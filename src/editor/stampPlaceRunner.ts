@@ -25,8 +25,10 @@ import { buildMapPlacementContext } from "@/ai/mapPlacementContext";
 import {
   buildStampPlannerUserPayload,
   buildStampRepairPrompt,
+  buildStampTurn2Prompt,
   classifyFastPathCommand,
   expandStampObjects,
+  extractCompoundFollowUpGoals,
   extractEraseTargetNoun,
   extractMoveDestinationPhrase,
   extractMoveSourcePhrase,
@@ -35,7 +37,9 @@ import {
   FAST_PATH_QUEST_OR_EVENT_GUIDANCE,
   parseRelativeShift,
   parseStampPlan,
+  planStampFollowUpFallback,
   resolveStampOverlaps,
+  shouldRunStampTurn2,
   STAMP_PLANNER_SYSTEM_PROMPT,
   type FastPathCommandClassification,
   type FastPathCommandTier,
@@ -46,7 +50,13 @@ import {
   type StampRect,
   type StampRefusal,
   type StampStep,
+  type StampTurnObservation,
 } from "@/ai/stampPlanner";
+import {
+  EXTENDED_STAMP_TOOLS,
+  expandExtendedSpatialStep,
+  type ExtendedTilePatch,
+} from "@/editor/stampPlaceExtendedTools";
 import { acceptedObjectNames, buildStampObjectIndex, extractCoreObjectName, sampleStampObjectNames } from "@/ai/stampObjects";
 import { captureStructureTiles, makeStructurePlacement, removeStructurePlacement, type StructureTiles } from "@/project/structurePlacements";
 
@@ -75,8 +85,7 @@ import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
 import { clearTileStack, topTileInStack } from "@/project/mapOverlayTiles";
 import { terrainLocked } from "@/project/terrainDesign";
 import { invalidateReliefSlopes, rampCode } from "@/project/relief/walk";
-import type { GameMap, Project, TilesetDef } from "@/project/types";
-
+import type { GameEvent, GameMap, Project, TilesetDef } from "@/project/types";
 /** 계획 호출 하나에 허용하는 벽시계(의도 선언과 같다). 수리 호출도 같은 값을 따로 쓴다. */
 export const STAMP_PLAN_TIMEOUT_MS = 20_000;
 
@@ -128,8 +137,9 @@ export interface StampRunResult {
   readonly refused?: number;
   /** 적용 전후 맵 비교 — 실제로 바뀐 타일·이벤트 수. */
   readonly effect?: StampEffect;
+  /** 바로 깔기 실행 중 사용된 LLM 계획 턴 수 (기본 1, 복합·연쇄 시공 시 최대 2). */
+  readonly llmTurnsUsed?: 1 | 2;
 }
-
 type PendingStructureOp =
   | { readonly kind: "remove"; readonly mapId: string; readonly placementId: string }
   | {
@@ -153,6 +163,16 @@ type PendingStructureOp =
       readonly kind: "tile_patch";
       readonly mapId: string;
       readonly patches: readonly { readonly x: number; readonly y: number; readonly lower?: number; readonly upper?: number }[];
+    }
+  | {
+      readonly kind: "event_upsert";
+      readonly mapId: string;
+      readonly event: GameEvent;
+    }
+  | {
+      readonly kind: "switch_ensure";
+      readonly switchId: string;
+      readonly name: string;
     };
 const pendingStructureOps: PendingStructureOp[] = [];
 let stampVariationSeq = 0;
@@ -237,6 +257,41 @@ function applyStampCallsWithStructureOps(calls: readonly ToolCall[]): ToolResult
           ...(rop.style ? { style: rop.style } : {}),
         };
         invalidateReliefSlopes(draft.relief);
+      });
+    }
+  }
+  const switchOps = ops.filter((op): op is Extract<PendingStructureOp, { readonly kind: "switch_ensure" }> => op.kind === "switch_ensure");
+  if (switchOps.length > 0 && results.some((r) => r.ok)) {
+    store.update((draft) => {
+      for (const sw of switchOps) {
+        const existing = draft.switches.find((entry) => entry.id === sw.switchId);
+        if (existing) {
+          if (existing.name === "") existing.name = sw.name;
+        } else {
+          draft.switches.push({ id: sw.switchId, name: sw.name });
+        }
+        draft.session.switches[sw.switchId] ??= false;
+      }
+    });
+  }
+  const eventOps = ops.filter((op): op is Extract<PendingStructureOp, { readonly kind: "event_upsert" }> => op.kind === "event_upsert");
+  if (eventOps.length > 0 && results.some((r) => r.ok)) {
+    const byMap = new Map<string, GameEvent[]>();
+    for (const evOp of eventOps) {
+      const list = byMap.get(evOp.mapId) ?? [];
+      list.push(evOp.event);
+      byMap.set(evOp.mapId, list);
+    }
+    for (const [mapId, events] of byMap) {
+      store.updateMap(mapId, (draft) => {
+        for (const ev of events) {
+          const existingIdx = draft.events.findIndex((e) => e.id === ev.id);
+          if (existingIdx >= 0) {
+            draft.events[existingIdx] = { ...ev, x: draft.events[existingIdx]!.x, y: draft.events[existingIdx]!.y };
+          } else {
+            draft.events.push(ev);
+          }
+        }
       });
     }
   }
@@ -667,12 +722,113 @@ export async function runStampPlaceWith(input: StampRunInput, deps: StampRunDeps
   }
   // 새 이벤트가 기존 이벤트·서로와 겹치지 않게 코드가 옮기고, 던전 방·집·물건 칸은 **지금 맵**에서 고른다.
   const liveFacts = refreshFacts(deps, facts);
+  const activeFacts = input.waitForApply ? liveFacts : facts;
   const variation = input.variation ?? (Date.now() + (++stampVariationSeq) * 997);
-  const expanded = expandPlanSteps(plan.steps, input.waitForApply ? liveFacts : facts, deps.getProject(), landingCheck(deps, input.mapId), variation);
-  plan = { ...plan, steps: expanded.steps, dropped: [...plan.dropped, ...expanded.dropped] };
+  const turn1RawSteps = plan.steps;
+  const expanded = expandPlanSteps(turn1RawSteps, activeFacts, deps.getProject(), landingCheck(deps, input.mapId), variation);
+  let combinedSteps: readonly StampStep[] = expanded.steps;
+  let combinedDropped: readonly string[] = [...plan.dropped, ...expanded.dropped];
+  let llmTurnsUsed: 1 | 2 = 1;
+
+  // ── 최대 2턴(maxLlmTurns = 2) 연쇄 시공 루프 ────────────────────────────────
+  // 1턴 시공 직후의 미리보기 맵(expanded.previewMap)에서 건물·출입구·물·도로·이벤트·남은 목표를 요약해
+  // 복합 요청이거나 1턴 계획이 후속 정밀 시공(needsFollowUp / remainingGoals)을 요청한 경우 2번째 LLM 턴을 수행한다.
+  const draftAfterTurn1 = expanded.previewMap ?? deps.getProject().maps[input.mapId];
+  const tilesetAfterTurn1 = draftAfterTurn1 ? deps.getProject().tilesets[draftAfterTurn1.tilesetId] : undefined;
+  if (draftAfterTurn1) {
+    const placedStructures = detectPlacedMapObjects(draftAfterTurn1, tilesetAfterTurn1)
+      .filter((o) => o.kind === "structure" || o.kind === "kit")
+      .map((o) => ({ id: o.id, name: o.name, x: o.x, y: o.y, w: o.w, h: o.h }));
+    const doorCells = placedStructures.map((s) => ({
+      x: s.x + Math.floor(s.w / 2),
+      y: Math.min(draftAfterTurn1.height - 1, s.y + s.h),
+    }));
+    let waterCells = 0;
+    let roadCells = 0;
+    for (let y = activeFacts.target.y; y < activeFacts.target.y + activeFacts.target.h; y++) {
+      for (let x = activeFacts.target.x; x < activeFacts.target.x + activeFacts.target.w; x++) {
+        if (isWaterCell(draftAfterTurn1, tilesetAfterTurn1, x, y)) waterCells++;
+        if (isRoadCell(draftAfterTurn1, tilesetAfterTurn1, x, y)) roadCells++;
+      }
+    }
+    const eventsCreated = combinedSteps
+      .filter((s) => s.tool === "place_npc" || s.tool === "make_villager" || s.tool === "place_chest" || s.tool === "place_savepoint")
+      .map((s, idx) => ({
+        id: String(s.args.id ?? `turn1_ev_${idx}`),
+        name: String(s.args.name ?? s.label),
+        x: Number(s.args.x ?? (s.args.home as { x?: number } | undefined)?.x ?? activeFacts.target.x),
+        y: Number(s.args.y ?? (s.args.home as { y?: number } | undefined)?.y ?? activeFacts.target.y),
+      }));
+    const followUpGoals = extractCompoundFollowUpGoals(activeFacts.text, turn1RawSteps);
+    const remainingGoals = [
+      ...(plan.remainingGoals ?? []),
+      ...followUpGoals.map((g) => `${g.tool}: ${g.label}`),
+    ];
+    const observation: StampTurnObservation = {
+      placedStructures,
+      doorCells,
+      waterCells,
+      roadCells,
+      eventsCreated,
+      remainingGoals,
+    };
+
+    if (shouldRunStampTurn2(activeFacts, turn1RawSteps, observation, plan.needsFollowUp === true)) {
+      llmTurnsUsed = 2;
+      const turn2Facts: StampPlanFacts = {
+        ...activeFacts,
+        placedObjects: detectPlacedMapObjects(draftAfterTurn1, tilesetAfterTurn1),
+        isOpenCell: (x, y) => isOpenObjectCell(deps.getProject(), draftAfterTurn1, x, y),
+        isWallMountCell: (x, y) => isWallMountCell(draftAfterTurn1, tilesetAfterTurn1, x, y),
+        isWaterCell: (x, y) => isWaterCell(draftAfterTurn1, tilesetAfterTurn1, x, y),
+        isRoadCell: (x, y) => isRoadCell(draftAfterTurn1, tilesetAfterTurn1, x, y),
+        isGrassOrSoilCell: (x, y) => isGrassOrSoilCell(draftAfterTurn1, tilesetAfterTurn1, x, y),
+        hasArtAt: (x, y) => hasArtAt(draftAfterTurn1, x, y),
+        ...(tilesetAfterTurn1 ? { isWallCell: (x: number, y: number) => isWallCell(draftAfterTurn1, tilesetAfterTurn1, x, y) } : {}),
+      };
+      let turn2Raw = "";
+      try {
+        turn2Raw = await callModel(
+          deps,
+          [
+            ...conversation,
+            { role: "assistant", content: planRaw },
+            { role: "user", content: buildStampTurn2Prompt({ facts: turn2Facts, turn1Steps: turn1RawSteps, observation }) },
+          ],
+          input.signal,
+        );
+      } catch (cause) {
+        if (cause instanceof StampAborted) return ABORTED;
+        turn2Raw = "";
+      }
+      const turn1ToolSet = new Set(turn1RawSteps.map((s) => s.tool));
+      let turn2CandidateSteps: readonly StampStep[] = [];
+      if (turn2Raw) {
+        const parsedTurn2 = parseStampPlan(turn2Raw, turn2Facts);
+        turn2CandidateSteps = parsedTurn2.steps.filter((s) => !turn1ToolSet.has(s.tool));
+      }
+      if (turn2CandidateSteps.length === 0) {
+        turn2CandidateSteps = planStampFollowUpFallback({ facts: turn2Facts, turn1Steps: turn1RawSteps, observation });
+      }
+      if (turn2CandidateSteps.length > 0) {
+        const turn2Expanded = expandPlanSteps(
+          turn2CandidateSteps,
+          turn2Facts,
+          deps.getProject(),
+          landingCheck(deps, input.mapId),
+          variation + 7,
+          draftAfterTurn1,
+        );
+        combinedSteps = [...combinedSteps, ...turn2Expanded.steps];
+        combinedDropped = [...combinedDropped, ...turn2Expanded.dropped];
+      }
+    }
+  }
+
+  plan = { ...plan, steps: combinedSteps, dropped: combinedDropped };
   const lines: string[] = [...refusalLines];
   if (plan.dropped.length > 0) lines.push(`버린 단계: ${plan.dropped.join(", ")}`);
-  if (plan.steps.length === 0) return { ok: false, lines, applied: 0, usedModel: true, refused: refusals.length };
+  if (plan.steps.length === 0) return { ok: false, lines, applied: 0, usedModel: true, refused: refusals.length, llmTurnsUsed };
   input.onPhase?.("applying");
   const firstResults = deps.apply(plan.steps.map(toCall));
   const first = stepLines(plan.steps, firstResults, "");
@@ -684,9 +840,10 @@ export async function runStampPlaceWith(input: StampRunInput, deps: StampRunDeps
     const visualApplied = plan.steps.some((step, index) => VISUAL_TOOLS[step.tool] === true && firstResults[index]?.ok);
     const lying = visualApplied && !hasVisibleChange(effect);
     const all = [...lines, ...extra];
-    all.push(describeStampEffect(effect));
+    const effectLine = describeStampEffect(effect) + (llmTurnsUsed === 2 ? " · LLM 2턴 연쇄 시공" : "");
+    all.push(effectLine);
     if (lying) all.push("※ 도구는 성공이라 했지만 맵에 눈에 보이게 바뀐 것이 없습니다 — 이 요청은 깔리지 않은 것으로 봅니다.");
-    return { ok: ok && !lying && refusals.length === 0, lines: all, applied, usedModel: true, refused: refusals.length, effect, ...(usedRepair ? {} : {}) };
+    return { ok: ok && !lying && refusals.length === 0, lines: all, applied, usedModel: true, refused: refusals.length, effect, llmTurnsUsed, ...(usedRepair ? {} : {}) };
   };
   if (failures.length === 0) return finish(applied > 0, [], false);
 
@@ -776,10 +933,11 @@ function expandPlanSteps(
   project: Project,
   fallbackLanding: (x: number, y: number) => boolean,
   variation: number,
-): { readonly steps: readonly StampStep[]; readonly dropped: readonly string[] } {
+  existingPreviewMap?: GameMap,
+): { readonly steps: readonly StampStep[]; readonly dropped: readonly string[]; readonly previewMap?: GameMap } {
   // 장면 구성 단계는 맨 앞이 아니어도 찾는다(앞에 지형 칠하기 등이 붙는 계획).
   const scene = steps.find((step) => step.tool === "compose_scene");
-  if (!scene) return settleAndExpandSteps(steps, facts, project, fallbackLanding, variation);
+  if (!scene) return settleAndExpandSteps(steps, facts, project, fallbackLanding, variation, existingPreviewMap);
   const composed = expandSceneStep(scene, project, variation);
   return { steps: [...composed.steps, ...steps.filter((step) => step !== scene)], dropped: composed.dropped };
 }
@@ -794,7 +952,8 @@ function settleAndExpandSteps(
   project: Project,
   fallbackLanding: (x: number, y: number) => boolean,
   variation = 0,
-): { readonly steps: readonly StampStep[]; readonly dropped: readonly string[] } {
+  existingPreviewMap?: GameMap,
+): { readonly steps: readonly StampStep[]; readonly dropped: readonly string[]; readonly previewMap?: GameMap } {
   const map = project.maps[facts.mapId];
   const tileset = map ? project.tilesets[map.tilesetId] : undefined;
   if (!map || !tileset) {
@@ -807,10 +966,12 @@ function settleAndExpandSteps(
     const objects = expandStampObjects(houses.steps, objectFacts);
     return { steps: objects.steps, dropped: [...settled.dropped, ...houses.dropped, ...objects.dropped] };
   }
-  const previewMap = copiedTerrainMap(map);
-  previewMap.structurePlacements = [...(map.structurePlacements ?? [])];
+  const previewMap = existingPreviewMap ?? copiedTerrainMap(map);
+  if (!existingPreviewMap) {
+    previewMap.structurePlacements = [...(map.structurePlacements ?? [])];
+  }
   const eraseMove = expandEraseAndMoveSteps(steps, previewMap, tileset, facts);
-  const special = expandSpecialSpatialSteps(eraseMove.steps, previewMap, tileset, facts, variation);
+  const special = expandSpecialSpatialSteps(eraseMove.steps, previewMap, tileset, facts, variation, project);
   const dungeon = expandDungeonRooms(special.steps, previewMap, tileset, facts);
   const urbanFilled = expandUrbanFillAndCrosswalkSteps(dungeon.steps, previewMap, tileset, facts);
   previewFillRegions(urbanFilled, previewMap, tileset);
@@ -838,6 +999,7 @@ function settleAndExpandSteps(
   return {
     steps: polished,
     dropped: [...eraseMove.dropped, ...special.dropped, ...dungeon.dropped, ...settled.dropped, ...houses.dropped, ...objects.dropped],
+    previewMap,
   };
 }
 
@@ -2950,8 +3112,20 @@ function expandSpecialSpatialSteps(
   tileset: TilesetDef,
   facts: StampPlanFacts,
   variation = 0,
+  project?: Project,
 ): { readonly steps: readonly StampStep[]; readonly dropped: readonly string[] } {
-  if (!steps.some((s) => s.tool === "carve_river" || s.tool === "sculpt_hill" || s.tool === "place_castle" || s.tool === "place_shop" || s.tool === "place_corpses" || s.tool === "harmonize_region")) {
+  if (
+    !steps.some(
+      (s) =>
+        s.tool === "carve_river" ||
+        s.tool === "sculpt_hill" ||
+        s.tool === "place_castle" ||
+        s.tool === "place_shop" ||
+        s.tool === "place_corpses" ||
+        s.tool === "harmonize_region" ||
+        EXTENDED_STAMP_TOOLS.has(s.tool),
+    )
+  ) {
     return { steps, dropped: [] };
   }
   const out: StampStep[] = [];
@@ -2961,8 +3135,37 @@ function expandSpecialSpatialSteps(
   const idx = (x: number, y: number): number => y * W + x;
   const inb = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < W && y < H;
   const houseCells = new Set<string>(protectedHouseCells(previewMap).map((c) => `${c.x},${c.y}`));
+  const roadGroupForCtx = (tileset.autotileGroups ?? []).find((g) => g.id === "beodeul_road_autotile");
 
   for (const step of steps) {
+    if (EXTENDED_STAMP_TOOLS.has(step.tool)) {
+      const extRes = expandExtendedSpatialStep(step, {
+        project: project ?? store.getCurrent(),
+        previewMap,
+        tileset,
+        facts,
+        variation,
+        stampKitDirect: (kitId, ox, oy, label, note, _group) =>
+          stampKitDirectSteps(kitId, ox, oy, previewMap, tileset, facts.mapId, label, note),
+        applyRoadAutotile: (roadMask, isProtectedCell, label) =>
+          roadGroupForCtx
+            ? applyBeodeulRoadAutotile(roadMask, previewMap, roadGroupForCtx, isProtectedCell, new Set(), facts.mapId, label)
+            : [],
+        queueTilePatch: (patches: readonly ExtendedTilePatch[]) => {
+          pendingStructureOps.push({ kind: "tile_patch", mapId: facts.mapId, patches });
+        },
+        queueEventUpsert: (event: GameEvent) => {
+          pendingStructureOps.push({ kind: "event_upsert", mapId: facts.mapId, event });
+        },
+        queueSwitchEnsure: (switchId: string, name: string) => {
+          pendingStructureOps.push({ kind: "switch_ensure", switchId, name });
+        },
+        detectObjects: detectPlacedMapObjects,
+      });
+      out.push(...extRes.steps);
+      dropped.push(...extRes.dropped);
+      continue;
+    }
     if (step.tool === "carve_river") {
       const area = (step.args.area as StampRect | undefined) ?? facts.target;
       const direction = step.args.direction === "vertical" ? "vertical" : "horizontal";

@@ -225,4 +225,38 @@ describe("3-Tier Fast-Path Command Classification & Guard Contract", () => {
       dy: 0,
     });
   });
+
+  it("validates all 22 extended fast-path tools and allows guild boards and lever+gate pairs", () => {
+    expect(classifyFastPathCommand("모험가 길드와 의뢰 게시판 만들어줘").allowed).toBe(true);
+    expect(classifyFastPathCommand("레버와 열리는 철문 깔아줘").allowed).toBe(true);
+    const tools = [
+      "place_bridge",
+      "carve_waterfall_pond",
+      "carve_lake_island",
+      "retheme_season_biome",
+      "build_market_bazaar",
+      "build_harbor_dock",
+      "build_farm_ranch",
+      "build_rail_crossing",
+      "place_inn",
+      "place_church_healer",
+      "place_guild_board",
+      "place_travel_portal",
+      "place_roaming_enemies",
+      "place_switch_and_gate",
+      "place_camp_rest",
+      "place_mimic_and_sparkles",
+      "repeat_line_or_grid",
+      "mirror_region",
+      "enclose_with_wall",
+      "auto_connect_roads",
+      "populate_crowd",
+      "set_mood_weather",
+    ] as const;
+    for (const tool of tools) {
+      const check = validateStampStep({ tool, args: { area: FACTS.target } }, { ...FACTS, text: "여관과 마을 사람들로 꾸며줘" });
+      expect("step" in check, `Expected ${tool} to validate`).toBe(true);
+      if ("step" in check) expect(check.step.tool).toBe(tool);
+    }
+  });
 });

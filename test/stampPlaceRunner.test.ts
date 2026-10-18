@@ -462,5 +462,34 @@ describe("runStampPlaceWith", () => {
     expect(eraseCalls[1]!.args.rect).toMatchObject({ x: 7, y: 4, w: 4, h: 4 });
     const paintUpper = h.applied[0]!.filter((c) => c.name === "paint_tiles" && c.args.layer === "upper");
     expect(paintUpper.length).toBeGreaterThan(0);
+    expect(res.llmTurnsUsed).toBe(1);
+  });
+
+  it("executes a 2-turn LLM loop within a single apply checkpoint when Turn 1 requests follow-up refinement", async () => {
+    const h = harness({
+      replies: [
+        JSON.stringify({
+          steps: [{ tool: "place_inn", args: { area: { x: 2, y: 2, w: 8, h: 8 }, name: "여관 주인", price: 20 }, label: "1턴: 여관 시공" }],
+          needsFollowUp: true,
+          remainingGoals: ["auto_connect_roads", "populate_crowd"],
+        }),
+        JSON.stringify({
+          steps: [
+            { tool: "auto_connect_roads", args: { area: { x: 2, y: 2, w: 12, h: 12 } }, label: "2턴: 출입구 도로 자동 연결" },
+            { tool: "populate_crowd", args: { area: { x: 2, y: 10, w: 12, h: 5 }, count: 3 }, label: "2턴: 마을 군중 3명" },
+          ],
+        }),
+      ],
+    });
+    const res = await runStampPlaceWith(
+      { text: "여관을 세우고 출입구 도로망을 자동 연결한 뒤 마을 군중으로 북적이게 해줘", mapId: h.mapId, selection: null },
+      h.deps,
+    );
+    expect(res.ok).toBe(true);
+    expect(res.llmTurnsUsed).toBe(2);
+    expect(h.requests).toHaveLength(2);
+    // 1턴 + 2턴 결과가 단일 apply 체크포인트(h.applied.length === 1)로 묶여 적용된다.
+    expect(h.applied).toHaveLength(1);
+    expect(res.lines.at(-1)).toContain("LLM 2턴 연쇄 시공");
   });
 });

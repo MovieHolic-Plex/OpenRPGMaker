@@ -50,6 +50,27 @@ export type StampTool =
   | "place_shop"
   | "place_corpses"
   | "harmonize_region"
+  | "place_bridge"
+  | "carve_waterfall_pond"
+  | "carve_lake_island"
+  | "retheme_season_biome"
+  | "build_market_bazaar"
+  | "build_harbor_dock"
+  | "build_farm_ranch"
+  | "build_rail_crossing"
+  | "place_church_healer"
+  | "place_guild_board"
+  | "place_travel_portal"
+  | "place_roaming_enemies"
+  | "place_switch_and_gate"
+  | "place_camp_rest"
+  | "place_mimic_and_sparkles"
+  | "repeat_line_or_grid"
+  | "mirror_region"
+  | "enclose_with_wall"
+  | "auto_connect_roads"
+  | "populate_crowd"
+  | "set_mood_weather"
   | "sculpt_relief"
   | "place_terrain_ramp";
 export const STAMP_TOOLS: readonly StampTool[] = [
@@ -86,6 +107,27 @@ export const STAMP_TOOLS: readonly StampTool[] = [
   "place_shop",
   "place_corpses",
   "harmonize_region",
+  "place_bridge",
+  "carve_waterfall_pond",
+  "carve_lake_island",
+  "retheme_season_biome",
+  "build_market_bazaar",
+  "build_harbor_dock",
+  "build_farm_ranch",
+  "build_rail_crossing",
+  "place_church_healer",
+  "place_guild_board",
+  "place_travel_portal",
+  "place_roaming_enemies",
+  "place_switch_and_gate",
+  "place_camp_rest",
+  "place_mimic_and_sparkles",
+  "repeat_line_or_grid",
+  "mirror_region",
+  "enclose_with_wall",
+  "auto_connect_roads",
+  "populate_crowd",
+  "set_mood_weather",
 ];
 
 export type FastPathCommandTier =
@@ -270,7 +312,29 @@ export const STAMP_PLANNER_SYSTEM_PROMPT = [
   "place_castle {area?:{x,y,w,h}, gate?:boolean, towers?:boolean, archetype?:\"citadel\"|\"keep\"|\"gatehouse\"|\"outpost\", seed?:int}  (when the user asks for 성/성채/요새/성곽/성벽과 성문/망루를 지어줘·세워줘 — builds stone castle ramparts, battlements, round watchtowers, arched portcullis gate, and courtyard; omit seed unless the user names one)",
   "place_corpses {area?:{x,y,w,h}, count?:int, withDebris?:boolean}  (when the user asks for 시체/시체들/백골/유골/유해/전사자 유해/해골 더미/전투 흔적을 깔아줘 — scatters skeletal/corpse remains, skull piles, graves, and battle debris/weapons)",
   "harmonize_region {area?:{x,y,w,h}}  (when the user asks for \"주변과 어울리게 해줘\", \"주변 풍경에 맞게 자연스럽게 꾸며줘\", \"어울리게 채워줘\" — inspects surrounding ground, roads, trees, and props to automatically blend the area with the map biome)",
-  "- SIMPLE NPC & SIMPLE SHOP ARE ALLOWED: \"간단한 NPC 만들고 대사도 만들어줘\", \"경비병과 산책하는 주민 NPC 만들어줘\" → use place_npc with 1-2 short lines. \"간단한 상점 만들어줘\", \"물약 상점과 상인 NPC 만들어줘\", \"무기 상점 세워줘\" → use place_shop (or place_house kind:\"상점\" + place_npc merchant:true stock:[...]).",
+  "place_bridge {area?:{x,y,w,h}, direction?:\"horizontal\"|\"vertical\", style?:\"stone\"|\"wood\"|\"sluice\"}  (when the user asks for 다리/돌다리/나무다리/수문 다리를 놓아줘·연결해줘 across water/river)",
+  "carve_waterfall_pond {area?:{x,y,w,h}}  (when the user asks for 폭포/폭포수와 연못/절벽 폭포를 만들어줘·깔아줘)",
+  "carve_lake_island {area?:{x,y,w,h}, centerpiece?:\"shrine\"|\"pavilion\"|\"statue\"}  (when the user asks for 호수 섬/작은 섬이 있는 호수/호수 한가운데 사당·정자·석상을 만들어줘)",
+  "retheme_season_biome {area?:{x,y,w,h}, theme:\"winter_snow\"|\"autumn\"|\"ruins\"|\"volcanic\"}  (when the user asks to change season/biome to 겨울 설원/눈 덮인 마을, 가을 단풍, 고대 폐허/유적, or 화산/용암 지대)",
+  "build_market_bazaar {area?:{x,y,w,h}, stallCount?:int}  (when the user asks for 장터/시장 광장/바자회/노점 거리를 만들어줘)",
+  "build_harbor_dock {area?:{x,y,w,h}}  (when the user asks for 항구/부두/선착장/잔교와 배를 만들어줘)",
+  "build_farm_ranch {area?:{x,y,w,h}}  (when the user asks for 농장/목장/텃밭과 헛간·가축을 만들어줘)",
+  "build_rail_crossing {area?:{x,y,w,h}}  (when the user asks for 철길/기찻길/선로와 건널목/간이역을 만들어줘)",
+  "place_inn {area?:{x,y,w,h}, at?:{x,y}, name?:string, price?:number, greeting?:string}  (when the user asks for 여관/숙소와 여관 주인을 만들어줘 — stamps inn building + Innkeeper NPC with gold-deducting party heal)",
+  "place_church_healer {area?:{x,y,w,h}, name?:string}  (when the user asks for 교회/성당/예배당과 치유 사제/힐러를 만들어줘 — heals party + opens save menu)",
+  "place_guild_board {area?:{x,y,w,h}, name?:string}  (when the user asks for 모험가 길드/의뢰 게시판을 만들어줘 — guild hall + interactive 3-choice rumor/bounty board)",
+  "place_travel_portal {area?:{x,y,w,h}, kind?:\"carriage\"|\"portal\"}  (when the user asks for 역마차 정류장/마차 or 순간이동 마법진/전이 포탈을 만들어줘)",
+  "place_roaming_enemies {area?:{x,y,w,h}, count?:1..4, movement?:\"approach\"|\"random\"}  (when the user asks for 돌아다니는 몬스터/배회하는 적/심볼 인카운터 적들을 깔아줘)",
+  "place_switch_and_gate {area?:{x,y,w,h}}  (when the user asks for 레버와 철문/스위치와 열리는 성문을 깔아줘 — wires a lever switch to open an iron gate)",
+  "place_camp_rest {area?:{x,y,w,h}}  (when the user asks for 야영지/캠프파이어/모닥불 쉼터와 천막을 만들어줘 — tent + campfire with rest/heal/save)",
+  "place_mimic_and_sparkles {area?:{x,y,w,h}}  (when the user asks for 미믹 상자와 반짝이는 바닥 아이템/유실물을 깔아줘)",
+  "repeat_line_or_grid {area?:{x,y,w,h}, query?:string, count?:int, rows?:int, cols?:int}  (when the user asks to repeat/line up/grid-place streetlamps, pillars, trees, statues, benches, banners)",
+  "mirror_region {area?:{x,y,w,h}, axis?:\"horizontal\"|\"vertical\"}  (when the user asks to mirror/symmetrically copy the left/right or top/bottom half of the selection)",
+  "enclose_with_wall {area?:{x,y,w,h}, style?:\"stone\"|\"fence\"|\"hedge\", gateSide?:\"south\"|\"north\"|\"east\"|\"west\"}  (when the user asks to surround/enclose the area with a stone wall, wooden fence, or hedge with a gate opening)",
+  "auto_connect_roads {area?:{x,y,w,h}}  (when the user asks to automatically connect building doors/gates to the road network with cobblestone roads and lamps)",
+  "populate_crowd {area?:{x,y,w,h}, count?:int}  (when the user asks to populate the area with a lively crowd of townsfolk, guards, children, and pets)",
+  "set_mood_weather {area?:{x,y,w,h}, weather?:\"rain\"|\"snow\"|\"fog\"|\"storm\"|\"clear\", preset?:\"sunset\"|\"night\"|\"dawn\"|\"day\"}  (when the user asks to set weather + sunset/night/dawn lighting tint + lit braziers/lamps)",
+  "- SIMPLE NPC, SIMPLE SHOP, TOWN FACILITIES & FIELD GIMMICKS ARE ALLOWED: place_npc, place_shop, place_inn, place_church_healer, place_guild_board, place_travel_portal, place_roaming_enemies, place_switch_and_gate, place_camp_rest, place_mimic_and_sparkles.",
   "- QUEST / BRANCHING STORY / BOSS EVENT / PUZZLE / PARTY RECRUIT / COMPLEX SYSTEM WIRING GUARD: ONLY if the sentence asks for 퀘스트 만들기/세우기, 분기·선택지 대화·스토리·컷신 짜기, 보스전·퍼즐·선택지 이벤트 만들기, 동료 영입/합류, or 상점·숙소 기능 배선/시스템 구현, return ONLY {\"reject\":\"FAST_PATH_UNSUPPORTED_QUEST_OR_EVENT\"}.",
 ].join("\n");
 
@@ -436,6 +500,27 @@ const TOOL_KO: Record<StampTool, string> = {
   place_shop: "상점",
   place_corpses: "백골 유해·전투 흔적",
   harmonize_region: "주변 맞춤 조경",
+  place_bridge: "다리·수문 횡단교",
+  carve_waterfall_pond: "폭포와 연못",
+  carve_lake_island: "호수 섬과 사당",
+  retheme_season_biome: "계절·바이옴 리테마",
+  build_market_bazaar: "장터 노점 광장",
+  build_harbor_dock: "항구 부두와 선박",
+  build_farm_ranch: "농장·목장 지구",
+  build_rail_crossing: "철길 건널목과 간이역",
+  place_church_healer: "성당과 치유 사제",
+  place_guild_board: "모험가 길드와 의뢰 게시판",
+  place_travel_portal: "역마차·전이 마법진",
+  place_roaming_enemies: "배회 심볼 몬스터",
+  place_switch_and_gate: "레버 스위치와 철문",
+  place_camp_rest: "야영지 천막과 모닥불",
+  place_mimic_and_sparkles: "미믹 상자와 반짝이 유실물",
+  repeat_line_or_grid: "일렬·격자 반복 배치",
+  mirror_region: "좌우·상하 대칭 복사",
+  enclose_with_wall: "성벽·울타리 포위 시공",
+  auto_connect_roads: "출입구 도로망 자동 연결",
+  populate_crowd: "활기찬 마을 군중 배치",
+  set_mood_weather: "날씨·석양/야경 조명 연출",
   sculpt_relief: "절벽 높이 빚기",
   place_terrain_ramp: "오르막 계단",
 };
@@ -790,28 +875,37 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
     case "paint_tiles":
       return dropped("paint_tiles 는 코드가 place_dungeon_room 에서 만드는 내부 단계다 — place_dungeon_room 을 쓴다");
     case "place_inn": {
-      const at = pointOrCenter(args.at, rect, target);
-      if (!at) return dropped("여관 주인 위치가 없습니다");
       const basis = facts.placement?.innPrice ?? { gold: 20, reason: "기본" };
       const asked = typeof args.price === "number" && Number.isFinite(args.price) ? Math.round(args.price) : undefined;
-      // 요청 금액은 기준의 1/3~3배 안에서만 받는다.
       const price = asked === undefined ? basis.gold : Math.max(Math.ceil(basis.gold / 3), Math.min(basis.gold * 3, asked));
       const name = stringArg(args.name) ?? "여관 주인";
       const greeting = stringArg(args.greeting)?.slice(0, 80) ?? `어서 오세요. 하룻밤 ${price}G 입니다.`;
       const existingInn = facts.placement?.existing.occupied.find((entry) => entry.kind === "inn");
       const priceNote = asked !== undefined && asked !== price ? `요금 ${asked}G → ${price}G(${basis.reason})` : `요금 ${price}G(${basis.reason})`;
-      // 2026-09-27 라이브: 「상자 하나랑 여관 주인」이 이미 여관 있는 마을에 두 번째 주인을 세웠다 — 요청이라 막지 않고 알린다.
       const note = existingInn ? `${priceNote} · 이 맵에 이미 여관이 있습니다(${existingInn.name} ${existingInn.x},${existingInn.y})` : priceNote;
+      if (args.at !== undefined && args.area === undefined && args.rect === undefined) {
+        const at = pointOrCenter(args.at, rect, target);
+        if (!at) return dropped("여관 주인 위치가 없습니다");
+        return {
+          step: {
+            tool: "place_npc",
+            label: labelText ?? `${name}(여관)`,
+            note,
+            args: {
+              mapId, x: at.x, y: at.y, name,
+              graphic: { query: stringArg(args.role) ?? "여관 주인" },
+              pages: [{ commands: [{ kind: "inn", price, note: greeting }] }],
+            },
+          },
+        };
+      }
+      const area = rect ?? target;
       return {
         step: {
-          tool: "place_npc",
-          label: labelText ?? `${name}(여관)`,
+          tool: "place_inn",
+          label: labelText ?? "여관 건물과 숙박 회복 주인",
           note,
-          args: {
-            mapId, x: at.x, y: at.y, name,
-            graphic: { query: stringArg(args.role) ?? "여관 주인" },
-            pages: [{ commands: [{ kind: "inn", price, note: greeting }] }],
-          },
+          args: { mapId, area, name, price, greeting },
         },
       };
     }
@@ -1011,6 +1105,250 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
           tool: "harmonize_region",
           label: labelText ?? "주변 바이옴 맞춤 자동 조경",
           args: { mapId, area },
+        },
+      };
+    }
+    case "place_bridge": {
+      const area = rect ?? target;
+      const direction = enumArg(args.direction, ["horizontal", "vertical"] as const);
+      const style = enumArg(args.style, ["stone", "wood", "sluice"] as const)
+        ?? (/수문|갑문/u.test(facts.text) ? "sluice" : /나무|널다리|목교/u.test(facts.text) ? "wood" : "stone");
+      return {
+        step: {
+          tool: "place_bridge",
+          label: labelText ?? (style === "sluice" ? "수문 다리와 양안 진입로" : style === "wood" ? "나무 널다리와 진입로" : "아치 돌다리와 양안 진입로"),
+          args: { mapId, area, ...(direction ? { direction } : {}), style },
+        },
+      };
+    }
+    case "carve_waterfall_pond": {
+      const area = rect ?? target;
+      return {
+        step: {
+          tool: "carve_waterfall_pond",
+          label: labelText ?? "절벽 폭포와 폭포수 연못",
+          args: { mapId, area },
+        },
+      };
+    }
+    case "carve_lake_island": {
+      const area = rect ?? target;
+      const centerpiece = enumArg(args.centerpiece, ["shrine", "pavilion", "statue"] as const)
+        ?? (/정자|닫집|파빌리온/u.test(facts.text) ? "pavilion" : /석상|동상|조각상/u.test(facts.text) ? "statue" : "shrine");
+      return {
+        step: {
+          tool: "carve_lake_island",
+          label: labelText ?? "호수 위 작은 섬과 사당·징검돌 다리",
+          args: { mapId, area, centerpiece },
+        },
+      };
+    }
+    case "retheme_season_biome": {
+      const area = rect ?? target;
+      const theme = enumArg(args.theme, ["winter_snow", "autumn", "ruins", "volcanic"] as const)
+        ?? (/화산|용암|잿더미|흑요석|volcan/iu.test(facts.text)
+          ? "volcanic"
+          : /폐허|유적|고대|무너진|ruin/iu.test(facts.text)
+            ? "ruins"
+            : /가을|단풍|추수|황금|autumn|fall/iu.test(facts.text)
+              ? "autumn"
+              : "winter_snow");
+      const koTheme = theme === "winter_snow" ? "겨울 설원" : theme === "autumn" ? "가을 단풍" : theme === "ruins" ? "고대 유적 폐허" : "화산 용암 지대";
+      return {
+        step: {
+          tool: "retheme_season_biome",
+          label: labelText ?? `${koTheme} 바이옴 리테마`,
+          args: { mapId, area, theme },
+        },
+      };
+    }
+    case "build_market_bazaar": {
+      const area = rect ?? target;
+      const stallCount = Math.max(3, Math.min(6, finiteInt(args.stallCount) ?? 5));
+      return {
+        step: {
+          tool: "build_market_bazaar",
+          label: labelText ?? "장터 광장과 노점 바자회·상인 NPC",
+          args: { mapId, area, stallCount },
+        },
+      };
+    }
+    case "build_harbor_dock": {
+      const area = rect ?? target;
+      return {
+        step: {
+          tool: "build_harbor_dock",
+          label: labelText ?? "석조 부두 안벽·나무 잔교·정박 어선·선원 NPC",
+          args: { mapId, area },
+        },
+      };
+    }
+    case "build_farm_ranch": {
+      const area = rect ?? target;
+      return {
+        step: {
+          tool: "build_farm_ranch",
+          label: labelText ?? "목장 울타리·경작지 밭·닭장·양떼·농부 NPC",
+          args: { mapId, area },
+        },
+      };
+    }
+    case "build_rail_crossing": {
+      const area = rect ?? target;
+      return {
+        step: {
+          tool: "build_rail_crossing",
+          label: labelText ?? "동서 철길 선로·남북 건널목·간이역·역무원 NPC",
+          args: { mapId, area },
+        },
+      };
+    }
+    case "place_church_healer": {
+      const area = rect ?? target;
+      return {
+        step: {
+          tool: "place_church_healer",
+          label: labelText ?? "성당 예배당과 치유·저장 사제 NPC",
+          args: { mapId, area },
+        },
+      };
+    }
+    case "place_guild_board": {
+      const area = rect ?? target;
+      return {
+        step: {
+          tool: "place_guild_board",
+          label: labelText ?? "모험가 길드 회관과 3분기 의뢰 게시판",
+          args: { mapId, area },
+        },
+      };
+    }
+    case "place_travel_portal": {
+      const area = rect ?? target;
+      const kind = enumArg(args.kind, ["carriage", "portal"] as const)
+        ?? (/마법진|포탈|순간이동|전이|룬|portal|teleport/iu.test(facts.text) ? "portal" : "carriage");
+      return {
+        step: {
+          tool: "place_travel_portal",
+          label: labelText ?? (kind === "portal" ? "고대 전이 마법진과 이동 이벤트" : "역마차 정류장과 마부 이동 이벤트"),
+          args: { mapId, area, kind },
+        },
+      };
+    }
+    case "place_roaming_enemies": {
+      const area = rect ?? target;
+      const count = Math.max(1, Math.min(4, finiteInt(args.count) ?? 3));
+      const movement = enumArg(args.movement, ["approach", "random"] as const) ?? "approach";
+      return {
+        step: {
+          tool: "place_roaming_enemies",
+          label: labelText ?? `배회 심볼 몬스터 ${count}마리`,
+          args: { mapId, area, count, movement },
+        },
+      };
+    }
+    case "place_switch_and_gate": {
+      const area = rect ?? target;
+      return {
+        step: {
+          tool: "place_switch_and_gate",
+          label: labelText ?? "레버 스위치와 연동 강철 성문",
+          args: { mapId, area },
+        },
+      };
+    }
+    case "place_camp_rest": {
+      const area = rect ?? target;
+      return {
+        step: {
+          tool: "place_camp_rest",
+          label: labelText ?? "모험가 야영 천막과 휴식·저장 모닥불",
+          args: { mapId, area },
+        },
+      };
+    }
+    case "place_mimic_and_sparkles": {
+      const area = rect ?? target;
+      return {
+        step: {
+          tool: "place_mimic_and_sparkles",
+          label: labelText ?? "보물상자·미믹 함정 상자·반짝이 유실물",
+          args: { mapId, area },
+        },
+      };
+    }
+    case "repeat_line_or_grid": {
+      const area = rect ?? target;
+      const query = stringArg(args.query) ?? stringArg(args.name) ?? (/벤치/u.test(facts.text) ? "벤치" : /석상|동상/u.test(facts.text) ? "석상" : /기둥|열주/u.test(facts.text) ? "기둥" : /나무|가로수/u.test(facts.text) ? "나무" : /깃발|배너/u.test(facts.text) ? "깃발" : "가로등");
+      const count = finiteInt(args.count) ?? undefined;
+      const rows = finiteInt(args.rows) ?? undefined;
+      const cols = finiteInt(args.cols) ?? undefined;
+      return {
+        step: {
+          tool: "repeat_line_or_grid",
+          label: labelText ?? `${query} 일렬·격자 반복 배치`,
+          args: { mapId, area, query, ...(count ? { count } : {}), ...(rows ? { rows } : {}), ...(cols ? { cols } : {}) },
+        },
+      };
+    }
+    case "mirror_region": {
+      const area = rect ?? target;
+      const axis = enumArg(args.axis, ["horizontal", "vertical"] as const)
+        ?? (/상하|위아래/u.test(facts.text) ? "vertical" : "horizontal");
+      return {
+        step: {
+          tool: "mirror_region",
+          label: labelText ?? `${axis === "horizontal" ? "좌우" : "상하"} 대칭 복사`,
+          args: { mapId, area, axis },
+        },
+      };
+    }
+    case "enclose_with_wall": {
+      const area = rect ?? target;
+      const style = enumArg(args.style, ["stone", "fence", "hedge"] as const)
+        ?? (/산울타리|생울타리|덤불/u.test(facts.text) ? "hedge" : /나무\s*울타리|울타리|펜스|목책/u.test(facts.text) ? "fence" : "stone");
+      const gateSide = enumArg(args.gateSide, ["south", "north", "east", "west"] as const)
+        ?? (/북쪽|위쪽/u.test(facts.text) ? "north" : /동쪽|오른쪽/u.test(facts.text) ? "east" : /서쪽|왼쪽/u.test(facts.text) ? "west" : "south");
+      return {
+        step: {
+          tool: "enclose_with_wall",
+          label: labelText ?? "외곽 담장·울타리 포위 및 출입구 시공",
+          args: { mapId, area, style, gateSide },
+        },
+      };
+    }
+    case "auto_connect_roads": {
+      const area = rect ?? target;
+      return {
+        step: {
+          tool: "auto_connect_roads",
+          label: labelText ?? "건물 출입구 도로망 자동 연결",
+          args: { mapId, area },
+        },
+      };
+    }
+    case "populate_crowd": {
+      const area = rect ?? target;
+      const count = Math.max(3, Math.min(8, finiteInt(args.count) ?? 5));
+      return {
+        step: {
+          tool: "populate_crowd",
+          label: labelText ?? `활기찬 마을 군중 NPC ${count}명 배치`,
+          args: { mapId, area, count },
+        },
+      };
+    }
+    case "set_mood_weather": {
+      const area = rect ?? target;
+      const weather = enumArg(args.weather, ["rain", "snow", "fog", "storm", "clear"] as const)
+        ?? (/눈|설원|폭설/u.test(facts.text) ? "snow" : /안개|연무/u.test(facts.text) ? "fog" : /폭풍|번개/u.test(facts.text) ? "storm" : /맑|쾌청/u.test(facts.text) ? "clear" : "rain");
+      const preset = enumArg(args.preset, ["sunset", "night", "dawn", "day"] as const)
+        ?? (/밤|야경|달빛|어두운/u.test(facts.text) ? "night" : /새벽|여명/u.test(facts.text) ? "dawn" : /노을|석양|황혼|저녁/u.test(facts.text) ? "sunset" : "sunset");
+      return {
+        step: {
+          tool: "set_mood_weather",
+          label: labelText ?? `${preset === "night" ? "야경" : preset === "dawn" ? "새벽" : "노을"} 조명과 ${weather === "snow" ? "눈" : weather === "fog" ? "안개" : weather === "clear" ? "맑음" : "비"} 분위기 연출`,
+          args: { mapId, area, weather, preset, withLights: args.withLights !== false },
         },
       };
     }
@@ -1546,8 +1884,8 @@ function pointRect(point: { x: number; y: number } | null): StampRect | null {
 }
 
 /** 문장이 사람을 세우라는 말인가 — 사람 낱말이 있거나 「알아서·예쁘게」처럼 구체 물건이 없는 말. */
-const PERSON_WORDS = /사람|주민|npc|상인|경비|병사|아이|아저씨|아주머니|할머니|할아버지|여관|주인|손님|학생|선생|기사|공주|왕|마법사|요리사|대장장이|점원|캐릭터|동료|친구|인물|노인|소녀|소년|여자|남자|용사|상점|가게|술집|주막|대장간|시장|교회|신부|수녀|villager|merchant|guard|keeper|shop|inn\b/iu;
-const VAGUE_WORDS = /예쁘|알아서|분위기|꾸며|꾸미|아늑|풍성|채워|사람 사는|마을처럼|활기|따뜻|멋지|그럴듯|빈 입력|살아 있|생기/u;
+const PERSON_WORDS = /사람|주민|npc|상인|경비|병사|아이|아저씨|아주머니|할머니|할아버지|여관|주인|손님|학생|선생|기사|공주|왕|마법사|요리사|대장장이|점원|캐릭터|동료|친구|인물|노인|소녀|소년|여자|남자|용사|상점|가게|술집|주막|대장간|시장|장터|교회|성당|신부|수녀|사제|힐러|치유|선원|뱃사람|농부|목장|역무원|마부|길드|군중|인파|북적|행인|villager|merchant|guard|keeper|shop|inn|priest|healer|sailor|farmer\b/iu;
+const VAGUE_WORDS = /예쁘|알아서|분위기|꾸며|꾸미|아늑|풍성|채워|사람 사는|마을처럼|활기|따뜻|멋지|그럴듯|빈 입력|살아 있|생기|북적/u;
 export function allowsPerson(text: string): boolean {
   const t = text.trim();
   if (t.length === 0) return true;
@@ -1560,6 +1898,21 @@ export interface StampGuardRejection {
   readonly guidance: string;
 }
 
+export interface StampTurnObservation {
+  readonly placedStructures: readonly { readonly id: string; readonly name: string; readonly x: number; readonly y: number; readonly w: number; readonly h: number }[];
+  readonly doorCells: readonly { readonly x: number; readonly y: number }[];
+  readonly waterCells: number;
+  readonly roadCells: number;
+  readonly eventsCreated: readonly { readonly id: string; readonly name: string; readonly x: number; readonly y: number }[];
+  readonly remainingGoals: readonly string[];
+}
+
+export interface StampPlannerFollowUpInput {
+  readonly facts: StampPlanFacts;
+  readonly turn1Steps: readonly StampStep[];
+  readonly observation: StampTurnObservation;
+}
+
 export interface ParsedStampPlan {
   readonly steps: readonly StampStep[];
   /** 버린 단계와 이유(채팅에 한 줄로 남긴다). */
@@ -1568,9 +1921,15 @@ export interface ParsedStampPlan {
   readonly refused: readonly StampRefusal[];
   /** 퀘스트·이벤트·대화 등 바로 깔기 금지 명령 가드. */
   readonly guardRejected?: StampGuardRejection;
+  /** 1턴 계획이 2턴 후속 정밀 시공을 요청했거나 남은 복합 목표가 있을 때. */
+  readonly needsFollowUp?: boolean;
+  readonly remainingGoals?: readonly string[];
   /** JSON 을 읽지 못했을 때만. */
   readonly error?: string;
 }
+
+const FAST_PATH_FACILITY_OR_GIMMICK_ALLOW_RE =
+  /길드\s*게시판|의뢰\s*게시판|퀘스트\s*게시판|모험가\s*길드|(?:스위치|레버)(?:와|과|랑|하고|\s)+(?:열리는\s*)?(?:철문|성문|문|창살문|격자문)|미믹|반짝이는\s*(?:바닥|아이템|유실물)|(?:돌아다니는|배회하는|필드)\s*(?:몬스터|적|슬라임|고블린)/iu;
 
 const TIER2_REJECTION_RULES: readonly { readonly category: string; readonly pattern: RegExp }[] = [
   {
@@ -1603,18 +1962,20 @@ export function classifyFastPathCommand(text: string): FastPathCommandClassifica
   if (!trimmed) {
     return { tier: "SPATIAL_DIRECT_OP", allowed: true, op: "place", spatialOp: "place" };
   }
-  for (const rule of TIER2_REJECTION_RULES) {
-    if (rule.pattern.test(trimmed)) {
-      return {
-        tier: "QUEST_OR_NARRATIVE_REJECTED",
-        allowed: false,
-        code: "FAST_PATH_UNSUPPORTED_QUEST_OR_EVENT",
-        matchedCategory: rule.category,
-        guidance: FAST_PATH_QUEST_OR_EVENT_GUIDANCE,
-      };
+  if (!FAST_PATH_FACILITY_OR_GIMMICK_ALLOW_RE.test(trimmed)) {
+    for (const rule of TIER2_REJECTION_RULES) {
+      if (rule.pattern.test(trimmed)) {
+        return {
+          tier: "QUEST_OR_NARRATIVE_REJECTED",
+          allowed: false,
+          code: "FAST_PATH_UNSUPPORTED_QUEST_OR_EVENT",
+          matchedCategory: rule.category,
+          guidance: FAST_PATH_QUEST_OR_EVENT_GUIDANCE,
+        };
+      }
     }
   }
-  if (MOVE_VERB_RE.test(trimmed)) {
+  if (MOVE_VERB_RE.test(trimmed) && !/역마차|마차\s*정류장|순간이동|전이\s*마법진|포탈/u.test(trimmed)) {
     return { tier: "SPATIAL_DIRECT_OP", allowed: true, op: "move", spatialOp: "move" };
   }
   if (ERASE_VERB_RE.test(trimmed) && !/차|자동차|승용차|버스|택시|차량|주행|교통/u.test(trimmed)) {
@@ -1773,7 +2134,95 @@ export function parseStampPlan(raw: string, facts: StampPlanFacts): ParsedStampP
   if (finalSteps.length === 0 && dropped.length === 0 && refused.length === 0 && houseAsk && facts.houseLooks === 0) {
     dropped.push(`집: 이 타일셋(${facts.tilesetId ?? "현재 타일셋"})에는 집 외관이 없습니다(벽·문·바닥으로 흉내 내지 않음)`);
   }
-  return { steps: finalSteps, dropped, refused };
+  const needsFollowUp = isRecord(parsed) && parsed.needsFollowUp === true;
+  const remainingGoals = isRecord(parsed) && Array.isArray(parsed.remainingGoals)
+    ? parsed.remainingGoals.map(stringArg).filter((g): g is string => Boolean(g))
+    : undefined;
+  return {
+    steps: finalSteps,
+    dropped,
+    refused,
+    ...(needsFollowUp ? { needsFollowUp: true } : {}),
+    ...(remainingGoals && remainingGoals.length > 0 ? { remainingGoals } : {}),
+  };
+}
+
+const EXTENDED_TOOL_MATCHERS: readonly { readonly tool: StampTool; readonly re: RegExp; readonly defaultArgs?: Record<string, unknown> }[] = [
+  { tool: "carve_waterfall_pond", re: /폭포|폭포수(?:와\s*연못)?|절벽\s*폭포/u },
+  { tool: "carve_lake_island", re: /호수\s*(?:위\s*)?(?:작은\s*)?섬|섬이?\s*있는\s*호수|호수\s*한가운데\s*(?:섬|사당|정자)/u },
+  { tool: "place_bridge", re: /(?:돌다리|나무\s*다리|널다리|아치\s*다리|수문\s*다리|다리)(?:를|을|로|으로)?\s*(?:놓|깔|세우|세워|만들|연결|건너|잇|이어)/u },
+  { tool: "retheme_season_biome", re: /(?:겨울\s*설원|설원\s*눈|눈\s*덮인|가을\s*단풍|고대\s*폐허|폐허\s*유적|화산\s*용암|용암\s*지대)(?:으로|로)?\s*(?:바꿔|리테마|꾸며|만들|변환|테마)/u },
+  { tool: "build_market_bazaar", re: /(?:장터|시장\s*광장|바자회|노점\s*거리|노점상\s*광장)(?:을|를|도|이|가)?\s*(?:만들|열|세우|세워|깔|조성)/u },
+  { tool: "build_harbor_dock", re: /(?:항구\s*부두|선착장|부두(?:와|랑)?\s*(?:배|어선|잔교)|잔교(?:와|랑)?\s*배|항구\s*선착장)(?:을|를|도)?\s*(?:만들|세우|세워|깔|조성)/u },
+  { tool: "build_farm_ranch", re: /(?:농장|목장|울타리\s*농장|경작지\s*농장|밭과\s*(?:헛간|양|목장))(?:을|를|도)?\s*(?:만들|세우|세워|깔|일구|조성)/u },
+  { tool: "build_rail_crossing", re: /(?:철길|기찻길|철도\s*선로|광산\s*선로|철도\s*건널목|건널목과\s*간이역)(?:을|를|도)?\s*(?:만들|깔|세우|세워|놓|연결)/u },
+  { tool: "place_inn", re: /(?:여관(?:과|이랑|하고)?\s*(?:숙박|여관\s*주인|회복)?|숙박\s*여관)(?:을|를|도)?\s*(?:만들|세우|세워|짓|지어|깔)/u },
+  { tool: "place_church_healer", re: /(?:성당|예배당|교회|치유\s*성소|힐러\s*사제|치유\s*사제)(?:과|와|이랑|하고|\s)*(?:치유\s*사제|신부님|힐러|사제|세이브)?(?:을|를|도)?\s*(?:만들|세우|세워|짓|지어|깔|배치)/u },
+  { tool: "place_guild_board", re: /(?:모험가\s*길드|길드\s*게시판|의뢰\s*게시판|현상금\s*게시판)(?:을|를|과|와|도)?\s*(?:만들|세우|세워|깔|놓|배치)/u },
+  { tool: "place_travel_portal", re: /(?:역마차\s*정류장|역마차와\s*마부|전이\s*마법진|순간이동\s*마법진|이동\s*포탈)(?:을|를|도)?\s*(?:만들|세우|세워|깔|놓|배치)/u },
+  { tool: "place_roaming_enemies", re: /(?:돌아다니는|배회하는|추격하는|필드|심볼\s*인카운터)\s*(?:몬스터|적|슬라임|고블린|늑대)/u },
+  { tool: "place_switch_and_gate", re: /(?:레버|스위치)(?:와|과|랑|하고|\s)+(?:열리는\s*|연동\s*)?(?:철문|강철\s*성문|성문|창살문|문)/u },
+  { tool: "place_camp_rest", re: /(?:야영지|캠프파이어|모닥불\s*쉼터|야영\s*천막과\s*모닥불|모닥불\s*야영지)(?:을|를|도)?\s*(?:만들|세우|세워|깔|놓|펴)/u },
+  { tool: "place_mimic_and_sparkles", re: /(?:미믹\s*상자|미믹(?:과|와|이랑)?\s*반짝이|반짝이는\s*(?:바닥\s*)?(?:유실물|아이템))/u },
+  { tool: "repeat_line_or_grid", re: /(?:일렬로|줄지어|격자로|바둑판으로|나란히\s*반복|간격으로\s*반복)(?:해서)?\s*(?:깔|놓|세우|세워|배치)|(?:가로등|기둥|석상|벤치|나무|깃발)(?:을|를)\s*(?:일렬로|격자로|줄지어)/u },
+  { tool: "mirror_region", re: /(?:좌우\s*대칭|상하\s*대칭|거울\s*대칭|반대편에\s*대칭)(?:으로)?\s*(?:복사|미러링|맞춰|만들|배치)/u },
+  { tool: "enclose_with_wall", re: /(?:성벽|돌담|담장|울타리|산울타리)(?:으로|로)\s*(?:둘러싸|감싸|포위|두르|둘러)/u },
+  { tool: "auto_connect_roads", re: /(?:출입구|문\s*앞|건물\s*문|도로망|길망)(?:을|를|끼리|마다)?\s*(?:길로\s*|도로로\s*)?(?:자동\s*연결|이어|잇고|연결해)/u },
+  { tool: "populate_crowd", re: /(?:사람들|주민들|군중|인파)(?:로|으로)?\s*(?:북적이게|가득\s*채워|활기차게|많이\s*배치)|마을\s*군중(?:을|를)?\s*(?:배치|만들|깔)/u },
+  { tool: "set_mood_weather", re: /(?:석양|노을|야경|밤하늘|새벽\s*안개|비\s*내리는\s*밤|눈\s*내리는\s*밤|조명과\s*날씨)(?:으로|로)?\s*(?:분위기|조명|날씨|바꿔|연출|맞춰)/u },
+];
+
+export function extractCompoundFollowUpGoals(
+  text: string,
+  turn1Steps: readonly StampStep[],
+): { readonly tool: StampTool; readonly label: string }[] {
+  const used = new Set<StampTool>(turn1Steps.map((s) => s.tool));
+  const matched: { tool: StampTool; label: string }[] = [];
+  for (const m of EXTENDED_TOOL_MATCHERS) {
+    if (m.re.test(text) && !used.has(m.tool)) {
+      matched.push({ tool: m.tool, label: TOOL_KO[m.tool] });
+    }
+  }
+  return matched;
+}
+
+export function shouldRunStampTurn2(
+  facts: StampPlanFacts,
+  turn1Steps: readonly StampStep[],
+  observation: StampTurnObservation,
+  explicitNeedsFollowUp = false,
+): boolean {
+  if (!facts.text || turn1Steps.length === 0) return false;
+  if (turn1Steps.some((s) => s.tool === "compose_scene")) return false;
+  if (explicitNeedsFollowUp) return true;
+  return observation.remainingGoals.length > 0;
+}
+
+export function buildStampTurn2Prompt(input: StampPlannerFollowUpInput): string {
+  return JSON.stringify({
+    turn: 2,
+    instruction: "Turn 1 primary construction has been applied on the draft map. Inspect observation and emit ONLY the remaining refinement/follow-up steps (up to 6 steps) needed to complete the user's sentence, or {\"steps\":[]} if everything is already complete.",
+    sentence: input.facts.text,
+    target: input.facts.target,
+    turn1AppliedTools: input.turn1Steps.map((s) => ({ tool: s.tool, label: s.label })),
+    observation: input.observation,
+  });
+}
+
+export function planStampFollowUpFallback(input: StampPlannerFollowUpInput): StampStep[] {
+  const out: StampStep[] = [];
+  const used = new Set<StampTool>(input.turn1Steps.map((s) => s.tool));
+  for (const m of EXTENDED_TOOL_MATCHERS) {
+    if (used.has(m.tool)) continue;
+    if (m.re.test(input.facts.text) || input.observation.remainingGoals.some((g) => g.includes(m.tool) || m.re.test(g))) {
+      const check = validateStampStep({ tool: m.tool, args: { area: input.facts.target } }, input.facts);
+      if ("step" in check) {
+        out.push(check.step);
+        used.add(m.tool);
+      }
+    }
+  }
+  return out;
 }
 
 function upgradeDirectSpatialOps(
@@ -1813,6 +2262,24 @@ function upgradeDirectSpatialOps(
       dropped.length = 0;
       return [check.step];
     }
+  }
+  // 확장 22종 도구(지형·도하·지구·시설·기믹·스마트 배치·군중/날씨) 결정론 폴백 매칭:
+  // 모델이 빈 steps 를 반환했거나 일반 타일 칠하기만 냈을 때 확장 도구로 승격한다.
+  if (steps.length === 0) {
+    const matchedExtended: StampStep[] = [];
+    for (const m of EXTENDED_TOOL_MATCHERS) {
+      if (m.re.test(facts.text)) {
+        const check = validateStampStep({ tool: m.tool, args: { area: facts.target, ...(m.defaultArgs ?? {}) } }, facts);
+        if ("step" in check) matchedExtended.push(check.step);
+      }
+    }
+    if (matchedExtended.length > 0) {
+      dropped.length = 0;
+      return matchedExtended.slice(0, STAMP_MAX_STEPS);
+    }
+  }
+  if (steps.length > 0) {
+    return [...steps];
   }
   // 간단한 상점·물약 상점·무기 상점·잡화점과 상인 NPC
   if (
