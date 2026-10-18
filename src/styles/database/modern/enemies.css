@@ -959,3 +959,107 @@
   min-height: 16px;
   opacity: 0.82;
 }
+
+/* 도트 몬스터 공방(databaseEnemyPixelStudio.ts) - 9칸 시트 생성·적용 패널. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-pixel-studio {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 8px;
+  color: var(--db-studio-text-1);
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 12px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-pixel-studio-toggle {
+  align-self: flex-start;
+}
+
+/* 공방은 밝은 카드다 — 어두운 무대용 머리줄(안쪽 여백·inset 색 상태 글씨)을 카드에 맞춘다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-pixel-studio .db-pixel-studio-body > .db-enemy-stage-heading {
+  padding: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-pixel-studio .db-pixel-studio-body > .db-enemy-stage-heading .db-enemy-stage-status {
+  color: var(--db-studio-text-2);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-pixel-studio-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-pixel-studio-body[hidden] {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-pixel-studio-form {
+  display: grid;
+  gap: 8px 12px;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-pixel-studio-field {
+  display: flex;
+  flex-direction: column;
+  font: 500 11px/1.4 var(--font-ui);
+  gap: 3px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-pixel-studio-field > span {
+  color: var(--db-studio-text-2);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-pixel-studio-field select {
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-pixel-studio-colors,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-pixel-studio-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  grid-column: 1 / -1;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-pixel-studio-colors input[type="color"] {
+  block-size: 28px;
+  inline-size: 56px;
+  padding: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-pixel-studio-check {
+  align-items: center;
+  display: inline-flex;
+  font: 500 12px/1.4 var(--font-ui);
+  gap: 5px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-pixel-studio-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-pixel-studio-status {
+  color: var(--db-studio-text-2);
+  font: 400 11px/1.45 var(--font-ui);
+  margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-pixel-studio-strip img {
+  background: var(--db-studio-well);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 4px;
+  height: auto;
+  image-rendering: pixelated;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-pixel-studio-strip:empty,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-pixel-studio-stage:empty {
+  display: none;
+}

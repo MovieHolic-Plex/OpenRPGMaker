@@ -139,13 +139,19 @@ export function enemyPixelListBadge(resourceId: string | undefined, size = 16): 
 
 export type EnemyPixelPreview = { readonly element: HTMLElement; readonly stop: () => void };
 
-/** 몬스터 도트 미리보기 카드. 시트가 없는 리소스면 null. 전투처럼 색조·투명 없이 시트 원래 모습 그대로 그린다.
- *  시트 그림이 404 면 카드를 숨기고 걷은 뒤 onMissing 을 부른다 — 소유자가 정지 그림 미리보기를 되살린다. */
+/**
+ * 몬스터 도트 미리보기 카드. 시트가 없는 리소스면 null. 전투처럼 색조·투명 없이 시트 원래 모습 그대로 그린다.
+ * sheetOverride: 아직 프로젝트에 넣지 않은 시트(도트 몬스터 공방의 초안)를 같은 무대에서 돌린다.
+ * 시트 그림이 404 면 카드를 숨기고 걷은 뒤 onMissing 을 부른다 — 소유자가 정지 그림 미리보기를 되살린다.
+ */
 export function renderEnemyPixelPreview(
   record: { readonly name: string; readonly monsterResourceId?: string },
-  onMissing?: () => void,
+  sheetOverrideOrOnMissing?: PixelEnemySheet | (() => void),
+  onMissingArg?: () => void,
 ): EnemyPixelPreview | null {
-  const sheet = pixelEnemySheet(record.monsterResourceId);
+  const sheetOverride = typeof sheetOverrideOrOnMissing === "function" ? undefined : sheetOverrideOrOnMissing;
+  const onMissing = typeof sheetOverrideOrOnMissing === "function" ? sheetOverrideOrOnMissing : onMissingArg;
+  const sheet = sheetOverride ?? pixelEnemySheet(record.monsterResourceId);
   if (!sheet) return null;
   const cell = pixelEnemyCell(sheet);
   const url = pixelEnemySheetUrl(sheet);

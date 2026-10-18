@@ -655,6 +655,11 @@ export interface UploadedAsset {
      */
     sheetCell?: number;
     sheetSourceId?: string;
+    /**
+     * 에디터 「도트 몬스터 공방」·author_enemy_pixel_sheet 가 만든 retro2003 9칸 전투 시트(src/assets/pixelEnemySheets.ts).
+     * 이 자산(한 칸 초상)과 같은 id 의 적은 sheetResourceId 의 3×3 시트로 전투·미리보기에서 움직인다.
+     */
+    pixelEnemySheet?: UploadedPixelEnemySheetMeta;
   };
   /** 에셋 스토어에서 넣은 에셋의 출처. 게임 크레딧이 여기서 만들어진다(src/assetStore/pack.ts storeCredits). */
   origin?: import("../../assetStore/format").StoreAssetOrigin;
@@ -663,6 +668,20 @@ export interface UploadedAsset {
    * 스토어에 올릴 때 「AI 생성」 표시를 끌 수 없게 한다(src/assetStore/pack.ts aiMadeAssets).
    */
   generatedBy?: string;
+}
+
+/** 프로젝트 저작 적 도트 시트 계약(번들 PIXEL_ENEMY_SHEETS 항목과 같은 뜻). */
+export interface UploadedPixelEnemySheetMeta {
+  /** 3×3 시트 PNG 를 담은 uploaded 자산 id. */
+  sheetResourceId: string;
+  cell: 48 | 64 | 96;
+  motion: "hop" | "swoop" | "stomp" | "dash" | "float" | "shoot" | "breath";
+  idleFrameMs: number;
+  skillCell?: true;
+  /** 미리보기 스킬 시연에 쓰는 번들 몬스터 스킬 묶음(RETRO_MONSTER_SKILLSETS 키). */
+  skillSlug?: string;
+  /** 생성 인자(공방 대화상자를 다시 열 때 채운다). */
+  recipe?: Record<string, unknown>;
 }
 
 export interface AssetSet {

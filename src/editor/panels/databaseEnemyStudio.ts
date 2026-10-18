@@ -2,6 +2,8 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { switchDatabaseActiveTab } from "@/editor/panels/database";
 import { currentEnemy, enemyGraphicVisual } from "@/editor/panels/databaseEnemyRecordSupport";
 import { renderEnemyPixelPreview, type EnemyPixelPreview } from "@/editor/panels/databaseEnemyPixelPreview";
+import { renderEnemyPixelStudio } from "@/editor/panels/databaseEnemyPixelStudio";
+import { pixelEnemySheet } from "@/assets/pixelEnemySheets";
 import { recordDetailSection, setRecordDetailSection, setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
 import { store } from "@/project/store";
 import type { EnemyRecord } from "@/project/types";
@@ -101,7 +103,7 @@ export function renderEnemyStudio(record: EnemyRecord, sections: EnemyInspectorS
   const root = el("div", {
     class: "db-enemy-studio",
     children: [
-      el("div", { class: "db-enemy-stage-column", children: [pixel.element, stage.element, actions, references] }),
+      el("div", { class: "db-enemy-stage-column", children: [pixel.element, renderEnemyPixelStudio(record), stage.element, actions, references] }),
       el("aside", {
         class: "db-enemy-inspector",
         attrs: { "aria-label": "몬스터 속성 편집" },
@@ -125,7 +127,8 @@ function enemyPixelSlot(record: EnemyRecord, onMissing: () => void): { element: 
   let key = "";
   const refresh = (): void => {
     const live = currentEnemy(record);
-    const next = JSON.stringify([live.monsterResourceId, live.name]);
+    // 공방이 같은 리소스 id 에 시트를 다시 그리면 id·이름은 그대로라 그림 URL 까지 본다.
+    const next = JSON.stringify([live.monsterResourceId, live.name, pixelEnemySheet(live.monsterResourceId)?.url]);
     if (next === key) return;
     key = next;
     preview?.stop();

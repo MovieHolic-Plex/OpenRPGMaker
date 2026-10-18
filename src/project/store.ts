@@ -57,6 +57,7 @@ import { restoreLockedTerrainCells } from "./terrainLocks";
 import { isMediaSeparationOnly } from "@/project/mediaSeparationEquality";
 import { randomUuid } from "@/util/id";
 import { createLogger } from "@/util/logger";
+import { setPixelEnemySheetProjectSource } from "@/assets/pixelEnemySheets";
 import {
   recordEditActivity,
   type EditActivityField,
@@ -1858,6 +1859,8 @@ class ProjectStore {
 }
 
 export const store = new ProjectStore();
+// 프로젝트 저작 적 도트 시트(도트 몬스터 공방)를 미리보기·전투가 번들 시트처럼 찾게 한다.
+setPixelEnemySheetProjectSource(() => store.getCurrent());
 
 function cloneTileStacks(stacks: Record<number, number[]>): Record<number, number[]> {
   const copy: Record<number, number[]> = {};

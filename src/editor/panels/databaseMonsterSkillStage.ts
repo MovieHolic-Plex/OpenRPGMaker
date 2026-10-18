@@ -46,9 +46,9 @@ import { el } from "@/util/dom";
 
 // ---- 계약 조회 ----
 
-/** 도트 시트 → 계약 slug(pixel-enemies/<slug>.png 의 파일 이름). */
-export function pixelEnemySlug(sheet: Pick<PixelEnemySheet, "path">): string {
-  return /([^/]+)\.png$/.exec(sheet.path)?.[1] ?? "";
+/** 도트 시트 → 계약 slug(pixel-enemies/<slug>.png 의 파일 이름). 저작 시트는 고른 스킬 묶음(skillSlug). */
+export function pixelEnemySlug(sheet: Pick<PixelEnemySheet, "path" | "skillSlug">): string {
+  return sheet.skillSlug ?? /([^/]+)\.png$/.exec(sheet.path)?.[1] ?? "";
 }
 
 /** 이 slug 가 쓰는 스킬(계약 순서). 모르는 slug 는 빈 배열. */

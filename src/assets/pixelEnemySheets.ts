@@ -9,7 +9,12 @@
 //
 // 같은 리소스 id 의 일반 이미지/다른 스킨은 pixelEnemyPortraits.ts 의 idle_a 한 칸을 그린다.
 // 옛 통짜 그림은 폐기했다. retro2003 에서만 이 3×3 포즈 시트를 직접 읽는다.
+// 프로젝트 저작 시트(에디터 「도트 몬스터 공방」·author_enemy_pixel_sheet): project.assets.uploaded[resourceId] 가 한 칸 초상이고
+// 그 meta.pixelEnemySheet.sheetResourceId 자산이 같은 계약의 3×3 시트다. pixelEnemySheet() 는 현재 프로젝트
+// (setPixelEnemySheetProjectSource — 편집기·플레이어 store 가 등록)의 저작 시트를 번들 항목보다 먼저 찾는다.
 import { withInlineAsset } from "@/assets/inlineAssetStore";
+import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
+import type { AssetSet, UploadedAsset, UploadedPixelEnemySheetMeta } from "@/project/types";
 
 export const PIXEL_ENEMY_CELL = 48;
 
@@ -42,6 +47,12 @@ export interface PixelEnemySheet {
    * 몬스터 스킬의 타격·방출 순간(retroMonsterCellForPose → skill)은 이 칸을, 통상 공격의 복귀(recover)는 move 칸을 쓴다(pixelEnemyFrame).
    */
   readonly skillCell?: true;
+  /** 프로젝트 저작 시트의 그림 URL(data URL·미디어 참조). 있으면 path 대신 쓴다. */
+  readonly url?: string;
+  /** 스킬 시연에 쓰는 몬스터 스킬 묶음 slug. 생략 = path 파일 이름. */
+  readonly skillSlug?: string;
+  /** project.assets.uploaded 에서 온 저작 시트. 웹 내보내기는 public 경로가 아니라 uploaded 자산으로 싣는다. */
+  readonly projectAuthored?: true;
 }
 
 export const PIXEL_ENEMY_SHEETS: readonly PixelEnemySheet[] = [
@@ -228,10 +239,54 @@ const legacyAliases: Readonly<Record<string, string>> = {
   monster_minotaur: "generated-enemy-minotaur-maze",
 };
 
-export function pixelEnemySheet(resourceId: string | undefined): PixelEnemySheet | undefined {
+/** 번들(public) 시트만. 웹 내보내기처럼 public 파일을 싣는 쪽이 쓴다. */
+export function bundledPixelEnemySheet(resourceId: string | undefined): PixelEnemySheet | undefined {
   if (!resourceId) return undefined;
   const namedId = resourceId.replace(/-enemy_extra_\d+$/, "");
   return byId.get(namedId) ?? (Object.hasOwn(legacyAliases, namedId) ? byId.get(legacyAliases[namedId]) : undefined);
+}
+
+type PixelEnemySheetProject = { readonly assets: Pick<AssetSet, "uploaded"> };
+let projectSource: (() => PixelEnemySheetProject | undefined) | undefined;
+
+/** 편집기 store·플레이어 store 가 부팅 때 한 번 등록한다. 등록 전(단위 시험·도구 스크립트)은 번들 시트만 찾는다. */
+export function setPixelEnemySheetProjectSource(source: (() => PixelEnemySheetProject | undefined) | undefined): void {
+  projectSource = source;
+}
+
+const PIXEL_ENEMY_MOTIONS: Readonly<Record<PixelEnemyMotion, true>> = { hop: true, swoop: true, stomp: true, dash: true, float: true, shoot: true, breath: true };
+const projectSheetCache = new WeakMap<UploadedAsset, { readonly meta: UploadedPixelEnemySheetMeta; readonly sheet: PixelEnemySheet }>();
+
+/** 프로젝트 저작 9칸 시트. 초상 자산에 시트 표식이 없거나 시트 자산·그림이 없으면 undefined. */
+export function projectPixelEnemySheet(resourceId: string | undefined, project: PixelEnemySheetProject | undefined = projectSource?.()): PixelEnemySheet | undefined {
+  if (!resourceId || !project) return undefined;
+  const uploaded = project.assets.uploaded;
+  const meta = Object.hasOwn(uploaded, resourceId) ? uploaded[resourceId]?.meta.pixelEnemySheet : undefined;
+  if (!meta || ![48, 64, 96].includes(meta.cell) || !Object.hasOwn(PIXEL_ENEMY_MOTIONS, meta.motion)) return undefined;
+  const sheetAsset = Object.hasOwn(uploaded, meta.sheetResourceId) ? uploaded[meta.sheetResourceId] : undefined;
+  if (!sheetAsset) return undefined;
+  const cached = projectSheetCache.get(sheetAsset);
+  if (cached && cached.meta === meta && cached.sheet.resourceId === resourceId) return cached.sheet;
+  const url = uploadedAssetUrl(sheetAsset);
+  if (!url) return undefined;
+  const sheet: PixelEnemySheet = {
+    resourceId,
+    path: `uploaded/${meta.sheetResourceId}.png`,
+    url,
+    motion: meta.motion,
+    idleFrameMs: Number.isFinite(meta.idleFrameMs) && meta.idleFrameMs >= 60 ? meta.idleFrameMs : 200,
+    cell: meta.cell,
+    ...(meta.skillCell ? { skillCell: true as const } : {}),
+    ...(meta.skillSlug ? { skillSlug: meta.skillSlug } : {}),
+    projectAuthored: true,
+  };
+  projectSheetCache.set(sheetAsset, { meta, sheet });
+  return sheet;
+}
+
+/** 저작 시트가 있으면 그것, 없으면 번들 시트. */
+export function pixelEnemySheet(resourceId: string | undefined): PixelEnemySheet | undefined {
+  return projectPixelEnemySheet(resourceId) ?? bundledPixelEnemySheet(resourceId);
 }
 
 export function pixelEnemyCell(entry: PixelEnemySheet): number {
@@ -239,5 +294,5 @@ export function pixelEnemyCell(entry: PixelEnemySheet): number {
 }
 
 export function pixelEnemySheetUrl(entry: PixelEnemySheet): string {
-  return withInlineAsset(`/${entry.path}`);
+  return entry.url ?? withInlineAsset(`/${entry.path}`);
 }

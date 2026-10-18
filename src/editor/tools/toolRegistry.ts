@@ -30,6 +30,7 @@ import { BATTLE_TOOLS } from "./battleTools";
 import { TROOP_BATTLE_PAGE_TOOLS } from "./troopBattlePageTools";
 import { CLUSTER_RULE_TOOLS } from "./clusterRuleTools";
 import { DB_TOOLS } from "./dbTools";
+import { ENEMY_PIXEL_SHEET_TOOLS } from "./enemyPixelSheetTools";
 import { ENDING_TOOLS } from "./endingTools";
 import { COMPANION_TOOLS } from "./companionTools";
 import { TIME_GATE_TOOLS } from "./timeGateTools";
@@ -338,6 +339,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(LIGHTING_TOOLS, "event"),
   ...withDomain(ENDING_TOOLS, "event"),
   ...withDomain(DB_TOOLS, "database"),
+  // 도트 몬스터 공방 — 새 몬스터 9칸 전투 시트를 그려 적 레코드에 잇는다.
+  ...withDomain(ENEMY_PIXEL_SHEET_TOOLS, "database"),
   ...withDomain(RETRO_CHOREOGRAPHY_TOOLS, "database"),
   ...withDomain(LIFE_SYSTEM_TOOLS, "database"),
   ...withDomain(LIFE_ECONOMY_TOOLS, "database"),
