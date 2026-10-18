@@ -961,12 +961,12 @@ export function composeDepartmentStore(spec: HandInteriorSpec, nuance: SpaceNuan
   s.keepRect(h.x0, h.y0 + 1, h.x1, h.y0 + 1);
   const fy = h.y0 + Math.max(4, Math.floor((h.y1 - h.y0) / 2) - 1);
   s.zone(cx - 3, fy - 1, cx + 3, fy + 2, pal.ring);
-  s.put("dept-atrium-fountain", cx - 1, fy, true);
+  s.put("jumbo-dept-fountain", cx - 1, fy, true);
   s.put("lounge-sofa-cream", cx - 4, fy); s.put("lounge-sofa-cream", cx + 3, fy);
   s.put("mci-plant-tall", cx - 3, fy - 1); s.put("mci-plant-tall", cx + 3, fy - 1);
   s.put("mci-plant-tall", cx - 3, fy + 2); s.put("mci-plant-tall", cx + 3, fy + 2);
   s.zone(cx - 1, fy + 3, cx + 1, h.y1 + 1, pal.runner);
-  s.keepRect(cx - 1, fy + 2, cx + 1, h.y1);
+  s.keepRect(cx - 1, fy + 3, cx + 1, h.y1);
   // 명품 아일랜드 열은 같은 섬 하나만 되풀이하면 단조롭다(2026-10-18 「진열대를 더 다양화해라」) - 가방·시계·보석 섬을 번갈아 세운다.
   const LUX = ["dept-luxury-island", "dept-watch-case", "dept-jewelry-island"] as const;
   for (const [x0, side] of [[h.x0, -1], [h.x1 - 2, 1]] as const) {
@@ -1031,6 +1031,8 @@ export function composeDepartmentStore(spec: HandInteriorSpec, nuance: SpaceNuan
   for (let x = b.x0, n = 0; x + 1 <= b.x1 && n < BEAUTY_WALL.length; n++) x += s.put(BEAUTY_WALL[n]!, x, b.y0) ? (BEAUTY_WALL[n] === "dept-glass-showcase" ? 4 : 3) : 1;
   s.keepRect(b.x0, b.y0 + 1, b.x1, b.y0 + 1);
   const BEAUTY_ISLANDS = ["dept-cosmetic-island", "dept-luxury-island", "dept-skincare-counter", "dept-jewelry-island", "dept-cosmetic-island", "dept-watch-case"] as const;
+  // 화장품관 첫 자리는 금 테 원형 카운터·향수 탑(4×4) - 남은 섬 자리는 아래 격자가 메운다.
+  s.put("jumbo-dept-perfume-rotunda", b.x0 + 1, b.y0 + 3);
   let islandY = b.y0 + 2, islands = 0;
   for (; islandY + 1 <= b.y1 - 1; islandY += 3) for (let x = b.x0 + 1; x + 2 <= b.x1 - 1; x += 4) s.put(BEAUTY_ISLANDS[islands++ % BEAUTY_ISLANDS.length]!, x, islandY);
   // 섬 줄 아래 남은 띠(계산대 앞 한 줄은 비운다)는 마네킹·안경 타워·화분으로 채운다 — 남쪽 빈 흰 바닥(VQA 6회차).
