@@ -5,6 +5,21 @@
 
 <!-- releases -->
 
+## 0.262.0 — 2026-10-18
+
+### 기능
+
+- **jp_city** — deep 3/4 roofs for shitamachi/shotengai streets, 7-row front kits, wider alley stair (#2924) (`4c8c1df`)
+- **modern_city** — animated street objects — signals synced to TRANSIT_SIGNAL, rail crossing gates, roadwork arrow boards, taxi stand, delivery scooter, emergency beacons (#2923) (`8376e57`)
+- **interior** — 30 modern/Japanese venue presets, 40x25 department store, ceiling inner-corner tiles, redrawn subway fare gate (#2921) (`bc89edd`)
+- **jp_city** — shitamachi/shotengai — calmer warm ground, edge lines, warm zebra, side curbs, 2-storey front kits (#2919) (`1e5a3f1`)
+- **jrpg** — author_jrpg_chapter — 크로노 트리거·FF6 한 장(거점·갈래 맵·NPC·퀘스트·사건·시간의 문)을 기존 구성기로 짓는다 (#2918) (`ec9701d`)
+
+### 수정
+
+- **monster** — 몬스터 10종 전투 도트 다시 그리기 + (0,2) 스킬 칸 (2차) (#2922) (`b544f7c`)
+- **editor** — AI 참고 청사진 VQA 18회차 — 로비 방 문·정문 표시·라운지 간격, 백화점 에스컬레이터 상하행 쌍 중앙 배치, 강의동 계단실(1F↔2F) (#2915) (`0d790cb`)
+
 ## 0.261.2 — 2026-10-18
 
 ### 수정
