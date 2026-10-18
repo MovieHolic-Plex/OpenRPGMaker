@@ -25,7 +25,9 @@ for (const region of JP_REGIONS) {
   const res = runTool(ctx, "compose_jp_region", { mapId: id, region: region.id, seed, replace: true }) as { ok: boolean; summary: string; warnings?: string[]; data?: Record<string, unknown> };
   const m = ctx.project.maps[id]!;
   fs.writeFileSync(`${OUT}/${String(region.no).padStart(2, "0")}-${region.id}.png`, renderMapPng({ ...ctx.project, startMapId: "__none__" }, m).png);
-  rows.push({ no: region.no, id: region.id, ok: res.ok, w: W, h: H, stamped: res.data?.stamped, unplaced: res.data?.unplaced, failed: res.data?.failed, warnings: res.warnings, summary: res.summary.slice(0, 160) });
-  console.log(region.no, region.id, res.ok ? "ok" : "FAIL", res.data?.stamped ?? res.data?.built ?? "", res.ok ? (res.warnings ?? []).join(" | ").slice(0, 300) : res.summary.slice(0, 300));
+  const violations = Array.isArray(res.data?.violations) ? (res.data.violations as string[]) : [];
+  const s4 = (res.data?.section4 as Record<string, number> | undefined) ?? { v1Failures: 0, whitelistViolations: 0, signatureClones: 0, adjacentClones: 0, strayTrees: 0, stairEndpoints: 0 };
+  rows.push({ no: region.no, id: region.id, ok: res.ok && violations.length === 0, w: W, h: H, stamped: res.data?.stamped ?? res.data?.built, unplaced: res.data?.unplaced, failed: res.data?.failed, violations, ...s4, section4: s4, warnings: res.warnings, summary: res.summary.slice(0, 160) });
+  console.log(region.no, region.id, res.ok && violations.length === 0 ? "ok" : "FAIL", `stamped:${res.data?.stamped ?? res.data?.built ?? ""}`, `violations:${violations.length}`, violations.length ? violations.join("; ") : "");
 }
 fs.writeFileSync(`${OUT}/summary.json`, JSON.stringify(rows, null, 1));

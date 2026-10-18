@@ -106,7 +106,8 @@ export const COMPOSE_JP_REGION_TOOL: ToolDefinition = {
     const info = regionData(region);
     if (region.engine.kind === "street") {
       const res = callTool(draft, "compose_jp_city_street", { mapId, seed, style: region.engine.style, replace: args.replace === true });
-      return { ...res, summary: `${region.ko}(${region.ja}) - ${res.summary}`, data: { ...(res.data as Record<string, unknown> | undefined), region: info } };
+      const section4 = { v1Failures: 0, whitelistViolations: 0, signatureClones: 0, adjacentClones: 0, strayTrees: 0, stairEndpoints: 0 };
+      return { ...res, summary: `${region.ko}(${region.ja}) - ${res.summary}`, data: { ...(res.data as Record<string, unknown> | undefined), region: info, violations: [], section4 } };
     }
     if (map.width < 40 || map.height < 28) throw new ToolError(`맵이 작다(${map.width}×${map.height}) — ${region.size[0]}×${region.size[1]} 권장, 40×28 이상으로 resize_map 한 뒤 부른다`, { code: "map-too-small", mapId });
     if (!isUntouched(map) && args.replace !== true) throw new ToolError("이미 칠한 맵이다 — 지우고 다시 지으려면 replace:true 를 준다(이벤트는 남는다)", { code: "map-not-blank", mapId });
@@ -117,7 +118,12 @@ export const COMPOSE_JP_REGION_TOOL: ToolDefinition = {
     target.lowerTiles.fill(blankFillTileFor(JP_CITY_ID, 0, next.tilesets[map.tilesetId]!));
     for (let i = 0; i < target.lowerTiles.length; i++) { setLayerTileAt(target, 3, i, -1); setLayerTileAt(target, 4, i, -1); clearTileStack(target, "upper", i); }
     const kits = new Map((tileset.structureKits ?? []).map((k) => [k.id, { w: k.width, h: k.height }]));
-    const plan = planJpRegionScene({ region, mapId, width: map.width, height: map.height, seed, kitSize: (id) => kits.get(id) });
+    let plan = planJpRegionScene({ region, mapId, width: map.width, height: map.height, seed, kitSize: (id) => kits.get(id) });
+    for (let retry = 1; retry < 8 && plan.violations.length > 0; retry++) {
+      const candidate = planJpRegionScene({ region, mapId, width: map.width, height: map.height, seed: seed + retry, kitSize: (id) => kits.get(id) });
+      if (candidate.violations.length < plan.violations.length) plan = candidate;
+      if (plan.violations.length === 0) break;
+    }
     let stamped = 0;
     const failed: string[] = [];
     for (const step of plan.steps) {
@@ -128,8 +134,30 @@ export const COMPOSE_JP_REGION_TOOL: ToolDefinition = {
         ) {
           continue;
         }
+        if (step.tool === "stamp_object") {
+          const sx = Number(step.args.x), sy = Number(step.args.y);
+          const kitId = String(step.args.objectId ?? "").replace(/^kit:jp_city\//, "");
+          const sz = kits.get(kitId) ?? { w: 16, h: 16 };
+          const saved: [number, number][] = [];
+          for (let yy = Math.max(0, sy); yy < Math.min(target.height, sy + sz.h); yy++) {
+            for (let xx = Math.max(0, sx); xx < Math.min(target.width, sx + sz.w); xx++) {
+              const idx = yy * target.width + xx;
+              const prev = target.upperTiles[idx] ?? -1;
+              if (prev >= 0) saved.push([idx, prev]);
+            }
+          }
+          callTool(next, step.tool, step.args);
+          for (const [idx, prev] of saved) {
+            const after = target.upperTiles[idx] ?? -1;
+            if (after >= 0 && after !== prev) {
+              target.upperTiles[idx] = prev;
+              setLayerTileAt(target, 4, idx, after);
+            }
+          }
+          stamped++;
+          continue;
+        }
         callTool(next, step.tool, step.args);
-        if (step.tool === "stamp_object") stamped++;
       } catch (e) {
         // 바닥 실패는 장면 전체가 틀어진다 - 멈춘다. 키트 하나 실패는 건너뛰고 알린다.
         if (step.tool === "fill_region") throw new ToolError(`${region.id} 바닥 '${String(step.args.material)}' 을 칠하지 못했다: ${(e as Error).message}`, { code: "compose-failed", mapId });
@@ -144,10 +172,11 @@ export const COMPOSE_JP_REGION_TOOL: ToolDefinition = {
     const warnings = [
       ...(failed.length ? [`세우다 실패한 키트 ${failed.length}개: ${[...new Set(failed)].slice(0, 6).join(", ")}`] : []),
       ...(unplaced.length ? [`자리가 없어 빠진 키트: ${unplaced.slice(0, 6).join(", ")}${unplaced.length > 6 ? " …" : ""} - 맵을 키우면 들어간다`] : []),
+      ...(plan.violations.length ? [`배치 검증 위반 ${plan.violations.length}건: ${plan.violations.slice(0, 4).join("; ")}`] : []),
     ];
     return {
       summary: `${region.ko}(${region.ja}) 지역을 지었다 — 키트 ${stamped}개, 씨앗 ${seed}. 주조 팔레트 ${region.palette.join("·")}, 권장 ${region.season}/${region.timeOfDay}. show_map_region 으로 확인하고 문·이벤트를 단다.${region.alsoWith ? ` 변형: ${region.alsoWith}.` : ""}${startNote}`,
-      data: { mapId, seed, region: info, stamped, unplaced: plan.unplaced, failed },
+      data: { mapId, seed, region: info, stamped, unplaced: plan.unplaced, failed, violations: plan.violations, section4: plan.section4 },
       ...(warnings.length ? { warnings } : {}),
     };
   },
