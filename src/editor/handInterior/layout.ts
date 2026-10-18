@@ -41,7 +41,7 @@ const DEFAULT_SIZE: Record<string, [number, number]> = {
   living: [8, 6], ldk: [8, 7], dining: [7, 6], great_hall: [12, 8], tavern: [10, 7], shop: [9, 6],
 };
 /** 지나다니는 방 — 문 나무의 가지가 여기서 뻗는다. 나머지(화장실·욕실·침실…)는 끝방이 되도록 점수를 준다. */
-const HUB = /^(genkan|entrance|hall|corridor|ldk|living|great_hall|tavern|dining|waiting_room|.*_shop|shop|konbini|supermarket|chapel|throne_room|engine_hall|casino|theater|common|museum_lobby|museum_gallery|ship_crew|ship_gundeck|arena_floor|arena_stands|shoegenkan|lobby|elevatorhall|open-?office|concourse|postlobby|hosp-lobby|hosp-corridor|annexcorridor|towerlobby|freeoffice|dept-atrium|dept-vip-hall|mart-sales-hall|subway-platform|subway-concourse|cinema-lobby|rest-dining-hall|gallery-lobby|gallery-paintings)$/u;
+const HUB = /^(genkan|entrance|hall|corridor|ldk|living|great_hall|tavern|dining|waiting_room|.*_shop|shop|konbini|supermarket|chapel|throne_room|engine_hall|casino|theater|common|museum_lobby|museum_gallery|ship_crew|ship_gundeck|arena_floor|arena_stands|shoegenkan|lobby|elevatorhall|open-?office|concourse|postlobby|hosp-lobby|hosp-corridor|annexcorridor|towerlobby|freeoffice|dept-atrium|dept-vip-hall|mart-sales-hall|subway-platform|subway-concourse|cinema-lobby|rest-dining-hall|gallery-lobby|gallery-paintings|karaoke-hall|sento-changing|hotel-lobby)$/u;
 // 손님이 드는 방(가게·주점·대청)이 복도보다 먼저 — 여관이 복도로 들어가 주점을 거치게 짜였다(2026-10-09).
 // jp_city 시설(2026-10-14): 학교 昇降口·사무 빌딩 로비·병원 외래 대기실이 거리 문 쪽 방.
 // 박물관은 매표 홀, 배는 선원 칸(위 갑판)·화물칸(아래 갑판), 투기장은 무기고(선수 입구)로 든다.

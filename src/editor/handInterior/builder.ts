@@ -52,6 +52,11 @@ export interface HandInteriorSpec {
   /** 벽면: 2줄 × cols 열 × 서쪽 그림자. 번호 = ((줄-1)*cols + x%cols)*2 + 서쪽. */
   readonly walls: Readonly<Record<string, { readonly ko: string; readonly cols: number; readonly tiles: readonly number[] }>>;
   readonly ceilings: Readonly<Record<string, readonly number[]>>;
+  /**
+   * 천장 띠 안쪽 모서리 조각(선택): 천장 id → "<기본 비트>:<모서리 비트>" → 칸. 모서리 비트 1 남서 · 2 남동 · 4 북서 · 8 북동 —
+   * 그 대각선 이웃이 바닥이고 대각선을 낀 두 이웃이 막힌 모서리. 칸막이가 벽 띠와 T·ㄱ 자로 만나는 칸에서 몰딩이 끊기지 않게 잇는다.
+   */
+  readonly ceilingCorners?: Readonly<Record<string, Readonly<Record<string, number>>>>;
   readonly objects: Readonly<Record<string, SpecObject>>;
   readonly tables: Readonly<Record<string, SpecTable>>;
   readonly lines: Readonly<Record<string, SpecLine>>;
@@ -177,6 +182,7 @@ export function handInteriorStructure(input: Pick<HandInteriorInput, "plan" | "f
   const ceiling = input.ceiling ?? "default";
   const ceil = S.ceilings[ceiling];
   if (!ceil) throw new HandInteriorError(`천장 "${ceiling}" 이 없다 — ${Object.keys(S.ceilings).join(", ")}`, "unknown-ceiling");
+  const corners = S.ceilingCorners?.[ceiling];
   const need = (kind: "floor" | "wall", id: string) => {
     const table = kind === "floor" ? S.floors : S.walls;
     if (!table[id]) throw new HandInteriorError(`${kind === "floor" ? "바닥" : "벽면"} "${id}" 이 없다 — ${Object.keys(table).join(", ")}`, `unknown-${kind}`);
@@ -199,8 +205,11 @@ export function handInteriorStructure(input: Pick<HandInteriorInput, "plan" | "f
       lower.push(fd.tiles[((cy % fd.rows) * fd.cols + (floorLayX(fd, cx, cy) % fd.cols)) * 4 + sh]!);
     } else if (top[cy]![cx]) {
       const nv = cy === 0 ? 1 : (inn(cx, cy - 1) || top[cy - 1]![cx] ? 0 : 1);
-      const b = (inn(cx, cy + 1) ? 1 : 0) | (inn(cx, cy - 1) ? 2 : 0) | (inn(cx - 1, cy) ? 4 : 0) | (inn(cx + 1, cy) ? 8 : 0) | (16 * nv);
-      lower.push(ceil[b]!);
+      const oS = inn(cx, cy + 1), oN = inn(cx, cy - 1), oW = inn(cx - 1, cy), oE = inn(cx + 1, cy);
+      const b = (oS ? 1 : 0) | (oN ? 2 : 0) | (oW ? 4 : 0) | (oE ? 8 : 0) | (16 * nv);
+      const d = (!oS && !oW && inn(cx - 1, cy + 1) ? 1 : 0) | (!oS && !oE && inn(cx + 1, cy + 1) ? 2 : 0)
+        | (!oN && !oW && inn(cx - 1, cy - 1) ? 4 : 0) | (!oN && !oE && inn(cx + 1, cy - 1) ? 8 : 0);
+      lower.push((d ? corners?.[`${b}:${d}`] : undefined) ?? ceil[b]!);
     } else lower.push(S.void);
   }
   void issues;
