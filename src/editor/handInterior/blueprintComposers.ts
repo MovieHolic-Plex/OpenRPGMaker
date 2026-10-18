@@ -415,7 +415,8 @@ export function composeOfficeLobby(spec: HandInteriorSpec, nuance: SpaceNuance, 
         s.put("mci-planter", sx + 4, r(8));
       }
     } else {
-      for (const [k, y] of [[0, r(4)], [1, r(7)]] as const) {
+      // 카페 대기석: 2줄은 세트 사이가 맨바닥으로 비었다(2026-10-18 VQA 4회차) — 3줄 엇갈림 + 세트 사이 화분.
+      for (const [k, y] of [[0, r(4)], [1, r(6)], [0, r(8)]] as const) {
         if (y > last - 1) continue;
         const tx = mid - 3 + k;
         for (const off of [0, 4]) {
@@ -423,6 +424,7 @@ export function composeOfficeLobby(spec: HandInteriorSpec, nuance: SpaceNuance, 
           if (s.put("mci-cafe-table", tx + off, y)) s.goods(pickOf(rng, ["mci-g-coffee", "mci-g-laptop", "mci-g-papers"]), tx + off, y);
           s.put("mci-cafe-chair-w", tx + off + 1, y);
         }
+        s.put("mci-planter", tx + 2 + (k ? -4 : 6), y);
       }
       s.put("mci-wait-bench", mid - 1, last - 1);
     }
@@ -810,6 +812,123 @@ export function composeThroneHall(spec: HandInteriorSpec, nuance: SpaceNuance, s
   return s.finish({ tileset: "atlas_biome_interior", floor: pal.hall[0], wall: pal.hall[1], ceiling: pal.ceiling }, areas, decisions);
 }
 
+// ─────────────────────────────────────────────── 백화점 (modern_city) ───────────────────────────────────────────────
+
+const STORE_PALETTES = {
+  neutral: { hall: ["mci-tile-concourse", "mci-wall-store"], ring: "mci-stone-lobby", runner: "mci-carpet-office", fashion: ["mci-wood-oak", "mci-wall-store"], boutique: "mci-wood-dark", beauty: ["mci-vinyl-store", "mci-wall-lobby"], cafe: ["mci-wood-dark", "mci-wall-brick"] },
+  cool: { hall: ["mci-stone-lobby", "mci-wall-lobby"], ring: "mci-tile-concourse", runner: "mci-carpet-office", fashion: ["mci-vinyl-store", "mci-wall-store"], boutique: "mci-carpet-office", beauty: ["mci-tile-small", "mci-wall-lobby"], cafe: ["mci-wood-oak", "mci-wall-home"] },
+  warm: { hall: ["mci-wood-oak", "mci-wall-home"], ring: "mci-stone-lobby", runner: "mci-carpet-office", fashion: ["mci-wood-dark", "mci-wall-brick"], boutique: "mci-carpet-office", beauty: ["mci-vinyl-store", "mci-wall-home"], cafe: ["mci-wood-dark", "mci-wall-brick"] },
+  dark: { hall: ["mci-wood-dark", "mci-wall-brick"], ring: "mci-stone-lobby", runner: "mci-carpet-office", fashion: ["mci-carpet-office", "mci-wall-office"], boutique: "mci-wood-oak", beauty: ["mci-stone-lobby", "mci-wall-lobby"], cafe: ["mci-wood-oak", "mci-wall-brick"] },
+} as const;
+
+/**
+ * 백화점 청사진 — 정문 → 융단 → 분수 원형 광장 → 북벽 측면 에스컬레이터·엘리베이터가 한 축(아트리움)에 선다.
+ * 아트리움 양옆 열은 명품 아일랜드, 한쪽 윙은 탈의 부스 + 행거·마네킹 격자 패션관, 반대쪽은 쇼케이스 화장품관과 카페.
+ * 견본 배치는 방을 늘이면 가구가 한쪽에 몰리고 바닥 70% 가 비었다(2026-10-18 VQA 4회차) — 여기서는 가구를 방 크기에 맞춰 격자로 채운다.
+ */
+export function composeDepartmentStore(spec: HandInteriorSpec, nuance: SpaceNuance, seed: number): BlueprintInteriorArgs {
+  const rng = blueprintRng(seed);
+  const grand = nuance.scale === "grand", compact = nuance.scale === "compact";
+  const mood = nuance.mood === "neutral" ? pickOf(rng, ["neutral", "neutral", "cool", "warm"] as const) : nuance.mood;
+  const pal = STORE_PALETTES[mood];
+  const wingW = pickInt(rng, 10, 12) + (grand ? 2 : 0) - (compact ? 1 : 0);
+  const hallW = pickOf(rng, [13, 15]) + (grand ? 2 : 0) - (compact ? 2 : 0);
+  const rowsY1 = pickInt(rng, 18, 20) + (grand ? 2 : 0) - (compact ? 3 : 0);
+  const topY1 = compact ? Math.floor(rowsY1 / 2) : pickInt(rng, 9, 10);
+  const fashionWest = rng() < 0.5;
+  const sideX0 = (west: boolean) => (west ? 1 : wingW + hallW + 3);
+  const fashion: HandInteriorRoom = { id: "fashion", x0: sideX0(fashionWest), y0: 1, x1: sideX0(fashionWest) + wingW - 1, y1: rowsY1, floor: pal.fashion[0], wall: pal.fashion[1] };
+  const hall: HandInteriorRoom = { id: "hall", x0: wingW + 2, y0: 1, x1: wingW + 1 + hallW, y1: rowsY1, floor: pal.hall[0], wall: pal.hall[1] };
+  const beauty: HandInteriorRoom = { id: "beauty", x0: sideX0(!fashionWest), y0: 1, x1: sideX0(!fashionWest) + wingW - 1, y1: topY1, floor: pal.beauty[0], wall: pal.beauty[1] };
+  const cafe: HandInteriorRoom = { id: "cafe", x0: beauty.x0, y0: topY1 + 2, x1: beauty.x1, y1: rowsY1, floor: pal.cafe[0], wall: pal.cafe[1] };
+  const cx = Math.floor((hall.x0 + hall.x1) / 2);
+  const fashionDoor = pickInt(rng, 6, Math.max(6, rowsY1 - 4));
+  const connect: HandInteriorConnect[] = [
+    { a: "fashion", b: "hall", at: fashionDoor },
+    { a: "beauty", b: "hall", at: topY1 - 1 },
+    { a: "cafe", b: "hall", at: Math.min(rowsY1 - 1, topY1 + 5) },
+  ];
+  const s = new InteriorSketch(spec, [fashion, hall, beauty, cafe], connect, { room: "hall", x: cx, width: 1 });
+  const decisions = [
+    `패션관 ${fashionWest ? "서쪽" : "동쪽"} · 화장품관+카페 ${fashionWest ? "동쪽" : "서쪽"} · 아트리움 폭 ${hallW}`,
+    `팔레트 ${mood} · 층고 ${rowsY1 - 2}줄`,
+  ];
+
+  // ── 아트리움: 북벽 에스컬레이터 둘 + 엘리베이터, 가운데 분수 원형 광장, 정문 융단, 양옆 명품 아일랜드 열.
+  const h = s.floorOf("hall");
+  // 엘리베이터는 벽면을 쓰므로 걸이보다 먼저 세운다(걸이가 먼저 벽면을 잡으면 엘리베이터가 빠진다 — VQA 6회차).
+  s.put("mci-elevator", cx - 1, h.y0, true);
+  hangRhythm(s, h, ["mci-art-frame", "mci-route-map", "mci-art-frame", "mci-wall-clock"], 4, 3);
+  s.put("escalator-side-up-east", h.x0, h.y0, true);
+  s.put("escalator-side-down-west", h.x1 - 3, h.y0, true);
+  s.put("mci-plant-tall", cx - 2, h.y0); s.put("mci-plant-tall", cx + 1, h.y0);
+  s.keepRect(h.x0, h.y0 + 1, h.x1, h.y0 + 1);
+  const fy = h.y0 + Math.max(4, Math.floor((h.y1 - h.y0) / 2) - 1);
+  s.zone(cx - 3, fy - 1, cx + 3, fy + 2, pal.ring);
+  s.put("dept-atrium-fountain", cx - 1, fy, true);
+  s.put("lounge-sofa-cream", cx - 4, fy); s.put("lounge-sofa-cream", cx + 3, fy);
+  s.put("mci-plant-tall", cx - 3, fy - 1); s.put("mci-plant-tall", cx + 3, fy - 1);
+  s.put("mci-plant-tall", cx - 3, fy + 2); s.put("mci-plant-tall", cx + 3, fy + 2);
+  s.zone(cx - 1, fy + 3, cx + 1, h.y1 + 1, pal.runner);
+  s.keepRect(cx - 1, fy + 2, cx + 1, h.y1);
+  for (const [x0, side] of [[h.x0, -1], [h.x1 - 2, 1]] as const) {
+    for (let y = h.y0 + 3; y + 1 < fy - 1; y += 3) s.put("dept-luxury-island", x0, y);
+    let y = fy + 3;
+    if (s.put("dept-glass-showcase", x0, y)) y += 2;
+    if (side < 0) { if (s.put("stairs-down-well", x0, y)) y += 3; } else if (s.put("mci-wait-bench", x0, y)) y += 2;
+    if (y < h.y1) s.put("mci-planter", x0 + (side < 0 ? 0 : 1), y);
+  }
+  s.put("dept-directory-kiosk", cx - 2, h.y1 - 1); s.put("dept-directory-kiosk", cx + 2, h.y1 - 1);
+  s.put("mci-security-gate", cx - 4, h.y1); s.put("mci-security-gate", cx + 3, h.y1);
+
+  // ── 패션관: 북벽 탈의 부스 줄, 행거·마네킹 격자(2칸 + 1칸 통로, 줄마다 1칸 통로), 가운데 부티크 바닥, 계산대.
+  const f = s.floorOf("fashion");
+  hangRhythm(s, f, ["mci-window-curtain", "mci-art-frame"], 1, 3);
+  for (let x = f.x0, n = 0; x + 1 <= f.x1 && n < 3; x += 3) if (s.put("dept-fitting-booth", x, f.y0)) n++;
+  s.put("mci-plant-tall", f.x1, f.y0);
+  s.keepRect(f.x0, f.y0 + 1, f.x1, f.y0 + 1);
+  s.zone(f.x0 + 1, f.y0 + 2, f.x1 - 1, Math.min(f.y1 - 2, f.y0 + 6), pal.boutique);
+  let row = 0;
+  for (let y = f.y0 + 2; y <= f.y1 - 2; y += 2, row++) {
+    let col = 0;
+    for (let x = f.x0 + 1; x + 1 <= f.x1 - 1; x += 3, col++) s.put((row + col) % 3 === 0 || y <= f.y0 + 4 ? "dept-mannequin-podium" : "dept-clothing-rack", x, y);
+  }
+  const fRegX = fashionWest ? f.x0 : f.x1 - 2;
+  if (s.put("mci-counter-register", fRegX, f.y1, true)) s.goods("mci-g-register", fRegX + 1, f.y1);
+  s.put("mci-plant-tall", fashionWest ? f.x1 : f.x0, f.y1);
+
+  // ── 화장품관: 북벽 쇼케이스 줄, 명품 아일랜드 격자, 계산대.
+  const b = s.floorOf("beauty");
+  hangRhythm(s, b, ["mci-art-frame", "mci-window-city"], 1, 3);
+  for (let x = b.x0; x + 2 <= b.x1; x += 4) s.put("dept-glass-showcase", x, b.y0);
+  s.keepRect(b.x0, b.y0 + 1, b.x1, b.y0 + 1);
+  let islandY = b.y0 + 2;
+  for (; islandY + 1 <= b.y1 - 1; islandY += 3) for (let x = b.x0 + 1; x + 2 <= b.x1 - 1; x += 4) s.put("dept-luxury-island", x, islandY);
+  // 섬 줄 아래 남은 띠(계산대 앞 한 줄은 비운다)는 마네킹 단상·화분으로 채운다 — 남쪽 빈 흰 바닥(VQA 6회차).
+  if (islandY <= b.y1 - 2) for (let x = b.x0 + 1, k = 0; x + 1 <= b.x1 - 1; x += 3, k++) s.put(k % 2 ? "mci-plant-tall" : "dept-mannequin-podium", x, islandY);
+  const bRegX = fashionWest ? b.x1 - 2 : b.x0;
+  if (s.put("mci-counter-register", bRegX, b.y1)) s.goods("mci-g-register", bRegX + 1, b.y1);
+
+  // ── 카페: 북벽 커피 스테이션·진열대·메뉴판, 카페 탁자 격자, 구석 화분.
+  const k = s.floorOf("cafe");
+  hangRhythm(s, k, ["mci-menu-board", "mci-window-city"], 1, 3);
+  s.put("mci-coffee-station", k.x0, k.y0);
+  s.put("mci-pastry-case", k.x0 + 2, k.y0);
+  s.put("mart-bakery-counter", k.x0 + 4, k.y0);
+  s.put("mci-plant-tall", k.x1, k.y0);
+  s.keepRect(k.x0, k.y0 + 1, k.x1, k.y0 + 1);
+  for (let y = k.y0 + 2; y <= k.y1; y += 2) {
+    for (let x = k.x0 + 1; x + 2 <= k.x1; x += 4) {
+      s.put("mci-cafe-chair-e", x, y);
+      if (s.put("mci-cafe-table", x + 1, y)) s.goods(pickOf(rng, ["mci-g-coffee", "mci-g-vase", "mci-g-coffee"]), x + 1, y);
+      s.put("mci-cafe-chair-w", x + 2, y);
+    }
+  }
+
+  const areas = [areaOf("아트리움", h), areaOf("패션관", f), areaOf("화장품관", b), areaOf("카페", k)];
+  return s.finish({ tileset: "modern_city", floor: pal.hall[0], wall: pal.hall[1] }, areas, decisions);
+}
+
 // ─────────────────────────────────────────────── 요청 읽기 · 고르기 ───────────────────────────────────────────────
 
 const WANT_WORDS: readonly (readonly [string, RegExp])[] = [
@@ -837,12 +956,13 @@ export function readSpaceNuance(text: string): SpaceNuance {
 
 /**
  * build_hand_interior_room 의 layout.program 이 청사진 구성기가 있는 공간이면 그 구성기로 짠다(칩셋이 맞을 때만).
- * 호텔·백화점 로비는 오피스 로비 청사진이 아니므로 원래 견본 배치를 쓴다.
+ * 호텔·백화점 「로비」는 오피스 로비 청사진이 아니므로 원래 견본 배치를 쓴다(백화점 전체는 department-store 구성기).
  */
 export function composeInteriorBlueprint(tilesetId: string, program: string, spec: HandInteriorSpec, request: string, seed: number): BlueprintInteriorArgs | undefined {
   const nuance = readSpaceNuance(request);
   if (tilesetId === "modern_city" && program === "lobby" && !/호텔|백화점|hotel|department/iu.test(request)) return composeOfficeLobby(spec, nuance, seed);
   if (tilesetId === "modern_campus" && program === "university-lecture-wing") return composeLectureWing(spec, nuance, seed);
   if (tilesetId === "atlas_biome_interior" && program === "throne") return composeThroneHall(spec, nuance, seed);
+  if (tilesetId === "modern_city" && program === "department-store") return composeDepartmentStore(spec, nuance, seed);
   return undefined;
 }
