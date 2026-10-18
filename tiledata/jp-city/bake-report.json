@@ -11,9 +11,30 @@
   "original": 2880,
   "pc_variant_copies": 4,
   "composite_cells": 253,
-  "block_cells": 12556,
-  "legacy": 0,
-  "legacy_ids": [],
+  "block_cells": 12503,
+  "legacy": 53,
+  "legacy_ids": [
+   15638,
+   15639,
+   15640,
+   15641,
+   15642,
+   15643,
+   15644,
+   15645,
+   15646,
+   15647,
+   15648,
+   15649,
+   15650,
+   15651,
+   15652,
+   15653,
+   15654,
+   15655,
+   15656,
+   15657
+  ],
   "unused_source": 110,
   "people_reserved": 155,
   "by_category": {
@@ -24,31 +45,31 @@
    "prop": 1692,
    "people-reserve": 155,
    "composite": 253,
-   "block": 12556
+   "block": 12503
   }
  },
  "pc_counts": {
   "star": 6487,
-  "solid": 3499,
+  "solid": 3446,
   "floor": 3857,
   "solidfloor": 1022,
   "flat": 673,
   "blank": 155
  },
  "kits": {
-  "total": 1445,
+  "total": 1431,
   "by_kind": {
    "recipe": 22,
    "recipe-L": 3,
    "door": 9,
    "prop": 142,
-   "block-kit": 1269
+   "block-kit": 1255
   },
   "prop": 142,
   "recipe": 22,
   "recipe_L": 3,
   "door": 9,
-  "block_kit": 1269
+  "block_kit": 1255
  },
  "groups": {
   "total": 348,
@@ -478,16 +499,16 @@
    },
    {
     "name": "shitamachi_pack",
-    "cells": 360,
+    "cells": 307,
     "autotiles": 0,
     "groups": 3,
-    "kits": 42,
-    "notes": "시타마치·상점가 바깥 거리 팩: 테라코타 벽돌 보도·따뜻한 아스팔트·맨홀·빗물받이·45° 사선 그림자 바닥 + 뒷줄 가게(청과·이자카야·자판기 골목) · 앞줄 3/4 건물(옥상 안테나·골목 계단·기와 발코니) · 상점가(코인 주차·아케이드·大門通 아치) · 전신주·버스 정류장·우체통. 키트 42종."
+    "kits": 28,
+    "notes": "시타마치·상점가 바깥 거리 팩: 테라코타 벽돌 보도·따뜻한 아스팔트·맨홀·빗물받이·45° 사선 그림자 바닥 + 뒷줄 가게(청과·이자카야·자판기 골목) · 앞줄 3/4 건물(옥상 안테나·골목 계단·기와 발코니) · 상점가(코인 주차·아케이드·大門通 아치) · 전신주·버스 정류장·우체통. 키트 28종."
    }
   ]
  },
  "reassembly": {
-  "kits_checked": 1445,
+  "kits_checked": 1431,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -569,7 +590,6 @@
    "coin": 1,
    "shotengai": 2,
    "utility": 1,
-   "back": 14,
    "postbox": 1
   },
   "mismatched_kits": 0,
@@ -581,7 +601,7 @@
   "by_code": {},
   "examples": {},
   "tiles_checked": 15693,
-  "kits_checked": 1445,
+  "kits_checked": 1431,
   "groups_checked": 348,
   "autotiles_checked": 17
  },
@@ -600,7 +620,7 @@
  "sheet_hash": "ee566ca342c3a7699ef7c563d9080b97213d65a5",
  "pc_rule": "tiledata/jp-city/bake/PC-RULES.md",
  "reassembly_from_files": {
-  "kits_checked": 1445,
+  "kits_checked": 1431,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -682,7 +702,6 @@
    "coin": 1,
    "shotengai": 2,
    "utility": 1,
-   "back": 14,
    "postbox": 1
   },
   "mismatched_kits": 0,
@@ -694,7 +713,7 @@
   "by_code": {},
   "examples": {},
   "tiles_checked": 15693,
-  "kits_checked": 1445,
+  "kits_checked": 1431,
   "groups_checked": 348,
   "autotiles_checked": 17
  },
