@@ -68,7 +68,8 @@ export interface WorldDefSpec {
 }
 
 export const GEOGRAPHY_TERRAIN = {
-  tilesetId: "easyrpg_chipset_world",
+  // easyrpg_chipset_world 는 2026-10-07 에 그림을 지웠다. worldmap_selected 가 같은 480칸 월드 배치를 잇는다.
+  tilesetId: "worldmap_selected",
   width: 128,
   height: 96,
 } as const;

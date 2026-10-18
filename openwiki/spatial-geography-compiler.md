@@ -30,10 +30,15 @@ its mandatory overview-access check, not permission to reset the project spawn.
 
 ## Terrain and structures
 
-Only the supported bundled World atlas (`easyrpg_chipset_world`) is accepted.
-Overview terrain defaults come from its World generation profile and canonical
-World coast/terrain mappings, not the old generic path number (360 is World
-forest). Maps use one atlas each; child town/interior maps keep their own atlases.
+Only bundled atlases that keep the stock 480-cell World layout are accepted
+(`isWorldTileset`: `tex_easyrpg_chipset_world`, `tex_atlas_biome_world`,
+`tex_worldmap_selected`). Built-in catalog regions/worlds and new blank drafts use
+`GEOGRAPHY_TERRAIN.tilesetId` = `worldmap_selected` — the `easyrpg_chipset_world`
+sheet art was deleted on 2026-10-07, so terrain pinned to it failed with `missing`.
+Terrain defaults come from the canonical World coast/terrain mappings, not the old
+generic path number (360 is World forest). Maps use one atlas each; child
+town/interior maps keep their own atlases. `get_geography_vocabulary` lists the
+project's world-layout tilesets (excluding per-map `world_structures_*` clones).
 
 Supported material names are `ground`, `water`, and the canonical World terrain
 keys: `dirt`, `sand`, `marsh`, `snow`, `tall-grass`, `snow-forest`, `snow-mountain`,

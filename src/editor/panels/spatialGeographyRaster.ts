@@ -39,8 +39,8 @@ export type GeographyPreviewMap = {
 function typedPreviewError(error: unknown): GeographyPreviewError | undefined {
   if (error instanceof SpatialCompileError) return { code: error.code, path: error.path };
   if (error instanceof ToolError) return { code: error.code, path: error.mapId ?? error.message };
-  // 지형 타일셋이 프로젝트에 없을 때(own → missing). 예: 2026-10-07 에 그림을 지운 easyrpg_chipset_world 를
-  // 가리키는 기본 세계 예시. 다시 던지면 카드 썸네일 하나 때문에 「세계」 탭 전체가 그려지지 않는다.
+  // 지형 타일셋이 프로젝트에 없을 때(own → missing). 예: 사용자가 지운 타일셋을 가리키는 저장된 세계 설계.
+  // 다시 던지면 카드 썸네일 하나 때문에 「세계」 탭 전체가 그려지지 않는다.
   if (error instanceof SpatialOperationError) return { code: error.code, path: error.path };
   return undefined;
 }

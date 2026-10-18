@@ -221,31 +221,43 @@
 .database-modal-body .spatial-purpose {
   flex: none;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
-  gap: 4px 10px;
-  /* 라이브러리 위 한 줄 띠. 여백을 줄여 그리드에 세로를 넘긴다(178px → 87px 밴드). */
+  gap: 10px;
+  /* 라이브러리 위 32px 한 줄 띠. 줄바꿈하지 않고 부연 설명을 말줄임해 갤러리 카드에 세로를 넘긴다. */
+  box-sizing: border-box;
+  height: 32px;
   margin: 0;
-  padding: 7px 12px;
-  border-width: 0 0 1px;
+  padding: 0 12px;
+  overflow: hidden;
+  border: 0;
+  border-bottom: 1px solid var(--db-studio-accent-border);
   border-radius: 0;
-  border: 1px solid var(--db-studio-accent-border);
   background: var(--db-studio-accent-soft);
+  white-space: nowrap;
 }
 .database-modal-body .spatial-purpose-lead {
   display: inline-flex;
   align-items: baseline;
   gap: 6px;
-  flex-wrap: wrap;
+  flex: 1 1 auto;
+  min-width: 0;
   font: 650 12px/1.4 inherit;
   color: var(--db-studio-text-1);
 }
+.database-modal-body .spatial-purpose-lead strong {
+  flex: none;
+}
 .database-modal-body .spatial-purpose-lead small {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font: 400 11.5px/1.4 inherit;
   color: var(--db-studio-text-2);
 }
 .database-modal-body .spatial-purpose-steps {
   display: inline-flex;
+  flex: none;
   align-items: center;
   gap: 6px;
 }

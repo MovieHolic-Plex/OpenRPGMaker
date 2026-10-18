@@ -16,7 +16,7 @@ export function geographyFixture(kind: "region" | "world", seed = 7) {
   const village = own(source.library.places, villageId);
   const base = { revision: 1, tags: [], provenance: { origin: "user" } } as const;
   const region: RegionDesign = { ...base, id: geographyRegion, name: "Contract region",
-    terrain: { tilesetId: "easyrpg_chipset_world", width: 32, height: 24, floor: "ground", areas: [] },
+    terrain: { tilesetId: "worldmap_selected", width: 32, height: 24, floor: "ground", areas: [] },
     places: [
       { id: spatialId("west"), source: { kind: "place", id: villageId }, x: 5, y: 8, level: 0 },
       { id: spatialId("east"), source: { kind: "place", id: villageId }, x: 25, y: 8, level: 0 },

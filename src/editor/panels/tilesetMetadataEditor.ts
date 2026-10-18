@@ -50,8 +50,6 @@ import {
 import {
   cachedCustomChipsetAlphaScan,
   CUSTOM_CHIPSET_ALPHA_SCANNED_EVENT,
-  detectedTileAlphaClass,
-  detectedTileAlphaSample,
   peekCustomChipsetAlphaScan,
 } from "@/editor/customChipsetTransparency";
 import { summarizeTileAlphaScan } from "@/project/tileAlphaScan";
@@ -89,12 +87,16 @@ const PASSAGE_META: Record<PassageMark, NonNullable<TileAiMetadata["passage"]>> 
  * 커스텀 칩셋 픽셀 감지를 정책에 주입한다. 캐시 히트면 즉시, 아니면 null 을 주고 스캔을
  * 예약한다(`peek…` 이 예약한다) — 스캔이 끝나면 아래 `installAlphaScanRerender` 가 다시 그린다.
  *
+ * 스캔은 렌더당 한 번만 찾는다. 캐시 키가 이식(graft) 베이크까지 담은 이미지 URL 이라 타일마다
+ * 찾으면 29,184칸 칩셋에서 「타일」 탭이 20초 넘게 멈췄다(2026-10-18 실측).
+ *
  * 감지는 메타를 만지지 않는다. 여기서 나온 값은 검토 목록 항목과 근거 문장에만 쓰인다.
  */
 function chipsetTransparencyDetection(tileset: TilesetDef): TileTransparencyDetection {
+  const scan = peekCustomChipsetAlphaScan(tileset);
   return {
-    classOf: (tile) => detectedTileAlphaClass(tileset, tile),
-    sampleOf: (tile) => detectedTileAlphaSample(tileset, tile),
+    classOf: (tile) => (!scan ? null : scan.status === "unknown" ? "unknown" : scan.samples[tile]?.cls ?? null),
+    sampleOf: (tile) => (!scan || scan.status === "unknown" ? null : scan.samples[tile] ?? null),
   };
 }
 
