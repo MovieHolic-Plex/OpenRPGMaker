@@ -1,5 +1,5 @@
 {
- "sheets": 2,
+ "sheets": 8,
  "chips": {
   "gustchick": {
    "sheet": 1,
@@ -60,6 +60,186 @@
   "gritnose": {
    "sheet": 2,
    "index": 6
+  },
+  "podback": {
+   "sheet": 2,
+   "index": 7
+  },
+  "ribbonwing": {
+   "sheet": 3,
+   "index": 0
+  },
+  "coilcrest": {
+   "sheet": 3,
+   "index": 1
+  },
+  "craghoof": {
+   "sheet": 3,
+   "index": 2
+  },
+  "lanternwing": {
+   "sheet": 3,
+   "index": 3
+  },
+  "brambleboar": {
+   "sheet": 3,
+   "index": 4
+  },
+  "tunnelpaw": {
+   "sheet": 3,
+   "index": 5
+  },
+  "reefguard": {
+   "sheet": 3,
+   "index": 6
+  },
+  "grovewarden": {
+   "sheet": 3,
+   "index": 7
+  },
+  "furnscale": {
+   "sheet": 4,
+   "index": 0
+  },
+  "tidekeeper": {
+   "sheet": 4,
+   "index": 1
+  },
+  "orchardant": {
+   "sheet": 4,
+   "index": 2
+  },
+  "galecrest": {
+   "sheet": 4,
+   "index": 3
+  },
+  "stormskink": {
+   "sheet": 4,
+   "index": 4
+  },
+  "ridgehorn": {
+   "sheet": 4,
+   "index": 5
+  },
+  "beaconmoth": {
+   "sheet": 4,
+   "index": 6
+  },
+  "briartusk": {
+   "sheet": 4,
+   "index": 7
+  },
+  "faultdigger": {
+   "sheet": 5,
+   "index": 0
+  },
+  "atollclamp": {
+   "sheet": 5,
+   "index": 1
+  },
+  "abyssail": {
+   "sheet": 5,
+   "index": 2
+  },
+  "brinewyrm": {
+   "sheet": 5,
+   "index": 3
+  },
+  "sandnip": {
+   "sheet": 5,
+   "index": 4
+  },
+  "dunestalk": {
+   "sheet": 5,
+   "index": 5
+  },
+  "miragespike": {
+   "sheet": 5,
+   "index": 6
+  },
+  "flurrykit": {
+   "sheet": 5,
+   "index": 7
+  },
+  "rimepelt": {
+   "sheet": 6,
+   "index": 0
+  },
+  "glaciermane": {
+   "sheet": 6,
+   "index": 1
+  },
+  "miretail": {
+   "sheet": 6,
+   "index": 2
+  },
+  "venomfrill": {
+   "sheet": 6,
+   "index": 3
+  },
+  "marshcrown": {
+   "sheet": 6,
+   "index": 4
+  },
+  "dozemite": {
+   "sheet": 6,
+   "index": 5
+  },
+  "trancescythe": {
+   "sheet": 6,
+   "index": 6
+  },
+  "oraclemantis": {
+   "sheet": 6,
+   "index": 7
+  },
+  "threadimp": {
+   "sheet": 7,
+   "index": 0
+  },
+  "hushdoll": {
+   "sheet": 7,
+   "index": 1
+  },
+  "veilmaster": {
+   "sheet": 7,
+   "index": 2
+  },
+  "reedpeep": {
+   "sheet": 7,
+   "index": 3
+  },
+  "fenstrider": {
+   "sheet": 7,
+   "index": 4
+  },
+  "thundercairn": {
+   "sheet": 7,
+   "index": 5
+  },
+  "winterquill": {
+   "sheet": 7,
+   "index": 6
+  },
+  "solmane": {
+   "sheet": 7,
+   "index": 7
+  },
+  "lunavane": {
+   "sheet": 8,
+   "index": 0
+  },
+  "relicarab": {
+   "sheet": 8,
+   "index": 1
+  },
+  "astralhart": {
+   "sheet": 8,
+   "index": 2
+  },
+  "mistralheron": {
+   "sheet": 8,
+   "index": 3
   }
  }
 }

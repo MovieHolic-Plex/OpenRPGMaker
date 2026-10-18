@@ -1,7 +1,7 @@
 {
   "version": 1,
   "canvas": 64,
-  "fieldSheets": 2,
+  "fieldSheets": 8,
   "species": {
     "sparkit": {
       "campaignSpeciesId": "mx_species_coalbit",
@@ -286,6 +286,861 @@
       "field": {
         "sheet": 2,
         "index": 6
+      }
+    },
+    "podback": {
+      "campaignSpeciesId": "mx_species_podback",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 2,
+        "index": 7
+      }
+    },
+    "ribbonwing": {
+      "campaignSpeciesId": "mx_species_ribbonwing",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 3,
+        "index": 0
+      }
+    },
+    "coilcrest": {
+      "campaignSpeciesId": "mx_species_coilcrest",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 3,
+        "index": 1
+      }
+    },
+    "craghoof": {
+      "campaignSpeciesId": "mx_species_craghoof",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 3,
+        "index": 2
+      }
+    },
+    "lanternwing": {
+      "campaignSpeciesId": "mx_species_lanternwing",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 3,
+        "index": 3
+      }
+    },
+    "brambleboar": {
+      "campaignSpeciesId": "mx_species_brambleboar",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 3,
+        "index": 4
+      }
+    },
+    "tunnelpaw": {
+      "campaignSpeciesId": "mx_species_tunnelpaw",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 3,
+        "index": 5
+      }
+    },
+    "reefguard": {
+      "campaignSpeciesId": "mx_species_reefguard",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 3,
+        "index": 6
+      }
+    },
+    "brinewyrm": {
+      "campaignSpeciesId": "mx_species_brinewyrm",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 5,
+        "index": 3
+      }
+    },
+    "grovewarden": {
+      "campaignSpeciesId": "mx_species_grovewarden",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 3,
+        "index": 7
+      }
+    },
+    "furnscale": {
+      "campaignSpeciesId": "mx_species_furnscale",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 4,
+        "index": 0
+      }
+    },
+    "tidekeeper": {
+      "campaignSpeciesId": "mx_species_tidekeeper",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 4,
+        "index": 1
+      }
+    },
+    "orchardant": {
+      "campaignSpeciesId": "mx_species_orchardant",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 4,
+        "index": 2
+      }
+    },
+    "galecrest": {
+      "campaignSpeciesId": "mx_species_galecrest",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 4,
+        "index": 3
+      }
+    },
+    "stormskink": {
+      "campaignSpeciesId": "mx_species_stormskink",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 4,
+        "index": 4
+      }
+    },
+    "ridgehorn": {
+      "campaignSpeciesId": "mx_species_ridgehorn",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 4,
+        "index": 5
+      }
+    },
+    "beaconmoth": {
+      "campaignSpeciesId": "mx_species_beaconmoth",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 4,
+        "index": 6
+      }
+    },
+    "briartusk": {
+      "campaignSpeciesId": "mx_species_briartusk",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 4,
+        "index": 7
+      }
+    },
+    "faultdigger": {
+      "campaignSpeciesId": "mx_species_faultdigger",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 5,
+        "index": 0
+      }
+    },
+    "atollclamp": {
+      "campaignSpeciesId": "mx_species_atollclamp",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 5,
+        "index": 1
+      }
+    },
+    "abyssail": {
+      "campaignSpeciesId": "mx_species_abyssail",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 5,
+        "index": 2
+      }
+    },
+    "sandnip": {
+      "campaignSpeciesId": "mx_species_sandnip",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 5,
+        "index": 4
+      }
+    },
+    "dunestalk": {
+      "campaignSpeciesId": "mx_species_dunestalk",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 5,
+        "index": 5
+      }
+    },
+    "miragespike": {
+      "campaignSpeciesId": "mx_species_miragespike",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 5,
+        "index": 6
+      }
+    },
+    "flurrykit": {
+      "campaignSpeciesId": "mx_species_flurrykit",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 5,
+        "index": 7
+      }
+    },
+    "rimepelt": {
+      "campaignSpeciesId": "mx_species_rimepelt",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 6,
+        "index": 0
+      }
+    },
+    "glaciermane": {
+      "campaignSpeciesId": "mx_species_glaciermane",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 6,
+        "index": 1
+      }
+    },
+    "miretail": {
+      "campaignSpeciesId": "mx_species_miretail",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 6,
+        "index": 2
+      }
+    },
+    "venomfrill": {
+      "campaignSpeciesId": "mx_species_venomfrill",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 6,
+        "index": 3
+      }
+    },
+    "marshcrown": {
+      "campaignSpeciesId": "mx_species_marshcrown",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 6,
+        "index": 4
+      }
+    },
+    "dozemite": {
+      "campaignSpeciesId": "mx_species_dozemite",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 6,
+        "index": 5
+      }
+    },
+    "trancescythe": {
+      "campaignSpeciesId": "mx_species_trancescythe",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 6,
+        "index": 6
+      }
+    },
+    "oraclemantis": {
+      "campaignSpeciesId": "mx_species_oraclemantis",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 6,
+        "index": 7
+      }
+    },
+    "threadimp": {
+      "campaignSpeciesId": "mx_species_threadimp",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 7,
+        "index": 0
+      }
+    },
+    "hushdoll": {
+      "campaignSpeciesId": "mx_species_hushdoll",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 7,
+        "index": 1
+      }
+    },
+    "veilmaster": {
+      "campaignSpeciesId": "mx_species_veilmaster",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 7,
+        "index": 2
+      }
+    },
+    "reedpeep": {
+      "campaignSpeciesId": "mx_species_reedpeep",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 7,
+        "index": 3
+      }
+    },
+    "fenstrider": {
+      "campaignSpeciesId": "mx_species_fenstrider",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 7,
+        "index": 4
+      }
+    },
+    "mistralheron": {
+      "campaignSpeciesId": "mx_species_mistralheron",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 8,
+        "index": 3
+      }
+    },
+    "thundercairn": {
+      "campaignSpeciesId": "mx_species_thundercairn",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 7,
+        "index": 5
+      }
+    },
+    "winterquill": {
+      "campaignSpeciesId": "mx_species_winterquill",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 7,
+        "index": 6
+      }
+    },
+    "solmane": {
+      "campaignSpeciesId": "mx_species_solmane",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 7,
+        "index": 7
+      }
+    },
+    "lunavane": {
+      "campaignSpeciesId": "mx_species_lunavane",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 8,
+        "index": 0
+      }
+    },
+    "relicarab": {
+      "campaignSpeciesId": "mx_species_relicarab",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 8,
+        "index": 1
+      }
+    },
+    "astralhart": {
+      "campaignSpeciesId": "mx_species_astralhart",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 8,
+        "index": 2
       }
     }
   }

@@ -10,6 +10,7 @@
   python3 field_chip.py sheet --species gustchick --out ~/claude-viz/x.html   후보 시트(걷기 GIF 포함)
   python3 field_chip.py pick --species gustchick --run <run> --candidate 1   고른 칩을 장부에 기록(그림 해시 묶음)
   python3 field_chip.py bake   고른 칩을 8명씩 288x256 시트로 묶어 번들에 굽고 런타임 목록을 다시 쓴다(칸 번호는 덧붙이기 전용)
+  python3 field_chip.py derive --species grovewarden   앞·뒤 전투 그림을 그대로 줄여 칩 후보 1개를 만든다(모델 없음, 결정적)
 
 산출은 <OUT>/<종>/<run>/cand-<k>/ (OUT 기본 qa-runs/harnesses/monster-field-chip, 저장소에 커밋하지 않는다).
 고르기는 사람(또는 위임받은 감독)이 한다. 키는 읽지도 쓰지도 않는다(agy 가 환경에서 스스로 인증한다).
@@ -309,6 +310,111 @@ def cmd_sheet(a):
     print(a.out, len(cards), '장')
 
 
+# ---- derive: 전투 그림에서 칩을 바로 만든다 -------------------------------------------------
+# 2026-10-18 「몬스터 하나에 서로 다른 이미지들이 혼재」 — 모델이 따로 그린 칩은 전투 그림과 다른 생물이 되곤 했다.
+# derive 는 고른 앞(아래·옆 방향)·뒤(위 방향) 전투 그림을 칸 최빈색으로 줄이고 앞모습 가장 어두운 색으로 1px 윤곽을 다시 둘러
+# 색·실루엣이 전투 그림 그대로인 칩을 만든다. 걸음은 몸을 1줄 올리고 발 줄을 좌우로 1칸 엇갈린다.
+DERIVE_W, DERIVE_H = 20, 26  # 몸 상한: 좌우 2칸 여유(걸음 엇갈림이 칸 경계에 닿지 않게)·위 4칸 여유
+
+
+def _lum(c): return 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2]
+
+
+def _reduce(im, tw, th):
+    """잉크 상자를 tw x th 안으로 줄인다. 칸마다 불투명이 절반 이상이면 최빈색(같으면 어두운 색)."""
+    im = im.convert('RGBA'); bb = im.getbbox(); im = im.crop(bb); px = im.load(); w, h = im.size
+    s = max(w / tw, h / th, 1)
+    ow, oh = max(1, round(w / s)), max(1, round(h / s))
+    out = Image.new('RGBA', (ow, oh), (0, 0, 0, 0)); po = out.load()
+    for oy in range(oh):
+        for ox in range(ow):
+            y0, x0 = int(oy * s), int(ox * s)
+            y1, x1 = max(y0 + 1, int((oy + 1) * s)), max(x0 + 1, int((ox + 1) * s))
+            counts, total = {}, 0
+            for y in range(y0, min(y1, h)):
+                for x in range(x0, min(x1, w)):
+                    total += 1
+                    if px[x, y][3] >= 128: counts[px[x, y][:3]] = counts.get(px[x, y][:3], 0) + 1
+            if sum(counts.values()) * 2 < total: continue
+            po[ox, oy] = min(counts, key=lambda c: (-counts[c], _lum(c))) + (255,)
+    return out
+
+
+def _outline(im, ink):
+    """바깥과 닿은 칸을 윤곽색으로, 8방향 이웃 없는 외톨이 도트는 지운다."""
+    w, h = im.size; px = im.load(); out = im.copy(); po = out.load()
+    on = lambda x, y: 0 <= x < w and 0 <= y < h and px[x, y][3] > 0
+    for y in range(h):
+        for x in range(w):
+            if not on(x, y): continue
+            if not any(on(x + dx, y + dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1) if dx or dy): po[x, y] = (0, 0, 0, 0)
+            elif not (on(x - 1, y) and on(x + 1, y) and on(x, y - 1) and on(x, y + 1)): po[x, y] = ink + (255,)
+    return out
+
+
+def _limit_colors(im, n=16):
+    """16색 넘으면 드문 색을 가장 가까운 자주 쓴 색으로 바꾼다(새 색은 만들지 않는다)."""
+    px = im.load(); w, h = im.size; counts = {}
+    for y in range(h):
+        for x in range(w):
+            if px[x, y][3]: counts[px[x, y][:3]] = counts.get(px[x, y][:3], 0) + 1
+    keep = sorted(counts, key=lambda c: -counts[c])[:n]
+    near = {c: min(keep, key=lambda k: sum((a - b) ** 2 for a, b in zip(c, k))) for c in counts}
+    for y in range(h):
+        for x in range(w):
+            if px[x, y][3]: px[x, y] = near[px[x, y][:3]] + (255,)
+    return im
+
+
+def _place(body, lift=0, step=0):
+    """24x32 칸 바닥(BASELINE) 가운데에 놓는다. lift: 몸을 위로, step: 발 줄(아래 4줄)을 좌우로 엇갈림."""
+    frame = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    x = (W - body.width) // 2; y = BASELINE + 1 - body.height
+    frame.alpha_composite(body, (x, y - lift))
+    if step:
+        feet = Image.new('RGBA', (W, H), (0, 0, 0, 0)); feet.alpha_composite(body, (x + step, y))
+        band = (0, BASELINE - 3, W, BASELINE + 1)
+        frame.paste((0, 0, 0, 0), band); frame.alpha_composite(feet.crop(band), band[:2])
+    return frame
+
+
+def derive_frames(front, back):
+    """앞·뒤 전투 그림 → frames[(dir, f)] (down·up·right × 0·1·2)."""
+    ink = min((c[:3] for _, c in front.convert('RGBA').getcolors(1 << 16) if c[3] >= 128), key=_lum)
+    bodies = {
+        'down': _outline(_reduce(front, DERIVE_W, DERIVE_H), ink),
+        'up': _outline(_reduce(back, DERIVE_W, DERIVE_H), ink),
+    }
+    bodies['right'] = bodies['down'].transpose(Image.FLIP_LEFT_RIGHT)  # 전투 앞모습은 왼쪽을 본다
+    frames = {}
+    for d, body in bodies.items():
+        frames[(d, 0)] = _limit_colors(_place(body, lift=1, step=-1))
+        frames[(d, 1)] = _limit_colors(_place(body))
+        frames[(d, 2)] = _limit_colors(_place(body, lift=1, step=1))
+    return frames
+
+
+def cmd_derive(a):
+    sid = a.species
+    front = os.path.join(BUNDLE, sid, 'front.png'); back = os.path.join(BUNDLE, sid, 'back.png')
+    if not (os.path.exists(front) and os.path.exists(back)): raise SystemExit('번들에 %s 앞·뒤 그림이 없다(build 먼저)' % sid)
+    run = 'derive-' + datetime.datetime.now().strftime('%Y%m%d-%H%M%S')
+    cdir = os.path.join(OUT, sid, run, 'cand-1'); os.makedirs(cdir, exist_ok=True)
+    frames = derive_frames(Image.open(front), Image.open(back))
+    errs, warns = [], []
+    for (d, f), im in frames.items():
+        e, w = check_frame('%s_%d' % (d, f), im); errs += e; warns += w
+    meta = {'species': sid, 'k': 1, 'derived': True, 'attempts': [{'n': 1, 'errors': errs, 'warnings': warns, 'at': now()}]}
+    if not errs:
+        sheet = assemble(frames); sheet.save(os.path.join(cdir, 'chip.png'))
+        meta.update({'ok': True, 'sha': sha(sheet), 'warnings': warns})
+    else:
+        meta['ok'] = False
+    json.dump(meta, open(os.path.join(cdir, 'meta.json'), 'w'), ensure_ascii=False, indent=1)
+    print(sid, run, 'ok' if meta['ok'] else 'FAIL', '; '.join(errs + warns))
+
+
+
 def cmd_pick(a):
     cdir = os.path.join(OUT, a.species, a.run, 'cand-%d' % a.candidate)
     meta = json.load(open(os.path.join(cdir, 'meta.json')))
@@ -353,6 +459,7 @@ def main():
     s = sub.add_parser('sheet'); s.add_argument('--species', nargs='+', required=True); s.add_argument('--out', required=True); s.add_argument('--title', default='몬스터 걷기 칩 후보'); s.set_defaults(fn=cmd_sheet)
     k = sub.add_parser('pick'); k.add_argument('--species', required=True); k.add_argument('--run', required=True); k.add_argument('--candidate', type=int, required=True); k.add_argument('--note'); k.set_defaults(fn=cmd_pick)
     b = sub.add_parser('bake'); b.set_defaults(fn=cmd_bake)
+    v = sub.add_parser('derive'); v.add_argument('--species', required=True); v.set_defaults(fn=cmd_derive)
     a = ap.parse_args(); a.fn(a)
 
 
