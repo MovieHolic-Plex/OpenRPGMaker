@@ -5,6 +5,19 @@
 
 <!-- releases -->
 
+## 0.264.0 — 2026-10-18
+
+### 기능
+
+- **monster** — add in-editor 9-cell retro2003 monster pixel studio and author_enemy_pixel_sheet tool (#2945) (`c626cbe`)
+- **jp_city** — shotengai covered arcade streets + mansion, monthly parking, market shops, jizo hokora (#2943) (`4cce899`)
+- **ai** — #2673 follow-up - focus-framed hazard stages + walking survival branch (#2917) (`fe6f590`)
+
+### 수정
+
+- **interior** — R9 hostile VQA — contract-size seed variation via row plans for 18 daily venues, map-key program seeds, legacy preset palettes, bar-lounge bookcase misread (#2944) (`c817c68`)
+- **monster** — 과부 거미·뿔 딱정벌레·화염 지네·가루 나방·모래 지렁이·병정개미·다이어울프·검치호랑이·거대 쥐·매 전투 도트 다시 그리기 + (0,2) 스킬 칸 (8차) (#2941) (`130e149`)
+
 ## 0.263.0 — 2026-10-18
 
 ### 기능
