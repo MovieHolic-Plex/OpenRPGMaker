@@ -188,12 +188,12 @@
     "front": {
       "resourceId": "mx_art_grovewarden_front",
       "file": "grovewarden-front.png",
-      "sha256": "18a0a3be923dabd068b0742ed8cfa68c74ab3f4e85bdbca7f40791ae52d5b384",
-      "bytes": 1734,
+      "sha256": "c78562a663405b1ba83826c7df36f759029083edd941269e2a5e4359cd41e3e3",
+      "bytes": 1929,
       "bbox": [
-        10,
         8,
-        53,
+        2,
+        55,
         62
       ],
       "dimensions": [
@@ -201,26 +201,29 @@
         64
       ],
       "opaquePalette": [
-        "#395349",
-        "#427851",
-        "#75b36a",
-        "#9da869",
-        "#b9d98b",
-        "#f1d480",
-        "#f8e2a6",
-        "#fff2d0"
+        "#183d17",
+        "#2c5f21",
+        "#371c0a",
+        "#3d7a27",
+        "#4f8c30",
+        "#5f9e34",
+        "#613110",
+        "#6fae3a",
+        "#9a5521",
+        "#d9a73c",
+        "#fdf1b7"
       ],
-      "opaqueColors": 8
+      "opaqueColors": 11
     },
     "back": {
       "resourceId": "mx_art_grovewarden_back",
       "file": "grovewarden-back.png",
-      "sha256": "6f58c154babb0d99f4222cd34c30cdbf0807288eba5d58c929c6ec96fe846bd8",
-      "bytes": 1526,
+      "sha256": "484b7b54ad4251247d5f275394bcbdc8164c8162b7d678d0d6e83178956f7038",
+      "bytes": 1938,
       "bbox": [
-        11,
-        8,
-        53,
+        6,
+        2,
+        57,
         62
       ],
       "dimensions": [
@@ -228,26 +231,29 @@
         64
       ],
       "opaquePalette": [
-        "#395349",
-        "#427851",
-        "#75b36a",
-        "#9da869",
-        "#b9d98b",
-        "#f1d480",
-        "#f8e2a6",
-        "#fff2d0"
+        "#183d17",
+        "#2c5f21",
+        "#371c0a",
+        "#3d7a27",
+        "#4f8c30",
+        "#5f9e34",
+        "#613110",
+        "#6fae3a",
+        "#9a5521",
+        "#d9a73c",
+        "#fdf1b7"
       ],
-      "opaqueColors": 8
+      "opaqueColors": 11
     },
     "icon": {
       "resourceId": "mx_art_grovewarden_icon",
       "file": "grovewarden-icon.png",
-      "sha256": "f73c87d0b7a6be5eefba7401157549da716902070b97e34ac74257ec729400ca",
-      "bytes": 679,
+      "sha256": "ed30ce92f49bf4f0e2fa3473ce7ced7059aab3b6ad49263a8dab41818ea4011b",
+      "bytes": 748,
       "bbox": [
-        7,
-        1,
-        30,
+        4,
+        0,
+        27,
         30
       ],
       "dimensions": [
@@ -255,16 +261,19 @@
         32
       ],
       "opaquePalette": [
-        "#395349",
-        "#427851",
-        "#75b36a",
-        "#9da869",
-        "#b9d98b",
-        "#f1d480",
-        "#f8e2a6",
-        "#fff2d0"
+        "#183d17",
+        "#2c5f21",
+        "#371c0a",
+        "#3d7a27",
+        "#4f8c30",
+        "#5f9e34",
+        "#613110",
+        "#6fae3a",
+        "#9a5521",
+        "#d9a73c",
+        "#fdf1b7"
       ],
-      "opaqueColors": 8
+      "opaqueColors": 11
     }
   },
   {

@@ -211,15 +211,17 @@ def build(seed: dict):
     sh.row_start()
     for v, kind in enumerate(("pink", "white", "red")):        # 정본: 본 시트 꽃(outdoor2.flowers) 그대로(바닥이 본 시트 풀)
         sh.add(f"gy_flowers{v}", o2.flowers(P, kind))     # 바닥이 본 시트 풀이 되어 꽃 칸도 본 시트 그대로
-    sh.add("gy_cuttree", wf.cut_tree(borrow(dict(P, _leaf_hex=seed["palette"]["leaf"]), "monster-wild", ("wfloor",))))   # 정본: 야생 자르기 나무(야생과 바이트까지 같게 발밑 그늘도 야생 팔레트)
-    for part in ("pivot", "pivot_v", "h", "h_w", "v", "v_n"):
-        sh.add(f"gy_turn_{part}", gp.turn(P, part))
+    # 칸 이름(맵 번호)은 그대로 두고 그림만 실내 정원 문법으로: 자르기 나무 → 가시 덤불, 회전문 → 덩굴 나무 문
+    # (닫힘 = 가로 세 칸 · 열림 = 덩굴이 양쪽 화단 벽으로 감겨 물러남 · pivot_v = 문을 여는 새싹 돌 받침)
+    sh.add("gy_cuttree", gp.vine_gate(P, "bramble"))
+    for part, look in (("pivot", "c"), ("pivot_v", "switch"), ("h", "e"), ("h_w", "w"), ("v", "coil_e"), ("v_n", "coil_w")):
+        sh.add(f"gy_turn_{part}", gp.vine_gate(P, look))
     sh.add("gy_pot", gp.pot(P))
     sh.row_start(); _obj(sh, "gyd_dais_grass", gp.dais_grass(P)); _obj(sh, "gyp_emb_grass", g2.emblem(P, "gy_hedge"))
     sh.row_start()
     turf = gc.floor(P, "turf", 0)
     for k in px.ALL47:
-        sh.add(f"gy_hedge_at{k}", gc.hedge(P, k, turf))
+        sh.add(f"gy_hedge_at{k}", gc.planter(P, k, turf))
     sh.end_section()
 
     sh.section("격투 도장(가로 마루·다다미·족자·샌드백·격파 판/부서진 판·빛이 번지는 어둠 47·나무 칸막이)")

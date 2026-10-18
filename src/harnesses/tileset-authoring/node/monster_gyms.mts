@@ -513,17 +513,18 @@ function after(g: Gym, mutate: (f: Field) => void): Field {
   const [onlyCut] = solve(g, { gates: rules.gates });
   if (search(s0(g), onlyTurn, isGoal([L])).found) k.fails.push("gym_grass: 자르기 없이 관장에게 간다");
   if (search(s0(g), onlyCut, isGoal([L])).found) k.fails.push("gym_grass: 회전문 없이 관장에게 간다");
-  k.describe(g.f, "풀관(무지개시티 정원 + 검방울): 잔디 위 둥근 나무 줄 울타리 두 줄(칸마다 한 그루). 아래 틈은 회전문(팔에 직각으로 걸어 들면 90도), 위 틈은 자르기 나무. 관장은 오른쪽 위 꽃 무대, 석상은 입구 길 양옆.");
-  g.save();
+  k.describe(g.f, "풀관(실내 정원): 크림 돌 테두리 화단 두 줄. 아래 틈은 덩굴 나무 문(가운데 줄기 매듭 + 양옆 뿌리 기둥, 가시 덩굴이 길을 가로막는다), 그 남쪽 길 위 새싹 돌 받침(gy_turn_pivot_v)이 문을 여는 장치. 위 틈은 가시 덤불(gy_cuttree). 관장은 오른쪽 위 꽃 무대, 석상은 입구 길 양옆.");
   const [px_, py] = g.one("P");
+  g.f.up(px_, py + 3, "gy_turn_pivot_v");   // 문을 여는 새싹 돌 받침 = world.ts device_pivot 자리
+  g.save();
   const fa = after(g, (f) => {
     for (const [x, y] of g.at("X")) f.map.upperTiles[y * g.W + x] = -1;
-    f.map.upperTiles[py * g.W + px_ - 1] = -1; f.map.upperTiles[py * g.W + px_ + 1] = -1;
-    f.up(px_, py - 1, "gy_turn_v_n"); f.up(px_, py + 1, "gy_turn_v"); f.up(px_, py, "gy_turn_pivot_v");   // 축의 팔 토막도 세로로(팔이 축에 닿는다, I3 Z5)
+    for (const dx of [-1, 0, 1]) f.map.upperTiles[py * g.W + px_ + dx] = -1;
+    f.up(px_ - 2, py, "gy_turn_v_n"); f.up(px_ + 2, py, "gy_turn_v");   // 덩굴이 양쪽 화단 벽으로 감겨 물러난 뭉치(길 쪽 끝에 붙는다)
   });
-  k.describe(fa, "풀관 — 회전문을 돌리고 나무를 벤 뒤: 팔이 세로(위 gy_turn_v_n · 아래 gy_turn_v — 바깥 끝마다 기둥, 축 gy_turn_pivot_v)로 서고 자르기 나무 칸이 비었다.");
-  k.expectReach(fa, start(g), [L], "gym_grass_after: 돈 회전문 옆과 벤 나무 자리로 관장까지");
-  k.negative(fa, "tree-not-cut", "자르기 나무를 지우지 않았다", (f) => { for (const [x, y] of g.at("X")) f.up(x, y, "gy_cuttree"); }, start(g), [L]);
+  k.describe(fa, "풀관 — 받침을 눌러 덩굴 문이 열리고 덤불을 정리한 뒤: 문 세 칸이 비어 돌길이 드러나고, 덩굴은 양옆 화단 벽 칸에 감긴 뭉치(gy_turn_v_n 서 · gy_turn_v 동)로 남았다.");
+  k.expectReach(fa, start(g), [L], "gym_grass_after: 열린 덩굴 문과 정리한 덤불 자리로 관장까지");
+  k.negative(fa, "tree-not-cut", "가시 덤불을 지우지 않았다", (f) => { for (const [x, y] of g.at("X")) f.up(x, y, "gy_cuttree"); }, start(g), [L]);
 }
 
 // 7) 격투 도장(노랑시티 도장 · 무로 체육관) 17×19 — 위는 다다미 수련장, 아래는 가로 마루 앞마당. 그 사이 어둠 미로(무로)를 지나야 한다.

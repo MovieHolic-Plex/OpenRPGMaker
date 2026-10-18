@@ -583,6 +583,110 @@ def pot(P):
     return f.done(P, floor_y=8)
 
 
+_BARK = ("#4a301c", "#704a2a", "#96683c", "#b88a54")
+_THORN = "#ece2c4"
+
+
+def _sprite(grid, ol):
+    """16×16 색 격자 → 외곽선 1px(빈 칸 쪽에만) + 아래 그림자. 칸 끝에 닿은 모양은 이웃 칸과 그대로 이어진다."""
+    im = px.new()
+    full = lambda x, y: 0 <= x < T and 0 <= y < T and grid[y][x] is not None
+    for y in range(T):
+        for x in range(T):
+            if grid[y][x] is not None:
+                im.putpixel((x, y), grid[y][x])
+            elif any(full(x + dx, y + dy) for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+                im.putpixel((x, y), ol)
+    base = im.copy()
+    for y in range(2, T):
+        for x in range(T):
+            if base.getpixel((x, y))[3] == 0 and base.getpixel((x, y - 2))[3] > 0:
+                im.putpixel((x, y), SHADOW)
+    return im
+
+
+def _vines(P, put, x, gx, lo=0):
+    """가시 덩굴 두 가닥(굵기 3px)이 꼬여 가로지른다(gx = 문 전체 기준 x, 세 칸이 한 줄로 이어진다). 가시는 연한 크림 삼각 · 잎은 두 칸 잎."""
+    lf = P["gy_hedge"]
+    for k, yc in enumerate((6.5 + 2.2 * math.sin(gx * 0.4), 10.5 - 2.2 * math.sin(gx * 0.4))):
+        y = int(round(yc)) + lo
+        put(x, y - 1, lf[2]); put(x, y, lf[1]); put(x, y + 1, lf[0] if k else lf[1])
+        if (gx + 3 * k) % 6 == 0:                                  # 가시: 가닥 바깥쪽으로 2px
+            ty = y - 2 if k == 0 else y + 2
+            put(x, ty, px.hexc(_THORN)); put(x, ty + (-1 if k == 0 else 1), px.hexc(_THORN))
+        if (gx + 5 * k) % 10 == 7:                                 # 잎: 가닥 안쪽으로 두 칸
+            ly = y + 2 if k == 0 else y - 2
+            put(x, ly, lf[3]); put(x + 1, ly, lf[2])
+
+
+def vine_gate(P, part: str):
+    """덩굴 나무 문(풀·벌레 체육관, 위층 · 막힘): 가운데 살아 있는 나무 줄기 매듭에서 가시 덩굴 두 가닥이 양옆 뿌리 기둥까지 길을 가로막는다.
+    w/c/e = 닫힌 문 세 칸(서쪽 뿌리 · 가운데 줄기 매듭과 꽃 · 동쪽 뿌리) · coil_w/coil_e = 열린 문(덩굴이 양쪽 화단 벽으로 감겨 물러난 뭉치) ·
+    switch = 문을 여는 새싹 돌 받침 · bramble = 가지 틈을 막은 가시 덤불(자르기). 회색 쇠막대 회전문은 '줄무늬 파이프'로 읽혔다(2026-10-18 사용자 반려)."""
+    lf, fl, rim = P["gy_hedge"], P["i2_c_flower"], P["gy_rim"]
+    bark = [px.hexc(c) for c in _BARK]
+    g = [[None] * T for _ in range(T)]
+
+    def put(x, y, c):
+        if 0 <= x < T and 0 <= y < T:
+            g[y][x] = c
+
+    def ell(cx, cy, rx, ry, fn):
+        for y in range(T):
+            for x in range(T):
+                if ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1:
+                    put(x, y, fn(x - cx, y - cy))
+
+    leafy = lambda dx, dy: lf[3] if dx + dy < -2.5 else lf[2] if dx + dy < 1 else lf[1]
+    barky = lambda dx, dy: bark[3] if dx < -1.5 else bark[2] if dx < 0.5 else bark[1]
+    if part in ("w", "c", "e"):
+        off = {"w": 0, "c": T, "e": 2 * T}[part]
+        for x in range(T):
+            _vines(P, put, x, off + x)
+        if part == "c":                                              # 줄기 매듭 + 붉은 꽃 한 송이(살아 있는 나무 문의 심장)
+            ell(8, 9.5, 4, 5, barky)
+            for y in (7, 11):
+                put(7, y, bark[0]); put(9, y + 1, bark[0])
+            ell(8, 3.5, 3, 2.6, lambda dx, dy: px.hexc("#f8e070") if dx * dx + dy * dy <= 1 else fl[1] if dx + dy < 1 else fl[0])
+            put(4, 5, lf[2]); put(5, 5, lf[3]); put(11, 5, lf[2]); put(12, 5, lf[2])
+        else:                                                        # 뿌리 기둥(문이 붙은 쪽 끝): 굵은 줄기 + 잎 머리
+            x0 = 0 if part == "w" else 11
+            for y in range(4, 16):
+                for x in range(x0, x0 + 5):
+                    put(x, y, barky(x - x0 - 2.5, 0))
+            for y in (7, 12):
+                put(x0 + 3, y, bark[0]); put(x0 + 3, y + 1, bark[0])
+            ell(x0 + 2.5, 3.5, 4.2, 3.2, leafy)
+    elif part in ("coil_w", "coil_e"):                                # 열린 문: 덩굴이 화단 벽 쪽으로 감겨 물러났다(길 쪽 칸 끝에 붙는다)
+        east = part == "coil_w"                                      # 서쪽 화단 칸 → 뭉치는 칸 동쪽 끝(길 쪽)
+        cx = 11.5 if east else 4.5
+        ell(cx, 8.5, 4.2, 6.2, leafy)                                # 감긴 덩굴 뭉치(빛은 왼쪽 위)
+        for y in (4, 8, 12):                                         # 감긴 가닥 띠 세 줄(뭉치를 가로지르는 어두운 줄)
+            for x in range(int(cx) - 3, int(cx) + 4):
+                if g[y][x] is not None:
+                    put(x, y + (1 if (x - int(cx)) % 3 == 0 else 0), lf[0])
+        for tx, ty in ((cx - 4, 6), (cx + 4, 10)):                   # 가시 둘(뭉치 밖으로 삐죽)
+            put(int(round(tx)), ty, px.hexc(_THORN))
+        put(int(cx), 2, fl[1]); put(int(cx) + 1, 2, fl[0])
+    elif part == "switch":                                           # 새싹 돌 받침: 크림 돌 단 위 초록 새싹(말을 거는 장치)
+        for y in range(9, 15):
+            for x in range(3, 13):
+                put(x, y, rim[3] if y == 9 else rim[2] if y < 12 else rim[1] if y < 14 else rim[0])
+        for x in range(4, 12):
+            put(x, 10, rim[3])
+        for y in range(4, 10):
+            put(7, y, lf[2]); put(8, y, lf[1])
+        ell(4.5, 4, 3, 1.8, leafy); ell(11, 3, 3, 1.8, leafy)
+        put(7, 8, lf[0]); put(8, 8, lf[0])
+    elif part == "bramble":
+        ell(8, 8.5, 7, 6.5, lambda dx, dy: lf[1] if dx + dy < 2 else lf[0])
+        for x in range(T):
+            _vines(P, put, x, x + 5, lo=-1)
+        for bx, by in ((5, 5), (11, 11), (9, 6)):
+            put(bx, by, px.hexc("#c03040"))
+    return _sprite(g, lf[0])
+
+
 # ---- 격투 도장 ----------------------------------------------------------------------------------
 def scroll(P):
     """족자(1×2 캔버스, 뒷벽 위): 위·아래 나무 축 · 흰 종이 · 먹 글씨(굵은 획 세 개)."""
