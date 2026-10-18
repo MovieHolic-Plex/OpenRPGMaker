@@ -35,6 +35,8 @@ declare global {
       dir: (dir: string | null) => void;
       face: (dir: string) => void;
     };
+    /** PlayScene(Phaser) — 해제 연출 중 살아 있는 입자 수와 카메라 흔들림·번쩍임을 읽는 데만 쓴다. */
+    __oprnHooksScene?: unknown;
   }
 }
 
@@ -437,52 +439,133 @@ try {
     await page.waitForTimeout(280);
   };
 
-  const flushDialogue = async (
-    onMidShot?: () => Promise<void>,
-    expectSwitchId?: string,
-  ): Promise<void> => {
-    let midTaken = false;
-    let idleTicks = 0;
-    for (let i = 0; i < 70; i += 1) {
-      const hasDlg = await present("dialogue-box");
-      const hasChoice = await present("runtime-choices");
-      if (hasDlg || hasChoice) {
-        idleTicks = 0;
-        if (!midTaken && onMidShot && hasDlg) {
-          midTaken = true;
-          await finishTypingIfOpen();
-          await onMidShot();
-        }
-        await page.keyboard.press("Enter");
-        await page.waitForTimeout(200);
-        continue;
-      }
-      idleTicks += 1;
-      if (expectSwitchId) {
-        const st = await readState();
-        if (st.switches[expectSwitchId] === true && idleTicks >= 3) break;
-      } else if (idleTicks >= 6) {
-        break;
-      }
-      await page.waitForTimeout(200);
-    }
-    await page.waitForTimeout(250);
-  };
-
   const createFrameRecorder = (name: string) => {
     const dir = path.join(FRAMES_ROOT, name);
     fs.rmSync(dir, { recursive: true, force: true });
     fs.mkdirSync(dir, { recursive: true });
     let idx = 0;
     return {
-      snap: async () => {
+      snap: async (): Promise<string> => {
         const p = path.join(dir, `${String(idx++).padStart(3, "0")}.png`);
         await page.screenshot({ path: p });
+        return p;
       },
-      finishGif: (outGif: string, fps = 2) => {
+      finishGif: (outGif: string, fps = 6) => {
         buildGif(dir, outGif, fps);
       },
     };
+  };
+  type FrameRecorder = ReturnType<typeof createFrameRecorder>;
+
+  interface VfxProbe {
+    readonly particles: number;
+    readonly shaking: boolean;
+    readonly flashing: boolean;
+  }
+  // 화면에 지금 살아 있는 입자 수와 카메라 흔들림·번쩍임 진행 여부.
+  const readVfx = async (): Promise<VfxProbe> =>
+    page.evaluate(() => {
+      const scene = window.__oprnHooksScene;
+      const running = (cam: object, key: string): boolean => {
+        if (!(key in cam)) return false;
+        const effect: unknown = Reflect.get(cam, key);
+        return Boolean(effect && typeof effect === "object" && "isRunning" in effect && effect.isRunning === true);
+      };
+      let particles = 0;
+      let shaking = false;
+      let flashing = false;
+      if (scene && typeof scene === "object") {
+        const children: unknown = "children" in scene ? scene.children : undefined;
+        const list: unknown = children && typeof children === "object" && "list" in children ? children.list : undefined;
+        if (Array.isArray(list)) {
+          for (const child of list) {
+            if (child && typeof child === "object" && "getAliveParticleCount" in child && typeof child.getAliveParticleCount === "function") {
+              particles += Number(child.getAliveParticleCount());
+            }
+          }
+        }
+        const cameras: unknown = "cameras" in scene ? scene.cameras : undefined;
+        const main: unknown = cameras && typeof cameras === "object" && "main" in cameras ? cameras.main : undefined;
+        if (main && typeof main === "object") {
+          shaking = running(main, "shakeEffect");
+          flashing = running(main, "flashEffect");
+        }
+      }
+      return { particles, shaking, flashing };
+    });
+
+  interface BurstCapture {
+    readonly framesDuringVfx: number;
+    readonly maxParticles: number;
+    readonly sawShake: boolean;
+    readonly sawFlash: boolean;
+  }
+
+  /**
+   * 대사·선택지를 넘기며 이벤트가 끝날 때까지 돈다. rec 를 주면 매 바퀴(대사를 넘긴 직후와, 대사 없이 해제 연출의
+   * 입자·흔들림·changeTile 물결이 도는 동안) ~110ms 간격으로 프레임을 찍는다. burstShotPath 를 주면 입자·흔들림·번쩍임이
+   * 가장 강한 프레임을 그 경로에 남긴다(= 해제 연출 한복판 스크린샷).
+   */
+  const flushDialogue = async (
+    opts: { readonly rec?: FrameRecorder; readonly expectSwitchId?: string; readonly burstShotPath?: string } = {},
+  ): Promise<BurstCapture> => {
+    const { rec, expectSwitchId, burstShotPath } = opts;
+    if (burstShotPath) fs.rmSync(burstShotPath, { force: true });
+    let idleTicks = 0;
+    let bestScore = -1;
+    let framesDuringVfx = 0;
+    let maxParticles = 0;
+    let sawShake = false;
+    let sawFlash = false;
+    const capture = async (): Promise<void> => {
+      if (!rec) return;
+      const vfx = await readVfx();
+      const covered = (await present("dialogue-box")) || (await present("runtime-choices"));
+      const frame = await rec.snap();
+      const active = vfx.particles > 0 || vfx.shaking || vfx.flashing;
+      if (!active) return;
+      framesDuringVfx += 1;
+      maxParticles = Math.max(maxParticles, vfx.particles);
+      sawShake ||= vfx.shaking;
+      sawFlash ||= vfx.flashing;
+      // 대사창이 덮지 않은 프레임을 먼저 고른다 — 해제 물결은 대사 전에 돌아서 입자·흔들림이 맨 화면에 보이는 순간이 있다.
+      const score = (covered ? 0 : 10_000) + vfx.particles + (vfx.shaking ? 40 : 0) + (vfx.flashing ? 40 : 0);
+      if (burstShotPath && score > bestScore) {
+        bestScore = score;
+        fs.copyFileSync(frame, burstShotPath);
+      }
+    };
+    const tickMs = rec ? 110 : 200;
+    for (let i = 0; i < 160; i += 1) {
+      const hasDlg = await present("dialogue-box");
+      const hasChoice = await present("runtime-choices");
+      if (hasDlg || hasChoice) {
+        idleTicks = 0;
+        await capture();
+        await page.keyboard.press("Enter");
+        await page.waitForTimeout(tickMs);
+        await capture();
+        continue;
+      }
+      idleTicks += 1;
+      await capture();
+      if (expectSwitchId) {
+        const st = await readState();
+        if (st.switches[expectSwitchId] === true && idleTicks >= 3) break;
+      } else if (idleTicks >= 6) {
+        break;
+      }
+      await page.waitForTimeout(tickMs);
+    }
+    await page.waitForTimeout(250);
+    return { framesDuringVfx, maxParticles, sawShake, sawFlash };
+  };
+
+  /** 해제 연출 한복판이 실제로 찍혔는지(입자·흔들림이 화면에 있던 프레임이 있는지) 확인한다. */
+  const assertBurstCaptured = (label: string, burst: BurstCapture, burstShotPath: string): void => {
+    console.log(`      ${label} VFX burst:`, burst);
+    assert.ok(burst.maxParticles > 0 && burst.sawShake, `${label}: no particle+shake frame captured during the reveal`);
+    assert.ok(fs.existsSync(burstShotPath), `${label}: missing mid-reveal shot ${burstShotPath}`);
   };
 
   const playProofs: Record<string, unknown> = {};
@@ -602,14 +685,14 @@ try {
     await page.keyboard.press("Enter");
     await finishTypingIfOpen();
     await rec.snap();
-    await flushDialogue();
+    await flushDialogue({ rec });
 
     // 2. 악보 단서 확인
     await standNextAndFace("map_p1_cathedral", scoreEv.x, scoreEv.y);
     await page.keyboard.press("Enter");
     await finishTypingIfOpen();
     await rec.snap();
-    await flushDialogue();
+    await flushDialogue({ rec });
 
     // 3. 오르간 연주 (선택지 0 -> 선택지 0)
     await standNextAndFace("map_p1_cathedral", organEv.x, organEv.y);
@@ -619,11 +702,9 @@ try {
     await clickChoice(0); // 「새벽의 별 화음을 연주한다」
     await waitForChoices();
     await rec.snap();
-    await page.screenshot({ path: path.join(OUT_DIR, "p1-organ-solving.png") });
     await clickChoice(0); // 「오르간 아래 숨은 페달을 밟는다」
-    await flushDialogue(async () => {
-      await rec.snap();
-    }, p1Data.solveSwitchId);
+    const p1Burst = path.join(OUT_DIR, "p1-organ-solving.png");
+    assertBurstCaptured("P1", await flushDialogue({ rec, expectSwitchId: p1Data.solveSwitchId, burstShotPath: p1Burst }), p1Burst);
 
     // 4. Unlocked: 정확히 동일한 시점(대사창 없음)에서 개방된 4×3 황금 카펫 회랑 + 대계단 + 보물상자 + 성소 크리스탈 촬영
     await captureStationaryVantage(
@@ -633,7 +714,7 @@ try {
       path.join(OUT_DIR, "p1-organ-unlocked.png"),
     );
     await rec.snap();
-    rec.finishGif(path.join(OUT_DIR, "p1-organ-flow.gif"), 2);
+    rec.finishGif(path.join(OUT_DIR, "p1-organ-flow.gif"), 6);
 
     const diff = await computeImageDiffMetrics(
       path.join(OUT_DIR, "p1-organ-before.png"),
@@ -677,24 +758,22 @@ try {
     await page.keyboard.press("Enter");
     await finishTypingIfOpen();
     await rec.snap();
-    await flushDialogue();
+    await flushDialogue({ rec });
 
     // 제2화로 점화 (Solving: 제1·제2화로 점화 + 불꽃 타일 455 점화 상태)
     await standNextAndFace("map_p2_brazier", b2.x, b2.y);
     await page.keyboard.press("Enter");
     await finishTypingIfOpen();
-    await page.screenshot({ path: path.join(OUT_DIR, "p2-brazier-solving.png") });
     await rec.snap();
-    await flushDialogue();
+    await flushDialogue({ rec });
 
     // 제3화로 점화 -> 5×3 대리석 다리 & 횃불 기둥 개방 + 수호자 보물상자 출현!
     await standNextAndFace("map_p2_brazier", b3.x, b3.y);
     await page.keyboard.press("Enter");
     await page.waitForTimeout(350);
     await rec.snap();
-    await flushDialogue(async () => {
-      await rec.snap();
-    }, p2Data.solveSwitchId);
+    const p2Burst = path.join(OUT_DIR, "p2-brazier-solving.png");
+    assertBurstCaptured("P2", await flushDialogue({ rec, expectSwitchId: p2Data.solveSwitchId, burstShotPath: p2Burst }), p2Burst);
 
     await captureStationaryVantage(
       "map_p2_brazier",
@@ -703,7 +782,7 @@ try {
       path.join(OUT_DIR, "p2-brazier-unlocked.png"),
     );
     await rec.snap();
-    rec.finishGif(path.join(OUT_DIR, "p2-brazier-flow.gif"), 2);
+    rec.finishGif(path.join(OUT_DIR, "p2-brazier-flow.gif"), 6);
 
     const diff = await computeImageDiffMetrics(
       path.join(OUT_DIR, "p2-brazier-before.png"),
@@ -744,16 +823,14 @@ try {
     // 서쪽 발판 밟기 (playerTouch) -> 석상 이동 + 중앙 교각 일부 융기 (Solving)
     await stepOntoCell("map_p3_plates", plateA.x, plateA.y);
     await finishTypingIfOpen();
-    await page.screenshot({ path: path.join(OUT_DIR, "p3-plates-solving.png") });
     await rec.snap();
-    await flushDialogue();
+    await flushDialogue({ rec });
 
     // 동쪽 발판 밟기 -> 3×4 돌다리 12칸 + 난간 가로등/촛대 완전 융기 + 황금 상자 출현!
     await stepOntoCell("map_p3_plates", plateB.x, plateB.y);
     await rec.snap();
-    await flushDialogue(async () => {
-      await rec.snap();
-    }, p3Data.solveSwitchId);
+    const p3Burst = path.join(OUT_DIR, "p3-plates-solving.png");
+    assertBurstCaptured("P3", await flushDialogue({ rec, expectSwitchId: p3Data.solveSwitchId, burstShotPath: p3Burst }), p3Burst);
 
     await captureStationaryVantage(
       "map_p3_plates",
@@ -762,7 +839,7 @@ try {
       path.join(OUT_DIR, "p3-plates-unlocked.png"),
     );
     await rec.snap();
-    rec.finishGif(path.join(OUT_DIR, "p3-plates-flow.gif"), 2);
+    rec.finishGif(path.join(OUT_DIR, "p3-plates-flow.gif"), 6);
 
     const diff = await computeImageDiffMetrics(
       path.join(OUT_DIR, "p3-plates-before.png"),
@@ -803,18 +880,16 @@ try {
     await standNextAndFace("map_p4_dynamite", supply.x, supply.y);
     await page.keyboard.press("Enter");
     await finishTypingIfOpen();
-    await page.screenshot({ path: path.join(OUT_DIR, "p4-dynamite-solving.png") });
     await rec.snap();
-    await flushDialogue();
+    await flushDialogue({ rec });
 
     // 낙석 바위 폭파! -> 5×3 암반이 광차 철길 + 발광 광맥 + 보물상자로 개방!
     await standNextAndFace("map_p4_dynamite", boulder.x, boulder.y);
     await page.keyboard.press("Enter");
     await page.waitForTimeout(350);
     await rec.snap();
-    await flushDialogue(async () => {
-      await rec.snap();
-    }, p4Data.solveSwitchId);
+    const p4Burst = path.join(OUT_DIR, "p4-dynamite-solving.png");
+    assertBurstCaptured("P4", await flushDialogue({ rec, expectSwitchId: p4Data.solveSwitchId, burstShotPath: p4Burst }), p4Burst);
 
     await captureStationaryVantage(
       "map_p4_dynamite",
@@ -823,7 +898,7 @@ try {
       path.join(OUT_DIR, "p4-dynamite-unlocked.png"),
     );
     await rec.snap();
-    rec.finishGif(path.join(OUT_DIR, "p4-dynamite-flow.gif"), 2);
+    rec.finishGif(path.join(OUT_DIR, "p4-dynamite-flow.gif"), 6);
 
     const diff = await computeImageDiffMetrics(
       path.join(OUT_DIR, "p4-dynamite-before.png"),
@@ -866,24 +941,22 @@ try {
     await page.keyboard.press("Enter");
     await finishTypingIfOpen();
     await rec.snap();
-    await flushDialogue();
+    await flushDialogue({ rec });
 
     // 오답 상자 건드려 미믹 함정 확인 (Solving)
     await standNextAndFace("map_p5_riddle", wrongChest.x, wrongChest.y);
     await page.keyboard.press("Enter");
     await finishTypingIfOpen();
-    await page.screenshot({ path: path.join(OUT_DIR, "p5-riddle-solving.png") });
     await rec.snap();
-    await flushDialogue();
+    await flushDialogue({ rec });
 
     // 정답 상자 개봉! -> 진실의 상자 열림 + 2×2 지하 비밀 계단 개방 + 발광 성유물 출현!
     await standNextAndFace("map_p5_riddle", trueChest.x, trueChest.y);
     await page.keyboard.press("Enter");
     await page.waitForTimeout(350);
     await rec.snap();
-    await flushDialogue(async () => {
-      await rec.snap();
-    }, p5Data.solveSwitchId);
+    const p5Burst = path.join(OUT_DIR, "p5-riddle-solving.png");
+    assertBurstCaptured("P5", await flushDialogue({ rec, expectSwitchId: p5Data.solveSwitchId, burstShotPath: p5Burst }), p5Burst);
 
     await captureStationaryVantage(
       "map_p5_riddle",
@@ -892,7 +965,7 @@ try {
       path.join(OUT_DIR, "p5-riddle-unlocked.png"),
     );
     await rec.snap();
-    rec.finishGif(path.join(OUT_DIR, "p5-riddle-flow.gif"), 2);
+    rec.finishGif(path.join(OUT_DIR, "p5-riddle-flow.gif"), 6);
 
     const diff = await computeImageDiffMetrics(
       path.join(OUT_DIR, "p5-riddle-before.png"),
@@ -936,24 +1009,22 @@ try {
     await page.keyboard.press("Enter");
     await finishTypingIfOpen();
     await rec.snap();
-    await flushDialogue();
+    await flushDialogue({ rec });
 
     // 달 비석 공명 (Solving: 2기 비석 발광 부유 수정으로 활성화!)
     await standNextAndFace("map_p6_monoliths", m2.x, m2.y);
     await page.keyboard.press("Enter");
     await finishTypingIfOpen();
-    await page.screenshot({ path: path.join(OUT_DIR, "p6-monoliths-solving.png") });
     await rec.snap();
-    await flushDialogue();
+    await flushDialogue({ rec });
 
     // 별 비석 공명 -> 3비석 동시 발광 + 4×4 보스 포털 마법진 & 수정 신전 제단 + 성역 다리 개방!
     await standNextAndFace("map_p6_monoliths", m3.x, m3.y);
     await page.keyboard.press("Enter");
     await page.waitForTimeout(350);
     await rec.snap();
-    await flushDialogue(async () => {
-      await rec.snap();
-    }, p6Data.solveSwitchId);
+    const p6Burst = path.join(OUT_DIR, "p6-monoliths-solving.png");
+    assertBurstCaptured("P6", await flushDialogue({ rec, expectSwitchId: p6Data.solveSwitchId, burstShotPath: p6Burst }), p6Burst);
 
     await captureStationaryVantage(
       "map_p6_monoliths",
@@ -962,7 +1033,7 @@ try {
       path.join(OUT_DIR, "p6-monoliths-unlocked.png"),
     );
     await rec.snap();
-    rec.finishGif(path.join(OUT_DIR, "p6-monoliths-flow.gif"), 2);
+    rec.finishGif(path.join(OUT_DIR, "p6-monoliths-flow.gif"), 6);
 
     const diff = await computeImageDiffMetrics(
       path.join(OUT_DIR, "p6-monoliths-before.png"),
