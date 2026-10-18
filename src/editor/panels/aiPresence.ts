@@ -6,7 +6,7 @@
 // 화면마다 달랐던 「모델 응답 대기 / 작업을 마쳤어요 / 초안 종료 / 적용」을 아래 6가지로 통일한다.
 
 import type { TeamBoardAgent, TeamBoardState } from "@/ai/piAgent/teamBoardState";
-import { requestTeamStop, subscribeTeamActivity } from "@/ai/piAgent/teamActivity";
+import { currentTeamActivity, requestTeamStop, subscribeTeamActivity } from "@/ai/piAgent/teamActivity";
 import { REGION_TASK_STATUS_EVENT, regionTaskStatusDetail } from "@/editor/regionTask/regionTaskStatus";
 import { mapRunQueue, type MapRunTicket } from "@/editor/aiMapRunQueue";
 import { store } from "@/project/store";
@@ -171,6 +171,8 @@ export function conversationCardCovers(presences: readonly Presence[]): boolean 
   if (typeof document === "undefined" || !document.body) return false;
   const body = document.body.classList;
   if (body.contains("ai-dock-collapsed") || body.contains("ai-studio-open")) return false;
+  // 팀 실행은 팀장 한 명만 보이는 구간에도 줄을 남긴다 — 곧 팀원 칩이 붙고, 사용자는 그 줄에서 팀원을 눌러 본다.
+  if (currentTeamActivity()?.mode === "team") return false;
   return presences.length === 1 && presences[0]!.source === "chat";
 }
 

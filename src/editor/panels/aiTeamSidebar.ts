@@ -36,7 +36,7 @@ const laneLabel: Record<LaneState["status"], string> = {
 const terminalPhases = new Set(["적용됨", "완료", "버림", "중단", "실패"]);
 const COLLAPSED_KEY = "oprn:ai-team-sidebar-collapsed";
 
-export function createAiTeamSidebar(options: { settings: HTMLElement }): { root: HTMLElement; openSettings(): void; openFirstMember(): void; getLogSelection(): AiLogSelection | undefined; setEmbedded(on: boolean): void; dispose(): void } {
+export function createAiTeamSidebar(options: { settings: HTMLElement }): { root: HTMLElement; openSettings(): void; openFirstMember(): void; openMember(id?: string): boolean; getLogSelection(): AiLogSelection | undefined; setEmbedded(on: boolean): void; dispose(): void } {
   const manager = laneSession();
   let activity: TeamBoardState | null = null;
   let selected: string | null = null;
@@ -62,11 +62,13 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
   const currentAction = el("p", { class: "ai-team-current-action", dataset: { testid: "ai-member-current-action" }, attrs: { role: "status", "aria-live": "polite" } });
   const recent = el("ol", { class: "ai-team-recent", dataset: { testid: "ai-member-recent" }, attrs: { "aria-label": "최근 활동" } });
   const records = el("details", { class: "ai-team-member-records", dataset: { testid: "ai-member-records" }, children: [el("summary", { text: "작업 기록" }), report, recent, activityView.root, process] });
+  // 이 조수가 남긴 작업 그림(맵 미리보기 등) — 기록 위에 크게 둔다. 같은 그림이면 노드를 그대로 둔다(읽던 그림이 깜박이지 않게).
+  const memberMedia = el("div", { class: "ai-team-member-media", dataset: { testid: "ai-member-media" }, attrs: { hidden: "" } });
   const conversation = el("div", { children: [assignment, el("dl", { class: "ai-team-work-summary", children: [
     el("dt", { text: "지금" }), el("dd", { children: [currentAction] }),
     el("dt", { text: "결과" }), el("dd", { children: [resultText] }),
     el("dt", { text: "다음" }), el("dd", { children: [nextText] }),
-  ] }), records] });
+  ] }), memberMedia, records] });
   let hasDetailedTrace = false;
   let processOwner: string | null = null;
   bindActivityLevel(conversation, level => { process.hidden = hasDetailedTrace || level === "none" || level === "brief"; process.open = level === "detail" || level === "trace"; });
@@ -210,7 +212,8 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
     // Keep the textarea node, selection and draft intact during streamed updates.
     if (input.dataset.owner !== m.key) { input.dataset.owner = m.key; input.value = drafts.get(m.key) ?? ""; }
     tabs.querySelectorAll<HTMLElement>("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.memberTab === tab)));
-    if (processOwner !== m.key) { process.open = false; processOwner = m.key; }
+    // 조수를 고르면 작업 기록·과정을 펼친 채로 보여 준다 — 접혀 있으면 「뭘 하는지」가 화면에 하나도 안 보였다(2026-10-18).
+    if (processOwner !== m.key) { records.open = true; process.open = true; processOwner = m.key; }
     hasDetailedTrace = Boolean(m.agent ? activity?.trace : m.lane?.trace);
     if (tab === "chat") {
       if (!content.contains(conversation)) content.replaceChildren(conversation);
@@ -220,6 +223,13 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
         class: entry.failed ? "is-failed" : "", children: [el("span", { text: entry.failed ? "!" : "·", attrs: { "aria-hidden": "true" } }),
           el("span", { text: entry.label }), el("time", { text: entry.at ? new Date(entry.at).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", second: "2-digit" }) : "", attrs: { translate: "no" } })],
       })));
+      const media = mediaFor(m);
+      const mediaKey = media?.length ? media.slice(-2).map(ref => ref.id).join("|") : "";
+      if (memberMedia.dataset.mediaId !== mediaKey) {
+        memberMedia.dataset.mediaId = mediaKey;
+        memberMedia.replaceChildren(...(media?.length ? [createActivityMedia(media.slice(-2), "")] : []));
+        memberMedia.hidden = !mediaKey;
+      }
       if (m.agent) {
         resultText.textContent = observed.report || (m.state === "실행 중" ? "맡은 작업을 진행하고 있어요." : "아직 결과가 없어요.");
         if (!processBody.contains(transcript.root)) processBody.replaceChildren(transcript.root);
@@ -431,5 +441,16 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
     getLogSelection: () => { const m = member(); return m ? { name: m.name, trace: m.agent ? activity?.trace : m.lane?.trace, actor: m.agent?.agentId } : undefined; },
     setEmbedded: on => { embedded = on; root.classList.toggle("is-embedded", on); syncCollapsed(); },
     openFirstMember: () => { if (!selected && view === "team") { selected = members()[0]?.key ?? null; render(); } },
+    // 상태 줄 칩·「조수 상세」가 이 조수를 연다. id 는 Presence.id(= 보드 agentId) · memberId · 레인 id 중 무엇이든.
+    openMember: id => {
+      const rows = members();
+      const bare = id?.replace(/^(board|lane|pending|bg\d+):/, "");
+      const match = id ? rows.find(m => m.key === id || m.agent?.agentId === bare || m.agent?.memberId === bare || m.key === `lane:${bare}` || m.key === `pending:${bare}`) : undefined;
+      const next = match ?? (selected ? undefined : rows[0]);
+      if (!next && !selected) return false;
+      if (next) selected = next.key;
+      view = "team"; tab = "chat"; setCollapsed(false); render();
+      return true;
+    },
     openSettings: () => { setCollapsed(false); view = "settings"; render(); root.dispatchEvent(new Event("oprn:ai-workspace-team", { bubbles: true })); options.settings.querySelector<HTMLElement>("button")?.focus(); }, dispose: () => { disposed = true; clearInterval(clock); unsubscribeTeam(); unsubscribeLanes(); unsubscribeStore(); root.removeEventListener("keydown", onKey); root.remove(); } };
 }

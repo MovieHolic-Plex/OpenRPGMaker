@@ -3436,7 +3436,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // The workspace owns the live team surface; wide mode temporarily moves it.
   panel.append(teamSidebar.root);
   const workspace = createAiWorkspace({ panel, deck, body, commandBar, outcome: outcomeSlot, team: teamSidebar, input,
-    showTeamUi: false,
+    showTeamUi: true,
     requestOpen: () => restoreCollapsed(), requestFold: () => { wideAssistant.close(); if (!collapsed) toggleCollapsed(); } });
   // AI 존재감 세 표면 중 지도 쪽 둘 — 지도 위 이름표와 지도 아래 상태 줄. 같은 원천(aiPresence)만 본다.
   const unmountStatusBar = mountAiStatusBar();
@@ -3445,9 +3445,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // `Cannot access 'panel' before initialization` 로 멈추고 캔버스가 그려지지 않았다).
   lockScrim.sync();
   const wideButton = el("button", { class: "ai-activity-expand", attrs: { type: "button", "aria-label": "조수 크게 보기", "aria-expanded": "false", "aria-haspopup": "dialog" }, dataset: { testid: "ai-wide-open" }, children: [deckIcon("expand"), el("span", { text: "크게 보기" })] }) as HTMLButtonElement;
-  // 팀 UI를 숨긴 동안에는 팀과 함께 열리는 분할 창도 노출하지 않는다.
-  wideButton.hidden = true;
-  wideButton.style.display = "none";
   wideButton.classList.add("ai-deck-wide-open");
   wideButton.replaceChildren(deckIcon("expand"));
   deck.querySelector(".ai-deck-rail-actions")?.append(wideButton);

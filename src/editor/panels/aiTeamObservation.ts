@@ -13,7 +13,8 @@ export interface TeamObservation {
   report?: string;
   startedAt?: number;
   lastAt?: number;
-  recent: readonly { label: string; at?: number; failed: boolean; running?: boolean }[];
+  /** step: 이 조수의 관측 단계 중 몇 번째(1부터) · ms: 끝난 단계의 소요 시간. */
+  recent: readonly { label: string; at?: number; failed: boolean; running?: boolean; step?: number; ms?: number }[];
 }
 
 function describe(entry: ActivityEntry, scope: string, compact = false): string {
@@ -35,7 +36,8 @@ function describe(entry: ActivityEntry, scope: string, compact = false): string 
   return entry.summary;
 }
 
-export function teamObservation(agent: TeamBoardAgent | undefined, trace?: ActivityTrace, lane?: LaneState): TeamObservation {
+/** recentLimit: 최근 단계를 몇 개까지 돌려줄지(기본 3 — 카드·목록 한 줄 요약용, 상태 줄 팝오버는 더 길게 본다). */
+export function teamObservation(agent: TeamBoardAgent | undefined, trace?: ActivityTrace, lane?: LaneState, recentLimit = 3): TeamObservation {
   const scope = agent?.mapName || agent?.mapId || lane?.spec.label || "프로젝트 전체";
   const entries = trace ? (agent ? activityEntryIndex(trace).byActor.get(agent.agentId) ?? [] : trace.entries) : [];
   const observable = entries.filter(e => e.name !== "connection.heartbeat" && e.name !== "map.image.delivered");
@@ -60,8 +62,15 @@ export function teamObservation(agent: TeamBoardAgent | undefined, trace?: Activ
     const tool = [...(agent?.log ?? [])].reverse().find(e => e.kind === "tool" && e.ok === null);
     if (tool?.kind === "tool") action = narrateAiActivity({ toolName: tool.name }).action;
   }
-  const recent = observable.filter(e => ["tool", "agent_spawn", "agent_done", "review", "status", "error"].includes(e.kind)).sort(receiptOrder).slice(-3)
-    .map(e => ({ label: describe(e, scope), at: e.endedAt ?? e.at, failed: e.status === "error", running: e.kind === "tool" && e.status === "running" }));
+  const major = observable.filter(e => ["tool", "agent_spawn", "agent_done", "review", "status", "error"].includes(e.kind)).sort(receiptOrder);
+  const first = Math.max(0, major.length - recentLimit);
+  // 단계 번호는 툴 실행만 센다 — 상태 줄 카드 머리의 「N단계 진행」(agent.toolCalls)과 같은 수가 되게. 배정·보고 행은 번호가 없다.
+  let toolNo = major.slice(0, first).filter(e => e.kind === "tool").length;
+  const recent = major.slice(first).map(e => {
+    const ms = e.durationMs ?? (e.endedAt !== undefined ? e.endedAt - e.at : undefined);
+    const step = e.kind === "tool" ? ++toolNo : undefined;
+    return { label: describe(e, scope), at: e.endedAt ?? e.at, failed: e.status === "error", running: e.kind === "tool" && e.status === "running", ...(step !== undefined ? { step } : {}), ...(ms !== undefined ? { ms } : {}) };
+  });
   return {
     scope, assignment: agent?.task || lane?.spec.instruction || "", action,
     result: latestResult ? describe(latestResult, scope, true) : report || "아직 처리 결과가 없어요", report,
