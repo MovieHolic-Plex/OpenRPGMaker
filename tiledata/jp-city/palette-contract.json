@@ -1,0 +1,752 @@
+{
+ "version": 1,
+ "source": "src/editor/jpCity/paletteContract.ts",
+ "families": [
+  {
+   "id": "ground_stone",
+   "index": 1,
+   "ko": "기단·도로·석재",
+   "materials": [
+    {
+     "id": "asphalt",
+     "ko": "아스팔트",
+     "steps": [
+      "#2b2a33",
+      "#393742",
+      "#464452",
+      "#5b5463",
+      "#6f6675"
+     ],
+     "chromaCap": 0.08
+    },
+    {
+     "id": "paving_stone",
+     "ko": "콘크리트 판석",
+     "steps": [
+      "#6e6a66",
+      "#8a8580",
+      "#a7a19a",
+      "#c2bcb3",
+      "#dad5cc"
+     ],
+     "chromaCap": 0.08
+    },
+    {
+     "id": "gravel",
+     "ko": "자갈",
+     "steps": [
+      "#575666",
+      "#69687a",
+      "#7b7b8f",
+      "#948fa3",
+      "#aba4b8"
+     ],
+     "chromaCap": 0.1
+    },
+    {
+     "id": "shrine_flagstone",
+     "ko": "신사 디딤돌",
+     "steps": [
+      "#4b4943",
+      "#64625a",
+      "#7f7c71",
+      "#9b978a",
+      "#b8b3a3"
+     ],
+     "chromaCap": 0.1
+    }
+   ]
+  },
+  {
+   "id": "timber_traditional",
+   "index": 2,
+   "ko": "목재·전통 가옥",
+   "materials": [
+    {
+     "id": "aged_cedar",
+     "ko": "삭은 삼나무",
+     "steps": [
+      "#452b2d",
+      "#593e39",
+      "#705c4a",
+      "#87735e",
+      "#a18d76"
+     ],
+     "chromaCap": 0.2
+    },
+    {
+     "id": "machiya_timber",
+     "ko": "짙은 마치야 목재",
+     "steps": [
+      "#1f1416",
+      "#2e1d1c",
+      "#3f2a24",
+      "#54392e",
+      "#6b4c3c"
+     ],
+     "chromaCap": 0.2
+    },
+    {
+     "id": "torii_vermilion",
+     "ko": "도리이 주홍",
+     "steps": [
+      "#5a1d1a",
+      "#862c22",
+      "#a9432f",
+      "#bf6446",
+      "#de8264"
+     ],
+     "chromaCap": 0.5
+    },
+    {
+     "id": "tatami_straw",
+     "ko": "다다미 짚",
+     "steps": [
+      "#5f5a38",
+      "#7f784b",
+      "#a09862",
+      "#bfb77f",
+      "#dad3a2"
+     ],
+     "chromaCap": 0.26
+    }
+   ]
+  },
+  {
+   "id": "roof_modern",
+   "index": 3,
+   "ko": "현대 건축·지붕",
+   "materials": [
+    {
+     "id": "kawara_dark_tile",
+     "ko": "이부시 기와",
+     "steps": [
+      "#28272e",
+      "#3a3942",
+      "#4e4d59",
+      "#646473",
+      "#817c8c"
+     ],
+     "chromaCap": 0.08
+    },
+    {
+     "id": "cream_stucco",
+     "ko": "크림 회벽",
+     "steps": [
+      "#8c8371",
+      "#aaa18b",
+      "#c6bea6",
+      "#ddd6bf",
+      "#eeeadb"
+     ],
+     "chromaCap": 0.14
+    },
+    {
+     "id": "concrete_grey",
+     "ko": "콘크리트 회색",
+     "steps": [
+      "#504f5c",
+      "#666775",
+      "#7f8191",
+      "#999dad",
+      "#b4b2c7"
+     ],
+     "chromaCap": 0.1
+    },
+    {
+     "id": "arcade_skylight_slate",
+     "ko": "아케이드 채광 슬레이트",
+     "steps": [
+      "#293952",
+      "#39536b",
+      "#4a7387",
+      "#627ca3",
+      "#7d8ebf"
+     ],
+     "chromaCap": 0.28
+    }
+   ]
+  },
+  {
+   "id": "vegetation_season",
+   "index": 4,
+   "ko": "식생·계절 자연",
+   "materials": [
+    {
+     "id": "pine_bamboo",
+     "ko": "소나무·대나무 짙은 녹",
+     "steps": [
+      "#183327",
+      "#254a32",
+      "#34633c",
+      "#49804c",
+      "#689e63"
+     ],
+     "chromaCap": 0.26
+    },
+    {
+     "id": "moss",
+     "ko": "이끼",
+     "steps": [
+      "#2e3820",
+      "#46532d",
+      "#5f6d3b",
+      "#7a874e",
+      "#98a466"
+     ],
+     "chromaCap": 0.26
+    },
+    {
+     "id": "sakura_petal",
+     "ko": "벚꽃잎",
+     "steps": [
+      "#6b4350",
+      "#956373",
+      "#bf8c99",
+      "#ddb2b8",
+      "#f2d6d6"
+     ],
+     "chromaCap": 0.22
+    },
+    {
+     "id": "autumn_maple",
+     "ko": "가을 단풍",
+     "steps": [
+      "#4a1a1e",
+      "#722428",
+      "#9a352f",
+      "#b8553c",
+      "#d07e58"
+     ],
+     "chromaCap": 0.5
+    }
+   ]
+  },
+  {
+   "id": "water_onsen_coast",
+   "index": 5,
+   "ko": "수변·온천·해안",
+   "materials": [
+    {
+     "id": "canal_indigo",
+     "ko": "운하 쪽빛",
+     "steps": [
+      "#18223a",
+      "#233352",
+      "#31486b",
+      "#456184",
+      "#627e9c"
+     ],
+     "chromaCap": 0.28
+    },
+    {
+     "id": "onsen_mineral_teal",
+     "ko": "온천 광물 청록",
+     "steps": [
+      "#1d3c40",
+      "#2a5657",
+      "#3c726f",
+      "#5a918b",
+      "#86b4aa"
+     ],
+     "chromaCap": 0.24
+    },
+    {
+     "id": "wet_cobble",
+     "ko": "젖은 자갈돌",
+     "steps": [
+      "#262833",
+      "#353946",
+      "#474d5b",
+      "#5f6674",
+      "#7d8592"
+     ],
+     "chromaCap": 0.1
+    }
+   ]
+  },
+  {
+   "id": "accent_signage",
+   "index": 6,
+   "ko": "점경·간판 포인트",
+   "materials": [
+    {
+     "id": "lantern_amber",
+     "ko": "등롱 호박색",
+     "steps": [
+      "#52351e",
+      "#856437",
+      "#b89d53",
+      "#e0c57a",
+      "#fae29f"
+     ],
+     "chromaCap": 0.42
+    },
+    {
+     "id": "noren_indigo",
+     "ko": "노렌 쪽빛",
+     "steps": [
+      "#12173d",
+      "#1f295c",
+      "#2f3f78",
+      "#4a5c94",
+      "#7282b0"
+     ],
+     "chromaCap": 0.3
+    },
+    {
+     "id": "noren_rust",
+     "ko": "노렌 녹슨 주황",
+     "steps": [
+      "#4a2418",
+      "#6e3420",
+      "#93492c",
+      "#b06640",
+      "#c88a62"
+     ],
+     "chromaCap": 0.45
+    },
+    {
+     "id": "vending_cool_white",
+     "ko": "자판기 찬 흰색",
+     "steps": [
+      "#8e95a3",
+      "#a9b0bc",
+      "#c3c9d3",
+      "#dce1e8",
+      "#eff2f6"
+     ],
+     "chromaCap": 0.08
+    }
+   ]
+  }
+ ],
+ "colors": [
+  "#2b2a33",
+  "#393742",
+  "#464452",
+  "#5b5463",
+  "#6f6675",
+  "#6e6a66",
+  "#8a8580",
+  "#a7a19a",
+  "#c2bcb3",
+  "#dad5cc",
+  "#575666",
+  "#69687a",
+  "#7b7b8f",
+  "#948fa3",
+  "#aba4b8",
+  "#4b4943",
+  "#64625a",
+  "#7f7c71",
+  "#9b978a",
+  "#b8b3a3",
+  "#452b2d",
+  "#593e39",
+  "#705c4a",
+  "#87735e",
+  "#a18d76",
+  "#1f1416",
+  "#2e1d1c",
+  "#3f2a24",
+  "#54392e",
+  "#6b4c3c",
+  "#5a1d1a",
+  "#862c22",
+  "#a9432f",
+  "#bf6446",
+  "#de8264",
+  "#5f5a38",
+  "#7f784b",
+  "#a09862",
+  "#bfb77f",
+  "#dad3a2",
+  "#28272e",
+  "#3a3942",
+  "#4e4d59",
+  "#646473",
+  "#817c8c",
+  "#8c8371",
+  "#aaa18b",
+  "#c6bea6",
+  "#ddd6bf",
+  "#eeeadb",
+  "#504f5c",
+  "#666775",
+  "#7f8191",
+  "#999dad",
+  "#b4b2c7",
+  "#293952",
+  "#39536b",
+  "#4a7387",
+  "#627ca3",
+  "#7d8ebf",
+  "#183327",
+  "#254a32",
+  "#34633c",
+  "#49804c",
+  "#689e63",
+  "#2e3820",
+  "#46532d",
+  "#5f6d3b",
+  "#7a874e",
+  "#98a466",
+  "#6b4350",
+  "#956373",
+  "#bf8c99",
+  "#ddb2b8",
+  "#f2d6d6",
+  "#4a1a1e",
+  "#722428",
+  "#9a352f",
+  "#b8553c",
+  "#d07e58",
+  "#18223a",
+  "#233352",
+  "#31486b",
+  "#456184",
+  "#627e9c",
+  "#1d3c40",
+  "#2a5657",
+  "#3c726f",
+  "#5a918b",
+  "#86b4aa",
+  "#262833",
+  "#353946",
+  "#474d5b",
+  "#5f6674",
+  "#7d8592",
+  "#52351e",
+  "#856437",
+  "#b89d53",
+  "#e0c57a",
+  "#fae29f",
+  "#12173d",
+  "#1f295c",
+  "#2f3f78",
+  "#4a5c94",
+  "#7282b0",
+  "#4a2418",
+  "#6e3420",
+  "#93492c",
+  "#b06640",
+  "#c88a62",
+  "#8e95a3",
+  "#a9b0bc",
+  "#c3c9d3",
+  "#dce1e8",
+  "#eff2f6"
+ ],
+ "supportRamps": [
+  "sumi",
+  "yoru",
+  "hodo",
+  "conc",
+  "tairu",
+  "ita",
+  "garasu",
+  "kawara",
+  "renga",
+  "tekko",
+  "ki",
+  "mado",
+  "kinari",
+  "shiro",
+  "soil",
+  "yuka",
+  "kokuban",
+  "lino",
+  "kon"
+ ],
+ "retiredRamps": [
+  "aka",
+  "daidai",
+  "kii",
+  "midori",
+  "sora",
+  "pinku",
+  "shiba",
+  "murasaki",
+  "neonP",
+  "neonC"
+ ],
+ "normalize": {
+  "#164c1d": {
+   "to": "#2e3820",
+   "ramp": "shiba",
+   "chroma": 0.21,
+   "why": "retired-ramp"
+  },
+  "#2e6e25": {
+   "to": "#46532d",
+   "ramp": "shiba",
+   "chroma": 0.29,
+   "why": "retired-ramp"
+  },
+  "#578f36": {
+   "to": "#5f6d3b",
+   "ramp": "shiba",
+   "chroma": 0.35,
+   "why": "retired-ramp"
+  },
+  "#80ad54": {
+   "to": "#7a874e",
+   "ramp": "shiba",
+   "chroma": 0.35,
+   "why": "retired-ramp"
+  },
+  "#a6c977": {
+   "to": "#98a466",
+   "ramp": "shiba",
+   "chroma": 0.32,
+   "why": "retired-ramp"
+  },
+  "#4c0717": {
+   "to": "#5a1d1a",
+   "ramp": "aka",
+   "chroma": 0.27,
+   "why": "retired-ramp"
+  },
+  "#801223": {
+   "to": "#862c22",
+   "ramp": "aka",
+   "chroma": 0.43,
+   "why": "retired-ramp"
+  },
+  "#b22430": {
+   "to": "#a9432f",
+   "ramp": "aka",
+   "chroma": 0.56,
+   "why": "retired-ramp"
+  },
+  "#db4d4a": {
+   "to": "#bf6446",
+   "ramp": "aka",
+   "chroma": 0.57,
+   "why": "retired-ramp"
+  },
+  "#f78175": {
+   "to": "#de8264",
+   "ramp": "aka",
+   "chroma": 0.51,
+   "why": "retired-ramp"
+  },
+  "#571108": {
+   "to": "#4a2418",
+   "ramp": "daidai",
+   "chroma": 0.31,
+   "why": "retired-ramp"
+  },
+  "#8a3014": {
+   "to": "#6e3420",
+   "ramp": "daidai",
+   "chroma": 0.46,
+   "why": "retired-ramp"
+  },
+  "#c26027": {
+   "to": "#93492c",
+   "ramp": "daidai",
+   "chroma": 0.61,
+   "why": "retired-ramp"
+  },
+  "#eb8e4f": {
+   "to": "#b06640",
+   "ramp": "daidai",
+   "chroma": 0.61,
+   "why": "retired-ramp"
+  },
+  "#ffb278": {
+   "to": "#c88a62",
+   "ramp": "daidai",
+   "chroma": 0.53,
+   "why": "retired-ramp"
+  },
+  "#572c02": {
+   "to": "#52351e",
+   "ramp": "kii",
+   "chroma": 0.33,
+   "why": "retired-ramp"
+  },
+  "#8f610b": {
+   "to": "#856437",
+   "ramp": "kii",
+   "chroma": 0.52,
+   "why": "retired-ramp"
+  },
+  "#c7a51c": {
+   "to": "#b89d53",
+   "ramp": "kii",
+   "chroma": 0.67,
+   "why": "retired-ramp"
+  },
+  "#f0cd45": {
+   "to": "#e0c57a",
+   "ramp": "kii",
+   "chroma": 0.67,
+   "why": "retired-ramp"
+  },
+  "#ffe26e": {
+   "to": "#fae29f",
+   "ramp": "kii",
+   "chroma": 0.57,
+   "why": "retired-ramp"
+  },
+  "#0c3d35": {
+   "to": "#254a32",
+   "ramp": "midori",
+   "chroma": 0.19,
+   "why": "retired-ramp"
+  },
+  "#1b6b50": {
+   "to": "#34633c",
+   "ramp": "midori",
+   "chroma": 0.31,
+   "why": "retired-ramp"
+  },
+  "#2e9963": {
+   "to": "#49804c",
+   "ramp": "midori",
+   "chroma": 0.42,
+   "why": "retired-ramp"
+  },
+  "#53c776": {
+   "to": "#689e63",
+   "ramp": "midori",
+   "chroma": 0.45,
+   "why": "retired-ramp"
+  },
+  "#81f093": {
+   "to": "#689e63",
+   "ramp": "midori",
+   "chroma": 0.44,
+   "why": "retired-ramp"
+  },
+  "#0a2847": {
+   "to": "#233352",
+   "ramp": "sora",
+   "chroma": 0.24,
+   "why": "retired-ramp"
+  },
+  "#164d75": {
+   "to": "#31486b",
+   "ramp": "sora",
+   "chroma": 0.37,
+   "why": "retired-ramp"
+  },
+  "#287ea8": {
+   "to": "#456184",
+   "ramp": "sora",
+   "chroma": 0.5,
+   "why": "retired-ramp"
+  },
+  "#4f80d6": {
+   "to": "#627e9c",
+   "ramp": "sora",
+   "chroma": 0.53,
+   "why": "retired-ramp"
+  },
+  "#7b9cf7": {
+   "to": "#627e9c",
+   "ramp": "sora",
+   "chroma": 0.49,
+   "why": "retired-ramp"
+  },
+  "#521e41": {
+   "to": "#6b4350",
+   "ramp": "pinku",
+   "chroma": 0.2,
+   "why": "retired-ramp"
+  },
+  "#803360": {
+   "to": "#956373",
+   "ramp": "pinku",
+   "chroma": 0.3,
+   "why": "retired-ramp"
+  },
+  "#b24f81": {
+   "to": "#bf8c99",
+   "ramp": "pinku",
+   "chroma": 0.39,
+   "why": "retired-ramp"
+  },
+  "#db7598": {
+   "to": "#ddb2b8",
+   "ramp": "pinku",
+   "chroma": 0.4,
+   "why": "retired-ramp"
+  },
+  "#fa9eb4": {
+   "to": "#f2d6d6",
+   "ramp": "pinku",
+   "chroma": 0.36,
+   "why": "retired-ramp"
+  },
+  "#3b1d42": {
+   "to": "#1f295c",
+   "ramp": "murasaki",
+   "chroma": 0.15,
+   "why": "retired-ramp"
+  },
+  "#62326b": {
+   "to": "#2f3f78",
+   "ramp": "murasaki",
+   "chroma": 0.22,
+   "why": "retired-ramp"
+  },
+  "#8a4a94": {
+   "to": "#4a5c94",
+   "ramp": "murasaki",
+   "chroma": 0.29,
+   "why": "retired-ramp"
+  },
+  "#bd6eb5": {
+   "to": "#7282b0",
+   "ramp": "murasaki",
+   "chroma": 0.31,
+   "why": "retired-ramp"
+  },
+  "#e69ad2": {
+   "to": "#7282b0",
+   "ramp": "murasaki",
+   "chroma": 0.3,
+   "why": "retired-ramp"
+  },
+  "#9e2070": {
+   "to": "#6b4350",
+   "ramp": "neonP",
+   "chroma": 0.49,
+   "why": "retired-ramp"
+  },
+  "#e043a7": {
+   "to": "#bf8c99",
+   "ramp": "neonP",
+   "chroma": 0.62,
+   "why": "retired-ramp"
+  },
+  "#ff89d4": {
+   "to": "#f2d6d6",
+   "ramp": "neonP",
+   "chroma": 0.46,
+   "why": "retired-ramp"
+  },
+  "#20919e": {
+   "to": "#1d3c40",
+   "ramp": "neonC",
+   "chroma": 0.49,
+   "why": "retired-ramp"
+  },
+  "#43d1e0": {
+   "to": "#3c726f",
+   "ramp": "neonC",
+   "chroma": 0.62,
+   "why": "retired-ramp"
+  },
+  "#89f3ff": {
+   "to": "#86b4aa",
+   "ramp": "neonC",
+   "chroma": 0.46,
+   "why": "retired-ramp"
+  }
+ }
+}

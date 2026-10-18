@@ -77,7 +77,7 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   { terms: ["선사", "원시", "공룡", "prehistoric", "stone age"], tools: ["compose_prehistoric_map", "link_prehistoric_interior"], label: "선사 테마" },
   { terms: ["우주 정거장", "sf", "우주선", "sci-fi", "space station"], tools: ["compose_sf_station_map"], label: "SF 정거장 테마" },
   { terms: ["센고쿠", "에도", "전국시대", "sengoku", "edo", "samurai"], tools: ["compose_sengoku_edo_map", "link_sengoku_edo_interior"], label: "센고쿠 테마" },
-  { terms: ["일본 거리", "상점가", "jp city", "japanese street"], tools: ["compose_jp_city_street", "build_jp_city_building"], label: "일본 거리" },
+  { terms: ["일본 거리", "상점가", "일본 지역", "온천 마을", "신사", "다랑논", "등산로", "jp city", "japanese street", "jp region"], tools: ["compose_jp_city_street", "compose_jp_region", "list_jp_regions", "build_jp_city_building"], label: "일본 거리·지역 30종" },
   { terms: ["현대 거리", "도시 거리", "modern city", "modern street"], tools: ["compose_modern_city_street", "link_modern_city_interior"], label: "현대 거리" },
   { terms: ["캠퍼스", "학교", "campus", "school"], tools: ["compose_campus_grounds", "link_campus_interior", "build_wizarding_space"], label: "캠퍼스" },
   { terms: ["마법학교", "호그와트", "wizarding", "hogwarts", "magic school"], tools: ["build_wizarding_space", "list_wizarding_spaces"], label: "마법 학교" },
