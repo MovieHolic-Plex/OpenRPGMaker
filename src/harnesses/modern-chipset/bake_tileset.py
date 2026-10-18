@@ -803,6 +803,9 @@ def main():
         sys.path.insert(0, os.path.join(ROOT, 'scripts', 'content', 'modern-city-street'))
         import bake_green
         bake_green.apply()
+        # 움직이는 거리 소품(신호등·보행자 신호·건널목·화살표판·택시 승강장) — 이름 핀(anim:*)으로 번호를 고정한 칸·스트립·키트를 다시 붙인다.
+        import bake_anim
+        bake_anim.apply()
     rep = out['report']
     if a.selftest:
         rep['selftest'] = selftest(a.out_root)

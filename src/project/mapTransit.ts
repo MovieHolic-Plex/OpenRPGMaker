@@ -22,7 +22,7 @@ import catalogJson from "@/assets/jpCityVehicles.json";
 
 export type TransitDir = "right" | "left" | "up" | "down";
 export type TransitRouteKind = "road" | "bus" | "tram" | "train" | "subway";
-export type TransitVehicleKind = "car" | "taxi" | "kei" | "truck" | "bus" | "tram" | "train" | "subway";
+export type TransitVehicleKind = "car" | "taxi" | "kei" | "moto" | "truck" | "bus" | "tram" | "train" | "subway";
 
 export interface TransitPoint { x: number; y: number }
 
@@ -83,6 +83,8 @@ export interface TransitVehicleDef {
   width: number;
   height: number;
   frames: Partial<Record<TransitFrameName, TransitFrameRect>>;
+  /** 경광등 차(경찰·구급·소방): `_0`/`_2` = 꺼짐, `_1`/`_3` = 켜짐 칸이다. 런타임이 시계로 적·청을 번갈아 켠다(서 있어도). */
+  beacon?: boolean;
 }
 
 /**
@@ -91,7 +93,7 @@ export interface TransitVehicleDef {
  * `/assets/modern-city/vehicles/<id>.png` 다. 행 = right·left·up·down, 열 = 기본·_0~_3(바퀴)·_brake·_sigL·_sigR·_open(버스 동서).
  */
 export const MODERN_VEHICLE_COLUMNS = ["", "_0", "_1", "_2", "_3", "_brake", "_sigL", "_sigR", "_open"] as const;
-function makeModernVehicleDef(id: string, name: string, kind: TransitVehicleKind, length: number, openDoor = false): TransitVehicleDef {
+function makeModernVehicleDef(id: string, name: string, kind: TransitVehicleKind, length: number, openDoor = false, beacon = false): TransitVehicleDef {
   const ewW = length * 16, ewH = 32, nsW = 32, nsH = length * 16;
   const ewFoot = { w: length, h: 2 }, nsFoot = { w: 2, h: length };
   const frames: Partial<Record<TransitFrameName, TransitFrameRect>> = {};
@@ -103,11 +105,11 @@ function makeModernVehicleDef(id: string, name: string, kind: TransitVehicleKind
   for (const [dir, y] of [["up", ewH * 2], ["down", ewH * 2 + nsH]] as const) {
     cols.forEach((s, i) => { frames[`${dir}${s}` as TransitFrameName] = { x: nsW * i, y, w: nsW, h: nsH, foot: nsFoot }; });
   }
-  return { id, name, kind, length, image: `/assets/modern-city/vehicles/${id}.png`, width: Math.max(ewW * (cols.length + (openDoor ? 1 : 0)), nsW * cols.length), height: ewH * 2 + nsH * 2, frames };
+  return { id, name, kind, length, image: `/assets/modern-city/vehicles/${id}.png`, width: Math.max(ewW * (cols.length + (openDoor ? 1 : 0)), nsW * cols.length), height: ewH * 2 + nsH * 2, frames, ...(beacon ? { beacon } : {}) };
 }
 
 export const MODERN_CITY_TRANSIT_VEHICLES: readonly TransitVehicleDef[] = [
-  makeModernVehicleDef("mc-veh-police-a", "경찰 패트롤카", "car", 3),
+  makeModernVehicleDef("mc-veh-police-a", "경찰 패트롤카", "car", 3, false, true),
   makeModernVehicleDef("mc-veh-taxi-b", "도심 택시", "taxi", 3),
   makeModernVehicleDef("mc-veh-car2-c-red", "낮은 지붕 세단 · 빨강", "car", 3),
   makeModernVehicleDef("mc-veh-sedan-a-navy", "승용차 · 남색", "car", 3),
@@ -118,9 +120,10 @@ export const MODERN_CITY_TRANSIT_VEHICLES: readonly TransitVehicleDef[] = [
   makeModernVehicleDef("mc-veh-sedan-a", "승용차 · 은색", "car", 3),
   makeModernVehicleDef("mc-veh-van-a", "승합차(밴)", "truck", 3),
   makeModernVehicleDef("mc-veh-truck-a", "소형 박스 트럭", "truck", 4),
-  makeModernVehicleDef("mc-veh-ambulance-a", "구급차", "truck", 4),
-  makeModernVehicleDef("mc-veh-firetruck-b", "소방차", "truck", 4),
+  makeModernVehicleDef("mc-veh-ambulance-a", "구급차", "truck", 4, false, true),
+  makeModernVehicleDef("mc-veh-firetruck-b", "소방차", "truck", 4, false, true),
   makeModernVehicleDef("mc-veh-bus-a", "시내버스", "bus", 5, true),
+  makeModernVehicleDef("mc-veh-scooter-delivery", "배달 스쿠터", "moto", 2),
 ];
 
 const CATALOG = catalogJson as unknown as { version: number; tileSize: number; vehicles: TransitVehicleDef[] };
@@ -132,7 +135,7 @@ export function transitVehicle(id: string): TransitVehicleDef | undefined { retu
 
 /** 노선 종류마다 탈 수 있는 탈것 종류. 조수·편집기·정규화가 같은 표를 본다. */
 export const TRANSIT_ROUTE_VEHICLE_KINDS: Record<TransitRouteKind, readonly TransitVehicleKind[]> = {
-  road: ["car", "taxi", "kei", "truck"],
+  road: ["car", "taxi", "kei", "moto", "truck"],
   bus: ["bus"],
   tram: ["tram"],
   train: ["train"],

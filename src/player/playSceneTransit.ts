@@ -95,7 +95,9 @@ export function syncTransitSprites(scene: PlaySceneContext): void {
     const lastPos = prevPos.get(v.key);
     const moving = lastPos === undefined || Math.abs(v.pos - lastPos) > 1e-5;
     prevPos.set(v.key, v.pos);
-    const phase = Math.floor(v.pos * 4) & 3;
+    // 경광등 차는 바퀴 위상의 홀짝(_1/_3 = 켜짐)을 0.25초 시계로 정한다 — 서 있어도(브레이크 칸 대신) 적·청이 번갈아 깜빡인다.
+    const beaconLit = Math.floor(sim.clockSec / 0.25) & 1;
+    const phase = v.def.beacon ? ((moving ? Math.floor(v.pos * 4) & 2 : 0) | beaconLit) : Math.floor(v.pos * 4) & 3;
     let frameName: TransitFrameName = pose.dir;
     // 방향지시등: 0.4초 켜짐 / 0.4초 꺼짐(시트에 _sigL/_sigR 칸이 있는 차만).
     const blinkOn = pose.blinker && Math.floor(sim.clockSec / 0.4) % 2 === 0;
@@ -104,9 +106,9 @@ export function syncTransitSprites(scene: PlaySceneContext): void {
       frameName = `${pose.dir}_open`;
     } else if (blinkOn && sigFrame && v.def.frames[sigFrame]) {
       frameName = sigFrame;
-    } else if (!moving && v.def.frames[`${pose.dir}_brake` as TransitFrameName]) {
+    } else if (!moving && !v.def.beacon && v.def.frames[`${pose.dir}_brake` as TransitFrameName]) {
       frameName = `${pose.dir}_brake` as TransitFrameName;
-    } else if (moving && v.def.frames[`${pose.dir}_${phase}` as TransitFrameName]) {
+    } else if ((moving || v.def.beacon) && v.def.frames[`${pose.dir}_${phase}` as TransitFrameName]) {
       frameName = `${pose.dir}_${phase}` as TransitFrameName;
     }
     const frameRect = v.def.frames[frameName];
