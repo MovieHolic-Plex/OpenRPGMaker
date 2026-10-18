@@ -385,7 +385,9 @@ export function composeOfficeLobby(spec: HandInteriorSpec, nuance: SpaceNuance, 
   for (let y = r(5); y <= last - 2; y += 3) { s.put("mci-plant-tall", cx - 3, y); s.put("mci-plant-tall", cx + 3, y); }
   s.put("dept-directory-kiosk", cx + 2, last - 1);
   // 북쪽 벽 리듬: 창·액자·게시판, 벽 가구(우편함·자판기·잡지대).
-  hangRhythm(s, h, ["mci-window-city", "mci-art-frame", "mci-window-city", "mci-notice-board"], 1, 4);
+  // 창밖은 낮 하늘(블라인드)이 기본, 밤·야경을 요청했을 때만 불 켜진 빌딩 야경 창(2026-10-18 사용자 반려 「창문 밖은 항상 어둡기만 한거냐」).
+  const cityWindow = nuance.mood === "dark" ? "mci-window-city" : "mci-window-blind";
+  hangRhythm(s, h, [cityWindow, "mci-art-frame", cityWindow, "mci-notice-board"], 1, 4);
   const westWall = [h.x0 + 1, h.x0 + 4], eastWall = [h.x1 - 2, h.x1 - 5];
   s.put(mirror ? "subway-vending-machine" : "mci-mailboxes", westWall[0]!, r(0));
   s.put("mci-magazine", westWall[1]!, r(0));
@@ -407,7 +409,7 @@ export function composeOfficeLobby(spec: HandInteriorSpec, nuance: SpaceNuance, 
       s.put("mci-coffee-table", sx, r(5), true);
       s.goods(pickOf(rng, ["mci-g-coffee", "mci-g-vase"]), sx, r(5));
       s.goods("mci-g-books", sx + 1, r(5));
-      s.put("mci-armchair", sx + 2, r(5));
+      // sx+2 안락의자는 2칸 높이 그림 윗칸이 소파 오른쪽 자리를 덮었다(2026-10-18 사용자 반려) - 소파 양끝 바깥에만 둔다.
       s.put("mci-armchair", sx + 3, r(5));
       if (r(8) <= last - 1) {
         s.put("mci-planter", sx - 2, r(8));
@@ -529,7 +531,7 @@ export function composeLectureWing(spec: HandInteriorSpec, nuance: SpaceNuance, 
   const wLecture = Math.max(13, benchesPerSide * 3 * 2 + 3 + 2);
   const wSeminar = pickInt(rng, 10, 12) + (grand ? 2 : 0) - (compact ? 1 : 0);
   const topH = pickInt(rng, 12, 13) + (grand ? 2 : 0) - (compact ? 2 : 0);
-  const corH = pickInt(rng, 6, 7);
+  const corH = pickInt(rng, 5, 6);
   const mirror = rng() < 0.5;
   const lecture: HandInteriorRoom = { id: "lecture", x0: 1, y0: 1, x1: wLecture, y1: topH, floor: pal.lecture[0], wall: pal.lecture[1] };
   const seminar: HandInteriorRoom = { id: "seminar", x0: wLecture + 2, y0: 1, x1: wLecture + 1 + wSeminar, y1: topH, floor: pal.seminar[0], wall: pal.seminar[1] };
@@ -569,7 +571,8 @@ export function composeLectureWing(spec: HandInteriorSpec, nuance: SpaceNuance, 
   s.keepRect(lcx - 1, f.y0 + 2, lcx + 1, f.y1);
   s.keepRect(f.x0, f.y0 + 2, f.x1, f.y0 + 2);
   const rowsY: number[] = [];
-  for (let y = f.y0 + 3; y <= f.y1 - 2; y += 2) rowsY.push(y);
+  // 마지막 줄을 뒷벽 바로 앞까지 - 줄이 f.y1-2 에서 끊겨 뒤쪽 세 줄이 비었다(VQA 14회차).
+  for (let y = f.y0 + 3; y <= f.y1 - 1; y += 2) rowsY.push(y);
   for (const y of rowsY) {
     for (let k = 0; k < benchesPerSide; k++) {
       s.put("mc-lecture-bench", lcx - 2 - (k + 1) * 3 + 1, y, true);
@@ -607,16 +610,23 @@ export function composeLectureWing(spec: HandInteriorSpec, nuance: SpaceNuance, 
   }
   s.put("mc-mini-fridge", m.x1, m.y1);
 
-  // ── 복도: 사물함 줄(문 앞은 비움), 게시판·소화기함, 음수대, 긴 의자.
+  // ── 복도: 위층 계단·아래층 계단참(건물이 1층뿐으로 보였다 - 2026-10-18 사용자 반려), 사물함 줄(문 앞은 비움), 게시판·소화기함, 음수대, 긴 의자.
+  // 걷는 줄은 한 줄만 비운다 - 예전엔 복도 가운데 4줄을 통째로 비워 빈 바닥 띠가 됐다(VQA 14회차).
   const c = s.floorOf("corridor");
+  const stairWest = rng() < 0.5;
+  s.put("sc-stairs-up", stairWest ? c.x0 + 1 : c.x1 - 2, c.y0, true);
   hangRhythm(s, c, ["sc-notice-board", "mc-cork-board", "mc-window-class"], 1, 4);
   for (let x = c.x0; x + 1 <= c.x1; x += 2) s.put(pickOf(rng, ["mc-hall-locker", "mc-hall-locker", "mc-hall-locker", "mc-bulletin-stand"]), x, c.y0);
   s.put("mc-fire-cabinet", c.x0, c.y0);
   s.put("mc-water-fountain", c.x1, c.y0);
-  s.keepRect(c.x0, c.y0 + 1, c.x1, c.y1 - 1);
-  for (let x = c.x0 + 2; x + 1 <= c.x1 - 1; x += 7) s.put("mc-locker-bench", x, c.y1);
+  s.keepRect(c.x0, c.y0 + 1, c.x1, c.y0 + 1);
+  s.put("sc-stairwell-down", stairWest ? c.x1 - 2 : c.x0 + 1, c.y1 - 1, true);
+  for (let x = c.x0 + 4; x + 1 <= c.x1 - 4; x += 5) {
+    s.put("mc-locker-bench", x, c.y1);
+    if (c.y1 - 1 > c.y0 + 1) s.put(pickOf(rng, ["mc-trophy-case", "mc-vending-low", "mc-trophy-shelf"]), x + 2, c.y1);
+  }
   s.put("mc-trash-bin", c.x0, c.y1);
-  s.put("mc-vending-low", c.x1 - 1, c.y1);
+  s.put("mc-vending-low", c.x1 - 1, c.y1) || s.put("mc-trash-bin", c.x1, c.y1);
 
   const areas = [areaOf("대강의실", f), areaOf("세미나·동아리실", m), areaOf("복도", c)];
   return s.finish({ tileset: "modern_campus", floor: pal.corridor[0], wall: pal.corridor[1] }, areas, decisions);
@@ -641,32 +651,35 @@ export function composeThroneHall(spec: HandInteriorSpec, nuance: SpaceNuance, s
   const mood = nuance.mood === "neutral" ? pickOf(rng, ["neutral", "neutral", "warm"] as const) : nuance.mood;
   const pal = THRONE_PALETTES[mood];
   const armory = nuance.wants.has("armory") || (!nuance.wants.has("library") && rng() < 0.35);
-  const hallW = (grand ? 17 : compact ? 13 : pickOf(rng, [15, 15, 17]));
-  const hallRows = pickInt(rng, 17, 19) + (grand ? 3 : 0) - (compact ? 3 : 0);
+  // 알현실은 세로로 아주 길어야 위엄이 선다(2026-10-18 사용자 반려 「굉장히 커야 위엄이 살텐데. 알현하는 곳은 세로로 매우 길어야」):
+  // 정문에서 왕좌까지 28~36줄 회랑, 양옆은 위·가운데·아래 세 방을 회랑 길이만큼 쌓는다.
+  const hallW = grand ? 19 : compact ? 13 : pickOf(rng, [15, 17, 17]);
+  const hallRows = pickInt(rng, 28, 32) + (grand ? 4 : 0) - (compact ? 8 : 0);
   const wingW = pickInt(rng, 11, 13) - (compact ? 1 : 0);
-  const wingRows = pickInt(rng, 10, 11) - (compact ? 1 : 0);
   const councilWest = rng() < 0.5;
-  const hall: HandInteriorRoom = { id: "hall", x0: wingW + 2, y0: 1, x1: wingW + 1 + hallW, y1: hallRows + 2, floor: pal.hall[0], wall: pal.hall[1] };
-  // 윙 아래 남는 자리는 검은 공백이 된다(2026-10-18 VQA 1회차) — 서쪽 아래 근위대 대기실, 동쪽 아래 접견 대기실로 알현실 높이까지 채운다.
-  // 아래 방이 들어가지 않는 낮은 알현실(소형)은 윙을 알현실 높이까지 늘인다.
-  const lowY0 = wingRows + 4, lowY1 = hallRows + 2;
-  const withLow = lowY1 - lowY0 + 1 >= 6;
-  const wingY1 = withLow ? wingRows + 2 : hallRows + 2;
-  const westWing: HandInteriorRoom = { id: councilWest ? "council" : "east", x0: 1, y0: 1, x1: wingW, y1: wingY1, ...(councilWest ? { floor: pal.council[0], wall: pal.council[1] } : { floor: pal.east[0], wall: pal.east[1] }) };
-  const eastWing: HandInteriorRoom = { id: councilWest ? "east" : "council", x0: hall.x1 + 2, y0: 1, x1: hall.x1 + 1 + wingW, y1: wingY1, ...(councilWest ? { floor: pal.east[0], wall: pal.east[1] } : { floor: pal.council[0], wall: pal.council[1] }) };
-  const guardRoom: HandInteriorRoom = { id: "guard", x0: 1, y0: lowY0, x1: wingW, y1: lowY1, floor: pal.east[0], wall: pal.east[1] };
-  const anteRoom: HandInteriorRoom = { id: "ante", x0: hall.x1 + 2, y0: lowY0, x1: hall.x1 + 1 + wingW, y1: lowY1, floor: pal.council[0], wall: pal.council[1] };
+  const hallY1 = hallRows + 2;
+  const three = hallY1 >= 27;
+  const avail = hallY1 - (three ? 2 : 1);
+  const topY1 = three ? Math.round(avail * 0.4) : Math.ceil(avail / 2);
+  const midY0 = topY1 + 2, midY1 = three ? midY0 + Math.round(avail * 0.28) - 1 : topY1;
+  const lowY0 = three ? midY1 + 2 : topY1 + 2;
+  const hall: HandInteriorRoom = { id: "hall", x0: wingW + 2, y0: 1, x1: wingW + 1 + hallW, y1: hallY1, floor: pal.hall[0], wall: pal.hall[1] };
+  const westX = { x0: 1, x1: wingW }, eastX = { x0: hall.x1 + 2, x1: hall.x1 + 1 + wingW };
+  const side = (west: boolean) => (west === councilWest ? westX : eastX);
+  const other = (west: boolean) => (west === councilWest ? eastX : westX);
+  const councilRoom: HandInteriorRoom = { id: "council", ...side(true), y0: 1, y1: topY1, floor: pal.council[0], wall: pal.council[1] };
+  const eastRoom: HandInteriorRoom = { id: "east", ...other(true), y0: 1, y1: topY1, floor: pal.east[0], wall: pal.east[1] };
+  const treasury: HandInteriorRoom = { id: "treasury", ...side(true), y0: midY0, y1: midY1, floor: pal.east[0], wall: pal.east[1] };
+  const chapel: HandInteriorRoom = { id: "chapel", ...other(true), y0: midY0, y1: midY1, floor: pal.council[0], wall: pal.hall[1] };
+  const guardRoom: HandInteriorRoom = { id: "guard", ...westX, y0: lowY0, y1: hallY1, floor: pal.east[0], wall: pal.east[1] };
+  const anteRoom: HandInteriorRoom = { id: "ante", ...eastX, y0: lowY0, y1: hallY1, floor: pal.council[0], wall: pal.council[1] };
+  const rooms = [councilRoom, eastRoom, hall, ...(three ? [treasury, chapel] : []), guardRoom, anteRoom];
+  const doorAt = (r: HandInteriorRoom) => Math.max(r.y0 + 3, Math.min(r.y1 - 1, r.y0 + Math.floor((r.y1 - r.y0) * 0.6)));
+  const connect: HandInteriorConnect[] = rooms.filter((r) => r.id !== "hall").map((r) => (r.x0 < hall.x0 ? { a: r.id, b: "hall", at: doorAt(r) } : { a: "hall", b: r.id, at: doorAt(r) }));
   const cx = Math.floor((hall.x0 + hall.x1) / 2);
-  const doorRow = 3 + Math.min(wingRows - 2, pickInt(rng, 6, 8));
-  const lowDoor = Math.min(lowY1 - 1, lowY0 + 2);
-  const connect: HandInteriorConnect[] = [
-    { a: westWing.id, b: "hall", at: doorRow },
-    { a: "hall", b: eastWing.id, at: doorRow },
-    ...(withLow ? [{ a: "guard", b: "hall", at: lowDoor }, { a: "hall", b: "ante", at: lowDoor }] : []),
-  ];
-  const s = new InteriorSketch(spec, withLow ? [westWing, hall, eastWing, guardRoom, anteRoom] : [westWing, hall, eastWing], connect, { room: "hall", x: cx, width: 1 });
+  const s = new InteriorSketch(spec, rooms, connect, { room: "hall", x: cx, width: 1 });
   const decisions = [
-    `어전 회의실 ${councilWest ? "서쪽" : "동쪽"} · 반대 윙 ${armory ? "무기고" : "왕실 도서관"} · 회랑 ${hallRows - 3}줄`,
+    `어전 회의실 ${councilWest ? "서쪽" : "동쪽"} · 반대 윙 ${armory ? "무기고" : "왕실 도서관"}${three ? " · 가운데 보물고·예배당" : ""} · 회랑 ${hallRows}줄 × ${hallW}칸`,
     `팔레트 ${mood}`,
   ];
 
@@ -696,6 +709,8 @@ export function composeThroneHall(spec: HandInteriorSpec, nuance: SpaceNuance, s
   for (let y = f.y0 + 4; y <= f.y1 - 2; y += 3, k++) {
     s.put("column marble", cx - 3, y, true);
     s.put("column marble", cx + 3, y, true);
+    // 바깥 통로 신하석 - 기둥 줄마다 융단을 향한 긴 의자.
+    s.put("bench 2", f.x0 + 1, y); s.put("bench 2", f.x1 - 2, y);
     const mid = y + 1;
     if (mid <= f.y1 - 2) {
       const id = k % 2 === 0 ? "brazier" : "armor stand";
@@ -762,7 +777,14 @@ export function composeThroneHall(spec: HandInteriorSpec, nuance: SpaceNuance, s
         }
       }
     }
-    s.put("globe", e.x0, e.y1); s.put("candelabra", e.x1, e.y1);
+    // 열람 책상 줄 사이 가운데 독서 탁자, 동서 벽 따라 키 큰 화분·촛대 교대 - 빈 깔개 한가운데를 메운다.
+    for (let y = e.y0 + 5; y <= e.y1 - 2; y += 4) s.put("table:book+scroll", ecx - 1, y);
+    // 4줄 간격 - 2줄 간격은 좁은 윙에서 책상 옆 벽 칸을 가둬 닿지 못하는 바닥을 냈다(VQA 13회차).
+    for (let y = e.y0 + 3; y <= e.y1 - 1; y += 4) {
+      s.put(y % 8 === 3 ? "candelabra" : "tall vase blue", e.x0, y);
+      s.put(y % 8 === 3 ? "tall vase blue" : "candelabra", e.x1, y);
+    }
+    s.put("globe", e.x0 + 1, e.y1); s.put("candelabra", e.x1 - 1, e.y1);
     s.put("table:book+scroll", ecx - 1, e.y1);
   } else {
     hangRhythm(s, e, ["weapon rack", "shield display", "bow rack", "heraldic shield"], 0, 2);
@@ -777,38 +799,78 @@ export function composeThroneHall(spec: HandInteriorSpec, nuance: SpaceNuance, s
     s.put("treasure chest big", ecx - 1, e.y1);
   }
 
-  // ── 근위대 대기실(서쪽 아래): 무기 거치대 벽, 원탁 + 의자, 침상 줄, 무기 통.
-  const lowAreas: ReturnType<typeof areaOf>[] = [];
-  if (withLow) {
-    const g = s.floorOf("guard");
-    const gcx = Math.floor((g.x0 + g.x1) / 2);
-    for (let x = g.x0; x <= g.x1; x += 2) s.put(x % 4 === 0 ? "weapon rack" : "sword rack", x, g.y0);
-    hangRhythm(s, g, ["heraldic shield", "royal banner"], 0, 3);
-    s.keepRect(g.x0, g.y0 + 1, g.x1, g.y0 + 1);
-    s.rug(pal.eastRug, gcx - 2, g.y0 + 2, gcx + 2, Math.min(g.y1 - 1, g.y0 + 4));
-    if (s.put("roundtable", gcx - 1, g.y0 + 2, true)) {
-      s.put("chair E", gcx - 2, g.y0 + 2); s.put("chair W", gcx + 1, g.y0 + 2);
-      s.put("chair S", gcx - 1, g.y0 + 1); s.put("chair N", gcx - 1, g.y0 + 4);
+  // ── 가운데 두 방(회랑이 길 때): 회의실 쪽 보물고, 반대쪽 왕실 예배당.
+  const midAreas: ReturnType<typeof areaOf>[] = [];
+  if (three) {
+    const t = s.floorOf("treasury");
+    const tcx = Math.floor((t.x0 + t.x1) / 2);
+    hangRhythm(s, t, ["shelf:coins", "heraldic shield", "royal banner"], 0, 2);
+    for (let x = t.x0; x <= t.x1; x += 2) s.put(x % 4 === 0 ? "safe" : "treasure chest", x, t.y0);
+    s.keepRect(t.x0, t.y0 + 1, t.x1, t.y0 + 1);
+    const ty0 = t.y0 + 2;
+    s.rug(pal.rug, tcx - 2, ty0, tcx + 2, t.y1 - 1);
+    const pedY = Math.floor((ty0 + t.y1) / 2);
+    s.put("crown pedestal", tcx, pedY, true);
+    s.put("candelabra", tcx - 2, pedY); s.put("candelabra", tcx + 2, pedY);
+    s.put("knight armor", tcx - 2, ty0); s.put("knight armor", tcx + 2, ty0);
+    for (let y = ty0; y <= t.y1; y += 2) {
+      s.put("treasure pile", t.x0, y); s.put("treasure pile", t.x1 - 1, y);
+      s.put(y % 4 === 0 ? "coin pile" : "royal chest", t.x0 + 3, y + 1 <= t.y1 ? y + 1 : y);
+      s.put(y % 4 === 0 ? "royal chest" : "coin pile", t.x1 - 3, y + 1 <= t.y1 ? y + 1 : y);
     }
-    for (let y = g.y0 + 2; y + 1 <= g.y1; y += 2) s.put("bed red", g.x0, y);
-    s.put("weapon barrel", g.x1, g.y1); s.put("armor stand", g.x1, g.y0 + 2);
-    lowAreas.push(areaOf("근위대 대기실", g));
-    // ── 접견 대기실(동쪽 아래): 깔개 위 소파·안락의자 응접, 석상·화분 벽 리듬.
-    const a = s.floorOf("ante");
-    const acx = Math.floor((a.x0 + a.x1) / 2);
-    hangRhythm(s, a, ["curtained window", "tapestry"], 0, 3);
-    s.keepRect(a.x0, a.y0 + 1, a.x1, a.y0 + 1);
-    s.rug(pal.councilRug, a.x0 + 1, a.y0 + 2, a.x1 - 1, a.y1 - 1);
-    s.put("sofa", acx - 1, a.y0 + 2, true);
-    s.put("table:plate+cup", acx - 1, a.y0 + 3) || s.put("roundtable", acx - 1, a.y0 + 3);
-    s.put("armchair", acx - 3, a.y0 + 3); s.put("armchair", acx + 2, a.y0 + 3);
-    s.put("statue", a.x0, a.y0); s.put("statue", a.x1, a.y0);
-    s.put("potted fern", a.x0, a.y1); s.put("potted fern", a.x1, a.y1);
-    s.put("bench 3", acx - 1, a.y1);
-    lowAreas.push(areaOf("접견 대기실", a));
+    midAreas.push(areaOf("보물고", t));
+    const p = s.floorOf("chapel");
+    const pcx = Math.floor((p.x0 + p.x1) / 2);
+    s.put("tall stained window", pcx - 1, p.faceY);
+    hangRhythm(s, p, ["stained glass", "wall torch"], 0, 3);
+    s.put("altar", pcx - 1, p.y0, true);
+    s.put("candelabra", pcx - 2, p.y0); s.put("candelabra", pcx + 1, p.y0);
+    s.put("pipe organ", p.x0, p.y0); s.put("statue", p.x1, p.y0);
+    s.keepRect(p.x0, p.y0 + 1, p.x1, p.y0 + 1);
+    s.rug(pal.rug, pcx - 1, p.y0 + 2, pcx, p.y1, true);
+    s.keepRect(pcx - 1, p.y0 + 2, pcx, p.y1);
+    for (let y = p.y0 + 2; y <= p.y1 - 1; y += 2) {
+      for (const x of [pcx - 5, pcx - 3, pcx + 1, pcx + 3]) if (x >= p.x0 + 1 && x + 1 <= p.x1 - 1) s.put("pew", x, y);
+    }
+    s.put("holy water font", p.x0, p.y1); s.put("holy water font", p.x1, p.y1);
+    midAreas.push(areaOf("왕실 예배당", p));
   }
 
-  const areas = [areaOf("알현실", f), areaOf("어전 회의실", c), areaOf(armory ? "무기고" : "왕실 도서관", e), ...lowAreas];
+  // ── 근위대 대기실(서쪽 아래): 북벽 침상 줄(벽 가구)·벽 무기 거치대, 가운데 깔개 위 원탁 + 의자, 남쪽 갑옷 줄.
+  // 침상은 벽 가구, 무기 거치대는 걸이라 바닥 줄에 놓으면 조용히 빠졌다(2026-10-18 VQA 11회차 - 빈 대기실).
+  const g = s.floorOf("guard");
+  const gcx = Math.floor((g.x0 + g.x1) / 2);
+  hangRhythm(s, g, ["weapon rack", "heraldic shield", "weapon rack", "royal banner"], 0, 2);
+  for (let x = g.x0; x <= gcx - 2; x += 2) s.put("bed red", x, g.y0);
+  for (let x = gcx + 2; x <= g.x1; x += 2) s.put(x % 4 === 0 ? "weapon barrel" : "armor stand", x, g.y0);
+  s.keepRect(g.x0, g.y0 + 2, g.x1, g.y0 + 2);
+  const gy = g.y0 + 3;
+  s.rug(pal.eastRug, gcx - 2, gy, gcx + 2, Math.min(g.y1 - 1, gy + 3));
+  if (s.put("war map table", gcx - 1, gy + 1, true)) {
+    s.put("chair E", gcx - 2, gy + 1); s.put("chair E", gcx - 2, gy + 2);
+    s.put("chair W", gcx + 1, gy + 1); s.put("chair W", gcx + 1, gy + 2);
+  }
+  for (let x = g.x0; x <= g.x1; x += 3) if (x < gcx - 2 || x > gcx + 2) s.put(x % 2 === 0 ? "armor stand" : "knight armor", x, g.y1);
+  s.put("weapon barrel", g.x0, gy + 1); s.put("weapon barrel", g.x1, gy + 1);
+  // ── 접견 대기실(동쪽 아래): 깔개 위 소파·안락의자 응접, 석상·화분 벽 리듬.
+  const a = s.floorOf("ante");
+  const acx = Math.floor((a.x0 + a.x1) / 2);
+  hangRhythm(s, a, ["curtained window", "tapestry"], 0, 3);
+  s.keepRect(a.x0, a.y0 + 1, a.x1, a.y0 + 1);
+  s.rug(pal.councilRug, a.x0 + 1, a.y0 + 2, a.x1 - 1, a.y1 - 1);
+  s.put("sofa", acx - 1, a.y0 + 2, true);
+  s.put("table:plate+cup", acx - 1, a.y0 + 3) || s.put("roundtable", acx - 1, a.y0 + 3);
+  s.put("armchair", acx - 3, a.y0 + 3); s.put("armchair", acx + 2, a.y0 + 3);
+  // 아래쪽 다과 탁자 응접 - 소파 무리 아래 깔개 절반이 비어 보였다(VQA 13회차).
+  if (a.y0 + 5 <= a.y1 - 1 && s.put("table:mug+bottle", acx - 1, a.y0 + 5)) {
+    s.put("chair E", acx - 2, a.y0 + 5); s.put("chair W", acx + 1, a.y0 + 5);
+  }
+  for (let y = a.y0 + 7; y <= a.y1 - 1; y += 2) { s.put("bench 3", a.x0 + 1, y); s.put("bench 3", a.x1 - 3, y); }
+  s.put("statue", a.x0, a.y0); s.put("statue", a.x1, a.y0);
+  s.put("potted fern", a.x0, a.y1); s.put("potted fern", a.x1, a.y1);
+  s.put("bench 3", acx - 1, a.y1);
+
+  const areas = [areaOf("알현실", f), areaOf("어전 회의실", c), areaOf(armory ? "무기고" : "왕실 도서관", e), ...midAreas, areaOf("근위대 대기실", g), areaOf("접견 대기실", a)];
   return s.finish({ tileset: "atlas_biome_interior", floor: pal.hall[0], wall: pal.hall[1], ceiling: pal.ceiling }, areas, decisions);
 }
 
@@ -901,7 +963,7 @@ export function composeDepartmentStore(spec: HandInteriorSpec, nuance: SpaceNuan
 
   // ── 화장품관: 북벽 쇼케이스 줄, 명품 아일랜드 격자, 계산대.
   const b = s.floorOf("beauty");
-  hangRhythm(s, b, ["mci-art-frame", "mci-window-city"], 1, 3);
+  hangRhythm(s, b, ["mci-art-frame", nuance.mood === "dark" ? "mci-window-city" : "mci-window-curtain"], 1, 3);
   for (let x = b.x0; x + 2 <= b.x1; x += 4) s.put("dept-glass-showcase", x, b.y0);
   s.keepRect(b.x0, b.y0 + 1, b.x1, b.y0 + 1);
   let islandY = b.y0 + 2;
@@ -913,7 +975,7 @@ export function composeDepartmentStore(spec: HandInteriorSpec, nuance: SpaceNuan
 
   // ── 카페: 북벽 커피 스테이션·진열대·메뉴판, 카페 탁자 격자, 구석 화분.
   const k = s.floorOf("cafe");
-  hangRhythm(s, k, ["mci-menu-board", "mci-window-city"], 1, 3);
+  hangRhythm(s, k, ["mci-menu-board", nuance.mood === "dark" ? "mci-window-city" : "mci-window-blind"], 1, 3);
   s.put("mci-coffee-station", k.x0, k.y0);
   s.put("mci-pastry-case", k.x0 + 2, k.y0);
   s.put("mart-bakery-counter", k.x0 + 4, k.y0);
