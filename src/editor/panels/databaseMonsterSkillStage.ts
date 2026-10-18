@@ -225,7 +225,8 @@ export function monsterSkillTimeline(skill: Pick<RetroMonsterSkill, "motion" | "
       break;
     }
     case "buff": {
-      b.pose(0, "windup"); b.sound(160, retroSoundForLayer(skill.layers[0]?.key ?? "buff"));
+      // 런타임 retroMonsterSkillTimeline 과 같이 오라가 터지는 순간 skill 칸(skillCell 시트는 (0,2) 기합 자세).
+      b.pose(0, "windup"); b.pose(160, "attack"); b.sound(160, retroSoundForLayer(skill.layers[0]?.key ?? "buff"));
       playUser(160);
       const end = impact(b, 200, hits);
       if (b.mid < 0 && user[0]) b.mid = 160 + Math.round(user[0].layer.frames * (RETRO_FX_FRAME_MS[user[0].layer.frame] ?? 60) * 0.45);

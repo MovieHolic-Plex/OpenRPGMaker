@@ -42,6 +42,7 @@ class Look:
     shin: float = 8.0
     hip_w: float = 3.0     # 앞뒤 엉덩이 간격
     shoulder_w: float = 3.0
+    ground: float = GROUND  # 바닥 기준선(칸 - 4). 96 칸 거구는 92
 
 
 def joints(look: Look, P: Pose):
@@ -51,8 +52,8 @@ def joints(look: Look, P: Pose):
     hn, hf = add(hip, (look.hip_w / 2, 0)), add(hip, (-look.hip_w / 2, -1))
     sn = add(polar(hip, -90 + P.lean, P.torso - 1.5), (look.shoulder_w / 2, 0))
     sf = add(sn, (-look.shoulder_w, -1))
-    fn = (P.foot_near[0], GROUND - P.foot_near[1])
-    ff = (P.foot_far[0], GROUND - P.foot_far[1])
+    fn = (P.foot_near[0], look.ground - P.foot_near[1])
+    ff = (P.foot_far[0], look.ground - P.foot_far[1])
     kn = ik_side(hn, fn, look.thigh, look.shin, forward=True)
     kf = ik_side(hf, ff, look.thigh, look.shin, forward=True)
 

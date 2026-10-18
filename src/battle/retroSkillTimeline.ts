@@ -693,8 +693,9 @@ export function retroMonsterSkillTimeline(skill: RetroMonsterTimelineSkill, opti
       break;
     }
     case "buff": {
-      // windup 칸으로 기합, 자기(user)·몬스터 편(allAllies) 위 오라.
-      b.pose(0, "idle"); b.pose(40, "attack_windup");
+      // windup 칸으로 움츠렸다 오라가 터지는 순간 skill 칸(skillCell 시트는 (0,2) 기합 자세, 그 밖은 attack 칸).
+      // 자기(user)·몬스터 편(allAllies) 위 오라.
+      b.pose(0, "idle"); b.pose(40, "attack_windup"); b.pose(200, "attack");
       playUser(200);
       b.sound(200, retroMonsterSoundForLayer(skill.layers[0]?.key ?? "buff"));
       const end = playImpact(b, 220, impact);
