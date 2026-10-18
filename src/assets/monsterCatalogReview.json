@@ -43,14 +43,14 @@
     },
     "generated-enemy-dragon-01": {
       "url": "/assets/generated/pixel-enemy-portraits/dragon.png",
-      "sha256": "9f32ba80115f6961024fa56d4099d37f5e3fecceeed1713207d92dd043983d91",
-      "observation": "황토색 비늘과 청동빛 넓은 날개, 구부러진 두 뿔, 두꺼운 꼬리와 송곳니를 가진 용이다.",
+      "sha256": "d0bd8348450d5ea8ee62e7d835b4d83ae290095a6efc7061437b82b8ca68df01",
+      "observation": "황토빛 비늘과 크림색 배 비늘판, 청동빛 넓은 박쥐 날개, 뒤로 휜 두 뿔과 뺨 가시, 등·꼬리를 따라 돋은 가시를 가진 네발 용이다.",
       "index": 4,
-      "inspectionMethod": "Fresh native pixel anatomy and all nine poses. Locally reviewed artwork; user acceptance is not implied.",
+      "inspectionMethod": "Direct pixel redraw (scripts/content/monsters/redraw_dragon.py): fresh anatomy, nine distinct poses with a skill-cast cell (0,2). Locally reviewed artwork; user acceptance is not implied.",
       "nativeSheet": "assets/generated/pixel-enemies/dragon.png",
-      "nativeSheetSha256": "1b47a954050f8345a0d26b038f9b4dd3a267bfa76f7cede7d1029202dde58e9e",
+      "nativeSheetSha256": "e22c0a8da89a359b057b02131315e61679da6f11d78602bb90074563c9f9cda5",
       "cell": 96,
-      "reviewEvidence": "verify-shots/monster-redraw-all/SUMMARY.md",
+      "reviewEvidence": "~/claude-viz/monster-mantis-fix-1.html",
       "sourceWorkingTree": true
     },
     "generated-enemy-sylph-hornet": {
@@ -1653,14 +1653,14 @@
     },
     "generated-enemy-demon-lord": {
       "url": "/assets/generated/pixel-enemy-portraits/demon-lord.png",
-      "sha256": "b3882c7287c1f5aaa8ea61b6b5d1fb9f368ea8a3b543d813a844a976e9a08fdf",
-      "observation": "자줏빛 피부와 검은 뿔, 붉은 박쥐날개, 금속 갑옷과 낫 모양 검을 가진 마왕이다.",
+      "sha256": "aaf39c634b467a092657e878e4502dabb27392ace6be09838d0e50a9f7953c2a",
+      "observation": "뒤로 휜 검은 큰 뿔과 붉은 눈, 흰 갈기의 자줏빛 마왕으로, 가시 어깨 판금과 붉은 마정석 가슴판, 진홍 망토와 붉은 박쥐 날개, 낫처럼 휜 검은 대검을 들었다.",
       "index": 139,
-      "inspectionMethod": "Fresh native pixel anatomy and all nine poses. Locally reviewed artwork; user acceptance is not implied.",
+      "inspectionMethod": "Direct pixel redraw (scripts/content/monsters/redraw_demon_lord.py): fresh anatomy, nine distinct poses with a skill-cast cell (0,2). Locally reviewed artwork; user acceptance is not implied.",
       "nativeSheet": "assets/generated/pixel-enemies/demon-lord.png",
-      "nativeSheetSha256": "01a27ddec1a7da25971cd84eaedcede653becf192b54cfc36fff7eb0428ab3a7",
+      "nativeSheetSha256": "4162fc4ea99da47b0218c90ecd7d3675936df6735c111b41d0f028bd679cfc53",
       "cell": 96,
-      "reviewEvidence": "verify-shots/monster-redraw-all/SUMMARY.md",
+      "reviewEvidence": "~/claude-viz/monster-mantis-fix-1.html",
       "sourceWorkingTree": true
     },
     "generated-enemy-angel-fallen": {

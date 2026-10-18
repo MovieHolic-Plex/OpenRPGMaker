@@ -48,7 +48,7 @@ export const PIXEL_ENEMY_SHEETS: readonly PixelEnemySheet[] = [
   { resourceId: "generated-enemy-slime-01", path: "assets/generated/pixel-enemies/slime.png", cell: 64, motion: "hop", idleFrameMs: 220, skillCell: true },
   { resourceId: "generated-enemy-bat-01", path: "assets/generated/pixel-enemies/bat.png", cell: 64, motion: "swoop", idleFrameMs: 110, skillCell: true },
   { resourceId: "generated-enemy-golem-01", path: "assets/generated/pixel-enemies/golem.png", cell: 64, motion: "stomp", idleFrameMs: 300, skillCell: true },
-  { resourceId: "generated-enemy-dragon-01", path: "assets/generated/pixel-enemies/dragon.png", cell: 96, motion: "breath", idleFrameMs: 260 },
+  { resourceId: "generated-enemy-dragon-01", path: "assets/generated/pixel-enemies/dragon.png", cell: 96, motion: "breath", idleFrameMs: 260, skillCell: true },
   { resourceId: "generated-enemy-skeleton-archer", path: "assets/generated/pixel-enemies/skeleton-archer.png", cell: 64, motion: "shoot", idleFrameMs: 240, skillCell: true },
   { resourceId: "generated-enemy-wolf-grey", path: "assets/generated/pixel-enemies/wolf-grey.png", cell: 64, motion: "dash", idleFrameMs: 180, skillCell: true },
   { resourceId: "generated-enemy-spider-cave", path: "assets/generated/pixel-enemies/spider-cave.png", cell: 64, motion: "dash", idleFrameMs: 160, skillCell: true },
@@ -86,7 +86,7 @@ export const PIXEL_ENEMY_SHEETS: readonly PixelEnemySheet[] = [
   { resourceId: "generated-enemy-minotaur-maze", path: "assets/generated/pixel-enemies/minotaur-maze.png", cell: 96, motion: "stomp", idleFrameMs: 320, skillCell: true },
   { resourceId: "generated-enemy-troll-cave", path: "assets/generated/pixel-enemies/troll-cave.png", cell: 96, motion: "stomp", idleFrameMs: 340, skillCell: true },
   { resourceId: "generated-enemy-gargoyle-stone", path: "assets/generated/pixel-enemies/gargoyle-stone.png", cell: 64, motion: "swoop", idleFrameMs: 260, skillCell: true },
-  { resourceId: "generated-enemy-demon-lord", path: "assets/generated/pixel-enemies/demon-lord.png", cell: 96, motion: "breath", idleFrameMs: 280 },
+  { resourceId: "generated-enemy-demon-lord", path: "assets/generated/pixel-enemies/demon-lord.png", cell: 96, motion: "breath", idleFrameMs: 280, skillCell: true },
   // 2026-10-02 폐기 그림의 원본 도트 대체: 요청한 97종 + 추가 감사의 일반 적 3종.
   // organic: 34종 — 저작 원본과 검토 해시는 retirement/organic, verify-shots/legacy-monsters/organic.
   { resourceId: "generated-enemy-crab-01", path: "assets/generated/pixel-enemies/crab-01.png", cell: 64, motion: "dash", idleFrameMs: 180 },
