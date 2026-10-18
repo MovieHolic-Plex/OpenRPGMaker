@@ -6,6 +6,7 @@
 // 새 배치 규칙은 만들지 않는다 — 맵은 구성기가, 연결·착지는 create_transfer_pair/create_time_gate/author_dungeon.entrance 가,
 // 이벤트 자리는 expand_jrpg_campaign_volume 과 같은 pickSpot(지워도 길이 끊기지 않는 칸)이 고른다.
 import { isPassable } from "@/project/collision";
+import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
 import type { GameMap, Project } from "@/project/types";
 import {
   asCell, asRoom, chestLoot, edgeGate, field, houseDoors, list, mainComponent, nested, num, pickSpot, pickTroops, placeRoamer, sanitizeId, text,
@@ -18,13 +19,28 @@ type MapKind = { readonly scene: string } | { readonly interior: string } | { re
 type SiteSpec = MapKind & { readonly key: string; readonly name: string; readonly from?: string };
 interface NpcSpec { readonly key: string; readonly name: string; readonly query: string; readonly lines: readonly string[]; readonly map?: string }
 interface MoodSpec { readonly weather?: "rain" | "snow" | "fog" | "storm"; readonly ambient?: number; readonly color?: string }
+/**
+ * 맵에 세우는 장면 소품 — 공용 킷(kit:<칩셋>/<id>, 다른 칩셋 그림은 stamp_object 가 이식한다).
+ * where: north·center·south = 걸음 덩이의 북쪽·가운데·남쪽, boss = 던전 보스방, rooms = 던전 방들을 돌아가며(장면 맵은 가운데).
+ * light = 그 자리 광원 색(맵 분위기에 붙는다). clue = 이 소품 앞 칸을 퀘스트 단서 조사 자리로 쓴다.
+ */
+/** where: fair = 바깥 맵 풀밭에 걷어 낸 장터 마당 둘레, fair-north = 그 마당 북쪽 무대, fair-center = 마당 한가운데. */
+interface DressSpec { readonly object: string; readonly where: "north" | "center" | "south" | "boss" | "rooms" | "fair" | "fair-north" | "fair-center"; readonly count?: number; readonly light?: string; readonly clue?: true }
 type Beat = Record<string, unknown>;
+/** 수호자 전투 — 기존 보스 트룹 이름이 장과 안 맞아(「성 경비대장」이 붉은 드래곤 트룹과 싸웠다) 장마다 제 이름·외형의 적·트룹을 만든다. */
+interface FoeSpec {
+  readonly map: string; readonly name: string; readonly query: string; readonly intro: readonly string[]; readonly victory: readonly string[];
+  /** 몬스터 리소스 id(generated-enemy-*). */ readonly graphic: string;
+  /** 트룹에 서는 마리 수(쌍둥이 골렘 = 2)와 한 마리 이름(없으면 name). */ readonly count?: number; readonly enemyName?: string;
+}
 interface ChapterSpec {
   readonly title: string;
   readonly era: string;
-  readonly hub: { readonly name: string; readonly scene: string };
+  /** form = 버들항 마을 형태(plaza 광장 = 장터 축제 마을). scene 이 beodeul_town:<theme> 일 때만. */
+  readonly hub: { readonly name: string; readonly scene: string; readonly form?: string };
   readonly sites: readonly SiteSpec[];
   readonly moods?: Readonly<Record<string, MoodSpec>>;
+  readonly dress?: Readonly<Record<string, readonly DressSpec[]>>;
   readonly npcs: readonly NpcSpec[];
   readonly quest: {
     readonly title: string;
@@ -33,7 +49,7 @@ interface ChapterSpec {
     readonly ask: string;
     readonly helper: { readonly npc: string; readonly lines: readonly string[] };
     readonly clue: { readonly map: string; readonly label: string; readonly lines: readonly string[] };
-    readonly foe: { readonly map: string; readonly name: string; readonly query: string; readonly intro: readonly string[]; readonly victory: readonly string[] };
+    readonly foe: FoeSpec;
     /** 수호자를 쓰러뜨린 뒤 의뢰인에게 보고할 때의 대사(create_quest dialogue.completed). */
     readonly report: readonly string[];
     readonly gold: number;
@@ -48,9 +64,25 @@ const say = (speaker: string, line: string): Beat => ({ kind: "say", speaker, te
 export const JRPG_CHAPTERS = {
   ct_truce_fair: {
     title: "천년제의 트루스 마을", era: "CT 1000 AD",
-    hub: { name: "트루스 마을 · 천년제 광장", scene: "beodeul_town:river" },
+    hub: { name: "트루스 마을 · 천년제 광장", scene: "beodeul_town:river", form: "plaza" },
     sites: [{ key: "castle", name: "가르디아 성 왕좌의 방", interior: "throne" }],
     moods: { hub: { ambient: 0.05, color: "#ffd9a0" } },
+    // 천년제 광장: 마을 풀밭을 걷어 낸 장터 마당 — 북쪽 무대에 루카의 텔레포드 두 기, 가운데에 리아네의 종탑·분수, 둘레에 장터 노점·길드 깃발·쌍등 가로등.
+    dress: {
+      hub: [
+        { object: "kit:atlas_biome_interior/hand-interior:teleport pad", where: "fair-north", count: 2, light: "#80d0ff" },
+        { object: "kit:sengoku_edo/se-bell-tower", where: "fair" },
+        { object: "kit:beodeul_city/bd-prop-stall_veg", where: "fair" },
+        { object: "kit:beodeul_city/bd-prop-stall_cheese_meat", where: "fair" },
+        { object: "kit:pirate_isles/pi-stall-fruit", where: "fair" },
+        { object: "kit:desert_east/de-stall-lantern", where: "fair", light: "#ffb060" },
+        { object: "kit:beodeul_city/bd-prop-flower_cart", where: "fair" },
+        { object: "kit:beodeul_city/bd-pick-walled-market-banner-red", where: "fair" },
+        { object: "kit:beodeul_city/bd-pick-walled-market-banner-teal", where: "fair" },
+        { object: "kit:beodeul_city/bd-prop-lamp_double", where: "fair", count: 2, light: "#ffd890" },
+        { object: "kit:modern_campus/mc-fountain-anim", where: "fair-center" },
+      ],
+    },
     npcs: [
       { key: "marle", name: "마르", query: "공주", lines: ["천년제 구경 왔어? 나랑 같이 돌아보자!", "저 텔레포드, 루카가 만든 거래. 한번 타 볼래?"] },
       { key: "lucca", name: "루카", query: "마법사 소녀", lines: ["내 텔레포드 시연 보러 왔구나! 광장 북쪽 무대야.", "펜던트가 장치랑 공명하는 건 계산에 없었는데…"] },
@@ -64,7 +96,7 @@ export const JRPG_CHAPTERS = {
       giver: "marle", ask: "내 펜던트… 텔레포드에 빨려 들어갈 때 빛났어. 성에 가면 뭔가 알 수 있을 거야.",
       helper: { npc: "lucca", lines: ["펜던트 파장이 시간의 문을 연 거야. 성의 기록실을 살펴봐!"] },
       clue: { map: "castle", label: "왕가의 초상화", lines: ["초상화 속 왕비가 마르와 같은 펜던트를 걸고 있다."] },
-      foe: { map: "castle", name: "성 경비대장", query: "붉은 갑옷 기사", intro: ["공주님을 납치한 놈이냐! 거기 서라!"], victory: ["…오해였군. 지나가게."] },
+      foe: { map: "castle", name: "가르디아 경비대장", query: "붉은 갑옷 기사", graphic: "generated-enemy-knight-fallen", intro: ["공주님을 납치한 놈이냐! 거기 서라!"], victory: ["…오해였군. 지나가게."] },
       report: ["펜던트는 왕가의 보물이었구나… 고마워, 같이 가자!"], gold: 300,
     },
     event: {
@@ -85,7 +117,22 @@ export const JRPG_CHAPTERS = {
       { key: "chapel", name: "대성당 예배당", scene: "gothic:chapel" },
       { key: "keep", name: "마왕성 지하", dungeon: "castle" },
     ],
-    moods: { hub: { weather: "fog", ambient: 0.35, color: "#1c2338" }, keep: { ambient: 0.55, color: "#1a0f24" } },
+    moods: { hub: { weather: "fog", ambient: 0.35, color: "#1c2338" }, keep: { ambient: 0.5, color: "#2a1048" } },
+    // 마왕성 지하: 붉은 융단, 고딕 촛대·화로(보랏빛), 검은 기사 갑옷상, 카타콤 기둥·강철 처녀·새장, 보스방 돌 제단.
+    dress: {
+      keep: [
+        { object: "kit:wizarding_world/wz-furn-rug", where: "boss" },
+        { object: "kit:beodeul_city/bd-pick-castle-catacombs-altar-stone", where: "boss" },
+        { object: "kit:gothic_manor/gm-armor", where: "boss", count: 2 },
+        { object: "kit:pirate_isles/pi-candelabra", where: "boss", count: 2, light: "#b070ff" },
+        { object: "kit:wizarding_world/wz-castle-rug-red", where: "rooms", count: 3 },
+        { object: "kit:gothic_manor/gm-armor", where: "rooms", count: 3 },
+        { object: "kit:beodeul_city/bd-pick-volcano-cave-brazier", where: "rooms", count: 4, light: "#c060ff" },
+        { object: "kit:gothic_manor/gm-statue-gargoyle", where: "rooms", count: 2 },
+        { object: "kit:beodeul_city/bd-pick-castle-catacombs-iron-maiden", where: "rooms", count: 2 },
+        { object: "kit:beodeul_city/bd-pick-castle-catacombs-cage-hanging", where: "rooms", count: 2 },
+      ],
+    },
     npcs: [
       { key: "captain", name: "기사단장", query: "파란 갑옷 기사", lines: ["마왕군이 국경을 넘었다. 성검만 있었더라면…"] },
       { key: "frog", name: "개구리 기사", query: "양서 기사", lines: ["…부서진 성검 그랜드리온. 날을 되살릴 자를 찾고 있다."] },
@@ -97,7 +144,7 @@ export const JRPG_CHAPTERS = {
       giver: "captain", ask: "대성당 오르간 뒤에 비밀 계단이 있다는 소문이다. 그 아래 기록을 찾아 오게.",
       helper: { npc: "frog", lines: ["손잡이는 마왕성 지하 깊은 곳… 내가 길을 알려 주지."] },
       clue: { map: "chapel", label: "오르간 뒤 숨겨진 스위치", lines: ["딸깍— 바닥이 갈라지며 아래로 내려가는 계단이 드러났다!"] },
-      foe: { map: "keep", name: "마왕군 수호자 오자", query: "마족 장군", intro: ["마왕님의 성에 발을 들이다니!"], victory: ["크윽… 성검의 손잡이를 가져가라…"] },
+      foe: { map: "keep", name: "마왕군 수호자 오자", query: "마족 장군", graphic: "generated-enemy-demon-lord", intro: ["마왕님의 성에 발을 들이다니!"], victory: ["크윽… 성검의 손잡이를 가져가라…"] },
       report: ["그랜드리온이 다시 빛나는군! 이것으로 마왕과 맞설 수 있다."], gold: 600,
     },
     event: {
@@ -130,7 +177,7 @@ export const JRPG_CHAPTERS = {
       giver: "elder", ask: "협곡 폭포 옆 바위에 불을 품은 부싯돌이 있다. 그걸 가져오면 동굴 문이 열려.",
       helper: { npc: "kino", lines: ["협곡 다리 건너 붉은 바위다! 뜨거우니 조심!"] },
       clue: { map: "canyon", label: "용암에 달궈진 부싯돌", lines: ["돌을 맞부딪치자 불꽃이 튀며 동굴 쪽 바위가 붉게 빛났다."] },
-      foe: { map: "lair", name: "공룡인간 우두머리", query: "드레이크", intro: ["원숭이 놈들! 여기는 우리 땅이다!"], victory: ["크르르… 용암 열쇠를 떨어뜨렸다."] },
+      foe: { map: "lair", name: "블랙 티라노", query: "드레이크", graphic: "generated-enemy-dragon-red", intro: ["아자라: 원숭이 놈들! 블랙 티라노, 짓밟아라!"], victory: ["블랙 티라노가 쓰러지며 용암 열쇠가 굴러 나왔다."] },
       report: ["불이 꺼지지 않는다! 오늘 밤 축제, 너희가 주인공이다!"], gold: 400,
     },
     event: {
@@ -162,7 +209,7 @@ export const JRPG_CHAPTERS = {
       giver: "schala", ask: "선착장 끝 마석 제단에 펜던트를 대면 해저신전 봉인이 풀려요.",
       helper: { npc: "prophet", lines: ["제단은 검은 새 그림자 아래에 있다. 서둘러라, 시간이 없다."] },
       clue: { map: "dock", label: "마석 제단", lines: ["펜던트가 푸르게 공명하며 마석의 봉인 문양이 사라졌다."] },
-      foe: { map: "ocean", name: "마신기의 골렘 쌍둥이", query: "보라 갑옷 괴물", intro: ["침입자를 감지. 배제한다."], victory: ["골렘이 무너지며 신전 깊은 곳 문이 열렸다."] },
+      foe: { map: "ocean", name: "마신기의 골렘 쌍둥이", enemyName: "마신기 골렘", count: 2, query: "보라 갑옷 괴물", graphic: "generated-enemy-golem-crystal", intro: ["침입자를 감지. 배제한다."], victory: ["골렘이 무너지며 신전 깊은 곳 문이 열렸다."] },
       report: ["고마워요… 하지만 라보스가 깨어나기 시작했어요."], gold: 800,
     },
     event: {
@@ -192,7 +239,7 @@ export const JRPG_CHAPTERS = {
       giver: "doan", ask: "저 고철 로봇… 공장 제어 콘솔이라면 깨울 수 있을지도 모르오.",
       helper: { npc: "survivor", lines: ["공장은 북쪽 지하야. 컨베이어 소리가 아직 들려."] },
       clue: { map: "factory", label: "중앙 제어 콘솔", lines: ["화면에 「R-66Y 재기동 시퀀스」가 떠오르고 에너지 포드가 충전되었다."] },
-      foe: { map: "factory", name: "경비 로봇 R 시리즈", query: "저주 갑옷", intro: ["R-66Y 의 반역 확인. 처분합니다."], victory: ["경비 로봇이 불꽃을 튀기며 멈췄다."] },
+      foe: { map: "factory", name: "공장 수호기 가디언", query: "저주 갑옷", graphic: "generated-enemy-golem-iron", intro: ["R-66Y 의 반역 확인. 처분합니다."], victory: ["가디언이 불꽃을 튀기며 멈췄다."] },
       report: ["로보가 눈을 떴다니… 이 미래에도 희망이 남아 있었군."], gold: 1000,
     },
     event: {
@@ -212,7 +259,22 @@ export const JRPG_CHAPTERS = {
       { key: "house", name: "아르비스의 집", interior: "narshe" },
       { key: "mine", name: "나르셰 마석 광산", dungeon: "mine" },
     ],
-    moods: { hub: { weather: "snow", ambient: 0.2, color: "#a8c0e0" }, mine: { ambient: 0.5, color: "#141c28" } },
+    moods: { hub: { weather: "snow", ambient: 0.2, color: "#a8c0e0" }, mine: { ambient: 0.45, color: "#0c3446" } },
+    // 마석 광산: 빛나는 얼음·마석 결정, 광차와 선로 끝 막이, 갱목 버팀목, 맨 안쪽 방에 얼음 속 환수의 수정 제단(단서 자리).
+    dress: {
+      mine: [
+        { object: "kit:sky_island/si-altar", where: "boss", clue: true, light: "#80f0ff" },
+        { object: "kit:snow_north/sn-ice-pillar", where: "boss", count: 2 },
+        { object: "kit:snow_north/sn-ice-crystal", where: "boss", count: 2, light: "#60e0ff" },
+        { object: "kit:snow_north/sn-ice-crystal", where: "rooms", count: 4, light: "#60e0ff" },
+        { object: "kit:beodeul_city/bd-pick-mining-valley-cart", where: "rooms", count: 2 },
+        { object: "kit:beodeul_city/bd-pick-mining-valley-cart-h", where: "rooms" },
+        { object: "kit:beodeul_city/bd-pick-mining-valley-pile", where: "rooms", count: 2 },
+        { object: "kit:atlas_biome_interior/hand-interior:timber prop", where: "rooms", count: 4 },
+        { object: "kit:snow_north/sn-stalagmite-ice", where: "rooms", count: 3 },
+        { object: "kit:beodeul_city/bd-pick-mining-valley-buffer", where: "rooms" },
+      ],
+    },
     npcs: [
       { key: "arvis", name: "아르비스", query: "터번 노인", lines: ["제국 병사들이 광산 안 얼음 속 환수를 노리고 있네."] },
       { key: "guard", name: "광산 경비병", query: "청년 병사", lines: ["제국의 마도 아머가 오면 광산 철로 입구를 지킨다!"] },
@@ -224,7 +286,7 @@ export const JRPG_CHAPTERS = {
       giver: "arvis", ask: "티나를 데리고 광산 뒷길로 빠져나가게. 얼음 속 환수가 그녀를 부르고 있어.",
       helper: { npc: "guard", lines: ["뒷길은 철로를 따라가다 왼쪽 갱도야. 몬스터가 들끓으니 조심해."] },
       clue: { map: "mine", label: "얼어붙은 환수", lines: ["얼음이 푸르게 빛나며 티나와 환수가 서로를 부른다!"] },
-      foe: { map: "mine", name: "거대 달팽이 웰크", query: "슬라임", intro: ["껍질에 번개가 흐른다… 공격하면 반격한다!"], victory: ["달팽이가 껍질 속으로 움츠러들며 쓰러졌다."] },
+      foe: { map: "mine", name: "껍질 수호수 웰크", query: "슬라임", graphic: "generated-enemy-crab-rock", intro: ["껍질에 번개가 흐른다… 공격하면 반격한다!"], victory: ["수호수가 껍질 속으로 움츠러들며 쓰러졌다."] },
       report: ["환수와 공명했다고? 그 아이는… 인간과 환수 사이에서 태어난 것인가."], gold: 500,
     },
     event: {
@@ -256,7 +318,7 @@ export const JRPG_CHAPTERS = {
       giver: "edgar", ask: "오페라 하우스로 가서 지배인을 만나게. 마리아로 분장해야 세처를 꾈 수 있어.",
       helper: { npc: "impresario", lines: ["악보는 무대 뒤에 있소. 2막 아리아가 핵심이오!"] },
       clue: { map: "opera", label: "무대 위 샹들리에", lines: ["샹들리에가 흔들린다… 천장 들보 위에 누가 무거운 추를 올려놨다!"] },
-      foe: { map: "opera", name: "울트로스", query: "청룡", intro: ["무후후후! 4톤 추로 공연을 박살 내 주지!"], victory: ["울트로스: 오, 오늘은 이쯤 해 두지!"] },
+      foe: { map: "opera", name: "울트로스", query: "청룡", graphic: "generated-enemy-squid-deep", intro: ["무후후후! 4톤 추로 공연을 박살 내 주지!"], victory: ["울트로스: 오, 오늘은 이쯤 해 두지!"] },
       report: ["공연을 지켰군! 이제 비공정 블랙잭으로 제국에 맞선다."], gold: 1200,
     },
     event: {
@@ -276,7 +338,21 @@ export const JRPG_CHAPTERS = {
       { key: "clock", name: "조조 시계탑 아파트", interior: "zozo" },
       { key: "tower", name: "케프카의 잔해의 탑", dungeon: "volcano" },
     ],
-    moods: { hub: { weather: "rain", ambient: 0.45, color: "#18202c" }, tower: { ambient: 0.5, color: "#2c0814" } },
+    moods: { hub: { weather: "rain", ambient: 0.45, color: "#18202c" }, tower: { ambient: 0.45, color: "#3a0a24" } },
+    // 잔해의 탑: 용암 균열, 의식 마법진(봉인), 부서진 마도 갑옷·톱니·고철, 불 수정, 꼭대기 방에 흑요석 제단과 날개 석상.
+    dress: {
+      tower: [
+        { object: "kit:beodeul_city/bd-pick-volcano-cave-altar", where: "boss", light: "#ffd040" },
+        { object: "kit:sky_island/si-statue", where: "boss", count: 2 },
+        { object: "kit:atlas_biome_interior/hand-interior:magic circle", where: "boss", light: "#ff60c0" },
+        { object: "kit:beodeul_city/bd-pick-volcano-cave-lava-strip", where: "rooms", count: 3, light: "#ff6020" },
+        { object: "kit:gothic_manor/gm-ov-ritual", where: "rooms", count: 2, light: "#ff40a0" },
+        { object: "kit:atlas_biome_interior/hand-interior:magitek armor", where: "rooms", count: 2 },
+        { object: "kit:wizarding_world/wz-clock-gear-m", where: "rooms" },
+        { object: "kit:steampunk_city/sp-scrap-heap", where: "rooms", count: 3 },
+        { object: "kit:beodeul_city/bd-pick-volcano-cave-fire-crystal", where: "rooms", count: 3, light: "#ff9030" },
+      ],
+    },
     npcs: [
       { key: "liar", name: "거짓말쟁이 사내", query: "단원 · 검은 코트(남)", lines: ["시계는 6시 정각이야. (이 마을 사람은 모두 거짓말을 한다)"] },
       { key: "dancer", name: "무희", query: "젊은 여성", lines: ["초침은 50초가 아니야… 아마도."] },
@@ -289,7 +365,7 @@ export const JRPG_CHAPTERS = {
       giver: "celes", ask: "마슈가 조조 시계탑에 단서가 있대. 시계를 맞추면 숨은 방이 열린다나 봐.",
       helper: { npc: "liar", lines: ["시계는 6시 10분 50초… 아니, 내가 그렇게 말했다면 거짓말이지."] },
       clue: { map: "clock", label: "멈춘 벽시계", lines: ["바늘을 6시 10분 50초에 맞추자 벽 뒤에서 열쇠가 떨어졌다."] },
-      foe: { map: "tower", name: "광대 케프카", query: "마왕", intro: ["히히히! 파괴야말로 아름다운 거야!"], victory: ["케프카: 이, 이럴 수가… 신이 된 내가…!"] },
+      foe: { map: "tower", name: "광대 케프카", query: "마왕", graphic: "generated-enemy-angel-fallen", intro: ["히히히! 파괴야말로 아름다운 거야!"], victory: ["케프카: 이, 이럴 수가… 신이 된 내가…!"] },
       report: ["다들 돌아왔어. 이제 무너진 세계를 다시 일으킬 차례야."], gold: 3000,
     },
     event: {
@@ -339,6 +415,260 @@ function hubGate(project: Project, hub: GameMap, taken: Set<string>, preferDoor:
   return far ? { cell: far } : undefined;
 }
 
+interface RoomRect { readonly id: string; readonly x: number; readonly y: number; readonly w: number; readonly h: number }
+interface DressResult { readonly lights: Array<Record<string, unknown>>; readonly placed: string[]; clue?: Cell }
+
+function kitSize(project: Project, objectId: string): { w: number; h: number } | undefined {
+  const m = /^kit:([^/]+)\/(.+)$/u.exec(objectId);
+  const kit = m ? project.tilesets[m[1]!]?.structureKits?.find((k) => k.id === m[2]) : undefined;
+  return kit ? { w: kit.width, h: kit.height } : undefined;
+}
+
+/**
+ * 장면 소품을 빈 바닥에 세운다. 소품 둘레 한 칸이 모두 걸을 수 있는 빈 칸이어야 한다 — 둘레가 이어진 고리라 소품이
+ * 길을 끊지 못하고, 벽 몰딩·문·계단·다른 소품·이벤트에 붙지 않는다(2026-10-18 R1: 던전 계단·철문이 벽 몰딩에 겹쳤다).
+ * 자리 = 기준점(북·가운데·남·보스방·방들)에서 가장 가까운 빈 사각형. 방 안 소품은 그 방 바닥 안에서만 찾는다.
+ */
+function dressMap(
+  project: Project, map: GameMap, items: readonly DressSpec[], rooms: readonly RoomRect[], bossId: string | undefined, taken: Set<string>, warnings: string[],
+  fairAt?: Cell,
+): DressResult {
+  const out: DressResult = { lights: [], placed: [] };
+  const blocked = new Set(taken);
+  for (const e of map.events ?? []) for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) blocked.add(`${e.x + dx},${e.y + dy}`);
+  const mainSet = mainComponent(project, map);
+  const main = [...mainSet].map((k) => k.split(",").map(Number) as [number, number]);
+  if (!main.length) return out;
+  // 바깥 맵(방 없음): 길·다리 위에 소품을 세우지 않는다(R2: 꽃수레가 다리를, 텔레포드가 북쪽 길을 막았다).
+  // 길 = 집 문 앞에서 가장 흔한 바닥(풀) 아닌 칸을 따라 이어진 칸(길 타일은 변주·가장자리가 섞여 타일 하나로 못 잡는다),
+  // 다리·계단 = 걸을 수 있는 칸의 1% 미만인 드문 바닥 타일.
+  const offCells = new Set<string>();
+  // 바깥 맵의 풀숲·바위·꽃 같은 낱개 장식(구조물 밖 상층 덩어리 4칸 이하)은 소품 자리를 위해 통째로 걷어 낼 수 있다 —
+  // 마을 구성기가 빈 풀밭을 덤불로 채워 축제 노점이 설 데가 없었다(R2 트루스). 집·밭(구조물)은 건드리지 않는다.
+  // 장터 마당(where fair)은 한 번 더 나아가 나무 덩어리(60칸 이하)까지 통째로 걷어 빈 마당을 낸다.
+  const looseOf = new Map<number, number[]>();
+  const groveOf = new Map<number, number[]>();
+  if (!rooms.length) {
+    const kits = new Map((project.tilesets[map.tilesetId]?.structureKits ?? []).map((kit) => [kit.id, kit]));
+    const covered = new Set<number>();
+    for (const p of map.structurePlacements ?? []) {
+      const kit = kits.get(p.kitId);
+      if (kit) for (let dy = 0; dy < kit.height; dy++) for (let dx = 0; dx < kit.width; dx++) covered.add((p.y + dy) * map.width + p.x + dx);
+    }
+    const decor = (i: number): boolean => !covered.has(i) && (layerTileAt(map, 3, i) >= 0 || layerTileAt(map, 4, i) >= 0);
+    const done = new Set<number>();
+    for (let i = 0; i < map.width * map.height; i++) {
+      if (done.has(i) || !decor(i)) continue;
+      const part = [i];
+      done.add(i);
+      for (let q = 0; q < part.length; q++) {
+        const cx = part[q]! % map.width, cy = Math.floor(part[q]! / map.width);
+        for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+          const nx = cx + dx, ny = cy + dy, n = ny * map.width + nx;
+          if (nx < 0 || ny < 0 || nx >= map.width || ny >= map.height || done.has(n) || !decor(n)) continue;
+          done.add(n);
+          part.push(n);
+        }
+      }
+      if (part.some((n) => (map.relief?.levels[n] ?? 0) !== 0)) continue;
+      if (part.length <= 60) for (const n of part) groveOf.set(n, part);
+      if (part.length <= 4) for (const n of part) looseOf.set(n, part);
+    }
+  }
+  const lowerAt = (x: number, y: number): number => map.lowerTiles[y * map.width + x] ?? -1;
+  let ground = -1;
+  if (!rooms.length) {
+    const freq = new Map<number, number>();
+    for (const [x, y] of main) freq.set(lowerAt(x, y), (freq.get(lowerAt(x, y)) ?? 0) + 1);
+    ground = [...freq].sort((a, b) => b[1] - a[1])[0]![0];
+    for (const [x, y] of main) if ((freq.get(lowerAt(x, y)) ?? 0) < main.length * 0.01) offCells.add(`${x},${y}`);
+    // 문 앞에 NPC·출입구가 선 집도 길의 씨앗이다 — 이벤트를 비운 맵 사본으로 문을 찾는다.
+    // 드문 칸(교차로 변주 등)도 길을 따라 지나가야 하므로 방문 표시는 offCells 와 따로 둔다.
+    // 광장은 길과 이어져 있지만 노점 자리다 — 풀(바닥)과 한 칸 안에 닿은 칸만 길로 친다(1~2칸 폭 길은 다 닿는다).
+    const nearGround = (c: Cell): boolean => {
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+        const x = c.x + dx, y = c.y + dy;
+        if (x >= 0 && y >= 0 && x < map.width && y < map.height && lowerAt(x, y) === ground) return true;
+      }
+      return false;
+    };
+    const queue = houseDoors(project, { ...map, events: [] }, mainSet).map((d) => d.front).filter((c) => lowerAt(c.x, c.y) !== ground);
+    const seen = new Set(queue.map(key));
+    while (queue.length) {
+      const c = queue.pop()!;
+      if (nearGround(c)) offCells.add(key(c));
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+        const n = { x: c.x + dx, y: c.y + dy }, k = key(n);
+        if (seen.has(k) || n.x < 0 || n.y < 0 || n.x >= map.width || n.y >= map.height || lowerAt(n.x, n.y) === ground || !isPassable(project, map, n.x, n.y)) continue;
+        seen.add(k);
+        queue.push(n);
+      }
+    }
+  }
+  const minY = Math.min(...main.map(([, y]) => y)), maxY = Math.max(...main.map(([, y]) => y));
+  const center = centerOf(project, map);
+  const boss = rooms.find((r) => r.id === bossId);
+  const others = rooms.filter((r) => r !== boss);
+  // 장터 마당 — fair 소품 발자국(둘레 한 줄 공유) 넓이의 1.2배 사각형을 지도 가운데에 가장 가까운 자리에서 고르고,
+  // 그 안·둘레에 닿은 장식 덩어리를 통째로 걷는다. 마당은 길·광장을 품어도 된다(소품은 길 칸을 밟지 않으니 장터 거리가 된다).
+  // 물·단·구조물(집)·이벤트 칸은 마당이 되지 못한다.
+  let fair: RoomRect | undefined;
+  const fairItems = items.filter((item) => item.where.startsWith("fair"));
+  if (!rooms.length && fairItems.length) {
+    const area = fairItems.reduce((sum, item) => { const s = kitSize(project, item.object); return sum + (s ? (s.w + 1) * (s.h + 1) * (item.count ?? 1) : 0); }, 0) * 1.2;
+    const tallest = Math.max(...fairItems.map((item) => kitSize(project, item.object)?.h ?? 1));
+    const usable = (x: number, y: number): boolean => {
+      const i = y * map.width + x;
+      if (blocked.has(`${x},${y}`) || (map.relief?.levels[i] ?? 0) !== 0) return false;
+      if (groveOf.has(i) && lowerAt(x, y) === ground) return true;
+      return isPassable(project, map, x, y) && layerTileAt(map, 3, i) < 0;
+    };
+    // 마을 큰길 띠처럼 가로로 긴 마당도 받는다 — 높이 6칸부터 정사각에 가까울 때까지.
+    // 다 들어갈 마당이 없으면 넓이를 10%씩 줄인다. 마을 광장(fairAt)이 있으면 그 14칸 안 마당만 — 맵 반대편 빈터에 장터를 따로 세우지 않는다.
+    let best: RoomRect & { score: number } | undefined;
+    const minH = Math.min(6, tallest + 2);
+    for (let want = area; !best && want >= minH * minH; want *= 0.9) {
+      for (let fh = minH; fh <= Math.ceil(Math.sqrt(want)); fh++) {
+        const fw = Math.ceil(want / fh);
+        for (let y = 1; y + fh < map.height - 1; y++) for (let x = 1; x + fw < map.width - 1; x++) {
+          let ok = true, cleared = 0;
+          for (let yy = y; yy < y + fh && ok; yy++) for (let xx = x; xx < x + fw; xx++) {
+            if (!usable(xx, yy)) { ok = false; break; }
+            if (groveOf.has(yy * map.width + xx)) cleared++;
+          }
+          if (!ok) continue;
+          // 마을 구성기가 낸 광장이 있으면 그 곁에 장터를 붙인다(광장의 우물·노점과 한 덩어리로 읽힌다). 없으면 지도 가운데.
+          const near = fairAt ?? center;
+          const dist = Math.abs(x + fw / 2 - near.x) + Math.abs(y + fh / 2 - near.y);
+          if (fairAt && dist > 14) continue;
+          const score = dist + cleared * 0.25;
+          if (!best || score < best.score) best = { id: "fair", x, y, w: fw, h: fh, score };
+        }
+      }
+    }
+    if (best) {
+      fair = { id: "fair", x: best.x, y: best.y, w: best.w, h: best.h };
+      const parts = new Set<number[]>();
+      for (let yy = best.y - 1; yy <= best.y + best.h; yy++) for (let xx = best.x - 1; xx <= best.x + best.w; xx++) {
+        const part = groveOf.get(yy * map.width + xx);
+        if (part) parts.add(part);
+      }
+      for (const part of parts) for (const i of part) { setLayerTileAt(map, 3, i, -1); setLayerTileAt(map, 4, i, -1); looseOf.delete(i); groveOf.delete(i); }
+    } else warnings.push(`${map.name}: 넓이 ${Math.round(area)}칸 장터 마당을 낼 자리가 없다 — 장터 소품은 가운데 빈 바닥에 선다`);
+  }
+  let cursor = 0;
+  /** 장터 소품을 세우는 동안은 나무 덩어리(groveOf)까지 걷을 수 있다 — 마당 둘레 숲을 열어 장터를 잇는다. */
+  let groveOk = false;
+  const decorPart = (i: number): number[] | undefined => looseOf.get(i) ?? (groveOk ? groveOf.get(i) : undefined);
+  /** 걷어 낼 수 있는 낱개 장식이 얹힌 풀 칸 — 걷어 내면 빈 바닥이 된다. */
+  const clearable = (xx: number, yy: number): boolean => decorPart(yy * map.width + xx) !== undefined && lowerAt(xx, yy) === ground;
+  const fits = (x: number, y: number, w: number, h: number, room: RoomRect | undefined): boolean => {
+    if (room && (x < room.x || y < room.y || x + w > room.x + room.w || y + h > room.y + room.h)) return false;
+    for (let yy = y - 1; yy <= y + h; yy++) for (let xx = x - 1; xx <= x + w; xx++) {
+      if (xx < 0 || yy < 0 || xx >= map.width || yy >= map.height || blocked.has(`${xx},${yy}`) || offCells.has(`${xx},${yy}`) && xx >= x && xx < x + w && yy >= y && yy < y + h) return false;
+      if (clearable(xx, yy)) continue;
+      if (!isPassable(project, map, xx, yy)) return false;
+      const inside = xx >= x && xx < x + w && yy >= y && yy < y + h;
+      if (inside && (map.upperTiles[yy * map.width + xx] ?? -1) >= 0) return false;
+    }
+    return true;
+  };
+  /** 자리(발자국 + 둘레)에 닿은 낱개 장식 덩어리를 통째로 걷는다 — 되돌릴 수 있게 원래 타일을 돌려준다. */
+  const clearDecor = (x: number, y: number, w: number, h: number): Array<[number, number, number]> => {
+    const saved: Array<[number, number, number]> = [];
+    const parts = new Set<number[]>();
+    for (let yy = y - 1; yy <= y + h; yy++) for (let xx = x - 1; xx <= x + w; xx++) {
+      const part = xx >= 0 && yy >= 0 && xx < map.width && yy < map.height ? decorPart(yy * map.width + xx) : undefined;
+      if (part) parts.add(part);
+    }
+    for (const part of parts) for (const i of part) {
+      saved.push([i, layerTileAt(map, 3, i), layerTileAt(map, 4, i)]);
+      setLayerTileAt(map, 3, i, -1);
+      setLayerTileAt(map, 4, i, -1);
+    }
+    return saved;
+  };
+  const place = (item: DressSpec, size: { w: number; h: number }, anchor: Cell, room: RoomRect | undefined, maxD = Infinity): boolean => {
+    const spots: Array<{ x: number; y: number; d: number }> = [];
+    const x0 = Math.max(1, room?.x ?? 1), y0 = Math.max(1, room?.y ?? 1);
+    const x1 = Math.min(map.width - 1, room ? room.x + room.w : map.width - 1), y1 = Math.min(map.height - 1, room ? room.y + room.h : map.height - 1);
+    for (let y = y0; y + size.h <= y1; y++) for (let x = x0; x + size.w <= x1; x++) {
+      const d = Math.abs(x + size.w / 2 - anchor.x) + Math.abs(y + size.h / 2 - anchor.y);
+      if (d <= maxD && fits(x, y, size.w, size.h, room)) spots.push({ x, y, d });
+    }
+    spots.sort((a, b) => a.d - b.d || a.y - b.y || a.x - b.x);
+    for (const s of spots.slice(0, 6)) {
+      const saved = clearDecor(s.x, s.y, size.w, size.h);
+      try { nested(project, "stamp_object", { objectId: item.object, mapId: map.id, x: s.x, y: s.y }); }
+      catch {
+        for (const [i, upper, overlay] of saved) { setLayerTileAt(map, 3, i, upper); setLayerTileAt(map, 4, i, overlay); }
+        continue;
+      }
+      for (const [i] of saved) { looseOf.delete(i); groveOf.delete(i); }
+      for (let yy = s.y; yy < s.y + size.h; yy++) for (let xx = s.x; xx < s.x + size.w; xx++) blocked.add(`${xx},${yy}`);
+      const mid = { x: s.x + Math.floor(size.w / 2), y: s.y + Math.floor(size.h / 2) };
+      if (item.light) out.lights.push({ id: `light_${map.id}_${out.lights.length + 1}`, at: mid, radius: 3, intensity: 0.9, color: item.light, flicker: true });
+      if (item.clue && !out.clue) {
+        out.clue = { x: mid.x, y: s.y + size.h };
+        blocked.add(key(out.clue));
+      }
+      out.placed.push(`${item.object.split("/").pop()} (${s.x},${s.y})`);
+      return true;
+    }
+    return false;
+  };
+  for (const item of items) {
+    const size = kitSize(project, item.object);
+    if (!size) { warnings.push(`${map.name}: 소품 ${item.object} 를 찾지 못했다`); continue; }
+    for (let n = 0; n < (item.count ?? 1); n++) {
+      let ok = false;
+      if (item.where === "boss" && boss) ok = place(item, size, { x: boss.x + Math.floor(boss.w / 2), y: boss.y + Math.floor(boss.h / 2) }, boss);
+      else if (item.where === "rooms" && others.length) {
+        for (let t = 0; t < others.length && !ok; t++) {
+          const room = others[cursor++ % others.length]!;
+          ok = place(item, size, { x: room.x + Math.floor(room.w / 2), y: room.y + Math.floor(room.h / 2) }, room);
+        }
+      } else if (item.where.startsWith("fair") && fair) {
+        // 무대는 북쪽 가운데, 분수는 마당 한가운데, 노점·깃발·등은 네 귀퉁이를 돌며 둘레에 붙인다 — 가운데가 비어야 장터 마당으로 읽힌다.
+        const corner = cursor++ % 4;
+        const anchor = item.where === "fair-north" ? { x: fair.x + Math.floor(fair.w / 2), y: fair.y }
+          : item.where === "fair-center" ? { x: fair.x + Math.floor(fair.w / 2), y: fair.y + Math.floor(fair.h / 2) }
+          : { x: corner % 2 ? fair.x + fair.w : fair.x, y: corner < 2 ? fair.y + fair.h : fair.y };
+        // 마당에 다 못 들어가면 마당 둘레 8칸 안 빈 바닥 — 그보다 멀면 세우지 않는다(맵 반대편 외딴 노점이 R2 에서 장터를 흩었다).
+        groveOk = true;
+        ok = place(item, size, anchor, fair) || place(item, size, anchor, undefined, 8 + Math.max(fair.w, fair.h) / 2);
+        groveOk = false;
+      } else {
+        const anchor = item.where === "north" || item.where === "fair-north" ? { x: center.x, y: minY + 2 } : item.where === "south" ? { x: center.x, y: maxY - 2 } : center;
+        ok = place(item, size, anchor, undefined);
+      }
+      if (!ok) warnings.push(`${map.name}: 소품 ${item.object} 를 세울 빈 바닥이 없다`);
+    }
+  }
+  return out;
+}
+
+/** 장의 수호자 적·트룹 — 기존 보스 트룹의 능력치를 본떠 이름·외형만 장에 맞춘다. 만들지 못하면 기존 보스 트룹으로 싸운다. */
+function chapterBossTroop(draft: Project, prefix: string, foe: FoeSpec, fallback: string | undefined, warnings: string[]): string | undefined {
+  const base = draft.database.troops.find((t) => t.id === fallback);
+  const template = draft.database.enemies.find((e) => e.id === base?.enemyIds[0]);
+  const enemyId = `enemy_${prefix}_boss`, troopId = `troop_${prefix}_boss`;
+  try {
+    nested(draft, "upsert_enemy", {
+      role: "boss",
+      enemy: {
+        id: enemyId, name: foe.enemyName ?? foe.name, monsterResourceId: foe.graphic,
+        ...(template ? { stats: structuredClone(template.stats), rewards: structuredClone(template.rewards), actions: structuredClone(template.actions ?? []) } : {}),
+      },
+    });
+    nested(draft, "upsert_troop", { troop: { id: troopId, name: foe.name, enemyIds: Array.from({ length: foe.count ?? 1 }, () => enemyId) } });
+    return troopId;
+  } catch (cause) {
+    warnings.push(`수호자 ${foe.name}: 적·트룹을 만들지 못해 ${fallback ?? "없음"} 으로 싸운다 — ${cause instanceof Error ? cause.message : String(cause)}`);
+    return fallback;
+  }
+}
+
 const authorJrpgChapter: ToolDefinition = {
   name: "author_jrpg_chapter",
   description:
@@ -375,13 +705,21 @@ const authorJrpgChapter: ToolDefinition = {
     const takenOf = (mapId: string): Set<string> => { let s = taken.get(mapId); if (!s) taken.set(mapId, s = new Set()); return s; };
     const freshId = (base: string): string => { let id = base, n = 2; while (draft.maps[id]) id = `${base}_${n++}`; return id; };
     const origins = new Map<string, Cell>();
-    const dungeonRooms = new Map<string, { rooms: Room[]; boss?: string; enemies: Cell[]; chests: Cell[] }>();
+    const plazas = new Map<string, Cell>();
+    const dungeonRooms = new Map<string, { rooms: Room[]; rects: RoomRect[]; boss?: string; enemies: Cell[]; chests: Cell[] }>();
     const mapsOut: Array<{ key: string; mapId: string; name: string; kind: string; link?: string }> = [];
 
     // ① 거점
     const hubId = freshId(`${prefix}_hub`);
-    nested(draft, "create_map", { id: hubId, name: spec.hub.name, themeScene: spec.hub.scene, seed });
+    const townTheme = /^beodeul_town:(.+)$/u.exec(spec.hub.scene)?.[1];
+    if (spec.hub.form && townTheme) {
+      // create_map themeScene 은 마을 형태를 넘기지 않는다 — 장터 광장 마을은 구성기를 직접 부른다.
+      const built = nested(draft, "author_beodeul_town", { id: hubId, name: spec.hub.name, theme: townTheme, form: spec.hub.form, seed });
+      const plaza = (built.data as { plaza?: Cell } | undefined)?.plaza;
+      if (plaza) plazas.set("hub", { x: plaza.x, y: plaza.y });
+    } else nested(draft, "create_map", { id: hubId, name: spec.hub.name, themeScene: spec.hub.scene, seed });
     const hub = requireMap(draft, hubId);
+    if (townTheme) hub.mapRole ??= "town";
     ids.set("hub", hubId);
     origins.set("hub", centerOf(draft, hub));
     mapsOut.push({ key: "hub", mapId: hubId, name: spec.hub.name, kind: spec.hub.scene });
@@ -402,7 +740,11 @@ const authorJrpgChapter: ToolDefinition = {
         const made = nested(draft, "author_dungeon", { id: mapId, name: site.name, type: site.dungeon, size: "medium", genre: "rpg", adapter: "beodeul", seed, entrance: { fromMapId: fromId, x: gate.cell.x, y: gate.cell.y } });
         const rooms = list(made.data, "rooms").map(asRoom).filter((r): r is Room => !!r);
         const planned = (k: string): Cell[] => list(field(made.data, "population"), k).map(asCell).filter((c): c is Cell => !!c);
-        dungeonRooms.set(site.key, { rooms, boss: text(field(made.data, "anchors"), "boss"), enemies: planned("enemies"), chests: planned("chests") });
+        const rects = list(made.data, "rooms").flatMap((r): RoomRect[] => {
+          const id = text(r, "id"), x = num(r, "x"), y = num(r, "y"), w = num(r, "w"), h = num(r, "h");
+          return id && x !== undefined && y !== undefined && w !== undefined && h !== undefined ? [{ id, x, y, w, h }] : [];
+        });
+        dungeonRooms.set(site.key, { rooms, rects, boss: text(field(made.data, "anchors"), "boss"), enemies: planned("enemies"), chests: planned("chests") });
         const front = asCell(field(field(made.data, "stairsUp"), "front"));
         origins.set(site.key, front ?? centerOf(draft, requireMap(draft, mapId)));
         mapsOut.push({ key: site.key, mapId, name: site.name, kind: `dungeon:${site.dungeon}`, link: `${from.name} (${gate.cell.x},${gate.cell.y}) ↔ 던전 입구` });
@@ -438,20 +780,7 @@ const authorJrpgChapter: ToolDefinition = {
       return at;
     };
 
-    // ③ 분위기
-    const moods: string[] = [];
-    for (const [k, mood] of Object.entries(spec.moods ?? {})) {
-      const map = mapOf(k);
-      if (!map) continue;
-      nested(draft, "set_scene_mood", {
-        mapId: map.id, applyMode: "map",
-        ...(mood.weather ? { weather: { kind: mood.weather, intensity: 0.6 } } : {}),
-        ...(mood.ambient !== undefined ? { lighting: { ambient: mood.ambient, ...(mood.color ? { color: mood.color } : {}) } } : {}),
-      });
-      moods.push(`${map.name}: ${[mood.weather, mood.ambient !== undefined ? `조명 ${mood.ambient}` : ""].filter(Boolean).join(" · ")}`);
-    }
-
-    // ④ 던전 — 계획된 자리의 보이는 적·상자(보스방 수호자는 퀘스트 전투가 선다)
+    // ③ 던전 — 계획된 자리의 보이는 적·상자(보스방 수호자는 퀘스트 전투가 선다)
     for (const [k, d] of dungeonRooms) {
       const map = mapOf(k)!;
       const free = (c: Cell): boolean => isPassable(draft, map, c.x, c.y) && !(map.events ?? []).some((e) => Math.abs(e.x - c.x) + Math.abs(e.y - c.y) <= 1);
@@ -465,6 +794,34 @@ const authorJrpgChapter: ToolDefinition = {
         nested(draft, "place_chest", { mapId: map.id, x: c.x, y: c.y, id: `ev_${map.id}_chest${i + 1}`, name: "던전 상자", contents: chestLoot(draft, chestSalt++) });
         takenOf(map.id).add(key(c));
       });
+    }
+
+    // ④ 장면 소품 — 축제 노점·종탑·텔레포드, 던전마다 다른 융단·촛대·결정·광차·용암 균열(적·상자·문이 선 뒤라 그 둘레를 비운다)
+    const lights = new Map<string, Array<Record<string, unknown>>>();
+    const clues = new Map<string, Cell>();
+    const dressed: string[] = [];
+    for (const [k, items] of Object.entries(spec.dress ?? {})) {
+      const map = mapOf(k);
+      if (!map) continue;
+      const d = dungeonRooms.get(k);
+      const result = dressMap(draft, map, items, d?.rects ?? [], d?.boss, takenOf(map.id), warnings, plazas.get(k));
+      if (result.lights.length) lights.set(k, result.lights);
+      if (result.clue) { clues.set(k, result.clue); takenOf(map.id).add(key(result.clue)); }
+      dressed.push(`${map.name}: ${result.placed.length}점 — ${result.placed.join(" · ")}`);
+    }
+
+    // ④-2 분위기 — 소품 광원(화로·결정·텔레포드)을 맵 조명에 붙인다
+    const moods: string[] = [];
+    for (const [k, mood] of Object.entries(spec.moods ?? {})) {
+      const map = mapOf(k);
+      if (!map) continue;
+      const sources = lights.get(k) ?? [];
+      nested(draft, "set_scene_mood", {
+        mapId: map.id, applyMode: "map",
+        ...(mood.weather ? { weather: { kind: mood.weather, intensity: 0.6 } } : {}),
+        ...(mood.ambient !== undefined ? { lighting: { ambient: mood.ambient, ...(mood.color ? { color: mood.color } : {}), ...(sources.length ? { sources } : {}) } } : {}),
+      });
+      moods.push(`${map.name}: ${[mood.weather, mood.ambient !== undefined ? `조명 ${mood.ambient}` : "", sources.length ? `광원 ${sources.length}` : ""].filter(Boolean).join(" · ")}`);
     }
 
     // ⑤ NPC
@@ -488,7 +845,7 @@ const authorJrpgChapter: ToolDefinition = {
     const helper = npcIds.get(q.helper.npc);
     const clueMap = mapOf(q.clue.map);
     const foeMap = mapOf(q.foe.map);
-    const clueAt = spot(q.clue.map, 0.75, 3);
+    const clueAt = clues.get(q.clue.map) ?? spot(q.clue.map, 0.75, 3);
     const bossRoom = dungeonRooms.get(q.foe.map);
     const bossCell = bossRoom
       ? bossRoom.rooms.find((r) => r.id === bossRoom.boss)?.spots.find((c) => !takenOf(foeMap!.id).has(key(c)) && isPassable(draft, foeMap!, c.x, c.y))
@@ -496,7 +853,8 @@ const authorJrpgChapter: ToolDefinition = {
     if (bossCell && foeMap) takenOf(foeMap.id).add(key(bossCell));
     const questKey = `${prefix}_main`;
     const stepsOut: string[] = [];
-    if (giver && helper && clueMap && foeMap && clueAt && bossCell && troops.boss) {
+    const bossTroop = chapterBossTroop(draft, prefix, q.foe, troops.boss, warnings);
+    if (giver && helper && clueMap && foeMap && clueAt && bossCell && bossTroop) {
       nested(draft, "create_quest", {
         def: {
           key: questKey, title: q.title, summary: q.summary, order: "sequence",
@@ -505,7 +863,7 @@ const authorJrpgChapter: ToolDefinition = {
           steps: [
             { kind: "talk", target: helper, lines: q.helper.lines },
             { kind: "inspect", at: { mapId: clueMap.id, x: clueAt.x, y: clueAt.y }, label: q.clue.label, lines: q.clue.lines },
-            { kind: "kill", troopId: troops.boss, at: { mapId: foeMap.id, x: bossCell.x, y: bossCell.y, graphicQuery: q.foe.query, intro: q.foe.intro, victory: q.foe.victory } },
+            { kind: "kill", troopId: bossTroop, at: { mapId: foeMap.id, x: bossCell.x, y: bossCell.y, graphicQuery: q.foe.query, intro: q.foe.intro, victory: q.foe.victory } },
           ],
           rewards: { gold: q.gold },
         },
@@ -515,7 +873,7 @@ const authorJrpgChapter: ToolDefinition = {
         `의뢰: ${nameOf(giver)} — 「${q.ask}」`,
         `① 대화: ${nameOf(helper)} — 「${q.helper.lines[0]}」`,
         `② 조사: ${clueMap.name} (${clueAt.x},${clueAt.y}) 「${q.clue.label}」`,
-        `③ 전투: ${foeMap.name} (${bossCell.x},${bossCell.y}) ${q.foe.name} [${troops.boss}]`,
+        `③ 전투: ${foeMap.name} (${bossCell.x},${bossCell.y}) ${q.foe.name} [${bossTroop} · ${q.foe.graphic.replace("generated-enemy-", "")}${(q.foe.count ?? 1) > 1 ? ` ×${q.foe.count}` : ""}]`,
         `④ 보고: ${nameOf(giver)} — 「${q.report[0]}」 보상 ${q.gold}G`,
       );
     } else warnings.push(`퀘스트 「${q.title}」: 의뢰인·조력자·단서·수호자 자리 중 빠진 것이 있어 만들지 않았다`);
@@ -548,7 +906,7 @@ const authorJrpgChapter: ToolDefinition = {
 
     return {
       summary: `${spec.era} 「${spec.title}」 — 맵 ${mapsOut.length}장(${mapsOut.map((m) => m.name).join(" · ")}), NPC ${npcsOut.length}, 퀘스트 「${q.title}」 ${stepsOut.length ? "의뢰·대화·조사·전투·보고" : "없음"}, 사건 「${spec.event.title}」${gateOut ? `, 시간의 문 ${gateOut}` : ""}`,
-      data: { chapter: chapterId, title: spec.title, era: spec.era, hubMapId: hubId, maps: mapsOut, npcs: npcsOut, quest: { key: questKey, title: q.title, summary: q.summary, steps: stepsOut }, event: eventOut, timeGate: gateOut, moods },
+      data: { chapter: chapterId, title: spec.title, era: spec.era, hubMapId: hubId, maps: mapsOut, npcs: npcsOut, quest: { key: questKey, title: q.title, summary: q.summary, steps: stepsOut, bossTroopId: bossTroop }, event: eventOut, timeGate: gateOut, moods, dressed },
       ...(warnings.length ? { warnings } : {}),
     };
   },
