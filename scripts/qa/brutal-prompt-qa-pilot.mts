@@ -781,6 +781,7 @@ export async function runLiveInGameBranch(
     partyActorIds?: string[];
     inventory?: Record<string, number>;
     switches?: Record<string, boolean>;
+    variables?: Record<string, number>;
     screenshotPath: string;
     afterScreenshotPath?: string;
     peakScreenshotPath?: string;
@@ -810,11 +811,17 @@ export async function runLiveInGameBranch(
       prepared.switches.push({ id: swId, name: swId });
     }
   }
+  for (const varId of Object.keys(options.variables ?? {})) {
+    if (!prepared.variables.some((v) => v.id === varId)) {
+      prepared.variables.push({ id: varId, name: varId, initialValue: options.variables![varId] ?? 0 });
+    }
+  }
   prepared.session = {
     ...prepared.session,
     partyActorIds: options.partyActorIds ?? ["actor_crono"],
     inventory: { ...prepared.session.inventory, ...(options.inventory ?? {}) },
     switches: { ...prepared.session.switches, ...(options.switches ?? {}) },
+    variables: { ...prepared.session.variables, ...(options.variables ?? {}) },
   };
 
   const rawProject = serialize(prepared);
@@ -830,10 +837,16 @@ export async function runLiveInGameBranch(
     if (msg.type() === "error") consoleErrors.push(msg.text());
   });
 
-  await page.goto(`${baseUrl}/player.html`, { waitUntil: "domcontentloaded", timeout: 180000 });
-  await page.waitForSelector("[data-testid='title-screen']", { timeout: 180000 }).catch((error: unknown) => {
-    throw new Error(`${options.branchLabel}: title screen never appeared - pageErrors=${JSON.stringify(pageErrors.slice(0, 5))} consoleErrors=${JSON.stringify(consoleErrors.slice(0, 5))}`, { cause: error });
-  });
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    pageErrors.length = 0;
+    consoleErrors.length = 0;
+    await page.goto(`${baseUrl}/player.html`, { waitUntil: "domcontentloaded", timeout: 60000 });
+    const shown = await page.waitForSelector("[data-testid='title-screen']", { timeout: 25000 }).then(() => true, () => false);
+    if (shown) break;
+    if (attempt === 3) {
+      throw new Error(`${options.branchLabel}: title screen never appeared - pageErrors=${JSON.stringify(pageErrors.slice(0, 5))} consoleErrors=${JSON.stringify(consoleErrors.slice(0, 5))}`);
+    }
+  }
   await page.keyboard.press("Enter");
   await page.waitForFunction(
     `(() => {

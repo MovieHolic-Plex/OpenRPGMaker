@@ -17,8 +17,9 @@ import { startPlayerQaServer } from "../lib/runtimeQaRun.mjs";
 import "../lib/oauthClients.mjs";
 import { resolveRequestApiKey } from "../lib/aiAuthRuntime.ts";
 import { completeProvider } from "../lib/ohMyPiPiAiRuntime.ts";
-import { runSingleJrpgCase, type SingleCaseExecutionResult } from "./jrpg-200-harness.mts";
+import { createJrpg200FixtureProject, runSingleJrpgCase, type SingleCaseExecutionResult } from "./jrpg-200-harness.mts";
 import { JRPG_200_CASES, type JrpgCommandCase } from "./jrpg-200-cases.mts";
+import { SCENE_SETTING_TOOLS } from "../../src/editor/tools/sceneSettingTools.ts";
 import {
   createQaContext,
   runLiveInGameBranch,
@@ -30,7 +31,7 @@ const MODEL_PROVIDER = "google-antigravity" as const;
 // 심판은 환경변수로 다른 공급자로 뗄 수 있다. 합격 기준(no 0개·score>=80·3표 중 2표)은 그대로다.
 const JUDGE_PROVIDER = process.env.PILOT_JUDGE_PROVIDER ?? MODEL_PROVIDER;
 const JUDGE_MODEL = process.env.PILOT_JUDGE_MODEL ?? "gemini-4-argon";
-const PILOT_IDS = ["jrpg_016", "jrpg_002", "jrpg_003", "jrpg_046"];
+const PILOT_IDS = ["jrpg_016", "jrpg_002", "jrpg_003", "jrpg_046", "jrpg_015", "jrpg_019", "jrpg_020", "jrpg_060"];
 
 interface Gate {
   id: string;
@@ -183,7 +184,7 @@ function branchGates(testCase: JrpgCommandCase, a: LiveInGameBranchTelemetry, b:
     passed: missing.length === 0,
     detail: wanted.length === 0 ? "프롬프트에 따옴표 대사 없음" : `요구 대사 ${wanted.length}개 중 게임에서 나온 것 ${wanted.length - missing.length}개${missing.length ? ` — 누락: ${missing.map((m) => `"${m}"`).join(", ")}` : ""}`,
   });
-  const deathCase = testCase.id !== "jrpg_046";
+  const deathCase = testCase.expectKind === "hazard_conditional_death";
   const fxA = a.screenEffectVisible || a.shakeIntensity > 0 || a.aliveParticles > 0;
   gates.push({
     id: "h5_fx_visible_branch_a",
@@ -206,11 +207,12 @@ function branchGates(testCase: JrpgCommandCase, a: LiveInGameBranchTelemetry, b:
       passed: !b.gameOverAfterAdvance && b.dialogueVisible,
       detail: `분기B GAME OVER=${b.gameOverAfterAdvance}, 대사 표시=${b.dialogueVisible} "${b.dialogueText.slice(0, 60)}"`,
     });
-  } else {
+  } else if (testCase.targetSwitchId) {
+    const sw = testCase.targetSwitchId;
     gates.push({
       id: "h7_switch_set",
-      passed: Boolean(b.switchesAfterAdvance["sw_masamune_awakened"]) || Boolean(a.switchesAfterAdvance["sw_masamune_awakened"]),
-      detail: `sw_masamune_awakened A=${a.switchesAfterAdvance["sw_masamune_awakened"]} B=${b.switchesAfterAdvance["sw_masamune_awakened"]}`,
+      passed: Boolean(b.switchesAfterAdvance[sw]) || Boolean(a.switchesAfterAdvance[sw]),
+      detail: `${sw} A=${a.switchesAfterAdvance[sw]} B=${b.switchesAfterAdvance[sw]}`,
     });
   }
   if (/무너/u.test(testCase.prompt)) {
@@ -263,7 +265,7 @@ JSON으로만 답하라:
         stream: false,
         max_tokens: 2000,
         temperature: 0.1,
-        reasoning: { effort: "high" },
+        reasoning: { effort: "low" },
       },
       { apiKey },
     )) as any;
@@ -295,7 +297,7 @@ JSON으로만 답하라:
 const FROG_KNIGHT_SHEET = process.env.PILOT_FROG_KNIGHT_SHEET ?? "/home/main/chr-frog-knight/data/runs/frog-knight-2/frog-knight-2__gpt-r1/views/sheet_rgba.png";
 
 export function installProjectCharsets(caseId: string, project: Project): void {
-  if (caseId !== "jrpg_046" || !existsSync(FROG_KNIGHT_SHEET)) return;
+  if (!["jrpg_046", "jrpg_019"].includes(caseId) || !existsSync(FROG_KNIGHT_SHEET)) return;
   const src = PNG.sync.read(readFileSync(FROG_KNIGHT_SHEET));
   const sheet = new PNG({ width: 288, height: 256 });
   PNG.bitblt(src, sheet, 0, 0, Math.min(src.width, 72), Math.min(src.height, 128), 0, 0);
@@ -307,6 +309,11 @@ export function installProjectCharsets(caseId: string, project: Project): void {
     dataUrl: `data:image/png;base64,${PNG.sync.write(sheet).toString("base64")}`,
     meta: { width: 288, height: 256 },
   };
+  const frogActor = project.database.actors.find((a) => a.id === "actor_frog");
+  if (frogActor) {
+    frogActor.characterResourceId = id;
+    frogActor.characterIndex = 0;
+  }
 }
 
 type JudgeResult = { passed: boolean; score: number; critique: string; requirements?: unknown };
@@ -333,27 +340,35 @@ function triggerModeFor(events: GameEvent[], fx: number, fy: number): "action" |
 }
 
 export function branchOptions(id: string, fx: number, fy: number, screenshotPath: string, which: "A" | "B", afterShot?: string, triggerMode?: "action" | "step_right") {
+  const tc = JRPG_200_CASES.find((c) => c.id === id);
   const labels: Record<string, [string, string]> = {
     jrpg_016: ["마르 미동행", "마르(actor_marle) 동행"],
     jrpg_002: ["반지 미소지", "화염의 반지 소지"],
     jrpg_003: ["방독면 OFF", "방독면 ON"],
     jrpg_046: ["각성 전", "각성 후"],
+    jrpg_015: ["수호 마석 미소지", "수호 마석 소지"],
+    jrpg_019: ["개구리 기사 미동행", "개구리 기사(actor_frog) 동행"],
+    jrpg_020: ["시간 앵커 0", "시간 앵커 3 이상"],
+    jrpg_060: ["태양석 충전 전", "태양석 충전 후"],
   };
   const isA = which === "A";
   return {
-    branchLabel: labels[id]![isA ? 0 : 1],
+    branchLabel: labels[id]?.[isA ? 0 : 1] ?? (isA ? "분기 A" : "분기 B"),
     startX: fx - 1,
     startY: fy,
     facing: "right" as const,
     triggerMode: triggerMode ?? "step_right",
-    partyActorIds: !isA && id === "jrpg_016" ? ["actor_crono", "actor_marle"] : ["actor_crono"],
-    inventory: id === "jrpg_002" ? { item_fire_ring: isA ? 0 : 1 } : {},
+    partyActorIds: !isA && tc?.targetActorId ? ["actor_crono", tc.targetActorId] : ["actor_crono"],
+    inventory: tc?.targetItemId ? { [tc.targetItemId]: isA ? 0 : 1 } : {},
     switches:
-      id === "jrpg_003"
-        ? { sw_gas_mask: !isA }
-        : id === "jrpg_046" && !isA
-          ? { sw_masamune_awakened: true }
-          : {},
+      tc?.targetSwitchId
+        ? tc.expectKind === "hazard_conditional_death"
+          ? { [tc.targetSwitchId]: !isA }
+          : !isA
+            ? { [tc.targetSwitchId]: true }
+            : {}
+        : {},
+    variables: tc?.targetVariableId ? { [tc.targetVariableId]: isA ? 0 : 3 } : {},
     screenshotPath,
     ...(afterShot ? { afterScreenshotPath: afterShot } : {}),
   };
@@ -374,12 +389,58 @@ async function main() {
   console.log(`[Authentic] judge: ${JUDGE_PROVIDER}/${JUDGE_MODEL}`);
 
   // Stage 1: the real assistant builds each case from the raw prompt (parallel; independent project clones).
-  console.log(`[Authentic] stage 1: real gemini-4-argon assistant builds ${ids.join(", ")}`);
+  const skipAssistant = process.argv.includes("--skip-assistant");
+  const runsDir = join(outDir, "runs");
+  mkdirSync(runsDir, { recursive: true });
+  console.log(`[Authentic] stage 1: ${skipAssistant ? "cached" : "real gemini-4-argon"} assistant builds ${ids.join(", ")}`);
   const assistantRuns = new Map<string, SingleCaseExecutionResult & { afterProject: Project }>();
   await Promise.all(
     ids.map(async (id) => {
       const testCase = JRPG_200_CASES.find((c) => c.id === id)!;
-      const res = (await runSingleJrpgCase(testCase, outDir, { clearFixtureEvents: true, prepareProject: (p) => installProjectCharsets(id, p) })) as SingleCaseExecutionResult & { afterProject: Project };
+      const cacheFile = join(runsDir, `${id}.json`);
+      if (skipAssistant && existsSync(cacheFile)) {
+        const cached = JSON.parse(readFileSync(cacheFile, "utf8"));
+        const beforeProject = createJrpg200FixtureProject();
+        beforeProject.startMapId = testCase.mapId;
+        beforeProject.maps[testCase.mapId]!.events = [];
+        installProjectCharsets(id, beforeProject);
+        const afterProject = structuredClone(beforeProject);
+        for (const tc of cached.toolCalls ?? []) {
+          if (tc.name === "build_scene_setting" && tc.ok && tc.args) {
+            SCENE_SETTING_TOOLS[0]!.run(afterProject, tc.args);
+          }
+        }
+        if (cached.savedMap) afterProject.maps[testCase.mapId] = cached.savedMap;
+        if (cached.savedActors) afterProject.database.actors = cached.savedActors;
+        assistantRuns.set(id, { ...cached, beforeProject, afterProject });
+        console.log(`  [${id}] loaded cached assistant run`);
+        return;
+      }
+      const res = (await runSingleJrpgCase(testCase, outDir, { clearFixtureEvents: true, prepareProject: (p) => installProjectCharsets(id, p) })) as SingleCaseExecutionResult & { afterProject: Project; beforeProject?: Project };
+      writeFileSync(
+        cacheFile,
+        JSON.stringify(
+          {
+            id: res.id,
+            index: res.index,
+            category: res.category,
+            title: res.title,
+            prompt: res.prompt,
+            model: res.model,
+            provider: res.provider,
+            durationMs: res.durationMs,
+            toolCalls: res.toolCalls,
+            assistantReply: res.assistantReply,
+            verification: res.verification,
+            visualQaPngPath: res.visualQaPngPath,
+            targetEvents: (res as any).targetEvents,
+            savedMap: res.afterProject.maps[testCase.mapId],
+            savedActors: res.afterProject.database.actors,
+          },
+          null,
+          2,
+        ),
+      );
       assistantRuns.set(id, res);
       console.log(
         `  [${id}] assistant done in ${Math.round(res.durationMs / 1000)}s, tools=${res.toolCalls.map((t) => `${t.name}:${t.ok ? "ok" : "err"}`).join(",") || "none"}`,
@@ -457,6 +518,12 @@ async function main() {
         `  [${id}] ${overallPassed ? "PASS" : "FAIL"} gates ${gates.filter((g) => g.passed).length}/${gates.length}, judge ${judge.score}`,
       );
       for (const g of gates) if (!g.passed) console.log(`     FAIL ${g.id}: ${g.detail}`);
+      const summaryPath = join(outDir, "authentic-summary.json");
+      const previous: CaseResult[] = existsSync(summaryPath) ? JSON.parse(readFileSync(summaryPath, "utf8")) : [];
+      const fresh = new Set(results.map((r) => r.caseId));
+      const order = (cid: string) => (PILOT_IDS.includes(cid) ? PILOT_IDS.indexOf(cid) : PILOT_IDS.length);
+      const mergedNow = [...previous.filter((r) => !fresh.has(r.caseId)), ...results].sort((p, q) => order(p.caseId) - order(q.caseId));
+      writeFileSync(summaryPath, JSON.stringify(mergedNow, null, 2));
     }
   } finally {
     await context.close();
@@ -464,7 +531,7 @@ async function main() {
     await server.close();
   }
 
-  // --cases 로 일부만 다시 돌려도 보고서는 네 사례를 모두 싣는다 — 이번에 돈 사례만 갈아 끼우고 나머지는 지난 결과를 둔다.
+  // --cases 로 일부만 다시 돌려도 보고서는 전체 사례를 모두 싣는다 — 이번에 돈 사례만 갈아 끼우고 나머지는 지난 결과를 둔다.
   const summaryPath = join(outDir, "authentic-summary.json");
   const previous: CaseResult[] = existsSync(summaryPath) ? JSON.parse(readFileSync(summaryPath, "utf8")) : [];
   const fresh = new Set(results.map((r) => r.caseId));
@@ -483,8 +550,8 @@ ${merged
 <p class="p">${esc(r.prompt)}</p>
 <p class="p">조수 도구 호출: ${esc(r.assistantToolCalls.join(", ") || "없음")}<br>조수 답변: ${esc(r.assistantReply)}</p>
 <div><img src="${r.mapPng}"> <img src="${r.shotA}"> <img src="${r.shotB}"></div>
-${existsSync(join(vizDir, `stage_${r.caseId}_after.png`)) ? `<p class="p">build_scene_setting 무대만(조수 손 안 댄 상태): 왼쪽 = 흩뿌림 시절, 오른쪽 = 대칭 세트</p>
-<div><img src="authentic-pilot/stage_${r.caseId}_before.png"> <img src="authentic-pilot/stage_${r.caseId}_after.png"></div>` : ""}
+${existsSync(join(vizDir, `stage_${r.caseId}_after.png`)) ? `<p class="p">build_scene_setting 무대 미리보기:</p>
+<div>${existsSync(join(vizDir, `stage_${r.caseId}_before.png`)) ? `<img src="authentic-pilot/stage_${r.caseId}_before.png"> ` : ""}<img src="authentic-pilot/stage_${r.caseId}_after.png"></div>` : ""}
 <table>${r.gates.map((g) => `<tr><td class="${g.passed ? "ok" : "ng"}">${g.passed ? "PASS" : "FAIL"}</td><td>${g.id}</td><td>${esc(g.detail)}</td></tr>`).join("")}
 <tr><td class="${r.judge.passed ? "ok" : "ng"}">${r.judge.passed ? "PASS" : "FAIL"}</td><td>blind judge ${r.judge.score}</td><td>${esc(r.judge.critique)}</td></tr></table>`,
   )

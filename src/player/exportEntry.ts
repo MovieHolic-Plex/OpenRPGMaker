@@ -9,7 +9,6 @@ import { PRODUCT_BRAND } from "@/brand";
 import { deserialize } from "@/project/io";
 import { OPRN_EXTENSION } from "@/project/package";
 import type { Project } from "@/project/types";
-import { createFlagshipDemoProject } from "@/project/flagship";
 import { renderPlayer } from "@/player/player";
 import { renderOprnGameFilePicker } from "@/player/oprnGameFilePicker";
 import { readStandalonePayload } from "@/player/standalonePayload";
@@ -59,6 +58,8 @@ async function bootExportedPlayer(root: HTMLElement): Promise<void> {
   registerExportAssetBase(new URL(probeAssets ? "../" : ".", document.baseURI));
   const demoParam = new URLSearchParams(window.location.search).get("demo");
   if (demoParam === "chrono-bell" || demoParam === "emerald-crown" || demoParam === "shitamachi-fourth-season") {
+    // 정적 import 하면 ?demo= 가 없는 일반 player.html 부팅에도 에디터 toolRegistry(1,800개 모듈) 전체가 로드된다.
+    const { createFlagshipDemoProject } = await import("@/project/flagship");
     startPlayer(root, boot, createFlagshipDemoProject(demoParam).project, "bundled");
     return;
   }

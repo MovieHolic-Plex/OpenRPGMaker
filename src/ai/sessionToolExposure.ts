@@ -92,9 +92,9 @@ function schemasForIntent(intent: IntentDeclaration | null): OpenAiTool[] {
 }
 
 /** 이벤트 요청 속 장소·지형·사물 낱말 — 말한 것이 맵에 없으면 조수가 먼저 지어야 하는 대상. */
-export const SCENE_SETTING_PATTERN = /(화산|용암|마그마|독\s*늪|늪지|유적|성소|신전|제단|협곡|다리|동굴|폭포|성검|중세)/u;
+export const SCENE_SETTING_PATTERN = /(화산|용암|마그마|독\s*늪|늪지|유적|성소|신전|제단|협곡|다리|동굴|폭포|성검|중세|심판의\s*빛|태양석|검기|결투장|차원의\s*틈)/u;
 
-export const SCENE_SETTING_NOTE = "[무대 필수] 이 요청이 말한 장소·지형·사물이 요청 좌표 주변에 보이지 않으면 이벤트를 만들기 전에 build_scene_setting({mapId,theme,x,y}) 를 한 번 호출해 무대를 짓는다(x,y = 이벤트 칸). theme: 화산·열풍 → volcano(마을 외곽이면 houses:2~3), 용암 다리·붕괴 → lava_bridge, 독늪·독안개 → poison_swamp, 유적·성소·제단·성검·중세 성소 → ruins_shrine. 지은 뒤 show_map_region 으로 그림을 확인한다. 이벤트만 만들고 끝내면 미완성이다. 맵의 나머지는 보존한다.";
+export const SCENE_SETTING_NOTE = "[무대 필수] 이 요청이 말한 장소·지형·사물이 요청 좌표 주변에 보이지 않으면 이벤트를 만들기 전에 build_scene_setting({mapId,theme,x,y}) 를 한 번 호출해 무대를 짓는다(x,y = 이벤트 칸). theme: 화산·열풍·심판의 빛·폐허 포격 → volcano, 용암 다리·차원 다리·붕괴 → lava_bridge, 독늪·독안개 → poison_swamp, 유적·성소·신전·제단·성검·결투장·태양의 신전 → ruins_shrine. 지은 뒤 show_map_region 으로 그림을 확인한다. 이벤트만 만들고 끝내면 미완성이다. 맵의 나머지는 보존한다.";
 
 /**
  * Build the registry portion of one AssistantSession request.

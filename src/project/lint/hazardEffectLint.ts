@@ -146,7 +146,7 @@ export function lintHazardEffects(project: Project): LintIssue[] {
           add('hazard-survival-static', `${event.id}: ${hazard} 생존(무사 통과) 분기에서 플레이어가 ${steps}칸만 움직여 제자리에 서 있는 것처럼 보입니다. moveActor{target:"player",moves:[…],wait:true}(이벤트 명령이면 moveEvent eventId:"${PLAYER_MOVE_TARGET}")로 이벤트 칸을 지나 ${MIN_SURVIVAL_STEPS}~5칸 걸어 위험 구역을 먼저 다 건넌 뒤에 색조를 되돌리고 weather none 으로 안개를 걷으세요. build_scene_setting 결과의 data.survivalWalk.moves 를 그대로 쓰면 막힌 칸이 없습니다.`);
         }
       }
-      if (!family) continue;
+      if (!hazardous) continue;
       const particles = commands.filter(isParticle);
       const longest = Math.max(0, ...particles.map((c) => Number(fieldsOf(c).durationMs ?? 0)));
       const spots = new Set(particles.map((c) => `${fieldsOf(c).target ?? ''}:${fieldsOf(c).x ?? ''},${fieldsOf(c).y ?? ''}`));
