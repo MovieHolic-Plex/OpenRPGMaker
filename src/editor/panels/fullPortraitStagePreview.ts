@@ -54,7 +54,7 @@ export function renderFullPortraitStage(options: FullPortraitStageOptions): HTML
     height: `${portraitHeight}px`,
     bottom: `${-drop}px`,
     [right ? "right" : "left"]: `${inset}px`,
-    imageRendering: "pixelated",
+    imageRendering: options.veil ? "auto" : "pixelated",
     transform: options.flipHorizontally ? "scaleX(-1)" : "",
   });
   const stageChildren: HTMLElement[] = [portrait];
@@ -72,7 +72,7 @@ export function renderFullPortraitStage(options: FullPortraitStageOptions): HTML
       height: `${portraitHeight}px`,
       bottom: `${-drop}px`,
       [right ? "left" : "right"]: `${inset}px`,
-      imageRendering: "pixelated",
+      imageRendering: options.veil ? "auto" : "pixelated",
       filter: options.veil ? "none" : "brightness(0.82) saturate(0.92)",
     });
     stageChildren.push(partnerNode);
@@ -90,7 +90,7 @@ export function renderFullPortraitStage(options: FullPortraitStageOptions): HTML
           src: cornerUrl,
           alt: "",
           draggable: "false",
-          style: `width:${Math.round(44 * stageScale)}px;height:${Math.round(44 * stageScale)}px;object-fit:contain;object-position:bottom center;flex-shrink:0;image-rendering:pixelated;margin-bottom:-5px;`,
+          style: `width:${Math.round(44 * stageScale)}px;height:${Math.round(44 * stageScale)}px;object-fit:contain;object-position:bottom center;flex-shrink:0;image-rendering:auto;margin-bottom:-5px;`,
         },
         dataset: { testid: "full-portrait-stage-corner-face" },
       });

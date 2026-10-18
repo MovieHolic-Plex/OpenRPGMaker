@@ -851,11 +851,12 @@ export function createDialogueUI(
     if (request.signal?.aborted) return Promise.reject(new DOMException("Text cancelled", "AbortError"));
     const system = systemFor(request);
     if (request.reading !== "off") setAuthoredPreferenceDefaults(system?.defaults);
+    const activeProjectForRequest = (request.textContext?.project && "system" in request.textContext.project ? request.textContext.project as Project : undefined) ?? store.getCurrent();
     const voiceFile = request.voiceResourceId?.trim();
-    const voiceUrl = voiceFile ? resolveAudioSource(voiceFile, store.getCurrent()) : null;
+    const voiceUrl = voiceFile ? resolveAudioSource(voiceFile, activeProjectForRequest) : null;
     if (voiceUrl) playLineVoice(voiceUrl);
     else stopLineVoice();
-    const requestedLook = request.look ?? resolveDialogueLook(store.getCurrent(), { speaker: request.speaker, emotion: request.emotion });
+    const requestedLook = request.look ?? resolveDialogueLook(activeProjectForRequest, { speaker: request.speaker, emotion: request.emotion });
     if (isNonBlockingContainer(requestedLook.container)) {
       // 흘림·코너 대사는 대사 상자를 건드리지 않고, 기다리지도 않는다.
       showAmbient(request, voiceUrl ? { ...requestedLook, voice: null } : requestedLook);
