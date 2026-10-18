@@ -136,11 +136,11 @@ class Sprite:
 
     def eye(self, x, y, w, h, dark, white, iris=None, iris_hi=None, rim=None):
         """3/4 시점 포켓몬식 타원 눈:
-        - 가까운 눈(w=5, h=6): 모서리를 깎은 5×6 타원 눈동자 + 왼쪽 위 2×2 흰 하이라이트 + 오른쪽 아래 초승달 홍채
-        - 먼 눈(w=3, h=5): 원근으로 좁아진 3×5 세로 타원 + 왼쪽 위 1×2 흰 하이라이트 + 아래쪽 홍채."""
+        - 가까운 눈(w=4, h=5): 모서리를 깎은 4×5 타원 눈동자 + 왼쪽 위 1×2 흰 하이라이트 + 오른쪽 아래 초승달 홍채
+        - 먼 눈(w=3, h=4): 원근으로 좁아진 3×4 세로 타원 + 왼쪽 위 1×2 흰 하이라이트 + 아래쪽 홍채."""
         for yy in range(h):
             for xx in range(w):
-                if w >= 5:
+                if w >= 4:
                     corner = (yy in (0, h - 1)) and (xx in (0, w - 1))
                 else:
                     corner = (yy in (0, h - 1)) and (xx == 0)
@@ -150,8 +150,8 @@ class Sprite:
                 else:
                     self.px(x + xx, y + yy, dark)
         if iris:
-            if w >= 5:
-                for xx in range(2, w - 1):
+            if w >= 4:
+                for xx in range(1, w - 1):
                     self.px(x + xx, y + h - 2, iris)
                 self.px(x + w - 2, y + h - 3, iris)
                 if iris_hi:
@@ -237,18 +237,11 @@ def leafling_front():
     leaf_part(sp, (18, 30), (9, 25), (11, 16), 11)  # 왼쪽 잎 귀
     leaf_part(sp, (28, 28), (36, 23), (39, 16), 11)  # 오른쪽 잎 귀
     head = sp.part(ell((22, 39), 12, 9.5) | ell((14, 41), 5.5, 4.5), FUR, spot=ell((19, 33), 3, 1.5))
-    mask = tidy(
-        head
-        & (
-            ell((16, 44), 6.5, 4)
-            | ell((13, 39), 3.8, 4.5)
-            | ell((22, 40), 4.5, 4.8)
-        )
-    ) & head
+    mask = tidy(head & ell((17, 45), 6.8, 3.2)) & head
     sp.fill(mask, CREAM[1])
     acorn_cap(sp, (23, 29), 7.5, 4)
-    sp.eye(12, 36, 3, 5, EYE_D, EYE_W, EYE_I, EYE_IH, rim=CREAM[1])
-    sp.eye(20, 36, 5, 6, EYE_D, EYE_W, EYE_I, EYE_IH, rim=CREAM[1])
+    sp.eye(13, 36, 3, 4, EYE_D, EYE_W, EYE_I, EYE_IH, rim=FUR[1])
+    sp.eye(20, 36, 4, 5, EYE_D, EYE_W, EYE_I, EYE_IH, rim=FUR[1])
     sp.px(16, 41, LEAF_INK)
     for x, y in ((15, 43), (16, 44), (17, 44), (18, 43)):
         sp.px(x, y, LEAF_INK)
@@ -327,11 +320,11 @@ def sparkit_front():
     toes(sp, front & (rows >= 59), FIRE_INK)
     sp.part(ell((28, 52), 7, 4), BELLY)
     head = sp.part(ell((22, 38), 11.5, 10) | ell((14, 40), 5.5, 4.5), EMBER, spot=ell((18, 32), 4, 1.5))
-    jaw = tidy(head & (ell((17, 45), 7.5, 3.8) | ell((13, 42), 5, 3.5) | ell((22, 39), 3.8, 4.5))) & head
+    jaw = tidy(head & (ell((18, 45), 7.5, 3.2) | ell((14, 43), 4.5, 2.5))) & head
     sp.fill(jaw, BELLY[1])
-    sp.eye(12, 35, 3, 5, F_EYE_D, (255, 255, 255), F_EYE_I, F_EYE_IH, rim=EMBER[1])
-    sp.eye(20, 35, 5, 6, F_EYE_D, (255, 255, 255), F_EYE_I, F_EYE_IH, rim=BELLY[1])
-    sp.px(16, 40, FIRE_INK)
+    sp.eye(14, 34, 3, 4, F_EYE_D, (255, 255, 255), F_EYE_I, F_EYE_IH, rim=EMBER[1])
+    sp.eye(21, 35, 4, 5, F_EYE_D, (255, 255, 255), F_EYE_I, F_EYE_IH, rim=EMBER[1])
+    sp.px(12, 39, FIRE_INK)
     for x, y in ((14, 42), (15, 43), (16, 43), (17, 43), (18, 42)):
         sp.px(x, y, FIRE_INK)
     sp.line([(25, 29), (26, 27)], STRIPE, clip=head)
@@ -402,11 +395,11 @@ def aqualing_front():
     gill(sp, (33, 37), (45, 34), 6.5)
     gill(sp, (32, 41), (43, 46), 5.5)
     head = sp.part(ell((21, 40), 12.5, 9.5), BLUE, spot=ell((16, 34), 4, 1.5))
-    cheek = tidy(head & (ell((18, 46), 8, 4) | ell((17, 43), 5.5, 4.5))) & head
+    cheek = tidy(head & ell((18, 46), 8, 3.2)) & head
     sp.fill(cheek, PALE[1])
-    sp.eye(12, 36, 3, 5, W_EYE_D, (255, 255, 255), W_EYE_I, W_EYE_IH, rim=BLUE[1])
-    sp.eye(21, 36, 5, 6, W_EYE_D, (255, 255, 255), W_EYE_I, W_EYE_IH, rim=BLUE[1])
-    for x, y in ((16, 42), (17, 43), (18, 43), (19, 42)):
+    sp.eye(13, 36, 3, 4, W_EYE_D, (255, 255, 255), W_EYE_I, W_EYE_IH, rim=BLUE[1])
+    sp.eye(20, 36, 4, 5, W_EYE_D, (255, 255, 255), W_EYE_I, W_EYE_IH, rim=BLUE[1])
+    for x, y in ((16, 43), (17, 44), (18, 44), (19, 43)):
         sp.px(x, y, WATER_INK)
     return sp.image()
 
