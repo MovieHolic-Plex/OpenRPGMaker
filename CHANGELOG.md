@@ -5,6 +5,21 @@
 
 <!-- releases -->
 
+## 0.270.0 — 2026-10-19
+
+### 기능
+
+- **stamp-place** — add 4 castle archetypes, relative dx/dy move, NPC dialogue & shop stamps (#2978) (`0936856`)
+
+### 수정
+
+- **handInterior** — extend WALL_ONLY_RE and fix remaining floating props in diverse-84 facilities (#2985) (`db47ca5`)
+- **interior** — R14 redraw stairs/escalators as real 3/4 flights; door approach keeps two tiles so all 21 daily venues are walkable (#2982) (`96efafd`)
+- **handInterior** — add WALL_ONLY assertion, south/east/west/counterLine verbs, and south-band props (#2983) (`072b4ba`)
+- **forest** — 숲 주변 풀밭을 수관 색 단으로 옮기고 숲 테두리 이끼 치마·낙엽 - Opus 적대적 VQA (#2981) (`1b6a58c`)
+- **puzzle** — build the 6 stage presets as full 20x15 single-tileset rooms (#2979) (`730ab26`)
+- **handInterior** — overhaul 84 diverse facility furniture placement per hostile VQA (#2977) (`7efed3b`)
+
 ## 0.269.0 — 2026-10-19
 
 ### 기능
