@@ -124,7 +124,7 @@ addFamily(ACTIONS.event, "upsert_event duplicate_event move_event create_transfe
 addFamily(ACTIONS.deleteEvent, "remove_event delete_troop_battle_page");
 addFamily(ACTIONS.database, "duplicate_database_record upsert_database_utility upsert_item upsert_enemy upsert_troop define_monster_species define_crop set_type_chart give_starter_monsters upsert_skill upsert_equipment upsert_equipment_slot upsert_class define_promotion upsert_state set_session_start set_title_screen upsert_battle_animation upsert_craft_recipe upsert_item_upgrade upsert_tool_action upsert_life_skill upsert_life_system upsert_fish_species upsert_farm_building_type upsert_home_decoration_type upsert_farm_animal_building define_ending set_shop_stock set_sell_prices");
 addFamily(ACTIONS.deleteDatabase, "delete_database_record delete_craft_recipe delete_fish_species");
-addFamily(ACTIONS.createMap, "create_map duplicate_map derive_map_variant generate_map");
+addFamily(ACTIONS.createMap, "create_map duplicate_map derive_map_variant generate_map expand_jrpg_campaign_volume");
 addFamily(ACTIONS.resizeMap, "resize_map");
 addFamily(ACTIONS.deleteMap, "remove_map");
 addFamily(ACTIONS.editMap, "manage_map_tree set_map_properties shift_map move_region set_start_position set_tile_passability set_encounter_table author_wild_route create_farm_plot make_hunting_ground remove_field_spawn configure_roguelike_room upsert_map_connection delete_map_connection link_maps adopt_layout_regions create_map_location delete_map_location update_map_location resolve_map_location");

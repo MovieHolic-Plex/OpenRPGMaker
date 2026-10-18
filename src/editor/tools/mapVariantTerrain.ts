@@ -58,6 +58,12 @@ const PROFILES = {
   },
 } as const;
 
+/** 황무지에서 나무 덩어리의 남은 칸을 메우는 네 방향 모두 막힌 물체 — 여러 칸짜리를 섞어 넣고 1칸짜리로 마감한다. */
+const WASTELAND_WALLS = [
+  "bd-pick-mining-valley-slagheap", "bd-pick-mountain-pass-boulder-l", "bd-pick-mountain-pass-boulder-m", "bd-pick-mining-valley-slagrock",
+  "bd-pick-deep-forest-path-stump",
+];
+
 /** 원시림에 더 심을 나무 — 마을 시공기가 쓰는 버들항 나무 킷(위층만, 모두 막힘). 큰 것부터 시도한다. */
 const PRIMEVAL_TREES = [
   "bd-tree-d43edd", "bd-tree-5844f6", "bd-tree-1e09f0", "bd-tree-d61d7e", "bd-tree-bdd36e", "bd-tree-1a786c",
@@ -160,6 +166,10 @@ export function applyVariantTerrain(copy: GameMap, tileset: Tileset | undefined,
   // ① 숲 — 황무지는 나무 덩어리를 고사목·광재·바위로, 원시림은 그대로 두고 아래 ④에서 더 심는다.
   if (profile === "wasteland") {
     const swaps = spec.treeSwaps.map((id) => upperPiece(kitsById.get(id))).filter((piece): piece is Piece => piece !== undefined);
+    const walls = WASTELAND_WALLS.map((id) => upperPiece(kitsById.get(id))).filter((piece): piece is Piece => piece !== undefined && piece.cells.every((c) => {
+      const pass = tileset.passability?.[c.tile];
+      return Boolean(pass && !pass.up && !pass.down && !pass.left && !pass.right);
+    }));
     const seen = new Uint8Array(width * height);
     for (let start = 0; start < width * height; start += 1) {
       if (seen[start] || !tagsOf(tileset, copy.upperTiles[start]).includes("tree")) continue;
@@ -204,6 +214,33 @@ export function applyVariantTerrain(copy: GameMap, tileset: Tileset | undefined,
             placed += 1;
             break fit;
           }
+        }
+      }
+      // 남은 나무 칸은 네 방향 모두 막는 바위·광재·그루터기로 메운다 — 숲 덩어리가 통째로 빈 땅이 되면
+      // 가도·마을 가장자리의 벽이 사라져 길이 읽히지 않는다(jrpg-loop-4 R6 폐허 가도). 통행은 나무 때와 같다.
+      // 단 덩어리 속(네 이웃이 모두 숲) 칸의 4할은 잿빛 맨땅 웅덩이로 비운다 — 다 메우면 맵 전체가 바위 융단이 됐다(R6 적대 검수 2회차).
+      // 테두리는 그대로 막히므로 빈 웅덩이에는 들어갈 수 없다.
+      for (const cell of component) {
+        const cx = cell % width, cy = Math.floor(cell / width);
+        const deep = [[cx + 1, cy], [cx - 1, cy], [cx, cy + 1], [cx, cy - 1]].every(([nx, ny]) => nx! >= 0 && ny! >= 0 && nx! < width && ny! < height && inside.has(index(nx!, ny!)));
+        if (deep && !taken.has(cell) && hash32(`${seed}:clear:${Math.floor(cx / 2)}:${Math.floor(cy / 2)}`) % 100 < 40) taken.add(cell);
+      }
+      const cells = [...component].sort((a, b) => b - a);
+      for (const cell of cells) {
+        if (taken.has(cell)) continue;
+        const cx = cell % width, cy = Math.floor(cell / width);
+        const fill = walls.map((piece, n) => ({ piece, key: hash32(`${seed}:wall:${cell}:${n}`) })).sort((a, b) => Number(a.piece.cells.length === 1) - Number(b.piece.cells.length === 1) || a.key - b.key);
+        for (const { piece } of fill) {
+          // 이 칸이 조각의 오른쪽 아래 칸이 되게 놓는다(아래 줄부터 메우므로 위·왼쪽으로 자란다).
+          const x0 = cx - piece.w + 1, y0 = cy - piece.h + 1;
+          if (!piece.cells.every((c) => inside.has(index(x0 + c.dx, y0 + c.dy)) && !taken.has(index(x0 + c.dx, y0 + c.dy)))) continue;
+          if (!piece.cells.some((c) => index(x0 + c.dx, y0 + c.dy) === cell)) continue;
+          for (const c of piece.cells) {
+            const at = index(x0 + c.dx, y0 + c.dy);
+            copy.upperTiles[at] = c.tile;
+            taken.add(at);
+          }
+          break;
         }
       }
     }

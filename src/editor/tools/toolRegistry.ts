@@ -98,6 +98,7 @@ import { CONSTRUCTION_TOOLS_V3, VOCABULARY_TOOLS_V3 } from "./v3";
 import { STRUCTURE_KIT_TOOLS } from "./structureKitTools";
 import { TILESET_OBJECT_TOOLS } from "./tilesetObjectTools";
 import { HAND_INTERIOR_TOOLS } from "./handInteriorTools";
+import { bindJrpgVolumeToolLookup, JRPG_VOLUME_TOOLS } from "./jrpgVolumeTools";
 import { SPACE_BLUEPRINT_TOOLS } from "./spaceBlueprintTools";
 import { JP_CITY_TOOLS } from "./jpCityTools";
 import { CAMPUS_TOOLS } from "./campusTools";
@@ -274,6 +275,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(SKY_ISLAND_TOOLS, "tile"),
   // 스팀펑크 도시(steampunk_city) 구성기 — 거리·공장역·운하 부두·실내 여섯 가지를 한 번에 짓고(배치·통행은 구성기), 건물 문 ↔ 실내를 잇는다.
   ...withDomain(STEAMPUNK_CITY_TOOLS, "tile"),
+  // JRPG 한 고장 분량 — 마을 집 문 ↔ 여관·상점·장로 실내, 가장자리 ↔ 가도(보이는 적·상자), 가도 끝 ↔ 던전(중간 보스·수호자)을 하위 도구로 잇는다.
+  ...withDomain(JRPG_VOLUME_TOOLS, "tile"),
   // SF 정거장·네온 거리(sf_station) 맵 구성기 — 정거장·연구 기지 실내·네온 거리·달 기지를 씨앗으로 한 장째 짠다. oprn-scifi 맵에서만 동작한다.
   ...withDomain(SF_STATION_TOOLS, "tile"),
   ...withDomain(GOTHIC_PLACE_TOOLS, "tile"),
@@ -413,6 +416,7 @@ export function getTool(name: string): ToolDefinition | undefined {
 bindStreetToolLookup(getTool);
 bindThemeToolLookup(getTool);
 bindSpaceBlueprintToolLookup(getTool);
+bindJrpgVolumeToolLookup(getTool);
 
 export function allTools(): readonly ToolDefinition[] {
   return TOOL_REGISTRY;

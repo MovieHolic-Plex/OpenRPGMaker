@@ -99,6 +99,52 @@ export function checkMapGraph(project: Project, graph: MapGraph): Finding[] {
   return findings;
 }
 
+/** 이 밝기 이상이면 「어두운 조명」 — 시대 변형 LOOKS 의 past 0.3 · ruin 0.52 가 여기 든다. */
+const DARK_AMBIENT = 0.3;
+const NO_LIGHTING = "none";
+
+/**
+ * defaultLighting 이 없는 맵은 들어오기 전 맵의 조명을 이어 받는다(lightingRules.applyMapDefaultLighting).
+ * 어두운 맵과 밝은 맵 양쪽에서 들어올 수 있으면 같은 장소가 길마다 달라 보인다 — jrpg-loop-4 R6: 폐허(ambient 0.52)에서
+ * 시작하는 ff2 는 붕괴 전 왕도·여관·가도까지 잿빛 갈색으로 덮여 「시대가 달라진 마을이 다 똑같다」가 되풀이됐다.
+ */
+export function checkLightingLeak(project: Project, graph: MapGraph): Finding[] {
+  const lightingKey = (id: string): string | undefined => {
+    const lighting = project.maps[id]?.defaultLighting;
+    return lighting ? `${lighting.ambient}|${lighting.color ?? ""}` : undefined;
+  };
+  const entering = new Map<string, Set<string>>();
+  if (project.maps[project.startMapId]) entering.set(project.startMapId, new Set([NO_LIGHTING]));
+  for (let changed = true; changed;) {
+    changed = false;
+    for (const edge of graph.edges) {
+      if (edge.from === null || edge.from === edge.to || !project.maps[edge.to]) continue;
+      const own = lightingKey(edge.from);
+      const leaving = own !== undefined ? [own] : [...(entering.get(edge.from) ?? [])];
+      const target = entering.get(edge.to) ?? new Set<string>();
+      for (const key of leaving) if (!target.has(key)) { target.add(key); changed = true; }
+      entering.set(edge.to, target);
+    }
+  }
+  const findings: Finding[] = [];
+  for (const map of Object.values(project.maps)) {
+    const keys = entering.get(map.id);
+    if (map.defaultLighting || !keys || keys.size < 2) continue;
+    const dark = [...keys].filter((key) => key !== NO_LIGHTING && Number(key.split("|")[0]) >= DARK_AMBIENT);
+    if (dark.length === 0) continue;
+    const darkSources = [...new Set(graph.edges.filter((edge) => edge.to === map.id && edge.from !== null && edge.from !== map.id)
+      .filter((edge) => { const own = lightingKey(edge.from!); return own !== undefined && dark.includes(own); })
+      .map((edge) => project.maps[edge.from!]?.name ?? edge.from!))];
+    findings.push({
+      severity: "warning",
+      code: "map-lighting-leak",
+      message: `${map.name}(${map.id}) 은 조명(defaultLighting)이 없어 들어오기 전 맵의 조명을 이어 받습니다 — ${darkSources.length > 0 ? `${darkSources.join("·")} 에서` : "어두운 맵을 거쳐"} 들어오면 어둡고 다른 길로 오면 밝아 같은 장소가 길마다 달라 보입니다. 고치기: set_lighting_volume({mapId:"${map.id}", ambient:0}) 로 이 맵의 조명을 고정하세요.`,
+      where: { mapId: map.id, mapName: map.name },
+    });
+  }
+  return findings;
+}
+
 export function summarizeMaps(project: Project, graph: MapGraph): MapSummary[] {
   return Object.values(project.maps).map((map) => ({
     id: map.id, name: map.name, width: map.width, height: map.height, events: map.events?.length ?? 0,
