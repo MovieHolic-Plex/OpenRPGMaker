@@ -37,7 +37,17 @@ const MODEL_PLANS = {
   },
   "성채와 성문 세워줘": {
     steps: [
-      { tool: "place_castle", args: { gate: true, towers: true }, label: "석조 성채·쌍둥이 망루·철창 아치 성문" },
+      { tool: "place_castle", args: { gate: true, towers: true }, label: "석조 성채·망루·아치 성문" },
+    ],
+  },
+  "성문 없이 성채 세워줘": {
+    steps: [
+      { tool: "place_castle", args: { gate: false, towers: true }, label: "폐쇄형 성벽과 망루 요새(gate:false)" },
+    ],
+  },
+  "망루 없이 성채 세워줘": {
+    steps: [
+      { tool: "place_castle", args: { gate: true, towers: false }, label: "평성벽과 철창 성문 요새(towers:false)" },
     ],
   },
   "전투 흔적과 백골 유해 깔아줘": {
@@ -50,6 +60,30 @@ const MODEL_PLANS = {
       { tool: "harmonize_region", args: {}, label: "주변 바이옴 맞춤 자동 조경" },
     ],
   },
+  "이 집 오른쪽으로 4칸 옮겨줘": {
+    steps: [
+      { tool: "move_object", args: { query: "집", dx: 4, dy: 0 }, label: "집 오른쪽으로 4칸 옮기기" },
+    ],
+  },
+  "성 오른쪽으로 몇 칸 옮겨줘": {
+    steps: [
+      { tool: "move_object", args: { query: "성" }, label: "성 오른쪽으로 옮기기" },
+    ],
+  },
+  "여기에 마을 경비병과 산책하는 주민 NPC 만들어줘": {
+    steps: [],
+  },
+  "간단한 NPC 만들고 대사도 만들어줘": {
+    steps: [],
+  },
+  "간단한 물약 상점과 상인 NPC 만들어줘": {
+    steps: [
+      { tool: "place_shop", args: { kind: "potion", name: "물약 상점" }, label: "간단한 물약 상점과 상인 NPC" },
+    ],
+  },
+  "간단한 상점 만들어줘": {
+    steps: [],
+  },
 };
 
 async function startViteServer() {
@@ -58,13 +92,14 @@ async function startViteServer() {
     env: { ...process.env, VITE_CACHE_DIR: `/tmp/vite-cache-fastpath-${PORT}` },
     stdio: ["ignore", "pipe", "pipe"],
   });
-  await new Promise((resolve, reject) => {
+  const baseUrl = await new Promise((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error("vite start timeout")), 45_000);
     proc.stdout.on("data", (chunk) => {
-      const text = String(chunk);
-      if (text.includes(String(PORT)) || text.includes("Local:")) {
+      const text = String(chunk).replace(/\x1b\[[0-9;]*m/g, "");
+      const m = text.match(/http:\/\/127\.0\.0\.1:\d+/);
+      if (m) {
         clearTimeout(timer);
-        resolve(undefined);
+        resolve(m[0]);
       }
     });
     proc.on("error", (err) => {
@@ -72,10 +107,10 @@ async function startViteServer() {
       reject(err);
     });
   });
-  return proc;
+  return { proc, baseUrl };
 }
 
-const viteProc = await startViteServer();
+const { proc: viteProc, baseUrl: ACTUAL_BASE } = await startViteServer();
 let browser;
 try {
   browser = await chromium.launch({
@@ -126,7 +161,7 @@ try {
     });
   });
 
-  await page.goto(`${BASE}/?blankProject=1`, { waitUntil: "domcontentloaded", timeout: 120_000 });
+  await page.goto(`${ACTUAL_BASE}/?blankProject=1`, { waitUntil: "domcontentloaded", timeout: 120_000 });
   await page.getByTestId("edit-canvas").waitFor({ state: "visible", timeout: 120_000 });
   const guest = page.getByTestId("login-guest");
   if (await guest.isVisible().catch(() => false)) await guest.click();
@@ -145,43 +180,65 @@ try {
   });
   await page.waitForTimeout(400);
 
-  async function resetBaseMap(caseId, name, extraSetup) {
+  async function resetBaseMap(caseId, name, extraSetup, mapSize) {
     const mapId = `map_${caseId}`;
+    const W = mapSize?.w ?? 24;
+    const H = mapSize?.h ?? 20;
     await page.evaluate(
-      async ({ mapId, name, extraSetup }) => {
+      async ({ mapId, name, extraSetup, W, H }) => {
         const t = window.__oprnEditorTool;
         const must = (toolName, args) => {
           const r = t(toolName, args);
           if (!r.ok) throw new Error(`${toolName} failed: ${r.summary}`);
           return r;
         };
-        must("create_map", { name, id: mapId, width: 24, height: 20, tilesetId: "beodeul_city" });
-        must("fill_region", { mapId, rect: { x: 0, y: 0, w: 24, h: 20 }, material: "버들항 풀밭" });
+        must("create_map", { name, id: mapId, width: W, height: H, tilesetId: "beodeul_city" });
+        must("fill_region", { mapId, rect: { x: 0, y: 0, w: W, h: H }, material: "버들항 풀밭" });
         // 기본 마을 문맥: 좌측 상단 집 1채 + 중앙 가로 포석 길 + 우물 + 나무
         must("stamp_tileset_object", { mapId, objectId: "bd-house-h103_1", at: { x: 1, y: 2 }, overwrite: true });
-        must("stamp_tileset_object", { mapId, objectId: "bd-prop-well_roofed", at: { x: 7, y: 5 }, overwrite: true });
-        must("stamp_tileset_object", { mapId, objectId: "bd-tree-3e8732", at: { x: 1, y: 15 }, overwrite: true });
-        // 중앙 가로 포석 길 (x=1..10, y=9..10)
+        must("stamp_tileset_object", { mapId, objectId: "bd-prop-well_roofed", at: { x: W === 27 ? 2 : 7, y: W === 27 ? 11 : 5 }, overwrite: true });
+        must("stamp_tileset_object", { mapId, objectId: "bd-tree-3e8732", at: { x: 1, y: Math.min(H - 5, 15) }, overwrite: true });
         const p = window.__oprnEditorStore.getCurrent();
         const ts = p.tilesets.beodeul_city;
         const roadTile = ts.autotileGroups?.find((g) => g.id === "beodeul_road_autotile")?.memberTileIds?.[0] ?? 1008;
+        const roadY = H >= 36 ? 36 : H >= 22 ? 19 : W === 27 ? 18 : 9;
         const roadCells = [];
-        for (let x = 1; x <= 10; x++) {
-          roadCells.push({ x, y: 9 }, { x, y: 10 });
+        for (let x = 1; x <= (W === 27 ? 6 : 10); x++) {
+          roadCells.push({ x, y: roadY }, { x, y: roadY + 1 });
+          if (roadY !== 9 && W !== 27) roadCells.push({ x, y: 9 }, { x, y: 10 });
         }
         must("paint_tiles", { mapId, layer: "lower", mode: "cells", tile: roadTile, cells: roadCells });
 
         if (extraSetup === "harmonize_raw_patch") {
-          // 주변에 가로등·꽃밭을 두어 마을 풍경을 뚜렷하게 만들고, 선택 영역(10,7,12,9) 안에는 어색한 맨땅 패치를 둔다
           must("stamp_tileset_object", { mapId, objectId: "bd-prop-lamp_crook", at: { x: 9, y: 6 }, overwrite: true });
           must("stamp_tileset_object", { mapId, objectId: "bd-pick-wizard-tower-bed-flower", at: { x: 5, y: 12 }, overwrite: true });
           must("fill_region", { mapId, rect: { x: 11, y: 8, w: 10, h: 7 }, material: "버들항 모랫길" });
+        }
+        if (extraSetup === "move_house_setup") {
+          must("stamp_tileset_object", { mapId, objectId: "bd-house-h103_2", at: { x: 11, y: 2 }, overwrite: true });
+        }
+        if (extraSetup === "move_castle_setup") {
+          const { runStampPlace } = await import("/src/editor/stampPlaceRunner.ts");
+          await runStampPlace({
+            text: "망루 초소 성채 세워줘",
+            mapId,
+            selection: { mapId, x: 9, y: 2, width: 11, height: 9 },
+            variation: 3,
+            chat: async () => ({
+              message: {
+                role: "assistant",
+                content: JSON.stringify({
+                  steps: [{ tool: "place_castle", args: { archetype: "outpost", gate: true, towers: true } }],
+                }),
+              },
+            }),
+          });
         }
 
         const { editorState } = await import("/src/editor/editorState.ts");
         editorState.set({ currentMapId: mapId, selection: null });
       },
-      { mapId, name, extraSetup: extraSetup ?? null },
+      { mapId, name, extraSetup: extraSetup ?? null, W, H },
     );
 
     await page.waitForFunction(
@@ -189,16 +246,22 @@ try {
       mapId,
       { timeout: 60_000 },
     );
-    await page.evaluate(async (id) => {
+    await page.evaluate(async ({ id, W, H }) => {
+      const { editorState } = await import("/src/editor/editorState.ts");
+      editorState.set({
+        layer: "lower",
+        tool: "select",
+        zoom: W <= 27 && H <= 22 ? 2 : 1,
+      });
       const { requestEditorCameraFocus } = await import("/src/editor/editorCameraFocus.ts");
       requestEditorCameraFocus({
         mapId: id,
-        tileX: 12,
-        tileY: 10,
-        bounds: { x: 0, y: 0, width: 24, height: 20 },
+        tileX: W / 2,
+        tileY: H / 2,
+        ...(W > 27 || H > 22 ? { bounds: { x: 0, y: 0, width: W, height: H } } : {}),
         immediate: true,
       });
-    }, mapId);
+    }, { id: mapId, W, H });
     await page.waitForTimeout(500);
     return mapId;
   }
@@ -229,6 +292,46 @@ try {
       prompt: "성채와 성문 세워줘",
     },
     {
+      id: "case4b-castle-keep",
+      mapName: "버들항 변경 — ④-B 성채 변주 1 (19×16 안뜰 본성 keep)",
+      mapSize: { w: 27, h: 20 },
+      sel: { x: 7, y: 1, w: 19, h: 16 },
+      prompt: "성채와 성문 세워줘",
+    },
+    {
+      id: "case4d-castle-outpost",
+      mapName: "버들항 변경 — ④-D 성채 변주 2 (19×16 망루 초소 outpost)",
+      mapSize: { w: 27, h: 20 },
+      sel: { x: 7, y: 1, w: 19, h: 16 },
+      prompt: "성채와 성문 세워줘",
+    },
+    {
+      id: "case4b-castle-moat",
+      mapName: "버들항 변경 — ④-C 성채 변주 3 (19×16 해자 성문루 gatehouse)",
+      mapSize: { w: 27, h: 20 },
+      sel: { x: 7, y: 1, w: 19, h: 16 },
+      prompt: "성채와 성문 세워줘",
+    },
+    {
+      id: "case4c-castle-citadel",
+      mapName: "버들항 왕도 — ④-A 왕성 원형 풀 키트 (34×34 citadel)",
+      mapSize: { w: 44, h: 40 },
+      sel: { x: 9, y: 1, w: 34, h: 34 },
+      prompt: "성채와 성문 세워줘",
+    },
+    {
+      id: "case4-opt-nogate",
+      mapName: "버들항 변경 — 성문 없는 요새 (gate:false)",
+      sel: { x: 9, y: 2, w: 14, h: 11 },
+      prompt: "성문 없이 성채 세워줘",
+    },
+    {
+      id: "case4-opt-notowers",
+      mapName: "버들항 변경 — 망루 없는 성벽과 성문 (towers:false)",
+      sel: { x: 9, y: 2, w: 14, h: 11 },
+      prompt: "망루 없이 성채 세워줘",
+    },
+    {
       id: "case5-corpses",
       mapName: "버들항 옛 전장 — ⑤ 시체들(백골 유해) 깔기",
       sel: { x: 9, y: 11, w: 13, h: 8 },
@@ -241,6 +344,44 @@ try {
       prompt: "주변과 어울리게 해줘",
       extraSetup: "harmonize_raw_patch",
     },
+    {
+      id: "case7-move-right",
+      mapName: "버들항 마을 — ⑦ 집 오른쪽으로 4칸 옮기기",
+      sel: { x: 10, y: 1, w: 13, h: 8 },
+      prompt: "이 집 오른쪽으로 4칸 옮겨줘",
+      extraSetup: "move_house_setup",
+    },
+    {
+      id: "case7b-move-castle",
+      mapName: "버들항 변경 — ⑦-B 성 오른쪽으로 몇 칸 옮기기",
+      sel: { x: 9, y: 2, w: 14, h: 9 },
+      prompt: "성 오른쪽으로 몇 칸 옮겨줘",
+      extraSetup: "move_castle_setup",
+    },
+    {
+      id: "case8-simple-npc",
+      mapName: "버들항 마을 — ⑧ 경비병과 산책하는 주민 NPC 만들기",
+      sel: { x: 9, y: 3, w: 12, h: 7 },
+      prompt: "여기에 마을 경비병과 산책하는 주민 NPC 만들어줘",
+    },
+    {
+      id: "case8b-npc-dialogue",
+      mapName: "버들항 마을 — ⑧-B 간단한 NPC 만들고 대사도 만들어줘",
+      sel: { x: 9, y: 3, w: 10, h: 6 },
+      prompt: "간단한 NPC 만들고 대사도 만들어줘",
+    },
+    {
+      id: "case9-simple-shop",
+      mapName: "버들항 장터 — ⑨ 간단한 물약 상점과 상인 NPC 만들기",
+      sel: { x: 10, y: 1, w: 13, h: 9 },
+      prompt: "간단한 물약 상점과 상인 NPC 만들어줘",
+    },
+    {
+      id: "case9b-simple-shop-weapon",
+      mapName: "버들항 장터 — ⑨-B 간단한 상점 만들어줘",
+      sel: { x: 10, y: 1, w: 13, h: 9 },
+      prompt: "간단한 상점 만들어줘",
+    },
   ];
 
   const results = [];
@@ -248,8 +389,7 @@ try {
 
   for (const c of CASES) {
     if (onlySet && !onlySet.has(c.id)) continue;
-    const mapId = await resetBaseMap(c.id, c.mapName, c.extraSetup);
-    // 우클릭 드래그로 선택 영역 지정하여 파란 선택 박스와 바로 깔기 입력 칩을 화면에 표시
+    const mapId = await resetBaseMap(c.id, c.mapName, c.extraSetup, c.mapSize);
     const tileSize = 16;
     const toClient = (tx, ty) =>
       page.evaluate(([x, y, size]) => window.__oprnEditWorldToClient?.(x * size + size / 2, y * size + size / 2) ?? null, [
@@ -285,21 +425,37 @@ try {
       { mapId },
     );
 
+    await page.mouse.move(10, 10);
     // Before 스크린샷 캡처 (선택 영역 + 입력된 프롬프트가 보이는 상태)
     await page.screenshot({ path: path.join(OUT, `${c.id}-before.png`), animations: "disabled", timeout: 60_000 });
-
+    const prevMaxOrder = await page.evaluate(() => {
+      const nums = [...document.body.innerText.matchAll(/#(\d+)\s+[^\n]+—\s*(?:완료|일부 적용|실패)/g)].map((m) => Number(m[1]));
+      return nums.length ? Math.max(...nums) : 0;
+    });
     // Enter 키로 바로 깔기 실행
     await chipPrompt.focus();
     await chipPrompt.press("Enter");
     await page.waitForFunction(
-      (shortText) => document.body.innerText.includes(`${shortText}`) && (document.body.innerText.includes("— 완료") || document.body.innerText.includes("— 일부 적용")),
-      c.prompt.slice(0, 12),
+      (prev) => {
+        const nums = [...document.body.innerText.matchAll(/#(\d+)\s+[^\n]+—\s*(?:완료|일부 적용|실패)/g)].map((m) => Number(m[1]));
+        const cur = nums.length ? Math.max(...nums) : 0;
+        return cur > prev;
+      },
+      prevMaxOrder,
       { timeout: 25_000 },
     );
-    await page.waitForTimeout(500);
-    // After 스크린샷 캡처
+    await page.evaluate(async (caseId) => {
+      const { editorState } = await import("/src/editor/editorState.ts");
+      const showEvents = caseId.startsWith("case8") || caseId.startsWith("case9");
+      editorState.set({
+        selection: null,
+        ...(showEvents ? { layer: "event", tool: "select" } : {}),
+      });
+    }, c.id);
+    await page.mouse.move(10, 10);
+    await page.waitForTimeout(300);
+    // After 스크린샷 캡처 (선택 칩·브러시 호버 가림 없이 시공 결과 전체 노출)
     await page.screenshot({ path: path.join(OUT, `${c.id}-after.png`), animations: "disabled", timeout: 60_000 });
-
     const afterSnap = await page.evaluate(
       ({ mapId }) => {
         const m = window.__oprnEditorStore.getCurrent().maps[mapId];
@@ -327,8 +483,9 @@ try {
     }
 
     const lastBubbleText = await page.evaluate(() => {
-      const bubbles = [...document.querySelectorAll(".cluster-ai-bubble")];
-      return (bubbles.at(-1)?.textContent ?? "").trim();
+      const text = document.body.innerText;
+      const matches = [...text.matchAll(/(#\d+\s+[^\n]+—\s*(?:완료|일부 적용|실패)[\s\S]*?)(?=\n#\d+\s+|\n바로 깔기 —|$)/g)];
+      return (matches.at(-1)?.[1] ?? "").trim();
     });
 
     console.log(`[${c.id}] "${c.prompt}" -> changedTiles=${changedTiles}, changedRelief=${changedRelief}, placements=${beforeSnap.placements}->${afterSnap.placements}`);
@@ -345,7 +502,20 @@ try {
     });
   }
 
-  fs.writeFileSync(path.join(OUT, "capabilities-report.json"), JSON.stringify({ results, pageErrors }, null, 2));
+  const reportPath = path.join(OUT, "capabilities-report.json");
+  let existingResults = [];
+  if (fs.existsSync(reportPath)) {
+    try {
+      const prev = JSON.parse(fs.readFileSync(reportPath, "utf8"));
+      if (Array.isArray(prev.results)) existingResults = prev.results;
+    } catch {
+      existingResults = [];
+    }
+  }
+  const byId = new Map(existingResults.map((r) => [r.id, r]));
+  for (const r of results) byId.set(r.id, r);
+  const mergedResults = CASES.map((c) => byId.get(c.id)).filter(Boolean);
+  fs.writeFileSync(reportPath, JSON.stringify({ results: mergedResults, pageErrors }, null, 2));
 } finally {
   if (browser) await browser.close();
   viteProc.kill("SIGTERM");
