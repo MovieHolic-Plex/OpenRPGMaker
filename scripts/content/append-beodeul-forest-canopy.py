@@ -137,13 +137,19 @@ STYLES = {
         "trunk": ((150, 112, 66), (112, 80, 46), (76, 54, 32), (46, 32, 22)), "root": (64, 48, 30), "moss": ((70, 120, 46), (40, 82, 40)),
         "shade": (10, 28, 24),
         "fleck": (104, 140, 54), "shaft": (255, 238, 150), "shaft_k": 0.26,
+        # 4판(「숲이 주변 바닥 타일들이랑 잘 어울리게」): 숲 테두리 틈의 이끼 치마(색·바깥→안쪽 세 단 알파), 낙엽·이끼 점, 숲 속 그늘 둘레 중간 톤
+        "skirt": (36, 60, 30), "skirt_a": (0, 52, 92, 136),
+        "litter": [(132, 100, 48), (156, 128, 60), (98, 74, 38), (120, 142, 58), (88, 112, 44)],
+        "edge": (30, 52, 32),
         # 숲 앞(남쪽) 밑동 사이 하층: 덤불·고사리·이끼 바위·쓰러진 통나무(id, 맞출 px, 다시 칠할 색 단)
         "undergrowth": [("bd-mpart-bush-c", 13, "shrub"), ("bd-mpart-bush-e", 12, "shrub"), ("bd-tree-47e17a", 11, "shrub"),
-                        ("bd-pick-deep-forest-path-fern-a", 12, None), ("bd-pick-deep-forest-path-fern-b", 12, None),
+                        ("bd-pick-deep-forest-path-fern-a", 12, "shrub"), ("bd-pick-deep-forest-path-fern-b", 12, "shrub"),
                         ("bd-pick-mountain-pass-boulder-m", 13, None), ("bd-pick-deep-forest-path-log-fallen", 18, None)],
-        "brush": [("bd-pick-deep-forest-path-fern-a", 16), ("bd-pick-deep-forest-path-fern-b", 16), ("bd-pick-deep-forest-path-fern-c", 16),
-                  ("bd-pick-deep-forest-path-wild-a", 16), ("bd-pick-deep-forest-path-toadstools-a", 16), ("bd-pick-deep-forest-path-wild-b", 16),
-                  ("bd-pick-mountain-pass-boulder-m", 14), ("bd-mpart-bush-c", 14)],
+        # (id, 맞출 px, 다시 칠할 색 단) — 고사리·들풀·덤불은 원본(source-tiles.png, 옛 쨍한 초록)에서 읽으므로 마을 낱 그림(restyle-beodeul-foliage.py 가
+        # shrub 단으로 칠함)과 같게 shrub 단으로 다시 칠한다 — 그대로 두면 숲 끝에서 바닥·수관과 따로 놀았다(4판 VQA)
+        "brush": [("bd-pick-deep-forest-path-fern-a", 16, "shrub"), ("bd-pick-deep-forest-path-fern-b", 16, "shrub"), ("bd-pick-deep-forest-path-fern-c", 16, "shrub"),
+                  ("bd-pick-deep-forest-path-wild-a", 16, "shrub"), ("bd-pick-deep-forest-path-toadstools-a", 16, None), ("bd-pick-deep-forest-path-wild-b", 16, "shrub"),
+                  ("bd-pick-mountain-pass-boulder-m", 14, None), ("bd-mpart-bush-c", 14, "shrub")],
     },
     "snow": {
         # 소나무는 키가 커서 32px 로 맞추면 덩이 안에서 위아래로 움직일 틈이 없어 16px 피치 가로줄(흰 눈-짙은 밑)로 늘어선다 — 20~29px 로 줄여 흔든다.
@@ -158,8 +164,11 @@ STYLES = {
         "trunk": ((132, 100, 70), (98, 72, 50), (70, 52, 38), (44, 34, 28)), "root": (70, 56, 44), "moss": ((206, 216, 232), (170, 184, 208)),
         "shade": (40, 60, 96),
         "fleck": (238, 242, 250), "shaft": (255, 250, 236), "shaft_k": 0.14,
+        "skirt": (78, 92, 130), "skirt_a": (0, 36, 64, 96),
+        "litter": [(112, 92, 72), (84, 70, 58), (150, 166, 196), (128, 108, 84)],
+        "edge": (88, 104, 144),
         "undergrowth": [("bd-pick-snowfield-mound", 13, None), ("bd-pick-snowfield-rock", 12, None)],
-        "brush": [("bd-pick-snowfield-mound", 16), ("bd-pick-snowfield-rock", 16)],
+        "brush": [("bd-pick-snowfield-mound", 16, None), ("bd-pick-snowfield-rock", 16, None)],
     },
 }
 
@@ -255,7 +264,7 @@ def build_slots(style, seed):
             around = [((cx - i) % P, (cy - j) % P) for j in (0, 1) for i in (0, 1)]
             if not any(k in slots for k in around):
                 put(*around[int(rng.integers(4))], 0)
-    brush = [sprite(k, 1.0, f) for k, f in st["brush"] if k in KITS]
+    brush = [relight(sprite(k, 1.0, f), RAMP[r], 0, True) if r else sprite(k, 1.0, f) for k, f, r in st["brush"] if k in KITS]
     # 주기 판(L×L px)에 감싸 이어지는 햇빛: 숲 바닥 햇빛 조각(fleck)과 왼쪽 위→오른쪽 아래로 비끼는 빛줄기(shaft) — 잡음으로 끊어 얼룩진 빛
     L = P * T
     r2 = np.random.default_rng(seed + 1)
@@ -266,7 +275,12 @@ def build_slots(style, seed):
     def band(c, wdt): return np.clip(1 - np.abs((u - c * L + L / 2) % L - L / 2) / wdt, 0, 1)
     dap = ndimage.gaussian_filter(r2.random((L, L)), 1.3, mode="wrap")
     shaft = np.clip(band(0.3, 7) + 0.6 * band(0.74, 4), 0, 1) * (dap > np.quantile(dap, 0.4))
-    return dict(P=P, slots=slots, brush=brush, seed=seed, ug=ug, fleck=fleck, shaft=shaft)
+    # 낙엽·이끼 점(주기 판에 감싸 이어짐): 흐린 잡음 위쪽 몫에 모인 무리 속에서만 드문드문 — 흩뿌린 고른 점(모래 무늬)이 되지 않게
+    r3 = np.random.default_rng(seed + 2)
+    clump = ndimage.gaussian_filter(r3.random((L, L)), 3.0, mode="wrap")
+    pick = (clump > np.quantile(clump, 0.55)) & (r3.random((L, L)) < 0.07)
+    litter = np.where(pick, r3.integers(0, len(st["litter"]), (L, L)), -1)
+    return dict(P=P, slots=slots, brush=brush, seed=seed, ug=ug, fleck=fleck, shaft=shaft, litter=litter)
 
 N8 = [(-1, -1), (0, -1), (1, -1), (-1, 0), (1, 0), (-1, 1), (0, 1), (1, 1)]
 def mask_cells(mask):
@@ -427,6 +441,22 @@ def canopy_tile(style, data, mask, phx, phy):
     gap = ~painted
     rgba[gap, 3] = np.where(np.where(open_gap, hang & (frac > 0), frac > 0.5 + dith)[gap], 255, 0)
     rgba[gap & fl & (frac > 0.2), 3] = 255   # 숲 바닥 햇빛 조각은 점묘로 쪼개지 않고 덩이로 남긴다(체 무늬 점 방지)
+    # 4) 숲 테두리 치마(4판): 수관 사이로 풀이 그대로 비치던 틈(숲 밖까지 1~9px)에 바깥→안쪽 세 단 이끼 그늘(바이어 점묘)을 깔아
+    #    밝은 풀밭과 짙은 숲 속 그늘이 곧장 맞닿지 않게 하고, 무리 진 낙엽·이끼 점을 흩는다(숲이 바닥 «위에 붙은» 판이 아니라 뿌리내린 결).
+    #    숲 속 그늘 덩이의 둘레 1px 는 중간 톤으로 눌러 검은 구멍처럼 끊기지 않게 한다.
+    #    해는 왼쪽 위 — 그늘·낙엽은 수관 «밑»(바로 위 수관까지 12px 안)에만 깐다. 숲 북쪽 끝 위 틈까지 깔면 나무 꼭대기 위에 점묘 띠가
+    #    칸 경계에서 곧게 끊긴 네모 후광으로 떴다(설원 5판 VQA).
+    open_ = gap & (rgba[..., 3] == 0) & fp & (up <= 12)
+    q = np.clip(np.floor(np.clip((d - 0.5) / 9.0, 0, 1) * 3 + 0.3 + dith), 0, 3).astype(int)
+    sa = np.array(st["skirt_a"])[q]
+    sk = open_ & (sa > 0)
+    rgba[sk, :3] = st["skirt"]; rgba[sk, 3] = sa[sk]
+    li_idx = data["litter"][IY, IX]
+    li = open_ & (li_idx >= 0) & (d > 1.5) & any_valid   # 수관 없는 칸(한 칸 폭 띠)까지 낙엽을 흩으면 위상마다 칸이 갈려 4096px 를 넘는다
+    rgba[li, :3] = np.array(st["litter"], float)[li_idx[li]]; rgba[li, 3] = 255
+    solid = gap & (rgba[..., 3] == 255) & ~li & ~fl
+    soft = solid & ndimage.binary_dilation(gap & (rgba[..., 3] < 255) & fp, structure=ndimage.generate_binary_structure(2, 1))
+    rgba[soft, :3] = st["edge"]
     # 3) 수관이 하나도 서지 못한 칸(한 칸 폭 띠·뾰족한 끝): 셋 중 둘 꼴로 숲 가장자리 덤불·바위·그루터기(칸 안에만), 나머지는 풀
     h = (phx * 7 + phy * 13 + mask * 5 + data["seed"]) % (len(data["brush"]) * 3 // 2 + 1) if data["brush"] else len(data["brush"])
     if not any_valid and h < len(data["brush"]):
@@ -454,6 +484,10 @@ def shade_tile(style, phx, nw, ne):
     levels = np.array([0, 40, 72, 104])
     q = np.clip(np.floor(a * 3 + 0.5 + BAYER[Y.astype(int) % 4, X.astype(int) % 4] * 0.9), 0, 3).astype(int)
     out = np.zeros((T, T, 4), np.uint8); out[..., :3] = st["shade"]; out[..., 3] = levels[q]
+    # 4판: 숲 끝에서 굴러 나온 낙엽·이끼 점 — 그늘이 짙은 곳에만 드문드문(같은 phx 의 nw/ne 변형끼리 같은 자리)
+    r = np.random.default_rng(1000 + phx).random((T, T)); pick = np.random.default_rng(2000 + phx).integers(0, len(st["litter"]), (T, T))
+    li = (a > 0.3) & (r < 0.06)
+    out[li, :3] = np.array(st["litter"], np.uint8)[pick[li]]; out[li, 3] = 255
     out[out[..., 3] == 0] = 0
     return out
 
