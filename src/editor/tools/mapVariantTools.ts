@@ -62,6 +62,28 @@ function transfersOf(event: GameEvent): Extract<Command, { kind: "transfer" }>[]
   return found;
 }
 
+/**
+ * 조명 없는 맵은 들어오기 전 맵의 조명을 이어 받는다(lightingRules.applyMapDefaultLighting). 변형에 시대 조명(폐허 0.52 등)을
+ * 입히면 원본 마을과 그 문 너머 맵들이 시대 조명을 이어 받아 원래 시대도 잿빛이 된다 — jrpg-loop-4 R6 ff2(폐허 시작)에서
+ * 붕괴 전 왕도까지 갈색으로 덮였다. 원본·변형과 그 문이 가는 맵 중 조명 없는 맵에 밝은 조명(ambient 0)을 박는다.
+ */
+function pinNeutralLighting(draft: Project, source: GameMap, variantIds: readonly string[]): string[] {
+  const lit = variantIds.some((id) => draft.maps[id]?.defaultLighting);
+  if (!lit) return [];
+  const targets = new Set<string>([source.id, ...variantIds]);
+  for (const id of [source.id, ...variantIds]) {
+    for (const event of draft.maps[id]?.events ?? []) for (const transfer of transfersOf(event)) targets.add(transfer.mapId);
+  }
+  const pinned: string[] = [];
+  for (const id of targets) {
+    const map = draft.maps[id];
+    if (!map || map.defaultLighting) continue;
+    map.defaultLighting = { ambient: 0, sources: [] };
+    pinned.push(id);
+  }
+  return pinned;
+}
+
 function remapTiles(map: GameMap, remap: readonly TileRemapEntry[]): number {
   if (remap.length === 0) return 0;
   const table = new Map<number, number>();
@@ -328,6 +350,7 @@ const deriveMapVariant: ToolDefinition = {
         for (const warning of result.warnings ?? []) warnings.push(`gates[${index}]: ${warning}`);
       });
     }
+    const pinnedLighting = reports.length > 0 ? pinNeutralLighting(draft, requireMap(draft, sourceId!), reports.map((report) => report.mapId)) : [];
     const dropped = reports.flatMap((report) => report.removedTimeGates.map((gate) => `${report.mapId}:${gate.name ?? gate.sourceEventId}(${gate.x},${gate.y})→${gate.leadsTo.join("/")}`));
     if (dropped.length > 0 && createdGates.length === 0) {
       warnings.push(`원본의 시간문 ${dropped.length}개를 변형에서 떼어 냈습니다(${dropped.join(", ")}) — 변형들을 잇으려면 create_time_gate 또는 gates 로 새 문을 만드세요(원본 문 자리를 쓰면 같은 위치에 놓입니다).`);
@@ -336,10 +359,11 @@ const deriveMapVariant: ToolDefinition = {
       reports.length ? `변형 ${reports.length}개 생성(${reports.map((report) => report.mapId).join(", ")})` : "",
       synced ? `${synced.variantId} 영역 ${synced.copiedCells}칸을 ${synced.sourceMapId} 에서 재동기` : "",
       createdGates.length ? `시간문 ${createdGates.length}쌍` : "",
+      pinnedLighting.length ? `시대 조명이 새지 않게 ${pinnedLighting.join(", ")} 조명을 밝게 고정` : "",
     ].filter(Boolean);
     return {
       summary: `${parts.join(" · ")} — 이벤트 id 표는 data.variants[].eventIdMap. check_reachability 와 원본 해상도 그림으로 시대별 통행·외형을 확인하세요.`,
-      data: { sourceMapId: sourceId, variants: reports, ...(synced ? { resync: synced } : {}), gates: createdGates },
+      data: { sourceMapId: sourceId, variants: reports, ...(synced ? { resync: synced } : {}), gates: createdGates, ...(pinnedLighting.length ? { pinnedLighting } : {}) },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
   },

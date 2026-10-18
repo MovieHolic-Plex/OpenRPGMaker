@@ -142,12 +142,13 @@ function fieldEnemyPages(input: {
       trigger: { kind: 'eventTouch' }, priority: 'same', overlapForbidden: true, animationType: input.movement.type === 'fixed' ? 'fixedGraphic' : 'normal',
       movement: input.movement, commands: fight,
     },
-    {
+    // 도망 불가 전투(보스·수호자)에는 숨 고르기 페이지를 켤 곳이 없다 — 남기면 「셀프 스위치 B 를 켜는 곳이 없다」 경고가 된다.
+    ...(input.canEscape ? [{
       id: `${id}_stun`, name: '도망 뒤 숨 고르기', conditions: [{ kind: 'selfSwitch', key: 'B', value: true }], graphic: structuredClone(input.graphic),
       trigger: { kind: 'parallel' }, priority: 'same', overlapForbidden: true, animationType: 'fixedGraphic',
       movement: { type: 'fixed', speed: 3, frequency: 3 },
       commands: [{ kind: 'wait', ms: STUN_MS }, { kind: 'setSelfSwitch', key: 'B', value: false }],
-    },
+    } satisfies EventPage] : []),
     {
       id: `${id}_cleared`, name: '쓰러진 자리', conditions: [{ kind: 'switch', switchId: input.clearSwitchId, value: true }], graphic: { transparent: true },
       // action 이면 쓰러진 자리 곁에 「Z 조사」 안내가 남는다(2026-10-14 런타임 QA) — 아무것도 안 하는 병렬 페이지로 둔다.

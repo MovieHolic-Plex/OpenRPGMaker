@@ -64,6 +64,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   remove_map: build("맵 삭제", "map"),
   duplicate_map: build("맵 복제", "map"),
   derive_map_variant: build("시대별 맵 파생", "map"),
+  expand_jrpg_campaign_volume: build("JRPG 고장 넓히기", "map"),
   author_beodeul_town: build("마을 짓기", "house"),
   author_dungeon: build("던전 짓기", "map"),
   author_beodeul_dungeon: build("던전 짓기", "map"),

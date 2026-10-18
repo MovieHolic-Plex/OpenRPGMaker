@@ -159,9 +159,10 @@ export function jrpgCompletionGaps(project: Project, briefText = briefTextOf(pro
   }
   if (COLLAPSE_WORDS.test(briefText)) {
     // 이름만 「폐허」인 맵은 붕괴 후가 아니다 — jrpg-loop-2 ff2: 씨앗 초록 항구에 「에덴의 폐허 거점」 이름만 붙었다. derive_map_variant(era ruin)가 남기는
-    // 조명·날씨(defaultLighting / climate.weather)가 있어야 붕괴 후 모습으로 센다.
+    // 조명·날씨(defaultLighting / climate.weather)가 있어야 붕괴 후 모습으로 센다. 밝은 조명(ambient 0)은 derive_map_variant 가 시대 조명이
+    // 새지 않게 원본에 박는 것이라 겉모습 변화가 아니다.
     const ruinMaps = Object.values(project.maps ?? {}).filter((map) => {
-      const looksAltered = Boolean(map.defaultLighting) || Boolean(map.climate && "weather" in map.climate && map.climate.weather && map.climate.weather !== "none");
+      const looksAltered = (map.defaultLighting?.ambient ?? 0) > 0 || Boolean(map.climate && "weather" in map.climate && map.climate.weather && map.climate.weather !== "none");
       return looksAltered && (RUIN_MAP_NAME.test(map.name ?? "") || (map.defaultLighting?.ambient ?? 0) >= 0.45);
     });
     const otherMaps = Object.values(project.maps ?? {}).length - ruinMaps.length;
