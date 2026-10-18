@@ -531,6 +531,8 @@ function buildCandidatesForVariant(
       score += (short * 3 + extra * 1.5) / (w.tw + w.th) * 4;
       const asp = Math.max(rc.w / rc.h, rc.h / rc.w), maxAsp = Math.max(2.6, w.tw / w.th, w.th / w.tw);
       if (asp > maxAsp && !/hall|corridor/u.test(w.kind)) score += (asp - maxAsp) * 2;
+      // 견본에 벽 속으로 오르는 계단·에스컬레이터가 있는 방은 건물 맨 북쪽 줄에 — 아래 줄이면 칸막이 속으로 올라 옆방으로 들어간다(2026-10-18 병원 seed 4·8 입원 병동).
+      if (rc.y !== 1 && w.template?.items.some((it) => it.t === "o" && S.objects[it.id]?.kind === "wall" && S.objects[it.id]?.stairs)) { score += 12; notes.push(`${w.id} 의 벽 속 계단이 칸막이에 박힌다 — 맨 북쪽 줄이 아니다`); }
     }
     {
       const roomArea = [...rects.values()].reduce((a, q) => a + q.w * q.h, 0);
