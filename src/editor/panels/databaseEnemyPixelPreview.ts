@@ -21,6 +21,8 @@ import { charsetBattler } from "@/assets/charsetBattlers";
 import { EXTENDED_POSE_FRAME } from "@/battle/battlePose";
 import { retroTimelineStateAt, type RetroSkillTimeline } from "@/battle/retroSkillTimeline";
 import type { RetroMonsterSkill } from "@/assets/retroMonsterSkills";
+import { resolveRetroMonsterChoreography } from "@/assets/retroSkillCatalog";
+import { store } from "@/project/store";
 import {
   MONSTER_MOTION_LABELS,
   createMonsterFxPainter,
@@ -145,7 +147,7 @@ export type EnemyPixelPreview = { readonly element: HTMLElement; readonly stop: 
  * 시트 그림이 404 면 카드를 숨기고 걷은 뒤 onMissing 을 부른다 — 소유자가 정지 그림 미리보기를 되살린다.
  */
 export function renderEnemyPixelPreview(
-  record: { readonly name: string; readonly monsterResourceId?: string },
+  record: { readonly name: string; readonly monsterResourceId?: string; readonly actions?: readonly { readonly skillId: string }[] },
   sheetOverrideOrOnMissing?: PixelEnemySheet | (() => void),
   onMissingArg?: () => void,
 ): EnemyPixelPreview | null {
@@ -289,7 +291,32 @@ export function renderEnemyPixelPreview(
   }
 
   // ---- 몬스터 스킬 ----
-  const skills = monsterSkillsForSlug(pixelEnemySlug(sheet));
+  const slugSkills = monsterSkillsForSlug(pixelEnemySlug(sheet));
+  const wiredSkills: RetroMonsterSkill[] = [];
+  const seenSkillIds = new Set<string>();
+  if (record.actions?.length) {
+    const project = store.getCurrent();
+    for (const entry of record.actions) {
+      if (entry.skillId === "skill_attack" || seenSkillIds.has(entry.skillId)) continue;
+      const skillRecord = project.database.skills.find((s) => s.id === entry.skillId);
+      const resolved = resolveRetroMonsterChoreography(skillRecord ?? { id: entry.skillId }, project.database.skillChoreographies);
+      if (!resolved) continue;
+      seenSkillIds.add(entry.skillId);
+      wiredSkills.push({
+        ...resolved,
+        id: entry.skillId,
+        name: skillRecord?.name || resolved.name,
+        description: skillRecord?.description || resolved.description,
+      });
+    }
+  }
+  for (const s of slugSkills) {
+    if (!seenSkillIds.has(s.id)) {
+      seenSkillIds.add(s.id);
+      wiredSkills.push(s);
+    }
+  }
+  const skills = wiredSkills;
   const painters = new Map<string, MonsterFxPainter>();
   let painterFor: MonsterFxPainter | undefined;
   let playing: { readonly skill: RetroMonsterSkill; readonly timeline: RetroSkillTimeline } | null = null;

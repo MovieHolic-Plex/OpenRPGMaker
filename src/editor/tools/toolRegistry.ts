@@ -339,7 +339,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(LIGHTING_TOOLS, "event"),
   ...withDomain(ENDING_TOOLS, "event"),
   ...withDomain(DB_TOOLS, "database"),
-  // 도트 몬스터 공방 — 새 몬스터 9칸 전투 시트를 그려 적 레코드에 잇는다.
+  // 도트 몬스터 공방 5종 도구 — 원형·팔레트 조회(list_monster_pixel_archetypes), 9칸 시트 정밀 검사(inspect_enemy_pixel_sheet),
+  // 새 9칸 시트 생성(author_enemy_pixel_sheet), 제자리 수정·셀 패치(edit_enemy_pixel_sheet), 전용 스킬 안무 배선(set_enemy_skill_choreography).
   ...withDomain(ENEMY_PIXEL_SHEET_TOOLS, "database"),
   ...withDomain(RETRO_CHOREOGRAPHY_TOOLS, "database"),
   ...withDomain(LIFE_SYSTEM_TOOLS, "database"),

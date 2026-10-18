@@ -18,16 +18,17 @@ import fs from "node:fs";
 import path from "node:path";
 import assert from "node:assert/strict";
 
-const args = { out: "output/evidence/editor-monster-studio" };
+const args = { out: "output/evidence/editor-monster-studio", flow3Only: false };
 for (let i = 2; i < process.argv.length; i += 1) {
   if (process.argv[i] === "--out") args.out = process.argv[++i];
+  else if (process.argv[i] === "--flow3-only") args.flow3Only = true;
   else throw new Error(`Unknown argument: ${process.argv[i]}`);
 }
 const OUT = path.resolve(args.out);
 fs.mkdirSync(path.join(OUT, "frames"), { recursive: true });
 const envPort = fs.existsSync(".env.local") ? /^DEV_SERVER_PORT=(\d+)/m.exec(fs.readFileSync(".env.local", "utf8"))?.[1] : undefined;
 const BASE = process.env.OPRN_DEV_URL || `http://127.0.0.1:${envPort ?? 9999}/`;
-const report = { base: BASE, flow1: {}, flow2: {} };
+const report = { base: BASE, flow1: {}, flow2: {}, flow3: {} };
 
 async function bootEditor(page) {
   await page.addInitScript(() => window.localStorage.clear());
@@ -74,7 +75,7 @@ async function frames(page, name, locator, count, everyMs, onFrame) {
 }
 
 // ---------------------------------------------------------------- Flow 1: editor UI
-{
+if (!args.flow3Only) {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
   page.on("console", (msg) => { if (msg.type() === "error") consoleErrors.push(`[editor] ${msg.text()}`); });
   page.on("pageerror", (error) => consoleErrors.push(`[editor] ${error.message}`));
@@ -178,7 +179,7 @@ async function frames(page, name, locator, count, everyMs, onFrame) {
 }
 
 // ---------------------------------------------------------------- Flow 2: AI tool → real player battle
-{
+if (!args.flow3Only) {
   const page = await browser.newPage({ viewport: { width: 1280, height: 860 } });
   page.on("console", (msg) => { if (msg.type() === "error") consoleErrors.push(`[editor2] ${msg.text()}`); });
   page.on("pageerror", (error) => consoleErrors.push(`[editor2] ${error.message}`));
@@ -297,6 +298,271 @@ async function frames(page, name, locator, count, everyMs, onFrame) {
   for (const entry of log) (bySheet[entry.sheet] ??= new Set()).add(entry.frame);
   report.flow2.poseFramesBySheet = Object.fromEntries(Object.entries(bySheet).map(([k, v]) => [k, [...v]]));
   await scene.screenshot({ path: path.join(OUT, "flow2-battle-later.png") });
+  await player.close();
+}
+
+// ---------------------------------------------------------------- Flow 3: 5-Tool AI Suite (Step A 64px Author -> Step B 96px Boss + Holy Palette + Wings + (0,2) CellPatch + Holy Ray Choreography -> Live Editor & Battle)
+{
+  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  page.on("console", (msg) => { if (msg.type() === "error") consoleErrors.push(`[editor3] ${msg.text()}`); });
+  page.on("pageerror", (error) => consoleErrors.push(`[editor3] ${error.message}`));
+  await bootEditor(page);
+  const tool = async (name, toolArgs) => {
+    const result = await page.evaluate(([n, a]) => window.__oprnEditorTool(n, a), [name, toolArgs]);
+    assert.ok(result.ok, `${name} failed: ${JSON.stringify(result).slice(0, 600)}`);
+    return result;
+  };
+  await tool("set_project_settings", { battle: { uiStyle: "retro2003" } });
+
+  // ① list_monster_pixel_archetypes 호출 검증
+  const catalog = await tool("list_monster_pixel_archetypes", { includeBundled: false });
+  assert.ok(catalog.data.archetypes.length >= 6, "must list all monster archetypes");
+  assert.ok(catalog.data.palettes.some((p) => p.id === "holy"), "must list holy palette");
+  assert.ok(catalog.data.traits.some((t) => t.id === "wings"), "must list wings trait");
+  report.flow3.catalogSummary = catalog.summary;
+
+  // Step A: AI 조수가 64px 자수정 송곳니 늑대를 author_enemy_pixel_sheet 로 생성
+  const authoredStepA = await tool("author_enemy_pixel_sheet", {
+    name: "자수정 송곳니 늑대",
+    archetype: "beast",
+    palette: "amethyst",
+    weapon: "fang",
+    cell: 64,
+    motion: "dash",
+    spikes: true,
+    skillSlug: "wolf-grey",
+    enemy: {
+      id: "enemy_amethyst_wolf",
+      name: "자수정 송곳니 늑대",
+      stats: { maxHp: 260, maxMp: 60, attack: 18, defense: 16, mind: 14, agility: 20 },
+      rewards: { exp: 45, gold: 30 },
+    },
+  });
+  report.flow3.stepA = {
+    summary: authoredStepA.summary,
+    resourceId: authoredStepA.data.resourceId,
+    cell: authoredStepA.data.cell,
+    colors: authoredStepA.data.colors,
+    minPairDiff: authoredStepA.data.minPairDiff,
+  };
+  assert.equal(authoredStepA.data.cell, 64);
+
+  // 자료집 → 전투 → 전투 몬스터 탭을 열어 방금 AI 가 만든 64px 몬스터(자동 선택·노출됨)를 촬영
+  await page.getByRole("button", { name: "자료집", exact: true }).first().click();
+  const modal = page.locator(".database-modal-window");
+  await modal.getByText("전투", { exact: true }).first().click();
+  await modal.locator('[data-testid="db-tab-enemies"]').click();
+  await settle(page);
+  const slotPreview = page.locator('[data-testid="db-enemy-pixel-slot"] [data-testid="db-enemy-pixel-preview"]');
+  await slotPreview.waitFor();
+  await page.screenshot({ path: path.join(OUT, "flow3-stepA-editor-modal-64px.png") });
+  await slotPreview.screenshot({ path: path.join(OUT, "flow3-stepA-preview-card-64px.png") });
+  await frames(page, "flow3-stepA-idle-64px", slotPreview.locator('[data-testid="db-enemy-pixel-stage"]'), 16, 110);
+
+  const stepASheetDataUrl = await page.evaluate(async () => {
+    const { store } = await import("/src/project/store.ts");
+    const { uploadedAssetUrl } = await import("/src/project/persistence/assetAccessors.ts");
+    const asset = store.getCurrent().assets.uploaded["authored-monster-enemy-amethyst-wolf-sheet"];
+    return (asset && uploadedAssetUrl(asset)) ?? "";
+  });
+  assert.ok(stepASheetDataUrl.startsWith("data:image/png;base64,"), "Step A 64px sheet PNG must exist");
+  fs.writeFileSync(path.join(OUT, "flow3-stepA-sheet-64px.png"), Buffer.from(stepASheetDataUrl.replace(/^data:image\/png;base64,/, ""), "base64"));
+
+  // Step B: 사용자 지시 "이 몬스터를 96px 보스 크기로 키우고, 날개랑 황금 성광 팔레트를 입히고, (0,2) 스킬 포즈에 성스러운 광선 연출을 붙여줘"
+  // ② inspect_enemy_pixel_sheet 호출
+  const inspectBefore = await tool("inspect_enemy_pixel_sheet", { enemyId: "enemy_amethyst_wolf" });
+  assert.equal(inspectBefore.data.dimensions.cell, 64);
+  report.flow3.inspectBefore = inspectBefore.summary;
+
+  // ④ edit_enemy_pixel_sheet 호출 (64->96px 보스 승격 + holy 황금 성광 팔레트 + wings/halo/aura + (0,2) 스킬 포즈 holy_ray 패치)
+  const editedStepB = await tool("edit_enemy_pixel_sheet", {
+    enemyId: "enemy_amethyst_wolf",
+    name: "성광 신수 황금랑 (보스)",
+    cell: 96,
+    palette: "holy",
+    addTraits: ["wings", "halo", "aura"],
+    motion: "dash",
+    upgradeToBoss: true,
+    cellPatches: {
+      "(0,2)": {
+        preset: "holy_ray",
+        anchor: "front",
+        rows: [
+          "...99w99...",
+          "..9wwwww9..",
+          ".9wwwwwww9.",
+          "..9wwwww9..",
+          "...99w99...",
+        ],
+      },
+    },
+  });
+  assert.equal(editedStepB.data.after.cell, 96);
+  assert.ok(editedStepB.data.after.activeTraits.includes("wings"));
+  assert.ok(editedStepB.data.after.patchedCells.includes("(0,2)"));
+  report.flow3.editStepB = editedStepB.summary;
+
+  // ⑤ set_enemy_skill_choreography 호출 (성스러운 광선 안무 + (0,2) 포즈 트리거 + HP 70% 보스 페이즈 행동)
+  const choreoStepB = await tool("set_enemy_skill_choreography", {
+    enemyId: "enemy_amethyst_wolf",
+    preset: "holy_ray",
+    skillName: "성스러운 광선",
+    description: "황금 성광 날개를 펼치고 (0,2) 포즈에서 심판의 성스러운 광선을 방출한다.",
+    hpThresholdPercent: 70,
+    patchSkillCell02: true,
+  });
+  report.flow3.choreoStepB = choreoStepB.summary;
+
+  // 수정 후 inspect_enemy_pixel_sheet 재검증
+  const inspectAfter = await tool("inspect_enemy_pixel_sheet", { enemyId: "enemy_amethyst_wolf" });
+  assert.equal(inspectAfter.data.dimensions.cell, 96);
+  assert.equal(inspectAfter.data.dimensions.sheetWidth, 288);
+  assert.equal(inspectAfter.data.contractValid, true);
+  assert.ok(inspectAfter.data.wiredSkills.some((s) => s.name === "성스러운 광선" && s.triggersSkillCell02));
+  report.flow3.inspectAfter = inspectAfter.summary;
+
+  // 에디터 열린 미리보기 카드 자동 갱신 확인 & 촬영
+  await settle(page);
+  const updatedPreview = page.locator('[data-testid="db-enemy-pixel-slot"] [data-testid="db-enemy-pixel-preview"]');
+  await updatedPreview.waitFor();
+  const stageCellAttr = await updatedPreview.locator('[data-testid="db-enemy-pixel-stage"]').getAttribute("data-cell");
+  assert.equal(stageCellAttr, "96", "open editor preview stage must live-update to 96px cell");
+  const firstSkillBtn = updatedPreview.locator(".db-enemy-pixel-skill").first();
+  const firstSkillText = await firstSkillBtn.textContent();
+  assert.equal(firstSkillText?.trim(), "성스러운 광선", "first skill button must be the newly wired signature skill");
+
+  await page.screenshot({ path: path.join(OUT, "flow3-stepB-editor-modal-96px.png") });
+  await updatedPreview.screenshot({ path: path.join(OUT, "flow3-stepB-preview-card-96px.png") });
+
+  const stepBSheetDataUrl = await page.evaluate(async () => {
+    const { store } = await import("/src/project/store.ts");
+    const { uploadedAssetUrl } = await import("/src/project/persistence/assetAccessors.ts");
+    const asset = store.getCurrent().assets.uploaded["authored-monster-enemy-amethyst-wolf-sheet"];
+    return (asset && uploadedAssetUrl(asset)) ?? "";
+  });
+  fs.writeFileSync(path.join(OUT, "flow3-stepB-sheet-96px.png"), Buffer.from(stepBSheetDataUrl.replace(/^data:image\/png;base64,/, ""), "base64"));
+
+  // 에디터 미리보기 무대에서 「성스러운 광선」 클릭 → (0,2) 스킬 포즈 + 광선 이펙트 GIF 녹화
+  const updatedStage = updatedPreview.locator('[data-testid="db-enemy-pixel-stage"]');
+  const skillFrames = await frames(page, "flow3-stepB-skill-holy-ray", updatedPreview, 24, 90, async (i) => {
+    if (i === 0) await firstSkillBtn.click();
+    return updatedStage.evaluate((node) => node.dataset.pixelCell ?? "");
+  });
+  report.flow3.editorSkillPoseFrames = [...new Set(skillFrames)];
+  assert.ok(report.flow3.editorSkillPoseFrames.includes("skill"), "editor skill preview must hit (0,2) skill cell");
+
+  // 실제 player.html 전투에서 96px 보스 『성광 신수 황금랑 (보스)』 단독/호위 전투 검증
+  await tool("author_enemy_pixel_sheet", {
+    name: "서리 쌍검 해골 기사",
+    archetype: "knight",
+    palette: "frost",
+    weapon: "twin_blades",
+    cell: 64,
+    motion: "dash",
+    horns: true,
+    shield: true,
+    enemy: {
+      id: "enemy_frost_twin_knight",
+      stats: { maxHp: 700, maxMp: 80, attack: 14, defense: 30, mind: 14, agility: 18 },
+      rewards: { exp: 80, gold: 50 },
+    },
+  });
+  await tool("upsert_troop", {
+    troop: {
+      id: "troop_holy_wolf_boss",
+      name: "성광 신수 황금랑 보스전",
+      enemyIds: ["enemy_amethyst_wolf", "enemy_frost_twin_knight"],
+      previewBackgroundResourceId: "generated-battle-reference-forest",
+    },
+  });
+  const start = await page.evaluate(async () => {
+    const { store } = await import("/src/project/store.ts");
+    const p = store.getCurrent();
+    return { mapId: p.startMapId, x: p.startPos.x, y: p.startPos.y };
+  });
+  await tool("upsert_event", {
+    mapId: start.mapId,
+    event: {
+      id: "evt_holy_wolf_boss_battle",
+      name: "성광 신수 보스전",
+      x: start.x,
+      y: Math.max(0, start.y - 2),
+      trigger: { kind: "auto" },
+      commands: [{ kind: "battleProcessing", troopId: "troop_holy_wolf_boss", canEscape: false, canLose: true }],
+    },
+  });
+  const wire3 = await page.evaluate(async () => {
+    const io = await import("/src/project/io.ts");
+    const { store } = await import("/src/project/store.ts");
+    return io.serialize(store.getCurrent());
+  });
+  await page.close();
+
+  const player = await browser.newPage({ viewport: { width: 1280, height: 860 } });
+  player.on("console", (msg) => { if (msg.type() === "error") consoleErrors.push(`[player3] ${msg.text()}`); });
+  player.on("pageerror", (error) => consoleErrors.push(`[player3] ${error.message}`));
+  await player.route("**/src/project/store.ts*", (route) => route.fulfill({ status: 200, contentType: "application/javascript", body: 'export * from "/src/player/exportProjectStoreShim.ts";\n' }));
+  await player.route("**/src/app/mode.ts*", (route) => route.fulfill({ status: 200, contentType: "application/javascript", body: 'export * from "/src/player/exportAppModeShim.ts";\n' }));
+  await player.route("**/project.json", (route) => route.fulfill({ status: 200, contentType: "application/json", body: wire3 }));
+  await player.goto(new URL("player.html", BASE).href, { waitUntil: "domcontentloaded", timeout: 90_000 });
+  await player.waitForSelector('[data-testid="title-screen"]', { timeout: 90_000 });
+
+  const battleEnemy = '[data-testid="battle-scene"] .battle-enemy[data-pixel-enemy]';
+  const deadline = Date.now() + 60_000;
+  while (!(await player.locator(battleEnemy).count())) {
+    if (Date.now() > deadline) assert.fail("Flow 3 autorun boss battle never opened");
+    await player.keyboard.press("Enter");
+    await player.waitForTimeout(400);
+  }
+  await player.waitForTimeout(600);
+  await player.evaluate(() => {
+    window.__poseLog3 = [];
+    const scene = document.querySelector('[data-testid="battle-scene"]');
+    new MutationObserver((records) => {
+      for (const r of records) {
+        const node = r.target;
+        if (!(node instanceof HTMLElement) || !node.classList.contains("battle-enemy")) continue;
+        window.__poseLog3.push({
+          t: Math.round(performance.now()),
+          sheet: node.querySelector(".battle-enemy-image")?.dataset.pixelSheet,
+          cell: node.dataset.pixelEnemyCell,
+          frame: node.dataset.battlePoseFrame ?? "idle",
+        });
+      }
+    }).observe(scene, { subtree: true, attributes: true, attributeFilter: ["data-battle-pose-frame"] });
+  });
+  const battleEnemies3 = await player.evaluate(() => [...document.querySelectorAll(".battle-enemy[data-pixel-enemy]")].map((node) => {
+    const image = node.querySelector(".battle-enemy-image");
+    return { motion: node.dataset.pixelEnemy, cell: node.dataset.pixelEnemyCell, sheet: image?.dataset.pixelSheet };
+  }));
+  report.flow3.battleEnemies = battleEnemies3;
+  const bossNode = battleEnemies3.find((e) => e.sheet === "authored-monster-enemy-amethyst-wolf");
+  assert.ok(bossNode && bossNode.cell === "96", "modified boss must render as 96px sheet in player.html battle");
+
+  const scene = player.locator('[data-testid="battle-scene"]');
+  await scene.screenshot({ path: path.join(OUT, "flow3-battle-boss-start.png") });
+  let capturedSkillShot = false;
+  await frames(player, "flow3-battle-boss-turns", scene, 95, 110, async (i) => {
+    if (i % 6 === 0) await player.keyboard.press("Enter");
+    if (!capturedSkillShot) {
+      const inSkillPose = await player.evaluate(() => {
+        const nodes = [...document.querySelectorAll(".battle-enemy[data-pixel-enemy]")];
+        return nodes.some((n) => n.dataset.battlePoseFrame === "skill" || n.dataset.retroAction === "skill");
+      });
+      if (inSkillPose) {
+        await scene.screenshot({ path: path.join(OUT, "flow3-battle-boss-skill.png") });
+        capturedSkillShot = true;
+      }
+    }
+    return null;
+  });
+  if (!capturedSkillShot) {
+    await scene.screenshot({ path: path.join(OUT, "flow3-battle-boss-skill.png") });
+  }
+  const log3 = await player.evaluate(() => window.__poseLog3);
+  const bySheet3 = {};
+  for (const entry of log3) (bySheet3[entry.sheet] ??= new Set()).add(entry.frame);
+  report.flow3.poseFramesBySheet = Object.fromEntries(Object.entries(bySheet3).map(([k, v]) => [k, [...v]]));
   await player.close();
 }
 

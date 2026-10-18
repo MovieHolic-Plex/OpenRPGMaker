@@ -14,8 +14,35 @@ import { encodeIndexedPng, pngDataUrl } from "@/util/indexedPng";
 
 export const MONSTER_ARCHETYPES = ["beast", "humanoid-knight", "winged-fiend", "slime-ooze", "golem-construct", "plant-hydra", "dragon-boss", "caster-wraith"] as const;
 export type MonsterArchetype = (typeof MONSTER_ARCHETYPES)[number];
-export const MONSTER_WEAPONS = ["sword", "axe", "spear", "claw", "staff", "fang", "breath"] as const;
+export const MONSTER_ARCHETYPE_ALIASES: Readonly<Record<string, MonsterArchetype>> = {
+  beast: "beast",
+  dragon: "dragon-boss",
+  "dragon-boss": "dragon-boss",
+  knight: "humanoid-knight",
+  "humanoid-knight": "humanoid-knight",
+  golem: "golem-construct",
+  "golem-construct": "golem-construct",
+  spirit: "caster-wraith",
+  wraith: "caster-wraith",
+  "caster-wraith": "caster-wraith",
+  slime: "slime-ooze",
+  ooze: "slime-ooze",
+  "slime-ooze": "slime-ooze",
+  fiend: "winged-fiend",
+  "winged-fiend": "winged-fiend",
+  plant: "plant-hydra",
+  hydra: "plant-hydra",
+  "plant-hydra": "plant-hydra",
+};
+export function normalizeMonsterArchetype(value: string | undefined): MonsterArchetype | undefined {
+  if (!value) return undefined;
+  const key = value.trim().toLowerCase();
+  return Object.hasOwn(MONSTER_ARCHETYPE_ALIASES, key) ? MONSTER_ARCHETYPE_ALIASES[key] : undefined;
+}
+export const MONSTER_WEAPONS = ["sword", "axe", "spear", "claw", "staff", "fang", "breath", "twin_blades", "tail_club"] as const;
 export type MonsterWeapon = (typeof MONSTER_WEAPONS)[number];
+export const MONSTER_TRAITS = ["horns", "wings", "spikes", "halo", "shield", "staff", "twin_blades", "tail_club", "aura"] as const;
+export type MonsterTrait = (typeof MONSTER_TRAITS)[number];
 export const MONSTER_SHEET_CELLS = [48, 64, 96] as const;
 export type MonsterSheetCell = (typeof MONSTER_SHEET_CELLS)[number];
 export const MONSTER_MOTIONS: readonly PixelEnemyMotion[] = ["hop", "swoop", "stomp", "dash", "float", "shoot", "breath"];
@@ -33,8 +60,37 @@ export const MONSTER_ARCHETYPE_LABELS: Readonly<Record<MonsterArchetype, string>
   "caster-wraith": "망령 술사",
 };
 export const MONSTER_WEAPON_LABELS: Readonly<Record<MonsterWeapon, string>> = {
-  sword: "검", axe: "도끼", spear: "창", claw: "발톱", staff: "지팡이", fang: "송곳니", breath: "숨결",
+  sword: "검", axe: "도끼", spear: "창", claw: "발톱", staff: "지팡이", fang: "송곳니", breath: "숨결", twin_blades: "쌍검", tail_club: "곤봉 꼬리",
 };
+
+export interface MonsterPalettePresetColors {
+  readonly id: string;
+  readonly label: string;
+  readonly primaryColor: string;
+  readonly secondaryColor: string;
+  readonly accentColor: string;
+}
+export const MONSTER_PALETTE_PRESETS: Readonly<Record<string, MonsterPalettePresetColors>> = {
+  fire: { id: "fire", label: "화염·용암", primaryColor: "#b83224", secondaryColor: "#e6a84c", accentColor: "#ff6b1a" },
+  frost: { id: "frost", label: "냉기·서리", primaryColor: "#2e6f9e", secondaryColor: "#b8e2f8", accentColor: "#5ce1ff" },
+  void: { id: "void", label: "심연·공허", primaryColor: "#2a2040", secondaryColor: "#8f7ab8", accentColor: "#b14eff" },
+  holy: { id: "holy", label: "황금 성광", primaryColor: "#d4a438", secondaryColor: "#f7eed2", accentColor: "#fff078" },
+  gold: { id: "gold", label: "태양 황금", primaryColor: "#c8962e", secondaryColor: "#f2df9c", accentColor: "#ffe45e" },
+  poison: { id: "poison", label: "맹독·포자", primaryColor: "#3b7a3e", secondaryColor: "#a6d96a", accentColor: "#bd5cff" },
+  amethyst: { id: "amethyst", label: "자수정", primaryColor: "#5b3f8f", secondaryColor: "#d9c6f2", accentColor: "#c77dff" },
+  abyss: { id: "abyss", label: "심해·산호", primaryColor: "#1d4e6b", secondaryColor: "#7cc7d9", accentColor: "#38ffcc" },
+  earth: { id: "earth", label: "대지·거석", primaryColor: "#8c6d46", secondaryColor: "#5c4d3c", accentColor: "#ffd040" },
+};
+const PALETTE_ALIASES: Readonly<Record<string, string>> = {
+  ice: "frost", cold: "frost", dark: "void", shadow: "void", light: "holy", radiant: "holy", sacred: "holy",
+  venom: "poison", acid: "poison", purple: "amethyst", crystal: "amethyst", water: "abyss", sea: "abyss", stone: "earth", rock: "earth",
+};
+export function resolveMonsterPalettePreset(value: string | undefined): MonsterPalettePresetColors | undefined {
+  if (!value) return undefined;
+  const key = value.trim().toLowerCase();
+  const canonical = Object.hasOwn(MONSTER_PALETTE_PRESETS, key) ? key : (Object.hasOwn(PALETTE_ALIASES, key) ? PALETTE_ALIASES[key] : undefined);
+  return canonical ? MONSTER_PALETTE_PRESETS[canonical] : undefined;
+}
 
 /** 원형마다 기본 무기·접근 방식·대기 칸 길이·비행 여부. */
 export const ARCHETYPE_DEFAULTS: Readonly<Record<MonsterArchetype, { readonly weapon: MonsterWeapon; readonly motion: PixelEnemyMotion; readonly idleFrameMs: number; readonly flying: boolean; readonly cell: MonsterSheetCell }>> = {
@@ -48,9 +104,23 @@ export const ARCHETYPE_DEFAULTS: Readonly<Record<MonsterArchetype, { readonly we
   "caster-wraith": { weapon: "staff", motion: "float", idleFrameMs: 200, flying: true, cell: 64 },
 };
 
+export const MONSTER_CELL_PATCH_PRESETS = ["holy_ray", "dark_flame", "frost_shard", "lightning_arc", "rune_halo"] as const;
+export type MonsterCellPatchPreset = (typeof MONSTER_CELL_PATCH_PRESETS)[number];
+export interface MonsterCellPatch {
+  readonly rows?: readonly string[];
+  readonly mode?: "overlay" | "replace";
+  readonly anchor?: "center" | "top" | "front" | "ground";
+  readonly offsetX?: number;
+  readonly offsetY?: number;
+  readonly preset?: MonsterCellPatchPreset;
+}
+export type MonsterCellPatchInput = readonly string[] | MonsterCellPatch | MonsterCellPatchPreset;
+
 export interface MonsterPixelRecipe {
   readonly name?: string;
-  readonly archetype?: MonsterArchetype;
+  readonly archetype?: MonsterArchetype | string;
+  /** 팔레트 프리셋(fire, frost, void, holy, gold, poison, amethyst, abyss, earth). */
+  readonly palette?: string;
   /** #rrggbb — 몸통. */
   readonly primaryColor?: string;
   /** #rrggbb — 갑옷·배·잎 같은 둘째 재질. */
@@ -59,16 +129,32 @@ export interface MonsterPixelRecipe {
   readonly accentColor?: string;
   readonly weapon?: MonsterWeapon;
   readonly cell?: MonsterSheetCell;
-  readonly motion?: PixelEnemyMotion;
+  readonly motion?: PixelEnemyMotion | "cast";
   /** 등·어깨 수정 가시. */
   readonly spikes?: boolean;
   /** 머리 뿔. */
   readonly horns?: boolean;
+  /** 등 날개. */
+  readonly wings?: boolean;
+  /** 머리 위 성광 후광. */
+  readonly halo?: boolean;
+  /** 몸 둘레 기운·오라 입자. */
+  readonly aura?: boolean;
+  /** 보조 방패. */
+  readonly shield?: boolean;
+  /** 곤봉 꼬리. */
+  readonly tailClub?: boolean;
+  /** 특징 목록(horns, wings, spikes, halo, shield, staff, twin_blades, tail_club, aura). */
+  readonly traits?: readonly string[];
   /**
    * 모드 B: 칸별 문자 격자(위→아래 줄). 문자 = MONSTER_PIXEL_CHARS 의 키.
    * cell×cell 이면 그 자리에, 더 작으면 가로 가운데·아래쪽 기준선(y=cell−4)에 맞춰 찍는다.
    */
   readonly cells?: Partial<Record<PixelEnemyCell, readonly string[]>>;
+  /**
+   * 칸별 픽셀 패치(overlay 또는 replace). "recover" | "skill" | "(0,2)" 로 (0,2) 스킬 칸에 광선·문양·덧그림을 얹거나 칸을 교체한다.
+   */
+  readonly cellPatches?: Partial<Record<PixelEnemyCell | "skill" | "(0,2)", MonsterCellPatchInput>>;
 }
 
 /** 모드 B 격자 문자 → 팔레트 칸. '.' 투명. */
@@ -166,9 +252,10 @@ function ramp(base: Rgb): [Rgb, Rgb, Rgb] {
 }
 
 function buildPalette(recipe: MonsterPixelRecipe): Rgb[] {
-  const primary = parseHex(recipe.primaryColor, "#5a6f8f");
-  const secondary = parseHex(recipe.secondaryColor, "#c9b27c");
-  const accent = parseHex(recipe.accentColor, "#b15cff");
+  const preset = resolveMonsterPalettePreset(recipe.palette);
+  const primary = parseHex(recipe.primaryColor, preset?.primaryColor ?? "#5a6f8f");
+  const secondary = parseHex(recipe.secondaryColor, preset?.secondaryColor ?? "#c9b27c");
+  const accent = parseHex(recipe.accentColor, preset?.accentColor ?? "#b15cff");
   const [ph, ps] = rgbToHsl(primary);
   const [ah, as] = rgbToHsl(accent);
   return [
@@ -363,6 +450,11 @@ interface Rig {
   readonly weapon: MonsterWeapon;
   readonly spikes: boolean;
   readonly horns: boolean;
+  readonly wings: boolean;
+  readonly halo: boolean;
+  readonly aura: boolean;
+  readonly shield: boolean;
+  readonly tailClub: boolean;
   /** 64 기준 좌표(x 오른쪽 +, h 바닥 위 높이) → 칸 픽셀. */
   readonly at: (x: number, h: number) => Pt;
   readonly mask: () => Mask;
@@ -373,10 +465,16 @@ function makeRig(cell: number, recipe: MonsterPixelRecipe, weapon: MonsterWeapon
   const u = (cell / 64) * scale;
   const cx = cell / 2;
   const ground = cell - 4;
+  const traitSet = new Set((recipe.traits ?? []).map((t) => t.trim().toLowerCase()));
   return {
     grid, u, cx, ground, weapon,
-    spikes: recipe.spikes ?? (archetype === "beast" || archetype === "golem-construct"),
-    horns: recipe.horns ?? (archetype === "winged-fiend" || archetype === "dragon-boss"),
+    spikes: recipe.spikes ?? (traitSet.has("spikes") ? true : archetype === "beast" || archetype === "golem-construct"),
+    horns: recipe.horns ?? (traitSet.has("horns") ? true : archetype === "winged-fiend" || archetype === "dragon-boss"),
+    wings: recipe.wings ?? (traitSet.has("wings") ? true : archetype === "winged-fiend" || archetype === "dragon-boss"),
+    halo: recipe.halo ?? traitSet.has("halo"),
+    aura: recipe.aura ?? traitSet.has("aura"),
+    shield: recipe.shield ?? (traitSet.has("shield") ? true : archetype === "humanoid-knight"),
+    tailClub: recipe.tailClub ?? (traitSet.has("tail_club") || weapon === "tail_club"),
     at: (x, h) => [cx + x * u, ground + 1 - h * u],
     mask: () => new Mask(cell),
   };
@@ -485,6 +583,19 @@ function heldWeapon(r: Rig, hand: Pt, angle: number, weapon: MonsterWeapon, glow
     const out = (p: Pt, k: number): Pt => [p[0] + side[0] * k * u, p[1] + side[1] * k * u];
     paint(r.grid, r.mask().poly([out(h0, -1), out(h0, -6), out(along(14), -8), out(h1, -6), out(h1, -1)]), "m");
     return;
+  }
+  if (weapon === "tail_club") {
+    paint(r.grid, r.mask().stroke([along(-4), along(14)], Math.max(2, 2.2 * u)), "s", { flat: true });
+    const head = along(16);
+    paint(r.grid, r.mask().ellipse(head[0], head[1], 4 * u, 4 * u), "m");
+    spike(r, [head[0] - 2 * u, head[1] - 3 * u], [head[0] + 2 * u, head[1] - 3 * u], [head[0], head[1] - 7 * u]);
+    if (glow) skillAura(r, head, 7 * u);
+    return;
+  }
+  if (weapon === "twin_blades") {
+    const dir2: Pt = [Math.cos(angle + 0.38), Math.sin(angle + 0.38)];
+    const along2 = (d: number): Pt => [hand[0] - 3 * u + dir2[0] * d * u, hand[1] + 2 * u + dir2[1] * d * u];
+    paint(r.grid, r.mask().stroke([along2(2), along2(16)], Math.max(2, 2.4 * u)), "a");
   }
   // sword (그 밖에 손에 들 수 없는 무기도 검으로)
   const guardA: Pt = [hand[0] + (dir[0] * 2.5 + side[0] * 4) * u, hand[1] + (dir[1] * 2.5 + side[1] * 4) * u];
@@ -993,7 +1104,7 @@ function derivedCell(source: Grid, cell: PixelEnemyCell, flying: boolean): Grid 
     case "recover": {
       shear(-s, -s);
       const top = bbox(out);
-      const r: Rig = { grid: out, u: size / 64, cx: size / 2, ground: size - 4, weapon: "staff", spikes: false, horns: false, at: (x, h) => [size / 2 + (x * size) / 64, size - 3 - (h * size) / 64], mask: () => new Mask(size) };
+      const r: Rig = { grid: out, u: size / 64, cx: size / 2, ground: size - 4, weapon: "staff", spikes: false, horns: false, wings: false, halo: false, aura: false, shield: false, tailClub: false, at: (x, h) => [size / 2 + (x * size) / 64, size - 3 - (h * size) / 64], mask: () => new Mask(size) };
       if (top) skillAura(r, [(top.minX + top.maxX) / 2, (top.minY + top.maxY) / 2], Math.min(size * 0.38, (top.maxX - top.minX) * 0.6 + 4));
       break;
     }
@@ -1021,20 +1132,232 @@ export interface ResolvedMonsterRecipe {
   readonly flying: boolean;
 }
 
+function drawExtraBackTraits(r: Rig, pose: Pose, archetype: MonsterArchetype): void {
+  const shift = pose.lean * 0.5;
+  if (r.wings && archetype !== "winged-fiend" && archetype !== "dragon-boss") {
+    const wingUp = -pose.flap * 7 + (pose.skill ? 5 : 0);
+    paint(
+      r.grid,
+      r.mask().poly([
+        r.at(-2 + shift, 22),
+        r.at(-11 + shift, 35 + wingUp),
+        r.at(-20 + shift, 30 + wingUp * 0.8),
+        r.at(-13 + shift, 20),
+      ]),
+      "s",
+    );
+  }
+}
+
+function drawExtraFrontTraits(r: Rig, pose: Pose, archetype: MonsterArchetype): void {
+  const { u } = r;
+  const shift = pose.lean * 0.5;
+  if (r.wings && archetype !== "winged-fiend" && archetype !== "dragon-boss") {
+    const wingUp = -pose.flap * 7 + (pose.skill ? 5 : 0);
+    paint(
+      r.grid,
+      r.mask().poly([
+        r.at(1 + shift, 21),
+        r.at(-4 + shift, 37 + wingUp),
+        r.at(-16 + shift, 34 + wingUp * 0.8),
+        r.at(-11 + shift, 26 + wingUp * 0.4),
+        r.at(-7 + shift, 19),
+      ]),
+      "s",
+    );
+    paint(
+      r.grid,
+      r.mask().stroke([r.at(1 + shift, 21), r.at(-4 + shift, 37 + wingUp), r.at(-16 + shift, 34 + wingUp * 0.8)], Math.max(1.4, 1.8 * u)),
+      "a",
+      { flat: true, outline: false },
+    );
+  }
+  if (r.horns && archetype !== "humanoid-knight" && archetype !== "winged-fiend" && archetype !== "dragon-boss" && archetype !== "caster-wraith") {
+    horn(r, r.at(11 + shift, 27 + pose.head), r.at(5 + shift, 36 + pose.head), 2 * u);
+    horn(r, r.at(14 + shift, 27 + pose.head), r.at(11 + shift, 35 + pose.head), 1.8 * u);
+  }
+  if (r.tailClub && archetype !== "slime-ooze") {
+    const club = r.at(-24 + shift, 28 + pose.flap * 2);
+    paint(r.grid, r.mask().ellipse(club[0], club[1], 3.4 * u, 3.4 * u), "m");
+    spike(r, [club[0] - 2 * u, club[1] - 2 * u], [club[0] + 2 * u, club[1] - 2 * u], [club[0], club[1] - 6 * u]);
+  }
+  if (r.shield && archetype !== "humanoid-knight") {
+    const sh = r.at(5 + shift, 16);
+    paint(r.grid, r.mask().poly([[sh[0] - 3.5 * u, sh[1] - 5 * u], [sh[0] + 3.5 * u, sh[1] - 5 * u], [sh[0] + 3.5 * u, sh[1] + 2 * u], [sh[0], sh[1] + 5.5 * u], [sh[0] - 3.5 * u, sh[1] + 2 * u]]), "s");
+    paint(r.grid, r.mask().stroke([[sh[0], sh[1] - 3 * u], [sh[0], sh[1] + 2.5 * u]], Math.max(1.2, 1.5 * u)), "a", { flat: true, outline: false });
+  }
+  if (r.halo) {
+    const box = bbox(r.grid);
+    const hx = box ? Math.round((box.minX + box.maxX) / 2 + 2 * u) : Math.round(r.cx + 4 * u);
+    const hy = box ? Math.max(Math.round(5 * u), box.minY - Math.round(3 * u)) : Math.round(12 * u);
+    const rx = Math.round(6.5 * u);
+    const ry = Math.max(2, Math.round(2.2 * u));
+    for (let deg = 0; deg < 360; deg += 12) {
+      const rad = (deg * Math.PI) / 180;
+      const px = Math.max(3, Math.min(r.grid.size - 4, Math.round(hx + Math.cos(rad) * rx)));
+      const py = Math.max(3, Math.min(r.ground - 6, Math.round(hy + Math.sin(rad) * ry)));
+      r.grid.set(px, py, deg % 48 === 0 ? W : 10);
+    }
+  }
+  if (r.aura) {
+    const radius = (pose.skill ? 16 : 12) * u;
+    const center = r.at(shift, 20);
+    const count = pose.skill ? 8 : 4;
+    for (let i = 0; i < count; i += 1) {
+      const angle = (i / count) * Math.PI * 2 + (pose.bob * 0.4);
+      const px = Math.max(4, Math.min(r.grid.size - 5, Math.round(center[0] + Math.cos(angle) * radius)));
+      const py = Math.max(4, Math.min(r.ground - 6, Math.round(center[1] + Math.sin(angle) * radius * 0.7)));
+      sparkle(r, [px, py], Math.max(1, Math.round(1.5 * u)));
+    }
+  }
+}
+
+function resolvePatchCellKey(key: string): PixelEnemyCell | undefined {
+  const k = key.trim().toLowerCase();
+  if (k === "skill" || k === "(0,2)" || k === "0,2" || k === "cast") return "recover";
+  return MONSTER_SHEET_ORDER.includes(k as PixelEnemyCell) ? (k as PixelEnemyCell) : undefined;
+}
+
+function drawPatchPreset(grid: Grid, preset: MonsterCellPatchPreset, u: number): void {
+  const size = grid.size;
+  const box = bbox(grid);
+  const clampX = (x: number): number => Math.max(2, Math.min(size - 3, Math.round(x)));
+  const clampY = (y: number): number => Math.max(2, Math.min(size - 5, Math.round(y)));
+  const frontX = box ? Math.min(size - Math.round(14 * u), box.maxX - Math.round(2 * u)) : Math.round(size * 0.58);
+  const midY = box ? Math.round(box.minY + (box.maxY - box.minY) * 0.36) : Math.round(size * 0.42);
+  const setSafe = (x: number, y: number, c: number): void => {
+    grid.set(clampX(x), clampY(y), c);
+  };
+  if (preset === "holy_ray") {
+    const endX = size - 3;
+    for (let x = frontX; x <= endX; x += 1) {
+      const t = (x - frontX) / Math.max(1, endX - frontX);
+      const half = Math.max(1, Math.round((1.5 + t * 3.2) * u));
+      for (let dy = -half; dy <= half; dy += 1) {
+        const ady = Math.abs(dy);
+        setSafe(x, midY + dy, ady === 0 ? W : ady <= Math.max(1, Math.floor(half * 0.55)) ? 10 : 9);
+      }
+    }
+    const starR = Math.max(2, Math.round(4 * u));
+    for (let k = -starR; k <= starR; k += 1) {
+      setSafe(frontX + k, midY, Math.abs(k) <= 1 ? W : 10);
+      setSafe(frontX, midY + k, Math.abs(k) <= 1 ? W : 10);
+    }
+    return;
+  }
+  if (preset === "dark_flame") {
+    for (let i = 0; i < 5; i += 1) {
+      const fx = frontX - Math.round((i - 2) * 3.5 * u);
+      const fy = midY + Math.round((i % 2 ? 4 : -2) * u);
+      for (let h = 0; h <= Math.round(7 * u); h += 1) {
+        setSafe(fx, fy - h, h < 2 ? W : h < 5 ? 10 : 8);
+        if (h < Math.round(4 * u)) {
+          setSafe(fx - 1, fy - h, 9);
+          setSafe(fx + 1, fy - h, 9);
+        }
+      }
+    }
+    return;
+  }
+  if (preset === "frost_shard") {
+    for (const [dx, dy] of [[4, -5], [9, 0], [5, 5]] as const) {
+      const cx = frontX + Math.round(dx * u), cy = midY + Math.round(dy * u);
+      for (let k = -Math.round(3 * u); k <= Math.round(3 * u); k += 1) {
+        setSafe(cx + k, cy, k === 0 ? W : 10);
+        setSafe(cx, cy + k, k === 0 ? W : 9);
+      }
+    }
+    return;
+  }
+  if (preset === "lightning_arc") {
+    let y = clampY(midY - Math.round(8 * u));
+    for (let x = frontX; x <= size - 3; x += 1) {
+      y = clampY(y + ((x % 3) - 1));
+      setSafe(x, y, W);
+      setSafe(x, y - 1, 10);
+      setSafe(x, y + 1, 9);
+    }
+    return;
+  }
+  // rune_halo
+  const cx = box ? Math.round((box.minX + box.maxX) / 2) : Math.round(size / 2);
+  const cy = box ? Math.max(5, box.minY - Math.round(2 * u)) : Math.round(size * 0.25);
+  const rx = Math.round(8 * u), ry = Math.max(2, Math.round(3 * u));
+  for (let deg = 0; deg < 360; deg += 10) {
+    const rad = (deg * Math.PI) / 180;
+    setSafe(cx + Math.cos(rad) * rx, cy + Math.sin(rad) * ry, deg % 40 === 0 ? W : 10);
+  }
+}
+
+function applyCellPatchToGrid(grid: Grid, cellName: PixelEnemyCell, patchInput: MonsterCellPatchInput, u: number): Grid {
+  const size = grid.size;
+  if (typeof patchInput === "string") {
+    drawPatchPreset(grid, patchInput, u);
+    return grid;
+  }
+  const patch: MonsterCellPatch = Array.isArray(patchInput) ? { rows: patchInput, mode: "overlay" } : (patchInput as MonsterCellPatch);
+  if (patch.preset) {
+    drawPatchPreset(grid, patch.preset, u);
+  }
+  const rows = patch.rows;
+  if (!rows || rows.length === 0) return grid;
+  const width = Math.max(...rows.map((r) => r.length));
+  if (patch.mode === "replace" || (patch.mode !== "overlay" && rows.length === size && width === size)) {
+    return gridFromRows(size, rows, `cellPatches.${cellName}`);
+  }
+  for (const row of rows) {
+    const bad = [...row].find((ch) => !Object.hasOwn(CHAR_INDEX, ch));
+    if (bad !== undefined) throw new MonsterPixelRecipeError(`cellPatches.${cellName}: 모르는 문자 ${JSON.stringify(bad)} — 쓸 수 있는 문자 ${Object.keys(CHAR_INDEX).join("")}`);
+  }
+  const box = bbox(grid);
+  const anchor = patch.anchor ?? "front";
+  const baseLeft = anchor === "front"
+    ? (box ? Math.min(size - width - 2, Math.max(2, box.maxX - Math.floor(width / 3))) : Math.floor(size * 0.6))
+    : anchor === "top"
+      ? (box ? Math.floor((box.minX + box.maxX - width) / 2) : Math.floor((size - width) / 2))
+      : Math.floor((size - width) / 2);
+  const baseTop = anchor === "top"
+    ? (box ? Math.max(2, box.minY - rows.length) : 2)
+    : anchor === "ground"
+      ? size - 5 - rows.length
+      : (box ? Math.max(2, Math.floor(box.minY + (box.maxY - box.minY) * 0.35 - rows.length / 2)) : Math.floor((size - rows.length) / 2));
+  const left = baseLeft + (patch.offsetX ?? 0);
+  const top = baseTop + (patch.offsetY ?? 0);
+  rows.forEach((row, j) => {
+    [...row].forEach((ch, i) => {
+      if (ch === ".") return;
+      const px = Math.max(2, Math.min(size - 3, left + i));
+      const py = Math.max(2, Math.min(size - 5, top + j));
+      grid.set(px, py, CHAR_INDEX[ch]!);
+    });
+  });
+  return grid;
+}
+
 export function resolveMonsterRecipe(recipe: MonsterPixelRecipe): ResolvedMonsterRecipe {
-  const archetype = recipe.archetype;
-  if (archetype !== undefined && !MONSTER_ARCHETYPES.includes(archetype)) {
-    throw new MonsterPixelRecipeError(`archetype 은 ${MONSTER_ARCHETYPES.join(" | ")} 중 하나입니다: ${JSON.stringify(archetype)}`);
+  const rawArchetype = recipe.archetype;
+  const archetype = rawArchetype !== undefined ? normalizeMonsterArchetype(rawArchetype) : undefined;
+  if (rawArchetype !== undefined && !archetype) {
+    throw new MonsterPixelRecipeError(`archetype 은 ${MONSTER_ARCHETYPES.join(" | ")} (또는 별칭 dragon·knight·golem·spirit·slime) 중 하나입니다: ${JSON.stringify(rawArchetype)}`);
   }
   if (!archetype && !recipe.cells?.idle_a) {
     throw new MonsterPixelRecipeError("archetype 을 고르거나 cells.idle_a 격자를 주세요(모드 B 는 대기 a 칸이 바탕입니다).");
   }
   const defaults = ARCHETYPE_DEFAULTS[archetype ?? "humanoid-knight"];
-  const weapon = recipe.weapon ?? defaults.weapon;
+  const traitList = (recipe.traits ?? []).map((t) => t.trim().toLowerCase());
+  const traitWeapon: MonsterWeapon | undefined = traitList.includes("twin_blades")
+    ? "twin_blades"
+    : traitList.includes("tail_club")
+      ? "tail_club"
+      : traitList.includes("staff")
+        ? "staff"
+        : undefined;
+  const weapon = recipe.weapon ?? traitWeapon ?? defaults.weapon;
   if (!MONSTER_WEAPONS.includes(weapon)) throw new MonsterPixelRecipeError(`weapon 은 ${MONSTER_WEAPONS.join(" | ")} 중 하나입니다.`);
   const cell = recipe.cell ?? (recipe.cells?.idle_a ? (recipe.cells.idle_a.length > 64 ? 96 : recipe.cells.idle_a.length > 48 ? 64 : 48) : defaults.cell);
   if (!MONSTER_SHEET_CELLS.includes(cell)) throw new MonsterPixelRecipeError("cell 은 48 | 64 | 96 입니다.");
-  const motion = recipe.motion ?? defaults.motion;
+  const rawMotion = recipe.motion === "cast" ? "shoot" : recipe.motion;
+  const motion = rawMotion ?? defaults.motion;
   if (!MONSTER_MOTIONS.includes(motion)) throw new MonsterPixelRecipeError(`motion 은 ${MONSTER_MOTIONS.join(" | ")} 중 하나입니다.`);
   return {
     name: recipe.name?.trim() || (archetype ? MONSTER_ARCHETYPE_LABELS[archetype] : "도트 몬스터"),
@@ -1054,24 +1377,44 @@ function composeFrames(recipe: MonsterPixelRecipe, resolved: ResolvedMonsterReci
 } {
   const { cell, archetype, weapon, flying } = resolved;
   const custom = recipe.cells ?? {};
+  const patches = new Map<PixelEnemyCell, MonsterCellPatchInput>();
+  if (recipe.cellPatches) {
+    for (const [rawKey, patchVal] of Object.entries(recipe.cellPatches)) {
+      if (patchVal === undefined) continue;
+      const targetCell = resolvePatchCellKey(rawKey);
+      if (!targetCell) throw new MonsterPixelRecipeError(`cellPatches 의 칸 이름은 ${MONSTER_SHEET_ORDER.join(", ")} (또는 skill / (0,2)) 이다: ${rawKey}`);
+      patches.set(targetCell, patchVal);
+    }
+  }
   const frames = {} as Record<PixelEnemyCell, Grid>;
   const customBase = custom.idle_a ? gridFromRows(cell, custom.idle_a, "cells.idle_a") : undefined;
   for (const name of MONSTER_SHEET_ORDER) {
     const rows = custom[name];
-    if (rows) { frames[name] = gridFromRows(cell, rows, `cells.${name}`); continue; }
+    if (rows) {
+      frames[name] = gridFromRows(cell, rows, `cells.${name}`);
+      const patch = patches.get(name);
+      if (patch) frames[name] = applyCellPatchToGrid(frames[name], name, patch, (cell / 64) * scale);
+      continue;
+    }
     if (name === "dead") continue;
     if (archetype) {
       const rig = makeRig(cell, recipe, weapon, archetype, scale);
+      drawExtraBackTraits(rig, POSES[name], archetype);
       DRAWERS[archetype](rig, POSES[name]);
+      drawExtraFrontTraits(rig, POSES[name], archetype);
       frames[name] = rig.grid;
     } else {
       frames[name] = derivedCell(customBase!, name, flying);
     }
+    const patch = patches.get(name);
+    if (patch) frames[name] = applyCellPatchToGrid(frames[name], name, patch, (cell / 64) * scale);
   }
   for (const name of MONSTER_SHEET_ORDER) if (name !== "dead") finishOutline(frames[name]);
   if (!custom.dead) {
     const flips = archetype === "beast" || archetype === "dragon-boss";
-    const dead = archetype === "slime-ooze" ? puddle(cell) : archetype ? fallen(frames.hit, flips ? "flip" : "rotate") : derivedCell(customBase!, "dead", flying);
+    let dead = archetype === "slime-ooze" ? puddle(cell) : archetype ? fallen(frames.hit, flips ? "flip" : "rotate") : derivedCell(customBase!, "dead", flying);
+    const deadPatch = patches.get("dead");
+    if (deadPatch) dead = applyCellPatchToGrid(dead, "dead", deadPatch, (cell / 64) * scale);
     finishOutline(dead);
     frames.dead = dead;
   } else finishOutline(frames.dead);

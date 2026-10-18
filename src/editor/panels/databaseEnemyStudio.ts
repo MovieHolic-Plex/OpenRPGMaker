@@ -128,7 +128,8 @@ function enemyPixelSlot(record: EnemyRecord, onMissing: () => void): { element: 
   const refresh = (): void => {
     const live = currentEnemy(record);
     // 공방이 같은 리소스 id 에 시트를 다시 그리면 id·이름은 그대로라 그림 URL 까지 본다.
-    const next = JSON.stringify([live.monsterResourceId, live.name, pixelEnemySheet(live.monsterResourceId)?.url]);
+    const currentSheet = pixelEnemySheet(live.monsterResourceId);
+    const next = JSON.stringify([live.monsterResourceId, live.name, currentSheet?.url, currentSheet?.skillSlug, currentSheet?.cell, live.actions?.map((a) => a.skillId)]);
     if (next === key) return;
     key = next;
     preview?.stop();
