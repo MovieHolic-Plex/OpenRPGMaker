@@ -99,6 +99,7 @@ import { STRUCTURE_KIT_TOOLS } from "./structureKitTools";
 import { TILESET_OBJECT_TOOLS } from "./tilesetObjectTools";
 import { HAND_INTERIOR_TOOLS } from "./handInteriorTools";
 import { bindJrpgVolumeToolLookup, JRPG_VOLUME_TOOLS } from "./jrpgVolumeTools";
+import { JRPG_CHAPTER_TOOLS } from "./jrpgChapterTools";
 import { SPACE_BLUEPRINT_TOOLS } from "./spaceBlueprintTools";
 import { JP_CITY_TOOLS } from "./jpCityTools";
 import { CAMPUS_TOOLS } from "./campusTools";
@@ -277,6 +278,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(STEAMPUNK_CITY_TOOLS, "tile"),
   // JRPG 한 고장 분량 — 마을 집 문 ↔ 여관·상점·장로 실내, 가장자리 ↔ 가도(보이는 적·상자), 가도 끝 ↔ 던전(중간 보스·수호자)을 하위 도구로 잇는다.
   ...withDomain(JRPG_VOLUME_TOOLS, "tile"),
+  // 크로노 트리거·FF6 한 장 — 거점 장면 + 실내·장면·던전 갈래 + NPC·퀘스트·사건 컷신·시간의 문을 하위 도구로 묶는다.
+  ...withDomain(JRPG_CHAPTER_TOOLS, "tile"),
   // SF 정거장·네온 거리(sf_station) 맵 구성기 — 정거장·연구 기지 실내·네온 거리·달 기지를 씨앗으로 한 장째 짠다. oprn-scifi 맵에서만 동작한다.
   ...withDomain(SF_STATION_TOOLS, "tile"),
   ...withDomain(GOTHIC_PLACE_TOOLS, "tile"),

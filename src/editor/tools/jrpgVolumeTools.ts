@@ -10,22 +10,22 @@ import { applyVariantLook, VARIANT_LOOKS, type VariantLook } from "./mapVariantL
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
-type Cell = { readonly x: number; readonly y: number };
+export type Cell = { readonly x: number; readonly y: number };
 type Role = "inn" | "shop" | "elder";
-type Room = { readonly id: string; readonly kind: string; readonly from: string | null; readonly spots: Cell[] };
+export type Room = { readonly id: string; readonly kind: string; readonly from: string | null; readonly spots: Cell[] };
 
 // 하위 도구의 data 는 unknown 이다 — 쓰는 필드만 좁혀 읽는다.
 type Rec = Record<string, unknown>;
 const isRec = (v: unknown): v is Rec => typeof v === "object" && v !== null;
-const field = (v: unknown, k: string): unknown => (isRec(v) ? v[k] : undefined);
-const list = (v: unknown, k: string): unknown[] => { const got = field(v, k); return Array.isArray(got) ? got : []; };
-const text = (v: unknown, k: string): string | undefined => { const got = field(v, k); return typeof got === "string" ? got : undefined; };
-const num = (v: unknown, k: string): number | undefined => { const got = field(v, k); return typeof got === "number" ? got : undefined; };
-function asCell(v: unknown): Cell | undefined {
+export const field = (v: unknown, k: string): unknown => (isRec(v) ? v[k] : undefined);
+export const list = (v: unknown, k: string): unknown[] => { const got = field(v, k); return Array.isArray(got) ? got : []; };
+export const text = (v: unknown, k: string): string | undefined => { const got = field(v, k); return typeof got === "string" ? got : undefined; };
+export const num = (v: unknown, k: string): number | undefined => { const got = field(v, k); return typeof got === "number" ? got : undefined; };
+export function asCell(v: unknown): Cell | undefined {
   const x = num(v, "x"), y = num(v, "y");
   return x === undefined || y === undefined ? undefined : { x, y };
 }
-function asRoom(v: unknown): Room | undefined {
+export function asRoom(v: unknown): Room | undefined {
   const id = text(v, "id"), kind = text(v, "kind");
   if (!id || !kind) return undefined;
   return { id, kind, from: text(v, "from") ?? null, spots: list(v, "spots").map(asCell).filter((c): c is Cell => !!c) };
@@ -36,14 +36,14 @@ const isLook = (v: unknown): v is VariantLook => typeof v === "string" && (VARIA
 let lookup: (name: string) => ToolDefinition | undefined = () => undefined;
 export function bindJrpgVolumeToolLookup(fn: (name: string) => ToolDefinition | undefined): void { lookup = fn; }
 
-function nested(draft: Project, name: string, args: Record<string, unknown>): ToolExecResult {
+export function nested(draft: Project, name: string, args: Record<string, unknown>): ToolExecResult {
   const tool = lookup(name);
   if (!tool) throw new ToolError(`${name} 도구를 찾을 수 없습니다.`, { code: "tool-missing" });
   return tool.run(draft, args);
 }
 
 /** 순찰하는 보이는 적 — 그 자리에 왕복할 직선 통로가 어느 축에도 없으면(unsafe-patrol) 제자리 적으로 둔다. */
-function placeRoamer(draft: Project, args: Record<string, unknown>, vertical: boolean): void {
+export function placeRoamer(draft: Project, args: Record<string, unknown>, vertical: boolean): void {
   for (const axis of vertical ? ["vertical", "horizontal"] : ["horizontal", "vertical"]) {
     try { nested(draft, "place_field_enemy", { ...args, patrol: { length: 2, axis } }); return; }
     catch (error) { if (!(error instanceof ToolError) || error.code !== "unsafe-patrol") throw error; }
@@ -90,7 +90,7 @@ function distances(project: Project, map: GameMap, origin: Cell, blocked: Readon
  * origin 에서 닿는 칸 중 rank(0=가까움, 1=가장 먼 곳) 근처의, 막아도 다른 칸이 끊기지 않는 칸.
  * 문·출입구 이벤트 옆, 맵 가장자리는 고르지 않는다.
  */
-function pickSpot(project: Project, map: GameMap, origin: Cell, taken: Set<string>, rank: number, minDist = 2): Cell | undefined {
+export function pickSpot(project: Project, map: GameMap, origin: Cell, taken: Set<string>, rank: number, minDist = 2): Cell | undefined {
   const blocked = new Set([...eventCells(map), ...taken]);
   const dist = distances(project, map, origin, blocked);
   const base = dist.size;
@@ -115,7 +115,7 @@ function pickSpot(project: Project, map: GameMap, origin: Cell, taken: Set<strin
 }
 
 /** 맵에서 가장 큰 걸음 덩이(시작·착지가 있는 마을 본체). */
-function mainComponent(project: Project, map: GameMap): Set<string> {
+export function mainComponent(project: Project, map: GameMap): Set<string> {
   const seen = new Set<string>();
   let best = new Set<string>();
   const blocked = eventCells(map);
@@ -132,7 +132,7 @@ function mainComponent(project: Project, map: GameMap): Set<string> {
 }
 
 /** 집 키트의 문(parts kind entrance) 중 문 앞이 마을 본체로 이어지고 비어 있는 것 — 마을 가운데에서 가까운 순. */
-function houseDoors(project: Project, map: GameMap, main: ReadonlySet<string>): Array<{ door: Cell; front: Cell }> {
+export function houseDoors(project: Project, map: GameMap, main: ReadonlySet<string>): Array<{ door: Cell; front: Cell }> {
   const tileset = project.tilesets[map.tilesetId];
   const kits = new Map((tileset?.structureKits ?? []).map((kit) => [kit.id, kit]));
   const events = eventCells(map);
@@ -152,7 +152,7 @@ function houseDoors(project: Project, map: GameMap, main: ReadonlySet<string>): 
 }
 
 /** 마을 본체에 붙은 가장자리 칸 — 모서리를 피하고, 이미 있는 출입구에서 8칸 넘게 떨어진 칸 중 변 가운데에 가까운 쪽. */
-function edgeGate(map: GameMap, main: ReadonlySet<string>): Cell | undefined {
+export function edgeGate(map: GameMap, main: ReadonlySet<string>): Cell | undefined {
   const gates = (map.events ?? []).map((e) => ({ x: e.x, y: e.y }));
   const edge = [...main]
     .map((k) => { const [x, y] = k.split(",").map(Number); return { x: x!, y: y! }; })
@@ -193,7 +193,7 @@ function storyTroops(project: Project): Set<string> {
   return used;
 }
 
-function pickTroops(project: Project, given: unknown): { field: string[]; midBoss?: string; boss?: string } {
+export function pickTroops(project: Project, given: unknown): { field: string[]; midBoss?: string; boss?: string } {
   const all = project.database.troops.map((t) => t.id).sort((a, b) => troopStrength(project, a) - troopStrength(project, b));
   const known = (id: unknown): id is string => typeof id === "string" && all.includes(id);
   const givenField = list(given, "field").filter(known);
@@ -226,13 +226,13 @@ function shopGoods(project: Project, given: unknown): string[] {
   return [...items, ...slots.values()].slice(0, 8);
 }
 
-function chestLoot(project: Project, salt: number): { itemId?: string; gold?: number } {
+export function chestLoot(project: Project, salt: number): { itemId?: string; gold?: number } {
   const items = (project.database.items ?? []).filter((i) => (i.price ?? 0) > 0 && (i.type === "medicine" || i.type === "normalGoods")).sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
   const pick = items[Math.min(items.length - 1, 1 + (salt * 3) % Math.max(1, Math.min(items.length, 12)))];
   return pick && salt % 3 !== 2 ? { itemId: pick.id } : { gold: 150 + 50 * salt };
 }
 
-function sanitizeId(raw: string): string {
+export function sanitizeId(raw: string): string {
   return raw.replace(/[^a-z0-9_]+/giu, "_").replace(/^_+|_+$/gu, "").toLowerCase();
 }
 
