@@ -337,14 +337,15 @@ export const MODERN_PRESET_DATA: ModernPresetData = {
         wall: "mci-wall-lobby",
         items: [
           { t: "o", id: "mci-wall-clock", x: 1, y: 0 },
+          { t: "o", id: "mci-art-frame", x: 14, y: 0 },
           { t: "o", id: "mci-art-frame", x: 19, y: 0 },
           { t: "o", id: "mci-art-frame", x: 28, y: 0 },
           { t: "o", id: "mci-plant-tall", x: 0, y: 2 },
           { t: "o", id: "mci-elevator", x: 3, y: 2 },
-          // 측면 에스컬레이터 상·하행 한 쌍은 건물 바깥 북쪽 벽에 붙은 이 홀에 — 아래 줄 아트리움 북쪽 벽은 VIP 홀과의 칸막이라 거기 붙이면 옆방으로 오른다.
-          { t: "o", id: "escalator-side-up-east", x: 6, y: 2 },
-          { t: "o", id: "escalator-side-down-west", x: 10, y: 2 },
-          { t: "o", id: "stairs-up-grand", x: 15, y: 2 },
+          // 상행·하행 에스컬레이터는 같은 문틀의 한 쌍으로 나란히 한 군데 — 건물 바깥 북쪽 벽에 붙은 이 홀에(아래 줄 아트리움 북쪽 벽은 칸막이다).
+          { t: "o", id: "escalator-pair-up", x: 6, y: 2 },
+          { t: "o", id: "escalator-pair-down", x: 9, y: 2 },
+          { t: "o", id: "mci-plant-tall", x: 12, y: 2 },
           { t: "o", id: "mci-coffee-station", x: 21, y: 2 },
           { t: "o", id: "mci-plant-tall", x: 31, y: 2 },
           { t: "o", id: "mci-teller", x: 2, y: 4 },
@@ -389,7 +390,7 @@ export const MODERN_PRESET_DATA: ModernPresetData = {
         floor: "mci-stone-lobby",
         wall: "mci-wall-lobby",
         items: [
-          // 아트리움은 출구 방이라 늘 아래 줄 — 북쪽 벽이 VIP 홀과의 칸막이다. 오르는 계단·에스컬레이터는 VIP 홀(바깥 북쪽 벽)에 두고 여기는 분수·내려가는 계단 홀만.
+          // 아트리움은 출구 방이라 늘 아래 줄 — 북쪽 벽이 VIP 홀과의 칸막이다. 오르내리는 에스컬레이터 한 쌍은 VIP 홀(바깥 북쪽 벽)에 두고 여기는 분수 광장만.
           { t: "o", id: "mci-art-frame", x: 1, y: 0 },
           { t: "o", id: "mci-art-frame", x: 5, y: 0 },
           { t: "o", id: "mci-art-frame", x: 9, y: 0 },
@@ -399,7 +400,7 @@ export const MODERN_PRESET_DATA: ModernPresetData = {
           { t: "o", id: "mci-wait-bench", x: 8, y: 2 },
           { t: "o", id: "mci-plant-tall", x: 11, y: 2 },
           { t: "o", id: "dept-atrium-fountain", x: 4, y: 6 },
-          { t: "o", id: "stairs-down-well", x: 1, y: 8 },
+          { t: "o", id: "mci-wait-bench", x: 1, y: 8 },
           { t: "o", id: "dept-directory-kiosk", x: 8, y: 8 },
           { t: "o", id: "mci-wait-bench", x: 9, y: 8 },
           { t: "o", id: "mci-security-gate", x: 3, y: 10 },
@@ -648,7 +649,7 @@ export const MODERN_PRESET_DATA: ModernPresetData = {
           { t: "o", id: "mci-window-blind", x: 1, y: 0 },
           { t: "o", id: "mci-wall-clock", x: 4, y: 0 },
           { t: "o", id: "mci-window-blind", x: 6, y: 0 },
-          { t: "o", id: "mci-window-blind", x: 11, y: 0 },
+          { t: "o", id: "mci-window-blind", x: 9, y: 0 },
           { t: "o", id: "mci-iv-stand", x: 0, y: 2 },
           { t: "o", id: "mci-hosp-bed", x: 1, y: 2 },
           { t: "o", id: "hospital-curtain-screen", x: 3, y: 2 },
@@ -657,11 +658,9 @@ export const MODERN_PRESET_DATA: ModernPresetData = {
           { t: "o", id: "hospital-curtain-screen", x: 7, y: 2 },
           { t: "o", id: "mci-iv-stand", x: 8, y: 2 },
           { t: "o", id: "mci-hosp-bed", x: 9, y: 2 },
-          { t: "o", id: "hospital-curtain-screen", x: 11, y: 2 },
-          { t: "o", id: "mci-iv-stand", x: 12, y: 2 },
-          { t: "o", id: "mci-hosp-bed", x: 13, y: 2 },
-          // 위층 병동으로 오르는 계단은 건물 맨 북쪽 줄 병동 바깥 벽에 — 대기실(출구 방)은 늘 아래 줄이라 북쪽 벽이 칸막이다.
-          { t: "o", id: "stairs-up-wall-stone", x: 15, y: 2 },
+          // 위·아래층 병동으로 가는 돌 계단 한 쌍(같은 문틀, 나란히)은 건물 맨 북쪽 줄 병동 바깥 벽에 — 대기실(출구 방)은 늘 아래 줄이라 북쪽 벽이 칸막이다.
+          { t: "o", id: "stairs-pair-up-stone", x: 12, y: 2 },
+          { t: "o", id: "stairs-pair-down-stone", x: 15, y: 2 },
           { t: "o", id: "mci-wait-bench", x: 1, y: 6 },
           { t: "o", id: "mci-med-cart", x: 4, y: 6 },
           { t: "o", id: "mci-med-cart", x: 12, y: 6 },
@@ -790,10 +789,10 @@ export const MODERN_PRESET_DATA: ModernPresetData = {
         items: [
           { t: "o", id: "mci-wall-clock", x: 0, y: 0 },
           { t: "o", id: "mci-wall-clock", x: 10, y: 0 },
-          { t: "o", id: "mci-plant-tall", x: 0, y: 2 },
-          { t: "o", id: "arcade-claw-machine", x: 1, y: 2 },
-          // 상영관 2층으로 오르는 측면 에스컬레이터는 늘 맨 북쪽 줄인 오락실 바깥 벽에 — 로비 북쪽 벽은 칸막이다.
-          { t: "o", id: "escalator-side-up-east", x: 4, y: 2 },
+          { t: "o", id: "arcade-claw-machine", x: 0, y: 2 },
+          // 상영관 2층으로 오르내리는 에스컬레이터 한 쌍(같은 문틀, 나란히)은 늘 맨 북쪽 줄인 오락실 바깥 벽에 — 로비 북쪽 벽은 칸막이다.
+          { t: "o", id: "escalator-pair-up", x: 2, y: 2 },
+          { t: "o", id: "escalator-pair-down", x: 5, y: 2 },
           { t: "o", id: "arcade-claw-machine", x: 8, y: 2 },
           { t: "o", id: "mci-plant-tall", x: 10, y: 2 },
           { t: "o", id: "arcade-cabinet-pair", x: 1, y: 4 },
@@ -946,13 +945,12 @@ export const MODERN_PRESET_DATA: ModernPresetData = {
         items: [
           { t: "o", id: "mci-art-frame", x: 1, y: 0 },
           { t: "o", id: "mci-art-frame", x: 4, y: 0 },
-          { t: "o", id: "mci-art-frame", x: 7, y: 0 },
-          { t: "o", id: "mci-art-frame", x: 10, y: 0 },
-          { t: "o", id: "mci-art-frame", x: 13, y: 0 },
+          // 위·아래 전시층으로 가는 돌 계단 한 쌍(같은 문틀, 나란히)은 맨 북쪽 줄 회화 전시실 바깥 벽 동쪽 끝에 — 액자는 계단 문틀과 겹치지 않는 서쪽 벽에만.
           { t: "o", id: "mci-plant-tall", x: 0, y: 2 },
-          { t: "o", id: "museum-velvet-rope", x: 2, y: 2 },
-          { t: "o", id: "museum-velvet-rope", x: 6, y: 2 },
-          { t: "o", id: "museum-velvet-rope", x: 10, y: 2 },
+          { t: "o", id: "museum-velvet-rope", x: 1, y: 2 },
+          { t: "o", id: "museum-velvet-rope", x: 4, y: 2 },
+          { t: "o", id: "stairs-pair-up-stone", x: 8, y: 2 },
+          { t: "o", id: "stairs-pair-down-stone", x: 11, y: 2 },
           { t: "o", id: "mci-plant-tall", x: 14, y: 2 },
           { t: "o", id: "museum-statue-pedestal", x: 2, y: 5 },
           { t: "o", id: "mci-wait-bench", x: 6, y: 5 },
