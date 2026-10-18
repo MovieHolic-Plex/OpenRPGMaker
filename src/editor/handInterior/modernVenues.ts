@@ -72,11 +72,11 @@ const VENUES: readonly Venue[] = [
       o("library-carrel", 14, 7), o("library-carrel", 17, 7), o("library-carrel", 14, 9), o("library-carrel", 17, 9),
       o("mci-counter-register", 16, 11), o("mci-plant-tall", 21, 11),
     ] },
-    { kind: "manga-cafe", w: 12, h: 12, floor: "mci-wood-dark", wall: "mci-wall-brick", items: [
+    { kind: "manga-cafe", w: 12, h: 7, floor: "mci-wood-dark", wall: "mci-wall-brick", items: [
       o("mci-notice-board", 9, 0),
       ...row("manga-shelf", 0, 2, 4, 2), o("mci-coffee-station", 8, 2), o("hospital-water-dispenser", 10, 2), o("mci-fridge", 11, 2),
-      o("manga-booth", 2, 5), o("manga-booth", 5, 5), o("manga-booth", 8, 5), o("manga-booth", 2, 8), o("manga-booth", 5, 8), o("manga-booth", 8, 8),
-      o("mci-reception", 1, 11), o("mci-plant-tall", 11, 11),
+      o("manga-booth", 1, 4), o("manga-booth", 4, 4), o("manga-booth", 7, 4),
+      o("mci-reception", 9, 5),
     ] },
   ] },
   // 18. 신사 — 북쪽 배전(시메나와 아래 제단·새전함·석등 넷·방석·붉은 참배 러너), 남쪽 현관(신발장·부적 진열대), 사무소.
@@ -330,11 +330,10 @@ const VENUES: readonly Venue[] = [
       ...row("library-shelf", 1, 3, 3, 5), ...row("library-shelf", 1, 3, 3, 7), ...row("library-shelf", 1, 3, 3, 9), ...row("library-shelf", 1, 3, 3, 11),
       ...row("library-carrel", 11, 3, 2, 5), ...row("library-carrel", 11, 3, 2, 7), ...row("library-carrel", 11, 3, 2, 9), ...row("library-carrel", 11, 3, 2, 11),
     ] },
-    { kind: "library-study", w: 8, h: 13, floor: "mci-carpet-office", wall: "mci-wall-office", items: [
+    { kind: "library-study", w: 8, h: 8, floor: "mci-carpet-office", wall: "mci-wall-office", items: [
       o("mci-whiteboard", 3, 0),
       o("mci-shelf-office", 0, 2), o("mci-plant-tall", 7, 2),
       o("mci-cafe-chair-e", 1, 4), o("mci-cafe-chair-e", 1, 5), o("council-table-u", 2, 4), o("mci-cafe-chair-w", 6, 4), o("mci-cafe-chair-w", 6, 5),
-      o("mci-cafe-chair-e", 1, 8), o("mci-cafe-chair-e", 1, 9), o("council-table-u", 2, 8), o("mci-cafe-chair-w", 6, 8), o("mci-cafe-chair-w", 6, 9),
     ] },
     { kind: "library-lobby", w: 26, h: 6, floor: "mci-stone-lobby", wall: "mci-wall-lobby", items: [
       o("mci-notice-board", 1, 0), o("mci-wall-clock", 20, 0),

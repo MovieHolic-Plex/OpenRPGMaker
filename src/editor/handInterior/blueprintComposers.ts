@@ -461,6 +461,8 @@ export function composeOfficeLobby(spec: HandInteriorSpec, nuance: SpaceNuance, 
         // PC 책상은 모니터가 4층을 쓴다 — 탁상 물건을 올리지 않는다(goods-no-layer).
         s.put("mci-desk-pc-back", ix + dx, iy + 1, true);
         s.put("mci-desk-pc", ix + dx, iy + 2, true);
+        s.put("mci-chair-office-n", ix + dx, iy + 3);
+        s.put("mci-chair-office-n", ix + dx + 1, iy + 3);
       }
     }
   }
@@ -481,7 +483,7 @@ export function composeOfficeLobby(spec: HandInteriorSpec, nuance: SpaceNuance, 
   const tx = m.x0 + 2, ty = m.y0 + 3;
   s.keepRect(m.x0, m.y0 + 1, m.x1, m.y0 + 1);
   if (s.table("mci-t-meeting", tx, ty, tw, 2, true)) {
-    for (let k = 0; k < tw; k++) s.put("mci-chair-office-s", tx + k, ty - 1);
+    for (let k = 0; k < tw; k++) { s.put("mci-chair-office-s", tx + k, ty - 1); s.put("mci-chair-office-n", tx + k, ty + 2); }
     s.put("mci-cafe-chair-e", tx - 1, ty); s.put("mci-cafe-chair-e", tx - 1, ty + 1);
     s.put("mci-cafe-chair-w", tx + tw, ty); s.put("mci-cafe-chair-w", tx + tw, ty + 1);
     const g = ["mci-g-laptop", "mci-g-papers", "mci-g-coffee", "mci-g-laptop", "mci-g-papers", "mci-g-coffee", "mci-g-phone"];
@@ -1058,7 +1060,6 @@ export function composeDepartmentStore(spec: HandInteriorSpec, nuance: SpaceNuan
     }
   }
   s.put("mci-plant-tall", k.x0, k.y1);
-  s.put("mci-plant-tall", k.x1, k.y1);
 
   const areas = [areaOf("아트리움", h), areaOf("패션관", f), areaOf("화장품관", b), areaOf("카페", k)];
   return s.finish({ tileset: "modern_city", floor: pal.hall[0], wall: pal.hall[1] }, areas, decisions);

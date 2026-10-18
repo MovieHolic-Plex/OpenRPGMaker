@@ -380,10 +380,11 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
     // 벽면 높이 탈것은 한 줄 올려 벽면 두 줄에 그린다 — 준 칸(첫 바닥 줄)은 그림 없이 비어 탈 자리가 된다.
     const lift = flush ? 1 : 0;
     const key = drawKey(d.kind, o.y - lift, d.h);
+    const isSurfaceObj = Boolean(d.surface) || /counter|table|desk|booth|zashiki|kotatsu|chabudai|reception|teller/iu.test(o.id);
     for (const [dx, dy, tile, layer] of d.cells) {
       push(o.x + dx, o.y + dy - lift, { key, tile, layer: layer as 2 | 3, label });
       if (flush && inBounds(o.x + dx, o.y + dy - lift)) flushFace.set((o.y + dy - lift) * W + o.x + dx, label);
-      if (d.surface && dy >= 0 && dy < Math.max(1, d.h) && inBounds(o.x + dx, o.y + dy)) surfaceCells.add((o.y + dy) * W + o.x + dx);
+      if (isSurfaceObj && dy >= 0 && dy < Math.max(1, d.h) && inBounds(o.x + dx, o.y + dy)) surfaceCells.add((o.y + dy) * W + o.x + dx);
     }
   }
   // 걸이(액자·시계·창)는 벽면에 박은 엘리베이터 문·계단과 같은 칸에 걸 수 없다 — 문 위에 액자가 덮였다.
