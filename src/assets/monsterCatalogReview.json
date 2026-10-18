@@ -743,14 +743,14 @@
     },
     "generated-enemy-wolf-grey": {
       "url": "/assets/generated/pixel-enemy-portraits/wolf-grey.png",
-      "sha256": "99d715527bd8006f7d6bca39f0b890d52e1acc35234baa6822a4168ec5507a15",
-      "observation": "청회색 털과 밝은 목털, 두꺼운 뒷다리, 드러난 송곳니를 가진 회색 늑대다.",
+      "sha256": "cbf734aeedf03b0a57764127f537ca5d95f80d93c21293193de9fb72d47f199d",
+      "observation": "목 갈기가 덥수룩한 잿빛 늑대로, 크림색 배와 뾰족한 귀, 노란 눈, 발끝으로 서는 네 다리와 숱 많은 꼬리를 가졌다.",
       "index": 63,
-      "inspectionMethod": "Four species: direct native pose board review and exported-player battle evidence.",
+      "inspectionMethod": "Direct pixel redraw (scripts/content/monsters/redraw_wolf_grey.py): fresh anatomy, nine distinct poses with a skill-cast cell (0,2). Locally reviewed artwork; user acceptance is not implied.",
       "nativeSheet": "assets/generated/pixel-enemies/wolf-grey.png",
-      "nativeSheetSha256": "69bcde6644b5911cb74ae5f44c604929f04c3e81bcf5b22ebf5885e0be7a96c8",
+      "nativeSheetSha256": "516b0005d6527860880c3c3faa70ac0bbe37e80043bc1e7cf0ef5b6e23c1ecea",
       "cell": 64,
-      "reviewEvidence": "verify-shots/monster-battle-four/SUMMARY.md"
+      "reviewEvidence": "~/claude-viz/monster-mantis-fix-1.html"
     },
     "generated-enemy-wolf-dire": {
       "url": "/assets/generated/pixel-enemy-portraits/wolf-dire.png",
@@ -934,14 +934,14 @@
     },
     "generated-enemy-skeleton-knight": {
       "url": "/assets/generated/pixel-enemy-portraits/skeleton-knight.png",
-      "sha256": "727cce477be229cfe30dea78c2bea3c4641cbe9d648877f62bec8f4979e259a8",
-      "observation": "낡은 철제 투구와 넓은 검, 닳은 초승달 방패를 들고 갈비뼈를 드러낸 해골 전사다.",
+      "sha256": "5b382af1b6bd8bfde7402c54bca644f96ee844e08bbb3b488fcba366b72977c5",
+      "observation": "녹슨 투구 틈으로 붉은 불씨 눈이 빛나는 해골 기사로, 낡은 가슴판과 진홍 허리 천, 해골 문장 방패와 긴 칼을 들었다.",
       "index": 79,
-      "inspectionMethod": "Four species: direct native pose board review and exported-player battle evidence.",
+      "inspectionMethod": "Direct pixel redraw (scripts/content/monsters/redraw_skeleton_knight.py): fresh anatomy, nine distinct poses with a skill-cast cell (0,2). Locally reviewed artwork; user acceptance is not implied.",
       "nativeSheet": "assets/generated/pixel-enemies/skeleton-knight.png",
-      "nativeSheetSha256": "210a890709cef2dabad3a20643adbfe8d57e74536afa467ee6c8e6458054e576",
+      "nativeSheetSha256": "60dbc0b21423c0bca27f365f2f01f9dbabf82d0e281d0f67246f067696cff8c5",
       "cell": 64,
-      "reviewEvidence": "verify-shots/monster-battle-four/SUMMARY.md"
+      "reviewEvidence": "~/claude-viz/monster-mantis-fix-1.html"
     },
     "generated-enemy-zombie-rot": {
       "url": "/assets/generated/pixel-enemy-portraits/zombie-rot.png",
@@ -1185,14 +1185,14 @@
     },
     "generated-enemy-golem-iron": {
       "url": "/assets/generated/pixel-enemy-portraits/golem-iron.png",
-      "sha256": "497d3d1c04e183ee2c9c6bb6eb7d3a3b49b6f9e738ddd23f78de7461ba9bb7c5",
-      "observation": "어두운 강철 판금 거인이 커다란 어깨, 노란 눈과 붉은 화로, 리벳이 박힌 주먹을 갖는다.",
+      "sha256": "ee635a7b156e755a58e421ce940511b15d52e935b50be4b0e7a2a184107f68a7",
+      "observation": "리벳 박은 강철 판 거인으로, 가슴에 주황 화로 창과 가로로 빛나는 눈 틈, 피스톤 팔뚝과 각진 큰 주먹, 등 굴뚝 둘을 가졌다.",
       "index": 100,
-      "inspectionMethod": "Fresh native pixel anatomy and all nine poses. Locally reviewed artwork; user acceptance is not implied.",
+      "inspectionMethod": "Direct pixel redraw (scripts/content/monsters/redraw_golem_iron.py): fresh anatomy, nine distinct poses with a skill-cast cell (0,2). Locally reviewed artwork; user acceptance is not implied.",
       "nativeSheet": "assets/generated/pixel-enemies/golem-iron.png",
-      "nativeSheetSha256": "5e63948bf9b12d477d26223687026fdc381ff731dd9f71bc700969e0bcc5a420",
+      "nativeSheetSha256": "6226d0efa49fd653d41e2df79f5846c7dfd2b544bfb88a4d85caf516d2178838",
       "cell": 64,
-      "reviewEvidence": "verify-shots/monster-redraw-all/SUMMARY.md",
+      "reviewEvidence": "~/claude-viz/monster-mantis-fix-1.html",
       "sourceWorkingTree": true
     },
     "generated-enemy-golem-clay": {
@@ -1221,14 +1221,14 @@
     },
     "generated-enemy-armor-living": {
       "url": "/assets/generated/pixel-enemy-portraits/armor-living.png",
-      "sha256": "394070b822203ec0cde0188d22636fe9766fce5bdfe5a982facede9e0f179ef7",
-      "observation": "두꺼운 청회색 판금의 빈 갑옷이 뾰족한 투구, 넓은 어깨와 장식된 검을 갖는다.",
+      "sha256": "aa58494b01591fe843d129dd71a01f41f42d97d92aa2bf835bbec0bfefbf3f32",
+      "observation": "속이 빈 검푸른 판금 갑옷으로, 뿔 투구 틈과 이음새로 푸른 혼불이 새고, 두 손에 긴 자루 반달 도끼를 쥐었다.",
       "index": 103,
-      "inspectionMethod": "Fresh native pixel anatomy and all nine poses. Locally reviewed artwork; user acceptance is not implied.",
+      "inspectionMethod": "Direct pixel redraw (scripts/content/monsters/redraw_armor_living.py): fresh anatomy, nine distinct poses with a skill-cast cell (0,2). Locally reviewed artwork; user acceptance is not implied.",
       "nativeSheet": "assets/generated/pixel-enemies/armor-living.png",
-      "nativeSheetSha256": "d4511233b2d46ad13cc1afa6c52685e90c97f7404df1d5a1dd2316e91b0ad812",
+      "nativeSheetSha256": "75e733908dc3c4bb77656c3da26c26ddaf40c3667378619924863631d8f93194",
       "cell": 64,
-      "reviewEvidence": "verify-shots/monster-redraw-all/SUMMARY.md",
+      "reviewEvidence": "~/claude-viz/monster-mantis-fix-1.html",
       "sourceWorkingTree": true
     },
     "generated-enemy-sword-flying": {
@@ -1389,14 +1389,14 @@
     },
     "generated-enemy-lizardman-spear": {
       "url": "/assets/generated/pixel-enemy-portraits/lizardman-spear.png",
-      "sha256": "762cb476a4b19cccb5516611f4c317d8120a5c3378426513f06af6a4967d56c3",
-      "observation": "청록 비늘과 긴 주둥이, 붉은 목 지느러미와 굽은 꼬리를 가진 리자드맨은 작은 어깨 판과 금갈색 배판, 긴 창을 지닌다.",
+      "sha256": "7dc958bbc1937b925921fc4995688fa38c1af8bd7a39a675d391fcc478057ca7",
+      "observation": "초록 비늘에 주황 볏 지느러미와 노란 세로동공 눈을 가진 도마뱀 전사로, 잎 날 긴 창과 둥근 가죽 방패, 굵은 꼬리를 가졌다.",
       "index": 117,
-      "inspectionMethod": "Fresh native pixel anatomy and all nine poses. Locally reviewed artwork; user acceptance is not implied.",
+      "inspectionMethod": "Direct pixel redraw (scripts/content/monsters/redraw_lizardman_spear.py): fresh anatomy, nine distinct poses with a skill-cast cell (0,2). Locally reviewed artwork; user acceptance is not implied.",
       "nativeSheet": "assets/generated/pixel-enemies/lizardman-spear.png",
-      "nativeSheetSha256": "152cd60c21c388960efd4d6d74d57e20b92cac7492e88a287142fe6f14d30080",
+      "nativeSheetSha256": "2f8ba712a41833ee2ad4d8cf72226972517b1f6e255317638e9d86072f8327c5",
       "cell": 64,
-      "reviewEvidence": "verify-shots/monster-redraw-all/SUMMARY.md",
+      "reviewEvidence": "~/claude-viz/monster-mantis-fix-1.html",
       "sourceWorkingTree": true
     },
     "generated-enemy-harpy-cliff": {
@@ -1413,14 +1413,14 @@
     },
     "generated-enemy-minotaur-maze": {
       "url": "/assets/generated/pixel-enemy-portraits/minotaur-maze.png",
-      "sha256": "c92cd7c809d4ca33287b8d7095b4851c818551e66960d688fcc054abebcdd750",
-      "observation": "갈색 털과 굵은 황소뿔, 콧고리, 붉은 허리천과 양날 도끼를 가진 미노타우로스다.",
+      "sha256": "f81e90f6d3bfc5488c7bfd82518007fa027ba0a74b0bd9426b79b64050bdd4fa",
+      "observation": "앞으로 휜 상아색 큰 뿔과 놋쇠 코뚜레, 붉은 눈의 황소 머리 거인으로, 짙은 갈기와 붉은 허리 천, 검은 발굽, 양날 도끼를 들었다.",
       "index": 119,
-      "inspectionMethod": "Fresh native pixel anatomy and all nine poses. Locally reviewed artwork; user acceptance is not implied.",
+      "inspectionMethod": "Direct pixel redraw (scripts/content/monsters/redraw_minotaur_maze.py): fresh anatomy, nine distinct poses with a skill-cast cell (0,2). Locally reviewed artwork; user acceptance is not implied.",
       "nativeSheet": "assets/generated/pixel-enemies/minotaur-maze.png",
-      "nativeSheetSha256": "2b6df55d99dca5017b09bb1228c0d160e6695dfb9798848a5919db16e06c1351",
+      "nativeSheetSha256": "362ed77ef4fc1d09d3cc723eca84aa612d092b79d43f55343cdbaf635b7f5971",
       "cell": 96,
-      "reviewEvidence": "verify-shots/monster-redraw-all/SUMMARY.md",
+      "reviewEvidence": "~/claude-viz/monster-mantis-fix-1.html",
       "sourceWorkingTree": true
     },
     "generated-enemy-centaur-plains": {
@@ -1437,14 +1437,14 @@
     },
     "generated-enemy-troll-cave": {
       "url": "/assets/generated/pixel-enemy-portraits/troll-cave.png",
-      "sha256": "7743fc2d183061cb8932128b934b52fba32b4cafad307b4104bc33df6cce2147",
-      "observation": "이끼빛 두꺼운 피부와 큰 코, 삐죽한 엄니, 거친 가죽 치마와 돌 몽둥이를 든 트롤이다.",
+      "sha256": "654ea5fc44c32b2c22098630f00fd20041a9906ff273db56f0e6e11924d470f5",
+      "observation": "등에 이끼가 덮인 구부정한 초록 트롤로, 늘어진 매부리코와 아래턱 엄니, 작은 노란 눈, 긴 팔에 쇠 테 두른 통나무 몽둥이를 들었다.",
       "index": 121,
-      "inspectionMethod": "Fresh native pixel anatomy and all nine poses. Locally reviewed artwork; user acceptance is not implied.",
+      "inspectionMethod": "Direct pixel redraw (scripts/content/monsters/redraw_troll_cave.py): fresh anatomy, nine distinct poses with a skill-cast cell (0,2). Locally reviewed artwork; user acceptance is not implied.",
       "nativeSheet": "assets/generated/pixel-enemies/troll-cave.png",
-      "nativeSheetSha256": "152f618659c2c35a254bd59ec08157c2a7229a2785ba225d7d95a8d963505bd0",
+      "nativeSheetSha256": "7524e1b0d68c51a7d9ca87f6dbf6caf19f1d07069deacbab83eb4bb80fb42edf",
       "cell": 96,
-      "reviewEvidence": "verify-shots/monster-redraw-all/SUMMARY.md",
+      "reviewEvidence": "~/claude-viz/monster-mantis-fix-1.html",
       "sourceWorkingTree": true
     },
     "generated-enemy-ogre-club": {
@@ -1557,14 +1557,14 @@
     },
     "generated-enemy-gargoyle-stone": {
       "url": "/assets/generated/pixel-enemy-portraits/gargoyle-stone.png",
-      "sha256": "162ce32bba3732e171d5ec0f0ff4eb96e3ae19e03ccfdb5b44d5a0dca0d0cf0c",
-      "observation": "청회색 돌 피부와 큰 코, 뿔과 긴 이빨을 가진 가고일은 각진 돌막 날개와 근육질 가슴, 두꺼운 다리와 발톱을 가진다.",
+      "sha256": "41197d5120f7d64341c4ef2a1dba28e15dfa8cf3185347229c2f0d31701550f0",
+      "observation": "뒤로 휜 두 뿔과 붉은 눈의 푸른 회색 석상 악마로, 금 간 돌 막 박쥐 날개와 갈고리 손, 화살촉 꼬리로 낮게 떠 있다.",
       "index": 131,
-      "inspectionMethod": "Fresh native pixel anatomy and all nine poses. Locally reviewed artwork; user acceptance is not implied.",
+      "inspectionMethod": "Direct pixel redraw (scripts/content/monsters/redraw_gargoyle_stone.py): fresh anatomy, nine distinct poses with a skill-cast cell (0,2). Locally reviewed artwork; user acceptance is not implied.",
       "nativeSheet": "assets/generated/pixel-enemies/gargoyle-stone.png",
-      "nativeSheetSha256": "00542d4f70efc95153288e3d8b21eb07becde8ae07303051ab18f869d0e10e0a",
+      "nativeSheetSha256": "6583403a5764921ca9bef16f788ec2e4bc75104058c20ced90c0f0792ae3083c",
       "cell": 64,
-      "reviewEvidence": "verify-shots/monster-redraw-all/SUMMARY.md",
+      "reviewEvidence": "~/claude-viz/monster-mantis-fix-1.html",
       "sourceWorkingTree": true
     },
     "generated-enemy-phoenix-rebirth": {
@@ -1689,14 +1689,14 @@
     },
     "generated-enemy-plant-carnivore": {
       "url": "/assets/generated/pixel-enemy-portraits/plant-carnivore.png",
-      "sha256": "0e422becba781ec7a3f905e1d1e3f62f8c459242be8b535ee0b15dd7350151e5",
-      "observation": "짙은 붉은 꽃잎이 큰 녹색 이빨 얼굴 주위를 둘러싸고 굵은 줄기와 갈라진 뿌리 발이 있다.",
+      "sha256": "ca90b2cc3b60d7de112abb6e1be8758d3150314b5599cbe1524b8f40416fe473",
+      "observation": "뿌리 덩이에서 휜 줄기 끝에 붉은 속살과 흰 이빨이 줄지은 파리지옥 덫 머리가 달리고, 넓은 잎 두 장을 흔드는 식인 식물이다.",
       "index": 142,
-      "inspectionMethod": "Fresh native pixel anatomy and all nine poses. Locally reviewed artwork; user acceptance is not implied.",
+      "inspectionMethod": "Direct pixel redraw (scripts/content/monsters/redraw_plant_carnivore.py): fresh anatomy, nine distinct poses with a skill-cast cell (0,2). Locally reviewed artwork; user acceptance is not implied.",
       "nativeSheet": "assets/generated/pixel-enemies/plant-carnivore.png",
-      "nativeSheetSha256": "2283f646bf9dbd882cc959e34a67cd70e2d3bea1e74d6a5cc122743b3bd30e35",
+      "nativeSheetSha256": "17278e466ae190ee05031b8da4252fbc86e9417bfbc3c6bf7102017758791d39",
       "cell": 64,
-      "reviewEvidence": "verify-shots/monster-redraw-all/SUMMARY.md",
+      "reviewEvidence": "~/claude-viz/monster-mantis-fix-1.html",
       "sourceWorkingTree": true
     },
     "easyrpg-monster-hornet": {

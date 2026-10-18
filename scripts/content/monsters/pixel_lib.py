@@ -18,6 +18,8 @@ from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parents[3]
 POSES = ["idle_a", "idle_b", "idle_c", "windup", "move", "attack", "recover", "hit", "dead"]
+# 지금 그리는 시트의 칸 크기. build() 가 정하므로 96 칸 종도 blank·limb·chain 에 S 를 넘기지 않아도 된다.
+CELL = 64
 
 
 # ── 기하 ─────────────────────────────────────────────────────
@@ -39,8 +41,8 @@ def lerp(a, b, t):
     return (a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t)
 
 
-def blank(S=64):
-    return Image.new("L", (S, S), 0)
+def blank(S=None):
+    return Image.new("L", (S or CELL, S or CELL), 0)
 
 
 def poly(m, pts):
@@ -68,7 +70,7 @@ def tapered(a, b, wa, wb, bulge=0.0, mid=0.5):
     return left + right[::-1]
 
 
-def limb(a, b, w, S=64):
+def limb(a, b, w, S=None):
     m = blank(S)
     d = ImageDraw.Draw(m)
     d.line([rnd(a), rnd(b)], fill=255, width=w)
@@ -79,7 +81,7 @@ def limb(a, b, w, S=64):
     return m
 
 
-def chain(pts, widths, S=64):
+def chain(pts, widths, S=None):
     """여러 마디를 폭을 바꿔 가며 잇는 하나의 마스크(꼬리·뱀 몸·촉수)."""
     m = blank(S)
     for i in range(len(pts) - 1):
@@ -372,6 +374,8 @@ def islands(im):
 
 
 def build(draw, S=64):
+    global CELL
+    CELL = S
     frames = [clamp(draw(n), S) for n in POSES]
     sheet = Image.new("RGBA", (S * 3, S * 3))
     hashes = set()
@@ -424,7 +428,7 @@ def run(slug, draw, argv, S=64, idle_ms=170):
         parts = islands(f)
         assert len(parts) == 1, (slug, POSES[i], parts)  # 대기 칸은 떨어진 픽셀 없이 한 덩어리
     sheet.save(sheet_path)
-    portrait = frames[0] if S == 64 else frames[0].resize((64, 64), Image.Resampling.NEAREST)
+    portrait = frames[0]  # 초상은 시트와 같은 칸 크기(96 칸 종은 96 초상)
     portrait.save(portrait_path)
     for path, im in ((sheet_path, sheet), (portrait_path, portrait)):
         with Image.open(path) as r:
