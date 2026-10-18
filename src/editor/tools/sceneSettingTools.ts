@@ -13,6 +13,8 @@ import { setLayerTileAt, layerTileAt } from "@/project/mapLayers";
 import { BEODEUL_NATURE, BEODEUL_NATURE_ID, createBeodeulNatureTileset } from "@/project/defaults/beodeulNature";
 import { translateTiles } from "@/project/objectStamp";
 import { canMove } from "@/project/collision";
+import { addMapLocation, COMPOSED_LAYOUT_TAG } from "@/project/mapNamedLocations";
+import { SCENE_STAGE_TAG } from "./sceneStageGuard";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 export const BUILD_SCENE_SETTING_TOOL = "build_scene_setting";
@@ -25,10 +27,16 @@ const VOLCANO = "bd-pick-volcano-cave-";
 const RUINS = "bd-pick-temple-ruins-";
 const SWAMP = "bd-pick-swamp-stilt-";
 
-interface Stamp {
+/**
+ * 무대 기물 한 점(또는 대칭 한 쌍). dx,dy 는 이벤트 칸 기준 왼쪽 위 칸.
+ * mirror 가 있으면 거울 짝을 함께 찍는다 — axis "x" 는 세로줄 x+at 기준 좌우, "y" 는 가로줄 y+at 기준 위아래.
+ * 짝 한쪽이 맵 밖·몸체 위·동선 위라 못 들어가면 두 쪽을 함께 빼거나 함께 민다(대칭이 깨진 한 짝은 남기지 않는다).
+ */
+interface Piece {
   readonly id: string;
   readonly dx: number;
   readonly dy: number;
+  readonly mirror?: { readonly axis: "x" | "y"; readonly at: number };
 }
 
 interface Layout {
@@ -36,7 +44,9 @@ interface Layout {
   /** 바닥 위에 먼저 깔 칠하기(물 등). 이벤트 칸과 시작 칸을 침범하지 않게 좌표를 고른다. */
   readonly fills: readonly { readonly material: string; readonly dx: number; readonly dy: number; readonly w: number; readonly h: number }[];
   /** 위에서 아래 순서로 찍는다 — 뒤에 찍은 것이 앞의 것을 덮는다. */
-  readonly stamps: readonly Stamp[];
+  readonly pieces: readonly Piece[];
+  /** 비워 두는 동선(다리·둑길·참배로) — 바닥 그림(모자이크·다리) 말고는 기물을 얹지 않고, 조수의 덧찍기도 막는다. */
+  readonly corridors?: readonly { readonly dx: number; readonly dy: number; readonly w: number; readonly h: number }[];
   /** 칸 단위로 칠하는 불규칙 몸체(용암·물). 2×2 스탬프 격자로는 직각 윤곽만 나온다. */
   readonly bodies?: readonly Body[];
   /** 바닥 전체에 이어 까는 바닥 표본 키트(하단 층). 오토타일 판석 한 장은 «벽돌 광장» 으로 읽혔다(2026-10-17 jrpg_003 심판). */
@@ -131,7 +141,8 @@ function bodyCells(map: GameMap, x: number, y: number, b: Body, keep: (cx: numbe
       if (cx < 0 || cy < 0 || cx >= map.width || cy >= map.height || cx - x < b.minDx) continue;
       if ((b.maxDx !== undefined && cx - x > b.maxDx) || (b.keepDy !== undefined && Math.abs(cy - y) <= b.keepDy) || !keep(cx, cy)) continue;
       const d = ((cx - ox) / b.rx) ** 2 + ((cy - oy) / b.ry) ** 2;
-      if (d < 1 + (hash01(cx, cy, b.seed) - 0.5) * 0.7) out.push({ x: cx, y: cy });
+      // 잡음은 이벤트 줄에서 잰 위아래 거리로 고른다 — 이벤트 줄을 사이에 둔 두 못(둑길 위·아래)이 거울처럼 같은 윤곽이 된다.
+      if (d < 1 + (hash01(cx, Math.abs(cy - y), b.seed) - 0.5) * 0.7) out.push({ x: cx, y: cy });
     }
   }
   return trimSpurs(map, out);
@@ -146,9 +157,11 @@ function lavaBandCells(map: GameMap, x: number, y: number): { x: number; y: numb
   for (let cx = 0; cx < map.width; cx++) {
     const rows = [y - 2, y - 1, y, y + 1];
     // 돌기는 3~4칸 묶음 단위이고, 다리(x-1..x+1) 양옆 2칸 안에서는 만들지 않는다(한 칸 돌기가 어두운 네모로 남는다).
-    if (Math.abs(cx - x) > 2) {
-      if (hash01(Math.floor(cx / 3), 1, 77) < 0.5) rows.unshift(y - 3);
-      if (hash01(Math.floor((cx + 1) / 3), 2, 77) < 0.5) rows.push(y + 2);
+    // 묶음은 다리에서 잰 거리로 고른다 — 다리 좌우의 강 기슭이 거울처럼 같은 굴곡이 된다.
+    const off = Math.abs(cx - x);
+    if (off > 2) {
+      if (hash01(Math.floor(off / 3), 1, 77) < 0.5) rows.unshift(y - 3);
+      if (hash01(Math.floor((off + 1) / 3), 2, 77) < 0.5) rows.push(y + 2);
     }
     for (const cy of rows) if (cy >= 0 && cy < map.height) out.push({ x: cx, y: cy });
   }
@@ -160,7 +173,8 @@ function lavaBandCells(map: GameMap, x: number, y: number): { x: number; y: numb
  * 굽는 자리는 두 묶음의 줄을 모두 칠해 끊기지 않는다.
  */
 function fissureCells(map: GameMap, x: number, y: number, f: { dy: number; dx0: number; dx1: number; seed: number }, keep: (cx: number, cy: number) => boolean): { x: number; y: number }[] {
-  const off = (cx: number) => (hash01(Math.floor(cx / 3), 7, f.seed) < 0.5 ? 0 : Math.sign(f.dy));
+  // 3칸 묶음은 균열 서쪽 끝(x+dx0)에서 센다 — 이벤트 칸이 어디든 굽이(와 그 앞 바위 무리 자리)가 같은 상대 위치에 난다.
+  const off = (cx: number) => (hash01(Math.floor((cx - x - f.dx0) / 3), 7, f.seed) < 0.5 ? 0 : Math.sign(f.dy));
   const out = new Map<number, { x: number; y: number }>();
   for (let cx = x + f.dx0; cx <= x + f.dx1; cx++) {
     const base = y + f.dy + off(cx);
@@ -230,221 +244,120 @@ function applyBankOverlay(project: Project, map: GameMap, cells: readonly { x: n
   return want.size;
 }
 
+/** 한 점. */
+const one = (id: string, dx: number, dy: number): Piece => ({ id, dx, dy });
+/** 세로줄 x+at 기준 좌우 한 쌍 — dx 는 오른쪽 짝. */
+const lr = (id: string, dx: number, dy: number, at = 0): Piece => ({ id, dx, dy, mirror: { axis: "x", at } });
+/** 가로줄 y+at 기준 위아래 한 쌍 — dy 는 위쪽 짝. */
+const ud = (id: string, dx: number, dy: number, at = 0): Piece => ({ id, dx, dy, mirror: { axis: "y", at } });
+
 /**
- * 무대마다 «빈 땅에 흩뿌릴 소품» 목록 — 15차 연속 심판이 «맵이 휑하다(소품이 가장자리·중앙에만)» 로 감점했다.
- * 자리는 해시로 고르되(같은 입력 → 같은 배치) 몸체·이미 찍은 키트·이벤트 칸·시작 칸과 1칸 간격을 둔다.
- * 2026-10-18: 같은 1×1 뾰족돌을 고르게 뿌린 땅은 «무늬 잡음» 으로 읽혔다 — 무대는 이벤트 칸 둘레의 고정 세트가 맡고 흩뿌림은 줄였다.
+ * 무대 짜임새 — 이벤트 칸 기준 상대 좌표의 건축 세트. 흩뿌림(해시로 고른 1×1 뼈·잔해·뾰족돌)은 쓰지 않는다:
+ * 2026-10-18 사용자 피드백 «기물 배치가 엉망» — 광장·길 위에 아무렇게나 떨어진 1×1 소품이 무대를 잡동사니로 만들었다.
+ * 기물은 동선(corridors)을 비우고 쌍(lr·ud)으로 축에 맞춰 선다. 이벤트 칸과 그 왼쪽 시작 칸, 생존 걷기 길(walk)은 막지 않는다.
  */
-const SCATTER: Record<SceneTheme, readonly (readonly [string, number])[]> = {
-  volcano: [[VOLCANO + "spike-small", 3], [VOLCANO + "ember-a", 2], [VOLCANO + "bones", 2], [VOLCANO + "steam-vent", 3], [VOLCANO + "stalagmite", 2], [VOLCANO + "spike-tall", 2], [VOLCANO + "pillar-broken-b", 1], [RUINS + "rubble-temple", 2]],
-  lava_bridge: [[VOLCANO + "spike-small", 3], [VOLCANO + "ember-a", 2], [VOLCANO + "bones", 2], [VOLCANO + "stalagmite", 2], [VOLCANO + "pillar-broken-b", 2], [RUINS + "rubble-temple", 4], [RUINS + "fallen-column-temple", 1]],
-  poison_swamp: [[RUINS + "cypress-ruin", 2], [RUINS + "rubble-temple", 4], [RUINS + "column-temple-broken", 2], [RUINS + "fallen-column-temple", 1], [SWAMP + "snag", 2], [VOLCANO + "bones", 2], [SWAMP + "reed-stack", 1]],
-  ruins_shrine: [[RUINS + "rubble-temple", 6], [RUINS + "column-temple-broken", 3], [RUINS + "fallen-column-temple", 2], [RUINS + "cypress-ruin", 3], [RUINS + "vines-2", 3], [VOLCANO + "brazier", 2], [VOLCANO + "bones", 2]],
-};
-
-function scatterStamps(
-  project: Project, map: GameMap, theme: SceneTheme, ground: { x: number; y: number; w: number; h: number },
-  occupied: Set<number>, blocked: (cx: number, cy: number) => boolean,
-): { id: string; x: number; y: number }[] {
-  const kits = project.tilesets.beodeul_city?.structureKits ?? [];
-  const out: { id: string; x: number; y: number }[] = [];
-  let n = 0;
-  for (const [id, count] of SCATTER[theme]) {
-    const kit = kits.find((k) => k.id === id);
-    if (!kit) continue;
-    for (let i = 0; i < count; i++) {
-      for (let attempt = 0; attempt < 40; attempt++, n++) {
-        const px = ground.x + Math.floor(hash01(n, 1, 501) * Math.max(1, ground.w - kit.width + 1));
-        const py = ground.y + Math.floor(hash01(n, 2, 502) * Math.max(1, ground.h - kit.height + 1));
-        if (px < 0 || py < 0 || px + kit.width > map.width || py + kit.height > map.height) continue;
-        let ok = true;
-        for (let dy = -1; dy <= kit.height && ok; dy++) for (let dx = -1; dx <= kit.width && ok; dx++) {
-          const cx = px + dx, cy = py + dy;
-          if (cx < 0 || cy < 0 || cx >= map.width || cy >= map.height) continue;
-          if (occupied.has(cy * map.width + cx) || blocked(cx, cy)) ok = false;
-        }
-        if (!ok) continue;
-        for (let dy = 0; dy < kit.height; dy++) for (let dx = 0; dx < kit.width; dx++) occupied.add((py + dy) * map.width + px + dx);
-        out.push({ id: KIT + id, x: px, y: py });
-        n++;
-        break;
-      }
-    }
-  }
-  return out;
-}
-
-/** 몸체 둘레(8방향 이웃)에 놓을 1×1 흑요석·불씨 소품 — 직각 가장자리를 가린다. */
-function rimStamps(map: GameMap, cells: readonly { x: number; y: number }[], keep: (cx: number, cy: number) => boolean, seed: number, density: number): { id: string; x: number; y: number }[] {
-  const lava = new Set(cells.map((c) => c.y * map.width + c.x));
-  const seen = new Set<number>();
-  const out: { id: string; x: number; y: number }[] = [];
-  for (const c of cells) {
-    for (let ny = c.y - 1; ny <= c.y + 1; ny++) {
-      for (let nx = c.x - 1; nx <= c.x + 1; nx++) {
-        const k = ny * map.width + nx;
-        if (nx < 0 || ny < 0 || nx >= map.width || ny >= map.height || lava.has(k) || seen.has(k) || !keep(nx, ny)) continue;
-        seen.add(k);
-        const h = hash01(nx, ny, seed);
-        if (h > density) continue;
-        const pick = hash01(ny, nx, seed + 5);
-        const id = pick < 0.4 ? "spike-small" : pick < 0.55 ? "ember-a" : pick < 0.62 ? "bones" : pick < 0.72 ? "fire-crystal" : "steam-vent";
-        out.push({ id: VOLCANO + id, x: nx, y: ny });
-      }
-    }
-  }
-  return out;
-}
-
-const s = (id: string, dx: number, dy: number): Stamp => ({ id, dx, dy });
-
-/** 배치는 이벤트 칸 기준 상대 좌표다. 이벤트 칸과 그 왼쪽 시작 칸, 생존 걷기 길(walk)은 막지 않는다. */
-function layoutFor(theme: SceneTheme): Layout {
+function arrange(theme: SceneTheme): Layout {
   switch (theme) {
-    case "lava_bridge": {
-      // 그을린 흙바닥 협곡을 4~5줄 용암 강(y-3..y+2)이 가로지르고, 바위 다리(3×7, y-3..y+3)가 이벤트 칸을 지나 두 둑의
-      // 유적 테라스(트래버틴)를 잇는다. 다리 머리에 화로·신전 기둥, 둑에는 현무암 기둥·흑요석 무리·용암 폭포.
-      // 생존 분기는 다리를 따라 북쪽 테라스까지 4칸 건너간다.
+    case "lava_bridge":
+      // 동서로 하나 이어진 용암 협곡(y-3..y+2)을 가운데 바위 다리(3×7)가 남북으로 건넌다. 다리 머리마다 화로 한 쌍,
+      // 북(y-5..y-4)·남(y+3..y+4) 기슭을 따라 현무암 기둥과 마그마 분출구가 다리를 축으로 좌우 대칭으로 선다. 다리 위 동선은 비운다.
+      // 생존 분기는 다리를 따라 북쪽 기슭까지 4칸 건너간다.
       return {
         ground: { material: "버들항 모랫길", rx: 10, ry: 7 },
         floorKit: `${RUINS}floor-dirt`,
         fills: [],
         walk: { dir: "up", steps: 4 },
-        stamps: [
-          s(`${VOLCANO}bridge`, -1, -3),
-          s(`${VOLCANO}brazier`, -2, -5),
-          s(`${VOLCANO}brazier`, 2, -5),
-          s(`${VOLCANO}brazier`, -2, 3),
-          s(`${VOLCANO}brazier`, 2, 3),
-          s(`${RUINS}column-temple-tall`, -4, -7),
-          s(`${RUINS}column-temple-tall`, 4, -7),
-          s(`${RUINS}column-temple-broken`, -4, 4),
-          s(`${RUINS}column-temple-broken`, 4, 4),
-          s(`${VOLCANO}altar`, -9, -7),
-          // 벽 한 조각(face-temple·ruined-wall)은 맵 한가운데 «잘린 사각 벽» 으로 읽혔다(2026-10-18 심판) — 사방에서 온전한 기둥·바위만 둔다.
-          s(`${RUINS}column-temple-broken`, 6, -7),
-          s(`${VOLCANO}stalagmite`, -7, -6),
-          s("bd-prop-statue_sage", 6, 3),
-          s(`${VOLCANO}spike-tall`, 6, -5),
-          s(`${VOLCANO}stalagmite`, -6, -5),
-          s(`${VOLCANO}spike-tall`, -9, 5),
-          s(`${VOLCANO}spike-wide`, -8, 3),
-          s(`${VOLCANO}pillar-broken-a`, -6, 3),
-          s(`${VOLCANO}pillar-fallen`, -3, 6),
-          s(`${VOLCANO}spike-small`, 3, -3),
-          s(`${VOLCANO}fire-crystal`, -3, -4),
-          s(`${VOLCANO}fire-crystal`, 3, 3),
-          s(`${VOLCANO}steam-vent`, -3, 3),
-          s(`${VOLCANO}bones`, 1, 5),
-          s(`${RUINS}rubble-temple`, -1, 6),
-          s(`${VOLCANO}ember-a`, 5, -4),
+        corridors: [{ dx: -1, dy: -7, w: 3, h: 15 }],
+        pieces: [
+          one(`${VOLCANO}bridge`, -1, -3),
+          lr(`${VOLCANO}brazier`, 2, -5),
+          lr(`${VOLCANO}brazier`, 2, 3),
+          lr(`${VOLCANO}pillar-broken-a`, 4, -5),
+          lr(`${VOLCANO}steam-vent`, 6, -4),
+          lr(`${VOLCANO}pillar-broken-a`, 8, -5),
+          lr(`${VOLCANO}pillar-broken-a`, 4, 3),
+          lr(`${VOLCANO}steam-vent`, 6, 3),
+          lr(`${VOLCANO}pillar-broken-a`, 8, 3),
         ],
       };
-    }
     case "volcano":
-      // 그을린 분화구 길: 이벤트 줄(y-1..y+1)이 길이고, 길 위(y-5..y-3)·아래(y+3..y+5)에 가는 용암 균열이 길을 따라 흐르다
-      // 오른쪽 분화구 용암 못에 닿는다. 이벤트 칸 바로 둘레에 흑요석 무리·증기 구멍·불탄 뼈(y±2 줄은 균열이 닿지 않는 소품 줄).
-      // 생존 분기는 길을 따라 오른쪽으로 3칸 나아간다(못은 x+4 부터).
+      // 그을린 분화구 길: 이벤트 줄(y-1..y+1)이 넓게 빈 길이고, 길 바깥 양옆(y-5..y-3, y+3..y+5)으로 가는 용암 균열이 길과 나란히
+      // 흐르다 동쪽 분화구 용암 못에 닿는다. 균열·못은 길을 축으로 위아래 거울처럼 굽고, 흑요석 바위 무리는 균열 서쪽 끝 굽이와
+      // 못가 바깥 굽이에만 모아 둔다. 생존 분기는 길을 따라 오른쪽으로 3칸 나아간다(못은 x+4 부터).
       return {
         ground: { material: "버들항 모랫길", rx: 9, ry: 6 },
         fills: [],
-        bodies: [{ kind: "lava", cx: 7.2, cy: -0.5, rx: 3.2, ry: 4.6, seed: 11, minDx: 4 }],
+        bodies: [{ kind: "lava", cx: 7.2, cy: 0, rx: 3.2, ry: 4.6, seed: 11, minDx: 4 }],
         fissures: [
-          { dy: -4, dx0: -7, dx1: 4, seed: 5 },
-          { dy: 3, dx0: -6, dx1: 4, seed: 9 },
+          { dy: -4, dx0: -4, dx1: 4, seed: 5 },
+          { dy: 3, dx0: -4, dx1: 4, seed: 5 },
         ],
         walk: { dir: "right", steps: 3 },
-        stamps: [
-          s(`${VOLCANO}spike-wide`, -2, -2),
-          s(`${VOLCANO}spike-tall`, 1, -2),
-          s(`${VOLCANO}steam-vent`, 3, -1),
-          s(`${VOLCANO}steam-vent`, -1, 1),
-          s(`${VOLCANO}steam-vent`, 2, 1),
-          s(`${VOLCANO}bones`, 1, 1),
-          s(`${VOLCANO}ember-a`, 0, -1),
-          s(`${VOLCANO}fire-crystal`, -3, 1),
-          s(`${VOLCANO}spike-small`, -4, 1),
-          s(`${VOLCANO}pillar-broken-a`, -5, -2),
-          s(`${VOLCANO}stalagmite`, 3, 1),
-          s(`${VOLCANO}stalagmite`, -6, 1),
-          s(`${VOLCANO}spike-small`, 0, 2),
-          s(`${VOLCANO}bones`, -3, 2),
-          s(`${VOLCANO}spike-wide`, -6, -7),
-          s(`${VOLCANO}spike-tall`, 2, -7),
-          s(`${VOLCANO}pillar-broken-b`, -1, -7),
-          s(`${VOLCANO}spike-wide`, 5, -6),
-          s(`${VOLCANO}fire-crystal`, -2, 6),
-          s(`${VOLCANO}spike-small`, 3, 6),
+        corridors: [{ dx: -9, dy: -1, w: 13, h: 3 }],
+        // 바위 무리: 균열 서쪽 끝 앞(dx -7..-5)과 균열이 바깥으로 굽어 길 쪽에 빈 홈이 난 자리(dx 2..3)에만.
+        pieces: [
+          ud(`${VOLCANO}spike-tall`, -7, -4),
+          ud(`${VOLCANO}spike-wide`, -6, -4),
+          ud(`${VOLCANO}spike-tall`, 3, -3),
+          ud(`${VOLCANO}stalagmite`, 2, -3),
         ],
       };
     case "poison_swamp":
-      // 마도 유적의 독늪 둑길: 이끼 낀 유적 판석 바닥, 이벤트 줄(y-1..y+1)만 남기고 위·아래로 독늪이 붙어 이벤트 칸이 좁은 둑길 목이 된다.
-      // 둑길은 트래버틴 판석, 양 끝에 신전 기둥 문, 가장자리에 부러진 기둥·증기 분출구·뼈. 북쪽에는 무너진 신전 벽·소신전·교단 제단·
-      // 현자 석상, 둑길 끝(동쪽)에는 마법진 모자이크. 생존 분기는 둑길을 따라 오른쪽으로 4칸 건너간다.
+      // 마도 유적의 독늪: 늪 한 못을 마른 둑길(이벤트 줄)이 동서로 가로지른다 — 위·아래 늪 윤곽은 둑길을 축으로 거울처럼 같다.
+      // 둑길 들머리(서)와 날머리(동)에 경고 등불 말뚝 한 쌍씩이 둑길을 끼고, 날머리 너머에 마법진 모자이크.
+      // 북쪽 늪가에는 소신전을 가운데 두고 석상·고목이 늪 가운데 세로줄(x+2)을 축으로 좌우 대칭으로 선다.
+      // 생존 분기는 둑길을 따라 4칸 건너간다.
       return {
         ground: { material: "버들항 광장 판석", rx: 24, ry: 20 },
         floorKit: `${RUINS}floor-ruin`,
         fills: [],
         bodies: [
-          { kind: "water", cx: 1, cy: -3.3, rx: 4.6, ry: 2.1, seed: 23, minDx: -5, maxDx: 6, keepDy: 1 },
-          { kind: "water", cx: 1.5, cy: 3.4, rx: 4.8, ry: 1.9, seed: 29, minDx: -5, maxDx: 6, keepDy: 1 },
+          { kind: "water", cx: 2, cy: -3.3, rx: 5, ry: 2, seed: 23, minDx: -3, maxDx: 7, keepDy: 1 },
+          { kind: "water", cx: 2, cy: 3.3, rx: 5, ry: 2, seed: 23, minDx: -3, maxDx: 7, keepDy: 1 },
         ],
         walk: { dir: "right", steps: 4 },
-        stamps: [
-          s(`${RUINS}column-temple-tall`, -5, -3),
-          s(`${RUINS}column-temple-tall`, 7, -3),
-          s(`${RUINS}column-temple-broken`, -2, -2),
-          s(`${RUINS}column-temple-broken`, 3, -2),
-          s(`${VOLCANO}steam-vent`, 0, -1),
-          s(`${VOLCANO}steam-vent`, 5, -1),
-          s(`${VOLCANO}steam-vent`, 2, 1),
-          s(`${VOLCANO}bones`, -1, 1),
-          s(`${RUINS}fallen-column-temple`, 3, 1),
-          s(`${RUINS}rubble-temple`, -3, 1),
-          s(`${SWAMP}pilings`, -1, -4),
-          s(`${SWAMP}pilings`, 4, -5),
-          s(`${RUINS}mosaic-medallion-5x5`, 8, -2),
-          s(`${RUINS}column-temple-broken`, 13, -2),
-          s(`${RUINS}fallen-column-temple`, 9, 3),
-          s("bd-pick-castle-catacombs-altar-stone", 9, -5),
-          s(`${RUINS}column-temple-tall`, -6, -11),
-          s(`${RUINS}column-temple-broken`, -3, -11),
-          s(`${RUINS}roof-naiskos-pediment`, 2, -11),
-          s(`${RUINS}cypress-ruin`, 7, -11),
-          s(`${RUINS}column-temple-tall`, 10, -11),
-          s("bd-pick-aqueduct-sewer-altar-cult", 3, -7),
-          s("bd-prop-statue_sage", -6, -8),
-          s(`${RUINS}column-temple-broken`, 0, -8),
-          s(`${RUINS}column-temple-broken`, 7, -8),
-          s(`${SWAMP}snag`, 11, -9),
-          s(`${SWAMP}snag`, -6, -2),
-          s(`${RUINS}cypress-ruin`, -6, 2),
+        corridors: [{ dx: -6, dy: 0, w: 15, h: 1 }],
+        pieces: [
+          ud(`${SWAMP}lantern`, -4, -3),
+          ud(`${SWAMP}lantern`, 8, -3),
+          one(`${RUINS}mosaic-medallion-5x5`, 9, -2),
+          one(`${RUINS}roof-naiskos-pediment`, 0, -11),
+          lr("bd-prop-statue_sage", 5, -10, 2),
+          lr(`${RUINS}column-temple-tall`, 8, -9, 2),
         ],
       };
     case "ruins_shrine":
-      // 모자이크 메달리온(7×7) 위에 이벤트 칸, 북쪽에 소신전과 제단 닫집, 둘레에 기둥·잔해.
+      // 성소: 모자이크 메달리온(7×7) 한가운데 이벤트 칸, 그 뒤(북) 맵 안쪽에 소신전과 좌우 수호 석상. 메달리온 양옆 x±4 줄에
+      // 3줄마다 한 쌍씩 열주가 남북 참배로를 따라 서고, 메달리온 남쪽 모서리 화로 한 쌍이 참배로 들머리를 연다. 바깥 줄은 사이프러스.
       return {
         ground: { material: "버들항 광장 판석", rx: 9, ry: 7 },
         fills: [],
-        stamps: [
-          s(`${RUINS}mosaic-medallion-7x7`, -3, -3),
-          s(`${RUINS}cypress-ruin`, -8, -6),
-          s(`${RUINS}cypress-ruin`, 8, -5),
-          s(`${RUINS}vines-2`, -4, -9),
-          s(`${RUINS}vines-2`, 3, -9),
-          s(`${RUINS}roof-naiskos-pediment`, -2, -9),
-          s(`${RUINS}column-temple-tall`, -6, -4),
-          s(`${RUINS}column-temple-tall`, 6, -4),
-          s(`${RUINS}column-temple-broken`, -6, 3),
-          s(`${RUINS}column-temple-broken`, 6, 3),
-          s(`${RUINS}fallen-column-temple`, -9, 5),
-          s(`${RUINS}rubble-temple`, 4, 5),
-          s(`${VOLCANO}brazier`, -5, -2),
-          s(`${VOLCANO}brazier`, 5, -2),
-          s(`${RUINS}column-temple-broken`, 8, 0),
+        corridors: [{ dx: -1, dy: 4, w: 3, h: 4 }],
+        pieces: [
+          one(`${RUINS}mosaic-medallion-7x7`, -3, -3),
+          one(`${RUINS}roof-hip-shrine`, -1, -6),
+          lr("bd-prop-statue_sage", 4, -6),
+          lr(`${RUINS}column-temple`, 4, -1),
+          lr(`${RUINS}column-temple`, 4, 2),
+          lr(`${RUINS}column-temple`, 4, 5),
+          lr(`${VOLCANO}brazier`, 3, 4),
+          lr(`${RUINS}cypress-ruin`, 7, -5),
+          lr(`${RUINS}cypress-ruin`, 7, -1),
+          lr(`${RUINS}cypress-ruin`, 7, 3),
         ],
       };
   }
+}
+
+/** 바닥 그림(모자이크·다리)만 동선 위에 깐다 — 걸어 지나가는 칸이다. */
+const FLOOR_PIECE = /mosaic|bridge|floor/u;
+
+/** 쌍의 두 짝(또는 한 점)의 놓을 자리 — 이벤트 칸 기준 dx,dy. */
+function pieceSpots(p: Piece, w: number, h: number): { dx: number; dy: number }[] {
+  if (!p.mirror) return [{ dx: p.dx, dy: p.dy }];
+  const m = p.mirror;
+  const twin = m.axis === "x" ? { dx: 2 * m.at - p.dx - w + 1, dy: p.dy } : { dx: p.dx, dy: 2 * m.at - p.dy - h + 1 };
+  return twin.dx === p.dx && twin.dy === p.dy ? [{ dx: p.dx, dy: p.dy }] : [{ dx: p.dx, dy: p.dy }, twin];
 }
 
 function toolByName(list: readonly ToolDefinition[], name: string): ToolDefinition {
@@ -494,7 +407,7 @@ function roundedParts(map: GameMap, r: { x: number; y: number; w: number; h: num
 }
 
 function themeKitIds(theme: SceneTheme): string[] {
-  return [...new Set(layoutFor(theme).stamps.map((st) => KIT + st.id))];
+  return [...new Set(arrange(theme).pieces.map((p) => KIT + p.id))];
 }
 
 function clampRect(map: GameMap, x: number, y: number, w: number, h: number) {
@@ -553,7 +466,9 @@ export const SCENE_SETTING_TOOLS: readonly ToolDefinition[] = [
         throw new ToolError(`좌표 (${args.x},${args.y}) 가 맵 ${map.width}×${map.height} 밖입니다`, { code: "out-of-map" });
       }
 
-      const layout = layoutFor(theme);
+      // 다시 지으면 옛 무대의 보호 구역부터 걷는다 — 남겨 두면 이번 무대의 기물이 그 구역에 걸려 거절된다.
+      map.locations = (map.locations ?? []).filter((l) => !(l.tags ?? []).includes(SCENE_STAGE_TAG));
+      const layout = arrange(theme);
       const fill = toolByName(CONSTRUCTION_TOOLS_V3, "fill_region");
       const stamp = toolByName(SHARED_OBJECT_TOOLS, "stamp_object");
       const warnings: string[] = [];
@@ -582,24 +497,22 @@ export const SCENE_SETTING_TOOLS: readonly ToolDefinition[] = [
       }
       if (layout.fills.length) built.push(`${layout.fills[0]!.material} 영역`);
 
-      // 불규칙 몸체(용암·물) — 칸 단위로 칠하고 둘레에 흑요석·불씨를 둘러 직각 가장자리를 가린다.
-      const bodyDecor: { id: string; x: number; y: number }[] = [];
+      // 불규칙 몸체(용암·물) — 칸 단위로 칠하고, 둘레는 둑 덧그림(applyBankOverlay)이 둥글린다.
       const bridgeBox = (cx: number, cy: number) => theme === "lava_bridge" && Math.abs(cx - x) <= 1 && cy >= y - 3 && cy <= y + 3;
       const walk = layout.walk ? walkCells(x, y, layout.walk) : [];
       const onWalk = (cx: number, cy: number) => walk.some((c) => c.x === cx && c.y === cy);
       const free = (cx: number, cy: number) => !((cx === x && cy === y) || (cx === x - 1 && cy === y)) && !bridgeBox(cx, cy) && !onWalk(cx, cy);
-      const lavaOf: { cells: { x: number; y: number }[]; rim: number }[] = theme === "lava_bridge"
-        ? [{ cells: lavaBandCells(map, x, y), rim: 0.28 }]
+      const lavaOf: { x: number; y: number }[][] = theme === "lava_bridge"
+        ? [lavaBandCells(map, x, y)]
         : [
-          ...(layout.bodies ?? []).filter((b) => b.kind === "lava").map((b) => ({ cells: bodyCells(map, x, y, b, free), rim: 0.5 })),
-          ...(layout.fissures ?? []).map((f) => ({ cells: fissureCells(map, x, y, f, free), rim: 0.12 })),
+          ...(layout.bodies ?? []).filter((b) => b.kind === "lava").map((b) => bodyCells(map, x, y, b, free)),
+          ...(layout.fissures ?? []).map((f) => fissureCells(map, x, y, f, free)),
         ];
-      for (const { cells, rim } of lavaOf) {
+      for (const cells of lavaOf) {
         for (const c of cells) setLayerTileAt(map, 1, c.y * map.width + c.x, LAVA_TILES[c.y % 2]![c.x % 2]!);
         for (const c of cells) for (let l = 2; l <= 3; l++) setLayerTileAt(map, l as 2 | 3, c.y * map.width + c.x, -1);
         applyBankOverlay(project, map, cells, BEODEUL_NATURE.bankLava);
         if (theme === "lava_bridge") for (const c of cells) if (bridgeBox(c.x, c.y)) setLayerTileAt(map, 2, c.y * map.width + c.x, -1);
-        bodyDecor.push(...rimStamps(map, cells, free, 41, rim));
       }
       if (layout.fissures?.length) built.push(`용암 균열 ${layout.fissures.length}줄`);
       for (const b of (layout.bodies ?? []).filter((q) => q.kind === "water")) {
@@ -620,34 +533,47 @@ export const SCENE_SETTING_TOOLS: readonly ToolDefinition[] = [
         applyBankOverlay(project, map, cells, BEODEUL_NATURE.bankBog);
         built.push("물 " + cells.length + "칸");
       }
-      let stamped = 0;
       const occupied = new Set<number>();
       const kitList = project.tilesets.beodeul_city?.structureKits ?? [];
-      const mark = (id: string, px: number, py: number) => {
-        const k = kitList.find((q) => q.id === id.replace(KIT, ""));
-        for (let dy = 0; dy < (k?.height ?? 1); dy++) for (let dx = 0; dx < (k?.width ?? 1); dx++) occupied.add((py + dy) * map.width + px + dx);
-      };
       const waterOrLava = new Set<number>();
-      for (const { cells } of lavaOf) for (const c of cells) waterOrLava.add(c.y * map.width + c.x);
+      for (const cells of lavaOf) for (const c of cells) waterOrLava.add(c.y * map.width + c.x);
       for (const b of (layout.bodies ?? []).filter((q) => q.kind === "water")) for (const c of bodyCells(map, x, y, b, free)) waterOrLava.add(c.y * map.width + c.x);
-      for (const d of bodyDecor) {
-        try { stamp.run(project, { objectId: KIT + d.id, mapId, x: d.x, y: d.y }); stamped++; mark(d.id, d.x, d.y); } catch { /* 맵 밖·충돌 칸은 건너뛴다 */ }
-      }
-      // 물·용암 위에 찍으면 키트 바닥 칸이 연못 한가운데 «돌 네모» 로 남았다(2026-10-18 jrpg_003) — 다리·말뚝만 몸체 위에 선다.
-      const onBody = (id: string, px: number, py: number) => {
-        if (/bridge|pilings/u.test(id)) return false;
-        const k = kitList.find((q) => q.id === id.replace(KIT, ""));
-        for (let dy = 0; dy < (k?.height ?? 1); dy++) for (let dx = 0; dx < (k?.width ?? 1); dx++) if (waterOrLava.has((py + dy) * map.width + px + dx)) return true;
-        return false;
+      const corridors = (layout.corridors ?? []).map((c) => clampRect(map, x + c.dx, y + c.dy, c.w, c.h));
+      const inCorridor = (cx: number, cy: number) => corridors.some((r) => cx >= r.x && cx < r.x + r.w && cy >= r.y && cy < r.y + r.h);
+      // 기물은 무대 바닥 안에만 선다. 물·용암·동선·이벤트 칸·걷기 길·다른 기물 위는 안 된다(바닥 그림인 모자이크·다리는 동선·몸체 위에 깐다).
+      const fits = (id: string, w: number, h: number, px: number, py: number) => {
+        if (px < 0 || py < 0 || px + w > map.width || py + h > map.height) return false;
+        const floorPiece = FLOOR_PIECE.test(id);
+        for (let cy = py; cy < py + h; cy++) {
+          for (let cx = px; cx < px + w; cx++) {
+            if (!groundKeep(cx, cy) || cx < ground.x || cy < ground.y || cx >= ground.x + ground.w || cy >= ground.y + ground.h) return false;
+            if (!floorPiece && (waterOrLava.has(cy * map.width + cx) || !free(cx, cy) || inCorridor(cx, cy) || occupied.has(cy * map.width + cx))) return false;
+          }
+        }
+        return true;
       };
-      for (const st of layout.stamps) {
-        if (onBody(st.id, x + st.dx, y + st.dy)) continue;
-        try {
-          stamp.run(project, { objectId: KIT + st.id, mapId, x: x + st.dx, y: y + st.dy });
-          mark(st.id, x + st.dx, y + st.dy);
-          stamped++;
-        } catch (error) {
-          warnings.push(`${st.id} (${x + st.dx},${y + st.dy}) 건너뜀: ${error instanceof Error ? error.message.slice(0, 120) : String(error)}`);
+      let stamped = 0;
+      let dropped = 0;
+      for (const p of layout.pieces) {
+        const kit = kitList.find((k) => k.id === p.id);
+        if (!kit) {
+          warnings.push(`${p.id} 키트가 없어 건너뜀`);
+          continue;
+        }
+        // 쌍은 두 짝이 모두 들어갈 때만 찍는다 — 한 짝이 맵 밖·몸체·동선에 걸리면 둘 다 뺀다(좌우·위아래 대칭이 깨지지 않게).
+        const spots = pieceSpots(p, kit.width, kit.height).map((sp) => ({ x: x + sp.dx, y: y + sp.dy }));
+        if (!spots.every((sp) => fits(p.id, kit.width, kit.height, sp.x, sp.y))) {
+          dropped++;
+          continue;
+        }
+        for (const sp of spots) {
+          try {
+            stamp.run(project, { objectId: KIT + p.id, mapId, x: sp.x, y: sp.y });
+            stamped++;
+            if (!FLOOR_PIECE.test(p.id)) for (let dy = 0; dy < kit.height; dy++) for (let dx = 0; dx < kit.width; dx++) occupied.add((sp.y + dy) * map.width + sp.x + dx);
+          } catch (error) {
+            warnings.push(`${p.id} (${sp.x},${sp.y}) 건너뜀: ${error instanceof Error ? error.message.slice(0, 120) : String(error)}`);
+          }
         }
       }
       if (theme === "ruins_shrine" && x + 1 < map.width && y >= 1) {
@@ -667,12 +593,15 @@ export const SCENE_SETTING_TOOLS: readonly ToolDefinition[] = [
         occupied.add(y * map.width + x + 1);
         built.push("성검 꽂힌 바위");
       }
-      const scatterBlocked = (cx: number, cy: number) => waterOrLava.has(cy * map.width + cx) || !free(cx, cy);
-      let scattered = 0;
-      for (const d of scatterStamps(project, map, theme, ground, occupied, scatterBlocked)) {
-        try { stamp.run(project, { objectId: d.id, mapId, x: d.x, y: d.y }); scattered++; } catch { /* 건너뜀 */ }
-      }
-      built.push(`키트 ${stamped}/${layout.stamps.length}개 · 흩뿌린 소품 ${scattered}개`);
+      built.push(`기물 ${stamped}점${dropped ? `(맵 밖·몸체에 걸린 대칭 쌍 ${dropped}개는 통째로 뺌)` : ""}`);
+
+      // 무대 보호 구역 — 이벤트 칸 둘레 2칸과 동선(다리·둑길·참배로). 조수의 stamp_object·place_props 는 여기에 소품을 얹지 못한다
+      // (sceneStageGuard). composed-layout 표식은 배치 품질 권고의 «빈 바닥 채우기» 를 끈다 — 그 권고가 비운 칸에 소품을 흩뿌리게 한다.
+      const zones = [
+        { name: "무대 초점", ...clampRect(map, x - 2, y - 2, 5, 5) },
+        ...corridors.map((r) => ({ name: "무대 동선", ...r })),
+      ];
+      for (const z of zones) addMapLocation(map, { ...z, tags: [SCENE_STAGE_TAG, COMPOSED_LAYOUT_TAG], note: `build_scene_setting ${theme} 보호 구역 — 소품 금지` });
 
       const houses = theme === "volcano" ? Math.max(0, Math.min(3, Math.trunc(Number(args.houses ?? 0)))) : 0;
       if (houses > 0) {
@@ -710,8 +639,8 @@ export const SCENE_SETTING_TOOLS: readonly ToolDefinition[] = [
         ? { cells: [{ x: x + 1, y: y - 1, layer: "upper" as const, tile: layerTileAt(map, 1, (y - 1) * map.width + x + 1) }], stone: { x: x + 1, y } }
         : undefined;
       return {
-        summary: `무대 ${theme} → ${mapId} 이벤트 칸 (${x},${y}) 둘레: ${built.join(" · ")}. 이제 show_map_region 으로 확인하고 (${x},${y}) 에 이벤트를 만든다 — 시작 칸 (${x - 1},${y}) 은 막혀 있지 않다.${collapse ? ` 다리 붕괴 연출은 사망 분기에서 data.collapse.cells ${collapse.cells.length}칸에 changeTile{mapId,layer:"upper",x,y,tile} 을 적용한다(다리 그림이 상단 층이라 반드시 layer "upper" — 하단은 이미 용암이라 바꿔도 화면이 그대로다). 붕괴 직후 한 번 더 화면을 붉게 번쩍이면 틈이 눈에 띈다.` : ""}${survivalWalk ? ` 생존(무사 통과) 분기는 제자리에 세워 두지 말고 moveActor{target:"player",moves:data.survivalWalk.moves} 로 (${survivalWalk.end.x},${survivalWalk.end.y}) 까지 ${walk.length}칸 걸어 위험 구역을 건너게 하고, 걷는 동안 tint 를 원래대로·weather none 으로 거둔다.` : ""}${swordPull ? ` 성검을 뽑는 분기는 바위 앞에서 한 걸음 다가서 칼자루를 쥐고(검을 쥔 인물 jump dx:0,dy:0) parallel[ flash white, shake, music se, particles sparkle(바위 칸), 빛기둥 picture(add) ] 와 함께 data.swordPull.cells 를 changeTile{mapId,layer:"upper",x,y,tile} 로 그대로 적용해 바위에서 칼이 사라지게 하고, 이어서 «성검을 높이 치켜들었다!» 대사 + sparkle 를 인물 위에 띄운다.` : ""}`,
-        data: { theme, mapId, focus: { x, y }, start: { x: x - 1, y }, ground, stamped, total: layout.stamps.length, ...(collapse ? { collapse } : {}), ...(survivalWalk ? { survivalWalk } : {}), ...(swordPull ? { swordPull } : {}) },
+        summary: `무대 ${theme} → ${mapId} 이벤트 칸 (${x},${y}) 둘레: ${built.join(" · ")}. 이제 show_map_region 으로 확인하고 (${x},${y}) 에 이벤트를 만든다 — 시작 칸 (${x - 1},${y}) 은 막혀 있지 않다. 기물은 축에 맞춘 대칭 세트로 이미 섰다 — 무대 초점·동선 ${zones.length}곳(scene-stage 로케이션)은 비워 둔 칸이라 stamp_object·place_props 가 거절하니, 소품을 더 흩뿌리지 않는다.${collapse ? ` 다리 붕괴 연출은 사망 분기에서 data.collapse.cells ${collapse.cells.length}칸에 changeTile{mapId,layer:"upper",x,y,tile} 을 적용한다(다리 그림이 상단 층이라 반드시 layer "upper" — 하단은 이미 용암이라 바꿔도 화면이 그대로다). 붕괴 직후 한 번 더 화면을 붉게 번쩍이면 틈이 눈에 띈다.` : ""}${survivalWalk ? ` 생존(무사 통과) 분기는 제자리에 세워 두지 말고 moveActor{target:"player",moves:data.survivalWalk.moves} 로 (${survivalWalk.end.x},${survivalWalk.end.y}) 까지 ${walk.length}칸 걸어 위험 구역을 건너게 하고, 걷는 동안 tint 를 원래대로·weather none 으로 거둔다.` : ""}${swordPull ? ` 성검을 뽑는 분기는 바위 앞에서 한 걸음 다가서 칼자루를 쥐고(검을 쥔 인물 jump dx:0,dy:0) parallel[ flash white, shake, music se, particles sparkle(바위 칸), 빛기둥 picture(add) ] 와 함께 data.swordPull.cells 를 changeTile{mapId,layer:"upper",x,y,tile} 로 그대로 적용해 바위에서 칼이 사라지게 하고, 이어서 «성검을 높이 치켜들었다!» 대사 + sparkle 를 인물 위에 띄운다.` : ""}`,
+        data: { theme, mapId, focus: { x, y }, start: { x: x - 1, y }, ground, stamped, total: layout.pieces.length, protectedZones: zones, ...(collapse ? { collapse } : {}), ...(survivalWalk ? { survivalWalk } : {}), ...(swordPull ? { swordPull } : {}) },
         ...(warnings.length ? { warnings } : {}),
       };
     },
