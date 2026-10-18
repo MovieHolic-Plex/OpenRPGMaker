@@ -1,14 +1,14 @@
-# Redraw R10 / R10b / R11 props in place: each prop's art is drawn again and its 16x16 cells are pasted over the
+# Redraw R10 / R10b / R11 / R13 props in place: each prop's art is drawn again and its 16x16 cells are pasted over the
 # exact chipset tiles already registered in modernCityRoomSpec.json (cells [x, y, tile, layer]). Tile indices,
-# passability and kit registration never move, so R11 (appended after R10b) keeps its numbers.
+# passability and kit registration never move, so later appends (R11 after R10b, R13 after R11) keep their numbers.
 # A redraw may leave a registered cell empty (pasted as transparent) but must not paint a cell that was never
 # registered - those pixels would be lost, so the script fails loudly and lists them.
 # Run: python3 scripts/content/modern-city-int/r10/rebake_inplace.py [--check]
 import json, os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, HERE); sys.path.insert(0, os.path.join(HERE, '..', 'r11'))
+sys.path.insert(0, HERE); sys.path.insert(0, os.path.join(HERE, '..', 'r11')); sys.path.insert(0, os.path.join(HERE, '..', 'r13'))
 from PIL import Image
-import bake_r10, bake_r10b, bake_r11
+import bake_r10, bake_r10b, bake_r11, bake_r13
 import dept as D
 
 # Older department-store sprites (not in any R10/R11 PROPS list) redrawn with the same kit: (id, kind, h, art).
@@ -36,7 +36,7 @@ def main():
     blank = Image.new('RGBA', (16, 16), (0, 0, 0, 0))
     lost, changed = [], 0
     legacy = [(pid, kind, h, None, None, None, None, fn) for pid, kind, h, fn in LEGACY]
-    lists = [(bake_r10.PROPS, bake_r10.GOODS), (bake_r10b.PROPS, []), (bake_r11.PROPS, []), (legacy, [])]
+    lists = [(bake_r10.PROPS, bake_r10.GOODS), (bake_r10b.PROPS, []), (bake_r11.PROPS, []), (bake_r13.PROPS, []), (legacy, [])]
     for props, goods in lists:
         for p in props:
             pid, kind, h, fn = p[0], p[1], p[2], p[7]

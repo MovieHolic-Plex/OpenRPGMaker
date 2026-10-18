@@ -310,7 +310,7 @@ const VENUES: readonly Venue[] = [
       o("park-stall-lines", 27, 2), o("park-car-front-white", 29, 2),
       // 중앙 주행 차로 & 버스·구급차·승용차 환승 베이(거리 차량 키트 재사용)
       o("park-bus-e", 1, 7), o("park-pillar", 10, 7), o("park-sedan-white-e", 12, 7), o("park-pillar", 18, 7), o("hosp-ambulance-e", 20, 7),
-      o("park-sedan-red-w", 26, 10),
+      o("jumbo-park-box-truck-e", 4, 10), o("park-sedan-red-w", 26, 10),
       // 남쪽 주차 구획(남쪽 출구 x=15..16 앞은 비운다)
       o("park-stall-lines", 0, 13), o("park-car-back-black", 2, 13), o("park-stall-lines", 6, 13), o("park-car-back-white", 8, 13),
       o("park-stall-lines", 18, 13), o("park-car-back-navy", 20, 13), o("park-stall-lines", 25, 13), o("park-car-back-black", 27, 13),
