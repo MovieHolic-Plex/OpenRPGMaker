@@ -86,38 +86,138 @@ def mannequin_kids():
 
 
 # ------------------------------------------------------------------ cases
+WALNUT, WALNUT_D, WALNUT_L = (92, 58, 40), (62, 38, 28), (124, 82, 56)
+BACKLIT, BACKLIT_D = (255, 238, 196), (226, 198, 150)
+VELVET, VELVET_D, VELVET_L = (70, 48, 110), (40, 28, 66), (104, 78, 150)
+MARBLE, MARBLE_V = (242, 238, 230), (210, 204, 196)
+
+
+def _bag(c, x, y, kind, col):
+    """One handbag in a 7x7 slot (x..x+6, y..y+6): handle/strap by kind, rounded body with lit flap, shaded base, brass clasp."""
+    o, L, D = dk(col, 0.45), lt(col, 1.3), dk(col, 0.72)
+    if kind in ('top', 'quilt'):
+        c.r(x + 2, y, x + 4, y, o); c.p(x + 1, y + 1, o); c.p(x + 5, y + 1, o)
+    elif kind == 'tote':
+        c.r(x + 1, y, x + 1, y + 1, o); c.r(x + 5, y, x + 5, y + 1, o); c.r(x + 2, y, x + 4, y, o)
+    elif kind == 'chain':
+        for px, py in ((1, 1), (2, 0), (4, 0), (5, 1)): c.p(x + px, y + py, GOLD)
+        c.p(x + 3, y, GOLD_D)
+    if kind == 'clutch':
+        c.rbox(x, y + 3, x + 6, y + 6, col, o); c.r(x + 1, y + 4, x + 5, y + 4, L); c.p(x + 3, y + 5, GOLD)
+        return
+    if kind == 'bucket':
+        c.r(x + 2, y, x + 4, y, o); c.rbox(x + 1, y + 2, x + 5, y + 6, col, o); c.r(x + 2, y + 3, x + 4, y + 3, D)
+        c.p(x + 2, y + 4, L); c.p(x + 3, y + 2, GOLD); return
+    c.rbox(x, y + 2, x + 6, y + 6, col, o)
+    c.r(x + 1, y + 3, x + 5, y + 3, L); c.r(x + 1, y + 5, x + 5, y + 5, D)
+    if kind == 'quilt': c.dither(x + 1, y + 4, x + 5, y + 5, D)
+    c.p(x + 3, y + 4, GOLD); c.p(x + 1, y + 3, lt(L, 1.2))
+
+
+def _shoes(c, x, y, col, heel=False):
+    """A pair of shoes seen from above (two 2x5 lasts): lit toe, dark heel cup, optional stiletto shadow."""
+    for sx in (x, x + 3):
+        c.r(sx, y, sx + 1, y + 4, col); c.p(sx, y, lt(col, 1.4)); c.r(sx, y + 3, sx + 1, y + 4, dk(col, 0.6))
+        c.p(sx + 1, y + 1, dk(col, 0.8))
+        if heel: c.p(sx + 1, y + 5, OL)
+
+
 def handbag_case():
-    """Luxury handbag wall vitrine: lit glass cubbies each holding one leather bag, brass frame."""
+    """Luxury handbag wall vitrine: walnut carcass, brass-framed backlit cubbies with a downlight hot spot,
+    six different bag silhouettes (top-handle, chain flap, tote, clutch, quilted, bucket), drawers below."""
     c = C(32, 32)
-    c.block(0, 0, 31, 30, 2, GOLD, (52, 40, 36))
-    cols = [(150, 40, 50), (40, 36, 34), (200, 160, 110), (240, 230, 214), (60, 90, 140), (150, 110, 70)]
-    for j, y in enumerate((5, 14)):
+    c.box(0, 0, 31, 30, WALNUT)
+    c.r(1, 1, 30, 2, WALNUT_L); c.r(1, 1, 30, 1, lt(WALNUT_L, 1.15)); c.r(1, 3, 30, 3, GOLD_D)
+    slots = [('top', (160, 40, 52)), ('chain', (34, 34, 40)), ('tote', (204, 160, 108)),
+             ('clutch', (236, 224, 206)), ('quilt', (60, 92, 150)), ('bucket', (150, 104, 62))]
+    for j, y in enumerate((4, 13)):
         for i, x in enumerate((2, 12, 22)):
-            c.box(x, y, x + 8, y + 8, (250, 238, 210))
-            col = cols[(i + j * 3) % 6]
-            c.box(x + 2, y + 3, x + 6, y + 7, col); c.l(x + 3, y + 2, x + 5, y + 2, dk(col)); c.p(x + 4, y + 5, GOLD)
-    c.r(1, 23, 30, 23, GOLD_D); c.r(1, 26, 30, 28, (36, 28, 26))
+            c.r(x - 1, y, x + 8, y + 8, GOLD_D)
+            c.r(x, y + 1, x + 7, y + 7, BACKLIT_D); c.r(x, y + 1, x + 7, y + 3, BACKLIT); c.r(x + 2, y + 1, x + 5, y + 1, WHITE)
+            c.r(x, y + 7, x + 7, y + 7, GOLD)
+            kind, col = slots[i + j * 3]
+            _bag(c, x + 1, y + 1, kind, col)
+            c.p(x + 7, y + 1, WHITE); c.p(x + 6, y + 2, GLASS_L)
+    c.r(1, 22, 30, 22, GOLD)
+    c.r(1, 23, 30, 28, WALNUT_D); c.r(2, 24, 14, 27, WALNUT); c.r(17, 24, 29, 27, WALNUT)
+    c.r(2, 24, 14, 24, WALNUT_L); c.r(17, 24, 29, 24, WALNUT_L)
+    c.r(7, 26, 9, 26, GOLD); c.r(22, 26, 24, 26, GOLD)
+    c.r(1, 29, 30, 29, dk(WALNUT_D, 0.7)); c.r(1, 31, 31, 31, SH)
     return c.done()
 def watch_case():
-    """Watch counter: black lacquer case, glass top with rows of watches on cushions, brass trim."""
+    """Watch counter: brass-framed glass top over black suede, two rows of watches (gold / steel cases, leather,
+    steel and gold straps) with white dials, diagonal glass glare, black lacquer front with a brass brand plaque."""
     c = C(32, 32)
-    c.box(0, 9, 31, 21, GOLD_D); c.r(1, 10, 30, 20, (36, 34, 40))
-    for j, y in enumerate((12, 17)):
-        for x in range(3, 29, 5):
-            c.r(x, y, x + 3, y + 2, (230, 222, 210)); c.oval(x, y - 1, x + 3, y + 2, [GOLD, STEEL_L][(x + j) % 2]); c.p(x + 1, y, OL)
-    c.r(1, 10, 30, 10, (120, 120, 140))
-    c.box(0, 20, 31, 29, (30, 28, 34)); c.r(1, 21, 30, 21, GOLD); c.r(12, 24, 19, 25, GOLD_D)
-    c.r(1, 30, 31, 30, SH)
+    c.box(0, 5, 31, 19, GOLD_D)
+    c.r(1, 6, 30, 18, (40, 34, 44)); c.r(2, 7, 29, 17, (52, 46, 58))
+    straps = [(110, 66, 40), STEEL, (34, 34, 40), GOLD_D, (130, 34, 46)]
+    for j, y in enumerate((8, 13)):
+        for i, x in enumerate(range(3, 27, 6)):
+            c.r(x + 1, y - 1, x + 3, y + 5, straps[(i + j * 2) % 5]); c.p(x + 1, y - 1, lt(straps[(i + j * 2) % 5], 1.3))
+            c.oval(x, y, x + 4, y + 4, [GOLD, STEEL_L][(i + j) % 2]); c.p(x + 2, y + 2, WHITE); c.p(x + 2, y + 1, CREAM)
+            c.p(x + 3, y + 2, OL)
+    c.l(2, 17, 4, 15, GLASS_L); c.l(27, 9, 29, 7, GLASS_L)
+    c.r(1, 6, 30, 6, lt(GOLD, 1.1))
+    c.box(0, 19, 31, 29, (30, 28, 34)); c.r(1, 20, 30, 20, GOLD); c.r(1, 21, 30, 21, (58, 54, 64))
+    c.r(11, 23, 20, 26, GOLD_D); c.r(12, 24, 19, 25, (58, 54, 64)); c.r(14, 24, 17, 24, GOLD)
+    c.r(1, 28, 30, 28, (18, 16, 22)); c.r(1, 30, 31, 30, SH)
     return c.done()
 def jewelry_island():
-    """Round jewellery island: glass ring top with necklaces and rings on velvet, white pedestal."""
+    """Round jewellery island: brass-rimmed glass drum over violet velvet - three busts with gold necklaces and
+    ruby/emerald/sapphire pendants, ring cushions with sparkling stones - on a white marble pedestal with gold band."""
     c = C(32, 32)
-    c.oval(1, 6, 30, 21, OL); c.e(2, 7, 29, 20, (60, 40, 80))
-    c.e(5, 9, 26, 18, (90, 60, 120))
-    for x in range(7, 25, 4): c.p(x, 11, GOLD); c.p(x + 1, 12, GOLD); c.p(x, 15, (200, 230, 250)); c.p(x + 2, 16, RED_L)
-    c.l(9, 13, 22, 13, GOLD_D)
-    c.box(5, 18, 26, 28, WHITE); c.r(6, 19, 25, 19, WHITE_D); c.r(14, 22, 17, 25, GOLD)
-    c.r(6, 29, 26, 29, SH)
+    c.e(3, 26, 28, 31, SH)
+    c.box(6, 14, 25, 28, MARBLE)
+    c.r(7, 15, 9, 27, WHITE); c.r(21, 15, 24, 27, MARBLE_V); c.r(24, 15, 24, 27, dk(MARBLE_V, 0.88))
+    c.l(12, 18, 15, 23, MARBLE_V); c.r(7, 24, 24, 24, GOLD); c.r(7, 25, 24, 25, GOLD_D); c.r(7, 27, 24, 27, MARBLE_V)
+    c.oval(0, 1, 31, 19, GOLD_D); c.eo(1, 2, 30, 18, GOLD)
+    c.e(2, 3, 29, 17, VELVET); c.e(4, 5, 27, 15, VELVET_D)
+    for i, x in enumerate((8, 15, 22)):
+        c.r(x, 5, x + 2, 5, VELVET_L); c.r(x - 1, 6, x + 3, 9, VELVET_L); c.r(x + 3, 6, x + 3, 9, VELVET)
+        for px, py in ((-1, 6), (0, 7), (1, 8), (2, 7), (3, 6)): c.p(x + px, py, GOLD)
+        c.p(x + 1, 9, [(230, 40, 70), (40, 200, 110), (60, 120, 240)][i]); c.p(x + 1, 8, lt(GOLD, 1.2))
+    for x in (7, 12, 17, 22):
+        c.r(x, 12, x + 2, 14, VELVET_L); c.eo(x, 11, x + 2, 13, GOLD); c.p(x + 1, 10, WHITE)
+        c.p(x, 10, (200, 230, 255)); c.p(x + 2, 10, (200, 230, 255))
+    c.l(4, 9, 8, 4, GLASS_L); c.l(5, 10, 6, 9, WHITE); c.l(23, 16, 27, 12, GLASS_L)
+    return c.done()
+def luxury_island():
+    """Luxury leather-goods island (3x2): two-tier marble plinth under spotlights - top-handle and chain bags on a
+    white lacquer riser, heels, loafers and a clutch on the lower tier, warm light pools, walnut base with a gold band."""
+    c = C(48, 32)
+    c.box(0, 9, 47, 28, MARBLE)
+    c.r(1, 10, 46, 10, WHITE); c.l(3, 18, 9, 13, MARBLE_V); c.l(36, 19, 43, 12, MARBLE_V)
+    c.r(1, 20, 46, 20, GOLD); c.r(1, 21, 46, 27, WALNUT); c.r(1, 21, 46, 21, WALNUT_L); c.r(1, 27, 46, 27, WALNUT_D)
+    for x in (8, 23, 38): c.r(x, 23, x + 1, 25, GOLD_D)
+    c.r(1, 29, 47, 30, SH)
+    for x0 in (2, 35): c.e(x0, 12, x0 + 10, 19, (255, 250, 238))
+    _shoes(c, 4, 12, (190, 30, 44), heel=True); _shoes(c, 37, 12, (110, 66, 40))
+    _bag(c, 28, 12, 'clutch', (230, 210, 120))
+    c.box(13, 1, 34, 15, WHITE); c.r(14, 2, 33, 7, (252, 252, 252)); c.r(14, 8, 33, 8, WHITE_D); c.r(14, 13, 33, 14, WHITE_D)
+    c.e(14, 3, 22, 8, (255, 246, 214)); c.e(25, 3, 33, 8, (255, 246, 214))
+    _bag(c, 15, 1, 'top', (160, 40, 52)); _bag(c, 26, 1, 'chain', (34, 34, 40))
+    c.r(20, 10, 27, 12, GOLD_D); c.r(21, 11, 26, 11, GOLD)
+    return c.done()
+def glass_showcase():
+    """Jewellery vitrine counter (3x1): brass frame, glass top over violet velvet trays of rings, necklaces and pearl
+    earrings with sparkles, diagonal glare, lit glass front showing a lower shelf, black plinth."""
+    c = C(48, 32)
+    c.box(0, 3, 47, 18, GOLD_D); c.r(1, 4, 46, 4, lt(GOLD, 1.1))
+    c.r(1, 5, 46, 17, VELVET_D)
+    for x0 in (3, 18, 33): c.rbox(x0, 7, x0 + 11, 16, VELVET); c.r(x0 + 1, 7, x0 + 10, 7, VELVET_L)
+    for x in (5, 10):
+        for y in (9, 13): c.eo(x - 1, y, x + 1, y + 2, GOLD); c.p(x, y, (190, 220, 255))
+    for i, x in enumerate((20, 25)):
+        for px, py in ((0, 9), (1, 11), (2, 12), (3, 12), (4, 11), (5, 9)): c.p(x + px, py, GOLD)
+        c.p(x + 2, 13, [(230, 40, 70), (40, 200, 110)][i]); c.p(x + 3, 13, [(230, 40, 70), (40, 200, 110)][i])
+    for x in (36, 41):
+        for y in (9, 13): c.p(x, y, GOLD); c.e(x - 1, y + 1, x + 1, y + 3, (236, 232, 222)); c.p(x - 1, y + 1, WHITE)
+    c.l(2, 15, 5, 12, GLASS_L); c.l(44, 9, 46, 7, GLASS_L)
+    c.box(0, 17, 47, 28, GOLD_D)
+    c.glass(1, 18, 46, 25, (186, 206, 220))
+    for x in range(4, 44, 7): c.r(x, 22, x + 3, 24, [VELVET, (230, 220, 200), VELVET_L][x % 3]); c.p(x + 1, 21, GOLD)
+    c.r(1, 26, 46, 27, (30, 28, 34)); c.r(1, 26, 46, 26, GOLD)
+    c.r(1, 29, 47, 29, SH)
     return c.done()
 def sunglasses_stand():
     """Rotating eyewear tower: white column with rows of sunglasses and a small mirror."""
@@ -138,43 +238,78 @@ def hat_stand():
     c.oval(2, 16, 10, 21, (150, 40, 60)); c.p(6, 16, OL)
     c.oval(3, 26, 12, 30, STEEL)
     return c.done()
+def _fold(c, x, y, col):
+    """Folded knit (6x3): lit top fold, collar crease, shaded lower fold."""
+    c.r(x, y, x + 5, y + 2, col); c.r(x, y, x + 5, y, lt(col, 1.25)); c.r(x, y + 2, x + 5, y + 2, dk(col, 0.68))
+    c.r(x + 2, y + 1, x + 3, y + 1, dk(col, 0.85)); c.p(x + 5, y + 1, dk(col, 0.8))
 def scarf_table():
-    """Folded-knit table: low wooden table with stacks of folded sweaters and scarves in many colours."""
+    """Two-tier walnut nesting table: folded sweaters in stacks on the high back tier and the low front tier,
+    turned legs, an acrylic price card."""
     c = C(32, 32)
-    c.box(0, 10, 31, 22, WOOD_D); c.r(1, 11, 30, 21, WOOD_L)
-    cols = [(220, 80, 80), (240, 200, 120), (90, 130, 200), (120, 170, 110), (200, 200, 200), (150, 90, 160)]
-    for i, x in enumerate(range(2, 28, 5)):
-        for j in range(3):
-            col = cols[(i + j) % 6]; y = 17 - j * 2
-            c.box(x, y, x + 4, y + 3, col); c.r(x + 1, y + 1, x + 3, y + 1, lt(col, 1.25))
-    c.box(0, 21, 31, 28, WOOD); c.r(1, 22, 30, 22, WOOD_D); c.r(2, 24, 29, 24, WOOD_L)
+    cols = [(220, 80, 80), (240, 200, 120), (90, 130, 200), (120, 170, 110), (226, 222, 214), (150, 90, 160)]
+    c.box(3, 3, 28, 12, WALNUT); c.r(4, 4, 27, 8, WALNUT_L); c.r(4, 4, 27, 4, lt(WALNUT_L, 1.15)); c.r(4, 10, 27, 11, WALNUT_D)
+    for x in (4, 26): c.r(x, 12, x + 1, 15, WALNUT_D)
+    for i, x in enumerate((5, 12, 19)):
+        for j in range(2): _fold(c, x, 5 - j * 2, cols[(i + j) % 6])
+    c.box(0, 13, 31, 25, WALNUT); c.r(1, 14, 30, 21, WOOD_L); c.r(1, 14, 30, 14, lt(WOOD_L, 1.12))
+    c.r(1, 22, 30, 22, WALNUT_D); c.r(1, 23, 30, 24, WALNUT)
+    for x in (1, 29): c.r(x, 25, x + 1, 28, WALNUT_D)
+    for i, x in enumerate((2, 9, 16, 23)):
+        for j in range(3): _fold(c, x, 18 - j * 2, cols[(i + j + 2) % 6])
+    c.box(27, 1, 30, 6, WHITE); c.r(28, 3, 29, 3, RED)
     c.r(1, 29, 31, 29, SH)
     return c.done()
 
 
 # ------------------------------------------------------------------ cosmetics
 def cosmetic_island():
-    """Cosmetics tester island: white counter, tilted tester tray of lipsticks and palettes, oval mirror on a stand."""
+    """Cosmetics island: two oval mirror stations ringed by warm LED glow, rounded white-lacquer counter with a black
+    tester tray of gold-cased lipsticks, a pan palette, compacts and a tester bottle; blush brand front with gold logo."""
     c = C(32, 32)
-    c.oval(10, 0, 21, 9, OL); c.e(11, 1, 20, 8, GLASS); c.p(13, 3, WHITE); c.r(15, 9, 16, 11, STEEL_D)
-    c.box(0, 10, 31, 20, (240, 236, 232)); c.r(1, 11, 30, 19, (250, 248, 246))
-    for x in range(2, 14, 2): c.r(x, 13, x, 17, [RED, PINK_D, (200, 60, 90), (180, 40, 60)][x % 4]); c.p(x, 13, BLACK)
-    for x in (18, 24): c.box(x, 13, x + 5, 17, BLACK); c.r(x + 1, 14, x + 2, 15, PINK); c.r(x + 3, 14, x + 4, 15, (220, 180, 140))
-    c.box(0, 19, 31, 28, WHITE); c.r(1, 20, 30, 20, WHITE_D); c.r(3, 23, 28, 23, PINK)
-    c.r(1, 29, 31, 29, SH)
+    for x0 in (3, 19):
+        c.oval(x0, 0, x0 + 9, 9, (255, 232, 180)); c.e(x0 + 2, 2, x0 + 7, 7, GLASS); c.e(x0 + 2, 5, x0 + 7, 7, GLASS_D)
+        c.l(x0 + 3, 5, x0 + 5, 3, WHITE); c.r(x0 + 4, 9, x0 + 5, 11, GOLD_D)
+    c.rbox(0, 19, 31, 29, (248, 222, 230)); c.r(1, 27, 30, 27, (255, 196, 216)); c.r(1, 28, 30, 28, dk((248, 222, 230), 0.8))
+    c.eo(12, 22, 15, 25, GOLD); c.eo(15, 22, 18, 25, GOLD)
+    c.rbox(0, 10, 31, 21, (252, 250, 248)); c.r(2, 11, 29, 11, WHITE); c.r(1, 20, 30, 20, WHITE_D)
+    c.rbox(2, 12, 14, 19, (40, 36, 44))
+    for i, x in enumerate(range(3, 14, 2)):
+        col = [RED, (230, 90, 120), (190, 40, 70), (240, 140, 120), (150, 30, 50), (220, 60, 90)][i]
+        c.r(x, 14, x, 16, col); c.p(x, 14, lt(col, 1.4)); c.r(x, 17, x, 18, GOLD)
+    c.rbox(16, 12, 24, 19, BLACK)
+    for i, (x, y) in enumerate((x, y) for y in (13, 16) for x in (17, 19, 21)):
+        col = [(230, 180, 150), (200, 120, 110), (150, 90, 80), (240, 200, 180), (180, 140, 190), (120, 90, 70)][i]
+        c.r(x, y, x + 1, y + 1, col); c.p(x, y, lt(col, 1.25))
+    c.oval(25, 12, 29, 16, PINK_D); c.p(26, 13, WHITE)
+    c.r(27, 17, 28, 19, (250, 210, 220)); c.p(27, 16, GOLD); c.p(27, 17, WHITE)
+    c.r(1, 30, 31, 30, SH)
     return c.done()
+def _flacon(c, x, yb, kind, col):
+    """Perfume bottle standing on y=yb: square, round or tall silhouette, gold or black cap, glass glint."""
+    if kind == 'square':
+        c.r(x, yb - 4, x + 2, yb, col); c.r(x + 2, yb - 4, x + 2, yb, dk(col, 0.8)); c.r(x + 1, yb - 6, x + 1, yb - 5, GOLD)
+    elif kind == 'round':
+        c.e(x, yb - 3, x + 2, yb, col); c.p(x + 1, yb - 4, OL); c.p(x + 1, yb - 5, BLACK)
+    else:
+        c.r(x, yb - 6, x + 1, yb, col); c.r(x + 1, yb - 6, x + 1, yb, dk(col, 0.8)); c.p(x, yb - 7, GOLD); c.p(x + 1, yb - 7, GOLD_D)
+    c.p(x, yb - 3, WHITE)
 def perfume_wall():
-    """Perfume brand wall: glossy backlit shelves of perfume bottles in amber, rose and clear glass."""
+    """Perfume brand wall: cream lacquer wall with six backlit arched niches, mirrored gold shelf lips and pairs of
+    square, round and tall flacons in amber, rose, clear and violet glass; drawer plinth below."""
     c = C(32, 32)
-    c.block(0, 0, 31, 30, 2, (230, 220, 200), (250, 244, 232))
-    cols = [(230, 170, 60), PINK, (200, 230, 246), (170, 120, 200), (240, 220, 140)]
-    for j, y in enumerate((5, 12, 19)):
-        c.r(1, y - 1, 30, y + 5, (252, 248, 236))
-        for i, x in enumerate(range(3, 28, 4)):
-            col = cols[(i + j) % 5]
-            c.r(x, y + 2, x + 2, y + 5, col); c.r(x + 1, y, x + 1, y + 1, GOLD); c.p(x, y + 2, WHITE)
-        c.r(1, y + 6, 30, y + 6, GOLD_D)
-    c.r(1, 26, 30, 28, (210, 196, 170))
+    c.box(0, 0, 31, 30, (232, 222, 204))
+    c.r(1, 1, 30, 2, (250, 244, 232)); c.r(1, 3, 30, 3, GOLD_D)
+    cols = [(232, 170, 60), PINK, (206, 232, 246), (170, 120, 200), (240, 220, 140), (200, 80, 90)]
+    kinds = ['square', 'tall', 'round']
+    for j, y in enumerate((5, 15)):
+        for i, x in enumerate((2, 12, 22)):
+            c.r(x + 1, y, x + 6, y, BACKLIT_D); c.r(x, y + 1, x + 7, y + 8, BACKLIT_D)
+            c.r(x + 1, y + 1, x + 6, y + 4, BACKLIT); c.r(x + 2, y + 1, x + 5, y + 1, WHITE)
+            c.r(x, y + 9, x + 7, y + 9, GOLD)
+            k = i + j * 3
+            _flacon(c, x + 1, y + 8, kinds[k % 3], cols[k % 6]); _flacon(c, x + 4, y + 8, kinds[(k + 1) % 3], cols[(k + 2) % 6])
+    c.r(1, 25, 30, 25, GOLD_D); c.r(1, 26, 30, 28, (210, 196, 170)); c.r(14, 27, 17, 27, GOLD)
+    c.r(1, 29, 30, 29, dk((210, 196, 170), 0.75)); c.r(1, 31, 31, 31, SH)
     return c.done()
 def skincare_counter():
     """Skincare brand counter: mint counter with jars, pumps and a lit brand panel."""
@@ -271,27 +406,45 @@ def info_desk():
     for x in range(8, 42, 8): c.l(x, 21, x, 25, WHITE_D)
     c.r(2, 29, 47, 29, SH)
     return c.done()
-def escalator_entry(up=True):
-    """Escalator landing seen 3/4 from the floor: black handrails on glass balustrades, steel comb plate and an
-    up (green) / down (orange) arrow sign at the mouth."""
+def escalator_pair(up=True):
+    """Grand escalator (3x3, wall opening): dark soffit with an LED direction sign, glass balustrades in stainless
+    frames under black rubber handrails with amber skirt light, grooved steel treads that deepen toward the floor
+    with yellow demarcation edges, a yellow comb plate and a diamond-plate landing with a painted arrow."""
     c = C(48, 48)
-    arrow = (60, 190, 90) if up else (240, 140, 40)
-    c.box(0, 4, 9, 45, (196, 224, 236)); c.r(1, 5, 8, 6, BLACK)                      # west balustrade
-    c.box(38, 4, 47, 45, (196, 224, 236)); c.r(39, 5, 46, 6, BLACK)
-    c.r(1, 6, 2, 44, BLACK); c.r(45, 6, 46, 44, BLACK)
-    c.box(9, 2, 38, 45, (60, 64, 76))
-    for y in range(4, 34, 3): c.r(10, y, 37, y, (110, 116, 128)); c.r(10, y + 1, 37, y + 1, (84, 90, 102))
-    c.r(10, 34, 37, 37, (220, 200, 60))                                              # yellow edge plate
-    c.r(10, 38, 37, 44, STEEL); for_x = range(11, 37, 2)
-    for x in for_x: c.p(x, 39, STEEL_L)
-    c.box(17, 14, 30, 27, arrow)
-    if up:
-        for i in range(5): c.r(23 - i, 17 + i, 24 + i, 17 + i, WHITE)
-        c.r(22, 22, 25, 25, WHITE)
-    else:
-        for i in range(5): c.r(23 - i, 24 - i, 24 + i, 24 - i, WHITE)
-        c.r(22, 16, 25, 19, WHITE)
-    c.r(1, 46, 47, 46, SH)
+    sign = (70, 210, 110) if up else (246, 150, 50)
+    c.box(0, 0, 47, 7, (44, 48, 58)); c.r(1, 1, 46, 1, (84, 90, 104))
+    c.box(16, 1, 31, 6, BLACK); c.r(17, 2, 30, 5, (18, 20, 26))
+    for i in range(3):
+        if up: c.r(23 - i, 2 + i, 24 + i, 2 + i, sign)
+        else: c.r(23 - i, 5 - i, 24 + i, 5 - i, sign)
+    c.r(19, 3, 20, 4, dk(sign, 0.6)); c.r(27, 3, 28, 4, dk(sign, 0.6))
+    c.r(10, 8, 37, 37, (34, 36, 44))
+    y, n = 8, 0
+    while y < 37:
+        h = 2 + (y - 8) // 9
+        f = 0.55 + 0.45 * (y - 8) / 29 if up else 1.0 - 0.35 * (y - 8) / 29
+        tread, groove = dk(STEEL_L, f), dk(STEEL_D, f)
+        y1 = min(36, y + h - 1)
+        c.r(11, y, 36, y1, tread)
+        for gx in range(12, 36, 2): c.r(gx, y, gx, y1, groove)
+        c.r(11, y, 11, y1, dk(YELLOW, f)); c.r(36, y, 36, y1, dk(YELLOW, f))
+        if up: c.r(11, y1 + 1, 36, y1 + 1, (26, 28, 34))
+        else: c.r(11, y, 36, y, dk(STEEL_L, min(1.0, f * 1.15)))
+        y = y1 + 2; n += 1
+    for x0, x1, rail, led in ((0, 9, 8, 10), (38, 47, 38, 37)):
+        c.box(x0, 6, x1, 40, STEEL_D)
+        c.glass(x0 + 1, 8, x1 - 1, 38, (168, 206, 224))
+        c.r(rail, 6, rail + 1, 40, BLACK); c.r(rail, 6, rail, 40, (70, 72, 84))
+        c.r(led, 8, led, 37, (250, 182, 64))
+    c.rbox(7, 37, 11, 42, BLACK); c.rbox(36, 37, 40, 42, BLACK); c.p(8, 38, (80, 82, 94)); c.p(37, 38, (80, 82, 94))
+    c.r(11, 38, 36, 38, YELLOW)
+    for x in range(11, 37, 2): c.p(x, 39, YELLOW_D)
+    c.r(11, 40, 36, 40, STEEL_D)
+    c.box(0, 41, 47, 46, STEEL); c.dither(1, 42, 46, 45, STEEL_L)
+    for i in range(3):
+        if up: c.r(23 - i, 42 + i, 24 + i, 42 + i, sign)
+        else: c.r(23 - i, 44 - i, 24 + i, 44 - i, sign)
+    c.r(1, 47, 47, 47, SH)
     return c.done()
 def bag_hook_wall():
     """Accessory wall: pegboard with belts, small leather goods and wallets hung on hooks."""

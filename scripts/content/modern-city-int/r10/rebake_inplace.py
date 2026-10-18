@@ -9,6 +9,15 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE); sys.path.insert(0, os.path.join(HERE, '..', 'r11'))
 from PIL import Image
 import bake_r10, bake_r10b, bake_r11
+import dept as D
+
+# Older department-store sprites (not in any R10/R11 PROPS list) redrawn with the same kit: (id, kind, h, art).
+LEGACY = [
+    ('escalator-pair-up', 'wall', 1, lambda: D.escalator_pair(True)),
+    ('escalator-pair-down', 'wall', 1, lambda: D.escalator_pair(False)),
+    ('dept-luxury-island', 'floor', 2, D.luxury_island),
+    ('dept-glass-showcase', 'floor', 1, D.glass_showcase),
+]
 
 REPO = HERE.rsplit('/scripts/', 1)[0]
 PNG = f'{REPO}/public/assets/modern-city/modern-city-chipset.png'
@@ -26,7 +35,8 @@ def main():
     rs = json.load(open(RS))
     blank = Image.new('RGBA', (16, 16), (0, 0, 0, 0))
     lost, changed = [], 0
-    lists = [(bake_r10.PROPS, bake_r10.GOODS), (bake_r10b.PROPS, []), (bake_r11.PROPS, [])]
+    legacy = [(pid, kind, h, None, None, None, None, fn) for pid, kind, h, fn in LEGACY]
+    lists = [(bake_r10.PROPS, bake_r10.GOODS), (bake_r10b.PROPS, []), (bake_r11.PROPS, []), (legacy, [])]
     for props, goods in lists:
         for p in props:
             pid, kind, h, fn = p[0], p[1], p[2], p[7]
