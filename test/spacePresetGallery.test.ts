@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { getTool } from "@/editor/tools/toolRegistry";
 import { composeSpaceFromBlueprint, matchSpaceBlueprint, SPACE_BLUEPRINTS } from "@/editor/spacePresetCatalog";
 import { createBlankProject } from "@/project/defaults";
+import { sanitizeRiversidePromenade } from "@/project/startRoutePaint";
 
 const signature = (project: ReturnType<typeof composeSpaceFromBlueprint>["project"], mapId: string): string => {
   const m = project.maps[mapId]!;
@@ -41,5 +42,17 @@ describe("AI 참고 청사진", () => {
     expect(res.summary).toContain("왕성 알현실");
     expect(res.summary).toContain("동선");
     expect(project.maps[mapId]!.tilesetId).toBe("atlas_biome_interior");
+  });
+
+  it("강변 산책로 강물은 석축 테두리 오토타일이고, 갓 깐 산책로를 정비가 다시 칠하지 않는다", () => {
+    const { project, mapId } = composeSpaceFromBlueprint(createBlankProject(), { request: "강변 산책로", seed: 7 });
+    const map = project.maps[mapId]!;
+    const river = project.tilesets[map.tilesetId]!.autotileGroups!.find((g) => g.id === "riverside-pond-water")!;
+    const waterCells = map.lowerTiles.filter((t) => river.memberTileIds.includes(t));
+    expect(waterCells.length / map.lowerTiles.length).toBeGreaterThanOrEqual(0.15);
+    expect(new Set(waterCells).size).toBeGreaterThan(3);
+    const before = map.lowerTiles.join(",");
+    expect(sanitizeRiversidePromenade(project, map)).toBe(false);
+    expect(map.lowerTiles.join(",")).toBe(before);
   });
 });

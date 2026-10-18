@@ -7,7 +7,7 @@
 //   들어가 코드가 한 번도 읽지 않았다 — 조수는 「보는 맵의 칩셋 계열」을 따르므로 버들항 빈 맵에서는 현대 거리도 로마풍으로 깔렸다.
 // 이 모듈은 칩셋마다 길·마당 재료 이름을 두고, 길 모양은 기획 구상(startVariety)에서 가져온다.
 
-import { createModernCityTileset } from "@/project/defaults/modernCity";
+import { createJpCityTileset } from "@/project/defaults/jpCity";
 import { translateTiles } from "@/project/objectStamp";
 import { isWaterfrontRouteName, type StartPlan } from "@/project/startVariety";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
@@ -145,17 +145,28 @@ export function ensureRiversideHeight(project: Project, map: GameMap, minHeight 
   return deltaY;
 }
 
-/** modern_campus 칩셋에 물 칸이 없으면 modern_city 의 연못 물(23번)을 이식해 반환한다. */
-export function ensureCampusWaterTile(project: Project, ts: TilesetDef): number {
-  const existing = ts.tileMeta?.findIndex((m) => m && (!m.defaultLayer || m.defaultLayer === "lower") && (m.role === "water" || (m.tags ?? []).includes("water") || m.label === "연못 물"));
-  if (existing !== undefined && existing >= 0) return existing;
-  const src = project.tilesets.modern_city ?? createModernCityTileset();
-  const grafted = translateTiles(src, ts, [23]);
-  const wid = grafted.map.get(23) ?? 6;
-  if (ts.tileGroups && !ts.tileGroups.some((g) => g.id === "mc:water")) {
-    ts.tileGroups.push({ id: "mc:water", name: "연못 물", role: "terrain", description: "강변·연못 물면", placementRules: "강변·연못에 깐다", defaultLayer: "lower", tileIds: [wid] });
-  }
-  return wid;
+const RIVER_GROUP_ID = "riverside-pond-water";
+/** 8방 오토타일 비트(autotileEngine AUTOTILE_DIR 순서)와 이웃 칸 오프셋. */
+const RIVER_NEIGHBORS: readonly (readonly [number, number, number])[] = [
+  [1, 0, -1], [2, 1, 0], [4, 0, 1], [8, -1, 0], [16, 1, -1], [32, 1, 1], [64, -1, 1], [128, -1, -1],
+];
+
+/**
+ * 강물 8방 오토타일(jp_city 「연못」 47모양: 석축 테두리 + 물결)을 현대 칩셋에 이식해 마스크→타일 표를 돌려준다.
+ * modern_city 연못 물(23번)은 칸마다 아래쪽 포말 줄이 있어 여러 줄을 쌓으면 자로 그은 가로줄이 됐다(2026-10-18 VQA: 「강이 엉망진창」).
+ */
+export function ensureRiverWaterAutotile(project: Project, ts: TilesetDef): Readonly<Record<string, number>> {
+  const own = ts.autotileGroups?.find((g) => g.id === RIVER_GROUP_ID);
+  if (own) return own.variantMap;
+  const jp = project.tilesets.jp_city ?? createJpCityTileset();
+  const pond = jp.autotileGroups?.find((g) => g.id === "jp-water-pond") ?? createJpCityTileset().autotileGroups!.find((g) => g.id === "jp-water-pond")!;
+  const { map } = translateTiles(jp, ts, pond.memberTileIds);
+  const t = (n: number) => map.get(n) ?? n;
+  const variantMap: Record<string, number> = {};
+  for (const [mask, tile] of Object.entries(pond.variantMap)) variantMap[mask] = t(tile);
+  const members = pond.memberTileIds.map(t);
+  ts.autotileGroups = [...(ts.autotileGroups ?? []), { ...structuredClone(pond), id: RIVER_GROUP_ID, name: "강·연못 물(석축 테두리)", memberTileIds: members, connectTileIds: members, variantMap }];
+  return variantMap;
 }
 
 /** 구조 키트 하나를 위층에 찍는다. 발자국이 맵 밖이거나 이미 찬 칸(이벤트 주변·앞서 찍은 키트)에 걸치면 찍지 않는다. 찍으면 발자국을 occupied 에 넣는다. */
@@ -191,11 +202,11 @@ function stampRiversideKit(
 /** 칩셋별 강변 바닥 재료(lower 타일 번호)와 소품 키트 이름. 캠퍼스 칩셋에 없는 키트는 조용히 건너뛴다. */
 const RIVERSIDE_PALETTES = {
   modern_city: {
-    embankment: 10, grass: 17, grassShade: 18, flower: 19, walkTop: 10, walk: 7, walkAlt: 8, walkBot: 9, paved: 7, pavedAlt: 8, path: 22,
+    grass: 17, grassShade: 18, flower: 19, walkTop: 20, walk: 7, walkAlt: 8, walkBot: 20, paved: 7, pavedAlt: 8, path: 22,
     trees: ["mc-prop-ginkgo-a", "mc-prop-keyaki-a", "mc-prop-blossom-a"], lamp: "mc-prop-park-lamp-a", bench: "mc-prop-bench-c", planter: "mc-prop-planter-b",
   },
   modern_campus: {
-    embankment: 6, grass: 1, grassShade: 4, flower: 3, walkTop: 7, walk: 8, walkAlt: 9, walkBot: 7, paved: 8, pavedAlt: 9, path: 9,
+    grass: 1, grassShade: 4, flower: 3, walkTop: 7, walk: 8, walkAlt: 9, walkBot: 7, paved: 8, pavedAlt: 9, path: 9,
     trees: ["mc-tree-zelkova", "mc-tree-ginkgo"], lamp: "mc-lamp", bench: "mc-bench", planter: "mc-planter",
   },
 } as const;
@@ -256,7 +267,8 @@ export function paintRiversidePromenade(
 
   const isCampus = map.tilesetId === "modern_campus";
   const P = RIVERSIDE_PALETTES[isCampus ? "modern_campus" : "modern_city"];
-  const water = isCampus && ts ? ensureCampusWaterTile(project, ts) : 23;
+  if (!ts) throw new Error(`강변 산책로: 맵 ${map.id} 의 타일셋 ${map.tilesetId} 이 프로젝트에 없습니다`);
+  const river = ensureRiverWaterAutotile(project, ts);
 
   // 강 굽이: 사인 두 개를 겹친 깊이(3..base+3), 이웃 열과 한 줄 넘게 차이 나지 않게 다듬는다.
   // 진폭 1.1 → 1.9 도 위쪽 띠로 보였다(2026-10-18 VQA 4회차) — 맵을 0.75 바퀴 가로지르는 긴 굽이(진폭 2.6)로 강이 비스듬히 흐르게 한다.
@@ -267,6 +279,11 @@ export function paintRiversidePromenade(
     depth.push(Math.max(3, Math.min(baseWaterDepth + 3, Math.round(v))));
   }
   for (let x = 1; x < W; x++) depth[x] = Math.max(depth[x - 1]! - 1, Math.min(depth[x - 1]! + 1, depth[x]!));
+  // 열마다 한 줄씩 오르내리면 둑이 계단처럼 깨져 보였다(2026-10-18 사용자 반려 「강은 엉망진창」) — 한 깊이를 최소 4열 이어 긴 둑선이 완만히 꺾이게 한다.
+  for (let x = 1, run = 1; x < W; x++) {
+    if (depth[x] !== depth[x - 1] && run < 4) { depth[x] = depth[x - 1]!; run++; }
+    else run = depth[x] === depth[x - 1] ? run + 1 : 1;
+  }
   const deepest = Math.max(...depth);
   // 제방 아래 잔디 띠는 나무(3줄)가 들어가도록 최소 3줄, 남쪽에 최소 2줄 남긴다.
   const walkTopY = Math.min(H - 6, deepest + 4);
@@ -293,19 +310,23 @@ export function paintRiversidePromenade(
     }
   }
 
-  // 바닥: 물 · 제방 · 잔디 띠(물가 화단·그늘) · 산책로 4줄 · 남쪽 잔디(아래에서 구획을 덧칠한다).
+  // 바닥: 물(석축 테두리 오토타일) · 물가 화단·잔디 띠 · 산책로 4줄 · 남쪽 잔디(아래에서 구획을 덧칠한다).
+  // 부두는 가장 깊고 평평한 둑(세 열 같은 깊이)에서 물 쪽으로 4줄 - 얕은 굽이에 서면 맵 위 가장자리에 붙은 돌덩이로 보였다(VQA 14회차).
   const pierW = 3;
-  const pierX = Math.max(2, Math.min(W - pierW - 2, Math.floor(W * (0.2 + rnd() * 0.6))));
+  let pierX = Math.max(2, Math.floor(W * 0.2));
+  for (let x = Math.max(2, Math.floor(W * 0.2)); x <= W - pierW - 2; x++) {
+    if (depth[x] !== depth[x + 1] || depth[x] !== depth[x + 2]) continue;
+    if (depth[x]! > depth[pierX]! || (depth[x] === depth[pierX] && rnd() < 0.3)) pierX = x;
+  }
   for (let y = 0; y < H; y++) {
     for (let x = 0; x < W; x++) {
       const idx = y * W + x;
       const d = depth[x]!;
-      const onPier = x >= pierX && x < pierX + pierW && y >= d - 2 && y <= d;
+      const onPier = depth[pierX]! >= 5 && x >= pierX && x < pierX + pierW && y >= d - 3 && y <= d;
       let tile: number;
       if (onPier) tile = x === pierX + 1 ? P.pavedAlt : P.paved;
-      else if (y < d) tile = water;
-      else if (y === d) tile = P.embankment;
-      else if (y < walkTopY) tile = y === d + 1 && (x + d) % 5 <= 1 ? P.flower : y === walkTopY - 1 && (x * 3 + y) % 7 <= 1 ? P.grassShade : P.grass;
+      else if (y < d) tile = -2;
+      else if (y < walkTopY) tile = y === d && (x + d) % 5 <= 1 ? P.flower : y === walkTopY - 1 && (x * 3 + y) % 7 <= 1 ? P.grassShade : P.grass;
       else if (y === walkTopY) tile = P.walkTop;
       else if (y === walkMidY1 || y === walkMidY2) tile = (x * 2 + y) % 5 === 1 ? P.walkAlt : P.walk;
       else if (y === walkBotY) tile = P.walkBot;
@@ -315,6 +336,20 @@ export function paintRiversidePromenade(
       map.upperTiles[idx] = -1;
       map.upperOverlayTiles[idx] = -1;
     }
+  }
+  // 물 칸은 8방 이웃(맵 밖 북쪽·좌우는 물로 이어짐, 부두는 뭍)으로 테두리 모양을 고른다.
+  const wet = map.lowerTiles.map((t) => t === -2);
+  const isWater = (x: number, y: number): boolean => {
+    if (y < 0) return true;
+    if (y >= H) return false;
+    const cx = Math.max(0, Math.min(W - 1, x));
+    return wet[y * W + cx]!;
+  };
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    if (!wet[y * W + x]) continue;
+    let mask = 0;
+    for (const [bit, dx, dy] of RIVER_NEIGHBORS) if (isWater(x + dx, y + dy)) mask |= bit;
+    map.lowerTiles[y * W + x] = river[String(mask)] ?? river[String(mask & 15)] ?? river["255"]!;
   }
   const paint = (x0: number, y0: number, x1: number, y1: number, tile: number): void => {
     for (let y = Math.max(0, y0); y <= Math.min(H - 1, y1); y++) for (let x = Math.max(0, x0); x <= Math.min(W - 1, x1); x++) map.lowerTiles[y * W + x] = tile;
@@ -374,7 +409,7 @@ export function paintRiversidePromenade(
   }
   // 산책로 4줄과 부두는 비워 둔다(걷는 길).
   for (let y = walkTopY; y <= walkBotY; y++) for (let x = 0; x < W; x++) occupied.add(y * W + x);
-  for (let x = pierX; x < pierX + pierW; x++) for (let y = depth[x]! - 2; y <= depth[x]!; y++) occupied.add(y * W + x);
+  if (depth[pierX]! >= 5) for (let x = pierX; x < pierX + pierW; x++) for (let y = depth[x]! - 3; y <= depth[x]!; y++) occupied.add(y * W + x);
 
   // 물가 띠: 가로수(나무 3줄이 제방 아래 잔디에 들어가는 자리) 사이사이 가로등, 산책로 쪽 벤치.
   const treeStep = 6 + Math.floor(rnd() * 2);
@@ -444,7 +479,7 @@ export function paintRiversidePromenade(
  * 강변·호숫가·수변 이름이 붙은 야외 길 맵이:
  * - 높이가 15 미만이거나
  * - 물 줄이 3줄 미만(예: y=0 한 줄 실개천)이거나
- * - 공원·보도 줄에 3×2 벽돌 섬(20·21번)이 찍혀 보도를 끊고 있으면
+ * - 공원·보도 줄에 3×2 벽돌 섬(20·21번)이 찍혀 보도를 끊고 있으면(산책로 위·아래 연석 줄처럼 한 줄 전체가 벽돌이면 섬이 아니다)
  * 강변 산책로 표준 레이아웃(4줄 강물 + 석축 제방 + 연속 보도 + 5~6칸 간격 소품)으로 정비한다.
  */
 export function sanitizeRiversidePromenade(project: Project, map: GameMap): boolean {
@@ -452,22 +487,25 @@ export function sanitizeRiversidePromenade(project: Project, map: GameMap): bool
   // 「강변」 이름 맵에 키트를 찍을 때마다 맨 위 줄을 물로 덮어 건물을 지웠다(2026-10-18 R5 강변 거리 VQA) — 그 칩셋은 손대지 않는다.
   if (map.tilesetId !== "modern_city" && map.tilesetId !== "modern_campus") return false;
   const W = map.width, H = map.height;
+  const meta = project.tilesets[map.tilesetId]?.tileMeta;
+  // 강물은 칸 설명(role·태그 water — 이식한 연못 오토타일 포함)이나 예전 물 칸 번호로 센다.
+  const isWater = (t: number): boolean => t === 23 || t === 849 || t === 32 || (t >= 0 && (meta?.[t]?.role === "water" || meta?.[t]?.tags?.includes("water") === true));
   let waterCells = 0;
   let row0Water = 0;
   const waterRows = new Set<number>();
   let hasBrickIslandOrCut = false;
   for (let y = 0; y < H; y++) {
+    let brick = 0;
     for (let x = 0; x < W; x++) {
       const t = map.lowerTiles[y * W + x] ?? -1;
-      if (t === 23 || t === 849 || t === 32) {
+      if (isWater(t)) {
         waterCells++;
         waterRows.add(y);
         if (y === 0) row0Water++;
       }
-      if (map.tilesetId === "modern_city" && (t === 20 || t === 21) && y >= 3) {
-        hasBrickIslandOrCut = true;
-      }
+      if (t === 20 || t === 21) brick++;
     }
+    if (map.tilesetId === "modern_city" && y >= 3 && brick > 0 && brick < W) hasBrickIslandOrCut = true;
   }
   const isRiversideStrip = isWaterfrontRouteName(map.name) || (map.id === "map_segment_route" && row0Water >= Math.ceil(W * 0.5));
   if (!isRiversideStrip) return false;

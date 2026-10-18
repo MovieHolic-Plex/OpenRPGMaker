@@ -174,14 +174,14 @@ export const SPACE_BLUEPRINTS: readonly SpaceBlueprint[] = [
     engine: { kind: "hand_interior", program: "smithy" },
   },
   {
-    id: "fantasy-throne", category: "fantasy_murim_dungeon", name: "왕성 알현실", tilesetId: "atlas_biome_interior", width: 41, height: 22,
+    id: "fantasy-throne", category: "fantasy_murim_dungeon", name: "왕성 알현실", tilesetId: "atlas_biome_interior", width: 43, height: 33,
     keywords: /알현실|왕좌|옥좌|왕성|궁전|throne|palace/iu,
     guide: {
-      zones: "알현실 45% · 어전 회의실 27% · 왕실 도서관 또는 무기고 27%",
+      zones: "세로로 아주 긴 알현 회랑 40% (정문→왕좌 28~36줄) · 양 윙 위·가운데·아래 세 방씩: 어전 회의실·보물고·근위대 대기실 / 도서관 또는 무기고·왕실 예배당·접견 대기실",
       focal: "대리석 단상 위 왕좌, 뒤 벽 태피스트리와 왕실 깃발",
-      clusters: "단상 양옆 화로·근위 갑옷 · 긴 회의 탁자+의자+작전 지도 · 대칭 서가+열람 책상 또는 무기 거치대",
-      paths: "정문→단상 3칸 붉은 융단, 양 윙 바닥 깔개",
-      rhythm: "융단 바로 옆(중심 ±3) 쌍기둥 3줄 간격, 기둥 바깥 화로·갑옷 교대, 높은 스테인드글라스",
+      clusters: "단상 양옆 화로·근위 갑옷 · 긴 회의 탁자+의자+작전 지도 · 왕관 단상+보물 더미 · 제단+장의자 · 침상+작전 탁자 · 응접 소파+다과 탁자",
+      paths: "정문→단상 3칸 융단이 회랑 끝까지, 양 윙 바닥 깔개",
+      rhythm: "융단 바로 옆(중심 ±3) 쌍기둥 3줄 간격, 기둥 바깥 화로·갑옷 교대, 바깥 통로 신하석, 높은 스테인드글라스",
     },
     engine: { kind: "hand_interior", program: "throne" },
   },
@@ -315,10 +315,16 @@ export function composeSpaceFromBlueprintOnDraft(draft: Project, mapId: MapId, o
       // 요청 문구가 기후·물가를 말하면 그 theme, 아니면 씨앗. form·terrain 은 엔진이 그 theme 에 허용하는 것만 고른다
       // (씨앗 7 이 snow + riverbank 를 골라 시공이 터졌다 — 2026-10-18 VQA 4회차).
       const theme = /눈|설원|겨울|snow/iu.test(options.request) ? "snow" : /바다|포구|항구|해안|coast|harbou?r/iu.test(options.request) ? "coast" : /강가|강변|river/iu.test(options.request) ? "river" : /도시|성곽|city/iu.test(options.request) ? "city" : pick(e.themes, 0);
-      const villageArgs = theme === "city" ? {} : {
-        form: pick(e.forms.filter((f) => allowedVillageForms(theme).includes(f)), 1),
-        terrain: pick(e.terrains.filter((t) => allowedVillageTerrains(theme).includes(t)), 2),
-      };
+      // 형태도 요청을 먼저 읽는다. 흩어진(scatter) 마을은 56×44 맵에 집 한 줄만 서고 남쪽 45% 가 빈 설원이 됐다
+      // (2026-10-18 사용자 반려 「눈 덮인 마을은 엉망진창」) — 요청이 외딴·흩어진 마을을 말할 때만 고른다.
+      const askedForm = /광장|plaza/iu.test(options.request) ? "plaza" : /거리|상점가|street/iu.test(options.request) ? "street" : /흩어진|외딴|산골|scatter/iu.test(options.request) ? "scatter" : /강둑|물가|riverbank/iu.test(options.request) ? "riverbank" : undefined;
+      const villageArgs = theme === "city" ? {} : (() => {
+        const allowedForms = e.forms.filter((f) => allowedVillageForms(theme).includes(f));
+        return {
+          form: askedForm && allowedForms.includes(askedForm) ? askedForm : pick(allowedForms.filter((f) => f !== "scatter"), 1),
+          terrain: pick(e.terrains.filter((t) => allowedVillageTerrains(theme).includes(t)), 2),
+        };
+      })();
       summary = runTool(draft, "author_beodeul_town", { mapId, name, width: w, height: h, theme, ...villageArgs, seed });
       break;
     }
