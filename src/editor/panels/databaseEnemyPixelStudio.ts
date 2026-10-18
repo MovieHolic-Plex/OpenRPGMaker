@@ -13,6 +13,8 @@ import {
   MONSTER_WEAPON_LABELS,
   MONSTER_WEAPONS,
   MonsterPixelRecipeError,
+  normalizeMonsterArchetype,
+  resolveMonsterPalettePreset,
   type MonsterArchetype,
   type MonsterPixelRecipe,
   type MonsterPixelSheet,
@@ -27,6 +29,7 @@ import {
   isAuthoredMonsterAsset,
   writeAuthoredMonsterAssets,
 } from "@/editor/tools/enemyPixelSheetTools";
+import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import { store } from "@/project/store";
 import type { EnemyRecord } from "@/project/types";
 import { el } from "@/util/dom";
@@ -109,6 +112,7 @@ type StudioSession = {
   form?: { recipe: MonsterPixelRecipe; skillSlug: string; actions: boolean };
   draft?: StudioDraft;
   applied?: string;
+  savedUrl?: string;
 };
 /**
  * 자료집 본문은 store 가 바뀔 때마다(이름 커밋·AI 도구·적용 자체) 탭을 통째로 다시 그린다.
@@ -147,8 +151,17 @@ export function renderEnemyPixelStudio(record: EnemyRecord): HTMLElement {
     const live = currentEnemy(record);
     const project = store.getCurrent();
     const authoredId = live.monsterResourceId && isAuthoredMonsterAsset(project, live.monsterResourceId) ? live.monsterResourceId : undefined;
-    const saved = authoredId ? project.assets.uploaded[authoredId]!.meta.pixelEnemySheet : undefined;
+    const currentAsset = authoredId ? project.assets.uploaded[authoredId] : undefined;
+    const saved = currentAsset?.meta.pixelEnemySheet;
+    const currentAssetUrl = currentAsset ? uploadedAssetUrl(currentAsset) : undefined;
+    if (currentAssetUrl && session.savedUrl !== currentAssetUrl) {
+      session.savedUrl = currentAssetUrl;
+      session.form = undefined;
+      session.draft = undefined;
+      session.applied = authoredId;
+    }
     const prior = (saved?.recipe ?? {}) as Partial<MonsterPixelRecipe>;
+    const presetColors = resolveMonsterPalettePreset(prior.palette);
 
     const form: StudioForm = {
       archetype: el("select", { dataset: { testid: "db-pixel-studio-archetype" }, children: MONSTER_ARCHETYPES.map((id) => option(id, MONSTER_ARCHETYPE_LABELS[id])) }),
@@ -177,15 +190,15 @@ export function renderEnemyPixelStudio(record: EnemyRecord): HTMLElement {
       form.horns.checked = archetype === "winged-fiend" || archetype === "dragon-boss";
     };
     const kept = session.form;
-    const initial = kept?.recipe.archetype ?? (prior.archetype && MONSTER_ARCHETYPES.includes(prior.archetype) ? prior.archetype : "beast");
+    const initial = normalizeMonsterArchetype(kept?.recipe.archetype ?? prior.archetype) ?? "beast";
     form.archetype.value = initial;
     applyArchetypeDefaults(initial);
     if (prior.weapon) form.weapon.value = prior.weapon;
     if (prior.cell) form.cell.value = String(prior.cell);
-    if (prior.motion) form.motion.value = prior.motion;
-    if (prior.primaryColor) form.primary.value = prior.primaryColor;
-    if (prior.secondaryColor) form.secondary.value = prior.secondaryColor;
-    if (prior.accentColor) form.accent.value = prior.accentColor;
+    if (prior.motion) form.motion.value = prior.motion === "cast" ? "shoot" : prior.motion;
+    if (prior.primaryColor ?? presetColors?.primaryColor) form.primary.value = prior.primaryColor ?? presetColors!.primaryColor;
+    if (prior.secondaryColor ?? presetColors?.secondaryColor) form.secondary.value = prior.secondaryColor ?? presetColors!.secondaryColor;
+    if (prior.accentColor ?? presetColors?.accentColor) form.accent.value = prior.accentColor ?? presetColors!.accentColor;
     if (prior.spikes !== undefined) form.spikes.checked = prior.spikes;
     if (prior.horns !== undefined) form.horns.checked = prior.horns;
     if (saved?.skillSlug) form.skill.value = saved.skillSlug;
@@ -195,7 +208,7 @@ export function renderEnemyPixelStudio(record: EnemyRecord): HTMLElement {
       const { recipe } = kept;
       form.weapon.value = recipe.weapon ?? form.weapon.value;
       form.cell.value = String(recipe.cell);
-      form.motion.value = recipe.motion ?? form.motion.value;
+      form.motion.value = recipe.motion === "cast" ? "shoot" : (recipe.motion ?? form.motion.value);
       form.primary.value = recipe.primaryColor ?? form.primary.value;
       form.secondary.value = recipe.secondaryColor ?? form.secondary.value;
       form.accent.value = recipe.accentColor ?? form.accent.value;
