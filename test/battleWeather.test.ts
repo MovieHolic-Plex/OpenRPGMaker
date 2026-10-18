@@ -43,7 +43,7 @@ describe("weather effects", () => {
     expect(weatherResidualDamage(undefined, 160, ["normal"])).toBe(0);
   });
   it("uses the right josa in the residual line", () => {
-    expect(weatherResidualLine("sandstorm", "숯비늘")).toBe("숯비늘은 모래바람에 휩싸였다!");
-    expect(weatherResidualLine("hail", "바람삐")).toBe("바람삐는 싸라기눈에 맞았다!");
+    expect(weatherResidualLine("sandstorm", "파이린")).toBe("파이린은 모래바람에 휩싸였다!");
+    expect(weatherResidualLine("hail", "피오르")).toBe("피오르는 싸라기눈에 맞았다!");
   });
 });

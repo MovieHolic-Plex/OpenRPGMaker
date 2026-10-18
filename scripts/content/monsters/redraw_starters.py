@@ -1,4 +1,4 @@
-"""첫 지역 스타터 세 종(새싹토 leafling · 숯비늘 sparkit · 여울랑 aqualing)의 64×64 전투 앞·뒷모습을 손 도트로 그린다.
+"""첫 지역 스타터 세 종(토리프 leafling · 파이린 sparkit · 아쿠링 aqualing)의 64×64 전투 앞·뒷모습을 손 도트로 그린다.
 
 사용자 반려(c-1792294716295, 2026-10-18): 생성 그림을 64칸으로 줄인 하네스 스프라이트는 외곽선이 점선처럼 끊기고
 잎맥이 계단으로 깨지고 발이 한 덩어리로 뭉개졌다. 축소·추적 없이 부위 마스크를 직접 래스터화한다.
@@ -135,19 +135,24 @@ class Sprite:
         self.fill(m, color)
 
     def eye(self, x, y, w, h, dark, white, iris=None):
-        """둥근 눈: w×h 어두운 덩어리(모서리 깎음) + 왼쪽 위 2×2 흰 반짝임 + 오른쪽 아래 홍채 한 줄."""
+        """둥근 눈: w×h 어두운 덩어리(모서리 깎음) + 왼쪽 위 흰 반짝임 + 오른쪽 아래 홍채.
+        양쪽 눈이 같은 방향(왼쪽 위)을 보도록 작은 눈(w=4)도 왼쪽 위(xx=1, yy=1..2)에 반짝임을 둔다."""
         for yy in range(h):
             for xx in range(w):
                 corner = (yy in (0, h - 1)) and (xx in (0, w - 1))
                 if not corner:
                     self.px(x + xx, y + yy, dark)
         if iris:
-            for xx in range(1, w - 1):
+            ix0 = 2 if w >= 5 else 1
+            for xx in range(ix0, w - 1):
                 self.px(x + xx, y + h - 2, iris)
-        for yy in (1, 2):
-            for xx in (1, 2) if w >= 4 else (0, 1):
-                self.px(x + xx, y + yy, white)
-
+        if w >= 5:
+            for yy in (1, 2):
+                for xx in (1, 2):
+                    self.px(x + xx, y + yy, white)
+        else:
+            self.px(x + 1, y + 1, white)
+            self.px(x + 1, y + 2, white)
     def image(self):
         """잉크를 가로 가운데로 옮긴다(정수 칸 이동 — 화소는 그대로)."""
         cols = np.nonzero(self.a.any(axis=0))[0]
@@ -172,7 +177,7 @@ def toes(sp, paw_m, color, gaps=2):
         sp.px(x, bottom - 1, color)
 
 
-# ── 새싹토 (leafling) ───────────────────────────────────────
+# ── 토리프 (leafling) ───────────────────────────────────────
 
 LEAF_INK = (30, 44, 26)
 FUR = ((72, 128, 60), (112, 172, 78), (160, 210, 108))
@@ -180,7 +185,7 @@ LEAF = ((64, 138, 42), (122, 194, 60), (184, 230, 96))
 VEIN = (50, 106, 34)
 CREAM = ((206, 192, 146), (244, 236, 200), (255, 252, 232))
 ACORN = ((100, 58, 28), (150, 94, 46), (204, 144, 78))
-EYE_D, EYE_W, EYE_I = (40, 28, 26), (255, 255, 255), (112, 72, 42)
+EYE_D, EYE_W, EYE_I = (40, 28, 26), (255, 255, 255), (76, 48, 28)
 BLUSH = (238, 150, 138)
 
 
@@ -218,15 +223,16 @@ def leafling_front():
     sp.part(ell((25, 48), 6, 5) | pol([(20, 51), (23, 55), (25, 51), (28, 55), (30, 50)]), CREAM)
     leaf_part(sp, (18, 30), (7, 25), (9, 10), 12)  # 왼쪽 잎 귀
     leaf_part(sp, (28, 28), (38, 23), (43, 10), 12)  # 오른쪽 잎 귀
-    head = sp.part(ell((23, 38), 11, 9.5) | ell((14, 41), 4.5, 4), FUR, spot=ell((19, 33), 3, 1.5))
-    acorn_cap(sp, (24, 29), 7, 4)
-    sp.eye(15, 36, 4, 5, EYE_D, EYE_W, EYE_I)
-    sp.eye(24, 35, 5, 6, EYE_D, EYE_W, EYE_I)
-    sp.px(10, 40, LEAF_INK)
-    sp.px(10, 41, LEAF_INK)
-    for x, y in ((13, 44), (14, 45), (15, 45), (16, 44)):
+    head = sp.part(ell((22, 39), 11.5, 9.5) | ell((16, 42), 5.5, 4.5), FUR, spot=ell((19, 33), 3, 1.5))
+    sp.fill(tidy(head & ell((18, 46), 6.5, 3)) & head, CREAM[1])
+    acorn_cap(sp, (23, 29), 7.5, 4)
+    sp.eye(13, 38, 4, 5, EYE_D, EYE_W, EYE_I)
+    sp.eye(21, 38, 5, 6, EYE_D, EYE_W, EYE_I)
+    sp.px(17, 42, LEAF_INK)
+    sp.px(18, 42, LEAF_INK)
+    for x, y in ((16, 44), (17, 45), (18, 45), (19, 45), (20, 44)):
         sp.px(x, y, LEAF_INK)
-    for x in (26, 27, 28):
+    for x in (11, 12, 26, 27):
         sp.px(x, 43, BLUSH)
     return sp.image()
 
@@ -249,7 +255,7 @@ def leafling_back():
     return sp.image()
 
 
-# ── 숯비늘 (sparkit) ─────────────────────────────────────────
+# ── 파이린 (sparkit) ─────────────────────────────────────────
 
 FIRE_INK = (44, 22, 18)
 EMBER = ((198, 84, 34), (238, 128, 48), (255, 176, 88))
@@ -302,17 +308,18 @@ def sparkit_front():
     toes(sp, hind & (rows >= 59), FIRE_INK)
     toes(sp, front & (rows >= 59), FIRE_INK)
     sp.part(ell((28, 52), 7, 4), BELLY)
-    head = sp.part(ell((22, 39), 12, 10) | ell((12, 42), 4, 4.5), EMBER, spot=ell((18, 33), 4, 1.5))
-    sp.fill(tidy(head & ell((14, 46), 8, 4)) & head, BELLY[1])
-    sp.eye(14, 36, 4, 5, F_EYE_D, (255, 255, 255), F_EYE_I)
-    sp.eye(23, 35, 5, 6, F_EYE_D, (255, 255, 255), F_EYE_I)
-    sp.px(9, 41, FIRE_INK)
-    for x, y in ((11, 45), (12, 46), (13, 46), (14, 46), (15, 45)):
+    head = sp.part(ell((22, 39), 12, 9.5) | ell((16, 42), 6, 4.5), EMBER, spot=ell((18, 33), 4, 1.5))
+    sp.fill(tidy(head & ell((19, 46), 7.5, 3.5)) & head, BELLY[1])
+    sp.eye(13, 38, 4, 5, F_EYE_D, (255, 255, 255), F_EYE_I)
+    sp.eye(21, 38, 5, 6, F_EYE_D, (255, 255, 255), F_EYE_I)
+    sp.px(17, 42, FIRE_INK)
+    sp.px(18, 42, FIRE_INK)
+    for x, y in ((16, 44), (17, 45), (18, 45), (19, 45), (20, 45), (21, 44)):
         sp.px(x, y, FIRE_INK)
-    for x in (27, 28, 29):
+    for x in (11, 12, 26, 27):
         sp.px(x, 43, (250, 104, 78))
-    sp.line([(26, 30), (27, 28)], STRIPE, clip=head)
-    sp.line([(30, 31), (32, 29)], STRIPE, clip=head)
+    sp.line([(25, 30), (26, 28)], STRIPE, clip=head)
+    sp.line([(29, 31), (31, 29)], STRIPE, clip=head)
     return sp.image()
 
 
@@ -336,13 +343,13 @@ def sparkit_back():
     return sp.image()
 
 
-# ── 여울랑 (aqualing) ───────────────────────────────────────
+# ── 아쿠링 (aqualing) ───────────────────────────────────────
 
 WATER_INK = (22, 34, 70)
 BLUE = ((70, 132, 206), (110, 172, 236), (168, 214, 250))
 PALE = ((206, 216, 222), (240, 244, 236), (255, 255, 250))
 GILL = ((214, 92, 104), (244, 138, 140), (255, 192, 186))
-W_EYE_D, W_EYE_I = (24, 30, 56), (56, 84, 140)
+W_EYE_D, W_EYE_I = (24, 30, 56), (38, 56, 98)
 
 
 def gill(sp, base, tip, width):
@@ -378,14 +385,14 @@ def aqualing_front():
     gill(sp, (31, 33), (44, 21), 7)  # 가까운 쪽 아가미 셋
     gill(sp, (33, 37), (48, 33), 7)
     gill(sp, (32, 41), (45, 46), 6)
-    head = sp.part(ell((21, 40), 13, 10), BLUE, spot=ell((16, 34), 4, 1.5))
-    sp.fill(tidy(head & ell((16, 47), 8, 3.5)) & head, PALE[1])
-    sp.eye(12, 37, 4, 5, W_EYE_D, (255, 255, 255), W_EYE_I)
-    sp.eye(22, 36, 5, 6, W_EYE_D, (255, 255, 255), W_EYE_I)
-    for x, y in ((12, 44), (13, 45), (14, 45), (15, 45), (16, 45), (17, 44)):
+    head = sp.part(ell((21, 40), 12.5, 9.5), BLUE, spot=ell((16, 34), 4, 1.5))
+    sp.fill(tidy(head & ell((19, 47), 7.5, 3)) & head, PALE[1])
+    sp.eye(13, 38, 4, 5, W_EYE_D, (255, 255, 255), W_EYE_I)
+    sp.eye(22, 38, 5, 6, W_EYE_D, (255, 255, 255), W_EYE_I)
+    for x, y in ((17, 44), (18, 45), (19, 45), (20, 45), (21, 44)):
         sp.px(x, y, WATER_INK)
-    for x in (25, 26, 27):
-        sp.px(x, 44, (238, 150, 160))
+    for x in (11, 12, 27, 28):
+        sp.px(x, 43, (238, 150, 160))
     return sp.image()
 
 

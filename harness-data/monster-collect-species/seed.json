@@ -109,7 +109,7 @@
   "species": [
     {
       "id": "sparkit",
-      "name": "스파킷",
+      "name": "파이린",
       "types": [
         "fire"
       ],
@@ -126,7 +126,7 @@
     },
     {
       "id": "aqualing",
-      "name": "아쿠아링",
+      "name": "아쿠링",
       "types": [
         "water"
       ],
@@ -140,7 +140,7 @@
     },
     {
       "id": "leafling",
-      "name": "리프링",
+      "name": "토리프",
       "types": [
         "grass"
       ],
@@ -160,7 +160,7 @@
     },
     {
       "id": "gustchick",
-      "name": "바람삐",
+      "name": "피오르",
       "types": [
         "normal",
         "flying"
@@ -174,7 +174,7 @@
     },
     {
       "id": "pipbug",
-      "name": "씨앗충",
+      "name": "포포비",
       "types": [
         "bug"
       ],
@@ -187,7 +187,7 @@
     },
     {
       "id": "wickworm",
-      "name": "심지충",
+      "name": "루미링",
       "types": [
         "bug"
       ],
@@ -200,7 +200,7 @@
     },
     {
       "id": "rootpig",
-      "name": "뿌리꿀",
+      "name": "도란돈",
       "types": [
         "ground"
       ],
@@ -214,7 +214,7 @@
     },
     {
       "id": "frondhare",
-      "name": "잎귀토",
+      "name": "실바리온",
       "types": [
         "grass"
       ],
@@ -228,7 +228,7 @@
     },
     {
       "id": "kilnclaw",
-      "name": "가마발",
+      "name": "볼케이건",
       "types": [
         "fire",
         "fighting"
@@ -243,7 +243,7 @@
     },
     {
       "id": "brookraft",
-      "name": "뗏목랑",
+      "name": "마린웨이",
       "types": [
         "water"
       ],
@@ -257,7 +257,7 @@
     },
     {
       "id": "coralpin",
-      "name": "산호집",
+      "name": "산호크랩",
       "types": [
         "water"
       ],
@@ -271,7 +271,7 @@
     },
     {
       "id": "curlfin",
-      "name": "돌돌해마",
+      "name": "해마린",
       "types": [
         "dragon",
         "water"
@@ -285,7 +285,7 @@
     },
     {
       "id": "zaptoe",
-      "name": "톡발도마",
+      "name": "볼트온",
       "types": [
         "electric"
       ],
@@ -298,7 +298,7 @@
     },
     {
       "id": "pebblekid",
-      "name": "조약양",
+      "name": "로키온",
       "types": [
         "rock"
       ],
@@ -311,7 +311,7 @@
     },
     {
       "id": "gritnose",
-      "name": "자갈코",
+      "name": "두더링",
       "types": [
         "ground"
       ],
@@ -324,7 +324,7 @@
     },
     {
       "id": "podback",
-      "name": "콩등충",
+      "name": "베르카부",
       "types": [
         "bug",
         "grass"
@@ -339,7 +339,7 @@
     },
     {
       "id": "ribbonwing",
-      "name": "리본날개",
+      "name": "윈드테일",
       "types": [
         "normal",
         "flying"
@@ -354,7 +354,7 @@
     },
     {
       "id": "coilcrest",
-      "name": "코일볏",
+      "name": "코일라군",
       "types": [
         "electric"
       ],
@@ -368,7 +368,7 @@
     },
     {
       "id": "craghoof",
-      "name": "절벽굽",
+      "name": "크래그혼",
       "types": [
         "rock",
         "fighting"
@@ -383,7 +383,7 @@
     },
     {
       "id": "lanternwing",
-      "name": "등불나방",
+      "name": "랜턴모스",
       "types": [
         "bug",
         "fire"
@@ -398,7 +398,7 @@
     },
     {
       "id": "brambleboar",
-      "name": "덤불멧",
+      "name": "브램보어",
       "types": [
         "ground",
         "grass"
@@ -414,7 +414,7 @@
     },
     {
       "id": "tunnelpaw",
-      "name": "굴손",
+      "name": "몰드클로",
       "types": [
         "ground"
       ],
@@ -428,7 +428,7 @@
     },
     {
       "id": "reefguard",
-      "name": "암초방패",
+      "name": "리프가드",
       "types": [
         "water",
         "rock"
@@ -444,7 +444,7 @@
     },
     {
       "id": "brinewyrm",
-      "name": "소금비룡",
+      "name": "세이렌곤",
       "types": [
         "dragon",
         "water"
@@ -459,7 +459,7 @@
     },
     {
       "id": "grovewarden",
-      "name": "숲지기토",
+      "name": "벨데로드",
       "types": [
         "grass",
         "psychic"
@@ -474,7 +474,7 @@
     },
     {
       "id": "furnscale",
-      "name": "용광비늘",
+      "name": "마그렉스",
       "types": [
         "fire",
         "fighting"
@@ -492,7 +492,7 @@
     },
     {
       "id": "tidekeeper",
-      "name": "조수지기",
+      "name": "네레이드",
       "types": [
         "water",
         "ice"
@@ -507,7 +507,7 @@
     },
     {
       "id": "orchardant",
-      "name": "과수장수",
+      "name": "헤라크론",
       "types": [
         "bug",
         "grass"
@@ -522,7 +522,7 @@
     },
     {
       "id": "galecrest",
-      "name": "돌풍깃",
+      "name": "스톰팰콘",
       "types": [
         "normal",
         "flying"
@@ -537,7 +537,7 @@
     },
     {
       "id": "stormskink",
-      "name": "폭풍도마",
+      "name": "라이곤",
       "types": [
         "electric",
         "dragon"
@@ -552,7 +552,7 @@
     },
     {
       "id": "ridgehorn",
-      "name": "능선뿔",
+      "name": "기간트혼",
       "types": [
         "rock",
         "fighting"
@@ -567,7 +567,7 @@
     },
     {
       "id": "beaconmoth",
-      "name": "봉화나방",
+      "name": "솔라모스",
       "types": [
         "bug",
         "fire"
@@ -582,7 +582,7 @@
     },
     {
       "id": "briartusk",
-      "name": "가시엄니",
+      "name": "가이아돈",
       "types": [
         "ground",
         "grass"
@@ -598,7 +598,7 @@
     },
     {
       "id": "faultdigger",
-      "name": "단층발",
+      "name": "테라디거",
       "types": [
         "ground",
         "rock"
@@ -613,7 +613,7 @@
     },
     {
       "id": "atollclamp",
-      "name": "환초집게",
+      "name": "아톨킹",
       "types": [
         "water",
         "rock"
@@ -629,7 +629,7 @@
     },
     {
       "id": "abyssail",
-      "name": "심해돛룡",
+      "name": "레비아온",
       "types": [
         "dragon",
         "water"
@@ -644,7 +644,7 @@
     },
     {
       "id": "sandnip",
-      "name": "모래집게",
+      "name": "스콜피",
       "types": ["poison", "ground"],
       "stage": 1,
       "campaignSpeciesId": "mx_species_sandnip",
@@ -655,7 +655,7 @@
     },
     {
       "id": "dunestalk",
-      "name": "사구꼬리",
+      "name": "듄스팅어",
       "types": ["poison", "ground"],
       "stage": 2,
       "evolvesFrom": "sandnip",
@@ -667,7 +667,7 @@
     },
     {
       "id": "miragespike",
-      "name": "신기루침",
+      "name": "미라주온",
       "types": ["poison", "ground"],
       "stage": 3,
       "evolvesFrom": "dunestalk",
@@ -679,7 +679,7 @@
     },
     {
       "id": "flurrykit",
-      "name": "눈송냥",
+      "name": "설아링",
       "types": ["ice", "normal"],
       "stage": 1,
       "campaignSpeciesId": "mx_species_flurrykit",
@@ -690,7 +690,7 @@
     },
     {
       "id": "rimepelt",
-      "name": "서리털",
+      "name": "샤베펠트",
       "types": ["ice", "normal"],
       "stage": 2,
       "evolvesFrom": "flurrykit",
@@ -702,7 +702,7 @@
     },
     {
       "id": "glaciermane",
-      "name": "빙하갈기",
+      "name": "글레이팽",
       "types": ["ice", "normal"],
       "stage": 3,
       "evolvesFrom": "rimepelt",
@@ -714,7 +714,7 @@
     },
     {
       "id": "miretail",
-      "name": "늪꼬리",
+      "name": "미르핀",
       "types": ["poison", "water"],
       "stage": 1,
       "campaignSpeciesId": "mx_species_miretail",
@@ -725,7 +725,7 @@
     },
     {
       "id": "venomfrill",
-      "name": "독주름",
+      "name": "베놈프릴",
       "types": ["poison", "water"],
       "stage": 2,
       "evolvesFrom": "miretail",
@@ -737,7 +737,7 @@
     },
     {
       "id": "marshcrown",
-      "name": "습지왕관",
+      "name": "베노로드",
       "types": ["poison", "water"],
       "stage": 3,
       "evolvesFrom": "venomfrill",
@@ -749,7 +749,7 @@
     },
     {
       "id": "dozemite",
-      "name": "졸음사마",
+      "name": "몽환아",
       "types": ["psychic", "bug"],
       "stage": 1,
       "campaignSpeciesId": "mx_species_dozemite",
@@ -760,7 +760,7 @@
     },
     {
       "id": "trancescythe",
-      "name": "몽환낫",
+      "name": "문사이드",
       "types": ["psychic", "bug"],
       "stage": 2,
       "evolvesFrom": "dozemite",
@@ -772,7 +772,7 @@
     },
     {
       "id": "oraclemantis",
-      "name": "예지사마",
+      "name": "오라클온",
       "types": ["psychic", "bug"],
       "stage": 3,
       "evolvesFrom": "trancescythe",
@@ -784,7 +784,7 @@
     },
     {
       "id": "threadimp",
-      "name": "실꼬마",
+      "name": "마리오네",
       "types": ["ghost", "psychic"],
       "stage": 1,
       "campaignSpeciesId": "mx_species_threadimp",
@@ -795,7 +795,7 @@
     },
     {
       "id": "hushdoll",
-      "name": "고요인형",
+      "name": "팬텀돌",
       "types": ["ghost", "psychic"],
       "stage": 2,
       "evolvesFrom": "threadimp",
@@ -807,7 +807,7 @@
     },
     {
       "id": "veilmaster",
-      "name": "장막인형",
+      "name": "녹턴베일",
       "types": ["ghost", "psychic"],
       "stage": 3,
       "evolvesFrom": "hushdoll",
@@ -819,7 +819,7 @@
     },
     {
       "id": "reedpeep",
-      "name": "갈대삐",
+      "name": "청비오",
       "types": ["flying", "water"],
       "stage": 1,
       "campaignSpeciesId": "mx_species_reedpeep",
@@ -830,7 +830,7 @@
     },
     {
       "id": "fenstrider",
-      "name": "습지걸음",
+      "name": "블루헤론",
       "types": ["flying", "water"],
       "stage": 2,
       "evolvesFrom": "reedpeep",
@@ -842,7 +842,7 @@
     },
     {
       "id": "mistralheron",
-      "name": "안개왜가리",
+      "name": "미스트랄",
       "types": ["flying", "water"],
       "stage": 3,
       "evolvesFrom": "fenstrider",
@@ -854,7 +854,7 @@
     },
     {
       "id": "thundercairn",
-      "name": "천뢰산양",
+      "name": "뇌제라칸",
       "types": ["electric", "rock"],
       "stage": 3,
       "campaignSpeciesId": "mx_species_thundercairn",
@@ -865,7 +865,7 @@
     },
     {
       "id": "winterquill",
-      "name": "설월학",
+      "name": "빙화세라",
       "types": ["ice", "flying"],
       "stage": 3,
       "campaignSpeciesId": "mx_species_winterquill",
@@ -876,7 +876,7 @@
     },
     {
       "id": "solmane",
-      "name": "해갈기사자",
+      "name": "솔라레온",
       "types": ["fire", "normal"],
       "stage": 3,
       "campaignSpeciesId": "mx_species_solmane",
@@ -887,7 +887,7 @@
     },
     {
       "id": "lunavane",
-      "name": "달빛가오리",
+      "name": "루나만타",
       "types": ["psychic", "water"],
       "stage": 3,
       "campaignSpeciesId": "mx_species_lunavane",
@@ -898,7 +898,7 @@
     },
     {
       "id": "relicarab",
-      "name": "유적장수",
+      "name": "스카라킹",
       "types": ["bug", "rock"],
       "stage": 3,
       "campaignSpeciesId": "mx_species_relicarab",
@@ -909,7 +909,7 @@
     },
     {
       "id": "astralhart",
-      "name": "별가지사슴",
+      "name": "아스트록",
       "types": ["grass", "ghost"],
       "stage": 3,
       "campaignSpeciesId": "mx_species_astralhart",

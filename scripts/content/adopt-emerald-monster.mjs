@@ -19,7 +19,7 @@ await withTsModule(resolve('src/project/emeraldMonsterOpening.ts'),'opening.mjs'
   {id:'emerald_starlight_welcome',shot:'dawn',text:'안녕! 나는 천문박사란다.\n여기는 사람과 몬스터가 함께 사는 별빛섬이지.'},
   {id:'emerald_starlight_route',shot:'route',text:'풀숲마다 몬스터 친구들이 숨어 있단다.\n작은 친구도 든든한 동료가 되지.'},
   {id:'emerald_starlight_beacon',shot:'lab',text:'우리 등대의 별빛은 먼 배들의 길잡이였지.\n그런데 밤막회사가 그 빛을 거둔다는구나.'},
-  {id:'emerald_starlight_starters',shot:'stage',text:'풀숲을 좋아하는 새싹토, 불을 품은 숯비늘,\n물길을 헤엄치는 여울랑. 첫 친구는 네가 고르렴.'},
+  {id:'emerald_starlight_starters',shot:'stage',text:'풀숲을 좋아하는 토리프, 불을 품은 파이린,\n물길을 헤엄치는 아쿠링. 첫 친구는 네가 고르렴.'},
   {id:'emerald_starlight_journey',shot:'gym',text:'함께 체육관에 도전해 배지를 모아 보렴.\n사라진 등대의 빛도 찾을 수 있겠지.'},
   {id:'emerald_starlight_departure',shot:'town',text:'별싹 마을 북동쪽 연구소에서 기다리마.\n너와 첫 친구의 모험을 시작하렴!'},
 ]}));

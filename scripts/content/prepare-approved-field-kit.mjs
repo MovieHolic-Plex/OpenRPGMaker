@@ -30,7 +30,7 @@ async function add(id,name,kind,file,mime,meta={}){
  const bytes=await fs.readFile(file),asset={id,name,kind,meta,dataUrl:`data:${mime};base64,${bytes.toString('base64')}`};
  project.assets.uploaded[id]=asset;cache.assets.uploaded[id]=asset;newAssets.push({id,sha256:hash(bytes),bytes:bytes.length});
 }
-await add(fieldId,'눈송냥 · 승인된 필드 보행','charset',adapter,'image/png',{width:288,height:256,frameWidth:24,frameHeight:32,frames:96,walkFrameMs:150});
+await add(fieldId,'설아링 · 승인된 필드 보행','charset',adapter,'image/png',{width:288,height:256,frameWidth:24,frameHeight:32,frames:96,walkFrameMs:150});
 // The same approved appearance also owns this species' train/follower sprite.
 project.database.monsterSpecies.find(s=>s.id==='mx_species_flurrykit').graphic.fieldGraphic={sprite:{type:'uploaded',id:fieldId},direction:'down',pattern:25,transparent:false,scale:1,scaleMode:'manual'};
 const replacements={mx_audio_town:'composed_music_fieldkit_town_v1',mx_audio_route:'composed_music_fieldkit_route_v1'};
@@ -55,7 +55,7 @@ replaceMedia(project);
 project.meta.oprnMenuSounds={cursor:'mx_fieldkit_cursor_v1',confirm:'mx_fieldkit_confirm_v1',cancel:'mx_fieldkit_cancel_v1'};
 project.system.titleScreen.sounds={...project.system.titleScreen.sounds,cursorSeResourceId:'mx_fieldkit_cursor_v1',confirmSeResourceId:'mx_fieldkit_confirm_v1',cancelSeResourceId:'mx_fieldkit_cancel_v1'};
 for(const e of project.meta.oprnFieldMenu.entries)if(e.command==='monsters')e.label='파티';
-const placements=[{mapId:'mx_map_home',x:11,y:10,body:'천문박사가 북쪽에서 데려온 눈송냥이다.\n차가운 코로 네 손을 살짝 건드렸다.'},{mapId:'mx_map_frost',x:6,y:9,body:'눈송냥이 눈 냄새를 맡으며 걷고 있다.\n작은 발자국이 뒤를 따라 이어진다.'}];
+const placements=[{mapId:'mx_map_home',x:11,y:10,body:'천문박사가 북쪽에서 데려온 설아링이다.\n차가운 코로 네 손을 살짝 건드렸다.'},{mapId:'mx_map_frost',x:6,y:9,body:'설아링이 눈 냄새를 맡으며 걷고 있다.\n작은 발자국이 뒤를 따라 이어진다.'}];
 const dirs={up:[0,-1],right:[1,0],down:[0,1],left:[-1,0]};
 await withTsModule(resolve('src/project/collision.ts'),'field-kit-passability.mjs',mod=>{
  for(const place of placements){
@@ -69,7 +69,7 @@ await withTsModule(resolve('src/project/collision.ts'),'field-kit-passability.mj
    x=nx;y=ny;
   }
   const id=map.id+'_field_flurrykit';if(map.events.some(e=>e.id===id))throw Error('Field monster already exists');
-  map.events.push({id,x:place.x,y:place.y,trigger:{kind:'action'},commands:[],pages:[{id:id+'_page',name:'눈송냥 · 산책',conditions:[],graphic:{sprite:{type:'uploaded',id:fieldId},direction:'down',pattern:25,transparent:false,scale:1,scaleMode:'manual'},trigger:{kind:'action'},priority:'same',overlapForbidden:true,animationType:'normal',movement:{type:'custom',speed:1,frequency:2,moveIntervalMs:1250,route:{repeat:true,skippable:false,moves:[...['right','down','left','up'].map(dir=>({kind:'move',dir})),{kind:'wait'}]}},commands:[{kind:'text',speaker:'눈송냥',body:place.body}]}]});
+  map.events.push({id,x:place.x,y:place.y,trigger:{kind:'action'},commands:[],pages:[{id:id+'_page',name:'설아링 · 산책',conditions:[],graphic:{sprite:{type:'uploaded',id:fieldId},direction:'down',pattern:25,transparent:false,scale:1,scaleMode:'manual'},trigger:{kind:'action'},priority:'same',overlapForbidden:true,animationType:'normal',movement:{type:'custom',speed:1,frequency:2,moveIntervalMs:1250,route:{repeat:true,skippable:false,moves:[...['right','down','left','up'].map(dir=>({kind:'move',dir})),{kind:'wait'}]}},commands:[{kind:'text',speaker:'설아링',body:place.body}]}]});
  }
 });
 if(!isDeepStrictEqual(before.session,project.session)||!isDeepStrictEqual(before.startPos,project.startPos)||before.startMapId!==project.startMapId||!isDeepStrictEqual(before.system.opening,project.system.opening))throw Error('Unexpected session/start/opening change');

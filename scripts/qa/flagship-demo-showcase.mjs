@@ -402,7 +402,7 @@ await withTsModule("src/project/flagship/index.ts", "flagship-showcase.mjs", asy
       );
       await page.waitForTimeout(500);
 
-      // Step 1: Talk to Professor (`ev_emerald_prof_starter`) -> Choose `새싹토` + Follower Companion + Vine Gate `changeTile`
+      // Step 1: Talk to Professor (`ev_emerald_prof_starter`) -> Choose `토리프` + Follower Companion + Vine Gate `changeTile`
       await page.evaluate(() => window.__oprnInput.face("up"));
       await page.evaluate(() => {
         void window.__oprnInput.action();
