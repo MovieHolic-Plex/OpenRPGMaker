@@ -1,0 +1,21 @@
+{
+ "count_before": 11748,
+ "count_after": 12263,
+ "owned_cells": 515,
+ "strips": 38,
+ "kits": [
+  "mc-anim-signal-ew",
+  "mc-anim-ped-signal-ew",
+  "mc-anim-signal-ns",
+  "mc-anim-ped-signal-ns",
+  "mc-anim-rail-crossing-a",
+  "mc-anim-rail-crossing-b",
+  "mc-anim-arrow-board-r",
+  "mc-anim-arrow-board-l",
+  "mc-prop-taxi-stand-a"
+ ],
+ "sheet": [
+  768,
+  4096
+ ]
+}

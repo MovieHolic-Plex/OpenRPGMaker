@@ -415,8 +415,9 @@ export function composeModernCityStreet(spec: MCStreetSpec, pal: MCPalette): MCS
     const big = BIG_STREET_TREES.filter((id) => b.pal.kit(id));
     if (!(big.length && b.prop(pick(r, big), xx + 9, yy - 3, ["walk", "road"]))) b.prop(pick(r, trees), xx + 10, yy - 2, ["walk"]);
   }
-  // 교차로 모서리 신호등(남쪽 두 모서리 발밑 = 교차로 맨 아래 보도 줄)
-  for (const yy of hz) for (const xx of vt) { b.prop("mc-prop-signal-a", xx + 1, yy + 9, ["walk", "road"]); b.prop("mc-prop-ped-signal-g-a", xx + 10, yy + 9, ["walk", "road"]); }
+  // 교차로 모서리 신호등(남쪽 두 모서리 발밑 = 교차로 맨 아래 보도 줄). 움직이는 키트라 시뮬레이션 신호 주기(TRANSIT_SIGNAL)와 같이 바뀐다:
+  // 차량 신호는 남쪽을 보고 서서 북쪽행(남북) 차로용, 보행자 신호는 남쪽 횡단보도(남북 길을 가로지른다 = 동서 차량과 함께 건넌다)용.
+  for (const yy of hz) for (const xx of vt) { b.prop("mc-anim-signal-ns", xx + 1, yy + 9, ["walk", "road"]); b.prop("mc-anim-ped-signal-ew", xx + 10, yy + 9, ["walk", "road"]); }
   // 지하철 입구 하나 — 남는 띠·공원 가장자리·건물 사이 넓은 틈 중 3×3 이 비는 곳
   for (let tries = 0; tries < 200; tries++) {
     const x = Math.floor(r() * (W - 3)), yy = Math.floor(r() * (H - 3));

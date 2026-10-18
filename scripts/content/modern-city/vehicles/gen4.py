@@ -720,6 +720,78 @@ def bus_ns(sp, view, ph=0, brake=False, sig=None, open_=False):
     return c.finish((4, 27, 78, 79))
 
 
+# ------------------------------------------------------------------ delivery scooter with rider (L=2: 32x32 every direction)
+BOX = ['#4a2a20', '#70402f', '#8b4f3f', '#a35f4c', '#b27361']      # delivery box, read off the chipset's mc-veh-scooter-* kits
+SKIN = ['#b27361', '#d6a483']
+
+
+def scooter_side(sp, ph=0, brake=False, sig=None, open_=False):
+    c = Cv(32, 32); T = R[sp['ramp']]; J = R[sp['jacket']]
+    c.oy = -BOB[ph]
+    # delivery box on the rear rack: lit top plane, front face, latch
+    c.R(2, 7, 10, 10, BOX[2]); c.HL(2, 7, 10, BOX[4]); c.R(2, 8, 10, 2, BOX[3]); c.HL(2, 16, 10, BOX[0])
+    c.VL(2, 8, 8, BOX[3]); c.VL(11, 8, 8, BOX[1]); c.HL(3, 12, 8, BOX[1]); c.R(6, 13, 2, 1, CHR[1])
+    c.R(3, 17, 9, 1, CHR[0])                                                  # rack
+    # rear body cowl (under the seat), floorboard, front leg shield + nose
+    c.R(3, 18, 13, 5, T[3]); c.HL(3, 18, 13, T[5]); c.HL(4, 22, 12, T[1]); c.VL(3, 19, 3, T[4])
+    c.R(14, 22, 7, 2, T[2]); c.HL(14, 22, 7, T[4])
+    c.R(20, 12, 4, 12, T[3]); c.VL(20, 12, 12, T[4]); c.VL(23, 13, 10, T[1]); c.HL(21, 12, 2, T[5])
+    c.R(24, 14, 3, 7, T[2]); c.VL(26, 15, 5, T[1]); c.P(24, 14, T[4])
+    c.R(26, 15, 1, 2, HEAD[1]); c.P(26, 17, AMB[sig == 'R'][sig == 'R'])
+    tl = TAIL[brake]; c.R(2, 18, 1, 2, tl[1] if brake else tl[0]); c.P(2, 20, AMB[sig == 'R'][sig == 'R'])
+    c.R(12, 17, 7, 1, INK2); c.HL(12, 16, 7, '#2a2c34')                        # seat
+    # rider: leg down to the floorboard, torso leaning to the bars, arm, helmet + visor
+    c.R(13, 14, 4, 3, J[1]); c.R(16, 17, 3, 5, J[0]); c.R(17, 21, 3, 1, INK2)
+    c.R(12, 7, 6, 8, J[2]); c.VL(12, 7, 8, J[4]); c.HL(13, 7, 4, J[4]); c.VL(17, 8, 6, J[1])
+    c.R(17, 9, 4, 2, J[3]); c.P(21, 10, SKIN[0]); c.P(21, 9, SKIN[1])
+    c.R(21, 8, 2, 1, INK2); c.P(22, 9, CHR[1])                                 # handlebar + mirror stalk
+    c.R(13, 1, 6, 6, '#e4e9e8'); c.HL(14, 0, 4, '#e4e9e8'); c.HL(13, 6, 6, '#a1a3ac'); c.VL(13, 2, 4, '#ffffff')
+    c.R(17, 3, 3, 2, G[1]); c.P(18, 3, G[4]); c.R(14, 6, 3, 1, J[0])
+    if sig == 'L': c.P(22, 7, AMB[True][1]); c.P(3, 6, AMB[True][1])
+    c.oy = 0
+    for x in (7, 24):
+        side_wheel(c, x, 27, ph, r=3)
+    c.R(22, 23, 4, 1, T[1])                                                    # front fender over the wheel
+    return c.finish((4, 27, 31, 31))
+
+
+def scooter_ns(sp, view, ph=0, brake=False, sig=None, open_=False):
+    """32x32: a 10px-wide scooter + rider seen from behind (up) or from the front (down), centred in the 2-tile lane."""
+    c = Cv(32, 32); T = R[sp['ramp']]; J = R[sp['jacket']]; down = view == 'down'
+    left_on, right_on = (sig == 'R', sig == 'L') if down else (sig == 'L', sig == 'R')
+    for y in (2, 25):                                                          # far tyre pokes out at the top, near tyre under the body
+        c.R(14, y, 4, 5, TIRE); c.HL(14, y + 1 + ph % 2, 4, TIRE2); c.HL(14, y + 3, 4, TIRE2 if ph % 2 == 0 else TIRE)
+    c.oy = -BOB[ph]
+    if down:
+        # far end: delivery box top plane (seen past the rider), then rider, bars, leg shield, nose + headlamp
+        c.R(10, 5, 12, 7, BOX[3]); c.HL(10, 5, 12, BOX[4]); c.VL(10, 5, 7, BOX[4]); c.VL(21, 5, 7, BOX[1]); c.HL(10, 11, 12, BOX[0])
+        c.R(12, 12, 8, 3, T[3]); c.HL(12, 12, 8, T[4])                          # seat cowl
+        c.R(11, 10, 10, 7, J[2]); c.VL(11, 10, 7, J[4]); c.VL(20, 10, 7, J[1]); c.HL(12, 10, 8, J[3])   # shoulders / chest
+        c.R(12, 4, 8, 7, '#e4e9e8'); c.HL(13, 3, 6, '#e4e9e8'); c.VL(12, 5, 5, '#ffffff'); c.VL(19, 5, 5, '#a1a3ac')
+        c.R(13, 7, 6, 3, G[1]); c.HL(13, 7, 6, G[3]); c.P(14, 8, G[4])           # visor facing the viewer
+        c.R(7, 16, 18, 2, INK2); c.HL(8, 16, 16, CHR[1])                        # handlebar
+        c.R(6, 16, 2, 2, SKIN[0]); c.R(24, 16, 2, 2, SKIN[0]); c.P(6, 16, SKIN[1]); c.P(24, 16, SKIN[1])
+        c.P(5, 17, AMB[left_on][left_on]); c.P(26, 17, AMB[right_on][right_on])
+        c.R(12, 18, 8, 7, T[3]); c.VL(12, 18, 7, T[5]); c.VL(19, 18, 7, T[1]); c.HL(13, 18, 6, T[4])
+        c.R(14, 19, 4, 2, HEAD[1]); c.HL(14, 20, 4, HEAD[0]); c.HL(13, 24, 6, T[1])
+        c.R(10, 21, 2, 3, J[1]); c.R(20, 21, 2, 3, J[1])                        # knees beside the shield
+    else:
+        # far end: front shield + bars, then rider's back, box (top + back face) at the near end with tail lamp
+        c.R(12, 6, 8, 4, T[3]); c.HL(12, 6, 8, T[5]); c.VL(19, 6, 4, T[1])
+        c.R(7, 8, 18, 2, INK2); c.HL(8, 8, 16, CHR[1])
+        c.R(6, 8, 2, 2, SKIN[0]); c.R(24, 8, 2, 2, SKIN[0])
+        c.P(5, 9, AMB[left_on][left_on]); c.P(26, 9, AMB[right_on][right_on])
+        c.R(11, 9, 10, 8, J[2]); c.VL(11, 9, 8, J[4]); c.VL(20, 9, 8, J[1]); c.HL(12, 9, 8, J[3]); c.VL(16, 11, 5, J[1])
+        c.R(12, 3, 8, 7, '#e4e9e8'); c.HL(13, 2, 6, '#e4e9e8'); c.VL(12, 4, 5, '#ffffff'); c.VL(19, 4, 5, '#a1a3ac'); c.HL(13, 9, 6, '#a1a3ac')
+        c.R(10, 17, 12, 3, BOX[3]); c.HL(10, 17, 12, BOX[4]); c.VL(10, 17, 3, BOX[4]); c.VL(21, 17, 3, BOX[2])   # box lid
+        c.R(10, 20, 12, 5, BOX[2]); c.VL(10, 20, 5, BOX[3]); c.VL(21, 20, 5, BOX[1]); c.HL(10, 24, 12, BOX[0])
+        c.HL(11, 22, 10, BOX[1]); c.R(15, 21, 2, 1, CHR[1])
+        tl = TAIL[brake]; c.R(13, 25, 6, 1, tl[1] if brake else tl[0]); c.P(12, 25, AMB[left_on][left_on]); c.P(19, 25, AMB[right_on][right_on])
+        plate(c, 14, 26, 4)
+    c.oy = 0
+    return c.finish((11, 20, 30, 31))
+
+
 # ------------------------------------------------------------------ catalogue
 SEDAN, SPORT = dict(fn='car'), dict(fn='car', sport=True)
 VEH = {
@@ -737,9 +809,10 @@ VEH = {
     'mc-veh-ambulance-a': dict(fn='box', kind='ambulance', ramp='truck', L=4),
     'mc-veh-firetruck-b': dict(fn='box', kind='fire', ramp='fire', L=4),
     'mc-veh-bus-a': dict(fn='bus', L=5),
+    'mc-veh-scooter-delivery': dict(fn='scooter', ramp='white', jacket='red', L=2),
 }
-SIDE = dict(car=car_side, van=van_side, box=box_side, bus=bus_side)
-NS = dict(car=car_ns, van=van_ns, box=box_ns, bus=bus_ns)
+SIDE = dict(car=car_side, van=van_side, box=box_side, bus=bus_side, scooter=scooter_side)
+NS = dict(car=car_ns, van=van_ns, box=box_ns, bus=bus_ns, scooter=scooter_ns)
 
 
 def frame(vid, view, ph=0, brake=False, sig=None, open_=False):

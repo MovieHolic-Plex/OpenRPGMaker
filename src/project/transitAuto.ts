@@ -117,6 +117,7 @@ export const DEFAULT_MODERN_CAR_MIX = [
   "mc-veh-sedan-a-black",
   "mc-veh-ambulance-a",
   "mc-veh-firetruck-b",
+  "mc-veh-scooter-delivery",
 ];
 
 export interface AutoTrafficOptions {
@@ -163,14 +164,14 @@ export function autoTrafficRoutes(bands: readonly RoadBand[], grid: GridLike, op
       const laneShift = shiftOf(band, dir);
       lanes.push({ id, dir, path, ...(laneShift ? { laneShift } : {}) });
       const baseMix = opts.vehicles?.length ? opts.vehicles : DEFAULT_CAR_MIX;
-      const nsMix = baseMix.filter((vid) => { const k = transitVehicle(vid)?.kind; return k === "car" || k === "taxi" || k === "kei" || vid === "mc-veh-van-a" || vid === "mc-veh-bus-a"; });
+      const nsMix = baseMix.filter((vid) => { const k = transitVehicle(vid)?.kind; return k === "car" || k === "taxi" || k === "kei" || k === "moto" || vid === "mc-veh-van-a" || vid === "mc-veh-bus-a"; });
       const laneMix = band.axis === "ns" && nsMix.length ? nsMix : baseMix;
       routes.push({ id, name: `${band.axis === "ew" ? "동서" : "남북"} 길 ${band.edge} ${({ right: "동쪽행", left: "서쪽행", down: "남쪽행", up: "북쪽행" } as const)[dir]}`, kind: "road", path, vehicles: rotate(laneMix, routes.length * 3), headwaySec: opts.headwaySec ?? 7, ...(laneShift ? { laneShift } : {}) });
     }
   }
   if (opts.includeTurns) {
     const baseMix = opts.vehicles?.length ? opts.vehicles : DEFAULT_CAR_MIX;
-    const turnMix = baseMix.filter((id) => { const k = transitVehicle(id)?.kind; return k === "car" || k === "taxi" || k === "kei" || id === "mc-veh-van-a"; });
+    const turnMix = baseMix.filter((id) => { const k = transitVehicle(id)?.kind; return k === "car" || k === "taxi" || k === "kei" || k === "moto" || id === "mc-veh-van-a"; });
     const mix = turnMix.length ? turnMix : baseMix;
     const ews = accepted.filter((b) => b.axis === "ew" && b.width >= 4);
     const nss = accepted.filter((b) => b.axis === "ns" && b.width >= 4);
