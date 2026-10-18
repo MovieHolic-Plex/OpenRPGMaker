@@ -7,14 +7,24 @@
 import json, os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE); sys.path.insert(0, os.path.join(HERE, '..', 'r11')); sys.path.insert(0, os.path.join(HERE, '..', 'r13'))
+sys.path.insert(0, os.path.join(HERE, '..', 'r14'))
 from PIL import Image
 import bake_r10, bake_r10b, bake_r11, bake_r13
 import dept as D
+import stairs as ST
 
-# Older department-store sprites (not in any R10/R11 PROPS list) redrawn with the same kit: (id, kind, h, art).
+# Older sprites (not in any R10/R11 PROPS list) redrawn with the same kit: (id, kind, h, art).
+# R14 stairs: every stair / escalator is a real 3/4 flight (stringers, handrails, treads + risers, landing opening).
 LEGACY = [
-    ('escalator-pair-up', 'wall', 1, lambda: D.escalator_pair(True)),
-    ('escalator-pair-down', 'wall', 1, lambda: D.escalator_pair(False)),
+    ('escalator-pair-up', 'wall', 1, ST.escalator_up),
+    ('escalator-pair-down', 'wall', 1, ST.escalator_down),
+    ('stairs-pair-up-stone', 'wall', 1, ST.stone_pair_up),
+    ('stairs-pair-down-stone', 'wall', 1, ST.stone_pair_down),
+    ('stairs-up-wall-wood', 'wall', 1, ST.wall_wood_up),
+    ('stairs-up-wall-stone', 'wall', 1, ST.wall_stone_up),
+    ('stairs-up-grand', 'wall', 1, ST.grand_up),
+    ('mci-stairs-up', 'wall', 1, ST.mci_up),
+    ('mci-stairs-down', 'floor', 2, ST.mci_down),
     ('dept-luxury-island', 'floor', 2, D.luxury_island),
     ('dept-glass-showcase', 'floor', 1, D.glass_showcase),
 ]
