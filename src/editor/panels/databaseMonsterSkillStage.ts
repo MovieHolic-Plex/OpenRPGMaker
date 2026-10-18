@@ -22,7 +22,7 @@ import type { SkillChoreographyRecord } from "@/project/types/database";
 // databaseSkillRetroStage 의 범위 헬퍼가 함께 부른다. 재생은 rAF 하나, 두 틱 연속 문서 밖이면 스스로 멈춘다.
 import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { charsetBattler } from "@/assets/charsetBattlers";
-import { PIXEL_ENEMY_FRAME, PIXEL_ENEMY_SHEETS, pixelEnemyCell, pixelEnemySheetUrl, type PixelEnemyCell, type PixelEnemySheet } from "@/assets/pixelEnemySheets";
+import { PIXEL_ENEMY_SHEETS, pixelEnemyCell, pixelEnemyFrame, pixelEnemySheetUrl, type PixelEnemyCell, type PixelEnemySheet, type RetroMonsterCell } from "@/assets/pixelEnemySheets";
 import type { RetroFxAnchor, RetroFxLayer } from "@/assets/retroClassSkills";
 import { RETRO_MONSTER_SKILLS, RETRO_MONSTER_SKILLSETS, retroMonsterSkill, type RetroMonsterSkill, type RetroMonsterSkillMotion } from "@/assets/retroMonsterSkills";
 import { EXTENDED_POSE_FRAME, type CastType, type ExtendedBattlerPose } from "@/battle/battlePose";
@@ -86,12 +86,12 @@ const POSE_OF: Readonly<Record<MonsterBeat, ExtendedBattlerPose>> = {
   windup: "attack_windup", move: "walk_b", attack: "attack", recover: "attack_follow", idle: "idle",
 };
 
-/** 타임라인 pose → 몬스터 시트 칸. 대기는 null(호출자가 대기 루프를 돈다). */
-export function monsterCellForPose(pose: ExtendedBattlerPose): PixelEnemyCell | null {
+/** 타임라인 pose → 몬스터 시트 칸(스킬 미리보기 전용, 런타임 retroMonsterCellForPose 와 같이 타격·방출은 skill). 대기는 null. */
+export function monsterCellForPose(pose: ExtendedBattlerPose): RetroMonsterCell | null {
   switch (pose) {
-    case "attack_windup": return "windup";
+    case "attack_windup": case "cast_charge": case "cast_raise": return "windup";
     case "walk_b": return "move";
-    case "attack": return "attack";
+    case "attack": case "attack_strike": case "cast_release": return "skill";
     case "attack_follow": return "recover";
     default: return null;
   }
@@ -496,7 +496,7 @@ export function renderMonsterSkillStage(skill: RetroMonsterSkill, name?: string,
     const programmed=track?motionPositionAt(track,now,anchors,timeline.movement?.acceleration):undefined;
     const point = programmed??monsterMovePoint(state, home, front);
     const beat = monsterCellForPose(programmed?.pose??state.pose) ?? idleCells[Math.floor(clock / (sheet?.idleFrameMs ?? 220)) % 4]!;
-    const pos = PIXEL_ENEMY_FRAME[beat];
+    const pos = pixelEnemyFrame(sheet, beat);
     monster.style.backgroundPosition = -pos.col * cell + "px " + -pos.row * cell + "px";
     // 시트 계약: 바닥 기준선 y = cell − 4.
     monster.style.left = Math.round(point.x - cell / 2) + "px";
@@ -526,7 +526,7 @@ export function renderMonsterSkillStage(skill: RetroMonsterSkill, name?: string,
       usedRoles.add(track.role);let node=extraNodes.get(track.role);if(!node){node=monster.cloneNode(false) as HTMLElement;world.append(node);extraNodes.set(track.role,node);}
       const p=motionPositionAt(track,now,anchors,timeline.movement?.acceleration);node.hidden=false;node.style.opacity=String(p.alpha);node.style.scale=p.flip?"-1 1":"";
       const summon=track.role==="summon"?partyPixelSheet("party-pixel-animal-7"):undefined,c=summon?.cell??cell;
-      const f=summon?partyPixelFrame(summon,p.pose==="attack"?"attack":"idle_a"):PIXEL_ENEMY_FRAME[monsterCellForPose(p.pose??"idle")??"idle_a"];
+      const f=summon?partyPixelFrame(summon,p.pose==="attack"?"attack":"idle_a"):pixelEnemyFrame(sheet,monsterCellForPose(p.pose??"idle")??"idle_a");
       Object.assign(node.style,{left:`${p.x-c/2}px`,top:`${p.y-c+4}px`,width:`${c}px`,height:`${c}px`,backgroundSize:`${c*3}px ${c*(summon?.rows??3)}px`,backgroundPosition:`${-f.col*c}px ${-f.row*c}px`,zIndex:"42"});
       if(summon)node.style.backgroundImage=`url("${partyPixelSheetUrl(summon)}")`;
     }

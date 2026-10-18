@@ -253,7 +253,8 @@ async function recordAll(rows, defaults) {
     if (seen.sheet !== row.resourceId) problems.push('pixel sheet not applied (' + seen.sheet + ')');
     if (String(seen.cell) !== String(row.cell)) problems.push('cell ' + seen.cell + ' != ' + row.cell);
     if (!seen.played) problems.push('monster skill player never started');
-    if (!seen.frames.includes('attack') && row.skill.motion !== 'buff') problems.push('attack cell not shown');
+    // 타격·방출 순간은 retroMonsterCellForPose → "skill" (skillCell 시트는 (0,2) 스킬 칸, 그 밖은 attack 자리 — pixelEnemyFrame).
+    if (!seen.frames.includes('skill') && row.skill.motion !== 'buff') problems.push('skill cell not shown');
     if (!seen.frames.includes('windup')) problems.push('windup cell not shown');
     const seenKeys = new Set([...seen.fx].map((k) => k.split('@')[0]));
     // 그림이 있는 레이어는 반드시 떠야 한다. 없는 그림은 레이어 노드만 빈 배경으로 뜬다(missingFx 로 따로 적는다).
