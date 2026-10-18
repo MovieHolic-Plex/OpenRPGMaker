@@ -5,9 +5,16 @@
 // 각각 있었지만, 「천년제 광장 + 가르디아 성 + 텔레포드 사건 + 펜던트 퀘스트」 같은 한 장을 묶는 길이 없었다.
 // 새 배치 규칙은 만들지 않는다 — 맵은 구성기가, 연결·착지는 create_transfer_pair/create_time_gate/author_dungeon.entrance 가,
 // 이벤트 자리는 expand_jrpg_campaign_volume 과 같은 pickSpot(지워도 길이 끊기지 않는 칸)이 고른다.
+import { normalizeAtmosphereEffects, type AtmosphereKind } from "@/project/atmosphere";
+import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { isPassable } from "@/project/collision";
+import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
-import type { GameMap, Project } from "@/project/types";
+import { questFlagIds } from "@/project/quest/questDef";
+import { EMOTE_KINDS, type EmoteKind } from "@/project/emotes";
+import type { Command, EventPage, GameEvent, GameMap, Project } from "@/project/types";
+import { heroCharacterResourceId } from "./cutsceneCharacterLock";
+import { ensureNamedSwitch } from "./flagHelpers";
 import {
   asCell, asRoom, chestLoot, edgeGate, field, houseDoors, list, mainComponent, nested, num, pickSpot, pickTroops, placeRoamer, sanitizeId, text,
   type Cell, type Room,
@@ -17,16 +24,52 @@ import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 type MapKind = { readonly scene: string } | { readonly interior: string } | { readonly dungeon: string };
 type SiteSpec = MapKind & { readonly key: string; readonly name: string; readonly from?: string };
-interface NpcSpec { readonly key: string; readonly name: string; readonly query: string; readonly lines: readonly string[]; readonly map?: string }
+/** roam = 마을을 돌아다니는 주민(random 이동). 의뢰인·조력자·동료는 제자리에 둔다. */
+interface NpcSpec { readonly key: string; readonly name: string; readonly query: string; readonly lines: readonly string[]; readonly map?: string; readonly roam?: true }
 interface MoodSpec { readonly weather?: "rain" | "snow" | "fog" | "storm"; readonly ambient?: number; readonly color?: string }
 /**
  * 맵에 세우는 장면 소품 — 공용 킷(kit:<칩셋>/<id>, 다른 칩셋 그림은 stamp_object 가 이식한다).
- * where: north·center·south = 걸음 덩이의 북쪽·가운데·남쪽, boss = 던전 보스방, rooms = 던전 방들을 돌아가며(장면 맵은 가운데).
- * light = 그 자리 광원 색(맵 분위기에 붙는다). clue = 이 소품 앞 칸을 퀘스트 단서 조사 자리로 쓴다.
+ * where: north·center·south = 걸음 덩이의 북쪽·가운데·남쪽, boss = 던전 보스방, rooms = 던전 방들을 돌아가며(장면 맵은 가운데),
+ * gate = 이 맵에서 갈래로 가는 출입구 곁(잠긴 출입구가 있으면 그 곁).
+ * light = 그 자리 광원 색(맵 분위기에 붙는다). mark = 이 소품 앞 칸에 이름을 붙여 이벤트 자리로 쓴다
+ * (clue 퀘스트 조사·퍼즐 자리, 그 밖은 장치 이름 — devices[].mark).
  */
 /** where: fair = 바깥 맵 풀밭에 걷어 낸 장터 마당 둘레, fair-north = 그 마당 북쪽 무대, fair-center = 마당 한가운데. */
-interface DressSpec { readonly object: string; readonly where: "north" | "center" | "south" | "boss" | "rooms" | "fair" | "fair-north" | "fair-center"; readonly count?: number; readonly light?: string; readonly clue?: true }
+interface DressSpec {
+  readonly object: string;
+  readonly where: "north" | "center" | "south" | "boss" | "rooms" | "gate" | "fair" | "fair-north" | "fair-center";
+  readonly count?: number; readonly light?: string; readonly mark?: string;
+}
 type Beat = Record<string, unknown>;
+/**
+ * 연출 낱말 — 퍼즐·장치 명령에 끼우는 짧은 화면·소리 효과. 컷신 컴파일러는 라벨을 한 범위에 하나만 허용해
+ * 선택지 갈래마다 다시 쓸 수 없으므로(label.duplicate) 같은 M2 명령을 직접 만든다.
+ * flash:<색> · shake:<1|3|6|10> · particles:<preset> · tint:<#hex|clear> · se:<easyrpg 효과음> · emote:<감정> · wait:<ms>
+ */
+type Fx = `${"flash" | "shake" | "particles" | "tint" | "se" | "emote" | "wait"}:${string}`;
+interface ItemSpec { readonly id: string; readonly name: string; readonly description: string }
+/** 퍼즐 한 단계 — answer 번째 보기만 다음 단계로 간다. hit = 맞힌 뒤 연출·대사, miss = 이 단계만의 틀린 답 반응. */
+interface PuzzleStage {
+  readonly prompt: string; readonly options: readonly string[]; readonly answer: number;
+  readonly hit?: { readonly lines?: readonly string[]; readonly fx?: readonly Fx[] };
+  readonly miss?: { readonly lines: readonly string[]; readonly fx?: readonly Fx[] };
+}
+/**
+ * 단서 조사 자리의 진짜 기믹 — 퀘스트 조사 단계(create_quest inspect)의 진행 페이지를 이 퍼즐로 감싼다.
+ * 모든 단계를 맞혀야 연출·보상 뒤에 원래 단서 대사와 단계 완료가 따른다. 단계가 없으면 조사만으로 보상을 준다.
+ */
+interface PuzzleSpec {
+  readonly intro: readonly string[];
+  readonly stages: readonly PuzzleStage[];
+  readonly wrong: readonly string[];
+  readonly wrongFx?: readonly Fx[];
+  readonly solvedFx: readonly Fx[];
+  readonly reward?: { readonly item?: ItemSpec; readonly gold?: number; readonly line: string };
+}
+/** 퀘스트와 따로 쓰는 장치 — 소품 앞(mark) 칸에서 조사하면 연출 + 회복. */
+interface DeviceSpec { readonly map: string; readonly mark: string; readonly name: string; readonly fx: readonly Fx[]; readonly heal?: true; readonly lines: readonly string[] }
+/** 갈래 맵으로 가는 출입구를 아이템으로 잠근다 — 아이템을 지니고 닿으면 연출과 함께 열리고, 그 뒤로는 보통 출입구다. */
+interface LockSpec { readonly site: string; readonly item: string; readonly locked: readonly string[]; readonly opened: readonly string[]; readonly fx: readonly Fx[] }
 /** 수호자 전투 — 기존 보스 트룹 이름이 장과 안 맞아(「성 경비대장」이 붉은 드래곤 트룹과 싸웠다) 장마다 제 이름·외형의 적·트룹을 만든다. */
 interface FoeSpec {
   readonly map: string; readonly name: string; readonly query: string; readonly intro: readonly string[]; readonly victory: readonly string[];
@@ -40,8 +83,15 @@ interface ChapterSpec {
   readonly hub: { readonly name: string; readonly scene: string; readonly form?: string };
   readonly sites: readonly SiteSpec[];
   readonly moods?: Readonly<Record<string, MoodSpec>>;
+  /** 맵 대기 입자(꽃잎·불씨·마력·먼지) — 날씨·조명과 겹쳐 깔린다. */
+  readonly atmosphere?: Readonly<Record<string, readonly AtmosphereKind[]>>;
   readonly dress?: Readonly<Record<string, readonly DressSpec[]>>;
   readonly npcs: readonly NpcSpec[];
+  /** 퀘스트를 보고하면 파티에 들어오는 NPC key — 그 NPC 의 그림으로 배우를 만들고, 합류 뒤 맵에서 사라진다. */
+  readonly joins?: readonly string[];
+  readonly puzzle?: PuzzleSpec;
+  readonly devices?: readonly DeviceSpec[];
+  readonly lock?: LockSpec;
   readonly quest: {
     readonly title: string;
     readonly summary: string;
@@ -57,7 +107,6 @@ interface ChapterSpec {
   readonly event: { readonly map: string; readonly title: string; readonly beats: readonly Beat[] };
   readonly gateName?: string;
 }
-
 const say = (speaker: string, line: string): Beat => ({ kind: "say", speaker, text: line });
 
 /** 장(章) 사전 — 크로노 트리거 다섯 시대 + FF6 세 고장. 맵 key 는 "hub" 또는 sites[].key. */
@@ -67,6 +116,7 @@ export const JRPG_CHAPTERS = {
     hub: { name: "트루스 마을 · 천년제 광장", scene: "beodeul_town:river", form: "plaza" },
     sites: [{ key: "castle", name: "가르디아 성 왕좌의 방", interior: "throne" }],
     moods: { hub: { ambient: 0.05, color: "#ffd9a0" } },
+    atmosphere: { hub: ["petals"] },
     // 천년제 광장: 마을 풀밭을 걷어 낸 장터 마당 — 북쪽 무대에 루카의 텔레포드 두 기, 가운데에 리아네의 종탑·분수, 둘레에 장터 노점·길드 깃발·쌍등 가로등.
     dress: {
       hub: [
@@ -86,11 +136,12 @@ export const JRPG_CHAPTERS = {
     npcs: [
       { key: "marle", name: "마르", query: "공주", lines: ["천년제 구경 왔어? 나랑 같이 돌아보자!", "저 텔레포드, 루카가 만든 거래. 한번 타 볼래?"] },
       { key: "lucca", name: "루카", query: "마법사 소녀", lines: ["내 텔레포드 시연 보러 왔구나! 광장 북쪽 무대야.", "펜던트가 장치랑 공명하는 건 계산에 없었는데…"] },
-      { key: "balloon", name: "풍선 장수", query: "행상인 · 갈색 둥근 모자", lines: ["천년제 기념 풍선이오! 하나에 10골드!"] },
+      { key: "balloon", name: "풍선 장수", query: "행상인 · 갈색 둥근 모자", lines: ["천년제 기념 풍선이오! 하나에 10골드!"], roam: true },
       { key: "bell", name: "종탑지기", query: "노인 · 흰 머리(남)", lines: ["천 년 전 왕국이 세워진 날을 이 종이 알린다네."] },
-      { key: "cat", name: "길 잃은 고양이", query: "주황 고양이", lines: ["냐아… (집에 데려다 달라는 눈치다)"] },
+      { key: "cat", name: "길 잃은 고양이", query: "주황 고양이", lines: ["냐아… (집에 데려다 달라는 눈치다)"], roam: true },
       { key: "chancellor", name: "대신", query: "귀족 남성", lines: ["공주님을 데려간 자가 누구냐!"], map: "castle" },
     ],
+    joins: ["marle", "lucca"],
     quest: {
       title: "천년제의 소녀", summary: "텔레포드 사고로 사라진 마르의 펜던트 단서를 가르디아 성에서 찾는다.",
       giver: "marle", ask: "내 펜던트… 텔레포드에 빨려 들어갈 때 빛났어. 성에 가면 뭔가 알 수 있을 거야.",
@@ -118,8 +169,11 @@ export const JRPG_CHAPTERS = {
       { key: "keep", name: "마왕성 지하", dungeon: "castle" },
     ],
     moods: { hub: { weather: "fog", ambient: 0.35, color: "#1c2338" }, keep: { ambient: 0.5, color: "#2a1048" } },
+    atmosphere: { keep: ["shades"] },
     // 마왕성 지하: 붉은 융단, 고딕 촛대·화로(보랏빛), 검은 기사 갑옷상, 카타콤 기둥·강철 처녀·새장, 보스방 돌 제단.
     dress: {
+      // 예배당 북쪽 벽의 파이프 오르간 — 그 앞 칸이 비밀 스위치 조사(퍼즐) 자리다.
+      chapel: [{ object: "kit:atlas_biome_interior/hand-interior:pipe organ", where: "north", mark: "clue", light: "#ffd890" }],
       keep: [
         { object: "kit:wizarding_world/wz-furn-rug", where: "boss" },
         { object: "kit:beodeul_city/bd-pick-castle-catacombs-altar-stone", where: "boss" },
@@ -137,8 +191,18 @@ export const JRPG_CHAPTERS = {
       { key: "captain", name: "기사단장", query: "파란 갑옷 기사", lines: ["마왕군이 국경을 넘었다. 성검만 있었더라면…"] },
       { key: "frog", name: "개구리 기사", query: "양서 기사", lines: ["…부서진 성검 그랜드리온. 날을 되살릴 자를 찾고 있다."] },
       { key: "nun", name: "수녀", query: "수녀", lines: ["대성당에서 기도하세요. 왕비님도 그곳에 계십니다."], map: "chapel" },
-      { key: "squire", name: "견습 기사", query: "청년 병사", lines: ["단장님은 마왕성 지하에 성검 손잡이가 있다고 하셨어요!"] },
+      { key: "squire", name: "견습 기사", query: "청년 병사", lines: ["단장님은 마왕성 지하에 성검 손잡이가 있다고 하셨어요!"], roam: true },
     ],
+    joins: ["frog"],
+    puzzle: {
+      intro: ["낡은 파이프 오르간이다. 건반 위에 먼지가 소복이 쌓여 있다."],
+      stages: [{
+        prompt: "오르간 앞이다. 어떻게 할까?", options: ["오르간 건반을 연주한다", "뒤쪽 숨은 레버를 당긴다"], answer: 1,
+        miss: { lines: ["장엄한 화음이 성당 가득 울려 퍼졌다… 하지만 아무 일도 일어나지 않았다."], fx: ["se:chime2", "emote:music"] },
+      }],
+      wrong: ["아무 일도 일어나지 않았다."],
+      solvedFx: ["se:collapse1", "shake:6", "flash:white", "particles:dust"],
+    },
     quest: {
       title: "성검 복원", summary: "대성당 숨은 계단의 단서로 마왕성 지하 수호자를 쓰러뜨리고 성검을 되살린다.",
       giver: "captain", ask: "대성당 오르간 뒤에 비밀 계단이 있다는 소문이다. 그 아래 기록을 찾아 오게.",
@@ -166,12 +230,29 @@ export const JRPG_CHAPTERS = {
       { key: "lair", name: "티라노 소굴 용암 동굴", dungeon: "volcano", from: "canyon" },
     ],
     moods: { canyon: { ambient: 0.15, color: "#ff8040" }, lair: { ambient: 0.4, color: "#3a0a00" } },
+    atmosphere: { canyon: ["embers"], lair: ["embers"] },
+    // 협곡: 소굴로 가는 입구 곁 토템 화로 두 기 — 용암 부싯돌로 불을 붙여야 입구가 열린다(lock).
+    dress: { canyon: [{ object: "kit:beodeul_city/bd-pick-volcano-cave-brazier", where: "gate", count: 2, light: "#ff7030" }] },
     npcs: [
       { key: "ayla", name: "에이라", query: "원시 전사 소녀", lines: ["에이라 강하다! 너 강하다? 같이 싸운다!"] },
       { key: "kino", name: "키노", query: "삐쭉머리 남자아이", lines: ["불꽃 돌… 협곡 너머 용암 동굴에서 빛났다!"] },
       { key: "elder", name: "족장 할멈", query: "노파", lines: ["밤이 되면 불 축제다. 불을 지킬 부싯돌이 필요해."] },
-      { key: "child", name: "부락 아이", query: "여자아이", lines: ["공룡인간들이 협곡 다리를 건너왔대!"] },
+      { key: "child", name: "부락 아이", query: "여자아이", lines: ["공룡인간들이 협곡 다리를 건너왔대!"], roam: true },
     ],
+    joins: ["ayla"],
+    puzzle: {
+      intro: ["폭포 옆 붉은 바위 틈에서 불을 품은 돌이 빛나고 있다."],
+      stages: [],
+      wrong: [],
+      solvedFx: ["particles:fire", "se:fire5"],
+      reward: { item: { id: "item_lava_flint", name: "용암 부싯돌", description: "용암에 달궈져 늘 뜨거운 부싯돌. 티라노 소굴 입구의 토템 화로에 불을 붙인다." }, line: "「용암 부싯돌」을 손에 넣었다!" },
+    },
+    lock: {
+      site: "lair", item: "item_lava_flint",
+      locked: ["거대한 바위가 동굴 입구를 막고 있다. 곁의 토템 화로는 차갑게 식어 있다…", "(불을 품은 돌이 있으면 화로에 불을 붙일 수 있을 것 같다)"],
+      opened: ["용암 부싯돌을 화로에 내리치자 불길이 치솟았다!", "달아오른 바위가 녹아내리며 소굴 입구가 열렸다."],
+      fx: ["se:fire7", "particles:fire", "flash:red", "shake:3"],
+    },
     quest: {
       title: "부싯돌과 용암 열쇠", summary: "협곡의 부싯돌을 찾고 용암 동굴의 공룡인간 우두머리를 물리친다.",
       giver: "elder", ask: "협곡 폭포 옆 바위에 불을 품은 부싯돌이 있다. 그걸 가져오면 동굴 문이 열려.",
@@ -198,12 +279,32 @@ export const JRPG_CHAPTERS = {
       { key: "ocean", name: "해저신전", dungeon: "temple" },
     ],
     moods: { ocean: { ambient: 0.45, color: "#08203c" } },
+    atmosphere: { hub: ["magic"], ocean: ["underwater"] },
+    // 선착장 한가운데 마석 제단 — 그 앞 칸에서 펜던트로 봉인 문양을 차례로 지운다(퍼즐).
+    dress: { dock: [{ object: "kit:sky_island/si-altar", where: "center", mark: "clue", light: "#60a0ff" }] },
     npcs: [
       { key: "prophet", name: "예언자", query: "파란 로브 마법사", lines: ["라보스의 힘에 손대면 왕국은 바다 밑으로 가라앉으리라."] },
       { key: "schala", name: "사라 공주", query: "신관 · 청록 로브", lines: ["어머니는 마신기에 홀리셨어요… 저를 도와주세요."] },
-      { key: "janus", name: "쟈키", query: "남자아이", lines: ["…누나 말고는 아무도 믿지 마."] },
+      { key: "janus", name: "쟈키", query: "남자아이", lines: ["…누나 말고는 아무도 믿지 마."], roam: true },
       { key: "captain", name: "검은 새 갑판장", query: "뱃사람 · 흰 선원 모자", lines: ["달팽이 같은 하늘배들이랑은 달라. 이게 검은 새다."], map: "dock" },
     ],
+    // 마석 제단 — 펜던트를 대고 하늘·바다·대지 문양 가운데 예언자가 말한 순서(하늘 → 바다)대로 지운다.
+    puzzle: {
+      intro: ["푸른 마석 제단이다. 표면에 하늘·바다·대지의 문양 셋이 새겨져 있다.", "(예언자: 「제단은 검은 새 그림자 아래에 있다」… 하늘이 먼저일까?)"],
+      stages: [
+        {
+          prompt: "펜던트를 어느 문양에 먼저 댈까?", options: ["하늘의 문양", "바다의 문양", "대지의 문양"], answer: 0,
+          hit: { lines: ["하늘의 문양이 푸르게 빛나며 사라졌다."], fx: ["se:chime2"] },
+        },
+        {
+          prompt: "다음 문양은?", options: ["바다의 문양", "대지의 문양"], answer: 0,
+          hit: { lines: ["바다의 문양이 물결처럼 흔들리며 녹아내렸다."], fx: ["se:chime2"] },
+        },
+      ],
+      wrong: ["문양이 붉게 번쩍이며 펜던트를 튕겨 냈다. 처음부터 다시 해야 한다."],
+      wrongFx: ["flash:red", "shake:3"],
+      solvedFx: ["flash:white", "particles:sparkle"],
+    },
     quest: {
       title: "마력 봉인 해제", summary: "선착장의 마석 제단을 깨우고 해저신전 마신기를 지키는 골렘을 쓰러뜨린다.",
       giver: "schala", ask: "선착장 끝 마석 제단에 펜던트를 대면 해저신전 봉인이 풀려요.",
@@ -228,12 +329,48 @@ export const JRPG_CHAPTERS = {
     hub: { name: "아리스 돔 크레이터", scene: "sf_station:moonbase" },
     sites: [{ key: "factory", name: "지하 로봇 공장", scene: "sf_station:lab" }],
     moods: { hub: { ambient: 0.4, color: "#20202c" }, factory: { ambient: 0.3, color: "#101826" } },
+    atmosphere: { hub: ["ash"], factory: ["sparks"] },
+    // 돔: 에너트론 수면 회복 캡슐(장치) + 냉동 포드 묶음. 공장: 중앙 제어 콘솔(단서·퍼즐)과 보조 콘솔·배관.
+    dress: {
+      hub: [
+        { object: "kit:sf_station/sf-cryo-pod", where: "center", mark: "pod", light: "#60c8ff" },
+        { object: "kit:sf_station/sf-cryo-bank", where: "center" },
+        { object: "kit:sf_station/sf-med-cabinet", where: "center" },
+      ],
+      factory: [
+        { object: "kit:sf_station/sf-console-big", where: "north", mark: "clue", light: "#40e0ff" },
+        { object: "kit:sf_station/sf-console-desk", where: "north", count: 2, light: "#40a0ff" },
+        { object: "kit:sf_station/sf-pipe-cluster", where: "center", count: 2 },
+      ],
+    },
+    devices: [{
+      map: "hub", mark: "pod", name: "에너트론 회복 캡슐", heal: true, fx: ["flash:blue", "se:recovery7", "particles:heal"],
+      lines: ["에너트론이 웅웅 울리며 푸른 빛이 몸을 감싼다…", "HP·MP가 전부 회복되었다! …하지만 배는 여전히 고프다."],
+    }],
     npcs: [
       { key: "doan", name: "돔 장로 도안", query: "노인 · 흰 머리(남)", lines: ["씨앗 저장고도 바닥났소… 이 돔이 마지막 피난처요."] },
-      { key: "survivor", name: "생존자", query: "청년 남성", lines: ["에너지 포드 하나만 있으면 오늘은 버틸 수 있어."] },
+      { key: "survivor", name: "생존자", query: "청년 남성", lines: ["에너지 포드 하나만 있으면 오늘은 버틸 수 있어.", "캡슐에 들어가 봐. 배는 안 불러도 기운은 나."], roam: true },
       { key: "robo", name: "로보", query: "고철 로봇", lines: ["…시스템 정지 상태. 재기동 신호를 기다립니다."] },
       { key: "keeper", name: "공장 관리 로봇", query: "고철 로봇", lines: ["침입자 경고. 생산 라인에서 물러나십시오."], map: "factory" },
     ],
+    joins: ["robo"],
+    puzzle: {
+      intro: ["중앙 제어 콘솔이다. 화면에 「보안 잠금 — 관리자 코드 입력」이 깜박인다."],
+      stages: [
+        {
+          prompt: "관리자 코드를 입력한다", options: ["K-11A", "R-66Y", "X-99Z"], answer: 1,
+          hit: { lines: ["「코드 확인. 보조 콘솔과 동시 기동이 필요합니다.」"], fx: ["se:key", "flash:blue"] },
+          miss: { lines: ["「코드 불일치. 경보 단계 1.」 붉은 경고등이 번쩍인다."], fx: ["se:buzzer1", "flash:red"] },
+        },
+        {
+          prompt: "두 콘솔의 기동 레버를…", options: ["왼쪽 콘솔만 당긴다", "두 레버를 동시에 당긴다", "오른쪽 콘솔만 당긴다"], answer: 1,
+          miss: { lines: ["한쪽만 켜지자 회로가 과부하로 튀었다. 처음부터 다시 해야 한다."], fx: ["se:buzzer1", "shake:3"] },
+        },
+      ],
+      wrong: ["콘솔이 반응하지 않는다."],
+      solvedFx: ["se:magic1", "flash:blue", "particles:sparkle", "shake:1"],
+      reward: { line: "「보안 잠금 해제. R-66Y 재기동 신호 송출.」" },
+    },
     quest: {
       title: "로보 재기동", summary: "공장 제어 콘솔에서 재기동 코드를 받아 로보를 깨우고 경비 로봇을 무력화한다.",
       giver: "doan", ask: "저 고철 로봇… 공장 제어 콘솔이라면 깨울 수 있을지도 모르오.",
@@ -260,10 +397,11 @@ export const JRPG_CHAPTERS = {
       { key: "mine", name: "나르셰 마석 광산", dungeon: "mine" },
     ],
     moods: { hub: { weather: "snow", ambient: 0.2, color: "#a8c0e0" }, mine: { ambient: 0.45, color: "#0c3446" } },
+    atmosphere: { mine: ["spirits"] },
     // 마석 광산: 빛나는 얼음·마석 결정, 광차와 선로 끝 막이, 갱목 버팀목, 맨 안쪽 방에 얼음 속 환수의 수정 제단(단서 자리).
     dress: {
       mine: [
-        { object: "kit:sky_island/si-altar", where: "boss", clue: true, light: "#80f0ff" },
+        { object: "kit:sky_island/si-altar", where: "boss", mark: "clue", light: "#80f0ff" },
         { object: "kit:snow_north/sn-ice-pillar", where: "boss", count: 2 },
         { object: "kit:snow_north/sn-ice-crystal", where: "boss", count: 2, light: "#60e0ff" },
         { object: "kit:snow_north/sn-ice-crystal", where: "rooms", count: 4, light: "#60e0ff" },
@@ -278,9 +416,10 @@ export const JRPG_CHAPTERS = {
     npcs: [
       { key: "arvis", name: "아르비스", query: "터번 노인", lines: ["제국 병사들이 광산 안 얼음 속 환수를 노리고 있네."] },
       { key: "guard", name: "광산 경비병", query: "청년 병사", lines: ["제국의 마도 아머가 오면 광산 철로 입구를 지킨다!"] },
-      { key: "miner", name: "광부", query: "갈색 머리 중년 전사", lines: ["깊은 갱도에서 얼음이 노래를 불러… 소름이 끼쳐."] },
+      { key: "miner", name: "광부", query: "갈색 머리 중년 전사", lines: ["깊은 갱도에서 얼음이 노래를 불러… 소름이 끼쳐."], roam: true },
       { key: "terra", name: "티나", query: "요정 소녀", lines: ["…아무것도 기억나지 않아요. 왜 저 얼음이 부르는 걸까요."], map: "house" },
     ],
+    joins: ["terra"],
     quest: {
       title: "얼음 속 환수", summary: "광산 깊은 곳 얼어붙은 환수와 공명하고 제국의 거대 달팽이를 물리친다.",
       giver: "arvis", ask: "티나를 데리고 광산 뒷길로 빠져나가게. 얼음 속 환수가 그녀를 부르고 있어.",
@@ -307,12 +446,38 @@ export const JRPG_CHAPTERS = {
       { key: "opera", name: "오페라 하우스 무대", interior: "opera" },
     ],
     moods: { hub: { ambient: 0, color: "#fff0c0" }, opera: { ambient: 0.35, color: "#2a1830" } },
+    atmosphere: { hub: ["sand"] },
     npcs: [
       { key: "edgar", name: "에드거 왕", query: "왕", lines: ["피가로는 제국과 동맹이지만… 마음까지 판 적은 없다."] },
       { key: "chancellor", name: "피가로 대신", query: "귀족 남성", lines: ["폐하, 성을 잠항시킬 준비가 끝났습니다."] },
       { key: "engineer", name: "기관장", query: "기어 정비사", lines: ["사막 아래로 성을 숨기는 거대한 기어! 이게 피가로의 자랑이지."], map: "engine" },
       { key: "impresario", name: "극장 지배인", query: "중절모 신사", lines: ["마리아 대역이라니! 아리아만 외우면 무대에 설 수 있소!"], map: "opera" },
     ],
+    joins: ["edgar"],
+    // 무대 위 아리아 — 1·2·3절 가사를 맞게 이어 불러야 박수 속에 공연이 이어지고, 들보 위 울트로스의 추가 드러난다.
+    puzzle: {
+      intro: ["조명이 무대를 비춘다. 마리아의 드레스를 입고 아리아 「아리아 디 마리아」를 부를 차례다."],
+      stages: [
+        {
+          prompt: "1절 — 첫 소절은?", options: ["검은 바람이여…", "오 나의 영웅이여…"], answer: 1,
+          hit: { lines: ["♪ 오 나의 영웅이여, 멀리 떠나간 그대여…"], fx: ["tint:#3a2850", "emote:music"] },
+          miss: { lines: ["객석이 웅성거린다. 「…그건 다른 노래 아니야?」"], fx: ["se:buzzer1", "emote:sweat"] },
+        },
+        {
+          prompt: "2절 — 이어지는 가사는?", options: ["별이 지는 밤에도 기다리리…", "사막의 모래폭풍 속에…"], answer: 0,
+          hit: { lines: ["♪ 별이 지는 밤에도 기다리리…"], fx: ["particles:sparkle", "emote:music"] },
+          miss: { lines: ["지휘자가 지휘봉을 떨어뜨렸다. 처음부터 다시!"], fx: ["se:buzzer1", "emote:sweat"] },
+        },
+        {
+          prompt: "3절 — 마지막 소절은?", options: ["성문을 걸어 잠가라!", "약속의 꽃다발을 그대에게!"], answer: 1,
+          hit: { lines: ["♪ 약속의 꽃다발을 그대에게!"], fx: ["particles:sparkle", "emote:heart"] },
+          miss: { lines: ["극장 지배인이 무대 옆에서 머리를 감싸 쥐었다."], fx: ["se:buzzer1", "emote:sweat"] },
+        },
+      ],
+      wrong: ["노래가 끊겼다."],
+      solvedFx: ["se:chime2", "flash:white", "particles:sparkle", "tint:clear"],
+      reward: { gold: 500, line: "객석에서 우레 같은 박수가 터졌다! 꽃다발과 함께 출연료 500G 를 받았다." },
+    },
     quest: {
       title: "아리아 디 마리아", summary: "오페라 공연을 지키며 무대 위 샹들리에 아래에서 울트로스를 막는다.",
       giver: "edgar", ask: "오페라 하우스로 가서 지배인을 만나게. 마리아로 분장해야 세처를 꾈 수 있어.",
@@ -339,8 +504,11 @@ export const JRPG_CHAPTERS = {
       { key: "tower", name: "케프카의 잔해의 탑", dungeon: "volcano" },
     ],
     moods: { hub: { weather: "rain", ambient: 0.45, color: "#18202c" }, tower: { ambient: 0.45, color: "#3a0a24" } },
+    atmosphere: { hub: ["leaks"], tower: ["embers"] },
     // 잔해의 탑: 용암 균열, 의식 마법진(봉인), 부서진 마도 갑옷·톱니·고철, 불 수정, 꼭대기 방에 흑요석 제단과 날개 석상.
     dress: {
+      // 시계탑 아파트 북쪽 벽의 멈춘 벽시계 — 그 앞 칸에서 바늘을 맞춘다(퍼즐).
+      clock: [{ object: "kit:atlas_biome_interior/hand-interior:wall clock", where: "north", mark: "clue" }],
       tower: [
         { object: "kit:beodeul_city/bd-pick-volcano-cave-altar", where: "boss", light: "#ffd040" },
         { object: "kit:sky_island/si-statue", where: "boss", count: 2 },
@@ -360,6 +528,19 @@ export const JRPG_CHAPTERS = {
       { key: "celes", name: "셀리스", query: "붉은 갑옷 여전사", lines: ["모두를 다시 모아야 해. 케프카를 쓰러뜨리려면."] },
       { key: "clockman", name: "시계지기", query: "노인 · 회색 머리 보라 숄(여)", lines: ["진짜 시각은 거짓말 사이에 숨어 있지."], map: "clock" },
     ],
+    joins: ["sabin"],
+    // 조조의 시계 — 거짓말쟁이 셋의 말을 뒤집어 시·분·초를 차례로 맞춘다(6시 10분 50초).
+    puzzle: {
+      intro: ["멈춘 벽시계다. 바늘 세 개를 손으로 돌릴 수 있다.", "(조조 사람들은 모두 거짓말을 한다… 들은 말을 뒤집어 보자)"],
+      stages: [
+        { prompt: "시침을 맞춘다", options: ["2시", "6시", "9시"], answer: 1, hit: { lines: ["딸깍 — 시침이 6에 걸렸다."], fx: ["se:clock"] }, miss: { lines: ["끼익… 시침이 제자리로 튕겨 돌아갔다."], fx: ["se:buzzer1"] } },
+        { prompt: "분침을 맞춘다", options: ["10분", "30분", "45분"], answer: 0, hit: { lines: ["딸깍 — 분침이 2를 가리킨다."], fx: ["se:clock"] }, miss: { lines: ["끼익… 분침이 제자리로 튕겨 돌아갔다."], fx: ["se:buzzer1"] } },
+        { prompt: "초침을 맞춘다", options: ["20초", "50초", "0초"], answer: 1, hit: { lines: ["딸깍 — 세 바늘이 맞물렸다!"], fx: ["se:clock", "shake:1"] }, miss: { lines: ["끼익… 바늘이 전부 처음으로 돌아갔다."], fx: ["se:buzzer1", "emote:sweat"] } },
+      ],
+      wrong: ["시계는 다시 멈췄다."],
+      solvedFx: ["se:bell", "flash:white", "particles:sparkle"],
+      reward: { item: { id: "item_zozo_clock_key", name: "시계탑 열쇠", description: "조조 시계 뒤 벽에서 떨어진 낡은 열쇠. 잔해의 탑 봉인 문 하나를 연다." }, line: "「시계탑 열쇠」를 손에 넣었다!" },
+    },
     quest: {
       title: "시계탑의 수수께끼와 재집결", summary: "조조 거짓말쟁이들의 말로 시계 비밀을 풀고 잔해의 탑의 케프카에게 도전한다.",
       giver: "celes", ask: "마슈가 조조 시계탑에 단서가 있대. 시계를 맞추면 숨은 방이 열린다나 봐.",
@@ -416,7 +597,7 @@ function hubGate(project: Project, hub: GameMap, taken: Set<string>, preferDoor:
 }
 
 interface RoomRect { readonly id: string; readonly x: number; readonly y: number; readonly w: number; readonly h: number }
-interface DressResult { readonly lights: Array<Record<string, unknown>>; readonly placed: string[]; clue?: Cell }
+interface DressResult { readonly lights: Array<Record<string, unknown>>; readonly placed: string[]; readonly marks: Map<string, Cell> }
 
 function kitSize(project: Project, objectId: string): { w: number; h: number } | undefined {
   const m = /^kit:([^/]+)\/(.+)$/u.exec(objectId);
@@ -431,9 +612,9 @@ function kitSize(project: Project, objectId: string): { w: number; h: number } |
  */
 function dressMap(
   project: Project, map: GameMap, items: readonly DressSpec[], rooms: readonly RoomRect[], bossId: string | undefined, taken: Set<string>, warnings: string[],
-  fairAt?: Cell,
+  fairAt?: Cell, gateAt?: Cell,
 ): DressResult {
-  const out: DressResult = { lights: [], placed: [] };
+  const out: DressResult = { lights: [], placed: [], marks: new Map() };
   const blocked = new Set(taken);
   for (const e of map.events ?? []) for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) blocked.add(`${e.x + dx},${e.y + dy}`);
   const mainSet = mainComponent(project, map);
@@ -608,9 +789,11 @@ function dressMap(
       for (let yy = s.y; yy < s.y + size.h; yy++) for (let xx = s.x; xx < s.x + size.w; xx++) blocked.add(`${xx},${yy}`);
       const mid = { x: s.x + Math.floor(size.w / 2), y: s.y + Math.floor(size.h / 2) };
       if (item.light) out.lights.push({ id: `light_${map.id}_${out.lights.length + 1}`, at: mid, radius: 3, intensity: 0.9, color: item.light, flicker: true });
-      if (item.clue && !out.clue) {
-        out.clue = { x: mid.x, y: s.y + size.h };
-        blocked.add(key(out.clue));
+      if (item.mark && !out.marks.has(item.mark)) {
+        // 소품 앞(남쪽) 가운데 칸 — 둘레 고리 안이라 늘 걸을 수 있는 빈 칸이다.
+        const front = { x: mid.x, y: s.y + size.h };
+        out.marks.set(item.mark, front);
+        blocked.add(key(front));
       }
       out.placed.push(`${item.object.split("/").pop()} (${s.x},${s.y})`);
       return true;
@@ -638,6 +821,9 @@ function dressMap(
         groveOk = true;
         ok = place(item, size, anchor, fair) || place(item, size, anchor, undefined, 8 + Math.max(fair.w, fair.h) / 2);
         groveOk = false;
+      } else if (item.where === "gate" && gateAt) {
+        // 출입구 둘레 6칸 안 — 화로·토템이 입구 양옆을 지키게.
+        ok = place(item, size, gateAt, undefined, 6);
       } else {
         const anchor = item.where === "north" || item.where === "fair-north" ? { x: center.x, y: minY + 2 } : item.where === "south" ? { x: center.x, y: maxY - 2 } : center;
         ok = place(item, size, anchor, undefined);
@@ -646,6 +832,126 @@ function dressMap(
     }
   }
   return out;
+}
+
+function m2(title: string, fields: Record<string, string | number | boolean>): Command {
+  const entry = M2_COMMAND_CATALOG.find((candidate) => candidate.title === title);
+  if (!entry) throw new ToolError(`M2 명령 ${title} 이 카탈로그에 없다`, { code: "m2-missing" });
+  return { kind: "m2Command", commandId: entry.id, fields };
+}
+
+const say1 = (body: string): Command => ({ kind: "text", body });
+
+/** 연출 낱말(Fx) → 이벤트 명령. 모르는 낱말은 조용히 버리지 않고 저작 오류로 던진다(장 사전은 코드에 있다). */
+function fxCommands(fx: readonly Fx[] | undefined): Command[] {
+  return (fx ?? []).flatMap((token): Command[] => {
+    const at = token.indexOf(":");
+    const kind = token.slice(0, at), value = token.slice(at + 1);
+    switch (kind) {
+      case "flash": return [m2("Flash Screen", { color: value || "white", durationMs: 300 })];
+      case "shake": { const n = [1, 3, 6, 10].includes(Number(value)) ? Number(value) : 3; return [m2("Shake Screen", { value: n, intensity: String(n), durationMs: 500 })]; }
+      case "particles": return [m2("Particle Effect", { preset: value, target: "player", durationMs: 800, wait: false })];
+      case "tint": return [m2("Tint Screen", { color: "neutral", value: value === "clear" ? "" : value, durationMs: 400 })];
+      case "se": return [{ kind: "playAudio", resourceId: `easyrpg-sound-${value}`, loop: false, channel: "se" }];
+      case "emote": {
+        if (!(EMOTE_KINDS as readonly string[]).includes(value)) throw new ToolError(`연출 낱말 ${token}: 감정은 ${EMOTE_KINDS.join("·")} 중 하나다`, { code: "fx-unknown" });
+        return [{ kind: "showEmote", target: "player", emote: value as EmoteKind, durationMs: 700 }];
+      }
+      case "wait": return [{ kind: "wait", ms: Math.max(0, Number(value) || 0) }];
+      default: throw new ToolError(`연출 낱말 ${token} 을 모른다`, { code: "fx-unknown" });
+    }
+  });
+}
+
+/**
+ * 퍼즐 → 조사 명령. 단계마다 선택지 하나 — 맞힌 보기만 다음 단계로 들어가고, 틀린 보기는 그 단계 반응 + 공통 틀림 대사로 끝난다
+ * (다시 조사하면 처음부터). 마지막 단계를 지나면 풀림 연출·보상 뒤에 원래 단서 명령(대사 + 단계 완료)이 따른다.
+ */
+function puzzleCommands(puzzle: PuzzleSpec, rewardCommands: readonly Command[], solved: readonly Command[]): Command[] {
+  const stage = (i: number): Command[] => {
+    const s = puzzle.stages[i];
+    if (!s) return [...fxCommands(puzzle.solvedFx), ...rewardCommands, ...solved];
+    return [{
+      kind: "choices", prompt: s.prompt,
+      options: s.options.map((option, j) => ({
+        text: option,
+        branch: j === s.answer
+          ? [...(s.hit?.lines ?? []).map(say1), ...fxCommands(s.hit?.fx), ...stage(i + 1)]
+          : [...fxCommands(s.miss?.fx), ...(s.miss?.lines ?? []).map(say1), ...fxCommands(puzzle.wrongFx), ...puzzle.wrong.map(say1)],
+      })),
+    }];
+  };
+  return [...puzzle.intro.map(say1), ...stage(0)];
+}
+
+const FIXED: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
+
+/** 합류 NPC → 배우. 맵에 선 그 NPC 의 걷기 그림(시트 + 칸)을 그대로 배우 그림으로 쓴다 — 합류 뒤 파티 행렬에 같은 얼굴이 선다. */
+function joinActor(draft: Project, prefix: string, npc: NpcSpec, ref: { mapId: string; eventId: string }, warnings: string[]): string | undefined {
+  const graphic = draft.maps[ref.mapId]?.events.find((e) => e.id === ref.eventId)?.pages?.[0]?.graphic;
+  const lead = draft.database.actors[0];
+  const classId = lead?.classId ?? draft.database.classes[0]?.id;
+  if (!graphic?.sprite?.id || !classId) { warnings.push(`${npc.name}: 걷기 그림·직업이 없어 동료로 만들지 못했다`); return undefined; }
+  const actorId = `actor_${prefix}_${npc.key}`;
+  try {
+    nested(draft, "upsert_actor", {
+      actor: {
+        id: actorId, name: npc.name, classId, initialLevel: lead?.initialLevel ?? 1,
+        characterResourceId: heroCharacterResourceId(graphic.sprite.id), characterIndex: decodeCharsetFrameIndex(graphic.pattern ?? 0).characterIndex,
+      },
+    });
+    return actorId;
+  } catch (cause) {
+    warnings.push(`${npc.name}: 동료 배우를 만들지 못했다 — ${cause instanceof Error ? cause.message : String(cause)}`);
+    return undefined;
+  }
+}
+
+/**
+ * 합류한 NPC 는 퀘스트가 끝나면 맵에서 사라진다 — 마지막 페이지(완료 스위치 조건)가 투명·통과 페이지라 위의 모든 페이지를 덮는다.
+ * 같은 완료 스위치만 조건으로 둔 기존 페이지(의뢰 완료 대사)는 그 페이지에 영원히 가려지므로 뺀다.
+ */
+function vanishAfter(event: GameEvent, switchId: string): void {
+  const base = event.pages?.[0];
+  if (!base) return;
+  const doneOnly = (p: EventPage): boolean => p.conditions.length > 0 && p.conditions.every((c) => c.kind === "switch" && c.switchId === switchId && c.value === true);
+  event.pages = [...event.pages!.filter((p) => !doneOnly(p)), {
+    ...structuredClone(base), id: `${event.id}_joined`, name: "합류 뒤", conditions: [{ kind: "switch", switchId, value: true }],
+    graphic: { transparent: true }, trigger: { kind: "action" }, priority: "below", movement: FIXED, commands: [],
+  }];
+}
+
+/**
+ * 갈래 출입구를 아이템으로 잠근다 — 첫 페이지: 아이템이 있으면 연출·열림 스위치 뒤 원래 이동, 없으면 막힘 대사.
+ * 열림 스위치 페이지가 뒤에 붙어 한 번 연 뒤로는 보통 출입구다.
+ */
+function lockGate(draft: Project, map: GameMap, siteMapId: string, lock: LockSpec, switchId: string): boolean {
+  const event = map.events.find((e) => (e.pages ?? []).some((p) => p.commands.some((c) => c.kind === "transfer" && c.mapId === siteMapId)));
+  const page = event?.pages?.[0];
+  if (!event || !page) return false;
+  ensureNamedSwitch(draft, switchId, `${lock.site} 출입구 열림`);
+  const travel = page.commands;
+  event.pages!.push({ ...structuredClone(page), id: `${page.id}_open`, name: "열린 출입구", conditions: [...page.conditions, { kind: "switch", switchId, value: true }], commands: structuredClone(travel) });
+  page.commands = [{
+    kind: "fork", condition: { kind: "item", itemId: lock.item, present: true },
+    then: [...lock.opened.map(say1), ...fxCommands(lock.fx), { kind: "setSwitch", switchId, value: true }, ...travel],
+    else: lock.locked.map(say1),
+  }];
+  return true;
+}
+
+/** 장치 — 소품 앞 칸의 투명 조사 이벤트: 연출 → 대사 → (heal) 파티 전원 회복. */
+function placeDevice(draft: Project, map: GameMap, at: Cell, id: string, device: DeviceSpec): void {
+  nested(draft, "upsert_event", {
+    mapId: map.id,
+    event: {
+      id, name: device.name, x: at.x, y: at.y, trigger: { kind: "action" }, commands: [],
+      pages: [{
+        id: `${id}_p1`, name: device.name, conditions: [], graphic: { transparent: true }, trigger: { kind: "action" }, priority: "below", movement: FIXED,
+        commands: [...fxCommands(device.fx), ...device.lines.map(say1), ...(device.heal ? [{ kind: "recoverAll" } as const] : [])],
+      }],
+    },
+  });
 }
 
 /** 장의 수호자 적·트룹 — 기존 보스 트룹의 능력치를 본떠 이름·외형만 장에 맞춘다. 만들지 못하면 기존 보스 트룹으로 싸운다. */
@@ -675,7 +981,8 @@ const authorJrpgChapter: ToolDefinition = {
     "크로노 트리거·FF6 풍 한 장(章)을 한 번에 짓는다 — 「크로노 트리거 천년제 마을 만들어줘」「FF6 나르셰 광산」「오페라 하우스 사건」. "
     + "{chapter, prefix?, seed?, timeGateFrom?:mapId} chapter: " + JRPG_CHAPTER_IDS.join(" · ") + ". "
     + "거점(장면 구성기) + 갈래 맵(손 도트 실내·장면·author_dungeon 던전)을 집 문·가장자리·던전 입구로 잇고, 이름 있는 NPC(대사), "
-    + "퀘스트(의뢰 → 조력자 대화 → 단서 조사 → 수호자 전투 → 보고, create_quest), 사건 컷신(script_cutscene, 들어오면 한 번), 맵 분위기(날씨·조명), 던전의 보이는 적·상자까지 깐다. "
+    + "퀘스트(의뢰 → 조력자 대화 → 단서 조사 → 수호자 전투 → 보고, create_quest), 사건 컷신(script_cutscene, 들어오면 한 번), 맵 분위기(날씨·조명·입자), 던전의 보이는 적·상자까지 깐다. "
+    + "장마다 기믹도 붙는다 — 동료 합류(보고하면 파티에 들어오고 맵에서 사라짐), 단서 앞 선택지 퍼즐(틀리면 처음부터, 풀면 연출·보상 아이템), 회복 장치, 아이템으로 여는 잠긴 출입구. "
     + "timeGateFrom 을 주면 그 맵과 이 장 거점을 시간의 문(create_time_gate)으로 잇는다 — CT 시대들을 천년제 광장에 모으는 식.",
   mode: "write",
   parameters: {
@@ -705,6 +1012,8 @@ const authorJrpgChapter: ToolDefinition = {
     const takenOf = (mapId: string): Set<string> => { let s = taken.get(mapId); if (!s) taken.set(mapId, s = new Set()); return s; };
     const freshId = (base: string): string => { let id = base, n = 2; while (draft.maps[id]) id = `${base}_${n++}`; return id; };
     const origins = new Map<string, Cell>();
+    /** 갈래 key → 앞 맵 key + 그 앞 맵의 출입구 칸(잠금·gate 소품 자리). */
+    const gateCells = new Map<string, { from: string; cell: Cell }>();
     const plazas = new Map<string, Cell>();
     const dungeonRooms = new Map<string, { rooms: Room[]; rects: RoomRect[]; boss?: string; enemies: Cell[]; chests: Cell[] }>();
     const mapsOut: Array<{ key: string; mapId: string; name: string; kind: string; link?: string }> = [];
@@ -735,6 +1044,7 @@ const authorJrpgChapter: ToolDefinition = {
       const gate = hubGate(draft, from, takenOf(fromId), "interior" in site);
       if (!gate) { warnings.push(`${site.name}: ${from.name} 에 출입구 자리가 없다`); continue; }
       takenOf(fromId).add(key(gate.cell));
+      gateCells.set(site.key, { from: fromKey, cell: gate.cell });
       if ("dungeon" in site) {
         // 던전 어댑터는 버들항 칩셋에만 있다 — 거점이 고딕·선사 칩셋이어도 던전 층은 버들항으로 짓는다(장마다 칩셋이 바뀌는 JRPG 지역 구성).
         const made = nested(draft, "author_dungeon", { id: mapId, name: site.name, type: site.dungeon, size: "medium", genre: "rpg", adapter: "beodeul", seed, entrance: { fromMapId: fromId, x: gate.cell.x, y: gate.cell.y } });
@@ -798,15 +1108,19 @@ const authorJrpgChapter: ToolDefinition = {
 
     // ④ 장면 소품 — 축제 노점·종탑·텔레포드, 던전마다 다른 융단·촛대·결정·광차·용암 균열(적·상자·문이 선 뒤라 그 둘레를 비운다)
     const lights = new Map<string, Array<Record<string, unknown>>>();
-    const clues = new Map<string, Cell>();
+    const marks = new Map<string, Map<string, Cell>>();
     const dressed: string[] = [];
     for (const [k, items] of Object.entries(spec.dress ?? {})) {
       const map = mapOf(k);
       if (!map) continue;
       const d = dungeonRooms.get(k);
-      const result = dressMap(draft, map, items, d?.rects ?? [], d?.boss, takenOf(map.id), warnings, plazas.get(k));
+      // gate 소품은 잠긴 갈래 출입구 곁, 잠금이 없으면 이 맵에서 나가는 첫 갈래 출입구 곁.
+      const lockedGate = spec.lock ? gateCells.get(spec.lock.site) : undefined;
+      const gateAt = lockedGate?.from === k ? lockedGate.cell : [...gateCells.values()].find((g) => g.from === k)?.cell;
+      const result = dressMap(draft, map, items, d?.rects ?? [], d?.boss, takenOf(map.id), warnings, plazas.get(k), gateAt);
       if (result.lights.length) lights.set(k, result.lights);
-      if (result.clue) { clues.set(k, result.clue); takenOf(map.id).add(key(result.clue)); }
+      for (const cell of result.marks.values()) takenOf(map.id).add(key(cell));
+      if (result.marks.size) marks.set(k, result.marks);
       dressed.push(`${map.name}: ${result.placed.length}점 — ${result.placed.join(" · ")}`);
     }
 
@@ -823,6 +1137,13 @@ const authorJrpgChapter: ToolDefinition = {
       });
       moods.push(`${map.name}: ${[mood.weather, mood.ambient !== undefined ? `조명 ${mood.ambient}` : "", sources.length ? `광원 ${sources.length}` : ""].filter(Boolean).join(" · ")}`);
     }
+    // 대기 입자 — 날씨·조명 위에 겹치는 맵 장식층(꽃잎·불씨·마력·재).
+    for (const [k, kinds] of Object.entries(spec.atmosphere ?? {})) {
+      const map = mapOf(k);
+      if (!map) continue;
+      map.atmosphereEffects = normalizeAtmosphereEffects(kinds.map((kind) => ({ kind })));
+      moods.push(`${map.name}: 입자 ${kinds.join("·")}`);
+    }
 
     // ⑤ NPC
     const npcIds = new Map<string, { mapId: string; eventId: string }>();
@@ -833,7 +1154,7 @@ const authorJrpgChapter: ToolDefinition = {
       const map = mapOf(k);
       if (!at || !map) { warnings.push(`${npc.name}: 설 자리를 찾지 못했다`); return; }
       const eventId = `ev_${prefix}_${npc.key}`;
-      nested(draft, "place_npc", { mapId: map.id, x: at.x, y: at.y, id: eventId, name: npc.name, graphic: { query: npc.query }, movement: "fixed", pages: [{ name: `${npc.name} · 기본`, lines: npc.lines }] });
+      nested(draft, "place_npc", { mapId: map.id, x: at.x, y: at.y, id: eventId, name: npc.name, graphic: { query: npc.query }, movement: npc.roam ? "random" : "fixed", pages: [{ name: `${npc.name} · 기본`, lines: npc.lines }] });
       const placed = map.events.find((e) => e.id === eventId);
       npcIds.set(npc.key, { mapId: map.id, eventId });
       npcsOut.push({ name: npc.name, mapId: map.id, x: placed?.x ?? at.x, y: placed?.y ?? at.y, lines: npc.lines });
@@ -845,7 +1166,7 @@ const authorJrpgChapter: ToolDefinition = {
     const helper = npcIds.get(q.helper.npc);
     const clueMap = mapOf(q.clue.map);
     const foeMap = mapOf(q.foe.map);
-    const clueAt = clues.get(q.clue.map) ?? spot(q.clue.map, 0.75, 3);
+    const clueAt = marks.get(q.clue.map)?.get("clue") ?? spot(q.clue.map, 0.75, 3);
     const bossRoom = dungeonRooms.get(q.foe.map);
     const bossCell = bossRoom
       ? bossRoom.rooms.find((r) => r.id === bossRoom.boss)?.spots.find((c) => !takenOf(foeMap!.id).has(key(c)) && isPassable(draft, foeMap!, c.x, c.y))
@@ -854,6 +1175,14 @@ const authorJrpgChapter: ToolDefinition = {
     const questKey = `${prefix}_main`;
     const stepsOut: string[] = [];
     const bossTroop = chapterBossTroop(draft, prefix, q.foe, troops.boss, warnings);
+    const gimmicks: string[] = [];
+    const ready = giver && helper && clueMap && foeMap && clueAt && bossCell && bossTroop;
+    // 합류 동료 — 보고하는 순간 파티에 들어온다(create_quest effects.actors → changeParty).
+    const joined = ready ? (spec.joins ?? []).flatMap((k) => {
+      const npc = spec.npcs.find((n) => n.key === k), ref = npcIds.get(k);
+      const actorId = npc && ref ? joinActor(draft, prefix, npc, ref, warnings) : undefined;
+      return actorId && npc && ref ? [{ npc, ref, actorId }] : [];
+    }) : [];
     if (giver && helper && clueMap && foeMap && clueAt && bossCell && bossTroop) {
       nested(draft, "create_quest", {
         def: {
@@ -866,6 +1195,7 @@ const authorJrpgChapter: ToolDefinition = {
             { kind: "kill", troopId: bossTroop, at: { mapId: foeMap.id, x: bossCell.x, y: bossCell.y, graphicQuery: q.foe.query, intro: q.foe.intro, victory: q.foe.victory } },
           ],
           rewards: { gold: q.gold },
+          ...(joined.length ? { effects: { actors: joined.map((j) => j.actorId) } } : {}),
         },
       });
       const nameOf = (ref: { eventId: string }): string => spec.npcs.find((n) => `ev_${prefix}_${n.key}` === ref.eventId)?.name ?? ref.eventId;
@@ -876,7 +1206,47 @@ const authorJrpgChapter: ToolDefinition = {
         `③ 전투: ${foeMap.name} (${bossCell.x},${bossCell.y}) ${q.foe.name} [${bossTroop} · ${q.foe.graphic.replace("generated-enemy-", "")}${(q.foe.count ?? 1) > 1 ? ` ×${q.foe.count}` : ""}]`,
         `④ 보고: ${nameOf(giver)} — 「${q.report[0]}」 보상 ${q.gold}G`,
       );
+      const done = questFlagIds(questKey, 3).done;
+      for (const j of joined) {
+        const event = draft.maps[j.ref.mapId]?.events.find((e) => e.id === j.ref.eventId);
+        if (event) vanishAfter(event, done);
+        gimmicks.push(`합류: ${j.npc.name} — 보고하면 파티에 들어오고 맵에서 사라진다 [${j.actorId}]`);
+      }
+      // 퍼즐 — 조사 단계의 진행 페이지를 선택지 퍼즐로 감싼다. 풀어야 원래 단서 대사·단계 완료가 따른다.
+      const inspect = clueMap.events.find((e) => e.id === `ev_${questKey}_inspect1`)?.pages?.find((p) => p.id.endsWith("_active"));
+      if (spec.puzzle && inspect) {
+        const reward: Command[] = [];
+        const prize = spec.puzzle.reward;
+        if (prize?.item) {
+          nested(draft, "upsert_item", { item: { ...prize.item, price: 0, consumable: false, occasion: "never" } });
+          reward.push({ kind: "changeItem", itemId: prize.item.id, op: "+=", amount: 1 });
+        }
+        if (prize?.gold) reward.push({ kind: "changeGold", op: "+=", amount: prize.gold });
+        if (prize) reward.push(say1(prize.line));
+        inspect.commands = puzzleCommands(spec.puzzle, reward, inspect.commands);
+        const prizeLabel = [prize?.item?.name, prize?.gold ? `${prize.gold}G` : ""].filter(Boolean).join(" + ");
+        gimmicks.push(`퍼즐: ${clueMap.name} 「${q.clue.label}」 — ${spec.puzzle.stages.length ? `${spec.puzzle.stages.length}단계 선택지` : "조사"}${prizeLabel ? ` · 보상 ${prizeLabel}` : ""}`);
+      } else if (spec.puzzle) warnings.push(`퍼즐: ${clueMap.name} 의 조사 이벤트를 찾지 못해 퍼즐을 붙이지 못했다`);
     } else warnings.push(`퀘스트 「${q.title}」: 의뢰인·조력자·단서·수호자 자리 중 빠진 것이 있어 만들지 않았다`);
+
+    // ⑥-2 장치 — 소품 앞 칸의 조사 이벤트(회복 캡슐 등)
+    for (const device of spec.devices ?? []) {
+      const map = mapOf(device.map);
+      const at = marks.get(device.map)?.get(device.mark);
+      if (!map || !at) { warnings.push(`장치 ${device.name}: 소품(${device.mark})이 서지 않아 놓지 못했다`); continue; }
+      placeDevice(draft, map, at, `ev_${prefix}_${sanitizeId(device.mark)}`, device);
+      gimmicks.push(`장치: ${map.name} (${at.x},${at.y}) ${device.name}${device.heal ? " — 전원 회복" : ""}`);
+    }
+
+    // ⑥-3 잠긴 출입구 — 아이템을 지니고 닿아야 갈래 맵으로 간다
+    if (spec.lock) {
+      const g = gateCells.get(spec.lock.site), siteMapId = ids.get(spec.lock.site);
+      const fromMap = g ? mapOf(g.from) : undefined;
+      if (fromMap && siteMapId && lockGate(draft, fromMap, siteMapId, spec.lock, `sw_${prefix}_${sanitizeId(spec.lock.site)}_open`)) {
+        const itemName = draft.database.items.find((it) => it.id === spec.lock!.item)?.name ?? spec.lock.item;
+        gimmicks.push(`잠금: ${fromMap.name} (${g!.cell.x},${g!.cell.y}) → ${mapOf(spec.lock.site)?.name} — 「${itemName}」 이 있어야 열린다`);
+      } else warnings.push(`잠금: ${spec.lock.site} 출입구 이벤트를 찾지 못했다`);
+    }
 
     // ⑦ 사건 컷신 — 그 맵에 들어오면 한 번
     const eventMap = mapOf(spec.event.map);
@@ -905,8 +1275,8 @@ const authorJrpgChapter: ToolDefinition = {
     }
 
     return {
-      summary: `${spec.era} 「${spec.title}」 — 맵 ${mapsOut.length}장(${mapsOut.map((m) => m.name).join(" · ")}), NPC ${npcsOut.length}, 퀘스트 「${q.title}」 ${stepsOut.length ? "의뢰·대화·조사·전투·보고" : "없음"}, 사건 「${spec.event.title}」${gateOut ? `, 시간의 문 ${gateOut}` : ""}`,
-      data: { chapter: chapterId, title: spec.title, era: spec.era, hubMapId: hubId, maps: mapsOut, npcs: npcsOut, quest: { key: questKey, title: q.title, summary: q.summary, steps: stepsOut, bossTroopId: bossTroop }, event: eventOut, timeGate: gateOut, moods, dressed },
+      summary: `${spec.era} 「${spec.title}」 — 맵 ${mapsOut.length}장(${mapsOut.map((m) => m.name).join(" · ")}), NPC ${npcsOut.length}, 퀘스트 「${q.title}」 ${stepsOut.length ? "의뢰·대화·조사·전투·보고" : "없음"}, 사건 「${spec.event.title}」${gimmicks.length ? `, 기믹 ${gimmicks.length}(${gimmicks.map((g) => g.split(":")[0]).join("·")})` : ""}${gateOut ? `, 시간의 문 ${gateOut}` : ""}`,
+      data: { chapter: chapterId, title: spec.title, era: spec.era, hubMapId: hubId, maps: mapsOut, npcs: npcsOut, quest: { key: questKey, title: q.title, summary: q.summary, steps: stepsOut, bossTroopId: bossTroop }, event: eventOut, timeGate: gateOut, moods, dressed, gimmicks },
       ...(warnings.length ? { warnings } : {}),
     };
   },
