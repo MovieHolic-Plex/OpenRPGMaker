@@ -392,7 +392,7 @@
 .dialogue-content.has-veil-speaker-face {
   align-items: stretch;
   grid-template-columns: minmax(0, 1fr);
-  padding-left: 52px;
+  padding-left: calc(52px * var(--dialogue-ui-scale, 1));
 }
 
 .dialogue-veil-speaker-face {
@@ -400,12 +400,12 @@
   background-repeat: no-repeat;
   background-size: contain;
   bottom: 0;
-  height: 48px;
-  image-rendering: auto;
-  left: 4px;
+  height: calc(48px * var(--dialogue-ui-scale, 1));
+  image-rendering: pixelated;
+  left: calc(4px * var(--dialogue-ui-scale, 1));
   pointer-events: none;
   position: absolute;
-  width: 48px;
+  width: calc(48px * var(--dialogue-ui-scale, 1));
   z-index: 3;
 }
 
@@ -563,8 +563,8 @@
   background-position: bottom center;
   background-size: auto 100%;
   filter: none;
-  image-rendering: auto;
-  left: -8px;
+  image-rendering: pixelated;
+  left: calc(-8px * var(--dialogue-ui-scale, 1));
   opacity: 1;
   right: auto;
   width: calc(var(--runtime-dialogue-full-height) * 0.62);
@@ -573,7 +573,7 @@
 
 .dialogue-overlay[data-dialogue-stage="dual-fullbody-veil"] .dialogue-face.dialogue-face-behind.dialogue-face-side-right {
   left: auto;
-  right: -8px;
+  right: calc(-8px * var(--dialogue-ui-scale, 1));
 }
 
 .dialogue-overlay[data-dialogue-stage="dual-fullbody-veil"] .dialogue-face.dialogue-face-behind.dialogue-portrait-listener {

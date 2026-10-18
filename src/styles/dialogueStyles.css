@@ -93,8 +93,8 @@
 .dialogue-ambient-layer [data-dialogue-style="dual-fullbody-veil"] {
   --runtime-dialogue-panel-height: 22%;
   --runtime-choice-panel-height: 28%;
-  --runtime-dialogue-speaker-inset: 15px;
-  --runtime-dialogue-font-size: 10px;
+  --runtime-dialogue-speaker-inset: calc(15px * var(--dialogue-ui-scale, 1));
+  --runtime-dialogue-font-size: calc(10px * var(--dialogue-ui-scale, 1));
   --dlg-bg: linear-gradient(
     180deg,
     rgba(10, 8, 16, 0) 0%,
@@ -123,8 +123,8 @@
   height: 100%;
   max-width: none;
   min-height: 0;
-  padding-bottom: 5px;
-  padding-inline: 8px 10px;
+  padding-bottom: calc(5px * var(--dialogue-ui-scale, 1));
+  padding-inline: calc(8px * var(--dialogue-ui-scale, 1)) calc(10px * var(--dialogue-ui-scale, 1));
 }
 
 .dialogue-overlay[data-dialogue-style="dual-fullbody-veil"] .dialogue-box .body {
@@ -136,24 +136,48 @@
   border: 0;
   box-shadow: none;
   color: rgb(255, 236, 190);
-  font-size: 9px;
+  font-size: calc(9px * var(--dialogue-ui-scale, 1));
   height: auto;
-  left: 16px;
+  left: calc(16px * var(--dialogue-ui-scale, 1));
   line-height: 1.1;
   padding: 0;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.98), 0 0 6px rgba(0, 0, 0, 0.9), 1px 1px 0 rgba(0, 0, 0, 0.95);
-  top: 2px;
+  top: calc(2px * var(--dialogue-ui-scale, 1));
 }
 
 .dialogue-overlay[data-dialogue-style="dual-fullbody-veil"] .dialogue-box.has-veil-speaker-face .speaker.speaker-nameplate {
-  left: 60px;
+  left: calc(60px * var(--dialogue-ui-scale, 1));
 }
 
 .dialogue-overlay[data-dialogue-style="dual-fullbody-veil"] .dialogue-page-cursor {
   background: rgb(255, 255, 255);
-  bottom: 2px;
-  left: calc(50% - 4px);
+  bottom: calc(2px * var(--dialogue-ui-scale, 1));
+  height: calc(6px * var(--dialogue-ui-scale, 1));
+  left: calc(50% - 4px * var(--dialogue-ui-scale, 1));
   right: auto;
+  width: calc(8px * var(--dialogue-ui-scale, 1));
+}
+
+.dialogue-overlay[data-dialogue-style="dual-fullbody-veil"].choices-active .choice-list {
+  gap: calc(3px * var(--dialogue-ui-scale, 1));
+}
+
+.dialogue-overlay[data-dialogue-style="dual-fullbody-veil"].choices-active .choice-list .choice-btn {
+  font-size: calc(9.5px * var(--dialogue-ui-scale, 1));
+  line-height: 1.25;
+  min-height: calc(14px * var(--dialogue-ui-scale, 1));
+  padding: calc(2px * var(--dialogue-ui-scale, 1)) calc(10px * var(--dialogue-ui-scale, 1)) calc(2px * var(--dialogue-ui-scale, 1)) calc(18px * var(--dialogue-ui-scale, 1));
+}
+
+.dialogue-overlay[data-dialogue-style="dual-fullbody-veil"].choices-active .choice-list .choice-btn.selected::before {
+  font-size: calc(5.5px * var(--dialogue-ui-scale, 1));
+  left: calc(6px * var(--dialogue-ui-scale, 1));
+}
+
+.dialogue-overlay[data-dialogue-style="dual-fullbody-veil"].choices-active .choice-prompt-row {
+  font-size: calc(9.5px * var(--dialogue-ui-scale, 1));
+  margin-bottom: calc(3px * var(--dialogue-ui-scale, 1));
+  padding: calc(2px * var(--dialogue-ui-scale, 1)) calc(8px * var(--dialogue-ui-scale, 1)) calc(4px * var(--dialogue-ui-scale, 1));
 }
 
 /* ── 고전 · 윈도스킨 ── 자료집 시스템 그림(system.systemResourceId)을 9칸으로 편다. */

@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-17T18:28:09.846Z",
+  "generatedAt": "2026-10-18T04:28:45.270Z",
   "metrics": {
-    "hexLiterals": 2557,
+    "hexLiterals": 2574,
     "important": 303,
     "undefinedVars": 60,
     "globalRootFiles": 10,
@@ -152,7 +152,7 @@
       "src/styles/runtime/emeraldTrainerIntro.css": 3,
       "src/styles/runtime/fieldHud.css": 62,
       "src/styles/runtime/galleryMenu.css": 3,
-      "src/styles/runtime/gameOver.css": 31,
+      "src/styles/runtime/gameOver.css": 48,
       "src/styles/runtime/keyboardNav.css": 6,
       "src/styles/runtime/minimap.css": 2,
       "src/styles/runtime/monsterCampaignMenu.css": 20,

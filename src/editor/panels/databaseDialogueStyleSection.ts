@@ -28,6 +28,7 @@ import {
   type DialogueStyleId,
 } from "@/project/dialogueStyles";
 import { FONT_REGISTRY, isFontFamilyId } from "@/project/fontRegistry";
+import { ensureHighResFullbodyPlayResolution } from "@/project/playResolution";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
 
@@ -257,7 +258,10 @@ function dialogueStyleGallery(
       if (selected === id) return;
       deps.updateSystem((draft) => {
         if (id === DEFAULT_DIALOGUE_STYLE_ID) delete draft.system.dialogueStyle;
-        else draft.system.dialogueStyle = id;
+        else {
+          draft.system.dialogueStyle = id;
+          if (id === "dual-fullbody-veil") ensureHighResFullbodyPlayResolution(draft.system);
+        }
       });
       selected = id;
       for (const [key, button] of cards) {

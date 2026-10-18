@@ -5,6 +5,30 @@ export const DEFAULT_PLAY_RESOLUTION: Readonly<PlayResolution> = Object.freeze({
   height: 240,
 });
 
+/** 전신 양쪽 스탠딩(dual-fullbody-veil) 대화창 프리셋의 기본 고해상도 논리 화면(1024×768, 4:3)과 카메라 배율(3.2배 = 20×15타일 시야 유지). */
+export const HIGH_RES_FULLBODY_PLAY_RESOLUTION: Readonly<PlayResolution> = Object.freeze({
+  width: 1024,
+  height: 768,
+});
+
+export const HIGH_RES_FULLBODY_CAMERA_ZOOM = 3.2;
+
+export function isCrampedFullbodyPlayResolution(
+  resolution: Readonly<PlayResolution> | undefined,
+): boolean {
+  return !resolution || (resolution.width <= 480 && resolution.height <= 320);
+}
+
+export function ensureHighResFullbodyPlayResolution(
+  system: Pick<SystemRecords, "playResolution" | "cameraZoom">,
+): boolean {
+  if (!isCrampedFullbodyPlayResolution(system.playResolution)) return false;
+  system.playResolution = { ...HIGH_RES_FULLBODY_PLAY_RESOLUTION };
+  if (system.cameraZoom === undefined) {
+    system.cameraZoom = HIGH_RES_FULLBODY_CAMERA_ZOOM;
+  }
+  return true;
+}
 export const PLAY_RESOLUTION_LIMITS = Object.freeze({
   minWidth: 320,
   maxWidth: 1920,
@@ -55,9 +79,13 @@ export function normalizePlayResolution(value: unknown): PlayResolution | undefi
 }
 
 export function resolvePlayResolution(
-  system: Pick<SystemRecords, "playResolution"> | undefined,
+  system: Pick<SystemRecords, "playResolution" | "dialogueStyle"> | undefined,
 ): Readonly<PlayResolution> {
-  return normalizePlayResolution(system?.playResolution) ?? DEFAULT_PLAY_RESOLUTION;
+  const normalized = normalizePlayResolution(system?.playResolution);
+  if (system?.dialogueStyle === "dual-fullbody-veil" && isCrampedFullbodyPlayResolution(normalized)) {
+    return HIGH_RES_FULLBODY_PLAY_RESOLUTION;
+  }
+  return normalized ?? DEFAULT_PLAY_RESOLUTION;
 }
 
 export function analyzePlayResolution(

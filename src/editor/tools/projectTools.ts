@@ -528,7 +528,14 @@ const setProjectSettings: ToolDefinition = {
         if (!isDialogueStyleId(style)) throw new ToolError(`알 수 없는 대화창 스타일입니다: ${String(style)}. 가능: ${DIALOGUE_STYLE_IDS.join(", ")}`, { code: "invalid-args" });
         // 기본값은 저장하지 않는다 — normalizeSystemRecords 와 같은 계약.
         if (style === DEFAULT_DIALOGUE_STYLE_ID) delete draft.system.dialogueStyle;
-        else draft.system.dialogueStyle = style;
+        else {
+          draft.system.dialogueStyle = style;
+          if (style === "dual-fullbody-veil" && !args.playResolution && (!draft.system.playResolution || (draft.system.playResolution.width <= 480 && draft.system.playResolution.height <= 320))) {
+            draft.system.playResolution = { width: 1024, height: 768 };
+            if (draft.system.cameraZoom === undefined) draft.system.cameraZoom = 3.2;
+            changed.push("화면=1024x768");
+          }
+        }
         changed.push(`대화창=${DIALOGUE_STYLES[style].label}`);
       }
       const { font, speed, punctuationPause, fullPortraitHeight, fullPortraitDrop } = args.dialogue as Record<string, unknown>;
