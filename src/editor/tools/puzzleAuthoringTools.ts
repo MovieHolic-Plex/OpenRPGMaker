@@ -32,6 +32,7 @@ import { charsetGraphic, resolveGraphic } from "./eventCompile";
 import { ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
 import { mainComponent, sanitizeId, type Cell } from "./jrpgVolumeTools";
 import { requireMap } from "./mapHelpers";
+import { buildDramaticPuzzleStage } from "./puzzleStageScenery";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 export const PUZZLE_PRESET_IDS = [
@@ -982,8 +983,24 @@ const authorMapPuzzleTool: ToolDefinition = {
         ? { x: Math.trunc(args.x), y: Math.trunc(args.y) }
         : undefined;
 
-    const cluster = pickPuzzleCluster(draft, map, requestedAnchor, preset.requiredCells);
+    const landings = collectTransferLandings(draft, map.id);
+    const stagePlan = buildDramaticPuzzleStage(
+      draft,
+      map,
+      presetId,
+      baseId,
+      solveSwitchId,
+      requestedAnchor,
+      landings,
+    );
+    const cluster = stagePlan
+      ? { origin: stagePlan.origin, cells: stagePlan.cells, adjusted: false }
+      : pickPuzzleCluster(draft, map, requestedAnchor, preset.requiredCells);
     const cells = cluster.cells;
+    const resolveChangeTiles = (fallbackCells: readonly Cell[]): Command[] =>
+      stagePlan && stagePlan.changeTileCommands.length > 0
+        ? [...stagePlan.changeTileCommands]
+        : buildVerifiedChangeTileCommands(draft, map, fallbackCells);
     const reward = preparePuzzleReward(draft, preset, args.reward);
     const customTitle = typeof args.title === "string" && args.title.trim() ? args.title.trim() : undefined;
     const customHint = typeof args.hintText === "string" && args.hintText.trim() ? args.hintText.trim() : undefined;
@@ -1018,7 +1035,7 @@ const authorMapPuzzleTool: ToolDefinition = {
         const cGate = cells[1]!;
         const leverId = `ev_${baseId}_lever`;
         const gateId = `ev_${baseId}_passage`;
-        changeTileCmds = buildVerifiedChangeTileCommands(draft, map, [cGate, cLever]);
+        changeTileCmds = resolveChangeTiles([cGate, cLever]);
         const leverDown = objGraphic("object2", 0, "down");
         const leverUp = objGraphic("object2", 0, "up");
         const gateClosed = objGraphic("object1", 3, "down");
@@ -1118,7 +1135,7 @@ const authorMapPuzzleTool: ToolDefinition = {
         const clueId = `ev_${baseId}_clue`;
         const consoleId = `ev_${baseId}_console`;
         const gateId = `ev_${baseId}_gate`;
-        changeTileCmds = buildVerifiedChangeTileCommands(draft, map, [cGate, cConsole]);
+        changeTileCmds = resolveChangeTiles([cGate, cConsole]);
         const consoleDown = objGraphic("object2", 0, "down");
         const consoleUp = objGraphic("object2", 0, "up");
 
@@ -1273,7 +1290,7 @@ const authorMapPuzzleTool: ToolDefinition = {
         const organId = `ev_${baseId}_organ`;
         const scoreId = `ev_${baseId}_score`;
         const stairId = `ev_${baseId}_stair`;
-        changeTileCmds = buildVerifiedChangeTileCommands(draft, map, [cStair, cOrgan]);
+        changeTileCmds = resolveChangeTiles([cStair, cOrgan]);
 
         const scoreEvent: GameEvent = {
           id: scoreId,
@@ -1427,7 +1444,7 @@ const authorMapPuzzleTool: ToolDefinition = {
         ensureNamedSwitch(draft, swB3, "제3화로 점화");
         switchIds.push(swB1, swB2, swB3);
 
-        changeTileCmds = buildVerifiedChangeTileCommands(draft, map, [cSeal, cB1, cB2, cB3]);
+        changeTileCmds = resolveChangeTiles([cSeal, cB1, cB2, cB3]);
         const unlitGraphic = objGraphic("object2", 3, "down");
         const litGraphic = objGraphic("object2", 6, "down");
 
@@ -1452,6 +1469,7 @@ const authorMapPuzzleTool: ToolDefinition = {
             particles("fire", 700),
             { kind: "setVariable", variableId: progressVar, op: "=", value: idx },
             { kind: "setSwitch", switchId: swId, value: true },
+            ...(stagePlan?.stepChangeTileCommands[`brazier_${idx}`] ?? []),
             textCmd(`화르륵! 제${idx}화로에 붉은 성화가 타올랐다! (${idx}/3)`),
             ...(isFinal
               ? [
@@ -1524,7 +1542,7 @@ const authorMapPuzzleTool: ToolDefinition = {
               id: `${sealId}_open`,
               name: "화염 봉인문 (개방)",
               conditions: [{ kind: "switch", switchId: solveSwitchId, value: true }],
-              graphic: objGraphic("object1", 5, "up"),
+              graphic: { transparent: true },
               priority: "below",
               overlapForbidden: false,
               commands: [textCmd("세 화로의 불길로 봉인이 풀린 통로다.")],
@@ -1554,7 +1572,7 @@ const authorMapPuzzleTool: ToolDefinition = {
         ensureNamedSwitch(draft, swP2, "제2 압력 발판 작동");
         switchIds.push(swP1, swP2);
 
-        changeTileCmds = buildVerifiedChangeTileCommands(draft, map, [cGate, cP1, cP2]);
+        changeTileCmds = resolveChangeTiles([cGate, cP1, cP2]);
         const plateFresh = objGraphic("object2", 4, "down");
         const platePressed = objGraphic("object2", 2, "down");
 
@@ -1589,6 +1607,7 @@ const authorMapPuzzleTool: ToolDefinition = {
                 commands: [
                   se("key"),
                   { kind: "setSwitch", switchId: swId, value: true },
+                  ...(idx === 1 ? (stagePlan?.stepChangeTileCommands.plate_1 ?? []) : []),
                   textCmd(`딸깍! 제${idx} 석상 발판이 바닥으로 깊숙이 눌렸다.`),
                   ...allSwitchesFork([swP1, swP2], unlockSequence),
                 ],
@@ -1629,7 +1648,7 @@ const authorMapPuzzleTool: ToolDefinition = {
               id: `${gateId}_open`,
               name: "유적 석문 (개방)",
               conditions: [{ kind: "switch", switchId: solveSwitchId, value: true }],
-              graphic: objGraphic("object1", 3, "up"),
+              graphic: { transparent: true },
               priority: "below",
               overlapForbidden: false,
               commands: [textCmd("압력 발판 장치로 열린 고대 유적 석문이다.")],
@@ -1654,7 +1673,7 @@ const authorMapPuzzleTool: ToolDefinition = {
         const leverId = `ev_${baseId}_diverter`;
         const slideId = `ev_${baseId}_slide`;
         const boulderId = `ev_${baseId}_boulder`;
-        changeTileCmds = buildVerifiedChangeTileCommands(draft, map, [cSlide, cBoulder]);
+        changeTileCmds = resolveChangeTiles([cSlide, cBoulder]);
         const leverDown = objGraphic("object2", 0, "down");
         const leverUp = objGraphic("object2", 0, "up");
 
@@ -1813,7 +1832,7 @@ const authorMapPuzzleTool: ToolDefinition = {
         ensureNamedSwitch(draft, seededSwitchId, `${preset.title} 과거 공명 완료`);
         switchIds.push(seededSwitchId);
 
-        const pastTileCmds = buildVerifiedChangeTileCommands(draft, map, [cPast]);
+        const pastTileCmds = resolveChangeTiles([cPast]);
         const futureTileCmds = buildVerifiedChangeTileCommands(draft, targetMap, [cFuture]);
         changeTileCmds = [...pastTileCmds, ...futureTileCmds];
 
@@ -1953,7 +1972,7 @@ const authorMapPuzzleTool: ToolDefinition = {
           );
         }
 
-        changeTileCmds = buildVerifiedChangeTileCommands(draft, map, [cBoulder]);
+        changeTileCmds = resolveChangeTiles([cBoulder]);
         const supplyId = `ev_${baseId}_supply`;
         const boulderId = `ev_${baseId}_boulder`;
         const crateClosed = objGraphic("object1", 7, "down");
@@ -2053,10 +2072,11 @@ const authorMapPuzzleTool: ToolDefinition = {
         const cDecoy1 = cells[1]!;
         const cDecoy2 = cells[2]!;
         const cTrue = cells[3]!;
-        changeTileCmds = buildVerifiedChangeTileCommands(draft, map, [cTrue]);
+        changeTileCmds = resolveChangeTiles([cTrue]);
         const trueClosed = objGraphic("object1", 6, "down");
         const trueOpened = chestOpenedGraphic(trueClosed);
         const decoyGraphic = objGraphic("object1", 7, "down");
+        const decoy2Graphic = objGraphic("object2", 7, "down");
 
         const tabletId = `ev_${baseId}_tablet`;
         const decoy1Id = `ev_${baseId}_chest_decoy1`;
@@ -2119,7 +2139,7 @@ const authorMapPuzzleTool: ToolDefinition = {
             makePage({
               id: `${decoy2Id}_p1`,
               name: "나무 상자 B (함정)",
-              graphic: decoyGraphic,
+              graphic: decoy2Graphic,
               commands: [
                 se("buzzer1"),
                 flash("red", 250),
@@ -2179,7 +2199,7 @@ const authorMapPuzzleTool: ToolDefinition = {
         const cBridge2 = cells[2]!;
         const valveId = `ev_${baseId}_valve`;
         const gateId = `ev_${baseId}_sluice_gate`;
-        changeTileCmds = buildVerifiedChangeTileCommands(draft, map, [cBridge1, cBridge2, cValve]);
+        changeTileCmds = resolveChangeTiles([cBridge1, cBridge2, cValve]);
         const valveDown = objGraphic("object2", 0, "down");
         const valveUp = objGraphic("object2", 0, "up");
 
@@ -2278,7 +2298,7 @@ const authorMapPuzzleTool: ToolDefinition = {
         ensureNamedSwitch(draft, distractedSwitchId, "경비병 유인 완료");
         switchIds.push(distractedSwitchId);
 
-        changeTileCmds = buildVerifiedChangeTileCommands(draft, map, [cGuard, cCache]);
+        changeTileCmds = resolveChangeTiles([cGuard, cCache]);
         const bellId = `ev_${baseId}_bell`;
         const guardId = `ev_${baseId}_guard`;
         const cacheId = `ev_${baseId}_cache`;
@@ -2446,7 +2466,7 @@ const authorMapPuzzleTool: ToolDefinition = {
         ensureNamedSwitch(draft, swM3, "별의 봉인 비석 해제");
         switchIds.push(swM1, swM2, swM3);
 
-        changeTileCmds = buildVerifiedChangeTileCommands(draft, map, [cBossGate, cM1, cM2, cM3]);
+        changeTileCmds = resolveChangeTiles([cBossGate, cM1, cM2, cM3]);
         const dormantMono = objGraphic("object2", 3, "down");
         const activeMono = objGraphic("object2", 6, "down");
 
@@ -2487,6 +2507,7 @@ const authorMapPuzzleTool: ToolDefinition = {
                   flash("white", 250),
                   particles("magic", 700),
                   { kind: "setSwitch", switchId: spec.swId, value: true },
+                  ...(stagePlan?.stepChangeTileCommands[`monolith_${spec.idx}`] ?? []),
                   textCmd(`「${spec.label}」에 손을 대자 고대 룬이 푸른 크리스탈 빛으로 깨어났다!`),
                   ...allSwitchesFork([swM1, swM2, swM3], unsealAllSequence),
                 ],
@@ -2528,7 +2549,7 @@ const authorMapPuzzleTool: ToolDefinition = {
               id: `${bossGateId}_unsealed`,
               name: "보스 결계문 (해제됨)",
               conditions: [{ kind: "switch", switchId: solveSwitchId, value: true }],
-              graphic: objGraphic("object1", 4, "up"),
+              graphic: objGraphic("object2", 6, "up"),
               priority: "below",
               overlapForbidden: false,
               commands: [textCmd("3비석의 공명으로 봉인 결계가 완전히 걷혔다.")],
@@ -2544,6 +2565,9 @@ const authorMapPuzzleTool: ToolDefinition = {
         ];
         break;
       }
+    }
+    for (const extra of stagePlan?.extraEvents ?? []) {
+      registerEvent(map, extra.event, extra.role);
     }
 
     // 선택적 기존 출입구 잠금 연동

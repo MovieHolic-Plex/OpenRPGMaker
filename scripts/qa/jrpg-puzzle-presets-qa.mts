@@ -201,8 +201,8 @@ assert.equal(p2.ok, true, p2.summary);
 // Room 3: 마왕성 예배당 · 석상 압력 발판 스위치 퍼즐 (statue_pressure_plates)
 runTool(playCtx, "create_map", {
   id: "map_p3_plates",
-  name: "마왕성 예배당 · 쌍둥이 석상 압력 발판",
-  themeScene: "gothic:chapel",
+  name: "마왕성 회랑 광장 · 쌍둥이 석상 압력 발판과 3×4 돌다리",
+  themeScene: "gothic:gallery-plaza",
   seed: 13,
 });
 const p3 = runTool(playCtx, "author_map_puzzle", {
@@ -231,8 +231,8 @@ assert.equal(p4.ok, true, p4.summary);
 // Room 5: 케프카의 탑 · 미믹/진실의 보물상자 수수께끼 (riddle_mimic_chests)
 runTool(playCtx, "build_hand_interior_room", {
   mapId: "map_p5_riddle",
-  name: "조조 시계탑 금고 · 진실의 상자 수수께끼",
-  layout: { program: "zozo", seed: 15 },
+  name: "조조 시계탑 대금고 · 삼색 상자 수수께끼와 2×2 비밀 계단",
+  layout: { program: "chapel", seed: 15 },
 });
 const p5 = runTool(playCtx, "author_map_puzzle", {
   mapId: "map_p5_riddle",
@@ -258,12 +258,19 @@ const p6 = runTool(playCtx, "author_map_puzzle", {
 assert.equal(p6.ok, true, p6.summary);
 
 // 시작 맵을 map_p1_cathedral 로 설정
-const p1Data = p1.data as { origin: { x: number; y: number }; events: Array<{ id: string; x: number; y: number; role: string }>; solveSwitchId: string };
-const p2Data = p2.data as { origin: { x: number; y: number }; events: Array<{ id: string; x: number; y: number; role: string }>; solveSwitchId: string };
-const p3Data = p3.data as { origin: { x: number; y: number }; events: Array<{ id: string; x: number; y: number; role: string }>; solveSwitchId: string };
-const p4Data = p4.data as { origin: { x: number; y: number }; events: Array<{ id: string; x: number; y: number; role: string }>; solveSwitchId: string };
-const p5Data = p5.data as { origin: { x: number; y: number }; events: Array<{ id: string; x: number; y: number; role: string }>; solveSwitchId: string };
-const p6Data = p6.data as { origin: { x: number; y: number }; events: Array<{ id: string; x: number; y: number; role: string }>; solveSwitchId: string };
+interface PuzzleRunData {
+  origin: { x: number; y: number };
+  events: Array<{ id: string; name: string; x: number; y: number; role: string }>;
+  changeTileCount: number;
+  changeTileCommands: Array<{ x: number; y: number; layer: string; tile: number }>;
+  solveSwitchId: string;
+}
+const p1Data = p1.data as PuzzleRunData;
+const p2Data = p2.data as PuzzleRunData;
+const p3Data = p3.data as PuzzleRunData;
+const p4Data = p4.data as PuzzleRunData;
+const p5Data = p5.data as PuzzleRunData;
+const p6Data = p6.data as PuzzleRunData;
 
 playCtx.project.startMapId = "map_p1_cathedral";
 playCtx.project.startPos = { x: p1Data.origin.x, y: p1Data.origin.y };
@@ -499,6 +506,97 @@ try {
   };
 
   const playProofs: Record<string, unknown> = {};
+  const captureStationaryVantage = async (
+    mapId: string,
+    vantageX: number,
+    vantageY: number,
+    outPath: string,
+  ): Promise<void> => {
+    await flushDialogue();
+    await page.evaluate(
+      ([m, x, y]) => {
+        window.__oprnDebug.teleport(String(m), Number(x), Number(y));
+        window.__oprnInput.face("up");
+      },
+      [mapId, vantageX, vantageY],
+    );
+    await page.waitForTimeout(550);
+    await page.screenshot({ path: outPath });
+  };
+
+  const computeImageDiffMetrics = async (
+    beforePath: string,
+    afterPath: string,
+  ): Promise<{
+    totalPixels: number;
+    changedPixels: number;
+    changedViewportPct: number;
+    stagePixels: number;
+    stageChangedPixels: number;
+    stageChangedPct: number;
+  }> => {
+    const b64Before = fs.readFileSync(beforePath).toString("base64");
+    const b64After = fs.readFileSync(afterPath).toString("base64");
+    return page.evaluate(
+      async ([srcA, srcB]) => {
+        const loadImg = (src: string) =>
+          new Promise<HTMLImageElement>((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = `data:image/png;base64,${src}`;
+          });
+        const [imgA, imgB] = await Promise.all([loadImg(String(srcA)), loadImg(String(srcB))]);
+        const w = imgA.width;
+        const h = imgA.height;
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d")!;
+        ctx.drawImage(imgA, 0, 0);
+        const dataA = ctx.getImageData(0, 0, w, h).data;
+        ctx.clearRect(0, 0, w, h);
+        ctx.drawImage(imgB, 0, 0);
+        const dataB = ctx.getImageData(0, 0, w, h).data;
+
+        let changedPixels = 0;
+        let stagePixels = 0;
+        let stageChangedPixels = 0;
+        const sx0 = Math.floor(w * 0.25);
+        const sx1 = Math.floor(w * 0.75);
+        const sy0 = Math.floor(h * 0.12);
+        const sy1 = Math.floor(h * 0.72);
+
+        for (let y = 0; y < h; y += 1) {
+          for (let x = 0; x < w; x += 1) {
+            const i = (y * w + x) * 4;
+            const diff =
+              Math.abs((dataA[i] ?? 0) - (dataB[i] ?? 0)) +
+              Math.abs((dataA[i + 1] ?? 0) - (dataB[i + 1] ?? 0)) +
+              Math.abs((dataA[i + 2] ?? 0) - (dataB[i + 2] ?? 0));
+            const isChanged = diff > 24;
+            if (isChanged) changedPixels += 1;
+            if (x >= sx0 && x <= sx1 && y >= sy0 && y <= sy1) {
+              stagePixels += 1;
+              if (isChanged) stageChangedPixels += 1;
+            }
+          }
+        }
+        const totalPixels = w * h;
+        return {
+          totalPixels,
+          changedPixels,
+          changedViewportPct: Number(((changedPixels / totalPixels) * 100).toFixed(2)),
+          stagePixels,
+          stageChangedPixels,
+          stageChangedPct: Number(((stageChangedPixels / stagePixels) * 100).toFixed(2)),
+        };
+      },
+      [b64Before, b64After],
+    );
+  };
+
+  const vqaMetrics: Record<string, unknown> = {};
 
   // --------------------------------------------------------------------------
   // Play 1: 대성당 파이프 오르간·별자리 조율 퍼즐 (cathedral_organ_tuning)
@@ -510,11 +608,19 @@ try {
     const organEv = p1Data.events[1]!;
     const stairEv = p1Data.events[2]!;
 
-    // 1. 잠긴 계단 확인 (Before)
-    await standNextAndFace("map_p1_cathedral", stairEv.x, stairEv.y);
+    const vantageX = stairEv.x;
+    const vantageY = stairEv.y + 1;
+
+    // 1. Before: 정지 시점(대사창 없음)에서 4×3 성당 봉인 석벽 & 철창문 촬영
+    await captureStationaryVantage(
+      "map_p1_cathedral",
+      vantageX,
+      vantageY,
+      path.join(OUT_DIR, "p1-organ-before.png"),
+    );
+    await rec.snap();
     await page.keyboard.press("Enter");
     await finishTypingIfOpen();
-    await page.screenshot({ path: path.join(OUT_DIR, "p1-organ-before.png") });
     await rec.snap();
     await flushDialogue();
 
@@ -539,15 +645,24 @@ try {
       await rec.snap();
     }, p1Data.solveSwitchId);
 
-    // 4. 개방된 계단 위/앞 확인 (Unlocked)
-    await standNextAndFace("map_p1_cathedral", stairEv.x, stairEv.y);
-    await page.keyboard.press("Enter");
-    await finishTypingIfOpen();
-    await page.screenshot({ path: path.join(OUT_DIR, "p1-organ-unlocked.png") });
-    await rec.snap();
-    await flushDialogue();
+    // 4. Unlocked: 정확히 동일한 시점(대사창 없음)에서 개방된 4×3 황금 카펫 회랑 + 대계단 + 보물상자 + 성소 크리스탈 촬영
+    await captureStationaryVantage(
+      "map_p1_cathedral",
+      vantageX,
+      vantageY,
+      path.join(OUT_DIR, "p1-organ-unlocked.png"),
+    );
     await rec.snap();
     rec.finishGif(path.join(OUT_DIR, "p1-organ-flow.gif"), 2);
+
+    const diff = await computeImageDiffMetrics(
+      path.join(OUT_DIR, "p1-organ-before.png"),
+      path.join(OUT_DIR, "p1-organ-unlocked.png"),
+    );
+    const distinctCells = new Set(p1Data.changeTileCommands.map((c) => `${c.x},${c.y}`)).size;
+    vqaMetrics.p1_organ = { ...diff, changeTileCount: p1Data.changeTileCount, distinctCells };
+    console.log("      P1 VQA diff:", vqaMetrics.p1_organ);
+    assert.ok(diff.stageChangedPct >= 15, `P1 stage visual diff too small: ${diff.stageChangedPct}%`);
 
     const st = await readState();
     assert.equal(st.switches[p1Data.solveSwitchId], true, "Puzzle 1 solveSwitch must be true");
@@ -565,13 +680,17 @@ try {
     const b3 = p2Data.events[2]!;
     const seal = p2Data.events[3]!;
 
-    // Before: 꺼진 화로 & 잠긴 화염문
-    await standNextAndFace("map_p2_brazier", seal.x, seal.y);
-    await page.keyboard.press("Enter");
-    await finishTypingIfOpen();
-    await page.screenshot({ path: path.join(OUT_DIR, "p2-brazier-before.png") });
+    const vantageX = seal.x;
+    const vantageY = seal.y + 2;
+
+    // Before: 정지 시점(대사창 없음)에서 꺼진 3화로 + 5×3 용암 해자 & 5×2 검은 화염/가시 결계 촬영
+    await captureStationaryVantage(
+      "map_p2_brazier",
+      vantageX,
+      vantageY,
+      path.join(OUT_DIR, "p2-brazier-before.png"),
+    );
     await rec.snap();
-    await flushDialogue();
 
     // 제1화로 점화
     await standNextAndFace("map_p2_brazier", b1.x, b1.y);
@@ -580,7 +699,7 @@ try {
     await rec.snap();
     await flushDialogue();
 
-    // 제2화로 점화 (Solving)
+    // 제2화로 점화 (Solving: 제1·제2화로 점화 + 불꽃 타일 455 점화 상태)
     await standNextAndFace("map_p2_brazier", b2.x, b2.y);
     await page.keyboard.press("Enter");
     await finishTypingIfOpen();
@@ -588,7 +707,7 @@ try {
     await rec.snap();
     await flushDialogue();
 
-    // 제3화로 점화 -> 화염 봉인문 개방!
+    // 제3화로 점화 -> 5×3 대리석 다리 & 횃불 기둥 개방 + 수호자 보물상자 출현!
     await standNextAndFace("map_p2_brazier", b3.x, b3.y);
     await page.keyboard.press("Enter");
     await page.waitForTimeout(350);
@@ -597,11 +716,23 @@ try {
       await rec.snap();
     }, p2Data.solveSwitchId);
 
-    await standNextAndFace("map_p2_brazier", seal.x, seal.y);
-    await page.waitForTimeout(350);
-    await page.screenshot({ path: path.join(OUT_DIR, "p2-brazier-unlocked.png") });
+    await captureStationaryVantage(
+      "map_p2_brazier",
+      vantageX,
+      vantageY,
+      path.join(OUT_DIR, "p2-brazier-unlocked.png"),
+    );
     await rec.snap();
     rec.finishGif(path.join(OUT_DIR, "p2-brazier-flow.gif"), 2);
+
+    const diff = await computeImageDiffMetrics(
+      path.join(OUT_DIR, "p2-brazier-before.png"),
+      path.join(OUT_DIR, "p2-brazier-unlocked.png"),
+    );
+    const distinctCells = new Set(p2Data.changeTileCommands.map((c) => `${c.x},${c.y}`)).size;
+    vqaMetrics.p2_brazier = { ...diff, changeTileCount: p2Data.changeTileCount, distinctCells };
+    console.log("      P2 VQA diff:", vqaMetrics.p2_brazier);
+    assert.ok(diff.stageChangedPct >= 15, `P2 stage visual diff too small: ${diff.stageChangedPct}%`);
 
     const st = await readState();
     assert.equal(st.switches[p2Data.solveSwitchId], true, "Puzzle 2 solveSwitch must be true");
@@ -618,33 +749,49 @@ try {
     const plateB = p3Data.events[1]!;
     const gate = p3Data.events[2]!;
 
-    // Before: 잠긴 제단문
-    await standNextAndFace("map_p3_plates", gate.x, gate.y);
-    await page.keyboard.press("Enter");
-    await finishTypingIfOpen();
-    await page.screenshot({ path: path.join(OUT_DIR, "p3-plates-before.png") });
-    await rec.snap();
-    await flushDialogue();
+    const vantageX = gate.x;
+    const vantageY = gate.y + 1;
 
-    // 서쪽 발판 밟기 (playerTouch)
+    // Before: 정지 시점(대사창 없음)에서 5×4 칠흑 심연 낭떠러지 & 석상 발판 촬영
+    await captureStationaryVantage(
+      "map_p3_plates",
+      vantageX,
+      vantageY,
+      path.join(OUT_DIR, "p3-plates-before.png"),
+    );
+    await rec.snap();
+
+    // 서쪽 발판 밟기 (playerTouch) -> 석상 이동 + 중앙 교각 일부 융기 (Solving)
     await stepOntoCell("map_p3_plates", plateA.x, plateA.y);
     await finishTypingIfOpen();
     await page.screenshot({ path: path.join(OUT_DIR, "p3-plates-solving.png") });
     await rec.snap();
     await flushDialogue();
 
-    // 동쪽 발판 밟기 -> 제단문 개방!
+    // 동쪽 발판 밟기 -> 3×4 돌다리 12칸 + 난간 가로등/촛대 완전 융기 + 황금 상자 출현!
     await stepOntoCell("map_p3_plates", plateB.x, plateB.y);
     await rec.snap();
     await flushDialogue(async () => {
       await rec.snap();
     }, p3Data.solveSwitchId);
 
-    await standNextAndFace("map_p3_plates", gate.x, gate.y);
-    await page.waitForTimeout(350);
-    await page.screenshot({ path: path.join(OUT_DIR, "p3-plates-unlocked.png") });
+    await captureStationaryVantage(
+      "map_p3_plates",
+      vantageX,
+      vantageY,
+      path.join(OUT_DIR, "p3-plates-unlocked.png"),
+    );
     await rec.snap();
     rec.finishGif(path.join(OUT_DIR, "p3-plates-flow.gif"), 2);
+
+    const diff = await computeImageDiffMetrics(
+      path.join(OUT_DIR, "p3-plates-before.png"),
+      path.join(OUT_DIR, "p3-plates-unlocked.png"),
+    );
+    const distinctCells = new Set(p3Data.changeTileCommands.map((c) => `${c.x},${c.y}`)).size;
+    vqaMetrics.p3_plates = { ...diff, changeTileCount: p3Data.changeTileCount, distinctCells };
+    console.log("      P3 VQA diff:", vqaMetrics.p3_plates);
+    assert.ok(diff.stageChangedPct >= 15, `P3 stage visual diff too small: ${diff.stageChangedPct}%`);
 
     const st = await readState();
     assert.equal(st.switches[p3Data.solveSwitchId], true, "Puzzle 3 solveSwitch must be true");
@@ -660,15 +807,19 @@ try {
     const supply = p4Data.events[0]!;
     const boulder = p4Data.events[1]!;
 
-    // Before: 다이너마이트 없이 낙석 조사 (막힘)
-    await standNextAndFace("map_p4_dynamite", boulder.x, boulder.y);
-    await page.keyboard.press("Enter");
-    await finishTypingIfOpen();
-    await page.screenshot({ path: path.join(OUT_DIR, "p4-dynamite-before.png") });
-    await rec.snap();
-    await flushDialogue();
+    const vantageX = boulder.x;
+    const vantageY = boulder.y + 1;
 
-    // 보급 상자에서 다이너마이트 입수
+    // Before: 정지 시점(대사창 없음)에서 5×3 거대 낙석 바위 더미 + 옆에 놓인 다이너마이트 화약통 촬영
+    await captureStationaryVantage(
+      "map_p4_dynamite",
+      vantageX,
+      vantageY,
+      path.join(OUT_DIR, "p4-dynamite-before.png"),
+    );
+    await rec.snap();
+
+    // 보급 상자에서 다이너마이트 입수 (Solving)
     await standNextAndFace("map_p4_dynamite", supply.x, supply.y);
     await page.keyboard.press("Enter");
     await finishTypingIfOpen();
@@ -676,7 +827,7 @@ try {
     await rec.snap();
     await flushDialogue();
 
-    // 낙석 바위 폭파!
+    // 낙석 바위 폭파! -> 5×3 암반이 광차 철길 + 발광 광맥 + 보물상자로 개방!
     await standNextAndFace("map_p4_dynamite", boulder.x, boulder.y);
     await page.keyboard.press("Enter");
     await page.waitForTimeout(350);
@@ -685,10 +836,23 @@ try {
       await rec.snap();
     }, p4Data.solveSwitchId);
 
-    await page.waitForTimeout(350);
-    await page.screenshot({ path: path.join(OUT_DIR, "p4-dynamite-unlocked.png") });
+    await captureStationaryVantage(
+      "map_p4_dynamite",
+      vantageX,
+      vantageY,
+      path.join(OUT_DIR, "p4-dynamite-unlocked.png"),
+    );
     await rec.snap();
     rec.finishGif(path.join(OUT_DIR, "p4-dynamite-flow.gif"), 2);
+
+    const diff = await computeImageDiffMetrics(
+      path.join(OUT_DIR, "p4-dynamite-before.png"),
+      path.join(OUT_DIR, "p4-dynamite-unlocked.png"),
+    );
+    const distinctCells = new Set(p4Data.changeTileCommands.map((c) => `${c.x},${c.y}`)).size;
+    vqaMetrics.p4_dynamite = { ...diff, changeTileCount: p4Data.changeTileCount, distinctCells };
+    console.log("      P4 VQA diff:", vqaMetrics.p4_dynamite);
+    assert.ok(diff.stageChangedPct >= 15, `P4 stage visual diff too small: ${diff.stageChangedPct}%`);
 
     const st = await readState();
     assert.equal(st.switches[p4Data.solveSwitchId], true, "Puzzle 4 solveSwitch must be true");
@@ -705,15 +869,26 @@ try {
     const wrongChest = p5Data.events[1]!;
     const trueChest = p5Data.events[3]!;
 
-    // Before: 비석 수수께끼 읽기
+    const vantageX = trueChest.x;
+    const vantageY = trueChest.y + 2;
+
+    // Before: 정지 시점(대사창 없음)에서 해자/울타리에 둘러싸인 잠긴 제단 위 3색 상자 촬영
+    await captureStationaryVantage(
+      "map_p5_riddle",
+      vantageX,
+      vantageY,
+      path.join(OUT_DIR, "p5-riddle-before.png"),
+    );
+    await rec.snap();
+
+    // 비석 수수께끼 읽기
     await standNextAndFace("map_p5_riddle", tablet.x, tablet.y);
     await page.keyboard.press("Enter");
     await finishTypingIfOpen();
-    await page.screenshot({ path: path.join(OUT_DIR, "p5-riddle-before.png") });
     await rec.snap();
     await flushDialogue();
 
-    // 오답 상자(붉은 상자) 건드려 미믹 함정 확인 (Solving)
+    // 오답 상자 건드려 미믹 함정 확인 (Solving)
     await standNextAndFace("map_p5_riddle", wrongChest.x, wrongChest.y);
     await page.keyboard.press("Enter");
     await finishTypingIfOpen();
@@ -721,7 +896,7 @@ try {
     await rec.snap();
     await flushDialogue();
 
-    // 정답 상자(황금 상자) 개봉!
+    // 정답 상자 개봉! -> 진실의 상자 열림 + 2×2 지하 비밀 계단 개방 + 발광 성유물 출현!
     await standNextAndFace("map_p5_riddle", trueChest.x, trueChest.y);
     await page.keyboard.press("Enter");
     await page.waitForTimeout(350);
@@ -730,10 +905,23 @@ try {
       await rec.snap();
     }, p5Data.solveSwitchId);
 
-    await page.waitForTimeout(350);
-    await page.screenshot({ path: path.join(OUT_DIR, "p5-riddle-unlocked.png") });
+    await captureStationaryVantage(
+      "map_p5_riddle",
+      vantageX,
+      vantageY,
+      path.join(OUT_DIR, "p5-riddle-unlocked.png"),
+    );
     await rec.snap();
     rec.finishGif(path.join(OUT_DIR, "p5-riddle-flow.gif"), 2);
+
+    const diff = await computeImageDiffMetrics(
+      path.join(OUT_DIR, "p5-riddle-before.png"),
+      path.join(OUT_DIR, "p5-riddle-unlocked.png"),
+    );
+    const distinctCells = new Set(p5Data.changeTileCommands.map((c) => `${c.x},${c.y}`)).size;
+    vqaMetrics.p5_riddle = { ...diff, changeTileCount: p5Data.changeTileCount, distinctCells };
+    console.log("      P5 VQA diff:", vqaMetrics.p5_riddle);
+    assert.ok(diff.stageChangedPct >= 15, `P5 stage visual diff too small: ${diff.stageChangedPct}%`);
 
     const st = await readState();
     assert.equal(st.switches[p5Data.solveSwitchId], true, "Puzzle 5 solveSwitch must be true");
@@ -751,13 +939,17 @@ try {
     const m3 = p6Data.events[2]!;
     const gate = p6Data.events[3]!;
 
-    // Before: 봉인된 보스 결계문 확인
-    await standNextAndFace("map_p6_monoliths", gate.x, gate.y);
-    await page.keyboard.press("Enter");
-    await finishTypingIfOpen();
-    await page.screenshot({ path: path.join(OUT_DIR, "p6-monoliths-before.png") });
+    const vantageX = gate.x;
+    const vantageY = gate.y + 1;
+
+    // Before: 정지 시점(대사창 없음)에서 어두운 3비석 & 봉인된 4×4 보스 포털 링 촬영
+    await captureStationaryVantage(
+      "map_p6_monoliths",
+      vantageX,
+      vantageY,
+      path.join(OUT_DIR, "p6-monoliths-before.png"),
+    );
     await rec.snap();
-    await flushDialogue();
 
     // 태양 비석 공명
     await standNextAndFace("map_p6_monoliths", m1.x, m1.y);
@@ -766,7 +958,7 @@ try {
     await rec.snap();
     await flushDialogue();
 
-    // 달 비석 공명 (Solving)
+    // 달 비석 공명 (Solving: 2기 비석 발광 부유 수정으로 활성화!)
     await standNextAndFace("map_p6_monoliths", m2.x, m2.y);
     await page.keyboard.press("Enter");
     await finishTypingIfOpen();
@@ -774,7 +966,7 @@ try {
     await rec.snap();
     await flushDialogue();
 
-    // 별 비석 공명 -> 3비석 동시 공명 & 결계 해제!
+    // 별 비석 공명 -> 3비석 동시 발광 + 4×4 보스 포털 마법진 & 수정 신전 제단 + 성역 다리 개방!
     await standNextAndFace("map_p6_monoliths", m3.x, m3.y);
     await page.keyboard.press("Enter");
     await page.waitForTimeout(350);
@@ -783,11 +975,23 @@ try {
       await rec.snap();
     }, p6Data.solveSwitchId);
 
-    await standNextAndFace("map_p6_monoliths", gate.x, gate.y);
-    await page.waitForTimeout(350);
-    await page.screenshot({ path: path.join(OUT_DIR, "p6-monoliths-unlocked.png") });
+    await captureStationaryVantage(
+      "map_p6_monoliths",
+      vantageX,
+      vantageY,
+      path.join(OUT_DIR, "p6-monoliths-unlocked.png"),
+    );
     await rec.snap();
     rec.finishGif(path.join(OUT_DIR, "p6-monoliths-flow.gif"), 2);
+
+    const diff = await computeImageDiffMetrics(
+      path.join(OUT_DIR, "p6-monoliths-before.png"),
+      path.join(OUT_DIR, "p6-monoliths-unlocked.png"),
+    );
+    const distinctCells = new Set(p6Data.changeTileCommands.map((c) => `${c.x},${c.y}`)).size;
+    vqaMetrics.p6_monoliths = { ...diff, changeTileCount: p6Data.changeTileCount, distinctCells };
+    console.log("      P6 VQA diff:", vqaMetrics.p6_monoliths);
+    assert.ok(diff.stageChangedPct >= 15, `P6 stage visual diff too small: ${diff.stageChangedPct}%`);
 
     const st = await readState();
     assert.equal(st.switches[p6Data.solveSwitchId], true, "Puzzle 6 solveSwitch must be true");
@@ -795,7 +999,7 @@ try {
   }
 
   // 썸네일 복사
-  fs.copyFileSync(path.join(OUT_DIR, "p1-organ-solving.png"), path.join(THUMB_DIR, "jrpg-puzzle-presets-1.png"));
+  fs.copyFileSync(path.join(OUT_DIR, "p1-organ-unlocked.png"), path.join(THUMB_DIR, "jrpg-puzzle-presets-1.png"));
   fs.copyFileSync(path.join(OUT_DIR, "p6-monoliths-unlocked.png"), path.join(THUMB_DIR, "jrpg-puzzle-presets-2.png"));
 
   const fullReport = {
@@ -804,6 +1008,7 @@ try {
     all12Smoke,
     chapterRecords,
     chapterLintSummary: lintRes.summary,
+    vqaMetrics,
     playProofs,
     consoleErrors,
   };
