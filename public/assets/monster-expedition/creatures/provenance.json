@@ -38,8 +38,8 @@
     "https://github.com/pret/pokeemerald/blob/master/src/data/graphics/pokemon.h",
     "https://github.com/pret/pokeemerald/blob/master/src/pokemon_icon.c"
   ],
-  "catalogSha256": "429a6d7f063c1363405d37ee3a73bd555f20adefbb7610b32aaea02174957e3e",
-  "uploadSeedSha256": "9f0c0f5f3155032104b70e66778b6b41d3094990eeb460d0d983576750791979",
-  "battlePngBytes": 139114,
-  "partyPngBytes": 35499
+  "catalogSha256": "e08bf3b615bb3ed2616f096480dc0739b4d37cf13ddc8696121c2ae49eaaa4d6",
+  "uploadSeedSha256": "6204f317700970ea113db008e5386f96193ae70f746db65baacc2da4e36eff29",
+  "battlePngBytes": 139721,
+  "partyPngBytes": 35568
 }
