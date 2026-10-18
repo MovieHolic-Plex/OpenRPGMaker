@@ -438,6 +438,9 @@ export function paintRiversidePromenade(
  * 강변 산책로 표준 레이아웃(4줄 강물 + 석축 제방 + 연속 보도 + 5~6칸 간격 소품)으로 정비한다.
  */
 export function sanitizeRiversidePromenade(project: Project, map: GameMap): boolean {
+  // 물 판정이 modern 칩셋 칸 번호(23 등)뿐이다. jp_city 하천(수로 오토타일)·다른 칩셋의 물은 못 보므로
+  // 「강변」 이름 맵에 키트를 찍을 때마다 맨 위 줄을 물로 덮어 건물을 지웠다(2026-10-18 R5 강변 거리 VQA) — 그 칩셋은 손대지 않는다.
+  if (map.tilesetId !== "modern_city" && map.tilesetId !== "modern_campus") return false;
   const W = map.width, H = map.height;
   let waterCells = 0;
   let row0Water = 0;
@@ -446,7 +449,7 @@ export function sanitizeRiversidePromenade(project: Project, map: GameMap): bool
   for (let y = 0; y < H; y++) {
     for (let x = 0; x < W; x++) {
       const t = map.lowerTiles[y * W + x] ?? -1;
-      if (t === 23 || t === 849 || t === 32 || (t >= 8 && t <= 15 && map.tilesetId === "beodeul_city")) {
+      if (t === 23 || t === 849 || t === 32) {
         waterCells++;
         waterRows.add(y);
         if (y === 0) row0Water++;
