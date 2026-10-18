@@ -32,8 +32,8 @@
   },
   "emit": {
     "front": {
-      "x": 5,
-      "y": 43,
+      "x": 4,
+      "y": 41,
       "source": "auto"
     },
     "back": {
