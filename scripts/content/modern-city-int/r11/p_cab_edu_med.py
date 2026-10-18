@@ -10,45 +10,71 @@ CHALK = (46, 92, 76)
 
 # ------------------------------------------------------------------ driver cab, facing WEST (train heads left)
 def cab_front_w():
-    """West-facing cab front (2x8 tiles): the windshield runs down the WEST edge (rails converging into a tunnel mouth,
-    signal lamp, wipers) and the master-controller console sits right behind it with its dials, ATS monitor and
-    T-handle seen from above. Driver stands/sits EAST of it looking west."""
+    """West-facing cab front (2x8 tiles). WEST edge: silver nose shell with a red livery line wrapping a three-pane
+    curved windshield (rounded outer corners, pillars, wipers) that shows the dark tunnel ahead - amber tunnel lamps,
+    a green signal with halo, glare streaks. Behind it the console desk: glowing speedometer with tick ring and red
+    needle, ATC cab-signal display with speed bars, twin pressure gauges, train-information monitor, lit timetable
+    holder, indicator lamps and toggles, radio handset, and twin master-controller handles (brake + power T-handle)
+    in notched quadrants. Driver sits EAST of it looking west."""
     c = C(32, 128)
-    c.box(0, 2, 11, 124, DARK)
-    c.r(2, 6, 9, 120, (118, 158, 198)); c.r(2, 6, 9, 36, (170, 210, 240)); c.r(2, 92, 9, 120, (96, 108, 120))
-    c.oval(2, 44, 6, 82, (28, 28, 34))
-    c.l(9, 108, 3, 70, STEEL_L); c.l(9, 18, 3, 58, STEEL_L); c.l(9, 112, 3, 72, STEEL_D); c.l(9, 14, 3, 56, STEEL_D)
-    for y in range(76, 110, 5): c.l(9 - (y - 70) // 7, y, 9 - (y - 70) // 7 - 2, y - 2, (120, 96, 70))
-    c.oval(3, 26, 6, 29, (60, 220, 120)); c.oval(3, 96, 6, 99, RED)
-    c.l(2, 117, 9, 100, (60, 64, 76)); c.l(2, 9, 9, 28, (60, 64, 76))
-    c.r(5, 3, 6, 5, STEEL_D); c.r(5, 121, 6, 123, STEEL_D)
-    for y in (40, 84): c.r(2, y, 9, y + 1, DARK)
-    c.block(11, 4, 31, 119, 108, DARK_M, (52, 56, 66))
-    c.r(12, 5, 12, 111, lt(DARK_M, 1.25))
-    c.oval(13, 14, 22, 23, WHITE); c.oval(15, 16, 20, 21, (40, 44, 52)); c.l(17, 19, 14, 15, RED)                  # speedometer
-    for y in (30, 40): c.oval(13, y, 19, y + 6, WHITE); c.oval(15, y + 2, 17, y + 4, (40, 44, 52)); c.l(16, y + 3, 14, y + 1, RED)
-    c.box(13, 50, 22, 72, BLACK); c.r(14, 51, 21, 71, (40, 160, 200)); c.r(15, 53, 20, 55, (250, 230, 120)); c.r(15, 58, 20, 58, WHITE); c.r(15, 62, 18, 62, WHITE)
-    c.r(13, 78, 22, 80, OL)
-    for i, y in enumerate((83, 88, 93)): c.oval(14, y, 17, y + 3, [RED, (80, 200, 100), YELLOW][i]); c.box(19, y, 22, y + 3, STEEL_D)
-    c.oval(21, 97, 30, 106, STEEL_D); c.oval(23, 99, 28, 104, STEEL)                                                # master controller base
-    c.l(25, 101, 14, 98, STEEL_L); c.box(11, 96, 15, 100, RED)                                                      # T-handle pointing west
-    c.box(24, 14, 30, 40, (230, 226, 210)); c.r(25, 17, 29, 17, OL); c.r(25, 21, 29, 21, OL); c.r(25, 25, 28, 25, OL)  # timetable holder
-    for y in range(46, 74, 6): c.box(25, y, 29, y + 3, STEEL)
-    c.r(12, 112, 30, 112, BLACK)
+    BODY, BODY_D = (226, 230, 236), (170, 176, 190)
+    c.rbox(0, 1, 12, 126, BODY); c.rbox(0, 1, 2, 126, BODY_D)
+    c.r(1, 6, 1, 121, RED); c.r(11, 4, 11, 123, BODY_D)
+    TUN, TUN_D = (34, 46, 66), (22, 30, 46)
+    for y0, y1 in ((5, 42), (46, 82), (86, 122)):
+        c.r(3, y0, 10, y1, TUN); c.r(3, y1 - 6, 10, y1, TUN_D); c.r(3, y0, 10, y0, (70, 92, 120))
+        for y in range(y0 + 4, y1 - 2, 9): c.p(4, y, (250, 190, 90)); c.p(5, y, (150, 110, 60))
+        c.glare(5, y1 - 14, 10, y1 - 9, (110, 140, 180)); c.glare(7, y1 - 9, 10, y1 - 6, (90, 116, 150))
+        c.l(10, y1 - 3, 6, y1 - 13, BLACK); c.p(10, y1 - 3, STEEL_D)
+    for x, y in ((3, 5), (3, 122), (10, 5), (10, 122)): c.p(x, y, BODY)
+    c.p(4, 5, BODY); c.p(4, 122, BODY); c.p(3, 6, BODY); c.p(3, 121, BODY)
+    c.p(6, 63, (130, 255, 170)); c.p(7, 63, (90, 220, 130)); c.p(6, 62, (60, 150, 100)); c.p(6, 64, (60, 150, 100)); c.p(5, 63, (60, 150, 100))
+    for y in (43, 83): c.r(2, y, 11, y + 2, BODY_D); c.r(2, y + 1, 11, y + 1, OL)
+    DESK, DESK_L = (60, 64, 76), (78, 84, 98)
+    c.box(12, 3, 31, 122, (40, 42, 50))
+    c.r(13, 4, 30, 116, DESK); c.r(13, 4, 30, 4, DESK_L); c.r(13, 4, 13, 116, DESK_L)
+    c.r(13, 117, 30, 117, (30, 32, 38)); c.r(13, 118, 30, 121, (46, 48, 58)); c.r(13, 120, 30, 120, (36, 38, 46))
+    c.r(12, 123, 31, 124, SH)
+    c.oval(13, 7, 25, 19, (250, 190, 90)); c.e(14, 8, 24, 18, (16, 18, 24))
+    for x, y in ((15, 13), (16, 10), (19, 9), (22, 10), (23, 13)): c.p(x, y, (90, 230, 130))
+    c.p(23, 16, RED_L); c.l(19, 13, 16, 10, RED_L); c.p(19, 13, STEEL_L); c.r(18, 16, 20, 16, (90, 230, 130))
+    c.box(13, 22, 25, 40, BLACK); c.r(14, 23, 24, 39, (12, 26, 34))
+    for i, x in enumerate(range(15, 24, 2)): c.r(x, 37 - (i + 1) * 2, x, 37, (60, 220, 120) if i < 3 else (250, 200, 70))
+    c.r(15, 26, 23, 26, RED); c.r(15, 24, 17, 24, WHITE); c.r(19, 24, 21, 24, WHITE)
+    for y in (7, 14):
+        c.oval(26, y, 30, y + 4, WHITE); c.p(28, y + 2, OL); c.p(27, y + 1, RED)
+    c.box(13, 44, 25, 60, BLACK); c.r(14, 45, 24, 59, (30, 90, 150)); c.r(14, 45, 24, 46, (60, 140, 200))
+    for y in (49, 53, 57):
+        for x in range(15, 24, 3): c.r(x, y, x + 1, y + 1, WHITE if (x + y) % 2 else (140, 210, 240))
+    c.box(26, 22, 30, 46, (240, 234, 212)); c.r(27, 23, 29, 23, (255, 250, 230)); c.r(27, 21, 29, 22, STEEL_D)
+    for y in range(26, 44, 3): c.r(27, y, 29 - (y % 2), y, (120, 116, 104))
+    c.rbox(26, 50, 30, 66, BLACK); c.r(27, 51, 27, 65, (70, 72, 84))
+    for y in range(67, 74, 2): c.p(28, y, BLACK); c.p(29, y + 1, BLACK)
+    for i, y in enumerate((64, 69, 74)):
+        col = [RED, (80, 220, 110), YELLOW][i]
+        c.oval(14, y, 17, y + 3, col); c.p(15, y + 1, lt(col, 1.5))
+        c.box(19, y, 23, y + 3, STEEL_D); c.r(20, y + 1, 21, y + 1, STEEL_L)
+    for y0, grip in ((80, BLACK), (98, RED)):
+        c.rbox(14, y0, 24, y0 + 15, (26, 28, 34))
+        for k in range(y0 + 2, y0 + 14, 3): c.r(15, k, 17, k, STEEL_D)
+        c.oval(21, y0 + 3, 30, y0 + 12, STEEL_D); c.oval(23, y0 + 5, 28, y0 + 10, STEEL); c.p(24, y0 + 6, STEEL_L)
+        c.l(25, y0 + 8, 14, y0 + 6, STEEL_L); c.l(25, y0 + 9, 14, y0 + 7, STEEL_D)
+        c.box(11, y0 + 3, 15, y0 + 10, grip); c.p(12, y0 + 4, lt(grip, 1.6) if grip != BLACK else (90, 92, 104))
     return c.done()
 
 
 def cab_seat_w():
-    """Driver's seat facing WEST: navy fabric cushion toward the console, tall backrest + headrest on the east side
-    behind the driver, chrome pedestal."""
+    """Driver's seat facing WEST: plump navy moquette cushion toward the console, tall contoured backrest with a
+    separate headrest on the east side, black armrest, chrome gas-lift post on a five-star base."""
     c = C(16, 32)
-    c.box(10, 5, 14, 27, NAVYS); c.r(11, 6, 13, 8, lt(NAVYS, 1.25)); c.r(11, 10, 11, 25, NAVY_D)
-    c.box(11, 0, 14, 6, NAVY_D)
-    c.box(1, 15, 11, 27, NAVYS); c.r(2, 16, 10, 17, lt(NAVYS, 1.3)); c.r(2, 25, 10, 26, NAVY_D)
-    c.r(2, 20, 9, 20, NAVY_D)
-    c.r(1, 12, 9, 13, STEEL_D); c.r(1, 11, 3, 14, STEEL_D)
-    c.r(5, 28, 8, 29, STEEL_D)
-    c.r(2, 30, 14, 30, SH)
+    L, M, D = lt(NAVYS, 1.35), NAVYS, NAVY_D
+    c.e(1, 27, 15, 31, SH)
+    c.oval(2, 26, 13, 30, STEEL_D); c.r(4, 27, 11, 27, STEEL_L); c.p(2, 28, BLACK); c.p(13, 28, BLACK)
+    c.r(7, 20, 8, 27, STEEL_D); c.r(7, 20, 7, 27, STEEL_L)
+    c.cushion(10, 4, 15, 25, L, M, D); c.r(12, 8, 12, 22, dk(M, 0.85))
+    c.cushion(10, 0, 15, 5, L, M, D)
+    c.cushion(1, 13, 12, 24, L, M, D); c.r(3, 18, 9, 18, dk(M, 0.85)); c.p(3, 15, lt(L, 1.15))
+    c.rbox(2, 11, 10, 14, BLACK); c.r(3, 11, 9, 11, (84, 86, 98))
     return c.done()
 
 

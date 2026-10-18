@@ -804,42 +804,47 @@ const VENUES: readonly Venue[] = [
       { "hosp-ward-west": ["mci-vinyl-store", "mci-wall-hospital"], "hosp-ward-east": ["mci-vinyl-store", "mci-wall-hospital"], "hosp-nurse-core": ["mci-tile-concourse", "mci-wall-lobby"], waiting_room: ["mci-tile-concourse", "mci-wall-lobby"] },
       { "hosp-ward-west": ["mci-wood-oak", "mci-wall-home"], "hosp-ward-east": ["mci-wood-oak", "mci-wall-home"], "hosp-nurse-core": ["mci-stone-lobby", "mci-wall-office"], waiting_room: ["mci-stone-lobby", "mci-wall-office"] },
     ] }, rooms: [
-    // ── 3F-1. 제1수술실 (10×14)
+    // ── 3F-1. 제1수술실 (10×14) - R12b: 수술대가 북쪽 절반에 몰려 남쪽 6줄이 빈 바닥이었다(Opus VQA).
+    //    북벽 스크럽 세척대 둘 + 모니터 뱅크 + 약품장, 가운데 수술 구역(무영등 아래 수술대 · 서쪽 마취기·생체 모니터 · 동쪽 메이요 기구대·기구 카트),
+    //    남쪽은 레일 커튼으로 가른 준비·회복 베이(이송 침대 + 응급 카트 + 수액 펌프).
     { kind: "hosp-or-1", w: 10, h: 14, floor: "mci-tile-small", wall: "mci-wall-hospital", items: [
       o("mci-wall-clock", 1, 0), o("hosp-film-viewer", 4, 0), o("mci-ac-wall", 7, 0),
-      o("hosp-scrub-sink", 0, 2), o("hosp-vitals-bank", 3, 2), o("hospital-med-cabinet", 6, 2), o("hospital-med-cabinet", 8, 2),
-      o("hosp-surgical-lamp", 4, 5),
-      o("hosp-anesthesia", 2, 6), o("hosp-op-table", 3, 6), o("hosp-mayo-stand", 6, 6),
-      o("hosp-iv-pump", 2, 8), o("hosp-mayo-stand", 6, 8),
-      o("hosp-crash-cart", 0, 10), o("mci-med-cart", 9, 10),
-      o("hospital-bedside-monitor", 0, 12), o("hosp-stretcher", 6, 12),
+      o("hosp-scrub-sink", 0, 2), o("hosp-scrub-sink", 2, 2), o("hosp-vitals-bank", 4, 2), o("hospital-med-cabinet", 6, 2), o("hospital-med-cabinet", 8, 2),
+      o("hosp-surgical-lamp", 4, 6),
+      o("hospital-bedside-monitor", 1, 7), o("hosp-anesthesia", 2, 7), o("hosp-op-table", 3, 7), o("hosp-mayo-stand", 6, 7), o("mci-med-cart", 7, 7),
+      o("hosp-iv-pump", 2, 9), o("hosp-mayo-stand", 6, 9),
+      o("hosp-curtain-track", 0, 11), o("hosp-curtain-track", 7, 11),
+      o("hosp-stretcher", 0, 13), o("hosp-iv-pump", 2, 13), o("hosp-crash-cart", 7, 13), o("mci-med-cart", 8, 13),
     ] },
-    // ── 3F-2. 제2수술실 (10×14)
+    // ── 3F-2. 제2수술실 (10×14) - 제1수술실의 좌우 대칭(스크럽 세척대는 동쪽, 준비·회복 베이는 남쪽).
     { kind: "hosp-or-2", w: 10, h: 14, floor: "mci-tile-small", wall: "mci-wall-hospital", items: [
-      o("hosp-film-viewer", 1, 0), o("mci-wall-clock", 5, 0), o("mci-ac-wall", 7, 0),
-      o("hospital-med-cabinet", 0, 2), o("hosp-vitals-bank", 3, 2), o("hosp-scrub-sink", 6, 2), o("mci-washbasin", 8, 2),
-      o("hosp-surgical-lamp", 4, 5),
-      o("hosp-anesthesia", 2, 6), o("hosp-op-table", 3, 6), o("hosp-mayo-stand", 6, 6),
-      o("hosp-iv-pump", 2, 8), o("hospital-bedside-monitor", 6, 8),
-      o("hosp-crash-cart", 0, 10), o("mci-med-cart", 9, 10),
-      o("hosp-stretcher", 0, 12), o("hosp-mayo-stand", 8, 12),
+      o("mci-ac-wall", 1, 0), o("hosp-film-viewer", 4, 0), o("mci-wall-clock", 8, 0),
+      o("hospital-med-cabinet", 0, 2), o("hosp-vitals-bank", 2, 2), o("hospital-med-cabinet", 4, 2), o("hosp-scrub-sink", 6, 2), o("hosp-scrub-sink", 8, 2),
+      o("hosp-surgical-lamp", 4, 6),
+      o("mci-med-cart", 1, 7), o("hosp-mayo-stand", 2, 7), o("hosp-op-table", 3, 7), o("hosp-anesthesia", 6, 7), o("hospital-bedside-monitor", 7, 7),
+      o("hosp-mayo-stand", 2, 9), o("hosp-iv-pump", 6, 9),
+      o("hosp-curtain-track", 0, 11), o("hosp-curtain-track", 7, 11),
+      o("mci-med-cart", 0, 13), o("hosp-crash-cart", 1, 13), o("hosp-iv-pump", 7, 13), o("hosp-stretcher", 8, 13),
     ] },
-    // ── 3F-3. 중환자실 ICU (10×14) - 2×2 ICU 병상 둘 + 가로형 E/W 병상 넷 + 생체 모니터 뱅크 + 응급 카트
+    // ── 3F-3. 중환자실 ICU (10×14) - 북벽 2×2 ICU 병상 둘, 서·동 벽 가로 병상 둘씩을 레일 커튼으로 나누고(사생활 보호),
+    //    가운데 열린 중앙 간호사 감시 데스크가 여섯 병상을 모두 본다. 남쪽은 응급 카트·약품 카트·휠체어 대기열.
     { kind: "hosp-icu", w: 10, h: 14, floor: "mci-vinyl-hospital", wall: "mci-wall-hospital", items: [
       o("mci-window-blind", 1, 0), o("mci-wall-clock", 4, 0), o("mci-window-blind", 7, 0),
       o("hosp-vitals-bank", 0, 2), o("hosp-icu-pod", 2, 2), o("hospital-curtain-screen", 4, 2), o("hosp-icu-pod", 5, 2), o("hosp-vitals-bank", 8, 2),
-      o("mci-hosp-bed-e", 0, 6), o("hosp-iv-pump", 0, 7), o("hospital-bedside-monitor", 1, 7),
-      o("mci-hosp-bed-w", 8, 6), o("hospital-bedside-monitor", 8, 7), o("hosp-iv-pump", 9, 7),
-      o("mci-hosp-bed-e", 0, 9), o("mci-hosp-bed-w", 8, 9),
-      o("hosp-crash-cart", 0, 12), o("hospital-nurse-station", 6, 12),
+      o("mci-hosp-bed-e", 0, 6), o("hospital-bedside-monitor", 2, 6), o("mci-hosp-bed-w", 8, 6), o("hospital-bedside-monitor", 7, 6),
+      o("hosp-curtain-track", 0, 8), o("hospital-nurse-station", 4, 8), o("hosp-curtain-track", 7, 8),
+      o("mci-hosp-bed-e", 0, 10), o("hosp-iv-pump", 2, 10), o("mci-chair-office-n", 5, 10), o("mci-hosp-bed-w", 8, 10), o("hosp-iv-pump", 7, 10),
+      o("hosp-crash-cart", 0, 13), o("mci-med-cart", 1, 13), o("hospital-wheelchair", 8, 13), o("hospital-wheelchair", 9, 13),
     ] },
-    // ── 3F-4. 영상의학·CT·X선실 (10×14) - CT 스캐너(3×2) + X선 촬영대(3×1) + 납유리 조작실 콘솔 + 판독 라이트박스 + 계단
+    // ── 3F-4. 영상의학·CT·X선실 (10×14) - 북쪽 CT실(CT 스캐너 + 납유리 조작 콘솔), 레일 커튼 아래 남쪽 X선실(촬영대 + 탈의 커튼 베이),
+    //    서남쪽 이송 대기(이송 침대·휠체어), 동남쪽 판독 데스크. 남서쪽 빈 바닥을 대기·탈의 동선으로 채운다.
     { kind: "hosp-imaging", w: 10, h: 14, floor: "mci-vinyl-hospital", wall: "mci-wall-hospital", items: [
       o("hosp-film-viewer", 1, 0), o("hosp-film-viewer", 4, 0), o("mci-wall-clock", 8, 0),
       o("hosp-xray-console", 0, 2), o("hosp-xray-console", 2, 2), o("hospital-med-cabinet", 5, 2), o("stairs-pair-down-stone", 7, 2),
-      o("hosp-ct-scanner", 1, 5), o("hosp-iv-pump", 5, 5), o("hospital-bedside-monitor", 8, 5),
-      o("hosp-curtain-track", 6, 7),
-      o("hosp-xray-table", 5, 9),
+      o("hosp-ct-scanner", 1, 5), o("hosp-iv-pump", 4, 5), o("hospital-bedside-monitor", 5, 5),
+      o("hosp-curtain-track", 0, 8), o("hosp-curtain-track", 6, 8),
+      o("hosp-stretcher", 0, 10), o("hosp-xray-table", 4, 10), o("hosp-mayo-stand", 8, 10),
+      o("hospital-wheelchair", 0, 13), o("hospital-curtain-screen", 2, 12),
       o("hospital-doctor-desk", 5, 12), o("mci-chair-office-n", 8, 12),
     ] },
     // ── 2F-1. 서병동 다인실 입원병동 (13×15) - 서쪽 가로 침대(mci-hosp-bed-e) 3상 + 동쪽 가로 침대(mci-hosp-bed-w) 3상 + 레일 커튼·수액 펌프·협탁·생체 모니터

@@ -979,29 +979,49 @@ export function composeDepartmentStore(spec: HandInteriorSpec, nuance: SpaceNuan
   s.put("dept-directory-kiosk", cx - 2, h.y1 - 1); s.put("dept-directory-kiosk", cx + 2, h.y1 - 1);
   s.put("mci-security-gate", cx - 4, h.y1); s.put("mci-security-gate", cx + 3, h.y1);
 
-  // ── 패션관: 북벽 탈의 부스 둘 + 커튼 탈의실 · 구두/스니커즈/잡화 월, 앞줄 마네킹(남·여·드레스·코트·캐주얼·아동), 그 뒤 색상별 원형 행거·니트 평대·
-  //    넥타이 쇼케이스·모자 스탠드 격자(2칸 + 1칸 통로), 가운데 부티크 바닥, 계산대 + 선물 포장대 + 구두 시착 벤치.
+  // ── 패션관: 북벽 탈의 부스 둘 + 커튼 탈의실 · 구두/스니커즈/잡화 월. 바닥은 R12b(Opus VQA)부터 가운데 융단 통로를 축으로
+  //    양옆에 카펫 부티크 알코브를 5줄 간격으로 세운다 - 바깥벽 쪽 색상별 원형 행거 둘, 통로 쪽 마네킹 한 쌍(같은 브랜드 두 착장),
+  //    그 아래 니트 평대·넥타이 쇼케이스·모자 진열대. 행거·마네킹을 3칸 격자로 흩어 놓던 배치는 바둑판으로 읽혀 폐기했다.
+  //    정문 쪽 문 줄은 가로 통로로 비워 아트리움 → 패션관 → 가운데 통로가 바로 이어진다.
   const f = s.floorOf("fashion");
   hangRhythm(s, f, ["mci-window-curtain", "mci-art-frame"], 1, 3);
   const FASHION_WALL = ["dept-fitting-booth", "dept-fitting-booth", "dept-fitting-curtain", "dept-shoe-wall", "dept-sneaker-wall", "dept-accessory-wall"] as const;
   for (let x = f.x0, n = 0; x + 1 <= f.x1 - 1 && n < FASHION_WALL.length; x += 3) if (s.put(FASHION_WALL[n]!, x, f.y0)) n++;
   s.put("mci-plant-tall", f.x1, f.y0);
   s.keepRect(f.x0, f.y0 + 1, f.x1, f.y0 + 1);
-  s.zone(f.x0 + 1, f.y0 + 2, f.x1 - 1, Math.min(f.y1 - 2, f.y0 + 6), pal.boutique);
-  const MANNEQUINS = ["dept-mannequin-dress", "dept-mannequin-suit", "dept-mannequin-coat", "dept-mannequin-casual", "dept-mannequin-kids", "dept-mannequin-podium"] as const;
-  const RACKS = ["dept-rack-warm", "dept-rack-cool", "dept-knit-table", "dept-rack-mono", "dept-tie-case", "dept-rack-pastel", "dept-hat-stand", "dept-clothing-rack"] as const;
-  let row = 0, shown = 0, racked = 0;
-  for (let y = f.y0 + 2; y <= f.y1 - 2; y += 2, row++) {
-    let col = 0;
-    for (let x = f.x0 + 1; x + 1 <= f.x1 - 1; x += 3, col++) {
-      const front = y <= f.y0 + 4 || (row + col) % 4 === 0;
-      s.put(front ? MANNEQUINS[shown++ % MANNEQUINS.length]! : RACKS[racked++ % RACKS.length]!, x, y);
+  s.keepRect(f.x0, fashionDoor, f.x1, fashionDoor);
+  const ax = f.x0 + Math.floor((f.x1 - f.x0) / 2);
+  // 팔레트에 따라 융단과 부티크 카펫이 같은 바닥이면 통로가 사라지므로 통로는 돌 바닥으로 바꾼다.
+  s.zone(ax - 1, f.y0 + 1, ax + 1, f.y1 - 1, pal.runner === pal.boutique ? "mci-stone-lobby" : pal.runner);
+  s.keepRect(ax - 1, f.y0 + 2, ax + 1, f.y1 - 1);
+  const PAIRS = [["dept-mannequin-dress", "dept-mannequin-coat"], ["dept-mannequin-suit", "dept-mannequin-casual"], ["dept-mannequin-coat", "dept-mannequin-dress"], ["dept-mannequin-kids", "dept-mannequin-kids"], ["dept-mannequin-casual", "dept-mannequin-suit"]] as const;
+  const RACKS = [["dept-rack-warm", "dept-rack-pastel"], ["dept-rack-mono", "dept-clothing-rack"], ["dept-rack-cool", "dept-rack-mono"], ["dept-rack-pastel", "dept-rack-warm"]] as const;
+  const LOW = ["dept-knit-table", "dept-tie-case", "dept-knit-table", "dept-shoe-bench"] as const;
+  let y = f.y0 + 2;
+  for (let band = 0; y + 3 <= f.y1 - 2; y += 5, band++) {
+    for (const west of [true, false]) {
+      const k = band * 2 + (west ? 0 : 1);
+      const outer = west ? f.x0 : f.x1 - 1;
+      const inner0 = west ? ax - 3 : ax + 2;
+      const low = west ? ax - 4 : ax + 2;
+      s.zone(west ? f.x0 : ax + 2, y, west ? ax - 2 : f.x1, y + 3, pal.boutique);
+      s.put(RACKS[k % RACKS.length]![0], outer, y + 1); s.put(RACKS[k % RACKS.length]![1], outer, y + 3);
+      s.put(PAIRS[k % PAIRS.length]![0], inner0, y + 1); s.put(PAIRS[k % PAIRS.length]![1], inner0 + 1, y + 1);
+      if (band % 3 === 2) s.put("dept-hat-stand", low + (west ? 1 : 0), y + 3);
+      else s.put(LOW[k % LOW.length]!, low, y + 3);
     }
+  }
+  // 마지막 알코브 아래 남은 띠는 시착 라운지(VIP 소파 + 구두 시착 벤치)로 계산대 한 줄 위에 둔다.
+  const ly = f.y1 - 2;
+  if (y - 1 < ly) {
+    s.zone(f.x0, y - 1, ax - 2, ly, pal.boutique); s.zone(ax + 2, y - 1, f.x1, ly, pal.boutique);
+    s.put("dept-vip-sofa", f.x0, ly); s.put("dept-shoe-bench", ax - 4, ly);
+    s.put("dept-shoe-bench", ax + 2, ly); s.put("dept-vip-sofa", f.x1 - 1, ly);
   }
   const fRegX = fashionWest ? f.x0 : f.x1 - 2;
   if (s.put("mci-counter-register", fRegX, f.y1, true)) s.goods("mci-g-register", fRegX + 1, f.y1);
   s.put("dept-gift-wrap", fashionWest ? fRegX + 4 : fRegX - 3, f.y1);
-  s.put("dept-shoe-bench", fashionWest ? f.x1 - 3 : f.x0 + 2, f.y1);
+  s.put("dept-eyewear-tower", fashionWest ? f.x1 - 3 : f.x0 + 2, f.y1);
   s.put("mci-plant-tall", fashionWest ? f.x1 : f.x0, f.y1);
 
   // ── 화장품관: 북벽 유리 쇼케이스·향수 월·네일 바·핸드백 진열장, 화장품 테스트 섬·스킨케어 카운터·보석 섬 격자, 계산대.
