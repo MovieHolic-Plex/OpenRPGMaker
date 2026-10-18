@@ -426,8 +426,47 @@ function shake(intensity: 1 | 3 | 6 | 10 = 3, durationMs = 500): Command {
   return m2("Shake Screen", { value: intensity, intensity: String(intensity), durationMs });
 }
 
-function particles(preset: string, durationMs = 800): Command {
-  return m2("Particle Effect", { preset, target: "player", durationMs, wait: false });
+function particles(preset: string, durationMs = 800, at?: Cell): Command {
+  return at
+    ? m2("Particle Effect", { preset, target: "tile", x: at.x, y: at.y, durationMs, wait: false })
+    : m2("Particle Effect", { preset, target: "player", durationMs, wait: false });
+}
+
+/** 해제 연출의 색과 세 물결 입자(1물결 균열 먼지 → 2물결 본 붕괴 → 3물결 완성 빛). */
+interface RevealTheme {
+  readonly flash: string;
+  readonly waves: readonly [string, string, string];
+}
+
+/**
+ * changeTile 묶음을 한 번에 갈지 않고 플레이어 쪽(남쪽)부터 세 물결로 연다. 물결마다 바뀌는 칸 위에 입자를 뿜고
+ * 칸을 간 뒤 흔들림이 다음 물결까지의 틈이 된다(Shake Screen 은 끝날 때까지 기다리는 명령이라 흔들리는 동안 먼지가 보인다).
+ */
+function revealInWaves(cmds: readonly Command[], theme: RevealTheme): Command[] {
+  const byCell = new Map<string, { x: number; y: number; cmds: Command[] }>();
+  for (const cmd of cmds) {
+    if (cmd.kind !== "changeTile") continue;
+    const key = `${cmd.x},${cmd.y}`;
+    let cell = byCell.get(key);
+    if (!cell) byCell.set(key, (cell = { x: cmd.x, y: cmd.y, cmds: [] }));
+    cell.cmds.push(cmd);
+  }
+  const cells = [...byCell.values()].sort((a, b) => b.y - a.y || a.x - b.x);
+  if (cells.length === 0) return [...cmds];
+  const out: Command[] = [flash(theme.flash, 350)];
+  const per = Math.ceil(cells.length / 3);
+  for (let wave = 0; wave < 3; wave += 1) {
+    const group = cells.slice(wave * per, (wave + 1) * per);
+    if (group.length === 0) continue;
+    // 물결마다 입자는 최대 4곳 — 칸마다 뿜으면 큰 다리·갱도에서 입자가 수십 개 겹쳐 오히려 뭉개진다.
+    const step = Math.max(1, Math.floor(group.length / 4));
+    for (let i = 0; i < group.length; i += step) out.push(particles(theme.waves[wave]!, 1200, group[i]!));
+    for (const cell of group) out.push(...cell.cmds);
+    out.push(shake(wave === 2 ? 10 : 6, wave === 2 ? 600 : 300));
+  }
+  const mid = cells[Math.floor(cells.length / 2)]!;
+  out.push(particles("sparkle", 1200, mid));
+  return out;
 }
 
 function textCmd(body: string): Command {
@@ -1347,10 +1386,7 @@ const authorMapPuzzleTool: ToolDefinition = {
                               branch: [
                                 se("bell"),
                                 se("collapse1"),
-                                shake(6, 600),
-                                flash("white", 350),
-                                particles("sparkle", 900),
-                                ...changeTileCmds,
+                                ...revealInWaves(changeTileCmds, { flash: "yellow", waves: ["dust", "smoke", "sparkle"] }),
                                 textCmd("쿠구구궁—! 오르간 공명과 함께 바닥 타일이 열리며 지하 비밀 계단과 성좌의 결정이 드러났다!"),
                                 ...reward.grantCommands,
                                 { kind: "setSwitch", switchId: solveSwitchId, value: true },
@@ -1466,18 +1502,17 @@ const authorMapPuzzleTool: ToolDefinition = {
           const onCorrect: Command[] = [
             se("fire7"),
             flash("red", 250),
-            particles("fire", 700),
+            particles("fire", 1200, at),
+            particles("smoke", 1200, { x: at.x, y: at.y - 1 }),
             { kind: "setVariable", variableId: progressVar, op: "=", value: idx },
             { kind: "setSwitch", switchId: swId, value: true },
             ...(stagePlan?.stepChangeTileCommands[`brazier_${idx}`] ?? []),
+            shake(3, 300),
             textCmd(`화르륵! 제${idx}화로에 붉은 성화가 타올랐다! (${idx}/3)`),
             ...(isFinal
               ? [
                   se("collapse1"),
-                  shake(6, 550),
-                  flash("white", 350),
-                  particles("sparkle", 800),
-                  ...changeTileCmds,
+                  ...revealInWaves(changeTileCmds, { flash: "red", waves: ["fire", "smoke", "sparkle"] }),
                   textCmd("세 화로의 불길이 하나로 공명하며 화염 봉인 철창이 열렸다!"),
                   ...reward.grantCommands,
                   { kind: "setSwitch", switchId: solveSwitchId, value: true } as Command,
@@ -1578,10 +1613,7 @@ const authorMapPuzzleTool: ToolDefinition = {
 
         const unlockSequence: Command[] = [
           se("collapse1"),
-          shake(6, 550),
-          flash("white", 300),
-          particles("dust", 750),
-          ...changeTileCmds,
+          ...revealInWaves(changeTileCmds, { flash: "white", waves: ["dust", "smoke", "sparkle"] }),
           textCmd("쿠구구궁—! 모든 압력 발판이 내려앉으며 고대 유적 석문이 열렸다!"),
           ...reward.grantCommands,
           { kind: "setSwitch", switchId: solveSwitchId, value: true },
@@ -1608,6 +1640,8 @@ const authorMapPuzzleTool: ToolDefinition = {
                   se("key"),
                   { kind: "setSwitch", switchId: swId, value: true },
                   ...(idx === 1 ? (stagePlan?.stepChangeTileCommands.plate_1 ?? []) : []),
+                  particles("dust", 1000, at),
+                  shake(3, 300),
                   textCmd(`딸깍! 제${idx} 석상 발판이 바닥으로 깊숙이 눌렸다.`),
                   ...allSwitchesFork([swP1, swP2], unlockSequence),
                 ],
@@ -2029,10 +2063,7 @@ const authorMapPuzzleTool: ToolDefinition = {
                     se("fire7"),
                     { kind: "changeItem", itemId: dynamiteItemId, op: "-=", amount: 1 },
                     se("explosion1"),
-                    flash("red", 300),
-                    shake(6, 650),
-                    particles("explosion", 900),
-                    ...changeTileCmds,
+                    ...revealInWaves(changeTileCmds, { flash: "red", waves: ["explosion", "smoke", "dust"] }),
                     textCmd("콰앙—!! 거대 낙석이 산산조각 나며 막혀 있던 광맥 통로가 시원하게 열렸다!"),
                     ...reward.grantCommands,
                     { kind: "setSwitch", switchId: solveSwitchId, value: true },
@@ -2164,9 +2195,8 @@ const authorMapPuzzleTool: ToolDefinition = {
               graphic: trueClosed,
               commands: [
                 ...chestOpenCommands(trueId, trueClosed),
-                flash("white", 300),
-                particles("sparkle", 850),
-                ...changeTileCmds,
+                se("collapse1"),
+                ...revealInWaves(changeTileCmds, { flash: "yellow", waves: ["dust", "smoke", "sparkle"] }),
                 textCmd("수수께끼의 정답! 진실의 상자가 찬란한 빛과 함께 열렸다!"),
                 ...reward.grantCommands,
                 { kind: "setSwitch", switchId: solveSwitchId, value: true },
@@ -2473,10 +2503,7 @@ const authorMapPuzzleTool: ToolDefinition = {
         const unsealAllSequence: Command[] = [
           se("barrier"),
           se("collapse1"),
-          shake(6, 650),
-          flash("white", 400),
-          particles("sparkle", 900),
-          ...changeTileCmds,
+          ...revealInWaves(changeTileCmds, { flash: "purple", waves: ["magic", "smoke", "sparkle"] }),
           textCmd("쿠구구궁—!! 태양·달·별의 세 비석이 동시에 빛기둥을 쏘아 올리며 보스 봉인 결계문이 깨어졌다!"),
           ...reward.grantCommands,
           { kind: "setSwitch", switchId: solveSwitchId, value: true },
@@ -2505,7 +2532,8 @@ const authorMapPuzzleTool: ToolDefinition = {
                 commands: [
                   se("chime2"),
                   flash("white", 250),
-                  particles("magic", 700),
+                  particles("magic", 1200, spec.at),
+                  shake(3, 300),
                   { kind: "setSwitch", switchId: spec.swId, value: true },
                   ...(stagePlan?.stepChangeTileCommands[`monolith_${spec.idx}`] ?? []),
                   textCmd(`「${spec.label}」에 손을 대자 고대 룬이 푸른 크리스탈 빛으로 깨어났다!`),
