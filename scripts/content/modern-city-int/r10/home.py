@@ -38,11 +38,19 @@ def school_bag():
 
 # ------------------------------------------------------------------ laundry / bath
 def washing_machine():
-    """Front-load washing machine: white body, control strip with dial, round porthole door with suds."""
+    """Front-load washing machine: white body with a lit top, detergent drawer, LCD and big chrome control dial,
+    chrome-ringed porthole door with a tinted glass drum, tumbling laundry and a glare arc, kick panel below."""
     c = C(16, 32)
-    c.block(0, 3, 15, 30, 3, WHITE, WHITE_D)
-    c.r(2, 8, 13, 9, DARK_M); c.p(11, 8, SCREEN); c.p(3, 8, GREEN_L)
-    c.oval(2, 12, 13, 26, STEEL_D); c.oval(4, 14, 11, 24, (150, 200, 236)); c.r(5, 18, 10, 20, WHITE); c.p(5, 16, GLASS_L)
+    c.block(0, 3, 15, 30, 3, WHITE, (226, 230, 236))
+    c.box(1, 7, 6, 10, (214, 218, 226)); c.r(2, 8, 5, 8, WHITE)                          # detergent drawer
+    c.r(8, 8, 10, 9, (40, 60, 70)); c.p(9, 8, (90, 230, 120))                           # LCD
+    c.oval(11, 7, 14, 10, STEEL_D); c.p(12, 8, WHITE); c.p(13, 9, STEEL)                 # dial
+    c.oval(1, 12, 14, 26, (150, 156, 168)); c.oval(2, 13, 13, 25, (220, 224, 230))       # chrome ring
+    c.oval(3, 14, 12, 24, (70, 100, 130)); c.oval(4, 15, 11, 23, (110, 160, 200))        # tinted drum
+    c.r(5, 19, 8, 21, (230, 120, 140)); c.r(7, 18, 10, 20, WHITE); c.p(6, 21, (90, 140, 210))   # tumbling laundry
+    c.p(4, 17, GLASS_L); c.p(5, 16, GLASS_L); c.p(6, 15, WHITE)                          # glare arc
+    c.r(12, 18, 13, 20, STEEL_D)                                                         # door latch
+    c.r(1, 27, 14, 28, (200, 206, 214)); c.r(10, 27, 13, 27, STEEL)
     return c.done()
 def laundry_basket():
     """Woven laundry basket heaped with folded towels and a striped shirt."""
@@ -144,15 +152,28 @@ def dining_table4():
 
 # ------------------------------------------------------------------ living
 def kotatsu():
-    """Kotatsu (2x2): quilted futon skirt in warm checks under a square wood top with mikan bowl and remote."""
+    """Kotatsu (2x2): square quilted futon in warm red plaid draping past a lacquered wood top, rounded drooping
+    corners with fold shading, a mikan bowl on a cloth runner, tea cups and a remote."""
     c = C(32, 32)
-    c.oval(0, 6, 31, 31, (176, 70, 70))
-    for x in range(4, 30, 6): c.l(x, 8, x, 29, (150, 50, 56))
-    for y in range(10, 30, 6): c.l(2, y, 29, y, (150, 50, 56))
-    c.block(5, 4, 26, 22, 12, WOOD_L, WOOD)
-    c.oval(12, 6, 20, 13, (230, 220, 200))
-    for x, y in ((14, 7), (16, 8), (13, 9), (17, 10)): c.ball(x, y, 2, ORANGE)
-    c.box(21, 13, 24, 16, DARK)
+    QL, QM, QD = (210, 96, 92), (180, 70, 72), (130, 44, 52)
+    c.rbox(0, 6, 31, 30, QM); c.rbox(1, 5, 30, 30, QM)
+    c.r(2, 6, 29, 7, QL)
+    for x in range(4, 30, 5): c.r(x, 7, x, 29, (196, 120, 90))                           # plaid warp
+    for y in range(9, 30, 5): c.r(2, y, 29, y, (196, 120, 90))                           # plaid weft
+    for x in range(4, 30, 5): c.p(x, 9, (236, 190, 120)); c.p(x, 24, (236, 190, 120))
+    c.r(1, 26, 30, 29, QD); c.r(2, 25, 29, 25, dk(QM, 0.85))                             # front drape shadow
+    for x in (6, 15, 24): c.l(x, 25, x + 2, 29, (104, 32, 40))                            # drape folds
+    c.r(30, 8, 30, 28, QD); c.r(1, 8, 1, 26, QL)
+    c.rbox(5, 4, 26, 19, WOOD_D); c.r(6, 5, 25, 16, WOOD_L); c.r(6, 5, 25, 5, (240, 214, 170))     # top
+    c.r(6, 17, 25, 18, WOOD)
+    for x in range(8, 24, 5): c.p(x, 8, WOOD); c.p(x + 2, 12, WOOD)                      # grain flecks
+    c.r(10, 9, 21, 13, (236, 232, 222)); c.r(10, 9, 21, 9, WHITE)                        # cloth runner
+    c.oval(11, 6, 19, 13, (90, 120, 170)); c.oval(12, 7, 18, 11, (226, 232, 240))         # mikan bowl
+    for x, y in ((14, 8), (16, 8), (15, 10), (13, 10), (17, 10)): c.ball(x, y, 1, ORANGE)
+    c.p(15, 7, LEAF)
+    c.oval(21, 7, 24, 10, (230, 222, 200)); c.p(22, 8, (120, 150, 80))                   # tea cup
+    c.box(7, 13, 9, 16, DARK); c.p(8, 14, RED)                                            # remote
+    c.r(2, 31, 29, 31, SH)
     return c.done()
 def floor_lamp():
     """Arc floor lamp: round marble base, slim stem, warm drum shade glowing."""
