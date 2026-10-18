@@ -3,6 +3,7 @@
 
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
+import { setPixelEnemySheetProjectSource } from "@/assets/pixelEnemySheets";
 
 let currentProject: Project = createBlankProject();
 
@@ -37,3 +38,6 @@ export const store = {
     };
   },
 };
+
+// 저작 적 도트 시트(project.assets.uploaded)를 내보낸 플레이어 전투도 찾게 한다(store.ts 와 같은 등록).
+setPixelEnemySheetProjectSource(() => currentProject);

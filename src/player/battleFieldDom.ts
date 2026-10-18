@@ -6,7 +6,7 @@ import { opaqueBounds, snapshotSprite } from "@/player/battleSpriteSnapshot";
 import { charsetBattler, resolvePartyBattleCharset, retroFallbackPartyBattler } from "@/assets/charsetBattlers";
 import { resolveBattlerAuras } from "@/assets/battleStateAuras";
 import { retroCastFrameFor, retroMotionPose, retroPartyPixelCell, retroPixelEnemyCell } from "@/player/battleRetroMotion";
-import { pixelEnemyFrame, pixelEnemySheet, pixelEnemySheetUrl } from "@/assets/pixelEnemySheets";
+import { pixelEnemyFrame, pixelEnemySheet, pixelEnemySheetUrl, projectPixelEnemySheet } from "@/assets/pixelEnemySheets";
 import { partyPixelBackgroundPosition, partyPixelSheet, partyPixelSheetUrl, type PartyPixelSheet } from "@/assets/partyPixelSheets";
 import { battleTypeBadges } from "@/player/battleTypeBadges";
 import { monsterExpBarProgress } from "@/player/battleExpBar";
@@ -170,9 +170,12 @@ function applyIdleAnimationToImage(image: HTMLImageElement, resourceId: string |
  * 칸 선택은 applyBattlerPose → retroPixelEnemyCell 이 맡는다. 대기 칸은 CSS 루프가 돈다.
  */
 function applyPixelEnemySheet(node: HTMLElement, image: HTMLImageElement, resourceId: string | undefined): void {
-  // A project upload owns its pixels even when it reuses a bundled resource ID.
-  if (resourceId && Object.hasOwn(store.getCurrent().assets.uploaded, resourceId)) return;
-  const sheet = pixelEnemySheet(resourceId);
+  // A project upload owns its pixels even when it reuses a bundled resource ID — unless that upload is
+  // itself an authored 9-cell sheet portrait (도트 몬스터 공방), which animates exactly like a bundled sheet.
+  const project = store.getCurrent();
+  const authored = projectPixelEnemySheet(resourceId, project);
+  if (!authored && resourceId && Object.hasOwn(project.assets.uploaded, resourceId)) return;
+  const sheet = authored ?? pixelEnemySheet(resourceId);
   if (!sheet) return;
   const url = pixelEnemySheetUrl(sheet);
   const cell = sheet.cell ?? 48;

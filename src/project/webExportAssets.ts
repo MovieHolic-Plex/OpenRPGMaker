@@ -7,7 +7,7 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { sharedPortraitExpressionSiblings } from "@/assets/sharedPortraitAssets";
 import { DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID } from "./cinematicSettings";
 import { battlerIdleAnimation } from "@/assets/battlerIdleAnimations";
-import { pixelEnemySheet } from "@/assets/pixelEnemySheets";
+import { bundledPixelEnemySheet } from "@/assets/pixelEnemySheets";
 import { findBgmRuntimeEntry } from "@/assets/bgmCatalogRuntime";
 import { bgmTrackUrl } from "@/assets/bgmCdn";
 import { BATTLER_PLACEMENTS } from "@/battle/battlerPlacements";
@@ -81,7 +81,8 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
     const idle = battlerIdleAnimation(id);
     if (idle) assets.set(idle.path, { kind: "public", sourcePath: idle.path, zipPath: idle.path });
     // 도트 측면 전투의 적 도트 시트도 경로로만 참조된다(pixelEnemySheets.ts) — 같은 id 면 함께 싣는다.
-    const pixelSheet = pixelEnemySheet(id);
+    // 저작 시트(uploaded)는 public 파일이 없다 — collectUsedUploadedAssetIds 가 시트 자산을 싣는다.
+    const pixelSheet = bundledPixelEnemySheet(id);
     if (pixelSheet) assets.set(pixelSheet.path, { kind: "public", sourcePath: pixelSheet.path, zipPath: pixelSheet.path });
     const bundled = BUNDLED_IMAGE_ASSETS.find((asset) => asset.textureKey === id);
     if (bundled) {
@@ -117,6 +118,11 @@ export function collectUsedUploadedAssetIds(project: Project): Set<string> {
   const uploaded = new Set<string>();
   for (const id of Object.keys(project.assets.uploaded)) {
     if (ids.has(id)) uploaded.add(id);
+  }
+  // 저작 적 도트 시트: 초상(=monsterResourceId)이 쓰이면 meta 로만 이어진 3×3 시트 자산도 함께 쓰인다.
+  for (const id of [...uploaded]) {
+    const sheetId = project.assets.uploaded[id]?.meta.pixelEnemySheet?.sheetResourceId;
+    if (sheetId && Object.hasOwn(project.assets.uploaded, sheetId)) uploaded.add(sheetId);
   }
   return uploaded;
 }
