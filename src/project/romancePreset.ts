@@ -128,6 +128,12 @@ export function applyRomanceDefaults(project: Project): string[] {
   if (!system.genreLock && start && GENRE_LOCK_PRESETS.romance.families.includes(tilesetFamily(project, start.tilesetId))) {
     if (enableGenreLockSettled(project, "romance")) applied.push("genreLock");
   }
+  const hero = project.database.actors[0];
+  if (hero && /^(?:주인공|모험가|배우\s*\d+|Hero|Actor\s*\d+)$/iu.test(hero.name.trim())) {
+    hero.name = "한결";
+    if (hero.nickname === "없음") hero.nickname = "";
+    applied.push("heroName");
+  }
   // 연애 기본 대화창 프리셋: 전신 양쪽 스탠딩 + 반투명 다크 베일 대화창(저작자가 다른 스타일을 직접 고르지 않았을 때만).
   if (system.dialogueStyle === undefined || system.dialogueStyle === "pixel-cinematic") {
     system.dialogueStyle = DUAL_FULLBODY_VEIL_PRESET_ID;

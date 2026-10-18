@@ -426,7 +426,7 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       return true;
     case "returnToTitle":
       reportEndingClear(scene, step.clear);
-      if (step.title !== undefined || step.message !== undefined || step.presentation) scene.showEndingScreen(step.title ?? "", step.message ?? "", step.presentation);
+      if (step.title !== undefined || step.message !== undefined || step.presentation) scene.showEndingScreen(step.title ?? "", step.message ?? "", step.presentation, step.clear?.endingId);
       else scene.returnToTitle();
       return true;
     case "done":

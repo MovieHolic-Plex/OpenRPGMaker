@@ -305,8 +305,14 @@ const eventNameByCharacter = new WeakMap<object, Map<string, string>>();
  */
 export function friendshipDisplayName(project: Project | undefined, key: string): string | undefined {
   if (!project) return undefined;
-  const profile = project.characters?.[key]?.displayName?.trim();
-  if (profile) return profile;
+  const trimmed = key.trim();
+  const base = trimmed.replace(/(?:_\d+)+$/u, "") || trimmed;
+  const stripped = base.replace(/^(?:ev_)?npc_/u, "");
+  const candidates = [...new Set([trimmed, base, `npc_${stripped}`, stripped])];
+  for (const candidate of candidates) {
+    const profile = project.characters?.[candidate]?.displayName?.trim();
+    if (profile) return profile;
+  }
   let index = eventNameByCharacter.get(project);
   if (!index) {
     index = new Map();
@@ -319,7 +325,11 @@ export function friendshipDisplayName(project: Project | undefined, key: string)
     }
     eventNameByCharacter.set(project, index);
   }
-  return index.get(key);
+  for (const candidate of candidates) {
+    const found = index.get(candidate);
+    if (found) return found;
+  }
+  return undefined;
 }
 
 /** Sorted read-only list of known social keys present in session.friendship. */
@@ -330,12 +340,28 @@ export function listFriendshipEntries(
   project?: Project
 ): FriendshipListEntry[] {
   if (!friendship) return [];
-  return Object.keys(friendship)
-    .sort((a, b) => a.localeCompare(b))
-    .map((key) => {
-      const value = Math.trunc(Number.isFinite(friendship[key]) ? friendship[key]! : 0);
+  const merged = new Map<string, { key: string; value: number; displayName?: string }>();
+  for (const rawKey of Object.keys(friendship).sort((a, b) => a.localeCompare(b))) {
+    const value = Math.trunc(Number.isFinite(friendship[rawKey]) ? friendship[rawKey]! : 0);
+    const displayName = friendshipDisplayName(project, rawKey);
+    const baseKey = (rawKey.trim().replace(/(?:_\d+)+$/u, "") || rawKey.trim()).replace(/^(?:ev_)?npc_/u, "");
+    const groupKey = displayName ? `name:${displayName}` : `key:${baseKey}`;
+    const prev = merged.get(groupKey);
+    if (!prev) {
+      merged.set(groupKey, { key: rawKey, value, ...(displayName ? { displayName } : {}) });
+    } else {
+      const preferNewKey = /_\d+$/u.test(prev.key) && !/_\d+$/u.test(rawKey);
+      merged.set(groupKey, {
+        key: preferNewKey ? rawKey : prev.key,
+        value: Math.max(prev.value, value),
+        ...((displayName ?? prev.displayName) ? { displayName: displayName ?? prev.displayName } : {}),
+      });
+    }
+  }
+  return [...merged.values()]
+    .sort((a, b) => a.key.localeCompare(b.key))
+    .map(({ key, value, displayName }) => {
       const tier = friendshipTier(value, max, tiers);
-      const displayName = friendshipDisplayName(project, key);
       return {
         key,
         value,

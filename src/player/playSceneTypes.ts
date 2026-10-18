@@ -334,7 +334,7 @@ export interface PlaySceneContext extends Phaser.Scene {
   hasCheckpoint(): boolean;
   restoreCheckpoint(): void;
   showGameOverScreen(message?: string, gameOverId?: string): void;
-  showEndingScreen(title: string, message: string, presentation?: import("@/project/cinematicSettings").EndingPresentation): void;
+  showEndingScreen(title: string, message: string, presentation?: import("@/project/cinematicSettings").EndingPresentation, endingId?: string): void;
   recoverFromDefeat(settings?: import("@/project/cinematicSettings").GameOverSettings): boolean;
   returnToTitle(): void;
 }

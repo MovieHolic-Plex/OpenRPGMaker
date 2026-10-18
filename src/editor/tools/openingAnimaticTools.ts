@@ -136,10 +136,21 @@ function charsetFrameWidth(project: Project, resourceId: string): number | null 
  * 배우를 «막대인간»으로 그리지 않게 한다: 번들 24×32 캐릭터 칩을 그대로 놓고 캐릭터 번호·방향·정수배율·보폭 걷기를 한 번에 붙인다.
  * 칩의 걷기 프레임은 charsetFrameIndex 로 계산하므로 조수가 프레임 번호를 셀 필요가 없다.
  */
+function resolveOpeningCharsetForGenre(project: Project, rawResourceId: string): string {
+  const normalized = rawResourceId.trim().replace(/^tex_oprn_charset_/iu, 'oprn-charset-').replace(/^tex_easyrpg_charset_/iu, 'easyrpg-charset-');
+  const isModernOrRomance = project.system?.genreLock?.preset === 'romance'
+    || project.gameDesignBrief?.interview?.genre === 'romance'
+    || (project.system as { genre?: string } | undefined)?.genre === 'modern';
+  if (isModernOrRomance && /^easyrpg-charset-/iu.test(normalized)) {
+    throw new ToolError(`현대·연애 오프닝에 중세 캐릭터 칩(${rawResourceId})은 사용할 수 없습니다(폴백 금지). oprn-charset-modern1~3 또는 create_character(char-gen)로 생성한 캐릭터 칩을 지정하세요.`, { code: 'genre-charset-forbidden' });
+  }
+  return normalized;
+}
+
 function charsetActorLayer(project: Project, s: Shot, args: Record<string, unknown>): AnimaticLayer {
   const rawId = text(args.charsetResourceId ?? args.resourceId ?? args.characterResourceId, 'charsetResourceId');
   const colonMatch = /^(.+):([0-7])$/u.exec(rawId);
-  const resourceId = colonMatch ? colonMatch[1]! : rawId;
+  const resourceId = resolveOpeningCharsetForGenre(project, colonMatch ? colonMatch[1]! : rawId);
   if (charsetFrameWidth(project, resourceId) === null) throw new ToolError(`캐릭터 칩이 아닙니다: ${resourceId}. list_resources(kind:"charset") 또는 list_opening_media 로 번들 캐릭터 칩(oprn-charset-heroes1, easyrpg-charset-actor1 등)을 찾아 쓰세요.`, { code: 'resource-not-found' });
   const characterIndex = Number(args.characterIndex ?? (colonMatch ? Number(colonMatch[2]) : 0));
   if (!Number.isSafeInteger(characterIndex) || characterIndex < 0 || characterIndex >= CHARSET_CHARACTER_COUNT) throw new ToolError(`characterIndex 는 0..${CHARSET_CHARACTER_COUNT - 1} 입니다.`, { code: 'invalid-args' });
@@ -317,6 +328,9 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
   definition('upsert_opening_layer', '그림/배우/글/도형/입자 레이어 추가·교체. 계약:get_animatic_capabilities.', 'write', schema({ shotId: str, layer: obj, index: integer }, ['shotId', 'layer']), (p, args) => {
     const s = shot(p, args.shotId), l = structuredClone(args.layer) as AnimaticLayer;
     if (!l || typeof l !== 'object' || Array.isArray(l)) throw new ToolError('layer 객체 필요.', { code: 'invalid-args' });
+    if (l.kind === 'image' && l.role === 'actor' && typeof l.resourceId === 'string') {
+      l.resourceId = resolveOpeningCharsetForGenre(p, l.resourceId);
+    }
     const rows = s.composition.layers, at = rows.findIndex(row => row.id === l.id);
     if (at >= 0) rows[at] = l; else { const index = args.index === undefined ? rows.length : Number(args.index); if (!Number.isSafeInteger(index) || index < 0 || index > rows.length) throw new ToolError('index 범위 오류.', { code: 'invalid-args' }); rows.splice(index, 0, l); }
     return commit(p, s, '실제 합성 레이어를 저장했습니다.', l.kind === 'image' && l.role === 'background');

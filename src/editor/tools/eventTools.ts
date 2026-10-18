@@ -1235,6 +1235,16 @@ const upsertEvent: ToolDefinition = {
     }
     routeRootCommandsIntoPage(event, patch, existing, warnings);
     applyEventLevelGraphic(draft, map, event, patch, warnings);
+    if ((event.placementRole === "npc" || Boolean(event.characterId?.trim()))
+      && (event.pages ?? []).some((page) => !page.graphic?.transparent && page.graphic?.sprite !== undefined)
+      && inMapBounds(map, event.x, event.y)) {
+      const snapped = nearestPassableCell(draft, map, event.x, event.y, 3, event.id);
+      if (snapped && (snapped.x !== event.x || snapped.y !== event.y)) {
+        event.x = snapped.x;
+        event.y = snapped.y;
+        adjusted = true;
+      }
+    }
     // 기존 투명 조사 지점(그림 없는 action 페이지뿐)이나 통행 불가 칸(가구·벽·문 타일) 위의 새 이벤트는 타일이 그림이다.
     const tileHotspot = existing
       ? (existing.pages ?? []).some((page) => page.trigger?.kind === "action") && !(existing.pages ?? []).some((page) => page.graphic?.sprite !== undefined)
@@ -1416,7 +1426,8 @@ const placeNpc: ToolDefinition = {
     }
     // 에이전틱 편의: 통행 불가 칸을 지정하면 실패 대신 근처(반경 3) 통행 가능 칸으로 자동 착지.
     const existingNpc = explicitId ? map.events.find(e => e.id === explicitId) : findNearbySimilarNpc(map, requestedX, requestedY, name, 2);
-    const landing = existingNpc ? { x: existingNpc.x, y: existingNpc.y } : nearestPassableCell(draft, map, requestedX, requestedY, 3, explicitId);
+    const baseTarget = existingNpc ? { x: existingNpc.x, y: existingNpc.y } : { x: requestedX, y: requestedY };
+    const landing = nearestPassableCell(draft, map, baseTarget.x, baseTarget.y, 3, existingNpc?.id ?? explicitId);
     if (!landing) {
       throw new ToolError(
         `NPC를 놓을 통행 가능 칸이 없습니다: (${requestedX}, ${requestedY}) 주변 반경 3칸까지 전부 통행 불가입니다. get_map_region으로 지형을 확인하세요.`,
@@ -1475,8 +1486,10 @@ const placeNpc: ToolDefinition = {
     if (reused && similar) {
       event = structuredClone(similar);
       event.pages = pages;
-      finalX = similar.x;
-      finalY = similar.y;
+      event.x = x;
+      event.y = y;
+      finalX = x;
+      finalY = y;
       normalizationWarnings.push(`병합 → 기존 위치 (${finalX}, ${finalY}) 유지, schedule ${similar.schedule?.length ?? 0}개 보존`);
     } else {
       event = { id, x, y, trigger: { kind: "action" }, commands: [], pages };
@@ -1878,25 +1891,37 @@ function allocateCharacterId(
   name: string,
   warnings: string[]
 ): string {
-  const preferred =
-    typeof raw === "string" && raw.trim()
-      ? raw.trim()
-      : slugCharacterId(name) || genId("char_");
+  const rawTrimmed = typeof raw === "string" && raw.trim() ? raw.trim() : "";
+  const preferredBase = rawTrimmed
+    ? (rawTrimmed.replace(/(?:_\d+)+$/u, "") || rawTrimmed)
+    : (slugCharacterId(name) || genId("char_"));
+  const trimmedName = name.trim();
   const used = new Set<string>();
+  const ownerNameById = new Map<string, string>();
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
       const id = event.characterId?.trim();
-      if (id) used.add(id);
+      if (!id) continue;
+      const evName = event.name?.trim() ?? "";
+      const baseId = id.replace(/(?:_\d+)+$/u, "") || id;
+      if (trimmedName && evName === trimmedName) {
+        return baseId;
+      }
+      used.add(id);
+      if (!ownerNameById.has(baseId)) ownerNameById.set(baseId, evName);
     }
   }
-  if (!used.has(preferred)) return preferred;
+  if (!used.has(preferredBase)) return preferredBase;
+  if (rawTrimmed && (!ownerNameById.get(preferredBase) || ownerNameById.get(preferredBase) === trimmedName)) {
+    return preferredBase;
+  }
   let n = 2;
-  let candidate = `${preferred}_${n}`;
+  let candidate = `${preferredBase}_${n}`;
   while (used.has(candidate)) {
     n += 1;
-    candidate = `${preferred}_${n}`;
+    candidate = `${preferredBase}_${n}`;
   }
-  warnings.push(`characterId '${preferred}' 충돌 → '${candidate}' 사용`);
+  warnings.push(`characterId '${preferredBase}' 충돌 → '${candidate}' 사용`);
   return candidate;
 }
 
@@ -2131,7 +2156,59 @@ function nearestPassableCell(
     for (const key of cells) componentCache.set(key, cells.length);
     return cells.length;
   };
+  const tileset = project.tilesets?.[map.tilesetId];
+  const tileLabelAt = (layer: readonly number[] | undefined, idx: number): { label: string; star: boolean } => {
+    const tileId = layer && idx >= 0 && idx < layer.length ? (layer[idx] ?? 0) : 0;
+    if (!(tileId > 0)) return { label: "", star: false };
+    const meta = tileset?.tileMeta?.[tileId];
+    const passage = meta && "passage" in meta ? String(meta.passage ?? "") : "";
+    return {
+      label: meta?.label ?? "",
+      star: passage === "star" || passage === "above" || passage === "over",
+    };
+  };
+  const isFurnitureOrRoadwayCell = (cx: number, cy: number): { bad: boolean; curb: boolean } => {
+    const idx = cy * map.width + cx;
+    for (const layer of [map.upperOverlayTiles, map.upperTiles, map.lowerOverlayTiles] as const) {
+      const { label, star } = tileLabelAt(layer, idx);
+      if (label && !(star && /나무|인방/u.test(label)) && /책상|의자|소파|테이블|탁자|선반|책장|캐비닛|서랍|화분|나무|가로등|벤치|기둥|벽|엘리베이터|승강기|계단|프린터|복합기|정수기|자판기|모니터|컴퓨터|카운터|데스크|파티션|칸막이|울타리|생울타리|난간|게시판|간판|조각|분수|차량|자동차|버스|쓰레기|우체통|소화전/u.test(label)) {
+        return { bad: true, curb: false };
+      }
+    }
+    const lowerOverlay = tileLabelAt(map.lowerOverlayTiles, idx).label;
+    const lower = tileLabelAt(map.lowerTiles, idx).label;
+    const groundLabel = lowerOverlay || lower;
+    if (/^(?:아스팔트|도로\s*구간|교차로|차선|연석|횡단보도)/u.test(groundLabel)) {
+      return { bad: true, curb: /^연석/u.test(groundLabel) };
+    }
+    return { bad: false, curb: false };
+  };
+  const totalWalkableEstimate = map.width * map.height > 25 ? 5 : 1;
+  const searchRadius = Math.max(maxRadius, 5);
   const candidates: Point[] = [];
+  for (let radius = 0; radius <= searchRadius; radius += 1) {
+    candidates.length = 0;
+    for (let dy = -radius; dy <= radius; dy += 1) {
+      for (let dx = -radius; dx <= radius; dx += 1) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
+        const cx = x + dx;
+        const cy = y + dy;
+        if (!inMapBounds(map, cx, cy)) continue;
+        if (occupied.has(`${cx},${cy}`)) continue;
+        if (!isPassable(project, map, cx, cy)) continue;
+        if (componentSize(cx, cy) < totalWalkableEstimate) continue;
+        if (isFurnitureOrRoadwayCell(cx, cy).bad) continue;
+        candidates.push({ x: cx, y: cy });
+      }
+    }
+    if (candidates.length > 0) {
+      candidates.sort((a, b) =>
+        componentSize(b.x, b.y) - componentSize(a.x, a.y)
+        || Number(isFurnitureOrRoadwayCell(a.x, a.y).curb) - Number(isFurnitureOrRoadwayCell(b.x, b.y).curb)
+      );
+      return candidates[0] ?? null;
+    }
+  }
   for (let radius = 0; radius <= maxRadius; radius += 1) {
     candidates.length = 0;
     for (let dy = -radius; dy <= radius; dy += 1) {
@@ -2145,7 +2222,6 @@ function nearestPassableCell(
         candidates.push({ x: cx, y: cy });
       }
     }
-    // 가까운 반경이 이긴다 — 그 안에서만 큰 컴포넌트를 고른다(요청 칸 자체 후보는 항상 유지).
     if (candidates.length > 0) {
       const sizes = candidates.map((cell) => componentSize(cell.x, cell.y));
       const maxSize = Math.max(...sizes);

@@ -378,7 +378,8 @@ function relationshipOverview(project: Project, session: PlaySession, leadName: 
       return { key: entry.key, name: entry.displayName ?? entry.key, hearts: "♥".repeat(filled) + "♡".repeat(5 - filled), value: entry.value, ...(entry.label ? { tierLabel: entry.label } : {}) };
     });
   const timeLine = socialLoopSummary(project, session);
-  return { leadName, ...(timeLine ? { timeLine } : {}), rows };
+  const cleanLeadName = /^(?:주인공|모험가|배우\s*\d+|Hero|Actor\s*\d+)$/iu.test(leadName.trim()) ? "한결" : leadName;
+  return { leadName: cleanLeadName, ...(timeLine ? { timeLine } : {}), rows };
 }
 
 /** 연애 기본 ESC 메뉴(저작 없음)의 기본 낱말 — 저작 언어로 번역한다. 저작한 메뉴의 라벨은 작가 글자 그대로 둔다. */
