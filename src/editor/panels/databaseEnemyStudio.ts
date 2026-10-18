@@ -12,7 +12,8 @@ export type EnemyInspectorSection = { id: string; label: string; cards: HTMLElem
 /** Local UI state only. Every field keeps its existing databaseActions mutation path. */
 export function renderEnemyStudio(record: EnemyRecord, sections: EnemyInspectorSection[], actions: HTMLElement): HTMLElement {
   const stage = enemyStage(record);
-  const pixel = enemyPixelSlot(record);
+  // 도트 시트가 404 로 걷히면 정지 그림 미리보기를 되살린다.
+  const pixel = enemyPixelSlot(record, () => stage.refresh(false));
   stage.refresh(!pixel.element.hidden);
   const tabs = el("div", { class: "db-enemy-inspector-tabs db-ws-section-tabs", attrs: { role: "tablist", "aria-label": "몬스터 속성" } });
   const panels = el("div", { class: "db-enemy-inspector-body" });
@@ -118,7 +119,7 @@ export function renderEnemyStudio(record: EnemyRecord, sections: EnemyInspectorS
  * retro2003 손도트 시트가 있는 몬스터의 도트 미리보기 카드 자리. 시트가 없으면 빈 자리(hidden)다.
  * 리소스·이름이 바뀔 때만 카드를 새로 그리고 옛 카드의 루프를 멈춘다.
  */
-function enemyPixelSlot(record: EnemyRecord): { element: HTMLElement; refresh: () => void } {
+function enemyPixelSlot(record: EnemyRecord, onMissing: () => void): { element: HTMLElement; refresh: () => void } {
   const slot = el("div", { class: "db-enemy-pixel-slot", dataset: { testid: "db-enemy-pixel-slot" } });
   let preview: EnemyPixelPreview | null = null;
   let key = "";
@@ -128,7 +129,15 @@ function enemyPixelSlot(record: EnemyRecord): { element: HTMLElement; refresh: (
     if (next === key) return;
     key = next;
     preview?.stop();
-    preview = renderEnemyPixelPreview(live);
+    const created: EnemyPixelPreview | null = renderEnemyPixelPreview(live, () => {
+      // 그사이 다른 몬스터 그림으로 바뀌었으면 옛 카드의 404 는 무시한다.
+      if (preview !== created) return;
+      preview = null;
+      slot.replaceChildren();
+      slot.hidden = true;
+      onMissing();
+    });
+    preview = created;
     slot.replaceChildren(...(preview ? [preview.element] : []));
     slot.hidden = !preview;
   };

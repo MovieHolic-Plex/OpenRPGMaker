@@ -515,6 +515,8 @@
   padding: 7px 10px;
 }
 .ai-lane-summary[hidden] { display: none; }
+/* 스튜디오 안에서는 레인 보드가 바로 보이므로 「스튜디오에서 보기」 줄을 겹쳐 두지 않는다. */
+.ai-chat-panel.is-studio .ai-lane-summary { display: none; }
 .ai-lane-summary-dot { background: var(--accent); border-radius: 50%; flex: none; height: 8px; width: 8px; }
 .ai-lane-summary[data-state="review"] .ai-lane-summary-dot { background: var(--warning); }
 .ai-lane-summary[data-state="idle"] .ai-lane-summary-dot { background: var(--text-3); }

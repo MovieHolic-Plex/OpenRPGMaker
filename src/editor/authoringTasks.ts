@@ -40,10 +40,12 @@ export function runAuthoringTask(id: AuthoringTaskId): void {
     // 이벤트 레이어에 있었다면 타일 작업으로 돌아온다. 이미 타일 레이어면 그 레이어를 유지한다.
     const layer = editorState.get().layer;
     selectSidebarLayer(layer === "event" ? "lower" : layer);
+    showSidebarTools();
     return;
   }
   if (id === "event") {
     selectSidebarLayer("event");
+    showSidebarTools();
     return;
   }
   if (id === "data") {
@@ -51,4 +53,9 @@ export function runAuthoringTask(id: AuthoringTaskId): void {
     return;
   }
   if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("oprn:test-play-window"));
+}
+
+/** 왼쪽 사이드바를 진행·공방 같은 다른 칸에서 도구 팔레트로 돌린다(leftLayerSwitcher 와 같은 신호). */
+function showSidebarTools(): void {
+  if (typeof window !== "undefined") window.dispatchEvent(new Event("oprn:ai-sidebar-tools"));
 }

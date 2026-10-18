@@ -624,10 +624,11 @@ function expandPlanSteps(
   fallbackLanding: (x: number, y: number) => boolean,
   variation: number,
 ): { readonly steps: readonly StampStep[]; readonly dropped: readonly string[] } {
-  const scene = steps[0]?.tool === "compose_scene" ? steps[0] : undefined;
+  // 장면 구성 단계는 맨 앞이 아니어도 찾는다(앞에 지형 칠하기 등이 붙는 계획).
+  const scene = steps.find((step) => step.tool === "compose_scene");
   if (!scene) return settleAndExpandSteps(steps, facts, project, fallbackLanding);
   const composed = expandSceneStep(scene, project, variation);
-  return { steps: [...composed.steps, ...steps.slice(1)], dropped: composed.dropped };
+  return { steps: [...composed.steps, ...steps.filter((step) => step !== scene)], dropped: composed.dropped };
 }
 
 /**

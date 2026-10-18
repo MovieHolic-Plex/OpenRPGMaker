@@ -397,7 +397,8 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
     if (!Array.isArray(samples) || !samples.length || samples.length > 4 || samples.some(t => !Number.isSafeInteger(t) || t < 0 || t > s.durationMs)) throw new ToolError('atMs는 샷 안의 정수시간1~4개여야 합니다.', { code: 'invalid-args' });
     check(p, s); return { summary: '실제 합성 프레임 전달을 요청했습니다.', data: { shotId: s.id, atMs: samples, resourceIds: animaticResourceIds(s.composition) } };
   }),
-  definition('generate_opening_layer', '실제 독립 배경/배우/소품/전경 생성. Pi 브라우저 생성 연결 필요.', 'write', schema({ prompt: str, name: str, role: { type: 'string', enum: ['background', 'actor', 'prop', 'foreground'] }, referenceResourceIds: { type: 'array', items: str, maxItems: 2 }, artStyle: str, aspectRatio: { type: 'string', enum: ['16:9', '4:3', '1:1'] } }, ['prompt', 'role']), () => { throw new ToolError('실제 브라우저 이미지 생성 경로가 필요합니다.', { code: 'image-generation-unavailable' }); }),
+  // 사용 중단: 에디터 조수 세션은 이 이름을 가로채지 않아 늘 실패한다(Pi 스크립트 실행기만 가로챈다). 새 저작은 generate_opening_image.
+  definition('generate_opening_layer', '사용 중단 — generate_opening_image(role:backdrop|foreground)를 쓴다.', 'write', schema({ prompt: str, name: str, role: { type: 'string', enum: ['background', 'actor', 'prop', 'foreground'] }, referenceResourceIds: { type: 'array', items: str, maxItems: 2 }, artStyle: str, aspectRatio: { type: 'string', enum: ['16:9', '4:3', '1:1'] } }, ['prompt', 'role']), () => { throw new ToolError('generate_opening_layer 는 사용 중단되었습니다. generate_opening_image(role:backdrop 또는 foreground)로 다시 부르세요.', { code: 'deprecated-tool' }); }),
   definition('set_opening_pixel_grid', '샷 전체를 정수 픽셀 격자(예384×216)로 렌더한다. 인자 없이 부르면 해제.', 'write', schema({ shotId: str, width: integer, height: integer }, ['shotId']), (p, args) => {
     const s = shot(p, args.shotId);
     if (args.width === undefined && args.height === undefined) delete s.composition.pixelGrid;

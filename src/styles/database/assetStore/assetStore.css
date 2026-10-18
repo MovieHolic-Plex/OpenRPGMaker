@@ -199,7 +199,7 @@
 .store-user-code { margin: 6px 0 !important; padding: 14px 22px; border-radius: var(--s-r); border: 1px dashed var(--s-gold); font: 700 28px/1 ui-monospace, monospace; letter-spacing: .14em; color: var(--s-gold) !important; background: var(--s-bg); }
 
 /* 왼쪽 활동 막대 「스토어」 */
-.left-store-pane { display: grid; gap: 8px; padding: 10px; }
+.left-store-pane { display: grid; gap: 8px; padding: 10px; flex: 1 1 auto; min-width: 0; min-height: 0; overflow-y: auto; align-content: start; }
 .left-store-pane[hidden] { display: none; }
 .left-store-title { margin: 0; font-size: 14px; }
 .left-store-lead { margin: 0; font-size: 12px; opacity: 0.8; }

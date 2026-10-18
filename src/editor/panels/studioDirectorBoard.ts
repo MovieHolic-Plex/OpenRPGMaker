@@ -6,6 +6,7 @@
 
 import { listAudioResources } from "@/assets/audioResourceCatalog";
 import { openEventFromCanvas } from "@/editor/canvasPointerBridge";
+import { editorState } from "@/editor/editorState";
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
 import { addMapPlanningItem } from "@/editor/mapPlanningActions";
 import { selectEditorMap } from "@/editor/mapSelection";
@@ -356,7 +357,9 @@ export function createStudioDirectorBoard(options: StudioDirectorBoardOptions = 
   const renderFlowView = (project: Project, genre: StudioDirectorGenre): HTMLElement => {
     const beats = buildBeats(project, genre);
     if (beats.length === 0) return el("p", { class: "ai-studio-director-empty", text: "프로젝트에 맵이 없습니다." });
-    const editorMap = beats.find((b) => b.mapId === project.startMapId);
+    // 처음 열 때는 편집 중인 맵을 고른다 — 없으면 시작 맵.
+    const currentMapId = editorState.get().currentMapId;
+    const editorMap = beats.find((b) => b.mapId === currentMapId) ?? beats.find((b) => b.mapId === project.startMapId);
     const beat = beats.find((b) => b.id === selectedBeatId) ?? editorMap ?? beats[0]!;
     selectedBeatId = beat.id;
 

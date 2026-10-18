@@ -71,11 +71,12 @@ export function createAiWorkspace(options: {
     const showTeam = showTeamUi && !studio && (wide || active === "team");
     body.hidden = !showChat; body.inert = !showChat;
     team.root.hidden = !showTeam; team.root.inert = !showTeam;
-    commandBar.hidden = !showChat && !team.root.querySelector<HTMLElement>(".ai-team-member-detail")?.hidden;
+    // 조수 탭에서는 팀원 상세가 자기 후속 입력창을 갖는다 — 아래 대화 입력창까지 보이면 입력창이 둘이 된다.
+    commandBar.hidden = !showChat;
     commandBar.inert = commandBar.hidden;
     outcome.hidden = !showChat;
-    // 조수(팀원·레인)가 있으면 「대화 | 조수 N」 탭을 늘 보인다 — 상태 줄의 「조수 상세」 말고도 도크에서 바로 팀원으로 들어간다.
-    tabs.hidden = !showTeamUi || wide || studio || (count === 0 && active === "chat");
+    // 조수 UI 가 켜져 있으면 「대화 | 조수」 탭을 늘 보인다 — 팀원이 0 명이어도 조수 탭의 「팀 설정」으로 실행 전에 팀을 꾸린다.
+    tabs.hidden = !showTeamUi || wide || studio;
     // 같은 값을 다시 쓰지 않는다 — 조수 이벤트마다 sync 가 돌고(스트림 24초에 85번), 같은 값 쓰기도 스타일 무효화를 일으킨다(2026-10-15 실측).
     if (panel.dataset.workspaceTab !== active) panel.dataset.workspaceTab = active;
     const chatSelected = String(active === "chat"), teamSelected = String(active === "team");

@@ -145,8 +145,8 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
     actorFilter.hidden = Boolean(actor) || actors.length < 2;
     meta.hidden = level !== "trace"; controls.hidden = level !== "trace"; columns.hidden = level !== "trace";
     root.dataset.member = String(Boolean(actor));
-    pipeline.root.hidden = Boolean(actor);
-    if (!actor) pipeline.update(current);
+    // 팀원 상세에서도 4단계 파이프라인 머리를 보인다 — 그 팀원의 기록만으로 단계를 센다.
+    pipeline.update(actor ? { ...current, entries: index.byActor.get(actor) ?? [] } : current);
     const metaText = `실행 기록 · ${current.entries.length}건 · ${current.phase}`;
     if (meta.textContent !== metaText) meta.textContent = metaText;
     const source = actor ? index.byActor.get(actor) ?? [] : current.entries;

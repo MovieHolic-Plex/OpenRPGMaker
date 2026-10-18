@@ -779,20 +779,54 @@
   word-break: keep-all;
 }
 
+/* 좁은 창·도크의 56/48px 아이콘 레인에서도 접기 줄은 남긴다 — 숨기면 접힌 탭에 닿을 길이 없다.
+   글자 줄 대신 「+N」 한 칸만 보이고 뜻은 title·aria-label 이 말한다. */
 @container db-modal (max-width: 799px) {
   .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold {
+    align-items: center;
+    min-height: 28px;
+    padding: 4px 0;
+    width: 40px;
+  }
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold > span {
     display: none;
+  }
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold::after {
+    content: "+" attr(data-count);
+    font-weight: 600;
   }
 }
 
 @media (max-width: 799px) {
   .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold {
+    align-items: center;
+    min-height: 28px;
+    padding: 4px 0;
+    width: 40px;
+  }
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold > span {
     display: none;
+  }
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold::after {
+    content: "+" attr(data-count);
+    font-weight: 600;
   }
 }
 
 .database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-tab-fold {
+  align-items: center;
+  min-height: 28px;
+  padding: 4px 0;
+  width: 40px;
+}
+
+.database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-tab-fold > span {
   display: none;
+}
+
+.database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-tab-fold::after {
+  content: "+" attr(data-count);
+  font-weight: 600;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group-label {
