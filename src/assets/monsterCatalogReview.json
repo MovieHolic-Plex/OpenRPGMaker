@@ -7,14 +7,14 @@
   "entries": {
     "generated-enemy-slime-01": {
       "url": "/assets/generated/pixel-enemy-portraits/slime.png",
-      "sha256": "460b6b64479c5480ead1ca85d25f288d89bca8bd9e9b1a8353c731296e79a0ae",
-      "observation": "청록색 비대칭 젤리 몸에 두꺼운 밝은 반사 띠와 돌출한 눈살, 작은 코와 입이 있다.",
+      "sha256": "f96ca0bb5fd59762790ed819f4105c50068c56dcbfb957ded06f8e07398273f5",
+      "observation": "물방울 모양 청록 젤리로, 뾰족한 머리끝과 큰 반사광, 몸속 밝은 핵과 거품, 동그란 두 눈을 가졌다.",
       "index": 1,
-      "inspectionMethod": "Fresh native pixel anatomy and all nine poses. Locally reviewed artwork; user acceptance is not implied.",
+      "inspectionMethod": "Direct pixel redraw (scripts/content/monsters/redraw_slime.py): fresh anatomy, nine distinct poses with a skill-cast cell (0,2). Locally reviewed artwork; user acceptance is not implied.",
       "nativeSheet": "assets/generated/pixel-enemies/slime.png",
-      "nativeSheetSha256": "f8e9c411e0d6d61d470ea6464b98767c4c886a7f26eadf02f7ab31f2c071634d",
+      "nativeSheetSha256": "56cc6c28a5948954b97e083725d23325673b14dfe09dc03e4107cd774b45b79c",
       "cell": 64,
-      "reviewEvidence": "verify-shots/monster-redraw-all/SUMMARY.md",
+      "reviewEvidence": "~/claude-viz/monster-mantis-fix-1.html",
       "sourceWorkingTree": true
     },
     "generated-enemy-bat-01": {
@@ -516,14 +516,14 @@
     },
     "generated-enemy-slime-red": {
       "url": "/assets/generated/pixel-enemy-portraits/slime-red.png",
-      "sha256": "e0dd599458b08d84bfa870391a59b9afc96c2ece446f2fab571753cfc4e89e3f",
-      "observation": "붉은 젤리의 갈라진 불꽃 볏과 깊은 입 안, 주황색 반사 덩어리가 보인다.",
+      "sha256": "96b264edd66adf33b8a9794a30d8449bf71e085fc968fc441b69f12aa8bde5b7",
+      "observation": "물방울 모양 붉은 젤리로, 몸속 주황 핵과 거품, 큰 반사광, 화난 두 눈을 가졌다.",
       "index": 44,
-      "inspectionMethod": "Fresh native pixel anatomy and all nine poses. Locally reviewed artwork; user acceptance is not implied.",
+      "inspectionMethod": "Direct pixel redraw (scripts/content/monsters/redraw_slime_red.py): fresh anatomy, nine distinct poses with a skill-cast cell (0,2). Locally reviewed artwork; user acceptance is not implied.",
       "nativeSheet": "assets/generated/pixel-enemies/slime-red.png",
-      "nativeSheetSha256": "470f17b824d55e38a892e546b67d18a96439705a4b52912df87bafd38dde6240",
+      "nativeSheetSha256": "e22512a4c9500327ce0859e44c01f257c3b48e58ba3ac90fb6e5141e3b127267",
       "cell": 64,
-      "reviewEvidence": "verify-shots/monster-redraw-all/SUMMARY.md",
+      "reviewEvidence": "~/claude-viz/monster-mantis-fix-1.html",
       "sourceWorkingTree": true
     },
     "generated-enemy-slime-green": {
@@ -874,14 +874,14 @@
     },
     "generated-enemy-hound-hell": {
       "url": "/assets/generated/pixel-enemy-portraits/hound-hell.png",
-      "sha256": "2e5b054347d037cf83b6d176228e268955d67114ca1c96bef2e5499c491a767b",
-      "observation": "검붉은 비늘 털과 뿔, 금빛 균열과 큰 턱을 가진 불타는 지옥 사냥개다.",
+      "sha256": "35fb9a54080f51974bc3616e67a72c6774f93c42aebdf68b81235d6ac5044b22",
+      "observation": "검붉은 털에 등과 꼬리로 불꽃이 타오르는 지옥 사냥개로, 뿔과 빛나는 눈, 벌린 턱을 가졌다.",
       "index": 74,
-      "inspectionMethod": "Fresh native pixel anatomy and all nine poses. Locally reviewed artwork; user acceptance is not implied.",
+      "inspectionMethod": "Direct pixel redraw (scripts/content/monsters/redraw_hound_hell.py): fresh anatomy, nine distinct poses with a skill-cast cell (0,2). Locally reviewed artwork; user acceptance is not implied.",
       "nativeSheet": "assets/generated/pixel-enemies/hound-hell.png",
-      "nativeSheetSha256": "81fe8fb3403b8cfc3c069e1e20535aa6f3680907d941c8f9dd8e472b50c494f2",
+      "nativeSheetSha256": "e2dd69eb3c5fae58cb1eb7d66efbb90c22f73f9361226ea6bfca26bffdefeac7",
       "cell": 64,
-      "reviewEvidence": "verify-shots/monster-redraw-all/SUMMARY.md",
+      "reviewEvidence": "~/claude-viz/monster-mantis-fix-1.html",
       "sourceWorkingTree": true
     },
     "generated-enemy-ape-stone": {
@@ -922,14 +922,14 @@
     },
     "generated-enemy-skeleton-archer": {
       "url": "/assets/generated/pixel-enemy-portraits/skeleton-archer.png",
-      "sha256": "7a3dfa7c6ab91ad90411284936cf440b57592d818b81b6865f1549cb4f85657b",
-      "observation": "큰 상아색 두개골과 굵은 늑골을 드러낸 궁수가 붉은 두건과 나무 활, 등 화살통을 갖는다.",
+      "sha256": "2fef885385d4e2cc78e1d90ccfdc48708c6d13727e0660fd76909f9681ebdddd",
+      "observation": "상아색 뼈의 해골 궁수로, 눈구멍 속 푸른 불씨와 갈비뼈, 어깨의 낡은 망토 조각과 나무 활, 등 화살통을 가졌다.",
       "index": 78,
-      "inspectionMethod": "Fresh native pixel anatomy and all nine poses. Locally reviewed artwork; user acceptance is not implied.",
+      "inspectionMethod": "Direct pixel redraw (scripts/content/monsters/redraw_skeleton_archer.py): fresh anatomy, nine distinct poses with a skill-cast cell (0,2). Locally reviewed artwork; user acceptance is not implied.",
       "nativeSheet": "assets/generated/pixel-enemies/skeleton-archer.png",
-      "nativeSheetSha256": "6d037975ccbab8e600425a4b9ac4a6136c5c3445873bb46e92818008121073f2",
+      "nativeSheetSha256": "b39dfa5ace423569e77351d05391e75a1896ea6f64592913d3bc3ed5d2e14f16",
       "cell": 64,
-      "reviewEvidence": "verify-shots/monster-redraw-all/SUMMARY.md",
+      "reviewEvidence": "~/claude-viz/monster-mantis-fix-1.html",
       "sourceWorkingTree": true
     },
     "generated-enemy-skeleton-knight": {
@@ -945,14 +945,14 @@
     },
     "generated-enemy-zombie-rot": {
       "url": "/assets/generated/pixel-enemy-portraits/zombie-rot.png",
-      "sha256": "24dc54e33f236775d46a04cdb14b7bc474f073201bc5256ee80e551b7ed49802",
-      "observation": "썩은 녹색 얼굴의 넓은 코와 벌어진 턱, 찢긴 붉은 셔츠와 부풀어 오른 어깨가 보인다.",
+      "sha256": "9c1e92a3a5d43ebea13222f113173fba8cea8437cbac4458a04fbb84a4ab90b2",
+      "observation": "잿빛 녹색 살갗에 등이 굽은 좀비로, 찢어진 적갈색 셔츠 사이 갈비, 처진 턱과 한쪽만 빛나는 눈을 가졌다.",
       "index": 80,
-      "inspectionMethod": "Fresh native pixel anatomy and all nine poses. Locally reviewed artwork; user acceptance is not implied.",
+      "inspectionMethod": "Direct pixel redraw (scripts/content/monsters/redraw_zombie_rot.py): fresh anatomy, nine distinct poses with a skill-cast cell (0,2). Locally reviewed artwork; user acceptance is not implied.",
       "nativeSheet": "assets/generated/pixel-enemies/zombie-rot.png",
-      "nativeSheetSha256": "8752090a8b628989e13df02122cccb4e46923f5c00a10ac89833e72628281040",
+      "nativeSheetSha256": "f127341e513109e640a8f1f644b7c5ae531bf131915b844220c5fe61cb589aac",
       "cell": 64,
-      "reviewEvidence": "verify-shots/monster-redraw-all/SUMMARY.md",
+      "reviewEvidence": "~/claude-viz/monster-mantis-fix-1.html",
       "sourceWorkingTree": true
     },
     "generated-enemy-ghoul-grave": {
@@ -969,14 +969,14 @@
     },
     "generated-enemy-ghost-pale": {
       "url": "/assets/generated/pixel-enemy-portraits/ghost-pale.png",
-      "sha256": "4df6bf6bcbd61cd562babc3313be06d91e86205fcedad387be8f2c337bba9e5e",
-      "observation": "두꺼운 창백한 수의의 접힌 천 아래 깊은 눈과 긴 코, 열린 입이 드러난다.",
+      "sha256": "8f62f5b9483dba06bce9fbc65208679826e0d24239dda77c5babf7c60a594cf7",
+      "observation": "바닥에서 떠 있는 하얀 천 유령으로, 물결치는 옷자락 끝과 흐느적거리는 소매 팔, 청록 불빛이 도는 눈구멍을 가졌다.",
       "index": 82,
-      "inspectionMethod": "Fresh native pixel anatomy and all nine poses. Locally reviewed artwork; user acceptance is not implied.",
+      "inspectionMethod": "Direct pixel redraw (scripts/content/monsters/redraw_ghost_pale.py): fresh anatomy, nine distinct poses with a skill-cast cell (0,2). Locally reviewed artwork; user acceptance is not implied.",
       "nativeSheet": "assets/generated/pixel-enemies/ghost-pale.png",
-      "nativeSheetSha256": "5fb2a4e965a065b61be79947e0988d2ddf7abe480831ea16f08d81885a8d2c28",
+      "nativeSheetSha256": "9340f1026694e4e7fff789aecd04770e87e57722392d59c601c6f2b3bac79430",
       "cell": 64,
-      "reviewEvidence": "verify-shots/monster-redraw-all/SUMMARY.md",
+      "reviewEvidence": "~/claude-viz/monster-mantis-fix-1.html",
       "sourceWorkingTree": true
     },
     "generated-enemy-wraith-dark": {
@@ -1005,14 +1005,14 @@
     },
     "generated-enemy-mummy-bandage": {
       "url": "/assets/generated/pixel-enemy-portraits/mummy-bandage.png",
-      "sha256": "43f3fbcd11199a42a7defee4804fc0f4ed5c71ced60c549398122fcb1c2cdbd0",
-      "observation": "두꺼운 모래색 붕대와 깊은 눈구멍의 미라가 굽은 관절과 풀린 붕대 끈을 갖는다.",
+      "sha256": "c951fc3542ef1f529c02c6799dd70439927ec0509d03c4164c4f126fbe1774bc",
+      "observation": "빛바랜 누런 붕대가 띠로 감긴 미라로, 눈 띠 틈의 붉은 한쪽 눈과 등 뒤로 나부끼는 풀린 붕대 끝을 가졌다.",
       "index": 85,
-      "inspectionMethod": "Fresh native pixel anatomy and all nine poses. Locally reviewed artwork; user acceptance is not implied.",
+      "inspectionMethod": "Direct pixel redraw (scripts/content/monsters/redraw_mummy_bandage.py): fresh anatomy, nine distinct poses with a skill-cast cell (0,2). Locally reviewed artwork; user acceptance is not implied.",
       "nativeSheet": "assets/generated/pixel-enemies/mummy-bandage.png",
-      "nativeSheetSha256": "adec5c52f43a321fbac5d35c6302adc2ea718ec36745fb12b92ef95f193eb250",
+      "nativeSheetSha256": "d13166129a20b0053c65a7d74a4fe5c2213f7e521a80fa4a86b490d21e7af75a",
       "cell": 64,
-      "reviewEvidence": "verify-shots/monster-redraw-all/SUMMARY.md",
+      "reviewEvidence": "~/claude-viz/monster-mantis-fix-1.html",
       "sourceWorkingTree": true
     },
     "generated-enemy-banshee-wail": {
@@ -1053,26 +1053,26 @@
     },
     "generated-enemy-spirit-fire": {
       "url": "/assets/generated/pixel-enemy-portraits/spirit-fire.png",
-      "sha256": "a39ad0317b0a97a4a7816aa070cc92640330f3fca708c117ca23c00f935be471",
-      "observation": "산호색 화염 정령의 넓은 불꽃 가슴과 황금색 속불, 갈라진 불꽃 주먹이 솟는다.",
+      "sha256": "5cb617998f643877672aee9957ce018460b167f7d2b12e418c572fdba0c6644f",
+      "observation": "떠 있는 불꽃 정령으로, 위로 갈라져 솟는 불길 머리와 흰 심지, 불꽃 팔 둘과 하얗게 타는 두 눈을 가졌다.",
       "index": 89,
-      "inspectionMethod": "Fresh native pixel anatomy and all nine poses. Locally reviewed artwork; user acceptance is not implied.",
+      "inspectionMethod": "Direct pixel redraw (scripts/content/monsters/redraw_spirit_fire.py): fresh anatomy, nine distinct poses with a skill-cast cell (0,2). Locally reviewed artwork; user acceptance is not implied.",
       "nativeSheet": "assets/generated/pixel-enemies/spirit-fire.png",
-      "nativeSheetSha256": "3ca7a2a5eff4975a21d20c199297784dfff47d4ee714c7740f32e001e4384eef",
+      "nativeSheetSha256": "8aad167f80a7b1ba3bd9f66af8f14f153e92d2d2658793b0a17c57db03f8bcf0",
       "cell": 64,
-      "reviewEvidence": "verify-shots/monster-redraw-all/SUMMARY.md",
+      "reviewEvidence": "~/claude-viz/monster-mantis-fix-1.html",
       "sourceWorkingTree": true
     },
     "generated-enemy-spirit-water": {
       "url": "/assets/generated/pixel-enemy-portraits/spirit-water.png",
-      "sha256": "c09ce6e55de7ed2130cc42cbc8076030062d7bbb41bb66e442abe7a2bd6fbca4",
-      "observation": "큰 청록 파도 소용돌이와 물결 가슴을 가진 물 정령이 긴 코와 흐르는 팔을 내민다.",
+      "sha256": "f80a16105396174b67e0fb35355384c25501a6857cc323c3089ff3bf3c239f33",
+      "observation": "떠 있는 물 정령으로, 뒤로 말린 물결 볏과 둥근 물방울 몸, 흰 물보라 심지와 물줄기 팔 둘을 가졌다.",
       "index": 90,
-      "inspectionMethod": "Fresh native pixel anatomy and all nine poses. Locally reviewed artwork; user acceptance is not implied.",
+      "inspectionMethod": "Direct pixel redraw (scripts/content/monsters/redraw_spirit_water.py): fresh anatomy, nine distinct poses with a skill-cast cell (0,2). Locally reviewed artwork; user acceptance is not implied.",
       "nativeSheet": "assets/generated/pixel-enemies/spirit-water.png",
-      "nativeSheetSha256": "e2c56d7d6272ecc167d72b43fe51ccdd69c7956d8266f59038b55f7a21e93925",
+      "nativeSheetSha256": "492223253ff1ce405aa269cd7c9d624734c918878fe1ee2acb8431dc42a36695",
       "cell": 64,
-      "reviewEvidence": "verify-shots/monster-redraw-all/SUMMARY.md",
+      "reviewEvidence": "~/claude-viz/monster-mantis-fix-1.html",
       "sourceWorkingTree": true
     },
     "generated-enemy-spirit-earth": {
@@ -1293,14 +1293,14 @@
     },
     "generated-enemy-goblin-scout": {
       "url": "/assets/generated/pixel-enemy-portraits/goblin-scout.png",
-      "sha256": "befd2c3d3c49cd78e2bd80493e45fe092b83573b9d84070e8d1328d4f4727033",
-      "observation": "초록색 피부와 긴 귀, 뾰족한 코와 이빨을 가진 고블린 정찰병은 갈색 가죽 조끼와 띠, 굽은 두 다리와 단검을 지닌다.",
+      "sha256": "d453e38cf650c58a31667f7ea6bf3c19db83b7b9e2eaf823b66b2f9613396e24",
+      "observation": "작고 마른 초록 고블린으로, 뒤로 뻗은 긴 귀와 매부리 코, 노란 눈과 송곳니, 가죽 조끼와 등 자루, 녹슨 단검을 가졌다.",
       "index": 109,
-      "inspectionMethod": "Fresh native pixel anatomy and all nine poses. Locally reviewed artwork; user acceptance is not implied.",
+      "inspectionMethod": "Direct pixel redraw (scripts/content/monsters/redraw_goblin_scout.py): fresh anatomy, nine distinct poses with a skill-cast cell (0,2). Locally reviewed artwork; user acceptance is not implied.",
       "nativeSheet": "assets/generated/pixel-enemies/goblin-scout.png",
-      "nativeSheetSha256": "8551d1e1d357ee705b0effffff7ba00353c58e690102f0c5e6c312e368c05c0a",
+      "nativeSheetSha256": "dddd0e79d35d70f75fd8c89ea78434f30951e4966fa3a48a9f4399225444db1e",
       "cell": 64,
-      "reviewEvidence": "verify-shots/monster-redraw-all/SUMMARY.md",
+      "reviewEvidence": "~/claude-viz/monster-mantis-fix-1.html",
       "sourceWorkingTree": true
     },
     "generated-enemy-goblin-brute": {
