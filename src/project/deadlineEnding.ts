@@ -79,8 +79,158 @@ function heroineEndingId(project: Project, key: string): string {
   return targets ? base : `${base}_${shortHash(key)}`;
 }
 
+function canonicalizeCommandFriendshipKeys(commands: Command[] | undefined, resolveKey: (raw: string) => string): void {
+  if (!commands) return;
+  const seenChange = new Set<string>();
+  for (let i = commands.length - 1; i >= 0; i -= 1) {
+    const cmd = commands[i]!;
+    if ((cmd.kind === "changeFriendship" || cmd.kind === "getFriendship" || cmd.kind === "setRelationship") && typeof cmd.npcKey === "string" && cmd.npcKey.trim()) {
+      cmd.npcKey = resolveKey(cmd.npcKey.trim());
+    }
+    if (cmd.kind === "text" && typeof cmd.body === "string") {
+      const cleaned = cmd.body.replace(/^\[[^\]\n]{1,28}\]\s*/u, "");
+      if (cleaned.trim()) cmd.body = cleaned;
+    }
+    if (cmd.kind === "fork") {
+      const cond = cmd.condition;
+      if (cond && (cond.kind === "friendshipAtLeast" || cond.kind === "relationshipAtLeast") && typeof cond.npcKey === "string" && cond.npcKey.trim()) {
+        cond.npcKey = resolveKey(cond.npcKey.trim());
+      }
+      canonicalizeCommandFriendshipKeys(cmd.then, resolveKey);
+      canonicalizeCommandFriendshipKeys(cmd.else, resolveKey);
+    } else if (cmd.kind === "choices") {
+      for (const opt of cmd.options ?? []) canonicalizeCommandFriendshipKeys(opt.branch, resolveKey);
+      canonicalizeCommandFriendshipKeys(cmd.cancelBranch, resolveKey);
+    }
+  }
+  for (let i = 0; i < commands.length; i += 1) {
+    const cmd = commands[i]!;
+    if (cmd.kind === "changeFriendship") {
+      const sig = `${cmd.npcKey ?? ""}:${cmd.delta}`;
+      if (seenChange.has(sig)) {
+        commands.splice(i, 1);
+        i -= 1;
+      } else {
+        seenChange.add(sig);
+      }
+    }
+  }
+}
+
+export function canonicalizeRomanceHeroines(project: Project): void {
+  const isVisiblePersonEvent = (event: Project["maps"][string]["events"][number]): boolean => {
+    const name = (event.name ?? "").trim();
+    if (/벤치|커피머신|간식|코너|게시판|안내판|표지판|자판기|포인트|기억|추억/u.test(name) && !/학생|선배|후배|동기|친구|교수|선생|바리스타|팀장|대리|사원|부원|회장/u.test(name)) {
+      return false;
+    }
+    if (/^ev_(?:examine|route_bench|date_bench|office_pantry|segment_)/iu.test(event.id)) return false;
+    return (event.pages ?? []).some((page) => !page.graphic?.transparent && page.graphic?.sprite !== undefined);
+  };
+  const byName = new Map<string, string>();
+  const nameByKey = new Map<string, string>();
+  for (const map of Object.values(project.maps ?? {})) {
+    for (const event of map.events ?? []) {
+      if (!isVisiblePersonEvent(event)) {
+        delete event.characterId;
+        delete event.talkFriendship;
+        continue;
+      }
+      const rawId = event.characterId?.trim();
+      const name = event.name?.trim();
+      if (!rawId || !name) continue;
+      const baseId = rawId.replace(/(?:_\d+)+$/u, "") || rawId;
+      const existingForName = byName.get(name);
+      if (!existingForName || (/_\d+$/u.test(existingForName) && !/_\d+$/u.test(baseId))) {
+        byName.set(name, baseId);
+      }
+      if (!nameByKey.has(baseId)) nameByKey.set(baseId, name);
+    }
+  }
+  const canonicalKeys = new Set<string>();
+  for (const map of Object.values(project.maps ?? {})) {
+    for (const event of map.events ?? []) {
+      const rawId = event.characterId?.trim();
+      if (!rawId) continue;
+      const name = event.name?.trim();
+      const baseId = rawId.replace(/(?:_\d+)+$/u, "") || rawId;
+      const canonical = (name && byName.get(name))
+        ? byName.get(name)!
+        : (!nameByKey.has(baseId) || nameByKey.get(baseId) === name ? baseId : rawId);
+      event.characterId = canonical;
+      canonicalKeys.add(canonical);
+    }
+  }
+  const resolveKey = (raw: string): string => {
+    if (!raw || raw === ANY_FRIENDSHIP_KEY || raw === "self") return raw;
+    if (canonicalKeys.has(raw)) return raw;
+    const base = raw.replace(/(?:_\d+)+$/u, "") || raw;
+    if (canonicalKeys.has(base)) return base;
+    const stripped = base.replace(/^(?:ev_)?npc_/u, "");
+    if (canonicalKeys.has(`npc_${stripped}`)) return `npc_${stripped}`;
+    if (canonicalKeys.has(`ev_npc_${stripped}`)) return `ev_npc_${stripped}`;
+    if (canonicalKeys.has(stripped)) return stripped;
+    return raw;
+  };
+  for (const map of Object.values(project.maps ?? {})) {
+    for (const event of map.events ?? []) {
+      canonicalizeCommandFriendshipKeys(event.commands, resolveKey);
+      let hasFriendshipCmd = false;
+      for (const page of event.pages ?? []) {
+        for (const cond of page.conditions ?? []) {
+          if ((cond.kind === "friendshipAtLeast" || cond.kind === "relationshipAtLeast") && typeof cond.npcKey === "string" && cond.npcKey.trim()) {
+            cond.npcKey = resolveKey(cond.npcKey.trim());
+          }
+        }
+        canonicalizeCommandFriendshipKeys(page.commands, resolveKey);
+        if (JSON.stringify(page.commands ?? []).includes('"changeFriendship"')) hasFriendshipCmd = true;
+      }
+      if (event.characterId?.trim() && hasFriendshipCmd && event.talkFriendship === undefined) {
+        event.talkFriendship = true;
+      }
+    }
+  }
+  if (project.endings) {
+    const seenHeroineTarget = new Set<string>();
+    const firstFriendshipTarget = (ending: NonNullable<Project["endings"]>[number]): string | undefined => {
+      const first = ending.conditions?.[0];
+      return first && first.kind === "friendshipAtLeast" ? first.npcKey : undefined;
+    };
+    for (const ending of project.endings) {
+      for (const cond of ending.conditions ?? []) {
+        if (cond.kind === "friendshipAtLeast" && typeof cond.npcKey === "string" && cond.npcKey.trim()) {
+          cond.npcKey = resolveKey(cond.npcKey.trim());
+        }
+      }
+      if (ending.id.startsWith("ending_with_") && !/_\d+$/u.test(ending.id)) {
+        const target = firstFriendshipTarget(ending);
+        if (target) seenHeroineTarget.add(target);
+      }
+    }
+    for (let i = project.endings.length - 1; i >= 0; i -= 1) {
+      const ending = project.endings[i]!;
+      if (!ending.id.startsWith("ending_with_")) continue;
+      const first = ending.conditions?.[0];
+      const target = first && first.kind === "friendshipAtLeast" ? first.npcKey : undefined;
+      if (!target || !canonicalKeys.has(target) || (/_\d+$/u.test(ending.id) && seenHeroineTarget.has(target))) {
+        project.endings.splice(i, 1);
+      } else {
+        seenHeroineTarget.add(target);
+      }
+    }
+    for (const map of Object.values(project.maps ?? {})) {
+      for (const event of map.events ?? []) {
+        const key = event.characterId?.trim();
+        if (key && seenHeroineTarget.has(key) && event.talkFriendship === undefined) {
+          event.talkFriendship = true;
+        }
+      }
+    }
+  }
+}
+
 /** 호감 대화 인물(characterId 있는 talkFriendship 이벤트)마다 「OO와 함께」 엔딩을 보장하고, 인물 엔딩 tiers 를 돌려준다. 이미 있는 같은 id 엔딩은 건드리지 않는다. 인물이 둘 미만이면 빈 배열. */
 export function ensureHeroineEndings(project: Project): { readonly tiers: DeadlineTier[]; readonly generated: string[]; readonly heroines: number } {
+  canonicalizeRomanceHeroines(project);
   const heroines = new Map<string, string>();
   for (const map of Object.values(project.maps ?? {})) for (const event of map.events ?? []) {
     const key = event.characterId?.trim();

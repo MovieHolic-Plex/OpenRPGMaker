@@ -126,14 +126,17 @@ function resolveCharsetTextureKeyCandidate(input: string): string | null {
   const lower = trimmed.toLowerCase();
   const folded = KNOWN_CHARSET_TEXTURE_KEYS.find((textureKey) => textureKey.toLowerCase() === lower);
   if (folded) return folded;
-  // 리소스 id 표기(`easyrpg-charset-people1`)와 텍스처 키(`tex_easyrpg_charset_people1`)는 접두사·구분자만 다르다
-  // (2026-09-24 헤드리스 「등대지기의 겨울」 place_npc 거부). 그 둘을 걷어 낸 모양이 키 하나에만 맞으면 그 키다.
+  const modernShort = /^modern([123])$/iu.exec(trimmed);
+  if (modernShort) return `tex_oprn_charset_modern${modernShort[1]}`;
   const shape = charsetKeyShape(trimmed);
   const shaped = KNOWN_CHARSET_TEXTURE_KEYS.filter((textureKey) => charsetKeyShape(textureKey) === shape);
   if (shape && shaped.length === 1) return shaped[0]!;
+  if (/modern/iu.test(trimmed)) return null;
   const top = searchResources("charset", trimmed)[0];
   if (!top) return null;
-  return parseCharsetSearchId(top.id)?.textureKey ?? null;
+  const key = parseCharsetSearchId(top.id)?.textureKey ?? null;
+  if (key && npcGraphicCatalogIsFiltered() && /^tex_easyrpg_charset_/iu.test(key)) return null;
+  return key;
 }
 
 function charsetTextureKeyCandidates(input: string): readonly string[] {
@@ -244,8 +247,15 @@ export function usedCharsetGraphicKeysOnMap(map: {
  */
 export function usedCharsetGraphicKeysOnProject(project: {
   readonly maps: Readonly<Record<string, { readonly events: readonly { readonly name?: string; readonly pages?: readonly { readonly graphic?: EventPageGraphic }[] }[] }>>;
+  readonly database?: { readonly actors?: readonly { readonly characterResourceId?: string; readonly characterIndex?: number }[] };
 }, exceptName?: string): Set<string> {
   const used = new Set<string>();
+  const hero = project.database?.actors?.[0];
+  if (hero?.characterResourceId) {
+    const idx = hero.characterIndex ?? 0;
+    used.add(`${hero.characterResourceId}#${idx}`);
+    used.add(`${hero.characterResourceId.replace(/^oprn-charset-/u, "tex_oprn_charset_")}#${idx}`);
+  }
   const except = exceptName?.trim();
   for (const map of Object.values(project.maps)) {
     for (const key of usedCharsetGraphicKeysOnMap({ events: map.events.filter((event) => !except || event.name?.trim() !== except) })) used.add(key);

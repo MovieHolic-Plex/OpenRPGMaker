@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { FACE_EXPRESSION_SETS } from "@/assets/faceExpressionSets";
@@ -85,5 +85,19 @@ describe("공용 표정 세트 흉상·전신", () => {
     const second = { database: { characterAppearances: [{ id: "u", name: "", description: "", charset: { resourceId: "oprn-charset-modern1", characterIndex: 1 } }] } } as unknown as Project;
     expect(resolveAppearancePortrait(second, "u", "full")).toMatchObject({ resourceId: "shared-modern-uni-boy-grey-expressions-full-base", presentation: "full" });
     expect(MODERN_PORTRAIT_SETS).toHaveLength(24);
+  });
+
+  it("현대 연애 초상은 한 그림체(팔레트 도트)로 잠겨 있다 — 매끈한 고해상도 일러스트가 섞이지 않는다", () => {
+    // #2870 이 세 세트를 768×1130 RGBA 오토메 일러스트로 덮어써 도트 인물 옆에 매끈한 인물이 섰다.
+    const offStyle = SHARED_PORTRAIT_ASSETS
+      .filter((asset) => MODERN_PORTRAIT_SETS.some((set) => asset.path.includes(`/${set.stem}/`)))
+      .flatMap((asset) => {
+        const png = readFileSync(path.join("public", asset.path));
+        const width = png.readUInt32BE(16);
+        const colourType = png[25];
+        const limit = asset.mode === "full" ? 400 : 1100;
+        return colourType === 3 && width <= limit ? [] : [`${asset.path} ${width}px type${colourType}`];
+      });
+    expect(offStyle).toEqual([]);
   });
 });

@@ -29,7 +29,7 @@ const PLACEHOLDER_NAMES = new Set<string>(["기억의 길", "기억의 조각", 
 /** 빈 프로젝트·인터뷰 시작이 남기는 기본 제목 — 연애 게임은 이 게임의 이름을 가져야 한다. */
 const PLACEHOLDER_TITLES = new Set(["", "새 게임", "새 프로젝트"]);
 const AFFECTION_VARIABLE = /호감|friendship|affection|favou?r/iu;
-const OBJECT_NPC_NAME = /표지판|게시판|안내판|푯말|우편함|시계탑|나무|상자|벤치|분수대|자판기|포인트|안내데스크|다이어리|수첩/u;
+const OBJECT_NPC_NAME = /표지판|게시판|안내판|푯말|우편함|시계탑|나무|상자|벤치|분수대|자판기|포인트|안내데스크|다이어리|수첩|커피머신|간식|코너/u;
 const PERSON_ROLE_NAME = /학생|선배|후배|동기|친구|교수|선생|매니저|바리스타|팀장|대리|사원|부원|위원|회장|서기|당번|주인|점원/u;
 /** 대사 본문 속 타일 좌표 「(40,13)」·「(16, 6)」 — 플레이어에게는 뜻 없는 숫자다. */
 const RAW_TILE_COORDS = /\(\s*\d{1,3}\s*,\s*\d{1,3}\s*\)/u;
@@ -61,6 +61,10 @@ function personKey(event: GameEvent): string {
 }
 
 function isPersonEvent(event: GameEvent): boolean {
+  const name = (event.name ?? "").trim();
+  if ((OBJECT_NPC_NAME.test(name) && !PERSON_ROLE_NAME.test(name)) || /^ev_(?:examine|route_bench|date_bench|segment_)/iu.test(event.id)) {
+    return false;
+  }
   return Boolean(event.characterId?.trim()) || /^(ev_)?npc[_-]/u.test(event.id);
 }
 
@@ -318,7 +322,11 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
     if (!hasChoices) continue;
     const g = page.graphic as { transparent?: boolean; sprite?: unknown; appearanceId?: string; characterResourceId?: string } | undefined;
     const drawn = g !== undefined && g.transparent !== true && (g.sprite !== undefined || g.appearanceId !== undefined || g.characterResourceId !== undefined);
-    const onObjectTile = (map.upperTiles[event.y * map.width + event.x] ?? -1) > 0;
+    const onObjectTile = [[0, 0], [0, -1], [0, 1], [-1, 0], [1, 0]].some(([dx, dy]) => {
+      const nx = event.x + dx!;
+      const ny = event.y + dy!;
+      return nx >= 0 && nx < map.width && ny >= 0 && ny < map.height && (map.upperTiles[ny * map.width + nx] ?? -1) > 0;
+    });
     if (!drawn && !onObjectTile) hiddenChoice.push(`${event.name ?? event.id}(${map.name})`);
   }
   if (hiddenChoice.length > 0) {

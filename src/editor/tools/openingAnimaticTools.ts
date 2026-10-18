@@ -136,10 +136,24 @@ function charsetFrameWidth(project: Project, resourceId: string): number | null 
  * 배우를 «막대인간»으로 그리지 않게 한다: 번들 24×32 캐릭터 칩을 그대로 놓고 캐릭터 번호·방향·정수배율·보폭 걷기를 한 번에 붙인다.
  * 칩의 걷기 프레임은 charsetFrameIndex 로 계산하므로 조수가 프레임 번호를 셀 필요가 없다.
  */
+function resolveOpeningCharsetForGenre(project: Project, rawResourceId: string): string {
+  const normalized = rawResourceId.trim().replace(/^tex_oprn_charset_/iu, 'oprn-charset-').replace(/^tex_easyrpg_charset_/iu, 'easyrpg-charset-');
+  if (/^(?:pixelart_|charset_)/iu.test(normalized)) {
+    throw new ToolError(`author_pixel_art 로 찍은 커스텀 인물(${rawResourceId})은 오프닝 배우로 쓸 수 없습니다(막대인간 금지). 번들 24×32 캐릭터 칩(현대·연애: oprn-charset-modern1~3, 판타지: oprn-charset-heroes1, easyrpg-charset-actor1~4, easyrpg-charset-people1~5)을 지정하세요.`, { code: 'custom-stick-actor-forbidden' });
+  }
+  const isModernOrRomance = project.system?.genreLock?.preset === 'romance'
+    || project.gameDesignBrief?.interview?.genre === 'romance'
+    || (project.system as { genre?: string } | undefined)?.genre === 'modern';
+  if (isModernOrRomance && /^easyrpg-charset-/iu.test(normalized)) {
+    throw new ToolError(`현대·연애 오프닝에 중세 캐릭터 칩(${rawResourceId})은 사용할 수 없습니다(폴백 금지). oprn-charset-modern1~3 또는 create_character(char-gen)로 생성한 캐릭터 칩을 지정하세요.`, { code: 'genre-charset-forbidden' });
+  }
+  return normalized;
+}
+
 function charsetActorLayer(project: Project, s: Shot, args: Record<string, unknown>): AnimaticLayer {
   const rawId = text(args.charsetResourceId ?? args.resourceId ?? args.characterResourceId, 'charsetResourceId');
   const colonMatch = /^(.+):([0-7])$/u.exec(rawId);
-  const resourceId = colonMatch ? colonMatch[1]! : rawId;
+  const resourceId = resolveOpeningCharsetForGenre(project, colonMatch ? colonMatch[1]! : rawId);
   if (charsetFrameWidth(project, resourceId) === null) throw new ToolError(`캐릭터 칩이 아닙니다: ${resourceId}. list_resources(kind:"charset") 또는 list_opening_media 로 번들 캐릭터 칩(oprn-charset-heroes1, easyrpg-charset-actor1 등)을 찾아 쓰세요.`, { code: 'resource-not-found' });
   const characterIndex = Number(args.characterIndex ?? (colonMatch ? Number(colonMatch[2]) : 0));
   if (!Number.isSafeInteger(characterIndex) || characterIndex < 0 || characterIndex >= CHARSET_CHARACTER_COUNT) throw new ToolError(`characterIndex 는 0..${CHARSET_CHARACTER_COUNT - 1} 입니다.`, { code: 'invalid-args' });
@@ -236,7 +250,7 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
       shots: '샷 목록은 7~8개(총 52~64초): (1) 밤하늘·성좌에서 수정 왕국 전경으로 카메라 하강(하늘/구름 레이어 + 빛기둥 + 카메라 y 하강), (2) 대성당 제단과 스테인드글라스 아래 진홍 기사단 대열(place_opening_charset_actor로 기사 5~7명을 2열 대열로 배치 + 대장 전진 보행 + 대각 빛줄기 shaft 2개 + 제단 glow), (3) 지하 동굴의 황금 수호 수정과 오른편에서 눈을 뜨는 거대한 마젠타 타락의 눈(독립 전경 레이어 role:foreground로 마젠타 눈/덩굴을 얹어 opacity/scale 키로 서서히 깨어나게 연출 + 수정 glow + 마젠타 입자), (4) 분수대가 있는 새벽의 평화로운 마을 광장(분수 수면 region palette-cycle + place_opening_charset_actor로 주민 5~6명 광장 배치 및 산책 + 주민 머리 위 12×14 소형 말풍선 2~3개만), (5) 노을빛 들판 길을 걷는 주인공과 절벽 위 검 발광(하늘·언덕·길 시차 레이어 + 주인공 보행 + 절벽 끝에서 검을 치켜들고 빛기둥/번개 flash), (6) 다크 크림슨 배경 위 황금 검 문장과 타이틀 로고 충격파(상단 y:18..46 문장 소품 + 중앙 제목/부제 텍스트 + 황금 입자 + 발광 고리). 마지막 로고 샷 뒤에 여분 맵 전환 샷을 만들지 않는다.',
       backgroundDiscipline: '배경은 place_opening_background({shotId, layerId, resourceId}) 로 깐다(x,y 는 «앵커 점»의 자리라 손으로 0,0 을 넣으면 중심 앵커 때문에 사분면만 덮인다). 배경 그림은 반드시 generate_opening_image(role:"backdrop") 로 이 오프닝 전용으로 만들고 프롬프트에 "16-bit SNES JRPG pixel art, crisp pixel clusters, unified 32-color dark fantasy palette, empty environment only, no people or characters in background"와 cast:"nobody"를 넣는다 — 번들 스틸(oprn-still-*, battle-scenery-*, title_art_*)은 인물이 그려진 부드러운 일러스트라 도트 배우와 화풍이 갈리고 배경 인물과 겹친다.',
       regionDiscipline: '⚠️ 절대 384×216 전체 배경(width>=300, height>=150)에 scroll-x나 scroll-y를 걸지 마라. scroll-x는 반드시 상단 하늘/구름 띠(예: x:0, y:28, width:384, height:44)에만 걸고, 마을 분수대·수호 수정·스테인드글라스에는 작은 영역(예: width:28..48, height:24..40) palette-cycle을 써라. 전체 화면 하강/패닝은 animate_opening_camera(예: y: 98 -> 114 또는 zoom: 1.04 -> 1.14)로 연출한다.',
-      spriteDiscipline: '⚠️ 인물·기사·주민·주인공을 author_pixel_art로 찍지 마라(막대인간 금지!). 인물은 반드시 번들 24×32 캐릭터 칩(easyrpg-charset-actor1~4, easyrpg-charset-people1~5)을 place_opening_charset_actor로 놓아라(scale:1 = 24×32, 정밀한 16-bit JRPG 도트 + 자동 보폭 걷기). 성당에서는 기사 5~7명을 대열로 놓고, 마을 광장에서는 분수대 둘레에 주민 5~6명을 놓아 살아 있는 광장을 만든다. author_pixel_art(kind:"picture")는 타이틀 검 문장이나 마젠타 눈/수정 코어 같은 비인물 소품에만 쓴다. 인물은 배경 그림 안이 아니라 배경 위에 독립 레이어로 놓는다.',
+      spriteDiscipline: '⚠️ 인물·기사·주민·주인공을 author_pixel_art로 찍지 마라(막대인간 금지!). 인물은 반드시 번들 24×32 캐릭터 칩(현대·연애·학원·오피스는 oprn-charset-modern1~3, 중세·판타지 JRPG는 oprn-charset-heroes1, easyrpg-charset-actor1~4, easyrpg-charset-people1~5)을 place_opening_charset_actor로 놓아라(scale:1 = 24×32, 정밀한 16-bit JRPG 도트 + 자동 보폭 걷기). 성당에서는 기사 5~7명을 대열로 놓고, 마을 광장에서는 분수대 둘레에 주민 5~6명을 놓아 살아 있는 광장을 만든다. author_pixel_art(kind:"picture")는 타이틀 검 문장이나 마젠타 눈/수정 코어 같은 비인물 소품에만 쓴다. 인물은 배경 그림 안이 아니라 배경 위에 독립 레이어로 놓는다.',
       primitives: '샷마다 최소 3개 이상의 독립 움직임(region 루프 + shaft/glow pulse + particles + place_opening_charset_actor 보행 + animate_opening_camera)을 겹쳐라. 말풍선(upsert_opening_emote)은 width:12, height:14 소형으로 마을 광장(주민 2~3명: ellipsis/question/exclaim)과 절벽(주인공: exclaim 1개)에만 쓰고 성당이나 수정 동굴에는 절대 쓰지 마라.',
       captionDiscipline: '자막(set_opening_caption)은 모든 샷에서 letterbox:0.15 하단 검정 바 안에 한 줄씩 타이프라이터로 찍고, 오프닝 전체에서 기본 색 하나(#fff0dc)로 통일하며 클라이맥스 대사 한두 큐만 강조색(#ff6878)을 써라(전체 색 종류 2가지 이하, 샷마다 무지개색 자막 금지!).',
       transitions: '샷 사이 전환은 dither({kind:"dither", durationMs:650})를 최소 2~3개 샷에, 클라이맥스(검 뽑기·타이틀 로고 등장)에는 flash({kind:"flash", durationMs:240, color:"#fff6d8"})를, 나머지에는 fade를 섞어라.',
@@ -317,6 +331,9 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
   definition('upsert_opening_layer', '그림/배우/글/도형/입자 레이어 추가·교체. 계약:get_animatic_capabilities.', 'write', schema({ shotId: str, layer: obj, index: integer }, ['shotId', 'layer']), (p, args) => {
     const s = shot(p, args.shotId), l = structuredClone(args.layer) as AnimaticLayer;
     if (!l || typeof l !== 'object' || Array.isArray(l)) throw new ToolError('layer 객체 필요.', { code: 'invalid-args' });
+    if (l.kind === 'image' && l.role === 'actor' && typeof l.resourceId === 'string') {
+      l.resourceId = resolveOpeningCharsetForGenre(p, l.resourceId);
+    }
     const rows = s.composition.layers, at = rows.findIndex(row => row.id === l.id);
     if (at >= 0) rows[at] = l; else { const index = args.index === undefined ? rows.length : Number(args.index); if (!Number.isSafeInteger(index) || index < 0 || index > rows.length) throw new ToolError('index 범위 오류.', { code: 'invalid-args' }); rows.splice(index, 0, l); }
     return commit(p, s, '실제 합성 레이어를 저장했습니다.', l.kind === 'image' && l.role === 'background');

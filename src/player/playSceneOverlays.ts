@@ -14,6 +14,9 @@ import { attachCursorMenu } from "@/player/runtimeCursorMenu";
 import { usesRelationshipMenu } from "@/project/relationshipMenu";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { monsterMenuIconResourceId, monsterUiEntry } from "@/player/playerMonsterPartyModel";
+import { resolveEndingCouplePortraits } from "@/player/dialogue";
+import { ANY_FRIENDSHIP_KEY } from "@/project/session";
+import type { FaceGraphic } from "@/project/types";
 
 export function showRuntimeOverlay(
   scene: PlaySceneContext,
@@ -293,7 +296,84 @@ function endingKicker(presentation?: EndingPresentation): string {
   return usesRelationshipMenu(store.getCurrent()) ? "두 사람의 이야기" : "우리의 여정";
 }
 
-export function showEndingScreen(scene: PlaySceneContext, title: string, message: string, presentation?: EndingPresentation): void {
+type EndingCg = { readonly layer: HTMLElement; readonly mode: "couple" | "scene"; readonly badge: string; readonly epilogue: string };
+
+const ENDING_PETAL_COUNT = 14;
+
+/** 엔딩이 고른 장면 그림: 엔딩 자신의 배경 → 타이틀 그림 → 오프닝 마지막 스틸. 모두 이 게임이 가진 그림이다. */
+function endingBackdropResourceId(project: Project, presentation?: EndingPresentation): string | undefined {
+  const openingStill = (project.system.opening?.scenes ?? []).flatMap((scene) => (scene.kind === "image" ? [scene.resourceId] : [])).at(-1);
+  return presentation?.backgroundResourceId ?? project.system.titleScreen?.backgroundResourceId ?? project.system.titleResourceId ?? openingStill;
+}
+
+function endingBadge(endingId: string | undefined, hasPartner: boolean, presentation?: EndingPresentation): string {
+  if (hasPartner) return "CHARACTER ENDING";
+  if (/bad/iu.test(endingId ?? "")) return "BAD ENDING";
+  if (/normal|segment/iu.test(endingId ?? "")) return "NORMAL ENDING";
+  return presentation?.tone === "dark" ? "ENDING" : "HAPPY ENDING";
+}
+
+function endingFigure(project: Project, face: FaceGraphic, role: "hero" | "partner"): HTMLElement | undefined {
+  const url = resolveAssetResourceUrl(face.resourceId, { project });
+  if (!url) return undefined;
+  const figure = textNode("div", `ending-cg-figure ending-cg-${role}`, "");
+  figure.dataset.testid = `ending-cg-${role}`;
+  figure.dataset.resourceId = face.resourceId;
+  figure.style.backgroundImage = `url("${url}")`;
+  return figure;
+}
+
+/**
+ * 검은 화면에 글만 남던 엔딩을 한 장의 엔딩 CG로 세운다: 게임의 장면 그림 위에 따뜻한 비네트·빛망울·꽃잎,
+ * 캐릭터 엔딩이면 엔딩 상대와 주인공이 서로 마주 보는 커플 일러스트, 그리고 배지·제목·에필로그 문장.
+ */
+function buildEndingCg(terminal: TerminalScene, project: Project, presentation: EndingPresentation | undefined, endingId: string | undefined): EndingCg | undefined {
+  const ending = endingId ? project.endings?.find((entry) => entry.id === endingId) : undefined;
+  const partnerKey = ending?.conditions.find((condition) => condition.kind === "friendshipAtLeast" && condition.npcKey !== ANY_FRIENDSHIP_KEY);
+  const couple = resolveEndingCouplePortraits(project, partnerKey?.kind === "friendshipAtLeast" ? partnerKey.npcKey : undefined);
+  const backdropId = endingBackdropResourceId(project, presentation);
+  const backdropUrl = backdropId ? resolveAssetResourceUrl(backdropId, { project }) : null;
+  const partnerFigure = couple.partner && endingFigure(project, couple.partner, "partner");
+  const heroFigure = couple.hero && partnerFigure ? endingFigure(project, couple.hero, "hero") : undefined;
+  if (!backdropUrl && !partnerFigure) return undefined;
+  const layer = textNode("div", "ending-cg", "");
+  layer.dataset.testid = "ending-cg";
+  if (backdropUrl) {
+    const image = document.createElement("img");
+    image.className = "ending-cg-backdrop";
+    image.alt = "";
+    image.draggable = false;
+    image.addEventListener("error", () => image.remove(), { once: true, signal: terminal.signal });
+    image.src = backdropUrl;
+    layer.append(image);
+  }
+  layer.append(textNode("div", "ending-cg-grade", ""), textNode("div", "ending-cg-bokeh", ""));
+  const petals = textNode("div", "ending-cg-petals", "");
+  for (let i = 0; i < ENDING_PETAL_COUNT; i += 1) {
+    const petal = textNode("span", "ending-cg-petal", "");
+    petal.style.setProperty("--petal-x", `${(i * 37 + 11) % 100}%`);
+    petal.style.setProperty("--petal-y", `${(i * 53 + 7) % 90}%`);
+    petal.style.setProperty("--petal-delay", `-${((i * 1.7) % 11).toFixed(1)}s`);
+    petal.style.setProperty("--petal-scale", `${0.6 + ((i * 7) % 5) / 10}`);
+    petals.append(petal);
+  }
+  layer.append(petals);
+  if (partnerFigure) {
+    const pair = textNode("div", "ending-cg-couple", "");
+    pair.dataset.testid = "ending-cg-couple";
+    pair.append(partnerFigure);
+    if (heroFigure) pair.append(heroFigure);
+    layer.append(pair);
+  }
+  layer.append(textNode("div", "ending-cg-frame", ""));
+  const epilogue = (ending?.epilogue ?? [])
+    .map((beat) => (typeof beat.text === "string" ? beat.text.trim() : ""))
+    .filter(Boolean)
+    .join("\n");
+  return { layer, mode: partnerFigure ? "couple" : "scene", badge: endingBadge(endingId, Boolean(partnerFigure), presentation), epilogue };
+}
+
+export function showEndingScreen(scene: PlaySceneContext, title: string, message: string, presentation?: EndingPresentation, endingId?: string): void {
   const terminal = createTerminalScene(scene, "ending", title || "엔딩");
   if (!terminal) return;
   terminal.root.dataset.tone = presentation?.tone ?? "warm";
@@ -302,7 +382,11 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     if (!await terminal.wait(terminal.reducedMotion ? 0 : 900)) return;
     terminal.phase("silence");
     if (!await terminal.wait(600)) return;
-    addBackground(terminal, presentation?.backgroundResourceId);
+    const cg = isEmeraldMonsterStyle(store.getCurrent()) ? undefined : buildEndingCg(terminal, store.getCurrent(), presentation, endingId);
+    if (cg) {
+      terminal.root.dataset.endingCg = cg.mode;
+      terminal.root.prepend(cg.layer);
+    } else addBackground(terminal, presentation?.backgroundResourceId);
     playTerminalMusic(terminal, store.getCurrent(), presentation?.musicResourceId, "ending-music");
     const hall = emeraldHallOfFame(scene);
     if (hall) {
@@ -320,9 +404,11 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
       if (!await terminal.wait(400)) return;
     }
     const epilogue = textNode("div", "ending-epilogue", "");
+    if (cg) epilogue.append(textNode("div", "ending-badge", cg.badge));
     epilogue.append(textNode("div", "ending-kicker", endingKicker(presentation)));
     epilogue.append(textNode("h1", "ending-heading", title || "The End"));
-    if (message) epilogue.append(textNode("div", "ending-message", message));
+    const body = message || cg?.epilogue;
+    if (body) epilogue.append(textNode("div", "ending-message", body));
     terminal.root.append(epilogue);
     terminal.phase("epilogue");
     if (!await terminal.wait(1800)) return;

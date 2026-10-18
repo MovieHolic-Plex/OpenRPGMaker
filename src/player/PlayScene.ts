@@ -747,8 +747,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     showSceneGameOverScreen(this, message, gameOverId);
   }
 
-  showEndingScreen(title: string, message: string, presentation?: import("@/project/cinematicSettings").EndingPresentation): void {
-    showSceneEndingScreen(this, title, message, presentation);
+  showEndingScreen(title: string, message: string, presentation?: import("@/project/cinematicSettings").EndingPresentation, endingId?: string): void {
+    showSceneEndingScreen(this, title, message, presentation, endingId);
   }
 
   returnToTitle(): void {

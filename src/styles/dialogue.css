@@ -580,6 +580,31 @@
   filter: none;
   opacity: 1;
 }
+
+/* 대화 시선: 현대 연애 전신 초상은 모두 화면 오른쪽(→)을 보도록 그려졌다. 양쪽 스탠딩에서는 무대가 시선을 정한다 —
+   왼쪽 인물은 그대로(→), 오른쪽 인물은 뒤집어(←) 두 사람이 서로를 마주 본다. 저작된 flipped 는 그 위에서 한 번 더 뒤집는다. */
+.dialogue-overlay[data-dialogue-stage="dual-fullbody-veil"] .dialogue-face.dialogue-face-behind.dialogue-face-side-right {
+  --face-flip: -1;
+  transform: scaleX(var(--face-flip));
+}
+
+.dialogue-overlay[data-dialogue-stage="dual-fullbody-veil"] .dialogue-face.dialogue-face-behind.dialogue-face-side-right.flipped {
+  --face-flip: 1;
+}
+
+/* 구도: 말하는 사람은 카메라 쪽으로 다가선 미디엄 풀샷(무릎 아래가 화면 밖), 듣는 사람은 한 걸음 물러난 전신 원경.
+   대사마다 화자가 바뀌면 두 인물의 크기·밝기가 엇갈려 같은 마네킹 두 개가 나란히 선 구도가 반복되지 않는다. */
+.dialogue-overlay[data-dialogue-stage="dual-fullbody-veil"] .dialogue-face.dialogue-face-behind:not(.dialogue-portrait-listener) {
+  scale: 1.16;
+  transform-origin: 50% 6%;
+}
+
+.dialogue-overlay[data-dialogue-stage="dual-fullbody-veil"] .dialogue-face.dialogue-face-behind.dialogue-portrait-listener {
+  filter: brightness(0.8) saturate(0.88);
+  scale: 0.9;
+  transform-origin: 50% 100%;
+}
+
 .dialogue-box.portrait-full-tall {
   z-index: 1;
 }

@@ -432,6 +432,31 @@ function resolveDualStagePartner(
   return undefined;
 }
 
+/**
+ * 캐릭터 엔딩 CG에 함께 세울 주인공과 엔딩 상대의 전신 초상(웃는 표정). 상대는 엔딩 조건의 호감 키로 찾는다.
+ * 찾지 못한 쪽은 비워 둔다 — 엉뚱한 인물로 채우지 않는다.
+ */
+export function resolveEndingCouplePortraits(
+  project: Project,
+  partnerKey: string | undefined,
+): { hero?: FaceGraphic; partner?: FaceGraphic; partnerName?: string } {
+  const smiling = (face: FaceGraphic | undefined): FaceGraphic | undefined => face && (promoteFaceToFullPortrait(face, "happy") ?? face);
+  const leadId = project.system.startActorIds?.[0] ?? project.database.actors[0]?.id;
+  const hero = smiling(resolveActorFullPortrait(project, project.database.actors.find((actor) => actor.id === leadId)));
+  const heroPart = hero ? { hero } : {};
+  if (!partnerKey) return heroPart;
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      if (event.characterId !== partnerKey && event.id !== partnerKey && event.id !== `ev_${partnerKey}`) continue;
+      const partner = smiling(resolveEventFullPortrait(project, event));
+      if (!partner) continue;
+      const partnerName = project.characters?.[partnerKey]?.displayName?.trim() || event.name?.trim();
+      return { ...heroPart, partner, ...(partnerName ? { partnerName } : {}) };
+    }
+  }
+  return heroPart;
+}
+
 function fullPortraitMetrics(
   hostHeight: number,
   layout: DialogueFullPortraitLayout,

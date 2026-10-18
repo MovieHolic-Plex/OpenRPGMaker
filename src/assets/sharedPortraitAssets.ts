@@ -90,12 +90,17 @@ const faceSetPortraits = FACE_EXPRESSION_SETS.flatMap((set) => {
     expression,
   })));
 });
+// 옆머리 묶음 남학생 세트는 현대 연애 무대에서 여학생으로 읽혀 같은 교복 남학생 세트로 연결한다.
+// (#2870 이 덮어쓴 uni-boy-navy·uni-girl-long·uni-girl-navy 는 원래 도트 일러스트로 복원돼 자기 폴더를 그대로 쓴다.)
+const MODERN_CLEAN_STEM_OVERRIDES: Readonly<Record<string, string>> = {
+  "modern-uni-boy-sidetail": "modern-uni-boy-grey",
+};
 const modernPortraits = MODERN_PORTRAIT_SETS.flatMap((set) => {
   const setId = `shared-${set.stem}-expressions`;
   return SHARED_PORTRAIT_MODES.flatMap((mode) => MODERN_PORTRAIT_EXPRESSIONS.map((expression) => ({
     id: sharedPortraitId(setId, mode, expression),
     name: `${set.name} · ${MODE_LABELS[mode]} ${SHARED_PORTRAIT_EXPRESSION_LABELS[expression]}`,
-    path: `assets/shared/portraits/${set.stem}/${mode}-${expression}.png`,
+    path: `assets/shared/portraits/${MODERN_CLEAN_STEM_OVERRIDES[set.stem] ?? set.stem}/${mode}-${expression}.png`,
     setId,
     mode,
     expression,

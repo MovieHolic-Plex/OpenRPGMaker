@@ -46,7 +46,11 @@ function isCutscenePage(page: EventPage): boolean {
 
 function visible(page: EventPage, map: GameMap, event: GameEvent): boolean {
   if (page.graphic?.sprite !== undefined || page.graphic?.appearanceId !== undefined) return page.graphic?.transparent !== true;
-  return (map.upperTiles[event.y * map.width + event.x] ?? -1) > 0;
+  return [[0, 0], [0, -1], [0, 1], [-1, 0], [1, 0]].some(([dx, dy]) => {
+    const nx = event.x + dx!;
+    const ny = event.y + dy!;
+    return nx >= 0 && nx < map.width && ny >= 0 && ny < map.height && (map.upperTiles[ny * map.width + nx] ?? -1) > 0;
+  });
 }
 
 const DIR: Record<string, { dx: number; dy: number }> = { up: { dx: 0, dy: -1 }, down: { dx: 0, dy: 1 }, left: { dx: -1, dy: 0 }, right: { dx: 1, dy: 0 } };
