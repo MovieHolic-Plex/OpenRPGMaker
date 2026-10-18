@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.261.0 — 2026-10-18
+
+### 기능
+
+- **jp_city** — shitamachi/shotengai rear row of houses + back alley instead of roof-sea kits (#2909) (`6dc1f64`)
+
+### 수정
+
+- **interior** — R6 hostile VQA — fill 7 venue presets with dedicated props, remove bookcase-like bar shelf (#2908) (`5dacc44`)
+
 ## 0.260.0 — 2026-10-18
 
 ### 기능
