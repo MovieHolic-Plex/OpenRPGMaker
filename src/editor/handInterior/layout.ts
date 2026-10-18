@@ -453,9 +453,9 @@ const matches = (w: Want, key: string) => w.id === key || w.kind === key;
  * 줄 배치 → 방 사각형. 줄마다 방을 왼쪽부터 칸막이 한 칸씩 띄워 놓고, 줄 높이는 그 줄 견본 높이(bh) 중 가장 큰 값, 줄 너비는 견본 너비(bw)로 가장 넓은 줄에 맞춘다 -
  * 견본 크기 합이 규모 규격(venueScale.ts)이라 seed 가 바뀌어도 맵 크기는 규격 그대로다. seed 변주로 넓힌 너비(tw - bw)는 그 줄의 남는 너비 안에서만
  * 앞 방부터 받고 나머지는 견본이 가장 넓은 방이 받는다 - 칸막이 자리가 seed 마다 옮겨 가구 간격이 바뀐다. 줄에 없는 방이 있거나 없는 방 종류를 부르면 undefined.
- * `void:N` 칸은 방 없이 N칸(칸막이 포함)을 건물 밖으로 남긴다, ragged 면 방이 줄 높이로 늘지 않는다 - 둘 다 네모가 아닌 외곽(ㄱ·ㄷ·ㅗ자·계단형)을 만든다.
+ * `void:N` 칸은 방 없이 N칸(칸막이 포함)을 건물 밖으로 남긴다, ragged 면 방이 줄 높이로 늘지 않는다, trim 은 방 종류별로 높이를 줄인다(줄 끝 방의 아래가 건물 밖) - 모두 네모가 아닌 외곽(ㄱ·ㄷ·ㅗ자·계단형)을 만든다.
  */
-function rowRects(rows: readonly (readonly string[])[], wants: readonly Want[], ragged = false): Map<string, Rect> | undefined {
+function rowRects(rows: readonly (readonly string[])[], wants: readonly Want[], ragged = false, trim: Readonly<Record<string, number>> = {}): Map<string, Rect> | undefined {
   type Cell = Want | { gap: number };
   const isGap = (c: Cell): c is { gap: number } => "gap" in c;
   const pool = [...wants];
@@ -493,7 +493,7 @@ function rowRects(rows: readonly (readonly string[])[], wants: readonly Want[], 
     for (const c of cells) {
       if (isGap(c)) { x += c.gap; continue; }
       const ww = widths.get(c)!;
-      out.set(c.id, { x, y, w: ww, h: ragged ? c.bh : h });
+      out.set(c.id, { x, y, w: ww, h: Math.min(trim[c.kind] ?? Infinity, ragged ? c.bh : h) });
       x += ww + 1;
     }
     y += h + 1;
@@ -549,7 +549,7 @@ function buildCandidatesForVariant(
   const r = rng((req.seed ?? 1) + variantSeedOffset);
   const found = new Map<string, LayoutCandidate>();
   // program 이 줄 배치(rows)를 주면 첫 시도는 그 줄 배치 그대로다 — 견본 방 크기 합이 규모 규격이라 seed 1 이 규격 크기로 선다. 나머지 시도는 다른 배치 후보(variant 1·2…).
-  const rowPlan = vary?.v.rows ? rowRects(vary.v.rows, wants, vary.v.ragged) : undefined;
+  const rowPlan = vary?.v.rows ? rowRects(vary.v.rows, wants, vary.v.ragged, vary.v.trim) : undefined;
   let rowKey: string | undefined;
   for (let trial = 0; trial < 600 && found.size < 60; trial++) {
     const order = [...wants];

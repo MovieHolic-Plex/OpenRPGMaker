@@ -9,7 +9,8 @@ import { g, o, row, type Venue } from "./venueKit";
 
 const VENUES: readonly Venue[] = [
   // 6. 대강당 + 로비 — 붉은 막 무대와 연단, 무대 옆 그랜드 피아노·앰프, 가운데 통로를 둔 객석 네 줄, 남쪽 로비(포스터·매표·물품 보관).
-  { program: "mc_auditorium", map: "auditorium", variation: { entrance: "aud-foyer", above: [["aud-hall", "aud-foyer"]], hubs: ["aud-foyer"], palettes: [
+  { program: "mc_auditorium", map: "auditorium", variation: {
+    rows: [["aud-hall", "void:6"], ["aud-foyer"]], entrance: "aud-foyer", above: [["aud-hall", "aud-foyer"]], hubs: ["aud-foyer"], palettes: [
     { "aud-hall": ["mci-wood-dark", "mci-wall-home"], "aud-foyer": ["mci-stone-lobby", "mci-wall-store"] },
     { "aud-hall": ["mci-stone-lobby", "mci-wall-lobby"], "aud-foyer": ["mci-wood-oak", "mci-wall-brick"] },
   ] }, rooms: [
@@ -30,7 +31,8 @@ const VENUES: readonly Venue[] = [
     ] },
   ] },
   // 16. 노래방 — 복도 위로 노래방 세 칸(코너 소파·탁자·벽걸이 모니터·스피커), 남쪽 복도(안내 데스크·드링크 바·대기 소파).
-  { program: "mc_karaoke", map: "karaoke-box", variation: { entrance: "karaoke-hall", above: [["karaoke-room", "karaoke-hall"]], palettes: [
+  { program: "mc_karaoke", map: "karaoke-box", variation: {
+    rows: [["karaoke-room", "karaoke-room", "karaoke-room", "void:7"], ["karaoke-hall"]], entrance: "karaoke-hall", above: [["karaoke-room", "karaoke-hall"]], palettes: [
     { "karaoke-room": ["mci-wood-dark", "mci-wall-store"], "karaoke-hall": ["mci-stone-lobby", "mci-wall-lobby"] },
     { "karaoke-room": ["mci-vinyl-store", "mci-wall-metal"], "karaoke-hall": ["mci-concrete", "mci-wall-brick"] },
   ] }, rooms: [
@@ -56,7 +58,9 @@ const VENUES: readonly Venue[] = [
     ] },
   ] },
   // 17. 대형 서점 + 만화카페 — 북쪽 벽 서가, 신간 평대 셋, 높은 서가 세 줄, 열람석, 계산대 / 동쪽 만화카페(만화 서가·개인 부스 여섯·드링크).
-  { program: "mc_bookstore", map: "bookstore-manga", variation: { entrance: "book-floor", left: [["book-floor", "manga-cafe"]], hubs: ["book-floor"], palettes: [
+  { program: "mc_bookstore", map: "bookstore-manga", variation: {
+    rows: [["book-floor", "manga-cafe"]],
+    trim: { "manga-cafe": 7 }, entrance: "book-floor", left: [["book-floor", "manga-cafe"]], hubs: ["book-floor"], palettes: [
     { "book-floor": ["mci-carpet-office", "mci-wall-home"], "manga-cafe": ["mci-wood-dark", "mci-wall-brick"] },
     { "book-floor": ["mci-wood-dark", "mci-wall-brick"], "manga-cafe": ["mci-carpet-office", "mci-wall-office"] },
   ] }, rooms: [
@@ -77,6 +81,7 @@ const VENUES: readonly Venue[] = [
   ] },
   // 18. 신사 — 북쪽 배전(시메나와 아래 제단·새전함·석등 넷·방석·붉은 참배 러너), 남쪽 현관(신발장·부적 진열대), 사무소.
   { program: "mc_shrine", map: "shrine-haiden", variation: {
+    rows: [["shrine-haiden", "void:6"], ["shrine-genkan", "shrine-office"]],
     entrance: "shrine-genkan", above: [["shrine-haiden", "shrine-genkan"]], left: [["shrine-genkan", "shrine-office"]], hubs: ["shrine-genkan"], palettes: [
       { "shrine-haiden": ["mci-wood-oak", "mci-wall-brick"], "shrine-genkan": ["mci-stone-lobby", "mci-wall-home"], "shrine-office": ["mci-wood-dark", "mci-wall-home"] },
       { "shrine-haiden": ["mci-stone-lobby", "mci-wall-home"], "shrine-genkan": ["mci-wood-dark", "mci-wall-brick"], "shrine-office": ["mci-carpet-office", "mci-wall-office"] },
@@ -101,6 +106,7 @@ const VENUES: readonly Venue[] = [
   ] },
   // 20. 파출소(코반) — 남쪽 민원실(수배 게시판·민원 데스크·대기 의자), 북서 유치장(철창 셋), 북동 휴게실(좌식석·TV·부엌).
   { program: "mc_koban", map: "koban", variation: {
+    rows: [["koban-cellblock", "koban-rest", "void:6"], ["koban-office"]],
     entrance: "koban-office", above: [["koban-cellblock", "koban-office"], ["koban-rest", "koban-office"]], left: [["koban-cellblock", "koban-rest"]], hubs: ["koban-office"], palettes: [
       { "koban-office": ["mci-concrete", "mci-wall-brick"], "koban-cellblock": ["mci-concrete", "mci-wall-metal"], "koban-rest": ["mci-wood-oak", "mci-wall-home"] },
       { "koban-office": ["mci-wood-oak", "mci-wall-lobby"], "koban-cellblock": ["mci-tile-small", "mci-wall-tile"], "koban-rest": ["mci-carpet-office", "mci-wall-office"] },
@@ -206,6 +212,7 @@ const VENUES: readonly Venue[] = [
   ] },
   // 26. 호텔 — 남쪽 로비(엘리베이터·벨 데스크·러기지 카트·소파·러그), 북서 스위트(킹베드·시티뷰 창·TV·옷장), 북동 로비 바(술병 선반·와인 랙·카운터·스툴·부스).
   { program: "mc_hotel", map: "hotel", variation: {
+    rows: [["hotel-suite", "hotel-lounge", "void:6"], ["hotel-lobby"]],
     entrance: "hotel-lobby", above: [["hotel-suite", "hotel-lobby"], ["hotel-lounge", "hotel-lobby"]], left: [["hotel-suite", "hotel-lounge"]], hubs: ["hotel-lobby"], palettes: [
       { "hotel-lobby": ["mci-wood-dark", "mci-wall-brick"], "hotel-suite": ["mci-wood-oak", "mci-wall-lobby"], "hotel-lounge": ["mci-stone-lobby", "mci-wall-store"] },
       { "hotel-lobby": ["mci-tile-concourse", "mci-wall-store"], "hotel-suite": ["mci-carpet-office", "mci-wall-office"], "hotel-lounge": ["mci-wood-dark", "mci-wall-home"] },
@@ -232,6 +239,7 @@ const VENUES: readonly Venue[] = [
   ] },
   // 27. 방송국 — 북쪽 스튜디오(조명 트러스·뉴스 데스크·크로마키 벽·카메라 셋·크레인), 남서 부조정실(모니터 벽·콘솔 책상 넷), 남동 분장실(거울 세면대·옷장·의상 행거·소파).
   { program: "mc_tv_studio", map: "tv-studio", variation: {
+    rows: [["studio-floor", "void:7"], ["studio-control", "studio-makeup"]],
     entrance: "studio-control", above: [["studio-floor", "studio-control"], ["studio-floor", "studio-makeup"]], left: [["studio-control", "studio-makeup"]], hubs: ["studio-control"], palettes: [
       { "studio-floor": ["mci-wood-dark", "mci-wall-office"], "studio-control": ["mci-carpet-office", "mci-wall-metal"], "studio-makeup": ["mci-wood-oak", "mci-wall-home"] },
       { "studio-floor": ["mci-vinyl-store", "mci-wall-brick"], "studio-control": ["mci-concrete", "mci-wall-office"], "studio-makeup": ["mci-tile-small", "mci-wall-tile"] },
@@ -255,7 +263,8 @@ const VENUES: readonly Venue[] = [
     ] },
   ] },
   // 28. 법정 + 대기 복도 — 판사석 단상과 휘장, 서기석, 증인석, 배심원석, 검사·변호인석, 난간 뒤 방청석 여섯 / 남쪽 대기 복도(벤치·사물함·정수기).
-  { program: "mc_courtroom", map: "courtroom", variation: { entrance: "court-lobby", above: [["court-room", "court-lobby"]], hubs: ["court-lobby"], palettes: [
+  { program: "mc_courtroom", map: "courtroom", variation: {
+    rows: [["court-room", "void:7"], ["court-lobby"]], entrance: "court-lobby", above: [["court-room", "court-lobby"]], hubs: ["court-lobby"], palettes: [
     { "court-room": ["mci-carpet-office", "mci-wall-office"], "court-lobby": ["mci-stone-lobby", "mci-wall-lobby"] },
     { "court-room": ["mci-stone-lobby", "mci-wall-lobby"], "court-lobby": ["mci-wood-oak", "mci-wall-home"] },
   ] }, rooms: [
@@ -309,6 +318,8 @@ const VENUES: readonly Venue[] = [
   ] },
   // 30. 대학 중앙도서관 — 북서 열람실(벽 서가·서가 열 넷·스터디 램프 열람석 여덟), 북동 그룹 스터디룸(ㄷ자 탁자 둘), 남쪽 로비(대출 데스크·검색 PC·자판기).
   { program: "mc_library", map: "central-library", variation: {
+    rows: [["library-hall", "library-study"], ["library-lobby"]],
+    trim: { "library-study": 8 },
     entrance: "library-lobby", above: [["library-hall", "library-lobby"], ["library-study", "library-lobby"]], left: [["library-hall", "library-study"]], hubs: ["library-lobby"], palettes: [
       { "library-hall": ["mci-wood-oak", "mci-wall-home"], "library-study": ["mci-carpet-office", "mci-wall-office"], "library-lobby": ["mci-stone-lobby", "mci-wall-lobby"] },
       { "library-hall": ["mci-wood-dark", "mci-wall-brick"], "library-study": ["mci-wood-oak", "mci-wall-home"], "library-lobby": ["mci-tile-concourse", "mci-wall-store"] },
