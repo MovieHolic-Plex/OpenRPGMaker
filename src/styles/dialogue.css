@@ -591,11 +591,6 @@
   --face-flip: 1;
 }
 
-.dialogue-overlay[data-dialogue-stage="dual-fullbody-veil"] .dialogue-face.dialogue-face-behind.dialogue-portrait-listener {
-  filter: none;
-  opacity: 1;
-}
-
 /* 구도: 말하는 사람은 카메라 쪽으로 다가선 미디엄 풀샷(무릎 아래가 화면 밖), 듣는 사람은 한 걸음 물러난 전신 원경.
    대사마다 화자가 바뀌면 두 인물의 크기·밝기가 엇갈려 같은 마네킹 두 개가 나란히 선 구도가 반복되지 않는다. */
 .dialogue-overlay[data-dialogue-stage="dual-fullbody-veil"] .dialogue-face.dialogue-face-behind:not(.dialogue-portrait-listener) {
@@ -605,6 +600,7 @@
 
 .dialogue-overlay[data-dialogue-stage="dual-fullbody-veil"] .dialogue-face.dialogue-face-behind.dialogue-portrait-listener {
   filter: brightness(0.8) saturate(0.88);
+  opacity: 1;
   scale: 0.9;
   transform-origin: 50% 100%;
 }

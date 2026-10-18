@@ -446,6 +446,11 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
       const rows = members();
       const bare = id?.replace(/^(board|lane|pending|bg\d+):/, "");
       const match = id ? rows.find(m => m.key === id || m.agent?.agentId === bare || m.agent?.memberId === bare || m.key === `lane:${bare}` || m.key === `pending:${bare}`) : undefined;
+      // id 를 줬는데 맞는 팀원이 없으면(팀장 칩 등) 앞서 고른 팀원을 남기지 않고 팀 개요로 간다.
+      if (id && !match) {
+        selected = null; view = "team"; tab = "chat"; setCollapsed(false); render();
+        return false;
+      }
       const next = match ?? (selected ? undefined : rows[0]);
       if (!next && !selected) return false;
       if (next) selected = next.key;

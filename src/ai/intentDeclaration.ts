@@ -201,6 +201,7 @@ Rules:
 - 탈것(비행선·배·초코보·광산 수레·뗏목)을 놓는 요청은 tools 에 place_vehicle 을 적는다(vehicle: boat|ship|airship|chocobo|cart|raft). 초코보는 숲·들을 걷고, 광산 수레는 레일 칸에서만, 뗏목은 강에서만 다닌다 — 월드맵 키트 지도는 지형 태그가 이미 붙어 있다.
 - 오페라·콘서트·연극 무대 공연(가사 자막·합창·막마다 배경 전환·조명)은 tools 에 author_stage_performance 를 적는다(막 목록 acts). 대사·카메라 중심 컷신은 script_cutscene, 그림 배우가 걷고 부딪히는 연출은 script_cutscene_staged.
 - 일본 상가·상점가·골목 거리(번들 칩셋 jp_city)나 jp_city 맵 위의 건물 짓기는 author_beodeul_town 이 아니다 — tools 에 create_map·fill_region·list_jp_city_building_parts·build_jp_city_building 을 적는다.
+- 크로노 트리거·FF6 풍 한 장(章)(천년제 마을·나르셰 광산·오페라 하우스 사건처럼 거점 맵 + 갈래 맵 + NPC·퀘스트·사건을 한 번에) 요청은 tools 에 author_jrpg_chapter 를 적는다.
 - 해리포터풍·마법 학교·호그와트풍 장소(대연회장·성채 복도·기숙사 휴게실·기숙사 침실·마법약 교실·부엉이 탑·도서관·온실·병동·퀴디치 경기장·검은 호수 보트 창고·금지된 숲 마차 승차장 등, 번들 칩셋 wizarding_world)는 손 도트 실내가 아니다 — tools 에 list_wizarding_spaces·build_wizarding_space 를 적는다.
 - 고딕 호러 장소(흉가·저택 정원·공동묘지·예배당·납골당·호러 미술관·저택 홀·서재·지하실, 번들 칩셋 gothic_manor)는 손 도트 실내·버들항 마을이 아니다 — tools 에 list_gothic_places·build_gothic_place 를 적는다. 호러·고딕·흉가 낱말이 없는 박물관·미술관 전시실, 배 안(선장실·조타실·배 주방·선원 숙소·화물칸·포 갑판), 투기장·콜로세움·검투사 방은 손 도트 실내다 — space=interior, tools 에 list_hand_interior_parts·build_hand_interior_room 을 적는다.
 - 사용자와 같은 언어로 clarify·summary 를 쓴다.

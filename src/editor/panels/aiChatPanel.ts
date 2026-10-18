@@ -190,6 +190,9 @@ import { createProposalHost, setAssistantMessageBadge } from "./aiProposalCard";
 import { changeChipsWithAreas, type ChangePreviewInput } from "./aiChangePreview";
 import type { AiWorkCard } from "./aiWorkStrip";
 import { createStudioShell, type StudioShell } from "./aiStudioShell";
+import { createLaneSummaryBar } from "./aiLaneSummaryBar";
+import { laneSession } from "./aiLaneSession";
+import { disposeAiJobList } from "./aiJobListView";
 import { changedAreaLabels } from "@/project/changeAreas";
 import { buildChangeLedger } from "@/project/changeLedger";
 import { proposalHumanSummaryLine } from "./aiProposalSummary";
@@ -3402,6 +3405,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     ] }), body, outcomeSlot, commandBar],
   });
   deckRoot = deck;
+  // 스튜디오 밖 레인 요약 줄 — 스튜디오를 나가도 도는 레인을 보이고 「스튜디오에서 보기」로 그 레인 스레드에 다시 들어간다.
+  const laneSummary = createLaneSummaryBar({
+    manager: laneSession(),
+    onOpenStudio: (laneId) => {
+      if (!studioShell?.attached()) applyStudio(true);
+      if (laneId) studioShell?.selectLane(laneId);
+    },
+  });
+  rail.root.after(laneSummary.root);
 
   /**
    * AI 미연결 잠금 막. 채팅창 위를 덮어 "지금은 쓸 수 없다" 를 몸으로 알게 한다.
@@ -4180,6 +4192,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     teamSidebar.dispose();
     suggestions.dispose();
     peek.dispose();
+    laneSummary.dispose();
+    laneSummary.root.remove();
+    disposeAiJobList();
 
     unsubscribeContextEditor();
     unsubscribeContextStore();

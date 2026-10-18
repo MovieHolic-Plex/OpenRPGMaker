@@ -721,12 +721,13 @@ html[data-ai-render="off"] {
 .ai-chat-sidebar.has-activity-bar > .left-activity-bar {
   flex: 0 0 48px; width: 48px; display: flex; flex-direction: column; align-items: center; gap: 4px;
   padding: 8px 0; border: 0; border-right: 1px solid var(--border-subtle); background: var(--bg-inset);
+  overflow-x: hidden; overflow-y: auto; min-height: 0;
 }
 .ai-chat-sidebar.is-collapsed > .left-activity-bar { flex-direction: column; padding: 8px 0; gap: 4px; border-right: 0; }
 .left-activity-group { display: flex; flex-direction: column; gap: 4px; }
 .left-activity-spacer { flex: 1; }
 .ai-chat-sidebar.has-activity-bar .left-activity-bar .left-activity-item {
-  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; flex-shrink: 0;
   width: 40px; height: 44px; padding: 0; border: 0; border-radius: var(--radius-s); box-shadow: none;
   background: transparent; color: var(--text-2); font: 500 11px var(--font-ui);
 }

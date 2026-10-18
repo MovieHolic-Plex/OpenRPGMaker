@@ -466,8 +466,9 @@ function applyEmptyTabFold(header: HTMLElement): void {
     const hasProfileFold = group.tabs.some((id) => folded.has(id) && profileFolded.includes(id));
     if (count) count.textContent = hasProfileFold ? `숨긴 탭 ${folded.size}개 · 모두 보기` : `빈 탭 ${folded.size}개`;
     if (text) text.textContent = names.join("·");
-    child.setAttribute("title", `비어 있는 탭 펼치기 — ${names.join(", ")}`);
-    child.setAttribute("aria-label", `${group.label}: 빈 탭 ${folded.size}개 펼치기`);
+    child.setAttribute("data-count", String(folded.size));
+    child.setAttribute("title", hasProfileFold ? `숨긴 탭 모두 보기 — ${names.join(", ")}` : `비어 있는 탭 펼치기 — ${names.join(", ")}`);
+    child.setAttribute("aria-label", hasProfileFold ? `${group.label}: 숨긴 탭 ${folded.size}개 모두 보기` : `${group.label}: 빈 탭 ${folded.size}개 펼치기`);
   }
 }
 

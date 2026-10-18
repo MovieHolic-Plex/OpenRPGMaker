@@ -83,6 +83,8 @@ function schemasForIntent(intent: IntentDeclaration | null): OpenAiTool[] {
   }
   // 던전 시공 도구를 고른 요청에는 시공 뒤 확인 도구를 함께 보인다(받침·도달은 도구가 스스로 검사하지만 이벤트 배치 뒤 확인이 필요하다).
   if (names.includes("author_dungeon") || names.includes("author_beodeul_dungeon")) names.push("author_dungeon", "link_world_entrance", "check_reachability", "show_map_region", "run_lint");
+  // JRPG 한 장 시공기는 여러 맵을 한 번에 짓는다 — 지은 뒤 통행·그림을 확인할 도구를 함께 보인다.
+  if (names.includes("author_jrpg_chapter")) names.push("author_jrpg_chapter", "check_reachability", "show_map_region", "run_lint");
   if (names.includes("stamp_object")) names.push("list_spatial_designs", "show_map_region");
   if (names.some(n => ["place_npc", "make_villager", "upsert_event", "list_npc_graphics"].includes(n))) names.push("place_npc", "list_npc_graphics");
   return toolSchemasForNames(names) as OpenAiTool[];
