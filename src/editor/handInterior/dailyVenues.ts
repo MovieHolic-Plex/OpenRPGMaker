@@ -47,9 +47,9 @@ const VENUES: readonly Venue[] = [
     { kind: "house-living", w: 10, h: 7, floor: "mci-wood-oak", wall: "mci-wall-home", items: [
       o("mci-window-curtain", 0, 0), o("mci-tv-wall", 4, 0), o("home-wall-ac", 7, 0),
       o("home-low-shelf", 0, 2), o("mci-tv-stand", 4, 2), o("home-floor-lamp", 7, 2), o("home-monstera", 9, 2),
-      // TV 를 보는 코타츠 - 서쪽 안락의자(동향)·동쪽 안락의자(서향)·남쪽 방석.
-      o("mci-armchair-e", 3, 4), o("home-kotatsu", 4, 4), o("mci-armchair-w", 6, 4), o("home-zabuton", 4, 6),
-      o("home-electric-fan", 0, 6), o("home-cat-bed", 8, 6),
+      // 서쪽 코타츠(안락의자·방석)는 TV 를 보고, 동쪽 킬림 러그 위 ㄱ자 소파·원형 탁자 세트가 거실의 중심.
+      o("mci-armchair-e", 1, 4), o("home-kotatsu", 2, 4), o("home-zabuton", 2, 6), o("jumbo-home-sectional", 5, 4),
+      o("home-electric-fan", 0, 6), o("home-cat-bed", 9, 6),
     ] },
     { kind: "house-kitchen", w: 8, h: 6, floor: "mci-tile-small", wall: "mci-wall-tile", items: [
       o("mci-window-blind", 0, 0), o("mci-wall-clock", 5, 0),
@@ -77,9 +77,9 @@ const VENUES: readonly Venue[] = [
       o("mci-ac-wall", 0, 0), o("mci-menu-board", 4, 0), o("mart-sale-banner", 7, 0), o("mci-window-city", 11, 0),
       o("mart-drink-open", 0, 2), o("mart-dairy-open", 2, 2), o("mart-liquor-fridge", 4, 2), o("konbini-bento", 6, 2),
       o("mart-bread-rack", 9, 2), o("konbini-magazine-rack", 11, 2), o("konbini-copier", 13, 2), o("konbini-atm", 14, 2),
-      // 색깔별 곤돌라 두 열(과자·라면 / 차·생활용품) + 특가 엔드캡, 동쪽 아이스크림·만두 평대와 통조림·생수 곤돌라.
+      // 색깔별 곤돌라 두 열(과자·라면 / 차·생활용품) + 특가 엔드캡, 동쪽 핫푸드 아일랜드(오뎅·찐빵·가라아게)와 통조림·생수 곤돌라.
       o("mart-gondola-snack", 1, 5), o("mart-gondola-ramen", 3, 5), o("mart-sale-endcap", 5, 5),
-      o("mart-freezer-icecream", 8, 5), o("mart-freezer-dumpling", 10, 5),
+      o("jumbo-konbini-hot-food-island", 8, 4), o("mart-freezer-icecream", 12, 5),
       o("mart-gondola-tea", 1, 8), o("mart-gondola-household", 3, 8), o("mart-promo-endcap", 5, 8),
       o("mart-gondola-cans", 8, 8), o("mart-gondola-water", 10, 8),
       // 서쪽 창가 취식 바 카운터(3석) + 동쪽 오뎅·핫스낵 계산대 줄.
@@ -259,8 +259,9 @@ const VENUES: readonly Venue[] = [
       o("mci-window-curtain", 1, 0), o("mci-whiteboard", 6, 0), o("projector-screen", 11, 0), o("mci-whiteboard", 17, 0), o("mci-wall-clock", 21, 0), o("mci-window-curtain", 23, 0),
       o("mci-plant-tall", 0, 2), o("mci-filing", 2, 2), o("mci-chair-office-s", 14, 2), o("mci-shelf-office", 21, 2), o("mci-plant-tall", 25, 2),
       o("lecture-podium", 11, 3), o("mci-desk-pc-back", 14, 3), g("mci-g-laptop", 14, 3),
-      // 계단식 객석 4열(y=4,7,10,13) - 뒷줄 의자(y=14) 뒤로 1칸 통로(y=15)를 남겨 모든 좌석에 닿는다.
-      ...[4, 7, 10, 13].flatMap((y) => [2, 6, 15, 19].flatMap((x) => [o("lecture-desk-row", x, y), ...row("mci-chair-wood-n", x, 1, 4, y + 1)])),
+      // 계단식 객석 - 앞 두 줄(y=4,7)은 낱개 책상 줄, 뒤쪽은 두 단 계단식 연속 책상 블록(y=11..13) 넷. 가운데 x=10..14 통로·뒤 y=14..15 통로.
+      ...[4, 7].flatMap((y) => [2, 6, 15, 19].flatMap((x) => [o("lecture-desk-row", x, y), ...row("mci-chair-wood-n", x, 1, 4, y + 1)])),
+      ...[2, 6, 15, 19].map((x) => o("jumbo-lecture-tiered-desk", x, 11)),
     ] },
     { kind: "sci-lab", w: 13, h: 16, floor: "mci-vinyl-hospital", wall: "mci-wall-office", items: [
       o("mci-whiteboard", 1, 0), o("mci-window-blind", 5, 0), o("mci-wall-clock", 9, 0), o("mci-window-blind", 10, 0),
@@ -481,9 +482,9 @@ const VENUES: readonly Venue[] = [
     ] },
     { kind: "otel-room", w: 8, h: 7, floor: "mci-wood-oak", wall: "mci-wall-home", items: [
       o("mci-window-curtain", 1, 0), o("home-wall-ac", 3, 0), o("mci-window-curtain", 6, 0),
-      o("mci-bed-double", 0, 2), o("home-low-shelf", 2, 2), o("mci-tv-stand", 5, 2), o("home-monstera", 7, 2),
-      o("mci-rug", 3, 4), o("home-floor-lamp", 0, 5), o("home-cat-bed", 0, 6),
-      o("mci-chair-office-s", 6, 5), o("mci-desk-pc-back", 6, 6), g("mci-g-laptop", 6, 6),
+      o("home-low-shelf", 0, 2), o("mci-tv-stand", 5, 2), o("home-monstera", 7, 2),
+      // 서쪽 로프트 침대·책상 모듈(위 침대, 아래 책상·책장) - 동쪽 러그와 TV 를 보는 자리.
+      o("jumbo-officetel-studio-bed-desk", 0, 4), o("mci-rug", 4, 4), o("home-floor-lamp", 7, 5), o("home-cat-bed", 7, 6),
     ] },
     { kind: "otel-elevator", w: 6, h: 5, floor: "mci-stone-lobby", wall: "mci-wall-store", items: [
       o("mci-wall-clock", 4, 0),
@@ -561,8 +562,8 @@ const VENUES: readonly Venue[] = [
       o("mci-window-curtain", 1, 0), o("mci-art-frame", 5, 0), o("mci-window-curtain", 9, 0),
       o("mci-shelf-office", 0, 2), o("mci-filing", 2, 2), o("mci-plant-tall", 11, 2),
       o("mci-chair-office-s", 5, 4), o("mci-desk-pc-back", 5, 5), g("mci-g-laptop", 5, 5),
-      // 응접 코너 - 킬림 러그 위 ㄱ자 소파·원형 탁자 세트.
-      o("jumbo-home-sectional", 1, 8),
+      // 응접 코너 - 크림 가죽 소파·북향 3인 소파가 낮은 탁자를 마주 보고, 양옆 안락의자.
+      o("lounge-sofa-cream", 2, 8), o("mci-armchair-e", 1, 9), o("mci-coffee-table", 2, 9), o("mci-armchair-w", 4, 9), o("mci-sofa-n", 1, 10),
       o("mci-plant-tall", 11, 11),
     ] },
     { kind: "lobby", w: 16, h: 14, floor: "mci-stone-lobby", wall: "mci-wall-lobby", items: [
@@ -711,8 +712,9 @@ const VENUES: readonly Venue[] = [
         o("mart-sale-endcap", 28, y), ...[29, 31, 33, 35, 37, 39, 41].map((x, i) => o(ids[(Math.floor(i / 3) + 1) % 3]!, x, y)), o("mart-promo-endcap", 43, y),
       ]),
       o("mart-promo-endcap", 20, 6), o("mart-sale-endcap", 23, 6),
-      o("jumbo-mart-promo-pyramid", 20, 9), o("mart-egg-tower", 23, 9), o("mart-rice-pallet", 24, 9),
-      o("mart-candy-bins", 23, 12), o("mart-sample-cart", 24, 12),
+      // 특판 피라미드는 가운데 아일랜드 한가운데 홀로 - 서쪽 사탕 통·동쪽 계란 탑·시식 카트와는 양쪽 2칸 통로로 떨어진다.
+      o("mart-candy-bins", 18, 9), o("jumbo-mart-promo-pyramid", 21, 9), o("mart-egg-tower", 26, 9),
+      o("mart-sample-cart", 26, 12),
       // 냉동 평대도 이어 붙인 아일랜드 두 개(서 x=2..15 · 동 x=29..42) - 계산대 쪽으로 2칸 통로를 남긴다.
       ...[2, 4, 6, 8, 10, 12, 14].map((x, i) => o(["mart-freezer-dumpling", "mart-freezer-icecream", "mci-freezer"][Math.floor(i / 2) % 3]!, x, 15)),
       ...[29, 31, 33, 35, 37, 39, 41].map((x, i) => o(["mart-freezer-icecream", "mci-freezer", "mart-freezer-dumpling"][Math.floor(i / 2) % 3]!, x, 15)),
@@ -770,10 +772,11 @@ const VENUES: readonly Venue[] = [
       o("mci-planter", 18, 2),
       ...row("sento-wash-station", 21, 2, 3, 2), ...row("sento-wash-station", 31, 2, 3, 2),
       // 남탕·여탕 각각 바깥쪽 대형 온탕(6×4) + 안쪽 탕(4×3) - 칸막이 기준 좌우 대칭.
-      o("jumbo-sento-grand-bath", 2, 5), o("sento-bath", 10, 5),
+      // 탕은 한 줄 내려(y=6) 씻는 자리 앞 두 줄(y=3..4)을 통로로 비운다.
+      o("jumbo-sento-grand-bath", 2, 6), o("sento-bath", 10, 5),
       o("mci-planter", 18, 5), o("mci-planter", 18, 8),
-      o("sento-bath", 24, 5), o("jumbo-sento-grand-bath", 30, 5),
-      o("home-bath-stool", 1, 9), o("mci-bench-metal", 6, 9), o("mci-bench-metal", 30, 9), o("home-bath-stool", 36, 9),
+      o("sento-bath", 24, 5), o("jumbo-sento-grand-bath", 30, 6),
+      o("home-bath-stool", 0, 8), o("mci-bench-metal", 9, 9), o("mci-bench-metal", 27, 9), o("home-bath-stool", 37, 8),
       o("mci-basket-stack", 0, 10), o("mci-basket-stack", 37, 10),
     ] },
     { kind: "sento-changing", w: 38, h: 7, floor: "mci-wood-oak", wall: "mci-wall-home", items: [
@@ -859,7 +862,7 @@ const VENUES: readonly Venue[] = [
       // 북쪽 MRI실 - 깊은 원통 보어 + 밀려 들어가는 환자 침대(4×3), 동쪽 수액 펌프·생체 모니터.
       o("jumbo-hosp-mri", 1, 5), o("hosp-iv-pump", 6, 5), o("hospital-bedside-monitor", 7, 5),
       o("hosp-curtain-track", 0, 8), o("hosp-curtain-track", 6, 8),
-      o("hosp-stretcher", 0, 10), o("hosp-xray-table", 4, 10), o("hosp-mayo-stand", 8, 10),
+      o("hosp-stretcher", 0, 10), o("hosp-mayo-stand", 8, 10),
       o("hospital-wheelchair", 0, 13), o("hospital-curtain-screen", 2, 12),
       o("hospital-doctor-desk", 5, 12), o("mci-chair-office-n", 8, 12),
     ] },
