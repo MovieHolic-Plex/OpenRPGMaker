@@ -1,15 +1,18 @@
 // 일상 21공간 통행 감사 - 2026-10-19 사용자 「집같은 작은 공간은 통행 안되는 곳도 많은거같음」.
 // 공간마다 조수 도구 그대로(build_hand_interior_room) 짓고, 정문 칸에서 런타임 이동 판정(canMove, 방향 비트 포함)으로 BFS 한다.
 //   실패 조건: 갇힌 칸(걸을 수 있는데 정문에서 못 가는 칸) · 걸음 칸이 하나도 닿지 않는 방 · 막힌 칸막이 문(문 칸 또는 양쪽 앞 칸) · 닿지 못하는 계단.
+//   통학 전동차는 modern_city 견본이 아니라 jp_city 손 도트 견본(program "train-car")을 그대로 쓴다 - 그 맵도 같은 감사로 본다.
 //   npx --no-install tsx --import ./tiledata/jp-city/refs/css-stub.mjs scripts/content/modern-city-int/qa/audit-daily-walk.mts [--seeds 1,2] [--json out.json] [prog ...]
 import { writeFileSync } from "node:fs";
 import { BUILD_HAND_INTERIOR_ROOM_TOOL } from "@/editor/tools/handInteriorTools";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { canMove, isPassable } from "@/project/collision";
 import { DAILY_VENUE_PROGRAMS } from "@/editor/handInterior/dailyVenues";
+import { JP_CITY_ID } from "@/project/defaults/jpCity";
 import roomSpec from "@/assets/modernCityRoomSpec.json";
+import jpRoomSpec from "@/assets/jpInteriorSpec.json";
 
-const spec: Record<string, { w: number; h: number }> = roomSpec.objects;
+const spec: Record<string, Record<string, { w: number; h: number }>> = { modern_city: roomSpec.objects, [JP_CITY_ID]: jpRoomSpec.objects };
 
 interface Pt { x: number; y: number }
 interface RoomRect { id: string; x0: number; y0: number; x1: number; y1: number }
@@ -26,7 +29,9 @@ const flag = (name: string) => { const i = argv.indexOf(name); return i >= 0 ? a
 const seeds = (flag("--seeds") ?? "1").split(",").map(Number);
 const jsonOut = flag("--json");
 const named = argv.filter((a, i) => !a.startsWith("--") && !argv[i - 1]?.startsWith("--"));
-const programs = named.length ? named : [...Object.keys(DAILY_VENUE_PROGRAMS).filter((p) => p !== "mc_elevator_car"), "mc_department_store", "mc_parking"];
+const DAILY_TRAIN = "train-car";
+const programs = named.length ? named : [...Object.keys(DAILY_VENUE_PROGRAMS).filter((p) => p !== "mc_elevator_car"), "mc_department_store", "mc_parking", DAILY_TRAIN];
+const tilesetOf = (program: string) => (program === DAILY_TRAIN ? JP_CITY_ID : "modern_city");
 
 const project = createEmptyToolProject("mci");
 const out: Record<string, unknown> = {};
@@ -35,7 +40,8 @@ const DIRS = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
 
 for (const program of programs) for (const seed of seeds) {
   const mapId = `${program}-s${seed}`;
-  const r = BUILD_HAND_INTERIOR_ROOM_TOOL.run(project, { tileset: "modern_city", mapId, name: program, layout: { program, seed } } as never);
+  const tileset = tilesetOf(program);
+  const r = BUILD_HAND_INTERIOR_ROOM_TOOL.run(project, { tileset, mapId, name: program, layout: { program, seed } } as never);
   const m = project.maps[mapId];
   if (!m || !r.data || typeof r.data !== "object") { failed++; console.log(`FAIL ${mapId} 지어지지 않았다 ${JSON.stringify(r).slice(0, 300)}`); continue; }
   const data = rec(r.data);
@@ -47,7 +53,7 @@ for (const program of programs) for (const seed of seeds) {
   // 막힌 칸을 덮는 기물 이름(발 디딘 줄 w×h) - 어느 가구를 옮길지 바로 보이게.
   const placed = list(data.rebuild && typeof data.rebuild === "object" ? rec(data.rebuild).objects : []).map((v) => rec(v));
   const who = (x: number, y: number) => {
-    const hit = placed.find((o) => { const d = spec[str(o.id)]; return d && x >= num(o.x) && x < num(o.x) + d.w && y >= num(o.y) && y < num(o.y) + Math.max(1, d.h); });
+    const hit = placed.find((o) => { const d = spec[tileset]![str(o.id)]; return d && x >= num(o.x) && x < num(o.x) + d.w && y >= num(o.y) && y < num(o.y) + Math.max(1, d.h); });
     if (!hit) return "?";
     const ox = num(hit.x), oy = num(hit.y), rm = rooms.find((r) => ox >= r.x0 && ox <= r.x1 && oy >= r.y0 && oy <= r.y1);
     return `${str(hit.id)}@${ox},${oy}${rm ? ` [${rm.id} ${ox - rm.x0},${oy - rm.y0} of ${rm.x1 - rm.x0 + 1}w]` : ""}`;
@@ -114,7 +120,7 @@ for (const program of programs) for (const seed of seeds) {
   if (problems.length) failed++;
   console.log(`${problems.length ? "FAIL" : "OK  "} ${mapId} ${m.width}x${m.height} 방 ${rooms.length} 문 ${openings.length} 계단 ${travel.length} 걸음 ${seen.size}/${walk}${problems.map((p) => `\n   ${p}`).join("")}`);
   if (argv.includes("--rooms")) console.log(`   방별 걸음 비율: ${tight.join(" · ")}`);
-  out[mapId] = { width: m.width, height: m.height, lower: m.lowerTiles, lower2: m.lowerOverlayTiles ?? [], upper: m.upperTiles, upper2: m.upperOverlayTiles ?? [],
+  out[mapId] = { tileset, width: m.width, height: m.height, lower: m.lowerTiles, lower2: m.lowerOverlayTiles ?? [], upper: m.upperTiles, upper2: m.upperOverlayTiles ?? [],
     reached: [...seen], walk, objects: placed.length, problems, warnings: r.warnings ?? [] };
 }
 if (jsonOut) writeFileSync(jsonOut, JSON.stringify({ maps: out }));

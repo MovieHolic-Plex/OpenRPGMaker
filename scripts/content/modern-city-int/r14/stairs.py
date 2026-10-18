@@ -1,9 +1,10 @@
 # R14 stairs & escalators redrawn as real 3/4 top-view flights - 2026-10-19 user: 「백화점이랑 집안 내부에서 계단으로 쓰이는 건
 # 다시만들어야할듯. 너무 .. 계단같지가않음. 그 백화점 계단을 참고해봐」.
-# Every wall flight is a tunnel cut into the north wall: a lintel over a dark upper-floor void, side walls that widen as the
-# flight recedes (stepped stringer edge = sawtooth), a diagonal handrail on each side and newel posts at the floor.
-#   up   : each step shows its riser (front face, shadowed under the nosing) and its tread (lit, bright nosing row);
-#          steps shrink and darken as they climb toward the upper floor.
+# R15 (2026-10-19 user: 「계단은 '직교' 시야각이어야한다. 저렇게 마름모 꼴이어선 곤란하다」): every line is axis-aligned.
+# Side balustrades are straight vertical columns at fixed x, every step spans the same x range (no trapezoid narrowing,
+# no diagonal handrail) - depth and direction come only from horizontal bands and vertical shading.
+#   up   : from the floor line northward, each step shows its riser (dark front face under the nosing) and its lit tread;
+#          bands shorten and darken as they climb to a landing in front of the dark upper-floor opening under the lintel.
 #   down : only treads are visible (risers face away) - thin drop lines between treads that crowd and sink into darkness.
 # Floor wells (stairs going down through the floor) show the pit's far wall, guard rails on three sides and treads
 # descending north from the open south edge.
@@ -33,97 +34,92 @@ MATS = {
 }
 
 
-def lerp(a, b, t): return round(a + (b - a) * t)
-
-
-def flight(c, m, x0, x1, yb, steps, conv, up):
-    """Steps from the floor line yb upward. Returns per-row inner bounds {y: (a, b)} and the top row of the flight."""
-    n = len(steps); y = yb; bounds = {}
+def flight(c, m, x0, x1, yb, steps, up):
+    """Steps from the floor line yb northward, all spanning x0..x1. Returns the top row of the flight."""
+    n = len(steps); y = yb
+    carpet = m.get('carpet')
+    cw = (x1 - x0 + 1) * 2 // 5; ca, cb = (x0 + x1 + 1) // 2 - cw // 2, (x0 + x1 + 1) // 2 + cw // 2 - 1
     for k, (r, t) in enumerate(steps):
         u = k / max(1, n - 1)
-        inset = round(conv * u)
-        a, b = x0 + inset, x1 - inset
         f = (1.0 - 0.42 * u) if up else (0.92 - 0.6 * u)
-        carpet = m.get('carpet')
-        cw = (b - a + 1) * 2 // 5; ca, cb = (a + b + 1) // 2 - cw // 2, (a + b + 1) // 2 + cw // 2 - 1
         if up:
             # riser: front face, darkest under the nosing, lit toward the floor
-            c.r(a, y - r + 1, b, y, dk(m['riser'], f))
-            c.r(a, y - r + 1, b, y - r + 1, dk(m['riser_d'], f))
+            c.r(x0, y - r + 1, x1, y, dk(m['riser'], f))
+            c.r(x0, y - r + 1, x1, y - r + 1, dk(m['riser_d'], f))
             if m.get('escalator'):
-                for gx in range(a + 1, b, 2): c.r(gx, y - r + 2, gx, y, dk(m['riser_d'], f))
+                for gx in range(x0 + 1, x1, 2): c.r(gx, y - r + 2, gx, y, dk(m['riser_d'], f))
             if carpet:
                 c.r(ca, y - r + 1, cb, y, dk(m['carpet_d'], f * 1.05)); c.r(ca, y, cb, y, dk(GOLD, f))
-            for yy in range(y - r + 1, y + 1): bounds[yy] = (a, b)
             y -= r
         else:
-            c.r(a, y, b, y, dk(VOID, 1.0)); bounds[y] = (a, b); y -= 1
+            c.r(x0, y, x1, y, VOID); y -= 1
         # tread: lit surface, bright nosing on its front (bottom) row
-        c.r(a, y - t + 1, b, y, dk(m['tread'], f))
-        c.r(a, y, b, y, dk(m['nose'], f))
-        if m.get('strip'): c.r(a + 1, y - 1, b - 1, y - 1, dk(m['strip'], f)) if t >= 3 else None
+        c.r(x0, y - t + 1, x1, y, dk(m['tread'], f))
+        c.r(x0, y, x1, y, dk(m['nose'], f))
+        if m.get('strip') and t >= 3: c.r(x0 + 1, y - 1, x1 - 1, y - 1, dk(m['strip'], f))
         if m.get('escalator'):
-            for gx in range(a + 2, b - 1, 2): c.r(gx, y - t + 1, gx, y - 1, dk(STEEL_D, f))
-            c.r(a, y - t + 1, a, y, dk(YELLOW_D, f)); c.r(b, y - t + 1, b, y, dk(YELLOW_D, f))
+            for gx in range(x0 + 2, x1 - 1, 2): c.r(gx, y - t + 1, gx, y - 1, dk(STEEL_D, f))
+            c.r(x0, y - t + 1, x0, y, dk(YELLOW_D, f)); c.r(x1, y - t + 1, x1, y, dk(YELLOW_D, f))
         if carpet:
             c.r(ca, y - t + 1, cb, y, dk(m['carpet'], f)); c.r(ca, y, cb, y, dk(m['carpet_l'], f))
             c.r(ca - 1, y - t + 1, ca - 1, y, dk(GOLD_D, f)); c.r(cb + 1, y - t + 1, cb + 1, y, dk(GOLD_D, f))
-        for yy in range(y - t + 1, y + 1): bounds[yy] = (a, b)
         y -= t
-    return bounds, y + 1
+    return y + 1
 
 
-def wall_flight(w, h, mat, up=True, sign=None, header=5, newel=True):
-    """3/4 flight into a north-wall opening on a w x h canvas whose bottom 16px row is the solid floor footprint."""
+def balustrade(c, m, xa, xb, y0, y1, east):
+    """Straight side balustrade (vertical column xa..xb): wall or glass body, handrail pair and stringer on the stair side.
+    Shaded darker toward the north (y0) where it runs up into the opening."""
+    glass = m.get('glass')
+    inner = xa if east else xb
+    step = 1 if east else -1                     # from the stair edge outward
+    rail = (inner + step, inner + 2 * step)
+    body0, body1 = (inner + 3 * step, xb) if east else (xa, inner + 3 * step)
+    for yy in range(y0, y1 + 1):
+        sh = 0.72 + 0.28 * (yy - y0) / max(1, y1 - y0)
+        c.r(body0, yy, body1, yy, dk(m['wall_d'] if east else m['wall'], sh))
+        c.p(inner, yy, dk(m['stringer'], sh * (0.85 if east else 1.0)))
+    if glass:
+        # vertical glare streaks at fixed x, broken every few rows
+        for gx in (body0 + 1, body0 + 3) if not east else (body1 - 1, body1 - 3):
+            for yy in range(y0 + 2, y1 - 3):
+                if (yy // 3) % 3 != 0: c.p(gx, yy, lt(m['wall'], 1.18))
+        if m.get('escalator'):
+            c.r(inner, y0 + 1, inner, y1, (250, 182, 64))     # amber skirt light
+    else:
+        # balusters: short ticks on the body side of the rail
+        for yy in range(y0 + 3, y1 - 2, 4): c.p(rail[1] + step, yy, dk(m['rail'], 1.1))
+    # handrail: dark rail + lit cap, straight north-south
+    c.r(min(rail), y0, min(rail), y1, m['rail_l'] if not east else m['rail'])
+    c.r(max(rail), y0, max(rail), y1, m['rail'] if not east else m['rail_l'])
+
+
+def wall_flight(w, h, mat, up=True, sign=None, header=5, newel=True, steps=None):
+    """Straight 3/4 flight into a north-wall opening on a w x h canvas whose bottom 16px row is the solid floor footprint."""
     m = MATS[mat]; c = C(w, h)
-    yb = h - 5 if h >= 48 else h - 1
-    x0, x1 = (8, w - 9) if w >= 48 else (5, w - 6)
-    conv = 5 if w >= 48 else 3
-    steps = ([(4, 3), (4, 3), (3, 3), (3, 2), (3, 2), (2, 2)] if h >= 48 else [(3, 2), (3, 2), (3, 2), (2, 2), (2, 2), (2, 1)]) if up \
-        else ([(1, 5), (1, 4), (1, 4), (1, 3), (1, 3), (1, 3), (1, 2), (1, 2)] if h >= 48 else [(1, 4), (1, 3), (1, 3), (1, 3), (1, 2), (1, 2), (1, 2)])
+    big = h >= 48
+    yb = h - 5 if big else h - 1
+    x0, x1 = (9, w - 10) if w >= 48 else (6, w - 7)
+    if steps is None:
+        steps = ([(3, 3), (3, 3), (3, 2), (3, 2), (2, 2), (2, 2)] if big else [(3, 2), (3, 2), (3, 2), (2, 2), (2, 2)]) if up \
+            else ([(1, 5), (1, 4), (1, 4), (1, 3), (1, 3), (1, 3), (1, 2), (1, 2)] if big else [(1, 4), (1, 3), (1, 3), (1, 3), (1, 2), (1, 2), (1, 2)])
     # dark void of the upper (or lower) floor behind the flight
     c.r(1, header, w - 2, yb, VOID)
-    bounds, top = flight(c, m, x0, x1, yb, steps, conv, up)
-    for yy in range(header + 1, top):
-        bounds[yy] = bounds[top]
-        f = 0.35 + 0.25 * (yy - header) / max(1, top - header)
-        c.r(bounds[top][0], yy, bounds[top][1], yy, dk(m['riser_d'] if up else VOID, f))
-    # side walls (or glass balustrades): widen toward the top, stepped stringer on the inner edge
-    glass = m.get('glass')
-    for yy in range(header + 1, yb + 1):
-        a, b = bounds[yy]
-        sh = 0.7 + 0.3 * (yy - header) / max(1, yb - header)
-        c.r(1, yy, a - 2, yy, dk(m['wall'], sh)); c.r(b + 2, yy, w - 2, yy, dk(m['wall_d'], sh))
-        c.p(a - 1, yy, dk(m['stringer'], sh)); c.p(b + 1, yy, dk(dk(m['stringer'], 0.85), sh))
-    # straight slope line from the foot of the flight to the lintel - handrail and glare follow it, not the sawtooth
-    a_bot, b_bot = bounds[yb]; a_top, b_top = bounds[top]
-
-    def slope(yy, side):
-        u = (yb - yy) / max(1, yb - header)
-        return lerp(a_bot, a_top, u) - 3 if side == 0 else lerp(b_bot, b_top, u) + 3
-    if glass:
-        # two parallel glare streaks on each glass panel, and a lit skirt light along the steps (escalator)
-        for side in (0, 1):
-            for off in (3, 5):
-                for yy in range(header + 3, yb - 4):
-                    if (yy // 3) % 3 == 0: continue
-                    x = slope(yy, side) + (-off if side == 0 else off)
-                    if 1 <= x <= w - 2: c.p(x, yy, lt(m['wall'], 1.18))
-            if m.get('escalator'):
-                for yy in range(header + 2, yb + 1):
-                    a, b = bounds[yy]
-                    c.p(a - 1 if side == 0 else b + 1, yy, (250, 182, 64))
-    # handrails: diagonal lines parallel to the flight, rising from the newel posts into the lintel
-    for side in (0, 1):
-        pts = [(slope(yy, side), yy) for yy in range(header + 1, yb - 3)]
-        for x, yy in pts:
-            c.p(x, yy, m['rail']); c.p(x + (1 if side == 0 else -1), yy, m['rail_l'])
-            if m.get('escalator'): c.p(x - (1 if side == 0 else -1), yy, m['rail'])
-        # balusters under the rail every few rows (not on glass)
-        if not glass:
-            for x, yy in pts[2::5]:
-                xi = x + (1 if side == 0 else -1)
-                for d in range(1, 4): c.p(xi, yy + d, dk(m['rail'], 1.1))
+    top = flight(c, m, x0, x1, yb, steps, up)
+    if up:
+        # top landing platform, then the opening darkening toward the lintel
+        land = 3 if big else 2
+        c.r(x0, top - land, x1, top - 1, dk(m['tread'], 0.5)); c.r(x0, top - 1, x1, top - 1, dk(m['nose'], 0.52))
+        if m.get('escalator'):
+            c.r(x0, top - 1, x1, top - 1, dk(YELLOW, 0.8))
+            for x in range(x0, x1 + 1, 2): c.p(x, top - 2, dk(YELLOW_D, 0.7))
+        for yy in range(header + 1, top - land):
+            c.r(x0, yy, x1, yy, dk(m['riser_d'], 0.3 + 0.2 * (yy - header) / max(1, top - land - header)))
+    elif m.get('escalator'):
+        c.r(x0, top - 1, x1, top - 1, dk(YELLOW, 0.45))
+    # side balustrades: straight vertical columns at fixed x
+    balustrade(c, m, 1, x0 - 1, header + 1, yb, False)
+    balustrade(c, m, x1 + 1, w - 2, header + 1, yb, True)
     # outline of the opening + lintel
     c.r(0, header, 0, yb, OL); c.r(w - 1, header, w - 1, yb, OL)
     c.box(0, 0, w - 1, header, m['header']); c.r(1, 1, w - 2, 1, m['header_l'])
@@ -135,29 +131,31 @@ def wall_flight(w, h, mat, up=True, sign=None, header=5, newel=True):
         for i in range(min(3, header - 1)):
             if sign == 'up': c.r(sx - 1 - i, 1 + i, sx + i, 1 + i, col)
             else: c.r(sx - 1 - i, header - 1 - i, sx + i, header - 1 - i, col)
-    # newel posts at the foot of the flight (3/4 box: cap on top, front face)
-    if newel and h >= 48:
+    # newel posts at the foot of each balustrade (3/4 box: cap on top, front face)
+    if newel and big:
         for px in (1, w - 7):
             if m.get('escalator'):
-                c.rbox(px + 1, yb - 6, px + 5, yb + 1, BLACK); c.p(px + 2, yb - 5, (80, 82, 94))
+                c.rbox(px + 1, yb - 6, px + 5, yb + 1, BLACK); c.r(px + 2, yb - 5, px + 4, yb - 5, (80, 82, 94))
                 continue
             c.box(px, yb - 9, px + 5, yb + 2, m['post'])
             c.r(px + 1, yb - 8, px + 4, yb - 7, m['post_l']); c.r(px + 1, yb + 1, px + 4, yb + 1, dk(m['post'], 0.75))
-            if mat in ('marble', 'grand'):
+            if mat == 'grand':
                 c.oval(px + 1, yb - 13, px + 4, yb - 10, GOLD); c.p(px + 2, yb - 12, (255, 240, 180))
             else:
-                c.box(px - 1, yb - 11, px + 6, yb - 8, m['post_l']); c.r(px, yb - 10, px + 5, yb - 10, lt(m['post_l'], 1.12))
-            c.r(px + 1, yb + 3, px + 6, yb + 3, SH)
+                c.box(px - 1 if px > 1 else px, yb - 11, px + 6 if px + 6 < w - 1 else px + 5, yb - 8, m['post_l'])
+                c.r(px + 1, yb - 10, px + 4, yb - 10, lt(m['post_l'], 1.12))
+            c.r(px + 1, yb + 3, px + 5, yb + 3, SH)
     # floor apron below the first step
-    if h >= 48:
+    if big:
         if m.get('escalator'):
             c.r(x0, yb + 1, x1, yb + 1, YELLOW)
-            c.box(x0 - 2, yb + 1, x1 + 2, h - 1, STEEL); c.dither(x0 - 1, yb + 2, x1 + 1, h - 2, STEEL_L)
+            for x in range(x0, x1 + 1, 2): c.p(x, yb + 2, YELLOW_D)
+            c.box(x0 - 2, yb + 2, x1 + 2, h - 1, STEEL); c.dither(x0 - 1, yb + 3, x1 + 1, h - 2, STEEL_L)
             col = (70, 210, 110) if up else (246, 150, 50)
             cx = (x0 + x1 + 1) // 2
             for i in range(2):
-                if up: c.r(cx - 1 - i, yb + 2 + i, cx + i, yb + 2 + i, col)
-                else: c.r(cx - 1 - i, yb + 3 - i, cx + i, yb + 3 - i, col)
+                if up: c.r(cx - 1 - i, yb + 3 + i, cx + i, yb + 3 + i, col)
+                else: c.r(cx - 1 - i, yb + 4 - i, cx + i, yb + 4 - i, col)
         else:
             c.r(x0, yb + 1, x1, yb + 1, dk(m['riser_d'], 0.8))
     return c.done()
@@ -209,6 +207,7 @@ def stone_pair_up(): return wall_flight(48, 48, 'stone', True, sign='up')
 def stone_pair_down(): return wall_flight(48, 48, 'stone', False, sign='down')
 def wall_wood_up(): return wall_flight(48, 48, 'wood', True)
 def wall_stone_up(): return wall_flight(48, 48, 'stone', True)
-def grand_up(): return wall_flight(48, 48, 'grand', True)
+# Grand staircase: straight palace flight with a deep intermediate landing halfway up (the 5-row tread).
+def grand_up(): return wall_flight(48, 48, 'grand', True, steps=[(3, 2), (3, 2), (2, 5), (3, 2), (3, 2), (2, 2)])
 def mci_up(): return wall_flight(32, 32, 'stone', True, header=3, newel=False)
 def mci_down(): return floor_well(32, 32, 'stone')

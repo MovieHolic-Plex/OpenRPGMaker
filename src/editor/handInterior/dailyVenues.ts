@@ -1,5 +1,5 @@
-// 학생 하루(10곳) · 직장인 하루(8곳) 실내 견본 - 2026-10-18 사용자 「대형마트는 시발 너무작다… 가령 대형마트는 50x50 정도로」
-// 「의자가 아래 방향만 구현되어있는거냐」 「전동차 내부는 아예 다시 만들어야겠는데」.
+// 학생 하루 · 직장인 하루 실내 견본 - 2026-10-18 사용자 「대형마트는 시발 너무작다… 가령 대형마트는 50x50 정도로」 「의자가 아래 방향만 구현되어있는거냐」.
+// 통학 전동차 차내는 여기서 짓지 않는다 - jp_city 손 도트 견본(program "train-car")을 그대로 쓴다(2026-10-19 「전철은 기존에 만들던 게 있는데 그걸 그대로 쓰면 되는데」).
 // 방 크기는 venueScale.ts VENUE_SCALE_CONTRACT 와 맞물린다 - 위 줄·아래 줄 방 너비 합 + 칸막이 + 바깥벽 = 규격 너비, 줄 높이 합 + 칸막이 + 바깥벽 = 규격 높이.
 // 탁자 둘레 의자는 seatedTable 로 네 방향(북쪽 -s · 남쪽 -n · 서쪽 -e · 동쪽 -w) 모두 탁자를 본다.
 // 칸막이 문은 겹친 열(가로 칸막이)·겹친 줄(세로 칸막이)의 가운데에 뚫린다 - 그 자리 앞 칸은 비워 둔다.
@@ -149,37 +149,6 @@ const VENUES: readonly Venue[] = [
       o("mci-counter-register", 2, 10), g("mci-g-register", 3, 10),
       o("mci-basket-stack", 0, 12), o("mci-plant-tall", 6, 12),
     ] },
-  ] },
-
-  // ── 학생 4. 08:20 전동차 내부 (40×12, 선두부 계단식 차체 외곽) - 좌측 선두 운전실(4×9) + 1호차(16×10) + 2호차(16×10).
-  //    운전실(train-cab)은 진행 방향인 서쪽(왼쪽 x=0) 벽에 운전 콘솔(train-cab-console)을 붙이고 기관사 의자(mci-chair-office-w)가 서쪽(왼쪽)을 본다!
-  //    객차 중앙 통로(y=5..6)는 바닥 장애물 없이 뻥 뚫어 승객 보행 동선을 확보하고, 좌석 앞 손잡이 줄(y=4,7)과 수직 봉(y=3,8)만 배치.
-  { program: "mc_train_car", map: "train-car", variation: {
-    rows: [["train-cab", "train-car", "train-car-2"]], ragged: true,
-    entrance: "train-car", left: [["train-cab", "train-car"], ["train-car", "train-car-2"]], hubs: ["train-car", "train-car-2"],
-    fixed: ["train-cab", "train-car", "train-car-2"], palettes: [
-      { "train-car": ["mci-concrete", "mci-wall-office"], "train-car-2": ["mci-concrete", "mci-wall-office"], "train-cab": ["mci-concrete", "mci-wall-metal"] },
-      { "train-car": ["mci-tile-concourse", "mci-wall-store"], "train-car-2": ["mci-tile-concourse", "mci-wall-store"], "train-cab": ["mci-tile-concourse", "mci-wall-office"] },
-    ] }, rooms: [
-    { kind: "train-cab", w: 4, h: 10, floor: "mci-concrete", wall: "mci-wall-metal", items: [
-      // 진행 방향 = 서쪽(왼쪽): 서쪽 가장자리 앞유리·제어대(train-cab-front-w)를 기관사 의자(train-cab-seat-w)가 서쪽으로 바라본다 - 칸막이 벽과 문은 의자 뒤(동쪽).
-      o("train-sos-intercom", 3, 0),
-      o("train-cab-front-w", 0, 2), o("train-cab-seat-w", 2, 6),
-    ] },
-    // 두 객차는 노선 색(초록 모켓 / 파랑 모켓)과 창(롤블라인드 / 터널 창)·창 위 안내(듀얼 LCD / 노선도 띠)만 달리한다.
-    ...([["train-car", "train-window-blind", "train-lcd-dual", "green"], ["train-car-2", "train-window-tunnel", "train-route-strip", "blue"]] as const).map(([kind, win, sign, moquette]) => ({ kind, w: 16, h: 10, floor: "mci-concrete", wall: "mci-wall-metal", items: [
-      // 북쪽 벽: 노약자석 | 문 | 7인석 | 문 | 7인석 | 휠체어 공간
-      o("train-emergency-cock", 0, 0), o("train-door-steel", 2, 0), o(win, 4, 0), o(sign, 6, 0), o("train-door-steel", 8, 0), o(win, 10, 0), o("train-luggage-rack", 12, 0), o("train-extinguisher", 14, 0), o("train-sos-intercom", 15, 0),
-      o("train-priority-pink-s", 0, 2), o("train-door-sill", 2, 2), o(`train-seat7-${moquette}-s`, 4, 2), o("train-door-sill", 8, 2), o(`train-seat7-${moquette}-s`, 10, 2), o("train-wheelchair-space", 14, 2),
-      o("train-stanchion", 4, 3), o("train-stanchion", 9, 3), o("train-stanchion", 13, 3),
-      // 좌석 앞 손잡이 줄(y=4, y=7)만 두고 중앙 통로(y=5..6)는 승객이 걷는 열린 통로로 비운다.
-      ...row("train-straps", 1, 3, 5, 4),
-      o("mci-tactile", 2, 5), o("mci-tactile", 8, 5), o("mci-tactile", 2, 6), o("mci-tactile", 8, 6),
-      ...row("train-straps", 1, 3, 5, 7),
-      o("train-stanchion", 4, 8), o("train-stanchion", 9, 8), o("train-stanchion", 13, 8),
-      // 남쪽 벽: 노약자석 | 문 | 7인석 | 문 | 7인석 | 노약자석
-      o("train-priority-orange-n", 0, 9), o("train-door-s", 2, 9), o(`train-seat7-${moquette}-n`, 4, 9), o("train-door-s", 8, 9), o(`train-seat7-${moquette}-n`, 10, 9), o("train-priority-orange-n", 14, 9),
-    ] })),
   ] },
 
   // ── 학생 5. 09:00 학교 교사동 (46×34, 비사각형 계단식 윙 외곽) - 위 줄 북서 후퇴(void:2)·교실 둘·계단실, 가운데 복도,

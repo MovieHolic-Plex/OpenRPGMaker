@@ -53,7 +53,7 @@ const OPEN_DEFAULT: [string, string][] = [
   ["genkan", "hall"], ["genkan", "ldk"], ["genkan", "entrance"], ["kitchen", "ldk"], ["kitchen", "dining"], ["arena_stands", "arena_floor"],
   ["dept-vip-hall", "dept-atrium"],
   ["mart-fresh-bakery", "mart-sales-hall"], ["mart-produce", "mart-sales-hall"], ["mart-butcher", "mart-sales-hall"], ["mart-sales-hall", "mart-checkout"],
-  ["subway-concourse", "subway-platform"], ["train-car", "train-car-2"],
+  ["subway-concourse", "subway-platform"],
   ["house-living", "house-kitchen"], ["espresso-bar", "cafe-hall"],
   ["cinema-arcade-zone", "cinema-lobby"],
   ["rest-kitchen-bar", "rest-dining-hall"], ["rest-bar-lounge", "rest-dining-hall"], ["rest-live-stage", "rest-dining-hall"],
