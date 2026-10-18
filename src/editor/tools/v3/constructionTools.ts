@@ -59,6 +59,7 @@ import {
 import { naturalnessArg, naturalnessLabel, rngForTool } from "../naturalToolArgs";
 import { placePropsOnDraft } from "../placePropsDomain";
 import { type ScatterPacking } from "../placementTools";
+import { rejectOnSceneStage } from "../sceneStageGuard";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "../types";
 import { coerceInt, coercePoint, coercePointArray, failWithExample } from "../toolArgCoerce";
 import { tilesetGrammarProfile } from "./grammarProfiles";
@@ -277,7 +278,7 @@ function cellsInRect(map: GameMap, rect: Rect): Point[] {
   return cells;
 }
 
-function protectedPassageCells(project: Project, map: GameMap): Map<string, string> {
+export function protectedPassageCells(project: Project, map: GameMap): Map<string, string> {
   const cells = new Map<string, string>();
   if (project.startMapId === map.id) cells.set(pointKey(project.startPos), "시작 위치");
   const transfers: Point[] = [];
@@ -835,6 +836,7 @@ const placeProps: ToolDefinition = {
     const { map, tileset } = requireMapContext(draft, args, PROPS_EXAMPLE);
     const area = coerceRect(args.area, "area", PROPS_EXAMPLE);
     requireRectInMap(map, area, "area", PROPS_EXAMPLE);
+    rejectOnSceneStage(map, area, "place_props");
     if (args.trunkVisible !== undefined || args.origins !== undefined) {
       failWithExample("trunkVisible·origins는 숲 합성 내부 전용이라 place_props 인자로 받지 않습니다(density로 숲을 심으세요)", PROPS_EXAMPLE);
     }
