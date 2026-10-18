@@ -135,7 +135,9 @@ export function templateClusters(t: InteriorRoomTemplate, S: HandInteriorSpec): 
   const find = (i: number): number => (parent[i] === i ? i : (parent[i] = find(parent[i]!)));
   const boxes = t.items.map((it) => itemBox(it, S));
   const links: [number, number][] = [];
+  const isFlatObj = (it: InteriorTemplateItem) => it.t === "o" && S.objects[it.id]?.kind === "flat";
   for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) {
+    if (isFlatObj(t.items[i]!) !== isFlatObj(t.items[j]!)) continue;
     const [ax, ay, aw, ah] = boxes[i]!, [bx, by, bw, bh] = boxes[j]!;
     // 1칸 띄운 것까지 붙은 것으로 본다(goods 는 가구 윗면 줄까지)
     const reach = t.items[i]!.t === "g" || t.items[j]!.t === "g" ? 2 : 1;

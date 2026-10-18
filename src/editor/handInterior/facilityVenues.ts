@@ -52,3 +52,4 @@ const NEW = facilityExports(NEW_FACILITIES);
 export const FACILITY_TEMPLATES = NEW.templates;
 export const FACILITY_PROGRAMS = NEW.programs;
 export const FACILITY_VARIATION = NEW.variation;
+export const FACILITY_OPEN_FLOOR = NEW.openFloorRooms;
