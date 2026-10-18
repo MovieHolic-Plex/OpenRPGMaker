@@ -321,6 +321,602 @@
       "signature": "a gigantic wide pale-pink snout bigger than the rest of its head, held high and covered in gritty speckles",
       "accent": "bright pink (only the snout)",
       "palette": "slate brown, pale pink, grey, cream"
+    },
+    {
+      "id": "podback",
+      "name": "콩등충",
+      "types": [
+        "bug",
+        "grass"
+      ],
+      "stage": 2,
+      "evolvesFrom": "pipbug",
+      "campaignSpeciesId": "mx_species_podback",
+      "design": "The evolved form of the pipbug beetle: a bigger round beetle walking low on six short sturdy legs, a high domed olive-green shell, a round soft cream-and-brown face with big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) peeking out at the front, two longer bent antennae.",
+      "signature": "the shell has split open along the middle like a giant pea pod, showing a row of three huge round bright-green peas inside with two broad leaves sprouting from the seam, together as big as the whole body",
+      "accent": "fresh pea green (only the peas and leaves)",
+      "palette": "olive green, brown, cream, dark green"
+    },
+    {
+      "id": "ribbonwing",
+      "name": "리본날개",
+      "types": [
+        "normal",
+        "flying"
+      ],
+      "stage": 2,
+      "evolvesFrom": "gustchick",
+      "campaignSpeciesId": "mx_species_ribbonwing",
+      "design": "The evolved form of the gustchick bird: a slimmer round songbird that can now fly, perched on two small three-toed feet with storm-grey wings half spread, a cream-white chest, a short pale-yellow beak, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly), the sky-blue crest grown into two swept-back feathers.",
+      "signature": "two extremely long sky-blue ribbon tail feathers, each much longer than its body, curling in loose loops like ribbons behind and below it",
+      "accent": "sky blue (the crest and ribbon tail)",
+      "palette": "storm grey, cream, pale yellow, dark blue"
+    },
+    {
+      "id": "coilcrest",
+      "name": "코일볏",
+      "types": [
+        "electric"
+      ],
+      "stage": 2,
+      "evolvesFrom": "zaptoe",
+      "campaignSpeciesId": "mx_species_coilcrest",
+      "design": "The evolved form of the zaptoe gecko: a longer agile gecko standing on four splayed round sticky toes with its head raised, a mustard-yellow body with dark brown bands, a white belly, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly), a shorter thick ridged tail.",
+      "signature": "a huge copper-coil crest on its head - a tall comb of three big ridged copper rings stacked like a coiled antenna, as tall as its body, with a bright spark orb at the top",
+      "accent": "electric white-yellow (only the spark orb)",
+      "palette": "mustard yellow, dark brown, white, copper"
+    },
+    {
+      "id": "craghoof",
+      "name": "절벽굽",
+      "types": [
+        "rock",
+        "fighting"
+      ],
+      "stage": 2,
+      "evolvesFrom": "pebblekid",
+      "campaignSpeciesId": "mx_species_craghoof",
+      "design": "The evolved form of the pebblekid lamb: a sturdy young mountain goat standing on four strong legs with big dark stone hooves, thick cream wool on its chest and back, a grey stone face with a short muzzle, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly).",
+      "signature": "two huge swept-back stone horns made of stacked slate plates curving back over its whole back like a helmet crest, longer than its body",
+      "accent": "dark slate blue (only the stone horns)",
+      "palette": "cream, stone grey, slate brown, dark grey"
+    },
+    {
+      "id": "lanternwing",
+      "name": "등불나방",
+      "types": [
+        "bug",
+        "fire"
+      ],
+      "stage": 2,
+      "evolvesFrom": "wickworm",
+      "campaignSpeciesId": "mx_species_lanternwing",
+      "design": "The evolved form of the wickworm larva: a plump round moth hovering with a fuzzy butter-yellow body and a fluffy cream collar, tiny stubby legs, two short feathery brown antennae, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly).",
+      "signature": "two huge round paper-lantern wings - each wing is a big round warm-cream lantern panel with a bright orange flame-shaped window pattern in the middle, together much wider than its body (flat colors, dark outline, not glowing)",
+      "accent": "warm orange-red (only the flame windows)",
+      "palette": "butter yellow, brown, cream, warm orange"
+    },
+    {
+      "id": "brambleboar",
+      "name": "덤불멧",
+      "types": [
+        "ground",
+        "grass"
+      ],
+      "stage": 2,
+      "evolvesFrom": "rootpig",
+      "campaignSpeciesId": "mx_species_brambleboar",
+      "design": "The evolved form of the rootpig piglet: a compact young boar on four short strong legs, a round medium-sized body (still smaller and younger than its final armored form), an earth-brown bristly body with a tan belly, a big round snout, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly), short twisted root tusks.",
+      "signature": "a thorny bramble bush growing on its back like a saddle - a round tangle of dark-green brambles with a few small pink berries, about half as tall as its body",
+      "accent": "fresh green (only the bramble leaves)",
+      "palette": "earth brown, tan, cream, dark brown",
+      "eyes": "draw TWO clearly visible big round eyes on the face above the snout - three-quarter view, the near eye bigger, each with a 2x2 white sparkle; keep the bristly fur, brambles and tusks away from the eyes so the eyes are not hidden."
+    },
+    {
+      "id": "tunnelpaw",
+      "name": "굴손",
+      "types": [
+        "ground"
+      ],
+      "stage": 2,
+      "evolvesFrom": "gritnose",
+      "campaignSpeciesId": "mx_species_tunnelpaw",
+      "design": "The evolved form of the gritnose mole: a sturdy round mole standing upright on short hind legs, velvety slate-brown fur, a big pale-pink snout, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) (never tiny), a chunk of glittering grey ore sitting on its head like a hard hat.",
+      "signature": "two gigantic shovel-shaped front paws, each as big as its head, with thick grey stone claws, held up ready to dig",
+      "accent": "bright pink (only the snout)",
+      "palette": "slate brown, pale pink, grey, cream"
+    },
+    {
+      "id": "reefguard",
+      "name": "암초방패",
+      "types": [
+        "water",
+        "rock"
+      ],
+      "stage": 2,
+      "evolvesFrom": "coralpin",
+      "campaignSpeciesId": "mx_species_reefguard",
+      "design": "The evolved form of the coralpin crab: a bigger round crab on six sturdy legs, a rose-pink shell, two eyes on short stalks, a small reef of coral-orange branches growing on its back.",
+      "signature": "one gigantic flat round shield-shaped pincer made of teal coral, as big as its whole body, held in front like a round shield, while the other claw stays small",
+      "accent": "teal (only the shield pincer)",
+      "palette": "rose pink, dark rose, pale cream, coral orange",
+      "eyes": "the two eyes sit on short stalks: each eyeball is a pale cream round ball (the light skin area) with a big dark round pupil at least 5 art pixels wide and a 2x2 white highlight square inside it; both eyeballs clearly visible and fully separate from the dark outline."
+    },
+    {
+      "id": "brinewyrm",
+      "name": "소금비룡",
+      "types": [
+        "dragon",
+        "water"
+      ],
+      "stage": 2,
+      "evolvesFrom": "curlfin",
+      "campaignSpeciesId": "mx_species_brinewyrm",
+      "design": "The evolved form of the curlfin seahorse: a longer upright young sea dragon with a curved neck and small arms, teal scales with pale-cream belly plates, a BIG rounded head (about a third of the body height, like curlfin's) with a short snout and one big bright round eye facing the viewer (large dark pupil with a 2x2 white sparkle on a pale-cream face, friendly), the tail still curled at the end.",
+      "signature": "two huge wing-like side fins spread wide from its chest like a manta's wings, each as big as its body, edged with gold salt crystals",
+      "accent": "gold (only the salt crystals)",
+      "palette": "teal, dark teal, pale cream, gold"
+    },
+    {
+      "id": "grovewarden",
+      "name": "숲지기토",
+      "types": [
+        "grass",
+        "psychic"
+      ],
+      "stage": 3,
+      "evolvesFrom": "frondhare",
+      "campaignSpeciesId": "mx_species_grovewarden",
+      "design": "The final evolved form of the frondhare fox: a tall noble guardian fox standing upright on two strong legs, a BROAD heavy chest and thick solid body clearly bigger and bulkier than frondhare, with a long full cape of layered leaves down its back to the ground, a BIG rounded head (about a third of the body height) with a big plain cream face and a short muzzle, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) (calm and wise), the acorn crown grown bigger, a long leaf-blade tail.",
+      "signature": "a big pair of tree-branch antler ears - two brown branching wooden antlers growing from the top of the head (above the face, never covering it) with a few broad green leaves on the tips, about as wide as its body like the crown of a tree",
+      "accent": "golden yellow (only the leaf tips)",
+      "palette": "leaf green, cream, acorn brown, dark green"
+    },
+    {
+      "id": "furnscale",
+      "name": "용광비늘",
+      "types": [
+        "fire",
+        "fighting"
+      ],
+      "stage": 3,
+      "evolvesFrom": "kilnclaw",
+      "campaignSpeciesId": "mx_species_furnscale",
+      "design": "The final evolved form of the kilnclaw salamander: a big heavy armored salamander brawler standing upright, huge muscular arms with thick dark claws, layered charcoal-grey scale armor on its shoulders and back, ember-orange skin with dark red stripes, a big round friendly head with a short snout and big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) (brave).",
+      "signature": "a gigantic furnace on its back - a big round charcoal kiln dome with a bright orange furnace mouth and a short chimney topped by a crisp pixel flame, bigger than its head (flat colors, dark outline, not glowing)",
+      "accent": "bright yellow-orange (only the furnace mouth and flame)",
+      "palette": "ember orange, charcoal grey, dark red, cream",
+      "motion": {
+        "flicker": "flame"
+      }
+    },
+    {
+      "id": "tidekeeper",
+      "name": "조수지기",
+      "types": [
+        "water",
+        "ice"
+      ],
+      "stage": 3,
+      "evolvesFrom": "brookraft",
+      "campaignSpeciesId": "mx_species_tidekeeper",
+      "design": "The final evolved form of the brookraft axolotl: a large calm amphibian guardian standing on four thick webbed legs, a blue body with a pale belly, a long fin-edged paddle tail, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) (calm and kind), coral-pink gill fronds with icy white frost tips.",
+      "signature": "a giant spiral conch-shell crown on its head - a big pale-cream and coral-pink spiral seashell like a royal crown, as big as its head, ringed with small icy-white frost spikes",
+      "accent": "coral pink (only the gill fronds and shell crown)",
+      "palette": "blue, pale cream, icy white, coral pink"
+    },
+    {
+      "id": "orchardant",
+      "name": "과수장수",
+      "types": [
+        "bug",
+        "grass"
+      ],
+      "stage": 3,
+      "evolvesFrom": "podback",
+      "campaignSpeciesId": "mx_species_orchardant",
+      "design": "The final evolved form of the podback beetle: a big strong rhinoceros beetle standing on six sturdy legs, a HUGE wide domed glossy olive-green shell that is clearly bigger and heavier than podback (a solid filled mass, not thin), leafy twigs sprouting from its seam, a cream-and-brown face with big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) (brave).",
+      "signature": "a gigantic forked horn shaped like a young fruit-tree branch - a thick brown horn growing up from its head that splits into branches holding three round red apples, taller than its whole body",
+      "accent": "apple red (only the fruits)",
+      "palette": "olive green, brown, cream, dark green"
+    },
+    {
+      "id": "galecrest",
+      "name": "돌풍깃",
+      "types": [
+        "normal",
+        "flying"
+      ],
+      "stage": 3,
+      "evolvesFrom": "ribbonwing",
+      "campaignSpeciesId": "mx_species_galecrest",
+      "design": "The final evolved form of the ribbonwing bird: a proud large bird standing tall on two strong pale-yellow feet, broad storm-grey wings spread open, a cream chest, a short hooked pale-yellow beak, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) (brave).",
+      "signature": "a gigantic sky-blue crest of five long swept-back feathers flaring from its head like a storm vane, as long as its whole body",
+      "accent": "sky blue (only the crest and tail tips)",
+      "palette": "storm grey, cream, pale yellow, dark blue"
+    },
+    {
+      "id": "stormskink",
+      "name": "폭풍도마",
+      "types": [
+        "electric",
+        "dragon"
+      ],
+      "stage": 3,
+      "evolvesFrom": "coilcrest",
+      "campaignSpeciesId": "mx_species_stormskink",
+      "design": "The final evolved form of the coilcrest gecko: a large muscular dragon-like lizard standing on four strong splayed legs, a mustard-yellow body with dark brown bands, a white belly, a long thick tail, a small copper crest, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) (brave).",
+      "signature": "a row of huge jagged lightning-bolt plates along its back - four big zigzag copper plates with white-yellow edges standing up from the spine like dragon fins, taller than its body",
+      "accent": "electric white-yellow (only the plate edges)",
+      "palette": "mustard yellow, dark brown, white, copper"
+    },
+    {
+      "id": "ridgehorn",
+      "name": "능선뿔",
+      "types": [
+        "rock",
+        "fighting"
+      ],
+      "stage": 3,
+      "evolvesFrom": "craghoof",
+      "campaignSpeciesId": "mx_species_ridgehorn",
+      "design": "The final evolved form of the craghoof goat: a huge powerful mountain ram standing on four massive legs with dark stone hooves, a thick cream wool mane on its chest, grey rock armor plates along its back like a mountain ridge, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) (brave).",
+      "signature": "two colossal curled stone horns, each a giant layered spiral as big as its whole head and body side, framing its head like a fortress gate",
+      "accent": "dark slate blue (only the horns)",
+      "palette": "cream, stone grey, slate brown, dark grey"
+    },
+    {
+      "id": "beaconmoth",
+      "name": "봉화나방",
+      "types": [
+        "bug",
+        "fire"
+      ],
+      "stage": 3,
+      "evolvesFrom": "lanternwing",
+      "campaignSpeciesId": "mx_species_beaconmoth",
+      "design": "The final evolved form of the lanternwing moth: a large majestic moth with a fluffy butter-yellow body, a big cream fur collar, two big feathery brown antennae, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) (calm).",
+      "signature": "four huge round wings spread wide like a fan, each carrying one big bright beacon-flame eyespot, together twice as wide as its body (flat colors, dark outline, not glowing)",
+      "accent": "warm orange-red (only the four beacon spots)",
+      "palette": "butter yellow, brown, cream, warm orange"
+    },
+    {
+      "id": "briartusk",
+      "name": "가시엄니",
+      "types": [
+        "ground",
+        "grass"
+      ],
+      "stage": 3,
+      "evolvesFrom": "brambleboar",
+      "campaignSpeciesId": "mx_species_briartusk",
+      "design": "The final evolved form of the brambleboar: a massive armored boar on four thick legs, a TALL heavy barrel body clearly bigger and bulkier than brambleboar (a solid filled mass, as tall as it is long), an earth-brown bristly body with a tan belly, its back covered in a thick high mound of dark-green thorny bramble armor, a big round snout, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly).",
+      "signature": "two gigantic curved tusks of twisted wood and thorns, each as long as its body, sweeping up and forward with green leaves at the tips",
+      "accent": "fresh green (only the bramble and tusk leaves)",
+      "palette": "earth brown, tan, cream, dark brown",
+      "eyes": "draw TWO clearly visible big round eyes on the face above the snout - three-quarter view, the near eye bigger, each with a 2x2 white sparkle; keep the bristly fur, brambles and tusks away from the eyes so the eyes are not hidden."
+    },
+    {
+      "id": "faultdigger",
+      "name": "단층발",
+      "types": [
+        "ground",
+        "rock"
+      ],
+      "stage": 3,
+      "evolvesFrom": "tunnelpaw",
+      "campaignSpeciesId": "mx_species_faultdigger",
+      "design": "The final evolved form of the tunnelpaw mole: a big hulking mole standing upright, velvety slate-brown fur, a big pale-pink snout, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) (never tiny), a rocky grey armor plate over its shoulders split by a zigzag crack.",
+      "signature": "two colossal drill claws - each front paw ends in a huge grey cone of spiral stone claws like a drill, as big as its body",
+      "accent": "bright pink (only the snout)",
+      "palette": "slate brown, pale pink, grey, cream"
+    },
+    {
+      "id": "atollclamp",
+      "name": "환초집게",
+      "types": [
+        "water",
+        "rock"
+      ],
+      "stage": 3,
+      "evolvesFrom": "reefguard",
+      "campaignSpeciesId": "mx_species_atollclamp",
+      "design": "The final evolved form of the reefguard crab: a large TALL sturdy crab standing high on six thick legs, rose-pink limbs, two eyes on short stalks, two big strong claws raised up high beside its shell, the whole body taller than reefguard (a tall compact mass, about as tall as it is wide).",
+      "signature": "a gigantic tall domed shell on its back shaped like a living atoll island rising high above its head - a ring of teal and coral-orange coral spires around a small blue lagoon, bigger than the rest of its body",
+      "accent": "teal (only the coral ring)",
+      "palette": "rose pink, dark rose, pale cream, coral orange",
+      "eyes": "the two eyes sit on short stalks: each eyeball is a pale cream round ball (the light skin area) with a big dark round pupil at least 5 art pixels wide and a 2x2 white highlight square inside it; both eyeballs clearly visible and fully separate from the dark outline."
+    },
+    {
+      "id": "abyssail",
+      "name": "심해돛룡",
+      "types": [
+        "dragon",
+        "water"
+      ],
+      "stage": 3,
+      "evolvesFrom": "brinewyrm",
+      "campaignSpeciesId": "mx_species_abyssail",
+      "design": "The final evolved form of the brinewyrm sea dragon: a large majestic sea-serpent dragon rising upright in a big S-curve, teal scales with pale-cream belly plates, small strong arms, a short snout, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) (calm and wise), gold salt crystals along its body.",
+      "signature": "a gigantic sail-shaped dorsal fin rising from its back like a ship's sail, taller than its whole body, dark teal with gold edges and stripes",
+      "accent": "gold (only the sail edges and crystals)",
+      "palette": "teal, dark teal, pale cream, gold"
+    },
+    {
+      "id": "sandnip",
+      "name": "모래집게",
+      "types": ["poison", "ground"],
+      "stage": 1,
+      "campaignSpeciesId": "mx_species_sandnip",
+      "design": "A baby desert scorpion standing low on six short legs: a big round sandy-orange head-body with a cream face, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly), two chunky round pincers held up in front, rust-brown back plates.",
+      "signature": "a short thick curled tail ending in a round pink crystal bulb almost as big as its head, held up over its back",
+      "accent": "rose pink (only the tail crystal)",
+      "palette": "sand orange, rust brown, cream, dark brown"
+    },
+    {
+      "id": "dunestalk",
+      "name": "사구꼬리",
+      "types": ["poison", "ground"],
+      "stage": 2,
+      "evolvesFrom": "sandnip",
+      "campaignSpeciesId": "mx_species_dunestalk",
+      "design": "The evolved form of the sandnip scorpion: a bigger sleek desert scorpion on six jointed legs, sandy-orange armor with rust-brown bands, a cream face with big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly), two large serrated pincers held forward.",
+      "signature": "a very long segmented tail arching high over its whole body in a big C-curve, ending in a sharp pink crystal stinger",
+      "accent": "rose pink (only the tail crystal)",
+      "palette": "sand orange, rust brown, cream, dark brown"
+    },
+    {
+      "id": "miragespike",
+      "name": "신기루침",
+      "types": ["poison", "ground"],
+      "stage": 3,
+      "evolvesFrom": "dunestalk",
+      "campaignSpeciesId": "mx_species_miragespike",
+      "design": "The final evolved form of the dunestalk scorpion: a large heavy armored desert scorpion king on six thick legs, a broad sandy-orange shell clearly bigger and bulkier than dunestalk, rust-brown armor bands, a cream face with big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) (proud), two huge crushing pincers.",
+      "signature": "a gigantic tail arching over its body that ends in a big cluster of three glowing pink mirage crystals, the cluster as big as its head",
+      "accent": "rose pink (only the tail crystals)",
+      "palette": "sand orange, rust brown, cream, dark brown"
+    },
+    {
+      "id": "flurrykit",
+      "name": "눈송냥",
+      "types": ["ice", "normal"],
+      "stage": 1,
+      "campaignSpeciesId": "mx_species_flurrykit",
+      "design": "A baby snow lynx kitten sitting upright on four small paws: a big round head with a white muzzle, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly), a fluffy pale-blue body with a white chest, a short fluffy tail.",
+      "signature": "two huge pointed ears with long tufts of white fur on the tips shaped like falling snowflakes, each ear as tall as its head",
+      "accent": "lavender (only the ear tufts' inner tips)",
+      "palette": "pale ice blue, white, slate blue, navy"
+    },
+    {
+      "id": "rimepelt",
+      "name": "서리털",
+      "types": ["ice", "normal"],
+      "stage": 2,
+      "evolvesFrom": "flurrykit",
+      "campaignSpeciesId": "mx_species_rimepelt",
+      "design": "The evolved form of the flurrykit lynx: a taller young snow lynx standing on four long legs, pale-blue fur with a white chest and muzzle, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly), tufted pointed ears, a bushy tail.",
+      "signature": "a huge thick frosty neck ruff of white fur around its neck and shoulders, as wide as its body, with small ice crystals stuck in it",
+      "accent": "lavender (only the ice crystals)",
+      "palette": "pale ice blue, white, slate blue, navy"
+    },
+    {
+      "id": "glaciermane",
+      "name": "빙하갈기",
+      "types": ["ice", "normal"],
+      "stage": 3,
+      "evolvesFrom": "rimepelt",
+      "campaignSpeciesId": "mx_species_glaciermane",
+      "design": "The final evolved form of the rimepelt lynx: a big powerful snow lynx standing on four strong legs, a broad heavy body clearly bigger and bulkier than rimepelt, pale-blue fur with a white chest, a big head with a white muzzle and big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) (calm and wise), tufted ears, a long bushy tail.",
+      "signature": "a gigantic mane of sharp lavender-blue ice crystals rising from its head and shoulders like a crown of glacier shards, taller than its head",
+      "accent": "lavender (only the ice crystal mane)",
+      "palette": "pale ice blue, white, slate blue, navy"
+    },
+    {
+      "id": "miretail",
+      "name": "늪꼬리",
+      "types": ["poison", "water"],
+      "stage": 1,
+      "campaignSpeciesId": "mx_species_miretail",
+      "design": "A baby swamp newt standing on four tiny stubby legs: a big round head with a pale lilac face, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly), a soft plump slate-purple body with a pale lilac belly.",
+      "signature": "a huge round flat paddle tail as big as its body, curled up behind it, covered in bright coral-pink spots",
+      "accent": "coral pink (only the tail spots)",
+      "palette": "slate purple, dark violet, pale lilac, navy"
+    },
+    {
+      "id": "venomfrill",
+      "name": "독주름",
+      "types": ["poison", "water"],
+      "stage": 2,
+      "evolvesFrom": "miretail",
+      "campaignSpeciesId": "mx_species_venomfrill",
+      "design": "The evolved form of the miretail newt: a bigger young swamp newt standing on four short legs, a slate-purple body with a pale lilac belly, a big round head with big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly), a long tail with pink spots.",
+      "signature": "a huge open frill collar around its neck like an umbrella, wider than its body, coral pink with dark violet stripes",
+      "accent": "coral pink (only the neck frill)",
+      "palette": "slate purple, dark violet, pale lilac, navy"
+    },
+    {
+      "id": "marshcrown",
+      "name": "습지왕관",
+      "types": ["poison", "water"],
+      "stage": 3,
+      "evolvesFrom": "venomfrill",
+      "campaignSpeciesId": "mx_species_marshcrown",
+      "design": "The final evolved form of the venomfrill newt: a large upright swamp newt king standing on two thick legs, a broad heavy slate-purple body clearly bigger and bulkier than venomfrill, a pale lilac belly, a big head with big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) (proud), a long heavy tail.",
+      "signature": "a gigantic spiky crown of coral-pink frill spines rising from its head like a royal crown, taller than its head",
+      "accent": "coral pink (only the crown frill)",
+      "palette": "slate purple, dark violet, pale lilac, navy"
+    },
+    {
+      "id": "dozemite",
+      "name": "졸음사마",
+      "types": ["psychic", "bug"],
+      "stage": 1,
+      "campaignSpeciesId": "mx_species_dozemite",
+      "design": "A baby sleepy mantis sitting upright on four thin legs: a big round lilac head with big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly, half-closed sleepy lids), a small plump violet body, two short folded arms.",
+      "signature": "two very long curly antennae rising from its head, each ending in a round mint-green dream bubble almost as big as its eye",
+      "accent": "mint green (only the antenna bubbles)",
+      "palette": "lilac, violet, pale cream, dark purple"
+    },
+    {
+      "id": "trancescythe",
+      "name": "몽환낫",
+      "types": ["psychic", "bug"],
+      "stage": 2,
+      "evolvesFrom": "dozemite",
+      "campaignSpeciesId": "mx_species_trancescythe",
+      "design": "The evolved form of the dozemite mantis: a taller young mantis standing upright on four thin legs, a slim lilac and violet body, a big triangular head with big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly), two curly antennae.",
+      "signature": "two huge curved scythe arms, each as long as its body, with thin glowing mint-green membranes along the blades",
+      "accent": "mint green (only the arm membranes)",
+      "palette": "lilac, violet, pale cream, dark purple"
+    },
+    {
+      "id": "oraclemantis",
+      "name": "예지사마",
+      "types": ["psychic", "bug"],
+      "stage": 3,
+      "evolvesFrom": "trancescythe",
+      "campaignSpeciesId": "mx_species_oraclemantis",
+      "design": "The final evolved form of the trancescythe mantis: a large noble mantis standing upright on four legs, a broad heavy lilac and violet body clearly bigger and bulkier than trancescythe, two big scythe arms held open, a big head with big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) (calm and wise).",
+      "signature": "a gigantic diamond-shaped mint-green crystal on its forehead with two wide glowing wing-like sheets of light spreading behind its shoulders, wider than its body",
+      "accent": "mint green (only the crystal and light sheets)",
+      "palette": "lilac, violet, pale cream, dark purple"
+    },
+    {
+      "id": "threadimp",
+      "name": "실꼬마",
+      "types": ["ghost", "psychic"],
+      "stage": 1,
+      "campaignSpeciesId": "mx_species_threadimp",
+      "design": "A small floating puppet ghost: a big round slate-blue cloth head with a pale cream face, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) and a little smile, a short ragged cloth body with two tiny stubby arms, no legs.",
+      "signature": "a big wooden puppet cross-bar floating above its head with four long cream strings tied to its head and arms",
+      "accent": "warm orange (only the button on its chest)",
+      "palette": "slate blue, dark navy, pale cream, wood brown"
+    },
+    {
+      "id": "hushdoll",
+      "name": "고요인형",
+      "types": ["ghost", "psychic"],
+      "stage": 2,
+      "evolvesFrom": "threadimp",
+      "campaignSpeciesId": "mx_species_hushdoll",
+      "design": "The evolved form of the threadimp puppet: a taller floating cloth doll ghost, a round slate-blue head with a pale cream face and big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly), a body wrapped in an old dark navy cloth, two cloth arms.",
+      "signature": "a huge stitched heart-shaped patch on its chest with big cross stitches, as wide as its body, and a long trailing torn cloth hem below",
+      "accent": "warm orange (only the heart patch)",
+      "palette": "slate blue, dark navy, pale cream, wood brown"
+    },
+    {
+      "id": "veilmaster",
+      "name": "장막인형",
+      "types": ["ghost", "psychic"],
+      "stage": 3,
+      "evolvesFrom": "hushdoll",
+      "campaignSpeciesId": "mx_species_veilmaster",
+      "design": "The final evolved form of the hushdoll puppet: a large floating puppeteer ghost, a broad heavy body clearly bigger than hushdoll wrapped in a long dark navy stage curtain, a big pale cream face with big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) (calm and wise), two long arms holding strings.",
+      "signature": "a gigantic theater mask hat on its head - a big orange half-moon mask with a wide brim, as wide as its body",
+      "accent": "warm orange (only the mask hat)",
+      "palette": "slate blue, dark navy, pale cream, wood brown"
+    },
+    {
+      "id": "reedpeep",
+      "name": "갈대삐",
+      "types": ["flying", "water"],
+      "stage": 1,
+      "campaignSpeciesId": "mx_species_reedpeep",
+      "design": "A baby marsh bird chick standing on two thin legs: a big round teal-green head and a plump round teal body with a cream belly, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly), small folded wings.",
+      "signature": "a very long thin pointed yellow beak, as long as its whole body, held straight forward",
+      "accent": "sunny yellow (only the beak and feet)",
+      "palette": "teal green, dark teal, cream, navy"
+    },
+    {
+      "id": "fenstrider",
+      "name": "습지걸음",
+      "types": ["flying", "water"],
+      "stage": 2,
+      "evolvesFrom": "reedpeep",
+      "campaignSpeciesId": "mx_species_fenstrider",
+      "design": "The evolved form of the reedpeep chick: a taller young marsh wading bird on two long thin legs, a teal-green body with a cream belly, a long curved neck, a round head with big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly), a long yellow beak.",
+      "signature": "two very long stilt legs as tall as its body with bright wave-pattern bands, and a round tuft crest on its head",
+      "accent": "sunny yellow (only the beak and leg bands)",
+      "palette": "teal green, dark teal, cream, navy"
+    },
+    {
+      "id": "mistralheron",
+      "name": "안개왜가리",
+      "types": ["flying", "water"],
+      "stage": 3,
+      "evolvesFrom": "fenstrider",
+      "campaignSpeciesId": "mx_species_mistralheron",
+      "design": "The final evolved form of the fenstrider bird: a large elegant mist heron standing tall on two long legs, a broad heavy teal-green body clearly bigger than fenstrider with wings half open, a cream belly, a short thick curved neck, a BIG round cream-faced head facing the viewer with two big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly, calm and wise), a short yellow beak.",
+      "signature": "a gigantic sweeping crest of long yellow-tipped plumes on its head and a long flowing tail of mist-white feathers, together longer than its body",
+      "accent": "sunny yellow (only the beak and plume tips)",
+      "palette": "teal green, dark teal, cream, navy"
+    },
+    {
+      "id": "thundercairn",
+      "name": "천뢰산양",
+      "types": ["electric", "rock"],
+      "stage": 3,
+      "campaignSpeciesId": "mx_species_thundercairn",
+      "design": "A legendary storm ibex standing on four sturdy hooved legs: a strong stocky body of golden fur with grey stone armor plates on its shoulders and back, a cream face with big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) (calm and wise), a short beard.",
+      "signature": "two gigantic curling horns sweeping back from its head like lightning bolts, each as long as its body, sky blue with jagged zig-zag edges",
+      "accent": "sky blue (only the lightning horns)",
+      "palette": "gold, grey stone, cream, dark brown"
+    },
+    {
+      "id": "winterquill",
+      "name": "설월학",
+      "types": ["ice", "flying"],
+      "stage": 3,
+      "campaignSpeciesId": "mx_species_winterquill",
+      "design": "A legendary moon crane drawn in a cute chibi style: a plump round white body on two short thin legs, a BIG round white head nearly as wide as the body with a cream face and two huge round navy eyes (each eye a solid 4x4 dark pupil with a 2x2 white sparkle, friendly, calm and wise), a short pale beak, a small crescent-moon crest on top of the head.",
+      "signature": "two big wings raised up beside its body, white feathers with long lavender ice-crystal quill tips",
+      "accent": "lavender (only the ice quill tips and a crest)",
+      "palette": "white, pale ice blue, slate blue, navy"
+    },
+    {
+      "id": "solmane",
+      "name": "해갈기사자",
+      "types": ["fire", "normal"],
+      "stage": 3,
+      "campaignSpeciesId": "mx_species_solmane",
+      "design": "A legendary sun lion sitting proudly on four strong paws: a powerful golden-yellow body with a cream muzzle and chest, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) (brave), a long tail ending in a round flame tuft.",
+      "signature": "a gigantic blazing sun mane around its whole head, shaped like a big round sunburst of pointed orange and gold flame spikes, wider than its body",
+      "accent": "flame orange (only the sunburst mane tips and tail tuft)",
+      "palette": "golden yellow, cream, rust brown, dark brown"
+    },
+    {
+      "id": "lunavane",
+      "name": "달빛가오리",
+      "types": ["psychic", "water"],
+      "stage": 3,
+      "campaignSpeciesId": "mx_species_lunavane",
+      "design": "A legendary moon manta ray gliding in the air: a broad flat lavender-blue body seen from the front-top, a pale cream face with big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) (calm and wise), a long thin whip tail.",
+      "signature": "two gigantic wide wing fins spread out to both sides like a moonlit kite, much wider than its body, with four bright mint-green star spots on them",
+      "accent": "mint green (only the star spots and a crest gem)",
+      "palette": "lavender blue, dark indigo, pale cream, navy"
+    },
+    {
+      "id": "relicarab",
+      "name": "유적장수",
+      "types": ["bug", "rock"],
+      "stage": 3,
+      "campaignSpeciesId": "mx_species_relicarab",
+      "design": "A legendary ancient scarab beetle standing on six sturdy legs: a big round golden-brown shell with carved stone rune patterns, a cream face with big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) (calm and wise), translucent teal wings half open behind the shell.",
+      "signature": "a gigantic ornate golden horn rising from its head shaped like an ancient key with a round ring on top, taller than its head",
+      "accent": "teal (only the wings and the rune glow)",
+      "palette": "gold, bronze brown, cream, dark brown"
+    },
+    {
+      "id": "astralhart",
+      "name": "별가지사슴",
+      "types": ["grass", "ghost"],
+      "stage": 3,
+      "campaignSpeciesId": "mx_species_astralhart",
+      "design": "A legendary spirit stag standing on four long slender legs: a graceful pale-green body with dark green leaf patterns, a cream face and chest, big bright round eyes (large dark pupils with a 2x2 white sparkle, friendly) (calm and wise), a short white tail.",
+      "signature": "a gigantic pair of glowing antlers branching like a starry tree, wider and taller than its body, with small pale-yellow star lights on every tip",
+      "accent": "pale star yellow (only the antler tip stars)",
+      "palette": "pale green, dark green, cream, navy"
     }
   ]
 }

@@ -3,7 +3,7 @@
 //   bun scripts/qa-game/check.mts qa-runs/<id>            # <id>/project.json → <id>/check.json + check.txt
 //   bun scripts/qa-game/check.mts --project game.json     # 임의의 프로젝트 JSON
 //   옵션: --out <dir>  --no-autoplay  --budget-ms 60000  --brief <brief.json|text>  --quiet
-//         --no-visual  그림 기반 시각 공백 검사(visual-void, 맵마다 렌더)를 끈다
+//         --no-visual  그림 기반 검사(맵마다 렌더하는 visual-void, 몬스터 종 다섯 면 일관성)를 끈다
 //         --raw  로더를 거치지 않은 원본 JSON 을 검사한다(생성기가 쓴 그대로 — 로더 정규화가 가린 결함까지)
 //   기본은 로더를 거친 프로젝트(런타임이 보는 모양)를 검사하고, 로더가 고친 명령은 load-normalized 경고로 낸다.
 //
@@ -14,6 +14,7 @@ import path from "node:path";
 import { loadHeadlessProject } from "../../src/headless/index.ts";
 import { formatGameCheckSummary, runGameCheck } from "../../src/qa/gameCheck/index.ts";
 import { checkVisualVoids } from "./lib/visualVoid.ts";
+import { checkMonsterCoherence } from "./lib/monsterCoherence.ts";
 import type { Project } from "../../src/project/types.ts";
 
 let ARGV: readonly string[] = process.argv.slice(2);
@@ -59,7 +60,8 @@ export async function checkMain(argv: readonly string[] = process.argv.slice(2))
   const project = flag("raw") ? (loaded.raw as Project) : loaded.project;
   const loadedMs = Date.now() - started;
   // 그려진 그림 기준 시각 공백(가운데 검은 구멍) — 데이터 검사로는 안 보이는 결함이라 렌더해서 본다.
-  const visual = flag("no-visual") ? [] : await checkVisualVoids(project, (line) => console.error(line));
+  // 몬스터 수집 게임은 종마다 다섯 면(초상·앞·뒤·동행 칩·아이콘)이 한 그림 묶음인지도 그림을 읽어 본다.
+  const visual = flag("no-visual") ? [] : [...await checkVisualVoids(project, (line) => console.error(line)), ...checkMonsterCoherence(project)];
   const report = runGameCheck(project, {
     extraFindings: visual,
     ...(flag("raw") || loaded.loadError ? {} : { rawProject: loaded.raw }),

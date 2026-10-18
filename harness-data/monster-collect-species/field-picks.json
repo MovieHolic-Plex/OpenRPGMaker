@@ -2,109 +2,424 @@
  "version": 1,
  "picks": {
   "gustchick": {
-   "run": "20261015-143852",
+   "run": "derive-20261018-174515",
    "candidate": 1,
-   "sha": "309a44e7085cdcc9",
-   "at": "2026-10-15T15:04:02",
-   "note": "2026-10-15 감독 선택"
+   "sha": "5fbad3b3c08ddd95",
+   "at": "2026-10-18T17:46:14",
+   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
   },
   "zaptoe": {
-   "run": "20261015-143852",
-   "candidate": 2,
-   "sha": "b9fadc3a35cc1c5b",
-   "at": "2026-10-15T15:04:02",
-   "note": "2026-10-15 감독 선택(도마뱀 특징)"
+   "run": "derive-20261018-174516",
+   "candidate": 1,
+   "sha": "ebb60b1c8924c201",
+   "at": "2026-10-18T17:46:15",
+   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
   },
   "sparkit": {
-   "run": "20261015-154633",
-   "candidate": 2,
-   "sha": "610a6eef179e647f",
-   "at": "2026-10-15T16:23:17",
-   "note": "2026-10-15 감독 확정"
+   "run": "derive-20261018-174514",
+   "candidate": 1,
+   "sha": "29add603b28ab9ba",
+   "at": "2026-10-18T17:46:13",
+   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
   },
   "aqualing": {
-   "run": "20261015-154633",
+   "run": "derive-20261018-174514",
    "candidate": 1,
-   "sha": "d70047bb317789f4",
-   "at": "2026-10-15T16:23:17",
-   "note": "2026-10-15 감독 확정"
+   "sha": "090ef8c845fd7425",
+   "at": "2026-10-18T17:46:13",
+   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
   },
   "leafling": {
-   "run": "hand-20261018",
+   "run": "derive-20261018-174515",
    "candidate": 1,
-   "sha": "ce9617ca3a99af51",
-   "at": "2026-10-18T11:55:38",
-   "note": "2026-10-18 손 도트 재작성(발밑 진한 띠·옆모습 잘림 제거, 사용자 반려 c-1792288003394)"
+   "sha": "cc375a1961e24d7a",
+   "at": "2026-10-18T17:46:14",
+   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
   },
   "pipbug": {
-   "run": "20261015-155547",
-   "candidate": 2,
-   "sha": "fd1b445d6d77e8a5",
-   "at": "2026-10-15T16:23:17",
-   "note": "2026-10-15 감독 확정"
+   "run": "derive-20261018-174515",
+   "candidate": 1,
+   "sha": "5f855b9079fb1685",
+   "at": "2026-10-18T17:46:14",
+   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
   },
   "wickworm": {
-   "run": "20261015-161024",
+   "run": "derive-20261018-174515",
    "candidate": 1,
-   "sha": "446ff4bd0e9f7dc5",
-   "at": "2026-10-15T17:13:26",
-   "note": "2026-10-15 작업자 추천(감독 위임)"
+   "sha": "65bc40dfe6b97088",
+   "at": "2026-10-18T17:46:14",
+   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
   },
   "rootpig": {
-   "run": "20261015-161024",
+   "run": "derive-20261018-174515",
    "candidate": 1,
-   "sha": "4d6c15f58afafb62",
-   "at": "2026-10-15T17:13:26",
-   "note": "2026-10-15 작업자 추천(감독 위임)"
+   "sha": "82186dc46146e194",
+   "at": "2026-10-18T17:46:14",
+   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
   },
   "frondhare": {
-   "run": "20261015-162439",
+   "run": "derive-20261018-174515",
    "candidate": 1,
-   "sha": "c90cde2ef40d1dca",
-   "at": "2026-10-15T17:13:26",
-   "note": "2026-10-15 작업자 추천(감독 위임)"
+   "sha": "34dcebb64c1fff54",
+   "at": "2026-10-18T17:46:14",
+   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
   },
   "kilnclaw": {
-   "run": "20261015-162439",
+   "run": "derive-20261018-174515",
    "candidate": 1,
-   "sha": "240ffb5e088f23a6",
-   "at": "2026-10-15T17:13:26",
-   "note": "2026-10-15 작업자 추천(감독 위임)"
+   "sha": "30342b9035633926",
+   "at": "2026-10-18T17:46:14",
+   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
   },
   "brookraft": {
-   "run": "20261015-163530",
+   "run": "derive-20261018-174516",
    "candidate": 1,
-   "sha": "3609c02aaa33b2d6",
-   "at": "2026-10-15T17:13:26",
-   "note": "2026-10-15 작업자 추천(감독 위임)"
+   "sha": "af225fcc4dfee4f2",
+   "at": "2026-10-18T17:46:15",
+   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
   },
   "coralpin": {
-   "run": "20261015-163530",
-   "candidate": 2,
-   "sha": "314da57705380abf",
-   "at": "2026-10-15T17:13:27",
-   "note": "2026-10-15 작업자 추천(감독 위임)"
+   "run": "derive-20261018-174516",
+   "candidate": 1,
+   "sha": "a043da138f56d620",
+   "at": "2026-10-18T17:46:15",
+   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
   },
   "curlfin": {
-   "run": "20261015-164557",
-   "candidate": 2,
-   "sha": "7262d4cb13961fd3",
-   "at": "2026-10-15T17:13:27",
-   "note": "2026-10-15 작업자 추천(감독 위임)"
+   "run": "derive-20261018-174516",
+   "candidate": 1,
+   "sha": "f3797ec62e965b53",
+   "at": "2026-10-18T17:46:15",
+   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
   },
   "pebblekid": {
-   "run": "20261015-164557",
+   "run": "derive-20261018-174516",
    "candidate": 1,
-   "sha": "b866af483402404f",
-   "at": "2026-10-15T17:13:27",
-   "note": "2026-10-15 작업자 추천(감독 위임)"
+   "sha": "e44db297d0950b13",
+   "at": "2026-10-18T17:46:15",
+   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
   },
   "gritnose": {
-   "run": "20261015-165342",
+   "run": "derive-20261018-174516",
    "candidate": 1,
-   "sha": "7291e04d86ce8623",
-   "at": "2026-10-15T17:13:27",
-   "note": "2026-10-15 작업자 추천(감독 위임)"
+   "sha": "ecca26cf2a679760",
+   "at": "2026-10-18T17:46:15",
+   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+  },
+  "podback": {
+   "run": "derive-20261018-184045",
+   "candidate": 1,
+   "sha": "14e4abbf47546bed",
+   "at": "2026-10-18T18:40:54",
+   "note": ""
+  },
+  "ribbonwing": {
+   "run": "derive-20261018-175810",
+   "candidate": 1,
+   "sha": "3d5b4d29e3340448",
+   "at": "2026-10-18T17:58:10",
+   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+  },
+  "coilcrest": {
+   "run": "derive-20261018-174517",
+   "candidate": 1,
+   "sha": "fd158a6fd6d8d7f1",
+   "at": "2026-10-18T17:46:16",
+   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+  },
+  "craghoof": {
+   "run": "derive-20261018-175811",
+   "candidate": 1,
+   "sha": "543d1ea3096c170e",
+   "at": "2026-10-18T17:58:11",
+   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+  },
+  "lanternwing": {
+   "run": "derive-20261018-174517",
+   "candidate": 1,
+   "sha": "e84cbd6c5c16297e",
+   "at": "2026-10-18T17:46:16",
+   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+  },
+  "brambleboar": {
+   "run": "derive-20261018-184045",
+   "candidate": 1,
+   "sha": "13836f10a3cbf3e3",
+   "at": "2026-10-18T18:40:54",
+   "note": ""
+  },
+  "tunnelpaw": {
+   "run": "derive-20261018-174517",
+   "candidate": 1,
+   "sha": "78ff7677883bcdc5",
+   "at": "2026-10-18T17:46:16",
+   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+  },
+  "reefguard": {
+   "run": "derive-20261018-184046",
+   "candidate": 1,
+   "sha": "31b8771195befa69",
+   "at": "2026-10-18T18:40:55",
+   "note": ""
+  },
+  "grovewarden": {
+   "run": "derive-20261018-184045",
+   "candidate": 1,
+   "sha": "f6cd3ae610f84bd8",
+   "at": "2026-10-18T18:40:54",
+   "note": ""
+  },
+  "furnscale": {
+   "run": "derive-20261018-174518",
+   "candidate": 1,
+   "sha": "1147195c049e309b",
+   "at": "2026-10-18T17:46:16",
+   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+  },
+  "tidekeeper": {
+   "run": "derive-20261018-184045",
+   "candidate": 1,
+   "sha": "cb85a2ec9ac69928",
+   "at": "2026-10-18T18:40:54",
+   "note": ""
+  },
+  "orchardant": {
+   "run": "derive-20261018-184045",
+   "candidate": 1,
+   "sha": "bfecf9d79f48abec",
+   "at": "2026-10-18T18:40:54",
+   "note": ""
+  },
+  "galecrest": {
+   "run": "derive-20261018-174519",
+   "candidate": 1,
+   "sha": "1b3cd621f7974a6d",
+   "at": "2026-10-18T17:46:17",
+   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+  },
+  "stormskink": {
+   "run": "derive-20261018-184046",
+   "candidate": 1,
+   "sha": "288b83c6e591a13d",
+   "at": "2026-10-18T18:40:55",
+   "note": ""
+  },
+  "ridgehorn": {
+   "run": "derive-20261018-174519",
+   "candidate": 1,
+   "sha": "d25bc33ee962fe80",
+   "at": "2026-10-18T17:46:17",
+   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+  },
+  "beaconmoth": {
+   "run": "derive-20261018-174519",
+   "candidate": 1,
+   "sha": "282475e272abe7f5",
+   "at": "2026-10-18T17:46:17",
+   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+  },
+  "briartusk": {
+   "run": "derive-20261018-184046",
+   "candidate": 1,
+   "sha": "57d2e98cff98d538",
+   "at": "2026-10-18T18:40:55",
+   "note": ""
+  },
+  "faultdigger": {
+   "run": "derive-20261018-174519",
+   "candidate": 1,
+   "sha": "3201882ed0ccb881",
+   "at": "2026-10-18T17:46:18",
+   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+  },
+  "atollclamp": {
+   "run": "derive-20261018-184046",
+   "candidate": 1,
+   "sha": "1f13a785b92280ca",
+   "at": "2026-10-18T18:40:55",
+   "note": ""
+  },
+  "abyssail": {
+   "run": "derive-20261018-174520",
+   "candidate": 1,
+   "sha": "f97544aaa0ada372",
+   "at": "2026-10-18T17:46:18",
+   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+  },
+  "brinewyrm": {
+   "run": "derive-20261018-175810",
+   "candidate": 1,
+   "sha": "65b45458989f895a",
+   "at": "2026-10-18T17:58:10",
+   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+  },
+  "sandnip": {
+   "run": "derive-20261018-194241",
+   "candidate": 1,
+   "sha": "379e6af61832bdf5",
+   "at": "2026-10-18T19:42:56",
+   "note": ""
+  },
+  "dunestalk": {
+   "run": "derive-20261018-194241",
+   "candidate": 1,
+   "sha": "58fcb96fdc1ecfc0",
+   "at": "2026-10-18T19:42:57",
+   "note": ""
+  },
+  "miragespike": {
+   "run": "derive-20261018-194241",
+   "candidate": 1,
+   "sha": "1690ae88ab388256",
+   "at": "2026-10-18T19:42:57",
+   "note": ""
+  },
+  "flurrykit": {
+   "run": "derive-20261018-194241",
+   "candidate": 1,
+   "sha": "d3ecbb3654db3782",
+   "at": "2026-10-18T19:42:57",
+   "note": ""
+  },
+  "rimepelt": {
+   "run": "derive-20261018-194241",
+   "candidate": 1,
+   "sha": "1a25026dbf76cabc",
+   "at": "2026-10-18T19:42:57",
+   "note": ""
+  },
+  "glaciermane": {
+   "run": "derive-20261018-194241",
+   "candidate": 1,
+   "sha": "8ef66c5baaf6f4ce",
+   "at": "2026-10-18T19:42:57",
+   "note": ""
+  },
+  "miretail": {
+   "run": "derive-20261018-194242",
+   "candidate": 1,
+   "sha": "04e948c1b0c3c173",
+   "at": "2026-10-18T19:42:57",
+   "note": ""
+  },
+  "venomfrill": {
+   "run": "derive-20261018-194242",
+   "candidate": 1,
+   "sha": "e6dc70d1f5226c37",
+   "at": "2026-10-18T19:42:57",
+   "note": ""
+  },
+  "marshcrown": {
+   "run": "derive-20261018-194242",
+   "candidate": 1,
+   "sha": "43d4acd083b3c9a5",
+   "at": "2026-10-18T19:42:58",
+   "note": ""
+  },
+  "dozemite": {
+   "run": "derive-20261018-194242",
+   "candidate": 1,
+   "sha": "f5ba686288a5ac71",
+   "at": "2026-10-18T19:42:58",
+   "note": ""
+  },
+  "trancescythe": {
+   "run": "derive-20261018-194242",
+   "candidate": 1,
+   "sha": "33144994abae0cc6",
+   "at": "2026-10-18T19:42:58",
+   "note": ""
+  },
+  "oraclemantis": {
+   "run": "derive-20261018-194242",
+   "candidate": 1,
+   "sha": "c6de81e8f1fbba12",
+   "at": "2026-10-18T19:42:58",
+   "note": ""
+  },
+  "threadimp": {
+   "run": "derive-20261018-194242",
+   "candidate": 1,
+   "sha": "803cc38ee4a48489",
+   "at": "2026-10-18T19:42:58",
+   "note": ""
+  },
+  "hushdoll": {
+   "run": "derive-20261018-194243",
+   "candidate": 1,
+   "sha": "1dad448f45ba0bad",
+   "at": "2026-10-18T19:42:58",
+   "note": ""
+  },
+  "veilmaster": {
+   "run": "derive-20261018-194243",
+   "candidate": 1,
+   "sha": "e4a0acf1121d0df5",
+   "at": "2026-10-18T19:42:58",
+   "note": ""
+  },
+  "reedpeep": {
+   "run": "derive-20261018-194243",
+   "candidate": 1,
+   "sha": "b00dcf194cb6cbd4",
+   "at": "2026-10-18T19:42:59",
+   "note": ""
+  },
+  "fenstrider": {
+   "run": "derive-20261018-194243",
+   "candidate": 1,
+   "sha": "5d4fb98a29fa40b7",
+   "at": "2026-10-18T19:42:59",
+   "note": ""
+  },
+  "thundercairn": {
+   "run": "derive-20261018-194243",
+   "candidate": 1,
+   "sha": "143adb0a2cc8bfc3",
+   "at": "2026-10-18T19:42:59",
+   "note": ""
+  },
+  "winterquill": {
+   "run": "derive-20261018-194243",
+   "candidate": 1,
+   "sha": "760decc06a254f43",
+   "at": "2026-10-18T19:42:59",
+   "note": ""
+  },
+  "solmane": {
+   "run": "derive-20261018-194244",
+   "candidate": 1,
+   "sha": "a49202006b5b6401",
+   "at": "2026-10-18T19:42:59",
+   "note": ""
+  },
+  "lunavane": {
+   "run": "derive-20261018-194244",
+   "candidate": 1,
+   "sha": "b03d862192619465",
+   "at": "2026-10-18T19:42:59",
+   "note": ""
+  },
+  "relicarab": {
+   "run": "derive-20261018-194244",
+   "candidate": 1,
+   "sha": "a90d3c6fcdaa2749",
+   "at": "2026-10-18T19:43:00",
+   "note": ""
+  },
+  "astralhart": {
+   "run": "derive-20261018-194244",
+   "candidate": 1,
+   "sha": "07eff5bd9887bebf",
+   "at": "2026-10-18T19:43:00",
+   "note": ""
+  },
+  "mistralheron": {
+   "run": "derive-20261018-194408",
+   "candidate": 1,
+   "sha": "8b61a66da8cdab5c",
+   "at": "2026-10-18T19:44:08",
+   "note": ""
   }
  }
 }

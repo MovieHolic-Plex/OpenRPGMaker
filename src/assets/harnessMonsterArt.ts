@@ -110,3 +110,14 @@ export function harnessFieldGraphicForCampaignSpecies(campaignSpeciesId: string)
   }
   return undefined;
 }
+
+/** 칩 시트 텍스처·캐릭터 칸 → 그 칩을 그린 하네스 종 id(일관성 검사가 칩의 원본 묶음을 찾는다). 하네스 칩이 아니면 undefined. */
+export function harnessSpeciesForFieldChip(textureKey: string, characterIndex: number): string | undefined {
+  const match = /^tex_oprn_charset_harness_monster(\d+)$/u.exec(textureKey);
+  if (!match) return undefined;
+  const sheet = Number(match[1]);
+  for (const [species, entry] of Object.entries(FILE.species)) {
+    if (entry.field?.sheet === sheet && entry.field.index === characterIndex) return species;
+  }
+  return undefined;
+}

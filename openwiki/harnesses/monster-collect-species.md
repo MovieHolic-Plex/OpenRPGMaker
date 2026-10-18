@@ -276,3 +276,13 @@ import를 확인한다. seed만 개인 sandbox에 복사하고 후보 import만 
 - 런타임: `harnessMonsterArt.ts` 가 시트를 캐릭터셋 카탈로그(`charsetCatalog.ts`, id `oprn-charset-harness-monster<n>` / 텍스처 `tex_oprn_charset_harness_monster<n>`)에 올리고, 로스터(`roster.ts` `fieldArt`)가 `campaignSpeciesId` 로 이어진 종에 `graphic.fieldGraphic` 을 단다. 칩이 없는 종은 기존대로 기본 몬스터 칩. 해석기·참조 검증·내보내기는 charset 의 일반 경로를 따른다.
 - 3/4 관문(object-gate) 영수증 없음 — 몬스터 하네스 경로(생성형 참고 + 격자 손 저작). 사람이 고른 것만 굽는다.
 - 15종 전부 칩이 있다(시트 2장, 2026-10-15). 실화면 확인: `scripts/qa/runtime/follower-chip-train.capture.mjs`(출하 플레이어, `buildMonsterFixture.ts` 캠페인 사용) — 종을 6마리씩 열차로 세워 네 방향으로 걷고 맵 이동·비행선 탑승(동료 스프라이트 0)·하차(복귀)를 찍는다. 열차는 세션 followers 를 직접 쓴 디버그 쓰기, 소형선은 육지 이동이 막혀 걸음 뒤 동기화가 안 돌아 비행선으로 시험한다.
+
+## 종 다섯 면 단일 정본 계약 (2026-10-18 — 사용자 「몬스터 하나에 서로 다른 이미지들이 혼재되어 있다. 몬스터 장르 전용 하네싱」)
+
+종 하나는 다섯 면에 나온다: 초상(스타터 카드·도감·파티 상세), 전투 앞모습, 전투 뒷모습, 따라다니기 걷기 칩, 파티 아이콘. 예전에는 면마다 다른 도구가 그림을 정해 한 진화 계통 안에서 1·2단은 하네스 도트, 3단은 `mx_art_*` 다각형(`scripts/content/monster-expedition-art.py`)이었고, 칩이 없는 종은 다른 생물 칩으로 대체됐다.
+
+- **원본 하나:** 앞·뒤는 이 하네스가 고른 그림(ledger), 초상·아이콘은 앞모습 그대로, 칩은 `field_chip.py derive --species <id>` 가 고른 앞(아래·옆)·뒤(위) 그림을 줄이고 앞모습 가장 어두운 색으로 1px 윤곽을 다시 두른 것(모델 없음, 결정적). 앞·뒤를 다시 고르면 칩도 derive → pick → bake 를 다시 한다.
+- **캠페인 60종 전부 하네스 종이다.** 시드에 `campaignSpeciesId` 로 이어진다(전설 6종은 `evolvesFrom` 없이 `stage: 3` — 몸집 목표만 3단). `mx_art_*` 는 하네스 종이 없는 다른 캠페인 판본에만 남는다.
+- **진화 몸집:** fit 은 단계별 몸집 목표를 앞모습 잉크의 외곽 상자로 맞춘다(`STAGE_SCALE`). 옆으로 넓은 종은 긴 변 상한 56칸에 먼저 걸려 단계마다 같은 크기가 되므로, 다음 단계 디자인 문장에 「더 크고 키가 크다」를 적고 외곽 상자가 앞 단계보다 큰 후보를 고른다.
+- **게이트:** `src/project/monsterSpeciesCoherence.ts` `auditMonsterSpeciesCoherence(project, load)` — 면마다 런타임과 같은 해석으로 원본 묶음(`harness:<id>` / `mx_art:<slug>` / `asset:<id>`)을 정하고 막는다: 다섯 면 묶음이 섞임(`monster-surface-mixed`), 기본 칩 대체(`monster-surface-fallback`), 읽을 수 없는 면(`monster-surface-unreadable`), 뒤·칩·아이콘 색이 앞모습 팔레트 밖(`monster-surface-palette`, Lab ΔE), 칩 12칸 잘림·배경 띠·빈 칸(`monster-chip-clipped/background/empty`), 앞·뒤 외톨이 도트·반투명 잔점(`monster-sprite-noise`), 전투 적 그림이 종 앞모습과 다름(`monster-enemy-art`), 계통 안 생성기 혼합(`monster-line-mixed`)·칩 유무 혼합(`monster-line-field`)·외곽 상자 넓이가 늘지 않음(`monster-line-size`)·팔레트 단절(`monster-line-palette`). 칩이 없는 종은 경고(`monster-surface-missing`).
+- **배선:** `qa-game check` 가 `scripts/qa-game/lib/monsterCoherence.ts`(pngjs 로더)로 부른다. `--no-visual` 로 끈다. 몬스터 수집 게임(`isDeclaredMonsterGame`)이 아니면 아무것도 하지 않는다.
