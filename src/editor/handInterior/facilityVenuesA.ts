@@ -533,7 +533,7 @@ export const FACILITIES_A: readonly FacilityVenue[] = [
       R("rm-kitchen", 10, 7, F.small, W.tile, {
         hang: ["m:menu-board", "izakaya-lantern"],
         wall: ["m:kitchen", "m:fridge", "m:cooler"],
-        at: [["m:kitchen", 3, 4], ["mart-rice-pallet", 0, 6], ["m:basket-stack", 9, 6]],
+        at: [["mart-fish-ice", 2, 4], ["mart-sashimi-case", 5, 4], ["mart-rice-pallet", 0, 6], ["m:basket-stack", 9, 6]],
       }),
       R("rm-hall", 18, 9, F.dark, W.brick, {
         hang: ["izakaya-noren", "m:menu-board", "izakaya-lantern", "m:menu-board"],
@@ -564,10 +564,8 @@ export const FACILITIES_A: readonly FacilityVenue[] = [
         hang: ["m:art-frame", "m:window-curtain"],
         at: [
           ["jp-tokonoma", 4, 2],
-          ["home-tatami-h", 1, 4], ["izakaya-zashiki", 1, 4],
-          ["home-tatami-h", 6, 4], ["izakaya-zashiki", 6, 4],
-          ["home-tatami-h", 1, 7], ["izakaya-zashiki", 1, 7],
-          ["home-tatami-h", 6, 7], ["izakaya-zashiki", 6, 7],
+          ["izakaya-zashiki", 1, 4], ["izakaya-zashiki", 7, 4],
+          ["izakaya-zashiki", 1, 7], ["izakaya-zashiki", 7, 7],
         ],
       }),
       R("ss-hall", 16, 9, F.dark, W.brick, {
@@ -685,7 +683,7 @@ export const FACILITIES_A: readonly FacilityVenue[] = [
       R("bt-kitchen", 10, 8, F.small, W.tile, {
         hang: ["m:menu-board", "m:wall-clock"],
         wall: ["m:kitchen", "m:fridge", "m:cooler"],
-        at: [["m:kitchen", 3, 5], ["mart-rice-pallet", 0, 7], ["m:basket-stack", 9, 7]],
+        at: [["food-bento-counter", 3, 5], ["mart-rice-pallet", 0, 7], ["m:basket-stack", 9, 7]],
       }),
       R("bt-shop", 12, 9, F.vinyl, W.store, {
         hang: ["m:menu-board", "m:menu-board", "m:wall-clock"],

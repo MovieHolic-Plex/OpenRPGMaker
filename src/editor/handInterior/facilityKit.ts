@@ -297,8 +297,19 @@ export function room(kind: string, w: number, h: number, floor: string, wall: st
   for (const it of items) {
     if (it.t !== "o") continue;
     const q = OBJ[it.id];
-    if (!q || q.kind === "hang" || q.kind === "flat") continue;
+    if (!q) throw new Error(`Unknown prop ${it.id} in ${kind}`);
     const iw = Math.max(1, q.w ?? 1), ih = Math.max(1, q.h ?? 1);
+    if (q.kind === "hang") {
+      if (it.y !== 0 || it.x < 0 || it.x + iw > w) throw new Error(`Invalid hang prop ${it.id} in ${kind} at (${it.x},${it.y})`);
+      continue;
+    }
+    if (it.x < 0 || it.y < 2 || it.x + iw > w || it.y + ih > h) {
+      throw new Error(`Out-of-bounds prop ${it.id} in ${kind} at (${it.x},${it.y}) in ${w}x${h}`);
+    }
+    if (q.kind === "wall" && it.y !== 2) {
+      throw new Error(`Wall-kind prop ${it.id} in ${kind} at (${it.x},${it.y}) must be at y=2`);
+    }
+    if (q.kind === "flat") continue;
     const touchesWall = it.y <= 2 || it.y + ih >= h || it.x === 0 || it.x + iw >= w;
     if (WALL_ONLY_RE.test(it.id) && !FLOOR_GONDOLA_RE.test(it.id) && !touchesWall) {
       throw new Error(`WALL_ONLY prop ${it.id} in ${kind} at (${it.x},${it.y}) must touch a wall`);

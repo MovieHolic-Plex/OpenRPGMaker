@@ -479,7 +479,7 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
       R("bk-vault", 10, 8, F.conc, W.metal, {
         hang: ["m:wall-clock"],
         wall: ["pub-vault-door", "m:filing", "m:filing"],
-        at: [["m:rack", 0, 2], ["m:shelf-office", 0, 7], ["m:shelf-office", 7, 7]],
+        at: [["m:rack", 0, 2], ["library-shelf", 0, 7], ["library-shelf", 7, 7]],
       }),
       R("bk-hall", 22, 9, F.stone, W.lobby, {
         hang: ["hosp-number-display", "m:wall-clock", "m:menu-board", "m:notice-board"],
@@ -788,8 +788,7 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
         hang: ["shrine-shimenawa", "izakaya-lantern"],
         at: [
           // 불교 사찰 입구: 신토 도리이 제거, 석등 남쪽 출입문 양옆 벽 밀착 + 본당 문 앞 새전함 + 출입구 옆 신발장
-          ["sento-shoe-locker", 0, 2], ["sento-shoe-locker", 2, 2], ["m:washbasin", 7, 2],
-          ["shrine-saisen-box", 5, 3],
+          ["sento-shoe-locker", 0, 2], ["sento-shoe-locker", 2, 2], ["m:washbasin", 7, 2], ["shrine-saisen-box", 9, 2],
           ["home-umbrella-stand", 0, 6], ["shrine-stone-lantern", 3, 6], ["shrine-stone-lantern", 7, 6],
         ],
       }),
@@ -797,8 +796,7 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
         hang: ["m:art-frame", "m:window-curtain"],
         at: [
           ["jp-tokonoma", 0, 2], ["jp-shoji-screen", 9, 2],
-          ["home-tatami-h", 2, 4], ["izakaya-zashiki", 2, 4],
-          ["home-tatami-h", 8, 4], ["izakaya-zashiki", 8, 4],
+          ["izakaya-zashiki", 2, 4], ["izakaya-zashiki", 9, 4],
         ],
       }),
       R("tp-office", 10, 7, F.oak, W.home, {
@@ -806,7 +804,7 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
         at: [
           ["m:shelf-office", 0, 2], ["m:filing", 3, 2], ["home-laptop-desk", 6, 2],
           ["home-zabuton", 6, 3],
-          ["home-tatami-h", 1, 5], ["izakaya-zashiki", 1, 5],
+          ["izakaya-zashiki", 2, 5],
           ["jp-incense-burner", 9, 6],
         ],
       }),
@@ -895,17 +893,15 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
         at: [
           ["sento-shoe-locker", 0, 2], ["jp-shoji-screen", 6, 2],
           ["home-genkan-shoes", 1, 5], ["shrine-stone-lantern", 1, 7],
-          ["home-tatami-h", 5, 5], ["home-zabuton", 6, 5], ["home-zabuton", 6, 6],
+          ["izakaya-zashiki", 5, 5],
         ],
       }),
       R("tr-chashitsu", 12, 8, F.oak, W.home, {
         hang: ["m:window-curtain", "izakaya-lantern"],
         at: [
           ["jp-tokonoma", 0, 2], ["jp-shoji-screen", 5, 2], ["jp-shoji-screen", 9, 2],
-          ["home-tatami-h", 1, 4], ["home-tatami-h", 7, 4],
-          ["home-tatami-h", 1, 6], ["home-tatami-h", 7, 6],
-          ["jp-tea-hearth", 5, 5],
-          ["home-zabuton", 3, 5], ["home-zabuton", 7, 5], ["home-zabuton", 5, 7], ["shrine-stone-lantern", 11, 6],
+          ["izakaya-zashiki", 1, 4], ["izakaya-zashiki", 8, 4],
+          ["jp-tea-hearth", 5, 6], ["home-zabuton", 5, 7], ["shrine-stone-lantern", 11, 6],
         ],
       }),
     ] }),
