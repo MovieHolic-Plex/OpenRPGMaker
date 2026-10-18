@@ -192,7 +192,7 @@ export const FACILITIES_A: readonly FacilityVenue[] = [
         at: [
           ["home-washing-machine", 1, 2], ["home-washing-machine", 2, 2], ["home-washing-machine", 7, 2],
           ["subway-vending-machine", 11, 2], ["m:coffee-station", 22, 2], ["m:fridge", 27, 2], ["m:shelf-office", 33, 2],
-          ["home-drying-rack", 2, 5], ["home-laundry-basket", 6, 5],
+          ["home-drying-rack", 2, 6], ["home-laundry-basket", 5, 6],
           ["m:sofa", 10, 4], ["m:armchair-e", 9, 5], ["m:coffee-table", 10, 5], ["m:armchair-w", 13, 5],
           ["m:sofa", 22, 4], ["m:armchair-e", 21, 5], ["m:coffee-table", 22, 5], ["m:armchair-w", 25, 5],
           ["m:wait-bench", 28, 5], ["m:wait-bench", 32, 5],
@@ -233,7 +233,7 @@ export const FACILITIES_A: readonly FacilityVenue[] = [
         hang: ["m:window-blind", "m:wall-clock"],
         wall: ["hospital-med-cabinet", "m:washbasin", "hospital-med-cabinet"],
         grid: [["clinic-dental-chair", 1, 4, 2, 2, 5, 2]],
-        at: [["hosp-mayo-stand", 4, 4], ["hosp-mayo-stand", 9, 4], ["m:med-cart", 9, 6]],
+        at: [["hosp-mayo-stand", 4, 4], ["hosp-mayo-stand", 9, 4], ["m:med-cart", 10, 6]],
       })),
       R("dn-wait", 12, 7, F.vinyl, W.home, {
         hang: ["m:tv-wall", "m:art-frame"],
@@ -248,7 +248,7 @@ export const FACILITIES_A: readonly FacilityVenue[] = [
       R("dn-xray", 9, 7, F.hosp, W.hosp, {
         hang: ["hosp-film-viewer", "m:wall-clock"],
         wall: ["hosp-xray-console", "hosp-scrub-sink"],
-        at: [["hosp-xray-table", 2, 4], ["m:med-cart", 7, 5], ["hosp-mayo-stand", 1, 6]],
+        at: [["hosp-xray-table", 2, 4], ["m:med-cart", 8, 5], ["hosp-mayo-stand", 1, 6]],
       }),
     ] }),
   facility({ cat: "의료시설", p: "mc_psychiatry", map: "psychiatry-clinic", ko: "정신과", shape: "계단형", entrance: "ps-lobby",
@@ -286,7 +286,7 @@ export const FACILITIES_A: readonly FacilityVenue[] = [
       R("hb-herb", 9, 8, F.dark, W.brick, {
         hang: ["m:window-curtain", "m:art-frame"],
         wall: ["clinic-herb-cabinet", "clinic-herb-cabinet", "clinic-herb-cabinet"],
-        at: [["lab-bench", 1, 5], ["m:chair-wood-n", 2, 6], ["m:med-cart", 6, 6]],
+        at: [["lab-bench", 1, 5], ["m:chair-wood-n", 2, 6], ["m:med-cart", 8, 6]],
       }),
       R("hb-acu", 9, 8, F.dark, W.brick, {
         hang: ["m:window-curtain", "m:art-frame"],
@@ -338,7 +338,7 @@ export const FACILITIES_A: readonly FacilityVenue[] = [
       R("ph-stock", 10, 7, F.vinyl, W.metal, {
         hang: ["m:notice-board"],
         wall: ["clinic-pharmacy-shelf", "clinic-pharmacy-shelf", "m:filing"],
-        rows: [[5, ["m:pallet", "m:pallet", "m:basket-stack"]]],
+        south: ["m:pallet", "m:pallet", "m:basket-stack"],
       }),
       R("ph-shop", 16, 8, F.vinyl, W.store, {
         hang: ["m:menu-board", "m:wall-clock", "m:notice-board"],
@@ -346,7 +346,7 @@ export const FACILITIES_A: readonly FacilityVenue[] = [
         at: [
           ["shop-drug-gondola", 1, 4], ["shop-drug-gondola", 5, 4], ["shop-drug-gondola", 11, 4],
           ["shop-drug-gondola", 1, 6], ["shop-drug-gondola", 5, 6],
-          ["m:counter-register", 11, 6], ["m:basket-stack", 9, 7],
+          ["m:counter-register", 11, 6], ["m:basket-stack", 15, 7],
         ],
       }),
       R("ph-dispense", 12, 8, F.hosp, W.hosp, {
@@ -366,7 +366,7 @@ export const FACILITIES_A: readonly FacilityVenue[] = [
       R("ds-stock", 10, 7, F.vinyl, W.metal, {
         hang: ["m:notice-board", "m:wall-clock"],
         wall: ["m:rack", "m:rack", "m:filing"],
-        rows: [[5, ["m:pallet", "m:pallet", "m:basket-stack"]]],
+        south: ["m:pallet", "m:pallet", "m:basket-stack"],
       }),
       R("ds-floor", 20, 9, F.vinyl, W.store, {
         hang: ["m:menu-board", "m:wall-clock", "m:menu-board", "m:notice-board"],
@@ -393,7 +393,7 @@ export const FACILITIES_A: readonly FacilityVenue[] = [
       R("hy-stock", 12, 7, F.vinyl, W.metal, {
         hang: ["m:notice-board", "m:wall-clock"],
         wall: ["m:rack", "m:rack", "m:filing"],
-        rows: [[5, ["m:pallet", "m:pallet", "m:pallet", "m:basket-stack"]]],
+        south: ["m:pallet", "m:pallet", "m:pallet", "m:basket-stack"],
       }),
       R("hy-floor", 30, 9, F.vinyl, W.store, {
         hang: ["m:menu-board", "m:wall-clock", "m:menu-board", "m:notice-board"],
@@ -411,7 +411,7 @@ export const FACILITIES_A: readonly FacilityVenue[] = [
       R("st-back", 8, 7, F.vinyl, W.metal, {
         hang: ["m:notice-board"],
         wall: ["m:rack", "m:filing"],
-        rows: [[5, ["m:pallet", "m:basket-stack"]]],
+        south: ["m:pallet", "m:basket-stack"],
       }),
       R("st-floor", 18, 9, F.oak, W.store, {
         hang: ["m:menu-board", "m:wall-clock", "m:art-frame"],
@@ -447,7 +447,8 @@ export const FACILITIES_A: readonly FacilityVenue[] = [
       R("fl-cooler", 10, 8, F.small, W.tile, {
         hang: ["m:wall-clock"],
         wall: ["shop-flower-cooler", "_", "shop-flower-cooler"],
-        rows: [[4, ["mart-flower-buckets", "mart-flower-buckets", "mart-flower-buckets"]], [6, ["mart-flower-buckets", "m:basket-stack", "mart-flower-buckets"]]],
+        rows: [[4, ["mart-flower-buckets", "mart-flower-buckets", "mart-flower-buckets"]]],
+        south: ["mart-flower-buckets", "m:basket-stack", "mart-flower-buckets"],
       }),
     ] }),
   facility({ cat: "상점", p: "mc_clothing", map: "clothing-store", ko: "옷가게", shape: "ㄷ자형", entrance: "cw-floor",
@@ -504,7 +505,7 @@ export const FACILITIES_A: readonly FacilityVenue[] = [
       R("sh-stock", 10, 7, F.conc, W.metal, {
         hang: ["m:notice-board"],
         wall: ["m:rack", "m:rack", "m:filing"],
-        rows: [[5, ["m:pallet", "m:pallet", "m:pallet"]]],
+        south: ["m:pallet", "m:pallet", "m:pallet"],
       }),
       R("sh-floor", 18, 9, F.oak, W.brick, {
         hang: ["m:menu-board", "m:wall-clock", "m:art-frame", "m:art-frame"],
@@ -532,7 +533,7 @@ export const FACILITIES_A: readonly FacilityVenue[] = [
       R("rm-kitchen", 10, 7, F.small, W.tile, {
         hang: ["m:menu-board", "izakaya-lantern"],
         wall: ["m:kitchen", "m:fridge", "m:cooler"],
-        rows: [[5, ["mart-rice-pallet", "m:basket-stack"]]],
+        at: [["mart-fish-ice", 2, 4], ["mart-sashimi-case", 5, 4], ["mart-rice-pallet", 0, 6], ["m:basket-stack", 9, 6]],
       }),
       R("rm-hall", 18, 9, F.dark, W.brick, {
         hang: ["izakaya-noren", "m:menu-board", "izakaya-lantern", "m:menu-board"],
@@ -563,10 +564,8 @@ export const FACILITIES_A: readonly FacilityVenue[] = [
         hang: ["m:art-frame", "m:window-curtain"],
         at: [
           ["jp-tokonoma", 4, 2],
-          ["home-tatami-h", 1, 4], ["izakaya-zashiki", 1, 4],
-          ["home-tatami-h", 6, 4], ["izakaya-zashiki", 6, 4],
-          ["home-tatami-h", 1, 7], ["izakaya-zashiki", 1, 7],
-          ["home-tatami-h", 6, 7], ["izakaya-zashiki", 6, 7],
+          ["izakaya-zashiki", 1, 4], ["izakaya-zashiki", 7, 4],
+          ["izakaya-zashiki", 1, 7], ["izakaya-zashiki", 7, 7],
         ],
       }),
       R("ss-hall", 16, 9, F.dark, W.brick, {
@@ -625,7 +624,7 @@ export const FACILITIES_A: readonly FacilityVenue[] = [
       R("ff-kitchen", 10, 7, F.small, W.tile, {
         hang: ["m:menu-board", "m:wall-clock"],
         wall: ["m:kitchen", "m:fridge", "m:cooler"],
-        rows: [[5, ["m:freezer", "m:basket-stack", "m:basket-stack"]]],
+        south: ["m:freezer", "m:basket-stack", "m:basket-stack"],
       }),
       R("ff-hall", 14, 9, F.vinyl, W.store, {
         hang: ["m:menu-board", "m:menu-board", "m:menu-board"],
@@ -662,7 +661,8 @@ export const FACILITIES_A: readonly FacilityVenue[] = [
       R("yk-kitchen", 9, 9, F.small, W.tile, {
         hang: ["m:menu-board", "m:wall-clock"],
         wall: ["m:kitchen", "m:fridge", "m:cooler"],
-        rows: [[5, ["mart-fish-ice", "mart-sample-cart"]], [7, ["m:basket-stack", "m:basket-stack"]]],
+        rows: [[5, ["mart-fish-ice", "mart-sample-cart"]]],
+        south: ["m:basket-stack", "m:basket-stack"],
       }),
       R("yk-hall", 20, 9, F.dark, W.brick, {
         hang: ["izakaya-noren", "m:menu-board", "izakaya-lantern", "m:menu-board", "izakaya-lantern"],
@@ -683,8 +683,7 @@ export const FACILITIES_A: readonly FacilityVenue[] = [
       R("bt-kitchen", 10, 8, F.small, W.tile, {
         hang: ["m:menu-board", "m:wall-clock"],
         wall: ["m:kitchen", "m:fridge", "m:cooler"],
-        rows: [[5, ["mart-rice-pallet", "m:basket-stack", "m:basket-stack"]]],
-        south: ["m:basket-stack", "m:basket-stack"],
+        at: [["food-bento-counter", 3, 5], ["mart-rice-pallet", 0, 7], ["m:basket-stack", 9, 7]],
       }),
       R("bt-shop", 12, 9, F.vinyl, W.store, {
         hang: ["m:menu-board", "m:menu-board", "m:wall-clock"],

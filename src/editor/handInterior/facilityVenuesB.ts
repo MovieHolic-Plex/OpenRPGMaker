@@ -10,7 +10,7 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
       R("pc-prize", 12, 7, F.carpet, W.lobby, {
         hang: ["m:art-frame", "m:menu-board"],
         wall: ["arcade-prize-counter", "m:cooler", "arcade-medal-changer", "dept-glass-showcase"],
-        at: [["dept-glass-showcase", 1, 5], ["dept-glass-showcase", 8, 5]],
+        at: [["dept-glass-showcase", 0, 6], ["dept-glass-showcase", 9, 6]],
       }),
       R("pc-office", 8, 7, F.carpet, W.office, {
         hang: ["m:wall-clock"],
@@ -254,13 +254,13 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
       R("oa-stair", 10, 7, F.conc, W.metal, {
         hang: ["m:notice-board", "m:wall-clock"],
         wall: ["stairs-up-wall-stone", "m:mailboxes"],
-        rows: [[5, ["home-umbrella-stand", "home-drying-rack"]]],
+        south: ["home-umbrella-stand", "home-drying-rack"],
       }),
       R("oa-corridor", 22, 7, F.conc, W.metal, {
         hang: ["m:wall-clock", "m:notice-board", "m:window-city", "m:window-city"],
         at: [
           ["m:mailboxes", 0, 2], ["m:mailboxes", 6, 2], ["home-shoe-cabinet", 13, 2], ["home-washing-machine", 19, 2],
-          ["home-drying-rack", 2, 5], ["home-laundry-basket", 6, 5], ["home-drying-rack", 14, 5], ["home-umbrella-stand", 19, 5],
+          ["home-drying-rack", 2, 6], ["home-laundry-basket", 6, 6], ["home-drying-rack", 14, 6], ["home-umbrella-stand", 19, 6],
         ],
       }),
     ] }),
@@ -374,7 +374,7 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
         at: [
           ["pub-fire-locker", 0, 2], ["pub-fire-locker", 2, 2], ["pub-fire-locker", 9, 2], ["m:rack", 20, 2], ["m:rack", 28, 2],
           ["pub-fire-truck", 2, 4], ["pub-fire-truck", 11, 4], ["pub-fire-truck", 22, 4],
-          ["m:pallet", 28, 6], ["m:pallet", 29, 6],
+          ["m:pallet", 29, 8], ["m:pallet", 30, 8],
         ],
       }),
     ] }),
@@ -456,7 +456,8 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
       R("pt-sorting", 14, 8, F.conc, W.metal, {
         hang: ["m:notice-board", "m:wall-clock"],
         wall: ["m:rack", "m:rack", "m:filing"],
-        rows: [[4, ["pub-mail-sort", "pub-mail-sort", "pub-mail-sort"]], [6, ["m:pallet", "m:pallet", "m:basket-stack", "m:pallet"]]],
+        rows: [[4, ["pub-mail-sort", "pub-mail-sort", "pub-mail-sort"]]],
+        south: ["m:pallet", "m:pallet", "m:basket-stack", "m:pallet"],
       }),
       R("pt-lobby", 16, 8, F.stone, W.lobby, {
         hang: ["m:notice-board", "m:wall-clock", "m:art-frame"],
@@ -478,14 +479,14 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
       R("bk-vault", 10, 8, F.conc, W.metal, {
         hang: ["m:wall-clock"],
         wall: ["pub-vault-door", "m:filing", "m:filing"],
-        at: [["m:rack", 0, 2], ["m:pallet", 1, 6], ["m:pallet", 7, 6]],
+        at: [["m:rack", 0, 2], ["library-shelf", 0, 7], ["library-shelf", 7, 7]],
       }),
       R("bk-hall", 22, 9, F.stone, W.lobby, {
         hang: ["hosp-number-display", "m:wall-clock", "m:menu-board", "m:notice-board"],
         at: [
           ["m:filing", 2, 2], ["m:shelf-office", 6, 2], ["office-copier", 11, 2], ["pub-atm", 17, 2], ["pub-atm", 19, 2],
           ["m:teller", 2, 4], ["m:teller", 5, 4], ["m:teller", 8, 4], ["m:teller", 11, 4], ["m:teller", 14, 4],
-          ["pub-ticket-dispenser", 21, 5],
+          ["pub-ticket-dispenser", 0, 5],
           ["hosp-wait-row-n", 3, 6], ["hosp-wait-row-n", 10, 6],
           ["hosp-wait-row-n", 3, 8], ["hosp-wait-row-n", 10, 8],
         ],
@@ -576,7 +577,7 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
         hang: ["m:wall-clock", "m:notice-board"],
         at: [
           ["tr-xray-lane", 1, 4], ["tr-xray-lane", 6, 4],
-          ["m:security-gate", 4, 6], ["m:security-gate", 9, 6], ["m:basket-stack", 1, 6],
+          ["m:security-gate", 4, 6], ["m:security-gate", 9, 6], ["m:basket-stack", 0, 6],
         ],
       }),
       R("ap-lounge", 14, 8, F.carpet, W.lobby, {
@@ -786,25 +787,25 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
       R("tp-gate", 12, 7, F.stone, W.brick, {
         hang: ["shrine-shimenawa", "izakaya-lantern"],
         at: [
-          // 불교 사찰 입구: 신토 도리이 제거, 석등 대칭 + 본당 문 앞 새전함 + 출입구 옆 신발장
-          ["sento-shoe-locker", 0, 2], ["sento-shoe-locker", 2, 2], ["m:washbasin", 7, 2],
-          ["shrine-stone-lantern", 2, 4], ["shrine-stone-lantern", 8, 4],
-          ["shrine-saisen-box", 5, 3], ["home-umbrella-stand", 1, 6],
+          // 불교 사찰 입구: 신토 도리이 제거, 석등 남쪽 출입문 양옆 벽 밀착 + 본당 문 앞 새전함 + 출입구 옆 신발장
+          ["sento-shoe-locker", 0, 2], ["sento-shoe-locker", 2, 2], ["m:washbasin", 7, 2], ["shrine-saisen-box", 9, 2],
+          ["home-umbrella-stand", 0, 6], ["shrine-stone-lantern", 3, 6], ["shrine-stone-lantern", 7, 6],
         ],
       }),
       R("tp-hall", 14, 7, F.oak, W.home, {
         hang: ["m:art-frame", "m:window-curtain"],
         at: [
           ["jp-tokonoma", 0, 2], ["jp-shoji-screen", 9, 2],
-          ["home-tatami-h", 2, 4], ["home-chabudai", 3, 4], ["home-zabuton", 3, 5],
-          ["home-tatami-h", 8, 4], ["home-chabudai", 9, 4], ["home-zabuton", 9, 5],
+          ["izakaya-zashiki", 2, 4], ["izakaya-zashiki", 9, 4],
         ],
       }),
       R("tp-office", 10, 7, F.oak, W.home, {
         hang: ["m:notice-board", "m:wall-clock"],
         at: [
           ["m:shelf-office", 0, 2], ["m:filing", 3, 2], ["home-laptop-desk", 6, 2],
-          ["home-zabuton", 6, 3], ["home-tatami-h", 2, 5], ["home-chabudai", 3, 5], ["jp-incense-burner", 8, 5],
+          ["home-zabuton", 6, 3],
+          ["izakaya-zashiki", 2, 5],
+          ["jp-incense-burner", 9, 6],
         ],
       }),
     ] }),
@@ -817,7 +818,7 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
           ["jp-shoji-screen", 0, 2],
           ["sento-wash-station", 10, 2], ["home-bath-stool", 10, 3],
           ["sento-wash-station", 12, 2], ["home-bath-stool", 12, 3],
-          ["shrine-stone-lantern", 1, 4], ["jp-rock-bath", 2, 5], ["jp-rock-bath", 10, 5], ["shrine-stone-lantern", 14, 4],
+          ["shrine-stone-lantern", 0, 4], ["jp-rock-bath", 2, 5], ["jp-rock-bath", 10, 5], ["shrine-stone-lantern", 15, 4],
         ],
       }),
       R("on-bath", 14, 9, F.small, W.tile, {
@@ -885,24 +886,22 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
       R("tr-mizuya", 8, 7, F.small, W.home, {
         hang: ["m:window-blind"],
         wall: ["home-sink-counter", "home-vanity-sink", "m:shelf-office"],
-        rows: [[5, ["home-drying-rack", "m:basket-stack"]]],
+        south: ["home-drying-rack", "m:basket-stack"],
       }),
       R("tr-waiting", 10, 8, F.oak, W.home, {
         hang: ["m:art-frame", "m:window-curtain"],
         at: [
           ["sento-shoe-locker", 0, 2], ["jp-shoji-screen", 6, 2],
           ["home-genkan-shoes", 1, 5], ["shrine-stone-lantern", 1, 7],
-          ["home-tatami-h", 5, 5], ["home-zabuton", 6, 5], ["home-zabuton", 6, 6],
+          ["izakaya-zashiki", 5, 5],
         ],
       }),
       R("tr-chashitsu", 12, 8, F.oak, W.home, {
         hang: ["m:window-curtain", "izakaya-lantern"],
         at: [
           ["jp-tokonoma", 0, 2], ["jp-shoji-screen", 5, 2], ["jp-shoji-screen", 9, 2],
-          ["home-tatami-h", 1, 4], ["home-tatami-h", 7, 4],
-          ["home-tatami-h", 1, 6], ["home-tatami-h", 7, 6],
-          ["jp-tea-hearth", 5, 5],
-          ["home-zabuton", 3, 5], ["home-zabuton", 7, 5], ["home-zabuton", 5, 7], ["shrine-stone-lantern", 10, 6],
+          ["izakaya-zashiki", 1, 4], ["izakaya-zashiki", 8, 4],
+          ["jp-tea-hearth", 5, 6], ["home-zabuton", 5, 7], ["shrine-stone-lantern", 11, 6],
         ],
       }),
     ] }),
@@ -921,7 +920,7 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
         hang: ["m:wall-clock", "m:notice-board"],
         wall: ["lab-fume-hood", "lab-reagent-shelf", "m:washbasin"],
         pair: [["lab-bench", "m:chair-wood-n", 1, 4, 2, 1, 5, 2, "s"]],
-        at: [["m:med-cart", 1, 7], ["m:basket-stack", 8, 7]],
+        at: [["m:med-cart", 0, 7], ["m:basket-stack", 9, 7]],
       }),
       R("fc-line", 36, 10, F.conc, W.metal, {
         hang: ["m:wall-clock", "m:notice-board", "m:ac-wall", "m:ac-wall"],
@@ -931,9 +930,8 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
           ["ind-conveyor", 1, 4], ["ind-conveyor", 5, 4], ["ind-conveyor", 9, 4],
           ["ind-conveyor", 1, 7], ["ind-conveyor", 5, 7], ["ind-conveyor", 9, 7],
           ["ind-lathe", 18, 7], ["ind-lathe", 21, 7], ["ind-lathe", 24, 7], ["ind-lathe", 27, 7],
-          ["m:pallet", 31, 4], ["m:pallet", 33, 4],
-          ["ind-forklift", 33, 6],
-          ["m:pallet", 31, 8], ["m:pallet", 33, 8],
+          ["ind-forklift", 32, 6],
+          ["m:pallet", 35, 6], ["m:pallet", 35, 7], ["m:pallet", 33, 9], ["m:pallet", 34, 9],
         ],
       }),
     ] }),
@@ -951,7 +949,7 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
           ["m:rack", 0, 2], ["m:rack", 4, 2], ["m:rack", 9, 2], ["m:rack", 15, 2],
           ["mci-gondola", 1, 4], ["mci-gondola", 5, 4], ["mci-gondola", 12, 4],
           ["mci-gondola", 1, 6], ["mci-gondola", 5, 6], ["mci-gondola", 12, 6],
-          ["m:pallet", 1, 8], ["m:pallet", 3, 8], ["m:pallet", 15, 8], ["m:pallet", 16, 8],
+          ["m:pallet", 1, 9], ["m:pallet", 3, 9], ["m:pallet", 15, 9], ["m:pallet", 16, 9],
         ],
       }),
       R("wh-dock", 14, 10, F.conc, W.metal, {
@@ -959,7 +957,7 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
         wall: ["m:rack", "m:rack", "m:rack"],
         at: [
           ["ind-forklift", 2, 4], ["ind-forklift", 8, 4],
-          ["m:pallet", 2, 8], ["m:pallet", 3, 8], ["m:pallet", 8, 8], ["m:pallet", 9, 8], ["m:basket-stack", 12, 8],
+          ["m:pallet", 1, 9], ["m:pallet", 2, 9], ["m:pallet", 9, 9], ["m:pallet", 10, 9], ["m:basket-stack", 12, 9],
         ],
       }),
     ] }),
@@ -1021,7 +1019,7 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
         at: [
           ["svc-salon-mirror", 1, 2], ["svc-barber-chair", 1, 3],
           ["svc-salon-mirror", 6, 2], ["svc-barber-chair", 6, 3],
-          ["svc-salon-basin", 2, 6], ["home-drying-rack", 6, 6],
+          ["svc-salon-basin", 2, 6], ["home-drying-rack", 6, 7],
         ],
       }),
     ] }),
@@ -1031,7 +1029,7 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
       R("ld-press", 10, 7, F.conc, W.metal, {
         hang: ["m:wall-clock", "m:ac-wall"],
         wall: ["home-washing-machine", "svc-dryer-stack", "m:rack"],
-        rows: [[5, ["home-drying-rack", "home-laundry-basket", "home-drying-rack"]]],
+        south: ["home-drying-rack", "home-laundry-basket", "home-drying-rack"],
       }),
       R("ld-floor", 20, 8, F.small, W.tile, {
         hang: ["m:menu-board", "m:wall-clock", "m:window-city"],
@@ -1046,7 +1044,7 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
         hang: ["m:menu-board", "m:wall-clock"],
         at: [
           ["m:rack", 0, 2], ["m:filing", 6, 2], ["m:filing", 8, 2],
-          ["m:counter-register", 1, 5], ["home-drying-rack", 6, 6],
+          ["m:counter-register", 1, 5], ["home-drying-rack", 6, 7],
         ],
       }),
     ] }),
@@ -1082,7 +1080,7 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
         wall: ["svc-arcade-shopfront", "svc-arcade-shopfront", "svc-arcade-shopfront", "svc-arcade-shopfront"],
         at: [
           ["m:bench-metal", 3, 4], ["m:bench-metal", 8, 4],
-          ["dept-glass-showcase", 1, 6], ["dept-glass-showcase", 5, 6], ["dept-glass-showcase", 10, 6],
+          ["dept-glass-showcase", 1, 7], ["dept-glass-showcase", 5, 7], ["dept-glass-showcase", 10, 7],
         ],
       }),
       R("um-atrium", 12, 8, F.stone, W.lobby, {
@@ -1097,7 +1095,7 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
         wall: ["svc-arcade-shopfront", "svc-arcade-shopfront", "svc-arcade-shopfront", "svc-arcade-shopfront"],
         at: [
           ["m:bench-metal", 3, 4], ["m:bench-metal", 8, 4],
-          ["dept-glass-showcase", 1, 6], ["dept-glass-showcase", 5, 6], ["dept-glass-showcase", 10, 6],
+          ["dept-glass-showcase", 1, 7], ["dept-glass-showcase", 5, 7], ["dept-glass-showcase", 10, 7],
         ],
       }),
       R("um-exit", 12, 7, F.tile, W.tile, {

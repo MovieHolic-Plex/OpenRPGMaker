@@ -131,7 +131,8 @@ export interface RoomSpec {
   readonly pl?: boolean | readonly [number, number];
 }
 
-const WALL_ONLY_RE = /vending|locker|ticket-machine|atm|cooler|fridge|mci-shelf|filing|bookshelf|cabinet|vault-door|board|tv|plant-tall|dispenser/u;
+const WALL_ONLY_RE = /vending|locker|ticket-machine|atm|cooler|fridge|mci-shelf|filing|bookshelf|cabinet|vault-door|board|tv|plant-tall|dispenser|pallet|basket-stack|rack|glass-showcase|med-cart|stone-lantern/u;
+const FLOOR_GONDOLA_RE = /stationery-rack|clothing-rack/u;
 
 export type FRoom = Venue["rooms"][number] & { readonly openFloor?: boolean };
 
@@ -296,10 +297,21 @@ export function room(kind: string, w: number, h: number, floor: string, wall: st
   for (const it of items) {
     if (it.t !== "o") continue;
     const q = OBJ[it.id];
-    if (!q || q.kind === "hang" || q.kind === "flat") continue;
+    if (!q) throw new Error(`Unknown prop ${it.id} in ${kind}`);
     const iw = Math.max(1, q.w ?? 1), ih = Math.max(1, q.h ?? 1);
-    const touchesWall = it.y <= 2 || it.y + ih >= h - 1 || it.x === 0 || it.x + iw >= w;
-    if (WALL_ONLY_RE.test(it.id) && !touchesWall) {
+    if (q.kind === "hang") {
+      if (it.y !== 0 || it.x < 0 || it.x + iw > w) throw new Error(`Invalid hang prop ${it.id} in ${kind} at (${it.x},${it.y})`);
+      continue;
+    }
+    if (it.x < 0 || it.y < 2 || it.x + iw > w || it.y + ih > h) {
+      throw new Error(`Out-of-bounds prop ${it.id} in ${kind} at (${it.x},${it.y}) in ${w}x${h}`);
+    }
+    if (q.kind === "wall" && it.y !== 2) {
+      throw new Error(`Wall-kind prop ${it.id} in ${kind} at (${it.x},${it.y}) must be at y=2`);
+    }
+    if (q.kind === "flat") continue;
+    const touchesWall = it.y <= 2 || it.y + ih >= h || it.x === 0 || it.x + iw >= w;
+    if (WALL_ONLY_RE.test(it.id) && !FLOOR_GONDOLA_RE.test(it.id) && !touchesWall) {
       throw new Error(`WALL_ONLY prop ${it.id} in ${kind} at (${it.x},${it.y}) must touch a wall`);
     }
   }
@@ -368,6 +380,7 @@ export function facility(s: FacilitySpec): FacilityVenue {
     return out;
   });
   const doorColsByRoom = new Map<string, Set<number>>();
+  const southDoorColsByRoom = new Map<string, Set<number>>();
   for (let r = 1; r < rowSpans.length; r++) {
     for (const bot of rowSpans[r]!) {
       for (const top of rowSpans[r - 1]!) {
@@ -379,30 +392,51 @@ export function facility(s: FacilitySpec): FacilityVenue {
           let set = doorColsByRoom.get(bot.kind);
           if (!set) { set = new Set<number>(); doorColsByRoom.set(bot.kind, set); }
           for (let d = 0; d < dw; d++) set.add(dx0 + d);
+          const tdx0 = ox0 + Math.floor((span - dw) / 2) - top.x0;
+          let sSet = southDoorColsByRoom.get(top.kind);
+          if (!sSet) { sSet = new Set<number>(); southDoorColsByRoom.set(top.kind, sSet); }
+          for (let d = -1; d <= dw; d++) sSet.add(tdx0 + d);
         }
       }
     }
   }
+  const entW = wOf.get(s.entrance) ?? 0;
+  if (entW > 0) {
+    let sSet = southDoorColsByRoom.get(s.entrance);
+    if (!sSet) { sSet = new Set<number>(); southDoorColsByRoom.set(s.entrance, sSet); }
+    const mid = Math.floor(entW / 2);
+    for (let d = -1; d <= 0; d++) sSet.add(mid + d);
+  }
   const adjustedRooms: FRoom[] = s.rooms.map((rm) => {
     const dCols = doorColsByRoom.get(rm.kind);
-    if (!dCols?.size) return rm;
-    const northTaken = new Set<number>(dCols);
+    const sCols = southDoorColsByRoom.get(rm.kind);
+    if (!dCols?.size && !sCols?.size) return rm;
+    const northTaken = new Set<number>(dCols ?? []);
+    const southTaken = new Set<number>(sCols ?? []);
     for (const it of rm.items) {
-      if (it.t !== "o" || (it.y !== 0 && it.y !== 2)) continue;
-      const sw = sizeOf(it.id).w;
-      const cols = Array.from({ length: sw }, (_, d) => it.x + d);
-      if (cols.some((c) => dCols.has(c))) continue;
-      for (const c of cols) northTaken.add(c);
+      if (it.t !== "o") continue;
+      const sz = sizeOf(it.id);
+      const cols = Array.from({ length: sz.w }, (_, d) => it.x + d);
+      if (it.y === 0 || it.y === 2) {
+        if (!cols.some((c) => dCols?.has(c))) for (const c of cols) northTaken.add(c);
+      } else if (it.y + sz.h >= rm.h) {
+        if (!cols.some((c) => sCols?.has(c))) for (const c of cols) southTaken.add(c);
+      }
     }
     const nextItems: InteriorTemplateItem[] = [];
     for (const it of rm.items) {
-      if (it.t !== "o" || (it.y !== 0 && it.y !== 2)) {
+      if (it.t !== "o") { nextItems.push(it); continue; }
+      const sz = sizeOf(it.id);
+      const isNorth = it.y === 0 || it.y === 2;
+      const isSouth = it.y + sz.h >= rm.h;
+      const blockSet = isNorth ? dCols : isSouth ? sCols : undefined;
+      const takenSet = isNorth ? northTaken : isSouth ? southTaken : undefined;
+      if (!blockSet?.size || !takenSet) {
         nextItems.push(it);
         continue;
       }
-      const sw = sizeOf(it.id).w;
-      const cols = Array.from({ length: sw }, (_, d) => it.x + d);
-      if (!cols.some((c) => dCols.has(c))) {
+      const cols = Array.from({ length: sz.w }, (_, d) => it.x + d);
+      if (!cols.some((c) => blockSet.has(c))) {
         nextItems.push(it);
         continue;
       }
@@ -410,10 +444,10 @@ export function facility(s: FacilitySpec): FacilityVenue {
       for (let dist = 1; dist < rm.w; dist++) {
         for (const dir of [1, -1] as const) {
           const nx = it.x + dir * dist;
-          if (nx < 0 || nx + sw > rm.w) continue;
-          const nCols = Array.from({ length: sw }, (_, d) => nx + d);
-          if (nCols.every((c) => !northTaken.has(c))) {
-            for (const c of nCols) northTaken.add(c);
+          if (nx < 0 || nx + sz.w > rm.w) continue;
+          const nCols = Array.from({ length: sz.w }, (_, d) => nx + d);
+          if (nCols.every((c) => !takenSet.has(c))) {
+            for (const c of nCols) takenSet.add(c);
             moved = { ...it, x: nx };
             break;
           }
