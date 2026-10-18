@@ -540,16 +540,20 @@ export function composeLectureWing(spec: HandInteriorSpec, nuance: SpaceNuance, 
   const wLecture = Math.max(13, benchesPerSide * 3 * 2 + 3 + 2);
   const wSeminar = pickInt(rng, 10, 12) + (grand ? 2 : 0) - (compact ? 1 : 0);
   const topH = pickInt(rng, 12, 13) + (grand ? 2 : 0) - (compact ? 2 : 0);
-  // 복도는 바닥 네 줄 — 계단실(북벽 오르는 계단 · 걷는 줄 · 내려가는 계단통 2줄)이 한 칸에 위아래로 들어간다.
+  // 복도는 바닥 대여섯 줄로 건물 전폭을 지난다. 계단실은 강의실·세미나실 좌·우 양 끝에 맨 북쪽 바깥 벽까지 닿는 2칸 폭 세로 방 —
+  // 복도 북벽은 강의실과 맞댄 칸막이라 거기 벽 속 계단을 두면 빌더가 「칸막이 속으로 이어진다」 경고를 낸다.
   const corH = pickInt(rng, 6, 7);
   const mirror = rng() < 0.5;
-  const lecture: HandInteriorRoom = { id: "lecture", x0: 1, y0: 1, x1: wLecture, y1: topH, floor: pal.lecture[0], wall: pal.lecture[1] };
-  const seminar: HandInteriorRoom = { id: "seminar", x0: wLecture + 2, y0: 1, x1: wLecture + 1 + wSeminar, y1: topH, floor: pal.seminar[0], wall: pal.seminar[1] };
+  const SX = 5; // 계단실 바깥 폭(바닥 3칸 + 칸막이 1 + 바깥 벽 1)
+  const lecture: HandInteriorRoom = { id: "lecture", x0: SX, y0: 1, x1: SX - 1 + wLecture, y1: topH, floor: pal.lecture[0], wall: pal.lecture[1] };
+  const seminar: HandInteriorRoom = { id: "seminar", x0: SX + wLecture + 1, y0: 1, x1: SX + wLecture + wSeminar, y1: topH, floor: pal.seminar[0], wall: pal.seminar[1] };
   const innerX1 = seminar.x1;
-  const L: HandInteriorRoom = mirror ? { ...lecture, x0: innerX1 + 1 - lecture.x1, x1: innerX1 + 1 - lecture.x0 } : lecture;
-  const S: HandInteriorRoom = mirror ? { ...seminar, x0: innerX1 + 1 - seminar.x1, x1: innerX1 + 1 - seminar.x0 } : seminar;
-  const corridor: HandInteriorRoom = { id: "corridor", x0: 1, y0: topH + 2, x1: innerX1, y1: topH + 1 + corH, floor: pal.corridor[0], wall: pal.corridor[1] };
-  const rooms = [L, S, corridor];
+  const L: HandInteriorRoom = mirror ? { ...lecture, x0: innerX1 + SX - lecture.x1, x1: innerX1 + SX - lecture.x0 } : lecture;
+  const S: HandInteriorRoom = mirror ? { ...seminar, x0: innerX1 + SX - seminar.x1, x1: innerX1 + SX - seminar.x0 } : seminar;
+  const corridor: HandInteriorRoom = { id: "corridor", x0: 1, y0: topH + 2, x1: innerX1 + SX - 1, y1: topH + 1 + corH, floor: pal.corridor[0], wall: pal.corridor[1] };
+  const stairW: HandInteriorRoom = { id: "stair-w", x0: 1, y0: 1, x1: SX - 2, y1: topH, floor: pal.corridor[0], wall: pal.corridor[1] };
+  const stairE: HandInteriorRoom = { id: "stair-e", x0: innerX1 + 2, y0: 1, x1: innerX1 + SX - 1, y1: topH, floor: pal.corridor[0], wall: pal.corridor[1] };
+  const rooms = [L, S, corridor, stairW, stairE];
   const lcx = Math.floor((L.x0 + L.x1) / 2);
   const scx = Math.floor((S.x0 + S.x1) / 2);
   const ccx = Math.floor((corridor.x0 + corridor.x1) / 2);
@@ -557,6 +561,8 @@ export function composeLectureWing(spec: HandInteriorSpec, nuance: SpaceNuance, 
   const connect: HandInteriorConnect[] = [
     { a: "lecture", b: "corridor", at: lcx },
     { a: "seminar", b: "corridor", at: scx },
+    { a: "stair-w", b: "corridor", at: stairW.x1 },
+    { a: "stair-e", b: "corridor", at: stairE.x0 },
   ];
   const s = new InteriorSketch(spec, rooms, connect, { room: "corridor", x: exitX, width: 1 });
   const decisions = [
@@ -620,30 +626,36 @@ export function composeLectureWing(spec: HandInteriorSpec, nuance: SpaceNuance, 
   }
   s.put("mc-mini-fridge", m.x1, m.y1);
 
-  // ── 복도: 한쪽 끝 계단실(1F↔2F) — 북벽 오르는 계단 바로 아래 쇠 난간 내려가는 계단통, 다른 바닥 계단참.
-  //    계단이 복도 양끝에 따로 떨어져 작게 보여 건물이 1층뿐으로 읽혔다(2026-10-18 사용자 반려 「학교가 1층밖에 없는거냐」).
-  //    나머지 벽은 사물함 줄(문 앞은 비움), 게시판·소화기함, 음수대, 긴 의자. 걷는 줄은 한 줄만 비운다(VQA 14회차).
+  // ── 계단실 둘(1F↔2F): 강의실·세미나실 좌·우 끝. 북쪽 바깥 벽 속 오르는 계단, 그 아래 내려가는 계단통, 남쪽 문까지 계단참 융단.
+  //    한쪽 끝 한 군데에 모아 복도에 두니 통행을 막았다(2026-10-18 사용자 반려 「계단은 '좌우'로 배치해야지 … 통행도 문제」).
+  //    바닥 3칸 폭: 바깥 2칸에 계단·계단통, 안쪽 1칸은 복도 문까지 걷는 세로줄(2칸 폭이면 계단통이 오르는 계단 앞을 가둔다).
+  for (const id of ["stair-w", "stair-e"] as const) {
+    const st = s.floorOf(id);
+    const outerX = id === "stair-w" ? st.x0 : st.x1 - 1, walkX = id === "stair-w" ? st.x1 : st.x0;
+    s.zone(st.x0, st.y0, st.x1, st.y1, pal.stage);
+    s.put("sc-stairs-up", outerX, st.y0, true);
+    s.keepRect(st.x0, st.y0 + 1, st.x1, st.y0 + 1);
+    s.keepRect(walkX, st.y0 + 1, walkX, st.y1);
+    s.put("sc-stairwell-down", outerX, st.y0 + 2, true);
+    s.keepRect(outerX, st.y0 + 4, outerX + 1, st.y0 + 4); // 계단통 남쪽 입구 앞
+    let y = st.y0 + 5;
+    for (const k of ["mc-vending-low", "mc-fire-cabinet", "mc-locker-bench", "mc-trash-bin"]) if (y <= st.y1 && s.put(k, outerX, y)) y += 2;
+    hangRhythm(s, st, ["mc-window-class", "sc-notice-board"], 0, 4);
+  }
+  // ── 복도: 사물함 줄(문 앞은 비움), 게시판·소화기함, 음수대, 긴 의자·트로피장. 북쪽 걷는 줄 하나는 비운다.
   const c = s.floorOf("corridor");
-  const stairWest = rng() < 0.5;
-  const bayX0 = stairWest ? c.x0 : c.x1 - 4, bayX1 = bayX0 + 4;
-  const inBay = (x: number) => x + 1 >= bayX0 && x <= bayX1;
-  s.zone(bayX0, c.y0, bayX1, c.y1, pal.stage);
-  s.put("sc-stairs-up", bayX0 + 1, c.y0, true);
   s.keepRect(c.x0, c.y0 + 1, c.x1, c.y0 + 1);
-  s.put("sc-stairwell-down", bayX0 + 1, c.y0 + 2, true);
-  s.put("mc-fire-cabinet", stairWest ? bayX0 + 3 : bayX0, c.y0);
+  s.put("mc-fire-cabinet", c.x0 + SX - 1, c.y0);
   hangRhythm(s, c, ["sc-notice-board", "mc-cork-board", "mc-window-class"], 1, 4);
-  for (let x = c.x0; x + 1 <= c.x1; x += 2) if (!inBay(x)) s.put(pickOf(rng, ["mc-hall-locker", "mc-hall-locker", "mc-hall-locker", "mc-bulletin-stand"]), x, c.y0);
-  s.put("mc-water-fountain", stairWest ? c.x1 : c.x0, c.y0);
-  for (let x = c.x0 + 4; x + 1 <= c.x1 - 4; x += 5) {
-    if (inBay(x) || inBay(x + 2)) continue;
+  for (let x = c.x0 + SX; x + 1 <= c.x1 - SX; x += 2) s.put(pickOf(rng, ["mc-hall-locker", "mc-hall-locker", "mc-hall-locker", "mc-bulletin-stand"]), x, c.y0);
+  s.put("mc-water-fountain", c.x1 - SX + 1, c.y0);
+  for (let x = c.x0 + 3; x + 1 <= c.x1 - 3; x += 5) {
     s.put("mc-locker-bench", x, c.y1);
     if (c.y1 - 1 > c.y0 + 1) s.put(pickOf(rng, ["mc-trophy-case", "mc-vending-low", "mc-trophy-shelf"]), x + 2, c.y1);
   }
-  s.put("mc-trash-bin", stairWest ? bayX1 : bayX0, c.y1);
-  if (stairWest) s.put("mc-vending-low", c.x1 - 1, c.y1) || s.put("mc-trash-bin", c.x1, c.y1);
-  else s.put("mc-vending-low", c.x0, c.y1) || s.put("mc-trash-bin", c.x0, c.y1);
-  decisions.push(`계단실(1F↔2F) ${stairWest ? "서쪽" : "동쪽"} 끝`);
+  s.put("mc-trash-bin", c.x0 + 1, c.y1);
+  s.put("mc-vending-low", c.x1 - 2, c.y1) || s.put("mc-trash-bin", c.x1 - 1, c.y1);
+  decisions.push("계단실(1F↔2F) 건물 좌·우 양 끝");
 
   const areas = [areaOf("대강의실", f), areaOf("세미나·동아리실", m), areaOf("복도", c)];
   return s.finish({ tileset: "modern_campus", floor: pal.corridor[0], wall: pal.corridor[1] }, areas, decisions);

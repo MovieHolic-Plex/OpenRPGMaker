@@ -142,8 +142,10 @@ const THEMES: Record<BeodeulVillageTheme, ThemeSpec> = {
 const FREE = 0, ROAD = 1, WATERC = 2, PLAZAC = 3, BLD = 4, PROP = 5, FIELD = 6, KEEP = 7, POND_RING = 8, FENCE = 9;
 /** 비워 둔 걸음 자리(울타리 문 앞에서 길까지 — 바닥은 바탕 그대로, 나무·소품·밭이 앉지 않는다). */
 const CLEAR = 10;
+/** 숲 덩이(이어진 수관 오토타일이 덮는 막힌 칸, 2026-10-18). */
+const FOREST = 11;
 /** 시공 기록(constructionLog)에 싣는 계획 분류 이름 — 편집기가 밑그림 색을 고른다. */
-const PLAN_CLASSES: Record<number, string> = { [ROAD]: "road", [WATERC]: "water", [PLAZAC]: "plaza", [BLD]: "building", [PROP]: "prop", [FIELD]: "field", [KEEP]: "keep", [POND_RING]: "ring", [FENCE]: "prop" };
+const PLAN_CLASSES: Record<number, string> = { [ROAD]: "road", [WATERC]: "water", [PLAZAC]: "plaza", [BLD]: "building", [PROP]: "prop", [FIELD]: "field", [KEEP]: "keep", [POND_RING]: "ring", [FENCE]: "prop", [FOREST]: "prop" };
 const SAND_PATH = "버들항 모랫길";
 
 interface Kit { id: string; w: number; h: number; door: { dx: number; dy: number } | null; def: StructureKitDef }
@@ -1490,7 +1492,42 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       cluster(spec.field.edge, x + fw + 1, y + fh - 1, 1, 1);
     }
   }
-  // 숲 덩이: 길에서 3칸 이상 떨어진 빈 땅에 덩이 중심, 덩이마다 3~7그루
+  // 숲 덩이(2026-10-18 사용자 반려 「버들 마을은 풀이 뭉쳐진 .. '숲' 을 구현하질 못함」): 나무 키트를 3~7그루씩 흩어 심으면
+  // 수관 사이로 잔디가 보이는 덤불 뭉치가 된다. 풀밭·설원 마을은 길에서 떨어진 빈 땅에 둥근 숲 덩이(FOREST, 막힘)를 잡고
+  // 12b 에서 이어진 수관 오토타일(BEODEUL_NATURE.forestCanopy)로 한 장에 덮는다. 낱 나무 덩이는 숲 가장자리 몇 그루로만 남긴다.
+  const canopyStyle: "leaf" | "snow" | null = theme === "snow" ? "snow" : theme === "river" || theme === "coast" ? "leaf" : null;
+  const forestSet = new Set<number>();
+  if (canopyStyle) {
+    const N4 = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
+    // 숲 칸은 한 단 위에만(남쪽 칸도 같은 단 — 절벽 끝에 수관이 걸치지 않게), 길·집에서 한 칸(그늘 줄)을 띄운다
+    const okCell = (c: number, L: number) => occ[c] === FREE && distRoad[c]! >= 2 && lv[c] === L && !rampCells.has(c) && (c + W >= W * H || lv[c + W] === L);
+    const goal = Math.round(W * H * (canopyStyle === "snow" ? 0.1 : 0.14));
+    for (let t = 0; t < 90 && forestSet.size < goal; t += 1) {
+      const sx = ri(0, W - 1), sy = ri(0, H - 1), s = idx(sx, sy);
+      if (occ[s] !== FREE || distRoad[s]! < 4 || forestSet.has(s)) continue;
+      const L = lv[s]!, rx = ri(3, 8), ry = ri(2, 5), wob = rand() * 6.28;
+      const blob = new Set<number>([s]); const q = [s];
+      for (let h = 0; h < q.length; h += 1) {
+        const c = q[h]!, x = c % W, y = (c - x) / W;
+        for (const [dx, dy] of N4) {
+          const nx = x + dx, ny = y + dy; if (!inMap(nx, ny)) continue; const n = idx(nx, ny);
+          if (blob.has(n) || !okCell(n, L)) continue;
+          const ex = (nx - sx) / rx, ey = (ny - sy) / ry;
+          if (ex * ex + ey * ey > 1 + 0.35 * Math.sin(Math.atan2(ey, ex) * 3 + wob)) continue;
+          blob.add(n); q.push(n);
+        }
+      }
+      if (blob.size >= 10) for (const c of blob) forestSet.add(c);
+    }
+    // 다듬기: 이웃 숲이 하나 이하인 혹은 지우고, 셋 이상 숲에 둘러싸인 빈 칸(같은 단)은 메운다 — 가는 가지·바늘구멍 수관이 생기지 않게
+    const n4 = (c: number) => { const x = c % W, y = (c - x) / W; let k = 0; for (const [dx, dy] of N4) if (!inMap(x + dx, y + dy) || forestSet.has(idx(x + dx, y + dy))) k += 1; return k; };
+    for (let pass = 0; pass < 2; pass += 1) {
+      for (const c of [...forestSet]) if (n4(c) <= 1) forestSet.delete(c);
+      for (let c = 0; c < W * H; c += 1) if (!forestSet.has(c) && n4(c) >= 3 && okCell(c, lv[c]!) && (!hasTerrain || N4.every(([dx, dy]) => { const x = (c % W) + dx, y = Math.floor(c / W) + dy; return !inMap(x, y) || lv[idx(x, y)] === lv[c]; }))) forestSet.add(c);
+    }
+    for (const c of forestSet) occ[c] = FOREST;
+  }
+  // 낱 나무 덩이: 길에서 3칸 이상 떨어진 빈 땅에 덩이 중심, 덩이마다 3~7그루(숲 덩이가 있으면 몇 덩이만)
   const trees = have(spec.trees), shrubs = have(spec.shrubs);
   let treeCount = 0;
   const treeFits = (k: Kit, x: number, y: number, gap: number) => {
@@ -1542,7 +1579,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   }
   // 밀도(2026-10-11 사용자 지적 「오브젝트 밀도가 너무 높다」 두 번): 덩이 시도·크기를 줄이고 빈 땅을 더 남긴다.
   // 화면당 빈 바닥 상한도 46%→58%(모래·눈 62%→74%) — 그림자가 생겨 덜 채워도 땅이 평평해 보이지 않는다.
-  for (let t = 0; t < (openLand ? 32 : 30) && trees.length; t += 1) {
+  for (let t = 0; t < (forestSet.size ? 8 : openLand ? 32 : 30) && trees.length; t += 1) {
     const cx = ri(1, W - 2), cy = ri(1, H - 2);
     if (at(cx, cy) !== FREE || distRoad[idx(cx, cy)]! < 3) continue;
     const n = openLand ? ri(2, 3) : ri(3, 5);
@@ -1678,7 +1715,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
 
   // ---------- 12. 찍기 ----------
   let stamped = 0, failed = 0;
-  let natureStats = { overlay: 0, shadowCells: 0 };
+  let natureStats = { overlay: 0, shadowCells: 0, forestCells: 0 };
   const treeKits = new Set([...spec.trees, ...spec.shrubs, ...(spec.pond?.ringTrees ?? [])]);
   const stampKind = (s: Stamp): string => s.v === BLD ? (anchors.includes(s.kit) ? "큰 건물" : "집")
     : treeKits.has(s.kit) ? "나무·덤불" : s.v === FIELD || decalAt.has(idx(s.x, s.y)) ? "풀꽃·밭" : "소품";
@@ -1758,6 +1795,21 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
         if (t >= 0) want.set(c, t);
       }
     }
+    // 숲 수관: 숲 칸마다 이웃 비트·2×2 위상으로 고른 수관 칸(막힘 ×), 숲 바로 남쪽 빈 칸에는 그늘(★)
+    const canopyAt = new Map<number, number>();
+    if (canopyStyle && forestSet.size) {
+      const isForest = (n: number) => occ[n] === FOREST;
+      const phases = BEODEUL_NATURE.forestCanopy[canopyStyle];
+      for (const c of forestSet) {
+        const x = c % W, y = (c - x) / W;
+        const t = phases[(x & 1) + 2 * (y & 1)]![maskOf(c, isForest)]!; if (t >= 0) canopyAt.set(c, t);
+        const s = c + W;
+        if (y + 1 < H && !isForest(s) && occ[s] !== WATERC && occ[s] !== KEEP && layerTileAt(m, 2, s) < 0 && !want.has(s)) {
+          const nw = x > 0 && isForest(c - 1), ne = x + 1 < W && isForest(c + 1);
+          want.set(s, BEODEUL_NATURE.forestShade[(nw ? 2 : 0) + (ne ? 1 : 0)]!);
+        }
+      }
+    }
     // 그림자: 찍힌 키트마다 그 그림 모양으로 잰 그림자(나무·야자·선인장 = 밑동 타원, 집·소품·바위 = 오른쪽 아래로 비낀 그림자)
     // 2층 덧그림은 ★(통행 + 상위) — 통행은 위층부터 ★·빈칸을 건너뛰고 처음 만난 타일이 정하므로 ○ 로 두면 물·이끼 늪의 × 를 덮어
     // 물 위를 걷게 된다(openwiki/editor-ai-tools.md 「나무 밑 그림자」 같은 함정). 2층은 캐릭터 밑 묶음이라 상위여도 인물 아래에 그린다.
@@ -1768,19 +1820,24 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       const sh = BEODEUL_NATURE.shadows[st.kit]; if (!sh) continue;
       sh.rows.forEach((row, j) => row.forEach((t, i) => {
         if (t < 0) return; const x = st.x + sh.dx + i, y = st.y + sh.dy + j; if (!inMap(x, y)) return;
-        const c = idx(x, y); if (occ[c] === WATERC || occ[c] === KEEP || want.has(c) || layerTileAt(m, 2, c) >= 0) return;
+        const c = idx(x, y); if (occ[c] === WATERC || occ[c] === KEEP || occ[c] === FOREST || want.has(c) || layerTileAt(m, 2, c) >= 0) return;
         if (hasTerrain && (lv[c] !== LV(st.x, st.y + (kitIndex.get(st.kit)?.h ?? 1) - 1) || rampCells.has(c))) return; // 단 너머·경사로에는 그림자를 두지 않는다
         want.set(c, t); shadowCells += 1; shadowOwner.set(c, st);
       }));
     }
-    if (want.size) {
+    if (want.size || canopyAt.size) {
       const nat = natureTileset();
-      const tr = translateTiles(nat, ts, new Set(want.values()));
-      for (const to of tr.map.values()) { ts.priority[to] = "upper"; ts.passability[to] = { up: true, down: true, left: true, right: true }; }
+      const tr = translateTiles(nat, ts, new Set([...want.values(), ...canopyAt.values()]));
+      const blocked = new Set(canopyAt.values());
+      for (const [from, to] of tr.map) {
+        ts.priority[to] = "upper";
+        ts.passability[to] = blocked.has(from) ? { up: false, down: false, left: false, right: false } : { up: true, down: true, left: true, right: true };
+      }
       for (const [c, t] of want) setLayerTileAt(m, 2, c, tr.map.get(t)!);
-      logConstructionTiles(m, "stamp", "물가·그림자", { major: false });
+      for (const [c, t] of canopyAt) setLayerTileAt(m, 2, c, tr.map.get(t)!);
+      logConstructionTiles(m, "stamp", canopyAt.size ? "물가·숲 수관·그림자" : "물가·그림자", { major: false });
     }
-    natureStats = { overlay: want.size, shadowCells };
+    natureStats = { overlay: want.size + canopyAt.size, shadowCells, forestCells: canopyAt.size };
   }
 
   // 마감 점검: 도시 형태 자(check_city_form 과 같은 계산)가 짚는 막다른 토막을 바탕으로 되돌린다(문 앞 칸은 두고)

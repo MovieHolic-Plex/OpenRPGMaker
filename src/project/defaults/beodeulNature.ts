@@ -16,6 +16,11 @@ export const BEODEUL_NATURE = catalog as unknown as {
   soilTiles: number[];
   /** 울타리 조각(공용 숲 울타리 화소로 만든 모서리·끝 — 2026-10-11 「울타리 외곽 마감」). end* = 그 방향으로 뻗고 반대쪽이 문. */
   fence: Record<'h' | 'v' | 'tl' | 'tr' | 'bl' | 'br' | 'endW' | 'endE' | 'endN' | 'endS', number>;
+  /** 이어진 숲 수관 오토타일(2026-10-18, scripts/content/append-beodeul-forest-canopy.py) — [양식][위상 (x&1)+2*(y&1)][이웃 비트 256].
+   *  숲 덩이 칸마다 깔면 수관이 칸 경계 없이 한 장으로 이어지고, 가장자리는 둥근 수관 혹·남쪽 끝은 줄기 띠로 끝난다. */
+  forestCanopy: Record<'leaf' | 'snow', number[][]>;
+  /** 숲 남쪽 바로 아래 칸 그늘 — [(북서 숲 ? 2 : 0) + (북동 숲 ? 1 : 0)]. */
+  forestShade: number[];
 };
 
 export function createBeodeulNatureTileset(): TilesetDef {
