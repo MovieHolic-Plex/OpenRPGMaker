@@ -74,13 +74,27 @@ export function lintHazardEffects(project: Project): LintIssue[] {
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
       const commands = collectCommands([event]);
-      if (!commands.some(isDeath)) continue;
       const family = commands.map(tintFamily).find((f) => f !== undefined);
       const add = (code: string, message: string) =>
         issues.push({ severity: 'warning', code: `authoring:${code}`, mapId: map.id, eventId: event.id, x: event.x, y: event.y, message });
       const hazard = family === 'heat' ? '열풍' : family === 'poison' ? '독기' : '함정';
-      // 생존 분기 걷기는 색조 종류와 무관하다(다리 붕괴는 섬광·흔들림만 쓰기도 한다). 화면 효과가 없는 사망 이벤트(대화 끝 게임오버 등)는 함정이 아니다.
       const hazardous = family !== undefined || commands.some((c) => isWeather(c) || isParticle(c) || commandIdOf(c) === 'm2-048-shake-screen');
+      const lines = commands.flatMap((c) => (c.kind === 'text' ? [c.body] : [])).join(' ');
+      const tileChanged = commands.some((c) => c.kind === 'changeTile');
+      // 2026-10-18 jrpg_002(45점): 조건 분기 함정인데 사망·붕괴가 통째로 빠져 «다리 붕괴와 사망 모션이 없다» 로 떨어졌다.
+      const conditional = (event.pages?.length ?? 0) > 1 || commands.some((c) => c.kind === 'fork');
+      if (family !== undefined && conditional && !commands.some(isDeath)) {
+        add('hazard-missing-gameover', `${event.id}: ${hazard} 조건부 함정인데 어느 분기에도 게임오버가 없습니다. 요청이 사망을 말하면 실패 분기 끝에 look{target:"player",pose:"fallen"} → gameOver 를 넣으세요.`);
+      }
+      if (hazardous && /다리|붕괴|무너/u.test(lines) && !tileChanged) {
+        add('hazard-collapse-missing-tile-change', `${event.id}: 붕괴를 말하지만 바뀌는 타일이 없어 다리가 온전히 보입니다. 사망 분기에서 build_scene_setting 결과 data.collapse.cells 를 changeTile{mapId,layer:"upper",x,y,tile} 로 적용하세요.`);
+      }
+      // 2026-10-18 jrpg_046(48점): 성검을 뽑는다고 말하는데 칼이 바위에 그대로였다.
+      if (/검|칼|sword/iu.test(lines) && /뽑|치켜|들어\s*올/u.test(lines) && !tileChanged) {
+        add('shrine-sword-not-pulled', `${event.id}: 검을 뽑는 장면인데 바위의 칼 칸이 그대로라 뽑힌 것이 보이지 않습니다. 섬광·흔들림·효과음·sparkle 과 함께 build_scene_setting 결과 data.swordPull.cells 를 changeTile 로 적용하고, 인물 jump{dx:0,dy:0} + «치켜들었다» 대사로 맺으세요.`);
+      }
+      if (!commands.some(isDeath)) continue;
+      // 생존 분기 걷기는 색조 종류와 무관하다(다리 붕괴는 섬광·흔들림만 쓰기도 한다). 화면 효과가 없는 사망 이벤트(대화 끝 게임오버 등)는 함정이 아니다.
       for (const branch of hazardous ? survivalBranches(event) : []) {
         const steps = playerSteps(branch);
         if (steps < MIN_SURVIVAL_STEPS) {
