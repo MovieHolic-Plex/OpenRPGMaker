@@ -219,6 +219,8 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   configure_companion_rules: people("동료 규칙", "user"),
   place_examine_hotspots: people("조사 지점 놓기", "search"),
   compile_puzzle: people("퍼즐 만들기", "spark"),
+  list_puzzle_presets: inspect("퍼즐 프리셋 목록", "list"),
+  author_map_puzzle: build("맵 퍼즐 시공", "spark"),
   make_horror_loop: people("호러 루프 만들기", "flag"),
   set_life_flower: people("꽃잎 체력 만들기", "flag"),
   make_gallery_room: people("조사 방 만들기", "search"),

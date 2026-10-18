@@ -6,13 +6,14 @@
 // 새 배치 규칙은 만들지 않는다 — 맵은 구성기가, 연결·착지는 create_transfer_pair/create_time_gate/author_dungeon.entrance 가,
 // 이벤트 자리는 expand_jrpg_campaign_volume 과 같은 pickSpot(지워도 길이 끊기지 않는 칸)이 고른다.
 import { normalizeAtmosphereEffects, type AtmosphereKind } from "@/project/atmosphere";
-import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
+import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { isPassable } from "@/project/collision";
 import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
 import { questFlagIds } from "@/project/quest/questDef";
 import { EMOTE_KINDS, type EmoteKind } from "@/project/emotes";
-import type { Command, EventPage, GameEvent, GameMap, Project } from "@/project/types";
+import type { Command, Dir, EventPage, EventPageGraphic, GameEvent, GameMap, Project } from "@/project/types";
+import { charsetGraphic } from "./eventCompile";
 import { heroCharacterResourceId } from "./cutsceneCharacterLock";
 import { ensureNamedSwitch } from "./flagHelpers";
 import {
@@ -20,8 +21,8 @@ import {
   type Cell, type Room,
 } from "./jrpgVolumeTools";
 import { requireMap } from "./mapHelpers";
+import { buildVerifiedChangeTileCommands, type PuzzlePresetId } from "./puzzleAuthoringTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
-
 type MapKind = { readonly scene: string } | { readonly interior: string } | { readonly dungeon: string };
 type SiteSpec = MapKind & { readonly key: string; readonly name: string; readonly from?: string };
 /** roam = 마을을 돌아다니는 주민(random 이동). 의뢰인·조력자·동료는 제자리에 둔다. */
@@ -70,9 +71,14 @@ interface PuzzleSpec {
  * 퀘스트와 따로 쓰는 장치 — 소품 앞(mark) 칸에서 조사하면 연출 + 대사 + (heal) 회복.
  * puzzle 이 있으면 그 선택지 퍼즐을 풀어야 연출·대사·보상이 따르고, 한 번 풀면 뒤로는 done 대사만 한다(보상 되풀이 없음).
  */
+interface StatefulGraphicSpec { readonly sheet: "object1" | "object2"; readonly index: number; readonly beforeDir?: Dir; readonly afterDir?: Dir }
 interface DeviceSpec {
   readonly map: string; readonly mark: string; readonly name: string; readonly fx: readonly Fx[]; readonly heal?: true; readonly lines: readonly string[];
   readonly puzzle?: PuzzleSpec; readonly done?: readonly string[];
+  readonly graphic?: StatefulGraphicSpec; readonly changeTile?: true;
+}
+interface ChapterPresetSpec {
+  readonly map: string; readonly presetId: PuzzlePresetId; readonly title: string; readonly hintText?: string;
 }
 /** 갈래 맵으로 가는 출입구를 아이템으로 잠근다 — 아이템을 지니고 닿으면 연출과 함께 열리고, 그 뒤로는 보통 출입구다. */
 interface LockSpec { readonly site: string; readonly item: string; readonly locked: readonly string[]; readonly opened: readonly string[]; readonly fx: readonly Fx[] }
@@ -96,7 +102,9 @@ interface ChapterSpec {
   /** 퀘스트를 보고하면 파티에 들어오는 NPC key — 그 NPC 의 그림으로 배우를 만들고, 합류 뒤 맵에서 사라진다. */
   readonly joins?: readonly string[];
   readonly puzzle?: PuzzleSpec;
+  readonly clueGraphic?: StatefulGraphicSpec;
   readonly devices?: readonly DeviceSpec[];
+  readonly puzzlePresets?: readonly ChapterPresetSpec[];
   readonly lock?: LockSpec;
   readonly quest: {
     readonly title: string;
@@ -143,6 +151,8 @@ export const JRPG_CHAPTERS = {
     // 천년제 범종·텔레포드 놀이 — 신호 종을 힘껏 쳐야 루카가 텔레포드를 돌리고, 출력을 「중간」에 맞춰야 시연이 성공한다.
     devices: [{
       map: "hub", mark: "telepod", name: "천년제 텔레포드 시연대",
+      graphic: { sheet: "object2", index: 0, beforeDir: "down", afterDir: "up" },
+      changeTile: true,
       fx: ["se:bell", "flash:white", "particles:sparkle"],
       lines: ["데엥— 종소리에 맞춰 텔레포드 두 기가 푸르게 빛났다!", "구경꾼들이 환호하며 꽃잎을 뿌린다."],
       done: ["텔레포드가 은은하게 웅웅거린다.", "(천년제 기념 메달은 이미 받았다)"],
@@ -165,6 +175,9 @@ export const JRPG_CHAPTERS = {
         reward: { item: { id: "item_ct_millennial_medal", name: "천년제 기념 메달", description: "천년제 범종 놀이에서 받은 은빛 메달. 광장의 상인들이 알아보고 웃어 준다." }, line: "「천년제 기념 메달」을 받았다!" },
       },
     }],
+    puzzlePresets: [
+      { map: "castle", presetId: "lever_secret_passage", title: "가르디아 성 지하 보물고 비밀 레버" },
+    ],
     npcs: [
       { key: "marle", name: "마르", query: "공주", lines: ["천년제 구경 왔어? 나랑 같이 돌아보자!", "저 텔레포드, 루카가 만든 거래. 한번 타 볼래?"] },
       { key: "lucca", name: "루카", query: "마법사 소녀", lines: ["내 텔레포드 시연 보러 왔구나! 광장 북쪽 무대야.", "펜던트가 장치랑 공명하는 건 계산에 없었는데…"] },
@@ -185,10 +198,15 @@ export const JRPG_CHAPTERS = {
     event: {
       map: "hub", title: "텔레포드 시연 — 마르의 실종",
       beats: [
-        { kind: "letterbox", show: true }, say("루카", "자, 천년제 특별 시연! 텔레포드 가동!"),
+        { kind: "letterbox", show: true },
+        { kind: "moveActor", target: "lucca", moves: [{ kind: "move", dir: "down" }], wait: true },
+        { kind: "camera", mode: "pan", x: 28, y: 18, durationMs: 400, wait: true },
+        say("루카", "자, 천년제 특별 시연! 텔레포드 가동!"),
         { kind: "parallel", beats: [{ kind: "flash", color: "white", durationMs: 400 }, { kind: "shake", intensity: 3, durationMs: 600, axis: "both" }] },
+        { kind: "moveActor", target: "marle", moves: [{ kind: "move", dir: "up" }], wait: true },
         say("마르", "어, 펜던트가… 빛나고 있어?!"), { kind: "particles", preset: "magic", target: "player", durationMs: 900, wait: true },
         { kind: "distort", effect: "rotate", amount: 0.6, durationMs: 600, wait: true }, { kind: "distort", effect: "clear", durationMs: 200 },
+        { kind: "camera", mode: "return", durationMs: 350, wait: true },
         say("루카", "시간의 문이 열렸어…! 마르가 사라졌다고?!"),
       ],
     },
@@ -226,6 +244,10 @@ export const JRPG_CHAPTERS = {
       { key: "squire", name: "견습 기사", query: "청년 병사", lines: ["단장님은 마왕성 지하에 성검 손잡이가 있다고 하셨어요!"], roam: true },
     ],
     joins: ["frog"],
+    clueGraphic: { sheet: "object2", index: 1, beforeDir: "down", afterDir: "up" },
+    puzzlePresets: [
+      { map: "keep", presetId: "statue_pressure_plates", title: "마왕성 지하 석상 압력 발판" },
+    ],
     puzzle: {
       intro: ["낡은 파이프 오르간이다. 건반 위에 먼지가 소복이 쌓여 있다."],
       stages: [{
@@ -246,7 +268,9 @@ export const JRPG_CHAPTERS = {
     event: {
       map: "chapel", title: "스테인드글라스 아래의 정체",
       beats: [
-        { kind: "letterbox", show: true }, say("수녀", "…왕비님이라면 이미 저 깊은 곳에 계시지요."),
+        { kind: "letterbox", show: true },
+        { kind: "moveActor", target: "nun", moves: [{ kind: "move", dir: "down" }], wait: true },
+        say("수녀", "…왕비님이라면 이미 저 깊은 곳에 계시지요."),
         { kind: "tint", color: "#3a1030", durationMs: 600, wait: true }, { kind: "shake", intensity: 6, durationMs: 500, axis: "vertical" },
         say("수녀", "키샤샤! 마왕님의 명으로 너희를 처리한다!"), { kind: "particles", preset: "smoke", target: "player", durationMs: 700, wait: true },
         { kind: "tint", color: "none", durationMs: 400 },
@@ -272,6 +296,10 @@ export const JRPG_CHAPTERS = {
       { key: "child", name: "부락 아이", query: "여자아이", lines: ["공룡인간들이 협곡 다리를 건너왔대!"], roam: true },
     ],
     joins: ["ayla"],
+    clueGraphic: { sheet: "object1", index: 0, beforeDir: "down", afterDir: "up" },
+    puzzlePresets: [
+      { map: "lair", presetId: "brazier_ignition_order", title: "티라노 소굴 원시 토템 3화로 점화" },
+    ],
     puzzle: {
       intro: ["폭포 옆 붉은 바위 틈에서 불을 품은 돌이 빛나고 있다."],
       stages: [],
@@ -296,8 +324,11 @@ export const JRPG_CHAPTERS = {
     event: {
       map: "hub", title: "화톳불 축제와 에이라의 합류",
       beats: [
-        { kind: "letterbox", show: true }, { kind: "tint", color: "#40180a", durationMs: 600 }, say("족장 할멈", "불을 둘러싸라! 오늘은 부락의 축제다!"),
+        { kind: "letterbox", show: true }, { kind: "tint", color: "#40180a", durationMs: 600 },
+        { kind: "moveActor", target: "elder", moves: [{ kind: "move", dir: "down" }], wait: true },
+        say("족장 할멈", "불을 둘러싸라! 오늘은 부락의 축제다!"),
         { kind: "particles", preset: "fire", target: "player", durationMs: 900, wait: true }, { kind: "emote", target: "player", emote: "music", durationMs: 800 },
+        { kind: "moveActor", target: "ayla", moves: [{ kind: "move", dir: "down" }], wait: true },
         say("에이라", "너 강하다. 에이라 따라간다!"), { kind: "tint", color: "none", durationMs: 500 },
       ],
     },
@@ -319,6 +350,10 @@ export const JRPG_CHAPTERS = {
       { key: "schala", name: "사라 공주", query: "신관 · 청록 로브", lines: ["어머니는 마신기에 홀리셨어요… 저를 도와주세요."] },
       { key: "janus", name: "쟈키", query: "남자아이", lines: ["…누나 말고는 아무도 믿지 마."], roam: true },
       { key: "captain", name: "검은 새 갑판장", query: "뱃사람 · 흰 선원 모자", lines: ["달팽이 같은 하늘배들이랑은 달라. 이게 검은 새다."], map: "dock" },
+    ],
+    clueGraphic: { sheet: "object2", index: 3, beforeDir: "down", afterDir: "up" },
+    puzzlePresets: [
+      { map: "ocean", presetId: "boss_seal_monoliths", title: "해저신전 삼중 마석 봉인 비석" },
     ],
     // 마석 제단 — 펜던트를 대고 하늘·바다·대지 문양 가운데 예언자가 말한 순서(하늘 → 바다)대로 지운다.
     puzzle: {
@@ -349,6 +384,7 @@ export const JRPG_CHAPTERS = {
       map: "ocean", title: "라보스의 각성",
       beats: [
         { kind: "letterbox", show: true }, { kind: "distort", effect: "wave", amount: 0.5, durationMs: 500 },
+        { kind: "moveActor", target: "player", moves: [{ kind: "move", dir: "up" }], wait: true },
         say("예언자", "이미 늦었다… 라보스가 눈을 뜬다!"),
         { kind: "parallel", beats: [{ kind: "shake", intensity: 10, durationMs: 1200, axis: "vertical" }, { kind: "flash", color: "red", durationMs: 600 }] },
         { kind: "particles", preset: "explosion", target: "player", durationMs: 900, wait: true }, { kind: "distort", effect: "clear", durationMs: 200 },
@@ -376,7 +412,9 @@ export const JRPG_CHAPTERS = {
       ],
     },
     devices: [{
-      map: "hub", mark: "pod", name: "에너트론 회복 캡슐", heal: true, fx: ["flash:blue", "se:recovery7", "particles:heal"],
+      map: "hub", mark: "pod", name: "에너트론 회복 캡슐",
+      graphic: { sheet: "object2", index: 5, beforeDir: "down", afterDir: "up" },
+      heal: true, fx: ["flash:blue", "se:recovery7", "particles:heal"],
       lines: ["에너트론이 웅웅 울리며 푸른 빛이 몸을 감싼다…", "HP·MP가 전부 회복되었다! …하지만 배는 여전히 고프다."],
     }],
     npcs: [
@@ -386,6 +424,10 @@ export const JRPG_CHAPTERS = {
       { key: "keeper", name: "공장 관리 로봇", query: "고철 로봇", lines: ["침입자 경고. 생산 라인에서 물러나십시오."], map: "factory" },
     ],
     joins: ["robo"],
+    clueGraphic: { sheet: "object2", index: 1, beforeDir: "down", afterDir: "up" },
+    puzzlePresets: [
+      { map: "factory", presetId: "two_step_sequence", title: "로봇 공장 보안 격벽 2단계 콘솔" },
+    ],
     puzzle: {
       intro: ["중앙 제어 콘솔이다. 화면에 「보안 잠금 — 관리자 코드 입력」이 깜박인다."],
       stages: [
@@ -414,7 +456,9 @@ export const JRPG_CHAPTERS = {
     event: {
       map: "factory", title: "로보 재기동",
       beats: [
-        { kind: "letterbox", show: true }, say("로보", "…시스템 부팅. 기억 장치 손상 37%."),
+        { kind: "letterbox", show: true },
+        { kind: "moveActor", target: "player", moves: [{ kind: "move", dir: "up" }], wait: true },
+        say("로보", "…시스템 부팅. 기억 장치 손상 37%."),
         { kind: "particles", preset: "sparkle", target: "player", durationMs: 800, wait: true }, { kind: "flash", color: "blue", durationMs: 300 },
         say("로보", "당신이 저를 깨웠군요. 앞으로 함께하겠습니다."), { kind: "emote", target: "player", emote: "exclamation", durationMs: 700 },
       ],
@@ -449,6 +493,8 @@ export const JRPG_CHAPTERS = {
     // 선로 전환기 — 경비병 말대로 「왼쪽 갱도」로 선로를 돌리고 광차 브레이크를 풀어야 막힌 갱도의 광차가 밀려나며 보급 상자가 드러난다.
     devices: [{
       map: "mine", mark: "switch_lever", name: "광산 철로 선로 전환기",
+      graphic: { sheet: "object2", index: 0, beforeDir: "down", afterDir: "up" },
+      changeTile: true,
       fx: ["se:collapse1", "shake:4", "particles:dust"],
       lines: ["덜커덩— 광차가 왼쪽 갱도로 미끄러져 내려가며 막힌 선로를 밀어냈다!", "갱도 벽에 숨겨 둔 광부들의 보급 주머니가 굴러 나왔다."],
       done: ["선로는 왼쪽 갱도로 돌려져 있다. 광차는 이미 내려갔다."],
@@ -478,6 +524,10 @@ export const JRPG_CHAPTERS = {
       { key: "terra", name: "티나", query: "요정 소녀", lines: ["…아무것도 기억나지 않아요. 왜 저 얼음이 부르는 걸까요."], map: "house" },
     ],
     joins: ["terra"],
+    clueGraphic: { sheet: "object2", index: 6, beforeDir: "down", afterDir: "up" },
+    puzzlePresets: [
+      { map: "mine", presetId: "dynamite_rock_blast", title: "나르셰 마석 광산 낙석 다이너마이트 폭파" },
+    ],
     quest: {
       title: "얼음 속 환수", summary: "광산 깊은 곳 얼어붙은 환수와 공명하고 제국의 거대 달팽이를 물리친다.",
       giver: "arvis", ask: "티나를 데리고 광산 뒷길로 빠져나가게. 얼음 속 환수가 그녀를 부르고 있어.",
@@ -489,7 +539,9 @@ export const JRPG_CHAPTERS = {
     event: {
       map: "mine", title: "환수 공명",
       beats: [
-        { kind: "letterbox", show: true }, say("티나", "…이 소리는? 누군가 나를 부르고 있어."),
+        { kind: "letterbox", show: true },
+        { kind: "moveActor", target: "player", moves: [{ kind: "move", dir: "up" }], wait: true },
+        say("티나", "…이 소리는? 누군가 나를 부르고 있어."),
         { kind: "parallel", beats: [{ kind: "flash", color: "purple", durationMs: 800 }, { kind: "shake", intensity: 3, durationMs: 900, axis: "both" }] },
         { kind: "particles", preset: "magic", target: "player", durationMs: 1000, wait: true }, { kind: "look", target: "player", pose: "fallen" },
         say("아르비스", "티나! 정신 차리게!"), { kind: "look", target: "player", reset: true },
@@ -512,6 +564,10 @@ export const JRPG_CHAPTERS = {
       { key: "impresario", name: "극장 지배인", query: "중절모 신사", lines: ["마리아 대역이라니! 아리아만 외우면 무대에 설 수 있소!"], map: "opera" },
     ],
     joins: ["edgar"],
+    clueGraphic: { sheet: "object2", index: 5, beforeDir: "down", afterDir: "up" },
+    puzzlePresets: [
+      { map: "engine", presetId: "sluice_lava_bridge", title: "피가로 기관실 모래 잠항 밸브" },
+    ],
     // 무대 위 아리아 — 1·2·3절 가사를 맞게 이어 불러야 박수 속에 공연이 이어지고, 들보 위 울트로스의 추가 드러난다.
     puzzle: {
       intro: ["조명이 무대를 비춘다. 마리아의 드레스를 입고 아리아 「아리아 디 마리아」를 부를 차례다."],
@@ -548,9 +604,10 @@ export const JRPG_CHAPTERS = {
       map: "opera", title: "아리아 컷신",
       beats: [
         { kind: "letterbox", show: true }, { kind: "tint", color: "#201030", durationMs: 600 },
+        { kind: "moveActor", target: "impresario", moves: [{ kind: "move", dir: "down" }], wait: true },
         say("마리아", "오 나의 사랑, 나의 왕자… 별이 지는 밤에도 기다리리…"),
         { kind: "particles", preset: "sparkle", target: "player", durationMs: 900, wait: true }, { kind: "emote", target: "player", emote: "music", durationMs: 900 },
-        say("지배인", "브라보! 하지만 들보 위에 저 문어는 대체…?!"), { kind: "tint", color: "none", durationMs: 400 },
+        say("극장 지배인", "브라보! 하지만 들보 위에 저 문어는 대체…?!"), { kind: "tint", color: "none", durationMs: 400 },
       ],
     },
   },
@@ -587,6 +644,10 @@ export const JRPG_CHAPTERS = {
       { key: "clockman", name: "시계지기", query: "노인 · 회색 머리 보라 숄(여)", lines: ["진짜 시각은 거짓말 사이에 숨어 있지."], map: "clock" },
     ],
     joins: ["sabin"],
+    clueGraphic: { sheet: "object2", index: 1, beforeDir: "down", afterDir: "up" },
+    puzzlePresets: [
+      { map: "tower", presetId: "riddle_mimic_chests", title: "케프카의 탑 진실의 보물상자 수수께끼" },
+    ],
     // 조조의 시계 — 거짓말쟁이 셋의 말을 뒤집어 시·분·초를 차례로 맞춘다(6시 10분 50초).
     puzzle: {
       intro: ["멈춘 벽시계다. 바늘 세 개를 손으로 돌릴 수 있다.", "(조조 사람들은 모두 거짓말을 한다… 들은 말을 뒤집어 보자)"],
@@ -611,7 +672,10 @@ export const JRPG_CHAPTERS = {
       map: "hub", title: "흩어진 동료 재집결",
       beats: [
         { kind: "letterbox", show: true }, { kind: "weather", weather: "rain", intensity: 0.8, durationMs: 400 },
-        say("셀리스", "…마슈? 정말 마슈야?"), say("마슈", "셀리스! 살아 있었구나!"),
+        { kind: "moveActor", target: "celes", moves: [{ kind: "move", dir: "down" }], wait: true },
+        say("셀리스", "…마슈? 정말 마슈야?"),
+        { kind: "moveActor", target: "sabin", moves: [{ kind: "move", dir: "up" }], wait: true },
+        say("마슈", "셀리스! 살아 있었구나!"),
         { kind: "emote", target: "player", emote: "exclamation", durationMs: 700 }, { kind: "particles", preset: "heal", target: "player", durationMs: 800, wait: true },
         say("셀리스", "모두를 찾아서 케프카의 탑으로 가자."),
       ],
@@ -625,7 +689,7 @@ export const JRPG_CHAPTER_IDS = Object.keys(JRPG_CHAPTERS) as JrpgChapterId[];
 const key = (c: Cell): string => `${c.x},${c.y}`;
 const BEAT_LABEL: Record<string, string> = {
   say: "대사", letterbox: "레터박스", flash: "섬광", shake: "흔들림", particles: "입자", distort: "왜곡", tint: "색조",
-  emote: "감정 말풍선", look: "자세", weather: "날씨", parallel: "동시 연출",
+  emote: "감정 말풍선", look: "자세", weather: "날씨", parallel: "동시 연출", moveActor: "배우 이동", camera: "카메라 이동",
 };
 
 /** 걸음 덩이 가운데에 가장 가까운 칸 — NPC·사건 자리의 기준(마을 광장 근처). */
@@ -1002,20 +1066,66 @@ function lockGate(draft: Project, map: GameMap, siteMapId: string, lock: LockSpe
  * 장치 — 소품 앞 칸의 투명 조사 이벤트: 연출 → 대사 → (heal) 파티 전원 회복.
  * 퍼즐 장치는 풀어야 그 차례가 오고(보상 포함), 풀면 풀림 스위치가 서서 뒤로는 done 대사 페이지가 대신 선다.
  */
+function statefulObjGraphic(spec: StatefulGraphicSpec, state: "before" | "after"): EventPageGraphic {
+  const direction: Dir = state === "before" ? (spec.beforeDir ?? "down") : (spec.afterDir ?? "up");
+  const base = charsetGraphic(`tex_easyrpg_charset_${spec.sheet}`, spec.index);
+  return {
+    ...base,
+    direction,
+    pattern: charsetFrameIndex({ characterIndex: spec.index, direction, pattern: 1 }),
+  };
+}
+
 function placeDevice(draft: Project, map: GameMap, at: Cell, id: string, device: DeviceSpec, reward: readonly Command[]): void {
-  const page = (pageId: string, conditions: EventPage["conditions"], commands: Command[]): Record<string, unknown> => ({
-    id: pageId, name: device.name, conditions, graphic: { transparent: true }, trigger: { kind: "action" }, priority: "below", movement: FIXED, commands,
+  const beforeGraphic: EventPageGraphic = device.graphic ? statefulObjGraphic(device.graphic, "before") : { transparent: true };
+  const afterGraphic: EventPageGraphic = device.graphic ? statefulObjGraphic(device.graphic, "after") : beforeGraphic;
+  const priority: EventPage["priority"] = device.graphic ? "same" : "below";
+  const page = (pageId: string, conditions: EventPage["conditions"], graphic: EventPageGraphic, commands: Command[]): Record<string, unknown> => ({
+    id: pageId, name: device.name, conditions, graphic, trigger: { kind: "action" }, priority, overlapForbidden: priority === "same", animationType: "fixedGraphic", movement: FIXED, commands,
   });
-  const effect: Command[] = [...fxCommands(device.fx), ...device.lines.map(say1), ...(device.heal ? [{ kind: "recoverAll" } as const] : [])];
+  const tileChangeCmds = device.changeTile ? buildVerifiedChangeTileCommands(draft, map, [at]) : [];
+  const effect: Command[] = [...tileChangeCmds, ...fxCommands(device.fx), ...device.lines.map(say1), ...(device.heal ? [{ kind: "recoverAll" } as const] : [])];
   const solved = `sw_${id.replace(/^ev_/, "")}_solved`;
   if (device.puzzle) ensureNamedSwitch(draft, solved, `${device.name} 풀림`);
   const pages = device.puzzle
     ? [
-      page(`${id}_p1`, [], puzzleCommands(device.puzzle, [], [...effect, ...reward, { kind: "setSwitch", switchId: solved, value: true }])),
-      page(`${id}_solved`, [{ kind: "switch", switchId: solved, value: true }], (device.done ?? device.lines).map(say1)),
+      page(`${id}_p1`, [], beforeGraphic, puzzleCommands(device.puzzle, [], [...effect, ...reward, { kind: "setSwitch", switchId: solved, value: true }])),
+      page(`${id}_solved`, [{ kind: "switch", switchId: solved, value: true }], afterGraphic, (device.done ?? device.lines).map(say1)),
     ]
-    : [page(`${id}_p1`, [], effect)];
+    : [page(`${id}_p1`, [], beforeGraphic, effect)];
   nested(draft, "upsert_event", { mapId: map.id, event: { id, name: device.name, x: at.x, y: at.y, trigger: { kind: "action" }, commands: [], pages } });
+}
+
+function placeSaveCrystal(draft: Project, map: GameMap, at: Cell, id: string): void {
+  const crystalGraphic = statefulObjGraphic({ sheet: "object2", index: 6, beforeDir: "down" }, "before");
+  const commands: Command[] = [
+    ...fxCommands(["se:recovery7", "flash:blue", "particles:heal"]),
+    say1("푸른 기억의 결정이 은은하게 공명하며 파티 전원의 체력과 마력을 완전히 회복시켰다!"),
+    { kind: "recoverAll" },
+  ];
+  nested(draft, "upsert_event", {
+    mapId: map.id,
+    event: {
+      id,
+      name: "기억의 세이브 결정",
+      x: at.x,
+      y: at.y,
+      trigger: { kind: "action" },
+      commands: [],
+      pages: [{
+        id: `${id}_p1`,
+        name: "기억의 세이브 결정",
+        conditions: [],
+        graphic: crystalGraphic,
+        trigger: { kind: "action" },
+        priority: "same",
+        overlapForbidden: true,
+        animationType: "fixedDirectionStep",
+        movement: FIXED,
+        commands,
+      }],
+    },
+  });
 }
 
 /** 퍼즐 보상 -> 명령(아이템은 데이터베이스에 먼저 넣는다) + 표시 이름. */
@@ -1289,12 +1399,25 @@ const authorJrpgChapter: ToolDefinition = {
         if (event) vanishAfter(event, done);
         gimmicks.push(`합류: ${j.npc.name} — 보고하면 파티에 들어오고 맵에서 사라진다 [${j.actorId}]`);
       }
-      // 퍼즐 — 조사 단계의 진행 페이지를 선택지 퍼즐로 감싼다. 풀어야 원래 단서 대사·단계 완료가 따른다.
-      const inspect = clueMap.events.find((e) => e.id === `ev_${questKey}_inspect1`)?.pages?.find((p) => p.id.endsWith("_active"));
+      // 퍼즐 — 조사 단계의 진행 페이지를 선택지 퍼즐 + 2상태 기물 그래픽 + 실제 changeTile 타일 개방으로 감싼다.
+      const inspectEvent = clueMap.events.find((e) => e.id === `ev_${questKey}_inspect1`);
+      const inspect = inspectEvent?.pages?.find((p) => p.id.endsWith("_active"));
+      const inspectDone = inspectEvent?.pages?.find((p) => p.id.endsWith("_done"));
+      if (spec.clueGraphic && inspect) {
+        inspect.graphic = statefulObjGraphic(spec.clueGraphic, "before");
+        inspect.priority = "same";
+        inspect.overlapForbidden = true;
+        if (inspectDone) {
+          inspectDone.graphic = statefulObjGraphic(spec.clueGraphic, "after");
+          inspectDone.priority = "same";
+          inspectDone.overlapForbidden = true;
+        }
+      }
       if (spec.puzzle && inspect) {
         const prize = puzzleReward(draft, spec.puzzle);
-        inspect.commands = puzzleCommands(spec.puzzle, prize.commands, inspect.commands);
-        gimmicks.push(`퍼즐: ${clueMap.name} 「${q.clue.label}」 — ${spec.puzzle.stages.length ? `${spec.puzzle.stages.length}단계 선택지` : "조사"}${prize.label ? ` · 보상 ${prize.label}` : ""}`);
+        const clueChangeTiles = buildVerifiedChangeTileCommands(draft, clueMap, [clueAt]);
+        inspect.commands = puzzleCommands(spec.puzzle, [...clueChangeTiles, ...prize.commands], inspect.commands);
+        gimmicks.push(`퍼즐: ${clueMap.name} 「${q.clue.label}」 — ${spec.puzzle.stages.length ? `${spec.puzzle.stages.length}단계 선택지` : "조사"} + 2상태 기물 + changeTile ${clueChangeTiles.length}칸${prize.label ? ` · 보상 ${prize.label}` : ""}`);
       } else if (spec.puzzle) warnings.push(`퍼즐: ${clueMap.name} 의 조사 이벤트를 찾지 못해 퍼즐을 붙이지 못했다`);
     } else warnings.push(`퀘스트 「${q.title}」: 의뢰인·조력자·단서·수호자 자리 중 빠진 것이 있어 만들지 않았다`);
 
@@ -1308,6 +1431,37 @@ const authorJrpgChapter: ToolDefinition = {
       placeDevice(draft, map, at, id, device, prize?.commands ?? []);
       const label = device.puzzle ? ` — ${device.puzzle.stages.length}단계 선택지${prize?.label ? ` · 보상 ${prize.label}` : ""}` : "";
       gimmicks.push(`장치: ${map.name} (${at.x},${at.y}) ${device.name}${device.heal ? " — 전원 회복" : ""}${label}`);
+    }
+    // ⑥-2b 던전 보스방 앞 기억의 세이브 결정 배치
+    for (const [k] of dungeonRooms) {
+      const dMap = mapOf(k);
+      const saveAt = spot(k, 0.82, 2);
+      if (dMap && saveAt) {
+        const saveId = `ev_${prefix}_${k}_save_crystal`;
+        placeSaveCrystal(draft, dMap, saveAt, saveId);
+        gimmicks.push(`세이브 결정: ${dMap.name} (${saveAt.x},${saveAt.y}) 기억의 세이브 결정 — 전원 회복 & 결전 준비`);
+      }
+    }
+
+    // ⑥-2c 장별 전용 퍼즐 프리셋(author_map_puzzle) 시공
+    for (const presetSpec of spec.puzzlePresets ?? []) {
+      const pMap = mapOf(presetSpec.map);
+      if (!pMap) continue;
+      try {
+        const res = nested(draft, "author_map_puzzle", {
+          mapId: pMap.id,
+          presetId: presetSpec.presetId,
+          puzzleId: `${prefix}_${presetSpec.map}_${presetSpec.presetId}`,
+          title: presetSpec.title,
+          ...(presetSpec.hintText ? { hintText: presetSpec.hintText } : {}),
+        });
+        const pEvents = list(res.data, "events").map(asCell).filter((c): c is Cell => !!c);
+        const pChangeTileCount = num(res.data, "changeTileCount") ?? 0;
+        for (const ev of pEvents) takenOf(pMap.id).add(`${ev.x},${ev.y}`);
+        gimmicks.push(`프리셋 퍼즐: ${pMap.name} 「${presetSpec.title}」 [${presetSpec.presetId}] — 2상태 기물 ${pEvents.length}개 · changeTile ${pChangeTileCount}칸`);
+      } catch (cause) {
+        warnings.push(`프리셋 퍼즐 ${presetSpec.title}: ${cause instanceof Error ? cause.message : String(cause)}`);
+      }
     }
 
     // ⑥-3 잠긴 출입구 — 아이템을 지니고 닿아야 갈래 맵으로 간다
@@ -1326,7 +1480,18 @@ const authorJrpgChapter: ToolDefinition = {
     let eventOut: { mapId: string; title: string; x: number; y: number; beats: string[] } | undefined;
     if (eventMap && eventAt) {
       const eventId = `ev_${prefix}_event`;
-      nested(draft, "script_cutscene", { mapId: eventMap.id, eventId, x: eventAt.x, y: eventAt.y, trigger: "auto", once: true, skippable: true, beats: spec.event.beats });
+      const resolveTarget = (t: unknown): unknown => {
+        if (typeof t !== "string") return t;
+        const byKey = npcIds.get(t);
+        if (byKey?.mapId === eventMap.id) return byKey.eventId;
+        const byName = spec.npcs.find((n) => n.name === t);
+        const ref = byName ? npcIds.get(byName.key) : undefined;
+        return ref?.mapId === eventMap.id ? ref.eventId : t;
+      };
+      const resolvedBeats = spec.event.beats.map((b) =>
+        typeof b.target === "string" ? { ...b, target: resolveTarget(b.target) } : b,
+      );
+      nested(draft, "script_cutscene", { mapId: eventMap.id, eventId, x: eventAt.x, y: eventAt.y, trigger: "auto", once: true, skippable: true, beats: resolvedBeats });
       eventOut = {
         mapId: eventMap.id, title: spec.event.title, x: eventAt.x, y: eventAt.y,
         beats: spec.event.beats.map((b) => b.kind === "say" ? `${String(b.speaker)}: ${String(b.text)}` : BEAT_LABEL[String(b.kind)] ?? String(b.kind)),
@@ -1341,9 +1506,22 @@ const authorJrpgChapter: ToolDefinition = {
       const b = spot("hub", 0.5, 3);
       if (a && b) {
         takenOf(src.id).add(key(a));
-        nested(draft, "create_time_gate", { a: { mapId: src.id, x: a.x, y: a.y }, b: { mapId: hubId, x: b.x, y: b.y }, name: spec.gateName ?? "시간의 문", effect: "swirl" });
+        nested(draft, "create_time_gate", { a: { mapId: src.id, x: a.x, y: a.y }, b: { mapId: hubId, x: b.x, y: b.y }, name: spec.gateName ?? "시간의 문", effect: "swirl", graphic: { textureKey: "tex_easyrpg_charset_object2", characterIndex: 6 } });
         gateOut = `${src.name} (${a.x},${a.y}) ⇄ ${hub.name} (${b.x},${b.y})`;
       } else warnings.push("시간의 문 자리를 찾지 못했다");
+    }
+
+    // ⑨ 로케이션 표시명 중복 해소 (map-location-duplicate-name 린트 경고 0 보장)
+    for (const m of mapsOut) {
+      const map = draft.maps[m.mapId];
+      if (!map?.locations?.length) continue;
+      const counts = new Map<string, number>();
+      for (const loc of map.locations) {
+        const keyName = loc.name.trim();
+        const seenCount = (counts.get(keyName) ?? 0) + 1;
+        counts.set(keyName, seenCount);
+        if (seenCount > 1) loc.name = `${keyName} ${seenCount}`;
+      }
     }
 
     return {
