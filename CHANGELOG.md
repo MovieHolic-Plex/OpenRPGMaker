@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.268.2 — 2026-10-19
+
+### 수정
+
+- **interior** — R12b Opus VQA - redraw dept escalators/luxury displays and west-facing train cab in place; dept fashion wing boutique alcoves, hospital 3F OR/ICU/imaging zoning (#2969) (`55dd8b1`)
+- **jp-city** — unify 26 region kits to 3/4 top-view style and densify all 30 regional maps (#2968) (`ec73a64`)
+
 ## 0.268.1 — 2026-10-18
 
 ### 수정
