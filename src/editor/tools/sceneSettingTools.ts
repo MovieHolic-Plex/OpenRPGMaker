@@ -35,6 +35,7 @@ const WALKS: Partial<Record<SceneTheme, Walk>> = {
   lava_bridge: { dir: "up", steps: 4 },
   volcano: { dir: "right", steps: 3 },
   poison_swamp: { dir: "right", steps: 4 },
+  ruins_shrine: { dir: "down", steps: 3 },
 };
 
 /** 비워 두는 동선(이벤트 칸 기준) — 다리·둑길·참배로. 기물을 얹지 않고 조수의 덧찍기도 막는다. */
@@ -116,54 +117,85 @@ function buildVolcano(s: Stage): { lavaTile: number } {
     return n > 0.7 ? 2 : n < 0.18 ? 0 : 1;
   }, { ash: "ash-b", dirt: "dirt-b" });
   // 서쪽 마을 외곽 돌길: 사각 띠가 되지 않게 가운데 줄(y)을 따라 이어지다 동쪽 화산재 앞에서 드문드문 끊긴다.
-  for (let cx = area.x; cx <= x - 5; cx++) {
-    if (cx <= x - 7 || hash01(cx, y, 83) < 0.65) {
-      p.ground(cx, y, p.tile("gm", `gm:floor:gm-fl-flag-${(cx + y) % 2 ? "a" : "b"}`));
-    }
-    for (const dy of [-1, 1]) {
-      if (cx <= x - 9 && hash01(cx, y + dy, 89) < 0.55) {
-        p.ground(cx, y + dy, p.tile("gm", `gm:floor:gm-fl-flag-${(cx + y + dy) % 2 ? "a" : "b"}`));
+  if (p.map.id === "map_ember_village") {
+    for (let cx = area.x; cx <= x - 5; cx++) {
+      if (cx <= x - 7 || hash01(cx, y, 83) < 0.65) {
+        p.ground(cx, y, p.tile("gm", `gm:floor:gm-fl-flag-${(cx + y) % 2 ? "a" : "b"}`));
+      }
+      for (const dy of [-1, 1]) {
+        if (cx <= x - 9 && hash01(cx, y + dy, 89) < 0.55) {
+          p.ground(cx, y + dy, p.tile("gm", `gm:floor:gm-fl-flag-${(cx + y + dy) % 2 ? "a" : "b"}`));
+        }
       }
     }
   }
   s.built.push("마을 외곽 돌길·화산재 분화구 바닥·칼데라 용암 못·용암 강 2줄");
-  if (area.y === 0 && y >= 9) {
+  if (area.y === 0 && y >= 4) {
     rockWall(s, 0, area.x, area.x + area.w - 1);
     s.built.push("북쪽 현무암 절벽");
   }
-  // 마을 외곽 건축물·울타리·경계 소품(x-15..x-6): 초록 풀·덩굴이 없는 돌·나무 외곽 구조물만 쓴다.
-  const outskirts: [ArtSource, string, number, number][] = [
-    ["bd", "bd-pick-mining-valley-s2", x - 15, y - 8],
-    ["bd", "bd-pick-mountain-pass-guard-post", x - 10, y - 7],
-    ["bd", "bd-out-woodshed", x - 15, y + 3],
-    ["bd", "bd-pick-mining-valley-kiln", x - 10, y + 3],
-    ["bd", "bd-out-fence-run", x - 14, y - 2],
-    ["bd", "bd-out-fence-run", x - 14, y + 2],
-    ["bd", "bd-pick-mountain-pass-wall-seg", x - 8, y - 2],
-    ["bd", "bd-pick-mountain-pass-wall-seg", x - 8, y + 2],
-    ["bd", "bd-out-signpost", x - 6, y - 2],
-    ["bd", "bd-prop-lamp_crook", x - 9, y - 4],
-    ["bd", "bd-prop-lamp_crook", x - 9, y + 2],
-    ["bd", "bd-pick-mining-valley-crates", x - 12, y - 4],
-    ["bd", "bd-out-woodpile", x - 12, y + 4],
-  ];
+  // 마을 맵이면 서쪽에 외곽 건축물·울타리·경계 소품(x-15..x-6), 폐허·유적 맵이면 서쪽에도 현무암 기둥·폐허 벽·화산 기물을 둔다.
+  const outskirts: [ArtSource, string, number, number][] = p.map.id === "map_ember_village"
+    ? [
+      ["bd", "bd-pick-mining-valley-s2", x - 15, y - 8],
+      ["bd", "bd-pick-mountain-pass-guard-post", x - 10, y - 7],
+      ["bd", "bd-out-woodshed", x - 15, y + 3],
+      ["bd", "bd-pick-mining-valley-kiln", x - 10, y + 3],
+      ["bd", "bd-out-fence-run", x - 14, y - 2],
+      ["bd", "bd-out-fence-run", x - 14, y + 2],
+      ["bd", "bd-pick-mountain-pass-wall-seg", x - 8, y - 2],
+      ["bd", "bd-pick-mountain-pass-wall-seg", x - 8, y + 2],
+      ["bd", "bd-out-signpost", x - 6, y - 2],
+      ["bd", "bd-prop-lamp_crook", x - 9, y - 4],
+      ["bd", "bd-prop-lamp_crook", x - 9, y + 2],
+      ["bd", "bd-pick-mining-valley-crates", x - 12, y - 4],
+      ["bd", "bd-out-woodpile", x - 12, y + 4],
+    ]
+    : [
+      ["ph", "ph-basalt-columns", x - 8, y - 2],
+      ["bd", `${RUINS}ruined-wall-2`, x - 6, y - 2],
+      ["bd", `${VOLCANO}spike-wide`, x - 8, y + 3],
+      ["ph", "ph-basalt-columns", x - 8, y + 6],
+      ["bd", `${RUINS}ruined-wall-2`, x - 5, y + 5],
+      ["bd", `${VOLCANO}brazier`, x - 6, y + 2],
+      ["bd", `${VOLCANO}fire-crystal`, x - 7, y + 1],
+      ["ph", "ph-dead-tree", x - 6, y + 7],
+      ["bd", `${RUINS}column-temple-broken`, x - 5, y + 8],
+    ];
   for (const [src, id, px, py] of outskirts) p.kitNear(src, id, Math.round(px), Math.round(py), 1);
   const shore = shoreCells(s, level, 3, area);
   const spots: [ArtSource, string, number, number][] = [
     ["ph", "ph-basalt-columns", x - 4, y - 8],
     ["ph", "ph-basalt-columns", x + 2, y - 9],
+    ["ph", "ph-basalt-columns", x + 8, y - 8],
     ["ph", "ph-dead-tree", x - 5, y - 4],
+    ["ph", "ph-dead-tree", x + 8, y + 4],
     ["bd", `${VOLCANO}altar`, x - 2, y - 9],
     ["bd", `${VOLCANO}spike-wide`, x - 4, y + 4],
+    ["bd", `${VOLCANO}spike-wide`, x + 5, y + 5],
     ["bd", `${VOLCANO}spike-tall`, x + 1, y + 2],
+    ["bd", `${VOLCANO}spike-tall`, x + 9, y - 3],
     ["bd", `${VOLCANO}brazier`, x - 4, y - 3],
     ["bd", `${VOLCANO}brazier`, x - 4, y + 2],
+    ["bd", `${VOLCANO}brazier`, x + 4, y - 3],
+    ["bd", `${VOLCANO}brazier`, x + 4, y + 2],
     ["ph", "ph-vent", x, y - 2],
     ["ph", "ph-vent", x + 2, y + 2],
+    ["ph", "ph-vent", x + 6, y - 2],
     ["bd", `${VOLCANO}steam-vent`, x - 1, y + 2],
+    ["bd", `${VOLCANO}steam-vent`, x + 6, y + 3],
     ["bd", `${VOLCANO}bones`, x + 1, y - 2],
+    ["bd", `${VOLCANO}bones`, x + 8, y + 2],
     ["bd", `${VOLCANO}fire-crystal`, x - 2, y - 2],
+    ["bd", `${VOLCANO}fire-crystal`, x + 5, y - 5],
+    ["bd", `${RUINS}ruined-wall-2`, x + 7, y - 6],
+    ["bd", `${RUINS}column-temple-broken`, x + 9, y + 1],
     ["ph", "ph-skull-pole", x - 5, y + 2],
+    ["bd", `${VOLCANO}altar`, x + 2, y + 5],
+    ["ph", "ph-basalt-columns", x - 3, y + 6],
+    ["ph", "ph-basalt-columns", x + 5, y + 7],
+    ["bd", `${RUINS}ruined-wall-2`, x - 1, y + 8],
+    ["bd", `${VOLCANO}fire-crystal`, x + 3, y + 8],
   ];
   for (const [src, id, px, py] of spots) p.kitNear(src, id, Math.round(px), Math.round(py), 2);
   scatter(s, [["ph", "ph-rock-s"], ["ph", "ph-bone-pile"], ["ph", "ph-rock-s"], ["bd", `${VOLCANO}ember-a`]], 0.05, 61);
@@ -209,11 +241,20 @@ function buildLavaBridge(s: Stage): { lavaTile: number } {
     ["bd", `${VOLCANO}brazier`, x - 9, north],
     ["bd", `${VOLCANO}fire-crystal`, x - 6, north + 1],
     ["ph", "ph-obsidian", x - 10, north + 1],
-    // 북쪽 동편 기슭 (x+4 .. x+7)
+    // 북쪽 동편 기슭 (x+4 .. x+13)
     ["ph", "ph-basalt-columns", x + 4, north - 1],
     ["bd", `${VOLCANO}pillar-broken-b`, x + 6, north],
     ["bd", `${VOLCANO}fire-crystal`, x + 5, north + 1],
-    // 남쪽 서편 기슭 (x-11 .. x-4)
+    ["bd", `${RUINS}ruined-wall-2`, x + 9, north],
+    ["ph", "ph-basalt-columns", x + 12, north - 1],
+    ["bd", `${VOLCANO}brazier`, x + 8, north],
+    ["ph", "ph-obsidian", x + 11, north + 1],
+    ["bd", `${RUINS}ruined-wall-2`, x - 4, north - 3],
+    ["ph", "ph-basalt-columns", x + 3, north - 3],
+    ["bd", `${RUINS}ruined-wall-2`, x + 7, north - 3],
+    ["ph", "ph-basalt-columns", x + 11, north - 3],
+    ["bd", `${VOLCANO}brazier`, x + 1, north - 3],
+    ["bd", `${VOLCANO}fire-crystal`, x + 10, north - 2],
     ["bd", `${RUINS}ruined-wall-2`, x - 11, y + 4],
     ["ph", "ph-basalt-columns", x - 8, y + 4],
     ["bd", `${VOLCANO}spike-wide`, x - 6, y + 5],
@@ -223,13 +264,19 @@ function buildLavaBridge(s: Stage): { lavaTile: number } {
     ["bd", `${VOLCANO}steam-vent`, x - 4, y + 4],
     ["bd", `${VOLCANO}fire-crystal`, x - 5, y + 7],
     ["ph", "ph-obsidian", x - 4, y + 7],
-    // 남쪽 동편 기슭 (x+4 .. x+7)
+    // 남쪽 동편 기슭 (x+4 .. x+13)
     ["ph", "ph-basalt-columns", x + 4, y + 4],
     ["bd", `${RUINS}ruined-wall-2`, x + 6, y + 4],
     ["bd", `${VOLCANO}spike-wide`, x + 4, y + 6],
     ["bd", `${VOLCANO}brazier`, x + 6, y + 6],
     ["ph", "ph-vent", x + 4, y + 4],
     ["bd", `${VOLCANO}pillar-broken-a`, x + 7, y + 6],
+    ["bd", `${RUINS}ruined-wall-2`, x + 9, y + 4],
+    ["ph", "ph-basalt-columns", x + 12, y + 4],
+    ["bd", `${VOLCANO}pillar-fallen`, x + 9, y + 7],
+    ["bd", `${VOLCANO}brazier`, x + 11, y + 5],
+    ["bd", `${VOLCANO}fire-crystal`, x + 10, y + 6],
+    ["ph", "ph-rock-l", x + 12, y + 6],
   ];
   for (const [src, id, px, py] of bankProps) p.kitNear(src, id, Math.round(px), Math.round(py), 2, { overBlocked: true });
   scatter(s, [["ph", "ph-rock-s"], ["bd", `${RUINS}rubble-temple`], ["bd", `${VOLCANO}ember-a`], ["ph", "ph-bone-pile"]], 0.07, 73);
@@ -304,9 +351,10 @@ function tileKit(s: Stage, kitId: string, rect: Rect, keep: (cx: number, cy: num
  * 덮은 폐허 땅. 북쪽 맵 끝에 소신전과 수호 석상·무너진 신전 벽, 안뜰 양옆으로 열주, 남쪽은 큰 계단 참배로와 화로 한 쌍.
  * 나무는 화분(돌 화단)에만 심는다.
  */
-function buildRuinsShrine(s: Stage): Cell {
+function buildRuinsShrine(s: Stage): Cell | undefined {
   const { p, x, y, area } = s;
   const ax = x + 1;
+  const sunTemple = p.map.id === "map_chrono_present";
   // 바깥: 풀 덮인 폐허 땅. 안뜰: 석회암 판석(가장자리를 잡음으로 깎아 풀이 파고든다).
   tileKit(s, `${RUINS}floor-grass`, area);
   const court = { x: ax - 6, y: y - 5, w: 13, h: 10 };
@@ -318,32 +366,55 @@ function buildRuinsShrine(s: Stage): Cell {
   s.built.push("폐허 풀밭·석회암 안뜰·참배로 판석");
   p.kit("bd", `${RUINS}mosaic-medallion-7x7`, ax - 3, y - 3, { floor: true });
   p.kit("bd", "bd-mpart-stairs", ax - 2, y + 4, { floor: true });
-  if (area.y === 0 && y >= 7) {
+  if (area.y === 0 && y >= 6) {
     p.kit("bd", `${RUINS}roof-hip-shrine`, ax - 1, 0);
     p.mirrorX("bd", "bd-prop-statue_sage", ax - 4, 0, ax);
     p.mirrorX("bd", `${RUINS}face-temple-2h`, ax - 8, 0, ax);
     p.mirrorX("bd", `${RUINS}column-temple-tall`, ax - 5, 0, ax);
     s.built.push("소신전·수호 석상·신전 벽");
+  } else if (area.y === 0 && y >= 5) {
+    p.kit("bd", `${RUINS}face-temple-2h`, ax - 1, 0);
+    p.mirrorX("bd", `${RUINS}face-temple-2h`, ax - 8, 0, ax);
+    p.mirrorX("bd", `${RUINS}column-temple`, ax - 4, 0, ax);
+    p.mirrorX("bd", "bd-prop-statue_sage", ax - 5, y - 3, ax);
+    s.built.push("신전 벽·열주·수호 석상");
   }
-  for (const dy of [-3, 0, 3]) p.mirrorX("bd", dy === 0 ? `${RUINS}column-temple-broken` : `${RUINS}column-temple`, ax - 5, y + dy - 1, ax);
+  for (const dy of [-3, 0, 3]) {
+    if (y + dy - 1 >= (y >= 5 ? 3 : 0)) {
+      p.mirrorX("bd", dy === 0 ? `${RUINS}column-temple-broken` : `${RUINS}column-temple`, ax - 5, y + dy - 1, ax);
+    }
+  }
   p.mirrorX("bd", `${VOLCANO}brazier`, ax - 3, y + 4, ax);
   p.mirrorX("bd", "bd-prop-tree_planter", ax - 7, y - 3, ax);
   p.mirrorX("bd", "bd-prop-tree_planter", ax - 7, y + 2, ax);
+  if (sunTemple) {
+    p.kit("bd", "bd-pick-wizard-tower-sundial", ax, y - 2, { upperOnly: true });
+    p.kit("bd", `${VOLCANO}fire-crystal`, ax, y + 1, { upperOnly: true });
+    p.kitNear("bd", "bd-prop-tree_planter", ax + 9, y - 6, 2);
+    p.kitNear("bd", "bd-prop-tree_planter", ax + 9, y + 3, 2);
+    s.built.push("태양의 신전 모자이크 제단·해시계·태양석");
+  }
   const rubble: [string, number, number][] = [
     [`${RUINS}fallen-column-temple`, ax - 9, y + 6], [`${RUINS}ruined-wall-2`, ax + 6, y + 5], [`${RUINS}rubble-temple`, ax - 6, y + 6],
     [`${RUINS}rubble-temple`, ax + 8, y - 1], [`${RUINS}column-temple-broken`, ax + 8, y + 4], [`${RUINS}rubble-temple`, ax - 10, y],
     [`${RUINS}cypress-ruin`, ax - 10, y - 5], [`${RUINS}cypress-ruin`, ax - 12, y + 1], [`${RUINS}column-temple-broken`, ax - 11, y - 2],
+    [`${RUINS}cypress-ruin`, ax + 9, y - 5], [`${RUINS}cypress-ruin`, ax + 11, y + 1], [`${RUINS}ruined-wall-2`, ax + 9, y - 3],
+    [`${RUINS}fallen-column-temple`, ax - 8, y - 6], [`${RUINS}fallen-column-temple`, ax + 7, y - 6],
+    [`${RUINS}column-temple-broken`, ax - 9, y + 3], [`${RUINS}column-temple-broken`, ax + 10, y + 3],
+    [`${RUINS}column-temple`, ax + 12, y - 4], [`${RUINS}ruined-wall-2`, ax + 12, y + 4],
   ];
   for (const [id, px, py] of rubble) p.kitNear("bd", id, px, py, 2);
   p.kitNear("gm", "gm-rock-moss", ax - 11, y + 5, 2);
   p.kitNear("gm", "gm-rock-moss", ax + 9, y + 2, 2);
+  p.kitNear("gm", "gm-rock-moss", ax - 10, y - 3, 2);
+  p.kitNear("gm", "gm-rock-moss", ax + 10, y - 4, 2);
   // 안뜰 밖 풀밭에만 덤불·고사리·잔돌(판석 위에 나무·덤불을 세우지 않는다).
   const onGrass = (cx: number, cy: number) => cx < court.x || cx >= court.x + court.w || cy < court.y || cy >= court.y + court.h;
   for (let cy = area.y; cy < area.y + area.h; cy++) for (let cx = area.x; cx < area.x + area.w; cx++) {
     if (!onGrass(cx, cy) || Math.abs(cx - ax) <= 2 || hash01(cx, cy, 71) >= 0.08) continue;
     p.kit("ph", (["ph-bush", "ph-fern-s", "ph-rock-s", "ph-mushrooms"] as const)[Math.floor(hash01(cx, cy, 72) * 4)]!, cx, cy);
   }
-  return { x: ax, y };
+  return sunTemple ? undefined : { x: ax, y };
 }
 
 /**
