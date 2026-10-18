@@ -75,6 +75,40 @@ function hash01(a: number, b: number, seed: number): number {
   return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
 }
 
+type Rect = { x: number; y: number; w: number; h: number };
+
+/**
+ * 사각 구역 안에서 남길 칸 — 변마다 2칸 묶음으로 0..depth 칸씩 들쭉날쭉 깎고 모서리는 한 칸 더 둥글린다. 맵 끝에 닿은 변은 그대로.
+ * 왜(2026-10-18 심판 4건 모두): 곧은 변의 판석·흙 구역이 «어색한 직선 사각 패치» 로 읽혔다.
+ */
+function raggedKeep(bounds: { readonly width: number; readonly height: number }, r: Rect, seed: number, depth: number): (cx: number, cy: number) => boolean {
+  const left = r.x > 0, right = r.x + r.w < bounds.width, top = r.y > 0, bottom = r.y + r.h < bounds.height;
+  const cut = (i: number, side: number) => Math.floor(hash01(Math.floor(i / 2), side, seed) * (depth + 1));
+  return (cx, cy) => {
+    if (cx < r.x || cy < r.y || cx >= r.x + r.w || cy >= r.y + r.h) return false;
+    const dl = left ? cx - r.x - cut(cy, 1) : Infinity;
+    const dr = right ? r.x + r.w - 1 - cx - cut(cy, 2) : Infinity;
+    const dt = top ? cy - r.y - cut(cx, 3) : Infinity;
+    const db = bottom ? r.y + r.h - 1 - cy - cut(cx, 4) : Infinity;
+    if (dl < 0 || dr < 0 || dt < 0 || db < 0) return false;
+    return Math.min(dl, dr) + Math.min(dt, db) >= 1;
+  };
+}
+
+/** keep 칸을 줄마다 이어진 1줄 사각형들로 — fill_region 은 사각형만 받는다. */
+function rowRuns(r: Rect, keep: (cx: number, cy: number) => boolean): Rect[] {
+  const out: Rect[] = [];
+  for (let cy = r.y; cy < r.y + r.h; cy++) {
+    let from = -1;
+    for (let cx = r.x; cx <= r.x + r.w; cx++) {
+      const k = cx < r.x + r.w && keep(cx, cy);
+      if (k && from < 0) from = cx;
+      if (!k && from >= 0) { out.push({ x: from, y: cy, w: cx - from, h: 1 }); from = -1; }
+    }
+  }
+  return out;
+}
+
 /** 용암 2×2 스탬프의 칸 번호(위·아래·좌·우 홀짝마다 다른 노이즈 프레임) — 칸마다 절대 좌표 홀짝으로 고른다. */
 const LAVA_TILES = [[27292, 27296], [27300, 27304]] as const;
 
@@ -140,13 +174,14 @@ function fissureCells(map: GameMap, x: number, y: number, f: { dy: number; dx0: 
   return trimSpurs(map, [...out.values()]);
 }
 
-/** 바닥 표본 키트를 rect 칸마다 되풀이해 하단 층에 깐다(원점 ox,oy 기준 무늬 주기). */
-function tileKit(project: Project, map: GameMap, kitId: string, rect: { x: number; y: number; w: number; h: number }, ox: number, oy: number): number {
+/** 바닥 표본 키트를 rect 칸마다 되풀이해 하단 층에 깐다(원점 ox,oy 기준 무늬 주기). keep 이 있으면 그 칸만. */
+function tileKit(project: Project, map: GameMap, kitId: string, rect: Rect, ox: number, oy: number, keep?: (cx: number, cy: number) => boolean): number {
   const kit = project.tilesets[map.tilesetId]?.structureKits?.find((k) => k.id === kitId);
   if (!kit) return 0;
   let n = 0;
   for (let cy = Math.max(0, rect.y); cy < Math.min(map.height, rect.y + rect.h); cy++) {
     for (let cx = Math.max(0, rect.x); cx < Math.min(map.width, rect.x + rect.w); cx++) {
+      if (keep && !keep(cx, cy)) continue;
       const t = kit.rows[(((cy - oy) % kit.height) + kit.height) % kit.height]?.tiles[(((cx - ox) % kit.width) + kit.width) % kit.width] ?? -1;
       if (t < 0) continue;
       setLayerTileAt(map, 1, cy * map.width + cx, t);
@@ -203,8 +238,8 @@ function applyBankOverlay(project: Project, map: GameMap, cells: readonly { x: n
 const SCATTER: Record<SceneTheme, readonly (readonly [string, number])[]> = {
   volcano: [[VOLCANO + "spike-small", 3], [VOLCANO + "ember-a", 2], [VOLCANO + "bones", 2], [VOLCANO + "steam-vent", 3], [VOLCANO + "stalagmite", 2], [VOLCANO + "spike-tall", 2], [VOLCANO + "pillar-broken-b", 1], [RUINS + "rubble-temple", 2]],
   lava_bridge: [[VOLCANO + "spike-small", 3], [VOLCANO + "ember-a", 2], [VOLCANO + "bones", 2], [VOLCANO + "stalagmite", 2], [VOLCANO + "pillar-broken-b", 2], [RUINS + "rubble-temple", 4], [RUINS + "fallen-column-temple", 1]],
-  poison_swamp: [[RUINS + "cypress-ruin", 2], [RUINS + "rubble-temple", 4], [RUINS + "column-temple-broken", 2], [RUINS + "fallen-column-temple", 1], [RUINS + "ruined-wall-2", 2], [VOLCANO + "bones", 2], [SWAMP + "reed-stack", 1]],
-  ruins_shrine: [[RUINS + "rubble-temple", 6], [RUINS + "column-temple-broken", 3], [RUINS + "fallen-column-temple", 2], [RUINS + "cypress-ruin", 3], [RUINS + "vines-2", 3], [RUINS + "ruined-wall-2", 2], [VOLCANO + "brazier", 2], [VOLCANO + "bones", 2]],
+  poison_swamp: [[RUINS + "cypress-ruin", 2], [RUINS + "rubble-temple", 4], [RUINS + "column-temple-broken", 2], [RUINS + "fallen-column-temple", 1], [SWAMP + "snag", 2], [VOLCANO + "bones", 2], [SWAMP + "reed-stack", 1]],
+  ruins_shrine: [[RUINS + "rubble-temple", 6], [RUINS + "column-temple-broken", 3], [RUINS + "fallen-column-temple", 2], [RUINS + "cypress-ruin", 3], [RUINS + "vines-2", 3], [VOLCANO + "brazier", 2], [VOLCANO + "bones", 2]],
 };
 
 function scatterStamps(
@@ -273,10 +308,6 @@ function layoutFor(theme: SceneTheme): Layout {
       return {
         ground: { material: "버들항 모랫길", rx: 10, ry: 7 },
         floorKit: `${RUINS}floor-dirt`,
-        pads: [
-          { kit: `${RUINS}floor-trav`, dx: -3, dy: -6, w: 7, h: 3 },
-          { kit: `${RUINS}floor-trav`, dx: -3, dy: 4, w: 7, h: 3 },
-        ],
         fills: [],
         walk: { dir: "up", steps: 4 },
         stamps: [
@@ -290,10 +321,11 @@ function layoutFor(theme: SceneTheme): Layout {
           s(`${RUINS}column-temple-broken`, -4, 4),
           s(`${RUINS}column-temple-broken`, 4, 4),
           s(`${VOLCANO}altar`, -9, -7),
-          s(`${RUINS}face-temple-3h`, 5, -7),
-          s(`${RUINS}ruined-wall-2`, -7, -6),
+          // 벽 한 조각(face-temple·ruined-wall)은 맵 한가운데 «잘린 사각 벽» 으로 읽혔다(2026-10-18 심판) — 사방에서 온전한 기둥·바위만 둔다.
+          s(`${RUINS}column-temple-broken`, 6, -7),
+          s(`${VOLCANO}stalagmite`, -7, -6),
           s("bd-prop-statue_sage", 6, 3),
-          s(`${VOLCANO}lava-fall-strip`, 6, -5),
+          s(`${VOLCANO}spike-tall`, 6, -5),
           s(`${VOLCANO}stalagmite`, -6, -5),
           s(`${VOLCANO}spike-tall`, -9, 5),
           s(`${VOLCANO}spike-wide`, -8, 3),
@@ -340,7 +372,7 @@ function layoutFor(theme: SceneTheme): Layout {
           s(`${VOLCANO}spike-wide`, -6, -7),
           s(`${VOLCANO}spike-tall`, 2, -7),
           s(`${VOLCANO}pillar-broken-b`, -1, -7),
-          s(`${VOLCANO}lava-fall-strip`, 5, -6),
+          s(`${VOLCANO}spike-wide`, 5, -6),
           s(`${VOLCANO}fire-crystal`, -2, 6),
           s(`${VOLCANO}spike-small`, 3, 6),
         ],
@@ -352,7 +384,6 @@ function layoutFor(theme: SceneTheme): Layout {
       return {
         ground: { material: "버들항 광장 판석", rx: 24, ry: 20 },
         floorKit: `${RUINS}floor-ruin`,
-        pads: [{ kit: `${RUINS}floor-trav`, dx: -4, dy: -1, w: 11, h: 3 }],
         fills: [],
         bodies: [
           { kind: "water", cx: 1, cy: -3.3, rx: 4.6, ry: 2.1, seed: 23, minDx: -5, maxDx: 6, keepDy: 1 },
@@ -376,17 +407,17 @@ function layoutFor(theme: SceneTheme): Layout {
           s(`${RUINS}column-temple-broken`, 13, -2),
           s(`${RUINS}fallen-column-temple`, 9, 3),
           s("bd-pick-castle-catacombs-altar-stone", 9, -5),
-          s(`${RUINS}face-temple-3h`, -6, -11),
-          s("bd-pick-deep-forest-path-ruin-gate", -3, -11),
+          s(`${RUINS}column-temple-tall`, -6, -11),
+          s(`${RUINS}column-temple-broken`, -3, -11),
           s(`${RUINS}roof-naiskos-pediment`, 2, -11),
-          s(`${RUINS}face-temple-2h`, 7, -11),
-          s(`${RUINS}face-temple-3h`, 10, -11),
+          s(`${RUINS}cypress-ruin`, 7, -11),
+          s(`${RUINS}column-temple-tall`, 10, -11),
           s("bd-pick-aqueduct-sewer-altar-cult", 3, -7),
           s("bd-prop-statue_sage", -6, -8),
           s(`${RUINS}column-temple-broken`, 0, -8),
           s(`${RUINS}column-temple-broken`, 7, -8),
           s(`${SWAMP}snag`, 11, -9),
-          s(`${RUINS}ruined-wall-2`, -6, -2),
+          s(`${SWAMP}snag`, -6, -2),
           s(`${RUINS}cypress-ruin`, -6, 2),
         ],
       };
@@ -410,8 +441,7 @@ function layoutFor(theme: SceneTheme): Layout {
           s(`${RUINS}rubble-temple`, 4, 5),
           s(`${VOLCANO}brazier`, -5, -2),
           s(`${VOLCANO}brazier`, 5, -2),
-          s(`${RUINS}ruined-wall-2`, 8, 0),
-          s("bd-prop-sword_barrel", 0, -1),
+          s(`${RUINS}column-temple-broken`, 8, 0),
         ],
       };
   }
@@ -531,10 +561,15 @@ export const SCENE_SETTING_TOOLS: readonly ToolDefinition[] = [
 
       const g = layout.ground;
       const ground = snapToMapEdge(map, clampRect(map, x - g.rx, y - g.ry, g.rx * 2 + 1, g.ry * 2 + 1));
-      for (const r of roundedParts(map, ground)) fill.run(project, { mapId, rect: r, material: g.material, clearUpper: true });
+      const groundKeep = raggedKeep(map, ground, 3, 2);
+      for (const r of rowRuns(ground, groundKeep)) fill.run(project, { mapId, rect: r, material: g.material, clearUpper: true });
       built.push(`바닥 ${g.material} ${ground.w}×${ground.h}`);
-      if (layout.floorKit && tileKit(project, map, layout.floorKit, ground, x, y) > 0) built.push(`바닥 무늬 ${layout.floorKit.replace("bd-pick-", "")}`);
-      for (const p of layout.pads ?? []) tileKit(project, map, p.kit, { x: x + p.dx, y: y + p.dy, w: p.w, h: p.h }, x, y);
+      if (layout.floorKit && tileKit(project, map, layout.floorKit, ground, x, y, groundKeep) > 0) built.push(`바닥 무늬 ${layout.floorKit.replace("bd-pick-", "")}`);
+      for (const [i, p] of (layout.pads ?? []).entries()) {
+        const r = { x: x + p.dx, y: y + p.dy, w: p.w, h: p.h };
+        const keepPad = raggedKeep({ width: Infinity, height: Infinity }, r, 17 + i, 1);
+        tileKit(project, map, p.kit, r, x, y, (cx, cy) => groundKeep(cx, cy) && keepPad(cx, cy));
+      }
 
       for (const f of layout.fills) {
         const r = clampRect(map, x + f.dx, y + f.dy, f.w, f.h);
@@ -598,7 +633,15 @@ export const SCENE_SETTING_TOOLS: readonly ToolDefinition[] = [
       for (const d of bodyDecor) {
         try { stamp.run(project, { objectId: KIT + d.id, mapId, x: d.x, y: d.y }); stamped++; mark(d.id, d.x, d.y); } catch { /* 맵 밖·충돌 칸은 건너뛴다 */ }
       }
+      // 물·용암 위에 찍으면 키트 바닥 칸이 연못 한가운데 «돌 네모» 로 남았다(2026-10-18 jrpg_003) — 다리·말뚝만 몸체 위에 선다.
+      const onBody = (id: string, px: number, py: number) => {
+        if (/bridge|pilings/u.test(id)) return false;
+        const k = kitList.find((q) => q.id === id.replace(KIT, ""));
+        for (let dy = 0; dy < (k?.height ?? 1); dy++) for (let dx = 0; dx < (k?.width ?? 1); dx++) if (waterOrLava.has((py + dy) * map.width + px + dx)) return true;
+        return false;
+      };
       for (const st of layout.stamps) {
+        if (onBody(st.id, x + st.dx, y + st.dy)) continue;
         try {
           stamp.run(project, { objectId: KIT + st.id, mapId, x: x + st.dx, y: y + st.dy });
           mark(st.id, x + st.dx, y + st.dy);
@@ -661,9 +704,14 @@ export const SCENE_SETTING_TOOLS: readonly ToolDefinition[] = [
       const survivalWalk = layout.walk && !blockedWalk.length
         ? { moves: walk.map(() => ({ kind: "move", dir: layout.walk!.dir })), cells: walk, end: walk[walk.length - 1]! }
         : undefined;
+      // 성검을 뽑는 순간 바위 위칸(칼자루·날)을 그 칸 바닥 그림으로 덮는다 — 뽑았는데 칼이 바위에 그대로면 «뽑는 동작이 없다» 로
+      // 감점(2026-10-18 jrpg_046 48점). 컷씬 changeTile 은 음수 타일을 0 으로 자르므로 «지우기» 대신 같은 바닥 칸을 쓴다.
+      const swordPull = built.includes("성검 꽂힌 바위")
+        ? { cells: [{ x: x + 1, y: y - 1, layer: "upper" as const, tile: layerTileAt(map, 1, (y - 1) * map.width + x + 1) }], stone: { x: x + 1, y } }
+        : undefined;
       return {
-        summary: `무대 ${theme} → ${mapId} 이벤트 칸 (${x},${y}) 둘레: ${built.join(" · ")}. 이제 show_map_region 으로 확인하고 (${x},${y}) 에 이벤트를 만든다 — 시작 칸 (${x - 1},${y}) 은 막혀 있지 않다.${collapse ? ` 다리 붕괴 연출은 사망 분기에서 data.collapse.cells ${collapse.cells.length}칸에 changeTile{mapId,layer:"upper",x,y,tile} 을 적용한다(다리 그림이 상단 층이라 반드시 layer "upper" — 하단은 이미 용암이라 바꿔도 화면이 그대로다). 붕괴 직후 한 번 더 화면을 붉게 번쩍이면 틈이 눈에 띈다.` : ""}${survivalWalk ? ` 생존(무사 통과) 분기는 제자리에 세워 두지 말고 moveActor{target:"player",moves:data.survivalWalk.moves} 로 (${survivalWalk.end.x},${survivalWalk.end.y}) 까지 ${walk.length}칸 걸어 위험 구역을 건너게 하고, 걷는 동안 tint 를 원래대로·weather none 으로 거둔다.` : ""}`,
-        data: { theme, mapId, focus: { x, y }, start: { x: x - 1, y }, ground, stamped, total: layout.stamps.length, ...(collapse ? { collapse } : {}), ...(survivalWalk ? { survivalWalk } : {}) },
+        summary: `무대 ${theme} → ${mapId} 이벤트 칸 (${x},${y}) 둘레: ${built.join(" · ")}. 이제 show_map_region 으로 확인하고 (${x},${y}) 에 이벤트를 만든다 — 시작 칸 (${x - 1},${y}) 은 막혀 있지 않다.${collapse ? ` 다리 붕괴 연출은 사망 분기에서 data.collapse.cells ${collapse.cells.length}칸에 changeTile{mapId,layer:"upper",x,y,tile} 을 적용한다(다리 그림이 상단 층이라 반드시 layer "upper" — 하단은 이미 용암이라 바꿔도 화면이 그대로다). 붕괴 직후 한 번 더 화면을 붉게 번쩍이면 틈이 눈에 띈다.` : ""}${survivalWalk ? ` 생존(무사 통과) 분기는 제자리에 세워 두지 말고 moveActor{target:"player",moves:data.survivalWalk.moves} 로 (${survivalWalk.end.x},${survivalWalk.end.y}) 까지 ${walk.length}칸 걸어 위험 구역을 건너게 하고, 걷는 동안 tint 를 원래대로·weather none 으로 거둔다.` : ""}${swordPull ? ` 성검을 뽑는 분기는 바위 앞에서 한 걸음 다가서 칼자루를 쥐고(검을 쥔 인물 jump dx:0,dy:0) parallel[ flash white, shake, music se, particles sparkle(바위 칸), 빛기둥 picture(add) ] 와 함께 data.swordPull.cells 를 changeTile{mapId,layer:"upper",x,y,tile} 로 그대로 적용해 바위에서 칼이 사라지게 하고, 이어서 «성검을 높이 치켜들었다!» 대사 + sparkle 를 인물 위에 띄운다.` : ""}`,
+        data: { theme, mapId, focus: { x, y }, start: { x: x - 1, y }, ground, stamped, total: layout.stamps.length, ...(collapse ? { collapse } : {}), ...(survivalWalk ? { survivalWalk } : {}), ...(swordPull ? { swordPull } : {}) },
         ...(warnings.length ? { warnings } : {}),
       };
     },
