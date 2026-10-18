@@ -28,46 +28,6 @@ export const FLAVOR_KITS: Readonly<Record<JpStreetFlavor, readonly FlavorKit[]>>
   ],
 };
 
-/** 지붕 바다 조각 — 모든 건물 위(띠 꼭대기까지)를 빈틈 없이 덮는다(참고 그림처럼 뒤 블록 지붕이 이어진다). 폭 → 높이 → 변형 id. */
-export const ROOF_PIECES: Readonly<Record<4 | 2 | 1, Readonly<Record<2 | 1, readonly string[]>>>> = {
-  4: { 2: ["jp-back-roofs", "jp-back-roofs-1", "jp-back-roofs-2", "jp-back-roofs-3"], 1: ["jp-back-roofs-w4h1-0", "jp-back-roofs-w4h1-1"] },
-  2: { 2: ["jp-back-roofs-w2h2-0", "jp-back-roofs-w2h2-1"], 1: ["jp-back-roofs-w2h1-0", "jp-back-roofs-w2h1-1"] },
-  1: { 2: ["jp-back-roofs-w1h2-0", "jp-back-roofs-w1h2-1"], 1: ["jp-back-roofs-w1h1-0", "jp-back-roofs-w1h1-1"] },
-};
-
-/** 열마다 덮을 지붕 바다 아래 끝(그 줄 바로 위까지 덮음)을 받아, 같은 높이로 이어진 열들을 폭 4·2·1 × 높이 2·1 조각으로 채우는 찍기 목록. */
-export function roofSeaStamps(top: number, x0: number, bottoms: readonly (number | undefined)[], seed: number): { id: string; x: number; y: number }[] {
-  const out: { id: string; x: number; y: number }[] = [];
-  const hash = (x: number, y: number) => {
-    let n = (Math.imul(x, 374761393) + Math.imul(y, 668265263) + Math.imul(seed, 2246822519 | 0)) | 0;
-    n = Math.imul(n ^ (n >>> 13), 1274126177);
-    return (n ^ (n >>> 16)) >>> 0;
-  };
-  let i = 0;
-  while (i < bottoms.length) {
-    const yb = bottoms[i];
-    let j = i + 1;
-    while (j < bottoms.length && bottoms[j] === yb) j++;
-    if (yb !== undefined && yb > top) {
-      let x = x0 + i;
-      const end = x0 + j;
-      while (x < end) {
-        const w: 4 | 2 | 1 = end - x >= 4 ? 4 : end - x >= 2 ? 2 : 1;
-        let y = yb;
-        while (y > top) {
-          const h: 2 | 1 = y - top >= 2 ? 2 : 1;
-          y -= h;
-          const list = ROOF_PIECES[w][h];
-          out.push({ id: list[hash(x, y) % list.length]!, x, y });
-        }
-        x += w;
-      }
-    }
-    i = j;
-  }
-  return out;
-}
-
 export const FLAVOR_POLE = { id: "jp-utility-pole-xfmr", w: 2, h: 6 } as const;
 export const FLAVOR_BUS_STOP = { id: "jp-bus-stop-sign", w: 1, h: 3 } as const;
 export const FLAVOR_POSTBOX = { id: "jp-postbox-red", w: 1, h: 2 } as const;
