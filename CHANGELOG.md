@@ -5,6 +5,22 @@
 
 <!-- releases -->
 
+## 0.271.0 — 2026-10-19
+
+### 기능
+
+- **jrpg-pilot** — add Batch 2 stage scenes (jrpg_015, jrpg_019, jrpg_020, jrpg_060) and plaza/lava-bridge upgrades (#2993) (`c85ffb3`)
+- **jp-inaka** — reuse existing jp_city trains/rail kits and earthen courtyards (#2992) (`de86c7c`)
+- **jp-inaka** — add 30 Japanese countryside 3/4 kits, 9 rural ground tiles, and 6 showcase maps (#2988) (`e790370`)
+- **stamp-place** — add 2-turn LLM refinement loop and all 22 Priority 1-3 fast-path tools (#2987) (`b6a9e01`)
+- **puzzle** — three-wave unlock reveals with tile particles and shake (#2984) (`791b86b`)
+
+### 수정
+
+- **jp-city** — overhaul 30 Japanese regions with surface zone-map composer and V1-V6 hostile VQA gates (#2991) (`7589a8e`)
+- **interior** — R15 orthogonal stairs/escalators; reuse the jp_city train car instead of a separate mc_train_car (#2990) (`0980fa0`)
+- **monster** — restore 57 clean sprites and fix exact 3/4 eye positions (#2986) (`cdc7e29`)
+
 ## 0.270.0 — 2026-10-19
 
 ### 기능
