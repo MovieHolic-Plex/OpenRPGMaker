@@ -52,6 +52,15 @@ export const GND = {
   shade: "jp-gnd-shade-brick",
   shadeL: "jp-gnd-shade-brick-dl",
   shadeR: "jp-gnd-shade-brick-dr",
+  lineN: "jp-gnd-asph-line-n",
+  lineS: "jp-gnd-asph-line-s",
+  zebra: "jp-gnd-zebra",
+  curbE: "jp-gnd-curb-e",
+  curbW: "jp-gnd-curb-w",
+  curbSE: "jp-gnd-curb-se",
+  curbSW: "jp-gnd-curb-sw",
+  curbNE: "jp-gnd-curb-ne",
+  curbNW: "jp-gnd-curb-nw",
 } as const;
 
 export const FLAVOR_KO: Readonly<Record<JpStreetFlavor, string>> = { shitamachi: "시타마치 골목", shotengai: "쇼텐가이 아케이드 상가" };

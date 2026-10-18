@@ -369,12 +369,14 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
     else { const lane = 3; streets.push({ x: 6 + Math.floor(rng() * Math.max(1, W - 14 - lane)), lane, w: lane + 2, from: 0, to: N - 1 }); }
   }
   const inStreet = (x: number, k?: number) => streets.some((s2) => x >= s2.x - 1 && x <= s2.x + s2.w && (k === undefined || (k >= s2.from && k <= s2.to)));
+  const vSegs: { s: VStreet; y0: number; y1: number }[] = [];
   for (const s2 of streets) {
     let segStart = s2.from === 0 ? 0 : bands[s2.from - 1]!.gap!.end - (bands[s2.from - 1]!.gap!.river ? 1 : 1);
     for (let k = s2.from; k <= s2.to; k++) {
       const crossRiver = k < s2.to && bands[k]!.gap!.river !== undefined;
       if (crossRiver) continue;                                      // 하천을 건너 다음 띠까지 한 번에 깐다(다리)
       const y1 = k === s2.to ? (k === N - 1 ? H - 1 : bands[k]!.gap!.road0 - 1) : bands[k]!.gap!.road0 - 1;
+      vSegs.push({ s: s2, y0: segStart, y1 });
       fill(s2.x, segStart, 1, y1 - segStart + 1, "보도 연석", true);
       fill(s2.x + s2.w - 1, segStart, 1, y1 - segStart + 1, "보도 연석", true);
       fill(s2.x + 1, segStart, s2.lane, y1 - segStart + 1, "생활도로", true);
@@ -461,30 +463,46 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
       const x = 3 + Math.floor(rng() * Math.max(1, W - 12));
       if (obstacles.some((s) => x < s.x + s.w + 1 && x + 6 > s.x - 1)) continue;
       crossings.push({ x, road: i });
-      stamp("jp-road-lane-crosswalk-h", x, b.gap.road0, "road");
+      if (flavor) {                                                   // 변형: 따뜻한 아스팔트 위 4칸 폭 줄무늬(얼음색 키트 대신)
+        for (let cx = x + 1; cx < x + 5; cx++) for (let y = b.gap.road0; y <= b.gap.road1; y++) stamp(GND.zebra, cx, y, "road");
+      } else stamp("jp-road-lane-crosswalk-h", x, b.gap.road0, "road");
       break;
     }
   });
-  // 변형 노면(1칸 바닥 키트, 아래층): 연석·맨홀·빗물받이·금 간 아스팔트·황토 벽돌 — 큰길 건널목과 세로 길은 비운다.
+  // 변형 노면(1칸 바닥 키트, 아래층): 연석(세로 길 모퉁이 포함)·路側帯 흰 선·맨홀·빗물받이·금 간 아스팔트·황토 벽돌 — 큰길 건널목과 세로 길 차로는 비운다.
   if (flavor) {
-    const busy = (x: number, road: number) => inStreet(x) || crossings.some((c) => c.road === road && x >= c.x - 1 && x < c.x + 7);
+    /** 띠 k 를 지나는 세로 길의 칸 쓰임: 왼쪽 보도 "e"(오른쪽이 길)·오른쪽 보도 "w"·차로 "lane". */
+    const streetCell = (x: number, k: number): "e" | "w" | "lane" | undefined => {
+      const s = streets.find((s2) => x >= s2.x && x < s2.x + s2.w && k >= s2.from && k <= s2.to);
+      return !s ? undefined : x === s.x ? "e" : x === s.x + s.w - 1 ? "w" : "lane";
+    };
+    const crossing = (x: number, road: number) => crossings.some((c) => c.road === road && x >= c.x && x < c.x + 6);
     const brick = (x: number, y: number) => { if (rng3() < 0.14) stamp(rng3() < 0.6 ? GND.ochre : GND.stain, x, y, "ground"); };
     bands.forEach((b, bi) => {
       const g = b.gap;
       if (!g || g.river) return;
       const manholes = new Set<number>();
-      for (let x = 3 + Math.floor(rng3() * 6); x < W - 1; x += 9 + Math.floor(rng3() * 5)) if (!busy(x, bi)) { stamp(GND.manhole, x, g.road0 + Math.floor(g.roadW / 2), "ground"); manholes.add(x); }
+      for (let x = 3 + Math.floor(rng3() * 6); x < W - 1; x += 9 + Math.floor(rng3() * 5)) if (!inStreet(x) && !crossing(x, bi)) { stamp(GND.manhole, x, g.road0 + Math.floor(g.roadW / 2), "ground"); manholes.add(x); }
       for (let x = 0; x < W; x++) {
-        if (busy(x, bi)) continue;
-        stamp(GND.curbS, x, g.sw1 + 1, "ground");
-        stamp(GND.curbN, x, g.sw2, "ground");
-        brick(x, g.sw1);
-        brick(x, g.sw2 + 1);
-        if (x % 7 === 3) stamp(GND.drain, x, g.road0, "ground");
-        else if (!manholes.has(x) && rng3() < 0.06) stamp(GND.crack, x, g.road0 + 1 + Math.floor(rng3() * Math.max(1, g.roadW - 1)), "ground");
+        const north = streetCell(x, bi), south = streetCell(x, bi + 1);
+        if (north !== "lane") stamp(north === "e" ? GND.curbSE : north === "w" ? GND.curbSW : GND.curbS, x, g.sw1 + 1, "ground");
+        if (south !== "lane") stamp(south === "e" ? GND.curbNE : south === "w" ? GND.curbNW : GND.curbN, x, g.sw2, "ground");
+        if (!north) brick(x, g.sw1);
+        if (!south) brick(x, g.sw2 + 1);
+        if (inStreet(x) || crossing(x, bi)) continue;
+        stamp(x % 7 === 3 ? GND.drain : GND.lineN, x, g.road0, "ground");
+        if (g.roadW >= 2) stamp(GND.lineS, x, g.road1, "ground");
+        if (!manholes.has(x) && g.roadW >= 3 && rng3() < 0.06) stamp(GND.crack, x, g.road0 + 1 + Math.floor(rng3() * (g.roadW - 2)), "ground");
       }
     });
     for (let x = 0; x < W; x++) if (!inStreet(x)) { brick(x, H - 2); brick(x, H - 1); }
+    // 세로 길 양옆 보도의 연석(큰길에 닿는 모퉁이 줄은 위에서 찍었다).
+    for (const seg of vSegs) for (let y = seg.y0; y <= seg.y1; y++) {
+      if (bands.some((bb) => bb.gap && !bb.gap.river && (y === bb.gap.sw1 + 1 || y === bb.gap.sw2))) continue;
+      if (bands.some((bb) => bb.gap?.river && y >= bb.gap.sw1 && y <= bb.gap.end)) continue;
+      stamp(GND.curbE, seg.s.x, y, "ground");
+      stamp(GND.curbW, seg.s.x + seg.s.w - 1, y, "ground");
+    }
   }
   /** 변형 접지 그림자(빛 왼쪽 위 → 그림자 오른쪽 아래 45°): 띠마다 이어 붙은 건물 폭을 한 덩어리로 합쳐 두 줄로 드리운다 — 발 아래 보도 줄(왼쪽 끝 사선 시작), 그 아래 연석 줄은 한 칸 오른쪽으로 밀린다.
    *  (2026-10-18 적대 QA: 건물마다 따로 찍어 이웃 건물 사이에 밝은 삼각 틈이 생겼고, 그림자가 보도 한 줄에서 끊겼다.) */
@@ -663,10 +681,13 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
         for (const k of [...order.filter((k2) => !flavorUsed.has(k2.id)), ...order.filter((k2) => flavorUsed.has(k2.id))]) {
           if (used + k.w > budget) continue;
           const kx = sx + used;
-          stamp(k.id, kx, b.foot - k.h + 1);
+          // 키트 지붕을 앞줄 맨 윗줄(fTop)에 붙인다: 키트(h 5~6)가 앞줄(7줄)보다 낮으면 남는 줄은 키트 앞 벽돌 마당이 된다.
+          // (2026-10-18 4등분 확대 QA: 발을 보도에 맞추면 키트 지붕 위에 1~2줄 빈 벽돌 판이 떠 뒷골목·뒷줄과 끊겼다.)
+          const kFoot = fTop + k.h - 1;
+          stamp(k.id, kx, fTop);
           flavorUsed.add(k.id);
-          placed.push({ role: "landmark", x: kx, foot: b.foot, w: k.w, top: fTop, h: k.h });
-          flavorShade(kx, k.w, b.foot);
+          placed.push({ role: "landmark", x: kx, foot: b.foot, w: k.w, top: fTop, h: b.foot - fTop + 1 });   // 발자국은 앞 마당까지(기둥·소품·빈터 쓰임이 키트 앞을 가리지 않게)
+          flavorShade(kx, k.w, kFoot);
           used += k.w;
         }
         packW = w - used; lmEnd = used;
