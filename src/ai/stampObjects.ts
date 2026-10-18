@@ -37,7 +37,7 @@ export interface StampObjectEntry {
 
 /** 바로 깔기가 한 번에 놓는 물건(나무·분수·다리·차량·제단 포함)의 최대 크기(건물·집은 place_house 가 맡는다). */
 const MAX_OBJECT_CELLS = 36;
-const MAX_OBJECT_SIDE = 7;
+const MAX_OBJECT_SIDE = 9;
 const WALL_TAGS: Readonly<Record<string, true>> = { wallmount: true, door: true, overhead: true, wall: true, hang: true, window: true, decal: true };
 const STRUCTURE_WORDS = /건물|집 외장|성벽|외벽|가게 앞|\b띠\b/u;
 const OBJECT_GROUP_ROLES: Readonly<Record<string, true>> = { prop: true, furniture: true, decoration: true, detail: true };
@@ -141,7 +141,20 @@ export function buildStampObjectIndex(tileset: TilesetDef | undefined): readonly
     const core = extractCoreObjectName(rawName);
     const slug = kit.id
       .replace(/^(?:bd-pick-[a-z-]+-|bd-(?:prop|mpart|out|tree|farm|bridge)-|jp-(?:prop|in-[a-z]+|tram|road)-|mc-(?:prop|veh|in-[a-z]+)-|jb-|wz-)/iu, "");
-    const kitAliases = kit.id === "bd-pick-desert-oasis-well" ? "분수 분수대 수반 fountain" : "";
+    const kitAliases =
+      kit.id === "bd-pick-desert-oasis-well"
+        ? "분수 분수대 수반 fountain"
+        : /^bd-pick-(?:aqueduct-sewer-(?:bone-heap|skulls|bones)|desert-oasis-bones|volcano-cave-bones)|^gm-bones|^pi-bones|^jb-fld_bones/i.test(kit.id)
+          ? "시체 시체들 백골 백골유해 유골 유해 전사자유해 사체 주검 해골 해골무더기 뼈 뼈더미 corpse corpses skeleton remains"
+          : kit.id === "bd-prop-sword_barrel"
+            ? "무기 부서진무기 칼 검 창 무기통 전리품 weapon weapons sword"
+            : /^bd-pick-(?:castle-catacombs-rubble|aqueduct-sewer-rubble|temple-ruins-rubble-temple|sea-cave-rubble-cave)$/i.test(kit.id)
+              ? "전투흔적 잔해 파편 돌무더기 무너진돌 부스러기 rubble debris"
+              : kit.id === "bd-mpart-tower"
+                ? "망루 성탑 원형탑 둥근탑 감시탑 초소탑 탑 tower watchtower turret"
+                : kit.id === "bd-pick-deep-forest-path-ruin-gate" || kit.id === "bd-garden-gate"
+                  ? "성문 아치성문 철문 정문 관문 gate castlegate"
+                  : "";
     entries.push({
       id: kit.id,
       kind: "kit",
@@ -332,7 +345,14 @@ const SYNONYM_GROUPS: readonly (readonly string[])[] = [
   ["내려가는 계단", "바닥에서 아래로 내려가는 계단 한 칸", "계단"],
   ["기둥", "돌기둥", "카타콤 기둥", "신전 기둥", "사각 기둥", "원주", "석주", "바위 기둥", "pillar", "column"],
   ["제단", "돌 제단", "교단 제단", "흑요석 제단", "altar"],
-  ["해골", "해골 무더기", "뼈", "뼈 더미", "skull", "skulls", "bones"],
+  ["해골", "해골 무더기", "뼈", "뼈 더미", "흩어진 뼈", "시체", "시체들", "백골", "백골 유해", "유골", "유해", "전사자 유해", "사체", "주검", "skull", "skulls", "bones", "bone heap", "skeleton", "corpse", "corpses", "remains"],
+  ["무기", "부서진 무기", "칼 꽂은 통", "무기통", "칼", "검", "창", "weapon", "weapons", "sword"],
+  ["잔해", "전투 흔적", "돌무더기", "무너진 돌 부스러기", "바위 부스러기", "파편", "rubble", "debris"],
+  ["관", "석관", "나무 관", "coffin", "sarcophagus"],
+  ["무덤", "묘지", "묘비", "봉분", "grave", "tomb", "tombstone"],
+  ["망루", "성탑", "탑", "원형 탑", "둥근 옆탑", "감시탑", "tower", "watchtower", "turret"],
+  ["성문", "무너진 성문", "정원 정문", "정원 문", "관문", "castle gate", "gate"],
+  ["깃발", "길드 깃발 기둥", "교단 깃발", "군기", "성기", "banner", "flag"],
   ["아치", "벽 아치", "벽 아치 문", "아치 문", "철창 아치", "던전 문", "arch", "archway"],
   ["밭", "경작지", "밀밭", "배추밭", "토마토밭", "모둠 밭", "farm plot"],
   ["문", "door"],
@@ -393,6 +413,10 @@ function pickVariants(hits: readonly { entry: StampObjectEntry; score: number }[
     if (/신호등|신호기|보행/u.test(primaryQuery) && e.id.startsWith("jp-") && e.id !== "jp-tram-ped-signal") return 1;
     if (/화분/u.test(primaryQuery) && e.id === "bd-prop-flowerbed") return 1;
     if (/벤치/u.test(primaryQuery) && e.id === "bd-pick-mining-valley-bench") return 1;
+    if (/시체|유골|백골|유해|해골|뼈/u.test(primaryQuery)) {
+      if (e.id === "bd-pick-aqueduct-sewer-bone-heap") return -2;
+      if (e.id === "bd-pick-aqueduct-sewer-skulls") return -1;
+    }
     return 0;
   };
   const biomeRank = (e: StampObjectEntry): number => {

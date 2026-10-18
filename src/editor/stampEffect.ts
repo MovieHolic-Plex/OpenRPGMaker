@@ -17,6 +17,8 @@ export interface StampEffect {
   readonly eventsInvisible: number;
   /** 새로 깔리거나 바뀐 주행 탈것 노선(map.transit.routes) 수. */
   readonly transitRoutesChanged?: number;
+  /** 절벽 단차·경사로(map.relief)가 바뀐 칸 수. */
+  readonly reliefCellsChanged?: number;
 }
 
 const TILE_LAYERS = ["lowerTiles", "upperTiles", "lowerOverlayTiles", "upperOverlayTiles"] as const;
@@ -47,6 +49,16 @@ export function measureStampEffect(before: Project, after: Project, mapId: strin
   const transitBefore = JSON.stringify(a.transit?.routes ?? []);
   const transitAfter = JSON.stringify(b.transit?.routes ?? []);
   const transitRoutesChanged = transitBefore !== transitAfter ? Math.max(b.transit?.routes?.length ?? 0, a.transit?.routes?.length ?? 0, 1) : 0;
+  let reliefCellsChanged = 0;
+  if (a.relief !== b.relief) {
+    for (let i = 0; i < size; i++) {
+      const lvA = a.relief?.levels?.[i] ?? 0;
+      const lvB = b.relief?.levels?.[i] ?? 0;
+      const rA = a.relief?.ramps?.[i] ?? 0;
+      const rB = b.relief?.ramps?.[i] ?? 0;
+      if (lvA !== lvB || rA !== rB) reliefCellsChanged += 1;
+    }
+  }
   return {
     tilesChanged,
     eventsAdded: added.length,
@@ -54,6 +66,7 @@ export function measureStampEffect(before: Project, after: Project, mapId: strin
     eventsWithArt: added.filter(eventHasVisibleArt).length,
     eventsInvisible: added.filter((event) => !eventHasVisibleArt(event)).length,
     transitRoutesChanged,
+    ...(reliefCellsChanged > 0 ? { reliefCellsChanged } : {}),
   };
 }
 
@@ -66,12 +79,13 @@ export function describeStampEffect(effect: StampEffect): string {
   }
   if (effect.eventsRemoved > 0) parts.push(`이벤트 ${effect.eventsRemoved}개 삭제`);
   if ((effect.transitRoutesChanged ?? 0) > 0) parts.push(`주행 노선 ${effect.transitRoutesChanged}개`);
+  if ((effect.reliefCellsChanged ?? 0) > 0) parts.push(`절벽 단차 ${effect.reliefCellsChanged}칸`);
   return `실제로 바뀐 것: ${parts.join(" · ")}`;
 }
 
-/** 화면에 보이는 변화가 하나라도 있는가(타일이 바뀌었거나 그림 있는 이벤트가 생김/지워짐, 또는 탈것 주행 노선이 바뀜). */
+/** 화면에 보이는 변화가 하나라도 있는가(타일이 바뀌었거나 그림 있는 이벤트가 생김/지워짐, 또는 탈것 주행 노선·절벽 단차가 바뀜). */
 export function hasVisibleChange(effect: StampEffect): boolean {
-  return effect.tilesChanged > 0 || effect.eventsWithArt > 0 || effect.eventsRemoved > 0 || (effect.transitRoutesChanged ?? 0) > 0;
+  return effect.tilesChanged > 0 || effect.eventsWithArt > 0 || effect.eventsRemoved > 0 || (effect.transitRoutesChanged ?? 0) > 0 || (effect.reliefCellsChanged ?? 0) > 0;
 }
 
 export function mapOf(project: Project, mapId: string): GameMap | undefined {
