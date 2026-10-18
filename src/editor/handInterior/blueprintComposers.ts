@@ -930,16 +930,16 @@ export function composeDepartmentStore(spec: HandInteriorSpec, nuance: SpaceNuan
   const topY1 = compact ? Math.floor(rowsY1 / 2) : pickInt(rng, 15, 18);
   const fashionWest = rng() < 0.5;
   const sideX0 = (west: boolean) => (west ? 1 : wingW + hallW + 3);
-  const fashion: HandInteriorRoom = { id: "fashion", x0: sideX0(fashionWest), y0: 1, x1: sideX0(fashionWest) + wingW - 1, y1: rowsY1, floor: pal.fashion[0], wall: pal.fashion[1] };
+  const fashion: HandInteriorRoom = { id: "fashion", x0: sideX0(fashionWest), y0: 3, x1: sideX0(fashionWest) + wingW - 1, y1: rowsY1 - 2, floor: pal.fashion[0], wall: pal.fashion[1] };
   const hall: HandInteriorRoom = { id: "hall", x0: wingW + 2, y0: 1, x1: wingW + 1 + hallW, y1: rowsY1, floor: pal.hall[0], wall: pal.hall[1] };
-  const beauty: HandInteriorRoom = { id: "beauty", x0: sideX0(!fashionWest), y0: 1, x1: sideX0(!fashionWest) + wingW - 1, y1: topY1, floor: pal.beauty[0], wall: pal.beauty[1] };
-  const cafe: HandInteriorRoom = { id: "cafe", x0: beauty.x0, y0: topY1 + 2, x1: beauty.x1, y1: rowsY1, floor: pal.cafe[0], wall: pal.cafe[1] };
+  const beauty: HandInteriorRoom = { id: "beauty", x0: sideX0(!fashionWest), y0: 2, x1: sideX0(!fashionWest) + wingW - 1, y1: topY1, floor: pal.beauty[0], wall: pal.beauty[1] };
+  const cafe: HandInteriorRoom = { id: "cafe", x0: beauty.x0, y0: topY1 + 2, x1: beauty.x1, y1: rowsY1 - 1, floor: pal.cafe[0], wall: pal.cafe[1] };
   const cx = Math.floor((hall.x0 + hall.x1) / 2);
-  const fashionDoor = pickInt(rng, 6, Math.max(6, rowsY1 - 4));
+  const fashionDoor = pickInt(rng, 7, Math.max(7, rowsY1 - 6));
   const connect: HandInteriorConnect[] = [
     { a: "fashion", b: "hall", at: fashionDoor },
     { a: "beauty", b: "hall", at: topY1 - 1 },
-    { a: "cafe", b: "hall", at: Math.min(rowsY1 - 1, topY1 + 5) },
+    { a: "cafe", b: "hall", at: Math.min(rowsY1 - 2, topY1 + 5) },
   ];
   const s = new InteriorSketch(spec, [fashion, hall, beauty, cafe], connect, { room: "hall", x: cx, width: 1 });
   const decisions = [
@@ -1025,15 +1025,18 @@ export function composeDepartmentStore(spec: HandInteriorSpec, nuance: SpaceNuan
   s.put("mci-pastry-case", k.x0 + 2, k.y0);
   s.put("mart-bakery-counter", k.x0 + 4, k.y0);
   s.put("mart-cake-showcase", k.x0 + 6, k.y0);
+  if (s.put("mci-counter-register", k.x0 + 8, k.y0)) s.goods("mci-g-register", k.x0 + 9, k.y0);
   s.put("mci-plant-tall", k.x1, k.y0);
   s.keepRect(k.x0, k.y0 + 1, k.x1, k.y0 + 1);
-  for (let y = k.y0 + 2; y <= k.y1; y += 2) {
+  for (let y = k.y0 + 2; y <= k.y1 - 1; y += 2) {
     for (let x = k.x0 + 1; x + 2 <= k.x1; x += 4) {
       s.put("mci-cafe-chair-e", x, y);
       if (s.put("mci-cafe-table", x + 1, y)) s.goods(pickOf(rng, ["mci-g-coffee", "mci-g-vase", "mci-g-coffee"]), x + 1, y);
       s.put("mci-cafe-chair-w", x + 2, y);
     }
   }
+  s.put("mci-plant-tall", k.x0, k.y1);
+  s.put("mci-plant-tall", k.x1, k.y1);
 
   const areas = [areaOf("아트리움", h), areaOf("패션관", f), areaOf("화장품관", b), areaOf("카페", k)];
   return s.finish({ tileset: "modern_city", floor: pal.hall[0], wall: pal.hall[1] }, areas, decisions);

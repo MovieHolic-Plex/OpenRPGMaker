@@ -52,11 +52,11 @@ const ENTRANCE_ORDER = [/^genkan$/u, /^entrance$/u, /^(shoegenkan|lobby|hosp-lob
 const OPEN_DEFAULT: [string, string][] = [
   ["genkan", "hall"], ["genkan", "ldk"], ["genkan", "entrance"], ["kitchen", "ldk"], ["kitchen", "dining"], ["arena_stands", "arena_floor"],
   ["dept-vip-hall", "dept-atrium"],
-  ["mart-fresh-bakery", "mart-sales-hall"],
-  ["subway-concourse", "subway-platform"],
+  ["mart-fresh-bakery", "mart-sales-hall"], ["mart-produce", "mart-sales-hall"], ["mart-butcher", "mart-sales-hall"], ["mart-sales-hall", "mart-checkout"],
+  ["subway-concourse", "subway-platform"], ["train-car", "train-car-2"],
+  ["house-living", "house-kitchen"], ["espresso-bar", "cafe-hall"],
   ["cinema-arcade-zone", "cinema-lobby"],
-  ["rest-kitchen-bar", "rest-dining-hall"],
-  ["rest-live-stage", "rest-dining-hall"],
+  ["rest-kitchen-bar", "rest-dining-hall"], ["rest-bar-lounge", "rest-dining-hall"], ["rest-live-stage", "rest-dining-hall"],
   ["gallery-paintings", "gallery-lobby"],
 ];
 /** 위·아래가 정해진 쌍(종류) — 앞 방이 뒷 방 바로 위(북쪽)에 붙어야 한다. 관중석은 모래 마당을 내려다본다(2026-10-14 조수 시험: 관중석이 마당 아래 딴 방으로 떨어졌다). */
@@ -127,6 +127,7 @@ const DOOR_OF: Record<string, { h?: string; v?: string }> = {
   "hosp-nurse-core": { h: "mci-door-glass" }, "hosp-pharmacy": { h: "mci-door-hospital" }, "hosp-er": { h: "mci-door-hospital" },
   "elev-cabin-1": { h: "elev-car-door" }, "elev-cabin-2": { h: "elev-car-door" }, "elev-stair-core": { h: "mci-door-steel" },
   waiting_room: { h: "mci-door-hospital" }, backroom: { h: "mci-door-steel" }, "mart-storage": { h: "mci-door-steel" },
+  "school-infirmary": { h: "mci-door-hospital" }, "roof-machine": { h: "mci-door-steel" }, "council-storage": { h: "mci-door-steel" },
   meeting: { h: "mci-door-glass" }, "open-office": { h: "mci-door-glass" }, elevatorhall: { h: "mci-door-glass" }, lounge: { h: "mci-door-glass" }, pantry: { h: "mci-door-wood" },
   "cinema-theater": { h: "mci-door-glass" }, "gallery-sculpture": { h: "mci-door-glass" },
   // modern_campus(현대 학교·캠퍼스) 실내 — 강의실·세미나실·교실·학생회실은 교실 미닫이문.
@@ -540,7 +541,10 @@ function buildCandidatesForVariant(
   const openPairs = [...pairOf(req.open), ...pairOf(OPEN_DEFAULT)];
   const isOpen = (a: string, b: string) => openPairs.some(([p, q]) => (p === a && q === b) || (p === b && q === a));
   const mirrorHorizontal = req.styleVariant ? (styleVariant === "B" || styleVariant === "D") : (styleVariant === "B" || styleVariant === "D" || Boolean(vary?.flip));
-  const leftPairs = pairOf(LEFT_DEFAULT);
+  const leftRules: Pair[] = vary?.v.left
+    ? LEFT_DEFAULT.filter(([p, q]) => !vary.v.left!.some(([a, b]) => a === p || b === q || (a === q && b === p)))
+    : LEFT_DEFAULT;
+  const leftPairs = pairOf(leftRules);
   const programAbove = pairOf(vary?.v.above), programLeft = pairOf(vary?.v.left);
   const total = wants.reduce((s, w) => s + w.tw * w.th, 0);
   const scaleKey = tilesetId === "modern_city" ? programBuilding(tilesetId, req.program) : undefined;
