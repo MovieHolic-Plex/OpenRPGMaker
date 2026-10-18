@@ -5,6 +5,19 @@
 
 <!-- releases -->
 
+## 0.269.0 — 2026-10-19
+
+### 기능
+
+- **interior** — R13b jumbo centerpieces for konbini, lecture hall, officetel; house/office/sento/mart/hospital layout fixes (#2974) (`4408f68`)
+- **interior** — R13 25 jumbo 3/4 top-view centerpieces (MRI, surgical rig, grand sento bath, perfume rotunda, seafood island, arcade stages...) appended after R11; placed in 17 daily-routine venues (#2973) (`2bbcc91`)
+- **ai** — authentic JRPG pilot 4/4 PASS — biome-authentic scene stages and cutscene/lint fixes (#2971) (`f82fbf8`)
+
+### 수정
+
+- **monster** — upgrade 3/4 perspective eyes on starters and all 60 species (#2976) (`cbc9415`)
+- **forest** — 버들항 낱 나무·덤불·생울타리·바늘잎을 숲 수관과 같은 화풍으로 다시 칠하기 (Opus 적대적 VQA) (#2972) (`50ff130`)
+
 ## 0.268.2 — 2026-10-19
 
 ### 수정
