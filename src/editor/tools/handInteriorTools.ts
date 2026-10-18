@@ -29,6 +29,7 @@ import { programKinds, roomPrograms, roomTemplates } from '@/editor/handInterior
 import { genId } from "@/util/id";
 import { assignCreatedMapBgm } from "./mapTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+import { venueScaleBrief } from "@/editor/handInterior/venueScale";
 
 // 바닥·벽면·천장 id 를 enum 으로 연다 — 자유 문자열이면 모델이 wood·stone·brick 처럼 그럴듯한 이름을 지어
 // 「바닥 "wood" 이 없다」로 거부된 뒤 다시 부른다(2026-10-05 헤드리스 스트레스 13판 중 4판).
@@ -547,6 +548,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     + "★ 건물·방이 둘 이상인 실내(집·가게+뒤채·여관·대장간·저택·일본 집·편의점 등)는 layout 하나만 준다: layout:{program:\"house-1f\"} 또는 layout:{rooms:[{kind:\"genkan\"},{kind:\"hall\"},{kind:\"ldk\"},{kind:\"toilet\"},{kind:\"bath\"}]} — 도구가 방 크기·배치(칸막이·문·트인 곳·출구, ㄱ·ㄷ자 바깥 모양)를 짜고 방마다 제작자 예제 방의 가구 한 벌을 심는다. "
     + "박물관·미술관 = program:\"museum\", 배 안 위 갑판(선장실·조타실·배 주방·선원 숙소) = \"ship\", 아래 갑판(포 갑판·화물칸·배 감방) = \"ship_hold\", 투기장·콜로세움 = \"arena\"(방 종류 museum_*·ship_*·arena_*·gladiator_cell). 호러·고딕 미술관은 build_gothic_place. "
     + "program·방 종류(roomKinds) 목록은 list_hand_interior_parts({tileset}) 인자 없이. 보고 있는 맵 크기에 맞추지 않는다 — 크기는 방 구성이 정한다. 결과 data.layout.picture 로 배치를 보고, 다른 배치는 layout.variant 1·2, 다른 견본은 layout.seed. "
+    + `modern_city 공간 규모 규격(벽 포함 가로×세로 — program 은 이 크기로 서고, rooms 를 직접 짤 때도 이 규모를 따른다. 대형마트를 30×20 으로 줄이지 않는다): ${venueScaleBrief()}. `
     + "가구를 더하거나 빼려면 data.rebuild(rooms·connect·exit·objects…)를 고쳐 같은 mapId·replace:true 로 넘긴다. "
     + "직접 방 사각형을 정하려면 plan 대신 rooms(방 사각형) + connect(이을 방 쌍) + exit(출구 방)를 준다 — 칸막이·문 틈·남쪽 출구·방별 바닥/벽면·문 기물(일본 집)을 도구가 계산하고 결과 data.plan·openings(문 자리)를 돌려준다. "
     + "방마다 쓰임이 다르면(화실·욕실·화장실·부엌·침실·창고) 바닥만 zones 로 바꾸지 말고 칸막이로 나눈 방으로 만든다 — 바닥 무늬만 다른 구역은 마루 한가운데 떠 보인다. 큰 방 하나는 방 사각형 둘을 맞닿게(사이 0칸) 놓아 ㄱ·ㄷ자로 만든다. "

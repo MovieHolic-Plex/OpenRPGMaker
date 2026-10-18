@@ -1,97 +1,13 @@
-// 현대 도시(modern_city) 30종 실내 확장 — 2026-10-18 사용자 "더 다양한 공간과 더 다양한 오브젝트… 일본에 뭐가 있나? 한 30가지".
-// 백화점·마트·지하철역·병원·영화관·레스토랑·미술관(modernPresets.ts)에 더해 전동차 내부·대학 강의실·체육관·강당·편의점·
-// 이자카야·센토·게임센터·노래방·서점·신사·옥상·파출소·실험실·음악실·학생회실·보건실·메이드 카페·호텔·방송국·법정·지하 주차장·도서관.
-// 가구 id 는 modernCityRoomSpec.json(R7 굽기: train-*·lecture-*·gym-*·aud-*·konbini-*·izakaya-*·sento-*·… 87종)을 쓴다.
+// 현대 도시(modern_city) 실내 확장 — 2026-10-18 사용자 "더 다양한 공간과 더 다양한 오브젝트… 일본에 뭐가 있나?".
+// 백화점·마트·지하철역·병원·영화관·레스토랑·미술관(modernPresets.ts)과 학생·직장인 하루 18곳(dailyVenues.ts)에 더해
+// 강당·노래방·서점·신사·파출소·실험실·음악실·보건실·메이드 카페·호텔·방송국·법정·지하 주차장·중앙도서관.
+// 가구 id 는 modernCityRoomSpec.json 을 쓴다.
 // 견본 좌표: 0~1 줄은 벽면(hang 은 y 0), 2 줄부터 바닥(wall 가구는 y 2). seed 변주는 MODERN_VENUE_VARIATION(바닥·벽면 묶음).
-import type { InteriorRoomTemplate, InteriorTemplateItem } from "./templates";
+import type { InteriorRoomTemplate } from "./templates";
 import type { ModernProgramVariation } from "./modernPresets";
-
-const o = (id: string, x: number, y: number): InteriorTemplateItem => ({ t: "o", id, x, y });
-const g = (id: string, x: number, y: number): InteriorTemplateItem => ({ t: "g", id, x, y });
-const row = (id: string, x0: number, step: number, n: number, y: number) => Array.from({ length: n }, (_, i) => o(id, x0 + i * step, y));
-
-interface Venue {
-  readonly program: string;
-  readonly map: string;
-  readonly variation: ModernProgramVariation;
-  readonly rooms: readonly Omit<InteriorRoomTemplate, "map" | "building" | "id">[];
-}
+import { g, o, row, type Venue } from "./venueKit";
 
 const VENUES: readonly Venue[] = [
-  // 3. 지하철 전동차 — 운전실 + 객차 두 칸이 한 줄로(칸 사이 연결 통로 문). 북쪽 롱시트·남쪽 벤치, 문 앞 노란 안전 매트, 가운데 손잡이 봉 줄.
-  // 세 칸이 벽에서 벽까지 이어져야 한다 - seed 변주에도 넓히지 않는다.
-  { program: "mc_train_car", map: "train-car", variation: {
-    entrance: "train-car", left: [["train-cab", "train-car"], ["train-car", "train-car-2"]], hubs: ["train-car", "train-car-2"],
-    fixed: ["train-cab", "train-car", "train-car-2"], palettes: [
-      { "train-car": ["mci-vinyl-store", "mci-wall-office"], "train-car-2": ["mci-vinyl-store", "mci-wall-office"], "train-cab": ["mci-concrete", "mci-wall-metal"] },
-      { "train-car": ["mci-wood-oak", "mci-wall-store"], "train-car-2": ["mci-wood-oak", "mci-wall-store"], "train-cab": ["mci-tile-concourse", "mci-wall-office"] },
-    ] }, rooms: [
-    { kind: "train-cab", w: 6, h: 8, floor: "mci-concrete", wall: "mci-wall-metal", items: [
-      o("mci-window-city", 1, 0), o("train-led", 3, 0),
-      o("mci-filing", 0, 2), o("mci-shelf-office", 4, 2),
-      o("mci-chair-office-s", 1, 4), o("mci-chair-office-s", 2, 4), o("mci-desk-pc-back", 1, 5), g("mci-g-phone", 2, 5),
-      o("train-pole", 4, 6), o("mci-tactile", 0, 7), o("mci-tactile", 1, 7),
-    ] },
-    { kind: "train-car", w: 13, h: 8, floor: "mci-concrete", wall: "mci-wall-metal", items: [
-      o("train-door", 1, 0), o("train-led", 4, 0), o("mci-route-map", 6, 0), o("train-door", 9, 0), o("mci-ac-wall", 11, 0),
-      o("mci-tactile", 1, 2), o("mci-tactile", 2, 2), o("train-longseat", 3, 2), o("train-longseat", 6, 2), o("mci-tactile", 9, 2), o("mci-tactile", 10, 2),
-      ...row("train-pole", 2, 3, 4, 4),
-      o("mci-wait-bench", 1, 7), o("mci-tactile", 5, 7), o("mci-tactile", 6, 7), o("mci-tactile", 7, 7), o("mci-wait-bench", 9, 7),
-    ] },
-    { kind: "train-car-2", w: 13, h: 8, floor: "mci-concrete", wall: "mci-wall-metal", items: [
-      o("train-door", 1, 0), o("mci-route-map", 4, 0), o("train-led", 6, 0), o("train-door", 9, 0), o("mci-notice-board", 12, 0),
-      o("mci-tactile", 1, 2), o("mci-tactile", 2, 2), o("train-longseat", 3, 2), o("train-longseat", 6, 2), o("mci-tactile", 9, 2), o("mci-tactile", 10, 2),
-      ...row("train-pole", 2, 3, 4, 4),
-      o("mci-wait-bench", 1, 7), o("mci-tactile", 5, 7), o("mci-tactile", 6, 7), o("mci-tactile", 7, 7), o("mci-wait-bench", 9, 7), o("train-pole", 12, 6),
-    ] },
-  ] },
-  // 4. 대학 대강의실 + 로비 — 프로젝터·교탁 앞 가운데 통로를 둔 강의 책상 네 줄, 남쪽 로비(사물함·자판기·게시판·카페 탁자).
-  { program: "mc_lecture_hall", map: "uni-lecture-hall", variation: { entrance: "uni-foyer", above: [["uni-lecture", "uni-foyer"]], hubs: ["uni-foyer"], palettes: [
-    { "uni-lecture": ["mci-wood-oak", "mci-wall-home"], "uni-foyer": ["mci-tile-concourse", "mci-wall-lobby"] },
-    { "uni-lecture": ["mci-vinyl-store", "mci-wall-lobby"], "uni-foyer": ["mci-stone-lobby", "mci-wall-office"] },
-  ] }, rooms: [
-    { kind: "uni-lecture", w: 22, h: 13, floor: "mci-carpet-office", wall: "mci-wall-office", items: [
-      o("mci-whiteboard", 2, 0), o("projector-screen", 9, 0), o("mci-whiteboard", 15, 0), o("mci-wall-clock", 18, 0), o("mci-ac-wall", 20, 0),
-      o("mci-plant-tall", 0, 2), o("mci-filing", 1, 2), o("mci-shelf-office", 18, 2), o("mci-plant-tall", 21, 2),
-      o("lecture-podium", 10, 3), o("mci-desk-pc", 12, 3), g("mci-g-laptop", 12, 3),
-      ...row("lecture-desk-row", 1, 4, 2, 5), ...row("lecture-desk-row", 13, 4, 2, 5),
-      ...row("lecture-desk-row", 1, 4, 2, 7), ...row("lecture-desk-row", 13, 4, 2, 7),
-      ...row("lecture-desk-row", 1, 4, 2, 9), ...row("lecture-desk-row", 13, 4, 2, 9),
-      ...row("lecture-desk-row", 1, 4, 2, 11), ...row("lecture-desk-row", 13, 4, 2, 11),
-    ] },
-    { kind: "uni-foyer", w: 22, h: 7, floor: "mci-tile-concourse", wall: "mci-wall-lobby", items: [
-      o("mci-notice-board", 1, 0), o("mci-notice-board", 3, 0), o("mci-art-frame", 14, 0), o("mci-wall-clock", 18, 0),
-      o("subway-vending-machine", 0, 2), o("subway-vending-machine", 2, 2), o("hospital-water-dispenser", 4, 2), o("sento-shoe-locker", 5, 2), o("sento-shoe-locker", 7, 2),
-      o("council-trophy-case", 13, 2), o("council-trophy-case", 15, 2), o("mci-coffee-station", 17, 2), o("mci-plant-tall", 21, 2),
-      o("mci-wait-bench", 1, 4), o("mci-cafe-chair-e", 14, 4), o("mci-cafe-table", 15, 4), o("mci-cafe-chair-w", 16, 4),
-      o("mci-cafe-chair-e", 18, 4), o("mci-cafe-table", 19, 4), o("mci-cafe-chair-w", 20, 4),
-      o("mci-plant-tall", 0, 6), o("subway-trash-bins", 3, 6), o("mci-planter", 17, 6),
-    ] },
-  ] },
-  // 5. 실내 체육관 — 코트(골대·점수판·센터 서클·양옆 관람석·팀 벤치·매트·뜀틀), 남쪽 탈의실(사물함·벤치)과 로비(트로피·자판기·안내 데스크).
-  { program: "mc_gym", map: "gymnasium", variation: { entrance: "gym-lobby", above: [["gym-court", "gym-lobby"]], left: [["gym-locker", "gym-lobby"]], hubs: ["gym-lobby"], palettes: [
-    { "gym-court": ["mci-wood-dark", "mci-wall-brick"], "gym-locker": ["mci-tile-small", "mci-wall-tile"], "gym-lobby": ["mci-stone-lobby", "mci-wall-lobby"] },
-    { "gym-court": ["mci-wood-oak", "mci-wall-metal"], "gym-locker": ["mci-concrete", "mci-wall-metal"], "gym-lobby": ["mci-tile-concourse", "mci-wall-office"] },
-  ] }, rooms: [
-    { kind: "gym-court", w: 26, h: 13, floor: "mci-wood-oak", wall: "mci-wall-office", items: [
-      o("mci-window-city", 2, 0), o("mci-window-city", 6, 0), o("mci-wall-clock", 10, 0), o("gym-scoreboard", 12, 0), o("mci-window-city", 16, 0), o("mci-window-city", 20, 0), o("mci-ac-wall", 23, 0),
-      o("mci-bench-metal", 5, 2), o("mci-bench-metal", 8, 2), o("gym-hoop", 12, 2), o("mci-bench-metal", 16, 2), o("mci-bench-metal", 19, 2),
-      o("gym-bleacher", 0, 4), o("gym-bleacher", 0, 7), o("gym-bleacher", 22, 4), o("gym-bleacher", 22, 7),
-      o("gym-center-circle", 11, 6),
-      o("gym-mat", 5, 11), o("gym-mat", 7, 11), o("gym-vault", 1, 11), o("gym-vault", 17, 11), o("gym-mat", 20, 11), o("mci-basket-stack", 24, 11),
-    ] },
-    { kind: "gym-locker", w: 12, h: 7, floor: "mci-tile-small", wall: "mci-wall-tile", items: [
-      o("mci-wall-clock", 5, 0),
-      ...row("sento-shoe-locker", 0, 2, 5, 2),
-      o("mci-bench-metal", 1, 4), o("mci-bench-metal", 4, 4), o("mci-bench-metal", 7, 4),
-      o("infirmary-scale", 0, 6), o("subway-trash-bins", 4, 6), o("mci-plant-tall", 8, 6),
-    ] },
-    { kind: "gym-lobby", w: 13, h: 7, floor: "mci-stone-lobby", wall: "mci-wall-lobby", items: [
-      o("mci-notice-board", 1, 0), o("mci-art-frame", 9, 0),
-      o("council-trophy-case", 0, 2), o("council-trophy-case", 2, 2), o("subway-vending-machine", 9, 2), o("hospital-water-dispenser", 11, 2),
-      o("mci-reception", 1, 4), o("mci-wait-bench", 9, 4), o("mci-plant-tall", 12, 6), o("mci-plant-tall", 0, 6),
-    ] },
-  ] },
   // 6. 대강당 + 로비 — 붉은 막 무대와 연단, 무대 옆 그랜드 피아노·앰프, 가운데 통로를 둔 객석 네 줄, 남쪽 로비(포스터·매표·물품 보관).
   { program: "mc_auditorium", map: "auditorium", variation: { entrance: "aud-foyer", above: [["aud-hall", "aud-foyer"]], hubs: ["aud-foyer"], palettes: [
     { "aud-hall": ["mci-wood-dark", "mci-wall-home"], "aud-foyer": ["mci-stone-lobby", "mci-wall-store"] },
@@ -111,105 +27,6 @@ const VENUES: readonly Venue[] = [
       o("dept-directory-kiosk", 0, 2), o("subway-vending-machine", 2, 2), o("mci-coffee-station", 4, 2), o("rest-coat-stand", 7, 2), o("rest-coat-stand", 8, 2),
       o("cinema-concession", 17, 3), o("subway-vending-machine", 22, 2), o("subway-vending-machine", 24, 2), o("mci-plant-tall", 27, 2),
       o("lounge-sofa-cream", 3, 4), o("lounge-sofa-cream", 5, 4), o("mci-wait-bench", 20, 5), o("mci-plant-tall", 0, 5),
-    ] },
-  ] },
-  // 12. 일본 편의점 + 창고 — 북쪽 벽 음료 냉장고·도시락 진열대·커피머신·ATM, 진열대 세 줄과 엔드캡, 동쪽 냉동고, 계산대 줄, 남쪽 잡지 평대·분리수거함.
-  { program: "mc_konbini_jp", map: "konbini-24h", variation: { entrance: "konbini-floor", left: [["konbini-floor", "konbini-backroom"]], palettes: [
-    { "konbini-floor": ["mci-tile-small", "mci-wall-tile"], "konbini-backroom": ["mci-concrete", "mci-wall-metal"] },
-    { "konbini-floor": ["mci-vinyl-hospital", "mci-wall-office"], "konbini-backroom": ["mci-wood-oak", "mci-wall-brick"] },
-  ] }, rooms: [
-    { kind: "konbini-floor", w: 20, h: 12, floor: "mci-vinyl-store", wall: "mci-wall-store", items: [
-      o("mci-ac-wall", 1, 0), o("mci-menu-board", 15, 0), o("mci-notice-board", 18, 0),
-      ...row("mci-cooler", 0, 2, 5, 2), o("konbini-bento", 10, 2), o("konbini-bento", 13, 2), o("mci-coffee-station", 16, 2), o("konbini-atm", 18, 2), o("mci-fridge", 19, 2),
-      ...row("mci-gondola", 1, 2, 4, 5), o("mart-promo-endcap", 9, 5),
-      ...row("mci-gondola", 1, 2, 4, 7), o("mart-promo-endcap", 9, 7),
-      ...row("mci-gondola", 1, 2, 4, 9), o("mart-promo-endcap", 9, 9),
-      o("mci-freezer", 18, 4), o("mci-freezer", 18, 6),
-      o("konbini-counter", 12, 8), o("mci-counter-register", 15, 8), o("mci-pastry-case", 12, 5),
-      o("subway-trash-bins", 1, 11), o("book-table", 4, 11), o("mci-basket-stack", 14, 11), o("mci-plant-tall", 19, 11),
-    ] },
-    { kind: "konbini-backroom", w: 7, h: 12, floor: "mci-concrete", wall: "mci-wall-metal", items: [
-      o("mci-wall-clock", 3, 0),
-      o("mci-rack", 0, 2), o("mci-rack", 3, 2), o("mci-fridge", 6, 2),
-      o("mci-pallet", 4, 5), o("mci-pallet", 5, 5), o("mci-pallet", 5, 6),
-      o("mci-chair-office-s", 1, 8), o("mci-desk-pc-back", 1, 9), g("mci-g-papers", 1, 9),
-      o("mci-basket-stack", 5, 10), o("mci-pallet", 6, 11),
-    ] },
-  ] },
-  // 13. 이자카야 — 북서 주방·다찌 카운터(스툴 여섯), 북쪽 칸막이 다다미 룸 둘, 남쪽 홀(식탁 여덟·와인 랙·술 상자·붉은 러너).
-  { program: "mc_izakaya", map: "izakaya", variation: {
-    entrance: "izakaya-hall", above: [["izakaya-kitchen", "izakaya-hall"], ["izakaya-tatami", "izakaya-hall"]], left: [["izakaya-kitchen", "izakaya-tatami"]], hubs: ["izakaya-hall"], palettes: [
-      { "izakaya-hall": ["mci-wood-oak", "mci-wall-brick"], "izakaya-kitchen": ["mci-tile-small", "mci-wall-tile"], "izakaya-tatami": ["mci-wood-dark", "mci-wall-home"] },
-      { "izakaya-hall": ["mci-concrete", "mci-wall-home"], "izakaya-kitchen": ["mci-concrete", "mci-wall-metal"], "izakaya-tatami": ["mci-wood-oak", "mci-wall-brick"] },
-    ] }, rooms: [
-    { kind: "izakaya-kitchen", w: 10, h: 7, floor: "mci-tile-small", wall: "mci-wall-tile", items: [
-      o("izakaya-lantern", 1, 0), o("mci-menu-board", 3, 0), o("izakaya-lantern", 8, 0),
-      o("mci-kitchen", 0, 2), o("mci-kitchen", 3, 2), o("izakaya-beer-server", 6, 2), o("rest-wine-rack", 7, 2), o("mci-fridge", 9, 2),
-      o("izakaya-counter", 1, 4), o("izakaya-counter", 4, 4), ...row("mci-bar-stool", 1, 1, 6, 5),
-    ] },
-    { kind: "izakaya-tatami", w: 7, h: 7, floor: "mci-wood-dark", wall: "mci-wall-home", items: [
-      o("izakaya-lantern", 1, 0), o("mci-art-frame", 3, 0), o("izakaya-lantern", 5, 0),
-      o("mci-plant-tall", 0, 2), o("rest-coat-stand", 6, 2), o("izakaya-zashiki", 2, 3),
-    ] },
-    { kind: "izakaya-tatami", w: 7, h: 7, floor: "mci-wood-dark", wall: "mci-wall-home", items: [
-      o("izakaya-lantern", 1, 0), o("izakaya-noren", 3, 0), o("izakaya-lantern", 5, 0),
-      o("rest-coat-stand", 0, 2), o("mci-plant-tall", 6, 2), o("izakaya-zashiki", 2, 3),
-    ] },
-    { kind: "izakaya-hall", w: 26, h: 9, floor: "mci-wood-dark", wall: "mci-wall-home", items: [
-      o("izakaya-lantern", 2, 0), o("izakaya-lantern", 6, 0), o("izakaya-lantern", 19, 0), o("izakaya-lantern", 23, 0),
-      o("rest-wine-rack", 0, 2), o("mci-pallet", 24, 2), o("mci-pallet", 25, 2), o("mci-pallet", 25, 3),
-      o("restaurant-table-4p", 1, 4), o("restaurant-table-4p", 5, 4), o("restaurant-table-4p", 17, 4), o("restaurant-table-4p", 21, 4),
-      o("restaurant-table-4p", 1, 7), o("restaurant-table-4p", 5, 7), o("restaurant-table-4p", 17, 7), o("restaurant-table-4p", 21, 7),
-      o("mci-rug", 11, 5), o("restaurant-host-podium", 15, 7),
-    ] },
-  ] },
-  // 14. 센토(대중목욕탕) — 남쪽 탈의실(로커·남탕/여탕 노렌·우유 자판기·평상·체중계·안마의자), 가운데 대욕장(씻는 자리 두 줄·후지산 벽화 아래 탕 셋),
-  // 북쪽 사우나(계단식 나무 벤치)와 노천탕(석등·화분).
-  { program: "mc_sento", map: "sento", variation: {
-    entrance: "sento-changing", above: [["sento-sauna", "sento-bathhall"], ["sento-bathhall", "sento-changing"]], hubs: ["sento-changing", "sento-bathhall"], palettes: [
-      { "sento-changing": ["mci-wood-dark", "mci-wall-home"], "sento-bathhall": ["mci-tile-concourse", "mci-wall-tile"], "sento-sauna": ["mci-wood-oak", "mci-wall-brick"] },
-      { "sento-changing": ["mci-tile-small", "mci-wall-store"], "sento-bathhall": ["mci-stone-lobby", "mci-wall-tile"], "sento-sauna": ["mci-wood-dark", "mci-wall-home"] },
-    ] }, rooms: [
-    { kind: "sento-sauna", w: 26, h: 7, floor: "mci-wood-oak", wall: "mci-wall-brick", items: [
-      o("mci-wall-clock", 3, 0), o("mci-window-city", 17, 0), o("mci-window-city", 21, 0),
-      o("gym-bleacher", 1, 3), o("gym-bleacher", 5, 3), o("hospital-water-dispenser", 10, 2),
-      o("mci-plant-tall", 13, 2), o("shrine-stone-lantern", 14, 3), o("sento-bath", 17, 3), o("shrine-stone-lantern", 22, 3), o("mci-plant-tall", 25, 2), o("mci-planter", 23, 6),
-    ] },
-    { kind: "sento-bathhall", w: 26, h: 11, floor: "mci-tile-small", wall: "mci-wall-tile", items: [
-      o("sento-fuji-mural", 7, 0), o("sento-fuji-mural", 10, 0), o("sento-fuji-mural", 13, 0), o("sento-fuji-mural", 16, 0),
-      ...row("sento-wash-station", 0, 2, 3, 2), o("mci-plant-tall", 6, 2), ...row("sento-wash-station", 19, 2, 3, 2), o("mci-plant-tall", 25, 2),
-      o("sento-bath", 7, 3), o("sento-bath", 11, 3), o("sento-bath", 15, 3),
-      o("mci-bench-metal", 1, 7), o("mci-bench-metal", 4, 7), o("mci-bench-metal", 19, 7), o("mci-bench-metal", 22, 7),
-    ] },
-    { kind: "sento-changing", w: 26, h: 8, floor: "mci-wood-oak", wall: "mci-wall-home", items: [
-      o("sento-noren-men", 4, 0), o("mci-wall-clock", 9, 0), o("sento-noren-women", 19, 0),
-      ...row("sento-shoe-locker", 0, 2, 3, 2), o("subway-vending-machine", 7, 2), o("mci-washbasin", 16, 2), o("mci-washbasin", 17, 2), ...row("sento-shoe-locker", 20, 2, 3, 2),
-      o("izakaya-zashiki", 2, 4), o("infirmary-scale", 8, 4), o("mci-armchair", 17, 5), o("mci-armchair", 18, 5), o("mci-wait-bench", 21, 5),
-      o("mci-plant-tall", 0, 7), o("mci-plant-tall", 25, 7),
-    ] },
-  ] },
-  // 15. 게임센터 — 북서 인형뽑기 구역(크레인 여섯·경품 카운터), 북동 리듬·레이싱 구역(리듬 기체·스티커 사진기·레이싱 넷), 남쪽 대전 캐비닛 열(16대)·메달 교환기.
-  { program: "mc_game_center", map: "game-center", variation: {
-    entrance: "game-floor", above: [["game-crane", "game-floor"], ["game-rhythm", "game-floor"]], left: [["game-crane", "game-rhythm"]], hubs: ["game-floor"], palettes: [
-      { "game-floor": ["mci-carpet-office", "mci-wall-brick"], "game-crane": ["mci-vinyl-store", "mci-wall-store"], "game-rhythm": ["mci-concrete", "mci-wall-metal"] },
-      { "game-floor": ["mci-vinyl-store", "mci-wall-store"], "game-crane": ["mci-carpet-office", "mci-wall-lobby"], "game-rhythm": ["mci-wood-dark", "mci-wall-brick"] },
-    ] }, rooms: [
-    { kind: "game-crane", w: 12, h: 9, floor: "mci-vinyl-store", wall: "mci-wall-store", items: [
-      o("cinema-poster", 1, 0), o("cinema-poster", 8, 0),
-      ...row("arcade-claw-machine", 0, 2, 6, 2),
-      o("arcade-prize-counter", 1, 5), o("dept-glass-showcase", 7, 5), o("dept-bag-stand", 11, 5),
-      o("mci-plant-tall", 0, 8), o("subway-trash-bins", 9, 8),
-    ] },
-    { kind: "game-rhythm", w: 12, h: 9, floor: "mci-concrete", wall: "mci-wall-metal", items: [
-      o("cinema-poster", 2, 0), o("cinema-poster", 9, 0),
-      o("arcade-rhythm", 0, 2), o("arcade-rhythm", 2, 2), o("arcade-rhythm", 4, 2), o("arcade-purikura", 8, 2), o("arcade-purikura", 10, 2),
-      o("arcade-racing-cabinet", 1, 5), o("arcade-racing-cabinet", 4, 5), o("arcade-racing-cabinet", 7, 5), o("arcade-racing-cabinet", 10, 5),
-    ] },
-    { kind: "game-floor", w: 25, h: 9, floor: "mci-concrete", wall: "mci-wall-metal", items: [
-      o("cinema-poster", 2, 0), o("cinema-poster", 20, 0),
-      o("arcade-medal-changer", 0, 2), o("arcade-medal-changer", 1, 2), o("subway-vending-machine", 3, 2), o("subway-vending-machine", 19, 2), o("arcade-medal-changer", 23, 2), o("arcade-medal-changer", 24, 2),
-      ...row("arcade-cabinet-pair", 2, 2, 4, 4), ...row("arcade-cabinet-pair", 15, 2, 4, 4),
-      ...row("arcade-cabinet-pair", 2, 2, 4, 7), ...row("arcade-cabinet-pair", 15, 2, 4, 7),
     ] },
   ] },
   // 16. 노래방 — 복도 위로 노래방 세 칸(코너 소파·탁자·벽걸이 모니터·스피커), 남쪽 복도(안내 데스크·드링크 바·대기 소파).
@@ -282,27 +99,6 @@ const VENUES: readonly Venue[] = [
       o("mci-chair-office-s", 1, 4), o("mci-desk-pc-back", 1, 5), g("mci-g-papers", 1, 5), o("mci-plant-tall", 5, 6),
     ] },
   ] },
-  // 19. 옥상 — 남쪽 데크(계단 탑옥·자판기·벤치·피크닉 탁자·남쪽 난간 펜스), 북서 옥상 정원(화분 상자·벤치), 북동 기계실(급수탑·선반·자재).
-  { program: "mc_rooftop", map: "rooftop", variation: {
-    entrance: "rooftop-deck", above: [["roof-garden", "rooftop-deck"], ["roof-machine", "rooftop-deck"]], left: [["roof-garden", "roof-machine"]], hubs: ["rooftop-deck"], palettes: [
-      { "rooftop-deck": ["mci-tile-concourse", "mci-wall-metal"], "roof-garden": ["mci-wood-dark", "mci-wall-brick"], "roof-machine": ["mci-concrete", "mci-wall-metal"] },
-      { "rooftop-deck": ["mci-stone-lobby", "mci-wall-office"], "roof-garden": ["mci-wood-oak", "mci-wall-office"], "roof-machine": ["mci-tile-concourse", "mci-wall-brick"] },
-    ] }, rooms: [
-    { kind: "roof-garden", w: 12, h: 7, floor: "mci-wood-oak", wall: "mci-wall-brick", items: [
-      o("mci-plant-tall", 0, 2), o("mci-planter", 2, 3), o("mci-planter", 5, 3), o("mci-planter", 8, 3), o("mci-plant-tall", 11, 2),
-      o("mci-bench-metal", 2, 5), o("mci-bench-metal", 8, 5),
-    ] },
-    { kind: "roof-machine", w: 11, h: 7, floor: "mci-concrete", wall: "mci-wall-metal", items: [
-      o("mci-ac-wall", 1, 0), o("mci-ac-wall", 5, 0),
-      o("mci-rack", 8, 2), o("roof-water-tank", 1, 4), o("roof-water-tank", 4, 4), o("mci-pallet", 8, 5), o("mci-pallet", 9, 5),
-    ] },
-    { kind: "rooftop-deck", w: 24, h: 10, floor: "mci-concrete", wall: "mci-wall-brick", items: [
-      o("roof-stair-hut", 0, 2), o("subway-vending-machine", 9, 2), o("subway-trash-bins", 14, 3), o("roof-water-tank", 21, 3),
-      o("mci-bench-metal", 2, 5), o("mci-bench-metal", 6, 5),
-      o("mci-cafe-chair-e", 15, 6), o("mci-cafe-table", 16, 6), o("mci-cafe-chair-w", 17, 6), o("mci-cafe-chair-e", 19, 6), o("mci-cafe-table", 20, 6), o("mci-cafe-chair-w", 21, 6),
-      ...row("roof-fence", 0, 2, 5, 9), ...row("roof-fence", 14, 2, 5, 9),
-    ] },
-  ] },
   // 20. 파출소(코반) — 남쪽 민원실(수배 게시판·민원 데스크·대기 의자), 북서 유치장(철창 셋), 북동 휴게실(좌식석·TV·부엌).
   { program: "mc_koban", map: "koban", variation: {
     entrance: "koban-office", above: [["koban-cellblock", "koban-office"], ["koban-rest", "koban-office"]], left: [["koban-cellblock", "koban-rest"]], hubs: ["koban-office"], palettes: [
@@ -364,25 +160,6 @@ const VENUES: readonly Venue[] = [
       o("mci-shelf-office", 0, 2), o("music-amp", 6, 2), o("music-amp", 7, 2),
       o("mci-chair-office-s", 2, 4), o("mci-chair-office-s", 4, 4), o("studio-news-desk", 2, 5),
       o("lounge-sofa-cream", 2, 9), o("mci-plant-tall", 7, 10),
-    ] },
-  ] },
-  // 23. 학생회실 + 비품실 — ㄷ자 회의 탁자와 의자 여덟, 화이트보드, 트로피 진열장, 회장 책상, 응접 소파 / 동쪽 비품실(선반·상자·의상 행거).
-  { program: "mc_council_room", map: "council-room", variation: { entrance: "council-room", left: [["council-room", "council-storage"]], palettes: [
-    { "council-room": ["mci-wood-oak", "mci-wall-home"], "council-storage": ["mci-concrete", "mci-wall-metal"] },
-    { "council-room": ["mci-vinyl-store", "mci-wall-lobby"], "council-storage": ["mci-wood-dark", "mci-wall-brick"] },
-  ] }, rooms: [
-    { kind: "council-room", w: 16, h: 11, floor: "mci-carpet-office", wall: "mci-wall-office", items: [
-      o("mci-window-blind", 1, 0), o("mci-whiteboard", 6, 0), o("mci-window-blind", 12, 0),
-      o("council-trophy-case", 0, 2), o("mci-shelf-office", 3, 2), o("mci-filing", 10, 2), o("council-trophy-case", 14, 2),
-      ...row("mci-chair-office-s", 6, 1, 4, 4),
-      o("mci-cafe-chair-e", 5, 5), o("mci-cafe-chair-e", 5, 6), o("council-table-u", 6, 5), o("mci-cafe-chair-w", 10, 5), o("mci-cafe-chair-w", 10, 6),
-      o("mci-chair-office-s", 1, 7), o("mci-desk-pc-back", 1, 8), g("mci-g-laptop", 1, 8),
-      o("lounge-sofa-cream", 11, 8), o("lounge-sofa-cream", 13, 8), o("mci-coffee-table", 12, 10), o("mci-plant-tall", 15, 10),
-    ] },
-    { kind: "council-storage", w: 7, h: 11, floor: "mci-concrete", wall: "mci-wall-metal", items: [
-      o("mci-rack", 0, 2), o("mci-rack", 3, 2), o("mci-fridge", 6, 2),
-      o("mci-pallet", 4, 5), o("mci-pallet", 5, 5), o("mci-pallet", 5, 6),
-      o("dept-clothing-rack", 1, 8), o("mci-basket-stack", 5, 9), o("mci-pallet", 6, 10),
     ] },
   ] },
   // 24. 보건실 — 북쪽 침상 칸(커튼 칸막이 침대 넷·협탁·링거), 남쪽 진찰실(약품장·세면대·정수기·보건 교사 책상·시력표·체중계·휠체어).
@@ -514,10 +291,12 @@ const VENUES: readonly Venue[] = [
       o("roof-water-tank", 8, 3), o("mci-pallet", 1, 5), o("mci-pallet", 2, 5), o("mci-pallet", 11, 5),
     ] },
     { kind: "parking-deck", w: 27, h: 13, floor: "mci-concrete", wall: "mci-wall-metal", items: [
-      ...row("park-stall-lines", 0, 2, 2, 2), o("park-pillar", 4, 3), ...row("park-stall-lines", 8, 2, 3, 2), o("park-pillar", 14, 3), ...row("park-stall-lines", 15, 2, 2, 2), ...row("park-stall-lines", 22, 2, 2, 2),
-      o("park-car-red", 0, 3), o("park-car-white", 8, 3), o("park-car-blue", 12, 3), o("park-car-white", 17, 3), o("park-car-red", 24, 3),
-      ...row("park-stall-lines", 1, 2, 5, 9), o("park-pillar", 11, 10), ...row("park-stall-lines", 16, 2, 5, 9),
-      o("park-car-blue", 1, 10), o("park-car-red", 5, 10), o("park-car-white", 7, 10), o("park-car-red", 16, 10), o("park-car-blue", 20, 10), o("park-car-white", 24, 10),
+      // 칸마다 [구분선 2칸][차 3칸] - 납작한 구분선과 차가 겹치면 조립기가 구분선을 밀어낸다. 남쪽 줄 가운데(x 12..14)는 출구 통로.
+      ...row("park-stall-lines", 0, 5, 6, 2),
+      o("park-car-front-white", 2, 2), o("park-car-front-red", 7, 2), o("park-car-front-navy", 12, 2), o("park-car-front-red", 17, 2), o("park-car-front-white", 22, 2),
+      o("park-pillar", 6, 7), o("park-pillar", 20, 7),
+      ...row("park-stall-lines", 0, 5, 6, 10),
+      o("park-car-back-black", 2, 10), o("park-car-back-white", 7, 10), o("park-car-back-navy", 17, 10), o("park-car-back-black", 22, 10),
     ] },
   ] },
   // 30. 대학 중앙도서관 — 북서 열람실(벽 서가·서가 열 넷·스터디 램프 열람석 여덟), 북동 그룹 스터디룸(ㄷ자 탁자 둘), 남쪽 로비(대출 데스크·검색 PC·자판기).

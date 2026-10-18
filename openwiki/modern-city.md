@@ -63,6 +63,13 @@ modern-chipset 하네스가 합성한 도시(건물·도로·소품·차량)를 
 - 엔진 검사 `qa/check-rooms.mts`(평면·program 두 경로 18장, 엔진 BFS) · 변조 `qa/tamper.mts`(6종 코드+좌표) · 참고문서 `refs_interior.py` → 용도 `mc-interior`(문서 10·그림 20, `public/assets/modern-city-interior-references/`). `bake_refs.py` 가 끝에서 저장본(`tiledata/modern-city/interior/refs/category.json`)을 다시 붙인다.
 - 문 이음 `link_modern_city_interior`(거리 문 ↔ 실내 출입구 틈 왕복, 막힌 문 칸에는 이벤트 없음).
 
+## 공간 규모 규격 · 학생/직장인 하루 18곳 (2026-10-18, `src/editor/handInterior/venueScale.ts`·`dailyVenues.ts`)
+
+- 사용자 「대형마트는 시발 너무 작다… 50x50 정도로」 → `VENUE_SCALE_CONTRACT` 가 program 마다 벽 포함 맵 크기를 정한다. XL 48~52×38~48(대형마트 50×46·백화점 48×38·체육관 46×34) · L 40~46×26~34(교사동 46×34·지하철역 46×32·오피스 46×32·강의동 42×30·센토 40×30·게임센터 40×28) · M 30~38×20~28(레스토랑 38×28·이자카야/학생회실 36×26·옥상 36×24·가정집 34×26·오피스텔/베이커리 32×24·32×22·편의점 30×22) · S 전동차 40×12.
+- `layout.ts` 는 규격이 있는 program(건물 id 또는 그 맵 key)의 배치 후보 중 규격 크기에 맞는 것을 고른다(작으면 칸당 3점, 크면 0.75점). 견본 방 크기는 위·아래 줄 너비 합 + 칸막이 + 바깥벽 = 규격이 되게 짰다. 백화점 청사진(`composeDepartmentStore`)도 48×38 바탕. 도구 설명(`build_hand_interior_room`)에 `venueScaleBrief()` 가 실린다.
+- 의자 방향: 탁자 둘레 의자는 탁자를 본다 — 북쪽 `-s`·남쪽 `-n`·서쪽 `-e`·동쪽 `-w`(`mci-chair-office-*`·`mci-chair-wood-*`·`mci-armchair-*`·`mci-sofa-*`). `builder.ts faceSeatsToTables` 가 견본·조수·청사진 어느 길로 온 남향 좌석이든 붙은 탁자 쪽 그림으로 바꾼다. 체육관 골대는 동서 양 끝 `gym-hoop-e`·`gym-hoop-w` 한 쌍.
+- 주차장 차는 새로 그리지 않고 거리 차량 `mc-veh-car-front-a-*`·`mc-veh-car-back-a-*` 칸을 그대로 쓴다(`park-car-*`). 전동차 `mc_train_car` 는 운전실 + 객차 둘(북 롱시트 남향·남 롱시트 북향·양문형 출입문·LED 노선판·손잡이·봉·연결 통로).
+
 ## 실조수 시험에서 나온 결함 (2026-10-14, gpt-6.1-sol — gemini-3.8-flash 는 할당량 429)
 
 - **거리를 로비로 덮음:** 배치 품질 권고(`src/ai/piAgent/layoutQuality.ts`)가 도로·교차로를 «빈 바닥 66%·빈 정사각형 12»로 세고, 칩셋에 방 사양이 있어 그 맵을 «실내»로 보고 `build_hand_interior_room replace:true` 를 시켰다 → 60×48 거리가 10×8 로비가 됐다.
