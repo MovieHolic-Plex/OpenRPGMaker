@@ -100,9 +100,10 @@ export class InteriorSketch {
     this.A = analyseHandInteriorPlan(this.composed.plan);
     this.W = this.A.W; this.H = this.A.H;
     for (const r of rooms) this.byId.set(r.id, r);
+    // 문 양쪽으로 곧게 두 칸은 비운다(furnish.ts doorwayCells 와 같은 규칙 - 2026-10-19 통행 감사).
     for (const o of this.composed.openings) {
-      if (o.kind === "h") for (let y = o.y - 1; y <= o.y + 3; y++) this.keepCell(o.x, y);
-      else for (let x = o.x - 1; x <= o.x + 1; x++) this.keepCell(x, o.y);
+      if (o.kind === "h") for (let y = o.y - 2; y <= o.y + 3; y++) this.keepCell(o.x, y);
+      else for (let x = o.x - 2; x <= o.x + 2; x++) this.keepCell(x, o.y);
     }
     const ex = this.composed.exit;
     for (let x = ex.x; x < ex.x + ex.width; x++) for (let y = ex.y - 2; y <= ex.y; y++) this.keepCell(x, y);

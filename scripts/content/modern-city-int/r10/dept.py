@@ -406,46 +406,6 @@ def info_desk():
     for x in range(8, 42, 8): c.l(x, 21, x, 25, WHITE_D)
     c.r(2, 29, 47, 29, SH)
     return c.done()
-def escalator_pair(up=True):
-    """Grand escalator (3x3, wall opening): dark soffit with an LED direction sign, glass balustrades in stainless
-    frames under black rubber handrails with amber skirt light, grooved steel treads that deepen toward the floor
-    with yellow demarcation edges, a yellow comb plate and a diamond-plate landing with a painted arrow."""
-    c = C(48, 48)
-    sign = (70, 210, 110) if up else (246, 150, 50)
-    c.box(0, 0, 47, 7, (44, 48, 58)); c.r(1, 1, 46, 1, (84, 90, 104))
-    c.box(16, 1, 31, 6, BLACK); c.r(17, 2, 30, 5, (18, 20, 26))
-    for i in range(3):
-        if up: c.r(23 - i, 2 + i, 24 + i, 2 + i, sign)
-        else: c.r(23 - i, 5 - i, 24 + i, 5 - i, sign)
-    c.r(19, 3, 20, 4, dk(sign, 0.6)); c.r(27, 3, 28, 4, dk(sign, 0.6))
-    c.r(10, 8, 37, 37, (34, 36, 44))
-    y, n = 8, 0
-    while y < 37:
-        h = 2 + (y - 8) // 9
-        f = 0.55 + 0.45 * (y - 8) / 29 if up else 1.0 - 0.35 * (y - 8) / 29
-        tread, groove = dk(STEEL_L, f), dk(STEEL_D, f)
-        y1 = min(36, y + h - 1)
-        c.r(11, y, 36, y1, tread)
-        for gx in range(12, 36, 2): c.r(gx, y, gx, y1, groove)
-        c.r(11, y, 11, y1, dk(YELLOW, f)); c.r(36, y, 36, y1, dk(YELLOW, f))
-        if up: c.r(11, y1 + 1, 36, y1 + 1, (26, 28, 34))
-        else: c.r(11, y, 36, y, dk(STEEL_L, min(1.0, f * 1.15)))
-        y = y1 + 2; n += 1
-    for x0, x1, rail, led in ((0, 9, 8, 10), (38, 47, 38, 37)):
-        c.box(x0, 6, x1, 40, STEEL_D)
-        c.glass(x0 + 1, 8, x1 - 1, 38, (168, 206, 224))
-        c.r(rail, 6, rail + 1, 40, BLACK); c.r(rail, 6, rail, 40, (70, 72, 84))
-        c.r(led, 8, led, 37, (250, 182, 64))
-    c.rbox(7, 37, 11, 42, BLACK); c.rbox(36, 37, 40, 42, BLACK); c.p(8, 38, (80, 82, 94)); c.p(37, 38, (80, 82, 94))
-    c.r(11, 38, 36, 38, YELLOW)
-    for x in range(11, 37, 2): c.p(x, 39, YELLOW_D)
-    c.r(11, 40, 36, 40, STEEL_D)
-    c.box(0, 41, 47, 46, STEEL); c.dither(1, 42, 46, 45, STEEL_L)
-    for i in range(3):
-        if up: c.r(23 - i, 42 + i, 24 + i, 42 + i, sign)
-        else: c.r(23 - i, 44 - i, 24 + i, 44 - i, sign)
-    c.r(1, 47, 47, 47, SH)
-    return c.done()
 def bag_hook_wall():
     """Accessory wall: pegboard with belts, small leather goods and wallets hung on hooks."""
     c = C(32, 32)

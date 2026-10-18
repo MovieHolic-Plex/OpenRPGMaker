@@ -40,8 +40,8 @@ const VENUES: readonly Venue[] = [
       o("home-laundry-basket", 4, 8),
     ] },
     { kind: "house-stairhall", w: 3, h: 9, floor: "mci-wood-oak", wall: "mci-wall-home", items: [
-      o("mci-wall-clock", 2, 0),
-      o("mci-stairs-up", 0, 2),
+      // 2층으로 오르는 나무 계단(3×3) - 북벽 문틀 속으로 디딤판·챌판이 올라가고 양옆 난간·엄지기둥이 선다.
+      o("stairs-up-wall-wood", 0, 2),
       o("home-monstera", 2, 8),
     ] },
     { kind: "house-living", w: 10, h: 7, floor: "mci-wood-oak", wall: "mci-wall-home", items: [
@@ -483,8 +483,8 @@ const VENUES: readonly Venue[] = [
     { kind: "otel-room", w: 8, h: 7, floor: "mci-wood-oak", wall: "mci-wall-home", items: [
       o("mci-window-curtain", 1, 0), o("home-wall-ac", 3, 0), o("mci-window-curtain", 6, 0),
       o("home-low-shelf", 0, 2), o("mci-tv-stand", 5, 2), o("home-monstera", 7, 2),
-      // 서쪽 로프트 침대·책상 모듈(위 침대, 아래 책상·책장) - 동쪽 러그와 TV 를 보는 자리.
-      o("jumbo-officetel-studio-bed-desk", 0, 4), o("mci-rug", 4, 4), o("home-floor-lamp", 7, 5), o("home-cat-bed", 7, 6),
+      // 동쪽 로프트 침대·책상 모듈(위 침대, 아래 책상·책장) - 서쪽 러그, 가운데 x=3 줄은 남쪽 부엌 문으로 가는 통로.
+      o("jumbo-officetel-studio-bed-desk", 4, 4), o("mci-rug", 0, 4), o("home-floor-lamp", 0, 6), o("home-cat-bed", 2, 6),
     ] },
     { kind: "otel-elevator", w: 6, h: 5, floor: "mci-stone-lobby", wall: "mci-wall-store", items: [
       o("mci-wall-clock", 4, 0),
