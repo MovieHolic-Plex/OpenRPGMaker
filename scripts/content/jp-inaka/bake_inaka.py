@@ -35,7 +35,7 @@ OUTDIR: Final[str] = os.path.join(ROOT, 'tiledata', 'jp-city', 'blocks', BLOCK)
 DEFAULT_SHEET_OUT: Final[str] = '/home/main/claude-viz/jp-inaka-countryside-1/inaka-kits-sheet.png'
 NOTES: Final[str] = (
     '일본 시골(이나카 여름방학) 팩: 모내기 물논·여름 푸른 논·가을 황금 논·논두렁 흙길·농수로 물/석축·시골 자갈길·맑은 개울·여름 들꽃 풀밭 바닥 9종 + '
-    '초가 고민가·기와 농가·토장 창고·막과자 가게·버스 정류장·무인 채소 판매대·목조 간이역·단량 디젤 동차·붉은 철교·개울 징검다리·소방 망루·'
+    '초가 고민가·기와 농가·토장 창고·막과자 가게·버스 정류장·무인 채소 판매대·목조 간이역·붉은 철교·개울 징검다리·소방 망루·'
     '흰 경트럭·붉은 트랙터·함석 농기구 헛간·비닐하우스·해바라기 군락·수국 꽃덤불·지장보살 사당·나무 전봇대·둥근 우체통과 자판기·물레방아간·'
     '농수로 수문·하사기 볏단 건조대·허수아비 한 쌍·타케가키 대나무 울타리·이끼 돌담·커브길 볼록거울·시골 자전거·작두 우물 펌프·언덕 도리이 돌계단 키트 %d종.'
 )
@@ -181,8 +181,8 @@ def selftest(verbose: bool = True) -> int:
     out: list[str] = []
     allowed = _allowed()
     b = build()
-    if len(b['kits']) < 30:
-        out.append('키트 수 미달: %d < 30' % len(b['kits']))
+    if len(b['kits']) < 29:
+        out.append('키트 수 미달: %d < 29' % len(b['kits']))
     if len(b['groups']) < 9:
         out.append('바닥 그룹 수 미달: %d < 9' % len(b['groups']))
     for k, c in b['cells'].items():
@@ -242,21 +242,48 @@ def preview(outdir: str = OUTDIR) -> str:
                 sheet.alpha_composite(cells[name]['img'], (12 + i * 44 + dx * 16, gy + dy * 16))
     sheet.save(os.path.join(outdir, '_all.png'))
     sheet.resize((sheet.width * 2, sheet.height * 2), Image.Resampling.NEAREST).save(os.path.join(outdir, '_all-x2.png'))
+    valid_pngs = {'_all.png', '_all-x2.png'} | {'jp-%s.png' % k['id'] for k in KITS}
+    for fn in os.listdir(outdir):
+        if fn.endswith('.png') and fn not in valid_pngs:
+            os.remove(os.path.join(outdir, fn))
     for k in KITS:
         renders[k['id']].save(os.path.join(outdir, 'jp-%s.png' % k['id']))
     return os.path.join(outdir, '_all-x2.png')
 
 
+def _render_reused_jp_train_card() -> Image.Image:
+    """Render existing `jp-train-car-a` + `jp-train-car-b` on `jp-rail-h` (8x4 tiles) from `rail_art.py` & `street_hand.py`."""
+    import rail_art
+    import street_hand
+    comp = Image.new('RGBA', (8 * 16, 4 * 16), (0, 0, 0, 0))
+    for tx in range(8):
+        rc = Cv(16, 64)
+        street_hand.rail_h(rc)
+        comp.alpha_composite(Image.fromarray(rc.a, 'RGBA'), (tx * 16, 0))
+    ca, cb = Cv(64, 48), Cv(64, 48)
+    rail_art._train(ca, 'a')
+    rail_art._train(cb, 'b')
+    comp.alpha_composite(Image.fromarray(ca.a, 'RGBA'), (0, 0))
+    comp.alpha_composite(Image.fromarray(cb.a, 'RGBA'), (64, 0))
+    return comp
+
+
 def render_contact_sheet(out_path: str = DEFAULT_SHEET_OUT, scale: int = 3) -> str:
-    """Render a 3x/4x labeled contact sheet of all 30 inaka kits + 9 ground tiles."""
+    """Render a 3x labeled contact sheet of 29 bespoke inaka kits + 1 reused jp_city train kit + 9 ground tiles."""
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     cells, _, renders, _ = _finalize()
+    cards: list[tuple[str, int, int, Image.Image]] = []
+    for k in KITS[:7]:
+        cards.append((k['id'], k['w'], k['h'], renders[k['id']]))
+    cards.append(('jp-train-car-a/b [reused]', 8, 4, _render_reused_jp_train_card()))
+    for k in KITS[7:]:
+        cards.append((k['id'], k['w'], k['h'], renders[k['id']]))
     cols = 5
     card_w, card_h = 376, 290
     pad = 16
     header_h = 84
     ground_h = 150
-    rows_n = (len(KITS) + cols - 1) // cols
+    rows_n = (len(cards) + cols - 1) // cols
     W = pad * 2 + cols * card_w + (cols - 1) * 12
     H_px = header_h + rows_n * (card_h + 12) + ground_h + pad
     canvas = Image.new('RGBA', (W, H_px), (26, 33, 29, 255))
@@ -265,26 +292,24 @@ def render_contact_sheet(out_path: str = DEFAULT_SHEET_OUT, scale: int = 3) -> s
 
     # Header banner
     draw.rectangle([0, 0, W, header_h - 8], fill=(36, 48, 41, 255))
-    draw.text((pad, 18), 'JP-INAKA COUNTRYSIDE CHIPSET — 30 BESPOKE 3/4 KITS + 9 GROUND/WATER TILES (3x NEAREST)', fill=(238, 234, 219, 255), font=font)
-    draw.text((pad, 44), '100% Argon High Pixel-Art | Palette Contract Compliant | Top-Left Sun | 1px Sumi Contour', fill=(186, 204, 174, 255), font=font)
+    draw.text((pad, 18), 'JP-INAKA COUNTRYSIDE CHIPSET — 29 INAKA KITS + REUSED JP-TRAIN-CAR-A/B + 9 GROUND TILES (3x)', fill=(238, 234, 219, 255), font=font)
+    draw.text((pad, 44), '100% Argon High Pixel-Art | Reuses Existing jp_city Train & Rail Kits | Top-Left Sun | 1px Sumi Contour', fill=(186, 204, 174, 255), font=font)
 
-    for idx, k in enumerate(KITS):
+    for idx, (cid, cw_t, ch_t, im) in enumerate(cards):
         r_idx, c_idx = divmod(idx, cols)
         cx = pad + c_idx * (card_w + 12)
         cy = header_h + r_idx * (card_h + 12)
         draw.rectangle([cx, cy, cx + card_w, cy + card_h], fill=(42, 54, 46, 255), outline=(88, 108, 86, 255), width=2)
-        # Checkerboard stage inside card
         stage_x, stage_y = cx + 10, cy + 32
         stage_w, stage_h = card_w - 20, card_h - 42
         draw.rectangle([stage_x, stage_y, stage_x + stage_w, stage_y + stage_h], fill=(64, 80, 62, 255))
-        im = renders[k['id']]
-        scaled = im.resize((im.width * scale, im.height * scale), Image.Resampling.NEAREST)
+        eff_scale = 2 if im.width * scale > stage_w - 8 else scale
+        scaled = im.resize((im.width * eff_scale, im.height * eff_scale), Image.Resampling.NEAREST)
         px = stage_x + (stage_w - scaled.width) // 2
         py = stage_y + (stage_h - scaled.height) // 2
         canvas.alpha_composite(scaled, (max(stage_x + 2, px), max(stage_y + 2, py)))
-        label = f"#{idx + 1:02d} {k['id']} ({k['w']}x{k['h']})"
+        label = f"#{idx + 1:02d} {cid} ({cw_t}x{ch_t})"
         draw.text((cx + 10, cy + 10), label, fill=(250, 226, 159, 255), font=font)
-
     # Bottom row: 9 ground/water tiles tiled 2x2 at 3x scale
     gy0 = header_h + rows_n * (card_h + 12) + 8
     draw.rectangle([pad, gy0, W - pad, gy0 + ground_h - 12], fill=(36, 46, 40, 255), outline=(88, 108, 86, 255), width=2)

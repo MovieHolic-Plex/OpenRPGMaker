@@ -11,9 +11,22 @@
   "original": 2880,
   "pc_variant_copies": 4,
   "composite_cells": 253,
-  "block_cells": 13846,
-  "legacy": 0,
-  "legacy_ids": [],
+  "block_cells": 13834,
+  "legacy": 12,
+  "legacy_ids": [
+   16777,
+   16778,
+   16779,
+   16780,
+   16781,
+   16782,
+   16783,
+   16784,
+   16785,
+   16786,
+   16787,
+   16788
+  ],
   "unused_source": 110,
   "people_reserved": 155,
   "by_category": {
@@ -24,31 +37,31 @@
    "prop": 1692,
    "people-reserve": 155,
    "composite": 253,
-   "block": 13846
+   "block": 13834
   }
  },
  "pc_counts": {
   "star": 6896,
-  "solid": 4275,
+  "solid": 4263,
   "floor": 3954,
   "solidfloor": 1030,
   "flat": 673,
   "blank": 155
  },
  "kits": {
-  "total": 1557,
+  "total": 1556,
   "by_kind": {
    "recipe": 22,
    "recipe-L": 3,
    "door": 9,
    "prop": 142,
-   "block-kit": 1381
+   "block-kit": 1380
   },
   "prop": 142,
   "recipe": 22,
   "recipe_L": 3,
   "door": 9,
-  "block_kit": 1381
+  "block_kit": 1380
  },
  "groups": {
   "total": 366,
@@ -498,16 +511,16 @@
    },
    {
     "name": "jp_inaka_pack",
-    "cells": 350,
+    "cells": 338,
     "autotiles": 0,
     "groups": 9,
-    "kits": 30,
-    "notes": "일본 시골(이나카 여름방학) 팩: 모내기 물논·여름 푸른 논·가을 황금 논·논두렁 흙길·농수로 물/석축·시골 자갈길·맑은 개울·여름 들꽃 풀밭 바닥 9종 + 초가 고민가·기와 농가·토장 창고·막과자 가게·버스 정류장·무인 채소 판매대·목조 간이역·단량 디젤 동차·붉은 철교·개울 징검다리·소방 망루·흰 경트럭·붉은 트랙터·함석 농기구 헛간·비닐하우스·해바라기 군락·수국 꽃덤불·지장보살 사당·나무 전봇대·둥근 우체통과 자판기·물레방아간·농수로 수문·하사기 볏단 건조대·허수아비 한 쌍·타케가키 대나무 울타리·이끼 돌담·커브길 볼록거울·시골 자전거·작두 우물 펌프·언덕 도리이 돌계단 키트 30종."
+    "kits": 29,
+    "notes": "일본 시골(이나카 여름방학) 팩: 모내기 물논·여름 푸른 논·가을 황금 논·논두렁 흙길·농수로 물/석축·시골 자갈길·맑은 개울·여름 들꽃 풀밭 바닥 9종 + 초가 고민가·기와 농가·토장 창고·막과자 가게·버스 정류장·무인 채소 판매대·목조 간이역·붉은 철교·개울 징검다리·소방 망루·흰 경트럭·붉은 트랙터·함석 농기구 헛간·비닐하우스·해바라기 군락·수국 꽃덤불·지장보살 사당·나무 전봇대·둥근 우체통과 자판기·물레방아간·농수로 수문·하사기 볏단 건조대·허수아비 한 쌍·타케가키 대나무 울타리·이끼 돌담·커브길 볼록거울·시골 자전거·작두 우물 펌프·언덕 도리이 돌계단 키트 29종."
    }
   ]
  },
  "reassembly": {
-  "kits_checked": 1557,
+  "kits_checked": 1556,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -595,7 +608,7 @@
    "monthly": 1,
    "hokora": 1,
    "rg": 26,
-   "inaka": 30
+   "inaka": 29
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -606,7 +619,7 @@
   "by_code": {},
   "examples": {},
   "tiles_checked": 16983,
-  "kits_checked": 1557,
+  "kits_checked": 1556,
   "groups_checked": 366,
   "autotiles_checked": 17
  },
@@ -669,10 +682,10 @@
    }
   }
  },
- "sheet_hash": "90b7312fed20dd27771dd35b24846cc909b3481a",
+ "sheet_hash": "70c3498582aca9690d649584eb6a3252968de69b",
  "pc_rule": "tiledata/jp-city/bake/PC-RULES.md",
  "reassembly_from_files": {
-  "kits_checked": 1557,
+  "kits_checked": 1556,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -760,7 +773,7 @@
    "monthly": 1,
    "hokora": 1,
    "rg": 26,
-   "inaka": 30
+   "inaka": 29
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -771,7 +784,7 @@
   "by_code": {},
   "examples": {},
   "tiles_checked": 16983,
-  "kits_checked": 1557,
+  "kits_checked": 1556,
   "groups_checked": 366,
   "autotiles_checked": 17
  },
