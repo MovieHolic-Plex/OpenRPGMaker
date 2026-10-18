@@ -27,13 +27,12 @@ export const DIRECTING_GUIDE = `# 연출 지침 (script_cutscene 비트)
 - 조건부 생존·사망 함정(방독면·화염 반지·동료가 있으면 무사, 없으면 사망) — 두 분기는 정지 화면 한 장으로도 갈려 보여야 한다:
   · 사망 분기: tint(위험 색) + parallel[ particles 2곳 이상 durationMs 1500, weather(fog 등), shake, music se ] → 비명 say → look{target:"player",pose:"fallen"} → 게임오버.
   · 생존(무사 통과) 분기: 주인공을 한 칸에 세워 두고 대사만 치면 «통과 연출이 없다» 로 감점된다(2026-10-17 jrpg_003 45점).
-    같은 위험 색·입자로 시작한 뒤 say(안도·버팀 대사) → parallel[ moveActor{target:"player",moves:[이벤트 칸을 지나는 3~5걸음]} ,
-    tint{color:"neutral",durationMs:1200}, weather{weather:"none"} ] 로 위험이 걷히는 동안 걸어서 건너게 한다. build_scene_setting 을
-    썼다면 결과 data.survivalWalk.moves 가 막히지 않는 걸음 목록이다. 생존 분기를 따로 쪽(페이지)으로 둘 때도 같은 걸음을 넣는다.
+    위험 색조(독=보라, 열풍·용암=붉은/황금빛)·weather{weather:"fog"}·위험 입자(fire/smoke 2곳 이상, durationMs 4500)와 방어 입자(particles{preset:"sparkle",target:"player",durationMs:4500}, particles{preset:"magic",target:"player",durationMs:4500})를 켠 뒤 say(안도·버팀 대사) → moveActor{target:"player",moves:[이벤트 칸을 지나는 3~5걸음],wait:true} 로 위험과 방어 효과가 화면에 살아 있는 채로 걸어서 건너게 하고, 걸음이 다 끝난 뒤에야 tint{color:"neutral",durationMs:600}, weather{weather:"none"} 으로 거둔다(걷기와 동시에 parallel 로 거두면 통과 장면에 위험·방어 효과가 사라져 감점된다). build_scene_setting 을 썼다면 결과 data.survivalWalk.moves 가 막히지 않는 걸음 목록이다.
 - 성검·전설의 무기 뽑기: 인물을 그냥 바위 옆에 세워 두면 «뽑는 동작이 없고 칼이 바위에 그대로» 로 감점된다(2026-10-18 jrpg_046 48점).
-  인물 moveActor 한 걸음 바위 쪽 → jump{dx:0,dy:0} (힘주어 뽑음) 과 동시에 parallel[ flash{color:"white"}, shake{intensity:3}, music se,
-    particles{preset:"sparkle",x,y(바위)}, picture 빛기둥(blendMode:"add") ] → changeTile 로 바위 위칸의 칼을 지움(build_scene_setting 결과
-    data.swordPull.cells 그대로) → 인물 위에 particles sparkle + tint 금빛 + «성검을 높이 치켜들었다!» 대사. 칼이 바위에서 사라진 모습이 화면에 보여야 한다.
+  인물을 제자리(movement type:"fixed", turn right)에 두고 parallel[ flash{color:"white"}, shake{intensity:6}, music se,
+    particles{preset:"sparkle",x,y(바위)} ] → changeTile 로 바위 위칸의 칼을 지움(build_scene_setting 결과 data.swordPull.cells 그대로).
+  · 치켜들기: 캐릭터 도트에는 «검을 든 자세» 가 없어 대사만으로는 «치켜드는 동작이 누락» 으로 감점된다(2026-10-18 jrpg_046 48점).
+    moveActor{target:인물,moves:[{kind:"turn",dir:"down"}]} 로 정면만 보게 돌린 뒤(주의: 인물에 jump{dx:0,dy:0} 나 move 를 쓰면 바라보는 방향으로 2칸 뛰어 머리 위 성검 밑에서 이탈하므로 절대 쓰지 않는다!) data.swordPull.raise 를 changeTile 로 찍어 인물 머리 위 칸에 칼을 솟게 하고, 같은 순간 particles sparkle(인물) + flash{color:"yellow"} + tint 금빛 + 치켜드는 외침 대사로 맺는다. 칼이 바위에서 사라져 인물 머리 위로 옮겨 간 모습이 화면에 그대로 유지되어야 한다.
 - 지진·거대한 발소리: shake{intensity:3,axis:"vertical",durationMs:800}, 잠깐 쉬고 반복. 부딪힘·휘청임은 axis:"horizontal".
 - 기절·쓰러짐·잠: look{target,pose:"fallen"} (+ emote "sleep"). 일어날 때 look{target,reset:true}.
 - 숨기·무릎 꿇기: look{target,pose:"crouch"}.
