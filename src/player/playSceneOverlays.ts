@@ -17,6 +17,7 @@ import { monsterMenuIconResourceId, monsterUiEntry } from "@/player/playerMonste
 import { resolveEndingCouplePortraits } from "@/player/dialogue";
 import { ANY_FRIENDSHIP_KEY } from "@/project/session";
 import type { FaceGraphic } from "@/project/types";
+import { sharedPortraitRendering } from "@/assets/sharedPortraitAssets";
 
 export function showRuntimeOverlay(
   scene: PlaySceneContext,
@@ -319,6 +320,7 @@ function endingFigure(project: Project, face: FaceGraphic, role: "hero" | "partn
   const figure = textNode("div", `ending-cg-figure ending-cg-${role}`, "");
   figure.dataset.testid = `ending-cg-${role}`;
   figure.dataset.resourceId = face.resourceId;
+  figure.dataset.portraitRender = sharedPortraitRendering(face.resourceId);
   figure.style.backgroundImage = `url("${url}")`;
   return figure;
 }

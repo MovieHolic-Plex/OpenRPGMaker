@@ -32,6 +32,8 @@ export type SharedPortraitAsset = {
   readonly setId: string;
   readonly mode: SharedPortraitMode;
   readonly expression: SharedPortraitExpression;
+  /** 화면 보간. 도트 초상은 pixelated, 현대 연애 고해상도 일러스트는 smooth(보간을 끄면 계단이 생긴다). */
+  readonly rendering: "pixel" | "smooth";
 };
 
 const MODE_LABELS: Readonly<Record<SharedPortraitMode, string>> = { bust: "흉상", full: "전신" };
@@ -88,10 +90,10 @@ const faceSetPortraits = FACE_EXPRESSION_SETS.flatMap((set) => {
     setId: set.id,
     mode,
     expression,
+    rendering: "pixel" as const,
   })));
 });
 // 옆머리 묶음 남학생 세트는 현대 연애 무대에서 여학생으로 읽혀 같은 교복 남학생 세트로 연결한다.
-// (#2870 이 덮어쓴 uni-boy-navy·uni-girl-long·uni-girl-navy 는 원래 도트 일러스트로 복원돼 자기 폴더를 그대로 쓴다.)
 const MODERN_CLEAN_STEM_OVERRIDES: Readonly<Record<string, string>> = {
   "modern-uni-boy-sidetail": "modern-uni-boy-grey",
 };
@@ -104,6 +106,7 @@ const modernPortraits = MODERN_PORTRAIT_SETS.flatMap((set) => {
     setId,
     mode,
     expression,
+    rendering: "smooth" as const,
   })));
 });
 export const SHARED_PORTRAIT_ASSETS: readonly SharedPortraitAsset[] = [...faceSetPortraits, ...modernPortraits];
@@ -131,6 +134,11 @@ export function sharedPortraitReferenceNote(setId: string): string {
 
 export function findSharedPortrait(resourceId: string | undefined): SharedPortraitAsset | undefined {
   return resourceId === undefined ? undefined : BY_ID.get(resourceId);
+}
+
+/** 초상 노드의 `data-portrait-render`. 공용 세트 밖(업로드·원본 얼굴)은 도트로 본다. */
+export function sharedPortraitRendering(resourceId: string | undefined): SharedPortraitAsset["rendering"] {
+  return findSharedPortrait(resourceId)?.rendering ?? "pixel";
 }
 
 export function resolveSharedPortraitUrl(resourceId: string): string | null {
