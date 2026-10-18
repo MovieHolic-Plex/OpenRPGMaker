@@ -13,6 +13,7 @@ import { BEODEUL_NATURE } from "@/project/defaults/beodeulNature";
 import { clearTileStack } from "@/project/mapOverlayTiles";
 import { appendStructurePlacement, captureStructureTiles, removeStructurePlacement, restoreStructurePlacementTiles, structurePlacementsOf } from "@/project/structurePlacements";
 import type { GameEvent, GameMap, Project, SectionStructureKitDef } from "@/project/types";
+import { applyVariantTerrain, type VariantTerrainReport } from "./mapVariantTerrain";
 
 export const VARIANT_LOOKS = ["ruin", "past", "future"] as const;
 export type VariantLook = (typeof VARIANT_LOOKS)[number];
@@ -30,6 +31,8 @@ type LookSpec = {
   readonly fog?: number;
   /** 대형 건물 철거 자리에 먼저 놓을 시대 랜드마크 킷(칩셋에 있는 것만 쓴다). */
   readonly landmarkIds: readonly string[];
+  /** 랜드마크를 놓을 철거 자리 수 상한. 과거는 철거한 집마다 오두막을 세워 「옛 마을」로 읽히게 한다. */
+  readonly maxLandmarks: number;
   /** 흩뿌릴 킷(칩셋에 있는 것만 쓴다). */
   readonly kitIds: readonly string[];
 };
@@ -37,11 +40,12 @@ type LookSpec = {
 const LOOKS: Readonly<Record<VariantLook, LookSpec>> = {
   ruin: {
     label: "붕괴·폐허",
-    demolishRatio: 0.88,
+    demolishRatio: 1,
     stampsPerSite: [5, 8],
-    ambient: 0.5,
-    color: "#2e2a3c",
-    fog: 0.9,
+    ambient: 0.52,
+    color: "#3a2016",
+    fog: 0.35,
+    maxLandmarks: 3,
     landmarkIds: [
       "bd-pick-temple-ruins-naiskos-pediment", "bd-pick-temple-ruins-ruined-wall-2",
       "bd-pick-temple-ruins-fallen-column-temple", "bd-pick-castle-catacombs-rubble",
@@ -54,11 +58,12 @@ const LOOKS: Readonly<Record<VariantLook, LookSpec>> = {
   },
   past: {
     label: "과거",
-    demolishRatio: 0.72,
+    demolishRatio: 1,
     stampsPerSite: [2, 4],
-    ambient: 0.56,
-    color: "#8a4608",
+    ambient: 0.3,
+    color: "#c0701a",
     fog: 0.25,
+    maxLandmarks: 12,
     landmarkIds: [
       "bd-out-cabin", "bd-out-cabin-small", "bd-out-woodshed", "bd-pick-deep-forest-path-campfire",
     ],
@@ -73,6 +78,7 @@ const LOOKS: Readonly<Record<VariantLook, LookSpec>> = {
     stampsPerSite: [2, 4],
     ambient: 0.56,
     color: "#0c2c70",
+    maxLandmarks: 3,
     landmarkIds: [
       "bd-pick-wizard-tower-glass-dome", "bd-pick-wizard-tower-moon-obelisk", "bd-pick-wizard-tower-armillary",
     ],
@@ -153,6 +159,8 @@ export type VariantLookReport = {
   stampedPieces: number;
   removedDoorEvents: string[];
   note?: string;
+  /** 맵 전체 바닥·길·숲 시대 팔레트(버들항 칩셋에서만). */
+  terrain?: VariantTerrainReport;
 };
 
 /**
@@ -265,6 +273,8 @@ export function applyVariantLook(draft: Project, copy: GameMap, look: VariantLoo
     .filter((placement) => placement.w * placement.h >= 12 && Math.min(placement.w, placement.h) >= 3 && !NOT_A_BUILDING.test(placement.kitId))
     .sort((a, b) => a.y - b.y || a.x - b.x);
   if (buildings.length === 0) {
+    const terrain = applyVariantTerrain(copy, tileset, look === "past" ? "primeval" : "wasteland", seed);
+    if (terrain) report.terrain = terrain;
     report.note = "건물 배치 기록(structurePlacements)이 없어 조명·안개만 적용했습니다 — 지형 변화를 더하려면 tileRemap·tileOverrides 로 건물·나무를 바꾸세요.";
     warnings.push(`${label}: ${report.note}`);
     return report;
@@ -327,7 +337,7 @@ export function applyVariantLook(draft: Project, copy: GameMap, look: VariantLoo
       return true;
     };
 
-    if (landmarks.length > 0 && placement.w >= 4 && placement.h >= 4 && landmarkPlaced < 3) {
+    if (landmarks.length > 0 && placement.w >= 4 && placement.h >= 4 && landmarkPlaced < spec.maxLandmarks) {
       const landmark = landmarks[(landmarkPlaced + Math.floor(random() * landmarks.length)) % landmarks.length]!;
       if (placeKitInSite(landmark, true)) landmarkPlaced += 1;
     }
@@ -344,5 +354,8 @@ export function applyVariantLook(draft: Project, copy: GameMap, look: VariantLoo
     report.note = "이 타일셋에는 시대 소품 킷이 없어 건물 철거와 조명·안개만 적용했습니다.";
     warnings.push(`${label}: ${report.note}`);
   }
+  // 철거로 되돌린 풀까지 시대 땅으로 바꾸도록 맨 마지막에 맵 전체를 칠한다.
+  const terrain = applyVariantTerrain(copy, tileset, look === "past" ? "primeval" : "wasteland", seed);
+  if (terrain) report.terrain = terrain;
   return report;
 }

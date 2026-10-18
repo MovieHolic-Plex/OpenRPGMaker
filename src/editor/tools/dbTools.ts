@@ -89,6 +89,7 @@ import { normalizeLowLevelCommandArray, validateLowLevelCommandArray } from "./c
 import { assertPartyActorReferences } from "./partyActorReferences";
 import { resolveEventPlacement } from "./eventTools";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
+import { unsuitableOpeningStillMessage } from "@/assets/openingStillMoods";
 import { troopBalanceWarnings } from "./troopBalanceCheck";
 import { expandShortParameterCurves } from "./parameterCurveInput";
 import { BATTLE_BACKDROP_ID_HINT } from "@/assets/battleSceneryCatalog";
@@ -2474,6 +2475,8 @@ function parseTitleBackgroundLayers(value: unknown): TitleBackgroundLayer[] {
     const layer = entry as Record<string, unknown>;
     const resourceId = typeof layer.resourceId === "string" ? layer.resourceId.trim() : "";
     if (!resourceId) throw new ToolError(`backgroundLayers[${index}].resourceId가 필요합니다.`, { code: "invalid-args" });
+    const banned = unsuitableOpeningStillMessage(resourceId, `backgroundLayers[${index}].resourceId`);
+    if (banned) throw new ToolError(banned, { code: "invalid-args" });
     const optionalNumber = (key: "scrollXPerSec" | "scrollYPerSec" | "parallax" | "opacity"): number | undefined => {
       const candidate = layer[key];
       if (candidate === undefined) return undefined;
@@ -2767,7 +2770,11 @@ const setTitleScreen: ToolDefinition = {
 
     if (typeof args.backgroundResourceId === "string") {
       const background = args.backgroundResourceId.trim();
-      if (background) current.backgroundResourceId = requireTitleResource(draft, "backgroundResourceId", background, "picture");
+      if (background) {
+        const banned = unsuitableOpeningStillMessage(background, "backgroundResourceId");
+        if (banned) throw new ToolError(banned, { code: "invalid-args" });
+        current.backgroundResourceId = requireTitleResource(draft, "backgroundResourceId", background, "picture");
+      }
       else delete current.backgroundResourceId;
     }
 

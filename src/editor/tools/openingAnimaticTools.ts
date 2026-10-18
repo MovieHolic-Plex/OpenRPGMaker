@@ -3,6 +3,7 @@ import type { CinematicScene, Project } from '@/project/types';
 import { CINEMATIC_SCENE_LIMIT } from '@/project/cinematicSettings';
 import { catalogLookup, hasOpeningImage } from './cinematicTools';
 import { ToolError, type ToolDefinition, type JsonSchema, type ToolExecResult } from './types';
+import { unsuitableOpeningStillMessage } from '@/assets/openingStillMoods';
 import references from '@/assets/openingReferences.json';
 import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver';
 import { findCharsetAsset } from '@/assets/charsetCatalog';
@@ -31,6 +32,8 @@ function check(project: Project, s: Shot, enforceBackdrop = false): void {
   for (const l of s.composition.layers) {
     if (l.kind === 'image' && !hasOpeningImage(project, l.resourceId!)) throw new ToolError('그림 리소스 없음: ' + l.resourceId, { code: 'resource-not-found' });
     if (l.kind === 'image' && l.role === 'background') {
+      const banned = unsuitableOpeningStillMessage(l.resourceId!, `배경 ${l.id}`);
+      if (banned) throw new ToolError(banned, { code: 'opening-composition-invalid' });
       if ((l.opacity ?? 1) < 0.9) throw new ToolError(`배경 ${l.id}의 opacity가 ${(l.opacity ?? 1).toFixed(2)}로 너무 낮습니다. 팔레트/오버레이로 어둡게 하세요.`, { code: 'opening-composition-invalid' });
       const hasIndependentSubjects = s.composition.layers.some(candidate => candidate.role === 'actor' || candidate.role === 'prop' || candidate.role === 'foreground');
       if (enforceBackdrop && hasIndependentSubjects && isBundledPaintedBackdrop(project, l.resourceId!)) throw new ToolError(`번들 스틸 ${l.resourceId}를 오프닝 배경으로 쓸 수 없습니다. 이미지 생성이 실패했다면 조용히 대체하지 말고 중단·보고하세요.`, { code: 'dedicated-backdrop-required' });
