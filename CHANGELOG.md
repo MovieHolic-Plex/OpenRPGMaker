@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.261.1 — 2026-10-18
+
+### 수정
+
+- **editor** — AI 참고 청사진 적대적 VQA 후속 — 강변 공원 남쪽·부두, 알현 회랑 청사진, 설원 마을 형태 요청 반영, 버들 잔디 부스러기 감소 (#2912) (`09732e8`)
+- **jp_city** — shitamachi/shotengai rear row sized to band — no empty brick slab behind front shops (#2911) (`5997788`)
+
 ## 0.261.0 — 2026-10-18
 
 ### 기능
