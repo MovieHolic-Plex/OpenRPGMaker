@@ -111,6 +111,8 @@ const PREFER_DEFAULT: [string, string][] = [
   ["dept-atrium", "dept-fashion"],
   ["subway-concourse", "subway-kiosk"],
   ["ward-exam-2", "waiting_room"],
+  ["hosp-ward-west", "hosp-nurse-core"],
+  ["hosp-nurse-core", "hosp-ward-east"],
   ["gallery-paintings", "gallery-sculpture"],
   ["gallery-lobby", "gallery-shop"],
 ];
@@ -120,6 +122,10 @@ const DOOR_OF: Record<string, { h?: string; v?: string }> = {
   bath: { v: "door-side-sliding" }, dressing: { v: "door-side-sliding" }, unitbath: { h: "door-open-toilet", v: "door-side-western" },
   // modern_city(도쿄풍 현대 도시) 실내 — 병동·대기 복도는 병원 미닫이, 뒷방·창고는 철문, 회의실·로비·오피스는 유리문/나무문.
   ward: { h: "mci-door-hospital" }, "ward-inpatient": { h: "mci-door-hospital" }, "ward-exam-1": { h: "mci-door-hospital" }, "ward-exam-2": { h: "mci-door-hospital" },
+  "hosp-or-1": { h: "mci-door-hospital" }, "hosp-or-2": { h: "mci-door-hospital" }, "hosp-icu": { h: "mci-door-hospital" }, "hosp-imaging": { h: "mci-door-hospital" },
+  "hosp-ward-west": { h: "mci-door-hospital" }, "hosp-ward-east": { h: "mci-door-hospital" }, "hosp-vip-ward": { h: "mci-door-hospital" },
+  "hosp-nurse-core": { h: "mci-door-glass" }, "hosp-pharmacy": { h: "mci-door-hospital" }, "hosp-er": { h: "mci-door-hospital" },
+  "elev-cabin-1": { h: "elev-car-door" }, "elev-cabin-2": { h: "elev-car-door" }, "elev-stair-core": { h: "mci-door-steel" },
   waiting_room: { h: "mci-door-hospital" }, backroom: { h: "mci-door-steel" }, "mart-storage": { h: "mci-door-steel" },
   meeting: { h: "mci-door-glass" }, "open-office": { h: "mci-door-glass" }, elevatorhall: { h: "mci-door-glass" }, lounge: { h: "mci-door-glass" }, pantry: { h: "mci-door-wood" },
   "cinema-theater": { h: "mci-door-glass" }, "gallery-sculpture": { h: "mci-door-glass" },
