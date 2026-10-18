@@ -59,20 +59,76 @@
 .ai-status-btn.is-stop { color: var(--danger, #d92d20); }
 .ai-status-btn[hidden] { display: none; }
 
-.ai-status-pop { position: fixed; z-index: calc(var(--z-popover, 60) + 1); width: 340px; max-width: calc(100vw - 16px); padding: 12px 14px; box-sizing: border-box; background: var(--bg-raised, #fff); border: 1px solid var(--border-default); border-radius: 12px; box-shadow: var(--shadow-pop, 0 10px 30px rgba(20, 30, 60, .28)); color: var(--text-1); font-size: 13px; }
-.ai-status-pop header { display: flex; align-items: center; gap: 8px; }
+/* ── 상태 줄 칩 → 조수 카드 (aiStatusMemberCard) ── */
+.ai-status-pop { --tone: var(--tone-0); position: fixed; z-index: calc(var(--z-popover, 60) + 1); display: flex; flex-direction: column; width: 420px; max-width: calc(100vw - 16px); max-height: calc(100vh - 150px); padding: 0; box-sizing: border-box; overflow: hidden; background: var(--bg-raised, #fff); border: 1px solid var(--border-default); border-radius: 14px; box-shadow: 0 18px 48px rgba(20, 30, 60, .22), 0 2px 6px rgba(20, 30, 60, .08); color: var(--text-1); font-size: 13px; }
+.ai-status-pop[data-tone="1"] { --tone: var(--tone-1); }
+.ai-status-pop[data-tone="2"] { --tone: var(--tone-2); }
+.ai-status-pop[data-tone="3"] { --tone: var(--tone-3); }
+.ai-status-pop-head { display: grid; grid-template-columns: 42px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 14px 14px 12px; border-top: 3px solid var(--tone); }
+.ai-status-pop-avatar { position: relative; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; background: color-mix(in srgb, var(--tone) 13%, var(--bg-raised, #fff)); color: var(--tone); }
+.ai-status-pop-pulse { position: absolute; right: -3px; bottom: -3px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--bg-raised, #fff); background: var(--success, #12a150); }
+.ai-status-pop-pulse[data-state="working"] { background: var(--tone); }
+.ai-status-pop-pulse[data-state="waiting"] { background: var(--text-3); }
+.ai-status-pop-pulse[data-state="review"] { background: var(--warning, #d9840d); }
+.ai-status-pop-pulse[data-state="failed"] { background: var(--danger, #d92d20); }
+.ai-status-pop-pulse.is-pulse { animation: ai-status-dot-pulse 1.4s ease-in-out infinite; }
+.ai-status-pop-ident { display: grid; gap: 4px; min-width: 0; }
+.ai-status-pop-title { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.ai-status-pop-title strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 15px; font-weight: 650; letter-spacing: -.01em; }
+.ai-status-pop-title .ai-status-tag { margin-left: 0; flex: 0 0 auto; }
+.ai-status-pop-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 6px; font-size: 12px; color: var(--text-2); }
+.ai-status-pop-role { font-weight: 600; color: var(--tone); }
+.ai-status-pop-scope { padding: 1px 7px; border-radius: 999px; background: var(--bg-inset); color: var(--text-2); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ai-status-pop-clock { color: var(--text-3); font-variant-numeric: tabular-nums; }
+.ai-status-pop-clock:empty { display: none; }
+.ai-status-pop-close { align-self: start; display: grid; place-items: center; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--text-3); cursor: pointer; }
+.ai-status-pop-close:hover { background: var(--bg-inset); color: var(--text-1); }
+.ai-status-pop-close:focus-visible { outline: var(--focus-outline); }
 .ai-status-tag { margin-left: auto; padding: 1px 8px; border-radius: 999px; background: var(--accent-muted); color: var(--accent); font-size: 11px; font-weight: 600; }
 .ai-status-tag[data-state="review"] { background: var(--warning-muted, #fff1d6); color: var(--warning, #a65f00); }
 .ai-status-tag[data-state="failed"] { background: var(--danger-muted, #fde8e6); color: var(--danger, #b42318); }
 .ai-status-tag[data-state="applied"], .ai-status-tag[data-state="draft"] { background: var(--success-muted, #e6f6ec); color: var(--success, #0b7a3c); }
-.ai-status-pop p { margin: 6px 0 0; color: var(--text-2); overflow-wrap: anywhere; }
-.ai-status-pop-map { font-size: 12px; color: var(--accent) !important; }
-.ai-status-pop-now b { color: var(--text-3); font-weight: 600; }
-.ai-status-pop-recent { list-style: none; margin: 8px 0 0 5px; padding: 0 0 0 12px; border-left: 2px solid var(--border-subtle); color: var(--text-2); }
-.ai-status-pop-recent li { margin: 3px 0; }
-.ai-status-pop-recent .is-failed { color: var(--danger, #b42318); }
-.ai-status-pop-recent .is-empty { color: var(--text-3); }
-.ai-status-pop-actions { display: flex; gap: 6px; margin-top: 10px; }
+.ai-status-pop-label { font-size: 11px; font-weight: 600; color: var(--text-3); white-space: nowrap; }
+.ai-status-pop-task-card { margin: 0 14px; padding: 9px 12px 10px; border-left: 3px solid var(--tone); border-radius: 4px 10px 10px 4px; background: var(--bg-inset); }
+.ai-status-pop-task-card p { margin: 3px 0 0; color: var(--text-1); font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+.ai-status-pop-now-banner { display: flex; align-items: center; gap: 8px; margin: 10px 14px 0; padding: 9px 12px; border: 1px solid color-mix(in srgb, var(--tone) 28%, transparent); border-radius: 10px; background: color-mix(in srgb, var(--tone) 8%, var(--bg-raised, #fff)); }
+.ai-status-pop-now-banner[data-state="failed"] { --tone: var(--danger, #d92d20); }
+.ai-status-pop-now-banner[data-state="review"] { --tone: var(--warning, #d9840d); }
+.ai-status-pop-now-banner .ai-status-pop-label { color: var(--tone); }
+.ai-status-pop-now-text { min-width: 0; color: var(--text-1); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ai-status-pop-now-icon { display: grid; place-items: center; color: var(--tone); }
+.ai-status-spinner { flex: 0 0 auto; width: 14px; height: 14px; box-sizing: border-box; border: 2px solid color-mix(in srgb, var(--tone) 25%, transparent); border-top-color: var(--tone); border-radius: 50%; animation: ai-status-spin .8s linear infinite; }
+.ai-status-spinner.is-small { width: 11px; height: 11px; border-width: 1.75px; }
+@keyframes ai-status-spin { to { transform: rotate(360deg); } }
+.ai-status-pop > :not(.ai-status-pop-timeline) { flex-shrink: 0; }
+.ai-status-step-mark svg { width: 12px; height: 12px; stroke-width: 2.4; }
+.ai-status-pop-media { flex: 0 0 auto; margin: 10px 14px 0; }
+/* 작업 그림(createActivityMedia: 루트 div > 갤러리 div > button > figure > 그림 span · figcaption · small 설명)은 다른 표면의 클래스라
+   이 표면의 래퍼에서 구조로만 줄인다(css-surfaces R2). */
+.ai-status-pop-media > div { margin: 0; }
+.ai-status-pop-media figure > span:first-child { height: 104px; }
+.ai-status-pop-media figcaption { padding: 7px 10px; }
+.ai-status-pop-media figure > small, .ai-team-member-media figure > small { display: none; }
+.ai-team-member-media > div { margin: 10px 0 4px; }
+.ai-team-member-media figure > span:first-child { height: 96px; }
+.ai-status-pop-timeline { display: flex; flex-direction: column; min-height: 0; margin: 12px 14px 0; }
+.ai-status-pop-section-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px; }
+.ai-status-pop-count { font-size: 11px; color: var(--text-3); }
+.ai-status-pop-timeline ol { display: flex; flex-direction: column-reverse; list-style: none; margin: 0; padding: 0; min-height: 0; max-height: 276px; overflow-y: auto; }
+.ai-status-pop-timeline li { position: relative; display: grid; grid-template-columns: 20px 22px minmax(0, 1fr) auto; align-items: center; gap: 6px; padding: 6px 0; }
+.ai-status-pop-timeline li + li { border-bottom: 1px solid var(--border-subtle); }
+.ai-status-pop-timeline li.is-empty { display: block; color: var(--text-3); }
+.ai-status-step-mark { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--success-muted, #e6f6ec); color: var(--success, #0b7a3c); }
+.ai-status-pop-timeline li[data-status="error"] .ai-status-step-mark { background: var(--danger-muted, #fde8e6); color: var(--danger, #b42318); }
+.ai-status-pop-timeline li[data-status="running"] .ai-status-step-mark { background: color-mix(in srgb, var(--tone) 12%, var(--bg-raised, #fff)); }
+.ai-status-step-no { color: var(--text-3); font: 600 11px/1 var(--font-mono, ui-monospace, monospace); text-align: right; font-variant-numeric: tabular-nums; }
+.ai-status-step-text { color: var(--text-1); font-size: 12.5px; line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ai-status-pop-timeline li[data-status="error"] .ai-status-step-text { color: var(--danger, #b42318); }
+.ai-status-pop-timeline li[data-status="running"] .ai-status-step-text { font-weight: 600; }
+.ai-status-pop-timeline time { color: var(--text-3); font-size: 11px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.ai-status-pop-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 12px; padding: 10px 14px; border-top: 1px solid var(--border-subtle); background: var(--bg-inset); }
+.ai-status-pop-actions .ai-status-btn { display: inline-flex; align-items: center; gap: 5px; }
+.ai-status-pop-actions .ai-status-btn:first-child { margin-right: auto; }
 
 /* ── 도크 받은함 ── */
 .ai-inbox { flex: 0 0 auto; padding: 10px 12px; border-bottom: 1px solid var(--border-subtle); background: var(--bg-inset); }
@@ -198,4 +254,4 @@ html:not([data-ai-activity-level="detail"]):not([data-ai-activity-level="trace"]
 .ai-status-job[data-state="applied"] .ai-status-job-state, .ai-status-job[data-state="draft"] .ai-status-job-state { background: var(--success-muted, #e6f6ec); color: var(--success, #0b7a3c); }
 .ai-status-job-acts { display: flex; align-items: center; gap: 4px; flex: 0 0 auto; }
 .ai-status-job-acts:empty { display: none; }
-@media (prefers-reduced-motion: reduce) { .ai-status-dot.is-pulse, .ai-map-region.is-pulse { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .ai-status-dot.is-pulse, .ai-map-region.is-pulse, .ai-status-pop-pulse.is-pulse, .ai-status-spinner { animation: none; } }

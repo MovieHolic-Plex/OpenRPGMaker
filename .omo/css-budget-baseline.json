@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-18T05:28:08.361Z",
+  "generatedAt": "2026-10-18T07:24:56.713Z",
   "metrics": {
-    "hexLiterals": 2574,
-    "important": 303,
+    "hexLiterals": 2587,
+    "important": 302,
     "undefinedVars": 60,
     "globalRootFiles": 10,
     "cssFileCount": 412
@@ -61,7 +61,7 @@
       "src/styles/database/tabs-b-assistant-panel/30-tileset-change-card.css": 2,
       "src/styles/database/tabs-b-assistant-panel/31-map-run-card.css": 6,
       "src/styles/database/tabs-b-assistant-panel/33-store-card.css": 2,
-      "src/styles/database/tabs-b-assistant-panel/34-ai-presence.css": 68,
+      "src/styles/database/tabs-b-assistant-panel/34-ai-presence.css": 81,
       "src/styles/database/tabs-b-assistant-panel/assistant-deck.part-4.css": 2,
       "src/styles/database/tabs-b-assistant-panel/studio-mode-start-screen.part-4.css": 6,
       "src/styles/database/tabs-b-status-menu-base.css": 2,
@@ -191,7 +191,7 @@
       "src/styles/database/tabs-b-assistant-panel/25-team-sidebar.css": 1,
       "src/styles/database/tabs-b-assistant-panel/29-creation-choice.css": 6,
       "src/styles/database/tabs-b-assistant-panel/32-ai-workspace.css": 1,
-      "src/styles/database/tabs-b-assistant-panel/34-ai-presence.css": 5,
+      "src/styles/database/tabs-b-assistant-panel/34-ai-presence.css": 4,
       "src/styles/database/title-workbench.css": 1,
       "src/styles/database/workspace-modern.css": 4,
       "src/styles/dialogue.css": 1,

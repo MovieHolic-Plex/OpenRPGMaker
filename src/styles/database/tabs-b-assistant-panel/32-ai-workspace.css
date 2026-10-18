@@ -41,6 +41,8 @@
 .ai-team-sidebar.is-embedded.has-detail > .ai-team-avatar-list { max-height: 200px; }
 .ai-team-sidebar.is-embedded .ai-team-member { padding: 8px; gap: 3px 6px; }
 .ai-team-sidebar.is-embedded .ai-team-member :is(.ai-team-member-assignment,.ai-team-member-result,.ai-team-member-signal,.ai-activity-media) { display: none; }
+/* 그림 썸네일을 숨기는 좁은 도크에서는 아바타를 되살린다 — 둘 다 숨으면 조수 행 왼쪽이 빈칸이 된다. */
+.ai-team-sidebar.is-embedded .ai-team-member > .ai-team-member-avatar { display: flex; }
 .ai-team-sidebar.is-embedded .ai-team-member-task { font-size: 12px; }
 .ai-team-sidebar.is-embedded .ai-team-member-head { padding: 10px 12px; gap: 8px; }
 .ai-team-member-map { flex: 0 0 auto; border: 1px solid var(--border-default); border-radius: var(--radius-s); background: var(--bg-raised); color: var(--text-1); padding: 7px; }
