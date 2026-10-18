@@ -304,6 +304,12 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
           ? { severity: "error", code: "stairs-not-at-wall", message: `${label} 위로 가는 계단은 북쪽 벽 앞 첫 바닥 줄에 세운다(벽면 두 줄을 덮고 벽 속으로 오른다) — 방 가운데·옆벽 금지`, x, y: o.y }
           : { severity: "error", code: "wall-piece-needs-face", message: `${label} 뒤(북쪽)에 벽면${flush ? " 두 줄" : ""}이 없다 — 벽 가구는 북쪽 벽면 바로 아래 첫 바닥 줄에`, x, y: o.y });
       }
+      // 벽 속 계단·에스컬레이터(상행·하행 모두 벽면 위층 입구로 이어진다)는 건물 바깥 북쪽 벽에 — 벽 너머(북쪽)에 다른 방 바닥이 있으면 칸막이에 박혀 옆방으로 오르는 그림이 된다
+      // (2026-10-18 적대적 VQA: 백화점 아트리움 에스컬레이터가 VIP 홀과의 칸막이 속으로 올라갔다).
+      if (d.kind === "wall" && d.stairs && !issues.some((i) => i.message.startsWith(label))) {
+        const partition = Array.from({ length: d.w }, (_, dx) => o.x + dx).some((x) => Array.from({ length: Math.max(0, o.y - 3) }, (_, y) => y).some((y) => A.isFloor(x, y)));
+        if (partition) issues.push({ severity: "warning", code: "stairs-into-partition", message: `${label} 이 방 사이 칸막이 속으로 이어진다(북쪽 너머에 다른 방이 있다) — 벽 속 계단·에스컬레이터는 건물 맨 북쪽 바깥 벽에 붙은 방에 둔다`, x: o.x, y: o.y });
+      }
     } else if (d.kind === "hang") {
       const cols = Array.from({ length: Math.max(1, d.w) }, (_, dx) => o.x + dx);
       const ok = o.id === "round arch" ? cols.some((x) => A.face[o.y]?.[x] === 1) : cols.every((x) => A.face[o.y]?.[x] === 1);
