@@ -3,6 +3,7 @@
   "picks": {
     "sparkit": {
       "front": {
+        "authored": "authored/sparkit-front.png",
         "grid": "grids/sparkit-front.png",
         "sourceSha256": "7cbde86872009fdae3d34154dddecf6c578bce38705fce28081b5ac6a587613c",
         "sourcePath": "qa-runs/harnesses/monster-collect-species/sparkit/front/20261016-102358/raw-1.png",
@@ -12,6 +13,7 @@
         "note": "v4 cute-first, Opus 5.5 judge: 가장 큰 동그란 눈에 흰 하이라이트가 선명하고 둥근 큰 머리라 친근하다. 꼬리 숯덩이 공도 크고 금이 또렷하다"
       },
       "back": {
+        "authored": "authored/sparkit-back.png",
         "grid": "grids/sparkit-back.png",
         "sourceSha256": "5d7f9daf4c488f20417a262e58d4ac748cc6bd493e4b8f1c1436168784661fa8",
         "sourcePath": "qa-runs/harnesses/monster-collect-species/sparkit/back/20261016-110037/raw-1.png",
@@ -23,6 +25,7 @@
     },
     "aqualing": {
       "front": {
+        "authored": "authored/aqualing-front.png",
         "grid": "grids/aqualing-front.png",
         "sourceSha256": "2916df8a931c569ac359c3f7dc527a3d895f95f181f55214efed32ec2641d583",
         "sourcePath": "qa-runs/harnesses/monster-collect-species/aqualing/front/20261016-102253/raw-2.png",
@@ -32,6 +35,7 @@
         "note": "v4 cute-first, Opus 5.5 judge: 큰 눈에 흰 하이라이트가 있고 웃는 입이라 다정하다. 분홍 아가미 깃이 머리 양옆으로 넓게 퍼져 바로 눈에 띈다"
       },
       "back": {
+        "authored": "authored/aqualing-back.png",
         "grid": "grids/aqualing-back.png",
         "sourceSha256": "0e01ab4bfe0be5696e602bdcbffca8daa478dd4b42e28fc3b043db4b40f2de03",
         "sourcePath": "qa-runs/harnesses/monster-collect-species/aqualing/back/20261016-105917/raw-3.png",
@@ -43,6 +47,7 @@
     },
     "leafling": {
       "front": {
+        "authored": "authored/leafling-front.png",
         "grid": "grids/leafling-front.png",
         "sourceSha256": "1430c6d25eb94f19a147051ea04548391adb881b92e0368a263904bfd15c3825",
         "sourcePath": "qa-runs/harnesses/monster-collect-species/leafling/front/20261016-102518/raw-1.png",
@@ -52,6 +57,7 @@
         "note": "v4 cute-first, Opus 5.5 judge: 큰 동그란 갈색 눈에 흰 하이라이트가 또렷하고 머리가 크다. 잎사귀 귀 두 장이 크고 위로 높이 솟아 있다"
       },
       "back": {
+        "authored": "authored/leafling-back.png",
         "grid": "grids/leafling-back.png",
         "sourceSha256": "430dd160043676f9de09135aba71d4322eb339a47dfd2bf984c7b4ffa409ff45",
         "sourcePath": "qa-runs/harnesses/monster-collect-species/leafling/back/20261016-110023/raw-1.png",

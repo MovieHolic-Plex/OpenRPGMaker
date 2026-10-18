@@ -76,9 +76,15 @@ export function reviewMonsterGame(p: Project) {
   if(transfers.length<plan.links)issues.push(`전체 맵 연결이 부족합니다(현재${transfers.length}, 기준${plan.links}방향).`);
   const start=p.maps[p.startMapId];if(!start||!isPassableLanding(p,start,p.startPos.x,p.startPos.y))issues.push('저작 시작 위치가 통행 가능한 실제 맵 칸이 아닙니다.');
   const opening=p.system.opening;if(!opening?.enabled||!opening.scenes.length)issues.push('교수·몬스터 소개와 플레이 진입 오프닝이 필요합니다.');
-  if(opening?.scenes.some(scene=>scene.kind==='video'||scene.durationMs!==0))issues.push('에메랄드 교수 소개는 Enter 확인 페이지로 이어져야 합니다. 기존 오프닝 교체가 요청된 경우 replaceOpening:true로 보수하세요.');
-  if(!p.meta.oprnOpeningBook?.portraitResourceId||!known(p.meta.oprnOpeningBook.portraitResourceId))issues.push('실제 교수 초상 그림이 소개에 연결되지 않았습니다.');
-  for(const scene of opening?.scenes??[])if(scene.kind==='image'&&!known(scene.resourceId))issues.push(`오프닝 실제 그림이 없습니다:${scene.id}`);
+  if(opening?.scenes.some(scene=>scene.kind==='video'))issues.push('에메랄드 소개는 동영상이 아니라 Enter로 넘길 수 있는 장면이어야 합니다. 기존 오프닝 교체가 요청된 경우 replaceOpening:true로 보수하세요.');
+  // 예전 정지 초상 소개(책)는 Enter 확인 페이지와 실제 교수 초상이 필요하다. 지금 생성기는 레이어 애니메틱 컷을 쓴다.
+  const book=p.meta.oprnOpeningBook;
+  if(book&&opening?.scenes.some(scene=>scene.durationMs!==0))issues.push('교수 초상 소개는 Enter 확인 페이지로 이어져야 합니다. 기존 오프닝 교체가 요청된 경우 replaceOpening:true로 보수하세요.');
+  if(book&&(!book.portraitResourceId||!known(book.portraitResourceId)))issues.push('실제 교수 초상 그림이 소개에 연결되지 않았습니다.');
+  for(const scene of opening?.scenes??[]){
+    if(scene.kind==='image'&&!known(scene.resourceId))issues.push(`오프닝 실제 그림이 없습니다:${scene.id}`);
+    if(scene.kind==='animatic')for(const layer of scene.composition.layers)if(layer.kind==='image'&&!known(layer.resourceId))issues.push(`오프닝 장면 그림이 없습니다:${scene.id}/${layer.id}`);
+  }
   if(!opening?.musicResourceId||!known(opening.musicResourceId))issues.push('실제 오프닝 음악이 연결되지 않았습니다.');
   for(const finding of checkMonsterCampaignDefinition(p))if(finding.severity==='blocker')issues.push(finding.message);
   return {reference:p.meta.oprnMonsterStyle??null,resolution:p.system.playResolution??null,cameraZoom:p.system.cameraZoom??1,campaignId:campaign?.id??null,plan:{gyms:plan.gyms,species:plan.species,maps:plan.maps,links:plan.links,declared:!!campaign?.plan},maps:maps.length,species:roster.length,badges:campaign?.badges.length??0,objectives:campaign?.objectives.length??0,transfers:transfers.length,trainerBattles:commands('battleProcessing').length,shops:commands('shop').length,missingSpecies:missing,start:{mapId:p.startMapId,...p.startPos},issues,verificationScope:'authored structure/resources only',playbackVerified:false as const};

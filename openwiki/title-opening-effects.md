@@ -223,7 +223,7 @@ continues to use its existing alias.
 
 ### Emerald professor native poses (2026-10-04)
 
-`configureEmeraldMonsterPortraitMotion` adds a reviewed384×64 strip (six64×64drawn poses,15opaque colors) to the shared introduction and existing canonical story without recreating narration pages. Scene orders hold neutral/blink/talk and selected gesture frames on one6fps clock. `openingPortraitMotion.ts` owns canvas/decode/visibility/reduced-motion/cleanup, while the cinematic runner owns Enter and BGM. Emerald portrait boxes use128×128, exact2× of the native64 square. The actual exported-player probe is `scripts/qa/runtime/pokemon-native-motion.mjs`; candidate gallery proof does not establish exported playback or saved persistence.
+(Superseded 2026-10-18: the generated Emerald opening is now six layered `animatic` shots, see [emerald-monster-production.md](emerald-monster-production.md); `upgradeLegacyEmeraldMonsterOpening` converts generator-made still books on repair and leaves an authored pose strip alone.) The legacy pose-strip path rendered a reviewed 384×64 strip (six 64×64 poses) on the shared introduction. Scene orders hold neutral/blink/talk and selected gesture frames on one 6fps clock. `openingPortraitMotion.ts` owns canvas/decode/visibility/reduced-motion/cleanup, while the cinematic runner owns Enter and BGM. Emerald portrait boxes use 128×128, exact 2× of the native 64 square. The actual exported-player probe is `scripts/qa/runtime/pokemon-native-motion.mjs`; candidate gallery proof does not establish exported playback or saved persistence.
 ## 타이틀 키보드 이동·크레딧 닫기 (2026-10-04)
 
 `player.ts`의 위/아래·W/S 선택 이동은 `updateTitleSelection`으로 기존 메뉴의 선택 클래스,

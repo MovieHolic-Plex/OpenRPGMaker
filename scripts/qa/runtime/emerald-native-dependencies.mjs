@@ -30,16 +30,14 @@ await withTsModule(resolve('src/editor/tools/monsterGameTools.ts'), 'native-repa
   const tool = m.MONSTER_GAME_TOOLS.find(t => t.name === 'build_monster_game');
   const old = structuredClone(project);
   delete old.meta.oprnOpeningBook.portraitMotion;
-  old.assets.uploaded.oprn_emerald_professor.meta.height = 96;
-  const story = JSON.stringify(old.system.opening);
+  const narration = old.system.opening.scenes.map(scene => scene.narration);
   const original = JSON.stringify({ session: old.session, start: [old.startMapId, old.startPos] });
   tool.run(old, { mode: 'repair' });
-  check('actual AI repair adds native motion to owned professor introduction', () => {
-    assert.equal(old.assets.uploaded.oprn_emerald_professor.meta.height, 64);
-    assert.equal(old.meta.oprnOpeningBook.portraitMotion.frameWidth, 64);
-    assert.equal(old.meta.oprnOpeningBook.portraitMotion.frameHeight, 64);
+  check('actual AI repair turns the generated still professor introduction into animatic shots', () => {
+    assert.equal(old.meta.oprnOpeningBook, undefined);
+    assert(old.system.opening.scenes.every(scene => scene.kind === 'animatic'));
   });
-  check('AI repair preserves authored story and Enter timings', () => assert.equal(JSON.stringify(old.system.opening), story));
+  check('AI repair keeps the authored narration in order', () => assert.deepEqual(old.system.opening.scenes.map(scene => scene.narration), narration));
   check('AI repair preserves session and start', () => assert.equal(JSON.stringify({ session: old.session, start: [old.startMapId, old.startPos] }), original));
   const custom = structuredClone(project);
   custom.meta.oprnOpeningBook.portraitMotion.fps = 7;

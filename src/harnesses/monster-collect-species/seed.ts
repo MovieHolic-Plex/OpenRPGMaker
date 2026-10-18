@@ -110,6 +110,8 @@ export type PickRecord = {
   block: number;
   pickedAt: string;
   note?: string;
+  /** harness-data 아래 손 도트 64×64 원본. 있으면 build 가 격자 축소 대신 이 그림을 그대로 번들에 쓴다 */
+  authored?: string;
 };
 
 /** 큰 동작 한 줄의 선택 기록. grid 는 줄 전체 격자 도트(N 프레임이 한 장) */

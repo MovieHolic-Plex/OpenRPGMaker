@@ -2,7 +2,7 @@ import { enableGenreLockSettled } from '@/project/genreLockCharsets';
 import type { ToolDefinition } from './types';
 import { ToolError } from './types';
 import { configureEmeraldMonsterStyle, EMERALD_MONSTER_AUTHORING_GUIDE } from '@/project/emeraldMonsterStyle';
-import { configureEmeraldMonsterOpening, configureEmeraldMonsterPortraitMotion } from '@/project/emeraldMonsterOpening';
+import { configureEmeraldMonsterOpening, upgradeLegacyEmeraldMonsterOpening } from '@/project/emeraldMonsterOpening';
 import { configureEmeraldMonsterCast } from '@/project/emeraldMonsterCast';
 import { monsterTitleThemeFromStart } from '@/project/emeraldMonsterTitleArt';
 import { configureEmeraldMonsterCreatureArt } from '@/project/emeraldMonsterCreatureArt';
@@ -46,7 +46,8 @@ export const MONSTER_GAME_TOOLS: readonly ToolDefinition[] = [
       configureEmeraldMonsterCast(p);
       const updatedCreatureAssets = configureEmeraldMonsterCreatureArt(p, args.replaceCreatureArt === true).length;
       if(args.replaceOpening===true||defaultOpening)configureEmeraldMonsterOpening(p);
-      else if(p.meta.oprnOpeningBook?.portraitResourceId==='oprn_emerald_professor'&&!p.meta.oprnOpeningBook.portraitMotion)configureEmeraldMonsterPortraitMotion(p);
+      // 예전 생성기의 정지 교수 초상 소개는 내레이션을 살린 채 6컷 애니메틱으로 바꾼다.
+      else upgradeLegacyEmeraldMonsterOpening(p);
       enableGenreLockSettled(p,'monster-collect');
       if(p.system.monsterCampaign.id==='starlight-islands')distributeNpcCharsets(p);
       if(JSON.stringify(p.session)!==session||JSON.stringify([p.startMapId,p.startPos])!==start)throw new ToolError('보수 중 세션/시작 위치가 바뀌었습니다.',{code:'monster-repair-state'});
