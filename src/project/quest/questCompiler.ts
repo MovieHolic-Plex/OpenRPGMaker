@@ -552,7 +552,19 @@ function buildGiverEvent(project: Project, def: QuestDef, flags: QuestFlagIds, s
   // 기존 이벤트에 페이지 병합.
   const existing = map.events.find((entry) => entry.id === id);
   if (!existing) throw new QuestCompileError(`기버 이벤트가 없습니다: ${id}`);
-  existing.pages = [...preservePages(existing), ...(prerequisites.length ? [unavailable] : []), proposal, active, done];
+  // 조건 없는 기존 페이지(인사 대사)는 뒤의 조건 없는 제안·선행 미충족 페이지에 늘 가려진다 — 그 대사를 두 페이지 앞머리로 옮기고 뺀다.
+  // 이 의뢰가 전에 만든 페이지(다시 컴파일)는 새 페이지로 바꾸되, 옛 제안 페이지 앞머리에 접혀 있던 인사는 되살린다.
+  const generated = new Set([proposal, active, done, unavailable].map((p) => p.id));
+  const pages = preservePages(existing);
+  const kept = pages.filter((p) => !generated.has(p.id));
+  const oldProposal = pages.find((p) => p.id === proposal.id);
+  const proposalBody = proposal.commands.length;
+  const greeting = [
+    ...kept.filter((p) => p.conditions.length === 0).flatMap((p) => p.commands),
+    ...(oldProposal ? oldProposal.commands.slice(0, Math.max(0, oldProposal.commands.length - proposalBody)) : []),
+  ];
+  for (const opening of [proposal, unavailable]) opening.commands = [...greeting, ...opening.commands];
+  existing.pages = [...kept.filter((p) => p.conditions.length > 0), ...(prerequisites.length ? [unavailable] : []), proposal, active, done];
   return existing;
 }
 

@@ -66,8 +66,14 @@ interface PuzzleSpec {
   readonly solvedFx: readonly Fx[];
   readonly reward?: { readonly item?: ItemSpec; readonly gold?: number; readonly line: string };
 }
-/** 퀘스트와 따로 쓰는 장치 — 소품 앞(mark) 칸에서 조사하면 연출 + 회복. */
-interface DeviceSpec { readonly map: string; readonly mark: string; readonly name: string; readonly fx: readonly Fx[]; readonly heal?: true; readonly lines: readonly string[] }
+/**
+ * 퀘스트와 따로 쓰는 장치 — 소품 앞(mark) 칸에서 조사하면 연출 + 대사 + (heal) 회복.
+ * puzzle 이 있으면 그 선택지 퍼즐을 풀어야 연출·대사·보상이 따르고, 한 번 풀면 뒤로는 done 대사만 한다(보상 되풀이 없음).
+ */
+interface DeviceSpec {
+  readonly map: string; readonly mark: string; readonly name: string; readonly fx: readonly Fx[]; readonly heal?: true; readonly lines: readonly string[];
+  readonly puzzle?: PuzzleSpec; readonly done?: readonly string[];
+}
 /** 갈래 맵으로 가는 출입구를 아이템으로 잠근다 — 아이템을 지니고 닿으면 연출과 함께 열리고, 그 뒤로는 보통 출입구다. */
 interface LockSpec { readonly site: string; readonly item: string; readonly locked: readonly string[]; readonly opened: readonly string[]; readonly fx: readonly Fx[] }
 /** 수호자 전투 — 기존 보스 트룹 이름이 장과 안 맞아(「성 경비대장」이 붉은 드래곤 트룹과 싸웠다) 장마다 제 이름·외형의 적·트룹을 만든다. */
@@ -120,7 +126,8 @@ export const JRPG_CHAPTERS = {
     // 천년제 광장: 마을 풀밭을 걷어 낸 장터 마당 — 북쪽 무대에 루카의 텔레포드 두 기, 가운데에 리아네의 종탑·분수, 둘레에 장터 노점·길드 깃발·쌍등 가로등.
     dress: {
       hub: [
-        { object: "kit:atlas_biome_interior/hand-interior:teleport pad", where: "fair-north", count: 2, light: "#80d0ff" },
+        // 루카의 텔레포드 시연대 — 앞 칸에서 범종 신호를 울리고 출력을 맞추는 축제 놀이(devices). 광장이 좁아도 늘 서는 소품에 단다.
+        { object: "kit:atlas_biome_interior/hand-interior:teleport pad", where: "fair-north", count: 2, light: "#80d0ff", mark: "telepod" },
         { object: "kit:sengoku_edo/se-bell-tower", where: "fair" },
         { object: "kit:beodeul_city/bd-prop-stall_veg", where: "fair" },
         { object: "kit:beodeul_city/bd-prop-stall_cheese_meat", where: "fair" },
@@ -133,6 +140,31 @@ export const JRPG_CHAPTERS = {
         { object: "kit:modern_campus/mc-fountain-anim", where: "fair-center" },
       ],
     },
+    // 천년제 범종·텔레포드 놀이 — 신호 종을 힘껏 쳐야 루카가 텔레포드를 돌리고, 출력을 「중간」에 맞춰야 시연이 성공한다.
+    devices: [{
+      map: "hub", mark: "telepod", name: "천년제 텔레포드 시연대",
+      fx: ["se:bell", "flash:white", "particles:sparkle"],
+      lines: ["데엥— 종소리에 맞춰 텔레포드 두 기가 푸르게 빛났다!", "구경꾼들이 환호하며 꽃잎을 뿌린다."],
+      done: ["텔레포드가 은은하게 웅웅거린다.", "(천년제 기념 메달은 이미 받았다)"],
+      puzzle: {
+        intro: ["루카의 텔레포드 시연대다. 곁의 신호 종 앞에서 종지기가 「힘 자랑 한번 해 보게!」 하며 당목을 건넨다."],
+        stages: [
+          {
+            prompt: "범종을 어떻게 칠까?", options: ["힘껏 친다", "살살 친다"], answer: 0,
+            hit: { lines: ["데에엥!! 광장 끝까지 종소리가 울려 퍼졌다.", "루카: 「좋아, 그 소리면 충분해! 텔레포드 출력은 얼마로 할까?」"], fx: ["se:bell", "shake:2"] },
+            miss: { lines: ["통… 종이 겨우 흔들렸다. 종지기가 웃는다."] },
+          },
+          {
+            prompt: "텔레포드 출력은?", options: ["최대 출력", "중간 출력", "최소 출력"], answer: 1,
+            hit: { lines: ["루카: 「안정적이야! 이 정도면 사람이 타도 괜찮겠어!」"], fx: ["se:chime2"] },
+            miss: { lines: ["루카: 「으악, 출력이 안 맞아! 장치가 덜덜 떨려!」"], fx: ["shake:3", "flash:red"] },
+          },
+        ],
+        wrong: ["종지기: 「다시 한번 처음부터 해 보게.」"],
+        solvedFx: ["particles:magic"],
+        reward: { item: { id: "item_ct_millennial_medal", name: "천년제 기념 메달", description: "천년제 범종 놀이에서 받은 은빛 메달. 광장의 상인들이 알아보고 웃어 준다." }, line: "「천년제 기념 메달」을 받았다!" },
+      },
+    }],
     npcs: [
       { key: "marle", name: "마르", query: "공주", lines: ["천년제 구경 왔어? 나랑 같이 돌아보자!", "저 텔레포드, 루카가 만든 거래. 한번 타 볼래?"] },
       { key: "lucca", name: "루카", query: "마법사 소녀", lines: ["내 텔레포드 시연 보러 왔구나! 광장 북쪽 무대야.", "펜던트가 장치랑 공명하는 건 계산에 없었는데…"] },
@@ -410,9 +442,35 @@ export const JRPG_CHAPTERS = {
         { object: "kit:beodeul_city/bd-pick-mining-valley-pile", where: "rooms", count: 2 },
         { object: "kit:atlas_biome_interior/hand-interior:timber prop", where: "rooms", count: 4 },
         { object: "kit:snow_north/sn-stalagmite-ice", where: "rooms", count: 3 },
-        { object: "kit:beodeul_city/bd-pick-mining-valley-buffer", where: "rooms" },
+        // 선로 끝 막이 곁의 선로 전환기 — 레버 조작 퍼즐 자리(devices).
+        { object: "kit:beodeul_city/bd-pick-mining-valley-buffer", where: "rooms", mark: "switch_lever" },
       ],
     },
+    // 선로 전환기 — 경비병 말대로 「왼쪽 갱도」로 선로를 돌리고 광차 브레이크를 풀어야 막힌 갱도의 광차가 밀려나며 보급 상자가 드러난다.
+    devices: [{
+      map: "mine", mark: "switch_lever", name: "광산 철로 선로 전환기",
+      fx: ["se:collapse1", "shake:4", "particles:dust"],
+      lines: ["덜커덩— 광차가 왼쪽 갱도로 미끄러져 내려가며 막힌 선로를 밀어냈다!", "갱도 벽에 숨겨 둔 광부들의 보급 주머니가 굴러 나왔다."],
+      done: ["선로는 왼쪽 갱도로 돌려져 있다. 광차는 이미 내려갔다."],
+      puzzle: {
+        intro: ["녹슨 선로 전환기다. 레버와 광차 브레이크 손잡이가 달려 있다.", "(경비병: 「뒷길은 철로를 따라가다 왼쪽 갱도야」)"],
+        stages: [
+          {
+            prompt: "레버를 어느 쪽으로 당길까?", options: ["왼쪽 갱도로", "오른쪽 갱도로", "그대로 둔다"], answer: 0,
+            hit: { lines: ["철컥! 선로가 왼쪽 갱도로 맞물렸다."], fx: ["se:key"] },
+            miss: { lines: ["선로가 오른쪽으로 꺾였다… 그쪽 갱도는 무너져 있다."], fx: ["se:buzzer1"] },
+          },
+          {
+            prompt: "광차 브레이크는?", options: ["브레이크를 푼다", "브레이크를 더 조인다"], answer: 0,
+            hit: { lines: ["끼이익— 브레이크가 풀리며 광차가 움직이기 시작했다."] },
+          },
+        ],
+        wrong: ["아무것도 움직이지 않는다. 레버를 처음부터 다시 맞춰 보자."],
+        wrongFx: ["shake:2"],
+        solvedFx: ["flash:white"],
+        reward: { gold: 300, line: "보급 주머니에서 300G 를 얻었다!" },
+      },
+    }],
     npcs: [
       { key: "arvis", name: "아르비스", query: "터번 노인", lines: ["제국 병사들이 광산 안 얼음 속 환수를 노리고 있네."] },
       { key: "guard", name: "광산 경비병", query: "청년 병사", lines: ["제국의 마도 아머가 오면 광산 철로 입구를 지킨다!"] },
@@ -940,18 +998,37 @@ function lockGate(draft: Project, map: GameMap, siteMapId: string, lock: LockSpe
   return true;
 }
 
-/** 장치 — 소품 앞 칸의 투명 조사 이벤트: 연출 → 대사 → (heal) 파티 전원 회복. */
-function placeDevice(draft: Project, map: GameMap, at: Cell, id: string, device: DeviceSpec): void {
-  nested(draft, "upsert_event", {
-    mapId: map.id,
-    event: {
-      id, name: device.name, x: at.x, y: at.y, trigger: { kind: "action" }, commands: [],
-      pages: [{
-        id: `${id}_p1`, name: device.name, conditions: [], graphic: { transparent: true }, trigger: { kind: "action" }, priority: "below", movement: FIXED,
-        commands: [...fxCommands(device.fx), ...device.lines.map(say1), ...(device.heal ? [{ kind: "recoverAll" } as const] : [])],
-      }],
-    },
+/**
+ * 장치 — 소품 앞 칸의 투명 조사 이벤트: 연출 → 대사 → (heal) 파티 전원 회복.
+ * 퍼즐 장치는 풀어야 그 차례가 오고(보상 포함), 풀면 풀림 스위치가 서서 뒤로는 done 대사 페이지가 대신 선다.
+ */
+function placeDevice(draft: Project, map: GameMap, at: Cell, id: string, device: DeviceSpec, reward: readonly Command[]): void {
+  const page = (pageId: string, conditions: EventPage["conditions"], commands: Command[]): Record<string, unknown> => ({
+    id: pageId, name: device.name, conditions, graphic: { transparent: true }, trigger: { kind: "action" }, priority: "below", movement: FIXED, commands,
   });
+  const effect: Command[] = [...fxCommands(device.fx), ...device.lines.map(say1), ...(device.heal ? [{ kind: "recoverAll" } as const] : [])];
+  const solved = `sw_${id.replace(/^ev_/, "")}_solved`;
+  if (device.puzzle) ensureNamedSwitch(draft, solved, `${device.name} 풀림`);
+  const pages = device.puzzle
+    ? [
+      page(`${id}_p1`, [], puzzleCommands(device.puzzle, [], [...effect, ...reward, { kind: "setSwitch", switchId: solved, value: true }])),
+      page(`${id}_solved`, [{ kind: "switch", switchId: solved, value: true }], (device.done ?? device.lines).map(say1)),
+    ]
+    : [page(`${id}_p1`, [], effect)];
+  nested(draft, "upsert_event", { mapId: map.id, event: { id, name: device.name, x: at.x, y: at.y, trigger: { kind: "action" }, commands: [], pages } });
+}
+
+/** 퍼즐 보상 -> 명령(아이템은 데이터베이스에 먼저 넣는다) + 표시 이름. */
+function puzzleReward(draft: Project, puzzle: PuzzleSpec): { commands: Command[]; label: string } {
+  const prize = puzzle.reward;
+  const commands: Command[] = [];
+  if (prize?.item) {
+    nested(draft, "upsert_item", { item: { ...prize.item, price: 0, consumable: false, occasion: "never" } });
+    commands.push({ kind: "changeItem", itemId: prize.item.id, op: "+=", amount: 1 });
+  }
+  if (prize?.gold) commands.push({ kind: "changeGold", op: "+=", amount: prize.gold });
+  if (prize) commands.push(say1(prize.line));
+  return { commands, label: [prize?.item?.name, prize?.gold ? `${prize.gold}G` : ""].filter(Boolean).join(" + ") };
 }
 
 /** 장의 수호자 적·트룹 — 기존 보스 트룹의 능력치를 본떠 이름·외형만 장에 맞춘다. 만들지 못하면 기존 보스 트룹으로 싸운다. */
@@ -982,7 +1059,7 @@ const authorJrpgChapter: ToolDefinition = {
     + "{chapter, prefix?, seed?, timeGateFrom?:mapId} chapter: " + JRPG_CHAPTER_IDS.join(" · ") + ". "
     + "거점(장면 구성기) + 갈래 맵(손 도트 실내·장면·author_dungeon 던전)을 집 문·가장자리·던전 입구로 잇고, 이름 있는 NPC(대사), "
     + "퀘스트(의뢰 → 조력자 대화 → 단서 조사 → 수호자 전투 → 보고, create_quest), 사건 컷신(script_cutscene, 들어오면 한 번), 맵 분위기(날씨·조명·입자), 던전의 보이는 적·상자까지 깐다. "
-    + "장마다 기믹도 붙는다 — 동료 합류(보고하면 파티에 들어오고 맵에서 사라짐), 단서 앞 선택지 퍼즐(틀리면 처음부터, 풀면 연출·보상 아이템), 회복 장치, 아이템으로 여는 잠긴 출입구. "
+    + "장마다 기믹도 붙는다 — 동료 합류(보고하면 파티에 들어오고 맵에서 사라짐), 단서 앞 선택지 퍼즐(틀리면 처음부터, 풀면 연출·보상 아이템), 소품 장치(회복 캡슐·범종 놀이·선로 전환기 — 선택지를 풀면 한 번만 보상), 아이템으로 여는 잠긴 출입구. "
     + "timeGateFrom 을 주면 그 맵과 이 장 거점을 시간의 문(create_time_gate)으로 잇는다 — CT 시대들을 천년제 광장에 모으는 식.",
   mode: "write",
   parameters: {
@@ -1215,17 +1292,9 @@ const authorJrpgChapter: ToolDefinition = {
       // 퍼즐 — 조사 단계의 진행 페이지를 선택지 퍼즐로 감싼다. 풀어야 원래 단서 대사·단계 완료가 따른다.
       const inspect = clueMap.events.find((e) => e.id === `ev_${questKey}_inspect1`)?.pages?.find((p) => p.id.endsWith("_active"));
       if (spec.puzzle && inspect) {
-        const reward: Command[] = [];
-        const prize = spec.puzzle.reward;
-        if (prize?.item) {
-          nested(draft, "upsert_item", { item: { ...prize.item, price: 0, consumable: false, occasion: "never" } });
-          reward.push({ kind: "changeItem", itemId: prize.item.id, op: "+=", amount: 1 });
-        }
-        if (prize?.gold) reward.push({ kind: "changeGold", op: "+=", amount: prize.gold });
-        if (prize) reward.push(say1(prize.line));
-        inspect.commands = puzzleCommands(spec.puzzle, reward, inspect.commands);
-        const prizeLabel = [prize?.item?.name, prize?.gold ? `${prize.gold}G` : ""].filter(Boolean).join(" + ");
-        gimmicks.push(`퍼즐: ${clueMap.name} 「${q.clue.label}」 — ${spec.puzzle.stages.length ? `${spec.puzzle.stages.length}단계 선택지` : "조사"}${prizeLabel ? ` · 보상 ${prizeLabel}` : ""}`);
+        const prize = puzzleReward(draft, spec.puzzle);
+        inspect.commands = puzzleCommands(spec.puzzle, prize.commands, inspect.commands);
+        gimmicks.push(`퍼즐: ${clueMap.name} 「${q.clue.label}」 — ${spec.puzzle.stages.length ? `${spec.puzzle.stages.length}단계 선택지` : "조사"}${prize.label ? ` · 보상 ${prize.label}` : ""}`);
       } else if (spec.puzzle) warnings.push(`퍼즐: ${clueMap.name} 의 조사 이벤트를 찾지 못해 퍼즐을 붙이지 못했다`);
     } else warnings.push(`퀘스트 「${q.title}」: 의뢰인·조력자·단서·수호자 자리 중 빠진 것이 있어 만들지 않았다`);
 
@@ -1234,8 +1303,11 @@ const authorJrpgChapter: ToolDefinition = {
       const map = mapOf(device.map);
       const at = marks.get(device.map)?.get(device.mark);
       if (!map || !at) { warnings.push(`장치 ${device.name}: 소품(${device.mark})이 서지 않아 놓지 못했다`); continue; }
-      placeDevice(draft, map, at, `ev_${prefix}_${sanitizeId(device.mark)}`, device);
-      gimmicks.push(`장치: ${map.name} (${at.x},${at.y}) ${device.name}${device.heal ? " — 전원 회복" : ""}`);
+      const id = `ev_${prefix}_${sanitizeId(device.mark)}`;
+      const prize = device.puzzle ? puzzleReward(draft, device.puzzle) : undefined;
+      placeDevice(draft, map, at, id, device, prize?.commands ?? []);
+      const label = device.puzzle ? ` — ${device.puzzle.stages.length}단계 선택지${prize?.label ? ` · 보상 ${prize.label}` : ""}` : "";
+      gimmicks.push(`장치: ${map.name} (${at.x},${at.y}) ${device.name}${device.heal ? " — 전원 회복" : ""}${label}`);
     }
 
     // ⑥-3 잠긴 출입구 — 아이템을 지니고 닿아야 갈래 맵으로 간다
