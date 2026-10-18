@@ -1795,18 +1795,20 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
         if (t >= 0) want.set(c, t);
       }
     }
-    // 숲 수관: 숲 칸마다 이웃 비트·2×2 위상으로 고른 수관 칸(막힘 ×), 숲 바로 남쪽 빈 칸에는 그늘(★)
+    // 숲 수관: 숲 칸마다 이웃 비트·P×P 위상으로 고른 수관 칸(막힘 ×), 숲 바로 남쪽 빈 칸에는 물결치는 그늘(★)
     const canopyAt = new Map<number, number>();
     if (canopyStyle && forestSet.size) {
       const isForest = (n: number) => occ[n] === FOREST;
       const phases = BEODEUL_NATURE.forestCanopy[canopyStyle];
+      const P = BEODEUL_NATURE.forestPeriod[canopyStyle];
+      const shades = BEODEUL_NATURE.forestShade[canopyStyle];
       for (const c of forestSet) {
         const x = c % W, y = (c - x) / W;
-        const t = phases[(x & 1) + 2 * (y & 1)]![maskOf(c, isForest)]!; if (t >= 0) canopyAt.set(c, t);
+        const t = phases[(x % P) + P * (y % P)]![maskOf(c, isForest)]!; if (t >= 0) canopyAt.set(c, t);
         const s = c + W;
         if (y + 1 < H && !isForest(s) && occ[s] !== WATERC && occ[s] !== KEEP && layerTileAt(m, 2, s) < 0 && !want.has(s)) {
           const nw = x > 0 && isForest(c - 1), ne = x + 1 < W && isForest(c + 1);
-          want.set(s, BEODEUL_NATURE.forestShade[(nw ? 2 : 0) + (ne ? 1 : 0)]!);
+          const sh = shades[(x % P) * 4 + (nw ? 2 : 0) + (ne ? 1 : 0)]!; if (sh >= 0) want.set(s, sh);
         }
       }
     }
