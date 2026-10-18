@@ -546,12 +546,13 @@ export function createDialogueUI(
    * 그려지지 않고 여기서 취소되고, 진입 연출도 다시 재생되지 않는다.
    */
   const takeOverOverlay = (): boolean => {
+    const wasOpen = overlay.firstChild !== null || pendingExit !== null;
+    // 위치가 바뀌는 연속 대사에서 창이 튀지 않게, 지우기 전에 앞 창의 자리를 기억한다(FLIP).
+    const prevBox = overlay.querySelector<HTMLElement>(".dialogue-box");
+    const savedBoxTop = prevBox ? layoutTop(overlay, prevBox)?.top : undefined;
     cancelActiveText?.();
     cancelActiveChoice?.();
-    const wasOpen = overlay.firstChild !== null;
-    // 위치가 바뀌는 연속 대사에서 창이 튀지 않게, 지우기 전에 앞 창의 자리를 기억한다(FLIP).
-    const prevBox = wasOpen ? overlay.querySelector<HTMLElement>(".dialogue-box") : null;
-    previousBoxTop = prevBox ? layoutTop(overlay, prevBox)?.top : undefined;
+    previousBoxTop = savedBoxTop;
     if (pendingExit) {
       pendingExit.cancelTimer();
       pendingExit = null;
@@ -850,11 +851,12 @@ export function createDialogueUI(
     if (request.signal?.aborted) return Promise.reject(new DOMException("Text cancelled", "AbortError"));
     const system = systemFor(request);
     if (request.reading !== "off") setAuthoredPreferenceDefaults(system?.defaults);
+    const activeProjectForRequest = (request.textContext?.project && "system" in request.textContext.project ? request.textContext.project as Project : undefined) ?? store.getCurrent();
     const voiceFile = request.voiceResourceId?.trim();
-    const voiceUrl = voiceFile ? resolveAudioSource(voiceFile, store.getCurrent()) : null;
+    const voiceUrl = voiceFile ? resolveAudioSource(voiceFile, activeProjectForRequest) : null;
     if (voiceUrl) playLineVoice(voiceUrl);
     else stopLineVoice();
-    const requestedLook = request.look ?? resolveDialogueLook(store.getCurrent(), { speaker: request.speaker, emotion: request.emotion });
+    const requestedLook = request.look ?? resolveDialogueLook(activeProjectForRequest, { speaker: request.speaker, emotion: request.emotion });
     if (isNonBlockingContainer(requestedLook.container)) {
       // 흘림·코너 대사는 대사 상자를 건드리지 않고, 기다리지도 않는다.
       showAmbient(request, voiceUrl ? { ...requestedLook, voice: null } : requestedLook);
@@ -895,8 +897,15 @@ export function createDialogueUI(
           : rawVnLook;
         const vnLook = applyVnLook(overlay, effectiveVnLook);
         const isDualFullbodyVeil = look.style === DUAL_FULLBODY_VEIL_PRESET_ID || vnLook?.preset === DUAL_FULLBODY_VEIL_PRESET_ID;
-        if (isDualFullbodyVeil) overlay.dataset.dialogueStage = DUAL_FULLBODY_VEIL_PRESET_ID;
-        else delete overlay.dataset.dialogueStage;
+        const uiScale = isDualFullbodyVeil ? Math.max(1, Math.round((logicalHostHeight(host) / PLAY_RESOLUTION.height) * 1000) / 1000) : 1;
+        if (isDualFullbodyVeil) {
+          overlay.dataset.dialogueStage = DUAL_FULLBODY_VEIL_PRESET_ID;
+          if (uiScale > 1) overlay.style.setProperty("--dialogue-ui-scale", String(uiScale));
+          else overlay.style.removeProperty("--dialogue-ui-scale");
+        } else {
+          delete overlay.dataset.dialogueStage;
+          overlay.style.removeProperty("--dialogue-ui-scale");
+        }
         const speakerName = nameplateSpeaker(request.speaker);
         const allowPortrait = !look.hideFace && !balloon && vnLookShowsPortraits(vnLook);
         const stagedSpeakerFace = !wasOpen
@@ -1086,7 +1095,7 @@ export function createDialogueUI(
             // 상수로 계산한 폭은 상자의 실제 안쪽 폭보다 몇 px 넓을 수 있다(jrpg-real-1 J07: 282 대 280).
             // 실제 레이아웃이 있으면 둘 중 좁은 쪽을 쓴다 — 넓게 재면 40자 줄이 DOM 에서 한 번 더 접혀 4번째 줄이 잘린다.
             : Math.min(
-              dialogueBodyWidth({ ...request, face }, position, logicalHostWidth(host), Boolean(veilFaceEl)),
+              dialogueBodyWidth({ ...request, face }, position, logicalHostWidth(host), Boolean(veilFaceEl), uiScale),
               measuredBodyContentWidth(bodyEl) ?? Number.POSITIVE_INFINITY,
             );
         const maxLines = balloon ? DIALOGUE_BALLOON_MAX_LINES : dialogueMaxLines(bodyEl);
@@ -1653,13 +1662,29 @@ export function createDialogueUI(
     stopReading("choices");
     const wasOpen = takeOverOverlay();
     return new Promise<number>((resolve, reject) => {
+      const activeProject = (request.textContext?.project && "system" in request.textContext.project ? request.textContext.project as Project : undefined) ?? store.getCurrent();
+      const choiceLook = request.look ?? resolveDialogueLook(activeProject);
+      const rawVnLook = resolveVnLook(activeProject);
+      const effectiveVnLook = choiceLook.style === DUAL_FULLBODY_VEIL_PRESET_ID && (!rawVnLook || rawVnLook.source === "setting-default")
+        ? resolveAuthoredVnLook({ version: 1, preset: DUAL_FULLBODY_VEIL_PRESET_ID }, "setting-default")
+        : rawVnLook;
+      const isDualFullbodyVeil = choiceLook.style === DUAL_FULLBODY_VEIL_PRESET_ID || effectiveVnLook?.preset === DUAL_FULLBODY_VEIL_PRESET_ID;
       // 초상이 선 대사 바로 뒤의 선택지는 그 대사창과 같은 아래 자리에 선다(같은 세션 안에서 창이 위로 뛰지 않게).
-      const position = applyOverlayPosition(overlay, request, wasOpen && lastLineForcedBottom);
+      const position = applyOverlayPosition(overlay, request, (wasOpen && lastLineForcedBottom) || isDualFullbodyVeil);
       overlay.classList.add("choices-active");
       if (request.options.length >= 4) overlay.classList.add("choices-compact");
       const choicesWindow = dialogueBox("choices", "dialogue-box");
-      applyDialogueLook(overlay, choicesWindow, request.look ?? resolveDialogueLook(store.getCurrent()));
-      applyVnLook(overlay, resolveVnLook(store.getCurrent()));
+      applyDialogueLook(overlay, choicesWindow, choiceLook);
+      applyVnLook(overlay, effectiveVnLook);
+      const uiScale = isDualFullbodyVeil ? Math.max(1, Math.round((logicalHostHeight(host) / PLAY_RESOLUTION.height) * 1000) / 1000) : 1;
+      if (isDualFullbodyVeil) {
+        overlay.dataset.dialogueStage = DUAL_FULLBODY_VEIL_PRESET_ID;
+        if (uiScale > 1) overlay.style.setProperty("--dialogue-ui-scale", String(uiScale));
+        else overlay.style.removeProperty("--dialogue-ui-scale");
+      } else {
+        delete overlay.dataset.dialogueStage;
+        overlay.style.removeProperty("--dialogue-ui-scale");
+      }
       applyTextSettings(overlay, choicesWindow, request, position);
       const choicesProfile = dialoguePresentationProfile(undefined, {
         reducedMotion: resolveReducedMotion(undefined),
@@ -1667,6 +1692,23 @@ export function createDialogueUI(
       applyDialoguePresentation(choicesWindow, choicesProfile);
       applyDialogueScrim(scrim, choicesProfile, position);
       activeExitMs = choicesProfile.exitMs;
+      const choiceBehindPortraits: HTMLElement[] = [];
+      if (isDualFullbodyVeil && (stageSlots.left || stageSlots.right)) {
+        overlay.classList.add("has-bust-face");
+        choicesWindow.classList.add("has-bust-face", "portrait-full", "portrait-full-tall");
+        const hostHeight = logicalHostHeight(host);
+        if (stageSlots.left) {
+          const leftEl = renderFace({ ...stageSlots.left.face, position: "left" });
+          styleBehindPortrait(leftEl, hostHeight, stageSlots.left.face, true);
+          choiceBehindPortraits.push(leftEl);
+        }
+        if (stageSlots.right) {
+          const rightEl = renderFace({ ...stageSlots.right.face, position: "right" });
+          rightEl.classList.add("dialogue-portrait-listener");
+          styleBehindPortrait(rightEl, hostHeight, stageSlots.right.face, true);
+          choiceBehindPortraits.push(rightEl);
+        }
+      }
       const choicesEl = el("div", { class: "choice-list", dataset: { testid: "runtime-choices" } });
       if (request.prompt) {
         const promptEl = el("div", {
@@ -1780,9 +1822,8 @@ export function createDialogueUI(
       document.addEventListener("keydown", onKey);
 
       choicesWindow.append(choicesEl);
-      overlay.append(choicesWindow);
+      overlay.append(choicesWindow, ...choiceBehindPortraits);
       if (system) applyWindowOpacity(choicesWindow, getEffectiveReadingPreferences(system.defaults).windowOpacity);
-      setSelected(0);
       beginEnter(choicesWindow, choicesProfile.enterMs, !wasOpen);
     });
   }
@@ -2114,14 +2155,15 @@ function dialogueBodyWidth(
   position: MessageWindowPosition,
   hostWidth: number,
   hasVeilCornerFace = false,
+  uiScale = 1,
 ): number {
   const baseWidth = hostWidth
-    - DIALOGUE_OVERLAY_HORIZONTAL_PADDING[position]
-    - DIALOGUE_BOX_HORIZONTAL_PADDING
-    - DIALOGUE_BOX_HORIZONTAL_BORDER;
+    - (DIALOGUE_OVERLAY_HORIZONTAL_PADDING[position]
+      + DIALOGUE_BOX_HORIZONTAL_PADDING
+      + DIALOGUE_BOX_HORIZONTAL_BORDER) * uiScale;
   const portraitMode = dialoguePortraitMode(request.face);
   const faceWidth = hasVeilCornerFace
-    ? 44 + DIALOGUE_FACE_COLUMN_GAP
+    ? Math.round((44 + DIALOGUE_FACE_COLUMN_GAP) * uiScale)
     : !request.face
       ? 0
       : portraitMode === "full"

@@ -177,7 +177,7 @@ export function sharedExpressionSetIdOf(resourceId: string | undefined): string 
   const sourceSet = ORIGINAL_FACE_SETS.get(resourceId);
   if (sourceSet) return sourceSet;
   const match = /^(shared-.+-expressions)-\d{2}$/u.exec(resourceId);
-  return match && FACE_EXPRESSION_SETS.some((set) => set.id === match[1]) ? match[1] : undefined;
+  return match && (FACE_EXPRESSION_SETS.some((set) => set.id === match[1]) || MODERN_PORTRAIT_SETS.some((set) => `shared-${set.stem}-expressions` === match[1])) ? match[1] : undefined;
 }
 
 /**

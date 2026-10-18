@@ -35,8 +35,18 @@ export function normalizeCameraZoom(value: unknown): number | undefined {
 }
 
 /** 플레이·편집기가 쓰는 유효 배율. 저작이 없으면 1. */
-export function resolveCameraZoom(system: Pick<SystemRecords, "cameraZoom"> | undefined): number {
-  return normalizeCameraZoom(system?.cameraZoom) ?? DEFAULT_CAMERA_ZOOM;
+export function resolveCameraZoom(
+  system: Pick<SystemRecords, "cameraZoom" | "dialogueStyle" | "playResolution"> | undefined,
+): number {
+  const normalized = normalizeCameraZoom(system?.cameraZoom);
+  if (normalized !== undefined) return normalized;
+  if (
+    system?.dialogueStyle === "dual-fullbody-veil" &&
+    (!system.playResolution || (system.playResolution.width <= 480 && system.playResolution.height <= 320))
+  ) {
+    return 3.2;
+  }
+  return DEFAULT_CAMERA_ZOOM;
 }
 
 /** 편집기 입력용 저장 함수 — 1 이면 필드를 지운다. */

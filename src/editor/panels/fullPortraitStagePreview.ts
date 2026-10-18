@@ -33,12 +33,13 @@ export function renderFullPortraitStage(options: FullPortraitStageOptions): HTML
   const project = store.getCurrent();
   const resolution = resolvePlayResolution(project.system);
   const width = options.width ?? STAGE_WIDTH;
-  const scale = width / resolution.width;
-  const height = Math.round(resolution.height * scale);
+  const aspectScale = width / resolution.width;
+  const stageScale = width / STAGE_WIDTH;
+  const height = Math.round(resolution.height * aspectScale);
   const portraitHeight = Math.round(height * options.layout.heightRatio);
   const portraitWidth = Math.round(portraitHeight * (options.veil ? 0.56 : PORTRAIT_ASPECT));
   const drop = Math.round(portraitHeight * options.layout.dropRatio);
-  const inset = Math.round((options.veil ? -4 : SIDE_INSET_PX) * scale);
+  const inset = Math.round((options.veil ? -4 : SIDE_INSET_PX) * stageScale);
   const url = resolveAssetResourceUrl(options.resourceId, { project });
   const right = options.position === "right";
   const portrait = url
@@ -89,7 +90,7 @@ export function renderFullPortraitStage(options: FullPortraitStageOptions): HTML
           src: cornerUrl,
           alt: "",
           draggable: "false",
-          style: `width:${Math.round(44 * scale)}px;height:${Math.round(44 * scale)}px;object-fit:contain;object-position:bottom center;flex-shrink:0;image-rendering:auto;margin-bottom:-5px;`,
+          style: `width:${Math.round(44 * stageScale)}px;height:${Math.round(44 * stageScale)}px;object-fit:contain;object-position:bottom center;flex-shrink:0;image-rendering:auto;margin-bottom:-5px;`,
         },
         dataset: { testid: "full-portrait-stage-corner-face" },
       });

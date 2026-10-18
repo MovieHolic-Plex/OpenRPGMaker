@@ -398,7 +398,6 @@ export function renderDialogueLookSample(speaker: string, body: string, look: Di
       const rightUrl = resolveAssetResourceUrl("shared-modern-uni-girl-long-expressions-full-base", { project });
       const cornerFaceUrl = resolveAssetResourceUrl("shared-modern-uni-boy-navy-expressions-bust-base", { project });
       overlay.classList.add("has-bust-face");
-      overlay.style.setProperty("--runtime-dialogue-panel-height", "42px");
       win.classList.add("has-bust-face", "portrait-full", "portrait-full-tall", "has-portrait-listener", "bust-left");
       const content = win.querySelector<HTMLElement>(".dialogue-content");
       if (content && cornerFaceUrl) {

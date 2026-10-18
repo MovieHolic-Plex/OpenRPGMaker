@@ -8,6 +8,7 @@
 //  4) 연애에 어울리는 번들 타이틀 그림(눈 덮인 마을 기본값 대신)
 //  5) 시작 맵 BGM — 비어 있으면 현대 일상 곡(잔잔한 찻집·옥상 저녁 따위) 하나
 import { DUAL_FULLBODY_VEIL_PRESET_ID, ROMANCE_FULL_PORTRAIT_DEFAULTS, romanceDialogueSystem } from "./dialogueSystem";
+import { ensureHighResFullbodyPlayResolution } from "./playResolution";
 import { romanceVnExtras } from "./vnExtras";
 import { DEADLINE_ENDING_COMMON_EVENT_ID, installDeadlineEnding, type DeadlineTier } from "@/project/deadlineEnding";
 import { ROMANCE_ENDING_HAPPY_AT, ROMANCE_ENDING_HAPPY_ID, ROMANCE_ENDING_NORMAL_AT, ROMANCE_ENDING_NORMAL_ID, SEGMENT_END_ENDING_ID } from "@/project/playableSegmentContract";
@@ -138,6 +139,9 @@ export function applyRomanceDefaults(project: Project): string[] {
   if (system.dialogueStyle === undefined || system.dialogueStyle === "pixel-cinematic") {
     system.dialogueStyle = DUAL_FULLBODY_VEIL_PRESET_ID;
     applied.push("dialogueStyle");
+  }
+  if (system.dialogueStyle === DUAL_FULLBODY_VEIL_PRESET_ID && ensureHighResFullbodyPlayResolution(system)) {
+    applied.push("playResolution");
   }
   if (!system.dialogueFullPortrait) {
     system.dialogueFullPortrait = { ...ROMANCE_FULL_PORTRAIT_DEFAULTS };

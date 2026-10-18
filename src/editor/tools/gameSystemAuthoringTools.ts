@@ -216,6 +216,10 @@ export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
     try{validateVnLook(next);}catch(e){fail(`${e instanceof Error?e.message:String(e)}`);}
     p.meta.oprnVnLook=next;
     const eff=resolveVnLook(p)!;
+    if(eff.preset==='dual-fullbody-veil'&&(!p.system.playResolution||(p.system.playResolution.width<=480&&p.system.playResolution.height<=320))){
+      p.system.playResolution={width:1024,height:768};
+      if(p.system.cameraZoom===undefined)p.system.cameraZoom=3.2;
+    }
     const notice:string[]=[];
     if(eff.layout==='page')notice.push('풀스크린 NVL 은 초상을 숨기고 화면 전체에 글만 보입니다 — 대화 장면 전체에 쓰면 얼굴이 안 보입니다');
     if(!p.meta.oprnDialogueSystem&&!resolveDialogueSystem(p))notice.push('읽은 글 구분은 대사 시스템(set_dialogue_system)의 읽은 글 기록이 있을 때만 보입니다');
