@@ -375,4 +375,92 @@ describe("runStampPlaceWith", () => {
     const paintCalls = h.applied[0]!.filter((call) => call.name === "paint_tiles");
     expect(paintCalls.length).toBeGreaterThan(0);
   });
+
+  it("hard-rejects quest/event/narrative requests in fast-path with FAST_PATH_UNSUPPORTED_QUEST_OR_EVENT without calling the model", async () => {
+    const h = harness({ replies: [] });
+    const questRes = await runStampPlaceWith({ text: "퀘스트 세우기", mapId: h.mapId, selection: null }, h.deps);
+    expect(questRes.ok).toBe(false);
+    expect(questRes.code).toBe("FAST_PATH_UNSUPPORTED_QUEST_OR_EVENT");
+    expect(questRes.tier).toBe("QUEST_OR_NARRATIVE_REJECTED");
+    expect(questRes.usedModel).toBe(false);
+    expect(questRes.applied).toBe(0);
+    expect(h.requests).toHaveLength(0);
+    expect(h.applied).toHaveLength(0);
+    expect(questRes.lines[0]).toContain("「퀘스트·이벤트·대화 만들기」는 타일만 찍는 『바로 깔기』로 처리할 수 없습니다.");
+
+    const bossRes = await runStampPlaceWith({ text: "광장에 보스 이벤트 만들기", mapId: h.mapId, selection: null }, h.deps);
+    expect(bossRes.ok).toBe(false);
+    expect(bossRes.code).toBe("FAST_PATH_UNSUPPORTED_QUEST_OR_EVENT");
+    expect(bossRes.usedModel).toBe(false);
+    expect(h.requests).toHaveLength(0);
+  });
+
+  it("erases a matched tree in the top-right region and a fountain in the plaza via erase_object", async () => {
+    const h = harness({
+      replies: [
+        JSON.stringify({
+          steps: [{ tool: "erase_object", args: { query: "나무", region: "오른쪽 위" }, label: "오른쪽 위 나무 지우기" }],
+        }),
+      ],
+    });
+    const map = h.project.maps[h.mapId]!;
+    const ts = h.project.tilesets[map.tilesetId]!;
+    const treeKit = (ts.structureKits ?? []).find((k) => /tree|나무/i.test(`${k.id} ${k.name}`));
+    expect(treeKit).toBeDefined();
+    // 오른쪽 위 (x=15, y=2) 에 나무 스탬프 배치
+    const tx = 15;
+    const ty = 2;
+    for (let dy = 0; dy < treeKit!.height; dy++) {
+      for (let dx = 0; dx < treeKit!.width; dx++) {
+        const u = treeKit!.rows[dy]?.upperTiles?.[dx] ?? -1;
+        if (u >= 0) map.upperTiles[(ty + dy) * map.width + (tx + dx)] = u;
+      }
+    }
+    const res = await runStampPlaceWith({ text: "오른쪽 위 나무 지워줘", mapId: h.mapId, selection: null }, h.deps);
+    expect(res.ok).toBe(true);
+    expect(h.applied[0]!.some((c) => c.name === "tile_erase")).toBe(true);
+    const eraseCall = h.applied[0]!.find((c) => c.name === "tile_erase")!;
+    expect(eraseCall.args.rect).toMatchObject({ x: tx, y: ty, w: treeKit!.width, h: treeKit!.height });
+  });
+
+  it("moves a placed well to the plaza center and shifts a house 4 tiles right via move_object", async () => {
+    const h = harness({
+      replies: [
+        JSON.stringify({
+          steps: [{ tool: "move_object", args: { query: "집", dx: 4, dy: 0 }, label: "집 오른쪽 4칸 이동" }],
+        }),
+      ],
+    });
+    const map = h.project.maps[h.mapId]!;
+    map.structurePlacements = [
+      {
+        id: "house_1",
+        kitId: "quick_house_1",
+        x: 3,
+        y: 4,
+        w: 4,
+        h: 4,
+        before: {
+          lower: new Array(16).fill(0),
+          lowerOverlay: new Array(16).fill(-1),
+          upper: new Array(16).fill(-1),
+          upperOverlay: new Array(16).fill(-1),
+          shadow: new Array(16).fill(0),
+        },
+      },
+    ];
+    for (let dy = 0; dy < 4; dy++) {
+      for (let dx = 0; dx < 4; dx++) {
+        map.upperTiles[(4 + dy) * map.width + (3 + dx)] = 500 + dy * 4 + dx;
+      }
+    }
+    const res = await runStampPlaceWith({ text: "집을 오른쪽으로 4칸 옮겨줘", mapId: h.mapId, selection: null }, h.deps);
+    expect(res.ok).toBe(true);
+    const eraseCalls = h.applied[0]!.filter((c) => c.name === "tile_erase");
+    expect(eraseCalls.length).toBeGreaterThanOrEqual(2);
+    expect(eraseCalls[0]!.args.rect).toMatchObject({ x: 3, y: 4, w: 4, h: 4 });
+    expect(eraseCalls[1]!.args.rect).toMatchObject({ x: 7, y: 4, w: 4, h: 4 });
+    const paintUpper = h.applied[0]!.filter((c) => c.name === "paint_tiles" && c.args.layer === "upper");
+    expect(paintUpper.length).toBeGreaterThan(0);
+  });
 });

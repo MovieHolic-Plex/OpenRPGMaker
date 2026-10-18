@@ -141,6 +141,7 @@ export function buildStampObjectIndex(tileset: TilesetDef | undefined): readonly
     const core = extractCoreObjectName(rawName);
     const slug = kit.id
       .replace(/^(?:bd-pick-[a-z-]+-|bd-(?:prop|mpart|out|tree|farm|bridge)-|jp-(?:prop|in-[a-z]+|tram|road)-|mc-(?:prop|veh|in-[a-z]+)-|jb-|wz-)/iu, "");
+    const kitAliases = kit.id === "bd-pick-desert-oasis-well" ? "분수 분수대 수반 fountain" : "";
     entries.push({
       id: kit.id,
       kind: "kit",
@@ -148,7 +149,7 @@ export function buildStampObjectIndex(tileset: TilesetDef | undefined): readonly
       source: sourceOf(kit),
       width: kit.width,
       height: kit.height,
-      nameText: norm(`${core} ${rawName} ${rawTags.join(" ")} ${slug}`),
+      nameText: norm(`${core} ${rawName} ${rawTags.join(" ")} ${slug} ${kitAliases}`),
       descText: norm(kit.ai?.description ?? ""),
       floorStanding: placement !== "wall",
       placement,
@@ -300,7 +301,7 @@ const SYNONYM_GROUPS: readonly (readonly string[])[] = [
   ["상자", "나무 상자", "궤", "박스", "크레이트", "crate", "box"],
   ["항아리", "단지", "독", "jar", "urn"],
   ["우물", "돌 우물", "우물가", "well"],
-  ["분수", "분수대", "fountain"],
+  ["분수", "분수대", "수반", "fountain"],
   ["연못", "pond"],
   ["가로등", "주오도리식 가로등", "공원 가로등", "정원 가로등", "등불", "랜턴", "가로 등", "street lamp", "lamp", "lantern", "lamppost"],
   ["횃불", "벽 횃불", "등불 기둥", "토치", "torch"],

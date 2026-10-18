@@ -25,16 +25,39 @@ import { buildMapPlacementContext } from "@/ai/mapPlacementContext";
 import {
   buildStampPlannerUserPayload,
   buildStampRepairPrompt,
+  classifyFastPathCommand,
   expandStampObjects,
+  extractEraseTargetNoun,
+  extractMoveDestinationPhrase,
+  extractMoveSourcePhrase,
+  extractMoveTargetNoun,
+  extractSpatialZonePhrase,
+  FAST_PATH_QUEST_OR_EVENT_GUIDANCE,
+  parseRelativeShift,
   parseStampPlan,
   resolveStampOverlaps,
   STAMP_PLANNER_SYSTEM_PROMPT,
+  type FastPathCommandClassification,
+  type FastPathCommandTier,
+  type FastPathRejectCode,
+  type FastPathSpatialOpKind,
+  type PlacedMapObjectSummary,
   type StampPlanFacts,
   type StampRect,
   type StampRefusal,
   type StampStep,
 } from "@/ai/stampPlanner";
-import { buildStampObjectIndex, sampleStampObjectNames } from "@/ai/stampObjects";
+import { acceptedObjectNames, buildStampObjectIndex, extractCoreObjectName, sampleStampObjectNames } from "@/ai/stampObjects";
+import { captureStructureTiles, makeStructurePlacement, removeStructurePlacement, type StructureTiles } from "@/project/structurePlacements";
+
+export {
+  classifyFastPathCommand,
+  FAST_PATH_QUEST_OR_EVENT_GUIDANCE,
+  type FastPathCommandClassification,
+  type FastPathCommandTier,
+  type FastPathRejectCode,
+  type FastPathSpatialOpKind,
+};
 import { describeStampEffect, eventHasVisibleArt, hasVisibleChange, measureStampEffect, type StampEffect } from "@/editor/stampEffect";
 import { expandSceneStep, stampSceneMenu } from "@/editor/stampScenes";
 import { forestTreeKindFromResolvedMaterial } from "@/editor/tools/forestDensity";
@@ -89,10 +112,16 @@ export interface StampRunInput {
 export interface StampRunResult {
   /** 한 단계 이상 적용됐고 남은 실패가 없다. */
   readonly ok: boolean;
+  /** 바로 깔기 거부 가드 코드(예: "FAST_PATH_UNSUPPORTED_QUEST_OR_EVENT"). */
+  readonly code?: FastPathRejectCode;
+  /** 3-Tier 분류 결과. */
+  readonly tier?: FastPathCommandTier;
+  /** 일반 AI 조수 모드로 즉시 넘길 원본 지시문. */
+  readonly handoffPrompt?: string;
   /** 채팅 말풍선용 한국어 줄 — 단계마다 한 줄(+ 실패 이유). */
   readonly lines: readonly string[];
   readonly applied: number;
-  /** 모델 계획을 받아 적용 단계까지 갔으면 true. 모델 없음·계획 실패면 false. */
+  /** 모델 계획을 받아 적용 단계까지 갔으면 true. 모델 없음·계획 실패·사전 가드면 false. */
   readonly usedModel: boolean;
   /** 칩셋에 그림이 없어 깔지 않은 물건 수(0 이면 필드 없음). */
   readonly refused?: number;
@@ -100,6 +129,21 @@ export interface StampRunResult {
   readonly effect?: StampEffect;
 }
 
+type PendingStructureOp =
+  | { readonly kind: "remove"; readonly mapId: string; readonly placementId: string }
+  | {
+      readonly kind: "relocate";
+      readonly mapId: string;
+      readonly placementId: string;
+      readonly kitId: string;
+      readonly x: number;
+      readonly y: number;
+      readonly w: number;
+      readonly h: number;
+      readonly before: StructureTiles;
+    };
+
+const pendingStructureOps: PendingStructureOp[] = [];
 type ToolCall = { name: string; args: Record<string, unknown> };
 
 /** 테스트 주입 지점. 기본값은 실제 스토어·모델. */
@@ -115,12 +159,41 @@ export interface StampRunDeps {
 function defaultDeps(chat: StampChatFn | undefined): StampRunDeps {
   return {
     getProject: () => store.getCurrent(),
-    apply: (calls) => applyToolSequenceToStore(calls, { continueOnError: true }),
+    apply: (calls) => applyStampCallsWithStructureOps(calls),
     chat: chat ?? chatCompletion,
     getConfig: loadAiConfig,
     isModelReady: chat ? () => true : (config) => isAssistantEndpointReady(config, getAiConnectionStatus(config)),
     timeoutMs: STAMP_PLAN_TIMEOUT_MS,
   };
+}
+
+function applyStampCallsWithStructureOps(calls: readonly ToolCall[]): ToolResult[] {
+  const ops = pendingStructureOps.splice(0, pendingStructureOps.length);
+  if (ops.length > 0) {
+    const affectedMapIds = new Set(ops.map((op) => op.mapId));
+    for (const mapId of affectedMapIds) {
+      const removeIds = new Set(ops.filter((op) => op.mapId === mapId).map((op) => op.placementId));
+      store.updateMap(mapId, (draft) => {
+        for (const id of removeIds) removeStructurePlacement(draft, id);
+      });
+    }
+  }
+  const results = applyToolSequenceToStore(calls, { continueOnError: true });
+  const relocations = ops.filter((op): op is Extract<PendingStructureOp, { readonly kind: "relocate" }> => op.kind === "relocate");
+  if (relocations.length > 0 && results.some((r) => r.ok)) {
+    for (const rel of relocations) {
+      store.updateMap(rel.mapId, (draft) => {
+        const next = makeStructurePlacement(draft, {
+          id: rel.placementId,
+          kitId: rel.kitId,
+          rect: { x: rel.x, y: rel.y, w: rel.w, h: rel.h },
+          before: rel.before,
+        });
+        draft.structurePlacements = [...(draft.structurePlacements ?? []), next];
+      });
+    }
+  }
+  return results;
 }
 
 export async function runStampPlace(input: StampRunInput): Promise<StampRunResult> {
@@ -172,6 +245,7 @@ export function buildStampPlanFacts(
     scenes: stampSceneMenu(project, map),
     objects,
     objectSamples: sampleStampObjectNames(objects, 36),
+    placedObjects: detectPlacedMapObjects(map, tileset),
     isOpenCell: (x, y) => isOpenObjectCell(project, map, x, y),
     isWallMountCell: (x, y) => isWallMountCell(map, tileset, x, y),
     isWaterCell: (x, y) => isWaterCell(map, tileset, x, y),
@@ -458,8 +532,24 @@ export async function runStampPlaceWith(input: StampRunInput, deps: StampRunDeps
   if (!map || map.width < 1 || map.height < 1) {
     return { ok: false, lines: ["맵을 연 뒤 바로 깔 수 있습니다."], applied: 0, usedModel: false };
   }
+  const rawInputText = input.text.trim();
+  const commandCheck = classifyFastPathCommand(rawInputText);
+  if (!commandCheck.allowed && commandCheck.code === "FAST_PATH_UNSUPPORTED_QUEST_OR_EVENT") {
+    return {
+      ok: false,
+      code: "FAST_PATH_UNSUPPORTED_QUEST_OR_EVENT",
+      tier: "QUEST_OR_NARRATIVE_REJECTED",
+      handoffPrompt: rawInputText,
+      lines: [
+        commandCheck.guidance ?? FAST_PATH_QUEST_OR_EVENT_GUIDANCE,
+        `거부 사유(FAST_PATH_UNSUPPORTED_QUEST_OR_EVENT): 「${commandCheck.matchedCategory ?? "퀘스트·이벤트·대화 만들기"}」 요청은 정적 타일이나 빈 소품으로 흉내 내지 않고 거부합니다.`,
+      ],
+      applied: 0,
+      usedModel: false,
+    };
+  }
   // 빈 문장도 모델이 읽는다 — 「이 자리를 알아서 채워 달라」는 뜻이다(맵 사실을 보고 고른다).
-  const text = input.text.trim() || EMPTY_SENTENCE;
+  const text = rawInputText || EMPTY_SENTENCE;
   const config = deps.getConfig();
   if (!deps.isModelReady(config)) {
     return failed(["바로 깔기는 AI 연결이 필요합니다. 설정에서 모델을 연결한 뒤 다시 시도하세요. 아무것도 깔지 않았습니다."]);
@@ -492,6 +582,20 @@ export async function runStampPlaceWith(input: StampRunInput, deps: StampRunDeps
     }
     if (input.signal?.aborted) return ABORTED;
     plan = parseStampPlan(planRaw, facts);
+    if (plan.guardRejected) {
+      return {
+        ok: false,
+        code: plan.guardRejected.code,
+        tier: "QUEST_OR_NARRATIVE_REJECTED",
+        handoffPrompt: rawInputText,
+        lines: [
+          plan.guardRejected.guidance,
+          `거부 사유(${plan.guardRejected.code}): 「${plan.guardRejected.matchedCategory}」 요청은 바로 깔기로 처리하지 않습니다.`,
+        ],
+        applied: 0,
+        usedModel: true,
+      };
+    }
     for (const item of plan.dropped) if (!priorDropped.includes(item)) priorDropped.push(item);
     if (plan.steps.length === 0 && plan.refused.length === 0) {
       lastProblem = plan.error ?? (priorDropped.length ? `버린 단계: ${priorDropped.join(", ")}` : "깔 단계가 없습니다");
@@ -655,7 +759,8 @@ function settleAndExpandSteps(
   }
   const previewMap = copiedTerrainMap(map);
   previewMap.structurePlacements = [...(map.structurePlacements ?? [])];
-  const dungeon = expandDungeonRooms(steps, previewMap, tileset, facts);
+  const eraseMove = expandEraseAndMoveSteps(steps, previewMap, tileset, facts);
+  const dungeon = expandDungeonRooms(eraseMove.steps, previewMap, tileset, facts);
   const urbanFilled = expandUrbanFillAndCrosswalkSteps(dungeon.steps, previewMap, tileset, facts);
   previewFillRegions(urbanFilled, previewMap, tileset);
   const roads = expandTownRoads(urbanFilled, previewMap, tileset, facts);
@@ -681,7 +786,7 @@ function settleAndExpandSteps(
   const polished = postProcessUrbanObjectSteps(objects.steps, previewMap, tileset, facts);
   return {
     steps: polished,
-    dropped: [...dungeon.dropped, ...settled.dropped, ...houses.dropped, ...objects.dropped],
+    dropped: [...eraseMove.dropped, ...dungeon.dropped, ...settled.dropped, ...houses.dropped, ...objects.dropped],
   };
 }
 
@@ -2026,4 +2131,601 @@ function cellOf(value: unknown): { x: number; y: number } | null {
 
 function toCall(step: StampStep): ToolCall {
   return { name: step.call ?? step.tool, args: { ...step.args } };
+}
+
+// ── 지우기(erase_object) · 옮기기(move_object) 공간 해석기 ───────────────────
+
+export function detectPlacedMapObjects(map: GameMap, tileset: TilesetDef | undefined): PlacedMapObjectSummary[] {
+  const W = map.width;
+  const H = map.height;
+  const out: PlacedMapObjectSummary[] = [];
+  const covered = new Set<number>();
+  const markCovered = (x: number, y: number, w: number, h: number): void => {
+    for (let dy = 0; dy < h; dy++) {
+      for (let dx = 0; dx < w; dx++) {
+        if (x + dx >= 0 && y + dy >= 0 && x + dx < W && y + dy < H) {
+          covered.add((y + dy) * W + (x + dx));
+        }
+      }
+    }
+  };
+
+  // 1) map.structurePlacements 기록
+  for (const p of map.structurePlacements ?? []) {
+    if (/-(?:ground|floor|face|ceiling)-|(?:-ceiling|-water-sew|-water-sea|-water-tide)$/i.test(p.kitId)) continue;
+    const kit = (tileset?.structureKits ?? []).find((k) => k.id === p.kitId);
+    const rawName = (kit?.name ?? p.kitId).trim();
+    const core = p.kitId === "bd-pick-desert-oasis-well"
+      ? "분수대 · 돌 우물"
+      : /^quick_house_|^bd-house-|^jp-bldg-|^mc-bld-/i.test(p.kitId)
+        ? `집 · ${extractCoreObjectName(rawName)}`
+        : extractCoreObjectName(rawName);
+    out.push({
+      id: p.id,
+      kind: "structure",
+      name: rawName,
+      coreName: core,
+      kitId: p.kitId,
+      placementId: p.id,
+      x: p.x,
+      y: p.y,
+      w: p.w,
+      h: p.h,
+    });
+    markCovered(p.x, p.y, p.w, p.h);
+  }
+
+  // 2) upperTiles 에 찍힌 structureKit 무늬 탐지
+  const upperPositions = new Map<number, number[]>();
+  for (let i = 0; i < W * H; i++) {
+    const t = map.upperTiles[i] ?? -1;
+    if (t >= 0) {
+      const list = upperPositions.get(t);
+      if (list) list.push(i);
+      else upperPositions.set(t, [i]);
+    }
+  }
+
+  // 버들항 포룸 3×3 분수대(2429, 2432, 2437) 특수 탐지
+  for (const pos of upperPositions.get(2429) ?? []) {
+    const ox = pos % W;
+    const oy = Math.floor(pos / W);
+    if (ox + 3 <= W && oy + 3 <= H && !covered.has(pos) && map.upperTiles[pos + 1] === 2432 && map.upperTiles[pos + 2] === 2437) {
+      out.push({
+        id: `kit_bd_forum_fountain_${ox}_${oy}`,
+        kind: "kit",
+        name: "버들항 광장 분수대 3×3",
+        coreName: "분수대",
+        kitId: "bd-forum-fountain",
+        x: ox,
+        y: oy,
+        w: 3,
+        h: 3,
+      });
+      markCovered(ox, oy, 3, 3);
+    }
+  }
+
+  const kitsSorted = [...(tileset?.structureKits ?? [])]
+    .filter((k) => k.width >= 1 && k.height >= 1 && k.width <= 12 && k.height <= 12 && (k.rows?.length ?? 0) > 0)
+    .sort((a, b) => b.width * b.height - a.width * a.height);
+
+  for (const kit of kitsSorted) {
+    if (/-(?:ground|floor|face|ceiling)-|(?:-ceiling|-water-sew|-water-sea|-water-tide)$/i.test(kit.id)) continue;
+    const upperCells: { dx: number; dy: number; tile: number }[] = [];
+    for (let dy = 0; dy < kit.height; dy++) {
+      const row = kit.rows[dy];
+      if (!row?.upperTiles) continue;
+      for (let dx = 0; dx < kit.width; dx++) {
+        const t = row.upperTiles[dx] ?? -1;
+        if (t >= 0) upperCells.push({ dx, dy, tile: t });
+      }
+    }
+    if (upperCells.length === 0) continue;
+    const anchor = upperCells[0]!;
+    for (const pos of upperPositions.get(anchor.tile) ?? []) {
+      const ox = (pos % W) - anchor.dx;
+      const oy = Math.floor(pos / W) - anchor.dy;
+      if (ox < 0 || oy < 0 || ox + kit.width > W || oy + kit.height > H) continue;
+      let alreadyCovered = false;
+      for (let dy = 0; dy < kit.height && !alreadyCovered; dy++) {
+        for (let dx = 0; dx < kit.width; dx++) {
+          if (covered.has((oy + dy) * W + (ox + dx))) {
+            alreadyCovered = true;
+            break;
+          }
+        }
+      }
+      if (alreadyCovered) continue;
+      let matches = 0;
+      for (const cell of upperCells) {
+        if (map.upperTiles[(oy + cell.dy) * W + (ox + cell.dx)] === cell.tile) matches += 1;
+      }
+      if (matches < upperCells.length) continue;
+      const rawName = (kit.name ?? kit.id).trim();
+      const core = kit.id === "bd-pick-desert-oasis-well"
+        ? "분수대 · 돌 우물"
+        : /^quick_house_|^bd-house-|^jp-bldg-|^mc-bld-/i.test(kit.id)
+          ? `집 · ${extractCoreObjectName(rawName)}`
+          : extractCoreObjectName(rawName);
+      out.push({
+        id: `kit_${kit.id}_${ox}_${oy}`,
+        kind: "kit",
+        name: rawName,
+        coreName: core,
+        kitId: kit.id,
+        x: ox,
+        y: oy,
+        w: kit.width,
+        h: kit.height,
+      });
+      markCovered(ox, oy, kit.width, kit.height);
+    }
+  }
+
+  // 3) 남은 upperTiles 소품·나무 클러스터 탐지
+  const groupNameByTile = new Map<number, string>();
+  for (const g of tileset?.tileGroups ?? []) {
+    for (const tid of g.tileIds ?? []) {
+      if (!groupNameByTile.has(tid)) groupNameByTile.set(tid, g.name);
+    }
+  }
+  const classifyUpperTile = (tile: number): string | null => {
+    if (tile < 0) return null;
+    const meta = tileset?.tileMeta?.[tile];
+    const groupName = groupNameByTile.get(tile) ?? "";
+    const text = `${meta?.label ?? ""} ${meta?.description ?? ""} ${(meta?.tags ?? []).join(" ")} ${groupName}`;
+    if (/나무|침엽수|활엽수|소나무|벚나무|은행나무|느티나무|전나무|가로수|숲|tree|pine|conifer|oak|sakura|ginkgo/iu.test(text)) return "나무";
+    if (/분수|수반|fountain/iu.test(text)) return "분수대";
+    if (/우물|well/iu.test(text)) return "우물";
+    if (/벤치|의자|bench|chair/iu.test(text)) return "벤치";
+    if (/화분|꽃|화단|planter|pot|flower/iu.test(text)) return "화분";
+    if (/울타리|펜스|산울타리|담장|fence|hedge/iu.test(text)) return "울타리";
+    if (/바위|돌|암석|rock|stone|boulder/iu.test(text)) return "바위";
+    if (/가로등|등불|횃불|lamp|lantern|torch/iu.test(text)) return "가로등";
+    if (/동상|조각상|석상|statue/iu.test(text)) return "동상";
+    if (/상자|통|배럴|오크통|crate|box|barrel/iu.test(text)) return "상자";
+    if (/집|건물|주택|민가|오두막|지붕|house|building|roof/iu.test(text)) return "집";
+    return meta?.label?.trim() || groupName || "소품";
+  };
+
+  for (let y = 0; y < H; y++) {
+    for (let x = 0; x < W; x++) {
+      const startIdx = y * W + x;
+      if (covered.has(startIdx)) continue;
+      const cat = classifyUpperTile(map.upperTiles[startIdx] ?? -1);
+      if (!cat) continue;
+      const queue: { x: number; y: number }[] = [{ x, y }];
+      covered.add(startIdx);
+      let minX = x;
+      let maxX = x;
+      let minY = y;
+      let maxY = y;
+      while (queue.length > 0) {
+        const cur = queue.shift()!;
+        if (cur.x < minX) minX = cur.x;
+        if (cur.x > maxX) maxX = cur.x;
+        if (cur.y < minY) minY = cur.y;
+        if (cur.y > maxY) maxY = cur.y;
+        for (let dy = -1; dy <= 1; dy++) {
+          for (let dx = -1; dx <= 1; dx++) {
+            if (dx === 0 && dy === 0) continue;
+            const nx = cur.x + dx;
+            const ny = cur.y + dy;
+            if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue;
+            const nIdx = ny * W + nx;
+            if (covered.has(nIdx)) continue;
+            const nCat = classifyUpperTile(map.upperTiles[nIdx] ?? -1);
+            if (nCat === cat && nx - minX < 8 && ny - minY < 8) {
+              covered.add(nIdx);
+              queue.push({ x: nx, y: ny });
+            }
+          }
+        }
+      }
+      out.push({
+        id: `prop_${cat}_${minX}_${minY}`,
+        kind: "prop_cluster",
+        name: cat,
+        coreName: cat,
+        x: minX,
+        y: minY,
+        w: maxX - minX + 1,
+        h: maxY - minY + 1,
+      });
+    }
+  }
+  return out;
+}
+
+function matchesPlacedObjectQuery(obj: PlacedMapObjectSummary, query: string): boolean {
+  const q = query.trim().toLowerCase();
+  if (!q) return true;
+  const hay = `${obj.coreName} ${obj.name} ${obj.kitId ?? ""}`.toLowerCase();
+  if (/^(?:집|주택|단독주택|민가|오두막|가옥|초가|저택|살림집|여관|상점|대장간|편의점|카페|건물|house|building)$/iu.test(q)) {
+    return /집|주택|민가|오두막|가옥|초가|저택|살림집|여관|상점|가게|대장간|편의점|카페|건물|house|bldg|bld-|quick_house|cabin|inn|shop|manor/iu.test(hay);
+  }
+  if (/^(?:분수|분수대|수반|fountain)$/iu.test(q)) {
+    return /분수|수반|fountain|desert-oasis-well/iu.test(hay);
+  }
+  if (/^(?:우물|돌\s*우물|well)$/iu.test(q)) {
+    return /우물|well/iu.test(hay);
+  }
+  if (/^(?:나무|소나무|벚나무|은행나무|느티나무|전나무|가로수|침엽수|활엽수|숲|tree)$/iu.test(q)) {
+    return /나무|침엽수|활엽수|소나무|벚나무|은행나무|가로수|숲|bd-tree-|jp-prop-tree-|mc-prop-(?:street-tree|tree|blossom|ginkgo)|tree|pine/iu.test(hay);
+  }
+  const synonyms = acceptedObjectNames(query, []).names;
+  return synonyms.some((syn) => hay.includes(syn.toLowerCase()));
+}
+
+function resolveSpatialZoneRect(
+  phrase: string | null | undefined,
+  map: GameMap,
+  tileset: TilesetDef | undefined,
+  target: StampRect,
+): StampRect {
+  if (!phrase) return target;
+  const p = phrase.trim();
+  if (p.includes("광장")) {
+    const layoutPlaza = (map.layoutPlan?.regions ?? []).find((r) => r.role === "plaza" || r.role === "market");
+    if (layoutPlaza && layoutPlaza.w > 0 && layoutPlaza.h > 0) {
+      return { x: layoutPlaza.x, y: layoutPlaza.y, w: layoutPlaza.w, h: layoutPlaza.h };
+    }
+    const plazaTileIds = new Set<number>();
+    for (const g of tileset?.tileGroups ?? []) {
+      if (/plaza|광장/iu.test(`${g.id} ${g.name}`)) {
+        for (const tid of g.tileIds ?? []) plazaTileIds.add(tid);
+      }
+    }
+    let minX = map.width;
+    let maxX = -1;
+    let minY = map.height;
+    let maxY = -1;
+    for (let y = 0; y < map.height; y++) {
+      for (let x = 0; x < map.width; x++) {
+        const l = map.lowerTiles[y * map.width + x] ?? -1;
+        const meta = tileset?.tileMeta?.[l];
+        if (plazaTileIds.has(l) || meta?.tags?.includes("plaza") || /광장/u.test(meta?.label ?? "")) {
+          if (x < minX) minX = x;
+          if (x > maxX) maxX = x;
+          if (y < minY) minY = y;
+          if (y > maxY) maxY = y;
+        }
+      }
+    }
+    if (maxX >= minX && maxY >= minY) {
+      const x0 = Math.max(0, minX - 1);
+      const y0 = Math.max(0, minY - 1);
+      const x1 = Math.min(map.width, maxX + 2);
+      const y1 = Math.min(map.height, maxY + 2);
+      return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+    }
+    return {
+      x: target.x + Math.floor(target.w * 0.25),
+      y: target.y + Math.floor(target.h * 0.25),
+      w: Math.max(4, Math.ceil(target.w * 0.5)),
+      h: Math.max(4, Math.ceil(target.h * 0.5)),
+    };
+  }
+  const halfW = Math.max(1, Math.ceil(target.w * 0.55));
+  const halfH = Math.max(1, Math.ceil(target.h * 0.55));
+  const rightX = target.x + target.w - halfW;
+  const bottomY = target.y + target.h - halfH;
+  if (p === "오른쪽 위") return { x: rightX, y: target.y, w: halfW, h: halfH };
+  if (p === "왼쪽 위") return { x: target.x, y: target.y, w: halfW, h: halfH };
+  if (p === "오른쪽 아래") return { x: rightX, y: bottomY, w: halfW, h: halfH };
+  if (p === "왼쪽 아래") return { x: target.x, y: bottomY, w: halfW, h: halfH };
+  if (p === "위쪽") return { x: target.x, y: target.y, w: target.w, h: halfH };
+  if (p === "아래쪽") return { x: target.x, y: bottomY, w: target.w, h: halfH };
+  if (p === "오른쪽") return { x: rightX, y: target.y, w: halfW, h: target.h };
+  if (p === "왼쪽") return { x: target.x, y: target.y, w: halfW, h: target.h };
+  if (p === "한가운데" || p === "가운데") {
+    return {
+      x: target.x + Math.floor(target.w * 0.25),
+      y: target.y + Math.floor(target.h * 0.25),
+      w: Math.max(4, Math.ceil(target.w * 0.5)),
+      h: Math.max(4, Math.ceil(target.h * 0.5)),
+    };
+  }
+  return target;
+}
+
+function pickSurroundingGroundTile(map: GameMap, tileset: TilesetDef | undefined, rect: StampRect): number {
+  const counts = new Map<number, number>();
+  for (let y = rect.y - 1; y <= rect.y + rect.h; y++) {
+    for (let x = rect.x - 1; x <= rect.x + rect.w; x++) {
+      if (x >= rect.x && x < rect.x + rect.w && y >= rect.y && y < rect.y + rect.h) continue;
+      if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
+      const t = map.lowerTiles[y * map.width + x] ?? -1;
+      if (t < 0) continue;
+      const meta = tileset?.tileMeta?.[t];
+      if (meta?.role === "wall" || meta?.role === "water") continue;
+      counts.set(t, (counts.get(t) ?? 0) + 1);
+    }
+  }
+  let bestTile = tileset?.id === "beodeul_city" ? 737 : 0;
+  let bestCount = 0;
+  for (const [tile, count] of counts) {
+    if (count > bestCount) {
+      bestCount = count;
+      bestTile = tile;
+    }
+  }
+  return bestTile;
+}
+
+function eraseObjectFootprintSteps(
+  obj: PlacedMapObjectSummary,
+  previewMap: GameMap,
+  tileset: TilesetDef | undefined,
+  mapId: string,
+  label: string,
+): StampStep[] {
+  const out: StampStep[] = [];
+  const rect: StampRect = { x: obj.x, y: obj.y, w: obj.w, h: obj.h };
+  const placement = obj.placementId
+    ? (previewMap.structurePlacements ?? []).find((p) => p.id === obj.placementId)
+    : (previewMap.structurePlacements ?? []).find((p) => p.x < obj.x + obj.w && obj.x < p.x + p.w && p.y < obj.y + obj.h && obj.y < p.y + p.h);
+
+  if (placement) {
+    pendingStructureOps.push({ kind: "remove", mapId, placementId: placement.id });
+    previewMap.structurePlacements = (previewMap.structurePlacements ?? []).filter((p) => p.id !== placement.id);
+  }
+
+  out.push({
+    tool: "tile_erase",
+    label,
+    at: [{ x: obj.x, y: obj.y }],
+    args: { mapId, rect, layer: "upper" },
+  });
+
+  // 하위 레이어 복원: structurePlacement.before 가 있으면 그 타일로, 아니면 키트가 건드린 하위 타일을 주변 땅 타일로 복원
+  const byLowerTile = new Map<number, { x: number; y: number }[]>();
+  const fallbackGround = pickSurroundingGroundTile(previewMap, tileset, rect);
+  const kit = obj.kitId ? (tileset?.structureKits ?? []).find((k) => k.id === obj.kitId) : undefined;
+  for (let dy = 0; dy < rect.h; dy++) {
+    for (let dx = 0; dx < rect.w; dx++) {
+      const x = rect.x + dx;
+      const y = rect.y + dy;
+      if (x < 0 || y < 0 || x >= previewMap.width || y >= previewMap.height) continue;
+      const idx = y * previewMap.width + x;
+      previewMap.upperTiles[idx] = -1;
+      if (previewMap.upperOverlayTiles) previewMap.upperOverlayTiles[idx] = -1;
+      let restoreLower: number | null = null;
+      if (placement && x >= placement.x && x < placement.x + placement.w && y >= placement.y && y < placement.y + placement.h) {
+        const bIdx = (y - placement.y) * placement.w + (x - placement.x);
+        const bTile = placement.before.lower[bIdx];
+        if (bTile !== undefined && bTile >= 0 && bTile !== previewMap.lowerTiles[idx]) {
+          restoreLower = bTile;
+        }
+      } else if (kit && (kit.rows[dy]?.tiles[dx] ?? -1) >= 0) {
+        restoreLower = fallbackGround;
+      }
+      if (restoreLower !== null && restoreLower !== previewMap.lowerTiles[idx]) {
+        previewMap.lowerTiles[idx] = restoreLower;
+        const cells = byLowerTile.get(restoreLower) ?? [];
+        cells.push({ x, y });
+        byLowerTile.set(restoreLower, cells);
+      }
+    }
+  }
+  for (const [tile, cells] of byLowerTile) {
+    out.push({
+      tool: "paint_tiles",
+      label: "",
+      args: { mapId, layer: "lower", mode: "cells", tile, cells },
+    });
+  }
+  return out;
+}
+
+function expandEraseAndMoveSteps(
+  steps: readonly StampStep[],
+  previewMap: GameMap,
+  tileset: TilesetDef,
+  facts: StampPlanFacts,
+): { readonly steps: readonly StampStep[]; readonly dropped: readonly string[] } {
+  if (!steps.some((s) => s.tool === "erase_object" || s.tool === "move_object")) {
+    return { steps, dropped: [] };
+  }
+  const out: StampStep[] = [];
+  const dropped: string[] = [];
+  const W = previewMap.width;
+  const H = previewMap.height;
+
+  for (const step of steps) {
+    if (step.tool === "erase_object") {
+      const query = typeof step.args.query === "string" ? step.args.query : extractEraseTargetNoun(facts.text) ?? "";
+      const regionPhrase = typeof step.args.region === "string" ? step.args.region : extractSpatialZonePhrase(facts.text);
+      const explicitRect = step.args.rect as StampRect | undefined;
+      const zone = explicitRect ?? resolveSpatialZoneRect(regionPhrase, previewMap, tileset, facts.target);
+      const placed = detectPlacedMapObjects(previewMap, tileset);
+      const candidates = placed.filter((obj) => matchesPlacedObjectQuery(obj, query));
+      if (candidates.length === 0) {
+        // 이벤트 중에 이름이 맞는 것이 있으면 remove_event 로 처리
+        const ev = (facts.placement?.existing.occupied ?? []).find((e) => e.name.includes(query) || query.includes(e.name));
+        if (ev) {
+          out.push({ tool: "remove_event", label: `${ev.name} 지우기`, args: { mapId: facts.mapId, eventId: ev.id } });
+          continue;
+        }
+        dropped.push(`${step.label}: 맵에서 「${query || "대상"}」을(를) 찾지 못해 지우지 않았습니다`);
+        continue;
+      }
+      const inZone = candidates.filter((obj) => {
+        const cx = obj.x + obj.w / 2;
+        const cy = obj.y + obj.h / 2;
+        return cx >= zone.x - 2 && cx <= zone.x + zone.w + 2 && cy >= zone.y - 2 && cy <= zone.y + zone.h + 2;
+      });
+      const zoneCx = zone.x + zone.w / 2;
+      const zoneCy = zone.y + zone.h / 2;
+      const targets = inZone.length > 0
+        ? inZone
+        : [...candidates].sort((a, b) => Math.hypot(a.x + a.w / 2 - zoneCx, a.y + a.h / 2 - zoneCy) - Math.hypot(b.x + b.w / 2 - zoneCx, b.y + b.h / 2 - zoneCy)).slice(0, 1);
+
+      targets.forEach((targetObj, idx) => {
+        const itemLabel = idx === 0
+          ? `${regionPhrase ? `${regionPhrase} ` : ""}${query || targetObj.coreName}${targets.length > 1 ? ` ${targets.length}곳` : ""} 지우기 (${targetObj.x},${targetObj.y})`
+          : "";
+        out.push(...eraseObjectFootprintSteps(targetObj, previewMap, tileset, facts.mapId, itemLabel));
+      });
+      continue;
+    }
+
+    if (step.tool === "move_object") {
+      const query = typeof step.args.query === "string" ? step.args.query : extractMoveTargetNoun(facts.text) ?? "물체";
+      const fromRegion = typeof step.args.fromRegion === "string" ? step.args.fromRegion : extractMoveSourcePhrase(facts.text);
+      const toRegion = typeof step.args.toRegion === "string" ? step.args.toRegion : extractMoveDestinationPhrase(facts.text);
+      const parsedShift = parseRelativeShift(facts.text);
+      const dx = typeof step.args.dx === "number" ? step.args.dx : parsedShift?.dx ?? null;
+      const dy = typeof step.args.dy === "number" ? step.args.dy : parsedShift?.dy ?? null;
+      const toArg = cellOf(step.args.to);
+
+      const placed = detectPlacedMapObjects(previewMap, tileset);
+      const candidates = placed.filter((obj) => matchesPlacedObjectQuery(obj, query));
+      if (candidates.length === 0) {
+        const ev = (facts.placement?.existing.occupied ?? []).find((e) => e.name.includes(query) || query.includes(e.name));
+        if (ev) {
+          const destZone = resolveSpatialZoneRect(toRegion, previewMap, tileset, facts.target);
+          const ex = dx !== null ? Math.max(0, Math.min(W - 1, ev.x + dx)) : toArg ? toArg.x : destZone.x + Math.floor(destZone.w / 2);
+          const ey = dy !== null ? Math.max(0, Math.min(H - 1, ev.y + dy)) : toArg ? toArg.y : destZone.y + Math.floor(destZone.h / 2);
+          out.push({ tool: "move_event", label: `${ev.name} 옮기기 (${ev.x},${ev.y}) → (${ex},${ey})`, args: { mapId: facts.mapId, eventId: ev.id, x: ex, y: ey } });
+          continue;
+        }
+        dropped.push(`${step.label}: 맵에서 옮길 「${query}」을(를) 찾지 못했습니다`);
+        continue;
+      }
+
+      const srcZone = fromRegion
+        ? resolveSpatialZoneRect(fromRegion, previewMap, tileset, { x: 0, y: 0, w: W, h: H })
+        : facts.target;
+      const srcCx = srcZone.x + srcZone.w / 2;
+      const srcCy = srcZone.y + srcZone.h / 2;
+      const source = [...candidates].sort(
+        (a, b) => Math.hypot(a.x + a.w / 2 - srcCx, a.y + a.h / 2 - srcCy) - Math.hypot(b.x + b.w / 2 - srcCx, b.y + b.h / 2 - srcCy),
+      )[0]!;
+
+      // 원본 타일 스냅샷을 먼저 뜬다
+      const kit = source.kitId ? (tileset.structureKits ?? []).find((k) => k.id === source.kitId) : undefined;
+      const liftedCells: { dx: number; dy: number; lower: number; upper: number; hasKitLower: boolean }[] = [];
+      for (let r = 0; r < source.h; r++) {
+        for (let c = 0; c < source.w; c++) {
+          const idx = (source.y + r) * W + (source.x + c);
+          const hasKitLower = kit
+            ? (kit.rows[r]?.tiles[c] ?? -1) >= 0
+            : source.kind === "structure" && /집|주택|민가|오두막|여관|상점|건물|house|bldg|bld-|quick_house/iu.test(`${source.coreName} ${source.kitId ?? ""}`);
+          liftedCells.push({
+            dx: c,
+            dy: r,
+            lower: previewMap.lowerTiles[idx] ?? -1,
+            upper: previewMap.upperTiles[idx] ?? -1,
+            hasKitLower,
+          });
+        }
+      }
+
+      const oldPlacement = source.placementId
+        ? (previewMap.structurePlacements ?? []).find((p) => p.id === source.placementId)
+        : undefined;
+
+      // 목적지 좌표 계산
+      let destX = source.x;
+      let destY = source.y;
+      if (dx !== null || dy !== null) {
+        destX = Math.max(0, Math.min(W - source.w, source.x + (dx ?? 0)));
+        destY = Math.max(0, Math.min(H - source.h, source.y + (dy ?? 0)));
+      } else if (toArg) {
+        destX = Math.max(0, Math.min(W - source.w, toArg.x));
+        destY = Math.max(0, Math.min(H - source.h, toArg.y));
+      } else {
+        const destZone = resolveSpatialZoneRect(toRegion, previewMap, tileset, { x: 0, y: 0, w: W, h: H });
+        const targetCx = destZone.x + destZone.w / 2;
+        const targetCy = destZone.y + destZone.h / 2;
+        destX = Math.max(0, Math.min(W - source.w, Math.round(targetCx - source.w / 2)));
+        destY = Math.max(0, Math.min(H - source.h, Math.round(targetCy - source.h / 2)));
+      }
+
+      // 1) 원본 자리 비우기 및 땅 복원
+      const moveLabel = `${query} 옮기기 (${source.x},${source.y}) → ${toRegion ? `${toRegion} ` : dx !== null || dy !== null ? `(${dx ? `${dx > 0 ? `+${dx}` : dx}` : "0"},${dy ? `${dy > 0 ? `+${dy}` : dy}` : "0"}) ` : ""}(${destX},${destY})`;
+      const eraseSteps = eraseObjectFootprintSteps(source, previewMap, tileset, facts.mapId, moveLabel);
+      out.push(...eraseSteps);
+
+      // 2) 목적지 자리 정리 및 찍기
+      const destRect: StampRect = { x: destX, y: destY, w: source.w, h: source.h };
+      const destBefore = captureStructureTiles(previewMap, destRect);
+      if (oldPlacement) {
+        // eraseObjectFootprintSteps 가 넣은 remove 대신 relocate 로 교체
+        const remIdx = pendingStructureOps.findIndex((op) => op.kind === "remove" && op.placementId === oldPlacement.id);
+        if (remIdx >= 0) pendingStructureOps.splice(remIdx, 1);
+        pendingStructureOps.push({
+          kind: "relocate",
+          mapId: facts.mapId,
+          placementId: oldPlacement.id,
+          kitId: oldPlacement.kitId,
+          x: destX,
+          y: destY,
+          w: source.w,
+          h: source.h,
+          before: destBefore,
+        });
+      }
+
+      out.push({
+        tool: "tile_erase",
+        label: "",
+        args: { mapId: facts.mapId, rect: destRect, layer: "upper" },
+      });
+
+      const lowerByTile = new Map<number, { x: number; y: number }[]>();
+      const upperByTile = new Map<number, { x: number; y: number }[]>();
+      for (const cell of liftedCells) {
+        const x = destX + cell.dx;
+        const y = destY + cell.dy;
+        if (x < 0 || y < 0 || x >= W || y >= H) continue;
+        const idx = y * W + x;
+        previewMap.upperTiles[idx] = -1;
+        if (cell.hasKitLower && cell.lower >= 0) {
+          previewMap.lowerTiles[idx] = cell.lower;
+          const list = lowerByTile.get(cell.lower) ?? [];
+          list.push({ x, y });
+          lowerByTile.set(cell.lower, list);
+        }
+        if (cell.upper >= 0) {
+          previewMap.upperTiles[idx] = cell.upper;
+          const list = upperByTile.get(cell.upper) ?? [];
+          list.push({ x, y });
+          upperByTile.set(cell.upper, list);
+        }
+      }
+      for (const [tile, cells] of lowerByTile) {
+        out.push({
+          tool: "paint_tiles",
+          label: "",
+          args: { mapId: facts.mapId, layer: "lower", mode: "cells", tile, cells },
+        });
+      }
+      for (const [tile, cells] of upperByTile) {
+        out.push({
+          tool: "paint_tiles",
+          label: "",
+          args: { mapId: facts.mapId, layer: "upper", mode: "cells", tile, cells },
+        });
+      }
+      if (oldPlacement) {
+        previewMap.structurePlacements = [
+          ...(previewMap.structurePlacements ?? []),
+          makeStructurePlacement(previewMap, {
+            id: oldPlacement.id,
+            kitId: oldPlacement.kitId,
+            rect: destRect,
+            before: destBefore,
+          }),
+        ];
+      }
+      continue;
+    }
+
+    out.push(step);
+  }
+
+  return { steps: out, dropped };
 }

@@ -4,6 +4,8 @@ import {
   buildStampPlannerUserPayload,
   buildStampRepairPrompt,
   clampRectToTarget,
+  classifyFastPathCommand,
+  FAST_PATH_QUEST_OR_EVENT_GUIDANCE,
   parseStampPlan,
   STAMP_MAX_STEPS,
   validateStampStep,
@@ -151,5 +153,76 @@ describe("prompts", () => {
     }]);
     expect(text).toContain("찾지 못했습니다");
     expect(text).not.toContain("map_a");
+  });
+});
+
+describe("3-Tier Fast-Path Command Classification & Guard Contract", () => {
+  it("classifies Tier 1 direct spatial ops (place, erase, move) as allowed", () => {
+    expect(classifyFastPathCommand("돌 우물과 가로등 두 개 깔아줘")).toMatchObject({
+      tier: "SPATIAL_DIRECT_OP",
+      allowed: true,
+      spatialOp: "place",
+    });
+    expect(classifyFastPathCommand("오른쪽 위 나무 지워줘")).toMatchObject({
+      tier: "SPATIAL_DIRECT_OP",
+      allowed: true,
+      spatialOp: "erase",
+    });
+    expect(classifyFastPathCommand("광장 분수대 없애줘")).toMatchObject({
+      tier: "SPATIAL_DIRECT_OP",
+      allowed: true,
+      spatialOp: "erase",
+    });
+    expect(classifyFastPathCommand("우물을 광장 한가운데로 옮겨줘")).toMatchObject({
+      tier: "SPATIAL_DIRECT_OP",
+      allowed: true,
+      spatialOp: "move",
+    });
+    expect(classifyFastPathCommand("집을 오른쪽으로 4칸 옮겨줘")).toMatchObject({
+      tier: "SPATIAL_DIRECT_OP",
+      allowed: true,
+      spatialOp: "move",
+    });
+  });
+
+  it("hard-rejects Tier 2 quest, narrative, boss/puzzle event, party recruitment, and shop/inn wiring requests", () => {
+    for (const sentence of [
+      "퀘스트 세우기",
+      "마을 촌장한테 퀘스트 만들어줘",
+      "대장간 보스전 이벤트 만들어줘",
+      "석상 퍼즐 기믹 짜줘",
+      "동료 영입 이벤트 만들어줘",
+      "상점 숙소 기능 배선해줘",
+      "NPC 대화 스토리 짜줘",
+    ]) {
+      const res = classifyFastPathCommand(sentence);
+      expect(res.allowed).toBe(false);
+      expect(res.tier).toBe("QUEST_OR_NARRATIVE_REJECTED");
+      expect(res.code).toBe("FAST_PATH_UNSUPPORTED_QUEST_OR_EVENT");
+      expect(res.guidance).toBe(FAST_PATH_QUEST_OR_EVENT_GUIDANCE);
+    }
+  });
+
+  it("validates erase_object and move_object steps", () => {
+    const eraseCheck = validateStampStep(
+      { tool: "erase_object", args: { query: "나무", region: "오른쪽 위" } },
+      { ...FACTS, text: "오른쪽 위 나무 지워줘" },
+    );
+    expect("step" in eraseCheck && eraseCheck.step.tool).toBe("erase_object");
+    expect("step" in eraseCheck && eraseCheck.step.args).toMatchObject({
+      query: "나무",
+      region: "오른쪽 위",
+    });
+
+    const moveCheck = validateStampStep(
+      { tool: "move_object", args: { query: "집", dx: 4, dy: 0 } },
+      { ...FACTS, text: "집을 오른쪽으로 4칸 옮겨줘" },
+    );
+    expect("step" in moveCheck && moveCheck.step.tool).toBe("move_object");
+    expect("step" in moveCheck && moveCheck.step.args).toMatchObject({
+      query: "집",
+      dx: 4,
+      dy: 0,
+    });
   });
 });

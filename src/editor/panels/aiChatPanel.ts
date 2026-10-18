@@ -2573,6 +2573,49 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const appendStampOrderResult = (order: StampOrder): void => {
     // 멈추기로 끊은 주문은 멈추기가 한 줄로 이미 알렸다.
     if (order.status === "aborted" && order.applied === 0) return;
+    if (order.code === "FAST_PATH_UNSUPPORTED_QUEST_OR_EVENT") {
+      expandForAiWork();
+      const bubble = appendBubble(
+        "system",
+        [`#${order.id} ${order.label} — 바로 깔기 거부 (${order.code})`, ...order.lines.map((line) => `- ${line}`)].join("\n"),
+      );
+      bubble.dataset.testid = "fast-path-guard-rejected";
+      bubble.dataset.guardCode = order.code;
+      const handoffText = (order.handoffPrompt ?? order.text).trim();
+      const actionsWrap = el("div", {
+        class: "fast-path-guard-actions",
+        attrs: { style: "margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;" },
+      });
+      const handoffBtn = el("button", {
+        text: "일반 AI 조수 모드로 전환해 실행 (『퀘스트/이벤트 제작』)",
+        dataset: { testid: "fast-path-handoff-btn", handoffPrompt: handoffText },
+        attrs: {
+          type: "button",
+          style:
+            "padding:5px 10px;border-radius:6px;border:1px solid #d97706;background:#fffbeb;color:#92400e;font-size:12px;font-weight:600;cursor:pointer;",
+        },
+        on: {
+          click: () => {
+            setStampPlaceOn(false);
+            stampPlaceOn = false;
+            composerShell.syncStampMode(false);
+            refreshComposerPlaceholder();
+            if (handoffText) {
+              restoreComposer(handoffText);
+              refreshSendEnabled();
+              if (!turnBusy) {
+                void send();
+              }
+            }
+            handoffBtn.textContent = "일반 AI 조수 모드로 전환됨 (실행 중)";
+            (handoffBtn as HTMLButtonElement).disabled = true;
+          },
+        },
+      });
+      actionsWrap.append(handoffBtn);
+      bubble.append(actionsWrap);
+      return;
+    }
     // 없는 물건은 「실패」가 아니라 「깔지 않음」 — 이벤트·지형으로 흉내 내지 않았다는 뜻이다(2026-10-15 바로 깔기 감사).
     const head = order.status === "done"
       ? "완료"
