@@ -12,22 +12,36 @@ export interface FlavorKit { readonly id: string; readonly w: number; readonly h
 /** 건물 띠에 줄지어 세우는 키트(왼쪽부터 붙여 찍는다). 앞쪽이 먼저 고려된다. */
 export const FLAVOR_KITS: Readonly<Record<JpStreetFlavor, readonly FlavorKit[]>> = {
   shitamachi: [
-    { id: "jp-shop-greengrocer", w: 6, h: 5 },
-    { id: "jp-izakaya-brick-wall", w: 4, h: 5 },
-    { id: "jp-vending-stripe-alcove", w: 3, h: 5 },
-    { id: "jp-fg-rooftop-dish", w: 6, h: 5 },
-    { id: "jp-alley-stair-tree", w: 4, h: 5 },
-    { id: "jp-fg-tiled-balcony", w: 6, h: 5 },
-    { id: "jp-coin-parking", w: 8, h: 6 },
+    { id: "jp-shop-greengrocer", w: 6, h: 7 },
+    { id: "jp-izakaya-brick-wall", w: 4, h: 7 },
+    { id: "jp-vending-stripe-alcove", w: 3, h: 7 },
+    { id: "jp-fg-rooftop-dish", w: 6, h: 7 },
+    { id: "jp-alley-stair-tree", w: 6, h: 7 },
+    { id: "jp-fg-tiled-balcony", w: 6, h: 7 },
+    { id: "jp-coin-parking", w: 8, h: 7 },
   ],
   shotengai: [
-    { id: "jp-shotengai-canopy", w: 8, h: 6 },
-    { id: "jp-shotengai-arch", w: 7, h: 6 },
-    { id: "jp-coin-parking", w: 8, h: 6 },
-    { id: "jp-shop-greengrocer", w: 6, h: 5 },
-    { id: "jp-vending-stripe-alcove", w: 3, h: 5 },
+    { id: "jp-shotengai-canopy", w: 8, h: 7 },
+    { id: "jp-shotengai-arch", w: 7, h: 7 },
+    { id: "jp-coin-parking", w: 8, h: 7 },
+    { id: "jp-shop-greengrocer", w: 6, h: 7 },
+    { id: "jp-vending-stripe-alcove", w: 3, h: 7 },
   ],
 };
+
+/**
+ * 조립 건물 위에 덮는 깊은 3/4 지붕 키트 `jp-roof-<종류>-<폭>`(shitamachi_pack ROOF_STYLES · ROOF_WIDTHS · ROOF_ROWS 와 같아야 한다).
+ * 참고 그림의 집은 3~4줄 깊이 지붕(기와 비탈·옥상 기물)이 보이는데 조립 지붕은 1~2줄 띠라 「같은 창 벽의 벽」으로 읽혔다(2026-10-18 5라운드).
+ */
+export const FLAVOR_ROOF_ROWS = 4;
+export const FLAVOR_ROOF_WIDTHS: readonly [number, number] = [3, 10];
+export const FLAVOR_ROOFS: Readonly<Record<JpStreetFlavor, readonly string[]>> = {
+  shitamachi: ["kawara", "kuro", "deck", "dish", "tin-aka", "kawara", "kuro"],
+  shotengai: ["deck", "dish", "tin-aka", "tin-sora", "kuro", "deck"],
+};
+export function flavorRoofKit(style: string, w: number): string | undefined {
+  return w >= FLAVOR_ROOF_WIDTHS[0] && w <= FLAVOR_ROOF_WIDTHS[1] ? `jp-roof-${style}-${w}` : undefined;
+}
 
 export const FLAVOR_POLE = { id: "jp-utility-pole-xfmr", w: 2, h: 6 } as const;
 export const FLAVOR_BUS_STOP = { id: "jp-bus-stop-sign", w: 1, h: 3 } as const;
