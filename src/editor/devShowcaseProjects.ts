@@ -1,5 +1,6 @@
 import { createBlankProject } from "@/project/defaults";
 import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
+import { createFlagshipDemoProject } from "@/project/flagship";
 import type { Project } from "@/project/types";
 
 // 2026-10-07 저작권 정리: 지운 칩셋(EasyRPG·숲마을·기후 마을 등) 위에 그려진 데모·쇼케이스 프로젝트
@@ -12,10 +13,14 @@ const CANONICAL_PROJECT_PARAM = "projectRecovered";
 
 export function createDevShowcaseProjectForLocation(): Project | null {
   if (typeof window === "undefined") return null;
+  const params = new URLSearchParams(window.location.search);
+  const demo = params.get("demo");
+  if (demo === "chrono-bell" || demo === "emerald-crown" || demo === "shitamachi-fourth-season") {
+    return createFlagshipDemoProject(demo).project;
+  }
   if (!isLocalDevHost(window.location.hostname)) return null;
   const e2eProject = createE2eProjectForLocation();
   if (e2eProject) return e2eProject;
-  const params = new URLSearchParams(window.location.search);
   if (params.has(CANONICAL_PROJECT_PARAM)) return null;
   if (params.has(DEV_BLANK_PROJECT_PARAM)) return createBlankProject();
   if (params.has(DEV_FRESH_PROJECT_PARAM)) return createBlankProject();

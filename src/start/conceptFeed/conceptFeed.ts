@@ -16,6 +16,40 @@ import { startIcon } from "../icons";
 const QUICK_ART = "https://cdn.openrpgmaker.com/interview-scene-bank/full/opening-62062ac73a78.webp";
 const QUICK_GENRES: readonly (readonly [InterviewGenre, string])[] = [["romance", "관계·연애"], ["monster", "몬스터 수집"], ["adventure", "모험"], ["mystery", "추리"]];
 
+export type BuiltinDemoId = "chrono-bell" | "emerald-crown";
+
+const BUILTIN_DEMO_CARDS: readonly {
+  readonly id: BuiltinDemoId;
+  readonly badge: string;
+  readonly title: string;
+  readonly subtitle: string;
+  readonly desc: string;
+  readonly thumb: string;
+  readonly playTestId: string;
+  readonly openTestId: string;
+}[] = [
+  {
+    id: "chrono-bell",
+    badge: "기본 JRPG 대표작",
+    title: "『시간의 종소리와 무너진 별』",
+    subtitle: "정통 시간여행 JRPG · 7개 맵 · 6컷 오프닝 · 시간의 문 · 퍼즐 · 96px 보스전",
+    desc: "천년제 광장의 범종과 텔레포드 시연 사고로 열린 시대의 문을 넘어 중세 대성당·아리아 돔·태고의 화산과 2페이즈 최종 보스전을 바로 체험하거나 편집기에서 뜯어볼 수 있습니다.",
+    thumb: "/assets/generated/welcome/slide-04.png",
+    playTestId: "builtin-demo-play-chrono-bell",
+    openTestId: "builtin-demo-open-chrono-bell",
+  },
+  {
+    id: "emerald-crown",
+    badge: "기본 몬스터 수집 대표작",
+    title: "『에메랄드 크라운: 새벽섬의 수호자』",
+    subtitle: "몬스터 수집 RPG · 8개 맵 · 스타터 선택 · 체육관 덩굴문 퍼즐 · 성소 보스전",
+    desc: "내 방 2층에서 출발해 새벽섬 연구소에서 첫 파트너(새싹토·찌릿토·물방토)를 고르고, 1번길 포획·새순 체육관 덩굴문 기믹·에메랄드 동굴 성소 보스전까지 완성된 정본입니다.",
+    thumb: "/assets/generated/welcome/slide-01.png",
+    playTestId: "builtin-demo-play-emerald-crown",
+    openTestId: "builtin-demo-open-emerald-crown",
+  },
+];
+
 export const CONCEPT_FEED_TESTIDS = {
   root: "concept-feed",
   search: "concept-feed-search",
@@ -35,6 +69,7 @@ export const CONCEPT_FEED_TESTIDS = {
   quick: "concept-feed-quick",
   quickGenre: "concept-feed-quick-genre",
   quickStart: "concept-feed-quick-start",
+  builtinDemos: "concept-feed-builtin-demos",
 } as const;
 
 /** launcher = 런처 「만들기」 갈래의 본문(위 막대는 틀이 그린다). overlay = 편집기의 덮는 창(자기 위 막대·닫기). */
@@ -50,6 +85,8 @@ export type ConceptFeedOptions = {
   /** 「골라서 만들기」 — 빠른 인터뷰(장르 + 질문 셋)가 낸 기획으로 만들기. 없으면 입구를 보이지 않는다. 약속은 onMake 와 같다. */
   readonly onInterview?: (brief: GameDesignBrief, title: string) => Promise<boolean>;
   readonly onClose?: () => void;
+  /** 기본 데모 게임 즉시 플레이 / 편집기에서 열기. */
+  readonly onBuiltinDemo?: (demoId: BuiltinDemoId, action: "play" | "open") => void;
   /** 런처만 — 피드 맨 위에 얹는 판(시작 화면의 「이어서 만들기」). */
   readonly lead?: HTMLElement | null;
   /** 「내가 쓴 걸로 만들기」 전에 — AI 연결 관문. false 면 초안을 쓰지 않고 피드에 남는다. */
@@ -204,8 +241,75 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
         el("button", { class: "cf-quick-go", attrs: { type: "button" }, text: "시작하기", dataset: { testid: CONCEPT_FEED_TESTIDS.quickStart }, on: { click: () => void openQuick() } }),
       ] }),
     ] });
+  const runBuiltinDemo = (demoId: BuiltinDemoId, action: "play" | "open"): void => {
+    if (making) return;
+    if (options.onBuiltinDemo) {
+      options.onBuiltinDemo(demoId, action);
+      return;
+    }
+    window.location.href = `/index.html?demo=${demoId}${action === "play" ? "&play=1" : ""}`;
+  };
+  const builtinDemosSection = el("section", {
+    class: "cf-builtin-demos",
+    dataset: { testid: CONCEPT_FEED_TESTIDS.builtinDemos },
+    children: [
+      el("div", {
+        class: "cf-builtin-head",
+        children: [
+          el("span", { class: "cf-builtin-kicker", text: "OFFICIAL BUILT-IN GAMES" }),
+          el("h2", { class: "cf-builtin-title", text: "기본 데모 게임 (설치된 공식 대표작 · AI 연결 없이 즉시 실행)" }),
+        ],
+      }),
+      el("div", {
+        class: "cf-builtin-grid",
+        children: BUILTIN_DEMO_CARDS.map((demo) =>
+          el("article", {
+            class: `cf-builtin-card cf-builtin-${demo.id}`,
+            dataset: { testid: `builtin-demo-card-${demo.id}` },
+            children: [
+              el("div", {
+                class: "cf-builtin-thumb",
+                children: [
+                  el("img", { class: "cf-builtin-thumb-img", attrs: { src: demo.thumb, alt: "", decoding: "async", draggable: "false" } }),
+                  el("span", { class: "cf-builtin-badge", text: demo.badge }),
+                ],
+              }),
+              el("div", {
+                class: "cf-builtin-body",
+                children: [
+                  el("h3", { class: "cf-builtin-card-title", text: demo.title, attrs: { translate: "no" } }),
+                  el("p", { class: "cf-builtin-card-sub", text: demo.subtitle }),
+                  el("p", { class: "cf-builtin-card-desc", text: demo.desc }),
+                  el("div", {
+                    class: "cf-builtin-actions",
+                    children: [
+                      el("button", {
+                        class: "cf-builtin-btn cf-builtin-btn-play",
+                        attrs: { type: "button" },
+                        dataset: { testid: demo.playTestId },
+                        text: "▶ 바로 플레이",
+                        on: { click: () => runBuiltinDemo(demo.id, "play") },
+                      }),
+                      el("button", {
+                        class: "cf-builtin-btn cf-builtin-btn-open",
+                        attrs: { type: "button" },
+                        dataset: { testid: demo.openTestId },
+                        text: "편집기에서 열기",
+                        on: { click: () => runBuiltinDemo(demo.id, "open") },
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ),
+      }),
+    ],
+  });
   const feed = el("section", { class: "cf-feed", children: [
     ...(options.lead ? [options.lead] : []),
+    builtinDemosSection,
     ...(quickBand ? [quickBand] : []),
     ...(launcher ? [el("div", { class: "cf-feed-head", children: [
       el("h2", { text: "컨셉에서 시작" }),

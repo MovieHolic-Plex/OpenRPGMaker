@@ -364,6 +364,71 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     on: { input: (event) => { state.worldQuery = (event.currentTarget as HTMLInputElement).value; renderPlayPage(); } },
   });
   const worldSearch = el("div", { class: "ln-search", children: [startIcon("search", "ln-icon"), worldSearchInput] });
+  const builtinDemoSection = (): HTMLElement => {
+    const demos = [
+      {
+        id: "chrono-bell",
+        title: "시간의 종소리와 무너진 별",
+        meta: "정통 시간여행 JRPG · 7개 맵 · 6컷 오프닝 · 96px 보스전",
+        thumb: "/assets/generated/welcome/slide-04.png",
+      },
+      {
+        id: "emerald-crown",
+        title: "에메랄드 크라운: 새벽섬의 수호자",
+        meta: "몬스터 수집 RPG · 8개 맵 · 스타터 선택 · 성소 보스전",
+        thumb: "/assets/generated/welcome/slide-01.png",
+      },
+    ] as const;
+    return section("start-builtin-demos", [
+      el("h2", { text: "기본 데모 게임" }),
+      el("p", { text: "설치된 공식 대표작 · AI 연결 없이 즉시 실행" }),
+    ], [
+      el("div", {
+        class: "ln-grid",
+        children: demos.map((demo) => el("article", {
+          class: "ln-card",
+          dataset: { testid: `start-builtin-demo-${demo.id}` },
+          children: [
+            el("button", {
+              class: "ln-card-hit",
+              attrs: { type: "button", title: demo.title },
+              dataset: { testid: `start-builtin-play-${demo.id}` },
+              on: { click: () => { window.location.href = `/index.html?demo=${demo.id}&play=1`; } },
+              children: [
+                el("span", {
+                  class: "ln-art",
+                  attrs: { "aria-hidden": "true" },
+                  children: [el("img", { attrs: { src: demo.thumb, alt: "", decoding: "async", draggable: "false" } })],
+                }),
+                el("span", { class: "ln-world-title", text: demo.title, attrs: { translate: "no" } }),
+              ],
+            }),
+            el("div", {
+              class: "ln-card-meta",
+              children: [
+                el("span", { text: demo.meta }),
+                el("button", {
+                  class: "ln-link",
+                  attrs: { type: "button" },
+                  dataset: { testid: `start-builtin-play-btn-${demo.id}` },
+                  text: "플레이",
+                  on: { click: () => { window.location.href = `/index.html?demo=${demo.id}&play=1`; } },
+                }),
+                el("button", {
+                  class: "ln-link",
+                  attrs: { type: "button" },
+                  dataset: { testid: `start-builtin-edit-${demo.id}` },
+                  text: "편집",
+                  on: { click: () => { window.location.href = `/index.html?demo=${demo.id}`; } },
+                }),
+              ],
+            }),
+          ],
+        })),
+      }),
+    ]);
+  };
+
   const renderPlayPage = (): void => {
     if (!state.loaded) {
       playPage.replaceChildren(el("p", { class: "ln-loading", text: "월드를 불러오는 중…" }));
@@ -379,20 +444,24 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       return;
     }
     if (worlds.length === 0) {
-      playPage.replaceChildren(el("div", { class: "ln-empty", children: [
-        el("h1", { text: "아직 플레이할 월드가 없어요" }),
-        el("p", { text: "만든 게임은 여기에 모입니다. 받은 .oprn 게임 파일도 바로 열 수 있어요." }),
-        el("div", { class: "ln-lead-actions", children: [
-          el("button", { class: "ln-btn ln-btn-primary", attrs: { type: "button" }, text: "게임 파일 열기", on: { click: openGameFile } }),
-          el("button", { class: "ln-btn ln-btn-secondary", attrs: { type: "button" }, text: "만들기로 가기", on: { click: () => setMode("make") } }),
+      playPage.replaceChildren(
+        builtinDemoSection(),
+        el("div", { class: "ln-empty", children: [
+          el("h1", { text: "아직 플레이할 월드가 없어요" }),
+          el("p", { text: "만든 게임은 여기에 모입니다. 받은 .oprn 게임 파일도 바로 열 수 있어요." }),
+          el("div", { class: "ln-lead-actions", children: [
+            el("button", { class: "ln-btn ln-btn-primary", attrs: { type: "button" }, text: "게임 파일 열기", on: { click: openGameFile } }),
+            el("button", { class: "ln-btn ln-btn-secondary", attrs: { type: "button" }, text: "만들기로 가기", on: { click: () => setMode("make") } }),
+          ] }),
+          ...[hiddenNote()].filter((node): node is HTMLElement => node !== null),
         ] }),
-        ...[hiddenNote()].filter((node): node is HTMLElement => node !== null),
-      ] }));
+      );
       return;
     }
     const played = worldsByLastPlayed(worlds, state.played);
     const [lead, ...recent] = played;
     playPage.replaceChildren(
+      builtinDemoSection(),
       ...(lead ? [section(null, [el("h2", { text: "이어서 플레이" })], [
         worldLead(lead, { ...playOptions(), side: { title: "최근 플레이", entries: recent.slice(0, SIDE_ROWS) } }),
       ])] : []),

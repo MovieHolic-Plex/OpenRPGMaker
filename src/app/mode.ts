@@ -191,7 +191,11 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
 
   let showBriefing = false;
   // 시작 화면 「플레이」로 연 폴더는 편집 화면을 거치지 않고 바로 플레이한다. 브리핑·인계는 만들기 길이라 묻지 않는다.
-  const playAtBoot = !modeMounted && takeStartPlayRequest(window.location, window.history);
+  const demoPlayAtBoot = !modeMounted
+    && typeof window !== "undefined"
+    && new URLSearchParams(window.location.search).get("play") === "1"
+    && new URLSearchParams(window.location.search).has("demo");
+  const playAtBoot = demoPlayAtBoot || (!modeMounted && takeStartPlayRequest(window.location, window.history));
   // 데스크톱 시작 화면의 「만들기」로 막 만든 폴더면, 거기서 고른 장르를 채택·저장하고 한 문장을 조수에게 넘긴다.
   // 시작 화면이 이미 「어떤 게임을 만들까요?」를 물었으므로 캔버스 브리핑은 다시 띄우지 않는다.
   const startHandoff = modeMounted ? null : await applyStartScreenHandoffAtBoot();

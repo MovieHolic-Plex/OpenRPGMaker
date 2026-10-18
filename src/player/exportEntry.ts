@@ -9,6 +9,7 @@ import { PRODUCT_BRAND } from "@/brand";
 import { deserialize } from "@/project/io";
 import { OPRN_EXTENSION } from "@/project/package";
 import type { Project } from "@/project/types";
+import { createFlagshipDemoProject } from "@/project/flagship";
 import { renderPlayer } from "@/player/player";
 import { renderOprnGameFilePicker } from "@/player/oprnGameFilePicker";
 import { readStandalonePayload } from "@/player/standalonePayload";
@@ -56,6 +57,11 @@ async function bootExportedPlayer(root: HTMLElement): Promise<void> {
   // resources belong to the editor host, one directory above that bundle.
   const probeAssets = boot.qaInstrumentation === true && boot.actionCombatProbe !== undefined;
   registerExportAssetBase(new URL(probeAssets ? "../" : ".", document.baseURI));
+  const demoParam = new URLSearchParams(window.location.search).get("demo");
+  if (demoParam === "chrono-bell" || demoParam === "emerald-crown" || demoParam === "shitamachi-fourth-season") {
+    startPlayer(root, boot, createFlagshipDemoProject(demoParam).project, "bundled");
+    return;
+  }
   // 단일 HTML 로 내보낸 게임: 프로젝트도 에셋도 이 문서 안에 있다. fetch 가 막히는 file:// 에서
   // 돌아야 하므로 네트워크를 타는 아래 경로보다 **먼저** 본다.
   const standalone = readStandalonePayload();
