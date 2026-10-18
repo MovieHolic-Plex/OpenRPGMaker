@@ -278,7 +278,7 @@ function cellsInRect(map: GameMap, rect: Rect): Point[] {
   return cells;
 }
 
-function protectedPassageCells(project: Project, map: GameMap): Map<string, string> {
+export function protectedPassageCells(project: Project, map: GameMap): Map<string, string> {
   const cells = new Map<string, string>();
   if (project.startMapId === map.id) cells.set(pointKey(project.startPos), "시작 위치");
   const transfers: Point[] = [];

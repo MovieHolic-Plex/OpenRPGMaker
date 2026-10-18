@@ -7,7 +7,7 @@
 
 import type { GameMap, Project } from "@/project/types";
 import { installBeodeulArchitecture } from "@/project/defaults/beodeulArchitecture";
-import { CONSTRUCTION_TOOLS_V3 } from "./v3/constructionTools";
+import { CONSTRUCTION_TOOLS_V3, protectedPassageCells } from "./v3/constructionTools";
 import { SHARED_OBJECT_TOOLS, prepareSharedObject } from "./sharedObjectTools";
 import { setLayerTileAt, layerTileAt } from "@/project/mapLayers";
 import { BEODEUL_NATURE, BEODEUL_NATURE_ID, createBeodeulNatureTileset } from "@/project/defaults/beodeulNature";
@@ -502,10 +502,19 @@ export const SCENE_SETTING_TOOLS: readonly ToolDefinition[] = [
       const walk = layout.walk ? walkCells(x, y, layout.walk) : [];
       const onWalk = (cx: number, cy: number) => walk.some((c) => c.x === cx && c.y === cy);
       const free = (cx: number, cy: number) => !((cx === x && cy === y) || (cx === x - 1 && cy === y)) && !bridgeBox(cx, cy) && !onWalk(cx, cy);
+      // 시작 칸·transfer 도착 칸이 못에 잠기면 못을 그 세로줄에서 끊는다(이벤트 칸에서 먼 쪽을 버린다) — 못 한가운데 외딴
+      // 바닥 섬도, 둑 너머 홀로 남은 작은 웅덩이도 없이 한 못으로 남고, 모든 못을 같은 줄에서 끊어 위·아래 거울이 유지된다.
+      const passage = [...protectedPassageCells(project, map).keys()].map((k) => k.split(",").map(Number) as [number, number]);
+      const rawBodies = (layout.bodies ?? []).map((b) => ({ kind: b.kind, cells: bodyCells(map, x, y, b, free) }));
+      const cutCols = passage.filter(([px, py]) => rawBodies.some((b) => b.cells.some((c) => c.x === px && c.y === py))).map(([px]) => px);
+      const drowned = (cx: number) => cutCols.some((px) => (px > x ? cx >= px : px < x ? cx <= px : cx === px));
+      const bodies = rawBodies.map((b) => ({ kind: b.kind, cells: cutCols.length ? trimSpurs(map, b.cells.filter((c) => !drowned(c.x))) : b.cells }));
+      // 용암 강은 다리 하나만 건너야 하므로 세로줄을 말리지 않는다 — 보호 칸과 다리 축 건너편 짝 칸만 강가로 남긴다.
+      const isPassage = (cx: number, cy: number) => passage.some(([px, py]) => py === cy && (px === cx || px === 2 * x - cx));
       const lavaOf: { x: number; y: number }[][] = theme === "lava_bridge"
-        ? [lavaBandCells(map, x, y)]
+        ? [trimSpurs(map, lavaBandCells(map, x, y).filter((c) => !isPassage(c.x, c.y)))]
         : [
-          ...(layout.bodies ?? []).filter((b) => b.kind === "lava").map((b) => bodyCells(map, x, y, b, free)),
+          ...bodies.filter((b) => b.kind === "lava").map((b) => b.cells),
           ...(layout.fissures ?? []).map((f) => fissureCells(map, x, y, f, free)),
         ];
       for (const cells of lavaOf) {
@@ -515,8 +524,7 @@ export const SCENE_SETTING_TOOLS: readonly ToolDefinition[] = [
         if (theme === "lava_bridge") for (const c of cells) if (bridgeBox(c.x, c.y)) setLayerTileAt(map, 2, c.y * map.width + c.x, -1);
       }
       if (layout.fissures?.length) built.push(`용암 균열 ${layout.fissures.length}줄`);
-      for (const b of (layout.bodies ?? []).filter((q) => q.kind === "water")) {
-        const cells = bodyCells(map, x, y, b, free);
+      for (const { cells } of bodies.filter((q) => q.kind === "water")) {
         const rows = new Map<number, number[]>();
         for (const c of cells) (rows.get(c.y) ?? rows.set(c.y, []).get(c.y)!).push(c.x);
         for (const [cy, xs] of rows) {
@@ -537,7 +545,7 @@ export const SCENE_SETTING_TOOLS: readonly ToolDefinition[] = [
       const kitList = project.tilesets.beodeul_city?.structureKits ?? [];
       const waterOrLava = new Set<number>();
       for (const cells of lavaOf) for (const c of cells) waterOrLava.add(c.y * map.width + c.x);
-      for (const b of (layout.bodies ?? []).filter((q) => q.kind === "water")) for (const c of bodyCells(map, x, y, b, free)) waterOrLava.add(c.y * map.width + c.x);
+      for (const b of bodies.filter((q) => q.kind === "water")) for (const c of b.cells) waterOrLava.add(c.y * map.width + c.x);
       const corridors = (layout.corridors ?? []).map((c) => clampRect(map, x + c.dx, y + c.dy, c.w, c.h));
       const inCorridor = (cx: number, cy: number) => corridors.some((r) => cx >= r.x && cx < r.x + r.w && cy >= r.y && cy < r.y + r.h);
       // 기물은 무대 바닥 안에만 선다. 물·용암·동선·이벤트 칸·걷기 길·다른 기물 위는 안 된다(바닥 그림인 모자이크·다리는 동선·몸체 위에 깐다).
