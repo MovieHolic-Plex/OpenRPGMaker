@@ -284,6 +284,8 @@
   padding: 8px;
   background: rgb(0 0 0 / 80%);
 }
+/* 애니메틱 캔버스는 position:absolute 라 static 자막을 덮는다 - 연출 없는 애니메틱 컷도 자막이 캔버스 위에 와야 읽힌다. */
+.cinematic-sequence[data-scene-kind="animatic"] .cinematic-frame:not([data-presented="true"]) .cinematic-narration { position: relative; z-index: 1; }
 .cinematic-narration:empty { display: none; }
 .cinematic-status {
   position: absolute; bottom: 8px; max-width: 90%;

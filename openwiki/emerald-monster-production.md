@@ -29,19 +29,30 @@ values remain host compatible. The authored viewport is 480x320 at cameraZoom2:
 the 240x160 GBA view at exact2x, showing 15x10 16px map cells. This uses existing
 supported settings rather than changing global resolution limits.
 
-`src/project/emeraldMonsterOpening.ts` authors Enter-confirm professor/monster dialogue
-(six pages) and leaves actual starter choice to existing map events. It accepts
-explicit author-written pages. `oprnOpeningBook.portraitResourceId` keeps the same
-professor image mounted while the showcased monster/text changes. Continue does not
-replay a new-game opening.
+`src/project/emeraldMonsterOpening.ts` authors the new-game introduction and leaves actual
+starter choice to existing map events. Continue does not replay a new-game opening.
+
+**Animatic opening (2026-10-18).** The user rejected the still professor-bust storybook ("오프닝도
+좆같음", c-1792294716295). The generator now writes six layered `animatic` scenes (4.5 s each,
+Enter advances): dawn island pan -> route 1 grass peek -> lab greeting -> starter stage ->
+gym face-off -> town departure (`emeraldMonsterOpeningShots.ts`). Backdrops are crops of the
+campaign's own maps baked to `public/assets/emerald-monster/opening/*.png`
+(`scripts/content/monsters/bake_opening_backdrops.mts`, resolved by id in
+`src/assets/emeraldOpeningBackdrops.ts`); actors are the campaign charsets at an exact 2x.
+Pages carry a required `shot`. On `build_monster_game(mode:repair)`,
+`upgradeLegacyEmeraldMonsterOpening` converts a generator-made still book (bust or old chip
+portrait, no authored `portraitMotion`) to animatic shots: the old generator default text is
+replaced by the new default pages (professor name kept), edited text is kept in order. A
+different authored portrait or an authored pose strip is left untouched. Non-presented
+animatic narration sits above the canvas (`playSurface.css`; the absolute canvas used to
+hide it). The professor-bust notes below describe the legacy still book.
 
 **Professor art (2026-10-16).** The opening professor is the bundled bust
 `oprn_emerald_professor_bust` (`public/assets/emerald-monster/professor-bust.png`, 122x97,
 shown at an exact 2x = 244x194). It is resolved by id in
 `generatedAssetResourceResolver.ts` only: the project JSON holds no image bytes. The old
-64x64 chip portrait on a big oval pedestal was dropped (users called the professor a mess);
-`configureEmeraldMonsterPortraitMotion` upgrades an old `oprn_emerald_professor` campaign
-on repair. The bust is the same character as the lab NPC chip (bald, white goatee, olive
+64x64 chip portrait on a big oval pedestal was dropped (users called the professor a mess).
+The bust is the same character as the lab NPC chip (bald, white goatee, olive
 field jacket). Production: `scripts/asset-gen/gen-opening-professor.mjs` (MDC image API,
 gpt-image-2.5-sunburst, magenta background) -> `pixelize-grid.py` (restores the fake pixel
 grid, cell mode colour) -> bundled PNG. Model, prompt summary and hashes are in

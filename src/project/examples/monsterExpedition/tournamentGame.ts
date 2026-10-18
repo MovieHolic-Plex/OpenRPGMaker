@@ -64,13 +64,13 @@ export function createMonsterTournament(options: TournamentOptions & { readonly 
   configureEmeraldMonsterCast(project, { startTheme: options.startTheme });
   const region = options.names?.region ?? (expedition ? "별빛 사냥터" : "별빛 대회");
   configureEmeraldMonsterOpening(project, { professorName: options.names?.registrar ?? (expedition ? "도감 박사 라온" : "접수 담당 라온"), titleTheme: monsterTitleThemeFromStart(options.startTheme), pages: expedition ? [
-    { id: "hunt_intro_welcome", text: `${region}에 어서 와!\n이 땅의 도감은 아직 텅 비어 있단다.` },
-    { id: "hunt_intro_rules", text: "체육관은 없어.\n사냥터를 따라 걸으며 만나고, 잡고, 기록하렴." },
-    { id: "hunt_intro_start", text: "먼저 연구소에서 첫 동료를 만나 보렴.\n길 끝에는 사냥터의 주인이 기다리고 있단다." },
+    { id: "hunt_intro_welcome", shot: "dawn", text: `${region}에 어서 와!\n이 땅의 도감은 아직 텅 비어 있단다.` },
+    { id: "hunt_intro_rules", shot: "route", text: "체육관은 없어.\n사냥터를 따라 걸으며 만나고, 잡고, 기록하렴." },
+    { id: "hunt_intro_start", shot: "lab", text: "먼저 연구소에서 첫 동료를 만나 보렴.\n길 끝에는 사냥터의 주인이 기다리고 있단다." },
   ] : [
-    { id: "tour_intro_welcome", text: `${region}에 어서 와!\n몬스터와 함께 서는 토너먼트 무대란다.` },
-    { id: "tour_intro_rules", text: "규칙은 간단해.\n데려온 동료들로만 승부하고, 포획은 없어." },
-    { id: "tour_intro_start", text: "먼저 접수처에서 첫 동료를 만나고,\n연습장에서 몸을 풀어 보렴." },
+    { id: "tour_intro_welcome", shot: "dawn", text: `${region}에 어서 와!\n몬스터와 함께 서는 토너먼트 무대란다.` },
+    { id: "tour_intro_rules", shot: "stage", text: "규칙은 간단해.\n데려온 동료들로만 승부하고, 포획은 없어." },
+    { id: "tour_intro_start", shot: "town", text: "먼저 접수처에서 첫 동료를 만나고,\n연습장에서 몸을 풀어 보렴." },
   ] });
   configureEmeraldMonsterTitle(project, monsterTitleThemeFromStart(options.startTheme));
   assignTrainerSprites(project);

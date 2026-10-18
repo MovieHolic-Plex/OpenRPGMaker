@@ -1,16 +1,72 @@
 import type { Project } from './types';
+import type { EventPageGraphic } from './types/events';
 import { EMERALD_PROFESSOR_BUST_RESOURCE_ID } from './emeraldProfessorArt';
 import { createStagTitleEffects, monsterTitleArt, monsterTitleThemeOf, type MonsterTitleTheme } from './emeraldMonsterTitleArt';
 import { defaultTitleScreenSettings } from './defaults/defaultDatabase';
+import { validateOpeningAnimatic } from './openingAnimatic';
+import {
+  charsetPatternIndex, EMERALD_OPENING_SHOT_MS, EMERALD_OPENING_SHOTS, emeraldOpeningShot,
+  type EmeraldOpeningCast, type EmeraldOpeningChip, type EmeraldOpeningShot,
+} from './emeraldMonsterOpeningShots';
 
-export { EMERALD_PROFESSOR_BUST_RESOURCE_ID };
-
-export type EmeraldOpeningPage = { id: string; text: string; monsterSpeciesId?: string };
+/** 한 컷의 내레이션. shot 은 그 컷이 그리는 장면(새벽 섬·1번길·연구소·스타터 무대·체육관·마을 출발). */
+export type EmeraldOpeningPage = { id: string; text: string; shot: EmeraldOpeningShot };
 
 /** Anchors belong to the bundled stag/coastal sunset artwork, in image coordinates. */
 export const createEmeraldMonsterTitleEffects = createStagTitleEffects;
 
-/** Shared original sprite introduction; actual starter selection remains in authored events. */
+// 컷의 사람들은 별빛섬 캠페인이 쓰는 내장 캐릭터 시트에서 고른다(천문박사·라이벌·새순 체육관 관장).
+const PROFESSOR: EmeraldOpeningChip = { resourceId: 'tex_oprn_charset_scarloxy_people3', index: charsetPatternIndex(76) };
+const RIVAL: EmeraldOpeningChip = { resourceId: 'tex_scarloxy_charset_people1', index: charsetPatternIndex(34) };
+const LEADER: EmeraldOpeningChip = { resourceId: 'tex_scarloxy_charset_people2', index: charsetPatternIndex(28) };
+const HERO: EmeraldOpeningChip = { resourceId: 'scarloxy-charset-people1', index: 0 };
+const MONSTER_CHIPS = 'tex_oprn_charset_harness_monster1';
+const FLYER: EmeraldOpeningChip = { resourceId: MONSTER_CHIPS, index: 0 };
+const WILD: EmeraldOpeningChip = { resourceId: MONSTER_CHIPS, index: 5 };
+
+const chipOf = (graphic: EventPageGraphic | undefined): EmeraldOpeningChip | undefined =>
+  graphic?.sprite?.id ? { resourceId: graphic.sprite.id, index: charsetPatternIndex(graphic.pattern ?? 0) } : undefined;
+
+function emeraldOpeningCast(project: Project): EmeraldOpeningCast {
+  const species = project.database.monsterSpecies ?? [];
+  const lead = project.database.actors[0];
+  return {
+    hero: lead?.characterResourceId ? { resourceId: lead.characterResourceId, index: lead.characterIndex ?? 0 } : HERO,
+    professor: PROFESSOR, rival: RIVAL, leader: LEADER, flyer: FLYER, wild: WILD,
+    starters: ['grass', 'fire', 'water'].flatMap(type => {
+      const starter = species.find(s => s.types?.includes(type)), front = starter?.graphic.monsterResourceId;
+      return starter && front ? [{ frontResourceId: front, chip: chipOf(starter.graphic.fieldGraphic) }] : [];
+    }),
+  };
+}
+
+function defaultEmeraldOpeningPages(project: Project, professorName: string): EmeraldOpeningPage[] {
+  const place = project.maps[project.startMapId]?.name ?? '새로운 마을';
+  return [
+    { id: 'emerald_intro_welcome', shot: 'dawn', text: `안녕! 만나서 반갑구나.\n나는 몬스터를 연구하는 ${professorName}란다.` },
+    { id: 'emerald_intro_world', shot: 'route', text: '이 세계에는 몬스터라는 친구들이 살고 있지.\n사람과 함께 살아가기도, 풀숲에서 뛰놀기도 한단다.' },
+    { id: 'emerald_intro_lab', shot: 'lab', text: '나는 연구소에서 몬스터와 사람이\n함께 지내는 법을 연구하고 있단다.' },
+    { id: 'emerald_intro_companions', shot: 'stage', text: '풀을 품은 친구, 불을 품은 친구, 물을 가르는 친구.\n첫 동료는 네가 직접 고르면 돼.' },
+    { id: 'emerald_intro_rival', shot: 'gym', text: '체육관 관장들과 라이벌이 너를 기다리지.\n함께 강해져서 배지를 모아 보렴.' },
+    { id: 'emerald_intro_departure', shot: 'town', text: `${place}에서 너의 모험이 시작된단다.\n먼저 연구소에 들러 보렴. 기다리고 있겠다!` },
+  ];
+}
+
+function writeEmeraldOpening(project: Project, pages: readonly EmeraldOpeningPage[], musicResourceId: string | undefined): void {
+  if (pages.length < 2 || pages.length > 32) throw Error('Emerald introduction needs 2..32 shots');
+  if (new Set(pages.map(page => page.id)).size !== pages.length) throw Error('Opening page ids must be unique');
+  const cast = emeraldOpeningCast(project);
+  const scenes = pages.map(page => {
+    if (!page.id || !page.text.trim()) throw Error('Opening page needs an id and readable text');
+    const composition = emeraldOpeningShot(page.shot, cast);
+    validateOpeningAnimatic(composition, EMERALD_OPENING_SHOT_MS, `opening.${page.id}`);
+    return { id: page.id, kind: 'animatic' as const, composition, durationMs: EMERALD_OPENING_SHOT_MS, narration: page.text };
+  });
+  project.system.opening = { enabled: true, skippable: true, scenes, ...(musicResourceId ? { musicResourceId } : {}) };
+  delete project.meta.oprnOpeningBook;
+}
+
+/** 6컷 레이어 애니메틱 오프닝(새벽 섬→1번길→연구소→스타터→체육관→출발). 컷마다 4.5초, Enter 로 넘긴다. */
 export function configureEmeraldMonsterOpening(project: Project, options: {
   professorName?: string;
   pages?: EmeraldOpeningPage[];
@@ -18,44 +74,33 @@ export function configureEmeraldMonsterOpening(project: Project, options: {
   /** 타이틀 키아트 테마(startTheme 에서). 생략하면 지금 프로젝트에서 추정(monsterTitleThemeOf). */
   titleTheme?: MonsterTitleTheme;
 } = {}): void {
-  const professorId = EMERALD_PROFESSOR_BUST_RESOURCE_ID;
-  const species = project.database.monsterSpecies ?? [];
-  const starter = ['grass', 'fire', 'water'].map(type => species.find(s => s.types?.includes(type)));
-  const professorName = options.professorName ?? '천문박사';
-  const place = project.maps[project.startMapId]?.name ?? '새로운 마을';
-  const pages: EmeraldOpeningPage[] = options.pages ?? [
-    { id: 'emerald_intro_welcome', text: `안녕! 만나서 반갑구나.\n나는 몬스터를 연구하는 ${professorName}란다.` },
-    { id: 'emerald_intro_world', text: '이 세계에는 몬스터라는 친구들이 살고 있지.\n사람과 함께 살아가기도, 풀숲에서 뛰놀기도 한단다.', monsterSpeciesId: starter[0]?.id },
-    { id: 'emerald_intro_companions', text: '어떤 친구는 뜨거운 불을 품고,\n어떤 친구는 바다를 자유롭게 헤엄치지.', monsterSpeciesId: starter[1]?.id },
-    { id: 'emerald_intro_journey', text: '너와 함께 여행할 친구를 만나 보렴.\n친구마다 잘하는 기술도, 좋아하는 장소도 다르단다.', monsterSpeciesId: starter[2]?.id },
-    { id: 'emerald_intro_choice', text: '첫 동료는 네가 직접 고르면 돼.\n풀밭을 걷고, 친구를 만나고, 함께 강해지는 거야.' },
-    { id: 'emerald_intro_departure', text: `${place}에서 너의 모험이 시작된단다.\n먼저 연구소에 들러 보렴. 기다리고 있겠다!` },
-  ];
-  if (pages.length < 2 || pages.length > 32) throw Error('Emerald introduction needs 2..32 confirmed pages');
-  if (new Set(pages.map(page => page.id)).size !== pages.length) throw Error('Opening page ids must be unique');
-  const scenes = pages.map(page => {
-    if (!page.id || !page.text.trim()) throw Error('Opening page needs an id and readable text');
-    const monster = page.monsterSpeciesId ? species.find(s => s.id === page.monsterSpeciesId) : undefined;
-    if (page.monsterSpeciesId && !monster) throw Error(`Unknown showcase species: ${page.monsterSpeciesId}`);
-    return { id: page.id, kind: 'image' as const, resourceId: monster?.graphic.monsterResourceId ?? professorId,
-      durationMs: 0, motion: 'none' as const, narration: page.text };
-  });
-  const musicResourceId = options.musicResourceId ?? project.system.opening?.musicResourceId;
-  project.system.opening = { enabled: true, skippable: true, scenes, ...(musicResourceId ? { musicResourceId } : {}) };
-  project.meta.oprnOpeningBook = { version: 1, sceneIds: scenes.map(s => s.id), ink: 'ivory', portraitResourceId: professorId };
-  configureEmeraldMonsterPortraitMotion(project);
+  writeEmeraldOpening(project, options.pages ?? defaultEmeraldOpeningPages(project, options.professorName ?? '천문박사'),
+    options.musicResourceId ?? project.system.opening?.musicResourceId);
   configureEmeraldMonsterTitle(project, options.titleTheme);
 }
 
-/** 교수 초상 움직임 시트(pokemon-character-motion 산출)는 저작권 정리(2026-10-07)로 지웠다. 초상은 정지 그림으로 둔다.
- *  옛 캠페인의 64×64 칩 초상(oprn_emerald_professor)도 보수 때 이 반신상으로 갈아 낀다. */
-export function configureEmeraldMonsterPortraitMotion(project: Project): void {
-  const book = project.meta.oprnOpeningBook;
-  if (!book || !project.system.opening) throw Error('An authored introduction is required before portrait motion');
-  // 옛 칩 초상이 장면 그림으로 남아 있으면 반신상과 달라 「몬스터 소개」로 오인된다 — 같이 갈아 낀다.
-  for (const scene of project.system.opening.scenes) if (scene.kind === 'image' && scene.resourceId === 'oprn_emerald_professor') scene.resourceId = EMERALD_PROFESSOR_BUST_RESOURCE_ID;
-  const { portraitMotion: _removed, ...rest } = book;
-  project.meta.oprnOpeningBook = { ...rest, portraitResourceId: EMERALD_PROFESSOR_BUST_RESOURCE_ID };
+/** 예전 생성기 기본 소개의 장면 id(교수 이름은 첫 장 글에 들어 있다). */
+const LEGACY_DEFAULT_IDS = ['emerald_intro_welcome', 'emerald_intro_world', 'emerald_intro_companions', 'emerald_intro_journey', 'emerald_intro_choice', 'emerald_intro_departure'];
+
+/**
+ * 예전 생성기가 만든 정지 교수 초상 소개(반신상/64×64 칩 위 Enter 페이지)를 6컷 애니메틱으로 바꾼다. 타이틀은 건드리지 않는다.
+ * 생성기 기본 글이면 새 기본 컷 글로(교수 이름은 살린다), 손본 글이면 그대로 컷 순서에 고르게 나눠 싣는다.
+ * 직접 고른 초상이나 움직임을 단 소개는 두고 false 를 돌려준다.
+ */
+export function upgradeLegacyEmeraldMonsterOpening(project: Project): boolean {
+  const book = project.meta.oprnOpeningBook, opening = project.system.opening;
+  const generated = book?.portraitResourceId === EMERALD_PROFESSOR_BUST_RESOURCE_ID || book?.portraitResourceId === 'oprn_emerald_professor';
+  if (!book || !opening || !generated || book.portraitMotion) return false;
+  if (!opening.scenes.length || !opening.scenes.every(scene => (scene.kind === 'image' || scene.kind === 'text') && scene.durationMs === 0 && scene.narration.trim())) return false;
+  const last = opening.scenes.length - 1;
+  const pages = opening.scenes.map(scene => scene.id).join() === LEGACY_DEFAULT_IDS.join()
+    ? defaultEmeraldOpeningPages(project, /연구하는 (.+)란다/u.exec(opening.scenes[0]!.narration)?.[1] ?? '천문박사')
+    : opening.scenes.map((scene, i): EmeraldOpeningPage => ({
+      id: scene.id, text: scene.narration,
+      shot: EMERALD_OPENING_SHOTS[last ? Math.round(i * (EMERALD_OPENING_SHOTS.length - 1) / last) : 0]!,
+    }));
+  writeEmeraldOpening(project, pages, opening.musicResourceId);
+  return true;
 }
 
 /** Shared original pixel key art; menu input and saved-game availability remain native. */

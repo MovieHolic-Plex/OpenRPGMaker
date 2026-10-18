@@ -22,7 +22,7 @@ import { join, relative, resolve } from "node:path";
 import { MONSTER_COLLECT_SPECIES_HARNESS } from "../harness";
 import { cleanReference, magentaCanvas, pixelize, toSprite } from "../pixel/pipeline";
 import type { GridOptions } from "../pixel/grid";
-import { MAX_INK_SIDE, SPRITE_CANVAS, type SpriteSide } from "../pixel/fit";
+import { MAX_INK_SIDE, SPRITE_CANVAS, type FitResult, type SpriteSide } from "../pixel/fit";
 import { checkEyes } from "../checks/eyes";
 import { checkDirection, checkFrames, checkPair, checkSprite, similarSilhouettes, type CheckIssue } from "../checks/checks";
 import { actionPrompt, backPrompt, evolutionPrompt, frontPrompt } from "../prompts/prompts";
@@ -397,6 +397,14 @@ function printIssues(label: string, issues: CheckIssue[]): number {
   return issues.filter((i) => i.level === "error").length;
 }
 
+/** 손 도트 원본(pick.authored): 이미 64 캔버스에 그린 그림이라 줄이지 않고 그대로 쓴다. */
+function authoredSprite(path: string): FitResult {
+  const sprite = readPng(resolve(PATHS.data, path));
+  if (sprite.width !== SPRITE_CANVAS || sprite.height !== SPRITE_CANVAS) throw new Error(`${path}: 손 도트는 ${SPRITE_CANVAS}×${SPRITE_CANVAS} 여야 한다 (${sprite.width}×${sprite.height})`);
+  const ink = cropToInk(sprite);
+  return { sprite, factor: 1, ink: { width: ink.width, height: ink.height }, magentaRemoved: 0 };
+}
+
 function stageBuild(): number {
   const seed = loadSeed();
   const ledger = loadLedger();
@@ -406,7 +414,7 @@ function stageBuild(): number {
     for (const which of ["front", "back"] as const) {
       const pick = ledger.picks[species.id]?.[which];
       if (!pick) continue;
-      const fit = toSprite(readPng(resolve(PATHS.data, pick.grid)), which, species.stage);
+      const fit = pick.authored ? authoredSprite(pick.authored) : toSprite(readPng(resolve(PATHS.data, pick.grid)), which, species.stage);
       writePng(bundlePath(species.id, which), fit.sprite);
       console.log(`${species.id} ${which}: 잉크 ${fit.ink.width}x${fit.ink.height} · 축소 ${fit.factor.toFixed(2)} · 마젠타 정리 ${fit.magentaRemoved}`);
       const manifest = (anim[species.id] ??= { canvas: SPRITE_CANVAS, direction: seed.animation.direction, sides: {} });

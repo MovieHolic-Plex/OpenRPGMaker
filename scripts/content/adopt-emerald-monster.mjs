@@ -16,14 +16,12 @@ const mapsUpdated=await withTsModule(resolve('src/project/emeraldMonsterTiles.ts
 await withTsModule(resolve('src/project/emeraldMonsterCast.ts'),'cast.mjs',m=>m.configureEmeraldMonsterCast(candidate));
 const creatureAssets=await withTsModule(resolve('src/project/emeraldMonsterCreatureArt.ts'),'creatures.mjs',m=>m.configureEmeraldMonsterCreatureArt(candidate,true));
 await withTsModule(resolve('src/project/emeraldMonsterOpening.ts'),'opening.mjs',m=>m.configureEmeraldMonsterOpening(candidate,{pages:[
-  {id:'emerald_starlight_welcome',text:'안녕! 나는 천문박사란다.\n여기는 사람과 몬스터가 함께 사는 별빛섬이지.'},
-  {id:'emerald_starlight_grass',text:'이 친구는 새싹토야. 풀숲을 좋아하지.\n작은 친구도 든든한 동료가 된단다.',monsterSpeciesId:'mx_species_spriglet'},
-  {id:'emerald_starlight_fire',text:'숯비늘은 따뜻한 불을 품고 있어.\n잘하는 기술도, 사는 곳도 다르단다.',monsterSpeciesId:'mx_species_coalbit'},
-  {id:'emerald_starlight_water',text:'여울랑은 물길을 자유롭게 헤엄친단다.\n너와 함께할 첫 친구는 네가 직접 고르렴.',monsterSpeciesId:'mx_species_rivulet'},
-  {id:'emerald_starlight_beacon',text:'우리 등대의 별빛은 먼 배들의 길잡이였지.\n그런데 요즘은 밤이 되어도 빛이 희미하구나.'},
-  {id:'emerald_starlight_company',text:'밤막회사가 별빛을 거둔다는구나.\n섬을 돌아다니며 무슨 일인지 살펴보렴.'},
-  {id:'emerald_starlight_journey',text:'함께 체육관에 도전해 배지를 모아 보렴.\n사라진 등대의 빛도 찾을 수 있겠지.'},
-  {id:'emerald_starlight_departure',text:'별싹 마을 북동쪽 연구소에서 기다리마.\n너와 첫 친구의 모험을 시작하렴!'},
+  {id:'emerald_starlight_welcome',shot:'dawn',text:'안녕! 나는 천문박사란다.\n여기는 사람과 몬스터가 함께 사는 별빛섬이지.'},
+  {id:'emerald_starlight_route',shot:'route',text:'풀숲마다 몬스터 친구들이 숨어 있단다.\n작은 친구도 든든한 동료가 되지.'},
+  {id:'emerald_starlight_beacon',shot:'lab',text:'우리 등대의 별빛은 먼 배들의 길잡이였지.\n그런데 밤막회사가 그 빛을 거둔다는구나.'},
+  {id:'emerald_starlight_starters',shot:'stage',text:'풀숲을 좋아하는 새싹토, 불을 품은 숯비늘,\n물길을 헤엄치는 여울랑. 첫 친구는 네가 고르렴.'},
+  {id:'emerald_starlight_journey',shot:'gym',text:'함께 체육관에 도전해 배지를 모아 보렴.\n사라진 등대의 빛도 찾을 수 있겠지.'},
+  {id:'emerald_starlight_departure',shot:'town',text:'별싹 마을 북동쪽 연구소에서 기다리마.\n너와 첫 친구의 모험을 시작하렴!'},
 ]}));
 if(!isDeepStrictEqual(candidate.session,before.session))throw Error('Authored session changed');
 if(!isDeepStrictEqual([candidate.startMapId,candidate.startPos],[before.startMapId,before.startPos]))throw Error('Starting position changed');

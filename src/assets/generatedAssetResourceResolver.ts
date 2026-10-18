@@ -4,6 +4,7 @@ import { CHARSET_BATTLERS } from "./charsetBattlers";
 import { PARTY_PIXEL_SHEETS } from "./partyPixelSheets";
 import { BATTLE_SCENERY_CATALOG } from "./battleSceneryCatalog";
 import { RETRO_PIXEL_FX_URLS } from "./retroPixelAnimations";
+import { EMERALD_OPENING_BACKDROP_URLS } from "./emeraldOpeningBackdrops";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import { withInlineAsset } from "./inlineAssetStore";
 import { resolveCc0IconAssetUrl } from "./cc0IconAssets";
@@ -49,6 +50,8 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   ...Object.fromEntries(BATTLE_SCENERY_CATALOG.map((entry) => [entry.resourceId, `/${entry.preview}`])),
   // 도트 측면 전투의 도트 효과 시트(anim_px_* 레코드가 쓴다).
   ...RETRO_PIXEL_FX_URLS,
+  // 몬스터 수집 오프닝 애니메틱의 맵 배경(별빛섬 맵을 1:1 로 구운 그림).
+  ...EMERALD_OPENING_BACKDROP_URLS,
   hero: null,
   "oprn-title-bright": "/assets/generated/title/oprn-title-bright-v2.png",
   "oprn-title-blue": "/assets/generated/title/default-title-blue.png",
