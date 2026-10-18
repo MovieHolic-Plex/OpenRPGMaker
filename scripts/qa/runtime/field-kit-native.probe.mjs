@@ -50,7 +50,7 @@ try{
  });
  await page.waitForTimeout(300);const beforeCollision=await state();await page.keyboard.down('ArrowRight');await page.waitForTimeout(350);await page.keyboard.up('ArrowRight');
  const afterCollision=await state();report.collision.playerBefore={x:beforeCollision.x,y:beforeCollision.y};report.collision.playerAfter={x:afterCollision.x,y:afterCollision.y};assert.equal(afterCollision.x,beforeCollision.x);assert.equal(afterCollision.y,beforeCollision.y);
- await key('Enter');await page.getByTestId('dialogue-box').waitFor();await page.waitForFunction(()=>document.querySelector('[data-testid="dialogue-box"]')?.innerText.includes('눈송냥'));report.dialogue=await page.getByTestId('dialogue-box').innerText();assert.match(report.dialogue,/눈송냥|차가운/);await shot('02-monster-dialogue');await drain();
+ await key('Enter');await page.getByTestId('dialogue-box').waitFor();await page.waitForFunction(()=>document.querySelector('[data-testid="dialogue-box"]')?.innerText.includes('설아링'));report.dialogue=await page.getByTestId('dialogue-box').innerText();assert.match(report.dialogue,/설아링|차가운/);await shot('02-monster-dialogue');await drain();
  await page.evaluate(()=>{if(window.__fieldKitMover)window.__oprnHooksScene.autonomousNPCs.set('mx_map_home_field_flurrykit',window.__fieldKitMover);});
  await page.evaluate(()=>window.__oprnDebug.teleport('mx_map_home',10,10));await page.waitForTimeout(500);
  report.audioBefore=await sound();assert(report.audioBefore.observed.includes('composed_music_fieldkit_town_v1'));

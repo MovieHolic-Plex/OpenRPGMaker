@@ -7,21 +7,21 @@ import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import type { FlagshipDemoBuildResult } from "./types";
 
 const STARTER_NAME_REMAP: Readonly<Record<string, string>> = {
-  mx_species_spriglet: "새싹토",
-  mx_species_bramblet: "잎귀토",
-  mx_species_canopine: "숲지기토",
-  mx_species_coalbit: "찌릿토",
-  mx_species_kilnclaw: "가마발",
-  mx_species_pyroscale: "용광비늘",
-  mx_species_rivulet: "물방토",
-  mx_species_tideling: "갯물방",
-  mx_species_abyssal: "조수지기",
+  mx_species_spriglet: "토리프",
+  mx_species_bramblet: "실바리온",
+  mx_species_canopine: "벨데로드",
+  mx_species_coalbit: "파이린",
+  mx_species_kilnclaw: "볼케이건",
+  mx_species_pyroscale: "마그렉스",
+  mx_species_rivulet: "아쿠링",
+  mx_species_tideling: "마린웨이",
+  mx_species_abyssal: "네레이드",
 };
 
 const OLD_TO_NEW_TEXT: ReadonlyArray<readonly [string, string]> = [
-  ["꼬마초", "새싹토"],
-  ["불씨점", "찌릿토"],
-  ["물방울", "물방토"],
+  ["꼬마초", "토리프"],
+  ["불씨점", "파이린"],
+  ["물방울", "아쿠링"],
   ["별싹 마을", "새벽섬 마을"],
   ["별빛섬", "새벽섬"],
 ];
@@ -147,7 +147,7 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
       presentation: {
         tone: "warm",
         credits:
-          "에메랄드 크라운: 새벽섬의 수호자\n새싹토 · 물방토 · 찌릿토와 함께한 새벽섬의 여정\n기획·도트·연출: OPRN Flagship Studio",
+          "에메랄드 크라운: 새벽섬의 수호자\n토리프 · 아쿠링 · 파이린과 함께한 새벽섬의 여정\n기획·도트·연출: OPRN Flagship Studio",
       },
     },
     {
@@ -198,7 +198,7 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
 
   const avoid = new Set<string>([`${spawn.x},${spawn.y}`]);
 
-  // North of spawn: Professor's Outdoor Starter & Vine Gate Switch (`changeTile` + Starter `새싹토`/`물방토`/`찌릿토` + Follower Companion `changeParty`)
+  // North of spawn: Professor's Outdoor Starter & Vine Gate Switch (`changeTile` + Starter `토리프`/`아쿠링`/`파이린` + Follower Companion `changeParty`)
   const profPos = { x: spawn.x, y: spawn.y - 1 };
   avoid.add(`${profPos.x},${profPos.y}`);
   const curTile = homeMap.lowerTiles[profPos.y * homeMap.width + profPos.x] ?? 0;
@@ -254,9 +254,9 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
             kind: "choices",
             prompt: "함께 모험을 떠날 첫 파트너를 선택하세요",
             options: [
-              { text: "풀 타입 『새싹토』 (새싹토 → 잎귀토 → 숲지기토)", branch: giveStarterBranch("mx_species_spriglet", "새싹토") },
-              { text: "물 타입 『물방토』 (물방토 → 갯물방 → 조수지기)", branch: giveStarterBranch("mx_species_rivulet", "물방토") },
-              { text: "불·전기 타입 『찌릿토』 (찌릿토 → 가마발 → 용광비늘)", branch: giveStarterBranch("mx_species_coalbit", "찌릿토") },
+              { text: "풀 타입 『토리프』 (토리프 → 실바리온 → 벨데로드)", branch: giveStarterBranch("mx_species_spriglet", "토리프") },
+              { text: "물 타입 『아쿠링』 (아쿠링 → 마린웨이 → 네레이드)", branch: giveStarterBranch("mx_species_rivulet", "아쿠링") },
+              { text: "불·격투 타입 『파이린』 (파이린 → 볼케이건 → 마그렉스)", branch: giveStarterBranch("mx_species_coalbit", "파이린") },
             ],
           },
         ],

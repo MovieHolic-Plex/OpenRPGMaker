@@ -277,7 +277,7 @@ interface RenameArg { speciesId?: unknown; name?: unknown }
 
 const renameMonsterSpecies: ToolDefinition = {
   name: 'rename_monster_species',
-  description: '몬스터 종 이름을 바꾸고 그 이름이 쓰인 모든 곳을 함께 고친다 — 도감 종 레코드, 적 이름, 전투 무리 이름(「야생의 …」), 맵 이벤트 대사·말하는 이, 선택지, 도감 설명(monsterCampaign.speciesNotes), 엔딩·공통 이벤트. 한글 조사(이/가·은/는·을/를·와/과·로/으로)는 새 이름 받침에 맞춘다. 여러 종을 한 번에(최대 60). 종 id 는 그대로다. 다른 종 이름의 일부인 이름(「새싹」→「새싹토」 안에 있음)은 오염을 막으려 건너뛰고 data.failed 에 이유를 적는다.',
+  description: '몬스터 종 이름을 바꾸고 그 이름이 쓰인 모든 곳을 함께 고친다 — 도감 종 레코드, 적 이름, 전투 무리 이름(「야생의 …」), 맵 이벤트 대사·말하는 이, 선택지, 도감 설명(monsterCampaign.speciesNotes), 엔딩·공통 이벤트. 한글 조사(이/가·은/는·을/를·와/과·로/으로)는 새 이름 받침에 맞춘다. 여러 종을 한 번에(최대 60). 종 id 는 그대로다. 다른 종 이름의 일부인 이름(「토리」→「토리프」 안에 있음)은 오염을 막으려 건너뛰고 data.failed 에 이유를 적는다.',
   mode: 'write',
   domains: ['database', 'world', 'system'],
   parameters: {
