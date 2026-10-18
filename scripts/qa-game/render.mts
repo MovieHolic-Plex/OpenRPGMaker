@@ -257,6 +257,16 @@ export function renderMapPng(project: Project, map: GameMap, scale = 1, sunSourc
       for (let row = 0; row < map.height; row++) sunRow(row);
     }
   }
+  // 맵 기본 조명(색조·어둡기)을 게임 오버레이(source-over, globalAlpha=ambient)와 같은 식으로 섞는다 — 시대 변형 맵의
+  // 잿빛·노을 색이 정적 그림에도 보이게. 광원 구멍은 그리지 않으므로 지도가 읽히도록 0.55 에서 자른다.
+  const ambient = Math.min(0.55, map.defaultLighting?.ambient ?? 0);
+  const tint = /^#([0-9a-f]{6})$/iu.exec(map.defaultLighting?.color ?? "")?.[1];
+  if (ambient > 0 && tint) {
+    const rgb = [0, 2, 4].map((at) => parseInt(tint.slice(at, at + 2), 16));
+    for (let i = 0; i < target.data.length; i += 4) {
+      for (let c = 0; c < 3; c += 1) target.data[i + c] = Math.round(target.data[i + c]! * (1 - ambient) + rgb[c]! * ambient);
+    }
+  }
   const surfaceY = (x: number, y: number) => relief?.rows[y]?.cells[x]?.y ?? y * size;
   const context = new PngContext(target);
   for (const event of map.events ?? []) {

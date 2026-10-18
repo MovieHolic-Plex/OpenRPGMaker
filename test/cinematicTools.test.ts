@@ -241,6 +241,20 @@ describe("opening cinematic AI tools", () => {
     })] });
   });
 
+  it("refuses split-screen / UI-baked reference stills as a title background", () => {
+    // jrpg-loop-4 r5-ff2: the title used the 4-panel village reference (oprn-still-hero-dawn) and was rejected by the user.
+    for (const id of ["oprn-still-hero-dawn", "oprn-still-quiet-room", "oprn-still-rally", "oprn-still-dream"]) {
+      const ctx = context();
+      const refused = runTool(ctx, "set_title_screen", { backgroundResourceId: id }, { dryRun: false });
+      expect(refused.ok, id).toBe(false);
+      expect(ctx.project.system.titleScreen?.backgroundResourceId).not.toBe(id);
+    }
+    const ctx = context();
+    const accepted = runTool(ctx, "set_title_screen", { backgroundResourceId: "oprn-still-kingdom-day" }, { dryRun: false });
+    expect(accepted.ok, failure(accepted)).toBe(true);
+    expect(ctx.project.system.titleScreen?.backgroundResourceId).toBe("oprn-still-kingdom-day");
+  });
+
   it("lists exactly the media the database opening tab offers", () => {
     const ctx = context();
 

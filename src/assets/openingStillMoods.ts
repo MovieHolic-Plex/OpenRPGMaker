@@ -41,8 +41,8 @@ export const OPENING_STILL_MOODS: readonly OpeningStillMood[] = [
     description: "위에서 내려다본 픽셀 풀밭 중앙에 작은 인물과 색깔별 작은 생물이 서 있다.",
     mood: ["경쾌"],
     useCases: ["가벼운 모험", "첫 만남"],
-    cautions: ["게임 화면 형태의 픽셀아트; 고정 캐릭터 포함"],
-    suitableForOpening: true,
+    cautions: ["게임 화면 캡처 — 아래쪽 단축키 UI 막대가 그림에 박혀 있음; 고정 캐릭터 포함"],
+    suitableForOpening: false,
     series: "single-rally",
   },
   {
@@ -129,8 +129,8 @@ export const OPENING_STILL_MOODS: readonly OpeningStillMood[] = [
     description: "회색 방의 작은 인물 앞에 여러 문이 열리고 각 문 너머로 서로 다른 색과 사물들이 보인다.",
     mood: ["몽환", "불안"],
     useCases: ["꿈의 시작", "세계의 분기"],
-    cautions: ["고정 인물과 초현실적 사물 포함"],
-    suitableForOpening: true,
+    cautions: ["게임 창 테두리(제목 막대) UI가 그림에 박혀 있음; 고정 인물과 초현실적 사물 포함"],
+    suitableForOpening: false,
     series: "single-dream",
   },
   {
@@ -461,6 +461,19 @@ const ALL_STILL_MOODS: readonly OpeningStillMood[] = [...OPENING_STILL_MOODS, ..
 
 export function findOpeningStillMood(id: string): OpeningStillMood | undefined {
   return ALL_STILL_MOODS.find((entry) => entry.id === id);
+}
+
+/**
+ * 타이틀·오프닝 배경으로 쓰면 안 되는 스틸(분할 화면 콜라주·게임 UI가 박힌 참고 화면)이면 거절 문구, 아니면 null.
+ * jrpg-loop-4 r5-ff2 타이틀이 4분할 마을 참고 화면(oprn-still-hero-dawn)을 깔아 「화면 나뉜 것」으로 반려됐다 —
+ * suitableForOpening:false 는 목록 라벨로만 쓰여 도구가 그대로 받아들였다.
+ */
+export function unsuitableOpeningStillMessage(id: string, field: string): string | null {
+  const still = findOpeningStillMood(id);
+  if (!still || still.suitableForOpening) return null;
+  const clean = ALL_STILL_MOODS.filter((entry) => entry.suitableForOpening && entry.cautions.length === 0).map((entry) => entry.id);
+  return `${field} '${id}' 는 타이틀·오프닝 배경으로 쓸 수 없는 참고 스틸입니다(${still.cautions.join("; ") || "오프닝 부적합"}). `
+    + `한 장면이 화면을 꽉 채우는 스틸로 바꾸세요 — 예: ${clean.join(", ")}.`;
 }
 
 export function listOpeningStillMoods(): readonly OpeningStillMood[] {

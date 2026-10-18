@@ -57,7 +57,7 @@ export const OPENING_PRESETS: readonly OpeningPreset[] = [
   ] },
   { id: 'film-opening', name: '영화처럼 열리는 장면', mood: '와이프 · 자막 등장 · 디졸브', musicResourceId: STARTER_TITLE_BGM_ID, scenes: [
     { narration: '누군가 이 길을 먼저 걸었다.', resourceId: 'oprn-still-forest-path', motion: 'pan', durationMs: 4200, presentation: { preset: 'subtitle', transition: { enter: 'wipe', enterMs: 900 } } },
-    { narration: '남겨진 빛을 따라, 이야기가 시작된다.', resourceId: 'oprn-still-hero-dawn', motion: 'zoom', durationMs: 4300, presentation: { preset: 'subtitle' } },
+    { narration: '남겨진 빛을 따라, 이야기가 시작된다.', resourceId: 'oprn-still-farm-golden', motion: 'zoom', durationMs: 4300, presentation: { preset: 'subtitle' } },
     { narration: '{제목}', durationMs: 3500, presentation: { preset: 'chapter' } },
   ] },
   { id: 'opening-credits', name: '흐르는 오프닝 크레딧', mood: '스크롤 글자 · 장면 페이드', musicResourceId: STARTER_TITLE_BGM_ID, scenes: [
@@ -84,7 +84,7 @@ export const OPENING_PRESETS: readonly OpeningPreset[] = [
       },
       {
         narration: "달빛만 남은 호숫가에서, 한 사람이 검을 집어 들었다.",
-        resourceId: "oprn-still-hero-dawn",
+        resourceId: "oprn-still-moon-meadow",
         motion: "zoom",
         durationMs: 5200,
       },
@@ -159,7 +159,7 @@ export const OPENING_PRESETS: readonly OpeningPreset[] = [
       },
       {
         narration: "호수가 별을 삼키고, 세계는 다른 이름을 얻었다.",
-        resourceId: "oprn-still-dream",
+        resourceId: "oprn-still-manor-night",
         motion: "pan",
         durationMs: 5200,
       },
