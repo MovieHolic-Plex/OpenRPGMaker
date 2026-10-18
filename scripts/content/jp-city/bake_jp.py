@@ -36,6 +36,34 @@ FAMILY = 'oprn-jp'
 TPR = BL.TPR
 SOURCES = os.path.join(ROOT, 'tiledata', 'jp-city', 'sources')
 PALETTE = os.path.join(ROOT, 'tiledata', 'atlas-pick', 'palette', 'modern3.pal')
+# 일본 로케일 팔레트 계약 - src/editor/jpCity/paletteContract.ts 를 bun scripts/content/jp-city/export_palette_contract.mts 로 내보낸 것.
+CONTRACT = os.path.join(ROOT, 'tiledata', 'jp-city', 'palette-contract.json')
+
+
+def load_contract():
+    """{'colors': 계약 색 set(rgb), 'map': modern3 퇴출 램프 rgb -> 계약 rgb}."""
+    rgb = lambda h: tuple(int(h[i:i + 2], 16) for i in (1, 3, 5))
+    d = json.load(open(CONTRACT, encoding='utf-8'))
+    return dict(colors={rgb(c) for c in d['colors']}, map={rgb(k): rgb(v['to']) for k, v in d['normalize'].items()})
+
+
+def is_outdoor_cat(cat):
+    """실내·던전 블록이 아닌 칸(원본 거리 칸·거리 블록·시타마치)만 계약을 따른다."""
+    return not (cat.startswith('block:interior_') or cat.startswith('block:dungeon_'))
+
+
+def contract_remap(im, cmap, counter=None):
+    a = np.array(im.convert('RGBA'))
+    vis = a[:, :, 3] > 0
+    for src_rgb, dst in cmap.items():
+        hit = vis & (a[:, :, :3] == src_rgb).all(-1)
+        n = int(hit.sum())
+        if not n: continue
+        a[hit, :3] = dst
+        if counter is not None: counter[src_rgb] += n
+    return Image.fromarray(a, 'RGBA')
+
+
 BLOCKS_DIR = os.path.join(HERE, 'blocks')
 # 블록 합치는 순서(이름 고정). 블록을 추가할 때는 맨 끝에 덧붙인다. 번호는 핀이 지키므로 순서는 새 번호가 매겨지는 순서일 뿐이다.
 BLOCK_ORDER = ['autotiles_ground', 'autotiles_lines', 'roads', 'buildings', 'street_hand', 'school', 'transit_street', 'transit_station',
@@ -44,7 +72,7 @@ BLOCK_ORDER = ['autotiles_ground', 'autotiles_lines', 'roads', 'buildings', 'str
                'interior_school', 'interior_gym', 'interior_station', 'interior_office', 'interior_post',
                'dungeon_underground', 'dungeon_hospital', 'dungeon_school', 'dungeon_construction', 'dungeon_warehouse',
                'interior_amuse', 'interior_karaoke', 'interior_famires', 'interior_hotel', 'interior_mall',
-               'interior_hospital', 'interior_school2', 'interior_office2', 'shitamachi_pack']
+               'interior_hospital', 'interior_school2', 'interior_office2', 'shitamachi_pack', 'jp_regions_pack']
 PEOPLE = (851, 1005)            # 행인(Actor1) 자리 — 번들에서 제외, 투명 빈 칸으로 번호만 지킨다
 N_ORIG = 2880
 SIGN_DECOS = ('sign_h', 'vstack', 'wallad', 'vsign', 'plate', 'board', 'rtext', 'facade_ad', 'vision', 'mural')
@@ -599,6 +627,14 @@ def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=Fal
             cells.img[t] = BL.norm(BL.read_cell(old_png, t, otpr))
         else:
             cells.img[t] = Image.new('RGBA', (16, 16), (0, 0, 0, 0))
+    # ---- 7b) 일본 로케일 팔레트 계약(src/editor/jpCity/paletteContract.ts): 바깥 칸의 퇴출 램프 색 -> 계약 재료 색. 실내·던전 칸은 손대지 않는다.
+    contract = load_contract()
+    pal |= contract['colors']
+    contract_px = collections.Counter()
+    for t, inf in cells.info.items():
+        if is_outdoor_cat(inf['cat']): cells.img[t] = contract_remap(cells.img[t], contract['map'], contract_px)
+    for kid in list(expected):
+        if is_outdoor_cat('block:' + kit_index[kid]['source']['block'] if 'block' in kit_index[kid].get('source', {}) else ''): expected[kid] = contract_remap(expected[kid], contract['map'])
     sheet_img = BL.render_sheet(cells.img, count)
 
     # ---- 8) 정의 JSON
@@ -660,8 +696,8 @@ def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=Fal
     # 재조립 픽셀 일치 (메모리 시트 → 정의로 다시 조립해 원본과 비교)
     res['reassembly'] = verify_reassembly(sheet_img, data['structureKits'], expected)
     res['definition_checks'] = BL.check_definition(data)
-    # 원본 2880칸이 96열로 옮겨져도 같은 그림인가
-    diff = [i for i in range(N_ORIG) if not BL.same_image(BL.read_cell(sheet_img, i), src.raw_img[i])]
+    # 원본 2880칸이 96열로 옮겨져도 같은 그림인가(바깥 칸은 팔레트 계약으로 바꾼 원본과 비교)
+    diff = [i for i in range(N_ORIG) if not BL.same_image(BL.read_cell(sheet_img, i), contract_remap(src.raw_img[i], contract['map']) if is_outdoor_cat(cells.info[i]['cat']) else src.raw_img[i])]
     res['relayout_identical'] = dict(cells=N_ORIG, mismatched=len(diff), ids=diff[:10])
     # 팔레트·알파
     offs = {}; partial = 0; marker = 0
@@ -673,7 +709,9 @@ def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=Fal
         o = BL.off_palette(cells.img[t], pal)
         if o: offs[t] = o
     res['palette'] = dict(allowed_colors=len(pal), cells_with_off_palette=len(offs), off_palette_examples={str(t): {('#%02x%02x%02x' % c): n for c, n in o.items()} for t, o in list(offs.items())[:5]},
-                          marker_pixels=marker, partial_alpha_pixels=partial)
+                          marker_pixels=marker, partial_alpha_pixels=partial,
+                          contract=dict(source=os.path.relpath(CONTRACT, ROOT), colors=len(contract['colors']), normalized_colors=len(contract['map']),
+                                        normalized_pixels={('#%02x%02x%02x -> #%02x%02x%02x' % (k + contract['map'][k])): n for k, n in contract_px.most_common()}))
     res['sheet_hash'] = hashlib.sha1(sheet_img.tobytes()).hexdigest()
     res['pc_rule'] = 'tiledata/jp-city/bake/PC-RULES.md'
     pins_out = dict(version=1, tilesPerRow=TPR, count=count, cells={k: v for k, v in sorted(pins.map.items(), key=lambda kv: kv[1])})

@@ -10,6 +10,7 @@ import {
 import { isPassable } from "@/project/collision";
 import { LINK_JP_CITY_INTERIOR_TOOL } from "./jpCityInteriorLink";
 import { COMPOSE_JP_CITY_STREET_TOOL } from "./jpCityStreetTool";
+import { COMPOSE_JP_REGION_TOOL, LIST_JP_REGIONS_TOOL } from "./jpRegionTool";
 import { isJpCityTileset, JP_CITY_FAMILY, JP_CITY_ID } from "@/project/defaults/jpCity";
 import { setLayerTileAt } from "@/project/mapLayers";
 import { clearTileStack } from "@/project/mapOverlayTiles";
@@ -316,4 +317,4 @@ export const BUILD_JP_CITY_BUILDING_TOOL: ToolDefinition = {
   },
 };
 
-export const JP_CITY_TOOLS: readonly ToolDefinition[] = [LIST_JP_CITY_BUILDING_PARTS_TOOL, BUILD_JP_CITY_BUILDING_TOOL, LINK_JP_CITY_INTERIOR_TOOL, COMPOSE_JP_CITY_STREET_TOOL];
+export const JP_CITY_TOOLS: readonly ToolDefinition[] = [LIST_JP_CITY_BUILDING_PARTS_TOOL, BUILD_JP_CITY_BUILDING_TOOL, LINK_JP_CITY_INTERIOR_TOOL, COMPOSE_JP_CITY_STREET_TOOL, LIST_JP_REGIONS_TOOL, COMPOSE_JP_REGION_TOOL];

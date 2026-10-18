@@ -2,6 +2,7 @@ import { MONSTER_GAME_TOOLS } from './monsterGameTools';
 import { MONSTER_TOURNAMENT_TOOLS } from './monsterTournamentTools';
 import { MONSTER_BATCH_TOOLS } from './monsterBatchTools';
 import { bindStreetToolLookup } from "./jpCityStreetTool";
+import { bindRegionToolLookup } from "./jpRegionTool";
 import { bindThemeToolLookup } from "./themeScenes";
 import { bindSpaceBlueprintToolLookup } from "@/editor/spacePresetCatalog";
 import { MAP_EMPTINESS_TOOLS } from "./mapEmptiness";
@@ -421,6 +422,7 @@ export function getTool(name: string): ToolDefinition | undefined {
   return TOOL_BY_NAME.get(name);
 }
 bindStreetToolLookup(getTool);
+bindRegionToolLookup(getTool);
 bindThemeToolLookup(getTool);
 bindSpaceBlueprintToolLookup(getTool);
 bindJrpgVolumeToolLookup(getTool);

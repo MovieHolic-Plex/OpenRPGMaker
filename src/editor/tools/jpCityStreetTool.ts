@@ -1,5 +1,7 @@
 // compose_jp_city_street — 일본 도시(jp_city) 맵 한 장을 씨앗과 가게 목록으로 거리째 짠다.
 // 견본을 붙이는 것이 아니라 부품 사전·거리 칸·소품을 규칙으로 엮는다(src/project/jpCityStreetComposer.ts). 같은 인자는 같은 거리, 씨앗이 다르면 다른 거리.
+import { JP_REGIONS } from "@/editor/jpCity/japaneseRegionsCatalog";
+import { isPassable } from "@/project/collision";
 import { isJpCityTileset, JP_CITY_FAMILY, JP_CITY_ID } from "@/project/defaults/jpCity";
 import { blankFillTileFor } from "@/project/defaults/defaultMaps";
 import { labelStreetBuildings, planJpCityStreet, runJpStreetPlan, type JpStreetStyle } from "@/project/jpCityStreetComposer";
@@ -8,6 +10,7 @@ import { fillLotUses } from "@/project/jpCityLotUse";
 import { setLayerTileAt } from "@/project/mapLayers";
 import { clearTileStack } from "@/project/mapOverlayTiles";
 import type { GameMap, Project } from "@/project/types";
+import { claimStartIfBlank } from "./composerStart";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
@@ -19,6 +22,31 @@ function isUntouched(map: GameMap): boolean {
   return map.lowerTiles.every((t) => t === map.lowerTiles[0]) && map.upperTiles.every((t) => t === -1);
 }
 
+function pickStreetStartPos(project: Project, map: GameMap, walkRows: readonly number[]): { x: number; y: number } {
+  if (project.startMapId === map.id && isPassable(project, map, project.startPos.x, project.startPos.y)) {
+    return project.startPos;
+  }
+  const cx = Math.floor(map.width / 2), cy = Math.floor(map.height / 2);
+  for (const y of walkRows) {
+    if (y < 0 || y >= map.height) continue;
+    for (let d = 0; d < map.width; d++) {
+      for (const x of [cx + d, cx - d]) {
+        if (x >= 0 && x < map.width && isPassable(project, map, x, y)) return { x, y };
+      }
+    }
+  }
+  for (let r = 0; r < Math.max(map.width, map.height); r++) {
+    for (let dy = -r; dy <= r; dy++) {
+      for (let dx = -r; dx <= r; dx++) {
+        if (Math.abs(dx) !== r && Math.abs(dy) !== r) continue;
+        const x = cx + dx, y = cy + dy;
+        if (x >= 0 && x < map.width && y >= 0 && y < map.height && isPassable(project, map, x, y)) return { x, y };
+      }
+    }
+  }
+  return { x: cx, y: cy };
+}
+
 export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
   name: "compose_jp_city_street",
   mode: "write",
@@ -26,7 +54,8 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
   fillsCurrentMapId: true,
   description: "일본 도시(jp_city) 맵 한 장을 거리째 짠다 — 뒷줄 건물·보도·도로(횡단보도·차)·앞줄 건물·가로등·자판기·자전거·노보리를 규칙으로 배치한다. 견본을 붙이는 게 아니라 씨앗마다 다른 거리가 나온다. "
     + "shops 에 기획의 가게를 넣으면 그 가게가 먼저 건물이 된다(konbini·izakaya·ramen·cafe·shop·office·apartment·house·machiya·garage·sento·bento). style: shopping(상가 거리) | residential(주택가). "
-    + "맵은 40×28 이상이어야 한다. 손댄 맵은 replace:true 여야 다시 짠다(땅·건물·소품을 지우고, 이벤트는 그대로 둔다 — 건물이 막는 칸 위 이벤트는 옮긴다). 짠 뒤 build_jp_city_building 으로 건물을 고치거나 link_jp_city_interior 로 문마다 실내를 잇는다.",
+    + "맵은 40×28 이상이어야 한다. 손댄 맵은 replace:true 여야 다시 짠다(땅·건물·소품을 지우고, 이벤트는 그대로 둔다 — 건물이 막는 칸 위 이벤트는 옮긴다). 짠 뒤 build_jp_city_building 으로 건물을 고치거나 link_jp_city_interior 로 문마다 실내를 잇는다. "
+    + "상가가 아닌 일본 장소(학교·단치·건널목·신사·사찰·성·등산로·계곡·온천 마을·다랑논·항구·해변·무인역 등 30종)는 region 에 list_jp_regions 의 id 를 준다(compose_jp_region 과 같다).",
   parameters: {
     type: "object",
     properties: {
@@ -35,12 +64,18 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
       style: { type: "string", enum: ["shopping", "residential", "shitamachi", "shotengai"], description: "shopping 상가 · residential 주택가 · shitamachi 시타마치 골목(청과 가게·벽돌 술집·자판기 골목·옥상 안테나·골목 계단·콘크리트 판석 보도) · shotengai 쇼텐가이 아케이드 상가(붉은 차양 아케이드·大門通 아치·코인 주차·변압기 전신주)" },
       shops: { type: "array", items: { type: "string", enum: ["konbini", "izakaya", "ramen", "cafe", "shop", "office", "apartment", "house", "machiya", "garage", "sento", "bento"] }, description: "거리에 꼭 넣을 가게(앞에서부터 건물에 배정)" },
       replace: { type: "boolean", description: "이미 칠한 맵을 지우고 다시 짠다" },
+      region: { type: "string", enum: JP_REGIONS.map((r) => r.id), description: "일본 지역 30종 id(list_jp_regions) — 주면 style·shops 대신 그 지역 문법으로 짓는다" },
       lotsOnly: { type: "boolean", description: "다시 짜지 않고 이미 지은 jp_city 맵의 남은 빈 대지만 쓰임(코인 주차·골목 자판기·놀이터·텃밭·공사장·광장 꾸밈)으로 채운다 — 건물을 손으로 더하거나 옮긴 뒤 부른다" },
     },
     additionalProperties: false,
   },
   invalidArgsExample: { seed: 3, style: "shopping", shops: ["konbini", "cafe"] },
   run(draft: Project, args): ToolExecResult {
+    if (typeof args.region === "string" && args.region) {
+      const tool = lookup("compose_jp_region");
+      if (!tool) throw new ToolError("도구 compose_jp_region 이 없다", { code: "unknown-tool" });
+      return tool.run(draft, { region: args.region, ...(typeof args.mapId === "string" ? { mapId: args.mapId } : {}), ...(typeof args.seed === "number" ? { seed: args.seed } : {}), ...(args.replace === true ? { replace: true } : {}) });
+    }
     const mapId = typeof args.mapId === "string" && args.mapId.trim() ? args.mapId.trim() : "";
     if (!mapId) throw new ToolError("mapId 가 없고 지금 보는 맵도 없다 — 거리를 짤 jp_city 맵 id 를 준다", { code: "map-not-found" });
     const map = requireMap(draft, mapId);
@@ -90,8 +125,9 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
     const labels = labelStreetBuildings(built, outcome.buildings);
     draft.maps[mapId] = built;
     for (const [id, ts] of Object.entries(next.tilesets)) draft.tilesets[id] = ts;
+    const startNote = claimStartIfBlank(draft, mapId, pickStreetStartPos(draft, built, plan.walkRows)).note;
     return {
-      summary: `${plan.summary} — 건물 ${outcome.built}채(못 지은 자리 ${outcome.skipped}) · 소품 ${outcome.props}개, 빈터 쓰임 ${outcome.lotUses.length}곳(${[...new Set(outcome.lotUses.map((u) => u.use))].join("·") || "없음"}). 건물 문: ${labels.join(" · ")}. 문마다 가게에 맞는 실내를 link_jp_city_interior 로 잇는다(건물 이름표는 list_map_locations).`,
+      summary: `${plan.summary} — 건물 ${outcome.built}채(못 지은 자리 ${outcome.skipped}) · 소품 ${outcome.props}개, 빈터 쓰임 ${outcome.lotUses.length}곳(${[...new Set(outcome.lotUses.map((u) => u.use))].join("·") || "없음"}). 건물 문: ${labels.join(" · ")}. 문마다 가게에 맞는 실내를 link_jp_city_interior 로 잇는다(건물 이름표는 list_map_locations).${startNote}`,
       data: { mapId, seed, style, shopsBuilt: labels, built: outcome.built, skipped: outcome.skipped, props: outcome.props, walkRows: plan.walkRows },
       ...(warnings.length ? { warnings } : {}),
     };
