@@ -74,6 +74,9 @@ export const MC_BUILDING_TYPES: Readonly<Record<string, { ko: string; program?: 
 };
 /** 거리마다 하나씩은 넣는 종류(씨앗이 순서를 섞는다) — 실내 예제가 있는 건물. */
 const MUST: readonly string[][] = [["conv"], ["office", "office-wide", "mid4"], ["hospital"], ["cafe"], ["bank"], ["apartment", "apt-balcony", "balcony2", "low3"], ["mid6", "hotel", "dept"]];
+/** 한 맵에 하나뿐인 랜드마크(옥상 헬기장 병원·백화점·호텔·관공서·타워) — 둘이 서면 복제한 거리로 보인다(R6 VQA: 헬기장 병원 셋). 나머지 종류는 둘까지. */
+const ONE_PER_MAP: ReadonlySet<string> = new Set(["hospital", "dept", "hotel", "police", "fire", "post", "tower10", "tower10b", "school"]);
+function typeLimit(type: string): number { return ONE_PER_MAP.has(type) ? 1 : 2; }
 
 function mulberry(seed: number): () => number {
   let s = seed >>> 0;
@@ -165,7 +168,7 @@ function frontage(b: Board, r: () => number, x0: number, x1: number, accessY: nu
   const fitsKit = (id: string, at: number) => { const k = b.kit(id); return k.height <= maxH && at + k.width - 1 <= x1 && b.fits(id, at, accessY - k.height, ["walk", "ground"]); };
   while (x <= x1 - 3) {
     const room = x1 - x + 1;
-    const candTypes = (types: readonly string[]) => types.filter((t) => t !== prev && (counts.get(t) ?? 0) < 2 && (byType.get(t) ?? []).some((id) => fitsKit(id, x)));
+    const candTypes = (types: readonly string[]) => types.filter((t) => t !== prev && (counts.get(t) ?? 0) < typeLimit(t) && (byType.get(t) ?? []).some((id) => fitsKit(id, x)));
     let type: string | undefined;
     // 사용자가 고른 가게 → 반드시 넣을 종류 → 무게 뽑기
     for (let i = 0; i < wishes.length && !type; i++) { const c = candTypes([wishes[i]!]); if (c.length) { type = c[0]; wishes.splice(i, 1); } }
@@ -243,27 +246,93 @@ function park(b: Board, r: () => number, x0: number, y0: number, x1: number, y1:
   for (let tries = 0, m = 0; tries < 40 && m < 2; tries++) { const x = x0 + Math.floor(r() * w), y = y0 + Math.floor(r() * h); if (b.prop(pick(r, shrubs), x, y - 1, ["park"], 1)) m++; }
 }
 
+/**
+ * 마지막 가로 도로 아래 얕은 띠(건물이 못 서는 4~7줄) — 길가 녹지. 빈 회색 보도로 맵 바닥이 끝나지 않게(R6 VQA)
+ * 세로 도로 사이 구간을 9~14칸 필지로 나눠 정원(생울타리·큰 나무·철쭉) · 카페 테라스(포석·파라솔 자리·매점) · 놀이터(잔디·모래밭·벤치)를
+ * 이웃끼리 다르게 앉힌다. 필지 사이엔 1칸 포석 샛길을 남긴다.
+ */
+function roadsideVerge(b: Board, r: () => number, y0: number, y1: number) {
+  const plaza = b.pal.group("mc:plaza");
+  const h = y1 - y0 + 1;
+  const segs: { x0: number; x1: number }[] = [];
+  for (let x = 0; x < b.W; x++) {
+    if (b.use[b.k(x, y0)] !== "ground") continue;
+    const last = segs[segs.length - 1];
+    if (last && last.x1 === x - 1) last.x1 = x; else segs.push({ x0: x, x1: x });
+  }
+  const paveAt = (x: number, y: number) => { const i = b.k(x, y); b.lower[i] = plaza[(x + y) % plaza.length] ?? b.lower[i]!; b.use[i] = "walk"; };
+  const lawnAt = (x: number, y: number) => { const i = b.k(x, y); b.lower[i] = lawnTile(b.pal, x, y); b.use[i] = "park"; };
+  const kinds = ["garden", "terrace", "play"] as const;
+  let prev = "";
+  const tryProp = (ids: readonly string[], x0: number, x1: number, yBottom: number, allow: readonly Use[], margin: number, tries = 12) => {
+    for (let t = 0; t < tries; t++) {
+      const id = pick(r, ids); const k = b.pal.kit(id); if (!k) continue;
+      const x = x0 + Math.floor(r() * Math.max(1, x1 - x0 - k.width + 2)), y = yBottom - k.height + 1;
+      if (y >= y0 && b.prop(id, x, y, allow, margin)) return true;
+    }
+    return false;
+  };
+  for (const s of segs) {
+    let x = s.x0;
+    while (x <= s.x1) {
+      let w = 9 + Math.floor(r() * 6);
+      if (s.x1 - (x + w - 1) < 6) w = s.x1 - x + 1;
+      const lx0 = x, lx1 = x + w - 1;
+      const kind = pick(r, kinds.filter((k) => k !== prev)); prev = kind;
+      for (let y = y0; y <= y1; y++) for (let X = lx0; X <= lx1; X++) (kind === "terrace" ? paveAt : lawnAt)(X, y);
+      if (lx1 < s.x1) for (let y = y0; y <= y1; y++) paveAt(lx1, y);     // 필지 사이 샛길
+      const ix1 = lx1 < s.x1 ? lx1 - 1 : lx1;
+      if (kind === "garden") {
+        const cx = lx0 + Math.floor((ix1 - lx0) / 2);
+        for (let y = y0; y <= y1; y++) for (const X of [cx, cx + 1]) if (X <= ix1) paveAt(X, y);   // 보도에서 드는 오솔길
+        const big = h >= 6 ? ["mc-prop-park-tree-a", "mc-prop-keyaki-a", "mc-prop-keyaki-b", "mc-prop-ginkgo-big-a"] : h >= 5 ? ["mc-prop-keyaki-a", "mc-prop-keyaki-b", "mc-prop-ginkgo-big-a"] : ["mc-prop-blossom-a", "mc-prop-blossom-b", "mc-prop-ginkgo-a"];
+        tryProp(big, lx0, cx - 1, y1, ["park"], 0);
+        tryProp(big, cx + 2, ix1, y1, ["park"], 0);
+        if (h >= 5) for (let X = lx0; X + 1 <= ix1; X += 2) if (X + 1 < cx || X > cx + 1) b.prop(pick(r, ["mc-prop-hedge-a", "mc-prop-hedge-b"]), X, y0, ["park"]);
+        tryProp(["mc-prop-azalea-a", "mc-prop-azalea-b", "mc-prop-shrub-a"], lx0, ix1, y1, ["park"], 0, 8);
+        b.prop(pick(r, ["mc-prop-park-lamp-a", "mc-prop-park-lamp-b"]), cx - 1, y0 + 1, ["park"]);
+      } else if (kind === "terrace") {
+        b.prop(pick(r, ["mc-prop-kiosk-a", "mc-prop-kiosk-b", "mc-prop-kiosk-c"]), lx0 + 1, y0 + 1, ["walk"]);
+        for (let ty = y0 + 1; ty + 1 <= y1 - (h >= 6 ? 1 : 0); ty += 3) for (let tx = lx0 + 4; tx + 1 <= ix1 - 1; tx += 3) b.prop(pick(r, ["mc-prop-terrace-a", "mc-prop-terrace-b", "mc-prop-terrace-c"]), tx, ty, ["walk"]);
+        b.prop(pick(r, ["mc-prop-bigpot-a", "mc-prop-bigpot-b"]), ix1, y0, ["walk"]);
+        b.prop(pick(r, ["mc-prop-vending-a", "mc-prop-vending2-a", "mc-prop-vending2-b"]), lx0, y1 - 1, ["walk"]);
+      } else {
+        b.prop(pick(r, ["mc-prop-sand-a", "mc-prop-sand-b", "mc-prop-sand-c"]), lx0 + 2, y0 + 1 + Math.floor(r() * Math.max(1, h - 3)), ["park"], 1);
+        b.prop(pick(r, ["mc-prop-bench-a", "mc-prop-bench-b"]), lx0 + 5 + Math.floor(r() * 2), y1 - 1, ["park"]);
+        tryProp(["mc-prop-blossom-a", "mc-prop-blossom-b", "mc-prop-conifer-a", "mc-prop-ginkgo-a"], lx0 + 5, ix1, y1, ["park"], 0);
+        b.prop(pick(r, ["mc-prop-park-lamp-a", "mc-prop-park-lamp-c"]), lx0, y0, ["park"]);
+        tryProp(["mc-prop-azalea-a", "mc-prop-azalea-b"], lx0, ix1, y1, ["park"], 0, 8);
+      }
+      x = lx1 + 1;
+    }
+  }
+}
+
 export function composeModernCityStreet(spec: MCStreetSpec, pal: MCPalette): MCStreetResult {
   const W = spec.width, H = spec.height, seed = spec.seed ?? 0;
   if (W < MODERN_CITY_STREET_MIN.w || H < MODERN_CITY_STREET_MIN.h) throw new Error(`맵이 작다(${W}×${H}) — ${MODERN_CITY_STREET_MIN.w}×${MODERN_CITY_STREET_MIN.h} 이상`);
   const r = mulberry(seed * 7919 + W * 31 + H);
   const b = new Board(W, H, pal);
-  // 계획: 가로 도로(12줄 단면) + 건물 띠. 띠 높이(8~13)와 맨 아래 남는 줄(없음 · 남향 건물 띠가 실제로 서는 10~13)을 씨앗으로 나눠
-  // 같은 맵 크기라도 도로망이 매번 달라지게 한다(R5 적대적 QA: 씨앗만 바꾸면 가로 도로 y 가 늘 같았다. 3~9줄 남김은
-  // 벤치만 늘어선 벽돌 띠·건물 없는 잔디 띠가 되어 뺐다).
+  // 계획: 가로 도로(12줄 단면) + 건물 띠. 띠 높이(8~13)와 맨 아래 남는 줄을 씨앗으로 나눠 같은 맵 크기라도 도로망이 매번 달라지게 한다
+  // (R5 적대적 QA: 씨앗만 바꾸면 가로 도로 y 가 늘 같았다). 맨 아래 남는 줄은 남향 건물 띠(10~13) 또는 길가 녹지 띠(4~7, roadsideVerge).
+  // 남김 0 은 맵이 마지막 도로의 맨 보도 줄에서 끝나 빈 회색 보도가 바닥 가장자리를 이루므로(R6 VQA) 다른 나눔이 없을 때만 쓴다.
+  // 8·9줄 남김은 건물이 서지 못하고 녹지로는 너무 넓어 빈 잔디 판이 되어 뺀다.
   const hz: number[] = [];
   const nH = Math.max(1, Math.min(3, Math.floor(H / 22)));
   const free = H - 12 * nH;
   if (Math.floor(free / nH) < 6) throw new Error(`맵 높이 ${H} 로는 건물 띠를 세울 수 없다`);
   const splits: number[][] = [];
   const grow = (acc: number[], left: number) => {
-    if (acc.length === nH) { if (left === 0 || (left >= 10 && left <= 13)) splits.push(acc); return; }
+    if (acc.length === nH) { if (left === 0 || (left >= 4 && left <= 7) || (left >= 10 && left <= 13)) splits.push(acc); return; }
     for (let h = 8; h <= 13 && h <= left; h++) grow([...acc, h], left - h);
   };
   grow([], free);
+  const sumOf = (s: readonly number[]) => s.reduce((a, c) => a + c, 0);
+  const filled = splits.filter((s) => sumOf(s) < free);
+  const choices = filled.length ? filled : splits;
   // 8줄 띠도 못 넣는 작은 맵: 옛 균등 분할(띠 ≤ 11, 남는 1~2 줄은 첫 띠로).
   const even = Math.min(11, Math.floor(free / nH)), evenSpare = free - even * nH;
-  const split = splits.length ? splits[Math.floor(r() * splits.length)]! : [even + (evenSpare <= 2 ? evenSpare : 0), ...Array<number>(nH - 1).fill(even)];
+  const split = choices.length ? choices[Math.floor(r() * choices.length)]! : [even + (evenSpare <= 2 ? evenSpare : 0), ...Array<number>(nH - 1).fill(even)];
   let y = 0;
   for (let i = 0; i < nH; i++) { y += split[i]!; hz.push(y); y += 12; }
   // 세로 도로 — 블록 폭 ≥ 16
@@ -274,41 +343,40 @@ export function composeModernCityStreet(spec: MCStreetSpec, pal: MCPalette): MCS
   for (const yy of hz) for (let x = 0; x < W; x++) b.ground("mc-street-ew-section", x, yy, "road");
   for (const xx of vt) for (let yy = 0; yy < H; yy++) b.ground("mc-street-ns-section", xx, yy, "road");
   for (const yy of hz) for (const xx of vt) b.ground("mc-intersection-12x12", xx, yy, "road");
-  // 길 칸 표시: 단면의 보도 줄은 walk, 차도는 road(ground() 가 보도 칸을 walk 로 둔다). 교차로·단면 안 연석·차도는 road.
-  const inV = (x: number) => vt.some((v) => x >= v && x < v + 12);
   // 띠: 가로 도로마다 북쪽(그 도로 첫 보도 줄이 접근칸 줄)
   const counts = new Map<string, number>();
   const queue = shuffle(r, MUST.map((m) => [...m]));
-  const wishes = [...(spec.shops ?? [])].map((s) => s.replace(/^mc-bld-/, ""));
+  // 손님이 고른 가게 순서는 씨앗으로 섞는다 — 그대로 두면 매번 맨 왼쪽 위 블록이 편의점·카페·은행 순으로 같았다(R6 VQA).
+  const wishes = shuffle(r, [...(spec.shops ?? [])].map((s) => s.replace(/^mc-bld-/, "")));
+  const edges = [-1, ...vt.flatMap((v) => [v, v + 11]), W].sort((a, c) => a - c);
   const blocks: { x0: number; x1: number; y0: number; y1: number; accessY: number }[] = [];
   hz.forEach((yy, i) => {
     const top = i === 0 ? 0 : hz[i - 1]! + 12;
-    const edges = [-1, ...vt.flatMap((v) => [v, v + 11]), W].sort((a, c) => a - c);
     for (let j = 0; j + 1 < edges.length; j += 2) {
       const x0 = edges[j]! + 1, x1 = edges[j + 1]! - 1;
       if (x1 - x0 + 1 >= 6) blocks.push({ x0, x1, y0: top, y1: yy - 1, accessY: yy });
     }
   });
-  // 공원 블록: 위에 도로가 있는(둘째 띠 이후) 블록 중 하나, 없으면 마지막 블록(블록이 셋 이상일 때만)
-  const parkable = blocks.filter((k) => k.y0 > 0 && k.x1 - k.x0 >= 13 && k.y1 - k.y0 >= 8);
-  const parkBlock = blocks.length >= 3 ? (parkable.length ? pick(r, parkable) : null) : null;
-  for (const k of blocks) {
-    if (k === parkBlock) { park(b, r, k.x0, k.y0, k.x1, k.y1); continue; }
-    frontage(b, r, k.x0, k.x1, k.accessY, k.y1 - k.y0 + 1, counts, queue, wishes);
-  }
-  // 마지막 도로 아래 남는 띠 — 7줄 이상이면 남향 건물 줄(맨 아래 보도 2줄이 접근칸 줄), 아니면 벽돌 광장 + 나무·벤치
+  // 마지막 도로 아래 남는 띠 — 10줄 이상이면 남향 건물 줄(맨 아래 보도 2줄이 접근칸 줄), 아니면 길가 녹지 띠.
   const lastBottom = hz.length ? hz[hz.length - 1]! + 12 : 0;
-  if (H - lastBottom >= 7) {
-    const edges = [-1, ...vt.flatMap((v) => [v, v + 11]), W].sort((a, c) => a - c);
+  const bottomRows = H - lastBottom;
+  if (bottomRows >= 10) {
     for (let j = 0; j + 1 < edges.length; j += 2) {
       const x0 = edges[j]! + 1, x1 = edges[j + 1]! - 1;
-      if (x1 - x0 + 1 >= 6) frontage(b, r, x0, x1, H - 2, H - 2 - lastBottom, counts, queue, wishes);
+      if (x1 - x0 + 1 >= 6) blocks.push({ x0, x1, y0: lastBottom, y1: H - 3, accessY: H - 2 });
     }
+  }
+  // 공원 블록: 모든 띠(맨 위·맨 아래 포함)의 넉넉한 블록 중 씨앗으로 하나 — 늘 둘째 띠 오른쪽에 서던 분수 공원(R6 VQA)을 맵 곳곳으로.
+  const parkable = blocks.filter((k) => k.x1 - k.x0 >= 13 && k.y1 - k.y0 >= 8);
+  const parkBlock = blocks.length >= 3 && parkable.length ? pick(r, parkable) : null;
+  for (const k of blocks) {
+    if (k === parkBlock) { park(b, r, k.x0, k.y0, k.x1, k.y1); continue; }
+    frontage(b, r, k.x0, k.x1, k.accessY, k.accessY - k.y0, counts, queue, wishes);
+  }
+  if (bottomRows >= 10) {
     for (let x = 0; x < W; x++) for (const yy of [H - 2, H - 1]) { const i = b.k(x, yy); if (b.use[i] === "ground") b.use[i] = "walk"; }
-  } else if (lastBottom < H) {
-    const plaza = pal.group("mc:plaza");
-    for (let yy = lastBottom; yy < H; yy++) for (let x = 0; x < W; x++) { const i = b.k(x, yy); if (b.use[i] === "ground") { b.lower[i] = plaza[(x + yy) % plaza.length]!; b.use[i] = "walk"; } }
-    for (let x = 1; x < W - 2; x += 5 + Math.floor(r() * 3)) if (!inV(x) && !inV(x + 1)) b.prop(pick(r, ["mc-prop-street-tree-a", "mc-prop-ginkgo-a", "mc-prop-blossom-a", "mc-prop-bench-a"]), x, Math.max(lastBottom, H - 3), ["walk"], 1);
+  } else if (bottomRows > 0) {
+    roadsideVerge(b, r, lastBottom, H - 1);
   }
   // 소품: 가로 도로
   const nearCross = (x: number, pad: number) => vt.some((v) => x >= v - pad && x < v + 12 + pad);
