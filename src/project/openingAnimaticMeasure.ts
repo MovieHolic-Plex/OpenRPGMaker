@@ -212,8 +212,8 @@ export function measureOpeningAnimatic(project: Project): OpeningMeasurement {
       }
       if (!s.hasCamera) issues.push(`${s.id}: 카메라 키가 없습니다. animate_opening_camera 로 하강·상승·팬 중 하나를 넣으세요(참조 도입부는 하늘에서 내려오는 하강과 성당 팬을 씁니다).`);
       for (const sp of s.spriteScale) {
-        if (/^pixelart_/u.test(sp.resourceId)) {
-          issues.push(`${s.id}/${sp.layerId}: author_pixel_art 로 찍은 커스텀 인물(${sp.resourceId}) 대신 번들 24×32 캐릭터 칩(easyrpg-charset-actor1~4, easyrpg-charset-people1~5 등)을 place_opening_charset_actor 로 놓으세요 — 막대인간이 되지 않고 배경과 도트 밀도가 맞습니다.`);
+        if (/^(?:pixelart_|charset_)/u.test(sp.resourceId)) {
+          issues.push(`${s.id}/${sp.layerId}: author_pixel_art 로 찍은 커스텀 인물(${sp.resourceId}) 대신 번들 24×32 캐릭터 칩(현대·연애: oprn-charset-modern1~3, 판타지: oprn-charset-heroes1, easyrpg-charset-actor1~4, easyrpg-charset-people1~5)을 place_opening_charset_actor 로 놓으세요 — 막대인간이 되지 않고 배경과 도트 밀도가 맞습니다.`);
         }
         if (Math.abs(sp.scale - Math.round(sp.scale)) > 0.01) {
           const next = Math.max(1, Math.round(sp.scale));
