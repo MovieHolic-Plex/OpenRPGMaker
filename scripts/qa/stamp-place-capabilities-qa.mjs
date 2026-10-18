@@ -84,6 +84,72 @@ const MODEL_PLANS = {
   "간단한 상점 만들어줘": {
     steps: [],
   },
+  "절벽 폭포와 연못 만들고 호수 섬 사당과 돌다리도 놓아줘": {
+    steps: [
+      { tool: "carve_waterfall_pond", args: { area: { x: 8, y: 1, w: 15, h: 9 } }, label: "절벽 폭포와 폭포수 연못" },
+      { tool: "carve_lake_island", args: { area: { x: 8, y: 10, w: 9, h: 9 }, centerpiece: "shrine" }, label: "호수 위 작은 섬과 사당" },
+      { tool: "place_bridge", args: { area: { x: 17, y: 10, w: 6, h: 9 }, style: "stone" }, label: "아치 돌다리와 양안 진입로" },
+    ],
+  },
+  "장터 광장과 노점 바자회 만들고 겨울 설원 테마로 바꿔줘": {
+    steps: [
+      { tool: "retheme_season_biome", args: { area: { x: 8, y: 1, w: 15, h: 7 }, theme: "winter_snow" }, label: "겨울 설원 바이옴 리테마" },
+      { tool: "build_market_bazaar", args: { area: { x: 8, y: 8, w: 15, h: 11 }, stallCount: 5 }, label: "장터 광장과 노점 바자회·상인 NPC" },
+    ],
+  },
+  "항구 부두와 어선 만들고 옆에 울타리 농장과 철길 건널목 만들어줘": {
+    steps: [
+      { tool: "build_farm_ranch", args: { area: { x: 8, y: 1, w: 15, h: 7 } }, label: "목장 울타리·경작지 밭·양떼·농부 NPC" },
+      { tool: "build_rail_crossing", args: { area: { x: 8, y: 8, w: 15, h: 5 } }, label: "동서 철길 선로·남북 건널목·간이역·역무원 NPC" },
+      { tool: "build_harbor_dock", args: { area: { x: 8, y: 13, w: 15, h: 6 } }, label: "석조 부두 안벽·나무 잔교·정박 어선·선원 NPC" },
+    ],
+  },
+  "여관과 치유 성당, 모험가 길드 게시판과 역마차 정류장 세워줘": {
+    steps: [
+      { tool: "place_inn", args: { area: { x: 8, y: 1, w: 8, h: 9 }, name: "버들항 여관 주인", price: 20 }, label: "여관 건물과 숙박 회복 주인" },
+      { tool: "place_church_healer", args: { area: { x: 16, y: 1, w: 7, h: 9 } }, label: "성당 예배당과 치유·저장 사제" },
+      { tool: "place_guild_board", args: { area: { x: 8, y: 10, w: 8, h: 9 } }, label: "모험가 길드 회관과 3분기 의뢰 게시판" },
+      { tool: "place_travel_portal", args: { area: { x: 16, y: 10, w: 7, h: 9 }, kind: "carriage" }, label: "역마차 정류장과 마부 이동 이벤트" },
+    ],
+  },
+  "배회하는 몬스터들과 레버 철문, 모닥불 야영지와 미믹 상자 깔아줘": {
+    steps: [
+      { tool: "place_switch_and_gate", args: { area: { x: 8, y: 1, w: 8, h: 6 } }, label: "레버 스위치와 연동 강철 성문" },
+      { tool: "place_camp_rest", args: { area: { x: 16, y: 1, w: 7, h: 7 } }, label: "모험가 야영 천막과 휴식·저장 모닥불" },
+      { tool: "place_roaming_enemies", args: { area: { x: 8, y: 8, w: 8, h: 9 }, count: 2, movement: "approach" }, label: "배회 심볼 몬스터 2마리" },
+      { tool: "place_mimic_and_sparkles", args: { area: { x: 16, y: 9, w: 7, h: 9 } }, label: "보물상자·미믹 함정 상자·반짝이 유실물" },
+    ],
+  },
+  "석조 성벽으로 둘러싸고 기둥을 일렬로 세우고 좌우 대칭 복사한 뒤 도로망을 자동 연결해줘": {
+    steps: [
+      { tool: "enclose_with_wall", args: { area: { x: 8, y: 1, w: 15, h: 15 }, style: "stone", gateSide: "south" }, label: "석조 담장 포위 및 남쪽 출입문" },
+      { tool: "repeat_line_or_grid", args: { area: { x: 9, y: 2, w: 5, h: 10 }, query: "기둥", count: 3 }, label: "기념 원주 일렬 반복 배치" },
+      { tool: "mirror_region", args: { area: { x: 9, y: 2, w: 13, h: 10 }, axis: "horizontal" }, label: "좌우 대칭 복사" },
+      { tool: "auto_connect_roads", args: { area: { x: 8, y: 1, w: 15, h: 17 } }, label: "건물 출입구 도로망 자동 연결" },
+    ],
+  },
+  "여관과 상점을 세우고 출입구 도로망을 자동 연결한 뒤 마을 군중으로 북적이게 하고 노을 조명으로 연출해줘": {
+    steps: [
+      { tool: "place_inn", args: { area: { x: 8, y: 1, w: 8, h: 9 }, name: "여관 주인", price: 20 }, label: "1턴: 여관 건물과 숙박 회복 주인" },
+      { tool: "place_shop", args: { area: { x: 16, y: 1, w: 7, h: 9 }, kind: "potion", name: "물약 상점" }, label: "1턴: 물약 상점과 상인 NPC" },
+    ],
+    needsFollowUp: true,
+    remainingGoals: [
+      "auto_connect_roads: 출입구 도로망 자동 연결",
+      "populate_crowd: 활기찬 마을 군중 배치",
+      "set_mood_weather: 날씨·석양/야경 조명 연출",
+    ],
+  },
+};
+
+const MODEL_TURN2_PLANS = {
+  "여관과 상점을 세우고 출입구 도로망을 자동 연결한 뒤 마을 군중으로 북적이게 하고 노을 조명으로 연출해줘": {
+    steps: [
+      { tool: "auto_connect_roads", args: { area: { x: 8, y: 1, w: 15, h: 17 } }, label: "2턴: 건물 출입구 도로망 오토타일 자동 연결" },
+      { tool: "populate_crowd", args: { area: { x: 8, y: 10, w: 15, h: 7 }, count: 5 }, label: "2턴: 활기찬 마을 군중 NPC 5명 배치" },
+      { tool: "set_mood_weather", args: { area: { x: 8, y: 1, w: 15, h: 17 }, weather: "clear", preset: "sunset" }, label: "2턴: 노을 조명과 가로등·화로 분위기 연출" },
+    ],
+  },
 };
 
 async function startViteServer() {
@@ -148,8 +214,11 @@ try {
       payload = {};
     }
     const sentence = String(payload.sentence ?? "");
-    const plan = MODEL_PLANS[sentence] ?? { steps: [] };
-    modelCalls.push({ sentence, plan });
+    const isTurn2 = users.length >= 2;
+    const plan = isTurn2
+      ? (MODEL_TURN2_PLANS[sentence] ?? { steps: [] })
+      : (MODEL_PLANS[sentence] ?? { steps: [] });
+    modelCalls.push({ sentence, turn: isTurn2 ? 2 : 1, plan });
     await route.fulfill({
       status: 200,
       contentType: "application/json",
@@ -382,6 +451,48 @@ try {
       sel: { x: 10, y: 1, w: 13, h: 9 },
       prompt: "간단한 상점 만들어줘",
     },
+    {
+      id: "case10-bridge-waterfall",
+      mapName: "버들항 계곡 — ⑩ 절벽 폭포·연못 + 호수 섬 사당 + 아치 돌다리",
+      sel: { x: 8, y: 1, w: 15, h: 18 },
+      prompt: "절벽 폭포와 연못 만들고 호수 섬 사당과 돌다리도 놓아줘",
+    },
+    {
+      id: "case11-market-bazaar",
+      mapName: "버들항 광장 — ⑪ 겨울 설원 리테마 + 장터 바자회 노점·상인",
+      sel: { x: 8, y: 1, w: 15, h: 18 },
+      prompt: "장터 광장과 노점 바자회 만들고 겨울 설원 테마로 바꿔줘",
+    },
+    {
+      id: "case12-harbor-farm",
+      mapName: "버들항 해안 — ⑫ 울타리 농장 + 철길 건널목·간이역 + 항구 부두·어선",
+      sel: { x: 8, y: 1, w: 15, h: 18 },
+      prompt: "항구 부두와 어선 만들고 옆에 울타리 농장과 철길 건널목 만들어줘",
+    },
+    {
+      id: "case13-inn-church-guild",
+      mapName: "버들항 중심가 — ⑬ 여관(회복) + 성당(힐·저장) + 길드 게시판(3분기) + 역마차",
+      sel: { x: 8, y: 1, w: 15, h: 18 },
+      prompt: "여관과 치유 성당, 모험가 길드 게시판과 역마차 정류장 세워줘",
+    },
+    {
+      id: "case14-enemies-switch-camp",
+      mapName: "버들항 변경 — ⑭ 레버·철문 + 야영지 모닥불 + 배회 몬스터 + 미믹·반짝이",
+      sel: { x: 8, y: 1, w: 15, h: 18 },
+      prompt: "배회하는 몬스터들과 레버 철문, 모닥불 야영지와 미믹 상자 깔아줘",
+    },
+    {
+      id: "case15-wall-repeat-mirror-roads",
+      mapName: "버들항 성역 — ⑮ 성벽 포위 + 기둥 일렬 반복 + 좌우 대칭 복사 + 도로 자동 연결",
+      sel: { x: 8, y: 1, w: 15, h: 17 },
+      prompt: "석조 성벽으로 둘러싸고 기둥을 일렬로 세우고 좌우 대칭 복사한 뒤 도로망을 자동 연결해줘",
+    },
+    {
+      id: "case16-crowd-weather-2turn",
+      mapName: "버들항 번화가 — ⑯ [LLM 2턴 연쇄 시공] 1턴 여관·상점 → 2턴 도로망 연결·군중 5명·노을 조명",
+      sel: { x: 8, y: 1, w: 15, h: 17 },
+      prompt: "여관과 상점을 세우고 출입구 도로망을 자동 연결한 뒤 마을 군중으로 북적이게 하고 노을 조명으로 연출해줘",
+    },
   ];
 
   const results = [];
@@ -446,7 +557,7 @@ try {
     );
     await page.evaluate(async (caseId) => {
       const { editorState } = await import("/src/editor/editorState.ts");
-      const showEvents = caseId.startsWith("case8") || caseId.startsWith("case9");
+      const showEvents = /^(?:case8|case9|case11|case12|case13|case14|case16)/.test(caseId);
       editorState.set({
         selection: null,
         ...(showEvents ? { layer: "event", tool: "select" } : {}),
