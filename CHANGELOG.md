@@ -5,6 +5,19 @@
 
 <!-- releases -->
 
+## 0.259.0 — 2026-10-18
+
+### 기능
+
+- **editor** — AI 참고 청사진 2차 — 백화점 청사진 구성기, 강 굽이·남쪽 구획 난수, 마을 기후 읽기 (적대적 VQA 4~7회차) (#2896) (`7d6f36d`)
+
+### 수정
+
+- **riverside** — 강변 이름 jp_city 맵의 맨 위를 강물로 덮던 정비를 modern 칩셋에만 돌린다 (#2898) (`791f9ae`)
+- **interior** — keep wall-flush stairs/escalators off room partitions in 7 venue presets (#2897) (`631a221`)
+- **modern_city** — 3/4 top-down N/S vehicle art + don't-block-the-box junction rule (#2893) (`9fe8197`)
+- **modern_city** — 바로 깔기 현대 도시의 가로 도로 위치를 씨앗마다 바꾼다 (#2892) (`0618a8c`)
+
 ## 0.258.2 — 2026-10-18
 
 ### 수정
