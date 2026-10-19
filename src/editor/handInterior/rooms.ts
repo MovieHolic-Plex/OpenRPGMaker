@@ -75,6 +75,7 @@ export function composeHandInteriorRooms(
 
   const doors: HandInteriorObject[] = [];
   const openings: { a: string; b: string; x: number; y: number; kind: "h" | "v"; open?: boolean }[] = [];
+  const seamZones: HandInteriorZone[] = [];
   for (const c of connect) {
     const A = byId.get(c.a) ?? fail(`connect: 방 "${c.a}" 이 없다`), B = byId.get(c.b) ?? fail(`connect: 방 "${c.b}" 이 없다`);
     const [top, bot] = A.y1 < B.y0 ? [A, B] : B.y1 < A.y0 ? [B, A] : [undefined, undefined];
@@ -98,7 +99,15 @@ export function composeHandInteriorRooms(
       openings.push({ a: c.a, b: c.b, x, y, kind: "h" });
     } else if (left && right && right.x0 - left.x1 === 2) {
       const oy0 = Math.max(left.y0, right.y0), oy1 = Math.min(left.y1, right.y1);
-      if (c.open) { if (oy0 > oy1) fail(`connect ${c.a}–${c.b}: 옆으로 겹친 줄이 없다`); for (let y = oy0; y <= oy1; y++) g[y]![left.x1 + 1] = "."; openings.push({ a: c.a, b: c.b, x: left.x1 + 1, y: oy1, kind: "v", open: true }); continue; }
+      if (c.open) {
+        if (oy0 > oy1) fail(`connect ${c.a}–${c.b}: 옆으로 겹친 줄이 없다`);
+        for (let y = oy0; y <= oy1; y++) g[y]![left.x1 + 1] = ".";
+        if (left.floor || left.wall) {
+          seamZones.push({ x0: left.x1 + 1, y0: oy0 - 1, x1: left.x1 + 1, y1: oy1, ...(left.floor ? { floor: left.floor } : {}), ...(left.wall ? { wall: left.wall } : {}) });
+        }
+        openings.push({ a: c.a, b: c.b, x: left.x1 + 1, y: oy1, kind: "v", open: true });
+        continue;
+      }
       // 통로 줄 p: 두 방 모두 벽면 아래(맨 위 두 줄 제외)이고, 틈 세 줄(p-2..p)이 겹친 구간 안.
       const lo = oy0 + 2, hi = oy1;
       if (lo > hi) fail(`connect ${c.a}–${c.b}: 옆으로 겹친 줄이 ${Math.max(0, oy1 - oy0 + 1)}줄 — 세로 칸막이 문은 겹친 줄 3줄 이상(위 두 줄은 칸막이 끝 벽면)`);
@@ -121,8 +130,11 @@ export function composeHandInteriorRooms(
   if (ex < exitRoom.x0 || ex + width - 1 > exitRoom.x1) fail(`exit.x=${ex} — 출구는 방 ${exitRoom.id} 의 열 ${exitRoom.x0}~${exitRoom.x1} 안`);
   for (let x = ex; x < ex + width; x++) g[H - 1]![x] = ".";
 
-  const zones: HandInteriorZone[] = rooms.filter((r) => r.floor || r.wall)
-    .map((r) => ({ x0: r.x0, y0: r.y0 - 1, x1: r.x1, y1: r.y1, ...(r.floor ? { floor: r.floor } : {}), ...(r.wall ? { wall: r.wall } : {}) }));
+  const zones: HandInteriorZone[] = [
+    ...rooms.filter((r) => r.floor || r.wall)
+      .map((r) => ({ x0: r.x0, y0: r.y0 - 1, x1: r.x1, y1: r.y1, ...(r.floor ? { floor: r.floor } : {}), ...(r.wall ? { wall: r.wall } : {}) })),
+    ...seamZones,
+  ];
   return { plan: g.map((row) => row.join("")), zones, doors, exit: { x: ex, y: H - 1, width }, openings };
 }
 

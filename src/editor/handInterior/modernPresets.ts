@@ -29,21 +29,33 @@ export interface ModernProgramVariation {
   readonly ragged?: boolean;
   /** 방 종류 → 줄 안 높이. 줄 끝 방의 높이를 줄여 그 아래를 건물 밖(ㄱ·ㄴ자 귀퉁이)으로 만든다 - 높이는 견본보다 크지 않다. */
   readonly trim?: Readonly<Record<string, number>>;
+  /** 칸막이 없이 넓게 트는 방 쌍(로비↔대기실, 매장↔진열 알코브 등). */
+  readonly open?: readonly (readonly [string, string])[];
 }
 
 export const MODERN_PROGRAM_VARIATION: Readonly<Record<string, Readonly<Record<string, ModernProgramVariation>>>> = {
   modern_city: {
-    mc_department_store: { palettes: [
+    mc_department_store: {
+      rows: [["dept-vip-hall"], ["dept-cosmetics", "dept-atrium", "dept-fashion"]], ragged: true, trim: { "dept-cosmetics": 12, "dept-fashion": 12 },
+      entrance: "dept-atrium", above: [["dept-vip-hall", "dept-cosmetics"], ["dept-vip-hall", "dept-atrium"], ["dept-vip-hall", "dept-fashion"]],
+      left: [["dept-cosmetics", "dept-atrium"], ["dept-atrium", "dept-fashion"]], hubs: ["dept-atrium", "dept-vip-hall"],
+      open: [["dept-vip-hall", "dept-atrium"], ["dept-cosmetics", "dept-atrium"], ["dept-atrium", "dept-fashion"]],
+      palettes: [
       { "dept-vip-hall": ["mci-wood-dark", "mci-wall-brick"], "dept-cosmetics": ["mci-stone-lobby", "mci-wall-store"], "dept-atrium": ["mci-stone-lobby", "mci-wall-store"], "dept-fashion": ["mci-carpet-office", "mci-wall-lobby"] },
       { "dept-vip-hall": ["mci-vinyl-store", "mci-wall-store"], "dept-cosmetics": ["mci-tile-small", "mci-wall-tile"], "dept-atrium": ["mci-tile-concourse", "mci-wall-lobby"], "dept-fashion": ["mci-wood-dark", "mci-wall-home"] },
     ] },
-    mc_cinema: { palettes: [
+    mc_cinema: {
+      rows: [["cinema-theater", "cinema-arcade-zone", "void:3"], ["cinema-lobby"]],
+      entrance: "cinema-lobby", above: [["cinema-theater", "cinema-lobby"], ["cinema-arcade-zone", "cinema-lobby"]], left: [["cinema-theater", "cinema-arcade-zone"]],
+      hubs: ["cinema-lobby"], open: [["cinema-arcade-zone", "cinema-lobby"]],
+      palettes: [
       { "cinema-theater": ["mci-wood-dark", "mci-wall-brick"], "cinema-arcade-zone": ["mci-concrete", "mci-wall-metal"], "cinema-lobby": ["mci-tile-concourse", "mci-wall-store"] },
       { "cinema-theater": ["mci-carpet-office", "mci-wall-office"], "cinema-arcade-zone": ["mci-vinyl-store", "mci-wall-tile"], "cinema-lobby": ["mci-wood-dark", "mci-wall-brick"] },
     ] },
     mc_museum: {
-      rows: [["gallery-paintings", "gallery-sculpture"], ["gallery-lobby", "gallery-shop"]], trim: { "gallery-shop": 5 }, entrance: "gallery-lobby",
+      rows: [["gallery-paintings", "gallery-sculpture"], ["gallery-lobby", "gallery-shop"]], ragged: true, trim: { "gallery-shop": 6 }, entrance: "gallery-lobby",
       above: [["gallery-paintings", "gallery-lobby"], ["gallery-sculpture", "gallery-lobby"], ["gallery-sculpture", "gallery-shop"]], left: [["gallery-paintings", "gallery-sculpture"], ["gallery-lobby", "gallery-shop"]], hubs: ["gallery-lobby"],
+      open: [["gallery-paintings", "gallery-lobby"]],
       palettes: [
       { "gallery-paintings": ["mci-wood-dark", "mci-wall-brick"], "gallery-sculpture": ["mci-concrete", "mci-wall-office"], "gallery-lobby": ["mci-tile-concourse", "mci-wall-store"], "gallery-shop": ["mci-wood-dark", "mci-wall-home"] },
       { "gallery-paintings": ["mci-carpet-office", "mci-wall-office"], "gallery-sculpture": ["mci-stone-lobby", "mci-wall-store"], "gallery-lobby": ["mci-wood-oak", "mci-wall-lobby"], "gallery-shop": ["mci-vinyl-store", "mci-wall-store"] },
@@ -269,8 +281,8 @@ export const MODERN_PRESET_DATA: ModernPresetData = {
           { t: "o", id: "dept-luxury-island", x: 4, y: 8 },
           { t: "o", id: "dept-jewelry-case", x: 1, y: 9 },
           { t: "o", id: "mci-counter-register", x: 8, y: 10 },
-          { t: "o", id: "dept-bag-stand", x: 1, y: 12 },
-          { t: "o", id: "mci-planter", x: 4, y: 12 },
+          { t: "o", id: "dept-bag-stand", x: 1, y: 11 },
+          { t: "o", id: "mci-planter", x: 4, y: 11 },
         ],
       },
       {
@@ -284,12 +296,11 @@ export const MODERN_PRESET_DATA: ModernPresetData = {
         wall: "mci-wall-lobby",
         items: [
           // 아트리움은 출구 방이라 늘 아래 줄 — 북쪽 벽이 명품 홀과의 칸막이다. 계단·에스컬레이터는 명품 홀(바깥 북쪽 벽)에 두고 여기는 분수 광장만.
-          { t: "o", id: "mci-art-frame", x: 1, y: 0 },
-          { t: "o", id: "mci-art-frame", x: 5, y: 0 },
-          { t: "o", id: "mci-art-frame", x: 9, y: 0 },
-          { t: "o", id: "mci-wait-bench", x: 1, y: 2 },
-          { t: "o", id: "mci-plant-tall", x: 5, y: 2 },
-          { t: "o", id: "mci-wait-bench", x: 8, y: 2 },
+          { t: "o", id: "mci-art-frame", x: 0, y: 0 },
+          { t: "o", id: "mci-art-frame", x: 10, y: 0 },
+          { t: "o", id: "mci-wait-bench", x: 0, y: 2 },
+          { t: "o", id: "mci-plant-tall", x: 11, y: 2 },
+          { t: "o", id: "mci-wait-bench", x: 9, y: 2 },
           { t: "o", id: "mci-planter", x: 1, y: 5 },
           { t: "o", id: "dept-sign-pillar", x: 6, y: 5 },
           { t: "o", id: "mci-planter", x: 9, y: 5 },
@@ -328,8 +339,8 @@ export const MODERN_PRESET_DATA: ModernPresetData = {
           { t: "o", id: "dept-clothing-rack", x: 2, y: 10 },
           { t: "o", id: "dept-clothing-rack", x: 6, y: 10 },
           { t: "o", id: "dept-clothing-rack", x: 9, y: 10 },
-          { t: "o", id: "mci-counter-register", x: 2, y: 12 },
-          { t: "o", id: "mci-armchair", x: 10, y: 12 },
+          { t: "o", id: "mci-counter-register", x: 2, y: 11 },
+          { t: "o", id: "mci-armchair", x: 10, y: 11 },
         ],
       },
       // ── 5. 영화관 · 아케이드 복합문화공간 (cinema-arcade, 32×22) ──
@@ -415,17 +426,17 @@ export const MODERN_PRESET_DATA: ModernPresetData = {
           { t: "o", id: "mci-wall-clock", x: 5, y: 0 },
           { t: "o", id: "mci-menu-board", x: 12, y: 0 },
           { t: "o", id: "mci-menu-board", x: 15, y: 0 },
-          { t: "o", id: "mci-art-frame", x: 18, y: 0 },
+          { t: "o", id: "mci-art-frame", x: 16, y: 0 },
           { t: "o", id: "mci-wall-clock", x: 28, y: 0 },
           { t: "o", id: "cinema-poster", x: 8, y: 0 },
-          { t: "o", id: "cinema-poster", x: 21, y: 0 },
-          { t: "o", id: "cinema-poster", x: 24, y: 0 },
+          { t: "o", id: "cinema-poster", x: 19, y: 0 },
+          { t: "o", id: "cinema-poster", x: 27, y: 0 },
           { t: "o", id: "mci-plant-tall", x: 0, y: 2 },
           { t: "o", id: "dept-directory-kiosk", x: 2, y: 2 },
           { t: "o", id: "dept-directory-kiosk", x: 5, y: 2 },
           { t: "o", id: "mci-coffee-station", x: 11, y: 2 },
           { t: "o", id: "mart-cold-case", x: 14, y: 2 },
-          { t: "o", id: "mci-elevator", x: 18, y: 2 },
+          { t: "o", id: "mci-elevator", x: 17, y: 2 },
           { t: "o", id: "mci-magazine", x: 27, y: 2 },
           { t: "o", id: "mci-plant-tall", x: 29, y: 2 },
           { t: "o", id: "mci-teller", x: 2, y: 4 },
@@ -433,7 +444,7 @@ export const MODERN_PRESET_DATA: ModernPresetData = {
           // 팝콘·음료 매점과 그 앞 줄 서는 벨벳 차단봉.
           { t: "o", id: "cinema-concession", x: 11, y: 4 },
           { t: "o", id: "museum-velvet-rope", x: 15, y: 5 },
-          { t: "o", id: "mci-wait-bench", x: 21, y: 2 },
+          { t: "o", id: "mci-wait-bench", x: 20, y: 4 },
           { t: "o", id: "lounge-sofa-cream", x: 25, y: 5 },
           { t: "o", id: "mci-coffee-table", x: 25, y: 6 },
           { t: "g", id: "mci-g-coffee", x: 25, y: 6 },
@@ -507,13 +518,12 @@ export const MODERN_PRESET_DATA: ModernPresetData = {
         wall: "mci-wall-lobby",
         items: [
           { t: "o", id: "mci-notice-board", x: 1, y: 0 },
-          { t: "o", id: "mci-wall-clock", x: 4, y: 0 },
-          { t: "o", id: "mci-art-frame", x: 10, y: 0 },
-          { t: "o", id: "cinema-poster", x: 6, y: 0 },
-          { t: "o", id: "cinema-poster", x: 15, y: 0 },
+          { t: "o", id: "mci-wall-clock", x: 10, y: 0 },
+          { t: "o", id: "mci-art-frame", x: 11, y: 0 },
+          { t: "o", id: "cinema-poster", x: 16, y: 0 },
           { t: "o", id: "mci-plant-tall", x: 0, y: 2 },
-          { t: "o", id: "mci-mailboxes", x: 2, y: 2 },
-          { t: "o", id: "dept-directory-kiosk", x: 10, y: 2 },
+          { t: "o", id: "mci-mailboxes", x: 1, y: 2 },
+          { t: "o", id: "dept-directory-kiosk", x: 11, y: 2 },
           { t: "o", id: "mci-elevator", x: 13, y: 2 },
           // 로비는 출구 방이라 아래 줄 — 북쪽 벽이 전시실과의 칸막이여서 오르는 계단 대신 엘리베이터만 둔다.
           { t: "o", id: "mci-wait-bench", x: 15, y: 2 },

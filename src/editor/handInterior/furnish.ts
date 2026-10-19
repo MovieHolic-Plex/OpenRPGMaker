@@ -120,14 +120,21 @@ export function furnishRooms(base: HandInteriorInput, rooms: readonly LayoutRoom
         const shifted = (it: InteriorTemplateItem, ex: number, ey: number): InteriorTemplateItem =>
           it.t === "l" ? { ...it, cells: it.cells!.map(([x, y]) => [x + ex, y + ey] as [number, number]) } : { ...it, x: it.x + ex, y: it.y + ey };
         /** 제자리에 안 들어가면 1~3칸 비켜 본다(벽 가구는 옆으로만) — 문 앞·다른 가구에 한 칸 걸려 통째로 빠지는 것을 막는다. */
-        const seat = (k: number): boolean => {
+        const seat = (k: number, parentShift: readonly [number, number] = [0, 0]): boolean => {
           const it = items.get(k)!;
-          if (tryPut(it)) { put.add(k); return true; }
-          if (it.t === "g") return false;
+          const [px, py] = parentShift;
+          if (tryPut(shifted(it, px, py))) {
+            put.add(k);
+            if (px || py) moved.set(k, [px, py]);
+            return true;
+          }
+          if (it.t === "g" || SEAT.test(it.id)) return false;
           const wallish = it.t === "o" && ["wall", "hang", "door", "sidedoor"].includes(S.objects[it.id]?.kind ?? "");
-          for (const [ex, ey] of [[1, 0], [-1, 0], [2, 0], [-2, 0], [0, 1], [0, -1], [3, 0], [-3, 0], [1, 1], [-1, 1]] as const) {
-            if (wallish && ey) continue;
-            if (tryPut(shifted(it, ex, ey))) { put.add(k); moved.set(k, [ex, ey]); return true; }
+          const shifts = wallish
+            ? [[1, 0], [-1, 0], [2, 0], [-2, 0], [3, 0], [-3, 0], [4, 0], [-4, 0], [5, 0], [-5, 0], [6, 0], [-6, 0]] as const
+            : [[1, 0], [-1, 0], [2, 0], [-2, 0], [0, 1], [0, -1], [3, 0], [-3, 0], [1, 1], [-1, 1]] as const;
+          for (const [ex, ey] of shifts) {
+            if (tryPut(shifted(it, px + ex, py + ey))) { put.add(k); moved.set(k, [px + ex, py + ey]); return true; }
           }
           return false;
         };
@@ -140,9 +147,11 @@ export function furnishRooms(base: HandInteriorInput, rooms: readonly LayoutRoom
           if (!seat(seed)) continue;
           const queue = [seed];
           while (queue.length) {
-            for (const k of nb.get(queue.shift()!) ?? []) {
+            const p = queue.shift()!;
+            const pShift = moved.get(p) ?? [0, 0];
+            for (const k of nb.get(p) ?? []) {
               if (seen.has(k) || t.items[k]!.t === "g") continue; seen.add(k);
-              if (seat(k)) queue.push(k);
+              if (seat(k, pShift)) queue.push(k);
             }
           }
         }

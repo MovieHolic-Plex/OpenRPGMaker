@@ -46,7 +46,7 @@ const VENUES: readonly Venue[] = [
     ] },
     { kind: "house-living", w: 10, h: 7, floor: "mci-wood-oak", wall: "mci-wall-home", items: [
       o("mci-window-curtain", 0, 0), o("mci-wall-clock", 2, 0), o("home-wall-ac", 7, 0),
-      o("home-low-shelf", 0, 2), o("mci-tv-stand", 4, 2), o("home-floor-lamp", 6, 2), o("home-monstera", 9, 2),
+      o("home-low-shelf", 0, 2), o("mci-tv-stand", 7, 2), o("home-monstera", 9, 2),
       // 서쪽 코타츠(안락의자·방석)는 TV 를 보고, 동쪽 킬림 러그 위 ㄱ자 소파·원형 탁자 세트가 거실의 중심.
       o("mci-armchair-e", 1, 4), o("home-kotatsu", 2, 4), o("home-zabuton", 2, 6), o("jumbo-home-sectional", 5, 4),
       o("home-electric-fan", 0, 6), o("home-cat-bed", 9, 6),
@@ -183,8 +183,8 @@ const VENUES: readonly Venue[] = [
       o("mci-plant-tall", 0, 2), o("school-cleaning-locker", 1, 2), o("hospital-water-dispenser", 16, 2), o("hospital-water-dispenser", 32, 2), o("mci-plant-tall", 43, 2),
     ] },
     { kind: "school-genkan", w: 12, h: 12, floor: "mci-stone-lobby", wall: "mci-wall-lobby", items: [
-      o("mci-notice-board", 1, 0), o("mci-wall-clock", 9, 0),
-      ...row("sento-shoe-locker", 0, 2, 2, 2), ...row("sento-shoe-locker", 8, 2, 2, 2),
+      o("mci-notice-board", 1, 0), o("mci-wall-clock", 10, 0),
+      o("sento-shoe-locker", 0, 2), o("sento-shoe-locker", 10, 2),
       // 바닥 신발 갈아신는 벤치·실내화 매트·점자 유도선·안내 키오스크·우산꽂이.
       o("mci-bench-metal", 1, 5), o("mci-bench-metal", 9, 5),
       o("mci-tactile", 5, 5), o("mci-tactile", 6, 5), o("mci-tactile", 5, 8), o("mci-tactile", 6, 8),
@@ -290,8 +290,8 @@ const VENUES: readonly Venue[] = [
       o("mci-bench-metal", 1, 8), o("infirmary-scale", 7, 8), o("home-laundry-basket", 9, 9),
     ] })),
     { kind: "gym-lobby", w: 13, h: 10, floor: "mci-stone-lobby", wall: "mci-wall-lobby", items: [
-      o("mci-notice-board", 1, 0), o("mci-art-frame", 9, 0),
-      o("council-trophy-case", 0, 2), o("council-trophy-case", 2, 2), o("subway-vending-machine", 9, 2), o("hospital-water-dispenser", 11, 2),
+      o("mci-notice-board", 0, 0), o("mci-art-frame", 10, 0),
+      o("council-trophy-case", 0, 2), o("subway-vending-machine", 10, 2), o("hospital-water-dispenser", 12, 2),
       o("mci-reception", 1, 6), o("mci-wait-bench", 9, 6),
       o("mci-plant-tall", 0, 9), o("mci-plant-tall", 12, 9),
     ] },
@@ -328,7 +328,7 @@ const VENUES: readonly Venue[] = [
       o("mci-plant-tall", 0, 11), o("mci-plant-tall", 12, 11),
     ] },
     { kind: "council-room", w: 20, h: 11, floor: "mci-carpet-office", wall: "mci-wall-lobby", items: [
-      o("mci-whiteboard", 1, 0), o("mci-notice-board", 5, 0), o("mci-wall-clock", 8, 0), o("mci-window-curtain", 12, 0), o("mci-window-curtain", 16, 0),
+      o("mci-whiteboard", 0, 0), o("mci-notice-board", 4, 0), o("mci-window-curtain", 14, 0), o("mci-window-curtain", 17, 0),
       o("council-trophy-case", 0, 2), o("council-trophy-case", 2, 2), o("mci-filing", 16, 2), o("mci-plant-tall", 19, 2),
       // 녹색 가죽 상감 타원 회의 탁자 - 북쪽 의자 남향, 남쪽 의자 북향, 양 끝 의장석은 탁자를 마주 본다.
       o("jumbo-council-oval-table", 7, 5),
@@ -367,7 +367,7 @@ const VENUES: readonly Venue[] = [
     ] },
     { kind: "rooftop-deck", w: 34, h: 12, floor: "mci-tile-concourse", wall: "mci-wall-metal", items: [
       ...row("roof-fence", 0, 2, 3, 2), ...row("roof-fence", 28, 2, 3, 2),
-      o("subway-vending-machine", 7, 2), o("subway-vending-machine", 25, 2),
+      o("subway-vending-machine", 7, 2), o("subway-vending-machine", 31, 2),
       o("mci-bench-metal", 2, 5),
       ...seatedTable("mci-t-wood", "mci-chair-wood", 7, 6, 2, 1, { e: true, w: true }), g("mci-g-coffee", 7, 6),
       o("mci-cafe-chair-e", 13, 6), o("mci-cafe-table", 14, 6), o("mci-cafe-chair-w", 15, 6),
@@ -418,7 +418,7 @@ const VENUES: readonly Venue[] = [
       o("mci-plant-tall", 0, 12), o("mci-plant-tall", 12, 12),
     ] },
     { kind: "manga-cafe", w: 13, h: 11, floor: "mci-wood-dark", wall: "mci-wall-home", items: [
-      o("mci-menu-board", 1, 0), o("mci-wall-clock", 6, 0), o("mci-menu-board", 9, 0),
+      o("mci-menu-board", 1, 0), o("mci-wall-clock", 3, 0), o("mci-menu-board", 10, 0),
       o("manga-shelf", 0, 2), o("manga-shelf", 2, 2), o("mci-coffee-station", 8, 2), o("manga-shelf", 11, 2),
       // 만화 부스 2열(4개) + 남쪽 열람 테이블(동·서 의자).
       o("manga-booth", 2, 5), o("manga-booth", 8, 5),
@@ -461,9 +461,8 @@ const VENUES: readonly Venue[] = [
       o("home-umbrella-stand", 0, 4), o("home-genkan-shoes", 4, 4),
     ] },
     { kind: "otel-kitchen", w: 11, h: 6, floor: "mci-tile-small", wall: "mci-wall-tile", items: [
-      o("mci-window-blind", 2, 0), o("mci-wall-clock", 9, 0),
-      // 북벽 문(x=1, x=6) 앞을 비우고 동쪽 벽(x=3..10)에 개수대·조리대·냉장고를 깔끔하게 일렬 배치.
-      o("home-sink-counter", 3, 2), o("mci-kitchen", 7, 2), o("mci-fridge", 10, 2),
+      o("mci-window-blind", 0, 0), o("mci-wall-clock", 2, 0),
+      o("home-sink-counter", 0, 2), o("mci-kitchen", 2, 2), o("home-appliance-rack", 9, 2), o("mci-fridge", 10, 2),
       o("mci-chair-wood-e", 0, 4), o("home-dining-set", 1, 4), o("mci-chair-wood-w", 3, 4),
       o("mci-coffee-table", 6, 4), o("mci-sofa-n", 6, 5), o("home-electric-fan", 10, 5),
     ] },
@@ -537,8 +536,8 @@ const VENUES: readonly Venue[] = [
       o("mci-plant-tall", 11, 11),
     ] },
     { kind: "lobby", w: 16, h: 14, floor: "mci-stone-lobby", wall: "mci-wall-lobby", items: [
-      o("mci-art-frame", 1, 0), o("mci-wall-clock", 6, 0), o("mci-art-frame", 11, 0),
-      o("mci-elevator", 1, 2), o("mci-elevator", 5, 2), o("mci-mailboxes", 11, 2), o("mci-plant-tall", 15, 2),
+      o("mci-art-frame", 0, 0), o("mci-art-frame", 14, 0),
+      o("mci-elevator", 0, 2), o("mci-elevator", 11, 2), o("mci-mailboxes", 13, 2), o("mci-plant-tall", 15, 2),
       o("mci-chair-office-s", 4, 5), o("mci-reception", 3, 6), g("mci-g-laptop", 3, 6),
       o("mci-security-gate", 10, 6), o("mci-security-gate", 12, 6),
       o("mci-sofa-e", 1, 9), o("mci-coffee-table", 2, 10), o("mci-armchair-w", 4, 10),
@@ -751,8 +750,8 @@ const VENUES: readonly Venue[] = [
       o("mci-basket-stack", 0, 10), o("mci-basket-stack", 37, 10),
     ] },
     { kind: "sento-changing", w: 38, h: 7, floor: "mci-wood-oak", wall: "mci-wall-home", items: [
-      // 좌측 남탕(男 노렌 x=8) | 중앙 시계·번대 카운터(x=16..21) | 우측 여탕(女 노렌 x=28) - 문(x=19)과 신발장을 피해 배치.
-      o("sento-noren-men", 8, 0), o("mci-wall-clock", 16, 0), o("mci-tv-wall", 21, 0), o("sento-noren-women", 28, 0),
+      // 좌측 남탕(男 노렌 x=8) | 중앙 시계·번대 카운터(x=14..21) | 우측 여탕(女 노렌 x=28) - 문(x=16..20)과 신발장을 피해 배치.
+      o("sento-noren-men", 8, 0), o("mci-wall-clock", 14, 0), o("mci-tv-wall", 21, 0), o("sento-noren-women", 28, 0),
       ...row("sento-shoe-locker", 0, 2, 4, 2), o("mci-fridge", 11, 2), o("mci-washbasin", 13, 2),
       o("mci-washbasin", 24, 2), o("mci-fridge", 26, 2), ...row("sento-shoe-locker", 30, 2, 4, 2),
       o("mci-wait-bench", 3, 5), o("infirmary-scale", 10, 5),
@@ -897,10 +896,10 @@ const VENUES: readonly Venue[] = [
     // ── 1F-2. 대형 대기실 로비 · 원무과 수납 · 엘리베이터 홀 (26×17) - 대기 의자 3연석 12열(36석) + 대형 원무과 카운터 + 문진·혈압대 + 번호표 발급기·전광판
     { kind: "waiting_room", w: 26, h: 17, floor: "mci-stone-lobby", wall: "mci-wall-lobby", items: [
       o("hosp-floor-directory", 4, 0), o("elev-floor-led", 6, 0), o("elev-hall-lantern", 9, 0),
-      o("hosp-number-display", 14, 0), o("mci-tv-wall", 17, 0), o("hosp-number-display", 20, 0), o("mci-wall-clock", 24, 0),
+      o("hosp-number-display", 14, 0), o("mci-tv-wall", 20, 0), o("mci-wall-clock", 24, 0),
       o("mci-plant-tall", 0, 2),
-      o("mci-elevator", 4, 2), o("mci-elevator", 6, 2), o("mci-elevator", 8, 2),
-      o("hospital-pharmacy-window", 13, 2), o("hospital-water-dispenser", 16, 2), o("subway-vending-machine", 19, 2), o("hospital-med-cabinet", 21, 2),
+      o("mci-elevator", 4, 2), o("mci-elevator", 6, 2), o("mci-elevator", 14, 2),
+      o("hospital-pharmacy-window", 16, 2), o("hospital-water-dispenser", 19, 2), o("subway-vending-machine", 20, 2), o("hospital-med-cabinet", 22, 2),
       o("mci-coffee-station", 24, 2),
       o("hosp-triage-desk", 3, 5), o("hosp-ticket-dispenser", 6, 5), o("dept-directory-kiosk", 7, 5),
       o("mci-chair-office-s", 14, 4), o("mci-chair-office-s", 16, 4), o("mci-chair-office-s", 18, 4), o("mci-chair-office-s", 20, 4),
@@ -957,9 +956,9 @@ const VENUES: readonly Venue[] = [
     ] },
     { kind: "elev-hall", w: 22, h: 7, floor: "mci-stone-lobby", wall: "mci-wall-lobby", items: [
       o("elev-floor-led", 2, 0), o("elev-hall-lantern", 4, 0),
-      o("elev-floor-led", 8, 0), o("elev-hall-lantern", 10, 0), o("hosp-floor-directory", 12, 0),
-      o("elev-floor-led", 17, 0), o("elev-hall-lantern", 19, 0), o("mci-wall-clock", 21, 0),
-      o("mci-elevator", 0, 2), o("mci-elevator", 6, 2), o("mci-elevator", 15, 2), o("office-water-cooler", 20, 2), o("mci-plant-tall", 21, 2),
+      o("elev-floor-led", 8, 0), o("elev-hall-lantern", 10, 0),
+      o("elev-floor-led", 13, 0), o("elev-hall-lantern", 14, 0), o("mci-wall-clock", 21, 0),
+      o("mci-elevator", 0, 2), o("mci-elevator", 6, 2), o("mci-elevator", 11, 2), o("office-water-cooler", 20, 2), o("mci-plant-tall", 21, 2),
       o("mci-tactile", 3, 3),
       // 승강장 가운데 올리브나무 원형 벤치 쉼터.
       o("hosp-wait-row-s", 0, 5), o("lounge-sofa-cream", 6, 5), o("jumbo-lobby-tree-bench", 9, 4), o("dept-directory-kiosk", 14, 5), o("hosp-wait-row-s", 16, 5),

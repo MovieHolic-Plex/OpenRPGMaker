@@ -281,6 +281,7 @@ export function room(kind: string, w: number, h: number, floor: string, wall: st
     const ry0 = resolveY(y0);
     for (let j = 0; j < rws; j++) for (let i = 0; i < cols; i++) {
       const dx = x0 + i * sx, dy = ry0 + j * sy;
+      if (dy + 1 >= h - 1) continue;
       items.push(t("mci-t-wood", dx, dy, 2, 1), o("mci-chair-wood-n", dx, dy + 1), o("mci-chair-wood-n", dx + 1, dy + 1));
     }
   }
@@ -292,9 +293,11 @@ export function room(kind: string, w: number, h: number, floor: string, wall: st
 
   // 8) F2: 화분은 방당 최대 1개, 명시된 위치(s.pl = [x, y])에만 둔다(기본 pl: true 구석 쌍 화분 폐기).
   if (Array.isArray(s.pl)) {
-    items.push(o("mci-plant-tall", s.pl[0], resolveY(s.pl[1])));
+    const py = resolveY(s.pl[1]);
+    items.push(o("mci-plant-tall", s.pl[0], py > 2 ? h - 1 : py));
   }
-  for (const it of items) {
+  for (let idx = 0; idx < items.length; idx++) {
+    const it = items[idx]!;
     if (it.t !== "o") continue;
     const q = OBJ[it.id];
     if (!q) throw new Error(`Unknown prop ${it.id} in ${kind}`);
@@ -310,7 +313,11 @@ export function room(kind: string, w: number, h: number, floor: string, wall: st
       throw new Error(`Wall-kind prop ${it.id} in ${kind} at (${it.x},${it.y}) must be at y=2`);
     }
     if (q.kind === "flat") continue;
-    const touchesWall = it.y <= 2 || it.y + ih >= h || it.x === 0 || it.x + iw >= w;
+    let touchesWall = it.y <= 2 || it.y + ih >= h || it.x === 0 || it.x + iw >= w;
+    if (WALL_ONLY_RE.test(it.id) && !FLOOR_GONDOLA_RE.test(it.id) && !touchesWall && it.y > 2) {
+      items[idx] = { ...it, y: h - ih };
+      touchesWall = true;
+    }
     if (WALL_ONLY_RE.test(it.id) && !FLOOR_GONDOLA_RE.test(it.id) && !touchesWall) {
       throw new Error(`WALL_ONLY prop ${it.id} in ${kind} at (${it.x},${it.y}) must touch a wall`);
     }
@@ -334,6 +341,9 @@ export interface FacilitySpec {
   readonly hubs?: readonly string[];
   readonly above?: readonly (readonly [string, string])[];
   readonly left?: readonly (readonly [string, string])[];
+  readonly open?: readonly (readonly [string, string])[];
+  readonly ragged?: boolean;
+  readonly trim?: Readonly<Record<string, number>>;
 }
 export interface FacilityVenue extends Venue { readonly cat: Category; readonly ko: string; readonly shape: string; readonly rooms: readonly FRoom[] }
 
@@ -343,14 +353,19 @@ const ALT_W: Record<string, string> = { [W.office]: W.home, [W.lobby]: W.store, 
 /** `~` 를 void:N 으로 푼다 - 방 줄(~ 없는 줄) 가운데 가장 넓은 줄이 건물 너비, ~ 가 있는 줄은 남는 너비를 ~ 끼리 나눠 채운다. */
 function resolveRows(rows: readonly (readonly string[])[], rooms: readonly FRoom[]): string[][] {
   const wOf = new Map(rooms.map((r) => [r.kind, r.w]));
-  const natural = (row: readonly string[]) => row.filter((k) => k !== "~").reduce((s, k) => s + (wOf.get(k) ?? 0) + 1, 0) - 1;
+  const cellW = (k: string) => {
+    const m = /^void:(\d+)$/u.exec(k);
+    return m ? Number(m[1]) : (wOf.get(k) ?? 0) + 1;
+  };
+  const natural = (row: readonly string[]) => row.filter((k) => k !== "~").reduce((s, k) => s + cellW(k), 0) - 1;
   const full = rows.filter((r) => !r.includes("~"));
-  if (!full.length) throw new Error(`rows 에 ~ 없는 줄이 없다: ${rows.map((r) => r.join(",")).join(" / ")}`);
-  const W0 = Math.max(...full.map(natural));
+  const W0 = full.length
+    ? Math.max(...full.map(natural))
+    : Math.max(...rows.map((r) => natural(r) + r.filter((k) => k === "~").length * 4));
   return rows.map((row) => {
     const n = row.filter((k) => k === "~").length;
     if (!n) return [...row];
-    const total = W0 + 1 - row.filter((k) => k !== "~").reduce((s, k) => s + (wOf.get(k) ?? 0) + 1, 0);
+    const total = W0 + 1 - row.filter((k) => k !== "~").reduce((s, k) => s + cellW(k), 0);
     if (total < n) throw new Error(`~ 자리가 모자란다(${total}): ${row.join(",")} (건물 너비 ${W0})`);
     let left = total;
     return row.map((k, i) => {
@@ -387,7 +402,8 @@ export function facility(s: FacilitySpec): FacilityVenue {
         const ox0 = Math.max(top.x0, bot.x0), ox1 = Math.min(top.x1, bot.x1);
         if (ox0 <= ox1) {
           const span = ox1 - ox0 + 1;
-          const dw = span >= 10 ? 2 : 1;
+          const opened = Boolean(s.open?.some(([p, q]) => (p === top.kind && q === bot.kind) || (p === bot.kind && q === top.kind)));
+          const dw = opened ? Math.min(span, 6) : span >= 10 ? 2 : 1;
           const dx0 = ox0 + Math.floor((span - dw) / 2) - bot.x0;
           let set = doorColsByRoom.get(bot.kind);
           if (!set) { set = new Set<number>(); doorColsByRoom.set(bot.kind, set); }
@@ -411,14 +427,17 @@ export function facility(s: FacilitySpec): FacilityVenue {
     const dCols = doorColsByRoom.get(rm.kind);
     const sCols = southDoorColsByRoom.get(rm.kind);
     if (!dCols?.size && !sCols?.size) return rm;
-    const northTaken = new Set<number>(dCols ?? []);
+    const wallTaken = new Set<number>(dCols ?? []);
+    const hangTaken = new Set<number>(dCols ?? []);
     const southTaken = new Set<number>(sCols ?? []);
     for (const it of rm.items) {
       if (it.t !== "o") continue;
       const sz = sizeOf(it.id);
       const cols = Array.from({ length: sz.w }, (_, d) => it.x + d);
-      if (it.y === 0 || it.y === 2) {
-        if (!cols.some((c) => dCols?.has(c))) for (const c of cols) northTaken.add(c);
+      if (it.y === 2) {
+        if (!cols.some((c) => dCols?.has(c))) for (const c of cols) { wallTaken.add(c); hangTaken.add(c); }
+      } else if (it.y === 0) {
+        if (!cols.some((c) => dCols?.has(c))) for (const c of cols) hangTaken.add(c);
       } else if (it.y + sz.h >= rm.h) {
         if (!cols.some((c) => sCols?.has(c))) for (const c of cols) southTaken.add(c);
       }
@@ -428,9 +447,10 @@ export function facility(s: FacilitySpec): FacilityVenue {
       if (it.t !== "o") { nextItems.push(it); continue; }
       const sz = sizeOf(it.id);
       const isNorth = it.y === 0 || it.y === 2;
-      const isSouth = it.y + sz.h >= rm.h;
+      const isSeat = /chair|stool|cushion|zabuton/u.test(it.id);
+      const isSouth = !isSeat && it.y + sz.h >= rm.h;
       const blockSet = isNorth ? dCols : isSouth ? sCols : undefined;
-      const takenSet = isNorth ? northTaken : isSouth ? southTaken : undefined;
+      const takenSet = it.y === 2 ? wallTaken : it.y === 0 ? hangTaken : isSouth ? southTaken : undefined;
       if (!blockSet?.size || !takenSet) {
         nextItems.push(it);
         continue;
@@ -447,7 +467,10 @@ export function facility(s: FacilitySpec): FacilityVenue {
           if (nx < 0 || nx + sz.w > rm.w) continue;
           const nCols = Array.from({ length: sz.w }, (_, d) => nx + d);
           if (nCols.every((c) => !takenSet.has(c))) {
-            for (const c of nCols) takenSet.add(c);
+            for (const c of nCols) {
+              takenSet.add(c);
+              if (it.y === 2) hangTaken.add(c);
+            }
             moved = { ...it, x: nx };
             break;
           }
@@ -463,10 +486,26 @@ export function facility(s: FacilitySpec): FacilityVenue {
   const once = (r: FRoom): readonly [string, string] => [ALT_F[r.floor] ?? r.floor, ALT_W[r.wall] ?? r.wall];
   const twice = (r: FRoom): readonly [string, string] => { const [f, w] = once(r); return [ALT_F[f] ?? f, ALT_W[w] ?? w]; };
   const palettes = [once, twice].map((pick) => Object.fromEntries(adjustedRooms.map((r) => [r.kind, pick(r)] as const)));
+  const hByKind: Record<string, number> = Object.fromEntries(adjustedRooms.map((r) => [r.kind, r.h]));
+  const autoTrim: Record<string, number> = {};
+  for (let rIdx = 0; rIdx < resolvedRows.length; rIdx++) {
+    if (rIdx !== 0 && rIdx !== resolvedRows.length - 1) continue;
+    const rowRooms = resolvedRows[rIdx]!.filter((k) => !k.startsWith("void:"));
+    const maxRowH = Math.max(...rowRooms.map((k) => hByKind[k] ?? 0));
+    for (const k of rowRooms) {
+      const rh = hByKind[k] ?? maxRowH;
+      if (rh < maxRowH) autoTrim[k] = rh;
+    }
+  }
+  const mergedTrim = { ...autoTrim, ...(s.trim ?? {}) };
   const variation: ModernProgramVariation = {
     entrance: s.entrance,
     rows: resolvedRows,
+    ragged: s.ragged ?? true,
+    ...(Object.keys(mergedTrim).length ? { trim: mergedTrim } : {}),
+    ...(s.open?.length ? { open: s.open } : {}),
     hubs: s.hubs ?? [s.entrance],
+    fixed: adjustedRooms.map((r) => r.kind),
     ...(s.above ? { above: s.above } : {}),
     ...(s.left ? { left: s.left } : {}),
     palettes,

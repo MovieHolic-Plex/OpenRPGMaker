@@ -26,7 +26,7 @@ const VENUES: readonly Venue[] = [
     { kind: "aud-foyer", w: 28, h: 6, floor: "mci-stone-lobby", wall: "mci-wall-store", items: [
       o("cinema-poster", 1, 0), o("cinema-poster", 5, 0), o("mci-wall-clock", 9, 0), o("cinema-poster", 20, 0), o("cinema-poster", 24, 0),
       o("dept-directory-kiosk", 0, 2), o("subway-vending-machine", 2, 2), o("mci-coffee-station", 4, 2), o("rest-coat-stand", 7, 2), o("rest-coat-stand", 8, 2),
-      o("cinema-concession", 17, 3), o("subway-vending-machine", 22, 2), o("subway-vending-machine", 24, 2), o("mci-plant-tall", 27, 2),
+      o("cinema-concession", 18, 3), o("subway-vending-machine", 22, 2), o("subway-vending-machine", 24, 2), o("mci-plant-tall", 27, 2),
       o("lounge-sofa-cream", 3, 4), o("lounge-sofa-cream", 5, 4), o("mci-wait-bench", 20, 5), o("mci-plant-tall", 0, 5),
     ] },
   ] },
@@ -53,7 +53,7 @@ const VENUES: readonly Venue[] = [
     ] },
     { kind: "karaoke-hall", w: 29, h: 7, floor: "mci-tile-concourse", wall: "mci-wall-lobby", items: [
       o("cinema-poster", 1, 0), o("mci-menu-board", 8, 0), o("cinema-poster", 18, 0), o("mci-wall-clock", 27, 0),
-      o("subway-vending-machine", 0, 2), o("mci-coffee-station", 7, 2), o("subway-vending-machine", 9, 2), o("mci-cooler", 17, 2), o("mci-plant-tall", 28, 2),
+      o("subway-vending-machine", 0, 2), o("mci-coffee-station", 1, 2), o("subway-vending-machine", 9, 2), o("mci-cooler", 17, 2), o("mci-plant-tall", 28, 2),
       o("mci-reception", 2, 5), o("lounge-sofa-cream", 19, 5), o("lounge-sofa-cream", 21, 5), o("mci-coffee-table", 23, 5),
     ] },
   ] },
@@ -128,7 +128,9 @@ const VENUES: readonly Venue[] = [
     ] },
   ] },
   // 21. 과학 실험실 + 준비실 — 시약 선반·흄후드 벽, 시연대, 의자를 낀 실험대 두 줄 / 동쪽 준비실(시약장·냉장고·작업대·기록 책상).
-  { program: "mc_lab", map: "science-lab", variation: { entrance: "sci-lab", left: [["sci-lab", "lab-prep"]], palettes: [
+  { program: "mc_lab", map: "science-lab", variation: {
+    rows: [["sci-lab", "lab-prep"]], ragged: true, trim: { "lab-prep": 8 },
+    entrance: "sci-lab", left: [["sci-lab", "lab-prep"]], open: [["sci-lab", "lab-prep"]], palettes: [
     { "sci-lab": ["mci-vinyl-hospital", "mci-wall-hospital"], "lab-prep": ["mci-concrete", "mci-wall-metal"] },
     { "sci-lab": ["mci-concrete", "mci-wall-metal"], "lab-prep": ["mci-tile-small", "mci-wall-tile"] },
   ] }, rooms: [
@@ -142,15 +144,17 @@ const VENUES: readonly Venue[] = [
       o("mci-chair-wood-s", 3, 8), o("mci-chair-wood-s", 7, 8), o("mci-chair-wood-s", 12, 8), o("mci-chair-wood-s", 16, 8),
       ...row("lab-bench", 2, 4, 2, 9), ...row("lab-bench", 11, 4, 2, 9),
     ] },
-    { kind: "lab-prep", w: 8, h: 11, floor: "mci-concrete", wall: "mci-wall-metal", items: [
+    { kind: "lab-prep", w: 8, h: 8, floor: "mci-concrete", wall: "mci-wall-metal", items: [
       o("mci-notice-board", 5, 0),
       o("lab-reagent-shelf", 0, 2), o("lab-reagent-shelf", 2, 2), o("mci-fridge", 4, 2), o("mci-rack", 5, 2),
-      o("lab-bench", 1, 5), o("lab-bench", 4, 5), o("mci-med-cart", 7, 5),
-      o("mci-chair-office-s", 1, 7), o("mci-desk-pc-back", 1, 8), g("mci-g-papers", 2, 8), o("subway-trash-bins", 5, 10),
+      o("lab-bench", 1, 4), o("lab-bench", 4, 4), o("mci-med-cart", 7, 4),
+      o("mci-chair-office-s", 1, 6), o("mci-desk-pc-back", 1, 7), g("mci-g-papers", 2, 7), o("subway-trash-bins", 5, 7),
     ] },
   ] },
   // 22. 음악실·밴드 동아리방 + 녹음 부스 — 흡음 패널, 앰프 벽, 드럼 세트·기타 거치대, 소파 / 동쪽 녹음 조정실(믹싱 콘솔·의자·소파).
-  { program: "mc_music_room", map: "band-room", variation: { entrance: "band-room", left: [["band-room", "band-booth"]], palettes: [
+  { program: "mc_music_room", map: "band-room", variation: {
+    rows: [["band-room", "band-booth"]], ragged: true, trim: { "band-booth": 8 },
+    entrance: "band-room", left: [["band-room", "band-booth"]], open: [["band-room", "band-booth"]], palettes: [
     { "band-room": ["mci-carpet-office", "mci-wall-office"], "band-booth": ["mci-wood-dark", "mci-wall-brick"] },
     { "band-room": ["mci-concrete", "mci-wall-metal"], "band-booth": ["mci-carpet-office", "mci-wall-office"] },
   ] }, rooms: [
@@ -161,34 +165,37 @@ const VENUES: readonly Venue[] = [
       o("music-guitar-stand", 5, 5), o("music-drum-kit", 7, 5), o("music-guitar-stand", 10, 5),
       o("mci-sofa", 2, 9), o("mci-coffee-table", 3, 10), o("mci-armchair", 6, 9), o("mci-plant-tall", 16, 9),
     ] },
-    { kind: "band-booth", w: 8, h: 11, floor: "mci-carpet-office", wall: "mci-wall-office", items: [
+    { kind: "band-booth", w: 8, h: 8, floor: "mci-carpet-office", wall: "mci-wall-office", items: [
       o("music-acoustic-panel", 1, 0), o("music-acoustic-panel", 5, 0),
       o("mci-shelf-office", 0, 2), o("music-amp", 6, 2), o("music-amp", 7, 2),
       o("mci-chair-office-s", 2, 4), o("mci-chair-office-s", 4, 4), o("studio-news-desk", 2, 5),
-      o("lounge-sofa-cream", 2, 9), o("mci-plant-tall", 7, 10),
+      o("lounge-sofa-cream", 2, 7), o("mci-plant-tall", 7, 7),
     ] },
   ] },
   // 24. 보건실 — 북쪽 침상 칸(커튼 칸막이 침대 넷·협탁·링거), 남쪽 진찰실(약품장·세면대·정수기·보건 교사 책상·시력표·체중계·휠체어).
-  { program: "mc_infirmary", map: "campus-infirmary", variation: { entrance: "infirmary-room", above: [["infirmary-beds", "infirmary-room"]], palettes: [
+  { program: "mc_infirmary", map: "campus-infirmary", variation: {
+    rows: [["infirmary-beds", "void:4"], ["infirmary-room"]],
+    entrance: "infirmary-room", above: [["infirmary-beds", "infirmary-room"]], open: [["infirmary-beds", "infirmary-room"]], palettes: [
     { "infirmary-room": ["mci-tile-small", "mci-wall-tile"], "infirmary-beds": ["mci-vinyl-store", "mci-wall-home"] },
     { "infirmary-room": ["mci-wood-oak", "mci-wall-home"], "infirmary-beds": ["mci-carpet-office", "mci-wall-hospital"] },
   ] }, rooms: [
-    { kind: "infirmary-beds", w: 17, h: 7, floor: "mci-vinyl-hospital", wall: "mci-wall-hospital", items: [
+    { kind: "infirmary-beds", w: 13, h: 7, floor: "mci-vinyl-hospital", wall: "mci-wall-hospital", items: [
       o("mci-window-curtain", 2, 0), o("mci-window-curtain", 7, 0), o("mci-window-curtain", 12, 0),
       o("mci-hosp-bed", 1, 3), o("mci-bedside", 2, 3), o("hospital-curtain-screen", 3, 3),
       o("mci-hosp-bed", 5, 3), o("mci-bedside", 6, 3), o("hospital-curtain-screen", 7, 3),
-      o("mci-hosp-bed", 9, 3), o("mci-bedside", 10, 3), o("hospital-curtain-screen", 11, 3),
-      o("mci-hosp-bed", 13, 3), o("mci-bedside", 14, 3), o("mci-iv-stand", 16, 3),
+      o("mci-hosp-bed", 9, 3), o("mci-bedside", 10, 3), o("mci-iv-stand", 12, 3),
     ] },
     { kind: "infirmary-room", w: 17, h: 8, floor: "mci-vinyl-hospital", wall: "mci-wall-hospital", items: [
-      o("mci-window-curtain", 1, 0), o("mci-wall-clock", 11, 0), o("infirmary-eye-chart", 14, 0),
-      o("hospital-med-cabinet", 0, 2), o("mci-washbasin", 3, 2), o("hospital-water-dispenser", 4, 2), o("mci-filing", 11, 2), o("hospital-med-cabinet", 15, 2),
+      o("mci-window-curtain", 0, 0), o("mci-wall-clock", 10, 0), o("infirmary-eye-chart", 14, 0),
+      o("hospital-med-cabinet", 0, 2), o("mci-washbasin", 2, 2), o("hospital-water-dispenser", 10, 2), o("mci-filing", 11, 2), o("hospital-med-cabinet", 15, 2),
       o("hospital-doctor-desk", 1, 4), o("mci-med-cart", 4, 4), o("infirmary-scale", 13, 4), o("hospital-wheelchair", 15, 4),
       o("mci-wait-bench", 11, 6), o("mci-plant-tall", 0, 7),
     ] },
   ] },
   // 25. 메이드·디저트 카페 + 주방 — 분홍 체크 타일, 파르페 쇼케이스, 소형 무대, 카페 탁자 넷, 부스석 둘 / 동쪽 주방(조리대·냉장고·디저트 진열대).
-  { program: "mc_maid_cafe", map: "maid-cafe", variation: { entrance: "maid-cafe", left: [["maid-cafe", "maid-kitchen"]], palettes: [
+  { program: "mc_maid_cafe", map: "maid-cafe", variation: {
+    rows: [["maid-cafe", "maid-kitchen"]], ragged: true, trim: { "maid-kitchen": 8 },
+    entrance: "maid-cafe", left: [["maid-cafe", "maid-kitchen"]], open: [["maid-cafe", "maid-kitchen"]], palettes: [
     { "maid-cafe": ["mci-wood-oak", "mci-wall-store"], "maid-kitchen": ["mci-tile-small", "mci-wall-tile"] },
     { "maid-cafe": ["mci-tile-small", "mci-wall-lobby"], "maid-kitchen": ["mci-concrete", "mci-wall-metal"] },
   ] }, rooms: [
@@ -203,11 +210,11 @@ const VENUES: readonly Venue[] = [
       o("mci-cafe-table", 10, 8), o("mci-cafe-chair-e", 9, 8), o("mci-cafe-chair-w", 11, 8),
       o("restaurant-booth-set", 0, 6), o("restaurant-booth-set", 15, 7), o("mci-plant-tall", 18, 10),
     ] },
-    { kind: "maid-kitchen", w: 8, h: 11, floor: "mci-tile-small", wall: "mci-wall-tile", items: [
+    { kind: "maid-kitchen", w: 8, h: 8, floor: "mci-tile-small", wall: "mci-wall-tile", items: [
       o("mci-menu-board", 4, 0),
       o("mci-kitchen", 0, 2), o("mci-fridge", 3, 2), o("mci-cooler", 4, 2), o("mci-coffee-station", 6, 2),
       o("mci-pastry-case", 1, 5), o("mci-pastry-case", 4, 5),
-      o("mci-pallet", 6, 8), o("mci-basket-stack", 1, 9), o("subway-trash-bins", 4, 10),
+      o("mci-pallet", 6, 7), o("mci-basket-stack", 1, 7), o("subway-trash-bins", 4, 7),
     ] },
   ] },
   // 26. 호텔 — 남쪽 로비(엘리베이터·벨 데스크·러기지 카트·소파·러그), 북서 스위트(킹베드·시티뷰 창·TV·옷장), 북동 로비 바(술병 선반·와인 랙·카운터·스툴·부스).
@@ -230,8 +237,8 @@ const VENUES: readonly Venue[] = [
       o("restaurant-booth-set", 6, 7), o("lounge-sofa-cream", 1, 8), o("mci-plant-tall", 9, 9),
     ] },
     { kind: "hotel-lobby", w: 24, h: 10, floor: "mci-stone-lobby", wall: "mci-wall-lobby", items: [
-      o("mci-art-frame", 8, 0), o("mci-wall-clock", 12, 0), o("mci-art-frame", 15, 0),
-      o("mci-elevator", 0, 2), o("mci-elevator", 2, 2), o("mci-plant-tall", 4, 2), o("mci-plant-tall", 19, 2),
+      o("mci-art-frame", 8, 0), o("mci-wall-clock", 12, 0), o("mci-art-frame", 21, 0),
+      o("mci-elevator", 0, 2), o("mci-elevator", 2, 2), o("mci-plant-tall", 4, 2), o("mci-plant-tall", 23, 2),
       o("dept-directory-kiosk", 14, 3), o("hotel-bell-desk", 9, 4), o("hotel-luggage-cart", 7, 5), o("hotel-luggage-cart", 13, 5),
       o("lounge-sofa-cream", 17, 5), o("lounge-sofa-cream", 19, 5), o("mci-coffee-table", 18, 7), g("mci-g-vase", 18, 7),
       o("mci-rug", 10, 7), o("mci-planter", 1, 8), o("mci-planter", 21, 8),
@@ -252,7 +259,7 @@ const VENUES: readonly Venue[] = [
       o("studio-camera", 4, 9), o("studio-camera", 7, 9), o("studio-camera-crane", 10, 8), o("mci-rug", 16, 8),
     ] },
     { kind: "studio-control", w: 12, h: 6, floor: "mci-carpet-office", wall: "mci-wall-metal", items: [
-      o("mci-tv-wall", 1, 0), o("mci-tv-wall", 4, 0), o("mci-tv-wall", 7, 0), o("mci-wall-clock", 10, 0),
+      o("mci-tv-wall", 1, 0), o("mci-tv-wall", 10, 0),
       o("mci-filing", 10, 2),
       ...row("mci-chair-office-s", 1, 2, 4, 3), ...row("mci-desk-pc-back", 1, 2, 4, 4),
     ] },
@@ -321,7 +328,7 @@ const VENUES: readonly Venue[] = [
   // 30. 대학 중앙도서관 — 북서 열람실(벽 서가·서가 열 넷·스터디 램프 열람석 여덟), 북동 그룹 스터디룸(ㄷ자 탁자 둘), 남쪽 로비(대출 데스크·검색 PC·자판기).
   { program: "mc_library", map: "central-library", variation: {
     rows: [["library-hall", "library-study"], ["library-lobby"]],
-    trim: { "library-study": 8 },
+    ragged: true, trim: { "library-study": 8 },
     entrance: "library-lobby", above: [["library-hall", "library-lobby"], ["library-study", "library-lobby"]], left: [["library-hall", "library-study"]], hubs: ["library-lobby"], palettes: [
       { "library-hall": ["mci-wood-oak", "mci-wall-home"], "library-study": ["mci-carpet-office", "mci-wall-office"], "library-lobby": ["mci-stone-lobby", "mci-wall-lobby"] },
       { "library-hall": ["mci-wood-dark", "mci-wall-brick"], "library-study": ["mci-wood-oak", "mci-wall-home"], "library-lobby": ["mci-tile-concourse", "mci-wall-store"] },
