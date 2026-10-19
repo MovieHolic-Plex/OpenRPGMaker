@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.275.0 — 2026-10-19
+
+### 기능
+
+- **stamp-place** — support 4-turn progressive RPG worldbuilding and fix road/roof VQA defects (#3003) (`da7446f`)
+
 ## 0.274.0 — 2026-10-19
 
 ### 기능
