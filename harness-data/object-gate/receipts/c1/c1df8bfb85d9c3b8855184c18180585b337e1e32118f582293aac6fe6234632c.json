@@ -1,0 +1,274 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c1df8bfb85d9c3b8855184c18180585b337e1e32118f582293aac6fe6234632c",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "카페 짙은 마루(헤링본)",
+ "label": "modern_city/interior/mci-wood-dark",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 7,
+  "darkV5": 74,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "herringbone wood floor tile (full 32x32 fill)",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a seamless 32x32 herringbone plank pattern that fills the whole tile (silhouette width 32 on every row). It has no standing body, front-edge line, eave shadow, ellipse or front face. This matches a flat terrain/floor tile, so the kind matches. The column scans show only plank-boundary bands (rows 21-23, 8-10 and 28-30) that repeat the pattern and are not top surfaces."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a dark herringbone wood floor with 7 colours and a median of 6 colours per tile. That is almost identical to the paving reference (7 and 7), though well below the grass reference (26 per tile, 80 colours). Grass is a much richer surface type, so the paving is the fairer comparison. Flat-fill coverage is 0%, so no 5x5 area is a single colour. The dark edge pixels are 0% neutral, so the plank seams read as a dark red-brown tone of the wood, not a black sticker line. Each plank has a lit edge and a darker body, giving about 5 lightness steps. The planks carry little grain or speckle, so texture is only moderate, and it is a bit thinner than the references. Overall it is comparable to the paving reference and a careful artist would accept it next to it, so it passes with slightly lower density.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 31955
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "herringbone wood floor tile (full 32x32 flat ground texture)",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The image is a full-bleed 32x32 square of dark red-brown herringbone planks with no transparent rows or silhouette change (width 32 on every row). It is a flat terrain tile, not a standing object. There is no front-edge line, eave shadow, ellipse or roof plane, and no distinct front face. The column scan shows only plank-pattern lightness changes (light plank bands at rows 21-23 and 8-10 and 28-30), which are texture, not a top/front structure. For a terrain tile this reads as a seamless floor texture rather than a 3/4 object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The herringbone floor is built from planks with a light edge, mid, and dark tones, separated by dark red-brown gaps, so the shading is about 5 steps on a 7-colour palette. The measured facts match the Beodeul paving reference, which also has 7 distinct colours and a median of 7 per tile (candidate: 6 per tile). Flat-fill coverage is 0%. Dark edge pixels are 0% neutral, so the outlines lean visibly brown rather than black. That fits the dark material-tone approach, unlike the paving reference, which is 80% neutral. The pattern is clearly structured. Grain is modest next to the 80-colour grass, but it is on a par with the paving, the matching kind. It does not look like a flat sticker beside the paving reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15758
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "herringbone wood floor tile (flat terrain texture, full 32x32)",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full-bleed 32x32 herringbone plank pattern with constant silhouette width 32 on every row. It has no outline, no front-edge line, no eave shadow, no ellipse and no front face. The column scans show only alternating plank bands (e.g. rows 8-10 and 21-23 lighter) that belong to the tiling pattern, not to a vertical face. This is a flat seamless terrain texture, which fits the terrain kind, so it is not a standing object in 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a herringbone wood floor in dark red-brown. It has 7 distinct colours and a median of 6 per tile. That is close to the paving reference (7 and 7), but far below the grass reference (80 and 26). 5x5 flat-fill coverage is 0%, so there are no big flat areas. The dark edge pixels are 0% neutral, so the lines between planks are a tinted dark red-brown and not black. Each plank has about 3-4 lightness steps (highlight, mid, dark, seam), which is shallower than the 5-6 steps in Beodeul materials. Texture is limited to a plank-edge highlight and a few grain dots. The pattern is regular and repeats with little per-plank variation or speckle, so it reads somewhat tidy and flat compared with the hand-shaded stones in the paving. It is at the level of the paving reference on colour count, but it has less per-plank variation, and the 7-colour palette is a small ramp. Overall it is acceptable but borderline; it is slightly lower in richness, with tinted outlines and no flat fills.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15332
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "herringbone wood floor tile (full 32x32 fill)",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full-bleed 32x32 square tile (width 32 on every row) filled with a herringbone plank pattern in dark reddish-brown. It has no silhouette, no front-edge line, no eave shadow and no front face. This is a flat floor texture, which fits the terrain kind. The column scans show only plank-pattern lightness changes, not a top surface and front face structure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The herringbone planks are separated by a dark red-brown line that leans toward the wood. Measured near-neutral dark-edge share is 0%, so this is not a black sticker outline. Each plank has a lighter top edge and a mid body, giving about 5 lightness steps. The planks carry little grain or speckle beyond the highlight lines, so texture is only 'some'. Measured facts: 7 distinct colours and a median of 6 per tile, against the paving reference's 7 and 7. The grass reference is far richer at 80 colours and 26 per tile, but it is a different material. Flat-fill coverage is 0%, matching both references. As a floor it sits at about the paving reference's level, slightly thinner in grain, which is acceptable next to it. The tinted outlines and the repeating plank pattern keep it from looking like a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14970
+  }
+ ],
+ "decidedAt": "2026-10-19T16:50:54.473Z",
+ "cells": {
+  "16": [
+   "1c60d3db89e72dbf",
+   "df17d5a8f4a39e60",
+   "e1f04c948d543477",
+   "fc9d90b4c82555a9"
+  ],
+  "24": [
+   "021e472defa5742c",
+   "0e320b1bf06f0da5",
+   "0ee9de29753d9346",
+   "1f7a064e80ac954e",
+   "20e680dfa7113f9a",
+   "2460907f35fd71fc",
+   "29a6b65ec4ae54d5",
+   "3194f85f56a1bb0b",
+   "575f245e1ec5346c",
+   "82f741348dacce21",
+   "83a9a919d32ef977",
+   "841286ceaa3945c3",
+   "8a5cac70a14c0a65",
+   "94c89cad68cdc12a",
+   "969461f4c17495e6",
+   "988fa4f45572b79b",
+   "9ec000e1bc0a25a6",
+   "9ee1b2dd00016c49",
+   "aa181c628d621e5d",
+   "ada5276edf0188ba",
+   "b8db52987b715756",
+   "bfe36c7442181533",
+   "c9f49899747b99f0",
+   "ea7d35d0b6a04327"
+  ],
+  "32": [
+   "90c3aa98a4a2c5aa"
+  ],
+  "48": [
+   "01abbd288b03028d",
+   "205a0286340315d9",
+   "3abc2e0f8e6a3769",
+   "76456f9bcb86dc75",
+   "91d2ffc02cd6f148",
+   "d9b0d92502ccf8f4"
+  ]
+ }
+}

@@ -1,0 +1,273 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "912294ca374ce6ac2b76d477cdc22887c1452d58f242707f0085de165f9dd521",
+ "width": 64,
+ "height": 16,
+ "kind": "terrain",
+ "name": "아파트 마루(밝은 참나무)",
+ "label": "modern_city/interior/mci-wood-oak",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 12,
+  "darkV5": 135,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wood plank floor tile (full 64x16 flat texture)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The image is a seamless terrain tile of light oak floorboards, 64 px wide and 16 rows tall, fully opaque with width 64 on every row. It has horizontal plank seams, dark gaps and a few nail-head or knot pixels, and it shows no standing body, no front face, and no top/front split. The column scans show only alternating plank tones (L 103-182) with no eave line or ellipse. Because it is a flat terrain texture and not a standing object, the top/front-face rules do not apply, so it reads as 'other' (a floor texture)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a wood-plank floor with staggered boards. Each board has a light top edge, a mid body, darker grain streaks and dark brown seams, so I count about 4 wood steps against 5-6 in the references. The seams and edges are a tinted dark brown, and the measured 0% near-neutral dark edge share agrees. That differs from the paving reference, whose outlines are 80% neutral. The measured 5x5 flat-fill coverage is 0%, and the boards carry grain dashes and a few speckle pixels. The median of 10 colours per tile matches the Beodeul median and exceeds the paving reference's 7. The total of 13 distinct colours is far below the grass's 80, which is expected for a uniform plank floor. It reads as hand-shaded wood rather than a sticker, so a careful artist would accept it next to the paving reference. The main weakness is that the grain and per-board variation are a little sparse.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23631
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wood plank floor tile (whole 64x16 tile)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a flat, seamless-looking floor tile of horizontal oak planks, 64 px wide and 16 rows tall, fully opaque with no transparent rows. The column scans show only alternating plank tones and dark seam lines (rows 2-3, 11 and similar), not a top band ending in a front-edge line, an ellipse, or a roof plane. There is no standing volume and no vertical front face, so it reads as a flat terrain tile. The kind (terrain floor) matches."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a wooden plank floor with a light top edge, a mid tan face, a darker lower edge and brown seams between planks. That gives about 4 lightness steps on the wood, against 5-6 on the grass reference. Plank-end seams and a few grain dots break up the faces, so there are no flat fills (0% 5x5 coverage). Dark edge pixels are 0% neutral, so the outlines lean brown and are not a black sticker line. It has a median of 10 colours per tile and 13 colours overall. That is far below the grass (26 per tile, 80 overall), but above the paving reference (7 per tile, 7 overall), which is itself a sparse piece. Per-tile density matches the Beodeul median of about 10. Structure and shading are slightly simpler than the grass, but an artist would accept it beside the references without it looking like a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16735
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wood plank floor tile (full 64x16 tile)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a flat, full-bleed wood plank floor texture, 64 px wide and 16 rows tall, opaque in every row (width 64 for rows 0-15). It has horizontal plank seams, darker grain lines and scattered knot pixels, with no silhouette, no front-edge line, no eave shadow and no vertical front face. The column scans show only alternating plank lightness bands, not a top surface above a face. It reads as a flat top-down floor tile, which is correct for terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is an oak plank floor with about 4 lightness steps: a pale top highlight, light and mid wood, and a dark brown seam. The seams and edges are a dark brown version of the wood, and 0% of dark edge pixels are neutral, so the outline is tinted rather than a black sticker line. Grain dots and staggered plank joints give some texture, and flat-fill coverage is 0%. It carries a median of 10 colours per tile, which matches the Beodeul median of about 10 and is above the paving reference at 7. Its 13 total colours are far below the grass reference at 80, and it has one step fewer than the 5-step references, so it is slightly lower in richness. It is still a clearly shaded, grained surface that sits acceptably next to the paving reference, so it passes. The piece is displayed small on the board, which is not a reason to fail it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16329
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wood plank floor tile (full 64x16 surface)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a terrain floor tile, 64x16 and fully opaque (width 64 on every row). It shows horizontal oak planks with darker seams and a few lighter and reddish knot pixels. The column scans show short alternating plank bands, not a top band with an edge line and eave shadow above a front face. It has no standing volume, no front face and no ellipse or roof plane, so it reads as a flat top-down surface. That is normal for a floor tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a wood-plank floor, so it matches the ground kind. Its outlines and plank seams are dark brown (0% neutral dark edge pixels), so they lean toward the wood tone and are not a black sticker line. The planks show about 4 lightness steps: a pale highlight, a light tan, a mid tan and a dark brown seam. There are a few grain dashes and nail dots, and 0% of pixels sit in 5x5 flat blocks. Measured density is 10 colours per tile, the same as the reference median of about 10 and above the paving reference (7). It is well below the grass reference (26 per tile, 80 colours in total), and its 13 colours overall is thin, so I rate it slightly lower. It is comparable to the paving reference, which is also a low-colour hard surface, and no flat fills or neutral outlines count against it. The visible strip looks shorter than a full 4x3 patch, but that is a layout question, not a style one. Accepted, though borderline on density.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19770
+  }
+ ],
+ "decidedAt": "2026-10-19T16:50:54.466Z",
+ "cells": {
+  "16": [
+   "0cfd7a43380cc258",
+   "0e6c61eae613f473",
+   "130471e83b9aeb71",
+   "ecb09aa2b2a42cc9"
+  ],
+  "24": [
+   "00744f4b3e0f3587",
+   "070111992dbe11ac",
+   "1c7bd091d55fccea",
+   "1d5fcd0c00abf7c5",
+   "3b3c15b7fb8d5d94",
+   "45869bc010ca69da",
+   "6c2e25b20cb0f178",
+   "8746c8fb3f3a89f5",
+   "875fd28e05a0e70e",
+   "8907de08609bc405",
+   "8fef0dc39ae83d66",
+   "a13c39b48843763e",
+   "badd2104409ddeee",
+   "bb5ba29d105e0e07",
+   "c16d762b9bb3fc31",
+   "d290b27f3fd49159",
+   "e7c9bc88ccbf723b",
+   "fff672a2181c04eb"
+  ],
+  "32": [
+   "4695a0c8a519e577",
+   "75b82da987c848c2",
+   "87b80a6f605a88e9",
+   "de4f4630c6dc4780"
+  ],
+  "48": [
+   "151b38ab34906750",
+   "3f5aa2cccf784ad8",
+   "406b75bbf918332f",
+   "6c2e16022274a44d",
+   "6d2c7bea00f59ca5",
+   "9b8663330abe4285",
+   "c63674a764e0b94d",
+   "cdab81d6401f040a",
+   "dc6066df58303cf0",
+   "e40219872af351f4",
+   "eaeda7ef3df28ffa",
+   "fd0109d35a2f3230"
+  ]
+ }
+}

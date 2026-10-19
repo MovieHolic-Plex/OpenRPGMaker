@@ -62,6 +62,12 @@ modern-chipset 하네스가 합성한 도시(건물·도로·소품·차량)를 
 - 예제 9장 `examples.py --render` → `tiledata/modern-city/interior/examples/*.json`. 실내 60칸 넘는 한 방은 기둥·알코브로 꺾었다(ㅁ자 경고 0). `layout.ts` 의 `DOOR_OF` 에 병동·대기 복도(병원 문)·뒷방(철문)·회의실(유리문) 한 줄.
 - 엔진 검사 `qa/check-rooms.mts`(평면·program 두 경로 18장, 엔진 BFS) · 변조 `qa/tamper.mts`(6종 코드+좌표) · 참고문서 `refs_interior.py` → 용도 `mc-interior`(문서 10·그림 20, `public/assets/modern-city-interior-references/`). `bake_refs.py` 가 끝에서 저장본(`tiledata/modern-city/interior/refs/category.json`)을 다시 붙인다.
 - 문 이음 `link_modern_city_interior`(거리 문 ↔ 실내 출입구 틈 왕복, 막힌 문 칸에는 이벤트 없음).
+- **나무 바닥 A안 (2026-10-20, 사용자 「나무 바닥이 좀 아쉽다」):** `art_shell.floor_wood_oak`·`floor_wood_dark` 색 규칙만 바꿨다(판 끝 자리·헤링본 짜임·`cols/rows/lay` 그대로 → `floorLayX`·`test/roomKit.test.ts` 값 불변).
+  참나무: 판 사이 틈은 그 판보다 한 단만(예전엔 모든 4px 띠 밑줄이 가장 어두운 단 → 화소 31% 가 틈, 골덴 줄무늬), 판 끝 이음만 가장 어두운 단, 판 톤 8갈래 + 꿀색 판·끊긴 윗 빛·결·옹이·결 점. 짙은 마루: 붉은 rose 판 대신 갈색 호두(rose 1·wood 0·rose 2, 틈 rose 0) — 벽돌 벽과 갈린다.
+  굽기는 **제자리** `rebake_wood_seat.py`(사양에 적힌 10240..10271 32칸에 그대로 붙이고 `pins.json`·`interior/baked.json` 의 옛 내용 해시 키를 새 키로 바꿔 적는다). `bake_interior.py` 로 구우면 내용 해시가 달라 끝에 덧붙고(옛 맵은 옛 그림) 시트가 이미 4608px 라 `assert rows*16 <= 4096` 에서 멈춘다.
+  저장된 맵은 칸 번호가 같으므로 새 그림을 그대로 받는다(의도한 그림 교체). 관문: `tiledata/modern-city/interior/_gate_r15/` 바닥 주기 그림 2장 kind terrain — **object-gate PASS 3/4+style on profile `ee216f0de5822996` which is REJECTED (uncalibrated) — provisional, not a valid pass**(`object-gate check --context bundle` 은 거절). 굽기는 `bake_interior.gate` 와 같은 규칙으로 «미보정 임시통과»를 세고 굽는다.
+  1회차(판 안 명암 3단·칸 정보량 낮음)는 화풍 불합격이라 결 점·옹이·끊긴 빛을 더해 2회차에 넘었다. 지금 그대로의 예전 바닥도 같은 프로필에서 화풍 불합격이었다.
+- **앉는 기물 다시 그림(굽지 않음):** `art_seat.py` 가 나무·사무·카페 의자 네 방향과 금속 벤치를 같은 칸 크기로 다시 그렸다(호두 틀 + 세이지 방석으로 나무 바닥·탁자와 다른 단, 등받이 윗면, 판 밑 그늘). 관문 2회차 11장 통과 0·보류 2 — 옆·뒤를 보는 의자는 규칙상 자동 통과가 없다(`rules.ts HUMAN_DEFINED_SEAT_FACINGS`). 사람 승인 경로가 생기면 `rebake_wood_seat.py --seats`. 안락의자·3인 소파는 다시 그려도 나무 바닥 대비가 떨어져(47→27) 뺐다.
 
 ## 공간 규모 규격 · 학생/직장인 하루 18곳 (2026-10-18, `src/editor/handInterior/venueScale.ts`·`dailyVenues.ts`)
 

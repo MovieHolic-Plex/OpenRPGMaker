@@ -54,7 +54,11 @@ def floor_vinyl_store(c):
 
 
 def floor_wood_oak(c):
-    """아파트 마루: 높이 4px 판, 판 길이 20~40px 엇갈림, 판마다 색 한 단 차이 + 결 + 판 사이 어두운 틈. 가로로만 이어진다(rowShift)."""
+    """아파트 마루: 높이 4px 판, 판 길이 20~40px 엇갈림(판 끝 자리는 2026-10-14 그대로). 가로로만 이어진다(rowShift).
+    2026-10-20 색 규칙(A안 「나무 바닥이 아쉽다」): 판 사이 틈은 그 판보다 한 단만 어둡게(예전엔 모든 띠 밑줄이 가장 어두운 단 →
+    화소 31% 가 틈이라 골덴 줄무늬로 읽혔다), 판 끝 이음만 가장 어두운 단. 띠 윗줄 전체 밝은 선은 없앴다.
+    판마다 톤 8갈래(같은 wood 램프 2~4단 + 가끔 amber 꿀색 판). 판 안 명암은 줄 전체가 아니라 덩이로: 윗줄 끊긴 빛(4px 덩이 절반),
+    긴 결(5px 덩이), 드문 옹이(두 단 어둡게), 몇 판에만 왁스 광택 — 판 하나에 4~5단이 보이되 띠 전체를 긋는 줄은 틈 한 단뿐이다."""
     W = c.w
     for y in range(c.h):
         band = y // 4; ly = y % 4
@@ -62,30 +66,46 @@ def floor_wood_oak(c):
         ends = []; pos = (h32(band, 7, 2) % 24)
         while pos < W + 40:
             ends.append(pos % W); pos += 20 + h32(pos, band, 3) % 21
+        last = sum(1 for e in ends if e <= W - 1)
         for x in range(W):
             k = sum(1 for e in ends if e <= x)
-            base = (3, 4, 3, 2)[h32(k, band, 4) % 4]
+            if x < min(ends): k = last                       # 주기 끝을 넘어 이어지는 판은 같은 판(색이 끊기지 않는다)
+            hv = h32(k, band, 4)
+            base = (3, 3, 4, 2, 3, 4, 3, 2)[hv % 8]
+            honey = (hv >> 9) % 9 == 0
             t = base
-            r = rnd(x // 3, y, 8 + band)
-            if r < 0.15 and ly in (1, 2): t = base - 1
-            if ly == 0: t = min(5, base + 1)
-            if ly == 3: t = 1
+            if ly == 0 and rnd(x // 4, band, 33) < 0.5: t = min(5, base + 1)                       # 끊긴 윗 빛
+            if ly in (1, 2) and rnd(x // 5, y, 8 + band) < 0.14: t = base - 1                         # 결
+            if ly == 1 and (hv >> 5) % 4 == 0 and rnd(x // 6, band, 31) < 0.3: t = min(5, base + 2)   # 왁스 광택
+            if ly in (1, 2) and rnd(x, band, 37) < 0.025: t = max(1, base - 2)                        # 옹이
+            if ly == 3: t = base - 1
             if x in ends: t = 1
-            c.P(x, y, 'wood', t)
+            fl = rnd(x, y, 39)
+            if honey and t >= 2 and x not in ends and ly != 3: c.P(x, y, 'amber', t - 1); continue
+            if ly in (1, 2) and x not in ends and fl < 0.035: c.P(x, y, 'beige', min(5, t + 1)); continue     # 마른 결 점(옅은 회갈)
+            if ly in (1, 2) and x not in ends and fl > 0.975: c.P(x, y, 'brick', max(1, t - 1)); continue     # 붉은 결 점
+            c.P(x, y, 'wood', max(1, t))
 
 
 def floor_wood_dark(c):
-    """카페 짙은 마루: 헤링본(8px 폭 지그재그 판), 짙은 호두색(rose 램프) — 판 끝 어두운 틈, 판마다 한 단 차이."""
+    """카페 짙은 마루: 헤링본(8px 폭 지그재그 판, 짜임은 2026-10-14 그대로).
+    2026-10-20 색(A안): 붉은 rose 판 대신 갈색 호두 — 판 rose 1 이 바탕, 가끔 wood 0(짙은 호두)·rose 2, 판 머리 짧은 wood 1 광택, 틈 rose 0.
+    벽돌 벽(brick 1~4 단)과 같은 색을 쓰지 않아 벽과 바닥이 갈린다."""
     for y in range(c.h):
         for x in range(c.w):
             bx = x // 8; lx = x % 8
             k = (y + lx // 2) if bx % 2 == 0 else (y + 3 - lx // 2)
             slat = k // 4
-            base = (2, 3, 2, 2)[h32(slat, bx, 9) % 4]
-            t = base
-            if k % 4 == 3: t = 1
-            if lx == 7: t = 1
-            c.P(x, y, 'rose', t)
+            col = (('rose', 1), ('wood', 0), ('rose', 1), ('rose', 2), ('rose', 1), ('wood', 0), ('rose', 1), ('rose', 2))[h32(slat, bx, 9) % 8]
+            q = k % 4
+            if q == 3 or lx == 7: col = ('rose', 0)
+            elif q == 0 and lx in (2, 3) and col == ('rose', 2): col = ('wood', 1)                       # 판 머리 광택
+            elif q == 0 and lx in (1, 2, 3, 4) and col == ('rose', 1): col = ('rose', 2)                  # 판 머리 한 단 밝게
+            elif q == 2 and lx == 6 and col != ('wood', 0): col = (col[0], col[1] - 1) if col[1] else col   # 판 오른끝 그늘
+            elif rnd(x, y, 45) < 0.05 and col == ('rose', 2): col = ('rose', 3)                            # 결 점
+            elif rnd(x, y, 46) < 0.035 and col == ('rose', 1): col = ('brick', 0)                          # 짙은 결 점
+            elif rnd(x, y, 47) < 0.03 and col == ('wood', 0): col = ('roof', 1)                            # 호두 회갈 점
+            c.P(x, y, *col)
 
 
 def floor_vinyl_hospital(c):
