@@ -208,8 +208,10 @@ export interface StoreCatalogPage { items: StoreItemSummary[]; total: number; pa
 export type Validation<T> = { ok: true; value: T } | { ok: false; errors: string[] };
 
 const SHA256 = /^[0-9a-f]{64}$/;
-const ASSET_ID = /^[A-Za-z0-9_.:-]{1,120}$/;
-export const STORE_SLUG = /^[a-z0-9][a-z0-9-]{1,62}[a-z0-9]$/;
+/** 에셋·타일셋 id. 객체 키로 쓰이므로 프로토타입 이름(__proto__ 등)은 받지 않는다. */
+const ASSET_ID = /^(?!(?:__proto__|constructor|prototype)$)[A-Za-z0-9_.:-]{1,120}$/;
+/** `--` 는 받지 않는다 — 프로젝트 id 가 slug 의 `-` 를 `_` 로 바꾸므로 `a--b` + `x` 가 `a` + `b__x` 와 같은 id 가 된다. */
+export const STORE_SLUG = /^(?!.*--)[a-z0-9][a-z0-9-]{1,62}[a-z0-9]$/;
 
 export const isSha256 = (value: unknown): value is string => typeof value === "string" && SHA256.test(value);
 export const blobPlaceholder = (sha256: string): string => `${STORE_BLOB_PREFIX}${sha256}`;
@@ -390,6 +392,10 @@ export function validateManifest(input: unknown): Validation<StorePackManifest> 
       }
       if (!Array.isArray(tileset.passability) || !Array.isArray(tileset.priority)) errors.push(`타일셋 ${id} 의 통행·층 정보가 없습니다.`);
       else if (tileset.passability.length > STORE_LIMITS.tilesetCells || tileset.priority.length > STORE_LIMITS.tilesetCells) errors.push(`타일셋 ${id} 의 통행·층 정보가 너무 깁니다.`);
+      else if (tileset.passability.length !== tileset.count || tileset.priority.length !== tileset.count
+        || (Array.isArray(tileset.terrain) && tileset.terrain.length !== tileset.count)) {
+        errors.push(`타일셋 ${id} 의 칸 수(count)와 통행·층 정보 길이가 다릅니다.`);
+      }
       if (tileset.referenceSourceTilesetId !== undefined && !Object.hasOwn(tilesets, tileset.referenceSourceTilesetId)) {
         errors.push(`타일셋 ${id} 이 팩 밖의 참고문서(${tileset.referenceSourceTilesetId})를 가리킵니다.`);
       }

@@ -11,6 +11,8 @@ import {
   blobPlaceholder,
   mapStrings,
   placeholderSha,
+  storeImageHasSpec,
+  storeImageSizeProblem,
   storeThirdPartyName,
   storeProjectId,
   tilesetUploadedAssetIds,
@@ -24,7 +26,7 @@ import {
   type StorePackCharacter,
   type StorePackManifest,
 } from "./format";
-import { base64ToBytes, bytesToBase64, dataUrlParts, sniffMime } from "./sniff";
+import { base64ToBytes, bytesToBase64, dataUrlParts, pngSize, sniffMime } from "./sniff";
 import { WORKSHOP_ASSET_PREFIX } from "../project/workshopTiles";
 
 export interface PackBlob { readonly bytes: Uint8Array; readonly mime: StoreBlobMime }
@@ -306,6 +308,19 @@ export function applyPackToProject(project: Project, manifest: StorePackManifest
     restoredCache.set(sha, encoded);
     return encoded;
   };
+  // 넣기 전에 그림 크기를 본다 — 서버 업로드 검사에만 기대면 사용자가 바꾼 스토어 주소나 서버 회귀에서 깨진 타일셋이 저장된다.
+  for (const packAsset of Object.values(manifest.content.assets)) {
+    const size = packAsset.mime === "image/png" && storeImageHasSpec(packAsset.kind) ? pngSize(context.blob(packAsset.blob)) : null;
+    const problem = size ? storeImageSizeProblem(packAsset.kind, size.width, size.height) : null;
+    if (problem) throw new Error(`${packAsset.name}: ${problem}`);
+  }
+  for (const tileset of Object.values(manifest.content.tilesets)) {
+    const image = tileset.image.type === "uploaded" && Object.hasOwn(manifest.content.assets, tileset.image.id) ? manifest.content.assets[tileset.image.id] : undefined;
+    const size = image?.mime === "image/png" ? pngSize(context.blob(image.blob)) : null;
+    if (size && (tileset.tilesPerRow * tileset.tileSize > size.width || Math.ceil(tileset.count / tileset.tilesPerRow) * tileset.tileSize > size.height)) {
+      throw new Error(`타일셋 ${tileset.name}: 칸 수(${tileset.count}칸, 한 줄 ${tileset.tilesPerRow}칸)가 그림 ${size.width}×${size.height} 보다 큽니다.`);
+    }
+  }
   for (const [id, packAsset] of Object.entries(manifest.content.assets)) {
     const bytes = context.blob(packAsset.blob);
     const mime = sniffMime(bytes);
@@ -336,7 +351,7 @@ export function applyPackToProject(project: Project, manifest: StorePackManifest
     project.charsetLabels = at >= 0 ? labels.map((old, i) => (i === at ? entry : old)) : [...labels, entry];
   }
   for (const [id, source] of Object.entries(manifest.content.tilesets)) {
-    const existingBundled = project.tilesets[id];
+    const existingBundled = Object.hasOwn(project.tilesets, id) ? project.tilesets[id] : undefined;
     const bundledRefUrls = new Map<string, string>();
     if (existingBundled && existingBundled.image.type === "bundled" && existingBundled.referenceDocuments?.length) {
       for (const category of existingBundled.referenceDocuments) {

@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
-import { STORE_BLOB_PREFIX, slugify, storeProjectId, storeThirdPartyName, validateManifest, packGrade } from "@/assetStore/format";
+import { STORE_BLOB_PREFIX, STORE_SLUG, slugify, storeProjectId, storeThirdPartyName, validateManifest, packGrade } from "@/assetStore/format";
 import { aiMadeAssets, aiMaker, applyPackToProject, basicTilesetFor, buildPack, closeSelection, decodePackBundle, encodePackBundle, packBlockedItems, storeCredits, storeItemsInProject, StorePackBlockedError, type PackMeta } from "@/assetStore/pack";
 import { bytesToBase64, pngSize, sniffMime } from "@/assetStore/sniff";
 import { uploadBlockReason } from "@/editor/assetStore/storeUpload";
@@ -85,6 +85,35 @@ describe("asset store pack", () => {
     leaked.content.tilesets.forest!.name = "data:image/png;base64,AAAA";
     expect(validateManifest(leaked).ok).toBe(false);
     expect(validateManifest({ ...built.manifest, license: "All rights reserved" }).ok).toBe(false);
+  });
+
+  it("rejects prototype ids, cell counts that disagree with passability, and slugs that collide as project ids", async () => {
+    const built = await buildPack(project(), { tilesetIds: ["forest"], assetIds: [] }, META, { readAsset, sha256 });
+    const proto = JSON.parse(JSON.stringify(built.manifest).replace('"forest":', '"__proto__":').replace('"id":"forest"', '"id":"__proto__"'));
+    const protoResult = validateManifest(proto);
+    expect(protoResult.ok).toBe(false);
+    if (!protoResult.ok) expect(protoResult.errors.join()).toContain("타일셋 id 가 올바르지 않습니다");
+    const stretched = structuredClone(built.manifest);
+    stretched.content.tilesets.forest!.count = 4096;
+    const stretchedResult = validateManifest(stretched);
+    expect(stretchedResult.ok).toBe(false);
+    if (!stretchedResult.ok) expect(stretchedResult.errors.join()).toContain("칸 수(count)와 통행·층 정보 길이가 다릅니다");
+    expect(STORE_SLUG.test("abc--def")).toBe(false);
+    expect(STORE_SLUG.test("abc-def")).toBe(true);
+  });
+
+  it("refuses to apply a tileset whose cells do not fit its picture", async () => {
+    const built = await buildPack(project(), { tilesetIds: ["forest"], assetIds: [] }, META, { readAsset, sha256 });
+    const tall = structuredClone(built.manifest);
+    const forest = tall.content.tilesets.forest!;
+    forest.count = 16;
+    forest.passability = [...forest.passability, ...forest.passability];
+    forest.priority = [...forest.priority, ...forest.priority];
+    forest.terrain = [...(forest.terrain ?? []), ...(forest.terrain ?? [])];
+    const target = { tilesets: {}, assets: { uploaded: {} } } as unknown as Project;
+    const context = { slug: "tall-pack", version: 1, author: "테스터", storeUrl: "https://store.example", itemUrl: "https://store.example/items/tall-pack", blob: (sha: string) => built.blobs.get(sha)!.bytes };
+    expect(() => applyPackToProject(target, tall, context)).toThrow("그림 64×32 보다 큽니다");
+    expect(target.assets.uploaded).toEqual({});
   });
 
   it("applies into a project with rewritten ids, restored data URLs and origin, and replaces on update", async () => {

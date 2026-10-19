@@ -10,7 +10,6 @@ import {
   storeBlobSchema, storeVisibilitySchema,
 } from "../shared/schemas";
 import { AssetStoreClient, sameOriginUrl, StoreError } from "./assetStoreClient";
-import type { StorePackManifest } from "../../src/assetStore/format";
 
 let client: AssetStoreClient | null = null;
 let loginSeq = 0;
@@ -127,7 +126,7 @@ export function registerAssetStore(): void {
   }));
   ipcMain.handle(OPRN_CHANNELS.storeUpload, (_event, payload: unknown) => wrap(async () => {
     const input = storeUploadSchema.parse(payload);
-    const result = await storeClient().upload({ manifest: input.manifest as StorePackManifest, blobs: input.blobs, ...(input.targetSlug ? { targetSlug: input.targetSlug } : {}) }, progress);
+    const result = await storeClient().upload({ manifest: input.manifest, blobs: input.blobs, ...(input.targetSlug ? { targetSlug: input.targetSlug } : {}) }, progress);
     broadcast(OPRN_CHANNELS.storeChanged, { kind: "uploaded", slug: result.slug });
     return result;
   }));

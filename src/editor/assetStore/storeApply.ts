@@ -65,7 +65,8 @@ export async function prepareStoreItem(slug: string): Promise<PreparedStoreItem>
   const currentTilesets = store.getCurrent().tilesets;
   const probeTilesets: Record<string, Project["tilesets"][string]> = {};
   for (const id of Object.keys(pkg.manifest.content.tilesets)) {
-    if (currentTilesets[id]) probeTilesets[id] = currentTilesets[id]!;
+    const existing = Object.hasOwn(currentTilesets, id) ? currentTilesets[id] : undefined;
+    if (existing) probeTilesets[id] = existing;
   }
   applyPackToProject({ tilesets: probeTilesets, assets: { uploaded: {} } } as unknown as Project, pkg.manifest, context);
   return { manifest: pkg.manifest, version: pkg.version, context };
