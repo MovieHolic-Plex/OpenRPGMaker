@@ -183,7 +183,7 @@ export const JRPG_CHAPTERS = {
       { key: "lucca", name: "토우", query: "마법사 소녀", lines: ["내 텔레포드 시연 보러 왔구나! 광장 북쪽 무대야.", "펜던트가 장치랑 공명하는 건 계산에 없었는데…"] },
       { key: "balloon", name: "풍선 장수", query: "행상인 · 갈색 둥근 모자", lines: ["천년제 기념 풍선이오! 하나에 10골드!"], roam: true },
       { key: "bell", name: "종탑지기", query: "노인 · 흰 머리(남)", lines: ["천 년 전 왕국이 세워진 날을 이 종이 알린다네."] },
-      { key: "cat", name: "길 잃은 고양이", query: "주황 고양이", lines: ["냐아… (집에 데려다 달라는 눈치다)"], roam: true },
+      { key: "dog", name: "길 잃은 강아지", query: "주황 강아지", lines: ["멍! 멍멍… (집에 데려다 달라는 눈치다)"], roam: true },
       { key: "chancellor", name: "벨하임 대신", query: "귀족 남성", lines: ["왕녀님을 데려간 자가 누구냐!"], map: "castle" },
     ],
     joins: ["marle", "lucca"],

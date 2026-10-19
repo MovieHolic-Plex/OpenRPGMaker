@@ -32,7 +32,7 @@ const FIELD_CELL_BY_SLUG: Readonly<Record<string, string>> = (() => {
     'tex_easyrpg_charset_monster5#1': ['armor-living', 'knight-fallen'],
     'tex_easyrpg_charset_monster5#3': ['puppet-string'],
     'tex_easyrpg_charset_monster5#5': ['scarecrow-field'],
-    'tex_easyrpg_charset_animal#0': ['cat-01'],
+    'tex_easyrpg_charset_animal#1': ['cat-01'],
     'tex_easyrpg_charset_animal#5': ['horse-01'],
     'tex_easyrpg_charset_animal#6': ['tiger-saber'],
   };

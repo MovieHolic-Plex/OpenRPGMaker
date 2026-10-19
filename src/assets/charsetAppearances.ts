@@ -136,7 +136,7 @@ export const CHARSET_APPEARANCE: Readonly<Record<string, string>> = {
   "tex_easyrpg_charset_actor4#6": "보라 긴 머리, 파란 로브, 노란 허리띠.",
   "tex_easyrpg_charset_actor4#7": "빨간 고깔모자, 청록 머리, 흰 블라우스, 노란 바지, 빨간 부츠.",
 
-  "tex_easyrpg_charset_animal#0": "주황 고양이. 흰 가슴, 파란 눈.",
+  "tex_easyrpg_charset_animal#0": "주황 강아지. 흰 가슴·주둥이, 짧은 다리의 코기형.",
   "tex_easyrpg_charset_animal#1": "갈색 고양이. 크림색 가슴과 어두운 귀.",
   "tex_easyrpg_charset_animal#2": "흰 닭. 빨간 벼슬, 노란 부리.",
   "tex_easyrpg_charset_animal#3": "흰 양. 검은 얼굴, 회색 털.",
