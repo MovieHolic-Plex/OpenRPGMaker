@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
@@ -9,6 +10,8 @@ import { chooseScale, fitSprite, MAX_INK_SIDE, SPRITE_CANVAS } from "@/harnesses
 import { cleanReference, pixelize } from "@/harnesses/monster-collect-species/pixel/pipeline";
 import { createImage, cropToInk, opaqueBounds, pixelAt, setPixel, type Rgba, type RgbaImage } from "@/harnesses/monster-collect-species/pixel/image";
 import { checkFrames, checkPair, checkSprite, silhouetteOverlap, similarSilhouettes, spriteStats } from "@/harnesses/monster-collect-species/checks/checks";
+import { checkEyes } from "@/harnesses/monster-collect-species/checks/eyes";
+import { checkEyePlacement, checkLineStyles, validateEyeTable, type EyeEntry, type EyeTable } from "@/harnesses/monster-collect-species/checks/eyeTable";
 import { backPrompt, evolutionPrompt, frontPrompt } from "@/harnesses/monster-collect-species/prompts/prompts";
 import { IDLE_PLAN, idleFrames } from "@/harnesses/monster-collect-species/anim/idle";
 import { poseForSkill } from "@/harnesses/monster-collect-species/anim/poses";
@@ -463,15 +466,109 @@ describe("monster-collect-species 시드·레지스트리", () => {
     expect(readFileSync(join(ROOT, "src/harnesses/INDEX.md"), "utf8")).toBe(renderHarnessIndex(HARNESSES));
   });
 
-  it("커밋된 번들 스프라이트가 검사를 통과한다", () => {
+  it("커밋된 번들 스프라이트가 검사를 통과한다 (눈 규칙 포함 — 면·단계를 넘겨야 checkSprite 가 눈을 본다)", () => {
     const seed = validateSeed(JSON.parse(readFileSync(join(ROOT, "harness-data/monster-collect-species/seed.json"), "utf8")));
     for (const species of seed.species) {
+      const stage = species.stage as 1 | 2 | 3;
       const front = readPng(join(ROOT, "public/assets/harnesses/monster-collect-species", species.id, "front.png"));
       const back = readPng(join(ROOT, "public/assets/harnesses/monster-collect-species", species.id, "back.png"));
-      expect(checkSprite(front, seed.style.maxColors).issues.filter((i) => i.level === "error"), `${species.id} front`).toEqual([]);
-      expect(checkSprite(back, seed.style.maxColors).issues.filter((i) => i.level === "error"), `${species.id} back`).toEqual([]);
+      expect(checkSprite(front, seed.style.maxColors, "front", stage).issues.filter((i) => i.level === "error"), `${species.id} front`).toEqual([]);
+      expect(checkSprite(back, seed.style.maxColors, "back", stage).issues.filter((i) => i.level === "error"), `${species.id} back`).toEqual([]);
+      expect(checkEyes(back, "back", stage).pass, `${species.id} 뒷모습에 눈 (V6)`).toBe(true);
       expect(checkPair(front, back), `${species.id} 앞·뒤`).toEqual([]);
     }
+  });
+
+  it("눈 표(eyes.json): 번들 앞모습의 눈 검사 실패 목록이 종마다 accept 와 정확히 같다 (V0~V7), 동결 종은 해시 그대로 (V8)", () => {
+    const seed = validateSeed(JSON.parse(readFileSync(join(ROOT, "harness-data/monster-collect-species/seed.json"), "utf8")));
+    const table = validateEyeTable(JSON.parse(readFileSync(join(ROOT, "harness-data/monster-collect-species/eyes.json"), "utf8")), seed.species.map((s) => s.id));
+    const lineFindings = checkLineStyles(table, seed.species);
+    for (const species of seed.species) {
+      const entry = table.species[species.id]!;
+      const front = readPng(join(ROOT, "public/assets/harnesses/monster-collect-species", species.id, "front.png"));
+      const findings = checkEyePlacement(front, entry);
+      const line = lineFindings.get(species.id);
+      if (line && !findings.some((f) => f.check === "V7")) findings.push(line);
+      expect([...new Set(findings.map((f) => f.check))].sort(), `${species.id}: ${findings.map((f) => `${f.check} ${f.message}`).join(" / ")}`).toEqual(Object.keys(entry.accept ?? {}).sort());
+      if (entry.frozen) {
+        const back = readPng(join(ROOT, "public/assets/harnesses/monster-collect-species", species.id, "back.png"));
+        expect(createHash("sha256").update(front.data).digest("hex"), `${species.id} 동결 앞모습`).toBe(entry.frozen.front);
+        expect(createHash("sha256").update(back.data).digest("hex"), `${species.id} 동결 뒷모습`).toBe(entry.frozen.back);
+      }
+    }
+    expect(Object.values(table.species).filter((e) => e.frozen).length).toBe(4);
+  });
+});
+
+describe("monster-collect-species 눈 표 검사 (합성 64px 얼굴)", () => {
+  const SKIN: Rgba = [250, 230, 190, 255];
+  const LINE: Rgba = [40, 20, 10, 255];
+  const PUPIL: Rgba = [30, 15, 10, 255];
+  const WHITE: Rgba = [255, 255, 255, 255];
+  /** 지름 40 원 얼굴(1칸 윤곽) */
+  function face(): RgbaImage {
+    const image = createImage(64, 64);
+    for (let y = 0; y < 64; y += 1) for (let x = 0; x < 64; x += 1) {
+      const d = Math.hypot(x + 0.5 - 32, y + 0.5 - 40);
+      if (d <= 20) setPixel(image, x, y, d > 19 ? LINE : SKIN);
+    }
+    return image;
+  }
+  /** 둥근 BW 눈: 상자 채움 + 왼쪽 위 모서리 살갗 + 2×2 하이라이트 */
+  function eye(image: RgbaImage, x: number, y: number, w: number, h: number): void {
+    for (let yy = y; yy < y + h; yy += 1) for (let xx = x; xx < x + w; xx += 1) setPixel(image, xx, yy, PUPIL);
+    if (w >= 5 && h >= 6) setPixel(image, x, y, SKIN);
+    for (const [dx, dy] of [[1, 1], [2, 1], [1, 2], [2, 2]] as const) if (dx < w && dy < h) setPixel(image, x + dx, y + dy, WHITE);
+  }
+  const entry = (over: Partial<EyeEntry>): EyeEntry => ({ anatomy: "threequarter", style: "round", near: [26, 36, 5, 6], far: [20, 36, 2, 4], ...over });
+
+  it("얼굴 안 둥근 두 눈은 통과", () => {
+    const image = face();
+    eye(image, 26, 36, 5, 6);
+    eye(image, 20, 36, 2, 4);
+    expect(checkEyePlacement(image, entry({}))).toEqual([]);
+  });
+
+  it("V1: 실루엣 밖 허공에 찍힌 먼 눈을 잡는다", () => {
+    const image = face();
+    eye(image, 26, 36, 5, 6);
+    eye(image, 11, 36, 2, 4);
+    expect(checkEyePlacement(image, entry({ far: [11, 36, 2, 4] })).map((f) => f.check)).toContain("V1");
+  });
+
+  it("V2: 윤곽선에 붙은 먼 눈, V5: 상자 밖으로 이어진 옛 눈 잔상", () => {
+    const edge = face();
+    eye(edge, 26, 36, 5, 6);
+    eye(edge, 13, 36, 2, 4);
+    expect(checkEyePlacement(edge, entry({ far: [13, 36, 2, 4] })).map((f) => f.check)).toContain("V2");
+    const ghost = face();
+    eye(ghost, 26, 36, 5, 6);
+    eye(ghost, 20, 36, 2, 4);
+    for (let y = 36; y < 42; y += 1) setPixel(ghost, 31, y, PUPIL);
+    expect(checkEyePlacement(ghost, entry({})).map((f) => f.check)).toContain("V5");
+  });
+
+  it("V0: 표 자리에 눈이 없으면, V4: 먼 눈이 더 크면, V7: 사각 틀이면 실패", () => {
+    const image = face();
+    eye(image, 26, 36, 5, 6);
+    expect(checkEyePlacement(image, entry({})).map((f) => f.check)).toContain("V0");
+    expect(checkEyePlacement(image, entry({ far: [18, 36, 6, 7] })).map((f) => f.check)).toContain("V4");
+    expect(checkEyePlacement(image, entry({ style: "square", far: null })).map((f) => f.check)).toContain("V7");
+  });
+
+  it("V7: 한 진화 계통 안에서 눈 양식이 섞이면 계통 전원이 실패, 동결 기준종·사용자 선택 대기 종은 빠진다", () => {
+    const table: EyeTable = { version: 1, species: {
+      a: entry({}), b: entry({ style: "square" }), c: entry({ style: "reference" }), d: entry({ pending: "user-pick" }),
+      x: entry({ style: "hand" }), y: entry({}),
+    } };
+    const found = checkLineStyles(table, [{ id: "a" }, { id: "b", evolvesFrom: "a" }, { id: "c", evolvesFrom: "b" }, { id: "d", evolvesFrom: "a" }, { id: "x" }, { id: "y", evolvesFrom: "x" }]);
+    expect([...found.keys()].sort()).toEqual(["a", "b"]);
+  });
+
+  it("eyes.json 형식: 종 누락·잘못된 상자·모르는 accept 키를 거른다", () => {
+    expect(() => validateEyeTable({ version: 1, species: {} }, ["a"])).toThrow("a 가 없다");
+    expect(() => validateEyeTable({ version: 1, species: { a: entry({ near: [62, 60, 5, 6] }) } }, ["a"])).toThrow("near");
+    expect(() => validateEyeTable({ version: 1, species: { a: entry({ accept: { V9: "x" } as never }) } }, ["a"])).toThrow("accept");
   });
 });
 
