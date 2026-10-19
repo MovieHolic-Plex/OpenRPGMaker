@@ -45,27 +45,26 @@ export function buildFollowerPresets(): readonly FollowerPreset[] {
 
   const base: FollowerPreset[] = [
     {
-      // id 는 즐겨찾기/테스트 계약이라 고정. 번들 charset 에 개 스프라이트가 없어서
-      // (tex_easyrpg_charset_animal = 주황 고양이/갈색 고양이/닭/양/소/말/호랑이/사자)
-      // 이 칩은 갈색 고양이로 정정했다. 이전에는 "강아지" 라벨이 붙은 채 고양이 프리셋과
-      // 똑같은 0번 스프라이트를 렌더했다(pattern 을 원시 프레임으로 넣은 탓).
+      // id 는 즐겨찾기/테스트 계약이라 고정. Animal 시트 0번은 노란 코기 **강아지**, 1번이 갈색 고양이다
+      // (정본 근거: retroRoster `animal-0 충견 · 노란 개`, party-pixel/animal-0.py `걷기 칩(Animal 0, 노란 코기)`).
+      // 예전에는 0번을 「주황 고양이」로 잘못 읽어 강아지 칩이 고양이를, 고양이 칩이 개를 그렸다.
       id: "preset:pet-dog",
       kind: "mascot",
-      label: "갈색 고양이 동료",
-      description: "주인공 바로 뒤를 따라오는 갈색 고양이.",
-      hint: "addFollower(그래픽) — animal charset 1번",
-      refId: "__mascot_black_cat__",
-      displayName: "까망이",
+      label: "강아지 동료",
+      description: "주인공 바로 뒤를 따라오는 주황 코기 강아지.",
+      hint: "addFollower(그래픽) — animal charset 0번",
+      refId: "__mascot_dog__",
+      displayName: "멍이",
       textureKey: "tex_easyrpg_charset_animal",
     },
     {
       id: "preset:pet-cat",
       kind: "mascot",
       label: "고양이 동료",
-      description: "느릿하게 뒤따라오는 주황 고양이. 마을·농장 분위기에 어울린다.",
-      hint: "addFollower(그래픽) — animal charset 0번",
-      refId: "__mascot_cat__",
-      displayName: "야옹이",
+      description: "주인공 바로 뒤를 따라오는 갈색 고양이.",
+      hint: "addFollower(그래픽) — animal charset 1번",
+      refId: "__mascot_black_cat__",
+      displayName: "까망이",
       textureKey: "tex_easyrpg_charset_animal",
     },
     {
@@ -115,7 +114,7 @@ export function followerPresetToCommands(preset: FollowerPreset): readonly Comma
 
 /** 마스코트 refId → 번들 charset 좌표. 프레임 계산은 charsetFollowerGraphic 이 단독으로 책임진다. */
 const MASCOT_CHARSETS: Readonly<Record<string, { readonly textureKey: string; readonly characterIndex: number }>> = {
-  __mascot_cat__: { textureKey: "tex_easyrpg_charset_animal", characterIndex: 0 },
+  __mascot_dog__: { textureKey: "tex_easyrpg_charset_animal", characterIndex: 0 },
   __mascot_black_cat__: { textureKey: "tex_easyrpg_charset_animal", characterIndex: 1 },
   __mascot_chick__: { textureKey: "tex_farming_charset_chicken", characterIndex: 0 },
 };

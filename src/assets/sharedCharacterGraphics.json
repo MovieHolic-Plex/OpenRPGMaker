@@ -461,14 +461,14 @@
     {
       "textureKey": "tex_easyrpg_charset_animal",
       "characterIndex": 0,
-      "label": "주황 고양이",
+      "label": "주황 강아지",
       "attributes": {
         "kind": "동물"
       },
       "status": "mapped",
-      "faceResourceId": "easyrpg-faceset-people2-09",
-      "quality": "approximate",
-      "note": "2026-09-18 원본 실물 대조. 주황·흰색 고양이에 갈색 줄무늬 고양이 얼굴. 털 무늬가 달라 근사 연결; 개 얼굴은 사용하지 않음."
+      "faceResourceId": "easyrpg-faceset-people2-08",
+      "quality": "exact",
+      "note": "2026-10-20 원본 실물 재대조. 걷는 그림은 주황 털·흰 가슴과 주둥이에 짧은 다리의 코기형 강아지(뒷모습의 둥근 엉덩이)이고 FaceSet/people2 #08(강아지)과 같은 인물이다. 이전 대응(#09 고양이)은 걷는 그림을 고양이로 잘못 읽은 오류였다."
     },
     {
       "textureKey": "tex_easyrpg_charset_animal",
