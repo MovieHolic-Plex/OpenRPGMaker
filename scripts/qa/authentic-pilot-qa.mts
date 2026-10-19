@@ -8,6 +8,7 @@
  *   bun scripts/qa/authentic-pilot-qa.mts [--cases jrpg_016,jrpg_002] [--skip-assistant]
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 import { chromium } from "playwright";
 import { PNG } from "pngjs";
@@ -30,7 +31,89 @@ const MODEL_PROVIDER = "google-antigravity" as const;
 // 조수(argon)와 심판이 같은 Cloud Code 쿼터 풀을 쓰면 한쪽이 바닥날 때 파이프라인이 통째로 멈춘다(2026-10-16 429 로 4건 중단).
 // 심판은 환경변수로 다른 공급자로 뗄 수 있다. 합격 기준(no 0개·score>=80·3표 중 2표)은 그대로다.
 const JUDGE_PROVIDER = process.env.PILOT_JUDGE_PROVIDER ?? MODEL_PROVIDER;
-const JUDGE_MODEL = process.env.PILOT_JUDGE_MODEL ?? "gemini-4-argon";
+const JUDGE_MODEL = process.env.PILOT_JUDGE_MODEL ?? "gemini-4-argon-high";
+const JUDGE_BASE_URLS = process.env.PILOT_JUDGE_BASE_URL
+  ? [process.env.PILOT_JUDGE_BASE_URL]
+  : ["http://127.0.0.1:8318/v1", "http://127.0.0.1:8319/v1"];
+
+function readLiveKey(): string {
+  const fromEnv = process.env.OPRN_LIVE_KEY?.trim();
+  if (fromEnv) return fromEnv;
+  const keyPath = join(homedir(), ".config/oprn/live-key");
+  return existsSync(keyPath) ? readFileSync(keyPath, "utf8").trim() : "";
+}
+
+async function completeJudgeText(content: unknown[], apiKey: string): Promise<string> {
+  const liveKey = readLiveKey();
+  if (liveKey && !process.env.PILOT_JUDGE_PROVIDER) {
+    const model = /^gemini-4-argon/u.test(JUDGE_MODEL) ? JUDGE_MODEL : "gemini-4-argon-high";
+    let lastHttpErr = "";
+    for (const baseUrl of JUDGE_BASE_URLS) {
+      const timeoutMs = baseUrl.includes(":8319") ? 12_000 : 40_000;
+      try {
+        const res = await fetch(`${baseUrl}/chat/completions`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            authorization: `Bearer ${liveKey}`,
+            "x-queue-tag": "authentic-pilot-judge",
+          },
+          body: JSON.stringify({
+            model,
+            messages: [{ role: "user", content }],
+            stream: true,
+            max_tokens: 2000,
+            temperature: 0.1,
+          }),
+          signal: AbortSignal.timeout(timeoutMs),
+        });
+        const bodyText = await res.text();
+        if (!res.ok) {
+          lastHttpErr = `Argon judge HTTP ${res.status} (${baseUrl}): ${bodyText.slice(0, 240)}`;
+          continue;
+        }
+        if (bodyText.trimStart().startsWith("{")) {
+          const parsed = JSON.parse(bodyText) as { choices?: { message?: { content?: string } }[] };
+          return String(parsed.choices?.[0]?.message?.content ?? "").trim();
+        }
+        let out = "";
+        for (const line of bodyText.split(/\r?\n/u)) {
+          if (!line.startsWith("data:")) continue;
+          const payload = line.slice(5).trim();
+          if (!payload || payload === "[DONE]") continue;
+          try {
+            const chunk = JSON.parse(payload) as {
+              choices?: { delta?: { content?: string }; message?: { content?: string } }[];
+            };
+            const delta = chunk.choices?.[0]?.delta?.content ?? chunk.choices?.[0]?.message?.content ?? "";
+            if (delta) out += delta;
+          } catch {
+            // ignore malformed keepalive chunk
+          }
+        }
+        if (out.trim()) return out.trim();
+        lastHttpErr = `Empty SSE stream from ${baseUrl}`;
+      } catch (err) {
+        lastHttpErr = `${baseUrl}: ${(err as Error).message}`;
+      }
+    }
+    throw new Error(lastHttpErr || "All Argon judge endpoints failed");
+  }
+  const freshKey = (await resolveRequestApiKey(JUDGE_PROVIDER)) ?? apiKey;
+  const { completion } = (await completeProvider(
+    JUDGE_PROVIDER,
+    {
+      model: JUDGE_MODEL,
+      messages: [{ role: "user", content }],
+      stream: false,
+      max_tokens: 2000,
+      temperature: 0.1,
+      reasoning: { effort: "low" },
+    },
+    { apiKey: freshKey },
+  )) as any;
+  return String(completion?.choices?.[0]?.message?.content ?? "").trim();
+}
 const PILOT_IDS = ["jrpg_016", "jrpg_002", "jrpg_003", "jrpg_046", "jrpg_015", "jrpg_019", "jrpg_020", "jrpg_060"];
 
 interface Gate {
@@ -256,35 +339,31 @@ JSON으로만 답하라:
       image_url: { url: `data:image/png;base64,${readFileSync(p).toString("base64")}` },
     });
   }
-  try {
-    const { completion } = (await completeProvider(
-      JUDGE_PROVIDER,
-      {
-        model: JUDGE_MODEL,
-        messages: [{ role: "user", content }],
-        stream: false,
-        max_tokens: 2000,
-        temperature: 0.1,
-        reasoning: { effort: "low" },
-      },
-      { apiKey },
-    )) as any;
-    const raw = String(completion?.choices?.[0]?.message?.content ?? "").trim();
-    const m = /\{[\s\S]*\}/u.exec(raw);
-    if (!m) return { passed: false, score: 0, critique: `판정 응답 파싱 실패: ${raw.slice(0, 200)}` };
-    const parsed = JSON.parse(m[0]);
-    const reqs = Array.isArray(parsed.requirements) ? parsed.requirements : [];
-    const anyNo = reqs.some((r: any) => r?.verdict === "no");
-    const score = Number(parsed.score ?? 0);
-    return {
-      passed: Boolean(parsed.passed) && !anyNo && score >= 80,
-      score,
-      critique: String(parsed.critique ?? ""),
-      requirements: reqs,
-    };
-  } catch (err) {
-    return { passed: false, score: 0, critique: `판정 오류: ${(err as Error).message}` };
+  let lastErr = "";
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const raw = await completeJudgeText(content, apiKey);
+      const m = /\{[\s\S]*\}/u.exec(raw);
+      if (!m) {
+        lastErr = `판정 응답 파싱 실패: ${raw.slice(0, 200)}`;
+        continue;
+      }
+      const parsed = JSON.parse(m[0]);
+      const reqs = Array.isArray(parsed.requirements) ? parsed.requirements : [];
+      const anyNo = reqs.some((r: any) => r?.verdict === "no");
+      const score = Number(parsed.score ?? 0);
+      return {
+        passed: Boolean(parsed.passed) && !anyNo && score >= 80,
+        score,
+        critique: String(parsed.critique ?? ""),
+        requirements: reqs,
+      };
+    } catch (err) {
+      lastErr = `판정 오류: ${(err as Error).message}`;
+      await new Promise((r) => setTimeout(r, 1500 * (attempt + 1)));
+    }
   }
+  return { passed: false, score: 0, critique: lastErr };
 }
 
 // ---------------------------------------------------------------------------
@@ -324,7 +403,12 @@ type JudgeResult = { passed: boolean; score: number; critique: string; requireme
  * contradicted itself between runs on identical frames, so one noisy "no" must not decide the run.
  */
 export async function blindJudge(prompt: string, imagePaths: string[], apiKey: string): Promise<JudgeResult & { votes: number[] }> {
-  const runs = await Promise.all([0, 1, 2].map(() => blindJudgeOnce(prompt, imagePaths, apiKey)));
+  const [r0, r1] = await Promise.all([
+    blindJudgeOnce(prompt, imagePaths, apiKey),
+    blindJudgeOnce(prompt, imagePaths, apiKey),
+  ]);
+  const r2 = await blindJudgeOnce(prompt, imagePaths, apiKey);
+  const runs = [r0, r1, r2];
   const sorted = [...runs].sort((x, y) => x.score - y.score);
   const median = sorted[1]!;
   const passes = runs.filter((r) => r.passed).length;
@@ -524,6 +608,7 @@ async function main() {
       const order = (cid: string) => (PILOT_IDS.includes(cid) ? PILOT_IDS.indexOf(cid) : PILOT_IDS.length);
       const mergedNow = [...previous.filter((r) => !fresh.has(r.caseId)), ...results].sort((p, q) => order(p.caseId) - order(q.caseId));
       writeFileSync(summaryPath, JSON.stringify(mergedNow, null, 2));
+      writeReportHtml(mergedNow, vizDir);
     }
   } finally {
     await context.close();
@@ -538,7 +623,13 @@ async function main() {
   const order = (id: string) => (PILOT_IDS.includes(id) ? PILOT_IDS.indexOf(id) : PILOT_IDS.length);
   const merged = [...previous.filter((r) => !fresh.has(r.caseId)), ...results].sort((p, q) => order(p.caseId) - order(q.caseId));
   writeFileSync(summaryPath, JSON.stringify(merged, null, 2));
+  writeReportHtml(merged, vizDir);
+  console.log("[Authentic] wrote http://mdc-server:18301/authentic-pilot.html");
+}
+
+function writeReportHtml(merged: CaseResult[], vizDir: string): void {
   const esc = (s: string) => s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c]!);
+  const bust = (p: string) => (p.includes("?") ? p : `${p}?v=r16`);
   const html = `<!doctype html><meta charset="utf-8"><title>Authentic pilot QA</title>
 <style>body{background:#10141c;color:#dde;font:14px system-ui;margin:20px}h2{margin-top:36px}img{image-rendering:pixelated;max-width:32%;border:1px solid #334}
 .ok{color:#6d6}.ng{color:#f66}td{padding:2px 8px;vertical-align:top}.p{color:#9ab}</style>
@@ -549,15 +640,14 @@ ${merged
     (r) => `<h2>${r.caseId} — ${esc(r.title)} : <span class="${r.overallPassed ? "ok" : "ng"}">${r.overallPassed ? "PASS" : "FAIL"}</span></h2>
 <p class="p">${esc(r.prompt)}</p>
 <p class="p">조수 도구 호출: ${esc(r.assistantToolCalls.join(", ") || "없음")}<br>조수 답변: ${esc(r.assistantReply)}</p>
-<div><img src="${r.mapPng}"> <img src="${r.shotA}"> <img src="${r.shotB}"></div>
+<div><img src="${bust(r.mapPng)}"> <img src="${bust(r.shotA)}"> <img src="${bust(r.shotB)}"></div>
 ${existsSync(join(vizDir, `stage_${r.caseId}_after.png`)) ? `<p class="p">build_scene_setting 무대 미리보기:</p>
-<div>${existsSync(join(vizDir, `stage_${r.caseId}_before.png`)) ? `<img src="authentic-pilot/stage_${r.caseId}_before.png"> ` : ""}<img src="authentic-pilot/stage_${r.caseId}_after.png"></div>` : ""}
+<div>${existsSync(join(vizDir, `stage_${r.caseId}_before.png`)) ? `<img src="authentic-pilot/stage_${r.caseId}_before.png?v=r16"> ` : ""}<img src="authentic-pilot/stage_${r.caseId}_after.png?v=r16"></div>` : ""}
 <table>${r.gates.map((g) => `<tr><td class="${g.passed ? "ok" : "ng"}">${g.passed ? "PASS" : "FAIL"}</td><td>${g.id}</td><td>${esc(g.detail)}</td></tr>`).join("")}
 <tr><td class="${r.judge.passed ? "ok" : "ng"}">${r.judge.passed ? "PASS" : "FAIL"}</td><td>blind judge ${r.judge.score}</td><td>${esc(r.judge.critique)}</td></tr></table>`,
   )
   .join("\n")}`;
   writeFileSync("/home/main/claude-viz/authentic-pilot.html", html);
-  console.log("[Authentic] wrote http://mdc-server:18301/authentic-pilot.html");
 }
 
 if (import.meta.main) {
