@@ -153,6 +153,8 @@ export const storeCatalogSchema = z.object({
   lang: storeLang.optional(),
 });
 export const storeVisibilitySchema = z.object({ slug: storeSlug, hidden: z.boolean() });
+/** 상품 신고. 사유는 서버 store_reports 의 다섯 가지(assetStoreClient StoreReportReason). */
+export const storeReportSchema = z.object({ slug: storeSlug, reason: z.enum(["copyright", "inappropriate", "broken", "spam", "other"]), detail: z.string().max(2000) });
 /** 컨셉 피드 입력. 카드 본문 검사는 assetStoreClient 가 normalizeGameConcept 로 한다. */
 const conceptSlug = z.string().min(3).max(80).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
 export const storeConceptsSchema = z.object({

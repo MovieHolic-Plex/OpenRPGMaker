@@ -82,6 +82,7 @@ export const OPRN_CHANNELS = {
   storeLogout: "oprn:store.logout",
   storeUpload: "oprn:store.upload",
   storeVisibility: "oprn:store.visibility",
+  storeReport: "oprn:store.report",
   /** 컨셉 피드(새 게임): 목록 한 쪽·상세·「이걸로 만들었다」 세기. 썸네일은 storeBlob 으로 받는다. */
   storeConcepts: "oprn:store.concepts",
   storeConcept: "oprn:store.concept",

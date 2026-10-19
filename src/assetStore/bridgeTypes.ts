@@ -17,6 +17,9 @@ export interface StoreProgressEvent { readonly slug: string; readonly phase: "in
 export interface StoreChangedEvent { readonly kind: "installed" | "uninstalled" | "auth" | "uploaded" | "visibility"; readonly slug?: string; readonly result?: string }
 export interface StoreLoginStart { readonly userCode: string; readonly verificationUri: string; readonly verificationUriComplete: string; readonly expiresIn: number }
 export type MyStoreItem = StoreItemSummary & { readonly status: StoreItemStatus; readonly hiddenBy: string | null };
+/** 신고 사유(서버 store_reports 와 같은 다섯). */
+export const STORE_REPORT_REASONS = ["copyright", "inappropriate", "broken", "spam", "other"] as const;
+export type StoreReportReason = (typeof STORE_REPORT_REASONS)[number];
 
 export interface OprnStoreBridge {
   status(): Promise<StoreStatus>;
@@ -34,6 +37,8 @@ export interface OprnStoreBridge {
   upload(input: { manifest: StorePackManifest; blobs: Record<string, Uint8Array>; targetSlug?: string }): Promise<{ slug: string; status: StoreItemStatus; version: number }>;
   /** 내 상품 숨기기(hidden: true)·다시 보이기. */
   visibility(input: { slug: string; hidden: boolean }): Promise<{ status: StoreItemStatus }>;
+  /** 상품 신고(로그인 없이도 된다). 신고가 쌓이면 서버가 상품을 숨긴다(hidden: true). */
+  report(input: { slug: string; reason: StoreReportReason; detail: string }): Promise<{ hidden: boolean }>;
   /** 컨셉 피드 한 쪽(24개). cursor 는 앞 쪽의 nextCursor. 썸네일 thumb.full·card 는 blob sha256 이라 blob() 으로 받는다. */
   concepts(input: { tag?: string; q?: string; preset?: string; cursor?: string; lang?: StoreLocale }): Promise<{ items: GameConcept[]; nextCursor: string | null }>;
   /** 컨셉 상세와 비슷한 컨셉(최대 6개). 번역은 concept.locales 에 실려 오므로 화면은 localizedConcept 로 고른다. */

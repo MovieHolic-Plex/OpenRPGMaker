@@ -9,11 +9,20 @@ import { MIME_EXTENSIONS, sniffMime } from "@/assetStore/sniff";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { projectRepository } from "@/project/persistence/repository";
 import { store } from "@/project/store";
+import { canWriteTeamProject } from "@/project/teamAccess";
 import type { Project, UploadedAsset } from "@/project/types";
 import { storeBridge } from "./storeBridge";
 import { addStoreProfiles } from "./storeProfiles";
+import { captureStoreAdd, staleStoreAssetIds, storeAddKeys, undoStoreAdd, type StoreAddSnapshot } from "./storeUndo";
 
-export interface AddResult extends ApplyResult { readonly title: string; readonly version: number }
+export interface AddResult extends ApplyResult {
+  readonly title: string;
+  readonly version: number;
+  /** 「되돌리기」가 되살릴 넣기 직전 모습. */
+  readonly snapshot: StoreAddSnapshot;
+  /** 이번 판본에는 없고 옛 판본에서만 들어온 에셋 — 쓰는 곳이 없으면 정리할 수 있다. */
+  readonly staleAssetIds: readonly string[];
+}
 
 /** 받은 판본과 프로젝트 저장소에 미리 넣어 둔 그림. 문서에 넣기(applyPreparedStoreItem)는 동기라 도구 run 안에서도 쓴다. */
 export interface PreparedStoreItem {
@@ -36,6 +45,26 @@ export async function prepareStoreItem(slug: string): Promise<PreparedStoreItem>
   };
   const repository = projectRepository();
   const storedRefs = new Map<string, NonNullable<UploadedAsset["ref"]>>();
+  const restoredDataUrls = new Map<string, string>();
+  const context: ApplyContext = {
+    slug,
+    version: pkg.version,
+    author: pkg.author,
+    storeUrl: pkg.storeUrl,
+    itemUrl: pkg.itemUrl,
+    blob,
+    storedRefs,
+    restoredDataUrls,
+  };
+  // 빈 문서(번들 타일셋 참조만 공유)로 먼저 넣어 본다 — 깨진 팩이면 실제 프로젝트도, 프로젝트 저장소(assets/)도 건드리지 않는다.
+  // 복원한 dataUrl 은 캐시해 재사용한다.
+  const currentTilesets = store.getCurrent().tilesets;
+  const probeTilesets: Record<string, Project["tilesets"][string]> = {};
+  for (const id of Object.keys(pkg.manifest.content.tilesets)) {
+    const existing = Object.hasOwn(currentTilesets, id) ? currentTilesets[id] : undefined;
+    if (existing) probeTilesets[id] = existing;
+  }
+  applyPackToProject({ tilesets: probeTilesets, assets: { uploaded: {} } } as unknown as Project, pkg.manifest, context);
   if (repository.supportsAssetRefs) {
     for (const { id, asset } of packAssetTargets(pkg.manifest, slug)) {
       const bytes = blob(asset.blob);
@@ -50,25 +79,6 @@ export async function prepareStoreItem(slug: string): Promise<PreparedStoreItem>
       if (stored.ref) storedRefs.set(id, stored.ref);
     }
   }
-  const restoredDataUrls = new Map<string, string>();
-  const context: ApplyContext = {
-    slug,
-    version: pkg.version,
-    author: pkg.author,
-    storeUrl: pkg.storeUrl,
-    itemUrl: pkg.itemUrl,
-    blob,
-    storedRefs,
-    restoredDataUrls,
-  };
-  // 빈 문서(번들 타일셋 참조만 공유)로 먼저 넣어 본다 — 깨진 팩이면 실제 프로젝트는 건드리지 않고, 복원한 dataUrl 은 캐시해 재사용한다.
-  const currentTilesets = store.getCurrent().tilesets;
-  const probeTilesets: Record<string, Project["tilesets"][string]> = {};
-  for (const id of Object.keys(pkg.manifest.content.tilesets)) {
-    const existing = Object.hasOwn(currentTilesets, id) ? currentTilesets[id] : undefined;
-    if (existing) probeTilesets[id] = existing;
-  }
-  applyPackToProject({ tilesets: probeTilesets, assets: { uploaded: {} } } as unknown as Project, pkg.manifest, context);
   return { manifest: pkg.manifest, version: pkg.version, context };
 }
 /** 준비한 판본을 문서에 넣는다(동기). 패널은 store.update 안에서, 조수 도구는 draft 에서 부른다. */
@@ -79,12 +89,40 @@ export function applyPreparedStoreItem(project: Project, prepared: PreparedStore
 }
 
 export async function addStoreItemToProject(slug: string): Promise<AddResult> {
+  // 보기 전용 팀 세션에서는 store.update 가 조용히 무시된다 — 빈 되돌리기 기록을 남기기 전에 막는다.
+  if (!canWriteTeamProject()) throw new Error("읽기 전용 프로젝트라 넣을 수 없습니다.");
   const prepared = await prepareStoreItem(slug);
-  let result: ApplyResult | null = null;
+  const out: { result?: ApplyResult; snapshot?: StoreAddSnapshot } = {};
   recordProjectSnapshot("스토어 에셋 넣기");
   store.update((project) => {
-    result = applyPreparedStoreItem(project, prepared);
+    out.snapshot = captureStoreAdd(project, storeAddKeys(prepared.manifest, slug));
+    out.result = applyPreparedStoreItem(project, prepared);
   }, { scope: "assets", origin: "human", label: `스토어 에셋 넣기: ${prepared.manifest.title}` });
-  if (!result) throw new Error("프로젝트에 넣지 못했습니다.");
-  return { ...(result as ApplyResult), title: prepared.manifest.title, version: prepared.version };
+  const { result, snapshot } = out;
+  if (!result || !snapshot) throw new Error("프로젝트에 넣지 못했습니다.");
+  return {
+    ...result,
+    title: prepared.manifest.title,
+    version: prepared.version,
+    snapshot,
+    staleAssetIds: staleStoreAssetIds(store.getCurrent(), slug, result.assetIds),
+  };
+}
+
+/** 스토어 창의 「되돌리기」 — 넣기 직전 모습으로. 맵이 이미 쓰고 있으면 바꾸지 않고 쓰는 곳을 돌려준다. */
+export function undoStoreItemAdd(title: string, snapshot: StoreAddSnapshot): { ok: true } | { ok: false; usedBy: string[] } {
+  const check = undoStoreAdd(structuredClone(store.getCurrent()), snapshot);
+  if (!check.ok) return check;
+  recordProjectSnapshot("스토어 에셋 되돌리기");
+  store.update((project) => { undoStoreAdd(project, snapshot); }, { scope: "assets", origin: "human", label: `스토어 에셋 되돌리기: ${title}` });
+  return { ok: true };
+}
+
+/** 「이 프로젝트」 탭의 빼기·옛 판본 정리. 같은 판정을 복제본에 먼저 돌려 쓰는 곳이 있으면 문서를 건드리지 않는다. */
+export function editStoreItemInProject(label: string, edit: (project: Project) => { ok: true; removed: number } | { ok: false; usedBy: string[] }): { ok: true; removed: number } | { ok: false; usedBy: string[] } {
+  const check = edit(structuredClone(store.getCurrent()));
+  if (!check.ok) return check;
+  recordProjectSnapshot(label);
+  store.update((project) => { edit(project); }, { scope: "assets", origin: "human", label });
+  return check;
 }
