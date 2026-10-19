@@ -6,6 +6,7 @@ import spec from "@/assets/modernCityRoomSpec.json";
 import type { InteriorRoomTemplate, InteriorTemplateItem } from "./templates";
 import type { ModernProgramVariation } from "./modernPresets";
 import { o, seatedTable, t, type Venue } from "./venueKit";
+import { HALL_KIND, type HallDress } from "./archHall";
 
 // 번들 JSON(모양 고정)에서 칸 크기만 읽는다 - 이름 붙인 형으로 한 번만 단언한다.
 interface SpecObj { readonly w: number; readonly h: number; readonly up: number; readonly kind: string }
@@ -344,6 +345,8 @@ export interface FacilitySpec {
   readonly open?: readonly (readonly [string, string])[];
   readonly ragged?: boolean;
   readonly trim?: Readonly<Record<string, number>>;
+  /** 줄 사이 복도 꾸밈 묶음 - 생략하면 program 별 기본(HALL_BY_PROGRAM), false 면 복도 없이. */
+  readonly hall?: HallDress | false;
 }
 export interface FacilityVenue extends Venue { readonly cat: Category; readonly ko: string; readonly shape: string; readonly rooms: readonly FRoom[] }
 
@@ -378,14 +381,33 @@ function resolveRows(rows: readonly (readonly string[])[], rooms: readonly FRoom
   });
 }
 
+/** 방이 줄지어 복도로 통해야 현실적인 시설 - 줄과 줄 사이에 가로 복도(arch-hall)를 깐다(archHall.ts). */
+const HALL_BY_PROGRAM: Readonly<Record<string, HallDress>> = {
+  mc_elementary: "school", mc_middle_school: "school", mc_high_school: "school", mc_cram_school: "school",
+  mc_clinic: "hospital", mc_dental: "hospital", mc_psychiatry: "hospital", mc_veterinary: "hospital",
+  mc_police: "public", mc_fire_station: "public", mc_city_hall: "public", mc_ward_office: "public", mc_airport: "public",
+  mc_luxury_hotel: "hotel", mc_capsule_hotel: "hotel", mc_sharehouse: "hotel", mc_boarding_house: "hotel",
+  mc_factory: "office",
+};
+
 export function facility(s: FacilitySpec): FacilityVenue {
-  const resolvedRows = resolveRows(s.rows, s.rooms);
+  const baseRows = resolveRows(s.rows, s.rooms);
+  const hallDress = s.hall === false ? undefined : (s.hall ?? HALL_BY_PROGRAM[s.p]);
+  const hallable = hallDress !== undefined && baseRows.length >= 2 && baseRows.length <= 3 && baseRows[baseRows.length - 1]!.includes(s.entrance);
+  const rowW = (row: readonly string[]) => row.reduce((sum, k) => { const m = /^void:(\d+)$/u.exec(k); return sum + (m ? Number(m[1]) : (s.rooms.find((r) => r.kind === k)?.w ?? 0) + 1); }, -1);
+  const fullW = Math.max(...baseRows.map(rowW));
+  const resolvedRows: string[][] = hallable
+    ? baseRows.flatMap((row, i) => (i < baseRows.length - 1 ? [row, [HALL_KIND]] : [row]))
+    : baseRows;
+  const hallAbove = hallable && resolvedRows[resolvedRows.length - 2]?.[0] === HALL_KIND;
+  const openPairs: readonly (readonly [string, string])[] = hallable && hallAbove ? [...(s.open ?? []), [s.entrance, HALL_KIND]] : (s.open ?? []);
   // 줄 배치에서 위 줄 방과 맞닿는 아래 줄 방의 북벽 문 열(겹친 열의 중앙)을 계산해, 북벽 가구(y=2)·걸이(y=0)가 문을 막으면 옆 빈칸으로 옮긴다.
   const wOf = new Map(s.rooms.map((r) => [r.kind, r.w]));
   const rowSpans = resolvedRows.map((row) => {
     let x = 1;
     const out: { kind: string; x0: number; x1: number }[] = [];
     for (const k of row) {
+      if (k === HALL_KIND) { out.push({ kind: k, x0: 1, x1: fullW }); continue; }
       const gap = /^void:(\d+)$/u.exec(k);
       if (gap) { x += Number(gap[1]); continue; }
       const w = wOf.get(k) ?? 0;
@@ -402,7 +424,7 @@ export function facility(s: FacilitySpec): FacilityVenue {
         const ox0 = Math.max(top.x0, bot.x0), ox1 = Math.min(top.x1, bot.x1);
         if (ox0 <= ox1) {
           const span = ox1 - ox0 + 1;
-          const opened = Boolean(s.open?.some(([p, q]) => (p === top.kind && q === bot.kind) || (p === bot.kind && q === top.kind)));
+          const opened = Boolean(openPairs.some(([p, q]) => (p === top.kind && q === bot.kind) || (p === bot.kind && q === top.kind)));
           const dw = opened ? Math.min(span, 6) : span >= 10 ? 2 : 1;
           const dx0 = ox0 + Math.floor((span - dw) / 2) - bot.x0;
           let set = doorColsByRoom.get(bot.kind);
@@ -503,11 +525,12 @@ export function facility(s: FacilitySpec): FacilityVenue {
     rows: resolvedRows,
     ragged: s.ragged ?? true,
     ...(Object.keys(mergedTrim).length ? { trim: mergedTrim } : {}),
-    ...(s.open?.length ? { open: s.open } : {}),
-    hubs: s.hubs ?? [s.entrance],
-    fixed: adjustedRooms.map((r) => r.kind),
+    ...(openPairs.length ? { open: openPairs } : {}),
+    hubs: [...(s.hubs ?? [s.entrance]), ...(hallable ? [HALL_KIND] : [])],
+    fixed: [...adjustedRooms.map((r) => r.kind), ...(hallable ? [HALL_KIND] : [])],
     ...(s.above ? { above: s.above } : {}),
     ...(s.left ? { left: s.left } : {}),
+    ...(hallable && hallDress ? { hall: hallDress } : {}),
     palettes,
   };
   return { program: s.p, map: s.map, aliases: [s.ko], variation, rooms: adjustedRooms, cat: s.cat, ko: s.ko, shape: s.shape };

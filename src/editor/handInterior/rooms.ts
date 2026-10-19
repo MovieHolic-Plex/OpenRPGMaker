@@ -11,10 +11,22 @@
 import type { HandInteriorInput, HandInteriorObject, HandInteriorSpec, HandInteriorZone } from "./builder";
 import { HandInteriorError } from "./builder";
 
+/** 방 한 귀퉁이를 막힌 덩이(구조 코어·벽장·돌출벽)로 도려 낸다 - 방 자체가 ㄱ자·ㄴ자가 된다. 북쪽 귀퉁이면 덩이 아래 벽면 두 줄이 같이 선다. */
+export interface HandInteriorNotch { readonly corner: "ne" | "nw" | "se" | "sw"; readonly w: number; readonly h: number }
 export interface HandInteriorRoom {
   readonly id: string;
   readonly x0: number; readonly y0: number; readonly x1: number; readonly y1: number;
   readonly floor?: string; readonly wall?: string;
+  readonly notch?: HandInteriorNotch;
+}
+
+/** 도려 낸 칸 + 그 아래 벽면 줄(북쪽 귀퉁이)의 절대 좌표 사각형 - 가구·문이 닿으면 안 되는 자리. */
+export function notchRect(r: HandInteriorRoom): { x0: number; y0: number; x1: number; y1: number } | undefined {
+  const n = r.notch;
+  if (!n) return undefined;
+  const north = n.corner[0] === "n", west = n.corner[1] === "w";
+  const x0 = west ? r.x0 : r.x1 - n.w + 1, x1 = west ? r.x0 + n.w - 1 : r.x1;
+  return north ? { x0, x1, y0: r.y0, y1: r.y0 + n.h + 1 } : { x0, x1, y0: r.y1 - n.h + 1, y1: r.y1 };
 }
 export interface HandInteriorConnect {
   readonly a: string; readonly b: string;
@@ -61,6 +73,12 @@ export function composeHandInteriorRooms(
   const W = Math.max(...rooms.map((r) => r.x1)) + 2, H = Math.max(...rooms.map((r) => r.y1)) + 2;
   const g: string[][] = Array.from({ length: H }, () => new Array<string>(W).fill("#"));
   for (const r of rooms) for (let y = r.y0; y <= r.y1; y++) for (let x = r.x0; x <= r.x1; x++) g[y]![x] = ".";
+  for (const r of rooms) {
+    if (!r.notch) continue;
+    if (r.notch.w < 1 || r.notch.h < 1 || r.notch.w > r.x1 - r.x0 - 3 || r.notch.h > r.y1 - r.y0 - 4) fail(`방 ${r.id}: notch ${r.notch.w}×${r.notch.h} 가 방보다 크다`);
+    const nr = notchRect(r)!, solidY1 = r.notch.corner[0] === "n" ? r.y0 + r.notch.h - 1 : nr.y1;
+    for (let y = nr.y0; y <= solidY1; y++) for (let x = nr.x0; x <= nr.x1; x++) g[y]![x] = "#";
+  }
 
   const doorOf = (kind: "door" | "sidedoor", want: string | undefined): string | undefined => {
     if (want === "none") return undefined;

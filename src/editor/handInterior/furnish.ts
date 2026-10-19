@@ -7,6 +7,8 @@ import { buildHandInteriorLayers, type HandInteriorInput, type HandInteriorSpec 
 import type { ComposedRooms } from "./rooms";
 import type { LayoutRoom } from "./layout";
 import { clusterShifts, fittingTemplate, itemArea, itemBox as itemBoxOf, roomTemplates, shiftItems, templateClusters, type InteriorStyleVariant, type InteriorTemplateItem } from "./templates";
+import { notchRect } from "./rooms";
+import { HALL_KIND, hallItems } from "./archHall";
 import type { TilesetDef } from "@/project/types";
 
 /** 탁자에 딸린 앉을 것 — 혼자서는 놓지 않는다. */
@@ -75,29 +77,47 @@ export function furnishRooms(base: HandInteriorInput, rooms: readonly LayoutRoom
     }
     return footprint(it, S).map((c) => `s:${c}`);
   };
+  /** 한 점을 넣어 본다 — 싼 검사(방 안·문 앞·겹침) 뒤 조립기 검사. 되면 반영하고 true. */
+  const tryPutIn = (it: InteriorTemplateItem, taken: Set<string>, inside: (it: InteriorTemplateItem) => boolean): boolean => {
+    const cells = cellsOf(it);
+    if (!inside(it) || footprint(it, S).some((c) => keep.has(c)) || cells.some((c) => taken.has(c))) return false;
+    const next = withItems(input, [it]);
+    const built = buildHandInteriorLayers(next, tileset, S);
+    const e = built.issues.filter((i) => i.severity === "error").length;
+    if (e > errors || built.unreachedFloor.length > unreached) return false;
+    input = next; errors = e; unreached = built.unreachedFloor.length;
+    for (const c of cells) taken.add(c);
+    return true;
+  };
   for (const room of rooms) {
+    if (room.kind === HALL_KIND && room.dress) {
+      // 복도는 견본이 없다 - 벽 가구·걸이·벤치를 archHall.ts 후보대로 놓고, 문 앞·겹침에 걸리면 옆으로 비킨다.
+      const hallTaken = new Set<string>();
+      const inHall = (it: InteriorTemplateItem) => it.t !== "l" && it.x >= room.x0 && it.x <= room.x1 && it.y >= room.y0 && it.y <= room.y1;
+      let hPlaced = 0, hDropped = 0;
+      for (const it of hallItems(room, room.dress, (id) => S.objects[id]?.w ?? 1)) {
+        if (!S.objects[it.id]) { hDropped++; continue; }
+        let ok = false;
+        for (const dx of [0, 1, -1, 2, -2, 3, -3]) { if (tryPutIn({ ...it, x: it.x + dx }, hallTaken, inHall)) { ok = true; break; } }
+        if (ok) hPlaced++; else hDropped++;
+      }
+      perRoom[room.id] = { template: HALL_KIND, placed: hPlaced, dropped: hDropped };
+      continue;
+    }
     const t0 = room.template ? byId.get(room.template) : undefined;
     if (!t0) continue;
     const w = room.x1 - room.x0 + 1, h = room.y1 - room.y0 + 1;
     const t = fittingTemplate(tilesetId, t0, w, h);
+    const nr = notchRect(room);
     const inside = (it: InteriorTemplateItem) => {
       const pts = it.t === "l" ? it.cells!.map(([x, y]) => [x, y] as const) : [[it.x, it.y] as const];
-      return pts.every(([x, y]) => x >= room.x0 && x <= room.x1 && y >= room.y0 && y <= room.y1);
+      if (!pts.every(([x, y]) => x >= room.x0 && x <= room.x1 && y >= room.y0 && y <= room.y1)) return false;
+      return !nr || !footprint(it, S).some((c) => { const [cx, cy] = c.split(",").map(Number) as [number, number]; return cx >= nr.x0 - 1 && cx <= nr.x1 + 1 && cy >= nr.y0 - 1 && cy <= nr.y1; });
     };
     let placed = 0, dropped = 0;
     let taken = new Set<string>();
     /** 한 점을 넣어 본다 — 싼 검사(방 안·문 앞·겹침) 뒤 조립기 검사. 되면 반영하고 true. */
-    const tryPut = (it: InteriorTemplateItem): boolean => {
-      const cells = cellsOf(it);
-      if (!inside(it) || footprint(it, S).some((c) => keep.has(c)) || cells.some((c) => taken.has(c))) return false;
-      const next = withItems(input, [it]);
-      const built = buildHandInteriorLayers(next, tileset, S);
-      const e = built.issues.filter((i) => i.severity === "error").length;
-      if (e > errors || built.unreachedFloor.length > unreached) return false;
-      input = next; errors = e; unreached = built.unreachedFloor.length;
-      for (const c of cells) taken.add(c);
-      return true;
-    };
+    const tryPut = (it: InteriorTemplateItem): boolean => tryPutIn(it, taken, inside);
     const clusters = templateClusters(t, S).sort((a, b) =>
       Number(b.pinTop) - Number(a.pinTop)
       || (styleVariant === "D" ? a.area - b.area : b.area - a.area)

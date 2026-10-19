@@ -7,8 +7,9 @@
 //  문: 출구 방에서 넓게 퍼지는 나무 — 복도·거실 같은 중심 방을 먼저 거친다. 현관↔복도·부엌↔거실처럼 트인 쌍은 칸막이를 걷는다.
 // 결과는 rooms.ts 의 rooms·connect·exit 그대로다.
 import type { HandInteriorSpec } from "./builder";
-import type { HandInteriorConnect, HandInteriorRoom } from "./rooms";
+import type { HandInteriorConnect, HandInteriorNotch, HandInteriorRoom } from "./rooms";
 import { programKinds, roomPrograms, roomTemplates, templatesOfKind, templateStyle, type InteriorRoomTemplate, type InteriorStyleVariant } from "./templates";
+import { HALL_DRESS, HALL_H, HALL_KIND, type HallDress } from "./archHall";
 import { MODERN_PROGRAM_VARIATION, type ModernProgramVariation } from "./modernPresets";
 import { VENUE_SCALE_CONTRACT } from "./venueScale";
 
@@ -28,7 +29,7 @@ export interface LayoutRequest {
   readonly styleVariant?: InteriorStyleVariant;
   readonly maxWidth?: number; readonly maxHeight?: number;
 }
-export interface LayoutRoom extends HandInteriorRoom { readonly kind: string; readonly template?: string }
+export interface LayoutRoom extends HandInteriorRoom { readonly kind: string; readonly template?: string; readonly dress?: HallDress; readonly notch?: HandInteriorNotch }
 export interface LayoutCandidate {
   readonly width: number; readonly height: number; readonly score: number;
   readonly rooms: LayoutRoom[]; readonly connect: HandInteriorConnect[]; readonly exit: { readonly room: string; readonly x?: number; readonly width?: number };
@@ -289,7 +290,7 @@ function programVariation(tilesetId: string, req: LayoutRequest): { v: ModernPro
 }
 
 /** bw·bh 는 seed 변주로 넓히기 전 견본 크기 - 줄 배치(rows)는 이 합으로 규모 규격 크기를 지키고, 넓힌 만큼은 칸막이 자리만 옮긴다. */
-interface Want { id: string; kind: string; tw: number; th: number; bw: number; bh: number; minW: number; minH: number; floor?: string; wall?: string; template?: InteriorRoomTemplate }
+interface Want { id: string; kind: string; tw: number; th: number; bw: number; bh: number; minW: number; minH: number; floor?: string; wall?: string; template?: InteriorRoomTemplate; dress?: HallDress }
 interface Rect { x: number; y: number; w: number; h: number }
 
 export class LayoutError extends Error { constructor(message: string) { super(message); this.name = "LayoutError"; } }
@@ -522,7 +523,11 @@ function buildCandidatesForVariant(
   styleVariant: InteriorStyleVariant,
   limit: number,
 ): LayoutCandidate[] {
-  const baseWants = layoutWants(tilesetId, req);
+  const vary0 = programVariation(tilesetId, req);
+  const hallWants: Want[] = vary0?.v.hall && vary0.v.rows?.some((row) => row.includes(HALL_KIND))
+    ? [{ id: HALL_KIND, kind: HALL_KIND, tw: 8, th: HALL_H, bw: 8, bh: HALL_H, minW: 3, minH: HALL_H, floor: HALL_DRESS[vary0.v.hall].floor, wall: HALL_DRESS[vary0.v.hall].wall, dress: vary0.v.hall }]
+    : [];
+  const baseWants = [...layoutWants(tilesetId, req), ...hallWants];
   const vary = programVariation(tilesetId, req);
   const entrance = pickEntrance(baseWants, req.entrance || !vary?.v.entrance ? req : { ...req, entrance: vary.v.entrance });
   const explicitFloorIds = new Set((req.rooms ?? []).filter((q) => q.floor).map((q) => q.id ?? q.kind));
@@ -663,8 +668,21 @@ function buildCandidatesForVariant(
     const rooms: LayoutRoom[] = wants.map((w) => {
       const rc = rects.get(w.id)!;
       const x0 = mirrorHorizontal ? BW - rc.x - rc.w : rc.x;
-      return { id: w.id, kind: w.kind, x0, y0: rc.y, x1: x0 + rc.w - 1, y1: rc.y + rc.h - 1, ...(w.floor ? { floor: w.floor } : {}), ...(w.wall ? { wall: w.wall } : {}), ...(w.template ? { template: w.template.id } : {}) };
+      return { id: w.id, kind: w.kind, x0, y0: rc.y, x1: x0 + rc.w - 1, y1: rc.y + rc.h - 1, ...(w.floor ? { floor: w.floor } : {}), ...(w.wall ? { wall: w.wall } : {}), ...(w.template ? { template: w.template.id } : {}), ...(w.dress ? { dress: w.dress } : {}) };
     });
+    // ㄱ·ㄴ자 방 - 바닥 줄 방(남쪽이 건물 밖 벽, 아래 이웃 없음) 중 큰 방의 한 귀퉁이를 구조 코어(설비 샤프트·벽장)로 도려 낸다. 이웃 방 쪽 귀퉁이와 출구 방은 피한다.
+    if (vary0?.v.rows) {
+      rooms.forEach((rm, i) => {
+        const kind = rm.kind;
+        const rw = rm.x1 - rm.x0 + 1, rh = rm.y1 - rm.y0 + 1;
+        const below = rooms.some((q) => q !== rm && q.y0 > rm.y1 && q.x0 <= rm.x1 && q.x1 >= rm.x0);
+        if (rm.id === entrance || below || rw < 10 || rh < 8 || isHub(kind) || kind === HALL_KIND) return;
+        const east = rooms.some((q) => q !== rm && q.x0 === rm.x1 + 2 && q.y0 <= rm.y1 && q.y1 >= rm.y0);
+        const west = rooms.some((q) => q !== rm && q.x1 === rm.x0 - 2 && q.y0 <= rm.y1 && q.y1 >= rm.y0);
+        const corner = !east ? "se" : !west ? "sw" : undefined;
+        if (corner) rooms[i] = { ...rm, notch: { corner, w: 3, h: 3 } };
+      });
+    }
     const exitRoom = rooms.find((rm) => rm.id === entrance) ?? rooms[0]!;
     const exitW = exitRoom.x1 - exitRoom.x0 + 1;
     const exitX = styleVariant === "B" && exitW >= 8
