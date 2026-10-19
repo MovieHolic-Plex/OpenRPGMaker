@@ -938,7 +938,8 @@ export function composeDepartmentStore(spec: HandInteriorSpec, nuance: SpaceNuan
   const beauty: HandInteriorRoom = { id: "beauty", x0: sideX0(!fashionWest), y0: 2, x1: sideX0(!fashionWest) + wingW - 1, y1: topY1, floor: pal.beauty[0], wall: pal.beauty[1] };
   const cafe: HandInteriorRoom = { id: "cafe", x0: beauty.x0, y0: topY1 + 2, x1: beauty.x1, y1: rowsY1 - 1, floor: pal.cafe[0], wall: pal.cafe[1] };
   const cx = Math.floor((hall.x0 + hall.x1) / 2);
-  const fashionDoor = pickInt(rng, 7, Math.max(7, rowsY1 - 6));
+  const fashionAisles = [11, 16, 26].filter((y) => y <= rowsY1 - 6);
+  const fashionDoor = pickOf(rng, fashionAisles.length ? fashionAisles : [Math.max(7, rowsY1 - 6)]);
   const connect: HandInteriorConnect[] = [
     { a: "fashion", b: "hall", at: fashionDoor },
     { a: "beauty", b: "hall", at: topY1 - 1 },
@@ -962,26 +963,74 @@ export function composeDepartmentStore(spec: HandInteriorSpec, nuance: SpaceNuan
   s.put("mci-stairs-up", fashionWest ? h.x0 : h.x1 - 1, h.y0, true);
   hangRhythm(s, h, ["mci-art-frame", "mci-route-map", "mci-art-frame", "mci-wall-clock"], 4, 3);
   s.keepRect(h.x0, h.y0 + 1, h.x1, h.y0 + 1);
+  for (const op of s.composed.openings) {
+    if (op.a !== "hall" && op.b !== "hall") continue;
+    if (op.x <= h.x0) s.keepRect(h.x0, op.y, cx - 1, op.y);
+    else if (op.x >= h.x1) s.keepRect(cx + 1, op.y, h.x1, op.y);
+  }
   const fy = h.y0 + Math.max(4, Math.floor((h.y1 - h.y0) / 2) - 1);
+  s.zone(cx - 1, h.y0 + 1, cx + 1, fy - 2, pal.runner);
+  s.keepRect(cx - 1, h.y0 + 1, cx + 1, fy - 2);
   s.zone(cx - 3, fy - 1, cx + 3, fy + 2, pal.ring);
   s.put("jumbo-dept-fountain", cx - 1, fy, true);
+  s.keepRect(cx - 2, fy - 1, cx - 2, fy + 2);
+  s.keepRect(cx + 2, fy - 1, cx + 2, fy + 2);
   s.put("lounge-sofa-cream", cx - 4, fy); s.put("lounge-sofa-cream", cx + 3, fy);
   s.put("mci-plant-tall", cx - 3, fy - 1); s.put("mci-plant-tall", cx + 3, fy - 1);
   s.put("mci-plant-tall", cx - 3, fy + 2); s.put("mci-plant-tall", cx + 3, fy + 2);
   s.zone(cx - 1, fy + 3, cx + 1, h.y1 + 1, pal.runner);
   s.keepRect(cx - 1, fy + 3, cx + 1, h.y1);
-  // 명품 아일랜드 열은 같은 섬 하나만 되풀이하면 단조롭다(2026-10-18 「진열대를 더 다양화해라」) - 가방·시계·보석 섬을 번갈아 세운다.
-  const LUX = ["dept-luxury-island", "dept-watch-case", "dept-jewelry-island"] as const;
-  for (const [x0, side] of [[h.x0, -1], [h.x1 - 2, 1]] as const) {
-    for (let y = h.y0 + 3, i = side < 0 ? 0 : 1; y + 1 < fy - 1; y += 3, i++) s.put(LUX[i % LUX.length]!, x0, y);
-    let y = fy + 3;
-    if (s.put(side < 0 ? "dept-info-desk" : "dept-glass-showcase", x0, y)) y += 2;
-    if (side < 0 && s.put("dept-vip-sofa", x0, y)) y += 2; else if (s.put("mci-wait-bench", x0, y)) y += 2;
-    if (y < h.y1) s.put("mci-planter", x0 + (side < 0 ? 0 : 1), y);
+  // 아트리움 상·하단 좌우 플랭크: 바깥벽 쇼케이스 열 + 중앙 러너 옆 프로모션 포디움·향수 카운터·휴게 라운지 열을 함께 배치한다(R16 VQA).
+  const UPPER_OUT_L = ["dept-luxury-island", "dept-watch-case", "dept-glass-showcase", "dept-jewelry-island"] as const;
+  const UPPER_IN_L = ["dept-perfume-island", "dept-mannequin-podium", "dept-jewelry-case", "dept-skincare-counter"] as const;
+  const UPPER_IN_R = ["dept-mannequin-podium", "dept-perfume-island", "dept-cosmetic-island", "dept-watch-case"] as const;
+  const UPPER_OUT_R = ["dept-glass-showcase", "dept-luxury-island", "dept-jewelry-island", "dept-watch-case"] as const;
+  for (let y = h.y0 + 3, i = 0; y + 1 < fy - 1; y += 3, i++) {
+    const outL = UPPER_OUT_L[i % UPPER_OUT_L.length]!;
+    if (!s.put(outL, h.x0, y)) s.put("dept-watch-case", h.x0, y);
+    s.put(UPPER_IN_L[i % UPPER_IN_L.length]!, cx - 3, y);
+    s.put(UPPER_IN_R[i % UPPER_IN_R.length]!, cx + 2, y);
+    const outR = UPPER_OUT_R[i % UPPER_OUT_R.length]!;
+    const rx = spec.objects[outR]?.w === 3 ? h.x1 - 2 : h.x1 - 1;
+    if (!s.put(outR, rx, y)) s.put("dept-jewelry-island", h.x1 - 1, y);
+  }
+  for (let y = fy + 3, j = 0; y <= h.y1 - 3; y += 3, j++) {
+    if (j === 0) {
+      s.put("dept-info-desk", h.x0, y);
+      s.put("dept-mannequin-podium", cx - 3, y);
+      s.put("dept-mannequin-podium", cx + 2, y);
+      s.put("dept-glass-showcase", h.x1 - 2, y);
+    } else if (j === 1) {
+      s.put("mci-wait-bench", h.x0, y);
+      s.put("lounge-sofa-cream", cx - 3, y);
+      s.put("dept-vip-sofa", cx + 2, y);
+      s.put("mci-wait-bench", h.x1 - 2, y);
+      if (y + 1 <= h.y1 - 3) {
+        s.put("mci-planter", h.x0, y + 1);
+        s.put("mci-coffee-table", cx - 3, y + 1);
+        s.put("mci-coffee-table", cx + 2, y + 1);
+        s.put("mci-planter", h.x1 - 1, y + 1);
+      }
+    } else if (j === 2) {
+      if (!s.put("dept-glass-showcase", h.x0, y)) s.put("dept-jewelry-case", h.x0, y);
+      s.put("dept-perfume-island", cx - 3, y);
+      s.put("dept-jewelry-case", cx + 2, y);
+      if (!s.put("dept-glass-showcase", h.x1 - 2, y)) s.put("dept-perfume-island", h.x1 - 1, y);
+    } else if (j === 3) {
+      s.put("dept-watch-case", h.x0, y); s.put("dept-eyewear-tower", h.x0 + 2, y);
+      s.put("dept-cosmetic-island", cx - 3, y);
+      s.put("dept-skincare-counter", cx + 2, y);
+      s.put("dept-bag-stand", h.x1 - 2, y); s.put("dept-jewelry-island", h.x1 - 1, y);
+    } else {
+      s.put("mci-wait-bench", h.x0, y);
+      s.put("dept-mannequin-podium", cx - 3, y);
+      s.put("dept-perfume-island", cx + 2, y);
+      s.put("mci-wait-bench", h.x1 - 2, y);
+    }
   }
   s.put("dept-directory-kiosk", cx - 2, h.y1 - 1); s.put("dept-directory-kiosk", cx + 2, h.y1 - 1);
+  s.put("mci-plant-tall", h.x0, h.y1); s.put("mci-plant-tall", h.x1, h.y1);
   s.put("mci-security-gate", cx - 4, h.y1); s.put("mci-security-gate", cx + 3, h.y1);
-
   // ── 패션관: 북벽 탈의 부스 둘 + 커튼 탈의실 · 구두/스니커즈/잡화 월. 바닥은 R12b(Opus VQA)부터 가운데 융단 통로를 축으로
   //    양옆에 카펫 부티크 알코브를 5줄 간격으로 세운다 - 바깥벽 쪽 색상별 원형 행거 둘, 통로 쪽 마네킹 한 쌍(같은 브랜드 두 착장),
   //    그 아래 니트 평대·넥타이 쇼케이스·모자 진열대. 행거·마네킹을 3칸 격자로 흩어 놓던 배치는 바둑판으로 읽혀 폐기했다.
@@ -992,26 +1041,51 @@ export function composeDepartmentStore(spec: HandInteriorSpec, nuance: SpaceNuan
   for (let x = f.x0, n = 0; x + 1 <= f.x1 - 1 && n < FASHION_WALL.length; x += 3) if (s.put(FASHION_WALL[n]!, x, f.y0)) n++;
   s.put("mci-plant-tall", f.x1, f.y0);
   s.keepRect(f.x0, f.y0 + 1, f.x1, f.y0 + 1);
-  s.keepRect(f.x0, fashionDoor, f.x1, fashionDoor);
   const ax = f.x0 + Math.floor((f.x1 - f.x0) / 2);
+  if (fashionWest) s.keepRect(ax - 1, fashionDoor, f.x1, fashionDoor);
+  else s.keepRect(f.x0, fashionDoor, ax + 1, fashionDoor);
   // 팔레트에 따라 융단과 부티크 카펫이 같은 바닥이면 통로가 사라지므로 통로는 돌 바닥으로 바꾼다.
   s.zone(ax - 1, f.y0 + 1, ax + 1, f.y1 - 1, pal.runner === pal.boutique ? "mci-stone-lobby" : pal.runner);
-  s.keepRect(ax - 1, f.y0 + 2, ax + 1, f.y1 - 1);
-  const PAIRS = [["dept-mannequin-dress", "dept-mannequin-coat"], ["dept-mannequin-suit", "dept-mannequin-casual"], ["dept-mannequin-coat", "dept-mannequin-dress"], ["dept-mannequin-kids", "dept-mannequin-kids"], ["dept-mannequin-casual", "dept-mannequin-suit"]] as const;
-  const RACKS = [["dept-rack-warm", "dept-rack-pastel"], ["dept-rack-mono", "dept-clothing-rack"], ["dept-rack-cool", "dept-rack-mono"], ["dept-rack-pastel", "dept-rack-warm"]] as const;
-  const LOW = ["dept-knit-table", "dept-tie-case", "dept-knit-table", "dept-shoe-bench"] as const;
+  // 중앙 3칸 통로 중 좌·우 보행 차선(ax-1, ax+1)은 끝까지 비우고, 정중앙(ax)에는 부티크 띠마다 안내판·전시 좌대·회전 진열대를 점진 배치한다.
+  s.keepRect(ax - 1, f.y0 + 2, ax - 1, f.y1 - 1);
+  s.keepRect(ax + 1, f.y0 + 2, ax + 1, f.y1 - 1);
+  const AISLE_ACCENTS = ["dept-sign-pillar", "art-plinth", "dept-bag-stand", "dept-eyewear-tower", "dept-hat-stand"] as const;
   let y = f.y0 + 2;
   for (let band = 0; y + 3 <= f.y1 - 2; y += 5, band++) {
-    for (const west of [true, false]) {
-      const k = band * 2 + (west ? 0 : 1);
-      const outer = west ? f.x0 : f.x1 - 1;
-      const inner0 = west ? ax - 3 : ax + 2;
-      const low = west ? ax - 4 : ax + 2;
-      s.zone(west ? f.x0 : ax + 2, y, west ? ax - 2 : f.x1, y + 3, pal.boutique);
-      s.put(RACKS[k % RACKS.length]![0], outer, y + 1); s.put(RACKS[k % RACKS.length]![1], outer, y + 3);
-      s.put(PAIRS[k % PAIRS.length]![0], inner0, y + 1); s.put(PAIRS[k % PAIRS.length]![1], inner0 + 1, y + 1);
-      if (band % 3 === 2) s.put("dept-hat-stand", low + (west ? 1 : 0), y + 3);
-      else s.put(LOW[k % LOW.length]!, low, y + 3);
+    s.zone(f.x0, y, ax - 2, y + 3, pal.boutique);
+    s.zone(ax + 2, y, f.x1, y + 3, pal.boutique);
+    if (Math.abs((y + 2) - fashionDoor) >= 2) s.put(AISLE_ACCENTS[band % AISLE_ACCENTS.length]!, ax, y + 2);
+    if (band === 0) {
+      // 1구역: 오트쿠튀르 런웨이 포디움 & 행거 부티크
+      s.put("dept-rack-warm", f.x0, y + 1); s.put("dept-mannequin-podium", ax - 3, y + 1);
+      s.put("dept-rack-pastel", f.x0, y + 3); s.put("dept-knit-table", ax - 3, y + 3);
+      s.put("dept-mannequin-dress", ax + 2, y + 1); s.put("dept-mannequin-coat", ax + 3, y + 1); s.put("dept-clothing-rack", f.x1 - 1, y + 1);
+      s.put("dept-glass-showcase", ax + 2, y + 3); s.put("dept-rack-mono", f.x1 - 1, y + 3);
+    } else if (band === 1) {
+      // 2구역: 명품 가방·시계·주얼리 유리 쇼케이스 부티크
+      if (!s.put("dept-glass-showcase", f.x0, y + 1)) s.put("dept-jewelry-case", f.x0, y + 1);
+      s.put("dept-watch-case", ax - 3, y + 1);
+      s.put("dept-jewelry-case", f.x0, y + 3); s.put("dept-tie-case", ax - 3, y + 3);
+      s.put("dept-glass-showcase", ax + 2, y + 1); s.put("dept-jewelry-island", f.x1 - 1, y + 1);
+      s.put("dept-perfume-island", ax + 2, y + 3); s.put("dept-eyewear-tower", ax + 4, y + 3); s.put("dept-hat-stand", f.x1, y + 3);
+    } else if (band === 2) {
+      // 3구역: 디자이너 슈즈·아이웨어 피팅 살롱
+      s.put("dept-shoe-bench", f.x0, y + 1); s.put("dept-mannequin-casual", ax - 3, y + 1); s.put("dept-bag-stand", ax - 2, y + 1);
+      s.put("dept-shoe-bench", f.x0, y + 3); s.put("dept-knit-table", ax - 3, y + 3);
+      s.put("dept-mannequin-podium", ax + 2, y + 1); s.put("dept-shoe-bench", f.x1 - 1, y + 1);
+      s.put("dept-shoe-bench", ax + 2, y + 3); s.put("dept-eyewear-tower", ax + 4, y + 3); s.put("dept-rack-cool", f.x1 - 1, y + 3);
+    } else if (band === 3) {
+      // 4구역: 남성 비스포크 테일러링 & 라운지
+      s.put("dept-rack-mono", f.x0, y + 1); s.put("dept-mannequin-suit", ax - 3, y + 1); s.put("dept-hat-stand", ax - 2, y + 1);
+      s.put("dept-tie-case", f.x0, y + 3); s.put("dept-knit-table", ax - 3, y + 3);
+      s.put("dept-tie-case", ax + 2, y + 1); s.put("dept-mannequin-suit", ax + 4, y + 1); s.put("dept-rack-cool", f.x1 - 1, y + 1);
+      s.put("lounge-sofa-cream", ax + 2, y + 3); s.put("mci-coffee-table", ax + 4, y + 3); s.put("mci-plant-tall", f.x1, y + 3);
+    } else {
+      // 5구역: VIP 스타일링 라운지 & 캐주얼·선물 포장 코너
+      s.put("dept-vip-sofa", f.x0, y + 1); s.put("mci-coffee-table", ax - 3, y + 1);
+      s.put("lounge-sofa-cream", f.x0, y + 3); s.put("dept-gift-wrap", ax - 3, y + 3);
+      s.put("dept-mannequin-kids", ax + 2, y + 1); s.put("dept-mannequin-casual", ax + 3, y + 1); s.put("dept-rack-pastel", f.x1 - 1, y + 1);
+      s.put("dept-knit-table", ax + 2, y + 3); s.put("dept-shoe-bench", f.x1 - 1, y + 3);
     }
   }
   // 마지막 알코브 아래 남은 띠는 시착 라운지(VIP 소파 + 구두 시착 벤치)로 계산대 한 줄 위에 둔다.
