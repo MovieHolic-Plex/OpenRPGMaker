@@ -115,27 +115,54 @@ async function bootFlagshipInPlayer(browser, serverUrl, demoId, serializedJson, 
       await page.waitForTimeout(1000);
     }
   }
-  await page.waitForTimeout(450);
+  const seqDeadline = Date.now() + 2400;
+  while (Date.now() < seqDeadline) {
+    const seqState = await page.evaluate(
+      () => document.querySelector('[data-testid="title-screen"]')?.getAttribute("data-seq-state") ?? "done",
+    );
+    if (seqState !== "playing") break;
+    await page.waitForTimeout(80);
+  }
+  const stillPlaying = await page.evaluate(
+    () => document.querySelector('[data-testid="title-screen"]')?.getAttribute("data-seq-state") === "playing",
+  );
+  if (stillPlaying) {
+    await page.keyboard.press("Enter");
+    await page.waitForTimeout(350);
+  } else {
+    await page.waitForTimeout(250);
+  }
   return { context, page, consoleErrors };
 }
 
 async function waitForOpeningReady(page) {
-  const deadline = Date.now() + 20_000;
+  const startMs = Date.now();
+  const deadline = startMs + 20_000;
+  let retriedEnter = false;
   while (Date.now() < deadline) {
-    const ready = await page.evaluate(() => {
+    const state = await page.evaluate(() => {
+      const title = document.querySelector('[data-testid="title-screen"]');
+      const titleBusy = title?.getAttribute("aria-busy") === "true";
       const seq = document.querySelector('[data-testid="cinematic-sequence"]');
       const status = document.querySelector('[data-testid="cinematic-status"]')?.textContent?.trim() ?? "";
       const canvas = document.querySelector('[data-testid="opening-animatic-stage"]');
-      if (!seq || seq.getAttribute("data-media-state") !== "ready" || status !== "") return false;
+      if (!seq || seq.getAttribute("data-media-state") !== "ready" || status !== "") {
+        return { ready: false, onTitle: Boolean(title), titleBusy };
+      }
       if (canvas) {
         const t = Number(canvas.getAttribute("data-time-ms") ?? 0);
-        return t >= 180 && t <= 3200;
+        return { ready: t >= 700 && t <= 3800, onTitle: false, titleBusy: false };
       }
-      return true;
+      return { ready: true, onTitle: false, titleBusy: false };
     });
-    if (ready) return;
+    if (state.ready) return;
+    if (!retriedEnter && state.onTitle && !state.titleBusy && Date.now() - startMs >= 600) {
+      retriedEnter = true;
+      await page.keyboard.press("Enter");
+    }
     await page.waitForTimeout(80);
   }
+  throw new Error("Timed out waiting for opening cinematic sequence to become ready");
 }
 
 async function waitForEndingReady(page, timeoutMs = 45_000) {
@@ -390,7 +417,9 @@ await withTsModule("src/project/flagship/index.ts", "flagship-showcase.mjs", asy
       await page.screenshot({ path: path.join(OUT_DIR, "emerald-02-opening.png") });
       rec.screenshots.push("emerald-02-opening.png");
 
-      const openingGif = await captureGifFrames(page, "emerald-crown-opening", 14, 240);
+      const openingGif = await captureGifFrames(page, "emerald-crown-opening", 14, 240, async (i) => {
+        if (i === 4 || i === 9) await page.keyboard.press("Enter").catch(() => {});
+      });
       rec.gifs.push(openingGif);
 
       await waitForFieldReady(page);
@@ -403,7 +432,7 @@ await withTsModule("src/project/flagship/index.ts", "flagship-showcase.mjs", asy
         ["emerald-04-bedroom-2f.png", "mx_map_home_house_2f", 7, 4],
         ["emerald-04b-house-1f-stairs.png", "mx_map_home_house", 9, 4],
         ["emerald-05-prof-lab.png", "mx_map_lab", 7, 7],
-        ["emerald-05b-prof-lab-2f.png", "mx_map_lab_2f", 6, 5],
+        ["emerald-05b-prof-lab-2f.png", "mx_map_lab_2f", 8, 5],
         ["emerald-06-route1-meadow.png", "mx_map_meadow", 10, 12],
         ["emerald-07-gym-vine-puzzle.png", "mx_map_grove_gym", 8, 16],
         ["emerald-08-emerald-cave.png", "mx_map_observatory", 10, 8],
@@ -419,12 +448,16 @@ await withTsModule("src/project/flagship/index.ts", "flagship-showcase.mjs", asy
       // Verify 1F -> 2F stairs_up and 2F -> 1F stairs_down transfer in Orbis Lab
       await page.evaluate(() => window.__oprnDebug.teleport("mx_map_lab", 12, 4));
       await page.waitForTimeout(300);
-      await page.evaluate(() => window.__oprnInput.move("up"));
-      await page.waitForTimeout(450);
+      await page.evaluate(() => window.__oprnInput.dir("up"));
+      await page.waitForTimeout(280);
+      await page.evaluate(() => window.__oprnInput.dir(null));
+      await page.waitForTimeout(1300);
       const lab2fState = await page.evaluate(() => window.__oprnDebug.readState());
       assert.equal(lab2fState.currentMapId, "mx_map_lab_2f", "Expected 1F->2F lab stair transfer");
-      await page.evaluate(() => window.__oprnInput.move("up"));
-      await page.waitForTimeout(450);
+      await page.evaluate(() => window.__oprnInput.dir("up"));
+      await page.waitForTimeout(280);
+      await page.evaluate(() => window.__oprnInput.dir(null));
+      await page.waitForTimeout(1300);
       const lab1fState = await page.evaluate(() => window.__oprnDebug.readState());
       assert.equal(lab1fState.currentMapId, "mx_map_lab", "Expected 2F->1F lab stair transfer");
 

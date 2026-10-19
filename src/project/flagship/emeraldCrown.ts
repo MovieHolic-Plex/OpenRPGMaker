@@ -4,7 +4,7 @@ import { createMonsterExpedition } from "@/project/examples/monsterExpedition";
 import mapTemplates from "@/project/examples/monsterExpedition/mapTemplates.json";
 import { composeTown, type TownSketch, type TownTemplate } from "@/project/examples/monsterExpedition/townLayouts";
 import { deserialize, serialize } from "@/project/io";
-import type { Command, GameEvent, GameMap, Project } from "@/project/types";
+import type { Command, EventPageMovement, GameEvent, GameMap, Project } from "@/project/types";
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import { DAWNING_SKYBIRDS_CHARSET_ID } from "./dawningSkybirdsAsset";
 import type { FlagshipDemoBuildResult } from "./types";
@@ -133,6 +133,7 @@ function createSkybirdEvent(
   speaker: string,
   body: string,
   priority: "below" | "same" | "above" = "same",
+  patrol: boolean = false,
 ): GameEvent {
   const graphic = {
     sprite: { type: "bundled" as const, id: DAWNING_SKYBIRDS_CHARSET_ID },
@@ -140,6 +141,27 @@ function createSkybirdEvent(
     pattern: charsetFrameIndex({ characterIndex, direction, pattern: 1 }),
     transparent: false,
   };
+  const oppositeDir: Record<"up" | "right" | "down" | "left", "up" | "right" | "down" | "left"> = {
+    up: "down",
+    down: "up",
+    left: "right",
+    right: "left",
+  };
+  const movement: EventPageMovement = patrol
+    ? {
+        type: "custom",
+        speed: 3,
+        frequency: 5,
+        route: {
+          repeat: true,
+          skippable: true,
+          moves: [
+            { kind: "move", dir: direction },
+            { kind: "move", dir: oppositeDir[direction] },
+          ],
+        },
+      }
+    : { type: "fixed", speed: 3, frequency: 4 };
   const commands: Command[] = [{ kind: "text", speaker, body }];
   return {
     id,
@@ -154,7 +176,7 @@ function createSkybirdEvent(
         name: "여명의 날개",
         conditions: [],
         graphic,
-        movement: { type: "fixed", speed: 3, frequency: 4 },
+        movement,
         priority,
         overlapForbidden: priority === "same",
         trigger: { kind: "action" },
@@ -256,10 +278,10 @@ function installInteriorStairsAndLab2F(project: Project): void {
       createSkybirdEvent(
         "ev_lab_2f_skybird",
         "관측실 아스트라별새",
-        7,
+        6,
         4,
         7,
-        "left",
+        "down",
         "아스트라별새",
         "끼르륵—! (2층 천문 관측실 창가에서 아스트라별새가 별빛 날개를 반짝이며 다우닝 시티의 하늘을 살피고 있다.)",
       ),
@@ -288,7 +310,7 @@ function installInteriorStairsAndLab2F(project: Project): void {
       4,
       6,
       2,
-      "right",
+      "down",
       "별빛방울새",
       "포르릉! (천문박사님의 관측기를 돕는 별빛방울새가 2층 계단 쪽을 가리키며 경쾌하게 지저귄다.)",
     ),
@@ -675,6 +697,8 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
       "left",
       "여명갈매기",
       "끼룩— 끼르륵! (여명갈매기가 다우닝 시티 광장 연못 위에서 푸른 날개를 활짝 펴고 바람을 탄다.)",
+      "same",
+      true,
     ),
     createSkybirdEvent(
       "ev_dawning_skybird_swallow",
@@ -685,6 +709,8 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
       "right",
       "창공제비",
       "지지배배—! (창공제비가 우리 집과 오르비스 천문 연구소 지붕 사이를 날렵하게 스쳐 날아간다.)",
+      "same",
+      true,
     ),
     createSkybirdEvent(
       "ev_dawning_skybird_flock",
@@ -696,6 +722,7 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
       "여명의 새떼",
       "푸드득—! (새벽빛을 머금은 제비 편대가 다우닝 시티 상공을 가로지르며 1번 도로 쪽을 가리킨다.)",
       "above",
+      true,
     ),
   );
 
@@ -711,6 +738,8 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
         "left",
         "별빛방울새",
         "뾰로롱—! (별빛방울새가 1번 도로 풀숲 위를 맴돌며 야생 몬스터의 기척을 알려 준다.)",
+        "same",
+        true,
       ),
       createSkybirdEvent(
         "ev_meadow_skybird_kingfisher",
@@ -721,6 +750,8 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
         "right",
         "황혼물총새",
         "키르르—! (청록빛 날개의 황혼물총새가 해안 바람을 타고 낮게 활공한다.)",
+        "same",
+        true,
       ),
     );
   }
