@@ -1,16 +1,21 @@
 #!/usr/bin/env python3
-# noqa: SIZE_OK — self-contained 3/4 rural architecture pixel-art primitives and kits 1..10 for jp-inaka
+# noqa: SIZE_OK - jp-inaka shared 3/4 drawing parts + the 10 rural building kits
 # /// script
 # requires-python = ">=3.10"
 # dependencies = ["numpy", "pillow"]
 # ///
-# ─── How to run ───
+# --- How to run ---
 # python3 scripts/content/jp-inaka/bake_inaka.py
-"""Japanese Countryside (jp-inaka) 3/4 top-view pixel-art primitives and kits 1..10."""
+"""jp-inaka(일본 시골) 건물 키트 10종 - jp_city 본편 주택 부품(ref_house / house_kit / jp_regions_pack)으로 조립한다.
+
+화풍 규칙(jp_city 와 같다):
+  - 3/4 탑뷰: 지붕은 경사 윗면(기와 줄·초가 결)이 보이고, 그 아래 남쪽 정면 벽, 맨 아래 기단 윗면 + 앞면.
+  - 색은 modern3 램프(K) + 일본 로케일 계약 색(J) 만, 빛은 왼쪽 위, 1px sumi 윤곽(OL), 반투명·노이즈 점 없음.
+  - 지붕·창·현관·처마 그림자는 ref_house.py 의 hip_roof / lean_to / eave_shadow / sash / genkan 을 그대로 쓴다.
+"""
 from __future__ import annotations
 
 import json
-import math
 import os
 import sys
 from typing import Final
@@ -22,8 +27,10 @@ for _p in (os.path.join(JP_CITY_DIR, 'houses'), os.path.join(JP_CITY_DIR, 'block
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
-from house_kit import Cv, K, OL  # noqa: E402
-from shitamachi_pack import H, disc, line  # noqa: E402
+from house_kit import Cv, K, OL, gable_side, lattice_door, shed, wall  # noqa: E402
+from jp_regions_pack import add_outline, canopy_clusters, plinth_34, rect_3d, stones  # noqa: E402,F401
+from ref_house import eave_shadow, foundation, genkan, hip_roof, lean_to, sash  # noqa: E402
+from shitamachi_pack import H, disc, line  # noqa: E402,F401
 
 with open(os.path.join(ROOT, 'tiledata', 'jp-city', 'palette-contract.json'), encoding='utf-8') as _f:
     _CONTRACT = json.load(_f)
@@ -32,828 +39,571 @@ _RAMP: Final[dict[str, list[int]]] = {
     for f in _CONTRACT['families']
     for m in f['materials']
 }
-SUMI1: Final[int] = K('sumi', 1)
-SUMI0: Final[int] = K('sumi', 0)
 
 
 def J(mat: str, s: int) -> int:
-    """Return 24-bit RGB integer for material `mat` at step `s` (0..4)."""
+    """계약 재료 mat 의 단 s(0 그늘 … 4 하이라이트)."""
     r = _RAMP[mat]
     return r[max(0, min(4, s))]
 
 
-def add_outline(c: Cv, x0: int = 0, y0: int = 0, x1: int | None = None, y1: int | None = None, skip_bottom: bool = False) -> None:
-    """Wrap opaque pixels in region with a 1px dark sumi contour (OL)."""
-    ex1 = c.w if x1 is None else x1
-    ey1 = c.h if y1 is None else y1
-    al = c.a[y0:ey1, x0:ex1, 3] > 0
-    h, w = al.shape
-    for j in range(h):
-        for i in range(w):
-            if al[j, i]:
-                continue
-            if skip_bottom and j == h - 1:
-                continue
-            nb = False
-            for dy, dx in ((-1, 0), (1, 0), (0, -1), (0, 1)):
-                nj, ni = j + dy, i + dx
-                if 0 <= nj < h and 0 <= ni < w and al[nj, ni]:
-                    nb = True
-                    break
-            if nb:
-                c.P(x0 + i, y0 + j, OL)
-
-
-def rect_3d(c: Cv, x: int, y: int, w: int, h: int, top_h: int, mat: str, top_t: int = 3, front_t: int = 2) -> None:
-    """Draw a 3/4 box showing both its top face (`top_h` px) and front elevation (`h - top_h` px) with 1px OL."""
-    c.R(x, y, w, h, OL)
-    if top_h > 0:
-        c.R(x + 1, y + 1, w - 2, top_h, J(mat, top_t))
-        c.HL(x + 1, y + 1, w - 2, J(mat, min(4, top_t + 1)))
-        c.HL(x + 1, y + top_h, w - 2, J(mat, max(0, top_t - 1)))
-    fy = y + 1 + top_h
-    fh = h - 2 - top_h
-    if fh > 0:
-        c.R(x + 1, fy, w - 2, fh, J(mat, front_t))
-        c.VL(x + 1, fy, fh, J(mat, min(4, front_t + 1)))
-        c.VL(x + w - 2, fy, fh, J(mat, max(0, front_t - 1)))
-        c.HL(x + 1, y + h - 2, w - 2, J(mat, max(0, front_t - 2)))
-
-
-def plinth_34(c: Cv, x: int, y: int, w: int, h: int = 9, top_h: int = 3, mat: str = 'shrine_flagstone') -> None:
-    """Draw a 3/4 stone foundation plinth with top slab surface, front masonry joints, and dark ground contact."""
-    c.R(x, y, w, h, OL)
-    c.R(x + 1, y + 1, w - 2, top_h, J(mat, 3))
-    c.HL(x + 1, y + 1, w - 2, J(mat, 4))
-    for sx in range(x + 9, x + w - 4, 11):
-        c.VL(sx, y + 1, top_h, J(mat, 2))
-    fy = y + 1 + top_h
-    fh = h - 2 - top_h
-    if fh > 0:
-        c.R(x + 1, fy, w - 2, fh, J(mat, 2))
-        c.VL(x + 1, fy, fh, J(mat, 3))
-        c.VL(x + w - 2, fy, fh, J(mat, 1))
-        c.HL(x + 1, y + h - 2, w - 2, J(mat, 0))
-        for sx in range(x + 7, x + w - 4, 11):
-            c.VL(sx, fy, fh, J(mat, 1))
-
-
-def engawa_34(c: Cv, x: int, y: int, w: int, h: int = 9, top_h: int = 5) -> None:
-    """Draw a 3/4 open wooden veranda (engawa) with floorboards on top, front beam, support posts, and step stone."""
-    c.R(x, y, w, h, OL)
-    c.R(x + 1, y + 1, w - 2, top_h, J('aged_cedar', 3))
-    c.HL(x + 1, y + 1, w - 2, J('aged_cedar', 4))
-    for px in range(x + 4, x + w - 2, 4):
-        c.VL(px, y + 1, top_h, J('aged_cedar', 2))
-    c.HL(x + 1, y + top_h, w - 2, J('aged_cedar', 4))
-    fy = y + 1 + top_h
-    fh = h - 2 - top_h
-    if fh > 0:
-        c.R(x + 1, fy, w - 2, fh, J('machiya_timber', 1))
-        c.HL(x + 1, fy, w - 2, J('aged_cedar', 2))
-        for px in range(x + 4, x + w - 3, 14):
-            c.R(px, fy, 3, fh, J('machiya_timber', 3))
-    # Kutsunugi-ishi stepping stone in front
-    sx = x + w // 2 - 5
-    c.R(sx, y + h - 3, 10, 3, OL)
-    c.R(sx + 1, y + h - 2, 8, 1, J('shrine_flagstone', 3))
-
-
-def shoji_panel(c: Cv, x: int, y: int, w: int, h: int, open_w: int = 0) -> None:
-    """Draw wooden-framed paper shoji sliding doors, optionally half-open revealing tatami room inside."""
-    c.R(x, y, w, h, OL)
-    c.R(x + 1, y + 1, w - 2, h - 2, J('cream_stucco', 4))
-    # Wood frame border and muntin grid
-    for gx in range(x + 4, x + w - 2, 4):
-        c.VL(gx, y + 1, h - 2, J('aged_cedar', 2))
-    for gy in range(y + 4, y + h - 4, 4):
-        c.HL(x + 1, gy, w - 2, J('aged_cedar', 2))
-    # Lower wooden kickboard (koshita)
-    c.R(x + 1, y + h - 5, w - 2, 4, J('aged_cedar', 2))
-    c.HL(x + 1, y + h - 5, w - 2, J('aged_cedar', 3))
-    if open_w > 0:
-        ox = x + w // 2 - open_w // 2
-        c.R(ox, y + 1, open_w, h - 2, J('machiya_timber', 0))
-        c.R(ox + 1, y + h - 6, open_w - 2, 5, J('tatami_straw', 2))
-        c.HL(ox + 1, y + h - 6, open_w - 2, J('tatami_straw', 3))
-
-
-def thatch_roof_34(c: Cv, x0: int, x1: int, y0: int, y1: int) -> None:
-    """Draw a thick, multi-layered 3/4 kayabuki thatched roof with timber ridge ties, smoke vent, and deep eaves."""
-    hgt = y1 - y0
-    taper = max(6, int(hgt * 0.36))
-    # Main sloped thatch body
-    for j in range(5, hgt - 4):
-        y = y0 + j
-        f = (j - 5) / max(1, hgt - 9)
-        ins = max(0, round((1.0 - f) * taper))
-        xs, xe = x0 + ins, x1 - ins
-        c.P(xs - 1, y, OL)
-        c.P(xe, y, OL)
-        for x in range(xs, xe):
-            # Layered reed bundle texture + top-left sun lighting
-            side_bias = 1 if (x - xs) < (xe - xs) * 0.38 else (-1 if (x - xs) > (xe - xs) * 0.78 else 0)
-            step_band = (j // 5) % 2
-            reed = ((x * 3 + j * 7) % 11 == 0)
-            lv = (3 if f < 0.45 else 2) + side_bias
-            if j % 5 == 4:
-                lv -= 1
-            elif j % 5 == 0 and (x + step_band * 2) % 3 != 0:
-                lv += 1
-            if reed:
-                c.P(x, y, J('aged_cedar', max(1, min(3, lv))))
-            else:
-                c.P(x, y, J('tatami_straw', max(0, min(4, lv))))
-        # Gable triangular recessed dark timber vents on upper left/right hips
-        if 8 <= j <= 18 and xe - xs > 24:
-            c.P(xs + 2, y, J('machiya_timber', 1))
-            c.P(xe - 3, y, J('machiya_timber', 0))
-    # Thick stepped thatch eave cut-face (3/4 underside thickness: bright reed lip + brown cut layer + deep shadow)
-    ew = x1 - x0
-    c.HL(x0, y1 - 4, ew, J('tatami_straw', 3))
-    c.HL(x0, y1 - 3, ew, J('aged_cedar', 2))
-    c.HL(x0, y1 - 2, ew, J('machiya_timber', 0))
-    c.HL(x0, y1 - 1, ew, OL)
-    c.VL(x0 - 1, y1 - 4, 4, OL)
-    c.VL(x1, y1 - 4, 4, OL)
-    # Heavy bamboo & cedar ridge beam (구시/오사에보코) with X-crossed katsuogi ties
-    rx0, rx1 = x0 + taper - 2, x1 - taper + 2
-    rw = max(8, rx1 - rx0)
-    c.R(rx0 - 1, y0, rw + 2, 6, OL)
-    c.HL(rx0, y0 + 1, rw, J('tatami_straw', 4))
-    c.HL(rx0, y0 + 2, rw, J('aged_cedar', 3))
-    c.HL(rx0, y0 + 3, rw, J('machiya_timber', 2))
-    c.HL(rx0, y0 + 4, rw, J('machiya_timber', 0))
-    for kx in range(rx0 + 4, rx1 - 3, 7):
-        c.R(kx, y0 - 1, 3, 6, OL)
-        c.VL(kx + 1, y0, 5, J('tatami_straw', 4))
-    # Small center smoke-vent gable (kemuridashi)
-    mx = (rx0 + rx1) // 2 - 5
-    c.R(mx, y0 + 4, 10, 6, OL)
-    c.R(mx + 1, y0 + 5, 8, 2, J('aged_cedar', 3))
-    c.R(mx + 2, y0 + 7, 6, 2, J('machiya_timber', 0))
-
-
-def kawara_roof_34(c: Cv, x0: int, x1: int, y0: int, y1: int, flare: int = 3, mat: str = 'kawara_dark_tile', blue_glaze: bool = False) -> None:
-    """Draw a 3/4 traditional ceramic tile roof with ridge course, tile ribs, and eave drip line."""
-    hgt = y1 - y0
-    taper = max(3, int(hgt * 0.38))
-    for j in range(3, hgt - 2):
-        y = y0 + j
-        f = (j - 3) / max(1, hgt - 6)
-        ins = max(0, round((1.0 - f) * taper))
-        fl = max(0, j - (hgt - 3 - flare))
-        xs, xe = x0 + ins - fl, x1 - ins + fl
-        c.P(xs - 1, y, OL)
-        c.P(xe, y, OL)
-        for x in range(xs, xe):
-            k = (x - xs) % 3
-            base_t = 3 if f < 0.48 else 2
-            tt = base_t + (1 if k == 0 else (-1 if k == 2 else 0))
-            if j % 4 == 3:
-                tt -= 1
-            if x - xs < 2:
-                tt = min(4, tt + 1)
-            elif xe - x <= 2:
-                tt = max(0, tt - 1)
-            if blue_glaze and k == 0 and j % 4 < 2:
-                c.P(x, y, J('noren_indigo', max(1, min(3, tt))))
-            else:
-                c.P(x, y, J(mat, tt))
-    rx0, rx1 = x0 + taper - 1, x1 - taper + 1
-    rw = max(4, rx1 - rx0)
-    c.HL(rx0, y0, rw, OL)
-    c.HL(rx0, y0 + 1, rw, J('vending_cool_white', 2) if blue_glaze else J(mat, 4))
-    c.HL(rx0, y0 + 2, rw, J(mat, 2))
-    c.HL(rx0, y0 + 3, rw, J(mat, 0))
-    c.VL(rx0 - 1, y0, 4, OL)
-    c.VL(rx1, y0, 4, OL)
-    # Onigawara ridge end caps
-    for ox in (rx0, rx1 - 2):
-        c.R(ox, y0 - 1, 2, 3, J(mat, 4))
-    ex0, ex1 = x0 - flare, x1 + flare
-    ew = ex1 - ex0
-    c.HL(ex0, y1 - 3, ew, J(mat, 3))
-    for x in range(ex0 + 1, ex1 - 1, 3):
-        c.P(x, y1 - 3, J('vending_cool_white', 2) if blue_glaze else J(mat, 4))
-    c.HL(ex0, y1 - 2, ew, J(mat, 1))
-    c.HL(ex0, y1 - 1, ew, OL)
-    c.VL(ex0 - 1, y1 - 3, 3, OL)
-    c.VL(ex1, y1 - 3, 3, OL)
-
-
-def corrugated_roof_34(c: Cv, x0: int, y0: int, w: int, h: int, mat: str = 'arcade_skylight_slate', rust_ratio: float = 0.22) -> None:
-    """Draw a 3/4 pitched corrugated sheet-metal roof with visible ridge, seam ribs, and rust patches."""
-    taper = max(2, h // 4)
-    for j in range(3, h - 2):
-        y = y0 + j
-        ins = max(0, round((1.0 - (j - 3) / max(1, h - 6)) * taper))
-        xs, xe = x0 + ins, x0 + w - ins
-        c.P(xs - 1, y, OL)
-        c.P(xe, y, OL)
-        for x in range(xs, xe):
-            k = (x - x0) % 3
-            tt = 3 if j < h // 2 else 2
-            if k == 0:
-                tt = min(4, tt + 1)
-            elif k == 2:
-                tt = max(0, tt - 1)
-            is_rust = H(x // 3, j // 3, 41) < rust_ratio
-            c.P(x, y, J('noren_rust' if is_rust else mat, tt))
-    rx0, rx1 = x0 + taper, x0 + w - taper
-    c.HL(rx0 - 1, y0, rx1 - rx0 + 2, OL)
-    c.HL(rx0, y0 + 1, rx1 - rx0, J(mat, 4))
-    c.HL(rx0, y0 + 2, rx1 - rx0, J('noren_rust' if rust_ratio > 0.1 else mat, 2))
-    c.VL(rx0 - 1, y0 + 1, 2, OL)
-    c.VL(rx1, y0 + 1, 2, OL)
-    c.HL(x0, y0 + h - 2, w, J(mat, 3))
-    c.HL(x0, y0 + h - 1, w, OL)
-    c.VL(x0 - 1, y0 + h - 2, 2, OL)
-    c.VL(x0 + w, y0 + h - 2, 2, OL)
-
-
-def boards_wall(c: Cv, x0: int, y0: int, w: int, h: int, mat: str = 'aged_cedar', t: int = 2, bw: int = 4) -> None:
-    """Draw vertical weathered timber boards with plank seams and under-eave shadow."""
-    for y in range(y0, y0 + h):
-        for x in range(x0, x0 + w):
-            k = (x - x0) % bw
-            lv = t + (1 if k == 0 else (-1 if k == bw - 1 else 0))
-            if y <= y0 + 1:
-                lv = max(0, lv - 1)
-            elif (y - y0) % 9 == 0:
-                lv = max(0, lv - 1)
-            c.P(x, y, J(mat, lv))
-    c.VL(x0 - 1, y0, h, OL)
-    c.VL(x0 + w, y0, h, OL)
-
-
-def plaster_wall(c: Cv, x0: int, y0: int, w: int, h: int, seed: int = 0) -> None:
-    """Draw traditional white/cream lime plaster wall with subtle texture and top eave shadow."""
-    c.HL(x0, y0, w, J('cream_stucco', 1))
-    for y in range(y0 + 1, y0 + h):
-        for x in range(x0, x0 + w):
-            lv = 3 + (1 if x <= x0 + 2 else 0) - (1 if x >= x0 + w - 2 else 0) - (1 if H(x // 2, y // 2, seed) > 0.9 else 0)
-            c.P(x, y, J('cream_stucco', lv))
-    c.VL(x0 - 1, y0, h, OL)
-    c.VL(x0 + w, y0, h, OL)
-
-
-def canopy_clusters(c: Cv, blobs: list[tuple[float, float, float, float]], mat: str) -> None:
-    """Draw 5-step clustered foliage blobs with top-left light and 1px sumi outline."""
-    t = Cv(c.w, c.h)
-    for bx, by, rx, ry in blobs:
-        disc(t, bx + 1.4, by + 1.8, rx, J(mat, 0), ry=ry)
-    for bx, by, rx, ry in blobs:
-        disc(t, bx, by, rx, J(mat, 1), ry=ry)
-    for bx, by, rx, ry in blobs:
-        disc(t, bx - 0.7, by - 0.7, max(1.8, rx - 1.3), J(mat, 2), ry=max(1.8, ry - 1.1))
-    for bx, by, rx, ry in blobs:
-        disc(t, bx - rx * 0.22 - 0.7, by - ry * 0.22 - 0.7, max(1.5, rx * 0.6), J(mat, 3), ry=max(1.5, ry * 0.6))
-    for bx, by, rx, ry in blobs:
-        disc(t, bx - rx * 0.34 - 0.9, by - ry * 0.34 - 0.9, max(1.1, rx * 0.32), J(mat, 4), ry=max(1.1, ry * 0.32))
-    add_outline(t)
-    for y in range(c.h):
-        for x in range(c.w):
-            if t.a[y, x, 3]:
-                c.P(x, y, (int(t.a[y, x, 0]) << 16) | (int(t.a[y, x, 1]) << 8) | int(t.a[y, x, 2]))
-
-
+# ═══════════════════════════ 키트 등록 ═══════════════════════════
 KITS: list[dict] = []
 
 
-def kit(
-    id_: str,
-    name: str,
-    w: int,
-    h: int,
-    kind: str,
-    solid: list[tuple[int, int]] | tuple[tuple[int, int], ...] = (),
-    other: str = 'star',
-    tags: list[str] | tuple[str, ...] = (),
-    rules: str = '',
-    role: str = 'prop',
-    doors: list[tuple[int, int, int]] | None = None,
-):
-    """Register an inaka kit definition."""
+def kit(id_, name, w, h, kind, solid=(), other='star', tags=(), rules='', role='prop', doors=None):
     def deco(fn):
-        KITS.append(
-            dict(
-                id=id_,
-                name=name,
-                w=w,
-                h=h,
-                kind=kind,
-                draw=fn,
-                solid=set(solid),
-                other=other,
-                tags=list(tags),
-                rules=rules,
-                role=role,
-                doors=list(doors or []),
-            )
-        )
+        KITS.append(dict(id=id_, name=name, w=w, h=h, kind=kind, draw=fn, solid=set(solid), other=other,
+                         tags=list(tags), rules=rules, role=role, doors=list(doors or [])))
         return fn
     return deco
 
 
-def rows(w: int, ys: list[int] | range) -> list[tuple[int, int]]:
-    """Return all `(x, y)` cell coordinates for width `w` across rows `ys`."""
+def rows(w, ys):
     return [(x, y) for y in ys for x in range(w)]
 
 
-# ─────────────────────────── 1. inaka-kominka-thatched (6×5) ───────────────────────────
-@kit(
-    'inaka-kominka-thatched',
-    '초가 고민가(茅葺き古民家) — 두꺼운 이엉 지붕·툇마루(수박 쟁반·모기향 돼지)·장지문(6×5)',
-    6, 5, 'building',
-    solid=rows(6, [3, 4]),
-    tags=['inaka', '고민가', '초가집', '툇마루', '여름방학', '농가'],
-    rules='시골 마을 흙길·자갈 마당 북쪽에 세운다. 남쪽 툇마루·현관 앞 한 줄은 걸을 수 있는 마당이어야 한다.',
-    role='building',
-    doors=[(1, 4, 1)],
-)
-def draw_kominka_thatched(c: Cv, base: Cv) -> None:
-    """Draw 6x5 thatched-roof kominka farmhouse with engawa veranda, watermelon tray, and kayaributa."""
-    # 1. Stone foundation plinth across bottom (y=70..79)
-    plinth_34(c, 3, 70, 90, 9, top_h=3, mat='shrine_flagstone')
-    # 2. Front wall & timber frame (y=44..71)
-    c.R(5, 44, 86, 27, OL)
-    plaster_wall(c, 6, 44, 84, 26, seed=1)
-    boards_wall(c, 6, 56, 84, 14, mat='aged_cedar', t=2, bw=4)
-    # Dark timber structural pillars
-    for px in (6, 26, 54, 74, 87):
-        c.R(px, 44, 3, 27, J('machiya_timber', 1))
-        c.VL(px, 44, 27, J('machiya_timber', 3))
-    # 3. Left genkan entrance with traditional dark lattice sliding door (x=10..25, y=47..71)
-    c.R(10, 47, 15, 24, OL)
-    c.R(11, 48, 13, 22, J('machiya_timber', 2))
-    for gx in range(13, 23, 3):
-        c.VL(gx, 48, 22, J('aged_cedar', 3))
-    for gy in range(52, 68, 5):
-        c.HL(11, gy, 13, J('aged_cedar', 2))
-    # Warm lantern beside genkan
-    c.R(7, 49, 3, 5, OL)
-    c.R(8, 50, 1, 3, J('lantern_amber', 4))
-    # 4. Wide shoji sliding doors along engawa (x=29..73, y=46..65), half-open in middle showing tatami & low chabudai
-    shoji_panel(c, 29, 46, 44, 20, open_w=14)
-    # Right wooden shutter storage box (tobukuro) + window
-    boards_wall(c, 77, 47, 9, 20, mat='machiya_timber', t=2, bw=3)
-    # 5. Open wooden engawa veranda on south front (x=27..86, y=64..74)
-    engawa_34(c, 27, 64, 59, 9, top_h=4)
-    # Watermelon slice on round lacquer tray on engawa (x=42..50, y=63..68)
-    disc(c, 46, 66, 4.0, OL, ry=2.2)
-    disc(c, 46, 66, 3.0, J('machiya_timber', 2), ry=1.5)
-    c.R(44, 64, 5, 2, J('torii_vermilion', 3))
-    c.P(45, 63, J('torii_vermilion', 4))
-    c.HL(44, 66, 5, J('pine_bamboo', 3))
-    # White ceramic mosquito-coil pig (kayaributa) with wisp of smoke (x=62..68, y=62..68)
-    c.R(62, 63, 6, 5, OL)
-    c.R(63, 64, 4, 3, J('vending_cool_white', 3))
-    c.P(64, 64, J('vending_cool_white', 4))
-    c.P(63, 65, J('machiya_timber', 1))
-    c.P(64, 61, J('vending_cool_white', 3))
-    c.P(65, 59, J('vending_cool_white', 4))
-    # 6. Massive 3/4 kayabuki thatched roof (y=2..45)
-    thatch_roof_34(c, 2, 94, 2, 45)
+# ═══════════════════════════ 공통 시골 부품 ═══════════════════════════
+def lerp(a, b, f):
+    return a + (b - a) * f
 
 
-# ─────────────────────────── 2. inaka-kawara-farmhouse (6×5) ───────────────────────────
-@kit(
-    'inaka-kawara-farmhouse',
-    '시골 기와 농가 — 이부시·청기와 지붕·박공 회벽·툇마루 풍경(風鈴)·장작더미(6×5)',
-    6, 5, 'building',
-    solid=rows(6, [3, 4]),
-    tags=['inaka', '기와집', '농가', '툇마루', '풍경', '여름'],
-    rules='시골 마을 골목이나 농가 마당 북쪽에 세운다. 현관과 툇마루 앞은 비워 둔다.',
-    role='building',
-    doors=[(1, 4, 1)],
-)
-def draw_kawara_farmhouse(c: Cv, base: Cv) -> None:
-    """Draw 6x5 rural kawara-tile farmhouse with white gable, engawa, glass furin wind chime, and firewood stack."""
-    plinth_34(c, 3, 70, 90, 9, top_h=3, mat='shrine_flagstone')
-    c.R(5, 40, 86, 31, OL)
-    plaster_wall(c, 6, 40, 84, 14, seed=2)
-    boards_wall(c, 6, 54, 84, 16, mat='aged_cedar', t=2, bw=4)
-    for px in (6, 27, 56, 78, 88):
-        c.R(px, 40, 3, 30, J('machiya_timber', 1))
-    # Main upper irimoya kawara roof (y=3..32) + decorative white plaster gable on left-center
-    kawara_roof_34(c, 4, 92, 3, 32, flare=4, mat='kawara_dark_tile', blue_glaze=True)
-    # White plaster triangular gable (chidorihafu) over genkan (x=10..32, y=14..32)
-    for j in range(14):
-        hw = j + 2
-        gx0, gx1 = 21 - hw, 21 + hw
-        c.HL(gx0 - 1, 17 + j, hw * 2 + 2, OL)
-        c.HL(gx0, 17 + j, hw * 2, J('cream_stucco', 4 if j > 4 else 3))
-        c.P(gx0, 17 + j, J('kawara_dark_tile', 3))
-        c.P(gx1 - 1, 17 + j, J('kawara_dark_tile', 1))
-    c.R(19, 23, 4, 5, J('machiya_timber', 1))
-    # Lower shimoya porch eave roof (y=35..43)
-    kawara_roof_34(c, 3, 93, 34, 43, flare=2, mat='kawara_dark_tile', blue_glaze=True)
-    # Genkan sliding lattice door on left (x=10..25, y=45..70)
-    c.R(10, 45, 16, 25, OL)
-    c.R(11, 46, 14, 23, J('machiya_timber', 2))
-    for gx in range(13, 24, 3):
-        c.VL(gx, 46, 23, J('aged_cedar', 3))
-    c.R(12, 47, 12, 5, J('noren_indigo', 2))
-    c.HL(13, 49, 10, J('vending_cool_white', 4))
-    # Wide shoji + glass doors along engawa (x=30..75, y=45..64)
-    shoji_panel(c, 30, 45, 45, 19, open_w=12)
-    engawa_34(c, 28, 63, 50, 10, top_h=4)
-    # Hanging glass wind chime (furin) under eave at x=54, y=43..50
-    c.VL(54, 43, 2, OL)
-    disc(c, 54, 46, 2.0, OL)
-    disc(c, 54, 46, 1.3, J('arcade_skylight_slate', 4))
-    c.R(54, 48, 2, 4, J('vending_cool_white', 4))
-    c.P(54, 50, J('torii_vermilion', 3))
-    # Side firewood stack & folded blue tarp under right eave (x=78..91, y=56..72)
-    rect_3d(c, 78, 56, 13, 15, 4, 'noren_indigo', top_t=3, front_t=2)
-    for ly in range(62, 70, 3):
-        for lx in range(79, 90, 3):
-            c.R(lx, ly, 2, 2, J('aged_cedar', 3))
-            c.P(lx + 1, ly + 1, J('machiya_timber', 1))
+def post(c, x, y, h, mat='machiya_timber', t=2, w=2):
+    """나무 기둥(빛 왼쪽 1px 밝게, 오른쪽 1px 어둡게)."""
+    c.R(x, y, w, h, J(mat, t))
+    c.VL(x, y, h, J(mat, t + 1))
+    c.VL(x + w - 1, y, h, J(mat, t - 1))
 
 
-# ─────────────────────────── 3. inaka-kura-storehouse (4×4) ───────────────────────────
-@kit(
-    'inaka-kura-storehouse',
-    '시골 토장 창고(土蔵) — 흰 회벽·해삼벽(なまこ壁)·철장 쌍여닫이문(4×4)',
-    4, 4, 'building',
-    solid=rows(4, [2, 3]),
-    tags=['inaka', '토장', '창고', '해삼벽', '농가'],
-    rules='고민가·기와 농가 옆 마당에 부속 창고로 세운다.',
-    role='building',
-    doors=[(1, 3, 2)],
-)
-def draw_kura_storehouse(c: Cv, base: Cv) -> None:
-    """Draw 4x4 white-plaster & namako-kabe rural storehouse with heavy tiled roof and iron-strapped doors."""
-    plinth_34(c, 4, 54, 56, 9, top_h=3, mat='shrine_flagstone')
-    # Heavy 3/4 kawara roof (y=2..24)
-    kawara_roof_34(c, 3, 61, 2, 24, flare=3, mat='kawara_dark_tile')
-    # Upper white lime plaster wall (y=24..38)
-    c.R(6, 24, 52, 31, OL)
-    plaster_wall(c, 7, 24, 50, 15, seed=5)
-    # Two small barred kura windows on upper wall
-    for wx in (13, 43):
-        c.R(wx, 27, 8, 7, OL)
-        c.R(wx + 1, 28, 6, 5, J('kawara_dark_tile', 0))
-        c.VL(wx + 3, 28, 5, J('aged_cedar', 3))
-        c.VL(wx + 5, 28, 5, J('aged_cedar', 3))
-        c.HL(wx, 34, 8, J('cream_stucco', 4))
-    # Lower namako-kabe wall (diagonal white mortar grid over dark slate tiles, y=39..54)
-    c.HL(7, 38, 50, J('kawara_dark_tile', 2))
-    for y in range(39, 54):
-        for x in range(7, 57):
-            dx, dy = (x - 7) % 6, (y - 39) % 6
-            is_joint = (dx + dy == 5) or (dx == dy)
-            c.P(x, y, J('cream_stucco', 4) if is_joint else J('kawara_dark_tile', 1 if (x + y) % 2 == 0 else 2))
-    # Heavy iron-strapped double doors in center (x=23..41, y=35..55)
-    c.R(22, 34, 20, 21, OL)
-    c.R(23, 35, 18, 20, J('kawara_dark_tile', 1))
-    c.VL(32, 35, 20, OL)
-    c.HL(23, 35, 18, J('cream_stucco', 4))
-    for sy in (38, 43, 48, 52):
-        c.HL(24, sy, 7, J('kawara_dark_tile', 3))
-        c.HL(33, sy, 7, J('kawara_dark_tile', 3))
-    c.R(29, 44, 2, 3, J('lantern_amber', 3))
-    c.R(33, 44, 2, 3, J('lantern_amber', 3))
-    # Stone front steps
-    rect_3d(c, 22, 55, 20, 8, 3, 'shrine_flagstone', top_t=4, front_t=2)
+def shoji(c, x, y, w, h, panes=2):
+    """장지문(障子): 나무 틀 + 흰 종이 + 4px 격자 + 아래 나무 허리판. 미닫이 맞닿는 곳은 짙은 틀."""
+    c.R(x, y, w, h, J('machiya_timber', 2))
+    c.R(x + 1, y + 1, w - 2, h - 2, J('cream_stucco', 4))
+    for gx in range(x + 4, x + w - 1, 4):
+        c.VL(gx, y + 1, h - 6, J('cream_stucco', 2))
+    for gy in range(y + 5, y + h - 5, 5):
+        c.HL(x + 1, gy, w - 2, J('cream_stucco', 2))
+    c.R(x + 1, y + h - 5, w - 2, 4, J('aged_cedar', 2))
+    c.HL(x + 1, y + h - 5, w - 2, J('aged_cedar', 3))
+    for k in range(1, panes):
+        px = x + w * k // panes
+        c.VL(px, y, h, J('machiya_timber', 1))
+    c.HL(x + 1, y + 1, w - 2, J('cream_stucco', 1))            # 윗틀 밑 그늘
+    c.VL(x - 1, y, h, OL); c.VL(x + w, y, h, OL)
 
 
-# ─────────────────────────── 4. inaka-dagashiya (5×4) ───────────────────────────
-@kit(
-    'inaka-dagashiya',
-    '시골 막과자 가게(駄菓子屋) — 홍백 함석 차양·유리 과자병 진열대·가챠 캡슐기·아이스크림 냉동고(5×4)',
-    5, 4, 'building',
-    solid=rows(5, [2, 3]),
-    tags=['inaka', '다가시야', '막과자', '구멍가게', '상점', '여름방학'],
-    rules='시골 삼거리나 버스 정류장 근처 길가에 세운다.',
-    role='building',
-    doors=[(2, 3, 1)],
-)
-def draw_dagashiya(c: Cv, base: Cv) -> None:
-    """Draw 5x4 nostalgic country dagashiya candy shop with striped awning, candy jars, gacha, and ice cream chest."""
-    plinth_34(c, 2, 54, 76, 9, top_h=3, mat='paving_stone')
-    # Upper weathered wooden hip roof (y=2..20)
-    kawara_roof_34(c, 4, 76, 2, 20, flare=2, mat='kawara_dark_tile')
-    # Wooden clapboard upper fascia + retro round tin sign on left (no readable text)
-    boards_wall(c, 5, 20, 70, 7, mat='aged_cedar', t=2, bw=4)
-    disc(c, 13, 23, 4.0, OL)
-    disc(c, 13, 23, 3.0, J('torii_vermilion', 3))
-    c.HL(11, 23, 5, J('vending_cool_white', 4))
-    # 3/4 Striped weathered corrugated tin awning (red-rust & cream stripes, y=26..36)
-    for j in range(10):
-        y = 26 + j
-        c.P(3, y, OL)
-        c.P(76, y, OL)
-        for x in range(4, 76):
-            stripe = ((x - 4) // 5) % 2 == 0
-            mat = 'noren_rust' if stripe else 'cream_stucco'
-            lv = (3 if stripe else 4) if j < 6 else (2 if stripe else 3)
-            if j == 8:
-                lv = max(0, lv - 1)
-            c.P(x, y, J(mat, lv))
-    c.HL(3, 26, 74, OL)
-    c.HL(3, 35, 74, OL)
-    # Storefront walls & open counter interior (y=36..55)
-    boards_wall(c, 5, 36, 70, 19, mat='aged_cedar', t=2, bw=4)
-    # Open shop interior bay (x=18..56, y=36..54)
-    c.R(18, 36, 38, 19, OL)
-    c.R(19, 37, 36, 10, J('machiya_timber', 0))
-    # Tiered wooden counter with colorful glass candy jars (y=41..54)
-    rect_3d(c, 19, 45, 26, 10, 3, 'aged_cedar', top_t=4, front_t=2)
-    jar_mats = ['torii_vermilion', 'lantern_amber', 'onsen_mineral_teal', 'sakura_petal', 'pine_bamboo', 'noren_rust']
-    for k, jm in enumerate(jar_mats):
-        jx = 21 + k * 4
-        c.R(jx, 41, 3, 5, OL)
-        c.R(jx + 1, 42, 2, 3, J('vending_cool_white', 4))
-        c.P(jx + 1, 43, J(jm, 3))
-        c.P(jx + 2, 43, J(jm, 4))
-        c.HL(jx + 1, 41, 2, J('torii_vermilion' if k % 2 == 0 else 'noren_indigo', 3))
-    # Open doorway slot at x=46..55
-    c.R(46, 37, 9, 18, J('machiya_timber', 0))
-    c.R(47, 37, 7, 5, J('noren_rust', 3))
-    c.HL(48, 39, 5, J('vending_cool_white', 4))
-    # Left side: 2 stacked red/yellow gacha capsule machines (x=7..17, y=40..56)
-    for gx in (7, 12):
-        rect_3d(c, gx, 46, 5, 10, 2, 'torii_vermilion', top_t=3, front_t=2)
-        c.R(gx, 40, 5, 7, OL)
-        c.R(gx + 1, 41, 3, 5, J('vending_cool_white', 4))
-        c.P(gx + 1, 43, J('lantern_amber', 4))
-        c.P(gx + 2, 44, J('noren_indigo', 3))
-        c.P(gx + 2, 50, J('vending_cool_white', 4))
-    # Right side: blue chest ice-cream freezer (x=57..73, y=44..56)
-    rect_3d(c, 57, 44, 16, 12, 4, 'noren_indigo', top_t=3, front_t=2)
-    c.R(59, 45, 12, 3, J('arcade_skylight_slate', 4))
-    c.VL(65, 45, 3, OL)
-    c.HL(59, 50, 12, J('vending_cool_white', 4))
-    # Retro wooden bench in front left (x=20..38, y=54..61)
-    rect_3d(c, 20, 54, 18, 7, 3, 'aged_cedar', top_t=4, front_t=2)
+def noren(c, x, y, w, h, mat='noren_indigo', crest=True):
+    """포렴: 세 폭 천, 폭 사이 1px 틈, 가운데 흰 문장."""
+    c.R(x, y, w, h, J(mat, 2))
+    c.HL(x, y, w, J(mat, 3))
+    c.HL(x, y + h - 1, w, J(mat, 1))
+    for k in range(1, 3):
+        sx = x + w * k // 3
+        c.VL(sx, y + 3, h - 3, J(mat, 0))
+    c.VL(x + w - 1, y, h, J(mat, 1))
+    if crest:
+        cx, cy = x + w // 2, y + h // 2
+        c.R(cx - 1, cy - 1, 3, 3, J('vending_cool_white', 4)); c.P(cx, cy, J(mat, 2))
 
 
-# ─────────────────────────── 5. inaka-bus-stop-shelter (3×3) ───────────────────────────
-@kit(
-    'inaka-bus-stop-shelter',
-    '시골 버스 정류장 — 낡은 목조·함석 대합실·나무 벤치·둥근 정류장 표지판·수국(3×3)',
-    3, 3, 'structure',
-    solid=[(0, 2), (1, 2), (2, 2)],
-    tags=['inaka', '버스정류장', '대합실', '수국', '토토로감성', '시골길'],
-    rules='시골 자갈길이나 삼거리 길가에 세운다.',
-    role='building',
-)
-def draw_bus_stop_shelter(c: Cv, base: Cv) -> None:
-    """Draw 3x3 weathered wooden bus shelter with tin roof, interior bench, round sign pole, and hydrangeas."""
-    # Concrete base slab (y=38..46)
-    plinth_34(c, 2, 38, 33, 8, top_h=3, mat='paving_stone')
-    # 3/4 pitched rusted corrugated tin roof (x=2..34, y=6..19)
-    corrugated_roof_34(c, 2, 6, 32, 13, mat='arcade_skylight_slate', rust_ratio=0.3)
-    # Weathered cedar walls + open front waiting bay (x=3..33, y=19..39)
-    c.R(3, 19, 30, 20, OL)
-    boards_wall(c, 4, 19, 28, 19, mat='aged_cedar', t=2, bw=4)
-    # Open interior recess
-    c.R(7, 21, 22, 17, OL)
-    c.R(8, 22, 20, 11, J('machiya_timber', 1))
-    c.R(8, 33, 20, 4, J('aged_cedar', 2))
-    # Route map & timetable board on back wall
-    c.R(10, 24, 7, 6, OL)
-    c.R(11, 25, 5, 4, J('vending_cool_white', 4))
-    c.HL(12, 26, 3, J('noren_indigo', 3))
-    c.R(19, 24, 7, 6, OL)
-    c.R(20, 25, 5, 4, J('cream_stucco', 3))
-    # Wooden waiting bench inside (3/4 top seat + legs)
-    rect_3d(c, 9, 31, 18, 6, 2, 'aged_cedar', top_t=4, front_t=2)
-    # Hydrangea bush & rusted round bus-stop pole on the right (x=34..46)
-    canopy_clusters(c, [(40, 36, 5.5, 4.5), (43, 39, 4.5, 4.0)], 'pine_bamboo')
-    for hx, hy, hm in ((38, 34, 'noren_indigo'), (42, 35, 'arcade_skylight_slate'), (40, 38, 'sakura_petal'), (44, 38, 'noren_indigo')):
-        disc(c, hx, hy, 1.8, J(hm, 3))
-        c.P(hx - 1, hy - 1, J(hm, 4))
-    # Round bus-stop sign pole (x=36..43, y=8..44)
-    rect_3d(c, 37, 39, 6, 6, 2, 'concrete_grey', top_t=3, front_t=2)
-    c.R(39, 16, 3, 24, OL)
-    c.VL(40, 16, 24, J('vending_cool_white', 3))
-    # Timetable plate on pole
-    c.R(37, 23, 7, 6, OL)
-    c.R(38, 24, 5, 4, J('vending_cool_white', 4))
-    c.HL(38, 25, 5, J('torii_vermilion', 3))
-    # Round head disc
-    disc(c, 40, 12, 4.5, OL)
-    disc(c, 40, 12, 3.4, J('vending_cool_white', 4))
-    c.R(38, 11, 5, 3, J('noren_indigo', 3))
-    c.HL(38, 10, 5, J('torii_vermilion', 3))
+def engawa(c, x, y, w, depth=5, front=3):
+    """툇마루(縁側): 윗면 판재(depth px, 가로 이음) + 앞 테 + 짧은 다리. 3/4 윗면이 확실히 보인다."""
+    c.R(x, y, w, depth, J('aged_cedar', 3))
+    c.HL(x, y, w, J('aged_cedar', 1))                         # 벽 밑 그늘
+    for k, yy in enumerate(range(y + 1, y + depth)):
+        for sx in range(x + (k * 7) % 11, x + w, 11):
+            c.P(sx, yy, J('aged_cedar', 2))                  # 판 이음
+    c.HL(x, y + depth - 1, w, J('aged_cedar', 4))             # 앞 끝 밝은 모서리
+    c.R(x, y + depth, w, front, J('machiya_timber', 3))
+    c.HL(x, y + depth + front - 1, w, J('machiya_timber', 1))
+    for px in range(x + 2, x + w - 2, 14):
+        c.R(px, y + depth + front, 2, 2, J('machiya_timber', 1))
+    c.VL(x - 1, y, depth + front, OL); c.VL(x + w, y, depth + front, OL)
+    c.HL(x - 1, y + depth + front, w + 2, OL)
 
 
-# ─────────────────────────── 6. inaka-unmanned-veg-stand (2×2) ───────────────────────────
-@kit(
-    'inaka-unmanned-veg-stand',
-    '무인 채소 판매대(無人販売所) — 나무 지붕·토마토·오이·가지·수박 상자·양철 요금통(2×2)',
-    2, 2, 'structure',
-    solid=[(0, 1), (1, 1)],
-    tags=['inaka', '무인판매대', '채소가판대', '수박', '토마토', '시골길'],
-    rules='시골 흙길·자갈길 옆이나 농가 담장 앞에 둔다.',
-    role='prop',
-)
-def draw_unmanned_veg_stand(c: Cv, base: Cv) -> None:
-    """Draw 2x2 unmanned roadside vegetable stand with rooflet, produce crates, watermelon, and coin box."""
-    # Ground shadow & support legs (y=14..30)
-    c.R(3, 28, 26, 3, OL)
-    for lx in (5, 25):
-        c.R(lx, 12, 3, 18, OL)
-        c.VL(lx + 1, 12, 17, J('aged_cedar', 3))
-    # 3/4 Wooden shingle rooflet (x=2..30, y=2..13)
-    corrugated_roof_34(c, 2, 2, 28, 11, mat='aged_cedar', rust_ratio=0.0)
-    # Hanging price plaque under eave (no readable text)
-    c.R(11, 12, 10, 4, OL)
-    c.R(12, 13, 8, 2, J('cream_stucco', 4))
-    c.P(13, 13, J('torii_vermilion', 3))
-    c.P(16, 13, OL)
-    c.P(18, 13, OL)
-    # Upper display shelf with 3 wooden produce crates (tomatoes, cucumbers, eggplants)
-    rect_3d(c, 4, 16, 22, 8, 4, 'aged_cedar', top_t=4, front_t=2)
-    # Left crate: red tomatoes
-    for tx, ty in ((6, 17), (8, 17), (7, 18), (9, 18)):
-        c.R(tx, ty, 2, 2, J('torii_vermilion', 3))
-        c.P(tx, ty, J('torii_vermilion', 4))
-    # Middle crate: green cucumbers
-    for cx_ in range(12, 17):
-        c.VL(cx_, 17, 3, J('pine_bamboo', 3 if cx_ % 2 == 0 else 2))
-    # Right crate: dark purple eggplants
-    for ex in (19, 21, 23):
-        c.R(ex, 17, 2, 3, J('asphalt', 1))
-        c.P(ex, 17, J('sakura_petal', 1))
-    # Lower shelf + striped round summer watermelon
-    rect_3d(c, 6, 24, 18, 6, 2, 'aged_cedar', top_t=3, front_t=1)
-    disc(c, 13, 25, 3.0, OL)
-    disc(c, 13, 25, 2.2, J('pine_bamboo', 3))
-    c.VL(13, 23, 4, J('pine_bamboo', 0))
-    c.P(12, 24, J('moss', 4))
-    # Tin coin box on right post (x=25..30, y=18..25)
-    rect_3d(c, 25, 18, 5, 7, 2, 'vending_cool_white', top_t=4, front_t=3)
-    c.HL(26, 19, 3, OL)
-    c.HL(26, 22, 3, J('torii_vermilion', 3))
+def step_stone(c, x, y, w=10):
+    """沓脱石: 윗면 3px + 앞면 2px 판석."""
+    c.R(x - 1, y - 1, w + 2, 7, OL)
+    c.R(x, y, w, 3, J('shrine_flagstone', 3)); c.HL(x, y, w, J('shrine_flagstone', 4))
+    c.R(x, y + 3, w, 2, J('shrine_flagstone', 1))
 
 
-# ─────────────────────────── 7. inaka-wooden-station (7×4) ───────────────────────────
-@kit(
-    'inaka-wooden-station',
-    '시골 목조 간이역(木造駅舎) — 민트·크림 비늘판벽·역 시계 박공·목조 개찰구·승강장(7×4)',
-    7, 4, 'building',
-    solid=rows(7, [2, 3]),
-    tags=['inaka', '간이역', '목조역', '기차역', '철도', '여름방학'],
-    rules='단선 철길 바로 옆에 승강장과 나란히 세운다.',
-    role='building',
-    doors=[(3, 3, 2)],
-)
-def draw_wooden_station(c: Cv, base: Cv) -> None:
-    """Draw 7x4 nostalgic wooden country train station with mint/cream clapboard, clock gable, and wicket gate."""
-    # 1. Full-width 3/4 stone & concrete station platform apron (x=1..111, y=50..63)
-    plinth_34(c, 1, 50, 110, 13, top_h=6, mat='paving_stone')
-    for x in range(4, 108):
-        c.P(x, 54, J('lantern_amber', 4 if x % 2 == 0 else 3))
-    # 2. Main station building on left/center (x=4..82)
-    # 3/4 Gabled roof (y=4..26)
-    kawara_roof_34(c, 3, 83, 4, 26, flare=3, mat='noren_rust')
-    # Central entrance gable dormer with round station clock (x=32..56, y=8..26)
-    for j in range(15):
-        hw = j + 2
-        c.HL(44 - hw - 1, 10 + j, hw * 2 + 2, OL)
-        c.HL(44 - hw, 10 + j, hw * 2, J('cream_stucco', 4 if j > 4 else 3))
-    disc(c, 44, 18, 4.2, OL)
-    disc(c, 44, 18, 3.2, J('vending_cool_white', 4))
-    c.P(44, 17, OL)
-    c.P(44, 18, OL)
-    c.P(45, 18, OL)
-    # Pale mint & cream horizontal clapboard walls (x=5..81, y=26..51)
-    c.R(5, 26, 76, 25, OL)
-    for y in range(27, 50):
-        is_dado = y >= 42
-        mat = 'onsen_mineral_teal' if is_dado else 'cream_stucco'
-        base_lv = 3 if is_dado else 4
-        if (y - 27) % 3 == 2:
-            base_lv -= 1
-        c.HL(6, y, 74, J(mat, base_lv))
-    # Timber corner & window posts
-    for px in (6, 28, 58, 78):
-        c.VL(px, 26, 24, J('onsen_mineral_teal', 2))
-    # Double-hung wooden station windows on left (x=10..25, y=30..41)
-    for wx in (10, 19):
-        c.R(wx, 30, 7, 11, OL)
-        c.R(wx + 1, 31, 5, 9, J('arcade_skylight_slate', 2))
-        c.P(wx + 1, 31, J('arcade_skylight_slate', 4))
-        c.HL(wx + 1, 35, 5, J('cream_stucco', 4))
-    # Open wooden wicket gate (개찰구, x=32..56, y=28..51)
-    c.R(32, 28, 24, 23, OL)
-    c.R(33, 29, 22, 16, J('machiya_timber', 0))
-    c.R(33, 45, 22, 5, J('paving_stone', 2))
-    # Wooden wicket latch posts on either side of gate passage
-    for gx in (34, 42, 50):
-        rect_3d(c, gx, 41, 4, 10, 3, 'aged_cedar', top_t=4, front_t=2)
-    # Waiting bench on right wall (x=60..76, y=42..50) + timetable poster
-    c.R(62, 30, 12, 9, OL)
-    c.R(63, 31, 10, 7, J('vending_cool_white', 4))
-    c.HL(64, 32, 8, J('torii_vermilion', 3))
-    c.HL(64, 35, 8, J('noren_indigo', 2))
-    rect_3d(c, 60, 43, 16, 8, 3, 'aged_cedar', top_t=4, front_t=2)
-    # 3. Right platform: standing vintage station nameboard (駅名標, x=85..108, y=22..51)
-    for px in (89, 103):
-        c.R(px, 36, 3, 15, OL)
-        c.VL(px + 1, 36, 14, J('aged_cedar', 3))
-    rect_3d(c, 85, 22, 23, 15, 3, 'vending_cool_white', top_t=4, front_t=4)
-    c.R(86, 32, 21, 3, J('noren_indigo', 2))
-    c.HL(87, 33, 19, J('torii_vermilion', 3))
-    for k in range(4):
-        c.R(88 + k * 4, 27, 2, 3, OL)
+def stone_base(c, x, y, w, h=5, mat='shrine_flagstone'):
+    """건물 밑 돌 기단(윗면 2px + 앞면 돌 줄눈)."""
+    c.R(x, y, w, h, J(mat, 2))
+    c.HL(x, y, w, J(mat, 4)); c.HL(x, y + 1, w, J(mat, 3))
+    for sx in range(x + 5, x + w - 2, 9):
+        c.VL(sx, y + 2, h - 2, J(mat, 0))
+    c.HL(x, y + h - 1, w, J(mat, 0))
+    c.VL(x - 1, y, h, OL); c.VL(x + w, y, h, OL); c.HL(x - 1, y + h, w + 2, OL)
 
 
-# ─────────────────────────── 9. inaka-red-iron-bridge (6×3) ───────────────────────────
-@kit(
-    'inaka-red-iron-bridge',
-    '시골 붉은 철교(赤い鉄교) — 리벳 워런 트러스 강철 거더·석조 교대·목조 상판(6×3)',
-    6, 3, 'structure',
-    solid=rows(6, [0]),
-    other='floor',
-    tags=['inaka', '철교', '붉은다리', '다리', '강', '개울'],
-    rules='시골 개울이나 강을 가로질러 놓는다. 가운데·아랫줄 상판은 걸어 건널 수 있다.',
-    role='terrain',
-)
-def draw_red_iron_bridge(c: Cv, base: Cv) -> None:
-    """Draw 6x3 iconic red steel Warren-truss bridge with stone abutments and walkable 3/4 deck."""
-    # 1. Walkable 3/4 bridge deck on `base` layer (y=18..42) so characters walk over the deck cleanly
-    rect_3d(base, 0, 18, 96, 24, 16, 'paving_stone', top_t=3, front_t=1)
-    for x in range(2, 94, 4):
-        base.VL(x, 19, 15, J('paving_stone', 2))
-    # Wooden/concrete sleeper ties & truss shadows on deck
-    for x in range(8, 88, 12):
-        base.R(x, 19, 3, 15, J('paving_stone', 1))
-    # 2. Left & right stone masonry abutments (x=0..10 and x=86..96, y=14..47)
-    for ax in (0, 86):
-        plinth_34(c, ax, 14, 10, 33, top_h=6, mat='shrine_flagstone')
-    # 3. Upper red steel Warren truss frame (y=2..22) on `c` (upper layer)
-    # Top horizontal chord (3/4 top face + front flange)
-    rect_3d(c, 6, 2, 84, 5, 2, 'torii_vermilion', top_t=4, front_t=2)
-    # Bottom horizontal chord of north truss (y=17..21)
-    rect_3d(c, 6, 17, 84, 4, 1, 'torii_vermilion', top_t=3, front_t=2)
-    # Vertical posts & diagonal Warren truss web members
-    for px in range(8, 89, 16):
-        c.R(px, 6, 3, 12, OL)
-        c.VL(px + 1, 6, 12, J('torii_vermilion', 3))
-        if px + 16 <= 88:
-            mid = px + 8
-            for t in range(-1, 2):
-                line(c, px + 1 + t, 6, mid + t, 17, OL if abs(t) == 1 else J('torii_vermilion', 3))
-                line(c, mid + t, 17, px + 16 + t, 6, OL if abs(t) == 1 else J('torii_vermilion', 2))
-            # Riveted gusset plates
-            c.R(px, 6, 4, 3, J('torii_vermilion', 4))
-            c.R(mid - 1, 15, 4, 3, J('torii_vermilion', 3))
-    # 4. South low safety parapet rail along bottom edge of deck (y=36..44)
-    rect_3d(c, 6, 36, 84, 6, 2, 'torii_vermilion', top_t=4, front_t=2)
-    for px in range(10, 86, 8):
-        c.R(px, 41, 2, 4, J('torii_vermilion', 1))
+def plaster(c, x, y, w, h, mat='shiro', base=1):
+    """회벽(漆喰): 평평한 흰 면 + 왼쪽 1px 빛, 오른쪽 1px 그늘."""
+    c.R(x, y, w, h, K(mat, base))
+    c.VL(x, y, h, K(mat, base + 1)); c.VL(x + w - 1, y, h, K(mat, base - 1))
 
 
-# ─────────────────────────── 10. inaka-stepping-stones (4×2) ───────────────────────────
-@kit(
-    'inaka-stepping-stones',
-    '개울 징검다리(飛び石) — 납작한 자연석 디딤돌 6개·하얀 물보라 파문(4×2)',
-    4, 2, 'terrain',
-    solid=[],
-    other='floor',
-    tags=['inaka', '징검다리', '개울', '다리', '시냇물'],
-    rules='시골 맑은 개울(inaka-river-shallow) 위에 놓아 개울을 건너는 징검다리를 만든다.',
-    role='terrain',
-)
-def draw_stepping_stones(c: Cv, base: Cv) -> None:
-    """Draw 4x2 natural flat river stepping stones on shallow water with white water ripples."""
-    # Tile the exact _river_shallow 16x16 pattern across the 4x2 base so water edges are 100% seamless
-    pebbles = [
-        (2, 3, 'shrine_flagstone', 3),
-        (7, 2, 'aged_cedar', 3),
-        (12, 5, 'wet_cobble', 3),
-        (4, 9, 'wet_cobble', 2),
-        (10, 10, 'shrine_flagstone', 3),
-        (13, 13, 'aged_cedar', 2),
-        (2, 14, 'shrine_flagstone', 2),
-    ]
-    for ty in range(2):
-        for tx in range(4):
-            ox, oy = tx * 16, ty * 16
-            for ly in range(16):
-                for lx in range(16):
-                    h = H(lx, ly, 67)
-                    base.P(ox + lx, oy + ly, J('onsen_mineral_teal', 3 if h < 0.55 else (2 if h < 0.88 else 4)))
-            for px, py, pm, pt in pebbles:
-                base.P(ox + px, oy + py, J(pm, pt))
-                base.P(ox + px + 1, oy + py, J(pm, max(1, pt - 1)))
-            for sx, sy in ((5, 5), (6, 5), (11, 8), (12, 8), (3, 12)):
-                base.P(ox + sx, oy + sy, J('vending_cool_white', 4))
-    stones_pos = [(7, 15, 5.2, 3.6), (18, 19, 4.8, 3.4), (28, 14, 5.5, 3.8), (38, 18, 4.6, 3.3), (48, 14, 5.2, 3.6), (57, 17, 4.5, 3.2)]
-    for sx, sy, rx, ry in stones_pos:
-        # Outer white water ripple ring
-        disc(base, sx, sy + 1, rx + 2.2, J('vending_cool_white', 4), ry=ry + 1.4)
-        disc(base, sx, sy + 1, rx + 1.2, J('onsen_mineral_teal', 4), ry=ry + 0.7)
-        # 3/4 Flat stone: dark wet side face + bright flat top face
-        disc(base, sx, sy + 1, rx, OL, ry=ry)
-        disc(base, sx, sy + 0.8, rx - 0.8, J('shrine_flagstone', 1), ry=ry - 0.5)
-        disc(base, sx, sy - 0.6, rx - 1.0, J('shrine_flagstone', 3), ry=ry - 0.8)
-        disc(base, sx - 1.0, sy - 1.2, rx * 0.55, J('shrine_flagstone', 4), ry=ry * 0.5)
-        # Touch of moss on stone edge
-        base.P(int(sx + rx * 0.4), int(sy - ry * 0.3), J('moss', 3))
+def thatch_roof(c, x0, x1, ytop, yeave, run, ridge=True):
+    """茅葺き 寄棟: 사다리꼴 경사 윗면. 6px 이엉 단(위 밝은 립, 아래 그늘) + 세로 짚 결.
+    왼쪽 隅 삼각면 밝게, 오른쪽 그늘. 처마는 5px 두께로 짚 끝 단면이 보인다."""
+    rl, rr = x0 + run, x1 - run
+    n = yeave - ytop
+    for y in range(ytop, yeave):
+        f = (y - ytop) / n
+        xl = round(lerp(rl, x0, f)); xr = round(lerp(rr, x1, f))
+        bl = round(lerp(rl, x0 + run // 2, f)); br = round(lerp(rr, x1 - run // 2, f))
+        k = (y - ytop) % 6
+        for x in range(xl, xr + 1):
+            if x < bl: t = 3
+            elif x > br: t = 1
+            else: t = 3 if f < 0.42 else 2
+            if k == 5: t -= 1
+            elif k == 0: t += 1
+            elif (x * 3 + ((y - ytop) // 6) * 2) % 5 == 0: t -= 1
+            c.P(x, y, J('tatami_straw', t))
+        c.P(bl, y, J('tatami_straw', 4)); c.P(br, y, J('tatami_straw', 1)); c.P(br + 1, y, J('tatami_straw', 0))
+        c.P(xl - 1, y, OL); c.P(xr + 1, y, OL)
+    # 처마 두께(짚 끝 단면 5px)
+    ex0, ex1 = x0 - 2, x1 + 2
+    c.HL(ex0, yeave, ex1 - ex0 + 1, J('tatami_straw', 4))
+    for x in range(ex0, ex1 + 1):
+        c.P(x, yeave + 1, J('tatami_straw', 3 if x % 2 else 2))
+        c.P(x, yeave + 2, J('tatami_straw', 2 if x % 3 else 1))
+        c.P(x, yeave + 3, J('aged_cedar', 1))
+    c.HL(ex0, yeave + 4, ex1 - ex0 + 1, OL)
+    c.VL(ex0 - 1, yeave, 4, OL); c.VL(ex1 + 1, yeave, 4, OL)
+    if ridge:
+        # 箱棟(대나무로 누른 용마루): 윗면 2px + 앞면 4px + 烏おどり(교차 막대)
+        bx0, bx1 = rl - 4, rr + 4
+        c.R(bx0 - 1, ytop - 8, bx1 - bx0 + 3, 9, OL)
+        c.R(bx0, ytop - 7, bx1 - bx0 + 1, 2, J('machiya_timber', 4))
+        c.HL(bx0, ytop - 7, bx1 - bx0 + 1, J('aged_cedar', 3))
+        c.R(bx0, ytop - 5, bx1 - bx0 + 1, 4, J('machiya_timber', 2))
+        c.HL(bx0, ytop - 2, bx1 - bx0 + 1, J('machiya_timber', 0))
+        for sx in range(bx0 + 3, bx1 - 1, 5):
+            c.VL(sx, ytop - 5, 3, J('pine_bamboo', 3))         # 대나무 누름대
+        for sx in range(bx0 + 5, bx1 - 3, 10):                 # 烏おどり
+            c.P(sx, ytop - 9, J('aged_cedar', 3)); c.P(sx + 2, ytop - 9, J('aged_cedar', 2))
+            c.P(sx - 1, ytop - 10, OL); c.P(sx + 3, ytop - 10, OL); c.P(sx + 1, ytop - 8, J('aged_cedar', 2))
+
+
+def kawara_gable(c, x0, x1, ytop, yeave, mat='tekko', base=0):
+    """house_kit.gable_side 와 같은 切妻 경사 윗면(기와 줄) - 짧은 별칭."""
+    gable_side(c, x0, x1, ytop, yeave, mat, base)
+
+
+# ═══════════════════════════ 1. 초가 고민가 ═══════════════════════════
+@kit('inaka-kominka-thatched', '초가 고민가(茅葺き古民家) - 이엉 寄棟 지붕·箱棟·흙벽·장지문·툇마루(6×5)', 6, 5, 'building',
+     solid=rows(6, [3, 4]), tags=['inaka', '고민가', '초가집', '茅葺き', '古民家'],
+     rules='시골 마을 중심 집. 앞(남)에 흙마당 2칸 이상, 뒤에 대숲·삼나무. 현관은 왼쪽 두 번째 칸.', role='building',
+     doors=[(1, 4, 1)])
+def kominka(c, base):
+    X0, X1 = 6, 89
+    # 벽(지붕 아래): 위 흙벽(漆喰) 띠 + 아래 판자·장지
+    WT, WB = 50, 71
+    plaster(c, X0, WT, X1 - X0 + 1, 8, 'kinari', 1)
+    c.R(X0, WT + 8, X1 - X0 + 1, WB - WT - 8, J('aged_cedar', 2))
+    for x in range(X0, X1 + 1, 3):
+        c.VL(x, WT + 9, WB - WT - 9, J('aged_cedar', 1))
+    c.HL(X0, WT + 8, X1 - X0 + 1, J('machiya_timber', 2))       # 長押(가로 보)
+    for px in (X0, 24, 40, 72, X1 - 1):
+        post(c, px, WT, WB - WT)
+    eave_shadow(c, X0, WT, X1 - X0 + 1, 'kinari', 1)
+    c.VL(X0 - 1, WT, WB - WT, OL); c.VL(X1 + 1, WT, WB - WT, OL)
+    # 현관(土間 입구): 물러선 어두운 감실 + 남색 포렴
+    c.R(12, WT + 3, 12, WB - WT - 3, J('machiya_timber', 0))
+    c.R(12, WB - 4, 12, 4, J('aged_cedar', 1))
+    noren(c, 12, WT + 3, 12, 9)
+    c.VL(11, WT + 3, WB - WT - 3, OL)
+    # 장지문 6장(툇마루 안쪽)
+    shoji(c, 42, WT + 9, 29, WB - WT - 9, panes=3)
+    # 오른쪽 창(격자 연子窓)
+    c.R(75, WT + 11, 12, 7, J('machiya_timber', 0))
+    for gx in range(76, 87, 2): c.VL(gx, WT + 11, 7, J('aged_cedar', 3))
+    c.HL(74, WT + 18, 14, J('aged_cedar', 4)); c.VL(74, WT + 11, 7, OL)
+    # 지붕(두꺼운 이엉)
+    thatch_roof(c, 2, 93, 12, 44, 26)
+    # 툇마루 + 디딤돌 + 돌 기단
+    stone_base(c, X0, WB, X1 - X0 + 1, 5)
+    engawa(c, 40, WB - 4, 50, depth=5, front=3)
+    step_stone(c, 55, WB + 5, 10)
+    step_stone(c, 14, WB + 5, 8)
+
+
+# ═══════════════════════════ 2. 기와 농가 ═══════════════════════════
+@kit('inaka-kawara-farmhouse', '기와 농가 - 寄棟 기와 지붕·下屋·회벽·격자문·툇마루(6×5)', 6, 5, 'building',
+     solid=rows(6, [3, 4]), tags=['inaka', '기와집', '농가', '瓦', '母屋'],
+     rules='마을 큰 농가 본채. 앞에 마당·경트럭, 옆에 토장 창고와 헛간.', role='building', doors=[(1, 4, 1)])
+def farmhouse(c, base):
+    X0, X1 = 8, 87
+    # 2층 회벽 띠(本屋 벽: 하얀 회벽 + 기둥)
+    plaster(c, X0, 38, X1 - X0 + 1, 10, 'shiro', 1)
+    for px in (X0, 28, 48, 68, X1 - 1):
+        post(c, px, 38, 10, 'machiya_timber', 2)
+    eave_shadow(c, X0, 38, X1 - X0 + 1, 'shiro', 1)
+    c.VL(X0 - 1, 38, 10, OL); c.VL(X1 + 1, 38, 10, OL)
+    for wx in (32, 52):                                         # 작은 고창
+        c.R(wx, 41, 10, 5, J('machiya_timber', 0))
+        for gx in range(wx + 1, wx + 10, 2): c.VL(gx, 41, 5, J('aged_cedar', 3))
+    # 1층 벽
+    Y1, YF = 57, 73
+    wall(c, X0, Y1, X1 - X0 + 1, YF - Y1, 'ita', 1, 'board')
+    eave_shadow(c, X0, Y1, X1 - X0 + 1, 'ita', 1)
+    lattice_door(c, 12, Y1 + 1, 20, YF - Y1 - 1)               # 현관 격자 미닫이
+    shoji(c, 40, Y1 + 1, 30, YF - Y1 - 1, panes=3)
+    sash(c, 74, Y1 + 4, 10, 8, 'ita', 1, shutter=False)
+    # 지붕: 寄棟 본채 + 앞 下屋
+    hip_roof(c, 4, 91, 12, 34, 24, 'tairu', 0)
+    lean_to(c, 4, 91, 48, 53, 'tairu', 0)
+    foundation(c, X0, YF, X1 - X0 + 1, vents=(48,))
+    c.VL(X0 - 1, YF, 4, OL); c.VL(X1 + 1, YF, 4, OL); c.HL(X0 - 1, YF + 4, X1 - X0 + 3, OL)
+    engawa(c, 38, YF - 3, 34, depth=4, front=3)
+    step_stone(c, 50, YF + 5, 10)
+    step_stone(c, 17, YF + 5, 10)
+
+
+# ═══════════════════════════ 3. 토장 창고 ═══════════════════════════
+def namako(c, x, y, w, h):
+    """海鼠壁: 짙은 평기와 마름모 + 볼록한 흰 회반죽 줄눈(위 밝고 아래 그늘)."""
+    for yy in range(y, y + h):
+        for xx in range(x, x + w):
+            u, v = (xx + yy) % 8, (xx - yy) % 8
+            if u == 0 or v == 0: col = K('shiro', 2)
+            elif u == 1 or v == 7: col = K('shiro', -1)
+            else: col = K('tekko', -1 if (xx // 4 + yy // 4) % 2 else -2)
+            c.P(xx, yy, col)
+    c.HL(x, y, w, K('shiro', 0))
+
+
+@kit('inaka-kura-storehouse', '토장 창고(土蔵) - 검은 기와 切妻·흰 회벽·海鼠壁·観音扉(4×4)', 4, 4, 'building',
+     solid=rows(4, [2, 3]), tags=['inaka', '토장', '창고', '蔵', '海鼠壁'],
+     rules='농가 본채 옆·뒤. 앞에 돌계단 칸을 비운다.', role='building', doors=[(1, 3, 2)])
+def kura(c, base):
+    X0, X1 = 6, 57
+    plaster(c, X0, 25, X1 - X0 + 1, 26, 'shiro', 1)
+    c.R(X0, 25, X1 - X0 + 1, 3, K('tekko', -2))                # 鉢巻(처마 밑 검은 띠)
+    c.HL(X0, 28, X1 - X0 + 1, K('shiro', -1))
+    namako(c, X0, 40, X1 - X0 + 1, 11)
+    c.VL(X0 - 1, 25, 26, OL); c.VL(X1 + 1, 25, 26, OL)
+    # 観音扉: 계단식 두꺼운 문틀(3단) + 닫힌 두 짝
+    dx, dy, dw, dh = 22, 30, 20, 21
+    for k, t in enumerate((-1, 0, 1)):
+        c.R(dx + k, dy + k, dw - 2 * k, dh - k, K('shiro', t))
+    c.R(dx + 3, dy + 3, dw - 6, dh - 3, K('tekko', -1))
+    c.VL(dx + dw // 2, dy + 3, dh - 3, K('tekko', -3))
+    c.VL(dx + 3, dy + 3, dh - 3, K('tekko', 1))
+    for hy in (dy + 7, dy + 15):
+        c.R(dx + dw // 2 - 3, hy, 2, 2, K('kii', 1)); c.R(dx + dw // 2 + 2, hy, 2, 2, K('kii', 1))
+    c.VL(dx - 1, dy, dh, OL)
+    # 높은 창(철 덧문)
+    c.R(46, 31, 7, 6, K('tekko', -2))
+    for gx in (47, 49, 51): c.VL(gx, 31, 6, K('tekko', 2))
+    c.HL(45, 37, 9, K('shiro', 2)); c.VL(45, 31, 6, OL)
+    kawara_gable(c, 3, 60, 3, 21, 'tekko', -1)
+    # 기단 + 돌계단(윗면·챌면)
+    plinth_34(c, 3, 51, 58, 7, top_h=2, mat='shrine_flagstone')
+    rect_3d(c, 20, 56, 24, 5, 2, 'shrine_flagstone', top_t=3, front_t=2)
+    rect_3d(c, 18, 59, 28, 5, 2, 'shrine_flagstone', top_t=3, front_t=1)
+
+
+# ═══════════════════════════ 4. 막과자 가게 ═══════════════════════════
+@kit('inaka-dagashiya', '막과자 가게(駄菓子屋) - 기와 切妻·줄무늬 차양·사탕 병 진열대·법랑 간판(5×4)', 5, 4, 'building',
+     solid=rows(5, [2, 3]), tags=['inaka', '다가시야', '막과자', '駄菓子屋', '가게'],
+     rules='마을 길가·버스 정류장 옆. 가게 앞 1칸은 비워 둔다(아이들 자리).', role='building', doors=[(2, 3, 1)])
+def dagashiya(c, base):
+    X0, X1 = 5, 74
+    # 위 판자벽 + 간판
+    wall(c, X0, 21, X1 - X0 + 1, 12, 'ita', 0, 'board')
+    eave_shadow(c, X0, 21, X1 - X0 + 1, 'ita', 1)
+    c.R(22, 23, 36, 8, K('kii', 1)); c.HL(22, 23, 36, K('kii', 2)); c.HL(22, 30, 36, K('kii', -1))
+    c.R(21, 22, 38, 1, OL); c.R(21, 31, 38, 1, OL); c.VL(21, 22, 10, OL); c.VL(58, 22, 10, OL)
+    for gx in (26, 34, 42, 50):                                # 간판 글자(だがし) 획
+        c.R(gx, 25, 5, 1, K('sumi', 0)); c.VL(gx + 2, 25, 4, K('sumi', 0)); c.P(gx + 4, 27, K('sumi', 0))
+    # 가게 앞(열린 진열창)
+    YS, YF = 38, 57
+    c.R(X0, YS, X1 - X0 + 1, YF - YS, J('machiya_timber', 0))
+    for sy, cols in ((40, ('aka', 'kii', 'midori', 'pinku', 'sora')), (46, ('daidai', 'sora', 'aka', 'midori', 'kii'))):
+        c.HL(X0 + 2, sy + 4, X1 - X0 - 3, J('aged_cedar', 3))  # 선반
+        for k, x in enumerate(range(X0 + 4, X1 - 4, 6)):
+            col = cols[k % len(cols)]
+            c.R(x, sy, 4, 4, K('garasu', 1)); c.R(x, sy + 2, 4, 2, K(col, 1)); c.P(x, sy, K('shiro', 2))
+            c.HL(x, sy - 1, 4, K('tekko', 2))                  # 병뚜껑
+    # 앞 진열대(3/4 윗면에 상자·뽑기 통)
+    rect_3d(c, X0 + 2, 50, 44, 9, 4, 'aged_cedar', top_t=3, front_t=2)
+    for k, (x, col) in enumerate(((10, 'aka'), (17, 'kii'), (24, 'sora'), (31, 'pinku'), (38, 'midori'))):
+        c.R(x, 51, 5, 3, K(col, 1)); c.HL(x, 51, 5, K(col, 2))
+    # 오른쪽: 유리 미닫이 + 라무네 냉장고
+    c.R(52, YS, 22, YF - YS, K('tekko', 2))
+    c.R(53, YS + 1, 9, YF - YS - 2, K('garasu', 0)); c.R(63, YS + 1, 10, YF - YS - 2, K('garasu', 0))
+    c.VL(54, YS + 2, 8, K('garasu', 2)); c.VL(64, YS + 2, 8, K('garasu', 2))
+    rect_3d(c, 55, 47, 16, 11, 3, 'vending_cool_white', top_t=4, front_t=3)
+    c.R(57, 51, 12, 4, K('sora', 1)); c.HL(57, 51, 12, K('sora', 2))
+    c.VL(X0 - 1, YS, YF - YS, OL); c.VL(X1 + 1, YS, YF - YS, OL)
+    # 줄무늬 차양(3/4 윗면 경사 + 앞 주름 끝)
+    for y in range(32, 38):
+        for x in range(X0 - 2, X1 + 3):
+            band = ((x - X0) // 5) % 2
+            t = 2 if y < 34 else 1 if y < 36 else 0
+            c.P(x, y, K('aka', t) if band == 0 else K('shiro', t))
+    for x in range(X0 - 2, X1 + 3):
+        if ((x - X0) % 5) in (1, 2, 3):
+            c.P(x, 38, K('aka', -1) if ((x - X0) // 5) % 2 == 0 else K('shiro', -1))
+    c.HL(X0 - 3, 31, X1 - X0 + 7, OL); c.VL(X0 - 3, 32, 6, OL); c.VL(X1 + 3, 32, 6, OL)
+    # 둥근 법랑 간판(기둥에)
+    disc(c, 4, 46, 3.6, OL); disc(c, 4, 46, 2.6, K('sora', 1)); c.P(3, 45, K('shiro', 2)); c.P(4, 46, K('shiro', 1))
+    # 지붕 + 기단
+    kawara_gable(c, 2, 77, 3, 18, 'tekko', 0)
+    stone_base(c, X0, YF, X1 - X0 + 1, 4)
+
+
+# ═══════════════════════════ 5. 목조 간이역 ═══════════════════════════
+@kit('inaka-wooden-station', '목조 간이역(木造駅舎) - 기와 寄棟·시계 박공·개찰·역명판·승강장 기단(7×4)', 7, 4, 'building',
+     solid=rows(7, [2, 3]), tags=['inaka', '간이역', '목조역', '駅舎', '無人駅'],
+     rules='선로(jp-rail-h) 바로 남쪽 또는 북쪽에 승강장 끝(jp-platform-edge)과 나란히 둔다. 개찰구는 가운데 두 칸.',
+     role='building', doors=[(3, 3, 2)])
+def station(c, base):
+    X0, X1 = 7, 104
+    YW, YF = 28, 49
+    wall(c, X0, YW, X1 - X0 + 1, YF - YW, 'lino', 1, 'siding')
+    eave_shadow(c, X0, YW, X1 - X0 + 1, 'lino', 1)
+    for px in (X0, 42, 70, X1 - 1):
+        post(c, px, YW, YF - YW, 'aged_cedar', 1)
+    sash(c, 14, 34, 22, 11, 'lino', 1, shutter=False)
+    sash(c, 76, 34, 22, 11, 'lino', 1, shutter=False)
+    # 가운데 개찰(열린 입구 + 나무 개찰 울)
+    c.R(45, 31, 24, YF - 31, J('machiya_timber', 0))
+    c.R(45, 31, 24, 2, J('machiya_timber', 1))
+    for gx in (49, 56, 63):
+        rect_3d(c, gx, 40, 4, 9, 2, 'aged_cedar', top_t=4, front_t=2)
+    c.HL(46, 42, 22, J('aged_cedar', 3))
+    c.VL(44, 31, YF - 31, OL)
+    # 역명판(흰 판 + 駅 글자) - 입구 위
+    c.R(46, 29, 22, 1, OL)
+    # 시간표판(오른쪽 벽 끝)
+    c.R(100, 33, 3, 12, K('kokuban', 0))
+    # 지붕(테라코타 기와 寄棟) + 가운데 시계 박공
+    hip_roof(c, 3, 108, 10, 24, 16, 'kawara', 0)
+    gx0, gx1, gy = 44, 68, 24
+    for y in range(12, gy):
+        half = (y - 12) * 12 / 12
+        for x in range(round(56 - half), round(56 + half) + 1):
+            c.P(x, y, K('shiro', 1 if x < 56 else 0))
+    line(c, 56, 10, gx0 - 2, gy, K('kawara', 2)); line(c, 56, 11, gx0 - 1, gy, K('kawara', 0))
+    line(c, 56, 10, gx1 + 2, gy, K('kawara', -1)); line(c, 56, 11, gx1 + 1, gy, K('kawara', -2))
+    line(c, 56, 9, gx0 - 3, gy, OL); line(c, 56, 9, gx1 + 3, gy, OL)
+    disc(c, 56, 19, 3.6, OL); disc(c, 56, 19, 2.7, K('shiro', 2)); c.VL(56, 17, 2, K('sumi', 0)); c.P(57, 19, K('sumi', 0))
+    # 역명 간판(처마 밑 흰 판, 남색 테)
+    c.R(44, 25, 26, 6, OL); c.R(45, 26, 24, 4, K('shiro', 2)); c.HL(45, 29, 24, K('kon', 0))
+    for gx in (49, 55, 61): c.R(gx, 27, 4, 1, K('sumi', 0)); c.P(gx + 1, 28, K('sumi', 0))
+    c.R(99, 32, 5, 14, OL); c.R(100, 33, 3, 12, K('kokuban', 0)); c.HL(100, 35, 3, K('shiro', 1)); c.HL(100, 38, 3, K('shiro', 1)); c.HL(100, 41, 3, K('shiro', 1))
+    # 승강장 기단(판석 윗면 5px + 앞면)
+    plinth_34(c, 1, YF, 110, 14, top_h=5, mat='paving_stone')
+    c.HL(2, YF + 4, 108, K('kii', 2))                           # 점자 블록 띠
+
+
+# ═══════════════════════════ 6. 버스 정류장 대합실 ═══════════════════════════
+@kit('inaka-bus-stop-shelter', '시골 버스 대합실 - 片流れ 함석 지붕·판자 뒷벽·나무 벤치·둥근 정류장 표지(3×3)', 3, 3, 'structure',
+     solid=[(0, 2), (1, 2), (2, 2)], tags=['inaka', '버스정류장', '대합실', 'バス停'],
+     rules='시골 길가(자갈길·생활도로) 북쪽에 정면이 길을 보게 둔다. 벤치 칸(아래 가운데)은 앉을 수 있다.', role='building')
+def bus_shelter(c, base):
+    # 판자 뒷벽(안쪽 그늘)
+    c.R(4, 15, 30, 20, J('aged_cedar', 1))
+    for x in range(4, 34, 4): c.VL(x, 15, 20, J('aged_cedar', 0))
+    c.HL(4, 15, 30, J('machiya_timber', 1)); c.HL(4, 16, 30, J('machiya_timber', 2))
+    c.R(20, 19, 9, 11, K('shiro', 1)); c.HL(20, 19, 9, K('aka', 0)); c.HL(21, 22, 6, K('tekko', 0)); c.HL(21, 24, 7, K('tekko', 0)); c.HL(21, 26, 5, K('tekko', 0))
+    c.VL(3, 15, 20, OL); c.VL(34, 15, 20, OL)
+    # 콘크리트 바닥 슬래브(윗면) + 벤치
+    rect_3d(c, 1, 33, 36, 9, 4, 'concrete_grey', top_t=3, front_t=2)
+    rect_3d(c, 7, 27, 22, 6, 3, 'aged_cedar', top_t=4, front_t=2)
+    c.R(9, 33, 2, 3, J('machiya_timber', 1)); c.R(25, 33, 2, 3, J('machiya_timber', 1))
+    # 기둥
+    post(c, 3, 13, 21, 'machiya_timber', 3, 3); post(c, 32, 13, 21, 'machiya_timber', 3, 3)
+    # 片流れ 지붕(뒤로 올라가는 경사 윗면, 녹슨 함석)
+    shed(c, 1, 36, 4, 11, 'tekko', 0)
+    for (rx, ry) in ((8, 6), (9, 7), (24, 8), (25, 8), (26, 9), (14, 9)):
+        c.P(rx, ry, J('noren_rust', 3))
+    # 둥근 버스 정류장 표지(파랑 테 + 흰 판) + 기둥 + 콘크리트 받침
+    c.R(42, 12, 2, 30, K('tekko', 2)); c.VL(42, 12, 30, K('tekko', 3)); c.VL(41, 12, 30, OL); c.VL(44, 12, 30, OL)
+    disc(c, 42.5, 8, 5.6, OL); disc(c, 42.5, 8, 4.6, K('sora', 0)); disc(c, 42.5, 8, 3.2, K('shiro', 2))
+    c.HL(40, 8, 6, K('sora', 0)); c.P(41, 6, K('aka', 1)); c.P(42, 6, K('aka', 1))
+    c.R(40, 18, 6, 7, K('shiro', 2)); c.HL(40, 18, 6, K('sora', 1)); c.HL(41, 21, 4, K('tekko', 0)); c.HL(41, 23, 4, K('tekko', 0))
+    c.R(39, 17, 8, 1, OL); c.VL(39, 18, 7, OL); c.VL(46, 18, 7, OL); c.HL(39, 25, 8, OL)
+    disc(c, 42.5, 43, 4.2, OL, ry=2.6); disc(c, 42.5, 43, 3.2, K('conc', 1), ry=1.6); c.HL(41, 42, 3, K('conc', 3))
+
+
+# ═══════════════════════════ 7. 물레방아간 ═══════════════════════════
+@kit('inaka-waterwheel-mill', '물레방아간(水車小屋) - 초가 오두막·筧 물길·나무 물레·돌 물받이(4×4)', 4, 4, 'building',
+     solid=rows(4, [2, 3]), tags=['inaka', '물레방아', '水車', '물레방아간'],
+     rules='개울·수로 가장자리에 둔다(오른쪽 아래 물받이가 물에 닿는다).', role='building', doors=[(1, 3, 1)])
+def waterwheel_mill(c, base):
+    # 오두막 벽 + 문
+    wall(c, 6, 31, 28, 20, 'ita', 0, 'board')
+    eave_shadow(c, 6, 31, 28, 'ita', 1)
+    c.R(13, 37, 10, 14, J('machiya_timber', 0)); c.R(14, 38, 8, 2, J('machiya_timber', 1)); c.VL(12, 37, 14, OL)
+    thatch_roof(c, 3, 37, 13, 27, 9)
+    stone_base(c, 4, 51, 32, 4)
+    # 돌 물받이(윗면에 물 + 앞면 돌)
+    c.R(36, 49, 27, 14, OL)
+    stones(c, 37, 54, 25, 8, 'shrine_flagstone', seed=3, course=(4, 4), width=(6, 9), moss=0.25)
+    c.R(37, 50, 25, 4, K('sora', 0)); c.HL(37, 50, 25, J('shrine_flagstone', 4)); c.HL(38, 52, 6, K('sora', 2)); c.HL(48, 51, 5, K('sora', 1))
+    # 물레(두께 = 오른쪽 아래로 밀린 짙은 원) + 테 + 살 + 축
+    cx, cy, r = 47, 34, 13.5
+    disc(c, cx + 2, cy + 1, r + 1, OL)
+    disc(c, cx + 2, cy + 1, r, J('aged_cedar', 0))
+    disc(c, cx, cy, r + 1, OL)
+    disc(c, cx, cy, r, J('aged_cedar', 3))
+    disc(c, cx, cy, r - 3, J('machiya_timber', 1))
+    import math
+    for k in range(8):
+        a = k * math.pi / 4
+        line(c, round(cx), round(cy), round(cx + math.cos(a) * (r - 2)), round(cy + math.sin(a) * (r - 2)), J('aged_cedar', 2))
+    for k in range(16):
+        a = k * math.pi / 8 + 0.2
+        px, py = round(cx + math.cos(a) * (r - 1)), round(cy + math.sin(a) * (r - 1))
+        c.P(px, py, J('aged_cedar', 1))
+    for k in range(10):                                         # 테 왼쪽 위 빛
+        a = math.pi + k * 0.16
+        c.P(round(cx + math.cos(a) * (r - 0.5)), round(cy + math.sin(a) * (r - 0.5)), J('aged_cedar', 4))
+    disc(c, cx, cy, 2.4, OL); disc(c, cx, cy, 1.5, K('tekko', 2))
+    # 筧(나무 물길): 윗면에 물이 보이는 홈통, 오른쪽 위에서 물레 꼭대기로
+    for k in range(18):
+        x = 62 - k; y = 4 + k // 2
+        c.P(x, y - 1, OL); c.P(x, y, J('aged_cedar', 4)); c.P(x, y + 1, K('sora', 1)); c.P(x, y + 2, K('sora', 2) if k % 3 else K('sora', 1))
+        c.P(x, y + 3, J('aged_cedar', 3)); c.P(x, y + 4, J('aged_cedar', 1)); c.P(x, y + 5, OL)
+    c.R(58, 8, 2, 12, J('machiya_timber', 2)); c.VL(57, 8, 12, OL); c.VL(60, 8, 12, OL)   # 받침 기둥
+    # 떨어지는 물 + 물보라
+    for y in range(13, 22):
+        c.P(44, y, K('sora', 2)); c.P(45, y, K('shiro', 2) if y % 3 else K('sora', 2))
+    for (sx, sy) in ((40, 48), (42, 47), (52, 48), (55, 49), (47, 48)):
+        c.P(sx, sy, K('shiro', 2)); c.P(sx + 1, sy, K('shiro', 1))
+
+
+# ═══════════════════════════ 8. 비닐하우스 ═══════════════════════════
+@kit('inaka-vinyl-greenhouse', '비닐하우스 - 둥근 지붕 윗면·골조·앞 박공 미닫이·안쪽 작물 줄(5×3)', 5, 3, 'building',
+     solid=rows(5, [1, 2]), tags=['inaka', '비닐하우스', '온실', 'ハウス'],
+     rules='밭(inaka-paddy 아님) 옆 흙 위에 둔다. 가운데 아래 칸이 출입구.', role='building', doors=[(2, 2, 1)])
+def greenhouse(c, base):
+    import math
+    x0, x1, yb, rise, depth = 3, 76, 43, 22, 16
+    cx, half = (x0 + x1) / 2, (x1 - x0) / 2
+
+    def arch_y(x, d):
+        u = (x - cx) / half
+        if abs(u) > 1: return None
+        return yb - d - rise * math.sqrt(1 - u * u)
+    # 둥근 지붕 윗면(뒤 아치까지 depth px): 원통 명암(왼쪽 밝음, 가운데 하이라이트, 오른쪽 그늘)
+    for x in range(x0, x1 + 1):
+        top = arch_y(x, depth); front = arch_y(x, 0)
+        if top is None: continue
+        u = (x - cx) / half
+        t = 2 if u < -0.6 else 4 if u < 0.05 else 3 if u < 0.5 else 1
+        for y in range(round(top), round(front)):
+            c.P(x, y, J('vending_cool_white', t))
+    for d in range(0, depth + 1, 4):                            # 골조 파이프(아치)
+        for x in range(x0, x1 + 1):
+            ay = arch_y(x, d)
+            if ay is not None: c.P(x, round(ay), K('tekko', 1) if d else K('tekko', 3))
+    for x in (round(cx),):                                      # 용마루 파이프
+        c.VL(x, round(arch_y(x, depth)), depth, K('tekko', 2))
+    # 앞 박공(반원 면): 비닐 너머 작물 줄 + 가운데 미닫이
+    for x in range(x0, x1 + 1):
+        fy = arch_y(x, 0)
+        if fy is None: continue
+        for y in range(round(fy) + 1, yb):
+            c.P(x, y, J('vending_cool_white', 2 if y < yb - 9 else 1))
+    for ry in (36, 39):
+        for x in range(x0 + 4, x1 - 3, 3):
+            if 32 <= x <= 47: continue
+            c.P(x, ry, K('midori', 1)); c.P(x + 1, ry, K('midori', 0)); c.P(x, ry - 1, K('midori', 2))
+    c.R(32, 25, 16, 18, K('tekko', 2))
+    c.R(33, 26, 7, 17, J('vending_cool_white', 3)); c.R(40, 26, 7, 17, J('machiya_timber', 0))
+    c.VL(33, 26, 17, J('vending_cool_white', 4)); c.VL(40, 26, 17, K('tekko', 3))
+    for y in (31, 37): c.HL(33, y, 7, K('tekko', 1))
+    for x in (x0 + 18, x1 - 18):
+        fy = arch_y(x, 0)
+        c.VL(x, round(fy), yb - round(fy), K('tekko', 1))
+    add_outline(c)
+    # 흙 둔덕(윗면 2px + 앞 2px)
+    c.R(1, yb, 78, 4, J('aged_cedar', 1)); c.HL(1, yb, 78, J('aged_cedar', 3)); c.HL(1, yb + 1, 78, J('aged_cedar', 2))
+    c.VL(0, yb, 4, OL); c.VL(79, yb, 4, OL); c.HL(0, yb + 4, 80, OL)
+
+
+# ═══════════════════════════ 9. 함석 헛간 ═══════════════════════════
+@kit('inaka-agri-tin-shed', '함석 농기구 헛간 - 녹슨 切妻 함석 지붕·골판 벽·열린 미닫이 안 볏가마(4×3)', 4, 3, 'building',
+     solid=rows(4, [1, 2]), tags=['inaka', '헛간', '농기구창고', '納屋', 'トタン'],
+     rules='농가 마당 옆이나 논 가장자리. 열린 문 앞 1칸은 비운다.', role='building', doors=[(1, 2, 1)])
+def tin_shed(c, base):
+    X0, X1 = 5, 58
+    wall(c, X0, 19, X1 - X0 + 1, 24, 'tekko', 1, 'vboard')
+    eave_shadow(c, X0, 19, X1 - X0 + 1, 'tekko', 1)
+    for (rx, ry, rw) in ((48, 30, 4), (10, 36, 3), (52, 38, 5)):
+        c.HL(rx, ry, rw, J('noren_rust', 2)); c.HL(rx + 1, ry + 1, rw - 1, J('noren_rust', 1))
+    # 열린 미닫이: 어두운 안 + 볏가마 쌓기 + 괭이
+    c.R(9, 23, 22, 20, K('tekko', -3)); c.R(9, 23, 22, 2, K('sumi', 1)); c.VL(8, 23, 20, OL)
+    for (bx, by) in ((11, 36), (19, 36), (15, 30)):
+        c.R(bx, by, 8, 6, J('tatami_straw', 3)); c.HL(bx, by, 8, J('tatami_straw', 4)); c.HL(bx, by + 5, 8, J('tatami_straw', 1))
+        c.VL(bx + 2, by, 6, J('tatami_straw', 1)); c.VL(bx + 5, by, 6, J('tatami_straw', 1))
+        c.VL(bx + 7, by, 6, J('tatami_straw', 2))
+    line(c, 27, 25, 29, 41, J('aged_cedar', 3)); c.R(25, 24, 4, 2, K('tekko', 2))
+    # 닫힌 문짝(사선 버팀)
+    c.R(32, 23, 22, 20, K('tekko', 0))
+    for x in range(32, 54, 4): c.VL(x, 23, 20, K('tekko', -1))
+    line(c, 33, 41, 52, 24, K('tekko', 2)); c.HL(32, 23, 22, K('tekko', 2)); c.VL(31, 23, 20, OL)
+    kawara_gable(c, 2, 61, 2, 15, 'tekko', 0)
+    for (rx, ry) in ((12, 9), (13, 9), (14, 10), (40, 12), (41, 12), (50, 8), (30, 13)):
+        c.P(rx, ry, J('noren_rust', 3)); c.P(rx, ry + 1, J('noren_rust', 1))
+    foundation(c, X0, 43, X1 - X0 + 1)
+    c.VL(X0 - 1, 43, 4, OL); c.VL(X1 + 1, 43, 4, OL)
+
+
+# ═══════════════════════════ 10. 언덕 도리이 돌계단 ═══════════════════════════
+def stone_lantern(c, x, y):
+    """석등(높이 26): 받침 윗면 · 기둥 · 불집(창 불빛) · 갓 윗면 · 보주."""
+    rect_3d(c, x, y + 20, 11, 6, 2, 'shrine_flagstone', top_t=3, front_t=2)
+    c.R(x + 3, y + 12, 5, 8, J('shrine_flagstone', 2)); c.VL(x + 3, y + 12, 8, J('shrine_flagstone', 3)); c.VL(x + 2, y + 12, 8, OL); c.VL(x + 8, y + 12, 8, OL)
+    rect_3d(c, x + 1, y + 6, 9, 7, 1, 'shrine_flagstone', top_t=3, front_t=2)
+    c.R(x + 3, y + 8, 5, 3, J('lantern_amber', 3)); c.HL(x + 3, y + 8, 5, J('lantern_amber', 4))
+    rect_3d(c, x - 1, y + 2, 13, 5, 3, 'shrine_flagstone', top_t=4, front_t=1)
+    c.R(x + 4, y, 3, 2, J('shrine_flagstone', 3)); c.P(x + 4, y, J('shrine_flagstone', 4))
+    c.HL(x + 4, y - 1, 3, OL); c.P(x + 3, y, OL); c.P(x + 7, y, OL)
+
+
+@kit('inaka-hillside-torii-stairs', '언덕 신사 돌계단과 明神 도리이 - 디딤판 윗면·챌면·석등 한 쌍(4×5)', 4, 5, 'structure',
+     solid=[(0, y) for y in range(5)] + [(3, y) for y in range(5)], other='floor',
+     tags=['inaka', '도리이', '돌계단', '神社', 'stair'],
+     rules='마을 뒷산 신사 입구. 위(북)쪽에 삼나무(jp-rg-sugi)·배전(jp-bldg-shrine-haiden)을 잇는다. 가운데 두 칸을 오른다.',
+     role='building')
+def torii_stairs(c, base):
+    # 양옆 풀 둔덕(이끼 램프 클러스터) + 돌 테
+    for (bx0, bx1) in ((1, 16), (48, 63)):
+        for y in range(22, 79):
+            for x in range(bx0, bx1):
+                h = H(x // 2, y // 2, 31)
+                c.P(x, y, J('moss', 3 if h < 0.35 else 2 if h < 0.85 else 4))
+        for x in range(bx0 + 2, bx1 - 1, 5):
+            c.P(x, 24 + (x * 7) % 40, J('pine_bamboo', 4)); c.P(x, 25 + (x * 7) % 40, J('pine_bamboo', 3))
+    # 돌계단: 디딤판(윗면 3px 밝음) + 챌면(3px 어두움)
+    for k, y in enumerate(range(30, 78, 6)):
+        c.R(16, y, 32, 3, J('shrine_flagstone', 3)); c.HL(16, y, 32, J('shrine_flagstone', 4))
+        c.R(16, y + 3, 32, 3, J('shrine_flagstone', 1)); c.HL(16, y + 5, 32, J('shrine_flagstone', 0))
+        for sx in range(18 + (k % 2) * 5, 46, 10): c.VL(sx, y + 3, 3, J('shrine_flagstone', 0))
+    c.R(16, 24, 32, 6, J('shrine_flagstone', 3)); c.HL(16, 24, 32, J('shrine_flagstone', 4))   # 맨 위 참배길
+    for (ex, t) in ((14, 3), (48, 1)):                           # 옆 돌 테(축대 윗면)
+        c.R(ex, 24, 2, 54, J('shrine_flagstone', t)); c.VL(ex - 1 if ex < 30 else ex + 2, 24, 54, OL)
+    c.HL(13, 78, 38, OL)
+    # 석등 한 쌍
+    stone_lantern(c, 2, 46); stone_lantern(c, 51, 46)
+    # 明神 도리이: 기둥 + 亀腹 + 貫 + 額束 + 島木 + 笠木(윗면 2px)
+    for px in (12, 49):
+        c.R(px - 1, 6, 5, 26, OL)
+        c.R(px, 7, 3, 24, J('torii_vermilion', 2)); c.VL(px, 7, 24, J('torii_vermilion', 3)); c.VL(px + 2, 7, 24, J('torii_vermilion', 1))
+        c.R(px - 1, 28, 5, 4, K('sumi', 1)); c.HL(px - 1, 28, 5, K('tekko', -1))
+    c.R(8, 14, 48, 4, OL); c.R(9, 15, 46, 2, J('torii_vermilion', 3)); c.HL(9, 16, 46, J('torii_vermilion', 1))
+    c.R(29, 9, 6, 6, OL); c.R(30, 10, 4, 4, K('sumi', 1)); c.R(31, 11, 2, 2, K('kii', 1))
+    c.R(5, 6, 54, 4, OL); c.R(6, 7, 52, 2, J('torii_vermilion', 3)); c.HL(6, 8, 52, J('torii_vermilion', 1))
+    c.R(2, 1, 60, 6, OL)
+    c.R(3, 2, 58, 2, J('kawara_dark_tile', 4)); c.HL(3, 2, 58, J('kawara_dark_tile', 3))
+    c.R(3, 4, 58, 2, J('kawara_dark_tile', 1))
+    c.R(0, 0, 4, 3, OL); c.R(60, 0, 4, 3, OL); c.P(1, 1, J('kawara_dark_tile', 3)); c.P(62, 1, J('kawara_dark_tile', 2))   # 반전(反り) 끝
