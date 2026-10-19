@@ -118,50 +118,50 @@ def draw_single_bird_cell(
     if direction in (DIR_RIGHT, DIR_LEFT):
         flip = direction == DIR_LEFT
         # Side-view flying bird (facing right by default, flipped for left)
-        if pattern == 0:  # Wings UP
+        if pattern == 0:  # Wings HIGH UP (3/4 top-down V-wings raised over back)
             grid = [
-                ".......OTTTO............",
-                "......OTSSSTO...........",
-                ".....OTSSSSSTO..........",
-                "....OTSSSWSSSTO.........",
-                "...OO...OWWO.OO........." if not crest else "...OO...OWWO..OOO.......",
-                "..OTTO.OWWWWOOOOOO......" if not crest else "..OTTO.OWWWWOOSSOO......",
-                ".OTSSOOOWWWWWWWWEBO.....",
-                "..OOOOOWWWWWWWWWBBBO....",
-                ".....OWWmmmmWWWWOO......",
-                "....OOmmmmmmmmWOO.......",
-                "...OTTDmmmmmmOO........." if not forked_tail else "..OTTTOmmmmmmOO.........",
-                "..OTTTTOOOOOO..........." if not forked_tail else ".OTTO.OTTOOOO...........",
+                "....OOO.........OOO.....",
+                "...OTSTO.......OTSTO....",
+                "...OTSSSTO....OTSSSTO...",
+                "....OTSSSSTO.OTSSSSTO...",
+                ".....OSSSSSTOOSSSSTO...." if not crest else ".....OSSSSSTOOSSSSTOO...",
+                "......OSSSSSWWWWWWOO....",
+                ".......ODDDWWWWWWWEBBBO.",
+                "..OOOO.ODDDWWWWWWWWBBO..",
+                ".OTDDDmmmmmmWWWWWWOO....",
+                "OTTTDDmmmmmmmmWWWOO....." if not forked_tail else "OTTO.OOmmmmmmmWWWOO.....",
+                ".OOOO..OOmmmmmmOO.......",
+                ".........OOOOOO.........",
             ]
-        elif pattern == 1:  # GLIDE (level sweeping wings)
+        elif pattern == 1:  # MID-FLAP / SOAR (3/4 outspread gull wings + protruding beak)
             grid = [
                 "........................",
-                "........OOOOO...........",
-                "......OOTSSSTOO.........",
-                "....OOTSSSSSSSTOO...OO..",
-                "..OOTTTSSSSSSSSTTOOOSSO." if crest else "..OOTTTSSSSSSSSTTOOOOO..",
-                ".OTTTTSSWWWWWWWWWWWEBO..",
-                "..OOOOOWWWWWWWWWWWWBBBO.",
-                "......OWWmmmmmmWWWOO....",
-                ".....OOmmmmmmmmWWOO.....",
-                "...OOTTDmmmmmmOOO......." if not forked_tail else "..OOTTTOmmmmmmOOO.......",
-                "..OTTTTTOOOOOO.........." if not forked_tail else ".OTTO..OTTOOOO..........",
-                "........................",
+                "..OOOO...........OOOO...",
+                ".OTTTTO.........OTTTTO..",
+                ".OTSSSSTO......OTSSSSTO.",
+                "..OTSSSSSTOOOOOTSSSSTO.." if not crest else "..OTSSSSSTOOOOTSSSSTOO..",
+                "...OOSSSSSWWWWWWWSSOO...",
+                ".....OODDDDWWWWWWWEBBBO.",
+                "..OOOO.ODDDWWWWWWWWBBO..",
+                ".OTDDDmmmmmmWWWWWWOO....",
+                "OTTTDDmmmmmmmmWWWOO....." if not forked_tail else "OTTO.OOmmmmmmmWWWOO.....",
+                ".OOOO..OOmmmmmmOO.......",
+                ".........OOOOOO.........",
             ]
-        else:  # Wings DOWN
+        else:  # Wings DOWN (sweeping down below belly)
             grid = [
                 "........................",
                 "........................",
-                "...........OOOOOO.......",
-                "....OO...OOWWWWWWO..OO..",
-                "..OOTTO.OWWWWWWWWWOOSSO." if crest else "..OOTTO.OWWWWWWWWWOOOO..",
-                ".OTTTTTOWWWWWWWWWWWEBO..",
-                "..OOOOOOWWmmmmWWWWWBBBO.",
-                "......OWSSmmmmmmWWOO....",
-                ".....OTSSSSSmmmmOO......",
-                "....OTSSSSSSSTOO........",
-                "...OTTTSSSSSTTO.........",
-                "....OOOTTTTTOO..........",
+                "............OOOOOO......" if not crest else "...........OOTSSOOO.....",
+                "..........OOWWWWWWO.....",
+                "....OOOO.OWWWWWWWWEBBBO.",
+                "...OTDDDOOWWWWWWWWWBBO..",
+                "..OTTTDDDmmOSSSSWWWWOO.." if not forked_tail else "..OTTO.ODmmOSSSSWWWWOO..",
+                "...OOOO..mOSSSSSSWWOO...",
+                ".........OTSSSSSSSTO....",
+                "........OTSSSSSSSSSTO...",
+                "........OTTTTSSSTTTTO...",
+                ".........OOOOTTTTOOO....",
             ]
         paint_from_grid(cell, 0, 5 + bob_y, grid, palette, flip_x=flip)
 
@@ -281,25 +281,28 @@ def draw_flock_pair_cell(
     def mini_bird_side(pose: int) -> list[str]:
         if pose == 0:
             return [
-                "..OTTO.....",
-                ".OTSSSO....",
-                "OOWWWWEBO..",
-                ".OmmmmWBB..",
-                "..OTTOO....",
+                ".OTO...OTO.",
+                ".OSSO.OSSO.",
+                "..OSSSSSO..",
+                "OTOWWWWEBBO",
+                ".OOmmmmBBO.",
+                "...OOOO....",
             ]
         if pose == 1:
             return [
                 "...........",
-                ".OOTSSOO...",
-                "OTSWWWWEBO.",
-                ".OOmmmmBB..",
-                "...OOOO....",
+                "OTO.....OTO",
+                "OSSO...OSSO",
+                ".OOSSSSSOO.",
+                "OTOWWWWEBBO",
+                ".OOmmmmOO..",
             ]
         return [
-            "....OOOO...",
-            ".OOWWWWEBO.",
-            "OTSSSSmBB..",
-            ".OTTTOO....",
+            "...OOOO....",
+            "OTOWWWWEBBO",
+            ".OOSSSSBBO.",
+            "..OTSSSTO..",
+            "...OOOOO...",
             "...........",
         ]
 
@@ -404,13 +407,13 @@ def build_sheet() -> Image.Image:
 
     # Slot 7: 아스트라별새 (Astra Starbird)
     pal_astra_bird = make_gull_palette(
-        outline=(28, 24, 58, 255),
-        body_hi=(255, 250, 220, 255),
-        body_mid=(230, 216, 252, 255),
-        wing_sky=(132, 118, 246, 255),
-        wing_deep=(84, 68, 196, 255),
-        tip_dark=(252, 212, 72, 255),
-        beak=(255, 224, 82, 255),
+        outline=(26, 22, 56, 255),
+        body_hi=(248, 250, 255, 255),
+        body_mid=(222, 226, 250, 255),
+        wing_sky=(124, 134, 252, 255),
+        wing_deep=(72, 78, 204, 255),
+        tip_dark=(44, 48, 136, 255),
+        beak=(255, 214, 68, 255),
     )
 
     slot_configs = [
