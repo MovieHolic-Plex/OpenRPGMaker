@@ -1423,7 +1423,10 @@ function stepPoints(step: StampStep): { readonly get: () => { x: number; y: numb
   const xy = (): { x: number; y: number }[] => [{ x: args.x as number, y: args.y as number }];
   const withXY = (points: { x: number; y: number }[]): StampStep => ({ ...step, args: { ...args, x: points[0]!.x, y: points[0]!.y } });
   switch (step.tool) {
-    case "place_chest": case "place_npc": case "place_savepoint": case "place_storage_chest":
+    case "place_npc":
+      if ((args.graphic as { readonly transparent?: boolean } | undefined)?.transparent === true) return null;
+      return { get: xy, set: withXY };
+    case "place_chest": case "place_savepoint": case "place_storage_chest":
     case "place_battle_blocker": case "set_start_position": case "move_event":
       return { get: xy, set: withXY };
     case "make_villager":

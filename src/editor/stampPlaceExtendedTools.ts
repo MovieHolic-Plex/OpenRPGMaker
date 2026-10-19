@@ -247,7 +247,7 @@ export function collectOverlappingPropClearPatches(
         const nIdx = ny * W + nx;
         if (clearSet.has(nIdx)) continue;
         const ut = previewMap.upperTiles[nIdx] ?? -1;
-        if (ut < 0 || ut === 2652 || ut === 28289 || ut === 2418) continue;
+        if (ut < 0 || ut === 23527 || (ut >= 28288 && ut <= 28300) || ut === 23503) continue;
         clearSet.add(nIdx);
         queue.push({ x: nx, y: ny });
       }
@@ -342,86 +342,115 @@ export function expandExtendedSpatialStep(
     // ── 1. place_bridge (다리·수문 횡단교 + 양안 진입로) ──────────────────────
     case "place_bridge": {
       const style = (step.args.style as "stone" | "wood" | "sluice" | undefined) ?? "stone";
-      // 영역 내 물줄기 방향 감지 (수평 강이면 남북 다리, 수직 강이면 동서 다리)
-      let waterHoriz = 0;
-      let waterVert = 0;
-      let hasWater = false;
-      for (let y = area.y; y < area.y + area.h; y++) {
-        for (let x = area.x; x < area.x + area.w; x++) {
-          if (facts.isWaterCell?.(x, y)) {
-            hasWater = true;
-            if (Math.abs(y - cy) <= 2) waterHoriz++;
-            if (Math.abs(x - cx) <= 2) waterVert++;
+      const canalGroup = (tileset.autotileGroups ?? []).find((g) => g.id === "beodeul_canal_lake_47");
+      const canalMemberSet = new Set<number>(canalGroup?.memberTileIds ?? []);
+      const isLiveWaterCell = (x: number, y: number): boolean => {
+        if (!inb(x, y)) return false;
+        if (facts.isWaterCell?.(x, y)) return true;
+        const lt = previewMap.lowerTiles[idx(x, y)] ?? -1;
+        if (canalMemberSet.has(lt)) return true;
+        const label = tileset.tileMeta?.[lt]?.label ?? "";
+        return /물|강|운하|연못|바다/u.test(label);
+      };
+
+      // 북쪽 폭포·강(bd-waterfall-drop / bd-river-bridge) 하류인지 확인:
+      // 폭포 물줄기(4칸 폭)가 위쪽(area.y - 2 .. area.y + 1)에 있으면 버들항 정본 아치 돌다리(bd-river-bridge r8..r11)로 직결
+      const riverBridgeKit = (tileset.structureKits ?? []).find((k) => k.id === "bd-river-bridge");
+      const archKit = (tileset.structureKits ?? []).find((k) => k.id === "bd-bridge-arch");
+      let waterfallChannelX = -1;
+      for (let checkY = Math.max(0, area.y - 2); checkY <= Math.min(H - 1, area.y + 1) && waterfallChannelX < 0; checkY++) {
+        for (let x = Math.max(0, area.x); x <= Math.min(W - 4, area.x + area.w - 4); x++) {
+          if (isLiveWaterCell(x, checkY) && isLiveWaterCell(x + 1, checkY) && isLiveWaterCell(x + 2, checkY) && isLiveWaterCell(x + 3, checkY)) {
+            waterfallChannelX = x;
+            break;
           }
         }
       }
-      const riverHoriz = step.args.direction === "vertical"
-        ? true
-        : step.args.direction === "horizontal"
-          ? false
-          : hasWater
-            ? waterHoriz >= waterVert
-            : area.w >= area.h;
 
       const patches: ExtendedTilePatch[] = [];
-      // 물이 아직 없으면 다리 아래로 물줄기를 먼저 내어 다리가 실제로 물을 건너게 한다
-      if (!hasWater) {
-        const waterMask = new Uint8Array(W * H);
-        if (riverHoriz) {
-          const wy0 = Math.max(0, Math.min(H - 4, cy - 1));
+      if (style === "stone" && (waterfallChannelX >= 0 || step.args.direction === "vertical" || step.args.direction === "horizontal") && riverBridgeKit) {
+        // 버들항 정본 4칸 강 + 2줄 아치 돌다리 + 좌우 포석 진입로 시공 (회색 사각 동굴판이나 가로 회색 띠 없음)
+        const chX = waterfallChannelX >= 0
+          ? waterfallChannelX
+          : Math.max(0, Math.min(W - 4, cx - 2));
+        const stampOx = chX - 4; // bd-river-bridge cols 3..14 기준(cols 7..10 이 4칸 강줄기)
+        const bridgeRows = [8, 9, 10, 11];
+        for (let dy = 0; dy < Math.min(area.h, bridgeRows.length); dy++) {
+          const srcRow = riverBridgeKit.rows[bridgeRows[dy]!];
+          const y = area.y + dy;
+          if (!srcRow || !inb(chX, y)) continue;
+          for (let col = 3; col <= 14; col++) {
+            const x = stampOx + col - 3;
+            if (x < area.x || x >= area.x + area.w || !inb(x, y) || houseCells.has(`${x},${y}`)) continue;
+            let lt = srcRow.tiles[col] ?? -1;
+            let ut = srcRow.upperTiles?.[col] ?? -1;
+            if ((bridgeRows[dy] === 8 || bridgeRows[dy] === 11) && (col <= 6 || col >= 11)) {
+              lt = 737;
+              ut = -1;
+            }
+            patches.push({
+              x,
+              y,
+              ...(lt >= 0 ? { lower: lt } : {}),
+              upper: ut >= 0 ? ut : -1,
+            });
+          }
+        }
+        // area.h 가 5 이상이면 아치 다리 아래쪽 강물(bd-bridge-arch row 4: 6972,6981,6990,6999)과 수변 풀밭 연장
+        const southRiverTiles = [6972, 6981, 6990, 6999] as const;
+        const southRiverUpper = [6980, 6989, 6998, 7007] as const;
+        for (let dy = bridgeRows.length; dy < area.h; dy++) {
+          const y = area.y + dy;
+          if (y >= H) break;
           for (let x = area.x; x < area.x + area.w; x++) {
-            for (let dy = 0; dy < 3; dy++) {
-              if (!houseCells.has(`${x},${wy0 + dy}`)) waterMask[idx(x, wy0 + dy)] = 1;
+            if (!inb(x, y) || houseCells.has(`${x},${y}`)) continue;
+            const rdx = x - chX;
+            if (rdx >= 0 && rdx < 4) {
+              patches.push({
+                x,
+                y,
+                lower: southRiverTiles[rdx]!,
+                upper: dy === bridgeRows.length ? southRiverUpper[rdx]! : -1,
+              });
+            } else {
+              patches.push({ x, y, lower: 737, upper: -1 });
             }
           }
-        } else {
-          const wx0 = Math.max(0, Math.min(W - 4, cx - 1));
-          for (let y = area.y; y < area.y + area.h; y++) {
-            for (let dx = 0; dx < 4; dx++) {
-              if (!houseCells.has(`${wx0 + dx},${y}`)) waterMask[idx(wx0 + dx, y)] = 1;
-            }
+        }
+        out.push(...makeAnchorPaintStep(ctx, patches, step.label, "물줄기 횡단 아치 돌다리 및 양안 포석 진입로"));
+        return { steps: out, dropped };
+      }
+
+      // 일반 개울/수로 위 다리 가설 (능선 개울 돌다리 / 나무 널다리 / 수문교)
+      const wx0 = Math.max(0, Math.min(W - 4, cx - 1));
+      if (!isLiveWaterCell(cx, cy)) {
+        const waterMask = new Uint8Array(W * H);
+        for (let y = area.y; y < area.y + area.h; y++) {
+          for (let dx = 0; dx < 3; dx++) {
+            if (inb(wx0 + dx, y) && !houseCells.has(`${wx0 + dx},${y}`)) waterMask[idx(wx0 + dx, y)] = 1;
           }
         }
         patches.push(...computeWaterAutotilePatches(waterMask, W, H, tileset));
       }
-
+      const bx = Math.max(0, Math.min(W - 5, cx - 2));
+      const by = Math.max(0, Math.min(H - 4, cy - 2));
       const branchRoad: { x: number; y: number }[] = [];
-      if (riverHoriz) {
-        const bx = Math.max(0, Math.min(W - 4, cx - 1));
-        const by = Math.max(0, Math.min(H - 6, cy - 2));
-        for (let y = Math.max(0, by - 2); y <= Math.min(H - 1, by + 6); y++) {
-          for (let x = bx; x < Math.min(W, bx + 3); x++) {
-            if (!facts.isWaterCell?.(x, y)) branchRoad.push({ x, y });
-          }
+      for (let x = Math.max(0, area.x); x < Math.min(W, area.x + area.w); x++) {
+        if (x >= wx0 && x < wx0 + 3) continue;
+        for (let y = by + 1; y <= Math.min(H - 1, by + 2); y++) {
+          if (!isLiveWaterCell(x, y)) branchRoad.push({ x, y });
         }
-        const roadPatch = buildRoadMaskWithBranch(previewMap, tileset, branchRoad);
-        patches.push(...roadPatch.patches);
-        out.push(...makeAnchorPaintStep(ctx, patches, step.label, "물줄기 횡단 다리 및 양안 포석 진입로"));
-        if (style === "sluice") {
-          out.push(...ctx.stampKitDirect("bd-pick-riverside-mill-sluice-gate", bx, by + 1));
-        } else {
-          out.push(...ctx.stampKitDirect("bd-pick-volcano-cave-bridge", bx, by));
-        }
-        if (bx - 2 >= 0 && by - 1 >= 0) out.push(...ctx.stampKitDirect("bd-prop-lamp_crook", bx - 1, by - 1));
-        if (bx + 3 < W && by + 4 < H) out.push(...ctx.stampKitDirect("bd-prop-lamp_crook", bx + 3, by + 4));
-      } else {
-        const bx = Math.max(0, Math.min(W - 5, cx - 2));
-        const by = Math.max(0, Math.min(H - 4, cy - 2));
-        for (let x = Math.max(0, bx - 2); x <= Math.min(W - 1, bx + 6); x++) {
-          for (let y = by + 1; y <= Math.min(H - 1, by + 2); y++) {
-            if (!facts.isWaterCell?.(x, y)) branchRoad.push({ x, y });
-          }
-        }
-        const roadPatch = buildRoadMaskWithBranch(previewMap, tileset, branchRoad);
-        patches.push(...roadPatch.patches);
-        out.push(...makeAnchorPaintStep(ctx, patches, step.label, "물줄기 횡단 다리 및 양안 포석 진입로"));
-        const kitId = style === "wood"
-          ? "bd-pick-riverside-mill-plank-footbridge"
-          : style === "sluice"
-            ? "bd-pick-riverside-mill-sluice-gate"
-            : "bd-pick-mountain-pass-stone-bridge";
-        out.push(...ctx.stampKitDirect(kitId, bx, by));
       }
+      patches.push(...buildRoadMaskWithBranch(previewMap, tileset, branchRoad).patches);
+      out.push(...makeAnchorPaintStep(ctx, patches, step.label, "물줄기 횡단 다리 및 양안 포석 진입로"));
+      const kitId = style === "wood"
+        ? "bd-pick-riverside-mill-plank-footbridge"
+        : style === "sluice"
+          ? "bd-pick-riverside-mill-sluice-gate"
+          : archKit
+            ? "bd-pick-mountain-pass-stone-bridge"
+            : "bd-pick-mountain-pass-stone-bridge";
+      out.push(...ctx.stampKitDirect(kitId, bx, by));
       return { steps: out, dropped };
     }
 
@@ -435,36 +464,20 @@ export function expandExtendedSpatialStep(
       for (let y = area.y; y < area.y + area.h; y++) {
         for (let x = area.x; x < area.x + area.w; x++) {
           if (inb(x, y) && !houseCells.has(`${x},${y}`)) {
-            patches.push({ x, y, upper: -1 });
+            patches.push({ x, y, lower: 737, upper: -1 });
           }
         }
       }
       const wfW = wfKit ? Math.min(wfKit.width, area.w) : Math.min(10, area.w);
-      const wfH = wfKit ? Math.min(wfKit.height, Math.max(4, Math.floor(area.h * 0.55))) : 5;
+      const wfH = wfKit ? Math.min(wfKit.height, area.h) : Math.min(7, area.h);
       const wfX = Math.max(0, Math.min(W - wfW, cx - Math.floor(wfW / 2)));
       const wfY = Math.max(0, area.y);
       const srcOffsetX = wfKit ? Math.max(0, Math.floor((wfKit.width - wfW) / 2)) : 0;
 
-      // 남쪽 폭포수 연못(splash pond) 오토타일 마스크 생성
-      const waterMask = new Uint8Array(W * H);
-      const pondY0 = Math.min(H - 3, wfY + wfH - 1);
-      const pondY1 = Math.min(H - 1, area.y + area.h - 1);
-      const pondRx = Math.max(3, Math.floor(area.w * 0.42));
-      const pondCy = Math.floor((pondY0 + pondY1) / 2);
-      const pondRy = Math.max(2, Math.ceil((pondY1 - pondY0 + 1) / 2));
-      for (let y = pondY0; y <= pondY1; y++) {
-        for (let x = Math.max(0, cx - pondRx); x <= Math.min(W - 1, cx + pondRx); x++) {
-          const nx = (x - cx) / Math.max(1, pondRx);
-          const ny = (y - pondCy) / Math.max(1, pondRy);
-          if (nx * nx + ny * ny <= 1.08 && !houseCells.has(`${x},${y}`)) {
-            waterMask[idx(x, y)] = 1;
-          }
-        }
-      }
-      patches.push(...computeWaterAutotilePatches(waterMask, W, H, tileset));
-
-      // 북쪽 암벽 폭포 키트 스탬프
+      // 북쪽 암벽 폭포 + 폭포수 물웅덩이 정본 키트(bd-waterfall-drop 12×7 전체 행) 시공
+      // (수직 폭포 물줄기 위에 가로 회색 운하 옹벽 띠나 물 한가운데 회색 돌판이 생기지 않도록 정본 타일 그대로 배치)
       if (wfKit) {
+        const riverRowTiles = [5668, 5700, 5708, 5716] as const;
         for (let dy = 0; dy < wfH; dy++) {
           const row = wfKit.rows[dy];
           if (!row) continue;
@@ -472,33 +485,56 @@ export function expandExtendedSpatialStep(
             const x = wfX + dx;
             const y = wfY + dy;
             if (!inb(x, y) || houseCells.has(`${x},${y}`)) continue;
-            const lt = row.tiles[srcOffsetX + dx] ?? -1;
-            const ut = row.upperTiles?.[srcOffsetX + dx] ?? -1;
+            const colIdx = srcOffsetX + dx;
+            let lt = row.tiles[colIdx] ?? -1;
+            let ut = row.upperTiles?.[colIdx] ?? -1;
+            // dy >= 4 의 좌우 가장자리(colIdx 0..2, 9..11)는 인접 다리 난간·가로수 반쪽 조각이므로 깨끗한 잔디(737)로 치환하고,
+            // dy === 6 물줄기는 자연 강물(5868,5876,5888,5896)로 이어 준다.
+            if (dy >= 4 && (colIdx <= 2 || colIdx >= 9)) {
+              lt = 737;
+              ut = -1;
+            } else if (dy === 6 && colIdx >= 4 && colIdx <= 7) {
+              lt = riverRowTiles[colIdx - 4]!;
+              ut = -1;
+            }
             if (lt >= 0 || ut >= 0) {
               patches.push({
                 x,
                 y,
                 ...(lt >= 0 ? { lower: lt } : {}),
-                ...(ut >= 0 ? { upper: ut } : { upper: -1 }),
+                upper: ut >= 0 ? ut : -1,
               });
+            }
+          }
+        }
+        // area.h 가 wfKit.height(7)보다 크면 아래쪽 행에 4칸 자연 강물 줄기(5868,5876,5888,5896)와 수변 풀밭 연장
+        const channelStartDx = Math.max(0, 4 - srcOffsetX);
+        for (let dy = wfH; dy < area.h; dy++) {
+          const y = wfY + dy;
+          if (y >= H) break;
+          for (let dx = 0; dx < wfW; dx++) {
+            const x = wfX + dx;
+            if (!inb(x, y) || houseCells.has(`${x},${y}`)) continue;
+            const rIdx = dx - channelStartDx;
+            if (rIdx >= 0 && rIdx < 4) {
+              patches.push({ x, y, lower: riverRowTiles[rIdx]!, upper: -1 });
+            } else {
+              patches.push({ x, y, lower: 737, upper: -1 });
             }
           }
         }
       }
 
       out.push(...makeAnchorPaintStep(ctx, patches, step.label, "북쪽 절벽 폭포 낙차 + 폭포수 연못 + 수변 조경"));
-      // 연못 징검돌·수변 바위·나무 배치
-      if (inb(cx, pondY1)) {
-        out.push(...ctx.stampKitDirect("bd-pick-deep-forest-path-stones-a", cx, pondY1));
+      // 폭포 좌우 절벽 아래 수변 풀밭에 온전한 나무(2×2)와 산바위(2×2)·들꽃 배치
+      const leftTreeX = wfX + Math.max(0, 1 - srcOffsetX);
+      const rightRockX = wfX + Math.min(wfW - 2, 9 - srcOffsetX);
+      const bankY = Math.min(H - 3, wfY + 4);
+      if (inb(leftTreeX, bankY) && !houseCells.has(`${leftTreeX},${bankY}`)) {
+        out.push(...ctx.stampKitDirect("bd-tree-f4f319", leftTreeX, bankY));
       }
-      if (inb(cx - 1, pondY1)) {
-        out.push(...ctx.stampKitDirect("bd-pick-deep-forest-path-stones-b", cx - 1, pondY1));
-      }
-      if (area.x + 1 < wfX && inb(area.x + 1, pondY0)) {
-        out.push(...ctx.stampKitDirect("bd-tree-f4f319", area.x + 1, Math.max(0, pondY0 - 1)));
-      }
-      if (wfX + wfW + 1 < area.x + area.w - 1 && inb(wfX + wfW, pondY0)) {
-        out.push(...ctx.stampKitDirect("bd-pick-mountain-pass-boulder-m", wfX + wfW, pondY0));
+      if (inb(rightRockX, bankY) && !houseCells.has(`${rightRockX},${bankY}`)) {
+        out.push(...ctx.stampKitDirect("bd-pick-mountain-pass-boulder-m", rightRockX, bankY));
       }
       return { steps: out, dropped };
     }
@@ -666,7 +702,7 @@ export function expandExtendedSpatialStep(
     case "build_market_bazaar": {
       const roadCells: { x: number; y: number }[] = [];
       const patches: ExtendedTilePatch[] = [
-        ...collectOverlappingPropClearPatches(ctx, area, 2, houseCells),
+        ...collectOverlappingPropClearPatches(ctx, area, 1, houseCells),
       ];
       for (let y = area.y; y < area.y + area.h; y++) {
         for (let x = area.x; x < area.x + area.w; x++) {
@@ -752,7 +788,7 @@ export function expandExtendedSpatialStep(
       const waterMask = new Uint8Array(W * H);
       const splitY = area.y + Math.max(3, Math.floor(area.h * 0.45));
       const patches: ExtendedTilePatch[] = [
-        ...collectOverlappingPropClearPatches(ctx, area, 2, houseCells),
+        ...collectOverlappingPropClearPatches(ctx, area, 1, houseCells),
       ];
       const quayCells: { x: number; y: number }[] = [];
 
@@ -822,7 +858,7 @@ export function expandExtendedSpatialStep(
     // ── 7. build_farm_ranch (울타리 농장 밭 이랑 + 헛간/닭장/우물/허수아비 + 가축·농부 NPC) ──
     case "build_farm_ranch": {
       const patches: ExtendedTilePatch[] = [
-        ...collectOverlappingPropClearPatches(ctx, area, 2, houseCells),
+        ...collectOverlappingPropClearPatches(ctx, area, 1, houseCells),
       ];
       for (let y = area.y; y < area.y + area.h; y++) {
         for (let x = area.x; x < area.x + area.w; x++) {
@@ -964,7 +1000,7 @@ export function expandExtendedSpatialStep(
       const innW = innKit?.width ?? 5;
       const innH = innKit?.height ?? 6;
       const clearRect: StampRect = { x: innX, y: innY, w: innW, h: innH };
-      patches.push(...collectOverlappingPropClearPatches(ctx, clearRect, 2, houseCells));
+      patches.push(...collectOverlappingPropClearPatches(ctx, clearRect, 1, houseCells));
       if (innKit) {
         const before = captureStructureTiles(previewMap, clearRect);
         for (let dy = 0; dy < innKit.height; dy++) {
@@ -1049,7 +1085,7 @@ export function expandExtendedSpatialStep(
       const chY = Math.max(0, Math.min(H - chH - 2, area.y));
       const chapelRect: StampRect = { x: chX, y: chY, w: chW, h: chH };
       const patches: ExtendedTilePatch[] = [
-        ...collectOverlappingPropClearPatches(ctx, chapelRect, 2, houseCells),
+        ...collectOverlappingPropClearPatches(ctx, chapelRect, 1, houseCells),
       ];
 
       if (chapelKit) {
@@ -1147,7 +1183,7 @@ export function expandExtendedSpatialStep(
       const gy = Math.max(0, Math.min(H - gH - 2, area.y));
       const guildRect: StampRect = { x: gx, y: gy, w: gW, h: gH };
       const patches: ExtendedTilePatch[] = [
-        ...collectOverlappingPropClearPatches(ctx, guildRect, 2, houseCells),
+        ...collectOverlappingPropClearPatches(ctx, guildRect, 1, houseCells),
       ];
 
       if (guildKit) {
@@ -1199,15 +1235,25 @@ export function expandExtendedSpatialStep(
 
       const boardX = Math.min(W - 1, area.x + area.w - 1, gx + gW + 1);
       const boardY = Math.min(H - 1, frontY - 1);
+      // 실제 나무 표지판/게시판 타일 스탬프(bd-out-signpost 1×2 및 bd-prop-sandwich_board 1×1) 시공 — 문짝(door) 스프라이트 오사용 원천 제거
+      if (boardY - 1 >= 0) {
+        out.push(...ctx.stampKitDirect("bd-out-signpost", boardX, boardY - 1));
+      }
+      const sandwichX = Math.max(0, guildDoorX - 2);
+      if (inb(sandwichX, boardY) && !houseCells.has(`${sandwichX},${boardY}`)) {
+        out.push(...ctx.stampKitDirect("bd-prop-sandwich_board", sandwichX, boardY));
+      }
+      const boardId = `ev_guild_board_${facts.mapId}_${boardX}_${boardY}`;
       out.push({
         tool: "place_npc",
         label: "모험가 길드 의뢰 게시판 (3분기 선택지)",
         args: {
           mapId: facts.mapId,
+          id: boardId,
           x: boardX,
           y: boardY,
           name: "길드 의뢰 게시판",
-          graphic: { textureKey: "tex_easyrpg_charset_object1", characterIndex: 0 },
+          graphic: { transparent: true },
           movement: "fixed",
           pages: [
             {
@@ -1236,6 +1282,53 @@ export function expandExtendedSpatialStep(
           ],
         },
       });
+      // 게시판 이벤트 자체는 투명 그래픽(transparent: true)으로 덮어써서 맵에 찍힌 실제 나무 표지판(bd-out-signpost) 타일이 그대로 보이게 함
+      ctx.queueEventUpsert({
+        id: boardId,
+        name: "길드 의뢰 게시판",
+        x: boardX,
+        y: boardY,
+        trigger: { kind: "action" },
+        commands: [],
+        pages: [
+          makeNativePage({
+            id: `${boardId}_p1`,
+            name: "모험가 길드 3분기 의뢰 게시판",
+            graphic: { transparent: true },
+            trigger: "action",
+            priority: "same",
+            overlapForbidden: true,
+            commands: [
+              { kind: "text", body: "【버들항 모험가 길드 공식 의뢰 및 소문 게시판】" },
+              {
+                kind: "choices",
+                prompt: "어느 공고를 살펴볼까?",
+                options: [
+                  {
+                    text: "① [토벌 의뢰] 남부 가도 배회 몬스터 소탕 (보상 150G)",
+                    branch: [
+                      { kind: "text", body: "「최근 남부 숲길에 야생 슬라임과 고블린이 출몰하여 행상인을 위협하고 있음. 처치 시 길드에서 150G 지급.」" },
+                    ],
+                  },
+                  {
+                    text: "② [탐사 의뢰] 고대 신전 폐허의 잠긴 철문과 레버 조사",
+                    branch: [
+                      { kind: "text", body: "「남쪽 봉인 유적의 강철 창살 성문은 입구 왼쪽의 레버 장치를 당기면 열린다는 보고가 있음.」" },
+                    ],
+                  },
+                  {
+                    text: "③ [마을 소문] 폭포수 연못과 호수 섬 사당의 전설",
+                    branch: [
+                      { kind: "text", body: "「동북부 절벽 폭포 아래 아치 돌다리를 건너면 맑은 물줄기가 흐른다는 전설이 전해진다.」" },
+                    ],
+                  },
+                ],
+                cancelBehavior: "choice3",
+              },
+            ],
+          }),
+        ],
+      });
       return { steps: out, dropped };
     }
 
@@ -1243,7 +1336,7 @@ export function expandExtendedSpatialStep(
     case "place_travel_portal": {
       const kind = step.args.kind === "portal" ? "portal" : "carriage";
       const patches: ExtendedTilePatch[] = [
-        ...collectOverlappingPropClearPatches(ctx, area, 2, houseCells),
+        ...collectOverlappingPropClearPatches(ctx, area, 1, houseCells),
       ];
       const roadCells: { x: number; y: number }[] = [];
       for (let y = area.y + 1; y < area.y + area.h; y++) {
@@ -1407,27 +1500,28 @@ export function expandExtendedSpatialStep(
       const switchId = `sw_fastpath_gate_${facts.mapId}_${gateX}_${gateY}`;
       ctx.queueSwitchEnsure(switchId, `철문 개폐 스위치 (${gateX},${gateY})`);
 
-      // 철문 좌우에 석조 차단 담장 배치
+      // 철문 좌우에 정본 석조 담장(23527, 낮은 정원 돌담 조각) 및 관문 판석(1509) 배치
       const patches: ExtendedTilePatch[] = [];
-      for (let dx = -3; dx <= 3; dx++) {
+      for (let dx = -2; dx <= 2; dx++) {
         const wx = gateX + dx;
         if (!inb(wx, gateY) || houseCells.has(`${wx},${gateY}`)) continue;
         if (dx === 0) {
           patches.push({ x: wx, y: gateY, lower: 1509, upper: -1 });
+        } else {
+          patches.push({ x: wx, y: gateY, lower: 1509, upper: 23527 });
         }
       }
       if (patches.length > 0) {
-        out.push(...makeAnchorPaintStep(ctx, patches, "철문 관문 바닥 판석", "레버-철문 스위치 배선"));
+        out.push(...makeAnchorPaintStep(ctx, patches, "철문 관문 바닥 판석과 석조 담장", "레버-철문 스위치 배선"));
       }
-      if (gateX - 2 >= 0) out.push(...ctx.stampKitDirect("bd-pick-mountain-pass-wall-seg", gateX - 2, Math.max(0, gateY - 1)));
-      if (gateX + 1 < W - 1) out.push(...ctx.stampKitDirect("bd-pick-mountain-pass-wall-seg", gateX + 1, Math.max(0, gateY - 1)));
 
       const leverId = `ev_lever_${facts.mapId}_${leverX}_${leverY}`;
       const gateId = `ev_gate_${facts.mapId}_${gateX}_${gateY}`;
-      const leverDown = objCharsetGraphic("object2", 0, "down");
-      const leverUp = objCharsetGraphic("object2", 0, "up");
-      const gateClosed = objCharsetGraphic("object1", 3, "down");
-      const gateOpen = objCharsetGraphic("object1", 3, "up");
+      // Object2 index 1 = 바닥 철제 레버 스위치, Object1 index 5 = 강철 창살 성문(portcullis)
+      const leverDown = objCharsetGraphic("object2", 1, "down");
+      const leverUp = objCharsetGraphic("object2", 1, "up");
+      const gateClosed = objCharsetGraphic("object1", 5, "down");
+      const gateOpen = objCharsetGraphic("object1", 5, "up");
 
       out.push({
         tool: "place_npc",
@@ -1438,7 +1532,7 @@ export function expandExtendedSpatialStep(
           x: leverX,
           y: leverY,
           name: "철문 개폐 레버",
-          graphic: { textureKey: "tex_easyrpg_charset_object2", characterIndex: 0 },
+          graphic: { textureKey: "tex_easyrpg_charset_object2", characterIndex: 1 },
           movement: "fixed",
           pages: [{ lines: ["철문을 여는 레버 장치다."] }],
         },
@@ -1452,12 +1546,11 @@ export function expandExtendedSpatialStep(
           x: gateX,
           y: gateY,
           name: "강철 성문",
-          graphic: { textureKey: "tex_easyrpg_charset_object1", characterIndex: 3 },
+          graphic: { textureKey: "tex_easyrpg_charset_object1", characterIndex: 5 },
           movement: "fixed",
-          pages: [{ lines: ["굳게 닫힌 강철 성문이다."] }],
+          pages: [{ lines: ["굳게 닫힌 강철 창살 성문이다."] }],
         },
       });
-
       ctx.queueEventUpsert({
         id: leverId,
         name: "철문 개폐 레버",
@@ -1534,21 +1627,27 @@ export function expandExtendedSpatialStep(
 
     // ── 15. place_camp_rest (야영 천막 + 모닥불 + 통나무 벤치 + 휴식/회복/저장 이벤트) ──
     case "place_camp_rest": {
+      const campClear = collectOverlappingPropClearPatches(ctx, area, 0, houseCells);
+      if (campClear.length > 0) {
+        out.push(...makeAnchorPaintStep(ctx, campClear, "", "야영지 터 정리"));
+      }
       out.push(...ctx.stampKitDirect("bd-pick-desert-oasis-tent", Math.max(0, cx - 2), Math.max(0, area.y + 1), "모험가 야영 천막"));
       out.push(...ctx.stampKitDirect("bd-prop-bench_wood", Math.max(0, cx - 3), Math.min(H - 1, cy + 1)));
       out.push(...ctx.stampKitDirect("bd-out-woodpile", Math.min(W - 2, cx + 2), Math.min(H - 1, cy + 1)));
-
       const fireX = cx;
       const fireY = Math.min(H - 1, cy + 1);
+      const fireId = `ev_campfire_${facts.mapId}_${fireX}_${fireY}`;
+      out.push(...ctx.stampKitDirect("bd-pick-deep-forest-path-campfire", fireX, fireY));
       out.push({
         tool: "place_npc",
         label: "야영지 모닥불 (휴식·회복·세이브)",
         args: {
           mapId: facts.mapId,
+          id: fireId,
           x: fireX,
           y: fireY,
           name: "따뜻한 야영 모닥불",
-          graphic: { textureKey: "tex_easyrpg_charset_object2", characterIndex: 1 },
+          graphic: { transparent: true },
           movement: "fixed",
           pages: [
             {
@@ -1571,6 +1670,47 @@ export function expandExtendedSpatialStep(
             },
           ],
         },
+      });
+      ctx.queueEventUpsert({
+        id: fireId,
+        name: "따뜻한 야영 모닥불",
+        x: fireX,
+        y: fireY,
+        trigger: { kind: "action" },
+        commands: [],
+        pages: [
+          makeNativePage({
+            id: `${fireId}_p1`,
+            name: "야영 모닥불 휴식·세이브",
+            graphic: { transparent: true },
+            trigger: "action",
+            priority: "same",
+            overlapForbidden: true,
+            commands: [
+              { kind: "text", body: "장작이 타오르는 따뜻한 야영지 모닥불이다." },
+              {
+                kind: "choices",
+                prompt: "모닥불 곁에서 쉬어 갈까?",
+                options: [
+                  {
+                    text: "모닥불 곁에서 휴식하며 저장한다 (HP/MP 완전 회복)",
+                    branch: [
+                      { kind: "recoverAll", actorId: "" },
+                      { kind: "checkpointSave" },
+                      { kind: "text", body: "모닥불의 온기 속에서 피로를 모두 풀고 여정을 기록했습니다!" },
+                      { kind: "openSaveMenu" },
+                    ],
+                  },
+                  {
+                    text: "불꽃만 바라본다",
+                    branch: [{ kind: "text", body: "타닥타닥 타오르는 불꽃이 마음을 차분하게 해 준다." }],
+                  },
+                ],
+                cancelBehavior: "choice2",
+              },
+            ],
+          }),
+        ],
       });
       return { steps: out, dropped };
     }
@@ -1604,7 +1744,7 @@ export function expandExtendedSpatialStep(
           x: mimicX,
           y: mimicY,
           name: "수상한 보물상자 (미믹)",
-          graphic: { textureKey: "tex_easyrpg_charset_object1", characterIndex: 2 },
+          graphic: { textureKey: "tex_easyrpg_charset_object1", characterIndex: 6 },
           movement: "fixed",
           pages: [{ lines: ["보물상자인 줄 알았더니 미믹이 덮쳐왔다!"] }],
         },
@@ -1635,7 +1775,7 @@ export function expandExtendedSpatialStep(
           makeNativePage({
             id: `${mimicId}_p1`,
             name: "미믹 (개봉 전)",
-            graphic: objCharsetGraphic("object1", 2, "down"),
+            graphic: objCharsetGraphic("object1", 6, "down"),
             commands: [
               { kind: "text", body: "앗! 보물상자가 날카로운 이빨을 드러내며 덮쳐왔다!" },
               { kind: "battleProcessing", troopId, canEscape: true, canLose: false },
@@ -1648,7 +1788,7 @@ export function expandExtendedSpatialStep(
             id: `${mimicId}_p2`,
             name: "미믹 (처치 완료)",
             conditions: [{ kind: "selfSwitch", key: "A", value: true }],
-            graphic: objCharsetGraphic("object1", 2, "up"),
+            graphic: objCharsetGraphic("object1", 6, "up"),
             commands: [{ kind: "text", body: "미믹을 물리친 빈 상자다." }],
           }),
         ],
@@ -1786,8 +1926,20 @@ export function expandExtendedSpatialStep(
       const y1 = area.y + area.h - 1;
       const patches: ExtendedTilePatch[] = [];
 
-      // 성벽/울타리/생울타리 대표 타일 ID
-      const wallUpperTile = style === "fence" ? 28289 : style === "hedge" ? 2418 : 2652;
+      // 성벽/돌담(23527 낮은 정원 돌담 조각) · 나무 울타리(28288..28300 모서리·가로·세로 정본) · 산울타리(23503) 타일 결정
+      // (절대 2652 건물 문짝 타일이나 2418 물 타일을 담장으로 오사용하지 않음!)
+      const pickWallUpperTile = (x: number, y: number): number => {
+        if (style === "fence") {
+          if (x === x0 && y === y0) return 28290;
+          if (x === x1 && y === y0) return 28291;
+          if (x === x0 && y === y1) return 28292;
+          if (x === x1 && y === y1) return 28293;
+          if (y === y0 || y === y1) return 28288;
+          return x === x1 ? 28300 : 28289;
+        }
+        if (style === "hedge") return 23503;
+        return 23527;
+      };
       const isGateOpening = (x: number, y: number): boolean => {
         if (gateSide === "south" && y === y1 && Math.abs(x - cx) <= 1) return true;
         if (gateSide === "north" && y === y0 && Math.abs(x - cx) <= 1) return true;
@@ -1799,7 +1951,7 @@ export function expandExtendedSpatialStep(
       // 담장 테두리에 걸치는 기존 소품/나무 제거 (반쪽 잘림 원천 차단)
       for (const obj of ctx.detectObjects(previewMap, tileset)) {
         if (obj.kind === "structure") continue;
-        if (/집|주택|민가|오두막|여관|상점|가게|성|성채|회관|신전|성당|house|inn|shop|castle|hall|temple/iu.test(`${obj.coreName} ${obj.name} ${obj.kitId ?? ""}`)) {
+        if (/집|주택|민가|오두막|여관|상점|가게|성|성채|회관|신전|성당|예배당|house|inn|shop|castle|hall|temple|church/iu.test(`${obj.coreName} ${obj.name} ${obj.kitId ?? ""}`)) {
           continue;
         }
         let touchesBorder = false;
@@ -1831,12 +1983,17 @@ export function expandExtendedSpatialStep(
             gateRoadCells.push({ x, y });
             patches.push({ x, y, lower: 1509, upper: -1 });
           } else {
-            patches.push({ x, y, upper: wallUpperTile });
+            patches.push({
+              x,
+              y,
+              ...(style === "stone" ? { lower: 1509 } : {}),
+              upper: pickWallUpperTile(x, y),
+            });
           }
         }
       }
       patches.push(...buildRoadMaskWithBranch(previewMap, tileset, gateRoadCells).patches);
-      out.push(...makeAnchorPaintStep(ctx, patches, step.label, `${style === "fence" ? "나무 울타리" : style === "hedge" ? "산울타리" : "석조 담장"} 둘레 포위 및 ${gateSide} 출입구 개방`));
+      out.push(...makeAnchorPaintStep(ctx, patches, step.label, `${style === "fence" ? "나무 울타리" : style === "hedge" ? "산울타리" : "석조 돌담"} 둘레 포위 및 ${gateSide} 출입구 개방`));
 
       if (gateSide === "south" && y1 - 2 >= 0) {
         if (cx - 2 >= x0) out.push(...ctx.stampKitDirect("bd-prop-lamp_crook", cx - 2, Math.max(0, y1 - 2)));
@@ -2127,12 +2284,39 @@ export function expandExtendedSpatialStep(
             `${obj.coreName} ${obj.name} ${obj.kitId ?? ""}`,
           );
         if (!isBuilding) continue;
-        for (let y = Math.max(0, obj.y - 1); y < Math.min(H, obj.y + obj.h + 1); y++) {
-          for (let x = Math.max(0, obj.x - 1); x < Math.min(W, obj.x + obj.w + 1); x++) {
+        // 건물 지붕·외벽으로부터 최소 2칸 이상의 안전 여백 확보
+        for (let y = Math.max(0, obj.y - 2); y < Math.min(H, obj.y + obj.h + 2); y++) {
+          for (let x = Math.max(0, obj.x - 2); x < Math.min(W, obj.x + obj.w + 2); x++) {
             protectedCells.add(`${x},${y}`);
           }
         }
       }
+      for (const ev of previewMap.events) {
+        for (let dy = -1; dy <= 1; dy++) {
+          for (let dx = -1; dx <= 1; dx++) {
+            protectedCells.add(`${ev.x + dx},${ev.y + dy}`);
+          }
+        }
+      }
+      const isCleanGrassRect = (rx: number, ry: number, rw: number, rh: number): boolean => {
+        for (let dy = 0; dy < rh; dy++) {
+          for (let dx = 0; dx < rw; dx++) {
+            const tx = rx + dx;
+            const ty = ry + dy;
+            if (!inb(tx, ty) || protectedCells.has(`${tx},${ty}`) || facts.isWaterCell?.(tx, ty)) return false;
+            if ((previewMap.lowerTiles[idx(tx, ty)] ?? -1) !== 737) return false;
+            if ((previewMap.upperTiles[idx(tx, ty)] ?? -1) >= 0) return false;
+          }
+        }
+        return true;
+      };
+      const reserveRect = (rx: number, ry: number, rw: number, rh: number): void => {
+        for (let dy = -1; dy <= rh; dy++) {
+          for (let dx = -1; dx <= rw; dx++) {
+            protectedCells.add(`${rx + dx},${ry + dy}`);
+          }
+        }
+      };
       const findOpenPropSpot = (prefX: number, prefY: number, kh: number): { x: number; y: number } | null => {
         for (let r = 0; r <= 8; r++) {
           for (let dy = -r; dy <= r; dy++) {
@@ -2140,14 +2324,7 @@ export function expandExtendedSpatialStep(
               const tx = prefX + dx;
               const ty = prefY + dy;
               if (tx < area.x || ty < area.y || tx >= area.x + area.w || ty + kh > area.y + area.h) continue;
-              let ok = true;
-              for (let ky = 0; ky < kh; ky++) {
-                if (!inb(tx, ty + ky) || protectedCells.has(`${tx},${ty + ky}`) || facts.isWaterCell?.(tx, ty + ky) || (previewMap.upperTiles[idx(tx, ty + ky)] ?? -1) >= 0) {
-                  ok = false;
-                  break;
-                }
-              }
-              if (ok) return { x: tx, y: ty };
+              if (isCleanGrassRect(tx, ty, 1, kh)) return { x: tx, y: ty };
             }
           }
         }
@@ -2157,11 +2334,51 @@ export function expandExtendedSpatialStep(
       if (step.args.withLights !== false) {
         const lampSpot = findOpenPropSpot(Math.max(0, cx - 3), Math.max(0, cy - 1), 3);
         if (lampSpot) {
+          reserveRect(lampSpot.x, lampSpot.y, 1, 3);
           out.push(...ctx.stampKitDirect("bd-prop-lamp_double", lampSpot.x, lampSpot.y, `${preset} 조명 가로등과 화로`));
         }
         const brazierSpot = findOpenPropSpot(Math.min(W - 1, cx + 2), Math.max(0, cy), 2);
         if (brazierSpot) {
+          reserveRect(brazierSpot.x, brazierSpot.y, 1, 2);
           out.push(...ctx.stampKitDirect("bd-pick-mountain-pass-brazier", brazierSpot.x, brazierSpot.y));
+        }
+      }
+
+      // 넓은 월드빌딩 영역(area.w >= 20, area.h >= 16)에서는 외곽 빈 잔디 테두리에 자연 수목·꽃덤불·바위 프레임을 자동 식재
+      if (area.w >= 20 && area.h >= 16 && step.args.frameForest !== false) {
+        const perimeterCandidates: readonly { kitId: string; w: number; h: number; x: number; y: number }[] = [
+          { kitId: "bd-tree-03a8f7", w: 3, h: 3, x: 7, y: 1 },
+          { kitId: "bd-pick-coast-cliff-road-fir-m", w: 2, h: 3, x: 10, y: 2 },
+          { kitId: "bd-pick-wizard-tower-bed-flower", w: 2, h: 2, x: 8, y: 5 },
+          { kitId: "bd-tree-f4f319", w: 2, h: 2, x: 1, y: 8 },
+          { kitId: "bd-mpart-bush-e", w: 2, h: 2, x: 9, y: 8 },
+          { kitId: "bd-pick-mountain-pass-boulder-m", w: 2, h: 2, x: 6, y: 8 },
+          { kitId: "bd-pick-coast-cliff-road-fir-m", w: 2, h: 3, x: 0, y: 14 },
+          { kitId: "bd-tree-3e8732", w: 3, h: 3, x: 0, y: 20 },
+          { kitId: "bd-tree-f4f319", w: 2, h: 2, x: 0, y: 28 },
+          { kitId: "bd-pick-wizard-tower-bed-blue", w: 2, h: 2, x: 14, y: 29 },
+          { kitId: "bd-tree-03a8f7", w: 3, h: 3, x: W - 4, y: 1 },
+          { kitId: "bd-pick-coast-cliff-road-fir-m", w: 2, h: 3, x: W - 3, y: 5 },
+          { kitId: "bd-tree-f4f319", w: 2, h: 2, x: W - 3, y: 12 },
+          { kitId: "bd-mpart-bush-c", w: 2, h: 2, x: W - 3, y: 20 },
+          { kitId: "bd-pick-deep-forest-path-wild-a", w: 1, h: 1, x: 7, y: 7 },
+          { kitId: "bd-pick-deep-forest-path-wild-b", w: 1, h: 1, x: 11, y: 6 },
+        ];
+        for (const cand of perimeterCandidates) {
+          let placed = false;
+          for (let r = 0; r <= 2 && !placed; r++) {
+            for (let dy = -r; dy <= r && !placed; dy++) {
+              for (let dx = -r; dx <= r && !placed; dx++) {
+                const tx = cand.x + dx;
+                const ty = cand.y + dy;
+                if (isCleanGrassRect(tx, ty, cand.w, cand.h)) {
+                  reserveRect(tx, ty, cand.w, cand.h);
+                  out.push(...ctx.stampKitDirect(cand.kitId, tx, ty));
+                  placed = true;
+                }
+              }
+            }
+          }
         }
       }
       out.push({
