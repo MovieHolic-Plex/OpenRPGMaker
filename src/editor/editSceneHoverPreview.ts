@@ -33,7 +33,7 @@ function announceReliefDoodadHover(detail: ReliefDoodadHoverDetail): void {
  */
 function renderReliefHover(spec: HoverPreviewSpec, map: GameMap, tileSize: number): void {
   const state = editorState.get();
-  const pick = reliefPickCell(map.relief, spec.centerX, spec.centerY);
+  const pick = reliefPickCell(map.relief, spec.centerX, spec.groundY ?? spec.centerY);
   const doodad = findReliefDoodad(store.getCurrent().tilesets[map.tilesetId], state.reliefDoodad);
   const tileset=store.getCurrent().tilesets[map.tilesetId];
   if (!tileset) return;
@@ -113,6 +113,7 @@ export function shouldShowPaintHoverPreview(input: {
 type HoverPreviewSpec = {
   readonly centerX: number;
   readonly centerY: number;
+  readonly groundY?: number;
   readonly layer: Phaser.GameObjects.Container;
   readonly mapId: MapId;
   readonly scene: Phaser.Scene;
@@ -129,13 +130,14 @@ function hoverPreviewKey(spec: HoverPreviewSpec): string {
     ? `${stamp.width}x${stamp.height}:${stamp.source.startTile}-${stamp.source.endTile}:${stamp.cells.length}`
     : "";
   return [
-    spec.mapId, spec.centerX, spec.centerY, state.tool, state.layer,
+    spec.mapId, spec.centerX, spec.centerY, spec.groundY ?? spec.centerY, state.tool, state.layer,
     state.selectedTile, state.worldmapAutoBackground, state.brushSize, state.paintShape, stampKey,
     state.terrainSymmetry, state.terrainStampId, state.terrainStampRotation, state.terrainStampMirror, state.terrainStampCapture,
     state.terrainHouseStyle, state.terrainHouseKitId, state.terrainHouseWidth, state.terrainHouseStories, state.terrainHouseResize, state.terrainHouseRoofWidth, state.terrainRoadDrag,
     state.terrainAreaShape, state.terrainDelta, state.terrainSeed, JSON.stringify(state.terrainMixWeights), JSON.stringify(state.terrainPoints),
+    reliefSignature(store.getCurrent().maps[spec.mapId]?.relief),
     ...(state.tool === "relief"
-      ? [state.reliefDoodad ?? "", state.reliefRoughSize, state.terrainBrush, state.terrainMaterial, state.terrainWidth, state.reliefRampWidth, state.reliefClusterDensity, state.reliefClusterEnabled, JSON.stringify(state.reliefBridgeStart), JSON.stringify(state.terrainSelectedGroup), state.terrainMoveGroup, `${store.getVersionToken().lineage}:${store.getVersionToken().generation}`, reliefSignature(store.getCurrent().maps[spec.mapId]?.relief)]
+      ? [state.reliefDoodad ?? "", state.reliefRoughSize, state.terrainBrush, state.terrainMaterial, state.terrainWidth, state.reliefRampWidth, state.reliefClusterDensity, state.reliefClusterEnabled, JSON.stringify(state.reliefBridgeStart), JSON.stringify(state.terrainSelectedGroup), state.terrainMoveGroup, `${store.getVersionToken().lineage}:${store.getVersionToken().generation}`]
       : []),
   ].join("|");
 }
@@ -159,6 +161,7 @@ export function renderHoverTilePreview(spec: HoverPreviewSpec): void {
   }
   if (state.tool !== "paint" && state.tool !== "fill" && state.tool !== "erase") return;
   if (spec.centerX < 0 || spec.centerY < 0 || spec.centerX >= map.width || spec.centerY >= map.height) return;
+  const lift = map.relief ? reliefLiftField(map.relief) : null;
   if (state.tool === "paint" && state.activePaletteStamp) {
     // 발자국은 comboBrushPlacement 하나로 푸다 — 여기서 두 번째 경계 계산을 하지 않는다.
     // 예전에는 미리보기와 페인트가 각자 `x < map.width` 를 세서 둘이 어긋날 수 있었고,
@@ -171,15 +174,17 @@ export function renderHoverTilePreview(spec: HoverPreviewSpec): void {
     });
     for (const placed of placement.cells) {
       const { x, y } = placed;
+      const liftPx = (lift ? cellLift(lift, x, y) : 0) * tileSize;
       if (placed.inBounds) {
         const preview = createChipsetTileObject(spec.scene, map, tileset, x, y, placed.cell.tile);
+        preview.y -= liftPx;
         preview.setAlpha(placed.cell.layer === "upper" ? 0.72 : 0.58);
         spec.layer.add(preview);
       }
       // 맵 밖 칸도 표시한다 — 붉은 슬롯이 계약대로 "이 칸은 잘린다"를 미리 말한다.
       const marker = spec.scene.add.rectangle(
         x * tileSize,
-        y * tileSize,
+        y * tileSize - liftPx,
         tileSize,
         tileSize,
         placed.inBounds ? 0x51cf66 : 0xff6b6b,
@@ -196,14 +201,16 @@ export function renderHoverTilePreview(spec: HoverPreviewSpec): void {
   const size = state.tool === "erase" || (state.tool === "paint" && state.paintShape === "pen") ? state.brushSize : 1;
   for (const { x, y } of brushStrokePoints({ centerX: spec.centerX, centerY: spec.centerY, size })) {
     if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
+    const liftPx = (lift ? cellLift(lift, x, y) : 0) * tileSize;
     if (!erasing) {
       const tile = state.worldmapAutoBackground && state.clusterAssistMode
         ? worldmapAutoTile(map, tileset, state.selectedTile, x, y) : state.selectedTile;
       const preview = createChipsetTileObject(spec.scene, map, tileset, x, y, tile);
+      preview.y -= liftPx;
       preview.setAlpha(0.62);
       spec.layer.add(preview);
     }
-    const marker = spec.scene.add.rectangle(x * tileSize, y * tileSize, tileSize, tileSize, erasing ? 0xff6b6b : 0x3bc9db, 0.18);
+    const marker = spec.scene.add.rectangle(x * tileSize, y * tileSize - liftPx, tileSize, tileSize, erasing ? 0xff6b6b : 0x3bc9db, 0.18);
     marker.setOrigin(0, 0);
     marker.setStrokeStyle(1, 0xe7f5ff, 0.85);
     spec.layer.add(marker);

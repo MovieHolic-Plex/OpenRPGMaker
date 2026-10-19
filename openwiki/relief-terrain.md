@@ -277,6 +277,15 @@ UX2 페이지 보존 뒤 「높이 붓을 쓰면 렉」 신고. 원인은 붓 �
   화소 비교는 카메라 postrender에서 고정한 해당 프레임의 view를 사용한다. WebGL snapshot Image.onload에서 현재 카메라를 읽으면
   카메라가 이미 다음 프레임으로 진행해 온전한 몸을 가림으로 오판할 수 있다. 재질 유무의 클릭 기하와 뒤 둑 hit도 함께 비교한다.
 
+
+## 편집기 높이 지형 위 타일 칠하기·선택·호버 좌표 일치 (2026-10-20)
+
+높이 지형(`map.relief`)이 있는 맵에서 바닥·상위 타일과 그림은 `cellLift(field, x, y) × tileSize`만큼 위로 들려(`screenY = y − lift`) 그려지지만, 편집기 `EditScene.worldToTile`은 들림을 역산하지 않고 `Math.floor(worldY / tileSize)`를 그대로 돌려주어 고지대 윗면을 클릭하면 `lift`칸 북쪽(`y − lift`)에 칠해지고 호버·도형·붙여넣기 고스트도 땅바닥 줄에 남던 문제를 바로잡았다.
+
+- `EditScene.worldToTile`: `map.relief`에 높이가 있으면 `prepareReliefRead(map)` 뒤 `reliefPickCell(map.relief, groundX, groundY)`로 커서 아래에 보이는 윗면/절벽 칸 `{ x, y, groundY }`를 돌려준다.
+- `TilePaintEngine`: 일반 타일·스탬프·지우개·충돌·스포이트·이벤트 배치는 들림이 역산된 논리 칸 `(x, y)`에 적용하고, 높이 붓(`tool === "relief"`)만은 올리는 동안 같은 화면 자리에 머물러도 칸이 북쪽으로 튀지 않도록 원래 땅바닥 줄 `groundY`를 그대로 쓴다.
+- `editSceneHoverPreview` · `DragOperationHandler` · `EditScene.renderPastePreviewGhost` · `editSceneRender`: 호버 프리뷰, 선/직사각형/타원 드래그 프리뷰, 클립보드 붙여넣기 고스트, 시작 위치·충돌 오버레이 모두 각 칸의 `cellLift(lift, x, y) × tileSize`만큼 위로 올려 실제 그려질 화면 자리와 일치시킨다. 호버 캐시 키에 `reliefSignature`와 `groundY`를 포함해 높이가 바뀐 직후에도 고스트가 즉시 갱신되며, 포인터가 맵 밖으로 나가거나 `pointerout`이 오면 호버 레이어를 비우고 렌더 프레임을 요청한다.
+- 검증: `scripts/capture/capture-relief-paint-offset.mjs`가 평지(줌 1·2·3), 고원(`h = 1..3`, 줌 1..3, 바닥/상위/3×3 붓/지우개/이벤트/카메라 스크롤), 실제 높이 러프 붓(`S/raise`, `M/mountain`) 위 칠하기까지 118개 지점을 실측해 모든 지점에서 `dx = 0`, `dy = 0`, `visualDy = 0`, `ghostVisualDy = 0`, `ghostDx = 0`, `errors = []`임을 확인했다.
 ## 알려진 한계 · 결정이 필요한 것
 
 - **걷기 규칙은 켜는 스위치가 없다.** `relief` 를 가진 맵(경사로 없이 높이만 칠한 옛 맵 포함)은 단 차이를 건너지 못한다. 편집기에서는 「지형」 패널의 경사로 바로 붙이기 또는 기물 선택 → 경사로·계단으로 절벽 아래에 `ramps` 를 깐다(네 방향 자동 접합). 다리 탭은 같은 높이의 두 둑을 잇는다.

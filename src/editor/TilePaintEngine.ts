@@ -68,7 +68,7 @@ type TilePickTarget = {
 
 export type TilePaintEngineDeps = {
   readonly mapId: () => MapId | null;
-  readonly pointerToTile: (ptr: Phaser.Input.Pointer) => { readonly x: number; readonly y: number };
+  readonly pointerToTile: (ptr: Phaser.Input.Pointer) => { readonly x: number; readonly y: number; readonly groundY?: number };
   readonly updatePointerStatus: (ptr: Phaser.Input.Pointer) => void;
   readonly eventLayerClickCount: (target: {
     readonly mapId: MapId;
@@ -82,7 +82,7 @@ export type TilePaintEngineDeps = {
   readonly openExistingEventAt: (mapId: MapId, x: number, y: number) => boolean;
   readonly handleEventClick: (mapId: MapId, x: number, y: number, openEditor?: boolean) => void;
   readonly tilesetForMap: (mapId: MapId) => TilesetDef | undefined;
-  readonly setLastPointerTile: (point: { readonly x: number; readonly y: number }) => void;
+  readonly setLastPointerTile: (point: { readonly x: number; readonly y: number; readonly groundY?: number }) => void;
   readonly getPaintState: () => { readonly isPainting: boolean; readonly lastPaintKey: string };
   readonly setPaintState: (state: { readonly isPainting?: boolean; readonly lastPaintKey?: string }) => void;
 };
@@ -107,8 +107,9 @@ export class TilePaintEngine {
   applyAtPointer(ptr: Phaser.Input.Pointer): void {
     const mid = this.deps.mapId();
     if (!mid) return;
-    const { x, y } = this.deps.pointerToTile(ptr);
-    this.deps.setLastPointerTile({ x, y });
+    const pointerTile = this.deps.pointerToTile(ptr);
+    const { x, y } = pointerTile;
+    this.deps.setLastPointerTile(pointerTile);
     this.deps.updatePointerStatus(ptr);
 
     const tool = editorState.get().tool;
@@ -119,7 +120,7 @@ export class TilePaintEngine {
       return;
     }
     const { activePaletteStamp, autoConnectMode, brushSize, clusterAssistMode, selectedTile } = editorState.get();
-    const key = `${x},${y}`;
+    const key = tool === "relief" ? `${x},${pointerTile.groundY ?? y}` : `${x},${y}`;
     const previousKey = this.deps.getPaintState().lastPaintKey;
     const firstStrokeTile = previousKey === "";
     if (firstStrokeTile) {
@@ -262,7 +263,7 @@ export class TilePaintEngine {
         this.applyStrokeEdit(mid, () => toggleCollision(mid, x, y), { includeTilesets: true });
         break;
       case "relief":
-        this.applyRelief(mid, ptr, x, y, firstStrokeTile);
+        this.applyRelief(mid, ptr, x, pointerTile.groundY ?? y, firstStrokeTile);
         break;
       case "event":
         this.deps.setPaintState({ isPainting: false, lastPaintKey: "" });

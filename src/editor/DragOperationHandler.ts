@@ -1,6 +1,8 @@
 import type Phaser from "phaser";
 import { editorMapTileSize } from "@/editor/mapGeometry";
 import { createChipsetTileObject } from "@/editor/chipsetTileRender";
+import { prepareReliefRead } from "@/editor/reliefGroundSurface";
+import { cellLift, reliefLiftField } from "@/project/relief/screen";
 import { editorState, type PaintShape } from "@/editor/editorState";
 import { requestAiSelectionContext } from "@/editor/aiSelectionContext";
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
@@ -246,15 +248,20 @@ export class DragOperationHandler {
     layer.removeAll(true);
     const map = store.getCurrent().maps[operation.mapId];
     if (!map) return;
+    prepareReliefRead(map);
     const tileset = store.getCurrent().tilesets[map.tilesetId];
     if (!tileset) return;
+    const tileSize = editorMapTileSize(operation.mapId);
+    const lift = map.relief ? reliefLiftField(map.relief) : null;
     const cells = tileCellsForPaintShape(operation.shape, operation.start, point, { width: map.width, height: map.height });
     for (const cell of cells) {
+      const liftPx = (lift ? cellLift(lift, cell.x, cell.y) : 0) * tileSize;
       const tile = operation.worldmapAutoBackground ? worldmapAutoTile(map, tileset, operation.tile, cell.x, cell.y, cells) : operation.tile;
       const preview = createChipsetTileObject(this.scene, map, tileset, cell.x, cell.y, tile);
+      preview.y -= liftPx;
       preview.setAlpha(0.62);
       layer.add(preview);
-      const marker = this.scene.add.rectangle(cell.x * editorMapTileSize(operation.mapId), cell.y * editorMapTileSize(operation.mapId), editorMapTileSize(operation.mapId), editorMapTileSize(operation.mapId), 0x3bc9db, 0.18);
+      const marker = this.scene.add.rectangle(cell.x * tileSize, cell.y * tileSize - liftPx, tileSize, tileSize, 0x3bc9db, 0.18);
       marker.setOrigin(0, 0);
       marker.setStrokeStyle(1, 0xe7f5ff, 0.85);
       layer.add(marker);

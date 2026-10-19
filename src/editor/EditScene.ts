@@ -169,9 +169,8 @@ import { prefersReducedMotion } from "@/util/reducedMotion";
 import { toast } from "@/util/toast";
 import { bindReliefRevision } from "@/project/relief/revision";
 import { copyRelief, reliefIsFlat } from "@/project/relief/edit";
-import { reliefReadSignature as reliefSignature, reliefTileSlotChangedCells } from "@/project/relief/screen";
+import { cellLift, reliefCellLiftPx, reliefLiftField, reliefPickCell, reliefReadSignature as reliefSignature, reliefTileSlotChangedCells } from "@/project/relief/screen";
 import type { ReliefData } from "@/project/relief/types";
-import { reliefCellLiftPx } from "@/project/relief/screen";
 import { ReliefLiveStrips } from "@/editor/reliefLiveStrips";
 import { SunlightLayer } from "@/player/sunlightLayer";
 import { tilesetTextureKey } from "@/editor/tilesetImage";
@@ -309,7 +308,7 @@ export class EditScene extends PhaserRuntime.Scene {
   private lastEventLayerClick: EventLayerClick | null = null;
   private lastPointerClick: EventLayerClick | null = null;
   private eventLayerClickFeedback: EventLayerClickFeedback | null = null;
-  private lastPointerTile: { x: number; y: number } | null = null;
+  private lastPointerTile: { x: number; y: number; groundY?: number } | null = null;
   private lastRenderedMapId: MapId | null = null;
   private lastMaterializedTileWindowKey = "";
   /** 청크 가시 창 + 청크 수. 같으면 청크 visible 을 다시 훑지 않는다. */
@@ -656,6 +655,7 @@ export class EditScene extends PhaserRuntime.Scene {
         __oprnEditReliefStats?: () => unknown;
         __oprnEditSunlightStats?: () => unknown;
         __oprnEditReliefRebuild?: () => void;
+        __oprnEditHoverRects?: () => readonly { readonly x: number; readonly y: number; readonly width: number; readonly height: number }[];
       };
       // 조수가 실제로 읽는 뷰포트 스냅샷과, 그 스냅샷을 만든 기하학(캔버스·가림 제외·worldView·줌).
       // e2e 가 카메라·가림 계산을 다시 구현하면 두 소스가 갈라지므로 씬의 값을 그대로 내보낸다.
@@ -685,6 +685,10 @@ export class EditScene extends PhaserRuntime.Scene {
           y: rect.y + (worldY - c.worldView.y) * c.zoom,
         };
       };
+      editWindow.__oprnEditHoverRects = () =>
+        (this.hoverPreviewLayer?.list ?? [])
+          .filter((o): o is Phaser.GameObjects.Rectangle => o.type === "Rectangle")
+          .map((o) => ({ x: o.x, y: o.y, width: o.width, height: o.height }));
     }
 
     // 선택 액션 바가 영역 작업 창을 열 때 대상 영역의 화면 사각형(avoid)을 알아야 한다.
@@ -784,11 +788,13 @@ export class EditScene extends PhaserRuntime.Scene {
         __oprnEditWorldToClient?: unknown;
         __oprnEditMapViewport?: unknown;
         __oprnEditVisibleArea?: unknown;
+        __oprnEditHoverRects?: unknown;
       };
       delete editWindow.__oprnEditCamera;
       delete editWindow.__oprnEditWorldToClient;
       delete editWindow.__oprnEditMapViewport;
       delete editWindow.__oprnEditVisibleArea;
+      delete editWindow.__oprnEditHoverRects;
     }
     this.clearBuildPaletteOverlay();
     // 씬이 내려가는 중에 전환이 걸려 있으면 그 뒷정리(reveal)가 영영 오지 않는다 —
@@ -1141,8 +1147,9 @@ export class EditScene extends PhaserRuntime.Scene {
       // 붙여넣기 미리보기: 커서 추종.
       if (editorState.get().pastePreview) {
         const mid = this.mapId();
-        const { x, y } = this.pointerToTile(ptr);
-        this.lastPointerTile = { x, y };
+        const pointerTile = this.pointerToTile(ptr);
+        const { x, y } = pointerTile;
+        this.lastPointerTile = pointerTile;
         if (mid) movePastePreview(mid, x, y);
         this.renderPastePreviewGhost();
         return;
@@ -1533,20 +1540,28 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private updateHoverPreview(ptr: Phaser.Input.Pointer): void {
-    const { x, y } = this.pointerToTile(ptr);
-    this.lastPointerTile = { x, y };
+    const pointerTile = this.pointerToTile(ptr);
+    const { x, y } = pointerTile;
+    const mid = this.mapId();
+    const map = mid ? store.getCurrent().maps[mid] : undefined;
+    if (!map || x < 0 || y < 0 || x >= map.width || y >= map.height) {
+      this.clearHoverPreview();
+      return;
+    }
+    this.lastPointerTile = pointerTile;
     this.updateEventMarkerTooltip(x, y);
     if (!this.shouldRenderPaintHover()) {
       this.clearHoverPreviewLayer();
       return;
     }
-    this.renderHoverPreview(x, y);
+    this.renderHoverPreview(x, y, pointerTile.groundY);
   }
 
   private clearHoverPreview(): void {
     this.lastPointerTile = null;
     this.clearEventMarkerTooltip();
     this.clearHoverPreviewLayer();
+    requestEditRenderFrame(this.game);
   }
 
   /** 페인트 스트로크 중 raw 호버만 제거 (포인터 좌표·툴팁 상태 유지). */
@@ -1571,13 +1586,17 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!map) return;
     const tileset = store.getCurrent().tilesets[map.tilesetId];
     if (!tileset) return;
+    if (map.relief) prepareReliefRead(map);
+    const lift = map.relief ? reliefLiftField(map.relief) : null;
+    const tileSize = this.activeTileSize();
     if (
-      this.pasteGhostClipboard === clipboard
+      !lift
+      && this.pasteGhostClipboard === clipboard
       && this.pasteGhostAt
       && layer.list.length > 0
     ) {
-      const dx = (preview.x - this.pasteGhostAt.x) * this.activeTileSize();
-      const dy = (preview.y - this.pasteGhostAt.y) * this.activeTileSize();
+      const dx = (preview.x - this.pasteGhostAt.x) * tileSize;
+      const dy = (preview.y - this.pasteGhostAt.y) * tileSize;
       if (dx !== 0 || dy !== 0) {
         for (const child of layer.list) {
           const positioned = child as Phaser.GameObjects.GameObject & { x: number; y: number };
@@ -1597,10 +1616,12 @@ export class EditScene extends PhaserRuntime.Scene {
         const y = preview.y + cy;
         if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
         const idx = cy * clipboard.width + cx;
+        const liftPx = (lift ? cellLift(lift, x, y) : 0) * tileSize;
         // 하위 레이어
         const lowerTile = clipboard.lower.tiles[idx];
         if (lowerTile !== undefined && lowerTile >= 0) {
           const obj = createChipsetTileObject(this, map, tileset, x, y, lowerTile);
+          obj.y -= liftPx;
           obj.setAlpha(0.4);
           layer.add(obj);
         }
@@ -1608,20 +1629,34 @@ export class EditScene extends PhaserRuntime.Scene {
         const upperTile = clipboard.upper.tiles[idx];
         if (upperTile !== undefined && upperTile >= 0) {
           const obj = createChipsetTileObject(this, map, tileset, x, y, upperTile);
+          obj.y -= liftPx;
           obj.setAlpha(0.55);
           layer.add(obj);
+        }
+        if (lift) {
+          const border = this.add.rectangle(
+            x * tileSize,
+            y * tileSize - liftPx,
+            tileSize,
+            tileSize,
+            0x51cf66,
+            0.08,
+          );
+          border.setOrigin(0, 0);
+          border.setStrokeStyle(1, 0x51cf66, 0.9);
+          layer.add(border);
         }
       }
     }
     // 외곽선 — 붙여넣기 범위 표시.
     const w = Math.min(clipboard.width, map.width - preview.x);
     const h = Math.min(clipboard.height, map.height - preview.y);
-    if (w > 0 && h > 0) {
+    if (!lift && w > 0 && h > 0) {
       const border = this.add.rectangle(
-        preview.x * this.activeTileSize(),
-        preview.y * this.activeTileSize(),
-        w * this.activeTileSize(),
-        h * this.activeTileSize(),
+        preview.x * tileSize,
+        preview.y * tileSize,
+        w * tileSize,
+        h * tileSize,
         0x51cf66,
         0.08,
       );
@@ -1657,7 +1692,7 @@ export class EditScene extends PhaserRuntime.Scene {
     });
   }
 
-  private renderHoverPreview(centerX: number, centerY: number): void {
+  private renderHoverPreview(centerX: number, centerY: number, groundY = this.lastPointerTile?.groundY): void {
     const layer = this.hoverPreviewLayer;
     const mapId = this.mapId();
     if (!layer || !mapId) return;
@@ -1665,7 +1700,7 @@ export class EditScene extends PhaserRuntime.Scene {
       this.clearHoverPreviewLayer();
       return;
     }
-    renderHoverTilePreview({ centerX, centerY, layer, mapId, scene: this, tileSize: this.activeTileSize() });
+    renderHoverTilePreview({ centerX, centerY, groundY, layer, mapId, scene: this, tileSize: this.activeTileSize() });
   }
 
   private beginDragOperation(ptr: Phaser.Input.Pointer): boolean {
@@ -2064,17 +2099,28 @@ export class EditScene extends PhaserRuntime.Scene {
     const rect = canvas.getBoundingClientRect();
     const worldX = camera.worldView.x + (point.x - rect.left) / camera.zoom;
     const worldY = camera.worldView.y + (point.y - rect.top) / camera.zoom;
-    const tileSize = this.activeTileSize();
-    return { x: Math.floor(worldX / tileSize), y: Math.floor(worldY / tileSize) };
+    return this.worldToTile(worldX, worldY);
   }
 
-  private pointerToTile(ptr: Phaser.Input.Pointer): { x: number; y: number } {
+  private pointerToTile(ptr: Phaser.Input.Pointer): { x: number; y: number; groundY?: number } {
     const world = ptr.positionToCamera(this.cameras.main) as { readonly x: number; readonly y: number };
+    return this.worldToTile(world.x, world.y);
+  }
+
+  private worldToTile(worldX: number, worldY: number): { x: number; y: number; groundY?: number } {
     const tileSize = this.activeTileSize();
-    return {
-      x: Math.floor(world.x / tileSize),
-      y: Math.floor(world.y / tileSize),
-    };
+    const groundX = Math.floor(worldX / tileSize);
+    const groundY = Math.floor(worldY / tileSize);
+    const mid = this.mapId();
+    const map = mid ? store.getCurrent().maps[mid] : undefined;
+    if (map?.relief) {
+      prepareReliefRead(map);
+      if (hasRelief(map.relief)) {
+        const pick = reliefPickCell(map.relief, groundX, groundY);
+        return { x: pick.x, y: pick.y, groundY };
+      }
+    }
+    return { x: groundX, y: groundY, groundY };
   }
 
   /**
@@ -2339,7 +2385,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.renderAgentBlueprint();
     this.renderStampOrders();
     this.publishMapViewport();
-    if (!mapChanged && this.lastPointerTile && this.shouldRenderPaintHover()) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
+    if (!mapChanged && this.lastPointerTile && this.shouldRenderPaintHover()) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y, this.lastPointerTile.groundY);
     this.syncSelectionOverlay();
     this.renderBuildPaletteOverlay();
   }
@@ -2434,6 +2480,7 @@ export class EditScene extends PhaserRuntime.Scene {
    * 굽기는 늘 마지막 값을 읽으므로 스트로크의 끝 모양은 빠지지 않는다.
    */
   private reliefRenderQueued = false;
+  private reliefRenderDeferred = false;
   private lastReliefRenderAt = 0;
   private lastReliefRenderCost = 0;
   private shouldDeferReliefRender(): boolean {
@@ -2446,14 +2493,22 @@ export class EditScene extends PhaserRuntime.Scene {
   }
   private scheduleReliefRender(): void {
     if (this.reliefRenderQueued) return;
-    if (this.shouldDeferReliefRender()) return;
+    if (this.shouldDeferReliefRender()) {
+      this.reliefRenderDeferred = true;
+      return;
+    }
+    this.reliefRenderDeferred = false;
     this.reliefRenderQueued = true;
     const wait = this.isPainting
       ? Math.max(0, this.lastReliefRenderAt + this.lastReliefRenderCost * 2 - performance.now())
       : 0;
     const run = (): void => {
       this.reliefRenderQueued = false;
-      if (this.shouldDeferReliefRender()) return;
+      if (this.shouldDeferReliefRender()) {
+        this.reliefRenderDeferred = true;
+        return;
+      }
+      this.reliefRenderDeferred = false;
       if (!this.reliefLayer) return;
       const started = performance.now();
       this.syncReliefLiftedTiles();
@@ -2588,7 +2643,7 @@ export class EditScene extends PhaserRuntime.Scene {
     if (cells.some((cell) => cell.layer === "event")) {
       refreshEditSceneOverlay({ scene: this, tileLayer, upperTileLayer, tileChunks: this.tileChunks, reliefLayer: this.reliefLayer ?? undefined, overlayLayer, gridGraphics, mapId: mid });
     }
-    if (this.lastPointerTile && this.shouldRenderPaintHover()) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
+    if (this.lastPointerTile && this.shouldRenderPaintHover()) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y, this.lastPointerTile.groundY);
     this.syncSelectionOverlay();
     this.renderBuildPaletteOverlay();
     return stats;
@@ -2623,7 +2678,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.syncSelectionOverlay();
     this.renderBuildPaletteOverlay();
     if (this.lastPointerTile && this.shouldRenderPaintHover()) {
-      this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
+      this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y, this.lastPointerTile.groundY);
     }
   }
 
@@ -3041,7 +3096,7 @@ export class EditScene extends PhaserRuntime.Scene {
     if (wasPainting) this.tilePaintEngine?.endStroke();
     this.isPainting = false;
     this.lastPaintKey = "";
-    if (wasPainting && editorState.get().tool === "relief") this.scheduleReliefRender();
+    if (this.reliefRenderDeferred || (wasPainting && editorState.get().tool === "relief")) this.scheduleReliefRender();
     this.stopPan();
     this.syncMapGestureFlag();
     return "gesture";
