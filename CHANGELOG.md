@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.281.1 — 2026-10-20
+
+### 수정
+
+- **flagship** — capture emerald-crown opening animatic and redraw side-view skybird sprites (#3039) (`5cf6333`)
+
 ## 0.281.0 — 2026-10-20
 
 ### 기능
