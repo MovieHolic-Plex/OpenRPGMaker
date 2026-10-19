@@ -2,5 +2,5 @@
   "extends": "./tsconfig.json",
   "compilerOptions": { "noEmit": true, "types": ["node"] },
   "include": [],
-  "files": ["src/vite-env.d.ts", "electron/main/assetStore.ts", "electron/main/assetStoreClient.ts", "src/editor/assetStore/storeUpload.ts", "src/editor/assetStore/storeApply.ts", "test/assetStoreClient.test.ts", "test/assetStorePack.test.ts"]
+  "files": ["src/vite-env.d.ts", "electron/main/assetStore.ts", "electron/main/assetStoreClient.ts", "src/editor/assetStore/storeUpload.ts", "src/editor/assetStore/storeApply.ts", "test/assetStoreClient.test.ts", "test/assetStorePack.test.ts", "test/storePublish.test.ts", "scripts/store/publish-buildings.mts", "scripts/store/publish-bundle.mts"]
 }

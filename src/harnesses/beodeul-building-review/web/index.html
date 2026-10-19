@@ -249,10 +249,10 @@ function renderStore(){
  const a=step('① 허용한 건물 반영',el('small',null,'허용 결정을 로그에 저장하고 시트·참고문서·예제 그림을 다시 굽습니다(몇 분).'));
  const row1=el('div','row');const bake=el('button',null,'다시 굽기');bake.disabled=run;bake.onclick=()=>storeDo('bake',{});row1.append(bake,state(hint,i.bakeNeeded?'warn':'ok'));a.append(row1);
  const info=p.ok?`${p.buildings}채 · 타일 ${p.tiles}칸 · ${p.megabytes}MB`:'내용을 확인하지 못했습니다: '+p.error;
- const where=t=>{const x=p.targets?.[t];if(!x)return state('확인 불가','warn');if(!x.reachable)return state('서버에 닿지 않음','warn');return x.upToDate?state('올라가 있음 · 최신','ok'):x.exists?state('올라가 있음 · 내용이 바뀜 → 판본 추가','warn'):state('아직 없음','warn')};
- const b=step('② 스테이징에 올리기 (mdc-server:18320, 시험용)',el('small',null,info));
- const row2=el('div','row');const st=el('button',null,'스테이징에 올리기');st.disabled=run||!p.ok||p.targets?.staging?.upToDate;st.onclick=()=>storeDo('publish',{target:'staging'});row2.append(st,where('staging'));b.append(row2);
- const c=step('③ 운영에 올리기 (store.openrpgmaker.com, 공개)',el('small',null,'올리면 사용자에게 바로 보이고 되돌리기 어렵습니다. 일회용 토큰은 저장하지 않습니다.'));
+ const where=t=>{const x=p.targets?.[t];if(!x)return state('확인 불가','warn');if(x.configured===false)return state(`주소 설정 안 됨(STORE_PUBLISH_${t.toUpperCase()}_URL)`,'warn');if(!x.reachable)return state('서버에 닿지 않음','warn');return x.upToDate?state('올라가 있음 · 최신','ok'):x.exists?state('올라가 있음 · 내용이 바뀜 → 판본 추가','warn'):state('아직 없음','warn')};
+ const b=step('② 스테이징에 올리기 (시험용 · 주소는 STORE_PUBLISH_STAGING_URL)',el('small',null,info));
+ const row2=el('div','row');const st=el('button',null,'스테이징에 올리기');st.disabled=run||!p.ok||p.targets?.staging?.upToDate||p.targets?.staging?.configured===false;st.onclick=()=>storeDo('publish',{target:'staging'});row2.append(st,where('staging'));b.append(row2);
+ const c=step('③ 운영에 올리기 (공개 · 주소는 STORE_PUBLISH_PRODUCTION_URL)',el('small',null,'올리면 사용자에게 바로 보이고 되돌리기 어렵습니다. 일회용 토큰은 저장하지 않습니다.'));
  const row3=el('div','row');const tok=el('input');tok.type='password';tok.placeholder='admin-link 일회용 토큰(15분·한 번)';tok.autocomplete='off';
  const ok=document.createElement('label');const chk=document.createElement('input');chk.type='checkbox';ok.append(chk,` 위 내용(${p.ok?p.buildings+'채':'-'})을 확인했고 공개해도 됩니다`);
  const go=el('button','deny','운영에 올리기');go.disabled=true;const upd=()=>{go.disabled=run||!p.ok||!chk.checked||tok.value.length<8||p.targets?.production?.upToDate};chk.onchange=upd;tok.oninput=upd;upd();
