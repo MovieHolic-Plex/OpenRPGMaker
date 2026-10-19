@@ -33,6 +33,10 @@ import {
 } from "@/project/package";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { createStandaloneHtmlExport } from "@/project/standaloneExport";
+import {
+  createDesktopSteamExportPackage,
+  type DesktopSteamExportOptions,
+} from "@/project/desktopGameExport";
 import { openPublishingDialog } from "./publishingDialog";
 import { createWebPlayerExportPackage, webExportFileName } from "@/project/webExport";
 import { installDelayedTooltips } from "@/editor/delayedTooltipRollout";
@@ -753,14 +757,9 @@ function menuCommands(id: MenuId, topbar: HTMLElement): readonly MenuCommand[] {
         item("프로젝트 파일 내보내기...", "menu-project-export", () => void exportProjectPackage()),
         item("백업 만들기", "menu-project-backup", () => void doBackupProject()),
         item("백업에서 복구...", "menu-project-restore-backup", () => void doRestoreBackup()),
-        item("게임 및 배포...", "menu-project-publication", () => void openPublishingDialog({
-          project: store.getCurrent(),
-          opener: topbar.querySelector<HTMLElement>('[data-testid="menu-project"]'),
-          apply: publication => store.update(project => { project.meta.publication = publication; }, { scope: "project", label: "게임 배포 설정" }),
-          exportZip: doExportWebGame, exportHtml: doExportStandaloneHtml,
-        })),
-        item("웹 게임 내보내기...", "menu-project-export-web", () => void doExportWebGame()),
-        item("실행형 HTML 내보내기...", "menu-project-export-standalone", () => void doExportStandaloneHtml()),
+        item("데스크톱 · Steam 게임 빌드...", "menu-project-publication", () => void openDesktopSteamStudio(topbar)),
+        item("웹 서버 번들 내보내기 (.zip)...", "menu-project-export-web", () => void doExportWebGame()),
+        item("Windows · Steam Depot 패키지 내보내기...", "menu-project-export-standalone", () => void doExportDesktopSteamGame({ platform: "win64-steam" })),
       ];
     case "help":
       return [
@@ -1055,6 +1054,38 @@ export async function exportProjectPackage(): Promise<void> {
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     toast(`내보내기 실패: ${message}`, "error");
+  }
+}
+
+function openDesktopSteamStudio(topbar: HTMLElement): void {
+  void openPublishingDialog({
+    project: store.getCurrent(),
+    opener: topbar.querySelector<HTMLElement>('[data-testid="menu-project"]'),
+    apply: (publication) => store.update((project) => { project.meta.publication = publication; }, { scope: "project", label: "게임 배포 설정" }),
+    exportZip: doExportWebGame,
+    exportHtml: doExportStandaloneHtml,
+    exportDesktopSteam: doExportDesktopSteamGame,
+  });
+}
+
+async function doExportDesktopSteamGame(options: DesktopSteamExportOptions = {}): Promise<void> {
+  try {
+    await store.flush().catch((error) => {
+      console.error("[desktop-steam-export] flush before export failed:", error);
+      toast("저장은 실패했지만 현재 상태로 데스크톱 · Steam 패키지를 만듭니다", "info");
+    });
+    toast("데스크톱 · Steam Depot 패키지를 조립하는 중... (resources/game.pak 아카이브 패킹)", "info");
+    const project = store.getCurrent();
+    const result = await createDesktopSteamExportPackage(project, options);
+    downloadBlob(result.blob, result.fileName);
+    const pakMb = (result.summary.pakArchiveBytes / 1048576).toFixed(1);
+    toast(
+      `Steam · 데스크톱 패키지 완료: ${result.summary.executablePath} + game.pak(${pakMb}MB), 에셋 ${result.summary.assetCount}개`,
+      "ok",
+    );
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    toast(`데스크톱 · Steam 패키지 빌드 실패: ${message}`, "error");
   }
 }
 

@@ -137,4 +137,37 @@ describe("publishing modal controls", () => {
     transient.remove(); button("cancel").click();
     expect(document.activeElement).toBe(opener);
   });
+  it("allows selecting Desktop & Steam target platforms and invokes exportDesktopSteam with configured options", async () => {
+    const project = createBlankProject();
+    const runtime = await createRuntimeManifest([{ name: "web/player.js", bytes: new Uint8Array([2]) },
+      { name: "web/dependency-collector.js", bytes: new Uint8Array([3]) }], []);
+    let capturedOptions: unknown = null;
+    await openPublishingDialog({
+      project,
+      apply: () => {},
+      exportZip: async () => {},
+      exportHtml: async () => {},
+      exportDesktopSteam: async (opts) => { capturedOptions = opts; },
+      fetchBytes: async path => path.endsWith("default.json")
+        ? jsonBytes({ runtimeTarget: runtime.runtimeTarget })
+        : jsonBytes(runtime),
+    });
+    const linuxTarget = document.querySelector<HTMLButtonElement>('[data-testid="publication-target-linux64-steamos"]');
+    expect(linuxTarget).not.toBeNull();
+    linuxTarget!.click();
+    const appIdInput = document.querySelector<HTMLInputElement>('[data-testid="publication-steam-appid"]')!;
+    appIdInput.value = "245010";
+    appIdInput.dispatchEvent(new Event("input"));
+    const buildBtn = document.querySelector<HTMLButtonElement>('[data-testid="publication-export-desktop-steam"]')!;
+    buildBtn.click();
+    expect(capturedOptions).toMatchObject({
+      platform: "linux64-steamos",
+      steamAppId: 245010,
+      steamDepotId: 245011,
+      displayMode: "fullscreen",
+      packAssetsArchive: true,
+      enableSteamAutoCloud: true,
+      enableSteamInputGamepad: true,
+    });
+  });
 });
