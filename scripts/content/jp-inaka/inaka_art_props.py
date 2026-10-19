@@ -304,37 +304,111 @@ def hasagi(c, base):
     add_outline(c)
 
 
-def scarecrow(c, x, y, robe='noren_indigo', hat=True):
-    line(c, x, y + 5, x, y + 26, J('aged_cedar', 1))
-    c.HL(x - 7, y + 10, 15, J('aged_cedar', 2)); c.HL(x - 7, y + 11, 15, J('aged_cedar', 1))
-    c.R(x - 4, y + 10, 9, 9, J(robe, 2)); c.VL(x - 4, y + 10, 9, J(robe, 3)); c.VL(x + 4, y + 10, 9, J(robe, 1))
-    c.HL(x - 4, y + 14, 9, J('torii_vermilion', 2))               # 허리띠
-    c.R(x - 7, y + 10, 3, 3, J(robe, 2)); c.R(x + 5, y + 10, 3, 3, J(robe, 1))
-    disc(c, x, y + 6, 3.2, K('shiro', 1)); c.P(x - 1, y + 6, K('sumi', 1)); c.P(x + 1, y + 6, K('sumi', 1))
-    if hat:                                                      # 삿갓(윗면 원뿔)
-        for k in range(4):
-            c.HL(x - 1 - k * 2, y + 1 + k, 3 + k * 4, J('tatami_straw', 4 if k < 2 else 3))
-        c.HL(x - 7, y + 5, 15, J('tatami_straw', 1))
+def _blit(c, t):
+    """임시 캔버스 t 의 불투명 픽셀을 c 위에 덮는다(add_outline 을 t 에만 두르기 위해)."""
+    for y in range(c.h):
+        for x in range(c.w):
+            if t.a[y, x, 3]:
+                c.P(x, y, (int(t.a[y, x, 0]) << 16) | (int(t.a[y, x, 1]) << 8) | int(t.a[y, x, 2]))
 
 
-@kit('inaka-scarecrow-pair', '허수아비 한 쌍(案山子) - 삿갓 윗면·팔 막대·쪽빛/주홍 옷(2×2)', 2, 2, 'prop',
+def scarecrow(c, t, x, y, robe='noren_indigo', obi='torii_vermilion'):
+    """3/4 허수아비: 흙 둔덕 + 땅에 진 대나무 그림자(c) → 기둥·팔 막대 → 소매 늘어진 기모노 → 자루 얼굴 → 菅笠(원뿔 윗면 + 챙 그늘)(t)."""
+    # 땅: 둔덕 그림자와 기둥 그림자는 윤곽 없이 바닥(c)에 진다(빛 왼쪽 위 → 오른쪽 아래)
+    disc(c, x + 2, y + 29, 6.5, K('yoru', -1), ry=2.0)
+    line(c, x + 1, y + 28, x + 7, y + 30, K('yoru', -1))
+    disc(t, x, y + 27.5, 5.5, J('aged_cedar', 1), ry=2.3)
+    disc(t, x - 0.5, y + 27, 4.2, J('aged_cedar', 2), ry=1.5)
+    for gx in (x - 4, x + 3):
+        t.P(gx, y + 26, J('moss', 3)); t.P(gx + 1, y + 25, J('moss', 4))
+    # 대나무 기둥(마디) + 팔 막대(윗면 1px 밝게)
+    t.R(x - 1, y + 8, 2, 20, J('pine_bamboo', 2)); t.VL(x - 1, y + 8, 20, J('pine_bamboo', 3))
+    for my in (y + 20, y + 24): t.HL(x - 1, my, 2, J('pine_bamboo', 1))
+    t.R(x - 7, y + 12, 15, 2, J('pine_bamboo', 2)); t.HL(x - 7, y + 12, 15, J('pine_bamboo', 3))
+    # 기모노 몸통: 어깨 9px → 밑단 7px, 왼쪽 빛·오른쪽 그늘, 세로 주름 두 줄, 흰 깃 V
+    for k in range(11):
+        hw = 4 if k < 6 else 3
+        t.HL(x - hw, y + 12 + k, hw * 2 + 1, J(robe, 2))
+        t.P(x - hw, y + 12 + k, J(robe, 3)); t.P(x + hw, y + 12 + k, J(robe, 1))
+    t.VL(x - 2, y + 18, 5, J(robe, 1)); t.VL(x + 2, y + 17, 6, J(robe, 1))
+    t.HL(x - 3, y + 22, 7, J(robe, 0))
+    t.P(x - 1, y + 12, K('shiro', 2)); t.P(x + 1, y + 12, K('shiro', 1)); t.P(x, y + 13, K('shiro', 1))
+    # 늘어진 소매(袖): 팔 막대 아래로 처진 천 + 안쪽 그늘
+    t.R(x - 7, y + 13, 3, 5, J(robe, 3)); t.VL(x - 5, y + 14, 4, J(robe, 1))
+    t.R(x + 5, y + 13, 3, 5, J(robe, 2)); t.VL(x + 5, y + 14, 4, J(robe, 0))
+    # 오비(띠) + 매듭
+    t.HL(x - 4, y + 16, 9, J(obi, 3)); t.HL(x - 4, y + 17, 9, J(obi, 2)); t.P(x + 2, y + 18, J(obi, 2))
+    # 자루 얼굴(へのへのもへじ 점) + 챙 그늘
+    disc(t, x, y + 9, 2.9, J('cream_stucco', 3), ry=2.6)
+    t.HL(x - 2, y + 8, 5, J('cream_stucco', 1))
+    t.P(x - 1, y + 9, J('aged_cedar', 0)); t.P(x + 1, y + 9, J('aged_cedar', 0)); t.P(x, y + 10, J('aged_cedar', 1))
+    # 菅笠: 3/4 챙 타원(아래 가장자리 그늘) 위에 원뿔 윗면(왼쪽 밝게, 엮음 결 세로줄)
+    disc(t, x, y + 6.5, 7.2, J('tatami_straw', 1), ry=2.4)
+    disc(t, x - 0.3, y + 6.0, 6.6, J('tatami_straw', 2), ry=1.9)
+    for k in range(6):
+        hw = 1 + k
+        yy = y + k
+        for xx in range(x - hw, x + hw + 1):
+            lv = 4 if xx < x - hw // 2 else 3 if xx <= x else 2
+            if (xx - x) % 3 == 0 and k > 1: lv -= 1
+            t.P(xx, yy, J('tatami_straw', lv))
+    t.P(x, y, J('tatami_straw', 4))
+
+
+@kit('inaka-scarecrow-pair', '허수아비 한 쌍(案山子) - 菅笠 원뿔 윗면·챙 그늘·소매 늘어진 기모노·대나무 기둥·흙 둔덕 그림자(2×2)', 2, 2, 'prop',
      solid=[(0, 1), (1, 1)], tags=['inaka', '허수아비', 'かかし'],
      rules='논 한가운데·논두렁.', role='prop')
 def scarecrows(c, base):
-    scarecrow(c, 8, 1, 'noren_indigo'); scarecrow(c, 23, 3, 'torii_vermilion')
-    add_outline(c)
-    c.HL(5, 30, 6, K('yoru', -1)); c.HL(20, 30, 6, K('yoru', -1))
+    t = Cv(c.w, c.h)
+    scarecrow(c, t, 8, 1, 'noren_indigo', 'torii_vermilion')
+    scarecrow(c, t, 24, 2, 'torii_vermilion', 'tatami_straw')
+    add_outline(t)
+    _blit(c, t)
 
 
-@kit('inaka-sunflower-patch', '해바라기 밭 한 덩이 - 남쪽을 보는 꽃 머리·큰 잎(3×2)', 3, 2, 'tree',
+def _sunflower_head(t, x, y, rx, ry, face=1):
+    """3/4 해바라기 머리: 꽃잎 테(뒤 그늘 → 앞 밝게) + 기울어진 씨앗판(face 방향으로 비킨 갈색 타원)."""
+    disc(t, x + 0.4, y + 0.6, rx + 1.2, J('lantern_amber', 1), ry=ry + 1.0)
+    for k in range(10):
+        a = k * math.pi / 5 + 0.3
+        disc(t, x + math.cos(a) * rx, y + math.sin(a) * ry, 1.6, J('lantern_amber', 3 if math.sin(a) < 0.3 else 2))
+    disc(t, x, y, rx, J('lantern_amber', 3), ry=ry)
+    disc(t, x - rx * 0.35, y - ry * 0.35, rx * 0.5, J('lantern_amber', 4), ry=ry * 0.45)
+    cx, cy = x + face * rx * 0.18, y + ry * 0.15
+    disc(t, cx, cy, rx * 0.5, J('machiya_timber', 1), ry=ry * 0.5)
+    disc(t, cx - 0.5, cy - 0.5, rx * 0.3, J('machiya_timber', 2), ry=ry * 0.3)
+    t.P(int(cx + rx * 0.3), int(cy + ry * 0.3), J('machiya_timber', 0))
+
+
+def _leaf(t, x, y, side):
+    """하트꼴 큰 잎(위 밝게) - side -1 왼쪽, 1 오른쪽으로 뻗는다."""
+    disc(t, x + side * 3, y + 1, 3.6, J('pine_bamboo', 2), ry=2.4)
+    disc(t, x + side * 3 - 0.8, y + 0.4, 2.4, J('pine_bamboo', 3), ry=1.4)
+    t.P(x + side * 2, y + 1, J('pine_bamboo', 1))
+
+
+@kit('inaka-sunflower-patch', '해바라기 밭 한 덩이 - 3/4 북돋운 흙 두둑·층층 잎 줄기·뒷줄 작고 앞줄 큰 비스듬한 꽃 머리(3×2)', 3, 2, 'tree',
      solid=[(0, 1), (1, 1), (2, 1)], tags=['inaka', '해바라기', 'ひまわり', '여름'],
      rules='밭·마당 가장자리에 2~6개 이어 붙인다.', role='prop')
 def sunflowers(c, base):
-    canopy_clusters(c, [(7, 24, 7, 5), (19, 25, 8, 5), (32, 24, 8, 5), (42, 25, 5, 4)], 'moss')
-    for (x, y) in ((6, 4), (17, 9), (27, 3), (38, 8), (12, 15), (33, 15), (44, 14)):
-        line(c, x, y + 4, x + 1, y + 16, J('pine_bamboo', 2))
-        disc(c, x, y, 4.6, OL); disc(c, x, y, 3.8, K('kii', 1)); disc(c, x - 0.7, y - 0.7, 2.4, K('kii', 2))
-        disc(c, x + 0.3, y + 0.4, 1.8, J('aged_cedar', 0)); c.P(x, y, J('aged_cedar', 2))
+    disc(c, 26, 29, 22, K('yoru', -1), ry=2.6)                    # 두둑 그림자(오른쪽 아래)
+    t = Cv(c.w, c.h)
+    # 북돋운 흙 두둑: 앞면(짙은 흙) → 윗면(밝은 흙, 이랑 줄)
+    disc(t, 24, 26.5, 22.5, J('aged_cedar', 0), ry=4.2)
+    disc(t, 24, 25.0, 21.5, J('aged_cedar', 2), ry=3.0)
+    for x in range(6, 43, 5): t.HL(x, 25, 3, J('aged_cedar', 3))
+    # 뒷줄(높고 작은 머리) → 앞줄(낮고 큰 머리): 줄기 + 잎을 먼저, 머리를 나중에
+    back = ((8, 5, 4.2, 3.4, 1), (20, 3, 4.6, 3.6, -1), (32, 5, 4.2, 3.4, 1), (42, 4, 3.8, 3.2, -1))
+    front = ((13, 13, 5.4, 4.4, -1), (26, 12, 5.8, 4.6, 1), (38, 14, 5.2, 4.2, -1))
+    for row, top in ((back, 22), (front, 25)):
+        for (x, y, rx, ry, face) in row:
+            t.R(x, y + 3, 2, top - y - 3, J('pine_bamboo', 2)); t.VL(x, y + 3, top - y - 3, J('pine_bamboo', 3))
+            for k, ly in enumerate(range(y + 7, top - 2, 5)):
+                _leaf(t, x + (0 if k % 2 else 1), ly, -1 if k % 2 else 1)
+        for (x, y, rx, ry, face) in row:
+            _sunflower_head(t, x, y, rx, ry, face)
+    add_outline(t)
+    _blit(c, t)
 
 
 @kit('inaka-hydrangea-hedge', '수국 꽃덤불(紫陽花) - 잎 덩이 위 파랑·보라 꽃송이·낮은 돌 테(3×2)', 3, 2, 'tree',
@@ -366,19 +440,32 @@ def jizo_row(c, base):
 
 
 # ═══════════════════════════ 물·담·다리 ═══════════════════════════
-@kit('inaka-sluice-gate', '농수로 수문(水門) - 콘크리트 기둥 윗면·철 수문판·핸들 다리 윗면(2×2)', 2, 2, 'structure',
+@kit('inaka-sluice-gate', '농수로 수문(水門) - 양 둑 콘크리트 기둥·3/4 윗면 다리판 보도·핸들 축·내려온 철 수문판·아래 흰 물거품(2×2)', 2, 2, 'structure',
      solid=[(0, 0), (1, 0), (0, 1), (1, 1)], tags=['inaka', '수문', '水門', '농수로'],
-     rules='농수로(inaka-canal-water) 위에 가로질러 놓는다.', role='water')
+     rules='폭 2칸 남북 농수로(수로) 위에 가로질러 놓는다. 양 기둥이 양쪽 호안에 선다.', role='water')
 def sluice(c, base):
-    rect_3d(c, 1, 6, 7, 24, 3, 'concrete_grey', top_t=3, front_t=2)
-    rect_3d(c, 24, 6, 7, 24, 3, 'concrete_grey', top_t=3, front_t=1)
-    c.R(8, 12, 16, 14, K('tekko', -1))                            # 철 수문판
-    for y in range(13, 26, 3): c.HL(8, y, 16, K('tekko', 0))
-    c.VL(8, 12, 14, K('tekko', 1))
-    c.R(8, 26, 16, 4, K('sora', 0)); c.HL(8, 26, 16, K('shiro', 2)); c.HL(10, 28, 5, K('sora', 2))
-    rect_3d(c, 0, 4, 32, 7, 3, 'machiya_timber', top_t=3, front_t=1)   # 다리판(윗면)
-    c.R(14, 0, 4, 5, K('tekko', 0)); disc(c, 16, 1, 3.4, K('aka', 0), ry=1.4); c.P(14, 0, K('aka', 2))   # 핸들
-    add_outline(c)
+    # 물(수로 물 색) + 수문 밑 흰 물거품
+    c.R(6, 22, 20, 10, J('canal_indigo', 2))
+    c.HL(6, 29, 20, J('canal_indigo', 3)); c.HL(9, 31, 6, J('canal_indigo', 4))
+    for x in range(7, 25):
+        c.P(x, 23, K('shiro', 3 if x % 3 else 2)); c.P(x, 24, K('shiro', 1) if x % 2 else J('canal_indigo', 4))
+        if x % 4 == 1: c.P(x, 25, K('shiro', 1))
+    # 철 수문판: 기둥 홈 사이로 내려와 물에 잠긴다(가로 보강대 + 왼쪽 빛)
+    c.R(6, 12, 20, 11, K('tekko', 0))
+    for y in (14, 18): c.HL(6, y, 20, K('tekko', 2)); c.HL(6, y + 1, 20, K('tekko', -1))
+    c.VL(6, 12, 11, K('tekko', 2)); c.HL(6, 22, 20, K('tekko', -2))
+    for x in (10, 16, 22): c.P(x, 16, K('tekko', 3))
+    # 양 둑 콘크리트 기둥(호안 위): 윗면 3px + 정면, 안쪽 홈은 짙게
+    rect_3d(c, 0, 4, 7, 28, 3, 'concrete_grey', top_t=3, front_t=2)
+    rect_3d(c, 25, 4, 7, 28, 3, 'concrete_grey', top_t=3, front_t=1)
+    c.VL(6, 9, 22, J('concrete_grey', 0)); c.VL(25, 9, 22, J('concrete_grey', 0))
+    # 다리판 보도(3/4 윗면 + 앞 갓) + 뒤 난간
+    c.HL(0, 2, 32, OL); c.HL(1, 3, 30, K('tekko', 1))
+    rect_3d(c, 0, 5, 32, 7, 4, 'concrete_grey', top_t=4, front_t=2)
+    # 핸들 축(가운데 세로 나사봉) + 붉은 핸들 바퀴(타원 윗면)
+    c.R(15, 0, 2, 7, K('tekko', 1)); c.VL(15, 0, 7, K('tekko', 3))
+    disc(c, 16, 2, 4.6, OL, ry=2.0); disc(c, 16, 2, 3.8, K('aka', 1), ry=1.4); disc(c, 16, 2, 2.0, K('aka', -1), ry=0.6)
+    c.P(13, 1, K('aka', 3)); c.P(16, 2, K('tekko', 3))
 
 
 @kit('inaka-bamboo-fence-gate', '대나무 울타리와 문(四つ目垣) - 기둥 갓 윗면·대나무 가로대·작은 기와 문(4×2)', 4, 2, 'structure',
@@ -441,6 +528,11 @@ def iron_bridge(c, base):
     for x in range(3, W, 6): c.P(x, 42, K('aka', 1))
     c.HL(0, 46, W, OL)
     c.HL(0, 47, W, K('kon', -1))                                  # 물에 진 그늘
+    # 양 끝 돌 교대(橋台): 거더 끝이 둑 돌 위에 얹힌다
+    for ax in (0, W - 7):
+        c.R(ax, 38, 7, 10, OL)
+        stones(c, ax + 1, 39, 5, 8, 'shrine_flagstone', seed=ax + 3, course=(4, 4), width=(4, 6), moss=0.2)
+        c.HL(ax + 1, 39, 5, J('shrine_flagstone', 4))
 
 
 @kit('inaka-stepping-stones', '개울 징검다리(飛び石) - 윗면 밝은 납작 돌·물에 잠긴 옆면(4×2)', 4, 2, 'terrain',
@@ -484,73 +576,62 @@ def _cluster(c, mat, levels, seed, cell=2):
 
 
 def _meadow(c):
-    """여름 풀밭: jp_city 잔디 칩 + 토끼풀 흰 꽃 두 송이."""
+    """여름 풀밭: jp_city 잔디 칩 그대로(±1단 톤 변화만, 밝은 꽃 점 없음 - 넓게 깔아도 점 격자가 생기지 않는다)."""
     _put(c, _chip('lawn'))
-    for (x, y) in ((4, 5), (12, 12)):
-        c.P(x, y, K('shiro', 2)); c.P(x + 1, y, K('shiro', 1)); c.P(x, y + 1, K('midori', -2))
-    c.P(13, 3, K('kii', 2))
 
 
 def _gravel_road(c):
-    """시골 흙자갈길: 다진 흙 2px 덩이 + 왼쪽 위 빛 받은 자갈(밝은 1 + 그늘 1)."""
-    _cluster(c, 'aged_cedar', (4, 3, 4), 51)
-    for (x, y) in ((2, 3), (9, 1), (13, 7), (5, 10), (11, 13), (1, 14), (7, 6)):
-        c.P(x, y, J('shrine_flagstone', 4)); c.P((x + 1) % 16, y, J('shrine_flagstone', 3)); c.P((x + 1) % 16, (y + 1) % 16, J('aged_cedar', 1))
+    """시골 흙자갈길: 다진 흙 2px 덩이 + 한 단 밝은 자갈(눈에 띄는 흰 점 없이)."""
+    _cluster(c, 'aged_cedar', (3, 3, 4), 51)
+    for (x, y) in ((2, 3), (9, 1), (13, 7), (5, 10), (11, 13), (7, 6)):
+        c.P(x, y, J('aged_cedar', 4)); c.P((x + 1) % 16, (y + 1) % 16, J('aged_cedar', 2))
 
 
 def _aze_path(c):
-    """논두렁·마당 흙: 산길 흙(rg trail) 톤 + 가장자리 없이 듬성 풀포기(위 밝은 잎 · 아래 그늘)."""
+    """논두렁·마당 흙: 산길 흙(rg trail) 톤 클러스터 + 한 단 차이 풀 기운(점 무늬 없음)."""
     _cluster(c, 'aged_cedar', (3, 2, 2), 23)
     for (x, y) in ((3, 4), (12, 11)):
-        c.P(x, y, J('moss', 4)); c.P(x - 1, y + 1, J('moss', 3)); c.P(x + 1, y + 1, J('moss', 3)); c.P(x, y + 2, J('moss', 1))
-    c.P(9, 2, J('shrine_flagstone', 4)); c.P(10, 3, J('aged_cedar', 0))
+        c.P(x, y, J('moss', 2)); c.P(x + 1, y, J('moss', 2))
 
 
-def _water_base(c, mat, base_t, seed):
+def _soft_base(c, mat, lv, seed):
+    """jp_city 잔디 칩처럼 1px 단위로 고르게 흩은 한 단 차이 결(덩이·사선 줄·점 격자 없음)."""
     for y in range(16):
         for x in range(16):
-            t = base_t
-            d = (x + y * 2) % 16                                  # 엷은 사선 물비늘(두 줄, 짧게)
-            if d in (0, 1) and Hw(x // 4, y // 4, seed) < 0.6: t = base_t + 1
-            c.P(x, y, J(mat, t))
+            h = Hw(x, y, seed)
+            c.P(x, y, J(mat, lv + 1 if h > 0.86 else lv - 1 if h < 0.05 else lv))
 
 
-def _rice_tuft(c, x, y, mat, lv=(4, 3, 2, 1)):
-    """뿌리 내린 벼 포기 3×3: 위 가운데 밝은 잎끝 → 양옆 잎 → 밑동 그늘(물에 비친 짙은 점)."""
-    hi, mid, lo, dk = lv
-    c.P(x % 16, y % 16, J(mat, hi))
-    c.P((x - 1) % 16, (y + 1) % 16, J(mat, mid)); c.P(x % 16, (y + 1) % 16, J(mat, mid)); c.P((x + 1) % 16, (y + 1) % 16, J(mat, lo))
-    c.P(x % 16, (y + 2) % 16, J(mat, dk))
+def _rice_rows(c, mat, lv, seed, tip=None):
+    """벼 포기 줄: 4px 간격 4줄 × 4포기(줄마다 2px 엇갈림 + 1px 흔들림). 잎은 바탕보다 한 단만 밝게, 밑동은 한 단 어둡게.
+    한 칸에 16포기가 고르게 깔려 점 격자가 아닌 결(texture)로 읽힌다."""
+    for j, y in enumerate((1, 5, 9, 13)):
+        for i in range(4):
+            x = (i * 4 + (j % 2) * 2 + (1 if Hw(i, j, seed) > 0.6 else 0)) % 16
+            c.P(x, y, J(mat, lv + 1) if tip is None or Hw(i, j, seed + 1) < 0.5 else tip)
+            c.P((x - 1) % 16, (y + 1) % 16, J(mat, lv + 1)); c.P(x, (y + 1) % 16, J(mat, lv)); c.P((x + 1) % 16, (y + 1) % 16, J(mat, lv + 1))
+            c.P(x, (y + 2) % 16, J(mat, lv - 1))
 
 
 def _paddy_water(c):
-    """모내기 물논: 하늘 비친 물 + 엇갈려 심은 어린 모 포기(가로 줄무늬 없음)."""
-    _water_base(c, 'onsen_mineral_teal', 2, 3)
-    for k, (x, y) in enumerate(((2, 1), (10, 3), (6, 8), (14, 10), (2, 13), (10, 14))):
-        c.P(x, y, J('pine_bamboo', 4)); c.P(x - 1, y + 1, J('pine_bamboo', 3)); c.P(x + 1, y + 1, J('moss', 3))
-        c.P(x, y + 2, J('onsen_mineral_teal', 0))
-    c.P(13, 6, J('vending_cool_white', 4))
-
-
-def _paddy_dense(c, mat, ground, lv, seed):
-    for y in range(16):
-        for x in range(16):
-            c.P(x, y, J(ground[0], ground[1] if Hw(x // 2, y // 2, seed) < 0.7 else ground[1] - 1))
-    for (x, y) in ((1, 0), (5, 1), (9, 0), (13, 1), (3, 4), (7, 5), (11, 4), (15, 5),
-                   (1, 8), (5, 9), (9, 8), (13, 9), (3, 12), (7, 13), (11, 12), (15, 13)):
-        _rice_tuft(c, x, y, mat, lv)
+    """모내기 물논: 하늘 비친 잔잔한 물(4px 얼룩) + 줄지어 심은 어린 모(한 단 차이 초록)."""
+    _soft_base(c, 'onsen_mineral_teal', 2, 3)
+    for j, y in enumerate((1, 5, 9, 13)):
+        for i in range(4):
+            x = (i * 4 + (j % 2) * 2 + (1 if Hw(i, j, 5) > 0.6 else 0)) % 16
+            c.P(x, y, J('pine_bamboo', 3)); c.P((x - 1) % 16, (y + 1) % 16, J('pine_bamboo', 2)); c.P((x + 1) % 16, (y + 1) % 16, J('pine_bamboo', 2))
 
 
 def _paddy_summer(c):
-    """여름 푸른 논: 짙은 물 바닥 위에 빽빽하게 엇갈린 벼 포기."""
-    _paddy_dense(c, 'pine_bamboo', ('onsen_mineral_teal', 1), (4, 3, 2, 1), 7)
+    """여름 푸른 논: 빽빽한 벼(moss) 결 - 바탕 2단, 잎 3단, 드문 4단 잎끝."""
+    _soft_base(c, 'moss', 2, 7)
+    _rice_rows(c, 'moss', 2, 7, tip=J('moss', 4))
 
 
 def _paddy_golden(c):
-    """가을 황금 논: 마른 논흙 위 고개 숙인 이삭 포기."""
-    _paddy_dense(c, 'tatami_straw', ('aged_cedar', 2), (4, 3, 2, 1), 9)
-    for (x, y) in ((5, 2), (13, 10), (9, 6)):
-        c.P(x, y, J('lantern_amber', 4))
+    """가을 황금 논: 고개 숙인 이삭 결 - 볏짚 2단 바탕, 3단 이삭, 드문 4단 빛."""
+    _soft_base(c, 'tatami_straw', 2, 9)
+    _rice_rows(c, 'tatami_straw', 2, 9, tip=J('tatami_straw', 4))
 
 
 def _canal_water(c):
@@ -576,11 +657,9 @@ def _canal_wall(c):
 
 
 def _river_shallow(c):
-    """얕은 개울: 맑은 물 + 비치는 강자갈(2px 덩이) + 짧은 사선 물비늘."""
-    _water_base(c, 'onsen_mineral_teal', 3, 67)
-    for (x, y, t) in ((3, 3, 2), (11, 5, 1), (6, 11, 2), (13, 13, 1)):
-        c.P(x, y, J('wet_cobble', t + 2)); c.P(x + 1, y, J('wet_cobble', t + 1)); c.P(x, y + 1, J('wet_cobble', t + 1)); c.P(x + 1, y + 1, J('onsen_mineral_teal', 2))
-    c.P(8, 8, J('vending_cool_white', 4)); c.P(9, 8, J('onsen_mineral_teal', 4))
+    """얕은 개울: jp_city 연못·수로 물 칩(water_tex) 그대로 - 연못(연못) 오토타일 물과 이음매 없이 이어진다."""
+    from autotiles_ground import water_tex
+    _put(c, water_tex())
 
 
 def _furrow(c):
