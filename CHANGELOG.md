@@ -5,6 +5,17 @@
 
 <!-- releases -->
 
+## 0.277.0 — 2026-10-19
+
+### 기능
+
+- **export** — add Desktop & Steam Depot executable package builder and build studio modal (#3007) (`381ea37`)
+
+### 수정
+
+- **handInterior** — resolve R17 adversarial VQA defects across daily routine spaces (#3009) (`8461187`)
+- **monster** — restore BW starter pixel art and upgrade all 60 species to #6/#7/#8/#10 standard (R13) (#3008) (`16b48f2`)
+
 ## 0.276.0 — 2026-10-19
 
 ### 기능
