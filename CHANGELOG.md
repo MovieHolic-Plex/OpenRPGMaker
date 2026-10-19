@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.272.0 — 2026-10-19
+
+### 기능
+
+- **jp-inaka** — Opus full redraw in jp_city 3/4 style + jp_city kit reuse (#2994) (`6873fc3`)
+
 ## 0.271.0 — 2026-10-19
 
 ### 기능
