@@ -47,7 +47,7 @@ export function charsetFamilyOf(project: CharsetFamilyContext | undefined, idOrT
   if (/^easyrpg-charset-(actor|people)\d+$/u.test(s)) return "rtp-people";
   // 원본 People1~2 와, 그 뼈대에서 변형해 늘린 칩 ScarloxyPeople<n>(2026-10-16) 모두 같은 계열이다 — 몬스터 수집 잠금이 둘 다 허용한다.
   if (/^(?:scarloxy-charset-people|oprn-charset-scarloxy-people)\d+$/u.test(s)) return "scarloxy-people";
-  if (/^easyrpg-charset-monster[456]$/u.test(s) || /^oprn-charset-harness-monster\d+$/u.test(s)) return "oprn-creature";
+  if (/^easyrpg-charset-monster[456]$/u.test(s) || /^oprn-charset-harness-monster\d+$/u.test(s) || s === "oprn-charset-dawning-skybirds") return "oprn-creature";
   if (/^easyrpg-charset-monster\d+$/u.test(s) || s === "easyrpg-charset-animal" || /^farming-charset-/u.test(s)) return "rtp-creature";
   if (/^easyrpg-charset-(object\d+|vehicles?|template)$/u.test(s)) return "object";
   if (/^oprn-charset-heroes\d+$/u.test(s)) return "heroes";

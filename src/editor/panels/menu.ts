@@ -775,8 +775,8 @@ function sampleProjectCommands(): readonly MenuCommand[] {
   return [
     item("폴른 스타: 추락한 별과 태엽의 성녀 (기본 JRPG 데모)", "menu-project-demo-chrono-bell", () => loadFlagshipDemoInEditor("chrono-bell")),
     item("폴른 스타: 추락한 별과 태엽의 성녀 — 바로 플레이 ▶", "menu-project-play-chrono-bell", () => loadFlagshipDemoInEditor("chrono-bell", true)),
-    item("에메랄드 크라운: 새벽섬의 수호자 (기본 몬스터 수집 데모)", "menu-project-demo-emerald-crown", () => loadFlagshipDemoInEditor("emerald-crown")),
-    item("에메랄드 크라운: 새벽섬의 수호자 — 바로 플레이 ▶", "menu-project-play-emerald-crown", () => loadFlagshipDemoInEditor("emerald-crown", true)),
+    item("아스트라 호라이즌: 다우닝 시티와 여명의 날개 (기본 몬스터 수집 데모)", "menu-project-demo-emerald-crown", () => loadFlagshipDemoInEditor("emerald-crown")),
+    item("아스트라 호라이즌: 다우닝 시티와 여명의 날개 — 바로 플레이 ▶", "menu-project-play-emerald-crown", () => loadFlagshipDemoInEditor("emerald-crown", true)),
     item("시타마치 사계절 (기본 현대 연애 데모)", "menu-project-demo-shitamachi", () => loadFlagshipDemoInEditor("shitamachi-fourth-season")),
     { kind: "separator" },
     item("Scarloxy 몬스터 초원 데모", "menu-project-scarloxy-demo", () => void newScarloxyDemoProject()),

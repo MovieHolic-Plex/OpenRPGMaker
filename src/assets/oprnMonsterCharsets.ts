@@ -10,16 +10,28 @@ const SHEETS = [
   { n: 6, name: "Monster6 · 전설의 괴수" },
 ] as const;
 
-export const OPRN_MONSTER_CHARSET_ASSETS = SHEETS.map(({ n, name }) => ({
-  category: "charset",
-  id: `easyrpg-charset-monster${n}`,
-  name: `${name} · 캐릭터 그림 · OPRN`,
-  sourcePath: `scripts/asset-gen/oprn-charset/monster${n}.py`,
-  path: `assets/generated/charsets/Monster${n}.png`,
-  fileName: `Monster${n}.png`,
-  textureKey: `tex_easyrpg_charset_monster${n}`,
-  group: "Monster",
-})) satisfies readonly EasyRpgCharsetAsset[];
+export const OPRN_MONSTER_CHARSET_ASSETS = [
+  ...SHEETS.map(({ n, name }) => ({
+    category: "charset" as const,
+    id: `easyrpg-charset-monster${n}`,
+    name: `${name} · 캐릭터 그림 · OPRN`,
+    sourcePath: `scripts/asset-gen/oprn-charset/monster${n}.py`,
+    path: `assets/generated/charsets/Monster${n}.png`,
+    fileName: `Monster${n}.png`,
+    textureKey: `tex_easyrpg_charset_monster${n}`,
+    group: "Monster",
+  })),
+  {
+    category: "charset" as const,
+    id: "oprn-charset-dawning-skybirds",
+    name: "DawningSkybirds · 다우닝 시티 여명의 날개 새 8종 · OPRN",
+    sourcePath: "scripts/content/monsters/build_skybird_charset.py",
+    path: "assets/charsets/dawning-skybirds.png",
+    fileName: "dawning-skybirds.png",
+    textureKey: "tex_oprn_charset_dawning_skybirds",
+    group: "Monster",
+  },
+] satisfies readonly EasyRpgCharsetAsset[];
 
 export const OPRN_MONSTER_CHARSET_RESOURCE_IDS: readonly string[] = OPRN_MONSTER_CHARSET_ASSETS.flatMap((asset) => [asset.id, asset.textureKey]);
 

@@ -41,9 +41,9 @@ const BUILTIN_DEMO_CARDS: readonly {
   {
     id: "emerald-crown",
     badge: "기본 몬스터 수집 대표작",
-    title: "『에메랄드 크라운: 새벽섬의 수호자』",
-    subtitle: "몬스터 수집 RPG · 8개 맵 · 스타터 선택 · 체육관 덩굴문 퍼즐 · 성소 보스전",
-    desc: "내 방 2층에서 출발해 새벽섬 연구소에서 첫 파트너(새싹토·찌릿토·물방토)를 고르고, 1번길 포획·새순 체육관 덩굴문 기믹·에메랄드 동굴 성소 보스전까지 완성된 정본입니다.",
+    title: "『아스트라 호라이즌: 다우닝 시티와 여명의 날개』",
+    subtitle: "몬스터 수집 RPG · 30×24 다우닝 시티 · 스타터 선택 · 실바나 체육관 퍼즐 · 성소 보스전",
+    desc: "다우닝 시티 내 방 2층에서 출발해 오르비스 천문 연구소에서 첫 파트너(토리프·파이린·아쿠링)를 고르고, 여명갈매기·창공제비가 나는 다우닝 시티와 실바나 체육관 덩굴문 기믹·아스트라 성소 결전까지 완성된 정본입니다.",
     thumb: "/assets/generated/welcome/slide-01.png",
     playTestId: "builtin-demo-play-emerald-crown",
     openTestId: "builtin-demo-open-emerald-crown",

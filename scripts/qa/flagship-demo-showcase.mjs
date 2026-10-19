@@ -400,8 +400,10 @@ await withTsModule("src/project/flagship/index.ts", "flagship-showcase.mjs", asy
       // Tour key maps in the 8-map progression before returning to Dawn Island spawn
       const startState = await page.evaluate(() => window.__oprnDebug.readState());
       for (const [slug, mapId, tx, ty] of [
-        ["emerald-04-bedroom-2f.png", "mx_map_home_house_2f", 5, 5],
+        ["emerald-04-bedroom-2f.png", "mx_map_home_house_2f", 7, 4],
+        ["emerald-04b-house-1f-stairs.png", "mx_map_home_house", 9, 4],
         ["emerald-05-prof-lab.png", "mx_map_lab", 7, 7],
+        ["emerald-05b-prof-lab-2f.png", "mx_map_lab_2f", 6, 5],
         ["emerald-06-route1-meadow.png", "mx_map_meadow", 10, 12],
         ["emerald-07-gym-vine-puzzle.png", "mx_map_grove_gym", 8, 16],
         ["emerald-08-emerald-cave.png", "mx_map_observatory", 10, 8],
@@ -414,7 +416,19 @@ await withTsModule("src/project/flagship/index.ts", "flagship-showcase.mjs", asy
         }
       }
 
-      // Return to Dawn Island spawn
+      // Verify 1F -> 2F stairs_up and 2F -> 1F stairs_down transfer in Orbis Lab
+      await page.evaluate(() => window.__oprnDebug.teleport("mx_map_lab", 12, 4));
+      await page.waitForTimeout(300);
+      await page.evaluate(() => window.__oprnInput.move("up"));
+      await page.waitForTimeout(450);
+      const lab2fState = await page.evaluate(() => window.__oprnDebug.readState());
+      assert.equal(lab2fState.currentMapId, "mx_map_lab_2f", "Expected 1F->2F lab stair transfer");
+      await page.evaluate(() => window.__oprnInput.move("up"));
+      await page.waitForTimeout(450);
+      const lab1fState = await page.evaluate(() => window.__oprnDebug.readState());
+      assert.equal(lab1fState.currentMapId, "mx_map_lab", "Expected 2F->1F lab stair transfer");
+
+      // Return to Dawning City spawn
       await page.evaluate(
         ([id, x, y]) => window.__oprnDebug.teleport(id, x, y),
         [startState.currentMapId, startState.x, startState.y],
@@ -426,6 +440,7 @@ await withTsModule("src/project/flagship/index.ts", "flagship-showcase.mjs", asy
       await page.evaluate(() => {
         void window.__oprnInput.action();
       });
+      await page.waitForSelector('[data-testid="dialogue-box"], [data-testid="runtime-choices"]', { timeout: 15_000 });
       const st1 = await advanceDialogueToChoicesOrClose(page);
       assert.equal(st1, "choices", "Expected starter selection choices");
       await page.screenshot({ path: path.join(OUT_DIR, "emerald-09-starter-choice.png") });
@@ -452,10 +467,10 @@ await withTsModule("src/project/flagship/index.ts", "flagship-showcase.mjs", asy
       await page.evaluate(() => {
         void window.__oprnInput.action();
       });
+      await page.waitForSelector('[data-testid="dialogue-box"], [data-testid="runtime-choices"]', { timeout: 15_000 });
       const st2 = await advanceDialogueToChoicesOrClose(page);
       assert.equal(st2, "choices", "Expected Gym Leader challenge choices");
       await clickChoiceButton(page, 0);
-
       const battleDeadline = Date.now() + 25_000;
       while (Date.now() < battleDeadline) {
         if (await page.locator('[data-testid="battle-scene"]').count()) break;
