@@ -92,4 +92,12 @@ describe("asset store client concept feed", () => {
     const offline = client(() => { throw new TypeError("fetch failed"); });
     await expect(offline.conceptMade({ slug: "good-one" })).resolves.toBe(false);
   });
+
+  it("refuses a pack bundle larger than manifest + pack limits before reading it", async () => {
+    const store = client((url) => url.endsWith("/bundle")
+      ? new Response(new Uint8Array(8), { status: 200, headers: { "content-length": String(200 * 1024 * 1024) } })
+      : json({ slug: "big-pack", latestVersion: 1 }));
+    await expect(store.install("big-pack", () => undefined)).rejects.toThrow("스토어 응답이 너무 큽니다.");
+    expect(requests.some((request) => request.url.endsWith("/manifest"))).toBe(false);
+  });
 });
