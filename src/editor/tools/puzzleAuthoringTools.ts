@@ -10,11 +10,24 @@
 // 한 번의 호출로 2상태 기물 이벤트 + 스위치/변수 + changeTile 타일 변화 + 연출 + 보상 + 통행 무결성 검증까지
 // 원자적으로 시공하는 author_map_puzzle 도구를 제공한다.
 
-import { charsetFrameIndex } from "@/assets/easyrpgRtp";
+import {
+  allSwitchesFork,
+  flash,
+  makePage,
+  objGraphic,
+  particles,
+  revealInWaves,
+  se,
+  shake,
+  textCmd,
+} from "./puzzleKit";
+import { PUZZLE_MECHANICS } from "./puzzleMechanics";
+import { analysePuzzleModel, hashSeed, type MechanicDef, type PuzzlePlayStep } from "./puzzleMechanicCore";
+import { claimPuzzleRoomWindow } from "./puzzleRoomScenery";
+import { NEW_QUALITY_PRESETS, QUALITY_OVERRIDES } from "./puzzlePresetQuality";
 import { chestOpenCommands, chestOpenedGraphic, lootGrantCommands } from "@/editor/lootFeedback";
 import { CHANGE_TILE_USAGE, changeTileProblems } from "@/project/changeTileValidation";
 import { isPassable } from "@/project/collision";
-import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import { EventPlacementAnalysis } from "@/project/eventPlacementRecovery";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { supportSurfaceOf } from "@/project/groundSupport";
@@ -22,7 +35,6 @@ import type {
   Command,
   Dir,
   EventPage,
-  EventPageCondition,
   EventPageGraphic,
   GameEvent,
   GameMap,
@@ -52,6 +64,10 @@ export const PUZZLE_PRESET_IDS = [
   "mirror_beam_refraction",
   "minecart_track_switch",
   "elemental_pedestal_swap",
+  "cracked_plank_bridge",
+  "number_code_lock",
+  "balance_scale_weights",
+  "flip_floor_tiles",
 ] as const;
 
 export type PuzzlePresetId = (typeof PUZZLE_PRESET_IDS)[number];
@@ -72,7 +88,12 @@ export interface PuzzlePresetEntry {
     | "riddle"
     | "environment"
     | "stealth"
-    | "boss_seal";
+    | "boss_seal"
+    | "logic"
+    | "memory"
+    | "navigation"
+    | "timing"
+    | "light";
   readonly genres: readonly string[];
   readonly summary: string;
   readonly mechanics: string;
@@ -89,9 +110,35 @@ export interface PuzzlePresetEntry {
     readonly mapId: string;
     readonly presetId: PuzzlePresetId;
   };
+  /** quality = 상태 공간 모형·실기 플레이 검증을 통과한 현역 프리셋, legacy = 판단 요소가 없어 기본 목록에서 내린 옛 프리셋(시공은 그대로 된다). */
+  readonly tier: "quality" | "legacy";
+  readonly quality?: PuzzleQualityInfo;
 }
 
-export const PUZZLE_PRESET_CATALOG: readonly PuzzlePresetEntry[] = [
+export type { PuzzlePlayStep };
+
+/** 품질 프리셋의 조수용 메타데이터 — list_puzzle_presets 가 그대로 돌려준다. */
+export interface PuzzleQualityInfo {
+  /** 기믹 계열(push_block · path · slide · toggle · order · memory · logic · routing · stealth · timing · light · resource). */
+  readonly family: string;
+  readonly difficulty: "easy" | "medium" | "hard";
+  /** 한 줄 기믹 설명. */
+  readonly mechanic: string;
+  /** 쓰는 이벤트 모양(기존 명령·조건만). */
+  readonly eventShapes: readonly string[];
+  readonly reset: string;
+  readonly hint: string;
+  readonly reveal: string;
+  readonly roomSize: "20x15";
+  /** 조수가 이 프리셋을 고를 한 문장 예시와 그때의 호출. */
+  readonly sentence: string;
+  readonly call: Readonly<Record<string, string | number>>;
+  /** 이전 판에서 바뀐 점(같은 id 를 다시 만든 경우). */
+  readonly reworkedFrom?: string;
+}
+
+/** 2026-10-19 까지의 16종 원래 항목. 품질 판으로 다시 만든 id 는 아래 QUALITY_OVERRIDES 가 제목·설명·메타데이터를 덮는다. */
+const BASE_PRESET_ENTRIES: readonly Omit<PuzzlePresetEntry, "tier" | "quality">[] = [
   {
     id: "lever_secret_passage",
     index: 1,
@@ -397,6 +444,14 @@ export const PUZZLE_PRESET_CATALOG: readonly PuzzlePresetEntry[] = [
     exampleCall: { mapId: "map_elemental_sanctum_1", presetId: "elemental_pedestal_swap" },
   },
 ] as const;
+
+export const PUZZLE_PRESET_CATALOG: readonly PuzzlePresetEntry[] = [
+  ...BASE_PRESET_ENTRIES.map((entry): PuzzlePresetEntry => {
+    const override = QUALITY_OVERRIDES[entry.id];
+    return override ? { ...entry, ...override, tier: "quality" } : { ...entry, tier: "legacy" };
+  }),
+  ...NEW_QUALITY_PRESETS,
+];
 const PRESET_ALIASES: Readonly<Record<string, PuzzlePresetId>> = {
   "1": "lever_secret_passage",
   lever: "lever_secret_passage",
@@ -493,6 +548,29 @@ const PRESET_ALIASES: Readonly<Record<string, PuzzlePresetId>> = {
   elemental_pedestal: "elemental_pedestal_swap",
   "사원소": "elemental_pedestal_swap",
   "원소제단": "elemental_pedestal_swap",
+  "17": "cracked_plank_bridge",
+  plank_bridge: "cracked_plank_bridge",
+  cracked_plank: "cracked_plank_bridge",
+  "판자다리": "cracked_plank_bridge",
+  "무너지는다리": "cracked_plank_bridge",
+  "한붓건너기": "cracked_plank_bridge",
+  "18": "number_code_lock",
+  number_lock: "number_code_lock",
+  code_lock: "number_code_lock",
+  "숫자자물쇠": "number_code_lock",
+  "번호자물쇠": "number_code_lock",
+  "개수세기": "number_code_lock",
+  "19": "balance_scale_weights",
+  balance_scale: "balance_scale_weights",
+  scale_weights: "balance_scale_weights",
+  "저울": "balance_scale_weights",
+  "저울추": "balance_scale_weights",
+  "무게맞추기": "balance_scale_weights",
+  "20": "flip_floor_tiles",
+  flip_tiles: "flip_floor_tiles",
+  flip_floor: "flip_floor_tiles",
+  "뒤집히는바닥": "flip_floor_tiles",
+  "타일반전": "flip_floor_tiles",
 };
 export function resolvePuzzlePresetId(raw: unknown): PuzzlePresetId | undefined {
   if (typeof raw !== "string" && typeof raw !== "number") return undefined;
@@ -501,7 +579,6 @@ export function resolvePuzzlePresetId(raw: unknown): PuzzlePresetId | undefined 
   return PRESET_ALIASES[trimmed];
 }
 
-const FIXED_MOVEMENT: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
 const NEIGHBORS: readonly Cell[] = [
   { x: 1, y: 0 },
   { x: -1, y: 0 },
@@ -510,124 +587,6 @@ const NEIGHBORS: readonly Cell[] = [
 ];
 
 const cellKey = (c: Cell): string => `${c.x},${c.y}`;
-
-function m2(title: string, fields: Record<string, string | number | boolean>): Command {
-  const entry = M2_COMMAND_CATALOG.find((candidate) => candidate.title === title);
-  if (!entry) throw new ToolError(`M2 명령 '${title}' 을 카탈로그에서 찾지 못했습니다.`, { code: "m2-missing" });
-  return { kind: "m2Command", commandId: entry.id, fields };
-}
-
-function se(name: string): Command {
-  return { kind: "playAudio", resourceId: `easyrpg-sound-${name}`, loop: false, channel: "se" };
-}
-
-function flash(color: string, durationMs = 300): Command {
-  return m2("Flash Screen", { color, durationMs });
-}
-
-function shake(intensity: 1 | 3 | 6 | 10 = 3, durationMs = 500): Command {
-  return m2("Shake Screen", { value: intensity, intensity: String(intensity), durationMs });
-}
-
-function particles(preset: string, durationMs = 800, at?: Cell): Command {
-  return at
-    ? m2("Particle Effect", { preset, target: "tile", x: at.x, y: at.y, durationMs, wait: false })
-    : m2("Particle Effect", { preset, target: "player", durationMs, wait: false });
-}
-
-/** 해제 연출의 색과 세 물결 입자(1물결 균열 먼지 → 2물결 본 붕괴 → 3물결 완성 빛). */
-interface RevealTheme {
-  readonly flash: string;
-  readonly waves: readonly [string, string, string];
-}
-
-/**
- * changeTile 묶음을 한 번에 갈지 않고 플레이어 쪽(남쪽)부터 세 물결로 연다. 물결마다 바뀌는 칸 위에 입자를 뿜고
- * 칸을 간 뒤 흔들림이 다음 물결까지의 틈이 된다(Shake Screen 은 끝날 때까지 기다리는 명령이라 흔들리는 동안 먼지가 보인다).
- */
-function revealInWaves(cmds: readonly Command[], theme: RevealTheme): Command[] {
-  const byCell = new Map<string, { x: number; y: number; cmds: Command[] }>();
-  for (const cmd of cmds) {
-    if (cmd.kind !== "changeTile") continue;
-    const key = `${cmd.x},${cmd.y}`;
-    let cell = byCell.get(key);
-    if (!cell) byCell.set(key, (cell = { x: cmd.x, y: cmd.y, cmds: [] }));
-    cell.cmds.push(cmd);
-  }
-  const cells = [...byCell.values()].sort((a, b) => b.y - a.y || a.x - b.x);
-  if (cells.length === 0) return [...cmds];
-  // 직전 대사·선택지 창이 완전히 닫힌 뒤 연출이 시작되고, 마지막 물결 뒤에도 잠깐 여유를 두어
-  // 캡처 프레임에 반쯤 닫히는 대사창이 절대 겹치지 않게 한다.
-  const out: Command[] = [{ kind: "wait", ms: 250 }, flash(theme.flash, 350)];
-  const per = Math.ceil(cells.length / 3);
-  const mid = cells[Math.floor(cells.length / 2)]!;
-  for (let wave = 0; wave < 3; wave += 1) {
-    const group = cells.slice(wave * per, (wave + 1) * per);
-    if (group.length === 0) continue;
-    // 물결마다 입자는 최대 4곳 — 칸마다 뿜으면 큰 다리·갱도에서 입자가 수십 개 겹쳐 오히려 뭉개진다.
-    const step = Math.max(1, Math.floor(group.length / 4));
-    for (let i = 0; i < group.length; i += step) out.push(particles(theme.waves[wave]!, 1200, group[i]!));
-    if (wave === 2) out.push(particles("sparkle", 1200, mid));
-    for (const cell of group) out.push(...cell.cmds);
-    out.push(shake(wave === 2 ? 10 : 6, wave === 2 ? 600 : 300));
-  }
-  out.push({ kind: "wait", ms: 220 });
-  return out;
-}
-
-function textCmd(body: string): Command {
-  return { kind: "text", body };
-}
-
-function objGraphic(sheet: "object1" | "object2", characterIndex: number, direction: Dir = "down"): EventPageGraphic {
-  const base = charsetGraphic(`tex_easyrpg_charset_${sheet}`, characterIndex);
-  return {
-    ...base,
-    direction,
-    pattern: charsetFrameIndex({ characterIndex, direction, pattern: 1 }),
-  };
-}
-
-function makePage(opts: {
-  readonly id: string;
-  readonly name: string;
-  readonly conditions?: readonly EventPageCondition[];
-  readonly graphic: EventPageGraphic;
-  readonly trigger?: "action" | "playerTouch" | "eventTouch" | "touch" | "auto" | "parallel";
-  readonly priority?: EventPage["priority"];
-  readonly overlapForbidden?: boolean;
-  readonly commands: readonly Command[];
-}): EventPage {
-  const priority = opts.priority ?? "same";
-  return {
-    id: opts.id,
-    name: opts.name,
-    conditions: [...(opts.conditions ?? [])],
-    graphic: opts.graphic,
-    trigger: { kind: opts.trigger ?? "action" },
-    priority,
-    overlapForbidden: opts.overlapForbidden ?? (priority === "same"),
-    animationType: "fixedGraphic",
-    movement: FIXED_MOVEMENT,
-    commands: [...opts.commands],
-  };
-}
-
-function allSwitchesFork(switchIds: readonly string[], onTrue: readonly Command[]): Command[] {
-  const build = (index: number): Command[] => {
-    const switchId = switchIds[index];
-    if (!switchId) return [...onTrue];
-    return [
-      {
-        kind: "fork",
-        condition: { kind: "switch", switchId, value: true },
-        then: build(index + 1),
-        else: [],
-      },
-    ];
-  };
-  return build(0);
-}
 
 /** 프로젝트 내 모든 transfer 명령의 착지 좌표를 모아 퍼즐 기물이 착지 칸을 막지 않게 한다. */
 function collectTransferLandings(project: Project, mapId: string): Set<string> {
@@ -981,18 +940,142 @@ function upsertPuzzleEvent(map: GameMap, event: GameEvent): void {
   else map.events.push(event);
 }
 
+/**
+ * 품질 프리셋 시공: 방 창 확보 → 시공기 → 이벤트 등록 → 모형 BFS 로 해 존재·최소 수·막다른 상태 측정(해 없으면 거절)
+ * → 상호작용 도달성 검증 → 최단 해를 실기 플레이 절차(playtest)로 돌려준다.
+ */
+function runMechanicPreset(
+  draft: Project,
+  map: GameMap,
+  preset: PuzzlePresetEntry,
+  mechanic: MechanicDef,
+  opts: {
+    readonly baseId: string;
+    readonly solveSwitchId: string;
+    readonly requestedAnchor: Cell | undefined;
+    readonly landings: ReadonlySet<string>;
+    readonly args: Record<string, unknown>;
+  },
+): ToolExecResult {
+  const { baseId, solveSwitchId, args } = opts;
+  const win = claimPuzzleRoomWindow(draft, map, opts.requestedAnchor, opts.landings);
+  if (!win) {
+    throw new ToolError(
+      `「${preset.title}」은 20×15 한 화면 방 전체를 짓는 퍼즐입니다. ${map.id} 에는 비어 있는 20×15 창이 없습니다(이벤트·이동 착지점·시작점이 있거나 맵이 작음). ` +
+        `create_map({width:20,height:15,tilesetId:"atlas_biome_interior"}) 로 빈 방을 만들어 거기에 시공하고, 출입은 create_transfer_pair 로 잇는다.`,
+      { code: "puzzle-room-needs-empty-window", mapId: map.id },
+    );
+  }
+  const reward = preparePuzzleReward(draft, preset, args.reward);
+  const title = typeof args.title === "string" && args.title.trim() ? args.title.trim() : undefined;
+  const hint = typeof args.hintText === "string" && args.hintText.trim() ? args.hintText.trim() : undefined;
+  const switchIds: string[] = [solveSwitchId];
+  const variableIds: string[] = [];
+  const built = mechanic.build({
+    draft,
+    map,
+    win,
+    baseId,
+    solveSwitchId,
+    rewardCommands: reward.grantCommands,
+    ...(title ? { title } : {}),
+    ...(hint ? { hint } : {}),
+    seed: hashSeed(baseId),
+    sw: (suffix, label) => {
+      const id = `sw_${baseId}_${suffix}`;
+      ensureNamedSwitch(draft, id, `${title ?? preset.title} · ${label}`);
+      switchIds.push(id);
+      return id;
+    },
+    v: (suffix, label) => {
+      const id = `var_${baseId}_${suffix}`;
+      ensureNamedVariable(draft, id, `${title ?? preset.title} · ${label}`);
+      variableIds.push(id);
+      return id;
+    },
+    evId: (suffix) => `ev_${baseId}_${suffix}`,
+  });
+  const analysis = analysePuzzleModel(built.model);
+  if (!analysis.solvable) {
+    throw new ToolError(`「${preset.title}」 시공 결과의 풀이 모형에 해가 없습니다(상태 ${analysis.reachableStates}개 전수 탐색) — 시공을 롤백합니다.`, {
+      code: "puzzle-unsolvable",
+      mapId: map.id,
+    });
+  }
+  for (const { event } of built.events) upsertPuzzleEvent(map, event);
+  const shift = (c: Cell): Cell => ({ x: c.x + win.x, y: c.y + win.y });
+  const origin = shift(built.origin);
+  const warnings: string[] = [];
+  let wiredGateEventId: string | undefined;
+  if (typeof args.gateEventId === "string" && args.gateEventId.trim()) {
+    const gid = args.gateEventId.trim();
+    if (wireOptionalGateEvent(map, gid, solveSwitchId, `이 통로는 '${title ?? preset.title}' 장치를 먼저 풀어야 열립니다.`)) wiredGateEventId = gid;
+    else warnings.push(`gateEventId '${gid}' 를 ${map.id} 에서 찾지 못해 자체 퍼즐 문만 배치했습니다.`);
+  }
+  // 조사·밟기 대상은 시작점에서 닿아야 한다(자동·병렬 진행 이벤트는 벽 속에 두므로 뺀다).
+  const analysisPlacement = new EventPlacementAnalysis(draft, map);
+  for (const { event } of built.events) {
+    const page = event.pages?.[0];
+    const kind = page?.trigger.kind;
+    if (kind === "auto" || kind === "parallel" || page?.priority !== "same") continue;
+    if (!analysisPlacement.hasInteractionPosition(event, origin)) {
+      throw new ToolError(`퍼즐 이벤트 '${event.id}'(${event.x},${event.y}) 에 시작점 (${origin.x},${origin.y}) 에서 닿을 수 없습니다 — 롤백합니다.`, {
+        code: "puzzle-softlock-prevented",
+        mapId: map.id,
+      });
+    }
+  }
+  const playtest = [...(built.mistakeDemo?.(analysis) ?? []), ...built.toPlaytest(analysis.solution)];
+  const events = built.events.map(({ event, role }) => ({ id: event.id, name: event.name ?? event.id, mapId: map.id, x: event.x, y: event.y, role }));
+  return {
+    summary:
+      `${map.name}(${map.id})에 품질 퍼즐 「${title ?? preset.title}」(${preset.id}) 시공 완료 — 20×15 방(창 ${win.x},${win.y}), 이벤트 ${events.length}개, ` +
+      `풀이 모형 BFS: 해 있음 · 최소 ${analysis.minMoves}수 · 상태 ${analysis.reachableStates}개 · 막다른 상태 ${analysis.deadEndStates}개, 보상 ${reward.summaryLabel}`,
+    data: {
+      mapId: map.id,
+      presetId: preset.id,
+      puzzleId: baseId,
+      title: title ?? preset.title,
+      category: preset.category,
+      solveSwitchId,
+      switchIds,
+      variableIds,
+      origin,
+      roomOrigin: win,
+      events,
+      changeTileCount: built.revealCommandCount,
+      reward: { itemId: reward.itemId, itemName: reward.itemName, gold: reward.gold },
+      wiredGateEventId: wiredGateEventId ?? null,
+      solveSteps: built.solveSteps,
+      solvability: {
+        solvable: analysis.solvable,
+        minMoves: analysis.minMoves,
+        reachableStates: analysis.reachableStates,
+        deadEndStates: analysis.deadEndStates,
+        truncated: analysis.truncated,
+        solution: analysis.solution,
+      },
+      playtest,
+      walkabilityVerified: true,
+    },
+    ...(warnings.length > 0 ? { warnings } : {}),
+  };
+}
+
 const listPuzzlePresetsTool: ToolDefinition = {
   name: "list_puzzle_presets",
   description:
-    "AI 조수가 맵·던전·실내에 바로 설치할 수 있는 16종 JRPG·어드벤처 퍼즐 프리셋 카탈로그를 조회한다. " +
-    "① 레버-비밀통로 changeTile 개방(lever_secret_passage) ② 2단계 비밀번호/순서 레버(two_step_sequence) " +
-    "③ 성당 파이프 오르간·별자리 조율(cathedral_organ_tuning) ④ 횃불/화로 점화 순서(brazier_ignition_order) " +
-    "⑤ 석상/바위 발판 스위치(statue_pressure_plates) ⑥ 얼음/컨베이어 미끄럼 길 찾기(ice_conveyor_slide) " +
-    "⑦ 시간의 문 시대 연동 기믹(time_gate_causality) ⑧ 열쇠·다이너마이트 장애물 폭파(dynamite_rock_blast) " +
-    "⑨ 보물상자 함정/미믹/진실의 상자 수수께끼(riddle_mimic_chests) ⑩ 수문/용암 수위 조절 다리 개방(sluice_lava_bridge) " +
-    "⑪ 경비병 시야/순찰 잠입(stealth_guard_patrol) ⑫ 보스 봉인 결계 3비석 해제(boss_seal_monoliths) " +
+    "AI 조수가 맵·던전·실내에 바로 설치할 수 있는 20종 JRPG·어드벤처 퍼즐 프리셋 카탈로그(상태 공간 BFS 검증 품질 프리셋 12종 + 호환 프리셋 8종)를 조회한다. " +
+    "① 레버-비밀통로(lever_secret_passage) ② 4레버 마스터마인드 판정(two_step_sequence) " +
+    "③ 성당 오르간 5음 메아리 기억(cathedral_organ_tuning) ④ 사방 화로 관계 단서 점화(brazier_ignition_order) " +
+    "⑤ 석상 밀기 발판 소코반(statue_pressure_plates) ⑥ 얼음/컨베이어 미끄럼(ice_conveyor_slide) " +
+    "⑦ 시간의 문 시대 연동(time_gate_causality) ⑧ 다이너마이트 장애물 폭파(dynamite_rock_blast) " +
+    "⑨ 거짓말쟁이 상자 추론(riddle_mimic_chests) ⑩ 두 저수조 3·5칸 수위 맞추기(sluice_lava_bridge) " +
+    "⑪ 경비병 시야/순찰 잠입(stealth_guard_patrol) ⑫ 보스 결계 3×3 수정 뒤집기 라이츠아웃(boss_seal_monoliths) " +
     "⑬ 거대 바위 굴리기·구렁 메우기(rolling_boulder_chasm) ⑭ 고대 거울 빛줄기 굴절(mirror_beam_refraction) " +
-    "⑮ 광산 선로 전환기 & 광차 충돌(minecart_track_switch) ⑯ 사원소 룬 제단 공명(elemental_pedestal_swap). " +
+    "⑮ 광산 선로 전환기 & 광차 충돌(minecart_track_switch) ⑯ 사원소 구슬 제단 배치 추론(elemental_pedestal_swap) " +
+    "⑰ 무너지는 판자 다리 한붓 건너기(cracked_plank_bridge) ⑱ 서재 유물 세기 세 자리 자물쇠(number_code_lock) " +
+    "⑲ 청동 저울 추 무게 맞추기(balance_scale_weights) ⑳ 뒤집히는 룬 바닥 4×3 보행(flip_floor_tiles). " +
     "조회한 presetId 를 author_map_puzzle({mapId, presetId, x?, y?}) 에 전달해 한 번에 시공한다.",
   mode: "read",
   domains: ["event", "map"],
@@ -1001,15 +1084,16 @@ const listPuzzlePresetsTool: ToolDefinition = {
     properties: {
       category: {
         type: "string",
-        description: "카테고리 필터(mechanism|sequence|musical_astronomy|elemental|spatial|movement|time_causality|obstacle_clear|riddle|environment|stealth|boss_seal)",
+        description:
+          "카테고리 필터(mechanism|sequence|musical_astronomy|elemental|spatial|movement|time_causality|obstacle_clear|riddle|environment|stealth|boss_seal|logic|memory|navigation)",
       },
       query: {
         type: "string",
-        description: "검색어(예: 레버, 오르간, 화로, 발판, 미끄럼, 시간의문, 다이너마이트, 미믹, 수문, 경비병, 결계)",
+        description: "검색어(예: 레버, 마스터마인드, 오르간, 화로, 소코반, 발판, 미믹, 수조, 라이츠아웃, 판자다리, 자물쇠, 저울, 바닥)",
       },
       presetId: {
         type: "string",
-        description: "특정 프리셋 id 또는 번호(1~16)",
+        description: "특정 프리셋 id 또는 번호(1~20)",
       },
     },
     additionalProperties: false,
@@ -1044,7 +1128,7 @@ const listPuzzlePresetsTool: ToolDefinition = {
 const authorMapPuzzleTool: ToolDefinition = {
   name: "author_map_puzzle",
   description:
-    "16종 퍼즐 프리셋(list_puzzle_presets) 중 하나를 대상 맵에 원자적으로 시공한다. " +
+    "20종 퍼즐 프리셋(list_puzzle_presets) 중 하나를 대상 맵에 원자적으로 시공한다. " +
     "{mapId, presetId, puzzleId?, x?, y?, targetMapId?, gateEventId?, solveSwitchId?, title?, hintText?, reward?} — " +
     "x·y 를 생략하면 맵의 주 통행 영역에서 길·출입구·시작점을 막지 않는 안전한 바닥 클러스터를 자동으로 찾아 배치한다. " +
     "모든 프리셋은 ① 작동 전/후가 눈에 보이는 2상태 기물 그래픽(레버·화로·발판·비석·보물상자·낙석·경비병) " +
@@ -1131,6 +1215,10 @@ const authorMapPuzzleTool: ToolDefinition = {
         : undefined;
 
     const landings = collectTransferLandings(draft, map.id);
+    const mechanic = PUZZLE_MECHANICS[presetId];
+    if (mechanic) {
+      return runMechanicPreset(draft, map, preset, mechanic, { baseId, solveSwitchId, requestedAnchor, landings, args });
+    }
     const stagePlan = buildDramaticPuzzleStage(
       draft,
       map,
