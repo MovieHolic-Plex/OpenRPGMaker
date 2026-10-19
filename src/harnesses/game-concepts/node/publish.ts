@@ -1,5 +1,6 @@
 // publish — 피드 라인업(사람이 받았고 판정 해시 == 현재 그림, 지금 칩셋으로 지을 수 있는 것)만 스토어에 올린다.
-// --target staging(기본, 테일스케일 스테이징) | prod(운영, 명시해야 한다) | http://… (임시 로컬 서버).
+// --target staging(기본, STORE_PUBLISH_STAGING_URL) | prod(운영, STORE_PUBLISH_PRODUCTION_URL — 명시해야 한다) | http://… (임시 로컬 서버).
+// 주소는 코드에 두지 않는다(openwiki/asset-store.md 「게시기」). 환경 변수가 없으면 아무것도 보내지 않고 멈춘다.
 // 토큰: OPRN_STORE_TOKEN, 없으면 storeCli 로그인 파일(~/.config/oprn-store/cli.json)의 그 주소 항목. 운영자 계정이어야 한다.
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
@@ -8,7 +9,15 @@ import { join } from "node:path";
 import type { GameConcept } from "../../../concepts/format";
 import { imagePath, lineupCandidates, paths, readJson, sha256File, writeJsonAtomic } from "./data";
 
-const TARGETS: Record<string, string> = { staging: "http://mdc-server:18320", prod: "https://store.openrpgmaker.com" };
+const TARGET_ENV: Record<string, string> = { staging: "STORE_PUBLISH_STAGING_URL", prod: "STORE_PUBLISH_PRODUCTION_URL" };
+
+function targetBase(targetArg: string): string {
+  const envName = TARGET_ENV[targetArg];
+  const base = envName ? process.env[envName]?.trim() : targetArg;
+  if (!base) throw new Error(`${envName} 가 설정되지 않았습니다. 게시 주소는 환경 변수로만 받습니다.`);
+  if (!/^https?:\/\//.test(base)) throw new Error(`--target 은 staging|prod|http(s) 주소여야 합니다(지금 ${base}).`);
+  return base.replace(/\/+$/, "");
+}
 
 function tokenFor(base: string): string {
   if (process.env.OPRN_STORE_TOKEN) return process.env.OPRN_STORE_TOKEN;
@@ -32,7 +41,7 @@ async function api(base: string, token: string, path: string, init: { method: st
 export async function publish(argv: string[]): Promise<number> {
   const targetArg = argv.includes("--target") ? argv[argv.indexOf("--target") + 1]! : "staging";
   if (targetArg === "prod" && !argv.includes("--yes-prod")) throw new Error("운영 게시는 --target prod --yes-prod 를 함께 줘야 합니다.");
-  const base = (TARGETS[targetArg] ?? targetArg).replace(/\/+$/, "");
+  const base = targetBase(targetArg);
   const token = tokenFor(base);
   const { concepts: ordered, skipped } = lineupCandidates();
   for (const line of skipped) console.warn(`[publish] 뺌 ${line}`);

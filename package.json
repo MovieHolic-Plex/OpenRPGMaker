@@ -101,7 +101,9 @@
     "qa:standalone": "node scripts/qa-standalone-boot.mjs",
     "build:standalone:bundle": "vite build --config vite.standalone.config.ts --configLoader runner",
     "serve:project": "node scripts/oprn-serve.mjs",
-    "harness": "vite-node --script scripts/harness.mts --"
+    "harness": "vite-node --script scripts/harness.mts --",
+    "store:publish-buildings": "vite-node --script scripts/store/publish-buildings.mts --",
+    "store:publish-bundle": "vite-node --script scripts/store/publish-bundle.mts --"
   },
   "dependencies": {
     "@oh-my-pi/pi-agent-core": "^18.8.4",
