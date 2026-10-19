@@ -20,6 +20,7 @@ import {
   type ExportProjectSource,
 } from "@/player/exportSaveNamespace";
 import { hostExitReturnUrl, parseHostBridge, type HostBridge } from "@/player/hostBridge";
+import { installDesktopShellBridge, type DesktopShellBootConfig } from "@/player/desktopShellBridge";
 import { stopAllAudio } from "@/player/audio";
 import { registerExportAssetBase } from "@/assets/inlineAssetStore";
 import { installExportUploadedAssets } from './exportUploadedAssets';
@@ -41,6 +42,7 @@ interface OpenRpgBootConfig {
   // 호스트 주입값은 신뢰하지 않는다 — hostBridge.parseHostBridge 가 방어적으로 파싱한다.
   readonly returnUrl?: unknown;
   readonly hostFeatures?: unknown;
+  readonly desktopShell?: DesktopShellBootConfig;
 }
 
 function readBootConfig(): OpenRpgBootConfig {
@@ -134,6 +136,7 @@ function startPlayer(
     document.title = project.meta.title || `${PRODUCT_BRAND} Player`;
     // 호스트(커뮤니티 사이트)가 주입한 returnUrl/hostFeatures — 잘못된 값은 조용히 무시된다.
     const host = parseHostBridge(boot);
+    installDesktopShellBridge(root, boot.desktopShell);
     const probe = boot.qaInstrumentation === true ? boot.actionCombatProbe : undefined;
     renderPlayer(root, {
       // 픽셀 격자 계약: 에메랄드 몬스터 게임은 정수 배율만 쓰고 남는 창은 여백(letterbox)으로 둔다 — 비정수 배율은 도트 크기가 섞인다.
