@@ -31,9 +31,9 @@ const BUILTIN_DEMO_CARDS: readonly {
   {
     id: "chrono-bell",
     badge: "기본 JRPG 대표작",
-    title: "『시간의 종소리와 무너진 별』",
-    subtitle: "정통 시간여행 JRPG · 7개 맵 · 6컷 오프닝 · 시간의 문 · 퍼즐 · 96px 보스전",
-    desc: "천년제 광장의 범종과 텔레포드 시연 사고로 열린 시대의 문을 넘어 중세 대성당·아리아 돔·태고의 화산과 2페이즈 최종 보스전을 바로 체험하거나 편집기에서 뜯어볼 수 있습니다.",
+    title: "『폴른 스타: 추락한 별과 태엽의 성녀』",
+    subtitle: "중세 마법 판타지 JRPG · 6컷 픽셀 오프닝 · 안드로이드 귀환 여정 제1막 · 96px 보스전",
+    desc: "왕도 아스텔의 밤하늘에 추락한 별의 방주에서 깨어난 태엽 안드로이드 소녀 『이리스』와 별지기 기사 『카엘』이 성좌 심문관 발렌의 추격을 뚫고 천상 귀환 좌표를 찾는 정통 판타지 JRPG입니다.",
     thumb: "/assets/generated/welcome/slide-04.png",
     playTestId: "builtin-demo-play-chrono-bell",
     openTestId: "builtin-demo-open-chrono-bell",

@@ -14,7 +14,8 @@ const CANONICAL_PROJECT_PARAM = "projectRecovered";
 export function createDevShowcaseProjectForLocation(): Project | null {
   if (typeof window === "undefined") return null;
   const params = new URLSearchParams(window.location.search);
-  const demo = params.get("demo");
+  const rawDemo = params.get("demo");
+  const demo = rawDemo === "fallen-star" ? "chrono-bell" : rawDemo;
   if (demo === "chrono-bell" || demo === "emerald-crown" || demo === "shitamachi-fourth-season") {
     return createFlagshipDemoProject(demo).project;
   }
