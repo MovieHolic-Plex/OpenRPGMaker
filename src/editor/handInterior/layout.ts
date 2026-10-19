@@ -10,6 +10,7 @@ import type { HandInteriorSpec } from "./builder";
 import type { HandInteriorConnect, HandInteriorNotch, HandInteriorRoom } from "./rooms";
 import { programKinds, roomPrograms, roomTemplates, templatesOfKind, templateStyle, type InteriorRoomTemplate, type InteriorStyleVariant } from "./templates";
 import { HALL_DRESS, HALL_H, HALL_KIND, type HallDress } from "./archHall";
+import { contrastPair } from "./wallContrast";
 import { MODERN_PROGRAM_VARIATION, type ModernProgramVariation } from "./modernPresets";
 import { VENUE_SCALE_CONTRACT } from "./venueScale";
 
@@ -29,7 +30,7 @@ export interface LayoutRequest {
   readonly styleVariant?: InteriorStyleVariant;
   readonly maxWidth?: number; readonly maxHeight?: number;
 }
-export interface LayoutRoom extends HandInteriorRoom { readonly kind: string; readonly template?: string; readonly dress?: HallDress; readonly notch?: HandInteriorNotch }
+export interface LayoutRoom extends HandInteriorRoom { readonly kind: string; readonly template?: string; readonly dress?: HallDress }
 export interface LayoutCandidate {
   readonly width: number; readonly height: number; readonly score: number;
   readonly rooms: LayoutRoom[]; readonly connect: HandInteriorConnect[]; readonly exit: { readonly room: string; readonly x?: number; readonly width?: number };
@@ -537,13 +538,11 @@ function buildCandidatesForVariant(
     const fixed = Boolean(vary?.v.fixed?.includes(w.kind));
     const addW = fixed ? 0 : styleVariant === "C" ? (isEnt ? 4 : idx % 2 === 0 ? 2 : 0) : styleVariant === "D" ? (isEnt ? 2 : idx % 2 === 1 ? 2 : 0) : 0;
     const addH = fixed ? 0 : styleVariant === "C" ? (!isEnt && idx === 0 ? 2 : 0) : styleVariant === "D" ? (isEnt ? 2 : idx === 0 ? 1 : 0) : 0;
-    return {
-      ...w,
-      tw: w.tw + addW,
-      th: w.th + addH,
-      floor: explicitFloorIds.has(w.id) ? w.floor : remapMaterial(tilesetId, "floors", w.floor, styleVariant, S),
-      wall: explicitWallIds.has(w.id) ? w.wall : remapMaterial(tilesetId, "walls", w.wall, styleVariant, S),
-    };
+    const floor0 = explicitFloorIds.has(w.id) ? w.floor : remapMaterial(tilesetId, "floors", w.floor, styleVariant, S);
+    const wall0 = explicitWallIds.has(w.id) ? w.wall : remapMaterial(tilesetId, "walls", w.wall, styleVariant, S);
+    // 벽면 두 줄이 바닥과 같은 색이면 구분이 안 된다(R20) - 방이 직접 지정한 재질이 아니면 대비가 모자란 쌍을 가장 가까운 재질로 바꾼다.
+    const pair = tilesetId === "modern_city" && !explicitFloorIds.has(w.id) && !explicitWallIds.has(w.id) ? contrastPair(floor0, wall0) : { floor: floor0, wall: wall0 };
+    return { ...w, tw: w.tw + addW, th: w.th + addH, floor: pair.floor, wall: pair.wall };
   });
   // program 이 위아래를 뒤집는 쌍은 기본 표의 반대 쌍을 뺀다(지하철역: 승강장이 대합실 위). program 만의 쌍은 기본 표보다 무겁게 본다.
   const aboveRules: Pair[] = vary?.v.above
@@ -671,16 +670,25 @@ function buildCandidatesForVariant(
       return { id: w.id, kind: w.kind, x0, y0: rc.y, x1: x0 + rc.w - 1, y1: rc.y + rc.h - 1, ...(w.floor ? { floor: w.floor } : {}), ...(w.wall ? { wall: w.wall } : {}), ...(w.template ? { template: w.template.id } : {}), ...(w.dress ? { dress: w.dress } : {}) };
     });
     // ㄱ·ㄴ자 방 - 바닥 줄 방(남쪽이 건물 밖 벽, 아래 이웃 없음) 중 큰 방의 한 귀퉁이를 구조 코어(설비 샤프트·벽장)로 도려 낸다. 이웃 방 쪽 귀퉁이와 출구 방은 피한다.
-    if (vary0?.v.rows) {
+    if (tilesetId === "modern_city" && req.program && rooms.length >= 3) {
       rooms.forEach((rm, i) => {
-        const kind = rm.kind;
         const rw = rm.x1 - rm.x0 + 1, rh = rm.y1 - rm.y0 + 1;
-        const below = rooms.some((q) => q !== rm && q.y0 > rm.y1 && q.x0 <= rm.x1 && q.x1 >= rm.x0);
-        if (rm.id === entrance || below || rw < 10 || rh < 8 || isHub(kind) || kind === HALL_KIND) return;
+        if (rm.kind === HALL_KIND) return;
+        const over = (q: LayoutRoom) => q !== rm && q.x0 <= rm.x1 && q.x1 >= rm.x0;
+        const below = rooms.some((q) => over(q) && q.y0 > rm.y1), above = rooms.some((q) => over(q) && q.y1 < rm.y0);
         const east = rooms.some((q) => q !== rm && q.x0 === rm.x1 + 2 && q.y0 <= rm.y1 && q.y1 >= rm.y0);
         const west = rooms.some((q) => q !== rm && q.x1 === rm.x0 - 2 && q.y0 <= rm.y1 && q.y1 >= rm.y0);
-        const corner = !east ? "se" : !west ? "sw" : undefined;
-        if (corner) rooms[i] = { ...rm, notch: { corner, w: 3, h: 3 } };
+        const notches: HandInteriorNotch[] = [];
+        if (rm.id === entrance) {
+          // 현관 홈(vestibule) - 넓은 출구 방의 남쪽 두 귀퉁이를 막아 출구 쪽이 좁아진 ㅜ자 로비로 만든다.
+          const vw = styleVariant === "C" ? 2 : 3;
+          if (!below && rw >= 12 && rh >= 7) { if (!east) notches.push({ corner: "se", w: vw, h: 2 }); if (!west) notches.push({ corner: "sw", w: vw, h: 2 }); }
+        } else if (!isHub(rm.kind)) {
+          // ㄱ·ㄴ자 방 - 남쪽이 바깥벽인 큰 방은 한 귀퉁이를 구조 코어로, 북쪽이 바깥벽인 큰 방은 북쪽 귀퉁이를 벽장·설비실 덩이로 도려 낸다.
+          if (!below && rw >= 10 && rh >= 8 && (!east || !west)) notches.push({ corner: !east ? "se" : "sw", w: 3, h: 3 });
+          else if (!above && rw >= 12 && rh >= 9 && (!east || !west)) notches.push({ corner: !east ? "ne" : "nw", w: 3, h: 2 });
+        }
+        if (notches.length) rooms[i] = { ...rm, notches };
       });
     }
     const exitRoom = rooms.find((rm) => rm.id === entrance) ?? rooms[0]!;
