@@ -1,6 +1,6 @@
 {
  "tiles": {
-  "count": 17006,
+  "count": 17007,
   "tilesPerRow": 96,
   "rows": 178,
   "sheetPx": [
@@ -11,8 +11,8 @@
   "original": 2880,
   "pc_variant_copies": 4,
   "composite_cells": 253,
-  "block_cells": 13802,
-  "legacy": 67,
+  "block_cells": 13804,
+  "legacy": 66,
   "legacy_ids": [
    16642,
    16647,
@@ -45,13 +45,13 @@
    "prop": 1692,
    "people-reserve": 155,
    "composite": 253,
-   "block": 13802
+   "block": 13804
   }
  },
  "pc_counts": {
   "star": 6883,
   "solid": 4266,
-  "floor": 3931,
+  "floor": 3933,
   "solidfloor": 1031,
   "flat": 673,
   "blank": 155
@@ -519,7 +519,7 @@
    },
    {
     "name": "jp_inaka_pack",
-    "cells": 306,
+    "cells": 308,
     "autotiles": 0,
     "groups": 10,
     "kits": 29,
@@ -626,7 +626,7 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 17006,
+  "tiles_checked": 17007,
   "kits_checked": 1556,
   "groups_checked": 367,
   "autotiles_checked": 17
@@ -648,24 +648,24 @@
    "normalized_colors": 46,
    "normalized_pixels": {
     "#4f80d6 -> #627e9c": 55263,
-    "#287ea8 -> #456184": 29295,
-    "#b22430 -> #a9432f": 28483,
-    "#4c0717 -> #5a1d1a": 27585,
-    "#2e9963 -> #49804c": 27496,
-    "#164d75 -> #31486b": 24766,
-    "#801223 -> #862c22": 20382,
-    "#db4d4a -> #bf6446": 20222,
-    "#f0cd45 -> #e0c57a": 18486,
-    "#53c776 -> #689e63": 14310,
+    "#287ea8 -> #456184": 29279,
+    "#b22430 -> #a9432f": 28499,
+    "#4c0717 -> #5a1d1a": 27603,
+    "#2e9963 -> #49804c": 27501,
+    "#164d75 -> #31486b": 24983,
+    "#801223 -> #862c22": 20481,
+    "#db4d4a -> #bf6446": 20265,
+    "#f0cd45 -> #e0c57a": 18320,
+    "#53c776 -> #689e63": 14311,
     "#1b6b50 -> #34633c": 13430,
-    "#ffe26e -> #fae29f": 11967,
+    "#ffe26e -> #fae29f": 11896,
     "#c7a51c -> #b89d53": 11646,
-    "#7b9cf7 -> #627e9c": 11547,
+    "#7b9cf7 -> #627e9c": 11554,
     "#c26027 -> #93492c": 9685,
-    "#f78175 -> #de8264": 9266,
+    "#f78175 -> #de8264": 9275,
     "#0a2847 -> #233352": 9123,
-    "#81f093 -> #689e63": 6629,
-    "#0c3d35 -> #254a32": 6539,
+    "#81f093 -> #689e63": 6630,
+    "#0c3d35 -> #254a32": 6537,
     "#eb8e4f -> #b06640": 5561,
     "#ffb278 -> #c88a62": 4184,
     "#bd6eb5 -> #7282b0": 4103,
@@ -690,7 +690,7 @@
    }
   }
  },
- "sheet_hash": "906138a6e6bf144e008356932caad225f1add080",
+ "sheet_hash": "4510b0dc6e3d50bbdf538f4e706a9162a4bea3e3",
  "pc_rule": "tiledata/jp-city/bake/PC-RULES.md",
  "reassembly_from_files": {
   "kits_checked": 1556,
@@ -791,7 +791,7 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 17006,
+  "tiles_checked": 17007,
   "kits_checked": 1556,
   "groups_checked": 367,
   "autotiles_checked": 17

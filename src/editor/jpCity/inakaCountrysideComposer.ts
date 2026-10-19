@@ -1,6 +1,7 @@
 // 일본 시골(이나카 여름방학, jp-inaka) 칩셋 카탈로그 및 6대 쇼케이스 장면 조립기.
-// 9종의 시골 바닥·물·논 타일(inaka-*)과 30종의 3/4 탑뷰 시골 건축·소품 키트(inaka-*)를
-// 겹침·부유·물/진흙 오배치 없이 32×22 맵 위에 정밀 시공한다.
+// 바닥은 jp_city 동네(town.png)와 같은 오토타일 재료(잔디·자갈 참배길·생활도로·보도 연석·수로·연못·산길 흙)를 fill_region 으로 깔아
+// 8방향 가장자리(연석·잔디 테·석축)가 저절로 생기게 하고, 논·밭 같은 시골 전용 면만 inaka-* 단일 타일로 칠한다.
+// 생울타리·블록담은 jp_city 선(4방향) 오토타일로 긋고, 전봇대(jp-pole-wood)와 전선(jp-wire-N)은 town.mjs 와 같은 규칙으로 4층에 잇는다.
 
 export interface InakaGroundTileSpec {
   readonly id: string;
@@ -19,12 +20,28 @@ export interface InakaKitSpec {
   readonly allowWet: boolean;
 }
 
-export interface InakaGroundFillOp {
+export interface InakaRect {
   readonly x: number;
   readonly y: number;
   readonly w: number;
   readonly h: number;
+}
+
+/** 바닥 면 채우기. material 은 jp_city fill_region 재료 라벨(잔디·수로…) 또는 inaka-* 단일 타일 그룹 이름. */
+export interface InakaGroundFillOp extends InakaRect {
   readonly material: string;
+}
+
+/** 2층(upper) 선 오토타일: 생울타리·블록담·철망 울타리. 1칸 폭 직선(가로 또는 세로). */
+export interface InakaLineOp extends InakaRect {
+  readonly material: "생울타리" | "블록담" | "철망 울타리";
+}
+
+/** 전봇대 줄: 발(맨 아래 칸) 행 footY 에 xs 열마다 전봇대를 세우고 이웃 기둥 사이를 jp-wire-<간격> 으로 잇는다(4층). */
+export interface InakaPoleRowOp {
+  readonly footY: number;
+  readonly xs: readonly number[];
+  readonly kit?: "jp-pole-wood" | "jp-pole";
 }
 
 export interface InakaStampOp {
@@ -47,11 +64,13 @@ export interface InakaShowcaseScene {
   readonly height: number;
   readonly baseGround: string;
   readonly fills: readonly InakaGroundFillOp[];
+  readonly lines?: readonly InakaLineOp[];
   readonly stamps: readonly InakaStampOp[];
+  readonly poleRows?: readonly InakaPoleRowOp[];
 }
 
 export interface InakaComposeStep {
-  readonly tool: "fill_region" | "stamp_object";
+  readonly tool: "fill_region" | "paint_line" | "stamp_object";
   readonly args: Readonly<Record<string, unknown>>;
   readonly note: string;
 }
@@ -63,6 +82,13 @@ export interface InakaComposePlan {
   readonly skippedStamps: readonly string[];
 }
 
+/** 키트 크기와 2층 그림이 있는 칸(행 우선 w*h). opaque 가 없으면 사각형 전체를 찬 것으로 본다. */
+export interface InakaKitShape {
+  readonly w: number;
+  readonly h: number;
+  readonly opaque?: readonly boolean[];
+}
+
 export const INAKA_GROUND_TILES: readonly InakaGroundTileSpec[] = [
   { id: "inaka-paddy-water", groupId: "jp:inaka-paddy-water", ko: "논(모내기 물논)", passable: false, surface: "paddy" },
   { id: "inaka-paddy-summer", groupId: "jp:inaka-paddy-summer", ko: "논(푸른 여름 벼)", passable: false, surface: "paddy" },
@@ -72,7 +98,7 @@ export const INAKA_GROUND_TILES: readonly InakaGroundTileSpec[] = [
   { id: "inaka-canal-wall", groupId: "jp:inaka-canal-wall", ko: "농수로 콘크리트·석축 벽", passable: false, surface: "water" },
   { id: "inaka-gravel-road", groupId: "jp:inaka-gravel-road", ko: "시골 자갈 신작로", passable: true, surface: "land" },
   { id: "inaka-river-shallow", groupId: "jp:inaka-river-shallow", ko: "시골 맑은 개울", passable: false, surface: "water" },
-  { id: "inaka-meadow-wildflower", groupId: "jp:inaka-meadow-wildflower", ko: "여름 들꽃 풀밭", passable: true, surface: "land" },
+  { id: "inaka-meadow-wildflower", groupId: "jp:inaka-meadow-wildflower", ko: "여름 풀밭", passable: true, surface: "land" },
 ] as const;
 
 export const INAKA_KITS: readonly InakaKitSpec[] = [
@@ -110,10 +136,13 @@ export const INAKA_KITS: readonly InakaKitSpec[] = [
 
 // 쇼케이스 장면에서 그대로 재사용하는 기존 jp_city 키트(새로 그리지 않는다).
 export const INAKA_REUSED_JP_CITY_KITS: readonly string[] = [
+  "jp-bldg-station-small", "jp-bldg-shop-dagashi", "jp-bldg-house-hiraya-gable", "jp-bldg-house-hiraya", "jp-bldg-house-machiya",
+  "jp-bldg-shrine-haiden", "jp-bldg-post-office", "jp-bldg-koban", "jp-bldg-shop-greengrocer",
   "jp-train-car-a", "jp-train-car-b", "jp-rail-h", "jp-rail-xing", "jp-rail-xing-bars", "jp-rail-verge", "jp-rail-wire",
-  "jp-platform-edge", "jp-prop-catenary-pole", "jp-prop-bus", "jp-prop-car-white", "jp-bus-stop", "jp-lot-veg",
-  "jp-prop-tree-sakura", "jp-prop-stone-lantern", "jp-jizo", "jp-rg-sugi", "jp-rg-bamboo-grove", "jp-rg-sunflower",
-  "jp-rg-hazakake", "jp-rg-kakashi", "jp-rg-doshirube", "jp-rg-moss-buddha",
+  "jp-platform-edge", "jp-prop-catenary-pole", "jp-prop-bus", "jp-prop-car-white", "jp-lot-veg", "jp-pole-wood", "jp-wire-*",
+  "jp-prop-tree-sakura", "jp-prop-tree-zelkova", "jp-prop-tree-ginkgo", "jp-prop-stone-lantern", "jp-prop-chozuya", "jp-torii",
+  "jp-hokora-jizo", "jp-pots", "jp-rg-sugi", "jp-rg-pine", "jp-rg-maple", "jp-rg-bamboo-grove", "jp-rg-sunflower", "jp-rg-ishigaki",
+  "jp-rg-hazakake", "jp-rg-kakashi", "jp-rg-doshirube", "jp-rg-moss-buddha", "jp-rg-fishing-boat", "jp-rg-mujin-eki",
 ] as const;
 
 const WET_MATERIALS: Readonly<Record<string, true>> = {
@@ -126,7 +155,11 @@ const WET_MATERIALS: Readonly<Record<string, true>> = {
   "논(물 댄 모)": true,
   "바다": true,
   "수로": true,
+  "연못": true,
 };
+
+/** jp_city 전봇대 줄 규칙(town.mjs poleRow): 전선 키트 윗줄은 콘크리트 전봇대(10칸) 꼭대기에 맞춘다. */
+const WIRE_TOP_POLE_HEIGHT = 10;
 
 export function inakaKitId(id: string): string {
   const trimmed = id.trim();
@@ -137,7 +170,7 @@ export function inakaKitId(id: string): string {
 export function paintInakaGround(
   map: { readonly width: number; readonly height: number; readonly lowerTiles: number[] },
   tileset: { readonly tileGroups?: readonly { readonly id: string; readonly name: string; readonly tileIds: readonly number[] }[] },
-  rect: { readonly x: number; readonly y: number; readonly w: number; readonly h: number },
+  rect: InakaRect,
   material: string,
 ): boolean {
   const norm = material.startsWith("inaka-ground-") ? `inaka-${material.slice("inaka-ground-".length)}` : material;
@@ -158,6 +191,9 @@ export function paintInakaGround(
   return true;
 }
 
+const W40 = 40;
+const H26 = 26;
+
 export const INAKA_SHOWCASE_SCENES: readonly InakaShowcaseScene[] = [
   {
     id: "01-kominka-summer-village",
@@ -165,487 +201,426 @@ export const INAKA_SHOWCASE_SCENES: readonly InakaShowcaseScene[] = [
     fileName: "01-kominka-summer-village.png",
     titleKo: "01. 여름방학 초가 고민가와 기와 농가 마을",
     subtitleJa: "茅葺き古民家と瓦農家の夏休み集落",
-    descriptionKo: "대숲·삼나무 뒷산 아래 다져진 흙마당의 초가 고민가와 기와 농가, 토장 창고, 텃밭, 수국 돌담, 해바라기 밭, 작두 우물, 흰 경트럭이 어우러진 여름 시골 마을.",
-    width: 32,
-    height: 22,
-    baseGround: "inaka-meadow-wildflower",
+    descriptionKo:
+      "대숲·삼나무 뒷산 아래 자갈 마당을 낀 초가 고민가·토장 창고와 기와 농가·단층 박공집, 죽담 사립문과 이끼 돌담·생울타리로 두른 집터, 흙길을 따라 이어진 나무 전봇대와 전선, 농수로와 여름 논, 텃밭·해바라기·무인 판매대와 町家.",
+    width: W40,
+    height: H26,
+    baseGround: "잔디",
     fills: [
-      { x: 4, y: 4, w: 10, h: 6, material: "inaka-aze-path" },
-      { x: 18, y: 4, w: 10, h: 6, material: "inaka-aze-path" },
-      { x: 6, y: 10, w: 2, h: 2, material: "inaka-aze-path" },
-      { x: 22, y: 10, w: 2, h: 2, material: "inaka-aze-path" },
-      { x: 15, y: 5, w: 2, h: 17, material: "inaka-aze-path" },
-      { x: 0, y: 12, w: 32, h: 3, material: "inaka-gravel-road" },
-      { x: 1, y: 15, w: 14, h: 7, material: "inaka-aze-path" },
-      { x: 2, y: 16, w: 12, h: 5, material: "inaka-paddy-summer" },
-      { x: 18, y: 15, w: 14, h: 1, material: "inaka-canal-wall" },
-      { x: 18, y: 16, w: 14, h: 1, material: "inaka-canal-water" },
-      { x: 18, y: 17, w: 13, h: 5, material: "inaka-aze-path" },
+      { x: 0, y: 14, w: 40, h: 2, material: "산길 흙" },
+      { x: 18, y: 6, w: 3, h: 8, material: "산길 흙" },
+      { x: 12, y: 16, w: 2, h: 10, material: "산길 흙" },
+      { x: 1, y: 9, w: 15, h: 4, material: "자갈 참배길" },
+      { x: 21, y: 9, w: 17, h: 4, material: "자갈 참배길" },
+      { x: 0, y: 17, w: 12, h: 2, material: "수로" },
+      { x: 0, y: 20, w: 12, h: 6, material: "산길 흙" },
+      { x: 1, y: 21, w: 10, h: 4, material: "inaka-paddy-summer" },
+      { x: 30, y: 24, w: 10, h: 2, material: "자갈 참배길" },
+    ],
+    lines: [
+      { x: 1, y: 13, w: 6, h: 1, material: "생울타리" },
+      { x: 11, y: 13, w: 5, h: 1, material: "생울타리" },
+      { x: 33, y: 13, w: 6, h: 1, material: "생울타리" },
     ],
     stamps: [
-      { kit: "rg-bamboo-grove", x: 0, y: 0 },
-      { kit: "inaka-kominka-thatched", x: 4, y: 2 },
-      { kit: "inaka-kura-storehouse", x: 10, y: 3 },
-      { kit: "jp-prop-tree-sakura", x: 14, y: 0 },
-      { kit: "inaka-kawara-farmhouse", x: 18, y: 2 },
-      { kit: "inaka-agri-tin-shed", x: 24, y: 3 },
-      { kit: "rg-bamboo-grove", x: 28, y: 0 },
-      { kit: "inaka-unmanned-veg-stand", x: 1, y: 7 },
-      { kit: "jp-bus-stop", x: 0, y: 9 },
-      { kit: "inaka-bicycle-parked", x: 4, y: 7 },
-      { kit: "inaka-well-handpump", x: 10, y: 7 },
-      { kit: "jp-lot-veg", x: 24, y: 6 },
-      { kit: "inaka-well-handpump", x: 29, y: 7 },
-      { kit: "inaka-bamboo-fence-gate", x: 2, y: 10 },
-      { kit: "inaka-hydrangea-hedge", x: 6, y: 10 },
-      { kit: "inaka-mossy-stone-wall", x: 9, y: 10 },
-      { kit: "inaka-wooden-pole-transformer", x: 14, y: 9 },
-      { kit: "inaka-roadside-mirror", x: 17, y: 10 },
-      { kit: "inaka-bamboo-fence-gate", x: 18, y: 10 },
-      { kit: "inaka-mossy-stone-wall", x: 22, y: 10 },
-      { kit: "inaka-hydrangea-hedge", x: 26, y: 10 },
-      { kit: "inaka-wooden-pole-transformer", x: 30, y: 9 },
-      { kit: "inaka-keitora-white", x: 11, y: 12 },
-      { kit: "jp-prop-car-white", x: 20, y: 12 },
-      { kit: "inaka-scarecrow-pair", x: 5, y: 15, allowWet: true },
-      { kit: "inaka-rice-rack-hasagi", x: 9, y: 15, allowWet: true },
-      { kit: "inaka-sluice-gate", x: 18, y: 15, allowWet: true },
-      { kit: "inaka-sunflower-patch", x: 19, y: 17 },
-      { kit: "inaka-sunflower-patch", x: 23, y: 17 },
-      { kit: "inaka-sunflower-patch", x: 27, y: 17 },
-      { kit: "jp-rg-sunflower", x: 19, y: 19 },
-      { kit: "inaka-sunflower-patch", x: 23, y: 19 },
-      { kit: "inaka-jizo-shrine-row", x: 27, y: 19 },
+      // 뒷산 숲(집보다 먼저 찍어 지붕이 숲 앞에 서게 한다)
+      { kit: "rg-bamboo-grove", x: 0, y: 0, allowOverlap: true },
+      { kit: "rg-sugi", x: 4, y: -1, allowOverlap: true },
+      { kit: "rg-sugi", x: 12, y: 0, allowOverlap: true },
+      { kit: "rg-bamboo-grove", x: 15, y: 0, allowOverlap: true },
+      { kit: "rg-sugi", x: 21, y: 0, allowOverlap: true },
+      { kit: "rg-bamboo-grove", x: 26, y: 0, allowOverlap: true },
+      { kit: "rg-sugi", x: 31, y: 0, allowOverlap: true },
+      { kit: "rg-bamboo-grove", x: 36, y: 0, allowOverlap: true },
+      // 서쪽 집터: 초가 고민가 + 토장 창고 + 우물 + 경트럭, 죽담 사립문
+      { kit: "inaka-kominka-thatched", x: 2, y: 4, allowOverlap: true },
+      { kit: "inaka-kura-storehouse", x: 9, y: 5, allowOverlap: true },
+      { kit: "inaka-well-handpump", x: 13, y: 9 },
+      { kit: "inaka-keitora-white", x: 2, y: 10 },
+      { kit: "jp-pots", x: 9, y: 9 },
+      { kit: "inaka-bamboo-fence-gate", x: 7, y: 12 },
+      { kit: "rg-doshirube", x: 21, y: 7 },
+      // 동쪽 집터: 기와 농가 + 단층 박공집, 이끼 돌담
+      { kit: "inaka-kawara-farmhouse", x: 22, y: 4, allowOverlap: true },
+      { kit: "jp-bldg-house-hiraya-gable", x: 29, y: 4, allowOverlap: true },
+      { kit: "inaka-bicycle-parked", x: 28, y: 9 },
+      { kit: "inaka-hydrangea-hedge", x: 34, y: 9 },
+      { kit: "inaka-mossy-stone-wall", x: 21, y: 12 },
+      { kit: "inaka-mossy-stone-wall", x: 25, y: 12 },
+      // 남쪽: 논·농수로·텃밭·町家
+      { kit: "rg-kakashi", x: 4, y: 21, allowWet: true },
+      { kit: "rg-kakashi", x: 8, y: 22, allowWet: true },
+      { kit: "inaka-unmanned-veg-stand", x: 14, y: 16 },
+      { kit: "jp-lot-veg", x: 15, y: 19 },
+      { kit: "jp-lot-veg", x: 15, y: 22 },
+      { kit: "jp-rg-sunflower", x: 20, y: 19 },
+      { kit: "inaka-sunflower-patch", x: 20, y: 22 },
+      { kit: "jp-prop-tree-zelkova", x: 24, y: 17 },
+      { kit: "jp-bldg-house-machiya", x: 31, y: 16, allowOverlap: true },
+      { kit: "jp-prop-tree-sakura", x: 27, y: 19, allowOverlap: true },
     ],
+    poleRows: [{ footY: 16, xs: [1, 15, 28], kit: "jp-pole-wood" }],
   },
   {
     id: "02-dagashiya-and-bus-stop",
     no: 2,
     fileName: "02-dagashiya-and-bus-stop.png",
-    titleKo: "02. 시골 삼거리 막과자 가게(다가시야)와 양철 버스 정류장",
-    subtitleJa: "三叉路の駄菓子屋とトタン屋根のバス停",
-    descriptionKo: "유리 과자병·가챠·아이스크림 냉동고가 놓인 시골 막과자 가게, 수국 핀 양철 버스 정류장, 무인 채소 가판대, 둥근 우체통과 비닐하우스 농장.",
-    width: 32,
-    height: 22,
-    baseGround: "inaka-meadow-wildflower",
+    titleKo: "02. 시골 삼거리 막과자 가게(다가시야)와 버스 정류장",
+    subtitleJa: "三叉路の駄菓子屋と郵便局・交番・バス停",
+    descriptionKo:
+      "생활도로 삼거리 북쪽에 늘어선 駄菓子屋 두 채와 우체국·파출소, 정류장에 막 들어선 노선버스와 시골 버스 대합실, 볼록거울·둥근 우체통·자전거, 전봇대 전선, 남쪽 논두렁 너머 물논과 푸른 여름 논.",
+    width: W40,
+    height: H26,
+    baseGround: "잔디",
     fills: [
-      { x: 3, y: 4, w: 6, h: 5, material: "inaka-aze-path" },
-      { x: 10, y: 5, w: 18, h: 4, material: "inaka-aze-path" },
-      { x: 0, y: 9, w: 32, h: 1, material: "inaka-aze-path" },
-      { x: 0, y: 10, w: 32, h: 4, material: "inaka-gravel-road" },
-      { x: 13, y: 14, w: 5, h: 8, material: "inaka-gravel-road" },
-      { x: 0, y: 14, w: 13, h: 1, material: "inaka-aze-path" },
-      { x: 18, y: 14, w: 14, h: 1, material: "inaka-aze-path" },
-      { x: 1, y: 15, w: 11, h: 6, material: "inaka-aze-path" },
-      { x: 19, y: 15, w: 12, h: 1, material: "inaka-canal-wall" },
-      { x: 19, y: 16, w: 12, h: 1, material: "inaka-canal-water" },
-      { x: 19, y: 17, w: 12, h: 4, material: "inaka-aze-path" },
-      { x: 20, y: 19, w: 10, h: 2, material: "inaka-paddy-water" },
+      { x: 0, y: 12, w: 40, h: 4, material: "생활도로" },
+      { x: 18, y: 0, w: 4, h: 12, material: "생활도로" },
+      { x: 0, y: 11, w: 18, h: 1, material: "보도 연석" },
+      { x: 22, y: 11, w: 18, h: 1, material: "보도 연석" },
+      { x: 19, y: 16, w: 2, h: 10, material: "산길 흙" },
+      { x: 0, y: 19, w: 19, h: 7, material: "산길 흙" },
+      { x: 21, y: 19, w: 19, h: 7, material: "산길 흙" },
+      { x: 1, y: 20, w: 17, h: 5, material: "inaka-paddy-summer" },
+      { x: 22, y: 20, w: 17, h: 5, material: "inaka-paddy-water" },
     ],
+    lines: [{ x: 22, y: 18, w: 18, h: 1, material: "생울타리" }],
     stamps: [
-      { kit: "rg-sugi", x: 0, y: 0 },
-      { kit: "inaka-kawara-farmhouse", x: 3, y: 2 },
-      { kit: "rg-sugi", x: 9, y: 0 },
-      { kit: "inaka-dagashiya", x: 12, y: 4 },
-      { kit: "inaka-retro-postbox-vending", x: 17, y: 6 },
-      { kit: "rg-sugi", x: 19, y: 0 },
-      { kit: "inaka-bus-stop-shelter", x: 20, y: 6 },
-      { kit: "inaka-hydrangea-hedge", x: 23, y: 7 },
-      { kit: "inaka-unmanned-veg-stand", x: 26, y: 7 },
-      { kit: "rg-bamboo-grove", x: 28, y: 0 },
-      { kit: "inaka-bamboo-fence-gate", x: 3, y: 7 },
-      { kit: "inaka-well-handpump", x: 7, y: 7 },
-      { kit: "inaka-wooden-pole-transformer", x: 10, y: 6 },
-      { kit: "inaka-wooden-pole-transformer", x: 28, y: 6 },
-      { kit: "inaka-bicycle-parked", x: 11, y: 8 },
-      { kit: "inaka-bicycle-parked", x: 14, y: 8 },
-      { kit: "inaka-keitora-white", x: 4, y: 11 },
-      { kit: "jp-prop-bus", x: 13, y: 10 },
-      { kit: "inaka-red-tractor", x: 24, y: 11 },
-      { kit: "inaka-roadside-mirror", x: 12, y: 14 },
-      { kit: "inaka-roadside-mirror", x: 18, y: 14 },
-      { kit: "inaka-vinyl-greenhouse", x: 1, y: 15 },
-      { kit: "inaka-agri-tin-shed", x: 7, y: 15 },
-      { kit: "inaka-sunflower-patch", x: 1, y: 19 },
-      { kit: "inaka-sunflower-patch", x: 5, y: 19 },
-      { kit: "inaka-unmanned-veg-stand", x: 9, y: 19 },
-      { kit: "inaka-sluice-gate", x: 19, y: 15, allowWet: true },
-      { kit: "inaka-jizo-shrine-row", x: 22, y: 17 },
-      { kit: "jp-rg-kakashi", x: 28, y: 18, allowWet: true },
+      { kit: "rg-sugi", x: 8, y: -1, allowOverlap: true },
+      { kit: "jp-prop-tree-zelkova", x: 12, y: -1, allowOverlap: true },
+      { kit: "rg-sugi", x: 32, y: -2, allowOverlap: true },
+      { kit: "jp-bldg-shop-dagashi", x: 1, y: 2, allowOverlap: true },
+      { kit: "inaka-dagashiya", x: 9, y: 7, allowOverlap: true },
+      { kit: "inaka-retro-postbox-vending", x: 14, y: 9 },
+      { kit: "inaka-bicycle-parked", x: 16, y: 9 },
+      { kit: "jp-bldg-post-office", x: 23, y: 3, allowOverlap: true },
+      { kit: "jp-bldg-koban", x: 33, y: 5, allowOverlap: true },
+      { kit: "jp-prop-bus", x: 2, y: 12 },
+      { kit: "inaka-keitora-white", x: 30, y: 13 },
+      { kit: "inaka-bus-stop-shelter", x: 6, y: 16 },
+      { kit: "inaka-hydrangea-hedge", x: 10, y: 16 },
+      { kit: "inaka-unmanned-veg-stand", x: 14, y: 16 },
+      { kit: "inaka-roadside-mirror", x: 22, y: 16 },
+      { kit: "jp-prop-tree-sakura", x: 24, y: 13, allowOverlap: true },
+      { kit: "inaka-sunflower-patch", x: 34, y: 16 },
+      { kit: "rg-kakashi", x: 8, y: 21, allowWet: true },
+      { kit: "inaka-scarecrow-pair", x: 29, y: 21, allowWet: true },
     ],
+    poleRows: [{ footY: 18, xs: [0, 12, 27, 36], kit: "jp-pole-wood" }],
   },
   {
     id: "03-wayside-station-and-railcar",
     no: 3,
     fileName: "03-wayside-station-and-railcar.png",
-    titleKo: "03. 여름 논밭 사이 목조 간이역과 통근 전철(기존 jp_city 열차·선로 재사용)",
-    subtitleJa: "夏水田を走るローカル電車と木造無人駅",
-    descriptionKo: "모내기 물논과 푸른 여름 논 사이를 가로지르는 지상 선로(jp-rail-h), 민트색 목조 간이역 승강장에 정차한 기존 jp_city 통근 열차(jp-train-car-a/b)와 건널목(jp-rail-xing)·가선 기둥(jp-prop-catenary-pole).",
-    width: 32,
-    height: 22,
-    baseGround: "inaka-meadow-wildflower",
+    titleKo: "03. 논 사이 시골 역과 2량 통근 열차",
+    subtitleJa: "田んぼの中の小さな駅とローカル電車",
+    descriptionKo:
+      "벚나무 역전 광장(흰 승용차·버스 대합실·둥근 우체통) 옆 さくら駅, 노란 점자 승강장에 정차한 2량 통근 열차, 가선 기둥과 전차선, 건널목, 선로 둔덕 아래 황금 논과 푸른 논.",
+    width: W40,
+    height: H26,
+    baseGround: "잔디",
     fills: [
-      { x: 4, y: 0, w: 6, h: 5, material: "inaka-aze-path" },
-      { x: 4, y: 1, w: 5, h: 3, material: "inaka-paddy-water" },
-      { x: 9, y: 0, w: 11, h: 7, material: "inaka-aze-path" },
-      { x: 23, y: 0, w: 6, h: 6, material: "inaka-aze-path" },
-      { x: 20, y: 0, w: 3, h: 22, material: "inaka-gravel-road" },
-      { x: 0, y: 7, w: 32, h: 4, material: "inaka-gravel-road" },
-      { x: 0, y: 11, w: 20, h: 2, material: "inaka-aze-path" },
-      { x: 23, y: 11, w: 9, h: 2, material: "inaka-aze-path" },
-      { x: 0, y: 13, w: 32, h: 2, material: "inaka-gravel-road" },
-      { x: 0, y: 15, w: 20, h: 7, material: "inaka-aze-path" },
-      { x: 23, y: 15, w: 9, h: 7, material: "inaka-aze-path" },
-      { x: 1, y: 16, w: 8, h: 5, material: "inaka-paddy-water" },
-      { x: 10, y: 16, w: 9, h: 5, material: "inaka-paddy-summer" },
-      { x: 24, y: 16, w: 7, h: 5, material: "inaka-paddy-golden" },
+      { x: 0, y: 1, w: 13, h: 6, material: "보도 연석" },
+      { x: 34, y: 0, w: 3, h: 9, material: "생활도로" },
+      { x: 34, y: 13, w: 3, h: 13, material: "생활도로" },
+      { x: 0, y: 16, w: 33, h: 10, material: "산길 흙" },
+      { x: 1, y: 17, w: 15, h: 8, material: "inaka-paddy-golden" },
+      { x: 17, y: 17, w: 15, h: 8, material: "inaka-paddy-summer" },
     ],
     stamps: [
-      // North rural backdrop & wooden wayside station (station platform row y=6 aligns with jp-platform-edge y=5..6)
-      { kit: "rg-bamboo-grove", x: 0, y: 0 },
-      { kit: "inaka-scarecrow-pair", x: 5, y: 1, allowWet: true },
-      { kit: "inaka-bicycle-parked", x: 11, y: 1 },
-      { kit: "inaka-bicycle-parked", x: 14, y: 1 },
-      { kit: "inaka-wooden-pole-transformer", x: 9, y: 2 },
-      { kit: "inaka-wooden-station", x: 10, y: 3 },
-      { kit: "inaka-retro-postbox-vending", x: 17, y: 3 },
-      { kit: "inaka-wooden-pole-transformer", x: 19, y: 2 },
-      { kit: "inaka-bus-stop-shelter", x: 23, y: 2 },
-      { kit: "inaka-hydrangea-hedge", x: 26, y: 3 },
-      { kit: "rg-sugi", x: 29, y: 0 },
-      // North railway embankment verge & station tactile platform edge (existing jp_city rail kits)
-      { kit: "jp-rail-verge", x: 4, y: 5 },
-      { kit: "jp-rail-verge", x: 5, y: 5 },
-      { kit: "jp-platform-edge", x: 6, y: 5 },
-      { kit: "jp-platform-edge", x: 7, y: 5 },
-      { kit: "jp-platform-edge", x: 8, y: 5 },
-      { kit: "jp-platform-edge", x: 9, y: 5 },
-      { kit: "jp-platform-edge", x: 17, y: 5 },
-      { kit: "jp-platform-edge", x: 18, y: 5 },
-      { kit: "jp-platform-edge", x: 19, y: 5 },
-      { kit: "jp-rail-verge", x: 23, y: 5 },
-      { kit: "jp-rail-verge", x: 24, y: 5 },
-      { kit: "jp-rail-verge", x: 25, y: 5 },
-      { kit: "jp-rail-verge", x: 26, y: 5 },
-      { kit: "jp-rail-verge", x: 27, y: 5 },
-      { kit: "jp-rail-verge", x: 28, y: 5 },
-      // Main horizontal railway track (existing jp-rail-h & jp-rail-xing + jp-rail-xing-bars)
-      { kit: "jp-rail-h", x: 0, y: 7 },
-      { kit: "jp-rail-h", x: 1, y: 7 },
-      { kit: "jp-rail-h", x: 2, y: 7 },
-      { kit: "jp-rail-h", x: 3, y: 7 },
-      { kit: "jp-rail-h", x: 4, y: 7 },
-      { kit: "jp-rail-h", x: 5, y: 7 },
-      { kit: "jp-rail-h", x: 6, y: 7 },
-      { kit: "jp-rail-h", x: 7, y: 7 },
-      { kit: "jp-rail-h", x: 8, y: 7 },
-      { kit: "jp-rail-h", x: 9, y: 7 },
-      { kit: "jp-rail-h", x: 10, y: 7 },
-      { kit: "jp-rail-h", x: 11, y: 7 },
-      { kit: "jp-rail-h", x: 12, y: 7 },
-      { kit: "jp-rail-h", x: 13, y: 7 },
-      { kit: "jp-rail-h", x: 14, y: 7 },
-      { kit: "jp-rail-h", x: 15, y: 7 },
-      { kit: "jp-rail-h", x: 16, y: 7 },
-      { kit: "jp-rail-h", x: 17, y: 7 },
-      { kit: "jp-rail-h", x: 18, y: 7 },
-      { kit: "jp-rail-h", x: 19, y: 7 },
-      { kit: "jp-rail-xing", x: 20, y: 7 },
-      { kit: "jp-rail-xing", x: 21, y: 7 },
-      { kit: "jp-rail-xing", x: 22, y: 7 },
-      { kit: "jp-rail-xing-bars", x: 20, y: 7, allowOverlap: true },
-      { kit: "jp-rail-xing-bars", x: 22, y: 7, allowOverlap: true },
-      { kit: "jp-rail-h", x: 23, y: 7 },
-      { kit: "jp-rail-h", x: 24, y: 7 },
-      { kit: "jp-rail-h", x: 25, y: 7 },
-      { kit: "jp-rail-h", x: 26, y: 7 },
-      { kit: "jp-rail-h", x: 27, y: 7 },
-      { kit: "jp-rail-h", x: 28, y: 7 },
-      { kit: "jp-rail-h", x: 29, y: 7 },
-      { kit: "jp-rail-h", x: 30, y: 7 },
-      { kit: "jp-rail-h", x: 31, y: 7 },
-      // Reused existing jp_city commuter train cars (2-car local formation stopped at station platform)
-      { kit: "jp-train-car-a", x: 8, y: 7, allowOverlap: true },
-      { kit: "jp-train-car-b", x: 12, y: 7, allowOverlap: true },
-      // Overhead catenary wires & poles on Layer 4 (aligned at y=5 so wires hang between pole crossarms)
-      { kit: "jp-rail-wire", x: 2, y: 5, allowOverlap: true, layer: 4 },
-      { kit: "jp-rail-wire", x: 25, y: 5, allowOverlap: true, layer: 4 },
-      { kit: "jp-prop-catenary-pole", x: 1, y: 5, allowOverlap: true, layer: 4 },
-      { kit: "jp-prop-catenary-pole", x: 6, y: 5, allowOverlap: true, layer: 4 },
-      { kit: "jp-prop-catenary-pole", x: 18, y: 5, allowOverlap: true, layer: 4 },
-      { kit: "jp-prop-catenary-pole", x: 24, y: 5, allowOverlap: true, layer: 4 },
-      { kit: "jp-prop-catenary-pole", x: 29, y: 5, allowOverlap: true, layer: 4 },
-      // South railway verge, level crossing mirrors, country road, and rice paddies
-      { kit: "jp-rail-verge", x: 0, y: 11 },
-      { kit: "jp-rail-verge", x: 1, y: 11 },
-      { kit: "jp-rail-verge", x: 2, y: 11 },
-      { kit: "jp-rail-verge", x: 3, y: 11 },
-      { kit: "jp-rail-verge", x: 4, y: 11 },
-      { kit: "jp-rail-verge", x: 5, y: 11 },
-      { kit: "jp-rail-verge", x: 6, y: 11 },
-      { kit: "jp-rail-verge", x: 7, y: 11 },
-      { kit: "inaka-hydrangea-hedge", x: 8, y: 11 },
-      { kit: "inaka-jizo-shrine-row", x: 12, y: 11 },
-      { kit: "inaka-unmanned-veg-stand", x: 16, y: 11 },
-      { kit: "inaka-roadside-mirror", x: 19, y: 11 },
-      { kit: "inaka-roadside-mirror", x: 23, y: 11 },
-      { kit: "jp-rail-verge", x: 25, y: 11 },
-      { kit: "jp-rail-verge", x: 26, y: 11 },
-      { kit: "jp-rail-verge", x: 27, y: 11 },
-      { kit: "jp-rail-verge", x: 28, y: 11 },
-      { kit: "jp-rail-verge", x: 29, y: 11 },
-      { kit: "jp-rail-verge", x: 30, y: 11 },
-      { kit: "jp-rail-verge", x: 31, y: 11 },
-      { kit: "inaka-keitora-white", x: 20, y: 13 },
-      { kit: "inaka-sunflower-patch", x: 1, y: 15, allowWet: true },
-      { kit: "inaka-sunflower-patch", x: 5, y: 15, allowWet: true },
-      { kit: "inaka-rice-rack-hasagi", x: 24, y: 15, allowWet: true },
-      { kit: "inaka-rice-rack-hasagi", x: 28, y: 15, allowWet: true },
-      { kit: "inaka-scarecrow-pair", x: 4, y: 18, allowWet: true },
-      { kit: "jp-rg-kakashi", x: 14, y: 18, allowWet: true },
-      { kit: "jp-rg-kakashi", x: 16, y: 19, allowWet: true },
+      { kit: "jp-prop-tree-sakura", x: 27, y: -1, allowOverlap: true },
+      { kit: "jp-prop-tree-sakura", x: 30, y: 0, allowOverlap: true },
+      { kit: "jp-bldg-station-small", x: 13, y: 1, allowOverlap: true },
+      { kit: "jp-prop-car-white", x: 1, y: 4 },
+      { kit: "inaka-bus-stop-shelter", x: 7, y: 1 },
+      { kit: "inaka-retro-postbox-vending", x: 10, y: 4 },
+      { kit: "inaka-bicycle-parked", x: 28, y: 5 },
+      { kit: "inaka-retro-postbox-vending", x: 37, y: 4 },
+      ...Array.from({ length: 24 }, (_, i) => ({ kit: "jp-platform-edge", x: 8 + i, y: 7 })),
+      ...Array.from({ length: 8 }, (_, i) => ({ kit: "jp-rail-verge", x: i, y: 7 })),
+      ...Array.from({ length: 34 }, (_, i) => ({ kit: "jp-rail-h", x: i, y: 9 })),
+      ...[34, 35, 36].map((x) => ({ kit: "jp-rail-xing", x, y: 9 })),
+      ...[37, 38, 39].map((x) => ({ kit: "jp-rail-h", x, y: 9 })),
+      { kit: "jp-rail-xing-bars", x: 34, y: 9, allowOverlap: true },
+      { kit: "jp-rail-xing-bars", x: 36, y: 9, allowOverlap: true },
+      ...Array.from({ length: 34 }, (_, i) => ({ kit: "jp-rail-verge", x: i, y: 13 })),
+      ...[37, 38, 39].map((x) => ({ kit: "jp-rail-verge", x, y: 13 })),
+      { kit: "jp-train-car-a", x: 15, y: 9, allowOverlap: true },
+      { kit: "jp-train-car-b", x: 19, y: 9, allowOverlap: true },
+      ...[0, 4, 8, 12, 16, 20, 24, 28, 32, 36].map((x) => ({ kit: "jp-rail-wire", x, y: 8, allowOverlap: true, layer: 4 as const })),
+      ...[3, 13, 25, 33].map((x) => ({ kit: "jp-prop-catenary-pole", x, y: 6, allowOverlap: true, layer: 4 as const })),
+      { kit: "inaka-bus-stop-shelter", x: 37, y: 16 },
+      { kit: "jp-rg-hazakake", x: 3, y: 17, allowWet: true },
+      { kit: "jp-rg-hazakake", x: 9, y: 17, allowWet: true },
+      { kit: "rg-kakashi", x: 24, y: 20, allowWet: true },
+      { kit: "inaka-keitora-white", x: 34, y: 20 },
     ],
   },
   {
     id: "04-terraced-paddies-and-waterwheel",
     no: 4,
     fileName: "04-terraced-paddies-and-waterwheel.png",
-    titleKo: "04. 다랑논 세 계절 들판과 물레방아간·농수로·소방 망루",
-    subtitleJa: "棚田の四季・水車小屋と用水路・火の見櫓",
-    descriptionKo: "물 비치는 봄 모내기 논, 한여름 푸른 논, 가을 황금 들판과 하사기 볏단 건조대, 돌축대 아래로 흐르는 농수로와 물레방아간, 수문, 붉은 트랙터와 소방 망루.",
-    width: 32,
-    height: 22,
-    baseGround: "inaka-aze-path",
+    titleKo: "04. 다랑논(棚田)과 물레방아간·농수로·수문",
+    subtitleJa: "棚田と水車小屋・用水路の水門",
+    descriptionKo:
+      "이끼 돌담과 石垣 축대로 층층이 쌓은 황금·물논·여름 다랑논, 동쪽 농수로에 걸친 물레방아간과 철제 수문, 비닐하우스·함석 헛간·트랙터·경트럭, 아랫길의 볏단 걸이와 허수아비·소방 망루.",
+    width: W40,
+    height: H26,
+    baseGround: "잔디",
     fills: [
-      { x: 1, y: 1, w: 9, h: 5, material: "inaka-paddy-water" },
-      { x: 11, y: 1, w: 9, h: 5, material: "inaka-paddy-summer" },
-      { x: 21, y: 1, w: 10, h: 7, material: "inaka-meadow-wildflower" },
-      { x: 0, y: 8, w: 32, h: 1, material: "inaka-canal-wall" },
-      { x: 0, y: 9, w: 32, h: 1, material: "inaka-canal-water" },
-      { x: 1, y: 11, w: 9, h: 4, material: "inaka-paddy-summer" },
-      { x: 11, y: 11, w: 10, h: 4, material: "inaka-paddy-golden" },
-      { x: 22, y: 10, w: 9, h: 5, material: "inaka-aze-path" },
-      { x: 0, y: 15, w: 32, h: 2, material: "inaka-gravel-road" },
-      { x: 1, y: 18, w: 11, h: 3, material: "inaka-paddy-golden" },
-      { x: 13, y: 18, w: 9, h: 3, material: "inaka-paddy-water" },
-      { x: 23, y: 18, w: 8, h: 3, material: "inaka-meadow-wildflower" },
+      { x: 0, y: 0, w: 27, h: 22, material: "산길 흙" },
+      { x: 0, y: 0, w: 26, h: 5, material: "inaka-paddy-golden" },
+      { x: 0, y: 7, w: 12, h: 5, material: "inaka-paddy-water" },
+      { x: 12, y: 7, w: 14, h: 4, material: "inaka-paddy-water" },
+      { x: 0, y: 14, w: 26, h: 5, material: "inaka-paddy-summer" },
+      { x: 33, y: 0, w: 2, h: 26, material: "수로" },
+      { x: 0, y: 21, w: 33, h: 2, material: "산길 흙" },
+      { x: 35, y: 9, w: 5, h: 17, material: "산길 흙" },
     ],
     stamps: [
-      { kit: "inaka-scarecrow-pair", x: 4, y: 2, allowWet: true },
-      { kit: "inaka-scarecrow-pair", x: 14, y: 2, allowWet: true },
-      { kit: "rg-sugi", x: 20, y: 0 },
-      { kit: "inaka-waterwheel-mill", x: 23, y: 4, allowWet: true },
-      { kit: "inaka-fire-watchtower", x: 28, y: 2 },
-      { kit: "inaka-mossy-stone-wall", x: 1, y: 6 },
-      { kit: "inaka-mossy-stone-wall", x: 5, y: 6 },
-      { kit: "inaka-mossy-stone-wall", x: 11, y: 6 },
-      { kit: "inaka-mossy-stone-wall", x: 15, y: 6 },
-      { kit: "inaka-sluice-gate", x: 9, y: 8, allowWet: true },
-      { kit: "inaka-sluice-gate", x: 19, y: 8, allowWet: true },
-      { kit: "inaka-rice-rack-hasagi", x: 11, y: 10, allowWet: true },
-      { kit: "inaka-rice-rack-hasagi", x: 15, y: 10, allowWet: true },
-      { kit: "inaka-agri-tin-shed", x: 22, y: 10 },
-      { kit: "inaka-vinyl-greenhouse", x: 26, y: 10 },
-      { kit: "inaka-wooden-pole-transformer", x: 0, y: 12 },
-      { kit: "inaka-wooden-pole-transformer", x: 21, y: 12 },
-      { kit: "inaka-red-tractor", x: 6, y: 15 },
-      { kit: "inaka-keitora-white", x: 14, y: 15 },
-      { kit: "inaka-unmanned-veg-stand", x: 22, y: 15 },
-      { kit: "inaka-roadside-mirror", x: 30, y: 14 },
-      { kit: "jp-rg-hazakake", x: 2, y: 17, allowWet: true },
-      { kit: "jp-rg-hazakake", x: 7, y: 17, allowWet: true },
-      { kit: "inaka-scarecrow-pair", x: 16, y: 17, allowWet: true },
-      { kit: "inaka-sunflower-patch", x: 23, y: 18 },
-      { kit: "inaka-sunflower-patch", x: 27, y: 18 },
+      { kit: "inaka-mossy-stone-wall", x: 0, y: 5 },
+      { kit: "inaka-mossy-stone-wall", x: 4, y: 5 },
+      { kit: "inaka-mossy-stone-wall", x: 8, y: 5 },
+      { kit: "inaka-mossy-stone-wall", x: 12, y: 5 },
+      { kit: "inaka-mossy-stone-wall", x: 16, y: 5 },
+      { kit: "inaka-mossy-stone-wall", x: 20, y: 5 },
+      { kit: "inaka-mossy-stone-wall", x: 0, y: 12 },
+      { kit: "inaka-mossy-stone-wall", x: 4, y: 12 },
+      { kit: "inaka-mossy-stone-wall", x: 8, y: 12 },
+      { kit: "inaka-mossy-stone-wall", x: 12, y: 11 },
+      { kit: "inaka-mossy-stone-wall", x: 16, y: 11 },
+      { kit: "inaka-mossy-stone-wall", x: 20, y: 11 },
+      { kit: "inaka-rice-rack-hasagi", x: 4, y: 0, allowWet: true },
+      { kit: "jp-rg-hazakake", x: 14, y: 1, allowWet: true },
+      { kit: "rg-kakashi", x: 6, y: 8, allowWet: true },
+      { kit: "inaka-scarecrow-pair", x: 18, y: 15, allowWet: true },
+      { kit: "inaka-agri-tin-shed", x: 28, y: 0 },
+      { kit: "inaka-waterwheel-mill", x: 30, y: 8, allowWet: true },
+      { kit: "inaka-red-tractor", x: 28, y: 13 },
+      { kit: "inaka-sluice-gate", x: 33, y: 16, allowWet: true },
+      { kit: "inaka-vinyl-greenhouse", x: 35, y: 1 },
+      { kit: "inaka-vinyl-greenhouse", x: 35, y: 5 },
+      { kit: "inaka-keitora-white", x: 36, y: 11 },
+      { kit: "inaka-fire-watchtower", x: 37, y: 15 },
+      { kit: "inaka-rice-rack-hasagi", x: 2, y: 23 },
+      { kit: "jp-rg-hazakake", x: 7, y: 23 },
+      { kit: "jp-rg-sunflower", x: 13, y: 23 },
+      { kit: "jp-rg-kakashi", x: 17, y: 23 },
+      { kit: "inaka-kura-storehouse", x: 20, y: 22, allowOverlap: true },
+      { kit: "jp-rg-pine", x: 25, y: 21, allowOverlap: true },
     ],
+    poleRows: [{ footY: 25, xs: [27, 36], kit: "jp-pole-wood" }],
   },
   {
     id: "05-river-stepping-stones-and-iron-bridge",
     no: 5,
     fileName: "05-river-stepping-stones-and-iron-bridge.png",
-    titleKo: "05. 맑은 시골 개울 징검다리와 붉은 트러스 철교",
-    subtitleJa: "清流の飛び石と赤いトラス鉄橋",
-    descriptionKo: "강자갈이 비치는 시골 개울 위 납작한 징검다리와 리벳 붉은 강철 트러스 철교, 강변 들꽃 제방 산책로와 물레방아·초가 농가.",
-    width: 32,
-    height: 22,
-    baseGround: "inaka-meadow-wildflower",
+    titleKo: "05. 산골 개울의 붉은 철교와 징검다리",
+    subtitleJa: "山あいの清流・赤い鉄橋と飛び石",
+    descriptionKo:
+      "돌 테 두른 개울이 굽이쳐 흐르는 산골, 윗길을 잇는 붉은 철교와 아랫길 징검다리, 물가에 걸친 물레방아간과 매어 둔 어선, 강가의 초가 고민가·기와 농가·토장 창고, 단풍과 삼나무·대숲.",
+    width: W40,
+    height: H26,
+    baseGround: "잔디",
     fills: [
-      { x: 3, y: 1, w: 9, h: 4, material: "inaka-aze-path" },
-      { x: 19, y: 1, w: 10, h: 4, material: "inaka-aze-path" },
-      { x: 0, y: 5, w: 32, h: 2, material: "inaka-gravel-road" },
-      { x: 0, y: 13, w: 32, h: 2, material: "inaka-aze-path" },
-      { x: 13, y: 0, w: 6, h: 22, material: "inaka-aze-path" },
-      { x: 14, y: 0, w: 4, h: 22, material: "inaka-river-shallow" },
-      { x: 1, y: 15, w: 12, h: 1, material: "inaka-canal-wall" },
-      { x: 1, y: 16, w: 12, h: 1, material: "inaka-canal-water" },
-      { x: 1, y: 17, w: 12, h: 4, material: "inaka-aze-path" },
-      { x: 2, y: 18, w: 10, h: 3, material: "inaka-paddy-water" },
+      { x: 14, y: 0, w: 6, h: 5, material: "연못" },
+      { x: 15, y: 4, w: 4, h: 6, material: "연못" },
+      { x: 12, y: 9, w: 9, h: 5, material: "연못" },
+      { x: 13, y: 13, w: 7, h: 4, material: "연못" },
+      { x: 14, y: 16, w: 4, h: 5, material: "연못" },
+      { x: 15, y: 20, w: 7, h: 6, material: "연못" },
+      { x: 0, y: 6, w: 14, h: 3, material: "생활도로" },
+      { x: 20, y: 6, w: 20, h: 3, material: "생활도로" },
+      { x: 3, y: 18, w: 11, h: 2, material: "산길 흙" },
+      { x: 18, y: 18, w: 12, h: 2, material: "산길 흙" },
+      { x: 1, y: 4, w: 13, h: 2, material: "자갈 참배길" },
+      { x: 23, y: 4, w: 15, h: 2, material: "자갈 참배길" },
     ],
     stamps: [
-      { kit: "rg-sugi", x: 0, y: 0 },
-      { kit: "inaka-kominka-thatched", x: 3, y: 0 },
-      { kit: "inaka-well-handpump", x: 9, y: 2 },
-      { kit: "inaka-kawara-farmhouse", x: 19, y: 0 },
-      { kit: "inaka-kura-storehouse", x: 25, y: 0 },
-      { kit: "rg-sugi", x: 29, y: 0 },
-      { kit: "inaka-wooden-pole-transformer", x: 11, y: 4 },
-      { kit: "inaka-roadside-mirror", x: 12, y: 5 },
-      { kit: "inaka-red-iron-bridge", x: 13, y: 5, allowWet: true },
-      { kit: "inaka-keitora-white", x: 4, y: 5 },
-      { kit: "inaka-waterwheel-mill", x: 9, y: 8, allowWet: true },
-      { kit: "inaka-hydrangea-hedge", x: 2, y: 9 },
-      { kit: "inaka-hydrangea-hedge", x: 5, y: 9 },
-      { kit: "inaka-bus-stop-shelter", x: 20, y: 9 },
-      { kit: "inaka-jizo-shrine-row", x: 24, y: 10 },
-      { kit: "inaka-hydrangea-hedge", x: 28, y: 10 },
-      { kit: "jp-rg-moss-buddha", x: 25, y: 13 },
-      { kit: "inaka-stepping-stones", x: 14, y: 13, allowWet: true },
-      { kit: "inaka-bicycle-parked", x: 6, y: 13 },
-      { kit: "inaka-sluice-gate", x: 2, y: 15, allowWet: true },
-      { kit: "inaka-scarecrow-pair", x: 5, y: 17, allowWet: true },
-      { kit: "inaka-unmanned-veg-stand", x: 20, y: 16 },
-      { kit: "inaka-sunflower-patch", x: 24, y: 16 },
-      { kit: "inaka-sunflower-patch", x: 28, y: 16 },
-      { kit: "inaka-sunflower-patch", x: 24, y: 19 },
-      { kit: "inaka-sunflower-patch", x: 28, y: 19 },
+      { kit: "rg-sugi", x: 9, y: -2, allowOverlap: true },
+      { kit: "rg-maple", x: 20, y: -1, allowOverlap: true },
+      { kit: "inaka-kominka-thatched", x: 1, y: 0, allowOverlap: true },
+      { kit: "inaka-kura-storehouse", x: 8, y: 1, allowOverlap: true },
+      { kit: "inaka-kawara-farmhouse", x: 24, y: 0, allowOverlap: true },
+      { kit: "rg-bamboo-grove", x: 31, y: -2, allowOverlap: true },
+      { kit: "jp-pots", x: 30, y: 4 },
+      { kit: "inaka-red-iron-bridge", x: 14, y: 6, allowWet: true, allowOverlap: true },
+      { kit: "inaka-keitora-white", x: 29, y: 7 },
+      { kit: "inaka-waterwheel-mill", x: 9, y: 10, allowWet: true },
+      { kit: "rg-fishing-boat", x: 13, y: 10, allowWet: true },
+      { kit: "rg-maple", x: 2, y: 10, allowOverlap: true },
+      { kit: "rg-sugi", x: 6, y: 12, allowOverlap: true },
+      { kit: "rg-sugi", x: 22, y: 10, allowOverlap: true },
+      { kit: "rg-maple", x: 26, y: 11, allowOverlap: true },
+      { kit: "rg-bamboo-grove", x: 33, y: 9, allowOverlap: true },
+      { kit: "inaka-stepping-stones", x: 14, y: 18, allowWet: true },
+      { kit: "rg-doshirube", x: 4, y: 16 },
+      { kit: "inaka-hydrangea-hedge", x: 7, y: 20 },
+      { kit: "rg-moss-buddha", x: 24, y: 20 },
+      { kit: "rg-pine", x: 1, y: 20, allowOverlap: true },
+      { kit: "rg-sugi", x: 27, y: 19, allowOverlap: true },
+      { kit: "rg-maple", x: 32, y: 19, allowOverlap: true },
+      { kit: "rg-sugi", x: 36, y: 18, allowOverlap: true },
     ],
+    poleRows: [{ footY: 9, xs: [1, 21, 35], kit: "jp-pole-wood" }],
   },
   {
     id: "06-hillside-shrine-and-jizo-pass",
     no: 6,
     fileName: "06-hillside-shrine-and-jizo-pass.png",
-    titleKo: "06. 삼나무 숲길 이끼 돌계단·언덕 도리이 신사와 지장보살 고개",
-    subtitleJa: "鎮守の杉並木・苔石段の鳥居とお地蔵様峠",
-    descriptionKo: "울창한 삼나무·대나무 숲 사이로 이어지는 이끼 낀 돌계단과 주홍 도리이, 산정 초가 신사와 보물고, 고갯길 지장보살 사당과 개울 징검다리.",
-    width: 32,
-    height: 22,
-    baseGround: "숲 바닥(이끼·낙엽)",
+    titleKo: "06. 石垣 축대 위 언덕 신사와 지장보살 고갯길",
+    subtitleJa: "石垣の上の鎮守の社とお地蔵様の峠道",
+    descriptionKo:
+      "石垣 축대 위 자갈 경내의 拝殿과 오미즈야·석등·도리이·토장 보물고, 가운데 이끼 돌계단 도리이로 오르는 참배길, 양옆 대숲과 삼나무 숲, 산기슭 고갯길의 지장보살 사당·이정표·이끼 석불·버스 대합실.",
+    width: W40,
+    height: H26,
+    baseGround: "잔디",
     fills: [
-      { x: 8, y: 0, w: 16, h: 6, material: "inaka-aze-path" },
-      { x: 14, y: 6, w: 4, h: 10, material: "온천가 돌길(이시다타미)" },
-      { x: 0, y: 16, w: 32, h: 2, material: "inaka-aze-path" },
-      { x: 0, y: 18, w: 32, h: 4, material: "inaka-meadow-wildflower" },
-      { x: 0, y: 19, w: 13, h: 2, material: "inaka-river-shallow" },
+      { x: 10, y: 0, w: 20, h: 11, material: "자갈 참배길" },
+      { x: 18, y: 16, w: 4, h: 2, material: "자갈 참배길" },
+      { x: 0, y: 18, w: 40, h: 3, material: "산길 흙" },
     ],
     stamps: [
-      { kit: "rg-bamboo-grove", x: 0, y: 0 },
-      { kit: "rg-bamboo-grove", x: 4, y: 0 },
-      { kit: "inaka-kura-storehouse", x: 9, y: 1 },
-      { kit: "inaka-kominka-thatched", x: 13, y: 0 },
-      { kit: "inaka-well-handpump", x: 19, y: 2 },
-      { kit: "inaka-fire-watchtower", x: 22, y: 1 },
-      { kit: "rg-bamboo-grove", x: 24, y: 0 },
-      { kit: "rg-bamboo-grove", x: 28, y: 0 },
-      { kit: "inaka-mossy-stone-wall", x: 8, y: 5 },
-      { kit: "inaka-mossy-stone-wall", x: 19, y: 5 },
-      { kit: "rg-sugi", x: 1, y: 6 },
-      { kit: "rg-sugi", x: 5, y: 6 },
-      { kit: "inaka-hillside-torii-stairs", x: 14, y: 6 },
-      { kit: "jp-prop-stone-lantern", x: 13, y: 9 },
-      { kit: "jp-prop-stone-lantern", x: 18, y: 9 },
-      { kit: "inaka-hydrangea-hedge", x: 10, y: 8 },
-      { kit: "inaka-hydrangea-hedge", x: 19, y: 8 },
-      { kit: "rg-sugi", x: 24, y: 6 },
-      { kit: "rg-sugi", x: 28, y: 6 },
-      { kit: "inaka-hillside-torii-stairs", x: 14, y: 11 },
-      { kit: "inaka-hydrangea-hedge", x: 10, y: 11 },
-      { kit: "inaka-hydrangea-hedge", x: 19, y: 11 },
-      { kit: "inaka-jizo-shrine-row", x: 5, y: 14 },
-      { kit: "jp-rg-doshirube", x: 9, y: 14 },
-      { kit: "jp-jizo", x: 10, y: 14 },
-      { kit: "jp-rg-moss-buddha", x: 20, y: 14 },
-      { kit: "inaka-jizo-shrine-row", x: 23, y: 14 },
-      { kit: "inaka-wooden-pole-transformer", x: 26, y: 13 },
-      { kit: "inaka-bus-stop-shelter", x: 27, y: 13 },
-      { kit: "inaka-roadside-mirror", x: 13, y: 15 },
-      { kit: "inaka-stepping-stones", x: 4, y: 19, allowWet: true },
-      { kit: "inaka-bicycle-parked", x: 15, y: 18 },
-      { kit: "inaka-unmanned-veg-stand", x: 19, y: 18 },
-      { kit: "inaka-sunflower-patch", x: 22, y: 18 },
-      { kit: "inaka-sunflower-patch", x: 26, y: 18 },
+      // 양옆 진수의 숲
+      { kit: "rg-bamboo-grove", x: 0, y: -1, allowOverlap: true },
+      { kit: "rg-sugi", x: 4, y: -1, allowOverlap: true },
+      { kit: "rg-sugi", x: 7, y: 1, allowOverlap: true },
+      { kit: "rg-bamboo-grove", x: 1, y: 5, allowOverlap: true },
+      { kit: "rg-sugi", x: 5, y: 6, allowOverlap: true },
+      { kit: "rg-sugi", x: 0, y: 10, allowOverlap: true },
+      { kit: "rg-bamboo-grove", x: 4, y: 11, allowOverlap: true },
+      { kit: "rg-sugi", x: 30, y: -1, allowOverlap: true },
+      { kit: "rg-bamboo-grove", x: 33, y: -1, allowOverlap: true },
+      { kit: "rg-sugi", x: 37, y: 1, allowOverlap: true },
+      { kit: "rg-sugi", x: 31, y: 5, allowOverlap: true },
+      { kit: "rg-bamboo-grove", x: 35, y: 5, allowOverlap: true },
+      { kit: "rg-bamboo-grove", x: 31, y: 11, allowOverlap: true },
+      { kit: "rg-sugi", x: 36, y: 11, allowOverlap: true },
+      // 경내
+      { kit: "jp-bldg-shrine-haiden", x: 16, y: 1, allowOverlap: true },
+      { kit: "jp-prop-chozuya", x: 10, y: 4, allowOverlap: true },
+      { kit: "inaka-kura-storehouse", x: 25, y: 3, allowOverlap: true },
+      { kit: "jp-torii", x: 18, y: 8 },
+      { kit: "jp-prop-stone-lantern", x: 16, y: 8 },
+      { kit: "jp-prop-stone-lantern", x: 23, y: 8 },
+      { kit: "jp-hokora-jizo", x: 27, y: 8 },
+      { kit: "jp-pots", x: 11, y: 9 },
+      // 石垣 축대 + 가운데 돌계단 도리이
+      { kit: "rg-ishigaki", x: 10, y: 11 },
+      { kit: "inaka-hillside-torii-stairs", x: 18, y: 11 },
+      { kit: "rg-ishigaki", x: 22, y: 11 },
+      // 산기슭 고갯길
+      { kit: "inaka-jizo-shrine-row", x: 3, y: 21 },
+      { kit: "rg-doshirube", x: 7, y: 21 },
+      { kit: "rg-moss-buddha", x: 9, y: 21 },
+      { kit: "inaka-hydrangea-hedge", x: 13, y: 21 },
+      { kit: "jp-prop-stone-lantern", x: 17, y: 16 },
+      { kit: "jp-prop-stone-lantern", x: 22, y: 16 },
+      { kit: "inaka-bus-stop-shelter", x: 28, y: 21 },
+      { kit: "inaka-mossy-stone-wall", x: 32, y: 22 },
+      { kit: "rg-maple", x: 22, y: 21, allowOverlap: true },
+      { kit: "rg-sugi", x: 37, y: 20, allowOverlap: true },
     ],
+    poleRows: [{ footY: 21, xs: [13, 25], kit: "jp-pole-wood" }],
   },
 ] as const;
 
 export function planInakaShowcaseScene(input: {
   readonly scene: InakaShowcaseScene;
   readonly mapId: string;
-  readonly kitSize: (kitId: string) => { readonly w: number; readonly h: number } | undefined;
+  readonly kitSize: (kitId: string) => InakaKitShape | undefined;
 }): InakaComposePlan {
   const { scene, mapId, kitSize } = input;
   const W = scene.width;
   const H = scene.height;
   const wet = new Uint8Array(W * H);
-  const used = new Uint8Array(W * H);
+  const used3 = new Uint8Array(W * H);
+  const used4 = new Uint8Array(W * H);
   const steps: InakaComposeStep[] = [];
   const skippedStamps: string[] = [];
   let stampedCount = 0;
 
-  const applyFill = (x: number, y: number, w: number, h: number, material: string): void => {
-    const x0 = Math.max(0, x);
-    const y0 = Math.max(0, y);
-    const cw = Math.min(W - x0, w);
-    const ch = Math.min(H - y0, h);
-    if (cw <= 0 || ch <= 0) return;
-    steps.push({
-      tool: "fill_region",
-      args: { mapId, rect: { x: x0, y: y0, w: cw, h: ch }, material },
-      note: `ground:${material}`,
-    });
-    const isWet = WET_MATERIALS[material] === true;
-    for (let yy = y0; yy < y0 + ch; yy++) {
-      for (let xx = x0; xx < x0 + cw; xx++) {
-        wet[yy * W + xx] = isWet ? 1 : 0;
-      }
+  const clip = (r: InakaRect): InakaRect | null => {
+    const x0 = Math.max(0, r.x);
+    const y0 = Math.max(0, r.y);
+    const w = Math.min(W, r.x + r.w) - x0;
+    const h = Math.min(H, r.y + r.h) - y0;
+    return w > 0 && h > 0 ? { x: x0, y: y0, w, h } : null;
+  };
+
+  const applyFill = (f: InakaGroundFillOp): void => {
+    const rect = clip(f);
+    if (!rect) return;
+    steps.push({ tool: "fill_region", args: { mapId, rect, material: f.material, clearUpper: false }, note: `ground:${f.material}` });
+    const isWet = WET_MATERIALS[f.material] === true;
+    for (let yy = rect.y; yy < rect.y + rect.h; yy++) {
+      for (let xx = rect.x; xx < rect.x + rect.w; xx++) wet[yy * W + xx] = isWet ? 1 : 0;
     }
   };
 
-  applyFill(0, 0, W, H, scene.baseGround);
-  for (const f of scene.fills) {
-    applyFill(f.x, f.y, f.w, f.h, f.material);
+  applyFill({ x: 0, y: 0, w: W, h: H, material: scene.baseGround });
+  for (const f of scene.fills) applyFill(f);
+
+  for (const ln of scene.lines ?? []) {
+    const rect = clip(ln);
+    if (!rect) continue;
+    steps.push({ tool: "paint_line", args: { mapId, rect, material: ln.material }, note: `line:${ln.material}` });
+    for (let yy = rect.y; yy < rect.y + rect.h; yy++) {
+      for (let xx = rect.x; xx < rect.x + rect.w; xx++) used3[yy * W + xx] = 1;
+    }
   }
 
-  for (const st of scene.stamps) {
+  // 키트 사각형이 맵 밖으로 조금 나가는 것(숲 나무 윗동)은 허용하고, 맵 안의 그림 칸만 겹침·젖은 땅을 따진다.
+  const place = (st: InakaStampOp): void => {
     const kitId = inakaKitId(st.kit);
     const sz = kitSize(kitId);
     if (!sz) {
       skippedStamps.push(`${kitId}:missing-kit`);
-      continue;
+      return;
     }
-    if (st.x < 0 || st.y < 0 || st.x + sz.w > W || st.y + sz.h > H) {
+    const footY = st.y + sz.h - 1;
+    if (st.x < 0 || st.x + sz.w > W || footY < 0 || footY >= H) {
       skippedStamps.push(`${kitId}@(${st.x},${st.y}):out-of-bounds`);
-      continue;
+      return;
     }
+    const layer = st.layer ?? 3;
+    const used = layer === 4 ? used4 : used3;
+    const cells: number[] = [];
     let collision = false;
     let wetConflict = false;
-    for (let yy = st.y; yy < st.y + sz.h; yy++) {
-      for (let xx = st.x; xx < st.x + sz.w; xx++) {
-        const idx = yy * W + xx;
+    for (let r = 0; r < sz.h; r++) {
+      const yy = st.y + r;
+      if (yy < 0) continue;
+      for (let c = 0; c < sz.w; c++) {
+        if (sz.opaque && sz.opaque[r * sz.w + c] !== true) continue;
+        const idx = yy * W + st.x + c;
+        cells.push(idx);
         if (used[idx]) collision = true;
-        if (wet[idx] && st.allowWet !== true) wetConflict = true;
+        if (wet[idx] && st.allowWet !== true && layer !== 4) wetConflict = true;
       }
     }
     if ((collision && st.allowOverlap !== true) || wetConflict) {
       skippedStamps.push(`${kitId}@(${st.x},${st.y}):${collision && st.allowOverlap !== true ? "overlap" : "wet-conflict"}`);
-      continue;
+      return;
     }
-    for (let yy = st.y; yy < st.y + sz.h; yy++) {
-      for (let xx = st.x; xx < st.x + sz.w; xx++) {
-        used[yy * W + xx] = 1;
-      }
-    }
+    for (const idx of cells) used[idx] = 1;
     steps.push({
       tool: "stamp_object",
-      args: {
-        objectId: `kit:jp_city/${kitId}`,
-        mapId,
-        x: st.x,
-        y: st.y,
-        ...(st.layer !== undefined ? { layer: st.layer } : {}),
-      },
+      args: { objectId: `kit:jp_city/${kitId}`, mapId, x: st.x, y: st.y, ...(st.layer !== undefined ? { layer: st.layer } : {}) },
       note: kitId,
     });
     stampedCount++;
+  };
+
+  for (const st of scene.stamps) place(st);
+
+  for (const row of scene.poleRows ?? []) {
+    const poleKit = row.kit ?? "jp-pole-wood";
+    const poleH = kitSize(poleKit)?.h ?? WIRE_TOP_POLE_HEIGHT;
+    for (const x of row.xs) place({ kit: poleKit, x, y: row.footY - poleH + 1, layer: 4, allowOverlap: true });
+    for (let i = 0; i + 1 < row.xs.length; i++) {
+      const span = row.xs[i + 1]! - row.xs[i]!;
+      place({ kit: `jp-wire-${span}`, x: row.xs[i]! + 3, y: row.footY - WIRE_TOP_POLE_HEIGHT + 1, layer: 4, allowOverlap: true });
+    }
   }
 
   return { sceneId: scene.id, steps, stampedCount, skippedStamps };

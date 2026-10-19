@@ -8,6 +8,7 @@ import { ensureBundledTilesets } from "../../src/project/defaults/defaultAssets.
 import { runTool } from "../../src/editor/tools/index.ts";
 import { blankFillTileFor } from "../../src/project/defaults/defaultMaps.ts";
 import { setLayerTileAt } from "../../src/project/mapLayers.ts";
+import { autotileGroupLayerView, shapeAutotileGroupAround } from "../../src/project/defaults/autotileEngine.ts";
 import {
   INAKA_GROUND_TILES,
   INAKA_KITS,
@@ -35,7 +36,11 @@ interface SceneSummaryRow {
 
 const rows: SceneSummaryRow[] = [];
 
+const onlyIndex = process.argv.indexOf("--only");
+const ONLY = onlyIndex >= 0 ? process.argv[onlyIndex + 1] : undefined;
+
 for (const scene of INAKA_SHOWCASE_SCENES) {
+  if (ONLY && !scene.id.startsWith(ONLY)) continue;
   const project = createNewProjectSeed("adventure-jrpg", scene.id);
   ensureBundledTilesets(project);
   const ctx = { project };
@@ -56,13 +61,16 @@ for (const scene of INAKA_SHOWCASE_SCENES) {
   }
   resizedMap.lowerTiles.fill(blankFillTileFor(refreshedKit.id, 0, refreshedKit));
 
-  const kitSizes = new Map(
-    (refreshedKit.structureKits ?? []).map((k) => [k.id, { w: k.width, h: k.height }]),
+  const kitShapes = new Map(
+    (refreshedKit.structureKits ?? []).map((k) => [
+      k.id,
+      { w: k.width, h: k.height, opaque: k.rows.flatMap((row) => row.upperTiles.map((t) => t >= 0)) },
+    ]),
   );
   const plan = planInakaShowcaseScene({
     scene,
     mapId,
-    kitSize: (id) => kitSizes.get(id),
+    kitSize: (id) => kitShapes.get(id),
   });
 
   let appliedStamps = 0;
@@ -81,6 +89,26 @@ for (const scene of INAKA_SHOWCASE_SCENES) {
       if (!fillRes.ok) {
         throw new Error(`${scene.id} fill_region(${matArg}) 실패: ${fillRes.summary}`);
       }
+      continue;
+    }
+    if (step.tool === "paint_line") {
+      // 생울타리·블록담은 jp_city 2층 선 오토타일: 멤버 타일을 깐 뒤 4방향 이웃으로 끝·모서리 모양을 다시 고른다.
+      const rectArg = step.args.rect as { readonly x: number; readonly y: number; readonly w: number; readonly h: number };
+      const matArg = String(step.args.material);
+      const curMap = ctx.project.maps[mapId];
+      const group = (ctx.project.tilesets.jp_city?.autotileGroups ?? []).find((g) => g.name === matArg && g.layer === "upper");
+      const member = group?.memberTileIds[0];
+      if (!curMap || !group || member === undefined) {
+        throw new Error(`${scene.id} paint_line(${matArg}): jp_city 2층 선 오토타일이 없습니다`);
+      }
+      const points: { x: number; y: number }[] = [];
+      for (let y = rectArg.y; y < rectArg.y + rectArg.h; y++) {
+        for (let x = rectArg.x; x < rectArg.x + rectArg.w; x++) {
+          curMap.upperTiles[y * curMap.width + x] = member;
+          points.push({ x, y });
+        }
+      }
+      shapeAutotileGroupAround(autotileGroupLayerView(curMap, group), group, points);
       continue;
     }
     const curMapBefore = ctx.project.maps[mapId];
@@ -146,7 +174,7 @@ for (const scene of INAKA_SHOWCASE_SCENES) {
   }
 }
 
-fs.writeFileSync(
+if (!ONLY) fs.writeFileSync(
   path.join(OUT, "summary.json"),
   JSON.stringify(
     {
