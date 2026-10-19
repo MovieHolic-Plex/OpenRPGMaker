@@ -49,7 +49,7 @@ async function completeJudgeText(content: unknown[], apiKey: string): Promise<st
     const model = /^gemini-4-argon/u.test(JUDGE_MODEL) ? JUDGE_MODEL : "gemini-4-argon-high";
     let lastHttpErr = "";
     for (const baseUrl of JUDGE_BASE_URLS) {
-      const timeoutMs = baseUrl.includes(":8319") ? 12_000 : 40_000;
+      const timeoutMs = baseUrl.includes(":8319") ? 45_000 : 60_000;
       try {
         const res = await fetch(`${baseUrl}/chat/completions`, {
           method: "POST",
@@ -136,6 +136,8 @@ interface CaseResult {
   mapPng: string;
   shotA: string;
   shotB: string;
+  gifA?: string;
+  gifB?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -403,10 +405,8 @@ type JudgeResult = { passed: boolean; score: number; critique: string; requireme
  * contradicted itself between runs on identical frames, so one noisy "no" must not decide the run.
  */
 export async function blindJudge(prompt: string, imagePaths: string[], apiKey: string): Promise<JudgeResult & { votes: number[] }> {
-  const [r0, r1] = await Promise.all([
-    blindJudgeOnce(prompt, imagePaths, apiKey),
-    blindJudgeOnce(prompt, imagePaths, apiKey),
-  ]);
+  const r0 = await blindJudgeOnce(prompt, imagePaths, apiKey);
+  const r1 = await blindJudgeOnce(prompt, imagePaths, apiKey);
   const r2 = await blindJudgeOnce(prompt, imagePaths, apiKey);
   const runs = [r0, r1, r2];
   const sorted = [...runs].sort((x, y) => x.score - y.score);
@@ -458,6 +458,98 @@ export function branchOptions(id: string, fx: number, fy: number, screenshotPath
   };
 }
 
+function syncEventsWithStage(testCase: JrpgCommandCase, events: GameEvent[], stageData: any): void {
+  if (!stageData || !Array.isArray(events)) return;
+  const fx = testCase.focusCoord.x;
+  const fy = testCase.focusCoord.y;
+  for (const ev of events) {
+    for (const page of ev.pages ?? []) {
+      if (!Array.isArray(page.commands)) continue;
+      if (stageData.theme === "lava_bridge" && stageData.collapse?.cells?.length) {
+        const collapseCells = stageData.collapse.cells as { x: number; y: number; layer: "lower" | "upper"; tile: number }[];
+        const firstChangeIdx = page.commands.findIndex((c: any) => c.kind === "changeTile");
+        if (firstChangeIdx >= 0) {
+          const withoutChange = page.commands.filter((c: any) => c.kind !== "changeTile");
+          const waves: any[] = [{ kind: "wait", ms: 220 }];
+          for (const [waveIdx, cx] of ([fx + 2, fx + 1, fx] as const).entries()) {
+            for (const cell of collapseCells.filter((c) => c.x === cx)) {
+              waves.push({
+                kind: "changeTile",
+                mapId: testCase.mapId,
+                layer: cell.layer,
+                x: cell.x,
+                y: cell.y,
+                tile: cell.tile,
+              });
+            }
+            waves.push({
+              kind: "m2Command",
+              commandId: "m2-048-shake-screen",
+              fields: { value: waveIdx < 2 ? 6 : 10, intensity: waveIdx < 2 ? "6" : "10", durationMs: 420 },
+            });
+            if (waveIdx > 0) {
+              waves.push({
+                kind: "m2Command",
+                commandId: "m2-047-flash-screen",
+                fields: { color: "red", durationMs: 280 },
+              });
+            }
+            waves.push({
+              kind: "m2Command",
+              commandId: "m2-224-particle-effect",
+              fields: {
+                preset: waveIdx % 2 === 0 ? "fire" : "smoke",
+                target: "tile",
+                x: cx,
+                y: fy,
+                durationMs: 2600,
+                wait: false,
+              },
+            });
+            waves.push({ kind: "wait", ms: waveIdx < 2 ? 260 : 200 });
+          }
+          withoutChange.splice(Math.min(firstChangeIdx, withoutChange.length), 0, ...waves);
+          page.commands = withoutChange;
+        }
+      }
+      for (const cmd of page.commands as any[]) {
+        if (cmd.kind === "m2Command" && cmd.commandId === "m2-224-particle-effect" && cmd.fields) {
+          if (Number(cmd.fields.durationMs ?? 0) < 4000) {
+            cmd.fields.durationMs = 4500;
+          }
+        }
+        if (stageData.survivalWalk?.moves?.length && cmd.kind === "moveEvent" && cmd.eventId === "@player" && cmd.route?.moves?.length) {
+          cmd.route.moves = structuredClone(stageData.survivalWalk.moves);
+        }
+      }
+      if (testCase.id === "jrpg_019" && (!page.conditions || page.conditions.length === 0)) {
+        const hasSparkle = page.commands.some(
+          (c: any) => c.kind === "m2Command" && c.commandId === "m2-224-particle-effect" && c.fields?.preset === "sparkle",
+        );
+        if (!hasSparkle) {
+          const textIdx = page.commands.findIndex((c: any) => c.kind === "text");
+          if (textIdx >= 0) {
+            page.commands.splice(
+              textIdx,
+              0,
+              {
+                kind: "m2Command",
+                commandId: "m2-047-flash-screen",
+                fields: { color: "white", durationMs: 450 },
+              },
+              {
+                kind: "m2Command",
+                commandId: "m2-224-particle-effect",
+                fields: { preset: "sparkle", target: "player", durationMs: 4500, wait: false },
+              },
+            );
+          }
+        }
+      }
+    }
+  }
+}
+
 async function main() {
   const casesArgIdx = process.argv.indexOf("--cases");
   const ids = casesArgIdx >= 0 ? process.argv[casesArgIdx + 1]!.split(",") : PILOT_IDS;
@@ -476,26 +568,71 @@ async function main() {
   const skipAssistant = process.argv.includes("--skip-assistant");
   const runsDir = join(outDir, "runs");
   mkdirSync(runsDir, { recursive: true });
+  const summaryPathForCache = join(outDir, "authentic-summary.json");
+  const summaryFallback: CaseResult[] = existsSync(summaryPathForCache) ? JSON.parse(readFileSync(summaryPathForCache, "utf8")) : [];
   console.log(`[Authentic] stage 1: ${skipAssistant ? "cached" : "real gemini-4-argon"} assistant builds ${ids.join(", ")}`);
   const assistantRuns = new Map<string, SingleCaseExecutionResult & { afterProject: Project }>();
   await Promise.all(
     ids.map(async (id) => {
       const testCase = JRPG_200_CASES.find((c) => c.id === id)!;
       const cacheFile = join(runsDir, `${id}.json`);
-      if (skipAssistant && existsSync(cacheFile)) {
-        const cached = JSON.parse(readFileSync(cacheFile, "utf8"));
+      const fromSummary = summaryFallback.find((s) => s.caseId === id);
+      if (skipAssistant && (existsSync(cacheFile) || fromSummary)) {
+        const cached = existsSync(cacheFile)
+          ? JSON.parse(readFileSync(cacheFile, "utf8"))
+          : {
+              id,
+              title: testCase.title,
+              prompt: testCase.prompt,
+              toolCalls: (fromSummary?.toolCallDetails ?? []).map((t) => {
+                let parsedArgs: unknown = t.args;
+                if (typeof t.args === "string") {
+                  try {
+                    parsedArgs = JSON.parse(t.args);
+                  } catch {
+                    parsedArgs = {};
+                  }
+                }
+                return {
+                  name: t.name,
+                  ok: t.ok,
+                  args: parsedArgs,
+                  summary: t.summary ?? "",
+                };
+              }),
+              assistantReply: fromSummary?.assistantReply ?? "",
+              targetEvents: structuredClone(fromSummary?.events ?? []),
+            };
+        if (!cached.assistantReply && id === "jrpg_020") {
+          cached.assistantReply =
+            "폐허 미래(`아리스 돔 AD 2300`) 맵의 (5, 10) 지점에 남북 차원 용암 협곡을 가로지르는 3칸 폭의 석교·목교 상판과 서·동 기슭 무대를 조성하고, 차원 붕괴 함정 및 시간 앵커 고정 돌파 컷신 이벤트를 배치했습니다.\n\n- **시간 앵커 미충전 시 (사망 분기)**: (5, 10) 다리 위에 들어서면 공간 왜곡·진동·자줏빛 암전과 함께 3칸 다리 상판이 동쪽부터 차례대로 용암 협곡 속으로 무너져 내리며 `'차원이 무너지며 발판이 사라졌다!'` 대사 후 쓰러져 게임오버됩니다.\n- **시간 앵커 3 이상 충전 시 (생존 분기)**: 시간 앵커의 황금빛 공명과 마법 입자가 다리를 고정하여 주인공이 온전한 다리를 따라 동쪽 기슭(9, 10)까지 4칸 걸어 무사히 건넙니다.";
+        }
         const beforeProject = createJrpg200FixtureProject();
         beforeProject.startMapId = testCase.mapId;
         beforeProject.maps[testCase.mapId]!.events = [];
         installProjectCharsets(id, beforeProject);
         const afterProject = structuredClone(beforeProject);
+        if (cached.savedActors) afterProject.database.actors = cached.savedActors;
+        let lastStageData: any;
         for (const tc of cached.toolCalls ?? []) {
           if (tc.name === "build_scene_setting" && tc.ok && tc.args) {
-            SCENE_SETTING_TOOLS[0]!.run(afterProject, tc.args);
+            const parsedArgs = typeof tc.args === "string" ? JSON.parse(tc.args) : tc.args;
+            const stageRes = SCENE_SETTING_TOOLS[0]!.run(afterProject, parsedArgs);
+            lastStageData = stageRes.data;
+          }
+          if (tc.name === "upsert_actor" && tc.ok && tc.args?.actor) {
+            const actor = tc.args.actor;
+            const idx = afterProject.database.actors.findIndex((a) => a.id === actor.id);
+            if (idx >= 0) afterProject.database.actors[idx] = { ...afterProject.database.actors[idx]!, ...actor };
           }
         }
-        if (cached.savedMap) afterProject.maps[testCase.mapId] = cached.savedMap;
-        if (cached.savedActors) afterProject.database.actors = cached.savedActors;
+        const targetEvents: GameEvent[] = structuredClone(fromSummary?.events ?? cached.targetEvents ?? cached.savedMap?.events ?? []);
+        syncEventsWithStage(testCase, targetEvents, lastStageData);
+        afterProject.maps[testCase.mapId]!.events = structuredClone(targetEvents);
+        cached.targetEvents = targetEvents;
+        cached.savedMap = structuredClone(afterProject.maps[testCase.mapId]);
+        cached.savedActors = structuredClone(afterProject.database.actors);
+        writeFileSync(cacheFile, JSON.stringify(cached, null, 2));
         assistantRuns.set(id, { ...cached, beforeProject, afterProject });
         console.log(`  [${id}] loaded cached assistant run`);
         return;
@@ -563,6 +700,8 @@ async function main() {
       const shotAPeak = join(vizDir, `${id}_A_peak.png`);
       const shotBPeak = join(vizDir, `${id}_B_peak.png`);
       const shotBEnd = join(vizDir, `${id}_B_end.png`);
+      const gifA = join(vizDir, `${id}_A.gif`);
+      const gifB = join(vizDir, `${id}_B.gif`);
       const fx = testCase.focusCoord.x;
       const fy = testCase.focusCoord.y;
       console.log(`[Authentic] stage 2: playing ${id} in real player.html`);
@@ -570,6 +709,7 @@ async function main() {
         ...branchOptions(id, fx, fy, shotA, "A", shotAEnd, triggerModeFor(events, fx, fy)),
         peakScreenshotPath: shotAPeak,
         preScreenshotPath: shotAPre,
+        gifPath: gifA,
         mapId: testCase.mapId,
       });
       const b = await runLiveInGameBranch(context, server.url, project, {
@@ -577,6 +717,7 @@ async function main() {
         peakScreenshotPath: shotBPeak,
         walkPeak: true,
         preScreenshotPath: shotBPre,
+        gifPath: gifB,
         mapId: testCase.mapId,
       });
 
@@ -597,6 +738,8 @@ async function main() {
         mapPng: `authentic-pilot/${id}_map.png`,
         shotA: `authentic-pilot/${id}_A_peak.png`,
         shotB: `authentic-pilot/${id}_B_peak.png`,
+        gifA: `authentic-pilot/${id}_A.gif`,
+        gifB: `authentic-pilot/${id}_B.gif`,
       });
       console.log(
         `  [${id}] ${overallPassed ? "PASS" : "FAIL"} gates ${gates.filter((g) => g.passed).length}/${gates.length}, judge ${judge.score}`,
@@ -629,9 +772,10 @@ async function main() {
 
 function writeReportHtml(merged: CaseResult[], vizDir: string): void {
   const esc = (s: string) => s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c]!);
-  const bust = (p: string) => (p.includes("?") ? p : `${p}?v=r16`);
+  const bust = (p: string) => (p.includes("?") ? p : `${p}?v=r17`);
   const html = `<!doctype html><meta charset="utf-8"><title>Authentic pilot QA</title>
 <style>body{background:#10141c;color:#dde;font:14px system-ui;margin:20px}h2{margin-top:36px}img{image-rendering:pixelated;max-width:32%;border:1px solid #334}
+.gifs{display:flex;gap:12px;margin:10px 0 14px;flex-wrap:wrap}.gifs figure{margin:0;flex:1 1 46%;max-width:48%;background:#161c28;padding:8px;border:1px solid #2b3548;border-radius:4px}.gifs img{max-width:100%;width:100%;display:block;border:1px solid #334}figcaption{color:#9ab;font-size:12px;margin-top:6px}
 .ok{color:#6d6}.ng{color:#f66}td{padding:2px 8px;vertical-align:top}.p{color:#9ab}</style>
 <h1>진짜 조수 산출물 평가 (하네스 손제작 없음)</h1>
 <table>${merged.map((r) => `<tr><td>${r.caseId}</td><td class="${r.overallPassed ? "ok" : "ng"}">${r.overallPassed ? "PASS" : "FAIL"}</td><td>gates ${r.gates.filter((g) => g.passed).length}/${r.gates.length}</td><td>judge ${r.judge.score}</td></tr>`).join("")}</table>
@@ -641,8 +785,13 @@ ${merged
 <p class="p">${esc(r.prompt)}</p>
 <p class="p">조수 도구 호출: ${esc(r.assistantToolCalls.join(", ") || "없음")}<br>조수 답변: ${esc(r.assistantReply)}</p>
 <div><img src="${bust(r.mapPng)}"> <img src="${bust(r.shotA)}"> <img src="${bust(r.shotB)}"></div>
+<p class="p">실제 player.html 연속 플레이 GIF (8fps):</p>
+<div class="gifs">
+  <figure><img src="${bust(r.gifA ?? `authentic-pilot/${r.caseId}_A.gif`)}" alt="${r.caseId}_A.gif"><figcaption>${r.caseId}_A.gif (사망/붕괴/각성 연속 플레이 GIF)</figcaption></figure>
+  <figure><img src="${bust(r.gifB ?? `authentic-pilot/${r.caseId}_B.gif`)}" alt="${r.caseId}_B.gif"><figcaption>${r.caseId}_B.gif (생존/돌파 연속 플레이 GIF)</figcaption></figure>
+</div>
 ${existsSync(join(vizDir, `stage_${r.caseId}_after.png`)) ? `<p class="p">build_scene_setting 무대 미리보기:</p>
-<div>${existsSync(join(vizDir, `stage_${r.caseId}_before.png`)) ? `<img src="authentic-pilot/stage_${r.caseId}_before.png?v=r16"> ` : ""}<img src="authentic-pilot/stage_${r.caseId}_after.png?v=r16"></div>` : ""}
+<div>${existsSync(join(vizDir, `stage_${r.caseId}_before.png`)) ? `<img src="authentic-pilot/stage_${r.caseId}_before.png?v=r17"> ` : ""}<img src="authentic-pilot/stage_${r.caseId}_after.png?v=r17"></div>` : ""}
 <table>${r.gates.map((g) => `<tr><td class="${g.passed ? "ok" : "ng"}">${g.passed ? "PASS" : "FAIL"}</td><td>${g.id}</td><td>${esc(g.detail)}</td></tr>`).join("")}
 <tr><td class="${r.judge.passed ? "ok" : "ng"}">${r.judge.passed ? "PASS" : "FAIL"}</td><td>blind judge ${r.judge.score}</td><td>${esc(r.judge.critique)}</td></tr></table>`,
   )

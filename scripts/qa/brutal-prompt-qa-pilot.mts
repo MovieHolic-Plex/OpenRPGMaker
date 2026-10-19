@@ -1,6 +1,8 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { chromium, type Browser } from "playwright";
+import { chromium, type Browser, type BrowserContext } from "playwright";
 import { PNG } from "pngjs";
 import type { GameMap, Project, TilesetDef } from "../../src/project/types.ts";
 import { deserialize, serialize } from "../../src/project/io.ts";
@@ -788,6 +790,8 @@ export async function runLiveInGameBranch(
     walkPeak?: boolean;
     /** Frame just before the trigger, so the scene itself is visible without tint/dialogue covering it. */
     preScreenshotPath?: string;
+    /** Animated GIF path recorded at 8fps across the entire playback of the branch. */
+    gifPath?: string;
   },
 ): Promise<LiveInGameBranchTelemetry> {
   const prepared = structuredClone(project);
@@ -891,46 +895,76 @@ export async function runLiveInGameBranch(
   );
   await page.waitForTimeout(180);
 
+  const gifTmpDir = options.gifPath ? mkdtempSync(join(tmpdir(), "oprn-pilot-gif-")) : undefined;
+  let gifFrameIdx = 0;
+  const snapGif = async (repeat = 1) => {
+    if (!gifTmpDir) return;
+    try {
+      const buf = await page.screenshot();
+      for (let r = 0; r < repeat; r++) {
+        const framePath = join(gifTmpDir, `frame_${String(gifFrameIdx++).padStart(4, "0")}.png`);
+        writeFileSync(framePath, buf);
+      }
+    } catch {
+      // ignore screenshot race on closing page
+    }
+  };
+
   if (options.preScreenshotPath) await page.screenshot({ path: options.preScreenshotPath });
+  await snapGif(3);
 
   // Trigger the event in-game!
   if (options.triggerMode === "step_right") {
     await page.evaluate(`(() => { window.__oprnInput?.dir("right"); })()`);
-    await page.waitForTimeout(260);
+    await page.waitForTimeout(130);
+    await snapGif(1);
+    await page.waitForTimeout(130);
     await page.evaluate(`(() => { window.__oprnInput?.dir(null); })()`);
+    await snapGif(1);
   } else {
     await page.evaluate(`(() => { window.__oprnInput?.face("right"); window.__oprnInput?.action(); })()`);
+    await snapGif(1);
   }
 
-  // Wait for the real `.dialogue-box` to appear on screen
+  // Wait for the real `.dialogue-box` to appear on screen while capturing pre-dialogue collapse/FX frames!
   try {
-    await page.waitForFunction(
-      `(() => {
-        const box = document.querySelector('[data-testid="dialogue-box"]');
-        if (!box) return false;
-        const rect = box.getBoundingClientRect();
-        return rect.width > 0 && rect.height > 0 && (box.textContent || "").trim().length > 0;
-      })()`,
-      undefined,
-      { timeout: 4500 },
-    );
-    // Wait until typewriter text finishes typing (textContent stabilizes across 200ms intervals, up to 3200ms)
-    let prevText = "";
-    let stableCount = 0;
-    for (let i = 0; i < 16; i++) {
-      await page.waitForTimeout(200);
-      const curText = (await page.evaluate(
+    let boxOpened = false;
+    for (let waitTick = 0; waitTick < 36; waitTick++) {
+      const ready = (await page.evaluate(
         `(() => {
           const box = document.querySelector('[data-testid="dialogue-box"]');
-          return (box?.textContent || "").replace(/\\s+/g, " ").trim();
+          if (!box) return false;
+          const rect = box.getBoundingClientRect();
+          return rect.width > 0 && rect.height > 0 && (box.textContent || "").trim().length > 0;
         })()`,
-      )) as string;
-      if (curText.length > 0 && curText === prevText) {
-        stableCount++;
-        if (stableCount >= 3) break;
-      } else {
-        prevText = curText;
-        stableCount = 0;
+      )) as boolean;
+      await snapGif(1);
+      if (ready) {
+        boxOpened = true;
+        break;
+      }
+      await page.waitForTimeout(125);
+    }
+    if (boxOpened) {
+      // Wait until typewriter text finishes typing (textContent stabilizes across 200ms intervals, up to 3200ms)
+      let prevText = "";
+      let stableCount = 0;
+      for (let i = 0; i < 16; i++) {
+        await page.waitForTimeout(200);
+        const curText = (await page.evaluate(
+          `(() => {
+            const box = document.querySelector('[data-testid="dialogue-box"]');
+            return (box?.textContent || "").replace(/\\s+/g, " ").trim();
+          })()`,
+        )) as string;
+        if (i % 2 === 0) await snapGif(1);
+        if (curText.length > 0 && curText === prevText) {
+          stableCount++;
+          if (stableCount >= 3) break;
+        } else {
+          prevText = curText;
+          stableCount = 0;
+        }
       }
     }
   } catch {
@@ -940,7 +974,7 @@ export async function runLiveInGameBranch(
 
   // Capture REAL in-game climax screenshot directly from `player.html`!
   await page.screenshot({ path: options.screenshotPath });
-
+  await snapGif(3);
   // Sample live engine state at climax
   const sampleStateJs = `(() => {
       const w = window;
@@ -1063,6 +1097,7 @@ export async function runLiveInGameBranch(
       if (options.peakScreenshotPath) await page.screenshot({ path: options.peakScreenshotPath });
     }
     if (st.gameOverVisible) {
+      await snapGif(2);
       gameOverSeen = true;
       break;
     }
@@ -1070,9 +1105,11 @@ export async function runLiveInGameBranch(
       idle = 0;
       if (st.dialoguePageReady) {
         typingTicks = 0;
+        await snapGif(2);
         await page.keyboard.press("Enter");
       } else {
         typingTicks++;
+        if (typingTicks % 2 === 0) await snapGif(1);
         if (typingTicks >= 10) {
           typingTicks = 0;
           await page.keyboard.press("Enter");
@@ -1080,6 +1117,7 @@ export async function runLiveInGameBranch(
       }
     } else {
       typingTicks = 0;
+      await snapGif(1);
       if (st.eventRunning) {
         idle = 0;
       } else {
@@ -1095,6 +1133,7 @@ export async function runLiveInGameBranch(
   if (options.afterScreenshotPath) {
     await page.screenshot({ path: options.afterScreenshotPath });
   }
+  await snapGif(4);
 
   const terminalState = (await page.evaluate(
     `(() => {
@@ -1112,6 +1151,25 @@ export async function runLiveInGameBranch(
 
   await page.close();
 
+  if (gifTmpDir && options.gifPath && gifFrameIdx > 0) {
+    spawnSync(
+      "ffmpeg",
+      [
+        "-y",
+        "-framerate",
+        "8",
+        "-i",
+        join(gifTmpDir, "frame_%04d.png"),
+        "-vf",
+        "fps=8,scale=480:-1:flags=neighbor,split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse=dither=none",
+        "-loop",
+        "0",
+        options.gifPath,
+      ],
+      { stdio: "ignore" },
+    );
+    rmSync(gifTmpDir, { recursive: true, force: true });
+  }
   const mergedAudio = Array.from(new Set([...audioSeen, ...(terminalState.audioObservedAfter ?? [])]));
 
   return {

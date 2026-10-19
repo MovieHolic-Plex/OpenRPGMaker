@@ -32,16 +32,16 @@ type Walk = { readonly dir: "up" | "down" | "right"; readonly steps: number };
 
 /** 생존(무사 통과) 분기가 걸어갈 길 — 이벤트 칸에서 dir 로 steps 칸. 제자리에 서 있기만 하면 «무사 통과» 가 안 보인다(2026-10-17 jrpg_003 45점). */
 const WALKS: Partial<Record<SceneTheme, Walk>> = {
-  lava_bridge: { dir: "up", steps: 4 },
-  volcano: { dir: "right", steps: 3 },
+  lava_bridge: { dir: "right", steps: 4 },
+  volcano: { dir: "right", steps: 4 },
   poison_swamp: { dir: "right", steps: 4 },
   ruins_shrine: { dir: "down", steps: 3 },
 };
 
 /** 비워 두는 동선(이벤트 칸 기준) — 다리·둑길·참배로. 기물을 얹지 않고 조수의 덧찍기도 막는다. */
 const CORRIDORS: Record<SceneTheme, readonly Rect[]> = {
-  lava_bridge: [{ x: -1, y: -7, w: 3, h: 15 }],
-  volcano: [{ x: -16, y: -1, w: 20, h: 3 }],
+  lava_bridge: [{ x: -4, y: -1, w: 10, h: 3 }],
+  volcano: [{ x: -16, y: -1, w: 22, h: 3 }],
   poison_swamp: [{ x: -8, y: 0, w: 22, h: 1 }],
   ruins_shrine: [{ x: -1, y: 4, w: 5, h: 8 }],
 };
@@ -108,15 +108,22 @@ function buildVolcano(s: Stage): { lavaTile: number } {
   const level = paintLevels(p, area, ["dirt", "ash", "crust", "lava"], (vx, vy) => {
     const wobble = (smoothNoise(vx, vy, 41, 2) - 0.5) * 0.6;
     if (touchesDry(s, vx, vy)) return 1;
+    // 주인공 진입 칸(x-1,y)부터 생존 보행 종점(x+4,y)까지 동서 회랑 둘레는 용암이 침범하지 않는 단단한 화산재 지면으로 유지한다.
+    if (vx >= x - 2 && vx <= x + 6 && Math.abs(vy - (y + 0.5)) <= 2) return 1;
     // 서쪽(vx < x - 6)은 마을 외곽 화산재·다진 흙 경계라 용암이 침범하지 않는다.
     if (vx < x - 6) return smoothNoise(vx, vy, 7, 4) < 0.25 ? 0 : 1;
-    const lake = ((vx - (x + 7.6)) / 3.4) ** 2 + ((vy - (y - 0.5)) / 6.2) ** 2;
+    const lake = ((vx - (x + 8.6)) / 3.2) ** 2 + ((vy - (y - 0.5)) / 6.2) ** 2;
     if (lake < 1 + wobble) return 3;
     if (distToPolyline(vx, vy, north) < 1.15 + wobble || distToPolyline(vx, vy, south) < 1.05 + wobble) return 3;
     const n = smoothNoise(vx, vy, 7, 4);
     return n > 0.7 ? 2 : n < 0.18 ? 0 : 1;
   }, { ash: "ash-b", dirt: "dirt-b" });
-  // 서쪽 마을 외곽 돌길: 사각 띠가 되지 않게 가운데 줄(y)을 따라 이어지다 동쪽 화산재 앞에서 드문드문 끊긴다.
+  // 서쪽 마을 외곽 돌길 및 화산 순례길(x-1..x+4): 생존 보행 동선이 단단한 판석·화산재 위로 이어지게 한다.
+  for (let cx = Math.max(area.x, x - 3); cx <= Math.min(area.x + area.w - 1, x + 4); cx++) {
+    if (cx <= x + 4 && hash01(cx, y, 81) < 0.85) {
+      p.ground(cx, y, p.tile("gm", `gm:floor:gm-fl-flag-${(cx + y) % 2 ? "a" : "b"}`));
+    }
+  }
   if (p.map.id === "map_ember_village") {
     for (let cx = area.x; cx <= x - 5; cx++) {
       if (cx <= x - 7 || hash01(cx, y, 83) < 0.65) {
@@ -206,79 +213,114 @@ function buildVolcano(s: Stage): { lavaTile: number } {
 }
 
 /**
- * 용암 다리(lava_bridge): 동서로 맵을 가르는 용암 협곡을 바위 다리가 남북으로 건넌다. 북쪽·남쪽 양 기슭의 좌우 모서리까지
- * 마도 유적 폐허 벽·부러진 기둥·현무암 기둥·가고일 석상·화로·흑요석·증기 구멍을 배치해 빈 구석이 없게 한다.
+ * 용암 다리(lava_bridge): 남북으로 흐르는 폭 3칸(x..x+2)의 용암 강·차원의 틈 위로 폭 3칸×높이 3칸(x..x+2, y-1..y+1)의
+ * 돌·나무 다리가 동서로 가로지른다. 서쪽 기슭(cx <= x-1)과 동쪽 기슭(cx >= x+3)은 모두 걸을 수 있는 단단한 지면이며,
+ * 양 기슭에 마도 유적 폐허 벽·부러진 기둥·현무암 기둥·가고일 석상·화로·흑요석·증기 구멍을 배치한다.
  */
 function buildLavaBridge(s: Stage): { lavaTile: number } {
   const { p, x, y, area } = s;
   paintLevels(p, area, ["dirt", "ash", "crust", "lava"], (vx, vy) => {
-    if (Math.abs(vx - x - 0.5) <= 2 && (vy <= y - 3 || vy >= y + 3)) return 1;
-    if (touchesDry(s, vx, vy) && Math.abs(vx - x - 0.5) > 2) return 1;
-    const centre = y + 0.2 + Math.sin((vx - x) * 0.45) * 0.4;
-    const half = 1.85 + (smoothNoise(vx, vy, 17, 2.5) - 0.5) * 0.55;
-    if (Math.abs(vy - centre) < half) return 3;
-    return Math.abs(vy - centre) < half + 0.7 && smoothNoise(vx, vy, 9, 3.5) > 0.65 ? 2 : 1;
+    // 다리 진입·진출로(y-1..y+1)의 서쪽 기슭(vx <= x)과 동쪽 기슭(vx >= x+3)은 단단한 화산재 지면으로 고정한다.
+    if (Math.abs(vy - (y + 0.5)) <= 2.2 && (vx <= x || vx >= x + 3)) return 1;
+    if (touchesDry(s, vx, vy) && (vx <= x || vx >= x + 3)) return 1;
+    const centre = x + 1.5 + Math.sin((vy - y) * 0.45) * 0.3;
+    const half = 1.65 + (smoothNoise(vx, vy, 17, 2.5) - 0.5) * 0.4;
+    if (Math.abs(vx - centre) < half) return 3;
+    return Math.abs(vx - centre) < half + 0.7 && smoothNoise(vx, vy, 9, 3.5) > 0.6 ? 2 : 1;
   }, { ash: "ash-b" });
-  s.built.push("화산재 기슭·용암 협곡");
+  // 남북 용암 협곡(x..x+2) 본류 보장 및 기물 침범 방지
+  for (let cy = area.y; cy < area.y + area.h; cy++) {
+    for (let cx = x - 1; cx <= x + 3; cx++) {
+      if (p.inside(cx, cy)) p.reserved.add(p.idx(cx, cy));
+    }
+    if (cy >= y - 1 && cy <= y + 1) continue;
+    for (let cx = x; cx <= x + 2; cx++) {
+      p.ground(cx, cy, p.tile("ph", "ph:ph-lava", Math.floor(hash01(cx, cy, 5) * 3)));
+    }
+  }
+  s.built.push("화산재 서·동 기슭·남북 용암 협곡·3칸 석교");
   if (area.y === 0 && y >= 6) {
-    rockWall(s, 0, area.x, area.x + area.w - 1);
+    rockWall(s, 0, area.x, x - 1);
+    rockWall(s, 0, x + 3, area.x + area.w - 1);
     s.built.push("북쪽 현무암 벽");
   }
-  for (let cy = y + 4; cy < area.y + area.h; cy++) for (let cx = x - 1; cx <= x + 1; cx++) p.ground(cx, cy, p.tile("gm", `gm:floor:gm-fl-flag-${(cx + cy) % 2 ? "a" : "b"}`));
-  for (let cx = x - 2; cx <= x + 2; cx++) if (p.inside(cx, y - 4)) p.ground(cx, y - 4, p.tile("gm", `gm:floor:gm-fl-flag-${(cx + y) % 2 ? "a" : "b"}`));
-  p.kit("bd", `${VOLCANO}bridge`, x - 1, y - 3, { floor: true });
-  const north = y - 5;
-  p.mirrorX("gm", "gm-statue-gargoyle", x - 2, north, x);
-  p.mirrorX("bd", `${VOLCANO}brazier`, x - 3, north, x);
-  p.mirrorX("gm", "gm-statue-gargoyle", x - 2, y + 4, x);
-  p.mirrorX("bd", `${VOLCANO}brazier`, x - 3, y + 5, x);
-  // 다리 중심(x)이 맵 한가운데가 아니어도(예: x=12, width=20) 좌우 기슭 끝까지 꽉 차도록 개별 kitNear 로 양쪽 기슭을 모두 채운다.
+  // 서쪽 기슭(cx <= x-1)과 동쪽 기슭(cx >= x+3)의 돌판석 진입로 — 직각 패치가 되지 않게 가운데 줄(y)을 중심으로 드문드문 흩어 화산재와 섞는다.
+  for (let cx = Math.max(area.x, x - 3); cx <= x - 1; cx++) {
+    if (cx === x - 1 || hash01(cx, y, 83) < 0.65) {
+      p.ground(cx, y, p.tile("gm", `gm:floor:gm-fl-flag-${(cx + y) % 2 ? "a" : "b"}`));
+    }
+  }
+  for (let cx = x + 3; cx <= Math.min(area.x + area.w - 1, x + 5); cx++) {
+    if (cx === x + 3 || hash01(cx, y, 89) < 0.65) {
+      p.ground(cx, y, p.tile("gm", `gm:floor:gm-fl-flag-${(cx + y) % 2 ? "a" : "b"}`));
+    }
+  }
+  // 3×3 다리 상판(x..x+2, y-1..y+1) + 서·동 교대(x-1, x+3) 시공
+  const stoneBridge = p.kitDef("bd", "bd-pick-mountain-pass-stone-bridge");
+  const topDeckRow = stoneBridge?.rows[1]?.tiles ?? [];
+  for (let dx = 0; dx < 5; dx++) {
+    const t = topDeckRow[dx] ?? -1;
+    if (t >= 0 && p.inside(x - 1 + dx, y - 1)) p.ground(x - 1 + dx, y - 1, t);
+  }
+  p.kit("bd", "bd-pick-mountain-pass-stone-bridge", x - 1, y - 1, { floor: true });
+  const plankTile = p.tile("ph", "ph:ph-bridge-h");
+  for (let cx = x; cx <= x + 2; cx++) {
+    if (p.inside(cx, y)) setLayerTileAt(p.map, 3, p.idx(cx, y), plankTile);
+  }
+  // 서쪽·동쪽 다리 들머리·날머리 수호 석상과 화로
+  for (const [px, py] of [[x - 2, y - 3], [x - 2, y + 2], [x + 3, y - 3], [x + 3, y + 2]] as const) {
+    p.kitNear("gm", "gm-statue-gargoyle", px, py, 1);
+  }
+  for (const [px, py] of [[x - 3, y - 3], [x - 3, y + 2], [x + 4, y - 3], [x + 4, y + 2]] as const) {
+    p.kitNear("bd", `${VOLCANO}brazier`, px, py, 1);
+  }
   const bankProps: [ArtSource, string, number, number][] = [
-    // 북쪽 서편 기슭 (x-11 .. x-4)
-    ["bd", `${RUINS}ruined-wall-2`, x - 11, north],
-    ["ph", "ph-basalt-columns", x - 8, north - 1],
-    ["bd", `${VOLCANO}pillar-broken-a`, x - 5, north],
-    ["bd", `${VOLCANO}brazier`, x - 9, north],
-    ["bd", `${VOLCANO}fire-crystal`, x - 6, north + 1],
-    ["ph", "ph-obsidian", x - 10, north + 1],
-    // 북쪽 동편 기슭 (x+4 .. x+13)
-    ["ph", "ph-basalt-columns", x + 4, north - 1],
-    ["bd", `${VOLCANO}pillar-broken-b`, x + 6, north],
-    ["bd", `${VOLCANO}fire-crystal`, x + 5, north + 1],
-    ["bd", `${RUINS}ruined-wall-2`, x + 9, north],
-    ["ph", "ph-basalt-columns", x + 12, north - 1],
-    ["bd", `${VOLCANO}brazier`, x + 8, north],
-    ["ph", "ph-obsidian", x + 11, north + 1],
-    ["bd", `${RUINS}ruined-wall-2`, x - 4, north - 3],
-    ["ph", "ph-basalt-columns", x + 3, north - 3],
-    ["bd", `${RUINS}ruined-wall-2`, x + 7, north - 3],
-    ["ph", "ph-basalt-columns", x + 11, north - 3],
-    ["bd", `${VOLCANO}brazier`, x + 1, north - 3],
-    ["bd", `${VOLCANO}fire-crystal`, x + 10, north - 2],
-    ["bd", `${RUINS}ruined-wall-2`, x - 11, y + 4],
-    ["ph", "ph-basalt-columns", x - 8, y + 4],
-    ["bd", `${VOLCANO}spike-wide`, x - 6, y + 5],
-    ["ph", "ph-rock-l", x - 11, y + 6],
-    ["bd", `${VOLCANO}pillar-fallen`, x - 8, y + 7],
-    ["bd", `${VOLCANO}brazier`, x - 9, y + 5],
-    ["bd", `${VOLCANO}steam-vent`, x - 4, y + 4],
-    ["bd", `${VOLCANO}fire-crystal`, x - 5, y + 7],
-    ["ph", "ph-obsidian", x - 4, y + 7],
-    // 남쪽 동편 기슭 (x+4 .. x+13)
-    ["ph", "ph-basalt-columns", x + 4, y + 4],
-    ["bd", `${RUINS}ruined-wall-2`, x + 6, y + 4],
-    ["bd", `${VOLCANO}spike-wide`, x + 4, y + 6],
-    ["bd", `${VOLCANO}brazier`, x + 6, y + 6],
-    ["ph", "ph-vent", x + 4, y + 4],
-    ["bd", `${VOLCANO}pillar-broken-a`, x + 7, y + 6],
-    ["bd", `${RUINS}ruined-wall-2`, x + 9, y + 4],
-    ["ph", "ph-basalt-columns", x + 12, y + 4],
-    ["bd", `${VOLCANO}pillar-fallen`, x + 9, y + 7],
-    ["bd", `${VOLCANO}brazier`, x + 11, y + 5],
-    ["bd", `${VOLCANO}fire-crystal`, x + 10, y + 6],
-    ["ph", "ph-rock-l", x + 12, y + 6],
+    // 서북쪽 기슭 (x-11 .. x-2, y-8 .. y-3)
+    ["bd", `${RUINS}ruined-wall-2`, x - 11, y - 6],
+    ["ph", "ph-basalt-columns", x - 8, y - 7],
+    ["bd", `${VOLCANO}pillar-broken-a`, x - 5, y - 6],
+    ["bd", `${VOLCANO}brazier`, x - 9, y - 4],
+    ["bd", `${VOLCANO}fire-crystal`, x - 6, y - 4],
+    ["ph", "ph-obsidian", x - 10, y - 3],
+    ["bd", `${RUINS}ruined-wall-2`, x - 4, y - 7],
+    ["ph", "ph-basalt-columns", x - 3, y - 6],
+    ["bd", `${VOLCANO}fire-crystal`, x - 2, y - 5],
+    // 서남쪽 기슭 (x-11 .. x-2, y+3 .. y+7)
+    ["bd", `${RUINS}ruined-wall-2`, x - 11, y + 3],
+    ["ph", "ph-basalt-columns", x - 8, y + 3],
+    ["bd", `${VOLCANO}spike-wide`, x - 6, y + 4],
+    ["ph", "ph-rock-l", x - 11, y + 5],
+    ["bd", `${VOLCANO}pillar-fallen`, x - 8, y + 6],
+    ["bd", `${VOLCANO}brazier`, x - 9, y + 4],
+    ["bd", `${VOLCANO}steam-vent`, x - 4, y + 3],
+    ["bd", `${VOLCANO}fire-crystal`, x - 5, y + 6],
+    ["ph", "ph-obsidian", x - 3, y + 5],
+    // 동북쪽 기슭 (x+4 .. x+14, y-8 .. y-3)
+    ["ph", "ph-basalt-columns", x + 5, y - 7],
+    ["bd", `${VOLCANO}pillar-broken-b`, x + 7, y - 6],
+    ["bd", `${VOLCANO}fire-crystal`, x + 6, y - 4],
+    ["bd", `${RUINS}ruined-wall-2`, x + 9, y - 6],
+    ["ph", "ph-basalt-columns", x + 12, y - 7],
+    ["bd", `${VOLCANO}brazier`, x + 8, y - 4],
+    ["ph", "ph-obsidian", x + 11, y - 4],
+    ["bd", `${RUINS}ruined-wall-2`, x + 6, y - 8],
+    ["ph", "ph-basalt-columns", x + 10, y - 8],
+    ["bd", `${VOLCANO}fire-crystal`, x + 13, y - 5],
+    // 동남쪽 기슭 (x+4 .. x+14, y+3 .. y+7)
+    ["ph", "ph-basalt-columns", x + 5, y + 3],
+    ["bd", `${RUINS}ruined-wall-2`, x + 7, y + 3],
+    ["bd", `${VOLCANO}spike-wide`, x + 5, y + 5],
+    ["bd", `${VOLCANO}brazier`, x + 7, y + 5],
+    ["ph", "ph-vent", x + 6, y + 4],
+    ["bd", `${VOLCANO}pillar-broken-a`, x + 8, y + 5],
+    ["bd", `${RUINS}ruined-wall-2`, x + 10, y + 3],
+    ["ph", "ph-basalt-columns", x + 12, y + 3],
+    ["bd", `${VOLCANO}pillar-fallen`, x + 10, y + 6],
+    ["bd", `${VOLCANO}brazier`, x + 11, y + 4],
+    ["bd", `${VOLCANO}fire-crystal`, x + 11, y + 5],
+    ["ph", "ph-rock-l", x + 13, y + 5],
   ];
-  for (const [src, id, px, py] of bankProps) p.kitNear(src, id, Math.round(px), Math.round(py), 2, { overBlocked: true });
+  for (const [src, id, px, py] of bankProps) p.kitNear(src, id, Math.round(px), Math.round(py), 2);
   scatter(s, [["ph", "ph-rock-s"], ["bd", `${RUINS}rubble-temple`], ["bd", `${VOLCANO}ember-a`], ["ph", "ph-bone-pile"]], 0.07, 73);
   return { lavaTile: p.tile("ph", "ph:ph-lava") };
 }
@@ -418,13 +460,21 @@ function buildRuinsShrine(s: Stage): Cell | undefined {
 }
 
 /**
- * 다리 칸(x-1..x+1, 용암 띠 y-2..y+1)이 «무너진» 모습. 다리 그림은 상단(upper) 층이고 그 밑 하단은 이미 용암이라,
- * 하단만 바꾸면 화면이 그대로다(2026-10-16 18차: 심판이 «다리가 온전하다» 로 감점). 상단 칸을 용암 타일로 덮어 틈을 낸다.
+ * 다리 상판(x..x+2, y-1..y+1 및 아치 그림자 y+2)이 «무너진» 모습. 하단(석교 상판)과 상단(난간·널빤지·아치)을 모두
+ * 용암 타일로 덮어 3칸 다리 전체가 용암 협곡 속으로 무너져 내리게 한다.
  */
 function bridgeCollapse(map: GameMap, x: number, y: number, lavaTile: number) {
-  const cells: { x: number; y: number; layer: "upper"; tile: number }[] = [];
-  for (const cy of [y - 2, y - 1, y, y + 1]) for (const cx of [x - 1, x, x + 1]) {
-    if (cx >= 0 && cx < map.width && cy >= 0 && cy < map.height) cells.push({ x: cx, y: cy, layer: "upper", tile: lavaTile });
+  const cells: { x: number; y: number; layer: "lower" | "upper"; tile: number }[] = [];
+  for (const cx of [x, x + 1, x + 2]) {
+    for (const cy of [y - 1, y, y + 1]) {
+      if (cx >= 0 && cx < map.width && cy >= 0 && cy < map.height) {
+        cells.push({ x: cx, y: cy, layer: "lower", tile: lavaTile });
+        cells.push({ x: cx, y: cy, layer: "upper", tile: lavaTile });
+      }
+    }
+    if (cx >= 0 && cx < map.width && y + 2 >= 0 && y + 2 < map.height) {
+      cells.push({ x: cx, y: y + 2, layer: "upper", tile: lavaTile });
+    }
   }
   return { cells };
 }
