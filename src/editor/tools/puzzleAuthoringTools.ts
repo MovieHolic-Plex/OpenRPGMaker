@@ -48,6 +48,10 @@ export const PUZZLE_PRESET_IDS = [
   "sluice_lava_bridge",
   "stealth_guard_patrol",
   "boss_seal_monoliths",
+  "rolling_boulder_chasm",
+  "mirror_beam_refraction",
+  "minecart_track_switch",
+  "elemental_pedestal_swap",
 ] as const;
 
 export type PuzzlePresetId = (typeof PUZZLE_PRESET_IDS)[number];
@@ -316,8 +320,83 @@ export const PUZZLE_PRESET_CATALOG: readonly PuzzlePresetEntry[] = [
     },
     exampleCall: { mapId: "map_boss_temple_1", presetId: "boss_seal_monoliths" },
   },
+  {
+    id: "rolling_boulder_chasm",
+    index: 13,
+    title: "⑬ 거대 바위 굴리기·구렁 메우기 퍼즐",
+    category: "obstacle_clear",
+    genres: ["jrpg", "ruins", "mountain", "zelda-like", "바위", "굴리기", "구렁", "돌다리", "물리궤적"],
+    summary: "상부 고패 윈치와 바위 멈춤쇠를 풀면 거대 바위가 경사로를 따라 6단계 궤적으로 회전·먼지 구름을 일으키며 굴러 내려와 심연 구렁을 메우고 돌다리를 만든다.",
+    mechanics: "상부 윈치 해제 + 바위 멈춤쇠 작동 + 5단계 경사로 구름 궤적(boulder_step_1~5 changeTile + 먼지·연기·불꽃 입자 + 단계별 진동) + 구렁 착지 3물결 폭발 및 3×2 돌다리·성소 계단 개방",
+    visualProps: ["상부 고패 윈치 (gate winch)", "경사로 3열 거대 바위 (push boulder 궤적 이동)", "심연 구렁 3×2 돌다리 & 성소 계단"],
+    usesChangeTile: true,
+    requiredCells: 3,
+    defaultReward: {
+      itemId: "item_puzzle_earthshaker_core",
+      itemName: "대지진의 바위 핵",
+      itemDescription: "거대 바위를 굴려 심연 구렁을 메우고 성소에서 획득한 대지의 마력 핵.",
+      gold: 350,
+    },
+    exampleCall: { mapId: "map_chasm_ruins_1", presetId: "rolling_boulder_chasm" },
+  },
+  {
+    id: "mirror_beam_refraction",
+    index: 14,
+    title: "⑭ 고대 거울 빛줄기 굴절 퍼즐",
+    category: "musical_astronomy",
+    genres: ["jrpg", "temple", "light", "mirror", "거울", "빛줄기", "굴절", "프리즘", "봉인"],
+    summary: "천창의 태양빛을 받는 서·동 프리즘 거울 기둥을 차례로 회전시켜 황금 빛줄기를 성소 바닥 위로 굴절·집중시켜 북쪽 암흑 결계를 파쇄한다.",
+    mechanics: "제1 프리즘 거울 회전(동쪽 빛줄기 changeTile) + 제2 굴절 거울 회전(북쪽 봉인 빛줄기 changeTile) + 섬광·마법 입자 + 북쪽 암흑 봉인 파쇄 및 성소 계단 개방",
+    visualProps: ["서·동 굴절 거울 기둥 (tailor mirror→mana crystal)", "황금 빛줄기 바닥 궤적 (rug royal + footlights)", "북쪽 암흑 봉인 제단 (dark orb pedestal→magic circle)"],
+    usesChangeTile: true,
+    requiredCells: 3,
+    defaultReward: {
+      itemId: "item_puzzle_helios_prism",
+      itemName: "태양신의 굴절 프리즘",
+      itemDescription: "고대 거울로 태양 빛줄기를 굴절시켜 암흑 봉인을 정화하고 얻은 황금 프리즘.",
+      gold: 350,
+    },
+    exampleCall: { mapId: "map_sun_temple_1", presetId: "mirror_beam_refraction" },
+  },
+  {
+    id: "minecart_track_switch",
+    index: 15,
+    title: "⑮ 광산 선로 전환기 & 광차 충돌 퍼즐",
+    category: "movement",
+    genres: ["jrpg", "mine", "steampunk", "dwarf", "광차", "선로", "전환기", "충돌", "바리케이드"],
+    summary: "막다른 서쪽 지선으로 향해 있던 광산 분기 선로를 전환기로 북쪽 본선에 연결한 뒤 광석 광차를 출발시켜 낙석 바리케이드를 정면 돌파한다.",
+    mechanics: "분기 선로 전환기(rail changeTile) + 광차 발진 4단계 선로 질주(minecart_step_1~4 + 불꽃·먼지 입자 + 진동) + 낙석 바리케이드 정면 충돌 폭파 및 금고 개방",
+    visualProps: ["분기 선로 전환기 (gate winch + rail)", "질주하는 광석 광차 (mine cart 4단계 이동)", "북쪽 금고 낙석 바리케이드 (push boulder→treasure pile)"],
+    usesChangeTile: true,
+    requiredCells: 3,
+    defaultReward: {
+      itemId: "item_puzzle_mithril_ingot",
+      itemName: "특제 미스릴 주괴",
+      itemDescription: "광차로 금고 바리케이드를 돌파해 찾아낸 고순도 미스릴 주괴.",
+      gold: 400,
+    },
+    exampleCall: { mapId: "map_dwarf_mine_1", presetId: "minecart_track_switch" },
+  },
+  {
+    id: "elemental_pedestal_swap",
+    index: 16,
+    title: "⑯ 사원소 룬 제단 공명 퍼즐",
+    category: "elemental",
+    genres: ["jrpg", "sanctum", "elemental", "rune", "사원소", "제단", "룬", "공명", "마법진"],
+    summary: "화염·빙결·질풍·대지 4방위 원소 제단에 각각 상응하는 원소 성물을 깨워 중앙 대마법진과 북쪽 대성소 계단을 개방한다.",
+    mechanics: "4방위 원소 제단(plinth→lava brazier/mana crystal/orb pedestal/rune stone 단계별 changeTile) + allSwitchesFork 4원소 합일 판정 + 대마법진·성소 계단 개방",
+    visualProps: ["화·빙·풍·지 4원소 제단 (plinth→4원소 성물)", "중앙 대마법진 (summoning circle→magic circle + save crystal)", "북쪽 성소 봉인문 (portcullis→stairs up stone)"],
+    usesChangeTile: true,
+    requiredCells: 4,
+    defaultReward: {
+      itemId: "item_puzzle_elemental_crown",
+      itemName: "사원소 공명의 관",
+      itemDescription: "네 원소 제단을 모두 깨워 대마법진을 완성하고 얻은 고대 왕관.",
+      gold: 450,
+    },
+    exampleCall: { mapId: "map_elemental_sanctum_1", presetId: "elemental_pedestal_swap" },
+  },
 ] as const;
-
 const PRESET_ALIASES: Readonly<Record<string, PuzzlePresetId>> = {
   "1": "lever_secret_passage",
   lever: "lever_secret_passage",
@@ -389,8 +468,32 @@ const PRESET_ALIASES: Readonly<Record<string, PuzzlePresetId>> = {
   "결계": "boss_seal_monoliths",
   "3비석": "boss_seal_monoliths",
   "봉인비석": "boss_seal_monoliths",
+  "13": "rolling_boulder_chasm",
+  boulder: "rolling_boulder_chasm",
+  rolling_boulder: "rolling_boulder_chasm",
+  boulder_roll: "rolling_boulder_chasm",
+  "바위굴리기": "rolling_boulder_chasm",
+  "구렁메우기": "rolling_boulder_chasm",
+  "바위궤적": "rolling_boulder_chasm",
+  "14": "mirror_beam_refraction",
+  mirror: "mirror_beam_refraction",
+  mirror_beam: "mirror_beam_refraction",
+  refraction: "mirror_beam_refraction",
+  "거울": "mirror_beam_refraction",
+  "빛줄기": "mirror_beam_refraction",
+  "굴절": "mirror_beam_refraction",
+  "15": "minecart_track_switch",
+  minecart: "minecart_track_switch",
+  track_switch: "minecart_track_switch",
+  "광차": "minecart_track_switch",
+  "선로전환": "minecart_track_switch",
+  "광차충돌": "minecart_track_switch",
+  "16": "elemental_pedestal_swap",
+  elemental: "elemental_pedestal_swap",
+  elemental_pedestal: "elemental_pedestal_swap",
+  "사원소": "elemental_pedestal_swap",
+  "원소제단": "elemental_pedestal_swap",
 };
-
 export function resolvePuzzlePresetId(raw: unknown): PuzzlePresetId | undefined {
   if (typeof raw !== "string" && typeof raw !== "number") return undefined;
   const trimmed = String(raw).trim().toLowerCase().replace(/\s+/gu, "");
@@ -453,19 +556,22 @@ function revealInWaves(cmds: readonly Command[], theme: RevealTheme): Command[] 
   }
   const cells = [...byCell.values()].sort((a, b) => b.y - a.y || a.x - b.x);
   if (cells.length === 0) return [...cmds];
-  const out: Command[] = [flash(theme.flash, 350)];
+  // 직전 대사·선택지 창이 완전히 닫힌 뒤 연출이 시작되고, 마지막 물결 뒤에도 잠깐 여유를 두어
+  // 캡처 프레임에 반쯤 닫히는 대사창이 절대 겹치지 않게 한다.
+  const out: Command[] = [{ kind: "wait", ms: 250 }, flash(theme.flash, 350)];
   const per = Math.ceil(cells.length / 3);
+  const mid = cells[Math.floor(cells.length / 2)]!;
   for (let wave = 0; wave < 3; wave += 1) {
     const group = cells.slice(wave * per, (wave + 1) * per);
     if (group.length === 0) continue;
     // 물결마다 입자는 최대 4곳 — 칸마다 뿜으면 큰 다리·갱도에서 입자가 수십 개 겹쳐 오히려 뭉개진다.
     const step = Math.max(1, Math.floor(group.length / 4));
     for (let i = 0; i < group.length; i += step) out.push(particles(theme.waves[wave]!, 1200, group[i]!));
+    if (wave === 2) out.push(particles("sparkle", 1200, mid));
     for (const cell of group) out.push(...cell.cmds);
     out.push(shake(wave === 2 ? 10 : 6, wave === 2 ? 600 : 300));
   }
-  const mid = cells[Math.floor(cells.length / 2)]!;
-  out.push(particles("sparkle", 1200, mid));
+  out.push({ kind: "wait", ms: 220 });
   return out;
 }
 
@@ -878,13 +984,15 @@ function upsertPuzzleEvent(map: GameMap, event: GameEvent): void {
 const listPuzzlePresetsTool: ToolDefinition = {
   name: "list_puzzle_presets",
   description:
-    "AI 조수가 맵·던전·실내에 바로 설치할 수 있는 12종 JRPG·어드벤처 퍼즐 프리셋 카탈로그를 조회한다. " +
+    "AI 조수가 맵·던전·실내에 바로 설치할 수 있는 16종 JRPG·어드벤처 퍼즐 프리셋 카탈로그를 조회한다. " +
     "① 레버-비밀통로 changeTile 개방(lever_secret_passage) ② 2단계 비밀번호/순서 레버(two_step_sequence) " +
     "③ 성당 파이프 오르간·별자리 조율(cathedral_organ_tuning) ④ 횃불/화로 점화 순서(brazier_ignition_order) " +
     "⑤ 석상/바위 발판 스위치(statue_pressure_plates) ⑥ 얼음/컨베이어 미끄럼 길 찾기(ice_conveyor_slide) " +
     "⑦ 시간의 문 시대 연동 기믹(time_gate_causality) ⑧ 열쇠·다이너마이트 장애물 폭파(dynamite_rock_blast) " +
     "⑨ 보물상자 함정/미믹/진실의 상자 수수께끼(riddle_mimic_chests) ⑩ 수문/용암 수위 조절 다리 개방(sluice_lava_bridge) " +
-    "⑪ 경비병 시야/순찰 잠입(stealth_guard_patrol) ⑫ 보스 봉인 결계 3비석 해제(boss_seal_monoliths). " +
+    "⑪ 경비병 시야/순찰 잠입(stealth_guard_patrol) ⑫ 보스 봉인 결계 3비석 해제(boss_seal_monoliths) " +
+    "⑬ 거대 바위 굴리기·구렁 메우기(rolling_boulder_chasm) ⑭ 고대 거울 빛줄기 굴절(mirror_beam_refraction) " +
+    "⑮ 광산 선로 전환기 & 광차 충돌(minecart_track_switch) ⑯ 사원소 룬 제단 공명(elemental_pedestal_swap). " +
     "조회한 presetId 를 author_map_puzzle({mapId, presetId, x?, y?}) 에 전달해 한 번에 시공한다.",
   mode: "read",
   domains: ["event", "map"],
@@ -901,7 +1009,7 @@ const listPuzzlePresetsTool: ToolDefinition = {
       },
       presetId: {
         type: "string",
-        description: "특정 프리셋 id 또는 번호(1~12)",
+        description: "특정 프리셋 id 또는 번호(1~16)",
       },
     },
     additionalProperties: false,
@@ -936,7 +1044,7 @@ const listPuzzlePresetsTool: ToolDefinition = {
 const authorMapPuzzleTool: ToolDefinition = {
   name: "author_map_puzzle",
   description:
-    "12종 퍼즐 프리셋(list_puzzle_presets) 중 하나를 대상 맵에 원자적으로 시공한다. " +
+    "16종 퍼즐 프리셋(list_puzzle_presets) 중 하나를 대상 맵에 원자적으로 시공한다. " +
     "{mapId, presetId, puzzleId?, x?, y?, targetMapId?, gateEventId?, solveSwitchId?, title?, hintText?, reward?} — " +
     "x·y 를 생략하면 맵의 주 통행 영역에서 길·출입구·시작점을 막지 않는 안전한 바닥 클러스터를 자동으로 찾아 배치한다. " +
     "모든 프리셋은 ① 작동 전/후가 눈에 보이는 2상태 기물 그래픽(레버·화로·발판·비석·보물상자·낙석·경비병) " +
@@ -2590,6 +2698,532 @@ const authorMapPuzzleTool: ToolDefinition = {
           `(${cM1.x},${cM1.y}) 태양의 봉인 비석 조사`,
           `(${cM2.x},${cM2.y}) 달의 봉인 비석 조사`,
           `(${cM3.x},${cM3.y}) 별의 봉인 비석 조사 → 3비석 공명 완성 + changeTile ${changeTileCmds.length}칸 및 (${cBossGate.x},${cBossGate.y}) 결계문 해제`,
+        ];
+        break;
+      }
+
+      case "rolling_boulder_chasm": {
+        const cWinch = cells[0]!;
+        const cStopper = cells[1]!;
+        const cChasmGate = cells[2]!;
+        const swWinch = `sw_${baseId}_winch_released`;
+        ensureNamedSwitch(draft, swWinch, "바위 경사로 상부 고패 윈치 해제");
+        switchIds.push(swWinch);
+
+        changeTileCmds = resolveChangeTiles([cChasmGate, cStopper, cWinch]);
+        const winchId = `ev_${baseId}_winch`;
+        const stopperId = `ev_${baseId}_stopper`;
+        const chasmGateId = `ev_${baseId}_chasm_gate`;
+
+        const rollSteps: Command[] = [{ kind: "wait", ms: 260 }];
+        for (let step = 1; step <= 5; step += 1) {
+          const rollX = cChasmGate.x;
+          const rollY = cStopper.y + step;
+          rollSteps.push(
+            se(step % 2 === 1 ? "earth2" : "collapse1"),
+            ...(stagePlan?.stepChangeTileCommands[`boulder_step_${step}`] ?? []),
+            particles("dust", 1200, { x: rollX, y: rollY - 1 }),
+            particles("smoke", 1100, { x: rollX + (step % 2 === 1 ? -1 : 1), y: rollY }),
+            particles("sparkle", 900, { x: rollX, y: rollY }),
+            shake(step >= 4 ? 6 : 3, 220),
+            { kind: "wait", ms: 60 },
+          );
+        }
+
+        const winchEvent: GameEvent = {
+          id: winchId,
+          name: "상부 고패 윈치",
+          x: cWinch.x,
+          y: cWinch.y,
+          trigger: { kind: "action" },
+          commands: [],
+          pages: [
+            makePage({
+              id: `${winchId}_locked`,
+              name: "고패 윈치 (고정됨)",
+              graphic: objGraphic("object2", 0, "down"),
+              commands: [
+                { kind: "wait", ms: 200 },
+                se("key"),
+                se("earth2"),
+                { kind: "setSwitch", switchId: swWinch, value: true },
+                ...(stagePlan?.stepChangeTileCommands.boulder_winch ?? []),
+                particles("dust", 900, cWinch),
+                shake(3, 300),
+                textCmd(
+                  "철컥— 끼이이익! 상부 고패 윈치의 쇠사슬을 풀어 경사로 바위의 1차 구속을 해제했다! 이제 옆의 『바위 멈춤쇠 페달』을 작동시킬 수 있다.",
+                ),
+              ],
+            }),
+            makePage({
+              id: `${winchId}_released`,
+              name: "고패 윈치 (해제됨)",
+              conditions: [{ kind: "switch", switchId: swWinch, value: true }],
+              graphic: objGraphic("object2", 0, "up"),
+              commands: [textCmd("상부 고패 윈치의 쇠사슬이 풀려 있다.")],
+            }),
+          ],
+        };
+
+        const stopperEvent: GameEvent = {
+          id: stopperId,
+          name: customTitle ?? "바위 경사로 멈춤쇠",
+          x: cStopper.x,
+          y: cStopper.y,
+          trigger: { kind: "action" },
+          commands: [],
+          pages: [
+            makePage({
+              id: `${stopperId}_ready`,
+              name: "바위 멈춤쇠 (굴리기 전)",
+              graphic: objGraphic("object2", 5, "down"),
+              commands: [
+                {
+                  kind: "fork",
+                  condition: { kind: "switch", switchId: swWinch, value: true },
+                  then: [
+                    textCmd("멈춤쇠 페달을 힘껏 밟자 고정 쐐기가 빠지며 거대 바위가 경사로 아래로 구르기 시작했다!"),
+                    ...rollSteps,
+                    se("explosion1"),
+                    ...revealInWaves(changeTileCmds, { flash: "yellow", waves: ["explosion", "dust", "sparkle"] }),
+                    textCmd(
+                      "쿠구구구궁— 콰앙!! 거대 바위가 경사로를 굴러 내려와 심연 구렁을 메우며 튼튼한 돌다리와 성소 계단을 열었다!",
+                    ),
+                    ...reward.grantCommands,
+                    { kind: "setSwitch", switchId: solveSwitchId, value: true },
+                  ],
+                  else: [
+                    textCmd(
+                      customHint ??
+                        "거대한 바위 3기가 경사로 꼭대기에 버티고 있다. 먼저 왼쪽의 『상부 고패 윈치』를 돌려 쇠사슬을 풀어야 바위를 굴릴 수 있다.",
+                    ),
+                  ],
+                },
+              ],
+            }),
+            makePage({
+              id: `${stopperId}_rolled`,
+              name: "바위 멈춤쇠 (투하 완료)",
+              conditions: [{ kind: "switch", switchId: solveSwitchId, value: true }],
+              graphic: objGraphic("object2", 2, "down"),
+              priority: "below",
+              overlapForbidden: false,
+              commands: [textCmd("거대 바위가 경사로를 따라 굴러 내려가 심연 구렁을 메웠다.")],
+            }),
+          ],
+        };
+
+        const chasmGateEvent: GameEvent = {
+          id: chasmGateId,
+          name: "심연 구렁 돌다리 착지점",
+          x: cChasmGate.x,
+          y: cChasmGate.y,
+          trigger: { kind: "action" },
+          commands: [],
+          pages: [
+            makePage({
+              id: `${chasmGateId}_blocked`,
+              name: "심연 구렁 (차단)",
+              graphic: objGraphic("object1", 5, "down"),
+              priority: "same",
+              commands: [
+                textCmd("깊은 심연 구렁이 앞을 가로막고 있다. 북쪽 경사로 상단의 거대 바위를 굴려 구렁을 메워야 건널 수 있다."),
+              ],
+            }),
+            makePage({
+              id: `${chasmGateId}_bridged`,
+              name: "심연 구렁 돌다리 (개방)",
+              conditions: [{ kind: "switch", switchId: solveSwitchId, value: true }],
+              graphic: { transparent: true },
+              priority: "below",
+              overlapForbidden: false,
+              commands: [textCmd("거대 바위가 심연 구렁을 메워 만든 튼튼한 돌다리다.")],
+            }),
+          ],
+        };
+
+        registerEvent(map, winchEvent, "상부 고패 윈치");
+        registerEvent(map, stopperEvent, "거대 바위 멈춤쇠");
+        registerEvent(map, chasmGateEvent, "심연 구렁 돌다리");
+        solveStepsSummary = [
+          `(${cWinch.x},${cWinch.y}) '상부 고패 윈치' 조사로 쇠사슬 해제`,
+          `(${cStopper.x},${cStopper.y}) '${stopperEvent.name}' 조사 → 5단계 바위 구름 궤적 연출 후 (${cChasmGate.x},${cChasmGate.y}) 심연 구렁 돌다리 완성`,
+        ];
+        break;
+      }
+
+      case "mirror_beam_refraction": {
+        const cMirror1 = cells[0]!;
+        const cMirror2 = cells[1]!;
+        const cSeal = cells[2]!;
+        const swM1 = `sw_${baseId}_mirror_1`;
+        const swM2 = `sw_${baseId}_mirror_2`;
+        ensureNamedSwitch(draft, swM1, "제1 태양 프리즘 거울 회전");
+        ensureNamedSwitch(draft, swM2, "제2 굴절 거울 회전");
+        switchIds.push(swM1, swM2);
+
+        changeTileCmds = resolveChangeTiles([cSeal, cMirror1, cMirror2]);
+        const m1Id = `ev_${baseId}_mirror_1`;
+        const m2Id = `ev_${baseId}_mirror_2`;
+        const sealId = `ev_${baseId}_mirror_seal`;
+
+        const mirror1Event: GameEvent = {
+          id: m1Id,
+          name: "제1 태양 프리즘 거울",
+          x: cMirror1.x,
+          y: cMirror1.y,
+          trigger: { kind: "action" },
+          commands: [],
+          pages: [
+            makePage({
+              id: `${m1Id}_unaligned`,
+              name: "제1 거울 (회전 전)",
+              graphic: objGraphic("object2", 3, "down"),
+              commands: [
+                { kind: "wait", ms: 200 },
+                se("chime2"),
+                flash("yellow", 250),
+                { kind: "setSwitch", switchId: swM1, value: true },
+                ...(stagePlan?.stepChangeTileCommands.mirror_1 ?? []),
+                particles("sparkle", 1100, cMirror1),
+                particles("magic", 1000, { x: Math.floor((cMirror1.x + cMirror2.x) / 2), y: cMirror1.y }),
+                shake(3, 280),
+                textCmd("스르륵— 쨍! 서쪽 프리즘 거울을 45도 회전시키자 천창의 황금 태양빛이 동쪽 굴절 거울로 뻗어 나갔다!"),
+              ],
+            }),
+            makePage({
+              id: `${m1Id}_aligned`,
+              name: "제1 거울 (반사 중)",
+              conditions: [{ kind: "switch", switchId: swM1, value: true }],
+              graphic: objGraphic("object2", 6, "down"),
+              commands: [textCmd("제1 프리즘 거울이 천창의 태양 빛줄기를 동쪽으로 반사하고 있다.")],
+            }),
+          ],
+        };
+
+        const mirror2Event: GameEvent = {
+          id: m2Id,
+          name: "제2 성소 굴절 거울",
+          x: cMirror2.x,
+          y: cMirror2.y,
+          trigger: { kind: "action" },
+          commands: [],
+          pages: [
+            makePage({
+              id: `${m2Id}_unaligned`,
+              name: "제2 거울 (회전 전)",
+              graphic: objGraphic("object2", 3, "down"),
+              commands: [
+                {
+                  kind: "fork",
+                  condition: { kind: "switch", switchId: swM1, value: true },
+                  then: [
+                    textCmd("동쪽 굴절 거울을 북쪽 성소 제단 각도로 맞췄다! 황금 빛줄기가 굴절되어 북쪽 암흑 결계를 직격한다!"),
+                    { kind: "wait", ms: 250 },
+                    se("bell"),
+                    ...(stagePlan?.stepChangeTileCommands.mirror_2 ?? []),
+                    particles("sparkle", 1200, cMirror2),
+                    particles("magic", 1200, { x: cMirror2.x, y: cSeal.y }),
+                    shake(3, 260),
+                    se("barrier"),
+                    se("collapse1"),
+                    ...revealInWaves(changeTileCmds, { flash: "yellow", waves: ["sparkle", "magic", "smoke"] }),
+                    textCmd("찬란한 태양 빛줄기가 북쪽 암흑 봉인을 산산이 정화하며 대성소 돌계단이 열렸다!"),
+                    ...reward.grantCommands,
+                    { kind: "setSwitch", switchId: swM2, value: true },
+                    { kind: "setSwitch", switchId: solveSwitchId, value: true },
+                  ],
+                  else: [
+                    textCmd("동쪽 굴절 거울 기둥이다. 먼저 서쪽 천창 아래의 『제1 태양 프리즘 거울』을 돌려 빛줄기를 보내야 한다."),
+                  ],
+                },
+              ],
+            }),
+            makePage({
+              id: `${m2Id}_aligned`,
+              name: "제2 거울 (굴절 완료)",
+              conditions: [{ kind: "switch", switchId: solveSwitchId, value: true }],
+              graphic: objGraphic("object2", 6, "down"),
+              commands: [textCmd("제2 굴절 거울이 황금 빛줄기를 북쪽 성소로 집중시키고 있다.")],
+            }),
+          ],
+        };
+
+        const sealEvent: GameEvent = {
+          id: sealId,
+          name: customTitle ?? "북쪽 암흑 봉인 제단",
+          x: cSeal.x,
+          y: cSeal.y,
+          trigger: { kind: "action" },
+          commands: [],
+          pages: [
+            makePage({
+              id: `${sealId}_sealed`,
+              name: "암흑 봉인 제단 (잠김)",
+              graphic: objGraphic("object1", 4, "down"),
+              priority: "same",
+              commands: [
+                textCmd(
+                  customHint ??
+                    "어둠의 구슬 결계가 북쪽 성소 계단을 막고 있다. 서쪽과 동쪽의 거울 기둥을 차례로 돌려 태양 빛줄기를 굴절시켜야 한다.",
+                ),
+              ],
+            }),
+            makePage({
+              id: `${sealId}_purified`,
+              name: "암흑 봉인 제단 (정화됨)",
+              conditions: [{ kind: "switch", switchId: solveSwitchId, value: true }],
+              graphic: { transparent: true },
+              priority: "below",
+              overlapForbidden: false,
+              commands: [textCmd("태양 빛줄기로 정화된 대성소 마법진이다.")],
+            }),
+          ],
+        };
+
+        registerEvent(map, mirror1Event, "제1 태양 프리즘 거울");
+        registerEvent(map, mirror2Event, "제2 성소 굴절 거울");
+        registerEvent(map, sealEvent, "북쪽 암흑 봉인 제단");
+        solveStepsSummary = [
+          `(${cMirror1.x},${cMirror1.y}) '제1 태양 프리즘 거울' 회전 → 동쪽 빛줄기 연결`,
+          `(${cMirror2.x},${cMirror2.y}) '제2 성소 굴절 거울' 회전 → (${cSeal.x},${cSeal.y}) 암흑 봉인 파쇄 및 계단 개방`,
+        ];
+        break;
+      }
+
+      case "minecart_track_switch": {
+        const cSwitch = cells[0]!;
+        const cCart = cells[1]!;
+        const cBarricade = cells[2]!;
+        const swTrack = `sw_${baseId}_track_switched`;
+        ensureNamedSwitch(draft, swTrack, "광산 분기 선로 전환 완료");
+        switchIds.push(swTrack);
+
+        changeTileCmds = resolveChangeTiles([cBarricade, cCart, cSwitch]);
+        const switchId = `ev_${baseId}_track_switch`;
+        const cartId = `ev_${baseId}_minecart`;
+        const barricadeId = `ev_${baseId}_barricade`;
+
+        const switchEvent: GameEvent = {
+          id: switchId,
+          name: "분기 선로 전환기",
+          x: cSwitch.x,
+          y: cSwitch.y,
+          trigger: { kind: "action" },
+          commands: [],
+          pages: [
+            makePage({
+              id: `${switchId}_west`,
+              name: "선로 전환기 (서쪽 지선)",
+              graphic: objGraphic("object2", 0, "down"),
+              commands: [
+                { kind: "wait", ms: 200 },
+                se("key"),
+                se("earth2"),
+                { kind: "setSwitch", switchId: swTrack, value: true },
+                ...(stagePlan?.stepChangeTileCommands.minecart_switch ?? []),
+                particles("sparkle", 900, cSwitch),
+                shake(3, 280),
+                textCmd("철커덩—! 선로 전환기 레버를 당기자 막다른 서쪽 지선이 북쪽 금고 바리케이드 본선으로 연결되었다!"),
+              ],
+            }),
+            makePage({
+              id: `${switchId}_north`,
+              name: "선로 전환기 (북쪽 본선)",
+              conditions: [{ kind: "switch", switchId: swTrack, value: true }],
+              graphic: objGraphic("object2", 0, "up"),
+              commands: [textCmd("분기 선로가 북쪽 금고 바리케이드 본선으로 연결되어 있다.")],
+            }),
+          ],
+        };
+
+        const cartEvent: GameEvent = {
+          id: cartId,
+          name: "광석 적재 광차",
+          x: cCart.x,
+          y: cCart.y,
+          trigger: { kind: "action" },
+          commands: [],
+          pages: [
+            makePage({
+              id: `${cartId}_parked`,
+              name: "광석 광차 (대기)",
+              graphic: objGraphic("object2", 5, "down"),
+              commands: [
+                {
+                  kind: "fork",
+                  condition: { kind: "switch", switchId: swTrack, value: true },
+                  then: [
+                    textCmd("광차의 제동 걸쇠를 풀고 힘껏 밀어 출발시켰다! 광차가 불꽃을 튀기며 선로를 따라 질주한다!"),
+                    { kind: "wait", ms: 250 },
+                    se("earth2"),
+                    ...(stagePlan?.stepChangeTileCommands.minecart_step_1 ?? []),
+                    particles("sparkle", 1000, { x: cCart.x, y: cCart.y - 2 }),
+                    particles("dust", 900, cCart),
+                    shake(3, 200),
+                    se("key"),
+                    ...(stagePlan?.stepChangeTileCommands.minecart_step_2 ?? []),
+                    particles("sparkle", 1000, { x: cCart.x, y: cCart.y - 4 }),
+                    particles("smoke", 900, { x: cCart.x, y: cCart.y - 2 }),
+                    shake(3, 200),
+                    se("earth2"),
+                    ...(stagePlan?.stepChangeTileCommands.minecart_step_3 ?? []),
+                    particles("sparkle", 1100, { x: cBarricade.x, y: cBarricade.y + 2 }),
+                    particles("dust", 900, { x: cCart.x + 2, y: cCart.y - 4 }),
+                    shake(6, 200),
+                    se("collapse1"),
+                    ...(stagePlan?.stepChangeTileCommands.minecart_step_4 ?? []),
+                    particles("explosion", 1100, { x: cBarricade.x, y: cBarricade.y + 1 }),
+                    shake(6, 220),
+                    se("explosion1"),
+                    ...revealInWaves(changeTileCmds, { flash: "red", waves: ["explosion", "dust", "sparkle"] }),
+                    textCmd("콰아아앙—!! 질주한 광차가 낙석 바리케이드를 정면으로 들이받아 산산조각 내고 북쪽 광산 금고를 열었다!"),
+                    ...reward.grantCommands,
+                    { kind: "setSwitch", switchId: solveSwitchId, value: true },
+                  ],
+                  else: [
+                    textCmd("광석이 가득 실린 무거운 철제 광차다. 먼저 중앙의 『분기 선로 전환기』를 조작해 선로를 북쪽 본선으로 이어야 한다."),
+                  ],
+                },
+              ],
+            }),
+            makePage({
+              id: `${cartId}_launched`,
+              name: "광석 광차 (발진 완료)",
+              conditions: [{ kind: "switch", switchId: solveSwitchId, value: true }],
+              graphic: { transparent: true },
+              priority: "below",
+              overlapForbidden: false,
+              commands: [textCmd("광차가 선로를 따라 질주해 북쪽 바리케이드를 돌파했다.")],
+            }),
+          ],
+        };
+
+        const barricadeEvent: GameEvent = {
+          id: barricadeId,
+          name: customTitle ?? "북쪽 금고 낙석 바리케이드",
+          x: cBarricade.x,
+          y: cBarricade.y,
+          trigger: { kind: "action" },
+          commands: [],
+          pages: [
+            makePage({
+              id: `${barricadeId}_blocking`,
+              name: "금고 바리케이드 (차단)",
+              graphic: objGraphic("object2", 5, "down"),
+              priority: "same",
+              commands: [
+                textCmd(
+                  customHint ??
+                    "두꺼운 낙석 바리케이드가 북쪽 금고를 막고 있다. 선로 전환기를 맞춘 뒤 남쪽의 광차를 출발시켜 충돌시키면 뚫을 수 있다.",
+                ),
+              ],
+            }),
+            makePage({
+              id: `${barricadeId}_smashed`,
+              name: "금고 바리케이드 (돌파됨)",
+              conditions: [{ kind: "switch", switchId: solveSwitchId, value: true }],
+              graphic: { transparent: true },
+              priority: "below",
+              overlapForbidden: false,
+              commands: [textCmd("광차 충돌로 바리케이드가 시원하게 뚫린 금고 입구다.")],
+            }),
+          ],
+        };
+
+        registerEvent(map, switchEvent, "분기 선로 전환기");
+        registerEvent(map, cartEvent, "광석 적재 광차");
+        registerEvent(map, barricadeEvent, "북쪽 금고 바리케이드");
+        solveStepsSummary = [
+          `(${cSwitch.x},${cSwitch.y}) '분기 선로 전환기' 조사 → 북쪽 본선 연결`,
+          `(${cCart.x},${cCart.y}) '광석 적재 광차' 발진 → 4단계 선로 질주 후 (${cBarricade.x},${cBarricade.y}) 바리케이드 격파`,
+        ];
+        break;
+      }
+
+      case "elemental_pedestal_swap": {
+        const cFire = cells[0]!;
+        const cIce = cells[1]!;
+        const cWind = cells[2]!;
+        const cEarth = cells[3]!;
+        const sw1 = `sw_${baseId}_pedestal_1`;
+        const sw2 = `sw_${baseId}_pedestal_2`;
+        const sw3 = `sw_${baseId}_pedestal_3`;
+        const sw4 = `sw_${baseId}_pedestal_4`;
+        ensureNamedSwitch(draft, sw1, "화염의 룬 제단 각성");
+        ensureNamedSwitch(draft, sw2, "빙결의 룬 제단 각성");
+        ensureNamedSwitch(draft, sw3, "질풍의 룬 제단 각성");
+        ensureNamedSwitch(draft, sw4, "대지의 룬 제단 각성");
+        switchIds.push(sw1, sw2, sw3, sw4);
+
+        changeTileCmds = resolveChangeTiles([cFire, cIce, cWind, cEarth]);
+        const allPedestalSwitches = [sw1, sw2, sw3, sw4];
+        const convergeSequence: Command[] = [
+          se("barrier"),
+          se("collapse1"),
+          ...revealInWaves(changeTileCmds, { flash: "purple", waves: ["fire", "magic", "sparkle"] }),
+          textCmd("쿠구구궁—!! 화·빙·풍·지 네 원소 제단의 빛이 중앙 대마법진으로 수렴하며 북쪽 성소 돌계단이 열렸다!"),
+          ...reward.grantCommands,
+          { kind: "setSwitch", switchId: solveSwitchId, value: true },
+        ];
+
+        const pedestalSpecs: ReadonlyArray<{
+          readonly idx: 1 | 2 | 3 | 4;
+          readonly label: string;
+          readonly relic: string;
+          readonly vfx: string;
+          readonly at: Cell;
+          readonly swId: string;
+        }> = [
+          { idx: 1, label: "화염의 룬 제단", relic: "홍련의 불꽃 성배", vfx: "fire", at: cFire, swId: sw1 },
+          { idx: 2, label: "빙결의 룬 제단", relic: "만년설의 마나 결정", vfx: "magic", at: cIce, swId: sw2 },
+          { idx: 3, label: "질풍의 룬 제단", relic: "천공의 폭풍 보주", vfx: "sparkle", at: cWind, swId: sw3 },
+          { idx: 4, label: "대지의 룬 제단", relic: "고대 거인의 룬석", vfx: "dust", at: cEarth, swId: sw4 },
+        ];
+
+        for (const spec of pedestalSpecs) {
+          const evId = `ev_${baseId}_pedestal_${spec.idx}`;
+          const pedEvent: GameEvent = {
+            id: evId,
+            name: spec.label,
+            x: spec.at.x,
+            y: spec.at.y,
+            trigger: { kind: "action" },
+            commands: [],
+            pages: [
+              makePage({
+                id: `${evId}_dormant`,
+                name: `${spec.label} (비어 있음)`,
+                graphic: objGraphic("object2", 3, "down"),
+                commands: [
+                  { kind: "wait", ms: 200 },
+                  se("chime2"),
+                  flash("white", 250),
+                  particles(spec.vfx, 1100, spec.at),
+                  shake(3, 280),
+                  { kind: "setSwitch", switchId: spec.swId, value: true },
+                  ...(stagePlan?.stepChangeTileCommands[`pedestal_${spec.idx}`] ?? []),
+                  textCmd(`「${spec.label}」 위에 『${spec.relic}』을(를) 안치하자 원소 룬이 찬란하게 깨어났다!`),
+                  ...allSwitchesFork(allPedestalSwitches, convergeSequence),
+                ],
+              }),
+              makePage({
+                id: `${evId}_active`,
+                name: `${spec.label} (공명 중)`,
+                conditions: [{ kind: "switch", switchId: spec.swId, value: true }],
+                graphic: objGraphic("object2", 6, "down"),
+                commands: [textCmd(`「${spec.label}」 위에서 『${spec.relic}』이(가) 원소 마력을 뿜어내고 있다.`)],
+              }),
+            ],
+          };
+          registerEvent(map, pedEvent, spec.label);
+        }
+
+        solveStepsSummary = [
+          `(${cFire.x},${cFire.y}) 화염의 룬 제단 조사`,
+          `(${cIce.x},${cIce.y}) 빙결의 룬 제단 조사`,
+          `(${cWind.x},${cWind.y}) 질풍의 룬 제단 조사`,
+          `(${cEarth.x},${cEarth.y}) 대지의 룬 제단 조사 → 4원소 합일 + changeTile ${changeTileCmds.length}칸 및 성소 개방`,
         ];
         break;
       }

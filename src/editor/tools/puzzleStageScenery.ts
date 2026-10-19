@@ -547,6 +547,34 @@ const ROOM_REWARDS: Record<PuzzleRoomPresetId, { readonly kind: string; readonly
     beforeText: "룬이 새겨진 석판 바닥이다.",
     afterText: "세 비석이 깨어나 결계가 걷히며 나타난 「성역 봉인 보물상자」를 열었다!",
   },
+  rolling_boulder_chasm: {
+    kind: "chest",
+    name: "구렁 돌다리 보물상자",
+    role: "바위 착지 출현 보물상자",
+    beforeText: "심연 구렁 남쪽 벼랑 옆의 평평한 돌바닥이다.",
+    afterText: "거대 바위가 심연 구렁을 메우며 나타난 「구렁 돌다리 보물상자」를 열었다!",
+  },
+  mirror_beam_refraction: {
+    kind: "chest",
+    name: "태양광 성소 보물상자",
+    role: "빛줄기 공명 출현 보물상자",
+    beforeText: "대리석 바닥에 황금빛 성소 문양이 새겨져 있다.",
+    afterText: "굴절된 태양 빛줄기가 암흑 봉인을 깨뜨리며 나타난 「태양광 성소 보물상자」를 열었다!",
+  },
+  minecart_track_switch: {
+    kind: "chest",
+    name: "광산 금고 황금 보물상자",
+    role: "광차 돌파 출현 보물상자",
+    beforeText: "선로 옆 흙바닥에 광석 부스러기가 흩어져 있다.",
+    afterText: "광차가 낙석 바리케이드를 돌파하며 드러난 「광산 금고 황금 보물상자」를 열었다!",
+  },
+  elemental_pedestal_swap: {
+    kind: "chest",
+    name: "사원소 대성소 보물상자",
+    role: "사원소 공명 출현 보물상자",
+    beforeText: "사원소 룬이 교차하는 엘프 석판 바닥이다.",
+    afterText: "화·빙·풍·지 네 제단이 공명하며 나타난 「사원소 대성소 보물상자」를 열었다!",
+  },
 };
 
 export function buildDramaticPuzzleStage(
