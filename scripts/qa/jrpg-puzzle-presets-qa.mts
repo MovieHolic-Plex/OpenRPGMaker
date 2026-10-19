@@ -63,13 +63,13 @@ interface PresetSmokeRecord {
 }
 
 // ============================================================================
-// 1. list_puzzle_presets & 12종 전수 시공 + check_reachability / run_lint 검증
+// 1. list_puzzle_presets & 16종 전수 시공 + check_reachability / run_lint 검증
 // ============================================================================
-console.log("1) Verifying list_puzzle_presets & all 12 presets via author_map_puzzle...");
+console.log("1) Verifying list_puzzle_presets & all 16 presets via author_map_puzzle...");
 const catalogCtx = { project: createBlankProject() };
 const listRes = runTool(catalogCtx, "list_puzzle_presets", {});
 assert.equal(listRes.ok, true, `list_puzzle_presets failed: ${listRes.summary}`);
-assert.equal(PUZZLE_PRESET_CATALOG.length, 12, "Catalog must have 12 presets");
+assert.equal(PUZZLE_PRESET_CATALOG.length, 16, "Catalog must have 16 presets");
 
 const all12Smoke: PresetSmokeRecord[] = [];
 for (const preset of PUZZLE_PRESET_CATALOG) {
@@ -124,7 +124,7 @@ for (const preset of PUZZLE_PRESET_CATALOG) {
     walkabilityVerified: d.walkabilityVerified,
   });
 }
-console.log(`   -> All ${all12Smoke.length}/12 presets built and verified reachability PASS!`);
+console.log(`   -> All ${all12Smoke.length}/16 presets built and verified reachability PASS!`);
 
 // ============================================================================
 // 2. author_jrpg_chapter 8개 장 전수 빌드 + 린트/기믹 검증
@@ -166,9 +166,9 @@ const lintRes = runTool(chapterCtx, "run_lint", { scope: "all" });
 console.log(`   -> 8 chapters built (${Object.keys(chapterCtx.project.maps).length} maps). Lint summary: ${lintRes.summary}`);
 
 // ============================================================================
-// 3. player.html 실기 플레이 검증용 프로젝트 구성 (6종 핵심 퍼즐 맵)
+// 3. player.html 실기 플레이 검증용 프로젝트 구성 (8종 핵심 퍼즐 맵)
 // ============================================================================
-console.log("3) Building live player.html showcase project with 6 distinct puzzle rooms...");
+console.log("3) Building live player.html showcase project with 8 distinct puzzle rooms...");
 const playCtx = { project: createBlankProject() };
 // 퍼즐 방은 author_map_puzzle 이 손 도트 v5 실내 칩셋으로 20×15 한 화면을 통째로 짓는다 — 빈 한 화면 맵만 만든다.
 const createPuzzleRoomMap = (id: string, name: string): void => {
@@ -239,6 +239,26 @@ const p6 = runTool(playCtx, "author_map_puzzle", {
 });
 assert.equal(p6.ok, true, p6.summary);
 
+// Room 7: 고대 산악 유적 · 거대 바위 굴리기·구렁 메우기 (rolling_boulder_chasm)
+createPuzzleRoomMap("map_p7_boulder", "고대 산악 유적 · 거대 바위 굴리기와 심연 구렁 메우기");
+const p7 = runTool(playCtx, "author_map_puzzle", {
+  mapId: "map_p7_boulder",
+  presetId: "rolling_boulder_chasm",
+  puzzleId: "mountain_boulder_roll",
+  title: "경사로 거대 바위 멈춤쇠",
+});
+assert.equal(p7.ok, true, p7.summary);
+
+// Room 8: 황금 태양 성소 · 고대 거울 빛줄기 굴절 (mirror_beam_refraction)
+createPuzzleRoomMap("map_p8_mirror", "황금 태양 성소 · 프리즘 거울 빛줄기 굴절과 암흑 봉인");
+const p8 = runTool(playCtx, "author_map_puzzle", {
+  mapId: "map_p8_mirror",
+  presetId: "mirror_beam_refraction",
+  puzzleId: "sun_temple_mirrors",
+  title: "태양 성소 암흑 봉인 제단",
+});
+assert.equal(p8.ok, true, p8.summary);
+
 // 시작 맵을 map_p1_cathedral 로 설정
 interface PuzzleRunData {
   origin: { x: number; y: number };
@@ -253,7 +273,8 @@ const p3Data = p3.data as PuzzleRunData;
 const p4Data = p4.data as PuzzleRunData;
 const p5Data = p5.data as PuzzleRunData;
 const p6Data = p6.data as PuzzleRunData;
-
+const p7Data = p7.data as PuzzleRunData;
+const p8Data = p8.data as PuzzleRunData;
 playCtx.project.startMapId = "map_p1_cathedral";
 playCtx.project.startPos = { x: p1Data.origin.x, y: p1Data.origin.y };
 
@@ -507,9 +528,14 @@ try {
    * 가장 강한 프레임을 그 경로에 남긴다(= 해제 연출 한복판 스크린샷).
    */
   const flushDialogue = async (
-    opts: { readonly rec?: FrameRecorder; readonly expectSwitchId?: string; readonly burstShotPath?: string } = {},
+    opts: {
+      readonly rec?: FrameRecorder;
+      readonly expectSwitchId?: string;
+      readonly burstShotPath?: string;
+      readonly preferMidRoll?: boolean;
+    } = {},
   ): Promise<BurstCapture> => {
-    const { rec, expectSwitchId, burstShotPath } = opts;
+    const { rec, expectSwitchId, burstShotPath, preferMidRoll } = opts;
     if (burstShotPath) fs.rmSync(burstShotPath, { force: true });
     let idleTicks = 0;
     let bestScore = -1;
@@ -519,17 +545,21 @@ try {
     let sawFlash = false;
     const capture = async (): Promise<void> => {
       if (!rec) return;
+      const coveredBefore = (await present("dialogue-box")) || (await present("runtime-choices"));
       const vfx = await readVfx();
-      const covered = (await present("dialogue-box")) || (await present("runtime-choices"));
       const frame = await rec.snap();
+      const coveredAfter = (await present("dialogue-box")) || (await present("runtime-choices"));
+      const covered = coveredBefore || coveredAfter;
       const active = vfx.particles > 0 || vfx.shaking || vfx.flashing;
       if (!active) return;
       framesDuringVfx += 1;
       maxParticles = Math.max(maxParticles, vfx.particles);
       sawShake ||= vfx.shaking;
       sawFlash ||= vfx.flashing;
-      // 대사창이 덮지 않은 프레임을 먼저 고른다 — 해제 물결은 대사 전에 돌아서 입자·흔들림이 맨 화면에 보이는 순간이 있다.
-      const score = (covered ? 0 : 10_000) + vfx.particles + (vfx.shaking ? 40 : 0) + (vfx.flashing ? 40 : 0);
+      if (covered) return;
+      // 대사창이 전후 모두 없는 순수 인게임 프레임만 후보로 고른다.
+      const midRollBonus = preferMidRoll && framesDuringVfx >= 2 && framesDuringVfx <= 5 ? 5_000 : 0;
+      const score = 10_000 + midRollBonus + vfx.particles + (vfx.shaking ? 40 : 0) + (vfx.flashing ? 40 : 0);
       if (burstShotPath && score > bestScore) {
         bestScore = score;
         fs.copyFileSync(frame, burstShotPath);
@@ -1048,15 +1078,142 @@ try {
     assert.equal(st.switches[p6Data.solveSwitchId], true, "Puzzle 6 solveSwitch must be true");
     playProofs.p6_boss_monoliths = st;
   }
+  // --------------------------------------------------------------------------
+  // Play 7: 고대 산악 유적 거대 바위 굴리기·구렁 메우기 퍼즐 (rolling_boulder_chasm)
+  // --------------------------------------------------------------------------
+  console.log("   -> Solving Puzzle 7: rolling_boulder_chasm...");
+  {
+    const rec = createFrameRecorder("p7_boulder");
+    const winchEv = p7Data.events[0]!;
+    const stopperEv = p7Data.events[1]!;
+    const chasmGateEv = p7Data.events[2]!;
+
+    const vantageX = chasmGateEv.x;
+    const vantageY = chasmGateEv.y + 1;
+
+    // Before: 정지 시점(대사창 없음)에서 상단 3열 바위 + 심연 구렁 촬영
+    await captureStationaryVantage(
+      "map_p7_boulder",
+      vantageX,
+      vantageY,
+      path.join(OUT_DIR, "p7-boulder-before.png"),
+    );
+    await rec.snap();
+
+    // 1. 상부 고패 윈치 해제
+    await standNextAndFace("map_p7_boulder", winchEv.x, winchEv.y);
+    await page.keyboard.press("Enter");
+    await finishTypingIfOpen();
+    await rec.snap();
+    await flushDialogue({ rec });
+
+    // 2. 바위 멈춤쇠 페달 작동 -> 5단계 바위 구름 궤적(회전·먼지·연기·진동) + 심연 구렁 돌다리 착지!
+    await standNextAndFace("map_p7_boulder", stopperEv.x, stopperEv.y);
+    await page.keyboard.press("Enter");
+    await finishTypingIfOpen();
+    await rec.snap();
+    const p7Burst = path.join(OUT_DIR, "p7-boulder-solving.png");
+    assertBurstCaptured(
+      "P7",
+      await flushDialogue({ rec, expectSwitchId: p7Data.solveSwitchId, burstShotPath: p7Burst, preferMidRoll: true }),
+      p7Burst,
+    );
+
+    // 3. Unlocked: 심연 구렁을 메운 3×2 돌다리와 동북쪽 성소 돌계단 + 출현 보물상자 촬영
+    await captureStationaryVantage(
+      "map_p7_boulder",
+      vantageX,
+      vantageY,
+      path.join(OUT_DIR, "p7-boulder-unlocked.png"),
+    );
+    await rec.snap();
+    rec.finishGif(path.join(OUT_DIR, "p7-boulder-flow.gif"), 6);
+
+    const diff = await computeImageDiffMetrics(
+      path.join(OUT_DIR, "p7-boulder-before.png"),
+      path.join(OUT_DIR, "p7-boulder-unlocked.png"),
+    );
+    const distinctCells = new Set(p7Data.changeTileCommands.map((c) => `${c.x},${c.y}`)).size;
+    vqaMetrics.p7_boulder = { ...diff, changeTileCount: p7Data.changeTileCount, distinctCells };
+    console.log("      P7 VQA diff:", vqaMetrics.p7_boulder);
+    assert.ok(diff.stageChangedPct >= MIN_STAGE_CHANGED_PCT, `P7 stage visual diff too small: ${diff.stageChangedPct}%`);
+
+    const st = await readState();
+    assert.equal(st.switches[p7Data.solveSwitchId], true, "Puzzle 7 solveSwitch must be true");
+    playProofs.p7_rolling_boulder = st;
+  }
+
+  // --------------------------------------------------------------------------
+  // Play 8: 황금 태양 성소 고대 거울 빛줄기 굴절 퍼즐 (mirror_beam_refraction)
+  // --------------------------------------------------------------------------
+  console.log("   -> Solving Puzzle 8: mirror_beam_refraction...");
+  {
+    const rec = createFrameRecorder("p8_mirror");
+    const mirror1Ev = p8Data.events[0]!;
+    const mirror2Ev = p8Data.events[1]!;
+    const sealEv = p8Data.events[2]!;
+
+    const vantageX = sealEv.x;
+    const vantageY = sealEv.y + 2;
+
+    // Before: 정지 시점(대사창 없음)에서 회전 전 거울 2기 + 암흑 봉인 제단 촬영
+    await captureStationaryVantage(
+      "map_p8_mirror",
+      vantageX,
+      vantageY,
+      path.join(OUT_DIR, "p8-mirror-before.png"),
+    );
+    await rec.snap();
+
+    // 1. 서쪽 제1 프리즘 거울 회전 -> 동쪽으로 황금 빛줄기 연결
+    await standNextAndFace("map_p8_mirror", mirror1Ev.x, mirror1Ev.y);
+    await page.keyboard.press("Enter");
+    await finishTypingIfOpen();
+    await rec.snap();
+    await flushDialogue({ rec });
+
+    // 2. 동쪽 제2 굴절 거울 회전 -> 북쪽 암흑 봉인 제단 직격 파쇄!
+    await standNextAndFace("map_p8_mirror", mirror2Ev.x, mirror2Ev.y);
+    await page.keyboard.press("Enter");
+    await finishTypingIfOpen();
+    await rec.snap();
+    const p8Burst = path.join(OUT_DIR, "p8-mirror-solving.png");
+    assertBurstCaptured("P8", await flushDialogue({ rec, expectSwitchId: p8Data.solveSwitchId, burstShotPath: p8Burst }), p8Burst);
+
+    // 3. Unlocked: 황금 빛줄기 카펫 + 대마법진 + 북쪽 성소 돌계단 + 보물상자 촬영
+    await captureStationaryVantage(
+      "map_p8_mirror",
+      vantageX,
+      vantageY,
+      path.join(OUT_DIR, "p8-mirror-unlocked.png"),
+    );
+    await rec.snap();
+    rec.finishGif(path.join(OUT_DIR, "p8-mirror-flow.gif"), 6);
+
+    const diff = await computeImageDiffMetrics(
+      path.join(OUT_DIR, "p8-mirror-before.png"),
+      path.join(OUT_DIR, "p8-mirror-unlocked.png"),
+    );
+    const distinctCells = new Set(p8Data.changeTileCommands.map((c) => `${c.x},${c.y}`)).size;
+    vqaMetrics.p8_mirror = { ...diff, changeTileCount: p8Data.changeTileCount, distinctCells };
+    console.log("      P8 VQA diff:", vqaMetrics.p8_mirror);
+    assert.ok(diff.stageChangedPct >= MIN_STAGE_CHANGED_PCT, `P8 stage visual diff too small: ${diff.stageChangedPct}%`);
+
+    const st = await readState();
+    assert.equal(st.switches[p8Data.solveSwitchId], true, "Puzzle 8 solveSwitch must be true");
+    playProofs.p8_mirror_beam = st;
+  }
 
   // 썸네일 복사
-  fs.copyFileSync(path.join(OUT_DIR, "p1-organ-unlocked.png"), path.join(THUMB_DIR, "jrpg-puzzle-presets-1.png"));
+  fs.copyFileSync(path.join(OUT_DIR, "p7-boulder-solving.png"), path.join(THUMB_DIR, "jrpg-puzzle-presets-1.png"));
+  fs.copyFileSync(path.join(OUT_DIR, "p7-boulder-unlocked.png"), path.join(THUMB_DIR, "jrpg-puzzle-presets-1.mid.png"));
   fs.copyFileSync(path.join(OUT_DIR, "p6-monoliths-unlocked.png"), path.join(THUMB_DIR, "jrpg-puzzle-presets-2.png"));
 
   const fullReport = {
     generatedAt: new Date().toISOString(),
     presetIds: PUZZLE_PRESET_IDS,
     all12Smoke,
+    all16Smoke: all12Smoke,
     chapterRecords,
     chapterLintSummary: lintRes.summary,
     vqaMetrics,
@@ -1064,7 +1221,7 @@ try {
     consoleErrors,
   };
   fs.writeFileSync(path.join(OUT_DIR, "qa-report.json"), JSON.stringify(fullReport, null, 2));
-  console.log("All 6 live puzzles solved in player.html with 0 softlocks! Report saved to", path.join(OUT_DIR, "qa-report.json"));
+  console.log("All 8 live puzzles solved in player.html with 0 softlocks! Report saved to", path.join(OUT_DIR, "qa-report.json"));
 } finally {
   await browser.close();
   await server.close();

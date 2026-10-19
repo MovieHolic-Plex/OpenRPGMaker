@@ -28,7 +28,11 @@ export type PuzzleRoomPresetId =
   | "statue_pressure_plates"
   | "dynamite_rock_blast"
   | "riddle_mimic_chests"
-  | "boss_seal_monoliths";
+  | "boss_seal_monoliths"
+  | "rolling_boulder_chasm"
+  | "mirror_beam_refraction"
+  | "minecart_track_switch"
+  | "elemental_pedestal_swap";
 
 const ROOM_PRESETS: Record<string, true> = {
   cathedral_organ_tuning: true,
@@ -37,6 +41,10 @@ const ROOM_PRESETS: Record<string, true> = {
   dynamite_rock_blast: true,
   riddle_mimic_chests: true,
   boss_seal_monoliths: true,
+  rolling_boulder_chasm: true,
+  mirror_beam_refraction: true,
+  minecart_track_switch: true,
+  elemental_pedestal_swap: true,
 };
 
 export function isPuzzleRoomPreset(presetId: PuzzlePresetId): presetId is PuzzleRoomPresetId {
@@ -401,6 +409,371 @@ function monolithDesign(): RoomDesign {
   };
 }
 
+// ---------------------------------------------------------------------------
+// 7. 거대 바위 굴리기·구렁 메우기 (rolling_boulder_chasm) — 산악 유적 바위 경사로(북→남 슈트)와 심연 구렁.
+//    서쪽 회랑을 따라 북쪽 고패 윈치(6,4)와 바위 멈춤쇠(8,4)를 풀면, 상단 3열 바위가 5단계(y=4→5→6→7→8→9)로
+//    회전·교차하며 굴러 내려와 심연 구렁(y=8..9)을 메우고 3×2 돌다리와 동북쪽 성소 돌계단을 연다.
+// ---------------------------------------------------------------------------
+function boulderDesign(): RoomDesign {
+  const door = [10];
+  // step: 0 = 상단 대기, 1..5 = 경사로 굴러 내려오는 5단계 궤적, 6 = 구렁 착지·돌다리 완성
+  const state = (winchReleased: boolean, step: 0 | 1 | 2 | 3 | 4 | 5 | 6): RoomState => {
+    const solved = step === 6;
+    const boulderObjs: HandInteriorObject[] =
+      step === 0
+        ? [obj("push boulder", 9, 4), obj("push boulder", 10, 4), obj("push boulder", 11, 4)]
+        : step === 1
+          ? [
+              obj("push boulder", 9, 5),
+              obj("push boulder", 10, 5),
+              obj("push boulder", 11, 4),
+              obj("drip puddle", 9, 4),
+            ]
+          : step === 2
+            ? [
+                obj("push boulder", 9, 5),
+                obj("push boulder", 10, 6),
+                obj("push boulder", 11, 6),
+                obj("drip puddle", 9, 4),
+                obj("drip puddle", 11, 5),
+              ]
+            : step === 3
+              ? [
+                  obj("push boulder", 9, 7),
+                  obj("push boulder", 10, 7),
+                  obj("push boulder", 11, 6),
+                  obj("drip puddle", 9, 5),
+                  obj("drip puddle", 11, 5),
+                ]
+              : step === 4
+                ? [
+                    obj("push boulder", 9, 7),
+                    obj("push boulder", 10, 8),
+                    obj("push boulder", 11, 8),
+                    obj("drip puddle", 9, 6),
+                    obj("drip puddle", 11, 7),
+                  ]
+                : step === 5
+                  ? [
+                      obj("push boulder", 9, 9),
+                      obj("push boulder", 10, 9),
+                      obj("push boulder", 11, 8),
+                      obj("drip puddle", 9, 7),
+                      obj("drip puddle", 11, 7),
+                    ]
+                  : [
+                      obj("push boulder", 8, 8),
+                      obj("push boulder", 12, 8),
+                      obj("stairs up stone", 15, 3),
+                    ];
+
+    const chasmRects: readonly Rect[] =
+      step < 4
+        ? [{ x0: 6, y0: 8, x1: 18, y1: 9 }]
+        : step === 4
+          ? [
+              { x0: 6, y0: 8, x1: 8, y1: 8 },
+              { x0: 12, y0: 8, x1: 18, y1: 8 },
+              { x0: 6, y0: 9, x1: 18, y1: 9 },
+            ]
+          : step === 5
+            ? [
+                { x0: 6, y0: 8, x1: 8, y1: 9 },
+                { x0: 12, y0: 8, x1: 18, y1: 9 },
+              ]
+            : [
+                { x0: 6, y0: 8, x1: 7, y1: 9 },
+                { x0: 8, y0: 9, x1: 8, y1: 9 },
+                { x0: 12, y0: 9, x1: 12, y1: 9 },
+                { x0: 13, y0: 8, x1: 18, y1: 9 },
+              ];
+
+    const railMaxY = step >= 5 ? 9 : step === 4 ? 8 : 7;
+    return {
+      input: {
+        plan: roomPlan({ top: 1, left: 2, door }),
+        floor: "cobble",
+        wall: "rock",
+        ceiling: "rock",
+        zones: [
+          { x0: 2, y0: 3, x1: 5, y1: 13, floor: "dungeon" },
+          { x0: 9, y0: 4, x1: 11, y1: 10, floor: "dplank" },
+          ...(step >= 1
+            ? [{ x0: 9, y0: 4, x1: 11, y1: Math.min(7, 3 + step), floor: "soot" } satisfies HandInteriorZone]
+            : []),
+        ],
+        objects: [
+          obj("wall torch", 4, 1),
+          obj(winchReleased ? "wall lever on" : "wall lever", 7, 1),
+          obj("wall torch", 12, 1),
+          obj("wall torch", 18, 1),
+          obj("column stone", 3, 4),
+          obj("column stone", 3, 9),
+          obj("rope coil", 5, 3),
+          obj("gate winch", 6, 4),
+          obj(winchReleased ? "pressure plate down" : "pressure plate", 8, 4),
+          obj("column stone", 13, 4),
+          obj(solved ? "iron gate open" : "iron gate", 13, 5),
+          obj("column stone", 13, 7),
+          obj("brazier", 14, 4),
+          obj("statue", 17, 5),
+          obj(solved ? "iron gate open" : "iron gate", 9, 10),
+          obj(solved ? "iron gate open" : "iron gate", 10, 10),
+          obj(solved ? "iron gate open" : "iron gate", 11, 10),
+          obj("column stone", 6, 10),
+          obj("column stone", 14, 10),
+          obj("skull pile", 3, 13),
+          obj("stone sphere", 17, 13),
+          ...boulderObjs,
+          ...(solved ? [] : [obj("cracked wall", 15, 1)]),
+        ],
+        lines: [
+          {
+            id: "rail",
+            cells: Array.from({ length: railMaxY - 3 }, (_, i) => ({ x: 10, y: 4 + i })),
+          },
+        ],
+        start: [{ x: 10, y: 14 }],
+      },
+      chasm: chasmRects,
+    };
+  };
+
+  return {
+    states: {
+      before: state(false, 0),
+      after: state(true, 6),
+      steps: {
+        boulder_winch: state(true, 0),
+        boulder_step_1: state(true, 1),
+        boulder_step_2: state(true, 2),
+        boulder_step_3: state(true, 3),
+        boulder_step_4: state(true, 4),
+        boulder_step_5: state(true, 5),
+      },
+    },
+    // cWinch, cStopper, cChasmGate
+    cells: [
+      { x: 6, y: 4 },
+      { x: 8, y: 4 },
+      { x: 10, y: 10 },
+    ],
+    origin: { x: 10, y: 13 },
+    reward: { x: 14, y: 12 },
+  };
+}
+
+// ---------------------------------------------------------------------------
+// 8. 고대 거울 빛줄기 굴절 퍼즐 (mirror_beam_refraction) — 대리석 태양 성소, 서·동 굴절 거울 기둥, 황금 빛줄기 궤적.
+// ---------------------------------------------------------------------------
+function mirrorDesign(): RoomDesign {
+  const door = [10];
+  const state = (step: 0 | 1 | 2, solved: boolean): RoomState => ({
+    input: {
+      plan: roomPlan({ top: 3, left: 2, door, ...(solved ? { open: [{ x0: 9, y0: 1, x1: 11, y1: 2 }] } : {}) }),
+      floor: "marble",
+      wall: "marblewall",
+      ceiling: "gold",
+      objects: [
+        obj("tall stained window", 4, 3),
+        obj("tall stained window", 15, 3),
+        obj("column marble", 3, 6),
+        obj("column marble", 17, 6),
+        obj("column marble", 3, 11),
+        obj("column marble", 17, 11),
+        obj("candelabra", 6, 5),
+        obj("candelabra", 14, 5),
+        obj("skylight light", 5, 9),
+        obj(step >= 1 ? "mana crystal" : "tailor mirror", 6, 10),
+        obj(step >= 2 ? "mana crystal" : "tailor mirror", 14, 10),
+        ...(step >= 1 ? [obj("footlights", 9, 10), obj("footlights", 12, 10)] : []),
+        ...(step >= 2 ? [obj("footlights", 14, 8), obj("crystal switch", 14, 6)] : [obj("plinth", 14, 6)]),
+        ...(solved
+          ? [obj("stairs up stone", 9, 3), obj("magic circle", 9, 6), obj("save crystal", 10, 8)]
+          : [obj("portcullis", 9, 3), obj("portcullis", 10, 3), obj("dark orb pedestal", 10, 6)]),
+      ],
+      lines: [
+        ...(step >= 1 ? [rectLine("rug royal", 6, 10, 14, 10)] : []),
+        ...(step >= 2 ? [rectLine("rug royal", 14, 6, 14, 10), rectLine("rug royal", 10, 6, 14, 6)] : []),
+        ...(solved ? [rectLine("rug royal", 9, 5, 11, 10)] : []),
+      ],
+      start: [{ x: 10, y: 14 }],
+    },
+  });
+  return {
+    states: {
+      before: state(0, false),
+      after: state(2, true),
+      steps: {
+        mirror_1: state(1, false),
+        mirror_2: state(2, false),
+      },
+    },
+    // cMirror1, cMirror2, cSeal
+    cells: [
+      { x: 6, y: 10 },
+      { x: 14, y: 10 },
+      { x: 10, y: 6 },
+    ],
+    origin: { x: 10, y: 13 },
+    reward: { x: 16, y: 12 },
+  };
+}
+
+// ---------------------------------------------------------------------------
+// 9. 광산 선로 전환기 & 광차 충돌 퍼즐 (minecart_track_switch) — 분기 선로 전환 + 광차 질주 4단계 + 바리케이드 파쇄.
+// ---------------------------------------------------------------------------
+function minecartDesign(): RoomDesign {
+  const door = [10];
+  const state = (switched: boolean, cartStep: 0 | 1 | 2 | 3 | 4, solved: boolean): RoomState => {
+    const cartPos: Cell =
+      solved
+        ? { x: 10, y: 3 }
+        : cartStep === 0
+          ? { x: 6, y: 11 }
+          : cartStep === 1
+            ? { x: 6, y: 9 }
+            : cartStep === 2
+              ? { x: 6, y: 7 }
+              : cartStep === 3
+                ? { x: 10, y: 7 }
+                : { x: 10, y: 6 };
+    const railCells: Cell[] = [
+      { x: 6, y: 12 },
+      { x: 6, y: 11 },
+      { x: 6, y: 10 },
+      { x: 6, y: 9 },
+      { x: 6, y: 8 },
+      { x: 6, y: 7 },
+      ...(switched
+        ? [
+            { x: 7, y: 7 },
+            { x: 8, y: 7 },
+            { x: 9, y: 7 },
+            { x: 10, y: 7 },
+            { x: 10, y: 6 },
+            ...(solved ? [{ x: 10, y: 5 }, { x: 10, y: 4 }, { x: 10, y: 3 }] : []),
+          ]
+        : [
+            { x: 5, y: 7 },
+            { x: 4, y: 7 },
+          ]),
+    ];
+    return {
+      input: {
+        plan: roomPlan({ top: 3, left: 2, door, ...(solved ? { open: [{ x0: 9, y0: 1, x1: 11, y1: 2 }] } : {}) }),
+        floor: "earth",
+        wall: "mine",
+        ceiling: "rock",
+        objects: [
+          obj("timber prop", 3, 5),
+          obj("timber prop", 17, 5),
+          obj("timber prop", 3, 11),
+          obj("timber prop", 17, 11),
+          obj("ore vein", 5, 3),
+          obj("pick rack", 7, 3),
+          obj("wall torch", 13, 3),
+          obj("ore vein", 15, 3),
+          obj("gate winch", 8, 9),
+          obj(switched ? "pressure plate down" : "pressure plate", 8, 8),
+          obj("powder kegs", 15, 12),
+          obj("rope coil", 16, 12),
+          obj("mine cart", cartPos.x, cartPos.y),
+          ...(solved
+            ? [obj("ore pile", 6, 5), obj("treasure pile", 13, 5)]
+            : [
+                obj("push boulder", 9, 5),
+                obj("push boulder", 10, 5),
+                obj("push boulder", 11, 5),
+                obj("cracked wall", 10, 3),
+              ]),
+        ],
+        lines: [{ id: "rail", cells: railCells }],
+        start: [{ x: 10, y: 14 }],
+      },
+    };
+  };
+  return {
+    states: {
+      before: state(false, 0, false),
+      after: state(true, 4, true),
+      steps: {
+        minecart_switch: state(true, 0, false),
+        minecart_step_1: state(true, 1, false),
+        minecart_step_2: state(true, 2, false),
+        minecart_step_3: state(true, 3, false),
+        minecart_step_4: state(true, 4, false),
+      },
+    },
+    // cSwitch, cCart, cBarricade
+    cells: [
+      { x: 8, y: 9 },
+      { x: 6, y: 11 },
+      { x: 10, y: 5 },
+    ],
+    origin: { x: 10, y: 13 },
+    reward: { x: 14, y: 11 },
+  };
+}
+
+// ---------------------------------------------------------------------------
+// 10. 사원소 룬 제단 공명 퍼즐 (elemental_pedestal_swap) — 화·빙·풍·지 4제단 유물 안치와 중앙 대마법진·성역 계단 개방.
+// ---------------------------------------------------------------------------
+function elementalDesign(): RoomDesign {
+  const door = [10];
+  const pedestals: readonly Cell[] = [
+    { x: 5, y: 7 },
+    { x: 15, y: 7 },
+    { x: 5, y: 11 },
+    { x: 15, y: 11 },
+  ];
+  const activeObjIds = ["lava brazier", "mana crystal", "orb pedestal", "rune stone"] as const;
+  const state = (awake: readonly boolean[], solved: boolean): RoomState => ({
+    input: {
+      plan: roomPlan({ top: 3, left: 2, door, ...(solved ? { open: [{ x0: 9, y0: 1, x1: 11, y1: 2 }] } : {}) }),
+      floor: "elfstone",
+      wall: "rune",
+      ceiling: "dark",
+      zones: [
+        { x0: 4, y0: 6, x1: 6, y1: 8, floor: "soot" },
+        { x0: 14, y0: 6, x1: 16, y1: 8, floor: "snowmat" },
+        { x0: 4, y0: 10, x1: 6, y1: 12, floor: "marble" },
+        { x0: 14, y0: 10, x1: 16, y1: 12, floor: "sandstone" },
+      ] satisfies HandInteriorZone[],
+      objects: [
+        ...pedestals.map((p, i) => obj(awake[i] ? activeObjIds[i]! : "plinth", p.x, p.y)),
+        obj("royal banner", 5, 3),
+        obj("royal banner", 15, 3),
+        obj("column dwarf", 3, 5),
+        obj("column dwarf", 17, 5),
+        obj("column dwarf", 3, 13),
+        obj("column dwarf", 17, 13),
+        ...(solved
+          ? [obj("stairs up stone", 9, 3), obj("magic circle", 9, 8), obj("save crystal", 10, 6)]
+          : [obj("portcullis", 9, 3), obj("portcullis", 10, 3), obj("summoning circle", 9, 8), obj("seal stone", 10, 5)]),
+      ],
+      daises: pedestals.map((p) => ({ id: "dais stone", x: p.x, y: p.y, w: 1, h: 1 })),
+      start: [{ x: 10, y: 14 }],
+    },
+  });
+  return {
+    states: {
+      before: state([false, false, false, false], false),
+      after: state([true, true, true, true], true),
+      steps: {
+        pedestal_1: state([true, false, false, false], false),
+        pedestal_2: state([true, true, false, false], false),
+        pedestal_3: state([true, true, true, false], false),
+        pedestal_4: state([true, true, true, true], false),
+      },
+    },
+    // cFire, cIce, cWind, cEarth
+    cells: pedestals,
+    origin: { x: 10, y: 13 },
+    reward: { x: 12, y: 12 },
+  };
+}
+
 function designFor(presetId: PuzzleRoomPresetId): RoomDesign {
   switch (presetId) {
     case "cathedral_organ_tuning":
@@ -415,6 +788,14 @@ function designFor(presetId: PuzzleRoomPresetId): RoomDesign {
       return riddleDesign();
     case "boss_seal_monoliths":
       return monolithDesign();
+    case "rolling_boulder_chasm":
+      return boulderDesign();
+    case "mirror_beam_refraction":
+      return mirrorDesign();
+    case "minecart_track_switch":
+      return minecartDesign();
+    case "elemental_pedestal_swap":
+      return elementalDesign();
   }
 }
 
@@ -553,8 +934,14 @@ export function buildPuzzleRoomStage(
   let previous = before;
   for (const [key, state] of Object.entries(design.states.steps ?? {})) {
     const layers = buildLayers(project, state, `${presetId}:${key}`);
-    // 화로처럼 차례로 쌓이는 단계(brazier_*)는 앞 단계에서, 서로 독립인 단계(plate·monolith)는 처음 상태에서 잰다.
-    const from = key.startsWith("brazier_") ? previous : before;
+    // 화로·바위 굴리기·거울 굴절·광차 질주·사원소 제단처럼 차례로 쌓이는 단계는 앞 단계(previous)에서, 서로 독립인 단계(plate·monolith)는 처음 상태에서 잰다.
+    const isSequential =
+      key.startsWith("brazier_") ||
+      key.startsWith("boulder_") ||
+      key.startsWith("mirror_") ||
+      key.startsWith("minecart_") ||
+      key.startsWith("pedestal_");
+    const from = isSequential ? previous : before;
     stepChangeTileCommands[key] = diffCommands(project, map, win.x, win.y, from, layers);
     for (const cmd of stepChangeTileCommands[key]!) {
       if (cmd.kind === "changeTile") touched.add((cmd.y - win.y) * PUZZLE_ROOM_W + (cmd.x - win.x));
@@ -567,6 +954,13 @@ export function buildPuzzleRoomStage(
     // 되돌리기: 단계가 건드린 칸만 처음 그림으로 다시 쓴다(-2 는 「무엇이었든 다르다」 표시라 칸마다 명령이 나온다).
     stepChangeTileCommands[design.resetKey] = diffCommands(project, map, win.x, win.y, fromAll, before);
   }
+  // 단계(boulder_step_* 등)가 잠시 바위·광차를 그렸던 칸이 after 에서 비어야 할 때도 빠짐없이 정리되도록 반영한다.
+  const finalFrom: Layers = { lower: [...before.lower], lower2: [...before.lower2], upper: [...before.upper], upper2: [...before.upper2] };
+  for (const i of touched) {
+    for (const key of LAYER_KEYS) {
+      if (previous[key][i] !== after[key][i]) finalFrom[key][i] = -2;
+    }
+  }
   writeLayers(map, win.x, win.y, before);
   const shift = (c: Cell): Cell => ({ x: c.x + win.x, y: c.y + win.y });
   return {
@@ -574,7 +968,7 @@ export function buildPuzzleRoomStage(
     center: shift({ x: Math.floor(PUZZLE_ROOM_W / 2), y: Math.floor(PUZZLE_ROOM_H / 2) }),
     reward: shift(design.reward),
     cells: design.cells.map(shift),
-    changeTileCommands: diffCommands(project, map, win.x, win.y, before, after),
+    changeTileCommands: diffCommands(project, map, win.x, win.y, finalFrom, after),
     stepChangeTileCommands,
   };
 }
