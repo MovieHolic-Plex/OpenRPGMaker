@@ -51,7 +51,7 @@ export function isPuzzleRoomPreset(presetId: PuzzlePresetId): presetId is Puzzle
   return ROOM_PRESETS[presetId] === true;
 }
 
-interface Rect {
+export interface Rect {
   readonly x0: number;
   readonly y0: number;
   readonly x1: number;
@@ -59,7 +59,7 @@ interface Rect {
 }
 
 /** 한 상태의 방 설계. plan 은 20×15 문자열, chasm 은 바닥을 지우고 심연(빈 칸)으로 둘 칸. */
-interface RoomState {
+export interface RoomState {
   readonly input: HandInteriorInput;
   readonly chasm?: readonly Rect[];
 }
@@ -80,20 +80,20 @@ interface RoomDesign {
   readonly reward: Cell;
 }
 
-interface Layers {
+export interface Layers {
   readonly lower: number[];
   readonly lower2: number[];
   readonly upper: number[];
   readonly upper2: number[];
 }
 
-const LAYER_KEYS = ["lower", "lower2", "upper", "upper2"] as const;
+export const LAYER_KEYS = ["lower", "lower2", "upper", "upper2"] as const;
 
 /**
  * 20×15 평면. top = 북쪽 벽 두께(천장 줄 수, 그 아래 두 줄이 벽면), left/right = 옆벽 두께.
  * 남쪽 벽 가운데에 출입구 틈을 둔다(맵이 더 크면 바깥과 이어지고, 딱 20×15 면 화면 아래로 나가는 문이 된다).
  */
-function roomPlan(opts: {
+export function roomPlan(opts: {
   readonly top: number;
   readonly left?: number;
   readonly right?: number;
@@ -799,7 +799,7 @@ function designFor(presetId: PuzzleRoomPresetId): RoomDesign {
   }
 }
 
-function buildLayers(project: Project, state: RoomState, label: string): Layers {
+export function buildLayers(project: Project, state: RoomState, label: string): Layers {
   const tileset = project.tilesets[HAND_INTERIOR_TILESET_ID];
   const built = buildHandInteriorLayers(state.input, tileset, HAND_INTERIOR_SPEC);
   const errors = built.issues.filter((i) => i.severity === "error");
@@ -826,7 +826,7 @@ function buildLayers(project: Project, state: RoomState, label: string): Layers 
   return layers;
 }
 
-function diffCommands(project: Project, map: GameMap, ox: number, oy: number, from: Layers, to: Layers): Command[] {
+export function diffCommands(project: Project, map: GameMap, ox: number, oy: number, from: Layers, to: Layers): Command[] {
   const out: Command[] = [];
   for (let i = 0; i < PUZZLE_ROOM_W * PUZZLE_ROOM_H; i += 1) {
     for (const key of LAYER_KEYS) {
@@ -849,7 +849,7 @@ function diffCommands(project: Project, map: GameMap, ox: number, oy: number, fr
   return out;
 }
 
-function writeLayers(map: GameMap, ox: number, oy: number, layers: Layers): void {
+export function writeLayers(map: GameMap, ox: number, oy: number, layers: Layers): void {
   const size = map.width * map.height;
   if (!map.lowerOverlayTiles || map.lowerOverlayTiles.length !== size) map.lowerOverlayTiles = new Array<number>(size).fill(-1);
   if (!map.upperOverlayTiles || map.upperOverlayTiles.length !== size) map.upperOverlayTiles = new Array<number>(size).fill(-1);
@@ -888,18 +888,17 @@ export interface PuzzleRoomBuild {
 }
 
 /**
- * 프리셋 무대 방 한 칸(20×15)을 화면 전체로 짓는다. 이미 사람이 꾸민 맵(이동 착지점·이벤트가 있는 맵)을 망치지 않도록
- * - 실내 칩셋 맵이면 방 창 안에 이동 착지점이 없을 때만,
- * - 다른 칩셋 맵이면 이벤트·착지점이 하나도 없는 빈 맵일 때만 맵 전체를 실내 칩셋으로 바꿔 짓는다.
- * 그 밖에는 undefined(기존 무대 시공으로 넘어간다).
+ * 20×15 방 창을 맵에서 확보한다. 이미 사람이 꾸민 맵(이동 착지점·이벤트가 있는 맵)을 망치지 않도록
+ * - 실내 칩셋 맵이면 방 창 안에 이동 착지점·이벤트·시작점이 없을 때만,
+ * - 다른 칩셋 맵이면 이벤트·착지점이 하나도 없는 빈 맵일 때만 맵 전체를 실내 칩셋으로 바꿔 쓴다.
+ * 확보하지 못하면 undefined.
  */
-export function buildPuzzleRoomStage(
+export function claimPuzzleRoomWindow(
   project: Project,
   map: GameMap,
-  presetId: PuzzleRoomPresetId,
   anchor: Cell | undefined,
   landings: ReadonlySet<string>,
-): PuzzleRoomBuild | undefined {
+): Cell | undefined {
   const tileset = project.tilesets[HAND_INTERIOR_TILESET_ID];
   if (!tileset || map.width < PUZZLE_ROOM_W || map.height < PUZZLE_ROOM_H) return undefined;
   const win = roomWindow(map, anchor);
@@ -917,15 +916,31 @@ export function buildPuzzleRoomStage(
     delete map.lowerTileStacks;
     delete map.upperTileStacks;
     delete map.relief;
-  } else {
-    for (const key of landings) {
-      const [lx = -1, ly = -1] = key.split(",").map(Number);
-      if (lx >= win.x && lx < win.x + PUZZLE_ROOM_W && ly >= win.y && ly < win.y + PUZZLE_ROOM_H) return undefined;
-    }
-    if (map.events.some((e) => e.x >= win.x && e.x < win.x + PUZZLE_ROOM_W && e.y >= win.y && e.y < win.y + PUZZLE_ROOM_H)) return undefined;
-    const start = project.startMapId === map.id ? project.startPos : undefined;
-    if (start && start.x >= win.x && start.x < win.x + PUZZLE_ROOM_W && start.y >= win.y && start.y < win.y + PUZZLE_ROOM_H) return undefined;
+    return win;
   }
+  const inWin = (x: number, y: number): boolean => x >= win.x && x < win.x + PUZZLE_ROOM_W && y >= win.y && y < win.y + PUZZLE_ROOM_H;
+  for (const key of landings) {
+    const [lx = -1, ly = -1] = key.split(",").map(Number);
+    if (inWin(lx, ly)) return undefined;
+  }
+  if (map.events.some((e) => inWin(e.x, e.y))) return undefined;
+  const start = project.startMapId === map.id ? project.startPos : undefined;
+  if (start && inWin(start.x, start.y)) return undefined;
+  return win;
+}
+
+/**
+ * 프리셋 무대 방 한 칸(20×15)을 화면 전체로 짓는다. 방 창을 확보하지 못하면 undefined(기존 무대 시공으로 넘어간다).
+ */
+export function buildPuzzleRoomStage(
+  project: Project,
+  map: GameMap,
+  presetId: PuzzleRoomPresetId,
+  anchor: Cell | undefined,
+  landings: ReadonlySet<string>,
+): PuzzleRoomBuild | undefined {
+  const win = claimPuzzleRoomWindow(project, map, anchor, landings);
+  if (!win) return undefined;
   const design = designFor(presetId);
   const before = buildLayers(project, design.states.before, `${presetId}:before`);
   const after = buildLayers(project, design.states.after, `${presetId}:after`);
