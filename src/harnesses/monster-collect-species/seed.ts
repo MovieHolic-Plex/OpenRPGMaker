@@ -112,6 +112,10 @@ export type PickRecord = {
   note?: string;
   /** harness-data 아래 손 도트 64×64 원본. 있으면 build 가 격자 축소 대신 이 그림을 그대로 번들에 쓴다 */
   authored?: string;
+  /** authored 파일 바이트의 sha256 (upgrade_all_60_eyes.py 가 쓴다). 파일과 다르면 손 수정이 장부 밖에서 일어난 것 */
+  authoredSha256?: string;
+  /** 이 authored 로 바꾸기 직전 파일의 sha256 (되돌릴 기준) */
+  previousAuthoredSha256?: string;
 };
 
 /** 큰 동작 한 줄의 선택 기록. grid 는 줄 전체 격자 도트(N 프레임이 한 장) */

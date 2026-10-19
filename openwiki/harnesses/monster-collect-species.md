@@ -162,6 +162,9 @@ R11~R13 은 눈을 `upgrade_all_60_eyes.py` 의 손으로 친 절대 좌표로 �
 - **동결**: #6 wickworm · #7 rootpig · #8 frondhare · #10 brookraft(사용자가 좋다고 한 R13 기준종)는 그림이 곧 기준이다 — V0~V7 을 보지 않고 V8 해시만 본다. 바뀌면 시험 실패.
 - **accept 는 정확히 같아야 한다**: 시험(`test/harnesses/monsterCollectSpecies.test.ts`)과 `check` 단계가 종마다 실제 실패 목록 = `accept` 키를 요구한다. 새로 깨지면 실패, 고쳤는데 `accept` 를 안 지워도 실패 — 실패 목록이 장부에 남아 「고쳤다」를 기계로 증명한다.
 - **번들 시험은 눈 규칙을 실제로 돈다**: `checkSprite(front|back, maxColors, side, stage)`.
+- **고치는 법(`scripts/content/monsters/upgrade_all_60_eyes.py`, 표 주도)**: 종 항목에 `repair`(`from` 지금 authored 파일 sha256 · `erase` 옛 눈 상자 · `clear` 허공에 찍혔던 칸 · `paint` 눈 색)를 적고 돌린다. ① 파일 해시가 `from` 이 아니면 거부(손 수정 보호), `to` 와 같으면 건너뜀 ② `clear` 칸을 투명으로, 옛 눈 상자와 거기 이어진 잔상 칸을 주변 살갗·윤곽에서 다시 채움 ③ `near`/`second`/`far` 에 둥근 BW 틀(`redraw_starters.draw_bw_eye`·`draw_far_eye`)을 그리되 투명 칸에는 안 그리고 윤곽 칸을 밝히지 않음 ④ authored 저장, 장부 `authoredSha256`·`previousAuthoredSha256`, 표 `repair.to` 기록. `--out-dir` 은 미리보기(저장소 무변경). 그다음 `npm run harness -- monster-collect-species build`, 바뀐 종만 `field_chip.py derive → pick → bake`.
+- **먼 눈 규칙(사용자 결정 2026-10-20)**: 먼 눈이 윤곽에 붙으면 얼굴 안쪽으로 1~2칸 밀고, 그래도 몸 밖이면 생략(한 눈 3/4). 몸 안이면 윤곽 옆이라도 유지 — 그 종은 `accept.V2` 로 남긴다.
+- **R13 → 판본 5 적용 결과(2026-10-20)**: 앞모습 49종 눈 재배치(걷기 칩 49종 다시 derive, 칩 그림이 실제로 바뀐 것 42종). 손대지 않은 앞모습 11종(동결 4 · 게 3 · 스타터 sparkit·aqualing·leafling · winterquill)과 뒷모습 60장은 화소 그대로. 남은 실패 6종: 게 3종(사용자 선택 대기), ribbonwing·hushdoll(먼 눈 몸 안·윤곽 옆, Q1 유지), aqualing(R12 스타터 손 도트 먼 눈).
 
 ### 격자 계약 (2026-10-16 — 외부 시험자 「픽셀 그리드부터 맞게」)
 

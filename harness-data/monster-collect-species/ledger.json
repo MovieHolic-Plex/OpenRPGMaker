@@ -76,7 +76,9 @@
         "block": 11,
         "pickedAt": "2026-10-16T10:41:20.318Z",
         "note": "v4 cute-first, Opus 5.5 judge: 크고 둥근 눈에 흰 하이라이트가 선명해 반짝이고, 통통한 몸에 하늘색 볏이 크게 솟았다",
-        "authored": "authored/gustchick-front.png"
+        "authored": "authored/gustchick-front.png",
+        "previousAuthoredSha256": "c4a127de3c1dad4532dc1ca90816fcb8cb70efbbcd8feb2cea6ea8fbe7093eab",
+        "authoredSha256": "5214fd9e783d3c397839d509c6cc48b5bbb00be6657d423c2075140eaf002adf"
       },
       "back": {
         "grid": "grids/gustchick-back.png",
@@ -97,7 +99,9 @@
         "block": 11,
         "pickedAt": "2026-10-16T10:41:42.825Z",
         "note": "v4 cute-first, Opus 5.5 judge: 가장 크고 둥근 눈에 흰 하이라이트가 또렷하고, 큰 머리와 통통한 몸, 큰 두 잎 새싹이 선명하다",
-        "authored": "authored/pipbug-front.png"
+        "authored": "authored/pipbug-front.png",
+        "previousAuthoredSha256": "6d6e3ac52c5d280ccea1dd37a35b584dc772a5b8217b5ab26daacfe757389a10",
+        "authoredSha256": "ea87b6a4ebcca5f839d6721f8c1f56653e945efe0ee9c918d4ceb6f0f2dfc153"
       },
       "back": {
         "grid": "grids/pipbug-back.png",
@@ -182,7 +186,9 @@
         "block": 12,
         "pickedAt": "2026-10-16T10:59:49.139Z",
         "note": "v4 cute-first, Opus 5.5 judge: 가장 큰 눈에 흰 하이라이트가 뚜렷하고, 머리가 둥글며 표정이 순하다. 금 간 숯 철퇴 꼬리가 크고 선명하며 도트도 가장 깔끔하다",
-        "authored": "authored/kilnclaw-front.png"
+        "authored": "authored/kilnclaw-front.png",
+        "previousAuthoredSha256": "020b05c4f86b86ac1ca4da2fe9d59e8caa9a0cca7c873f5b3d7b2a8c078f8aa6",
+        "authoredSha256": "d0a266df4dfaeea5b54b5fa040c6b9cf16799c320ae5cb32b062c4019d5e919e"
       },
       "back": {
         "grid": "grids/kilnclaw-back.png",
@@ -246,7 +252,9 @@
         "block": 14,
         "pickedAt": "2026-10-16T10:42:43.635Z",
         "note": "v4 cute-first, Opus 5.5 judge: 깨끗한 큰 눈에 흰 하이라이트가 또렷하고 얼굴이 순하며, 몸만 한 나선 꼬리와 조약돌이 깔끔하다",
-        "authored": "authored/curlfin-front.png"
+        "authored": "authored/curlfin-front.png",
+        "previousAuthoredSha256": "e83f13612e4362fad1012e820f4aa5e126dd2950cf6b195a04d1fd9a888fd859",
+        "authoredSha256": "f835736f65d4b4d1415ec8659db1f7570636c5584b7dc98257ee2aaeb10c09fc"
       },
       "back": {
         "grid": "grids/curlfin-back.png",
@@ -268,7 +276,9 @@
         "block": 9,
         "pickedAt": "2026-10-16T10:43:01.808Z",
         "note": "v4 cute-first, Opus 5.5 judge: Biggest, roundest eye with clear white highlight squares; friendly smile; tall ridged coil with bright orb reads first",
-        "authored": "authored/zaptoe-front.png"
+        "authored": "authored/zaptoe-front.png",
+        "previousAuthoredSha256": "961f3f510240043cfb373742929413c700767d47c5f180fed9d08471ec4e50a1",
+        "authoredSha256": "733dc9dfe6c9eaca51bdbc17954ea4213fd8d4d2e6213134da167830c9f3db4e"
       },
       "back": {
         "grid": "grids/zaptoe-back.png",
@@ -289,7 +299,9 @@
         "block": 10,
         "pickedAt": "2026-10-16T10:43:19.765Z",
         "note": "v4 cute-first, Opus 5.5 judge: Large round eye with a crisp white highlight, soft round face, big swirling stone horns frame the head cleanly",
-        "authored": "authored/pebblekid-front.png"
+        "authored": "authored/pebblekid-front.png",
+        "previousAuthoredSha256": "2e5f56bab3d449bcd438c42b7bef818bd97443a4eac60ff26de033fe761cbb77",
+        "authoredSha256": "39c383f32db4bbddba2556c5f243e2777b5ddc44f9ec75c12d51c838ab844e07"
       },
       "back": {
         "grid": "grids/pebblekid-back.png",
@@ -310,7 +322,9 @@
         "block": 11,
         "pickedAt": "2026-10-16T10:43:35.254Z",
         "note": "v4 cute-first, Opus 5.5 judge: Big round sparkling eye with a clear white highlight, plump body, huge speckled pink snout dominates",
-        "authored": "authored/gritnose-front.png"
+        "authored": "authored/gritnose-front.png",
+        "previousAuthoredSha256": "ce939e68adb4a2b05a9d318284452353f8c9612fb7b4fe63eec6fdf2788ed246",
+        "authoredSha256": "49eb735940f1f52dc4eca27fc9ae61b131e730ff14decdd61d72f8a7e9724260"
       },
       "back": {
         "grid": "grids/gritnose-back.png",
@@ -331,7 +345,9 @@
         "block": 12,
         "pickedAt": "2026-10-18T09:11:43.168Z",
         "note": "2026-10-18-진화-몸집-단조-증가",
-        "authored": "authored/podback-front.png"
+        "authored": "authored/podback-front.png",
+        "previousAuthoredSha256": "67bca8fb3d08b80f775f4cb682a3b511e50b97a07a94f2cef77b6d5600b3ae47",
+        "authoredSha256": "f28716e3228bfcc817f19c8ac41e5bbe2d2dbcc05b0a662a1a9dd1bfc0c2ff4c"
       },
       "back": {
         "grid": "grids/podback-back.png",
@@ -353,7 +369,9 @@
         "block": 9,
         "pickedAt": "2026-10-18T08:10:12.529Z",
         "note": "2026-10-18-진화계통-하네스-통일",
-        "authored": "authored/coilcrest-front.png"
+        "authored": "authored/coilcrest-front.png",
+        "previousAuthoredSha256": "7b30009a5c78ea3de78aa95351ded8e8ad900f27792fc74718bbfd5407a0e171",
+        "authoredSha256": "5b5fbef525824d6c101fbd35b85a47d3137b93d494a94ac4d9b421d21742e6c2"
       },
       "back": {
         "grid": "grids/coilcrest-back.png",
@@ -374,7 +392,9 @@
         "block": 12,
         "pickedAt": "2026-10-18T08:10:30.115Z",
         "note": "2026-10-18-진화계통-하네스-통일",
-        "authored": "authored/lanternwing-front.png"
+        "authored": "authored/lanternwing-front.png",
+        "previousAuthoredSha256": "c9084b5f579134a205c4a2628bb490c232a5da9c6cea26fa4661d36be655aaae",
+        "authoredSha256": "6b01450e81439b537f0e8a70696b6952a7e988ff8f682ea2b8536fdae7466f44"
       },
       "back": {
         "grid": "grids/lanternwing-back.png",
@@ -395,7 +415,9 @@
         "block": 11,
         "pickedAt": "2026-10-18T09:16:48.614Z",
         "note": "2026-10-18-진화-몸집-단조-증가",
-        "authored": "authored/brambleboar-front.png"
+        "authored": "authored/brambleboar-front.png",
+        "previousAuthoredSha256": "23865b1aae5abc32441d117844389b79acf294b30d4d17b1232a0e6a02f15c88",
+        "authoredSha256": "1d499d840ab30d1c386e95b64dbe373fe1ad300a6c860e5efd37909594216cf8"
       },
       "back": {
         "grid": "grids/brambleboar-back.png",
@@ -416,7 +438,9 @@
         "block": 12,
         "pickedAt": "2026-10-18T08:17:18.090Z",
         "note": "2026-10-18-진화계통-하네스-통일",
-        "authored": "authored/tunnelpaw-front.png"
+        "authored": "authored/tunnelpaw-front.png",
+        "previousAuthoredSha256": "979b5f058ae21c209a7da974cdb32fff82dbf8c66c11d777b3d545210294e9f2",
+        "authoredSha256": "c7e486bdb5b3bdf38bdd1a89ee5343adb131fa0d0d06cf2a09f145d4e6aa1a0c"
       },
       "back": {
         "grid": "grids/tunnelpaw-back.png",
@@ -459,7 +483,9 @@
         "block": 12,
         "pickedAt": "2026-10-18T08:51:27.419Z",
         "note": "2026-10-18-눈규칙-통과-후보로-교체",
-        "authored": "authored/brinewyrm-front.png"
+        "authored": "authored/brinewyrm-front.png",
+        "previousAuthoredSha256": "c68ebc0ed00c3e09a746d2d1e8cd619cd7b4ec7a02e9935a668e08d543dec333",
+        "authoredSha256": "c68ebc0ed00c3e09a746d2d1e8cd619cd7b4ec7a02e9935a668e08d543dec333"
       },
       "back": {
         "grid": "grids/brinewyrm-back.png",
@@ -481,7 +507,9 @@
         "block": 9,
         "pickedAt": "2026-10-18T08:44:25.071Z",
         "note": "2026-10-18-눈규칙-통과-후보로-교체",
-        "authored": "authored/ribbonwing-front.png"
+        "authored": "authored/ribbonwing-front.png",
+        "previousAuthoredSha256": "e9ef140852b643b7dd0e4d657f29f1a61311cc605eeee5c26d25dc62927f41da",
+        "authoredSha256": "4fca2b57c5f4ed5a00c301edd86cd018ae585212bd249a2feedbb760a4a4197b"
       },
       "back": {
         "grid": "grids/ribbonwing-back.png",
@@ -502,7 +530,9 @@
         "block": 10,
         "pickedAt": "2026-10-18T08:44:40.985Z",
         "note": "2026-10-18-눈규칙-통과-후보로-교체",
-        "authored": "authored/craghoof-front.png"
+        "authored": "authored/craghoof-front.png",
+        "previousAuthoredSha256": "325d5e6f0db0d3d0e1578a62abfb9b6f3b6040995a4e03b26372f7a04e6c36c0",
+        "authoredSha256": "1b3e62ab7eecd6a8c2d55114b64cf49b98fc4ca0c7a433a3e324465bfbc32247"
       },
       "back": {
         "grid": "grids/craghoof-back.png",
@@ -523,7 +553,9 @@
         "block": 9,
         "pickedAt": "2026-10-18T09:16:27.036Z",
         "note": "2026-10-18-진화-몸집-단조-증가",
-        "authored": "authored/grovewarden-front.png"
+        "authored": "authored/grovewarden-front.png",
+        "previousAuthoredSha256": "e5f3787e8c9888b0eee7cfcd9b425298e8bdffee99e45e65d77e3c49448bacd0",
+        "authoredSha256": "66147313e7a24c8a00e314f649be0188edf64eb823cf474ae71a5ccf3b2589c4"
       },
       "back": {
         "grid": "grids/grovewarden-back.png",
@@ -545,7 +577,9 @@
         "block": 9,
         "pickedAt": "2026-10-18T08:28:23.868Z",
         "note": "2026-10-18-진화계통-하네스-통일",
-        "authored": "authored/furnscale-front.png"
+        "authored": "authored/furnscale-front.png",
+        "previousAuthoredSha256": "29e197dfd032cf4110e78d6baf7d294de19ce181b6d20df076e6f48dba545bb0",
+        "authoredSha256": "01d9758dbe77c44c9e028605d943036f97dd3e014af36c6506d3914e613f10f9"
       },
       "back": {
         "grid": "grids/furnscale-back.png",
@@ -566,7 +600,9 @@
         "block": 9,
         "pickedAt": "2026-10-18T09:03:42.341Z",
         "note": "2026-10-18-진화-몸집-증가-후보로-교체",
-        "authored": "authored/tidekeeper-front.png"
+        "authored": "authored/tidekeeper-front.png",
+        "previousAuthoredSha256": "6a0fcac9615a5cf23f4c479347a6392e8d04e76b214e9209e1b65a046685415c",
+        "authoredSha256": "d9a28a9dbdddda9d603cf1ffe147f4426e96d982ed4aa1bdba11c0c17d6b73c5"
       },
       "back": {
         "grid": "grids/tidekeeper-back.png",
@@ -587,7 +623,9 @@
         "block": 12,
         "pickedAt": "2026-10-18T09:12:11.196Z",
         "note": "2026-10-18-진화-몸집-단조-증가",
-        "authored": "authored/orchardant-front.png"
+        "authored": "authored/orchardant-front.png",
+        "previousAuthoredSha256": "599e637a03d99d65e7851a067bcc7bf26b2fe2c453e312b51be869e6f10c2e89",
+        "authoredSha256": "157590a8ad15880581585d15899ce1302ba7a96e86a4d1cf15e0aa3ce5a99b84"
       },
       "back": {
         "grid": "grids/orchardant-back.png",
@@ -608,7 +646,9 @@
         "block": 9,
         "pickedAt": "2026-10-18T09:17:28.410Z",
         "note": "2026-10-18-진화-몸집-단조-증가",
-        "authored": "authored/stormskink-front.png"
+        "authored": "authored/stormskink-front.png",
+        "previousAuthoredSha256": "df2c2706872584f2b7f5d133a72d3cc8b9e6d06b4320a75c415c96075daf7a8c",
+        "authoredSha256": "42accc497b02f5d5bf4ffe05eec4cb300fe7f5dc31cb21e3bdfa57fec9f2523b"
       },
       "back": {
         "grid": "grids/stormskink-back.png",
@@ -629,7 +669,9 @@
         "block": 10,
         "pickedAt": "2026-10-18T08:29:20.526Z",
         "note": "2026-10-18-진화계통-하네스-통일",
-        "authored": "authored/beaconmoth-front.png"
+        "authored": "authored/beaconmoth-front.png",
+        "previousAuthoredSha256": "5ff1f579746c55e25ff5e3aae6ead4c4c53f76bbcfc990d7b65eaa293c1be49b",
+        "authoredSha256": "4323d4e15f81b781a81df53ff0def6d4c5e2fa868a7d76f90905e050d9836807"
       },
       "back": {
         "grid": "grids/beaconmoth-back.png",
@@ -650,7 +692,9 @@
         "block": 8,
         "pickedAt": "2026-10-18T08:30:37.353Z",
         "note": "2026-10-18-진화계통-하네스-통일",
-        "authored": "authored/galecrest-front.png"
+        "authored": "authored/galecrest-front.png",
+        "previousAuthoredSha256": "b7f73d32498954a689aba504a874310a64f088ded9f77983e6d28f034648bd01",
+        "authoredSha256": "8ba0bab08aa54f1d910832d3faa70c6102f79b077923fc8524e9e3dc0a61ae27"
       },
       "back": {
         "grid": "grids/galecrest-back.png",
@@ -671,7 +715,9 @@
         "block": 10,
         "pickedAt": "2026-10-18T08:30:57.344Z",
         "note": "2026-10-18-진화계통-하네스-통일",
-        "authored": "authored/ridgehorn-front.png"
+        "authored": "authored/ridgehorn-front.png",
+        "previousAuthoredSha256": "25fec68ed1e3714a647172576844c84589c5f180d35e4438cbb7a56b3bbecee9",
+        "authoredSha256": "1fdaf045dddac7754074399d2f87e162427e1c681da36645dd3accb532ae2d46"
       },
       "back": {
         "grid": "grids/ridgehorn-back.png",
@@ -692,7 +738,9 @@
         "block": 9,
         "pickedAt": "2026-10-18T09:17:08.640Z",
         "note": "2026-10-18-진화-몸집-단조-증가",
-        "authored": "authored/briartusk-front.png"
+        "authored": "authored/briartusk-front.png",
+        "previousAuthoredSha256": "55f27100fd0e77aec0da1e5a81d2a6901018c9d47812b8fada220d2255ffcaea",
+        "authoredSha256": "c9f535730bec4a7a017829643268754e678c0fda103c1307bfb84cee319cfd51"
       },
       "back": {
         "grid": "grids/briartusk-back.png",
@@ -713,7 +761,9 @@
         "block": 10,
         "pickedAt": "2026-10-18T08:31:37.592Z",
         "note": "2026-10-18-진화계통-하네스-통일",
-        "authored": "authored/faultdigger-front.png"
+        "authored": "authored/faultdigger-front.png",
+        "previousAuthoredSha256": "a5e4514a9dcbe4fcb10537a3653cf01abe1152a79e119e04d2c452de1f4aa5f2",
+        "authoredSha256": "f496765c0a401cddebddd41b79f44e7794592b182598ccdd0affffc2bc693ee4"
       },
       "back": {
         "grid": "grids/faultdigger-back.png",
@@ -756,7 +806,9 @@
         "block": 9,
         "pickedAt": "2026-10-18T08:32:17.355Z",
         "note": "2026-10-18-진화계통-하네스-통일",
-        "authored": "authored/abyssail-front.png"
+        "authored": "authored/abyssail-front.png",
+        "previousAuthoredSha256": "ef5e689c536f479eded48f9766fce0f8ae6821b4c2656ec8445f93b3028cb73e",
+        "authoredSha256": "00bcc225e5573bd619ae4504a13daf76147d56df0366d2f29ff25114a67a7485"
       },
       "back": {
         "grid": "grids/abyssail-back.png",
@@ -777,7 +829,9 @@
         "block": 14,
         "pickedAt": "2026-10-18T09:35:23.650Z",
         "note": "2026-10-18-캠페인-전종-하네스",
-        "authored": "authored/sandnip-front.png"
+        "authored": "authored/sandnip-front.png",
+        "previousAuthoredSha256": "433fa085df7f278fcee1dae390b23879b6b7a633e5dfc9ba8d5d1aa1c18f8954",
+        "authoredSha256": "fdc0d1568f22928ab529dbbdec73f91194871814aa1d2761a91ff16cb4a4bbcd"
       },
       "back": {
         "grid": "grids/sandnip-back.png",
@@ -798,7 +852,9 @@
         "block": 9,
         "pickedAt": "2026-10-18T09:35:42.689Z",
         "note": "2026-10-18-캠페인-전종-하네스",
-        "authored": "authored/flurrykit-front.png"
+        "authored": "authored/flurrykit-front.png",
+        "previousAuthoredSha256": "c4fc1c5e1e473652b62b8f36d7cf526c6bb3c6b96ee8567aa678ce4158b24422",
+        "authoredSha256": "35605a2b37c00fc63b6f8b774288be32c6dc1efa44f19d30bbd7d69894bfa2c5"
       },
       "back": {
         "grid": "grids/flurrykit-back.png",
@@ -819,7 +875,9 @@
         "block": 11,
         "pickedAt": "2026-10-18T09:36:04.770Z",
         "note": "2026-10-18-캠페인-전종-하네스",
-        "authored": "authored/miretail-front.png"
+        "authored": "authored/miretail-front.png",
+        "previousAuthoredSha256": "38f3c2c58d7052909f7e3be2ddedecc8fa19cf70fc924c1e1ce221351ab3bd2c",
+        "authoredSha256": "3e41cb663ef8daede4fd66b1ffa64bd2470971292582a9fa0d108592614d318f"
       },
       "back": {
         "grid": "grids/miretail-back.png",
@@ -840,7 +898,9 @@
         "block": 8,
         "pickedAt": "2026-10-18T09:36:23.535Z",
         "note": "2026-10-18-캠페인-전종-하네스",
-        "authored": "authored/dozemite-front.png"
+        "authored": "authored/dozemite-front.png",
+        "previousAuthoredSha256": "3ff8e9083c3afb95268432877e2a79673c10c3d2dc20ba90cfaa66370ba73bb6",
+        "authoredSha256": "b3a1f8af9735206f5c3ef14c77072d0e2aefac6bc8dd0d9c339b5958cd2c7277"
       },
       "back": {
         "grid": "grids/dozemite-back.png",
@@ -861,7 +921,9 @@
         "block": 10,
         "pickedAt": "2026-10-18T09:36:45.202Z",
         "note": "2026-10-18-캠페인-전종-하네스",
-        "authored": "authored/threadimp-front.png"
+        "authored": "authored/threadimp-front.png",
+        "previousAuthoredSha256": "ec4bc4753c63b6c01e3401e3b743f2539ffe647559535712893e36865057eaf6",
+        "authoredSha256": "f176162ad9f17c09cd59eec902b4b6cc2c6e6495e33991e1df5bdcb480571a90"
       },
       "back": {
         "grid": "grids/threadimp-back.png",
@@ -882,7 +944,9 @@
         "block": 11,
         "pickedAt": "2026-10-18T09:37:03.546Z",
         "note": "2026-10-18-캠페인-전종-하네스",
-        "authored": "authored/reedpeep-front.png"
+        "authored": "authored/reedpeep-front.png",
+        "previousAuthoredSha256": "ba123945c4b785cd08c199df4d2951482f681ea42230024b1304cd526e56cf82",
+        "authoredSha256": "0ad8f034c210aca1995f1baaaa99fc52494dad8367de40f0c3263d90c74e44f4"
       },
       "back": {
         "grid": "grids/reedpeep-back.png",
@@ -903,7 +967,9 @@
         "block": 11,
         "pickedAt": "2026-10-18T09:37:21.031Z",
         "note": "2026-10-18-캠페인-전종-하네스",
-        "authored": "authored/thundercairn-front.png"
+        "authored": "authored/thundercairn-front.png",
+        "previousAuthoredSha256": "24cbe8d8095446633b5f74b9122ed33416d936d48d8508702794b3155577ec69",
+        "authoredSha256": "ec02788d695cefc7b39aa4d0eb5e34079fe1103d4c6f242eb3fa097076291a79"
       },
       "back": {
         "grid": "grids/thundercairn-back.png",
@@ -945,7 +1011,9 @@
         "block": 10,
         "pickedAt": "2026-10-18T09:46:48.772Z",
         "note": "2026-10-18-캠페인-전종-하네스",
-        "authored": "authored/solmane-front.png"
+        "authored": "authored/solmane-front.png",
+        "previousAuthoredSha256": "70d7f9abee840ebf6e03317fcadfb619568cb18e56652cacd886385c2f7f8495",
+        "authoredSha256": "ee6613e1f2c5fd682ecc2f9df4fb45196f6239512ffbbaaefe069b49b0912f58"
       },
       "back": {
         "grid": "grids/solmane-back.png",
@@ -966,7 +1034,9 @@
         "block": 11,
         "pickedAt": "2026-10-18T09:47:04.025Z",
         "note": "2026-10-18-캠페인-전종-하네스",
-        "authored": "authored/lunavane-front.png"
+        "authored": "authored/lunavane-front.png",
+        "previousAuthoredSha256": "f53b45abf4450c754772665f274ac5628561b8ddfbdae19bca9a60326f6ca8ff",
+        "authoredSha256": "1e2388751604805a0bfc908b631097eeb02288ecbd161a327dc6412b63ec5af6"
       },
       "back": {
         "grid": "grids/lunavane-back.png",
@@ -987,7 +1057,9 @@
         "block": 8,
         "pickedAt": "2026-10-18T09:38:24.011Z",
         "note": "2026-10-18-캠페인-전종-하네스",
-        "authored": "authored/relicarab-front.png"
+        "authored": "authored/relicarab-front.png",
+        "previousAuthoredSha256": "7f91269727be127dc9a47c23cdc100278d251d6115fee3a4b664b467f2c07bf3",
+        "authoredSha256": "8500da824dba98a3990c7869a827e2ae713622172700f206e13334d5dd4c2470"
       },
       "back": {
         "grid": "grids/relicarab-back.png",
@@ -1008,7 +1080,9 @@
         "block": 12,
         "pickedAt": "2026-10-18T09:38:37.978Z",
         "note": "2026-10-18-캠페인-전종-하네스",
-        "authored": "authored/astralhart-front.png"
+        "authored": "authored/astralhart-front.png",
+        "previousAuthoredSha256": "af9d68e1782107957329f43fb6bc20d72993d6f32f0fe3929bfb39387270ce16",
+        "authoredSha256": "90c1a72809d02f8fad1a700c6c1b7d7b5b00cdb6c5b431d8fd897ff5edbee851"
       },
       "back": {
         "grid": "grids/astralhart-back.png",
@@ -1029,7 +1103,9 @@
         "block": 9,
         "pickedAt": "2026-10-18T10:02:33.712Z",
         "note": "2026-10-18-캠페인-전종-하네스",
-        "authored": "authored/dunestalk-front.png"
+        "authored": "authored/dunestalk-front.png",
+        "previousAuthoredSha256": "7107c4068e968d40b9f04dfa5e38f8d90dd46d8b6ef975e2f6c8eba90858d471",
+        "authoredSha256": "b49d52999f1a64f4d7673082e6ea8f813a36e97f1483c8f8cc756796b6bf3046"
       },
       "back": {
         "grid": "grids/dunestalk-back.png",
@@ -1050,7 +1126,9 @@
         "block": 11,
         "pickedAt": "2026-10-18T10:02:54.626Z",
         "note": "2026-10-18-캠페인-전종-하네스",
-        "authored": "authored/venomfrill-front.png"
+        "authored": "authored/venomfrill-front.png",
+        "previousAuthoredSha256": "a4818282729a7b139ef6c9f33f9166c239e36d40eba7cca5d78d563d0d531631",
+        "authoredSha256": "80af81fa8815e334be48d1e9b517b060225f460adf9f672348936c557cb94e52"
       },
       "back": {
         "grid": "grids/venomfrill-back.png",
@@ -1071,7 +1149,9 @@
         "block": 9,
         "pickedAt": "2026-10-18T10:03:08.659Z",
         "note": "2026-10-18-캠페인-전종-하네스",
-        "authored": "authored/hushdoll-front.png"
+        "authored": "authored/hushdoll-front.png",
+        "previousAuthoredSha256": "f71415b96e6faaa46aa26166321d68c438d9ea72f8e09ba25b4baa72b476d046",
+        "authoredSha256": "422a9445d8105ec87d7692616a48d5868aca1b02a5c2be5578c415ed5cf6666c"
       },
       "back": {
         "grid": "grids/hushdoll-back.png",
@@ -1092,7 +1172,9 @@
         "block": 9,
         "pickedAt": "2026-10-18T10:03:22.298Z",
         "note": "2026-10-18-캠페인-전종-하네스",
-        "authored": "authored/fenstrider-front.png"
+        "authored": "authored/fenstrider-front.png",
+        "previousAuthoredSha256": "3ed9b318e770c3c4967c8bee8d430ee3fc27e6f1bd6a5457082ed8f6291322c3",
+        "authoredSha256": "92a32d85c6c19572d03ed27df187c8e9fdfed7ec26f37f7d6ffa7bca72c09e27"
       },
       "back": {
         "grid": "grids/fenstrider-back.png",
@@ -1113,7 +1195,9 @@
         "block": 10,
         "pickedAt": "2026-10-18T10:07:59.448Z",
         "note": "2026-10-18-캠페인-전종-하네스",
-        "authored": "authored/rimepelt-front.png"
+        "authored": "authored/rimepelt-front.png",
+        "previousAuthoredSha256": "fc46ca3f0bd21b69c82c218e148405ba8dbbcd16656d6bcfe2ce19765eeca7b9",
+        "authoredSha256": "7a0869ca63d96552d8fe643236f8c707e0163d6b6efb57dbae3b3f5f6a1f031c"
       },
       "back": {
         "grid": "grids/rimepelt-back.png",
@@ -1134,7 +1218,9 @@
         "block": 12,
         "pickedAt": "2026-10-18T10:08:15.378Z",
         "note": "2026-10-18-캠페인-전종-하네스",
-        "authored": "authored/trancescythe-front.png"
+        "authored": "authored/trancescythe-front.png",
+        "previousAuthoredSha256": "07424d17fc99396c718aa02c68c86f47387f66b5df7e037ed3a1b7bd171b28ce",
+        "authoredSha256": "86afc962c1b75163870bb1acd77a7f3ae7a3fab8a88f8e7649312de948887583"
       },
       "back": {
         "grid": "grids/trancescythe-back.png",
@@ -1155,7 +1241,9 @@
         "block": 7,
         "pickedAt": "2026-10-18T10:17:37.255Z",
         "note": "2026-10-18-캠페인-전종-하네스",
-        "authored": "authored/miragespike-front.png"
+        "authored": "authored/miragespike-front.png",
+        "previousAuthoredSha256": "1245d607cb71211b1f0e55360ebc9945b4cab9f96f9d9cf4aafd96818d1bb69b",
+        "authoredSha256": "4fd531bcf38af9065b8e5112c2679e0f692ec2839ebe85c369f18bf7cd6e4657"
       },
       "back": {
         "grid": "grids/miragespike-back.png",
@@ -1176,7 +1264,9 @@
         "block": 8,
         "pickedAt": "2026-10-18T10:17:57.676Z",
         "note": "2026-10-18-캠페인-전종-하네스",
-        "authored": "authored/glaciermane-front.png"
+        "authored": "authored/glaciermane-front.png",
+        "previousAuthoredSha256": "95e00240ebab11b105f1d53c69d637de3a3b44d692e6e78f3d1d295400f0d07b",
+        "authoredSha256": "8b4e07b1df1c8bf16be9b2ade9e589a157e42cd22d248b76d2697c849a17cfa8"
       },
       "back": {
         "grid": "grids/glaciermane-back.png",
@@ -1197,7 +1287,9 @@
         "block": 10,
         "pickedAt": "2026-10-18T10:18:15.341Z",
         "note": "2026-10-18-캠페인-전종-하네스",
-        "authored": "authored/marshcrown-front.png"
+        "authored": "authored/marshcrown-front.png",
+        "previousAuthoredSha256": "4c439c3d63cb6f7c9db6a299736a004d2babd59611feb6f85710a527caf64ee0",
+        "authoredSha256": "5d2eeb9bdd870188bb46845aaa251bf87479e4b7617553c94123dfc0c3e481b4"
       },
       "back": {
         "grid": "grids/marshcrown-back.png",
@@ -1218,7 +1310,9 @@
         "block": 9,
         "pickedAt": "2026-10-18T10:32:42.925Z",
         "note": "2026-10-18-캠페인-전종-하네스",
-        "authored": "authored/oraclemantis-front.png"
+        "authored": "authored/oraclemantis-front.png",
+        "previousAuthoredSha256": "11ff428ada4da192e49ae8a575a3ad7adb7b8f1a62318fbff4dc572976e6eca6",
+        "authoredSha256": "51b61f338c9e0d73ebc16b577dc6ab88be97b35a7779e0632830de142c278284"
       },
       "back": {
         "grid": "grids/oraclemantis-back.png",
@@ -1239,7 +1333,9 @@
         "block": 7,
         "pickedAt": "2026-10-18T10:33:00.333Z",
         "note": "2026-10-18-캠페인-전종-하네스",
-        "authored": "authored/veilmaster-front.png"
+        "authored": "authored/veilmaster-front.png",
+        "previousAuthoredSha256": "b01b5f974f5e7f624fb596d79afc4c37057c768d97cee46c9d81340a0d5927b9",
+        "authoredSha256": "1cbc2b5d8ca20cefea93e9dd5789ec1241f866bcf65f81ace3bbc57aac16e3d6"
       },
       "back": {
         "grid": "grids/veilmaster-back.png",
@@ -1260,7 +1356,9 @@
         "block": 7,
         "pickedAt": "2026-10-18T10:38:56.784Z",
         "note": "2026-10-18-캠페인-전종-하네스",
-        "authored": "authored/mistralheron-front.png"
+        "authored": "authored/mistralheron-front.png",
+        "previousAuthoredSha256": "68cc72cb09f7597129d6a27c5fd8e384f4291e4584d96aeee13edcab1e23ebe1",
+        "authoredSha256": "2de73a5fef7ab8f2aca495cda3770c49c951240428d2c91a1eb8d0853aa75114"
       },
       "back": {
         "grid": "grids/mistralheron-back.png",
