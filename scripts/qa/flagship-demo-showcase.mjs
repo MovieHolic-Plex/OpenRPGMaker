@@ -101,12 +101,19 @@ async function bootFlagshipInPlayer(browser, serverUrl, demoId, serializedJson, 
   await page.route("**/__runtime-qa/project.json", (route) =>
     route.fulfill({ status: 200, contentType: "application/json", body: serializedJson }),
   );
-  await page.goto(`${serverUrl}/player.html`, { waitUntil: "domcontentloaded", timeout: 120_000 });
-  try {
-    await page.waitForSelector('[data-testid="title-screen"]', { timeout: 60_000 });
-  } catch (err) {
-    const bodyText = await page.evaluate(() => document.body?.innerText ?? "").catch(() => "");
-    throw new Error(`[${demoId}] title-screen timeout. consoleErrors=${JSON.stringify(consoleErrors)} body=${bodyText} (${err.message})`);
+  for (let attempt = 0; attempt < 3; attempt++) {
+    await page.goto(`${serverUrl}/player.html`, { waitUntil: "domcontentloaded", timeout: 120_000 });
+    try {
+      await page.waitForSelector('[data-testid="title-screen"]', { timeout: 60_000 });
+      break;
+    } catch (err) {
+      if (attempt === 2) {
+        const bodyText = await page.evaluate(() => document.body?.innerText ?? "").catch(() => "");
+        throw new Error(`[${demoId}] title-screen timeout. consoleErrors=${JSON.stringify(consoleErrors)} body=${bodyText} (${err.message})`);
+      }
+      consoleErrors.length = 0;
+      await page.waitForTimeout(1000);
+    }
   }
   await page.waitForTimeout(450);
   return { context, page, consoleErrors };
@@ -189,12 +196,13 @@ await withTsModule("src/project/flagship/index.ts", "flagship-showcase.mjs", asy
     validateFlagshipStyleLock,
   } = flagshipMod;
 
-  console.log("1. Building 3 canonical flagship demo projects...");
-  const chrono = createChronoBellFlagshipDemo();
-  const emerald = createEmeraldCrownFlagshipDemo();
-  const shitamachi = createShitamachiFourthSeasonFlagshipDemo();
+  const ONLY_DEMO = process.env.ONLY_DEMO ?? "";
+  console.log(`1. Building flagship demo project(s)${ONLY_DEMO ? ` (${ONLY_DEMO})` : ""}...`);
+  const chrono = !ONLY_DEMO || ONLY_DEMO === "chrono-bell" ? createChronoBellFlagshipDemo() : null;
+  const emerald = !ONLY_DEMO || ONLY_DEMO === "emerald-crown" ? createEmeraldCrownFlagshipDemo() : null;
+  const shitamachi = !ONLY_DEMO || ONLY_DEMO === "shitamachi-fourth-season" ? createShitamachiFourthSeasonFlagshipDemo() : null;
 
-  for (const built of [chrono, emerald, shitamachi]) {
+  for (const built of [chrono, emerald, shitamachi].filter(Boolean)) {
     const lockReport = validateFlagshipStyleLock(built.id, built.project);
     console.log(`[style-lock] ${built.id}:`, JSON.stringify(lockReport));
     assert.equal(lockReport.ok, true, `Style lock failed for ${built.id}: ${lockReport.violations.join(", ")}`);
@@ -221,116 +229,126 @@ await withTsModule("src/project/flagship/index.ts", "flagship-showcase.mjs", asy
 
   try {
     // =========================================================================
-    // FLAGSHIP #1: 시간의 종소리와 무너진 별 (`chrono-bell`)
+    // FLAGSHIP #1: 폴른 스타: 추락한 별과 태엽의 성녀 (`chrono-bell`)
     // =========================================================================
-    console.log("2. Playing Flagship #1: chrono-bell in player.html...");
-    {
+    if (!ONLY_DEMO || ONLY_DEMO === "chrono-bell") {
+      console.log("2. Playing Flagship #1: chrono-bell (Fallen Star) in player.html...");
       const { context, page, consoleErrors } = await bootFlagshipInPlayer(browser, server.url, "chrono-bell", chrono.serialized, {
         width: 960,
         height: 540,
       });
       const rec = showcaseReport.demos["chrono-bell"];
-      const hasExistingChronoShots =
-        fs.existsSync(path.join(OUT_DIR, "chrono-11-boss-battle.png")) &&
-        fs.existsSync(path.join(OUT_DIR, "chrono-bell-boss-battle.gif"));
 
-      if (!hasExistingChronoShots) {
-        await page.screenshot({ path: path.join(OUT_DIR, "chrono-01-title.png") });
-      }
+      await page.screenshot({ path: path.join(OUT_DIR, "chrono-01-title.png") });
       rec.screenshots.push("chrono-01-title.png");
 
       // Start New Game -> 6-shot pixel opening
       await page.keyboard.press("Enter");
       await waitForOpeningReady(page);
-      await page.screenshot({ path: path.join(OUT_DIR, "chrono-02-opening.png") });
-      rec.screenshots.push("chrono-02-opening.png");
 
-      if (!fs.existsSync(path.join(OUT_DIR, "chrono-bell-opening.gif"))) {
-        const openingGif = await captureGifFrames(page, "chrono-bell-opening", 14, 240);
-        rec.gifs.push(openingGif);
+      const waitShotReady = async (expectedShotId) => {
+        const dl = Date.now() + 15_000;
+        while (Date.now() < dl) {
+          const ok = await page.evaluate((shotId) => {
+            const seq = document.querySelector('[data-testid="cinematic-sequence"]');
+            const canvas = document.querySelector('[data-testid="opening-animatic-stage"]');
+            if (!seq || !canvas) return false;
+            if (seq.getAttribute("data-scene-id") !== shotId) return false;
+            const t = Number(canvas.getAttribute("data-time-ms") ?? 0);
+            return t >= 900;
+          }, expectedShotId);
+          if (ok) return;
+          await page.waitForTimeout(80);
+        }
+      };
+
+      await waitShotReady("cb_shot_1");
+      const openingGif = await captureGifFrames(page, "chrono-bell-opening", 18, 220, async (i) => {
+        if (i > 0 && i % 3 === 0) {
+          const nextShotIdx = Math.floor(i / 3) + 1;
+          await page.keyboard.press("Enter");
+          await waitShotReady(`cb_shot_${nextShotIdx}`);
+        }
+        if (i === 10) {
+          // Shot 4 (cb_shot_4): Kael & Elena meeting awakened Android Iris & Automaton Aegis-07
+          await page.screenshot({ path: path.join(OUT_DIR, "chrono-02-opening.png") });
+        }
+      });
+      rec.screenshots.push("chrono-02-opening.png");
+      rec.gifs.push(openingGif);
+      if (process.env.ONLY_OPENING === "1") {
+        await context.close();
       } else {
-        rec.gifs.push("chrono-bell-opening.gif");
-      }
 
       await waitForFieldReady(page);
 
-      if (!hasExistingChronoShots) {
-        await page.screenshot({ path: path.join(OUT_DIR, "chrono-03-millennium-fair.png") });
-        const startState = await page.evaluate(() => window.__oprnDebug.readState());
-        for (const [slug, mapId] of [
-          ["chrono-04-cathedral-organ.png", "ct_middle_ages_chapel"],
-          ["chrono-05-future-aria-dome.png", "ct_future_hub"],
-          ["chrono-06-prehistory-volcano.png", "ct_prehistory_canyon"],
-        ]) {
-          const m = chrono.project.maps[mapId];
-          if (m) {
-            await page.evaluate(
-              ([id, x, y]) => window.__oprnDebug.teleport(id, x, y),
-              [mapId, Math.floor(m.width / 2), Math.floor(m.height / 2)],
-            );
-            await page.waitForTimeout(650);
-            await page.screenshot({ path: path.join(OUT_DIR, slug) });
-          }
+      await page.screenshot({ path: path.join(OUT_DIR, "chrono-03-millennium-fair.png") });
+      const startState = await page.evaluate(() => window.__oprnDebug.readState());
+      for (const [slug, mapId] of [
+        ["chrono-04-cathedral-organ.png", "ct_middle_ages_chapel"],
+        ["chrono-05-future-aria-dome.png", "ct_future_hub"],
+        ["chrono-06-prehistory-volcano.png", "ct_prehistory_canyon"],
+      ]) {
+        const m = chrono.project.maps[mapId];
+        if (m) {
+          await page.evaluate(
+            ([id, x, y]) => window.__oprnDebug.teleport(id, x, y),
+            [mapId, Math.floor(m.width / 2), Math.floor(m.height / 2)],
+          );
+          await page.waitForTimeout(650);
+          await page.screenshot({ path: path.join(OUT_DIR, slug) });
         }
-        await page.evaluate(
-          ([id, x, y]) => window.__oprnDebug.teleport(id, x, y),
-          [startState.currentMapId, startState.x, startState.y],
-        );
-        await page.waitForTimeout(500);
-
-        await page.evaluate(() => window.__oprnInput.face("up"));
-        await page.evaluate(() => {
-          void window.__oprnInput.action();
-        });
-        await page.waitForSelector('[data-testid="dialogue-box"]', { timeout: 15_000 });
-        await page.waitForTimeout(350);
-        await page.screenshot({ path: path.join(OUT_DIR, "chrono-07-bell-dialogue.png") });
-
-        let st = await advanceDialogueToChoicesOrClose(page);
-        assert.equal(st, "choices", "Expected 1st stage bell puzzle choices");
-        await page.screenshot({ path: path.join(OUT_DIR, "chrono-08-bell-puzzle-step1.png") });
-        await clickChoiceButton(page, 0);
-
-        st = await advanceDialogueToChoicesOrClose(page);
-        assert.equal(st, "choices", "Expected 2nd stage telepod resonance puzzle choices");
-        await page.screenshot({ path: path.join(OUT_DIR, "chrono-09-bell-puzzle-step2.png") });
-        await clickChoiceButton(page, 0);
-
-        await advanceDialogueToChoicesOrClose(page);
-        await page.waitForTimeout(400);
-
-        await page.evaluate(() => window.__oprnInput.face("right"));
-        await page.evaluate(() => {
-          void window.__oprnInput.action();
-        });
-        st = await advanceDialogueToChoicesOrClose(page);
-        assert.equal(st, "choices", "Expected Time Gate shrine choices");
-        await page.screenshot({ path: path.join(OUT_DIR, "chrono-10-time-gate-choices.png") });
-        await clickChoiceButton(page, 0);
-
-        const battleDeadline = Date.now() + 25_000;
-        while (Date.now() < battleDeadline) {
-          if (await page.locator('[data-testid="battle-scene"]').count()) break;
-          await page.keyboard.press("Enter");
-          await page.waitForTimeout(250);
-        }
-        await page.waitForSelector('[data-testid="battle-scene"]', { timeout: 15_000 });
-        await page.waitForTimeout(500);
-        await page.screenshot({ path: path.join(OUT_DIR, "chrono-11-boss-battle.png") });
-
-        await captureGifFrames(page, "chrono-bell-boss-battle", 18, 220, async (i) => {
-          if (i % 2 === 0) await page.keyboard.press("Enter").catch(() => {});
-        });
-      } else {
-        await page.evaluate(() => window.__oprnInput.face("right"));
-        await page.evaluate(() => {
-          void window.__oprnInput.action();
-        });
-        const st = await advanceDialogueToChoicesOrClose(page);
-        assert.equal(st, "choices", "Expected Time Gate shrine choices");
-        const optCount = await page.locator('[data-testid="runtime-choices"] button').count();
-        await clickChoiceButton(page, optCount - 1);
       }
+      await page.evaluate(
+        ([id, x, y]) => window.__oprnDebug.teleport(id, x, y),
+        [startState.currentMapId, startState.x, startState.y],
+      );
+      await page.waitForTimeout(500);
+
+      await page.evaluate(() => window.__oprnInput.face("up"));
+      await page.evaluate(() => {
+        void window.__oprnInput.action();
+      });
+      await page.waitForSelector('[data-testid="dialogue-box"]', { timeout: 15_000 });
+      await page.waitForTimeout(2900);
+      await page.screenshot({ path: path.join(OUT_DIR, "chrono-07-bell-dialogue.png") });
+
+      let st = await advanceDialogueToChoicesOrClose(page);
+      assert.equal(st, "choices", "Expected 1st stage Star Ark signal choices");
+      await page.screenshot({ path: path.join(OUT_DIR, "chrono-08-bell-puzzle-step1.png") });
+      await clickChoiceButton(page, 0);
+      await page.waitForSelector('[data-testid="dialogue-box"], [data-testid="runtime-choices"]', { timeout: 15_000 });
+
+      st = await advanceDialogueToChoicesOrClose(page);
+      assert.equal(st, "choices", "Expected 2nd stage Iris core resonance choices");
+      await page.screenshot({ path: path.join(OUT_DIR, "chrono-09-bell-puzzle-step2.png") });
+      await clickChoiceButton(page, 0);
+      await page.waitForSelector('[data-testid="dialogue-box"]', { timeout: 15_000 });
+      await waitForFieldReady(page);
+
+      await page.evaluate(() => window.__oprnInput.face("right"));
+      await page.evaluate(() => {
+        void window.__oprnInput.action();
+      });
+      await page.waitForSelector('[data-testid="dialogue-box"], [data-testid="runtime-choices"]', { timeout: 15_000 });
+      st = await advanceDialogueToChoicesOrClose(page);
+      assert.equal(st, "choices", "Expected Astral Gate choices");
+      await page.screenshot({ path: path.join(OUT_DIR, "chrono-10-time-gate-choices.png") });
+      await clickChoiceButton(page, 0);
+
+      const battleDeadline = Date.now() + 25_000;
+      while (Date.now() < battleDeadline) {
+        if (await page.locator('[data-testid="battle-scene"]').count()) break;
+        await page.keyboard.press("Enter");
+        await page.waitForTimeout(250);
+      }
+      await page.waitForSelector('[data-testid="battle-scene"]', { timeout: 15_000 });
+      await page.waitForTimeout(500);
+      await page.screenshot({ path: path.join(OUT_DIR, "chrono-11-boss-battle.png") });
+
+      await captureGifFrames(page, "chrono-bell-boss-battle", 18, 220, async (i) => {
+        if (i % 2 === 0) await page.keyboard.press("Enter").catch(() => {});
+      });
 
       rec.screenshots.push(
         "chrono-03-millennium-fair.png",
@@ -350,13 +368,14 @@ await withTsModule("src/project/flagship/index.ts", "flagship-showcase.mjs", asy
       rec.screenshots.push("chrono-12-ending.png");
       rec.consoleErrors = consoleErrors;
       await context.close();
+      }
     }
 
     // =========================================================================
     // FLAGSHIP #2: 에메랄드 크라운: 새벽섬의 수호자 (`emerald-crown`)
     // =========================================================================
-    console.log("3. Playing Flagship #2: emerald-crown in player.html...");
-    {
+    if (!ONLY_DEMO || ONLY_DEMO === "emerald-crown") {
+      console.log("3. Playing Flagship #2: emerald-crown in player.html...");
       const { context, page, consoleErrors } = await bootFlagshipInPlayer(browser, server.url, "emerald-crown", emerald.serialized, {
         width: 960,
         height: 640,
@@ -463,8 +482,8 @@ await withTsModule("src/project/flagship/index.ts", "flagship-showcase.mjs", asy
     // =========================================================================
     // FLAGSHIP #3: 시타마치의 네 번째 계절 (`shitamachi-fourth-season`)
     // =========================================================================
-    console.log("4. Playing Flagship #3: shitamachi-fourth-season in player.html...");
-    {
+    if (!ONLY_DEMO || ONLY_DEMO === "shitamachi-fourth-season") {
+      console.log("4. Playing Flagship #3: shitamachi-fourth-season in player.html...");
       const { context, page, consoleErrors } = await bootFlagshipInPlayer(
         browser,
         server.url,

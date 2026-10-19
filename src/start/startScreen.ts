@@ -368,8 +368,8 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     const demos = [
       {
         id: "chrono-bell",
-        title: "시간의 종소리와 무너진 별",
-        meta: "정통 시간여행 JRPG · 7개 맵 · 6컷 오프닝 · 96px 보스전",
+        title: "폴른 스타: 추락한 별과 태엽의 성녀",
+        meta: "중세 마법 판타지 JRPG · 안드로이드 이리스의 귀환 여정 제1막 · 6컷 오프닝",
         thumb: "/assets/generated/welcome/slide-04.png",
       },
       {
