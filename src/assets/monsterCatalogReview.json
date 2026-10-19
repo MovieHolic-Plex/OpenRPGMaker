@@ -186,14 +186,14 @@
     },
     "generated-enemy-wolf-01": {
       "url": "/assets/generated/pixel-enemy-portraits/wolf-01.png",
-      "sha256": "c64b3b6dfc69045d17a6871716304d93e280a19812652e3c942a4568b68bc768",
-      "observation": "넓은 은회색 가슴털과 각진 긴 주둥이, 굵은 발목과 네 발이 있는 큰 늑대다.",
+      "sha256": "bc96653814624bf6704068d5a18f43944a3af7a5c10c254b5e71e834903ad3ef",
+      "observation": "은회색 큰 늑대가 등의 검은 안장 무늬와 목에서 무릎까지 앞으로 부푼 은빛 가슴털, 각진 굵은 긴 주둥이, 짧은 귀와 푸른 눈, 굵은 발목을 가졌다.",
       "index": 16,
-      "inspectionMethod": "Fresh native pixel anatomy and all nine poses. Locally reviewed artwork; user acceptance is not implied.",
+      "inspectionMethod": "Direct pixel redraw (scripts/content/monsters/redraw_wolf_01.py): fresh anatomy, nine distinct poses with a skill-cast cell (0,2). Locally reviewed artwork; user acceptance is not implied.",
       "nativeSheet": "assets/generated/pixel-enemies/wolf-01.png",
-      "nativeSheetSha256": "c6dd3d9779d8e5bbe51661bb41b7f8e8db647d74db981979f843d926fd8a0225",
+      "nativeSheetSha256": "df7934115250d45497558e10d0506189f82b27a6a77e432d2091fd685b1c57c1",
       "cell": 64,
-      "reviewEvidence": "verify-shots/monster-redraw-all/SUMMARY.md",
+      "reviewEvidence": "~/claude-viz/monster-mantis-fix-1.html",
       "sourceWorkingTree": true
     },
     "generated-enemy-harpy-01": {
@@ -282,14 +282,14 @@
     },
     "generated-enemy-cat-01": {
       "url": "/assets/generated/pixel-enemy-portraits/cat-01.png",
-      "sha256": "d63bfefd569ffc5dc49a92aabd0ca5ec3f5de2f008e168e5d21a0d7d767eed6a",
-      "observation": "황갈색 털과 짧고 둥근 얼굴, 큰 눈과 길게 휘어진 꼬리를 가진 고양이다.",
+      "sha256": "3ab8572c518bd5e738fe38599adab8f841054d44eda11b878733b033f1d271de",
+      "observation": "황갈색 털에 등에서 내려오는 갈색 줄무늬, 흰 가슴과 주둥이, 작고 둥근 머리의 큰 초록 눈(세로 동공)과 큰 삼각 귀, 흰 수염, S 자로 휘어 끝이 선 긴 꼬리의 가는 고양이다.",
       "index": 24,
-      "inspectionMethod": "Fresh native pixel anatomy and all nine poses. Locally reviewed artwork; user acceptance is not implied.",
+      "inspectionMethod": "Direct pixel redraw (scripts/content/monsters/redraw_cat_01.py): fresh anatomy, nine distinct poses with a skill-cast cell (0,2). Locally reviewed artwork; user acceptance is not implied.",
       "nativeSheet": "assets/generated/pixel-enemies/cat-01.png",
-      "nativeSheetSha256": "96267c4d775adafbcc383e1aea53e98680c5d665c5dc48ff1c53bb679b67e08d",
+      "nativeSheetSha256": "2c30f27cfa326a50f9913aac3aa6b76de8b70355a463ba6f72e82b169b7df264",
       "cell": 64,
-      "reviewEvidence": "verify-shots/monster-redraw-all/SUMMARY.md",
+      "reviewEvidence": "~/claude-viz/monster-mantis-fix-1.html",
       "sourceWorkingTree": true
     },
     "generated-enemy-kappa-01": {
@@ -437,14 +437,14 @@
     },
     "generated-enemy-fire-pup": {
       "url": "/assets/generated/pixel-enemy-portraits/fire-pup.png",
-      "sha256": "ab50603e1ab07a2a20c41b57eb7a9cf911dac140baa049f402096af9864bb3ad",
-      "observation": "주황색 두꺼운 털과 밝은 목덜미, 불꽃 꼬리와 큰 귀를 가진 불강아지다.",
+      "sha256": "8f7f59e0eee1e971f0d0d6d007d3fa86c6b861928e9488552d895f2cd33c2507",
+      "observation": "머리가 크고 다리가 짧은 주황 털 강아지가 크림색 목덜미와 짧은 주둥이, 끝이 붉게 탄 큰 귀, 둥근 갈색 눈, 엉덩이 위로 타오르는 세 갈래 불꽃 꼬리를 가졌다.",
       "index": 37,
-      "inspectionMethod": "Fresh native pixel anatomy and all nine poses. Locally reviewed artwork; user acceptance is not implied.",
+      "inspectionMethod": "Direct pixel redraw (scripts/content/monsters/redraw_fire_pup.py): fresh anatomy, nine distinct poses with a skill-cast cell (0,2). Locally reviewed artwork; user acceptance is not implied.",
       "nativeSheet": "assets/generated/pixel-enemies/fire-pup.png",
-      "nativeSheetSha256": "d17b2f754e0a6ba9866f47cb0af3c5a226e45d046004575ce9a31bfd1f700731",
+      "nativeSheetSha256": "5b33922fe98dbf8932c1a072ed2b85d2567176e6e57b457ff027c76d83a10905",
       "cell": 64,
-      "reviewEvidence": "verify-shots/monster-redraw-all/SUMMARY.md",
+      "reviewEvidence": "~/claude-viz/monster-mantis-fix-1.html",
       "sourceWorkingTree": true
     },
     "generated-enemy-sparkit-fire": {
@@ -838,14 +838,14 @@
     },
     "generated-enemy-cat-shadow": {
       "url": "/assets/generated/pixel-enemy-portraits/cat-shadow.png",
-      "sha256": "0467ed012e3f40845ff702879055b72f92eb3b29900cca9f49cd3da018f9b83a",
-      "observation": "짙은 보랏빛 몸을 낮게 웅크리고 긴 꼬리를 말아 올린 금빛 눈의 그림자 고양이다.",
+      "sha256": "0a5ca9c89d9fb59b74fb19ecbab4ba94e6e5316085667d325d3dee510ae42ca1",
+      "observation": "짙은 보랏빛 털에 더 짙은 줄무늬, 금빛 눈의 그림자 고양이가 몸을 땅에 붙이듯 낮게 웅크리고, 높이 말아 올린 꼬리 끝에서 그림자 연기가 피어오른다.",
       "index": 71,
-      "inspectionMethod": "Fresh native pixel anatomy and all nine poses. Locally reviewed artwork; user acceptance is not implied.",
+      "inspectionMethod": "Direct pixel redraw (scripts/content/monsters/redraw_cat_shadow.py): fresh anatomy, nine distinct poses with a skill-cast cell (0,2). Locally reviewed artwork; user acceptance is not implied.",
       "nativeSheet": "assets/generated/pixel-enemies/cat-shadow.png",
-      "nativeSheetSha256": "7509288bdb7a05307a6148315f8a2e24b7ab4eb6ce9b90e9db987edf26d65599",
+      "nativeSheetSha256": "e9c0eef3b6a8239dbce72cf17e6aad0b1daa42b91f52162c081cde56eee2238b",
       "cell": 64,
-      "reviewEvidence": "verify-shots/monster-redraw-all/SUMMARY.md",
+      "reviewEvidence": "~/claude-viz/monster-mantis-fix-1.html",
       "sourceWorkingTree": true
     },
     "generated-enemy-goat-mountain": {
