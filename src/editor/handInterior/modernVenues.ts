@@ -294,7 +294,7 @@ const VENUES: readonly Venue[] = [
       { "parking-deck": ["mci-stone-lobby", "mci-wall-office"], "parking-lobby": ["mci-tile-small", "mci-wall-tile"], "parking-utility": ["mci-tile-concourse", "mci-wall-office"] },
     ] }, rooms: [
     { kind: "parking-lobby", w: 14, h: 6, floor: "mci-stone-lobby", wall: "mci-wall-lobby", items: [
-      o("elev-floor-led", 1, 0), o("elev-hall-lantern", 3, 0), o("mci-notice-board", 6, 0), o("mci-route-map", 9, 0),
+      o("elev-floor-led", 2, 0), o("elev-hall-lantern", 5, 0), o("mci-notice-board", 7, 0), o("mci-route-map", 9, 0),
       o("mci-elevator", 0, 2), o("mci-elevator", 3, 2), o("subway-vending-machine", 12, 2),
       o("park-pay-machine", 8, 3), o("park-pay-machine", 9, 3), o("mci-wait-bench", 1, 5), o("mci-plant-tall", 13, 5),
     ] },
@@ -304,15 +304,17 @@ const VENUES: readonly Venue[] = [
       o("roof-water-tank", 8, 3), o("mci-pallet", 1, 5), o("mci-pallet", 2, 5), o("mci-pallet", 11, 5),
     ] },
     { kind: "parking-deck", w: 32, h: 16, floor: "mci-concrete", wall: "mci-wall-metal", items: [
-      // 북쪽 주차 구획(위 방 문 앞 x=10·25 는 비운다)
+      // 북쪽 일반 승용차 주차 구획(위 방 문 앞 x=10·25 는 비운다)
       o("park-stall-lines", 0, 2), o("park-car-front-white", 2, 2), o("park-stall-lines", 5, 2), o("park-car-front-red", 6, 2),
       o("park-stall-lines", 12, 2), o("park-car-front-navy", 14, 2), o("park-stall-lines", 18, 2), o("park-car-front-red", 20, 2),
-      o("park-stall-lines", 27, 2), o("park-car-front-white", 29, 2),
-      // 중앙 주행 차로 & 버스·구급차·승용차 환승 베이(거리 차량 키트 재사용)
-      o("park-bus-e", 1, 7), o("park-pillar", 10, 7), o("park-sedan-white-e", 12, 7), o("park-pillar", 18, 7), o("hosp-ambulance-e", 20, 7),
-      o("jumbo-park-box-truck-e", 4, 10), o("park-sedan-red-w", 26, 10),
-      // 남쪽 주차 구획(남쪽 출구 x=15..16 앞은 비운다)
-      o("park-stall-lines", 0, 13), o("park-car-back-black", 2, 13), o("park-stall-lines", 6, 13), o("park-car-back-white", 8, 13),
+      // 북동쪽 구급차·특수차량 전용 구획
+      o("hosp-ambulance-w", 26, 3),
+      // 중앙 주행 차로(y=6..10) — 기둥만 대칭 배치하고 주행 차선을 100% 개방하며, 서쪽·동쪽 끝 전용 하역장에만 차량 정차
+      o("park-sedan-white-e", 0, 7), o("park-pillar", 9, 7), o("park-pillar", 22, 7),
+      // 동쪽 대형 화물 하역 베이(택배 탑차 5×3) + 남서쪽 전용 대형 버스 베이(시내버스 8×2, 구획선 겹침 없음)
+      o("jumbo-park-box-truck-e", 26, 8),
+      o("park-bus-e", 1, 13), o("park-sedan-red-w", 10, 13),
+      // 남동쪽 승용차 주차 구획(남쪽 출구 x=15..16 앞은 비운다)
       o("park-stall-lines", 18, 13), o("park-car-back-navy", 20, 13), o("park-stall-lines", 25, 13), o("park-car-back-black", 27, 13),
     ] },
   ] },
