@@ -65,8 +65,16 @@ export function furnishRooms(base: HandInteriorInput, rooms: readonly LayoutRoom
   const first = buildHandInteriorLayers(input, tileset, S);
   let errors = first.issues.filter((i) => i.severity === "error").length, unreached = first.unreachedFloor.length;
   const perRoom: FurnishResult["perRoom"] = {};
-  const isFlat = (it: InteriorTemplateItem) => it.t === "l" || (it.t === "o" && S.objects[it.id]?.kind === "flat");
-  const cellsOf = (it: InteriorTemplateItem) => (isFlat(it) ? flatCells(it, S) : footprint(it, S)).map((c) => `${isFlat(it) ? "f" : "s"}:${c}`);
+  const cellsOf = (it: InteriorTemplateItem): string[] => {
+    const isFlat = it.t === "l" || (it.t === "o" && S.objects[it.id]?.kind === "flat");
+    if (isFlat) return flatCells(it, S).map((c) => `f:${c}`);
+    const o = it.t === "o" ? S.objects[it.id] : undefined;
+    if (o?.kind === "hang") {
+      const w = Math.max(1, o.w);
+      return Array.from({ length: w * 2 }, (_, i) => `h:${it.x + (i % w)},${it.y + Math.floor(i / w)}`);
+    }
+    return footprint(it, S).map((c) => `s:${c}`);
+  };
   for (const room of rooms) {
     const t0 = room.template ? byId.get(room.template) : undefined;
     if (!t0) continue;
