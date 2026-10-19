@@ -2,424 +2,424 @@
  "version": 1,
  "picks": {
   "gustchick": {
-   "run": "derive-20261018-174515",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "5fbad3b3c08ddd95",
-   "at": "2026-10-18T17:46:14",
-   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+   "sha": "297a671f62bf375c",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "zaptoe": {
-   "run": "derive-20261018-174516",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "ebb60b1c8924c201",
-   "at": "2026-10-18T17:46:15",
-   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+   "sha": "e9ff536aada61751",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "sparkit": {
-   "run": "derive-20261019-145249",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "eb7b284aaa7f9125",
-   "at": "2026-10-19T14:52:49",
-   "note": ""
+   "sha": "62bc35856cd888fa",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "aqualing": {
-   "run": "derive-20261019-145249",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "b11979757463a346",
-   "at": "2026-10-19T14:52:49",
-   "note": ""
+   "sha": "b7d6f1bf4132b102",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "leafling": {
-   "run": "derive-20261019-145248",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "3ff337e43dbdee09",
-   "at": "2026-10-19T14:52:49",
-   "note": ""
+   "sha": "da6c80ba786cabe6",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "pipbug": {
-   "run": "derive-20261018-174515",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "5f855b9079fb1685",
-   "at": "2026-10-18T17:46:14",
-   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+   "sha": "aae8af5056561f3e",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "wickworm": {
-   "run": "derive-20261018-174515",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "65bc40dfe6b97088",
-   "at": "2026-10-18T17:46:14",
-   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+   "sha": "0d55d06ec3a0e6f3",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "rootpig": {
-   "run": "derive-20261018-174515",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "82186dc46146e194",
-   "at": "2026-10-18T17:46:14",
-   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+   "sha": "22a8c5ec639b6dd0",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "frondhare": {
-   "run": "derive-20261019-145249",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "34dcebb64c1fff54",
-   "at": "2026-10-19T14:52:50",
-   "note": ""
+   "sha": "8e98ae1a441f39a5",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "kilnclaw": {
-   "run": "derive-20261018-174515",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "30342b9035633926",
-   "at": "2026-10-18T17:46:14",
-   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+   "sha": "fafdc1f9fb8bf1fe",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "brookraft": {
-   "run": "derive-20261019-145250",
+   "run": "derive-20261019-r13",
    "candidate": 1,
    "sha": "af225fcc4dfee4f2",
-   "at": "2026-10-19T14:52:50",
-   "note": ""
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "coralpin": {
-   "run": "derive-20261018-174516",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "a043da138f56d620",
-   "at": "2026-10-18T17:46:15",
-   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+   "sha": "0d152a84147534f7",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "curlfin": {
-   "run": "derive-20261018-174516",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "f3797ec62e965b53",
-   "at": "2026-10-18T17:46:15",
-   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+   "sha": "25409e73ea72c01d",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "pebblekid": {
-   "run": "derive-20261019-145250",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "e44db297d0950b13",
-   "at": "2026-10-19T14:52:50",
-   "note": ""
+   "sha": "d6eca64aa758868e",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "gritnose": {
-   "run": "derive-20261018-174516",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "ecca26cf2a679760",
-   "at": "2026-10-18T17:46:15",
-   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+   "sha": "da0b49d033233fbe",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "podback": {
-   "run": "derive-20261018-184045",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "14e4abbf47546bed",
-   "at": "2026-10-18T18:40:54",
-   "note": ""
+   "sha": "6b976c18a01e9654",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "ribbonwing": {
-   "run": "derive-20261018-175810",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "3d5b4d29e3340448",
-   "at": "2026-10-18T17:58:10",
-   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+   "sha": "68a92a96c7700e6d",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "coilcrest": {
-   "run": "derive-20261018-174517",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "fd158a6fd6d8d7f1",
-   "at": "2026-10-18T17:46:16",
-   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+   "sha": "bd0da0197541e799",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "craghoof": {
-   "run": "derive-20261018-175811",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "543d1ea3096c170e",
-   "at": "2026-10-18T17:58:11",
-   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+   "sha": "17b256a9197535df",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "lanternwing": {
-   "run": "derive-20261018-174517",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "e84cbd6c5c16297e",
-   "at": "2026-10-18T17:46:16",
-   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+   "sha": "5bcdfa05355ffc0d",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "brambleboar": {
-   "run": "derive-20261018-184045",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "13836f10a3cbf3e3",
-   "at": "2026-10-18T18:40:54",
-   "note": ""
+   "sha": "1670f4d9b79a77d3",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "tunnelpaw": {
-   "run": "derive-20261018-174517",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "78ff7677883bcdc5",
-   "at": "2026-10-18T17:46:16",
-   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+   "sha": "50a6456306d05055",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "reefguard": {
-   "run": "derive-20261018-184046",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "31b8771195befa69",
-   "at": "2026-10-18T18:40:55",
-   "note": ""
+   "sha": "7313f88c51b63bad",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "grovewarden": {
-   "run": "derive-20261018-184045",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "f6cd3ae610f84bd8",
-   "at": "2026-10-18T18:40:54",
-   "note": ""
+   "sha": "126d6481a0cccc22",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "furnscale": {
-   "run": "derive-20261018-174518",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "1147195c049e309b",
-   "at": "2026-10-18T17:46:16",
-   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+   "sha": "0d9f71018c47e5b4",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "tidekeeper": {
-   "run": "derive-20261018-184045",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "cb85a2ec9ac69928",
-   "at": "2026-10-18T18:40:54",
-   "note": ""
+   "sha": "05b0e979ec5e1e76",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "orchardant": {
-   "run": "derive-20261018-184045",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "bfecf9d79f48abec",
-   "at": "2026-10-18T18:40:54",
-   "note": ""
+   "sha": "8275b877d45c98b7",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "galecrest": {
-   "run": "derive-20261018-174519",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "1b3cd621f7974a6d",
-   "at": "2026-10-18T17:46:17",
-   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+   "sha": "ce4d1bab5bb5eff0",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "stormskink": {
-   "run": "derive-20261018-184046",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "288b83c6e591a13d",
-   "at": "2026-10-18T18:40:55",
-   "note": ""
+   "sha": "e720d1f5193848c9",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "ridgehorn": {
-   "run": "derive-20261018-174519",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "d25bc33ee962fe80",
-   "at": "2026-10-18T17:46:17",
-   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+   "sha": "c721ebd20731ca24",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "beaconmoth": {
-   "run": "derive-20261018-174519",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "282475e272abe7f5",
-   "at": "2026-10-18T17:46:17",
-   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+   "sha": "e88f0e067ff7f537",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "briartusk": {
-   "run": "derive-20261018-184046",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "57d2e98cff98d538",
-   "at": "2026-10-18T18:40:55",
-   "note": ""
+   "sha": "eab91275dea6b682",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "faultdigger": {
-   "run": "derive-20261018-174519",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "3201882ed0ccb881",
-   "at": "2026-10-18T17:46:18",
-   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+   "sha": "555c089ea6a209e1",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "atollclamp": {
-   "run": "derive-20261018-184046",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "1f13a785b92280ca",
-   "at": "2026-10-18T18:40:55",
-   "note": ""
+   "sha": "70d63625821e9229",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "abyssail": {
-   "run": "derive-20261018-174520",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "f97544aaa0ada372",
-   "at": "2026-10-18T17:46:18",
-   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+   "sha": "5b38f84cd5199f83",
+   "at": "2026-10-19T21:30:50",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "brinewyrm": {
-   "run": "derive-20261018-175810",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "65b45458989f895a",
-   "at": "2026-10-18T17:58:10",
-   "note": "2026-10-18 전투 그림에서 derive(다섯 면 단일 원본)"
+   "sha": "eefc5ab2ec6f3916",
+   "at": "2026-10-19T21:30:49",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "sandnip": {
-   "run": "derive-20261018-194241",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "379e6af61832bdf5",
-   "at": "2026-10-18T19:42:56",
-   "note": ""
+   "sha": "6dbf9c4c72731ebf",
+   "at": "2026-10-19T21:30:50",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "dunestalk": {
-   "run": "derive-20261018-194241",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "58fcb96fdc1ecfc0",
-   "at": "2026-10-18T19:42:57",
-   "note": ""
+   "sha": "1332a6f888038b05",
+   "at": "2026-10-19T21:30:50",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "miragespike": {
-   "run": "derive-20261018-194241",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "1690ae88ab388256",
-   "at": "2026-10-18T19:42:57",
-   "note": ""
+   "sha": "929d12a5cd6d7262",
+   "at": "2026-10-19T21:30:50",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "flurrykit": {
-   "run": "derive-20261019-145250",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "53eaf1a9b6a03536",
-   "at": "2026-10-19T14:52:50",
-   "note": ""
+   "sha": "65fd34c43a84baa6",
+   "at": "2026-10-19T21:30:50",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "rimepelt": {
-   "run": "derive-20261018-194241",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "1a25026dbf76cabc",
-   "at": "2026-10-18T19:42:57",
-   "note": ""
+   "sha": "10919ef2ff57ecc0",
+   "at": "2026-10-19T21:30:50",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "glaciermane": {
-   "run": "derive-20261018-194241",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "8ef66c5baaf6f4ce",
-   "at": "2026-10-18T19:42:57",
-   "note": ""
+   "sha": "c07abb87c42b5ed4",
+   "at": "2026-10-19T21:30:50",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "miretail": {
-   "run": "derive-20261018-194242",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "04e948c1b0c3c173",
-   "at": "2026-10-18T19:42:57",
-   "note": ""
+   "sha": "87446f67a2c733d6",
+   "at": "2026-10-19T21:30:50",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "venomfrill": {
-   "run": "derive-20261018-194242",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "e6dc70d1f5226c37",
-   "at": "2026-10-18T19:42:57",
-   "note": ""
+   "sha": "2c5e2c887e096bad",
+   "at": "2026-10-19T21:30:50",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "marshcrown": {
-   "run": "derive-20261018-194242",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "43d4acd083b3c9a5",
-   "at": "2026-10-18T19:42:58",
-   "note": ""
+   "sha": "292298ad0724b708",
+   "at": "2026-10-19T21:30:50",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "dozemite": {
-   "run": "derive-20261018-194242",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "f5ba686288a5ac71",
-   "at": "2026-10-18T19:42:58",
-   "note": ""
+   "sha": "b70a50489854742d",
+   "at": "2026-10-19T21:30:50",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "trancescythe": {
-   "run": "derive-20261018-194242",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "33144994abae0cc6",
-   "at": "2026-10-18T19:42:58",
-   "note": ""
+   "sha": "fd9a88cee9e579dd",
+   "at": "2026-10-19T21:30:50",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "oraclemantis": {
-   "run": "derive-20261018-194242",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "c6de81e8f1fbba12",
-   "at": "2026-10-18T19:42:58",
-   "note": ""
+   "sha": "71e11fd4ebf5803b",
+   "at": "2026-10-19T21:30:50",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "threadimp": {
-   "run": "derive-20261018-194242",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "803cc38ee4a48489",
-   "at": "2026-10-18T19:42:58",
-   "note": ""
+   "sha": "4c9a9a7a3a698dd3",
+   "at": "2026-10-19T21:30:50",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "hushdoll": {
-   "run": "derive-20261018-194243",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "1dad448f45ba0bad",
-   "at": "2026-10-18T19:42:58",
-   "note": ""
+   "sha": "174282d3c69a4351",
+   "at": "2026-10-19T21:30:50",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "veilmaster": {
-   "run": "derive-20261018-194243",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "e4a0acf1121d0df5",
-   "at": "2026-10-18T19:42:58",
-   "note": ""
+   "sha": "62919b313988df27",
+   "at": "2026-10-19T21:30:50",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "reedpeep": {
-   "run": "derive-20261018-194243",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "b00dcf194cb6cbd4",
-   "at": "2026-10-18T19:42:59",
-   "note": ""
+   "sha": "ee5a371026140c3c",
+   "at": "2026-10-19T21:30:50",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "fenstrider": {
-   "run": "derive-20261018-194243",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "5d4fb98a29fa40b7",
-   "at": "2026-10-18T19:42:59",
-   "note": ""
+   "sha": "4175079407a865ef",
+   "at": "2026-10-19T21:30:50",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "thundercairn": {
-   "run": "derive-20261018-194243",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "143adb0a2cc8bfc3",
-   "at": "2026-10-18T19:42:59",
-   "note": ""
+   "sha": "0b791b788d94f5d8",
+   "at": "2026-10-19T21:30:50",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "winterquill": {
-   "run": "derive-20261018-194243",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "760decc06a254f43",
-   "at": "2026-10-18T19:42:59",
-   "note": ""
+   "sha": "0c27a61a03008baa",
+   "at": "2026-10-19T21:30:50",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "solmane": {
-   "run": "derive-20261018-194244",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "a49202006b5b6401",
-   "at": "2026-10-18T19:42:59",
-   "note": ""
+   "sha": "a18f8c9680be970f",
+   "at": "2026-10-19T21:30:50",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "lunavane": {
-   "run": "derive-20261018-194244",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "b03d862192619465",
-   "at": "2026-10-18T19:42:59",
-   "note": ""
+   "sha": "25526f6e58fa933c",
+   "at": "2026-10-19T21:30:50",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "relicarab": {
-   "run": "derive-20261018-194244",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "a90d3c6fcdaa2749",
-   "at": "2026-10-18T19:43:00",
-   "note": ""
+   "sha": "b92c73a3958f5ceb",
+   "at": "2026-10-19T21:30:50",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "astralhart": {
-   "run": "derive-20261018-194244",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "07eff5bd9887bebf",
-   "at": "2026-10-18T19:43:00",
-   "note": ""
+   "sha": "6980ee5eda001fb0",
+   "at": "2026-10-19T21:30:50",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "mistralheron": {
-   "run": "derive-20261018-194408",
+   "run": "derive-20261019-r13",
    "candidate": 1,
-   "sha": "8b61a66da8cdab5c",
-   "at": "2026-10-18T19:44:08",
-   "note": ""
+   "sha": "e280f13611a8d676",
+   "at": "2026-10-19T21:30:50",
+   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   }
  }
 }
