@@ -108,11 +108,11 @@ export function furnishRooms(base: HandInteriorInput, rooms: readonly LayoutRoom
     if (!t0) continue;
     const w = room.x1 - room.x0 + 1, h = room.y1 - room.y0 + 1;
     const t = fittingTemplate(tilesetId, t0, w, h);
-    const nr = notchRect(room);
+    const nrs = (room.notches ?? []).map((n) => notchRect(room, n));
     const inside = (it: InteriorTemplateItem) => {
       const pts = it.t === "l" ? it.cells!.map(([x, y]) => [x, y] as const) : [[it.x, it.y] as const];
       if (!pts.every(([x, y]) => x >= room.x0 && x <= room.x1 && y >= room.y0 && y <= room.y1)) return false;
-      return !nr || !footprint(it, S).some((c) => { const [cx, cy] = c.split(",").map(Number) as [number, number]; return cx >= nr.x0 - 1 && cx <= nr.x1 + 1 && cy >= nr.y0 - 1 && cy <= nr.y1; });
+      return !nrs.length || !footprint(it, S).some((c) => { const [cx, cy] = c.split(",").map(Number) as [number, number]; return nrs.some((nr) => cx >= nr.x0 - 1 && cx <= nr.x1 + 1 && cy >= nr.y0 - 1 && cy <= nr.y1); });
     };
     let placed = 0, dropped = 0;
     let taken = new Set<string>();

@@ -11,19 +11,17 @@
 import type { HandInteriorInput, HandInteriorObject, HandInteriorSpec, HandInteriorZone } from "./builder";
 import { HandInteriorError } from "./builder";
 
-/** 방 한 귀퉁이를 막힌 덩이(구조 코어·벽장·돌출벽)로 도려 낸다 - 방 자체가 ㄱ자·ㄴ자가 된다. 북쪽 귀퉁이면 덩이 아래 벽면 두 줄이 같이 선다. */
+/** 방 한 귀퉁이를 막힌 덩이(구조 코어·벽장·돌출벽)로 도려 낸다 - 방 자체가 ㄱ자·ㄴ자(두 귀퉁이면 ㅜ·ㅗ자 현관 홈)가 된다. 북쪽 귀퉁이면 덩이 아래 벽면 두 줄이 같이 선다. */
 export interface HandInteriorNotch { readonly corner: "ne" | "nw" | "se" | "sw"; readonly w: number; readonly h: number }
 export interface HandInteriorRoom {
   readonly id: string;
   readonly x0: number; readonly y0: number; readonly x1: number; readonly y1: number;
   readonly floor?: string; readonly wall?: string;
-  readonly notch?: HandInteriorNotch;
+  readonly notches?: readonly HandInteriorNotch[];
 }
 
 /** 도려 낸 칸 + 그 아래 벽면 줄(북쪽 귀퉁이)의 절대 좌표 사각형 - 가구·문이 닿으면 안 되는 자리. */
-export function notchRect(r: HandInteriorRoom): { x0: number; y0: number; x1: number; y1: number } | undefined {
-  const n = r.notch;
-  if (!n) return undefined;
+export function notchRect(r: HandInteriorRoom, n: HandInteriorNotch): { x0: number; y0: number; x1: number; y1: number } {
   const north = n.corner[0] === "n", west = n.corner[1] === "w";
   const x0 = west ? r.x0 : r.x1 - n.w + 1, x1 = west ? r.x0 + n.w - 1 : r.x1;
   return north ? { x0, x1, y0: r.y0, y1: r.y0 + n.h + 1 } : { x0, x1, y0: r.y1 - n.h + 1, y1: r.y1 };
@@ -48,7 +46,7 @@ export interface ComposedRooms {
   readonly doors: HandInteriorObject[];
   readonly exit: { readonly x: number; readonly y: number; readonly width: number };
   /** 이은 문마다 실제 틈 자리(조수가 가구를 문 앞에 놓지 않도록 돌려준다). */
-  readonly openings: { readonly a: string; readonly b: string; readonly x: number; readonly y: number; readonly kind: "h" | "v"; readonly open?: boolean }[];
+  readonly openings: { readonly a: string; readonly b: string; readonly x: number; readonly y: number; readonly kind: "h" | "v"; readonly open?: boolean; readonly pilaster?: boolean }[];
 }
 
 const fail = (message: string, code = "rooms-invalid"): never => { throw new HandInteriorError(message, code); };
@@ -74,10 +72,11 @@ export function composeHandInteriorRooms(
   const g: string[][] = Array.from({ length: H }, () => new Array<string>(W).fill("#"));
   for (const r of rooms) for (let y = r.y0; y <= r.y1; y++) for (let x = r.x0; x <= r.x1; x++) g[y]![x] = ".";
   for (const r of rooms) {
-    if (!r.notch) continue;
-    if (r.notch.w < 1 || r.notch.h < 1 || r.notch.w > r.x1 - r.x0 - 3 || r.notch.h > r.y1 - r.y0 - 4) fail(`방 ${r.id}: notch ${r.notch.w}×${r.notch.h} 가 방보다 크다`);
-    const nr = notchRect(r)!, solidY1 = r.notch.corner[0] === "n" ? r.y0 + r.notch.h - 1 : nr.y1;
-    for (let y = nr.y0; y <= solidY1; y++) for (let x = nr.x0; x <= nr.x1; x++) g[y]![x] = "#";
+    for (const n of r.notches ?? []) {
+      if (n.w < 1 || n.h < 1 || n.w > r.x1 - r.x0 - 3 || n.h > r.y1 - r.y0 - 4) fail(`방 ${r.id}: notch ${n.w}×${n.h} 가 방보다 크다`);
+      const nr = notchRect(r, n), solidY1 = n.corner[0] === "n" ? r.y0 + n.h - 1 : nr.y1;
+      for (let y = nr.y0; y <= solidY1; y++) for (let x = nr.x0; x <= nr.x1; x++) g[y]![x] = "#";
+    }
   }
 
   const doorOf = (kind: "door" | "sidedoor", want: string | undefined): string | undefined => {
@@ -92,7 +91,7 @@ export function composeHandInteriorRooms(
   };
 
   const doors: HandInteriorObject[] = [];
-  const openings: { a: string; b: string; x: number; y: number; kind: "h" | "v"; open?: boolean }[] = [];
+  const openings: { a: string; b: string; x: number; y: number; kind: "h" | "v"; open?: boolean; pilaster?: boolean }[] = [];
   const seamZones: HandInteriorZone[] = [];
   for (const c of connect) {
     const A = byId.get(c.a) ?? fail(`connect: 방 "${c.a}" 이 없다`), B = byId.get(c.b) ?? fail(`connect: 방 "${c.b}" 이 없다`);
@@ -120,10 +119,13 @@ export function composeHandInteriorRooms(
       if (c.open) {
         if (oy0 > oy1) fail(`connect ${c.a}–${c.b}: 옆으로 겹친 줄이 없다`);
         for (let y = oy0; y <= oy1; y++) g[y]![left.x1 + 1] = ".";
+        // 기둥 날개벽 - 겹침이 9줄 이상이면 칸막이를 통째로 걷지 않고 북쪽 끝 1줄(아래 벽면 두 줄과 3줄 날개)과 남쪽 끝 2줄을 남긴다. 두 방이 한 ㄱ·ㄷ·ㅗ자 공간으로 읽힌다.
+        const pilaster = oy1 - oy0 + 1 >= 9;
+        if (pilaster) { g[oy0]![left.x1 + 1] = "#"; g[oy1]![left.x1 + 1] = "#"; g[oy1 - 1]![left.x1 + 1] = "#"; }
         if (left.floor || left.wall) {
           seamZones.push({ x0: left.x1 + 1, y0: oy0 - 1, x1: left.x1 + 1, y1: oy1, ...(left.floor ? { floor: left.floor } : {}), ...(left.wall ? { wall: left.wall } : {}) });
         }
-        openings.push({ a: c.a, b: c.b, x: left.x1 + 1, y: oy1, kind: "v", open: true });
+        openings.push({ a: c.a, b: c.b, x: left.x1 + 1, y: pilaster ? oy1 - 2 : oy1, kind: "v", open: true, ...(pilaster ? { pilaster: true } : {}) });
         continue;
       }
       // 통로 줄 p: 두 방 모두 벽면 아래(맨 위 두 줄 제외)이고, 틈 세 줄(p-2..p)이 겹친 구간 안.

@@ -1,12 +1,14 @@
 // 일상 21공간 통행 감사 - 2026-10-19 사용자 「집같은 작은 공간은 통행 안되는 곳도 많은거같음」.
 // 공간마다 조수 도구 그대로(build_hand_interior_room) 짓고, 정문 칸에서 런타임 이동 판정(canMove, 방향 비트 포함)으로 BFS 한다.
 //   실패 조건: 갇힌 칸(걸을 수 있는데 정문에서 못 가는 칸) · 걸음 칸이 하나도 닿지 않는 방 · 막힌 칸막이 문(문 칸 또는 양쪽 앞 칸) · 닿지 못하는 계단.
+//   벽면·바닥 대비(R20): modern_city 방마다 벽면 두 줄과 바닥의 평균 Lab 색차 ΔE 가 MIN_WALL_FLOOR_DELTA_E(20) 미만이면 실패 - 연녹 벽 + 연녹 바닥처럼 구분이 안 되는 방.
 //   통학 전동차는 modern_city 견본이 아니라 jp_city 손 도트 견본(program "train-car")을 그대로 쓴다 - 그 맵도 같은 감사로 본다.
 //   npx --no-install tsx --import ./tiledata/jp-city/refs/css-stub.mjs scripts/content/modern-city-int/qa/audit-daily-walk.mts [--seeds 1,2] [--json out.json] [prog ...]
 import { writeFileSync } from "node:fs";
 import { BUILD_HAND_INTERIOR_ROOM_TOOL } from "@/editor/tools/handInteriorTools";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { canMove, isPassable } from "@/project/collision";
+import { MIN_WALL_FLOOR_DELTA_E, wallFloorDelta } from "@/editor/handInterior/wallContrast";
 import { DAILY_VENUE_PROGRAMS } from "@/editor/handInterior/dailyVenues";
 import { JP_CITY_ID } from "@/project/defaults/jpCity";
 import roomSpec from "@/assets/modernCityRoomSpec.json";
@@ -15,7 +17,7 @@ import jpRoomSpec from "@/assets/jpInteriorSpec.json";
 const spec: Record<string, Record<string, { w: number; h: number }>> = { modern_city: roomSpec.objects, [JP_CITY_ID]: jpRoomSpec.objects };
 
 interface Pt { x: number; y: number }
-interface RoomRect { id: string; x0: number; y0: number; x1: number; y1: number }
+interface RoomRect { id: string; x0: number; y0: number; x1: number; y1: number; notches: { corner: string; w: number; h: number }[] }
 interface Opening extends Pt { a: string; b: string; kind: "h" | "v"; open: boolean }
 interface Travel extends Pt { label: string }
 
@@ -46,7 +48,7 @@ for (const program of programs) for (const seed of seeds) {
   if (!m || !r.data || typeof r.data !== "object") { failed++; console.log(`FAIL ${mapId} 지어지지 않았다 ${JSON.stringify(r).slice(0, 300)}`); continue; }
   const data = rec(r.data);
   const layout = data.layout && typeof data.layout === "object" ? rec(data.layout) : {};
-  const rooms: RoomRect[] = list(layout.rooms).map((v) => { const o = rec(v); return { id: str(o.id), x0: num(o.x0), y0: num(o.y0), x1: num(o.x1), y1: num(o.y1) }; });
+  const rooms: RoomRect[] = list(layout.rooms).map((v) => { const o = rec(v); return { id: str(o.id), x0: num(o.x0), y0: num(o.y0), x1: num(o.x1), y1: num(o.y1), notches: list(o.notches).map((n) => { const q = rec(n); return { corner: str(q.corner), w: num(q.w), h: num(q.h) }; }) }; });
   const openings: Opening[] = list(data.openings).map((v) => { const o = rec(v); return { a: str(o.a), b: str(o.b), x: num(o.x), y: num(o.y), kind: o.kind === "v" ? "v" : "h", open: o.open === true }; });
   const travel: Travel[] = list(data.travel).map((v) => { const o = rec(v); return { label: str(o.label), x: num(o.x), y: num(o.y) }; });
   const entrance: Pt[] = list(data.entrance).map((v) => { const o = rec(v); return { x: num(o.x), y: num(o.y) }; });
@@ -81,7 +83,9 @@ for (const program of programs) for (const seed of seeds) {
     const trapped: string[] = [], ghost: string[] = []; let hit = 0, open = 0;
     // 벽면 두 줄(y0, y0+1)은 벽 그림이라 빼고 바닥 줄만 본다.
     for (let y = room.y0; y <= room.y1; y++) for (let x = room.x0; x <= room.x1; x++) {
-      if (!pass(x, y)) { if (y >= room.y0 + 2 && bare(x, y)) ghost.push(`(${x},${y})`); continue; }
+      // 도려 낸 귀퉁이 덩이(rooms.ts notch)는 일부러 막은 칸이다.
+      const solid = room.notches.some((n) => (n.corner[1] === "w" ? x < room.x0 + n.w : x > room.x1 - n.w) && (n.corner[0] === "n" ? y < room.y0 + n.h + 2 : y > room.y1 - n.h));
+      if (!pass(x, y)) { if (!solid && y >= room.y0 + 2 && bare(x, y)) ghost.push(`(${x},${y})`); continue; }
       open++;
       if (reached(x, y)) hit++; else trapped.push(`(${x},${y})`);
     }
@@ -90,6 +94,12 @@ for (const program of programs) for (const seed of seeds) {
     if (ghost.length) problems.push(`방 ${room.id}: 빈 바닥인데 막힌 칸 ${ghost.length} ${ghost.slice(0, 8).join(" ")}`);
     const floorRows = (room.x1 - room.x0 + 1) * Math.max(1, room.y1 - room.y0 - 1);
     tight.push(`${room.id} ${Math.round((hit / floorRows) * 100)}%`);
+  }
+  if (tileset === "modern_city") {
+    for (const room of list(layout.rooms).map((v) => rec(v))) {
+      const d = wallFloorDelta(typeof room.floor === "string" ? room.floor : undefined, typeof room.wall === "string" ? room.wall : undefined);
+      if (d !== undefined && d < MIN_WALL_FLOOR_DELTA_E) problems.push(`방 ${str(room.id)}: 벽면 ${String(room.wall)} 과 바닥 ${String(room.floor)} 이 구분 안 된다 (ΔE ${d.toFixed(1)} < ${MIN_WALL_FLOOR_DELTA_E})`);
+    }
   }
   for (const op of openings) {
     // 문 칸 + 양쪽으로 곧게 두 칸(문 앞 접근 칸)이 모두 정문에서 닿아야 한다 - 문 바로 앞에 가구가 붙으면 실패.

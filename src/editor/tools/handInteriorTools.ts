@@ -849,7 +849,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
         ...(composed ? { plan: composed.plan, openings: composed.openings } : {}),
         ...(picked && composed ? {
           layout: { variant: picked.variant, variants: picked.variants, score: picked.c.score, notes: picked.c.notes, picture: layoutAscii(picked.c, composed.plan),
-            rooms: picked.c.rooms.map((r, i) => ({ letter: String.fromCharCode(65 + (i % 26)), id: r.id, kind: r.kind, x0: r.x0, y0: r.y0, x1: r.x1, y1: r.y1, template: furnished?.[r.id]?.template ?? r.template, furniture: furnished?.[r.id] })) },
+            rooms: picked.c.rooms.map((r, i) => ({ letter: String.fromCharCode(65 + (i % 26)), id: r.id, kind: r.kind, x0: r.x0, y0: r.y0, x1: r.x1, y1: r.y1, floor: r.floor, wall: r.wall, notches: r.notches, template: furnished?.[r.id]?.template ?? r.template, furniture: furnished?.[r.id] })) },
           // 이 집을 손보려면 이 값을 그대로 rooms·connect·exit·objects… 로 넘기고 replace:true(가구를 빼거나 더해서)
           rebuild: { rooms: picked.c.rooms.map(({ kind: _k, template: _t, ...r }) => r), connect: picked.c.connect, exit: picked.c.exit,
             objects: (input.objects ?? []).filter((o) => !composed.doors.some((d) => d.id === o.id && d.x === o.x && d.y === o.y)), tables: input.tables, goods: input.goods, lines: input.lines, daises: input.daises },
