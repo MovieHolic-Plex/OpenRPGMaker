@@ -10,6 +10,7 @@ import { gunzipSync } from "node:zlib";
 import { isSha256, STORE_LIMITS, validateManifest, type StoreCatalogPage, type StoreItemDetail, type StorePackManifest } from "../../src/assetStore/format";
 import { decodePackBundle, type DecodedPackBundle } from "../../src/assetStore/pack";
 import { sniffMime } from "../../src/assetStore/sniff";
+import { normalizeGameConcept, type GameConcept } from "../../src/concepts/format";
 
 export const DEFAULT_STORE_URL = "https://store.openrpgmaker.com";
 
@@ -177,7 +178,7 @@ export class AssetStoreClient {
       { auth: false, headers: { accept: "application/vnd.oprn.store-pack, application/octet-stream" }, signal: AbortSignal.timeout(180_000) },
     ).catch(() => null);
     if (bundleRes && bundleRes.ok) {
-      const maxBundleBytes = STORE_LIMITS.manifestBytes + STORE_LIMITS.versionBytes + 65_536;
+      const maxBundleBytes = STORE_LIMITS.manifestBytes + STORE_LIMITS.packBytes + 65_536;
       const rawBundle = await readCapped(bundleRes, maxBundleBytes, (done, total) => {
         progress({ slug, phase: "install", done, total: total || done });
       });
