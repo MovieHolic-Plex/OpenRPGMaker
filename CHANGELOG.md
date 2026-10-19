@@ -5,6 +5,22 @@
 
 <!-- releases -->
 
+## 0.280.0 — 2026-10-20
+
+### 기능
+
+- **monster** — hand-drawn eye-stalk candidates for the crab line, user pick pending (눈 규칙 판본 5) (#3030) (`29db9a7`)
+- **store** — restore official-pack publishers behind env-only store addresses (#3029) (`503f6e6`)
+
+### 수정
+
+- **monster** — 코브라·골렘 2종·바위 유인원·꼬마 악마·코볼트·오거·식충 식물·마법사·허수아비 전투 도트 다시 그리기 + (0,2) 스킬 칸 (13차) (#3033) (`d7d27a6`)
+- **monster** — table-driven eye repair for 49 species — erase old eyes, clip to body, round eyes per line (눈 규칙 판본 5) (#3028) (`ccd181e`)
+
+### 문서
+
+- **store** — document where the store pieces live, contract sync, exclusion and publishers (#3031) (`d3169b0`)
+
 ## 0.279.0 — 2026-10-20
 
 ### 기능
