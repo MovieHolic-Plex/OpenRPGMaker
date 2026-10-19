@@ -199,7 +199,7 @@ function paletteRenderInputs(): readonly unknown[] | null {
   if (!map || !tileset) return null;
   return [
     // 맵 헤더는 맵 도크가 있는지에 따라 모양이 다르다(sidebarMapHeader.ts).
-    document.querySelector('[data-testid="left-map-root"]') !== null,
+    document.querySelector('[data-testid="left-map-root"], [data-testid="map-sidebar-section"]') !== null,
     map.id,
     map.name,
     tileset,

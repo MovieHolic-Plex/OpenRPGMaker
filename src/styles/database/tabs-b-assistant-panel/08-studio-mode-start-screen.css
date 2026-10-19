@@ -52,6 +52,7 @@ body.ai-studio-open .ai-chat-float-host {
   z-index: var(--z-flyout);
 }
 
+body.ai-studio-open .ai-chat-sidebar-content,
 body.ai-studio-open .left-panel,
 body.ai-studio-open .right-panel,
 body.ai-studio-open .resizer-left,

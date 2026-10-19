@@ -987,6 +987,9 @@ export function revealMapInDock(mapId: MapId): void {
   mapFilterQuery = '';
   mapFilterFacet = 'all';
   expandPathToMap(store.getCurrent().mapTree, mapId);
+  if (typeof window !== 'undefined' && document.querySelector('[data-testid="map-sidebar-section"]')) {
+    window.dispatchEvent(new Event('oprn:ai-sidebar-maps'));
+  }
   rerenderMapList();
   focusMapRow(mapId);
 }

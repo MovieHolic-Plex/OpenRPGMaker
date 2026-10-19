@@ -1,10 +1,14 @@
 import { el } from "@/util/dom";
+import { AI_STUDIO_CHANGE_EVENT, readStudioMode, requestAiStudioToggle } from "@/editor/aiStudioMode";
+import { closeAssetStore, isAssetStoreOpen } from "@/editor/assetStore/storeWorkspace";
+import { closeWorkshop, isWorkshopOpen } from "@/editor/workshop/workshopWorkspace";
 import { deckIcon, type DeckIconName } from "./aiDeckIcons";
 import { installDelayedTooltips } from "@/editor/delayedTooltipRollout";
 import { editorState } from "@/editor/editorState";
 import { selectSidebarLayer } from "@/editor/panels/leftLayerSwitcher";
 import { ruleAuditViolationCountCached, RULE_AUDIT_UPDATED_EVENT } from "@/editor/panels/ruleAuditPanel";
 import { closeSidebarSurface } from "@/editor/panels/sidebarSurface";
+import { renderTilePalette } from "@/editor/panels/tilePalette";
 import { closeSidebarInspectionMenus, openSidebarInspection } from "@/editor/panels/tileToolbarMenus";
 import { store } from "@/project/store";
 
@@ -68,9 +72,14 @@ export function createAiSidebarWorkspace(tools: HTMLElement, _host: HTMLElement 
   };
   const badge = el("span", { class: "left-activity-badge", attrs: { "aria-hidden": "true" }, dataset: { testid: "sidebar-inspect-badge" } });
   const inspectButton = item("alert", "검사", "sidebar-inspect", () => {
+    closeAuxiliaryOverlays();
     const state = editorState.get();
     if (state.layer === "event" || state.tool === "relief") {
       selectSidebarLayer("lower");
+      const paletteRoot = tools.dataset.testid === "left-palette-root"
+        ? tools
+        : tools.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
+      if (paletteRoot) renderTilePalette(paletteRoot);
     }
     show("tools");
     openSidebarInspection("ruleAudit");
@@ -95,6 +104,11 @@ export function createAiSidebarWorkspace(tools: HTMLElement, _host: HTMLElement 
     class: "ai-chat-sidebar has-activity-bar", dataset: { testid: "editor-ai-sidebar" },
     children: [bar, content],
   });
+  function closeAuxiliaryOverlays(): void {
+    if (isWorkshopOpen()) closeWorkshop();
+    if (isAssetStoreOpen()) closeAssetStore();
+    if (readStudioMode()) requestAiStudioToggle();
+  }
   function syncBadge(): void {
     const count = ruleAuditViolationCountCached();
     badge.textContent = count > 0 ? String(count > 99 ? "99+" : count) : "";
@@ -130,6 +144,9 @@ export function createAiSidebarWorkspace(tools: HTMLElement, _host: HTMLElement 
     surfaces[pane].show();
   }
   function show(next: Pane): void {
+    if (next !== "workshop" && isWorkshopOpen()) closeWorkshop();
+    if (next !== "store" && isAssetStoreOpen()) closeAssetStore();
+    if (readStudioMode()) requestAiStudioToggle();
     const wasCollapsed = collapsed;
     pane = next;
     collapsed = false;
@@ -139,12 +156,24 @@ export function createAiSidebarWorkspace(tools: HTMLElement, _host: HTMLElement 
     if (wasCollapsed) onResize();
   }
   function activate(next: Pane): void {
-    if (next === "tools" && editorState.get().tool === "relief") {
+    if (next === "tools" && (editorState.get().tool === "relief" || editorState.get().layer === "event")) {
       selectSidebarLayer("lower");
       show("tools");
       return;
     }
     if (!collapsed && pane === next) {
+      if (next === "workshop" && isWorkshopOpen()) {
+        closeWorkshop();
+        return;
+      }
+      if (next === "store" && isAssetStoreOpen()) {
+        closeAssetStore();
+        return;
+      }
+      if (readStudioMode()) {
+        requestAiStudioToggle();
+        return;
+      }
       collapsed = true;
       sync();
       persist();
@@ -154,7 +183,16 @@ export function createAiSidebarWorkspace(tools: HTMLElement, _host: HTMLElement 
     show(next);
   }
   const showTools = (): void => show("tools");
+  const showMaps = (): void => show("maps");
+  const onStudioChange = (event: Event): void => {
+    if (event instanceof CustomEvent && event.detail?.open) {
+      closeSidebarSurface();
+      closeSidebarInspectionMenus();
+    }
+  };
   window.addEventListener("oprn:ai-sidebar-tools", showTools);
+  window.addEventListener("oprn:ai-sidebar-maps", showMaps);
+  window.addEventListener(AI_STUDIO_CHANGE_EVENT, onStudioChange);
   window.addEventListener(RULE_AUDIT_UPDATED_EVENT, syncBadge);
   sync();
   // 배지는 규칙 감사가 끝났다고 알릴 때(RULE_AUDIT_UPDATED_EVENT) 채운다. 올리면서 직접 세지 않는다 —
@@ -165,6 +203,8 @@ export function createAiSidebarWorkspace(tools: HTMLElement, _host: HTMLElement 
   return { root, isCollapsed: () => collapsed, dispose: () => {
     for (const surface of Object.values(surfaces)) surface.dispose();
     window.removeEventListener("oprn:ai-sidebar-tools", showTools);
+    window.removeEventListener("oprn:ai-sidebar-maps", showMaps);
+    window.removeEventListener(AI_STUDIO_CHANGE_EVENT, onStudioChange);
     window.removeEventListener(RULE_AUDIT_UPDATED_EVENT, syncBadge);
   } };
 }
