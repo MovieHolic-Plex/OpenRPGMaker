@@ -56,6 +56,14 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=10240
         run: npm run typecheck:app
 
+      # typecheck:app 은 electron/ 을 보지 않는다. #2856 이 assetStoreClient.ts 의 import 를 지운 채 머지돼
+      # 컨셉 피드가 늘 실패했다(2026-10-20). 스토어 중계·편집기 스토어 모듈·그 테스트와 import 만 본다 — electron/main 전체는
+      # main.ts·protocols.ts·serve/runtime.ts 에 묵은 오류가 남아 있어 아직 게이트로 못 쓴다.
+      - name: 타입체크 (Electron 스토어 중계)
+        env:
+          NODE_OPTIONS: --max-old-space-size=8192
+        run: npm run typecheck:electron-store
+
       # typecheck:app 은 src 만 본다. test/ · scripts/ · evals/ 의 import 계약은 아무도 안 보는데
       # (`npx tsc --noEmit` 전체는 이 저장소에서 4GB 힙으로 OOM 이라 게이트로 못 쓴다),
       # 실제로 #882/#883 이 머지되면서 e2e 스펙 2개가 배럴에서 빠진 심볼을 다시 가져왔다.

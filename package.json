@@ -63,6 +63,7 @@
     "preview": "vite preview --configLoader runner",
     "typecheck": "tsc --noEmit",
     "typecheck:app": "tsc --noEmit -p tsconfig.app.json",
+    "typecheck:electron-store": "tsc -p tsconfig.electron-main.json",
     "typecheck:export-qa": "tsc -p scripts/tsconfig.json",
     "ontology:query": "node scripts/ontology-query.mjs",
     "ontology:classify": "node scripts/ontology-query.mjs classify",

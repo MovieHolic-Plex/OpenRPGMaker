@@ -23,7 +23,10 @@ export interface StorePackage {
   manifest: StorePackManifest; blobs: Record<string, Uint8Array>; slug: string; version: number;
   author: string; storeUrl: string; itemUrl: string;
 }
-export interface UploadInput { manifest: StorePackManifest; blobs: Record<string, Uint8Array>; targetSlug?: string }
+/** 올릴 매니페스트는 렌더러가 보낸 값이라 upload 가 validateManifest 로 다시 확인한다. */
+export interface UploadInput { manifest: unknown; blobs: Record<string, Uint8Array>; targetSlug?: string }
+/** 서버 store_reports 사유(OpenRPGMaker-store src/items.ts REPORT_REASONS 와 같은 다섯). */
+export type StoreReportReason = "copyright" | "inappropriate" | "broken" | "spam" | "other";
 export type Progress = (event: { slug: string; phase: "install" | "upload"; done: number; total: number }) => void;
 
 export class StoreError extends Error {
@@ -35,6 +38,8 @@ interface TokenVault { load(): string | null; save(token: string | null): void; 
 export class AssetStoreClient {
   private token: string | null;
   private storeUrl: string;
+  /** 이 주소의 서버가 `/bundle` 을 모르면(404·405·501) 이번 실행 동안 다시 묻지 않는다. 주소를 바꾸면 다시 묻는다. */
+  private bundleUnsupported = false;
 
   constructor(private readonly root: string, private readonly vault: TokenVault, envUrl?: string) {
     mkdirSync(join(root, "blobs"), { recursive: true });
@@ -49,7 +54,7 @@ export class AssetStoreClient {
 
   setUrl(url: string): void {
     const next = normalizeUrl(url);
-    if (next !== this.storeUrl) { this.storeUrl = next; this.setToken(null); }
+    if (next !== this.storeUrl) { this.storeUrl = next; this.bundleUnsupported = false; this.setToken(null); }
     this.writeConfig({ url: next });
   }
 
@@ -136,11 +141,15 @@ export class AssetStoreClient {
 
   private blobPath(sha: string): string { return join(this.root, "blobs", sha.slice(0, 2), sha); }
 
-  /** 캐시에 있으면 그것을, 없으면 받아서 해시·형식을 확인하고 캐시에 둔다. */
+  /** 캐시에 있으면 해시를 다시 확인해 그것을(깨졌으면 지우고 다시 받는다), 없으면 받아서 해시·형식을 확인하고 캐시에 둔다. */
   async blob(sha: string): Promise<Uint8Array> {
     if (!isSha256(sha)) throw new StoreError("파일 주소가 올바르지 않습니다.");
     const path = this.blobPath(sha);
-    if (existsSync(path)) return new Uint8Array(readFileSync(path));
+    if (existsSync(path)) {
+      const cached = new Uint8Array(readFileSync(path));
+      if (createHash("sha256").update(cached).digest("hex") === sha) return cached;
+      rmSync(path, { force: true });
+    }
     const response = await this.request(`/api/v1/blobs/${sha}`, { auth: false });
     if (!response.ok) throw new StoreError(`파일을 받지 못했습니다(${response.status}).`, response.status);
     const bytes = await readCapped(response, STORE_LIMITS.blobBytes);
@@ -173,26 +182,29 @@ export class AssetStoreClient {
     // 판본 번호는 캐시 파일 이름에 들어간다 — 서버가 준 값이라도 양의 정수만 믿는다.
     if (!Number.isSafeInteger(target) || target < 1) throw new StoreError("스토어가 알려 준 판본 번호가 올바르지 않습니다.");
     let manifest: StorePackManifest | null = null;
-    const bundleRes = await this.request(
+    const bundleRes = this.bundleUnsupported ? null : await this.request(
       `/api/v1/items/${encodeURIComponent(slug)}/versions/${target}/bundle`,
       { auth: false, headers: { accept: "application/vnd.oprn.store-pack, application/octet-stream" }, signal: AbortSignal.timeout(180_000) },
     ).catch(() => null);
+    if (bundleRes && [404, 405, 501].includes(bundleRes.status)) this.bundleUnsupported = true;
     if (bundleRes && bundleRes.ok) {
-      const maxBundleBytes = STORE_LIMITS.manifestBytes + STORE_LIMITS.packBytes + 65_536;
+      // OPK1 = 8B 머리 + 매니페스트 + blob 전부. 압축이면 풀린 크기에도 같은 상한을 둔다(gzip 폭탄).
+      const maxBundleBytes = 8 + STORE_LIMITS.manifestBytes + STORE_LIMITS.packBytes;
       const rawBundle = await readCapped(bundleRes, maxBundleBytes, (done, total) => {
         progress({ slug, phase: "install", done, total: total || done });
       });
-      const inflated = rawBundle.byteLength >= 2 && rawBundle[0] === 0x1f && rawBundle[1] === 0x8b
-        ? new Uint8Array(gunzipSync(rawBundle))
-        : rawBundle;
       let decoded: DecodedPackBundle;
       try {
+        const inflated = rawBundle.byteLength >= 2 && rawBundle[0] === 0x1f && rawBundle[1] === 0x8b
+          ? new Uint8Array(gunzipSync(rawBundle, { maxOutputLength: maxBundleBytes }))
+          : rawBundle;
         decoded = decodePackBundle(
           inflated,
           (bytes) => createHash("sha256").update(bytes).digest("hex"),
-          (bytes) => new Uint8Array(gunzipSync(bytes)),
+          (bytes) => new Uint8Array(gunzipSync(bytes, { maxOutputLength: STORE_LIMITS.manifestBytes })),
         );
       } catch (error) {
+        if (error instanceof RangeError) throw new StoreError("스토어 응답이 너무 큽니다.");
         throw new StoreError(error instanceof Error ? error.message : "팩 번들이 손상되었습니다.");
       }
       manifest = decoded.manifest;
@@ -293,20 +305,26 @@ export class AssetStoreClient {
     if (!this.token) throw new StoreError("올리려면 먼저 로그인해 주세요.", 401);
     const checked = validateManifest(input.manifest);
     if (!checked.ok) throw new StoreError("팩 형식이 올바르지 않습니다.", 0, checked.errors);
-    const label = input.targetSlug ?? input.manifest.title;
-    const shas = input.manifest.blobs.map((blob) => blob.sha256);
+    const manifest = checked.value;
+    const label = input.targetSlug ?? manifest.title;
+    const shas = manifest.blobs.map((blob) => blob.sha256);
     const { missing } = await this.json<{ missing: string[] }>(`/api/v1/blobs/check`, { method: "POST", json: { sha256s: shas } });
     let done = shas.length - missing.length;
     progress({ slug: label, phase: "upload", done, total: shas.length });
     for (const sha of missing) {
       const bytes = input.blobs[sha];
       if (!bytes || createHash("sha256").update(bytes).digest("hex") !== sha) throw new StoreError("올릴 파일이 매니페스트와 맞지 않습니다.");
-      await this.json(`/api/v1/blobs`, { method: "POST", body: bytes, headers: { "x-sha256": sha, "content-type": "application/octet-stream" }, signal: AbortSignal.timeout(300_000) });
+      await this.json(`/api/v1/blobs`, { method: "POST", body: new Uint8Array(bytes), headers: { "x-sha256": sha, "content-type": "application/octet-stream" }, signal: AbortSignal.timeout(300_000) });
       done += 1;
       progress({ slug: label, phase: "upload", done, total: shas.length });
     }
     const path = input.targetSlug ? `/api/v1/items/${encodeURIComponent(input.targetSlug)}/versions` : `/api/v1/items`;
-    return this.json(path, { method: "POST", json: { manifest: input.manifest } });
+    return this.json(path, { method: "POST", json: { manifest } });
+  }
+
+  /** 상품 신고. 로그인했으면 계정으로(자동 숨김에 셈), 아니면 익명으로 운영자 확인 목록에만 오른다. */
+  report(slug: string, reason: StoreReportReason, detail: string): Promise<{ hidden: boolean }> {
+    return this.json<{ hidden: boolean }>(`/api/v1/items/${encodeURIComponent(slug)}/reports`, { method: "POST", json: { reason, detail } });
   }
 }
 

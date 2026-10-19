@@ -1,6 +1,8 @@
-import { mkdtempSync, rmSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { gzipSync } from "node:zlib";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AssetStoreClient, isPrivateHost, sameOriginUrl, StoreError } from "../electron/main/assetStoreClient";
 
@@ -99,5 +101,36 @@ describe("asset store client concept feed", () => {
       : json({ slug: "big-pack", latestVersion: 1 }));
     await expect(store.install("big-pack", () => undefined)).rejects.toThrow("스토어 응답이 너무 큽니다.");
     expect(requests.some((request) => request.url.endsWith("/manifest"))).toBe(false);
+  });
+
+  it("refuses a gzip bundle that inflates past the limit", async () => {
+    const bomb = gzipSync(Buffer.alloc(190 * 1024 * 1024));
+    const store = client((url) => url.endsWith("/bundle") ? new Response(bomb, { status: 200 }) : json({ slug: "bomb", latestVersion: 1 }));
+    await expect(store.install("bomb", () => undefined)).rejects.toThrow("스토어 응답이 너무 큽니다.");
+  });
+
+  it("asks a store without /bundle only once per address", async () => {
+    const store = client((url) => url.endsWith("/bundle") ? json({ message: "없는 주소입니다." }, 404)
+      : url.endsWith("/manifest") ? json({ message: "점검 중" }, 503) : json({ slug: "old-server", latestVersion: 1 }));
+    await expect(store.install("old-server", () => undefined)).rejects.toBeInstanceOf(StoreError);
+    await expect(store.install("old-server", () => undefined)).rejects.toBeInstanceOf(StoreError);
+    expect(requests.filter((request) => request.url.endsWith("/bundle"))).toHaveLength(1);
+  });
+
+  it("re-downloads a cached blob whose bytes no longer match its sha256", async () => {
+    const png = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 1, 2, 3]);
+    const sha = createHash("sha256").update(png).digest("hex");
+    const store = client(() => new Response(png, { status: 200 }));
+    const shard = join(roots.at(-1)!, "blobs", sha.slice(0, 2));
+    mkdirSync(shard, { recursive: true });
+    writeFileSync(join(shard, sha), "tampered");
+    expect(await store.blob(sha)).toEqual(png);
+    expect(requests.map((request) => request.url)).toEqual([`https://store.example.com/api/v1/blobs/${sha}`]);
+  });
+
+  it("reports an item through the store API", async () => {
+    const store = client(() => json({ hidden: false }));
+    await expect(store.report("some-item", "copyright", "원본 출처가 다릅니다")).resolves.toEqual({ hidden: false });
+    expect(requests).toEqual([{ url: "https://store.example.com/api/v1/items/some-item/reports", method: "POST" }]);
   });
 });
