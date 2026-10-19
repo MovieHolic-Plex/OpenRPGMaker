@@ -40,85 +40,176 @@ def car_shadow(c, x0, x1, y):
 
 
 # ═══════════════════════════ 탈것 ═══════════════════════════
-@kit('inaka-keitora-white', '흰 경트럭(軽トラ) - 캡 지붕 윗면·짐칸 윗면(양 난간·채소 상자·파란 방수포)·노란 번호판(3×2)', 3, 2, 'vehicle',
-     solid=rows(3, [0, 1]), tags=['inaka', '경트럭', '軽トラ', '탈것'],
+@kit('inaka-keitora-white', '흰 경트럭(軽トラ) - 캡 지붕 윗면·짐칸 윗면(양 난간·채소 상자·파란 방수포)·노란 경차 번호판(4×2)', 4, 2, 'vehicle',
+     solid=rows(4, [0, 1]), tags=['inaka', '경트럭', '軽トラ', '탈것'],
      rules='농가 마당·논두렁 옆 자갈길에 오른쪽(동)을 보고 세운다.', role='prop')
 def keitora(c, base):
-    car_shadow(c, 3, 46, 29)
-    # 짐칸: 먼 난간 윗면 → 짐칸 바닥 → 가까운 난간 윗면 → 옆판
-    c.R(3, 8, 27, 2, K('shiro', 2)); c.HL(3, 9, 27, K('shiro', 1))
-    c.R(4, 10, 25, 7, K('tekko', -2))
-    for x in range(6, 29, 5): c.VL(x, 10, 7, K('tekko', -1))   # 바닥 골
-    rect_3d(c, 5, 9, 8, 7, 3, 'aged_cedar', top_t=3, front_t=2)   # 채소 상자(윗면에 양배추)
-    c.R(6, 10, 6, 3, K('midori', 1)); c.P(7, 10, K('midori', 2)); c.P(10, 11, K('midori', 2))
-    rect_3d(c, 13, 9, 8, 7, 3, 'aged_cedar', top_t=3, front_t=2)
-    c.R(14, 10, 6, 3, K('daidai', 1)); c.P(15, 10, K('daidai', 2)); c.P(18, 11, K('daidai', 2))
-    c.R(21, 10, 8, 6, K('sora', 0)); c.HL(21, 10, 8, K('sora', 2)); c.HL(22, 11, 6, K('sora', 1)); c.VL(28, 10, 6, K('sora', -1))
-    c.HL(3, 16, 27, K('shiro', 2))                              # 가까운 난간 윗면
-    c.R(3, 17, 27, 7, K('shiro', 0))
-    c.HL(3, 20, 27, K('shiro', -1))
-    for x in (12, 21): c.VL(x, 17, 7, K('shiro', -1))
-    c.VL(3, 8, 16, K('shiro', 1))
-    c.R(3, 18, 1, 3, K('aka', 1))                                # 뒷등
-    # 캡 뒷벽(가드 프레임)
-    c.R(29, 7, 3, 17, K('shiro', -1)); c.VL(29, 7, 10, K('tekko', 1))
-    # 캡: 지붕 윗면 5px → 앞 유리(위에서 본 경사) → 옆면
-    c.R(31, 3, 11, 5, K('shiro', 2)); c.HL(31, 3, 11, K('shiro', 2)); c.HL(31, 7, 11, K('shiro', 1))
-    for y in range(4, 13):
-        x0 = 41 + (y - 4) // 2
-        c.R(x0, y, 3, 1, K('garasu', 1 if y < 8 else 0))
-    c.P(42, 5, K('garasu', 3))
-    c.R(31, 8, 12, 16, K('shiro', 0))
-    c.R(32, 9, 8, 6, K('garasu', 0)); c.HL(32, 9, 8, K('garasu', -1))
-    line(c, 33, 13, 36, 10, K('garasu', 2))
-    c.VL(40, 9, 14, K('shiro', -1)); c.HL(37, 16, 2, K('tekko', 0))   # 문 이음 + 손잡이
-    c.R(43, 13, 3, 11, K('shiro', -1)); c.VL(45, 14, 9, K('shiro', -2))  # 차 앞면
-    c.R(44, 15, 2, 2, K('kii', 2))                               # 전조등
-    c.R(42, 21, 4, 2, K('kii', 1)); c.HL(42, 21, 4, K('kii', 2))  # 노란 경차 번호판
-    c.HL(31, 23, 15, K('conc', 0))                               # 범퍼·사이드 스커트
-    c.HL(3, 24, 43, K('tekko', -2))
-    wheel(c, 10, 25); wheel(c, 37, 25)
+    car_shadow(c, 3, 61, 29)
+    # 짐칸: 먼 난간 윗면 → 짐칸 골바닥 → 채소 상자 2개 + 파란 방수포 → 가까운 난간 윗면 → 옆판
+    c.R(3, 6, 36, 2, K('shiro', 2)); c.HL(3, 7, 36, K('shiro', 1))
+    c.R(4, 8, 34, 8, K('tekko', -2))
+    for x in range(7, 38, 5): c.VL(x, 8, 8, K('tekko', -1))     # 바닥 골
+    rect_3d(c, 5, 7, 10, 8, 3, 'aged_cedar', top_t=3, front_t=2)   # 채소 상자 1(윗면에 양배추·배추)
+    c.R(6, 8, 8, 3, K('midori', 1)); c.P(7, 8, K('midori', 2)); c.P(11, 9, K('midori', 2)); c.P(9, 10, K('midori', 0))
+    rect_3d(c, 16, 7, 10, 8, 3, 'aged_cedar', top_t=3, front_t=2)  # 채소 상자 2(윗면에 당근·감자·귤)
+    c.R(17, 8, 8, 3, K('daidai', 1)); c.P(18, 8, K('daidai', 2)); c.P(22, 9, K('daidai', 2)); c.P(20, 10, K('aka', 1))
+    # 파란 방수포(일부 화물을 덮은 3/4 천 주름)
+    c.R(27, 8, 11, 7, K('sora', 0)); c.HL(27, 8, 11, K('sora', 2)); c.HL(28, 9, 9, K('sora', 1))
+    c.HL(28, 12, 9, K('sora', -1)); c.VL(37, 8, 7, K('sora', -1))
+    c.HL(3, 15, 36, K('shiro', 2))                              # 가까운 난간 윗면
+    c.R(3, 16, 36, 8, K('shiro', 0))
+    c.HL(3, 19, 36, K('shiro', -1)); c.HL(3, 23, 36, K('shiro', -1))
+    for x in (15, 27): c.VL(x, 16, 7, K('shiro', -1)); c.P(x + 1, 18, K('tekko', 0))  # 난간 걸쇠
+    c.VL(3, 6, 18, K('shiro', 1))
+    c.R(3, 17, 2, 4, K('aka', 1)); c.P(3, 17, K('aka', 2))      # 후미등
+    # 캡 뒷벽(토리이 가드 프레임)
+    c.R(39, 4, 2, 20, K('tekko', 0)); c.VL(39, 4, 12, K('tekko', 2))
+    for yy in (6, 10, 14): c.HL(37, yy, 2, K('tekko', 0))
+    # 캡: 지붕 윗면 6px → 경사 앞유리 → 옆면 문짝 + 사이드미러 + 앞 얼굴
+    c.R(41, 2, 14, 6, K('shiro', 2)); c.HL(42, 2, 12, K('shiro', 3)); c.HL(41, 7, 14, K('shiro', 1))
+    for y in range(3, 14):
+        x0 = 54 + (y - 3) // 2
+        c.R(x0, y, 4, 1, K('garasu', 2 if y < 6 else 1 if y < 9 else 0))
+    c.P(55, 4, K('garasu', 3)); c.P(56, 5, K('garasu', 3))
+    c.R(41, 8, 17, 16, K('shiro', 0))
+    c.R(43, 9, 10, 7, K('garasu', 0)); c.HL(43, 9, 10, K('garasu', -1)); c.VL(52, 9, 7, K('garasu', -2))
+    line(c, 44, 14, 48, 10, K('garasu', 2))                     # 창문 빛 반사
+    c.R(52, 13, 2, 3, K('sumi', 1)); c.P(52, 13, K('tekko', 2)) # 사이드미러
+    c.VL(42, 8, 15, K('shiro', 1)); c.VL(54, 9, 14, K('shiro', -1))
+    c.HL(44, 18, 3, K('tekko', -1))                             # 문 손잡이
+    c.R(58, 13, 3, 11, K('shiro', -1)); c.VL(60, 14, 9, K('shiro', -2))  # 차 앞면
+    c.R(59, 15, 2, 3, K('kii', 2)); c.P(59, 15, K('shiro', 2))  # 전조등
+    c.R(57, 21, 4, 2, K('kii', 1)); c.HL(57, 21, 4, K('kii', 2))  # 노란 경차 번호판
+    c.HL(41, 23, 20, K('conc', 0))                              # 범퍼·사이드 스커트
+    c.R(4, 24, 56, 2, K('tekko', -2))
+    wheel(c, 13, 25, 4.8); wheel(c, 49, 25, 4.8)
     add_outline(c)
 
 
-@kit('inaka-red-tractor', '빨간 트랙터 - 보닛 윗면·배기통·핸들·롤바 지붕·큰 뒷바퀴 펜더 윗면·로터리(3×2)', 3, 2, 'vehicle',
-     solid=rows(3, [0, 1]), tags=['inaka', '트랙터', 'トラクター', '농기계'],
+@kit('inaka-red-tractor', '빨간 농기계 트랙터 - 캐노피 지붕 윗면·긴 보닛·배기 연통·운전석·대형 러그 뒷바퀴·로터리 작업기(4×3)', 4, 3, 'vehicle',
+     solid=rows(4, [1, 2]), tags=['inaka', '트랙터', 'トラクター', '농기계'],
      rules='논 가장자리·헛간 앞. 오른쪽(동)을 보고 둔다.', role='prop')
 def tractor(c, base):
-    car_shadow(c, 1, 46, 29)
-    # 로터리(뒤쪽 경운기): 덮개 윗면 + 앞면 + 칼날
-    c.R(1, 15, 9, 3, K('daidai', 1)); c.HL(1, 15, 9, K('daidai', 2))
-    c.R(1, 18, 9, 7, K('daidai', -1)); c.HL(1, 24, 9, K('daidai', -2))
-    for x in (2, 5, 8): c.R(x, 25, 1, 3, K('conc', 2))
-    # 롤바 + 지붕(윗면)
-    c.R(12, 3, 2, 14, K('tekko', 0)); c.R(23, 3, 2, 10, K('tekko', 0))
-    c.R(10, 1, 17, 3, K('tekko', 2)); c.HL(10, 1, 17, K('tekko', 3)); c.HL(10, 4, 17, K('tekko', -1))
-    # 좌석 + 핸들
-    c.R(14, 10, 6, 2, K('sumi', 2)); c.R(14, 12, 2, 4, K('sumi', 1))
-    line(c, 21, 15, 24, 9, K('tekko', -1))
-    c.R(22, 8, 5, 2, K('sumi', 1)); c.HL(22, 8, 5, K('tekko', 2))
-    # 보닛: 윗면(밝은 빨강) + 옆면 + 그릴
-    c.R(25, 11, 19, 5, K('aka', 2)); c.HL(25, 11, 19, K('aka', 2)); c.HL(25, 15, 19, K('aka', 1))
-    for x in range(28, 42, 4): c.P(x, 13, K('aka', 1))
-    c.R(25, 16, 19, 7, K('aka', 0))
-    for y in (18, 20): c.HL(29, y, 11, K('aka', -1))
-    c.R(44, 12, 2, 11, K('tekko', 0)); c.VL(45, 13, 9, K('tekko', -1)); c.P(44, 14, K('kii', 2))
-    # 배기통
-    c.R(36, 4, 2, 7, K('tekko', -1)); c.VL(36, 4, 7, K('tekko', 1)); c.R(35, 3, 4, 2, K('tekko', 0))
-    # 큰 뒷바퀴 + 펜더(둥근 윗면)
-    disc(c, 17, 22, 8.2, OL); disc(c, 17, 22, 7.3, K('sumi', 1))
-    for k in range(12):
-        a = k * math.pi / 6
-        c.P(round(17 + math.cos(a) * 6.6), round(22 + math.sin(a) * 6.6), K('tekko', -1))
-    disc(c, 17, 22, 3.6, K('kii', 0)); disc(c, 17, 22, 1.6, K('kii', -2)); c.P(16, 21, K('kii', 2))
-    for x in range(8, 27):
-        u = (x - 17) / 9.5
-        yt = round(13 - 3 * math.sqrt(max(0.0, 1 - u * u)))
-        c.P(x, yt, K('aka', 2)); c.P(x, yt + 1, K('aka', 2 if x < 17 else 1)); c.P(x, yt + 2, K('aka', 0))
-    # 앞바퀴
-    wheel(c, 38, 25, 4.2, 'kii')
+    car_shadow(c, 2, 61, 44)
+    # 뒤쪽 로터리 경운 작업기(윗면 주황 덮개 + 유압 암 + 경운 칼날)
+    line(c, 15, 31, 7, 27, K('tekko', 1)); line(c, 15, 35, 7, 34, K('tekko', -1))
+    c.R(2, 26, 12, 4, K('daidai', 1)); c.HL(2, 26, 12, K('daidai', 2)); c.HL(2, 29, 12, K('daidai', 0))
+    c.R(2, 30, 12, 9, K('daidai', -1)); c.HL(2, 38, 12, K('daidai', -2)); c.VL(2, 26, 13, K('daidai', 2))
+    for x in (3, 6, 9, 12):
+        c.R(x, 39, 2, 4, K('conc', 2)); c.P(x, 42, K('conc', 0))
+    # 롤바 프레임 + 붉은/흰 햇빛 가림막 캐노피 지붕(3/4 윗면)
+    c.R(16, 9, 2, 18, K('tekko', 0)); c.VL(16, 9, 18, K('tekko', 2))
+    c.R(31, 9, 2, 14, K('tekko', 0)); c.VL(31, 9, 14, K('tekko', 2))
+    c.R(13, 4, 22, 5, K('aka', 2)); c.HL(14, 4, 20, K('aka', 3)); c.HL(13, 8, 22, K('aka', 0))
+    c.HL(15, 5, 18, K('shiro', 2))
+    # 운전석 등받이 좌석 + 조향 핸들 + 레버
+    c.R(19, 17, 3, 6, K('sumi', 1)); c.R(19, 21, 7, 3, K('sumi', 2)); c.HL(20, 21, 5, K('sumi', 3))
+    line(c, 28, 24, 32, 16, K('tekko', 0))
+    c.R(29, 15, 6, 2, K('sumi', 1)); c.HL(29, 15, 6, K('tekko', 2))
+    # 엔진 보닛: 넓은 3/4 윗면(밝은 빨강) + 측면 루버/흰 줄무늬 + 전면 그릴과 전조등 + 앞 범퍼 웨이트
+    c.R(32, 19, 25, 6, K('aka', 2)); c.HL(33, 19, 23, K('aka', 3)); c.HL(32, 24, 25, K('aka', 1))
+    for x in range(36, 54, 4): c.P(x, 21, K('aka', 1))
+    c.R(32, 25, 25, 11, K('aka', 0))
+    c.HL(33, 27, 22, K('shiro', 2)); c.HL(33, 28, 22, K('aka', -1))
+    for y in (30, 32, 34): c.HL(36, y, 16, K('tekko', -2))      # 엔진 냉각 루버
+    c.R(57, 20, 3, 15, K('tekko', 0)); c.VL(59, 21, 13, K('tekko', -2))
+    c.R(58, 22, 2, 3, K('kii', 2)); c.P(58, 22, K('shiro', 2))  # 전조등
+    c.R(59, 32, 3, 5, K('tekko', -1)); c.HL(59, 32, 3, K('tekko', 1))  # 전면 웨이트 범퍼
+    # 수직 배기 연통(머플러)
+    c.R(47, 7, 3, 12, K('tekko', -1)); c.VL(47, 7, 12, K('tekko', 2))
+    c.R(46, 5, 5, 2, K('tekko', 0)); c.HL(46, 5, 5, K('tekko', 2))
+    # 차대 하부 프레임
+    c.R(24, 35, 32, 4, K('tekko', -2)); c.HL(28, 36, 12, K('tekko', 0))
+    # 대형 깍두기(러그) 뒷바퀴 + 둥근 붉은 펜더 윗면
+    for x in range(12, 33):
+        u = (x - 22.5) / 10.5
+        yt = round(23 - 4.5 * math.sqrt(max(0.0, 1 - u * u)))
+        c.P(x, yt, K('aka', 3 if x < 23 else 2))
+        c.P(x, yt + 1, K('aka', 2 if x < 23 else 1))
+        c.P(x, yt + 2, K('aka', 0))
+    disc(c, 22.5, 34, 10.6, OL); disc(c, 22.5, 34, 9.5, K('sumi', 1))
+    for k in range(14):
+        a = k * math.pi / 7
+        c.P(round(22.5 + math.cos(a) * 8.6), round(34 + math.sin(a) * 8.6), K('tekko', 0))
+        c.P(round(22.5 + math.cos(a) * 9.5), round(34 + math.sin(a) * 9.5), OL)
+    disc(c, 22.5, 34, 5.2, K('kii', 1)); disc(c, 22.5, 34, 2.4, K('aka', 0)); c.P(21, 32, K('kii', 3))
+    # 앞바퀴(조향 러그 타이어 + 노란 림)
+    wheel(c, 51, 38, 6.0, 'kii')
     add_outline(c)
 
+
+@kit('inaka-single-car-train', '단량 디젤 동차(キハ40 국철색) - AU75 냉방기·물탱크·배기구 지붕 윗면·크림+주홍 투톤 차체·폴딩 도어·전조등·대차(8×3)', 8, 3, 'vehicle',
+     solid=rows(8, [1, 2]), tags=['inaka', '열차', '기차', '디젤동차', 'キハ', '철도'],
+     rules='시골 선로(jp-rail-h) 위에 올린다(간이역 승강장 앞).', role='prop')
+def single_car_train(c, base):
+    W = 128
+    # 3/4 지붕 윗면(y=1..17, jp-train-car-a 와 같은 지붕 비례): 뒤 모서리 OL → 둥근 회백색 지붕 판 → 앞 처마 OL
+    c.HL(2, 0, W - 4, OL)
+    for j in range(17):
+        y = 1 + j
+        col = K('conc', 1) if j == 0 else K('conc', 2) if j == 1 else K('shiro', 2) if j >= 14 else K('conc', 3)
+        c.HL(2, y, W - 4, col)
+    for j in (5, 10, 14):
+        c.HL(3, j, W - 6, K('conc', 2))
+    c.VL(1, 1, 17, OL); c.VL(W - 2, 1, 17, OL)
+    # 지붕 위 기기: 물탱크(왼)·AU75 냉방기 2기·배기 매니폴드·환기구 4기
+    for (bx, bw, ramp, t) in ((8, 14, 'conc', 2), (30, 22, 'shiro', 2), (76, 22, 'shiro', 2)):
+        c.HL(bx, 3, bw, OL)
+        c.R(bx, 4, bw, 5, K(ramp, t)); c.HL(bx, 4, bw, K('shiro', 3)); c.HL(bx, 8, bw, K(ramp, t + 1))
+        c.R(bx, 9, bw, 3, K('tekko', 0)); c.HL(bx, 9, bw, K('tekko', 2)); c.HL(bx, 11, bw, K('tekko', -2))
+        for gx in range(bx + 3, bx + bw - 2, 4):
+            c.VL(gx, 5, 3, K('conc', 1)); c.P(gx, 10, K('tekko', -3))
+        c.VL(bx - 1, 4, 8, OL); c.VL(bx + bw, 4, 8, OL); c.HL(bx - 1, 12, bw + 2, OL)
+    # 디젤 배기 연통(가운데 지붕 위)
+    c.R(59, 3, 8, 6, K('tekko', -1)); c.HL(59, 3, 8, K('tekko', 2)); c.R(61, 4, 4, 3, K('sumi', 1))
+    c.VL(58, 3, 6, OL); c.VL(67, 3, 6, OL); c.HL(58, 9, 10, OL)
+    # 소형 지붕 환기구(벤틸레이터)
+    for vx in (24, 53, 70, 102):
+        c.R(vx, 6, 4, 3, K('conc', 2)); c.HL(vx, 6, 4, K('shiro', 2)); c.HL(vx, 8, 4, K('tekko', 0))
+    # 앞·뒤 운전실 지붕 위 전조등(타이폰+헤드라이트 포드)
+    for hx in (3, W - 7):
+        c.R(hx, 7, 4, 4, K('tekko', 1)); c.P(hx + (0 if hx < 64 else 3), 8, K('kii', 3))
+    c.HL(1, 18, W - 2, K('tekko', -2)); c.HL(1, 19, W - 2, OL)  # 처마 홈통
+    # 차체 옆면(y=20..38): 국철 키하 40형 크림(위) + 주홍(首都圏色/국철 투톤, 아래) 도색
+    c.R(2, 20, W - 4, 4, J('torii_vermilion', 2)); c.HL(2, 20, W - 4, J('torii_vermilion', 3))
+    c.R(2, 24, W - 4, 8, K('kinari', 2)); c.HL(2, 24, W - 4, K('kinari', 3)); c.HL(2, 31, W - 4, K('kinari', 1))
+    c.R(2, 32, W - 4, 7, J('torii_vermilion', 2)); c.HL(2, 32, W - 4, J('torii_vermilion', 3))
+    c.HL(2, 34, W - 4, K('kinari', 2))                          # 크림색 가는 허리띠
+    c.HL(2, 38, W - 4, J('torii_vermilion', 0))
+    c.VL(2, 20, 19, K('kinari', 3)); c.VL(W - 3, 20, 19, J('torii_vermilion', 0))
+    c.VL(1, 20, 20, OL); c.VL(W - 2, 20, 20, OL)
+    # 양 끝 운전실 옆창 + 파노라마 앞유리 모서리 + 전조등/후미등 + 행선판(サボ)
+    for cx0, is_right in ((3, False), (W - 9, True)):
+        c.R(cx0, 24, 6, 6, K('garasu', -1)); c.HL(cx0, 24, 6, K('garasu', 2)); c.P(cx0 + 1, 25, K('garasu', 3))
+    c.R(2, 33, 2, 3, K('aka', 2))                               # 뒤쪽 적색 미등
+    c.R(W - 4, 33, 2, 3, K('kii', 3)); c.P(W - 4, 33, K('shiro', 3))  # 앞쪽 전조등
+    # 승객 2단 유닛 창(6개)
+    for wx in (23, 34, 45, 56, 67, 78, 89):
+        c.R(wx - 1, 23, 9, 8, K('tekko', 1))
+        c.R(wx, 24, 7, 6, K('garasu', -1)); c.HL(wx, 24, 7, K('garasu', 1)); c.HL(wx, 27, 7, K('tekko', 2))
+        c.P(wx + 1, 25, K('garasu', 3)); c.P(wx + 5, 25, K('garasu', 2))
+    # 행선지 표지판(サボ) + 원맨(ワンマン) 표시판
+    c.R(63, 33, 8, 3, K('shiro', 2)); c.HL(64, 34, 6, K('sora', 0))
+    c.R(99, 25, 4, 3, K('midori', 1)); c.HL(99, 25, 4, K('shiro', 2))
+    # 앞·뒤 폴딩 승강문(2개소: x=11..19, x=105..113)
+    for dx in (11, 105):
+        c.R(dx, 22, 9, 16, J('torii_vermilion', 1))
+        c.HL(dx, 24, 9, K('kinari', 2)); c.R(dx, 25, 9, 6, K('kinari', 1))
+        c.VL(dx, 22, 16, J('torii_vermilion', 0)); c.VL(dx + 8, 22, 16, J('torii_vermilion', 0))
+        c.VL(dx + 4, 22, 16, K('tekko', -1))                    # 두 짝 폴딩 이음선
+        c.R(dx + 1, 24, 3, 6, K('garasu', -1)); c.R(dx + 5, 24, 3, 6, K('garasu', -1))
+        c.P(dx + 1, 25, K('garasu', 2)); c.P(dx + 5, 25, K('garasu', 2))
+        c.HL(dx + 1, 36, 7, K('tekko', 1))                      # 승강 발판
+    # 하부 언더프레임 + 디젤 엔진·연료탱크 기기함 + DT22 대차 2조 + 배장기(스커트)
+    c.R(2, 39, W - 4, 3, K('tekko', -2)); c.HL(2, 39, W - 4, K('tekko', 0))
+    c.R(4, 41, 6, 4, K('tekko', 0)); c.R(W - 10, 41, 6, 4, K('tekko', 0))  # 양 끝 배장기(스커트)
+    for (ux, uw) in ((42, 16), (62, 14), (80, 10)):             # 하부 디젤 엔진·공기탱크
+        c.R(ux, 41, uw, 3, K('tekko', -1)); c.HL(ux + 1, 42, uw - 2, K('tekko', 1))
+    for bx in (16, 30, 94, 108):                                # 앞·뒤 보기 대차 바퀴
+        c.R(bx - 4, 41, 9, 4, K('yoru', -1))
+        c.P(bx - 2, 42, K('tekko', 2)); c.P(bx + 2, 42, K('tekko', 2))
+    c.HL(14, 41, 19, K('tekko', 0)); c.HL(92, 41, 19, K('tekko', 0))
+    c.HL(2, 45, W - 4, OL); c.HL(3, 46, W - 6, K('yoru', -2))
 
 @kit('inaka-bicycle-parked', '세워 둔 엄마 자전거(ママチャリ) - 앞 바구니 윗면·안장 윗면·짐받이(2×2)', 2, 2, 'prop',
      solid=[(0, 1), (1, 1)], tags=['inaka', '자전거', 'ママチャリ'],

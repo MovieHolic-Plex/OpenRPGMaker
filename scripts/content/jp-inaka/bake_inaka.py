@@ -34,9 +34,9 @@ BLOCK: Final[str] = 'jp_inaka_pack'
 OUTDIR: Final[str] = os.path.join(ROOT, 'tiledata', 'jp-city', 'blocks', BLOCK)
 DEFAULT_SHEET_OUT: Final[str] = '/home/main/claude-viz/jp-inaka-countryside-1/inaka-kits-sheet.png'
 NOTES: Final[str] = (
-    '일본 시골(이나카 여름방학) 팩: 모내기 물논·여름 푸른 논·가을 황금 논·논두렁 흙길·농수로 물/석축·시골 자갈길·맑은 개울·여름 들꽃 풀밭 바닥 9종 + '
-    '초가 고민가·기와 농가·토장 창고·막과자 가게·버스 정류장·무인 채소 판매대·목조 간이역·붉은 철교·개울 징검다리·소방 망루·'
-    '흰 경트럭·붉은 트랙터·함석 농기구 헛간·비닐하우스·해바라기 군락·수국 꽃덤불·지장보살 사당·나무 전봇대·둥근 우체통과 자판기·물레방아간·'
+    '일본 시골(이나카 여름방학) 팩: 모내기 물논·여름 푸른 논·가을 황금 논·논두렁 흙길·농수로 물/석축·시골 자갈길·맑은 개울·여름 들꽃 풀밭·채소밭 이랑 바닥 10종 + '
+    '초가 고민가·기와 농가·토장 창고·막과자 가게·버스 정류장·무인 채소 판매대·목조 간이역·단량 디젤 동차(키하 40형 8×3)·붉은 철교·개울 징검다리·소방 망루·'
+    '흰 경트럭(4×2)·붉은 트랙터(4×3)·함석 농기구 헛간·비닐하우스·해바라기 군락·수국 꽃덤불·지장보살 사당·나무 전봇대·둥근 우체통과 자판기·물레방아간·'
     '농수로 수문·하사기 볏단 건조대·허수아비 한 쌍·타케가키 대나무 울타리·이끼 돌담·커브길 볼록거울·시골 자전거·작두 우물 펌프·언덕 도리이 돌계단 키트 %d종.'
 )
 _CACHE: dict[str, tuple] = {}
@@ -181,8 +181,8 @@ def selftest(verbose: bool = True) -> int:
     out: list[str] = []
     allowed = _allowed()
     b = build()
-    if len(b['kits']) < 29:
-        out.append('키트 수 미달: %d < 29' % len(b['kits']))
+    if len(b['kits']) < 30:
+        out.append('키트 수 미달: %d < 30' % len(b['kits']))
     if len(b['groups']) < 9:
         out.append('바닥 그룹 수 미달: %d < 9' % len(b['groups']))
     for k, c in b['cells'].items():
@@ -267,17 +267,27 @@ def _render_reused_jp_train_card() -> Image.Image:
     comp.alpha_composite(Image.fromarray(cb.a, 'RGBA'), (64, 0))
     return comp
 
+def _render_kiha_on_rail_card(kiha_im: Image.Image) -> Image.Image:
+    """Render `inaka-single-car-train` (8x3) on `jp-rail-h` (8x4 tiles) so it can be directly compared with `jp-train-car-a/b`."""
+    import street_hand
+    comp = Image.new('RGBA', (8 * 16, 4 * 16), (0, 0, 0, 0))
+    for tx in range(8):
+        rc = Cv(16, 64)
+        street_hand.rail_h(rc)
+        comp.alpha_composite(Image.fromarray(rc.a, 'RGBA'), (tx * 16, 0))
+    comp.alpha_composite(kiha_im, (0, 0))
+    return comp
+
 
 def render_contact_sheet(out_path: str = DEFAULT_SHEET_OUT, scale: int = 3) -> str:
-    """Render a 3x labeled contact sheet of 29 bespoke inaka kits + 1 reused jp_city train kit + 9 ground tiles."""
+    """Render a 3x labeled contact sheet of 30 bespoke inaka kits (incl. 8x3 Kiha, 4x2 keitora, 4x3 tractor) + reused jp_city train kit + ground tiles."""
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     cells, _, renders, _ = _finalize()
     cards: list[tuple[str, int, int, Image.Image]] = []
-    for k in KITS[:7]:
-        cards.append((k['id'], k['w'], k['h'], renders[k['id']]))
-    cards.append(('jp-train-car-a/b [reused]', 8, 4, _render_reused_jp_train_card()))
-    for k in KITS[7:]:
-        cards.append((k['id'], k['w'], k['h'], renders[k['id']]))
+    for k in KITS:
+        im = _render_kiha_on_rail_card(renders[k['id']]) if k['id'] == 'inaka-single-car-train' else renders[k['id']]
+        cards.append((k['id'], k['w'], k['h'], im))
+    cards.append(('jp-train-car-a/b [jp_city]', 8, 4, _render_reused_jp_train_card()))
     cols = 5
     card_w, card_h = 376, 290
     pad = 16
@@ -292,7 +302,7 @@ def render_contact_sheet(out_path: str = DEFAULT_SHEET_OUT, scale: int = 3) -> s
 
     # Header banner
     draw.rectangle([0, 0, W, header_h - 8], fill=(36, 48, 41, 255))
-    draw.text((pad, 18), 'JP-INAKA COUNTRYSIDE CHIPSET — 29 INAKA KITS + REUSED JP-TRAIN-CAR-A/B + 9 GROUND TILES (3x)', fill=(238, 234, 219, 255), font=font)
+    draw.text((pad, 18), 'JP-INAKA COUNTRYSIDE CHIPSET — 30 INAKA KITS (UPGRADED 4x2 KEITORA, 4x3 TRACTOR, 8x3 KIHA) + JP-TRAIN-CAR-A/B + 10 GROUND TILES', fill=(238, 234, 219, 255), font=font)
     draw.text((pad, 44), 'jp_city house_kit / parts_vehicles conventions | 3/4 top-down (top plane + south face) | Top-Left Sun | 1px Sumi Contour', fill=(186, 204, 174, 255), font=font)
 
     for idx, (cid, cw_t, ch_t, im) in enumerate(cards):
