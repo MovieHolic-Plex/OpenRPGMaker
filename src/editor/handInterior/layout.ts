@@ -58,6 +58,14 @@ const OPEN_DEFAULT: [string, string][] = [
   ["cinema-arcade-zone", "cinema-lobby"],
   ["rest-kitchen-bar", "rest-dining-hall"], ["rest-bar-lounge", "rest-dining-hall"], ["rest-live-stage", "rest-dining-hall"],
   ["gallery-paintings", "gallery-lobby"],
+  ["library-hall", "library-lobby"], ["konbini-floor", "konbini-backroom"], ["book-floor", "manga-cafe"],
+  ["izakaya-kitchen", "izakaya-hall"], ["game-crane", "game-floor"], ["karaoke-room", "karaoke-hall"],
+  ["hotel-lounge", "hotel-lobby"], ["shrine-haiden", "shrine-genkan"], ["sento-rotenburo", "sento-bathhall"], ["sento-bathhall", "sento-changing"],
+  ["open-office", "lobby"], ["lobby", "pantry"], ["studio-floor", "studio-control"], ["hosp-nurse-core", "waiting_room"],
+  ["school-corridor", "school-genkan"], ["uni-lecture", "uni-foyer"], ["gym-court", "gym-lobby"],
+  ["band-room", "council-room"], ["roof-garden", "rooftop-deck"], ["otel-room", "otel-kitchen"],
+  ["aud-hall", "aud-foyer"], ["koban-rest", "koban-office"], ["court-room", "court-lobby"],
+  ["parking-lobby", "parking-deck"], ["elev-stair-core", "elev-hall"],
 ];
 /** 위·아래가 정해진 쌍(종류) — 앞 방이 뒷 방 바로 위(북쪽)에 붙어야 한다. 관중석은 모래 마당을 내려다본다(2026-10-14 조수 시험: 관중석이 마당 아래 딴 방으로 떨어졌다). */
 const ABOVE_DEFAULT: [string, string][] = [
@@ -478,7 +486,8 @@ function rowRects(rows: readonly (readonly string[])[], wants: readonly Want[], 
   const W = Math.max(...grid.map(baseWidth));
   const out = new Map<string, Rect>();
   let y = 1;
-  for (const cells of grid) {
+  for (let rowIdx = 0; rowIdx < grid.length; rowIdx++) {
+    const cells = grid[rowIdx]!;
     const line = cells.filter((c): c is Want => !isGap(c));
     const h = Math.max(...line.map((w) => w.bh));
     const widest = line.reduce((a, w) => (w.bw > a.bw ? w : a), line[0]!);
@@ -491,10 +500,13 @@ function rowRects(rows: readonly (readonly string[])[], wants: readonly Want[], 
     }));
     widths.set(widest, widest.bw + W - baseWidth(cells) - line.reduce((s, w) => s + (w === widest ? 0 : widths.get(w)! - w.bw), 0));
     let x = 1;
+    const isLastRow = rowIdx === grid.length - 1;
     for (const c of cells) {
       if (isGap(c)) { x += c.gap; continue; }
       const ww = widths.get(c)!;
-      out.set(c.id, { x, y, w: ww, h: Math.min(trim[c.kind] ?? Infinity, ragged ? c.bh : h) });
+      const ch = Math.min(trim[c.kind] ?? Infinity, isLastRow && ragged ? c.bh : h);
+      const ry = rowIdx === 0 && grid.length > 1 ? y + (h - ch) : y;
+      out.set(c.id, { x, y: ry, w: ww, h: ch });
       x += ww + 1;
     }
     y += h + 1;
@@ -537,8 +549,9 @@ function buildCandidatesForVariant(
   const pairTuple = (x: Pair): readonly [string, string] => ("a" in x ? [x.a, x.b] : x);
   const pairOf = (list: readonly Pair[] | undefined) => (list ?? []).map(pairTuple).flatMap(([p, q]) =>
     wants.filter((w) => matches(w, p)).flatMap((a) => wants.filter((w) => w !== a && matches(w, q)).map((b) => [a.id, b.id] as [string, string])));
+  const programOpen = pairOf(vary?.v.open);
   const prefer = [...pairOf(req.prefer), ...pairOf(PREFER_DEFAULT)];
-  const openPairs = [...pairOf(req.open), ...pairOf(OPEN_DEFAULT)];
+  const openPairs = [...pairOf(req.open), ...programOpen, ...pairOf(OPEN_DEFAULT)];
   const isOpen = (a: string, b: string) => openPairs.some(([p, q]) => (p === a && q === b) || (p === b && q === a));
   const mirrorHorizontal = req.styleVariant ? (styleVariant === "B" || styleVariant === "D") : (styleVariant === "B" || styleVariant === "D" || Boolean(vary?.flip));
   const leftRules: Pair[] = vary?.v.left
@@ -601,7 +614,7 @@ function buildCandidatesForVariant(
     }
     if (reached.size !== wants.length) continue;
     const deg: Record<string, number> = {}; for (const e of tree) { deg[e.a] = (deg[e.a] ?? 0) + 1; deg[e.b] = (deg[e.b] ?? 0) + 1; }
-    for (const [p, q] of prefer) {
+    for (const [p, q] of [...prefer, ...programOpen]) {
       const e = edges.find((x) => (x.a === p && x.b === q) || (x.a === q && x.b === p));
       if (e && !tree.includes(e)) tree.push(e);
     }
@@ -614,7 +627,7 @@ function buildCandidatesForVariant(
       const asp = Math.max(rc.w / rc.h, rc.h / rc.w), maxAsp = Math.max(2.6, w.tw / w.th, w.th / w.tw);
       if (asp > maxAsp && !/hall|corridor/u.test(w.kind)) score += (asp - maxAsp) * 2;
       // 견본에 벽 속으로 오르는 계단·에스컬레이터가 있는 방은 건물 맨 북쪽 줄에 — 아래 줄이면 칸막이 속으로 올라 옆방으로 들어간다(2026-10-18 병원 seed 4·8 입원 병동).
-      if (rc.y !== 1 && w.template?.items.some((it) => it.t === "o" && S.objects[it.id]?.kind === "wall" && S.objects[it.id]?.stairs)) { score += 12; notes.push(`${w.id} 의 벽 속 계단이 칸막이에 박힌다 — 맨 북쪽 줄이 아니다`); }
+      if ([...rects.values()].some((q) => q !== rc && q.y < rc.y && q.x < rc.x + rc.w && rc.x < q.x + q.w) && w.template?.items.some((it) => it.t === "o" && S.objects[it.id]?.kind === "wall" && S.objects[it.id]?.stairs)) { score += 12; notes.push(`${w.id} 의 벽 속 계단이 칸막이에 박힌다 — 맨 북쪽 줄이 아니다`); }
     }
     {
       const roomArea = [...rects.values()].reduce((a, q) => a + q.w * q.h, 0);
@@ -635,15 +648,15 @@ function buildCandidatesForVariant(
       if (!edges.some((e) => e.kind === "v" && ((e.a === p && e.b === q) || (e.a === q && e.b === p))) || lft.x > rgt.x) { score += weight; notes.push(`${p} 가 ${q} 바로 왼쪽이 아니다`); }
     }
     for (const w of wants) if (!isHub(w.kind) && w.id !== entrance && (deg[w.id] ?? 0) > 1) { score += 2.5; notes.push(`${w.id} 를 지나가야 다른 방에 간다`); }
-    const openSpan = styleVariant === "C" || styleVariant === "D" ? 5 : 3;
+    const openSpan = styleVariant === "C" || styleVariant === "D" ? 6 : 5;
     const connect: HandInteriorConnect[] = tree.map((e) => {
       const A = byId.get(e.a)!, B = byId.get(e.b)!;
       if (isOpen(e.a, e.b)) {
         const lower = rects.get(e.a)!.y > rects.get(e.b)!.y ? A : B;
-        return e.kind === "h" && !/^(genkan|entrance)$/u.test(lower.kind) ? { a: e.a, b: e.b, open: true, span: openSpan } : { a: e.a, b: e.b, open: true };
+        const span = programOpen.some(([p, q]) => (p === e.a && q === e.b) || (p === e.b && q === e.a)) ? 6 : openSpan;
+        return e.kind === "h" && !/^(genkan|entrance)$/u.test(lower.kind) ? { a: e.a, b: e.b, open: true, span } : { a: e.a, b: e.b, open: true };
       }
-      const pick = (w: Want) => DOOR_OF[w.kind]?.[e.kind];
-      const door = pick(A) ?? pick(B);
+      const door = DOOR_OF[A.kind]?.[e.kind] ?? DOOR_OF[B.kind]?.[e.kind];
       return { a: e.a, b: e.b, ...(door && S.objects[door] ? { door } : {}) };
     });
     // 변주 seed 의 동↔서 뒤집기는 점수를 다 매긴 뒤 결과 좌표에만 한다 — 왼·오른 쌍 규칙까지 거울로 뒤집힌 배치가 된다.
