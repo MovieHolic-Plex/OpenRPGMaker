@@ -142,8 +142,8 @@ const MODEL_PLANS = {
   "북쪽에 왕성 본성과 폭포 연못·돌다리·남동쪽 항구 부두를 세우고, 중앙에 여관·치유 성당·물약 상점·모험가 길드·장터 바자회를 지어 모든 출입구 도로망을 자동 연결한 뒤, 남쪽 유적을 석조 성벽으로 둘러싸고 레버 철문·배회하는 몬스터·야영지 모닥불·미믹 상자를 깔고, 서쪽 역마차 정류장·가로등 열주·마을 군중·노을 조명으로 4단계 RPG 월드빌딩해줘": {
     steps: [
       { tool: "place_castle", args: { area: { x: 13, y: 1, w: 19, h: 12 }, archetype: "keep", gate: true, towers: true }, label: "1턴 [성채·수역 기틀]: 북부 안뜰 본성(keep)과 쌍둥이 망루·성문" },
-      { tool: "carve_waterfall_pond", args: { area: { x: 33, y: 1, w: 10, h: 8 } }, label: "1턴 [성채·수역 기틀]: 동북부 절벽 폭포와 폭포수 연못" },
-      { tool: "place_bridge", args: { area: { x: 33, y: 9, w: 10, h: 5 }, style: "stone", direction: "vertical" }, label: "1턴 [성채·수역 기틀]: 동부 하천과 아치 돌다리 횡단교" },
+      { tool: "carve_waterfall_pond", args: { area: { x: 32, y: 1, w: 12, h: 7 } }, label: "1턴 [성채·수역 기틀]: 동북부 절벽 폭포와 폭포수 연못" },
+      { tool: "place_bridge", args: { area: { x: 32, y: 8, w: 12, h: 5 }, style: "stone", direction: "vertical" }, label: "1턴 [성채·수역 기틀]: 동부 하천과 아치 돌다리 횡단교" },
       { tool: "build_harbor_dock", args: { area: { x: 30, y: 23, w: 13, h: 8 } }, label: "1턴 [성채·수역 기틀]: 남동부 석조 항구 부두·나무 잔교·정박 어선·선원" },
     ],
     needsFollowUp: true,
@@ -258,7 +258,7 @@ let browser;
 try {
   browser = await chromium.launch({
     headless: true,
-    args: ["--disable-background-networking", "--disable-features=NetworkChangeNotifier"],
+    args: ["--disable-dev-shm-usage", "--disable-background-networking", "--disable-features=NetworkChangeNotifier"],
   });
   const page = await browser.newPage({ viewport: { width: 1600, height: 960 } });
   const pageErrors = [];
@@ -354,6 +354,17 @@ try {
         must("stamp_tileset_object", { mapId, objectId: "bd-house-h103_1", at: { x: 1, y: 2 }, overwrite: true });
         must("stamp_tileset_object", { mapId, objectId: "bd-prop-well_roofed", at: { x: W === 27 ? 2 : 6, y: W === 27 ? 11 : 5 }, overwrite: true });
         must("stamp_tileset_object", { mapId, objectId: "bd-tree-3e8732", at: { x: 1, y: Math.min(H - 5, 15) }, overwrite: true });
+        if (W === 44 && H === 32) {
+          must("stamp_tileset_object", { mapId, objectId: "bd-tree-03a8f7", at: { x: 8, y: 1 }, overwrite: true });
+          must("stamp_tileset_object", { mapId, objectId: "bd-pick-coast-cliff-road-fir-m", at: { x: 6, y: 1 }, overwrite: true });
+          must("stamp_tileset_object", { mapId, objectId: "bd-pick-wizard-tower-bed-flower", at: { x: 9, y: 5 }, overwrite: true });
+          must("stamp_tileset_object", { mapId, objectId: "bd-pick-mountain-pass-boulder-m", at: { x: 7, y: 7 }, overwrite: true });
+          must("stamp_tileset_object", { mapId, objectId: "bd-mpart-bush-e", at: { x: 10, y: 7 }, overwrite: true });
+          must("stamp_tileset_object", { mapId, objectId: "bd-tree-f4f319", at: { x: 0, y: 20 }, overwrite: true });
+          must("stamp_tileset_object", { mapId, objectId: "bd-tree-f4f319", at: { x: 0, y: 28 }, overwrite: true });
+          must("stamp_tileset_object", { mapId, objectId: "bd-mpart-bush-c", at: { x: 41, y: 15 }, overwrite: true });
+          must("stamp_tileset_object", { mapId, objectId: "bd-tree-f4f319", at: { x: 41, y: 18 }, overwrite: true });
+        }
         const p = window.__oprnEditorStore.getCurrent();
         const ts = p.tilesets.beodeul_city;
         const roadTile = ts.autotileGroups?.find((g) => g.id === "beodeul_road_autotile")?.memberTileIds?.[0] ?? 1008;

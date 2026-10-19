@@ -292,7 +292,7 @@ function applyStampCallsWithStructureOps(calls: readonly ToolCall[]): ToolResult
         for (const ev of events) {
           const existingIdx = draft.events.findIndex((e) => e.id === ev.id);
           if (existingIdx >= 0) {
-            draft.events[existingIdx] = { ...ev, x: draft.events[existingIdx]!.x, y: draft.events[existingIdx]!.y };
+            draft.events[existingIdx] = ev;
           } else {
             draft.events.push(ev);
           }
@@ -3529,7 +3529,7 @@ function expandSpecialSpatialSteps(
         const propClearPatches = collectOverlappingPropClearPatches(
           { previewMap, tileset, detectObjects: detectPlacedMapObjects },
           buildingRect,
-          2,
+          1,
           houseCells,
         );
         if (propClearPatches.length > 0) {
@@ -3782,7 +3782,7 @@ function expandSpecialSpatialSteps(
         const castlePropClears = collectOverlappingPropClearPatches(
           { previewMap, tileset, detectObjects: detectPlacedMapObjects },
           castleRect,
-          2,
+          1,
           houseCells,
         );
         const castleBefore = captureStructureTiles(previewMap, castleRect);
