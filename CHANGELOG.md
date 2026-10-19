@@ -5,6 +5,18 @@
 
 <!-- releases -->
 
+## 0.278.0 — 2026-10-19
+
+### 기능
+
+- **flagship** — overhaul Flagship #1 into Fallen Star (폴른 스타: 추락한 별과 태엽의 성녀) Act 1 & 6-shot 2x pixel animatic opening (#3011) (`64c5adf`)
+
+### 수정
+
+- **hand-interior** — merge non-rectangular L/U/T rooms and resolve 84-facility VQA issues (#3015) (`1869d45`)
+- **stamp-place** — replace misassigned door wall/signpost tiles with stone walls, real signboards, and seamless waterfall-bridge (#3013) (`2295806`)
+- **jrpg-pilot** — build 3-tile east-west bridge collapse & record 8fps playback GIFs (#3012) (`973986b`)
+
 ## 0.277.0 — 2026-10-19
 
 ### 기능
