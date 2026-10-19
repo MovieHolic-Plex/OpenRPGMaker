@@ -1,444 +1,230 @@
-"""첫 지역 스타터 세 종(토리프 leafling · 파이린 sparkit · 아쿠링 aqualing)의 64×64 전투 앞·뒷모습을 손 도트로 그린다.
-
-사용자 반려(c-1792294716295, 2026-10-18): 생성 그림을 64칸으로 줄인 하네스 스프라이트는 외곽선이 점선처럼 끊기고
-잎맥이 계단으로 깨지고 발이 한 덩어리로 뭉개졌다. 축소·추적 없이 부위 마스크를 직접 래스터화한다.
-
-규칙(하네스 checks.ts 계약과 같다):
-- 64×64 RGBA, 알파 0/255, 발 외곽선이 맨 아랫줄(y=63)에 닿는다, 몸은 긴 변 56 이내, 색 20개 이하.
-- 부위마다 4방향 1px 외곽선 고리(끊김 없음) → 왼쪽 위 빛 기준 3단 셀 명암(그늘·중간·빛).
-- 앞모습은 왼쪽(상대 쪽)을 본다. 뒷모습은 오른쪽 위로 등을 보인다. 뒷모습에는 눈을 그리지 않는다.
-- 앞모습 눈(R12 draw_eye): 가까운 눈 5×6·먼 눈 3×5 — 잉크 위 속눈썹, 2×2 흰 반짝임, 어두운 눈동자, 두 단 보석 홍채, 바깥 흰자.
-
-출력은 harness-data/monster-collect-species/authored/<종>-<면>.png. ledger 의 pick.authored 가 이 파일을 가리키면
-`npm run harness -- monster-collect-species build` 가 격자 축소 대신 이 그림을 번들에 쓰고 대기 스트립을 다시 굽는다.
-
-    python3 scripts/content/monsters/redraw_starters.py            # 여섯 장 쓰기
-    python3 scripts/content/monsters/redraw_starters.py --preview  # /tmp/redraw-starters.png 8배 확인 시트
+#!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.11"
+# dependencies = ["numpy", "pillow"]
+# ///
+# ─── How to run ───
+# uv run scripts/content/monsters/redraw_starters.py
+# python3 scripts/content/monsters/redraw_starters.py
+"""Restore the 3 first-region starters (`sparkit`, `aqualing`, `leafling`) from their authentic
+Pokemon Black & White pixel-art grids (`57eef00592`) and provide shared BW eye/outline helpers.
 """
 from __future__ import annotations
 
+import io
+import subprocess
 import sys
 from pathlib import Path
+from typing import Final
 
 import numpy as np
-from PIL import Image, ImageDraw
+from PIL import Image
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-from pixel_lib import ROOT, bezier, blank, ellipse, poly, tapered  # noqa: E402
+ROOT: Final[Path] = Path(__file__).resolve().parents[3]
+OUT: Final[Path] = ROOT / "harness-data/monster-collect-species/authored"
+BASELINE_REF: Final[str] = "57eef00592"
 
-S = 64
-OUT = ROOT / "harness-data/monster-collect-species/authored"
-
-
-# ── 마스크 ───────────────────────────────────────────────────
-
-def M(img):
-    return np.array(img) > 0
+Rgb = tuple[int, int, int]
+NearEyeSpec = tuple[int, int, int, int, Rgb, Rgb, Rgb, Rgb, Rgb, Rgb | None]
+FarEyeSpec = tuple[int, int, int, Rgb, Rgb, Rgb, Rgb, int | None, Rgb | None]
 
 
-def ell(c, rx, ry):
-    return M(ellipse(blank(S), c, rx, ry))
+def srgb_to_linear(v: float) -> float:
+    """Convert sRGB channel (0..255) to linear light."""
+    c = v / 255.0
+    return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
 
 
-def pol(pts):
-    return M(poly(blank(S), pts))
+def oklab_l(rgb: Rgb) -> float:
+    """Compute OKLab lightness L for an RGB tuple."""
+    r, g, b = srgb_to_linear(rgb[0]), srgb_to_linear(rgb[1]), srgb_to_linear(rgb[2])
+    l_ = 0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b
+    m_ = 0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b
+    s_ = 0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b
+    return 0.2104542553 * (l_ ** (1 / 3)) + 0.7936177850 * (m_ ** (1 / 3)) - 0.0040720468 * (s_ ** (1 / 3))
 
 
-def taper(a, b, wa, wb, bulge=0.0, mid=0.5):
-    return pol(tapered(a, b, wa, wb, bulge, mid))
+def load_bw_starter(sid: str, side: str) -> Image.Image:
+    """Load the authentic 64x64 BW pixel-art starter sprite from commit 57eef00592."""
+    raw = subprocess.check_output(
+        ["git", "show", f"{BASELINE_REF}:public/assets/harnesses/monster-collect-species/{sid}/{side}.png"],
+        cwd=ROOT,
+    )
+    return Image.open(io.BytesIO(raw)).convert("RGBA")
 
 
-def curve_leaf(base, ctrl, tip, width, n=10):
-    """곡선 잎: base→ctrl→tip 2차 곡선을 따라 가운데가 가장 넓은 잎."""
-    pts = bezier(base, ctrl, tip, n)
-    left, right = [], []
-    for i, p in enumerate(pts):
-        q = pts[min(i + 1, n)] if i < n else pts[i]
-        o = pts[max(i - 1, 0)] if i > 0 else pts[i]
-        dx, dy = q[0] - o[0], q[1] - o[1]
-        ln = (dx * dx + dy * dy) ** 0.5 or 1
-        nx, ny = -dy / ln, dx / ln
-        t = i / n
-        w = width * (4 * t * (1 - t)) ** 0.8 / 2 + (0.8 if t < 0.15 else 0)
-        left.append((p[0] + nx * w, p[1] + ny * w))
-        right.append((p[0] - nx * w, p[1] - ny * w))
-    return pol(left + right[::-1]), pts
+def ensure_dark_outline(arr: np.ndarray, default_dark: Rgb, max_l: float = 0.345) -> None:
+    """Ensure every silhouette edge pixel (4-neighbor of transparent) has L < 0.35."""
+    alpha = arr[:, :, 3] > 0
+    orig = arr.copy()
+    for y in range(64):
+        for x in range(64):
+            if not alpha[y, x]:
+                continue
+            is_edge = any(
+                x + dx < 0 or x + dx >= 64 or y + dy < 0 or y + dy >= 64 or not alpha[y + dy, x + dx]
+                for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))
+            )
+            if not is_edge:
+                continue
+            c: Rgb = (int(orig[y, x, 0]), int(orig[y, x, 1]), int(orig[y, x, 2]))
+            if oklab_l(c) < max_l:
+                continue
+            found: Rgb | None = None
+            found_l = 1.0
+            for yy in range(max(0, y - 3), min(64, y + 4)):
+                for xx in range(max(0, x - 3), min(64, x + 4)):
+                    if not alpha[yy, xx]:
+                        continue
+                    nc: Rgb = (int(orig[yy, xx, 0]), int(orig[yy, xx, 1]), int(orig[yy, xx, 2]))
+                    nl = oklab_l(nc)
+                    if nl < max_l and nl < found_l:
+                        found = nc
+                        found_l = nl
+            arr[y, x, :3] = found if found is not None else default_dark
 
 
-def shift(m, dx, dy):
-    """out[y, x] = m[y - dy, x - dx] (밖은 False)."""
-    out = np.zeros_like(m)
-    h, w = m.shape
-    ys, yd = (slice(0, h - dy), slice(dy, h)) if dy >= 0 else (slice(-dy, h), slice(0, h + dy))
-    xs, xd = (slice(0, w - dx), slice(dx, w)) if dx >= 0 else (slice(-dx, w), slice(0, w + dx))
-    out[yd, xd] = m[ys, xs]
-    return out
+def draw_bw_eye(arr: np.ndarray, spec: NearEyeSpec) -> None:
+    """Stamp a #6/#7/#8/#10-style 3/4 near eye with 2x2 catchlight and 2-tone iris."""
+    x0, y0, w, h, dark, pupil, iris_dark, iris_hi, white, skin = spec
+    if skin is not None:
+        for xx in range(x0 - 1, x0 + w + 1):
+            if 0 <= xx < 64:
+                if 0 <= y0 - 1 < 64 and arr[y0 - 1, xx, 3] > 0 and oklab_l((int(arr[y0 - 1, xx, 0]), int(arr[y0 - 1, xx, 1]), int(arr[y0 - 1, xx, 2]))) < 0.4:
+                    arr[y0 - 1, xx, :3] = skin
+                if 0 <= y0 + h < 64 and arr[y0 + h, xx, 3] > 0 and oklab_l((int(arr[y0 + h, xx, 0]), int(arr[y0 + h, xx, 1]), int(arr[y0 + h, xx, 2]))) < 0.4:
+                    arr[y0 + h, xx, :3] = skin
+        for yy in range(y0 - 1, y0 + h + 1):
+            if 0 <= yy < 64:
+                if 0 <= x0 - 1 < 64 and arr[yy, x0 - 1, 3] > 0 and oklab_l((int(arr[yy, x0 - 1, 0]), int(arr[yy, x0 - 1, 1]), int(arr[yy, x0 - 1, 2]))) < 0.4:
+                    arr[yy, x0 - 1, :3] = skin
+                if 0 <= x0 + w < 64 and arr[yy, x0 + w, 3] > 0 and oklab_l((int(arr[yy, x0 + w, 0]), int(arr[yy, x0 + w, 1]), int(arr[yy, x0 + w, 2]))) < 0.4:
+                    arr[yy, x0 + w, :3] = skin
+    for yy in range(y0, y0 + h):
+        for xx in range(x0, x0 + w):
+            arr[yy, xx] = (*pupil, 255)
+    for xx in range(x0, x0 + w):
+        arr[y0, xx] = (*dark, 255)
+        arr[y0 + h - 1, xx] = (*dark, 255)
+    for yy in range(y0, y0 + h):
+        arr[yy, x0] = (*dark, 255)
+    if skin is not None and w >= 5 and h >= 6:
+        arr[y0, x0] = (*skin, 255)
+        arr[y0 + h - 1, x0] = (*skin, 255)
+        arr[y0 + h - 1, x0 + w - 1] = (*skin, 255)
+    for dy in (1, 2):
+        for dx in (1, 2):
+            arr[y0 + dy, x0 + dx] = (*white, 255)
+    if h >= 6:
+        for xx in range(x0 + 2, x0 + w - 1):
+            arr[y0 + h - 3, xx] = (*iris_dark, 255)
+        for xx in range(x0 + 1, x0 + w - 1):
+            arr[y0 + h - 2, xx] = (*iris_dark, 255)
+        arr[y0 + h - 2, x0 + w - 2] = (*iris_hi, 255)
+    else:
+        for xx in range(x0 + 2, x0 + w - 1):
+            arr[y0 + 3, xx] = (*iris_dark, 255)
+        arr[y0 + 3, x0 + w - 2] = (*iris_hi, 255)
+        for xx in range(x0 + 1, x0 + w - 1):
+            arr[y0 + 4, xx] = (*iris_dark, 255)
 
 
-def n4(m):
-    return shift(m, 1, 0).astype(int) + shift(m, -1, 0) + shift(m, 0, 1) + shift(m, 0, -1)
+def draw_far_eye(arr: np.ndarray, spec: FarEyeSpec) -> None:
+    """Stamp a foreshortened 2xH far eye with white catchlight and iris."""
+    x0, y0, h, dark, iris_dark, iris_hi, white, sep_x, skin = spec
+    if sep_x is not None and skin is not None:
+        for yy in range(y0, y0 + h):
+            if 0 <= sep_x < 64 and arr[yy, sep_x, 3] > 0:
+                arr[yy, sep_x] = (*skin, 255)
+    arr[y0, x0] = (*dark, 255)
+    arr[y0, x0 + 1] = (*dark, 255)
+    arr[y0 + 1, x0] = (*white, 255)
+    arr[y0 + 1, x0 + 1] = (*dark, 255)
+    if h >= 4:
+        arr[y0 + 2, x0] = (*white, 255)
+        arr[y0 + 2, x0 + 1] = (*iris_dark, 255)
+        arr[y0 + 3, x0] = (*iris_dark, 255)
+        arr[y0 + 3, x0 + 1] = (*iris_hi, 255)
+        if h >= 5:
+            arr[y0 + 4, x0] = (*dark, 255)
+            arr[y0 + 4, x0 + 1] = (*dark, 255)
+    else:
+        arr[y0 + 2, x0] = (*iris_dark, 255)
+        arr[y0 + 2, x0 + 1] = (*iris_hi, 255)
 
 
-def tidy(m):
-    """한 칸 가시(4방향 이웃 1개 이하)를 깎고 세 방향이 막힌 한 칸 구멍을 메운다 — 계단 잡티 제거."""
-    m = m.copy()
-    for _ in range(4):
-        n = n4(m)
-        nxt = (m & (n >= 2)) | (~m & (n >= 3))
-        if (nxt == m).all():
-            break
-        m = nxt
-    return m
-
-
-# ── 캔버스 ───────────────────────────────────────────────────
-
-class Sprite:
-    def __init__(self, ink):
-        self.ink = ink
-        self.rgb = np.zeros((S, S, 3), np.uint8)
-        self.a = np.zeros((S, S), bool)
-        self.body = np.zeros((S, S), bool)
-
-    def fill(self, m, color):
-        self.rgb[m] = color
-        self.a |= m
-
-    def px(self, x, y, color):
-        self.rgb[y, x] = color
-        self.a[y, x] = True
-
-    def part(self, m, ramp, light=(1, 2), dark=(1, 2), spot=None, ink=None):
-        """외곽선 고리 + 3단 셀 명암. ramp=(그늘, 중간, 빛). 빛은 왼쪽 위, 그늘은 오른쪽 아래 가장자리 띠."""
-        m = tidy(m)
-        if not m.any():
-            return m
-        ring = (shift(m, 1, 0) | shift(m, -1, 0) | shift(m, 0, 1) | shift(m, 0, -1)) & ~m
-        self.fill(ring, ink or self.ink)
-        sh = m & ~shift(m, -dark[0], -dark[1])  # 오른쪽 아래로 dark 만큼 밖이면 그늘
-        hi = m & ~shift(m, light[0], light[1]) & ~sh  # 왼쪽 위로 light 만큼 밖이면 빛
-        sh, hi = tidy(sh) & m, tidy(hi) & m & ~sh
-        self.fill(m, ramp[1])
-        self.fill(sh, ramp[0])
-        self.fill(hi, ramp[2])
-        if spot is not None:
-            self.fill(spot & m & ~sh, ramp[2])
-        self.body |= m
-        return m
-
-    def line(self, pts, color, clip=None):
-        im = blank(S)
-        ImageDraw.Draw(im).line([(round(x), round(y)) for x, y in pts], fill=255, width=1)
-        m = M(im)
-        if clip is not None:
-            m &= clip
-        self.fill(m, color)
-
-    def image(self):
-        """잉크를 가로 가운데로 옮긴다(정수 칸 이동 — 화소는 그대로)."""
-        cols = np.nonzero(self.a.any(axis=0))[0]
-        dx = (S - (cols[0] + cols[-1] + 1)) // 2 if len(cols) else 0
-        out = np.zeros((S, S, 4), np.uint8)
-        out[..., :3] = self.rgb
-        out[..., 3] = np.where(self.a, 255, 0)
-        out = np.roll(out, dx, axis=1)
-        return Image.fromarray(out, "RGBA")
-
-
-# 3/4 시점 애니 눈 (R12). I 위 속눈썹·윤곽(잉크) · W 2×2 흰 반짝임과 바깥 흰자 · D 눈동자 · R/H 두 단 보석 홍채.
-NEAR_EYE_PAT = [
-    ".IIII",
-    "IWWDI",
-    "IWWDD",
-    "IDDRW",
-    ".DRHW",
-    ".DRR.",
-]
-FAR_EYE_PAT = [  # 먼 눈: 원근으로 좁아진 3×5
-    ".II",
-    "IWD",
-    "IWD",
-    "IRH",
-    ".DR",
-]
-
-
-def draw_eye(sp, x, y, kind, ink, dark, white, iris, iris_hi):
-    """(x, y)는 패턴 왼쪽 위. kind 는 "near"(5×6) 또는 "far"(3×5)."""
-    cmap = {"I": ink, "D": dark, "W": white, "R": iris, "H": iris_hi}
-    for dy, row in enumerate(NEAR_EYE_PAT if kind == "near" else FAR_EYE_PAT):
+def paint_rows(arr: np.ndarray, x0: int, y0: int, rows: list[str], cmap: dict[str, Rgb]) -> None:
+    """Paint a character-mapped pixel patch onto `arr` at `(x0, y0)`."""
+    for dy, row in enumerate(rows):
         for dx, ch in enumerate(row):
             if ch in cmap:
-                sp.px(x + dx, y + dy, cmap[ch])
+                arr[y0 + dy, x0 + dx] = (*cmap[ch], 255)
 
 
-def toes(sp, paw_m, color, gaps=2):
-    """발 앞쪽 아래에 짧은 발가락 금(외곽선 색)을 긋는다."""
-    ys, xs = np.nonzero(paw_m)
-    if not len(xs):
-        return
-    bottom = ys.max()
-    x0, x1 = xs[ys == bottom].min(), xs[ys == bottom].max()
-    for k in range(1, gaps + 1):
-        x = x0 + round((x1 - x0) * k / (gaps + 1))
-        sp.px(x, bottom, color)
-        sp.px(x, bottom - 1, color)
+def build_sparkit_front() -> Image.Image:
+    """Refine sparkit front sprite with unbroken outline and 3/4 crimson-amber jewel eyes."""
+    arr = np.array(load_bw_starter("sparkit", "front"))
+    cmap: dict[str, Rgb] = {
+        "0": (26, 4, 4), "1": (69, 13, 3), "2": (99, 20, 4), "6": (189, 28, 5),
+        "B": (253, 135, 14), "E": (254, 238, 166), "W": (254, 254, 254),
+    }
+    ensure_dark_outline(arr, cmap["1"])
+    paint_rows(arr, 5, 39, ["1B00", "1BW0", "1BW2", "1B16"], cmap)
+    paint_rows(arr, 14, 39, [".0000.", "0WW001", "0WW001", "000221", "122661", ".1121E", "B....E"], cmap)
+    return Image.fromarray(arr, "RGBA")
 
 
-# ── 토리프 (leafling) ───────────────────────────────────────
-
-LEAF_INK = (30, 44, 26)
-FUR = ((72, 128, 60), (112, 172, 78), (160, 210, 108))
-LEAF = ((64, 138, 42), (122, 194, 60), (184, 230, 96))
-VEIN = (50, 106, 34)
-CREAM = ((206, 192, 146), (244, 236, 200), (255, 252, 232))
-ACORN = ((100, 58, 28), (150, 94, 46), (204, 144, 78))
-EYE_D, EYE_W, EYE_I, EYE_IH = (24, 18, 16), (255, 255, 255), (118, 34, 28), (230, 124, 42)
-
-def acorn_cap(sp, c, rx, ry):
-    cap = ell(c, rx, ry) & (np.indices((S, S))[0] <= c[1] + 1)
-    cap |= ell((c[0], c[1] + 1), rx + 1, 1.2)
-    sp.part(cap, ACORN, light=(1, 1), dark=(1, 1))
-    ys, xs = np.nonzero(tidy(cap))
-    for y, x in zip(ys, xs):  # 깍정이 비늘: 마름모 격자 점
-        if y < c[1] and (x + 2 * y) % 4 == 0 and (x - 2 * y) % 4 == 0 and tidy(cap)[y - 1, x] and tidy(cap)[y + 1, x]:
-            sp.px(x, y, ACORN[0])
-    stem = pol([(c[0] - 1, c[1] - ry - 3), (c[0] + 1, c[1] - ry - 3), (c[0] + 1, c[1] - ry + 1), (c[0] - 1, c[1] - ry + 1)])
-    sp.part(stem, ACORN, light=(1, 1), dark=(1, 1))
+def build_aqualing_front() -> Image.Image:
+    """Refine aqualing front sprite with unbroken gill outline and 3/4 ocean-blue jewel eyes."""
+    arr = np.array(load_bw_starter("aqualing", "front"))
+    cmap: dict[str, Rgb] = {
+        "0": (2, 33, 93), "1": (24, 60, 128), "3": (40, 104, 189), "6": (73, 151, 232),
+        "8": (252, 145, 142), "9": (126, 199, 252), "C": (254, 247, 218), "W": (254, 254, 254),
+    }
+    ensure_dark_outline(arr, cmap["0"])
+    for gx, gy in ((18, 33), (18, 34), (38, 33)):
+        arr[gy, gx] = (*cmap["8"], 255)
+    paint_rows(arr, 15, 42, ["9000", "90W0", "90W1", "9013", "9001", ".CCC"], cmap)
+    paint_rows(arr, 26, 42, ["C0000C", "0WW000", "0WW000", "000110", "011360", "C0000C", "CCCCC."], cmap)
+    return Image.fromarray(arr, "RGBA")
 
 
-def leaf_part(sp, base, ctrl, tip, width):
-    """잎: 외곽선 + 3단 명암 + 가운데 잎맥 한 줄. 곁맥은 64칸에서 계단 잡티가 되어 긋지 않는다."""
-    m, pts = curve_leaf(base, ctrl, tip, width)
-    m = sp.part(m, LEAF, light=(1, 2), dark=(2, 1))
-    sp.line(pts[2:-2], VEIN, clip=m & shift(m, 1, 0) & shift(m, -1, 0) & shift(m, 0, 1) & shift(m, 0, -1))
-    return m
+def build_leafling_front() -> Image.Image:
+    """Refine leafling front sprite with continuous leaf outlines/veins and 3/4 amber-brown eyes."""
+    arr = np.array(load_bw_starter("leafling", "front"))
+    cmap: dict[str, Rgb] = {
+        "0": (52, 26, 10), "1": (21, 69, 20), "2": (88, 46, 16), "4": (151, 83, 33),
+        "6": (199, 122, 57), "L": (178, 251, 19), "D": (253, 237, 188), "W": (254, 254, 253),
+    }
+    ensure_dark_outline(arr, cmap["1"], max_l=0.348)
+    arr[27, 11] = (*cmap["L"], 255)
+    arr[29, 16] = (*cmap["L"], 255)
+    paint_rows(arr, 17, 41, ["1D..", "1D00", "1DW0", "1DW2", "1D24", "1D00"], cmap)
+    paint_rows(arr, 23, 42, ["D0000D", "0WW000", "0WW000", "000220", "022460", "D0000D"], cmap)
+    return Image.fromarray(arr, "RGBA")
 
 
-def leafling_front():
-    sp = Sprite(LEAF_INK)
-    leaf_part(sp, (41, 50), (49, 45), (49, 31), 9)  # 꼬리 잎
-    far = ((72, 128, 60), (92, 150, 68), (128, 186, 90))
-    for a, b in (((25, 49), (26, 59)), ((42, 51), (43, 59))):
-        sp.part(taper(a, b, 5, 5) | ell((b[0], b[1] + 1), 3, 2), far)
-    sp.part(ell((34, 49), 11, 8), FUR)
-    hind = sp.part(ell((40, 52), 5.5, 5.5) | taper((39, 54), (38, 60), 6, 6) | ell((37, 60), 3.5, 2), FUR)
-    front = sp.part(taper((21, 50), (20, 60), 6, 6) | ell((19, 60), 3.5, 2), FUR)
-    toes(sp, hind & (np.indices((S, S))[0] >= 59), LEAF_INK)
-    toes(sp, front & (np.indices((S, S))[0] >= 59), LEAF_INK)
-    sp.part(ell((25, 48), 6, 5) | pol([(20, 51), (23, 55), (25, 51), (28, 55), (30, 50)]), CREAM)
-    leaf_part(sp, (18, 30), (9, 25), (11, 16), 11)  # 왼쪽 잎 귀
-    leaf_part(sp, (28, 28), (36, 23), (39, 16), 11)  # 오른쪽 잎 귀
-    head = sp.part(ell((22, 39), 12, 9.5) | ell((14, 40.5), 5.8, 4.8), FUR, spot=ell((19, 33), 3, 1.5))
-    mask = tidy(head & ell((17, 45.5), 6.8, 3.0)) & head
-    sp.fill(mask, CREAM[1])
-    acorn_cap(sp, (23, 28), 7.5, 4)
-    draw_eye(sp, 12, 34, "far", LEAF_INK, EYE_D, EYE_W, EYE_I, EYE_IH)
-    draw_eye(sp, 20, 34, "near", LEAF_INK, EYE_D, EYE_W, EYE_I, EYE_IH)
-    sp.px(15, 41, LEAF_INK)
-    for x, y in ((15, 44), (16, 45), (17, 45), (18, 44)):
-        sp.px(x, y, LEAF_INK)
-    return sp.image()
+def build_starter_back(sid: str, default_dark: Rgb) -> Image.Image:
+    """Refine starter back sprite outline continuity."""
+    arr = np.array(load_bw_starter(sid, "back"))
+    ensure_dark_outline(arr, default_dark)
+    return Image.fromarray(arr, "RGBA")
 
 
-def leafling_back():
-    sp = Sprite(LEAF_INK)
-    far = ((72, 128, 60), (92, 150, 68), (128, 186, 90))
-    for c in ((44, 59), (22, 59)):
-        sp.part(ell(c, 4, 3.5), far)
-    body = sp.part(ell((34, 50), 15, 9.5), FUR)
-    for c in ((25, 60), (42, 60)):
-        paw = sp.part(ell(c, 4.5, 3), FUR)
-        sp.fill(ell((c[0], c[1] + 0.5), 2, 1.2) & paw, CREAM[1])
-    leaf_part(sp, (26, 28), (12, 24), (10, 10), 13)
-    leaf_part(sp, (38, 27), (51, 24), (54, 10), 13)
-    sp.part(ell((33, 35), 12.5, 10.5), FUR, spot=ell((28, 30), 4, 2))
-    sp.fill(tidy(ell((36, 45), 7, 2.5)) & body & ~ell((33, 35), 13.5, 11.5), FUR[0])
-    acorn_cap(sp, (33, 26), 8, 4.5)
-    leaf_part(sp, (26, 55), (12, 54), (10, 38), 11)  # 꼬리 잎(앞쪽)
-    return sp.image()
-
-
-# ── 파이린 (sparkit) ─────────────────────────────────────────
-
-FIRE_INK = (44, 22, 18)
-EMBER = ((198, 84, 34), (238, 128, 48), (255, 176, 88))
-STRIPE = (150, 46, 30)
-BELLY = ((222, 186, 128), (250, 226, 170), (255, 244, 210))
-ROCK = ((40, 36, 40), (70, 62, 66), (104, 94, 96))
-LAVA = ((236, 120, 30), (255, 196, 54), (255, 240, 150))
-F_EYE_D, F_EYE_I, F_EYE_IH = (28, 14, 18), (124, 28, 32), LAVA[1]
-
-
-def lava_ball(sp, c, r):
-    m = sp.part(ell(c, r, r), ROCK, light=(1, 2), dark=(2, 2))
-    cracks = [
-        [(c[0] - r + 2, c[1] - 1), (c[0] - 2, c[1] - 2), (c[0] + 1, c[1] + 1), (c[0] + r - 2, c[1])],
-        [(c[0] - 2, c[1] - 2), (c[0] - 3, c[1] - r + 2)],
-        [(c[0] + 1, c[1] + 1), (c[0], c[1] + r - 2)],
-        [(c[0] + 3, c[1] + 0.5), (c[0] + 4, c[1] - r + 3)],
-    ]
-    inner = m & shift(m, 1, 0) & shift(m, -1, 0) & shift(m, 0, 1) & shift(m, 0, -1)
-    for cr in cracks:
-        sp.line(cr, LAVA[1], clip=inner)
-    return m
-
-
-def flame_tuft(sp, base, h, lean=1):
-    outer = pol([(base[0] - 4, base[1]), (base[0] - 3, base[1] - h * 0.5), (base[0] - 1, base[1] - h * 0.65),
-                 (base[0] + lean, base[1] - h), (base[0] + 2, base[1] - h * 0.55), (base[0] + 4, base[1] - h * 0.7),
-                 (base[0] + 4, base[1])])
-    m = sp.part(outer, (LAVA[0], LAVA[0], LAVA[1]), light=(1, 1), dark=(1, 1))
-    core = pol([(base[0] - 2, base[1]), (base[0], base[1] - h * 0.55), (base[0] + 2, base[1])]) & m
-    sp.fill(tidy(core) & m, LAVA[2])
-    return m
-
-
-def sparkit_front():
-    sp = Sprite(FIRE_INK)
-    tail = sp.part(taper((41, 52), (48, 46), 7, 5, bulge=0.5), EMBER)
-    lava_ball(sp, (52, 42), 8)
-    flame_tuft(sp, (53, 35), 12)
-    far = ((168, 66, 30), (204, 100, 40), (236, 140, 64))
-    for a, b in (((26, 51), (26, 59)), ((42, 52), (43, 59))):
-        sp.part(taper(a, b, 5, 5) | ell((b[0], b[1] + 1), 3, 2), far)
-    body = sp.part(ell((34, 50), 12, 7.5), EMBER)
-    for x0 in (31, 37):
-        sp.line([(x0, 43), (x0 + 2, 47)], STRIPE, clip=body)
-        sp.line([(x0 + 1, 43), (x0 + 3, 47)], STRIPE, clip=body)
-    hind = sp.part(ell((41, 54), 5, 4.5) | taper((40, 55), (39, 60), 6, 6) | ell((38, 60), 3.5, 2), EMBER)
-    front = sp.part(taper((23, 52), (22, 60), 6, 6) | ell((21, 60), 3.5, 2), EMBER)
-    rows = np.indices((S, S))[0]
-    toes(sp, hind & (rows >= 59), FIRE_INK)
-    toes(sp, front & (rows >= 59), FIRE_INK)
-    sp.part(ell((28, 52), 7, 4), BELLY)
-    head = sp.part(ell((21.5, 37.5), 12.0, 10.2) | ell((14, 40), 5.5, 4.5), EMBER, spot=ell((18, 31), 4, 1.5))
-    jaw = tidy(head & (ell((18, 45), 7.5, 3.2) | ell((14, 43.5), 4.5, 2.3))) & head
-    sp.fill(jaw, BELLY[1])
-    draw_eye(sp, 13, 32, "far", FIRE_INK, F_EYE_D, (255, 255, 255), F_EYE_I, F_EYE_IH)
-    draw_eye(sp, 21, 32, "near", FIRE_INK, F_EYE_D, (255, 255, 255), F_EYE_I, F_EYE_IH)
-    sp.px(12, 40, FIRE_INK)
-    for x, y in ((14, 43), (15, 44), (16, 44), (17, 44), (18, 43)):
-        sp.px(x, y, FIRE_INK)
-    sp.line([(25, 29), (26, 27)], STRIPE, clip=head)
-    sp.line([(29, 30), (31, 28)], STRIPE, clip=head)
-    return sp.image()
-
-
-def sparkit_back():
-    sp = Sprite(FIRE_INK)
-    far = ((168, 66, 30), (204, 100, 40), (236, 140, 64))
-    for c in ((46, 59), (26, 59)):
-        sp.part(ell(c, 4, 3.5), far)
-    body = sp.part(ell((36, 50), 15, 9.5), EMBER)
-    for x0 in (30, 36, 42):
-        sp.line([(x0, 42), (x0 + 1, 52)], STRIPE, clip=body)
-        sp.line([(x0 + 1, 42), (x0 + 2, 52)], STRIPE, clip=body)
-    for c in ((28, 60), (45, 60)):
-        sp.part(ell(c, 4.5, 3), EMBER)
-    head = sp.part(ell((38, 33), 12.5, 10), EMBER, spot=ell((33, 28), 4, 2))
-    sp.line([(36, 24), (37, 28)], STRIPE, clip=head)
-    sp.line([(41, 24), (41, 28)], STRIPE, clip=head)
-    sp.part(taper((26, 54), (18, 52), 7, 5), EMBER)
-    lava_ball(sp, (13, 47), 8.5)
-    flame_tuft(sp, (13, 39), 13, lean=-1)
-    return sp.image()
-
-
-# ── 아쿠링 (aqualing) ───────────────────────────────────────
-
-WATER_INK = (22, 34, 70)
-BLUE = ((70, 132, 206), (110, 172, 236), (168, 214, 250))
-PALE = ((206, 216, 222), (240, 244, 236), (255, 255, 250))
-GILL = ((214, 92, 104), (244, 138, 140), (255, 192, 186))
-W_EYE_D, W_EYE_I, W_EYE_IH = (14, 20, 48), (24, 62, 132), (72, 210, 242)
-
-
-def gill(sp, base, tip, width):
-    m, pts = curve_leaf(base, ((base[0] + tip[0]) / 2, (base[1] + tip[1]) / 2 - 1), tip, width, n=8)
-    # 깃털 톱니: 양쪽 가장자리를 2칸마다 한 칸씩 파낸다
-    edge = m & ~(shift(m, 1, 0) & shift(m, -1, 0) & shift(m, 0, 1) & shift(m, 0, -1))
-    ys, xs = np.nonzero(edge)
-    notch = np.zeros_like(m)
-    for y, x in zip(ys, xs):
-        if (x + y) % 3 == 0:
-            notch[y, x] = True
-    m = sp.part(m & ~notch, GILL, light=(1, 1), dark=(1, 1))
-    sp.line(pts[1:-2], GILL[0], clip=m)
-    return m
-
-
-def aqualing_front():
-    sp = Sprite(WATER_INK)
-    tail = sp.part(curve_leaf((39, 54), (49, 56), (54, 47), 8.5)[0], BLUE)
-    sp.fill(tidy(tail & ~shift(tail, 0, -2) & ~shift(tail, 1, 0)) & tail, PALE[1])
-    gill(sp, (16, 30), (10, 20), 5.5)  # 먼 쪽 아가미
-    gill(sp, (20, 29), (18, 19), 5.5)
-    far = ((52, 108, 180), (86, 148, 214), (130, 186, 236))
-    for a, b in (((25, 52), (25, 59)), ((41, 53), (42, 59))):
-        sp.part(taper(a, b, 5, 5) | ell((b[0], b[1] + 1), 3, 2), far)
-    sp.part(ell((34, 51), 12, 7), BLUE)
-    hind = sp.part(ell((40, 55), 5, 4) | taper((39, 56), (38, 60), 6, 6) | ell((37, 60), 3.5, 2), BLUE)
-    front = sp.part(taper((22, 53), (21, 60), 6, 6) | ell((20, 60), 3.5, 2), BLUE)
-    rows = np.indices((S, S))[0]
-    toes(sp, hind & (rows >= 59), WATER_INK)
-    toes(sp, front & (rows >= 59), WATER_INK)
-    sp.part(ell((28, 54), 7, 3.5), PALE)
-    gill(sp, (31, 33), (42, 22), 6.5)  # 가까운 쪽 아가미 셋
-    gill(sp, (33, 37), (45, 34), 6.5)
-    gill(sp, (32, 41), (43, 46), 5.5)
-    head = sp.part(ell((21, 38.5), 12.5, 10.0), BLUE, spot=ell((16, 31.5), 4, 1.5))
-    cheek = tidy(head & ell((18, 45.5), 8, 3.2)) & head
-    sp.fill(cheek, PALE[1])
-    draw_eye(sp, 13, 31, "far", WATER_INK, W_EYE_D, (255, 255, 255), W_EYE_I, W_EYE_IH)
-    draw_eye(sp, 21, 31, "near", WATER_INK, W_EYE_D, (255, 255, 255), W_EYE_I, W_EYE_IH)
-    for x, y in ((15, 42), (16, 43), (17, 43), (18, 42)):
-        sp.px(x, y, WATER_INK)
-    return sp.image()
-
-
-def aqualing_back():
-    sp = Sprite(WATER_INK)
-    far = ((52, 108, 180), (86, 148, 214), (130, 186, 236))
-    for c in ((46, 59), (24, 59)):
-        sp.part(ell(c, 4, 3.5), far)
-    sp.part(ell((35, 50), 13, 9), BLUE)
-    for c in ((26, 60), (44, 60)):
-        sp.part(ell(c, 4.5, 3), BLUE)
-    for base, tip in (((25, 30), (8, 18)), ((24, 34), (6, 32)), ((25, 38), (9, 45))):
-        gill(sp, base, tip, 7)
-    for base, tip in (((44, 29), (58, 15)), ((45, 33), (60, 30)), ((44, 37), (57, 43))):
-        gill(sp, base, tip, 7)
-    sp.part(ell((35, 34), 12.5, 10), BLUE, spot=ell((30, 28), 4, 2))
-    tail = sp.part(curve_leaf((28, 56), (16, 58), (8, 47), 10)[0], BLUE)
-    sp.fill(tidy(tail & ~shift(tail, 0, -2) & ~shift(tail, -1, 0)) & tail, PALE[1])
-    return sp.image()
-
-
-DRAW = {
-    "leafling": (leafling_front, leafling_back),
-    "sparkit": (sparkit_front, sparkit_back),
-    "aqualing": (aqualing_front, aqualing_back),
-}
-
-
-def main(argv):
-    images = {(sp, side): fn() for sp, fns in DRAW.items() for side, fn in zip(("front", "back"), fns)}
-    if "--preview" in argv:
-        k = 8
-        sheet = Image.new("RGBA", (3 * (S * k + 16), 2 * (S * k + 16)), (214, 228, 200, 255))
-        for i, sp in enumerate(DRAW):
-            for j, side in enumerate(("front", "back")):
-                sheet.alpha_composite(images[(sp, side)].resize((S * k, S * k), Image.NEAREST), (i * (S * k + 16), j * (S * k + 16)))
-        sheet.save("/tmp/redraw-starters.png")
-        print("/tmp/redraw-starters.png")
-        return
+def main(argv: list[str] | None = None) -> None:
+    """Write all 6 starter authored PNGs (`sparkit`, `aqualing`, `leafling` front & back)."""
+    _ = argv
     OUT.mkdir(parents=True, exist_ok=True)
-    for (sp, side), im in images.items():
-        path = OUT / f"{sp}-{side}.png"
-        im.save(path, optimize=True)
-        colors = len({tuple(c) for c in np.array(im).reshape(-1, 4) if c[3]})
-        print(path.relative_to(ROOT), im.getbbox(), colors, "colors")
+    sprites = {
+        "sparkit-front": build_sparkit_front(),
+        "sparkit-back": build_starter_back("sparkit", (63, 12, 3)),
+        "aqualing-front": build_aqualing_front(),
+        "aqualing-back": build_starter_back("aqualing", (3, 33, 92)),
+        "leafling-front": build_leafling_front(),
+        "leafling-back": build_starter_back("leafling", (18, 50, 11)),
+    }
+    for name, img in sprites.items():
+        img.save(OUT / f"{name}.png", optimize=True)
 
 
 if __name__ == "__main__":
