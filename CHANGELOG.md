@@ -5,6 +5,24 @@
 
 <!-- releases -->
 
+## 0.279.0 — 2026-10-20
+
+### 기능
+
+- **hand-interior** — pilaster open-plan wings, vestibule/notched rooms, wall-floor contrast guard (#3019) (`535dd98`)
+- **hand-interior** — add architectural corridors and L-shaped notched rooms to facility layouts (#3018) (`5eb20b6`)
+
+### 수정
+
+- **monster** — 고양이 2종·은회색 늑대·불꽃 강아지 전투 도트 다시 그리기 + (0,2) 스킬 칸 (12차) (#3027) (`af4ffbd`)
+- **store** — cap bundle inflation, re-verify cached blobs, tighten pack validation (#3025) (`f9d1ff4`)
+- **monster** — 언데드 8종·고블린 장사·오크 전투 도트 다시 그리기 + (0,2) 스킬 칸 (11차) (#3024) (`1a9aea4`)
+- **monster** — run eye checks on the shipped bundle and add per-species eye table checks V0-V8 (눈 규칙 판본 5) (#3023) (`8bf757c`)
+- **store** — refuse third-party and store-bought items anywhere in a pack's closure (#3022) (`93170cf`)
+- **monster** — 슬라임 6종·우즈 2종·해골·좀비 전투 도트 다시 그리기 + (0,2) 스킬 칸 (10차) (#3021) (`9eea1be`)
+- **store** — restore concept import and real bundle size cap in Electron store client (#3020) (`b4477cf`)
+- **editor** — resolve left sidebar rail, drawer, submode, and overlay state desyncs (#3016) (`c36b48b`)
+
 ## 0.278.0 — 2026-10-19
 
 ### 기능
