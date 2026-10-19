@@ -98,3 +98,28 @@ npm run harness -- game-concepts publish --target staging|prod --yes-prod|http:/
 「인기 에셋 둘러보기」를 누르면 에셋 스토어가 `browse`·`sort: "popular"`로 열리고,
 큰 화면의 제목도 「인기 에셋」으로 시작한다. 최신 목록·받은 것·프로젝트·올리기는 큰 화면의
 탭에서 필요할 때 연다. 데스크톱 브리지가 없으면 기존 안내만 보여 준다.
+
+## 스토어 창 UX (2026-10-20, 「사용자들이 매우 쉽게」)
+
+처음 쓰는 사람 기준 감사(로컬 일회용 스토어 + 실제 Electron 창, 증거 `~/claude-viz/store-ux-1.html`) 뒤에 바꾼 계약이다.
+
+| 파일 | 맡는 일 |
+|---|---|
+| `src/editor/assetStore/storeWorkspace.ts` | 창 껍데기·둘러보기·상세·넣기/되돌리기·받아 둔 것·내 프로젝트·신고 |
+| `src/editor/assetStore/storeShare.ts` | 「내 에셋 나누기」 3걸음 마법사(고르기 → 자동 검사·소개 → 미리보기·올리기) |
+| `src/editor/assetStore/storeText.ts` | 사람 문장(순수): 라이선스 한 문장, 「들어오는 것」, 크기, 오류 → 제목·고칠 방법·단추 |
+| `src/editor/assetStore/storeUndo.ts` | 넣기 직전 모습 캡처·되돌리기·빼기·옛 판본 찌꺼기 정리(순수, `test/assetStoreUndo.test.ts`) |
+
+- **탭 id 는 그대로**(`browse|installed|project|upload`, testid `store-tab-*`), 이름만 쉬운 말: 둘러보기 · 받아 둔 것 · 내 프로젝트 · 내 에셋 나누기.
+- **첫 화면**: 종류 큰 칸 6개(`store-category-<kind>`: 땅·건물 타일, 캐릭터, 음악, 효과음, 게임 시작 세트, 얼굴) + 추천 한 개 + 인기 목록. 첫 방문 안내 띠(`store-first-run`, localStorage `oprn:store.firstRunDone`).
+- **찾기**: Enter 없이 280ms 뒤 찾는다. 찾기 칸·머리는 열 때 한 번만 만들어 다시 그리지 않는다(한글 IME 조합이 끊기지 않게). 추천 목록(`store-suggest`)은 종류·이미 본 제목·태그에서 고르고 서버를 다시 부르지 않는다. `/` = 찾기 칸, ↑↓ Enter = 추천 고르기, Esc 는 한 겹씩(추천 → 로그인 → 신고 → 상세 → 창).
+- **목록**: 24개씩, 끝이 보이면 다음 쪽(IntersectionObserver) + 「더 보기」. 늦게 온 옛 응답은 버린다(`catalogSeq`). 불러오는 동안 뼈대 카드.
+- **상세**: 1100px 이상은 오른쪽 기둥, 그 아래(1024 창)는 덮개 패널. 「들어오는 것」 한 문장(`store-contents`), 라이선스·크레딧 한 문장(`store-license-sentence`), 크기(`store-size`, 판본 bytes), 「커뮤니티 작품」 출처 표시, 신고(`store-report` → 사유 5개, `window.oprn.store.report`).
+- **넣기는 단추 하나**(`store-add`): 받기 → 넣기를 이어서 하고 진행 막대(`store-progress`, role=progressbar)를 그 자리에서만 고친다. 50MB 넘으면 먼저 묻고, 새 판본으로 바꿀 때도 묻는다. 끝나면 `store-added-panel`: 들어간 곳(타일 N칸 → 팔레트 …), 「새 맵에서 칠해 보기」(`store-open-palette` — 팔레트는 지금 맵의 타일셋만 보이므로 그 타일셋으로 새 맵을 만들어 연다), 「리소스 목록에서 보기」, **「되돌리기」**(`store-undo`).
+- **되돌리기 계약**: `addStoreItemToProject` 가 넣기 직전 그 키들(에셋·타일셋·캐릭터 이름표·리소스 줄)을 `snapshot` 으로 돌려주고, `undoStoreItemAdd` 가 그대로 되돌린다(새 판본 넣기면 옛 판본이 돌아온다). 넣은 뒤 맵·이벤트·DB 가 그 id 를 쓰기 시작했으면 바꾸지 않고 쓰는 곳 이름을 알려 준다. 편집기 Ctrl+Z 기록도 그대로 남는다.
+- **빼기·정리**: 「내 프로젝트」 탭의 「빼기」, 새 판본에서 빠진 옛 에셋 「정리하기」 — 같은 쓰는 곳 검사를 복제본에 먼저 돌린다.
+- **오류**: `humanStoreError` 가 제목(쉬운 말) + 고칠 방법 + 단추(다시 시도·받아 둔 것 보기·신고·프로젝트 열기·로그인)로 바꾼다. 내부 영어 오류는 제목이 되지 않고 「자세히」 안에만. 오프라인은 배너가 아니라 빈 화면 카드(`store-offline`)에 다시 시도·받아 둔 것.
+- **나누기**: 로그인은 마지막 걸음에서만. 2걸음의 자동 검사는 `packBlockedItems`(Rasak·REFMAP·RPG Maker MV·PAW·스토어에서 받은 것이 의존으로 딸려 와도 막힘) 결과를 그대로 보여 주고 다음으로 못 가게 한다. 라이선스는 쉬운 말 네 가지(추천 = OPRN-GAME). 내 에셋 새 판본 덮어쓰기는 확인을 받는다.
+- **보안**: 상품 글(제목·소개·설명·작가·태그·크레딧)은 전부 `textContent` + `translate="no"` — `innerHTML` 을 쓰지 않는다. 그림은 메인이 sha256 을 확인한 blob 의 `blob:` 주소로만. 토큰은 메인 프로세스(safeStorage)에만 있고 DOM·localStorage·로그에 없다.
+- **문구**: 새 문장은 한국어 원문 템플릿 하나로 쓰고 `src/i18n/catalogs/{en,ja,zh}.json` 에 넣었다(종류·라이선스 이름은 `STORE_KIND_NAMES` 그대로).
+- **아직 없는 것**: 서버가 「검증된 작가」를 알려 주지 않아 모든 상품이 「커뮤니티 작품」으로 보인다(서버 필드가 생기면 배지만 붙이면 된다). 넣기를 중간에 취소하는 단추는 없다(받기 IPC 에 취소가 없다).

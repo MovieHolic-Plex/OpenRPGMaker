@@ -7,7 +7,7 @@ import { app, ipcMain, safeStorage, shell, webContents } from "electron";
 import { OPRN_CHANNELS } from "../shared/channels";
 import {
   storeCatalogSchema, storeConceptMadeSchema, storeConceptSlugSchema, storeConceptsSchema, storeLoginSchema, storeSlugSchema, storeUploadSchema, storeUrlSchema,
-  storeBlobSchema, storeVisibilitySchema,
+  storeBlobSchema, storeReportSchema, storeVisibilitySchema,
 } from "../shared/schemas";
 import { AssetStoreClient, sameOriginUrl, StoreError } from "./assetStoreClient";
 
@@ -129,6 +129,10 @@ export function registerAssetStore(): void {
     const result = await storeClient().upload({ manifest: input.manifest, blobs: input.blobs, ...(input.targetSlug ? { targetSlug: input.targetSlug } : {}) }, progress);
     broadcast(OPRN_CHANNELS.storeChanged, { kind: "uploaded", slug: result.slug });
     return result;
+  }));
+  ipcMain.handle(OPRN_CHANNELS.storeReport, (_event, payload: unknown) => wrap(() => {
+    const { slug, reason, detail } = storeReportSchema.parse(payload);
+    return storeClient().report(slug, reason, detail);
   }));
   ipcMain.handle(OPRN_CHANNELS.storeVisibility, (_event, payload: unknown) => wrap(async () => {
     const { slug, hidden } = storeVisibilitySchema.parse(payload);

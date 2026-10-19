@@ -67,6 +67,8 @@ export const DELAYED_TOOLTIP_ROLLOUT: readonly DelayedTooltipTarget[] = [
   { label: "자동", name: "레이어 자동 판정에 맡기기", testid: "tileset-layer-auto" },
   { label: "하위 고정", name: "이 타일의 홈 레이어를 하위로 확정", testid: "tileset-layer-lower" },
   { label: "상위 고정", name: "이 타일의 홈 레이어를 상위로 확정", testid: "tileset-layer-upper" },
+  // 에셋 스토어 찾기 칸의 × (글자 없는 단추) — storeWorkspace 가 그릴 때마다 설치기를 부른다.
+  { label: "지우기", name: "찾는 말 지우기", testid: "store-search-clear" },
 ];
 
 const ATTACHED_FLAG = "delayedTooltipAttached";

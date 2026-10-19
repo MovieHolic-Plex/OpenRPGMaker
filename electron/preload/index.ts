@@ -122,6 +122,7 @@ const bridge = {
     logout: invoke(OPRN_CHANNELS.storeLogout),
     upload: invoke(OPRN_CHANNELS.storeUpload),
     visibility: invoke(OPRN_CHANNELS.storeVisibility),
+    report: invoke(OPRN_CHANNELS.storeReport),
     concepts: invoke(OPRN_CHANNELS.storeConcepts),
     concept: invoke(OPRN_CHANNELS.storeConcept),
     conceptMade: invoke(OPRN_CHANNELS.storeConceptMade),
