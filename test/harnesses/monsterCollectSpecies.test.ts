@@ -498,6 +498,19 @@ describe("monster-collect-species 시드·레지스트리", () => {
     }
     expect(Object.values(table.species).filter((e) => e.frozen).length).toBe(4);
   });
+
+  it("눈 표 repair: 장부 authoredSha256 이 authored 파일 바이트 해시·eyes.json repair.to 와 같다 (손 수정이 장부 밖에서 일어나지 않았다)", () => {
+    const table = JSON.parse(readFileSync(join(ROOT, "harness-data/monster-collect-species/eyes.json"), "utf8")) as EyeTable & { species: Record<string, { repair?: { from: string; to: string } }> };
+    const ledger = JSON.parse(readFileSync(join(ROOT, "harness-data/monster-collect-species/ledger.json"), "utf8")) as { picks: Record<string, { front?: { authored?: string; authoredSha256?: string; previousAuthoredSha256?: string } }> };
+    for (const [id, entry] of Object.entries(table.species)) {
+      if (!entry.repair) continue;
+      const pick = ledger.picks[id]!.front!;
+      const sha = createHash("sha256").update(readFileSync(join(ROOT, "harness-data/monster-collect-species", pick.authored!))).digest("hex");
+      expect(pick.authoredSha256, id).toBe(sha);
+      expect(entry.repair.to, id).toBe(sha);
+      expect(pick.previousAuthoredSha256, id).toBe(entry.repair.from);
+    }
+  });
 });
 
 describe("monster-collect-species 눈 표 검사 (합성 64px 얼굴)", () => {

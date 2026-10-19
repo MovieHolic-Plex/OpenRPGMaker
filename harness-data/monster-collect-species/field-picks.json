@@ -2,18 +2,18 @@
  "version": 1,
  "picks": {
   "gustchick": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014114",
    "candidate": 1,
-   "sha": "297a671f62bf375c",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "5da80cd3380149a8",
+   "at": "2026-10-20T01:41:27",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "zaptoe": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014114",
    "candidate": 1,
-   "sha": "e9ff536aada61751",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "ecbf8eb572e416e1",
+   "at": "2026-10-20T01:41:27",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "sparkit": {
    "run": "derive-20261019-r13",
@@ -37,11 +37,11 @@
    "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "pipbug": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014114",
    "candidate": 1,
-   "sha": "aae8af5056561f3e",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "b74166fb77066420",
+   "at": "2026-10-20T01:41:27",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "wickworm": {
    "run": "derive-20261019-r13",
@@ -65,11 +65,11 @@
    "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "kilnclaw": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014114",
    "candidate": 1,
-   "sha": "fafdc1f9fb8bf1fe",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "8b16e95e24a58fa2",
+   "at": "2026-10-20T01:41:27",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "brookraft": {
    "run": "derive-20261019-r13",
@@ -86,74 +86,74 @@
    "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "curlfin": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014114",
    "candidate": 1,
-   "sha": "25409e73ea72c01d",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "4f8cb1292eb1b58e",
+   "at": "2026-10-20T01:41:27",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "pebblekid": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014115",
    "candidate": 1,
-   "sha": "d6eca64aa758868e",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "04269f89716fd932",
+   "at": "2026-10-20T01:41:27",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "gritnose": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014115",
    "candidate": 1,
-   "sha": "da0b49d033233fbe",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "bb34b35f93c33a42",
+   "at": "2026-10-20T01:41:28",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "podback": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014115",
    "candidate": 1,
    "sha": "6b976c18a01e9654",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "at": "2026-10-20T01:41:28",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "ribbonwing": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014115",
    "candidate": 1,
-   "sha": "68a92a96c7700e6d",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "adb7982b365c7508",
+   "at": "2026-10-20T01:41:28",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "coilcrest": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014115",
    "candidate": 1,
-   "sha": "bd0da0197541e799",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "7d64825df49b1b80",
+   "at": "2026-10-20T01:41:28",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "craghoof": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014115",
    "candidate": 1,
    "sha": "17b256a9197535df",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "at": "2026-10-20T01:41:28",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "lanternwing": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014116",
    "candidate": 1,
-   "sha": "5bcdfa05355ffc0d",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "f63ada2bebc104a3",
+   "at": "2026-10-20T01:41:28",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "brambleboar": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014116",
    "candidate": 1,
-   "sha": "1670f4d9b79a77d3",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "c293e9bbb32f4a8b",
+   "at": "2026-10-20T01:41:28",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "tunnelpaw": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014116",
    "candidate": 1,
    "sha": "50a6456306d05055",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "at": "2026-10-20T01:41:29",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "reefguard": {
    "run": "derive-20261019-r13",
@@ -163,74 +163,74 @@
    "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "grovewarden": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014116",
    "candidate": 1,
-   "sha": "126d6481a0cccc22",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "6a6f98f712e76621",
+   "at": "2026-10-20T01:41:29",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "furnscale": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014116",
    "candidate": 1,
    "sha": "0d9f71018c47e5b4",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "at": "2026-10-20T01:41:29",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "tidekeeper": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014116",
    "candidate": 1,
-   "sha": "05b0e979ec5e1e76",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "4a2feb130a068d44",
+   "at": "2026-10-20T01:41:29",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "orchardant": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014117",
    "candidate": 1,
-   "sha": "8275b877d45c98b7",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "1f65af99ef72ee2b",
+   "at": "2026-10-20T01:41:29",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "galecrest": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014117",
    "candidate": 1,
-   "sha": "ce4d1bab5bb5eff0",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "f979ddcab098ed15",
+   "at": "2026-10-20T01:41:29",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "stormskink": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014117",
    "candidate": 1,
    "sha": "e720d1f5193848c9",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "at": "2026-10-20T01:41:30",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "ridgehorn": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014117",
    "candidate": 1,
-   "sha": "c721ebd20731ca24",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "9467f84927457d33",
+   "at": "2026-10-20T01:41:30",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "beaconmoth": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014117",
    "candidate": 1,
-   "sha": "e88f0e067ff7f537",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "9125a66916e20f1a",
+   "at": "2026-10-20T01:41:30",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "briartusk": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014117",
    "candidate": 1,
-   "sha": "eab91275dea6b682",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "411e4adb67b86f91",
+   "at": "2026-10-20T01:41:30",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "faultdigger": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014118",
    "candidate": 1,
-   "sha": "555c089ea6a209e1",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "7bf49fcf2c3fd089",
+   "at": "2026-10-20T01:41:30",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "atollclamp": {
    "run": "derive-20261019-r13",
@@ -240,144 +240,144 @@
    "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "abyssail": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014118",
    "candidate": 1,
-   "sha": "5b38f84cd5199f83",
-   "at": "2026-10-19T21:30:50",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "872115eeb38d84b6",
+   "at": "2026-10-20T01:41:30",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "brinewyrm": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014116",
    "candidate": 1,
    "sha": "eefc5ab2ec6f3916",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "at": "2026-10-20T01:41:29",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "sandnip": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014118",
    "candidate": 1,
-   "sha": "6dbf9c4c72731ebf",
-   "at": "2026-10-19T21:30:50",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "33898a40ca9b0baa",
+   "at": "2026-10-20T01:41:30",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "dunestalk": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014118",
    "candidate": 1,
-   "sha": "1332a6f888038b05",
-   "at": "2026-10-19T21:30:50",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "0bb6ff168a08c886",
+   "at": "2026-10-20T01:41:31",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "miragespike": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014118",
    "candidate": 1,
-   "sha": "929d12a5cd6d7262",
-   "at": "2026-10-19T21:30:50",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "0e21ebdcb0eacbe8",
+   "at": "2026-10-20T01:41:31",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "flurrykit": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014118",
    "candidate": 1,
-   "sha": "65fd34c43a84baa6",
-   "at": "2026-10-19T21:30:50",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "bb278a4eace5cb8f",
+   "at": "2026-10-20T01:41:31",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "rimepelt": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014118",
    "candidate": 1,
-   "sha": "10919ef2ff57ecc0",
-   "at": "2026-10-19T21:30:50",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "24789ddb65417405",
+   "at": "2026-10-20T01:41:31",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "glaciermane": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014119",
    "candidate": 1,
-   "sha": "c07abb87c42b5ed4",
-   "at": "2026-10-19T21:30:50",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "7650dea2a3f39bd9",
+   "at": "2026-10-20T01:41:31",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "miretail": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014119",
    "candidate": 1,
    "sha": "87446f67a2c733d6",
-   "at": "2026-10-19T21:30:50",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "at": "2026-10-20T01:41:31",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "venomfrill": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014119",
    "candidate": 1,
-   "sha": "2c5e2c887e096bad",
-   "at": "2026-10-19T21:30:50",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "aa03e6120a04d2f4",
+   "at": "2026-10-20T01:41:31",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "marshcrown": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014119",
    "candidate": 1,
-   "sha": "292298ad0724b708",
-   "at": "2026-10-19T21:30:50",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "9e3d895f0dddc9ad",
+   "at": "2026-10-20T01:41:32",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "dozemite": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014119",
    "candidate": 1,
-   "sha": "b70a50489854742d",
-   "at": "2026-10-19T21:30:50",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "0719664df2fd0637",
+   "at": "2026-10-20T01:41:32",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "trancescythe": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014120",
    "candidate": 1,
-   "sha": "fd9a88cee9e579dd",
-   "at": "2026-10-19T21:30:50",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "d35a5ff6cbfe7c58",
+   "at": "2026-10-20T01:41:32",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "oraclemantis": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014120",
    "candidate": 1,
-   "sha": "71e11fd4ebf5803b",
-   "at": "2026-10-19T21:30:50",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "9ce24e87e767c100",
+   "at": "2026-10-20T01:41:32",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "threadimp": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014120",
    "candidate": 1,
-   "sha": "4c9a9a7a3a698dd3",
-   "at": "2026-10-19T21:30:50",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "d68c284c0eaeb647",
+   "at": "2026-10-20T01:41:32",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "hushdoll": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014120",
    "candidate": 1,
-   "sha": "174282d3c69a4351",
-   "at": "2026-10-19T21:30:50",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "8539b00ea90a19cb",
+   "at": "2026-10-20T01:41:32",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "veilmaster": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014120",
    "candidate": 1,
-   "sha": "62919b313988df27",
-   "at": "2026-10-19T21:30:50",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "f1596bc1bf5568ee",
+   "at": "2026-10-20T01:41:32",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "reedpeep": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014120",
    "candidate": 1,
-   "sha": "ee5a371026140c3c",
-   "at": "2026-10-19T21:30:50",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "27ac4eb27217c564",
+   "at": "2026-10-20T01:41:32",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "fenstrider": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014120",
    "candidate": 1,
-   "sha": "4175079407a865ef",
-   "at": "2026-10-19T21:30:50",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "561fa3582614467f",
+   "at": "2026-10-20T01:41:33",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "thundercairn": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014121",
    "candidate": 1,
-   "sha": "0b791b788d94f5d8",
-   "at": "2026-10-19T21:30:50",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "52942afa9373dc8a",
+   "at": "2026-10-20T01:41:33",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "winterquill": {
    "run": "derive-20261019-r13",
@@ -387,39 +387,39 @@
    "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "solmane": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014121",
    "candidate": 1,
-   "sha": "a18f8c9680be970f",
-   "at": "2026-10-19T21:30:50",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "6aac03b72f4931b3",
+   "at": "2026-10-20T01:41:33",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "lunavane": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014121",
    "candidate": 1,
-   "sha": "25526f6e58fa933c",
-   "at": "2026-10-19T21:30:50",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "8f09006d95ed9281",
+   "at": "2026-10-20T01:41:33",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "relicarab": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014121",
    "candidate": 1,
-   "sha": "b92c73a3958f5ceb",
-   "at": "2026-10-19T21:30:50",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "786615dd8f9ba9e3",
+   "at": "2026-10-20T01:41:33",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "astralhart": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014121",
    "candidate": 1,
-   "sha": "6980ee5eda001fb0",
-   "at": "2026-10-19T21:30:50",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "03f680905c7a4bd9",
+   "at": "2026-10-20T01:41:33",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "mistralheron": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-014121",
    "candidate": 1,
-   "sha": "e280f13611a8d676",
-   "at": "2026-10-19T21:30:50",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "aacc37f9bf1f3004",
+   "at": "2026-10-20T01:41:33",
+   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   }
  }
 }
