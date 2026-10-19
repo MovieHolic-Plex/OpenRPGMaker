@@ -9,7 +9,7 @@
 - 판정은 그 순간의 큰 그림 sha256 에 묶인다. 그림을 다시 그리면 판정이 풀리고 다시 골라야 한다.
 - 원작 이름은 쓰지 않는다(`CONCEPT_FORBIDDEN_NAMES`). 패러디 이름은 `CONCEPT_PARODY_NAMES` 에 명시해야 통과한다(예: 파이널 판타지아).
 - 썸네일 화풍은 SNES 16비트 도트(`conceptArtPrompt`). 사용자가 애니 일러스트와 비교해 도트를 골랐다(2026-10-07).
-- 운영 스토어 게시는 `--target prod --yes-prod` 둘 다 있어야 한다.
+- 운영 스토어 게시는 `--target prod --yes-prod` 둘 다 있어야 한다. 주소는 코드에 없다 — staging 은 `STORE_PUBLISH_STAGING_URL`, prod 는 `STORE_PUBLISH_PRODUCTION_URL` 에서 읽고, 없으면 아무것도 보내지 않고 멈춘다.
 
 ## 단계
 

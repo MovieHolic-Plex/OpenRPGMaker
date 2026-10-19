@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **178쪽 / 6323KB / 약 1,848,212 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **178쪽 / 6346KB / 약 1,854,990 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -18,7 +18,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/beodeul-city.md` | 129KB | 10KB | 736 | ~39,249 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
 | `openwiki/editor-ai-panel.md` | 704KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4557 | ~206,628 |
-| `openwiki/editor-ai-tools.md` | 471KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 3483 | ~137,252 |
+| `openwiki/editor-ai-tools.md` | 474KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 3486 | ~138,178 |
 | `openwiki/editor-database.md` | 440KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 2577 | ~129,141 |
 | `openwiki/editor-event-authoring.md` | 180KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 1101 | ~52,781 |
 | `openwiki/editor-event-commands.md` | 68KB | 32KB | 303 | ~18,704 |
@@ -30,7 +30,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/harnesses/interview-scene-bank.md` | 56KB | 38KB | 197 | ~17,387 |
 | `openwiki/harnesses/super-harness.md` | 102KB | 4KB | 1063 | ~32,225 |
 | `openwiki/jp-city.md` | 81KB | 9KB | 420 | ~24,033 |
-| `openwiki/runtime-battle.md` | 390KB | 32KB | 2181 | ~114,266 |
+| `openwiki/runtime-battle.md` | 392KB | 32KB | 2181 | ~115,018 |
 | `openwiki/runtime-pre-edit-routing.md` | 131KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 904 | ~39,425 |
 | `openwiki/runtime-project-schema.md` | 236KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1705 | ~66,340 |
 | `openwiki/runtime-sessions.md` | 141KB | 52KB ⚠상한 초과 — 절을 더 쪼개라 | 849 | ~38,208 |
@@ -45,7 +45,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 |---|---|---|
 | `openwiki/chipset-gap-inventory.md` | 1 | 20 |
 | `openwiki/editor-ai-panel.md` | 26 | 3047, 3048, 3049, 3050, 3051, 3052, 3066, 3076 |
-| `openwiki/editor-ai-tools.md` | 7 | 2207, 2208, 2212, 2214, 2216, 2404, 3339 |
+| `openwiki/editor-ai-tools.md` | 7 | 2207, 2208, 2212, 2214, 2216, 2404, 3342 |
 | `openwiki/editor-database.md` | 14 | 60, 61, 62, 63, 64, 65, 1113, 1117 |
 | `openwiki/editor-event-authoring.md` | 16 | 517, 518, 521, 526, 527, 528, 529, 530 |
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
@@ -70,6 +70,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/agent-worktrees.md` | 1 | `scripts/gen-combined-town-chipset-report.mts` |
 | `openwiki/ai-workflow.md` | 10 | `.omo/evidence/ai-assistant-failure-modes.md`, `20260709000000_ai_activity_logs.sql`, `docs/2026-07-10-tool-calling-architecture-review.md`, `docs/tool-catalog.md`, `latest.json`, `src/ai/plannerSkip.ts`, `test/authorVillageScopeGate.test.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/tilesetAiClient.test.ts`, `test/volumeContractSession.test.ts` |
 | `openwiki/architecture.md` | 3 | `bridge.js`, `player.js`, `project.json` |
+| `openwiki/asset-store.md` | 3 | `DATA/store-uploads.json`, `OpenRPGMaker-store/scripts/storeCli.ts`, `scripts/check-contract.mjs` |
 | `openwiki/atlas-biome-interior.md` | 7 | `.loop.json`, `.loop.png`, `interior-merged-palette.html`, `public/assets/atlas-interior/dungeon-chipset.png`, `scripts/content/atlas-dungeon/split-dungeon.mjs`, `src/assets/atlasBiomeDungeonTileset.json`, `verify-shots/interior-bake-4/new-objects.png` |
 | `openwiki/authoring-play-presets.md` | 1 | `catalog-96.json` |
 | `openwiki/autotiles.md` | 13 | `install-pixel-art-world-shared-host.mjs`, `pixelArtWorldAutotiles.ts`, `prepare-pixel-art-world-xp-library.mjs`, `publish-pixel-art-world-xp-library.mjs`, `reports/pr617-621-integration.md`, `src/assets/tiboRecoveredTileset.json`, `src/project/defaults/iceGrandPlain64.ts`, `src/project/defaults/tallGrassArrange.ts`, `test/iceGrandPlain64.test.ts`, `test/placeConceptRender.test.ts`, `test/villageBuilder.test.ts`, `tiboRecovery.test.ts`, `wildRouteForest.ts` |
@@ -285,9 +286,16 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/asset-store.md` — 1KB · 24줄 · ~446 토큰
+### `openwiki/asset-store.md` — 8KB · 101줄 · ~2,362 토큰
 
-- `L18` 에디터 첫 진입 화면 (2026-10-12)
+- `L6` 어디에 무엇이 있나
+- `L23` 계약 동기화 절차
+- `L33` 올리기(내보내기) 경로
+  - `L38` 제외(Rasak·REFMAP·RPG Maker MV/MZ·PAW) 집행 지점
+- `L53` 받기(가져오기) 경로
+- `L61` 게시기
+- `L91` 상태 확인
+- `L95` 에디터 첫 진입 화면 (2026-10-12)
 
 ### `openwiki/atlas-biome-interior.md` — 46KB · 255줄 · ~13,677 토큰
 
@@ -692,7 +700,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L4522` 결정 (2026-10-16)
 - `L4551` 왼쪽 사이드바(그리기·지형·활동 막대) 탭 전환 계약 (2026-10-17)
 
-### `openwiki/editor-ai-tools.md` — 471KB · 3483줄 · ~137,252 토큰 · 통째읽기 잘림 · 깨진 줄 7
+### `openwiki/editor-ai-tools.md` — 474KB · 3486줄 · ~138,178 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
 - `L3` 장르 칩셋 잠금 `system.genreLock` — 조수·도구 경로 강제 (2026-10-15)
   - `L27` 캐릭터 칩(걷기 그림)도 같은 잠금 + 장르 표지 `system.genre` (2026-10-16)
@@ -820,58 +828,58 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L2954` 기존 서사 플래그의 설명 수정 (2026-09-25)
 - `L2967` 타이틀 오프닝 효과 도구 (2026-09-25)
 - `L2982` 크로노 트리거식 필드 도구 인자 (2026-09-26)
-- `L3008` Pi 오프닝 제작·그림 검토 계약 (2026-10-03)
-- `L3036` Independent opening timelines
-- `L3040` Monster collector setup and verification (2026-10-03)
-- `L3046` Structured optional read arrays (2026-10-04)
-- `L3056` NPC, shop and readable opening production (2026-10-04)
-- `L3065` 에메랄드 참고 전체 몬스터 제작 (2026-10-04)
-- `L3120` Emerald native sprite contract (2026-10-04 correction)
-- `L3126` 세계 지도 지형 도구 (2026-10-03)
-- `L3136` Bounded romance authoring tools
-  - `L3140` 선택 정수 enum의 Antigravity 전달 (2026-10-04)
-- `L3148` 글자·장면 오프닝 연출 (2026-10-04)
-- `L3158` 오프닝 스토리보드·그림 배우·원곡 BGM (2026-10-04)
-- `L3166` OST·효과음 직접 작곡 (2026-10-05)
-- `L3170` 작은 편집의 래스터 보존과 선택지 취소 (2026-10-05)
-- `L3176` 슈퍼하네싱 사용자 선택 기물 우선 사용 (2026-10-05)
-- `L3185` 키트 시트 야외 빈 터 꾸미기 — `find_empty_ground` · `furnish_outdoor_area` (2026-10-07)
-  - `L3200` naturalize_beodeul_hamlet (2026-10-04)
-- `L3205` compose_beodeul_courtyard_village (2026-10-04)
-- `L3210` refine_beodeul_courtyard_vegetation (2026-10-04)
-- `L3215` 오프닝 그림 프롬프트 구조화 (2026-10-11)
-  - `L3221` 그림 기본 경로 = ChatGPT(GPT Image) (2026-10-11)
-  - `L3227` 오프닝 바이블·cast·화풍 기법 (2026-10-11)
-  - `L3234` 오프닝 후보 생성 + 독립 판정자 (2026-10-11)
-  - `L3240` 시연 오프닝 6컷 mp4 (2026-10-12)
-  - `L3245` 조수가 도트를 직접 찍는다 — `author_pixel_art` · `author_actor_charset` · Argon 기본 (2026-10-14)
-  - `L3252` 대형 유닛 walker · smash — 세계가 반응하는 행군 (2026-10-14)
-  - `L3259` 사람 비율·지문·색조·자세 (2026-10-15, 오프닝 1라운드 장면 분석 뒤)
-- `L3268` 몬스터 자유 경로 도구 (monster-free-b, 2026-10-14)
-- `L3277` 몬스터 캠페인 규모 인자화 · 정의 일치 검사 (2026-10-14, monster-free-a)
-- `L3302` 세계 변형판 · 장소 입구 · 지형 조우 (2026-10-15, worker B, FF6급 감사)
-- `L3314` 필드 스킬 게이트 증명: `useFieldSkill` + `partyKnowsSkill` (2026-10-15, FF6 수정 C)
-- `L3318` 무대 공연 도구 — author_stage_performance (2026-10-15, FF6급 감사 #31)
-- `L3328` `place_field_obstacle` — 비전머신(HM) 필드 기술 게이트 (2026-10-15, poke-fix-p Phase 2)
-- `L3343` 포켓몬풍 필드·진행 규칙 도구 (2026-10-15, poke-fix-p)
-- `L3351` 팀 교대 전투 도구 (2026-10-15, FF6 수정 A)
-- `L3359` 비행 시점 모드7 — place_vehicle flightView (2026-10-15, FF6급 감사 #31, 안 A)
-- `L3370` `upsert_item.heldEffect` — 지닌 도구 (2026-10-16, poke-depth PR4)
-- `L3378` `define_monster_species.ability` — 특성 (2026-10-16, poke-depth PR3)
-- `L3385` `upsert_state` 의 맹독·혼란 (2026-10-16, poke-depth PR2)
-- `L3393` `upsert_skill.statStageEffects` — 능력치 단계 (2026-10-16, poke-depth PR1)
-- `L3402` 세계 카드 AI 공개 범위가 걸리는 도구 (2026-10-16)
-- `L3407` `upsert_skill.weather` — 날씨 기술 (2026-10-16, poke-depth PR5)
-- `L3413` 연애 루프 도구 변경 (2026-10-16)
-- `L3420` `upsert_item.captureProfile.condition` — 조건부 볼 (2026-10-16, poke-depth PR6)
-- `L3425` `upsert_item` 몬스터 필드 아이템 — 부활·PP·이상한 사탕·진화의 돌·가방 포켓 (2026-10-16, poke-sys-items)
-- `L3432` `upsert_item.repelSteps` / `escapeTo` · `configure_monster_system.escapeGraceSteps` — 필드 도구 (2026-10-16, poke-sys ②)
-- `L3438` 연애 3차 수리 — 칩·ESC 메뉴·뼈대·완료 문 (2026-10-16, romance-fix-3)
-- `L3447` `set_dialogue_system` — 대사창 읽기 보조 (2026-10-17, 미연시 시스템 UI 1단계)
-- `L3455` 공용 규칙 모듈 `src/project/menuSystem.ts` — 자료집 「메뉴·시스템」 탭과 같은 검증 (2026-10-17, 미연시 3단계)
-- `L3460` `set_vn_extras` — 갤러리·엔딩 목록·세이브 카드 (2026-10-17, 미연시 시스템 UI 2단계)
-- `L3467` `set_vn_look` — 미연시 대사창 룩(프리셋·이름표·선택지·대기 표시·글자) (2026-10-17, vn-look-1)
-- `L3479` 바로 깔기 `place_house` — 장식 정리 후 집 배치·`jp_city` 지원 (2026-10-17)
+- `L3011` Pi 오프닝 제작·그림 검토 계약 (2026-10-03)
+- `L3039` Independent opening timelines
+- `L3043` Monster collector setup and verification (2026-10-03)
+- `L3049` Structured optional read arrays (2026-10-04)
+- `L3059` NPC, shop and readable opening production (2026-10-04)
+- `L3068` 에메랄드 참고 전체 몬스터 제작 (2026-10-04)
+- `L3123` Emerald native sprite contract (2026-10-04 correction)
+- `L3129` 세계 지도 지형 도구 (2026-10-03)
+- `L3139` Bounded romance authoring tools
+  - `L3143` 선택 정수 enum의 Antigravity 전달 (2026-10-04)
+- `L3151` 글자·장면 오프닝 연출 (2026-10-04)
+- `L3161` 오프닝 스토리보드·그림 배우·원곡 BGM (2026-10-04)
+- `L3169` OST·효과음 직접 작곡 (2026-10-05)
+- `L3173` 작은 편집의 래스터 보존과 선택지 취소 (2026-10-05)
+- `L3179` 슈퍼하네싱 사용자 선택 기물 우선 사용 (2026-10-05)
+- `L3188` 키트 시트 야외 빈 터 꾸미기 — `find_empty_ground` · `furnish_outdoor_area` (2026-10-07)
+  - `L3203` naturalize_beodeul_hamlet (2026-10-04)
+- `L3208` compose_beodeul_courtyard_village (2026-10-04)
+- `L3213` refine_beodeul_courtyard_vegetation (2026-10-04)
+- `L3218` 오프닝 그림 프롬프트 구조화 (2026-10-11)
+  - `L3224` 그림 기본 경로 = ChatGPT(GPT Image) (2026-10-11)
+  - `L3230` 오프닝 바이블·cast·화풍 기법 (2026-10-11)
+  - `L3237` 오프닝 후보 생성 + 독립 판정자 (2026-10-11)
+  - `L3243` 시연 오프닝 6컷 mp4 (2026-10-12)
+  - `L3248` 조수가 도트를 직접 찍는다 — `author_pixel_art` · `author_actor_charset` · Argon 기본 (2026-10-14)
+  - `L3255` 대형 유닛 walker · smash — 세계가 반응하는 행군 (2026-10-14)
+  - `L3262` 사람 비율·지문·색조·자세 (2026-10-15, 오프닝 1라운드 장면 분석 뒤)
+- `L3271` 몬스터 자유 경로 도구 (monster-free-b, 2026-10-14)
+- `L3280` 몬스터 캠페인 규모 인자화 · 정의 일치 검사 (2026-10-14, monster-free-a)
+- `L3305` 세계 변형판 · 장소 입구 · 지형 조우 (2026-10-15, worker B, FF6급 감사)
+- `L3317` 필드 스킬 게이트 증명: `useFieldSkill` + `partyKnowsSkill` (2026-10-15, FF6 수정 C)
+- `L3321` 무대 공연 도구 — author_stage_performance (2026-10-15, FF6급 감사 #31)
+- `L3331` `place_field_obstacle` — 비전머신(HM) 필드 기술 게이트 (2026-10-15, poke-fix-p Phase 2)
+- `L3346` 포켓몬풍 필드·진행 규칙 도구 (2026-10-15, poke-fix-p)
+- `L3354` 팀 교대 전투 도구 (2026-10-15, FF6 수정 A)
+- `L3362` 비행 시점 모드7 — place_vehicle flightView (2026-10-15, FF6급 감사 #31, 안 A)
+- `L3373` `upsert_item.heldEffect` — 지닌 도구 (2026-10-16, poke-depth PR4)
+- `L3381` `define_monster_species.ability` — 특성 (2026-10-16, poke-depth PR3)
+- `L3388` `upsert_state` 의 맹독·혼란 (2026-10-16, poke-depth PR2)
+- `L3396` `upsert_skill.statStageEffects` — 능력치 단계 (2026-10-16, poke-depth PR1)
+- `L3405` 세계 카드 AI 공개 범위가 걸리는 도구 (2026-10-16)
+- `L3410` `upsert_skill.weather` — 날씨 기술 (2026-10-16, poke-depth PR5)
+- `L3416` 연애 루프 도구 변경 (2026-10-16)
+- `L3423` `upsert_item.captureProfile.condition` — 조건부 볼 (2026-10-16, poke-depth PR6)
+- `L3428` `upsert_item` 몬스터 필드 아이템 — 부활·PP·이상한 사탕·진화의 돌·가방 포켓 (2026-10-16, poke-sys-items)
+- `L3435` `upsert_item.repelSteps` / `escapeTo` · `configure_monster_system.escapeGraceSteps` — 필드 도구 (2026-10-16, poke-sys ②)
+- `L3441` 연애 3차 수리 — 칩·ESC 메뉴·뼈대·완료 문 (2026-10-16, romance-fix-3)
+- `L3450` `set_dialogue_system` — 대사창 읽기 보조 (2026-10-17, 미연시 시스템 UI 1단계)
+- `L3458` 공용 규칙 모듈 `src/project/menuSystem.ts` — 자료집 「메뉴·시스템」 탭과 같은 검증 (2026-10-17, 미연시 3단계)
+- `L3463` `set_vn_extras` — 갤러리·엔딩 목록·세이브 카드 (2026-10-17, 미연시 시스템 UI 2단계)
+- `L3470` `set_vn_look` — 미연시 대사창 룩(프리셋·이름표·선택지·대기 표시·글자) (2026-10-17, vn-look-1)
+- `L3482` 바로 깔기 `place_house` — 장식 정리 후 집 배치·`jp_city` 지원 (2026-10-17)
 
 ### `openwiki/editor-database.md` — 440KB · 2577줄 · ~129,141 토큰 · 통째읽기 잘림 · 깨진 줄 14
 
@@ -1335,12 +1343,12 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L97` Opening and victory
 - `L110` 2026-10-04 delivery evidence
 
-### `openwiki/emerald-monster-production.md` — 9KB · 136줄 · ~2,362 토큰
+### `openwiki/emerald-monster-production.md` — 10KB · 147줄 · ~2,596 토큰
 
-- `L65` Original title key art
-- `L84` Field cast
-- `L99` Existing authored animation compatibility
-- `L116` 2026-10-04 canonical adoption and publication
+- `L76` Original title key art
+- `L95` Field cast
+- `L110` Existing authored animation compatibility
+- `L127` 2026-10-04 canonical adoption and publication
 
 ### `openwiki/emerald-runtime-surfaces.md` — 16KB · 145줄 · ~4,391 토큰 · 깨진 줄 1
 
@@ -1459,7 +1467,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L38` 나무/풀 깊이·연결 울타리·돌벽 통일 (2026-10-04)
 - `L42` 박공 벽 정리와 기와 복원 (2026-10-04 사용자 정정)
 
-### `openwiki/harnesses/beodeul-building-review.md` — 46KB · 210줄 · ~14,278 토큰
+### `openwiki/harnesses/beodeul-building-review.md` — 46KB · 211줄 · ~14,431 토큰
 
 - `L5` 실행
 - `L31` 원본 도트와 초안
@@ -1478,7 +1486,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L161` round 10 — 통나무집 · 탑 접지 · 바닥 그림자 (2026-10-07)
   - `L173` 저장 · 설치 · 서비스 (2026-10-07)
   - `L186` 여러 타일셋 · 스토어 올리기 (2026-10-07)
-  - `L204` 소품·울타리 프로필 `beodeul-props` (2026-10-07)
+  - `L205` 소품·울타리 프로필 `beodeul-props` (2026-10-07)
 
 ### `openwiki/harnesses/charset-actor.md` — 36KB · 200줄 · ~10,821 토큰
 
@@ -1526,7 +1534,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L152` 4. 제안 웨이브 순서
 - `L173` 출처
 
-### `openwiki/harnesses/game-concepts.md` — 5KB · 65줄 · ~1,596 토큰
+### `openwiki/harnesses/game-concepts.md` — 6KB · 65줄 · ~1,647 토큰
 
 - `L6` 규칙
 - `L14` 단계
@@ -1633,7 +1641,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L102` 공급자 오류 재개 (2026-10-05)
   - `L113` 전체 시설 Allow 이후 공용 등록 (2026-10-05)
 
-### `openwiki/harnesses/monster-collect-species.md` — 37KB · 279줄 · ~11,236 토큰
+### `openwiki/harnesses/monster-collect-species.md` — 44KB · 302줄 · ~13,265 토큰
 
 - `L28` 빠른 시작
   - `L49` Alpha/고정 격자 집중 확인 (2026-10-04)
@@ -1642,18 +1650,20 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L106` 디자인 규칙 (2026-10-16 — 외부 시험자 지적 이후)
   - `L129` 눈 규칙 (판본 3, 2026-10-16 — 사용자 지적 「몬스터에 문제가 많다, 눈이라던가」)
   - `L147` 판본 4 — 귀여움 우선·흰 하이라이트 필수 (2026-10-16, 사용자 「눈이 안 비치니까 징그럽다, 귀여운 거 위주로」)
-  - `L156` 격자 계약 (2026-10-16 — 외부 시험자 「픽셀 그리드부터 맞게」)
-- `L165` 왜 이렇게 만드는가 (2026-10-01 실험, `qa-runs/hand-monster/` 시안)
-- `L174` 애니메이션 — 대기는 움직이고, 큰 동작은 한 줄로 생성한다 (2026-10-01 비교 시험)
-  - `L190` 공격 방향 계약 (`animation.direction`)
-  - `L201` 엔진 비트 → 프레임 (`actions.*.keys`)
-  - `L208` 입·손 자리 (`anim.json` 의 `emit`)
-  - `L215` 스킬별 공격 = 자세 몇 가지 × 스킬 매핑 (`anim/poses.ts`)
-- `L228` 검사 (`build` · `check`)
-- `L247` 전투 배치 (`src/harnesses/monster-collect-species/qa/battle-layout.css`, 엔진 미반영)
-- `L253` 시험
-- `L262` 아직 없는 것
-- `L269` 따라다니기 걷기 칩 (2026-10-15)
+  - `L156` 판본 5 — 종별 눈 표와 눈 자리 검사 (2026-10-20, 사용자 「몬스터 눈알 교정」)
+  - `L169` 격자 계약 (2026-10-16 — 외부 시험자 「픽셀 그리드부터 맞게」)
+- `L178` 왜 이렇게 만드는가 (2026-10-01 실험, `qa-runs/hand-monster/` 시안)
+- `L187` 애니메이션 — 대기는 움직이고, 큰 동작은 한 줄로 생성한다 (2026-10-01 비교 시험)
+  - `L203` 공격 방향 계약 (`animation.direction`)
+  - `L214` 엔진 비트 → 프레임 (`actions.*.keys`)
+  - `L221` 입·손 자리 (`anim.json` 의 `emit`)
+  - `L228` 스킬별 공격 = 자세 몇 가지 × 스킬 매핑 (`anim/poses.ts`)
+- `L241` 검사 (`build` · `check`)
+- `L260` 전투 배치 (`src/harnesses/monster-collect-species/qa/battle-layout.css`, 엔진 미반영)
+- `L266` 시험
+- `L275` 아직 없는 것
+- `L282` 따라다니기 걷기 칩 (2026-10-15)
+- `L293` 종 다섯 면 단일 정본 계약 (2026-10-18 — 사용자 「몬스터 하나에 서로 다른 이미지들이 혼재되어 있다. 몬스터 장르 전용 하네싱」)
 
 ### `openwiki/harnesses/murim-chipset.md` — 34KB · 285줄 · ~10,326 토큰
 
@@ -2022,7 +2032,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L172` 첫 판 기록 — 굽기·번들·조수 길 (2026-10-14, PR bake-themes, 반려된 그림)
 - `L185` 죽은 문 강제 (2026-10-14, known-bugs-fix)
 
-### `openwiki/modern-city.md` — 20KB · 125줄 · ~5,898 토큰
+### `openwiki/modern-city.md` — 22KB · 132줄 · ~6,466 토큰
 
 - `L5` 식별자
 - `L15` 파일
@@ -2031,14 +2041,15 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L40` 거리 구성기 `compose_modern_city_street` (2026-10-14)
 - `L49` 거리 녹지 — 버들항 화풍 맞추기 (2026-10-14 quality-b, `scripts/content/modern-city-street/`)
 - `L58` 실내 (2026-10-14, `scripts/content/modern-city-int/`)
-- `L66` 실조수 시험에서 나온 결함 (2026-10-14, gpt-6.1-sol — gemini-3.8-flash 는 할당량 429)
-- `L75` 예제 도시 맵 (60×60, 시드 1)
-- `L82` 참고문서 (번들 소유, AI-REFERENCE-CONTRACT 8항)
-- `L91` 자동 검사 (구조·통행만)
-- `L96` 번들 장소
-- `L100` 승인된 작은 지하 주차장 (2026-10-05)
-  - `L113` 12면 확장 실험
-- `L119` 실시간 주행·교차로 90° 회전 차량 및 AI 조수 자동 배선 (2026-10-17)
+- `L66` 공간 규모 규격 · 학생/직장인 하루 18곳 (2026-10-18, `src/editor/handInterior/venueScale.ts`·`dailyVenues.ts`)
+- `L73` 실조수 시험에서 나온 결함 (2026-10-14, gpt-6.1-sol — gemini-3.8-flash 는 할당량 429)
+- `L82` 예제 도시 맵 (60×60, 시드 1)
+- `L89` 참고문서 (번들 소유, AI-REFERENCE-CONTRACT 8항)
+- `L98` 자동 검사 (구조·통행만)
+- `L103` 번들 장소
+- `L107` 승인된 작은 지하 주차장 (2026-10-05)
+  - `L120` 12면 확장 실험
+- `L126` 실시간 주행·교차로 90° 회전 차량 및 AI 조수 자동 배선 (2026-10-17)
 
 ### `openwiki/monster-assistant-preview.md` — 1KB · 15줄 · ~418 토큰
 
@@ -2427,7 +2438,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 390KB · 2181줄 · ~114,266 토큰 · 통째읽기 잘림 · 깨진 줄 1
+### `openwiki/runtime-battle.md` — 392KB · 2181줄 · ~115,018 토큰 · 통째읽기 잘림 · 깨진 줄 1
 
 - `L1` 포획 연출 · 도감 등록 문장 (2026-10-16, poke-sys ⑦)
 - `L12` 조건부 볼 · 포획 볼 기록 — 포켓몬식 그물·퀵·타이머·리피트 볼 (2026-10-16, poke-depth PR6)
@@ -2843,13 +2854,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L245` RPG 판타지 장소 70곳 공용 DB 등록 (2026-09-25)
 - `L256` 공용 DB 게시 도우미 `scripts/content/lib/shared-library.mjs` (2026-09-25)
 
-### `openwiki/spatial-geography-compiler.md` — 9KB · 158줄 · ~2,420 토큰
+### `openwiki/spatial-geography-compiler.md` — 10KB · 163줄 · ~2,520 토큰
 
 - `L8` Public path
 - `L31` Terrain and structures
-- `L61` Settlement regions (2026-09-12)
-- `L83` Ownership and regeneration
-- `L106` Contract fixtures and proof
+- `L66` Settlement regions (2026-09-12)
+- `L88` Ownership and regeneration
+- `L111` Contract fixtures and proof
 
 ### `openwiki/spatial-geography-ui.md` — 32KB · 445줄 · ~9,146 토큰
 
@@ -3233,7 +3244,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L570` 버들항 밝은 잔디 접지·꾸밈 공용 용도 (2026-10-04)
 - `L599` 버들항 공동마당 배치 참고문서 (2026-10-04)
 
-### `openwiki/title-opening-effects.md` — 42KB · 409줄 · ~12,644 토큰
+### `openwiki/title-opening-effects.md` — 42KB · 409줄 · ~12,693 토큰
 
 - `L6` 데이터
 - `L18` 프리셋
