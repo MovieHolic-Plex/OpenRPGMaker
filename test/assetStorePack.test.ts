@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
-import { STORE_BLOB_PREFIX, slugify, storeProjectId, validateManifest, packGrade } from "@/assetStore/format";
-import { aiMadeAssets, aiMaker, applyPackToProject, basicTilesetFor, buildPack, closeSelection, decodePackBundle, encodePackBundle, storeCredits, storeItemsInProject, type PackMeta } from "@/assetStore/pack";
+import { STORE_BLOB_PREFIX, slugify, storeProjectId, storeThirdPartyName, validateManifest, packGrade } from "@/assetStore/format";
+import { aiMadeAssets, aiMaker, applyPackToProject, basicTilesetFor, buildPack, closeSelection, decodePackBundle, encodePackBundle, packBlockedItems, storeCredits, storeItemsInProject, StorePackBlockedError, type PackMeta } from "@/assetStore/pack";
 import { bytesToBase64, pngSize, sniffMime } from "@/assetStore/sniff";
 import { uploadBlockReason } from "@/editor/assetStore/storeUpload";
 import type { Project, TilesetDef, UploadedAsset } from "@/project/types";
@@ -128,6 +128,24 @@ describe("asset store pack", () => {
     expect(uploadBlockReason("t1", "Rasak Fantasy 마을", undefined)).toContain("제3자");
     expect(uploadBlockReason("t2", "RPG Maker MV 실내", undefined)).toContain("제3자");
     expect(uploadBlockReason("pawn_shop", "전당포 pawnshop", undefined)).toBeNull();
+  });
+
+  it("finds third-party names glued to words or digits but not inside ordinary words", () => {
+    for (const name of ["rasaktown", "rasak01_house", "RASAK-B", "refmap2", "PAWModern", "paw_modern", "mv_actor1", "MZ Exterior", "RPGMaker 실내", "라삭 마을"]) expect(storeThirdPartyName(name), name).not.toBeNull();
+    for (const name of ["pawn_shop", "전당포 pawnshop", "mvp_trophy", "내 숲 칩셋", "tex_easyrpg_chipset_retro_house"]) expect(storeThirdPartyName(name), name).toBeNull();
+  });
+
+  it("refuses a pack when a picked tileset drags in third-party or store-bought dependencies", async () => {
+    const p = project();
+    p.assets.uploaded.extra!.name = "Rasak town A";
+    p.assets.uploaded.bought = { id: "bought", name: "산 타일", kind: "chipset", dataUrl: dataUrl(png(16, 16, 5)), meta: {}, origin: { itemSlug: "x" } as UploadedAsset["origin"] };
+    p.tilesets.forest!.tileGrafts = [...p.tilesets.forest!.tileGrafts!, { targetTile: 2, sourceChipset: "bought", sourceTile: 0 }];
+    p.tilesets.forest!.referenceSourceTilesetId = "refmap_ts";
+    p.tilesets.refmap_ts = { ...basicTilesetFor("sheet", "도시", 64, 32, 16), id: "refmap_ts" };
+    expect(packBlockedItems(p, { tilesetIds: ["forest"], assetIds: [] }).map((item) => item.id).sort()).toEqual(["bought", "extra", "refmap_ts"]);
+    const refused = buildPack(p, { tilesetIds: ["forest"], assetIds: [] }, META, { readAsset, sha256 });
+    await expect(refused).rejects.toBeInstanceOf(StorePackBlockedError);
+    await expect(refused).rejects.toThrow("bought — 스토어에서 받은 것은 다시 올릴 수 없습니다");
   });
 
   it("encodes and decodes a single-file OPK1 pack bundle with sha256 verification", async () => {

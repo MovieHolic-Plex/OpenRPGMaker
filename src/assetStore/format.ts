@@ -289,6 +289,27 @@ export function tilesetUploadedAssetIds(tileset: TilesetDef, assetIds: ReadonlyS
   return [...ids];
 }
 
+/** 붙여 쓰거나 숫자를 붙여도 그대로 드러나는 제3자 팩 이름. */
+const THIRD_PARTY_SUBSTRINGS = ["rasak", "라삭", "refmap", "rpgmaker", "알만툴", "쯔꾸르", "ツクール"] as const;
+/** 다른 낱말 안에 흔히 들어 있어(pawn, mvp) 낱말 하나로 떨어질 때만 보는 이름. */
+const THIRD_PARTY_TOKENS = ["paw", "mv", "mz", "rtp"] as const;
+
+/**
+ * 남이 만든 유료·제3자 팩 계열 이름이면 걸린 낱말을, 아니면 null(2026-10-06 결정: Rasak·REFMAP·RPG Maker MV/MZ·PAW 는 스토어에 올리지 않는다).
+ * 편집기 buildPack·올리기 화면과 스토어 서버 검열이 같이 쓴다. id·이름에만 쓴다(참고문서 본문의 `layer-model: mz4` 같은 표지는 대상이 아니다).
+ * 이름으로 막는 안전장치일 뿐 권리 확인은 올리는 사람 몫이다.
+ */
+export function storeThirdPartyName(text: string): string | null {
+  const spaced = text.normalize("NFKC")
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2")
+    .replace(/(\p{L})(?=\p{N})|(\p{N})(?=\p{L})/gu, "$1$2 ")
+    .toLowerCase();
+  const compact = spaced.replace(/[^\p{L}\p{N}]+/gu, "");
+  const tokens = new Set(spaced.split(/[^\p{L}\p{N}]+/u));
+  return THIRD_PARTY_SUBSTRINGS.find((word) => compact.includes(word)) ?? THIRD_PARTY_TOKENS.find((word) => tokens.has(word)) ?? null;
+}
+
 /**
  * 매니페스트 구조 검증. blob 바이트 검증(시그니처·해시)은 서버가 따로 한다.
  * 실패 문구는 사람이 읽는 한국어다 — 업로드 화면·에디터에 그대로 보인다.
