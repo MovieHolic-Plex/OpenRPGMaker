@@ -13,7 +13,6 @@ import { chromium } from "playwright";
 import { spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
-
 const PORT = Number(process.env.PORT ?? "9898");
 const BASE = `http://127.0.0.1:${PORT}`;
 const OUT = path.resolve(process.env.OUT ?? "/home/main/claude-viz/stamp-jrpg/capabilities");
@@ -140,6 +139,32 @@ const MODEL_PLANS = {
       "set_mood_weather: 날씨·석양/야경 조명 연출",
     ],
   },
+  "북쪽에 왕성 본성과 폭포 연못·돌다리·남동쪽 항구 부두를 세우고, 중앙에 여관·치유 성당·물약 상점·모험가 길드·장터 바자회를 지어 모든 출입구 도로망을 자동 연결한 뒤, 남쪽 유적을 석조 성벽으로 둘러싸고 레버 철문·배회하는 몬스터·야영지 모닥불·미믹 상자를 깔고, 서쪽 역마차 정류장·가로등 열주·마을 군중·노을 조명으로 4단계 RPG 월드빌딩해줘": {
+    steps: [
+      { tool: "place_castle", args: { area: { x: 13, y: 1, w: 19, h: 12 }, archetype: "keep", gate: true, towers: true }, label: "1턴 [성채·수역 기틀]: 북부 안뜰 본성(keep)과 쌍둥이 망루·성문" },
+      { tool: "carve_waterfall_pond", args: { area: { x: 33, y: 1, w: 10, h: 8 } }, label: "1턴 [성채·수역 기틀]: 동북부 절벽 폭포와 폭포수 연못" },
+      { tool: "place_bridge", args: { area: { x: 33, y: 9, w: 10, h: 5 }, style: "stone", direction: "vertical" }, label: "1턴 [성채·수역 기틀]: 동부 하천과 아치 돌다리 횡단교" },
+      { tool: "build_harbor_dock", args: { area: { x: 30, y: 23, w: 13, h: 8 } }, label: "1턴 [성채·수역 기틀]: 남동부 석조 항구 부두·나무 잔교·정박 어선·선원" },
+    ],
+    needsFollowUp: true,
+    remainingGoals: [
+      "place_inn: 여관 건물과 숙박 회복 주인",
+      "place_church_healer: 성당과 치유 사제",
+      "place_shop: 물약 상점과 상인",
+      "place_guild_board: 모험가 길드와 의뢰 게시판",
+      "build_market_bazaar: 장터 노점 광장",
+      "auto_connect_roads: 출입구 도로망 자동 연결",
+      "enclose_with_wall: 성벽 포위 시공",
+      "place_switch_and_gate: 레버 스위치와 철문",
+      "place_roaming_enemies: 배회 심볼 몬스터",
+      "place_camp_rest: 야영지 천막과 모닥불",
+      "place_mimic_and_sparkles: 미믹 상자와 반짝이 유실물",
+      "place_travel_portal: 역마차 정류장",
+      "repeat_line_or_grid: 가로등 일렬 배치",
+      "populate_crowd: 활기찬 마을 군중 배치",
+      "set_mood_weather: 노을 조명 연출",
+    ],
+  },
 };
 
 const MODEL_TURN2_PLANS = {
@@ -148,6 +173,58 @@ const MODEL_TURN2_PLANS = {
       { tool: "auto_connect_roads", args: { area: { x: 8, y: 1, w: 15, h: 17 } }, label: "2턴: 건물 출입구 도로망 오토타일 자동 연결" },
       { tool: "populate_crowd", args: { area: { x: 8, y: 10, w: 15, h: 7 }, count: 5 }, label: "2턴: 활기찬 마을 군중 NPC 5명 배치" },
       { tool: "set_mood_weather", args: { area: { x: 8, y: 1, w: 15, h: 17 }, weather: "clear", preset: "sunset" }, label: "2턴: 노을 조명과 가로등·화로 분위기 연출" },
+    ],
+  },
+  "북쪽에 왕성 본성과 폭포 연못·돌다리·남동쪽 항구 부두를 세우고, 중앙에 여관·치유 성당·물약 상점·모험가 길드·장터 바자회를 지어 모든 출입구 도로망을 자동 연결한 뒤, 남쪽 유적을 석조 성벽으로 둘러싸고 레버 철문·배회하는 몬스터·야영지 모닥불·미믹 상자를 깔고, 서쪽 역마차 정류장·가로등 열주·마을 군중·노을 조명으로 4단계 RPG 월드빌딩해줘": {
+    steps: [
+      { tool: "place_inn", args: { area: { x: 2, y: 14, w: 7, h: 8 }, name: "버들항 여관 주인", price: 20 }, label: "2턴 [마을 상권·도로망]: 버들항 여관과 숙박 회복 주인" },
+      { tool: "place_church_healer", args: { area: { x: 10, y: 14, w: 8, h: 8 } }, label: "2턴 [마을 상권·도로망]: 치유 대성당과 사제 엘레나" },
+      { tool: "place_shop", args: { area: { x: 19, y: 14, w: 8, h: 8 }, kind: "potion", name: "왕도 연금 물약점" }, label: "2턴 [마을 상권·도로망]: 연금 물약 상점과 약초 매대·상인" },
+      { tool: "place_guild_board", args: { area: { x: 28, y: 14, w: 8, h: 8 } }, label: "2턴 [마을 상권·도로망]: 모험가 길드 회관과 3분기 의뢰 게시판" },
+      { tool: "build_market_bazaar", args: { area: { x: 2, y: 24, w: 13, h: 7 }, stallCount: 5 }, label: "2턴 [마을 상권·도로망]: 남서부 포석 장터 바자회와 만물상인" },
+      { tool: "auto_connect_roads", args: { area: { x: 1, y: 12, w: 41, h: 12 } }, label: "2턴 [마을 상권·도로망]: 전 시설 출입구·성문·항구 포석 도로망 자동 직결" },
+    ],
+    needsFollowUp: true,
+    remainingGoals: [
+      "enclose_with_wall: 성벽 포위 시공",
+      "place_switch_and_gate: 레버 스위치와 철문",
+      "place_roaming_enemies: 배회 심볼 몬스터",
+      "place_camp_rest: 야영지 천막과 모닥불",
+      "place_mimic_and_sparkles: 미믹 상자와 반짝이 유실물",
+      "place_travel_portal: 역마차 정류장",
+      "repeat_line_or_grid: 가로등 일렬 배치",
+      "populate_crowd: 활기찬 마을 군중 배치",
+      "set_mood_weather: 노을 조명 연출",
+    ],
+  },
+};
+
+const MODEL_TURN3_PLANS = {
+  "북쪽에 왕성 본성과 폭포 연못·돌다리·남동쪽 항구 부두를 세우고, 중앙에 여관·치유 성당·물약 상점·모험가 길드·장터 바자회를 지어 모든 출입구 도로망을 자동 연결한 뒤, 남쪽 유적을 석조 성벽으로 둘러싸고 레버 철문·배회하는 몬스터·야영지 모닥불·미믹 상자를 깔고, 서쪽 역마차 정류장·가로등 열주·마을 군중·노을 조명으로 4단계 RPG 월드빌딩해줘": {
+    steps: [
+      { tool: "enclose_with_wall", args: { area: { x: 16, y: 24, w: 13, h: 7 }, style: "stone", gateSide: "north" }, label: "3턴 [던전 기믹·몬스터]: 남부 봉인 유적 석조 성벽 포위(북문 개방)" },
+      { tool: "place_switch_and_gate", args: { area: { x: 19, y: 23, w: 7, h: 3 }, leverSide: "north" }, label: "3턴 [던전 기믹·몬스터]: 유적 입구 2상태 레버 스위치와 연동 강철 성문" },
+      { tool: "place_roaming_enemies", args: { area: { x: 17, y: 26, w: 6, h: 4 }, count: 2, movement: "approach" }, label: "3턴 [던전 기믹·몬스터]: 유적 내부 배회 심볼 몬스터(슬라임·고블린)" },
+      { tool: "place_mimic_and_sparkles", args: { area: { x: 23, y: 26, w: 5, h: 4 } }, label: "3턴 [던전 기믹·몬스터]: 보물상자(80G)·미믹 함정 상자·반짝이 유실물" },
+      { tool: "place_camp_rest", args: { area: { x: 36, y: 15, w: 7, h: 7 } }, label: "3턴 [던전 기믹·몬스터]: 동부 강변 모험가 야영 천막과 회복·세이브 모닥불" },
+    ],
+    needsFollowUp: true,
+    remainingGoals: [
+      "place_travel_portal: 역마차 정류장",
+      "repeat_line_or_grid: 가로등 일렬 배치",
+      "populate_crowd: 활기찬 마을 군중 배치",
+      "set_mood_weather: 노을 조명 연출",
+    ],
+  },
+};
+
+const MODEL_TURN4_PLANS = {
+  "북쪽에 왕성 본성과 폭포 연못·돌다리·남동쪽 항구 부두를 세우고, 중앙에 여관·치유 성당·물약 상점·모험가 길드·장터 바자회를 지어 모든 출입구 도로망을 자동 연결한 뒤, 남쪽 유적을 석조 성벽으로 둘러싸고 레버 철문·배회하는 몬스터·야영지 모닥불·미믹 상자를 깔고, 서쪽 역마차 정류장·가로등 열주·마을 군중·노을 조명으로 4단계 RPG 월드빌딩해줘": {
+    steps: [
+      { tool: "place_travel_portal", args: { area: { x: 2, y: 10, w: 9, h: 4 }, kind: "carriage" }, label: "4턴 [생동감·군중·황혼]: 서부 가도 역마차 정류장과 마부 빠른 이동" },
+      { tool: "repeat_line_or_grid", args: { area: { x: 12, y: 11, w: 20, h: 3 }, query: "가로등", count: 4 }, label: "4턴 [생동감·군중·황혼]: 왕성 앞 대로 가로등 일렬 배치" },
+      { tool: "populate_crowd", args: { area: { x: 6, y: 21, w: 28, h: 3 }, count: 6 }, label: "4턴 [생동감·군중·황혼]: 중심가 활기찬 마을 군중 NPC 6명 스폰" },
+      { tool: "set_mood_weather", args: { area: { x: 1, y: 1, w: 42, h: 30 }, weather: "clear", preset: "sunset" }, label: "4턴 [생동감·군중·황혼]: 황금빛 노을 조명(sunset)과 화로 연출" },
     ],
   },
 };
@@ -213,12 +290,22 @@ try {
     } catch {
       payload = {};
     }
-    const sentence = String(payload.sentence ?? "");
-    const isTurn2 = users.length >= 2;
-    const plan = isTurn2
-      ? (MODEL_TURN2_PLANS[sentence] ?? { steps: [] })
-      : (MODEL_PLANS[sentence] ?? { steps: [] });
-    modelCalls.push({ sentence, turn: isTurn2 ? 2 : 1, plan });
+    let lastPayload = {};
+    try {
+      lastPayload = JSON.parse(String(users.at(-1)?.content ?? "{}"));
+    } catch {
+      lastPayload = {};
+    }
+    const sentence = String(lastPayload.sentence ?? payload.sentence ?? "");
+    const turnNum = Number(lastPayload.turn) || (users.length >= 2 ? users.length : 1);
+    const plan = turnNum === 4
+      ? (MODEL_TURN4_PLANS[sentence] ?? { steps: [] })
+      : turnNum === 3
+        ? (MODEL_TURN3_PLANS[sentence] ?? { steps: [] })
+        : turnNum === 2
+          ? (MODEL_TURN2_PLANS[sentence] ?? { steps: [] })
+          : (MODEL_PLANS[sentence] ?? { steps: [] });
+    modelCalls.push({ sentence, turn: turnNum, plan });
     await route.fulfill({
       status: 200,
       contentType: "application/json",
@@ -265,16 +352,16 @@ try {
         must("fill_region", { mapId, rect: { x: 0, y: 0, w: W, h: H }, material: "버들항 풀밭" });
         // 기본 마을 문맥: 좌측 상단 집 1채 + 중앙 가로 포석 길 + 우물 + 나무
         must("stamp_tileset_object", { mapId, objectId: "bd-house-h103_1", at: { x: 1, y: 2 }, overwrite: true });
-        must("stamp_tileset_object", { mapId, objectId: "bd-prop-well_roofed", at: { x: W === 27 ? 2 : 7, y: W === 27 ? 11 : 5 }, overwrite: true });
+        must("stamp_tileset_object", { mapId, objectId: "bd-prop-well_roofed", at: { x: W === 27 ? 2 : 6, y: W === 27 ? 11 : 5 }, overwrite: true });
         must("stamp_tileset_object", { mapId, objectId: "bd-tree-3e8732", at: { x: 1, y: Math.min(H - 5, 15) }, overwrite: true });
         const p = window.__oprnEditorStore.getCurrent();
         const ts = p.tilesets.beodeul_city;
         const roadTile = ts.autotileGroups?.find((g) => g.id === "beodeul_road_autotile")?.memberTileIds?.[0] ?? 1008;
-        const roadY = H >= 36 ? 36 : H >= 22 ? 19 : W === 27 ? 18 : 9;
+        const roadY = H === 32 ? 13 : H >= 36 ? 36 : H >= 22 ? 19 : W === 27 ? 18 : 9;
         const roadCells = [];
         for (let x = 1; x <= (W === 27 ? 6 : 10); x++) {
           roadCells.push({ x, y: roadY }, { x, y: roadY + 1 });
-          if (roadY !== 9 && W !== 27) roadCells.push({ x, y: 9 }, { x, y: 10 });
+          if (roadY !== 9 && roadY !== 13 && W !== 27) roadCells.push({ x, y: 9 }, { x, y: 10 });
         }
         must("paint_tiles", { mapId, layer: "lower", mode: "cells", tile: roadTile, cells: roadCells });
 
@@ -493,6 +580,13 @@ try {
       sel: { x: 8, y: 1, w: 15, h: 17 },
       prompt: "여관과 상점을 세우고 출입구 도로망을 자동 연결한 뒤 마을 군중으로 북적이게 하고 노을 조명으로 연출해줘",
     },
+    {
+      id: "case17-multiturn-rpg-worldbuild",
+      mapName: "버들항 왕국 변경 — ⑰ [4턴 연쇄 RPG 월드빌딩] 성채·폭포·항구 → 마을 상권·도로망 → 봉인 유적·레버·몬스터 → 역마차·군중·노을",
+      mapSize: { w: 44, h: 32 },
+      sel: { x: 1, y: 1, w: 42, h: 30 },
+      prompt: "북쪽에 왕성 본성과 폭포 연못·돌다리·남동쪽 항구 부두를 세우고, 중앙에 여관·치유 성당·물약 상점·모험가 길드·장터 바자회를 지어 모든 출입구 도로망을 자동 연결한 뒤, 남쪽 유적을 석조 성벽으로 둘러싸고 레버 철문·배회하는 몬스터·야영지 모닥불·미믹 상자를 깔고, 서쪽 역마차 정류장·가로등 열주·마을 군중·노을 조명으로 4단계 RPG 월드빌딩해줘",
+    },
   ];
 
   const results = [];
@@ -553,11 +647,11 @@ try {
         return cur > prev;
       },
       prevMaxOrder,
-      { timeout: 25_000 },
+      { timeout: 60_000 },
     );
     await page.evaluate(async (caseId) => {
       const { editorState } = await import("/src/editor/editorState.ts");
-      const showEvents = /^(?:case8|case9|case11|case12|case13|case14|case16)/.test(caseId);
+      const showEvents = /^(?:case8|case9|case11|case12|case13|case14|case16|case17)/.test(caseId);
       editorState.set({
         selection: null,
         ...(showEvents ? { layer: "event", tool: "select" } : {}),
@@ -567,6 +661,91 @@ try {
     await page.waitForTimeout(300);
     // After 스크린샷 캡처 (선택 칩·브러시 호버 가림 없이 시공 결과 전체 노출)
     await page.screenshot({ path: path.join(OUT, `${c.id}-after.png`), animations: "disabled", timeout: 60_000 });
+
+    if (c.id === "case17-multiturn-rpg-worldbuild") {
+      // 1) Turn 1 → Turn 2 → Turn 3 → Turn 4 단계별 점진적 시공 스크린샷 캡처
+      const stageMapId = await resetBaseMap("case17_stages", c.mapName, null, c.mapSize);
+      const stagePlans = [
+        MODEL_PLANS[c.prompt],
+        MODEL_TURN2_PLANS[c.prompt],
+        MODEL_TURN3_PLANS[c.prompt],
+        MODEL_TURN4_PLANS[c.prompt],
+      ];
+      for (let tIdx = 0; tIdx < stagePlans.length; tIdx++) {
+        const stagePlan = stagePlans[tIdx];
+        await page.evaluate(
+          async ({ stageMapId, stagePlan, sel, tIdx, promptText }) => {
+            const { runStampPlace } = await import("/src/editor/stampPlaceRunner.ts");
+            await runStampPlace({
+              text: promptText,
+              mapId: stageMapId,
+              selection: { mapId: stageMapId, x: sel.x, y: sel.y, width: sel.w, height: sel.h },
+              maxLlmTurns: 1,
+              variation: 10 + tIdx,
+              chat: async () => ({
+                message: {
+                  role: "assistant",
+                  content: JSON.stringify({ steps: stagePlan.steps }),
+                },
+              }),
+            });
+            const { editorState } = await import("/src/editor/editorState.ts");
+            editorState.set({ currentMapId: stageMapId, selection: null, layer: "event", tool: "select", zoom: 1 });
+          },
+          { stageMapId, stagePlan, sel: c.sel, tIdx, promptText: c.prompt },
+        );
+        await page.mouse.move(10, 10);
+        await page.waitForTimeout(350);
+        await page.screenshot({
+          path: path.join(OUT, `${c.id}-turn${tIdx + 1}.png`),
+          animations: "disabled",
+          timeout: 60_000,
+        });
+      }
+
+      // 다시 최종 4턴 통합 맵으로 복귀
+      await page.evaluate(async (id) => {
+        const { editorState } = await import("/src/editor/editorState.ts");
+        editorState.set({ currentMapId: id, selection: null, layer: "event", tool: "select", zoom: 1 });
+      }, mapId);
+      await page.waitForTimeout(250);
+
+      // 2) 완성된 44×32 RPG 월드 타운을 실런타임(openTestPlayModal)에서 바로 부팅하여 길드 의뢰 게시판 3분기 대화창/선택지 상호작용 캡처
+      await page.evaluate(async (targetMapId) => {
+        const { openTestPlayModal, closeTestPlayModal } = await import("/src/editor/panels/testPlayModal.ts");
+        const proj = window.__oprnEditorStore.getCurrent();
+        const targetMap = proj.maps[targetMapId];
+        const guildEv = targetMap?.events?.find((e) => e.name.includes("길드 의뢰 게시판"));
+        const startPos = guildEv
+          ? { mapId: targetMapId, x: guildEv.x, y: Math.min(targetMap.height - 1, guildEv.y + 1) }
+          : { mapId: targetMapId, x: 22, y: 22 };
+        window.__closeCase17PlayModal = closeTestPlayModal;
+        await openTestPlayModal(startPos);
+      }, mapId);
+      await page.waitForFunction(
+        (expectedMapId) => window.__oprnDebug?.readState?.()?.currentMapId === expectedMapId,
+        mapId,
+        { timeout: 60_000 },
+      );
+      await page.waitForTimeout(800);
+      // 북쪽(길드 의뢰 게시판 방향)을 바라보고 액션으로 3분기 의뢰 게시판 대화창 및 선택지 오픈
+      await page.evaluate(() => {
+        window.__oprnInput?.face?.("up");
+        window.__oprnInput?.action?.();
+      });
+      await page.waitForTimeout(1400);
+      await page.keyboard.press("Enter");
+      await page.waitForTimeout(600);
+      await page.screenshot({
+        path: path.join(OUT, `${c.id}-playtest.png`),
+        animations: "disabled",
+        timeout: 60_000,
+      });
+      await page.evaluate(() => {
+        window.__closeCase17PlayModal?.();
+      });
+      await page.waitForTimeout(250);
+    }
     const afterSnap = await page.evaluate(
       ({ mapId }) => {
         const m = window.__oprnEditorStore.getCurrent().maps[mapId];

@@ -35,6 +35,7 @@ import {
   extractMoveTargetNoun,
   extractSpatialZonePhrase,
   FAST_PATH_QUEST_OR_EVENT_GUIDANCE,
+  inferMaxStampLlmTurns,
   parseRelativeShift,
   parseStampPlan,
   planStampFollowUpFallback,
@@ -45,6 +46,7 @@ import {
   type FastPathCommandTier,
   type FastPathRejectCode,
   type FastPathSpatialOpKind,
+  type ParsedStampPlan,
   type PlacedMapObjectSummary,
   type StampPlanFacts,
   type StampRect,
@@ -53,6 +55,7 @@ import {
   type StampTurnObservation,
 } from "@/ai/stampPlanner";
 import {
+  collectOverlappingPropClearPatches,
   EXTENDED_STAMP_TOOLS,
   expandExtendedSpatialStep,
   type ExtendedTilePatch,
@@ -117,6 +120,8 @@ export interface StampRunInput {
   readonly chat?: StampChatFn;
   /** 장면 구성기 씨앗(테스트·재현용). 생략하면 부를 때마다 다른 값 — 같은 문장도 다른 장면이 나온다. */
   readonly variation?: number;
+  /** 바로 깔기 내 최대 LLM 연쇄 시공 턴 수 (기본 2, 다단계 RPG 월드빌딩 요청 시 최대 4). */
+  readonly maxLlmTurns?: 1 | 2 | 3 | 4;
 }
 
 export interface StampRunResult {
@@ -137,8 +142,8 @@ export interface StampRunResult {
   readonly refused?: number;
   /** 적용 전후 맵 비교 — 실제로 바뀐 타일·이벤트 수. */
   readonly effect?: StampEffect;
-  /** 바로 깔기 실행 중 사용된 LLM 계획 턴 수 (기본 1, 복합·연쇄 시공 시 최대 2). */
-  readonly llmTurnsUsed?: 1 | 2;
+  /** 바로 깔기 실행 중 사용된 LLM 계획 턴 수 (기본 1, 복합·연쇄 시공 시 최대 4). */
+  readonly llmTurnsUsed?: 1 | 2 | 3 | 4;
 }
 type PendingStructureOp =
   | { readonly kind: "remove"; readonly mapId: string; readonly placementId: string }
@@ -673,7 +678,7 @@ export async function runStampPlaceWith(input: StampRunInput, deps: StampRunDeps
   // 호출 실패·시간 초과·읽을 수 없는 계획은 한 번만 다시 묻는다. 그래도 안 되면 아무것도 깔지 않는다.
   // 「그림이 없어 거절」은 읽을 수 없는 계획이 아니다 — 다시 물어도 같은 답이므로 재시도하지 않는다.
   let planRaw = "";
-  let plan: ReturnType<typeof parseStampPlan> = { steps: [], dropped: [], refused: [] };
+  let plan: ParsedStampPlan = { steps: [], dropped: [], refused: [] };
   let lastProblem = "";
   const priorDropped: string[] = [];
   for (let attempt = 0; attempt < 2 && plan.steps.length === 0 && plan.refused.length === 0; attempt++) {
@@ -728,101 +733,157 @@ export async function runStampPlaceWith(input: StampRunInput, deps: StampRunDeps
   const expanded = expandPlanSteps(turn1RawSteps, activeFacts, deps.getProject(), landingCheck(deps, input.mapId), variation);
   let combinedSteps: readonly StampStep[] = expanded.steps;
   let combinedDropped: readonly string[] = [...plan.dropped, ...expanded.dropped];
-  let llmTurnsUsed: 1 | 2 = 1;
+  let llmTurnsUsed: 1 | 2 | 3 | 4 = 1;
+  const maxLlmTurns = inferMaxStampLlmTurns(activeFacts.text, input.maxLlmTurns);
 
-  // ── 최대 2턴(maxLlmTurns = 2) 연쇄 시공 루프 ────────────────────────────────
-  // 1턴 시공 직후의 미리보기 맵(expanded.previewMap)에서 건물·출입구·물·도로·이벤트·남은 목표를 요약해
-  // 복합 요청이거나 1턴 계획이 후속 정밀 시공(needsFollowUp / remainingGoals)을 요청한 경우 2번째 LLM 턴을 수행한다.
-  const draftAfterTurn1 = expanded.previewMap ?? deps.getProject().maps[input.mapId];
-  const tilesetAfterTurn1 = draftAfterTurn1 ? deps.getProject().tilesets[draftAfterTurn1.tilesetId] : undefined;
-  if (draftAfterTurn1) {
-    const placedStructures = detectPlacedMapObjects(draftAfterTurn1, tilesetAfterTurn1)
+  // ── 최대 4턴(maxLlmTurns = 2..4) 다단계 연쇄 시공 루프 ────────────────────────
+  // 각 턴 시공 직후의 미리보기 맵(currentDraft)에서 건물·출입구·물·도로·이벤트·스위치·남은 목표를 요약해
+  // 복합 요청이거나 직전 턴 계획이 후속 시공(needsFollowUp / remainingGoals)을 요청한 경우 다음 LLM 턴을 수행한다.
+  let currentDraft = expanded.previewMap ?? deps.getProject().maps[input.mapId];
+  let allRawSteps: StampStep[] = [...turn1RawSteps];
+  let lastNeedsFollowUp = plan.needsFollowUp === true;
+  let explicitRemainingGoals: readonly string[] = plan.remainingGoals ?? [];
+  const turnMessages: ChatMessage[] = [{ role: "assistant", content: planRaw }];
+  const stepSig = (s: StampStep): string => {
+    const a = (s.args.area ?? s.args.rect ?? s.args.at ?? "") as unknown;
+    return `${s.tool}:${JSON.stringify(a)}`;
+  };
+  const executedStepSigs = new Set<string>(turn1RawSteps.map(stepSig));
+
+  while (llmTurnsUsed < maxLlmTurns && currentDraft) {
+    const draftSnap = currentDraft;
+    const tilesetSnap = deps.getProject().tilesets[draftSnap.tilesetId];
+    const placedStructures = detectPlacedMapObjects(draftSnap, tilesetSnap)
       .filter((o) => o.kind === "structure" || o.kind === "kit")
-      .map((o) => ({ id: o.id, name: o.name, x: o.x, y: o.y, w: o.w, h: o.h }));
-    const doorCells = placedStructures.map((s) => ({
-      x: s.x + Math.floor(s.w / 2),
-      y: Math.min(draftAfterTurn1.height - 1, s.y + s.h),
-    }));
+      .map((o) => ({ id: o.id, name: o.name, x: o.x, y: o.y, w: o.w, h: o.h, kitId: o.kitId }));
+    const doorCells = placedStructures.map((s) => {
+      const kit = s.kitId ? (tilesetSnap?.structureKits ?? []).find((k) => k.id === s.kitId) : undefined;
+      const entrance = kit?.parts?.find((part) => part.kind === "entrance");
+      return {
+        x: s.x + (entrance ? entrance.dx : Math.floor(s.w / 2)),
+        y: Math.min(draftSnap.height - 1, s.y + s.h),
+      };
+    });
     let waterCells = 0;
     let roadCells = 0;
     for (let y = activeFacts.target.y; y < activeFacts.target.y + activeFacts.target.h; y++) {
       for (let x = activeFacts.target.x; x < activeFacts.target.x + activeFacts.target.w; x++) {
-        if (isWaterCell(draftAfterTurn1, tilesetAfterTurn1, x, y)) waterCells++;
-        if (isRoadCell(draftAfterTurn1, tilesetAfterTurn1, x, y)) roadCells++;
+        if (isWaterCell(draftSnap, tilesetSnap, x, y)) waterCells++;
+        if (isRoadCell(draftSnap, tilesetSnap, x, y)) roadCells++;
       }
     }
     const eventsCreated = combinedSteps
       .filter((s) => s.tool === "place_npc" || s.tool === "make_villager" || s.tool === "place_chest" || s.tool === "place_savepoint")
       .map((s, idx) => ({
-        id: String(s.args.id ?? `turn1_ev_${idx}`),
+        id: String(s.args.id ?? `turn_ev_${idx}`),
         name: String(s.args.name ?? s.label),
         x: Number(s.args.x ?? (s.args.home as { x?: number } | undefined)?.x ?? activeFacts.target.x),
         y: Number(s.args.y ?? (s.args.home as { y?: number } | undefined)?.y ?? activeFacts.target.y),
       }));
-    const followUpGoals = extractCompoundFollowUpGoals(activeFacts.text, turn1RawSteps);
+    const switchesWired = [
+      ...new Set(
+        pendingStructureOps
+          .filter((op): op is Extract<PendingStructureOp, { readonly kind: "switch_ensure" }> => op.kind === "switch_ensure")
+          .map((op) => op.switchId),
+      ),
+    ];
+    const followUpGoals = extractCompoundFollowUpGoals(activeFacts.text, allRawSteps);
+    const usedTools = new Set<string>(allRawSteps.map((s) => s.tool));
     const remainingGoals = [
-      ...(plan.remainingGoals ?? []),
+      ...explicitRemainingGoals.filter((g) => {
+        const prefix = g.split(":")[0]?.trim() ?? "";
+        return !usedTools.has(prefix);
+      }),
       ...followUpGoals.map((g) => `${g.tool}: ${g.label}`),
     ];
     const observation: StampTurnObservation = {
-      placedStructures,
+      turnCompleted: llmTurnsUsed,
+      placedStructures: placedStructures.map(({ kitId: _k, ...rest }) => rest),
       doorCells,
       waterCells,
       roadCells,
       eventsCreated,
+      switchesWired,
       remainingGoals,
     };
 
-    if (shouldRunStampTurn2(activeFacts, turn1RawSteps, observation, plan.needsFollowUp === true)) {
-      llmTurnsUsed = 2;
-      const turn2Facts: StampPlanFacts = {
-        ...activeFacts,
-        placedObjects: detectPlacedMapObjects(draftAfterTurn1, tilesetAfterTurn1),
-        isOpenCell: (x, y) => isOpenObjectCell(deps.getProject(), draftAfterTurn1, x, y),
-        isWallMountCell: (x, y) => isWallMountCell(draftAfterTurn1, tilesetAfterTurn1, x, y),
-        isWaterCell: (x, y) => isWaterCell(draftAfterTurn1, tilesetAfterTurn1, x, y),
-        isRoadCell: (x, y) => isRoadCell(draftAfterTurn1, tilesetAfterTurn1, x, y),
-        isGrassOrSoilCell: (x, y) => isGrassOrSoilCell(draftAfterTurn1, tilesetAfterTurn1, x, y),
-        hasArtAt: (x, y) => hasArtAt(draftAfterTurn1, x, y),
-        ...(tilesetAfterTurn1 ? { isWallCell: (x: number, y: number) => isWallCell(draftAfterTurn1, tilesetAfterTurn1, x, y) } : {}),
-      };
-      let turn2Raw = "";
-      try {
-        turn2Raw = await callModel(
-          deps,
-          [
-            ...conversation,
-            { role: "assistant", content: planRaw },
-            { role: "user", content: buildStampTurn2Prompt({ facts: turn2Facts, turn1Steps: turn1RawSteps, observation }) },
-          ],
-          input.signal,
-        );
-      } catch (cause) {
-        if (cause instanceof StampAborted) return ABORTED;
-        turn2Raw = "";
-      }
-      const turn1ToolSet = new Set(turn1RawSteps.map((s) => s.tool));
-      let turn2CandidateSteps: readonly StampStep[] = [];
-      if (turn2Raw) {
-        const parsedTurn2 = parseStampPlan(turn2Raw, turn2Facts);
-        turn2CandidateSteps = parsedTurn2.steps.filter((s) => !turn1ToolSet.has(s.tool));
-      }
-      if (turn2CandidateSteps.length === 0) {
-        turn2CandidateSteps = planStampFollowUpFallback({ facts: turn2Facts, turn1Steps: turn1RawSteps, observation });
-      }
-      if (turn2CandidateSteps.length > 0) {
-        const turn2Expanded = expandPlanSteps(
-          turn2CandidateSteps,
-          turn2Facts,
-          deps.getProject(),
-          landingCheck(deps, input.mapId),
-          variation + 7,
-          draftAfterTurn1,
-        );
-        combinedSteps = [...combinedSteps, ...turn2Expanded.steps];
-        combinedDropped = [...combinedDropped, ...turn2Expanded.dropped];
-      }
+    if (!shouldRunStampTurn2(activeFacts, allRawSteps, observation, lastNeedsFollowUp)) {
+      break;
     }
+    const nextTurn = (llmTurnsUsed + 1) as 2 | 3 | 4;
+    const turnFacts: StampPlanFacts = {
+      ...activeFacts,
+      placedObjects: detectPlacedMapObjects(draftSnap, tilesetSnap),
+      isOpenCell: (x, y) => isOpenObjectCell(deps.getProject(), draftSnap, x, y),
+      isWallMountCell: (x, y) => isWallMountCell(draftSnap, tilesetSnap, x, y),
+      isWaterCell: (x, y) => isWaterCell(draftSnap, tilesetSnap, x, y),
+      isRoadCell: (x, y) => isRoadCell(draftSnap, tilesetSnap, x, y),
+      isGrassOrSoilCell: (x, y) => isGrassOrSoilCell(draftSnap, tilesetSnap, x, y),
+      hasArtAt: (x, y) => hasArtAt(draftSnap, x, y),
+      ...(tilesetSnap ? { isWallCell: (x: number, y: number) => isWallCell(draftSnap, tilesetSnap, x, y) } : {}),
+    };
+    const userPrompt = buildStampTurn2Prompt({
+      turn: nextTurn,
+      maxTurns: maxLlmTurns,
+      facts: turnFacts,
+      turn1Steps: allRawSteps,
+      priorSteps: allRawSteps,
+      observation,
+    });
+    let nextRaw = "";
+    try {
+      nextRaw = await callModel(
+        deps,
+        [
+          ...conversation,
+          ...turnMessages,
+          { role: "user", content: userPrompt },
+        ],
+        input.signal,
+      );
+    } catch (cause) {
+      if (cause instanceof StampAborted) return ABORTED;
+      nextRaw = "";
+    }
+    llmTurnsUsed = nextTurn;
+    let nextCandidateSteps: readonly StampStep[] = [];
+    let parsedNext: ParsedStampPlan | null = null;
+    if (nextRaw) {
+      parsedNext = parseStampPlan(nextRaw, turnFacts);
+      nextCandidateSteps = parsedNext.steps.filter((s) => !executedStepSigs.has(stepSig(s)));
+    }
+    if (nextCandidateSteps.length === 0 && nextTurn === 2) {
+      nextCandidateSteps = planStampFollowUpFallback({
+        turn: nextTurn,
+        maxTurns: maxLlmTurns,
+        facts: turnFacts,
+        turn1Steps: allRawSteps,
+        priorSteps: allRawSteps,
+        observation,
+      });
+    }
+    if (nextCandidateSteps.length === 0) {
+      break;
+    }
+    for (const s of nextCandidateSteps) executedStepSigs.add(stepSig(s));
+    allRawSteps = [...allRawSteps, ...nextCandidateSteps];
+    lastNeedsFollowUp = parsedNext?.needsFollowUp === true;
+    explicitRemainingGoals = parsedNext?.remainingGoals ?? [];
+    turnMessages.push(
+      { role: "user", content: userPrompt },
+      { role: "assistant", content: nextRaw || JSON.stringify({ steps: nextCandidateSteps }) },
+    );
+    const nextExpanded = expandPlanSteps(
+      nextCandidateSteps,
+      turnFacts,
+      deps.getProject(),
+      landingCheck(deps, input.mapId),
+      variation + nextTurn * 7,
+      draftSnap,
+    );
+    combinedSteps = [...combinedSteps, ...nextExpanded.steps];
+    combinedDropped = [...combinedDropped, ...nextExpanded.dropped];
+    currentDraft = nextExpanded.previewMap ?? draftSnap;
   }
 
   plan = { ...plan, steps: combinedSteps, dropped: combinedDropped };
@@ -840,7 +901,7 @@ export async function runStampPlaceWith(input: StampRunInput, deps: StampRunDeps
     const visualApplied = plan.steps.some((step, index) => VISUAL_TOOLS[step.tool] === true && firstResults[index]?.ok);
     const lying = visualApplied && !hasVisibleChange(effect);
     const all = [...lines, ...extra];
-    const effectLine = describeStampEffect(effect) + (llmTurnsUsed === 2 ? " · LLM 2턴 연쇄 시공" : "");
+    const effectLine = describeStampEffect(effect) + (llmTurnsUsed > 1 ? ` · LLM ${llmTurnsUsed}턴 연쇄 시공` : "");
     all.push(effectLine);
     if (lying) all.push("※ 도구는 성공이라 했지만 맵에 눈에 보이게 바뀐 것이 없습니다 — 이 요청은 깔리지 않은 것으로 봅니다.");
     return { ok: ok && !lying && refusals.length === 0, lines: all, applied, usedModel: true, refused: refusals.length, effect, llmTurnsUsed, ...(usedRepair ? {} : {}) };
@@ -3435,11 +3496,11 @@ function expandSpecialSpatialSteps(
       const roadGroup = (tileset.autotileGroups ?? []).find((g) => g.id === "beodeul_road_autotile");
 
       if (tileset.id === "beodeul_city") {
-        const canFitShopHouse = area.w >= 8 && area.h >= 8 && !/노점|좌판/u.test(facts.text);
+        const canFitShopHouse = area.w >= 6 && area.h >= 7 && !/노점|좌판/u.test(facts.text);
         const houseKitId = kind === "potion"
-          ? "bd-house-h103_2"
+          ? "bd-house-h134_0"
           : kind === "weapon"
-            ? "bd-house-smithy_town"
+            ? (area.w >= 8 ? "bd-house-smithy_town" : "bd-house-h110_0")
             : kind === "armor"
               ? "bd-house-h110_0"
               : "bd-house-h134_0";
@@ -3451,12 +3512,30 @@ function expandSpecialSpatialSteps(
             : "bd-prop-stall_jug_bottle";
         const bannerKitId = kind === "potion" ? "bd-pick-walled-market-banner-teal" : "bd-pick-walled-market-banner-red";
 
-        const shopX = Math.max(0, Math.min(W - (houseKit ? houseKit.width + 4 : 5), area.x + 1));
+        const shopX = Math.max(
+          0,
+          Math.min(
+            W - (houseKit ? houseKit.width + 2 : 5),
+            area.w >= (houseKit ? houseKit.width + 4 : 7) ? area.x + 1 : area.x,
+          ),
+        );
         const shopY = Math.max(0, Math.min(H - (houseKit ? houseKit.height + 2 : 6), area.y + 1));
         const clearW = Math.min(W - shopX, houseKit ? houseKit.width + 4 : 6);
         const clearH = Math.min(H - shopY, houseKit ? houseKit.height + 2 : 6);
         const clearRect: StampRect = { x: shopX, y: shopY, w: clearW, h: clearH };
-        const shopBefore = captureStructureTiles(previewMap, clearRect);
+        const buildingRect: StampRect = houseKit
+          ? { x: shopX, y: shopY, w: houseKit.width, h: houseKit.height }
+          : clearRect;
+        const propClearPatches = collectOverlappingPropClearPatches(
+          { previewMap, tileset, detectObjects: detectPlacedMapObjects },
+          buildingRect,
+          2,
+          houseCells,
+        );
+        if (propClearPatches.length > 0) {
+          pendingStructureOps.push({ kind: "tile_patch", mapId: facts.mapId, patches: propClearPatches });
+        }
+        const shopBefore = captureStructureTiles(previewMap, buildingRect);
 
         let shopTouchesHouse = false;
         for (let y = clearRect.y; y < clearRect.y + clearRect.h; y++) {
@@ -3475,13 +3554,17 @@ function expandSpecialSpatialSteps(
 
         if (houseKit) {
           out.push(...stampKitDirectSteps(houseKit.id, shopX, shopY, previewMap, tileset, facts.mapId, `${shopName} 건물과 매대 시공`));
-          const stallX = Math.min(W - 2, shopX + houseKit.width + 1);
+          const stallX = Math.min(W - 2, shopX + houseKit.width + (area.w >= houseKit.width + 3 ? 1 : 0));
           const stallY = shopY + Math.max(0, houseKit.height - 4);
           out.push(...stampKitDirectSteps(stallKitId, stallX, stallY, previewMap, tileset, facts.mapId));
           if (shopX - 1 >= area.x) {
             out.push(...stampKitDirectSteps(bannerKitId, shopX - 1, shopY + Math.max(0, houseKit.height - 4), previewMap, tileset, facts.mapId));
+          } else if (stallX + 2 < area.x + area.w && stallX + 2 < W) {
+            out.push(...stampKitDirectSteps(bannerKitId, stallX + 2, shopY + Math.max(0, houseKit.height - 4), previewMap, tileset, facts.mapId));
           }
-          const doorX = shopX + Math.floor(houseKit.width / 2);
+          const doorPart = houseKit.parts?.find((p) => p.kind === "entrance");
+          const doorX = shopX + (doorPart ? doorPart.dx : Math.floor(houseKit.width / 2));
+          const doorY = shopY + (doorPart ? doorPart.dy + doorPart.h - 1 : houseKit.height - 1);
           const doorFrontY = Math.min(H - 1, shopY + houseKit.height);
           const merchantAt = { x: Math.min(W - 1, stallX), y: doorFrontY };
 
@@ -3502,6 +3585,7 @@ function expandSpecialSpatialSteps(
             let nearestRoad: { x: number; y: number; d: number } | null = null;
             for (let y = 0; y < H; y++) {
               for (let x = 0; x < W; x++) {
+                if (x >= shopX && x <= stallX + 1 && y >= doorFrontY && y <= doorFrontY + 1) continue;
                 if (roadTileSet.has(previewMap.lowerTiles[idx(x, y)] ?? -1)) {
                   const d = Math.abs(x - doorX) + Math.abs(y - doorFrontY);
                   if (!nearestRoad || d < nearestRoad.d) nearestRoad = { x, y, d };
@@ -3524,7 +3608,8 @@ function expandSpecialSpatialSteps(
                 }
               }
             }
-            const roadSteps = applyBeodeulRoadAutotile(roadMask, previewMap, roadGroup, () => false, new Set(), facts.mapId, "");
+            const shopDoorSet = new Set<string>([`${doorX},${doorY}`, `${doorX + 1},${doorY}`]);
+            const roadSteps = applyBeodeulRoadAutotile(roadMask, previewMap, roadGroup, () => false, shopDoorSet, facts.mapId, "");
             const roadPatches: { readonly x: number; readonly y: number; readonly lower: number }[] = [];
             for (const rs of roadSteps) {
               const cells = (rs.args.cells as { x: number; y: number }[] | undefined) ?? [];
@@ -3542,10 +3627,10 @@ function expandSpecialSpatialSteps(
             mapId: facts.mapId,
             placementId: `shop_${shopX}_${shopY}`,
             kitId: `bd-shop-${kind}`,
-            x: clearRect.x,
-            y: clearRect.y,
-            w: clearRect.w,
-            h: clearRect.h,
+            x: buildingRect.x,
+            y: buildingRect.y,
+            w: buildingRect.w,
+            h: buildingRect.h,
             before: shopBefore,
           });
           previewMap.structurePlacements = [
@@ -3553,11 +3638,10 @@ function expandSpecialSpatialSteps(
             makeStructurePlacement(previewMap, {
               id: `shop_${shopX}_${shopY}`,
               kitId: `bd-shop-${kind}`,
-              rect: clearRect,
+              rect: buildingRect,
               before: shopBefore,
             }),
           ];
-
           const npcName = kind === "potion" ? "물약 상인" : kind === "weapon" ? "무기 상인" : kind === "armor" ? "방어구 상인" : "상점 주인";
           out.push({
             tool: "make_villager",
@@ -3645,7 +3729,7 @@ function expandSpecialSpatialSteps(
       if (tileset.id === "beodeul_city" && castleKit) {
         const fitting: CastleArchetypeId[] = [];
         if (area.w >= 33 && area.h >= 33) fitting.push("citadel");
-        if (area.w >= 19 && area.h >= 15) fitting.push("keep");
+        if (area.w >= 19 && area.h >= 12) fitting.push("keep");
         if (area.w >= 14 && area.h >= 11) fitting.push("gatehouse");
         if (area.w >= 11 && area.h >= 8) fitting.push("outpost");
 
@@ -3685,7 +3769,7 @@ function expandSpecialSpatialSteps(
         const ch = chosen === "citadel"
           ? 33
           : chosen === "keep"
-            ? Math.max(15, Math.min(16, area.h - (area.h >= 17 ? 1 : 0)))
+            ? Math.max(12, Math.min(16, area.h - (area.h >= 17 ? 1 : 0)))
             : chosen === "gatehouse"
               ? Math.max(11, Math.min(14, area.h - (area.h >= 13 ? 1 : 0)))
               : Math.max(8, Math.min(12, area.h - (area.h >= 10 ? 1 : 0)));
@@ -3695,6 +3779,12 @@ function expandSpecialSpatialSteps(
         const ox = Math.max(0, Math.min(W - cw, area.x + (padX === 1 ? 1 : Math.floor(padX / 2))));
         const oy = Math.max(0, Math.min(H - ch, area.y + Math.floor((area.h - ch) / 2)));
         const castleRect: StampRect = { x: ox, y: oy, w: cw, h: ch };
+        const castlePropClears = collectOverlappingPropClearPatches(
+          { previewMap, tileset, detectObjects: detectPlacedMapObjects },
+          castleRect,
+          2,
+          houseCells,
+        );
         const castleBefore = captureStructureTiles(previewMap, castleRect);
 
         let castleTouchesHouse = false;
@@ -3712,7 +3802,7 @@ function expandSpecialSpatialSteps(
           });
         }
 
-        const touchedCells = new Set<number>();
+        const touchedCells = new Set<number>(castlePropClears.map((p) => idx(p.x, p.y)));
         const setCell = (x: number, y: number, lt: number, ut: number): void => {
           if (!inb(x, y) || houseCells.has(`${x},${y}`)) return;
           const cellIdx = idx(x, y);

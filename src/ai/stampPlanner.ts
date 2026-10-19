@@ -532,7 +532,7 @@ const TOOL_KO: Record<StampTool, string> = {
 export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampStepCheck {
   if (!isRecord(raw)) return { dropped: "단계가 객체가 아닙니다" };
   const rawTool = typeof raw.tool === "string" ? raw.tool.trim() : "";
-  const tool = rawTool === "set_map_transit" ? "set_street_traffic" : rawTool;
+  const tool = rawTool === "set_map_transit" ? "set_street_traffic" : rawTool === "place_simple_shop" ? "place_shop" : rawTool;
   if (!(STAMP_TOOLS as readonly string[]).includes(tool)) return { dropped: `허용되지 않은 도구 ${tool || "(없음)"}` };
   const stampTool = tool as StampTool;
   const args = isRecord(raw.args) ? raw.args : raw;
@@ -1249,11 +1249,12 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
     }
     case "place_switch_and_gate": {
       const area = rect ?? target;
+      const leverSide = enumArg(args.leverSide, ["north", "south"] as const);
       return {
         step: {
           tool: "place_switch_and_gate",
           label: labelText ?? "레버 스위치와 연동 강철 성문",
-          args: { mapId, area },
+          args: { mapId, area, ...(leverSide ? { leverSide } : {}) },
         },
       };
     }
@@ -1899,17 +1900,22 @@ export interface StampGuardRejection {
 }
 
 export interface StampTurnObservation {
+  readonly turnCompleted?: number;
   readonly placedStructures: readonly { readonly id: string; readonly name: string; readonly x: number; readonly y: number; readonly w: number; readonly h: number }[];
   readonly doorCells: readonly { readonly x: number; readonly y: number }[];
   readonly waterCells: number;
   readonly roadCells: number;
   readonly eventsCreated: readonly { readonly id: string; readonly name: string; readonly x: number; readonly y: number }[];
+  readonly switchesWired: readonly string[];
   readonly remainingGoals: readonly string[];
 }
 
 export interface StampPlannerFollowUpInput {
+  readonly turn?: number;
+  readonly maxTurns?: number;
   readonly facts: StampPlanFacts;
   readonly turn1Steps: readonly StampStep[];
+  readonly priorSteps?: readonly StampStep[];
   readonly observation: StampTurnObservation;
 }
 
@@ -2186,6 +2192,27 @@ export function extractCompoundFollowUpGoals(
   return matched;
 }
 
+export function inferMaxStampLlmTurns(text: string, requestedMaxTurns?: number): 1 | 2 | 3 | 4 {
+  if (typeof requestedMaxTurns === "number" && Number.isFinite(requestedMaxTurns)) {
+    const clamped = Math.max(1, Math.min(4, Math.round(requestedMaxTurns)));
+    return clamped as 1 | 2 | 3 | 4;
+  }
+  const t = text.trim();
+  if (!t) return 2;
+  const hasStage1Foundation = /성채|왕성|성곽|요새|폭포|연못|호수|강|돌다리|다리|항구|부두|선착장/u.test(t);
+  const hasStage2Town = /여관|성당|예배당|치유\s*사제|상점|무기점|물약\s*상점|길드|의뢰\s*게시판|장터|바자회|농장|목장|도로망|자동\s*연결/u.test(t);
+  const hasStage3Dungeon = /던전|폐허|성벽으로\s*둘러|담장|포위|레버|강철\s*성문|철문|배회하는\s*몬스터|심볼\s*몬스터|몬스터|야영지|캠프파이어|미믹|반짝이|보물상자/u.test(t);
+  const hasStage4Living = /역마차|마법진|포탈|군중|인파|북적이게|일렬로|대칭|석양|노을|야경|새벽|조명|날씨/u.test(t);
+  const stageCount = Number(hasStage1Foundation) + Number(hasStage2Town) + Number(hasStage3Dungeon) + Number(hasStage4Living);
+  let matchedTools = 0;
+  for (const m of EXTENDED_TOOL_MATCHERS) {
+    if (m.re.test(t)) matchedTools++;
+  }
+  if (/4\s*턴|4\s*단계|월드빌딩|지역\s*전체\s*시공/u.test(t) || stageCount >= 4 || matchedTools >= 7) return 4;
+  if (/3\s*턴|3\s*단계/u.test(t) || stageCount === 3 || matchedTools >= 5) return 3;
+  return 2;
+}
+
 export function shouldRunStampTurn2(
   facts: StampPlanFacts,
   turn1Steps: readonly StampStep[],
@@ -2199,19 +2226,24 @@ export function shouldRunStampTurn2(
 }
 
 export function buildStampTurn2Prompt(input: StampPlannerFollowUpInput): string {
+  const turn = input.turn ?? 2;
+  const maxTurns = input.maxTurns ?? 2;
+  const prior = input.priorSteps ?? input.turn1Steps;
   return JSON.stringify({
-    turn: 2,
-    instruction: "Turn 1 primary construction has been applied on the draft map. Inspect observation and emit ONLY the remaining refinement/follow-up steps (up to 6 steps) needed to complete the user's sentence, or {\"steps\":[]} if everything is already complete.",
+    turn,
+    maxTurns,
+    instruction: `Turn ${turn - 1} construction has been applied on the draft map. Inspect observation (placedStructures, doorCells, waterCells, roadCells, eventsCreated, switchesWired, remainingGoals) and emit ONLY the next stage steps (up to 6 steps) needed to progress or complete the user's RPG worldbuilding sentence, or {"steps":[]} if everything is already complete.`,
     sentence: input.facts.text,
     target: input.facts.target,
-    turn1AppliedTools: input.turn1Steps.map((s) => ({ tool: s.tool, label: s.label })),
+    turn1AppliedTools: prior.map((s) => ({ tool: s.tool, label: s.label })),
     observation: input.observation,
   });
 }
 
 export function planStampFollowUpFallback(input: StampPlannerFollowUpInput): StampStep[] {
   const out: StampStep[] = [];
-  const used = new Set<StampTool>(input.turn1Steps.map((s) => s.tool));
+  const prior = input.priorSteps ?? input.turn1Steps;
+  const used = new Set<StampTool>(prior.map((s) => s.tool));
   for (const m of EXTENDED_TOOL_MATCHERS) {
     if (used.has(m.tool)) continue;
     if (m.re.test(input.facts.text) || input.observation.remainingGoals.some((g) => g.includes(m.tool) || m.re.test(g))) {
