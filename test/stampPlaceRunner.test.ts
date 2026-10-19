@@ -492,4 +492,59 @@ describe("runStampPlaceWith", () => {
     expect(h.applied).toHaveLength(1);
     expect(res.lines.at(-1)).toContain("LLM 2턴 연쇄 시공");
   });
+
+  it("executes a 4-turn progressive RPG worldbuilding loop with enriched observation (placedStructures, doorCells, switchesWired)", async () => {
+    const h = harness({
+      replies: [
+        JSON.stringify({
+          steps: [
+            { tool: "place_castle", args: { area: { x: 2, y: 1, w: 14, h: 11 }, gate: true, towers: true }, label: "1턴: 성채와 성문" },
+            { tool: "carve_waterfall_pond", args: { area: { x: 16, y: 1, w: 7, h: 8 } }, label: "1턴: 폭포와 연못" },
+          ],
+          needsFollowUp: true,
+          remainingGoals: ["place_inn", "place_shop", "auto_connect_roads", "place_switch_and_gate", "populate_crowd", "set_mood_weather"],
+        }),
+        JSON.stringify({
+          steps: [
+            { tool: "place_inn", args: { area: { x: 2, y: 12, w: 8, h: 7 }, name: "여관 주인", price: 20 }, label: "2턴: 여관 시공" },
+            { tool: "place_shop", args: { area: { x: 11, y: 12, w: 7, h: 7 }, kind: "potion", name: "물약 상점" }, label: "2턴: 물약 상점 시공" },
+            { tool: "auto_connect_roads", args: { area: { x: 2, y: 1, w: 20, h: 18 } }, label: "2턴: 출입구 도로 자동 연결" },
+          ],
+          needsFollowUp: true,
+          remainingGoals: ["place_switch_and_gate", "place_roaming_enemies", "populate_crowd", "set_mood_weather"],
+        }),
+        JSON.stringify({
+          steps: [
+            { tool: "place_switch_and_gate", args: { area: { x: 18, y: 10, w: 5, h: 5 } }, label: "3턴: 레버와 강철 성문" },
+            { tool: "place_roaming_enemies", args: { area: { x: 18, y: 15, w: 5, h: 4 }, count: 2 }, label: "3턴: 배회 심볼 몬스터" },
+          ],
+          needsFollowUp: true,
+          remainingGoals: ["populate_crowd", "set_mood_weather"],
+        }),
+        JSON.stringify({
+          steps: [
+            { tool: "populate_crowd", args: { area: { x: 2, y: 10, w: 14, h: 4 }, count: 4 }, label: "4턴: 마을 군중 4명" },
+            { tool: "set_mood_weather", args: { area: { x: 1, y: 1, w: 22, h: 18 }, weather: "clear", preset: "sunset" }, label: "4턴: 노을 조명 연출" },
+          ],
+        }),
+      ],
+    });
+    const res = await runStampPlaceWith(
+      {
+        text: "성채와 폭포를 세우고 여관과 물약 상점을 지어 도로망을 자동 연결한 뒤 레버 철문과 배회하는 몬스터를 깔고 마을 군중과 노을 조명으로 4단계 월드빌딩해줘",
+        mapId: h.mapId,
+        selection: null,
+      },
+      h.deps,
+    );
+    expect(res.ok).toBe(true);
+    expect(res.llmTurnsUsed).toBe(4);
+    expect(h.requests).toHaveLength(4);
+    expect(h.applied).toHaveLength(1);
+    expect(res.lines.at(-1)).toContain("LLM 4턴 연쇄 시공");
+    const turn4UserPayload = JSON.parse(String(h.requests[3]!.messages.at(-1)!.content));
+    expect(turn4UserPayload.turn).toBe(4);
+    expect(turn4UserPayload.observation.switchesWired.length).toBeGreaterThan(0);
+    expect(turn4UserPayload.observation.doorCells.length).toBeGreaterThanOrEqual(2);
+  });
 });
