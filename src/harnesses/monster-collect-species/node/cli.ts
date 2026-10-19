@@ -25,6 +25,7 @@ import type { GridOptions } from "../pixel/grid";
 import { MAX_INK_SIDE, SPRITE_CANVAS, type FitResult, type SpriteSide } from "../pixel/fit";
 import { checkEyes } from "../checks/eyes";
 import { checkDirection, checkFrames, checkPair, checkSprite, similarSilhouettes, type CheckIssue } from "../checks/checks";
+import { checkEyePlacement, checkLineStyles, validateEyeTable } from "../checks/eyeTable";
 import { actionPrompt, backPrompt, evolutionPrompt, frontPrompt } from "../prompts/prompts";
 import { emptyLedger, validateSeed, type ActionContract, type ActionKind, type MonsterLedger, type MonsterSeed, type SpeciesSeed } from "../seed";
 import { idleFrames } from "../anim/idle";
@@ -566,7 +567,42 @@ function stageCheck(): number {
   // 실루엣 테스트(디자인 규칙 ④): 윤곽이 거의 같은 종 짝은 경고 — 진화형이 1단계 복제인 경우도 여기서 걸린다
   const fronts = seed.species.filter((sp) => existsSync(bundlePath(sp.id, "front"))).map((sp) => ({ id: sp.id, image: readPng(bundlePath(sp.id, "front")) }));
   for (const pair of similarSilhouettes(fronts)) console.log(`  ! 실루엣 ${pair.a} ↔ ${pair.b}: 겹침 ${pair.iou.toFixed(2)} (64px 검정 마스크에서 구별되지 않는다)`);
+  errors += eyeTableCheck(seed);
   console.log(errors === 0 ? "검사: 오류 없음" : `검사: 오류 ${errors}개`);
+  return errors;
+}
+
+/**
+ * 눈 표 검사(눈 규칙 판본 5, `checks/eyeTable.ts`): 번들 앞모습이 `eyes.json` 의 눈 자리와 맞는지, 동결 종 해시가 그대로인지.
+ * 실제 실패 목록이 표의 `accept` 와 다르면 오류다 — 새로 깨진 종도, 고쳤는데 accept 를 안 지운 종도 잡는다.
+ */
+function eyeTableCheck(seed: MonsterSeed): number {
+  const file = join(PATHS.data, "eyes.json");
+  if (!existsSync(file)) return 0;
+  const table = validateEyeTable(JSON.parse(readFileSync(file, "utf8")), seed.species.map((s) => s.id));
+  const lineFindings = checkLineStyles(table, seed.species);
+  let errors = 0;
+  let accepted = 0;
+  for (const species of seed.species) {
+    if (!existsSync(bundlePath(species.id, "front")) || !existsSync(bundlePath(species.id, "back"))) continue;
+    const entry = table.species[species.id]!;
+    const front = readPng(bundlePath(species.id, "front"));
+    const back = readPng(bundlePath(species.id, "back"));
+    const findings = checkEyePlacement(front, entry);
+    const line = lineFindings.get(species.id);
+    if (line && !findings.some((f) => f.check === "V7")) findings.push(line);
+    const accept = entry.accept ?? {};
+    const issues: CheckIssue[] = findings.map((f) => ({ level: f.check in accept ? "warn" : "error", message: `눈 ${f.check} ${f.message}${f.check in accept ? " (accept)" : ""}` }));
+    for (const k of Object.keys(accept)) if (!findings.some((f) => f.check === k)) issues.push({ level: "error", message: `눈 ${k} 는 이제 통과한다 — eyes.json accept 에서 지워라` });
+    if (entry.frozen) {
+      for (const [side, image] of [["front", front], ["back", back]] as const) {
+        if (createHash("sha256").update(image.data).digest("hex") !== entry.frozen[side]) issues.push({ level: "error", message: `동결 종 ${side} 그림이 바뀌었다 (V8) — 사용자 승인 기준종은 바꾸지 않는다` });
+      }
+    }
+    if (Object.keys(accept).length > 0) accepted += 1;
+    errors += printIssues(`${species.id} 눈 표`, issues);
+  }
+  console.log(`눈 표: accept 로 남은 종 ${accepted}개`);
   return errors;
 }
 
