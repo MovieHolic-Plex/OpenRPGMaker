@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.274.0 — 2026-10-19
+
+### 기능
+
+- **puzzle** — expand catalog to 16 presets and implement 5-step rolling boulder motion (#3000) (`602c6a2`)
+
+### 수정
+
+- **monster** — redesign starter 3/4 anime eyes and refine 4 species eyes (R12) (#3001) (`8cb3d8b`)
+
 ## 0.273.0 — 2026-10-19
 
 ### 기능
