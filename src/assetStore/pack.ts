@@ -11,6 +11,7 @@ import {
   blobPlaceholder,
   mapStrings,
   placeholderSha,
+  storeThirdPartyName,
   storeProjectId,
   tilesetUploadedAssetIds,
   validateManifest,
@@ -91,6 +92,55 @@ export function aiMadeAssets(project: Project, selection: PackSelection): { id: 
   });
 }
 
+export interface PackBlockedItem { readonly id: string; readonly kind: "asset" | "tileset"; readonly reason: string }
+
+/** 팩이 끌고 들어오는 것 중 올릴 수 없는 것이 있을 때. 화면은 blocked 를 목록으로 보여 준다. */
+export class StorePackBlockedError extends Error {
+  constructor(readonly blocked: readonly PackBlockedItem[]) {
+    super(`스토어에 올릴 수 없는 것이 팩에 딸려 들어갑니다: ${blocked.map((item) => `${item.id} — ${item.reason}`).join(" / ")}`);
+    this.name = "StorePackBlockedError";
+  }
+}
+
+/**
+ * 직접 만든 것만 올린다: 스토어에서 받은 것(원작자·라이선스를 지키려고)·공용 자료집(`shared_`)·제3자 팩 이름은 막는다.
+ * 막는 이유 문장, 괜찮으면 null. 올리기 화면 후보와 buildPack 이 같은 판정을 쓴다.
+ */
+export function storePublishBlockReason(id: string, name: string, origin: unknown): string | null {
+  if (origin) return "스토어에서 받은 것은 다시 올릴 수 없습니다(원작자·라이선스는 그 상품에 남습니다).";
+  if (id.startsWith("shared_")) return "공용 자료집에서 온 것은 올릴 수 없습니다. 직접 만든 것만 올립니다.";
+  const word = storeThirdPartyName(id) ?? storeThirdPartyName(name);
+  return word ? `제3자 팩(PAW·Rasak·REFMAP·RPG Maker 계열 「${word}」)은 올릴 수 없습니다.` : null;
+}
+
+/**
+ * 고른 것과 그 의존(타일셋 그림·이식 원본·참고문서 원본 타일셋·번들 이식 칩셋 이름) 전부에서 올릴 수 없는 것.
+ * 고른 것만 보면 이식 원본이나 참고문서 원본으로 제3자·스토어 그림이 몰래 딸려 간다(2026-10-20 감사).
+ */
+export function packBlockedItems(project: Project, selection: PackSelection): PackBlockedItem[] {
+  const closed = closeSelection(project, selection);
+  const uploaded = project.assets.uploaded;
+  const blocked: PackBlockedItem[] = [];
+  for (const id of closed.tilesetIds) {
+    const tileset = project.tilesets[id];
+    if (!tileset) continue;
+    const bundledNames = [
+      ...(tileset.image.type === "bundled" ? [tileset.image.id] : []),
+      ...(tileset.tileGrafts ?? []).map((graft) => graft.sourceChipset).filter((key) => !Object.hasOwn(uploaded, key)),
+    ];
+    const bundledWord = bundledNames.map(storeThirdPartyName).find((word) => word !== null);
+    const reason = storePublishBlockReason(id, tileset.name, null)
+      ?? (bundledWord ? `제3자 팩 칩셋(「${bundledWord}」)을 씁니다.` : null);
+    if (reason) blocked.push({ id, kind: "tileset", reason });
+  }
+  for (const id of closed.assetIds) {
+    const asset = uploaded[id];
+    const reason = asset ? storePublishBlockReason(id, asset.name, asset.origin) : null;
+    if (reason) blocked.push({ id, kind: "asset", reason });
+  }
+  return blocked;
+}
+
 /**
  * 프로젝트의 타일셋·에셋을 스토어 팩으로 묶는다. 매니페스트 안의 data URL 은 전부 blob 자리표시로 뺀다.
  * AI 가 만든 자산이 들어 있으면 meta.aiGenerated 가 false 여도 true 로 올린다.
@@ -99,6 +149,8 @@ export function aiMadeAssets(project: Project, selection: PackSelection): { id: 
 export async function buildPack(project: Project, selection: PackSelection, meta: PackMeta, io: PackBuildIo, previews: readonly Uint8Array[] = []): Promise<BuiltPack> {
   const closed = closeSelection(project, selection);
   if (closed.missing.length > 0) throw new Error(`팩에 넣을 항목을 찾지 못했습니다: ${closed.missing.join(", ")}`);
+  const blocked = packBlockedItems(project, selection);
+  if (blocked.length > 0) throw new StorePackBlockedError(blocked);
   const blobs = new Map<string, PackBlob>();
   const addBlob = async (bytes: Uint8Array, label: string): Promise<{ sha: string; mime: StoreBlobMime }> => {
     const mime = sniffMime(bytes);
