@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.276.0 — 2026-10-19
+
+### 기능
+
+- **jp-inaka** — scale up keitora (4x2), red tractor (4x3), and Kiha diesel railcar (8x3) + curate rural showcase (#3005) (`a52ef1a`)
+
 ## 0.275.0 — 2026-10-19
 
 ### 기능
