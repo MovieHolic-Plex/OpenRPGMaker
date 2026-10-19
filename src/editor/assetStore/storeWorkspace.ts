@@ -71,6 +71,13 @@ export function openAssetStore(tab: Tab = state.tab): void {
     state.detail = null;
   }
   host = el("div", { class: "store-host", dataset: { testid: "store-host" }, on: { click: (event) => { if (event.target === host) closeAssetStore(); } } });
+  if (typeof document !== "undefined") {
+    if (document.querySelector('[data-testid="left-activity-bar"]')) host.style.left = "48px";
+    if (document.querySelector('[data-testid="oprn-menu-bar"]')) {
+      host.style.top = "48px";
+      host.style.paddingTop = "16px";
+    }
+  }
   document.body.append(host);
   document.addEventListener("keydown", onKeydown);
   if (!bridge) {

@@ -91,6 +91,10 @@ export function createLeftPropsPane(): { root: HTMLElement; show(): void; dispos
       on: { click: () => {
         // A stale button must never select a stamp from a different map's chipset.
         if (current().tileset !== sourceTileset) return;
+        if (selected(choice)) {
+          editorState.set({ activePaletteStamp: null });
+          return;
+        }
         if (editorState.get().layer === "event") editorState.set({ layer: stamp.cells[0]!.layer });
         selectPaletteStamp(choice.stamp);
       } },

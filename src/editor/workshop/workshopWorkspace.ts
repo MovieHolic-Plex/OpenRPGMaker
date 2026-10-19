@@ -43,6 +43,10 @@ export async function openWorkshop(harnessId: string, options: OpenWorkshopOptio
     class: "workshop-host", dataset: { testid: "workshop-host" },
     on: { click: (event) => { if (event.target === host) closeWorkshop(); } },
   });
+  if (typeof document !== "undefined") {
+    if (document.querySelector('[data-testid="left-activity-bar"]')) host.style.left = "48px";
+    if (document.querySelector('[data-testid="oprn-menu-bar"]')) host.style.top = "48px";
+  }
   host.append(el("div", { class: "workshop-loading", text: "공방을 여는 중…" }));
   const myHost = host;
   document.body.append(myHost);
@@ -111,7 +115,9 @@ function render(force: boolean): void {
     ? { start: active.selectionStart, end: active.selectionEnd } : null;
   clearChildren(host);
   host.append(el("section", {
-    class: "workshop", attrs: { role: "dialog", "aria-modal": "true", "aria-label": "공방" }, dataset: { testid: "workshop" },
+    class: "workshop",
+    attrs: { role: "dialog", "aria-modal": "true", "aria-label": "공방", style: "max-width: calc(100% - 24px); max-height: calc(100% - 24px);" },
+    dataset: { testid: "workshop" },
     children: [
       el("header", {
         class: "workshop-head",

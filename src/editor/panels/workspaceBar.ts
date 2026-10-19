@@ -77,8 +77,9 @@ function renderPanelsMenu(): readonly [HTMLElement, HTMLElement] {
     button.setAttribute("aria-expanded", "true");
     menu.hidden = false;
     menu.classList.add("open");
-    // 메뉴는 톱바가 그릴 때 한 번만 만들어진다. 언어를 바꿔도 톱바는 다시 그려지지 않으므로
-    // 열 때마다 현재 언어로 라디오를 맞춘다(안 하면 English 를 골라도 한국어에 점이 남는다).
+    // 메뉴는 톱바가 그릴 때 한 번만 만들어진다. 언어·패널 구성을 바꿔도 톱바는 다시 그려지지 않으므로
+    // 열 때마다 현재 상태로 체크/라디오를 맞춘다.
+    syncPanelItems(menu, close);
     syncLocaleItems(menu);
     const rect = button.getBoundingClientRect?.();
     if (rect) {
@@ -137,6 +138,14 @@ function syncLocaleItems(menu: HTMLElement): void {
     item.setAttribute("aria-checked", active ? "true" : "false");
   });
 }
+function syncPanelItems(menu: HTMLElement, close: () => void): void {
+  const layout = getWorkspaceLayout();
+  for (const panel of allPanels().filter((candidate) => candidate.id !== "assistant")) {
+    const existing = menu.querySelector<HTMLElement>(`[data-testid="workspace-panel-row-${panel.id}"]`);
+    if (existing) existing.replaceWith(renderPanelRow(panel.id, panel.title, layout, close));
+  }
+}
+
 
 /**
  * 패널 한 줄 = 표시 토글 + 도크 이동 칩.
@@ -161,6 +170,7 @@ function renderPanelRow(id: PanelId, title: string, layout: WorkspaceLayout, clo
       click: (event) => {
         event.stopPropagation();
         toggleWorkspacePanel(id);
+        syncPanelItems(row.parentElement ?? row, close);
         close();
       },
     },
@@ -182,6 +192,7 @@ function renderPanelRow(id: PanelId, title: string, layout: WorkspaceLayout, clo
           click: (event) => {
             event.stopPropagation();
             moveWorkspacePanel(id, target);
+            syncPanelItems(row.parentElement ?? row, close);
             close();
           },
         },

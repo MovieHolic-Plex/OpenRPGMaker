@@ -17,7 +17,7 @@ describe("left activity bar", () => {
   beforeEach(() => {
     localStorage.clear();
     store.replace(createBlankProject());
-    editorState.set({ currentMapId: store.getCurrent().startMapId });
+    editorState.set({ currentMapId: store.getCurrent().startMapId, layer: "lower", tool: "paint", activePaletteStamp: null });
     tools = document.createElement("div");
     resizes = 0;
   });
@@ -112,6 +112,10 @@ describe("left activity bar", () => {
     expect(editorState.get().layer).toBe("upper");
     expect(editorState.get().activePaletteStamp).toMatchObject({ width: 2, height: 1, source: { tilesetId: tileset.id }, cells: [{ dx: 0, dy: 0, layer: "upper", tile: 4 }, { dx: 1, dy: 0, layer: "upper", tile: 7 }] });
     expect(store.getCurrent().maps[map.id]!.upperTiles).toEqual(original);
+    button!.click();
+    expect(editorState.get().activePaletteStamp).toBeNull();
+    button!.click();
+    expect(editorState.get().activePaletteStamp).not.toBeNull();
     editorState.set({ currentMapId: "qa-other-map" });
     expect(editorState.get().activePaletteStamp).toBeNull();
   });
@@ -131,6 +135,25 @@ describe("left activity bar", () => {
     expect(workspace.root.dataset.pane).toBe("tools");
     expect(editorState.get().tool).toBe("paint");
     expect(editorState.get().layer).toBe("lower");
+  });
+
+  it("returns from event layer to paint tools without collapsing when sidebar-tools is clicked", () => {
+    mount();
+    editorState.set({ tool: "event", layer: "event" });
+    find("sidebar-tools")?.click();
+    expect(workspace.isCollapsed()).toBe(false);
+    expect(workspace.root.dataset.pane).toBe("tools");
+    expect(editorState.get().tool).toBe("paint");
+    expect(editorState.get().layer).toBe("lower");
+  });
+
+  it("opens the maps pane when oprn:ai-sidebar-maps is dispatched", () => {
+    mount();
+    expect(workspace.root.dataset.pane).toBe("tools");
+    window.dispatchEvent(new Event("oprn:ai-sidebar-maps"));
+    expect(workspace.isCollapsed()).toBe(false);
+    expect(workspace.root.dataset.pane).toBe("maps");
+    expect(find("sidebar-maps")?.getAttribute("aria-pressed")).toBe("true");
   });
 
   it("switches to the store sidebar pane without forcing a full-screen store modal", () => {
