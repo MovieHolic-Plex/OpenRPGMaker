@@ -20,7 +20,7 @@ const VENUES: readonly Venue[] = [
       { "house-bedroom": ["mci-wood-dark", "mci-wall-brick"], "house-kidroom": ["mci-carpet-office", "mci-wall-home"], "house-living": ["mci-stone-lobby", "mci-wall-lobby"], "house-kitchen": ["mci-wood-oak", "mci-wall-home"] },
     ] }, rooms: [
     { kind: "house-bedroom", w: 6, h: 9, floor: "mci-wood-oak", wall: "mci-wall-home", items: [
-      o("mci-window-curtain", 0, 0), o("home-wall-ac", 2, 0), o("mci-wall-clock", 5, 0),
+      o("mci-window-curtain", 0, 0), o("home-wall-ac", 2, 0), o("mci-wall-clock", 4, 0),
       o("mci-wardrobe", 0, 2), o("mci-bed-double", 2, 2), o("mci-bedside", 4, 2), o("home-floor-lamp", 5, 2),
       o("home-laundry-basket", 0, 5), o("mci-rug", 1, 5),
       o("mci-chair-office-s", 4, 6), o("mci-desk-pc-back", 4, 7), g("mci-g-books", 5, 7),
@@ -45,8 +45,8 @@ const VENUES: readonly Venue[] = [
       o("home-monstera", 2, 8),
     ] },
     { kind: "house-living", w: 10, h: 7, floor: "mci-wood-oak", wall: "mci-wall-home", items: [
-      o("mci-window-curtain", 0, 0), o("mci-tv-wall", 4, 0), o("home-wall-ac", 7, 0),
-      o("home-low-shelf", 0, 2), o("mci-tv-stand", 4, 2), o("home-floor-lamp", 7, 2), o("home-monstera", 9, 2),
+      o("mci-window-curtain", 0, 0), o("mci-wall-clock", 2, 0), o("home-wall-ac", 7, 0),
+      o("home-low-shelf", 0, 2), o("mci-tv-stand", 4, 2), o("home-floor-lamp", 6, 2), o("home-monstera", 9, 2),
       // 서쪽 코타츠(안락의자·방석)는 TV 를 보고, 동쪽 킬림 러그 위 ㄱ자 소파·원형 탁자 세트가 거실의 중심.
       o("mci-armchair-e", 1, 4), o("home-kotatsu", 2, 4), o("home-zabuton", 2, 6), o("jumbo-home-sectional", 5, 4),
       o("home-electric-fan", 0, 6), o("home-cat-bed", 9, 6),
@@ -397,7 +397,7 @@ const VENUES: readonly Venue[] = [
     ] },
     { kind: "karaoke-room", w: 11, h: 12, floor: "mci-carpet-office", wall: "mci-wall-brick", items: [
       o("mci-art-frame", 1, 0), o("karaoke-monitor", 4, 0), o("mci-art-frame", 8, 0),
-      o("music-amp", 0, 2), o("mci-tv-stand", 4, 2), o("music-amp", 10, 2),
+      o("music-amp", 0, 2), o("amuse-mixing-desk", 2, 2), o("music-guitar-stand", 7, 2), o("music-amp", 10, 2),
       o("mci-armchair-e", 3, 6), o("karaoke-table", 4, 6), o("mci-armchair-w", 6, 6),
       o("karaoke-sofa", 3, 8), g("mci-g-coffee", 5, 6),
       o("mci-plant-tall", 0, 11), o("mci-plant-tall", 10, 11),
@@ -450,7 +450,7 @@ const VENUES: readonly Venue[] = [
       o("home-laundry-basket", 0, 4), o("home-drying-rack", 0, 6), o("dept-hat-stand", 3, 6),
     ] },
     { kind: "otel-room", w: 8, h: 7, floor: "mci-wood-oak", wall: "mci-wall-home", items: [
-      o("mci-window-curtain", 1, 0), o("home-wall-ac", 3, 0), o("mci-window-curtain", 6, 0),
+      o("home-wall-ac", 0, 0), o("mci-window-curtain", 2, 0), o("mci-wall-clock", 4, 0),
       o("home-low-shelf", 0, 2), o("mci-tv-stand", 5, 2), o("home-monstera", 7, 2),
       // 동쪽 로프트 침대·책상 모듈(위 침대, 아래 책상·책장) - 서쪽 러그, 가운데 x=3 줄은 남쪽 부엌 문으로 가는 통로.
       o("jumbo-officetel-studio-bed-desk", 4, 4), o("mci-rug", 0, 4), o("home-floor-lamp", 0, 6), o("home-cat-bed", 2, 6),
@@ -895,10 +895,10 @@ const VENUES: readonly Venue[] = [
     // ── 1F-2. 대형 대기실 로비 · 원무과 수납 · 엘리베이터 홀 (26×17) - 대기 의자 3연석 12열(36석) + 대형 원무과 카운터 + 문진·혈압대 + 번호표 발급기·전광판
     { kind: "waiting_room", w: 26, h: 17, floor: "mci-stone-lobby", wall: "mci-wall-lobby", items: [
       o("hosp-floor-directory", 4, 0), o("elev-floor-led", 6, 0), o("elev-hall-lantern", 9, 0),
-      o("hosp-number-display", 14, 0), o("mci-tv-wall", 17, 0), o("hosp-number-display", 19, 0), o("mci-wall-clock", 24, 0),
+      o("hosp-number-display", 14, 0), o("mci-tv-wall", 17, 0), o("hosp-number-display", 20, 0), o("mci-wall-clock", 24, 0),
       o("mci-plant-tall", 0, 2),
       o("mci-elevator", 4, 2), o("mci-elevator", 6, 2), o("mci-elevator", 8, 2),
-      o("hospital-pharmacy-window", 13, 2), o("hospital-water-dispenser", 16, 2), o("subway-vending-machine", 17, 2), o("hospital-med-cabinet", 19, 2),
+      o("hospital-pharmacy-window", 13, 2), o("hospital-water-dispenser", 16, 2), o("subway-vending-machine", 19, 2), o("hospital-med-cabinet", 21, 2),
       o("mci-coffee-station", 24, 2),
       o("hosp-triage-desk", 3, 5), o("hosp-ticket-dispenser", 6, 5), o("dept-directory-kiosk", 7, 5),
       o("mci-chair-office-s", 14, 4), o("mci-chair-office-s", 16, 4), o("mci-chair-office-s", 18, 4), o("mci-chair-office-s", 20, 4),
