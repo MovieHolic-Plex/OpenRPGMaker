@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-"""Exact surgical eye fixes for the 3 starters and 8 specific non-starter species.
+"""Exact surgical eye fixes for the 3 starters and 12 specific non-starter species.
 
 - Starters (`sparkit`, `aqualing`, `leafling`): generated via `redraw_starters.py` with
-  balanced 3/4 foreshortened far eyes (`3x4`) and oval near eyes (`4x5`) seated cleanly
-  in their orbital sockets.
-- 8 specific non-starter species (`rootpig`, `kilnclaw`, `furnscale`, `curlfin`,
-  `brinewyrm`, `solmane`, `coralpin`, `reefguard`): surgical pixel-exact pupil/catchlight
-  alignment on the clean `5b8d884cbb` baseline sprites without touching any other body part.
-- The remaining 49 species use their clean `5b8d884cbb` sprites directly (no blind center
+  3/4 anime eyes (`draw_eye`): 5x6 near eye and foreshortened 3x5 far eye, each with an ink
+  upper lash, 2x2 white catchlight, dark pupil core, 2-tone jewel iris and white outer sclera.
+- 12 specific non-starter species (`rootpig`, `kilnclaw`, `furnscale`, `curlfin`,
+  `brinewyrm`, `solmane`, `coralpin`, `reefguard`, `frondhare`, `brookraft`, `pebblekid`,
+  `flurrykit`): surgical pixel-exact lash/pupil/catchlight/iris tuning on the clean `5b8d884cbb`
+  baseline sprites without touching any other body part (colors stay <= 20).
+- The remaining 45 species use their clean `5b8d884cbb` sprites directly (no blind center
   eye-stamping loop).
 """
 from __future__ import annotations
@@ -187,6 +188,73 @@ def fix_reefguard(arr: np.ndarray) -> None:
     set_px(arr, 41, 38, dark)
 
 
+def fix_frondhare(arr: np.ndarray) -> None:
+    dark = (55, 28, 10)
+    iris = (97, 49, 16)
+    white = (253, 253, 253)
+    # 가까운 눈: 위 속눈썹 한 줄 + 왼쪽 위 1×2 반짝임 하나만(가운데 떠 있던 둘째 점은 홍채로)
+    for x in range(27, 31):
+        set_px(arr, x, 36, dark)
+    set_px(arr, 27, 37, white)
+    set_px(arr, 27, 38, white)
+    set_px(arr, 29, 39, iris)
+    # 먼 눈: 뭉친 점을 2칸 폭 세로 눈(속눈썹·반짝임·홍채)으로
+    set_px(arr, 22, 36, dark)
+    set_px(arr, 21, 37, white)
+    set_px(arr, 22, 37, dark)
+    set_px(arr, 21, 38, dark)
+    set_px(arr, 21, 39, iris)
+    set_px(arr, 22, 39, iris)
+
+
+def fix_brookraft(arr: np.ndarray) -> None:
+    dark = (4, 22, 74)
+    white = (254, 254, 254)
+    iris = (69, 130, 223)
+    iris_dark = (32, 80, 170)
+    # 가까운 눈: 가운데 가로 띠였던 반짝임을 왼쪽 위 2×2 로 올리고 아래에 보석 홍채
+    set_px(arr, 31, 41, dark)
+    set_px(arr, 27, 42, dark)
+    set_px(arr, 28, 42, white)
+    set_px(arr, 29, 42, white)
+    set_px(arr, 28, 43, white)
+    set_px(arr, 29, 43, white)
+    set_px(arr, 29, 45, iris_dark)
+    set_px(arr, 30, 45, iris)
+    # 먼 눈: 윤곽에 붙은 눈에 반짝임 한 점
+    set_px(arr, 16, 42, white)
+
+
+def fix_pebblekid(arr: np.ndarray) -> None:
+    white = (253, 253, 253)
+    iris = (123, 77, 70)
+    # 가까운 눈: 반짝임 2×2 로 넓히고 아래 홍채 초승달
+    set_px(arr, 26, 40, white)
+    set_px(arr, 26, 41, white)
+    set_px(arr, 26, 43, iris)
+    set_px(arr, 27, 43, iris)
+
+
+def fix_flurrykit(arr: np.ndarray) -> None:
+    dark = (8, 26, 81)
+    white = (252, 252, 251)
+    iris_dark = (22, 50, 110)
+    iris = (80, 163, 220)
+    # 가까운 눈: 반짝임 없는 어두운 덩어리 → 위 속눈썹 + 2×2 반짝임 + 보석 홍채 + 바깥 흰자
+    set_px(arr, 22, 40, dark)
+    set_px(arr, 22, 41, dark)
+    set_px(arr, 21, 42, dark)
+    set_px(arr, 23, 41, white)
+    set_px(arr, 24, 41, white)
+    set_px(arr, 23, 42, white)
+    set_px(arr, 24, 42, white)
+    set_px(arr, 26, 42, white)
+    set_px(arr, 24, 43, iris_dark)
+    set_px(arr, 25, 43, iris)
+    # 먼 눈: 윤곽에 묻힌 눈에 반짝임 한 점
+    set_px(arr, 15, 41, white)
+
+
 SURGICAL_FIXES = {
     "rootpig": fix_rootpig,
     "kilnclaw": fix_kilnclaw,
@@ -196,6 +264,10 @@ SURGICAL_FIXES = {
     "solmane": fix_solmane,
     "coralpin": fix_coralpin,
     "reefguard": fix_reefguard,
+    "frondhare": fix_frondhare,
+    "brookraft": fix_brookraft,
+    "pebblekid": fix_pebblekid,
+    "flurrykit": fix_flurrykit,
 }
 
 

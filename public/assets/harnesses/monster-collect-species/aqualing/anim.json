@@ -33,7 +33,7 @@
   "emit": {
     "front": {
       "x": 7,
-      "y": 42,
+      "y": 40,
       "source": "auto"
     },
     "back": {
