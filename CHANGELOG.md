@@ -5,6 +5,17 @@
 
 <!-- releases -->
 
+## 0.273.0 — 2026-10-19
+
+### 기능
+
+- **jp-inaka** — organic jp_city-style showcase maps + de-gridded ground tiles (#2996) (`96f2477`)
+
+### 수정
+
+- **jrpg-pilot** — route blind judge through Argon proxy for 8/8 authentic pilot PASS (#2999) (`4627aee`)
+- **handInterior** — remove duplicate TV in mc_house and enrich mc_department_store atrium/fashion (#2998) (`aad7e9e`)
+
 ## 0.272.0 — 2026-10-19
 
 ### 기능
