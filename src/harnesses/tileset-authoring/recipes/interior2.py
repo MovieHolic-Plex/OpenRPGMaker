@@ -450,37 +450,43 @@ def stairs(P, side: str, metal: bool):
 
 
 def stairs_down(P, metal: bool):
-    """내려가는 계단(2×3, 뒷벽에 붙임 — 올라가는 계단과 같은 자리): 벽과 벽 밑 줄에 뚫린 어두운 입구로 디딤판만 보이며 내려간다.
-    챌판은 안쪽을 향해 보이지 않고, 단 사이는 어두운 틈, 깊을수록(위로 갈수록) 단이 좁아지고 어두워져 어둠에 묻힌다.
-    양옆은 바닥 높이의 낮은 난간(위 두 줄을 덮는다), 2줄은 구멍 앞 바닥 턱과 난간 기둥 — 그 밖은 바닥이 비친다."""
+    """내려가는 계단(2×3, 뒷벽에 붙임 — 올라가는 계단과 같은 자리): 위층 바닥(y=38 아래 투명)에서 열린 입구로 걸어 들어가
+    남쪽(가까운 높은 단)에서 북쪽(깊고 어두운 통로)으로 한 단씩 내려간다.
+    앞을 가로막는 턱 막대 없이 양옆 난간 기둥만 서 있어 내려가는 층계임이 한눈에 읽힌다."""
     f = F(2, 3)
     vd = C(P, "i2_void")
-    f.r(4, 0, 27, 33, vd)
+    ol = C(P, "i2_ol")
     if metal:
-        st = P["i2_steel"]
-        tread, nose, gap = st[1], st[2], C(P, "i2_ol")
+        st, o = P["i2_steel"], P["i2_orange"]
+        tread, nose, riser = st[1], P["i2_white"][2], st[0]
+        rail_hi, rail_mid = o[2], o[1]
+        wall_side = st[0]
     else:
-        pl = P["i2_plank"]
-        tread, nose, gap = pl[3], P["i2_h_paper"][2], P["i2_h_trim"][0]
-    y = 33
-    for i, h in enumerate((6, 5, 4, 4, 3, 3, 2, 2)):                    # 아래(가까움)부터 위(깊음)로
-        dim = (1.0, 0.86, 0.72, 0.6, 0.48, 0.38, 0.3, 0.24)[i]
-        top = y - h
-        f.r(4, top, 27, y - 1, px.tint(tread, dim)); f.r(4, top, 27, top, px.tint(nose, dim))
+        pl, t = P["i2_plank"], P["i2_h_trim"]
+        tread, nose, riser = pl[3], P["i2_h_paper"][2], t[0]
+        rail_hi, rail_mid = t[3], t[2]
+        wall_side = t[1]
+
+    f.r(0, 0, 31, 1, rail_hi)
+    f.r(0, 2, 31, 4, rail_mid)
+    f.r(0, 5, 31, 5, ol)
+    f.r(4, 6, 27, 38, vd)
+    f.r(4, 6, 5, 37, wall_side)
+    f.r(26, 6, 27, 37, wall_side)
+    f.r(5, 6, 5, 37, ol)
+    f.r(26, 6, 26, 37, ol)
+
+    for y_top, y_bot, dim in ((34, 38, 1.00), (29, 33, 0.90), (24, 28, 0.78), (19, 23, 0.64), (14, 18, 0.50)):
+        f.r(6, y_top, 25, y_top, vd)
+        f.r(6, y_top + 1, 25, y_bot - 1, px.tint(tread, dim))
         if metal:
-            for x in range(6, 27, 3):
-                f.r(x, top + 1, x, y - 1, px.tint(st[0], dim))
-        f.r(4, y - 1, 27, y - 1, px.tint(gap, max(dim, 0.5)) if i else gap)
-        y = top
-    f.r(4, 0, 27, 1, vd)
-    # 구멍 앞 턱(바닥 높이): 밝은 모서리 + 앞면
-    if metal:
-        f.r(2, 34, 29, 35, P["i2_white"][2]); f.r(2, 36, 29, 37, st[0])
-    else:
-        t = P["i2_h_trim"]
-        f.r(2, 34, 29, 34, t[3]); f.r(2, 35, 29, 37, t[1])
-    _stair_sides(f, P, metal, 40, low=0)
-    return f.done(P, floor_y=32)
+            for x in range(7, 25, 3):
+                f.r(x, y_top + 1, x, y_bot - 1, px.tint(riser, dim))
+        f.r(6, y_bot - 1, 25, y_bot - 1, px.tint(nose, dim))
+        f.r(6, y_bot, 25, y_bot, px.tint(riser, dim))
+
+    _stair_sides(f, P, metal, 39, low=0)
+    return f.done(P, floor_y=40, shadow=False)
 
 # ---- 마트 가구 --------------------------------------------------------------------------------
 _GOODS = ("i2_red", "i2_blue", "i2_yellow", "i2_green")

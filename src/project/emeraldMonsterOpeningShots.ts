@@ -76,13 +76,16 @@ const shot = (layers: AnimaticLayer[], camera: OpeningAnimatic['camera'], backgr
 
 /** 별빛섬의 새벽: 바다에서 해변 마을로 올라가는 팬, 새벽빛이 걷히고 하늘엔 새 몬스터가 난다. */
 function dawnShot(cast: EmeraldOpeningCast): OpeningAnimatic {
+  const swallow: EmeraldOpeningChip = { resourceId: cast.flyer.resourceId, index: 1 };
+  const flock: EmeraldOpeningChip = { resourceId: cast.flyer.resourceId, index: 3 };
   return shot([
     backdrop('dawn'),
     walking('swimmer', cast.starters[2]?.chip ?? cast.wild, 'left', [{ atMs: 0, x: 600, y: 800 }, { atMs: 4500, x: 440, y: 800 }]),
     { id: 'dawn-tint', kind: 'shape', shape: 'rect', role: 'effect', space: 'screen', color: '#ff9a5c', blend: 'multiply', x: 0, y: 0, width: STAGE.width, height: STAGE.height,
-      keys: { opacity: [{ atMs: 0, value: 0.6 }, { atMs: 3600, value: 0, ease: 'ease-in-out' }] } },
-    walking('flyer-a', cast.flyer, 'right', [{ atMs: 0, x: -60, y: 40 }, { atMs: 4500, x: 520, y: 24 }], { space: 'screen' }),
-    walking('flyer-b', cast.flyer, 'right', [{ atMs: 500, x: -60, y: 92 }, { atMs: 4500, x: 400, y: 70 }], { space: 'screen', startMs: 500 }),
+      keys: { opacity: [{ atMs: 0, value: 0.52 }, { atMs: 3600, value: 0, ease: 'ease-in-out' }] } },
+    walking('flyer-a', cast.flyer, 'right', [{ atMs: 0, x: 36, y: 34 }, { atMs: 4500, x: 520, y: 18 }], { space: 'screen' }),
+    walking('flyer-b', swallow, 'right', [{ atMs: 0, x: 112, y: 82 }, { atMs: 4500, x: 480, y: 58 }], { space: 'screen' }),
+    walking('flyer-c', flock, 'left', [{ atMs: 0, x: 410, y: 48 }, { atMs: 4500, x: -40, y: 72 }], { space: 'screen' }),
   ], { x: 416, keys: { y: [{ atMs: 0, value: 860 }, { atMs: 4300, value: 250, ease: 'ease-in-out' }] } });
 }
 
@@ -97,11 +100,13 @@ function routeShot(cast: EmeraldOpeningCast): OpeningAnimatic {
       emote(id + '-emote', 'exclaim', { x, y: peeked }, atMs + 200, atMs + 1500),
     ];
   };
+  const songbird: EmeraldOpeningChip = { resourceId: cast.flyer.resourceId, index: 2 };
   return shot([
     backdrop('route'),
     ...peek('wild-a', cast.starters[0]?.chip ?? cast.wild, 12, 27, 1100),
     ...peek('wild-b', cast.wild, 15, 29, 2000),
     walking('hero', cast.hero, 'up', [{ atMs: 0, x: 296, y: 960 }, { atMs: 4400, x: 296, y: 560 }]),
+    walking('flyer-route', songbird, 'right', [{ atMs: 0, x: 40, y: 28 }, { atMs: 4500, x: 460, y: 18 }], { space: 'screen' }),
   ], { x: 400, keys: { y: [{ atMs: 0, value: 864 }, { atMs: 1200, value: 840 }, { atMs: 4400, value: 600, ease: 'ease-in' }] } });
 }
 
@@ -153,11 +158,13 @@ function gymShot(cast: EmeraldOpeningCast): OpeningAnimatic {
 /** 출발: 주인공과 첫 동료가 마을 길을 내려와 모험을 떠난다. */
 function townShot(cast: EmeraldOpeningCast): OpeningAnimatic {
   const from = standAt(10, 4), to = standAt(10, 13), partner = cast.starters[0]?.chip;
+  const flock: EmeraldOpeningChip = { resourceId: cast.flyer.resourceId, index: 3 };
   return shot([
     backdrop('town'),
     ...(partner ? [walking('partner', partner, 'down', [{ atMs: 0, x: from.x, y: from.y - TILE * 2 }, { atMs: 4300, x: to.x, y: to.y - TILE }])] : []),
     walking('hero', cast.hero, 'down', [{ atMs: 0, x: from.x, y: from.y }, { atMs: 4300, x: to.x, y: to.y }]),
-    walking('flyer', cast.flyer, 'left', [{ atMs: 600, x: 540, y: 30 }, { atMs: 4500, x: 60, y: 54 }], { space: 'screen', startMs: 600 }),
+    walking('flyer', cast.flyer, 'left', [{ atMs: 0, x: 440, y: 28 }, { atMs: 4500, x: 40, y: 52 }], { space: 'screen' }),
+    walking('flyer-flock', flock, 'right', [{ atMs: 200, x: 30, y: 64 }, { atMs: 4500, x: 450, y: 40 }], { space: 'screen', startMs: 200 }),
   ], { x: 352, keys: { y: [{ atMs: 0, value: 200 }, { atMs: 4300, value: 400, ease: 'ease-in-out' }] } });
 }
 

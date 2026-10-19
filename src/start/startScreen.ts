@@ -374,8 +374,8 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       },
       {
         id: "emerald-crown",
-        title: "에메랄드 크라운: 새벽섬의 수호자",
-        meta: "몬스터 수집 RPG · 8개 맵 · 스타터 선택 · 성소 보스전",
+        title: "아스트라 호라이즌: 다우닝 시티와 여명의 날개",
+        meta: "몬스터 수집 RPG · 30×24 다우닝 시티 · 스타터 선택 · 아스트라 성소 결전",
         thumb: "/assets/generated/welcome/slide-01.png",
       },
     ] as const;

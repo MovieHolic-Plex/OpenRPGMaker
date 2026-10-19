@@ -15,7 +15,7 @@ export function createDevShowcaseProjectForLocation(): Project | null {
   if (typeof window === "undefined") return null;
   const params = new URLSearchParams(window.location.search);
   const rawDemo = params.get("demo");
-  const demo = rawDemo === "fallen-star" ? "chrono-bell" : rawDemo;
+  const demo = rawDemo === "fallen-star" ? "chrono-bell" : rawDemo === "astra-horizon" ? "emerald-crown" : rawDemo;
   if (demo === "chrono-bell" || demo === "emerald-crown" || demo === "shitamachi-fourth-season") {
     return createFlagshipDemoProject(demo).project;
   }

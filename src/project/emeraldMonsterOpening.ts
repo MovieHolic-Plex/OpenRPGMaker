@@ -21,7 +21,7 @@ const RIVAL: EmeraldOpeningChip = { resourceId: 'tex_scarloxy_charset_people1', 
 const LEADER: EmeraldOpeningChip = { resourceId: 'tex_scarloxy_charset_people2', index: charsetPatternIndex(28) };
 const HERO: EmeraldOpeningChip = { resourceId: 'scarloxy-charset-people1', index: 0 };
 const MONSTER_CHIPS = 'tex_oprn_charset_harness_monster1';
-const FLYER: EmeraldOpeningChip = { resourceId: MONSTER_CHIPS, index: 0 };
+const FLYER: EmeraldOpeningChip = { resourceId: 'oprn-charset-dawning-skybirds', index: 0 };
 const WILD: EmeraldOpeningChip = { resourceId: MONSTER_CHIPS, index: 5 };
 
 const chipOf = (graphic: EventPageGraphic | undefined): EmeraldOpeningChip | undefined =>
