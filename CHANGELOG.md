@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.283.0 — 2026-10-20
+
+### 기능
+
+- **puzzle** — 상태 공간 모형(BFS) 퍼즐 프리셋 20종 카탈로그 및 출하 플레이어 실기 QA 러너 (#3045) (`40523d2`)
+
+### 수정
+
+- **editor** — align tile paint, pick, and hover coordinates on relief terrain (#3044) (`85866f1`)
+
 ## 0.282.0 — 2026-10-20
 
 ### 기능
