@@ -601,6 +601,7 @@ function renderCollisionOverlay(context: EditSceneRenderContext, map: GameMap): 
   const project = store.getCurrent();
   const tileset = project.tilesets[map.tilesetId];
   const tileSize = mapTileSize(map, tileset);
+  const lift = map.relief ? reliefLiftField(map.relief) : null;
   const collG = context.scene.add.graphics();
   collG.fillStyle(0xff4444, 0.35);
   for (let y = 0; y < map.height; y++) {
@@ -609,7 +610,8 @@ function renderCollisionOverlay(context: EditSceneRenderContext, map: GameMap): 
       // 1~4층 모두 본다(4층 × 가 통행 3층 위에 있으면 빨갛게). 옛 스택 top 도 cellPassability 가 반영한다.
       const pass = cellPassability(tileset, map, y * map.width + x);
       if (!pass.up && !pass.down && !pass.left && !pass.right) {
-        collG.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+        const h = lift ? cellLift(lift, x, y) : 0;
+        collG.fillRect(x * tileSize, (y - h) * tileSize, tileSize, tileSize);
       }
     }
   }
@@ -621,9 +623,11 @@ function renderStartPosition(context: EditSceneRenderContext): void {
   if (project.startMapId !== context.mapId) return;
   const map = store.getCurrent().maps[context.mapId];
   const tileSize = mapTileSize(map, map ? store.getCurrent().tilesets[map.tilesetId] : undefined);
+  const lift = map?.relief ? reliefLiftField(map.relief) : null;
+  const h = lift ? cellLift(lift, project.startPos.x, project.startPos.y) : 0;
   const s = context.scene.add.rectangle(
     project.startPos.x * tileSize + tileSize / 2,
-    project.startPos.y * tileSize + tileSize / 2,
+    (project.startPos.y - h) * tileSize + tileSize / 2,
     tileSize - 6,
     tileSize - 6,
     0x69db7c,
