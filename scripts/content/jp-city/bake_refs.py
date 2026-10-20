@@ -616,7 +616,7 @@ def doc_at_usage():
 - 비트: N=1 E=2 S=4 W=8 NE=16 SE=32 SW=64 NW=128(8방), 4방은 하위 4비트만. `mask` = 이웃 칸(같은 세트의 칸) 쪽 비트의 합.
 - 8방 정규화: 대각 비트는 **인접한 두 변이 모두 켜졌을 때만** 남는다(`canon`). 정의의 8방 7세트 모두 256키 전부에서 `variantMap[m] == variantMap[canon(m)]` 이고 서로 다른 `canon` 은 {sorted({v['canonCount'] for v in canon.values()})[0]}개다(7세트 검증: {sum(1 for v in canon.values() if v['ok'])}/7 일치). 그래서 세트 문서의 사전은 `canon` 마스크 {sorted({v['canonCount'] for v in canon.values()})[0]}개만 적는다.
 - 칸 고르기: 칸의 이웃 8칸이 같은 세트 칸이면 비트 1, 아니면 0 → `mask` 를 `canon` 으로 바꿔 사전에서 칸 번호를 찾는다. 이웃으로 세는 칸(`connectTileIds`)은 **자기 세트 칸뿐**이다 — 다른 오토타일·도로 키트의 복사 칸과는 이어지지 않는다.
-- 맵 밖은 이웃이 아니다(`edgeConnects:false`).
+- 맵 밖: 지면 8방 7세트는 **같은 재료로 센다**(`edgeConnects:true` + `outsideConnects:true`, 2026-10-20) — 맵 둘레에 회색 톱니가 안 생긴다. 선형 4방 10세트(벽·울타리·레일·차선 등)는 맵 밖을 이웃으로 세지 않는다(`edgeConnects:false`).
 
 ## 17세트 한눈에
 {md_table(['오토타일 id', '이름(그룹 이름 = material)', '이웃', '칸 번호 범위', '칠하는 층', '도구', '문서'], rows)}
