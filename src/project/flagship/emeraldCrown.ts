@@ -7,6 +7,7 @@ import { deserialize, serialize } from "@/project/io";
 import type { Command, EventPageMovement, GameEvent, GameMap, Project } from "@/project/types";
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import { DAWNING_SKYBIRDS_CHARSET_ID } from "./dawningSkybirdsAsset";
+import { remapAstraBuildingKits } from "./emeraldCrownBuildings";
 import { polishFirstTenMinutes } from "./emeraldCrownFirstTen";
 import type { FlagshipDemoBuildResult } from "./types";
 
@@ -839,6 +840,7 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
     project.system.titleScreen.logoSubtitle = "다우닝 시티와 여명의 날개";
   }
 
+  remapAstraBuildingKits(project);
   const serialized = serialize(project);
   const reloaded = deserialize(serialized);
   const manifest = {
