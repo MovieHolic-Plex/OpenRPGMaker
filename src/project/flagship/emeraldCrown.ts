@@ -436,6 +436,18 @@ function rebuildDawningCity(project: Project): GameMap {
     if (!next) continue;
     ev.x = next.x;
     ev.y = next.y;
+    // 건물 문으로 들어서면 안쪽(위)을 보고 선다 — 「down」 이면 동료가 「뒤」인 앞쪽에 놓여 주인공과 겹친다(r5).
+    if (next.returnMapId) {
+      const faceInward = (value: unknown): void => {
+        if (Array.isArray(value)) { value.forEach(faceInward); return; }
+        if (!value || typeof value !== "object") return;
+        const node = value as { kind?: string; mapId?: string; direction?: string };
+        if (node.kind === "transfer" && node.mapId === next.returnMapId) node.direction = "up";
+        Object.values(node).forEach(faceInward);
+      };
+      faceInward(ev.commands);
+      faceInward(ev.pages);
+    }
     if (next.returnMapId && next.returnX !== undefined && next.returnY !== undefined) {
       retargetReturnPortal(project.maps[next.returnMapId], homeMap.id, next.returnX, next.returnY);
     }
