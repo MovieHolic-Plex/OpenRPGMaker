@@ -378,9 +378,22 @@ def _place(body, lift=0, step=0):
     return frame
 
 
+def _clean_chip_eye(px, bw, bh, inner, rect):
+    """줄인 몸의 눈 자리 rect(x0,y0,x1,y1, 끝 제외)에서 윤곽이 아닌 어두운 칸을 둘레 밝은 살갗의 최빈색으로 덮는다."""
+    x0, y0, x1, y1 = max(rect[0], 0), max(rect[1], 0), min(rect[2], bw), min(rect[3], bh)
+    ring = [px[x, y] for x in range(x0 - 1, x1 + 1) for y in range(y0 - 1, y1 + 1)
+            if 0 <= x < bw and 0 <= y < bh and not (x0 <= x < x1 and y0 <= y < y1) and px[x, y][3] and _lum(px[x, y]) >= 110]
+    if not ring: return
+    skin = max(set(ring), key=ring.count)
+    for x in range(x0, x1):
+        for y in range(y0, y1):
+            if inner(x, y) and _lum(px[x, y]) < _lum(skin) * 0.6: px[x, y] = skin
+
+
 def _stamp_chip_eyes(body, front, eye):
     """손 도트 2차 눈(eyes.json 의 patch 종): 줄인 몸에서 사라지는 눈을 앞모습 눈 자리에 다시 찍는다.
-    가까운 눈 = 2x2(왼쪽 위 흰 반짝임 + 어두운 3칸), 먼 눈 = 1x2 어두운 칸. 투명·실루엣 가장자리 칸에는 찍지 않는다."""
+    가까운 눈 = 2x2(왼쪽 위 흰 반짝임 + 어두운 3칸), 먼 눈 = 1x2 어두운 칸. 투명·실루엣 가장자리 칸에는 찍지 않는다.
+    eye['chip'] == 'clean'(3차, eye-patches-r3): 찍기 전에 줄인 눈 자리의 어두운 잔상을 둘레 살갗색으로 지우고, 정면 둘째 눈(second)도 2x2 로 찍는다."""
     src = front.convert('RGBA'); bb = src.getbbox(); w, h = bb[2] - bb[0], bb[3] - bb[1]
     s = max(w / DERIVE_W, h / DERIVE_H, 1)
     px = body.load(); bw, bh = body.size; sp = src.load()
@@ -390,11 +403,21 @@ def _stamp_chip_eyes(body, front, eye):
     inner = lambda x, y: 0 < x < bw - 1 and 0 < y < bh - 1 and all(px[x + dx, y + dy][3] for dx, dy in ((0, 0), (1, 0), (-1, 0), (0, 1), (0, -1)))
     def at(box):
         return round((box[0] + box[2] / 2 - bb[0]) / s - 0.5), round((box[1] + box[3] / 2 - bb[1]) / s - 0.5)
+    clean = eye.get('chip') == 'clean'
     cx, cy = at(eye['near'])
     cx, cy = min(cx, bw - 2), min(cy, bh - 2)
-    spots = [(cx, cy, white), (cx + 1, cy, dark), (cx, cy + 1, dark), (cx + 1, cy + 1, dark)]
-    if all(inner(x, y) for x, y, _ in spots):
-        for x, y, c in spots: px[x, y] = c
+    if clean:  # 다시 찍을 수 있는 눈 자리만 지운다(찍기는 알파만 보므로 지우기 전에 판정해도 같다)
+        def fits(x, y, w, h): return all(inner(x + dx, y + dy) for dx in range(w) for dy in range(h))
+        for box, w in ((eye['near'], 2), (eye.get('far'), 1), (eye.get('second'), 2)):
+            if not box: continue
+            ex, ey = (cx, cy) if box is eye['near'] else at(box)
+            if box is eye.get('far'): ex = min(ex, cx - 2)
+            if fits(ex, ey, w, 2):
+                _clean_chip_eye(px, bw, bh, inner, [int((box[0] - bb[0]) / s), int((box[1] - bb[1]) / s), int(-(-(box[0] + box[2] - bb[0]) // s)), int(-(-(box[1] + box[3] - bb[1]) // s))])
+    for ex, ey in [(cx, cy)] + ([tuple(min(v, lim) for v, lim in zip(at(eye['second']), (bw - 2, bh - 2)))] if clean and eye.get('second') else []):
+        spots = [(ex, ey, white), (ex + 1, ey, dark), (ex, ey + 1, dark), (ex + 1, ey + 1, dark)]
+        if all(inner(x, y) for x, y, _ in spots):
+            for x, y, c in spots: px[x, y] = c
     if eye.get('far'):
         fx, fy = at(eye['far'])
         fx = min(fx, cx - 2)

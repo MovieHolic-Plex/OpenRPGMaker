@@ -1,0 +1,303 @@
+{
+  "version": 1,
+  "species": {
+    "sparkit": {
+      "from": "bf1980ad4fb96700488f0e43829738aadc8f8ae71eb13fa10d82c9ba781002d0",
+      "anatomy": "threequarter",
+      "style": "hand",
+      "near": [15, 39, 5, 6],
+      "far": [10, 40, 2, 4],
+      "chip": "clean",
+      "origin": [7, 39],
+      "to": "65563ef4a73eba3cf8030c07ce5e254a97f672b9817d65aa9e47c59348b9de58",
+      "pal": {"a": "#fd870e", "b": "#1a0404", "c": "#fefefe", "d": "#631404", "e": "#bd1c05"},
+      "rows": [
+        "........a...b..",
+        "..a.b..ab.c..aa",
+        "aaacb..ab.c..aa",
+        ".aacd..a..dd...",
+        ".aa.e..a.d.e...",
+        "..aa...aabbba..",
+        ".a.....aaaaa...",
+        "......aaaa....."
+      ]
+    },
+    "leafling": {
+      "from": "56872ec997688983994a6d4a87c3a084eaaa1021c89b496716193ba885e192a8",
+      "anatomy": "threequarter",
+      "style": "hand",
+      "near": [24, 42, 5, 6],
+      "far": [19, 43, 2, 4],
+      "chip": "clean",
+      "origin": [18, 41],
+      "to": "993d1249b19a0262de64efd5998711ad09791c49205c75aaca76e44ab7a06911",
+      "pal": {"a": "#fdedbc", "b": "#341a0a", "c": "#fefefd", "d": "#582e10", "e": "#975321"},
+      "rows": [
+        "...aaaaaaaaaa",
+        "...aaaa...baa",
+        ".....ab.c....",
+        ".....ab.c....",
+        ".cd..a.......",
+        ".de..a.......",
+        ".aa...a...aaa",
+        "a.........aaa"
+      ]
+    },
+    "gustchick": {
+      "from": "77635aa59f4a52b6f50b80c1b6df3c6472a27857a3bd1c82a210f569b96fd55a",
+      "anatomy": "threequarter",
+      "style": "round",
+      "near": [21, 38, 5, 6],
+      "far": [15, 39, 2, 4],
+      "chip": "clean",
+      "origin": [15, 37],
+      "to": "4033694c374bb855a1f30db129ad42d1ea3ec8b3cee2519c34417cfc2a7cfa30",
+      "pal": {"a": "#fcf3d3", "b": "#032051", "c": "#fefefe", "d": "#16377d", "e": "#468be2"},
+      "rows": [
+        ".....aa",
+        ".....aa",
+        "bb.....",
+        "cb.....",
+        "cd.....",
+        "de....."
+      ]
+    },
+    "wickworm": {
+      "from": "83abc7cf08ebc91b3d264fb5f18e3a69f6c249068257fcb8e3761a27a7d430c6",
+      "anatomy": "threequarter",
+      "style": "round",
+      "near": [22, 44, 5, 6],
+      "far": [17, 45, 2, 4],
+      "chip": "clean",
+      "origin": [13, 44],
+      "to": "b3b4332fc22c4fda54062b115da1193f27f081fa2b2c476f313bb3ddb816076a",
+      "pal": {"a": "#320a0a", "b": "#f4f3f3", "c": "#fde02c", "d": "#401b03", "e": "#5d220a", "f": "#fef8b8"},
+      "rows": [
+        "..........aaaa.",
+        "....aa...abb...",
+        "c...b.........c",
+        "cccc.d....add.c",
+        "ccccde.c..ddeac",
+        "...fff..cc.aacc",
+        "....ff..cccccc.",
+        "........ccccccc"
+      ]
+    },
+    "zaptoe": {
+      "from": "71c33c08e39093f302edae6962413ffb3380635f727a82fd8f6fdb9896d8fa94",
+      "anatomy": "threequarter",
+      "style": "round",
+      "near": [16, 38, 5, 6],
+      "far": null,
+      "chip": "clean",
+      "origin": [11, 39],
+      "to": "22d5d28e017ca8b172f9ea460f5fc104885738edf80cbaa5689443f177377aed",
+      "pal": {"a": "#fdd030"},
+      "rows": [
+        ".aa",
+        "aaa",
+        "aaa",
+        "aaa",
+        ".aa"
+      ]
+    },
+    "pebblekid": {
+      "from": "2006872dde8e188edd8bd0136eabf26c7835c06215692af7cf7bc9b8f085360d",
+      "anatomy": "threequarter",
+      "style": "round",
+      "near": [25, 39, 5, 6],
+      "far": [18, 40, 2, 4],
+      "chip": "clean",
+      "note": "사용자 지정: 전투 앞모습을 #3028 이전(BEFORE) 그림으로 되돌림",
+      "origin": [16, 38],
+      "accept": {"V1": "사용자 지정 원본(#3028 이전) 복원 — far 눈이 실루엣 가장자리(투명 1칸)에 닿는다", "V2": "사용자 지정 원본(#3028 이전) 복원 — far 눈이 윤곽선 옆이다"},
+      "to": "2e5f56bab3d449bcd438c42b7bef818bd97443a4eac60ff26de033fe761cbb77",
+      "pal": {"a": "#283344", "b": "#3a2221", "c": "#211a19", "d": "#faecce", "e": "#af9983", "f": "#fdfdfd", "g": "#512833", "h": "#7b4d46"},
+      "rows": [
+        "..a............",
+        "..bb......ccccd",
+        "bdcc.ed..c.....",
+        "..fcddd..c.....",
+        ".dfgddd..c.....",
+        ".dghddd..c.....",
+        "...bb.d...cccdd",
+        ".............d."
+      ]
+    },
+    "lanternwing": {
+      "from": "64c8801ecb0ab8250ff6f70ade300c0c68552423c9baa94773b16b2942c8edf1",
+      "anatomy": "threequarter",
+      "style": "round",
+      "near": [23, 38, 5, 6],
+      "far": [17, 39, 3, 4],
+      "chip": "clean",
+      "origin": [17, 39],
+      "to": "4316b63942f54d257e4a6a98499a8d6075c840c1464f9711471d482e8d78dbb3",
+      "pal": {"a": "#380908", "b": "#fdf6c3", "c": "#fde556", "d": "#fefefe", "e": "#742c0a", "f": "#b66115"},
+      "rows": [
+        ".a.b.......c.",
+        "adab.......c.",
+        "adeb.c..e.ac.",
+        "...b.c.e.fac.",
+        ".bbb.cc...ccc",
+        ".....ccc...cc"
+      ]
+    },
+    "sandnip": {
+      "from": "e96958901be71619b089a2acde951c43f40d488f60e97c06d8e38425405a456b",
+      "anatomy": "threequarter",
+      "style": "round",
+      "near": [24, 40, 5, 6],
+      "far": [18, 41, 2, 4],
+      "chip": "clean",
+      "origin": [17, 39],
+      "to": "00dc17c75f7101fbd8410b2442230b504b788ca3bba29dd5696238f9f7ff1ddd",
+      "pal": {"a": "#fde5ba", "b": "#501a0e", "c": "#fefdfd", "d": "#6e2616", "e": "#b84b25"},
+      "rows": [
+        "...........aa",
+        ".......a...ba",
+        "......ab.c.ba",
+        "a.....ab.c.ba",
+        "acd...a.b.dba",
+        "ade...ab.deba",
+        ".aa....a..baa",
+        "........aaaaa"
+      ]
+    },
+    "glaciermane": {
+      "from": "a29763f52320c0e8c9667814c1293979750f6cc1acb714d2fec395ca6e1b6d66",
+      "anatomy": "threequarter",
+      "style": "round",
+      "near": [17, 28, 5, 6],
+      "far": [12, 29, 3, 4],
+      "chip": "clean",
+      "origin": [12, 28],
+      "to": "c3f45b9527fbc82229a610606ae41a859a5cf431172a887a775beed83e8091c9",
+      "pal": {"a": "#d5e6fa", "b": "#0a1a57", "c": "#fdfdfc", "d": "#27317a", "e": "#617db7"},
+      "rows": [
+        ".....a...b",
+        ".bb.ab.c.b",
+        "bcb.ab.c.b",
+        "bcd.a.b.db",
+        ".bb.ab.deb",
+        "....aa..b."
+      ]
+    },
+    "dozemite": {
+      "from": "473dbfbdb5d4fe5e4819cc939c223d6cf2387c69843875e098c2289a5ae36bb4",
+      "anatomy": "threequarter",
+      "style": "round",
+      "near": [26, 40, 5, 6],
+      "far": [22, 41, 2, 4],
+      "chip": "clean",
+      "origin": [22, 40],
+      "to": "f37da038e4bbfdf049ed89ae1ba706f6c334729a8b2b5b213b1878197754b585",
+      "pal": {"a": "#e8b3f8", "b": "#3f0469", "c": "#fefefe", "d": "#262a76", "e": "#a8f3ac"},
+      "rows": [
+        "aa",
+        "b.",
+        "cb",
+        "cd",
+        "de"
+      ]
+    },
+    "trancescythe": {
+      "from": "62d01d78ef52d0e9edfc8ef062b3fc73b7d38803caeefe9317f6d546dc940c1d",
+      "anatomy": "threequarter",
+      "style": "round",
+      "near": [28, 31, 5, 6],
+      "far": [25, 32, 2, 4],
+      "chip": "clean",
+      "origin": [25, 31],
+      "to": "960212ac3074a1477864aa5e0cfd3a164464484f3a613abf7684725d991464b2",
+      "pal": {"a": "#44076e", "b": "#e7b2f0", "c": "#fffff8", "d": "#262a76", "e": "#adf3ad"},
+      "rows": [
+        "....aaaab.",
+        "aa..cc.abb",
+        "caba.c.ab.",
+        "cdbaadda..",
+        "deb...ea..",
+        "..bbaa....",
+        "...bbb...."
+      ]
+    },
+    "oraclemantis": {
+      "from": "7f4d3e75322ea61bed394e173fde553730b3861ae3c6c9e9ca647b406d9c4ee5",
+      "anatomy": "threequarter",
+      "style": "round",
+      "near": [23, 27, 5, 6],
+      "far": [20, 28, 2, 4],
+      "chip": "clean",
+      "origin": [20, 27],
+      "to": "03ed21519868a8cbf06b80127f79b144017afbd9f532e7d48bff2d9ea0de12ec",
+      "pal": {"a": "#fdf6c8", "b": "#450a6f", "c": "#fefefe", "d": "#262a76", "e": "#7cd78c"},
+      "rows": [
+        "...a...b",
+        "bbab.c.b",
+        "cbab.c.b",
+        "cda.b.db",
+        "deab.deb",
+        ".a.a..b."
+      ]
+    },
+    "solmane": {
+      "from": "38d6753d42bfb2d8021ffbbae7d7272e1519639929a142659827056cc4e11f32",
+      "anatomy": "threequarter",
+      "style": "round",
+      "near": [19, 27, 5, 6],
+      "far": [14, 28, 2, 4],
+      "chip": "clean",
+      "origin": [13, 28],
+      "to": "fba27cef2f2f37060dba54ee6b120fc720f48c598a9b91e52256cf44b6a2a769",
+      "pal": {"a": "#fdd424", "b": "#221f22", "c": "#fefefe", "d": "#4b2007", "e": "#b25029"},
+      "rows": [
+        "ab.a",
+        "acba",
+        "acda",
+        ".dea",
+        "..aa",
+        "..aa"
+      ]
+    },
+    "lunavane": {
+      "from": "b666b9ab6a7aa6c749fd5c0c156fa900c4476412b682e9d4421b04211bde26fa",
+      "anatomy": "frontal",
+      "style": "round",
+      "near": [29, 49, 5, 6],
+      "far": null,
+      "second": [22, 49, 5, 6],
+      "chip": "clean",
+      "origin": [21, 49],
+      "to": "f5a604b11ce9543b967d952f26a4918e30709d91c040000575e5b171dc2dd9dd",
+      "pal": {"a": "#fef8d4", "b": "#1a0869", "c": "#fefefe", "d": "#2d2391", "e": "#9ff3fd"},
+      "rows": [
+        "aa...b.aa..bb",
+        "ab.c.baabccbb",
+        "ab.c.baabccbb",
+        "a.b.dbaabbddb",
+        "ab.debaabddeb",
+        ".a..b..aa.bb."
+      ]
+    },
+    "astralhart": {
+      "from": "a8493a6796638939b5385aa38894ba362ccc2b33e5f45fa8dd93c6be028be0a7",
+      "anatomy": "threequarter",
+      "style": "round",
+      "near": [25, 35, 5, 6],
+      "far": null,
+      "chip": "clean",
+      "origin": [21, 35],
+      "to": "7e43cbcb6f91e87debe4b1255f6f1ce0bfc9f3013d77d4173e7137feedc52a5e",
+      "pal": {"a": "#fef3d5", "b": "#2c1608", "c": "#fefefe", "d": "#5a3416", "e": "#8a5a2a"},
+      "rows": [
+        "a.aaa..bb",
+        "..aabccbb",
+        "a.aabccbb",
+        "..aabbddb",
+        "..aabddeb",
+        "...aa.bb.",
+        "a........"
+      ]
+    }
+  }
+}
