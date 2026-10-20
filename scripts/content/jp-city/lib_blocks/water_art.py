@@ -207,7 +207,8 @@ def shade_field(lands, land, X, Y):
         cx, cy, face = L[0], L[1], L[2]
         wc = L[3] if len(L) > 3 else 1
         hc = L[4] if len(L) > 4 else 1
-        x0, x1, y0, y1 = cx * 16, (cx + wc) * 16, cy * 16, (cy + hc) * 16 + face
+        g = SHORE_SHIFT.get(land, 0)
+        x0, x1, y0, y1 = cx * 16 - g, (cx + wc) * 16 + g, cy * 16 - g, (cy + hc) * 16 + face + g
         dx = max(0.0, x0 - X, X - x1); dy = max(0.0, y0 - Y, Y - y1)
         vert = P['N'] if Y >= y1 else P['S']
         if dy == 0: v = _prof(dx, P['V'])
@@ -222,21 +223,30 @@ def shade_field(lands, land, X, Y):
 BRIDGE_PROF = (3, 11)   # 다리 상판 남쪽 물: 위 3px 짙은 그늘 → 11px 에서 0
 
 
-def shade_level(a, x, y, steps=2):
-    """0..1 그늘 → 단(0 = 그늘 없음). 베이어 디더."""
+DV_OFF = {0: None, 1: (1, 2), 2: (3, 1), 3: (2, 3), 4: (1, 1)}
+
+
+def shade_level(a, x, y, steps=2, dv=0):
+    """0..1 그늘 → 단(0 = 그늘 없음). 베이어 디더.
+    칸 둘레 1px 은 늘 거울 베이어(칸 양끝 열·행이 같은 문턱 → 옆 칸과 화소 그대로 이어진다). dv>0 이면 안쪽(1..14)은 어긋난 보통 베이어 —
+    긴 벽을 따라 같은 고리 칸이 되풀이되어도 16px 마다 같은 빗살로 읽히지 않게 변형마다 다르다(셋째 판 r2)."""
     if a <= 0: return 0
     q = a * steps
     k = int(q); fr = q - k
-    xi, yi = min(x, 15 - x) % 4, min(y, 15 - y) % 4     # 칸 가운데서 거울 — 칸 양끝 열(행)이 같은 문턱이라 옆 칸과 화소 그대로 이어진다
+    off = DV_OFF.get(dv % 5)
+    if off is None or x in (0, 15) or y in (0, 15):
+        xi, yi = min(x, 15 - x) % 4, min(y, 15 - y) % 4
+    else:
+        xi, yi = (x + off[0]) % 4, (y + off[1]) % 4
     return min(steps, k + (1 if fr > (BAYER[yi][xi] + 0.5) / 16 else 0))
 
 
 SHADE_TONE = {1: lambda: J('garasu', 1), 2: lambda: J('canal_indigo', 1), 3: lambda: J('canal_indigo', 0)}
 
 
-def shaded_water(kind, x, y, v, a, bridge=False):
+def shaded_water(kind, x, y, v, a, bridge=False, dv=0):
     """그늘 a(0..1) 를 얹은 물 화소. bridge=True 면 다리 상판 그늘(3단, 더 짙다)을 겹친다."""
-    lvl = shade_level(a, x, y)
+    lvl = shade_level(a, x, y, 2, dv)
     if bridge:
         lvl = max(lvl, shade_level(_prof(y + 0.5, BRIDGE_PROF), x, y, 3))
     if lvl: return SHADE_TONE[lvl]()
@@ -285,13 +295,14 @@ def ring_lands(key, land):
 
 
 def ring_cell(kind, land, key, v=0, bridge=False):
+    """v = 변형 번호: 밑 물 무늬와 디더 어긋남(dv)이 함께 바뀐다."""
     """물 몸통 칸(3×3 이 다 물) 중 5×5 둘레에 그늘 땅이 있는 «깊이 고리» 칸. v = 밑 물 변형(강 물살 위치)."""
     lands = ring_lands(key, land)
     c = Cv(16, 16)
-    base_v = (1 if v == 0 else (7 if v == 1 else 2)) if kind == 'sea' else v
+    base_v = (1, 7, 2)[v % 3] if kind == 'sea' else v % 4
     for y in range(16):
         for x in range(16):
-            c.P(x, y, shaded_water(kind, x, y, base_v, shade_field(lands, land, x + 0.5, y + 0.5), bridge))
+            c.P(x, y, shaded_water(kind, x, y, base_v, shade_field(lands, land, x + 0.5, y + 0.5), bridge, v))
     return c
 
 
@@ -343,13 +354,27 @@ def band_natural(t, side, d, x, y):
     return None
 
 
+def band_bank(d, nw, side, x, y):
+    """자연 둑 띠(G) — nw = 북쪽 둑 정도(0..1). 풀 어두운 테 → 흙 입술(북 4px · 그 밖 2px, 사이는 보간) → 짙은 물 1px → 젖은 띠 → 얕은 물."""
+    if d < 1: return J('moss', 0) if (nw > 0.5 or side != 'S') else J('moss', 1)
+    lip = 3.0 + 2.0 * nw            # 흙 입술 끝(북 5, 그 밖 3)
+    if d < lip:
+        if d < 2: return J('soil', 3) if H(x, y, 41) > 0.28 else J('soil', 2)
+        if d < lip - 1: return J('soil', 2) if H(x, y, 42) > 0.3 else J('soil', 3)
+        return J('soil', 1)
+    if d < lip + 1: return J('canal_indigo', 0)
+    end = lip + 3.0 + 1.0 * nw
+    if d < end: return J('canal_indigo', 2) if (d >= end - 1 and H(x, y, 44) > 0.5) else J('canal_indigo', 1)
+    return None
+
+
 FH = 12  # 부두 안벽 높이면(물 칸 안 px)
 
 
 def _foam(t, alt, s):
     """안벽 밑 물가 거품 — 드문드문 불규칙한 1px(칸 양끝 2px 은 비운다 → 대체 칸끼리 이어짐). 주기 무늬가 아니다."""
     if t < 2 or t > 13: return None
-    h = H(t, alt * 13 + s, 90 + s)
+    h = H(t * 7 + alt * 31, alt * 13 + s, 90 + s + alt * 5)
     if h < 0.04: return J('vending_cool_white', 2)
     if h < 0.13: return J('vending_cool_white', 0)
     return None
@@ -388,7 +413,11 @@ def _nb_from_mask(m, water, land):
     return nb
 
 
-ALT_BUMP = {0: 0.0, 1: 1.7, 2: -1.4}
+ALT_BUMP = {0: 0.0, 1: 1.7, 2: -1.4, 3: 0.0, 4: 0.0}
+# 자연 둑(G) 물가 선을 물 칸 안으로 4px 밀어 둔다(셋째 판 r2) — 대각만 땅인 칸은 반지름 4 의 사분원이 되어
+# 강이 1칸 꺾이는 자리의 볼록 모서리가 둥글어지고, 오목 모서리는 SMIN_K 로 4~6px 비스듬히 메운다(직각 계단 대신 굽이).
+SHORE_SHIFT = {'G': 4.0}
+SMIN_K = {'G': 7.0}
 
 
 def _bump(t, alt):
@@ -443,64 +472,76 @@ def shore_cell(kind, land, m, land_px=None, v=0, alt=0, bridge=False):
                     col = J('canal_indigo', 0)
                 if col is not None:
                     c.P(x, y, col); continue
-                c.P(x, y, shaded_water(kind, x, y, wv, shade_field(lands, 'D', x + 0.5, y + 0.5), bridge))
+                c.P(x, y, shaded_water(kind, x, y, wv, shade_field(lands, 'D', x + 0.5, y + 0.5), bridge, alt))
                 continue
             # 2) 자연 물가: 방향별 거리 + 흔들림, 부드러운 최소
             cands = []
-            if isl(N): cands.append((y + 0.5 - wob(x, 1.0) - _bump(x + 0.5, alt), 'N'))
-            if isl(S): cands.append((15.5 - y - wob(x, 2.3) - _bump(x + 0.5, alt), 'S'))
-            if isl(Wn): cands.append((x + 0.5 - wob(y, 3.1) - _bump(y + 0.5, alt), 'W'))
-            if isl(E): cands.append((15.5 - x - wob(y, 3.1) - _bump(y + 0.5, alt), 'E'))
+            sh = SHORE_SHIFT.get(land, 0)
+            if isl(N): cands.append((y + 0.5 - wob(x, 1.0) - _bump(x + 0.5, alt) - sh, 'N'))
+            if isl(S): cands.append((15.5 - y - wob(x, 2.3) - _bump(x + 0.5, alt) - sh, 'S'))
+            if isl(Wn): cands.append((x + 0.5 - wob(y, 3.1) - _bump(y + 0.5, alt) - sh, 'W'))
+            if isl(E): cands.append((15.5 - x - wob(y, 3.1) - _bump(y + 0.5, alt) - sh, 'E'))
             for t, ddx, ddy in ((NW, -1, -1), (NE, 1, -1), (SW, -1, 1), (SE, 1, 1)):
                 if isl(t) and not isl(nb(ddx, 0)) and not isl(nb(0, ddy)):
                     px = (x + 0.5) if ddx < 0 else (15.5 - x)
                     py = (y + 0.5) if ddy < 0 else (15.5 - y)
                     sd = 'N' if (ddy < 0 and py < px) else ('W' if ddx < 0 else 'E')
-                    cands.append((math.hypot(px, py), sd))
+                    cands.append((math.hypot(px, py) - sh, sd))
             if cands:
                 cands.sort(key=lambda q: q[0])
                 d, side = cands[0]
                 if len(cands) > 1:
-                    d = smin(d, cands[1][0], 4.0)
+                    d = smin(d, cands[1][0], SMIN_K.get(land, 4.0))
                 if d < 0:
                     c.P(x, y, land_px(x, y)); continue
-                col = band_natural(land, side, d, x, y)
+                if land == 'G':
+                    # 북쪽 둑(3/4 로 흙 높이면 4px)과 동·서·남 둑(2px)을 거리 차이로 섞는다 — 모퉁이에서 두께가 툭 바뀌던 «갈고리» 를 없앤다(r2)
+                    dn = min([q for q, sd2 in cands if sd2 == 'N'] or [99.0])
+                    do = min([q for q, sd2 in cands if sd2 != 'N'] or [99.0])
+                    nw = 0.0 if dn >= 99 else 1.0 if do >= 99 else min(1.0, max(0.0, 0.5 + (do - dn) / 6.0))
+                    col = band_bank(d, nw, side, x, y)
+                else:
+                    col = band_natural(land, side, d, x, y)
                 if col is not None:
                     c.P(x, y, col); continue
             a = shade_field(lands, land, x + 0.5, y + 0.5) if lands else 0.0
-            c.P(x, y, shaded_water(kind, x, y, wv, a, bridge))
+            c.P(x, y, shaded_water(kind, x, y, wv, a, bridge, alt))
     return c
 
 
 # ═══════════════════════════ 부두 콘크리트 판(땅 칸) ═══════════════════════════
 def quay_deck_cell(m=255, v=0):
-    """부두 콘크리트 칸: 칸마다 판석(가로 줄눈 y=15, 세로 줄눈 x=15 공통 — 변형끼리 이음매 없음) + 물 쪽 갓돌 테.
-    m = canon 8방 마스크(켜진 비트 = 부두/땅, 꺼진 비트 = 물). v = 몸통 변형(판 밝기·가운데 줄눈·얼룩)."""
-    # 세로 줄눈: v0·v3 오른쪽 끝(x=15), v1 없음(판이 옆 칸으로 이어짐), v2 가운데(x=7) — 해시로 섞이면 판 길이가 8~48px 로 흩어진다.
+    """부두 콘크리트 칸: 판석 8px 줄(가로 줄눈 y=7·y=15 고정) 반 칸 엇쌓기 — 위 줄 세로 줄눈 x=15, 아래 줄 x=7. 모든 변형·가장자리 칸이
+    같은 줄눈이라 칸 경계에서 줄눈이 어긋나지 않는다(셋째 판 r2: 변형마다 세로 줄눈이 달라 16px 마다 T 자로 끊겼다). 변형은 판 얼룩·잔무늬만 다르다.
+    m = canon 8방 마스크(켜진 비트 = 부두/땅, 꺼진 비트 = 물)."""
     tone = 4
-    vj = {0: (15,), 1: (), 2: (7,), 3: (15,)}[v]
+    def joint(x, y): return y in (7, 15) or (y < 7 and x == 15) or (7 < y < 15 and x == 7)
     c = Cv(16, 16)
     for y in range(16):
         for x in range(16):
-            if y == 15 or x in vj:
+            if joint(x, y):
                 col = J('conc', 2)
-            elif y == 0:
+            elif y in (0, 8):
                 col = J('conc', tone)
             else:
                 h = H(x, y, 72 + v)
                 col = J('conc', tone)
                 if h > 0.9: col = J('conc', tone - 1)
                 elif h < 0.04: col = J('conc', tone + 1)
-                if v == 3 and pnoise(x, y, 16, 4, 71) > 0.66 and h > 0.45: col = J('conc', tone - 1)
+                if v in (1, 3) and pnoise(x, y, 16, 4, 71 + v) > 0.66 and h > 0.45: col = J('conc', tone - 1)
             c.P(x, y, col)
     on = lambda b: bool(m & DIRS[b])
     N, E, S, Wn = on('N'), on('E'), on('S'), on('W')
     if not N:
         c.HL(0, 0, 16, OL); c.HL(0, 1, 16, J('conc', 6)); c.HL(0, 2, 16, J('conc', 5)); c.HL(0, 3, 16, J('conc', 2))
+        c.P(15, 1, J('conc', 4)); c.P(15, 2, J('conc', 3))      # 위 줄 세로 줄눈(x=15)에서 밝은 테를 끊는다
     if not Wn:
-        c.VL(0, 0, 16, OL); c.VL(1, 0, 16, J('conc', 6)); c.VL(2, 0, 16, J('conc', 5)); c.VL(3, 0, 16, J('conc', 2))
+        # 서쪽 갓돌: 밝은 테를 한 단 낮추고(6→5, 5→4) 가로 줄눈(y=7·15)에서 끊는다 — 전 길이 흰 줄로 읽히지 않게
+        c.VL(0, 0, 16, OL); c.VL(1, 0, 16, J('conc', 5)); c.VL(2, 0, 16, J('conc', 4)); c.VL(3, 0, 16, J('conc', 2))
+        for jy in (7, 15): c.P(1, jy, J('conc', 3)); c.P(2, jy, J('conc', 2))
     if not E:
         c.VL(15, 0, 16, OL); c.VL(14, 0, 16, J('conc', 3)); c.VL(13, 0, 16, J('conc', 4)); c.VL(12, 0, 16, J('conc', 2))
+        for jy in (7, 15): c.P(13, jy, J('conc', 2))
     if not S:
         c.HL(0, 12, 16, J('conc', 2)); c.HL(0, 13, 16, J('conc', 6)); c.HL(0, 14, 16, J('conc', 5)); c.HL(0, 15, 16, J('conc', 4))
         c.P(7, 14, J('conc', 3)); c.P(7, 15, J('conc', 3))

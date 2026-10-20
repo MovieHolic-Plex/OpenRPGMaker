@@ -57,8 +57,8 @@ for _a in _CPATS:
         RING_KEYS += [WA.ring_key(_a, _b, '000'), WA.ring_key(_a, '000', _b)]
 RING_KEYS += [WA.ring_key('000', '111', '111'), WA.ring_key('111', '111', '111')]
 RING_KEYS = list(dict.fromkeys(RING_KEYS))
-# 곧은 벽·둑 옆 고리는 길게 되풀이되므로 변형 3벌(밑 물 무늬만 다르다)
-RING_VARIANTS = {WA.ring_key('111', '000', '000'): 3, WA.ring_key('000', '111', '000'): 3, WA.ring_key('000', '000', '111'): 3}
+# 고리 칸 변형: 한 면 키 3벌, 두 면 키 2벌 — 밑 물 무늬와 디더 어긋남(dv)이 다르다(셋째 판 r2: 긴 벽을 따라 16px 빗살이 보였다).
+RING_VARIANTS = {k: (3 if sum(1 for side in (k[1:4], k[5:8], k[9:12]) if '1' in side) == 1 else 2) for k in RING_KEYS}
 # 다리 그늘: 강 가장자리(서·동 둑) 마스크와 4칸 폭 강의 고리 키(다리가 둑 위까지 덮으므로 다리 줄 칸은 물로 센다 → 011)
 BRIDGE_MASKS = (55, 205)
 BRIDGE_RING_KEYS = (WA.ring_key('000', '011', '000'), WA.ring_key('000', '000', '011'), WA.ring_key('000', '111', '000'), WA.ring_key('000', '000', '111'))
@@ -115,13 +115,14 @@ def build():
             for side in ('N', 'E', 'S', 'W'):
                 m = GA.canon(255 & ~GA.DIRS[side] & ~{'N': 16 | 128, 'S': 32 | 64, 'E': 16 | 32, 'W': 64 | 128}[side])
                 alts = []
-                for alt in (1, 2):
+                for alt in ((1, 2, 3, 4) if land == 'D' else (1, 2)):
                     loc = '%s.m%d.a%d' % (prefix, m, alt); alts.append(loc)
                     cells[loc] = _cell(WA.shore_cell(kind, land, m, lp, v=CANON.index(m) % 3, alt=alt).img(), 'solidfloor',
                                        '%s · %s (대체 %d)' % (name, GA.describe_mask(m), alt), '%s 곧은 물가 대체 칸(마스크 %d). 물(걸을 수 없음).' % (name, m), ['물', 'autotile', prefix])
+                # (안벽 대체 칸 3·4 는 셋째 판 r2 덧붙임 — 거품 점이 16px 마다 같은 자리에 오지 않게)
                 members += alts
                 groups.append(dict(id='jp:shore-alt:%s:%d' % (aid, m), name='%s · %s 대체' % (name, GA.describe_mask(m)), role='water', defaultLayer='lower', cells=alts,
-                                   desc='%s 곧은 물가(마스크 %d) 대체 칸 2개. 구성기가 칸 위치 해시로 기본 칸과 섞는다.' % (name, m), rules='물가 다듬기(shorePass)가 고른다. 손으로 칠하지 않는다.'))
+                                   desc='%s 곧은 물가(마스크 %d) 대체 칸 %d개. 구성기가 칸 위치 해시로 기본 칸과 섞는다.' % (name, m, len(alts)), rules='물가 다듬기(shorePass)가 고른다. 손으로 칠하지 않는다.'))
         # 깊이 고리(셋째 판): 몸통 칸(3×3 이 다 물) 중 5×5 둘레에 안벽·둑이 있는 칸 — 벽 그늘이 바다 쪽으로 옅어진다. 모래 해변은 없음.
         if land in WA.PROF:
             for key in RING_KEYS:
@@ -133,6 +134,14 @@ def build():
                                        '%s 벽·둑 옆 몸통 물의 깊이 그늘 칸(한 칸 바깥 고리, 둘레 땅 %s). 물(걸을 수 없음).' % (name, key), ['물', 'depth', prefix])
                 groups.append(dict(id='jp:shore-ring:%s:%s' % (aid, key), name='%s · 깊이 그늘 %s' % (name, key), role='water', defaultLayer='lower', cells=locs,
                                    desc='%s 몸통 물 중 둘레 5×5 에 그늘 땅(%s)이 있는 칸.' % (name, key), rules='물가 다듬기(shorePass)가 고른다. 손으로 칠하지 않는다.'))
+        # 다리 상판(출렁다리 1층 칸) 중 남쪽이 둑(땅)인 칸: 상판 아래 1px 물빛 그늘을 짙은 흙 색으로(셋째 판 r2 — 흙 위에 남색 그늘이 비쳤다)
+        if kind == 'river':
+            import jp_regions_pack as RP
+            dk = np.array(RP._finalize()[0]['rg-tsuribashi/b0.1']['img']).copy()
+            dk[15, :, :3] = WA.rgb(WA.J('soil', 1))
+            cells['bridge-deck.soil'] = _cell(Image.fromarray(dk, 'RGBA'), 'floor', '출렁다리 상판 · 둑 위', '출렁다리 1층 발판 칸 중 남쪽이 흙 둑인 칸(아래 그늘이 흙 색). 물가 다듬기가 바꿔 단다.', ['다리', 'bridge'])
+            groups.append(dict(id='jp:shore-bridge-deck-soil', name='출렁다리 상판 · 둑 위', role='terrain', defaultLayer='lower', cells=['bridge-deck.soil'],
+                               desc='출렁다리 발판 칸의 둑 위 변형(아래 1px 그늘이 흙 색).', rules='물가 다듬기(shorePass)가 다리 키트 발판 중 남쪽이 땅인 칸에 단다.'))
         # 다리 그늘(셋째 판, 강만): 다리 상판 바로 남쪽 물 칸 — 다리가 물에 납작 붙어 보이지 않게
         if kind == 'river':
             bkeys = [('body', lambda: WA.bridge_body_cell(kind, 1))]
@@ -275,7 +284,8 @@ def compose_grid(grid, b=None):
         for x in range(Ww):
             t = grid[y][x]; h = GA.cell_hash(x, y)
             if t == 'B':
-                im = deck
+                south = at_(x, y + 1)
+                im = C['bridge-deck.soil']['img'] if (south is not None and not water(south)) else deck
             elif water(t):
                 m = mask(x, y, water)
                 under_bridge = at_(x, y - 1) == 'B'
@@ -355,16 +365,24 @@ HARBOR_BOARD = [
 RIVER_BOARD = [
     'GGGGRRRRGGGGG',
     'GGGGRRRRGGGGG',
+    'GGGGRRRRGGGGG',
     'GGGGGRRRRGGGG',
     'GGGGGRRRRGGGG',
-    'GGGGGGRRRRGGG',
+    'GGGGGRRRRGGGG',
+    'GGGGGRRRRGGGG',
+    'GGGGRRRRGGGGG',
+    'GGGGRRRRGGGGG',
     'GGBBBBBBBBGGG',
-    'GGGGGGRRRRGGG',
-    'GGGGGGRRRRGGG',
-    'GGGGGRRRRGGGG',
     'GGGGRRRRGGGGG',
     'GGGGRRRRGGGGG',
-    'GGGGGRRRRGGGG',
+    'GGGGRRRRGGGGG',
+    'GGGGRRRRGGGGG',
+    'GGGRRRRGGGGGG',
+    'GGGRRRRGGGGGG',
+    'GGGRRRRGGGGGG',
+    'GGGRRRRGGGGGG',
+    'GGGGRRRRGGGGG',
+    'GGGGRRRRGGGGG',
 ]
 
 

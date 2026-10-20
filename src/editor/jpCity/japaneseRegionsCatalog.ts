@@ -23,7 +23,7 @@ export type JpRegionOp =
   | { readonly op: "area"; readonly mat: string; readonly box: readonly [number, number, number, number]; readonly clear?: boolean; readonly zone?: JpZoneHint }
   /** 맵을 가로지르는 길·물·선로 띠. 늘 비워 둔다(onPath 소품만 위에 선다). span 은 띠 방향 범위 비율. */
   | { readonly op: "band"; readonly mat: string; readonly dir: "h" | "v"; readonly at: number; readonly size: number; readonly span?: readonly [number, number];
-      /** 세로 띠(dir v)만: 줄마다 가로로 ±amp 칸 굽이친다(주기 period 줄, 위상은 seed). keep 은 곧게 둘 세로 범위 비율 — 다리·폭포 자리. 경계에서 3줄에 걸쳐 0 으로 줄어든다. */
+      /** 세로 띠(dir v)만: 최대 ±amp(1|2) 칸 S 자로 굽이친다 — 한 번에 1칸, 3~4줄 붙든 뒤 꺾는다(period 는 기록용, 무늬 주기 26줄 고정). keep 은 곧게 둘 세로 범위 비율 — 다리·폭포 자리. 위상은 seed. */
       readonly meander?: { readonly amp: number; readonly period: number; readonly keep?: readonly (readonly [number, number])[] } }
   /** 굴절·연결 거리/산길/데크(A2) - [x,y] 꼭짓점 폴리라인을 따라 폭 size 칸으로 바닥을 깐다. */
   | { readonly op: "street"; readonly mat: string; readonly points: readonly (readonly [number, number])[]; readonly size: number; readonly deadEnd?: boolean }
@@ -674,7 +674,7 @@ const DEFS: readonly RegionDef[] = [
       // 폭포(10×6)는 3..6열이 강 4칸과 겹치게 같은 at 에 둔다(band x = X(at)-2, put x = X(at)-5).
       { op: "street", mat: M.trail, size: 2, points: [[0.24, 1], [0.24, 0.76], [0.36, 0.76], [0.36, 0.56], [0.74, 0.56], [0.74, 0.34], [0.84, 0.34], [0.84, 0]] },
       // 강은 폭포(위)·출렁다리 자리만 곧게 두고 그 사이·아래는 1~2칸씩 굽이친다(2026-10-20 셋째 판, 자로 그은 수로처럼 보이던 것).
-      { op: "band", mat: M.river, dir: "v", at: 0.54, size: 4, span: [0, 1], meander: { amp: 1.7, period: 13, keep: [[0, 0.24], [0.48, 0.62]] } },
+      { op: "band", mat: M.river, dir: "v", at: 0.54, size: 4, span: [0, 1], meander: { amp: 2, period: 26, keep: [[0, 0.24], [0.48, 0.62]] } },
       { op: "put", kit: "rg-waterfall", at: [0.54, 0.18], foot: true, onPath: true },
       { op: "put", kit: "rg-tsuribashi", at: [0.54, 0.56], onPath: true },
       { op: "put", kit: "rg-stone-ruin", at: [0.43, 0.36], onPath: true },
@@ -833,7 +833,9 @@ const DEFS: readonly RegionDef[] = [
       // 방파제 부두는 6칸 폭, 등대는 부두 끝(남쪽) 동쪽 3칸에 — 서쪽 3칸(48px)으로 사람이 등대 옆을 지나 끝까지 간다(2026-10-20 셋째 판; 4칸 폭에 가운데 등대면 11px 만 남았다).
       { op: "band", mat: M.quay, dir: "v", at: 0.78, size: 6, span: [0.58, 0.96] },
       { op: "put", kit: "rg-lighthouse", at: [0.8, 0.94], foot: true, onPath: true },
-      { op: "line", kit: "rg-tetrapod", dir: "v", at: 0.9, span: [0.64, 0.94], step: 3, onPath: true },
+      // 테트라포드는 부두 동쪽 물 한가운데에 두 무리만 — 벽·안벽에 닿지 않게(부두 벽에서 2칸, 안벽 줄에서 3줄 떨어짐).
+      { op: "put", kit: "rg-tetrapod", at: [0.93, 0.74], onPath: true },
+      { op: "put", kit: "rg-tetrapod", at: [0.93, 0.9], onPath: true },
       { op: "put", kit: "rg-fishing-boat", at: [0.14, 0.67], onPath: true },
       { op: "put", kit: "rg-fishing-boat", at: [0.34, 0.67], onPath: true },
       { op: "put", kit: "rg-fishing-boat", at: [0.54, 0.67], onPath: true },

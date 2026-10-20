@@ -58,6 +58,10 @@ interface ShoreTiles {
   readonly bridgeShade: ReadonlyMap<string, ReadonlyMap<string, readonly number[]>>;
   /** 다리 키트의 1층(바닥) 칸 — 이 칸 바로 남쪽 물에 다리 그늘. */
   readonly bridgeDeck: ReadonlySet<number>;
+  /** 출렁다리 발판 중 남쪽이 땅(둑)인 칸에 바꿔 다는 칸(아래 그늘이 흙 색). */
+  readonly deckSoil: number | undefined;
+  /** 출렁다리(tsuribashi) 키트의 발판 칸(둑 위 칸으로 바꿔 달 대상). */
+  readonly tsuriDeck: readonly number[];
 }
 
 const cellsOf = (m: ReadonlyMap<string, ReadonlyMap<string, readonly number[]>>, id: string): number[] => [...(m.get(id)?.values() ?? [])].flat();
@@ -98,6 +102,9 @@ function shoreTiles(ts: Ts): ShoreTiles | undefined {
     if (!/tsuribashi|bridge/.test(k.id)) continue;
     for (const r of k.rows ?? []) for (const t of r.tiles ?? []) if (t >= 0) bridgeDeck.add(t);
   }
+  const deckSoil = group("jp:shore-bridge-deck-soil")[0];
+  const tsuriDeck = [...new Set((ts.structureKits ?? []).filter((k) => /tsuribashi/.test(k.id)).flatMap((k) => (k.rows ?? []).flatMap((r) => r.tiles ?? [])).filter((t) => t >= 0))];
+  if (deckSoil !== undefined) { bridge.add(deckSoil); bridgeDeck.add(deckSoil); }
   const alts = new Map<string, number[]>();
   const rings = new Map<string, Map<string, number[]>>(), bridgeShade = new Map<string, Map<string, number[]>>();
   const nested = (into: Map<string, Map<string, number[]>>, rest: string, ids: readonly number[]) => {
@@ -112,7 +119,7 @@ function shoreTiles(ts: Ts): ShoreTiles | undefined {
     else if (g.id.startsWith("jp:shore-bridge:")) nested(bridgeShade, g.id.slice("jp:shore-bridge:".length), g.tileIds);
   }
   return {
-    alts, rings, bridgeShade, bridgeDeck,
+    alts, rings, bridgeShade, bridgeDeck, deckSoil, tsuriDeck,
     seaBody,
     riverBody: interior(riverBank),
     quayBody: interior(quayDeck),
@@ -197,6 +204,11 @@ export function applyJpShores(map: { readonly width: number; readonly height: nu
       } else if (T.quay.has(t)) {
         const m = mask(x, y, (n) => !isWater(n));
         next = m === 255 ? T.quayBody[cellHash(x, y) % T.quayBody.length] : T.quayDeck.variantMap[String(m)];
+      }
+      else if (T.deckSoil !== undefined && T.tsuriDeck.length === 1 && (t === T.deckSoil || t === T.tsuriDeck[0])) {
+        // 출렁다리 발판: 남쪽이 둑(땅)이면 아래 1px 그늘을 흙 색으로 그린 칸, 물이면 키트 원래 칸
+        const south = at(x, y + 1);
+        next = south !== undefined && !isWater(south) ? T.deckSoil : T.tsuriDeck[0];
       }
       if (next !== undefined && next !== t) { map.lowerTiles[i] = next; changed++; }
     }

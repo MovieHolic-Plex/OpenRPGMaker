@@ -348,22 +348,36 @@ export function planJpRegionScene(input: {
         const x = X(op.at) - Math.floor(op.size / 2);
         const y0 = snapY(a), y1 = snapY(b);
         if (op.meander) {
-          // 굽이치는 세로 띠: 줄마다 가로 오프셋(사인, keep 범위는 0, 경계 3줄에서 서서히). 위상은 seed 로만(rand 순서를 건드리지 않는다).
-          const { amp, period, keep = [] } = op.meander;
+          // 굽이치는 세로 띠(셋째 판 r2): 한 번에 1칸만, 같은 오프셋을 3~4줄 붙든 뒤 꺾고 좌우로 번갈아 S 자. keep 범위(폭포·다리)는 0.
+          // 줄마다 사인을 반올림하던 첫 판은 거의 매 줄 1칸씩 직각 계단이 됐다. 위상은 seed 로만(rand 순서를 건드리지 않는다).
+          const { amp, keep = [] } = op.meander;
+          const A = Math.max(1, Math.min(2, Math.round(amp)));
+          const half = A === 2 ? [0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 1, 1, 1] : [0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0];
+          const pattern = [...half, ...half.map((v) => -v)];
           const keepRows = keep.map(([k0, k1]) => [Y(k0), Y(k1)] as const);
-          const env = (yy: number) => {
-            let d = Infinity;
-            for (const [k0, k1] of keepRows) {
-              if (yy >= k0 && yy <= k1) return 0;
-              d = Math.min(d, yy < k0 ? k0 - yy : yy - k1);
+          const inKeep = (yy: number) => keepRows.some(([k0, k1]) => yy >= k0 && yy <= k1);
+          const offs = new Map<number, number>();
+          let yy = y0;
+          while (yy <= y1) {
+            if (inKeep(yy)) { offs.set(yy, 0); yy++; continue; }
+            let end = yy;
+            while (end + 1 <= y1 && !inKeep(end + 1)) end++;
+            const closed = end < y1;   // 아래도 keep(곧은 자리)이면 끝이 0 근처여야 한다
+            let best = -1, bestScore = -1;
+            for (let ph = 0; ph < pattern.length; ph++) {
+              const seq = Array.from({ length: end - yy + 1 }, (_, k) => pattern[(ph + k) % pattern.length]!);
+              if (Math.abs(seq[0]!) > 1 || (closed && Math.abs(seq[seq.length - 1]!) > 1)) continue;
+              // 창 끝에서 잘린 줄도 3줄 이상 붙들어야 한다(0 이 아니면 — 그 앞뒤 keep 과 1칸 꺾임이 생기므로)
+              const runLen = (from: number, dir: 1 | -1) => { let n = 0; for (let k = from; k >= 0 && k < seq.length && seq[k] === seq[from]; k += dir) n++; return n; };
+              if (seq[0] !== 0 && runLen(0, 1) < 3) continue;
+              if (closed && seq[seq.length - 1] !== 0 && runLen(seq.length - 1, -1) < 3) continue;
+              const score = seq.filter((v) => v !== 0).length * 10 + ((ph * 7 + seed) % 10);
+              if (score > bestScore) { bestScore = score; best = ph; }
             }
-            return Math.min(1, d / 3);
-          };
-          const phase = (seed % 7) * 0.9;
-          for (let yy = y0; yy <= y1; yy++) {
-            const off = Math.round(amp * env(yy) * Math.sin((2 * Math.PI * yy) / period + phase));
-            fill(x + off, yy, op.size, 1, op.mat, true);
+            for (let k = 0; k <= end - yy; k++) offs.set(yy + k, best < 0 ? 0 : pattern[(best + k) % pattern.length]! * (seed % 2 ? -1 : 1));
+            yy = end + 1;
           }
+          for (let r = y0; r <= y1; r++) fill(x + (offs.get(r) ?? 0), r, op.size, 1, op.mat, true);
         } else fill(x, y0, op.size, y1 - y0 + 1, op.mat, true);
         const z = matToSurface(op.mat);
         if (z !== JpSurface.WATER && z !== JpSurface.PADDY && op.size >= 2 && op.size <= 6) {
