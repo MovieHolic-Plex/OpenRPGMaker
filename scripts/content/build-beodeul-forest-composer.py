@@ -1,6 +1,12 @@
-"""버들항 woodland composer 정의 — 원본 bd-tree 키트 칸(그림 그대로)을 나무 composer(#3058 treeComposer.ts) 그림으로 묶는다.
+"""버들항 숲 composer 정의 — 원본 버들항 키트 칸(그림 그대로)을 나무 composer(#3058 treeComposer.ts) 그림으로 묶는다.
 
 새 그림은 없다. 칸 번호는 beodeul_city 시트의 원본 칸, cover 는 그 칸의 불투명 화소 비율이다.
+숲 종류 셋(forestType):
+  · broadleaf 활엽 — 줄기 나무 bd-tree-d43edd·5844f6(4×5), 1a786c·d61d7e(3×4), 가장자리 틈 덤불 37f48b·f4f319(2×2)
+  · conifer   침엽 — 해안 절벽길 전나무 bd-pick-coast-cliff-road-fir-l(3×4)·m·m2·s(2×3) + 원본 도시 숲의 측백 bd-tree-eef4bc·28ad5e·c27062(1×3)
+  · mixed     혼효 — 원본 도시 숲(tiledata/beodeul-city/render-full/city6.png)처럼 큰 활엽수 사이에 측백·전나무가 선다
+접지(ground)는 scripts/content/build-beodeul-forest-ground.py 가 만든 beodeul_ground 칸이다(런타임에 대상 칩셋으로 이식).
+
   python3 scripts/content/build-beodeul-forest-composer.py  → src/assets/beodeulForestComposer.json
 """
 from pathlib import Path
@@ -9,36 +15,46 @@ import json
 R = Path(__file__).resolve().parents[2]
 city = json.loads((R / 'src/assets/beodeulCityTileset.json').read_text())
 K = {k['id']: k for k in city['structureKits']}
-atlas = Image.open(R / 'public/assets/beodeul-city/beodeul-city-chipset.png').convert('RGBA')
-A = atlas.getchannel('A')
+A = Image.open(R / 'public/assets/beodeul-city/beodeul-city-chipset.png').convert('RGBA').getchannel('A')
 
 def cover(n):
     if n < 0: return 0
     x, y = n % 128 * 16, n // 128 * 16
-    a = A.crop((x, y, x + 16, y + 16)).getdata()
+    a = A.crop((x, y, x + 16, y + 16)).tobytes()
     return round(sum(1 for v in a if v > 0) * 100 / 256)
 
-# 숲 가장자리·숲 속 모두 줄기 나무(4×5·3×4)다. 숲 속을 수관만 있는 3×3 으로 바꿔 보니(2026-10-20 시험) 수관이 작아
-# 3칸 격자 무늬가 다시 드러나고 수관 사이로 풀밭이 비쳤다 — 앞 나무 수관이 뒤 나무 줄기를 대부분 가리므로 줄기 나무를 그대로 쓴다.
-# 수관만 있는 3×3(떠 보인다)과 측백(이가 빠진다)은 쓰지 않는다.
-SHAPES = {'T4': ['d43edd', '5844f6'], 'T3': ['1a786c', 'd61d7e'], 'B2': ['37f48b', 'f4f319']}
-INNER = SHAPES
-sprites = []
-trunk = {}
-for shape, ids in SHAPES.items():
-    for dark in (False, True):
-        for id in (INNER[shape] if dark else ids):
-            k = K['bd-tree-' + id]
-            tiles = [n for r in k['rows'] for n in r['upperTiles']]
-            cov = [cover(n) for n in tiles]
-            sprites.append(dict(name=id, shape=shape, dark=dark, w=k['width'], h=k['height'], tiles=tiles, cover=cov))
-            if shape not in trunk and not dark:
-                # 줄기 열 = 맨 아래 줄에서 불투명 화소가 3할 넘는 칸(덤불은 맨 아래 줄 전체)
-                bottom = cov[-k['width']:]
-                trunk[shape] = [i for i, v in enumerate(bottom) if v > 30] or list(range(k['width']))
-out = dict(kind='trees', version=1, layers=[4, 3, 2], rowStep=2, colStep=3, skip=0.05,
-           shapeOrder=list(SHAPES), shapeOdds=[0.4, 0.95], trunkCols=trunk,
-           overhangOnGroups=['버들항 풀밭'], overhangOnTiles=[], sprites=sprites,
-           source='beodeul_city bd-tree 원본 칸(새 그림 없음). 규칙 #3058 treeComposer.ts')
+def kid(name): return name if name.startswith('bd-') else 'bd-tree-' + name
+FIR = 'bd-pick-coast-cliff-road-fir-'
+CYP = ['eef4bc', '28ad5e', 'c27062']
+
+def build(shapes, order, odds, rowStep, colStep, skip, shadeCover):
+    sprites, trunk = [], {}
+    for shape, names in shapes.items():
+        for dark in (False, True):
+            for name in names:
+                k = K[kid(name)]
+                tiles = [n for r in k['rows'] for n in r['upperTiles']]
+                cov = [cover(n) for n in tiles]
+                sprites.append(dict(name=kid(name), shape=shape, dark=dark, w=k['width'], h=k['height'], tiles=tiles, cover=cov))
+                if shape not in trunk:
+                    bottom = cov[-k['width']:]
+                    best = max(bottom)
+                    trunk[shape] = [i for i, v in enumerate(bottom) if v > 30 and v * 2 >= best] or [bottom.index(best)]
+    return dict(kind='trees', version=1, layers=[4, 3, 2], rowStep=rowStep, colStep=colStep, skip=skip,
+                shapeOrder=order, shapeOdds=odds, trunkCols=trunk, overhangOnGroups=['버들항 풀밭'], overhangOnTiles=[], sprites=sprites,
+                groundShadeCover=shadeCover)  # 접지 그늘 덮개 문턱(가는 침엽수는 칸을 덜 덮으므로 낮춘다)
+
+# 숲 속도 줄기 나무를 쓴다 — 수관만 있는 3×3 은 작아서 3칸 격자 무늬와 풀밭 틈이 드러났다(2026-10-20 시험).
+defs = {
+    'broadleaf': build({'T4': ['d43edd', '5844f6'], 'T3': ['1a786c', 'd61d7e'], 'B2': ['37f48b', 'f4f319']},
+                       ['T4', 'T3', 'B2'], [0.4, 0.95], 2, 3, 0.05, 30),
+    'conifer': build({'C3': [FIR + 'l'], 'C2': [FIR + 'm', FIR + 'm2', FIR + 's'], 'P1': CYP},
+                     ['C3', 'C2', 'P1'], [0.45, 0.85], 2, 2, 0.04, 12),
+    'mixed': build({'T4': ['d43edd', '5844f6'], 'S': CYP + [FIR + 'm', FIR + 'm2'], 'T3': ['1a786c', 'd61d7e', FIR + 'l']},
+                   ['T4', 'S', 'T3'], [0.35, 0.7], 2, 3, 0.04, 20),
+}
+ground = json.loads((R / 'tiledata/beodeul-ground/forest-ground.json').read_text())
+out = dict(source='beodeul_city 원본 키트 칸(새 그림 없음). 규칙 #3058 treeComposer.ts. 접지 칸은 beodeul_ground(forest-ground.json).',
+           ground=ground, types=defs)
 (R / 'src/assets/beodeulForestComposer.json').write_text(json.dumps(out, ensure_ascii=False, indent=1) + '\n')
-print(json.dumps(dict(trunk=trunk, sprites=[(s['name'], s['shape'], s['w'], s['h'], s['cover']) for s in sprites if not s['dark']])))
+print(json.dumps({t: d['trunkCols'] for t, d in defs.items()}))

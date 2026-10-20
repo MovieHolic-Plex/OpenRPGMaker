@@ -17,14 +17,15 @@ const save = (p: Project, id: string, name: string) => {
   console.log(name);
 };
 
-for (const seed of [1, 7]) {
+const types = (process.env.BW_TYPES ?? "broadleaf").split(",");
+for (const forestType of types) for (const seed of [1, 7]) {
   resetMapEditHistory();
   const project = createBlankProject();
   project.database.troops.push({ id: "troop_wild", name: "야생", members: [] } as unknown as Project["database"]["troops"][number]);
   const ctx = { project };
   ok(runTool(ctx, "create_map", { id: "map_route", name: "도로", width: 32, height: 40, tilesetId: "beodeul_city" }, { dryRun: false }), "create_map");
-  ok(runTool(ctx, "author_wild_route", { mapId: "map_route", exits: [{ x: 16, y: 39 }, { x: 16, y: 0 }], grassPatches: 3, seed, encounters: [{ troopId: "troop_wild", weight: 1 }] }, { dryRun: false }), "route");
-  save(ctx.project, "map_route", `route-${seed}`);
+  ok(runTool(ctx, "author_wild_route", { mapId: "map_route", exits: [{ x: 16, y: 39 }, { x: 16, y: 0 }], grassPatches: 3, seed, encounters: [{ troopId: "troop_wild", weight: 1 }], ...(forestType === "broadleaf" ? {} : { forestType }) }, { dryRun: false }), "route");
+  save(ctx.project, "map_route", forestType === "broadleaf" ? `route-${seed}` : `route-${forestType}-${seed}`);
 }
 
 {
@@ -38,11 +39,11 @@ for (const seed of [1, 7]) {
   save(ctx.project, "map_court", "courtyard");
 }
 
-for (const seed of [3]) {
+for (const forestType of types) for (const seed of [3]) {
   resetMapEditHistory();
   const project = createBlankProject();
   const ctx = { project };
-  const r = runTool(ctx, "author_beodeul_town", { id: "map_river", theme: "river", seed }, { dryRun: false });
+  const r = runTool(ctx, "author_beodeul_town", { id: "map_river", theme: "river", seed, ...(forestType === "broadleaf" ? {} : { forestType }) }, { dryRun: false });
   ok(r, "river");
-  save(ctx.project, "map_river", `river-${seed}`);
+  save(ctx.project, "map_river", forestType === "broadleaf" ? `river-${seed}` : `river-${forestType}-${seed}`);
 }

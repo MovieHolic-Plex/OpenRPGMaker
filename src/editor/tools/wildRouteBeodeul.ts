@@ -14,10 +14,8 @@ import type { Rng } from "@/util/rng";
 import { CONSTRUCTION_TOOLS_V3 } from "./v3/constructionTools";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import type { ToolDefinition } from "./types";
-import type { TreeComposerDef } from "@/project/types";
-import { composeTreesInMask } from "@/project/defaults/treeComposer";
 import { layerTileAt } from "@/project/mapLayers";
-import BEODEUL_FOREST_COMPOSER from "@/assets/beodeulForestComposer.json";
+import { composeBeodeulForest, type BeodeulForestType } from "./beodeulForest";
 
 const BEODEUL_TEXTURE = "tex_beodeul_city";
 const BEODEUL_ID = "beodeul_city";
@@ -51,10 +49,12 @@ export interface BeodeulWildRouteInput {
   /** 나무를 심지 않을 공터(풀밭으로 둔다). */
   readonly clearings?: readonly Rect[];
   readonly rng: Rng;
+  /** 숲 종류(기본 활엽수림). */
+  readonly forestType?: BeodeulForestType;
 }
 
 export function paintBeodeulWildRoute(input: BeodeulWildRouteInput): { roadCells: number; treeCells: number; decor: number } {
-  const { project, map, tileset, road, grass, patches, exits, clearings = [], rng } = input;
+  const { project, map, tileset, road, grass, patches, exits, clearings = [], rng, forestType = "broadleaf" } = input;
   const fillRegion = requireTool(CONSTRUCTION_TOOLS_V3, "fill_region");
   const stampObject = requireTool(SHARED_OBJECT_TOOLS, "stamp_object");
   const w = map.width;
@@ -115,7 +115,7 @@ export function paintBeodeulWildRoute(input: BeodeulWildRouteInput): { roadCells
     if (x >= 0 && y >= 0 && x < w && y < map.height) reserved.add(y * w + x);
   }
 
-  const treeCells = plantBeodeulForestWall(project, map, tileset, reserved, rng, stampObject);
+  const treeCells = plantBeodeulForestWall(project, map, tileset, reserved, rng, stampObject, forestType);
   const decor = dressBeodeulVerge(project, map, tileset, road, reserved, rng, stampObject);
   return { roadCells: roadCells.length, treeCells, decor };
 }
@@ -132,9 +132,10 @@ export function paintBeodeulWildRoute(input: BeodeulWildRouteInput): { roadCells
  * 그래도 남은 2×2 빈 풀밭만 덤불로 메운다(1칸 틈은 풀밭으로 둔다).
  */
 export function plantBeodeulForestWall(project: Project, map: GameMap, tileset: TilesetDef, reserved: ReadonlySet<number>, rng: Rng,
-  stampObject: ToolDefinition): number {
+  _stampObject: ToolDefinition, forestType: BeodeulForestType = "broadleaf"): number {
   const w = map.width, h = map.height;
-  const empty = (index: number): boolean => ([2, 3, 4] as const).every(L => layerTileAt(map, L, index) < 0);
+  let groundTiles: ReadonlySet<number> = new Set();
+  const empty = (index: number): boolean => ([2, 3, 4] as const).every(L => { const t = layerTileAt(map, L, index); return t < 0 || groundTiles.has(t); });
   const plantable = (x: number, y: number): boolean => {
     if (x < 0 || y < 0 || x >= w || y >= h) return false;
     const index = y * w + x;
@@ -144,24 +145,17 @@ export function plantBeodeulForestWall(project: Project, map: GameMap, tileset: 
   const forest = new Set<number>();
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (plantable(x, y)) forest.add(y * w + x);
   const inForest = (x: number, y: number) => x >= 0 && y >= 0 && x < w && y < h && forest.has(y * w + x);
-  const composer = BEODEUL_FOREST_COMPOSER as unknown as TreeComposerDef;
-  composeTreesInMask(map, composer, inForest, inForest, Math.floor(rng() * 997));   // 숲 칸 밖은 쓰지 않는다
+  // 접지(r6): 숲 칸 1층은 숲 바닥 그늘, 숲 밖 빈 잔디(아무것도 안 찍힌 칸)에는 오른쪽 아래로 진 땅 그늘 덧칸.
+  // 수관은 숲 칸 안에만(hold), 다시 쓰는 칸은 숲 칸 + 빈 칸(write) — 이미 찍힌 소품·덤불 칸은 건드리지 않는다.
+  const bare = new Set<number>();
+  for (let i = 0; i < w * h; i++) if (empty(i)) bare.add(i);
+  const composer = composeBeodeulForest(project, map, tileset, forestType, inForest, inForest, Math.floor(rng() * 997), (x, y) => inForest(x, y) || bare.has(y * w + x));
   let cells = 0;
+  groundTiles = new Set((composer.ground?.apronTiles ?? []).filter(n => n >= 0));
   for (const index of forest) if (!empty(index)) cells++;
   // 틈 메우기 — 덤불(2×2)만. 숲 칸 안의 빈 풀밭 2×2 에만.
-  const bushes = (tileset.structureKits ?? []).filter(kit => kit.id === "bd-tree-37f48b" || kit.id === "bd-tree-f4f319");
-  for (let y = 0; y < h; y++) {
-    for (let x = 0; x < w; x++) {
-      const bush = bushes[Math.floor(rng() * bushes.length)];
-      if (!bush || ![0, 1].every(dy => [0, 1].every(dx => inForest(x + dx, y + dy) && empty((y + dy) * w + x + dx)))) continue;
-      try {
-        stampObject.run(project, { objectId: `kit:${BEODEUL_ID}/${bush.id}`, mapId: map.id, x, y });
-        cells += 4; x += 1;
-      } catch {
-        // 찍을 수 없는 자리(보호 칸 등)는 건너뛴다.
-      }
-    }
-  }
+  // 틈 메우기 덤불은 따로 찍지 않는다(2026-10-20 r2) — 덤불은 composer 활엽 그림(B2)에 들어 있고, 숲 속 빈 틈은 숲 바닥 그늘이 메운다.
+  // 따로 찍은 덤불은 땅 그늘을 못 받아 숲 바닥 위에 밝게 떠 보였다.
   return cells;
 }
 
