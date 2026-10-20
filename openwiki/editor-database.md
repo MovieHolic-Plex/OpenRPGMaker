@@ -29,6 +29,25 @@ world z9, 배경 물결을 z4로 배치한다. 앞 효과는 기존 z60 층이�
 네이티브 입력·이름·종류·필터·보기 전환·맨 끝 스크롤·키보드 선택 근거는
 `verify-shots/editor-ux-improvements-20261004/README.md`와 `scripts/qa/editor-ux-forms-audit.mjs`를 본다.
 
+## 시스템(게임 설정) 탭 전수 점검 — 양쪽 전신 대화창이 해상도를 잠그던 버그 (2026-10-21)
+
+신고 「해상도 변경이 안 되는 것 같다」. 원인: 대화창이 「양쪽 전신 · 반투명 베일」(`dual-fullbody-veil`, 연애 프리셋 `partner-raise` 기본)이면
+`resolvePlayResolution`(`src/project/playResolution.ts`)·`resolveCameraZoom`(`src/project/cameraZoom.ts`)이 **저작값이 480×320 이하이면 무조건** 1024×768·3.2배를 돌려줬다(#2907).
+그래서 「화면」에서 480×270(새 기본)·320×240·「보기 범위 → 기본」을 골라도 store 에는 들어가지만 칸은 1024로 되돌아가고, 시연 실행·출하 플레이어도 1024×768 이었다.
+
+- 고친 규칙: 고해상도 승격은 **`playResolution` 이 아예 없는** 옛 프로젝트에만 한다. 작가가 고른 값이 이긴다.
+- 양쪽 전신 프로젝트에서는 생략이 1024×768 을 뜻하므로, 작가가 고른 기본값(320×240·배율 1)도 생략하지 않고 값으로 남긴다:
+  `normalizePlayResolution(v, { keepDefault })`·`normalizeCameraZoom(v, { keepDefault })`, 판정 `keepsExplicitDefaultResolution(system)`.
+  `normalizeSystemRecords`(저장·재로드)·`storeCameraZoom`·자료집 `storePlayResolution` 이 이 규칙을 쓴다.
+- 새 프로젝트가 양쪽 전신을 깔 때(인터뷰 시작 `projectInterviewStartup.ts`, 조수 `reset_project`)는 `ensureHighResFullbodyPlayResolution` 으로 1024×768 을 값으로 저장한다 — 예전 동작(1024×768)은 그대로이고, 자료집에서 바꿀 수 있게 됐다.
+- 「화면」 구획: 해상도·배율을 바꾸면 「보기 범위」·「화면 맞춤」 선택도 다시 맞춘다(예전엔 빠른 선택 뒤 「가깝게」가 남았다). 양쪽 전신이면 안내 `db-system-resolution-veil-note`.
+- 「시작 설정」 장르 칩셋 잠금: 설명 전체가 라벨(132px 칸)에 들어가 네 줄로 꺾이던 것을 짧은 라벨 + 화면용 안내 문장으로. 몬스터 자산 막힘 문장도 도구용(`monsterAssetStatus().reason`) 대신 화면용.
+- 시스템 폼 라벨이 옛 `.db-detail-form label { text-transform: uppercase }` 에 걸려 「(PX)」「(%P)」로 보이던 것을 `studio-refresh.css` 에서 끔.
+- 증거·도구: `scripts/qa/db-system-audit.mjs`(구획별 컨트롤 목록·넘침 1280×800/1920×1080, 컨트롤마다 바꿔 store·serialize→deserialize 재로드·런타임이 키를 읽는지),
+  `scripts/qa/db-system-veil-resolution.mjs`(재현·시연 실행 캔버스), 출하 플레이어 `npm run qa:runtime -- --scenario db-system-res`(픽스처 `res480-fixture.mts` 의 `RES_DIALOGUE`).
+  전후 `verify-shots/db-system-audit/`: 고치기 전 캔버스 1024×768·3.2배 → 고친 뒤 480×270·1배. 이 머신은 크로미움이 `ERR_NETWORK_CHANGED` 로 vite 모듈을 끊으므로 `unshare -rn` 격리 netns 에서 dev 서버와 같이 돌린다.
+- 그대로 둔 것(이 탭 밖 공용 부품): 리소스 칸 이름이 원시 id(`windowskin-warm`)로 보임, 숨은 시험 호환 id 칸(`.db-authoring-id`, aria-hidden)에 임의 글자를 넣으면 재로드가 참조 검사로 실패 — 사람 경로가 아니라 고치지 않았다.
+
 ## 시스템(게임 설정) 탭 구획 목록·폼 격자·스위치 통일 (2026-10-17, 메뉴 감사 PR-5)
 
 `system` 탭(`src/editor/panels/databaseSystemView.ts`, `src/styles/database/studio-refresh.css`)의 상단 13칩 가로 줄을 왼쪽 세로 구획 목록(`184px | minmax(0, 1fr)`)으로 옮기고 소제목 3개(`규칙` / `보이는 것` / `시작·끝`)로 묶었다. 구획 DOM·testid(`db-system-nav-<slug>`, `data-system-section`)와 `requestSystemSection`·`DATABASE_SEARCH_DESTINATIONS` 경로는 그대로다.

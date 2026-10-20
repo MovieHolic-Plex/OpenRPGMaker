@@ -1829,7 +1829,11 @@ function genreLockField(project: ReturnType<typeof store.getCurrent>, rerender: 
   const lock = project.system.genreLock;
   const report = genreLockReport(project);
   const lockPreset = lock?.preset ?? (project.gameDesignBrief?.interview?.genre === "romance" ? "romance" : "monster-collect");
-  const lockLabel = lockPreset === "romance" ? "연애 — 조수는 현대 학교·도시 칩셋만 새로 쓴다" : "몬스터 수집 — 조수는 몬스터 칩셋·캐릭터 칩·얼굴·전투 그림만 새로 쓴다";
+  // 라벨은 132px 칸에 들어가는 짧은 이름만 — 예전에는 설명 전체를 라벨에 넣어 네 줄로 꺾였다(2026-10-21 감사).
+  const lockLabel = lockPreset === "romance" ? "연애" : "몬스터 수집";
+  const offText = lockPreset === "romance"
+    ? "꺼짐 — 켜면 AI 조수가 현대 학교·도시 칩셋만 새로 씁니다. 손으로 칠한 것은 막지 않습니다."
+    : "꺼짐 — 켜면 AI 조수가 몬스터 칩셋·캐릭터 칩·얼굴·전투 그림만 새로 씁니다. 손으로 칠한 것은 막지 않습니다.";
   const checkbox = checkboxField(`장르 칩셋 잠금 (${lockLabel})`, "db-field-system-genre-lock", lock !== undefined, (checked) => {
     recordProjectSnapshot();
     store.update((draft) => {
@@ -1841,7 +1845,7 @@ function genreLockField(project: ReturnType<typeof store.getCurrent>, rerender: 
   const badge = el("p", {
     class: "db-system-resolution-help",
     dataset: { testid: "db-genre-lock-badge" },
-    text: !lock ? "꺼짐 — 조수가 다른 계열 칩셋으로 맵을 만들 수 있다."
+    text: !lock ? offText
       : `잠금 중(${lock.mode === "warn" ? "경고만" : "강제"}) · 허용 칩셋 ${report.allowedTilesets.length}개`
         + (genreLockAllowedCharsetLabels(project).length ? ` · 캐릭터 칩: ${genreLockAllowedCharsetLabels(project).join("·")}` : "")
         + (genreLockVisualSummary(project) ? ` · 얼굴·전투 그림: ${genreLockVisualSummary(project)}` : "")
@@ -1855,7 +1859,10 @@ function genreLockField(project: ReturnType<typeof store.getCurrent>, rerender: 
   const monsterBadge = el("p", {
     class: "db-system-resolution-help",
     dataset: { testid: "db-monster-asset-lock-badge" },
-    text: `몬스터 자산: ${monsterAssets.allowed ? "허용" : "조수에게 막힘"} — ${monsterAssets.reason}`,
+    // reason 은 조수 도구용 문장이라 화면에는 막힘일 때 화면용 문장을 쓴다.
+    text: monsterAssets.allowed
+      ? `몬스터 자산: 허용 — ${monsterAssets.reason}`
+      : "몬스터 자산: 몬스터 수집 게임이 아니라서 AI 조수가 포켓몬식 칩셋·캐릭터 칩·전투 그림을 새로 고르지 않습니다. 이미 있는 것과 손 편집은 막지 않습니다.",
   });
   return el("div", { class: "db-genre-lock-field", children: [checkbox, badge, monsterBadge] });
 }

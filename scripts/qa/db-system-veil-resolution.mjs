@@ -1,4 +1,9 @@
+// 양쪽 전신(dual-fullbody-veil) 대화창 프로젝트에서 자료집 「게임 설정 → 화면」 해상도가 바뀌는지 재현·증명.
+//   2026-10-21 신고 「해상도 변경이 안 됨」: 480×320 이하를 고르면 1024×768·3.2배로 말없이 되돌아갔다.
+// 사용(격리 netns 권장): DEV_SERVER_PORT=<포트> node scripts/qa/db-system-veil-resolution.mjs <캡처 접두>
+//   찍는 것: 고른 직후 「화면」 구획, 그다음 시연 실행 창의 게임 캔버스 크기.
 import { chromium } from "playwright";
+const PREFIX = process.argv[2] ?? "/tmp/db-system-veil";
 const PORT = process.env.DEV_SERVER_PORT ?? "9823";
 const browser = await chromium.launch({ args: ["--disable-background-networking", "--disable-features=NetworkChangeNotifier"] });
 const page = await (await browser.newContext({ viewport: { width: 1280, height: 800 } })).newPage();
@@ -28,5 +33,13 @@ for (const p of ["480x270", "640x360", "320x240"]) {
 await page.getByTestId("db-field-system-view-preset").selectOption("default");
 await page.waitForTimeout(300);
 console.log("view default", await sys(), await vals());
-await page.screenshot({ path: "/tmp/dbsys-veil.png" });
+await page.getByTestId("database-modal").screenshot({ path: `${PREFIX}-display.png` });
+// 시연 실행 — 게임 캔버스가 고른 크기로 뜨는가
+await page.keyboard.press("Escape");
+await page.waitForTimeout(500);
+await page.evaluate(async () => { (await import("/src/editor/panels/testPlayModal.ts")).openTestPlayModal(); });
+await page.waitForTimeout(12000);
+const canvases = await page.evaluate(() => [...document.querySelectorAll("canvas")].map((c) => `${c.width}x${c.height}`).join(" | "));
+console.log("test-play canvases", canvases);
+await page.screenshot({ path: `${PREFIX}-testplay.png` });
 await browser.close();

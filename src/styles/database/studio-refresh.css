@@ -475,6 +475,11 @@
   color: var(--db-studio-text-1);
 }
 
+/* 옛 .db-detail-form label 의 대문자 변환이 한글 라벨 속 단위를 「(PX)」「(%P)」로 바꿨다(2026-10-21 감사). */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-system-form label {
+  text-transform: none;
+}
+
 /* R2: 폼 격자 = 라벨 132px | 컨트롤 (타이틀 메뉴 항목 오른쪽 「표시」 보조 스위치만 압축 유지). */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-system-form :is(.db-field, .db-resource-picker-control) {
   grid-template-columns: 132px minmax(0, 1fr);

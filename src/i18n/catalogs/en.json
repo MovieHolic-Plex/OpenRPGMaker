@@ -16816,4 +16816,10 @@
 "공방":"Workshop",
 "라벨·태그 검색":"Search labels & tags",
 "맞는 지형·프리팹·타일이 없습니다.":"No matching terrain, prefabs or tiles.",
-"언덕·절벽 지형 편집":"Edit hills & cliffs"}
+"언덕·절벽 지형 편집":"Edit hills & cliffs",
+"대화창이 「양쪽 전신 · 반투명 베일」이라 기본은 1024 × 768 · 배율 3.2 입니다. 여기서 고른 크기가 그대로 쓰이며, 작게 고르면 전신 그림이 화면에 비해 커 보일 수 있습니다.":"The dialogue window is \"Dual full-body · translucent veil\", so the default is 1024 × 768 at zoom 3.2. The size you pick here is used as is; a small size can make the full-body art look large for the screen.",
+"꺼짐 — 켜면 AI 조수가 현대 학교·도시 칩셋만 새로 씁니다. 손으로 칠한 것은 막지 않습니다.":"Off — when on, the AI assistant only uses modern school/city chipsets for new work. Hand painting is not blocked.",
+"꺼짐 — 켜면 AI 조수가 몬스터 칩셋·캐릭터 칩·얼굴·전투 그림만 새로 씁니다. 손으로 칠한 것은 막지 않습니다.":"Off — when on, the AI assistant only uses monster chipsets, character chips, faces and battle art for new work. Hand painting is not blocked.",
+"몬스터 자산: 몬스터 수집 게임이 아니라서 AI 조수가 포켓몬식 칩셋·캐릭터 칩·전투 그림을 새로 고르지 않습니다. 이미 있는 것과 손 편집은 막지 않습니다.":"Monster assets: this is not a monster-collecting game, so the AI assistant won't pick new monster-style chipsets, character chips or battle art. Existing assets and hand edits are not blocked.",
+"장르 칩셋 잠금 (연애)":"Genre chipset lock (romance)",
+"장르 칩셋 잠금 (몬스터 수집)":"Genre chipset lock (monster collecting)"}
