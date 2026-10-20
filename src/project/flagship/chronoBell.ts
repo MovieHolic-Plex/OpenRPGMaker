@@ -274,16 +274,7 @@ function polishLines(observatory: GameMap, forest: GameMap, vault: GameMap): voi
   }
   replaceLine(vault, `ev_${FS_PREFIX}_vault_chest1`, "보물상자를 열었다! 기본 새우를 손에 넣었다.", [narrate("보물상자를 열었다! 상급 회복약을 손에 넣었다.")]);
 
-  // 보기가 셋인 선택지는 질문 줄을 앞 대사로 뺀다 — 480×270 에서 질문+보기 셋이 아래 창 높이를 넘어 셋째 보기가 잘렸다(감사 2차).
-  for (const map of [observatory, forest, vault]) for (const event of map.events) for (const list of eventCommandLists(event)) {
-    for (let i = 0; i < list.length; i += 1) {
-      const c = list[i] as ChoicesCommand;
-      if (c.kind !== "choices" || !c.prompt || c.options.length < 3) continue;
-      list.splice(i, 0, narrate(c.prompt));
-      delete c.prompt;
-      i += 1;
-    }
-  }
+  // 보기 셋 선택지는 질문과 함께 띄운다 — 480×270 에서 셋째 보기가 잘리던 것은 엔진이 고쳤다(#3128, 선택 창이 보기 수만큼 자란다).
 
   // 남은 기본 화자 「의뢰인」은 하넬이다(이 장의 의뢰인은 하넬 하나).
   for (const map of [observatory, forest, vault]) for (const event of map.events) for (const list of eventCommandLists(event)) for (const c of list) {

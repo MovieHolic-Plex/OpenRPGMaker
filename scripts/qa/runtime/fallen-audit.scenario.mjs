@@ -39,7 +39,7 @@ const dumpState = (name) => ({
 
 export default {
   id: "fallen-audit",
-  projectFixture: process.env.RES_FIXTURE ?? ".omo/fs/v11.json",
+  projectFixture: process.env.RES_FIXTURE ?? ".omo/fs/v14.json",
   viewport: { width: vw, height: vh },
   beats: [
     { id: "title", note: "타이틀", ops: [{ kind: "waitFor", testid: "title-screen", state: "present", timeoutMs: 60000 }], shot: true },
@@ -84,8 +84,8 @@ export default {
     { id: "pod-stage1", note: "다시 — 해", ops: [...talk("up"), ...choose(1)], shot: true },
     { id: "pod-stage2", note: "맨손", ops: [...choose(2)], shot: true },
     { id: "pod-stage3", note: "괜찮아, 지켜 줄게", ops: [...choose(1)], shot: true },
-    { id: "iris-wakes", note: "이리스 깨어남", ops: [{ kind: "pressUntilText", key: "Enter", testid: "dialogue-box", text: "하늘을 건너는 배", maxPresses: 12 }], shot: true },
-    { id: "iris-key", note: "열쇠", ops: [{ kind: "pressUntilText", key: "Enter", testid: "dialogue-box", text: "별빛 열쇠", maxPresses: 12 }], shot: true },
+    { id: "iris-wakes", note: "이리스 깨어남", ops: [{ kind: "pressUntilText", key: "Enter", testid: "dialogue-box", text: "하늘을 건너는 배", maxPresses: 30 }], shot: true },
+    { id: "iris-key", note: "열쇠", ops: [{ kind: "pressUntilText", key: "Enter", testid: "dialogue-box", text: "별빛 열쇠", maxPresses: 30 }], shot: true },
     { id: "iris-joined", note: "합류", ops: [...closeDialogue(), dumpState("iris")], shot: true },
     { id: "back-to-hub", note: "숲 → 광장", ops: [...stepInto("fs_forest", 15, 38, "down")], shot: true },
     { id: "plaza-after", note: "광장 — 발렌 일행이 떠났는가", ops: [{ kind: "teleport", mapId: "fs_hub", x: 36, y: 27 }, { kind: "hold", dir: null, ms: 1200 }], shot: true },
