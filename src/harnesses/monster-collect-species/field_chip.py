@@ -400,6 +400,9 @@ def _stamp_chip_eyes(body, front, eye):
     nx, ny, nw, nh = eye['near']
     cells = [sp[x, y] for x in range(nx, nx + nw) for y in range(ny, ny + nh) if sp[x, y][3]]
     dark = min(cells, key=_lum)[:3] + (255,); white = max(cells, key=_lum)[:3] + (255,)
+    # 6차(eye_catalog_r6): 종마다 홍채 색이 다르다 — 칩 눈 오른쪽 아래 칸에 앞모습 눈의 가장 흔한 유채색(홍채)을 찍는다
+    tinted = [c for c in cells if c[:3] != dark[:3] and c[:3] != white[:3] and max(c[:3]) - min(c[:3]) >= 40]
+    iris = max(set(tinted), key=tinted.count)[:3] + (255,) if tinted else dark
     inner = lambda x, y: 0 < x < bw - 1 and 0 < y < bh - 1 and all(px[x + dx, y + dy][3] for dx, dy in ((0, 0), (1, 0), (-1, 0), (0, 1), (0, -1)))
     def at(box):
         return round((box[0] + box[2] / 2 - bb[0]) / s - 0.5), round((box[1] + box[3] / 2 - bb[1]) / s - 0.5)
@@ -415,7 +418,7 @@ def _stamp_chip_eyes(body, front, eye):
             if fits(ex, ey, w, 2):
                 _clean_chip_eye(px, bw, bh, inner, [int((box[0] - bb[0]) / s), int((box[1] - bb[1]) / s), int(-(-(box[0] + box[2] - bb[0]) // s)), int(-(-(box[1] + box[3] - bb[1]) // s))])
     for ex, ey in [(cx, cy)] + ([tuple(min(v, lim) for v, lim in zip(at(eye['second']), (bw - 2, bh - 2)))] if clean and eye.get('second') else []):
-        spots = [(ex, ey, white), (ex + 1, ey, dark), (ex, ey + 1, dark), (ex + 1, ey + 1, dark)]
+        spots = [(ex, ey, white), (ex + 1, ey, dark), (ex, ey + 1, dark), (ex + 1, ey + 1, iris if (eye.get('patch') or {}).get('source') == 'eye_catalog_r6.py' else dark)]
         if all(inner(x, y) for x, y, _ in spots):
             for x, y, c in spots: px[x, y] = c
     if eye.get('far'):

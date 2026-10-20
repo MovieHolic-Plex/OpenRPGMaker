@@ -4,7 +4,7 @@ User note (판정 1): 「BEFORE 가 더 나음」 — the round-2 picture with o
 so this redraw keeps that big, blue, sparkly near eye and adds a readable far eye beside the beak.
 """
 from .kit import *  # noqa: F401,F403
-from .kit import blob, inner, leaf, midline, paint, sd_chain, sd_ellipse, shifted
+from .kit import blob, inner, leaf, midline, paint, sd_ellipse, shifted
 
 
 def draw(side: str):
@@ -45,20 +45,18 @@ def draw(side: str):
     for i, (b, t, w, bend) in enumerate(crest):
         parts[f"crest{i}"] = Part(f"crest{i}", leaf(b, t, w, bend=bend * flip, fat=0.32), BLUE, shade=((1, 2), (2, 1)), rim=True)
     if v.back:
-        order = ["far_foot", "near_foot", "ball", "crest0", "crest1", "crest2", "tail0", "tail1", "wing"]
-        parts["wing"] = Part("wing", leaf(E(37, 43), E(48, 56), R(11), bend=0.1 * flip, fat=0.4), GREY, shade=((2, 2), (0, 2)), rim=True)
+        order = ["far_foot", "near_foot", "ball", "crest0", "crest1", "crest2", "wing", "tail0", "tail1"]
     else:
         order = ["far_foot", "near_foot", "tail0", "tail1", "crest2", "crest1", "crest0", "ball", "mask", "beak", "wing"]
     arr = render([parts[n] for n in order], OL)
 
     if v.back:  # back of the head: a soft lighter crown arc so the ball reads as head + back, not a boulder
-        cap = ellipse(*E(26, 37.5), R(11), R(6.5))  # lighter crown / nape: reads as head on top of the body
-        paint(arr, cap, GREY[0], ["ball"])
-        for k, (x, y) in enumerate(((45.5, 54), (43, 55.5), (40.5, 56))):  # blue primary feathers on the wing tip
-            paint(arr, sd_chain([E(x - 3.5, y - 4.5), E(x, y)], [R(1.1), R(0.8)]) < 0, BLUE[2 if k % 2 else 1], ["wing"])
+        arc = ellipse(*E(27, 41), R(10), R(7.5)) & ~ellipse(*E(27, 42.5), R(10), R(7.5))
+        paint(arr, arc, GREY[0], ["ball"])
     eyes = None
     if not v.back:
         near = eye(arr, 23, 36, NEAR_EYE_6x8, "#0a1838", "#2a5aa8", "#6aa6e8", rim="#031f50")
+        far = eye(arr, 18, 38, FAR_EYE_3x7, "#0a1838", "#2a5aa8", "#6aa6e8", rim="#031f50")
         stamp(arr, 13, 44, ["DDDD"], {"D": "#b08a1a"})  # beak split
-        eyes = {"anatomy": "profile", "style": "round", "near": near, "far": None}
+        eyes = {"anatomy": "threequarter", "style": "round", "near": near, "far": far}
     return arr, eyes
