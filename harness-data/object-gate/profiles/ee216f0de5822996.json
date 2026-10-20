@@ -1,8 +1,8 @@
 {
  "schema": "oprn-object-gate-profile/1",
  "profileHash": "ee216f0de5822996",
- "status": "rejected",
- "calibratedAt": "2026-10-15T16:57:10.595Z",
+ "status": "calibrated",
+ "calibratedAt": "2026-10-20T05:59:39.830Z",
  "bad": {
   "total": 30,
   "caught": 30,
@@ -26,7 +26,7 @@
     "passed": 0
    },
    "good": {
-    "total": 133,
+    "total": 114,
     "passed": 99
    }
   },
@@ -46,7 +46,7 @@
     "passed": 9
    },
    "good": {
-    "total": 19,
+    "total": 21,
     "passed": 3
    }
   },
@@ -56,7 +56,7 @@
     "passed": 1
    },
    "good": {
-    "total": 4,
+    "total": 17,
     "passed": 0
    }
   },
@@ -106,35 +106,16 @@
    "missed": []
   },
   "good": {
-   "total": 57,
+   "total": 38,
    "passed": 31,
    "falseFail": [
     "fresh3/b3_prop-stall_jug_bottle",
-    "fresh3/b3_prop-crate_apple",
-    "fresh3/b3_prop-crate_cabbage",
-    "fresh3/b3_prop-anchor_display",
-    "fresh3/b3_prop-net_rack",
-    "fresh3/b3_prop-fish_crates",
-    "fresh3/b3_prop-fish_barrel",
-    "fresh3/b3_prop-mooring_bollard",
-    "fresh3/b3_prop-bread_rack",
-    "fresh3/b3_prop-sandwich_board",
-    "fresh3/b3_prop-crate_fish",
-    "fresh3/b3_prop-cloth_stand",
-    "fresh3/b3_prop-sword_barrel",
-    "fresh3/b3_prop-flowerbox_long",
-    "fresh3/b3_prop-laundry_rack",
-    "fresh3/b3_prop-tree_planter",
-    "fresh3/b3_prop-column_monument",
-    "fresh3/b3_prop-statue_sage",
     "fresh/g6_snow",
     "fresh/g20_campus",
-    "fresh/g53_modern_city",
     "fresh/g44_desert",
     "fresh/g62_modern_city",
     "fresh/g18_modern_city",
-    "fresh2/g7_steampunk",
-    "fresh2/g12_modern_city"
+    "fresh2/g7_steampunk"
    ]
   }
  },
@@ -143,22 +124,20 @@
   "passed": 0,
   "missed": []
  },
+ "humanOnly": {
+  "total": 4,
+  "refer": 4,
+  "autoPassed": []
+ },
  "style": {
-  "badTotal": 10,
-  "caught": 9,
-  "missed": [
-   "style/farm__farm-fenced-plot__v2"
-  ],
+  "badTotal": 8,
+  "caught": 8,
+  "missed": [],
   "badRefer": 0,
-  "goodTotal": 18,
+  "goodTotal": 14,
   "passed": 14,
-  "falseFail": [
-   "style/farm__farm-fenced-plot__v3",
-   "style/farm__farm-plot-wheat__v3",
-   "style/farm__farm-fence-v-3__v3",
-   "style/beodeul__prop-lamp_double"
-  ],
-  "goodRefer": 1,
+  "falseFail": [],
+  "goodRefer": 0,
   "groups": {
    "farm-user": {
     "total": 10,

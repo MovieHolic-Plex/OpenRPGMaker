@@ -26,8 +26,9 @@
   "view34": "good",
   "style": "good",
   "group": "fresh3-beodeul-good",
-  "tier": "A",
-  "note": "버들항 번들 키트 bd-prop-crate_apple — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+  "tier": "U",
+  "note": "버들항 번들 키트 bd-prop-crate_apple — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상).",
+  "tierNote": "사용자 수락(2026-10-20 감독 결정): 버들항 원본 1칸 상자 — 앞면 7행으로 엄격 계약(상자 앞면 8행)과 어긋난다. 버들항 원본의 지붕·윗면은 3/4 로 충분하다는 사용자 판정에 따라 수락작(U)으로 자동 통과율 분모에서 뺀다. 결과를 본 뒤 정한 분류다."
  },
  {
   "name": "b3_prop-crate_cabbage",
@@ -36,8 +37,9 @@
   "view34": "good",
   "style": "good",
   "group": "fresh3-beodeul-good",
-  "tier": "A",
-  "note": "버들항 번들 키트 bd-prop-crate_cabbage — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+  "tier": "U",
+  "note": "버들항 번들 키트 bd-prop-crate_cabbage — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상).",
+  "tierNote": "사용자 수락(2026-10-20 감독 결정): 버들항 원본 1칸 상자 — 앞면 7행으로 엄격 계약(상자 앞면 8행)과 어긋난다. 버들항 원본의 지붕·윗면은 3/4 로 충분하다는 사용자 판정에 따라 수락작(U)으로 자동 통과율 분모에서 뺀다. 결과를 본 뒤 정한 분류다."
  },
  {
   "name": "b3_prop-anchor_display",
@@ -46,8 +48,9 @@
   "view34": "good",
   "style": "good",
   "group": "fresh3-beodeul-good",
-  "tier": "A",
-  "note": "버들항 번들 키트 bd-prop-anchor_display — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+  "tier": "U",
+  "note": "버들항 번들 키트 bd-prop-anchor_display — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상).",
+  "tierNote": "사용자 수락(2026-10-20 감독 결정): 버들항 원본 정면형 소품 — 윗면 0~3행으로 엄격 계약과 어긋난다. 버들항 원본은 수락작이라는 사용자 판정에 따라 U 로 자동 통과율 분모에서 뺀다(정상으로 바꾸지 않았다). 결과를 본 뒤 정한 분류다."
  },
  {
   "name": "b3_prop-net_rack",
@@ -66,8 +69,9 @@
   "view34": "good",
   "style": "good",
   "group": "fresh3-beodeul-good",
-  "tier": "A",
-  "note": "버들항 번들 키트 bd-prop-fish_crates — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+  "tier": "U",
+  "note": "버들항 번들 키트 bd-prop-fish_crates — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상).",
+  "tierNote": "사용자 수락(2026-10-20 감독 결정): 버들항 원본 1칸 상자 — 앞면 7행으로 엄격 계약(상자 앞면 8행)과 어긋난다. 버들항 원본의 지붕·윗면은 3/4 로 충분하다는 사용자 판정에 따라 수락작(U)으로 자동 통과율 분모에서 뺀다. 결과를 본 뒤 정한 분류다."
  },
  {
   "name": "b3_prop-stall_veg",
@@ -86,8 +90,9 @@
   "view34": "good",
   "style": "good",
   "group": "fresh3-beodeul-good",
-  "tier": "A",
-  "note": "버들항 번들 키트 bd-prop-fish_barrel — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+  "tier": "U",
+  "note": "버들항 번들 키트 bd-prop-fish_barrel — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상).",
+  "tierNote": "사용자 수락(2026-10-20, 감독 결정 10장과 같은 근거로 확장): 버들항 원본 — 아가리(내용물) 2~3행 — round_body 윗면 4행 계약과 어긋남, 판정자 사실 4번·독립 눈 3번 모두 3행 이하, 4배 육안도 같음. 정상으로 바꾸지 않고 U 로 자동 통과율 분모에서 뺀다. 결과를 본 뒤 정한 분류다."
  },
  {
   "name": "b3_prop-mooring_bollard",
@@ -96,8 +101,9 @@
   "view34": "good",
   "style": "good",
   "group": "fresh3-beodeul-good",
-  "tier": "A",
-  "note": "버들항 번들 키트 bd-prop-mooring_bollard — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+  "tier": "U",
+  "note": "버들항 번들 키트 bd-prop-mooring_bollard — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상).",
+  "tierNote": "사용자 수락(2026-10-20, 감독 결정 10장과 같은 근거로 확장): 버들항 원본 — 머리 판 3행·몸통보다 4px 튀어나옴(< 6) — column 머리 계약과 어긋남, 독립 눈 right 0/3, 4배 육안도 같음. 정상으로 바꾸지 않고 U 로 자동 통과율 분모에서 뺀다. 결과를 본 뒤 정한 분류다."
  },
  {
   "name": "b3_prop-bread_rack",
@@ -106,8 +112,9 @@
   "view34": "good",
   "style": "good",
   "group": "fresh3-beodeul-good",
-  "tier": "A",
-  "note": "버들항 번들 키트 bd-prop-bread_rack — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+  "tier": "U",
+  "note": "버들항 번들 키트 bd-prop-bread_rack — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상).",
+  "tierNote": "사용자 수락(2026-10-20 감독 결정): 버들항 원본 정면형 소품 — 윗면 0~3행으로 엄격 계약과 어긋난다. 버들항 원본은 수락작이라는 사용자 판정에 따라 U 로 자동 통과율 분모에서 뺀다(정상으로 바꾸지 않았다). 결과를 본 뒤 정한 분류다."
  },
  {
   "name": "b3_prop-sandwich_board",
@@ -126,8 +133,9 @@
   "view34": "good",
   "style": "good",
   "group": "fresh3-beodeul-good",
-  "tier": "A",
-  "note": "버들항 번들 키트 bd-prop-crate_fish — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+  "tier": "U",
+  "note": "버들항 번들 키트 bd-prop-crate_fish — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상).",
+  "tierNote": "사용자 수락(2026-10-20 감독 결정): 버들항 원본 1칸 상자 — 앞면 7행으로 엄격 계약(상자 앞면 8행)과 어긋난다. 버들항 원본의 지붕·윗면은 3/4 로 충분하다는 사용자 판정에 따라 수락작(U)으로 자동 통과율 분모에서 뺀다. 결과를 본 뒤 정한 분류다."
  },
  {
   "name": "b3_prop-cloth_stand",
@@ -176,8 +184,9 @@
   "view34": "good",
   "style": "good",
   "group": "fresh3-beodeul-good",
-  "tier": "A",
-  "note": "버들항 번들 키트 bd-prop-sword_barrel — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+  "tier": "U",
+  "note": "버들항 번들 키트 bd-prop-sword_barrel — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상).",
+  "tierNote": "사용자 수락(2026-10-20 감독 결정): 버들항 원본 정면형 소품 — 윗면 0~3행으로 엄격 계약과 어긋난다. 버들항 원본은 수락작이라는 사용자 판정에 따라 U 로 자동 통과율 분모에서 뺀다(정상으로 바꾸지 않았다). 결과를 본 뒤 정한 분류다."
  },
  {
   "name": "b3_prop-flowerbox_long",
@@ -186,8 +195,9 @@
   "view34": "good",
   "style": "good",
   "group": "fresh3-beodeul-good",
-  "tier": "A",
-  "note": "버들항 번들 키트 bd-prop-flowerbox_long — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+  "tier": "U",
+  "note": "버들항 번들 키트 bd-prop-flowerbox_long — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상).",
+  "tierNote": "사용자 수락(2026-10-20, 감독 결정 10장과 같은 근거로 확장): 버들항 원본 — 꽃에 가린 흙 띠 1~2행 — container 윗면 4행 계약과 어긋남, 독립 눈 right 0/3, 4배 육안도 같음. 정상으로 바꾸지 않고 U 로 자동 통과율 분모에서 뺀다. 결과를 본 뒤 정한 분류다."
  },
  {
   "name": "b3_prop-laundry_rack",
@@ -206,8 +216,9 @@
   "view34": "good",
   "style": "good",
   "group": "fresh3-beodeul-good",
-  "tier": "A",
-  "note": "버들항 번들 키트 bd-prop-tree_planter — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+  "tier": "U",
+  "note": "버들항 번들 키트 bd-prop-tree_planter — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상).",
+  "tierNote": "사용자 수락(2026-10-20 감독 결정): 버들항 원본 정면형 소품 — 윗면 0~3행으로 엄격 계약과 어긋난다. 버들항 원본은 수락작이라는 사용자 판정에 따라 U 로 자동 통과율 분모에서 뺀다(정상으로 바꾸지 않았다). 결과를 본 뒤 정한 분류다."
  },
  {
   "name": "b3_prop-column_monument",
@@ -216,8 +227,9 @@
   "view34": "good",
   "style": "good",
   "group": "fresh3-beodeul-good",
-  "tier": "A",
-  "note": "버들항 번들 키트 bd-prop-column_monument — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+  "tier": "U",
+  "note": "버들항 번들 키트 bd-prop-column_monument — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상).",
+  "tierNote": "사용자 수락(2026-10-20 감독 결정): 버들항 원본 정면형 소품 — 윗면 0~3행으로 엄격 계약과 어긋난다. 버들항 원본은 수락작이라는 사용자 판정에 따라 U 로 자동 통과율 분모에서 뺀다(정상으로 바꾸지 않았다). 결과를 본 뒤 정한 분류다."
  },
  {
   "name": "b3_prop-statue_sage",
@@ -226,8 +238,9 @@
   "view34": "good",
   "style": "good",
   "group": "fresh3-beodeul-good",
-  "tier": "A",
-  "note": "버들항 번들 키트 bd-prop-statue_sage — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+  "tier": "U",
+  "note": "버들항 번들 키트 bd-prop-statue_sage — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상).",
+  "tierNote": "사용자 수락(2026-10-20 감독 결정): 버들항 원본 정면형 소품 — 윗면 0~3행으로 엄격 계약과 어긋난다. 버들항 원본은 수락작이라는 사용자 판정에 따라 U 로 자동 통과율 분모에서 뺀다(정상으로 바꾸지 않았다). 결과를 본 뒤 정한 분류다."
  },
  {
   "name": "b3_prop-flowerbed",

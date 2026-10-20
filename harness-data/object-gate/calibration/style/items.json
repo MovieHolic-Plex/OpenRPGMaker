@@ -42,7 +42,8 @@
   "view34": null,
   "style": "bad",
   "group": "farm-user",
-  "note": "농장 2판(사용자 반려: 칸 정보량·윤곽·질감이 얕다)"
+  "note": "농장 2판(사용자 반려: 칸 정보량·윤곽·질감이 얕다) — 조각 단위로는 판 라벨과 맞지 않는다(약한 라벨)",
+  "weak": true
  },
  {
   "name": "farm__farm-fenced-plot__v3",
@@ -51,7 +52,8 @@
   "view34": null,
   "style": "good",
   "group": "farm-user",
-  "note": "농장 3판(PR #2541, 사용자 수락)"
+  "note": "농장 3판(PR #2541, 사용자 수락) — 조각 단위로는 판 라벨과 맞지 않는다(약한 라벨)",
+  "weak": true
  },
  {
   "name": "farm__farm-plot-wheat__v2",
@@ -60,7 +62,7 @@
   "view34": null,
   "style": "bad",
   "group": "farm-user",
-  "note": "농장 2판(사용자 반려: 칸 정보량·윤곽·질감이 얕다) — 이 조각은 구조가 같고 색만 다르다(약한 라벨)",
+  "note": "농장 2판(사용자 반려: 칸 정보량·윤곽·질감이 얕다) — 조각 단위로는 판 라벨과 맞지 않는다(약한 라벨)",
   "weak": true
  },
  {
@@ -70,7 +72,8 @@
   "view34": null,
   "style": "good",
   "group": "farm-user",
-  "note": "농장 3판(PR #2541, 사용자 수락)"
+  "note": "농장 3판(PR #2541, 사용자 수락) — 조각 단위로는 판 라벨과 맞지 않는다(약한 라벨)",
+  "weak": true
  },
  {
   "name": "farm__farm-fence-v-3__v2",
@@ -79,7 +82,8 @@
   "view34": null,
   "style": "bad",
   "group": "farm-user",
-  "note": "농장 2판(사용자 반려: 칸 정보량·윤곽·질감이 얕다)"
+  "note": "농장 2판(사용자 반려: 칸 정보량·윤곽·질감이 얕다) — 조각 단위로는 판 라벨과 맞지 않는다(약한 라벨)",
+  "weak": true
  },
  {
   "name": "farm__farm-fence-v-3__v3",
@@ -88,7 +92,8 @@
   "view34": null,
   "style": "good",
   "group": "farm-user",
-  "note": "농장 3판(PR #2541, 사용자 수락)"
+  "note": "농장 3판(PR #2541, 사용자 수락) — 조각 단위로는 판 라벨과 맞지 않는다(약한 라벨)",
+  "weak": true
  },
  {
   "name": "gothic__dead-tree__before",
@@ -1396,7 +1401,8 @@
   "view34": null,
   "style": "good",
   "group": "beodeul-heldout",
-  "note": "버들항 번들 키트 bd-prop-lamp_double(기준 그림 아님)"
+  "note": "버들항 번들 키트 bd-prop-lamp_double(기준 그림 아님) — 흑철 무채색 윤곽 예외(약한 라벨)",
+  "weak": true
  },
  {
   "name": "beodeul__ground-plaza",
