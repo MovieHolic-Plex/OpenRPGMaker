@@ -159,10 +159,13 @@ const talk = async (dir) => {
 };
 const action = () => page.evaluate(() => window.__oprnInput.action());
 const eventOf = (mapId, eventId) => project.maps[mapId].events.find((event) => event.id === eventId);
-const free = (mapId, x, y) => !project.maps[mapId].events.some((event) => event.x === x && event.y === y);
+// 시야 전투로 다가온 트레이너는 원래 칸을 떠나 있다 — 살아 있는 위치(eventLocations)로 본다. 옛 위치로 보면 옆 칸에 다른 트레이너가 서 있어 말이 안 걸렸다(체육관 수련생 0, 0턴 ✗).
+let liveSpots = {};
+const spotOf = (mapId, event) => { const l = liveSpots[event.id]; return l && l.mapId === mapId ? l : event; };
+const free = (mapId, x, y) => !project.maps[mapId].events.some((event) => { const at = spotOf(mapId, event); return at.x === x && at.y === y; });
 /** 이벤트 옆 서 있을 칸과 바라볼 방향(아래쪽부터). */
-const besideOf = (mapId, event) => [[0, 1, "up"], [-1, 0, "right"], [1, 0, "left"], [0, -1, "down"]]
-  .map(([dx, dy, dir]) => ({ x: event.x + dx, y: event.y + dy, dir })).find((p) => free(mapId, p.x, p.y));
+const besideOf = (mapId, event) => { const at = spotOf(mapId, event); return [[0, 1, "up"], [-1, 0, "right"], [1, 0, "left"], [0, -1, "down"]]
+  .map(([dx, dy, dir]) => ({ x: at.x + dx, y: at.y + dy, dir })).find((p) => free(mapId, p.x, p.y)); };
 
 /**
  * 영상용 걷기 — 맵 칸 통행(타일 통행표·이벤트)으로 최단 경로를 짜고 실제 방향 입력으로 한 칸씩 간다. 표가 틀려 못 가면 그 칸을 막힘으로 배우고 다시 짠다.
@@ -356,10 +359,11 @@ async function bestSkill(skills) {
 }
 
 /** 종·레벨로 지금 쓸 수 있는 기술(배운 것 중 마지막 넷)과 그 적에 대한 최고 점수. */
-function moveScore(speciesId, level, enemyTypes) {
+// 실제로 아는 기술(개체 skillIds)이 있으면 그것으로 — 종 표로만 보면 비행 기술을 아직 못 배운 피오르로 바꿔 어깨툭만 치다 관장전이 11턴이 됐다(r27).
+function moveScore(speciesId, level, enemyTypes, skillIds) {
   const sp = (project.database.monsterSpecies ?? []).find((s) => s.id === speciesId);
   if (!sp) return 0;
-  const known = (sp.skillsByLevel ?? []).filter((e) => e.level <= level).slice(-4);
+  const known = Array.isArray(skillIds) && skillIds.length ? skillIds.map((skillId) => ({ skillId })) : (sp.skillsByLevel ?? []).filter((e) => e.level <= level).slice(-4);
   let best = 0;
   for (const { skillId } of known) {
     const sk = skillById.get(skillId); if (!sk) continue;
@@ -407,8 +411,8 @@ async function playerTactic(switchedFor, { potionOnly = false } = {}) {
   if (potionOnly) return null;
   // 2) 교체 — 다른 동료의 상성 점수가 1.6배 이상이고 체력이 반 이상이면(적 한 마리에 한 번).
   if (active && enemyTypes.length && !switchedFor.has(enemyName)) {
-    const mine = moveScore(active.speciesId, active.level, enemyTypes);
-    const better = party.filter((m) => m !== active && (m.currentHp ?? 1) > 0).map((m) => ({ m, score: moveScore(m.speciesId, m.level, enemyTypes) })).sort((a, b) => b.score - a.score)[0];
+    const mine = moveScore(active.speciesId, active.level, enemyTypes, active.skillIds);
+    const better = party.filter((m) => m !== active && (m.currentHp ?? 1) > 0).map((m) => ({ m, score: moveScore(m.speciesId, m.level, enemyTypes, m.skillIds) })).sort((a, b) => b.score - a.score)[0];
     if (better && better.score >= mine * 1.6) {
       const pk = page.locator('[data-testid="actor-command-pkmn"]');
       if (await pk.count() && await pk.isEnabled()) {
@@ -453,6 +457,7 @@ async function go(fromMapId, toMapId) {
 }
 /** 이벤트 옆까지 걸어가 말을 건다. 못 걸으면 순간이동. */
 async function approachAndTalk(mapId, event) {
+  liveSpots = (await page.evaluate(() => window.__oprnDebug.readState().eventLocations).catch(() => ({}))) ?? {};
   const spot = besideOf(mapId, event);
   if (!spot) return false;
   const now = await here();
