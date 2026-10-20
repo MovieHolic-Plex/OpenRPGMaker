@@ -325,6 +325,7 @@ async function fight(label, { capture = false, run = false } = {}) {
       await page.locator('[data-testid="actor-command-fight"]').focus(); await page.keyboard.press("Enter");
       const skills = page.locator('[data-testid^="actor-skill-"]:not([disabled])');
       await skills.first().waitFor({ timeout: 10000 });
+      if (process.env.FV_SKILL_SHOT && (globalThis.__fvShots = (globalThis.__fvShots ?? 0) + 1) <= 3) { await page.waitForTimeout(400); await page.screenshot({ path: join(out, `skillmenu-${globalThis.__fvShots}.png`) }); }
       const pick = capture ? skills.first() : await bestSkill(skills);
       log.push(`turn ${turn}: ${await pick.getAttribute("data-testid")}`);
       await pick.focus(); await page.keyboard.press("Enter");

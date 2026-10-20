@@ -134,41 +134,86 @@ export function buildCampaignRegionMap(project: Project, session: PlaySession, c
     currentMapName: project.maps[session.currentMapId]?.name ?? '알 수 없는 장소' };
 }
 
+const MAP_W = 448;
+const MAP_H = 136;
+const LABEL_PX = 16;
+
+type LabelBox = { x0: number; y0: number; x1: number; y1: number };
+
+const textWidth = (text: string): number => [...text].reduce((sum, ch) => sum + (/[\u1100-\u11ff\u3130-\u318f\uac00-\ud7af\u3040-\u30ff\u4e00-\u9fff]/.test(ch) ? LABEL_PX : ch === ' ' ? 6 : 9), 0);
+
+const overlaps = (a: LabelBox, b: LabelBox): boolean => a.x0 < b.x1 && b.x0 < a.x1 && a.y0 < b.y1 && b.y0 < a.y1;
+
+/** 지역 지도: 실제 장소 좌표와 연결선만 그린다. 이름은 16px 도트 글꼴로 노드 옆에 놓고, 겹치면 위·아래·옆으로 피한다. */
 export function renderCampaignRegionMap(map: CampaignRegionMap): HTMLElement {
   const figure = el('figure', { class: 'campaign-region-map', dataset: { testid: 'campaign-region-map' } });
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.setAttribute('viewBox', '0 0 220 118');
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', `0 0 ${MAP_W} ${MAP_H}`);
   svg.setAttribute('role', 'img');
   svg.setAttribute('aria-label', `지역 지도. 현재 위치: ${map.currentMapName}`);
-  const title = document.createElementNS(svg.namespaceURI, 'title');
+  const title = document.createElementNS(ns, 'title');
   title.textContent = `현재 위치: ${map.currentMapName}`;
   svg.append(title);
-  const xs = map.locations.map((location) => location.x);
-  const ys = map.locations.map((location) => location.y);
-  const minX = Math.min(...xs, 0), minY = Math.min(...ys, 0);
-  const spanX = Math.max(...xs, 1) - minX || 1, spanY = Math.max(...ys, 1) - minY || 1;
-  const positions = new Map(map.locations.map((location) => [location.mapId, { x: 14 + (location.x - minX) / spanX * 186, y: 12 + (location.y - minY) / spanY * 88 }]));
-  const shape = (tag: string, attributes: Record<string, string>): SVGElement => {
-    const node = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  const shape = (tag: string, attributes: Record<string, string>, text?: string): SVGElement => {
+    const node = document.createElementNS(ns, tag);
     for (const [key, value] of Object.entries(attributes)) node.setAttribute(key, value);
+    if (text !== undefined) node.textContent = text;
     svg.append(node);
     return node;
   };
-  shape('path', { d: 'M22 15 L72 5 111 12 145 6 198 25 212 60 195 99 159 111 115 106 80 112 38 96 9 65 Z', class: 'campaign-region-island' });
+  // 도식 지도: 실제 좌표의 순서만 지키고 간격은 고르게 편다 — 가까운 장소끼리 이름이 겹치지 않게 한다.
+  const rankOf = (values: number[]): Map<number, number> => {
+    const sorted = [...new Set(values)].sort((a, b) => a - b);
+    return new Map(sorted.map((value, index) => [value, sorted.length <= 1 ? 0.5 : index / (sorted.length - 1)]));
+  };
+  const rankX = rankOf(map.locations.map((location) => location.x));
+  const rankY = rankOf(map.locations.map((location) => location.y));
+  // 가운데 영역에 좌표를 펴고, 가장자리는 이름이 들어갈 여백으로 둔다.
+  const left = 52, right = MAP_W - 52, top = 22, bottom = MAP_H - 24;
+  const positions = new Map(map.locations.map((location) => [location.mapId, {
+    x: Math.round(left + rankX.get(location.x)! * (right - left)),
+    y: Math.round(top + (1 - rankY.get(location.y)!) * (bottom - top)),
+  }]));
   for (const link of map.links) {
     const from = positions.get(link.from), to = positions.get(link.to);
     if (from && to) shape('path', { d: `M${from.x} ${from.y} H${to.x} V${to.y}`, class: 'campaign-region-road' });
   }
+  const nodeBoxes: LabelBox[] = [...positions.values()].map((p) => ({ x0: p.x - 7, y0: p.y - 7, x1: p.x + 7, y1: p.y + 7 }));
+  const placed: LabelBox[] = [];
+  // 현재 위치·가까운 노드를 먼저 놓아 긴 이름이 밀려나지 않게 한다.
+  const order = [...map.locations].sort((a, b) => Number(b.mapId === map.currentMapId) - Number(a.mapId === map.currentMapId));
+  for (const location of order) {
+    const point = positions.get(location.mapId)!;
+    const width = textWidth(location.name);
+    const candidates: { box: LabelBox; anchor: 'start' | 'middle' | 'end'; x: number; y: number }[] = [];
+    const add = (anchor: 'start' | 'middle' | 'end', x: number, yTop: number) => {
+      const x0 = anchor === 'start' ? x : anchor === 'end' ? x - width : x - width / 2;
+      candidates.push({ box: { x0, y0: yTop, x1: x0 + width, y1: yTop + LABEL_PX }, anchor, x, y: yTop + LABEL_PX - 3 });
+    };
+    add('middle', point.x, point.y + 9);
+    add('middle', point.x, point.y - 9 - LABEL_PX);
+    add('start', point.x + 10, point.y - LABEL_PX / 2);
+    add('end', point.x - 10, point.y - LABEL_PX / 2);
+    add('start', point.x - 4, point.y + 9);
+    add('end', point.x + 4, point.y + 9);
+    add('start', point.x - 4, point.y - 9 - LABEL_PX);
+    add('end', point.x + 4, point.y - 9 - LABEL_PX);
+    const fits = (c: (typeof candidates)[number]): boolean => c.box.x0 >= 2 && c.box.x1 <= MAP_W - 2 && c.box.y0 >= 1 && c.box.y1 <= MAP_H - 1
+      && !placed.some((other) => overlaps(c.box, other)) && !nodeBoxes.some((other) => overlaps(c.box, other));
+    const choice = candidates.find(fits) ?? candidates[0]!;
+    placed.push(choice.box);
+    shape('text', { x: String(choice.x), y: String(choice.y), 'text-anchor': choice.anchor, class: `campaign-region-label${location.mapId === map.currentMapId ? ' is-current' : ''}` }, location.name);
+  }
   for (const location of map.locations) {
     const point = positions.get(location.mapId)!;
-    const node = shape('rect', { x: String(point.x - 2.5), y: String(point.y - 2.5), width: '5', height: '5', class: `campaign-region-node is-${location.kind}` });
-    const label = document.createElementNS(svg.namespaceURI, 'title');
-    label.textContent = location.name;
-    node.append(label);
+    shape('rect', { x: String(point.x - 4), y: String(point.y - 4), width: '8', height: '8', class: `campaign-region-node is-${location.kind}` });
     if (location.mapId === map.currentMapId) {
-      shape('path', { d: `M${point.x - 4} ${point.y - 11} H${point.x + 4} L${point.x} ${point.y - 5} Z`, class: 'campaign-region-current' });
+      shape('path', { d: `M${point.x - 5} ${point.y - 5} H${point.x + 5} L${point.x} ${point.y - 11} Z`, class: 'campaign-region-current' });
     }
   }
-  figure.append(svg, el('figcaption', { text: `▼ ${map.currentMapName} · ■ 마을  ▪ 길  ◆ 탐험지`, dataset: { testid: 'campaign-region-current' } }));
+  const legend = el('figcaption', { dataset: { testid: 'campaign-region-current' } });
+  legend.append(el('span', { class: 'is-current', text: '▼ 현재' }), el('span', { class: 'is-town', text: '■ 마을' }), el('span', { class: 'is-route', text: '■ 길' }), el('span', { class: 'is-dungeon', text: '■ 탐험지' }));
+  figure.append(svg, legend);
   return figure;
 }
