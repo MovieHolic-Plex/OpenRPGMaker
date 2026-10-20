@@ -1,0 +1,368 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c38c52719987544492a79bd7b63ce684dec0cfb015ac78861a5a8b8f57c4d055",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "home ofuro",
+ "label": "modern_city_interior/home-ofuro",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 21,
+  "darkV5": 74,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "folded wooden bath cover along the back",
+      "rows": "2-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "tub opening with back rim, water and front rim",
+      "rows": "10-23",
+      "evidence": "d",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tub front face",
+      "rows": "24-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tub is an open container. Rows 10-12 are the grey back rim. Rows 13-20 show blue water with highlights inside the opening. Rows 21-23 are the light front rim. Row 24 is a darker front-edge line (L=144), and a grey front face runs below it through row 30, with a darker base at row 31. The water seen from above gives evidence (d) and a top surface of about 14 rows. The wooden cover at rows 2-9 has a bright top plane that darkens downward to a dark edge line at row 9, which gives evidence (a), though it is somewhat ambiguous and could be read as a front-facing strip. No isometric side face is drawn. The small control panel at the right edge is a minor detail."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The tub is a small, clean piece. The wooden rim has about 3 tones and the water has a few light ripple lines. The white or grey tub body is a large, smooth, nearly flat surface with only a step or two of shading and no grain, speckle or per-element detail. The measured facts look fine on paper: 16 visible tones per tile against 17 for the stall and 20 for the well, and 0% near-flat coverage. But the edge is 67% near-neutral, a grey-black line with little material tint. The references are mostly tinted (hedge 0%, stall 1%). The rim and body are separated by a uniform grey outline rather than by value shifts in the adjacent material's dark tone, which gives a slight sticker look. The material ramps (about 4 steps) fall short of Beodeul's 5-6, and the piece reads thinner than the stall or well. A careful artist would likely ask for more shading on the body and tinted outlines.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 22471
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden folding lid resting on the back of the tub",
+      "rows": "2-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tub opening with rim and water inside",
+      "rows": "10-20",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tub front face (white/grey panel)",
+      "rows": "21-30",
+      "evidence": "none",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a bathtub. Rows 10-12 are the grey rim at the back and sides. Rows 13-20 show blue water inside the open tub, so the interior is seen from above (evidence d). The water has a lighter highlight ripple and a darker blue back wall at the left. Together that is about 11 rows of top surface. A wooden lid at rows 2-9 ends in a dark front-edge line at row 9 and reads as a top plane. Rows 21-30 are the front face, with a lighter edge line at row 24 and a base line at row 30. The control panel on the right is a small vertical face, not an isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small tub with a wooden rim, a white or grey body and blue water. The measured facts are fine: 16 visible tones per tile (the stall has 17, the well 20), 0% near-flat coverage, and no 5x5 flat fills. By eye, though, each material has only about 3-4 steps: the wood rim has a few planks and highlights, the white body reads as one pale tone with a grey edge, and the water has a couple of blues. The Beodeul references (well, stall) carry 5-6 steps per material with per-stone and per-tile grain. 67% of the candidate's dark edge pixels are near-neutral, which is close to the neutral outline of the lamp (100%) and far from the tinted outlines of the hedge and stall (0-1%). The dark edge around the white body looks like a grey sticker line, not a darker tone of the neighbouring material, so I call the outline mixed. Overall it is clean but shallower and more sticker-like than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15821
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden lid/cover at back",
+      "rows": "2-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tub opening with rim and water",
+      "rows": "10-20",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "control panel on right",
+      "rows": "8-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tub shows a pale rim at rows 10-12 with water visible inside the open basin at rows 13-20 (evidence d). Below it is a front face of rows 21-30, with edge lines at rows 24 and 30 and a darker outline at row 31. The wooden cover at rows 2-9 is a plank band ending in a dark front line at row 9. The control panel on the right is treated as decor. The tub reads as a top surface with an interior seen from above, above a front face of 3+ rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small tub with a plank lid, a pale tub body and a water surface. The measured facts are 16 visible tones per tile, against 17 for the cheese stall and 20 for the roofed well, so it is in the same range as the references. Near-flat coverage is 0%, so there are no flat fills. The wood lid shows plank lines and several tones, the tub body steps through pale tones, and the water carries highlight dots. Outline tint is the weak point: 67% of the dark edge pixels are near-neutral, higher than the bench (44%) and the well (33%). The outline is a grey-blue line around a white material rather than a clearly tinted dark brown, so I report it as mixed rather than a black sticker outline. Shading is about 4 steps per material against roughly 5 in the references, which makes density slightly lower but not shallow. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18645
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden lid/cover panel behind the tub",
+      "rows": "2-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tub opening with water and rims",
+      "rows": "10-20",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tub front rim and front face",
+      "rows": "21-30",
+      "evidence": "none",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "control panel on right",
+      "rows": "8-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a bath tub. Rows 10-20 show an open basin: a grey back rim at rows 10-12 and blue water filling rows 13-20 (evidence d). Below it a light front rim at rows 21-23 ends in an edge line at row 24. The front face of rows 25-30 is darker and has a bottom outline at row 31, so there are 10 front rows including the rim. The wooden lid at rows 2-9 has highlighted upper boards and a dark edge line at row 9, so it reads as a sloped or horizontal board surface. The small panel on the right is a side-mounted control and not an isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a white tub with a wooden lid and blue water. Measured facts look fine on paper: 16 visible tones per tile against 17-20 for the stall and well, and 0% near-flat coverage. By eye, though, each material ramp is shallow. The white or grey tub body has about 3 steps, the wood lid about 3-4 with little grain, and the water about 3. The references carry 5-6 steps per material plus per-element texture, such as the stall's goods and the well's stones shaded one by one. 67% of the dark edge pixels are near-neutral, so the grey-black outline reads as a uniform line around the tub rather than the dark tone of the neighbouring material, which is the sticker look. The reference stall and hedge sit at 0-1%. Density is on par with the references only because the tile count is inflated by the small, busy lid and water area. The tub walls are smooth and sparse compared with the references. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18577
+  }
+ ],
+ "decidedAt": "2026-10-20T23:28:13.347Z",
+ "cells": {
+  "16": [
+   "3fd2e76ba9dd4540",
+   "6197ae326514cc72",
+   "dd4653574f730f7d",
+   "ef5260766ee263c5"
+  ],
+  "24": [
+   "0db2dae1e66d2961",
+   "0fc4703ea57f74b6",
+   "1c8a94ed4b9290e9",
+   "1f6487d48df2420a",
+   "2b2aaa065085fc0e",
+   "2b9ce6c49391c2a1",
+   "322a882864445e22",
+   "348f5cf03c26ba5f",
+   "378505da1bfcffd2",
+   "3bab80980e0c9f93",
+   "40921104e71c0b96",
+   "4456d588888e14c2",
+   "598d7152c15638a2",
+   "6da36de0aafdb054",
+   "7a96c98723b2ecb5",
+   "7e3036d51ca413d1",
+   "88fe6e417dff4d5f",
+   "8e49e9ea31a7568b",
+   "a05d203f67a1e937",
+   "a2aae27dcbdcab7d",
+   "bc56c4262fd53109",
+   "d784670173059f28",
+   "ecf78bf35e83647e",
+   "ee2c33300812fc99"
+  ],
+  "32": [
+   "eed283d72b118491"
+  ],
+  "48": [
+   "0e55a4cbfb4aefe2",
+   "3cadbfe1f1f8d2ca",
+   "4cfc67e56ed3729c",
+   "9c39a5b16585c76c",
+   "c33aa11cd4ca1560",
+   "dadf6868cbce501b"
+  ]
+ }
+}

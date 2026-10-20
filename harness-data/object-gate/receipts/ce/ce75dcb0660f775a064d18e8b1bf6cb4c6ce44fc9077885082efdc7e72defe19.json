@@ -1,0 +1,328 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ce75dcb0660f775a064d18e8b1bf6cb4c6ce44fc9077885082efdc7e72defe19",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "dept perfume wall",
+ "label": "modern_city_interior/dept-perfume-wall",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 20,
+  "tileColorsP90": 21,
+  "darkV5": 80,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top slab / cornice of the wall unit",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "shelf body with perfume bottles inside two columns of shelf bays",
+      "rows": "8-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a pinkish top band with a tile-like alternation of lightness. It is 32 px wide against 30 px below, so it overhangs. The band ends in a light front-edge line at row 5 (L=195). Rows 6-7 are darker eave shadow (L=95, then L=76). Below that, rows 8-31 are the vertical front face: shelf bays with bottles, a middle divider and a base with drawer fronts. This matches the cabinet 'top + edge + eave' reference. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a wooden display shelf with perfume bottles. It has 20 visible tones per 16x16 tile, level with prop-well-roofed (20) and above prop-stall-cheese (17) and prop-hedge (9). Near-flat coverage is 0%, so there are no flat fills. The frame is drawn with a visible light-to-dark brown wood ramp of about 5 steps and a lighter back panel. Dark edge pixels are 0% neutral, so the outline is a tinted dark brown rather than black, matching the Beodeul practice of using the adjacent material's dark tone. The bottles are small clusters in several tones, which gives varied shapes on the shelves. It is slightly simpler than the stall in wood grain detail, but a careful artist would accept it next to the references without it looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17513
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top slab of cabinet (overhanging cornice top)",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "front face with two shelf bays",
+      "rows": "8-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "perfume bottles and goods on shelves",
+      "rows": "9-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a pinkish-brown top slab. It ends in a light front-edge line at row 5 (#ddbf91), followed by darker eave shadow at rows 6-7. The slab is 32px wide against a 30px body, so it overhangs. The front face runs from row 8 to row 31 (24 rows) and holds two shelf bays with bottles, a centre divider and a base with a plinth. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a wooden wall shelf unit with perfume bottles. It measures 20 visible tones per 16x16 tile, equal to prop-well-roofed (20) and above prop-stall-cheese (17) and prop-hedge (9). Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, so the outline is tinted dark brown beside the wood and not a black sticker line. The frame has a lit top edge, mid and dark wood tones, and a dark inner shelf back. The bottles are varied in shape and tone with small highlights. The shading is a little simpler than the stall's, and the frame grain is modest, but a careful artist would accept it beside the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14775
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap of the cabinet",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "front face with shelves and perfume bottles",
+      "rows": "8-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a salmon band that is 32 px wide, 2 px wider than the 30 px body below, so it overhangs. It ends in a light front-edge line at row 5 (#ddbf91). Row 6 (#8b4f3f) and rows 7-8 (#70402f) are dark eave shadow above the front face. This matches the green 'cabinet: top + edge + eave' reference. The front face runs from row 8 to row 31, about 24 rows. It shows two columns of shelves holding perfume bottles, with a plinth and drawer band at rows 27-31. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a wooden shelf cabinet with bottles. It measures 20 visible tones per tile, equal to prop-well-roofed (20) and above prop-stall-cheese (17) and prop-hedge (9). Near-flat coverage is 0%, and 0% of its dark edge pixels are neutral, so the outline is tinted brown wood tone rather than black. Seen by eye, the wood frame has about 4 steps (highlight, light, mid, dark). The shelf interior is a fairly uniform pale fill with only small bottle shapes, and it has no grain or per-plank texture. Next to the stall and well references, which have scalloped or striped awnings, stone-by-stone shading and layered goods, the candidate looks a bit simpler and flatter, with fewer material ramps. It is close but not clearly equal, and with the doubt rule that points to a fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15847
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top band (overhanging cornice top)",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "perfume bottles and goods on shelves",
+      "rows": "9-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a warm reddish top band that is 2 px wider than the body (width 32 vs 30). A light front-edge line at row 5 (#ddbf91) follows it, then dark eave shadow at rows 6-7. This is the evidence-(a) pattern, comparable to the 'cabinet: top 5 + edge + eave' reference. Below it, rows 8-31 (24 rows) are the front face: two shelf bays with perfume bottles, a divider at x=16, and a base with drawer fronts. The bottles are goods on shelves, so decor. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a wooden display shelf with bottles, the same kind of standing prop as the stall and well references. It measures 20 visible tones per 16x16 tile, which matches prop-well-roofed (20) and is above prop-stall-cheese (17) and prop-hedge (9). Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, so the outline is tinted. By eye it is a dark brown frame beside the wood, not a black sticker line. The wood frame shows about 5 steps (highlight, light, mid, dark, deep), and the bottles and shelves carry varied small shapes and tones. It is a little less textured than the best references, with less grain on the frame, but I would accept it next to them without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16847
+  }
+ ],
+ "decidedAt": "2026-10-20T23:28:13.317Z",
+ "cells": {
+  "16": [
+   "24971b9a5b7dfd37",
+   "9838b0a641f061a5",
+   "efa116a8f98a4aba",
+   "f6188a202f1685ba"
+  ],
+  "24": [
+   "01dc17cf0144beac",
+   "0eea7e5be6be008d",
+   "108896a472753e71",
+   "177af0a95d656feb",
+   "2233e0d3770a0e2e",
+   "234cd2641f36dc34",
+   "52ee67cba401c1ea",
+   "6b50e14f2133c40b",
+   "76a00b556df1af8d",
+   "77cfda8f1a30ae7c",
+   "855008cc08d20c55",
+   "8697e8f298a9bf4b",
+   "9041d2f1aae45c09",
+   "935708a0cd93a46c",
+   "a32537abc3fdf0c8",
+   "a43e266b0c372a79",
+   "b490507c06f86cb2",
+   "beb27723cc05b90f",
+   "bfa8e941c06d2b46",
+   "cb7f6988f1433491",
+   "dbbac6f00dce365b",
+   "e75d2d6030e8c549",
+   "ea86f5ed443353f6",
+   "ecc5ce21b2bedd05"
+  ],
+  "32": [
+   "f0aaa24d327c18b9"
+  ],
+  "48": [
+   "11f89602d0edc6f6",
+   "4a0fe85a21e3d940",
+   "691c3e2e6f5d39c8",
+   "c6868d6d4a321895",
+   "d0440b92e7c368b5",
+   "f536b9183cfe3eec"
+  ]
+ }
+}

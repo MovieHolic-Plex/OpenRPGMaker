@@ -1,0 +1,102 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b2",
+ "round": 2,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png"
+ ],
+ "items": [
+  {
+   "id": "dept-nail-bar",
+   "pixelSha256": "51e3e84b7fb678f93ca3ee58ebc9334d009f46ce1f710173fac6b67fa5c8729b",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "At 1x this reads as a pink display shelf of polish bottles. There is no manicure table, lamp or seating, so it does not read as a nail bar. The tiny bottles in many colours (red, orange, green, purple) make a noisy confetti band across both shelves."
+  },
+  {
+   "id": "dept-rack-cool",
+   "pixelSha256": "f5ccafc53053573a095215d6ed495dc2c3d04ddb61fd67e6229b53cbeaf2b4b0",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    4
+   ],
+   "reasons": "The ring, crossbar and base are outlined in saturated orange-gold instead of the dark navy/black outline the originals use. The navy fill inside the ring is a muddy dark blob, and the crossbar crosses over the hanging clothes with no clear depth."
+  },
+  {
+   "id": "dept-shoe-wall",
+   "pixelSha256": "fe7ede7de4da2d083c7c3a64c9b2bf3222a0557e3829e6b52600ed992f60697a",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The cream top plane and short front read as 3/4. The thin dark outline and muted palette match the originals. Four cubbies with clearly shaped shoes and boots read at 1x, and it sits against the wall base believably."
+  },
+  {
+   "id": "home-appliance-rack",
+   "pixelSha256": "36389221f3241728a4629019f27c6faaea5205d1c42f35ac93e3f483c407fb35",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3
+   ],
+   "reasons": "The wooden top is only about 1–2 rows thin, so there is no real lit top plane. The microwave fills the whole width as a flat front elevation. The red object on the lower shelf is an unreadable blob, not a recognisable appliance."
+  },
+  {
+   "id": "home-drying-rack",
+   "pixelSha256": "b1b24f02923856621ca14bf3300fffc021aabac3aac1dba6a8dea5a3acbc844e",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "The rails and frame are drawn in straight plan (top-down) view, while the towel and shirts hang in front elevation. The mixed projection makes the rack look like a flat grate lying on the floor with clothes pasted on top."
+  },
+  {
+   "id": "home-umbrella-stand",
+   "pixelSha256": "dc441d1ab6156fb8db3a34d926239886b8eb04729f64c14160b88cc431b37161",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    1
+   ],
+   "reasons": "The umbrellas are straight capsule shapes with no canopy folds or hooked handles, so they read as bottles or thermoses. The white bin has no visible open top plane, only a front box with a one-row rim."
+  },
+  {
+   "id": "hosp-anesthesia",
+   "pixelSha256": "7139d4a347ea0c34255d6e34951dba945e6e81369540d16b2a997a7e45504ad7",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "The monitor and cart are a flat front elevation with no lit top surface. The body is full of scattered 1–2px green, black and blue specks that read as noise, not as dials and gas cylinders."
+  },
+  {
+   "id": "hospital-curtain-screen",
+   "pixelSha256": "4b152cc00c6b3c8f7ccc7e37802b2e1528a2dbbae3065675ca2f01904e2f2134",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    1
+   ],
+   "reasons": "The neon emerald green with bright banded highlights is far more saturated than anything in the chipset palette. The top rail is a boxed gradient block, not a lit 3/4 plane. At one tile wide and very tall, the proportions read as a pillar, not a screen."
+  }
+ ]
+}

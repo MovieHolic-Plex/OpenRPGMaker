@@ -1,0 +1,336 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a5003fea425887c2159e4fb1806fcbb7c78a0d2ead7644750238042c55595c67",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "home washing machine",
+ "label": "modern_city_interior/home-washing-machine",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 97,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "machine top lid",
+      "rows": "5-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "control panel",
+      "rows": "13-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "round door and drum",
+      "rows": "18-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 5-11 form a light band with sheen streaks across the full 16px width. A dark front-edge line at row 12 ends it, and a second dark row at 13 (seen at x=8) acts as eave shadow. Below it the front face runs from row 13 to row 31, about 19 rows. The face holds a control panel and a round door with a drum. The width is a constant 16 from row 5 down, so no side face is drawn. The top band is fairly tall, but it has the edge line and shadow that mark a top surface, so it reads as three-quarter rather than front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small one-tile appliance with 12 visible tones per tile. That is within the reference range (hedge 9, cheese stall 17, roofed well 20) and above the thin lamp and bench, which measure 0. Near-flat coverage is 0%, so there are no flat fills. The body shows about 5 grey/white steps, with highlight and shadow edges, a round door ring and a glass interior, plus a control panel. The dark edge pixels are 100% near-neutral, which on its own reads as near_black. But the material is itself neutral grey/white, so the dark edge is the dark tone of that material, not a pure-black sticker line. The lamp-crook reference has the same neutral edge. The edge is also not uniform around every shape, so I call it mixed. The piece is small and simple but is not thinner or flatter than the references of the same kind, so a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24120
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top lid of the machine",
+      "rows": "5-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "control panel and round drum door (front face)",
+      "rows": "13-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 5-11 form a light, highlighted band, bounded by the outline at row 4. It ends in a dark front-edge line at row 12, and row 13 is a lighter line that sits in the shadow below that edge. This reads as the machine's top surface seen from above. Below it, rows 13-31 are the vertical south face, with the control panel (rows 13-17) and the round drum door (rows 18-30). No receding side face is drawn. The top band is 7 rows, which is more than a 1-2 row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small light-grey box with a round porthole door and a control strip. The body reads as roughly 4 lightness steps (white highlight, light grey, mid grey, dark grey), compared with about 5-6 on the hedge, stall and well references. The outline is a fairly uniform dark line around the whole silhouette. 100% of its dark edge pixels are near-neutral, so there is no tinted lean toward the adjacent material. That gives the shallow sticker look. Only the lamp-crook reference shares this 100% neutral figure, and the hedge, stall and well references have tinted or mixed edges. Density is acceptable by the numbers: 12 visible tones per tile against 9 for the hedge and 17-20 for the stall and well. Near-flat coverage is 0%, so there are no flat fills, but the texture is limited to a few porthole and panel details. The body has no speckle, grain or per-part shading like the references. It reads thinner and more sticker-like than the references, so it fails on the neutral outline and the shallower ramp.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 18165
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "washer top lid",
+      "rows": "4-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "control panel and front door with drum",
+      "rows": "13-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 4-11 form a light band with white highlights across the full width. Row 4 is the outline. The band ends in a dark front-edge line at rows 12-13 (L=111 at x=4, 8 and 11), so it is a top surface about 7 rows deep. Below it, rows 13-31 are the vertical front face: a control panel with dial and display (rows 13-17), then a round porthole door with a blue-and-white drum (rows 18-30). There is no eave shadow, because row 13 is lighter, but the edge line is enough. No side face is drawn. The silhouette is 16 px wide from row 5 down, with an outline at row 4."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has 12 visible tones per tile, which is within the reference range (hedge 9, stall 17, well 20), and 0% near-flat coverage, so density and flat fills are not the problem. The problem is the outline. 100% of its dark edge pixels are near-neutral, and the picture shows an even dark grey-black line around the whole cabinet and door, which reads as the sticker look. The references that carry tinted outlines (hedge 0%, stall 1%) separate forms by value and dark material tone instead. The body has only about 4 lightness steps (white, light grey, mid grey, dark grey) with a small blue-tinted porthole, whereas the references use 5-6 steps per material. Texture is limited to a few highlight dots and the door ring, with no grain or speckle on the casing. The neutral grey material excuses some of the neutrality, but the uniform dark contour and shallow ramp still leave it flatter than the references, so it fails on the doubt rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 21568
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top plate of machine",
+      "rows": "5-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "control panel and drum door front face",
+      "rows": "13-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 4-11 form a separate light top plate with a highlighted back edge at row 5 and a pale, speckled surface. It ends in a dark front-edge line at row 12, followed by a light lip at row 13. Below it, rows 13-31 show the front face: a control panel at rows 14-15 and a round drum door at rows 17-30. The silhouette is a constant 16px wide, with no receding side face. The top is about 7 rows, so it is more than a rim, though the lack of eave shadow makes it a borderline case."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small grey and white washer with a round porthole door and a control strip. It carries about 4 grey lightness steps on the body and a few blue-grey steps on the glass, against about 5-6 per material on the references. The measured facts are fine on density: 12 visible tones per tile (hedge 9, cheese stall 17, well 20) and 0% near-flat coverage. The outline is the problem. 100% of its dark edge pixels are near-neutral, so it is a uniform dark grey/black line around the whole silhouette. That is the sticker look. The hedge, cheese stall and well use tinted outlines (0-33% neutral), so they separate forms by value and material tone. The body is mostly smooth panels with little grain, speckle or per-part shading, so the machine looks flatter and thinner than the stall and well beside it. Shading depth and texture also fall slightly short of the references. A careful artist would not accept it next to them without tinting the outline and adding surface texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 19512
+  }
+ ],
+ "decidedAt": "2026-10-20T23:28:13.357Z",
+ "cells": {
+  "16": [
+   "3b4161cebed4d9c4",
+   "7aa79a204be27d75"
+  ],
+  "24": [
+   "0dc7ae814cea6059",
+   "0f5c17368a0baa40",
+   "0fe8db174c756139",
+   "1573e88550101464",
+   "39ac4c63a3ac3352",
+   "3e3257789be99d52",
+   "5dc31994c40aba52",
+   "90ac281ce72884b4",
+   "950674873144468d",
+   "d608edf77519743c",
+   "d86a5d32febd3a7e",
+   "e224e05abc66a325"
+  ],
+  "32": [
+   "9f937bc435111fca",
+   "a8d50ffac5ec3ee3",
+   "dbfd6c9b1cf56645"
+  ],
+  "48": [
+   "1ec3a1611629219f",
+   "3053fba24e19692f",
+   "8a0d09699a682d15",
+   "8ba062d37b4c7ce8",
+   "e672b316027800f5",
+   "f594e22284a8f851"
+  ]
+ }
+}

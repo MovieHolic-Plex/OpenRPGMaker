@@ -1,0 +1,355 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0cdc30c2571f69d25586090cc038248663597770026226f4a54d20db75e06fad",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "hosp ticket dispenser",
+ "label": "modern_city_interior/hosp-ticket-dispenser",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 34,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "red dispenser housing top",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "pedestal base step",
+      "rows": "21-25",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The red housing (rows 1-15, width 12) has a lighter pink band at rows 2-5 (L about 150). Row 6 is a darker red front-edge line, and row 7 is a dark outline that works as shadow. Below that, the screen face with the '17' fills rows 7-14, so the front face is about 9 rows. The top band is 4 rows, more than a rim. The narrow stem (rows 17-20, width 7) sits on a wider base (rows 21-30, width 12). The base has a light highlight band at rows 24-25 and a front face below it. It reads as a 3/4 view with a top and a front face, though the top band is fairly thin."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, roughly one-tile prop with a red body, a dark screen and ticket slot, and a pale grey base. It measures 12 visible tones per 16x16 tile, above prop-hedge (9) and below the larger stall (17) and well (20). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline leans dark red or brown beside the red body and grey-blue beside the base. That is a material-tone outline, not a uniform black sticker line. Shading is about 4 steps (highlight, mid, shadow, deep), a little under the references' 5-6, but there is value separation between the body, screen and base, and the pixel variation is not flat. For a thin, small prop this holds up next to the bench and lamp without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19666
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "red dispenser head top plane",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "black screen with digits 17",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stem/neck",
+      "rows": "16-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey pedestal base top",
+      "rows": "21-25",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The red head has a lighter pink band at rows 2-5 (about 4-5 rows) that ends in a darker front-edge line at row 6, followed by the dark screen at row 7. The screen and the front face continue down to row 16. The grey pedestal widens at row 21, and its light top band (rows 21-24) ends in a bright edge line at row 25 above the front face (rows 26-30). So the main body and the base both show a top surface plus a front face of 3+ rows. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small red ticket dispenser on a pale pedestal. The red housing shows about 4 steps (highlight, mid, dark, deep), and the white/grey base has 3-4 steps. This is slightly below the 5-6 steps on the stall and well references, but it is not a flat body with a single outline. The outline pixels lean dark red-brown and grey-blue, matching the adjacent material, and the facts agree with 0% near-neutral dark edge pixels. There are no flat fills, with 0% near-flat coverage. It carries 12 visible tones per 16x16 tile, above the hedge reference (9) and below the stall (17) and well (20). A ticket slot, label and screen icon add shape detail, and the base is shaded rather than a single flat tone. It would sit acceptably next to the references without looking like a sticker, though it is a little simpler than the best of them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22032
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "red dispenser head top plane",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "red dispenser front face with screen showing 17",
+      "rows": "7-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey pedestal stem",
+      "rows": "17-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey pedestal base top shoulder",
+      "rows": "21-25",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the red dispenser head. Rows 2-5 are a light pink top band, and row 6 is a darker red front-edge line. Rows 7-16 are the front face, with a black screen frame starting at row 7 and a '17' display. The head sits on a narrow grey stem (rows 17-20, width 7) over a wider base (rows 21-30, width 12). The base has a lighter shoulder, with a highlight line at row 25, above a 5-row front face. The object is a freestanding kiosk on a pedestal, not tall furniture against a wall, so the kind only loosely matches."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, thin standing prop: a red ticket box with a dark display panel on a white and grey pedestal. Measured facts put it at 12 visible tones per tile, which is above prop-hedge (9) and within range of the stall (17) and well (20). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels have 0% neutral share, so the outlines are tinted (dark red beside the red body, grey-brown beside the base) rather than a near-black sticker line. By eye, the red body and the white/grey stand each show about 4 steps with highlights and shadow facets. That is a little shallower than Beodeul's 5-6 steps and has less grain than the stall or well, but it is at least as rich as the hedge, bench and lamp props. A careful artist would accept it beside them without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24716
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "red dispenser head top",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "red dispenser front face with number display",
+      "rows": "7-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey pedestal base top",
+      "rows": "21-24",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey pedestal base front",
+      "rows": "26-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the red ticket dispenser head, columns x=5, 8, 10. Rows 2-5 are a light pink top band (L about 150) between the outline at row 1 and a darker front-edge line at row 6 (#cc343c). Below that is a dark screen frame (row 7) and the vertical front face with the '17' display on rows 7-16, about 10 rows. The head is a freestanding kiosk on a pedestal, not tall wall furniture, so the kind match is weak. The grey pedestal also shows a top band on rows 21-24 that ends in a bright edge line at row 25, with a front face on rows 26-30. The narrow stem is on rows 17-20. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small red-and-white dispenser, about 12x25 source pixels. It carries 12 visible tones per full tile, which is above the hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no 5x5 flat fills. The dark edge pixels are 0% neutral, so the outline leans dark red beside the red body and grey-brown beside the base, which matches Beodeul's dark-material-tone outlining rather than a black sticker line. The red casing has about 4 lightness steps, a highlight edge, and a dark ticket-slot display with a glyph. The grey base has 2-3 steps. It is a little simpler than the stall and well, but it is not flat or shallow. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20068
+  }
+ ],
+ "decidedAt": "2026-10-20T23:28:13.361Z",
+ "cells": {
+  "16": [
+   "492153a5a6eb4cf7",
+   "fe8654792f3d0c0f"
+  ],
+  "24": [
+   "02eeb7316368eebe",
+   "2f24fe682dbdf488",
+   "5af0febee5eca515",
+   "846cc515eb7ce277",
+   "a5b468df24f14848",
+   "aefff7acadad7419",
+   "b6f7765d06a4f5c2",
+   "c019551cb963c9d0",
+   "c20111ff52919c7c",
+   "f123a4607747ee43",
+   "f66a636dfc31c634",
+   "fc01cdb35dc530da"
+  ],
+  "32": [
+   "4b7f0b8d8e7b0912",
+   "d5d676f945d35c85",
+   "ee2b4d68f841fcdb"
+  ],
+  "48": [
+   "1e96de1ced9981db",
+   "1f83dda89c6e8b71",
+   "562358cf73534482",
+   "b956ce18875fa271",
+   "dfa8d9cacd71821f",
+   "f629b6b3205281fd"
+  ]
+ }
+}
