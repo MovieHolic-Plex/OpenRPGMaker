@@ -677,6 +677,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   clearUpperByLabel(project, M(PUZZLE_ROOM), /^긴 화덕/);
   // 숲지기 곁 모닥불.
   const bram = M(ids.forest).events.find((e) => e.id === `ev_${FS_PREFIX}_bram`);
+  // 숲지기는 길 한가운데(14,18) 곁에 선다 — 길 계획(rng)이 바뀌어도 QA 대본·대화 접근 칸(14,19)이 같다.
+  if (bram && !M(ids.forest).events.some((e) => e !== bram && e.x === 14 && e.y === 18) && isPassable(project, M(ids.forest), 14, 18) && isPassable(project, M(ids.forest), 14, 19)) { bram.x = 14; bram.y = 18; }
   if (bram) for (const [dx, dy] of [[1, 1], [-1, 1], [1, -1], [-1, -1]] as const) if (tryStamp(project, M(ids.forest), "kit:beodeul_city/bd-pick-deep-forest-path-campfire", bram.x + dx, bram.y + dy)) break;
 
   // 시작 — 광장, 천문대 문이 보이는 곳.
