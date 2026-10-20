@@ -661,6 +661,7 @@ export interface TreeComposerGround {
   shadeBits: number[][];
   shadeCover: number;                     // 이만큼(%) 넘게 덮은 그림 칸이 덮개
   shadeCoverBase: number;                 // 맨 아랫줄(줄기·뿌리) 칸은 이만큼만 덮어도 덮개
+  shadeRows?: number;                     // 그림 맨 아래 몇 줄만 덮개로 센다(생략 = 전부)
   floorTiles: number[];
   apronLayer: number;
   apronBases: number[];

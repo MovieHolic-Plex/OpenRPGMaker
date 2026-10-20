@@ -147,7 +147,7 @@ function rewrite(c: Ctx, x0: number, y0: number, x1: number, y1: number, canWrit
           const xx = p.x0 + i, yy = p.y0 + j;
           if (xx < ex0 || yy < ey0 || xx >= ex1 || yy >= ey1) continue;
           const key = yy * c.W + xx;
-          if (gr && cv >= (j === sp.h - 1 ? gr.shadeCoverBase : gr.shadeCover)) cover[key] = 1;
+          if (gr && j >= sp.h - (gr.shadeRows ?? sp.h) && cv >= (j === sp.h - 1 ? gr.shadeCoverBase : gr.shadeCover)) cover[key] = 1;
           if (xx < x0 || yy < y0 || xx >= x1 || yy >= y1) continue;
           const list = stacks.get(key) ?? [];
           list.push({ z: p.z, tile, cover: cv });
@@ -231,8 +231,7 @@ export function isTreeComposerGroup(group: AutotileGroup): boolean {
  * hold 밖 칸은 쓰지 않는다 — 같은 나무 그림을 따로 찍어 둔 낱 나무·덤불(composer 그림과 칸 번호가 같다)을 지우지 않게.
  */
 export function composeTreesInMask(map: GameMap, cp: TreeComposerDef, forest: (x: number, y: number) => boolean,
-  hold: (x: number, y: number) => boolean, seed = 0, write: (x: number, y: number) => boolean = hold): number {
-  // write: 다시 짜도 되는 칸(기본 hold). 접지 둘레 그늘(apron)은 수관이 못 가는 숲 밖 잔디에 깔리므로 hold 보다 넓게 줄 수 있다.
+  hold: (x: number, y: number) => boolean, seed = 0): number {
   const c = contextFor(map, cp, [], seed, forest, hold);
-  return c ? rewrite(c, 0, 0, c.W, c.H, write) : 0;
+  return c ? rewrite(c, 0, 0, c.W, c.H, hold) : 0;
 }
