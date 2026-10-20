@@ -518,6 +518,12 @@ function tunePacing(project: Project): void {
     const sprout = project.database.skills.find((s) => s.name === "새싹치기")?.id;
     const leaderBug = byId("mx_enemy_mx_map_grove_gym_leader_0");
     if (leaderBug && sprout) leaderBug.actions = leaderBug.actions.map((a) => (a.skillId && bug.has(a.skillId) ? { ...a, skillId: sprout } : a));
+    // 신전 보스 선봉도 같은 베르카부라 Lv8 로 내려도 Lv10 풀 스타터가 두 번 졌다(2026-10-20 실입력 여정).
+    // 리그 선봉 베르카부도 같다 — 디버그로 Lv20 까지 올린 파티도 한 번 졌다(journey12). 둘 다 같은 자리 바꿈.
+    for (const id of ["mx_enemy_mx_map_observatory_boss_0", "mx_enemy_mx_map_league_0_league_challenge_0"]) {
+      const lead = byId(id);
+      if (lead && sprout) lead.actions = lead.actions.map((a) => (a.skillId && bug.has(a.skillId) ? { ...a, skillId: sprout } : a));
+    }
   }
   // 배지 하나짜리 데모라 초반 경험치를 두 배로 — 라이벌·도로 트레이너·수련생을 다 이기면 관장 앞에서 Lv8 안팎이 되게 한다.
   // (rescaleEnemy 가 레벨을 바꾸기 전 보상이 그대로라 레벨을 내린 수련생도 보상은 원래 레벨 몫이다.)
