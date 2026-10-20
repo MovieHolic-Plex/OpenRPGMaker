@@ -811,6 +811,19 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
         // 아래 줄(문틀 옆기둥 6424)은 통행을 막으므로 걷어 낸다 — 위 줄(상인방 6423)만 벽 칸에 남아 문 위를 두른다.
         { const om = M(ids.observatory); const door = om.upperTiles; const di = 15 * om.width + 9; if (door[di] === 6424) door[di] = -1; }
   }
+  // 천문대(18×19)도 화면(30×17)보다 좁아 양옆·위아래가 검은 허공으로 40% 가량 비었다 — 화로의 방과 같이 암반 벽 둘레를 덧붙이고
+  // 이 맵으로 들어오는 모든 이동 좌표를 같은 만큼 민다(VQA r5). 위 계단·철문·뚜껑문 좌표 작업은 모두 끝난 뒤여야 한다.
+  {
+    const padX = 6, padY = 3;
+    const wallUpper = [3170, 3172, 3166, 3168], wallLower = [3134, 3176, 3174, 3132];
+    padMapCentered(M(ids.observatory), padX, padY, (x, y) => ((y % 2 === 0 ? wallUpper : wallLower)[x % 4]!));
+    for (const from of Object.values(project.maps)) {
+      for (const event of from.events) for (const list of eventCommandLists(event)) for (const cmd of list) {
+        const rec = cmd as unknown as Record<string, unknown>;
+        if (rec.kind === "transfer" && rec.mapId === M(ids.observatory).id && typeof rec.x === "number" && typeof rec.y === "number") { rec.x += padX; rec.y += padY; }
+      }
+    }
+  }
   // 숲지기 곁 모닥불.
   const bram = M(ids.forest).events.find((e) => e.id === `ev_${FS_PREFIX}_bram`);
   // 숲지기는 길 한가운데(14,18) 곁에 선다 — 길 계획(rng)이 바뀌어도 QA 대본·대화 접근 칸(14,19)이 같다.
