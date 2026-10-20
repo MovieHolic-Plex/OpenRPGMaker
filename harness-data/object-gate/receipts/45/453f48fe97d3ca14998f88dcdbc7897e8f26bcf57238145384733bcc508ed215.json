@@ -1,0 +1,385 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "453f48fe97d3ca14998f88dcdbc7897e8f26bcf57238145384733bcc508ed215",
+ "width": 64,
+ "height": 32,
+ "kind": "structure",
+ "name": "Japanese split-bamboo fence (kenninji-gaki) with small tiled-roof wicket gate",
+ "label": "jp_inaka_pack/inaka-bamboo-fence-gate",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 14,
+  "darkV5": 38,
+  "nearBlackEdge": 0.7,
+  "opaqueTiles": 5
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled wicket-gate roof",
+      "rows": "1-6",
+      "evidence": "c",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "4-6"
+     },
+     {
+      "part": "fence top cap band (green)",
+      "rows": "9-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13"
+     },
+     {
+      "part": "bamboo fence front face with rails",
+      "rows": "13-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The fence's main body has a top band at rows 9-12: a light edge at row 10, green rows 11-12, then a dark shadow row at 13. Below it the bamboo front face runs rows 13-29, about 17 rows, with horizontal rails at rows 18 and 23-24. The gate roof at rows 1-6 is 30 px wide and has a lighter gray band at rows 2-3 over dark rows 4-6, which reads as a roof plane with eave shadow. The roof is a weak, small top surface. The posts at rows 9-30 are vertical supports with no side face drawn. No receding side face is visible."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a thin, sparse object, so I judged mainly by eye. The measured facts are mixed. Median colours per tile (12) match h112 (11) and sit below h101 (18). Flat-fill coverage is 0%. Only 1% of dark edge pixels are neutral, so the outlines are tinted. The total of 18 distinct colours is far below the references (66 and 185). The fence has vertical green bamboo slats with horizontal binding bands. That gives some texture, but only about 3-4 greens and no per-stalk highlights or grain. The wicket gate's 'tiled' roof reads as a dark slab with a single highlight line. It has no tile scallops, no per-tile highlights and only 2-3 steps. The brown posts are also shallow, with roughly 2-3 tones. The references show 5-6 steps per material and fully scalloped roofs with speckled plaster and stone. Next to them, the candidate looks thinner and flatter in shading depth, although it is not a sticker-style piece. Because the roof lacks tile texture and the colour ramps are shallow, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 23186
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bamboo fence top cap",
+      "rows": "9-12",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "gate tiled roof",
+      "rows": "1-6",
+      "evidence": "c",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "4-6"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the fence. Rows 9-12 are a green cap band, with a lighter highlight on row 10 and a darker row 11-12. Row 13 is a dark front-edge line, and the slatted front face runs rows 14-29, about 16 rows, with horizontal rails at rows 18 and 23-24. The small gate roof at rows 0-6 has a light row at row 2 and a mid row at row 3, then dark rows 4-6 that act as the underside or eave shadow. The roof's top plane is thin, only about 2 rows, so it is weaker evidence than the fence cap. The gate posts (rows 7-30) are narrow vertical faces. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a low fence with a small gate, while the references are whole houses, so the kinds only loosely match. Measured facts: 12 colours per tile is within the reference range (11 and 18), flat-fill coverage is 0%, and only 1% of dark edge pixels are neutral, so the outlines are tinted dark green and brown rather than black. The total palette is only 18 colours against 66 and 185, which shows in the shading. The bamboo has slat lines and a few band highlights, about 3-4 greens. The gate roof is a dark, nearly uniform slab with one thin highlight line. It has none of the per-tile scallops and highlights that the reference roofs carry, so it reads as 2-3 steps. The gate posts are also only about 2-3 browns. Overall the piece is cleanly drawn but flatter and thinner than the references, especially the roof, so it would look shallower next to them. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 22007
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bamboo fence top cap band",
+      "rows": "10-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-13"
+     },
+     {
+      "part": "wicket gate tiled roof",
+      "rows": "2-3",
+      "evidence": "c",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "4-6"
+     },
+     {
+      "part": "gate lintel between posts",
+      "rows": "10-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The fence body spans rows 9-29. Its green top band (rows 10-12, light row 10 at x=16) ends in a darker edge at row 12-13, and row 13 (L=42) works as eave shadow. Below it the bamboo front face runs about rows 13-29, with horizontal rails at rows 18 and 23. The gate roof (rows 0-8) shows a light gray strip at rows 2-3 over dark front rows 4-6, which reads as a thin sloped roof plane with shadow beneath. It is weak but present. The posts and lintel are vertical faces, and the roof above covers the gate part. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a thin, sparse prop (fence plus wicket gate) set against two full houses, so I judged density mostly by eye. The measured facts are mixed. Median colours per tile is 12, in line with h112 (11) and below h101 (18). Flat-fill coverage is 0%, and only 1% of dark edge pixels are neutral, so the outlines are tinted (dark green beside the bamboo, dark brown beside the posts). The total of 18 distinct colours is far below the references (66 and 185). That matches what I see. The bamboo fence has a regular slat pattern with a light top band, but it uses only about 3-4 green steps and no per-slat grain or variation. The gate posts are two or three browns with almost no wood grain. The small roof is a near-solid dark slab with a thin highlight on top. It has none of the tile scallops, per-tile highlights or 5-6 value steps that the reference roofs carry. A careful artist would find it thinner and flatter than the references, closer to a sticker. The roof and posts would need more ramp steps and surface texture to pass.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 26030
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bamboo fence top cap",
+      "rows": "10-12",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "13"
+     },
+     {
+      "part": "wicket gate roof",
+      "rows": "2-6",
+      "evidence": "c",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "4-6"
+     },
+     {
+      "part": "gate lintel",
+      "rows": "10-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the fence. Rows 10-12 form a green top band (row 10 is the lighter line), and row 13 is a dark front-edge/eave line. Below it, rows 14-28 are a vertical slat face with horizontal rails at rows 18 and 23-24, so the front face is 15 rows. The small gate roof at rows 0-8 is thin and mostly dark. It has a lighter ridge at row 2, a gray band at rows 2-3, and dark eave rows 4-6, so it reads as a shallow roof plane. The gate posts and lintel are vertical faces, which is normal for an open frame. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has only 18 distinct colours against 185 and 66 for the references. Its tile median of 12 is close to h112's 11, but that is helped by the busy bamboo slats. The bamboo fence has a few greens with vertical slat marks and band highlights, which is decent, but it is roughly 3-4 steps. The gate roof is a dark slab with one highlight line and no tile scallops or per-tile highlights, so it is about 2-3 steps. The references have 5-6 steps with scalloped tile rows and speckled plaster. The posts are brown with only 2-3 tones and little grain. Outline pixels are only 1% neutral, so they lean brown or green, which fits the material-tone standard. There are no 5x5 flat fills (0%), but the roof and posts read as thin and simple next to the references. A careful artist would see the gate as flatter and less textured than the reference roofs, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 24832
+  }
+ ],
+ "decidedAt": "2026-10-20T04:36:31.896Z",
+ "cells": {
+  "16": [
+   "0bbeacd9fa956a41",
+   "389eac0981d144da",
+   "6762fd19c099224e",
+   "6bff1dadb7316de2",
+   "7404ba9902ba9a2f",
+   "d653cfc92cb016a2",
+   "e65c793ced54c7c0",
+   "ee8567e7b81c5a81"
+  ],
+  "24": [
+   "037f61964c76d4f8",
+   "07bfa6929b15c012",
+   "092c9db76b10e2b6",
+   "0f258180d76c3a6e",
+   "1e7ded0e76105066",
+   "1ef1c7eee2ebf4c8",
+   "2a077d448a71c926",
+   "398b27c3a7c90773",
+   "43ebfcbb834e792a",
+   "4e15d1c33086e851",
+   "4ee55f451e10ca0f",
+   "56aa1efed2fc42c8",
+   "584e0ba584e1ba2b",
+   "58b2903bd2b4bdad",
+   "6df7f2ace674024c",
+   "8323f79ab8183af0",
+   "87a399103ca33d9b",
+   "8b0d1c1cc96031f0",
+   "9c334d4a79a1abbc",
+   "a32f4249c14bdb45",
+   "a708fbb0c990b0fd",
+   "a765318690c57ffd",
+   "aa31a9407d41270d",
+   "b0519a4fda64280a",
+   "b52b9c8aba4ba7be",
+   "bfb52ab8e3c54038",
+   "c78b8efcfdeb2c9c",
+   "c8d7a36129593bc5",
+   "d715afe7e080f7e7",
+   "dc1c43e08757eb21",
+   "ef819b9377e18099",
+   "f08e98e52b317d59",
+   "f3136873d5f54f10"
+  ],
+  "32": [
+   "5cb0c9d68d49eeb4",
+   "e00538dbe3596d6e"
+  ],
+  "48": [
+   "1fffb5e6fe93ad90",
+   "217325856f5f66d1",
+   "373ed84700b65ba2",
+   "4ad711b7411d1831",
+   "52422ca784a75d81",
+   "5ae5eb4487447eb4",
+   "7a6a0f7c51ed5900",
+   "93a2886114d7f7cb",
+   "990dd82cb6de11f5",
+   "b4b569f3bcc61e0a",
+   "c2659af402cfe069",
+   "eceed981d0fee297"
+  ]
+ }
+}
