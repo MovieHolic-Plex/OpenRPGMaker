@@ -487,7 +487,7 @@ function rebuildDawningCity(project: Project): GameMap {
   });
   homeMap.events.push(
     createSkybirdEvent("ev_dawning_skybird_gull", "광장 연못 여명갈매기", 18, 13, 0, "left"),
-    createSkybirdEvent("ev_dawning_skybird_swallow", "광장 창공제비", 11, 7, 1, "right"),
+    createSkybirdEvent("ev_dawning_skybird_swallow", "광장 창공제비", 13, 7, 1, "right"),
     createSkybirdEvent("ev_dawning_skybird_flock", "여명의 날개 새떼", 20, 5, 3, "left"),
   );
   return homeMap;

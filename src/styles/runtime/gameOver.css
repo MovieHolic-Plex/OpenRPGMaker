@@ -259,13 +259,13 @@
 /* 에메랄드 엔딩(D04): 도트 글꼴(Galmuri9 18px 격자)·전당 등록 쪽. 비도트 system-ui 와 7·9·10px 글자는 이 게임에 없다. */
 .terminal-scene[data-monster-style="emerald"] { font-family: "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; letter-spacing: 0; }
 .terminal-scene[data-monster-style="emerald"] .ending-kicker { font: 18px/24px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; letter-spacing: 0; opacity: .8; }
-.terminal-scene[data-monster-style="emerald"] .ending-heading { font: 36px/48px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; }
+.terminal-scene[data-monster-style="emerald"] .ending-heading { font: 36px/48px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; word-break: keep-all; overflow-wrap: break-word; text-wrap: balance; }
 .terminal-scene[data-monster-style="emerald"] .ending-message,
 .terminal-scene[data-monster-style="emerald"] .ending-final-caption,
 .terminal-scene[data-monster-style="emerald"] .game-over-hint,
 .terminal-scene[data-monster-style="emerald"] .ending-credits-roll,
-.terminal-scene[data-monster-style="emerald"] .game-over-actions .game-over-choice { font: 18px/24px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; letter-spacing: 0; }
-.terminal-scene[data-monster-style="emerald"] .ending-final-title { font: 36px/48px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; letter-spacing: 0; }
+.terminal-scene[data-monster-style="emerald"] .game-over-actions .game-over-choice { word-break: keep-all; font: 18px/24px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; letter-spacing: 0; }
+.terminal-scene[data-monster-style="emerald"] .ending-final-title { font: 36px/48px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; letter-spacing: 0; word-break: keep-all; text-wrap: balance; }
 .ending-hall { position: absolute; inset: 0 0 40px; display: grid; align-content: center; justify-items: center; gap: 12px; animation: game-over-reveal 280ms ease-out both; }
 .ending-hall-title { font: 36px/48px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; color: #f8f0c8; text-shadow: 2px 2px #284050; }
 .ending-hall-grid { display: grid; grid-template-columns: repeat(2, 192px); gap: 8px 16px; }
