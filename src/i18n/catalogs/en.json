@@ -16832,4 +16832,12 @@
 "캐릭터 위로 지나감":"passes over the character",
 "클릭할 때마다 통과 → 막힘 → 캐릭터 위":"Each click cycles: passable → blocked → over character",
 "지나갈 수 있지만 캐릭터보다 위에 그려져요 (나뭇잎·지붕 끝처럼 캐릭터를 가리는 칸)":"Passable, but drawn above the character (like leaves or roof edges that cover the character)",
-"타일별 통행·이동 설정 열기 →":"Open per-tile passage & movement settings →"}
+"타일별 통행·이동 설정 열기 →":"Open per-tile passage & movement settings →",
+"자료집에서 항목을 하나 고치면 끝납니다. 연결이 끊긴 항목이 있으면 여기 알려 줘요.":"Done once you edit one item in the Database. If any item has a broken link, it is shown here.",
+"자료집 열기":"Open Database",
+"테스트 열기":"Open test play",
+"「이미 했어요」 표시 해제":"Clear the \"Already done\" mark",
+"이 단계는 이미 했다고 직접 표시합니다 (편집기가 변경을 못 찾았을 때)":"Mark this step as already done yourself (when the editor could not detect the change)",
+"이미 했어요 ✓":"Already done ✓",
+"이미 했어요":"Already done",
+"이 단계의 작업 화면을 엽니다":"Opens the work screen for this step"}

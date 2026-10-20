@@ -802,6 +802,7 @@ html[data-ai-render="off"] {
   border: 1px solid var(--border-default); font: 600 11px var(--font-ui); color: var(--text-2);
 }
 .left-progress-step.is-done .left-progress-mark { background: var(--success, var(--accent)); border-color: transparent; color: var(--on-accent); }
+.left-progress-step.is-claimed .left-progress-mark { background: transparent; border: 1px dashed var(--text-muted, currentColor); color: var(--text-muted, inherit); }
 .left-progress-step.is-next .left-progress-mark { border-color: var(--accent); color: var(--accent); }
 .left-progress-copy { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .left-progress-copy strong { font: 600 12.5px var(--font-ui); }
