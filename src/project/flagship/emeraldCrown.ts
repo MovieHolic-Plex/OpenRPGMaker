@@ -509,8 +509,9 @@ function tunePacing(project: Project): void {
     mx_enemy_mx_map_grove_gym_grunt_0_0: { species: "mx_enemy_podback", level: 6 },
     mx_enemy_mx_map_grove_gym_grunt_1_0: { species: "mx_enemy_brambleboar", level: 6 },
     mx_enemy_mx_map_grove_gym_grunt_2_0: { species: "mx_enemy_orchardant", level: 6 },
-    mx_enemy_mx_map_grove_gym_leader_0: { species: "mx_enemy_podback", level: 8 },
-    mx_enemy_mx_map_grove_gym_leader_1: { species: "mx_enemy_brambleboar", level: 9 },
+    // 관장 8·9 는 정직 여정(Lv8~9)에서 5~10턴 승이었지만 첫 10분 길(Lv6~7)로 온 플레이어는 졌다(r24) → 7·8.
+    mx_enemy_mx_map_grove_gym_leader_0: { species: "mx_enemy_podback", level: 7 },
+    mx_enemy_mx_map_grove_gym_leader_1: { species: "mx_enemy_brambleboar", level: 8 },
   };
   for (const [enemyId, { species, level }] of Object.entries(reskin)) {
     const enemy = byId(enemyId), template = byId(species);
@@ -594,6 +595,8 @@ function tunePacing(project: Project): void {
     league.enemyIds = league.members.map((m) => m.enemyId);
     // 셋으로 줄인 뒤에도 Lv12 풀 + Lv9 비행 정직 파티가 두 번 졌다(2026-10-21 r15) → 앞 둘 Lv8, 에이스 Lv10 그대로.
     for (const m of rest) { const e = byId(m.enemyId); if (e) rescaleEnemy(e, 8); }
+    // 볼트온의 전류실(마비)·로키온의 굳히기 같은 보조 기술로 두 마리 파티가 끌려다니다 졌다(2026-10-21 r24, 물·불 각 두 번) — 챔피언 셋은 공격 기술만.
+    for (const m of league.members) { const e = byId(m.enemyId); if (e) e.actions = e.actions.filter((a) => !a.skillId || !/^mx_skill_[a-z]+_6$/.test(a.skillId)); }
     // r4 「너무 쉽다」에 신전 8·8·9, 리그 9·9·11 로 올리자 스타터 셋 모두 정직 여정에서 신전에 두 번씩 졌고 불·물은 리그도 두 번 졌다(2026-10-21 r22) →
     // 신전 6·7·7, 리그 8·8·10. 관장(8·9)만 올린 채 둔다.
   }

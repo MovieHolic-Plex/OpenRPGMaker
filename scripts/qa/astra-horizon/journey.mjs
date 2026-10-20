@@ -303,7 +303,9 @@ async function fight(label, { capture = false, run = false } = {}) {
       await skills.first().waitFor({ timeout: 10000 });
       const pick = capture ? skills.first() : await bestSkill(skills);
       log.push(`turn ${turn}: ${await pick.getAttribute("data-testid")}`);
-      await pick.focus(); await page.keyboard.press("Enter");
+      // 기술 창이 막 바뀌는 사이 포커스가 30초 걸려 여정 전체가 끝났다(r24 풀) — 짧게 기다리고 못 잡으면 이번 차례를 다시 돈다.
+      if (!(await pick.focus({ timeout: 5000 }).then(() => true, () => false))) { await page.keyboard.press("Escape").catch(() => {}); await page.waitForTimeout(400); continue; }
+      await page.keyboard.press("Enter");
     }
     await page.waitForTimeout(300);
     const target = page.locator('button[data-testid^="battle-target-"]:not([data-testid="battle-target-cancel"])');
