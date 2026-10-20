@@ -16,7 +16,7 @@ SHOTS = ROOT / "verify-shots" / "runtime-qa"
 OUT = ROOT / "public" / "assets" / "start" / "builtin"
 
 PLAN = {
-    "fallen": {"crop": None, "frames": {"01-title": "fallen-title", "02-op1": "fallen-op1", "03-op2": "fallen-op2", "05-field": "fallen-field"}},
+    "fallen": {"crop": None, "frames": {"01-title": "fallen-title", "02-op1": "fallen-op1", "04-op3": "fallen-op2", "05-field": "fallen-field"}},
     # 무대 x 240..1680, y 60..1020 → 가운데 16:9 = y 135..945
     "astra": {"crop": (240, 135, 1680, 945), "frames": {"01-title": "astra-title", "02-op1": "astra-op1", "04-op3": "astra-op2", "05-field": "astra-field"}},
 }
