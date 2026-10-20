@@ -2,6 +2,7 @@
 // 장면 지역은 regionComposer 가 펼친 바닥·키트 단계를 복제본에 시공하고, 상가·주택가 지역은 compose_jp_city_street 에 넘긴다.
 import { JP_REGION_CATEGORIES, JP_REGIONS, jpRegionBrief, jpRegionById, searchJpRegions, type JpRegion } from "@/editor/jpCity/japaneseRegionsCatalog";
 import { paintJpRegionGround, planJpRegionScene } from "@/editor/jpCity/regionComposer";
+import { applyJpShores } from "@/editor/jpCity/shorePass";
 import { isPassable } from "@/project/collision";
 import { blankFillTileFor } from "@/project/defaults/defaultMaps";
 import { isJpCityTileset, JP_CITY_FAMILY, JP_CITY_ID } from "@/project/defaults/jpCity";
@@ -164,6 +165,8 @@ export const COMPOSE_JP_REGION_TOOL: ToolDefinition = {
         failed.push(step.note);
       }
     }
+    // 물가 다듬기: 바다·강·부두 단칸 바닥을 이웃에 맞는 물가 칸(모래 해변·안벽·흙 둑·갓돌 테)과 몸통 변형으로 바꾼다.
+    const shoreCells = applyJpShores(target, next.tilesets[map.tilesetId]!);
     if (stamped === 0) throw new ToolError(`${region.id} 키트를 하나도 세우지 못했다 — 맵을 ${region.size[0]}×${region.size[1]} 로 키우거나 다른 seed 를 준다`, { code: "compose-failed", mapId });
     draft.maps[mapId] = next.maps[mapId]!;
     for (const [id, ts] of Object.entries(next.tilesets)) draft.tilesets[id] = ts;
@@ -176,7 +179,7 @@ export const COMPOSE_JP_REGION_TOOL: ToolDefinition = {
     ];
     return {
       summary: `${region.ko}(${region.ja}) 지역을 지었다 — 키트 ${stamped}개, 씨앗 ${seed}. 주조 팔레트 ${region.palette.join("·")}, 권장 ${region.season}/${region.timeOfDay}. show_map_region 으로 확인하고 문·이벤트를 단다.${region.alsoWith ? ` 변형: ${region.alsoWith}.` : ""}${startNote}`,
-      data: { mapId, seed, region: info, stamped, unplaced: plan.unplaced, failed, violations: plan.violations, section4: plan.section4 },
+      data: { mapId, seed, region: info, stamped, shoreCells, unplaced: plan.unplaced, failed, violations: plan.violations, section4: plan.section4 },
       ...(warnings.length ? { warnings } : {}),
     };
   },

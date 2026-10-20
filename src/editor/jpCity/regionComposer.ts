@@ -88,7 +88,9 @@ function matToSurface(mat: string, hint?: JpZoneHint): SurfaceId {
     case "수로":
     case "연못":
     case "inaka-canal-water":
-    case "inaka-river-shallow": return JpSurface.WATER;
+    case "inaka-river-shallow":
+    case "계곡 강": return JpSurface.WATER;
+    case "부두 콘크리트": return JpSurface.PLAZA;
     case "논(물 댄 모)":
     case "inaka-paddy-water":
     case "inaka-paddy-summer":

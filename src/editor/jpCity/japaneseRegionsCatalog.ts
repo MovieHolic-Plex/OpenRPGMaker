@@ -85,6 +85,8 @@ const M = {
   alley: "따뜻한 아스팔트 골목", lawn: "잔디", gravel: "자갈 참배길", pond: "연못", canal: "수로", rail: "선로", school: "校庭 흙 바닥", gomu: "遊具 밑 ゴムチップ",
   sand: "해변 모래사장", sea: "바다", paddy: "논(물 댄 모)", trail: "산길 흙", forest: "숲 바닥(이끼·낙엽)", deck: "나무 데크 탐방로",
   ishidatami: "온천가 돌길(이시다타미)", marsh: "습원 풀밭", oldrail: "폐선 녹슨 선로",
+  /** 2026-10-20 물가 블록(jp_shore): 자연 둑 계곡 강 · 부두 콘크리트(물 쪽 갓돌 테·안벽은 shorePass 가 단다). */
+  river: "계곡 강", quay: "부두 콘크리트",
 } as const;
 
 /** 카탈로그가 쓰는 바닥 재료 이름 전부(시공 전 칩셋 확인용). */
@@ -666,9 +668,11 @@ const DEFS: readonly RegionDef[] = [
     engine: { kind: "scene", ground: M.forest, ops: [
       { op: "line", kit: "rg-ishigaki", dir: "h", at: 0.16, span: [0.02, 0.44], step: 8, onPath: true },
       { op: "line", kit: "rg-ishigaki", dir: "h", at: 0.16, span: [0.66, 0.98], step: 8, onPath: true },
-      { op: "band", mat: M.canal, dir: "v", at: 0.54, size: 5, span: [0.14, 1] },
-      { op: "put", kit: "rg-waterfall", at: [0.54, 0.18], foot: true, onPath: true },
+      // 계곡 강(자연 흙 둑, 4칸 폭)은 산길 뒤에 깐다 — 산길이 강을 메우지 않고 둑에서 끊겨 출렁다리가 물을 건넌다.
+      // 폭포(10×6)는 3..6열이 강 4칸과 겹치게 같은 at 에 둔다(band x = X(at)-2, put x = X(at)-5).
       { op: "street", mat: M.trail, size: 2, points: [[0.24, 1], [0.24, 0.76], [0.36, 0.76], [0.36, 0.56], [0.74, 0.56], [0.74, 0.34], [0.84, 0.34], [0.84, 0]] },
+      { op: "band", mat: M.river, dir: "v", at: 0.54, size: 4, span: [0, 1] },
+      { op: "put", kit: "rg-waterfall", at: [0.54, 0.18], foot: true, onPath: true },
       { op: "put", kit: "rg-tsuribashi", at: [0.54, 0.56], onPath: true },
       { op: "put", kit: "rg-stone-ruin", at: [0.43, 0.36], onPath: true },
       { op: "put", kit: "rg-stone-ruin", at: [0.65, 0.42], onPath: true },
@@ -820,9 +824,10 @@ const DEFS: readonly RegionDef[] = [
       { op: "row", kits: ["jp-bldg-market-hall", "jp-bldg-warehouse", "jp-bldg-shop-fish", "jp-bldg-factory", "jp-bldg-shop-sushi"], foot: 0.44, span: [0.01, 0.99], gap: 1 },
       { op: "band", mat: M.walk, dir: "h", at: 0.46, size: 1 },
       { op: "row", kits: ["jp-prop-tin-stall-0", "rg-yatai", "jp-prop-tin-stall-1", "jp-gomi-box", "jp-prop-tin-stall-2"], foot: 0.58, span: [0.04, 0.72], gap: 2 },
-      { op: "band", mat: M.curb, dir: "h", at: 0.6, size: 1 },
       { op: "area", mat: M.sea, box: [0, 0.62, 1, 1], clear: true },
-      { op: "band", mat: M.pave, dir: "v", at: 0.78, size: 4, span: [0.58, 0.96] },
+      // 부두 안벽 한 줄 + 방파제 부두(부두 콘크리트) — 물 쪽 갓돌 테와 바다 칸의 안벽 높이면은 shorePass 가 단다.
+      { op: "band", mat: M.quay, dir: "h", at: 0.61, size: 1 },
+      { op: "band", mat: M.quay, dir: "v", at: 0.78, size: 4, span: [0.58, 0.96] },
       { op: "put", kit: "rg-lighthouse", at: [0.78, 0.94], foot: true, onPath: true },
       { op: "line", kit: "rg-tetrapod", dir: "v", at: 0.86, span: [0.64, 0.94], step: 3, onPath: true },
       { op: "put", kit: "rg-fishing-boat", at: [0.14, 0.67], onPath: true },

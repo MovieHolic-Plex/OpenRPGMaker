@@ -130,8 +130,16 @@ const PROP_SIZE: Readonly<Record<string, readonly [number, number]>> = {
   "jp-prop-pot": [1, 2], "jp-prop-stone-lantern": [1, 2], "jp-prop-utility-pole2": [2, 5], "jp-prop-vending-aka": [2, 2], "jp-prop-vending-midori": [2, 2], "jp-prop-vending-sora": [2, 2],
   "jp-prop-blade-sign-0": [1, 3], "jp-prop-blade-sign-1": [1, 3], "jp-prop-street-flag": [1, 3], "jp-prop-bike-cluster": [3, 1], "jp-prop-cat-sit": [1, 1], "jp-prop-cat-loaf": [1, 1], "jp-prop-neon-stack-0": [2, 8], "jp-prop-neon-stack-1": [2, 10], "jp-prop-neon-stack-2": [2, 6], "jp-prop-led-tower-0": [3, 8], "jp-prop-smoking-area": [2, 2], "jp-prop-vend-pair": [3, 2],
   "jp-prop-nobori-aka": [1, 2], "jp-prop-nobori-sora": [1, 2], "jp-prop-nobori-midori": [1, 2], "jp-hokora-jizo": [2, 2],
-  "jp-prop-tree-zelkova": [4, 6], "jp-prop-tree-ginkgo": [4, 6], "jp-prop-tree-sakura": [4, 6], "jp-road-signal-ped": [1, 2], "jp-road-signal-ped-green": [1, 2],
+  "jp-prop-tree-zelkova": [3, 4], "jp-prop-tree-ginkgo": [4, 6], "jp-prop-tree-sakura": [3, 4], "jp-road-signal-ped": [1, 2], "jp-road-signal-ped-green": [1, 2],
 };
+
+/** 가로수 느티나무·벚나무는 2026-10-20 3×4 로 다시 그렸다(jp_street_trees). 이 구성기의 나무 자리 계산은 옛 4×6 왼쪽 위 기준이므로
+ *  같은 줄기 자리(가운데 열·맨 아래 줄)에 서도록 3×4 키트는 (x+1, y+2) 로 옮겨 찍는다. 은행나무는 아직 4×6. */
+const TREE_SHIFT: Readonly<Record<string, readonly [number, number]>> = { "jp-prop-tree-zelkova": [1, 2], "jp-prop-tree-sakura": [1, 2] };
+function treeXY(id: string, x: number, y: number): { x: number; y: number } {
+  const d = TREE_SHIFT[id];
+  return d ? { x: x + d[0], y: y + d[1] } : { x, y };
+}
 
 const SHOPPING_MIX = ["konbini", "izakaya", "ramen", "cafe", "shop", "office", "shop", "izakaya", "apartment", "bento", "cafe", "garage"];
 const RESIDENTIAL_MIX = ["house", "house", "machiya", "apartment", "house", "garage", "house", "machiya", "sento", "house"];
@@ -263,7 +271,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
   const fill = (x: number, y: number, w: number, h: number, material: string, optional = false) => {
     if (w > 0 && h > 0) steps.push({ tool: "fill_region", args: { mapId, rect: { x, y, w, h }, material }, optional });
   };
-  const stamp = (id: string, x: number, y: number, note = "prop") => steps.push({ tool: "stamp_object", args: { objectId: `kit:jp_city/${id}`, mapId, x, y }, optional: true, note });
+  const stamp = (id: string, x: number, y: number, note = "prop") => steps.push({ tool: "stamp_object", args: { objectId: `kit:jp_city/${id}`, mapId, ...treeXY(id, x, y) }, optional: true, note });
 
   // ── 1. 도로망: 가로 큰길(N-1 줄) 사이에 건물 띠(N 줄). 건물 문은 모두 남쪽이라 띠마다 아래에 길이 있다.
   const N = H >= 46 ? 3 : 2;
@@ -593,7 +601,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
     for (const y of yardDescs) {
       const { gx, gw, foot, top } = y;
       const f = (x: number, yy: number, w: number, h: number, material: string) => { if (w > 0 && h > 0) yardSteps.push({ tool: "fill_region", args: { mapId, rect: { x, y: yy, w, h }, material }, optional: true }); };
-      const put = (id: string, x: number, yy: number) => yardSteps.push({ tool: "stamp_object", args: { objectId: `kit:jp_city/${id}`, mapId, x, y: yy }, optional: true, note: "prop" });
+      const put = (id: string, x: number, yy: number) => yardSteps.push({ tool: "stamp_object", args: { objectId: `kit:jp_city/${id}`, mapId, ...treeXY(id, x, yy) }, optional: true, note: "prop" });
       if (y.parking) {                                          // 넓으면 주차장(아스팔트 3줄+블록담+차 한 대)
         f(gx, foot - 2, gw, 3, "생활도로");
         f(gx, foot - 3, gw, 1, "블록담");
@@ -677,7 +685,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
       }
       if (bi === 0 && w >= 8 && !rear) {                              // 맨 뒷줄 뒷마당: 건물이 닿지 않는 지붕 위 빈 대지에 가로수를 드문드문(건물 칸은 나중에 덮는다) — 자갈 한 판이 비어 보이지 않게
         for (let tx = sx + 1 + Math.floor(rng2() * 4); tx + 4 <= ex; tx += 6 + Math.floor(rng2() * 5)) {
-          if (rng2() < 0.75) yardSteps.push({ tool: "stamp_object", args: { objectId: `kit:jp_city/jp-prop-tree-${pick(rng2, ["zelkova", "ginkgo", "sakura"])}`, mapId, x: tx, y: b.top + 1 + Math.floor(rng2() * 2) }, optional: true, note: "prop" });
+          if (rng2() < 0.75) { const tid = `jp-prop-tree-${pick(rng2, ["zelkova", "ginkgo", "sakura"])}`; yardSteps.push({ tool: "stamp_object", args: { objectId: `kit:jp_city/${tid}`, mapId, ...treeXY(tid, tx, b.top + 1 + Math.floor(rng2() * 2)) }, optional: true, note: "prop" }); }
         }
       }
       if (zone === "house" && b.foot - b.top >= 6 && !rear) fill(sx, b.top, w, 1, "블록담", true);          // 주택 구획: 잔디를 통으로 깔지 않고 뒷담만(대지는 자갈 그대로)
