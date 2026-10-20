@@ -12,6 +12,14 @@ export const STORE_BLOB_PREFIX = "oprn-blob:" as const;
 export const STORE_SLUG_SEPARATOR = "__" as const;
 
 export const STORE_LICENSES = ["CC0", "CC-BY-4.0", "CC-BY-SA-4.0", "OPRN-GAME"] as const;
+/**
+ * 그림·소리 하나를 어떻게 만들었나(2026-10-20 감독 결정 — AI 표시는 정확해야 한다. 「에이전트가 냈다」와 「AI 가 그렸다」는 다르다).
+ * - generative-model: 생성 모델이 만들었다(이미지·소리 생성, LLM 이 픽셀을 직접 찍기 포함). model 필수.
+ * - procedural: 스크립트만(색 바꾸기·조각 합성·규칙 생성), 생성 모델 없음. model 을 적지 않는다.
+ * - mixed: 둘 다(예: 스크립트로 합성한 칩 + 생성 모델 초상). model 필수.
+ * engine = 실제로 돌린 도구(예 "tile-gen 0.2.0", "char-gen compose"). tile-gen·char-gen·에디터가 같은 꼴을 쓴다.
+ */
+export const STORE_GENERATION_METHODS = ["generative-model", "procedural", "mixed"] as const;
 export type StoreLicense = (typeof STORE_LICENSES)[number];
 export const STORE_LICENSE_LABELS: Readonly<Record<StoreLicense, string>> = {
   "CC0": "CC0 — 조건 없이 자유 사용",
@@ -119,6 +127,14 @@ export function storeImageSizeProblem(kind: StoreAssetKind, width: number, heigh
 
 export interface StoreBlobRef { readonly sha256: string; readonly mime: StoreBlobMime; readonly bytes: number }
 
+export type StoreGenerationMethod = (typeof STORE_GENERATION_METHODS)[number];
+export interface StoreGeneration {
+  method: StoreGenerationMethod;
+  engine: string;
+  /** 생성 모델 이름(예 "claude-opus-5.5"). generative-model·mixed 면 필수, procedural 이면 없음. */
+  model?: string;
+}
+
 export interface StorePackAsset {
   id: string;
   name: string;
@@ -126,6 +142,8 @@ export interface StorePackAsset {
   blob: string;
   mime: StoreBlobMime;
   meta: UploadedAsset["meta"];
+  /** 만든 방법(선택). 없으면 「AI 생성」으로 친다(팩의 다른 에셋이 방법을 밝힌 경우). */
+  generation?: StoreGeneration;
 }
 
 /**
@@ -142,6 +160,8 @@ export interface StorePackCharacter {
   gender?: "male" | "female" | "none";
   age?: "child" | "youth" | "middle" | "elder";
   appearance?: string;
+  /** 이 캐릭터(칩·초상 묶음)를 만든 방법. 칩은 스크립트 + 초상은 생성 모델이면 mixed. */
+  generation?: StoreGeneration;
 }
 
 /**
@@ -203,6 +223,8 @@ export interface StoreItemSummary {
   grade: StoreGrade;
   license: StoreLicense;
   aiGenerated: boolean;
+  /** 「AI 생성」 표시의 근거(storePackGeneration). 옛 상품·방법을 밝히지 않은 상품은 없다. */
+  generation?: StorePackGenerationSummary | null;
   author: string;
   tags: string[];
   latestVersion: number;
@@ -329,6 +351,53 @@ export function storeThirdPartyName(text: string): string | null {
   return THIRD_PARTY_SUBSTRINGS.find((word) => compact.includes(word)) ?? THIRD_PARTY_TOKENS.find((word) => tokens.has(word)) ?? null;
 }
 
+const GENERATION_NAME = 80;
+
+/** generation 객체 하나의 문제(없으면 빈 배열). where = 「에셋 a_x」 같은 사람이 읽는 위치. */
+export function storeGenerationProblems(raw: unknown, where: string): string[] {
+  if (!isRecord(raw) || !includes(STORE_GENERATION_METHODS, raw.method)) return [`${where}: generation.method 는 ${STORE_GENERATION_METHODS.join("|")} 중 하나여야 합니다.`];
+  const out: string[] = [];
+  if (!isString(raw.engine, GENERATION_NAME, 1)) out.push(`${where}: generation.engine(실제로 돌린 도구 이름, 1~${GENERATION_NAME}자)이 있어야 합니다.`);
+  if (raw.model !== undefined && !isString(raw.model, GENERATION_NAME, 1)) out.push(`${where}: generation.model 은 1~${GENERATION_NAME}자 글이어야 합니다.`);
+  if (raw.method === "procedural" && raw.model !== undefined) out.push(`${where}: procedural(생성 모델 없음)인데 generation.model 이 있습니다 — 모델을 썼으면 mixed 입니다.`);
+  if (raw.method !== "procedural" && raw.model === undefined) out.push(`${where}: ${raw.method} 이면 쓴 생성 모델 이름(generation.model)을 적어야 합니다.`);
+  return out;
+}
+
+/** 상품 단위 「만든 방법」 요약. 상품 화면·목록의 표시가 이것으로 정해진다. */
+export interface StorePackGenerationSummary {
+  /** ai-generated: 생성 모델·섞음이 하나라도 있거나 방법을 안 밝힌 것이 있다. procedural: 전부 스크립트. */
+  label: "ai-generated" | "procedural";
+  counts: Record<StoreGenerationMethod | "unstated", number>;
+  engines: string[];
+  models: string[];
+}
+
+/**
+ * 팩의 만든 방법 요약. 에셋·캐릭터 어디에도 generation 이 없으면 null — 그때는 매니페스트 aiGenerated 가 정한다(사람이 손으로 만든 팩은 false).
+ * 하나라도 밝혔으면: 생성 모델·섞음이 있거나 안 밝힌 에셋이 있으면 ai-generated, 전부 procedural 이면 procedural.
+ */
+export function storePackGeneration(manifest: Pick<StorePackManifest, "content">): StorePackGenerationSummary | null {
+  const assets = Object.values(manifest.content?.assets ?? {});
+  const characters = manifest.content?.characters ?? [];
+  const stated = [...assets, ...characters].map((entry) => entry.generation).filter((g): g is StoreGeneration => Boolean(g));
+  if (stated.length === 0) return null;
+  const counts: StorePackGenerationSummary["counts"] = { "generative-model": 0, procedural: 0, mixed: 0, unstated: 0 };
+  for (const asset of assets) counts[asset.generation?.method ?? "unstated"] += 1;
+  for (const character of characters) if (character.generation) counts[character.generation.method] += 1;
+  const uniq = (values: (string | undefined)[]): string[] => [...new Set(values.filter((v): v is string => Boolean(v)))].slice(0, 8);
+  return {
+    label: counts["generative-model"] + counts.mixed + counts.unstated > 0 ? "ai-generated" : "procedural",
+    counts, engines: uniq(stated.map((g) => g.engine)), models: uniq(stated.map((g) => g.model)),
+  };
+}
+
+/** 이 팩을 「AI 생성」으로 표시하는가. 방법을 밝혔으면 요약이, 아니면 aiGenerated 가 정한다. */
+export function storeIsAiGenerated(manifest: Pick<StorePackManifest, "aiGenerated" | "content">): boolean {
+  const summary = storePackGeneration(manifest);
+  return summary ? summary.label === "ai-generated" : manifest.aiGenerated;
+}
+
 /**
  * 매니페스트 구조 검증. blob 바이트 검증(시그니처·해시)은 서버가 따로 한다.
  * 실패 문구는 사람이 읽는 한국어다 — 업로드 화면·에디터에 그대로 보인다.
@@ -392,6 +461,7 @@ export function validateManifest(input: unknown): Validation<StorePackManifest> 
       if (!isSha256(raw.blob) || !blobs.has(raw.blob)) errors.push(`에셋 ${id} 의 blob 이 목록에 없습니다.`);
       else if (blobs.get(raw.blob)!.mime !== raw.mime) errors.push(`에셋 ${id} 의 형식이 blob 과 다릅니다.`);
       if (!isRecord(raw.meta)) errors.push(`에셋 ${id} 의 meta 가 없습니다.`);
+      if (raw.generation !== undefined) errors.push(...storeGenerationProblems(raw.generation, `에셋 ${id}`));
     }
     for (const [id, raw] of Object.entries(tilesets)) {
       if (!ASSET_ID.test(id) || !isRecord(raw) || raw.id !== id) { errors.push(`타일셋 id 가 올바르지 않습니다: ${id.slice(0, 40)}`); continue; }
@@ -435,6 +505,7 @@ export function validateManifest(input: unknown): Validation<StorePackManifest> 
           if (c.gender !== undefined && !["male", "female", "none"].includes(c.gender as string)) errors.push(`캐릭터 성별 값이 올바르지 않습니다: ${where}`);
           if (c.age !== undefined && !["child", "youth", "middle", "elder"].includes(c.age as string)) errors.push(`캐릭터 나이 값이 올바르지 않습니다: ${where}`);
           if (c.appearance !== undefined && !isString(c.appearance, STORE_LIMITS.characterAppearance)) errors.push(`캐릭터 외형 설명은 ${STORE_LIMITS.characterAppearance}자 이하여야 합니다: ${where}`);
+          if (c.generation !== undefined) errors.push(...storeGenerationProblems(c.generation, `캐릭터 ${where}`));
           const key = `${c.asset as string}#${String(c.characterIndex)}`;
           if (seen.has(key)) errors.push(`같은 캐릭터 칸이 두 번 적혔습니다: ${where}`);
           seen.add(key);
@@ -481,6 +552,14 @@ export function validateManifest(input: unknown): Validation<StorePackManifest> 
   }
   // 문자열 안에 data URL 이 남아 있으면 안 된다(전부 blob 으로 빼야 한다). 크기 제한을 우회하는 길이다.
   if (content && JSON.stringify(content).includes('"data:')) errors.push("매니페스트에 data: URL 이 남아 있습니다. blob 으로 빼야 합니다.");
+  if (errors.length === 0 && typeof m.aiGenerated === "boolean") {
+    const summary = storePackGeneration(m as unknown as StorePackManifest);
+    if (summary && m.aiGenerated !== (summary.label === "ai-generated")) {
+      errors.push(summary.label === "procedural"
+        ? "모든 에셋이 procedural(생성 모델 없음)인데 aiGenerated 가 true 입니다 — false 로 적으세요."
+        : "생성 모델·섞음이거나 만든 방법을 밝히지 않은 에셋이 있는데 aiGenerated 가 false 입니다.");
+    }
+  }
   return errors.length > 0 ? { ok: false, errors } : { ok: true, value: m as unknown as StorePackManifest };
 }
 
