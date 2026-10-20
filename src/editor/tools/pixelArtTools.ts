@@ -285,6 +285,7 @@ const authorPixelArt: ToolDefinition = {
       kind: OBJECT_KINDS[kindArg], columns: made.columns!, rows: made.rows!, footRows,
       risePx: Math.max(0, (made.rows! - footRows) * TILE - made.padTop!), use: [], gridHash,
       asset: { id: workshopAssetId(made.dataUrl), dataUrl: made.dataUrl, width: made.width!, height: made.height! }, cells: made.cells!,
+      provenance: { aiGenerated: true, tool: "author_pixel_art" },
     });
     return {
       summary: `물체 '${made.name}'(${kit.id}, ${made.columns}×${made.rows}칸)을 칩셋 ${tilesetId} 에 구웠습니다. stamp_tileset_object 의 objectId:\"${kit.id}\" 로 맵에 놓으세요. ${gateNote}`,
