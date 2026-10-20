@@ -1,11 +1,12 @@
 // compose_jp_region · list_jp_regions — 일본 지역 30종(japaneseRegionsCatalog.ts)을 jp_city 맵 한 장에 짓는다.
 // 장면 지역은 regionComposer 가 펼친 바닥·키트 단계를 복제본에 시공하고, 상가·주택가 지역은 compose_jp_city_street 에 넘긴다.
 import { JP_REGION_CATEGORIES, JP_REGIONS, jpRegionBrief, jpRegionById, searchJpRegions, type JpRegion } from "@/editor/jpCity/japaneseRegionsCatalog";
+import { paintJpForest } from "@/editor/jpCity/forestPainter";
 import { paintJpRegionGround, planJpRegionScene } from "@/editor/jpCity/regionComposer";
 import { isPassable } from "@/project/collision";
 import { blankFillTileFor } from "@/project/defaults/defaultMaps";
 import { isJpCityTileset, JP_CITY_FAMILY, JP_CITY_ID } from "@/project/defaults/jpCity";
-import { setLayerTileAt } from "@/project/mapLayers";
+import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
 import { clearTileStack } from "@/project/mapOverlayTiles";
 import type { GameMap, Project } from "@/project/types";
 import { claimStartIfBlank } from "./composerStart";
@@ -125,9 +126,22 @@ export const COMPOSE_JP_REGION_TOOL: ToolDefinition = {
       if (plan.violations.length === 0) break;
     }
     let stamped = 0;
+    let forest: ReturnType<typeof paintJpForest> | undefined;
     const failed: string[] = [];
     for (const step of plan.steps) {
       try {
+        if (step.tool === "paint_forest") {
+          // 숲 구획: 마스크 → 수관 오토타일 → 하늘선 → 수관 머리 → 줄기 띠(forestPainter). 3층 수관·4층 덧그림.
+          const kinds = Uint8Array.from(step.args.kinds as number[]);
+          forest = paintJpForest({
+            width: target.width,
+            height: target.height,
+            getLayer: (layer, i) => layerTileAt(target, layer, i),
+            setLayer: (layer, i, t) => setLayerTileAt(target, layer, i, t),
+          }, next.tilesets[map.tilesetId]!, kinds, Number(step.args.seed) || 0);
+          stamped++;
+          continue;
+        }
         if (
           step.tool === "fill_region"
           && paintJpRegionGround(target, next.tilesets[map.tilesetId]!, step.args.rect as { x: number; y: number; w: number; h: number }, String(step.args.material))
@@ -176,7 +190,7 @@ export const COMPOSE_JP_REGION_TOOL: ToolDefinition = {
     ];
     return {
       summary: `${region.ko}(${region.ja}) 지역을 지었다 — 키트 ${stamped}개, 씨앗 ${seed}. 주조 팔레트 ${region.palette.join("·")}, 권장 ${region.season}/${region.timeOfDay}. show_map_region 으로 확인하고 문·이벤트를 단다.${region.alsoWith ? ` 변형: ${region.alsoWith}.` : ""}${startNote}`,
-      data: { mapId, seed, region: info, stamped, unplaced: plan.unplaced, failed, violations: plan.violations, section4: plan.section4 },
+      data: { mapId, seed, region: info, stamped, unplaced: plan.unplaced, failed, violations: plan.violations, section4: plan.section4, ...(forest ? { forest } : {}) },
       ...(warnings.length ? { warnings } : {}),
     };
   },
