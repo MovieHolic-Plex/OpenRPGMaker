@@ -1,4 +1,5 @@
 import type { Command, GameEvent, Project } from "@/project/types";
+import { castTheAstraHorizon } from "./emeraldCrownCast";
 
 /**
  * 아스트라 호라이즌 첫 10분(타이틀 → 내 방 → 엄마 → 연구소 → 스타터 → 라이벌 → 1번 도로 → 실바나 체육관) 다듬기.
@@ -437,5 +438,6 @@ export function polishFirstTenMinutes(project: Project): void {
   starterCoverage(project);
   gymBloomPuzzle(project);
   fairChampion(project);
+  castTheAstraHorizon(project);
 }
 

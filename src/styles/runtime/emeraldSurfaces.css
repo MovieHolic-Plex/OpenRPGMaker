@@ -630,11 +630,12 @@
 /* 흉상(changeFace presentation bust)은 보인다 — 상자 위(위쪽 상자면 아래)에 1배 도트로 서고, 글은 상자 전체 폭을 그대로 쓴다.
    작은 얼굴·이름표는 3세대 상자처럼 계속 숨긴다(2026-10-21 아스트라 인물 흉상). */
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] {
-  --runtime-dialogue-bust-height: 112px;
-  --runtime-dialogue-bust-width: 112px;
+  --runtime-dialogue-bust-height: 120px;
+  --runtime-dialogue-bust-width: 120px;
 }
-.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-face.dialogue-face-bust { bottom: 100%; left: 8px; }
-.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-box.bust-right .dialogue-face.dialogue-face-bust { left: auto; right: 8px; }
+.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-face.dialogue-face-bust { bottom: 100%; left: 8px; background-size: auto; background-position: bottom left; }
+/* 아스트라 흉상은 원래 도트 크기(약 100×110)로 구웠다 — 늘이지 않고 1배로 그린다(contain 은 0.97·1.07배 같은 어긋난 배율을 만든다). */
+.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-box.bust-right .dialogue-face.dialogue-face-bust { left: auto; right: 8px; background-position: bottom right; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].position-top .dialogue-face.dialogue-face-bust { bottom: auto; top: 100%; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-content.has-bust { padding-inline: 0; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-page-cursor { right: 12px; bottom: 12px; color: #c85048; font: 18px/20px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; text-shadow: none; }

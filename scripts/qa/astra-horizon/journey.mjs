@@ -561,30 +561,36 @@ try {
   }
   const now0 = await here();
   grassCells.sort((a, b) => (b.grass - a.grass) || (Math.abs(a.x - now0.x) + Math.abs(a.y - now0.y)) - (Math.abs(b.x - now0.x) + Math.abs(b.y - now0.y)));
-  let encountered = false;
-  for (const cell of grassCells.slice(0, 6)) {
-    const r = await walkTo(route.id, cell, 120);
-    if (r === "battle") { encountered = true; break; }
-    if (r !== "arrived") continue;
-    for (let i = 0; i < 80 && !encountered; i++) {
-      await page.evaluate((d) => window.__oprnInput.dir(d), i % 2 ? "left" : "right");
-      await page.waitForTimeout(260);
-      await page.evaluate(() => window.__oprnInput.dir(null));
-      encountered = await present("battle-scene");
+  // 실제 플레이어처럼 놓치면 다시 풀숲을 걸어 잡을 때까지(최대 3번) 시도한다 — 한 번 놓쳐 혼자 다니면 보스·리그가 부당하게 어려워진다.
+  let captured = false;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    let encountered = false;
+    for (const cell of grassCells.slice(0, 6)) {
+      const r = await walkTo(route.id, cell, 120);
+      if (r === "battle") { encountered = true; break; }
+      if (r !== "arrived") continue;
+      for (let i = 0; i < 80 && !encountered; i++) {
+        await page.evaluate((d) => window.__oprnInput.dir(d), i % 2 ? "left" : "right");
+        await page.waitForTimeout(260);
+        await page.evaluate(() => window.__oprnInput.dir(null));
+        encountered = await present("battle-scene");
+      }
+      if (encountered) break;
     }
-    if (encountered) break;
+    if (encountered) await page.waitForTimeout(2500);
+    step("wild-encounter", encountered, encountered ? "battle-scene" : "조우 없음", await shot("12-wild-battle"));
+    if (encountered) {
+      const before = await live();
+      const captureLog = await fight("13-capture", { capture: true });
+      const after = await live();
+      const owned = after.party.length + after.box.length;
+      const cap = await page.evaluate(() => window.__journeyBattleWatch.capture);
+      if (owned > before.party.length + before.box.length) captured = true;
+      step(`capture${attempt ? `-${attempt + 1}` : ""}`, owned > before.party.length + before.box.length, `${captureLog.join(" / ")} → 보유 ${owned} · ${JSON.stringify(cap)}`, await shot("14-after-capture"));
+    }
+    if (captured) break;
+    if (attempt < 2) { await go(route.id, home); await healAt(home); await go(home, route.id); }
   }
-  if (encountered) await page.waitForTimeout(2500);
-  step("wild-encounter", encountered, encountered ? "battle-scene" : "조우 없음", await shot("12-wild-battle"));
-  if (encountered) {
-    const before = await live();
-    const captureLog = await fight("13-capture", { capture: true });
-    const after = await live();
-    const owned = after.party.length + after.box.length;
-    const cap = await page.evaluate(() => window.__journeyBattleWatch.capture);
-    step("capture", owned > before.party.length + before.box.length, `${captureLog.join(" / ")} → 보유 ${owned} · ${JSON.stringify(cap)}`, await shot("14-after-capture"));
-  }
-
   // 포획전으로 지친 동료를 마을 회복 센터에 맡기고 돌아온다(플레이어가 하듯)
   await go(route.id, home); await healAt(home); await go(home, route.id);
   step("heal-home", true, await partyLine());
