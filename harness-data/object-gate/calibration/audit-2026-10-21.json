@@ -1,5 +1,5 @@
 {
- "about": "2026-10-21 감독 지시 감사: v6 에서 떨어진 원본 47 + 놓친 위반 8. 분류 i=종류 라벨 잘못(데이터 수정) ii=판정자 오류 iii=원본이 실제 3/4 결함(불확실·다시 그리기로) keep=위반 유지 out=시점 결함이 아니라 (a)에서 뺌(보고만). 판정자의 판정 이유를 본 뒤 그림을 4배로 보고 정했다.",
+ "about": "2026-10-21 감독 지시 감사: v6 에서 떨어진 원본 47 + 놓친 위반 8. 분류 i=종류 라벨 잘못(데이터 수정) ii=판정자 오류 iii=원본이 실제 3/4 결함(불확실·다시 그리기로) keep=위반 유지 out=시점 결함이 아니라 (a)에서 뺌(보고만). 판정자의 판정 이유를 본 뒤 그림을 4배로 보고 정했다. v9 추가: 버들항 원본 중 화소가 같은 fresh4 블라인드 표본이 위반·애매로 라벨된 5장도 iii(불확실). 벽 선반은 면제 종류 대신 wall_structure.",
  "items": [
   {
    "n": 1,
@@ -76,9 +76,9 @@
    "group": "beodeul_city",
    "label": "fresh3/b3_prop-flowerbox_long",
    "kind": "container",
-   "class": "ii",
+   "class": "iii",
    "newKind": null,
-   "reason": "planter box filled with flowers seen from above",
+   "reason": "화소가 같은 fresh4/q081_beodeul 의 블라인드 라벨(판정 전 고정)이 3/4 위반·애매(등급 C)라 알려진 정상이 아니다 → 불확실",
    "judge": "2: the flowers (rows 0-4) stand in one front-facing row of blooms with no back edge or far rim; the soil/leaf line (row ~5) is a flat strip on top of the plante"
   },
   {
@@ -166,9 +166,9 @@
    "group": "beodeul_city",
    "label": "style/beodeul__prop-flower_cart",
    "kind": "low_furniture",
-   "class": "ii",
+   "class": "iii",
    "newKind": null,
-   "reason": "cart bed holds flower pots; the pots are the fill",
+   "reason": "화소가 같은 fresh4/q113_beodeul 의 블라인드 라벨(판정 전 고정)이 3/4 위반·애매(등급 C)라 알려진 정상이 아니다 → 불확실",
    "judge": "2: this is the mirrored version of #4. The bench/cart body is a front-facing band (rows ~10-18) with only about 1-2 rows of top behind the pots, below the 3-row"
   },
   {
@@ -176,9 +176,9 @@
    "group": "beodeul_city",
    "label": "style/beodeul__prop-goods_pile",
    "kind": "other",
-   "class": "ii",
+   "class": "iii",
    "newKind": null,
-   "reason": "goods pile; barrel/jar tops are visible as light ellipses",
+   "reason": "화소가 같은 fresh4/q013_beodeul 의 블라인드 라벨(판정 전 고정)이 3/4 위반·애매(등급 C)라 알려진 정상이 아니다 → 불확실",
    "judge": "Charge 2: neither the barrels/jars nor the sack show a clear elliptical top or an opening seen from above; only ~2 lighter rows sit at their tops. · 8d: at 1x t"
   },
   {
@@ -186,9 +186,9 @@
    "group": "beodeul_city",
    "label": "style/beodeul__prop-table_mugs",
    "kind": "low_furniture",
-   "class": "ii",
+   "class": "iii",
    "newKind": null,
-   "reason": "table with mugs; plank top read as stacked front planks",
+   "reason": "화소가 같은 fresh4/q061_beodeul 의 블라인드 라벨(판정 전 고정)이 3/4 위반·애매(등급 C)라 알려진 정상이 아니다 → 불확실",
    "judge": "Charge 1: the body reads as stacked front-facing planks (rows 0-3, 7-16, 19-23) with grey gaps. No foreshortened top plane is visible behind the top plank. · Un"
   },
   {
@@ -337,8 +337,8 @@
    "label": "originals-interior/int__shelf__potion_potionb_potiong",
    "kind": "tall_furniture",
    "class": "i",
-   "newKind": "wall_mounted",
-   "reason": "wall shelf boards on the wall with potions, not a free-standing tall unit",
+   "newKind": "wall_structure",
+   "reason": "wall shelf boards on the wall with potions, not a free-standing tall unit (v9: wall_structure — 면제 종류로 옮기지 않는다)",
    "judge": "Charge 1: the unit has no top plane of its own; it is two shelf boards seen front-on, each showing only a 2-row plank strip over a dark front band · Charge 2: t"
   },
   {
@@ -347,8 +347,8 @@
    "label": "originals-interior/int__shelf__herb",
    "kind": "tall_furniture",
    "class": "i",
-   "newKind": "wall_mounted",
-   "reason": "wall shelf boards with herb pots, not a free-standing tall unit",
+   "newKind": "wall_structure",
+   "reason": "wall shelf boards with herb pots, not a free-standing tall unit (v9: wall_structure — 면제 종류로 옮기지 않는다)",
    "judge": "7: the object reads as two stacked planter strips with a green checker fill, not as tall furniture. · 1: each tier is a front-facing green/orange band. No fores"
   },
   {
@@ -549,6 +549,16 @@
    "class": "out",
    "newKind": null,
    "reason": "same as farm coop v2 → reported only",
+   "judge": ""
+  },
+  {
+   "n": 56,
+   "group": "beodeul_city",
+   "label": "fresh3/b3_prop-planter_round",
+   "kind": "",
+   "class": "iii",
+   "newKind": null,
+   "reason": "화소가 같은 fresh4/q116_beodeul 의 블라인드 라벨(판정 전 고정)이 3/4 위반·애매(등급 C)라 알려진 정상이 아니다 → 불확실",
    "judge": ""
   }
  ]

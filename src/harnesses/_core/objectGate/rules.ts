@@ -21,7 +21,7 @@ export const OBJECT_GATE_RULES_VERSION = 10;
 
 export type ObjectGateKind =
   | "tall_furniture" | "low_furniture" | "seat" | "frame" | "container" | "round_body" | "column" | "box"
-  | "structure" | "figure" | "organic" | "debris" | "flat" | "wall_mounted" | "front_prop" | "terrain" | "other";
+  | "structure" | "figure" | "organic" | "debris" | "flat" | "wall_mounted" | "front_prop" | "terrain" | "other" | "wall_structure";
 
 /** 종류 → 판정자에게 주는 뜻 · 윗면 최소 행 수(없으면 윗면 행 수로 떨어뜨리지 않는다). */
 /**
@@ -47,6 +47,8 @@ export const OBJECT_GATE_KINDS: Record<ObjectGateKind, { meaning: string; minTop
   front_prop: { meaning: "front-facing sign or drying frame: a free-standing sandwich board / A-frame sign or post sign, a laundry or cloth drying rack, a fishing-net drying frame, a hanging-banner stand — its whole design is one flat front panel on legs or a frame, so no top surface is expected. It is NOT any storage or display furniture (weapon/spear/saddle/keg rack, shelf, bookshelf, cabinet, wardrobe, chest, drawers, table, seat), NOT a gong/bell frame, NOT a container or barrel, NOT a building, door or gate. If the object holds goods or has a body with volume that ought to show a top, this kind does NOT match", exempt: true, humanOnly: true },
   terrain: { meaning: "terrain tiles, not a standing object: ground, floor, wall face, roof surface, water, cliff, autotile block", exempt: true },
   other: { meaning: "other standing object", minTopRows: 3 },
+  // v9 최종 판정(2026-10-21): 벽에 붙은 구조물. 면제 종류가 아니다 — 벽에서 튀어나온 부분은 윗면을 보인다.
+  wall_structure: { meaning: "built-in wall piece: a wall opening (serving hatch, window, pass-through), a wall-hung shelf, a post or pillar engaged in a wall, wainscot, a beam. Every part that sticks out from the wall (sill, ledge, shelf board, counter, cap, beam) shows its top face seen from above", minTopRows: 2 },
 };
 
 export const OBJECT_GATE_RUBRIC = `You are a measuring instrument for 16px pixel-art map objects drawn for a top-down JRPG in "3/4 view". You report what is drawn, as JSON. You do NOT decide pass or fail; a separate rule does.
@@ -320,7 +322,8 @@ export const OBJECT_GATE_PROFILE = {
   minCapOverhang: OBJECT_GATE_MIN_CAP_OVERHANG,
   crownMinRows: OBJECT_GATE_CROWN_MIN_ROWS,
   maxFrontToTopForContents: OBJECT_GATE_MAX_FRONT_TO_TOP_FOR_CONTENTS,
-  kinds: OBJECT_GATE_KINDS,
+  // wall_structure 는 Opus 최종 판정(v9)에서 더한 종류다 — 옛 판정자 프로필 해시를 그대로 두려고 뺀다.
+  kinds: Object.fromEntries(Object.entries(OBJECT_GATE_KINDS).filter(([k]) => k !== 'wall_structure')),
   // 판정자는 Claude Sonnet 5.5 high 하나(claude -p 헤드리스, 그림 첨부). 3/4 호출 4번 + 화풍 호출 4번. 신원은 프로필 해시에 들어가고 `status` 가 보여 준다. 다른 모델로 몰래 넘어가지 않는다 — Sonnet 이 안 되면 멈춘다.
   judges: [
     { id: "sonnet", provider: "claude-cli", model: "claude-sonnet-5-5", effort: "high" },
