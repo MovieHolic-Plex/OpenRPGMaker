@@ -709,5 +709,31 @@
    },
    "trainerFront": "battle-trainers/astra_muyeong/front.png"
   }
+ },
+ "trainerFronts": {
+  "muyeong": {
+   "from": "/home/main/astra-qa/cast/fronts/muyeong/front.png",
+   "size": [
+    128,
+    128
+   ],
+   "pixelSha256": "814e7da26d370b53be5475fb4df455fa4ca71b90a5b44dca2259faa60ebeda2f"
+  },
+  "naru": {
+   "from": "/home/main/astra-qa/cast/fronts/naru/front.png",
+   "size": [
+    128,
+    128
+   ],
+   "pixelSha256": "f1133fc311849d6ec5f8f11b7f85e5be1dcefa7801bbbf0eb92d191657cd8320"
+  },
+  "yurim": {
+   "from": "/home/main/astra-qa/cast/fronts/yurim/front.png",
+   "size": [
+    128,
+    128
+   ],
+   "pixelSha256": "79e4f57ecb2efad63b5c19fc746b0ac113ceb240ddb6ffe41e928716b94dc94b"
+  }
  }
 }
