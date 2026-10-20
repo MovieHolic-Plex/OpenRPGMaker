@@ -78,12 +78,6 @@ function bottomGap(map: GameMap, project: Project): Cell {
 }
 
 /** origin 에서 가장 가까운, 걸어 들어갈 수 있는 빈 칸(이벤트 없는 칸). */
-/** origin 에서 아래로 내려가며 처음 만나는 통행 칸. */
-function firstPassableBelow(project: Project, map: GameMap, origin: Cell): Cell {
-  for (let y = origin.y; y < map.height; y += 1) if (isPassable(project, map, origin.x, y)) return { x: origin.x, y };
-  return nearestFree(project, map, origin);
-}
-
 export function nearestFree(project: Project, map: GameMap, origin: Cell, maxR = 8, avoid: readonly Cell[] = []): Cell {
   for (let r = 0; r <= maxR; r++) {
     for (let dy = -r; dy <= r; dy++) {
@@ -183,9 +177,8 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
       whiteboard: nearestFree(project, officeRoom, { x: 21, y: 9 }),
     },
     rooftop: {
-      // 계단실 덩어리는 막혀 있다 — 그 아래 첫 통행 칸이 내려가는 문 발판, 올라와 서는 칸은 그 한 칸 아래.
-      door: firstPassableBelow(project, roofRoom, { x: 6, y: 4 }), doorOut: nearestFree(project, roofRoom, { x: 6, y: firstPassableBelow(project, roofRoom, { x: 6, y: 4 }).y + 1 }),
-      rail: nearestFree(project, roofRoom, { x: 9, y: 7 }), bench: nearestFree(project, roofRoom, { x: 3, y: 6 }),
+      door: nearestFree(project, roofRoom, { x: 3, y: 6 }), doorOut: nearestFree(project, roofRoom, { x: 3, y: 7 }),
+      rail: nearestFree(project, roofRoom, { x: 10, y: 4 }), bench: nearestFree(project, roofRoom, { x: 6, y: 10 }),
     },
     konbini: {
       door: bottomGap(konbiniRoom, project), doorOut: nearestFree(project, konbiniRoom, { x: 6, y: 9 }),
@@ -204,8 +197,11 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   cloneMap(project, FL_MAP.office, FL_MAP.officeFri, "스튜디오 늘봄 · 금요일");
   const platformPm = cloneMap(project, FL_MAP.platformAm, FL_MAP.platformPm, "한결역 승강장 · 막차");
 
-  // 밤 거리: 푸른 어둠 + 가로등·간판 빛. 가로등 칸은 거리 맵의 램프 소품 자리를 모르면 문 앞을 밝힌다.
+  // 밤 거리: 푸른 어둠 + 실제 가로등(3칸 기둥의 머리 높이)·공원 가로등·간판 빛.
+  // 좌표는 거리 맵(modern_city, 시드 5)에 찍힌 mc-prop-lamp-a 기둥 윗칸 + 1 이다.
   const lamps: LightSource[] = [];
+  const streetLamps: Array<[number, number]> = [[21, 2], [1, 21], [14, 21], [41, 21], [21, 26], [21, 33], [6, 4], [13, 4]];
+  for (const [i, [x, y]] of streetLamps.entries()) lamps.push(light(`fl_lamp_${i}`, { x, y }, 4, "#ffd98a", 0.95));
   for (const [i, b] of streetData.buildings.entries()) {
     const d = b.access[0];
     if (d) lamps.push(light(`fl_shop_${i}`, d, 3, b.kind === "conv" ? "#e8fff4" : "#ffd9a0", 0.8));
@@ -218,8 +214,29 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   };
   platformPm.defaultLighting = {
     ambient: 0.48, color: "#121a36",
-    sources: [light("fl_plat_a", { x: 4, y: 6 }, 4, "#e8f0ff", 0.7), light("fl_plat_b", { x: 13, y: 6 }, 4, "#e8f0ff", 0.7)],
+    // 승강장에는 가로등이 없다 — 실제로 빛나는 것(발차 LED 판·자판기·매표기·벽시계·역명 간판)만 켠다.
+    sources: [
+      light("fl_led_a", { x: 7, y: 3 }, 4, "#bfe0ff", 0.8), light("fl_led_b", { x: 26, y: 3 }, 4, "#bfe0ff", 0.8),
+      light("fl_led_c", { x: 2, y: 12 }, 4, "#bfe0ff", 0.8), light("fl_led_d", { x: 25, y: 12 }, 4, "#bfe0ff", 0.8),
+      light("fl_vend_a", { x: 12, y: 4 }, 3, "#d9f4ff", 0.85), light("fl_vend_b", { x: 24, y: 4 }, 3, "#d9f4ff", 0.85),
+      light("fl_ticket_a", { x: 1, y: 4 }, 3, "#c8ffe0", 0.7), light("fl_ticket_b", { x: 5, y: 4 }, 3, "#c8ffe0", 0.7),
+      light("fl_sign_a", { x: 8, y: 14 }, 4, "#fff0c8", 0.8), light("fl_sign_b", { x: 24, y: 14 }, 4, "#fff0c8", 0.8),
+      light("fl_plat_a", { x: 4, y: 12 }, 4, "#e8f0ff", 0.6), light("fl_plat_b", { x: 13, y: 12 }, 4, "#e8f0ff", 0.6), light("fl_plat_c", { x: 29, y: 12 }, 4, "#e8f0ff", 0.6),
+    ],
   };
+  // 편의점은 밤에도 형광등이 켜진 밝은 가게 — 거리의 어두운 조명을 물려받지 않게 따로 건다.
+  {
+    const w = konbiniRoom.width, h = konbiniRoom.height;
+    konbiniRoom.defaultLighting = {
+      ambient: 0.04, color: "#f0f6ff",
+      sources: [
+        light("fl_kb_a", { x: Math.round(w * 0.25), y: Math.round(h * 0.3) }, 6, "#f4fbff", 0.7),
+        light("fl_kb_b", { x: Math.round(w * 0.7), y: Math.round(h * 0.3) }, 6, "#f4fbff", 0.7),
+        light("fl_kb_c", { x: Math.round(w * 0.3), y: Math.round(h * 0.75) }, 6, "#f4fbff", 0.7),
+        light("fl_kb_d", { x: Math.round(w * 0.7), y: Math.round(h * 0.75) }, 6, "#f4fbff", 0.7),
+      ],
+    };
+  }
   roofRoom.defaultLighting = { ambient: 0.06, color: "#ffd9a8", sources: [] };
   roofRoom.atmosphereEffects = normalizeAtmosphereEffects([{ kind: "sunrays", amount: 0.5, speed: 0.4, size: 1, opacity: 0.5 }]);
 
