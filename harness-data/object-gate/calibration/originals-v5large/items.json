@@ -110,27 +110,33 @@
   "name": "v5l__reject-potion-cabinet-r1",
   "kind": "tall_furniture",
   "styleKind": "prop",
-  "view34": "bad",
-  "style": null,
+  "view34": null,
+  "style": "bad",
   "group": "v5large-bad",
-  "note": "object-gen 견본 반려: copied flat blocks on a flat black back"
+  "note": "object-gen 견본 반려: copied flat blocks on a flat black back",
+  "weak": true,
+  "auditOut": "2026-10-21 감사: user rejected for style (copied flat blocks), not view → style-bad, reported only"
  },
  {
   "name": "v5l__reject-loaf-cabinet-r1",
   "kind": "tall_furniture",
   "styleKind": "prop",
-  "view34": "bad",
-  "style": null,
+  "view34": null,
+  "style": "bad",
   "group": "v5large-bad",
-  "note": "object-gen 견본 반려: the same loaf copied across every shelf on black"
+  "note": "object-gen 견본 반려: the same loaf copied across every shelf on black",
+  "weak": true,
+  "auditOut": "2026-10-21 감사: user rejected for style (copied loaf on black), not a view defect → style-bad, reported only"
  },
  {
   "name": "v5l__reject-book-cabinet-r1",
   "kind": "tall_furniture",
   "styleKind": "prop",
-  "view34": "bad",
-  "style": null,
+  "view34": null,
+  "style": "bad",
   "group": "v5large-bad",
-  "note": "object-gen 견본 반려: books read as nameplate rectangles"
+  "note": "object-gen 견본 반려: books read as nameplate rectangles",
+  "weak": true,
+  "auditOut": "2026-10-21 감사: user rejected for style (books as nameplates), not view → style-bad, reported only"
  }
 ]

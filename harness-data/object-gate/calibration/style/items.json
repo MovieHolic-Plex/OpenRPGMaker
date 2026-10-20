@@ -6,7 +6,9 @@
   "view34": null,
   "style": "bad",
   "group": "farm-user",
-  "note": "농장 2판(사용자 반려: 칸 정보량·윤곽·질감이 얕다)"
+  "note": "농장 2판(사용자 반려: 칸 정보량·윤곽·질감이 얕다)",
+  "weak": true,
+  "auditOut": "2026-10-21 감사: same as farm coop v2 → reported only"
  },
  {
   "name": "farm__farm-barn__v3",
@@ -24,7 +26,9 @@
   "view34": null,
   "style": "bad",
   "group": "farm-user",
-  "note": "농장 2판(사용자 반려: 칸 정보량·윤곽·질감이 얕다)"
+  "note": "농장 2판(사용자 반려: 칸 정보량·윤곽·질감이 얕다)",
+  "weak": true,
+  "auditOut": "2026-10-21 감사: user rejected for shallow information/outline/texture — not nameable under the style rule (never charge less detail) → reported only"
  },
  {
   "name": "farm__farm-coop__v3",
@@ -1396,13 +1400,15 @@
  },
  {
   "name": "beodeul__prop-lamp_double",
-  "kind": "column",
+  "kind": "other",
   "styleKind": "prop",
   "view34": null,
   "style": "good",
   "group": "beodeul-heldout",
   "note": "버들항 번들 키트 bd-prop-lamp_double(기준 그림 아님) — 흑철 무채색 윤곽 예외(약한 라벨)",
-  "weak": true
+  "weak": true,
+  "kindBefore": "column",
+  "relabel": "2026-10-21 감사: street lamp with a crossbar and lanterns is not a column/pillar (no cap expected)"
  },
  {
   "name": "beodeul__ground-plaza",
