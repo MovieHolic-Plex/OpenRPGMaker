@@ -16827,4 +16827,9 @@
 "지형 카드라 「이웃 연결」을 자동으로 켰어요. 끄려면 위의 「이웃 연결」을 누르세요.":"Terrain card selected, so \"Neighbor connection\" was turned on automatically. Press \"Neighbor connection\" above to turn it off.",
 "테스트 플레이 시작값":"Starting value in test play",
 "여러 개 이름 한꺼번에 붙이기":"Name several at once",
-"시작 번호와 개수를 정하면, 그 번호들에 같은 앞말을 붙여 한 번에 이름을 매깁니다.":"Pick a start number and a count, and the same prefix is added to all of those numbers in one go."}
+"시작 번호와 개수를 정하면, 그 번호들에 같은 앞말을 붙여 한 번에 이름을 매깁니다.":"Pick a start number and a count, and the same prefix is added to all of those numbers in one go.",
+"캐릭터 위 ★":"Over character ★",
+"캐릭터 위로 지나감":"passes over the character",
+"클릭할 때마다 통과 → 막힘 → 캐릭터 위":"Each click cycles: passable → blocked → over character",
+"지나갈 수 있지만 캐릭터보다 위에 그려져요 (나뭇잎·지붕 끝처럼 캐릭터를 가리는 칸)":"Passable, but drawn above the character (like leaves or roof edges that cover the character)",
+"타일별 통행·이동 설정 열기 →":"Open per-tile passage & movement settings →"}
