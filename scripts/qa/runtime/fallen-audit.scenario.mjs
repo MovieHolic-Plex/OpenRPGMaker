@@ -30,9 +30,11 @@ const stepInto = (mapId, x, y, dir) => [
  * 결전 한 수 — 보스는 공격만으로는 거의 못 이긴다(심판의 빛). 화면의 전투 명령 단추를 직접 누른다:
  * 명령 창이면 「스킬」, 스킬 목록이면 쓸 수 있는 첫 기술(없으면 뒤로 → 다음 수는 공격), 대상 창이면 첫 대상, 결과 창이면 확인.
  */
-const BOSS_STEP_FN = `() => {
+const BOSS_STEP_FN = `() => { const log = (window.__fsLog ??= []); const act = ((() => {
   const q = (t) => document.querySelector('[data-testid="' + t + '"]');
   const confirm = q("battle-result-confirm"); if (confirm) { confirm.click(); return "confirm"; }
+  const ratio = (text) => { const m = /(\\d+)\\s*\\/\\s*(\\d+)/.exec(text || ""); return m ? Number(m[1]) / Math.max(1, Number(m[2])) : 1; };
+  const low = [...document.querySelectorAll(".battle-party .battle-actor-status")].some((n) => ratio(n.textContent) < 0.55);
   const all = [...document.querySelectorAll("button.battle-command")].filter((n) => n.dataset.previewOnly !== "true");
   const live = all.filter((n) => !n.disabled);
   const ids = live.map((n) => n.dataset.testid || "");
@@ -43,13 +45,21 @@ const BOSS_STEP_FN = `() => {
   }
   if (all.some((n) => (n.dataset.testid || "").startsWith("actor-skill-"))) {
     const skills = ids.filter((id) => id.startsWith("actor-skill-"));
-    const skill = skills.find((id) => id !== "actor-skill-skill_attack") ?? skills[0];
+    if (low && skills.includes("actor-skill-skill_heal")) { window.__fsHeal = true; return click("actor-skill-skill_heal"); }
+    const strong = ["skill_mage_blizzard", "skill_gunner_snipe", "skill_hero_rising_blade", "skill_hero_flame_sword"].map((id) => "actor-skill-" + id);
+    const skill = strong.find((id) => skills.includes(id)) ?? skills.find((id) => id !== "actor-skill-skill_attack" && id !== "actor-skill-skill_heal") ?? skills[0];
     if (skill) return click(skill);
     window.__fsNoSkill = true; return click("actor-command-back");
   }
-  const target = live.find((n) => (n.dataset.testid || "").startsWith("battle-target-") && n.dataset.testid !== "battle-target-cancel");
-  if (target) { target.click(); return "target:" + target.dataset.testid; }
-  return null;
+  const targets = live.filter((n) => (n.dataset.testid || "").startsWith("battle-target-") && n.dataset.testid !== "battle-target-cancel");
+  if (!targets.length) return null;
+  const pick = window.__fsHeal ? targets.reduce((a, b) => (ratio(b.textContent) < ratio(a.textContent) ? b : a)) : targets[0];
+  window.__fsHeal = false; pick.click(); return "target:" + pick.dataset.testid;
+})());
+  const hp = (sel) => [...document.querySelectorAll(sel)].map((n) => (n.textContent || "").replace(/\\s+/g, " ").trim().slice(0, 40));
+  const msg = (document.querySelector('[data-testid="battle-message-window"]')?.textContent || "").trim().slice(0, 60);
+  if (act) log.push({ t: Date.now(), act, party: hp(".battle-party .battle-actor-status"), enemies: hp(".battle-enemy-list-hp, [data-testid^=battle-enemy-list-hp]"), msg });
+  return log;
 }`;
 const bossStep = [{ kind: "evalToFile", fn: BOSS_STEP_FN, out: "/tmp/fs-audit-boss-step.json" }, { kind: "hold", dir: null, ms: 450 }];
 /** 걷다가 풀숲 조우가 나면 끝까지 싸운다(Enter = 공격). */
