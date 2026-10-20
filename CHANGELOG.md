@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.295.1 — 2026-10-21
+
+### 수정
+
+- **start** — start screen sections with one view-state owner; home shows only what you can do; refreshed demo art (#3140) (`adcaaf5`)
+- **object-gate** — revoke Opus final profile 3b8dddb2 (7.5% clean pass; originals not measured) (#3139) (`80d20fc`)
+
 ## 0.295.0 — 2026-10-21
 
 ### 기능
