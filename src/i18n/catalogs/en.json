@@ -16840,4 +16840,7 @@
 "이 단계는 이미 했다고 직접 표시합니다 (편집기가 변경을 못 찾았을 때)":"Mark this step as already done yourself (when the editor could not detect the change)",
 "이미 했어요 ✓":"Already done ✓",
 "이미 했어요":"Already done",
-"이 단계의 작업 화면을 엽니다":"Opens the work screen for this step"}
+"이 단계의 작업 화면을 엽니다":"Opens the work screen for this step",
+"이 서버에서는 AI 가 꺼져 있어요. 서버 관리자에게 AI 를 켜 달라고 요청하세요.":"AI is turned off on this server. Ask the server administrator to turn it on.",
+"AI 에게 묻고 지시하는 대화창":"A chat where you ask the AI and give instructions",
+"AI 팀원에게 일을 맡기고 진행을 보는 곳":"Hand work to AI teammates and follow their progress"}
