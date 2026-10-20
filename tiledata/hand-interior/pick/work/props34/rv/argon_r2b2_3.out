@@ -1,0 +1,6 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"P1","view34":"PASS","quality":"FAIL","reason":"The cabinet frame has a valid 3/4 top plane, but the bolts inside are flat front-facing colored squares with single-pixel white corner stickers rather than readable rolled fabric bolts."}
+{"id":"P2","view34":"PASS","quality":"PASS","reason":"Clear 5px lit wooden top plane on the cabinet and well-shaded 3-4 tone glass bottles with distinct necks, corks, and upper-left lighting across all three shelves."}
+{"id":"P3","view34":"PASS","quality":"FAIL","reason":"The cabinet top plane reads in 3/4 view, but the contents look like notched white blocks inside thick grey U-brackets with no wicks, flames, or recognizable candle silhouettes."}
+{"id":"P4","view34":"PASS","quality":"FAIL","reason":"The cabinet has a proper 3/4 top surface, but the cheese wheels are split by a dark horizontal seam like burger buns and the wedges are misshapen L-notched blocks."}

@@ -1,0 +1,7 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"cabinet:gem+gemr","view34":"PASS","quality":"FAIL","reason":"The cabinet shell has a clear 4px 3/4 top plane, but the gems are blobby with opaque dark maroon and olive rectangular background patches that clash with the shelf recess."}
+{"id":"cabinet:bolt+boltg+boltr","view34":"PASS","quality":"FAIL","reason":"While the cabinet top plane reads in 3/4 view, the cloth bolts look like boxy jars with flat horizontal sticker bands and stray tan pixels bridging the gap between rolls."}
+{"id":"cabinet:bottle+bottler+bottley","view34":"PASS","quality":"FAIL","reason":"The cabinet frame has a proper 3/4 top surface, but the bottles have flat 2x1 white sticker highlights and visible dark maroon/olive rectangular background halos inside the shelves."}
+{"id":"cabinet:candle","view34":"PASS","quality":"FAIL","reason":"The cabinet body shows a valid 3/4 top plane, but the candles lack readable flames, use flat boxy silhouettes with dull grey tips, and leave mismatched rectangular background patches."}
+{"id":"cabinet:cheese","view34":"PASS","quality":"FAIL","reason":"The cabinet has a readable 3/4 top plane, but the cheeses repeat the same blocky 4x4 bright-white L-shape cinco times with dark maroon and olive bounding-box halos."}

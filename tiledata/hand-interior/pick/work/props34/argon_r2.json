@@ -1,0 +1,11 @@
+{"_note": "2026-10-20 round 2: independent adversarial judge gemini-4-argon-high (headless claude -p via 8319/cc), prompt rv/prompt.txt (3/4 + quality rubric vs GOOD bread shelf/wardrobe/globe and BAD armchair), 3 runs per board, pass = view34 PASS and quality PASS in >=2 of 3. Raw runs: rv/argon_*.out",
+ "votes": {
+  "cabinet:loaf": [3, 3, "rv/argon_r2b0_*"], "cabinet:bun": [3, 3, "rv/argon_r2b0_*"], "cabinet:pie": [3, 3, "rv/argon_r2b0_*"],
+  "cabinet:potion+potionb+potiong": [3, 3, "rv/argon_r2b0_*"], "cabinet:vial+flask": [3, 3, "rv/argon_r2b1_*"],
+  "cabinet:jar+jarb+jarg": [2, 3, "rv/argon_r2b1_*"], "cabinet:book+bookb+bookg": [3, 3, "rv/argon_r2b1_*"],
+  "cabinet:gem+gemr": [3, 3, "rv/argon_cfin_*"], "cabinet:bolt+boltg+boltr": [0, 3, "rv/argon_cfin_*"],
+  "cabinet:bottle+bottler+bottley": [3, 3, "rv/argon_cfin_*"], "cabinet:candle": [1, 3, "rv/argon_cfin_*"],
+  "cabinet:cheese": [2, 3, "rv/argon_cfin_*"], "cabinet:toy": [2, 3, "rv/argon_r2b3_*"],
+  "helmet shelf": [3, 3, "rv/argon_r2b3_*"], "orrery": [2, 3, "rv/argon_r2b3_*"], "control console": [3, 3, "rv/argon_m7_* (after outline recolour)"],
+  "slot machine": [3, 3, "rv/argon_m5_*"], "confessional": [3, 3, "rv/argon_r2b4_*"], "relic cabinet": [2, 3, "rv/argon_r2b4_*"],
+  "wide cabinet": [2, 3, "rv/argon_m4_*"], "ship bunk": [0, 3, "rv/argon_m6_* (view34 3/3 PASS; quality FAIL: 1-tile width reads as a shelf)"]}}

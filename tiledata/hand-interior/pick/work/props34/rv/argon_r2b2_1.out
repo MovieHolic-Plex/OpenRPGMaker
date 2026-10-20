@@ -1,0 +1,6 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"P1","view34":"PASS","quality":"FAIL","reason":"Cloth bolts read as flat colored rectangles with isolated 1-2px pure-white sticker highlights sitting in a pitch-black shelf void."}
+{"id":"P2","view34":"PASS","quality":"FAIL","reason":"Bottle necks on the middle and bottom shelves butt directly into the shelf boards above with zero gap, and bodies rely on isolated 1-2px sticker specular dots against a black void."}
+{"id":"P3","view34":"PASS","quality":"FAIL","reason":"Shelf contents do not read as candles at all, showing grey U-notched blocks and headless white bars without wicks or flames."}
+{"id":"P4","view34":"PASS","quality":"FAIL","reason":"Cheese wedges are jagged 4px stair-step triangles with a 1px left spike, and the wheels have a dark middle stripe that reads like a burger bun against a pitch-black back wall."}

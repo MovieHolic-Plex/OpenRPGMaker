@@ -18,6 +18,9 @@ import redraw as R
 sys.path.insert(0, os.path.join(R.ROOT, 'scripts/content/interior-plus'))
 sys.path.insert(0, os.path.join(R.ROOT, 'src/harnesses/_core'))
 import gate_rooms
+import json
+# round 2 (2026-10-20): also require the independent adversarial Argon majority (3/4 + quality rubric); see argon_r2.json
+ARGON = json.load(open(os.path.join(R.ROOT, 'tiledata/hand-interior/pick/work/props34/argon_r2.json')))['votes']
 
 
 def main(check=False):
@@ -28,6 +31,9 @@ def main(check=False):
     for oid, frames in R.build().items():
         kind = 'tall_furniture' if oid in R.PLUS else R.KIND.get(oid, 'tall_furniture')
         st, why = gate_rooms.state(frames[0], kind)
+        v = ARGON.get(oid)
+        if st and not (v and v[0] * 2 > v[1]):
+            st, why = None, f'Argon adversarial majority FAIL ({v[0] if v else 0}/{v[1] if v else 0})'
         if not st:
             held.append((oid, why)); continue
         cells, x0, y0, W, H = R.geom(oid)

@@ -1,0 +1,310 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "776e61b8b82eab7c5ceec606709df08e8cca12157326bf8d575b4ee76e87faf9",
+ "width": 16,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "유물 벽 진열장 (relic cabinet)",
+ "label": "atlas_biome_interior/plus/relic cabinet",
+ "profileHash": "1db03a95223e5b0b",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 2/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 2/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 8
+ },
+ "metrics": {
+  "tileColorsMedian": 29,
+  "tileColorsP90": 29,
+  "darkV5": 26,
+  "nearBlackEdge": 0.85,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top band",
+      "rows": "6-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-12"
+     },
+     {
+      "part": "front face with shelves and relics",
+      "rows": "10-38",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Column scans at x=4, 8 and 11 show a wood top band in rows 6-8 (L=126, #9e684b). Row 9 is a lighter front-edge line (#d59147). Rows 10-12 are a dark eave shadow (L~37). Below that the front face runs from rows 10 to 38, about 29 rows, with shelves, relics and a base. The silhouette is a constant 16 px wide from row 6 to row 38, with no receding side face. The top band is 4 rows with an edge line and shadow, which matches the green cabinet reference (top plus edge plus eave) and not the 1-row or 2-row rim cases."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a wooden wall cabinet with shelves holding small relics, drawn at the same scale as the references. Measured facts: 29 visible tones per 16x16 tile (stall-cheese 17, well-roofed 20, hedge 9), 0% near-flat coverage, and 0% neutral dark edge pixels. That means the outline carries a tint rather than being black. By eye, the frame uses several brown steps (highlight, light, mid, dark, deep) with a dark brown outline next to the wood, and the shelves hold varied small objects in different tones, so no large flat fills appear. Texture is modest but present, and it is comparable to the stall and well. At this small size it does not look thinner or more sticker-like than the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12563
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "6-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-12"
+     },
+     {
+      "part": "front face with shelves and relics",
+      "rows": "10-39",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Row 5 is the outline. Rows 6-8 are a mid-brown top band (L=126). Row 9 is a lighter front-edge line (#d59147), and rows 10-12 are dark eave shadow (L~37). The front face runs from about row 10 to row 39 (about 29 rows) and holds shelves with relics, framed by dark side posts. The silhouette is a constant 16 px wide with no receding side face. This matches the green bookshelf reference, which has a top band, an edge line and shadow above a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wall cabinet with a dark brown wooden frame. The shelves hold small items (a vase, a bottle, and book-like objects) in several tones. Its measured visible tones per 16x16 tile (29) are above the stall (17) and well (20) references, and above the hedge (9). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, which means the outline is tinted. The picture agrees: the frame edges are dark brown, a dark tone of the wood, with no black sticker line. The wood has about 4-5 lightness steps across frame, shelf and interior. The contents add varied clusters, so the density holds up against the references. It is slightly small and the item detail is compact, but at this scale it would sit acceptably next to the stall and well.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13016
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top slab",
+      "rows": "6-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-12"
+     },
+     {
+      "part": "relic display contents (pot, vase, items on shelves)",
+      "rows": "13-38",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Row 5 is the outline. Rows 6-8 are a lighter wood band (#9e684b) that ends in a brighter front-edge line at row 9 (#d59147). Rows 10-12 are a dark band (#3a2210) that reads as eave shadow. Below that, rows 10-38 are the front face, with shelves and relics inside a frame, and a dark outline at row 39. The top is a 4-row slab with an edge line and shadow, not a plain front-facing cornice. The silhouette is 16 wide from row 6 to row 38, with no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a wall cabinet with a dark brown wood frame and shelves holding small relics (a vase, a figure, a red item). The measured facts back this up. It has 29 visible tones per 16x16 tile, against 17-20 for the stall and well references. Near-flat coverage is 0%, and 0% of dark edge pixels are near-neutral, so the outline is tinted brown and matches the adjacent wood rather than being a black sticker line. The frame shows about 4-5 wood steps, with a highlight edge and a dark inner back panel, and the shelf items are shaded individually. It is small and narrow, so texture is only 'some' (grain is limited), but it does not look thinner or flatter than the stall and well references. A careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13316
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top band",
+      "rows": "6-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-12"
+     },
+     {
+      "part": "display contents (relics on shelves)",
+      "rows": "13-37",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 6-8 form a lighter brown band at the top (#9e684b). Row 9 is a lighter front-edge line (#d59147), and rows 10-12 are dark eave shadow (#3a2210) leading into the front face. This matches the green bookshelf and cabinet references, which have a top band, an edge line and a shadow. The front face runs from about row 10 to row 38, about 29 rows, with a dark outline at the bottom (rows 38-39). Shelf dividers at rows 19-20 and 28-29 are thin front-facing lines. The items inside the niches are decor. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a tall wooden cabinet with shelves holding relics, and it reads as the same kind of prop as the stall and well references. Measured facts: 29 visible tones per full tile, above the stall (17) and well (20). Near-flat coverage is 0%, so there are no flat fills. 0% of its dark edge pixels are neutral, so the outline is tinted, a dark brown frame beside the wood, not a near-black sticker line. By eye the wood frame carries about 5 lightness steps with grain, and the shelf contents (pots, small objects) are shaded separately and add clusters of detail. Density is at or above the references and a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11687
+  }
+ ],
+ "decidedAt": "2026-10-20T10:14:44.679Z",
+ "cells": {
+  "16": [
+   "b1d0005bec1466fd",
+   "c8f97c39305b22b4",
+   "fe330ca931ff52c0"
+  ],
+  "24": [
+   "5cefc7e246ea27d8",
+   "776ff144fadfbd14",
+   "7af11fac8893488f",
+   "87ce9535daf7e1c2",
+   "d8cc9408bdeee8c1",
+   "f00580693565c542"
+  ],
+  "32": [
+   "1c7d9e8c9873d620",
+   "508d259ddfab84d7",
+   "59146fbaca1b5724",
+   "6157f2a7e2d60ad5",
+   "6f0aa8adfe8858c1",
+   "6fc0f105fe5da64a",
+   "83b9b3e0052fd969",
+   "869c1cc1fb2eb067",
+   "9da122d28c23dcb5",
+   "b1e9a8078c5cd8a7",
+   "c39c849f2076d2e7",
+   "ff3b11e381cd6233"
+  ],
+  "48": [
+   "24f9eaaa057bda64",
+   "7c544130933ea0ef",
+   "888591ea06d1c401"
+  ]
+ }
+}

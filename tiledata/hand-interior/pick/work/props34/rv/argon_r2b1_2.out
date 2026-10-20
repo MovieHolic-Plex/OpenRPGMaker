@@ -1,0 +1,6 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"P1","view34":"PASS","quality":"PASS","reason":"Cabinet crown has a clear 5px lit top plane and the three shelves hold readable corked potion vials and conical flasks with consistent upper-left shading."}
+{"id":"P2","view34":"PASS","quality":"FAIL","reason":"While the cabinet has a 5px lit top plane, the small jars on all three shelves are unshaped 3x5 rectangles with flat 2px grey/white top stripes that read like batteries rather than jars."}
+{"id":"P3","view34":"PASS","quality":"PASS","reason":"Cabinet shows a 5px lit top wood plane and well-varied book spines with gold bands, top page-edge highlights, and a believable leaning volume on the middle shelf."}
+{"id":"P4","view34":"PASS","quality":"FAIL","reason":"Despite the valid 5px cabinet top plane, the shelf contents are amorphous 5x5 blobs and T-shapes with stark 2px white sticker highlights in the center that do not read as gems."}

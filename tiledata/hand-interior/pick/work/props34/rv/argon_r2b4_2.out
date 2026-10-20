@@ -1,0 +1,6 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"P1","view34":"PASS","quality":"FAIL","reason":"The reel window breaks the left outer outline with a stray light pixel, the three reels are noisy and cramped, and the right lever knob lacks a distinct arm shaft."}
+{"id":"P2","view34":"PASS","quality":"PASS","reason":"Clear 4px lit wooden top plane above the cornice, balanced purple curtains on gold rods, and a crisp central door with a lattice grille."}
+{"id":"P3","view34":"PASS","quality":"PASS","reason":"Readable 4px lit top surface, warm wood cabinet frame matching the anchors, and three distinct shelves displaying a clear urn, silver vessel, and relics."}
+{"id":"P4","view34":"PASS","quality":"FAIL","reason":"Top plane reads well in 3/4 view, but the middle-left sword/hilt overwrites the central vertical wood divider and the six compartments are overcrowded with noisy micro-shapes."}

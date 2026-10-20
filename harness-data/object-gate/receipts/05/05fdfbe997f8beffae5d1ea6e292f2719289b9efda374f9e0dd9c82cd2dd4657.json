@@ -1,0 +1,298 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "05fdfbe997f8beffae5d1ea6e292f2719289b9efda374f9e0dd9c82cd2dd4657",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "약병·플라스크 진열장 (cabinet:vial+flask)",
+ "label": "atlas_biome_interior/props34/cabinet:vial+flask",
+ "profileHash": "1db03a95223e5b0b",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 30,
+  "tileColorsP90": 30,
+  "darkV5": 26,
+  "nearBlackEdge": 0.71,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "wrong",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top board of cabinet",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "vials and flasks on shelves",
+      "rows": "10-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "At x=4, 8 and 11 the top of the cabinet is a darker row 1, a lighter band at rows 2-4, and a lighter front-edge line at row 5 (#d59147). Below it come dark rows 6-9 or 6-10, which read as eave shadow over the open interior. The front face runs from row 6 to row 31 and is 26 rows tall. Shelf boards at rows 13, 22 and 30 (#b77246) each have a dark shadow row beneath, and the vials and flasks stand on them. The cabinet has the same structure as the 'right' bookshelf reference: a top band with an edge line, then the open face. The silhouette is a uniform 16 px wide with no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wooden shelf cabinet with vials and flasks in several colours on its shelves. It matches the prop kind. The measured facts favour it. It has 30 visible tones per 16x16 tile, against 17-20 for the richer references (cheese stall, roofed well) and 9 for the hedge. Near-flat coverage is 0%. The dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood, not a black sticker line. By eye, the wood frame shows about 4-5 lightness steps with a lit edge and shaded inner shelf backs. The vials add small highlights and varied tones, so the shelf rows are not flat. The texture is mostly vial and shelf detail, with less grain on the wood than the cheese stall or well. That keeps it at 'some' rather than 'rich', but it would not look thinner or flatter than the references next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15401
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-9"
+     },
+     {
+      "part": "vials and flasks on the shelves",
+      "rows": "6-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-4 form a wood top band (L about 130) and row 5 is a lighter front-edge line (#d59147). Below it, rows 6-10 are a dark shadow that reads as eave shadow over the open shelf interior. Shelf boards at rows 13, 22 and 30 (#b77246) split the front into three bays that hold vials and flasks (decor). The front face runs from about row 6 to row 31, which is 26 rows. The silhouette is a constant 16 px wide with no receding side face. The structure matches the green bookshelf reference, with a top band, an edge line and a front opening."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a standing wooden cabinet with shelves of vials and flasks, so it matches the prop kind. It measures 30 visible tones per 16x16 tile, above the stall (17) and the well (20), the closest references with full tiles. Near-flat coverage is 0%, so there are no large flat fills; the frame and the bottles all carry variation. The dark edge pixels are 0% near-neutral, so the outline is a tinted dark brown beside the wood, not a black sticker line. The frame shows about 5 wood steps (highlight, light, mid, dark, deep) against about 6 on the references. The bottles each have their own colour and highlight, which gives the shelves a busy, shaded look like the stall goods. The image is small, so the texture reads as 'some', not 'rich'. It would sit next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16611
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top band",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "vials and flasks on shelves",
+      "rows": "8-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band at rows 2-4 is mid-brown wood (L about 125-135). Row 5 is a lighter front-edge line (L=157, #d59147), and rows 6-7 below it are dark (L about 34), which reads as eave shadow. That gives a top surface about 4 rows tall, like the green bookshelf reference. The front face runs from row 6 to row 31, which is 26 rows. It has three shelf boards, lighter wood at rows 13, 22 and 30, each with a dark shadow row beneath. The vials and flasks sit inside the open shelves, so I counted them as decor. The silhouette is a constant 16 px wide with no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a wooden shelf cabinet holding vials and flasks. It sits at the same scale as the stall and well references, and the kind matches. The measured facts favour it: 30 visible tones per tile against 17 (stall) and 20 (well), 0% near-flat coverage, and 0% neutral dark edge pixels. The outline therefore carries a tint and reads as dark brown beside the wood frame, not a black sticker line. By eye, the frame has about 5 wood steps (highlight, light, mid, dark, deep). The shelves are separated by value, and each bottle has its own highlight and body tone in different hues. There are no large flat fills, since the back panel is broken up by shelf shadow and bottle clusters. It is slightly smaller and simpler than the stall and well, but it is not thinner or flatter than the references, so a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15722
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top of the cabinet is a wood band from row 1 (darker back edge) through rows 2-4 (mid-brown). Row 5 is a lighter front-edge line (#d59147), and the dark interior at rows 6-9 reads as eave shadow beneath it. Below that is a front face of about 26 rows (rows 6-31) with three shelf compartments. The shelf boards at rows 13-14, 22-23 and 30 are front-facing strips and the vials and flasks sit inside the compartments. Silhouette width is a constant 16 from row 1 down, with no receding side face. This matches the green bookshelf/cabinet references (top band, edge line, shadow, front face)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a standing wooden shelf cabinet with vials and flasks, the same kind as the stall and well references. It measures 30 visible tones per 16x16 tile, above the stall (17) and well (20). Near-flat coverage is 0%, so there are no large flat fills, and the shelf contents break up the surface with bottles in several colours and small highlights. The dark edge pixels are 0% neutral, so the outline leans brown, like the wood it borders, not near-black. The wood frame looks like roughly 4-5 lightness steps, close to the references. It reads as comparable to the stall and well in density and outline treatment, not as a flat sticker. The image is small, so the texture rating is a cautious 'some'.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17446
+  }
+ ],
+ "decidedAt": "2026-10-20T10:14:44.656Z",
+ "cells": {
+  "16": [
+   "117c82c5526eb87b",
+   "d4dbe8a297e6ca06"
+  ],
+  "24": [
+   "0a995eb16473a360",
+   "10ee43a732152077",
+   "1a3cc4617c72db2e",
+   "1f7acf3e94a0de48",
+   "29dff2d9477cbf12",
+   "30e301349f709a77",
+   "41248b2e9a471d4f",
+   "9e6147950fa45875",
+   "dedba71d8c8f6618",
+   "e55db07694cdccbc",
+   "e7f849f2b1e3f558",
+   "f0f2164ba4a7211a"
+  ],
+  "32": [
+   "1be45781516f08f6",
+   "58711625b07eed79",
+   "aca5b04ec3a1d570"
+  ],
+  "48": [
+   "0bc72115e389af2c",
+   "1366cf11296e7317",
+   "2d32684bfa962ebf",
+   "69349a28edad0bba",
+   "9b4e44d92be2661b",
+   "ce53a15b6916c2af"
+  ]
+ }
+}

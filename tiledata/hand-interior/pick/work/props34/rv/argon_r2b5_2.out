@@ -1,0 +1,3 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"P1","view34":"FAIL","quality":"FAIL","reason":"At 10px inner width, placing pillow and blanket side-by-side makes miniature cubby shelves rather than beds, and the bunk platforms lack readable 3/4 horizontal bed planes (only 1px shelf lines under flat vertical blocks)."}

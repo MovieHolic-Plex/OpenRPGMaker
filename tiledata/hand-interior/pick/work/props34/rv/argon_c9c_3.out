@@ -1,0 +1,7 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"cabinet:gem+gemr","view34":"PASS","quality":"FAIL","reason":"Middle cyan cluster reads as a three-toothed crown on a flat 11px grey bar, and the small red/purple gems are boxy 4x4-5x4 blobs without readable facets."}
+{"id":"cabinet:bolt+boltg+boltr","view34":"PASS","quality":"FAIL","reason":"Bottom folded stacks have 1px sawtooth comb-like left edges, while upper shelves look like tiny boxy pouches hanging from a clothesline rod rather than cloth bolts."}
+{"id":"cabinet:bottle+bottler+bottley","view34":"PASS","quality":"FAIL","reason":"All six bottles are squat 5x5-5x6 blocks arranged in a rigid 2x3 grid, and the full-width bottom label row (oeeEo) sits directly on the base outline like a tan coaster rather than a bottle label."}
+{"id":"cabinet:candle","view34":"PASS","quality":"FAIL","reason":"The wall glow around the middle flame merges with the wax into a brown cap with a dark hole (k) in the top, and the 4px-wide tapers read as collared vials rather than slender candles."}
+{"id":"cabinet:cheese","view34":"PASS","quality":"FAIL","reason":"All four wedges on the top and bottom shelves are near-identical right-triangle ramps pointing the same way, and the middle notched wheel reads as an amorphous red blob with a yellow side patch."}

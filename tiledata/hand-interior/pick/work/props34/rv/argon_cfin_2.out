@@ -1,0 +1,7 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"cabinet:gem+gemr","view34":"PASS","quality":"PASS","reason":"Cabinet has a clear 4px lit top plane and the crystal clusters and cut gems have crisp silhouettes with 4-tone upper-left shading."}
+{"id":"cabinet:bolt+boltg+boltr","view34":"PASS","quality":"FAIL","reason":"Cabinet top plane reads in 3/4 view, but the top and middle shelves show tiny 5x5 boxy blobs with 2x2 sticker patches on rods that read as jars or pouches rather than fabric bolts."}
+{"id":"cabinet:bottle+bottler+bot","view34":"PASS","quality":"PASS","reason":"Cabinet top plane is clearly visible and all six potions/bottles have distinct necks, labels, and upper-left glass highlights."}
+{"id":"cabinet:candle","view34":"PASS","quality":"FAIL","reason":"Cabinet top plane is solid, but the candles are flat rectangular blocks without elliptical tops or flames and the middle-left candle has a stray dark hole pixel in the wax."}
+{"id":"cabinet:cheese","view34":"PASS","quality":"PASS","reason":"Cabinet top plane reads well and the cut cheese wedges and red-wax wheel have clear rinds, yellow paste tones, and eye holes at 1x."}

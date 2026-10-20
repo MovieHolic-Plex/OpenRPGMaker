@@ -1,0 +1,7 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"cabinet:gem+gemr","view34":"PASS","quality":"FAIL","reason":"The crystal clusters use alternating dark outline columns that read as spiky vertical bars on a flat 1px grey line, with the 10px cyan cluster spanning nearly the whole middle shelf."}
+{"id":"cabinet:bolt+boltg+boltr","view34":"PASS","quality":"FAIL","reason":"The top shelf's blue cloth corner overwrites the 2px wooden shelf plank and hangs into the middle bay like a blue icicle, while the 1px rainbow stripes read like stacked burgers at 1x."}
+{"id":"cabinet:bottle+bottler+bottley","view34":"PASS","quality":"FAIL","reason":"The 4px white label row (eeeE) on the wine bottles lacks side outline pixels and bleeds to the outer silhouette edges, and the 2px cork/neck lacks a left outline."}
+{"id":"cabinet:candle","view34":"PASS","quality":"FAIL","reason":"The wick pixel (#2a180b) matches the dark back wall, carving a U-shaped notch into the top of each unlit pillar (oLkLo) and leaving the lit flame floating 1px above the wax body."}
+{"id":"cabinet:cheese","view34":"PASS","quality":"FAIL","reason":"The cut wheels place a vertical pale rectangle beside a dark vertical seam so the middle red wheel reads as a ball with a side patch, and the 4x4 wedges collapse to 3 interior pixels inside a thick outline."}

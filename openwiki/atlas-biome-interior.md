@@ -273,6 +273,22 @@ v5 시트 **끝에 덧붙인** 손 도트 조각(같은 팔레트 v6·같은 램
   2026-10-20 결과: 17종 덮음(진열장 13·슬롯머신·유물 진열장 둘·선원 침상), 4종 보류(투구 선반·천체 모형·제어반 = 3/4 판정 갈림 REFER, 고해실 = 화풍 FAIL) —
   옛 그림 그대로이고 후보 그림은 `tiledata/hand-interior/props34/` 에 있다. 영수증이 PASS 로 바뀌면 `rebake_inplace.py` 를 다시 돌리면 들어간다.
 
+### 2판 — 독립 적대 판정으로 다시 (2026-10-20)
+
+1판 17종은 object-gate 미보정 프로필의 잠정 PASS 만으로 들어갔다(정식 관문 아님). 2판은 21종 전부를 독립 적대 판정자
+Gemini 4 Argon(`claude -p --model gemini-4-argon-high`, 8319/cc)으로 3번씩 보고(과반, 3/4 + 품질 기준표, 좋은 기준 빵 선반·옷장·지구본 /
+나쁜 기준 안락의자, 프롬프트 `tiledata/hand-interior/pick/work/props34/rv/prompt.txt`) 떨어진 것을 다시 그렸다. 1판 진열장 13종은
+윗면만 고쳐 진열품이 「복사한 납작 블록」으로 전부 품질 FAIL 이었다.
+- 그림: 진열장 진열품 `props34/r2_cabinet.py`, 투구 선반·천체 모형·제어반·슬롯머신 `props34/r2_misc.py`(redraw.build 가 덮어쓴다),
+  유물·넓은 진열장 `interior-plus/pieces/museum.py`. 투표 원본 `props34/argon_r2.json` + `rv/argon_*.out`.
+- **굽기 조건은 둘 다**: `rebake_inplace.py` 가 object-gate 현재 프로필 PASS **그리고** `argon_r2.json` 과반 PASS 인 것만 붙인다.
+  작업 중 main 의 판정 프로필이 ee216f→1db03a95(규칙 v9, 여전히 rejected)로 바뀌어 21종을 다시 받았다(`gate-review-r3.log`). 같은 그림의 판정이 프로필마다 뒤집힌다(슬롯머신 PASS→화풍 FAIL, 천체 모형 FAIL→PASS).
+- 반영 13종: 진열장 11(식빵·둥근빵·파이·물약·시험관·단지·책·보석·병·치즈·장난감), 천체 모형, 넓은 진열장.
+- 보류 8종(시트는 #3087 그림 그대로, 후보는 `tiledata/hand-interior/props34/`·`rv/`): Argon 탈락 — 옷감 진열장(천이 16px 에서 천으로 안 읽힘, 0/3)·초 진열장(1/3)·선원 침상(3/4 는 통과,
+  1칸 폭이라 침대로 안 읽힘 — 발자국을 2칸으로 바꿀지는 사람 결정, 후보 그림만 `rv/ship_bunk_r5_candidate.png`). object-gate 탈락(Argon 은 통과) — 슬롯머신·고해실(화풍 FAIL),
+  투구 선반·제어반·유물 진열장(REFER, 사람 확인 대기 — #3101 의 보류 판정 사람 검토 화면 대상). 유물 진열장 원본 함수는 main 그림으로 되돌렸다(후보 `rv/relic_cabinet_r2_candidate.png`).
+- object-gate 는 보정 프로필이 없어(미보정) 정식 영수증이 불가능하다. 보정되면 이 21종을 다시 받아야 한다.
+
 ## 퍼즐 방 조각 — interior-plus `puzzle` (2026-10-20)
 
 `scripts/content/interior-plus/pieces/puzzle.py` (카테고리 `puzzle` = 「퍼즐 방」). 칸은 7157부터 덧붙였다(핀 덧붙이기 전용, 옛 칸 0개 변경 — 굽기 대조).

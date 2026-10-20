@@ -1,0 +1,6 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"P1","view34":"PASS","quality":"FAIL","reason":"Cabinet has a clear 5px lit top plane, but the cloth bolts read as round jelly blobs with harsh 2x2 white sticker highlights rather than rolled fabric."}
+{"id":"P2","view34":"PASS","quality":"FAIL","reason":"Cabinet top plane reads in 3/4 view, but the horizontal bottles on the middle and bottom shelves have upturned corks and white end-stickers that read as pipes or troughs."}
+{"id":"P3","view34":"PASS","quality":"FAIL","reason":"Cabinet frame has a valid 5px top plane, but nine lit candle flames burning directly under wooden shelf boards are implausible and the wax bodies read as flat banded blocks."}
+{"id":"P4","view34":"PASS","quality":"PASS","reason":"Clear 5px lit wooden top plane and 2px shelf ledges, with well-shaded cheese wheels and wedges in a warm 4-tone ramp matching the GOOD bread shelf anchor."}
