@@ -123,17 +123,25 @@ def _tuft(a, x, y, kind=0):
 
 
 def grass_body(seed=0) -> np.ndarray:
-    """풀밭 몸통: 넓고 낮은 대비 덩이(몸·몸 어둠) + 드문 풀잎 획 + 풀포기 2개. 버들항 풀처럼 넓게 깔아도 점 격자가 서지 않는다."""
+    """풀밭 몸통(버들항 풀처럼 거의 단색 면): 기본 몸 한 색 + 드문 2px 그늘 덩이 2개 + 풀잎 획 1~2개.
+    seed 1·3 은 점 무리 덩이(빛·그늘 엇갈림) 한 판 — 넓게 깔면 점 무리가 띄엄띄엄 놓인다. 황토빛(moss) 점은 흙처럼 읽혀 뺐다."""
     a = blank(GRASS[4])
     q = seed * 97
-    mottle(a, GRASS, (4, 3, 5), 11 + q, lo=.06, hi=.9)
-    for k in range(4 + seed % 2):
-        x = int(h(k, 3, 21 + q) * 16); y = int(h(k, 7, 22 + q) * 16)
-        put(a, x, y, GRASS[5] if h(k, 1, 23 + q) < .7 else GRASS[6])
-        put(a, x, y + 1, GRASS[3])
-    for k in range(1 + (seed != 1)):
-        _tuft(a, 3 + int(h(k, 9, 31 + q) * 10), 2 + int(h(k, 13, 32 + q) * 10), (k + seed) % 2)
-    put(a, int(h(0, 5, 41 + q) * 16), int(h(0, 6, 42 + q) * 16), GRASS[2])
+    for k in range(2):
+        x = int(h(k, 3, 11 + q) * 14); y = int(h(k, 5, 12 + q) * 14)
+        put(a, x, y, GRASS[3]); put(a, x + 1, y, GRASS[3]); put(a, x + 1, y + 1, GRASS[3])
+    for k in range(1 + seed % 2):
+        x = 1 + int(h(k, 3, 21 + q) * 14); y = 1 + int(h(k, 7, 22 + q) * 13)
+        put(a, x, y, GRASS[5 if seed % 2 else 6] if False else GRASS[6]); put(a, x, y + 1, GRASS[3])
+    if seed in (1, 3):                                         # 점 무리 덩이
+        cx = 4 + int(h(seed, 1, 31) * 8); cy = 4 + int(h(seed, 2, 32) * 8)
+        for y in range(cy - 3, cy + 4):
+            for x in range(cx - 4, cx + 5):
+                d = ((x - cx) / 4.5) ** 2 + ((y - cy) / 3.5) ** 2
+                if d < 1 and (x + y) % 2 == 0 and h(x, y, 33 + seed) < 1.15 - d:
+                    put(a, x, y, GRASS[5] if (x - y) % 4 == 0 else GRASS[3])
+    if seed == 2:
+        _tuft(a, 3 + int(h(0, 9, 31 + q) * 10), 3 + int(h(0, 13, 32 + q) * 9), 0)
     return a
 
 
@@ -167,8 +175,8 @@ def _pebble(a, x, y, big=False):
 
 def dirt_body() -> np.ndarray:
     a = blank(DIRT[4])
-    mottle(a, DIRT, (4, 3, 5), 51)
-    for k in range(5):                                        # 흙 알갱이 결(밝은 위 + 어두운 아래 2px)
+    mottle(a, DIRT, (4, 3, 4), 51, lo=.1)
+    for k in range(2):                                        # 흙 알갱이 결(밝은 위 + 어두운 아래 2px) — 드물게
         x = int(h(k, 3, 61) * 16); y = int(h(k, 4, 62) * 16)
         put(a, x, y, DIRT[5]); put(a, x, y + 1, DIRT[3])
     # 2칸 폭 길은 모두 가장자리 칸이라 몸통 변형이 안 들어간다 → 몸통에 눈에 띄는 돌을 두면 16px 마다 같은 돌이 줄 선다. 잔돌 하나만.
@@ -320,27 +328,27 @@ def paddy_water_body(seed=0) -> np.ndarray:
 
 
 def _rice_clumps(a, R, water, seed, droop=False):
-    """벼 줄(버들항 밭 줄처럼): 4px 줄마다 이어진 벼 띠 — 위 실루엣은 잎끝이 1~2px 들쭉날쭉 솟고(빛),
-    몸은 빛→그늘 2단, 밑에 짙은 밑동 1줄과 물(고랑) 1줄. 숙인 이삭(황금)은 잎끝이 오른쪽으로 꺾인다."""
-    for j in range(4):
-        y0 = j * 4
+    """벼 줄(버들항 밭 이랑처럼 굵게): 8px 마다 한 줄 — 잎끝이 1~2px 들쭉날쭉 솟은 위 실루엣(빛),
+    몸 4줄(빛→몸→몸→그늘), 짙은 밑동 1줄, 포기 사이 고랑 1~2줄(물·그늘). 포기(株)는 4~6px 마다 그늘 틈으로 갈린다.
+    숙인 이삭(황금)은 잎끝이 오른쪽으로 꺾인다."""
+    for j in range(2):
+        y0 = j * 8 + 1
+        cut = [x for x in range(16) if h(x, j, seed + 7) < .2]     # 포기 사이 틈
         for x in range(16):
             v = h(x, j, seed)
-            spike = 2 if v < .18 else 1 if v < .62 else 0          # 잎끝 높이
-            for k in range(spike):
-                put(a, x, y0 - k, R[6] if k == spike - 1 and v < .4 else R[5])
-            if spike == 0:
-                put(a, x, y0, R[4] if h(x, j, seed + 6) < .6 else water[2])
-            put(a, x, y0 + 1, R[5] if h(x, j, seed + 1) < .3 else R[4])
-            put(a, x, y0 + 2, R[3] if h(x, j, seed + 2) < .75 else R[4])
-            v3 = h(x, j, seed + 3)
-            put(a, x, y0 + 3, R[2] if v3 < .62 else R[1] if v3 < .85 else water[1])
+            spike = 2 if v < .25 else 1 if v < .7 else 0
+            for k in range(1, spike + 1):
+                put(a, x, y0 - k, R[6] if k == spike else R[5])
+            gap = x in cut
+            put(a, x, y0, R[5] if not gap else R[3])
+            put(a, x, y0 + 1, R[4] if h(x, j, seed + 1) < .7 else R[5])
+            put(a, x, y0 + 2, (R[4] if h(x, j, seed + 2) < .55 else R[3]) if not gap else R[2])
+            put(a, x, y0 + 3, R[3] if not gap else R[2])
+            put(a, x, y0 + 4, R[2] if h(x, j, seed + 3) < .8 else R[1])
+            put(a, x, y0 + 5, R[1] if h(x, j, seed + 4) < .6 else water[1])
+            put(a, x, y0 + 6, water[1] if h(x, j, seed + 5) < .5 else water[2])
             if droop and spike and v < .3:
                 put(a, x + 1, y0 - spike + 1, R[6])
-    for j in range(4):                                            # 포기 사이 깊은 틈(드물게)
-        for x in range((j * 7) % 5, 16, 5):
-            if h(x, j, seed + 5) < .5:
-                put(a, x, j * 4 + 2, R[2])
     return a
 
 
