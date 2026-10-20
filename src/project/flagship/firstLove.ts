@@ -13,6 +13,7 @@ import { runTool } from "@/editor/tools/toolRunner";
 import "@/editor/tools/toolRegistry";
 import { createBlankProject } from "@/project/defaults";
 import { DEFAULT_ACTOR_ID } from "@/project/defaults/constants";
+import { isPassable } from "@/project/collision";
 import { deserialize, serialize } from "@/project/io";
 import type { Command, Dir, GameEvent, GameMap, Project } from "@/project/types";
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
@@ -107,6 +108,31 @@ function dirToward(from: Cell, to: Cell): Dir {
   const dx = to.x - from.x, dy = to.y - from.y;
   if (Math.abs(dx) > Math.abs(dy)) return dx > 0 ? "right" : "left";
   return dy > 0 ? "down" : "up";
+}
+
+/** from → to 의 실제 걸을 수 있는 최단 경로(통행 칸 + 이벤트 칸 피함). 길이 없으면 직선 path 로 물러난다. */
+function route(project: Project, mapId: string, from: Cell, to: Cell): Dir[] {
+  const map = project.maps[mapId]!;
+  const blocked = new Set(map.events.map((e) => `${e.x},${e.y}`));
+  blocked.delete(`${to.x},${to.y}`);
+  const steps: [Dir, number, number][] = [["up", 0, -1], ["down", 0, 1], ["left", -1, 0], ["right", 1, 0]];
+  const prev = new Map<string, [string, Dir]>();
+  const queue: Cell[] = [from];
+  const seen = new Set([`${from.x},${from.y}`]);
+  while (queue.length) {
+    const c = queue.shift()!;
+    if (c.x === to.x && c.y === to.y) break;
+    for (const [d, dx, dy] of steps) {
+      const n = { x: c.x + dx, y: c.y + dy }, k = `${n.x},${n.y}`;
+      if (seen.has(k) || blocked.has(k) || !isPassable(project, map, n.x, n.y)) continue;
+      seen.add(k); prev.set(k, [`${c.x},${c.y}`, d]); queue.push(n);
+    }
+  }
+  const out: Dir[] = [];
+  let k = `${to.x},${to.y}`;
+  if (!prev.has(k)) return path(from, to);
+  while (prev.has(k)) { const [pk, d] = prev.get(k)!; out.unshift(d); k = pk; }
+  return out;
 }
 
 /** from → to 로 걷는 한 칸씩의 방향(가로 먼저). 경로 막힘은 짓는 쪽이 앵커로 보장한다. */
@@ -311,7 +337,8 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     face("ev_fl_jihu_roof", "up"),
     ...think("…있다."),
     ...think("난간에 기대 선 뒷모습. 바람에 후드 끈이 흔들린다."),
-    walk("@player", path(r.doorOut, { x: jihuRail.x, y: jihuRail.y - 1 }).slice(0, 2)),
+    walk("@player", route(project, FL_MAP.rooftop, r.doorOut, nearestFree(project, roof, { x: jihuRail.x - 1, y: jihuRail.y }, 2, [jihuRail]))),
+    face("@player", "right"),
     face("ev_fl_jihu_roof", "left"),
     ...emote("ev_fl_jihu_roof", "ellipsis"),
     ...say("jihu", "base", "…여긴 어떻게 알았어요."),
@@ -728,7 +755,7 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
   add(plat, scene("ev_fl_platform", { x: 1, y: 1 }, S.RUN, [
     { kind: "setWeather", weather: "none", transitionMs: 0 } as Command,
     ...voice("안내 방송", "‘이번 열차는 서울역행, 마지막 열차입니다. 열차가 곧 도착하오니—’"),
-    walk("@player", path(p.arrive, meet, false)),
+    walk("@player", route(project, FL_MAP.platformPm, p.arrive, meet)),
     face("@player", "right"),
     face("ev_fl_p_jihu", "left"),
     ...emote("ev_fl_p_jihu", "exclamation", 1300),
