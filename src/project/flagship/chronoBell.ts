@@ -735,7 +735,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
 
   project.meta.title = "폴른 스타: 추락한 별과 태엽의 성녀";
   project.meta.author = "OPRN Flagship Studio";
-  project.system.playResolution = { width: 480, height: 270 };
+  project.system.playResolution = { width: 640, height: 360 };
   project.system.cameraZoom = 2;
   project.system.dialogueStyle = "pixel-cinematic";
 

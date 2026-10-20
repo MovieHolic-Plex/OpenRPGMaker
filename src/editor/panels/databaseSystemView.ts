@@ -819,9 +819,9 @@ function playResolutionFieldset(project: Project, rerender: SystemRefresh): HTML
   const presetSelect = el("select", { dataset: { testid: "db-field-system-resolution-preset" } }) as HTMLSelectElement;
   const labels: Record<PlayResolutionPreset, string> = {
     "320x240": "320 × 240 · 클래식 4:3",
-    "480x270": "480 × 270 · 와이드 16:9 (새 프로젝트 기본)",
+    "480x270": "480 × 270 · 와이드 16:9",
     "426x240": "426 × 240 · 와이드 (정수 배율 안 맞음)",
-    "640x360": "640 × 360 · 와이드 넓게",
+    "640x360": "640 × 360 · 와이드 16:9 (새 프로젝트 기본, 배율 1)",
     "640x480": "640 × 480 · 확장 4:3",
     custom: "직접 입력",
   };

@@ -18,7 +18,7 @@ const BANNED_IP_PROPER_NOUNS = [
 export const CHRONO_BELL_STYLE_LOCK: FlagshipStyleLock = {
   demoId: "chrono-bell",
   presetId: "adventure-jrpg",
-  resolution: { width: 480, height: 270 },
+  resolution: { width: 640, height: 360 },
   cameraZoom: 2,
   dialogueStyle: "pixel-cinematic",
   allowedTilesetIds: [
