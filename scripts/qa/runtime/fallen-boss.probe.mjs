@@ -24,7 +24,7 @@ const RUNS = [
   { id: "defend-mix", seed: 33, plan: "defendFirst2" },
   { id: "lose-retry", seed: 77, plan: "attack", vitals: { hp: 30 }, retry: true },
 ];
-const RUN_DEADLINE_MS = 300_000;
+const RUN_DEADLINE_MS = Number(process.env.FS_DEADLINE ?? 300_000);
 const LOOP_MAX = 800;
 
 async function readUi(page) {
@@ -156,6 +156,7 @@ async function playRun(browser, serverUrl, run) {
     const ctx = { decisions: 0, cancels: 0, shotCommand: false, shotTarget: false, shotResult: false, sawScene: false };
     for (let i = 0; i < LOOP_MAX && Date.now() - startedAt < RUN_DEADLINE_MS; i++) {
       const ui = await readUi(page);
+      if (i % 40 === 0) (record.trace ??= []).push({ i, ...ui, menu: ui.menu.slice(0, 6), pos: await page.evaluate(() => { const s = window.__oprnDebug.readState(); return [s.currentMapId, s.x, s.y, s.switches.sw_fs_main_step0, s.switches.sw_fs_main_step1, s.switches.sw_fs_main_started]; }) });
       if (ui.gameOver) {
         record.outcome = "gameover";
         break;
@@ -189,11 +190,11 @@ async function playRun(browser, serverUrl, run) {
         record.resultAtPanel = ui.battleResult;
       }
       if (ui.resultConfirm) {
-        await page.keyboard.press("z");
+        await page.keyboard.press("Enter");
         continue;
       }
       if (ui.dialogue) {
-        await page.keyboard.press("z");
+        await page.keyboard.press("Enter");
         continue;
       }
       if (ui.targetPrompt) {
@@ -220,13 +221,13 @@ async function playRun(browser, serverUrl, run) {
           await page.keyboard.press("ArrowRight");
           await page.waitForTimeout(60);
         }
-        await page.keyboard.press("z");
+        await page.keyboard.press("Enter");
         continue;
       }
       // 서브메뉴(스킬/아이템 행이 보임): 첫 행을 고른다.
       const submenu = ui.menu.filter((id) => id.startsWith("actor-skill-") || id.startsWith("actor-item-"));
       if (submenu.length > 0 && !ui.busy) {
-        if (await moveCursorTo(page, submenu[0])) await page.keyboard.press("z");
+        if (await moveCursorTo(page, submenu[0])) await page.keyboard.press("Enter");
         ctx.decisions += 1;
         continue;
       }
@@ -250,11 +251,11 @@ async function playRun(browser, serverUrl, run) {
         let pick = pickCommand(ui, run, ctx);
         if (!usable.includes(pick)) pick = "actor-command-attack";
         if (usable.includes(pick)) {
-          if (await moveCursorTo(page, pick)) await page.keyboard.press("z");
+          if (await moveCursorTo(page, pick)) await page.keyboard.press("Enter");
           ctx.decisions += 1;
           continue;
         }
-        await page.keyboard.press("z");
+        await page.keyboard.press("Enter");
         continue;
       }
       // 중간 관측샷 — 적이 실제로 행동해 파티 HP/상태 배지가 변한 프레임을 잡는다.
@@ -265,7 +266,7 @@ async function playRun(browser, serverUrl, run) {
         record.shots.push(shot);
       }
       // charging / 전이 / 메시지 — 텍스트 진행용으로 z 한 번.
-      await page.keyboard.press("z");
+      await page.keyboard.press("Enter");
       await page.waitForTimeout(120);
     }
     record.decisions = ctx.decisions;
