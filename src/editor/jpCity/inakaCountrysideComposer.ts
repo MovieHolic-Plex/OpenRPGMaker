@@ -412,7 +412,7 @@ export const INAKA_SHOWCASE_SCENES: readonly InakaShowcaseScene[] = [
       { kit: "inaka-waterwheel-mill", x: 30, y: 8, allowWet: true },
       { kit: "inaka-red-tractor", x: 28, y: 14 },
       { kit: "inaka-sluice-gate", x: 33, y: 16, allowWet: true },
-      { kit: "inaka-keitora-white", x: 36, y: 10 },
+      { kit: "inaka-keitora-white", x: 23, y: 16 },
       { kit: "inaka-fire-watchtower", x: 38, y: 13 },
       { kit: "inaka-rice-rack-hasagi", x: 2, y: 23 },
       { kit: "jp-rg-hazakake", x: 7, y: 23 },
