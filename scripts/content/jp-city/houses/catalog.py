@@ -347,7 +347,7 @@ add('machikoba_home', '町工場 · 2층 살림집', 'industrial', dict(
     joins=[('belt', {})]))
 add('station_small', 'さくら駅 작은 역사', 'public', dict(
     w=12, rmat='kawara', rbase=0, roof=('hip', {'run': 40}),
-    floors=[fl(48, 'shiro', 2, P, ('sign', 3, 96, 'さくら駅', 'kon', WH, 1, 18), ('shopglass', 3, 96, 'paper', 0, 24, 'mid'),
+    floors=[fl(48, 'shiro', 2, P, ('sign', 3, 96, 'さくら駅', 'kon', WH, 1, 20, 'bold'), ('shopglass', 3, 96, 'paper', 0, 24, 'mid'),
               ('vend', 0, 6), ('vend', 1, 8), ('sash', 9, 40, 14, 4, 26, False, False))],
     joins=[], after=[lambda cv, g: LP.clock(cv, g['X0'] + 96, g['ys'][0] - 12, 6)]))
 add('school', '小学校 교사(3층)', 'public', dict(

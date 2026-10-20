@@ -42,8 +42,28 @@ def text_w(s, step=17):
     return step * len(s) - (step - 16)
 
 
+def text_bold(c, x, y, s, fg, shade, step=18):
+    """칠한 간판 글자: 16px 글리프 획을 오른쪽으로 1px 굵히고(세로획 2px), 획 윗가장자리는 한 단 밝게,
+    오른쪽 아래 1px 그림자(shade)를 깐다 — 1px 흰 선 글자가 화면 글꼴처럼 떠 보이던 것(2026-10-20 시골 보고서 「역 간판 글씨」)."""
+    import numpy as np
+    ramp, t = fg
+    for i, ch in enumerate(s):
+        if ch == ' ': continue
+        g = jfont.glyph(ch).astype(bool)
+        m = np.zeros((18, 18), bool)
+        m[:16, :16] |= g
+        gap = np.zeros_like(g); gap[:, :-2] = g[:, 2:]             # 굵혀서 1px 틈이 막히는 곳(駅 의 馬)은 굵히지 않는다
+        m[:16, 1:17] |= g & ~gap
+        sh = np.zeros_like(m); sh[1:, 1:] = m[:-1, :-1]; sh &= ~m
+        ox = x + i * step
+        for j in range(18):
+            for k in range(18):
+                if sh[j, k]: c.P(ox + k, y + j, shade)
+                elif m[j, k]: c.P(ox + k, y + j, K(ramp, t) if (j == 0 or not m[j - 1, k]) else K(ramp, t - 1))
+
+
 # ─────────────────────────── 간판·차양·노렌 ───────────────────────────
-def sign(c, x, y, w, s, bg='sora', fg=('shiro', 2), h=20, frame=True):
+def sign(c, x, y, w, s, bg='sora', fg=('shiro', 2), h=20, frame=True, bold=False):
     """간판판: 윗면 2(+2/+1) · 앞면 h(bg 0, 테 -2) · 아래 그림자 3 (벽 위)."""
     c.HL(x, y, w, K(bg, 2)); c.HL(x, y + 1, w, K(bg, 1))
     c.R(x, y + 2, w, h, K(bg, 0))
@@ -51,7 +71,10 @@ def sign(c, x, y, w, s, bg='sora', fg=('shiro', 2), h=20, frame=True):
         c.HL(x + 1, y + 3, w - 2, K(bg, 1)); c.HL(x + 1, y + h, w - 2, K(bg, -1)); c.VL(x + w - 2, y + 3, h - 2, K(bg, -1)); c.VL(x + 1, y + 3, h - 2, K(bg, 1))
     c.HL(x, y + h + 2, w, K(bg, -2))
     c.HL(x - 1, y - 1, w + 2, OL); c.VL(x - 1, y, h + 3, OL); c.VL(x + w, y, h + 3, OL); c.HL(x - 1, y + h + 3, w + 2, OL)
-    if s:
+    if s and bold:
+        tw = text_w(s, 18) + 1
+        text_bold(c, x + (w - tw) // 2, y + 2 + (h - 17) // 2, s, fg, K(bg, -2))
+    elif s:
         tw = text_w(s)
         text(c, x + (w - tw) // 2, y + 2 + (h - 16) // 2 + 1, s, K(*fg))
     return y + h + 4
@@ -274,7 +297,7 @@ def chimney(c, x, ybot, h, w=12):
 def _p_sign(cv, cx, fy, fh, f, it):
     # ('sign', 칸, 폭, 글자, 바탕, 글자색튜플, y오프셋[, 높이])
     sign(cv, cx + it[7] if len(it) > 8 else cx, fy + it[6], it[2], it[3], it[4], it[5], it[8] if len(it) > 8 else 20) if False else \
-        sign(cv, cx, fy + it[6], it[2], it[3], it[4], it[5], it[7] if len(it) > 7 else 20)
+        sign(cv, cx, fy + it[6], it[2], it[3], it[4], it[5], it[7] if len(it) > 7 else 20, bold=len(it) > 8 and it[8] == 'bold')
     wall_shadow(cv, cx, fy + it[6] + (it[7] if len(it) > 7 else 20) + 4, it[2], f, 2)
 
 
