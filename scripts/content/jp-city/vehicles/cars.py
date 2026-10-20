@@ -498,6 +498,17 @@ def _kei_up(color, L=4):
 WHITE = ('shiro', 1)
 
 
+def _cab_glass(c, T, rx1, xf, ry, rf):
+    """캡 앞유리: 지붕 앞 끝(rx1, ry..rf) → 캡 앞 끝(xf, ry+GH..rf+GH) 로 기운 면. 아래 가장자리 = 비스듬한 A 기둥."""
+    g0, g1, g2, ghi = K('garasu', 0), K('garasu', -1), K('garasu', -2), K('garasu', 1)
+    for x in range(rx1, xf + 1):
+        s_ = (x - rx1) / max(1, xf - rx1)
+        yf = _lerp(ry, ry + GH, s_); yn = _lerp(rf, rf + GH, s_)
+        for y in range(yf, yn + 1):
+            k = y - yf
+            c.P(x, y, T['bod'] if y == yn else ghi if (k in (2, 3) and x - rx1 in (1, 2)) else g0 if k <= 1 else g1 if k < 8 else g2)
+
+
 def _ktruck_side():
     """64×48(L=4), 3/4 깊이판. 짐칸 = 난간 윗면에 둘러싸인 바닥 판(위에서 보임) · 캡오버 캡(지붕 윗면 = 차 지붕과 같은 깊이)."""
     c = Cv(64, H34); T = _tone(*WHITE)
@@ -523,10 +534,8 @@ def _ktruck_side():
     c.VL(cx0 + 18, R_F + 2, B_Y1 - R_F - 5, T['lo']); c.HL(cx0 + 4, R_F + 11, 3, T['dk'])
     c.HL(cx0, B_Y0 + 5, cx1 - cx0 + 4, T['lo']); c.R(cx0, B_Y1 - 3, cx1 - cx0 + 4, 3, T['lo']); c.HL(cx0, B_Y1, cx1 - cx0 + 4, T['dk'])
     c.R(cx1 + 1, B_Y0 + 1, 2, 3, K('kii', 2))
-    for x in range(cx1, cx1 + 4):                                                     # 앞유리: 지붕 앞 끝에서 앞으로 기운 짧은 면
-        k = x - cx1
-        for y in range(R_Y + k, R_F + 9): c.P(x, y, g0 if y - (R_Y + k) <= 1 else g2 if y > R_F + 6 else g1)
-    _roof34(c, cx0, cx1 + 1, R_Y, R_F + 1, T)
+    _cab_glass(c, T, cx1 - 3, cx1 + 3, R_Y, R_F)                                       # 앞유리: 기운 면
+    _roof34(c, cx0, cx1 - 2, R_Y, R_F + 1, T)
     _arches(c, wh)
     c.R(6, B_Y1 + 1, 54, 2, K('sumi', 0))
     return _done34(c, wh)
@@ -627,10 +636,8 @@ def _box_side():
     c.VL(cx0 + 18, cf + 2, by1 - cf - 5, T['lo']); c.HL(cx0 + 4, cf + 11, 3, T['dk'])
     c.HL(cx0, by1 - 8, cx1 - cx0 + 4, T['lo']); c.R(cx0, by1 - 3, cx1 - cx0 + 4, 3, T['lo']); c.HL(cx0, by1, cx1 - cx0 + 4, T['dk'])
     c.R(cx1 + 1, by1 - 12, 2, 3, K('kii', 2))
-    for x in range(cx1, cx1 + 4):
-        k = x - cx1
-        for y in range(cy + k, cf + 9): c.P(x, y, g0 if y - (cy + k) <= 1 else g2 if y > cf + 6 else g1)
-    _roof34(c, cx0, cx1 + 1, cy, cf + 1, T)
+    _cab_glass(c, T, cx1 - 3, cx1 + 3, cy, cf)
+    _roof34(c, cx0, cx1 - 2, cy, cf + 1, T)
     c.VL(cx0 - 1, rf + 1, by1 - rf - 3, K('tekko', -1))                              # 캡·화물칸 틈
     _arches(c, wh, W_Y + o)
     c.R(6, by1 + 1, 85, 2, K('sumi', 0))
