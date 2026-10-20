@@ -72,7 +72,7 @@ BLOCK_ORDER = ['autotiles_ground', 'autotiles_lines', 'roads', 'buildings', 'str
                'interior_school', 'interior_gym', 'interior_station', 'interior_office', 'interior_post',
                'dungeon_underground', 'dungeon_hospital', 'dungeon_school', 'dungeon_construction', 'dungeon_warehouse',
                'interior_amuse', 'interior_karaoke', 'interior_famires', 'interior_hotel', 'interior_mall',
-               'interior_hospital', 'interior_school2', 'interior_office2', 'shitamachi_pack', 'jp_regions_pack', 'jp_inaka_pack', 'jp_forest_pack', 'jp_forest_r3']
+               'interior_hospital', 'interior_school2', 'interior_office2', 'shitamachi_pack', 'jp_regions_pack', 'jp_inaka_pack', 'jp_forest_pack', 'jp_forest_r3', 'jp_forest_r4']
 PEOPLE = (851, 1005)            # 행인(Actor1) 자리 — 번들에서 제외, 투명 빈 칸으로 번호만 지킨다
 N_ORIG = 2880
 SIGN_DECOS = ('sign_h', 'vstack', 'wallad', 'vsign', 'plate', 'board', 'rtext', 'facade_ad', 'vision', 'mural')
@@ -552,6 +552,12 @@ def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=Fal
         if a.get('phase'):       # 위치 위상 변형(엔진 phaseVariants): 칸 그림이 마스크와 (x mod w, y mod h) 로 정해진다
             ph = a['phase']
             at['phaseVariants'] = dict(w=ph['w'], h=ph['h'], maps=[{k: L(b, v) for k, v in m.items()} for m in ph['maps']])
+        if a.get('composer'):    # 나무 composer(엔진 treeComposer.ts): 그림 칸 위치(loc)를 칸 번호로 바꿔 그대로 싣는다
+            cp = dict(a['composer'])
+            cp['sprites'] = [dict(sp, tiles=[L(b, v) if v is not None else -1 for v in sp['tiles']]) for sp in cp['sprites']]
+            # 수관이 넘쳐도 되는 1층 칸 = 잔디 그룹 멤버 + 제 숲 바닥(엔진은 그룹 이름을 몰라도 된다)
+            cp['overhangOnTiles'] = sorted(set(mem).union(*[set(at_members.get(g, [])) for g in cp.get('overhangOnGroups', [])]))
+            at['composer'] = cp
         autotiles.append(at)
     block_groups = []
     for b, g in pending_groups:

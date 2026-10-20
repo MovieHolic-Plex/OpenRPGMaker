@@ -15,6 +15,7 @@ sys.path.insert(0, HERE)
 import forest_r3 as F  # noqa: E402
 import forest_r3_scenes as S3  # noqa: E402
 import forest_r4_compose as C  # noqa: E402
+LOCAL = os.environ.get('JPF_COMPOSE', 'local') == 'local'
 
 T = 16
 
@@ -25,7 +26,7 @@ def scene(sp, S, name, M, gfn):
     if name == 'touching':
         avoid = np.zeros((H, W), bool); avoid[9:15, 3:12] = True; avoid[:, 14:16] = True
         k = S3.KITS['jp-bldg-house-shed-modern']; avoid[9:9 + k['height'], 17:17 + k['width']] = True
-    img = C.render(gfn(), C.compose(M, S, avoid=avoid), S)
+    img = C.render(gfn(), (C.compose_local if LOCAL else C.compose)(M, S, avoid=avoid), S)
     if name == 'touching': S3.stamp_kit(img, 'jp-bldg-house-shed-modern', 17, 9)
     return img
 
@@ -44,7 +45,7 @@ def paint_gif(S, path, scale=2):
         if add.any():
             M |= add
             ch = [(int(x), int(y)) for y, x in zip(*np.nonzero(add))]
-            prev = C.recompose(M, S, prev, ch)
+            prev = C.compose_local(M, S) if LOCAL else C.recompose(M, S, prev, ch)
         if k % 2: continue
         im = Image.fromarray(C.render(base, prev, S)).resize((Wd * T * scale, H * T * scale), Image.NEAREST)
         frames.append(im.convert('P', palette=Image.ADAPTIVE, colors=255))

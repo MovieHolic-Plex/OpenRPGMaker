@@ -393,6 +393,20 @@ export function validateTileset(id: string, value: unknown): void {
           }
         }
       }
+      if (record.composer !== undefined) {
+        const at = `tileset ${id}.autotileGroups[${index}].composer`;
+        const cp = requireRecord(at, record.composer);
+        requireString(`${at}.kind`, cp.kind);
+        for (const layer of requireArray(`${at}.layers`, cp.layers)) requireNumber(`${at}.layers[]`, layer);
+        for (const name of requireArray(`${at}.overhangOnGroups`, cp.overhangOnGroups)) requireString(`${at}.overhangOnGroups[]`, name);
+        for (const [n, sprite] of requireArray(`${at}.sprites`, cp.sprites).entries()) {
+          const sp = requireRecord(`${at}.sprites[${n}]`, sprite);
+          requireNumber(`${at}.sprites[${n}].w`, sp.w);
+          requireNumber(`${at}.sprites[${n}].h`, sp.h);
+          for (const tileId of requireArray(`${at}.sprites[${n}].tiles`, sp.tiles)) requireNumber(`${at}.sprites[${n}].tiles[]`, tileId);
+          for (const c of requireArray(`${at}.sprites[${n}].cover`, sp.cover)) requireNumber(`${at}.sprites[${n}].cover[]`, c);
+        }
+      }
       if (record.interiorVariants !== undefined) {
         for (const [depth, tier] of requireArray(`tileset ${id}.autotileGroups[${index}].interiorVariants`, record.interiorVariants).entries()) {
           for (const tileId of requireArray(`tileset ${id}.autotileGroups[${index}].interiorVariants[${depth}]`, tier)) {

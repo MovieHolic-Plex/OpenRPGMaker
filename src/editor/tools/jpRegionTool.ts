@@ -1,7 +1,7 @@
 // compose_jp_region · list_jp_regions — 일본 지역 30종(japaneseRegionsCatalog.ts)을 jp_city 맵 한 장에 짓는다.
 // 장면 지역은 regionComposer 가 펼친 바닥·키트 단계를 복제본에 시공하고, 상가·주택가 지역은 compose_jp_city_street 에 넘긴다.
 import { JP_REGION_CATEGORIES, JP_REGIONS, jpRegionBrief, jpRegionById, searchJpRegions, type JpRegion } from "@/editor/jpCity/japaneseRegionsCatalog";
-import { hasJpForestR3, paintJpForest } from "@/editor/jpCity/forestPainter";
+import { composeJpForestR4, hasJpForestR3, hasJpForestR4, paintJpForest } from "@/editor/jpCity/forestPainter";
 import { paintJpRegionGround, planJpRegionScene } from "@/editor/jpCity/regionComposer";
 import { isPassable } from "@/project/collision";
 import { blankFillTileFor } from "@/project/defaults/defaultMaps";
@@ -119,9 +119,9 @@ export const COMPOSE_JP_REGION_TOOL: ToolDefinition = {
     target.lowerTiles.fill(blankFillTileFor(JP_CITY_ID, 0, next.tilesets[map.tilesetId]!));
     for (let i = 0; i < target.lowerTiles.length; i++) { setLayerTileAt(target, 3, i, -1); setLayerTileAt(target, 4, i, -1); clearTileStack(target, "upper", i); }
     const kits = new Map((tileset.structureKits ?? []).map((k) => [k.id, { w: k.width, h: k.height }]));
-    let plan = planJpRegionScene({ region, mapId, width: map.width, height: map.height, seed, kitSize: (id) => kits.get(id), forestAutotile: hasJpForestR3(tileset) });
+    let plan = planJpRegionScene({ region, mapId, width: map.width, height: map.height, seed, kitSize: (id) => kits.get(id), forestAutotile: hasJpForestR3(tileset) || hasJpForestR4(tileset) });
     for (let retry = 1; retry < 8 && plan.violations.length > 0; retry++) {
-      const candidate = planJpRegionScene({ region, mapId, width: map.width, height: map.height, seed: seed + retry, kitSize: (id) => kits.get(id), forestAutotile: hasJpForestR3(tileset) });
+      const candidate = planJpRegionScene({ region, mapId, width: map.width, height: map.height, seed: seed + retry, kitSize: (id) => kits.get(id), forestAutotile: hasJpForestR3(tileset) || hasJpForestR4(tileset) });
       if (candidate.violations.length < plan.violations.length) plan = candidate;
       if (plan.violations.length === 0) break;
     }
@@ -178,6 +178,8 @@ export const COMPOSE_JP_REGION_TOOL: ToolDefinition = {
         failed.push(step.note);
       }
     }
+    // r4 나무 composer: 숲 바닥만 칠해 두었다가 집·소품을 다 찍은 뒤 한 번에 나무를 세운다(수관이 집·길·물 위로 넘치지 않게).
+    if (forest && hasJpForestR4(next.tilesets[map.tilesetId]!)) composeJpForestR4(target, next.tilesets[map.tilesetId]!, seed);
     if (stamped === 0) throw new ToolError(`${region.id} 키트를 하나도 세우지 못했다 — 맵을 ${region.size[0]}×${region.size[1]} 로 키우거나 다른 seed 를 준다`, { code: "compose-failed", mapId });
     draft.maps[mapId] = next.maps[mapId]!;
     for (const [id, ts] of Object.entries(next.tilesets)) draft.tilesets[id] = ts;

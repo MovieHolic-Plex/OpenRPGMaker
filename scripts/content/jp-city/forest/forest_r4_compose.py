@@ -169,6 +169,77 @@ def compose(mask, S, seed=0, keep=(), window=None, avoid=None):
     return out
 
 
+def ih(x, y, s):
+    """TS treeComposer.ts 의 hash 와 비트까지 같은 32비트 정수 해시(Math.imul 흉내)."""
+    M = 0xFFFFFFFF
+    def imul(a, b): return ((a & M) * (b & M)) & M
+    h = (imul(x, 374761393) + imul(y, 668265263) + imul(s, 2147483647)) & M
+    h = imul(h ^ (h >> 13), 1274126177)
+    return (h ^ (h >> 16)) & M
+
+
+def ih01(x, y, s):
+    return ih(x, y, s) / 4294967296.0
+
+
+SHAPE_ORDER = ('T4', 'T3', 'T2')
+_PH = {}
+
+
+def row_phase(y, sd):
+    """줄 위상(칸 간격 3 의 시작): 두 줄마다 1~2칸 밀린다 — 위아래 줄 나무가 같은 열에 서지 않는다. 마스크와 무관(y 만)."""
+    key = (y, sd)
+    if key not in _PH:
+        p = 0
+        for i in range((y >> 1) + 1): p += 1 + ih(0, i, 11 + sd) % 2
+        _PH[key] = (p + (y & 1)) % 3
+    return _PH[key]
+
+
+def anchor_at(mask, S, x, y, seed=0, avoid=None):
+    """칸 (x, y) 에 밑동을 둔 나무가 서는가 — 서면 (그림 이름, x0, y0, 깊이), 아니면 None. 이웃 몇 칸만 본다(붓질이 국소다).
+    TS 판 src/project/defaults/treeComposer.ts 의 anchorAt 과 같은 규칙.
+      · 줄: 짝수 줄, 또는 숲 남쪽 끝 줄(바로 아래가 숲 밖).
+      · 칸: 줄마다 해시 위상 기준 3칸 간격(엇갈림), 5% 는 비운다.
+      · 모양: 해시로 T4 32% · T3 62% · T2 6% 순서를 정하고, 줄기 열이 숲 안이고 그림 칸이 avoid·맵 옆/아래 밖에 걸리지 않는 첫 모양.
+      · 숲 속(줄기 바로 아래가 숲) 나무는 그늘판(d)."""
+    H, W = mask.shape
+
+    def m(xx, yy):
+        return 0 <= xx < W and 0 <= yy < H and mask[yy, xx]
+    if not m(x, y): return None
+    if not (y % 2 == 0 or not m(x, y + 1)): return None
+    sd = seed * 101
+    if (x - row_phase(y, sd)) % 3 != 0: return None
+    if ih01(x, y, 13 + sd) < 0.05: return None
+    r = ih01(x, y, 17 + sd)
+    order = ['T4', 'T3', 'T2'] if r < 0.32 else ['T3', 'T4', 'T2'] if r < 0.94 else ['T2', 'T3']
+    for shape in order:
+        tcols = TRUNK_COLS[shape]
+        if not all(m(x + i, y) for i in tcols): continue
+        inner = all(m(x + i, y + 1) for i in tcols)
+        names = sorted(S.by_shape.get(shape + ('d' if inner else ''), []))
+        if not names: continue
+        name = names[ih(x, y, 19 + SHAPE_ORDER.index(shape) + sd) % len(names)]
+        c = S.cover[name]; ch, cw = c.shape
+        x0, y0 = x, y - ch + 1
+        ok = True
+        for j in range(ch):
+            for i in range(cw):
+                if round(c[j, i] * 100) <= 2: continue
+                xx, yy = x0 + i, y0 + j
+                if yy < 0: continue
+                if not (0 <= xx < W and yy < H) or (avoid is not None and avoid[yy, xx]): ok = False; break
+            if not ok: break
+        if ok: return (name, x0, y0, y * 4096 + ih(x, y, 23 + sd) % 4096)
+    return None
+
+
+def compose_local(mask, S, seed=0, avoid=None):
+    H, W = mask.shape
+    return [p for y in range(H) for x in range(W) for p in [anchor_at(mask, S, x, y, seed, avoid)] if p]
+
+
 def cell_stack(placements, S, W, H):
     """칸 → [(층, 그림 이름, i, j)] (앞에서부터). 투명한 칸 조각은 빼고, 셋이 넘으면 가장 뒤 것을 버린다.
     앞 조각이 칸을 거의 다 덮으면(불투명 ≥ 0.98) 그 뒤는 놓지 않는다."""
@@ -177,7 +248,7 @@ def cell_stack(placements, S, W, H):
         c = S.cover[name]; ch, cw = c.shape
         for j in range(ch):
             for i in range(cw):
-                if c[j, i] <= 0.0: continue
+                if round(c[j, i] * 100) <= 0: continue
                 x, y = x0 + i, y0 + j
                 if 0 <= x < W and 0 <= y < H:
                     cells.setdefault((x, y), []).append((z, name, i, j, c[j, i]))
@@ -187,7 +258,7 @@ def cell_stack(placements, S, W, H):
         keep = []
         for z, name, i, j, cv in lst:
             keep.append((name, i, j))
-            if cv >= 0.98 or len(keep) == len(LAYERS): break
+            if round(cv * 100) >= 98 or len(keep) == len(LAYERS): break
         out[k] = [(LAYERS[n], name, i, j) for n, (name, i, j) in enumerate(keep)]
     return out
 

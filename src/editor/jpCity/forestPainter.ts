@@ -4,8 +4,9 @@
 // 그 밑 줄이 줄기 띠 자리다 — 띠도 숲 구획 안에 들어가므로 폭 3~4칸 얕은 띠(수관 2줄 + 띠 1줄)도 칠해진다.
 // 순수 함수: 맵·타일셋 구조만 읽고 칸 쓰기는 콜백으로 한다(regionComposer 단계 실행기 jpRegionTool 이 부른다).
 
-import type { AutotileGroup } from "@/project/types";
+import type { AutotileGroup, GameMap } from "@/project/types";
 import { autotileVariantForMask } from "@/project/defaults/autotileEngine";
+import { composeTreesAll } from "@/project/defaults/treeComposer";
 
 export const JP_FOREST_BROADLEAF = 1;   // 느티나무·잡목 활엽
 export const JP_FOREST_BAMBOO = 2;
@@ -19,15 +20,15 @@ export const JP_FOREST_MIX_HILL = 8;    // 섞인 숲: 산비탈(삼나무+활�
 interface KitRowView { readonly tiles?: readonly number[]; readonly upperTiles?: readonly number[] }
 interface KitView { readonly id: string; readonly width: number; readonly height: number; readonly rows: readonly KitRowView[] }
 export interface JpForestTilesetView {
-  readonly autotileGroups?: readonly { readonly id: string; readonly variantMap: Readonly<Record<string, number>>; readonly interiorVariants?: readonly (readonly number[])[]; readonly phaseVariants?: AutotileGroup["phaseVariants"] }[];
+  readonly autotileGroups?: readonly { readonly id: string; readonly variantMap: Readonly<Record<string, number>>; readonly interiorVariants?: readonly (readonly number[])[]; readonly phaseVariants?: AutotileGroup["phaseVariants"]; readonly composer?: AutotileGroup["composer"]; readonly memberTileIds?: readonly number[] }[];
   readonly tileGroups?: readonly { readonly id: string; readonly tileIds: readonly number[] }[];
   readonly structureKits?: readonly KitView[];
 }
 export interface JpForestTarget {
   readonly width: number;
   readonly height: number;
-  getLayer(layer: 3 | 4, index: number): number;
-  setLayer(layer: 3 | 4, index: number, tile: number): void;
+  getLayer(layer: 1 | 2 | 3 | 4, index: number): number;
+  setLayer(layer: 1 | 2 | 3 | 4, index: number, tile: number): void;
 }
 export interface JpForestReport { readonly canopy: number; readonly sky: number; readonly heads: number; readonly overlays: number; readonly bands: number }
 
@@ -144,12 +145,61 @@ export function paintJpForestR3(target: JpForestTarget, tileset: JpForestTileset
   return { canopy, sky: 0, heads: 0, overlays: 0, bands: 0 };
 }
 
+// r4 나무 composer(jp_forest_r4): 종 코드 → 숲 바닥 오토타일. 지금은 활엽만 있다 — 다른 종은 r3 오토타일로 칠한다.
+const R4_CODES: readonly (readonly [number, string])[] = [[JP_FOREST_BROADLEAF, "bl"]];
+
+function r4Group(tileset: JpForestTilesetView, k: string): AutotileGroup | undefined {
+  const g = (tileset.autotileGroups ?? []).find((a) => a.id === `jp-forest4-${k}` && a.composer?.kind === "trees");
+  return g as unknown as AutotileGroup | undefined;
+}
+
+/** 이 타일셋에 나무 composer 숲(jp_forest_r4, jp-forest4-<k>)이 구워져 있는가. */
+export function hasJpForestR4(tileset: JpForestTilesetView): boolean {
+  return R4_CODES.some(([, k]) => !!r4Group(tileset, k));
+}
+
+/**
+ * r4: composer 가 있는 종의 칸은 1층에 숲 바닥만 칠하고 kind 에서 뺀다(나무는 composeJpForestR4 가 맨 끝에 한 번에 세운다 —
+ * 집·소품을 다 찍은 뒤라야 수관이 집 위로 넘치지 않는다). 칠한 칸 수.
+ */
+export function paintJpForestR4Floor(target: JpForestTarget, tileset: JpForestTilesetView, kind: Uint8Array): number {
+  let n = 0;
+  for (const [code, k] of R4_CODES) {
+    const g = r4Group(tileset, k);
+    const floor = g?.memberTileIds?.[0];
+    if (floor === undefined) continue;
+    for (let i = 0; i < kind.length; i++) {
+      if (kind[i] !== code) continue;
+      target.setLayer(1, i, floor);
+      target.setLayer(2, i, -1);
+      kind[i] = 0;
+      n++;
+    }
+  }
+  return n;
+}
+
+/** r4: 숲 바닥이 칠린 맵 전체에 나무를 세운다(편집기 붓·조수 지형 도구와 같은 composer). 바뀐 칸 수. */
+export function composeJpForestR4(map: GameMap, tileset: JpForestTilesetView, seed = 0): number {
+  let n = 0;
+  for (const [, k] of R4_CODES) {
+    const g = r4Group(tileset, k);
+    if (g) n += composeTreesAll(map, g, seed);
+  }
+  return n;
+}
+
 /**
  * kind[y*W+x] = 0 숲 아님 · 1 활엽 · 2 대숲 · 3 벚나무 · 4 삼나무 · 5 단풍. 그 종류가 칩셋에 없으면 활엽으로 칠한다. 3층에 수관·하늘선·머리·줄기 띠, 4층에 하늘선 윗줄·머리 덧그림을 쓴다.
  * 4층은 비어 있는 칸에만 쓴다. 3층은 마스크 안 칸에만 쓴다(마스크는 부르는 쪽이 이미 점유 칸을 뺐다).
  */
 export function paintJpForest(target: JpForestTarget, tileset: JpForestTilesetView, kind: Uint8Array, seed = 0): JpForestReport {
-  if (hasJpForestR3(tileset)) return paintJpForestR3(target, tileset, kind, seed);
+  const floor = hasJpForestR4(tileset) ? paintJpForestR4Floor(target, tileset, kind) : 0;
+  if (floor > 0 && !kind.some((k) => k > 0)) return { canopy: floor, sky: 0, heads: 0, overlays: 0, bands: 0 };
+  if (hasJpForestR3(tileset)) {
+    const r = paintJpForestR3(target, tileset, kind, seed);
+    return { ...r, canopy: r.canopy + floor };
+  }
   const W = target.width, H = target.height;
   const rep = { canopy: 0, sky: 0, heads: 0, overlays: 0, bands: 0 };
   const sets = [kindSet(tileset, "bl", JP_FOREST_BROADLEAF), kindSet(tileset, "bb", JP_FOREST_BAMBOO), kindSet(tileset, "sk", JP_FOREST_SAKURA), kindSet(tileset, "sg", JP_FOREST_SUGI), kindSet(tileset, "mp", JP_FOREST_MAPLE)]

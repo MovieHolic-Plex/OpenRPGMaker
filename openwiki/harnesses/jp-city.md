@@ -109,6 +109,22 @@ flags: `overlay`(투명 덧칠: 윤곽·접지·귀퉁이 검사 제외) · `thi
 - 숲은 발 행 순서로 찍고, 위아래 이웃 나무는 종류를 바꾸며 1~2칸 비킨다(세로 기둥 줄 금지). 전봇대는 石垣 축대 앞면을 가리지 않는다.
 남은 그림 결함(돌담 이음매·논 가장자리·죽담 사다리꼴)은 그림 화소를 바꾸므로 object-gate 영수증 상태를 PR 본문에 적고 사용자 결정까지 머지하지 않는다.
 
+## 나무 composer 숲 `jp_forest_r4` (2026-10-20, PR #3058 — 활엽만, 굽기 보류)
+
+- 사용자 판정(2026-10-20): r4 나무 단위 방식은 「괜찮다」. 다만 색은 jp_city 잔디·땅과 어울려야 한다 → r5 색 맞춤.
+- 붓으로 칠하는 것은 1층 숲 바닥 오토타일 `jp-forest4-bl`(모든 마스크가 같은 바닥 칸, solidfloor)이다. 그룹의 `composer`(타입 `TreeComposerDef`, `src/project/types/base.ts`)가 있으면
+  엔진 `shapeAutotileGroupAround` 가 끝에 `src/project/defaults/treeComposer.ts` 의 `composeTreesAround` 를 부른다 — 편집기 붓·지우개·채우기, 조수 지형 도구(mapTools·terrainBrush), forestPainter 모두 같은 경로다.
+  1층 층 뷰는 `autotileLayerView(map, 1)` 이 `composeTarget` 으로 맵을 함께 넘긴다(없으면 2~4층을 못 고친다).
+- 규칙: 밑동 칸 (x, y) 에 나무가 서는지는 그 칸 해시와 이웃 몇 칸만으로 정해진다(짝수 줄 또는 숲 남쪽 끝 줄, 줄마다 위상이 다른 3칸 간격, 5% 비움, 모양 T4/T3/T2 해시, 숲 속 나무는 그늘판).
+  칸마다 덮는 조각을 깊이(남쪽 = 앞)로 줄 세워 앞에서부터 4·3·2층에 둔다(이웃 수관이 겹친다). 수관은 `overhangOnTiles`(굽기가 잔디 그룹 `jp-lawn-dirt`·`jp-gravel-lawn` 멤버로 풀어 둔다) 위로만 넘친다. 2~4층에 남의 칸이 있으면 비킨다.
+  그래서 붓질은 국소이고 결정적이다 — 붓질을 쌓은 결과 = 한 번에 짠 결과(`scripts/content/jp-city/forest/ts_compose_check.mts`, 모양 5종 차이 0).
+- 원형(파이썬, 해시까지 같다): `forest_r4_compose.py` 의 `anchor_at`·`cell_stack`. 그림 `forest_r4.py`, 장면 `forest_r4_scenes.py`, r5 색 비교 `forest_r5_compare.py`, 상태 쪽 `forest_r4_viz.py`.
+- r5 색: jp 잔디 3281(색상 122°·채도 0.41·명도 0.52)에 버들항 나무/잔디 관계(나무 명도 중앙값 = 잔디 ×0.77)를 옮긴 램프 `pine_bamboo/keyaki_g1·g2·h1·h2·leafhi_g`, `aged_cedar/bark_g`(paletteContract.ts).
+- 지역 생성(jpRegionTool): paint_forest 는 활엽 칸에 숲 바닥만 칠하고, 키트를 다 찍은 뒤 `composeJpForestR4` 로 한 번에 세운다(집 위로 수관이 넘치지 않게).
+- 알려진 한계: 숲 옆에 길·물을 새로 칠해도 숲 그룹 재성형이 안 불리므로 이미 넘친 수관은 그대로다(숲 쪽을 한 번 다시 칠하면 맞춰진다).
+- Argon 적대 검수(r3 와 같은 설정): jp 활엽 6.6, **버들항 bd-tree 를 같은 composer 에 넣어도 6.6** — 이 판별 설정은 기준 그림도 0 을 못 만든다.
+- 굽기: `blocks/jp_forest_r4.py`(BLOCK_ORDER 끝), 임시 `--out-root` 로만 확인(23,459칸). 3/4 관문 미통과 — 보정 대기.
+
 ## 붓으로 칠하는 숲 오토타일 `jp_forest_r3` (2026-10-20, PR #3058 — 그림 머지 보류)
 
 - r1/r2 숲 팩(키트를 흩뿌리고 머리·하늘선·줄기 띠를 손으로 찍는 방식)을 대신하는 r3. 종마다 오토타일 하나 `jp-forest3-<bl|bb|sk|sg|mp|mh>`(활엽·대숲·벚·삼나무·단풍·섞인 숲 삼나무+활엽).

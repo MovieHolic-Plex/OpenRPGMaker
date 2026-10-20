@@ -1,5 +1,6 @@
 import type { AutotileGroup, AutotileNeighborhood, GameMap } from "../types";
 import type { TileLayerNo } from "../mapLayers";
+import { composeTreesAround } from "./treeComposer";
 
 // 범용 오토타일(지형 자동 연결) 엔진 — 순수 로직.
 // 이웃 연결 상태를 비트마스크로 계산하고 variantMap 조회로 배치 타일을 결정한다.
@@ -22,6 +23,8 @@ export interface AutotileMapView {
   readonly width: number;
   readonly height: number;
   readonly lowerTiles: number[];
+  /** 이 뷰가 빌려 온 맵(층 뷰). 나무 composer 그룹이 2~4층까지 고치려면 필요하다(autotileLayerView 가 채운다). */
+  readonly composeTarget?: GameMap;
 }
 
 /**
@@ -33,7 +36,7 @@ export interface AutotileMapView {
  */
 export function autotileLayerView(map: GameMap, layer: TileLayerNo): AutotileMapView {
   const { width, height } = map;
-  if (layer === 1) return { width, height, lowerTiles: map.lowerTiles };
+  if (layer === 1) return { width, height, lowerTiles: map.lowerTiles, composeTarget: map };
   if (layer === 3) return { width, height, lowerTiles: map.upperTiles };
   const tiles = layer === 2 ? map.lowerOverlayTiles : map.upperOverlayTiles;
   return { width, height, lowerTiles: tiles ?? new Array<number>(width * height).fill(-1) };
@@ -280,6 +283,16 @@ export function shapeAutotileGroupAround(
       if (typeof variant === "number") map.lowerTiles[cy * map.width + cx] = variant;
     }
   }
+  // 나무 composer 숲 바닥(jp 숲 r4): 칠하거나 지운 둘레의 나무 그림을 2~4층에 다시 짠다. 1층 그룹일 때만, 맵 전체를 알 때만.
+  if (group.composer && (group.layer ?? "lower") === "lower") {
+    const full = map.composeTarget ?? (isFullMap(map) ? map : undefined);
+    if (full) composeTreesAround(full, group, points, canWrite);
+  }
+}
+
+function isFullMap(map: AutotileMapView): map is AutotileMapView & GameMap {
+  const m = map as Partial<GameMap>;
+  return Array.isArray(m.upperTiles) && m.lowerTiles === map.lowerTiles;
 }
 
 /**

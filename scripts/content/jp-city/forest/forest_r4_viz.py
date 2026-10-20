@@ -43,6 +43,7 @@ def main():
         if a.r5_note: P.append(f'<p class="note">{html.escape(a.r5_note)}</p>')
         for sh, ko in (('touching', '연못·길·집 (jp_city 잔디 3281·길·연못 오토타일·집 키트)'), ('blob', '덩이')):
             P.append(f'<h2>{ko}</h2><div class="row">' + fig(cp5(f'r5-{sh}-before.png'), '전: r4 색') + fig(cp5(f'r5-{sh}-after.png'), '후: r5 잔디 맞춤')
+                     + fig(cp5(f'r5-{sh}-ts.png'), 'TS composer 가 임시 굽기 시트로 칠한 것(편집기 붓과 같은 경로)')
                      + fig(cp5(f'r5-{sh}-beodeul.png'), '버들항 잔디 위 버들항 나무(같은 composer)') + '</div>')
     P.append('<h1>jp 숲 r4 — 나무 composer (활엽만, 1×)</h1>')
     if a.note: P.append(f'<p class="note">{html.escape(a.note)}</p>')
