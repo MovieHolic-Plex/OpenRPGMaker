@@ -1,5 +1,5 @@
 import { furniturePushBlocks } from './furniturePushAnimation';
-import { canMoveFootprint, inBounds } from "@/project/collision";
+import { canMoveFootprint, inBounds, isLedgeCell } from "@/project/collision";
 import { UNIT_FOOTPRINT, passageBounds, rectsOverlap } from "@/project/footprint";
 import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
 import { resolvePlayerBody, playerPassageRect } from "@/project/playerFootprint";
@@ -108,7 +108,8 @@ function leg(
     toX,
     toY,
     self.passRows
-  ) && !isSpatialPlacementBlocking(
+  ) && !isLedgeCell(request.project, request.scene.map, toX, toY)
+    && !isSpatialPlacementBlocking(
     request.project,
     request.scene.session,
     request.scene.map.id,
