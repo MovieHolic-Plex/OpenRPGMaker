@@ -26,20 +26,29 @@ export function parseBeodeulForestType(value: unknown, fallback: BeodeulForestTy
  * grassBases: 둘레 그늘을 깔 1층 잔디 칸(기본 민무늬 잔디 737). 둘레 그늘은 투명 덧칸이라 어느 잔디 위에서나 같은 칸을 쓴다.
  */
 export function beodeulForestComposer(project: Project, target: TilesetDef, type: BeodeulForestType,
-  grassBases: readonly number[] = data.ground.apronBases): TreeComposerDef {
+  grassBases: readonly number[] = data.ground.apronBases, woodlandGround = false): TreeComposerDef {
   const { groundShadeCover, groundShadeRows, ...rest } = structuredClone(data.types[type]);
   const def = rest as unknown as TreeComposerDef;
   const g = data.ground;
   const common = project.tilesets.beodeul_ground ??= createBeodeulGroundTileset();
   ensureBeodeulGroundReferences(common);
-  const tr = translateTiles(common, target, [...g.floorTiles, ...g.floorEdgeTiles, ...g.apronTiles].filter((n) => n >= 0)).map;
+  // woodlandGround(r4 B): 숲 장면 잔디(채도 낮춤) 위 숲 바닥 칸 — 도로 숲 벽처럼 맵 바닥 전체가 숲 장면 잔디일 때
+  const floorSrc = woodlandGround ? g.woodlandFloorTiles : g.floorTiles;
+  const tr = translateTiles(common, target, [...floorSrc, ...g.floorEdgeTiles, ...g.apronTiles].filter((n) => n >= 0)).map;
   const to = (n: number) => (n >= 0 ? tr.get(n) ?? -1 : -1);
   def.ground = {
     shadeBits: g.shadeBits.map((b) => [...b]), shadeCover: groundShadeCover ?? g.shadeCover, shadeCoverBase: g.shadeCoverBase, shadeRows: groundShadeRows,
-    floorTiles: g.floorTiles.map(to), apronLayer: g.apronLayer, apronBases: [...grassBases], apronTiles: grassBases.flatMap(() => g.apronTiles.map(to)),
+    floorTiles: floorSrc.map(to), apronLayer: g.apronLayer, apronBases: [...grassBases], apronTiles: grassBases.flatMap(() => g.apronTiles.map(to)),
   };
-  edgeFloor.set(def, new Map(g.floorTiles.map((n, k) => [to(n), to(g.floorEdgeTiles[k]!)] as const)));
+  edgeFloor.set(def, woodlandGround ? new Map() : new Map(g.floorTiles.map((n, k) => [to(n), to(g.floorEdgeTiles[k]!)] as const)));
   return def;
+}
+
+/** 숲 장면 잔디(737 채도 ×0.84, r4 B) 를 대상 칩셋으로 이식한 칸 번호. 공용 잔디 737 은 바꾸지 않는다. */
+export function beodeulWoodlandGrass(project: Project, target: TilesetDef): number {
+  const common = project.tilesets.beodeul_ground ??= createBeodeulGroundTileset();
+  ensureBeodeulGroundReferences(common);
+  return translateTiles(common, target, [data.ground.woodlandGrass]).map.get(data.ground.woodlandGrass) ?? -1;
 }
 
 const edgeFloor = new WeakMap<TreeComposerDef, Map<number, number>>();
@@ -49,10 +58,12 @@ const edgeFloor = new WeakMap<TreeComposerDef, Map<number, number>>();
  * gap: 두 밑동이 |dx|<gx 이고 |dy|<gy 이면 같이 서지 못한다. 격자가 아니라 해시 순 탐욕 배치라 밑동 높이·간격이 그루마다 다르다.
  * shapes: [모양, 몫] — 해시로 뽑는다. coniferShade: 침엽 그림은 줄기 칸 한 칸만 그늘 덮개(수관 옆으로 번지지 않게).
  */
-const PLANT: Record<BeodeulForestType, { gx: number; gy: number; shapes: readonly (readonly [string, number])[] }> = {
-  broadleaf: { gx: 3, gy: 2, shapes: [["T4", 0.4], ["T3", 0.55], ["B2", 0.05]] },
-  conifer: { gx: 2, gy: 2, shapes: [["C3", 0.45], ["C2", 0.35], ["P1", 0.2]] },
-  mixed: { gx: 2, gy: 2, shapes: [["T4", 0.3], ["T3", 0.35], ["S", 0.35]] },
+type Shapes = readonly (readonly [string, number])[];
+const PLANT: Record<BeodeulForestType, { gx: number; gy: number; rim: Shapes; core: Shapes }> = {
+  // r4 B(2026-10-21 사용자 승인): 숲 덩이 한 톤 — 속(가장자리에서 2칸 이상)은 짙은 초록(D3 3×4·D2 덤불), 가장자리만 밝은 연두(큰 4×5 포함)
+  broadleaf: { gx: 2, gy: 2, rim: [["T3", 0.5], ["B2", 0.3], ["T4", 0.2]], core: [["D3", 0.85], ["D2", 0.15]] },
+  conifer: { gx: 2, gy: 2, rim: [["C3", 0.45], ["C2", 0.35], ["P1", 0.2]], core: [["C3", 0.45], ["C2", 0.35], ["P1", 0.2]] },
+  mixed: { gx: 2, gy: 2, rim: [["T4", 0.4], ["T3", 0.35], ["S", 0.25]], core: [["D3", 0.55], ["S", 0.4], ["D2", 0.05]] },
 };
 const CONIFER_ART = /fir|eef4bc|28ad5e|c27062/u;
 
@@ -80,6 +91,18 @@ export function planBeodeulForest(map: GameMap, def: TreeComposerDef, type: Beod
   const byShape = new Map<string, TreeComposerSprite[]>();
   for (const sp of def.sprites) if (!sp.dark) byShape.set(sp.shape, [...(byShape.get(sp.shape) ?? []), sp]);
   const rule = PLANT[type];
+  // 숲 밖(맵 밖은 숲으로 본다)까지 체비쇼프 거리(1~3)
+  const depth = new Uint8Array(W * H);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    if (!forest(x, y)) continue;
+    let d = 3;
+    for (let r = 1; r <= 2 && d === 3; r++) {
+      for (let dy = -r; dy <= r && d === 3; dy++) for (let dx = -r; dx <= r; dx++) {
+        if ((Math.abs(dx) === r || Math.abs(dy) === r) && inMap(x + dx, y + dy) && !forest(x + dx, y + dy)) { d = r; break; }
+      }
+    }
+    depth[y * W + x] = d;
+  }
   const cand: { x: number; y: number; k: number }[] = [];
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
     if (!forest(x, y)) continue;
@@ -107,13 +130,14 @@ export function planBeodeulForest(map: GameMap, def: TreeComposerDef, type: Beod
   for (const { x, y } of cand) {
     if (placed.some((p) => Math.abs(p.ax - x) < rule.gx && Math.abs(p.ay - y) < rule.gy)) continue;
     const r = treeHash(x, y, sd + 17) / 4294967296;
-    let acc = 0, first = rule.shapes.length - 1;
-    for (let i = 0; i < rule.shapes.length; i++) { acc += rule.shapes[i]![1]; if (r < acc) { first = i; break; } }
-    const order = [first, ...rule.shapes.map((_, i) => i).filter((i) => i !== first)];
+    const shapes = depth[y * W + x]! <= 1 ? rule.rim : rule.core;
+    let acc = 0, first = shapes.length - 1;
+    for (let i = 0; i < shapes.length; i++) { acc += shapes[i]![1]; if (r < acc) { first = i; break; } }
+    const order = [first, ...shapes.map((_, i) => i).filter((i) => i !== first)];
     const z = y * 4096 + (treeHash(x, y, sd + 23) % 4096);
     let done = false;
     for (const si of order) {
-      const shape = rule.shapes[si]![0];
+      const shape = shapes[si]![0];
       const tcols = def.trunkCols[shape] ?? [0];
       if (!tcols.every((i) => isF(x + i, y))) continue;
       const near = new Set(placed.filter((p) => Math.abs(p.ax - x) <= 3 && Math.abs(p.ay - y) <= 2).map((p) => p.sprite.name));
@@ -151,20 +175,14 @@ export function planBeodeulForest(map: GameMap, def: TreeComposerDef, type: Beod
       if (on) shade[yy * W + xx] = 1;
     }
   }
-  // 숲 속 바닥: 숲 밖(맵 밖은 숲으로 본다)까지 체비쇼프 거리 3 이상은 그늘 덩이, 2 는 반쯤 — 덩이 가장자리가 숲 칸 네모를 따르지 않게
+  // 숲 속 바닥(r4 B — jp 숲처럼 덩이 밑이 고르게 어둡다): 거리 2 이상은 그늘(3+ 전부, 2 는 80%), 가장자리 25%.
+  // 나무가 없는 숲 칸(맵 위 끝처럼 그림이 다 들어가지 못해 비운 줄)에는 덩이를 깔지 않는다 — 나무 없는 그늘(D1)
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
-    if (!forest(x, y)) continue;
-    let d = 3;
-    for (let r = 1; r <= 2 && d === 3; r++) {
-      for (let dy = -r; dy <= r && d === 3; dy++) for (let dx = -r; dx <= r; dx++) {
-        if ((Math.abs(dx) === r || Math.abs(dy) === r) && inMap(x + dx, y + dy) && !forest(x + dx, y + dy)) { d = r; break; }
-      }
-    }
-    // 나무가 없는 숲 칸(맵 위 끝처럼 그림이 다 들어가지 못해 비운 줄)에는 덩이를 깔지 않는다 — 나무 없는 그늘(D1)
+    const d = depth[y * W + x]!;
+    if (!d) continue;
     let tree = false;
     for (let dy = -1; dy <= 1 && !tree; dy++) for (let dx = -1; dx <= 1; dx++) if (stacks.has((y + dy) * W + x + dx) && inMap(x + dx, y + dy)) { tree = true; break; }
-    // 깊이별 확률(속 88% · 둘째 줄 50% · 가장자리 12%) — 덩이 안에 듬성한 볕 구멍, 가장자리는 칸 줄을 따라 곧게 서지 않는다(D3·D7)
-    const pct = d >= 3 ? 88 : d === 2 ? 50 : 12;
+    const pct = d >= 3 ? 100 : d === 2 ? 80 : 25;
     if (tree && treeHash(x, y, sd + 31) % 100 < pct) shade[y * W + x] = 1;
   }
   return { placements: placed.map(({ sprite, x0, y0, z }) => ({ sprite, x0, y0, z })), shade };
@@ -175,8 +193,8 @@ export function planBeodeulForest(map: GameMap, def: TreeComposerDef, type: Beod
  */
 export function composeBeodeulForest(project: Project, map: GameMap, target: TilesetDef, type: BeodeulForestType,
   forest: (x: number, y: number) => boolean, hold: (x: number, y: number) => boolean, seed: number,
-  write: (x: number, y: number) => boolean = hold, grassBases?: readonly number[]): TreeComposerDef {
-  const def = beodeulForestComposer(project, target, type, grassBases);
+  write: (x: number, y: number) => boolean = hold, grassBases?: readonly number[], woodlandGround = false): TreeComposerDef {
+  const def = beodeulForestComposer(project, target, type, grassBases, woodlandGround);
   const plan = planBeodeulForest(map, def, type, forest, hold, seed);
   composeTreesPlaced(map, def, plan.placements, plan.shade, forest, hold, write);
   const edge = edgeFloor.get(def)!;

@@ -45,12 +45,19 @@ def build(shapes, order, odds, rowStep, colStep, skip, shadeCover, shadeRows):
                 groundShadeCover=shadeCover, groundShadeRows=shadeRows)  # 그늘은 수관 아랫부분 몇 줄에서만 — 북쪽 숲 끝 수관 꼭대기 밑 잔디엔 그늘이 없다  # 접지 그늘 덮개 문턱(가는 침엽수는 칸을 덜 덮으므로 낮춘다)
 
 # 숲 속도 줄기 나무를 쓴다 — 수관만 있는 3×3 은 작아서 3칸 격자 무늬와 풀밭 틈이 드러났다(2026-10-20 시험).
+# woodland r4(B, 2026-10-21): 숲 덩이마다 나무색 한 톤 — 속(가장자리에서 2칸 이상)은 짙은 초록 D3·D2, 가장자리만 밝은 연두 T4·T3·B2.
+# 짙은 큰 나무는 원본에 3×4(1e09f0) 하나뿐이라 속은 3×4 + 2×2 덤불, 큰 4×5 는 가장자리에만 선다(크고 작은 수관 섞기).
+LIME_T4 = ['d43edd', '5844f6', 'b1d104']
+LIME_T3 = ['1a786c', 'd61d7e', 'bdd36e']
+LIME_B2 = ['37f48b', 'f4f319', '132848']
+DEEP_T3 = ['1e09f0']
+DEEP_B2 = ['47e17a', 'd105b2', 'cc0fcb', 'e9d9b3']
 defs = {
-    'broadleaf': build({'T4': ['d43edd', '5844f6'], 'T3': ['1a786c', 'd61d7e'], 'B2': ['37f48b', 'f4f319']},
+    'broadleaf': build({'T4': LIME_T4, 'T3': LIME_T3, 'B2': LIME_B2, 'D3': DEEP_T3, 'D2': DEEP_B2},
                        ['T4', 'T3', 'B2'], [0.4, 0.95], 2, 3, 0.05, 30, 2),
     'conifer': build({'C3': [FIR + 'l'], 'C2': [FIR + 'm', FIR + 'm2', FIR + 's'], 'P1': CYP},
                      ['C3', 'C2', 'P1'], [0.45, 0.85], 2, 2, 0.04, 12, 1),
-    'mixed': build({'T4': ['d43edd', '5844f6'], 'S': CYP + [FIR + 'm', FIR + 'm2'], 'T3': ['1a786c', 'd61d7e', FIR + 'l']},
+    'mixed': build({'T4': LIME_T4, 'S': CYP + [FIR + 'm', FIR + 'm2'], 'T3': LIME_T3 + [FIR + 'l'], 'D3': DEEP_T3, 'D2': DEEP_B2},
                    ['T4', 'S', 'T3'], [0.35, 0.7], 2, 3, 0.04, 20, 2),
 }
 ground = json.loads((R / 'tiledata/beodeul-ground/forest-ground.json').read_text())

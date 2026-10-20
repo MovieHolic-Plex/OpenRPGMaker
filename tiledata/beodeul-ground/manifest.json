@@ -3,7 +3,7 @@
   "texture": "tex_beodeul_ground",
   "tileSize": 16,
   "tilesPerRow": 8,
-  "count": 848,
+  "count": 912,
   "recipes": [
     {
       "id": "bdg-grass-0",
@@ -6973,6 +6973,981 @@
       ],
       "blocked": false,
       "kind": "forest-apron",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-woodland-grass",
+      "name": "숲 장면 잔디(채도 낮춤)",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          841
+        ]
+      ],
+      "blocked": false,
+      "kind": "woodland-grass",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-0",
+      "name": "숲 장면 숲 바닥 그늘 0",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          842
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-1",
+      "name": "숲 장면 숲 바닥 그늘 1",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          843
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-2",
+      "name": "숲 장면 숲 바닥 그늘 2",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          844
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-3",
+      "name": "숲 장면 숲 바닥 그늘 3",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          845
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-4",
+      "name": "숲 장면 숲 바닥 그늘 4",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          846
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-5",
+      "name": "숲 장면 숲 바닥 그늘 5",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          847
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-6",
+      "name": "숲 장면 숲 바닥 그늘 6",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          848
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-7",
+      "name": "숲 장면 숲 바닥 그늘 7",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          849
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-8",
+      "name": "숲 장면 숲 바닥 그늘 8",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          850
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-9",
+      "name": "숲 장면 숲 바닥 그늘 9",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          851
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-10",
+      "name": "숲 장면 숲 바닥 그늘 10",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          852
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-11",
+      "name": "숲 장면 숲 바닥 그늘 11",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          853
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-12",
+      "name": "숲 장면 숲 바닥 그늘 12",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          854
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-13",
+      "name": "숲 장면 숲 바닥 그늘 13",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          855
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-14",
+      "name": "숲 장면 숲 바닥 그늘 14",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          856
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-15",
+      "name": "숲 장면 숲 바닥 그늘 15",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          857
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-16",
+      "name": "숲 장면 숲 바닥 그늘 16",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          858
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-17",
+      "name": "숲 장면 숲 바닥 그늘 17",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          859
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-18",
+      "name": "숲 장면 숲 바닥 그늘 18",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          860
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-19",
+      "name": "숲 장면 숲 바닥 그늘 19",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          861
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-20",
+      "name": "숲 장면 숲 바닥 그늘 20",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          862
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-21",
+      "name": "숲 장면 숲 바닥 그늘 21",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          863
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-22",
+      "name": "숲 장면 숲 바닥 그늘 22",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          864
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-23",
+      "name": "숲 장면 숲 바닥 그늘 23",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          865
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-24",
+      "name": "숲 장면 숲 바닥 그늘 24",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          866
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-25",
+      "name": "숲 장면 숲 바닥 그늘 25",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          867
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-26",
+      "name": "숲 장면 숲 바닥 그늘 26",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          868
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-27",
+      "name": "숲 장면 숲 바닥 그늘 27",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          869
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-28",
+      "name": "숲 장면 숲 바닥 그늘 28",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          870
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-29",
+      "name": "숲 장면 숲 바닥 그늘 29",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          871
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-30",
+      "name": "숲 장면 숲 바닥 그늘 30",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          872
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-31",
+      "name": "숲 장면 숲 바닥 그늘 31",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          873
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-32",
+      "name": "숲 장면 숲 바닥 그늘 32",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          874
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-33",
+      "name": "숲 장면 숲 바닥 그늘 33",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          875
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-34",
+      "name": "숲 장면 숲 바닥 그늘 34",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          876
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-35",
+      "name": "숲 장면 숲 바닥 그늘 35",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          877
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-36",
+      "name": "숲 장면 숲 바닥 그늘 36",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          878
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-37",
+      "name": "숲 장면 숲 바닥 그늘 37",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          879
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-38",
+      "name": "숲 장면 숲 바닥 그늘 38",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          880
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-39",
+      "name": "숲 장면 숲 바닥 그늘 39",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          881
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-40",
+      "name": "숲 장면 숲 바닥 그늘 40",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          882
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-41",
+      "name": "숲 장면 숲 바닥 그늘 41",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          883
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-42",
+      "name": "숲 장면 숲 바닥 그늘 42",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          884
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-43",
+      "name": "숲 장면 숲 바닥 그늘 43",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          885
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-44",
+      "name": "숲 장면 숲 바닥 그늘 44",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          886
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-45",
+      "name": "숲 장면 숲 바닥 그늘 45",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          887
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-46",
+      "name": "숲 장면 숲 바닥 그늘 46",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          888
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-47",
+      "name": "숲 장면 숲 바닥 그늘 47",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          889
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-48",
+      "name": "숲 장면 숲 바닥 그늘 48",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          890
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-49",
+      "name": "숲 장면 숲 바닥 그늘 49",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          891
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-50",
+      "name": "숲 장면 숲 바닥 그늘 50",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          892
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-51",
+      "name": "숲 장면 숲 바닥 그늘 51",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          893
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-52",
+      "name": "숲 장면 숲 바닥 그늘 52",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          894
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-53",
+      "name": "숲 장면 숲 바닥 그늘 53",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          895
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-54",
+      "name": "숲 장면 숲 바닥 그늘 54",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          896
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-55",
+      "name": "숲 장면 숲 바닥 그늘 55",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          897
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-56",
+      "name": "숲 장면 숲 바닥 그늘 56",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          898
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-57",
+      "name": "숲 장면 숲 바닥 그늘 57",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          899
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-58",
+      "name": "숲 장면 숲 바닥 그늘 58",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          900
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-59",
+      "name": "숲 장면 숲 바닥 그늘 59",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          901
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-60",
+      "name": "숲 장면 숲 바닥 그늘 60",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          902
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-61",
+      "name": "숲 장면 숲 바닥 그늘 61",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          903
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-62",
+      "name": "숲 장면 숲 바닥 그늘 62",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          904
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-forest-ground-wfloor-63",
+      "name": "숲 장면 숲 바닥 그늘 63",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          905
+        ]
+      ],
+      "blocked": false,
+      "kind": "forest-floor",
       "forestGround": true
     }
   ],

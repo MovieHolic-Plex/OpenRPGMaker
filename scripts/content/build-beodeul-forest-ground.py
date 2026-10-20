@@ -78,21 +78,38 @@ def overlay(code):
 
 city = Image.open(R / 'public/assets/beodeul-city/beodeul-city-chipset.png').convert('RGBA')
 grass = city.crop((737 % 128 * T, 737 // 128 * T, 737 % 128 * T + T, 737 // 128 * T + T))
+# woodland r4(B, 2026-10-21 사용자 승인): 숲 장면(도로 숲 벽)의 바닥 잔디만 채도를 조금 낮춘다 — 공용 잔디 737 은 그대로.
+# 화소마다 HSV 채도 ×0.84(밝기·색상 그대로). 새 그림이라 3/4·화풍 관문(Opus 판정자) 대상이다.
+import colorsys
+def desat(im, k=0.84):
+    out = im.copy()
+    for yy in range(im.height):
+        for xx in range(im.width):
+            r, g, b, a = im.getpixel((xx, yy))
+            hh, ss, vv = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+            r2, g2, b2 = colorsys.hsv_to_rgb(hh, ss * k, vv)
+            out.putpixel((xx, yy), (round(r2 * 255), round(g2 * 255), round(b2 * 255), a))
+    return out
+wgrass = desat(grass)
 cat_paths = [R / 'src/assets/beodeulGroundCatalog.json', R / 'tiledata/beodeul-ground/manifest.json']
 m = json.loads(cat_paths[0].read_text())
 sheet = Image.open(OUT / 'chipset.png').convert('RGBA')
 cells = [sheet.crop((n % 8 * T, n // 8 * T, n % 8 * T + T, n // 8 * T + T)) for n in range(sheet.height // T * 8)]
 recipes = {r['id']: r for r in m['recipes']}
-used = max(n for r in m['recipes'] if not r['id'].startswith('bdg-forest-ground-') for row in r['rows'] for n in row)
+used = max(n for r in m['recipes'] if not r['id'].startswith('bdg-forest-ground-') and r['id'] != 'bdg-woodland-grass' for row in r['rows'] for n in row)
 keep = [c.tobytes() for c in cells[:used + 1]]
-nxt = used + 1
+nxt = max(n for r in m['recipes'] for row in r['rows'] for n in row) + 1  # 새 칸은 시트 끝에 — 옛 칸 번호는 그대로
 
 def slot(rid):
     global nxt
     if rid in recipes: return recipes[rid]['rows'][0][0]
     n = nxt; nxt += 1; return n
 
-floor_ids, edge_ids, apron_ids = [], [], []
+floor_ids, edge_ids, apron_ids, wfloor_ids = [], [], [], []
+rid = 'bdg-woodland-grass'; wgrass_id = slot(rid)
+while len(cells) <= wgrass_id: cells.append(Image.new('RGBA', (T, T)))
+cells[wgrass_id] = wgrass
+recipes[rid] = recipes.get(rid) or dict(id=rid, name='숲 장면 잔디(채도 낮춤)', width=1, height=1, layer=1, rows=[[wgrass_id]], blocked=False, kind='woodland-grass', forestGround=True)
 for code in range(NCODES):
     ov = overlay(code)
     # 숲 바닥 = 잔디에 나무 그늘(코드)만. 「숲 칸이면 어디나 그늘」은 덩이가 작은 마을 숲에서 칸 네모로 드러났다(2026-10-20 r2 시험).
@@ -109,6 +126,13 @@ for code in range(NCODES):
     while len(cells) <= n: cells.append(Image.new('RGBA', (T, T)))
     cells[n] = e; edge_ids.append(n)
     recipes[rid] = recipes.get(rid) or dict(id=rid, name=f'숲 가장자리 바닥 그늘 {code}', width=1, height=1, layer=1, rows=[[n]], blocked=False, kind='forest-floor-edge', forestGround=True)
+    wf = wgrass.copy(); wf.alpha_composite(ov)
+    if code == 0:
+        for p in ((4, 11), (12, 5)): wf.alpha_composite(Image.new('RGBA', (1, 1), OUTER), p)
+    rid = f'bdg-forest-ground-wfloor-{code}'; n = slot(rid)
+    while len(cells) <= n: cells.append(Image.new('RGBA', (T, T)))
+    cells[n] = wf; wfloor_ids.append(n)
+    recipes[rid] = recipes.get(rid) or dict(id=rid, name=f'숲 장면 숲 바닥 그늘 {code}', width=1, height=1, layer=1, rows=[[n]], blocked=False, kind='forest-floor', forestGround=True)
     if ov.getbbox():
         rid = f'bdg-forest-ground-apron-{code}'; n = slot(rid)
         while len(cells) <= n: cells.append(Image.new('RGBA', (T, T)))
@@ -126,7 +150,7 @@ assert [img.crop((n % 8 * T, n // 8 * T, n % 8 * T + T, n // 8 * T + T)).tobytes
 sys.path.insert(0, str(R / 'src/harnesses/_core'))
 from object_gate import refusal  # noqa: E402
 new_cells, seen = [], set()
-for n in [*floor_ids, *edge_ids, *[a for a in apron_ids if a >= 0]]:
+for n in [*floor_ids, *edge_ids, *wfloor_ids, wgrass_id, *[a for a in apron_ids if a >= 0]]:
     c = cells[n]
     if c.tobytes() in seen: continue
     seen.add(c.tobytes()); why = refusal(c, kind='terrain', context='bundle')
@@ -137,7 +161,7 @@ if new_cells and '--draft' not in sys.argv:
 img.save(OUT / 'chipset.png'); img.resize((512, img.height * 4), Image.Resampling.NEAREST).save(OUT / 'atlas.png')
 for p in cat_paths: p.write_text(json.dumps(m, ensure_ascii=False, indent=2) + '\n')
 ground = dict(shadeBits=[[dx, dy] for _, dx, dy in SHADE_BITS], shadeCover=30, shadeCoverBase=15,
-              floorTiles=floor_ids, floorEdgeTiles=edge_ids, apronLayer=2, apronBases=[737], apronTiles=apron_ids, source='beodeul_ground')
+              floorTiles=floor_ids, floorEdgeTiles=edge_ids, woodlandGrass=wgrass_id, woodlandFloorTiles=wfloor_ids, apronLayer=2, apronBases=[737], apronTiles=apron_ids, source='beodeul_ground')
 (R / 'tiledata/beodeul-ground/forest-ground.json').write_text(json.dumps(ground, indent=1) + '\n')
 # 미리보기: 코드별 숲 바닥·둘레 그늘
 pv = Image.new('RGBA', (NCODES * 18, 36), (40, 40, 46, 255))

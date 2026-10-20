@@ -15,7 +15,7 @@ import { CONSTRUCTION_TOOLS_V3 } from "./v3/constructionTools";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import type { ToolDefinition } from "./types";
 import { layerTileAt } from "@/project/mapLayers";
-import { composeBeodeulForest, type BeodeulForestType } from "./beodeulForest";
+import { beodeulWoodlandGrass, composeBeodeulForest, type BeodeulForestType } from "./beodeulForest";
 
 const BEODEUL_TEXTURE = "tex_beodeul_city";
 const BEODEUL_ID = "beodeul_city";
@@ -117,6 +117,9 @@ export function paintBeodeulWildRoute(input: BeodeulWildRouteInput): { roadCells
 
   const treeCells = plantBeodeulForestWall(project, map, tileset, reserved, rng, stampObject, forestType);
   const decor = dressBeodeulVerge(project, map, tileset, road, reserved, rng, stampObject);
+  // r4 B(2026-10-21 사용자 승인): 숲 장면의 바닥 잔디만 채도를 조금 낮춘 잔디로 — 공용 잔디 737 그림은 그대로, 이 맵의 칸만 바꾼다.
+  const woodlandGrass = beodeulWoodlandGrass(project, tileset);
+  if (woodlandGrass >= 0) for (let i = 0; i < map.lowerTiles.length; i++) if (map.lowerTiles[i] === BEODEUL_PLAIN_GRASS) map.lowerTiles[i] = woodlandGrass;
   return { roadCells: roadCells.length, treeCells, decor };
 }
 
@@ -149,7 +152,8 @@ export function plantBeodeulForestWall(project: Project, map: GameMap, tileset: 
   // 수관은 숲 칸 안에만(hold), 다시 쓰는 칸은 숲 칸 + 빈 칸(write) — 이미 찍힌 소품·덤불 칸은 건드리지 않는다.
   const bare = new Set<number>();
   for (let i = 0; i < w * h; i++) if (empty(i)) bare.add(i);
-  const composer = composeBeodeulForest(project, map, tileset, forestType, inForest, inForest, Math.floor(rng() * 997), (x, y) => inForest(x, y) || bare.has(y * w + x));
+  // 숲 바닥은 숲 장면 잔디(채도 낮춤) 위 그늘 칸 — 시공 끝에 맵의 737 잔디도 같은 잔디로 바꾼다(paintBeodeulWildRoute)
+  const composer = composeBeodeulForest(project, map, tileset, forestType, inForest, inForest, Math.floor(rng() * 997), (x, y) => inForest(x, y) || bare.has(y * w + x), undefined, true);
   let cells = 0;
   groundTiles = new Set((composer.ground?.apronTiles ?? []).filter(n => n >= 0));
   for (const index of forest) if (!empty(index)) cells++;
