@@ -24,11 +24,11 @@
   "....abbbbbba....",
   "....abbbbbba....",
   "....abbbbbba....",
-  "..aaggggggggaa..",
+  "..aaeeeeeeeeaa..",
   "..affffffffffa..",
   "..affffffffffa..",
-  "..affffffffffa..",
-  "..affffffffffa..",
+  "..agggggggggga..",
+  "..agggggggggga..",
   "..acccccccccca..",
   "..aeeeeeeeeeea..",
   "..aeehhhhhheea..",
@@ -47,5 +47,5 @@
   "..aaaaaaaaaaaa..",
   "................"
  ],
- "note": ""
+ "note": "r16: sloped top relit far-to-near (e far -> f -> g lit front edge), was lightest at the far edge"
 }

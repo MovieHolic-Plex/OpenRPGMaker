@@ -13,10 +13,10 @@
  },
  "rows": [
   "..aaaaaaaaaaaa..",
-  "..agggggggggga..",
-  "..agggggggggga..",
+  "..adddddddddda..",
   "..aeeeeeeeeeea..",
   "..agggggggggga..",
+  "..adddddddddda..",
   "..agggggggggga..",
   ".acccccccccccca.",
   ".acccgggcccccca.",
@@ -45,5 +45,5 @@
   "..aaaaaaaaaaaa..",
   "................"
  ],
- "note": ""
+ "note": "r16: column cap: d far -> e -> white lit edge + shadow row (was a flat white band)"
 }

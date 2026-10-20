@@ -666,8 +666,8 @@
  },
  {
   "id": "food-fastfood-counter",
-  "real": true,
-  "why": "horizontal top (lid/top cap/counter/opening) <=2px — counters_stalls"
+  "real": false,
+  "why": "false FAIL: counter top is the 8-row yellow surface the register and cups stand on, lit edge then red front"
  },
  {
   "id": "jumbo-bakery-deck-oven",
@@ -816,8 +816,8 @@
  },
  {
   "id": "restaurant-host-podium",
-  "real": true,
-  "why": "horizontal top (lid/top cap/counter/opening) <=2px — desks_tables"
+  "real": false,
+  "why": "false FAIL: sloped top with the open book is ~10 rows seen from above"
  },
  {
   "id": "restaurant-table-4p",
@@ -831,13 +831,13 @@
  },
  {
   "id": "dept-fitting-booth",
-  "real": true,
-  "why": "horizontal top (lid/top cap/counter/opening) <=2px — doors_stairs_screens"
+  "real": false,
+  "why": "false FAIL: kind wall: drawn flush into the back wall row, no protruding top"
  },
  {
   "id": "dept-fitting-curtain",
-  "real": true,
-  "why": "horizontal top (lid/top cap/counter/opening) <=2px — doors_stairs_screens"
+  "real": false,
+  "why": "false FAIL: kind wall: curtain booth flush in the back wall row"
  },
  {
   "id": "dept-sign-pillar",

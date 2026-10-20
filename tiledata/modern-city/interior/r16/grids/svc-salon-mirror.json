@@ -17,7 +17,9 @@
   "l": "#ddbf91ff",
   "m": "#f0ece8ff",
   "n": "#f4f6f8ff",
-  "o": "#ffffffff"
+  "o": "#ffffffff",
+  "p": "#bc9250ff",
+  "q": "#cba76cff"
  },
  "rows": [
   "................................",
@@ -45,9 +47,9 @@
   "bkkbijjjjjjjjjjjjjjjjjjjjjjibkkb",
   "bkkbiiiiiiiiiiiiiiiiiiiiiiiibkkb",
   "bkkbbbbbbbbbbbbbbbbbbbbbbbbbbkkb",
-  "bkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkb",
-  "bkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkb",
-  "bkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkb",
+  "bkppppppppppppppppppppppppppppkb",
+  "bkqqqqqqqqqqqqqqqqqqqqqqqqqqqqkb",
+  "bkqqqqqqqqqqqqqqqqqqqqqqqqqqqqkb",
   "bklllllllllllllldddlllllllllllkb",
   "bkffffffffffffffdddfffffffffffkb",
   "bkkkkkkkkkkkkkkbdddbkkkkkkkkkkkb",
@@ -69,5 +71,5 @@
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
   "................................"
  ],
- "note": ""
+ "note": "r16: vanity top 3 plain rows -> wood top (far #bc9250 -> #cba76c -> lit edge l), shadow strip f kept"
 }

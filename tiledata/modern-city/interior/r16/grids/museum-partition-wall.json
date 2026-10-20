@@ -18,10 +18,10 @@
  },
  "rows": [
   "..aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa..",
-  "..ajjjjjjjjjjjjjjjjjjjeeeejjjjjjjjjjjjjjjjjjja..",
-  "..ajjjjjjjjjjjjjjjjjjjeeeejjjjjjjjjjjjjjjjjjja..",
-  "..ajjjjjjjjjjjjjjjjjjjeeeejjjjjjjjjjjjjjjjjjja..",
-  "..ajjjjjjjjjjjjjjjlllllllllllljjjjjjjjjjjjjjja..",
+  "..afffffffffffffffffffeeeefffffffffffffffffffa..",
+  "..ahhhhhhhhhhhhhhhhhhheeeehhhhhhhhhhhhhhhhhhha..",
+  "..akkkkkkkkkkkkkkkkkkkeeeekkkkkkkkkkkkkkkkkkka..",
+  "..ahhhhhhhhhhhhhhhllllllllllllhhhhhhhhhhhhhhha..",
   "..ajjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjja..",
   "..ajjjjjjjbbbbbbbbbbbbbbbbbbbbbbbbbbbbjjjjjjja..",
   "..ajjjjjjjbhhhhhhhhhhhhhhhhhhhhhhhhhhbjjjjjjja..",
@@ -50,5 +50,5 @@
   "..aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa..",
   "................................................"
  ],
- "note": ""
+ "note": "r16: free-standing wall top thickness: grey far edge -> warm -> bright lit edge + shadow row (was same white as the face)"
 }

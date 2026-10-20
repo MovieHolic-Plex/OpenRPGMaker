@@ -20,7 +20,7 @@
  "rows": [
   "................................",
   ".aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.",
-  ".afffffffffffffccfffffffffffffa.",
+  ".agggggggggggggccggggggggggggga.",
   ".afffffffffffffccfffffffffffffa.",
   ".afffffffffffffccfffffffffffffa.",
   ".afffffffffffffccfffffffffffffa.",
@@ -39,7 +39,7 @@
   ".aiiimmmjmmmiiiiiiiimmmjmmmiiia.",
   ".aiiimmmjmmmiiiiiiiimmmjmmmiiia.",
   ".aiiimmmjmmmiiiiiiiimmmjmmmiiia.",
-  ".aiiiiiiiiiiiiiiiiiiiiiiiiiiiia.",
+  ".akkkkkkkkkkkkkkkkkkkkkkkkkkkka.",
   ".adddddddddddddddddddddddddddda.",
   ".agggggggggggggggggggggggggggga.",
   ".agggggggggggggggggggggggggggga.",
@@ -51,5 +51,5 @@
   ".aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.",
   "................................"
  ],
- "note": ""
+ "note": "r16: partition top edge lit (g), desk top now ends in a lit front edge (k) above the shadow row"
 }

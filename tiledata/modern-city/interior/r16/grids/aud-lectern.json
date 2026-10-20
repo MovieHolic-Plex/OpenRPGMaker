@@ -10,11 +10,10 @@
   "e": "#8c5a46ff",
   "f": "#a87828ff",
   "g": "#e2b448ff",
-  "h": "#f0d278ff"
+  "h": "#f0d278ff",
+  "i": "#a35f4cff"
  },
  "rows": [
-  "................",
-  "................",
   "................",
   "................",
   "....a.....a.....",
@@ -27,7 +26,9 @@
   "..aaaaaeeaaaaa..",
   "..adddddddddda..",
   "..adddddddddda..",
-  "..adddddddddda..",
+  "..aeeeeeeeeeea..",
+  "..aeeeeeeeeeea..",
+  "..aiiiiiiiiiia..",
   "..abbbbbbbbbba..",
   "..acccccccccca..",
   "..acggggggggca..",
@@ -46,5 +47,5 @@
   "..aaaaaaaaaaaa..",
   "................"
  ],
- "note": ""
+ "note": "r16: lectern top 3 -> 5 rows (d far -> e -> lit brick edge); microphone moved up 2 rows into the empty rows"
 }

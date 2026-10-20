@@ -33,13 +33,13 @@
   ".bgggggggggggb...bgggggggggggb...bgggggggggggb...bgggggggggggb..",
   ".bgggggggggggb...bgggggggggggb...bgggggggggggb...bgggggggggggb..",
   ".bbbbbbbbbbbbb...bbbbbbbbbbbbb...bbbbbbbbbbbbb...bbbbbbbbbbbbb..",
-  "................................................................",
-  "................................................................",
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-  "bkkkkbbbbbkkkkkkkkkkkbbbbbkkkkkkkkkkkbbbbbkkkkkkkkkkkbbbbbkkkkkb",
+  "bhhhhbbbbbhhhhhhhhhhhbbbbbhhhhhhhhhhhbbbbbhhhhhhhhhhhbbbbbhhhhhb",
   "biiiiblllbiiiiiiiiiiiblllbiiiiiiiiiiiblllbiiiiiiiiiiiblllbiiiiib",
   "biiiiblllbiiiiiiiiiiiblllbiiiiiiiiiiiblllbiiiiiiiiiiiblllbiiiiib",
   "biiiiblllbiiiiiiiiiiiblllbiiiiiiiiiiiblllbiiiiiiiiiiiblllbiiiiib",
+  "biiiiblllbiiiiiiiiiiiblllbiiiiiiiiiiiblllbiiiiiiiiiiiblllbiiiiib",
+  "bkkkkblllbkkkkkkkkkkkblllbkkkkkkkkkkkblllbkkkkkkkkkkkblllbkkkkkb",
   "beeeebbbbbeeeeeeeeeeebbbbbeeeeeeeeeeebbbbbeeeeeeeeeeebbbbbeeeeeb",
   "bffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb",
   "bffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb",
@@ -66,5 +66,5 @@
   "................................................................",
   "................................................................"
  ],
- "note": ""
+ "note": "r16: counter top 4 -> 6 rows, relit far h -> i -> k lit edge (was lightest at the far edge); uses the 2 empty rows above"
 }

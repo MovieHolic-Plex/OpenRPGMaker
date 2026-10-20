@@ -15,11 +15,11 @@
  "rows": [
   "................................",
   "..........aaaaaaaaaaaa..........",
-  "......aaaaggggggggggggaaaa......",
+  "......aaaaffffffffffffaaaa......",
   "....aaggggggggggggggggggggaa....",
   "...agggggggggggggggggggggggga...",
-  "..agggggggggggggggggggggggggga..",
-  "..affffffffffffffffffffffffffa..",
+  "..ahhhhhhhhhhhhhhhhhhhhhhhhhha..",
+  "..adddddddddddddddddddddddddda..",
   "..affffffffffffffffffffffffffa..",
   "..afhfffffffffffffffffbbfffffa..",
   "..afhfffffffffffffffffbbfffffa..",
@@ -62,5 +62,5 @@
   "....aaa..................aaa....",
   "................................"
  ],
- "note": ""
+ "note": "r16: tank lid ellipse: far rim f -> g -> white lit front rim + shadow row under the rim"
 }
