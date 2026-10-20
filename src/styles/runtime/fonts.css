@@ -6,3 +6,6 @@
    9px 글꼴을 18px(정확히 2배)로 써서 480×320 네이티브 격자에 맞는다 — Galmuri11 을 18px 로 쓰면 획이 뭉개져 고르지 않았다(2026-10-15 비교).
    woff2 는 public/assets/fonts/ 에 두고 CSS 가 쓸 때만 내려받는다(번들에 넣지 않는다). Neo둥근모는 계속 뺀 채다. */
 @font-face { font-family: "Galmuri9"; src: url("/assets/fonts/Galmuri9.woff2") format("woff2"); font-display: swap; }
+/* 에메랄드 타이틀 로고 전용 굵은 갈무리(Galmuri11 Bold, 같은 OFL). Galmuri9 을 4배(36px)로 키우면 「즌」처럼 받침까지 세 줄인 글자가
+   9px 칸에 눌려 ㅈ 머리가 뭉개졌다(2026-10-20 아스트라 첫 10분 검수). 11px 글꼴을 3배(33px)로 써서 격자에 맞춘다. */
+@font-face { font-family: "Galmuri11 Bold"; src: url("/assets/fonts/Galmuri11-Bold.woff2") format("woff2"); font-display: swap; }

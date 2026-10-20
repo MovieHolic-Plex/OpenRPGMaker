@@ -252,6 +252,7 @@ async function walkThroughDoor(fromMapId, toMapId) {
 /** 전투가 끝날 때까지: 포획 모드면 체력이 반 아래일 때 가방 → 첫 포획구, 아니면 싸운다 → 가장 강한 기술. */
 async function fight(label, { capture = false, run = false } = {}) {
   const log = [];
+  const switchedFor = new Set();
   for (let turn = 0; turn < 40; turn++) {
     if (!(await present("battle-scene"))) break;
     if (await present("battle-result-panel")) {
@@ -273,6 +274,11 @@ async function fight(label, { capture = false, run = false } = {}) {
     }
     const ready = await page.locator('[data-testid="actor-command-fight"]').count();
     if (!ready) { await page.keyboard.press("Enter"); await page.waitForTimeout(300); continue; }
+    // 플레이어처럼: 체력이 바닥이면 회복약, 상성이 크게 불리하면 더 나은 동료로 교체(적 한 마리당 한 번).
+    if (!capture) {
+      const tactic = await playerTactic(switchedFor);
+      if (tactic) { log.push(`turn ${turn}: ${tactic}`); await page.waitForTimeout(400); continue; }
+    }
     // 적 체력은 화면 HUD 글자(「현재/최대」)에서 읽는다 — 플레이어가 보는 그 값.
     const enemyHp = await page.evaluate(() => {
       for (const node of document.querySelectorAll('[data-testid^="battle-enemy-hp-"]')) {
@@ -343,6 +349,82 @@ async function bestSkill(skills) {
   return best;
 }
 
+/** 종·레벨로 지금 쓸 수 있는 기술(배운 것 중 마지막 넷)과 그 적에 대한 최고 점수. */
+function moveScore(speciesId, level, enemyTypes) {
+  const sp = (project.database.monsterSpecies ?? []).find((s) => s.id === speciesId);
+  if (!sp) return 0;
+  const known = (sp.skillsByLevel ?? []).filter((e) => e.level <= level).slice(-4);
+  let best = 0;
+  for (const { skillId } of known) {
+    const sk = skillById.get(skillId); if (!sk) continue;
+    const el = sk.elementId ?? "normal", power = sk.power ?? 30;
+    let eff = 1; for (const t of enemyTypes) eff *= CHART[el]?.[t] ?? 1;
+    best = Math.max(best, power * eff * ((sp.types ?? []).includes(el) ? 1.5 : 1));
+  }
+  // 받는 쪽 상성: 적 타입이 내 타입을 2배로 치면 깎는다.
+  let taken = 1; for (const et of enemyTypes) for (const mt of sp.types ?? []) taken *= CHART[et]?.[mt] ?? 1;
+  return best / Math.max(0.5, taken);
+}
+async function playerTactic(switchedFor) {
+  const info = await page.evaluate(() => {
+    const scene = document.querySelector('[data-testid="battle-scene"]');
+    const enemy = [...document.querySelectorAll(".battle-enemy-name")].map((n) => n.textContent?.trim()).find(Boolean) ?? "";
+    let enemyHp = null;
+    for (const node of document.querySelectorAll('[data-testid^="battle-enemy-hp-"]')) { const [hp, max] = (node.textContent ?? "").split("/").map(Number); if (max > 0 && hp > 0) enemyHp = hp / max; }
+    const box = scene?.querySelector(".battle-party .battle-actor-status") ?? scene?.querySelector(".battle-party");
+    const m = (box?.textContent ?? "").match(/(\d+)\s*\/\s*(\d+)/);
+    const name = (box?.textContent ?? "").trim().split(/\s*Lv/)[0].trim();
+    return { enemy, enemyHp, name, hp: m ? Number(m[1]) : null, max: m ? Number(m[2]) : null };
+  });
+  const enemyName = info.enemy.replace(/\s*Lv.*$/, "");
+  const enemyTypes = speciesByName.get(enemyName)?.types ?? [];
+  const party = (await live()).party;
+  const nameOf = (m) => (project.database.monsterSpecies ?? []).find((sp) => sp.id === m.speciesId)?.name ?? "";
+  const active = party.find((m) => (m.currentHp ?? 1) > 0 && (m.nickname ?? nameOf(m)) === info.name) ?? party.find((m) => (m.currentHp ?? 1) > 0 && nameOf(m) === info.name) ?? party.find((m) => (m.currentHp ?? 1) > 0);
+  const back = async () => { await page.keyboard.press("Escape"); await page.waitForTimeout(250); if (!(await page.locator('[data-testid="actor-command-fight"]').count())) { const b = page.locator('[data-testid="actor-command-back"]'); if (await b.count()) { await b.first().focus(); await page.keyboard.press("Enter"); await page.waitForTimeout(250); } } };
+  // 1) 회복약 — 내 체력 35% 아래이고 상대가 아직 버티면.
+  if (info.hp !== null && info.max && info.hp / info.max < 0.35 && (info.enemyHp === null || info.enemyHp > 0.25)) {
+    const item = page.locator('[data-testid="actor-command-item"]');
+    if (await item.count() && await item.isEnabled()) {
+      await item.focus(); await page.keyboard.press("Enter"); await page.waitForTimeout(300);
+      const potion = page.locator('[data-testid^="actor-item-"]').filter({ hasText: /회복약|포션|약/ }).first();
+      if (await potion.count()) {
+        await potion.focus(); await page.keyboard.press("Enter"); await page.waitForTimeout(300);
+        const target = page.locator('button[data-testid^="battle-target-"]:not([data-testid="battle-target-cancel"])');
+        if (await target.count()) { await target.first().focus(); await page.keyboard.press("Enter"); }
+        await page.waitForFunction(() => !document.querySelector('[data-testid="battle-scene"]') || document.querySelector('[data-testid="battle-result-panel"]') || document.querySelector('[data-testid="actor-command-fight"]') || document.querySelector('[data-testid^="actor-switch-"]'), undefined, { timeout: 45000 }).catch(() => {});
+        return `potion (${info.hp}/${info.max})`;
+      }
+      await back();
+    }
+  }
+  // 2) 교체 — 다른 동료의 상성 점수가 1.6배 이상이고 체력이 반 이상이면(적 한 마리에 한 번).
+  if (active && enemyTypes.length && !switchedFor.has(enemyName)) {
+    const mine = moveScore(active.speciesId, active.level, enemyTypes);
+    const better = party.filter((m) => m !== active && (m.currentHp ?? 1) > 0).map((m) => ({ m, score: moveScore(m.speciesId, m.level, enemyTypes) })).sort((a, b) => b.score - a.score)[0];
+    if (better && better.score >= mine * 1.6) {
+      const pk = page.locator('[data-testid="actor-command-pkmn"]');
+      if (await pk.count() && await pk.isEnabled()) {
+        await pk.focus(); await page.keyboard.press("Enter"); await page.waitForTimeout(300);
+        const name = (project.database.monsterSpecies ?? []).find((s) => s.id === better.m.speciesId)?.name ?? "";
+        const btn = page.locator('[data-testid^="actor-switch-"]').filter({ hasText: name }).first();
+        const ok = await btn.count() && /체력\s*(\d+)\s*\/\s*(\d+)/.test(await btn.textContent() ?? "") && (() => true)();
+        if (ok) {
+          const [, h, mx] = (await btn.textContent()).match(/체력\s*(\d+)\s*\/\s*(\d+)/);
+          if (Number(h) / Number(mx) >= 0.5) {
+            switchedFor.add(enemyName);
+            await btn.focus(); await page.keyboard.press("Enter");
+            await page.waitForFunction(() => !document.querySelector('[data-testid="battle-scene"]') || document.querySelector('[data-testid="battle-result-panel"]') || document.querySelector('[data-testid="actor-command-fight"]') || document.querySelector('[data-testid^="actor-switch-"]'), undefined, { timeout: 45000 }).catch(() => {});
+            return `switch → ${name} (${better.score.toFixed(0)} vs ${mine.toFixed(0)})`;
+          }
+        }
+        await back();
+        switchedFor.add(enemyName);
+      }
+    }
+  }
+  return null;
+}
 const here = () => page.evaluate(() => window.__oprnDebug.readLive());
 const eventRunning = () => page.evaluate(() => Boolean(window.__oprnHooksScene?.running));
 /** 대사·선택지가 없고 이벤트 실행도 끝날 때까지 — 배지 연출처럼 상자 없이 도는 구간에 순간이동하면 연출이 끊기고 그림이 남았다. */
