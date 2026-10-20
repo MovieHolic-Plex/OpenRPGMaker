@@ -24,7 +24,7 @@ import { OBJECT_GATE_KINDS, OBJECT_GATE_STYLE_KINDS, defaultObjectGateStyleKind,
 import { GATE_DATA, calibratedFinalProfiles, listFinals, listQueueBatches, readFinal, readFinalProfiles, readPng, readReceipt, styleRefs, writeFinal, writeFinalProfile, writeHeldImage } from './store';
 import { receiptCells } from './cells';
 
-export const FINAL_RULES_VERSION = 3;
+export const FINAL_RULES_VERSION = 4;
 export const FINAL_JUDGE = { provider: 'claude-cli' as const, model: 'claude-opus-5-5', effort: 'medium' };
 export const FINAL_BATCH = 6;
 /** 표 수. 각 표는 다른 묶음 섞기로 따로 부른다. 모든 표가 pass 일 때만 pass — 앞 표가 fail 이면 뒤 표는 부르지 않는다(규칙 v3: 한 번만 보면 같은 그림이 판마다 뒤집혔다). */
@@ -48,7 +48,7 @@ CHARGES — fail the candidate if ANY one holds (cite it in "reasons"):
 5. TOP-DOWN SLAB: no front face (fewer than 3 rows) — a pure plan view of a standing object.
 6. COLUMN CAP: a column-like object whose top end is a dome, hat or flat band instead of an elliptical cap plate that is narrower again above and below its widest rows.
 7. WRONG KIND: the declared kind does not describe the object. Exempt kinds skip charges 1-6 ONLY when the object truly is that kind (a cabinet, rack, crate, display case or sign stand called organic, debris, flat, wall_mounted, terrain or front_prop is a WRONG KIND and fails). front_prop is only a single flat front panel (A-frame sign, post sign, laundry/net drying frame, banner stand) with no volume and holding no goods.
-8. STYLE BELOW THE BEODEUL BAR: compare with the Beodeul reference pieces of the same style kind at the same scale. Each theme keeps its own palette — never judge hue, brightness or saturation. Charge shallow craft: about 2-3 lightness steps per material instead of Beodeul's 5-6; a uniform near-black or pure-black outline around every shape instead of the darker tone of the adjacent material; large flat fills (5x5 source pixels or more of one colour with no grain, dot or variation); clearly less visible information per 16x16 tile than the reference; muddy, noisy or broken pixel clusters; pillow shading. Small or thin pieces are not failed for being small, but they must look as crafted as the reference beside them.
+8. STYLE BELOW THE BEODEUL BAR: compare with the Beodeul reference pieces of the same style kind at the same scale. Each theme keeps its own palette — never judge hue, brightness or saturation. Charge shallow craft: about 2-3 lightness steps per material instead of Beodeul's 5-6; a uniform near-black or pure-black outline around every shape instead of the darker tone of the adjacent material; large flat fills (5x5 source pixels or more of one colour with no grain, dot or variation); clearly less visible information per 16x16 tile than the reference; muddy or broken pixel clusters; pillow shading. The references ARE the bar, texture included: Beodeul foliage, grass, soil and stone are built from dense multi-tone speckle and dither, and that is texture, not noise. Charge "noisy", "muddy" or "speckled" only when the candidate is clearly LESS readable or LESS structured than the reference shown beside it — a piece drawn with the same kind of texture and value range as the reference does not get charge 8 for that texture. Small or thin pieces are not failed for being small, but they must look as crafted as the reference beside them.
 
 STANDING KINDS (charges 1-6 apply; minimum top rows are SOURCE pixel rows of the main top plane, back edge to front-edge line inclusive):
 ${STANDING}
