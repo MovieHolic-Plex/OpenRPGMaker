@@ -564,6 +564,19 @@ async function applyOp(page, op, runState) {
       }
       return;
     }
+    case "pressUntilJs": {
+      // 조건식(fn 문자열)이 참이 될 때까지 key 를 누른다. 누르기 전에 먼저 본다 — 선택지가 떠 있으면 누르지 않게
+      // fn 쪽에서 선택지 존재를 참으로 돌려주면 된다. 장면 사이 걷기·암전처럼 대사창이 잠깐 없는 구간에도 멈추지 않는다.
+      const max = op.maxPresses ?? 40;
+      const ok = () => page.evaluate(`(${op.fn})()`).catch(() => false);
+      for (let i = 0; i < max; i += 1) {
+        if (await ok()) return;
+        await page.keyboard.press(op.key ?? "Enter");
+        await page.waitForTimeout(op.settleMs ?? 450);
+      }
+      if (!(await ok())) throw new Error(`pressUntilJs: ${max}회 뒤에도 조건이 참이 아니다: ${op.fn}`);
+      return;
+    }
     case "evalToFile": {
       const value = await page.evaluate(`(${op.fn})()`);
       await writeFile(op.out, JSON.stringify(value, null, 1));
