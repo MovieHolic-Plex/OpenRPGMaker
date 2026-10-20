@@ -1,0 +1,253 @@
+{
+ "schema": "oprn-object-gate-profile/1",
+ "profileHash": "4d8774b517f41638",
+ "status": "rejected",
+ "calibratedAt": "2026-10-20T13:02:36.792Z",
+ "bad": {
+  "total": 30,
+  "caught": 28,
+  "missed": [
+   "interior/pew__v5",
+   "interior/stone_throne__w52-A"
+  ],
+  "refer": 9
+ },
+ "good": {
+  "total": 29,
+  "passed": 25,
+  "falseFail": [
+   "interior/roundtable__v5",
+   "interior/timber_prop__w53-B",
+   "interior/cheese_wheels__v5",
+   "murim/well__A"
+  ],
+  "refer": 3
+ },
+ "tiers": {
+  "A": {
+   "bad": {
+    "total": 119,
+    "passed": 8
+   },
+   "good": {
+    "total": 190,
+    "passed": 144
+   }
+  },
+  "B": {
+   "bad": {
+    "total": 7,
+    "passed": 2
+   },
+   "good": {
+    "total": 0,
+    "passed": 0
+   }
+  },
+  "C": {
+   "bad": {
+    "total": 55,
+    "passed": 25
+   },
+   "good": {
+    "total": 37,
+    "passed": 10
+   }
+  },
+  "U": {
+   "bad": {
+    "total": 16,
+    "passed": 1
+   },
+   "good": {
+    "total": 15,
+    "passed": 1
+   }
+  },
+  "D": {
+   "bad": {
+    "total": 16,
+    "passed": 11
+   },
+   "good": {
+    "total": 0,
+    "passed": 0
+   }
+  },
+  "K": {
+   "bad": {
+    "total": 0,
+    "passed": 0
+   },
+   "good": {
+    "total": 10,
+    "passed": 0
+   }
+  }
+ },
+ "holdout": {
+  "bad": {
+   "total": 47,
+   "caught": 45,
+   "missed": [
+    "holdout/mir_pew__v5",
+    "holdout/mir_stone_throne__w52-A"
+   ]
+  },
+  "good": {
+   "total": 47,
+   "passed": 42,
+   "falseFail": [
+    "holdout/mir_straw_bed__w44-A",
+    "holdout/mir_timber_prop__w53-B",
+    "holdout/mir_cheese_wheels__v5",
+    "holdout/mir_well__A",
+    "holdout/hue_cheese_wheels__v5"
+   ]
+  }
+ },
+ "fresh": {
+  "bad": {
+   "total": 7,
+   "caught": 7,
+   "missed": []
+  },
+  "good": {
+   "total": 42,
+   "passed": 28,
+   "falseFail": [
+    "fresh3/b3_prop-stall_jug_bottle",
+    "fresh3/b3_prop-veg_cart",
+    "fresh3/b3_prop-anchor_display",
+    "fresh3/b3_prop-mooring_bollard",
+    "fresh3/b3_prop-tree_planter",
+    "fresh3/b3_prop-statue_sage",
+    "fresh/g6_snow",
+    "fresh/g20_campus",
+    "fresh/g53_modern_city",
+    "fresh/g44_desert",
+    "fresh/g18_modern_city",
+    "fresh2/g7_steampunk",
+    "fresh2/g12_modern_city",
+    "fresh2/g26_steampunk"
+   ]
+  }
+ },
+ "frozen2": {
+  "set": "fresh5",
+  "bad": {
+   "total": 16,
+   "caught": 13,
+   "missed": [
+    "fresh5/s007_wizarding",
+    "fresh5/s011_modern_city",
+    "fresh5/s022_interior"
+   ]
+  },
+  "good": {
+   "total": 41,
+   "passed": 31,
+   "falseFail": [
+    "fresh5/s024_sf",
+    "fresh5/s031_modern_city",
+    "fresh5/s049_interior",
+    "fresh5/s054_sf",
+    "fresh5/s055_gothic",
+    "fresh5/s059_prehistoric",
+    "fresh5/s081_steampunk",
+    "fresh5/s084_prehistoric",
+    "fresh5/s086_interior",
+    "fresh5/s089_sf"
+   ]
+  }
+ },
+ "frozen": {
+  "set": "fresh4",
+  "bad": {
+   "total": 19,
+   "caught": 18,
+   "missed": [
+    "fresh4/q001_gothic"
+   ]
+  },
+  "good": {
+   "total": 31,
+   "passed": 18,
+   "falseFail": [
+    "fresh4/q008_interior",
+    "fresh4/q019_prehistoric",
+    "fresh4/q029_pirate",
+    "fresh4/q031_sf",
+    "fresh4/q048_modern_city",
+    "fresh4/q052_sengoku",
+    "fresh4/q054_desert",
+    "fresh4/q078_interior",
+    "fresh4/q088_farm",
+    "fresh4/q092_modern_city",
+    "fresh4/q102_steampunk",
+    "fresh4/q110_beodeul",
+    "fresh4/q118_modern_city"
+   ]
+  },
+  "style": {
+   "shallow": {
+    "total": 6,
+    "caught": 6,
+    "missed": []
+   },
+   "beodeul": {
+    "total": 15,
+    "passed": 11,
+    "falseFail": [
+     "fresh4/q086_beodeul",
+     "fresh4/g4_beodeul-road",
+     "fresh4/g4_beodeul-sand",
+     "fresh4/g4_beodeul-farmland"
+    ]
+   }
+  }
+ },
+ "probe": {
+  "total": 144,
+  "passed": 0,
+  "missed": []
+ },
+ "humanOnly": {
+  "total": 4,
+  "refer": 4,
+  "autoPassed": []
+ },
+ "style": {
+  "badTotal": 8,
+  "caught": 8,
+  "missed": [],
+  "badRefer": 0,
+  "goodTotal": 14,
+  "passed": 14,
+  "falseFail": [],
+  "goodRefer": 0,
+  "groups": {
+   "farm-user": {
+    "total": 10,
+    "passed": 5
+   },
+   "quality-before": {
+    "total": 60,
+    "passed": 13
+   },
+   "quality-after": {
+    "total": 60,
+    "passed": 17
+   },
+   "beodeul-heldout": {
+    "total": 13,
+    "passed": 12
+   },
+   "synthetic-shallow": {
+    "total": 6,
+    "passed": 0
+   }
+  }
+ },
+ "judge": "claude-sonnet-5-5(high)"
+}

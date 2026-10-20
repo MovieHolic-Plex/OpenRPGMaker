@@ -17,7 +17,7 @@
  * ④ 보정은 확실 라벨(A)만 통과·차단 기준으로 세고, 다툼(C)·사용자 수락(U)은 따로 보고한다. 라벨은 숫자에 맞춰 바꾸지 않는다. 숨김 표본(hidden)은 규칙을 조정한 뒤 처음 재는 표본이다.
  */
 
-export const OBJECT_GATE_RULES_VERSION = 9;
+export const OBJECT_GATE_RULES_VERSION = 10;
 
 export type ObjectGateKind =
   | "tall_furniture" | "low_furniture" | "seat" | "frame" | "container" | "round_body" | "column" | "box"
@@ -32,7 +32,7 @@ export const OBJECT_GATE_KINDS: Record<ObjectGateKind, { meaning: string; minTop
   // 2026-10-14: 윗면 하한을 3/4 계약(modern-style-bible §11-1: 4~6px, 새 그림은 5~6)의 아래 끝 4 로 맞췄다 — 세 줄짜리는 계약 미달이었다.
   tall_furniture: { meaning: "tall furniture standing against a wall: bookshelf, cabinet, wardrobe, drawer chest, cupboard, fireplace", minTopRows: 4 },
   low_furniture: { meaning: "low furniture: table, desk, tea table, bed, counter, bench top", minTopRows: 3 },
-  seat: { meaning: "seat: stool, chair, cushion seat (the seat surface must be seen from above)", minTopRows: 4 },
+  seat: { meaning: "seat: stool, chair, bench, sofa, pew, cushion seat (the SEAT surface where one sits must be seen from above; its backrest and armrests are exempt from the top-surface rule)", minTopRows: 4 },
   frame: { meaning: "open frame or rack: weapon rack, gong/bell frame, target stand, sandbag frame, cell bars, well pulley frame (its horizontal beams and base must show top faces)", minTopRows: 3 },
   container: { meaning: "container with an opening: pot, jar, cauldron/ding, well, brazier, censer, open coffin (the inside of the opening must be seen from above)", minOpeningRows: 4 },
   round_body: { meaning: "closed cylinder: drum, barrel, round stool (the top cap is an ellipse seen from above)", minTopRows: 4 },
@@ -58,6 +58,7 @@ EVIDENCE OF A TOP SURFACE (any one is enough, and you must point at rows):
  (d) contents, water or a heap visible inside an open container.
 NOT A TOP SURFACE: the 1-row outline at the silhouette; a 1-2 row rim or lip; a vertical face (door, drawer front, panel, window, a backrest or cushion seen face-on); a cornice or beam drawn as a front-facing strip with no edge line and no shadow; a dome-shaped top end that is rounded only at its upper edge and has a flat bottom edge directly on a narrower shaft (a "hat" or rounded end is not an ellipse cap).
 DECOR PARTS (rules v9): things that stand on, grow out of or rise above the main body but are not part of its built structure — a tree canopy or plant in a planter, pot or flowerbox; the figure of a statue standing on its plinth; a water jet or spout over a basin; goods, screens, monitors, ornaments or a sign placed on a counter, table or shelf top; a flag on a pole. List them in "surfaces" with evidence "decor": they are not expected to show a top surface, and they are NOT the main body. Measure the main body that carries them (the planter mouth, the plinth top, the counter top) as usual. NEVER call a part of the object's own structure decor: a backrest, headboard, cabinet or shelf body, hood, canopy frame, awning, roof, chimney, engine or machine housing, a stacked second crate, a door or panel are structure.
+SEAT PARTS (rules v10, user decision 2026-10-20) — ONLY when the caller-supplied kind is seat (chair, sofa, bench, pew, stool with a back): the BACKREST and the ARMRESTS are exempt from the top-surface rule. They may be drawn as vertical faces. List each of them in "surfaces" with evidence "seat_back". The MAIN BODY of a seat is its SEAT surface (where one sits): measure "main_top_rows" on the seat surface, not on the backrest, and decide "reads_as" from the seat surface and the front face below it. A seat whose sitting surface shows no top (only a front band, or a 1-3 row strip) is still front_elevation. For every other kind there is no such exemption and "seat_back" must not be used.
 FRONT FACE: the vertical south face (or the legs, apron or supports of an open piece). A drawing with no front face (fewer than 3 rows) is a flat top-down slab.
 Measure the MAIN BODY (the largest volume), not small details. Use the EXACT COLUMN SCAN and the SILHOUETTE WIDTH profile given with the question for every row number; row numbers equal the source-pixel rows on the left ruler of image 1.
 Image 1 is the candidate magnified 10x with the source row numbers on the left. Image 2 shows REAL reference pairs of the same objects (red frame = WRONG drawing, green frame = RIGHT drawing). Image 3 is a fixed GUIDE of synthetic shapes (green = right, red = wrong). Compare the structure of the candidate with them; do not judge by subject or detail.`;
@@ -94,7 +95,7 @@ Compare against the reference of the same kind at the same scale. Do not fail a 
 export const OBJECT_GATE_OUTPUT_FORMAT = `Reply ONLY JSON:
 {"facing": "south"|"east"|"west"|"north"|"round"|"unclear",
  "kind_matches": bool,
- "surfaces": [{"part": string, "rows": "a-b", "evidence": "a"|"b"|"c"|"d"|"none"|"decor", "front_edge_line_row": int|null, "eave_shadow_rows": string|null}],
+ "surfaces": [{"part": string, "rows": "a-b", "evidence": "a"|"b"|"c"|"d"|"none"|"decor"|"seat_back", "front_edge_line_row": int|null, "eave_shadow_rows": string|null}],
  "main_top_rows": int,
  "front_face_rows": int,
  "side_face_visible": bool,
@@ -102,7 +103,7 @@ export const OBJECT_GATE_OUTPUT_FORMAT = `Reply ONLY JSON:
  "round_cap": null | {"cap_rows": int, "cap_width": int, "shaft_width": int, "rounded_at_both_edges": bool},
  "reads_as": "three_quarter"|"front_elevation"|"side_profile_no_top"|"top_down_slab"|"other",
  "evidence": string}
-"kind_matches": the caller-supplied kind plausibly describes this object. "main_top_rows" = height in rows of the main top surface (0 when none; 1-2 for a rim). "side_face_visible": an isometric receding side face is drawn (not the normal south face). "all_major_parts_have_top" is false if one big part (a backrest panel, a staircase, a beam, a chimney) is drawn only as a vertical face where a horizontal surface should be visible Decor parts do not count here. "round_cap" is filled ONLY for column-like objects (pillar, stele, rune stone, lantern post): cap_width and shaft_width come from the width profile; rounded_at_both_edges is true only when the cap's widest rows are bounded by narrower rows both above AND below (an ellipse plate), false for a dome or hat that ends flat.
+"kind_matches": the caller-supplied kind plausibly describes this object. "main_top_rows" = height in rows of the main top surface (0 when none; 1-2 for a rim). "side_face_visible": an isometric receding side face is drawn (not the normal south face). "all_major_parts_have_top" is false if one big part (a backrest panel, a staircase, a beam, a chimney) is drawn only as a vertical face where a horizontal surface should be visible. Decor parts do not count here, and for kind seat the backrest and armrests (seat_back) do not count here. "round_cap" is filled ONLY for column-like objects (pillar, stele, rune stone, lantern post): cap_width and shaft_width come from the width profile; rounded_at_both_edges is true only when the cap's widest rows are bounded by narrower rows both above AND below (an ellipse plate), false for a dome or hat that ends flat.
 "reads_as": three_quarter = the main body has a top surface and a front face of 3+ rows; front_elevation = no top surface (or only a rim); side_profile_no_top = a profile silhouette without a horizontal surface; top_down_slab = no front face.`;
 
 export const OBJECT_GATE_STYLE_OUTPUT_FORMAT = `Reply ONLY JSON:
@@ -115,7 +116,8 @@ export const OBJECT_GATE_STYLE_OUTPUT_FORMAT = `Reply ONLY JSON:
  * 눈은 **거부권만** 갖는다: 사실 판정이 pass 인데 눈이 3번 중 2번 이상 wrong 이면 pass 가 아니라 refer. 눈이 right 라고 해서 통과가 되지는 않는다.
  */
 export const OBJECT_GATE_EYE_RUBRIC = `You are an independent pixel-art reviewer for a top-down JRPG drawn in 3/4 view (camera south of the object, looking down ~45 degrees). A correctly drawn standing object shows its TOP surfaces (horizontal surfaces seen from above, foreshortened, usually 4-6 pixel rows for a 16px-scale object) AND its FRONT face. A WRONG drawing is a flat front elevation (no readable horizontal top surface, only a thin 1-2 row rim/outline), a flat plan view, or an isometric side view.
-You get image 1 = the candidate magnified 10x, image 2 = reference pairs of the same objects (red = WRONG, green = RIGHT). Judge only the camera angle/structure, never the subject or the style.`;
+You get image 1 = the candidate magnified 10x, image 2 = reference pairs of the same objects (red = WRONG, green = RIGHT). Judge only the camera angle/structure, never the subject or the style.
+SEATS (rules v10, user decision 2026-10-20): when the question says the object is a seat (chair, sofa, bench, pew, stool), its backrest and armrests may be drawn face-on with no top; that alone is not wrong. Judge only whether the SEAT surface where one sits is seen from above (count top_rows on the seat surface) with a front face below it.`;
 export const OBJECT_GATE_EYE_OUTPUT_FORMAT = `Reply ONLY JSON: {"verdict":"right"|"borderline"|"wrong","top_rows":int,"why":"one sentence naming the rows you looked at"}`;
 export type ObjectGateEyeAnswer = { verdict?: "right" | "borderline" | "wrong" | string; top_rows?: number; why?: string };
 /** 눈 판정 횟수와 거부권 문턱(wrong 이 이 횟수 이상이면 pass → refer). */
@@ -158,10 +160,12 @@ const rowSpan = (rows: unknown): [number, number] | null => {
   return m ? [Number(m[1]), Number(m[2])] : null;
 };
 /** 판정자가 적은 부분 중 맨 위(행 0~2)에서 시작해 12행 이상이며 윗면 증거가 none 인 것이 있으면 그 행 수. */
-export function crownWithoutTopRows(a: ObjectGateJudgeAnswer): number {
+export function crownWithoutTopRows(a: ObjectGateJudgeAnswer, kind?: ObjectGateKind): number {
   for (const p of a.surfaces ?? []) {
     const r = rowSpan(p.rows);
-    if (r && r[0] <= 2 && r[1] - r[0] + 1 >= OBJECT_GATE_CROWN_MIN_ROWS && p.evidence === "none") return r[1] - r[0] + 1;
+    // 규칙 v10: 등받이·팔걸이(seat_back)는 seat 종류에서만 면제다. 다른 종류가 seat_back 이라 적으면 증거 없음(none)으로 센다.
+    const none = p.evidence === "none" || (p.evidence === "seat_back" && kind !== "seat");
+    if (r && r[0] <= 2 && r[1] - r[0] + 1 >= OBJECT_GATE_CROWN_MIN_ROWS && none) return r[1] - r[0] + 1;
   }
   return 0;
 }
@@ -192,9 +196,12 @@ export function judgeRunFlags(kind: ObjectGateKind, a: ObjectGateJudgeAnswer | n
   const minFront = Math.max(OBJECT_GATE_MIN_FRONT_ROWS, rule.minFrontRows ?? 0);
   if (front < minFront) { clear = false; why.push(`앞면 ${front}행 < ${minFront}`); }
   if (a.all_major_parts_have_top === false) { clear = false; why.push("큰 부분 하나가 윗면 없이 세로 면으로만 그려짐"); }
+  // 규칙 v10: 등받이·팔걸이 면제(seat_back)는 seat 종류만. 다른 종류가 이 증거를 쓰면 분명한 3/4 로 보지 않는다.
+  const misusedSeatBack = kind !== "seat" && (a.surfaces ?? []).some(p => p.evidence === "seat_back");
+  if (misusedSeatBack) { clear = false; why.push("seat 가 아닌데 등받이 면제(seat_back)를 씀"); }
   const flatPlan = kind !== "structure" && front > 0 && top / front > OBJECT_GATE_MAX_TOP_TO_FRONT;
   if (flatPlan) { clear = false; why.push(`윗면/앞면 ${top}/${front} — 앞면이 거의 없는 평면도`); }
-  const crown = kind === "structure" || kind === "column" ? 0 : crownWithoutTopRows(a);
+  const crown = kind === "structure" || kind === "column" ? 0 : crownWithoutTopRows(a, kind);
   if (crown) { clear = false; why.push(`맨 위의 큰 부분(${crown}행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님`); }
   const contentsOnly = kind !== "structure" && topEvidenceIsContentsOnly(a) && top > 0 && front > OBJECT_GATE_MAX_FRONT_TO_TOP_FOR_CONTENTS * top;
   if (contentsOnly) { clear = false; why.push(`윗면 증거가 안쪽 내용물뿐이고 앞면/윗면 ${front}/${top} — 정면 단면`); }
@@ -320,5 +327,5 @@ export const OBJECT_GATE_PROFILE = {
   ],
   runsPerJudge: 4,
   magnify: 10,
-  combine: "facts-then-rules-3state-v9-decor-visibletones" as const,
+  combine: "facts-then-rules-3state-v10-seatback" as const,
 };
