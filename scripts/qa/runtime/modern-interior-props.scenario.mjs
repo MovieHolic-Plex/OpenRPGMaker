@@ -13,6 +13,6 @@ const beats = [
 ];
 for (const m of maps) for (const y of pts(m.h, 14)) for (const x of pts(m.w, 26)) {
   const at = { mapId: m.id, x, y };
-  beats.push({ id: `${m.id}-${x}-${y}`, shot: true, ops: [{ kind: "teleport", ...at }, { kind: "waitForPosition", ...at }], expect: { ...at } });
+  beats.push({ id: `${m.id.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${x}-${y}`, shot: true, ops: [{ kind: "teleport", ...at }, { kind: "waitForPosition", ...at }], expect: { ...at } });
 }
 export default { id: "modern-interior-props", projectFixture, beats };

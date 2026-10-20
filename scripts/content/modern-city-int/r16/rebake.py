@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """r16 다시 그림을 시트에 **제자리**로 굽는다 (칸 번호·통행·사양 불변, 저장 맵은 새 그림을 그대로 받는다).
 
-  python3 scripts/content/modern-city-int/r16/rebake.py [--check]
+  python3 scripts/content/modern-city-int/r16/rebake.py [--check] [--only ids.json]
 
 원본: tiledata/modern-city/interior/r16/grids/<id>.json (grid.py 참고). 사양 cells 의 칸 번호에 16×16 을 붙여 넣고,
 tiledata/modern-city/pins.json · interior/baked.json 의 옛 내용 해시 키를 새 키로 바꿔 적는다(rebake_wood_seat.py 와 같은 규칙).
@@ -22,12 +22,13 @@ OWN = os.path.join(ROOT, 'tiledata/modern-city/interior/baked.json')
 TPR = 48
 
 
-def work(sp):
+def work(sp, only=None):
     """[(칸 번호, 16×16 RGBA Image, 이름)]"""
     out, users = [], collections.defaultdict(set)
     for k, o in sp['objects'].items():
         for c in o['cells']: users[c[2]].add(k)
     ids = sorted(f[:-5] for f in os.listdir(G.GRIDS) if f.endswith('.json'))
+    if only is not None: ids = [i for i in ids if i in only]
     seen = {}
     for pid in ids:
         e = G.check(pid, sp)
@@ -45,10 +46,10 @@ def work(sp):
     return out
 
 
-def apply(check=False):
+def apply(check=False, only=None):
     import bake_lib as BL
     sp = G.spec()
-    items = work(sp)
+    items = work(sp, only)
     sheet = Image.open(G.PNG).convert('RGBA')
     pins = json.load(open(PINS, encoding='utf-8')); own = json.load(open(OWN, encoding='utf-8'))
     by_tid = collections.defaultdict(list)
@@ -82,4 +83,6 @@ def apply(check=False):
 
 
 if __name__ == '__main__':
-    apply('--check' in sys.argv)
+    a = sys.argv
+    only = set(json.load(open(a[a.index('--only') + 1]))) if '--only' in a else None   # 부분 굽기(PR 나누기용): id 목록 JSON
+    apply('--check' in a, only)
