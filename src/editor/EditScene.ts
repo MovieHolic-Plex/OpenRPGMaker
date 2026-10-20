@@ -835,6 +835,7 @@ export class EditScene extends PhaserRuntime.Scene {
    * 바뀔 때 게시한다. 무변화 프레임은 수 번의 수치 복사·문자열 비교만 하고 끝난다.
    */
   update(): void {
+    this.avoidHalfPixelTileSeams();
     const sunlightMapId = this.mapId();
     const sunlightMap = sunlightMapId ? store.getCurrent().maps[sunlightMapId] : undefined;
     if (this.sunlightLayer?.sync(sunlightMap, sunlightMap ? store.getCurrent().tilesets[sunlightMap.tilesetId] : undefined)) requestEditRenderFrame(this.game);
@@ -846,6 +847,24 @@ export class EditScene extends PhaserRuntime.Scene {
     this.syncTileCullingFrame();
     this.syncGridWindow();
     this.syncRenderActivity();
+  }
+
+  /**
+   * 타일 가장자리가 화면 픽셀 중심(.5)에 정확히 놓이면 NEAREST 샘플이 프레임 경계를 넘어
+   * 아틀라스 이웃 타일의 끝 한 줄을 끌어와 가로·세로 밝은 이음선이 생긴다(홀수 높이·2배 줌에서 scroll 이 .5 일 때).
+   * 화면 변환 오프셋의 소수부가 .5 에 아주 가까우면 scroll 을 0.1 화면 픽셀만큼 비켜 놓는다. 휠 앵커는 눈에 안 띄는 크기다.
+   */
+  private avoidHalfPixelTileSeams(): void {
+    const camera = this.cameras?.main;
+    if (!camera) return;
+    const nudge = (scroll: number, size: number): number => {
+      const offset = camera.zoom * scroll + (size * (camera.zoom - 1)) / 2;
+      const frac = offset - Math.floor(offset);
+      return Math.abs(frac - 0.5) < 0.02 ? scroll + 0.1 / camera.zoom : scroll;
+    };
+    const x = nudge(camera.scrollX, camera.width);
+    const y = nudge(camera.scrollY, camera.height);
+    if (x !== camera.scrollX || y !== camera.scrollY) camera.setScroll(x, y);
   }
 
   /**

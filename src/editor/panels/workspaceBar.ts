@@ -67,6 +67,14 @@ function renderPanelsMenu(): readonly [HTMLElement, HTMLElement] {
     menu.hidden = true;
     menu.classList.remove("open");
     document.removeEventListener("pointerdown", onOutsidePointerDown, true);
+    document.removeEventListener("keydown", onEscapeKey, true);
+  };
+  // Esc 로 닫고 포커스를 「보기」 버튼으로 돌린다 — 바깥 클릭만 닫히면 키보드 사용자가 갇힌다.
+  const onEscapeKey = (event: KeyboardEvent): void => {
+    if (event.key !== "Escape") return;
+    event.stopPropagation();
+    close();
+    button.focus?.();
   };
   const onOutsidePointerDown = (event: Event): void => {
     const target = event.target;
@@ -91,6 +99,7 @@ function renderPanelsMenu(): readonly [HTMLElement, HTMLElement] {
       menu.style.top = `${Math.round(rect.bottom + 4)}px`;
     }
     document.addEventListener("pointerdown", onOutsidePointerDown, true);
+    document.addEventListener("keydown", onEscapeKey, true);
   };
   button.addEventListener("click", (event) => {
     event.stopPropagation();

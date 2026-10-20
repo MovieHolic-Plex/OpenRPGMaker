@@ -122,7 +122,7 @@ function pageCsp(nonce: string): string {
     "default-src 'self'",
     `script-src 'self' 'nonce-${nonce}'`,
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: blob:",
+    "img-src 'self' data: blob: https://cdn.openrpgmaker.com",
     "media-src 'self' data: blob:",
     "font-src 'self' data:",
     "connect-src 'self'",
