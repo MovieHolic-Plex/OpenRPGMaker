@@ -7,6 +7,7 @@ import type { MechanicDef } from "./puzzleMechanicCore";
 import { balanceScaleWeights, elementalOrbPlacement, flipFloorTiles, liarChests, numberCodeLock, twinCisterns } from "./puzzleMechanicsDeduce";
 import { brazierRelationalOrder, leverMastermind, organEchoMemory, sealCrystalsLightsOut } from "./puzzleMechanicsLogic";
 import { crackedPlankBridge, sokobanPlates } from "./puzzleMechanicsSpatial";
+import { guardPostStealth, iceCavernSlide, leverGatehouse, timeTempleEras } from "./puzzleMechanicsClassic";
 
 export const PUZZLE_MECHANICS: Partial<Record<PuzzlePresetId, MechanicDef>> = {
   statue_pressure_plates: sokobanPlates,
@@ -21,4 +22,8 @@ export const PUZZLE_MECHANICS: Partial<Record<PuzzlePresetId, MechanicDef>> = {
   number_code_lock: numberCodeLock,
   balance_scale_weights: balanceScaleWeights,
   flip_floor_tiles: flipFloorTiles,
+  lever_secret_passage: leverGatehouse,
+  ice_conveyor_slide: iceCavernSlide,
+  time_gate_causality: timeTempleEras,
+  stealth_guard_patrol: guardPostStealth,
 };

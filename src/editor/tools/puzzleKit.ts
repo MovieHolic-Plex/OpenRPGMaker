@@ -226,6 +226,8 @@ export interface PropState {
   readonly daises?: readonly HandInteriorDais[];
   readonly open?: readonly Rect[];
   readonly voids?: readonly Rect[];
+  /** 심연 위에 얹는 밟는 기물(판자 프레임) — 심연을 판 뒤 2층에 쓴다. */
+  readonly overlays?: readonly HandInteriorObject[];
 }
 
 export interface PuzzleRoomSpec {
@@ -242,6 +244,7 @@ export interface PuzzleRoomSpec {
   readonly lines?: readonly HandInteriorLine[];
   readonly daises?: readonly HandInteriorDais[];
   readonly voids?: readonly Rect[];
+  readonly overlays?: readonly HandInteriorObject[];
   /** 기물 키 → 상태 그림 목록. 상태 0 이 처음 그림이다. */
   readonly props?: Readonly<Record<string, readonly PropState[]>>;
 }
@@ -293,6 +296,7 @@ export class PuzzleRoom {
     const daises: HandInteriorDais[] = [...(spec.daises ?? [])];
     const open: Rect[] = [...(spec.open ?? [])];
     const voids: Rect[] = [...(spec.voids ?? [])];
+    const overlays: HandInteriorObject[] = [...(spec.overlays ?? [])];
     for (const [key, list] of Object.entries(spec.props ?? {})) {
       const st = list[override[key] ?? this.states[key] ?? 0];
       if (!st) continue;
@@ -302,6 +306,7 @@ export class PuzzleRoom {
       daises.push(...(st.daises ?? []));
       open.push(...(st.open ?? []));
       voids.push(...(st.voids ?? []));
+      overlays.push(...(st.overlays ?? []));
     }
     const input: HandInteriorInput = {
       plan: roomPlan({ top: spec.top, left: spec.left, right: spec.right, door: spec.door ?? [10], open }),
@@ -314,7 +319,7 @@ export class PuzzleRoom {
       daises,
       start: [{ x: (spec.door ?? [10])[0]!, y: PUZZLE_ROOM_H - 1 }],
     };
-    return buildLayers(this.project, { input, chasm: voids }, this.label);
+    return buildLayers(this.project, { input, chasm: voids, overlays }, this.label);
   }
 
   /** 처음 그림을 맵에 쓴다. initial 을 주면 그 기물들은 그 상태로 시작한다(나머지는 상태 0). */

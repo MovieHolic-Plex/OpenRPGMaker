@@ -5,6 +5,7 @@
 import { isPassable } from "@/project/collision";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import type { Command, GameEvent } from "@/project/types";
+import { HAND_INTERIOR_SPEC } from "@/editor/handInterior/builder";
 import type { Cell } from "./jrpgVolumeTools";
 import {
   DIR_OF,
@@ -600,6 +601,7 @@ export const balanceScaleWeights: MechanicDef = {
     const target = unique[ctx.seed % unique.length]!;
     const answerMask = sums.get(target)![0]!;
     const stands: Cell[] = [5, 7, 9, 11, 13].map((x) => ({ x, y: 7 }));
+    const weightArt = ["weight stand", ...stands.map((_, i) => `weight stand ${i + 1}`)].every((id) => Boolean(HAND_INTERIOR_SPEC.objects[id]));
     const spec: PuzzleRoomSpec = {
       top: 3,
       left: 2,
@@ -611,7 +613,16 @@ export const balanceScaleWeights: MechanicDef = {
       objects: [obj("wall torch", 5, 3), obj("wall torch", 14, 3), obj("balance scale", 9, 10), obj("apothecary drawers", 2, 5), obj("hint tablet", 11, 10)],
       props: {
         gate: GATE,
-        ...Object.fromEntries(stands.map((c, i) => [`weight_${i}`, [{ objects: [obj("plinth helmet", c.x, c.y)] }, { objects: [obj("plinth", c.x, c.y)] }]])),
+        // 추 그림(2026-10-20 r4): 받침 위 추 다섯이 무게 순으로 크기·재질·눈금이 다르다(weight stand 1..5, 빈 받침 weight stand).
+        // 칩셋에 없으면 옛 투구 받침.
+        ...Object.fromEntries(
+          stands.map((c, i) => [
+            `weight_${i}`,
+            weightArt
+              ? [{ objects: [obj(`weight stand ${i + 1}`, c.x, c.y)] }, { objects: [obj("weight stand", c.x, c.y)] }]
+              : [{ objects: [obj("plinth helmet", c.x, c.y)] }, { objects: [obj("plinth", c.x, c.y)] }],
+          ]),
+        ),
         pan: [{ objects: [] }, { objects: [obj("crystal ball", 8, 11)] }],
       },
     };
