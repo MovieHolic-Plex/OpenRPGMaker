@@ -5,6 +5,21 @@
 
 <!-- releases -->
 
+## 0.290.0 — 2026-10-20
+
+### 기능
+
+- **interior-seats** — seat study 2 — 89 seats passed by the user (2026-10-20), waiting on 3/4 gate receipts (#3115) (`635077c`)
+- **fallen-star** — rebuild act 1 — real journey, puzzles, boss, 1x opening, natural dialogue (#3111) (`6df4e06`)
+
+### 수정
+
+- **flagship** — Astra Horizon plays its real campaign — audit fixes (shortcut, fairness, story, people, UI) (#3110) (`a7b1476`)
+
+### 잡무
+
+- **monster** — record user pass verdict for all 60 species (round 6, hash-bound) (#3113) (`ce67df4`)
+
 ## 0.289.0 — 2026-10-20
 
 ### 기능
