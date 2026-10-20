@@ -25,12 +25,11 @@ import { translateTiles } from "@/project/objectStamp";
 import groundCatalog from "@/assets/beodeulGroundCatalog.json";
 import { BEODEUL_NATURE, BEODEUL_NATURE_ID, createBeodeulNatureTileset } from "@/project/defaults/beodeulNature";
 import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
-import { composeTreesInMask } from "@/project/defaults/treeComposer";
-import BEODEUL_FOREST_COMPOSER from "@/assets/beodeulForestComposer.json";
+import { composeBeodeulForest, type BeodeulForestType } from "./beodeulForest";
 import { invalidateReliefSlopes, rampCode, reliefAllowsStep } from "@/project/relief/walk";
 import type { ReliefData } from "@/project/relief/types";
 import { allowedVillageTerrains, planVillageTerrain, resolveVillageTerrain, TERRAIN_LABEL, VILLAGE_TERRAINS } from "./beodeulTerrain";
-import type { Project, StructureKitDef, TilesetDef, TreeComposerDef } from "@/project/types";
+import type { Project, StructureKitDef, TilesetDef } from "@/project/types";
 import { appendStructurePlacement, captureStructureTiles } from "@/project/structurePlacements";
 import { CONSTRUCTION_TOOLS_V3 } from "./v3/constructionTools";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
@@ -175,7 +174,7 @@ export interface VillageResult {
 }
 
 /** 버들항 마을 문법 시공. map 은 이미 만들어진(크기 확정) 버들항 맵. */
-export function buildBeodeulVillage(draft: Project, mapId: string, theme: BeodeulVillageTheme, seed: number, formArg?: string, terrainArg?: string): VillageResult {
+export function buildBeodeulVillage(draft: Project, mapId: string, theme: BeodeulVillageTheme, seed: number, formArg?: string, terrainArg?: string, forestType: BeodeulForestType = "broadleaf"): VillageResult {
   const form = resolveVillageForm(theme, seed, formArg);
   let terrainName: ReturnType<typeof resolveVillageTerrain>;
   let terrainNote = "";
@@ -1800,35 +1799,27 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     // 숲 수관: 숲 칸마다 이웃 비트·P×P 위상으로 고른 수관 칸(막힘 ×), 숲 바로 남쪽 빈 칸에는 물결치는 그늘(★)
     const canopyAt = new Map<number, number>();
     let composedForest = 0;
-    const composedTrees: Stamp[] = [];
     if (canopyStyle === "leaf" && forestSet.size) {
       // 풀밭 숲(2026-10-20 woodland 보정): 수관 오토타일은 숲 가장자리를 칸 경계로 곧게 자르고 위상 반복이 드러났다 —
-      // 원본 bd-tree 줄기 나무를 나무 composer(#3058)로 겹쳐 세운다(앞 나무 수관이 뒤 나무 줄기를 가린다). 설원 수관은 그대로.
+      // 원본 버들항 나무를 나무 composer(#3058)로 겹쳐 세운다(앞 나무 수관이 뒤 나무 줄기를 가린다). 숲 종류는 forestType. 설원 수관은 그대로.
+      // 접지(r6): 숲 칸 1층은 숲 바닥 그늘, 숲 둘레 빈 잔디에는 오른쪽 아래로 진 땅 그늘(원본 숲 조각 그림자 색).
       const inForest = (x: number, y: number) => inMap(x, y) && occ[idx(x, y)] === FOREST;
       // 수관은 숲 칸 + 숲에 붙은 빈 풀밭(길에서 2칸 이상, 같은 단, 아직 아무것도 안 찍힌 칸)까지 넘칠 수 있다 — 숲 덩이가 작아도 큰 나무가 선다.
       const bare = new Set<number>();
       for (let c = 0; c < W * H; c += 1) if (([2, 3, 4] as const).every((L) => layerTileAt(m, L, c) < 0)) bare.add(c);
       const nearForest = (x: number, y: number) => { for (let dy = -2; dy <= 2; dy += 1) for (let dx = -2; dx <= 2; dx += 1) if (inForest(x + dx, y + dy)) return true; return false; };
+      const sameLevel = (x: number, y: number) => { const c = idx(x, y); return !hasTerrain || [[0, 1], [0, 2], [0, -1], [1, 0], [-1, 0]].every(([dx, dy]) => !inForest(x + dx!, y + dy!) || lv[idx(x + dx!, y + dy!)] === lv[c]); };
       const hold = (x: number, y: number) => {
         if (!inMap(x, y)) return false; const c = idx(x, y);
         if (!bare.has(c)) return false;
         if (occ[c] === FOREST) return true;
-        return occ[c] === FREE && distRoad[c]! >= 2 && !rampCells.has(c) && nearForest(x, y) && (!hasTerrain || [[0, 1], [0, 2], [0, -1], [1, 0], [-1, 0]].every(([dx, dy]) => !inForest(x + dx!, y + dy!) || lv[idx(x + dx!, y + dy!)] === lv[c]));
+        return occ[c] === FREE && distRoad[c]! >= 2 && !rampCells.has(c) && nearForest(x, y) && sameLevel(x, y);
       };
-      composeTreesInMask(m, BEODEUL_FOREST_COMPOSER as unknown as TreeComposerDef, (x, y) => inForest(x, y) && bare.has(idx(x, y)), hold, seed);
-      for (const c of forestSet) if (([2, 3, 4] as const).some((L) => layerTileAt(m, L, c) >= 0)) composedForest += 1;
-      // composer 가 세운 나무도 찍은 나무처럼 밑동 그림자를 받는다(아래 그림자 고리) — 줄기 맨 아래 칸으로 나무 자리를 되찾는다.
-      const trunkFoot = new Map<number, { kit: string; dx: number; h: number }>();
-      const cp = BEODEUL_FOREST_COMPOSER as unknown as TreeComposerDef;
-      for (const sp of cp.sprites) for (const i of cp.trunkCols[sp.shape] ?? []) {
-        const t = sp.tiles[(sp.h - 1) * sp.w + i]!; if (t >= 0 && !trunkFoot.has(t)) trunkFoot.set(t, { kit: `bd-tree-${sp.name}`, dx: i, h: sp.h });
-      }
-      const seen = new Set<string>();
-      for (let c = 0; c < W * H; c += 1) for (const L of [2, 3, 4] as const) {
-        const f = trunkFoot.get(layerTileAt(m, L, c)); if (!f) continue;
-        const x = (c % W) - f.dx, y = Math.floor(c / W) - f.h + 1, key = `${x},${y}`;
-        if (!seen.has(key)) { seen.add(key); composedTrees.push({ kit: f.kit, x, y, record: false }); }
-      }
+      // 둘레 그늘은 길 가장자리까지 깔려도 된다(통행 칸) — 다시 쓰는 칸은 hold + 숲 둘레 빈 잔디.
+      const write = (x: number, y: number) => hold(x, y) || (inMap(x, y) && bare.has(idx(x, y)) && occ[idx(x, y)] !== WATERC && !rampCells.has(idx(x, y)) && nearForest(x, y) && sameLevel(x, y));
+      const composer = composeBeodeulForest(draft, m, ts, forestType, (x, y) => inForest(x, y) && bare.has(idx(x, y)), hold, seed, write);
+      const groundTiles = new Set((composer.ground?.apronTiles ?? []).filter((n) => n >= 0));
+      for (const c of forestSet) if (([2, 3, 4] as const).some((L) => { const t = layerTileAt(m, L, c); return t >= 0 && !groundTiles.has(t); })) composedForest += 1;
     } else if (canopyStyle && forestSet.size) {
       const isForest = (n: number) => occ[n] === FOREST;
       const phases = BEODEUL_NATURE.forestCanopy[canopyStyle];
@@ -1849,7 +1840,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     // 물 위를 걷게 된다(openwiki/editor-ai-tools.md 「나무 밑 그림자」 같은 함정). 2층은 캐릭터 밑 묶음이라 상위여도 인물 아래에 그린다.
     // 길·광장 칸은 2층이 길 가장자리 그림이라 차 있어 그림자를 두지 않는다(4층은 상위면 인물 위에 그려지므로 쓰지 않는다).
     let shadowCells = 0;
-    for (const st of [...stamps, ...composedTrees]) {
+    for (const st of stamps) {
       if (st.v === FIELD) continue;
       const sh = BEODEUL_NATURE.shadows[st.kit]; if (!sh) continue;
       sh.rows.forEach((row, j) => row.forEach((t, i) => {
