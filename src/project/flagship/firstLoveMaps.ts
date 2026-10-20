@@ -13,6 +13,7 @@ import { canMove, isPassable } from "@/project/collision";
 import { createJpCityTileset, JP_CITY_ID } from "@/project/defaults/jpCity";
 import type { GameMap, LightSource, Project } from "@/project/types";
 import roomsJson from "./firstLoveRooms.json";
+import { FIRST_LOVE_SKYLINE_DATA_URL, FIRST_LOVE_SKYLINE_ID } from "./firstLoveSkylineAsset";
 
 export type ExecTool = (name: string, args: Record<string, unknown>) => { data?: unknown };
 
@@ -190,6 +191,15 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   const roofRoom = project.maps[FL_MAP.rooftop]!;
   const platform = project.maps[FL_MAP.platformAm]!;
   paintStairwellRoof(roofRoom);
+  // 옥상 바깥은 검은 허공이 아니라 밤 도시 스카이라인(코드 손 도트, scripts/content/first-love/skyline.py).
+  project.assets.uploaded[FIRST_LOVE_SKYLINE_ID] = {
+    id: FIRST_LOVE_SKYLINE_ID,
+    name: "첫사랑 옥상 밤 스카이라인",
+    kind: "backdrop",
+    dataUrl: FIRST_LOVE_SKYLINE_DATA_URL,
+    meta: { width: 480, height: 270 },
+  };
+  roofRoom.background = { imageId: FIRST_LOVE_SKYLINE_ID, fit: "native", cameraFollow: 0, showInEmptyCells: true };
   removeFareMapBoards(platform);
   const broadcast = project.maps[FL_MAP.broadcast]!;
 
