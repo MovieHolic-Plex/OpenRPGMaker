@@ -22,11 +22,11 @@
   "q": "#ffa8c9ff"
  },
  "rows": [
-  "................................",
-  "................................",
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-  "bqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqb",
   "bnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnb",
+  "bqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqb",
+  "bqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqb",
+  "bppppppppppppppppppppppppppppppb",
   "bjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjb",
   "bpcppcppcppcppcppcppcppcppcppcpb",
   "bpiipllpggpeepffpddpoopmmpccpiib",
@@ -55,5 +55,5 @@
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
   ".aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
  ],
- "note": ""
+ "note": "r16: pink cabinet top 3 rows + white lit edge (uses the 2 empty rows), grey row below is the shadow"
 }

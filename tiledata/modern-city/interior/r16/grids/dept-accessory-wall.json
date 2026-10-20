@@ -20,8 +20,10 @@
  },
  "rows": [
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-  "bnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnb",
+  "bjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjb",
   "bllllllllllllllllllllllllllllllb",
+  "bllllllllllllllllllllllllllllllb",
+  "bnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnb",
   "biiiiiiiiiiiiiiiiiiiiiiiiiiiiiib",
   "bkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkb",
   "bkkfkkkfkkkfkkkfkkkfkkkfkkkfkkkb",
@@ -46,11 +48,9 @@
   "bkkbbbbkbbbbkbbbbkbbbbkbbbbkkkkb",
   "bkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkb",
   "bkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkb",
-  "bkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkb",
-  "bkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkb",
   "bggggggggggggggggggggggggggggggb",
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
   ".aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
  ],
- "note": ""
+ "note": "r16: oak cabinet top 3 rows (darker far edge) + light lit edge, old grey row is the cornice shadow; two plain rows removed"
 }

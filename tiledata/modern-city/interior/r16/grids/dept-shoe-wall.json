@@ -26,10 +26,12 @@
  },
  "rows": [
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-  "bqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqb",
+  "biiiiiiiiiiiiiiiiiiiiiiiiiiiiiib",
   "bnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnb",
+  "bqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqb",
+  "bqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqb",
+  "bttttttttttttttttttttttttttttttb",
   "bmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmb",
-  "bppppppppppppppppppppppppppppppb",
   "bppppppppppppppppppppppppppppppb",
   "bppppppppppppppppppppppppppppppb",
   "bpcppppplpppppjpppppdpppppoppppb",
@@ -52,11 +54,9 @@
   "bpooooopgggggpcccccplllllpjjjjjb",
   "biiiiiiiiiiiiiiiiiiiiiiiiiiiiiib",
   "bppppppppppppppppppppppppppppppb",
-  "bppppppppppppppppppppppppppppppb",
-  "bppppppppppppppppppppppppppppppb",
   "bkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkb",
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
   ".aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
  ],
- "note": ""
+ "note": "r16: oak top 4 rows (darker far edge) + white lit edge, beige row below is the shadow; three plain rows removed"
 }

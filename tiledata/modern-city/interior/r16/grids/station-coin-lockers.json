@@ -16,8 +16,10 @@
  },
  "rows": [
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-  "bhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhb",
   "bggggggggggggggggggggggggggggggb",
+  "bhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhb",
+  "bhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhb",
+  "bjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjb",
   "bddddddddddddddddddddddddddddddb",
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
   "bbjjffbbjjffbbjjffbbjjffbbjjffbb",
@@ -26,13 +28,11 @@
   "bbffffbbffffbbffffbbffffbbffffbb",
   "bbffffbbffffbbffffbbffffbbffffbb",
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-  "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
   "bbjjffbbjjffbbjjffbbjjffbbjjffbb",
   "bbffffbbffffbbffffbbffffbbffffbb",
   "bbfffibbfffibbfffibbfffibbfffibb",
   "bbffffbbffffbbffffbbffffbbffffbb",
   "bbffffbbffffbbffffbbffffbbffffbb",
-  "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
   "bbfffffffffffffbbfffffffffffffbb",
   "bbfffffffffffffbbfffffffffffffbb",
@@ -48,5 +48,5 @@
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
   ".aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
  ],
- "note": ""
+ "note": "r16: locker bank top 3 rows + white lit edge; one gap row between banks removed twice"
 }

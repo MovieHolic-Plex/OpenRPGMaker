@@ -28,8 +28,10 @@
   "..dddddddddddddddddddddddddddddddddddddddddddd..",
   "................................................",
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-  "bnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnb",
+  "biiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiib",
+  "bkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkb",
   "bmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmb",
+  "bnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnb",
   "bhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhb",
   "bibbbbbbbbbbbbbiiibbbbbbbbbbbbbiiibbbbbbbbbbbbbb",
   "bibeeeeeeeeeeebiiibeeeeeeeeeeebiiibeeeeeeeeeeebb",
@@ -56,17 +58,15 @@
   "bibkkbbfffbbkkbiiibkkbbfffbbkkbiiibkkbbfffbbkkbb",
   "bibkkkkbbbkkkkbiiibkkkkbbbkkkkbiiibkkkkbbbkkkkbb",
   "bibkkkkkkkkkkkbiiibkkkkkkkkkkkbiiibkkkkkkkkkkkbb",
-  "bibkkkkkkkkkkkbiiibkkkkkkkkkkkbiiibkkkkkkkkkkkbb",
   "bibkkkkfffkkkkbiiibkkkkfffkkkkbiiibkkkkfffkkkkbb",
   "bibkkkkfffkkkkbiiibkkkkfffkkkkbiiibkkkkfffkkkkbb",
   "bibkkkkkkkkkkkbiiibkkkkkkkkkkkbiiibkkkkkkkkkkkbb",
   "bibkkkkkkkkkkkbiiibkkkkkkkkkkkbiiibkkkkkkkkkkkbb",
   "bibbbbbbbbbbbbbiiibbbbbbbbbbbbbiiibbbbbbbbbbbbbb",
   "biiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiib",
-  "biiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiib",
   "baaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab",
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
   "................................................"
  ],
- "note": ""
+ "note": "r16: washer row top 3 rows (grey far edge) + white lit edge, grey row below is the shadow; one door row and one base row removed"
 }

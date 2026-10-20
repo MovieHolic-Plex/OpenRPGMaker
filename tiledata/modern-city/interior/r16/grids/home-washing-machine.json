@@ -23,12 +23,12 @@
  },
  "rows": [
   "................",
-  "................",
-  "................",
   "bbbbbbbbbbbbbbbb",
+  "bhhhhhhhhhhhhhhb",
+  "bkkkkkkkkkkkkkkb",
+  "bmmmmmmmmmmmmmmb",
+  "bppppppppppppppb",
   "bqqqqqqqqqqqqqqb",
-  "bppppppppppppppb",
-  "bppppppppppppppb",
   "bbbbbbbjjjjjbbjb",
   "bbppppbmcecbpgbb",
   "bbllllbmcccbghbb",
@@ -55,5 +55,5 @@
   "bbbbbbbbbbbbbbbb",
   ".aaaaaaaaaaaaaaa"
  ],
- "note": ""
+ "note": "r16: washer lid top 4 rows (grey far edge) + white lit edge (uses empty rows above)"
 }

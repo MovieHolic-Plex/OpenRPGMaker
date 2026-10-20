@@ -16,9 +16,10 @@
   "k": "#ffffffff"
  },
  "rows": [
-  "................................",
-  "................................",
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "bddddddddddddddddddddddddddddddb",
+  "bffffffffffffffffffffffffffffffb",
+  "biiiiiiiiiiiiiiiiiiiiiiiiiiiiiib",
   "bkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkb",
   "bjbbbbbbbbbbbbbbbbbbbbbbbbbbbbjb",
   "bdbffffffffffffffffffffffffffbdb",
@@ -39,7 +40,6 @@
   "bgbiiiiiiibbbccccccbbbiiiiiiibgb",
   "bgbiiiiiiiiiibbbbbbiiiiiiiiiibgb",
   "bgbbbbbbbbbbbbbbbbbbbbbbbbbbbbgb",
-  "bggggggggggggggggggggggggggggggb",
   "bggggggggggggggggggggggggggggggb",
   "bgbbbbbbbbbbbbbbbbbbbbbbbbbbbbgb",
   "bgbffffffffffffffffffffffffffbgb",
@@ -65,5 +65,5 @@
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
   "................................"
  ],
- "note": ""
+ "note": "r16: dryer top 3 rows (grey far edge) + white lit edge (uses the empty top rows); one gap row removed"
 }

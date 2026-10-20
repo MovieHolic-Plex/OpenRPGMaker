@@ -21,13 +21,13 @@
   "................................................",
   "................................................",
   "................................................",
-  "................................................",
-  "................................................",
-  "................................................",
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "beeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeb",
+  "bggggggggggggggggggggggggggggggggggggggggggggggb",
+  "bhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhb",
+  "bhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhb",
   "bmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmb",
-  "bhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhb",
-  "bhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhb",
+  "bffffffffffffffffffffffffffffffffffffffffffffffb",
   "bebbbbbkjkbbbbbeeebbbbbkjkbbbbbeeebbbbbkjkbbbbbb",
   "bfbcccccccccccbfffbcccccccccccbfffbcccccccccccbb",
   "bfbcccccccccccbfffbcccccccccccbfffbcccccccccccbb",
@@ -67,5 +67,5 @@
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
   "................................................"
  ],
- "note": ""
+ "note": "r16: capsule block top 4 rows (grey far edge) + white lit edge + shadow drawn into the empty rows above"
 }

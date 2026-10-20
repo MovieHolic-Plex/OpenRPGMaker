@@ -23,12 +23,17 @@
   "r": "#ff4854ff",
   "s": "#ffd246ff",
   "t": "#ffff4eff",
-  "u": "#ffffffff"
+  "u": "#ffffffff",
+  "v": "#767c88ff",
+  "w": "#a0a6b2ff"
  },
  "rows": [
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-  "biiiiiiiiiiiiiiiiiiiiiiiiiiiiiib",
   "bffffffffffffffffffffffffffffffb",
+  "bjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjb",
+  "bvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvb",
+  "bvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvb",
+  "bwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwb",
   "bddddddddddddddddddddddddddddddb",
   "beeeeeeeeeeeeeeeeeeeeeeeeeeeeeeb",
   "bebbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
@@ -37,7 +42,6 @@
   "bebmmmmbbhhhhbbppppbboooobbggggb",
   "bebmmmmbbhhhhbbppppbboooobbggggb",
   "bebqqqqbbqqqqbbqqqqbbqqqqbbqqqqb",
-  "bebbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
   "bebbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
   "bebjjjjbbjjjjbbjjjjbbjjjjbbjjjjb",
   "beblhhhbbupppbbtooobbkgggbbsnnnb",
@@ -53,11 +57,9 @@
   "bebqqqqbbqqqqbbqqqqbbqqqqbbqqqqb",
   "bebbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
   "beeeeeeeeeeeeeeeeeeeeeeeeeeeeeeb",
-  "beeeeeeeeeeeeeeeeeeeeeeeeeeeeeeb",
-  "beeeeeeeeeeeeeeeeeeeeeeeeeeeeeeb",
   "bccccccccccccccccccccccccccccccb",
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
   ".aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
  ],
- "note": ""
+ "note": "r16: dark cabinet top 4 rows (charcoal far edge to grey) + light grey lit edge; three plain rows removed"
 }

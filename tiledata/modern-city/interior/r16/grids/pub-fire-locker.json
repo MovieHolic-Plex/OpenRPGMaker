@@ -14,19 +14,20 @@
   "i": "#bec5d2ff",
   "j": "#c4961eff",
   "k": "#dce678ff",
-  "l": "#f0aa32ff"
+  "l": "#f0aa32ff",
+  "m": "#dde0e7ff"
  },
  "rows": [
   "................................",
   "................................",
   "................................",
-  "................................",
-  "................................",
-  "................................",
-  "................................",
-  "................................",
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "bffffffffffffffffffffffffffffffb",
+  "bhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhb",
   "biiiiiiiiiiiiiiiiiiiiiiiiiiiiiib",
+  "biiiiiiiiiiiiiiiiiiiiiiiiiiiiiib",
+  "bmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmb",
+  "beeeeeeeeeeeeeeeeeeeeeeeeeeeeeeb",
   "bhdddddbbbbddddffdddddbbbbddddhb",
   "beddddbjjjjbdddffddddbjjjjbdddeb",
   "bgdddbjjjjjjbddffdddbjjjjjjbddgb",
@@ -66,5 +67,5 @@
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
   "................................"
  ],
- "note": ""
+ "note": "r16: steel cabinet top 4 rows + pale lit edge + shadow row drawn into the empty rows above the cabinet"
 }

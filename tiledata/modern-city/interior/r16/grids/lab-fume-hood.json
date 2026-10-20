@@ -19,9 +19,9 @@
   "................................",
   ".aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.",
   ".affffffffffffffffffffffffffffa.",
-  ".affffffffffffffffffffffffffffa.",
-  ".affffffffffffffffffffffffffffa.",
+  ".agggggggggggggggggggggggggggga.",
   ".aiiiiiiiiiiiiiiiiiiiiiiiiiiiia.",
+  ".ajjjjjjjjjjjjjjjjjjjjjjjjjjjja.",
   ".aiieeeeeeeeeeeeeeeeeeeeeeeeiia.",
   ".aiiejjjjjjjjeeeeeeeeeeeeeeeiia.",
   ".aiieeeeeeeeeeeeeeeeeeeeeeeeiia.",
@@ -49,5 +49,5 @@
   "................................",
   "................................"
  ],
- "note": ""
+ "note": "r16: hood top relit as a 3-row plane (grey far edge) + white lit edge above the sash glass"
 }

@@ -16,8 +16,10 @@
  },
  "rows": [
   ".bbbbbbbbbbbbbb.",
-  ".bjjjjjjjjjjjjb.",
+  ".bffffffffffffb.",
   ".biiiiiiiiiiiib.",
+  ".biiiiiiiiiiiib.",
+  ".bjjjjjjjjjjjjb.",
   ".bffffffffffffb.",
   ".bggggggggggggb.",
   ".bggddddddddggb.",
@@ -25,8 +27,6 @@
   "hbggddddddddggb.",
   "hbggggggggggggb.",
   "hbggddddddddggb.",
-  ".hggggggggggggb.",
-  ".hggggggggggggb.",
   ".hggggggggggggb.",
   ".hggggggggggggb.",
   ".hggggggggggggb.",
@@ -48,5 +48,5 @@
   "cccccbbbbbbbbbb.",
   "..aaaaaaaaaaaaa."
  ],
- "note": ""
+ "note": "r16: locker top 3 rows + white lit edge, old grey row becomes the cornice shadow; two plain door rows removed"
 }
