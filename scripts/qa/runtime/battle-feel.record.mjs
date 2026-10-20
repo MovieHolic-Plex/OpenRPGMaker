@@ -75,6 +75,13 @@ async function instrument(page) {
     const ev = window.__bf = { t0: performance.now(), events: [] };
     const push = (k, v, who) => ev.events.push({ t: Math.round(performance.now() - ev.t0), k, v, who });
     document.addEventListener('keydown', (e) => push('key', e.key), true);
+    // 보스 등장 표본: 인트로 3초 동안 100ms 마다 단계·보스 그림 상태.
+    for (let d = 0; d <= 3000; d += 100) setTimeout(() => {
+      const boss = root.querySelector('.battle-enemy[data-collapse="bossSink"]');
+      if (!boss) return;
+      const cs = getComputedStyle(boss);
+      push('boss', `${root.dataset.battleDirectorStep}|op${cs.opacity}|${cs.filter}|${cs.animationName}`);
+    }, d);
     const watch = ['data-retro-beat', 'data-battle-phase', 'data-battle-sequence-busy', 'data-battle-finale'];
     new MutationObserver((recs) => {
       for (const r of recs) {
@@ -94,7 +101,17 @@ async function instrument(page) {
               push('probe' + d, hits, document.querySelector('[data-testid="battle-scene"]').className);
             }, d);
           }
-          if (n.nodeType === 1 && n.matches?.('[data-testid="battle-result-panel"]')) push('result-panel', n.getAttribute('data-battle-result'));
+          if (n.nodeType === 1 && n.matches?.('[data-testid="battle-result-panel"]')) {
+            push('result-panel', n.getAttribute('data-battle-result'));
+            setTimeout(() => {
+              const r = n.getBoundingClientRect();
+              const stack = [];
+              for (let e = n; e && stack.length < 8; e = e.parentElement) { const cs = getComputedStyle(e);
+                stack.push(`${e.className?.toString().slice(0, 40)}|bg${cs.backgroundColor}|img${cs.backgroundImage.slice(0, 30)}|op${cs.opacity}|vis${cs.visibility}|anim${cs.animationName}|disp${cs.display}`); }
+              const f = document.querySelector('.battle-field'); if (f) { const cs = getComputedStyle(f); const b = f.getBoundingClientRect(); stack.push(`FIELD ${b.width}x${b.height}|op${cs.opacity}|vis${cs.visibility}|disp${cs.display}|z${cs.zIndex}`); }
+              push('result-stack', stack);
+            }, 900);
+          }
         }
       }
     }).observe(root, { subtree: true, childList: true, attributes: true, attributeFilter: watch });
@@ -190,7 +207,7 @@ try {
     const wall0 = Date.now();
     let started = 0, ended = 0, crop = null;
     try {
-      await page.goto(server.url + '/player.html', { waitUntil: 'domcontentloaded' });
+      await page.goto(server.url + '/player.html', { waitUntil: 'domcontentloaded', timeout: 120000 });
       // 부팅 중 ERR_NETWORK_CHANGED 로 백지가 되는 경우가 있다 — 두 번까지 다시 읽는다.
       for (let attempt = 0; ; attempt++) {
         try { await page.waitForSelector(id('title-screen'), { timeout: 60000 }); break; }
@@ -202,7 +219,11 @@ try {
       await page.waitForTimeout(600);
       started = (Date.now() - wall0) / 1000;
       await page.keyboard.press('z');
-      for (let i = 0; i < 40 && !await page.locator(id('battle-scene')).count(); i++) { await page.waitForTimeout(150); await page.keyboard.press('z'); }
+      // 확인키를 연타하면 진입 인트로가 빨리감기(SKIP_SPEED)로 지나간다 — 한 번 누르고 기다린다. 안 열리면 몇 초 뒤 다시.
+      for (let i = 0; i < 8 && !await page.locator(id('battle-scene')).count(); i++) {
+        await page.waitForSelector(id('battle-scene'), { timeout: 2500 }).catch(() => {});
+        if (!await page.locator(id('battle-scene')).count()) await page.keyboard.press('z');
+      }
       await page.waitForSelector(id('battle-scene'));
       await instrument(page);
       if (process.env.BF_PROBE) await page.evaluate(() => { window.__bfProbe = true; });
@@ -211,6 +232,15 @@ try {
       const first = await waitCommand(page, 40000);
       await page.evaluate(() => window.__bf.events.push({ t: Math.round(performance.now() - window.__bf.t0), k: 'first-command' }));
       if (first) await page.screenshot({ path: join(out, `${key}-command.png`) });
+      // 배틀러 기하(무대 배율·자산 배율·노드 상자) — 정수 배율 점검용.
+      if (first) timing.geometry = { ...(timing.geometry ?? {}), [key]: await page.evaluate(() => {
+        const r = (n) => { if (!n) return null; const b = n.getBoundingClientRect(); return { x: Math.round(b.x), y: Math.round(b.y), w: +b.width.toFixed(2), h: +b.height.toFixed(2), ow: n.offsetWidth, oh: n.offsetHeight }; };
+        const scene = document.querySelector('[data-testid="battle-scene"]');
+        return { stageScale: scene?.dataset.battleStageScale, assetScale: scene?.dataset.battleAssetScale, stageWidth: scene?.style.getPropertyValue('--battle-stage-width'),
+          scene: r(scene), field: r(scene?.querySelector('.battle-field')),
+          enemies: [...document.querySelectorAll('.battle-enemy .battle-enemy-image')].map(r),
+          actors: [...document.querySelectorAll('.battle-actor .battle-actor-sprite, .battle-actor .battle-actor-image')].map(r) };
+      }) };
       for (const kind of SCENARIOS[key].manual) {
         await act(page, kind, notes);
         if (kind === 'magic') await page.waitForTimeout(500).then(() => page.screenshot({ path: join(out, `${key}-magic.png`) }));

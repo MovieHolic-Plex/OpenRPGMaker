@@ -1,4 +1,4 @@
-## 전투 체감 프로토타입 battle-feel-r1 (2026-10-20, 미머지·사용자 판단 대기)
+## 전투 체감 battle-feel r1 (#3063 머지) · r2 (2026-10-20)
 
 사용자 「전투가 허접」. 출하 player 녹화(`scripts/qa/runtime/battle-feel.record.mjs --out <dir> [--res 640x360] [--only group,boss,defeat]`,
 demo-v3 녹화 사본 + 일반 무리·보스·전멸 적 그룹)로 전/후를 비교했다. 바꾼 것:
@@ -8,7 +8,18 @@ demo-v3 녹화 사본 + 일반 무리·보스·전멸 적 그룹)로 전/후를 
 - **피해 숫자**: 32px 굵은 8방향 테두리, 도트 측면은 빼기표 없음.
 - **말수**: 게이지 대기 문장 없음(빈 윗창은 숨김), 자동 전투 통상 공격도 「X의 공격!」, 단축키 안내는 바뀐 순간 1.6초만.
 - **시전 모으기**: 시전 approach 비트 동안 발밑 고리·빛기둥(시전 종류 색) — CSS 만.
-CSS 는 전부 `29-impact-contact.css` 끝(+ `26-battle-scenery.css` 넓은 무대 절). 남은 큰 일(전투 그림 배율 1.5px 불균일, 결과 화면, 보스 존재감)은 전/후 페이지 `~/claude-viz/battle-feel-1.html`.
+CSS 는 전부 `29-impact-contact.css` 끝(+ `26-battle-scenery.css` 넓은 무대 절). 전/후 페이지 `~/claude-viz/battle-feel-1.html`.
+
+r2(도트 측면만):
+- **정수 도트 배율**: 무대 배율 s 에서 자산 1px = 2·s 게임 px(640×360 → 1.5, 480×270 → 1.125)라 선이 번졌다.
+  `calculateBattleAssetZoom` 이 `.battle-field` 에 `zoom = round(2s)/(2s)`(`--battle-asset-zoom`, `data-battle-asset-scale`)를 건다 —
+  640×360 은 2px(1.333배), 480×270 은 1px(0.889배), 320×240·전투 테스트 모달은 그대로. 배틀러·연출 칸·피해 숫자가 함께 바뀌고,
+  걸음·연출 위치는 원래 각 요소의 rect/offsetWidth 로 재므로 그대로 맞는다. px 무대 위 여백은 `--battle-stage-inset-top` 선언(01) 에서 zoom 으로 되나눈다.
+  피해 숫자의 배너 여유(64)는 레이어 배율로 화면 px 로 옮긴다(`battleFieldDom`) — 큰 적 머리 위 숫자가 배너 뒤로 잘렸다.
+- **보스**: `data-collapse="bossSink"` 적이 있으면 인트로 2초(`introHoldMs` 훅, `BATTLE_BOSS_INTRO_MS`) 동안 검은 실루엣 → 내려앉아 땅울림 → 흰 번쩍 → 색,
+  아래 레터박스 띠, 살아 있는 동안 무대 가장자리 붉은 어둠. 녹화기는 확인키를 한 번만 누른다(연타하면 인트로가 SKIP_SPEED 로 지나간다).
+- **결과**: 도트 결과 판은 반투명 막, 가운데 줄을 비워(`grid-template-areas` 에 `". ."`) 이긴 파티가 보이고 창 넷이 차례로 내려앉는다. 전멸은 무대가 잿빛으로 식은 뒤 창이 떠오른다.
+- **죽은 시간**: 메뉴가 닫힌 게이지 충전 구간은 틱을 3배로 감고(`BATTLE_IDLE_CHARGE_BOOST`), 연출이 끝나면 다음 틱을 바로 돈다(`battleTick`). 행동 순서는 그대로.
 
 ## 포획 연출 · 도감 등록 문장 (2026-10-16, poke-sys ⑦)
 
