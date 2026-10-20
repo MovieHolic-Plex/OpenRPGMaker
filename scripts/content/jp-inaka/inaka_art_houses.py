@@ -429,27 +429,32 @@ def _lattice_win(c, x, y, w, h):
 
 
 # ─────────────── 초가 ───────────────
-_SCALLOP: Final[tuple[int, ...]] = (0, 1, 1, 2, 2, 1)
+STRAW_R: Final[list[int]] = [J('moss', 1), J('tatami_straw', 0), J('aged_cedar', 2), J('tatami_straw', 1),
+                             J('tatami_straw', 2), J('tatami_straw', 3), J('tatami_straw', 4)]
 
 
 def _thatch_px(x, y, ytop, n, face, moss_bias=0.0, seed=0):
-    """초가 화소: 6px 이엉 단(물결 진 다발 끝) — 단 안에서 위 빛 → 아래 그늘 · 단 내내 이어지는 세로 짚 획 ·
-    큰 덩이로 섞인 새 짚(노르스름) · 그늘 쪽 이끼 덩이."""
+    """초가 화소: 위→아래로 흐르는 1px 짚 획. 8px 이엉 단마다 획 끝이 엇갈리고(끝 빛), 아랫단에 덮이는 끝 줄은
+    단차 그늘. 획마다 톤, 획 사이 틈(지붕 전체로 이어지는 가는 어두운 결). 반점 덩이 없음. 이끼는 용마루 밑·처마 끝 띠만."""
     yy = y - ytop
-    C = 6
-    ph = _SCALLOP[(x // 2 + (yy // C) * 2) % 6]
-    crs, j = (yy + ph) // C, (yy + ph) % C
+    C = 8
+    off = int(H(x, yy // C, seed + 1) * 3)                               # 획 끝 엇갈림 0..2
+    crs, j = (yy + off) // C, (yy + off) % C
     f = yy / max(1, n)
-    t = 3 + face + (1 if f < 0.25 else 0) - (1 if f > 0.85 else 0)
-    t += (1, 1, 0, 0, -1, -2)[j]                                         # 단: 끝 빛 → 밑 그늘
-    st = H(x, crs, seed + 3)                                             # 세로 짚 획(단 내내)
-    t += -1 if st < 0.3 else (1 if st > 0.82 and j < 4 else 0)
-    big = (H(x // 9, y // 7, seed + 4) + H((x + 4) // 9, (y + 3) // 7, seed + 4)) / 2
-    ramp = STRAW if big > 0.76 else STRAW_OLD
-    m = (H(x // 2, y // 2, seed + 6) + H((x + 1) // 4, (y + 2) // 3, seed + 7)) / 2
-    if m + moss_bias > 0.86 and j < C - 1:
-        return _ri(MOSS, t)
-    return _ri(ramp, t)
+    t = 4 + face + (1 if f < 0.2 else 0) - (1 if f > 0.85 else 0)
+    st = H(x, crs, seed + 3)
+    t += -1 if st < 0.28 else (1 if st > 0.82 else 0)                    # 획마다 톤
+    if H(x, 0, seed + 8) < 0.3 and H(x, crs, seed + 9) < 0.75:
+        t -= 1                                                           # 획 사이 틈(세로로 길게 이어짐)
+    if j == 0:
+        t += 1                                                           # 획 끝 빛
+    elif j == C - 1:
+        t -= 2                                                           # 윗단에 덮인 단차 그늘
+    col = _ri(STRAW_R, t)
+    band = yy < 2 or n - yy <= 2
+    if band and H(x, y, seed + 6) < 0.45 + moss_bias:
+        col = _ri(MOSS, t - 1)
+    return col
 
 
 def thatch_roof(c, x0, x1, ytop, yeave, run, ridge=True):
@@ -463,16 +468,16 @@ def thatch_roof(c, x0, x1, ytop, yeave, run, ridge=True):
         bl = round(lerp(rl, x0 + run // 2, f)); br = round(lerp(rr, x1 - run // 2, f))
         for x in range(xl, xr + 1):
             if x < bl:
-                face, mb = 1, -0.3
+                face, mb = 1, -0.2
             elif x > br:
-                face, mb = -2, 0.06
+                face, mb = -2, 0.15
             else:
-                face, mb = 0, (0.0 if f > 0.6 else -0.3)
+                face, mb = 0, 0.0
             col = _thatch_px(x, y, ytop, n, face, mb)
             if x == bl or x == bl - 1:
                 col = _thatch_px(x, y, ytop, n, face + 1, -1)            # 왼쪽 隅 둥근 등
             if x == br + 1:
-                col = _thatch_px(x, y, ytop, n, -3, 0.15)
+                col = _thatch_px(x, y, ytop, n, -3, 0.0)
             c.P(x, y, col)
         c.P(xl - 1, y, OL); c.P(xr + 1, y, OL)
     # 처마 두께(짚 끝 단면 6px): 맨 위 립 빛, 짚 끝 점무늬 층, 밑면 그늘, 서까래 끝
@@ -482,8 +487,8 @@ def thatch_roof(c, x0, x1, ytop, yeave, run, ridge=True):
         sh = -1 if x > ex1 - wspan // 6 else (1 if x < ex0 + wspan // 8 else 0)
         c.P(x, yeave, _ri(STRAW, 5 + sh))
         for r in range(1, 4):
-            v = 4 - r // 2 + sh - ((x + r) % 2)
-            if H(x, r, 27) < 0.18:
+            v = 4 - r // 2 + sh - (1 if H(x, 9, 27) < 0.35 else 0)        # 짚 끝 단면: 세로로 이어지는 결
+            if H(x, r, 27) < 0.1:
                 v -= 1
             c.P(x, yeave + r, _ri(STRAW if r < 3 else STRAW_OLD, v))
         c.P(x, yeave + 4, _ri(STRAW_OLD, 2 + sh - (x % 2)))
@@ -813,7 +818,9 @@ def kura(c, base):
     for gx in (47, 49, 51):
         c.VL(gx, 31, 6, K('tekko', 2)); c.P(gx, 31, K('tekko', 3))
     c.HL(45, 37, 9, K('shiro', 2)); c.HL(45, 38, 9, K('shiro', -2)); c.VL(44, 30, 8, OL)
-    _eave_shade(c, X0, 28, W, 3)
+    for j, k in enumerate((0.5, 0.62, 0.76)):                              # 흰 회벽 바로 밑 짙은 처마 그늘 3px
+        _shade(c, X0, 28 + j, W, 1, k, 8)
+    _shade(c, X0, 31, W, 1, 0.86, 8, dither=True)
     kawara_gable(c, 3, 60, 7, 21, 'tekko', -1)
     # 기단 + 돌계단(윗면·챌면)
     plinth_34(c, 3, 51, 58, 7, top_h=2, mat='shrine_flagstone')
