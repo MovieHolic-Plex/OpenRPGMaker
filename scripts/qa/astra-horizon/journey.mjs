@@ -330,6 +330,8 @@ const CHART = {
   bug: { grass: 2, psychic: 2, fire: 0.5, flying: 0.5, fighting: 0.5 }, ground: { fire: 2, electric: 2, rock: 2, poison: 2, grass: 0.5, bug: 0.5, flying: 0 },
   flying: { grass: 2, bug: 2, fighting: 2, rock: 0.5, electric: 0.5 }, fighting: { normal: 2, rock: 2, ice: 2, flying: 0.5, psychic: 0.5, bug: 0.5 },
   electric: { water: 2, flying: 2, ground: 0, grass: 0.5, electric: 0.5 }, rock: { fire: 2, flying: 2, bug: 2, ice: 2, ground: 0.5, fighting: 0.5 },
+  // 얼음·에스퍼가 빠져 있어 물 스타터가 브램보어(땅·풀)에게 4배 서리발 대신 여울방울을 골랐다(2026-10-21 r21).
+  ice: { grass: 2, ground: 2, flying: 2, dragon: 2, fire: 0.5, water: 0.5, ice: 0.5 }, psychic: { fighting: 2, poison: 2, psychic: 0.5 },
 };
 const speciesByName = new Map((project.database.monsterSpecies ?? []).map((sp) => [sp.name, sp]));
 const skillById = new Map(project.database.skills.map((sk) => [sk.id, sk]));
