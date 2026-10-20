@@ -270,7 +270,7 @@ const argv = process.argv.slice(2);
 const stage = argv[0];
 const option = (name: string) => { const i = argv.indexOf(`--${name}`); return i >= 0 ? argv[i + 1] : undefined; };
 const concurrency = Math.max(1, Math.min(6, Number(option('concurrency') ?? 4)));
-const isErr = (a: Answer | { error: string } | undefined): a is { error: string } => !a || 'error' in a;
+const isErr = (a: Answer | { error: string } | undefined): a is { error: string } | undefined => !a || 'error' in a;
 
 if (stage === 'final-status') {
   const hash = finalProfileHash(), rec = readFinalProfiles().find(p => p.profileHash === hash);
@@ -291,7 +291,7 @@ if (stage === 'final-review') {
   const res = await judgeFinal(items, { concurrency, onCall: (d, t) => console.error(`  호출 ${d}/${t}`) });
   let fail = 0;
   for (const [p, a] of res) {
-    if (isErr(a)) { console.log(`ERR  ${p.label ?? p.name}: ${a.error.slice(0, 160)}`); fail++; continue; }
+    if (isErr(a)) { console.log(`ERR  ${p.label ?? p.name}: ${(a?.error ?? "답 없음").slice(0, 160)}`); fail++; continue; }
     const r = finalRecord(p, a, hash); writeFinal(r); writeHeldImage(p.sha, p.img.width, p.img.height, p.img.data);
     if (r.verdict !== 'pass') fail++;
     console.log(`${r.verdict.toUpperCase()} ${p.kind.padEnd(14)} ${(p.label ?? p.name).padEnd(40)} ${r.reasons.join(' · ').slice(0, 200)}`);
@@ -412,7 +412,7 @@ if (stage === 'final-queue') {
     console.error(`[${b}] ${list.length}장`);
     const res = await judgeFinal(list, { concurrency, onCall: (d, t) => { if (d % 10 === 0 || d === t) console.error(`  [${b}] 호출 ${d}/${t}`); } });
     for (const [p, a] of res) {
-      if (isErr(a)) { console.error(`  ERR ${p.label}: ${a.error.slice(0, 160)}`); continue; }
+      if (isErr(a)) { console.error(`  ERR ${p.label}: ${(a?.error ?? "답 없음").slice(0, 160)}`); continue; }
       writeFinal(finalRecord(p, a, hash)); writeHeldImage(p.sha, p.img.width, p.img.height, p.img.data);
     }
     write();
