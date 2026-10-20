@@ -71,9 +71,11 @@ async function electronRun(projectDir, configHome) {
   const app = await electron.launch({
     args: [resolve(opt("main", join(REPO, "dist-electron/main.cjs"))), "--disable-dev-shm-usage"],
     cwd: REPO,
-    env: { ...process.env, XDG_CONFIG_HOME: configHome, OPRN_RENDERER_DIR: resolve(REPO, opt("dist", "dist")) },
+    env: { ...process.env, ...(opt("ipc-timing", null) ? { OPRN_IPC_TIMING: "1" } : {}), XDG_CONFIG_HOME: configHome, OPRN_RENDERER_DIR: resolve(REPO, opt("dist", "dist")) },
   });
   const t = {};
+  const ipcLog = opt("ipc-timing", null);
+  if (ipcLog) app.process().stderr?.on("data", (chunk) => { for (const line of String(chunk).split("\n")) if (line.includes("[ipc-timing]")) writeFileSync(ipcLog, `${line}\n`, { flag: "a" }); });
   try {
     const page = await app.firstWindow();
     // 시작 화면: 최근 월드 카드(편집 단추)가 그려진 순간. 카드가 생기기 전까지는 홈이 쓸모가 없다.
@@ -140,6 +142,8 @@ async function webRun(url, profileDir) {
     t.nav = Math.round(marks.timeOrigin - t0);
     for (const [name, at] of Object.entries(marks.marks)) t[`editor.${name}`] = at;
     t.editorKB = Math.round(marks.resources.reduce((sum, entry) => sum + entry.size, 0) / 1024);
+    const saveWait = Number(opt("save-wait", "0"));
+    if (saveWait > 0) await page.waitForTimeout(saveWait);
     return { t, editorResources: marks.resources };
   } finally {
     await context.close();

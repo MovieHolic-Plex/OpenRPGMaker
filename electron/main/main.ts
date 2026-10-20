@@ -89,7 +89,14 @@ function destroyWindow(window: BrowserWindow): void {
   if (!window.isDestroyed()) window.destroy();
 }
 
-// 닫기는 flush → ack → destroy 다(설계서 7.3). 렌더러가 10초 안에 flush-done 을 부르지 않으면 강제로 닫는다.
+/**
+ * 닫기 저장을 기다리는 상한. 큰 프로젝트를 새 빌드로 처음 연 직후의 자동 저장(부팅 정규화 결과 + 표식)은 렌더러 준비만 10초를 넘는다
+ * (2026-10-20 실측, 71MB: 정착 뒤 저장 완료까지 16초). 예전 상한 10초는 그 저장을 끊어 버려 — 다음 실행이 또 «첫 부팅»(+10~15초)이
+ * 되고 저장 중이던 변경도 잃었다. 창은 닫는 즉시 숨기므로 사용자는 기다리지 않는다.
+ */
+const CLOSE_FLUSH_TIMEOUT_MS = 60_000;
+
+// 닫기는 flush → ack → destroy 다(설계서 7.3). 렌더러가 상한 안에 flush-done 을 부르지 않으면 강제로 닫는다.
 function installCloseFlow(window: BrowserWindow): void {
   const id = window.webContents.id;
   window.on("close", (event) => {
@@ -97,8 +104,10 @@ function installCloseFlow(window: BrowserWindow): void {
     if (!sessions.get(id)) return;
     event.preventDefault();
     closing.add(id);
+    // 저장이 끝날 때까지 창을 잡아 두되 화면에서는 바로 치운다 — 닫기 단추가 «바로» 먹는다.
+    window.hide();
     window.webContents.send(OPRN_CHANNELS.lifecycleFlushBeforeClose);
-    closeTimers.set(id, setTimeout(() => destroyWindow(window), 10_000));
+    closeTimers.set(id, setTimeout(() => destroyWindow(window), CLOSE_FLUSH_TIMEOUT_MS));
   });
   window.on("closed", () => {
     closing.delete(id);
