@@ -868,6 +868,11 @@ export function createFirstLoveFlagshipDemo(): FlagshipDemoBuildResult {
 
   const exec = (name: string, args: Record<string, unknown>) => execTool(project, name, args);
   const anchors = buildFirstLoveMaps(project, exec);
+  // 조명이 없는 맵은 들어오기 전 맵의 조명을 이어 받는다 — 밤거리에서 편의점에 들어가면 편의점이 어두워진다. 모든 맵의 조명을 못 박는다.
+  for (const id of Object.values(FL_MAP)) {
+    const m = project.maps[id];
+    if (m && !m.defaultLighting) m.defaultLighting = { ambient: 0, color: "#000000", sources: [] };
+  }
   for (const id of initialMapIds) delete project.maps[id];
 
   // 원곡 두 곡(프로젝트 안에 실린다).

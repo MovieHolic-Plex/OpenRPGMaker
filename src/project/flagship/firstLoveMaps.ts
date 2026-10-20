@@ -78,6 +78,12 @@ function bottomGap(map: GameMap, project: Project): Cell {
 }
 
 /** origin 에서 가장 가까운, 걸어 들어갈 수 있는 빈 칸(이벤트 없는 칸). */
+/** origin 에서 아래로 내려가며 처음 만나는 통행 칸. */
+function firstPassableBelow(project: Project, map: GameMap, origin: Cell): Cell {
+  for (let y = origin.y; y < map.height; y += 1) if (isPassable(project, map, origin.x, y)) return { x: origin.x, y };
+  return nearestFree(project, map, origin);
+}
+
 export function nearestFree(project: Project, map: GameMap, origin: Cell, maxR = 8, avoid: readonly Cell[] = []): Cell {
   for (let r = 0; r <= maxR; r++) {
     for (let dy = -r; dy <= r; dy++) {
@@ -177,7 +183,8 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
       whiteboard: nearestFree(project, officeRoom, { x: 21, y: 9 }),
     },
     rooftop: {
-      door: { x: 6, y: 4 }, doorOut: nearestFree(project, roofRoom, { x: 6, y: 5 }),
+      // 계단실 덩어리는 막혀 있다 — 그 아래 첫 통행 칸이 내려가는 문 발판, 올라와 서는 칸은 그 한 칸 아래.
+      door: firstPassableBelow(project, roofRoom, { x: 6, y: 4 }), doorOut: nearestFree(project, roofRoom, { x: 6, y: firstPassableBelow(project, roofRoom, { x: 6, y: 4 }).y + 1 }),
       rail: nearestFree(project, roofRoom, { x: 9, y: 7 }), bench: nearestFree(project, roofRoom, { x: 3, y: 6 }),
     },
     konbini: {

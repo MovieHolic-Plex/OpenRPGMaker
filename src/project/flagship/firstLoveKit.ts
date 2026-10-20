@@ -78,8 +78,8 @@ export const letterbox = (on: boolean, ms = 500): Command[] => [
 ];
 export const tint = (value: string, ms = 0): Command => m2("Tint Screen", { color: "neutral", value, durationMs: ms });
 export const clearTint = (ms = 0): Command => m2("Tint Screen", { color: "neutral", value: "", durationMs: ms });
-export const shake = (ms = 300): Command => m2("Shake Screen", { intensity: "1", durationMs: ms, direction: "horizontal" });
-export const flash = (color = "white", ms = 300): Command => m2("Flash Screen", { color, durationMs: ms });
+export const shake = (ms = 300): Command => m2("Shake Screen", { value: 1, intensity: "1", durationMs: ms, direction: "horizontal" });
+export const flash = (color = "white", ms = 300): Command => m2("Flash Screen", { color, durationMs: ms, value: "flash" });
 export const hidePlayer = (): Command => m2("Sprite Look", { target: "player", opacity: "0" });
 export const showPlayer = (): Command => m2("Sprite Look", { target: "player", reset: true });
 
