@@ -219,91 +219,101 @@ def J(mat, s):
 
 
 def _train(c, kind):
-    """통근 열차 한 량(64×48). 3/4: 지붕 윗면 5..12(밝은 스테인리스 판 + 냉방기·통풍구·배수 홈, B 는 팬터그래프) + 남쪽 옆면 13..39 + 바닥 기기·대차 40..43 + 접지 그늘.
-    양 끝 x=0·63 은 연결 막 그늘(어두운 세로 띠)이라 A B A B 로 붙이면 칸이 나뉘어 보이고 지붕선·띠·그늘 줄은 끊김 없이 이어진다."""
+    """통근 열차 한 량(64×48). 3/4: 지붕 윗면 4..13(11줄, 밝은 스테인리스 판 + 냉방기·통풍구, B 는 팬터그래프) + 배수 홈 14
+    + 남쪽 옆면 15..37 + 바닥 기기·대차 38..43 + 접지 그늘 44..45.
+    양 끝 x=0·63 은 지붕·스커트가 파인 연결 막(幌) 그늘이라 A B A B 로 붙이면 칸이 나뉘어 보이고, 띠·그늘 줄은 끊김 없이 이어진다."""
     W = 64
     S = lambda s: J('vending_cool_white', s); CG = lambda s: J('concrete_grey', s); AS = lambda s: J('asphalt', s)
     G = lambda s: K('garasu', s); ST = lambda s: J('pine_bamboo', s)
     RIM = CG(0)                                                                                   # 재질 톤 윤곽(순흑 아님)
     # ── 지붕 윗면 ──
-    c.HL(0, 4, W, RIM)
-    c.HL(0, 5, W, S(2)); c.HL(0, 6, W, S(3))
-    for y in range(7, 11): c.HL(0, y, W, S(4) if y in (7, 10) else S(3))
-    for x in range(3, W, 8): c.P(x, 8 + (x // 8) % 2, S(4))                                     # 판 이음 광택
-    for x in range(7, W, 16): c.VL(x, 6, 5, S(2))                                                 # 지붕 판 이음(세로)
-    c.HL(0, 11, W, S(4)); c.HL(0, 12, W, CG(1))                                                  # 앞 모서리 입술 · 배수 홈
-    # 냉방기(윗면 + 앞면, 회색 덮개에 격자 슬릿)
-    for ax, aw in (((16, 32),) if kind == 'a' else ((44, 16),)):
-        c.HL(ax, 5, aw, RIM)
-        c.R(ax, 6, aw, 3, CG(4)); c.HL(ax + 1, 6, aw - 2, CG(4))
-        for x in range(ax + 2, ax + aw - 2, 3): c.VL(x, 6, 3, CG(2))                             # 윗면 그릴
-        c.R(ax, 9, aw, 2, CG(2)); c.HL(ax, 10, aw, CG(1))                                         # 앞면
-        for x in range(ax + 3, ax + aw - 3, 4): c.P(x, 9, CG(0))
-        c.VL(ax - 1, 6, 5, RIM); c.VL(ax + aw, 6, 5, RIM); c.VL(ax + aw - 1, 6, 5, CG(1))
-        c.HL(ax, 11, aw, S(2))                                                                    # 덮개 그늘
-    # 통풍구(낮은 상자 2~3개)
-    for vx in ((4, 52) if kind == 'a' else (3, 11)):
-        c.HL(vx, 6, 7, RIM); c.R(vx, 7, 7, 2, CG(3)); c.HL(vx + 1, 7, 5, CG(4)); c.HL(vx, 9, 7, CG(1))
-        c.VL(vx - 1, 7, 3, RIM); c.VL(vx + 7, 7, 3, RIM); c.P(vx + 2, 8, CG(0)); c.P(vx + 4, 8, CG(0))
-    if kind == 'b':                                                                               # 팬터그래프(마름모 틀 + 집전 판 + 애자)
+    c.HL(0, 3, W, RIM)
+    c.HL(0, 4, W, S(2)); c.HL(0, 5, W, S(3))
+    for y in range(6, 13): c.HL(0, y, W, S(3) if y % 3 else S(4))                                # 지붕 골(길이 방향 리브)
+    for x in range(5, W, 9): c.P(x, 7 + (x // 9) % 4, S(4))                                       # 광택 점
+    for x in (16, 48): c.VL(x, 5, 8, S(2))                                                        # 지붕 판 이음
+    c.HL(0, 13, W, S(4)); c.HL(0, 14, W, CG(1))                                                  # 앞 모서리 입술 · 배수 홈
+    def box(x, y, w, top, front, slats=0):
+        """지붕 위 상자: 윗면 top 줄(밝음) + 앞면 front 줄(어두움) + 재질 윤곽 + 오른쪽 아래 그늘."""
+        c.HL(x, y - 1, w, RIM); c.VL(x - 1, y, top + front, RIM); c.VL(x + w, y, top + front, RIM)
+        c.R(x, y, w, top, CG(4)); c.HL(x, y, w, S(4))
+        if slats:
+            for xx in range(x + 2, x + w - 1, slats): c.VL(xx, y + 1, top - 1, CG(3))
+        c.R(x, y + top, w, front, CG(2)); c.HL(x, y + top, w, CG(1)); c.HL(x, y + top + front - 1, w, CG(1))
+        for xx in range(x + 2, x + w - 2, 3): c.P(xx, y + top + 1, CG(0))                         # 앞면 흡기 구멍
+        c.HL(x + 1, y + top + front, w, S(2)); c.VL(x + w + 1, y + 1, top + front, S(2))           # 지붕에 떨어진 그늘
+    if kind == 'a':
+        box(18, 6, 28, 3, 3, slats=3)                                                             # 냉방기 덮개
+        box(4, 7, 7, 2, 2); box(53, 7, 7, 2, 2)                                                   # 통풍구
+    else:
+        box(46, 6, 14, 3, 3, slats=3)
+        box(4, 7, 7, 2, 2); box(13, 9, 4, 1, 2)
         PANTO = ('...##############...',
-                 '..=o============o=..',
+                 '..oOOOOOOOOOOOOOOo..',
                  '....o..........o....',
                  '...o.o........o.o...',
                  '..o...o......o...o..',
                  '.o.....o....o.....o.',
                  '..o.....o..o.....o..',
                  '...o.....oo.....o...',
+                 '....o....oo....o....',
                  '..bbbbbbbbbbbbbbbb..',
-                 '.wBBBBBBBBBBBBBBBBw.')
-        pal = {'#': CG(4), '=': CG(1), 'o': AS(3), 'b': CG(3), 'B': CG(1), 'w': S(4)}
+                 '.wBBBBBBBBBBBBBBBBw.',
+                 '..ssssssssssssssss..')
+        pal = {'#': CG(4), 'O': CG(1), 'o': AS(1), 'b': CG(3), 'B': CG(1), 'w': S(4), 's': S(2)}
         for j, row in enumerate(PANTO):
             for i, ch in enumerate(row):
-                if ch in pal: c.P(22 + i, j, pal[ch])
-        c.HL(4, 10, 20, CG(1)); c.HL(40, 10, 4, CG(1))                                            # 지붕 위 전선
+                if ch in pal: c.P(20 + i, j, pal[ch])
+        c.HL(11, 12, 10, CG(1)); c.HL(39, 12, 5, CG(1))                                           # 지붕 위 전선
     # ── 옆면(남쪽) ──
-    c.HL(0, 13, W, S(4))
-    c.R(0, 14, W, 3, S(3))                                                                         # 창 위 띠
-    c.R(0, 17, W, 6, S(2))                                                                         # 창 높이 띠
-    c.R(0, 23, W, 2, S(3))
-    c.HL(0, 25, W, ST(3)); c.HL(0, 26, W, ST(2)); c.HL(0, 27, W, ST(1))                           # 초록 띠
-    for y in range(28, 39): c.HL(0, y, W, S(2) if y % 2 else S(3))                                # 아래 골판(스테인리스 리브)
-    c.HL(0, 38, W, S(1)); c.HL(0, 39, W, CG(1))
-    for x in range(8, W, 16): c.VL(x, 28, 10, S(1))                                               # 차체 판 이음(세로)
+    c.HL(0, 15, W, S(4))
+    c.R(0, 16, W, 2, S(3))                                                                         # 창 위 띠
+    c.R(0, 18, W, 6, S(2))
+    c.R(0, 24, W, 2, S(3)); c.HL(0, 24, W, S(4))
+    c.HL(0, 26, W, ST(3)); c.HL(0, 27, W, ST(2)); c.HL(0, 28, W, ST(1))                           # 초록 띠
+    rib = {29: (4, 3), 30: (3, 3), 31: (4, 2), 32: (3, 2), 33: (3, 2), 34: (2, 1), 35: (2, 1), 36: (1, 1)}
+    for y, (hi, lo_) in rib.items(): c.HL(0, y, W, S(hi) if y % 2 else S(lo_))                    # 아래 골판: 띠 밑이 밝고 아래로 어두워진다
+    c.HL(0, 37, W, CG(1))
+    for x in range(8, W, 16): c.VL(x, 29, 8, S(1)); c.VL(x + 1, 29, 8, S(4))                       # 차체 판 이음(세로)
     doors = (12, 43) if kind == 'a' else (10, 45)
-    wins = ((3, 6), (24, 8), (33, 8), (55, 6)) if kind == 'a' else ((2, 6), (22, 9), (32, 10), (56, 5))
-    for (wx, ww) in wins:                                                                          # 창: 6줄 높이, 반사 2단
-        c.R(wx - 1, 16, ww + 2, 8, AS(2))
-        c.HL(wx, 17, ww, G(2)); c.HL(wx, 18, ww, G(1)); c.R(wx, 19, ww, 3, G(-1)); c.HL(wx, 22, ww, G(-2))
+    wins = ((3, 6), (25, 7), (33, 7), (56, 5)) if kind == 'a' else ((3, 5), (23, 9), (33, 9), (57, 4))
+    for (wx, ww) in wins:                                                                          # 창: 6줄, 반사 2단
+        c.R(wx - 1, 17, ww + 2, 8, AS(2))
+        c.HL(wx, 18, ww, G(2)); c.HL(wx, 19, ww, G(1)); c.R(wx, 20, ww, 3, G(-1)); c.HL(wx, 23, ww, G(-2))
         for k in range(3):
-            x = wx + 1 + k
-            if x < wx + ww: c.P(x, 20 - k, G(1))
-        if ww > 6: c.P(wx + ww - 2, 18, G(3))
-        c.HL(wx - 1, 24, ww + 2, S(4))                                                              # 창턱 빛
+            if wx + 1 + k < wx + ww: c.P(wx + 1 + k, 21 - k, G(1))
+        if ww > 5: c.P(wx + ww - 2, 19, G(3))
+        c.HL(wx - 1, 25, ww + 2, S(4))                                                              # 창턱 빛
     for dx in doors:                                                                               # 양문 승강문(창 달린 문)
-        c.R(dx, 15, 10, 24, AS(2))
-        c.R(dx + 1, 16, 4, 22, S(2)); c.R(dx + 5, 16, 4, 22, S(2))
-        c.VL(dx + 1, 16, 22, S(3)); c.VL(dx + 5, 16, 22, S(3))
-        for lx in (dx + 2, dx + 6):
-            c.R(lx, 18, 2, 6, G(-1)); c.P(lx, 18, G(2)); c.P(lx, 19, G(1)); c.P(lx + 1, 18, G(1))
-        c.HL(dx + 1, 25, 8, ST(3)); c.HL(dx + 1, 26, 8, ST(2)); c.HL(dx + 1, 27, 8, ST(1))
-        c.HL(dx + 1, 37, 8, S(1)); c.HL(dx, 39, 10, AS(1))                                         # 문 밑 발판
+        c.R(dx, 17, 10, 21, AS(2))
+        for lx in (dx + 1, dx + 5):
+            c.R(lx, 18, 4, 19, S(2)); c.VL(lx, 18, 19, S(3))
+            for y in range(29, 37, 2): c.HL(lx, y, 4, S(3))
+            c.R(lx + 1, 19, 2, 6, G(-1)); c.P(lx + 1, 19, G(2)); c.P(lx + 1, 20, G(1)); c.P(lx + 2, 19, G(1))
+        c.HL(dx + 1, 26, 8, ST(3)); c.HL(dx + 1, 27, 8, ST(2)); c.HL(dx + 1, 28, 8, ST(1))
+        c.HL(dx, 37, 10, AS(1))                                                                     # 문 밑 발판
+    c.VL(1, 15, 22, S(4)); c.VL(W - 2, 15, 22, S(1))                                               # 차 끝 빛 / 그늘
     # ── 바닥 기기·대차 ──
-    c.R(0, 40, W, 4, AS(1)); c.HL(0, 40, W, AS(3))
-    for (bx, bw) in ((20, 10), (33, 8)) if kind == 'a' else ((19, 7), (28, 14)):
-        c.R(bx, 40, bw, 3, AS(2)); c.HL(bx, 40, bw, AS(4)); c.VL(bx + bw - 1, 40, 3, AS(0))
-    for bc in (9, 54):
-        c.R(bc - 7, 40, 14, 3, CG(0)); c.HL(bc - 7, 40, 14, CG(2))                                # 대차 틀
-        for wx in (bc - 4, bc + 3):
-            c.R(wx - 2, 41, 4, 4, AS(0)); c.HL(wx - 1, 41, 2, AS(1)); c.P(wx - 1, 42, CG(3)); c.P(wx, 42, CG(2))
-            c.HL(wx - 1, 45, 2, AS(0))
-    c.HL(0, 44, W, AS(0)); c.HL(0, 45, W, K('yoru', -3))                                          # 접지 그늘(바퀴 사이도 막힘)
-    for bc in (9, 54):
-        for wx in (bc - 4, bc + 3): c.R(wx - 2, 43, 4, 2, AS(0)); c.HL(wx - 1, 44, 2, CG(1))
-    # ── 연결 막(양 끝) ──
-    for x, col in ((0, AS(2)), (W - 1, AS(1))):
-        c.VL(x, 5, 8, col); c.VL(x, 13, 27, col)
-    c.VL(1, 13, 27, S(4)); c.VL(W - 2, 13, 27, S(1))
+    c.R(2, 38, W - 4, 2, AS(1)); c.HL(2, 38, W - 4, AS(3))
+    for (bx, bw) in ((20, 9), (31, 6), (39, 5)) if kind == 'a' else ((19, 6), (27, 13), (42, 3)):
+        c.R(bx, 39, bw, 3, AS(2)); c.HL(bx, 39, bw, AS(4)); c.VL(bx + bw - 1, 40, 2, AS(0)); c.HL(bx, 41, bw, AS(1))
+    c.HL(0, 44, W, AS(0)); c.HL(0, 45, W, K('yoru', -3))                                          # 접지 그늘
+    for bc in (10, 53):
+        c.R(bc - 8, 39, 16, 2, CG(1)); c.HL(bc - 8, 39, 16, CG(3)); c.VL(bc - 8, 39, 3, RIM); c.VL(bc + 7, 39, 3, RIM)   # 대차 틀
+        for wx in (bc - 4, bc + 4):                                                                # 바퀴(지름 5) + 축 상자
+            for yy in range(40, 45):
+                for xx in range(wx - 3, wx + 3):
+                    d = (xx + .5 - wx) ** 2 + (yy + .5 - 42.5) ** 2
+                    if d <= 6.5: c.P(xx, yy, AS(1) if d > 2.3 else CG(3) if yy < 42 else CG(1))
+            c.P(wx - 2, 41, AS(3))
+        c.R(bc - 1, 40, 2, 2, CG(2))
+    # ── 연결 막(양 끝): 지붕·스커트를 파고 幌 그늘 ──
+    for x in (0, W - 1):
+        for y in range(3, 15): c.P(x, y, None)
+        c.a[3:15, x] = 0
+        for y in range(15, 38): c.P(x, y, AS(1) if y % 3 else AS(2))
+        c.a[38:44, x] = 0
+    c.VL(1, 4, 10, S(2)); c.VL(W - 2, 4, 10, CG(2)); c.a[3, 1] = 0; c.a[3, W - 2] = 0
 
 
 @_spec('train-car-a', '통근 열차 한 량 A(크림+청회색, 초록 줄, 4×3)', 4, 3, 'box', solid=[(x, 1) for x in range(4)] + [(x, 2) for x in range(4)],
