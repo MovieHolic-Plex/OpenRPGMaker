@@ -513,6 +513,11 @@ function tunePacing(project: Project): void {
     // 1번 도로 트레이너의 포포비도 같은 벌레 기술로 Lv5 스타터를 3턴에 쓰러뜨렸다(2026-10-20 실플레이) — 첫 도로에서는 몸통 기술만.
     const routeBug = byId("mx_enemy_mx_map_meadow_trainer_1_0");
     if (routeBug) routeBug.actions = routeBug.actions.filter((a) => !a.skillId || !bug.has(a.skillId));
+    // 관장의 베르카부가 원래 기술 그대로 더듬이쏘기(벌레)를 써서 풀 스타터를 매번 2~3방에 눕혔다(2026-10-20 실입력 여정, Lv7 로 세 번 패배).
+    // 풀 체육관이니 그 자리를 새싹치기(풀)로 바꾼다 — 스타터와 서로 반감이라 어깨툭 싸움이 되고, 잡은 동료가 힘을 쓸 자리가 생긴다.
+    const sprout = project.database.skills.find((s) => s.name === "새싹치기")?.id;
+    const leaderBug = byId("mx_enemy_mx_map_grove_gym_leader_0");
+    if (leaderBug && sprout) leaderBug.actions = leaderBug.actions.map((a) => (a.skillId && bug.has(a.skillId) ? { ...a, skillId: sprout } : a));
   }
   // 배지 하나짜리 데모라 초반 경험치를 두 배로 — 라이벌·도로 트레이너·수련생을 다 이기면 관장 앞에서 Lv8 안팎이 되게 한다.
   // (rescaleEnemy 가 레벨을 바꾸기 전 보상이 그대로라 레벨을 내린 수련생도 보상은 원래 레벨 몫이다.)
