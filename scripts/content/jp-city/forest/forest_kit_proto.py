@@ -410,7 +410,7 @@ def _undergrowth_base(seed):
             px = i * 4 + 2 + (h01(i, j, seed + 30) - 0.5) * 3.2
             py = j * 4 + 2 + (h01(i, j, seed + 31) - 0.5) * 3.2
             q = h01(i, j, seed + 32)
-            L = 0 if q < 0.22 else (1 if q < 0.62 else (2 if q < 0.9 else 3))
+            L = 0 if q < 0.12 else (1 if q < 0.45 else (2 if q < 0.8 else 3))
             pts.append((px, py, L, 1.6 + h01(i, j, seed + 33) * 1.2, h01(i, j, seed + 34)))
     for y in range(16):
         for x in range(16):
@@ -983,8 +983,9 @@ def _broadleaf_band(a, P, part, variant, s, x0, x1, H):
                 P(bx, y, R(BARK, 2) if y > 8 else R(BARK, 1))
     # 3) 앞 줄기: 굵기·자리·뿌리가 변형마다 다르다
     # 변형: 굵기 3~12px, 한두 그루, 또는 잎이 땅까지 늘어져 줄기를 가린다(drape) — 같은 간격의 「울타리」가 되지 않게
-    sets = [[(4, 6)], [(10, 5)], [(2, 3), (9, 7)], [(3, 11)], [(1, 4), (11, 4)], [(10, 5)], [(5, 9)], [(12, 3)]]
-    drape = {5: (0, 8), 7: (0, 11), 1: (0, 5)}.get(variant % 8) if not open_ else None
+    # 가는 막대 줄기(3~4px)를 줄였다(Argon r6: 「울타리·바코드」). 두 변형(4·7)은 잎이 땅까지 늘어져 줄기가 거의 안 보인다.
+    sets = [[(4, 6)], [(10, 5)], [(8, 8)], [(3, 11)], [(2, 6)], [(10, 5)], [(5, 9)], []]
+    drape = {5: (0, 8), 7: (0, 16), 1: (0, 5), 4: (9, 16), 2: (0, 6), 3: (14, 16)}.get(variant % 8) if not open_ else None
     trunks = [(5, 6)] if open_ else sets[variant % 8]
     if part == 'L': trunks = [(max(t[0], x0 + 3), t[1]) for t in trunks]
     if part == 'R': trunks = [(min(t[0], x1 - 2 - t[1]), t[1]) for t in trunks]
