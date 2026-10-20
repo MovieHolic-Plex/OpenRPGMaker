@@ -152,7 +152,10 @@ affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는
   옮긴 것: 컨셉 검색창·분류 칩·무한 격자·골라서 만들기·빈 프로젝트 → 「새로 만들기」, 전체 목록·숨김 보기·게임 파일 열기 → 「내 게임」,
   장면 넘겨 보기·소개 글 → 「기본 게임」, 「AI 엔진이 아직 없어요」 카드 → 「새로 만들기」 맨 위(레일 AI 상태 줄은 그대로).
 - 클릭 행렬 스크립트 `scripts/qa/start-screen-nav.mjs`(vitest 아님, 가짜 브리지, 모든 순서쌍·연타·상세/검색 누수·뒤로 가기·늦은 목록) — 53개 확인.
-  증거 `verify-shots/start-screen-ux/`(before = 10-20 판, after).
+  증거 `verify-shots/start-screen-ux/`(before = 10-20 판, after, electron = 실제 앱에서 순서쌍 16 + 상세 누수·뒤로 가기 확인).
+- 기본 게임 그림(같은 날 다시 찍음): 데모를 다듬는 브랜치의 스냅숏(`git worktree add --detach`)에서 `home-builtin` 시나리오를 돌리고
+  `HOME_SHOTS_FALLEN=… HOME_SHOTS_ASTRA=… python3 scripts/content/bake-home-builtin-art.py` 로 굽는다. 이제 480×270 1배 무손실 webp
+  (화면이 pixelated 로 키운다). 이 머신은 크로미움이 ERR_NETWORK_CHANGED 로 백지가 되므로 시나리오는 `unshare -rn`(lo 올림) 안에서 돌렸다.
 
 아래는 10-20 판 설명이다 — 「선반으로 스크롤」·「lead」 부분은 위 칸 나누기로 바뀌었다.
 위에서부터 큰 배너 하나(「이어서 만들기」 — 마지막으로 편집한 게임) → 「내 게임」 선반 → 「기본 게임」 선반 → 「컨셉에서 시작」 피드.
@@ -172,7 +175,7 @@ affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는
   - 「내 게임」: 최근 편집 순 5장 + 「새 게임」 칸, 「게임 파일 열기」·「모두 보기 (n)」. 마우스를 올리면 「플레이」·「편집」.
     같은 이름이 여럿이면 화면 언어 날짜를 붙인다(`displayTitles`, 「새 게임 · 10월 12일」). 처음 켠 상태는 「첫 게임 만들기」 + (AI 가 없으면) 막지 않는 안내 카드.
   - 「기본 게임」: `src/start/home/builtinGames.ts` 한 표(편집기 「새 게임」 덮는 창도 같은 표). 그림은 출하 플레이어(player.html)로 기본 해상도 그대로 찍어
-    (`scripts/qa/runtime/home-builtin.scenario.mjs`, 픽스처 `home-builtin-fixture.mts`) `scripts/content/bake-home-builtin-art.py` 가 논리 480×270 의 정확히 2배 webp 로 굽는다
+    (`scripts/qa/runtime/home-builtin.scenario.mjs`, 픽스처 `home-builtin-fixture.mts`) `scripts/content/bake-home-builtin-art.py` 가 논리 480×270 1배 무손실 webp 로 굽는다(10-21 전에는 2배 손실)
     (`public/assets/start/builtin/`). 아스트라는 480×320(GBA 비율, 장르 고정)이라 무대 가운데 16:9 를 자른다. 마우스를 올리면 오프닝·첫 필드를 넘겨 보인다.
     소개는 하는 사람 기준 한 줄 — 「96px 보스전」 같은 만든 사람 수치는 쓰지 않는다.
   - 「컨셉에서 시작」 머리 오른쪽 글자 단추 「골라서 만들기 ›」(빠른 인터뷰)·「빈 프로젝트 ›」. 카드 큰 그림은 그 컨셉이 지어질 칩셋의 등록 장소 그림
