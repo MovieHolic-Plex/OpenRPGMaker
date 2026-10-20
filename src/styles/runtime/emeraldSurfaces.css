@@ -385,6 +385,8 @@
   /* D18: 줄 높이 20px 은 Galmuri9 18px 글자(받침 포함 높이 약 20)에 빡빡해 위아래 줄 획이 붙었다 — 문장 창과 같은 24px. */
   font: 18px/24px var(--runtime-pixel-font);
   white-space: nowrap;
+  /* R3-1: 공용 규칙의 아래 4px 그림자(0 4px 0 #000 80%)가 글자 밑에 세로 번짐을 만들어 획이 길쭉·겹쳐 보였다. 밝은 상자 위라 그림자를 끈다. */
+  text-shadow: none;
 }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-panel .battle-levelup-stat-value { text-align: right; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-finale-stamp { display: none; }

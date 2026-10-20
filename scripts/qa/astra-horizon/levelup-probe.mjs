@@ -28,6 +28,15 @@ await page.addInitScript(() => {
   const probe = { samples: [], violations: [], firstSeen: {}, label: "" };
   window.__hudProbe = probe;
   setInterval(() => {
+    const box = [...document.querySelectorAll('.battle-levelup-stats')].find((b) => b.getBoundingClientRect().width > 20);
+    if (!box || window.__luDump) return;
+    const cs = (el) => { const c = getComputedStyle(el); return { ff: c.fontFamily.slice(0, 50), fs: c.fontSize, fst: c.fontStretch, fsa: c.fontSizeAdjust, tf: c.transform, zoom: c.zoom, ls: c.letterSpacing, fw: c.fontWeight, w: c.width }; };
+    const chain = []; for (let el = box; el && el !== document.body && chain.length < 14; el = el.parentElement) chain.push({ c: String(el.className).slice(0, 36), ...cs(el) });
+    const kids = [...box.children].slice(0, 3).map((k) => ({ t: k.tagName, c: k.className, txt: k.textContent, sw: k.scrollWidth, ...cs(k), r: (({ x, y, width, height }) => [x, y, width, height].map(Math.round))(k.getBoundingClientRect()) }));
+    const msg = document.querySelector('.battle-message-line');
+    window.__luDump = { boxRect: JSON.stringify(box.getBoundingClientRect()), boxCs: (() => { const c = getComputedStyle(box); return { d: c.display, fontSize: c.fontSize, font: c.font, ws: c.whiteSpace, w: c.width, tf: c.transform, ts: c.textShadow, fk: c.fontKerning, fss: c.fontSynthesis, ftr: c.fontFeatureSettings, tr: c.textRendering, wm: c.writingMode, lh: c.lineHeight }; })(), chain, kids, msg: msg ? cs(msg) : null, dpr: window.devicePixelRatio };
+  }, 100);
+  setInterval(() => {
     const scene = document.querySelector('[data-testid="battle-scene"]');
     if (!scene) { probe.firstSeen = {}; return; }
     const now = performance.now();
@@ -63,6 +72,17 @@ const shooter = setInterval(async () => {
       await page.screenshot({ path: join(out, "frames", name) });
       const info = await page.evaluate(() => { const p = window.__hudProbe, s = p.samples.at(-1); return s ? { label: p.label, t: s.t, msg: s.msg } : null; });
       frames.push({ name, ...info });
+      const dump = await page.evaluate(() => {
+        const lab0 = [...document.querySelectorAll('*')].find((e) => e.children.length === 0 && e.textContent.trim() === '체력' && e.getBoundingClientRect().width > 5);
+        if (!lab0) return null;
+        const box = lab0.parentElement;
+        const cs = (el) => { const c = getComputedStyle(el); return { ff: c.fontFamily.slice(0, 50), fs: c.fontSize, fst: c.fontStretch, fsa: c.fontSizeAdjust, tf: c.transform, zoom: c.zoom, ls: c.letterSpacing, fw: c.fontWeight, ts: c.textRendering, w: c.width }; };
+        const chain = []; for (let el = lab0; el && el !== document.body && chain.length < 14; el = el.parentElement) chain.push({ c: String(el.className).slice(0, 36), ...cs(el) });
+        const kids = [...box.children].slice(0, 3).map((k) => ({ t: k.tagName, c: k.className, txt: k.textContent, sw: k.scrollWidth, ...cs(k), r: (({ x, y, width, height }) => [x, y, width, height].map(Math.round))(k.getBoundingClientRect()) }));
+        const msg = document.querySelector('.battle-message-line');
+        return { chain, kids, msg: msg ? cs(msg) : null, dpr: window.devicePixelRatio };
+      });
+      if (dump && !globalThis.__dumped) { globalThis.__dumped = true; console.log("DUMP " + JSON.stringify(dump, null, 1)); await page.screenshot({ path: join(out, "dump-shot.png") }); }
     }
   } catch { /* page busy */ } finally { shooting = false; }
 }, 250);
@@ -143,7 +163,10 @@ const shotLevelup = async () => {
       if (!box || !box.getClientRects().length) return null;
       const r = box.getBoundingClientRect();
       const ally = document.querySelector('.battle-ally-hud, [data-testid="battle-ally-hud"], .battle-actor-row');
-      return { box: [r.x, r.y, r.width, r.height].map(Math.round), scroll: [box.scrollWidth, box.clientWidth], text: box.textContent };
+      const cs = (el) => { const c = getComputedStyle(el); return { ff: c.fontFamily.slice(0, 60), fs: c.fontSize, fst: c.fontStretch, fsa: c.fontSizeAdjust, tf: c.transform, zoom: c.zoom, ls: c.letterSpacing, fw: c.fontWeight, fsyn: c.fontSynthesis, ts: c.textRendering }; };
+      const chain = []; for (let el = box; el && el !== document.body && chain.length < 12; el = el.parentElement) chain.push({ c: String(el.className).slice(0, 40), ...cs(el) });
+      const lab = box.querySelector('span, div'); const msg = document.querySelector('.battle-message-line');
+      return { box: [r.x, r.y, r.width, r.height].map(Math.round), scroll: [box.scrollWidth, box.clientWidth], text: box.textContent, chain, lab: lab ? [lab.tagName, lab.className, JSON.stringify(cs(lab)), JSON.stringify(lab.getBoundingClientRect())] : null, msg: msg ? cs(msg) : null, dpr: window.devicePixelRatio };
     });
     if (info) { const n = `levelup-${report.shots.length}.png`; await page.screenshot({ path: join(out, n) }); report.shots.push({ n, ...info }); if (report.shots.length >= 4) return; }
     await page.keyboard.press("Enter"); await page.waitForTimeout(350);
@@ -189,6 +212,9 @@ try {
   }
 } finally {
   await writeFile(join(out, "report.json"), JSON.stringify(report, null, 1));
+  for (let i = 0; i < 60 && !(await page.evaluate(() => window.__luDump).catch(() => true)); i++) { await page.keyboard.press("Enter").catch(() => {}); await page.waitForTimeout(400); }
+  await page.screenshot({ path: join(out, "dump-final.png") }).catch(() => {});
+  console.log("DUMP " + JSON.stringify(await page.evaluate(() => window.__luDump).catch(() => null), null, 1));
   console.log(JSON.stringify(report.shots), "errors", errors.length);
   await browser.close();
   await server.close();
