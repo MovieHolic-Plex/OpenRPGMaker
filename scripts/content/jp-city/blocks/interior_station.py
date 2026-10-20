@@ -286,9 +286,9 @@ def _office_window(c):
        desc='작은 역 매점 2칸. 위 주황 간판 띠(글자 없음), 뒤 선반에 과자·음료 색 덩이, 앞 카운터 위에 신문 더미, 앞면에 잡지 표지(색 덩이). 카운터 위에 신문·도시락을 놓는다.')
 def _kiosk(c):
     # 지붕 윗면 5px(밝은 회색 판) → 앞으로 주황 간판 띠 → 뒤 선반 → 카운터 상판 → 앞면 잡지
-    rc(c, 1, 1, 30, 5, K('conc', 2)); hl(c, 1, 1, 30, K('conc', 3)); hl(c, 1, 2, 30, K('conc', 3)); hl(c, 1, 5, 30, K('conc', 1))
-    for x in (6, 13, 19, 26): px(c, x, 3, K('conc', 1))
-    hl(c, 1, 6, 30, K('daidai', -2)); rc(c, 1, 7, 30, 2, K('daidai', 0)); hl(c, 1, 7, 30, K('daidai', 1))
+    rc(c, 1, 1, 30, 5, K('daidai', 1)); hl(c, 1, 1, 30, K('daidai', 2))                                  # 지붕 윗면 5줄(간판과 같은 주황, 밝게)
+    for x in (6, 13, 19, 26): px(c, x, 3, K('daidai', 0))
+    hl(c, 1, 6, 30, K('daidai', -2)); rc(c, 1, 7, 30, 2, K('daidai', 0)); hl(c, 1, 8, 30, K('daidai', -1))   # 앞 모서리 · 간판 띠
     outline(c, 0, 0, 32, 10, OL)
     rc(c, 2, 10, 28, 8, K('tekko', -1)); vl(c, 1, 10, 8, OL); vl(c, 30, 10, 8, OL)
     cols = ('aka', 'kii', 'sora', LINE, 'daidai', 'pinku', 'shiro')
