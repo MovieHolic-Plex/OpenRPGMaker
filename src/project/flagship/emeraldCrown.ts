@@ -526,7 +526,9 @@ function tunePacing(project: Project): void {
     // 첫 10분 길(Lv7, 동료 없음)의 풀 스타터는 선봉 베르카부 Lv7 의 두 배 더듬이쏘기에 4턴에 졌다(r26) → 선봉 6, 에이스 8 그대로.
     mx_enemy_mx_map_grove_gym_leader_0: { species: "mx_enemy_podback", level: 6 },
     // 선봉 6 으로도 첫 10분 길 풀 스타터(Lv7 혼자)는 깃바람 세 방을 버틴 브램보어 Lv8 에게 5턴에 졌다(r27) → 에이스 7. 불은 3턴·물은 서리발 4배라 그대로 이긴다.
-    mx_enemy_mx_map_grove_gym_leader_1: { species: "mx_enemy_brambleboar", level: 7 },
+    // 에이스 7 에서는 거꾸로 첫 10분 길 불 스타터(Lv7 혼자)가 흙먼지(땅, 두 배) 두 방에 3턴 만에 졌다(r29) — 두 배 위협이 에이스에 있는 불만 동전 던지기였다 → 에이스 6.
+    // 세 스타터가 저마다 두 배 위협 하나(풀 ← 베르카부, 불 ← 브램보어)·두 배 공격 하나를 갖고 같은 레벨 둘을 상대한다.
+    mx_enemy_mx_map_grove_gym_leader_1: { species: "mx_enemy_brambleboar", level: 6 },
   };
   for (const [enemyId, { species, level }] of Object.entries(reskin)) {
     const enemy = byId(enemyId), template = byId(species);
