@@ -1,0 +1,348 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "780d50b0b2bf1dd1a9448747023c2b0a516b194c4bd2dbe7c9bea05764a356ce",
+ "width": 96,
+ "height": 96,
+ "kind": "organic",
+ "name": "dense bamboo grove (culm+leaf canopy autotile + culm wall)",
+ "label": "jp-forest-proto/grove-bamboo",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 13,
+  "darkV5": 35,
+  "nearBlackEdge": 0.59,
+  "opaqueTiles": 34
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf/culm canopy mass",
+      "rows": "1-61",
+      "evidence": "c",
+      "front_edge_line_row": 62,
+      "eave_shadow_rows": "62-64"
+     },
+     {
+      "part": "culm wall (front face)",
+      "rows": "63-94",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 61,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The upper block (rows 1-61) is a wide canopy mass, 90-95 px across. It has a leaf clump in the middle (rows 24-40) and a dark lower edge with shadow at rows 60-66. That edge works as a front-edge line with eave shadow, which meets criterion (c). Below it, a separate culm wall (rows 63-94) shows vertical stalks with node bands and dark gaps, about 32 rows tall, so a real front face exists. The canopy is textured with vertical culms and node ticks, so it leans toward a front elevation. The overall structure is still canopy on top, shadow line, then a front wall. No side face is visible."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate has only 19 distinct colours against 427 and 567 for the references, and a median of 12 colours per 16x16 tile against about 108. The measured flat-fill coverage is 0%, so there are no large flat areas. The dark edge pixels are 0% neutral, so the outlines lean green and are dark material tone, as in the references. The bamboo culms repeat as vertical stripes in about 4 greens with node ticks, and the leaf canopy is a small mottled patch in 3-4 greens. This gives about 4 steps, where the references have 5-6 steps with clumped leaf highlights and shaded trunks. The tiles repeat a regular pattern and lack the per-clump variation and rich shading of the references. The piece is cleanly drawn and reads as bamboo, but it is far below the references in density and shading depth, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15321
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf/culm canopy block (upper mass)",
+      "rows": "1-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "60-63"
+     },
+     {
+      "part": "culm wall (lower trunks)",
+      "rows": "63-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The canopy (rows 1-62) is drawn as a face-on mass of vertical culm segments with node bands and leaf clusters. There is no back-to-front band ending in a front-edge line, no ellipse, and no visible contents. Rows 60-63 are only a dark shadow at the canopy base, not a top surface. Below it, rows 63-95 are vertical culm trunks seen from the front with a grass strip at the bottom. The whole object is a flat front elevation with no horizontal top surface, and the silhouette widths (about 90-95 from row 18 down) show no top-plane or side-face structure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate has only 19 distinct colours against 427 and 567 for the references, and a median of 12 colours per tile against about 108. That is a large gap in tile information. Its flat-fill coverage is 0% and its dark edge pixels are not neutral (0%), so the outline is a tinted dark green and not a sticker line. The bamboo culms show vertical stripe grain with a few leaf-tip dots, but the canopy is a repeated, regular stripe pattern with about 3-4 green steps. It lacks the per-clump multi-green shading and highlights the references have. It reads thinner and more uniform next to them, so the shading and density are shallow.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 9353
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf/culm canopy block",
+      "rows": "0-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "60-63"
+     },
+     {
+      "part": "culm wall (trunks below canopy)",
+      "rows": "63-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 95,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The canopy (rows 1-62) is drawn as vertical green culms with node bands and leaf tufts. Every column scan (x=24, 48, 71) shows repeating vertical stripes with nodes every 16 rows, so these are vertical faces seen head-on. No row band ends in a front-edge line, and no ellipse or horizontal receding plane appears at the top. The rows at 0-2 are only a ragged outline. The dark rows 60-63 under the canopy are a shadow strip above the culm wall, not an edge line below a top surface. The culm wall (rows 63-95) is a pure front view of vertical stalks ending in a grass strip at rows 93-95. The whole object reads as a flat front elevation with no readable top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate's culm pattern is regular and repetitive. Each vertical stalk is built from about 3-4 greens (light, mid, dark, plus node ticks), against 5-6 steps in the references. The 19 distinct colours total and 12 colours per tile are far below the references (427-567 colours, ~108 per tile), which is about 9x lower per tile. There are no flat 5x5 fills (0%) and the dark edges are tinted rather than neutral (0% near-neutral), so the outline reads as dark green rather than black, which is a point in its favour. The tiling is tidy, but the culms are near-identical copies with little clump variation, so it reads as a flat, stamped pattern. The canopy has only a faint lighter patch with no leaf-clump rhythm, and the lower culm wall is even simpler. Next to the richly shaded references it looks thinner and flatter, so it does not meet the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12218
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy (upper mass)",
+      "rows": "1-62",
+      "evidence": "c",
+      "front_edge_line_row": 61,
+      "eave_shadow_rows": "61-63"
+     },
+     {
+      "part": "culm wall (lower trunks)",
+      "rows": "63-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The canopy (rows 1-62) is drawn as vertical bamboo culms with leaf clusters seen face-on. It has no distinct band of top-surface rows. The top edge is a scalloped silhouette, and there are no foreshortened horizontal planes or ellipse. The dark band at rows 61-63 is shadow where the canopy meets the culm wall, not an eave over a visible top. The culm wall below (rows 63-95) is a vertical face of straight trunks with a grass strip at the base. The whole object reads as a flat front elevation with no readable top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate has only 19 distinct colours against 427 and 567 for the references, and a median of 12 colours per tile against about 108. That is far below both references. The bamboo culms are drawn as repeated vertical stripes with about 4 green steps. They carry only a little node and leaf-tuft detail, so the canopy reads as a patterned fill rather than the clumped, multi-green foliage of the references. The darker edges are tinted green (0% neutral), so the outline is dark_material_tone, and there are no 5x5 flat fills. Even so, the shallow ramps, the low colour count and the repetitive texture leave it clearly thinner than the Beodeul trees, which have 5-6 steps with per-clump shading and trunk grain. The measured density gap is too large to pass.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12705
+  }
+ ],
+ "decidedAt": "2026-10-20T04:56:26.200Z",
+ "cells": {
+  "16": [
+   "000f95ac97f8b414",
+   "119dfa7c8acdda6e",
+   "128a8e140bdc318c",
+   "18c668055098cfbf",
+   "205a350b672e6ebb",
+   "2092c4b60a5844f6",
+   "2c07c8c50591e99d",
+   "40c71260060e401e",
+   "45e7e5c4cf031686",
+   "4adf6b865c1776c5",
+   "4e9ad4c4cae04540",
+   "5d0da9db66d3142c",
+   "61eac2a0af7834c3",
+   "6dafd135b69bab64",
+   "764888ffd64d0cca",
+   "7e336ec2b7dfb912",
+   "9c99f2f066d6230d",
+   "ac1fd0286453748e",
+   "b2a8d321cfe17c40",
+   "c1975ec9e04c3acf",
+   "d85f055e7924d730",
+   "dd71e32c588f3101",
+   "e1dc9d1ac99ef795",
+   "e2bf871c8ca86b1b",
+   "f53238ce236670a3",
+   "fa5273347862b878"
+  ],
+  "24": [
+   "0c1bc859ab707a9a",
+   "0f08d47846e64c9b",
+   "261bc5cb4ff40a14",
+   "37840db25458397f",
+   "38838c319421b403",
+   "3d821d9361c5d79e",
+   "4e9516c6394452df",
+   "82ee77671b3d47af",
+   "877a18b99326562f",
+   "b5d600e502b118d1",
+   "bf862ac705e2a4cf",
+   "c38197ae3201ddf9",
+   "cc9dcae629f6219e",
+   "cd15a22b67a413f8",
+   "f29c19ff15e23a1d",
+   "ff52da727a838760"
+  ],
+  "32": [
+   "0a2d25950c16fa28",
+   "177a45d36e6947d9",
+   "1a5ce345259d52fc",
+   "38d57a174d01597d",
+   "4a900bed214459db",
+   "86cd8091026efbfe",
+   "a4516fc7e1178b66",
+   "e4b202ee0b311b94",
+   "fd9757beb35ac355"
+  ],
+  "48": [
+   "13f053a63e298222",
+   "1a426fc7ac11f307",
+   "6058985276de689b",
+   "714fac75912dc470"
+  ]
+ }
+}
