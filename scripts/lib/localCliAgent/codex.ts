@@ -208,6 +208,8 @@ export const codexAdapter: LocalCliAdapter = {
     let text = "";
     const session = openCodexSession({
       mcpUrl: "", mcpToken: "none", systemPrompt: "Answer the user's request directly. You have no tools.",
+      // 보조 글(의도 선언·JSON 판정)은 짧은 답이다 — 추론을 낮춰 기다림을 줄인다(의도 선언은 시간 벽이 있다).
+      effort: "low",
       ...(options.model ? { model: options.model } : {}), ...(options.signal ? { signal: options.signal } : {}), ...(options.binary ? { binary: options.binary } : {}),
       onEvent: (event) => { if (event.kind === "assistant") for (const block of event.blocks) if (block.type === "text") text = block.text; },
     }, false);

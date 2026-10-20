@@ -58,6 +58,7 @@ import { createLlmIntentDeclarer, type IntentDeclarer } from "@/ai/intentDeclara
 import type { SessionTurnScope } from "@/ai/assistantSession";
 import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel, type AutonomyResolution } from "@/ai/autonomyLevels";
 import { isAutonomyLevel, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai/llmClient";
+import { isLocalCliProviderId } from "@/ai/localCliEngine";
 import { GOAL_MAX_TURNS, GOAL_TIMEOUT_MS } from "@/ai/piAgent/goalCommand";
 import { store } from "@/project/store";
 import { parsePiCommand, plainPiCommand, runPiCommand, type ParsedPiCommand, type PiChangeReceipt, type PiRunOptions } from "./aiPiAgentCommand";
@@ -2226,7 +2227,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // do 레벨의 질문 발화를 읽기 전용으로 승격하는 분류 호출 — 세션 경로의 mode=question→ask 자동
   // 승격이 Pi 이관(2026-09-11)에서 빠져 「균형」 질문 턴에 쓰기 툴이 달려 갔다(2026-09-12 실측).
   // 분류가 지연·실패하면 다이얼 그대로 두는 쪽이 안전하므로 타임아웃을 짧게 둔다.
-  let piIntentDeclarer: IntentDeclarer | null = null;
+  let piIntentDeclarer: { declarer: IntentDeclarer; timeoutMs: number } | null = null;
   /** 평문 한 줄 → Pi 명령 + 실행 계획. 팀 비트는 설정에서, 읽기 전용·계획은 자율성 다이얼에서 온다. */
   type PlainPiTurn = { readonly command: ParsedPiCommand; readonly plan: PiRunPlan; readonly questionPromoted: boolean; readonly initialToolNames?: readonly string[]; readonly intentNote?: string | null; readonly timing: TurnTimingRecorder };
   const plainPiTurn = async (text: string, turnOptions?: {
@@ -2253,7 +2254,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         selectedEvent: selectedEventFact(store.getCurrent(), turnMapId, editorState.get().selectedEventId, editorState.get().selectedEventPageId),
         hasActivePlan: workPlanSurfaceState?.active === true,
         autonomy: currentAutonomy(),
-        declarer: () => (piIntentDeclarer ??= createLlmIntentDeclarer({ timeoutMs: 30_000, coverageAudit: false })),
+        // 로컬 CLI 엔진은 차례마다 CLI 프로세스를 새로 띄운다(실측 2026-10-20: codex exec 한 줄 답도 약 17초) — 30초 벽이면 의도 선언이 자주 잘린다.
+        declarer: () => {
+          const timeoutMs = isLocalCliProviderId(loadAiConfig().providerId) ? 120_000 : 30_000;
+          if (piIntentDeclarer?.timeoutMs !== timeoutMs) piIntentDeclarer = { timeoutMs, declarer: createLlmIntentDeclarer({ timeoutMs, coverageAudit: false }) };
+          return piIntentDeclarer.declarer;
+        },
         // 프리셋 첫 생성은 설정과 무관하게 팀이다 — 읽기 전용 다이얼이면 classifyPlainPiTurn 이 여전히 단독으로 내린다.
         piTeam: turnOptions?.team === true || (loadAiConfig().piTeam ?? DEFAULT_PI_TEAM),
         onDeclaring: turnOptions?.onDeclaring ?? (() => setStatus("의도 읽는 중…")),
