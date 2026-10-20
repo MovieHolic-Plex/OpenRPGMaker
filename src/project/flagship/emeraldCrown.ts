@@ -485,11 +485,12 @@ function tunePacing(project: Project): void {
   const enemies = project.database.enemies;
   const byId = (id: string) => enemies.find((e) => e.id === id);
   const reskin: Record<string, { species: string; level?: number }> = {
-    mx_enemy_mx_map_grove_gym_grunt_0_0: { species: "mx_enemy_podback" },
-    mx_enemy_mx_map_grove_gym_grunt_1_0: { species: "mx_enemy_brambleboar" },
-    mx_enemy_mx_map_grove_gym_grunt_2_0: { species: "mx_enemy_orchardant" },
-    mx_enemy_mx_map_grove_gym_leader_0: { species: "mx_enemy_podback", level: 8 },
-    mx_enemy_mx_map_grove_gym_leader_1: { species: "mx_enemy_brambleboar", level: 10 },
+    // 다 싸운 플레이어가 Lv6 일 때 수련생 Lv6~7 에게 6턴 만에, 관장 Lv8·10 에게 2턴 만에 졌다(2026-10-20 실플레이) → 한 단씩 낮춘다.
+    mx_enemy_mx_map_grove_gym_grunt_0_0: { species: "mx_enemy_podback", level: 5 },
+    mx_enemy_mx_map_grove_gym_grunt_1_0: { species: "mx_enemy_brambleboar", level: 5 },
+    mx_enemy_mx_map_grove_gym_grunt_2_0: { species: "mx_enemy_orchardant", level: 6 },
+    mx_enemy_mx_map_grove_gym_leader_0: { species: "mx_enemy_podback", level: 7 },
+    mx_enemy_mx_map_grove_gym_leader_1: { species: "mx_enemy_brambleboar", level: 9 },
   };
   for (const [enemyId, { species, level }] of Object.entries(reskin)) {
     const enemy = byId(enemyId), template = byId(species);
@@ -512,6 +513,13 @@ function tunePacing(project: Project): void {
     // 1번 도로 트레이너의 포포비도 같은 벌레 기술로 Lv5 스타터를 3턴에 쓰러뜨렸다(2026-10-20 실플레이) — 첫 도로에서는 몸통 기술만.
     const routeBug = byId("mx_enemy_mx_map_meadow_trainer_1_0");
     if (routeBug) routeBug.actions = routeBug.actions.filter((a) => !a.skillId || !bug.has(a.skillId));
+  }
+  // 배지 하나짜리 데모라 초반 경험치를 두 배로 — 라이벌·도로 트레이너·수련생을 다 이기면 관장 앞에서 Lv8 안팎이 되게 한다.
+  // (rescaleEnemy 가 레벨을 바꾸기 전 보상이 그대로라 레벨을 내린 수련생도 보상은 원래 레벨 몫이다.)
+  for (const enemy of enemies) {
+    if (enemy.level && enemy.level <= 10 && /^mx_enemy_mx_map_(meadow|lab|grove_gym)_/.test(enemy.id)) {
+      enemy.rewards = { ...enemy.rewards, exp: enemy.rewards.exp * 2 };
+    }
   }
   const trim: Record<string, number> = { mx_troop_mx_map_observatory_boss: 3, mx_troop_mx_map_league_0_league_challenge: 4 };
   for (const troop of project.database.troops) {

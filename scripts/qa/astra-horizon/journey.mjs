@@ -418,8 +418,10 @@ try {
     if (now.currentMapId === home) break;
     // 계단은 아래층으로만 — 1층에서 다시 2층으로 올라가지 않게, 바깥(home) 문을 먼저 고른다.
     const exits = project.maps[now.currentMapId].events.filter((e) => /"kind":"transfer"/.test(JSON.stringify(e.pages ?? e.commands)));
-    const exit = exits.find((e) => JSON.stringify(e.pages).includes(`"mapId":"${home}"`)) ?? exits.find((e) => !/_2f/.test(JSON.stringify(e.pages)));
-    const m = exit && JSON.stringify(exit.pages).match(/"mapId":"([^"]+)"/);
+    // 페이지 id 에도 「_2f」가 들어 있다(계단 이벤트 이름) — 옮겨 가는 맵 id 만 본다.
+    const target = (e) => JSON.stringify(e.pages ?? e.commands).match(/"kind":"transfer","mapId":"([^"]+)"/)?.[1];
+    const exit = exits.find((e) => target(e) === home) ?? exits.find((e) => target(e) && !/_2f$/.test(target(e)));
+    const m = exit && [null, target(exit)];
     if (!m) break;
     await go(now.currentMapId, m[1]);
   }
