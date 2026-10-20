@@ -28,7 +28,7 @@ const KAEL: Chip = { resourceId: "tex_easyrpg_charset_actor1", index: 0 };
 const ELENA: Chip = { resourceId: "tex_easyrpg_charset_actor1", index: 7 };
 const VALEN: Chip = { resourceId: "tex_easyrpg_charset_actor1", index: 4 };
 const KNIGHT: Chip = { resourceId: "tex_easyrpg_charset_actor1", index: 2 };
-const HANEL: Chip = { resourceId: "tex_easyrpg_charset_people1", index: 3 };
+const HANEL: Chip = { resourceId: "tex_easyrpg_charset_people1", index: 6 };
 const BRAM: Chip = { resourceId: "tex_easyrpg_charset_actor2", index: 2 };
 
 function stepFrames(chip: Chip, facing: Facing): readonly [number, number, number] {
