@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **180쪽 / 6462KB / 약 1,889,886 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **180쪽 / 6467KB / 약 1,891,383 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -29,7 +29,8 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-pre-edit-routing.md` | 185KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1147 | ~54,275 |
 | `openwiki/editor-workflows-misc.md` | 90KB | 33KB | 631 | ~25,154 |
 | `openwiki/harnesses/interview-scene-bank.md` | 56KB | 38KB | 197 | ~17,387 |
-| `openwiki/harnesses/monster-collect-species.md` | 57KB | 17KB | 331 | ~17,194 |
+| `openwiki/harnesses/monster-collect-species.md` | 58KB | 18KB | 332 | ~17,539 |
+| `openwiki/harnesses/object-gate.md` | 54KB | 5KB | 454 | ~16,369 |
 | `openwiki/harnesses/super-harness.md` | 102KB | 4KB | 1063 | ~32,225 |
 | `openwiki/jp-city.md` | 84KB | 9KB | 429 | ~24,865 |
 | `openwiki/runtime-battle.md` | 398KB | 32KB | 2211 | ~116,882 |
@@ -1657,7 +1658,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L102` 공급자 오류 재개 (2026-10-05)
   - `L113` 전체 시설 Allow 이후 공용 등록 (2026-10-05)
 
-### `openwiki/harnesses/monster-collect-species.md` — 57KB · 331줄 · ~17,194 토큰 · 통째읽기 잘림
+### `openwiki/harnesses/monster-collect-species.md` — 58KB · 332줄 · ~17,539 토큰 · 통째읽기 잘림
 
 - `L28` 빠른 시작
   - `L49` Alpha/고정 격자 집중 확인 (2026-10-04)
@@ -1667,19 +1668,19 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L129` 눈 규칙 (판본 3, 2026-10-16 — 사용자 지적 「몬스터에 문제가 많다, 눈이라던가」)
   - `L147` 판본 4 — 귀여움 우선·흰 하이라이트 필수 (2026-10-16, 사용자 「눈이 안 비치니까 징그럽다, 귀여운 거 위주로」)
   - `L156` 판본 5 — 종별 눈 표와 눈 자리 검사 (2026-10-20, 사용자 「몬스터 눈알 교정」)
-  - `L198` 격자 계약 (2026-10-16 — 외부 시험자 「픽셀 그리드부터 맞게」)
-- `L207` 왜 이렇게 만드는가 (2026-10-01 실험, `qa-runs/hand-monster/` 시안)
-- `L216` 애니메이션 — 대기는 움직이고, 큰 동작은 한 줄로 생성한다 (2026-10-01 비교 시험)
-  - `L232` 공격 방향 계약 (`animation.direction`)
-  - `L243` 엔진 비트 → 프레임 (`actions.*.keys`)
-  - `L250` 입·손 자리 (`anim.json` 의 `emit`)
-  - `L257` 스킬별 공격 = 자세 몇 가지 × 스킬 매핑 (`anim/poses.ts`)
-- `L270` 검사 (`build` · `check`)
-- `L289` 전투 배치 (`src/harnesses/monster-collect-species/qa/battle-layout.css`, 엔진 미반영)
-- `L295` 시험
-- `L304` 아직 없는 것
-- `L311` 따라다니기 걷기 칩 (2026-10-15)
-- `L322` 종 다섯 면 단일 정본 계약 (2026-10-18 — 사용자 「몬스터 하나에 서로 다른 이미지들이 혼재되어 있다. 몬스터 장르 전용 하네싱」)
+  - `L199` 격자 계약 (2026-10-16 — 외부 시험자 「픽셀 그리드부터 맞게」)
+- `L208` 왜 이렇게 만드는가 (2026-10-01 실험, `qa-runs/hand-monster/` 시안)
+- `L217` 애니메이션 — 대기는 움직이고, 큰 동작은 한 줄로 생성한다 (2026-10-01 비교 시험)
+  - `L233` 공격 방향 계약 (`animation.direction`)
+  - `L244` 엔진 비트 → 프레임 (`actions.*.keys`)
+  - `L251` 입·손 자리 (`anim.json` 의 `emit`)
+  - `L258` 스킬별 공격 = 자세 몇 가지 × 스킬 매핑 (`anim/poses.ts`)
+- `L271` 검사 (`build` · `check`)
+- `L290` 전투 배치 (`src/harnesses/monster-collect-species/qa/battle-layout.css`, 엔진 미반영)
+- `L296` 시험
+- `L305` 아직 없는 것
+- `L312` 따라다니기 걷기 칩 (2026-10-15)
+- `L323` 종 다섯 면 단일 정본 계약 (2026-10-18 — 사용자 「몬스터 하나에 서로 다른 이미지들이 혼재되어 있다. 몬스터 장르 전용 하네싱」)
 
 ### `openwiki/harnesses/murim-chipset.md` — 34KB · 285줄 · ~10,326 토큰
 
@@ -1711,7 +1712,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L199` Public draft deployment
   - `L215` Wand scene panels and trial timing
 
-### `openwiki/harnesses/object-gate.md` — 50KB · 409줄 · ~15,217 토큰
+### `openwiki/harnesses/object-gate.md` — 54KB · 454줄 · ~16,369 토큰 · 통째읽기 잘림
 
 - `L4` 왜
 - `L16` 구성
@@ -1738,6 +1739,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L292` 2026-10-20 정정 — 선택 편향 철회, 블라인드 화소 규칙으로 다시 재니 rejected
 - `L322` 2026-10-20 규칙 v9 — 판정자 답 근거로 고침 + 얼린 새 숨김 fresh4 로 최종 측정 (프로필 `1db03a95223e5b0b`, rejected)
 - `L367` 보류(사람 확인) 승인 길 — 검토 화면 `serve-holds` (2026-10-20)
+- `L410` 규칙 v10 — 좌석 등받이·팔걸이 면제 (사용자 결정 2026-10-20, 프로필 `4d8774b517f41638`, rejected)
 
 ### `openwiki/harnesses/pokemon-character-casting.md` — 25KB · 205줄 · ~6,489 토큰
 
