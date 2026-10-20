@@ -1,3 +1,15 @@
+## 전투 체감 프로토타입 battle-feel-r1 (2026-10-20, 미머지·사용자 판단 대기)
+
+사용자 「전투가 허접」. 출하 player 녹화(`scripts/qa/runtime/battle-feel.record.mjs --out <dir> [--res 640x360] [--only group,boss,defeat]`,
+demo-v3 녹화 사본 + 일반 무리·보스·전멸 적 그룹)로 전/후를 비교했다. 바꾼 것:
+- **넓은 무대**: 도트 측면(`data-battle-motion="retro"`)은 host 비율을 따라 논리 폭 640~854(`calculateBattleStageWidth`, `--battle-stage-width`, `data-battle-stage-wide`).
+  16:9 새 프로젝트에서 4:3 무대 좌우의 남색 띠가 없어진다. 겹 배경은 넓을 때 cover·아래 정렬(가로 늘림 없음).
+- **번쩍임**: 맞은 몸은 흰 덩어리 대신 밝기(2.1), 점멸은 반투명 대신 밝기. 스펠 화면 막(`retro-skill-screen-flash`·`retro-class-veil-flash`·`battle-screen-flash`)은 2프레임 끊김, 통상 명중의 무대 흰 막은 끔, 아군 피격 붉은 테는 0.42.
+- **피해 숫자**: 32px 굵은 8방향 테두리, 도트 측면은 빼기표 없음.
+- **말수**: 게이지 대기 문장 없음(빈 윗창은 숨김), 자동 전투 통상 공격도 「X의 공격!」, 단축키 안내는 바뀐 순간 1.6초만.
+- **시전 모으기**: 시전 approach 비트 동안 발밑 고리·빛기둥(시전 종류 색) — CSS 만.
+CSS 는 전부 `29-impact-contact.css` 끝(+ `26-battle-scenery.css` 넓은 무대 절). 남은 큰 일(전투 그림 배율 1.5px 불균일, 결과 화면, 보스 존재감)은 전/후 페이지 `~/claude-viz/battle-feel-1.html`.
+
 ## 포획 연출 · 도감 등록 문장 (2026-10-16, poke-sys ⑦)
 
 - 시각 QA: `MODE=success|fail|both [SHAKES=0..3] [VIDEO=1] unshare -rn sh -c "ip link set lo up && node scripts/qa/runtime/monster-capture.scenario.mjs <campaign.json> <outDir>"` — 실제 가방 버튼으로 볼을 던져 프레임 연속 캡처(+녹화)·전투 문장 로그(`<mode>MsgLog`)를 남긴다. 진단 전용.
