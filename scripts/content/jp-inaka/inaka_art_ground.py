@@ -125,14 +125,15 @@ def _tuft(a, x, y, kind=0):
 def grass_body(seed=0) -> np.ndarray:
     """풀밭 몸통: 넓고 낮은 대비 덩이(몸·몸 어둠) + 드문 풀잎 획 + 풀포기 2개. 버들항 풀처럼 넓게 깔아도 점 격자가 서지 않는다."""
     a = blank(GRASS[4])
-    mottle(a, GRASS, (4, 3, 5), 11, lo=.06, hi=.9)
-    for k in range(5):
-        x = int(h(k, 3, 21) * 16); y = int(h(k, 7, 22) * 16)
-        put(a, x, y, GRASS[5] if h(k, 1, 23) < .7 else GRASS[6])
+    q = seed * 97
+    mottle(a, GRASS, (4, 3, 5), 11 + q, lo=.06, hi=.9)
+    for k in range(4 + seed % 2):
+        x = int(h(k, 3, 21 + q) * 16); y = int(h(k, 7, 22 + q) * 16)
+        put(a, x, y, GRASS[5] if h(k, 1, 23 + q) < .7 else GRASS[6])
         put(a, x, y + 1, GRASS[3])
-    for k in range(2):
-        _tuft(a, 3 + int(h(k, 9, 31) * 10), 2 + int(h(k, 13, 32) * 10), k % 2)
-    put(a, int(h(0, 5, 41) * 16), int(h(0, 6, 42) * 16), GRASS[2])
+    for k in range(1 + (seed != 1)):
+        _tuft(a, 3 + int(h(k, 9, 31 + q) * 10), 2 + int(h(k, 13, 32 + q) * 10), (k + seed) % 2)
+    put(a, int(h(0, 5, 41 + q) * 16), int(h(0, 6, 42 + q) * 16), GRASS[2])
     return a
 
 
@@ -298,18 +299,21 @@ def style_stream(side, d, s, x, y):
 
 
 # ═══════════════════════════ 논 ═══════════════════════════
-def paddy_water_body() -> np.ndarray:
+def paddy_water_body(seed=0) -> np.ndarray:
     """모내기 물논: 하늘 비친 잔잔한 물(넓은 밝은 덩이 + 구름 비침) + 4px 간격 줄에 4px 간격으로 심은 작은 모(잎 2·끝 빛·물 그림자)."""
     M = MUD_WATER
     a = blank(M[3])
-    mottle(a, M, (3, 2, 4), 101, lo=.18, hi=.86)
-    x = int(h(0, 1, 102) * 16); y = 3 + int(h(0, 2, 103) * 10)  # 구름 비침 한 줄
-    for i in range(4):
-        put(a, x + i, y, M[4])
-    put(a, x + 1, y, M[5])
+    mottle(a, M, (3, 2, 4), 101 + seed * 13, cell=4, lo=.1, hi=.93)
+    if seed % 2 == 0:
+        x = int(h(0, 1, 102 + seed) * 12); y = 3 + int(h(0, 2, 103 + seed) * 10)  # 구름 비침 한 줄
+        for i in range(4):
+            put(a, x + i, y, M[4])
+        put(a, x + 1, y, M[5])
     for j, y in enumerate((1, 5, 9, 13)):
         for i in range(4):
-            x = i * 4 + (j % 2) * 2 + 1
+            if h(i, j, 107 + seed) < .08:
+                continue                                       # 빈 자리(모가 빠짐)
+            x = i * 4 + 1 + (h(i, j, 109 + seed) < .2)
             put(a, x, y, RICE[6] if (i + j) % 3 else RICE[5]); put(a, x, y + 1, RICE[3]); put(a, x - 1, y + 1, RICE[4])
             put(a, x + 1, y + 1, M[1]); put(a, x, y + 2, M[2])   # 물에 진 그림자(오른쪽 아래)
     return a
@@ -326,10 +330,11 @@ def _rice_clumps(a, R, water, seed, droop=False):
             for k in range(spike):
                 put(a, x, y0 - k, R[6] if k == spike - 1 and v < .4 else R[5])
             if spike == 0:
-                put(a, x, y0, water[2])
+                put(a, x, y0, R[4] if h(x, j, seed + 6) < .6 else water[2])
             put(a, x, y0 + 1, R[5] if h(x, j, seed + 1) < .3 else R[4])
             put(a, x, y0 + 2, R[3] if h(x, j, seed + 2) < .75 else R[4])
-            put(a, x, y0 + 3, R[1] if h(x, j, seed + 3) < .7 else water[1])
+            v3 = h(x, j, seed + 3)
+            put(a, x, y0 + 3, R[2] if v3 < .62 else R[1] if v3 < .85 else water[1])
             if droop and spike and v < .3:
                 put(a, x + 1, y0 - spike + 1, R[6])
     for j in range(4):                                            # 포기 사이 깊은 틈(드물게)
@@ -339,15 +344,15 @@ def _rice_clumps(a, R, water, seed, droop=False):
     return a
 
 
-def paddy_summer_body() -> np.ndarray:
+def paddy_summer_body(seed=0) -> np.ndarray:
     """여름 푸른 논: 빽빽하게 자란 벼 포기 덩이(6단 녹색) + 포기 사이로 비치는 어두운 물."""
-    return _rice_clumps(blank(RICE[2]), RICE, [MUD_WATER[0], P('ki', 1), P('ki', 2)], 111)
+    return _rice_clumps(blank(RICE[2]), RICE, [MUD_WATER[0], P('ki', 1), P('ki', 2)], 111 + seed * 17)
 
 
-def paddy_golden_body() -> np.ndarray:
+def paddy_golden_body(seed=0) -> np.ndarray:
     """가을 황금 논: 고개 숙인 이삭 포기(8단 황금) + 마른 논흙 틈."""
     G = GOLD
-    return _rice_clumps(blank(G[2]), [G[0], G[1], G[2], G[3], G[5], G[6], G[7]], [P('soil', 1), P('soil', 2), G[1]], 121, droop=True)
+    return _rice_clumps(blank(G[2]), [G[0], G[1], G[2], G[3], G[5], G[6], G[7]], [P('soil', 1), P('soil', 2), G[1]], 121 + seed * 17, droop=True)
 
 
 def _paddy_var(base, kind, ramp):
@@ -421,8 +426,9 @@ def _sets():
     pw, ps, pg = paddy_water_body(), paddy_summer_body(), paddy_golden_body()
     none = lambda side, d, s, x, y: None  # noqa: E731
     return [
-        dict(key='grass', id='jp-inaka-at-grass', name='시골 풀밭', role='green', tex=gb, style=none, var=(grass_var(gb, 1), grass_var(gb, 2)),
-             pc='floor', flat=True, weights=(3, 1, 1),
+        dict(key='grass', id='jp-inaka-at-grass', name='시골 풀밭', role='green', tex=gb, style=none,
+             var=(grass_var(gb, 1), grass_var(gb, 2), grass_body(1), grass_body(2), grass_body(3)),
+             pc='floor', flat=True, weights=(3, 1, 1, 2, 2, 2),
              desc='시골 여름 풀밭(기본 대지). 풀포기·잎끝 빛·그늘 덩이 6단 녹색. 가장자리를 그리지 않는다 — 흙길·개울·논이 자기 쪽에 풀 테·둑을 그린다.'),
         dict(key='dirt', id='jp-inaka-at-dirt', name='시골 흙길', role='path', tex=db, style=style_dirt, var=(dirt_var(db, 1), dirt_var(db, 2)),
              pc='floor', weights=(3, 1, 1),
@@ -431,13 +437,13 @@ def _sets():
              pc='solidfloor', weights=(3, 1, 1),
              desc='맑고 얕은 시골 개울(지나갈 수 없음). 물밑 자갈이 비치고 물살이 반짝인다. 북쪽은 흙 둑 앞면(박힌 돌)·젖은 선, 남·옆은 풀 둑 입술과 물가 빛.'),
         dict(key='paddy-water', id='jp-inaka-at-paddy-water', name='시골 물논', role='terrain', tex=pw, style=style_paddy(MUD_WATER),
-             var=(_paddy_var(pw, 1, RICE), _paddy_var(pw, 2, RICE)), pc='solidfloor', weights=(4, 1, 1),
+             var=(_paddy_var(pw, 1, RICE), _paddy_var(pw, 2, RICE), paddy_water_body(1), paddy_water_body(2), paddy_water_body(3)), pc='solidfloor', weights=(3, 1, 1, 3, 3, 3),
              desc='모내기 물논(지나갈 수 없음). 하늘 비친 물에 줄지어 심은 모. 논 가장자리에 풀 덮인 논두렁 둑이 저절로 생긴다(북쪽 둑은 흙 앞면이 물로 떨어진다).'),
         dict(key='paddy-summer', id='jp-inaka-at-paddy-summer', name='시골 여름 논', role='terrain', tex=ps, style=style_paddy(RICE),
-             var=(_paddy_var(ps, 1, RICE), _paddy_var(ps, 2, RICE)), pc='solidfloor', weights=(4, 1, 1),
+             var=(_paddy_var(ps, 1, RICE), _paddy_var(ps, 2, RICE), paddy_summer_body(1), paddy_summer_body(2), paddy_summer_body(3)), pc='solidfloor', weights=(3, 1, 1, 3, 3, 3),
              desc='여름 푸른 논(지나갈 수 없음). 포기 줄마다 벼 덩이(빛·몸·그늘)와 고랑. 가장자리에 논두렁 둑이 저절로 생긴다.'),
         dict(key='paddy-golden', id='jp-inaka-at-paddy-golden', name='시골 황금 논', role='terrain', tex=pg, style=style_paddy(GOLD),
-             var=(_paddy_var(pg, 1, GOLD), _paddy_var(pg, 2, GOLD)), pc='solidfloor', weights=(4, 1, 1),
+             var=(_paddy_var(pg, 1, GOLD), _paddy_var(pg, 2, GOLD), paddy_golden_body(1), paddy_golden_body(2), paddy_golden_body(3)), pc='solidfloor', weights=(3, 1, 1, 3, 3, 3),
              desc='가을 황금 논(지나갈 수 없음). 고개 숙인 이삭 줄과 그늘 고랑. 가장자리에 논두렁 둑이 저절로 생긴다. 볏단 걸이와 짝.'),
     ]
 
@@ -450,7 +456,8 @@ def painted(S) -> list:
         if S.get('flat'):
             _PAINT[S['key']] = [(255, S['tex']), ('b1', S['var'][0]), ('b2', S['var'][1])]
         else:
-            _PAINT[S['key']] = GA.build_set(S['tex'], S['style'], S['var'], None, None)
+            _PAINT[S['key']] = GA.build_set(S['tex'], S['style'], S['var'][:2], None, None)
+        _PAINT[S['key']] += [('b%d' % (i + 3), v) for i, v in enumerate(S['var'][2:])]   # 몸통 변형 더(넓은 논·풀밭 벽지 깨기)
     return _PAINT[S['key']]
 
 
@@ -475,7 +482,7 @@ def autotile_cells():
             vm = GA.variant_map(lambda m: loc(m))
             conn = list(members)
         w3 = S['weights']
-        body = [loc(255)] * w3[0] + [loc('b1')] * w3[1] + [loc('b2')] * w3[2]
+        body = [loc(255)] * w3[0] + [loc('b%d' % i) for i in range(1, len(w3)) for _ in range(w3[i])]
         autotiles.append(dict(id=S['id'], name=S['name'], neighborhood=8, layer='lower', member=members, connect=conn,
                               variantMap=vm, interior=[list(body), list(body)], edgeConnects=True))
         groups.append(dict(id='jp:' + S['id'][3:], name=S['name'], role=S['role'], defaultLayer='lower', cells=list(members), desc=S['desc'],
