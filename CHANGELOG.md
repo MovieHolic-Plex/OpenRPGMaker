@@ -5,6 +5,43 @@
 
 <!-- releases -->
 
+## 0.289.0 — 2026-10-20
+
+### 기능
+
+- **monster** — round 6 eye catalog — distinct eyes for all 60 species, redraw 4 failed species (#3108) (`a1ee935`)
+- **object-gate** — human review page for held (refer) verdicts — signed allow/reject bound to pixel hash, profile and kind (#3101) (`014e07f`)
+- **object-gate** — rules v9 + frozen fresh4 final calibration (still rejected) (#3100) (`6a1a55c`)
+- **interior-seats** — 3/4·quality redraws of 89 seats as pending candidates (#3097) (`6e0ce53`)
+- **puzzle** — 옛 퍼즐 넷(레버·얼음·시간·경비)을 방째로 다시 짓기 + 판자·심연·추·빙판 손 도트 (#3081) (`662de61`)
+- **start** — library home — one hero, my-games/built-in/concept shelves, settings with AI engine (#3094) (`6dec642`)
+- **monster** — 불합격 14종 5차 — 한쪽 눈 옆얼굴(먼 눈 숨김) (#3093) (`eac5c64`)
+- **store** — character packs pair chips with portraits from char-gen (#3091) (`6570b87`)
+
+### 수정
+
+- **modern-city-int** — 관문 없이 머지된 실내 기물 142종 적대 재검수 — FAIL 92종 다시 그림 (#3109) (`3851ca9`)
+- **build** — player artifacts back under the 64MiB secret-scan limit (#3106) (`90253ee`)
+- **interior** — v5 props round 2 — independent adversarial Argon re-judge, 13 redraws baked, 8 held (#3104) (`cf7cf9a`)
+- **start** — AI connect from the desktop home actually shows, and home reflects an existing Google login (#3102) (`441cc63`)
+
+### 성능
+
+- **startup** — lazy-load bundled tileset definitions — editor opens ~1s faster (#3103) (`dd46149`)
+- **startup** — desktop home in ~1.4s — lazy project core, slim start-screen bundle, codeCache, close-save fix (#3095) (`39d189a`)
+
+### 문서
+
+- **interior** — props34 round 3 — 2-wide ship bunk candidate held at object-gate REFER, last cloth/candle attempts fail Argon 0/3 (#3105) (`de3b110`)
+
+### 잡무
+
+- **object-gate** — record the user's 4 hold allows (profile 1db03a95) — relic cabinet, ship bunk 2w, control console, helmet shelf (#3107) (`5fcb430`)
+
+### 기타
+
+- **ai** — 조수를 사용자의 로컬 claude -p 로 돌리기 (MCP 서버) — 병합 금지 (#3072) (`f7baaeb`)
+
 ## 0.288.0 — 2026-10-20
 
 ### 기능
