@@ -1,0 +1,53 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/chair_W/w135-A.pxg",
+ "id": "chair W",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.057
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-seats-34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 7,
+ "v5_colors": 8,
+ "bbox": [
+  2,
+  1,
+  12,
+  15
+ ],
+ "v5_bbox": [
+  3,
+  1,
+  11,
+  15
+ ],
+ "note": "꼭대기 윗면 3행(y=10~12) 좌판 윗면(왼쪽·뒤 밝게 → 등 기둥 옆 어둡게) + 앞면 1행(y=13); 동쪽 등 기둥 2px(왼쪽 밝게, 안쪽 테 갈색) y=1~12, 다리 1px 두 개 사이 바닥 열림",
+ "topClaim": {
+  "rows": 3,
+  "y": [
+   10,
+   12
+  ],
+  "need": 3
+ },
+ "topBand": {
+  "cover": 1.0,
+  "cuts": []
+ },
+ "lines": {
+  "o_thick": 0.0,
+  "o_melt": 0.075,
+  "o_none": 0.0,
+  "o_foreign": 0.525,
+  "light_inv": -0.141,
+  "l_thick": 0.667,
+  "n": 100,
+  "n_outline": 40,
+  "n_line": 12
+ },
+ "ok": true
+}

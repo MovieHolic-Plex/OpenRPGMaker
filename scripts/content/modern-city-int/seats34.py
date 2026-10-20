@@ -711,3 +711,46 @@ DRAW = {
     'home-zabuton': _r(floor_cushions),
 }
 PENDING = {k for k in DRAW if k.endswith(('-e', '-w', '-n'))}
+
+
+# ══ seats study 2 (사람 합격 2026-10-20) ══
+import os                              # noqa: E402
+from PIL import Image                  # noqa: E402
+# 정본 그림 = tiledata/seats34/study2/art/modern_city/<id>.png(그림 코드 seats_study2/mc.py), 사람 판정 = tiledata/seats34/study2/human-verdicts.json.
+# 사람이 동·서·북향까지 모두 합격시켰으므로 이 그림들은 PENDING 에서 뺀다. 굽기는 여전히 rebake_seats34.py 의 관문(pass 영수증) 뒤에서만.
+def _study2():
+    import json as _j
+    root = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..'))
+    p = os.path.join(root, 'tiledata', 'seats34', 'study2', 'human-verdicts.json')
+    if not os.path.exists(p): return {}
+    return {it['id']: os.path.join(root, it['png']) for it in _j.load(open(p, encoding='utf-8'))['items']
+            if it['tileset'] == 'modern_city_interior' and it['verdict'] == 'pass'}
+
+
+_SHEET_COLS = None
+
+
+def _sheet_cols():
+    """modern_city 시트(origin/main 판)에 이미 있는 색 — 합격 그림은 이 색만 쓴다(mkit 팔레트보다 넓다: 시트 실제 색)."""
+    global _SHEET_COLS
+    if _SHEET_COLS is None:
+        root = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..'))
+        a = np.array(Image.open(os.path.join(root, 'public/assets/modern-city/modern-city-chipset.png')).convert('RGBA'))
+        _SHEET_COLS = {tuple(p) for p in a[a[:, :, 3] == 255][:, :3].tolist()}
+    return _SHEET_COLS
+
+
+def _png(path):
+    def f(w, h):
+        a = np.array(Image.open(path).convert('RGBA'))
+        assert a.shape[:2] == (h, w), (path, a.shape, (w, h), '사양 캔버스와 크기가 다르다')
+        off = {tuple(p) for p in a[a[:, :, 3] == 255][:, :3].tolist()} - _sheet_cols()
+        assert not off, (path, '시트에 없는 색', sorted(off)[:6])
+        return a
+    return f
+
+
+STUDY2 = _study2()
+for _k, _p in STUDY2.items(): DRAW[_k] = _png(_p)
+PENDING -= set(STUDY2)
+# ══ /seats study 2 ══

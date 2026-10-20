@@ -419,3 +419,28 @@ def curule_seat_seats34(c):
     c.hl(1, 14, 12, K('gold', 5)); c.hl(1, 14, 13, K('gold', 2))   # 금 틀
     c.outline()
 # ══ seats34 ══
+
+# ══ seats study2 ══ 대기 후보(굽지 않음, 등록 안 함): 방석 윗면 4행(뒤 두 줄 가장 밝게)·앞면 2행 어둡게, 금 틀 윗면 1행+앞면,
+# X 다리는 2px 금 대각 둘(아랫면에만 짙은 금 한 칸 — 안쪽 검은 벽 없음), 발 받침 둘. 무늬는 넣지 않는다(두 점 눈 금지).
+def curule_seat_s2(c):
+    c.shadow(1, 21, 15, 23)
+    pal = {str(i): K('purple', i) for i in range(7)}
+    pal.update({ch: K('gold', i) for i, ch in enumerate('abcdefg')})
+    c.sprite(0, 8, [
+        "..000000000000..",            # 방석 윗면 3행(y=9~11): 뒤 줄 가장 밝게 → 앞으로 한 단씩
+        ".06666666666650.",
+        ".05555555555440.",
+        ".04444444444330.",
+        ".02222222222110.",            # 방석 앞면 1행(두 단 어둡게)
+        "affffffffffffeea",            # 금 틀 윗면 1행 + 앞면 1행
+        "adddddddddddccba",
+        ".aaaaaaaaaaaaaa.",
+        ".aec........dba.",            # X 다리: 2px 금 대각, 아래쪽에만 짙은 금 한 칸
+        "...aec....dba...",
+        ".....aeffba.....",            # 가운데 금 못(2x2)
+        "......dffc......",
+        "....dba..aec....",
+        "..dba......aec..",
+        ".adca......aeca.",            # 발 받침
+        ".abba......abba."], pal)
+# ══ seats study2 ══

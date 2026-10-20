@@ -772,6 +772,9 @@ for _k in SEATS34_PASS: R.objs[_k]['draw'] = PENDING_SEATS34[_k]
 # ══ /seats34 ══
 
 
+
+S34_STUDY2 = __import__('seat34').apply_study2(R)   # 사람 합격(2026-10-20) 앉는 기물 — 관문 pass 영수증 있는 것만 바꾼다
+
 def build(): return R.build()
 def selftest(): return R.selftest()
 
