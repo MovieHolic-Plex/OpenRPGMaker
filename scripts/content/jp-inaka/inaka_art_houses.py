@@ -850,7 +850,8 @@ def tile_px(mat, base, ytop, rh=3):
         if face == -3:
             return _kt(mat, base - 2)
         t = base + {0: 0, -1: 1, -2: -1}[face]
-        r, i = (y - ytop) % rh, x % 4
+        r = (y - ytop) % rh
+        i = (x + 2 * (((y - ytop) // rh) % 2)) % 4                         # 줄마다 丸瓦 열을 반 장 엇갈림
         if r == rh - 1:
             t -= 2 if i == 3 else 1                                        # 줄 그늘(기와 한 줄의 아래 끝)
         elif i == 3:
@@ -1201,11 +1202,9 @@ def _kura_plaster(c, x, y, w, h):
     for yy in range(y, y + h):
         for xx in range(x, x + w):
             t = 1
-            v = H(xx, yy, 27)
-            if v < 0.025:
-                t -= 1
-            elif v > 0.985:
-                t += 1
+            gx, gy = (xx - x) // 6, (yy - y) // 6                          # 6×6 칸마다 1px 반점 하나(위치 해시)
+            if (xx - x) % 6 == int(H(gx, gy, 27) * 6) and (yy - y) % 6 == int(H(gx, gy, 29) * 6):
+                t += -1 if H(gx, gy, 30) < 0.7 else 1
             if yy >= y + h - 2 and H(xx, yy, 28) < (0.5 if yy == y + h - 1 else 0.25):
                 t -= 1
             c.P(xx, yy, K('shiro', t))
@@ -1368,12 +1367,13 @@ def dagashiya(c, base):
         band = ((x - X0) // 5) % 2
         i = (x - X0) % 5
         c.P(x, 37, K('aka', 0) if band == 0 else K('shiro', 0))
+        c.P(x, 38, K('aka', 0) if band == 0 else K('shiro', 0))
         if i in (1, 2, 3):
-            c.P(x, 38, K('aka', -1) if band == 0 else K('shiro', -1))
-    c.P(X0 - 3, 37, OL); c.P(X1 + 3, 37, OL)
+            c.P(x, 39, K('aka', -1) if band == 0 else K('shiro', -1))
+    c.VL(X0 - 3, 37, 2, OL); c.VL(X1 + 3, 37, 2, OL)
     c.HL(X0, 31, X1 - X0 + 1, OL)                                          # 벽과 차양 사이 1px 짙은 솔기
     for x in range(X0, X1 + 1):                                            # 주름 밑 그늘 2줄(풀림)
-        y0 = 39 if (x - X0) % 5 in (1, 2, 3) else 38
+        y0 = 40 if (x - X0) % 5 in (1, 2, 3) else 39
         _shade(c, x, y0, 1, 1, 0.6)
         _shade(c, x, y0 + 1, 1, 1, 0.78)
         if (x + y0) % 2 == 0:
@@ -1440,31 +1440,38 @@ def station(c, base):
     for yy, col in ((29, K('shiro', 1)), (30, K('aka', 1)), (33, K('shiro', 0)), (36, K('sora', 1))):
         c.P(101, yy, col); c.P(102, yy, _dim(col, 0.8))
     # 역명판(입구 위): 흰 판 + 남색 띠 + 붉은 점(노선색) — 글자 없음
-    c.R(44, EY - 7, 26, 6, OL)
-    for yy in range(EY - 6, EY - 2):
+    EY2 = EY + 4                                                           # 역명판은 차양 밑에 매단다
+    c.R(44, EY2 - 7, 26, 6, OL)
+    for yy in range(EY2 - 6, EY2 - 2):
         for xx in range(45, 69):
-            t = 2 if yy == EY - 6 else 1
+            t = 2 if yy == EY2 - 6 else 1
             if xx > 64:
                 t -= 1
             c.P(xx, yy, K('shiro', t))
-    c.HL(45, EY - 3, 24, K('kon', 0)); c.HL(45, EY - 4, 24, K('kon', 1))
-    c.R(48, EY - 5, 3, 1, K('aka', 1)); c.R(63, EY - 5, 3, 1, K('aka', 0))
-    # 승강장 차양(c0 37~42: 함석 윗면 5줄 + 짙은 입술 1줄) — 본 지붕 처마 바로 앞, 기둥 넷이 승강장까지
-    CT, CL = 37, 42
+    c.HL(45, EY2 - 3, 24, K('kon', 0)); c.HL(45, EY2 - 4, 24, K('kon', 1))
+    c.R(48, EY2 - 5, 3, 1, K('aka', 1)); c.R(63, EY2 - 5, 3, 1, K('aka', 0))
+    # 승강장 차양(R9b): 본 지붕 처마 밑 벽 4줄을 띄우고 c0 41~45 에 밝은 아연 함석(차가운 흰빛, 기와와 다른 색) 윗면 4줄 + 입술,
+    # 기둥 넷(2px 밝은 나무 + 그늘 1px)과 까치발이 승강장까지 — 지붕 한 단이 아니라 차양으로 읽히게.
+    _deep_eave_shadow(c0, X0, 36, W)
+    CT, CL, CX0, CX1 = 41, 45, 5, 106
     _deep_eave_shadow(c0, X0, CL + 2, W)
     for px in (8, 42, 70, 102):
         for yy in range(CL + 2, YF + D):
-            c0.P(px, yy, J('aged_cedar', 4 if yy < YF + D - 2 else 3)); c0.P(px + 1, yy, J('aged_cedar', 2 if yy < YF + D - 2 else 1))
-        c0.P(px - 1, CL + 2, OL); c0.P(px + 2, CL + 2, OL)
+            c0.P(px, yy, J('aged_cedar', 4 if yy < YF + D - 2 else 3)); c0.P(px + 1, yy, J('aged_cedar', 3 if yy < YF + D - 2 else 2))
+            c0.P(px + 2, yy, J('machiya_timber', 3))
+        c0.P(px - 1, CL + 2, OL)
+        for k in range(3):                                                 # 까치발(기둥 → 차양 밑)
+            if px > CX0 + 4:
+                c0.P(px - 1 - k, CL + 4 - k, J('aged_cedar', 3))
+            if px < CX1 - 4:
+                c0.P(px + 3 + k, CL + 4 - k, J('aged_cedar', 2))
     for yy in range(CT, CL):
-        for xx in range(3, 109):
+        for xx in range(CX0, CX1 + 1):
             i = xx % 4
-            t = 2 + (1 if i == 0 else -1 if i == 3 else 0) + (1 if yy == CT else 0)
-            c0.P(xx, yy, K('tekko', t))
-    c0.HL(3, CL, 106, K('tekko', -1)); c0.HL(2, CL + 1, 108, OL); c0.VL(2, CT, CL - CT + 1, OL); c0.VL(109, CT, CL - CT + 1, OL)
-    for xx in range(3, 109):
-        if xx % 4 == 0:
-            c0.P(xx, CL, K('tekko', 0))
+            t = 1 + (1 if i == 0 else -1 if i == 3 else 0) + (1 if yy == CT else 0)
+            c0.P(xx, yy, T('vending_cool_white', t))
+    c0.HL(CX0, CL, CX1 - CX0 + 1, K('conc', 0)); c0.HL(CX0 - 1, CL + 1, CX1 - CX0 + 3, K('conc', -2))
+    c0.HL(CX0 - 1, CT - 1, CX1 - CX0 + 3, K('conc', -1)); c0.VL(CX0 - 1, CT, CL - CT + 1, OL); c0.VL(CX1 + 1, CT, CL - CT + 1, OL)
     # 지붕(테라코타 기와 寄棟, 얕은 띠) + 가운데 시계 박공(破風이 처마선을 넘어 y38 까지)
     low_kawara(c0, 3, 108, 22, 34, 'kawara', 0, hip=True, taper=14, wg=8)
     AX, AY, BY, SL = 56, 21, 38, 0.95
@@ -1643,30 +1650,35 @@ def _waterwheel_mill_draw(c):
     # 물레(R9): 정면에서 본 바퀴(타원 17×22) — 짙은 테 두께 · 8 바퀴살 · 축통 · 테 밖 날개 끝(왼쪽 위 빛, 오른쪽 아래 그늘).
     # 살 사이로는 바퀴 뒤 그늘이 보인다. 아래 끝은 물받이 물에 잠긴다.
     WX, WY, RX, RY = 49.5, 40.0, 8.6, 10.8
+    NB = 12                                                                # 날개 끝(테 밖 2px, 고른 간격)
+    for k in range(NB):                                                    # 날개 끝을 먼저: 테가 그 위를 덮어 뿌리를 정리한다
+        ph = 2 * math.pi * (k + 0.5) / NB
+        cu, sv = math.cos(ph), math.sin(ph)
+        lit = -(cu + sv) * 0.7
+        col = J('aged_cedar', 4 if lit > 0.3 else 3 if lit > -0.3 else 1)
+        for rr in (1.0, 1.1, 1.2):
+            c.P(round(WX - 0.5 + cu * RX * rr), round(WY - 0.5 + sv * RY * rr), col)
     for y in range(26, 52):
         for x in range(38, 62):
             u, v = (x + 0.5 - WX) / RX, (y + 0.5 - WY) / RY
             r = math.hypot(u, v)
-            ang = math.atan2(v, u)
+            if r > 1.0:
+                continue
             lit = -(u + v) / max(r, 1e-6) * 0.7                            # 왼쪽 위 +, 오른쪽 아래 −
-            if r <= 1.0:
-                if r > 0.84:
-                    col = J('aged_cedar', max(0, min(4, round(2.4 + lit * 1.6))))   # 바깥 테(빛 받는 둘레)
-                elif r > 0.72:
-                    col = J('machiya_timber', 3 if lit > 0 else 2)        # 테 안쪽 두께(짙게)
-                elif r < 0.2:
-                    col = J('machiya_timber', 4) if lit > 0.2 else J('machiya_timber', 3)   # 축통
-                else:
-                    k = (ang / (2 * math.pi) * 8 + 0.06) % 1.0
-                    if k < 0.17:
-                        col = J('aged_cedar', 3 if lit > -0.2 else 2)      # 바퀴살(8개)
-                    else:
-                        col = K('yoru', 0 if (x + y) % 2 else 1)           # 살 사이: 바퀴 뒤 그늘
-                c.P(x, y, col)
-            elif r <= 1.2:
-                k = (ang / (2 * math.pi) * 14) % 1.0                       # 날개 끝 14개(테 밖 1~2px)
-                if k < 0.36:
-                    c.P(x, y, J('aged_cedar', 4 if lit > 0.25 else 3 if lit > -0.25 else 1))
+            if r > 0.84:
+                col = J('aged_cedar', 4 if lit > 0.35 else 3 if lit > -0.35 else 2)   # 깨끗한 바깥 테(세 단)
+            elif r > 0.72:
+                col = J('machiya_timber', 3)                               # 테 안쪽 두께(한 색)
+            else:
+                col = K('yoru', 0)                                         # 살 사이: 바퀴 뒤 그늘(한 색)
+            c.P(x, y, col)
+    for k in range(8):                                                     # 바퀴살 8개(축 → 테 안쪽)
+        ph = 2 * math.pi * k / 8 + 0.2
+        cu, sv = math.cos(ph), math.sin(ph)
+        lit = -(cu + sv) * 0.7
+        line(c, round(WX - 0.5 + cu * RX * 0.18), round(WY - 0.5 + sv * RY * 0.18),
+             round(WX - 0.5 + cu * RX * 0.74), round(WY - 0.5 + sv * RY * 0.74), J('aged_cedar', 3 if lit > -0.3 else 2))
+    disc(c, WX - 0.5, WY - 0.5, 2.0, J('machiya_timber', 3))              # 축통
     disc(c, WX - 0.5, WY - 0.5, 1.2, J('aged_cedar', 4))                  # 축 머리
     c.P(round(WX), round(WY), J('machiya_timber', 2))
     ay = round(WY)                                                         # 축: 오두막 벽에서 바퀴로

@@ -231,7 +231,7 @@ export const INAKA_SHOWCASE_SCENES: readonly InakaShowcaseScene[] = [
     stamps: [
       // 뒷산 숲(집보다 먼저 찍어 지붕이 숲 앞에 서게 한다)
       { kit: "rg-bamboo-grove", x: 0, y: 0, allowOverlap: true },
-      { kit: "rg-sugi", x: 4, y: -1, allowOverlap: true },
+      { kit: "rg-sugi", x: 4, y: -3, allowOverlap: true }, // 고민가 용마루(y3) 위로 한 칸 이상 띄운다
       { kit: "rg-sugi", x: 12, y: 0, allowOverlap: true },
       { kit: "rg-bamboo-grove-b", x: 15, y: 0, allowOverlap: true },
       { kit: "rg-sugi", x: 21, y: 0, allowOverlap: true },
