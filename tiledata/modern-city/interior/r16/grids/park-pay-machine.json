@@ -12,7 +12,8 @@
   "g": "#e2b448ff",
   "h": "#f8d848ff",
   "i": "#a0a6b2ff",
-  "j": "#f4f6f8ff"
+  "j": "#f4f6f8ff",
+  "k": "#c89a2bff"
  },
  "rows": [
   ".aaaaaaaaaaaaaa.",
@@ -20,7 +21,7 @@
   ".affffffffffffa.",
   ".affffffffffffa.",
   ".ajjjjjjjjjjjja.",
-  ".ahhhhhhhhhhhha.",
+  ".akkkkkkkkkkkka.",
   ".ahhhhhhhhhhhha.",
   ".adddddddddddda.",
   ".adddddddddddda.",
@@ -48,5 +49,5 @@
   "................",
   "................"
  ],
- "note": "r16: steel top 3 rows + white lit edge above the yellow header (2 rows kept); one body row removed"
+ "note": "r16: steel top 3 rows + white lit edge, then an amber cornice-shadow row above the yellow header"
 }

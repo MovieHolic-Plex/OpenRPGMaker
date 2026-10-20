@@ -17,7 +17,7 @@
  },
  "rows": [
   "....jjjjjjj.....",
-  "bbbbhhhhhhhbbbbb",
+  "bbbbjjjjjjjbbbbb",
   "bfffhhhhhhhffffb",
   "biiigggggggiiiib",
   "biiiiiiiiiiiiiib",
@@ -49,5 +49,5 @@
   "aaaaaaaaaaaaaaaa",
   "................"
  ],
- "note": "r16: fridge top relit far-to-near (grey far edge, white front edge row 5, shadow row 6); box on top unchanged"
+ "note": "r16: fridge top relit far-to-near + white front edge row 5 + shadow row 6; box on top now shows a 2-row lid"
 }

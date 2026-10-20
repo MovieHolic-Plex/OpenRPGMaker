@@ -10,14 +10,15 @@
   "e": "#dc3c3cff",
   "f": "#e2b448ff",
   "g": "#fac83cff",
-  "h": "#ffe678ff"
+  "h": "#ffe678ff",
+  "i": "#f4f6f8ff"
  },
  "rows": [
   ".aaaaaaaaaaaaaa.",
   ".affffffffffffa.",
-  ".agggggggggggga.",
-  ".agggggggggggga.",
   ".ahhhhhhhhhhhha.",
+  ".ahhhhhhhhhhhha.",
+  ".aiiiiiiiiiiiia.",
   ".aeeeeeeeeeeeea.",
   ".aeeeeeeeeeeeea.",
   ".agggggggggggga.",
@@ -46,5 +47,5 @@
   "................",
   "................"
  ],
- "note": "r16: gold cabinet top 3 rows + pale lit edge above the red header (2 rows kept); one body row removed"
+ "note": "r16: gold cabinet top 4 rows read as a lit plane (f far -> pale h -> white lit edge) above the red header"
 }

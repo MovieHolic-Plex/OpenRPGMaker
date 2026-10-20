@@ -13,15 +13,16 @@
   "h": "#bebeb8ff",
   "i": "#ccd0d8ff",
   "j": "#f4f6f8ff",
-  "k": "#fadc78ff"
+  "k": "#fadc78ff",
+  "l": "#e4e9e8ff"
  },
  "rows": [
   "................................................",
   ".aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.",
   ".agggggggggggggggggggggggggggggggggggggggggggga.",
-  ".ahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhha.",
-  ".ahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhha.",
   ".aiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiia.",
+  ".aiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiia.",
+  ".alllllllllllllllllllllllllllllllllllllllllllla.",
   ".aggggggggggggggffffffffffffffffgggggggggggggga.",
   ".ahhhhhhhhhhhhhhddddddddddddddddhhhhhhhhhhhhhha.",
   ".ahhhccccccchhhhddddddddddddddddhhhhbbbbbbbhhha.",
@@ -49,5 +50,5 @@
   "................................................",
   "................................................"
  ],
- "note": "r16: roof top relit (g far -> h -> i lit edge, 4 rows) + cornice shadow row beside the door head"
+ "note": "r16: roof top 4 rows clearly lighter than the wall (g far -> i -> pale lit edge) + cornice shadow row beside the door head"
 }

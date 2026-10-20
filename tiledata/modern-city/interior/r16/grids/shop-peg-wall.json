@@ -25,17 +25,18 @@
   "t": "#ffc341ff",
   "u": "#ffc3eaff",
   "v": "#fffdd4ff",
-  "w": "#ffff48ff"
+  "w": "#ffff48ff",
+  "x": "#c89a2bff"
  },
  "rows": [
-  ".........rrrrrrrrrrrrrr.........",
+  ".........wwwwwwwwwwwwww.........",
   ".........rrrrrrrrrrrrrr.........",
   ".........rrmmrmmmmrrrrr.........",
   ".........rrmmrmmrrrrrrr.........",
   ".........rrmmrmmrrrrrrr.........",
   ".........rrmmrmmmmrrrrr.........",
   ".........rrrrrrrrrrrrrr.........",
-  ".........rrrrrrrrrrrrrr.........",
+  ".........xxxxxxxxxxxxxx.........",
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
   "bkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkb",
   "bnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnb",
@@ -77,5 +78,5 @@
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
   "................................"
  ],
- "note": "r16: pegboard body gets a 4-row top (beige, darker far edge) + lit front edge under the sign; three empty peg rows removed"
+ "note": "r16: pegboard body 4-row top + lit edge under the sign; IC sign shaded (bright top row, amber bottom row)"
 }

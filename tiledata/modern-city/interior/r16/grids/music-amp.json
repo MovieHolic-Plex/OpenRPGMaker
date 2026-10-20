@@ -10,13 +10,14 @@
   "e": "#e2b448ff",
   "f": "#f4f6f8ff",
   "g": "#464852ff",
-  "h": "#5a5a6eff"
+  "h": "#5a5a6eff",
+  "i": "#757886ff"
  },
  "rows": [
   ".aaaaaaaaaaaaaa.",
-  ".adddddddddddda.",
   ".agggggggggggga.",
   ".ahhhhhhhhhhhha.",
+  ".aiiiiiiiiiiiia.",
   ".adeeeeeeeeeeda.",
   ".adefeeefeeeeda.",
   ".adcdcdcdcdcdda.",
@@ -46,5 +47,5 @@
   "................",
   "................"
  ],
- "note": "r16: amp top 3 rows (dark far edge to grey) above the gold control strip (now the front edge); one grille gap row removed"
+ "note": "r16: amp top 3 rows now clearly lighter than the black body (g far -> h -> #757886 lit edge) above the gold control strip"
 }

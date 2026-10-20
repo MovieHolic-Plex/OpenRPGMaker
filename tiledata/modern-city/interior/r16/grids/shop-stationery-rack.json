@@ -21,17 +21,18 @@
   "p": "#f096b4ff",
   "q": "#f0c838ff",
   "r": "#f4f6f8ff",
-  "s": "#ffffffff"
+  "s": "#ffffffff",
+  "t": "#8fd0ffff"
  },
  "rows": [
-  "........ffffffffffffffff........",
+  "........tttttttttttttttt........",
   "........ffffffffffffffff........",
   "........ffffffffffffffff........",
   "........ffrrrrrrrrrrrrff........",
   "........ffrrrrrrrrrrrrff........",
   "........ffffffffffffffff........",
   "........ffffffffffffffff........",
-  "........ffffffffffffffff........",
+  "........bbbbbbbbbbbbbbbb........",
   "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
   "akkkkkkkkkkkkkkkkkkkkkkkkkkkkkka",
   "alllllllllllllllllllllllllllllla",
@@ -73,5 +74,5 @@
   "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
   "................................"
  ],
- "note": "r16: rack body gets a 4-row top (grey far edge to white lit edge) under the sign; three empty rows in the lower bays removed"
+ "note": "r16: rack body 4-row top + lit edge under the sign; sign shaded (light top row, dark bottom row)"
 }

@@ -16,16 +16,17 @@
   "k": "#ecf0f6ff",
   "l": "#f0c838ff",
   "m": "#f4f6f8ff",
-  "n": "#ffffffff"
+  "n": "#ffffffff",
+  "o": "#2d436eff"
  },
  "rows": [
-  "..dddddddddddddddddddddddddddddddddddddddddddd..",
+  "..eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee..",
   "..dddddddddddddddddddddddddddddddddddddddddddd..",
   "..ddddmmmmmmmmmmmmmmmddddddddddddddddddddddddd..",
   "..ddddmmmmmmmmmmmmmmmddddddddddddddddddddddddd..",
   "..ddddmmmmmmmmmmmmmmmddddddddddddddddddddddddd..",
   "..dddddddddddddddddddddddddddddddddddddddddddd..",
-  "..dddddddddddddddddddddddddddddddddddddddddddd..",
+  "..oooooooooooooooooooooooooooooooooooooooooooo..",
   "................................................",
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
   "biiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiib",
@@ -68,5 +69,5 @@
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
   "................................................"
  ],
- "note": "r16: washer row top 3 rows (grey far edge) + white lit edge, grey row below is the shadow; one door row and one base row removed"
+ "note": "r16: washer row top 3 rows + white lit edge; header sign shaded (lit top row, dark bottom row)"
 }

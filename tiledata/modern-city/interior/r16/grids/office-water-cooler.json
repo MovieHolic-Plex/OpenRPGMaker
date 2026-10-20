@@ -20,8 +20,8 @@
  },
  "rows": [
   ".....bbbbbb.....",
-  "....bbffffbb....",
-  "...bbbbbbbbbb...",
+  "....bffmmffb....",
+  "...biiiiiiiib...",
   "...biiidddddb...",
   "...biiidddddb...",
   "...biiidddddb...",
@@ -52,5 +52,5 @@
   ".bbbbbbbbbbbbbb.",
   "..aaaaaaaaaaaaa."
  ],
- "note": "r16: body top relit far-to-near (grey far edge, white front edge row 15) around the bottle"
+ "note": "r16: bottle base reads as an ellipse from above (lit oval f/m over a pale rim row) instead of a flat black rim line"
 }
