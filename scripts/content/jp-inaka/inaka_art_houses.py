@@ -880,13 +880,21 @@ STRAW_L: Final[list[int]] = [J('aged_cedar', 1), J('aged_cedar', 2), J('tatami_s
                              J('tatami_straw', 3), J('tatami_straw', 4), K('kinari', 1)]   # 밝기 한 방향(70→217)
 
 
+STRAW_D: Final[list[int]] = [J('moss', 1), J('tatami_straw', 0), J('moss', 2)]   # 그늘진 이엉(어둠·몸·빛)
+
+
 def straw_low_px(seed=0):
     """얕은 초가 화소(R9): 고른 면(밝기 ≈150, 회벽보다 어둡고 금빛) + 짧은 1×2 짚 획(어둡게·밝게) — 처마 쪽 획은 이끼빛.
     왼쪽 隅面 한 단 밝고 오른쪽 한 단 어둡다."""
     def px(x, y, f, face):
         t = 3 + {0: 0, -1: 1, -2: -2, 1: 3, -3: -3}[face]                  # 서쪽 隅面 밝게·동쪽 두 단 어둡게, 隅棟 선
-        if face in (1, -3):
+        if face == -3:
+            return STRAW_D[0]
+        if face == 1:
             return _ri(STRAW_L, t)
+        if face == -2:                                                     # 동쪽 隅面: 어두운 이엉 램프(나무 갈색 아님)
+            v = H(x, y // 2 + (x % 3), seed + 4)
+            return STRAW_D[0] if v < 0.24 else (STRAW_D[2] if v > 0.88 else STRAW_D[1])
         v = H(x, y // 2 + (x % 3), seed + 4)
         if v < 0.24:
             if f > 0.55 and H(x, y // 2, seed + 7) < (f - 0.45):
@@ -1465,7 +1473,7 @@ def station(c, base):
     c0.HL(CX0, CL, CX1 - CX0 + 1, K('conc', 0)); c0.HL(CX0 - 1, CL + 1, CX1 - CX0 + 3, K('conc', -2))
     c0.HL(CX0 - 1, CT - 1, CX1 - CX0 + 3, K('conc', -1)); c0.VL(CX0 - 1, CT, CL - CT + 1, OL); c0.VL(CX1 + 1, CT, CL - CT + 1, OL)
     # 지붕(테라코타 기와 寄棟, 얕은 띠) + 가운데 시계 박공(破風이 처마선을 넘어 y38 까지)
-    deep_kawara(c0, 3, 108, 7, 43, 'kawara', 0, taper=14, wg=12, hip=True)   # R10 寄棟 윗면 36줄(7칸 폭)
+    deep_kawara(c0, 3, 108, 7, 43, 'kawara', 0, taper=14, wg=24, hip=True)   # R10 寄棟 윗면 36줄(7칸 폭)
     AX, AY, BY, SL = 56, 22, 46, 0.95
     for y in range(AY + 2, BY):                                            # 박공 면: 세로 판(빛 왼쪽) — 흰 시계가 서도록
         half = (y - AY) * SL
@@ -1643,14 +1651,19 @@ def _waterwheel_mill_draw(c):
     # 물레(R9): 정면에서 본 바퀴(타원 17×22) — 짙은 테 두께 · 8 바퀴살 · 축통 · 테 밖 날개 끝(왼쪽 위 빛, 오른쪽 아래 그늘).
     # 살 사이로는 바퀴 뒤 그늘이 보인다. 아래 끝은 물받이 물에 잠긴다.
     WX, WY, RX, RY = 49.5, 40.0, 8.6, 10.8
-    NB = 12                                                                # 날개 끝(테 밖 2px, 고른 간격)
-    for k in range(NB):                                                    # 날개 끝을 먼저: 테가 그 위를 덮어 뿌리를 정리한다
-        ph = 2 * math.pi * (k + 0.5) / NB
-        cu, sv = math.cos(ph), math.sin(ph)
-        lit = -(cu + sv) * 0.7
-        col = J('aged_cedar', 4 if lit > 0.3 else 3 if lit > -0.3 else 1)
-        for rr in (1.0, 1.1, 1.2):
-            c.P(round(WX - 0.5 + cu * RX * rr), round(WY - 0.5 + sv * RY * rr), col)
+    for y in range(26, 52):                                                # 날개 8개: 바퀴살 끝마다 2px 폭 · 테 밖 2px, 날개마다 한 색
+        for x in range(38, 62):
+            u, v = (x + 0.5 - WX) / RX, (y + 0.5 - WY) / RY
+            r = math.hypot(u, v)
+            if not (1.0 < r <= 1.24):
+                continue
+            ang = math.atan2(v, u)
+            k = ((ang - 0.2) / (2 * math.pi) * 8) % 1.0
+            if min(k, 1 - k) > 0.13:
+                continue
+            ph = 0.2 + 2 * math.pi * round((ang - 0.2) / (2 * math.pi) * 8) / 8
+            lit = -(math.cos(ph) + math.sin(ph)) * 0.7
+            c.P(x, y, J('aged_cedar', 4 if lit > 0.3 else 3 if lit > -0.3 else 1))
     for y in range(26, 52):
         for x in range(38, 62):
             u, v = (x + 0.5 - WX) / RX, (y + 0.5 - WY) / RY
@@ -1951,7 +1964,7 @@ def tin_shed(c, base):
     front(_shift(c, D))
     X0, X1 = 5, 58
     # 지붕 몫 ≈25%: 정면 골판 벽·문을 위로 늘리고(옛 정면 지붕 자리 덮음) 위에 얕은 切妻 함석 띠
-    YW = 30                                                                # R10: 벽 위(처마 바로 밑)
+    YW = 38                                                                # R11: 벽 위(처마 바로 밑) — 지붕 32줄, 벽 짧게
     c.a[YW:D + 19, :X0 - 1, 3] = 0; c.a[YW:D + 19, X1 + 2:, 3] = 0          # 옛 정면 지붕·처마 띠의 양옆 나머지 지움
     for x in range(X0, X1 + 1):
         drip = H(x // 4, 0, 48) < 0.22
@@ -1965,7 +1978,7 @@ def tin_shed(c, base):
             c.P(x, y, col)
     c.VL(X0, YW, D + 15 - YW + 8, K('tekko', 2)); c.VL(X1, YW, D + 15 - YW + 8, K('tekko', -2))
     c.VL(X0 - 1, YW, D + 15 - YW + 8, OL); c.VL(X1 + 1, YW, D + 15 - YW + 8, OL)
-    DT = 38                                                                # 문 위(레일 밑) — 문 높이 33
+    DT = 42                                                                # 문 위(레일 밑) — R11 짧아진 열린 칸
     for yy in range(DT, D + 23):                                           # 열린 미닫이 안: 3px 판 번갈아, 문 위 그늘 2줄
         for xx in range(9, 31):
             t = -2 if ((xx - 9) // 3) % 2 == 0 else -1
@@ -1991,13 +2004,12 @@ def tin_shed(c, base):
             for y in range(YW + 1, YW + 1 + ln):
                 if c.a[y, x, 3] and _key(c, x, y) not in (OL,):
                     c.P(x, y, J('noren_rust', 1 if y < YW + ln - 2 else 0))
-    for j, k in enumerate((0.62, 0.68, 0.74, 0.8, 0.86)):                  # 처마 그늘: 골 따라 30% 어둡게 → 풀림
+    for j, k in enumerate((0.64, 0.8)):                                    # 처마 그늘 2줄(R11)
         _shade(c, X0, YW + j, X1 - X0 + 1, 1, k, 8)
-    _shade(c, X0, YW + 5, X1 - X0 + 1, 1, 0.92, 6, dither=True)
     # 切妻 함석 띠(얕게): 용마루 덮개 2px 빛 → 한 방향 명암 사다리꼴(골은 짧은 점선) → 짙은 처마 2줄. 양 끝은 처마로 벌어진다.
-    low_roof(c, 1, 62, 4, 28, 10, 53, tin_low_px(4, 54), hip=True, wg=7)    # R10 탑 3/4: 함석 윗면 24줄(4칸 폭)
+    low_roof(c, 1, 62, 4, 36, 10, 53, tin_low_px(4, 54), hip=True, wg=16)   # R11 탑 3/4: 함석 윗면 32줄
     low_ridge(c, 10, 53, 4, K('tekko', 3), K('tekko', 3))
-    low_eave(c, 1, 62, 28, K('tekko', 1), K('tekko', -3))
+    low_eave(c, 1, 62, 36, K('tekko', 1), K('tekko', -3))
     _finish(c, mat=True)
     ground_shadow(c, X0 + 2, X1 + 4, 47 + D, 1, K('tairu', -2))
 
