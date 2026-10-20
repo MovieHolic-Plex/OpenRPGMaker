@@ -23,7 +23,9 @@ const SPECIES_NAMES: Readonly<Record<string, string>> = {
   mx_species_bramblet: "실바리온",
   mx_species_canopine: "벨데로드",
   mx_species_coalbit: "숯꼬미",
-  mx_species_kilnclaw: "볼케이건",
+  // 볼케이건은 기존 작품 이름과 소리가 가까웠다(2026-10-21) — 가마(kiln) + 발톱(claw).
+  mx_species_kilnclaw: "가마발톱",
+  mx_enemy_kilnclaw: "가마발톱",
   mx_species_pyroscale: "마그렉스",
   mx_species_rivulet: "아가핀",
   mx_species_tideling: "마린웨이",
@@ -54,6 +56,7 @@ const NAME_SWAPS: ReadonlyArray<readonly [string, string]> = [
   // 생성기 로스터의 옛 이름이 한글 원작 이름과 한 글자 차이라 먼저 바꾼다.
   ["파이린", "숯꼬미"],
   ["아쿠링", "아가핀"],
+  ["볼케이건", "가마발톱"],
   ["1번길 · 별싹 들판", PLACE.route1],
   ["별빛 리그 · 챔피언", PLACE.league],
   ["별빛 리그", "아스트라 리그"],
