@@ -949,23 +949,25 @@ def deep_kawara(c, ex0, ex1, ytop, yeave, mat, base, taper, wg=13, hip=True, gli
 # 위 줄 밝고 아래 줄 어둡게, 세로 줄눈 격자 없이 12px 마다 3px 기와 끝 하이라이트만. 귀마루는 선이 아니라 따로 칠한 삼각면
 # (위가 넓고 처마 모서리에서 끝난다, 서쪽 한 단 밝게·동쪽 한 단 어둡게). 처마는 립 1행 → 짙은 2행 → 윤곽 → 벽 그림자 1행.
 _JP_ROOF: Final[dict] = {
-    # 앞면 줄(위 절반, 아래 절반): 단(t) 4행 주기. ridge: 용마루 상자 행들(색), lip/dark: 처마. side: 서·동 삼각면 단 차.
-    'tairu': dict(ramp=lambda t: K('tairu', max(-3, min(3, t))), up=(2, 1, 1, -1), lo=(1, -1, -1, -2),
+    # 앞면 줄(위 절반, 아래 절반): 단(t) 4행 주기. ridge: 용마루 상자 행들(색), lip/dark: 처마.
+    # face: 귀마루 삼각면 세로 줄(서, 동) 4px 주기 단 — さくら駅 표본(서 'b a e b', 동 'c d e e').
+    'tairu': dict(ramp=lambda t: K('tairu', max(-3, min(3, t))), up=(2, 1, 1, -1), lo=(1, 0, 0, -2),
                   ridge=(('t', 3), ('t', 2), ('c', K('kinari', 1)), ('t', 1), ('c', K('kinari', -1)), ('t', -2), ('t', -3)),
-                  lip=('t', 2), dark=(('t', -1), ('t', -3)), side=(1, -1), tick=True),
+                  lip=('t', 2), dark=(('t', -1), ('t', -3)), face=((2, 0, 3, 2), (-2, 1, 0, 0)), tick=True, oni=True),
     'kawara': dict(ramp=lambda t: K('kawara', max(-3, min(3, t))), up=(0, -1, -1, -3), lo=(-1, -2, -2, -3),
-                   ridge=(('t', 1),), lip=('t', 0), dark=(('t', -3), ('t', -3)), side=(1, -1), tick=True),
+                   ridge=(('t', 1),), lip=('t', 0), dark=(('t', -3), ('t', -3)), face=((0, -2, 1, 0), (-3, 0, -1, -1)),
+                   tick=True, oni=False),
     'tin': dict(ramp=lambda t: K('tekko', max(-3, min(3, t))), up=(0,), lo=(0,),
-                ridge=(), lip=('c', K('shiro', 1)), dark=(('c', K('shiro', 0)),), side=(0, -2), tick=False),
-    'thatch': dict(ramp=None, up=(J('tatami_straw', 3), J('tatami_straw', 2), J('tatami_straw', 2), J('aged_cedar', 1)),
-                   lo=(J('tatami_straw', 2), J('tatami_straw', 1), J('tatami_straw', 1), J('aged_cedar', 1)),
-                   ridge=(), lip=('c', J('tatami_straw', 3)), dark=(('c', J('aged_cedar', 1)), ('c', J('aged_cedar', 0))),
-                   side=(1, -1), tick=True),
+                ridge=(), lip=('c', K('shiro', 1)), dark=(('c', K('shiro', 0)),), tick=False, oni=False),
+    # 초가(R13): 띠 사이는 한 단 어두운 짚 1행만(판자 줄눈 #593e39 없음), 짚결은 불규칙 1×2 틱, 처마 립 2행 + 짙은 2행.
+    'thatch': dict(ramp=lambda t: J('tatami_straw', max(0, min(4, t))), up=(3, 2, 2, 1), lo=(2, 1, 1, 0),
+                   ridge=(), lip=('c', J('tatami_straw', 3)),
+                   dark=(('c', J('tatami_straw', 3)), ('c', J('aged_cedar', 1)), ('c', J('aged_cedar', 0))),
+                   tick=True, oni=False),
 }
-_THATCH_SIDE: Final[dict] = {
-    1: (J('tatami_straw', 4), J('tatami_straw', 3), J('tatami_straw', 3), J('aged_cedar', 2)),
-    -1: (J('tatami_straw', 1), J('tatami_straw', 0), J('tatami_straw', 0), J('aged_cedar', 0)),
-}
+_THATCH_SIDE: Final[dict] = {1: (4, 3, 3, 2), -1: (1, 0, 0, 0)}
+# 鬼瓦 끝 블록(hiraya_gable 표본 5×6, 단): a=3 c=2 b=1 d=-2, 안쪽 1열은 -3 칸막이.
+_ONI: Final[tuple] = ((3, 3, 3, 3, 3), (3, 2, 2, 1, -2), (3, 2, 1, 1, -2), (3, 1, 1, 1, -2), (3, 1, 1, -2, -2), (-2, -2, -2, -2, -2))
 
 
 def _jp_col(cfg, spec):
@@ -973,10 +975,22 @@ def _jp_col(cfg, spec):
     return cfg['ramp'](v) if kind == 't' else v
 
 
-def jp_roof(c, ex0, ex1, ytop, ybot, mat, hip=True, inset=None, hw=None, box=None):
-    """R12 jp_city 문법 지붕. ytop = 윗 윤곽 행, ybot = 처마 밑 윤곽 행(벽은 ybot+1 부터, 그 1행은 벽 그림자).
+def _straw_ticks(ex0, ex1, k):
+    """초가 띠 k 의 짚결 틱 x → 단 차(+1/−1): 3~5px 불규칙 간격."""
+    out = {}
+    x = ex0 + int(H(k, 0, 71) * 5)
+    while x <= ex1:
+        out[x] = 1 if H(x, k, 72) > 0.5 else -1
+        x += 3 + int(H(x, k, 73) * 3)
+    return out
+
+
+def jp_roof(c, ex0, ex1, ytop, ybot, mat, hip=True, inset=None, hw=None, box=None, lo2=None):
+    """R12/R13 jp_city 문법 지붕. ytop = 윗 윤곽 행, ybot = 처마 밑 윤곽 행(벽은 ybot+1 부터, 그 1행은 벽 그림자).
     inset: 윗변이 처마보다 안으로 들어간 폭(기본 높이×0.28). hw: 위에서 본 귀마루 삼각면 윗변 폭(寄棟만).
-    box: 초가·함석 용마루 상자 색 행들(앞면 폭에만). 반환: 앞면 윗변 (xa, xb)."""
+    box: 초가·함석 용마루 상자 색 행들(앞면 폭에만). lo2: 마지막 기왓줄 단(더 어둡게). 반환: 앞면 윗변 (xa, xb).
+    R13 기와: 줄마다 몸 2행에 4px 줄눈(몸 −1) + 44px 간격으로 줄마다 엇갈린 3px 틱(몸 +1). 寄棟 끝은 세로 줄 삼각면,
+    서쪽 경계 밝은 1px + 앞면 첫 열 짙게, 동쪽 경계 짙은 1px. 용마루 상자 양 끝에 鬼瓦 블록."""
     cfg = _JP_ROOF[mat]
     Hh = ybot - ytop
     ins = round(Hh * 0.28) if inset is None else inset
@@ -987,6 +1001,8 @@ def jp_roof(c, ex0, ex1, ytop, ybot, mat, hip=True, inset=None, hw=None, box=Non
     y_c0 = ytop + 1 + len(ridge)                                          # 첫 기왓줄 행
     ncrs = max(1, (y_e0 - y_c0) // 4)
     xa0, xb0 = ex0 + ins, ex1 - ins
+    tile = mat in ('tairu', 'kawara')
+    straw = {}
     for y in range(ytop, ybot + 1):
         f = (y - ytop) / max(1, Hh)
         xl = round(lerp(xa0, ex0, f)); xr = round(lerp(xb0, ex1, f))
@@ -1011,9 +1027,12 @@ def jp_roof(c, ex0, ex1, ytop, ybot, mat, hip=True, inset=None, hw=None, box=Non
                 lower = k >= (ncrs + 1) // 2
                 if mat == 'thatch':
                     seq = _THATCH_SIDE[side] if side else (cfg['lo'] if lower else cfg['up'])
-                    col = seq[r]
-                    if side == 0 and r in (1, 2) and (x + 3 * k) % 7 == 0:
-                        col = J('tatami_straw', 1 if not lower else 0)    # 짚 결: 드문 1px 세로 틱
+                    t = seq[r]
+                    if r in (1, 2):
+                        if k not in straw:
+                            straw[k] = _straw_ticks(ex0, ex1, k)
+                        t += straw[k].get(x, 0)                           # 짚결: 1px × 2행 틱(띠 밝은색 ±1단)
+                    col = cfg['ramp'](t)
                 elif mat == 'tin':
                     i = x % 4
                     t = (2, 1, 1, 0)[i]
@@ -1024,14 +1043,43 @@ def jp_roof(c, ex0, ex1, ytop, ybot, mat, hip=True, inset=None, hw=None, box=Non
                     if (y - y_c0) % 12 == 11:
                         t -= 1                                            # 12행마다 판 이음새
                     col = cfg['ramp'](t)
+                elif side:                                                # 寄棟 삼각면: 세로 줄 4px + 엇갈린 줄눈
+                    st = cfg['face'][0 if side == 1 else 1]
+                    t = st[x % 4]
+                    if (y - ytop + 2 * (x // 4)) % 4 == 0:
+                        t -= 1
+                    if side == 1 and x == bl - 1:
+                        t = st[2] + 1 if mat == 'kawara' else 3           # 서쪽 귀마루 경계: 밝은 1px
+                    if side == -1 and x == br + 1:
+                        t = -3                                            # 동쪽 귀마루 경계: 짙은 1px
+                    col = cfg['ramp'](t)
                 else:
                     seq = cfg['lo'] if lower else cfg['up']
-                    t = seq[r] + cfg['side'][0 if side == 1 else 1] * (side != 0)
-                    if cfg['tick'] and side == 0 and r in (1, 2) and (x + 6 * k) % 12 < 3:
-                        t = seq[0]                                        # 기와 끝 하이라이트(드물게)
+                    if lo2 is not None and k >= ncrs - 1:
+                        seq = lo2
+                    t = seq[r]
+                    if r in (1, 2):
+                        u = x - ex0
+                        if u % 4 == 3:
+                            t -= 1                                        # 4px 줄눈
+                        elif (u // 4 + 3 * k) % 11 == 0:
+                            t += 1                                        # 드문 3px 기와 끝(줄마다 엇갈림)
+                    if hip and x == bl and r != 0:
+                        t = -3                                            # 서쪽 경계 밑 앞면 첫 열 짙게
                     col = cfg['ramp'](t)
             c.P(x, y, col)
         c.P(xl - 1, y, OL); c.P(xr + 1, y, OL)
+    if cfg.get('oni') and box is None and len(ridge) >= 6:               # 鬼瓦 끝 블록(용마루 상자 양 끝)
+        for j, row in enumerate(_ONI):
+            y = ytop + 1 + j
+            f = (y - ytop) / max(1, Hh)
+            xl = round(lerp(xa0, ex0, f)); xr = round(lerp(xb0, ex1, f))
+            if hip:
+                xl = round(lerp(xa0 + hw, ex0 + 1, f)); xr = round(lerp(xb0 - hw, ex1 - 1, f))
+            for i, t in enumerate(row):
+                c.P(xl + i, y, cfg['ramp'](t)); c.P(xr - 4 + i, y, cfg['ramp'](t))
+            if j:
+                c.P(xl + 5, y, cfg['ramp'](-3)); c.P(xr - 5, y, cfg['ramp'](-3))
     return xa0 + hw, xb0 - hw
 
 
@@ -1231,7 +1279,7 @@ def _kominka_draw(c):
     c.VL(X0 - 1, UW, WB - UW, OL); c.VL(X1 + 1, UW, WB - UW, OL)
     _shade(c, X0, UW, W, 1, 0.6)                                           # 처마 밑 벽 그림자 1행
     # 지붕(R12 jp 문법): 윤곽 · 箱棟 4행 · 이엉 4행 띠 5줄 · 처마 립+짙은 2 · 윤곽 = 31행
-    jp_roof(c, EX0, EX1, 29, UW - 1, 'thatch', hip=True, hw=16,
+    jp_roof(c, EX0, EX1, 29, UW - 1, 'thatch', hip=True, hw=10,
             box=(K('ita', 2), K('ita', 0), K('ita', -1), K('ita', -2)))
     stone_base(c, X0, WB, W, 5)
     engawa(c, 40, WB - 4, 48, depth=5, front=3)
@@ -1496,7 +1544,7 @@ def dagashiya(c, base):
             _shade(c, x, y0 + 2, 1, 1, 0.88)
     # 둥근 법랑 간판(기둥에)
     disc(c, 4, 46, 3.6, OL); disc(c, 4, 46, 2.6, K('sora', 1)); c.P(3, 45, K('shiro', 2)); c.P(4, 46, K('shiro', 1)); c.P(5, 47, K('sora', -1))
-    jp_roof(c0, 2, 77, 28, 51, 'tairu', hip=False)                       # R12 jp 문법 切妻 24행
+    jp_roof(c0, 2, 77, 28, 51, 'tairu', hip=False, lo2=(0, -1, -1, -2))                       # R12 jp 문법 切妻 24행
     stone_base(c, X0, YF, W, 4)
     _jp_finish(c0, (X0 + 2, X1 + 4, YF + 4 + D, 3))
 
@@ -1603,9 +1651,7 @@ def station(c, base):
         xl, xr = round(AX - half), round(AX + half)
         c0.P(xl - 1, y, OL); c0.P(xl, y, J('aged_cedar', 4)); c0.P(xl + 1, y, J('machiya_timber', 3))
         c0.P(xr + 1, y, OL); c0.P(xr, y, J('aged_cedar', 2)); c0.P(xr - 1, y, J('machiya_timber', 2))
-        if y >= BY - 1:
-            c0.P(xl - 1, y, J('machiya_timber', 3)); c0.P(xr + 1, y, J('machiya_timber', 2))
-    c0.P(AX, AY - 1, OL)
+    c0.P(AX, AY - 1, OL); c0.P(AX - 1, AY, OL); c0.P(AX + 1, AY, OL)       # R13: 박공 둘레 #1a1226 1px 끊김 없이
     for x in (round(AX - (BY - AY) * SL), round(AX + (BY - AY) * SL)):
         c0.HL(x - 2, BY + 1, 5, OL)
     CY = 34
@@ -1742,7 +1788,7 @@ def _waterwheel_mill_draw(c):
         c.P(sx, sy, J('cream_stucco', 2)); c.P(sx + 1, sy, J('cream_stucco', 1))
     _shade(c, 6, 26, 28, 1, 0.6)                                           # 처마 밑 벽 그림자 1행
     c.VL(5, 21, 30, OL); c.VL(34, 21, 30, OL)
-    jp_roof(c0, 0, 40, 5 + D, 25 + D, 'thatch', hip=True, hw=8,          # R12 jp 문법 초가 21행(箱棟 4 · 띠 3줄)
+    jp_roof(c0, 0, 40, 5 + D, 25 + D, 'thatch', hip=True, hw=6,          # R12 jp 문법 초가 21행(箱棟 4 · 띠 3줄)
             box=(K('ita', 2), K('ita', 0), K('ita', -1), K('ita', -2)))
     stone_base(c, 4, 51, 32, 4)
     # 돌 물받이(윗면에 물 + 앞면 돌, 젖은 아래쪽)
@@ -1804,7 +1850,7 @@ def _waterwheel_mill_draw(c):
     c.R(33, ay - 3, 3, 7, J('machiya_timber', 1)); c.VL(33, ay - 3, 7, J('machiya_timber', 3))
     # 筧(나무 물길, 남북): 북쪽에서 바퀴 오른쪽 위 날개로 곧게 오는 열린 홈통, 남쪽 끝면(2px)
     FX0, FX1 = 48, 57
-    for y in range(3, 26):
+    for y in range(6, 26):
         c.P(FX0 - 1, y, OL); c.P(FX1 + 1, y, OL)
         c.P(FX0, y, J('aged_cedar', 4)); c.P(FX0 + 1, y, J('aged_cedar', 3)); c.P(FX0 + 2, y, J('aged_cedar', 1))
         for x in range(FX0 + 3, FX1 - 2):
@@ -1813,7 +1859,7 @@ def _waterwheel_mill_draw(c):
     for x in range(FX0, FX1 + 1):
         c.P(x, 26, J('aged_cedar', 2)); c.P(x, 27, J('aged_cedar', 1))
     c.VL(FX0 - 1, 26, 2, OL); c.VL(FX1 + 1, 26, 2, OL)
-    c.HL(FX0 - 1, 2, FX1 - FX0 + 3, OL)
+    c.HL(FX0 - 1, 5, FX1 - FX0 + 3, OL)
     for y in range(28, 34):                                                # 홈통 끝에서 바퀴 오른쪽 위 날개로 떨어지는 물
         for x in range(FX0 + 3, FX1 - 2):
             u, v = (x + 0.5 - WX) / RX, (y + 0.5 - WY) / RY
@@ -2079,7 +2125,7 @@ def tin_shed(c, base):
     YW = 38                                                                # R11: 벽 위(처마 바로 밑) — 지붕 32줄, 벽 짧게
     c.a[YW:D + 19, :X0 - 1, 3] = 0; c.a[YW:D + 19, X1 + 2:, 3] = 0          # 옛 정면 지붕·처마 띠의 양옆 나머지 지움
     for x in range(X0, X1 + 1):
-        drip = H(x // 4, 0, 48) < 0.22
+        drip = False                                                       # R13: 처마 밑 녹 점 없음
         dl = 4 + int(H(x // 4, 1, 48) * 12)
         for y in range(YW, D + 23):
             i = x % 4
