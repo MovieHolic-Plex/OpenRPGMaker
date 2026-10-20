@@ -15,6 +15,7 @@ import { createBlankProject } from "@/project/defaults";
 import { DEFAULT_ACTOR_ID } from "@/project/defaults/constants";
 import { isPassable } from "@/project/collision";
 import { enableGenreLock } from "@/project/genreLock";
+import { defaultVnLook } from "@/project/vnLook";
 import { deserialize, serialize } from "@/project/io";
 import type { Command, Dir, GameEvent, GameMap, Project } from "@/project/types";
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
@@ -990,6 +991,15 @@ export function createFirstLoveFlagshipDemo(): FlagshipDemoBuildResult {
     { command: "relationships", label: "호감도" }, { command: "backlog", label: "대화 기록" }, { command: "endings", label: "엔딩" },
     { command: "save", label: "저장" }, { command: "load", label: "불러오기" }, { command: "options", label: "설정" }, { command: "to-title", label: "타이틀로" },
   ] };
+  // 대사창·메뉴 룩: 어두운 유리 + 금빛 이름 탭(진지한 관계극). 연애 기본(분홍 카드)은 이 이야기의 씁쓸한 톤과 도트에 안 맞는다.
+  project.meta.oprnVnLook = defaultVnLook("night-glass");
+  // ESC 메뉴 머리줄의 장소 이름은 8자 안쪽이어야 잘리지 않는다(VQA 1차: 「스튜디오 늘봄 · …」).
+  const shortNames: Record<string, string> = {
+    [FL_MAP.platformAm]: "한결역 · 아침", [FL_MAP.street]: "빌딩 앞 거리", [FL_MAP.office]: "7층 사무실",
+    [FL_MAP.rooftop]: "빌딩 옥상", [FL_MAP.streetPm]: "거리 · 밤", [FL_MAP.konbini]: "회사 앞 편의점",
+    [FL_MAP.broadcast]: "그날의 방송실", [FL_MAP.officePm]: "7층 · 수요일 밤", [FL_MAP.officeFri]: "7층 · 금요일", [FL_MAP.platformPm]: "한결역 · 막차",
+  };
+  for (const [id, name] of Object.entries(shortNames)) if (project.maps[id]) project.maps[id]!.name = name;
   // 현대 연애 장르 잠금 — 메뉴·대사 보조(오토·스킵·기록)·엔딩 목록이 연애 기본 구성을 따르고, 편집기 조수도 현대 칩셋 계열만 새로 쓴다.
   enableGenreLock(project, "romance", "enforce");
 
