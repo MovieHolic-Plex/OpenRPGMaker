@@ -18,8 +18,12 @@ import { oklabCached } from "../pixel/oklab";
 
 export type EyeBox = readonly [number, number, number, number];
 export type EyeAnatomy = "threequarter" | "profile" | "frontal" | "stalk";
-/** round = 둥근 BW 눈 틀(#6/#7/#10), hand = 스타터 손 도트 보석눈, square = 사각 5×5(폐지 대상), reference = 동결 기준종 */
-export type EyeStyle = "round" | "hand" | "square" | "reference";
+/**
+ * round = 둥근 BW 눈 틀(#6/#7/#10), hand = 스타터 손 도트 보석눈, square = 사각 5×5(폐지 대상), reference = 동결 기준종.
+ * 6차(2026-10-20, 사용자 「다 눈이 똑같아서 불만」): 종마다 다른 눈 — `scripts/content/monsters/eye_catalog_r6.py` 의 틀 이름이 양식이다.
+ */
+export const EYE_STYLES = ["round", "hand", "square", "reference", "glossy", "roundtr", "bead", "beadsm", "almond", "sleepy", "sleepybig", "sharp", "slit", "slitalm", "compound", "glow", "ring", "pin", "sparkle", "stalk"] as const;
+export type EyeStyle = (typeof EYE_STYLES)[number];
 export const EYE_CHECK_IDS = ["V0", "V1", "V2", "V3", "V4", "V5", "V7"] as const;
 export type EyeCheckId = (typeof EYE_CHECK_IDS)[number];
 
@@ -188,14 +192,19 @@ function layoutIssue(entry: EyeEntry): string | null {
 
 function styleProblem(image: RgbaImage, entry: EyeEntry): string | null {
   if (entry.style === "square") return "사각 5×5 눈(폐지) — 둥근 틀로 바꿔야 한다";
-  if (entry.style !== "round") return null;
+  if (entry.style === "hand" || entry.style === "reference") return null;
   const [x, y, , h] = entry.near;
-  if (h < 6) return `둥근 틀인데 가까운 눈 높이 ${h} < 6`;
-  if (lightness(image, x, y) < EYE_TABLE_RULES.darkL) return "둥근 틀인데 가까운 눈 왼쪽 위 모서리가 어둡다(사각으로 보인다)";
+  if (entry.style === "round" && h < 6) return `둥근 틀인데 가까운 눈 높이 ${h} < 6`;
+  if (h < 4) return `눈 높이 ${h} < 4 — 선으로 읽힌다`;
+  // 6차 틀(눈썹·속눈썹 포함 상자)도 왼쪽 위 모서리는 살갗이다 — 꽉 찬 사각 덩어리 금지
+  if (lightness(image, x, y) < EYE_TABLE_RULES.darkL) return "가까운 눈 왼쪽 위 모서리가 어둡다(사각으로 보인다)";
   return null;
 }
 
-/** 진화 계통(evolvesFrom 사슬) 안에서 양식이 섞였는지. 동결 기준종(reference)은 빼고, hand(스타터)는 round 와 같은 갈래로 본다. */
+/**
+ * 진화 계통(evolvesFrom 사슬) 안에서 사각 틀(폐지)과 둥근 계열 틀이 섞였는지. 동결 기준종(reference)은 뺀다.
+ * 6차부터 계통 안에서 틀이 아기 → 성체로 바뀌는 것(예: glossy → round → sharp)은 의도된 변화라 같은 갈래로 본다.
+ */
 export function checkLineStyles(table: EyeTable, species: readonly { id: string; evolvesFrom?: string }[]): Map<string, EyeFinding> {
   const parent = new Map(species.map((s) => [s.id, s.evolvesFrom]));
   const root = (id: string): string => { let cur = id; while (parent.get(cur)) cur = parent.get(cur)!; return cur; };
@@ -203,7 +212,7 @@ export function checkLineStyles(table: EyeTable, species: readonly { id: string;
   for (const s of species) lines.set(root(s.id), [...(lines.get(root(s.id)) ?? []), s.id]);
   const out = new Map<string, EyeFinding>();
   for (const members of lines.values()) {
-    const fam = (id: string) => (table.species[id]?.style === "hand" ? "round" : table.species[id]?.style);
+    const fam = (id: string) => { const st = table.species[id]?.style; return st === "square" || st === "reference" ? st : "drawn"; };
     const styles = new Set(members.filter((id) => fam(id) !== "reference" && !table.species[id]?.pending).map(fam));
     if (styles.size <= 1) continue;
     for (const id of members) {
@@ -226,7 +235,7 @@ export function validateEyeTable(value: unknown, speciesIds: readonly string[]):
   for (const [id, e] of Object.entries(table.species)) {
     if (!speciesIds.includes(id)) throw new Error(`eyes.json: 시드에 없는 종 ${id}`);
     if (!["threequarter", "profile", "frontal", "stalk"].includes(e.anatomy)) throw new Error(`eyes.json ${id}: anatomy ${e.anatomy}`);
-    if (!["round", "hand", "square", "reference"].includes(e.style)) throw new Error(`eyes.json ${id}: style ${e.style}`);
+    if (!(EYE_STYLES as readonly string[]).includes(e.style)) throw new Error(`eyes.json ${id}: style ${e.style}`);
     if (!isBox(e.near)) throw new Error(`eyes.json ${id}: near 상자`);
     if (e.far !== null && !isBox(e.far)) throw new Error(`eyes.json ${id}: far 는 상자 또는 null`);
     if (e.second !== undefined && !isBox(e.second)) throw new Error(`eyes.json ${id}: second 상자`);
