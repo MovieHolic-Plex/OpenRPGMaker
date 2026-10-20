@@ -22,6 +22,7 @@ import {
 } from "./firstLoveKit";
 import { buildFirstLoveMaps, FL_MAP, nearestFree, type Cell, type FirstLoveAnchors } from "./firstLoveMaps";
 import { FIRST_LOVE_MEMORY_ARGS, FIRST_LOVE_THEME_ARGS } from "./firstLoveMusic";
+import { buildFirstLoveOpening } from "./firstLoveOpening";
 import type { FlagshipDemoBuildResult } from "./types";
 
 // ── 상태 ──
@@ -841,6 +842,7 @@ function buildTitleAndOpening(project: Project, themeId: string): void {
     musicResourceId: themeId,
   });
   project.system.titleScreen.backgroundFit = "cover";
+  buildFirstLoveOpening(project, themeId);
 }
 
 export function createFirstLoveFlagshipDemo(): FlagshipDemoBuildResult {
@@ -851,6 +853,8 @@ export function createFirstLoveFlagshipDemo(): FlagshipDemoBuildResult {
   project.system.playResolution = { width: 480, height: 270 };
   delete project.system.cameraZoom;
   project.system.dialogueStyle = "pixel-cinematic";
+  // 전투도 체력도 없는 이야기 — 필드 HUD 는 비운다(호감은 숫자로 보이지 않고 장면으로만 드러난다).
+  project.system.fieldHud = { theme: "chase", vitals: false, clock: false, tools: false, objective: false, hideEmpty: true, widgets: [] };
 
   const hero = project.database.actors.find((x) => x.id === DEFAULT_ACTOR_ID) ?? project.database.actors[0];
   if (hero) {
