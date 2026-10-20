@@ -237,13 +237,52 @@ def _penthouse(c, x, y, w=28, top=16, face=18):
     c.HL(dx - 1, y + top + face - 18, 14, K('conc', -2))
 
 
-def flat_top(c, x0, x1, ytop, yb, mat='conc', items=()):
+def _plant(c, x, y):
+    """화분: 위에서 본 잎 덩이(밝은 위 · 어두운 아래) + 화분 남쪽 면."""
+    for j in range(7):
+        for i in range(9):
+            if ((i - 4) / 4.6) ** 2 + ((j - 3) / 3.6) ** 2 <= 1:
+                c.P(x + i, y + j, K('midori', 3 if (j < 3 and i < 5) else 1 if (i + j) % 3 else 0))
+    c.P(x + 3, y + 1, K('aka', 3)); c.P(x + 6, y + 2, K('pinku', 3))
+    c.R(x + 2, y + 6, 5, 4, K('renga', 1)); c.HL(x + 2, y + 6, 5, K('renga', 3)); c.VL(x + 6, y + 7, 3, K('renga', -1))
+    c.HL(x + 1, y + 10, 7, OL); c.VL(x + 1, y + 6, 4, OL); c.VL(x + 7, y + 6, 4, OL)
+
+
+def _laundry(c, x, y, w=22):
+    """빨래 건조대: 양 끝 기둥 + 줄 + 걸린 천(흰·하늘·분홍)."""
+    for px in (x, x + w - 1):
+        c.VL(px, y, 12, K('tekko', 2)); c.P(px, y + 12, OL)
+    c.HL(x, y + 1, w, K('shiro', 1))
+    cl = (('shiro', 2), ('sora', 2), ('pinku', 2), ('shiro', 1), ('kii', 3))
+    xx = x + 2; k = 0
+    while xx + 4 < x + w - 1:
+        rm, t = cl[k % len(cl)]; h = 6 + (k % 2) * 2
+        c.R(xx, y + 2, 4, h, K(rm, t)); c.VL(xx + 3, y + 2, h, K(rm, t - 2)); c.HL(xx, y + 2 + h, 4, OL)
+        xx += 5; k += 1
+    c.HL(x + 1, y + 13, w - 1, K('conc', -2))
+
+
+def _railing(c, x0, x1, ytop, yb, mat):
+    """옥상 난간(위에서 본 사방): 위 손잡이 줄 + 4px 간격 기둥. 뒤·앞은 가로, 옆은 세로로 짧은 기둥 머리."""
+    W = x1 - x0 + 1
+    for (y0, h) in ((ytop, 5), (yb - 6, 4)):                                      # 뒤 · 앞
+        c.HL(x0, y0, W, K('shiro', 2)); c.HL(x0, y0 + 1, W, K('shiro', 0))
+        for x in range(x0 + 1, x1, 4): c.VL(x, y0 + 2, h - 2, K('shiro', 1)); c.VL(x + 1, y0 + 2, h - 2, K('shiro', -1))
+    for xx, lit in ((x0, True), (x1 - 1, False)):                                 # 옆
+        c.VL(xx, ytop, yb - ytop - 2, K('shiro', 2 if lit else 0)); c.VL(xx + (1 if lit else -1), ytop, yb - ytop - 2, K('shiro', 0 if lit else -1))
+        for y in range(ytop + 4, yb - 6, 4): c.P(xx + (2 if lit else -2), y, K('shiro', 1))
+
+
+def flat_top(c, x0, x1, ytop, yb, mat='conc', items=(), rail=False, floor=None):
     """陸屋根을 위에서. 바닥 = 깊이(ytop..yb). 뒤 난간은 캡 + 안쪽 면(남향, 보인다), 옆 난간은 캡만, 앞 난간은 캡 + 앞 띠."""
     W = x1 - x0 + 1
     c.R(x0, ytop, W, yb - ytop, K(mat, 0))
+    if floor:                                                                    # 방수 도장 바닥(초록 등) — 난간 안쪽만
+        c.R(x0 + 3, ytop + 8, W - 6, yb - ytop - 13, K(floor[0], floor[1]))
     # 방수 시트 이음(가로) · 세로 줄눈
-    for y in range(ytop + 12, yb - 6, 9): c.HL(x0 + 4, y, W - 8, K(mat, -1)); c.HL(x0 + 4, y + 1, W - 8, K(mat, 1))
-    for x in range(x0 + 20, x1 - 6, 24): c.VL(x, ytop + 9, yb - ytop - 14, K(mat, -1))
+    fm, fb = floor if floor else (mat, 0)
+    for y in range(ytop + 12, yb - 6, 9): c.HL(x0 + 4, y, W - 8, K(fm, fb - 1)); c.HL(x0 + 4, y + 1, W - 8, K(fm, fb + 1))
+    for x in range(x0 + 20, x1 - 6, 24): c.VL(x, ytop + 9, yb - ytop - 14, K(fm, fb - 1))
     # 뒤 난간: 캡 3 + 안쪽 면 5(남향 · 조금 어둡다) + 바닥에 떨어진 그늘 2
     c.R(x0, ytop, W, 3, K(mat, 3)); c.HL(x0, ytop + 2, W, K(mat, 2))
     c.R(x0, ytop + 3, W, 5, K(mat, -1)); c.HL(x0, ytop + 3, W, K(mat, -2))
@@ -259,22 +298,31 @@ def flat_top(c, x0, x1, ytop, yb, mat='conc', items=()):
     c.HL(x0, yb - 1, W, K(mat, -2)); c.HL(x0 - 1, yb, W + 2, OL)                 # 앞 난간 립 그늘 + 윤곽: 옥상/벽 경계를 또렷이
     c.R(x0 + 6, yb - 9, 4, 3, K('tekko', -2)); c.HL(x0 + 6, yb - 9, 4, K('tekko', -3))   # 배수구
     c.HL(x0 - 1, ytop - 1, W + 2, OL); c.VL(x0 - 1, ytop, yb - ytop, OL); c.VL(x1 + 1, ytop, yb - ytop, OL)
+    if rail: _railing(c, x0, x1, ytop, yb, mat)
     taken = []
+    BW = {'pent': 28, 'ac': 14, 'tank': 14, 'plant': 9, 'laundry': 22}
+    BH = {'pent': 34, 'ac': 15, 'tank': 17, 'plant': 11, 'laundry': 14}
     for kind, ix, iy in items:
         ix += x0; iy += ytop
-        bw = {'pent': 28, 'ac': 14, 'tank': 14}.get(kind, 14)
-        for a, b in taken:                                                   # 겹치면 오른쪽으로 민다
-            if ix < b + 4 and ix + bw > a - 4: ix = b + 5
-        if ix + bw > x1 - 4: continue                                        # 옥상 밖으로 나가면 뺀다
-        bh = {'pent': 34, 'ac': 15, 'tank': 17}.get(kind, 15)
+        bw, bh = BW.get(kind, 14), BH.get(kind, 15)
         pt = 16
         if iy + bh > yb - 7:                                                 # 앞 난간을 덮지 않게 위로 올린다(모자라면 塔屋 윗면을 줄인다)
             iy = max(ytop + 1, yb - 7 - bh)
-            if kind == 'pent' and iy + bh > yb - 7: pt = max(6, 16 - (iy + bh - (yb - 7)))
-        taken.append((ix, ix + bw))
+            if kind == 'pent' and iy + bh > yb - 7: pt = max(6, 16 - (iy + bh - (yb - 7))); bh = pt + 18
+        moved = True
+        while moved:                                                         # 겹치면(가로·세로 모두) 오른쪽으로 민다
+            moved = False
+            for a0, a1, b0, b1 in taken:
+                if ix < a1 + 3 and ix + bw > a0 - 3 and iy < b1 + 2 and iy + bh > b0 - 2:
+                    ix = a1 + 4; moved = True
+        if ix + bw > x1 - 4: continue                                        # 옥상 밖으로 나가면 뺀다
+        if ix < x0 + 4: ix = x0 + 4
+        taken.append((ix, ix + bw, iy, iy + bh))
         if kind == 'ac': _ac(c, ix, iy)
         elif kind == 'tank': _tank(c, ix, iy)
         elif kind == 'pent': _penthouse(c, ix, iy, top=pt)
+        elif kind == 'plant': _plant(c, ix, iy)
+        elif kind == 'laundry': _laundry(c, ix, iy)
 
 
 # ─────────────────────────── house_kit 등록 ───────────────────────────
@@ -314,7 +362,7 @@ def deepen(r, kind_map=None):
 
 
 def _flat_top(cv, X0, X1, top, h, r, opt):
-    flat_top(cv, X0, X1, top - h, top, opt.get('mat', 'conc'), opt.get('items', ()))
+    flat_top(cv, X0, X1, top - h, top, opt.get('mat', 'conc'), opt.get('items', ()), opt.get('rail', False), opt.get('floor'))
 
 
 def _gable_front_top(cv, X0, X1, top, h, r, opt):
@@ -359,4 +407,38 @@ def cap_roof(r):
         k = h_new / r['roof'][1]['h']
         ro['items'] = tuple((kind, ix, max(4, round(iy * k))) for kind, ix, iy in ro['items'])
     r['roof'] = (rk, ro)
+    return r
+
+
+# ── 상점가 화풍(2026-10-20 사용자 참고: 妻入り 박공 · 난간 두른 옥상) ─────────────────────────────
+# 좁은 상점·주택(폭 ≤ 6칸)은 妻入り(용마루 남북) 박공, 평지붕은 사방 난간 + 화분·실외기·塔屋·빨래가 있는 데크.
+# 지붕 색은 어둡고 중립(슬레이트·흑갈·녹), 두 경사면 명암을 또렷이. 밝은 빨강 지붕은 기와색으로 내린다.
+PITCHED_OLD = ('gable_side', 'shed', 'gable_front', 'gable_front_big', 'hip')
+FLOORS = (('midori', -1), ('conc', -1), ('tairu', 0), ('midori', 0))
+
+
+def townify(r, id_, narrow_w=6, force=None):
+    """옛 레시피 → 상점가 화풍 3/4 레시피. force = 'gable_front' | 'flat' 이면 폭과 무관하게 그 지붕으로."""
+    import copy, zlib
+    r = copy.deepcopy(r)
+    seed = zlib.crc32(id_.encode())
+    rk = r['roof'][0]
+    if r.get('rmat') == 'aka': r['rmat'], r['rbase'] = 'kawara', -1
+    if r.get('rmat') == 'kawara': r['rbase'] = min(r.get('rbase', 0), -2)        # 흑갈 기와(밝은 주황 기와 금지)
+    if force == 'gable_front' or (force is None and rk in PITCHED_OLD and r['w'] <= narrow_w):
+        r['roof'] = ('gable_front', {})
+    elif force == 'flat':
+        r['roof'] = ('flat', {'items': (('ac', 30),)})
+    r = deepen(r)
+    rk, ro = r['roof']
+    if rk == 'flat_top':
+        W = r['w'] * 16; h = ro['h']
+        items = list(ro.get('items', ()))
+        if not any(k == 'pent' for k, _, _ in items) and W >= 80: items.insert(0, ('pent', 6, 4))
+        items.append(('plant', W - 22, h - 20))
+        items.append(('plant', 8 if W < 80 else 40, h - 20))
+        if W >= 96 and seed % 2 == 0: items.append(('laundry', W // 2, 12))
+        elif W >= 96: items.append(('plant', W // 2 + 8, h - 20))
+        ro = dict(ro, items=tuple(items), rail=True, floor=FLOORS[seed % len(FLOORS)])
+        r['roof'] = (rk, ro)
     return r

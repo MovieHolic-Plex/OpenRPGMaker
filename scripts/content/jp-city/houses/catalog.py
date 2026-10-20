@@ -382,6 +382,8 @@ add('gas_office', '給油所 사무소', 'commercial', dict(
 
 
 # ── 3/4 깊이 지붕(2026-10-20 사용자: 세로 공간감) — 주택 전부 + 파출소·창고·작은 역사. 우체국·house_hip2 는 위에서 직접 정했다 ──
+import copy as _copy
+_NISETAI0 = _copy.deepcopy(CATALOG['house_nisetai'][2])
 DEEP_IDS = [k for k, (n, cat, r) in CATALOG.items() if cat == 'house' and k != 'house_hip2'] + ['koban', 'warehouse', 'station_small']
 for _id in DEEP_IDS:
     _n, _cat, _r = CATALOG[_id]
@@ -391,7 +393,19 @@ for _id in DEEP_IDS:
                        else (it[:4] + ('',) + it[5:]) if it[0] == 'lantern' and len(it) > 4 else it for it in _f['items']]
     CATALOG[_id] = (_n, _cat, _r)
 # 깊은 지붕에서 자리를 옮긴 부품: 파출소 빨간 등은 박공벽 안(처마선 아래), 역 시계는 지붕이 아니라 글자 없는 간판 판 가운데
-for _id in DEEP_IDS + ['post_office', 'house_hip2']:            # 지붕 높이 상한(경사 40% · 평지붕 35%)
+# 상점가 화풍(2026-10-20 사용자 참고): 상점·식당 전부(入母屋 제외) + 寄棟 주택 둘(hip2 → 妻入り, 二世帯 → 난간 옥상).
+# 寄棟은 교외 주택 둘(house_hiraya · house_hip2_wide)만 남긴다.
+TOWN_IDS = [k for k, (n, cat, r) in CATALOG.items() if cat in ('shop', 'restaurant') and r['roof'][0] != 'irimoya']
+for _id in TOWN_IDS:
+    _n, _cat, _r = CATALOG[_id]
+    _r = depth34.townify(_r, _id)
+    for _f in _r['floors']:
+        _f['items'] = [(it[:3] + ('',) + it[4:]) if it[0] == 'sign' else (it[:4] + ('',) + it[5:]) if it[0] == 'noren'
+                       else (it[:4] + ('',) + it[5:]) if it[0] == 'lantern' and len(it) > 4 else it for it in _f['items']]
+    CATALOG[_id] = (_n, _cat, _r)
+CATALOG['house_hip2'] = ('2층 妻入り 단독주택', 'house', depth34.townify(R0['hip2'], 'house_hip2', force='gable_front'))
+CATALOG['house_nisetai'] = (CATALOG['house_nisetai'][0], 'house', depth34.townify(_NISETAI0, 'house_nisetai', force='flat'))
+for _id in DEEP_IDS + TOWN_IDS + ['post_office', 'house_hip2']:            # 지붕 높이 상한(경사 40% · 평지붕 35%)
     _n, _cat, _r = CATALOG[_id]
     CATALOG[_id] = (_n, _cat, depth34.cap_roof(_r))
 CATALOG['koban'][2]['after'] = [lambda cv, g: red_lamp(cv, (g['X0'] + g['X1']) // 2 - 3, g['ys'][0] - 8)]

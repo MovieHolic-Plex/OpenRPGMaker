@@ -25,6 +25,9 @@ def pieces():
     for id_ in BUILDINGS:
         cv, _ = hk.build(CA.CATALOG[id_][2])
         out.append(('건물', id_, CA.CATALOG[id_][0], cv.img(), id_ + '.png'))
+    for id_ in CA.TOWN_IDS:                                                    # 상점가 화풍(妻入り · 난간 옥상)
+        cv, _ = hk.build(CA.CATALOG[id_][2])
+        out.append(('상점', id_, CA.CATALOG[id_][0], cv.img(), id_ + '.png'))
     for k, fr, opn in (('bus-right', True, False), ('bus-left_open', False, True)):
         out.append(('움직이는 탈것', k, '노선버스 ' + k[4:], Image.fromarray(heavy.bus_side(fr, opn)), k + '.png'))
     for v in cars.VEHICLES:
@@ -67,7 +70,7 @@ def main(old_dir, out):
     for grp, k, name, im, oldf in pieces():
         old = Image.open(os.path.join(old_dir, oldf)).convert('RGBA')
         im.save(os.path.join(out, f'{k}-new.png'))
-        r = row([old, im, police if grp != '건물' else beo, act])
+        r = row([old, im, beo if grp in ('건물', '상점') else police, act])
         r.save(os.path.join(out, f'{k}-1x.png'))
         r.resize((r.width * 4, r.height * 4), Image.NEAREST).save(os.path.join(out, f'{k}-4x.png'))
         idx.append(dict(group=grp, key=k, name=name))
