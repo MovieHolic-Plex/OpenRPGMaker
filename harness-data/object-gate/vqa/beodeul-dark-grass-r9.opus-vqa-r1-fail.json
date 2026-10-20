@@ -1,0 +1,480 @@
+{
+ "schema": "bdg-vqa/1",
+ "judge": "claude-opus-5-5",
+ "date": "2026-10-21",
+ "overall": "FAIL",
+ "criteriaNotes": {
+  "1_topdown_view": "Large blobs read as flat dark ground. Isolated single cell (651/697) becomes a tiny star-shaped fleck that reads as a tuft/sprig object; 1-cell-wide bands read as chains of small sprigs. Small 2x2 clusters form spiky star silhouettes (pinched waists) - borderline plant-like.",
+  "2_autotile_seams": "Systematic defect in the shared edge contract: thin-arm edge pixels do not line up across seams (N edge cols 8-10 vs S edge col 7; E edge row 11 vs W edge rows 8,12), so connections are diagonal-only single pixels. Border stub pixels (15,11),(0,12),(7,15)-(8,14) are detached from the cell's dark body in 34 of 46 masks -> floating flecks at seams. Blob edges with both flanking diagonals join fine. Unconnected edges are clean (all-light border rows).",
+  "3_colour_fit": "The 4 new colours (#759951,#688c48,#81a359,#8aab60) are a coherent desaturated version of 737 and sit naturally against the dark grass and crowns in s1-s8. No off-palette or muddy look.",
+  "4_style_fit": "Dark interior and dither are the original 11628 texture; edge dither is consistent with the sheet. No smeared/generated noise. Woodland cells are pixel-identical in dark layout to plain cells.",
+  "5_map_renders": "Under crowns, forest-edge dark grass reads as natural ground. Long straight edges (675/682/693 repeated) show a regular 16px sawtooth that leans grid-aligned in s4-forest-farm (NE forest edge, south band), not a hard slab. Isolated single cells appear as stray specks in fields."
+ },
+ "cells": [
+  {
+   "id": 650,
+   "verdict": "PASS",
+   "reasons": "Woodland base: same texture as city 737, desaturated; the 4 new colours sit between 737 and the dark grass and look natural in s1-s8/r6 maps. No seam issue on its own (path-edge tiles that keep 737 margins show a very slight saturation step, not this cell's art)."
+  },
+  {
+   "id": 651,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 0] isolated single-cell shape renders as a ~5px dark star-shaped fleck in a light cell; in field/maps it reads as a stray tuft/sprig object, not a patch of ground (criterion 1)"
+  },
+  {
+   "id": 652,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 1] 1-cell-wide connection(s) N: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.)"
+  },
+  {
+   "id": 653,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 2] 1-cell-wide connection(s) E: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side E (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 654,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 3] 1-cell-wide connection(s) NE: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side E (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 655,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 4] 1-cell-wide connection(s) S: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side S (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 656,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 5] 1-cell-wide connection(s) NS: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side S (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 657,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 6] 1-cell-wide connection(s) ES: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side SE (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 658,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 7] 1-cell-wide connection(s) NES: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side SE (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 659,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 8] 1-cell-wide connection(s) W: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side W (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 660,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 9] 1-cell-wide connection(s) NW: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side W (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 661,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 10] 1-cell-wide connection(s) EW: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side EW (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 662,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 11] 1-cell-wide connection(s) NEW: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side EW (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 663,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 12] 1-cell-wide connection(s) SW: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side SW (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 664,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 13] 1-cell-wide connection(s) NSW: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side SW (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 665,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 14] 1-cell-wide connection(s) ESW: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side SEW (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 666,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 15] 1-cell-wide connection(s) NESW: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side SEW (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 667,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 19] detached 1-2px stub(s) at tile border on side E (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 668,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 23] 1-cell-wide connection(s) S: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side SE (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 669,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 27] 1-cell-wide connection(s) W: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side EW (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 670,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 31] 1-cell-wide connection(s) SW: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side SEW (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 671,
+   "verdict": "PASS",
+   "reasons": "[plain mask 38] dark region connected, no border stubs, all connected edges overlap neighbour edges; open edge wobbles 4-6px (periodic 16px along long straight runs - looks jagged-straight in s4 but acceptable); texture = original 11628 dither; reads as flat ground"
+  },
+  {
+   "id": 672,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 39] 1-cell-wide connection(s) N: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.)"
+  },
+  {
+   "id": 673,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 46] 1-cell-wide connection(s) W: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side W (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 674,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 47] 1-cell-wide connection(s) NW: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side W (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 675,
+   "verdict": "PASS",
+   "reasons": "[plain mask 55] dark region connected, no border stubs, all connected edges overlap neighbour edges; open edge wobbles 4-6px (periodic 16px along long straight runs - looks jagged-straight in s4 but acceptable); texture = original 11628 dither; reads as flat ground"
+  },
+  {
+   "id": 676,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 63] 1-cell-wide connection(s) W: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side W (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 677,
+   "verdict": "PASS",
+   "reasons": "[plain mask 76] dark region connected, no border stubs, all connected edges overlap neighbour edges; open edge wobbles 4-6px (periodic 16px along long straight runs - looks jagged-straight in s4 but acceptable); texture = original 11628 dither; reads as flat ground"
+  },
+  {
+   "id": 678,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 77] 1-cell-wide connection(s) N: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.)"
+  },
+  {
+   "id": 679,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 78] 1-cell-wide connection(s) E: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side E (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 680,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 79] 1-cell-wide connection(s) NE: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side E (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 681,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 95] detached 1-2px stub(s) at tile border on side E (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 682,
+   "verdict": "PASS",
+   "reasons": "[plain mask 110] dark region connected, no border stubs, all connected edges overlap neighbour edges; open edge wobbles 4-6px (periodic 16px along long straight runs - looks jagged-straight in s4 but acceptable); texture = original 11628 dither; reads as flat ground"
+  },
+  {
+   "id": 683,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 111] 1-cell-wide connection(s) N: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.)"
+  },
+  {
+   "id": 684,
+   "verdict": "PASS",
+   "reasons": "[plain mask 127] dark region connected, no border stubs, all connected edges overlap neighbour edges; open edge wobbles 4-6px (periodic 16px along long straight runs - looks jagged-straight in s4 but acceptable); texture = original 11628 dither; reads as flat ground"
+  },
+  {
+   "id": 685,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 137] detached 1-2px stub(s) at tile border on side W (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 686,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 139] 1-cell-wide connection(s) E: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side EW (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 687,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 141] 1-cell-wide connection(s) S: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side SW (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 688,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 143] 1-cell-wide connection(s) ES: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side SEW (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 689,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 155] detached 1-2px stub(s) at tile border on side EW (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 690,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 159] 1-cell-wide connection(s) S: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side SEW (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 691,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 175] detached 1-2px stub(s) at tile border on side W (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 692,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 191] detached 1-2px stub(s) at tile border on side W (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 693,
+   "verdict": "PASS",
+   "reasons": "[plain mask 205] dark region connected, no border stubs, all connected edges overlap neighbour edges; open edge wobbles 4-6px (periodic 16px along long straight runs - looks jagged-straight in s4 but acceptable); texture = original 11628 dither; reads as flat ground"
+  },
+  {
+   "id": 694,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 207] 1-cell-wide connection(s) E: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side E (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 695,
+   "verdict": "FAIL",
+   "reasons": "[plain mask 223] detached 1-2px stub(s) at tile border on side E (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 696,
+   "verdict": "PASS",
+   "reasons": "[plain mask 239] dark region connected, no border stubs, all connected edges overlap neighbour edges; open edge wobbles 4-6px (periodic 16px along long straight runs - looks jagged-straight in s4 but acceptable); texture = original 11628 dither; reads as flat ground"
+  },
+  {
+   "id": 697,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 0] isolated single-cell shape renders as a ~5px dark star-shaped fleck in a light cell; in field/maps it reads as a stray tuft/sprig object, not a patch of ground (criterion 1)"
+  },
+  {
+   "id": 698,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 1] 1-cell-wide connection(s) N: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.)"
+  },
+  {
+   "id": 699,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 2] 1-cell-wide connection(s) E: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side E (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 700,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 3] 1-cell-wide connection(s) NE: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side E (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 701,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 4] 1-cell-wide connection(s) S: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side S (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 702,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 5] 1-cell-wide connection(s) NS: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side S (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 703,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 6] 1-cell-wide connection(s) ES: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side SE (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 704,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 7] 1-cell-wide connection(s) NES: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side SE (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 705,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 8] 1-cell-wide connection(s) W: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side W (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 706,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 9] 1-cell-wide connection(s) NW: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side W (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 707,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 10] 1-cell-wide connection(s) EW: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side EW (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 708,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 11] 1-cell-wide connection(s) NEW: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side EW (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 709,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 12] 1-cell-wide connection(s) SW: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side SW (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 710,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 13] 1-cell-wide connection(s) NSW: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side SW (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 711,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 14] 1-cell-wide connection(s) ESW: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side SEW (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 712,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 15] 1-cell-wide connection(s) NESW: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side SEW (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 713,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 19] detached 1-2px stub(s) at tile border on side E (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 714,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 23] 1-cell-wide connection(s) S: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side SE (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 715,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 27] 1-cell-wide connection(s) W: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side EW (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 716,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 31] 1-cell-wide connection(s) SW: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side SEW (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 717,
+   "verdict": "PASS",
+   "reasons": "[woodland mask 38] dark region connected, no border stubs, all connected edges overlap neighbour edges; open edge wobbles 4-6px (periodic 16px along long straight runs - looks jagged-straight in s4 but acceptable); texture = original 11628 dither; reads as flat ground"
+  },
+  {
+   "id": 718,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 39] 1-cell-wide connection(s) N: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.)"
+  },
+  {
+   "id": 719,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 46] 1-cell-wide connection(s) W: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side W (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 720,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 47] 1-cell-wide connection(s) NW: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side W (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 721,
+   "verdict": "PASS",
+   "reasons": "[woodland mask 55] dark region connected, no border stubs, all connected edges overlap neighbour edges; open edge wobbles 4-6px (periodic 16px along long straight runs - looks jagged-straight in s4 but acceptable); texture = original 11628 dither; reads as flat ground"
+  },
+  {
+   "id": 722,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 63] 1-cell-wide connection(s) W: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side W (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 723,
+   "verdict": "PASS",
+   "reasons": "[woodland mask 76] dark region connected, no border stubs, all connected edges overlap neighbour edges; open edge wobbles 4-6px (periodic 16px along long straight runs - looks jagged-straight in s4 but acceptable); texture = original 11628 dither; reads as flat ground"
+  },
+  {
+   "id": 724,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 77] 1-cell-wide connection(s) N: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.)"
+  },
+  {
+   "id": 725,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 78] 1-cell-wide connection(s) E: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side E (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 726,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 79] 1-cell-wide connection(s) NE: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side E (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 727,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 95] detached 1-2px stub(s) at tile border on side E (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 728,
+   "verdict": "PASS",
+   "reasons": "[woodland mask 110] dark region connected, no border stubs, all connected edges overlap neighbour edges; open edge wobbles 4-6px (periodic 16px along long straight runs - looks jagged-straight in s4 but acceptable); texture = original 11628 dither; reads as flat ground"
+  },
+  {
+   "id": 729,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 111] 1-cell-wide connection(s) N: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.)"
+  },
+  {
+   "id": 730,
+   "verdict": "PASS",
+   "reasons": "[woodland mask 127] dark region connected, no border stubs, all connected edges overlap neighbour edges; open edge wobbles 4-6px (periodic 16px along long straight runs - looks jagged-straight in s4 but acceptable); texture = original 11628 dither; reads as flat ground"
+  },
+  {
+   "id": 731,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 137] detached 1-2px stub(s) at tile border on side W (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 732,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 139] 1-cell-wide connection(s) E: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side EW (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 733,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 141] 1-cell-wide connection(s) S: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side SW (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 734,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 143] 1-cell-wide connection(s) ES: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side SEW (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 735,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 155] detached 1-2px stub(s) at tile border on side EW (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 736,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 159] 1-cell-wide connection(s) S: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side SEW (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 737,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 175] detached 1-2px stub(s) at tile border on side W (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 738,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 191] detached 1-2px stub(s) at tile border on side W (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 739,
+   "verdict": "PASS",
+   "reasons": "[woodland mask 205] dark region connected, no border stubs, all connected edges overlap neighbour edges; open edge wobbles 4-6px (periodic 16px along long straight runs - looks jagged-straight in s4 but acceptable); texture = original 11628 dither; reads as flat ground"
+  },
+  {
+   "id": 740,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 207] 1-cell-wide connection(s) E: edge contact is only 1-3px and offset (N edge cols 8-10 vs neighbour S edge col 7; E edge row 11 vs neighbour W edge rows 8/12), so adjacent cells touch only diagonally -> bands render as broken chains of separate specks (seams-*.png masks 2/8/10 etc.); detached 1-2px stub(s) at tile border on side E (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 741,
+   "verdict": "FAIL",
+   "reasons": "[woodland mask 223] detached 1-2px stub(s) at tile border on side E (e.g. (15,11)/(0,12)/(7,15)-(8,14)) not connected to the cell's dark body; joined across the seam they form floating flecks beside the blob"
+  },
+  {
+   "id": 742,
+   "verdict": "PASS",
+   "reasons": "[woodland mask 239] dark region connected, no border stubs, all connected edges overlap neighbour edges; open edge wobbles 4-6px (periodic 16px along long straight runs - looks jagged-straight in s4 but acceptable); texture = original 11628 dither; reads as flat ground"
+  }
+ ]
+}
