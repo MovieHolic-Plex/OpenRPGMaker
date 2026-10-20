@@ -8,9 +8,16 @@
   숲 바닥은 민무늬 잔디 737 에 같은 색을 합성한 불투명 칸이다. 경계는 단색 덩이 밖 듬성한 낱점(원본 도시 숲 그늘 결).
 새 그림이 아니라 원본 잔디·원본 그림자 색의 합성이다.
 
-  python3 scripts/content/build-beodeul-forest-ground.py   (반복 실행해도 같은 칸 번호에 다시 쓴다)
+  python3 scripts/content/build-beodeul-forest-ground.py [--draft]   (반복 실행해도 같은 칸 번호에 다시 쓴다)
+
+3/4·화풍 관문(AGENTS hard rule, 2026-10-21 독립 검수 D11): 이 칸들은 원본 화소 복사가 아니라 원본 색으로 코드가 그린 새 그림이다.
+굽기 전에 object-gate 출구(bundle)를 칸마다 확인하고, 하나라도 막히면 쓰지 않는다. 사람이 18323 검토 화면에서
+묶음 「버들항 숲 바닥 그늘」(beodeul-forest-ground-r3)을 허용하기 전에는 --draft 로만 쓸 수 있다(초안 PR 전용, 머지 금지).
+판정 데이터는 OBJECT_GATE_DATA(기본: 검토 서버 체크아웃 ~/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate).
 """
 from pathlib import Path
+import os, sys
+os.environ.setdefault('OBJECT_GATE_DATA', str(Path.home() / 'z-project/rpg-zzu-object-gate-holds/harness-data/object-gate'))
 from PIL import Image
 import json, hashlib
 R = Path(__file__).resolve().parents[2]
@@ -116,6 +123,17 @@ m['count'] = (len(cells) + 7) // 8 * 8
 img = Image.new('RGBA', (128, m['count'] // 8 * T))
 for n, c in enumerate(cells): img.paste(c, (n % 8 * T, n // 8 * T))
 assert [img.crop((n % 8 * T, n // 8 * T, n % 8 * T + T, n // 8 * T + T)).tobytes() for n in range(used + 1)] == keep  # 앞 칸은 그대로
+sys.path.insert(0, str(R / 'src/harnesses/_core'))
+from object_gate import refusal  # noqa: E402
+new_cells, seen = [], set()
+for n in [*floor_ids, *edge_ids, *[a for a in apron_ids if a >= 0]]:
+    c = cells[n]
+    if c.tobytes() in seen: continue
+    seen.add(c.tobytes()); why = refusal(c, kind='terrain', context='bundle')
+    if why: new_cells.append(f'칸 {n}: {why}')
+print(f'object-gate(bundle): 고유 칸 {len(seen)} 중 막힘 {len(new_cells)}' + (f' — 예: {new_cells[0]}' if new_cells else ''))
+if new_cells and '--draft' not in sys.argv:
+    sys.exit('3/4·화풍 관문 미통과 — 18323 에서 사람이 허용하기 전에는 공용 번들에 굽지 않는다(초안은 --draft)')
 img.save(OUT / 'chipset.png'); img.resize((512, img.height * 4), Image.Resampling.NEAREST).save(OUT / 'atlas.png')
 for p in cat_paths: p.write_text(json.dumps(m, ensure_ascii=False, indent=2) + '\n')
 ground = dict(shadeBits=[[dx, dy] for _, dx, dy in SHADE_BITS], shadeCover=30, shadeCoverBase=15,
