@@ -115,3 +115,8 @@ flags: `overlay`(투명 덧칠: 윤곽·접지·귀퉁이 검사 제외) · `thi
 `shed_top`(片流れ 한 장 면) · `flat_top`(陸屋根: 뒤 난간 안쪽 면, 옥상 설비는 윗면+남쪽 면 상자). `depth34.deepen(r)` 이 옛 레시피 지붕을 바꾸고 지붕 높이를 벽 높이에 맞춘다(그림 높이의 40~50%).
 간판·노렌 글자는 색 판으로 비운다. 탈것: `vehicles/heavy.py` 버스 옆 프레임(지붕 윗면 22줄·어깨 띠·휠 아치), `vehicles/cars.py` 승용·경차·트럭(두 상자 모형: 지붕 윗면과 보닛·트렁크 윗면이 같은 12줄 깊이, 옆창 띠 6줄, 앞·뒷유리는 기운 면, 몸체 옆면 14줄 한 단 어둡게, 바퀴 아래 절반만 · 옆 프레임 48 높이, 2톤 트럭 56 · 기준 = 경찰차),
 정지 소품 `lib/parts_vehicles.py` 의 `car()`·`bus()` 는 같은 그림을 부른다. 비교판: `scripts/content/jp-city/qa/depth_pilot.py OLD_DIR OUT_DIR`. 굽기·관문은 별도(gate_kinds 우회 금지).
+
+**상점가 화풍(2026-10-20, 사용자 참고 그림 — 저장소 밖 연구용, 커밋 금지):** `houses/depth34.py` `townify()` 가 상점·식당 전부(入母屋 제외)와
+`house_hip2` 를 妻入り(`gable_front_top`, 박공벽은 맨 위층 벽 재질·무늬 위상을 그대로 잇는다)로, 평지붕은 사방 난간 + 塔屋·실외기·화분·물탱크·빨래
+데크(`flat_top(rail=True, floor=…)`)로, `house_nisetai` 는 난간 옥상으로 바꾼다. 寄棟은 `house_hiraya`·`house_hip2_wide` 만 남긴다.
+지붕 높이 상한 `cap_roof()`: 경사 ≤40%, 평지붕·片流れ ≤35%(妻入り는 박공벽 제외), 단층은 지붕 최소 24줄. 기와 단은 처마에 맞춘다(`_anchor`).
