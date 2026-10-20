@@ -101,14 +101,15 @@ def blob(a, cx, cy, rx, ry, col, wrap=True):
                     put(a, x, y, col)
 
 
-def mottle(a, ramp, levels, seed, cell=4, jitter=0.35):
-    """큰 덩이 얼룩(4px 격자를 해시로 일그러뜨린 두세 톤) — 1px 노이즈 대신 버들항식 넓은 명암 결."""
+def mottle(a, ramp, levels, seed, cell=2, lo=.14, hi=.93):
+    """드문 작은 덩이(2px 덩이를 1px 흔들어 모서리를 깎음) — 몸통은 거의 한 톤, 어둠·밝음 덩이는 드물게.
+    16px 칸에 큰 무늬가 하나 서면 넓게 깔았을 때 벽지처럼 칸 격자가 보인다(R5 1·2차 시도에서 확인)."""
     for y in range(16):
         for x in range(16):
-            gx = (x + int(h(x, y, seed + 1) * 3 * jitter * cell)) // cell
-            gy = (y + int(h(y, x, seed + 2) * 3 * jitter * cell)) // cell
-            v = h(gx, gy, seed)
-            t = levels[0] if v < .45 else levels[1] if v < .82 else levels[2]
+            v = h(x // cell + (y // cell) * 5, y // cell, seed)
+            if h(x, y, seed + 3) < .25:
+                v = h(x, y, seed + 4)                       # 덩이 가장자리 흔들기
+            t = levels[1] if v < lo else levels[2] if v > hi else levels[0]
             a[y, x] = ramp[t]
 
 
@@ -124,7 +125,7 @@ def _tuft(a, x, y, kind=0):
 def grass_body(seed=0) -> np.ndarray:
     """풀밭 몸통: 넓고 낮은 대비 덩이(몸·몸 어둠) + 드문 풀잎 획 + 풀포기 2개. 버들항 풀처럼 넓게 깔아도 점 격자가 서지 않는다."""
     a = blank(GRASS[4])
-    mottle(a, GRASS, (4, 4, 3), 11, cell=8, jitter=0.5)
+    mottle(a, GRASS, (4, 3, 5), 11, lo=.06, hi=.9)
     for k in range(5):
         x = int(h(k, 3, 21) * 16); y = int(h(k, 7, 22) * 16)
         put(a, x, y, GRASS[5] if h(k, 1, 23) < .7 else GRASS[6])
@@ -165,7 +166,7 @@ def _pebble(a, x, y, big=False):
 
 def dirt_body() -> np.ndarray:
     a = blank(DIRT[4])
-    mottle(a, DIRT, (4, 4, 3), 51, cell=8, jitter=0.5)
+    mottle(a, DIRT, (4, 3, 5), 51)
     for k in range(5):                                        # 흙 알갱이 결(밝은 위 + 어두운 아래 2px)
         x = int(h(k, 3, 61) * 16); y = int(h(k, 4, 62) * 16)
         put(a, x, y, DIRT[5]); put(a, x, y + 1, DIRT[3])
@@ -209,10 +210,10 @@ def style_dirt(side, d, s, x, y):
         return GRASS[6] if (s + d) % 3 == 0 else GRASS[5]
     if d == depth:
         if side in 'NW':
-            return DIRT[1]                                     # 풀이 드리운 그늘
-        return DIRT[2] if (s % 2) else None
-    if d == depth + 1 and side in 'NW' and s % 2 == 0:
-        return DIRT[2]
+            return DIRT[2]                                     # 풀이 드리운 그늘(한 단만 — 두 단이면 흙 카펫 테두리로 읽힌다)
+        return DIRT[3] if (s % 3 == 0) else None
+    if d == depth + 1 and side in 'NW' and s % 3 == 0:
+        return DIRT[3]
     return None
 
 
@@ -220,15 +221,18 @@ def style_dirt(side, d, s, x, y):
 def stream_body() -> np.ndarray:
     W = WATER
     a = blank(W[2])
-    mottle(a, W, (2, 2, 1), 91, cell=7)
+    mottle(a, W, (2, 1, 3), 91, lo=.18, hi=.9)
     for k in range(5):                                        # 물밑 자갈(물에 잠겨 한 단 흐림)
         cx, cy = h(k, 1, 92) * 16, h(k, 2, 93) * 16
         blob(a, cx, cy, 1.6, 1.0, W[3]); put(a, int(cx) - 1, int(cy) - 1, W[4]); put(a, int(cx) + 1, int(cy) + 1, W[1])
-    for k in range(4):                                        # 물살(가로 짧은 밝은 획, 앞 끝 반짝)
-        x = int(h(k, 3, 94) * 16); y = int(h(k, 4, 95) * 16); ln = 2 + int(h(k, 5, 96) * 3)
+    # 물살: 가로로 길고 끝이 가늘어지는 밝은 결(머리·꼬리 같은 밝기 → 화살표로 읽히지 않게), 아래 1px 물 그늘. 반짝은 따로 드문 점.
+    for k in range(3):
+        x = int(h(k, 3, 94) * 16); y = 2 + int(h(k, 4, 95) * 12); ln = 3 + int(h(k, 5, 96) * 4)
         for i in range(ln):
-            put(a, x + i, y, W[5])
-        put(a, x + ln, y, W[6] if k % 2 == 0 else W[5]); put(a, x, y + 1, W[1])
+            put(a, x + i, y, W[4] if 0 < i < ln - 1 else W[3])
+            if 1 < i < ln - 2:
+                put(a, x + i, y + 1, W[1])
+    put(a, int(h(9, 3, 97) * 16), int(h(9, 4, 98) * 16), W[6])
     return a
 
 
@@ -238,12 +242,12 @@ def stream_var(base, kind):
     if kind == 1:                                             # 물살이 갈라지는 돌 하나
         blob(a, 8, 8, 2.2, 1.4, PEBBLE[2], wrap=False); put(a, 7, 7, PEBBLE[4]); put(a, 8, 7, PEBBLE[3]); put(a, 9, 9, PEBBLE[0])
         for x in range(3, 6):
-            put(a, x, 8, W[5])
-        put(a, 11, 7, W[6]); put(a, 11, 9, W[5]); put(a, 12, 9, W[5])
+            put(a, x, 8, W[4])
+        put(a, 11, 7, W[5]); put(a, 11, 9, W[4]); put(a, 12, 9, W[4])
     else:                                                     # 소용돌이 반짝
         for (x, y) in ((5, 5), (6, 4), (7, 4), (8, 5), (10, 10), (11, 11)):
-            put(a, x, y, W[5])
-        put(a, 7, 4, W[6])
+            put(a, x, y, W[4])
+        put(a, 7, 4, W[5])
     return a
 
 
@@ -265,7 +269,9 @@ def style_stream(side, d, s, x, y):
             return D[0]                                        # 젖은 둑 발치
         if face == 5:
             return W[0]
-        if face == 6:
+        if face in (6, 7):
+            return W[1]                                        # 둑 아래 깊은 물 그늘
+        if face == 8:
             return W[1] if s % 2 else None
         return None
     if side == 'S':
@@ -286,6 +292,8 @@ def style_stream(side, d, s, x, y):
         return D[2] if side == 'W' else D[3]
     if d == lip + 1:
         return W[1] if side == 'W' else W[4] if s % 3 else W[3]
+    if d == lip + 2 and side == 'W':
+        return W[1] if s % 2 else None
     return None
 
 
@@ -294,12 +302,11 @@ def paddy_water_body() -> np.ndarray:
     """모내기 물논: 하늘 비친 잔잔한 물(넓은 밝은 덩이 + 구름 비침) + 4px 간격 줄에 4px 간격으로 심은 작은 모(잎 2·끝 빛·물 그림자)."""
     M = MUD_WATER
     a = blank(M[3])
-    mottle(a, M, (3, 4, 2), 101, cell=7)
-    for k in range(3):                                        # 구름 비침(흰 기 도는 넓은 띠)
-        x = int(h(k, 1, 102) * 16); y = int(h(k, 2, 103) * 16)
-        for i in range(5):
-            put(a, x + i, y, M[5])
-        put(a, x + 1, y - 1, M[5]); put(a, x + 2, y - 1, M[6])
+    mottle(a, M, (3, 2, 4), 101, lo=.18, hi=.86)
+    x = int(h(0, 1, 102) * 16); y = 3 + int(h(0, 2, 103) * 10)  # 구름 비침 한 줄
+    for i in range(4):
+        put(a, x + i, y, M[4])
+    put(a, x + 1, y, M[5])
     for j, y in enumerate((1, 5, 9, 13)):
         for i in range(4):
             x = i * 4 + (j % 2) * 2 + 1
@@ -308,52 +315,39 @@ def paddy_water_body() -> np.ndarray:
     return a
 
 
-def paddy_summer_body() -> np.ndarray:
-    """여름 푸른 논: 포기 줄마다 둥근 벼 덩이(위 빛·몸·아래 그늘) + 줄 사이 물 그늘 고랑. 1배에서 줄 결로 읽힌다."""
-    R = RICE
-    a = blank(R[2])
-    for y in range(16):
-        r = y % 4
+def _rice_clumps(a, R, water, seed, droop=False):
+    """벼 줄(버들항 밭 줄처럼): 4px 줄마다 이어진 벼 띠 — 위 실루엣은 잎끝이 1~2px 들쭉날쭉 솟고(빛),
+    몸은 빛→그늘 2단, 밑에 짙은 밑동 1줄과 물(고랑) 1줄. 숙인 이삭(황금)은 잎끝이 오른쪽으로 꺾인다."""
+    for j in range(4):
+        y0 = j * 4
         for x in range(16):
-            if r == 3:
-                a[y, x] = R[1] if h(x, y, 111) < .6 else MUD_WATER[1]   # 고랑 그늘(물 비침)
-            elif r == 0:
-                a[y, x] = R[5] if h(x, y, 112) < .55 else R[4]           # 이삭 끝 빛
-            elif r == 1:
-                a[y, x] = R[4] if h(x, y, 113) < .55 else R[3]
-            else:
-                a[y, x] = R[3] if h(x, y, 114) < .6 else R[2]
-    for k in range(10):                                       # 바람에 흔들린 잎끝 반짝
-        x = int(h(k, 1, 115) * 16); y = (int(h(k, 2, 116) * 4)) * 4
-        put(a, x, y, R[6]); put(a, x + 1, y, R[5])
-    for j in range(4):                                        # 포기 덩이 사이 틈(줄이 한 덩이 띠로 읽히지 않게)
-        for x in range((j * 5) % 4 + 1, 16, 4 + (j % 2)):
-            put(a, x, j * 4 + 1, R[2]); put(a, x, j * 4 + 2, R[1])
+            v = h(x, j, seed)
+            spike = 2 if v < .18 else 1 if v < .62 else 0          # 잎끝 높이
+            for k in range(spike):
+                put(a, x, y0 - k, R[6] if k == spike - 1 and v < .4 else R[5])
+            if spike == 0:
+                put(a, x, y0, water[2])
+            put(a, x, y0 + 1, R[5] if h(x, j, seed + 1) < .3 else R[4])
+            put(a, x, y0 + 2, R[3] if h(x, j, seed + 2) < .75 else R[4])
+            put(a, x, y0 + 3, R[1] if h(x, j, seed + 3) < .7 else water[1])
+            if droop and spike and v < .3:
+                put(a, x + 1, y0 - spike + 1, R[6])
+    for j in range(4):                                            # 포기 사이 깊은 틈(드물게)
+        for x in range((j * 7) % 5, 16, 5):
+            if h(x, j, seed + 5) < .5:
+                put(a, x, j * 4 + 2, R[2])
     return a
+
+
+def paddy_summer_body() -> np.ndarray:
+    """여름 푸른 논: 빽빽하게 자란 벼 포기 덩이(6단 녹색) + 포기 사이로 비치는 어두운 물."""
+    return _rice_clumps(blank(RICE[2]), RICE, [MUD_WATER[0], P('ki', 1), P('ki', 2)], 111)
 
 
 def paddy_golden_body() -> np.ndarray:
-    """가을 황금 논: 고개 숙인 이삭 줄(이삭 알갱이 빛 점) + 줄 사이 그늘 + 마른 논흙 비침."""
-    Gd = GOLD
-    a = blank(Gd[3])
-    for y in range(16):
-        r = y % 4
-        for x in range(16):
-            if r == 3:
-                a[y, x] = Gd[1] if h(x, y, 121) < .55 else Gd[0]
-            elif r == 0:
-                a[y, x] = Gd[6] if h(x, y, 122) < .4 else Gd[5]
-            elif r == 1:
-                a[y, x] = Gd[5] if h(x, y, 123) < .45 else Gd[4]
-            else:
-                a[y, x] = Gd[3] if h(x, y, 124) < .6 else Gd[2]
-    for k in range(10):
-        x = int(h(k, 1, 125) * 16); y = (int(h(k, 2, 126) * 4)) * 4
-        put(a, x, y, Gd[7])
-    for k in range(5):                                        # 숙인 이삭 끝이 아랫줄로 늘어짐
-        x = int(h(k, 3, 127) * 16); y = (int(h(k, 4, 128) * 4)) * 4 + 2
-        put(a, x, y, Gd[5]); put(a, x + 1, y + 1, Gd[4])
-    return a
+    """가을 황금 논: 고개 숙인 이삭 포기(8단 황금) + 마른 논흙 틈."""
+    G = GOLD
+    return _rice_clumps(blank(G[2]), [G[0], G[1], G[2], G[3], G[5], G[6], G[7]], [P('soil', 1), P('soil', 2), G[1]], 121, droop=True)
 
 
 def _paddy_var(base, kind, ramp):
@@ -511,7 +505,7 @@ def gravel_road_body() -> np.ndarray:
 def canal_water_body() -> np.ndarray:
     """농수로 물: 흐르는 짙은 물(남색 → 청록 5단) + 흐름 줄."""
     a = blank(P('canal_indigo', 2))
-    mottle(a, [P('canal_indigo', 1), P('canal_indigo', 2), P('canal_indigo', 3), P('onsen_mineral_teal', 2)], (1, 2, 3), 151, cell=6)
+    mottle(a, [P('canal_indigo', 1), P('canal_indigo', 2), P('canal_indigo', 3), P('onsen_mineral_teal', 2)], (2, 1, 3), 151)
     for k in range(6):
         x = int(h(k, 1, 152) * 16); y = int(h(k, 2, 153) * 16)
         for i in range(4):
