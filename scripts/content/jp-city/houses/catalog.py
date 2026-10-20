@@ -275,7 +275,7 @@ add('office6', '6층 오피스 빌딩', 'commercial', dict(
     joins=[('belt', {})] * 5))
 add('post_office', '郵便局', 'public', dict(
     w=7, rmat='conc', rbase=0, roof=('flat_top', {'h': 72, 'items': (('pent', 8, 18), ('ac', 46, 34), ('ac', 64, 34), ('tank', 86, 8))}),
-    floors=[fl(48, 'shiro', 2, T, ('sign', 1, 80, '', 'aka', WH, 1, 14), ('shopglass', 0, 96, 'paper', 0, 19, 'mid'), ('postbox', 6, 2)),
+    floors=[fl(48, 'shiro', 2, T, ('sign', 1, 80, '郵便局', 'aka', WH, 1, 17), ('shopglass', 0, 96, 'paper', 0, 19, 'mid'), ('postbox', 6, 2)),
             fl(28, 'shiro', 2, T, ('sash', 0, 48, 14, 8, 8, False, True), ('sash', 4, 32, 14, 8, 8, False, True))],
     joins=[('shop_band', {})]))
 add('koban', '交番 파출소', 'public', dict(
@@ -388,20 +388,14 @@ DEEP_IDS = [k for k, (n, cat, r) in CATALOG.items() if cat == 'house' and k != '
 for _id in DEEP_IDS:
     _n, _cat, _r = CATALOG[_id]
     _r = depth34.deepen(_r)
-    for _f in _r['floors']:                                   # 글자 없는 색 판(간판·노렌·초롱)
-        _f['items'] = [(it[:3] + ('',) + it[4:]) if it[0] == 'sign' else (it[:4] + ('',) + it[5:]) if it[0] == 'noren'
-                       else (it[:4] + ('',) + it[5:]) if it[0] == 'lantern' and len(it) > 4 else it for it in _f['items']]
     CATALOG[_id] = (_n, _cat, _r)
-# 깊은 지붕에서 자리를 옮긴 부품: 파출소 빨간 등은 박공벽 안(처마선 아래), 역 시계는 지붕이 아니라 글자 없는 간판 판 가운데
+# 깊은 지붕에서 자리를 옮긴 부품: 파출소 빨간 등은 박공벽 안(처마선 아래), 역 시계는 지붕이 아니라 역명판 오른쪽
 # 상점가 화풍(2026-10-20 사용자 참고): 상점·식당 전부(入母屋 제외) + 寄棟 주택 둘(hip2 → 妻入り, 二世帯 → 난간 옥상).
 # 寄棟은 교외 주택 둘(house_hiraya · house_hip2_wide)만 남긴다.
 TOWN_IDS = [k for k, (n, cat, r) in CATALOG.items() if cat in ('shop', 'restaurant') and r['roof'][0] != 'irimoya']
 for _id in TOWN_IDS:
     _n, _cat, _r = CATALOG[_id]
     _r = depth34.townify(_r, _id)
-    for _f in _r['floors']:
-        _f['items'] = [(it[:3] + ('',) + it[4:]) if it[0] == 'sign' else (it[:4] + ('',) + it[5:]) if it[0] == 'noren'
-                       else (it[:4] + ('',) + it[5:]) if it[0] == 'lantern' and len(it) > 4 else it for it in _f['items']]
     CATALOG[_id] = (_n, _cat, _r)
 CATALOG['house_hip2'] = ('2층 妻入り 단독주택', 'house', depth34.townify(R0['hip2'], 'house_hip2', force='gable_front'))
 CATALOG['house_nisetai'] = (CATALOG['house_nisetai'][0], 'house', depth34.townify(_NISETAI0, 'house_nisetai', force='flat'))
@@ -409,7 +403,7 @@ for _id in DEEP_IDS + TOWN_IDS + ['post_office', 'house_hip2']:            # 지
     _n, _cat, _r = CATALOG[_id]
     CATALOG[_id] = (_n, _cat, depth34.cap_roof(_r))
 CATALOG['koban'][2]['after'] = [lambda cv, g: red_lamp(cv, (g['X0'] + g['X1']) // 2 - 3, g['ys'][0] - 8)]
-CATALOG['station_small'][2]['after'] = [lambda cv, g: LP.clock(cv, g['X0'] + 96, g['ys'][0] + 11, 6)]   # 간판 판 가운데
+CATALOG['station_small'][2]['after'] = [lambda cv, g: LP.clock(cv, g['X0'] + 160, g['ys'][0] + 11, 6)]   # 역명판 오른쪽(일본어 간판 글자 허용, 2026-10-20)
 
 def render(out, names=None):
     os.makedirs(out, exist_ok=True)

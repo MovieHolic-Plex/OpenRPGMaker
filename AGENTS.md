@@ -55,7 +55,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → `modern-chipset` · 시드 `harness-data/modern-chipset/seed.json`
   → `npm run harness -- modern-chipset <단계>` · 문서 `openwiki/harnesses/modern-chipset.md`
   → 기준 = 프로젝트의 modern-city-atlas 경찰차. 후보는 Sonnet 5명이 pxgrid 로 찍고 사람이 고른다. 직접 그리지 말 것.
-- **jp_city 번들(일본 도시, modern3)의 주택가·역·공원·신사 그림(건물 외형·소품·바닥 타일·키트)을 그릴 때** (3/4 시점, 사람·글자·상표 금지)
+- **jp_city 번들(일본 도시, modern3)의 주택가·역·공원·신사 그림(건물 외형·소품·바닥 타일·키트)을 그릴 때** (3/4 시점, 사람·상표 금지 · 일본어 간판 글자는 허용)
   → `jp-city` · 시드 `harness-data/jp-city/seed.json`(항목 40, wave houses/station/park/shrine)
   → `npm run harness -- jp-city <단계>` · 문서 `openwiki/harnesses/jp-city.md`
   → 후보는 Sonnet 5명이 pxgrid 로 찍고 **사람이 고른다**(시트 `~/claude-viz/jp-<판>.html`). 직접 그리거나 감독이 고르지 말 것. 웨이브 구동 `src/harnesses/jp-city/waves.py`.
