@@ -57,6 +57,8 @@ function talkTo(mapId, cell, dir = "up") {
     { kind: "hold", dir: null, ms: 600 },
   ];
 }
+/** 콘솔 오류·경고와 페이지 재적재를 모은다(마지막 state 비트가 함께 적는다). */
+const HOOK = "() => { if (!window.__flLog) { window.__flLog = []; for (const k of ['error','warn']) { const o = console[k].bind(console); console[k] = (...a) => { window.__flLog.push(k + ': ' + a.map(String).join(' ').slice(0, 400)); o(...a); }; } window.addEventListener('error', (e) => window.__flLog.push('onerror: ' + e.message)); window.addEventListener('unhandledrejection', (e) => window.__flLog.push('rejection: ' + String(e.reason?.stack ?? e.reason).slice(0, 600))); } return true; }";
 const shotPause = (ms = 700) => ({ kind: "hold", dir: null, ms });
 const RAIL = "[data-testid='status-menu-command-rail']";
 const openMenu = (id, note) => ({ id, note, ops: [{ kind: "key", key: "Escape" }, { kind: "waitFor", testid: "status-menu-command-rail", state: "present", timeoutMs: 8000 }, shotPause(700)], shot: true });
@@ -90,7 +92,7 @@ export default {
   query: { demo: "first-love" },
   viewport: { width: vw, height: vh },
   beats: [
-    { id: "title", note: "타이틀", ops: [{ kind: "waitFor", testid: "title-screen", state: "present", timeoutMs: 120000 }, { kind: "pressUntilJs", key: "Shift", fn: "() => (window.__flT ??= Date.now()) && Date.now() - window.__flT > 2500", maxPresses: 12, settleMs: 400 }], shot: true },
+    { id: "title", note: "타이틀", ops: [{ kind: "waitFor", testid: "title-screen", state: "present", timeoutMs: 120000 }, { kind: "evalToFile", out: `/tmp/fl-hook-${PATH}.json`, fn: HOOK }, { kind: "pressUntilJs", key: "Shift", fn: "() => (window.__flT ??= Date.now()) && Date.now() - window.__flT > 2500", maxPresses: 12, settleMs: 400 }], shot: true },
     { id: "opening-1", note: "오프닝 1컷 — 10년 전 교복의 두 사람", ops: [{ kind: "key", key: "Enter" }, shotPause(4200)], shot: true },
     { id: "opening-2", note: "오프닝 2컷 — 편지의 빛", ops: [shotPause(5600)], shot: true },
     { id: "opening-4", note: "오프닝 4컷 — 지금", ops: [shotPause(13000)], shot: true },
@@ -137,10 +139,12 @@ export default {
         { id: "letter", note: "편지", ops: [{ kind: "pressUntilJs", key: "Enter", fn: "() => /처음으로 이름이 적힌/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 30, settleMs: 600 }, shotPause(900)], shot: true },
         { id: "c9", note: "마지막 선택", ops: [toChoice(), shotPause(500)], shot: true },
         { id: "confess", note: "고백", ops: [...pick(0), shotPause(1500)], shot: true },
+        { id: "pre-peak", note: "정점 직전", ops: [{ kind: "key", key: "Enter" }, shotPause(900)], shot: true },
+        { id: "pre-peak-2", note: "정점 직전 2", ops: [{ kind: "key", key: "Enter" }, shotPause(900)], shot: true },
         { id: "peak", note: "고백 정점 — 10년 전 그림이 겹친다", ops: [{ kind: "pressUntilJs", key: "Enter", fn: `() => /${A ? "10년 늦은 답장이에요" : "그 금요일에도. 지금도"}/.test(document.querySelector("[data-testid='dialogue-box']")?.textContent ?? '')`, maxPresses: 20, settleMs: 700 }, shotPause(600)], shot: true },
         { id: `ending-${PATH.toLowerCase()}`, note: `엔딩 ${PATH}`, ops: [untilEnding, shotPause(2500)], shot: true },
       ]),
     { id: "ending-after", note: "엔딩 에필로그 뒤", ops: [{ kind: "key", key: "Enter" }, shotPause(2500), { kind: "key", key: "Enter" }, shotPause(2500)], shot: true },
-    { id: "state", note: "최종 상태", ops: [{ kind: "evalToFile", out: `/tmp/fl-state-${PATH}.json`, fn: "() => { const s = window.__oprnDebug.readState(); return { heapMB: Math.round((performance.memory?.usedJSHeapSize ?? 0) / 1048576), map: s.currentMapId, vars: s.variables, sw: Object.fromEntries(Object.entries(s.switches).filter(([k]) => k.startsWith('sw_fl'))) }; }" }], shot: false },
+    { id: "state", note: "최종 상태", ops: [{ kind: "evalToFile", out: `/tmp/fl-state-${PATH}.json`, fn: "() => { const s = window.__oprnDebug.readState(); return { log: window.__flLog ?? 'reloaded (hook lost)', heapMB: Math.round((performance.memory?.usedJSHeapSize ?? 0) / 1048576), map: s.currentMapId, vars: s.variables, sw: Object.fromEntries(Object.entries(s.switches).filter(([k]) => k.startsWith('sw_fl'))) }; }" }], shot: false },
   ],
 };

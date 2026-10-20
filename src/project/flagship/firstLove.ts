@@ -21,7 +21,7 @@ import type { Command, Dir, GameEvent, GameMap, Project } from "@/project/types"
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import {
   bgm, caption, CAST, choices, clearTint, emote, event, face, fadeIn, fadeOut, flash, hidePlayer, ifCond, letterbox, page,
-  playSe, say, setSw, setVar, shake, showPlayer, stopBgm, stageAtLeast, stageBelow, stageIs, swOff, swOn, memoryTint, memoryPictureIn, memoryPictureOut, think, transfer, voice, wait, walk,
+  playSe, say, setSw, setVar, shake, showPlayer, stopBgm, stageAtLeast, stageBelow, stageIs, swOff, swOn, memoryTint, memoryPictureIn, memoryPictureOut, memoryPictureErase, think, transfer, voice, wait, walk,
 } from "./firstLoveKit";
 import { buildFirstLoveMaps, FL_MAP, nearestFree, type Cell, type FirstLoveAnchors } from "./firstLoveMaps";
 import { FIRST_LOVE_MEMORY_ARGS, FIRST_LOVE_THEME_ARGS } from "./firstLoveMusic";
@@ -827,6 +827,7 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
           ...say("jihu", "happy", "윤서하. 10년 늦은 답장이에요.", "나도 좋아했어. 그 금요일에도. 지금도."),
           ...memoryPictureOut(1600),
           ...emote("ev_fl_p_jihu", "heart", 1600),
+          memoryPictureErase(),
           ...say("jihu", "base", "부산은 가야 해요. 아버지 혼자 계시니까. 근데—"),
           ...say("jihu", "happy", "KTX로 두 시간 사십 분이에요. 금요일마다 올게요. 이번엔, 진짜 약속해요."),
           ...say("seoha", "happy", "…늦으면, 사연 보낼 거예요. 하루끝에. 실명으로."),
@@ -838,6 +839,7 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
           ...say("seoha", "sad", "좋아했어요. 그 금요일에도. 지금도."),
           ...memoryPictureOut(1400),
           ...say("jihu", "sad", "…고마워요. 정말로."),
+          memoryPictureErase(),
           ...say("jihu", "sad", "근데 지금 대답하면, 그건 또 도망치는 대답 같아요. 떠나는 사람이 할 말이 아니라서."),
           ...say("jihu", "base", "답장은 여기 써 뒀어요. 열차 떠나면 읽어요."),
           playSe(SE_PAPER),

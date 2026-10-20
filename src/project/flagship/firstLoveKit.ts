@@ -88,18 +88,18 @@ export const flash = (color = "white", ms = 300): Command => m2("Flash Screen", 
 /** 회상 그림 겹침 — 10년 전 교복의 두 사람을 화면 가득 반투명으로 띄웠다 거둔다(고백 정점). 그림은 앱에 든 연애 타이틀 그림. */
 const MEMORY_PICTURE = "fl_memory";
 const MEMORY_ART = { resourceId: "oprn-title-romance-school", x: -4, y: -3, scale: 29 } as const;
+// 기다리지 않는다 — 그림이 번지는 동안 대사가 바로 뜬다. 기다리는 동안 눌린 Enter 가 다음 대사를 삼키지 않게(첫사랑 VQA 3차).
 export function memoryPictureIn(opacity = 140, ms = 1600): Command[] {
   return [
     { kind: "showPicture", pictureId: MEMORY_PICTURE, ...MEMORY_ART, opacity: 0, waitForPicture: false } as Command,
-    { kind: "showPicture", pictureId: MEMORY_PICTURE, ...MEMORY_ART, opacity, durationMs: ms, easing: "easeOut", waitForPicture: true } as Command,
+    { kind: "showPicture", pictureId: MEMORY_PICTURE, ...MEMORY_ART, opacity, durationMs: ms, easing: "easeOut", waitForPicture: false } as Command,
   ];
 }
+/** 거두기 시작만 한다 — 지우기는 다음 장면 전환 앞의 memoryPictureErase 가 한다. */
 export function memoryPictureOut(ms = 1400): Command[] {
-  return [
-    { kind: "showPicture", pictureId: MEMORY_PICTURE, ...MEMORY_ART, opacity: 0, durationMs: ms, easing: "easeInOut", waitForPicture: true } as Command,
-    { kind: "erasePicture", pictureId: MEMORY_PICTURE } as Command,
-  ];
+  return [{ kind: "showPicture", pictureId: MEMORY_PICTURE, ...MEMORY_ART, opacity: 0, durationMs: ms, easing: "easeInOut", waitForPicture: false } as Command];
 }
+export const memoryPictureErase = (): Command => ({ kind: "erasePicture", pictureId: MEMORY_PICTURE } as Command);
 export const hidePlayer = (): Command => m2("Sprite Look", { target: "player", opacity: "0" });
 export const showPlayer = (): Command => m2("Sprite Look", { target: "player", reset: true });
 
