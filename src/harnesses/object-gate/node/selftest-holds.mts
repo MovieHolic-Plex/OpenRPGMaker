@@ -68,7 +68,7 @@ try {
   const shaA = await receiptFor(A, 'fail'), shaB = await receiptFor(B, 'refer');
   const shaD1 = await receiptFor(D1, 'pass'), shaD2 = await receiptFor(D2, 'refer'); await receiptFor(E, 'pass');
   const shaC = await store.pngPixelSha256(C); { const { width, height, data } = store.readPng(C); store.writeHeldImage(shaC, width, height, data); }
-  store.writeQueueBatch({ schema: 'oprn-object-gate-queue/1', id: 'selftest-batch', title: '시험 묶음', createdAt: new Date().toISOString(), items: [shaD1, shaD2].map(sha => ({ sha, kind: 'tall_furniture', label: sha.slice(0, 8) })) });
+  store.writeQueueBatch({ schema: 'oprn-object-gate-queue/1', id: 'selftest-batch', title: '시험 묶음', createdAt: new Date().toISOString(), items: [shaD1, shaD2, shaD2].map((sha, i) => ({ sha, kind: 'tall_furniture', label: `${sha.slice(0, 8)}-${i}` })) }); // 같은 그림 두 이름(D2) — 한 장으로 센다
 
   ok('결정 전: AI FAIL(미보정) 은 모든 출구에서 막힘', await blockedEverywhere(A));
   ok('결정 전: AI PASS(미보정 프로필) 도 막힘', await blockedEverywhere(E));
