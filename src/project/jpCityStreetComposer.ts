@@ -121,7 +121,7 @@ const ENTRANCE_PROPS: Readonly<Record<string, readonly (readonly [string, number
 
 /** 완성 큰 건물(문 위치를 몰라 이름표·실내 연결은 하지 않는다 — 풍경). 띠 높이에 맞는 것만 놓는다. */
 const LANDMARKS: readonly { id: string; w: number; h: number }[] = [
-  { id: "jp-bldg-mansion4", w: 11, h: 11 }, { id: "jp-bldg-zakkyo5", w: 7, h: 14 }, { id: "jp-bldg-office6", w: 9, h: 15 }, { id: "jp-bldg-mansion6-slim", w: 7, h: 15 }, { id: "jp-bldg-clinic", w: 9, h: 8 }, { id: "jp-bldg-post-office", w: 9, h: 8 }, { id: "jp-bldg-supermarket", w: 14, h: 6 }, { id: "jp-bldg-koban", w: 6, h: 6 },
+  { id: "jp-bldg-mansion4", w: 11, h: 11 }, { id: "jp-bldg-zakkyo5", w: 7, h: 14 }, { id: "jp-bldg-office6", w: 9, h: 15 }, { id: "jp-bldg-mansion6-slim", w: 7, h: 15 }, { id: "jp-bldg-clinic", w: 9, h: 8 }, { id: "jp-bldg-post-office", w: 9, h: 8 }, { id: "jp-bldg-supermarket", w: 14, h: 6 }, { id: "jp-bldg-koban", w: 6, h: 7 },
 ];
 
 /** 겹침 검사용 소품 칸 크기(w,h) — 키트 색인 tiledata/jp-city/kit-index.json 의 값. 모르는 id 는 검사하지 않는다. */

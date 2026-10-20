@@ -259,13 +259,29 @@ class Src:
 
 # ====================================================================== 칸 사전
 class Cells:
-    def __init__(self, pins):
+    def __init__(self, pins, old_png=None, old_count=0, cmap=None):
         self.pins = pins
         self.img = {}
         self.info = {}
         self.order = []
+        # 옛 번호는 옛 그림 그대로(2026-10-21, #3127·#3132 뒤): 핀에 있는 자리 키의 새 그림이 그 번호의 지금 시트 그림과 다르면
+        # 자리 키에 @r<그림 해시> 를 붙여 새 번호(끝)를 받는다. 옛 번호는 7) legacy 단계가 옛 그림으로 남긴다 — 이미 깔린 맵·게시 장소의 칸이 바뀌지 않는다.
+        self.old_png, self.old_count, self.cmap = old_png, old_count, cmap
+        self.old_tpr = old_png.width // 16 if old_png is not None else TPR
+        self.rekeyed = []
+
+    def _frozen_key(self, key, img, info):
+        if self.old_png is None or key.startswith('jp16/') or key in self.pins.used: return key
+        t0 = self.pins.map.get(key)
+        if t0 is None or t0 >= self.old_count or (t0 // self.old_tpr + 1) * 16 > self.old_png.height: return key
+        fin = contract_remap(img, self.cmap) if self.cmap and is_outdoor_cat(info.get('cat', '')) else img
+        if BL.same_image(fin, BL.read_cell(self.old_png, t0, self.old_tpr)): return key
+        new = '%s@r%s' % (key, hashlib.sha256(np.asarray(BL.norm(fin)).tobytes()).hexdigest()[:8])
+        self.rekeyed.append((key, t0, new))
+        return new
 
     def put(self, key, img, info):
+        key = self._frozen_key(key, img, info)
         tid = self.pins.assign(key)
         if tid in self.img:
             return tid
@@ -350,9 +366,9 @@ def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=Fal
             raise SystemExit('pins.json 이 origin/main 보다 낡았거나 번호가 다르다 — git fetch 후 origin/main 에 rebase 하고 '
                              'tiledata/jp-city/pins.json 을 origin/main 것으로 둔 뒤 다시 구워라(번호가 밀리면 게시한 장소·사용자 맵이 깨진다).\n  ' + '\n  '.join(chk[0]))
     pins = BL.Pins(prev_pins)
-    cells = Cells(pins)
     old_png = Image.open(P['png']).convert('RGBA') if os.path.exists(P['png']) else None
     old_def = json.load(open(P['tileset'], encoding='utf-8')) if os.path.exists(P['tileset']) else None
+    cells = Cells(pins, old_png, old_def['count'] if old_def else 0, load_contract()['map'])
 
     # ---- 1) 기본 블록 jp16 — 원본 0..2879 번호 그대로
     for i in range(N_ORIG):
@@ -672,6 +688,13 @@ def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=Fal
     for kid in list(expected):
         if is_outdoor_cat('block:' + kit_index[kid]['source']['block'] if 'block' in kit_index[kid].get('source', {}) else ''): expected[kid] = contract_remap(expected[kid], contract['map'])
     sheet_img = BL.render_sheet(cells.img, count)
+    # 옛 번호 그림 불변 확인: 옛 시트에 있던 번호는 화소가 같아야 한다(바뀐 그림은 Cells._frozen_key 가 새 번호로 보냈다)
+    old_changed = []
+    if old_png is not None and old_def:
+        otpr = old_png.width // 16
+        for t in range(min(old_def['count'], count)):
+            if (t // otpr + 1) * 16 > old_png.height: break
+            if not BL.same_image(BL.read_cell(sheet_img, t), BL.read_cell(old_png, t, otpr)): old_changed.append(t)
 
     # ---- 8) 정의 JSON
     SOLID = dict(up=False, down=False, left=False, right=False); PASS = dict(up=True, down=True, left=True, right=True)
@@ -719,7 +742,7 @@ def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=Fal
     n_var = sum(1 for k in pins.used if re.search(r'^jp16/\d+@', k)); n_comp = sum(1 for k in pins.used if k.startswith('jp16c/'))
     n_block = sum(1 for k in pins.used if not k.startswith('jp16'))
     res['tiles'] = dict(count=count, tilesPerRow=TPR, rows=math.ceil(count / TPR), sheetPx=[TPR * 16, math.ceil(count / TPR) * 16], height_ok=math.ceil(count / TPR) * 16 <= BL.MAX_H,
-                        original=N_ORIG, pc_variant_copies=n_var, composite_cells=n_comp, block_cells=n_block, legacy=len(legacy), legacy_ids=legacy[:20],
+                        original=N_ORIG, pc_variant_copies=n_var, composite_cells=n_comp, block_cells=n_block, legacy=len(legacy), legacy_ids=legacy[:20], rekeyed_art=len(cells.rekeyed), rekeyed_sample=[list(r) for r in cells.rekeyed[:12]], old_cells_changed=len(old_changed), old_cells_changed_ids=old_changed[:20],
                         unused_source=sum(1 for t, i in cells.info.items() if i['cat'] == 'unused-source'), people_reserved=sum(1 for t, i in cells.info.items() if i['cat'] == 'people-reserve'),
                         by_category=dict(cat_counts))
     res['pc_counts'] = dict(collections.Counter(i['pc'] for i in cells.info.values()))
@@ -863,7 +886,7 @@ def main():
     if 'selftest' in rep: summ['selftest'] = rep['selftest']
     print(json.dumps(summ, ensure_ascii=False, indent=1, default=str))
     bad = (rep['reassembly']['mismatched_kits'] or rep['definition_checks']['violations'] or rep['relayout_identical']['mismatched'] or rep['palette']['cells_with_off_palette']
-           or rep['palette']['marker_pixels'] or rep['palette']['partial_alpha_pixels'] or not rep['tiles']['height_ok'] or ('selftest' in rep and not rep['selftest']['pass']))
+           or rep['palette']['marker_pixels'] or rep['palette']['partial_alpha_pixels'] or not rep['tiles']['height_ok'] or ('selftest' in rep and not rep['selftest']['pass']) or rep['tiles'].get('old_cells_changed'))
     if bad: print('검증 실패', file=sys.stderr); sys.exit(1)
     if not a.dry and os.path.abspath(a.out_root) == os.path.abspath(ROOT):       # 일본 실내 사양(번호 핀이 정해진 뒤)
         sys.path.insert(0, HERE); import bake_interior_spec; bake_interior_spec.main()
