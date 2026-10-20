@@ -79,11 +79,14 @@ def read_front_prop_approval(sha: str) -> dict | None:
 
 HOLD_KEY_PATH = Path(os.environ.get("OBJECT_GATE_HOLD_KEY") or Path.home() / ".config" / "oprn" / "object-gate-hold.key")
 _HOLD_KEYS = ("schema", "pixelSha256", "profileHash", "kind", "decision", "decidedBy", "decidedAt", "by", "via", "reasons", "note")
+# 위임 결정(by: "delegated")만 서명 대상에 더한다 — 사람 기록의 서명 문자열은 그대로다. TS objectGateHoldPayload 와 같다.
+_HOLD_DELEGATED_KEYS = ("delegatedBy", "evidence")
 
 
 def hold_payload(d: dict) -> str:
     """서명 대상 문자열. TS objectGateHoldPayload 와 같다."""
-    return json.dumps([[k, d.get(k)] for k in _HOLD_KEYS], ensure_ascii=False, separators=(",", ":"))
+    keys = _HOLD_KEYS + _HOLD_DELEGATED_KEYS if d.get("by") == "delegated" else _HOLD_KEYS
+    return json.dumps([[k, d.get(k)] for k in keys], ensure_ascii=False, separators=(",", ":"))
 
 
 def read_hold_decision(sha: str) -> dict | None:
@@ -103,7 +106,9 @@ def human_decision(d: dict | None, receipt: dict | None) -> str | None:
     """서명 확인을 마친 사람 결정이 이 영수증(그림 해시·종류)에 묶였으면 'allow'|'reject', 아니면 None. 프로필 보정 여부는 보지 않는다(TS humanDecision 과 같다)."""
     if not d or not receipt:
         return None
-    ok = d.get("schema") == "oprn-object-gate-hold-decision/1" and d.get("by") == "human" and d.get("via") == "review-page" \
+    by_ok = d.get("by") == "human" or (d.get("by") == "delegated" and d.get("decision") == "allow"
+                                       and str(d.get("delegatedBy") or "").strip() != "" and str(d.get("evidence") or "").strip() != "")
+    ok = d.get("schema") == "oprn-object-gate-hold-decision/1" and by_ok and d.get("via") == "review-page" \
         and d.get("decision") in ("allow", "reject") and d.get("pixelSha256") == receipt.get("pixelSha256") \
         and d.get("kind") == receipt.get("kind") and str(d.get("decidedBy") or "").strip() != "" and bool(d.get("decidedAt")) \
         and bool(d.get("profileHash"))
