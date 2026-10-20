@@ -249,7 +249,7 @@ export const INAKA_SHOWCASE_SCENES: readonly InakaShowcaseScene[] = [
       // 동쪽 집터: 기와 농가 + 단층 박공집, 이끼 돌담
       { kit: "inaka-kawara-farmhouse", x: 22, y: 4, allowOverlap: true },
       { kit: "jp-bldg-house-hiraya-gable", x: 29, y: 4, allowOverlap: true },
-      { kit: "inaka-bicycle-parked", x: 31, y: 8 }, // 전봇대(28..30열) 기둥 뒤에 숨지 않게
+      { kit: "inaka-bicycle-parked", x: 31, y: 8, allowOverlap: true }, // 전봇대(28..30열) 기둥 뒤에 숨지 않게
       { kit: "inaka-hydrangea-hedge", x: 34, y: 9 },
       { kit: "inaka-mossy-stone-wall", x: 21, y: 12 },
       { kit: "inaka-mossy-stone-wall-mid", x: 25, y: 12 },
@@ -342,7 +342,7 @@ export const INAKA_SHOWCASE_SCENES: readonly InakaShowcaseScene[] = [
       { kit: "inaka-wooden-station", x: 7, y: 1, allowOverlap: true },
       { kit: "inaka-retro-postbox-vending", x: 14, y: 5 },
       { kit: "jp-bldg-station-small", x: 18, y: 1, allowOverlap: true },
-      { kit: "inaka-bicycle-parked", x: 16, y: 4 },
+      { kit: "inaka-bicycle-parked", x: 16, y: 4, allowOverlap: true },
       { kit: "inaka-retro-postbox-vending", x: 38, y: 4 },
       ...Array.from({ length: 28 }, (_, i) => ({ kit: "jp-platform-edge", x: 6 + i, y: 7 })),
       ...Array.from({ length: 6 }, (_, i) => ({ kit: "jp-rail-verge", x: i, y: 7 })),
