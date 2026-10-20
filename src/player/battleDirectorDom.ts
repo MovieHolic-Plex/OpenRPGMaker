@@ -938,7 +938,8 @@ function commandLine(command: ActorCommand, actor: BattleBattlerSnapshot | undef
       return `${subject} ${withJosa(skillName(command.skillId), "을/를")} 사용했다!`;
     }
     case "item":
-      return `${subject} ${withJosa(itemName(command.itemId), "을/를")} 사용했다!`;
+      // 약을 쓰는 쪽도 트레이너(나)다 — 「토리프가 회복약을 사용했다」는 몬스터가 약을 쓰는 꼴이었다(2026-10-21 적대 검수 m5).
+      return emeraldNarrationActive() ? `${withJosa(itemName(command.itemId), "을/를")} 썼다!` : `${subject} ${withJosa(itemName(command.itemId), "을/를")} 사용했다!`;
     case "capture":
       // 던지는 쪽은 트레이너(나)다 — 몬스터 이름을 주어로 쓰면 「새싹토가 구슬을 던졌다」가 된다(2026-10-15 진단 C1).
       return emeraldNarrationActive() ? `${withJosa(itemName(command.captureItemId), "을/를")} 던졌다!` : `${subject} ${withJosa(itemName(command.captureItemId), "을/를")} 던졌다!`;
