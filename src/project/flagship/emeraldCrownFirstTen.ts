@@ -500,6 +500,20 @@ function gbaFeel(project: Project): void {
       }
     });
   }
+  // 스타터 고르기: 이름 세 줄뿐이었고 미리보기 설명이 「토리프⏎풀 타입」 같은 덜 다듬은 줄이었다(적대 검수 m5·R2-3) — 목록에 타입을 붙이고 설명을 문장으로.
+  const typeName: Record<string, string> = { grass: "풀", fire: "불꽃", water: "물" };
+  const starterType = new Map((db.monsterSpecies ?? []).filter((sp) => ["mx_species_spriglet", "mx_species_coalbit", "mx_species_rivulet"].includes(sp.id)).map((sp) => [sp.name, typeName[sp.types?.[0] ?? ""] ?? ""]));
+  const topic = (word: string) => { const code = word.charCodeAt(word.length - 1) - 0xac00; return `${word}${code >= 0 && code <= 11171 && code % 28 ? "은" : "는"}`; };
+  const lab = project.maps.mx_map_lab?.events.find((e) => e.id === "mx_map_lab_professor");
+  for (const page of lab?.pages ?? []) walkLists(page.commands, (list) => {
+    for (const c of list) {
+      if (c.kind === "choices" && c.prompt === "첫 동료를 선택하자") for (const o of c.options) { const t = starterType.get(o.text); if (t) o.text = `${o.text} · ${t}`; }
+      if (c.kind === "text") { const m = /^(\S+)\n(\S+) 타입$/u.exec(c.body); if (m && starterType.has(m[1]!)) c.body = `${topic(m[1]!)} ${m[2]} 타입이란다.`; }
+    }
+  });
+  // 나루 대사 상자에 직함을 붙인다(적대 검수 R2-6: 「나루」 이름만).
+  const titled = (commands: Command[]) => walkLists(commands, (list) => { for (const c of list) if (c.kind === "text" && c.speaker === "나루") c.speaker = "라이벌 나루"; });
+  for (const map of Object.values(project.maps)) for (const event of map.events) for (const page of event.pages ?? []) titled(page.commands);
   const bottom = (commands: Command[]) => walkLists(commands, (list) => { for (const c of list) if (c.kind === "text" && !c.position) c.position = "bottom"; });
   for (const map of Object.values(project.maps)) for (const event of map.events) for (const page of event.pages ?? []) bottom(page.commands);
   for (const common of project.commonEvents ?? []) bottom(common.commands);
