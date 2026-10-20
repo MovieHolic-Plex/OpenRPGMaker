@@ -1,5 +1,6 @@
 import type { Command, GameEvent, Project } from "@/project/types";
 import { castTheAstraHorizon } from "./emeraldCrownCast";
+import { isLedgeCell } from "@/project/collision";
 
 /**
  * 아스트라 호라이즌 첫 10분(타이틀 → 내 방 → 엄마 → 연구소 → 스타터 → 라이벌 → 1번 도로 → 실바나 체육관) 다듬기.
@@ -534,6 +535,17 @@ function gbaFeel(project: Project): void {
       i++;
     }
   });
+  // 시야 트레이너가 한 방향 턱 너머의 주인공을 보면, 다가갈 칸이 턱이라 걸어오지 못하고 승부도 열리지 않았다(2026-10-21 r24·r25 연구원 — 「0턴」).
+  // 시야를 첫 턱 칸 앞에서 끊는다(그 너머는 원작처럼 턱을 내려온 뒤 다시 지나가며 만난다).
+  const step: Record<string, readonly [number, number]> = { down: [0, 1], up: [0, -1], left: [-1, 0], right: [1, 0] };
+  for (const map of Object.values(project.maps)) for (const event of map.events) for (const page of event.pages ?? []) {
+    const sight = page.detectionEncounter?.sight;
+    const d = step[page.graphic?.direction ?? "down"];
+    if (!sight || sight.facing !== "forward" || !d) continue;
+    for (let k = 1; k <= sight.range; k++) {
+      if (isLedgeCell(project, map, event.x + d[0] * k, event.y + d[1] * k)) { sight.range = Math.max(1, k - 1); break; }
+    }
+  }
   const bottom = (commands: Command[]) => walkLists(commands, (list) => { for (const c of list) if (c.kind === "text" && !c.position) c.position = "bottom"; });
   for (const map of Object.values(project.maps)) for (const event of map.events) for (const page of event.pages ?? []) bottom(page.commands);
   for (const common of project.commonEvents ?? []) bottom(common.commands);
