@@ -109,11 +109,19 @@ flags: `overlay`(투명 덧칠: 윤곽·접지·귀퉁이 검사 제외) · `thi
 - 숲은 발 행 순서로 찍고, 위아래 이웃 나무는 종류를 바꾸며 1~2칸 비킨다(세로 기둥 줄 금지). 전봇대는 石垣 축대 앞면을 가리지 않는다.
 남은 그림 결함(돌담 이음매·논 가장자리·죽담 사다리꼴)은 그림 화소를 바꾸므로 object-gate 영수증 상태를 PR 본문에 적고 사용자 결정까지 머지하지 않는다.
 
-## 숲 키트 시제품 r1 — 이어지는 수관 오토타일 (2026-10-20, 초안·미굽기)
+## 이어지는 숲 팩 `jp_forest_pack` (2026-10-20, PR #3058 — 그림 머지 보류)
 
-- 진단: 지금 숲은 한 그루짜리 키트(rg-sugi·rg-pine·대숲)를 `regionComposer` 가 흩뿌린다. 시트에 수관끼리 이어지는 칸이 없어서 빽빽하게 깔아도 스티커 무리가 되고 잔디가 비친다. 키트 5~6칸이 전부 숲 구획 안이어야 해서 폭 3~4칸 숲 띠는 비어 버린다. 수관은 `disc()` 5단 동심원이라 「동글동글」하다.
-- 시제품 `scripts/content/jp-city/forest/forest_kit_proto.py`(코드 손 도트, 위치 해시): 수관 8방 오토타일(canon 47 + 몸통 변형 4×2 + 위 가장자리 변형 4), 몸통 위 수관 머리 키트, 하늘선 키트, S 가장자리 밑 줄기 띠(활엽 1칸·대숲 2칸), 한 그루 나무 3종으로 이루어진다. 활엽·대숲 두 벌이고 계약 재료 + 보조 램프 ki·kokuban 만 쓴다. 비교 페이지는 `forest_kit_viz.py` → `~/claude-viz/jp-forest-kit-1.html`, 그림은 `tiledata/jp-city/forest-proto/`.
-- 상태: **시트에 굽지 않았고 regionComposer 도 바꾸지 않았다.** object-gate 3/4 는 통과했지만 화풍이 FAIL 4/4 다(칸 정보량, 프로필 ee216f0de5822996 미보정). 사람이 방향을 고르기 전에는 번들에 넣지 않는다.
+- 진단(r1): 옛 숲은 한 그루짜리 키트(rg-sugi·rg-pine·대숲)를 `regionComposer` 가 흩뿌렸다. 시트에 수관끼리 이어지는 칸이 없어 스티커 무리가 됐고, 키트 5~6칸이 전부 숲 구획 안이어야 해서 폭 3~4칸 숲 띠는 비었다.
+- **그림**(`scripts/content/jp-city/forest/forest_kit_proto.py`, 코드 손 도트, 위치 해시, 계약 확장·하위 램프만): 종류 다섯 — `bl` 활엽(느티나무·잡목) · `bb` 대숲 · `sk` 벚나무 숲(`sakura_petal+`) · `sg` 삼나무 숲(`pine_bamboo+`, 원뿔 수관) · `mp` 단풍 숲(`autumn_maple+`, 가을 지역). 종류마다
+  수관 8방 오토타일 `jp-forest-<k>`(canon 47 + 몸통 변형 12/대숲 4, 3층 막힘) · 곧은 가장자리 변형 그룹 `jp:forest-<k>-edge-<n|s|w|e>` · 수관 머리 `jp-forest-<k>-head-*`(3층 불투명) · 머리 덧그림 `-headx-*`(4층, 대숲 없음) · 하늘선 `-sky-*`(윗줄 ★ 4층) · 줄기 띠 `-band-<L|M|R|one>-*`(활엽 1칸·대숲 2칸) · 한 그루 `-tree-*`(활엽 t2x3·t3x4·t4x4, 삼나무 s2x4·s2x5·s3x5).
+  **한 그루 느티나무·벚나무는 그리지 않는다** — `jp_street_trees`(modern-tiles-r1, 사용자 승인 3×4 가로수)를 쓴다.
+- **몸통은 공을 줄 세우지 않는다**: 몸통 칸 = 어두운 덤불 결(3~5px 잎 뭉치, 점묘 없음)이고 칸 테두리 2px 가 모든 변형에서 같다. 밝은 덩이는 전부 머리 키트(투명 덧그림 + 몸통 위 합성)라 칸 경계를 넘는다 — 몸통에 16px 마다 같은 공을 두면 Argon 이 「달걀판」으로 본다(r4).
+- **칠하기**(`src/editor/jpCity/forestPainter.ts` `paintJpForest`): 마스크(칸마다 종류 코드) → 수관 오토타일 → 하늘선 → 머리(3층, 큰 키트부터) → 머리 덧그림(4층, 엇갈림) → 줄기 띠. 수관 = 아래로 띠 높이만큼 같은 숲이 이어지는 칸, 그 밑 줄이 띠 — 띠가 숲 구획 안에 들어가 폭 3~4칸 얕은 띠도 칠해진다. 맵 밖은 숲이 이어진다고 본다.
+- **구성기**(`regionComposer.paintForestZones` → 단계 `paint_forest`, 실행 `jpRegionTool`): 숲 구획에서 키트·길·물·비움 칸과 그 둘레 1칸을 빼고, 폭 1칸 기둥·6칸 미만 자투리를 지운다. 덩이마다 수종(신사·절·산 → 삼나무 55%, 봄 → 벚나무, 성·공원 → 벚나무 25%, 가끔 대숲, 가을 활엽 → 단풍), 대숲 산길은 서쪽 대숲·동쪽 삼나무. 칩셋에 숲 팩이 없으면 옛 흩뿌리기로 돌아간다.
+- **굽기 보류**: `BLOCK_ORDER` 끝에 `jp_forest_pack` 를 붙였지만 저장소 시트에는 굽지 않았다(3/4 관문 보정 전 저장소 굽기 보류). 미리보기는 임시 굽기 —
+  저장소 `public/assets/jp-city/jp-city-chipset.png`·`src/assets/jpCity*.json`·`tiledata/jp-city/{pins,kit-index}.json` 을 `/tmp/root` 같은 곳에 복사한 뒤 `bake_jp.bake('/tmp/root')` → `bun scripts/qa/jp-forest-preview.mts --mode regions|inaka --root /tmp/root --out <폴더>`(번호는 덧붙기만, 기존 17,053칸 이동 0).
+- **관문(정직)**: 대표 13장 `object-gate review` — 3/4 통과 13/13, 화풍 불합격 13/13(「칸 정보량이 기준보다 훨씬 낮음」), 프로필 `ee216f0de5822996` 미보정(rejected) → **3/4 관문 미통과 — 보정 대기**. 판정 PNG·목록 `tiledata/jp-city/blocks/jp_forest_pack/_gate/`.
+- **적대 VQA**: Argon(`gemini-4-argon-high`, 판정 스크립트 `forest/argon_judge.py`, 버들항 숲 크롭 기준 4배 사분면) r0~r7, 점수 기록 `tiledata/jp-city/forest-proto/argon-rounds.json`. 1.5~2 → 2~3. 끝까지 남은 지적: 줄기 띠의 「울타리」 리듬, 머리 덩이의 「콜리플라워」 결, 얕은 띠의 16px 계단.
 
 ## 대나무(대숲) 재작화 — R4 적대 VQA (2026-10-20)
 

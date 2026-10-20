@@ -91,9 +91,47 @@ if (MODE === "regions") {
     const plan = Inaka.planInakaShowcaseScene({ scene, mapId, kitSize: (id: string) => kitShapes.get(id) } as Parameters<typeof Inaka.planInakaShowcaseScene>[0]);
     const W = scene.width, H = scene.height;
     const kinds = new Uint8Array(W * H);
-    const treeSteps: { kit: string; x: number; y: number; cells: number[]; args: Record<string, unknown> }[] = [];
+    const steps = plan.steps as readonly { tool: string; args: Record<string, unknown>; note: string }[];
+    const kitOfStep = (st: { args: Record<string, unknown> }): string => String(st.args.objectId ?? "").replace(/^kit:jp_city\//u, "");
+    // 1차: 나무 키트 발자국 → 덩이 크기. 30칸 미만 덩이의 나무와 공원·가로수 한 그루(prop-tree-*)는 숲으로 바꾸지 않는다.
+    const foot = new Map<number, number[]>();
+    if (!BEFORE) {
+      const tmp = new Uint8Array(W * H);
+      steps.forEach((st, si) => {
+        const kitId = kitOfStep(st);
+        if (!TREE.test(kitId) || kitId.startsWith("jp-prop-tree-")) return;
+        const sh = kitShapes.get(kitId);
+        const sx = Number(st.args.x), sy = Number(st.args.y);
+        const cells: number[] = [];
+        if (sh) for (let j = 0; j < sh.h; j++) for (let i = 0; i < sh.w; i++) {
+          const x = sx + i, y = sy + j;
+          if (x >= 0 && y >= 0 && x < W && y < H && sh.opaque[j * sh.w + i]) { tmp[y * W + x] = species(kitId); cells.push(y * W + x); }
+        }
+        foot.set(si, cells);
+      });
+      const comp = new Int32Array(W * H).fill(-1);
+      const sizes: number[] = [];
+      for (let i0 = 0; i0 < W * H; i0++) {
+        if (!tmp[i0] || comp[i0]! >= 0) continue;
+        const st = [i0]; comp[i0] = sizes.length; let c = 0;
+        while (st.length) {
+          const i = st.pop()!; c++;
+          const x = i % W, y = (i - x) / W;
+          for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+            const xx = x + dx, yy = y + dy, j = yy * W + xx;
+            if (xx >= 0 && yy >= 0 && xx < W && yy < H && tmp[j] && comp[j]! < 0) { comp[j] = sizes.length; st.push(j); }
+          }
+        }
+        sizes.push(c);
+      }
+      for (const [si, cells] of [...foot]) {
+        if (!cells.length || sizes[comp[cells[0]!]!]! < 30) { foot.delete(si); continue; }
+        for (const i of cells) kinds[i] = tmp[i]!;
+      }
+    }
     let trees = 0;
-    for (const step of plan.steps as readonly { tool: string; args: Record<string, unknown>; note: string }[]) {
+    // 2차: 계획 순서 그대로 찍는다(숲이 된 나무만 건너뛰고, 외딴 삼나무는 그 자리에서 새 한 그루로 바꾼다)
+    for (const [si, step] of steps.entries()) {
       const m = p.maps[mapId]!;
       if (step.tool === "fill_region") {
         const rect = step.args.rect as { x: number; y: number; w: number; h: number };
@@ -109,23 +147,18 @@ if (MODE === "regions") {
         shapeAutotileGroupAround(autotileGroupLayerView(m, group), group, pts);
         continue;
       }
-      const kitId = String(step.args.objectId ?? "").replace(/^kit:jp_city\//u, "");
-      if (!BEFORE && TREE.test(kitId)) {
-        // 나무 키트 발자국(수관 칸) → 숲 마스크
+      const kitId = kitOfStep(step);
+      if (foot.has(si)) { trees++; continue; }
+      let stampArgs: Record<string, unknown> = (({ layer: _l, ...rest }) => rest)(step.args);
+      if (!BEFORE && kitId.startsWith("jp-rg-sugi")) {
         const sh = kitShapes.get(kitId);
-        const sx = Number(step.args.x), sy = Number(step.args.y);
-        const cells: number[] = [];
-        if (sh) for (let j = 0; j < sh.h; j++) for (let i = 0; i < sh.w; i++) {
-          const x = sx + i, y = sy + j;
-          if (x >= 0 && y >= 0 && x < W && y < H && sh.opaque[j * sh.w + i]) { kinds[y * W + x] = species(kitId); cells.push(y * W + x); }
-        }
-        treeSteps.push({ kit: kitId, x: sx, y: sy, cells, args: step.args });
-        trees++;
-        continue;
+        const v = (Number(step.args.x) * 7 + Number(step.args.y) * 3) % 4;
+        const nk = `jp-forest-sg-tree-${sh && sh.h >= 6 ? "s3x5" : "s2x5"}-${v}`;
+        const ns = kitShapes.get(nk);
+        if (sh && ns) stampArgs = { ...stampArgs, objectId: `kit:jp_city/${nk}`, x: Number(step.args.x) + Math.floor((sh.w - ns.w) / 2), y: Number(step.args.y) + sh.h - ns.h };
       }
       const prev = m.upperTiles.slice();
       const layer = typeof step.args.layer === "number" ? step.args.layer : 3;
-      const { layer: _l, ...stampArgs } = step.args;
       const r = run(p, "stamp_object", stampArgs);
       if (!r.ok) continue;
       const after = p.maps[mapId]!;
@@ -133,41 +166,6 @@ if (MODE === "regions") {
         const b = prev[i] ?? -1, a = after.upperTiles[i] ?? -1;
         if (b === a) continue;
         if (layer === 4 && a >= 0) { setLayerTileAt(after, 4, i, a); after.upperTiles[i] = b; } else if (b >= 0 && a >= 0) setLayerTileAt(after, 2, i, b);
-      }
-    }
-    // 외딴 나무(겹친 나무 무리가 30칸 미만)는 숲으로 만들지 않고 한 그루로 둔다 — 삼나무는 새 한 그루(jp-forest-sg-tree-*), 나머지는 원래 키트
-    if (!BEFORE) {
-      const comp = new Int32Array(W * H).fill(-1);
-      let n = 0;
-      const sizes: number[] = [];
-      for (let i0 = 0; i0 < W * H; i0++) {
-        if (!kinds[i0] || comp[i0]! >= 0) continue;
-        const st = [i0]; comp[i0] = n; let c = 0;
-        while (st.length) {
-          const i = st.pop()!; c++;
-          const x = i % W, y = (i - x) / W;
-          for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
-            const xx = x + dx, yy = y + dy, j = yy * W + xx;
-            if (xx >= 0 && yy >= 0 && xx < W && yy < H && kinds[j] && comp[j]! < 0) { comp[j] = n; st.push(j); }
-          }
-        }
-        sizes.push(c); n++;
-      }
-      const lone = treeSteps.filter((t) => t.cells.length && sizes[comp[t.cells[0]!]!]! < 30);
-      for (const t of lone) for (const i of t.cells) kinds[i] = 0;
-      for (const t of lone.sort((a, b) => a.y - b.y)) {
-        const mm = p.maps[mapId]!;
-        if (t.kit.includes("sugi")) {
-          const sh = kitShapes.get(t.kit)!;
-          const v = (t.x * 7 + t.y * 3) % 4;
-          const key = sh.h >= 6 ? "s3x5" : "s2x5";
-          const nk = `jp-forest-sg-tree-${key}-${v}`;
-          const ns = kitShapes.get(nk);
-          if (ns) { run(p, "stamp_object", { objectId: `kit:jp_city/${nk}`, mapId, x: t.x + Math.floor((sh.w - ns.w) / 2), y: t.y + sh.h - ns.h }); continue; }
-        }
-        const { layer: _l2, ...a2 } = t.args;
-        run(p, "stamp_object", a2);
-        void mm;
       }
     }
     const m = p.maps[mapId]!;
