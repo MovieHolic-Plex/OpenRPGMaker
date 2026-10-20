@@ -302,7 +302,7 @@ def render_contact_sheet(out_path: str = DEFAULT_SHEET_OUT, scale: int = 3) -> s
 
     # Header banner
     draw.rectangle([0, 0, W, header_h - 8], fill=(36, 48, 41, 255))
-    draw.text((pad, 18), 'JP-INAKA COUNTRYSIDE CHIPSET — 30 INAKA KITS (UPGRADED 4x2 KEITORA, 4x3 TRACTOR, 8x3 KIHA) + JP-TRAIN-CAR-A/B + 10 GROUND TILES', fill=(238, 234, 219, 255), font=font)
+    draw.text((pad, 18), 'JP-INAKA COUNTRYSIDE CHIPSET — %d INAKA KITS (4x2 KEITORA, 4x3 TRACTOR, 8x3 KIHA) + JP-TRAIN-CAR-A/B + %d GROUND TILES' % (len(KITS), len(GROUND)), fill=(238, 234, 219, 255), font=font)
     draw.text((pad, 44), 'jp_city house_kit / parts_vehicles conventions | 3/4 top-down (top plane + south face) | Top-Left Sun | 1px Sumi Contour', fill=(186, 204, 174, 255), font=font)
 
     for idx, (cid, cw_t, ch_t, im) in enumerate(cards):
@@ -323,7 +323,7 @@ def render_contact_sheet(out_path: str = DEFAULT_SHEET_OUT, scale: int = 3) -> s
     # Bottom row: 9 ground/water tiles tiled 2x2 at 3x scale
     gy0 = header_h + rows_n * (card_h + 12) + 8
     draw.rectangle([pad, gy0, W - pad, gy0 + ground_h - 12], fill=(36, 46, 40, 255), outline=(88, 108, 86, 255), width=2)
-    draw.text((pad + 12, gy0 + 10), 'GROUND & WATER TILES (9x 16x16 tiled 2x2 at 3x scale):', fill=(250, 226, 159, 255), font=font)
+    draw.text((pad + 12, gy0 + 10), 'GROUND & WATER TILES (%dx 16x16 tiled 2x2 at 3x scale):' % len(GROUND), fill=(250, 226, 159, 255), font=font)
     g_step = (W - pad * 2 - 24) // len(GROUND)
     for i, (gkey, _) in enumerate(GROUND.items()):
         gx = pad + 16 + i * g_step

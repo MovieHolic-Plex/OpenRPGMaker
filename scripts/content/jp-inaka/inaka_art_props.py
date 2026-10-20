@@ -579,20 +579,38 @@ def bamboo_fence(c, base):
     add_outline(c)
 
 
+def _mossy_wall(c, seed):
+    """이끼 돌담 4×2 한 토막. 양옆 끝에 윤곽을 두르지 않아 이어 붙여도 4칸마다 검은 세로 이음매가 생기지 않는다(줄눈만 1px 어두운 돌색).
+    윗줄·밑줄 윤곽은 가로로 이어지고, 이끼는 열마다 한두 줄 아래로 흘러내린다. 풀포기는 윤곽 없는 풀잎 3장."""
+    c.HL(0, 4, 64, OL); c.HL(0, 30, 64, OL)
+    y = 11                                                       # 줄 높이는 두 토막 모두 6·7·6px 로 고정: 이어 놓았을 때 가로 줄눈이 끊기지 않는다
+    for k, ch in enumerate((6, 7, 6)):                           # (돌 폭·엇갈림·이끼만 토막마다 다르다)
+        stones(c, 0, y, 64, ch, 'shrine_flagstone', seed=seed + 31 * k, course=(ch, ch), width=(8, 13), moss=0.18)
+        y += ch
+    for x in range(64):                                          # 윗길: 이끼 2~3단 클러스터 + 열마다 흘러내림
+        drip = 10 + int(H(x // 2, 1, seed + 7) * 3)
+        for y in range(5, drip + 1):
+            h = H(x // 3, y // 2, seed + 6)
+            c.P(x, y, J('moss', 3 if h < 0.5 else 4 if h < 0.7 else 2))
+        c.P(x, drip, J('moss', 1))
+    for k in range(4):                                           # 윗길 풀포기(토막마다 자리 다름)
+        x = 4 + k * 16 + int(H(k, 2, seed) * 9)
+        c.P(x, 4, J('pine_bamboo', 2)); c.P(x + 1, 4, J('pine_bamboo', 3)); c.P(x + 2, 4, J('pine_bamboo', 2))
+        c.P(x, 3, J('pine_bamboo', 3)); c.P(x + 1, 2, J('pine_bamboo', 4)); c.P(x + 2, 3, J('moss', 4))
+
+
 @kit('inaka-mossy-stone-wall', '이끼 낀 돌담 - 이끼 덮인 윗길·돌 쌓기 정면(4×2)', 4, 2, 'wall',
      solid=rows(4, [0, 1]), tags=['inaka', '돌담', '石垣', '이끼'],
-     rules='경사 밭·집터 경계를 가로로 이어 쌓는다.', role='wall')
+     rules='경사 밭·집터 경계를 가로로 이어 쌓는다. 길게 이을 때는 inaka-mossy-stone-wall-mid 와 번갈아 놓는다.', role='wall')
 def stone_wall(c, base):
-    c.R(0, 4, 64, 27, OL)
-    for x in range(1, 63):                                       # 윗길: 이끼 2~3단 클러스터
-        for y in range(5, 11):
-            h = H(x // 3, y // 2, 11)
-            c.P(x, y, J('moss', 3 if h < 0.5 else 4 if h < 0.7 else 2))
-        c.P(x, 10, J('moss', 1))
-    stones(c, 1, 11, 62, 19, 'shrine_flagstone', seed=5, course=(5, 7), width=(8, 13), moss=0.18)
-    for (x, y) in ((6, 3), (20, 2), (41, 3), (55, 2)):          # 윗길 풀포기
-        c.P(x, y + 1, J('pine_bamboo', 3)); c.P(x + 1, y, J('pine_bamboo', 4)); c.P(x + 2, y + 1, J('pine_bamboo', 3))
-        c.P(x, y, OL); c.P(x + 2, y, OL); c.P(x + 1, y - 1, OL)
+    _mossy_wall(c, 5)
+
+
+@kit('inaka-mossy-stone-wall-mid', '이끼 낀 돌담(이음 토막) - 다른 돌 쌓기·이끼 결(4×2)', 4, 2, 'wall',
+     solid=rows(4, [0, 1]), tags=['inaka', '돌담', '石垣', '이끼'],
+     rules='inaka-mossy-stone-wall 과 번갈아 가로로 이어 쌓아 4칸마다 같은 돌 무늬가 되풀이되지 않게 한다.', role='wall')
+def stone_wall_mid(c, base):
+    _mossy_wall(c, 17)
 
 
 @kit('inaka-red-iron-bridge', '붉은 철교(人道橋) - 먼 난간·판재 다리 바닥 윗면·가까운 난간 갓 윗면·거더(6×3)', 6, 3, 'structure',
@@ -694,35 +712,60 @@ def _soft_base(c, mat, lv, seed):
 
 
 def _rice_rows(c, mat, lv, seed, tip=None):
-    """벼 포기 줄: 4px 간격 4줄 × 4포기(줄마다 2px 엇갈림 + 1px 흔들림). 잎은 바탕보다 한 단만 밝게, 밑동은 한 단 어둡게.
+    """벼 포기 줄: 4px 간격 4줄 × 4포기(줄마다 2px 엇갈림 + 1px 흔들림). 잎은 바탕보다 한 단 밝게, 밑동은 두 단 어둡게.
     한 칸에 16포기가 고르게 깔려 점 격자가 아닌 결(texture)로 읽힌다."""
     for j, y in enumerate((1, 5, 9, 13)):
         for i in range(4):
             x = (i * 4 + (j % 2) * 2 + (1 if Hw(i, j, seed) > 0.6 else 0)) % 16
             c.P(x, y, J(mat, lv + 1) if tip is None or Hw(i, j, seed + 1) < 0.5 else tip)
             c.P((x - 1) % 16, (y + 1) % 16, J(mat, lv + 1)); c.P(x, (y + 1) % 16, J(mat, lv)); c.P((x + 1) % 16, (y + 1) % 16, J(mat, lv + 1))
-            c.P(x, (y + 2) % 16, J(mat, lv - 1))
+            c.P(x, (y + 2) % 16, J(mat, lv - 2))                   # 밑동 그늘 두 단(1배에서도 포기 줄이 남게)
+    for y in (3, 7, 11, 15):                                       # 포기 줄 사이 고랑: 한 단 어두운 가로 결(1배에서 줄무늬로 읽힌다)
+        for x in range(16):
+            if Hw(x, y, seed + 3) < 0.7:
+                c.P(x, y, J(mat, lv - 1))
 
 
 def _paddy_water(c):
-    """모내기 물논: 하늘 비친 잔잔한 물(4px 얼룩) + 줄지어 심은 어린 모(한 단 차이 초록)."""
+    """모내기 물논: 하늘 비친 잔잔한 물 + 줄지어 심은 어린 모. 모 끝은 이끼 4단·잎은 대 4단(물 2단보다 두 단 밝게) + 물에 진 1px 그늘이라
+    1배에서도 모 줄이 점선으로 읽힌다."""
     _soft_base(c, 'onsen_mineral_teal', 2, 3)
     for j, y in enumerate((1, 5, 9, 13)):
         for i in range(4):
             x = (i * 4 + (j % 2) * 2 + (1 if Hw(i, j, 5) > 0.6 else 0)) % 16
-            c.P(x, y, J('pine_bamboo', 3)); c.P((x - 1) % 16, (y + 1) % 16, J('pine_bamboo', 2)); c.P((x + 1) % 16, (y + 1) % 16, J('pine_bamboo', 2))
+            c.P(x, y, J('moss', 4)); c.P((x - 1) % 16, (y + 1) % 16, J('pine_bamboo', 4)); c.P((x + 1) % 16, (y + 1) % 16, J('pine_bamboo', 3))
+            c.P(x, (y + 1) % 16, J('pine_bamboo', 3)); c.P((x + 1) % 16, (y + 2) % 16, J('onsen_mineral_teal', 0))
+    for y in (3, 7, 11, 15):                                       # 모 줄 사이 물에 비친 하늘: 한 단 밝은 가로 결(1배에서 줄무늬로 읽힌다)
+        for x in range(16):
+            if Hw(x, y, 9) < 0.55:
+                c.P(x, y, J('onsen_mineral_teal', 3))
 
 
 def _paddy_summer(c):
-    """여름 푸른 논: 빽빽한 벼(moss) 결 - 바탕 2단, 잎 3단, 드문 4단 잎끝."""
+    """여름 푸른 논: 빽빽한 벼(moss) 결 - 바탕 2단, 잎 3단, 드문 4단 잎끝, 밑동 0단."""
     _soft_base(c, 'moss', 2, 7)
     _rice_rows(c, 'moss', 2, 7, tip=J('moss', 4))
 
 
 def _paddy_golden(c):
-    """가을 황금 논: 고개 숙인 이삭 결 - 볏짚 2단 바탕, 3단 이삭, 드문 4단 빛."""
+    """가을 황금 논: 고개 숙인 이삭 결 - 볏짚 2단 바탕, 3단 이삭, 드문 4단 빛, 밑동 0단."""
     _soft_base(c, 'tatami_straw', 2, 9)
     _rice_rows(c, 'tatami_straw', 2, 9, tip=J('tatami_straw', 4))
+
+
+def _paddy_bank(fn, edge_mat, edge_lv):
+    """논 북쪽 가장자리 칸: 논두렁(산길 흙) 앞면이 논으로 떨어지는 3/4 둑 + 둑 그늘 + 물가 빛 한 줄. 논 면 맨 윗줄에 한 줄 깔아
+    흙과 논이 칼로 자른 사각 경계로 맞닿지 않게 한다(아래 줄은 같은 논 칸과 이음매 없이 이어진다)."""
+    def draw(c):
+        fn(c)
+        for x in range(16):
+            c.P(x, 0, J('aged_cedar', 3 if Hw(x, 0, 41) > 0.3 else 2))          # 둑 윗면 끝(빛)
+            c.P(x, 1, J('aged_cedar', 1 if Hw(x, 1, 42) > 0.25 else 2))         # 둑 앞면
+            c.P(x, 2, J('aged_cedar', 0) if Hw(x, 2, 43) < 0.55 else J(edge_mat, max(0, edge_lv - 2)))   # 둑 발치가 물·흙에 진 그늘(들쭉날쭉)
+            c.P(x, 3, J(edge_mat, max(0, edge_lv - 1)) if Hw(x, 3, 44) < 0.6 else J(edge_mat, min(4, edge_lv + 1)) if x % 5 == 2 else J(edge_mat, edge_lv))
+        for x in (3, 10):                                             # 둑에 난 풀포기
+            c.P(x, 0, J('pine_bamboo', 3)); c.P(x + 1, 0, J('pine_bamboo', 4)); c.P(x, 1, J('pine_bamboo', 2))
+    return draw
 
 
 def _canal_water(c):
@@ -777,6 +820,9 @@ GROUND: Final[collections.OrderedDict[str, tuple[Callable[[Cv], None], str]]] = 
     ('gnd/inaka-river-shallow', (_river_shallow, 'solidfloor')),
     ('gnd/inaka-meadow-wildflower', (_meadow, 'floor')),
     ('gnd/inaka-vegetable-furrow', (_furrow, 'solidfloor')),
+    ('gnd/inaka-paddy-water-bank', (_paddy_bank(_paddy_water, 'onsen_mineral_teal', 2), 'solidfloor')),
+    ('gnd/inaka-paddy-summer-bank', (_paddy_bank(_paddy_summer, 'moss', 2), 'solidfloor')),
+    ('gnd/inaka-paddy-golden-bank', (_paddy_bank(_paddy_golden, 'tatami_straw', 2), 'solidfloor')),
 ))
 
 GROUND_GROUPS: Final[tuple[tuple[str, str, list[str], str], ...]] = (
@@ -790,4 +836,7 @@ GROUND_GROUPS: Final[tuple[tuple[str, str, list[str], str], ...]] = (
     ('jp:inaka-river-shallow', 'inaka-river-shallow', ['gnd/inaka-river-shallow'], '시골 맑은 개울 - 강자갈이 비치는 얕은 물. 징검다리·붉은 철교 아래에 깐다.'),
     ('jp:inaka-meadow-wildflower', 'inaka-meadow-wildflower', ['gnd/inaka-meadow-wildflower'], '여름 풀밭 - jp_city 잔디 칩에 토끼풀 꽃. 기본 대지 바닥.'),
     ('jp:inaka-vegetable-furrow', 'inaka-vegetable-furrow', ['gnd/inaka-vegetable-furrow'], '채소밭 이랑 - 짙은 흙 이랑과 양배추 포기. 걸을 수 없다.'),
+    ('jp:inaka-paddy-water-bank', 'inaka-paddy-water-bank', ['gnd/inaka-paddy-water-bank'], '물논 북쪽 둑 가장자리 - 논두렁 앞면이 물로 떨어지는 3/4 둑과 그늘. 물논 맨 윗줄에 한 줄 깐다.'),
+    ('jp:inaka-paddy-summer-bank', 'inaka-paddy-summer-bank', ['gnd/inaka-paddy-summer-bank'], '여름 논 북쪽 둑 가장자리 - 논두렁 앞면과 둑 그늘. 여름 논 맨 윗줄에 한 줄 깐다.'),
+    ('jp:inaka-paddy-golden-bank', 'inaka-paddy-golden-bank', ['gnd/inaka-paddy-golden-bank'], '황금 논 북쪽 둑 가장자리 - 논두렁 앞면과 둑 그늘. 황금 논 맨 윗줄에 한 줄 깐다.'),
 )

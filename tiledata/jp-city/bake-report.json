@@ -1,6 +1,6 @@
 {
  "tiles": {
-  "count": 17027,
+  "count": 17038,
   "tilesPerRow": 96,
   "rows": 178,
   "sheetPx": [
@@ -11,7 +11,7 @@
   "original": 2880,
   "pc_variant_copies": 4,
   "composite_cells": 253,
-  "block_cells": 13836,
+  "block_cells": 13847,
   "legacy": 54,
   "legacy_ids": [
    16642,
@@ -45,40 +45,40 @@
    "prop": 1692,
    "people-reserve": 155,
    "composite": 253,
-   "block": 13836
+   "block": 13847
   }
  },
  "pc_counts": {
   "star": 6895,
-  "solid": 4286,
+  "solid": 4294,
   "floor": 3933,
-  "solidfloor": 1031,
+  "solidfloor": 1034,
   "flat": 673,
   "blank": 155
  },
  "kits": {
-  "total": 1557,
+  "total": 1558,
   "by_kind": {
    "recipe": 22,
    "recipe-L": 3,
    "door": 9,
    "prop": 142,
-   "block-kit": 1381
+   "block-kit": 1382
   },
   "prop": 142,
   "recipe": 22,
   "recipe_L": 3,
   "door": 9,
-  "block_kit": 1381
+  "block_kit": 1382
  },
  "groups": {
-  "total": 367,
+  "total": 370,
   "by_kind": {
    "street": 9,
    "band": 60,
    "deco": 73,
    "prop": 11,
-   "block": 214
+   "block": 217
   }
  },
  "autotiles": {
@@ -519,16 +519,16 @@
    },
    {
     "name": "jp_inaka_pack",
-    "cells": 340,
+    "cells": 351,
     "autotiles": 0,
-    "groups": 10,
-    "kits": 30,
-    "notes": "일본 시골(이나카 여름방학) 팩: 모내기 물논·여름 푸른 논·가을 황금 논·논두렁 흙길·농수로 물/석축·시골 자갈길·맑은 개울·여름 들꽃 풀밭·채소밭 이랑 바닥 10종 + 초가 고민가·기와 농가·토장 창고·막과자 가게·버스 정류장·무인 채소 판매대·목조 간이역·단량 디젤 동차(키하 40형 8×3)·붉은 철교·개울 징검다리·소방 망루·흰 경트럭(4×2)·붉은 트랙터(4×3)·함석 농기구 헛간·비닐하우스·해바라기 군락·수국 꽃덤불·지장보살 사당·나무 전봇대·둥근 우체통과 자판기·물레방아간·농수로 수문·하사기 볏단 건조대·허수아비 한 쌍·타케가키 대나무 울타리·이끼 돌담·커브길 볼록거울·시골 자전거·작두 우물 펌프·언덕 도리이 돌계단 키트 30종."
+    "groups": 13,
+    "kits": 31,
+    "notes": "일본 시골(이나카 여름방학) 팩: 모내기 물논·여름 푸른 논·가을 황금 논·논두렁 흙길·농수로 물/석축·시골 자갈길·맑은 개울·여름 들꽃 풀밭·채소밭 이랑 바닥 10종 + 초가 고민가·기와 농가·토장 창고·막과자 가게·버스 정류장·무인 채소 판매대·목조 간이역·단량 디젤 동차(키하 40형 8×3)·붉은 철교·개울 징검다리·소방 망루·흰 경트럭(4×2)·붉은 트랙터(4×3)·함석 농기구 헛간·비닐하우스·해바라기 군락·수국 꽃덤불·지장보살 사당·나무 전봇대·둥근 우체통과 자판기·물레방아간·농수로 수문·하사기 볏단 건조대·허수아비 한 쌍·타케가키 대나무 울타리·이끼 돌담·커브길 볼록거울·시골 자전거·작두 우물 펌프·언덕 도리이 돌계단 키트 31종."
    }
   ]
  },
  "reassembly": {
-  "kits_checked": 1557,
+  "kits_checked": 1558,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -616,7 +616,7 @@
    "monthly": 1,
    "hokora": 1,
    "rg": 26,
-   "inaka": 30
+   "inaka": 31
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -626,9 +626,9 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 17027,
-  "kits_checked": 1557,
-  "groups_checked": 367,
+  "tiles_checked": 17038,
+  "kits_checked": 1558,
+  "groups_checked": 370,
   "autotiles_checked": 17
  },
  "relayout_identical": {
@@ -690,10 +690,10 @@
    }
   }
  },
- "sheet_hash": "36e72fed65f61769db5978a4ab6393768536df13",
+ "sheet_hash": "3aff4b1c6c8ceef361c3c9a546012494c8262fb5",
  "pc_rule": "tiledata/jp-city/bake/PC-RULES.md",
  "reassembly_from_files": {
-  "kits_checked": 1557,
+  "kits_checked": 1558,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -781,7 +781,7 @@
    "monthly": 1,
    "hokora": 1,
    "rg": 26,
-   "inaka": 30
+   "inaka": 31
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -791,9 +791,9 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 17027,
-  "kits_checked": 1557,
-  "groups_checked": 367,
+  "tiles_checked": 17038,
+  "kits_checked": 1558,
+  "groups_checked": 370,
   "autotiles_checked": 17
  },
  "files": {
