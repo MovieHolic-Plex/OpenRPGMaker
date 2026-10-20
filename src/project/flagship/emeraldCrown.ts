@@ -570,6 +570,19 @@ function recastPeople(project: Project): void {
   if (leagueGuide) { leagueGuide.x = 5; leagueGuide.y = 10; }
 }
 
+/**
+ * 1번 도로 꽃밭 세 곳은 나무 밑동 위에 숲 수관 가운데 조각(위층 616·617)을 덮고, 꽃밭에 몬스터 볼처럼 생긴 장식(640)을 얹었다.
+ * 밑동 없는 네모 수관이 떠 보이고(2026-10-20 검수), 볼은 주울 수도 없는 장식이었다 → 위층 세 칸씩 비운다(아래층 나무·꽃은 그대로).
+ */
+function tidyMeadowDecor(project: Project): void {
+  const meadow = project.maps.mx_map_meadow;
+  if (!meadow) return;
+  for (let i = 0; i < meadow.upperTiles.length; i++) {
+    const tile = meadow.upperTiles[i];
+    if (tile === 616 || tile === 617 || tile === 640) meadow.upperTiles[i] = -1;
+  }
+}
+
 /** 명령 나무의 모든 하위 목록(분기·선택지·전투 결과)을 돈다. */
 function forEachNestedCommandList(commands: Command[], visit: (list: Command[]) => void): void {
   visit(commands);
@@ -679,6 +692,7 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
   tunePacing(project);
   softenTrainerDefeats(project);
   recastPeople(project);
+  tidyMeadowDecor(project);
 
   // 1번 도로와 신전에도 여명의 날개 — 길 위를 날 뿐 막지 않는다.
   project.maps["mx_map_meadow"]?.events.push(
@@ -701,7 +715,8 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
   ];
 
   // 오프닝·타이틀은 이름을 다 바꾼 뒤에 만든다(타이틀이 meta.title 을 읽는다).
-  configureEmeraldMonsterOpening(project, { pages: OPENING_PAGES });
+  // 오프닝 컷의 나루도 게임 속 나루(붉은 모자 라이벌, ScarloxyPeople2 3번)와 같은 사람으로.
+  configureEmeraldMonsterOpening(project, { pages: OPENING_PAGES, cast: { rival: { resourceId: "tex_oprn_charset_scarloxy_people2", index: 3 } } });
   if (project.system.titleScreen) {
     project.system.titleScreen.title = "아스트라 호라이즌";
     project.system.titleScreen.logoSubtitle = "다우닝 시티와 여명의 날개";

@@ -27,12 +27,15 @@ const WILD: EmeraldOpeningChip = { resourceId: MONSTER_CHIPS, index: 5 };
 const chipOf = (graphic: EventPageGraphic | undefined): EmeraldOpeningChip | undefined =>
   graphic?.sprite?.id ? { resourceId: graphic.sprite.id, index: charsetPatternIndex(graphic.pattern ?? 0) } : undefined;
 
-function emeraldOpeningCast(project: Project): EmeraldOpeningCast {
+/** 게임마다 바꿔 입힐 수 있는 컷 인물(라이벌·관장·박사). 비우면 생성기 기본 칩. */
+export type EmeraldOpeningCastOverride = Partial<Pick<EmeraldOpeningCast, 'professor' | 'rival' | 'leader'>>;
+
+function emeraldOpeningCast(project: Project, override: EmeraldOpeningCastOverride = {}): EmeraldOpeningCast {
   const species = project.database.monsterSpecies ?? [];
   const lead = project.database.actors[0];
   return {
     hero: lead?.characterResourceId ? { resourceId: lead.characterResourceId, index: lead.characterIndex ?? 0 } : HERO,
-    professor: PROFESSOR, rival: RIVAL, leader: LEADER, flyer: FLYER, wild: WILD,
+    professor: override.professor ?? PROFESSOR, rival: override.rival ?? RIVAL, leader: override.leader ?? LEADER, flyer: FLYER, wild: WILD,
     starters: ['grass', 'fire', 'water'].flatMap(type => {
       const starter = species.find(s => s.types?.includes(type)), front = starter?.graphic.monsterResourceId;
       return starter && front ? [{ frontResourceId: front, chip: chipOf(starter.graphic.fieldGraphic) }] : [];
@@ -52,10 +55,10 @@ function defaultEmeraldOpeningPages(project: Project, professorName: string): Em
   ];
 }
 
-function writeEmeraldOpening(project: Project, pages: readonly EmeraldOpeningPage[], musicResourceId: string | undefined): void {
+function writeEmeraldOpening(project: Project, pages: readonly EmeraldOpeningPage[], musicResourceId: string | undefined, castOverride?: EmeraldOpeningCastOverride): void {
   if (pages.length < 2 || pages.length > 32) throw Error('Emerald introduction needs 2..32 shots');
   if (new Set(pages.map(page => page.id)).size !== pages.length) throw Error('Opening page ids must be unique');
-  const cast = emeraldOpeningCast(project);
+  const cast = emeraldOpeningCast(project, castOverride);
   const scenes = pages.map(page => {
     if (!page.id || !page.text.trim()) throw Error('Opening page needs an id and readable text');
     const composition = emeraldOpeningShot(page.shot, cast);
@@ -73,9 +76,11 @@ export function configureEmeraldMonsterOpening(project: Project, options: {
   musicResourceId?: string;
   /** 타이틀 키아트 테마(startTheme 에서). 생략하면 지금 프로젝트에서 추정(monsterTitleThemeOf). */
   titleTheme?: MonsterTitleTheme;
+  /** 컷에 나오는 라이벌·관장·박사 칩을 이 게임의 실제 NPC 칩으로 맞춘다. */
+  cast?: EmeraldOpeningCastOverride;
 } = {}): void {
   writeEmeraldOpening(project, options.pages ?? defaultEmeraldOpeningPages(project, options.professorName ?? '천문박사'),
-    options.musicResourceId ?? project.system.opening?.musicResourceId);
+    options.musicResourceId ?? project.system.opening?.musicResourceId, options.cast);
   configureEmeraldMonsterTitle(project, options.titleTheme);
 }
 
