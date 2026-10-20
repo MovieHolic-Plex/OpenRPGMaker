@@ -121,6 +121,10 @@ function light(id: string, at: Cell, radius: number, color: string, intensity = 
  */
 /** 옥상 한 판 = 이웃 건물 낮은 옥상(둘레) + 우리 옥상 블록(20×14). 블록의 왼쪽 위 좌표. */
 const ROOF_OX = 6, ROOF_OY = 4;
+// 사무층(34x20)·편의점·방송실(30x17)은 원래 방을 더 큰 평면 가운데에 놓았다 — 카메라가 맵 밖(검정)을 비추지 않게.
+const OFC_OX = 5;
+const KB_OX = 8, KB_OY = 2, KB_W = 14, KB_H = 12;
+const BC_OX = 8, BC_OY = 2;
 function paintStairwellRoof(map: GameMap): void {
   const W = map.width;
   const CAP_TOP = 9347, EDGE_LEFT = 9338;
@@ -211,28 +215,28 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
       arrive: below(subwayStep),
     },
     office: {
-      elevator: { x: 18, y: 14 }, elevatorOut: nearestFree(project, officeRoom, { x: 19, y: 15 }),
-      stairs: { x: 14, y: 15 }, stairsOut: nearestFree(project, officeRoom, { x: 14, y: 13 }),
-      heroDesk: nearestFree(project, officeRoom, { x: 9, y: 8 }),
-      jihuDesk: nearestFree(project, officeRoom, { x: 10, y: 4 }),
-      leadDesk: nearestFree(project, officeRoom, { x: 20, y: 8 }),
-      pantry: nearestFree(project, officeRoom, { x: 10, y: 15 }),
-      meeting: nearestFree(project, officeRoom, { x: 5, y: 15 }),
-      meetingSeat: nearestFree(project, officeRoom, { x: 3, y: 15 }),
-      whiteboard: nearestFree(project, officeRoom, { x: 21, y: 9 }),
+      elevator: { x: 18 + OFC_OX, y: 14 }, elevatorOut: nearestFree(project, officeRoom, { x: 19 + OFC_OX, y: 15 }),
+      stairs: { x: 14 + OFC_OX, y: 15 }, stairsOut: nearestFree(project, officeRoom, { x: 14 + OFC_OX, y: 13 }),
+      heroDesk: nearestFree(project, officeRoom, { x: 9 + OFC_OX, y: 8 }),
+      jihuDesk: nearestFree(project, officeRoom, { x: 10 + OFC_OX, y: 4 }),
+      leadDesk: nearestFree(project, officeRoom, { x: 20 + OFC_OX, y: 8 }),
+      pantry: nearestFree(project, officeRoom, { x: 10 + OFC_OX, y: 15 }),
+      meeting: nearestFree(project, officeRoom, { x: 5 + OFC_OX, y: 15 }),
+      meetingSeat: nearestFree(project, officeRoom, { x: 3 + OFC_OX, y: 15 }),
+      whiteboard: nearestFree(project, officeRoom, { x: 21 + OFC_OX, y: 9 }),
     },
     rooftop: {
       door: nearestFree(project, roofRoom, { x: 3 + ROOF_OX, y: 6 + ROOF_OY }), doorOut: nearestFree(project, roofRoom, { x: 3 + ROOF_OX, y: 7 + ROOF_OY }),
       rail: nearestFree(project, roofRoom, { x: 10 + ROOF_OX, y: 4 + ROOF_OY }), bench: nearestFree(project, roofRoom, { x: 6 + ROOF_OX, y: 10 + ROOF_OY }),
     },
     konbini: {
-      door: bottomGap(konbiniRoom, project), doorOut: nearestFree(project, konbiniRoom, { x: 6, y: 9 }),
-      cooler: nearestFree(project, konbiniRoom, { x: 3, y: 4 }), counter: nearestFree(project, konbiniRoom, { x: 9, y: 8 }),
+      door: { x: 6 + KB_OX, y: 11 + KB_OY }, doorOut: nearestFree(project, konbiniRoom, { x: 6 + KB_OX, y: 9 + KB_OY }),
+      cooler: nearestFree(project, konbiniRoom, { x: 3 + KB_OX, y: 4 + KB_OY }), counter: nearestFree(project, konbiniRoom, { x: 9 + KB_OX, y: 8 + KB_OY }),
     },
     broadcast: {
-      start: nearestFree(project, broadcast, { x: 6, y: 11 }),
-      mailbox: nearestFree(project, broadcast, { x: 7, y: 10 }),
-      booth: nearestFree(project, broadcast, { x: 6, y: 6 }),
+      start: nearestFree(project, broadcast, { x: 6 + BC_OX, y: 11 + BC_OY }),
+      mailbox: nearestFree(project, broadcast, { x: 7 + BC_OX, y: 10 + BC_OY }),
+      booth: nearestFree(project, broadcast, { x: 6 + BC_OX, y: 6 + BC_OY }),
     },
   };
 
@@ -271,14 +275,14 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   };
   // 편의점은 밤에도 형광등이 켜진 밝은 가게 — 거리의 어두운 조명을 물려받지 않게 따로 건다.
   {
-    const w = konbiniRoom.width, h = konbiniRoom.height;
+    const w = KB_W, h = KB_H;
     konbiniRoom.defaultLighting = {
       ambient: 0.04, color: "#f0f6ff",
       sources: [
-        light("fl_kb_a", { x: Math.round(w * 0.25), y: Math.round(h * 0.3) }, 6, "#f4fbff", 0.7),
-        light("fl_kb_b", { x: Math.round(w * 0.7), y: Math.round(h * 0.3) }, 6, "#f4fbff", 0.7),
-        light("fl_kb_c", { x: Math.round(w * 0.3), y: Math.round(h * 0.75) }, 6, "#f4fbff", 0.7),
-        light("fl_kb_d", { x: Math.round(w * 0.7), y: Math.round(h * 0.75) }, 6, "#f4fbff", 0.7),
+        light("fl_kb_a", { x: KB_OX + Math.round(w * 0.25), y: KB_OY + Math.round(h * 0.3) }, 6, "#f4fbff", 0.7),
+        light("fl_kb_b", { x: KB_OX + Math.round(w * 0.7), y: KB_OY + Math.round(h * 0.3) }, 6, "#f4fbff", 0.7),
+        light("fl_kb_c", { x: KB_OX + Math.round(w * 0.3), y: KB_OY + Math.round(h * 0.75) }, 6, "#f4fbff", 0.7),
+        light("fl_kb_d", { x: KB_OX + Math.round(w * 0.7), y: KB_OY + Math.round(h * 0.75) }, 6, "#f4fbff", 0.7),
       ],
     };
   }
