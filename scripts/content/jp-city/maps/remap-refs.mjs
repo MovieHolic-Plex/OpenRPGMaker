@@ -30,14 +30,9 @@ if (!process.env.REMAP_UNDER_TSX) {
 
 const { createJpCityTileset } = await import(join(ROOT, "src/project/defaults/jpCity.ts"));
 const TS = createJpCityTileset();
-const nowCells = JSON.parse(fs.readFileSync(join(ROOT, "tiledata/jp-city/pins.json"), "utf8")).cells;
-let oldCells = nowCells;
-if (!RETILE_ONLY) {
-  const show = spawnSync("git", ["show", `${FROM}:tiledata/jp-city/pins.json`], { cwd: ROOT, encoding: "utf8", maxBuffer: 1 << 30 });
-  if (show.status !== 0) { console.error(show.stderr); process.exit(2); }
-  oldCells = JSON.parse(show.stdout).cells;
-}
-const keyOf = new Map(Object.entries(oldCells).map(([k, v]) => [v, k]));
+const { readPinCells, buildIdRemap } = await import(join(HERE, "pinRemap.mjs"));
+const nowCells = readPinCells(ROOT);
+const remap = buildIdRemap(RETILE_ONLY ? nowCells : readPinCells(ROOT, FROM), nowCells);
 const LAYERS = ["lowerTiles", "lowerOverlayTiles", "upperTiles", "upperOverlayTiles"];
 
 /** 맵 칸 번호를 옮긴다. 옮길 수 없는 번호가 있으면 그 목록을 돌려주고 맵은 건드리지 않는다. */
@@ -48,9 +43,8 @@ function remapMap(map) {
     if (!Array.isArray(map[L])) continue;
     next[L] = map[L].map((t) => {
       if (t == null || t < 0) return t;
-      const key = keyOf.get(t);
-      const n = key === undefined ? undefined : nowCells[key];
-      if (n === undefined) { lost.set(t, key ?? "?"); return t; }
+      const n = remap.to(t);
+      if (n === undefined) { lost.set(t, remap.keyOf(t) ?? "?"); return t; }
       if (n !== t) moved++;
       return n;
     });

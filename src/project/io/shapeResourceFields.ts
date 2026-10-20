@@ -50,6 +50,15 @@ export function validateMeta(value: unknown): void {
   if (meta.oprnDialogueSystem !== undefined) validateDialogueSystem(meta.oprnDialogueSystem);
   if (meta.oprnVnExtras !== undefined) validateVnExtras(meta.oprnVnExtras);
   if (meta.oprnVnLook !== undefined) validateVnLook(meta.oprnVnLook);
+  if (meta.oprnJpCityPinRepairs !== undefined) {
+    for (const item of requireArray("meta.oprnJpCityPinRepairs", meta.oprnJpCityPinRepairs)) {
+      const record = requireRecord("jp_city pin repair", item);
+      requireString("jp_city pin repair mapId", record.mapId);
+      requireString("jp_city pin repair era", record.era);
+      requireString("jp_city pin repair at", record.at);
+      requireNumber("jp_city pin repair moved", record.moved);
+    }
+  }
   if(meta.oprnMenuSounds!==undefined) {
     const sounds=requireRecord('meta.oprnMenuSounds',meta.oprnMenuSounds);
     assert(Object.keys(sounds).every(k=>['cursor','confirm','cancel'].includes(k)),'Unknown menu sound cue');
