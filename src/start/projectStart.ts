@@ -10,11 +10,12 @@ export const DEFAULT_START_SCREEN_SIZE: ProjectStartScreenSize = "wide";
 
 /**
  * 시작 화면 크기 → 저장할 논리 뷰포트. classic 은 기본값(320×240)이라 필드를 비워 둔다.
- * wide 480×270 은 1080p 에서 정확히 4배로 꽉 차(720p 2배, 4K 8배) 도트 굵기가 고르고, 가로 30칸을 보여 준다.
+ * wide 640×360 은 1080p 에서 정확히 3배로 꽉 차(720p 2배, 4K 6배) 도트 굵기가 고르다. 카메라 배율은 기본 1 이라 16px 맵은 40×22.5칸, 32px 는 20×11.25칸이 보인다.
+ * (2026-10-20: 480×270+배율 2 가 도트가 투박하다는 결정으로 640×360+배율 1 로 바꿨다. 이미 저장된 프로젝트는 값을 그대로 읽는다.)
  */
 export const START_SCREEN_RESOLUTIONS: Readonly<Record<ProjectStartScreenSize, Readonly<PlayResolution> | undefined>> = {
   classic: undefined,
-  wide: { width: 480, height: 270 },
+  wide: { width: 640, height: 360 },
 };
 
 export const START_EXAMPLES = NEW_PROJECT_CHOICES.filter(choice => choice.featured);

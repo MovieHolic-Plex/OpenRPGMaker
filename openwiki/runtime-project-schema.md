@@ -1560,6 +1560,10 @@ collector/classic/horror/chase/hearts 프리셋을 추가했다. 기존 미설�
 
 `StartScreenIntent`(sessionStorage, version 1)의 선택 필드 `startMode?: "example" | "ai" | "blank"`,
 `screenSize?: "classic" | "wide"`가 런처 선택을 같은 새 SQLite 폴더로 전달한다.
+화면 크기 기본값(2026-10-20): `wide` = 내부 해상도 640×360 · 카메라 배율 1(`START_SCREEN_RESOLUTIONS`, `src/start/projectStart.ts`).
+1080p 에서 정확히 3배(720p 2배·4K 6배)이고 배율 1 이면 16px 칸 40×22.5, 32px 칸 20×11.25 가 보인다. 배율은 새 프로젝트 시드에서 건드리지 않아
+`DEFAULT_CAMERA_ZOOM`(1)이 그대로 쓰인다. 저장된 옛 프로젝트의 `playResolution`·`cameraZoom` 은 마이그레이션이 다시 쓰지 않는다(생략값 320×240·1 유지).
+DB 시스템 화면의 「새 프로젝트 기본」 표시는 640×360 에 붙는다. 『폴른 스타』(`createChronoBellFlagshipDemo`, `flagship/chronoBell.ts`)는 640×360 · 배율 2(20×11.25칸, 코드 생성이라 저장본 없음).
 필드가 없는 옛 인계는 장르가 있으면 AI, 없으면 빈 프로젝트로 해석한다. 알 수 없는 값은 거절한다.
 예제 경로는 장르별 플레이 가능한 첫 구간을 저장하고 AI 인터뷰/자동 생성을 시작하지 않는다.
 AI 경로는 기존 연결 관문 → 기획 인터뷰 → 확정 기획 저장 → 팀 첫 생성 계약을 유지한다.
