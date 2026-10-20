@@ -285,7 +285,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     settingsOpen = true;
     // 설정 창은 누를 때만 받는다(첫 화면 번들을 키우지 않게).
     void import("./settings/settingsDialog").then(({ openSettingsDialog }) => {
-      const dialog = openSettingsDialog({ tab, onEngineChange: applyAiStatus });
+      const dialog = openSettingsDialog({ tab, onEngineChange: (summary) => { if (summary.tone === "off") refreshAiStatus(); else applyAiStatus(summary); } });
       const observer = new MutationObserver(() => {
         if (document.querySelector("[data-testid='start-settings']")) return;
         settingsOpen = false;
@@ -302,6 +302,14 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   const refreshAiStatus = (): void => {
     void import("./settings/settingsDialog").then(async ({ summarizeAiStatus }) => {
       const choice = loadEngineChoice();
+      if (!choice) {
+        // 이 PC 의 AI 프로그램을 고르지 않았으면 조수는 편집기의 「AI 연결」(Google·ChatGPT 로그인·API 키)을 그대로 쓴다.
+        // 그 연결이 살아 있으면 «AI 엔진이 아직 없어요» 라고 하지 않는다 — 로그인을 마쳐도 첫 화면이 계속 «없음» 이었다.
+        const { getAiConnectionStatus, refreshAiConnectionStatus } = await import("@/editor/panels/aiConnectionStatus");
+        await refreshAiConnectionStatus().catch(() => {});
+        const status = getAiConnectionStatus();
+        if (status.kind === "ready") { applyAiStatus({ tone: "ok", text: status.label }); return; }
+      }
       if (!localAgentsEnabled()) { applyAiStatus(summarizeAiStatus(choice, null)); return; }
       const { createLocalAgentsApi } = await import("./settings/localAgents");
       const report = await createLocalAgentsApi().detect(false).catch(() => null);
@@ -359,8 +367,14 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   const source = createConceptSource();
   const ensureAiConnected = async (label: string): Promise<boolean> => {
     // AI 연결 창은 편집기 UI 를 끌고 온다 — 만들기를 누를 때만 받는다(코드 분할, 첫 화면 번들을 키우지 않게).
-    const { ensureAiConnectedForPreset } = await import("@/editor/ui/aiConnectGate");
-    return ensureAiConnectedForPreset({ presetLabel: label });
+    // 시작 화면에는 편집기 셸 CSS 가 없다 — AI 설정 창 스타일을 같이 받지 않으면 창이 위치 없이 문서 끝에 붙어
+    // 첫 화면 뒤로 숨는다(「AI 연결하기」를 눌러도 아무것도 안 보였다).
+    const [{ ensureAiConnectedForPreset }] = await Promise.all([import("@/editor/ui/aiConnectGate"), import("./aiModalStyles")]);
+    try {
+      return await ensureAiConnectedForPreset({ presetLabel: label });
+    } finally {
+      refreshAiStatus();
+    }
   };
   const feed: ConceptFeed = createConceptFeed({
     mode: "launcher",
