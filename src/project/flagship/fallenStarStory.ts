@@ -137,7 +137,7 @@ export const FALLEN_STAR_ACT1: ChapterSpec = {
     ],
     stages: [
       {
-        prompt: "별, 달, 해, 별, 달… 다음에 빛날 무늬를 누른다.",
+        prompt: "다음에 빛날 무늬를 누른다.",
         options: ["별", "해", "달"],
         answer: 1,
         hit: { lines: ["해 무늬가 노랗게 빛나고, 알 옆면에 손바닥 모양 자국이 떠올랐다.", "엘레나: 자국 아래 옛 글자가 있어. 『살아 있는 손만』… 이라고 읽혀."], fx: ["se:chime2"] },
@@ -168,7 +168,7 @@ export const FALLEN_STAR_ACT1: ChapterSpec = {
   },
   devices: [
     {
-      map: "observatory", mark: "scope", name: "큰 망원경",
+      map: "observatory", mark: "scope", name: "망원경",
       fx: ["se:chime2", "particles:sparkle"],
       lines: ["망원경 너머로 동쪽 숲 위에 아직 연기가 가늘게 피어오른다."],
       done: ["렌즈가 깨끗하게 닦여 있다. 하넬 선생님이 밤새 들여다보신 모양이다."],

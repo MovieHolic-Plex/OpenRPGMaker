@@ -73,6 +73,10 @@ function setupCast(project: Project): void {
   // Actor4 칩에는 짝 얼굴 그림이 없다 — 남의 얼굴을 빌리지 않는다.
   delete (actors.find((a) => a.id === IRIS_ID) as { faceResourceId?: string }).faceResourceId;
   project.system.startActorIds = [hero.id, ELENA_ID];
+  // 런타임은 새 게임 파티를 session.partyActorIds 에서 읽는다 — 둘 다 맞춘다(감사 2차: 엘레나가 대사에만 있고 파티에 없었다).
+  project.session.partyActorIds = [hero.id, ELENA_ID];
+  // 동료는 맵에서도 뒤따라 걷는다 — 대사에만 있고 화면에 없는 동료가 없게.
+  project.system.companions = { ...project.system.companions, fromParty: true };
 }
 
 // ── 적 ──────────────────────────────────────────────────────────────────
@@ -262,6 +266,17 @@ function polishLines(observatory: GameMap, forest: GameMap, vault: GameMap): voi
   }
   replaceLine(vault, `ev_${FS_PREFIX}_vault_chest1`, "보물상자를 열었다! 기본 새우를 손에 넣었다.", [narrate("보물상자를 열었다! 상급 회복약을 손에 넣었다.")]);
 
+  // 보기가 셋인 선택지는 질문 줄을 앞 대사로 뺀다 — 480×270 에서 질문+보기 셋이 아래 창 높이를 넘어 셋째 보기가 잘렸다(감사 2차).
+  for (const map of [observatory, forest, vault]) for (const event of map.events) for (const list of eventCommandLists(event)) {
+    for (let i = 0; i < list.length; i += 1) {
+      const c = list[i] as ChoicesCommand;
+      if (c.kind !== "choices" || !c.prompt || c.options.length < 3) continue;
+      list.splice(i, 0, narrate(c.prompt));
+      delete c.prompt;
+      i += 1;
+    }
+  }
+
   // 남은 기본 화자 「의뢰인」은 하넬이다(이 장의 의뢰인은 하넬 하나).
   for (const map of [observatory, forest, vault]) for (const event of map.events) for (const list of eventCommandLists(event)) for (const c of list) {
     const rec = c as { kind: string; speaker?: string };
@@ -388,7 +403,12 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   setEventFace(M(ids.forest), `ev_${FS_PREFIX}_bram`, undefined);
   polishLines(M(ids.observatory), M(ids.forest), M(ids.vault));
   const bossEvent = M(ids.vault).events.find((e) => (e.pages ?? []).some((p) => JSON.stringify(p.commands).includes("battleProcessing")) && e.id.includes("kill"));
-  if (bossEvent) setEventChip(M(ids.vault), bossEvent.id, "tex_easyrpg_charset_actor1", 4);
+  if (bossEvent) {
+    setEventChip(M(ids.vault), bossEvent.id, "tex_easyrpg_charset_actor1", 4);
+    // 보스 자리에는 옛 렌즈가 서 있어 발렌이 렌즈 그림 속에 묻혔다(감사 2차) — 렌즈 앞(남쪽) 빈 바닥으로 내려 세운다.
+    const front = nearFree(project, M(ids.vault), { x: bossEvent.x, y: bossEvent.y + 3 }, 3, bossEvent.id);
+    if (front) { bossEvent.x = front.x; bossEvent.y = front.y; }
+  }
 
   // 떨어진 별을 열면 이리스가 깨어나 동료가 된다. 별빛 열쇠는 알 안에 있다 — 뚜껑이 열린 뒤 이리스가 건넨다.
   // 장 구성기 기본값인 「풀이 칸 바닥을 풀숲으로 바꾸기」(changeTile)는 그을린 흙 위에 풀 한 칸을 남겨 뺀다.
