@@ -137,14 +137,14 @@ export default {
     { id: "hanel-hint", note: "하넬 — 다음 갈 곳", ops: [{ kind: "teleport", mapId: "fs_observatory", x: 11, y: 14 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
     { id: "hanel-hint-close", note: "", ops: [...closeDialogue()], shot: false },
     { id: "hatch", note: "바닥 뚜껑문 → 화로의 방", ops: [...stepInto("fs_observatory", 13, 17, "up"), ...closeDialogue(10), { kind: "hold", dir: null, ms: 1200 }], shot: true },
-    { id: "tablet", note: "단서 석판", ops: [{ kind: "teleport", mapId: "fs_vault_gate", x: 10, y: 10 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
+    { id: "tablet", note: "단서 석판", ops: [{ kind: "teleport", mapId: "fs_vault_gate", x: 16, y: 13 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
     { id: "tablet-close", note: "", ops: [...closeDialogue()], shot: false },
-    { id: "brazier-wrong", note: "북동부터 — 틀린다", ops: [{ kind: "teleport", mapId: "fs_vault_gate", x: 13, y: 8 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
+    { id: "brazier-wrong", note: "북동부터 — 틀린다", ops: [{ kind: "teleport", mapId: "fs_vault_gate", x: 19, y: 11 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
     { id: "brazier-wrong-close", note: "", ops: [...closeDialogue()], shot: false },
-    ...[["se", 13, 12], ["nw", 6, 8], ["ne", 13, 8], ["sw", 6, 12]].map(([name, x, y]) => ({
+    ...[["se", 19, 15], ["nw", 12, 11], ["ne", 19, 11], ["sw", 12, 15]].map(([name, x, y]) => ({
       id: `brazier-${name}`, note: `화로 ${name}`, ops: [{ kind: "teleport", mapId: "fs_vault_gate", x, y }, { kind: "hold", dir: null, ms: 400 }, ...talk("up"), ...closeDialogue()], shot: name === "sw",
     })),
-    { id: "gate-open", note: "창살이 녹은 문", ops: [{ kind: "hold", dir: null, ms: 1500 }, ...closeDialogue(), { kind: "hold", dir: null, ms: 1500 }, ...closeDialogue(),{ kind: "teleport", mapId: "fs_vault_gate", x: 10, y: 5 }, { kind: "hold", dir: null, ms: 800 }], shot: true },
+    { id: "gate-open", note: "창살이 녹은 문", ops: [{ kind: "hold", dir: null, ms: 1500 }, ...closeDialogue(), { kind: "hold", dir: null, ms: 1500 }, ...closeDialogue(),{ kind: "teleport", mapId: "fs_vault_gate", x: 16, y: 8 }, { kind: "hold", dir: null, ms: 800 }], shot: true },
     { id: "to-vault", note: "지하로", ops: [{ kind: "hold", dir: "up", ms: 1200 }, { kind: "hold", dir: null, ms: 1500 }, dumpState("vault")], shot: true },
     { id: "save-crystal", note: "세이브 결정", ops: [{ kind: "teleport", mapId: "fs_vault", x: 32, y: 23 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
     { id: "save-crystal-close", note: "", ops: [...closeDialogue()], shot: false },
@@ -164,7 +164,7 @@ export default {
     { id: "signal-close", note: "", ops: [...closeDialogue()], shot: false },
     { id: "vault-out", note: "지하 → 화로의 방 → 천문대", ops: [
       ...stepInto("fs_vault", 30, 57, "up"),
-      ...stepInto("fs_vault_gate", 10, 13, "down"),
+      ...stepInto("fs_vault_gate", 16, 16, "down"),
     ], shot: true },
     { id: "report", note: "하넬에게 보고", ops: [...closeDialogue(),{ kind: "teleport", mapId: "fs_observatory", x: 11, y: 14 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
     { id: "ending", note: "엔딩까지", ops: [
