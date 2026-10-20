@@ -1,0 +1,332 @@
+{
+ "schema": "oprn-object-gate-final-profile/1",
+ "profileHash": "90cff8ccd3acc5a2",
+ "status": "rejected",
+ "calibratedAt": "2026-10-20T16:23:33.687Z",
+ "judge": {
+  "provider": "claude-cli",
+  "model": "claude-opus-5-5",
+  "effort": "medium"
+ },
+ "bad": {
+  "total": 217,
+  "caught": 217,
+  "missed": []
+ },
+ "good": {
+  "total": 214,
+  "passed": 90,
+  "falseFail": [
+   "interior/conductor_podium__w31-F",
+   "holdout/hue_beodeul__prop-stall_herb_flower",
+   "holdout/hue_war_drum__A",
+   "fresh4/q019_prehistoric",
+   "holdout/mir_bookshelf_1w__w41-A",
+   "holdout/mir_holy_water_font__w7-A",
+   "fresh/g70_sf",
+   "fresh5/s084_prehistoric",
+   "fresh/g4_campus",
+   "holdout/hue_stool__v5",
+   "fresh3/b3_tree-eef4bc",
+   "fresh4/q110_beodeul",
+   "holdout/mir_stove__w44-A",
+   "fresh5/s006_modern_city",
+   "interior/straw_bed__w44-A",
+   "fresh4/g4_beodeul-farmland-wet",
+   "holdout/mir_new-column",
+   "holdout/mir_beodeul__prop-stall_herb_flower",
+   "fresh2/g7_steampunk",
+   "fresh/g63_sky",
+   "holdout/real_broom_bucket",
+   "fresh/g54_steampunk",
+   "fresh5/s037_campus",
+   "fresh5/s079_pirate",
+   "interior/cheese_wheels__v5",
+   "fresh4/q052_sengoku",
+   "murim/well__A",
+   "fresh3/b3_house-h120_0",
+   "fresh/g44_desert",
+   "fresh5/s070_wizarding",
+   "fresh/g6_snow",
+   "style/beodeul__tree-a80c85",
+   "fresh3/b3_house-h132_0",
+   "fresh3/b3_prop-stall_veg",
+   "fresh4/g4_beodeul-farm-grass",
+   "holdout/mir_tea_table__A",
+   "fresh5/s019_campus",
+   "fresh/g9_desert",
+   "fresh5/s055_gothic",
+   "fresh3/b3_prop-parasol_table",
+   "holdout/hue_cheese_wheels__v5",
+   "fresh2/g25_desert",
+   "holdout/mir_potted_fern__w7-B",
+   "interior/timber_prop__w53-B",
+   "fresh4/g4_beodeul-sand",
+   "holdout/real_sack_flour",
+   "fresh5/s082_sengoku",
+   "fresh3/b3_tree-cc0fcb",
+   "fresh5/s059_prehistoric",
+   "murim/war_drum__A",
+   "fresh4/g4_beodeul-farmland",
+   "fresh/g62_modern_city",
+   "holdout/mir_coal_bin__w10-B",
+   "fresh5/s031_modern_city",
+   "style/farm__farm-coop__v3",
+   "fresh/g47_sky",
+   "fresh4/q108_interior",
+   "fresh5/s024_sf",
+   "holdout/hue_coal_bin__w10-B",
+   "style/beodeul__prop-goods_pile",
+   "holdout/hue_holy_water_font__w7-A",
+   "fresh/g79_sengoku",
+   "fresh3/b3_prop-cloth_stand",
+   "fresh5/s026_desert",
+   "fresh/g53_modern_city",
+   "interior/potted_fern__w7-B",
+   "interior/bookshelf_1w__w41-A",
+   "holdout/mir_well__A",
+   "holdout/mir_beodeul__house-h122_0",
+   "fresh/g20_campus",
+   "holdout/mir_straw_bed__w44-A",
+   "fresh3/b3_prop-stall_jug_bottle",
+   "holdout/mir_war_drum__A",
+   "fresh2/g12_modern_city",
+   "holdout/real_barrel_apple",
+   "fresh5/s041_sf",
+   "holdout/hue_quench_barrel__w5-C",
+   "holdout/mir_bar_stool__w5-C",
+   "fresh4/q031_sf",
+   "fresh5/s064_pirate",
+   "fresh/g0_pirate",
+   "fresh5/s028_jp_city_interior",
+   "interior/coal_bin__w10-B",
+   "fresh3/b3_prop-anchor_display",
+   "fresh/g18_modern_city",
+   "holdout/mir_beodeul__house-h106_1",
+   "fresh3/b3_tree-d105b2",
+   "holdout/mir_beodeul__house-h124_0",
+   "fresh3/b3_tree-c27062",
+   "fresh3/b3_prop-mooring_bollard",
+   "fresh4/q054_desert",
+   "fresh5/s014_modern_city_interior",
+   "fresh5/s049_interior",
+   "holdout/mir_conductor_podium__w31-F",
+   "fresh3/b3_prop-tree_planter",
+   "fresh3/b3_prop-statue_sage",
+   "style/beodeul__prop-stall_herb_flower",
+   "holdout/mir_timber_prop__w53-B",
+   "interior/holy_water_font__w7-A",
+   "fresh5/s063_pirate",
+   "fresh4/q092_modern_city",
+   "pairs/new-column",
+   "fresh5/s053_pirate",
+   "holdout/hue_new-column",
+   "fresh5/s054_sf",
+   "interior/quench_barrel__w5-C",
+   "fresh3/b3_tree-e9d9b3",
+   "fresh3/b3_house-h101_1",
+   "fresh4/g4_beodeul-road",
+   "fresh/g37_desert",
+   "holdout/mir_beodeul__house-h111_0",
+   "style/beodeul__tree-7ecdb8",
+   "holdout/mir_cheese_wheels__v5",
+   "fresh4/q048_modern_city",
+   "fresh4/q003_sengoku",
+   "holdout/hue_bathtub__w22-F",
+   "style/beodeul__ground-plaza",
+   "fresh/g19_modern_city",
+   "holdout/mir_quench_barrel__w5-C",
+   "style/farm__farm-barn__v3",
+   "fresh3/b3_prop-veg_cart",
+   "fresh4/q111_beodeul",
+   "fresh4/g4_beodeul-farm-lane",
+   "interior/bar_stool__w5-C"
+  ]
+ },
+ "sets": {
+  "fresh3": {
+   "bad": {
+    "total": 0,
+    "caught": 0
+   },
+   "good": {
+    "total": 24,
+    "passed": 7
+   }
+  },
+  "interior": {
+   "bad": {
+    "total": 24,
+    "caught": 24
+   },
+   "good": {
+    "total": 19,
+    "passed": 9
+   }
+  },
+  "fresh4": {
+   "bad": {
+    "total": 25,
+    "caught": 25
+   },
+   "good": {
+    "total": 38,
+    "passed": 22
+   }
+  },
+  "holdout": {
+   "bad": {
+    "total": 47,
+    "caught": 47
+   },
+   "good": {
+    "total": 47,
+    "passed": 15
+   }
+  },
+  "adv-front-prop": {
+   "bad": {
+    "total": 84,
+    "caught": 84
+   },
+   "good": {
+    "total": 0,
+    "passed": 0
+   }
+  },
+  "fresh5": {
+   "bad": {
+    "total": 16,
+    "caught": 16
+   },
+   "good": {
+    "total": 41,
+    "passed": 21
+   }
+  },
+  "fresh": {
+   "bad": {
+    "total": 4,
+    "caught": 4
+   },
+   "good": {
+    "total": 22,
+    "passed": 6
+   }
+  },
+  "style": {
+   "bad": {
+    "total": 8,
+    "caught": 8
+   },
+   "good": {
+    "total": 12,
+    "passed": 5
+   }
+  },
+  "fresh2": {
+   "bad": {
+    "total": 3,
+    "caught": 3
+   },
+   "good": {
+    "total": 6,
+    "passed": 3
+   }
+  },
+  "murim": {
+   "bad": {
+    "total": 5,
+    "caught": 5
+   },
+   "good": {
+    "total": 4,
+    "passed": 2
+   }
+  },
+  "pairs": {
+   "bad": {
+    "total": 1,
+    "caught": 1
+   },
+   "good": {
+    "total": 1,
+    "passed": 0
+   }
+  }
+ },
+ "tiers": {
+  "A": {
+   "bad": {
+    "total": 203,
+    "passed": 0
+   },
+   "good": {
+    "total": 194,
+    "passed": 87
+   }
+  },
+  "K": {
+   "bad": {
+    "total": 0,
+    "passed": 0
+   },
+   "good": {
+    "total": 10,
+    "passed": 0
+   }
+  },
+  "C": {
+   "bad": {
+    "total": 76,
+    "passed": 0
+   },
+   "good": {
+    "total": 37,
+    "passed": 9
+   }
+  },
+  "D": {
+   "bad": {
+    "total": 32,
+    "passed": 0
+   },
+   "good": {
+    "total": 0,
+    "passed": 0
+   }
+  },
+  "A-style": {
+   "bad": {
+    "total": 77,
+    "passed": 4
+   },
+   "good": {
+    "total": 84,
+    "passed": 16
+   }
+  },
+  "U": {
+   "bad": {
+    "total": 32,
+    "passed": 0
+   },
+   "good": {
+    "total": 15,
+    "passed": 3
+   }
+  },
+  "B": {
+   "bad": {
+    "total": 14,
+    "passed": 0
+   },
+   "good": {
+    "total": 0,
+    "passed": 0
+   }
+  }
+ },
+ "errors": [],
+ "note": "위반 = 등급 A 3/4 위반(적대 시험 adv-* 포함) + 강한 라벨 화풍 얕음, 전체 판정으로 센다. 정상 = 라벨 반쪽(3/4 라벨은 3/4·종류, 화풍 라벨은 화풍)으로 센다, 하한 0.5. 전체 판정 정상 통과 13/214. 전체 표본"
+}

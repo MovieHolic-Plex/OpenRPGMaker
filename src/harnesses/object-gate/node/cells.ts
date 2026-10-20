@@ -12,7 +12,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { objectGateRefusal, type ObjectGateContext, type ObjectGateReceipt } from '../../_core/objectGate';
-import { GATE_DATA, calibratedProfiles, listReceipts, readApproval, readHoldDecision } from './store';
+import { GATE_DATA, calibratedFinalProfiles, calibratedProfiles, listFinals, listReceipts, readApproval, readFinal, readHoldDecision, readReceipt } from './store';
 
 export const CELL_SIZES = [16, 24, 32, 48] as const;
 export const BASELINE_FILE = resolve(GATE_DATA, 'baseline-cells.txt');
@@ -66,11 +66,18 @@ export function readBaseline(): Set<string> {
 
 /** 출구 규칙을 통과한 영수증의 칸 해시 → 영수증. */
 export function passingCellIndex(context: ObjectGateContext, receipts: ObjectGateReceipt[] = listReceipts()): Map<string, ObjectGateReceipt> {
-  const calibrated = calibratedProfiles();
+  const calibrated = calibratedProfiles(), calibratedFinal = calibratedFinalProfiles();
   const index = new Map<string, ObjectGateReceipt>();
   for (const receipt of receipts) {
-    if (objectGateRefusal({ receipt, pixelSha256: receipt.pixelSha256, context, calibratedProfiles: calibrated, approval: receipt.kind === 'front_prop' ? readApproval(receipt.pixelSha256) : null, hold: readHoldDecision(receipt.pixelSha256) })) continue;
+    if (objectGateRefusal({ receipt, pixelSha256: receipt.pixelSha256, context, calibratedProfiles: calibrated, approval: receipt.kind === 'front_prop' ? readApproval(receipt.pixelSha256) : null, hold: readHoldDecision(receipt.pixelSha256), final: readFinal(receipt.pixelSha256), calibratedFinalProfiles: calibratedFinal })) continue;
     for (const hashes of Object.values(receipt.cells ?? {})) for (const h of hashes) index.set(h, receipt);
+  }
+  // Opus 최종 판정만 있고 옛 영수증이 없는 그림(2026-10-21~): 최종 기록이 칸 해시를 든다.
+  for (const final of listFinals()) {
+    const receipt = readReceipt(final.pixelSha256);
+    if (objectGateRefusal({ receipt, pixelSha256: final.pixelSha256, context, calibratedProfiles: calibrated, approval: null, hold: readHoldDecision(final.pixelSha256), final, calibratedFinalProfiles: calibratedFinal })) continue;
+    const stand = receipt ?? ({ schema: 'oprn-object-gate-receipt/1', pixelSha256: final.pixelSha256, width: final.width, height: final.height, kind: final.kind, name: final.name, label: final.label, profileHash: final.profileHash, verdict: 'pass', reasons: [], runs: [], decidedAt: final.decidedAt, cells: final.cells } as ObjectGateReceipt);
+    for (const hashes of Object.values(final.cells ?? {})) for (const h of hashes) index.set(h, stand);
   }
   return index;
 }

@@ -4,7 +4,7 @@ import { OBJECT_GATE_PROFILE, objectGateRefusal, type ObjectGateContext, type Ob
 import { createInterface } from 'node:readline/promises';
 import { humanDecision, validFrontPropApproval } from '../../_core/objectGate';
 import { readFileSync } from 'node:fs';
-import { calibratedProfiles, gateProfileHash, listApprovals, listQueueBatches, listReceipts, pngPixelSha256, readApproval, readHoldDecision, readProfiles, readReceipt, removeApproval, writeApproval, writeQueueBatch } from './store';
+import { exitInputs, calibratedProfiles, gateProfileHash, listApprovals, listQueueBatches, listReceipts, pngPixelSha256, readApproval, readHoldDecision, readProfiles, readReceipt, removeApproval, writeApproval, writeQueueBatch } from './store';
 
 const spawnBun = (argv: string[]): Promise<number> => new Promise((done, reject) => {
   const child = spawn('bun', [resolve('src/harnesses/object-gate/node/judge.mts'), ...argv], { stdio: 'inherit', cwd: process.cwd() });
@@ -15,6 +15,11 @@ export async function run(argv: string[]): Promise<number> {
   const stage = argv[0];
   const option = (name: string) => { const i = argv.indexOf(`--${name}`); return i >= 0 ? argv[i + 1] : undefined; };
   if (stage === 'review' || stage === 'calibrate' || stage === 'audit' || stage === 'preview' || stage === 'rereview') return spawnBun(argv);
+  // Opus 5.5 medium 적대적 최종 판정(2026-10-21): final-calibrate · final-review · final-queue · final-status
+  if (stage.startsWith('final-')) return new Promise((done, reject) => {
+    const child = spawn('bun', [resolve('src/harnesses/object-gate/node/final.mts'), ...argv], { stdio: 'inherit', cwd: process.cwd() });
+    child.once('error', reject); child.once('exit', code => done(code ?? 1));
+  });
   // 사람 허용 규칙 위변조 시험(임시 데이터·임시 키). 모델 호출 없음.
   if (stage === 'selftest-holds') return new Promise((done, reject) => {
     const child = spawn('bun', [resolve('src/harnesses/object-gate/node/selftest-holds.mts')], { stdio: 'inherit', cwd: process.cwd() });
@@ -24,7 +29,7 @@ export async function run(argv: string[]): Promise<number> {
     const png = option('png'), context = option('context') as ObjectGateContext | undefined;
     if (!png || !context) throw Error('check --png <그림> --context bundle|shared|store|workshop-local [--kind 종류]');
     const sha = await pngPixelSha256(resolve(png));
-    const refusal = objectGateRefusal({ receipt: readReceipt(sha), pixelSha256: sha, kind: option('kind') as ObjectGateKind | undefined, context, calibratedProfiles: calibratedProfiles(), approval: readApproval(sha), hold: readHoldDecision(sha) });
+    const refusal = objectGateRefusal({ ...exitInputs(sha), pixelSha256: sha, kind: option('kind') as ObjectGateKind | undefined, context });
     console.log(refusal ? `거절: ${refusal}` : `통과 (${sha.slice(0, 12)})`);
     return refusal ? 3 : 0;
   }
