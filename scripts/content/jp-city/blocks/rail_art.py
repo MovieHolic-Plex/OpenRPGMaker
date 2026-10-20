@@ -317,6 +317,7 @@ def _train(c, kind):
         c.P(x, 5, AS(3))
         for y in range(6, 38): c.P(x, y, AS(1) if y % 2 else AS(3))                               # 幌 주름(1px 줄)
         c.R(x, 38, 1, 6, AS(0)); c.P(x, 40, CG(2))                                                # 연결기
+    for x in (1, W - 2): c.R(x, 38, 1, 3, AS(0))                                                  # 스커트 끝 틈 메움
     c.VL(1, 5, 13, S(2)); c.VL(W - 2, 5, 13, CG(2)); c.a[3, 1] = 0; c.a[3, W - 2] = 0
 
 
