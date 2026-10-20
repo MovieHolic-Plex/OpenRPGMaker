@@ -433,6 +433,8 @@
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] :is(.status-menu-detail-label, .status-menu-detail-value, .status-menu-detail-description, .status-menu-detail-empty) { font: 18px/24px var(--runtime-pixel-font); color: #384840; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .status-menu-detail-value { grid-column: 2; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .status-menu-footer { left: 8px; right: 8px; bottom: 8px; top: auto; height: 56px; border: 4px solid #487068; background: #f8f8e8; box-shadow: inset 0 0 0 2px #fff; padding: 8px 12px; box-sizing: border-box; border-radius: 0; }
+/* 안내문이 비어 있는 정보 페이지(원정 수첩·여행자 등)는 빈 테두리 상자를 그리지 않는다(R4-4). 안내는 본문 힌트 줄이 이미 보여 준다. */
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .status-menu-footer:has(.status-menu-message:empty) { display: none; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .status-menu-message { font: 18px/24px var(--runtime-pixel-font); white-space: normal; color: #384840; overflow: auto; margin: 0; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .status-menu-entry-icon { width: 32px; height: 32px; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .status-menu-detail-row:has(> .status-menu-entry-icon) { grid-template-columns: 32px minmax(0, 1fr); gap: 4px; }
