@@ -14,6 +14,10 @@ import type { Rng } from "@/util/rng";
 import { CONSTRUCTION_TOOLS_V3 } from "./v3/constructionTools";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import type { ToolDefinition } from "./types";
+import type { TreeComposerDef } from "@/project/types";
+import { composeTreesInMask } from "@/project/defaults/treeComposer";
+import { layerTileAt } from "@/project/mapLayers";
+import BEODEUL_FOREST_COMPOSER from "@/assets/beodeulForestComposer.json";
 
 const BEODEUL_TEXTURE = "tex_beodeul_city";
 const BEODEUL_ID = "beodeul_city";
@@ -116,68 +120,46 @@ export function paintBeodeulWildRoute(input: BeodeulWildRouteInput): { roadCells
   return { roadCells: roadCells.length, treeCells, decor };
 }
 
-type Kit = NonNullable<TilesetDef["structureKits"]>[number];
 
 /**
  * 숲 벽 — 포켓몬 도로처럼 길 양옆을 나무로 빈틈없이 막는다(2026-10-06 「1번 도로가 엉망진창」).
- * 예전엔 2칸 격자마다 크기가 제각각인 나무 하나를 흔들어 찍어 덤불 점박이가 됐다.
- * 버들항 나무는 크기로 갈린다: 3×3 = 줄기 없는 수관, 3×4·4×5 = 줄기 있는 나무, 2×2 = 덤불, 1×3 = 측백.
- * 위에서 아래로 훑으며 아래가 트인 자리(길·풀숲·맵 끝)엔 줄기 나무를, 숲 안쪽엔 수관을 붙여 깔고, 남은 틈은 덤불로 메운다.
- * 측백은 숲 벽에 섞으면 이가 빠져 보여 쓰지 않는다.
+ *
+ * 2026-10-20 woodland 보정: 예전엔 3×3 수관·3×4 줄기 나무를 3칸 격자에 겹침 없이 찍고 틈을 덤불로 메웠다 —
+ * 같은 수관이 바둑판처럼 반복되고, 수관 사이로 풀밭이 비치고, 안쪽 수관은 줄기 없이 떠 보였다.
+ * 이제 나무 composer(#3058 treeComposer.ts, jp 숲 r4 와 같은 규칙)가 원본 줄기 나무(4×5·3×4)를 2줄·3칸 간격 밑동에 세우고,
+ * 칸마다 남쪽(앞) 나무부터 4·3·2층에 쌓는다 — 앞 수관이 뒤 나무의 줄기를 가리고, 숲 남쪽 끝 줄만 줄기가 보인다.
+ * 그림은 bd-tree 원본 칸 그대로다(src/assets/beodeulForestComposer.json, 새 그림 없음). 수관은 숲 칸 밖으로 넘치지 않는다(길 둘레 통행 보존).
+ * 그래도 남은 2×2 빈 풀밭만 덤불로 메운다(1칸 틈은 풀밭으로 둔다).
  */
 export function plantBeodeulForestWall(project: Project, map: GameMap, tileset: TilesetDef, reserved: ReadonlySet<number>, rng: Rng,
   stampObject: ToolDefinition): number {
   const w = map.width, h = map.height;
-  const kits = (tileset.structureKits ?? []).filter(kit => kit.id.startsWith("bd-tree-"));
-  const crowns = kits.filter(kit => kit.width === 3 && kit.height === 3);
-  const trunks = kits.filter(kit => kit.width === 3 && kit.height === 4);
-  const bushes = kits.filter(kit => kit.width === 2 && kit.height === 2);
+  const empty = (index: number): boolean => ([2, 3, 4] as const).every(L => layerTileAt(map, L, index) < 0);
   const plantable = (x: number, y: number): boolean => {
     if (x < 0 || y < 0 || x >= w || y >= h) return false;
     const index = y * w + x;
-    return !reserved.has(index) && map.lowerTiles[index] === BEODEUL_PLAIN_GRASS && map.upperTiles[index]! < 0;
+    return !reserved.has(index) && map.lowerTiles[index] === BEODEUL_PLAIN_GRASS && empty(index);
   };
-  const free = (x: number, y: number, kw: number, kh: number): boolean => {
-    for (let dy = 0; dy < kh; dy++) for (let dx = 0; dx < kw; dx++) if (!plantable(x + dx, y + dy)) return false;
-    return true;
-  };
-  // 발자국 바로 아래 줄에 나무를 심을 수 없는 칸(길 둘레·풀숲·맵 끝)이 있으면 그 나무는 숲의 앞줄이라 줄기가 보여야 한다.
-  const openBelow = (x: number, y: number, kw: number, kh: number): boolean => {
-    if (y + kh >= h) return true;
-    for (let dx = 0; dx < kw; dx++) {
-      const index = (y + kh) * w + x + dx;
-      if (x + dx < w && (reserved.has(index) || map.lowerTiles[index] !== BEODEUL_PLAIN_GRASS)) return true;
-    }
-    return false;
-  };
-  // 맵 하나에 수관·줄기 나무는 한 종씩, 덤불은 두 종까지 — 색이 다른 수관을 섞으면 숲이 조각보가 됐다.
-  const one = (list: readonly Kit[]): Kit[] => list.length ? [list[Math.floor(rng() * list.length)]!] : [];
-  const crownKind = one(crowns), trunkKind = one(trunks), bushKinds = [...one(bushes), ...one(bushes)];
-  const pick = (list: readonly Kit[]): Kit | undefined => list[Math.floor(rng() * list.length)];
+  // 숲 칸을 먼저 정해 두고(짜는 동안 칸이 차도 판정이 흔들리지 않게) composer 에 넘긴다.
+  const forest = new Set<number>();
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (plantable(x, y)) forest.add(y * w + x);
+  const inForest = (x: number, y: number) => x >= 0 && y >= 0 && x < w && y < h && forest.has(y * w + x);
+  const composer = BEODEUL_FOREST_COMPOSER as unknown as TreeComposerDef;
+  composeTreesInMask(map, composer, inForest, inForest, Math.floor(rng() * 997));
   let cells = 0;
-  const stamp = (kit: Kit, x: number, y: number): boolean => {
-    try {
-      stampObject.run(project, { objectId: `kit:${BEODEUL_ID}/${kit.id}`, mapId: map.id, x, y });
-      cells += kit.width * kit.height;
-      return true;
-    } catch {
-      return false;   // 찍을 수 없는 자리(보호 칸 등)는 건너뛴다.
-    }
-  };
+  for (const index of forest) if (!empty(index)) cells++;
+  // 틈 메우기 — 덤불(2×2)만. 숲 칸 안의 빈 풀밭 2×2 에만.
+  const bushes = (tileset.structureKits ?? []).filter(kit => kit.id === "bd-tree-37f48b" || kit.id === "bd-tree-f4f319");
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
-      // 줄마다 시작 열을 비껴 벽돌처럼 엇갈리게 — 같은 열에 세우면 둥근 수관 사이 풀밭이 격자로 보인다.
-      if (!plantable(x, y) || (x + (Math.floor(y / 3) % 3)) % 3 !== 0) continue;
-      const trunk = pick(trunkKind), crown = pick(crownKind);
-      if (trunk && free(x, y, 3, 4) && openBelow(x, y, 3, 4) && stamp(trunk, x, y)) { x += 2; continue; }
-      if (crown && free(x, y, 3, 3) && !openBelow(x, y, 3, 3) && stamp(crown, x, y)) { x += 2; continue; }
-    }
-  }
-  // 틈 메우기 — 덤불(2×2). 1칸 틈은 풀밭으로 둔다(1×1 생울타리는 네모 판이라 숲 속에서 튄다).
-  for (let y = 0; y < h; y++) {
-    for (let x = 0; x < w; x++) {
-      const bush = pick(bushKinds);
-      if (bush && free(x, y, 2, 2) && stamp(bush, x, y)) x += 1;
+      const bush = bushes[Math.floor(rng() * bushes.length)];
+      if (!bush || ![0, 1].every(dy => [0, 1].every(dx => inForest(x + dx, y + dy) && empty((y + dy) * w + x + dx)))) continue;
+      try {
+        stampObject.run(project, { objectId: `kit:${BEODEUL_ID}/${bush.id}`, mapId: map.id, x, y });
+        cells += 4; x += 1;
+      } catch {
+        // 찍을 수 없는 자리(보호 칸 등)는 건너뛴다.
+      }
     }
   }
   return cells;

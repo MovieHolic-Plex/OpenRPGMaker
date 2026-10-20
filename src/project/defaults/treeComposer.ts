@@ -37,11 +37,19 @@ interface Ctx {
   readonly sd: number;
   readonly maxW: number;
   readonly maxH: number;
+  /** 1층 숲 바닥 대신 쓰는 숲 판정(composeTreesInMask — 숲 바닥 오토타일이 없는 칩셋, 예: 버들항). */
+  readonly forestAt?: (x: number, y: number) => boolean;
+  /** 1층 잔디 판정 대신 쓰는 「수관이 덮어도 되는 칸」. */
+  readonly holdAt?: (x: number, y: number) => boolean;
 }
 
 function context(map: GameMap, group: AutotileGroup, seed: number): Ctx | null {
-  const cp = group.composer;
-  if (!cp || cp.kind !== "trees" || !cp.sprites?.length) return null;
+  return group.composer ? contextFor(map, group.composer, group.memberTileIds, seed) : null;
+}
+
+function contextFor(map: GameMap, cp: TreeComposerDef, floorTiles: readonly number[], seed: number,
+  forestAt?: (x: number, y: number) => boolean, holdAt?: (x: number, y: number) => boolean): Ctx | null {
+  if (cp.kind !== "trees" || !cp.sprites?.length) return null;
   const byKey = new Map<string, TreeComposerSprite[]>();
   const own = new Set<number>();
   let maxW = 1, maxH = 1;
@@ -53,20 +61,21 @@ function context(map: GameMap, group: AutotileGroup, seed: number): Ctx | null {
   }
   // forest_r4_compose 는 같은 모양 안에서 이름 순으로 고른다 — 굽기도 이름 순으로 싣지만, 손으로 고친 정의에도 같게 맞춘다.
   for (const list of byKey.values()) list.sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
-  const floor = new Set(group.memberTileIds);
+  const floor = new Set(floorTiles);
   const overhang = new Set<number>([...(cp.overhangOnTiles ?? []), ...floor]);
-  return { map, cp, W: map.width, H: map.height, floor, overhang, own, byKey, phase: new Map(), sd: seed * 101, maxW, maxH };
+  return { map, cp, W: map.width, H: map.height, floor, overhang, own, byKey, phase: new Map(), sd: seed * 101, maxW, maxH, forestAt, holdAt };
 }
 
 function isForest(c: Ctx, x: number, y: number): boolean {
-  return x >= 0 && y >= 0 && x < c.W && y < c.H && c.floor.has(layerTileAt(c.map, 1, y * c.W + x));
+  if (x < 0 || y < 0 || x >= c.W || y >= c.H) return false;
+  return c.forestAt ? c.forestAt(x, y) : c.floor.has(layerTileAt(c.map, 1, y * c.W + x));
 }
 
 /** 수관이 놓여도 되는 칸: 1층이 잔디·숲 바닥이고 composer 층(2~4층)에 남의 칸이 없다. */
 function canHold(c: Ctx, x: number, y: number): boolean {
   if (x < 0 || y < 0 || x >= c.W || y >= c.H) return false;
   const i = y * c.W + x;
-  if (!c.overhang.has(layerTileAt(c.map, 1, i))) return false;
+  if (c.holdAt ? !c.holdAt(x, y) : !c.overhang.has(layerTileAt(c.map, 1, i))) return false;
   for (const L of c.cp.layers) {
     const t = layerTileAt(c.map, L as TileLayerNo, i);
     if (t >= 0 && !c.own.has(t)) return false;
@@ -185,4 +194,14 @@ export function composeTreesAll(map: GameMap, group: AutotileGroup, seed = 0): n
 /** 이 그룹이 나무 composer 숲 바닥인가. */
 export function isTreeComposerGroup(group: AutotileGroup): boolean {
   return group.composer?.kind === "trees";
+}
+
+/**
+ * 숲 바닥 오토타일 없이 숲 칸 판정으로 맵 전체를 짠다(버들항 woodland, 2026-10-20).
+ * forest(x,y) = 나무가 설 수 있는 숲 칸, hold(x,y) = 수관이 덮어도 되는 칸(숲 칸 포함). 규칙은 composeTreesAll 과 같다.
+ */
+export function composeTreesInMask(map: GameMap, cp: TreeComposerDef, forest: (x: number, y: number) => boolean,
+  hold: (x: number, y: number) => boolean, seed = 0): number {
+  const c = contextFor(map, cp, [], seed, forest, hold);
+  return c ? rewrite(c, 0, 0, c.W, c.H) : 0;
 }

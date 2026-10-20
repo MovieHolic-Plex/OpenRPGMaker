@@ -54,8 +54,9 @@ export function refineBeodeulVegetation(project:Project,mapId:string){
  for(const g of COURTYARD_GROVES){stamp(g.recipe+'-shadow',g.x,g.y);stamp(g.recipe,g.x,g.y);}
  // Three connected edges enclose the actual vegetable bed; the north side opens onto the main lane.
  for(let x=30;x<=35;x++)stamp('fence-horizontal',x,22);
- stamp('fence-corner',29,22);stamp('fence-corner',36,22);
- for(let y=20;y<=21;y++){stamp('fence-vertical',29,y);stamp('fence-vertical',36,y);}
+ // 모서리·세로는 원본 밭 울타리 칸(남서·남동·서변·동변)이다 — 예전 한 가지 「모서리」를 양쪽에 쓰면 동쪽 모서리 레일이 밖으로 삐졌다.
+ stamp('fence-corner',29,22);stamp('fence-corner-se',36,22);
+ for(let y=20;y<=21;y++){stamp('fence-vertical',29,y);stamp('fence-vertical-east',36,y);}
  for(const [j,[x,y]] of [[1,3],[26,3],[49,3],[3,12],[3,31],[35,12],[48,30],[41,32]].entries()){
   const r=newRecipes.find(r=>r.id===`bdg-woodland-fringe-${j%2}`)!;
   const woodlandTargets=new Set(translated.map.values());
