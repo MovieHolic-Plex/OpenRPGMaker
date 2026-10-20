@@ -93,7 +93,7 @@ function setupCast(project: Project): void {
   // 턴제 파티 RPG — 필드에 액션 전투용 하트 HUD 를 띄우지 않는다(감사 2차: 지도 왼쪽 위를 늘 가렸다).
   project.system.fieldHud = JRPG_CLASSIC_FIELD_HUD;
   // 보스전에서 남은 체력이 보이게 — 도트 측면 스킨은 적 체력을 숨긴다(가혹 검수 r1: 「적 HP 표시가 전혀 없음」).
-  project.system.battleLook = { ...project.system.battleLook, enemyHp: true };
+  project.system.battleLook = { ...project.system.battleLook, enemyHp: true, enemyNames: true };
 }
 
 // ── 적 ──────────────────────────────────────────────────────────────────
@@ -122,16 +122,17 @@ function setupFoes(project: Project): { field: string[]; boss: string } {
   makeEnemy(project, "enemy_fs_wolf", "숲늑대", "wolf-grey", { maxHp: 150, maxMp: 0, attack: 58, defense: 18, mind: 30, agility: 40 }, 40, 12);
   makeEnemy(project, "enemy_fs_spider", "덤불거미", "spider-cave", { maxHp: 130, maxMp: 0, attack: 55, defense: 16, mind: 30, agility: 34 }, 36, 10);
   makeEnemy(project, "enemy_fs_wisp", "길 잃은 도깨비불", "wisp-blue", { maxHp: 110, maxMp: 20, attack: 60, defense: 12, mind: 60, agility: 46 }, 38, 14);
-  makeEnemy(project, "enemy_fs_valen", "심문관 발렌", "mage-rogue", { maxHp: 1100, maxMp: 120, attack: 84, defense: 75, mind: 90, agility: 44 }, 400, 300);
-  makeEnemy(project, "enemy_fs_guardian", "별지기의 수호상", "golem-crystal", { maxHp: 900, maxMp: 0, attack: 92, defense: 85, mind: 40, agility: 22 }, 300, 0);
+  makeEnemy(project, "enemy_fs_valen", "심문관 발렌", "mage-rogue", { maxHp: 1100, maxMp: 120, attack: 84, defense: 80, mind: 90, agility: 44 }, 400, 300);
+  makeEnemy(project, "enemy_fs_guardian", "별지기의 수호상", "golem-crystal", { maxHp: 900, maxMp: 0, attack: 92, defense: 90, mind: 40, agility: 22 }, 300, 0);
   // 발렌은 필드와 같은 걷기 칩의 전투 시트로 싸운다(감사 3차: 필드는 망토 마법사, 전투는 보라 후드 — 다른 사람처럼 보였다).
   const valen = project.database.enemies.find((e) => e.id === "enemy_fs_valen");
   if (valen) valen.monsterResourceId = "charset-battler-actor1-4";
   // 보스 압박(가혹 검수 r1: 「공격 연타만으로 이긴다」) — 발렌은 둘째 차례부터 세 차례마다 「심판의 기도」로 예고하고 다음 차례에
   // 파티 전체에 「심판의 빛」을 쏟는다. 수호상은 둘째 차례부터 격 차례로 「수호의 철퇴」. 둘 다 방어가 두꺼워 통상 공격이 덜 박힌다.
   // 가혹 검수 r3·r4: 발렌의 자기 치유(체력 30% 아래, 한 차례에 두 번까지)가 싸움을 끝나지 않게 했다 — 치유를 뺐다.
-  // 엔진 그대로 돌린 헤드리스 판(.omo/fs/naive.mts, 60판, Lv6): 공격만 15% 승 · 공격 반·아무 기술 반 87% ·
-  // 공격 반·센 기술 반 98% · 센 기술 100%(결정 13). 방어가 두꺼워 통상 공격보다 기술 배율이 크게 먹힌다.
+  // 엔진 그대로 돌린 헤드리스 판(.omo/fs/naive.mts, 60판, Lv6): 공격만 27% 승 · 공격 반·아무 기술 반 90% ·
+  // 공격 반·센 기술 반 100%(결정 19) · 센 기술 100%(결정 12). 방어가 두꺼워 통상 공격보다 기술 배율이 크게 먹힌다.
+  // 가혹 검수 r5: 「한 판 결정 수가 길다」 — 체력을 700/480 으로 줄였다.
   const skills = project.database.skills;
   const cloneSkill = (fromId: string, id: string, patch: Record<string, unknown>): void => {
     const base = skills.find((s) => s.id === fromId);
@@ -142,7 +143,7 @@ function setupFoes(project: Project): { field: string[]; boss: string } {
   };
   const noMp = { flat: 0, percentMax: 0 };
   cloneSkill("skill_focus", "skill_fs_prayer", { name: "심판의 기도", mpCost: noMp, description: "빛을 모은다. 다음 차례에 큰 빛이 쏟아진다." });
-  cloneSkill("skill_mage_blizzard", "skill_fs_judgment", { name: "심판의 빛", power: 140, mpCost: noMp, description: "모은 빛을 파티 전체에 쏟아붓는다." });
+  cloneSkill("skill_mage_blizzard", "skill_fs_judgment", { name: "심판의 빛", power: 150, mpCost: noMp, description: "모은 빛을 파티 전체에 쏟아붓는다." });
   cloneSkill("skill_sword_slash", "skill_fs_maul", { name: "수호의 철퇴", power: 120, description: "돌 팔을 크게 내리친다." });
   const act = (skillId: string, priority: number, condition: Enemy["actions"][number]["condition"] = { kind: "always" }) =>
     ({ skillId, priority, condition, switchOnAfterAction: { enabled: false }, switchOffAfterAction: { enabled: false } });
@@ -153,11 +154,11 @@ function setupFoes(project: Project): { field: string[]; boss: string } {
       act("skill_fs_judgment", 10, { kind: "turn", start: 3, interval: 3 }),
       act("skill_sword_slash", 6), act("skill_weaken", 4),
     ];
-    valen.stats = { ...valen.stats, maxHp: 800 };
+    valen.stats = { ...valen.stats, maxHp: 700 };
   }
   if (guardian) {
     guardian.actions = [act("skill_fs_maul", 9, { kind: "turn", start: 2, interval: 2 }), act("skill_earth", 7), act("skill_attack", 6)];
-    guardian.stats = { ...guardian.stats, maxHp: 550 };
+    guardian.stats = { ...guardian.stats, maxHp: 480 };
   }
   // 표시 레벨 — 견본 몬스터에서 복제한 레벨(발렌 33·수호상 27)이 Lv6 파티 앞에 그대로 떠 이야기와 어긋났다(감사 VQA).
   // 보상은 위에서 직접 정했으므로 레벨은 표시와 레벨 차 경험치 보정에만 쓰인다.
@@ -170,7 +171,13 @@ function setupFoes(project: Project): { field: string[]; boss: string } {
   makeTroop(project, "troop_fs_finale", "심문관 발렌과 수호상", ["enemy_fs_valen", "enemy_fs_guardian"]);
   // 옛 별지기의 방 — 동굴 배경만으로는 종유석 굴처럼 보였다(감사 VQA 2차). 천장 렌즈에서 내려오는 빛줄기와 별빛 겹을 얹는다.
   const finale = project.database.troops.find((t) => t.id === "troop_fs_finale");
-  if (finale) finale.backdropLayers = [{ preset: "lightRays", opacity: 45 }, { preset: "stars", opacity: 55 }];
+  // 가혹 검수 r5: 「배경이 평평하다」 — 안개 층을 하나 더 깔아 깊이를 준다.
+  if (finale) finale.backdropLayers = [{ preset: "mist", opacity: 30 }, { preset: "lightRays", opacity: 45 }, { preset: "stars", opacity: 55 }];
+  // 가혹 검수 r5: 「전투 스프라이트가 화면 대비 작다」 — 결전의 둘은 크게 세운다(발렌 정수 2배, 수호상 1.5배).
+  for (const [id, scale] of [["enemy_fs_valen", 200], ["enemy_fs_guardian", 150]] as const) {
+    const enemy = project.database.enemies.find((e) => e.id === id);
+    if (enemy) enemy.battleScalePercent = scale;
+  }
   return { field: ["troop_fs_wolves", "troop_fs_spiders", "troop_fs_wisps"], boss: "troop_fs_finale" };
 }
 
@@ -624,6 +631,17 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       { kind: "say", speaker: "이리스", text: "북쪽 하늘에서 아직 대답이 들려요. 아주 작게." },
       { kind: "say", speaker: "카엘", text: "그럼 거기까지 가 보자. 같이." },
     ],
+    // 가혹 검수 r5: 끝 화면이 두 줄뿐이라 여운이 약했다 — 짧은 크레딧 두루마리와 「다음 막」 예고를 단다.
+    presentation: {
+      kicker: "제1막 끝",
+      credits: [
+        "폴른 스타", "제1막 · 떨어진 별", "",
+        "카엘 — 견습 별지기", "엘레나 — 천문대의 마도학자", "이리스 — 별에서 온 기계 소녀", "",
+        "천문대장 하넬", "숲지기 브람", "심문관 발렌", "",
+        "그날 밤 동쪽 숲에 떨어진 것은 별이 아니었다.", "이리스의 배가 남은 곳, 북쪽 하늘탑으로.", "",
+        "제2막에서 계속됩니다.",
+      ].join("\n"),
+    },
   });
   const reported = findTextList(M(ids.observatory), "이리스를 집에 데려다주거라");
   if (!reported) throw new Error("[fallen-star] 보고 대사를 찾지 못했다");

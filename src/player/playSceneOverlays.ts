@@ -437,6 +437,8 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     const final = textNode("div", "ending-final game-over-content", "");
     final.append(textNode("div", "ending-final-title", "THE END"));
     final.append(textNode("div", "ending-final-caption", title));
+    const summary = endingSummaryLine(scene);
+    if (summary) final.append(textNode("div", "ending-final-summary", summary));
     const actions = textNode("div", "game-over-actions", "");
     const button = terminalButton("return-title", "타이틀로 돌아가기", () => { void exitTerminal(terminal, () => scene.returnToTitle()); });
     actions.append(button); final.append(actions); terminal.root.append(final);
@@ -482,4 +484,19 @@ function playTerminalMusic(terminal: TerminalScene, project: Project, resourceId
   terminal.root.append(music);
   terminal.signal.addEventListener("abort", () => { music.pause(); music.removeAttribute("src"); music.load(); music.remove(); }, { once: true });
   void music.play().catch(() => { /* Unavailable media must not prevent the terminal outcome. */ });
+}
+
+/**
+ * 마지막 카드 아래 한 줄 요약 — 함께한 동료와 플레이 시간. 제목 두 줄만 남던 끝 화면이 여운 없이 끊겼다(폴른 스타 가혹 검수 r5).
+ * 몬스터 파티 게임은 배우 파티가 비어 동료 칸을 빼고 시간만 말한다.
+ */
+function endingSummaryLine(scene: { session: { partyActorIds?: readonly string[]; playTimeSeconds?: number } }): string {
+  const project = store.getCurrent();
+  const names = (scene.session.partyActorIds ?? [])
+    .map((id) => project.database.actors.find((actor) => actor.id === id)?.name)
+    .filter((name): name is string => Boolean(name));
+  const seconds = Math.max(0, Math.floor(scene.session.playTimeSeconds ?? 0));
+  const time = `${Math.floor(seconds / 3600)}:${String(Math.floor((seconds % 3600) / 60)).padStart(2, "0")}`;
+  const parts = [names.length ? `함께한 이 ${names.join(" · ")}` : "", seconds > 0 ? `플레이 시간 ${time}` : ""].filter(Boolean);
+  return parts.join("   ·   ");
 }

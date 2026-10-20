@@ -145,6 +145,7 @@
 }
 .ending-final-title { position: absolute; top: 36%; left: 5%; right: 5%; text-align: center; font-size: 23px; letter-spacing: 6px; font-weight: 400; }
 .ending-final-caption { position: absolute; top: 55%; left: 10%; right: 10%; text-align: center; font-size: 9px; line-height: 1.6; opacity: .65; overflow-wrap: anywhere; }
+.ending-final-summary { position: absolute; top: 63%; left: 8%; right: 8%; text-align: center; font-size: 9px; line-height: 1.6; opacity: .55; letter-spacing: .04em; overflow-wrap: anywhere; }
 @keyframes terminal-darken { from { background: transparent; } to { background: #080809; } }
 @keyframes terminal-reveal { from { opacity: 0; } to { opacity: 1; } }
 @keyframes terminal-wake { from { opacity: 1; } to { opacity: 0; } }
