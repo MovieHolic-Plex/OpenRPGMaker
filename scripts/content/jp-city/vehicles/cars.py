@@ -113,7 +113,7 @@ def _done(c):
 
 # ── 옆모습 공통(3/4: 위에서 보이는 윗면 띠 + 남쪽 옆면) ─────────────────────
 # 행 좌표는 48 높이 캔버스 기준. 보닛·트렁크 윗면 DY..DF-1, 접힘선 DF, 아래 몸체 옆면 BY0..BY1.
-DY, DF, BY0, BY1 = 22, 29, 30, 40
+DY, DF, BY0, BY1 = 18, 29, 30, 40       # 2026-10-20 깊이: 보닛·트렁크 윗면 7→11줄(차폭을 위에서 본 면)
 
 
 def _lerp(a, b, f):
@@ -184,14 +184,22 @@ def _sedan_side(tone, body='sedan', taxi=False):
     """80×48, 오른쪽 진행. 세단(트렁크 데크) / 해치백(짧은 꽁무니, 지붕이 뒤까지)."""
     c = Cv(80, 48); T = _tone(*tone)
     if body == 'hatch':
-        _side(c, T, 8, 76, 17, 50, 9, 58, 12, 19, pillars=(36,), seams=(36, 57), handles=(39, 22), trunk=False)
+        _side(c, T, 8, 76, 17, 50, 9, 58, 9, 21, pillars=(36,), seams=(36, 57), handles=(39, 22), trunk=False)
         _wheels(c, (20, 62))
     else:
-        _side(c, T, 4, 76, 26, 50, 20, 58, 12, 19, pillars=(37,), seams=(23, 37, 57), handles=(40, 25))
+        _side(c, T, 4, 76, 26, 50, 20, 58, 9, 21, pillars=(37,), seams=(23, 37, 57), handles=(40, 25))
         _wheels(c, (17, 62))
     if taxi:                                                                      # 지붕 표시등(글자 없음)
-        c.R(33, 7, 10, 5, K('shiro', 1)); c.HL(33, 7, 10, K('shiro', 2)); c.VL(33, 8, 4, K('shiro', 2))
-        c.R(34, 9, 8, 2, K('aka', 1)); c.VL(42, 8, 4, K('conc', 0))
+        c.R(33, 4, 10, 6, K('shiro', 1)); c.HL(33, 4, 10, K('shiro', 2)); c.VL(33, 5, 5, K('shiro', 2))
+        c.R(34, 7, 8, 2, K('aka', 1)); c.VL(42, 5, 5, K('conc', 0))
+    return _done(c)
+
+
+def _van_side(tone):
+    """80×48 밴(정지 소품용): 지붕이 꽁무니까지 이어진 긴 상자 캐빈, 짧은 보닛."""
+    c = Cv(80, 48); T = _tone(*tone)
+    _side(c, T, 4, 76, 6, 54, 4, 62, 7, 20, pillars=(26, 42), seams=(26, 42, 61), handles=(45, 29), trunk=False)
+    _wheels(c, (17, 62))
     return _done(c)
 
 
@@ -294,7 +302,7 @@ def _sedan_up(tone, L=5, taxi=False):
 def _kei_side(color):
     """64×48(L=4), 오른쪽 진행. 짧은 보닛·지붕이 꽁무니까지(서 있는 뒷면)·창 셋·뒷문 슬라이드."""
     c = Cv(64, 48); T = _tone(*KEI_TONE[color])
-    _side(c, T, 4, 61, 7, 46, 4, 53, 11, 18, pillars=(16, 32), seams=(16, 33, 52), handles=(35, 19), trunk=False)
+    _side(c, T, 4, 61, 7, 46, 4, 53, 6, 18, pillars=(16, 32), seams=(16, 33, 52), handles=(35, 19), trunk=False)
     c.HL(18, BY0 + 4, 14, T['dk'])                                               # 슬라이드 레일
     _wheels(c, (14, 51))
     return _done(c)

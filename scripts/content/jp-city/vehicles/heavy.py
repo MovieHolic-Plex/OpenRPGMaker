@@ -6,6 +6,7 @@
 앞/뒤(`down`/`up`)는 폭 32: 위(먼 끝) → 지붕(가장 밝은 단 · 에어컨 · 환기 줄) → 앞유리 → 얼굴 → 바닥 그림자.
 """
 import os, sys
+import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 for p in (HERE, os.path.join(HERE, '..', '..', 'atlas-pick'), os.path.join(HERE, '..', 'lib')):
     if p not in sys.path: sys.path.insert(0, p)
@@ -51,16 +52,19 @@ def _led(c, X, y, w, col='daidai'):
 # ───────────────────────────── 노선버스 ─────────────────────────────
 BUS_BAND = 'midori'
 
-def bus_side(front_right=True, open_=False):
+def bus_side(front_right=True, open_=False, band=None):
     """3/4 탑뷰 옆모습(2026-10-20 깊이 다시 그림): 지붕 윗면이 화면 세로 22줄(차폭 2.5m를 위에서 본 면) →
     둥근 어깨 2줄 → 옆면 26줄. 옥상 설비는 윗면 + 남쪽 면이 있는 상자. 옛 그림은 지붕 13줄 + 옆면 37줄의 입면도였다."""
     s = Side(144, 64, front_right); c = s.c
+    BUS_BAND = band or globals()['BUS_BAND']
     RT, RB = 3, 25                     # 지붕 윗면 줄(먼 쪽 가장자리 RT, 가까운 쪽 RB-1)
     ST = RB + 2                         # 옆면 시작(어깨 2줄 아래)
     # ── 지붕 윗면: 먼 가장자리 밝은 단 · 가운데 · 가까운 쪽으로 한 단 어두워짐(둥근 지붕) ──
-    for y in range(RT, RB):
-        t = 3 if y < RT + 2 else 2 if y < RB - 5 else 1
-        c.HL(3, y, 136, K('shiro', t))
+    for y in range(RT, RB):                                                                             # 윗면: 옆면보다 밝은 값 + 북→남 그러데이션(디더)
+        f = (y - RT) / (RB - RT)
+        for x in range(3, 139):
+            t = 2 if f < 0.45 else 1 if f > 0.8 else (2 if (x + y) % 2 else 1) if f < 0.62 else (1 if (x + y) % 3 else 2)
+            c.P(x, y, K('shiro', t))
     c.HL(5, RT - 1, 132, K('shiro', 3)); c.HL(8, RT - 2, 126, K('shiro', 2))                         # 먼 쪽 둥근 가장자리
     for y in range(RT - 1, RB):                                                                         # 앞뒤 끝: 둥근 모서리(왼쪽 빛 · 오른쪽 그늘)
         c.P(2, y, K('shiro', 3)); c.P(140, y, K('conc', 0)); c.P(139, y, K('shiro', 1))
@@ -78,9 +82,9 @@ def bus_side(front_right=True, open_=False):
     roofbox(88, 9, 14, 6, 2)
     # 앞 끝 위 행선 LED(지붕 앞 가장자리 아래로 내려온 판)
     # ── 어깨: 지붕 → 옆면 둥근 모서리 2줄 ──
-    c.HL(2, RB, 139, K('shiro', 0)); c.HL(2, RB + 1, 139, K('conc', 1))
+    c.HL(2, RB, 139, K('conc', 1)); c.HL(2, RB + 1, 139, K('conc', -1))                                # 어두운 둥근 어깨 띠 2px
     # ── 옆면 ──
-    c.R(2, ST, 139, 54 - ST, K('shiro', 1)); c.VL(2, ST, 54 - ST, K('shiro', 2)); c.VL(140, ST, 54 - ST, K('conc', 0))
+    c.R(2, ST, 139, 54 - ST, K('shiro', 0)); c.VL(2, ST, 54 - ST, K('shiro', 1)); c.VL(140, ST, 54 - ST, K('conc', 0))   # 옆면: 지붕보다 한 단 어둡다
     c.HL(2, ST, 139, K(BUS_BAND, 1))                                                                    # 처마 가는 띠
     WY, WH = ST + 2, 11                                                                                 # 창 줄
     c.R(2, 41, 139, 4, K(BUS_BAND, 1)); c.HL(2, 41, 139, K(BUS_BAND, 2)); c.HL(2, 44, 139, K(BUS_BAND, -1))   # 허리 띠
@@ -117,8 +121,20 @@ def bus_side(front_right=True, open_=False):
     c.R(2, 51, 139, 3, K('tekko', 1)); c.HL(2, 51, 139, K('tekko', 2))
     for dx in doors:
         if not open_: s.R(dx - 1, 51, 16, 3, K('conc', 0))
-    for x in (28, 102):
-        s.arch(x, 52, 8); s.wheel(x, 56, 7)
+    body = c.a.copy()
+    for x in (28, 102):                                                                                 # 바퀴: 치마(51..53) 밑으로 아래 60% 만 보인다
+        X = s.fx(x)
+        for j in range(-7, 8):
+            for i in range(-7, 8):
+                d2 = i * i + j * j
+                if d2 <= 52:
+                    col = K('sumi', 1) if d2 > 30 else K('tekko', -1) if d2 > 12 else K('conc', 1) if d2 > 2 else K('conc', -1)
+                    if 12 < d2 <= 30 and i < 0 and j > 0: col = K('tekko', 0)                                # 타이어 옆 빛
+                    c.P(X + i, 55 + j, col)
+    c.a[:54] = body[:54]
+    sh = (c.a[54:56, :, 3] > 0) & (body[54:56, :, 3] == 0)                                                  # 치마 밑 그늘: 보이는 바퀴 윗 2줄을 어둡게
+    for j in range(2):
+        for x in np.where(sh[j])[0]: c.P(int(x), 54 + j, K('sumi', 0 if j == 0 else 1))
     out = ink2(c)
     return out.a
 

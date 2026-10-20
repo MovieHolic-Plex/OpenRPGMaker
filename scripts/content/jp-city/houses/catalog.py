@@ -381,6 +381,16 @@ add('gas_office', '給油所 사무소', 'commercial', dict(
     joins=[]))
 
 
+# ── 3/4 깊이 지붕(2026-10-20 사용자: 세로 공간감) — 주택 전부 + 파출소·창고·작은 역사. 우체국·house_hip2 는 위에서 직접 정했다 ──
+DEEP_IDS = [k for k, (n, cat, r) in CATALOG.items() if cat == 'house' and k != 'house_hip2'] + ['koban', 'warehouse', 'station_small']
+for _id in DEEP_IDS:
+    _n, _cat, _r = CATALOG[_id]
+    _r = depth34.deepen(_r)
+    for _f in _r['floors']:                                   # 글자 없는 색 판(간판·노렌·초롱)
+        _f['items'] = [(it[:3] + ('',) + it[4:]) if it[0] == 'sign' else (it[:4] + ('',) + it[5:]) if it[0] == 'noren'
+                       else (it[:4] + ('',) + it[5:]) if it[0] == 'lantern' and len(it) > 4 else it for it in _f['items']]
+    CATALOG[_id] = (_n, _cat, _r)
+
 def render(out, names=None):
     os.makedirs(out, exist_ok=True)
     res = {}

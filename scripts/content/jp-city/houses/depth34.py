@@ -87,20 +87,81 @@ def hip_top(c, x0, x1, ytop, yeave, mat, base, ridge_frac=0.24, run=None):
 def gable_top(c, x0, x1, ytop, yeave, mat, base, ridge_frac=0.22):
     """平入り 切妻를 위에서: 직사각 바깥선, 가로 용마루, 뒤 경사면 띠, 양 끝 破風板은 세로 흰 띠."""
     D = yeave - ytop
-    yr = ytop + max(5, round(D * ridge_frac))
+    flat_back = ridge_frac <= 0.08                            # 버들항식: 용마루 = 윗선(뒤 경사면 안 보임)
+    yr = ytop + (2 if flat_back else max(5, round(D * ridge_frac)))
     fd = yeave - yr
     for y in range(ytop, yeave):
         up = 1 if y >= yr and (y - yr) < fd * 0.35 else 0
         for x in range(x0, x1 + 1):
-            if y < yr: _course(c, x, y, ytop, mat, base + 1)
+            if y < yr and not flat_back: _course(c, x, y, ytop, mat, base + 1)
             else: _course(c, x, y, yr, mat, base + up)
         c.P(x0, y, K('shiro', 1)); c.P(x0 + 1, y, K('shiro', 2 if y >= yr else 0)); c.P(x0 + 2, y, K(mat, base - 2))   # 破風(빛 쪽)
         c.P(x1, y, K('shiro', -1)); c.P(x1 - 1, y, K('shiro', 0 if y >= yr else -1))                                     # 破風(그늘 쪽)
         c.P(x0 - 1, y, OL); c.P(x1 + 1, y, OL)
     c.HL(x0 + 2, yr - 2, x1 - x0 - 3, K(mat, base + 3)); c.HL(x0 + 2, yr - 1, x1 - x0 - 3, K(mat, base + 2)); c.HL(x0 + 2, yr, x1 - x0 - 3, K(mat, base - 3))
-    c.HL(x0 - 1, ytop - 1, x1 - x0 + 3, OL); c.HL(x0, ytop, x1 - x0 + 1, K(mat, base - 1))
+    c.HL(x0 - 1, ytop - 1, x1 - x0 + 3, OL)
+    if not flat_back: c.HL(x0, ytop, x1 - x0 + 1, K(mat, base - 1))
     _eave_lip(c, x0 - 1, x1 + 1, yeave, mat, base)
     return yr
+
+
+def gable_front_top(c, x0, x1, ytop, yeave, ywall, mat, base, rise, wx0, wx1, wmat, wbase, wkind='plaster'):
+    """妻入り 切妻를 위에서: 용마루가 남북(화면 세로) 가운데선. 왼쪽 경사 빛 · 오른쪽 그늘, 기와 줄은 세로(처마와 나란).
+    뒤 끝·앞 끝 바깥선은 납작한 Λ(가운데가 rise 만큼 높다). 앞 끝 아래로 박공 삼각벽이 벽 위(ywall)까지 보인다."""
+    xc = (x0 + x1) // 2; half = max(1, (x1 - x0) / 2)
+    tex_ribs = mat == 'tekko'
+    rise_b = max(4, rise // 2)                                               # 뒤 끝은 더 납작하게(멀다)
+    for x in range(x0, x1 + 1):
+        d = abs(x - xc) / half
+        yt = ytop + round(rise_b * d); yb = yeave - round(rise * (1 - d))
+        lit = x <= xc
+        for y in range(yt, yb - 1):
+            if tex_ribs:                                                     # 골판 골 = 물매 방향(동서) = 가로 줄
+                t = base + (2 if lit else -1) + (1 if y % 4 == 1 else -1 if y % 4 == 3 else 0)
+            else:
+                k = (x - x0) % 4 if lit else (x1 - x) % 4                   # 기와 줄 = 처마와 나란(세로)
+                t = base + (2 if lit else -1)
+                if k == 3: t -= 2
+                elif k == 0: t += 1
+                elif (y + (2 if (x - x0) // 4 % 2 else 0)) % 4 == 0: t -= 1
+            if lit and x < x0 + 2: t += 1
+            if not lit and x > x1 - 2: t -= 1
+            c.P(x, y, K(mat, t))
+        c.P(x, yb - 1, K('shiro', 1 if lit else -1)); c.P(x, yb, K('shiro', 0 if lit else -2))   # 破風板(앞 끝)
+        c.P(x, yb + 1, OL)
+        c.P(x, yt - 1, OL)
+        if wx0 <= x <= wx1:                                                  # 박공 삼각벽
+            for y in range(yb + 2, ywall):
+                if wkind == 'vboard':
+                    tt = wbase + (-1 if x % 4 == 0 else 1 if x % 4 == 1 else 0)
+                elif wkind == 'siding':
+                    tt = wbase - 1 if y % 4 == 0 else wbase
+                else:
+                    tt = wbase + (1 if (x * 5 + y * 11) % 23 == 0 else 0)
+                if y < yb + 4: tt -= 1                                       # 처마 밑 그늘
+                c.P(x, y, K(wmat, tt))
+    for y in range(ytop - 1, yeave - rise + 2):                              # 용마루(세로): 밝은 1 + 그늘 1
+        c.P(xc, y, K(mat, base + 3)); c.P(xc + 1, y, K(mat, base - 2))
+    c.VL(x0 - 1, ytop + rise_b - 1, yeave - ytop - rise_b + 3, OL); c.VL(x1 + 1, ytop + rise_b - 1, yeave - ytop - rise_b + 3, OL)
+    gy = yeave - rise + 6                                                    # 박공 환기창
+    if gy + 5 < ywall:
+        c.R(xc - 3, gy, 7, 5, K('tekko', -1)); c.HL(xc - 3, gy, 7, K('tekko', 2))
+        for i in range(xc - 2, xc + 4, 2): c.VL(i, gy + 1, 4, K('tekko', 1))
+
+
+def shed_top(c, x0, x1, ytop, yeave, mat, base):
+    """片流れ를 위에서: 한 장 직사각 면(뒤가 높다). 금속 골판 = 세로 줄, 뒤 끝 밝은 판금, 앞 처마 물받이."""
+    for y in range(ytop, yeave):
+        g = 1 if y - ytop < (yeave - ytop) * 0.3 else 0
+        for x in range(x0, x1 + 1):
+            t = base + g + (1 if x % 4 == 1 else -1 if x % 4 == 3 else 0)
+            c.P(x, y, K(mat, t))
+        c.P(x0, y, K(mat, base + 2)); c.P(x1, y, K(mat, base - 2))
+        c.P(x0 - 1, y, OL); c.P(x1 + 1, y, OL)
+    c.HL(x0 - 1, ytop - 1, x1 - x0 + 3, OL); c.HL(x0, ytop, x1 - x0 + 1, K(mat, base + 3)); c.HL(x0, ytop + 1, x1 - x0 + 1, K(mat, base + 2))
+    c.HL(x0 - 1, yeave, x1 - x0 + 3, K('tekko', 3)); c.HL(x0 - 1, yeave + 1, x1 - x0 + 3, K('tekko', 0))
+    c.HL(x0 - 1, yeave + 2, x1 - x0 + 3, K('tekko', -2)); c.HL(x0 - 2, yeave + 3, x1 - x0 + 5, OL)
+    c.VL(x0 - 2, yeave, 3, OL); c.VL(x1 + 2, yeave, 3, OL)
 
 
 # ─────────────────────────── 옥상(陸屋根) ───────────────────────────
@@ -160,7 +221,9 @@ def flat_top(c, x0, x1, ytop, yb, mat='conc', items=()):
     c.R(x1 - 2, ytop, 3, yb - ytop, K(mat, 0)); c.VL(x1, ytop, yb - ytop, K(mat, -1))
     c.VL(x0 + 3, ytop + 8, yb - ytop - 8, K(mat, -2)); c.VL(x0 + 4, ytop + 8, yb - ytop - 8, K(mat, -1))
     # 앞 난간 캡(위에서 본 윗면) + 앞 띠(벽 맨 위)
-    c.HL(x0, yb - 4, W, K(mat, 3)); c.HL(x0, yb - 3, W, K(mat, 2)); c.R(x0, yb - 2, W, 2, K(mat, 1)); c.HL(x0, yb - 5, W, K(mat, -2))
+    c.HL(x0, yb - 5, W, K(mat, -2))                                              # 캡 뒤(바닥 쪽) 그늘
+    c.HL(x0, yb - 4, W, K(mat, 3)); c.HL(x0, yb - 3, W, K(mat, 2)); c.HL(x0, yb - 2, W, K(mat, 1))
+    c.HL(x0, yb - 1, W, K(mat, -2)); c.HL(x0 - 1, yb, W + 2, OL)                 # 앞 난간 립 그늘 + 윤곽: 옥상/벽 경계를 또렷이
     c.R(x0 + 6, yb - 9, 4, 3, K('tekko', -2)); c.HL(x0 + 6, yb - 9, 4, K('tekko', -3))   # 배수구
     c.HL(x0 - 1, ytop - 1, W + 2, OL); c.VL(x0 - 1, ytop, yb - ytop, OL); c.VL(x1 + 1, ytop, yb - ytop, OL)
     for kind, ix, iy in items:
@@ -179,10 +242,49 @@ def _gable_top(cv, X0, X1, top, h, r, opt):
     gable_top(cv, X0 - 4, X1 + 4, top - h, top - 4, r['rmat'], r['rbase'], opt.get('ridge', 0.22))
 
 
+def deepen(r, kind_map=None):
+    """옛 레시피 r 의 지붕을 3/4 깊이 지붕으로 바꾼 사본. 지붕 높이는 벽 높이에 맞춰 그림 높이의 40~50%.
+    hip→hip_top · gable_side→gable_top · gable_front/gable_front_big→gable_front_top · shed→shed_top · flat→flat_top."""
+    import copy
+    r = copy.deepcopy(r)
+    rk, ro = r['roof']
+    walls = sum(f['h'] for f in r['floors']) + sum(hk.JOIN_H.get(j[0], {'lean': 16, 'lean_bal': 16, 'belt': 4, 'corridor': 4}.get(j[0], 0)) for j in r.get('joins', [])) + 8
+    hp = max(50, min(70, round(walls * 0.85)))
+    if rk == 'hip':
+        r['roof'] = ('hip_top', {'h': hp, 'ridge': 0.0, 'run': min(16, (r['w'] * 16) // 8)})
+    elif rk == 'gable_side':
+        r['roof'] = ('gable_top', {'h': hp - 4, 'ridge': 0.0})
+    elif rk in ('gable_front', 'gable_front_big'):
+        r['roof'] = ('gable_front_top', {'h': hp + 6, 'rise': max(12, min(20, r['w'] * 3))})
+    elif rk == 'shed':
+        r['roof'] = ('shed_top', {'h': hp - 6})
+    elif rk == 'flat':
+        hf = max(52, min(72, round(walls * 0.75)))
+        items = []
+        for kind, ix in ro.get('items', ()):
+            if kind == 'hatch': items.append(('pent', ix, hf // 4))
+            elif kind == 'tank': items.append(('tank', ix, 8))
+            elif kind == 'ac': items.append(('ac', ix, hf - 30))
+        r['roof'] = ('flat_top', {'h': hf, 'mat': ro.get('mat', 'conc'), 'items': tuple(items)})
+    return r
+
+
 def _flat_top(cv, X0, X1, top, h, r, opt):
     flat_top(cv, X0, X1, top - h, top, opt.get('mat', 'conc'), opt.get('items', ()))
 
 
+def _gable_front_top(cv, X0, X1, top, h, r, opt):
+    f = r['floors'][-1]
+    rise = opt.get('rise', 14)
+    gable_front_top(cv, X0 - 4, X1 + 4, top - h, top, top, r['rmat'], r['rbase'], rise, X0, X1, f['mat'], f['base'], f['kind'])
+
+
+def _shed_top(cv, X0, X1, top, h, r, opt):
+    shed_top(cv, X0 - 3, X1 + 3, top - h, top - 4, r['rmat'], r['rbase'])
+
+
+ROOFS['gable_front_top'] = _gable_front_top
+ROOFS['shed_top'] = _shed_top
 ROOFS['hip_top'] = _hip_top
 ROOFS['gable_top'] = _gable_top
 ROOFS['flat_top'] = _flat_top

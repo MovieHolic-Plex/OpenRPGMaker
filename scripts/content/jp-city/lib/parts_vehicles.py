@@ -13,77 +13,33 @@ def _arch(c, x, y, r, col):
         for xx in range(-r - 1, r + 1):
             if (xx + .5) ** 2 + yy * yy <= (r + 1) ** 2: c.P(x + xx, y + yy, K('tekko', -2))
 
+def _veh_mods():
+    """3/4 깊이 그림(2026-10-20)의 정본은 vehicles/cars.py · heavy.py(움직이는 스프라이트). 정지 소품도 같은 그림을 쓴다."""
+    import os, sys
+    d = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'vehicles')
+    if d not in sys.path: sys.path.insert(0, d)
+    import cars, heavy
+    return cars, heavy
+
+
+def _as_cv(a, flip=False):
+    c = Cv(a.shape[1], a.shape[0]); c.a[:] = a[:, ::-1] if flip else a
+    return c
+
+
 def car(color='white', kind='sedan', flip=False):
-    """80x48. 진행 방향 오른쪽. 위=윗면(트렁크·지붕·보닛), 아래=옆면. 윗면은 앞면보다 한 단 밝고 경계에 어두운 접힘선."""
-    c = Cv(80, 48); ramp, t = CAR_BODY2[color]
-    n5 = len(RAMPS[ramp]) == 5; mx = 2 if n5 else 3
-    if color == 'black': t = -1                                                           # 윗면·앞면 명도 차를 확보
-    t = min(t, mx - 1)                                                                    # 윗면(t+1)이 항상 한 단 더 밝다
-    bod = K(ramp, t); top = K(ramp, t + 1); topE = K(ramp, t + 2); lo = K(ramp, t - 1); dk = K(ramp, t - 2)
-    glass = K('garasu', 2); glass_hi = K('garasu', 4); gdk = K('garasu', 0)
-    if kind == 'van':
-        # 화물칸 윗면(넓음) / 캐빈 지붕(낮고 좁음) / 앞면. 캐빈 앞유리는 앞으로 기운 사다리꼴.
-        c.R(5, 11, 51, 9, top); c.HL(6, 11, 49, topE); c.VL(5, 12, 8, topE); c.HL(5, 19, 51, lo)                             # 화물칸 윗면
-        c.R(57, 16, 18, 5, top); c.HL(58, 16, 14, topE); c.HL(57, 20, 18, lo); c.P(74, 16, None)                              # 캐빈 지붕 윗면
-        c.R(5, 20, 51, 19, bod); c.VL(5, 21, 17, top); c.VL(55, 21, 17, lo)                                                     # 화물칸 앞면
-        c.R(56, 21, 19, 18, bod); c.VL(74, 22, 16, lo); c.VL(56, 21, 18, lo)                                                    # 캐빈 앞면 (56 은 칸 경계선)
-        for j in range(9):                                                                                                     # 앞유리·문 창: 오른쪽 아래로 기운다
-            c.HL(58, 22 + j, 9 + (j + 1) // 2 + 2, glass)
-        c.R(58, 22, 11, 2, glass_hi); c.VL(64, 22, 9, bod); c.VL(65, 22, 9, lo)
-        for x in (9, 24, 39): c.R(x, 24, 9, 5, glass); c.R(x, 24, 9, 2, glass_hi)                                              # 화물칸 창 3개
-        for x in (20, 35, 50): c.VL(x, 21, 17, lo)                                                                             # 칸 단위 규칙 이음
-        c.R(70, 31, 4, 3, K('kii', 3)); c.R(5, 29, 3, 3, K('aka', 1)); c.R(5, 35, 70, 3, K('tekko', 1)); c.HL(5, 35, 70, K('tekko', 3))
-        wx = (17, 62)
-    else:
-        # 옆면 몸통 + 숄더라인
-        c.R(4, 27, 70, 12, bod); c.VL(4, 28, 11, top); c.VL(73, 28, 11, lo); c.HL(4, 38, 70, dk)
-        c.HL(5, 29, 68, top); c.R(4, 33, 70, 2, lo)
-        # 트렁크·보닛 윗면 (앞면 위에 한 단 밝은 면 + 어두운 접힘선)
-        for (x0, w, ch) in ((5, 16, 1), (53, 21, 2)):
-            c.R(x0, 22, w, 5, top); c.HL(x0 + 1, 22, w - 2, topE); c.HL(x0, 26, w, lo)
-        c.HL(4, 27, 70, lo)
-        # 캐빈: 지붕 윗면 4px(앞쪽 줄은 앞면색), 유리는 사다리꼴(A필러 경사)
-        c.R(24, 9, 26, 3, top); c.HL(25, 9, 24, topE); c.HL(24, 12, 26, bod)
-        for j in range(15):
-            xs = 26 - j // 3; xe = 49 + j // 3
-            c.HL(xs, 13 + j, xe - xs, glass)
-        c.R(26, 13, 24, 2, glass_hi); c.VL(37, 13, 14, bod); c.VL(38, 13, 14, lo)
-        for j in range(3): c.HL(48 - j, 9 + j, 3 + j, lo)                                                                        # 지붕 오른쪽 어두운 사선
-        c.R(70, 29, 3, 3, K('kii', 3)); c.R(4, 29, 2, 3, K('aka', 1)); c.R(66, 33, 6, 2, lo)
-        if color == 'taxi':
-            c.R(33, 4, 10, 5, K('shiro', 3)); c.HL(33, 4, 10, K('shiro', 4)); c.R(34, 6, 8, 2, K('aka', 2)); c.VL(42, 5, 4, K('conc', 0))
-        wx = (17, 60)
-    if kind == 'van': c.R(5, 39, 70, 2, K('sumi', 0))
-    else: c.R(4, 39, 70, 2, K('sumi', 0))
-    for x in wx:
-        _arch(c, x, 38, 6, K('sumi', 1)); _wheel(c, x, 40, 5)
-    out = ink2(c)
-    if flip: out.a[:] = out.a[:, ::-1]
-    return out
+    """80x48 정지 차 소품. 진행 방향 오른쪽(flip 이면 왼쪽). 윗면(지붕·보닛·트렁크)이 위에서 본 면으로 화면 세로 11~13줄."""
+    cars, _ = _veh_mods()
+    tone = cars.CAR_TONE[color]
+    a = cars._van_side(tone) if kind == 'van' else cars._sedan_side(tone, taxi=(color == 'taxi'))
+    return _as_cv(a, flip)
+
 
 def bus(flip=False, stripe='aka'):
-    """9칸 x 4칸 (144x64). 지붕(한 단 밝은 윗면)과 옆면(한 단 어두움) 사이 접힘선, 앞=넓은 앞유리+행선 표시+전조등, 뒤=후미창."""
-    c = Cv(144, 64)
-    SH, SB = K('shiro', 2), K('shiro', 1)                                                                                   # 지붕(밝음) / 옆면
-    c.R(2, 6, 138, 11, SH); c.HL(3, 6, 136, K('shiro', 2)); c.VL(2, 7, 10, SH); c.VL(139, 7, 10, K('shiro', 0)); c.HL(2, 16, 138, K('conc', 1))
-    for x in (16, 62, 102): c.R(x, 9, 20, 5, K('conc', 2)); c.HL(x, 9, 20, K('shiro', 2)); c.HL(x, 13, 20, K('conc', 0)); c.VL(x + 19, 10, 4, K('conc', 1))
-    c.R(2, 17, 138, 35, SB); c.VL(2, 18, 34, K('shiro', 2)); c.VL(139, 18, 34, K('conc', 0)); c.HL(2, 51, 138, K('conc', 0)); c.HL(2, 17, 138, K('conc', 2))
-    c.R(2, 40, 138, 5, K(stripe, 1)); c.HL(2, 40, 138, K(stripe, 2)); c.HL(2, 44, 138, K(stripe, -1))                       # 줄무늬: 양 끝까지 직선
-    for k in range(6):
-        x = 8 + k * 16; c.R(x, 22, 13, 14, K('garasu', 2)); c.R(x, 22, 13, 3, K('garasu', 4)); c.VL(x + 12, 22, 14, K('garasu', 0))
-    c.R(105, 22, 14, 26, K('garasu', 2)); c.VL(112, 22, 26, K('tekko', 2)); c.R(105, 22, 14, 3, K('garasu', 4)); c.HL(105, 47, 14, K('tekko', 1))        # 승강문
-    # 앞(오른쪽): 넓고 높은 앞유리, 행선 표시, 전조등
-    c.R(122, 20, 16, 18, K('garasu', 3)); c.R(122, 20, 16, 3, K('garasu', 4)); c.VL(122, 20, 18, K('conc', 0)); c.VL(129, 23, 15, K('garasu', 1)); c.HL(122, 37, 16, K('conc', 0))
-    c.R(124, 10, 14, 4, K('tekko', -2)); c.HL(124, 10, 14, K('tekko', 0)); c.HL(126, 12, 8, K('kii', 2))
-    c.R(133, 41, 5, 3, K('kii', 3)); c.HL(133, 41, 5, K('kii', 2))
-    # 뒤(왼쪽): 세로 후미등
-    c.R(3, 24, 3, 9, K('aka', 0)); c.VL(3, 24, 9, K('aka', 2)); c.R(3, 41, 2, 3, K('aka', -1))
-    c.R(2, 51, 138, 4, K('tekko', 1))
-    for x in (28, 96):
-        _arch(c, x, 51, 8, K('sumi', 1)); _wheel(c, x, 54, 7)
-    out = ink2(c)
-    if flip: out.a[:] = out.a[:, ::-1]
-    return out
+    """9칸 x 4칸 (144x64) 정지 버스 소품 = 움직이는 버스 옆 프레임(지붕 윗면 22줄). flip 이면 서쪽행(문 있는 면)."""
+    _, heavy = _veh_mods()
+    return _as_cv(heavy.bus_side(not flip, False, band=stripe))
+
 
 def train(n=10, stripe='midori'):
     """n칸 x 4칸: 지붕 윗면(밝음, 에어컨) + 옆면(창은 칸 사이 벽 사이, 띠는 끊김 없음) + 대차 박스 + 레일 윗면."""
