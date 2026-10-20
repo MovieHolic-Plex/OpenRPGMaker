@@ -39,23 +39,82 @@ def canon(m):
     return m
 
 def depth(px, py):
-    # 경계 깊이 — 칸 좌표의 주기 16 물결이라 옆 칸 경계와 이어진다
-    # 3차 검수 W3: 두 겹만으론 세로·가로 한 칸 경계가 곧게 보였다 — 세 번째 겹(주기 16/3)을 더한다
-    return 5.5 + 1.8 * math.sin(2 * math.pi * (px + py) / T) + 1.0 * math.sin(2 * math.pi * (2 * py - px) / T + 1.3) + 0.9 * math.sin(2 * math.pi * (3 * px - 3 * py) / T + 0.4)
+    # 경계 깊이 — 칸 좌표의 주기 16 물결이라 옆 칸 경계와 이어진다(전역 화소 좌표 mod 16 의 함수).
+    # 3차 검수 W3: 두 겹만으론 세로·가로 한 칸 경계가 곧게 보였다 — 세 겹 물결(넓은 덩이 가장자리는 r6 과 같은 굴곡).
+    # 최소 깊이 3 ≥ 여백 3 — canon 이 지운 대각 이웃의 실제 값과 상관없이 여백 화소가 같게 계산된다(dark_mask).
+    return 6.0 + 1.5 * math.sin(2 * math.pi * (px + py) / T) + 0.9 * math.sin(2 * math.pi * (2 * py - px) / T + 1.3) + 0.6 * math.sin(2 * math.pi * (3 * px - 3 * py) / T + 0.4)
+
+MARGIN = 3
+DITHER = 3.5
+CARD = {N: (0, -1), E: (1, 0), S: (0, 1), W: (-1, 0)}
+
+def in_block(cells, ax, ay):
+    """칸 (ax,ay) 가 짙은 2×2 덩이에 들어 있는가."""
+    return any(all((ax + i, ay + j) in cells for i in (0, sx) for j in (0, sy)) for sx in (-1, 1) for sy in (-1, 1))
+
+def thin_seam(cells, ax, ay, dx, dy):
+    """짙은 두 칸 사이 이음매가 「한 칸 폭」인가 — 두 칸을 함께 품는 짙은 2×2 덩이가 없으면 그렇다. 양쪽 칸이 같은 답을 낸다."""
+    bx, by = ax + dx, ay + dy
+    px, py = (0, 1) if dx else (1, 0)
+    return not any((ax + px * k, ay + py * k) in cells and (bx + px * k, by + py * k) in cells for k in (-1, 1))
+
+def spine(cx, cy, dark_cells, X, Y):
+    """한 칸 폭 띠·외딴 칸의 뼈대(4차 독립 Opus 적대 VQA, 2026-10-21): 굴곡 경계만으로는 한 칸 폭 띠가 다 깎여
+    대각 한 화소로만 닿거나 끊긴 점 사슬이 됐고, 외딴 칸은 5px 낱점(풀포기)으로 읽혔다.
+    2×2 덩이에 들지 않는 짙은 칸에는 가운데 둥근 속(반지름 4.0, 디더 1px), 「한 칸 폭」 이음매 쪽으로는 다리(반폭 3.3, 디더 1px)를
+    더한다. 덩이 가장자리는 굴곡 경계 그대로(r6). 다리 중심선은 가장자리에서 잰 거리 u 의 함수(1.2·sin(πu/8))라 이음매 양쪽이 같은 열/행에서 만난다."""
+    lx, ly = X - cx * T, Y - cy * T
+    best = 99.0 if in_block(dark_cells, cx, cy) else math.hypot(lx - 8, ly - 8) - 4.0
+    for b, (dx, dy) in CARD.items():
+        if (cx + dx, cy + dy) not in dark_cells or not thin_seam(dark_cells, cx, cy, dx, dy): continue
+        if dy:
+            u = ly if dy < 0 else T - ly
+            if u > 8: continue
+            best = min(best, abs(lx - (8 + 1.2 * math.sin(math.pi * u / 8))) - 3.3)
+        else:
+            u = lx if dx < 0 else T - lx
+            if u > 8: continue
+            best = min(best, abs(ly - (8 + 1.2 * math.sin(math.pi * u / 8))) - 3.3)
+    return best  # ≤0 단단함, 0~1 디더(절반)
 
 def dark_mask(m):
+    """칸 하나의 짙은 화소 — 전역 필드(밝은 이웃 칸까지 거리·전역 좌표 물결·Bayer) ∪ 뼈대(spine)를 칸+여백 3px 창에서
+    계산하고, 크기 3 이하의 떨어진 짙은 조각(디더 낱점)을 지운다. 조각 판정은 전역 필드의 연결 성분으로 하므로 옆 칸도
+    같은 조각을 같게 지운다(이음매 양쪽 일치). 칸에 닿는 크기 ≤3 조각은 여백 3 안에 다 들어가 판정이 정확하다."""
     light = [OFF[b] for b in OFF if not m & b]
-    out = np.zeros((T, T), bool)
-    for py in range(T):
-        for px in range(T):
-            X, Y = px + 0.5, py + 0.5
+    dark_cells = {(0, 0)} | {OFF[b] for b in OFF if m & b}
+    Wn = T + 2 * MARGIN
+    win = np.zeros((Wn, Wn), bool)
+    for wy in range(Wn):
+        for wx in range(Wn):
+            X, Y = wx - MARGIN + 0.5, wy - MARGIN + 0.5
+            cx, cy = math.floor(X / T), math.floor(Y / T)
+            if (cx, cy) not in dark_cells: continue
+            px, py = int(math.floor(X)) % T, int(math.floor(Y)) % T
+            bay = (BAYER[py % 4][px % 4] + 0.5) / 16
             best = 99.0
             for dx, dy in light:
                 x0, y0 = dx * T, dy * T
                 best = min(best, math.hypot(max(x0 - X, 0, X - x0 - T), max(y0 - Y, 0, Y - y0 - T)))
-            t = (best - depth(px, py)) / 3.5
-            out[py, px] = t >= 1 or (t > 0 and (BAYER[py % 4][px % 4] + 0.5) / 16 < t)
-    return out
+            t = (best - depth(px, py)) / DITHER
+            sp = spine(cx, cy, dark_cells, X, Y)
+            win[wy, wx] = t >= 1 or (t > 0 and bay < t) or sp <= 0 or (sp <= 1 and bay < 0.5)
+    seen = np.zeros_like(win)
+    for sy in range(Wn):
+        for sx in range(Wn):
+            if not win[sy, sx] or seen[sy, sx]: continue
+            comp, stack = [], [(sx, sy)]; seen[sy, sx] = True
+            while stack:
+                x, y = stack.pop(); comp.append((x, y))
+                for ddx in (-1, 0, 1):
+                    for ddy in (-1, 0, 1):
+                        nx, ny = x + ddx, y + ddy
+                        if 0 <= nx < Wn and 0 <= ny < Wn and win[ny, nx] and not seen[ny, nx]:
+                            seen[ny, nx] = True; stack.append((nx, ny))
+            inside = all(0 < x < Wn - 1 and 0 < y < Wn - 1 for x, y in comp)
+            if len(comp) <= 3 and inside:
+                for x, y in comp: win[y, x] = False
+    return win[MARGIN:MARGIN + T, MARGIN:MARGIN + T]
 
 city = Image.open(R / 'public/assets/beodeul-city/beodeul-city-chipset.png').convert('RGBA')
 def native(i): return np.array(city.crop((i % 128 * T, i // 128 * T, i % 128 * T + T, i // 128 * T + T)))
