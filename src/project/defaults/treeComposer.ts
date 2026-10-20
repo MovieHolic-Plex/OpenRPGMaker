@@ -53,6 +53,7 @@ function contextFor(map: GameMap, cp: TreeComposerDef, floorTiles: readonly numb
   const byKey = new Map<string, TreeComposerSprite[]>();
   const own = new Set<number>();
   let maxW = 1, maxH = 1;
+  for (const t of cp.ground?.apronTiles ?? []) if (t >= 0) own.add(t);
   for (const sp of cp.sprites) {
     const key = sp.shape + (sp.dark ? "d" : "");
     byKey.set(key, [...(byKey.get(key) ?? []), sp]);
@@ -124,50 +125,78 @@ function anchorAt(c: Ctx, x: number, y: number): Placement | null {
   return null;
 }
 
-/** 영역 [x0,x1)×[y0,y1) 칸을 다시 짠다. 바뀐 칸 수. */
+/** 영역 [x0,x1)×[y0,y1) 칸을 다시 짠다(나무 칸 + r6 땅 그늘). 바뀐 칸 수. */
 function rewrite(c: Ctx, x0: number, y0: number, x1: number, y1: number, canWrite?: (x: number, y: number) => boolean): number {
   x0 = Math.max(0, x0); y0 = Math.max(0, y0); x1 = Math.min(c.W, x1); y1 = Math.min(c.H, y1);
   if (x1 <= x0 || y1 <= y0) return 0;
-  // 이 영역을 덮을 수 있는 밑동: 왼쪽으로 maxW, 아래로 maxH 더
+  const gr = c.cp.ground;
+  // 그늘 덮개는 영역 바깥 한 칸까지 알아야 한다(그늘 코드가 이웃을 본다)
+  const ex0 = Math.max(0, x0 - 1), ey0 = Math.max(0, y0 - 1), ex1 = Math.min(c.W, x1 + 1), ey1 = Math.min(c.H, y1 + 1);
+  const cover = new Uint8Array(c.W * c.H);
   const stacks = new Map<number, { z: number; tile: number; cover: number }[]>();
-  for (let y = y0; y < Math.min(c.H, y1 + c.maxH); y++) {
-    for (let x = x0 - c.maxW; x < x1; x++) {
+  for (let y = ey0; y < Math.min(c.H, ey1 + c.maxH); y++) {
+    for (let x = ex0 - c.maxW; x < ex1; x++) {
       const p = anchorAt(c, x, y);
       if (!p) continue;
       const sp = p.sprite;
       for (let j = 0; j < sp.h; j++) {
         for (let i = 0; i < sp.w; i++) {
           const k = j * sp.w + i;
-          const tile = sp.tiles[k] ?? -1, cover = sp.cover[k] ?? 0;
-          if (tile < 0 || cover <= 0) continue;
+          const tile = sp.tiles[k] ?? -1, cv = sp.cover[k] ?? 0;
+          if (tile < 0 || cv <= 0) continue;
           const xx = p.x0 + i, yy = p.y0 + j;
-          if (xx < x0 || yy < y0 || xx >= x1 || yy >= y1) continue;
+          if (xx < ex0 || yy < ey0 || xx >= ex1 || yy >= ey1) continue;
           const key = yy * c.W + xx;
+          if (gr && cv >= (j === sp.h - 1 ? gr.shadeCoverBase : gr.shadeCover)) cover[key] = 1;
+          if (xx < x0 || yy < y0 || xx >= x1 || yy >= y1) continue;
           const list = stacks.get(key) ?? [];
-          list.push({ z: p.z, tile, cover });
+          list.push({ z: p.z, tile, cover: cv });
           stacks.set(key, list);
         }
       }
     }
   }
+  const shadeCode = (x: number, y: number): number => {
+    let code = 0;
+    gr!.shadeBits.forEach(([dx, dy], k) => {
+      const xx = x + dx!, yy = y + dy!;
+      if (xx >= 0 && yy >= 0 && xx < c.W && yy < c.H && cover[yy * c.W + xx]) code |= 1 << k;
+    });
+    return code;
+  };
   let changed = 0;
   for (let y = y0; y < y1; y++) {
     for (let x = x0; x < x1; x++) {
       if (canWrite && !canWrite(x, y)) continue;
       const i = y * c.W + x;
+      // r6 접지: 숲 칸은 1층 숲 바닥 그늘 변형, 숲 밖 잔디 칸은 apronLayer 에 둘레 그늘 덧칸
+      let apron = -1;
+      if (gr) {
+        const code = shadeCode(x, y);
+        if (isForest(c, x, y)) {
+          const t = gr.floorTiles[code] ?? gr.floorTiles[0]!;
+          if (layerTileAt(c.map, 1, i) !== t) { setLayerTileAt(c.map, 1, i, t); changed++; }
+        } else {
+          const bi = gr.apronBases.indexOf(layerTileAt(c.map, 1, i));
+          const cur = layerTileAt(c.map, gr.apronLayer as TileLayerNo, i);
+          if (bi >= 0 && (cur < 0 || c.own.has(cur))) apron = gr.apronTiles[bi * 64 + code] ?? -1;
+        }
+      }
+      const treeLayers = c.cp.layers.filter((L) => !(apron >= 0 && L === gr!.apronLayer));
       const list = (stacks.get(i) ?? []).sort((a, b) => b.z - a.z);
       const keep: number[] = [];
       for (const e of list) {
         keep.push(e.tile);
-        if (e.cover >= 98 || keep.length === c.cp.layers.length) break;
+        if (e.cover >= 98 || keep.length === treeLayers.length) break;
       }
-      c.cp.layers.forEach((L, n) => {
+      for (const L of c.cp.layers) {
         const layer = L as TileLayerNo;
         const cur = layerTileAt(c.map, layer, i);
-        if (cur >= 0 && !c.own.has(cur)) return;      // 남의 칸(집·소품)은 그대로
-        const next = keep[n] ?? -1;
+        if (cur >= 0 && !c.own.has(cur)) continue;      // 남의 칸(집·소품)은 그대로
+        const n = treeLayers.indexOf(L);
+        const next = apron >= 0 && L === gr!.apronLayer ? apron : n >= 0 ? (keep[n] ?? -1) : -1;
         if (cur !== next) { setLayerTileAt(c.map, layer, i, next); changed++; }
-      });
+      }
     }
   }
   return changed;
