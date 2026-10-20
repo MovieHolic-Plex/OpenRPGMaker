@@ -73,8 +73,7 @@ def draw(side: str):
 
     eyes = None
     if not v.back:
-        near = eye(arr, 19, 40, NEAR_EYE_6x8, "#2a0a02", "#7a3a0e", "#c87a26", rim="#451303")
-        far = eye(arr, 11, 41, FAR_EYE_3x7, "#2a0a02", "#7a3a0e", "#c87a26", rim="#451303")
-        stamp(arr, 11, 49, ["D...D", ".DDD."], {"D": OL})
-        eyes = {"anatomy": "threequarter", "style": "round", "near": near, "far": far}
+        near = eye(arr, 13, 40, NEAR_EYE_6x8, "#2a0a02", "#7a3a0e", "#c87a26", rim="#451303")
+        stamp(arr, 8, 49, ["D..", ".DD"], {"D": OL})
+        eyes = {"anatomy": "profile", "style": "round", "near": near, "far": None}
     return arr, eyes

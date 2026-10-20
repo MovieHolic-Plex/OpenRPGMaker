@@ -12,14 +12,14 @@ def draw(side: str):
     PINK = ("#fbcfd5", "#f89aa9", "#ed5e74", "#d93456")
     E, R = v.p, v.r
     body = ellipse(*E(27, 47.5), R(13.2), R(11.2)) | ellipse(*E(33, 53), R(10), R(7))
-    face = ellipse(*E(21, 52), R(10), R(6.5)) & body
+    face = ellipse(*E(18, 51), R(9.5), R(7)) & body
     # tail curls up from the rear over the back; bulb hangs above the head
     tail_pts = [E(38.5, 47), E(43.5, 42), E(45.5, 35.5), E(43.5, 29.5), E(38.5, 26.5)]
     tail = chain(tail_pts, [R(4.2), R(4), R(3.6), R(3.2), R(3)])
     bulb_c = E(33.5, 23.5)
     # faceted crystal bulb (hexagonal gem) instead of a round balloon
     gx, gy = 33.5, 23.5
-    bulb = poly([E(gx - 5.5, gy - 1.5), E(gx - 2.5, gy - 6.5), E(gx + 3, gy - 6.5), E(gx + 6, gy - 1.5), E(gx + 3.5, gy + 5.5), E(gx - 3, gy + 5.5)])
+    bulb = poly([E(gx - 5.5, gy - 1.5), E(gx - 2.5, gy - 6.5), E(gx + 3, gy - 6.5), E(gx + 6, gy - 1.5), E(gx + 3, gy + 4.5), E(gx, gy + 6.5), E(gx - 3, gy + 4.5)])
     stinger = poly([E(29, 28), E(27, 31), E(31, 29.5)])
 
     def claw(cx, cy, r, arm_from):
@@ -30,7 +30,7 @@ def draw(side: str):
         return (ball & ~notch) | arm
 
     near_claw = claw(10.5, 54.5, 6, (19, 55.5))
-    far_claw = claw(9.5, 45.5, 4.6, (17, 49))
+    far_claw = ellipse(*E(9.5, 45.5), R(4.4), R(3.6)) | (sd_chain([E(17, 49), E(12, 46)], [R(2), R(1.8)]) < 0)
     legs_far = [leg2(E, R, a, b, c, 2.8, 2.2, 3.0, paw_h=1.0, toe=0.6) for a, b, c in (((30, 55), (33.5, 55.5), (35, 59.4)), ((37, 55), (41, 55.5), (43, 59.4)))]
     legs_near = [leg2(E, R, a, b, c, 3.6, 2.8, 3.6, paw_h=1.2, toe=t) for a, b, c, t in (((25, 56), (21.5, 57.5), (20.5, 61.4), -0.6), ((31, 57), (30, 59), (29.5, 61.6), 0), ((37.5, 56.5), (41.5, 58), (43, 61.4), 0.6))]
     parts = {}
@@ -65,8 +65,7 @@ def draw(side: str):
     
     eyes = None
     if not v.back:
-        near = eye(arr, 24, 42, NEAR_EYE_6x8, "#2a0804", "#7a2e0c", "#c86a2a", rim="#501307")
-        far = eye(arr, 16, 43, FAR_EYE_3x7, "#2a0804", "#7a2e0c", "#c86a2a", rim="#501307")
-        stamp(arr, 19, 50, ["D..D", ".DD."], {"D": OL})
-        eyes = {"anatomy": "threequarter", "style": "round", "near": near, "far": far}
+        near = eye(arr, 16, 42, NEAR_EYE_6x8, "#2a0804", "#7a2e0c", "#c86a2a", rim="#501307")
+        stamp_at(arr, face, 3, -2, ["D..", ".DD"], {"D": OL})
+        eyes = {"anatomy": "profile", "style": "round", "near": near, "far": None}
     return arr, eyes

@@ -91,8 +91,7 @@ def draw(side: str):
         paint(arr, sd_chain([E(x0 + 1, 46.5), E(x0 - 0.6, 52), E(x0 + 0.4, 58)], [R(1.1), R(1.1), R(0.9)]) < 0, BAND[1], ["abdomen"])
     eyes = None
     if not v.back:
-        near = eye(arr, v.ix(21), v.iy(38), NEAR_EYE_6x8, "#2a0804", "#7a3a10", "#c07a2c", rim=OL)
-        far = eye(arr, v.ix(14), v.iy(39), FAR_EYE_3x7, "#2a0804", "#7a3a10", "#c07a2c", rim=OL)
-        stamp(arr, v.ix(15), v.iy(47), ["D..D", ".DD."], {"D": OL})
-        eyes = {"anatomy": "threequarter", "style": "round", "near": near, "far": far}
+        near = eye(arr, v.ix(13), v.iy(38), NEAR_EYE_6x8, "#2a0804", "#7a3a10", "#c07a2c", rim=OL)
+        stamp(arr, v.ix(10), v.iy(46.5), ["D..", ".DD"], {"D": OL})
+        eyes = {"anatomy": "profile", "style": "round", "near": near, "far": None}
     return arr, eyes

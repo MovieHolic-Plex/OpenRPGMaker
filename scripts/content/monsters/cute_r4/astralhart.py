@@ -97,9 +97,8 @@ def draw(side: str):
                 arr[iy + dy, ix + dx] = (*hexc("#fdf88c"), 255) if (dx, dy) != (0, 0) else (255, 255, 240, 255)
     eyes = None
     if not v.back:
-        near = eye(arr, v.ix(18), v.iy(26), NEAR_EYE_6x8, "#0a2412", "#3a6a2a", "#7aa84a", rim=OL)
-        far = eye(arr, v.ix(10.5), v.iy(27), FAR_EYE_3x7, "#0a2412", "#3a6a2a", "#7aa84a", rim=OL)
-        stamp(arr, v.ix(8), v.iy(32), ["N"], {"N": DARK[1]})
-        stamp(arr, v.ix(11), v.iy(35), ["D.D", ".D."], {"D": OL})
-        eyes = {"anatomy": "threequarter", "style": "round", "near": near, "far": far}
+        near = eye(arr, v.ix(17.5), v.iy(26), NEAR_EYE_6x8, "#1a0c04", "#7a4214", "#d09040", rim=OL)
+        stamp(arr, v.ix(8.2), v.iy(31.6), ["NN", "N."], {"N": OL})
+        stamp_at(arr, muzzle, 2, -2, ["D..", ".DD"], {"D": OL})
+        eyes = {"anatomy": "profile", "style": "round", "near": near, "far": None}
     return arr, eyes

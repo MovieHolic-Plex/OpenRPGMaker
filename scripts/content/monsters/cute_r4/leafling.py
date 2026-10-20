@@ -71,9 +71,8 @@ def draw(side: str):
     paint(arr, np.zeros((64, 64), bool) | (np.arange(64)[:, None] == rim_y) & cap, NUT[0], ["cap"])
     eyes = None
     if not v.back:
-        near = eye(arr, v.ix(22), v.iy(38.5), NEAR_EYE_6x8, "#1e0d04", "#6a3a14", "#b0702c", rim="#2a1404")
-        far = eye(arr, v.ix(15.5), v.iy(39.5), FAR_EYE_3x7, "#1e0d04", "#6a3a14", "#b0702c", rim="#2a1404")
+        near = eye(arr, v.ix(17), v.iy(38), NEAR_EYE_6x8, "#1e0d04", "#6a3a14", "#b0702c", rim="#2a1404")
         stamp(arr, v.ix(10), v.iy(43), ["NN", "N."], {"N": "#3a2410"})  # nose
-        stamp(arr, v.ix(13), v.iy(47.5), ["D.D", ".D."], {"D": OL})  # small fox smile
-        eyes = {"anatomy": "threequarter", "style": "hand", "near": near, "far": far}
+        stamp(arr, v.ix(12), v.iy(47), ["D..", ".DD"], {"D": OL})  # small fox smile
+        eyes = {"anatomy": "profile", "style": "hand", "near": near, "far": None}
     return arr, eyes

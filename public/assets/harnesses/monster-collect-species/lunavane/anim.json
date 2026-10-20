@@ -33,12 +33,12 @@
   "emit": {
     "front": {
       "x": 5,
-      "y": 24,
+      "y": 40,
       "source": "auto"
     },
     "back": {
-      "x": 58,
-      "y": 24,
+      "x": 59,
+      "y": 36,
       "source": "auto"
     }
   }
