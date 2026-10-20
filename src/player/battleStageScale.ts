@@ -31,6 +31,20 @@ export const BATTLE_LOGICAL_HEIGHT = 480;
 /** 자산 px(320×240 시대 기준) → 논리 px 환산 계수. 640×480 논리 해상도에서 1 자산 px = 2 논리 px. */
 export const BATTLE_ASSET_PIXEL_SCALE = 2;
 
+/**
+ * 배틀러 도트 정수 배율. 자산 1px 이 host 레이아웃 px(= 게임 px) 몇 개로 그려지는지를 정수로 맞추는
+ * 필드 zoom 을 돌려준다. 무대 배율 s 에서 자산 1px = 2·s 게임 px 인데, 640×360 은 1.5, 480×270 은 1.125
+ * 라 선이 번졌다(2026-10-20 battle-feel 녹화 실측). 가장 가까운 정수 n(최소 1)으로 맞춘다: zoom = n / (2·s).
+ *   640×360 → s 0.75, n 2, zoom 1.333 · 480×270 → s 0.5625, n 1, zoom 0.889 · 320×240 → s 0.5, n 1, zoom 1
+ * 전투 테스트 모달(host 640×480, 조상 배율 없음)은 s 1 → n 2 → zoom 1 로 그대로다.
+ */
+export function calculateBattleAssetZoom(stageScale: number): { readonly zoom: number; readonly pixels: number } {
+  const exact = BATTLE_ASSET_PIXEL_SCALE * stageScale;
+  if (!Number.isFinite(exact) || exact <= 0) return { zoom: 1, pixels: BATTLE_ASSET_PIXEL_SCALE };
+  const pixels = Math.max(1, Math.round(exact));
+  return { zoom: pixels / exact, pixels };
+}
+
 /** 넓은 화면(16:9) 게임에서 도트 측면 전투가 쓰는 최대 논리 폭. 480 × 16/9 ≈ 853.3. */
 export const BATTLE_WIDE_LOGICAL_WIDTH_MAX = 854;
 
@@ -85,6 +99,15 @@ export function bindBattleStageScale(host: HTMLElement, scene: HTMLElement): Sca
     scene.style.setProperty("--battle-stage-offset-x", `${offsetX}px`);
     scene.style.setProperty("--battle-stage-offset-y", `${offsetY}px`);
     scene.dataset.battleStageScale = scale.toFixed(3);
+    // 도트 측면 전투만: 배틀러 필드를 정수 배율로 맞춘다(calculateBattleAssetZoom).
+    if (scene.dataset.battleMotion === "retro") {
+      const asset = calculateBattleAssetZoom(scale);
+      scene.style.setProperty("--battle-asset-zoom", String(asset.zoom));
+      scene.dataset.battleAssetScale = String(asset.pixels);
+    } else {
+      scene.style.removeProperty("--battle-asset-zoom");
+      delete scene.dataset.battleAssetScale;
+    }
   };
 
   sync();

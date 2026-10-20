@@ -947,7 +947,10 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
       const banner = field.closest(".battle-scene")?.querySelector<HTMLElement>(".battle-message-window");
       const bannerRect = banner?.getBoundingClientRect();
       if (bannerRect && bannerRect.height > 0 && bannerRect.bottom > layerRect.top) {
-        const clearance = 64 * (POP_SCALE[anchor.dataset.hitIntensity ?? ""] ?? 1);
+        // 64 는 레이어 안 px 다 — 화면 px(rect)로 옮긴다. 무대 배율·필드 정수 zoom 이 곱해져 있다(battle-feel r2:
+        // zoom 1.33 에서 큰 적 머리 위 숫자가 배너 뒤로 잘렸다).
+        const layerScale = layer.offsetHeight > 0 ? layerRect.height / layer.offsetHeight : 1;
+        const clearance = 64 * layerScale * (POP_SCALE[anchor.dataset.hitIntensity ?? ""] ?? 1);
         topPx = Math.max(topPx, bannerRect.bottom - layerRect.top + clearance);
       }
       popup.style.top = `${(topPx / layerRect.height) * 100}%`;

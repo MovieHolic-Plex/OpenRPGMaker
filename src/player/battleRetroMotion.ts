@@ -640,6 +640,12 @@ function spawnDust(node: HTMLElement): void {
 // 시퀀서가 비트 길이를 정하기 전에(actorApproachMs) 한 번, 전진을 걸 때 한 번 부르므로 엔트리별로 기억한다.
 // 2026-09-28 「더 빠르게」: 복귀도 0.36 → 0.5 px/ms(튀어 돌아가는 공중제비가 늘어지지 않게).
 const RETURN_PX_PER_MS = 0.5;
+/** 필드 정수 zoom(battle-feel r2, --battle-asset-zoom). 걸음 거리는 zoom 된 노드 단위로 재므로, 시간을 정할 때는
+ *  무대 논리 px 로 되돌린다 — 안 그러면 640×360(zoom 1.33)에서 걸음이 빨라지고 480×270(0.89)에서 느려진다. */
+function fieldAssetZoom(field: HTMLElement): number {
+  const value = Number.parseFloat(field.closest<HTMLElement>(".battle-scene")?.style.getPropertyValue("--battle-asset-zoom") ?? "");
+  return Number.isFinite(value) && value > 0 ? value : 1;
+}
 const WALK_GAP_PX = 6;
 const walkCache = new WeakMap<HTMLElement, Map<number, RetroWalk | null>>();
 
@@ -715,7 +721,7 @@ function measureWalk(field: HTMLElement, entry: BattleTimelineEntrySnapshot): Re
   const dy = Math.round(enemyFeet - userFeet + 2);
   if (!Number.isFinite(distance) || !Number.isFinite(dy)) return undefined;
   const clamp = (value: number, min: number, max: number) => Math.round(Math.max(min, Math.min(max, value)));
-  const path = Math.hypot(distance, dy);
+  const path = Math.hypot(distance, dy) * fieldAssetZoom(field);
   if (partyCell) {
     // 파티원 몬스터: 적 도트와 같은 이동(measureEnemyReach) — 궁수형·브레이스형은 다가가지 않는다.
     const motion = user.dataset.pixelParty;
@@ -850,7 +856,7 @@ function measureEnemyReach(field: HTMLElement, entry: BattleTimelineEntrySnapsho
   const dy = Math.round((actorRect.top + actorRect.height * (actorAnchor / (targetCell || 48))
     - (imageRect.top + imageRect.height * (enemyAnchor / cell))) / scale);
   if (!Number.isFinite(dx) || !Number.isFinite(dy)) return undefined;
-  const distance = Math.hypot(dx, dy);
+  const distance = Math.hypot(dx, dy) * fieldAssetZoom(field);
   const clamp = (value: number, min: number, max: number) => Math.round(Math.max(min, Math.min(max, value)));
   const speed = motion === "dash" ? 0.65 : motion === "stomp" ? 0.34 : hovering ? 0.42 : 0.3;
   return {
