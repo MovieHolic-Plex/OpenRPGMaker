@@ -420,7 +420,7 @@ if (stage === 'final-queue') {
   }
   console.error(`대기열 ${all.length} · 판정할 그림 ${items.length} · 그림 없음 ${noImage.length}`);
   // 다시 그리기 목록이 그림을 찾아가게: 표식 앞머리 → 타일셋 id → 번들 시트·칸 크기, 시트 칸 해시 색인(처음 쓸 때 만든다).
-  const PREFIX_TILESET: Record<string, string> = { jp: 'jp_city', 'modern-campus-int': 'modern_campus', modern_city_interior: 'modern_city', beodeul_farm: 'beodeul_city' };
+  const PREFIX_TILESET: Record<string, string> = { jp: 'jp_city', 'modern-campus-int': 'modern_campus', modern_city_interior: 'modern_city', beodeul_farm: 'beodeul_city', beodeul_ground: 'beodeul_city' };
   const tilesets = new Map<string, { textureKey: string; tileSize: number }>();
   for (const f of readdirSync(resolve('src/assets')).filter(f => f.endsWith('Tileset.json'))) {
     try { const t = JSON.parse(readFileSync(resolve('src/assets', f), 'utf8')) as { id?: string; textureKey?: string; tileSize?: number }; if (t.id && t.textureKey) tilesets.set(t.id, { textureKey: t.textureKey, tileSize: t.tileSize ?? 16 }); } catch { /* 타일셋이 아닌 JSON */ }
@@ -451,7 +451,7 @@ if (stage === 'final-queue') {
       const b = (per[x._batch] ??= { total: 0, judged: 0, pass: 0, fail: 0, noImage: 0 }); b.total++;
       const f = recs.get(`${x.sha}|${x.kind}`);
       if (!f) { if (noImage.includes(x)) b.noImage++; continue; }
-      b.judged++; if (f.verdict === 'pass') b.pass++; else { const at = locate(x.label, f.cells); fails.push({ sha: x.sha, batch: x._batch, label: x.label, kind: x.kind, styleKind: f.styleKind, reasons: f.reasons, view34: f.view34, style: f.style, source: items.find(i => i.sha === x.sha)?.source ?? null, heldImage: heldPath(x.sha), tileset: at.tileset, sheet: at.sheet, tileSize: at.tileSize, sheetCells: at.cells, profile: f.profileHash }); }
+      b.judged++; if (f.verdict === 'pass') b.pass++; else { b.fail++; const at = locate(x.label, f.cells); fails.push({ sha: x.sha, batch: x._batch, label: x.label, kind: x.kind, styleKind: f.styleKind, reasons: f.reasons, view34: f.view34, style: f.style, source: items.find(i => i.sha === x.sha)?.source ?? null, heldImage: heldPath(x.sha), tileset: at.tileset, sheet: at.sheet, tileSize: at.tileSize, sheetCells: at.cells, profile: f.profileHash }); }
     }
     if (option('fails')) { mkdirSync(dirname(option('fails')!), { recursive: true }); writeFileSync(`${option('fails')!}.tmp`, `${JSON.stringify(fails, null, 1)}\n`); renameSync(`${option('fails')!}.tmp`, option('fails')!); }
     if (option('summary')) writeFileSync(option('summary')!, `${JSON.stringify({ profile: hash, at: new Date().toISOString(), totals: { queue: all.length, toJudge: items.length, noImage: noImage.length }, batches: per }, null, 1)}\n`);
