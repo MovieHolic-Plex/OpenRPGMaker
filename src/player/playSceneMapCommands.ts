@@ -1,3 +1,4 @@
+import { findBlockingRuntimeEventAtInMap } from "@/project/runtimeEventState";
 import { getLoadedPhaser } from "@/app/phaserRuntime";
 import { mapTileSize } from "@/project/tileGeometry";
 import { carryPursuitThroughDoor } from "./horrorRuntime";
@@ -112,12 +113,16 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
   if (resolveCompanionRules(project.system.companions).clearOnTransfer) {
     removeFollowerFromSession(scene.session, { all: true });
   }
-  resetFollowerTrailNearPlayer(scene.session, destinationMap, project.system.companions);
   if (request.direction && request.direction !== "retain") scene.facing = request.direction;
+  // 착지 방향이 정해진 뒤에 깐다 — 동료는 주인공이 바라보는 반대쪽(뒤)에 한 줄로 선다.
+  resetFollowerTrailNearPlayer(scene.session, destinationMap, project.system.companions, {
+    project, facing: scene.facing, blocked: (x, y) => findBlockingRuntimeEventAtInMap(project, destinationMap, scene.session, scene.eventPositions, x, y) !== undefined,
+  });
   scene.player.setFrame(scene.playerSprite.idleFrameFor(scene.facing));
   scene.player.setPosition(footprintSpriteX(landing.x, body.footprint, mapTileSize(scene.map)), characterSpriteY(landing.y, mapTileSize(scene.map)));
   updateCharacterDepth(scene.player, "same");
-  syncFollowerSprites(scene);
+  // 새 자리로 바로 세운다 — 옛 맵 좌표에서 미끄러져 오면 주인공을 가로질러 지나간다.
+  syncFollowerSprites(scene, { snap: true });
   scene.moving = false;
   scene.playerSlide = null;
   scene.playerSlideKind = null;
@@ -153,10 +158,13 @@ export function placePlayerOnCurrentMap(scene: PlaySceneContext, x: number, y: n
   scene.tileY = y;
   scene.session.x = x;
   scene.session.y = y;
-  resetFollowerTrailNearPlayer(scene.session, runtimeMap(scene.map, scene.session), project.system.companions);
+  const placedMap = runtimeMap(scene.map, scene.session);
+  resetFollowerTrailNearPlayer(scene.session, placedMap, project.system.companions, {
+    project, facing: scene.facing, blocked: (bx, by) => findBlockingRuntimeEventAtInMap(project, placedMap, scene.session, scene.eventPositions, bx, by) !== undefined,
+  });
   scene.player.setPosition(footprintSpriteX(x, body.footprint, mapTileSize(scene.map)), characterSpriteY(y, mapTileSize(scene.map)));
   updateCharacterDepth(scene.player, "same");
-  syncFollowerSprites(scene);
+  syncFollowerSprites(scene, { snap: true });
   scene.moving = false;
   scene.playerSlide = null;
   scene.playerSlideKind = null;

@@ -1437,7 +1437,7 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         if (resolveCompanionRules(state.project.system.companions).clearOnTransfer) {
           removeFollowerFromSession(state.session, { all: true });
         }
-        resetFollowerTrailNearPlayer(state.session, state.project.maps[step.mapId], state.project.system.companions);
+        resetFollowerTrailNearPlayer(state.session, state.project.maps[step.mapId], state.project.system.companions, { project: state.project });
         applyNpcSchedulesForRunner(state);
         refreshChasers(state);
         syncFollowCamera(state);
