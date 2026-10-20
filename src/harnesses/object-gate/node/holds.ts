@@ -41,12 +41,15 @@ function buildQueue(fresh = false): { entries: Map<string, Entry>; batches: Batc
   for (const r of receipts(fresh)) entries.set(r.pixelSha256, { receipt: r, sha: r.pixelSha256, kind: r.kind, label: r.label ?? r.name, batches: [] });
   const batches: BatchInfo[] = [];
   for (const b of listQueueBatches()) {
-    const shas: string[] = [];
+    // 같은 그림(같은 해시)이 묶음에 여러 이름으로 들어 있으면 한 장으로 센다(결정은 해시에 묶이므로 한 번이면 된다). 이름은 모아 보인다.
+    const shas: string[] = [], names = new Map<string, string[]>();
     for (const it of b.items) {
+      if (names.has(it.sha)) { names.get(it.sha)!.push(it.label); continue; }
       const e = entries.get(it.sha) ?? { receipt: readReceipt(it.sha), sha: it.sha, kind: it.kind, label: it.label, batches: [] };
       if (e.receipt && e.receipt.kind !== it.kind) e.receipt = null; // 다른 종류로 받은 영수증은 이 묶음 항목의 조언이 아니다
-      e.label = it.label; e.batches.push(b.id); entries.set(it.sha, e); shas.push(it.sha);
+      names.set(it.sha, [it.label]); e.batches.push(b.id); entries.set(it.sha, e); shas.push(it.sha);
     }
+    for (const [sha, list] of names) entries.get(sha)!.label = list.length > 1 ? `${list[0]} (같은 그림 ${list.length}개: ${list.join(', ')})` : list[0]!;
     batches.push({ id: b.id, title: b.title, note: b.note, auto: false, shas });
   }
   const auto = new Map<string, string[]>();
@@ -116,7 +119,9 @@ export async function serveHolds({ host, port }: { host: string; port: number })
           }
           return { id: b.id, title: b.title, note: b.note ?? '', auto: b.auto, ...c };
         });
-        const totals = summary.reduce((t, b) => ({ waiting: t.waiting + b.waiting, allowed: t.allowed + b.allowed, rejected: t.rejected + b.rejected, autoPass: t.autoPass + b.autoPass }), { waiting: 0, allowed: 0, rejected: 0, autoPass: 0 });
+        // 전체 수는 그림(해시) 하나를 한 번만 센다(한 그림이 여러 묶음에 들 수 있다).
+        const totals = { waiting: 0, allowed: 0, rejected: 0, autoPass: 0 };
+        for (const sha of entries.keys()) { const s = st(sha).status; if (s === 'waiting') totals.waiting++; else if (s === 'allowed') totals.allowed++; else if (s === 'rejected') totals.rejected++; else if (s === 'auto-pass') totals.autoPass++; }
         const pick = url.searchParams.get('batch') ?? summary.find(b => !b.auto && b.waiting)?.id ?? summary.find(b => b.waiting)?.id ?? summary[0]?.id;
         const showDecided = url.searchParams.get('decided') === '1';
         const batch = batches.find(b => b.id === pick);

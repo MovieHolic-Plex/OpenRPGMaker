@@ -29,7 +29,7 @@
 **2026-10-20 처음 올린 묶음:**
 | 묶음 id | 이름 | 그림 | 출처 |
 |---|---|---|---|
-| `seats34-study2-89` | 의자 89 — 사용자 눈 합격 2026-10-20 | 89 | `tiledata/seats34/study2/needs-receipt.json`·`human-verdicts.json` |
+| `seats34-study2-89` | 의자 89 — 사용자 눈 합격 2026-10-20 | 89 (같은 그림 3개짜리 2벌이 있어 그림 85장) | `tiledata/seats34/study2/needs-receipt.json`·`human-verdicts.json` |
 | `modern-city-interior-r16-142` | modern_city 실내 기물 142 (r16) | 142 | `tiledata/modern-city/interior/r16/needs-receipt.json`, 그림은 `grids/<id>.json` 을 화소로 옮긴 것 |
 | `v5-props34` | 손 도트 v5 실내 기물 22 (props34·plus) | 22 | `tiledata/hand-interior/props34/` + `ship bunk 2w`(보류 그림) — #3107 허용 4장 포함 |
 | `jp-roof-47` | jp 지붕 47 — 사용자 눈 OK 2026-10-20 | 47 | #3098 건물 단품(kind `structure`), 그림은 사용자가 본 `claude-viz/jp-depth-pilot-1/*-new.png`, 목록 `~/.cache/jp-depth/needs-receipt-jp-roof-47.json` |
