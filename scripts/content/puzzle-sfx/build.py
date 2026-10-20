@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
-"""JRPG 퍼즐 방 효과음 세트 — 원본 칩튠 합성(CC0).
+"""JRPG 퍼즐 방 효과음 세트 — 원본 SNES 샘플 악기풍 합성(CC0).
 
-몬스터 효과음과 같은 합성기(`scripts/content/monster-sfx/synth.py`: 펄스·삼각·LFSR 잡음 + 엔벨로프)로 아래 패치를 렌더한다.
-녹음·샘플·원작 멜로디는 쓰지 않았다. 해결 징글은 장7화음을 위로 쌓는 자체 음형이다.
+2026-10-20 부터 출하음은 `snes.py` 의 변형 A 다: 코드로 합성한 악기 샘플(하프·글로켄·마림바·팀파니·금관·파이프오르간…)을
+SNES 경로(32 kHz·BRR 왕복·가우스 보간·ADSR·8채널·FIR 에코)로 재생한다. 녹음·원작 샘플·원작 멜로디는 쓰지 않았다.
+해결 징글은 장7화음을 위로 쌓는 자체 음형이다.
+
+아래 CHIP_PATCHES 는 옛 칩튠판(#3060)이다. 지우지 않는 이유: ① 새 소리의 크기를 옛 소리의 게이트 RMS 에 맞추는 기준,
+② `snes.py` 비교 예제의 「현행」 줄. 칩튠 합성기는 `scripts/content/monster-sfx/synth.py`.
 
   python3 scripts/content/puzzle-sfx/build.py            # public/assets/puzzle-sfx/*.ogg + manifest.json
   PUZZLE_SFX_WAV_DIR=/tmp/x python3 ...build.py           # 검수용 WAV 도 남긴다
@@ -25,6 +29,8 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 sys.path.insert(0, str(ROOT / "scripts" / "content" / "monster-sfx"))
 import synth  # noqa: E402
+sys.path.insert(0, str(HERE))
+import snes  # noqa: E402
 
 OUT = ROOT / "public" / "assets" / "puzzle-sfx"
 ENV_HIT = {"a": 0.001, "d": 0.06, "s": 0.0, "r": 0.01, "curve": "exp"}
@@ -48,7 +54,7 @@ def organ(pitch: str, sub: str) -> dict:
     }
 
 
-PATCHES: dict[str, dict] = {
+CHIP_PATCHES: dict[str, dict] = {
     # 비밀이 풀린 순간 — 장7화음을 빠르게 올라가 높은 으뜸음에서 반짝이며 머문다(약 1.2초).
     "secret-solved": {
         "duration": 1.25,
@@ -193,15 +199,74 @@ TITLES = {
 PEAK_DBFS = {"secret-solved": -3.0, "stone-push": -4.0, "plate-press": -4.0, "switch-clack": -5.0, "wrong": -5.0}
 
 
+SNES_DESC = {
+    "secret-solved": "harp rising A-maj7 arpeggio + glockenspiel sparkle + string pad (A, E), 64 ms echo",
+    "stone-push": "band-limited BRR noise sample (stone scrape, pitch wobble) + timpani thud, dry",
+    "switch-clack": "FM metal sample, two clanks low->high + timpani floor knock",
+    "plate-press": "timpani thud + marimba C6 -> G6 confirm",
+    "wrong": "muted brass two-note fall (semitone rub) + plucked bass",
+    "crystal-ping": "FM glockenspiel E6 -> B6, 64 ms echo",
+    "organ": "pipe organ (additive drawbar loop + chiff) with octave-below double, 64 ms echo",
+}
+ORGAN_NOTES = {"organ-c": "C5", "organ-e": "E5", "organ-g": "G5", "organ-c2": "C6"}
+
+
+def gated_rms(y: np.ndarray, sr: int) -> float:
+    """30 ms 창 중 가장 큰 창보다 30 dB 이내인 창만 평균한 RMS(꼬리·무음 길이에 흔들리지 않는 크기)."""
+    w = int(0.03 * sr)
+    fr = np.array([np.sqrt(np.mean(y[i:i + w] ** 2)) for i in range(0, len(y) - w + 1, w)])
+    keep = fr[fr >= fr.max() * 10 ** (-30 / 20)]
+    return float(np.sqrt(np.mean(keep ** 2)))
+
+
+def finish(y32: np.ndarray, ref: np.ndarray) -> np.ndarray:
+    """32 kHz SNES 출력 → 44.1 kHz, 옛 칩튠판 게이트 RMS 에 맞추고 피크 -1 dBFS 상한, -60 dB 아래 꼬리는 잘라 20 ms 로 닫는다."""
+    from fractions import Fraction
+    from scipy import signal as sps
+    r = Fraction(synth.SR, snes.FS)
+    y = sps.resample_poly(y32, r.numerator, r.denominator)
+    y = sps.sosfilt(sps.butter(1, 30 / (synth.SR / 2), "high", output="sos"), y)
+    y = y * (gated_rms(ref, synth.SR) / gated_rms(y, synth.SR))
+    peak = float(np.max(np.abs(y)))
+    if peak > 10 ** (-1 / 20):
+        y = y * (10 ** (-1 / 20) / peak)
+    loud = np.nonzero(np.abs(y) > np.max(np.abs(y)) * 10 ** (-60 / 20))[0]
+    end = min(len(y), int(loud[-1]) + int(0.02 * synth.SR))
+    y = y[:end].copy()
+    fo = int(0.02 * synth.SR)
+    y[-fo:] *= np.linspace(1, 0, fo)
+    return y
+
+
+def measure(y: np.ndarray, ref: np.ndarray) -> dict:
+    sr = synth.SR
+    onset = int(np.argmax(np.abs(y) > np.max(np.abs(y)) * 0.1))
+    return {
+        "gatedRmsDb": round(20 * np.log10(gated_rms(y, sr)), 2),
+        "chipGatedRmsDb": round(20 * np.log10(gated_rms(ref, sr)), 2),
+        "peakDbfs": round(20 * np.log10(float(np.max(np.abs(y)))), 2),
+        "dc": round(float(np.mean(y)), 5),
+        "maxStep": round(float(np.max(np.abs(np.diff(y)))), 3),  # 최대 표본 간 점프(클릭 검사)
+        "onsetMs": round(onset / sr * 1000, 1),
+        "seconds": round(len(y) / sr, 3),
+        "chipSeconds": round(len(ref) / sr, 3),
+    }
+
+
 def main() -> int:
     OUT.mkdir(parents=True, exist_ok=True)
     wav_dir = Path(os.environ["PUZZLE_SFX_WAV_DIR"]) if os.environ.get("PUZZLE_SFX_WAV_DIR") else None
     if wav_dir:
         wav_dir.mkdir(parents=True, exist_ok=True)
+    S = snes.all_samples()
+    cues = snes.build_cues(S)
     sounds = {}
-    for cue, patch in PATCHES.items():
-        patch = {"id": cue, **patch}
-        y = synth.normalise(synth.render(patch), PEAK_DBFS.get(cue, -4.0))
+    for cue in CHIP_PATCHES:
+        ref = synth.normalise(synth.render({"id": cue, **CHIP_PATCHES[cue]}), PEAK_DBFS.get(cue, -4.0))
+        raw = snes.organ_note(S, ORGAN_NOTES[cue]) if cue in ORGAN_NOTES else cues[cue]["A"][0]
+        y = finish(raw, ref)
+        m = measure(y, ref)
+        assert m["peakDbfs"] <= -0.99 and abs(m["dc"]) < 0.002 and m["onsetMs"] < 15, (cue, m)
         with tempfile.TemporaryDirectory() as tmp:
             wav = Path(tmp) / f"{cue}.wav"
             synth.write_wav(wav, y)
@@ -210,23 +275,24 @@ def main() -> int:
             ogg = OUT / f"{cue}.ogg"
             subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(wav), "-c:a", "libvorbis", "-q:a", "5", "-ar", "44100", "-ac", "1", str(ogg)], check=True)
         data = ogg.read_bytes()
-        rms = float(np.sqrt(np.mean(y**2)))
         sounds[cue] = {
             "file": f"{cue}.ogg",
             "title": TITLES[cue],
             "bytes": len(data),
             "sha256": hashlib.sha256(data).hexdigest(),
-            "durationSeconds": round(len(y) / synth.SR, 4),
-            "peakDbfs": PEAK_DBFS.get(cue, -4.0),
-            "rmsDbfs": round(20 * np.log10(max(rms, 1e-9)), 2),
-            "patch": patch,
+            "durationSeconds": m["seconds"],
+            "instrument": SNES_DESC["organ" if cue in ORGAN_NOTES else cue],
+            "measure": m,
         }
+        print(f"{cue:14s} {json.dumps(m)}")
     manifest = {
-        "format": 1,
+        "format": 2,
         "license": "CC0-1.0",
-        "originality": "Synthesised from numeric patches (pulse/triangle/LFSR-noise oscillators and envelopes) written by hand. No recording, sample or game melody is used.",
-        "synth": "scripts/content/monster-sfx/synth.py",
+        "originality": "Instrument samples are synthesised in code (Karplus-Strong, FM, additive, looped single-cycle waves) and played through an SNES-like path. No recording, ripped sample or game melody is used.",
+        "engine": "scripts/content/puzzle-sfx/snes.py (variant A): 32 kHz, BRR 4-bit ADPCM round-trip, Gaussian 4-tap interpolation, SNES ADSR, 8 voices, hardware noise, 8-tap FIR echo",
         "builder": "scripts/content/puzzle-sfx/build.py",
+        "loudness": "gated RMS matched to the previous chiptune set (CHIP_PATCHES in build.py), peak capped at -1 dBFS",
+        "aramKiB": round(snes.aram_kib(S), 1),
         "sampleRate": synth.SR,
         "channels": 1,
         "codec": "vorbis q5",

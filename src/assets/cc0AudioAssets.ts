@@ -88,14 +88,14 @@ export const CC0_AUDIO_ASSETS = [
     license: "CC0-1.0" as const,
     sourceName: `${PRODUCT_BRAND} original chip synthesis (monster-sfx)`,
   })),
-  // ── JRPG 퍼즐 방 효과음(원본 칩튠 합성, 패치는 puzzle-sfx/manifest.json) ──
+  // ── JRPG 퍼즐 방 효과음(원본 SNES 샘플 악기풍 합성, 내역은 puzzle-sfx/manifest.json) ──
   ...PUZZLE_SFX_CUES.map((cue) => ({
     id: puzzleSfxResourceId(cue),
     name: `${PUZZLE_SFX_TITLES[cue]} · 퍼즐 효과음 (CC0)`,
     path: puzzleSfxPath(cue),
     kind: "sound" as const,
     license: "CC0-1.0" as const,
-    sourceName: `${PRODUCT_BRAND} original chip synthesis (puzzle-sfx)`,
+    sourceName: `${PRODUCT_BRAND} original SNES-style sample synthesis (puzzle-sfx)`,
   })),
 ] as const satisfies readonly Cc0AudioAsset[];
 
