@@ -1,0 +1,335 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3b3d375081073873c957823ae38144583cf10e5fde0b8c959a4ff3118e1656d8",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "Astra centre kit cell 4 (r1 c0)",
+ "label": "monster_overworld/astra-centre-kit-4 (칸 2228)",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(top_down_slab) (4/4)",
+  "3/4: 앞면 0행 < 3 (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 평면 채움 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(top_down_slab) (4/4)",
+   "앞면 0행 < 3 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "평면 채움 (3/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 2
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 5,
+  "darkV5": 88,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof plane (full cell, repeating tile courses)",
+      "rows": "0-15",
+      "evidence": "c",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The whole cell (rows 0-15, constant width 15) is one sloped roof plane of teal tile courses. Each course is a light edge line (L=168 at rows 1, 5, 9, 13) over mid-tone tile rows and dark shadow rows, so the roof-plane evidence (c) is present. The bottom edge line at row 13 is followed by the shadow rows 14-15. No vertical wall, lintel face or door face is drawn below the roof, so there is no front face of 3 or more rows. The cell is a roof fragment, not a complete building with a top and a front, so it reads as a flat slab by the definitions."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny teal icon, roughly 14x28 px at 2x, with a few horizontal stripes. It is not a whole building: it has no roof, walls, door or windows. It shows 5 visible tones against 12 and 10 for the references, and 0% near-flat coverage only because the object is so small. The measured 0% neutral edge share is not meaningful because there is no real outline. Shading is shallow, with 2-3 teal steps against about 6 per material on the references. It has no tile scallops, plaster speckle or stone-by-stone shading. It would look far thinner and flatter than either reference, and it does not match the kind.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(top_down_slab) (1/1)",
+    "앞면 0행 < 3 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(top_down_slab) (1/1)",
+     "앞면 0행 < 3 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15618
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof tile field (repeating tile courses)",
+      "rows": "0-15",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The whole 15px-wide, 16-row tile is one repeating pattern of roof tile courses. Each 4-row course has a light line (L=168), then two mid rows (L=134), then a dark row (L=74-102), at rows 1/5/9/13. The same course pattern runs to the bottom edge, so row 15 is just another course shadow. There is no wall, lintel or eave-and-face transition and no vertical south face of 3 or more rows. This is a sloped roof surface fill with no front face, so it reads as a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny teal striped swatch about one tile in size, with no roof, walls, door or windows, so it is not a whole building like the references. Its only visible information is 5 tones in a few teal bands. That is well below the references' 10-12 visible tones per tile, and it has no tile scallops, plaster speckle or stone shading. The measured near-flat coverage is 0%, so it has no large flat fills, and its dark edges are tinted teal rather than neutral (0% near-neutral). Even so, it is far too shallow and structurally different to sit next to the Beodeul houses.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(top_down_slab) (1/1)",
+    "앞면 0행 < 3 (1/1)",
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(top_down_slab) (1/1)",
+     "앞면 0행 < 3 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12671
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof plane (centre kit cell)",
+      "rows": "0-15",
+      "evidence": "c",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "All 16 rows at a constant width of 15 are a roof-tile plane. The column scans repeat a 4-row course: a light line at rows 1, 5, 9 and 13, then mid-tone rows, then a darker row. The last course has its light edge line at row 13, followed by rows 14-15 of darker shade, which acts as the eave shadow. Nothing below that is a vertical face such as a wall, fascia or door, so the cell has no front face of 3 or more rows. It is a slope-only kit fragment and reads as a flat top-down slab on its own."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny teal icon, roughly 28x30 px at 2x, so it is smaller than one tile. It is not a whole building with roof, walls and door/windows. It looks like a small striped or panel glyph. The measured facts back this up: 5 visible tones per tile against 10-12 in the references, and only 5 distinct colours in total against 66-185. Near-flat coverage reads 0% only because the piece is so small. By eye it has about 2 tone steps and no outline, tile scallops, plaster speckle or stone shading. The references have 5-6 step roof tiles, timber framing, speckled plaster and individually shaded stones. The candidate is far flatter and simpler, and it does not match the reference kind.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(top_down_slab) (1/1)",
+    "앞면 0행 < 3 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(top_down_slab) (1/1)",
+     "앞면 0행 < 3 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 13878
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof tile plane (whole cell)",
+      "rows": "0-15",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The cell is 15 px wide for all 16 rows. The column scan repeats a 4-row shingle cycle at x=5, 8 and 12: a light row at 1, 5, 9 and 13, then two mid rows, then a dark row. The whole cell is a sloped roof or tile plane, so it counts as a top surface under evidence (c). There is no wall, lintel face, eave shadow band or vertical south face beneath it. The last row, 15, is just a dark outline row, so front_face_rows is 0. As a standalone cell it is a tiled roof slab with no front face, which makes it a flat top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny teal icon, about one tile in size, with a few horizontal stripes. It is not a whole building with roof, walls and door/windows, so it does not match the reference kind. It has only 5 visible tones per tile, against 12 and 10 for the references. The 0% near-flat figure comes from the piece being tiny, so it does not show real texture. There are no roof tile scallops, no plaster or stone grain, and no material-toned outline. It shows about 2 shading steps against the references' 5-6 per material. It would look far thinner and flatter than the references next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(top_down_slab) (1/1)",
+    "앞면 0행 < 3 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(top_down_slab) (1/1)",
+     "앞면 0행 < 3 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 12416
+  }
+ ],
+ "decidedAt": "2026-10-20T22:08:46.590Z",
+ "cells": {
+  "16": [
+   "0947437962d69037"
+  ],
+  "24": [
+   "1f5e234a95686b34",
+   "355146c28ca428e1",
+   "55ef80b67c5f7e2f",
+   "b3d5581491cbb51d",
+   "d7085f8c99dbbdaa",
+   "ef10703711a6e8a2"
+  ],
+  "32": [
+   "01e199b403ae3efb",
+   "06594bf5d1a8023d",
+   "31f011ca581bb05f",
+   "90ee4ddb3fc47617",
+   "9450cf007a693e88",
+   "9a797d28823efc6b"
+  ],
+  "48": [
+   "09abb2e3b1de76fb",
+   "1c96afeacc27a504",
+   "5c9cf1c5c464615b",
+   "6e011ffb1512d720",
+   "7a72332fdec7a26f",
+   "f297f98e7ad0253d"
+  ]
+ }
+}
