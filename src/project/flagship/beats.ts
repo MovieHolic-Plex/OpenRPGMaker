@@ -168,7 +168,7 @@ export const EMERALD_CROWN_BEATS: readonly FlagshipBeat[] = [
   {
     id: "ec_beat_02_route1_and_grove_town",
     atMinute: 6,
-    act: "2막 · 1번 도로 여명 해안길 → 실바나 마을 → 2번 도로 솔방울 언덕",
+    act: "2막 · 1번 도로 새싹 들길 → 실바나 마을 → 2번 도로 솔방울 언덕",
     mapKey: "mx_map_meadow",
     sceneTitle: "풀숲 야생 조우·포획구슬 투척 & 시야선 트레이너 배틀",
     playerFeel: "여명의 날개 새들이 나는 1번 도로 풀숲에서 야생 몬스터를 만나 포획 구슬로 포획하고, 시야선 트레이너(!)와 겨루며 실바나 마을 회복 센터·도구점으로 나아간다.",

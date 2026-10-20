@@ -36,7 +36,7 @@ const SPECIES_NAMES: Readonly<Record<string, string>> = {
 const PLACE = {
   region: "아스트라 군도",
   home: "다우닝 시티",
-  route1: "1번 도로 · 여명 해안길",
+  route1: "1번 도로 · 새싹 들길",
   town2: "실바나 마을",
   gym: "실바나 체육관",
   route2: "2번 도로 · 솔방울 언덕",
@@ -143,11 +143,11 @@ const LINE_REWRITES: Readonly<Record<string, string>> = {
     "빛은 누군가 가둬 둘 수 있는 게 아니었군. 이제… 나도 이 군도를 처음부터 다시 걸어 봐야겠어.",
   "아스트라 리그의 문이 열렸다. 실바나 마을에서 마지막 도전을 시작하자.":
     "새벽 하늘로 여명의 날개 새떼가 다시 날아올랐다. 실바나 마을 북쪽 끝, 챔피언 전당의 문이 열렸다.",
-  "1번 도로 · 여명 해안길. 야생 몬스터는 포획할 수 있지만 조련사의 몬스터는 포획할 수 없습니다. 길을 걷기 전에 체력과 기술 PP를 확인하세요.":
-    "1번 도로 · 여명 해안길. 키 큰 풀숲에는 야생 몬스터가 숨어 있다. 다른 트레이너의 몬스터는 잡을 수 없다.",
+  "1번 도로 · 새싹 들길. 야생 몬스터는 포획할 수 있지만 조련사의 몬스터는 포획할 수 없습니다. 길을 걷기 전에 체력과 기술 PP를 확인하세요.":
+    "1번 도로 · 새싹 들길. 키 큰 풀숲에는 야생 몬스터가 숨어 있다. 다른 트레이너의 몬스터는 잡을 수 없다.",
   "솔방울 언덕에는 길에서 만나기 힘든 몬스터가 살아요. 도감에 빈칸이 있다면 천천히 탐색해 보세요.":
     "솔방울 언덕에는 1번 도로에서 보기 힘든 몬스터가 살아요. 체육관에 가기 전에 여기서 동료를 단련해도 좋아요.",
-  "북쪽 길: 1번 도로 · 여명 해안길": "북쪽: 1번 도로 · 여명 해안길",
+  "북쪽 길: 1번 도로 · 새싹 들길": "북쪽: 1번 도로 · 새싹 들길",
   "북쪽 길: 솔방울 언덕": "북쪽: 2번 도로 · 솔방울 언덕",
   "북쪽 길: 실바나 마을": "북쪽: 실바나 마을",
   "다우닝 시티 북동쪽 연구소에서 천문박사와 첫 동료를 만나라.": "다우닝 시티의 오르비스 천문 연구소에서 첫 동료를 만나라.",
@@ -362,8 +362,8 @@ function startInBedroom(project: Project, introEvent: GameEvent | undefined): vo
   intro.y = start.y;
   intro.id = "mx_map_home_house_2f_opening";
   const commands: Command[] = [
-    textCommand("오늘은 천문박사님께 첫 동료를 받기로 한 날이다. 창밖에서 여명의 날개 새들이 길을 잃은 듯 빙빙 돌고 있다."),
-    textCommand("방향키로 걷고, Z/Enter로 말을 걸고, X/Esc로 메뉴를 연다. 계단은 방 오른쪽 위에 있다."),
+    textCommand("오늘은 첫 동료를 받는 날!"),
+    textCommand("방향키로 걷고, Z/Enter로 말을 걸고, X/Esc로 메뉴를 연다."),
     { kind: "setSwitch", switchId: "mx_intro", value: true },
   ];
   for (const page of intro.pages ?? []) page.commands = commands;
@@ -656,6 +656,26 @@ function tidyMeadowDecor(project: Project): void {
     const tile = meadow.upperTiles[i];
     if (tile === 616 || tile === 617 || tile === 640) meadow.upperTiles[i] = -1;
   }
+  roundMeadowGrassCorners(meadow);
+}
+
+/**
+ * 1번 도로 풀숲이 모서리 직각의 직사각형 장판으로 깔려 있었다(2026-10-20 검수 R2-5) — 자연 덤불로 보이도록 네 귀퉁이 칸을 맨땅으로 깎는다.
+ * 키큰풀(4·5)과 그 가장자리 변형만 대상이고, 위층 장식과 통행 규칙은 그대로다.
+ */
+const MEADOW_GRASS_TILES = new Set([4, 5, 16, 17, 19, 23, 31, 32, 34, 38]);
+function roundMeadowGrassCorners(meadow: { width: number; height: number; lowerTiles: number[] }): void {
+  const { width: w, height: h, lowerTiles: low } = meadow;
+  const grass = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < w && y < h && MEADOW_GRASS_TILES.has(low[y * w + x]);
+  const corners: Array<[number, number]> = [];
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      if (!grass(x, y)) continue;
+      const up = grass(x, y - 1), down = grass(x, y + 1), left = grass(x - 1, y), right = grass(x + 1, y);
+      if ((!up && !left) || (!up && !right) || (!down && !left) || (!down && !right)) corners.push([x, y]);
+    }
+  }
+  for (const [x, y] of corners) low[y * w + x] = (x * 5 + y * 3) % 4;
 }
 
 /** 명령 나무의 모든 하위 목록(분기·선택지·전투 결과)을 돈다. */
