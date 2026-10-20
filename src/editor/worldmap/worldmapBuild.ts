@@ -129,14 +129,14 @@ const REQUEST_TIMEOUT_MS = 7 * 60 * 1000;
 export async function buildWorldmap(request: WorldmapBuildRequest): Promise<WorldmapBuildResult> {
   if (builderOverride) return builderOverride(request);
   // LLM 클라이언트는 도구 레지스트리를 다시 읽는다. 빌드 도구 초기화와 순환하지 않게 HTTP 경로에서만 불러온다.
-  const [{ companionTokenHeaders }, { companionRequestBaseUrl }] = await Promise.all([
-    import("@/ai/companionToken"), import("@/ai/llmClient"),
+  const [{ fetchCompanion }, { companionRequestBaseUrl }] = await Promise.all([
+    import("@/ai/companionConnection"), import("@/ai/llmClient"),
   ]);
   let response: Response;
   try {
-    response = await fetch(`${companionRequestBaseUrl().replace(/\/$/, "")}/worldmap/build`, {
+    response = await fetchCompanion(`${companionRequestBaseUrl().replace(/\/$/, "")}/worldmap/build`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", ...companionTokenHeaders() },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(request),
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });

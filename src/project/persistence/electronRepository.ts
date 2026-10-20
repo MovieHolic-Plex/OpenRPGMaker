@@ -133,6 +133,11 @@ export type OprnBridge = {
   readonly companionOrigin: string | null;
   /** 동반 서비스 실행별 토큰(설계 7.4). 루프백은 같은 머신의 다른 프로세스에 열려 있다. */
   readonly companionToken: string | null;
+  /**
+   * 브라우저 로컬 서버 전용 — 서버가 다시 시작돼 토큰이 바뀌었을 때 새로고침 없이 지금 토큰을 다시 받는다
+   * (`src/ai/companionConnection.ts` 가 401/403 에 한 번 부른다). 일렉트론은 동반 서비스가 앱과 수명을 같이 해서 없다.
+   */
+  readonly refreshConnection?: () => Promise<{ readonly bridgeTokenChanged: boolean; readonly companionTokenChanged: boolean }>;
   /** 내용 주소 자산을 열 수 있는 접두사. 일렉트론은 oprn-asset 스킴, 브라우저 로컬 서버는 HTTP 경로다. */
   readonly assetBaseUrl: (projectId: string) => string;
   readonly lifecycle: OprnBridgeLifecycle;
