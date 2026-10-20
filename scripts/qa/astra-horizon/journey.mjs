@@ -656,6 +656,11 @@ try {
   step("gym-puzzle", puzzleSwitches.every((s) => st0.switches[s] === true), puzzleSwitches.map((s) => `${s}=${st0.switches[s]}`).join(","), await shot("20-gym-solved"));
   // 수련생 셋 — 플레이어처럼 다 싸운다
   for (const [k, grunt] of gym.events.filter((e) => /_grunt_\d+$/.test(e.id)).entries()) {
+    // 플레이어처럼: 앞 동료 체력이 바닥(12 아래, Lv8 최대의 40% 쯤)이면 이기지 않은 수련생에게 가기 전 마을 센터에서 쉰다 — 체력 2 로 수련생에게 덤벼 진 것(r28 불)을 난이도로 잘못 읽었다.
+    const lead0 = (await live()).party.find((m) => (m.currentHp ?? 1) > 0);
+    if (town2 && (await live()).switches?.[`${grunt.id}_won`] !== true && lead0?.currentHp !== undefined && lead0.currentHp < 12) {
+      await go(gym.id, town2.id); await healAt(town2.id); await go(town2.id, gym.id);
+    }
     const approach = await approachAndTalk(gym.id, grunt);
     const probe = { approach, spot: besideOf(gym.id, grunt), live: liveSpots[grunt.id] ?? null, hero: await here().then((h) => `${h.x},${h.y}`), dialogue: await present("dialogue-box") };
     const started = await pressEnterUntil(() => present("battle-scene"), 30);
