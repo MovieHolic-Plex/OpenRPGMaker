@@ -88,9 +88,10 @@ export function clearUpperByLabel(project: Project, map: GameMap, pattern: RegEx
 /**
  * 구덩이 가장자리: 칠한 흙 칸 묶음(cells)의 바깥 둘레 칸에 물가 둑 덧그림(bankGrass, 「earth」)을 2층에 얹는다.
  * 둑 그림은 바깥 풀이 둥글게 들어오고 흙 띠·어두운 테가 서서, 네모난 흙 마당이 움푹 팬 자리로 읽힌다(새 화소 없음 — 버들항 자연 팩 칸).
+ * bank="bankLava" 는 같은 모양의 그을린 흑요석 둑(검은 재 띠 + 불씨 주황 모서리) — 추락 구덩이용. 풀 둑은 진흙 입술로 읽힌다(감사 라운드 2).
  * 이미 2층에 무언가 있는 칸은 건드리지 않는다. 얹은 칸 수를 돌려준다.
  */
-export function rimPit(project: Project, map: GameMap, cells: ReadonlySet<number>): number {
+export function rimPit(project: Project, map: GameMap, cells: ReadonlySet<number>, bank: "bankGrass" | "bankLava" = "bankGrass"): number {
   const tileset = project.tilesets[map.tilesetId];
   if (!tileset) return 0;
   const nature = project.tilesets[BEODEUL_NATURE_ID] && project.tilesets[BEODEUL_NATURE_ID]!.count >= BEODEUL_NATURE.count
@@ -105,7 +106,7 @@ export function rimPit(project: Project, map: GameMap, cells: ReadonlySet<number
       if (nx < 0 || ny < 0 || nx >= w || ny >= h || cells.has(ny * w + nx)) mask |= 1 << bit;
     });
     if (mask === 255 || layerTileAt(map, 2, c) >= 0) continue;
-    const tile = BEODEUL_NATURE.bankGrass[mask] ?? -1;
+    const tile = BEODEUL_NATURE[bank][mask] ?? -1;
     if (tile >= 0) want.set(c, tile);
   }
   if (want.size === 0) return 0;
