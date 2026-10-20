@@ -1,0 +1,350 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "43c7d74382bc74ce1820b77290b319bcb0a2093b91a2b2838a549708eac9ac4e",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "forest south edge: trunk band under the canopy",
+ "label": "jp_city/jp-forest-bl-band-M-0",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 34,
+  "nearBlackEdge": 0.1,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy at top",
+      "rows": "0-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk band (brown trunk in dark foliage)",
+      "rows": "5-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass/foliage at base",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The 16x16 tile is a full-width foliage/trunk band: leaf canopy in rows 0-4, a brown trunk (x~4-11) in rows 5-10 seen face-on, and grass tufts in rows 11-15. The width profile is 16 for rows 0-10, so there is no ellipse, no band ending in a front-edge line, no eave shadow, and no visible contents. The trunk is a vertical face only, with no horizontal top surface. It reads as a flat front elevation, which suits a tile meant to be a tiling edge band."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a single 16x16 tile showing a dark trunk under a green canopy fringe. It has only 12 distinct colours, against a median of 108-109 per tile in the references (427 and 567 colours in total). Its greens and browns step through only about 3 lightness levels per material, while the references use 5-6 with clumped leaf highlights. Flat-fill coverage is 0% and the dark edge pixels are tinted rather than neutral, so the outline reads as dark material tone, not black. This is a small tile piece, but even allowing for that, the tile carries a tenth of the reference density. The leaf clumps are not varied and the trunk has little bark grain, so it looks flatter and simpler beside the references. A careful artist would not accept it next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15525
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "canopy foliage (top band)",
+      "rows": "0-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "2-4"
+     },
+     {
+      "part": "trunk",
+      "rows": "5-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bush/grass at base",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tile is a full-width 16px strip of foliage with a vertical trunk drawn face-on in rows 5-10. The silhouette stays 16 wide in rows 0-10, narrows at row 11, and is full width again in rows 12-14, so there is no widening-then-narrowing ellipse. No row shows a front-edge line, and no horizontal top plane or opening is visible. The dark rows 2-4 are foliage shading on the vertical face, not eave shadow under a top surface. The trunk and foliage are flat front-facing masses, so the whole thing reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a single 16x16 tile with 12 distinct colours. The references carry about 108 colours per tile and 427-567 colours overall, so it is roughly 9x poorer per tile. It shows a dark green canopy band over a dark brown trunk. The trunk reads as 2-3 flat tones with little grain or bark detail, and the canopy has only a few greens, far fewer than the 5-6 steps in the references, with no per-clump highlights. Dark edge pixels are 0% neutral, so the outlines lean green/brown, which is a plus. Flat-fill coverage is 0%, but that comes from scattered dither-like pixels rather than rich texture. As a tile-sized edge piece it is allowed to be simple, but it is clearly shallower and flatter than the references, so it would look thin next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14935
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk (brown column, centre)",
+      "rows": "3-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "canopy foliage at top",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bush and grass base",
+      "rows": "11-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tile is a full-width 16px foliage strip with silhouette width 16 on nearly every row. The dark trunk (about rows 3-11, brown at x=4 and x=11) is drawn as a flat vertical face. Foliage sits above it at rows 0-2 and a leafy base with highlights at rows 11-14. No row has a front-edge line followed by eave shadow, no ellipse widens and narrows, and no contents are visible. The leaf texture above is a front-facing tile and does not read as a sloped canopy plane over an eave. The result is a front elevation with no horizontal top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a single 16x16 tile showing a trunk band under the canopy, with only 12 distinct colours against about 108 median per tile in both references. That is roughly a tenth of the reference density. The dark edge pixels are 0% neutral, so the outline leans green/brown and reads as dark material tone, which matches the references. There are no 5x5 flat fills, but the tile shows only about 3 lightness steps on the trunk and foliage, against 5-6 in the references. The trunk looks like a dark slab with little bark grain, and the leaf clumps around it are small and sparse next to the references' multi-green clumps. The tile is small and simple, but its density and shading depth are still far below the reference. A careful artist would not accept it beside the references without it looking flatter and thinner.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16883
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "foliage canopy above the trunk",
+      "rows": "0-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "2-4"
+     },
+     {
+      "part": "trunk (vertical brown face)",
+      "rows": "4-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass and bush strip at the base",
+      "rows": "11-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a full 16px-wide tile (rows 0-10 at width 16, then 11:11, 12-14:16, 15:10). Rows 0-4 are dark and mid-green foliage mass with no front-edge line, and the darker rows 2-4 at x=4 and rows 3-11 at x=8 are shading inside the foliage. The trunk, brown at x=4 rows 5-10 and dark at x=11 rows 5-10, is only a vertical face and has no horizontal top or ellipse. Rows 11-14 are a grass strip. Nothing is an ellipse, a roof plane or visible contents, so no top surface is present, and the tile reads as a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a single 16x16 tile showing a trunk band under a canopy. It has only 12 distinct colours, against 108-109 median colours per tile and 427-567 total colours in the references. The dark edge pixels are tinted (0% neutral), so the outline reads as a dark green/brown material tone and not a black sticker line. There are no flat 5x5 fills, but the shading is shallow: about 3 green steps plus a dark trunk, against 5-6 steps in the references. The canopy clumps and trunk grain are much sparser than the leaf clusters and bark shading in the references. Because the tile is small, the colour count is partly a scale effect, but by eye it is still flatter and thinner than a reference tile of the same kind. A careful artist would not accept it next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15940
+  }
+ ],
+ "decidedAt": "2026-10-20T06:28:44.234Z",
+ "cells": {
+  "16": [
+   "d471c3b3bd0d2b5e"
+  ],
+  "24": [
+   "28861014aff92eea",
+   "6680383ae70c71de",
+   "72a0dfdd09ce4463",
+   "b9b866c6abfcdee7",
+   "df09e8b819c57c1d",
+   "e55550f5f8f4a117"
+  ],
+  "32": [
+   "10758d6341e12a78",
+   "9fb54072760a941c",
+   "a8898d500019d8f6",
+   "dcf11212141bc67a",
+   "e62b74d90df8fd46",
+   "fba19abe34302eee"
+  ],
+  "48": [
+   "25220ccd7d4d4425",
+   "50b8ce099156c7a2",
+   "b780b19aaadb5688",
+   "bf33429c7972f660",
+   "d821d9764addba0d",
+   "f3f425db8abeb954"
+  ]
+ }
+}

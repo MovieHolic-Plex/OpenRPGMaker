@@ -1,0 +1,393 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e5696fe1a622c628d2cca434123a78e952f79f570aa953d17118fc10539c6c99",
+ "width": 64,
+ "height": 64,
+ "kind": "organic",
+ "name": "single deciduous tree",
+ "label": "jp_city/jp-forest-bl-tree-t4x4-1",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 17,
+  "darkV5": 35,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 10
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "foliage canopy (two overlapping crowns)",
+      "rows": "11-20",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "38-42"
+     },
+     {
+      "part": "trunk",
+      "rows": "40-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "40-42"
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The foliage is a rounded heap. The top rows 11-20 are lit light green (#8bc84c, #73b83e) and the mass darkens to deep green by rows 33-40, so it shows an upper surface above a shaded front. The width profile grows from 5 to about 56 at rows 28-30 and then narrows to 18 at the trunk. Rows 40-42 are a very dark shadow band under the canopy, on top of the trunk. The trunk is a brown vertical front face at rows 41-62, about 22 rows, with a flared base at rows 60-62 on a ground shadow. This is a standard organic 3/4 tree. The canopy has no hard front-edge line, so the top surface is read from the lit heap shading."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate shows two rounded canopies on straight trunks with a ground shadow. It has only 20 distinct colours and a median of 11 per tile, against 427-567 colours and a median of about 108 per tile for the references, so it is far below them on the measured facts. The canopies have roughly 4 green steps and a few clump dots, but the clumps are large, blobby and soft. The references have many small leaf clusters in 5-6 greens with varied highlights and light-catching edges. The trunks are plain, with 2-3 browns, no bark grain and no roots or branches visible through the canopy, unlike the reference trunks, which have branches, roots and grain. Outlines are tinted dark green and brown, with 0% neutral edge pixels, so they do not look like a sticker outline. Flat-fill coverage is low at 2%. Even so, the shading is shallower and the tile information is much lower than the Beodeul standard, so it would look thinner and flatter next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 17480
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "foliage canopy (two merged crowns)",
+      "rows": "11-40",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunks",
+      "rows": "40-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "40-42"
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Organic tree: a rounded foliage mass (rows 11-40) is shaded lighter at the top and darker toward the bottom. Light clumps at rows 11-20 suggest the upper surface of the crown, and the dark underside at rows 36-42 reads as shadow. Two brown trunks run below it (rows 40-62) with flared roots and a ground shadow at rows 54-63. The trunks are vertical south faces with no top surface and are not a flat top-down slab. There is no ellipse or edge-line top. The crown's volume and underside shading read as a 3/4 view of a tree rather than a flat front elevation. The object appears to show two trees, though it is named a single tree."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is two trees, while the references are single trees, but the kind still matches. Its canopies have about 4 green steps, with a few clumpy dots, and the trunks are nearly flat brown with only 2-3 tones. The references carry 6 or more greens in distinct leaf clumps, plus detailed roots and branches visible through the canopy. Measured facts back this up: 20 distinct colours against 427 and 567 for the references, and 11 colours per tile against about 108. Flat-fill coverage is low at 2%, and the dark edge pixels are 0% neutral, so the outline is tinted dark green or brown and not near-black. That is a good point, but the canopy is still a smooth blob with weak leaf-cluster definition, and the trunks and ground are simple. Overall it is much sparser and shallower than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14389
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy (two overlapping crowns)",
+      "rows": "11-43",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "38-43"
+     },
+     {
+      "part": "trunks",
+      "rows": "40-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "40-42"
+     },
+     {
+      "part": "ground shadow/grass patch",
+      "rows": "54-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 18,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The canopy silhouette widens from 5 px at row 11 to 56 px at rows 28-30, then narrows to 18 px at the trunk (row 44). It reads as a rounded volume. Its upper rows 11-27 are lit light green and its lower rows 33-43 are dark green, so it shows a top surface and a shaded underside. It has no hard edge line, only a dark underside at rows 39-43, directly over the trunk. Trunks run rows 40-62 with a flared root base and a dark shadow at rows 40-42 under the crown, giving a front face of about 23 rows. The image shows two trees with two trunks rather than one, but it is still an organic tree object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is two trees, each with a rounded canopy and a straight trunk. The canopy has about 4 green steps and some clumping, but the clumps are large and soft, with no individual leaf-cluster highlights. The trunks are nearly flat brown with a single dark side and no bark grain or root flare. The outline is a dark green or brown tint, not neutral, which matches the 0% near-neutral measurement. The measured density is far below both references: 11 colours per tile against 108 and 109, and 20 distinct colours against 427 and 567. Flat-fill coverage is low at 2%, so the problem is shallow shading and sparse detail rather than big flat areas. Next to the references' detailed leaf clumps, highlights and rooted trunks, it looks like a simplified sticker-style tree.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 17789
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "canopy (two overlapping leaf masses)",
+      "rows": "11-39",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "36-40"
+     },
+     {
+      "part": "trunks",
+      "rows": "40-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "40-42"
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The canopy silhouette widens from 5 px at row 11 to 56 px at rows 28-30, then narrows to 18 px at the trunk (rows 44-53). That is a rounded, ellipse-like mass. Its upper rows 11-27 are lighter (#8bc84c highlights) and read as the sunlit top. Rows 36-42 are much darker (#2d5737 down to #0e221b and #1c1214) and read as underside shadow where the canopy meets the trunk. The trunk (rows 40-62, about 23 rows) is a vertical front face with a flared base on a ground patch. The canopy has no crisp front-edge line, so the top-surface evidence is the silhouette profile and light/dark shading, not a hard edge. The image shows two overlapping trees rather than one, but both are deciduous trees, so the organic kind fits."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is two deciduous trees with 20 distinct colours and a median of 11 colours per tile, against 427-567 colours and a median of about 108 per tile in the references. Its canopies show roughly 4 green steps with some leaf-clump dithering, but the clumps are large and soft. They lack the per-leaf highlights and varied clusters of the references. The trunks are simple, with 2-3 browns, no root flare and little bark grain. Dark edge pixels are 0% neutral, so the outline leans green or brown and counts as dark_material_tone. Flat-fill coverage is low at 2%, but the low colour count and shallow ramps make the piece look simpler and more sticker-like beside the richly shaded references. The density gap is far too large to pass.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 16648
+  }
+ ],
+ "decidedAt": "2026-10-20T06:28:44.236Z",
+ "cells": {
+  "16": [
+   "458e4f36616b6ea6",
+   "4a3e6d1577288f3f",
+   "4b782e1bcc13c6f2",
+   "4d369ec87caf17b3",
+   "528adb6ad46f4572",
+   "5340233c508fab1e",
+   "7570d850f9f2d2c3",
+   "7c504fb7159a919e",
+   "8536a47e8d1da862",
+   "85fead8de112b083",
+   "97f1aeec2ddb2325",
+   "b0c1ff92032cf439",
+   "d7f568d3b73261db",
+   "dceb064414c111e5",
+   "e9b0de3ff92654da"
+  ],
+  "24": [
+   "0498a1669123382e",
+   "06cda84129ce174b",
+   "142424bc463013eb",
+   "1d180aafa2d03715",
+   "1fcee6836ec4f66a",
+   "2783cbfd6fe0191c",
+   "33565437d0cfceb1",
+   "3471e0d9b80c26db",
+   "38295689fe965621",
+   "3de1d7fcc1c6ae7d",
+   "3e675d56d79dc68f",
+   "3f2eaa374fb4a93f",
+   "4d4515f2418344c5",
+   "51a1bf9d72c658ea",
+   "53220aab2439bd75",
+   "55b3cbce9dcdcc88",
+   "591ac2c19ebf51f3",
+   "59f9efdbec4aa26c",
+   "62b6860e341b9047",
+   "64f0a54cc277ed1d",
+   "680ffc125a689e9c",
+   "6dc5e96f26d3e734",
+   "71c291e1bd8af827",
+   "73a6c4f0dbbefc5f",
+   "74be03f349f08885",
+   "75098f5088f36f4f",
+   "7ad88ea23bebfad6",
+   "83239f5db845b6a6",
+   "84bb93cf7123b4a2",
+   "8587a91db3b816fb",
+   "85a578dc8c68df05",
+   "8dfcb09c7efca09d",
+   "9972fd7460b48467",
+   "9f1d33bc70acc3ba",
+   "9f659742eeff3644",
+   "aa97beb33eccfd6b",
+   "ae10073d9aa61b0b",
+   "ae80495ed0f5aa41",
+   "bab7aa57d223020a",
+   "bd4451dcc030e793",
+   "bf2f63ce9d590df1",
+   "c2b54512d2851951",
+   "c40d68aa53100895",
+   "c76dac3a3ab24cdb",
+   "cdb0fc01aac61073",
+   "dcf6c98efbd2add1",
+   "dd4c5707eb9b34c5",
+   "de23c365c3292c8b",
+   "dfa6bfee60a561af",
+   "e3051d1bffad7947",
+   "fd74d778d850f0a3"
+  ],
+  "32": [
+   "092630dd124c949d",
+   "7045824d9e1d2c35",
+   "dde4870cc0ce77b6",
+   "ed32ae3579dbff6f"
+  ],
+  "48": [
+   "0334c711646b0206",
+   "040d296c7048b75c",
+   "21f9eed4bc4639f8",
+   "23f56aca9b9aadd6",
+   "30ded5a73ef65fb0",
+   "3220e228e2d0c98c",
+   "3e422e2e3fee1896",
+   "4119d90ffc1cf0fd",
+   "503dcbf962d5af32",
+   "50e377415080d60e",
+   "79de3eaec8bb4a23",
+   "8409fb951c203004",
+   "8858a980464f404f",
+   "980ff567827d9bb1",
+   "b8548f42fca55130",
+   "be1cd3e6a0872dfe",
+   "e14ea873eb4af69e",
+   "e206cf59df8cb8a6",
+   "e62cea4861a54aa8",
+   "ebfb323247b5dd81",
+   "f616bfe427e5ab8b",
+   "f958deed3c814c51",
+   "fdfc6693c94e73df"
+  ]
+ }
+}

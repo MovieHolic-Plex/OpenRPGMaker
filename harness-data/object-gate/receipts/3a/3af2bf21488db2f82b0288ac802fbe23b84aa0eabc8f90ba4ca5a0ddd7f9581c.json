@@ -1,0 +1,322 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3af2bf21488db2f82b0288ac802fbe23b84aa0eabc8f90ba4ca5a0ddd7f9581c",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "forest south edge: trunk band under the canopy",
+ "label": "jp_city/jp-forest-bl-band-M-7",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 8,
+  "darkV5": 39,
+  "nearBlackEdge": 0.08,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "foliage/canopy mass",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower band under canopy",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-14"
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a full-width (16px) mottled green texture for rows 0-10, with no ellipse, no roof plane and no distinct top band. Row 11 is a dark 1-row line (#143526) followed by a short band of lighter and darker green in rows 12-14. That reads as a front-facing strip of foliage with a dark underside, not a horizontal top surface with an edge line. The silhouette is 16 wide in rows 0-14 and narrows to 9 in row 15, so there is no widening-then-narrowing ellipse. The whole piece is a vertical front elevation with no visible top surface and no side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a single small tile with only 8 distinct colours, against about 108 per tile and 427-567 total colours in the references. It has no flat 5x5 fills and its dark edge pixels are tinted (0% neutral), so the outline reads as dark green rather than black. It still shows only about 3 lightness steps of dark green with a little mottling, where the references use 5-6 steps with clumped leaf highlights and shaded trunk and roots. As a trunk band under a canopy it is a sparse, simple piece, but it is clearly flatter and far less information-rich than the reference tiles, so it would look thin beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17442
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "canopy foliage mass",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk band",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The 16x16 tile is a flat texture strip. Rows 0-10 are uniform dark green canopy foliage with pixel noise. Rows 11-15 are a darker shadow line at row 11 and then trunk or ground bands at 12-15. There is no ellipse, no front-edge line with eave shadow, and no sloped roof or canopy plane. The row 11 dark line is a shadow under the canopy, not an edge line of a top surface. The silhouette is 16 wide throughout and narrows only at row 15. The object is a front-facing tile with no horizontal surface visible."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a single 16x16 tile of dark green foliage with only 8 distinct colours, against a median of about 108 per tile in both references. It shows roughly 3 visible green steps with a little dotted variation, where the references use 5-6 steps with clumped leaf highlights. It has no flat 5x5 fills, and its dark edge pixels are tinted (0% neutral), so the outline reads as a dark green material tone rather than black. It is meant as a trunk band under the canopy, so some sparseness is expected. Even so, the tile is murky and low-contrast. It shows no trunk structure or bark grain and no highlight clumps, so it looks flatter and thinner than the reference tiles. A careful artist would not accept it next to the references, so it fails on density and shading depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16677
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "canopy foliage band",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk band",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "11"
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The image is a 16x16 tile of dense green foliage texture in rows 0-10. A dark line at row 11 separates it from a short strip of trunk and undergrowth in rows 12-15, which narrows to 9 px at row 15. The tile is a flat front-facing band. There is no ellipse, no front-edge line with a top band above it, and no roof-like plane. The dark row 11 is a shadow or outline under the canopy, not a top surface. It reads as a front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a single small tile of dark green foliage with some speckle. It has only 8 distinct colours against about 108 per tile in both references, and about 3 visible lightness steps against 5-6 in the references. The dark edge pixels are not neutral (0% near-neutral), so the outline leans toward dark green, but at this size there is little outline to judge. Flat-fill coverage is 0%, so there are no large flat areas. It is still a much sparser and flatter clump than the references' multi-green leaf clusters with highlights, trunk shading and root detail. The trunk band is not visibly readable as a trunk with bark grain, so the piece looks like a thin dark patch rather than something equal to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 11146
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "foliage canopy mass",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk/undergrowth band",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "11"
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Rows 0-10 are a uniform mid-green foliage texture (L about 65) that is 16px wide with no back rim, no ellipse and no edge line separating a top plane from a face. Row 11 is a single dark line (L=41 at x=4 and x=11), and rows 12-14 are a slightly lighter and darker green band. This reads as the bottom shadow of the canopy over a trunk or undergrowth strip, not as an eave over a horizontal surface. Row 15 narrows to 9px with gray bits. The whole piece is a face-on tile with no visible horizontal top surface, so it reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a single 16x16 tile with only 8 distinct colours, against a median of 108-109 per tile in both references (427 and 567 colours overall). It reads as a dark green foliage patch with a few mottled lighter dots, about 3 visible lightness steps against the references' 5-6 per material. There is no visible trunk or bark ramp and no per-clump highlights, so the 'trunk band' is not legible. Dark edge pixels are 0% neutral, so any outline is tinted and reads as dark material tone, which is fine. 5x5 flat-fill coverage is 0%, so the surface is not flat, but the variation is sparse and noisy. Measured colours per tile are far below the references. This is a tile fragment, so sparseness alone does not decide it, but by eye it is also flatter and less structured than the reference foliage and trunk. It would look thinner next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 24133
+  }
+ ],
+ "decidedAt": "2026-10-20T06:28:44.235Z",
+ "cells": {
+  "16": [
+   "47ff34419ef49736"
+  ],
+  "24": [
+   "16adc1a896a093dc",
+   "45b88b5dbe36622d",
+   "61002654669bcf04",
+   "6e042e93b8085417",
+   "a5b9978686ad2da6",
+   "d9929c8b8cb59a7f"
+  ],
+  "32": [
+   "002372d742e529e4",
+   "149e43a0094e9a09",
+   "4eefe783297acf67",
+   "597295235d9c9db2",
+   "a25963115e23437a",
+   "bf265841fda10931"
+  ],
+  "48": [
+   "07ae2e4346c8b5ac",
+   "850f5cfd48ea0ae5",
+   "aed17c4e37c910c1",
+   "c2809e580551906f",
+   "cba38541ff9c90c8",
+   "cd7fddc7f3342d16"
+  ]
+ }
+}

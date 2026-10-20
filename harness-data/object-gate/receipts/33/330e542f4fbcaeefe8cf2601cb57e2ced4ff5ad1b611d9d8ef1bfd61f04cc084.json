@@ -1,0 +1,315 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "330e542f4fbcaeefe8cf2601cb57e2ced4ff5ad1b611d9d8ef1bfd61f04cc084",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "forest north-edge skyline of treetops",
+ "label": "jp_city/jp-forest-bl-sky-0",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 15,
+  "darkV5": 34,
+  "nearBlackEdge": 0.3,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "treetop canopy mass (lit cluster of foliage)",
+      "rows": "16-34",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark lower foliage band",
+      "rows": "35-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 19,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The object is a full-width skyline of treetops: a lit, light-green canopy mass at rows 16-34 seen from above, over a darker shaded foliage band at rows 35-47 that acts as the front/shadowed face. The width is 32 from row 19 down, so it is a tiling strip. The lit crowns show a horizontal leaf surface with a shadowed underside, so it reads as a top surface plus a front face, though it is organic with no hard edge line. A column scan shows brightness dropping from L~150-170 at rows 19-23 to L~26-50 at rows 35+, consistent with a lit top and a shaded front."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a small dark-green treetop block with a lighter clump in the middle. It shows about 4 green steps and some clumping, but the leaf forms are blurry and less defined than the references' individual leaf clusters. Its edge pixels are tinted dark green, not neutral, which matches the 0% near-neutral measure. The numbers are far below both references: 15 colours per 16x16 tile against 108 and 109, and 15 distinct colours against 427 and 567. There are no flat 5x5 fills (0%), but the tile reads as a soft blob rather than the richly textured, multi-green leaf clumps of Beodeul. Density is much lower, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12030
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "treetop canopy mass (bright foliage clump, rows 17-33)",
+      "rows": "17-33",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark lower foliage band",
+      "rows": "34-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a full-width 32px block from row 19 to 47 with a short ragged top at rows 16-18. It is a tiling strip of leaf clusters. The light foliage in rows 17-33 is highlight shading, not a horizontal surface, and it has no front-edge line or eave shadow. Rows 34-47 are dark leaf clumps that read as a vertical face. There is no ellipse, roof plane or visible contents. This is a front-on foliage wall with no distinct top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small dark-green canopy blob with a lighter clump, about 15 distinct colours in total and a median of 15 per tile. The references have 108-109 per tile and 427-567 colours overall, so the candidate is far below them. It has no flat 5x5 fills (0%) and its edge pixels carry a green tint (0% neutral), so the outline reads as a dark material tone rather than a black sticker line. The shading is about 4 steps (a highlight clump, mid, dark and deep green) against the references' 5-6 greens with individual leaf clumps. Texture is only moderate, with some dotting and no per-clump variation. As a skyline strip it is acceptable to be simple, but next to the references it looks thinner and flatter, with lower density and fewer ramp steps. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 13670
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lit canopy crown (bright leaf mass)",
+      "rows": "16-34",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark shaded foliage below the crown",
+      "rows": "35-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 19,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is full width (32 px) from row 19 down, with a ragged leafy top at rows 16-18. Rows 16-34 hold a bright, light-green canopy mass (L about 110-170) that reads as a heap of foliage seen from above. Rows 35-47 are much darker (L about 26-70), a shaded leaf face below it. There is no crisp front-edge line or eave shadow, so the top evidence is a heap-like lit crown rather than a hard edge. It is a tiling organic skyline strip, and the lit-top-over-shaded-front structure is the nearest fit to three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small dark-green treetop block with a lighter clump in the middle. It has about 4 green steps, and the dark edge pixels are green-tinted (0% neutral), so the outline is fine. Its numbers are far below both references: 15 distinct colours against 427 and 567, and 15 colours per tile against about 108. The light clump has some leaf-cluster dots, but the surrounding dark mass is mostly one or two near-identical dark greens with little per-leaf highlight or clump variation. The references carry 5-6 greens with individually shaded leaf clumps, and next to them the candidate looks flatter and thinner. The 0% flat-fill coverage only means the area is dithered or varied slightly, not that it is rich. Because it is a tile-like skyline strip, I did not fail it for being small. It still falls clearly short of the Beodeul density on structure and shading.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15109
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "treetop canopy mass (lit crown clusters)",
+      "rows": "16-34",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark lower foliage band",
+      "rows": "35-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 19,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The canopy is a full-width mass of leaf clusters. Rows 16-34 are the lit upper crown, seen from above (bright #8bc84c highlights, brighter at rows 18-23). It shades down to a dark foliage layer in rows 35-47, which acts as the shadowed front face. There is no hard front-edge line or eave. The top reads as a heap of foliage viewed from above, and the dark lower leaf layer below it is 13 rows tall. The silhouette is a full 32 px wide from row 19 down, so it is a tiling skyline strip. It is organic, so the kind matches."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small treetop tile with about 15 distinct colours in total and a median of 15 per tile. The references have 108-109 per tile and 427-567 colours overall, so it is far below them. The measured outline is tinted (0% neutral dark edge pixels), and the picture shows dark green edges, so the outline is dark_material_tone. The canopy has a lighter clump on top and a dark mass underneath, roughly 4 green steps. The references use 5-6 steps with many individually shaded leaf clumps. The candidate's clumps are blurrier and less defined, with little leaf-cluster detail. There are no 5x5 flat fills, but the texture is only modest. The piece is a sparse edge skyline tile, but even allowing for that, it is clearly flatter and less information-rich than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 11387
+  }
+ ],
+ "decidedAt": "2026-10-20T06:28:44.234Z",
+ "cells": {
+  "16": [
+   "25c3cf18209aca35",
+   "5f1f5d360fb0fef8",
+   "8d7b3c861eb7beb7",
+   "e6a8f6f293eb97c9"
+  ],
+  "24": [
+   "012647ec75514f5c",
+   "2c5c9d52f28efcff",
+   "2cf3d2bc94a4aac5",
+   "4d05f1366173adac",
+   "509635db0f6f3dff",
+   "5e1491d988fc7d9f",
+   "6b99f6f6767d992e",
+   "6dd0291a25902a9a",
+   "ba3d2e214c5ae595",
+   "c2e3092b716ddfe1",
+   "e16de9e82b7e2a2f",
+   "e6e38d4853849e96"
+  ],
+  "32": [
+   "31e87e0ca847f834",
+   "dc7c1fcd31138cd0",
+   "eaac1b0859bd8c7a"
+  ],
+  "48": [
+   "0e446791770cedba",
+   "e5360ca8fc79da7e",
+   "f93a245c25322d11"
+  ]
+ }
+}
