@@ -18,7 +18,7 @@ import type { Command, Dir, GameEvent, GameMap, Project } from "@/project/types"
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import {
   bgm, caption, CAST, choices, clearTint, emote, event, face, fadeIn, fadeOut, flash, hidePlayer, ifCond, letterbox, page,
-  playSe, say, setSw, setVar, shake, showPlayer, stopBgm, stageAtLeast, stageBelow, stageIs, swOff, swOn, think, tint, transfer, voice, wait, walk,
+  playSe, say, setSw, setVar, shake, showPlayer, stopBgm, stageAtLeast, stageBelow, stageIs, swOff, swOn, memoryTint, think, transfer, voice, wait, walk,
 } from "./firstLoveKit";
 import { buildFirstLoveMaps, FL_MAP, nearestFree, type Cell, type FirstLoveAnchors } from "./firstLoveMaps";
 import { FIRST_LOVE_MEMORY_ARGS, FIRST_LOVE_THEME_ARGS } from "./firstLoveMusic";
@@ -46,8 +46,9 @@ const S = {
 const TRUE_END_AT = 6;
 
 const END_A = "end_fl_again";
-const END_B = "end_fl_late_reply";
-const END_C = "end_fl_team";
+// 엔딩 배지는 id 로 정해진다(playSceneOverlays.endingBadge): normal → 「NORMAL ENDING」. A 만 「HAPPY ENDING」.
+const END_B = "end_fl_normal_late_reply";
+const END_C = "end_fl_normal_team";
 
 const SE_HEART = "cc0-se-orp-interface-interface3";
 const SE_MAIL = "cc0-se-orp-interface-interface1";
@@ -443,7 +444,7 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
   );
   add(bc, event("ev_fl_flashback", "회상", { x: 1, y: 1 }, [page("fb", [swOn("sw_fl_flashback"), stageIs(V_STAGE, S.KONBINI)], [
     hidePlayer(),
-    tint("sepia", 0),
+    memoryTint(0),
     ...letterbox(true, 0),
     ...fadeIn(1200),
     { kind: "playAudio", resourceId: "@memory", loop: true, channel: "bgm", fadeInMs: 1500 } as Command,
@@ -808,7 +809,7 @@ function defineEndings(project: Project, themeId: string): void {
     id: END_B,
     name: "늦은 답장",
     conditions: [],
-    presentation: { musicResourceId: themeId, tone: "warm", kicker: "엔딩 B · 늦은 답장" },
+    presentation: { musicResourceId: themeId, tone: "warm", kicker: "엔딩 B · 10년 늦은 인사", backgroundResourceId: "oprn-title-romance-school" },
     epilogue: [
       { kind: "say", text: "열차가 떠나고, 승강장에 혼자 남았다. 연두색 편지지 뒤에, 낯익은 글씨." },
       { kind: "say", text: "‘바나나우유 님께. 그 금요일 방송, 이제야 읽어요.’" },
@@ -822,7 +823,7 @@ function defineEndings(project: Project, themeId: string): void {
     id: END_C,
     name: "우리 팀의 봄",
     conditions: [],
-    presentation: { musicResourceId: BGM_TOWN, tone: "warm", kicker: "엔딩 C · 우리 팀의 봄" },
+    presentation: { musicResourceId: BGM_TOWN, tone: "warm", kicker: "엔딩 C · 첫 주의 끝" },
     epilogue: [
       { kind: "say", text: "회식 자리. 민호 씨가 건배사를 세 번째 하고 있다." },
       { kind: "say", speaker: "오 팀장", text: "서하 씨, 첫 주 수고했어요. 다음 주부터 진짜 시작이에요." },
@@ -841,7 +842,7 @@ function buildTitleAndOpening(project: Project, themeId: string): void {
     logoStyle: "glow",
     musicResourceId: themeId,
   });
-  project.system.titleScreen.backgroundFit = "cover";
+  if (project.system.titleScreen) project.system.titleScreen.backgroundFit = "cover";
   buildFirstLoveOpening(project, themeId);
 }
 

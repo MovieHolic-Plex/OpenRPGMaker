@@ -10,6 +10,7 @@
 가운데 16:9(1440×810)를 자른다.
 """
 import os
+import sys
 from pathlib import Path
 from PIL import Image
 
@@ -23,15 +24,20 @@ PLAN = {
     # 무대 x 240..1680, y 60..1020 → 가운데 16:9 = y 135..945
     # 첫 필드(내 방)는 맵이 무대보다 작아 둘레가 검다 — 오프닝 연구소 장면(03-op2)을 넷째 장면으로 쓴다(2026-10-21).
     "astra": {"crop": (240, 135, 1680, 945), "frames": {"01-title": "astra-title", "02-op1": "astra-op1", "04-op3": "astra-op2", "03-op2": "astra-lab"}},
+    # 첫사랑은 통짜 플레이 시나리오(first-love, FL_PATH=A, 960×540 = 2배)의 샷을 그대로 쓴다: 타이틀 · 오프닝 편지 · 밤 편의점 선택 · 회상 방송실.
+    "firstlove": {"crop": None, "dir": "first-love-A", "frames": {"01-title": "firstlove-title", "03-opening-2": "firstlove-op1", "21-konbini-jihu": "firstlove-konbini", "23-flashback-2": "firstlove-flashback"}},
 }
 
 
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
+    only = set(sys.argv[1:])  # 예: bake-home-builtin-art.py firstlove — 적은 것만 다시 굽는다.
     for which, plan in PLAN.items():
+        if only and which not in only:
+            continue
         for shot, name in plan["frames"].items():
             shots = Path(os.environ.get(f"HOME_SHOTS_{which.upper()}", SHOTS))
-            src = shots / f"home-builtin-{which}" / f"{shot}.png"
+            src = shots / plan.get("dir", f"home-builtin-{which}") / f"{shot}.png"
             image = Image.open(src).convert("RGB")
             if plan["crop"]:
                 image = image.crop(plan["crop"])

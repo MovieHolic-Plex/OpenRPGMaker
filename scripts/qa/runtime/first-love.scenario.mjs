@@ -133,6 +133,6 @@ export default {
         { id: `ending-${PATH.toLowerCase()}`, note: `엔딩 ${PATH}`, ops: [untilEnding, shotPause(2500)], shot: true },
       ]),
     { id: "ending-after", note: "엔딩 에필로그 뒤", ops: [{ kind: "key", key: "Enter" }, shotPause(2500), { kind: "key", key: "Enter" }, shotPause(2500)], shot: true },
-    { id: "state", note: "최종 상태", ops: [{ kind: "evalToFile", out: `/tmp/fl-state-${PATH}.json`, fn: "() => { const s = window.__oprnDebug.readState(); return { map: s.currentMapId, vars: s.variables, sw: Object.fromEntries(Object.entries(s.switches).filter(([k]) => k.startsWith('sw_fl'))) }; }" }], shot: false },
+    { id: "state", note: "최종 상태", ops: [{ kind: "evalToFile", out: `/tmp/fl-state-${PATH}.json`, fn: "() => { const s = window.__oprnDebug.readState(); return { heapMB: Math.round((performance.memory?.usedJSHeapSize ?? 0) / 1048576), map: s.currentMapId, vars: s.variables, sw: Object.fromEntries(Object.entries(s.switches).filter(([k]) => k.startsWith('sw_fl'))) }; }" }], shot: false },
   ],
 };
