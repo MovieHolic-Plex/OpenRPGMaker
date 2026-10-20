@@ -147,10 +147,6 @@ export interface StorePackAsset {
 }
 
 /**
- * 캐릭터 시트 한 칸의 설명. 팩을 넣으면 프로젝트 charsetLabels(spriteType "uploaded")로 들어가
- * NPC 그림 검색(list_npc_graphics·그래픽 고르기)이 외형으로 찾는다. 없으면 「시트 이름 / 칸 N」으로만 보인다.
- */
-/**
  * 캐릭터 칸의 짝 초상(char-gen 캐릭터 세트, 2026-10-20). 같은 팩의 에셋 id 를 가리킨다.
  * face = faceset(48×48 낱장), bust·full = 표정 → picture. 표정 이름은 공용 초상 16표정과 같고 base 가 있어야 한다.
  * extra 는 그 밖의 표정(thinking, hurt …) — 그림으로만 들어오고 대사 표정이 저절로 바꾸지는 않는다.
@@ -168,6 +164,10 @@ export interface StorePackCharacterPortraits {
   extra?: Record<string, { bust?: string; full?: string }>;
 }
 
+/**
+ * 캐릭터 시트 한 칸의 설명. 팩을 넣으면 프로젝트 charsetLabels(spriteType "uploaded")로 들어가
+ * NPC 그림 검색(list_npc_graphics·그래픽 고르기)이 외형으로 찾는다. 없으면 「시트 이름 / 칸 N」으로만 보인다.
+ */
 export interface StorePackCharacter {
   /** content.assets 의 charset 에셋 id. */
   asset: string;
@@ -325,7 +325,6 @@ export function slugify(title: string, suffix: string): string {
   return base.length >= 3 ? `${base}-${tail}` : `item-${tail}`;
 }
 
-/** 프로젝트에 넣을 때의 id. 같은 상품의 다음 판본이 같은 id 를 덮어써 맵 참조가 유지된다. */
 /** content.characters[i].portraits 검사 — 가리키는 에셋의 종류·표정 이름·base. */
 function portraitProblems(raw: unknown, assets: Record<string, unknown>, where: string): string[] {
   const out: string[] = [];
@@ -357,6 +356,7 @@ function portraitProblems(raw: unknown, assets: Record<string, unknown>, where: 
   return out;
 }
 
+/** 프로젝트에 넣을 때의 id. 같은 상품의 다음 판본이 같은 id 를 덮어써 맵 참조가 유지된다. */
 export const storeProjectId = (slug: string, originalId: string): string => `store_${slug.replace(/-/g, "_")}${STORE_SLUG_SEPARATOR}${originalId}`;
 
 export function packGrade(content: StorePackContent): StoreGrade {
