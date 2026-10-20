@@ -363,18 +363,21 @@
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-panel .battle-result-reward-row { display: none; padding: 0; min-height: 0; background: transparent; animation: none; opacity: 1; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-panel .battle-result-reward-row[data-emerald-page="true"] { display: block; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-panel .battle-result-reward-label { color: #f8f8e8; font: 18px/24px var(--runtime-pixel-font); text-shadow: 2px 2px #284050; white-space: nowrap; }
-/* 레벨업 능력치 상자: 문장 창 오른쪽 위에 얹힌다. 마지막으로 공개된 줄(data-emerald-last)에 붙은 것만 보인다. */
+/* 레벨업 능력치 상자: 화면 위쪽 가운데에 고정한다(VQA R3-1). 예전엔 문장 창 오른쪽 위(bottom: 100%)에 얹혀 내 몬스터 상자를 덮고 글자가 잘렸다.
+   결과 단계에는 쓰러진 상대 상자가 사라져 위쪽 가운데가 비므로 어느 상자도 가리지 않는다. 마지막으로 공개된 줄(data-emerald-last)에 붙은 것만 보인다. */
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-panel .battle-levelup-stats { display: none; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-panel .battle-result-reward-row[data-emerald-last="true"] { position: static; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-panel .battle-result-reward-row[data-emerald-last="true"] .battle-levelup-stats {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 0 16px;
   position: absolute;
-  right: 0;
-  bottom: 100%;
-  width: 136px;
-  margin-bottom: 4px;
-  padding: 4px 10px;
+  left: 50%;
+  top: -232px;
+  transform: translateX(-50%);
+  width: max-content;
+  min-width: 148px;
+  padding: 4px 12px;
   box-sizing: border-box;
   background: #f8f8e8;
   border: 4px solid #486050;
