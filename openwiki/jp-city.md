@@ -314,6 +314,15 @@ node scripts/content/jp-city/tamper_builder.mjs               # 조립기 32건 
 - 런타임 QA `scripts/content/jp-city/qa/door-link.probe.mjs door-link-all-1.json door-link-all-2.json door-link-all-3.json`(netns, 출하 player.html): 상가 거리 예제(`maps/out/shopstreet.{map,plan}.json`)는 건물이 8채라 장소 21곳을 세 판으로 나눠, 건물 문마다 도구로 실내를 잇고 «문 앞 발판으로 한 걸음(아래가 소품이면 옆에서) → 실내 도착 칸 → (여러 층이면 계단 올라가 위층 둘러보고 내려오기) → 실내 지름 양 끝(가장 먼 칸 → 거기서 가장 먼 칸 — 안쪽 문 너머 방까지) → 출입구 밟기 → 거리 도착 칸 → 1.5초 머물러 되튕김 없음». 대조 시트 `qa/interior-sheets.py` → `verify-shots/jp-city/interior2/sheet1~4.png`(관문 `--stage interior-shop` 이 본다).
 - 판정 근거는 `qa/check-interior-examples.mts`(조수 도구 그대로 짓기)다 — 작업자용 `interior/preview.py` 「문제 0」은 도구와 어긋났다(탁상 4층 충돌·벽 가구 앞칸·한 줄 탁자 h=1·옆문 자리). 관문 1회차 지적(뒷방 여섯 복사·빈 바닥·라멘 동선·자시키·조각보 나무 바닥)은 2회차에서 업종별 뒷방 가구·맵 축소·L자 카운터·4×2 다다미 단으로 고쳤다. 장소 id 의 크기 꼬리는 예제 크기를 따라간다(게시 전 맞춤). 시험 프로젝트는 쓰는 칩셋만 남긴다(빈 도구 프로젝트 135MB 그대로면 크롬이 죽는다). 증거 `verify-shots/jp-city/door-link/`.
 
+## 지면 오토타일은 맵 밖을 같은 재료로 센다 (2026-10-20)
+
+- 증상: 모든 jp_city 맵 둘레에 회색 톱니(맵 밖을 다른 재료로 세어 고른 가장자리 그림). 출처 `~/claude-viz/jp-inaka-countryside-1.html` F1.
+- 원인: 지면 8방 7세트(`jp-sidewalk-curb`·`jp-lane-road`·`jp-lawn-dirt`·`jp-gravel-lawn`·`jp-plaza-pave`·`jp-water-pond`·`jp-water-canal`)가 `edgeConnects:false`·`outsideConnects` 없음이었다. **그리고 `rmTypeExpander.ts resolveAutotile`(`fill_region` 도구·조수·예제 구성기 경로)은 `outsideConnects` 만 읽고 `edgeConnects` 는 무시한다** — 엔진 쪽(`autotileEngine.ts` 호출자들)은 둘 중 하나면 켠다. 그래서 `edgeConnects` 하나만 고치면 `fill_region` 결과가 안 바뀐다. 둘 다 켠다(beodeul_city 와 같음, `build-beodeul-city.py` 301~306).
+- 수정: `blocks/autotiles_ground.py` 에서 두 플래그를 켜고 `jpCityTileset.json` 을 굽는다. `jpCity.ts` 의 `shapeSignature` 에 플래그 지문(`edgeBits`)을 넣어 기존 프로젝트의 타일셋 사본이 갱신되게 했다. 선형 4방 10세트는 그대로(맵 끝 벽·차선이 밖으로 새지 않게). 그림·간판 글자는 안 바뀐다. jp_city_interior 는 별도 타일셋이 아니라(실내 맵도 `jp_city` id) 같이 고쳐진다.
+- 이주가 필요한 이유: 맵은 변형 타일 번호를 **구워서** 저장하고 엔진은 칠하거나 도구를 쓸 때만 이웃을 다시 센다(렌더 때 재계산 없음). 타일셋 플래그만 고치면 저장된 맵 둘레 톱니가 남는다. `src/project/defaults/jpCityEdgeMigration.ts` `reshapeJpCityMapBorders` 가 `store.ts normalizeCurrentProject`(`jpCityEdgeConnect`)와 헤드리스 `normalizeHeadlessProject` 에서 돈다.
+- 이주 규칙: 둘레 한 줄 칸만, **맵 밖 방향 비트만** 바꾼다(현재 그림이 뜻하는 이웃 모양 + 맵 밖 = 같은 재료 → 사전에서 다시 고름). 둘레 칸을 이웃에서 통째로 다시 세면 안 된다 — 구성기가 안쪽 칸에 "꽉 찬" 잔디를 그대로 두고 그 곁에 개울·길을 나중에 올리므로 둘레만 엄격히 세면 회색 가장자리가 새로 생긴다. 안쪽 칸·저자가 둔 다른 칸은 안 건드리고, 같은 입력엔 같은 결과(멱등)다. 공개 지역 스냅숏(`public/assets/region-references/jp-city-*.oprn.json`)은 둘레가 대부분 비그룹 칸이라 결함도 이주 변화도 없고, 생성기 출력(`maps/*.mjs`)은 다시 굽지 않는다.
+- 증명: `bun scripts/qa/jp-inaka-showcase.mts --old-edge --out <dir>` 는 옛 플래그로 구성한 맵을 저장→이주 후 `<장면>.migrated.png` 를 낸다. 6장면 모두 이주본이 새 구성과 화소 단위로 같고(차이 0) 두 번째 패스는 변화 없음.
+
 ## 실제 거리 조사 (2026-10-06)
 
 `tiledata/jp-city/research/` — 상점가·역 앞·요코초 / 주택가 생활도로·가로 시설 / 건물 유형별 치수 / 도트 게임 선례 웹 조사 4편(출처 URL)과 요약 `README.md`(축척 1칸≈0.9~1m, 「일본」 신호 우선순위·흔한 실수, 블록 구성, 현재 번들 대조, 다음 작업 순서). 새 건물·소품·거리 키트를 그리기 전에 먼저 읽는다.
@@ -431,4 +440,5 @@ python3 scripts/content/jp-city/bake_refs.py                   # 문서·그림�
 - 굽기: 정본 루트는 3/4 관문 `enforce` 가 거절하므로 `--out-root` 사본에서 굽고 산출물만 옮겼다. 핀 17027 → 17312(덧붙임 285, 옮겨진 키 0). 관문 그림·목록 `tiledata/jp-city/blocks/jp_shore/_gate/items.jsonl`(물가 판 5 terrain · 등대·폭포 structure · 가로수 organic; `python3 scripts/content/jp-city/blocks/jp_shore.py` 가 다시 쓴다). 2026-10-20 현재 **3/4 관문 미통과**(판정 대기).
 - 장면 확인: `bun scripts/qa/jp-shore-scenes.mts` → `tiledata/jp-city/qa/modern-tiles/{gorge,harbor,coast}.json`(맵 객체 통째, id `mt-jp-*`)·`~/claude-viz/modern-tiles-proto/baked/jp-*-1x.png`. 출하 경로 캡처는 `scripts/qa/runtime/modern-tiles.capture.mjs`.
 - 둘째 판(같은 날, 감독 지시): 넓은 바다가 16px 격자로 읽혀 몸통 6벌(`water_art.SEA_BODY`, v0 = gnd/sea · v1~v5 = sea.v1..v5)을 손으로 다시 배치했다 — 둘레 1px 는 공통 바탕, 벌마다 물결 행·밀도가 다르고(거의 빈 칸·엇갈린 짝·긴 물결·밝은 짧은 물결·납작한 얕은 물 덩이) 흰 반짝임은 바다·강 몸통에서 뺐다. shorePass 가 칸 위치 해시로 고른다(전과 같음). 자연 둑은 시안 쪽으로 두껍게(풀 어두운 테 → 흙 입술 2px → 젖은 띠, 북쪽 둑 높이면 4px). 다시 굽기: 옮겨진 키 0, 바뀐 칸 63(16106 · 17073~17077 · 17080 · 17132 · 17187~17241).
+- 맵 밖(#3061 병합 뒤): 물가 4세트도 `edgeConnects` + `outsideConnects` — 바다·강·부두가 맵 밖으로 이어진다(둘레에 물가 선을 긋지 않는다). shorePass 도 맵 밖을 같은 재료로 센다(같은 규칙). `bake_jp.py` 가 블록의 `outsideConnects` 를 굽는 정의로 옮긴다(전에는 빠져서 다시 구우면 #3061 의 값이 사라졌다). `reshapeJpCityMapBorders` 는 물가 세트도 대상이지만 shorePass 가 이미 맵 밖을 물로 센 맵에서는 물가 칸을 바꾸지 않는다(장면 3장 실측 0칸, 두 번째 적용도 변화 없음).
 - 한계: 안쪽 모서리 1px 계단, 모래와 부두가 맞닿는 자리는 안벽으로 타협, 강 몸통 세로 결은 아직 칸마다 비슷하다, 외곽선 색 재지정(시안의 outline 판)은 미적용.

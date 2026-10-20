@@ -62,7 +62,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
 - **던전·동굴 공용 칩셋 beodeul_dungeon(버들항과 같은 oprn-atlas 계열)의 불규칙 벽·바닥 오토타일·물/용암/얼음 가장자리·계단·문·함정·상자·횃불 조각을 그릴 때**
   → `dungeon-chipset` · 시드 `harness-data/dungeon-chipset/seed.json` · `npm run harness -- dungeon-chipset palette|validate|list|draw|gate|sheet|pick|reject|status` · 문서 `openwiki/harnesses/dungeon-chipset.md`
   → 코드 손 도트(행 문자열), 버들항 실제 색 잠금 팔레트. 후보는 사람이 시트(`~/claude-viz/dungeon-<판>.html`)에서 고르고 pick 은 그림 해시에 묶인다. 관문 통과는 합격이 아니며 번들 굽기는 별도.
-- **새 기물(오브젝트) 그림을 번들·공용 DB·스토어·공방 칩셋에 굽거나 올리기 전 / 굽기·게시 스크립트에 3/4 시점 관문을 붙일 때** → `object-gate` · 시드 `harness-data/object-gate/seed.json` · `npm run harness -- object-gate review|calibrate|check|status|audit|preview` · 문서 `openwiki/harnesses/object-gate.md`. 판정자 Claude Sonnet 5.5 high(`claude -p`, 사용자 결정 2026-10-14; 신원·effort 는 프로필 해시, 안 되면 다른 모델로 안 넘어가고 멈춤) 하나×네 번(과반) 한 번의 판정이 **3/4 시점 + 버들항 화풍(같은 종류 버들항 기준 그림과 같은 배율 비교)** 둘을 함께 정하고, 영수증은 두 판정을 그림 화소 해시·프로필 해시에 묶는다(둘 다 통과해야 통과, 화풍은 영수증의 별도 칸). 위반 표본을 다 잡는 보정 프로필만 효력이 있다(현재 미보정 — 2026-10-14 프로필 `473db36f963972c9` rejected: 3/4 위반 17/47·정상 27/36, 화풍 얕음 53/71·버들 43/78. 옛 영수증은 무효, `rereview` 는 보정 통과 전엔 거절). 번들·공용·스토어는 예외 없이 막고 공방 로컬만 사람이 「그래도 넣기」.
+- **새 기물(오브젝트) 그림을 번들·공용 DB·스토어·공방 칩셋에 굽거나 올리기 전 / 굽기·게시 스크립트에 3/4 시점 관문을 붙일 때** → `object-gate` · 시드 `harness-data/object-gate/seed.json` · `npm run harness -- object-gate review|calibrate|check|status|audit|preview` · 문서 `openwiki/harnesses/object-gate.md`. 판정자 Claude Sonnet 5.5 high(`claude -p`, 사용자 결정 2026-10-14; 신원·effort 는 프로필 해시, 안 되면 다른 모델로 안 넘어가고 멈춤) 하나×네 번(과반) 한 번의 판정이 **3/4 시점 + 버들항 화풍(같은 종류 버들항 기준 그림과 같은 배율 비교)** 둘을 함께 정하고, 영수증은 두 판정을 그림 화소 해시·프로필 해시에 묶는다(둘 다 통과해야 통과, 화풍은 영수증의 별도 칸). 위반 표본을 다 잡는 보정 프로필만 효력이 있다(현재 미보정 — 2026-10-20 프로필 `ee216f0de5822996`(규칙 v8) **rejected**: 확실 위반 자동통과 0/84·적대 0/144·화풍 강한 라벨 8/8·14/14 이지만 새 숨김 정상 29/42(69%) < 80%. 옛 영수증 5,300장은 무효, `rereview` 는 보정 통과 전엔 거절). 번들·공용·스토어는 예외 없이 막고 공방 로컬만 사람이 「그래도 넣기」.
 - **조선(바람의나라풍) 칩셋 joseon_baram 의 조각·지도를 만지거나 번들을 재생성할 때** (팔레트 잠금·게이트 P/E/T/L/S/A/K/TR/V·판정·지도 관문·16구역 적대 검수)
   → `joseon-baram` · 시드 `harness-data/joseon-baram/seed.json`(지도 15장·관문·쓰지 말 것)
   → `npm run harness -- joseon-baram <단계>` (palette·validate·list·gate·verdict·build·map·review·status) · 문서 `openwiki/harnesses/joseon-baram.md`
@@ -100,6 +100,14 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → `interview-scene-bank` · 시드 `harness-data/interview-scene-bank/seed.json` · 문서 `openwiki/harnesses/interview-scene-bank.md`
   → 1,457개 선택 조합을 계획하고, 원본 도트 규격과 해시에 묶인 실제 그림 검수를 모두 통과한 배경만 배포한다.
 
+## 코딩 에이전트의 에셋 스토어 제출 (hard rule, 2026-10-20)
+
+**코딩 에이전트(Claude Code·omp·Codex 등)가 만든 그림·소리를 store.openrpgmaker.com 에 올릴 때는 `npm run -s store -- publish <팩 폴더> --agent "<도구·모델>"` 하나만 쓴다.**
+팩 폴더는 `npm run -s store -- init <폴더> --kind … --title … --license … --file …` 로 만든다. 토큰은 주인이 발급한 에이전트 토큰 파일
+`~/.config/oprn-store/agent-token`(권한 600)에서 읽는다 — 값을 출력·커밋·채팅에 넣지 않는다. 제출은 **항상 확인 대기**이고 주인이 `/admin` 에서 공개한다.
+「공개됐다」가 아니라 「확인 대기로 제출(url)」로 보고한다. 타사 소재(Rasak·REFMAP·PAW·MV/MZ·RTP) 금지, 타일·기물 시트는 3/4 관문 영수증 필수(지금은 보정 전이라 막힌다 — 우회 금지).
+운영자 세션·`STORE_LINK_TOKEN`·서버 셸로 대신 올리지 않는다. 문서 `openwiki/store-agent-contribution.md`, 스킬 `assistant-skills/store-contribution/SKILL.md`.
+
 새 하네스를 만들면 `src/harnesses/<id>/` 폴더 하나에 두고, `src/harnesses/_core/registry.ts` 에 등록하고,
 `npm run harness -- list` 로 INDEX 를 다시 쓰고, 이 목록에 한 줄을 더한다.
 
@@ -126,6 +134,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - Editor AI panel & tools: `openwiki/editor-ai-panel.md` + `openwiki/editor-ai-tools.md`
    - Editor misc workflows: `openwiki/editor-workflows-misc.md`
    - 에디터 「공방」 (하네스를 에디터 안에서 사용자 계정 모델로 돌리기 — 왼쪽 막대, 실행기·저장·표면): `openwiki/editor-workshop.md`
+   - 코딩 에이전트의 스토어 제출 (`npm run -s store`, 에이전트 토큰·확인 대기·검사 목록): `openwiki/store-agent-contribution.md`
    - 에셋 스토어 (편집기 안 공용 장터 — 팩 형식 `oprn-store-pack/1`, 프로젝트에 넣기·출처·크레딧, Electron 중계, 서버는 비공개 `OpenRPGMaker-store` 저장소, 게시기 `scripts/store/`(주소는 환경 변수만), Rasak·REFMAP·MV·PAW 제외 집행 지점): `openwiki/asset-store.md`
    - Editor validation: `openwiki/editor-validation.md`
    - **타일을 저작하는 모든 에이전트:** 먼저 현재 프로젝트의 `타일 → 참고문서 → 해당 용도`를 읽어라. `list_tileset_references`로 용도/자료 목록을 조회하고 `read_tileset_reference`로 MD 전 페이지와 실제 이미지를 확인한 뒤 배치한다. 코딩 에이전트는 정본(SQLite 호스트) 프로젝트를 읽어 `scripts/content/export-tileset-references.mjs`로 추출하고 이미지를 직접 연다. 이전 대화나 저장소의 옛 학습 문서만으로 대체하지 않는다. 구현·도구 계약은 `openwiki/tileset-reference-documents.md`.
@@ -203,9 +212,8 @@ index 에서 제거하고 `.gitignore` 에 `.qoder/` `.qwen/` `.senpi/` `.agents
 3/4 탑뷰 검증을 통과한 뒤에만 번들·공용 DB·맵·스토어에 들어간다.** 「눈으로 봤다」「기계 지표 통과」「서브에이전트 QA 점수」는 이 관문을 대신하지 못한다.
 
 - 관문의 정본은 `object-gate` 하나다: `npm run harness -- object-gate review|check|status` · 문서 `openwiki/harnesses/object-gate.md`.
-  판정자 Claude Sonnet 5.5 high 하나×네 번(과반, 2026-10-14 교체; 보정 프로필 `3989203095df6a2f` rejected — 3/4 위반 43/47·정상 19/36, 화풍 58/71·31/78)이고 한 번에 3/4 와 버들항 화풍 둘을 함께 판정한다(영수증에 칸 둘, 둘 다 통과해야 통과; 숫자 지표는 보조). 영수증은 그림 화소 해시에 묶인다. 그림이 한 화소라도 바뀌면 다시 받는다.
-- **지금 상태(2026-10-16 실측): 영수증 0장, 현재 프로필 `ee216f0de5822996`(규칙 v8) 보정 rejected** — 3/4 반쪽은 확실 위반 0/84 자동통과지만 정상 통과율·화풍 반쪽이 미통과다. 굽기 스크립트 다수(`theme_bake` 계열·modern-city·murim-chipset·jp-city)는 이미 `refusal`/`require_pass` 를 호출하므로 새 그림은 지금 **거절된다**(우회 `JP_GATE=skip`·`--no-gate`·`--dev` 는 제거됨, 배선 표는 `openwiki/harnesses/object-gate.md`). 정면형 소품(간판·건조 틀)은 종류 `front_prop` — **사람이 터미널에서 `approve-front-prop` 로 그림 해시에 승인한 것만** 3/4 면제(화풍은 그대로 pass), 승인 전엔 보류이며 감독·에이전트는 승인하지 않는다. 「관문이 있다」·「통과했다」고 쓰지 마라.
-  그래서 새 키트가 관문 없이 계속 들어왔다. 이 상태를 「관문이 있다」고 쓰거나 「통과했다」고 보고하지 마라.
+  판정자 Claude Sonnet 5.5 high(`claude-cli/claude-sonnet-5-5` effort=high) 하나×네 번(중앙값·과반 + 독립 눈 3번 거부권)이고, 3/4 와 버들항 화풍을 따로 호출해 둘 다 통과해야 통과한다(영수증에 칸 둘; 숫자 지표는 보조). 결과는 pass·fail·refer(사람 확인) 3상태다. 영수증은 그림 화소 해시에 묶인다. 그림이 한 화소라도 바뀌면 다시 받는다.
+- **지금 상태(2026-10-20 실측): 현재 프로필 `ee216f0de5822996`(규칙 v8) 보정 rejected.** 확실 위반 자동통과 0/84 · 적대 시험 0/144 · 화풍 강한 라벨 8/8·14/14 이지만 새 숨김 정상 통과 29/42(69%) < 80% (버들항 원본 U 는 판정 결과를 가린 화소 규칙으로만 정함 — `calibration/review-2026-10-20.json`; 결과를 보고 고른 첫 분류의 81.6%·calibrated 는 선택 편향이라 철회). 그래서 영수증은 효력이 없고 굽기 스크립트(`theme_bake` 계열·modern-city·murim-chipset·jp-city 등, `refusal`/`require_pass`)는 새 그림을 **거절한다**(우회 `JP_GATE=skip`·`--no-gate`·`--dev` 는 제거됨, 배선 표는 `openwiki/harnesses/object-gate.md`). 정면형 소품(간판·건조 틀)은 종류 `front_prop` — **사람이 터미널에서 `approve-front-prop` 로 그림 해시에 승인한 것만** 3/4 면제(화풍은 그대로 pass), 승인 전엔 보류이며 감독·에이전트는 승인하지 않는다. 「관문이 있다」·「통과했다」고 쓰지 마라.
 - 새 그림을 만든 에이전트는 완료 보고에 `object-gate review` 영수증(또는 `status` 출력)을 붙인다. 없으면 「3/4 관문 미통과」라고 쓴다.
 - 굽기·게시 스크립트에는 `src/harnesses/_core/object_gate` 의 `require_pass(img, kind=, context=, label=)` 를 붙인다(Python). 새 굽기 스크립트를 만들 때 이것부터 건다.
 - 관문을 건너뛰거나 점수·기준을 완화하지 마라. 막히면 그림을 고치거나 사용자에게 묻는다.

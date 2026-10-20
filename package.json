@@ -1,6 +1,6 @@
 {
   "name": "oprn",
-  "version": "0.283.2",
+  "version": "0.284.1",
   "description": "웹 기반 탑뷰 타일 JRPG 메이커 (MVP)",
   "private": true,
   "license": "SEE LICENSE IN LICENSE.md",
@@ -102,6 +102,7 @@
     "build:standalone:bundle": "vite build --config vite.standalone.config.ts --configLoader runner",
     "serve:project": "node scripts/oprn-serve.mjs",
     "harness": "vite-node --script scripts/harness.mts --",
+    "store": "vite-node --script scripts/store/agentStore.mts --",
     "store:publish-buildings": "vite-node --script scripts/store/publish-buildings.mts --",
     "store:publish-bundle": "vite-node --script scripts/store/publish-bundle.mts --"
   },

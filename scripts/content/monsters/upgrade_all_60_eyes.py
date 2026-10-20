@@ -180,6 +180,8 @@ def main(argv: list[str] | None = None) -> int:
         repair = entry.get("repair")
         if not repair or (only and sid not in only):
             continue
+        if entry.get("patch"):
+            continue  # superseded by the hand-pixel round (redraw_failed_eyes_r2.py)
         if entry.get("frozen") or entry.get("pending"):
             print(f"{sid}: frozen/pending species must not carry a repair", file=sys.stderr)
             errors += 1

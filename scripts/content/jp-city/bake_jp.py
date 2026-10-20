@@ -550,6 +550,7 @@ def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=Fal
         assert len(a['variantMap']) == len(vm), ('variantMap 키 수', a['id'])
         at = dict(id=a['id'], name=a['name'], neighborhood=a['neighborhood'], memberTileIds=sorted(set(mem)), connectTileIds=conn, variantMap=vm, layer=a['layer'], edgeConnects=bool(a.get('edgeConnects')))
         if a.get('interior'): at['interiorVariants'] = [[L(b, x) for x in lst] for lst in a['interior']]
+        if a.get('outsideConnects'): at['outsideConnects'] = True   # fill_region(resolveAutotile)은 이 값만 읽는다 — 맵 밖을 같은 재료로(#3061)
         autotiles.append(at)
     block_groups = []
     for b, g in pending_groups:

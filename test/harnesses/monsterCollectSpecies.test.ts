@@ -496,19 +496,21 @@ describe("monster-collect-species 시드·레지스트리", () => {
         expect(createHash("sha256").update(back.data).digest("hex"), `${species.id} 동결 뒷모습`).toBe(entry.frozen.back);
       }
     }
-    expect(Object.values(table.species).filter((e) => e.frozen).length).toBe(4);
+    expect(Object.values(table.species).filter((e) => e.frozen).length).toBe(3);
   });
 
   it("눈 표 repair: 장부 authoredSha256 이 authored 파일 바이트 해시·eyes.json repair.to 와 같다 (손 수정이 장부 밖에서 일어나지 않았다)", () => {
-    const table = JSON.parse(readFileSync(join(ROOT, "harness-data/monster-collect-species/eyes.json"), "utf8")) as EyeTable & { species: Record<string, { repair?: { from: string; to: string } }> };
+    const table = JSON.parse(readFileSync(join(ROOT, "harness-data/monster-collect-species/eyes.json"), "utf8")) as EyeTable & { species: Record<string, { repair?: { from: string; to: string }; patch?: { from: string; to: string } }> };
     const ledger = JSON.parse(readFileSync(join(ROOT, "harness-data/monster-collect-species/ledger.json"), "utf8")) as { picks: Record<string, { front?: { authored?: string; authoredSha256?: string; previousAuthoredSha256?: string } }> };
     for (const [id, entry] of Object.entries(table.species)) {
-      if (!entry.repair) continue;
+      // patch = 손 도트 2차(redraw_failed_eyes_r2.py, eye-patches-r2.json)가 repair 를 대신한다
+      const record = entry.patch ?? entry.repair;
+      if (!record) continue;
       const pick = ledger.picks[id]!.front!;
       const sha = createHash("sha256").update(readFileSync(join(ROOT, "harness-data/monster-collect-species", pick.authored!))).digest("hex");
       expect(pick.authoredSha256, id).toBe(sha);
-      expect(entry.repair.to, id).toBe(sha);
-      expect(pick.previousAuthoredSha256, id).toBe(entry.repair.from);
+      expect(record.to, id).toBe(sha);
+      expect(pick.previousAuthoredSha256, id).toBe(record.from);
     }
   });
 });

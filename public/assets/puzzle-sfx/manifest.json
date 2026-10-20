@@ -1,0 +1,194 @@
+{
+ "format": 2,
+ "license": "CC0-1.0",
+ "originality": "Instrument samples are synthesised in code (Karplus-Strong, FM, additive, looped single-cycle waves) and played through an SNES-like path. No recording, ripped sample or game melody is used.",
+ "engine": "scripts/content/puzzle-sfx/snes.py (variant A): 32 kHz, BRR 4-bit ADPCM round-trip, Gaussian 4-tap interpolation, SNES ADSR, 8 voices, hardware noise, 8-tap FIR echo",
+ "builder": "scripts/content/puzzle-sfx/build.py",
+ "loudness": "gated RMS matched to the previous chiptune set (CHIP_PATCHES in build.py), peak capped at -1 dBFS",
+ "aramKiB": 55.0,
+ "sampleRate": 44100,
+ "channels": 1,
+ "codec": "vorbis q5",
+ "sounds": {
+  "secret-solved": {
+   "file": "secret-solved.ogg",
+   "title": "퍼즐 해결 징글",
+   "bytes": 25023,
+   "sha256": "23f634f6ae91102a1f2a0c463eae9690294ecda8e796aa308bdbd3a7a25afdc1",
+   "durationSeconds": 1.9,
+   "instrument": "harp rising A-maj7 arpeggio + glockenspiel sparkle + string pad (A, E), 64 ms echo",
+   "measure": {
+    "gatedRmsDb": -17.88,
+    "chipGatedRmsDb": -17.88,
+    "peakDbfs": -4.23,
+    "dc": 0.0,
+    "maxStep": 0.433,
+    "onsetMs": 0.6,
+    "seconds": 1.9,
+    "chipSeconds": 1.25
+   }
+  },
+  "stone-push": {
+   "file": "stone-push.ogg",
+   "title": "바위 밀기",
+   "bytes": 8881,
+   "sha256": "5fbb3fb31cbfeecaa05c6721d8640c952ae348636f0b9e4c0ee0dd8e66221056",
+   "durationSeconds": 0.48,
+   "instrument": "band-limited BRR noise sample (stone scrape, pitch wobble) + timpani thud, dry",
+   "measure": {
+    "gatedRmsDb": -17.85,
+    "chipGatedRmsDb": -17.85,
+    "peakDbfs": -5.18,
+    "dc": -0.0,
+    "maxStep": 0.063,
+    "onsetMs": 0.8,
+    "seconds": 0.48,
+    "chipSeconds": 0.46
+   }
+  },
+  "plate-press": {
+   "file": "plate-press.ogg",
+   "title": "발판 눌림",
+   "bytes": 7422,
+   "sha256": "9367f3b168675f0c8201d2e127b0c01b68e91f1f95eb5c436d03d1d6d9ef5bd9",
+   "durationSeconds": 0.362,
+   "instrument": "timpani thud + marimba C6 -> G6 confirm",
+   "measure": {
+    "gatedRmsDb": -20.0,
+    "chipGatedRmsDb": -20.0,
+    "peakDbfs": -7.76,
+    "dc": -0.0,
+    "maxStep": 0.137,
+    "onsetMs": 0.6,
+    "seconds": 0.362,
+    "chipSeconds": 0.3
+   }
+  },
+  "switch-clack": {
+   "file": "switch-clack.ogg",
+   "title": "레버·스위치",
+   "bytes": 7177,
+   "sha256": "7de14b258f4222fb63bb8ad4ec5f204fd39fb0ef882d8e0047ec50b48be925b9",
+   "durationSeconds": 0.3,
+   "instrument": "FM metal sample, two clanks low->high + timpani floor knock",
+   "measure": {
+    "gatedRmsDb": -23.6,
+    "chipGatedRmsDb": -23.6,
+    "peakDbfs": -7.15,
+    "dc": -0.0,
+    "maxStep": 0.149,
+    "onsetMs": 1.1,
+    "seconds": 0.3,
+    "chipSeconds": 0.2
+   }
+  },
+  "wrong": {
+   "file": "wrong.ogg",
+   "title": "오답",
+   "bytes": 8982,
+   "sha256": "5854caaeeec505aee3477476d0b68d983e268c0eefb9fa9c915484376c332bf9",
+   "durationSeconds": 0.5,
+   "instrument": "muted brass two-note fall (semitone rub) + plucked bass",
+   "measure": {
+    "gatedRmsDb": -14.72,
+    "chipGatedRmsDb": -14.72,
+    "peakDbfs": -3.72,
+    "dc": -0.0,
+    "maxStep": 0.188,
+    "onsetMs": 0.8,
+    "seconds": 0.5,
+    "chipSeconds": 0.34
+   }
+  },
+  "crystal-ping": {
+   "file": "crystal-ping.ogg",
+   "title": "수정·판 뒤집힘",
+   "bytes": 11239,
+   "sha256": "ffd5d08ed043eee67b50cc5077b9859c9e3b1d16561eb7aab2ca90820e83b2d7",
+   "durationSeconds": 0.8,
+   "instrument": "FM glockenspiel E6 -> B6, 64 ms echo",
+   "measure": {
+    "gatedRmsDb": -20.08,
+    "chipGatedRmsDb": -20.08,
+    "peakDbfs": -4.91,
+    "dc": 0.0,
+    "maxStep": 0.553,
+    "onsetMs": 0.7,
+    "seconds": 0.8,
+    "chipSeconds": 0.42
+   }
+  },
+  "organ-c": {
+   "file": "organ-c.ogg",
+   "title": "오르간 발판 · 도",
+   "bytes": 11927,
+   "sha256": "87b4d3a72e0a19297f6c4456495295b87e230c6130aa9df41a76a2985d847471",
+   "durationSeconds": 0.75,
+   "instrument": "pipe organ (additive drawbar loop + chiff) with octave-below double, 64 ms echo",
+   "measure": {
+    "gatedRmsDb": -18.86,
+    "chipGatedRmsDb": -18.86,
+    "peakDbfs": -9.39,
+    "dc": -0.0,
+    "maxStep": 0.084,
+    "onsetMs": 1.8,
+    "seconds": 0.75,
+    "chipSeconds": 0.62
+   }
+  },
+  "organ-e": {
+   "file": "organ-e.ogg",
+   "title": "오르간 발판 · 미",
+   "bytes": 12241,
+   "sha256": "20421160e25492ba24f0189159746c688e2cb0ff2a9466d5156e74eb0552e37f",
+   "durationSeconds": 0.75,
+   "instrument": "pipe organ (additive drawbar loop + chiff) with octave-below double, 64 ms echo",
+   "measure": {
+    "gatedRmsDb": -18.45,
+    "chipGatedRmsDb": -18.45,
+    "peakDbfs": -9.4,
+    "dc": -0.0,
+    "maxStep": 0.107,
+    "onsetMs": 1.6,
+    "seconds": 0.75,
+    "chipSeconds": 0.62
+   }
+  },
+  "organ-g": {
+   "file": "organ-g.ogg",
+   "title": "오르간 발판 · 솔",
+   "bytes": 11696,
+   "sha256": "11156b7d56185e2852a51ca0a4954e330d5fbff2de71763ec7f5b021fc1811a1",
+   "durationSeconds": 0.75,
+   "instrument": "pipe organ (additive drawbar loop + chiff) with octave-below double, 64 ms echo",
+   "measure": {
+    "gatedRmsDb": -17.6,
+    "chipGatedRmsDb": -17.6,
+    "peakDbfs": -8.75,
+    "dc": -0.0,
+    "maxStep": 0.134,
+    "onsetMs": 2.1,
+    "seconds": 0.75,
+    "chipSeconds": 0.62
+   }
+  },
+  "organ-c2": {
+   "file": "organ-c2.ogg",
+   "title": "오르간 발판 · 높은 도",
+   "bytes": 11882,
+   "sha256": "688aff430d2163c4f2d64a4b4aecc5915d4266714fafd0670d60709befb43493",
+   "durationSeconds": 0.75,
+   "instrument": "pipe organ (additive drawbar loop + chiff) with octave-below double, 64 ms echo",
+   "measure": {
+    "gatedRmsDb": -16.35,
+    "chipGatedRmsDb": -16.35,
+    "peakDbfs": -7.6,
+    "dc": -0.0,
+    "maxStep": 0.201,
+    "onsetMs": 1.7,
+    "seconds": 0.75,
+    "chipSeconds": 0.62
+   }
+  }
+ }
+}

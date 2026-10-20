@@ -348,9 +348,9 @@ def build():
         body = [full] * w3[0] + [local_of(S, "b1")] * w3[1] + [local_of(S, "b2")] * w3[2]       # 몸통을 더 자주(해시 선택)
         interior = [list(body) for _ in range(S["interior_n"])]
         autotiles.append(dict(id=S["id"], name=S["name"], neighborhood=8, layer="lower", member=members, connect=list(members),
-                              variantMap=vm, interior=interior, edgeConnects=False))
+                              variantMap=vm, interior=interior, edgeConnects=True, outsideConnects=True))
         groups.append(dict(id="jp:" + S["id"][3:], name=S["name"], role=S["role"], defaultLayer="lower", cells=list(members),
-                           desc=S["desc"], rules="8방 오토타일: 같은 세트 칸끼리만 이웃으로 센다. 바깥 지형은 한 가지로 가정(타 지형과 맞닿는 변은 이 가장자리 그림을 그대로 쓴다)."))
+                           desc=S["desc"], rules="8방 오토타일: 같은 세트 칸끼리만 이웃으로 센다. 맵 밖은 같은 지형으로 이어진다(edgeConnects — 맵 둘레가 톱니로 끊기지 않는다). 타 지형과 맞닿는 변은 이 가장자리 그림을 그대로 쓴다."))
     return dict(cells=cells, autotiles=autotiles, groups=groups, kits=[], notes=NOTES)
 
 

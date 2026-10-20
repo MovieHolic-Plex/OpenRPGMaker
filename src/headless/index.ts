@@ -6,6 +6,7 @@ import { normalizeToolArgs, runToolDefinition } from "@/editor/tools/toolRunner"
 import { ToolError, type ChangeSummary, type JsonSchema, type ToolMode, type ToolResult } from "@/editor/tools/types";
 import { deserialize, serialize } from "@/project/io";
 import { createBlankProject, ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { reshapeJpCityMapBorders } from "@/project/defaults/jpCityEdgeMigration";
 import { ensureBundledResourceProfiles, ensureBundledTilesets, removeLegacyRmTileset } from "@/project/defaults/defaultAssets";
 import { ensureSharedTileReferences } from "@/project/sharedTileReferences";
 import { ensureDefaultDatabaseIconResources } from "@/project/defaults/defaultDatabaseIconResources";
@@ -74,6 +75,7 @@ export function listHeadlessMcpTools(): readonly HeadlessMcpToolInfo[] {
 export function normalizeHeadlessProject(project: Project): Project {
   ensureSwitchVariableSlots(project);
   ensureBundledTilesets(project);
+  reshapeJpCityMapBorders(project);
   ensureSharedTileReferences(project);
   removeLegacyRmTileset(project);
   ensureBundledResourceProfiles(project);

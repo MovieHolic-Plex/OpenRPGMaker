@@ -531,6 +531,7 @@ function validatePageShape(label: string, value: unknown): void {
     if (interaction.directions !== undefined) {
       for (const dir of requireArray(`${label}.interaction.directions`, interaction.directions)) validateDir(label, dir);
     }
+    if (interaction.sound !== undefined) requireString(`${label}.interaction.sound`, interaction.sound);
   }
   validateCommandArray(`${label}.commands`, page.commands);
 }

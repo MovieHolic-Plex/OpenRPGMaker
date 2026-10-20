@@ -96,7 +96,9 @@ function shapeSignature(t: Pick<TilesetDef, "priority" | "passability" | "tileMe
     const g = group as { defaultLayer?: string; layerHome?: string };
     return `${(g.defaultLayer ?? "-")[0]}${(g.layerHome ?? "-")[0]}`;
   }).join("");
-  return `${layerSignature(t)}|${t.tileGroups?.length ?? 0}|${groupLayers}|${ownedAutotiles}|${t.animationStrips?.length ?? 0}|${ownedKits}`;
+  // 오토타일의 맵 밖 연결(`edgeConnects`)도 센다 — 이 값만 바뀐 굽기(2026-10-20 지면 7그룹 false→true)도 기존 사본이 갱신돼야 한다.
+  const edgeBits = (t.autotileGroups ?? []).filter((group) => isOwned(group.id)).map((group) => (group.edgeConnects ? "1" : "0") + (group.outsideConnects ? "1" : "0")).join("");
+  return `${layerSignature(t)}|${t.tileGroups?.length ?? 0}|${groupLayers}|${ownedAutotiles}|${edgeBits}|${t.animationStrips?.length ?? 0}|${ownedKits}`;
 }
 let bundledShape: string | undefined;
 function bundleShape(): string {

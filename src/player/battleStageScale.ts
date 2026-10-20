@@ -31,10 +31,25 @@ export const BATTLE_LOGICAL_HEIGHT = 480;
 /** 자산 px(320×240 시대 기준) → 논리 px 환산 계수. 640×480 논리 해상도에서 1 자산 px = 2 논리 px. */
 export const BATTLE_ASSET_PIXEL_SCALE = 2;
 
+/** 넓은 화면(16:9) 게임에서 도트 측면 전투가 쓰는 최대 논리 폭. 480 × 16/9 ≈ 853.3. */
+export const BATTLE_WIDE_LOGICAL_WIDTH_MAX = 854;
+
+/**
+ * 전투 무대의 논리 폭. 높이는 480 으로 두고 폭만 host 비율을 따른다(640~854).
+ * 2026-10-20 battle-feel: 새 프로젝트 기본이 640×360(16:9)이 된 뒤 4:3 무대가 가운데에 떠
+ * 좌우 25% 가 남색 띠였다(출하 player 녹화 실측). 도트 측면 전투만 넓힌다 — 배틀러 좌표는
+ * 무대 폭의 백분율이라 그대로 넓게 퍼지고, 그림 칸은 px 라 늘어나지 않는다.
+ */
+export function calculateBattleStageWidth(width: number, height: number, wide: boolean): number {
+  if (!wide || !Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) return BATTLE_LOGICAL_WIDTH;
+  const fit = Math.round(BATTLE_LOGICAL_HEIGHT * (width / height));
+  return Math.max(BATTLE_LOGICAL_WIDTH, Math.min(BATTLE_WIDE_LOGICAL_WIDTH_MAX, fit));
+}
+
 /** Largest uniform fit without cropping; the host's own transform is applied once by its parent. */
-export function calculateBattleStageScale(width: number, height: number): number {
+export function calculateBattleStageScale(width: number, height: number, logicalWidth = BATTLE_LOGICAL_WIDTH): number {
   if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) return 1;
-  return Math.min(width / BATTLE_LOGICAL_WIDTH, height / BATTLE_LOGICAL_HEIGHT);
+  return Math.min(width / logicalWidth, height / BATTLE_LOGICAL_HEIGHT);
 }
 
 type ScaleBinding = { readonly sync: () => void; readonly cleanup: () => void };
@@ -58,10 +73,14 @@ export function bindBattleStageScale(host: HTMLElement, scene: HTMLElement): Sca
     // 전투 테스트 모달(레이아웃 640×480)은 배율 1.0 으로 각각 맞는다.
     const width = host.clientWidth || host.offsetWidth;
     const height = host.clientHeight || host.offsetHeight;
-    const scale = calculateBattleStageScale(width, height);
+    const logicalWidth = calculateBattleStageWidth(width, height, scene.dataset.battleMotion === "retro");
+    const scale = calculateBattleStageScale(width, height, logicalWidth);
     // transform-origin 이 top left 라 스케일 후 남는 여백을 직접 반으로 나눠 중앙에 놓는다.
-    const offsetX = Math.max(0, (width - BATTLE_LOGICAL_WIDTH * scale) / 2);
+    const offsetX = Math.max(0, (width - logicalWidth * scale) / 2);
     const offsetY = Math.max(0, (height - BATTLE_LOGICAL_HEIGHT * scale) / 2);
+    scene.style.setProperty("--battle-stage-width", `${logicalWidth}px`);
+    if (logicalWidth !== BATTLE_LOGICAL_WIDTH) scene.dataset.battleStageWide = "true";
+    else delete scene.dataset.battleStageWide;
     scene.style.setProperty("--battle-stage-scale", String(scale));
     scene.style.setProperty("--battle-stage-offset-x", `${offsetX}px`);
     scene.style.setProperty("--battle-stage-offset-y", `${offsetY}px`);

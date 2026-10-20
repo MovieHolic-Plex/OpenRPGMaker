@@ -937,7 +937,9 @@ function playScreen(field: HTMLElement, player: ClassPlayer, event: Extract<Retr
     if (event.color && event.effect === "flash") veil.style.background = event.color;
     const keys = event.effect === "dim"
       ? [{ opacity: 0 }, { opacity: 0.62, offset: Math.min(0.2, 180 / duration) }, { opacity: 0.62, offset: Math.max(0.8, 1 - 180 / duration) }, { opacity: 0 }]
-      : [{ opacity: 0.85 }, { opacity: 0 }];
+      // battle-feel 2026-10-20: 0.85 → 0 으로 길게 빠지면 무대 전체가 회색 안개로 덮였다(동굴 녹화 3~4프레임).
+      // 번쩍임은 두 프레임 머물렀다 끊는다 — battle-flash-snap 과 같은 「머물렀다 끊김」.
+      : [{ opacity: 0.6 }, { opacity: 0.6, offset: Math.min(0.45, 50 / duration) }, { opacity: 0, offset: Math.min(0.5, 66 / duration) }, { opacity: 0 }];
     if (typeof veil.animate === "function") player.animations.push(veil.animate(keys, { duration, fill: "forwards" }));
   }
   field.append(veil);

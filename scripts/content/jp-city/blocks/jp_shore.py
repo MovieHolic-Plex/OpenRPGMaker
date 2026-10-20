@@ -116,7 +116,7 @@ def build():
             connect = list(members)
             interior = [[full] + river_vars[1:], [full] + river_vars[1:]]
         autotiles.append(dict(id=aid, name=name, neighborhood=8, layer='lower', member=members, connect=connect,
-                              variantMap=GA.variant_map(loc_of), interior=interior, edgeConnects=True))
+                              variantMap=GA.variant_map(loc_of), interior=interior, edgeConnects=True, outsideConnects=True))
         groups.append(dict(id='jp:shore-' + prefix, name=name, role='water', defaultLayer='lower', cells=list(members),
                            desc='%s — 8방 오토타일(물, 걸을 수 없음).' % name,
                            rules='지역 구성기가 바다·강 칸의 이웃을 보고 자동으로 깐다(shorePass). 붓으로 칠할 때는 같은 물 칸끼리 이웃으로 센다.'))
@@ -131,7 +131,7 @@ def build():
     autotiles.append(dict(id='jp-quay-deck', name='부두 콘크리트 · 갓돌 테', neighborhood=8, layer='lower', member=members,
                           connect=list(members) + ['other:jp-plaza-pave', 'other:jp-sidewalk-curb'],
                           variantMap=GA.variant_map(lambda m: quay_vars[0] if m == 255 else _mloc('quay-deck', m)),
-                          interior=[[quay_vars[0]] + quay_vars[1:]] * 2, edgeConnects=True))
+                          interior=[[quay_vars[0]] + quay_vars[1:]] * 2, edgeConnects=True, outsideConnects=True))
     groups.append(dict(id='jp:shore-quay-deck', name='부두 콘크리트 · 갓돌 테', role='terrain', defaultLayer='lower', cells=list(members),
                        desc='부두 콘크리트 판 8방 오토타일 — 물과 맞닿는 변에 갓돌 테. 판석 광장·보도와 맞닿는 변은 이어진다.',
                        rules='지역 구성기가 부두 칸의 물 쪽 이웃을 보고 자동으로 깐다(shorePass).'))

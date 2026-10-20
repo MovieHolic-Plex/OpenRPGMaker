@@ -385,7 +385,12 @@ if (stage === 'calibrate') {
   // adv-* = 적대 시험(위반 표본을 면제 종류로 거짓 선언): 개발·숨김 집계에 섞지 않고 따로 센다. 한 장이라도 통과하면 효력 없음.
   const probe = picked.filter(c => c.set.startsWith('adv-'));
   const dev = picked.filter(c => !c.holdout && !c.set.startsWith('adv-')), hold = picked.filter(c => c.holdout);
-  const v34 = (list: Cal[], tier: Tier) => tally(list.filter(c => c.tier === tier), (c, r) => ({ truth: c.view34, verdict: r.view34?.verdict ?? 'fail' }));
+  // 사람 승인 전용 종류(humanOnly: front_prop)는 3/4 반쪽이 구조상 자동 pass 를 낼 수 없다(항상 refer). 자동 통과율 분모에 넣으면 정상 통과율을 근거 없이 깎으므로
+  // 따로 센다 — 자동 통과가 한 장이라도 나오면 효력 없음(사람 승인 없이 출구를 넘을 길이 생긴 것이다).
+  const humanOnly = (c: Cal) => !!OBJECT_GATE_KINDS[c.kind]?.humanOnly;
+  const v34 = (list: Cal[], tier: Tier) => tally(list.filter(c => c.tier === tier && !humanOnly(c)), (c, r) => ({ truth: c.view34, verdict: r.view34?.verdict ?? 'fail' }));
+  const humanItems = picked.filter(c => !c.set.startsWith('adv-') && c.view34 && humanOnly(c));
+  const humanAutoPass = humanItems.filter(c => byLabel.get(c.label!)!.view34?.verdict === 'pass').map(c => c.label!);
   // 숨김 표본은 둘이다: holdout(1차 숨김 — 규칙 v6 결과를 본 뒤 규칙 v7 을 조정하는 데 쓰였으므로 더 이상 숨김이 아님) · fresh(v7 규칙을 정한 뒤 처음 재는 표본).
   const holdOld = hold.filter(c => c.set === 'holdout'), holdFresh = hold.filter(c => c.set.startsWith('fresh'));
   const devA = v34(dev, 'A'), holdA = v34(holdOld, 'A'), freshA = v34(holdFresh, 'A');
@@ -400,7 +405,7 @@ if (stage === 'calibrate') {
   const GOOD_MIN = 0.8; // 정상 표본 통과율 하한(위반을 하나도 못 놓치는 것에 더해, 정상 표본을 대부분 통과시켜야 효력이 있다)
   // 효력 조건: 개발 표본(확실 라벨)과 숨김 표본 양쪽에서 위반 자동 통과 0 · 정상 통과 ≥ 80%, 화풍은 강한 라벨만.
   const probeMissed = probe.filter(c => byLabel.get(c.label!)!.view34?.verdict === 'pass').map(c => c.label!);
-  const ok = probeMissed.length === 0 && devA.missed.length === 0 && goodRate(devA) >= GOOD_MIN && holdA.missed.length === 0 && goodRate(holdA) >= GOOD_MIN
+  const ok = probeMissed.length === 0 && humanAutoPass.length === 0 && devA.missed.length === 0 && goodRate(devA) >= GOOD_MIN && holdA.missed.length === 0 && goodRate(holdA) >= GOOD_MIN
     && (freshA.badTotal + freshA.goodTotal > 0 ? freshA.missed.length === 0 && goodRate(freshA) >= GOOD_MIN : true)
     && strong.missed.length === 0 && goodRate(strong) >= GOOD_MIN;
   const record = {
@@ -409,6 +414,7 @@ if (stage === 'calibrate') {
     tiers, holdout: { bad: { total: holdA.badTotal, caught: holdA.caught, missed: holdA.missed }, good: { total: holdA.goodTotal, passed: holdA.passed, falseFail: holdA.falseFail } },
     fresh: { bad: { total: freshA.badTotal, caught: freshA.caught, missed: freshA.missed }, good: { total: freshA.goodTotal, passed: freshA.passed, falseFail: freshA.falseFail } },
     probe: { total: probe.length, passed: probeMissed.length, missed: probeMissed },
+    humanOnly: { total: humanItems.length, refer: humanItems.filter(c => byLabel.get(c.label!)!.view34?.verdict === 'refer').length, autoPassed: humanAutoPass },
     style: { ...strong, groups }, judge: OBJECT_GATE_PROFILE.judges.map(j => `${j.model}(${j.effort})`).join('+'),
     note: full ? undefined : '부분 실행(--set/--limit/--runs) — 효력 없음',
   };
@@ -420,6 +426,7 @@ if (stage === 'calibrate') {
   console.log(`3/4 숨김(1차, 조정에 쓰임)·확실(A)  ${t(holdA)}`);
   console.log(`3/4 새 숨김(fresh, v7 확정 뒤 처음)·확실(A)  ${t(freshA)}`);
   if (probe.length) { console.log(`적대 시험(위반 ${probe.length}장을 면제 종류로 거짓 선언)  통과 ${probeMissed.length}/${probe.length}${probeMissed.length ? ' — ' + probeMissed.join(', ') : ''}`); }
+  if (humanItems.length) console.log(`사람 승인 전용 종류(front_prop, 자동 통과율 분모에서 뺌)  ${humanItems.length}장: 보류 ${humanItems.filter(c => byLabel.get(c.label!)!.view34?.verdict === 'refer').length} · 자동 통과 ${humanAutoPass.length}${humanAutoPass.length ? ' — ' + humanAutoPass.join(', ') : ''}`);
   for (const [k, v] of Object.entries(tiers)) console.log(`   등급 ${k}: 위반 자동통과 ${v.bad.passed}/${v.bad.total} · 정상 통과 ${v.good.passed}/${v.good.total}`);
   console.log(`화풍 강한 라벨만  얕음 ${strong.caught}/${strong.badTotal} 막음 · 버들 ${strong.passed}/${strong.goodTotal} 통과 (약한 라벨 포함: 얕음 ${sty.caught}/${sty.badTotal} · 버들 ${sty.passed}/${sty.goodTotal})`);
   for (const [g, v] of Object.entries(groups)) console.log(`  화풍 그룹 ${g.padEnd(18)} 통과 ${v.passed}/${v.total}`);
