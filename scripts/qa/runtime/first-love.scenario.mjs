@@ -58,6 +58,9 @@ function talkTo(mapId, cell, dir = "up") {
   ];
 }
 const shotPause = (ms = 700) => ({ kind: "hold", dir: null, ms });
+const RAIL = "[data-testid='status-menu-command-rail']";
+const openMenu = (id, note) => ({ id, note, ops: [{ kind: "key", key: "Escape" }, { kind: "waitFor", testid: "status-menu-command-rail", state: "present", timeoutMs: 8000 }, shotPause(700)], shot: true });
+const closeMenu = (id) => ({ id, note: "메뉴 닫기", ops: [{ kind: "pressUntilJs", key: "Escape", fn: `() => !document.querySelector("${RAIL}")`, maxPresses: 4, settleMs: 500 }], shot: false });
 
 const A = PATH === "A";
 const C = PATH === "C";
@@ -105,6 +108,8 @@ export default {
     { id: "c1", note: "선택 1", ops: [toChoice(), shotPause(500)], shot: true },
     { id: "after-c1", note: "선택 1 결과", ops: [...pick(pickC1), shotPause(900)], shot: true },
     { id: "office-free", note: "사무실 자유 이동", ops: [untilStage(3), shotPause(800)], shot: true },
+    openMenu("menu-mon", "ESC 메뉴 — 연애 메뉴(호감도·대화 기록·엔딩·저장)"),
+    closeMenu("menu-mon-close"),
     { id: "pantry", note: "탕비실 민호", ops: [...talkTo("fl_office", minho, "up"), toChoice(), shotPause(500)], shot: true },
     { id: "after-pantry", note: "선택 2 → 옥상 힌트", ops: [...pick(pickC2), untilStage(4), shotPause(500)], shot: true },
     { id: "rooftop", note: "옥상의 지후", ops: [...stepInto("fl_office", stairs, "up"), { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 20000 }, shotPause(1500)], shot: true },
@@ -117,6 +122,8 @@ export default {
     { id: "flashback-2", note: "회상 — 어린 지후", ops: [{ kind: "pressUntilJs", key: "Enter", fn: "() => /서성이는/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 30, settleMs: 600 }, shotPause(900)], shot: true },
     { id: "wednesday", note: "수요일 야근 — 실수", ops: [{ kind: "pressUntilJs", key: "Enter", fn: "() => /지난주 버전/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 40, settleMs: 600 }, shotPause(900)], shot: true },
     { id: "c5", note: "선택 5", ops: [toChoice(), ...pick(pickC5), untilStage(9), shotPause(600)], shot: true },
+    openMenu("menu-wed", "ESC 메뉴 — 수요일 호감도"),
+    closeMenu("menu-wed-close"),
     { id: "notebook", note: "지후 수첩", ops: [...talkTo("fl_office_pm", notebook, "up"), toChoice(), shotPause(500)], shot: true },
     { id: "ramen", note: "탕비실 라면", ops: [...pick(pickNote), closeDialogue(), ...talkTo("fl_office_pm", jihuPantry, "down"), toChoice(), shotPause(500)], shot: true },
     { id: "friday", note: "금요일 발표", ops: [...pick(pickC6), { kind: "pressUntilJs", key: "Enter", fn: "() => /핵심이 뭡니까/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 40, settleMs: 600 }, shotPause(1200)], shot: true },
