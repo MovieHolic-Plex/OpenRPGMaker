@@ -122,6 +122,11 @@ flags: `overlay`(투명 덧칠: 윤곽·접지·귀퉁이 검사 제외) · `thi
 - r5 색: jp 잔디 3281(색상 122°·채도 0.41·명도 0.52)에 버들항 나무/잔디 관계(나무 명도 중앙값 = 잔디 ×0.77)를 옮긴 램프 `pine_bamboo/keyaki_g1·g2·h1·h2·leafhi_g`, `aged_cedar/bark_g`(paletteContract.ts).
 - 지역 생성(jpRegionTool): paint_forest 는 활엽 칸에 숲 바닥만 칠하고, 키트를 다 찍은 뒤 `composeJpForestR4` 로 한 번에 세운다(집 위로 수관이 넘치지 않게).
 - 알려진 한계: 숲 옆에 길·물을 새로 칠해도 숲 그룹 재성형이 안 불리므로 이미 넘친 수관은 그대로다(숲 쪽을 한 번 다시 칠하면 맞춰진다).
+- **r6 접지**(사용자 「떠 보인다」, 2026-10-20): 버들항 실측 — 숲 그림자는 나무와 따로 땅에 깔린 두 단 반투명 덩이(잔디 ×0.83 · ×0.70), 보이는 쪽은 오른쪽 아래.
+  jp 는 알파 0/255 계약이라 잔디 무늬를 같은 비율로 어둡게 한 칸(계약 램프 `pine_bamboo/lawn_shade`)을 깐다. `TreeComposerDef.ground`(선택, 칩셋마다): 숲 칸은 1층 `floorTiles[code]`(64 변형, 오토타일 멤버),
+  숲 밖 잔디(`apronBases` 3281~3283)는 `apronLayer`(2층) 덧칸, 그 칸의 나무는 2층을 비운다. 그늘 코드 = 가운데·북·서·북서·동·북동 칸이 「그늘 덮개」(그림 맨 아래 `shadeRows`=2 줄을 30%/밑줄 15% 넘게 덮은 칸)인가.
+  그늘 모양 `forest_r6_ground.py`(덮개 칸을 (+2,+3) 민 속 · 오른 3·아래 5 넓힌 가, 원판 다수결로 둥글림). 밑동: 들쭉날쭉 파고드는 아랫선·앞 뿌리·밑동 타원(×0.55)·풀 술(`forest_r4.py` GROUND=r6).
+  `ground` 가 없는 composer(예: #3122 버들항 `composeTreesInMask`)는 예전 그대로 나무만 짠다. 접지 검수 `argon_ground_judge.py`: r5 2.0/2.33 → r6 4.0/3.33(덩이/연못·길·집, 3번 평균).
 - Argon 적대 검수(r3 와 같은 설정): jp 활엽 6.6, **버들항 bd-tree 를 같은 composer 에 넣어도 6.6** — 이 판별 설정은 기준 그림도 0 을 못 만든다.
 - 굽기: `blocks/jp_forest_r4.py`(BLOCK_ORDER 끝), 임시 `--out-root` 로만 확인(23,459칸). 3/4 관문 미통과 — 보정 대기.
 

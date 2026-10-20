@@ -20,6 +20,9 @@ def main():
     ap.add_argument('--table', default='')
     ap.add_argument('--note', default='')
     ap.add_argument('--r5', default='')
+    ap.add_argument('--r6', default='')
+    ap.add_argument('--r6-note', default='')
+    ap.add_argument('--r6-table', default='')
     ap.add_argument('--r5-note', default='')
     a = ap.parse_args()
     out = os.path.join(VIZ, NAME)
@@ -34,6 +37,18 @@ def main():
         return f'<figure><img src="{src}"><figcaption>{html.escape(cap)}</figcaption></figure>' if src else ''
 
     P = []
+    if a.r6:
+        def cp6(n):
+            p = os.path.join(a.r6, n)
+            if not os.path.exists(p): return None
+            dst = 'r6-' + n[3:]
+            shutil.copy(p, os.path.join(out, dst)); return f'{NAME}/{dst}'
+        P.append('<h1>r6 접지 — 나무가 땅에 앉게 (jp_city 실제 땅 위, 1×)</h1>')
+        if a.r6_note: P.append(f'<p class="note">{html.escape(a.r6_note)}</p>')
+        for sh, ko in (('blob', '덩이'), ('touching', '연못·길·집')):
+            P.append(f'<h2>{ko}</h2><div class="row">' + fig(cp6(f'r5-{sh}-before.png'), '전: r5') + fig(cp6(f'r5-{sh}-after.png'), '후: r6 접지')
+                     + fig(cp6(f'r5-{sh}-ts.png'), 'r6 TS composer(임시 굽기 시트)') + fig(cp6(f'r5-{sh}-beodeul.png'), '버들항 잔디 위 버들항 나무(같은 composer)') + '</div>')
+        if a.r6_table: P.append('<h2>접지 적대 검수 (Argon, 그림마다 3번 따로)</h2>' + a.r6_table)
     if a.r5:
         def cp5(n):
             p = os.path.join(a.r5, n)

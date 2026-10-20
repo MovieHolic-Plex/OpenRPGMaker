@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""r5 잔디 맞춤 비교(1×): jp_city 실제 땅(잔디 3281·연못·길·집) 위 jp 활엽 — 맞춤 전(JPF_PAL=r4) / 후(r5),
+"""r5 잔디 맞춤 / r6 접지(JPF_COMPARE=r6) 비교(1×): jp_city 실제 땅(잔디 3281·연못·길·집) 위 jp 활엽 — 맞춤 전(JPF_PAL=r4) / 후(r5),
 옆에 버들항 잔디 위 버들항 bd-tree(같은 composer).
 
   python3 forest_r5_compare.py OUTDIR   → r5-{blob,touching}-{before,after,beodeul}.png
@@ -53,6 +53,10 @@ if __name__ == '__main__':
     if len(sys.argv) > 2:
         jp(out, sys.argv[2]); sys.exit(0)
     os.makedirs(out, exist_ok=True)
-    for tag, pal in (('before', 'r4'), ('after', 'r5')):
-        subprocess.run([sys.executable, __file__, out, tag], check=True, env=dict(os.environ, JPF_PAL=pal))
+    if os.environ.get('JPF_COMPARE') == 'r6':      # r6 접지: 전 = r5(색 맞춤, 땅 그늘 없음) · 후 = r6
+        runs = (('before', dict(JPF_PAL='r5', JPF_GROUND='r5')), ('after', dict(JPF_PAL='r5', JPF_GROUND='r6')))
+    else:
+        runs = (('before', dict(JPF_PAL='r4', JPF_GROUND='r5')), ('after', dict(JPF_PAL='r5', JPF_GROUND='r5')))
+    for tag, env in runs:
+        subprocess.run([sys.executable, __file__, out, tag], check=True, env=dict(os.environ, **env))
     beodeul(out)

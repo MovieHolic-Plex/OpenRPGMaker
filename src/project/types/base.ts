@@ -644,6 +644,22 @@ export interface TreeComposerDef {
   overhangOnGroups: string[];             // 수관이 숲 밖으로 넘쳐도 되는 1층 오토타일 그룹(잔디) — 사람이 읽는 이름
   overhangOnTiles: number[];              // 굽기가 위 그룹 멤버 + 제 숲 바닥으로 풀어 둔 칸 번호(엔진은 이것만 본다)
   sprites: TreeComposerSprite[];
+  ground?: TreeComposerGround;            // r6 접지(없으면 땅 그늘 없이 나무만)
+}
+/**
+ * 땅 그늘(r6 접지, scripts/content/jp-city/forest/forest_r6_ground.py). 나무 그림이 덮은 칸(그늘 덮개)에서 그늘 코드를 만든다 —
+ * 비트 k = 칸 (x+shadeBits[k][0], y+shadeBits[k][1]) 이 덮개인가. 숲 칸의 1층은 floorTiles[code], 숲 밖 잔디 칸(apronBases)의
+ * apronLayer 층은 apronTiles[baseIndex*64 + code](-1 = 그늘 없음). 그 칸의 나무는 apronLayer 를 비워 둔다.
+ */
+export interface TreeComposerGround {
+  shadeBits: number[][];
+  shadeCover: number;                     // 이만큼(%) 넘게 덮은 그림 칸이 덮개
+  shadeCoverBase: number;                 // 맨 아랫줄(줄기·뿌리) 칸은 이만큼만 덮어도 덮개
+  shadeRows?: number;                     // 그림 맨 아래 몇 줄만 덮개로 센다(생략 = 전부)
+  floorTiles: number[];
+  apronLayer: number;
+  apronBases: number[];
+  apronTiles: number[];
 }
 
 export interface SpriteDef {

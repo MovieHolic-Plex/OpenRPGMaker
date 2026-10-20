@@ -22,6 +22,7 @@ import forest_r3 as F  # noqa: E402  팔레트·해시를 같이 쓴다
 
 T = 16
 PAL_R4 = F.PAL
+GROUND = os.environ.get('JPF_GROUND', 'r6')
 
 # r5 잔디 맞춤: 버들항 나무와 버들항 잔디의 관계(색상 +4°, 채도 ×0.9, 명도 중앙값 −0.14·폭 0.23~0.80)를
 # jp_city 잔디(3281: 색상 122°, 채도 0.41, 명도 0.52)에 그대로 옮긴다. 나무 색상은 124° 쪽으로 당기고(노란 연두를 뺀다),
@@ -203,14 +204,27 @@ def paint_trunk(img, cx, top, base, w, bark, seed, root=5):
     """줄기: 위가 좁고 밑이 넓다(테이퍼), 왼쪽 밝은 결 + 세로 껍질 골, 밑동에서 뿌리 가닥 3~4개가 갈라져 땅에 박힌다.
     밑에 두 단 땅 그늘 타원(오른쪽으로 밀림)."""
     H, W = img.shape[:2]
-    gsh = PAL['gsh']
-    # 땅 그늘: 속(gsh0) · 둘레(gsh1), 오른쪽으로 2px 밀림
-    sw = w / 2 + root + 6; sh = 3.6
-    for y in range(int(base - sh - 1), min(H, int(base + sh + 1))):
-        for x in range(max(0, int(cx + 2 - sw - 1)), min(W, int(cx + 2 + sw + 2))):
-            e = ((x + 0.5 - cx - 2) / sw) ** 2 + ((y + 0.5 - base) / sh) ** 2
-            if e <= 1 and not img[y, x, 3]:
-                img[y, x, :3] = gsh[1 if e < 0.5 else 0]; img[y, x, 3] = 255
+    if GROUND == 'r5':
+        gsh = PAL['gsh']
+        # 땅 그늘: 속(gsh0) · 둘레(gsh1), 오른쪽으로 2px 밀림
+        sw = w / 2 + root + 6; sh = 3.6
+        for y in range(int(base - sh - 1), min(H, int(base + sh + 1))):
+            for x in range(max(0, int(cx + 2 - sw - 1)), min(W, int(cx + 2 + sw + 2))):
+                e = ((x + 0.5 - cx - 2) / sw) ** 2 + ((y + 0.5 - base) / sh) ** 2
+                if e <= 1 and not img[y, x, 3]:
+                    img[y, x, :3] = gsh[1 if e < 0.5 else 0]; img[y, x, 3] = 255
+    else:
+        # r6 접지: 넓은 땅 그늘은 1·2층(forest_r6_ground)이 깐다. 그림에는 밑동 닿는 곳만 — 뿌리 밑 좁은 타원,
+        # 속은 잔디 ×0.55, 가는 ×0.70(숲 바닥 속과 같은 색이라 바닥에 녹아든다). 빛이 왼쪽 위라 오른쪽으로 2px.
+        grass = ((52, 99, 60), (73, 128, 76), (104, 158, 99))
+        dark = tuple(int(round(v * 0.55)) for v in grass[1]); mid = tuple(int(round(v * 0.70)) for v in grass[1])
+        gsh = [dark, mid]
+        sw = w / 2 + root + 4; sh = 3.2
+        for y in range(int(base - sh - 1), min(H, int(base + sh + 1))):
+            for x in range(max(0, int(cx + 2 - sw - 1)), min(W, int(cx + 2 + sw + 2))):
+                e = ((x + 0.5 - cx - 2) / sw) ** 2 + ((y + 0.5 - base - 0.5) / sh) ** 2
+                if e <= 1 and not img[y, x, 3]:
+                    img[y, x, :3] = dark if e < 0.55 else mid; img[y, x, 3] = 255
     lean = (hf('lean', seed) - 0.5) * 2.4
     for y in range(top, base + 1):
         f = (y - top) / max(1, base - top)
@@ -230,9 +244,9 @@ def paint_trunk(img, cx, top, base, w, bark, seed, root=5):
     # 뿌리: 밑동에서 좌우로 세 갈래씩 비스듬히 벌어진다(두께 2→1), 갈래 사이는 땅 그늘
     for sgn in (-1, 1):
         for k in range(3):
-            ln = 3 + k + int(hf('rl', seed, sgn, k) * 3)
+            ln = 3 + k + int(hf('rl', seed, sgn, k) * 3) + (2 if GROUND != 'r5' else 0)
             sx = cx + sgn * (w / 2 - 1)
-            slope = 0.25 + 0.3 * k + 0.2 * hf('rsl', seed, sgn, k)
+            slope = 0.25 + 0.3 * k + 0.2 * hf('rsl', seed, sgn, k) + (0.12 if GROUND != 'r5' else 0.0)
             for t in range(ln):
                 x = int(round(sx + sgn * t)); y = int(round(base - 3 + t * slope))
                 th = 2 if t < ln * 0.6 else 1
@@ -240,6 +254,31 @@ def paint_trunk(img, cx, top, base, w, bark, seed, root=5):
                     yy = y - q
                     if 0 <= x < W and 0 <= yy < H:
                         img[yy, x, :3] = bark[(4 if sgn < 0 else 2) - q * (2 if sgn > 0 else 1)]; img[yy, x, 3] = 255
+    if GROUND != 'r5':
+        # r6 접지: 밑동 아랫선을 들쭉날쭉하게 — 줄기 열마다 1~2px 땅으로 파고들거나(가장 어두운 껍질) 1px 덜 내려온다.
+        # 앞으로 뻗는 뿌리 하나(아래로 2~3px). 버들항 밑동 실측: 뿌리 끝이 땅 그늘 속으로 박히고 풀 술이 뿌리 끝을 덮는다.
+        cols = [x for x in range(W) if img[base, x, 3] and tuple(img[base, x, :3]) in {tuple(c) for c in bark}]
+        for x in cols:
+            h = hf('bite', seed, x)
+            if h < 0.45:
+                for d in range(1, 2 + (h < 0.18)):
+                    if base + d < H: img[base + d, x, :3] = bark[0 if d > 1 else 1]; img[base + d, x, 3] = 255
+            elif h > 0.85 and not img[base + 1, x, 3] if base + 1 < H else False:
+                img[base, x, :3] = bark[0]
+        fx0 = int(round(cx - 1 + (hf('froot', seed) - 0.5) * w * 0.5))
+        for d in range(1, 3 + int(hf('frl', seed) * 2)):
+            for x in (fx0, fx0 + 1):
+                if 0 <= x < W and base + d < H: img[base + d, x, :3] = bark[2 if x == fx0 else 1] if d < 2 else bark[0]; img[base + d, x, 3] = 255
+        # 풀 술: 뿌리 줄을 따라 5~6개, 뿌리·밑동 아랫 두 줄 위에도 덮는다(풀이 밑동 앞에 선다)
+        grass_hi = ((104, 158, 99), tuple(PAL['keyaki_b'][13]), tuple(PAL['keyaki_b'][16]))
+        for b in range(6):
+            fx = int(cx - w / 2 - root + hf('fx6', seed, b) * (w + 2 * root)); fy = base + 2 - int(hf('fy6', seed, b) * 3)
+            for dx, dy, k in ((0, 0, 0), (0, -1, 1), (-1, -1, 0), (1, -2, 2), (0, -2, 1), (-1, -3, 2)):
+                if dy == -3 and hf('tall', seed, b) < 0.5: continue
+                x, y = fx + dx, fy + dy
+                if 0 <= x < W and 0 <= y < H and (not img[y, x, 3] or y >= base - 1):
+                    img[y, x, :3] = grass_hi[k]; img[y, x, 3] = 255
+        return
     # 풀잎 술
     for b in range(3):
         fx = int(cx - w / 2 - root + hf('fx', seed, b) * (w + 2 * root)); fy = base + 1 - int(hf('fy', seed, b) * 2)

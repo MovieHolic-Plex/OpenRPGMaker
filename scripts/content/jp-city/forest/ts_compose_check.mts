@@ -17,7 +17,7 @@ function blank(W: number, H: number): GameMap {
   return { id: "t", name: "t", width: W, height: H, tilesetId: "jp_city", lowerTiles: new Array(W * H).fill(GRASS), upperTiles: new Array(W * H).fill(-1) } as unknown as GameMap;
 }
 function layers(m: GameMap): number[][] {
-  return [m.upperOverlayTiles ?? new Array(m.width * m.height).fill(-1), m.upperTiles, m.lowerOverlayTiles ?? new Array(m.width * m.height).fill(-1)];
+  return [m.upperOverlayTiles ?? new Array(m.width * m.height).fill(-1), m.upperTiles, m.lowerOverlayTiles ?? new Array(m.width * m.height).fill(-1), m.lowerTiles.slice()];
 }
 const out: Record<string, number[][]> = {};
 for (const s of JSON.parse(fs.readFileSync(shapesPath, "utf8")) as { name: string; W: number; H: number; mask: number[][]; avoid: number[][] | null }[]) {

@@ -23,6 +23,8 @@ from PIL import Image  # noqa: E402
 import forest_r3 as F3  # noqa: E402
 import forest_r4 as R  # noqa: E402
 import forest_r4_compose as C  # noqa: E402
+import forest_r3_scenes as S3  # noqa: E402
+import forest_r6_ground as G  # noqa: E402
 
 BLOCK = 'jp_forest_r4'
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..', '..'))
@@ -30,21 +32,8 @@ T = 16
 KINDS = (('bl', '활엽 혼효림(느티나무·잡목)'),)
 SHAPES = ('T4', 'T3', 'T2')
 OVERHANG_ON = ['jp-lawn-dirt', 'jp-gravel-lawn']
+APRON_BASES = [3281, 3282, 3283]       # jp-lawn-dirt 속 잔디 칸(번호 핀으로 고정) — 둘레 그늘은 이 잔디 무늬를 어둡게 한 덧칸
 _CACHE = {}
-
-
-def floor_tile():
-    """숲 바닥 표시 칸: jp 잔디(3281)에 그늘 점을 드문드문 — 잔디와 다른 칸이어야 붓이 숲을 알아본다. 나무 사이 틈으로만 보인다."""
-    import forest_r3_scenes as S3
-    g = S3.tile(S3.GRASS).copy()
-    gsh = F3.PAL['gsh']
-    for y in range(T):
-        for x in range(T):
-            h = F3.hf('ff', x, y)
-            if h < 0.10: g[y, x, :3] = gsh[2]
-            elif h < 0.14: g[y, x, :3] = gsh[1]
-    g[..., 3] = 255
-    return g
 
 
 def _finalize():
@@ -61,8 +50,20 @@ def _finalize():
         return loc
 
     for k, ko in KINDS:
-        floor = put(floor_tile(), f'{ko} 숲 바닥', 'solidfloor', ['숲', '숲 바닥', k],
-                    f'[숲 r4] {ko} 숲 바닥 표시(1층). 오토타일 jp-forest4-{k} 로 칠하면 나무가 저절로 선다.')
+        # r6 접지: 숲 바닥(1층) 그늘 변형 64 + 숲 둘레 그늘(2층 덧칸) 잔디 칸 3 × 64 — forest_r6_ground
+        base = S3.tile(S3.GRASS)
+        floor_tiles = []
+        for code in range(G.NCODES):
+            floor_tiles.append(put(G.floor_tile(base, code), f'{ko} 숲 바닥 (그늘 {code})', 'solidfloor', ['숲', '숲 바닥', k],
+                                   f'[숲 r6] {ko} 숲 바닥(1층). 오토타일 jp-forest4-{k} 로 칠하면 나무가 저절로 서고, 나무가 덮은 칸 둘레에 땅 그늘이 깔린다.'))
+        floor = floor_tiles[0]
+        apron = []
+        for b in APRON_BASES:
+            bimg = S3.tile(b)
+            for code in range(G.NCODES):
+                t = G.apron_tile(bimg, code)
+                apron.append(None if t is None else put(t, f'{ko} 숲 둘레 그늘 (잔디 {b}, 그늘 {code})', 'flat', ['숲', '그늘', k],
+                                                       f'[숲 r6] {ko} 숲 둘레 땅 그늘(2층 덧칸, 잔디 {b} 위). composer 가 놓는다.'))
         S = C.Sprites(k)
         sprites = []
         for shape in SHAPES:
@@ -81,12 +82,14 @@ def _finalize():
                             covers.append(int(round(cov[j, i] * 100)))
                     sprites.append(dict(name=name, shape=shape, dark=dark, w=cw, h=ch, tiles=tiles, cover=covers))
         autotiles.append(dict(
-            id=f'jp-forest4-{k}', name=f'숲 · {ko}', neighborhood=8, layer='lower', member=[floor], connect=None,
+            id=f'jp-forest4-{k}', name=f'숲 · {ko}', neighborhood=8, layer='lower', member=list(dict.fromkeys(floor_tiles)), connect=None,
             variantMap={str(m): floor for m in range(256)}, edgeConnects=True,
             composer=dict(kind='trees', version=1, layers=[4, 3, 2], rowStep=2, colStep=3, skip=0.05,
                           shapeOrder=list(SHAPES), shapeOdds=[0.32, 0.94],
                           trunkCols={s: list(C.TRUNK_COLS[s]) for s in SHAPES},
-                          overhangOnGroups=OVERHANG_ON, sprites=sprites)))
+                          overhangOnGroups=OVERHANG_ON, sprites=sprites,
+                          ground=dict(shadeBits=[[dx, dy] for _, dx, dy in G.SHADE_BITS], shadeCover=C.SHADE_COVER, shadeCoverBase=C.SHADE_COVER_BASE, shadeRows=C.SHADE_ROWS,
+                                      floorTiles=floor_tiles, apronLayer=C.APRON_LAYER, apronBases=APRON_BASES, apronTiles=apron))))
         groups.append(dict(id=f'jp:forest4-{k}', name=f'숲 · {ko}', role='green', defaultLayer='lower', cells=[floor],
                            desc=f'{ko}: 붓으로 칠하는 숲(1층 숲 바닥). 칠한 구역에 나무 그림이 저절로 겹쳐 선다 — 남쪽 끝은 줄기, 안쪽은 겹친 수관.',
                            rules=f'오토타일 jp-forest4-{k} 로 구역을 칠한다(편집기 붓·조수 지형 도구 모두). 나무 칸은 composer 가 2~4층에 쓰니 손으로 찍거나 지우지 않는다.'))
@@ -129,6 +132,10 @@ def selftest(verbose=True):
             if len(sp['tiles']) != sp['w'] * sp['h'] or len(sp['cover']) != len(sp['tiles']): out.append('(b) %s 칸 수' % sp['name'])
             for loc in sp['tiles']:
                 if loc is not None and loc not in b['cells']: out.append('(b) %s 칸 없음 %s' % (sp['name'], loc))
+        gr = cp['ground']
+        if len(gr['floorTiles']) != 64 or len(gr['apronTiles']) != 64 * len(gr['apronBases']): out.append('(b) 접지 표 크기')
+        for loc in gr['floorTiles'] + [x for x in gr['apronTiles'] if x is not None]:
+            if loc not in b['cells']: out.append('(b) 접지 칸 없음 %s' % loc)
         for s in cp['shapeOrder']:
             if not any(sp['shape'] == s and not sp['dark'] for sp in cp['sprites']): out.append('(b) %s 밝은판 없음' % s)
             if not any(sp['shape'] == s and sp['dark'] for sp in cp['sprites']): out.append('(b) %s 그늘판 없음' % s)

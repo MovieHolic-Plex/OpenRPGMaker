@@ -399,6 +399,13 @@ export function validateTileset(id: string, value: unknown): void {
         requireString(`${at}.kind`, cp.kind);
         for (const layer of requireArray(`${at}.layers`, cp.layers)) requireNumber(`${at}.layers[]`, layer);
         for (const name of requireArray(`${at}.overhangOnGroups`, cp.overhangOnGroups)) requireString(`${at}.overhangOnGroups[]`, name);
+        if (cp.ground !== undefined) {
+          const gr = requireRecord(`${at}.ground`, cp.ground);
+          for (const t of requireArray(`${at}.ground.floorTiles`, gr.floorTiles)) requireNumber(`${at}.ground.floorTiles[]`, t);
+          for (const t of requireArray(`${at}.ground.apronTiles`, gr.apronTiles)) requireNumber(`${at}.ground.apronTiles[]`, t);
+          for (const t of requireArray(`${at}.ground.apronBases`, gr.apronBases)) requireNumber(`${at}.ground.apronBases[]`, t);
+          requireNumber(`${at}.ground.apronLayer`, gr.apronLayer);
+        }
         for (const [n, sprite] of requireArray(`${at}.sprites`, cp.sprites).entries()) {
           const sp = requireRecord(`${at}.sprites[${n}]`, sprite);
           requireNumber(`${at}.sprites[${n}].w`, sp.w);

@@ -26,7 +26,7 @@ def scene(sp, S, name, M, gfn):
     if name == 'touching':
         avoid = np.zeros((H, W), bool); avoid[9:15, 3:12] = True; avoid[:, 14:16] = True
         k = S3.KITS['jp-bldg-house-shed-modern']; avoid[9:9 + k['height'], 17:17 + k['width']] = True
-    img = C.render(gfn(), (C.compose_local if LOCAL else C.compose)(M, S, avoid=avoid), S)
+    img = C.render(gfn(), (C.compose_local if LOCAL else C.compose)(M, S, avoid=avoid), S, mask=M, avoid=avoid, base=S3.tile(S3.GRASS)) if S.sp != 'bd' else C.render(gfn(), C.compose_local(M, S, avoid=avoid), S)
     if name == 'touching': S3.stamp_kit(img, 'jp-bldg-house-shed-modern', 17, 9)
     return img
 
@@ -47,7 +47,7 @@ def paint_gif(S, path, scale=2):
             ch = [(int(x), int(y)) for y, x in zip(*np.nonzero(add))]
             prev = C.compose_local(M, S) if LOCAL else C.recompose(M, S, prev, ch)
         if k % 2: continue
-        im = Image.fromarray(C.render(base, prev, S)).resize((Wd * T * scale, H * T * scale), Image.NEAREST)
+        im = Image.fromarray(C.render(base, prev, S, mask=M if S.sp != 'bd' else None, base=S3.tile(S3.GRASS))).resize((Wd * T * scale, H * T * scale), Image.NEAREST)
         frames.append(im.convert('P', palette=Image.ADAPTIVE, colors=255))
     for _ in range(6): frames.append(frames[-1])
     frames[0].save(path, save_all=True, append_images=frames[1:], duration=120, loop=0)

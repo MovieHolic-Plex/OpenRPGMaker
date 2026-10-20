@@ -37,14 +37,23 @@ interface Ctx {
   readonly sd: number;
   readonly maxW: number;
   readonly maxH: number;
+  /** 1층 숲 바닥 대신 쓰는 숲 판정(composeTreesInMask — 숲 바닥 오토타일이 없는 칩셋, 예: 버들항). */
+  readonly forestAt?: (x: number, y: number) => boolean;
+  /** 1층 잔디 판정 대신 쓰는 「수관이 덮어도 되는 칸」. */
+  readonly holdAt?: (x: number, y: number) => boolean;
 }
 
 function context(map: GameMap, group: AutotileGroup, seed: number): Ctx | null {
-  const cp = group.composer;
-  if (!cp || cp.kind !== "trees" || !cp.sprites?.length) return null;
+  return group.composer ? contextFor(map, group.composer, group.memberTileIds, seed) : null;
+}
+
+function contextFor(map: GameMap, cp: TreeComposerDef, floorTiles: readonly number[], seed: number,
+  forestAt?: (x: number, y: number) => boolean, holdAt?: (x: number, y: number) => boolean): Ctx | null {
+  if (cp.kind !== "trees" || !cp.sprites?.length) return null;
   const byKey = new Map<string, TreeComposerSprite[]>();
   const own = new Set<number>();
   let maxW = 1, maxH = 1;
+  for (const t of cp.ground?.apronTiles ?? []) if (t >= 0) own.add(t);
   for (const sp of cp.sprites) {
     const key = sp.shape + (sp.dark ? "d" : "");
     byKey.set(key, [...(byKey.get(key) ?? []), sp]);
@@ -53,20 +62,21 @@ function context(map: GameMap, group: AutotileGroup, seed: number): Ctx | null {
   }
   // forest_r4_compose 는 같은 모양 안에서 이름 순으로 고른다 — 굽기도 이름 순으로 싣지만, 손으로 고친 정의에도 같게 맞춘다.
   for (const list of byKey.values()) list.sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
-  const floor = new Set(group.memberTileIds);
+  const floor = new Set(floorTiles);
   const overhang = new Set<number>([...(cp.overhangOnTiles ?? []), ...floor]);
-  return { map, cp, W: map.width, H: map.height, floor, overhang, own, byKey, phase: new Map(), sd: seed * 101, maxW, maxH };
+  return { map, cp, W: map.width, H: map.height, floor, overhang, own, byKey, phase: new Map(), sd: seed * 101, maxW, maxH, forestAt, holdAt };
 }
 
 function isForest(c: Ctx, x: number, y: number): boolean {
-  return x >= 0 && y >= 0 && x < c.W && y < c.H && c.floor.has(layerTileAt(c.map, 1, y * c.W + x));
+  if (x < 0 || y < 0 || x >= c.W || y >= c.H) return false;
+  return c.forestAt ? c.forestAt(x, y) : c.floor.has(layerTileAt(c.map, 1, y * c.W + x));
 }
 
 /** 수관이 놓여도 되는 칸: 1층이 잔디·숲 바닥이고 composer 층(2~4층)에 남의 칸이 없다. */
 function canHold(c: Ctx, x: number, y: number): boolean {
   if (x < 0 || y < 0 || x >= c.W || y >= c.H) return false;
   const i = y * c.W + x;
-  if (!c.overhang.has(layerTileAt(c.map, 1, i))) return false;
+  if (c.holdAt ? !c.holdAt(x, y) : !c.overhang.has(layerTileAt(c.map, 1, i))) return false;
   for (const L of c.cp.layers) {
     const t = layerTileAt(c.map, L as TileLayerNo, i);
     if (t >= 0 && !c.own.has(t)) return false;
@@ -115,50 +125,78 @@ function anchorAt(c: Ctx, x: number, y: number): Placement | null {
   return null;
 }
 
-/** 영역 [x0,x1)×[y0,y1) 칸을 다시 짠다. 바뀐 칸 수. */
+/** 영역 [x0,x1)×[y0,y1) 칸을 다시 짠다(나무 칸 + r6 땅 그늘). 바뀐 칸 수. */
 function rewrite(c: Ctx, x0: number, y0: number, x1: number, y1: number, canWrite?: (x: number, y: number) => boolean): number {
   x0 = Math.max(0, x0); y0 = Math.max(0, y0); x1 = Math.min(c.W, x1); y1 = Math.min(c.H, y1);
   if (x1 <= x0 || y1 <= y0) return 0;
-  // 이 영역을 덮을 수 있는 밑동: 왼쪽으로 maxW, 아래로 maxH 더
+  const gr = c.cp.ground;
+  // 그늘 덮개는 영역 바깥 한 칸까지 알아야 한다(그늘 코드가 이웃을 본다)
+  const ex0 = Math.max(0, x0 - 1), ey0 = Math.max(0, y0 - 1), ex1 = Math.min(c.W, x1 + 1), ey1 = Math.min(c.H, y1 + 1);
+  const cover = new Uint8Array(c.W * c.H);
   const stacks = new Map<number, { z: number; tile: number; cover: number }[]>();
-  for (let y = y0; y < Math.min(c.H, y1 + c.maxH); y++) {
-    for (let x = x0 - c.maxW; x < x1; x++) {
+  for (let y = ey0; y < Math.min(c.H, ey1 + c.maxH); y++) {
+    for (let x = ex0 - c.maxW; x < ex1; x++) {
       const p = anchorAt(c, x, y);
       if (!p) continue;
       const sp = p.sprite;
       for (let j = 0; j < sp.h; j++) {
         for (let i = 0; i < sp.w; i++) {
           const k = j * sp.w + i;
-          const tile = sp.tiles[k] ?? -1, cover = sp.cover[k] ?? 0;
-          if (tile < 0 || cover <= 0) continue;
+          const tile = sp.tiles[k] ?? -1, cv = sp.cover[k] ?? 0;
+          if (tile < 0 || cv <= 0) continue;
           const xx = p.x0 + i, yy = p.y0 + j;
-          if (xx < x0 || yy < y0 || xx >= x1 || yy >= y1) continue;
+          if (xx < ex0 || yy < ey0 || xx >= ex1 || yy >= ey1) continue;
           const key = yy * c.W + xx;
+          if (gr && j >= sp.h - (gr.shadeRows ?? sp.h) && cv >= (j === sp.h - 1 ? gr.shadeCoverBase : gr.shadeCover)) cover[key] = 1;
+          if (xx < x0 || yy < y0 || xx >= x1 || yy >= y1) continue;
           const list = stacks.get(key) ?? [];
-          list.push({ z: p.z, tile, cover });
+          list.push({ z: p.z, tile, cover: cv });
           stacks.set(key, list);
         }
       }
     }
   }
+  const shadeCode = (x: number, y: number): number => {
+    let code = 0;
+    gr!.shadeBits.forEach(([dx, dy], k) => {
+      const xx = x + dx!, yy = y + dy!;
+      if (xx >= 0 && yy >= 0 && xx < c.W && yy < c.H && cover[yy * c.W + xx]) code |= 1 << k;
+    });
+    return code;
+  };
   let changed = 0;
   for (let y = y0; y < y1; y++) {
     for (let x = x0; x < x1; x++) {
       if (canWrite && !canWrite(x, y)) continue;
       const i = y * c.W + x;
+      // r6 접지: 숲 칸은 1층 숲 바닥 그늘 변형, 숲 밖 잔디 칸은 apronLayer 에 둘레 그늘 덧칸
+      let apron = -1;
+      if (gr) {
+        const code = shadeCode(x, y);
+        if (isForest(c, x, y)) {
+          const t = gr.floorTiles[code] ?? gr.floorTiles[0]!;
+          if (layerTileAt(c.map, 1, i) !== t) { setLayerTileAt(c.map, 1, i, t); changed++; }
+        } else {
+          const bi = gr.apronBases.indexOf(layerTileAt(c.map, 1, i));
+          const cur = layerTileAt(c.map, gr.apronLayer as TileLayerNo, i);
+          if (bi >= 0 && (cur < 0 || c.own.has(cur))) apron = gr.apronTiles[bi * 64 + code] ?? -1;
+        }
+      }
+      const treeLayers = c.cp.layers.filter((L) => !(apron >= 0 && L === gr!.apronLayer));
       const list = (stacks.get(i) ?? []).sort((a, b) => b.z - a.z);
       const keep: number[] = [];
       for (const e of list) {
         keep.push(e.tile);
-        if (e.cover >= 98 || keep.length === c.cp.layers.length) break;
+        if (e.cover >= 98 || keep.length === treeLayers.length) break;
       }
-      c.cp.layers.forEach((L, n) => {
+      for (const L of c.cp.layers) {
         const layer = L as TileLayerNo;
         const cur = layerTileAt(c.map, layer, i);
-        if (cur >= 0 && !c.own.has(cur)) return;      // 남의 칸(집·소품)은 그대로
-        const next = keep[n] ?? -1;
+        if (cur >= 0 && !c.own.has(cur)) continue;      // 남의 칸(집·소품)은 그대로
+        const n = treeLayers.indexOf(L);
+        const next = apron >= 0 && L === gr!.apronLayer ? apron : n >= 0 ? (keep[n] ?? -1) : -1;
         if (cur !== next) { setLayerTileAt(c.map, layer, i, next); changed++; }
-      });
+      }
     }
   }
   return changed;
@@ -185,4 +223,15 @@ export function composeTreesAll(map: GameMap, group: AutotileGroup, seed = 0): n
 /** 이 그룹이 나무 composer 숲 바닥인가. */
 export function isTreeComposerGroup(group: AutotileGroup): boolean {
   return group.composer?.kind === "trees";
+}
+
+/**
+ * 숲 바닥 오토타일 없이 숲 칸 판정으로 맵 전체를 짠다(버들항 woodland, 2026-10-20).
+ * forest(x,y) = 나무가 설 수 있는 숲 칸, hold(x,y) = 수관이 덮어도 되는 칸(숲 칸 포함). 규칙은 composeTreesAll 과 같다.
+ * hold 밖 칸은 쓰지 않는다 — 같은 나무 그림을 따로 찍어 둔 낱 나무·덤불(composer 그림과 칸 번호가 같다)을 지우지 않게.
+ */
+export function composeTreesInMask(map: GameMap, cp: TreeComposerDef, forest: (x: number, y: number) => boolean,
+  hold: (x: number, y: number) => boolean, seed = 0): number {
+  const c = contextFor(map, cp, [], seed, forest, hold);
+  return c ? rewrite(c, 0, 0, c.W, c.H, hold) : 0;
 }

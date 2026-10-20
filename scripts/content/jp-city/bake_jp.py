@@ -555,6 +555,11 @@ def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=Fal
         if a.get('composer'):    # 나무 composer(엔진 treeComposer.ts): 그림 칸 위치(loc)를 칸 번호로 바꿔 그대로 싣는다
             cp = dict(a['composer'])
             cp['sprites'] = [dict(sp, tiles=[L(b, v) if v is not None else -1 for v in sp['tiles']]) for sp in cp['sprites']]
+            if cp.get('ground'):   # r6 접지: 숲 바닥 그늘 변형·둘레 그늘 덧칸(apronBases 는 이미 칸 번호)
+                gr = dict(cp['ground'])
+                gr['floorTiles'] = [L(b, v) for v in gr['floorTiles']]
+                gr['apronTiles'] = [L(b, v) if v is not None else -1 for v in gr['apronTiles']]
+                cp['ground'] = gr
             # 수관이 넘쳐도 되는 1층 칸 = 잔디 그룹 멤버 + 제 숲 바닥(엔진은 그룹 이름을 몰라도 된다)
             cp['overhangOnTiles'] = sorted(set(mem).union(*[set(at_members.get(g, [])) for g in cp.get('overhangOnGroups', [])]))
             at['composer'] = cp

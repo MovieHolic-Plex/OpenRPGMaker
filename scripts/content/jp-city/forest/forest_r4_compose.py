@@ -84,7 +84,8 @@ def parts(name, S):
     return None
 
 
-LAYERS = (4, 3, 2)          # 칸마다 앞에서부터 이 층에 놓는다(1층은 잔디·숲 바닥)
+LAYERS = (4, 3, 2)
+APRON_LAYER = 2             # 숲 둘레 그늘 칸이 쓰는 층(그 칸의 나무는 4·3층만)          # 칸마다 앞에서부터 이 층에 놓는다(1층은 잔디·숲 바닥)
 
 
 def compose(mask, S, seed=0, keep=(), window=None, avoid=None):
@@ -240,7 +241,7 @@ def compose_local(mask, S, seed=0, avoid=None):
     return [p for y in range(H) for x in range(W) for p in [anchor_at(mask, S, x, y, seed, avoid)] if p]
 
 
-def cell_stack(placements, S, W, H):
+def cell_stack(placements, S, W, H, apron=frozenset()):
     """칸 → [(층, 그림 이름, i, j)] (앞에서부터). 투명한 칸 조각은 빼고, 셋이 넘으면 가장 뒤 것을 버린다.
     앞 조각이 칸을 거의 다 덮으면(불투명 ≥ 0.98) 그 뒤는 놓지 않는다."""
     cells = {}
@@ -255,11 +256,12 @@ def cell_stack(placements, S, W, H):
     out = {}
     for k, lst in cells.items():
         lst.sort(key=lambda t: -t[0])
+        lay = [L for L in LAYERS if not (k in apron and L == APRON_LAYER)]
         keep = []
         for z, name, i, j, cv in lst:
             keep.append((name, i, j))
-            if round(cv * 100) >= 98 or len(keep) == len(LAYERS): break
-        out[k] = [(LAYERS[n], name, i, j) for n, (name, i, j) in enumerate(keep)]
+            if round(cv * 100) >= 98 or len(keep) == len(lay): break
+        out[k] = [(lay[n], name, i, j) for n, (name, i, j) in enumerate(keep)]
     return out
 
 
@@ -285,11 +287,63 @@ def recompose(mask, S, prev, changed, seed=0, margin=4, avoid=None):
     return compose(mask, S, seed, keep=keep, window=win, avoid=avoid)
 
 
-def render(ground, placements, S):
-    """칸마다 뒤(2층) → 앞(4층) 순서로 칸 조각을 덮는다."""
+SHADE_COVER = 30            # 나무 그림 칸이 이만큼(%) 넘게 덮으면 그 칸은 그늘 덮개(땅 그늘의 바탕)
+SHADE_ROWS = 2              # 그늘 덮개는 그림 맨 아래 두 줄(줄기 줄 + 바로 위 수관 줄)만 — 수관 꼭대기 위로 그늘이 비치지 않게, 그늘이 밑동 둘레에 고인다
+SHADE_COVER_BASE = 15       # 맨 아랫줄(줄기·뿌리 칸)은 이만큼만 덮어도 덮개 — 밑동 둘레까지 그늘이 깔린다(버들항 실측: 그늘이 뿌리 밑까지)
+
+
+def shade_cover(placements, S, W, H):
+    cov = np.zeros((H, W), bool)
+    for name, x0, y0, z in placements:
+        c = S.cover[name]
+        for j in range(c.shape[0]):
+            for i in range(c.shape[1]):
+                if j < c.shape[0] - SHADE_ROWS: continue
+                need = SHADE_COVER_BASE if j == c.shape[0] - 1 else SHADE_COVER
+                if round(c[j, i] * 100) >= need and 0 <= x0 + i < W and 0 <= y0 + j < H: cov[y0 + j, x0 + i] = True
+    return cov
+
+
+def ground_layers(mask, placements, S, avoid=None):
+    """r6 접지: (1층 숲 바닥 {칸: code}, 2층 둘레 그늘 {칸: code}). 그늘은 숲 마스크가 아니라 실제로 선 나무가 덮은 칸을 따른다.
+    둘레 그늘은 숲 밖 잔디 칸(avoid 아님)에만."""
+    import forest_r6_ground as G
+    H, W = mask.shape
+    cv = shade_cover(placements, S, W, H)
+
+    def cov(x, y):
+        return 0 <= x < W and 0 <= y < H and cv[y, x]
+    floor, apron = {}, {}
+    for y in range(H):
+        for x in range(W):
+            c = G.shade_code(cov, x, y)
+            if mask[y, x]: floor[(x, y)] = c
+            elif (avoid is None or not avoid[y, x]) and c: apron[(x, y)] = c
+    return floor, apron
+
+
+_GT = {}
+
+
+def render(ground, placements, S, mask=None, avoid=None, base=None):
+    """칸마다 뒤(2층) → 앞(4층) 순서로 칸 조각을 덮는다. mask 를 주면 r6 접지(숲 바닥·둘레 그늘)를 먼저 깐다."""
     img = ground.copy()
     H, W = img.shape[0] // T, img.shape[1] // T
-    st = cell_stack(placements, S, W, H)
+    apron = frozenset()
+    if mask is not None and os.environ.get('JPF_GROUND', 'r6') == 'r6':
+        import forest_r6_ground as G
+        floor, ap = ground_layers(mask, placements, S, avoid)
+        for (x, y), c in floor.items():
+            key = ('f', c)
+            if key not in _GT: _GT[key] = G.floor_tile(base, c)
+            img[y * T:(y + 1) * T, x * T:(x + 1) * T] = _GT[key]
+        used = set()
+        for (x, y), c in ap.items():
+            key = ('a', c)
+            if key not in _GT: _GT[key] = G.apron_tile(base, c)
+            if _GT[key] is not None: F.over(img, _GT[key], x * T, y * T); used.add((x, y))
+        apron = frozenset(used)
+    st = cell_stack(placements, S, W, H, apron)
     for L in (2, 3, 4):
         for (x, y), lst in st.items():
             for layer, name, i, j in lst:
