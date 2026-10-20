@@ -17,7 +17,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..', '..'))
 VIZ = os.path.expanduser('~/claude-viz')
 NAME = 'jp-forest-kit-1'
-KO = dict(bl='활엽(느티·잡목) 6×4', bb='대숲 4×4', sk='벚나무 4×4', sg='삼나무 4×4', mp='단풍 4×4', pn='소나무 4×4')
+KO = dict(bl='활엽(느티·잡목)', bb='대숲', sk='벚나무', sg='삼나무', mp='단풍', mx='섞인 숲: 신사(소나무+단풍)', mh='섞인 숲: 산비탈(삼나무+활엽)')
 SCENES = [('blob', '덩이'), ('strips', '띠 1·2·3줄 / 세로 1·2칸'), ('lshape', 'L 자(안쪽 모서리)'), ('ring', '빈터 둘레 고리'), ('touching', '연못·길·집 맞닿음')]
 
 

@@ -127,20 +127,14 @@ def beodeul_ref(Wd=26, H=16):
     return img
 
 
-def mix_scene(pair, seed=0, Wd=26, H=16):
-    """섞인 숲 규칙(forestPainter.resolveJpForestMix 와 같은 규칙): 3×3 칸 덩이마다 두 종 중 하나, 경계는 칸 해시로 한 칸 흔든다.
-    다른 종 칸은 서로 숲 아님 → 덩이마다 하늘선·줄기 띠."""
+def adjacent_scene(pair, Wd=26, H=16):
+    """서로 다른 두 숲 오토타일이 맞닿은 덩이(왼쪽 반 A, 오른쪽 반 B, 경계는 비스듬한 계단). 서로를 숲 밖으로 본다."""
     yy, xx = np.mgrid[0:H, 0:Wd]
     M = ((xx - 12.5) / 11.0) ** 2 + ((yy - 7.5) / 7.0) ** 2 < 1.0
-    kind = np.zeros((H, Wd), object)
-    for y in range(H):
-        for x in range(Wd):
-            if not M[y, x]: continue
-            jx = 1 if F.hf('mjx', x, y, seed) < 0.25 else 0; jy = 1 if F.hf('mjy', x, y, seed) < 0.25 else 0
-            kind[y, x] = pair[0 if F.hf('mb', (x + jx) // 3, (y + jy) // 3, seed) < 0.5 else 1]
+    left = xx < 11 + yy // 3
     img = ground(Wd, H)
-    for sp in pair:
-        F.over(img, F.paint_map(sp, kind == sp, tiles(sp)), 0, 0)
+    F.over(img, F.paint_map(pair[0], M & left, tiles(pair[0])), 0, 0)
+    F.over(img, F.paint_map(pair[1], M & ~left, tiles(pair[1])), 0, 0)
     return img
 
 
@@ -177,8 +171,8 @@ if __name__ == '__main__':
     kinds = sys.argv[sys.argv.index('--kinds') + 1].split(',') if '--kinds' in sys.argv else F.KINDS
     Image.fromarray(beodeul_ref()).save(os.path.join(out, 'ref-beodeul.png'))
     if '--mix' in sys.argv:
-        for name, pair in (('mix-shrine', ('pn', 'mp')), ('mix-hill', ('sg', 'bl'))):
-            Image.fromarray(mix_scene(pair)).save(os.path.join(out, f'{name}.png')); print(name, 'ok', flush=True)
+        for name, pair in (('adj-bl-sg', ('bl', 'sg')), ('adj-sk-mx', ('sk', 'mx'))):
+            Image.fromarray(adjacent_scene(pair)).save(os.path.join(out, f'{name}.png')); print(name, 'ok', flush=True)
         sys.exit(0)
     for sp in kinds:
         if '--gif-only' in sys.argv:

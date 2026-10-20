@@ -1,7 +1,7 @@
 // compose_jp_region · list_jp_regions — 일본 지역 30종(japaneseRegionsCatalog.ts)을 jp_city 맵 한 장에 짓는다.
 // 장면 지역은 regionComposer 가 펼친 바닥·키트 단계를 복제본에 시공하고, 상가·주택가 지역은 compose_jp_city_street 에 넘긴다.
 import { JP_REGION_CATEGORIES, JP_REGIONS, jpRegionBrief, jpRegionById, searchJpRegions, type JpRegion } from "@/editor/jpCity/japaneseRegionsCatalog";
-import { paintJpForest } from "@/editor/jpCity/forestPainter";
+import { hasJpForestR3, paintJpForest } from "@/editor/jpCity/forestPainter";
 import { paintJpRegionGround, planJpRegionScene } from "@/editor/jpCity/regionComposer";
 import { isPassable } from "@/project/collision";
 import { blankFillTileFor } from "@/project/defaults/defaultMaps";
@@ -119,9 +119,9 @@ export const COMPOSE_JP_REGION_TOOL: ToolDefinition = {
     target.lowerTiles.fill(blankFillTileFor(JP_CITY_ID, 0, next.tilesets[map.tilesetId]!));
     for (let i = 0; i < target.lowerTiles.length; i++) { setLayerTileAt(target, 3, i, -1); setLayerTileAt(target, 4, i, -1); clearTileStack(target, "upper", i); }
     const kits = new Map((tileset.structureKits ?? []).map((k) => [k.id, { w: k.width, h: k.height }]));
-    let plan = planJpRegionScene({ region, mapId, width: map.width, height: map.height, seed, kitSize: (id) => kits.get(id) });
+    let plan = planJpRegionScene({ region, mapId, width: map.width, height: map.height, seed, kitSize: (id) => kits.get(id), forestAutotile: hasJpForestR3(tileset) });
     for (let retry = 1; retry < 8 && plan.violations.length > 0; retry++) {
-      const candidate = planJpRegionScene({ region, mapId, width: map.width, height: map.height, seed: seed + retry, kitSize: (id) => kits.get(id) });
+      const candidate = planJpRegionScene({ region, mapId, width: map.width, height: map.height, seed: seed + retry, kitSize: (id) => kits.get(id), forestAutotile: hasJpForestR3(tileset) });
       if (candidate.violations.length < plan.violations.length) plan = candidate;
       if (plan.violations.length === 0) break;
     }

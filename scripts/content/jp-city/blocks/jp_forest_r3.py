@@ -5,9 +5,9 @@
 칸 하나의 그림은 8방 마스크(정규화 47)와 칸 위치 위상 (x mod 6, y mod 4) 으로만 정해진다. 그래서 편집기의 보통 오토타일 붓과
 조수의 지형 도구가 같은 표(`phaseVariants`)로 칠한다 — 손으로 찍는 키트·머리·하늘선이 없다.
 
-  오토타일 jp-forest3-<k>   k = bl 활엽(느티나무·잡목) · bb 대숲 · sk 벚나무 · sg 삼나무 · mp 단풍 · pn 소나무
-                            neighborhood 8, 위층(3층), variantMap = 위상 (0,0) 표(위상을 모르는 쪽의 대체), phase = 위상 표(활엽 6×4 = 24장, 나머지 4×4 = 16장 — jp 시트 4096px 안에 들도록).
-  섞인 숲은 새 칸을 굽지 않는다: 칠하는 쪽(forestPainter)이 덩이 잡음으로 3×3 이상 덩이마다 종을 고르고, 다른 종 칸은 「숲 아님」으로 본다.
+  오토타일 jp-forest3-<k>   k = bl 활엽(느티나무·잡목) · bb 대숲 · sk 벚나무 · sg 삼나무 · mp 단풍 · mx 신사 숲(소나무+단풍) · mh 산비탈 숲(삼나무+활엽)
+                            neighborhood 8, 위층(3층), variantMap = 위상 (0,0) 표(위상을 모르는 쪽의 대체), phase = 위상 표(단일 종 6×4 = 24장, 섞인 숲 4×4 = 16장 — jp 시트 4096px 안에 들도록).
+  섞인 숲은 그 자체가 오토타일이다(mx·mh): 한 수관 밭 안에서 수관마다 종이 다르다. 서로 다른 오토타일이 맞닿으면 서로 「숲 아님」으로 본다.
 
   python3 scripts/content/jp-city/blocks/jp_forest_r3.py [--kinds bl,sg]   # selftest
 """
@@ -24,7 +24,7 @@ import forest_r3 as F  # noqa: E402
 
 BLOCK = 'jp_forest_r3'
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..', '..'))
-KINDS = (('bl', '활엽 혼효림(느티나무·잡목)'), ('bb', '대숲'), ('sk', '벚나무 숲'), ('sg', '삼나무 숲'), ('mp', '단풍 숲'), ('pn', '소나무 숲'))
+KINDS = (('bl', '활엽 혼효림(느티나무·잡목)'), ('bb', '대숲'), ('sk', '벚나무 숲'), ('sg', '삼나무 숲'), ('mp', '단풍 숲'), ('mx', '신사 숲(소나무+단풍)'), ('mh', '산비탈 숲(삼나무+활엽)'))
 _CACHE = {}
 ONLY = None
 
@@ -68,7 +68,7 @@ def build():
             'autotiles': [dict(a, member=list(a['member']), variantMap=dict(a['variantMap']),
                                phase=dict(a['phase'], maps=[dict(m) for m in a['phase']['maps']])) for a in autotiles],
             'groups': [dict(g, cells=list(g['cells'])) for g in groups], 'kits': [],
-            'notes': '붓으로 칠하는 숲 오토타일 r3(종 6): 8방 마스크 × 위치 위상 6×4. 섞인 숲은 forestPainter 덩이 규칙.'}
+            'notes': '붓으로 칠하는 숲 오토타일 r3(단일 종 5 + 섞인 숲 2): 8방 마스크 × 위치 위상.'}
 
 
 def kinds():

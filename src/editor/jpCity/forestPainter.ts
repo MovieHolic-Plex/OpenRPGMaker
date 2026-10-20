@@ -12,9 +12,9 @@ export const JP_FOREST_BAMBOO = 2;
 export const JP_FOREST_SAKURA = 3;      // 벚나무 숲
 export const JP_FOREST_SUGI = 4;        // 삼나무 숲(사토야마 산비탈·신사 숲)
 export const JP_FOREST_MAPLE = 5;       // 단풍 숲(가을 활엽)
-export const JP_FOREST_PINE = 6;        // 소나무 숲(신사·해안) — r3 오토타일만
-export const JP_FOREST_MIX_SHRINE = 7;  // 섞인 숲: 신사(소나무+단풍) — r3 덩이 규칙
-export const JP_FOREST_MIX_HILL = 8;    // 섞인 숲: 산비탈(삼나무+활엽) — r3 덩이 규칙
+export const JP_FOREST_PINE = 6;        // 소나무 숲(신사·해안) — r3 에서는 신사 숲(mx)으로 칠한다
+export const JP_FOREST_MIX_SHRINE = 7;  // 섞인 숲: 신사(소나무+단풍) — r3 오토타일 jp-forest3-mx
+export const JP_FOREST_MIX_HILL = 8;    // 섞인 숲: 산비탈(삼나무+활엽) — r3 오토타일 jp-forest3-mh
 
 interface KitRowView { readonly tiles?: readonly number[]; readonly upperTiles?: readonly number[] }
 interface KitView { readonly id: string; readonly width: number; readonly height: number; readonly rows: readonly KitRowView[] }
@@ -106,34 +106,19 @@ export function hasJpForestPack(tileset: JpForestTilesetView): boolean {
   return (tileset.autotileGroups ?? []).some((a) => a.id === "jp-forest-bl");
 }
 
-const R3_CODES: readonly (readonly [number, string])[] = [[JP_FOREST_BROADLEAF, "bl"], [JP_FOREST_BAMBOO, "bb"], [JP_FOREST_SAKURA, "sk"], [JP_FOREST_SUGI, "sg"], [JP_FOREST_MAPLE, "mp"], [JP_FOREST_PINE, "pn"]];
-const R3_MIX: Readonly<Record<number, readonly [number, number]>> = { [JP_FOREST_MIX_SHRINE]: [JP_FOREST_PINE, JP_FOREST_MAPLE], [JP_FOREST_MIX_HILL]: [JP_FOREST_SUGI, JP_FOREST_BROADLEAF] };
+// 소나무(6)는 소나무가 앞선 신사 숲(mx)으로 칠한다. 섞인 숲은 한 오토타일 안에서 수관마다 종이 섞인다.
+const R3_CODES: readonly (readonly [number, string])[] = [[JP_FOREST_BROADLEAF, "bl"], [JP_FOREST_BAMBOO, "bb"], [JP_FOREST_SAKURA, "sk"], [JP_FOREST_SUGI, "sg"], [JP_FOREST_MAPLE, "mp"],
+  [JP_FOREST_PINE, "mx"], [JP_FOREST_MIX_SHRINE, "mx"], [JP_FOREST_MIX_HILL, "mh"]];
 
 /** 이 타일셋에 붓으로 칠하는 숲 오토타일 r3(jp_forest_r3, jp-forest3-<k>)이 구워져 있는가. */
 export function hasJpForestR3(tileset: JpForestTilesetView): boolean {
   return (tileset.autotileGroups ?? []).some((a) => a.id === "jp-forest3-bl" && !!a.phaseVariants);
 }
 
-/**
- * 섞인 숲 규칙: 섞임 코드(7 신사·8 산비탈) 칸을 3×3 칸 덩이마다 두 종 중 하나로 바꾼다. 덩이 경계는 칸 해시로 한 칸씩 흔든다.
- * 새 칸을 굽지 않는다 — 다른 종 칸은 서로 「숲 아님」이라 덩이마다 하늘선·줄기 띠가 생겨 한 그루 무리들이 붙은 숲이 된다.
- */
-export function resolveJpForestMix(kind: Uint8Array, W: number, H: number, seed = 0): void {
-  for (let y = 0; y < H; y++) {
-    for (let x = 0; x < W; x++) {
-      const i = y * W + x;
-      const pair = R3_MIX[kind[i]!];
-      if (!pair) continue;
-      const jx = h01(x, y, seed + 71) < 0.25 ? 1 : 0, jy = h01(x, y, seed + 73) < 0.25 ? 1 : 0;
-      kind[i] = pair[h01(Math.floor((x + jx) / 3), Math.floor((y + jy) / 3), seed + 79) < 0.5 ? 0 : 1]!;
-    }
-  }
-}
-
 /** r3: 종마다 8방 마스크 + 위치 위상으로 칸을 고른다(편집기 붓·조수 지형 도구와 같은 표). 3층에만 쓴다. */
 export function paintJpForestR3(target: JpForestTarget, tileset: JpForestTilesetView, kind: Uint8Array, seed = 0): JpForestReport {
   const W = target.width, H = target.height;
-  resolveJpForestMix(kind, W, H, seed);
+  void seed;
   const groups = new Map<number, AutotileGroup>();
   for (const [code, k] of R3_CODES) {
     const g = (tileset.autotileGroups ?? []).find((a) => a.id === `jp-forest3-${k}`);

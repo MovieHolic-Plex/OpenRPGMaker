@@ -265,6 +265,8 @@ export function planJpRegionScene(input: {
   readonly height: number;
   readonly seed: number;
   readonly kitSize: (kitId: string) => { readonly w: number; readonly h: number } | undefined;
+  /** 칩셋에 붓으로 칠하는 숲 오토타일 r3(jp-forest3-*)이 있는가 — 있으면 FOREST 구획을 paint_forest 로 칠한다. */
+  readonly forestAutotile?: boolean;
 }): JpRegionPlan {
   const { region, mapId, width: W, height: H, seed, kitSize } = input;
   if (region.engine.kind !== "scene") throw new Error(`${region.id} 은 장면 지역이 아니다(engine ${region.engine.kind})`);
@@ -907,7 +909,7 @@ export function planJpRegionScene(input: {
   function fillZones(): void {
     // 숲 팩(jp_forest_pack)이 구워진 칩셋이면 FOREST 구획을 이어지는 수관으로 덮는다(paint_forest 한 단계):
     // 마스크 → 수관 오토타일 → 하늘선 → 수관 머리 → 줄기 띠. 한 그루 키트 흩뿌리기(아래)는 숲 팩이 없는 옛 칩셋에서만 쓴다.
-    if (kitSize("jp-forest-bl-sky-0")) {
+    if (input.forestAutotile || kitSize("jp-forest-bl-sky-0")) {
       paintForestZones();
       return;
     }

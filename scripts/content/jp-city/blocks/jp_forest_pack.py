@@ -135,8 +135,18 @@ def _finalize():
     return _CACHE['r']
 
 
+# 2026-10-20: 숲 구획은 r3 오토타일(jp_forest_r3)이 칠한다. 이 팩은 한 그루 키트(tree-*)만 굽는다 — 수관 오토타일·머리·하늘선·줄기 띠는
+# 저장소 시트에 구운 적이 없어(069acd8999 되돌림) 없앨 번호가 없다. 시트 4096px 안에 r3 6종(6×4 위상)을 넣기 위해서다.
+TREES_ONLY = True
+
+
 def build():
     cells, autotiles, groups, kits, _ = _finalize()
+    if TREES_ONLY:
+        kits = [k for k in kits if '-tree-' in k['id']]
+        keep = {x for k in kits for row in k['grid'] for x in row if x}
+        cells = collections.OrderedDict((k, v) for k, v in cells.items() if k in keep)
+        autotiles, groups = [], []
     return {'cells': collections.OrderedDict((k, dict(v, img=v['img'].copy(), tags=list(v['tags']))) for k, v in cells.items()),
             'autotiles': [dict(a, member=list(a['member']), interior=[list(x) for x in a['interior']], variantMap=dict(a['variantMap'])) for a in autotiles],
             'groups': [dict(g, cells=list(g['cells'])) for g in groups], 'kits': [dict(k) for k in kits],
@@ -145,7 +155,7 @@ def build():
 
 def kinds():
     """object-gate 종류: 숲 조각은 모두 organic(시점 면제 종류 — 판정자 과반이 「종류가 맞다」고 해야 한다)."""
-    return {k['id']: 'organic' for k in _finalize()[3]}
+    return {k['id']: 'organic' for k in _finalize()[3] if not TREES_ONLY or '-tree-' in k['id']}
 
 
 def _allowed():

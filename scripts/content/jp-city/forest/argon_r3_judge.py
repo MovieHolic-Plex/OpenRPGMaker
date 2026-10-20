@@ -31,7 +31,7 @@ Images:
  2) CANDIDATE scene at 1x.
  3) REFERENCE crop at 4x.
  4-7) CANDIDATE quadrants q0 (top-left), q1 (top-right), q2 (bottom-left), q3 (bottom-right) at 4x. 64 screen px = one 16px tile.
-
+{peer_txt}
 Hunt specifically for:
 - any visible 16px grid: straight cuts, seams, stair steps along edges, tiles that do not join, half crowns cut by a tile line
 - edges: north skyline (irregular or ruler-straight?), south edge (trunk band reading as a fence/comb/black stripe?), east/west edges,
@@ -44,7 +44,10 @@ Report in JSON only (no prose outside JSON):
 {{"blocking":[{{"where":"q0..q3 or 1x, tile col/row","what":"...","fix":"pixel-level fix"}}],
   "minor":[{{"where":"...","what":"...","fix":"..."}}],
   "repeat_interval_tiles": <number or null>,
+  "visible_1x_rank":["most visible defect at 1x zoom", "second", "third"],
+  "vs_peer": "worse" or "same" or "better" or null,
   "verdict":"SHIP" or "NO-SHIP"}}
+Order "blocking" from most to least visible at 1x zoom.
 List every blocking defect you can find (up to 12), then minor ones (up to 8)."""
 
 
@@ -58,14 +61,17 @@ def quads(im, scale=4):
     return out
 
 
-def judge(name, img, desc, species, ref, out, rnd):
+def judge(name, img, desc, species, ref, out, rnd, peer=None):
     im = Image.open(img).convert('RGBA')
     rf = Image.open(ref).convert('RGBA')
     rc = rf.crop((rf.width // 4, rf.height // 8, rf.width // 4 + im.width // 2, rf.height // 8 + im.height // 2))
     rc = rc.resize((rc.width * 4, rc.height * 4), Image.NEAREST)
-    content = [{'type': 'text', 'text': PROMPT.format(species=species, desc=desc)},
+    peer_txt = (' 8) PEER at 1x: the BROADLEAF species of this same autotile painted in the same shape. Say in "vs_peer" whether the candidate is worse/same/better than this peer.\n'
+                if peer else '')
+    content = [{'type': 'text', 'text': PROMPT.format(species=species, desc=desc, peer_txt=peer_txt)},
                {'type': 'image_url', 'image_url': {'url': uri(rf)}}, {'type': 'image_url', 'image_url': {'url': uri(im)}},
                {'type': 'image_url', 'image_url': {'url': uri(rc)}}] + [{'type': 'image_url', 'image_url': {'url': uri(q)}} for q in quads(im)]
+    if peer: content.append({'type': 'image_url', 'image_url': {'url': uri(Image.open(peer).convert('RGBA'))}})
     txt = ask(content)
     m = re.search(r'\{.*\}', txt, re.S)
     try:
@@ -83,15 +89,15 @@ def main():
     ap.add_argument('--out', required=True)
     ap.add_argument('--ref', required=True)
     ap.add_argument('--species', default='broadleaf (keyaki / mixed deciduous)')
-    ap.add_argument('--scene', action='append', required=True, help='NAME=IMG=DESC')
+    ap.add_argument('--scene', action='append', required=True, help='NAME=IMG=DESC[=SPECIES[=PEER]]')
     ap.add_argument('--jobs', type=int, default=3)
     a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)
-    jobs = [s.split('=', 2) for s in a.scene]
+    jobs = [s.split('=', 4) for s in a.scene]
     with cf.ThreadPoolExecutor(a.jobs) as ex:
-        for name, res in ex.map(lambda j: judge(j[0], j[1], j[2], a.species, a.ref, a.out, a.round), jobs):
+        for name, res in ex.map(lambda j: judge(j[0], j[1], j[2], j[3] if len(j) > 3 else a.species, a.ref, a.out, a.round, j[4] if len(j) > 4 else None), jobs):
             b = res.get('blocking', [])
-            print(f"{name}: {res.get('verdict', '?')} blocking={len(b) if isinstance(b, list) else '?'} minor={len(res.get('minor', []) or [])} repeat={res.get('repeat_interval_tiles')}")
+            print(f"{name}: {res.get('verdict', '?')} blocking={len(b) if isinstance(b, list) else '?'} minor={len(res.get('minor', []) or [])} repeat={res.get('repeat_interval_tiles')} vs_peer={res.get('vs_peer')}")
             for d in (b or [])[:12]:
                 print('   -', d.get('where', ''), '|', d.get('what', '')[:220])
 
