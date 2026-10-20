@@ -536,6 +536,123 @@ for w in ('kr', 'gl', 'br', 'cr'):
             blk('flat.%s.%s%s' % (w, r, cl))(lambda c, r=r, cl=cl, w=w: flat(c, r, cl, w))
 
 
+# ── 옥상 녹화(세덤) 평지붕 — 2026-10-20 사용자 승인 시안(modern-tiles-proto ground roof-campus-green) 이식 ──
+# 캠퍼스 평지붕이 모두 같은 초록 도막이라 단조롭다(현대 칩셋 적대 QA 결함 4). 파라펫은 flat() 그대로 두고 안쪽만 바꾼다:
+# 파라펫 안 자갈 점검 띠 → 알루미늄 테(위·왼 밝게, 아래·오른 어둡게) → 세덤 매트(초록 ki · 연두 shiba · 붉은 kawara 덩이, 덩이마다 위 밝고 아래 어둡다)
+# → 가운데 콘크리트 점검 보도판(세로 띠, 'W' 칸). 지붕 깊이 3줄(b·m·f) 기준 좌표:
+#   매트 위 테 = b 줄 y10 · 아래 테 = f 줄 y2 · 왼 테 = L 칸 x9 · 오른 테 = R 칸 x9. 그 바깥(파라펫 안쪽까지)은 자갈.
+# 덩이는 칸 안에 가둬(칸 경계를 넘지 않는다) 어느 변형끼리 붙여도 이음이 없다. 잎 점·자갈 결은 16 주기 공용.
+GREEN_VARIANTS = 3
+SEDUM = (('ki', 2, 3, 4, 5), ('shiba', 1, 2, 3, 4), ('ki', 2, 3, 4, 5), ('kawara', 2, 3, 4, 5), ('ki', 2, 3, 4, 5), ('shiba', 1, 2, 3, 4))
+
+
+def _mat_box(row, col):
+    """칸 안 매트 영역 (x0, y0, x1, y1) — 끝 포함 아님. 테두리는 이 상자의 가장자리 1px."""
+    x0 = 9 if col == 'L' else 0
+    x1 = 10 if col == 'R' else 16
+    y0 = 10 if row == 'b' else 0
+    y1 = 3 if row == 'f' else 16
+    return x0, y0, x1, y1
+
+
+def _gravel(c, x, y):
+    """자갈(hodo): 알갱이 = 밝은 머리 + 아래 그늘, 16 주기."""
+    lx, ly = x % 16, y % 16
+    q = rnd(lx // 2, ly // 2, 71); k = rnd(lx, ly, 72)
+    if k < 0.18: return ('hodo', 5)
+    if k > 0.86: return ('hodo', 2)
+    return ('hodo', 4) if q < 0.5 else ('hodo', 3)
+
+
+def _sedum_cell(c, var, row, col, x0, y0, x1, y1):
+    """매트 안을 세덤으로 채운다. 매트가 이웃 칸으로 이어지는 변은 칸 끝까지 칠한다(테는 진짜 끝에만).
+    바탕 = ki 3 + 공용 잎 점(16 주기), 덩이 = 변형별 고정 배치(칸 안에 가둔다)."""
+    ix0 = x0 + 1 if col == 'L' else x0
+    ix1 = x1 - 1 if col == 'R' else x1
+    iy0 = y0 + 1 if row == 'b' else y0
+    iy1 = y1 - 1 if row == 'f' else y1
+    for y in range(iy0, iy1):
+        for x in range(ix0, ix1):
+            k = rnd(x, y, 81)
+            c.P(x, y, 'ki', 4 if k < 0.2 else 2 if k > 0.9 else 3)
+    import random
+    r = random.Random(4100 + var * 37 + (0 if row == 'm' else 11 if row == 'b' else 23) + (0 if col in 'MW' else 5))
+    for n in range(9):
+        cx = r.uniform(ix0 + 1.5, ix1 - 1.5); cy = r.uniform(iy0 + 1.5, iy1 - 1.5); rad = 2.2 + r.random() * 1.6
+        mat, d0, d1, d2, d3 = SEDUM[r.randrange(len(SEDUM))]
+        if mat == 'kawara' and r.random() < 0.5: mat, d0, d1, d2, d3 = SEDUM[1]
+        for y in range(iy0, iy1):
+            for x in range(ix0, ix1):
+                dx, dy = x + 0.5 - cx, y + 0.5 - cy
+                d = (dx * dx + dy * dy) ** 0.5
+                if d >= rad: continue
+                t = d1
+                if dy < -rad * 0.3: t = d2
+                if dy < -rad * 0.6 and dx < 0.5: t = d3
+                if dy > rad * 0.45: t = d0
+                if d > rad - 0.9 and dy > 0: t = max(d0 - 1, 0) if mat == 'ki' else d0
+                c.P(x, y, mat, t)
+                if rnd(x, y, 83 + var) < 0.1 and t < d3: c.P(x, y, mat, t + 1)
+
+
+def flat_green(c, row, col, wall='kr', var=0):
+    """옥상 녹화 칸. col 은 L/M/R/W(보도판 칸). 파라펫은 flat() 과 같고 안쪽만 자갈·테·세덤·보도판으로 바꾼다."""
+    flat(c, row, 'M' if col == 'W' else col, wall)
+    keep = {(x, y) for y in range(16) for x in range(16)
+            if (row == 'b' and y <= 5) or (row == 'f' and y >= 7) or (col == 'L' and x <= 3) or (col == 'R' and x >= 13)}
+    x0, y0, x1, y1 = _mat_box(row, col)
+    for y in range(16):
+        for x in range(16):
+            if (x, y) in keep: continue
+            c.P(x, y, *_gravel(c, x, y))
+    if row == 'f':                                     # 앞 파라펫 안쪽 접힘(빛)
+        for x in range(16):
+            if (x, 6) not in keep: c.P(x, 6, 'hodo', 5)
+    if col == 'R':                                     # 오른 파라펫 안쪽 면(빛 받음) — flat() 의 초록 도막 빛줄을 콘크리트로
+        for y in range(16):
+            if row == 'b' and y < 4: continue
+            if (12, y) in keep: c.P(12, y, 'conc', 5)
+            else: c.P(12, y, 'hodo', 5)
+    # 파라펫 그늘(빛 왼위): 뒤 파라펫 밑 2줄 · 왼 파라펫 오른쪽 2줄 — 자갈 위에 한 단 어둡게
+    if row == 'b':
+        for x in range(16):
+            if (x, 6) not in keep: c.P(x, 6, 'hodo', 1)
+            if (x, 7) not in keep: c.P(x, 7, 'hodo', 2)
+    if col == 'L':
+        for y in range(16):
+            if (4, y) not in keep: c.P(4, y, 'hodo', 1)
+            if (5, y) not in keep and not (row == 'b' and y < 6): c.P(5, y, 'hodo', 2)
+    _sedum_cell(c, var, row, col, x0, y0, x1, y1)
+    if col == 'W':                                     # 점검 보도판: 6px 판 두 줄, 8px 마다 가로 이음
+        ys0 = y0 + 1 if row == 'b' else y0
+        ys1 = y1 - 1 if row == 'f' else y1
+        for y in range(ys0, ys1):
+            for x in range(2, 14):
+                lx, ly = (x - 2) % 6, y % 8
+                t = 5 if (lx == 0 or ly == 0) else 2 if (lx == 5 or ly == 7) else 3 if (lx == 4 or ly == 6) else 4
+                c.P(x, y, 'conc', t)
+            c.P(1, y, 'conc', 2); c.P(14, y, 'conc', 1)
+    # 알루미늄 테: 위·왼 밝음, 아래·오른 어두움 (칸 경계에 걸친 쪽은 그리지 않는다 = 이웃 칸으로 이어짐)
+    if row == 'b':
+        for x in range(x0, x1): c.P(x, y0, 'shiro', 3)
+    if row == 'f':
+        for x in range(x0, x1): c.P(x, y1 - 1, 'conc', 2)
+    if col == 'L':
+        for y in range(y0, y1): c.P(x0, y, 'shiro', 3)
+    if col == 'R':
+        for y in range(y0, y1): c.P(x1 - 1, y, 'conc', 2)
+    if row == 'f' and col == 'L': c.P(x0, y1 - 1, 'conc', 3)
+    if row == 'b' and col == 'R': c.P(x1 - 1, y0, 'shiro', 2)
+
+
+for w in ('kr', 'gl', 'br', 'cr'):
+    for r in 'bmf':
+        for cl in 'LRW':
+            blk('flatg.%s.%s%s' % (w, r, cl))(lambda c, r=r, cl=cl, w=w: flat_green(c, r, cl, w, 0))
+        for v in range(GREEN_VARIANTS):
+            blk('flatg.%s.%sM%d' % (w, r, v))(lambda c, r=r, w=w, v=v: flat_green(c, r, 'M', w, v))
+
+
 # 옥상 설비(얹기 — 'flat.kr.mM+rt.ac')
 @blk('rt.ac')
 def _(c):
@@ -692,6 +809,14 @@ def bld(wall, W, S, roof='flat', D=3, door=None, piers=(), rooftop=None, ground=
             rows.append(lmr(W, 'flat.%s.%sL' % (wall if wall != 'gy' else 'kr', rk), 'flat.%s.%sM' % (wall if wall != 'gy' else 'kr', rk), 'flat.%s.%sR' % (wall if wall != 'gy' else 'kr', rk)))
         for (x, y), n in (rooftop or {}).items():
             rows[y][x] = rows[y][x] + '+' + n
+    elif roof == 'green':                       # 옥상 녹화: rooftop = {'walk': 보도판 칸 x}
+        wk = (rooftop or {}).get('walk', W // 2)
+        wl = wall if wall != 'gy' else 'kr'
+        for r in range(D):
+            rk = 'b' if r == 0 else 'f' if r == D - 1 else 'm'
+            row = ['flatg.%s.%sL' % (wl, rk)] + ['flatg.%s.%sM%d' % (wl, rk, (x * 2 + r) % GREEN_VARIANTS) for x in range(1, W - 1)] + ['flatg.%s.%sR' % (wl, rk)]
+            if 0 < wk < W - 1: row[wk] = 'flatg.%s.%sW' % (wl, rk)
+            rows.append(row)
     elif roof in ('hip', 'seam'):
         for r in range(D): rows.append(lmr(W, '%s.%s.%d.%dL' % (roof, color, D, r), '%s.%s.%d.%dM' % (roof, color, D, r), '%s.%s.%d.%dR' % (roof, color, D, r)))
     else:
@@ -774,6 +899,10 @@ add_bld('bld-hall-7', '대학 학과동(붉은 벽돌 2층, 붉은 기와 모임
         ['대학', '학과동', '벽돌'], '쿼드 둘레 작은 학과 건물.')
 add_bld('bld-dorm-5', '기숙사 소동(크림 미장 3층, 초록 모임지붕, 폭 5)', bld('cr', 5, 3, roof='hip', D=3, door=2, color='green'), 2,
         ['기숙사', '학교'], '기숙사 작은 동. 큰 기숙사 옆에 1~2동.')
+# 2026-10-20 사용자 승인 시안(modern-tiles-proto ground roof-campus-green): 모든 평지붕이 같은 초록 도막인 단조로움을 깨는 대안 키트.
+# 옛 bld-dorm-flat 은 그대로 둔다(관문 영수증이 있는 판 — 새 그림은 영수증을 따로 받아야 굽힌다).
+add_bld('bld-dorm-flat-green', '기숙사(크림 미장 3층, 옥상 녹화 평지붕, 폭 6)', bld('cr', 6, 3, roof='green', D=3, door=2, rooftop={'walk': 3}), 2,
+        ['기숙사', '학교', '옥상 녹화'], '기숙사 별동의 옥상 녹화 판: 파라펫 안 자갈 점검 띠·알루미늄 테 세덤 매트·가운데 점검 보도판. bld-dorm-flat 대신 골라 쓴다.')
 
 
 def sheet(path=None, z=3):

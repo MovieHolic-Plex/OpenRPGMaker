@@ -16,3 +16,4 @@
 {"png": "mc-bld-hall-12.png", "kind": "structure", "name": "대학 대강의동(붉은 벽돌 3층, 슬레이트 모임지붕, 폭 12)", "label": "modern-campus/mc-bld-hall-12"}
 {"png": "mc-bld-hall-7.png", "kind": "structure", "name": "대학 학과동(붉은 벽돌 2층, 붉은 기와 모임지붕, 폭 7)", "label": "modern-campus/mc-bld-hall-7"}
 {"png": "mc-bld-dorm-5.png", "kind": "structure", "name": "기숙사 소동(크림 미장 3층, 초록 모임지붕, 폭 5)", "label": "modern-campus/mc-bld-dorm-5"}
+{"png": "mc-bld-dorm-flat-green.png", "kind": "structure", "name": "기숙사(크림 미장 3층, 옥상 녹화 평지붕, 폭 6)", "label": "modern-campus/mc-bld-dorm-flat-green"}

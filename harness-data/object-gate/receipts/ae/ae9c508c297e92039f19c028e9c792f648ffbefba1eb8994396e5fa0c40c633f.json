@@ -1,0 +1,396 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ae9c508c297e92039f19c028e9c792f648ffbefba1eb8994396e5fa0c40c633f",
+ "width": 96,
+ "height": 144,
+ "kind": "structure",
+ "name": "campus dorm, flat green (sedum) roof",
+ "label": "modern-campus/mc-bld-dorm-flat",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 9/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 9/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 19,
+  "darkV5": 49,
+  "nearBlackEdge": 0.53,
+  "opaqueTiles": 54
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat sedum roof with parapet and skylight",
+      "rows": "0-39",
+      "evidence": "d",
+      "front_edge_line_row": 38,
+      "eave_shadow_rows": "39-40"
+     },
+     {
+      "part": "balcony ledges",
+      "rows": "68-77",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 39,
+    "front_face_rows": 100,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-39 show the roof seen from above. A grey parapet frames a green sedum bed (rows 11-33) with a skylight panel in the middle, and the light parapet front edge sits near rows 36-38. This is contents visible inside an open frame (evidence d). Below it the cornice (rows ~41-47) and a tall south facade (rows ~48-143) carry windows, balconies and a door canopy. That gives about 100 rows of front face. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate's measured facts sit within the reference range. It has 15 colours per tile against 18 and 11 for the references, and 53 distinct colours against 66 for the stone reference (the other reference has 185). Flat-fill coverage is 4%, and 0% of its dark edge pixels are neutral, so the outlines lean visibly toward the material (purple-grey stone frame, dark blue-grey window frames, dark green around the foliage) rather than being a black sticker line. The sedum roof is the strongest part: it has clumped foliage in about 4-5 greens, with reddish dots and per-clump highlights and shadows. The cream wall has a speckle texture, and the balconies have railing detail, pink curtains and lit window panes. The weaker points are that the wall ramp is only about 3-4 steps against the 5-6 of the tile roofs and plaster, and that the facade repeats the same window pattern. Even so, it would sit next to the references without looking flat or sticker-like, so it is slightly lower in density but acceptable.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17158
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat sedum roof with parapet and skylight",
+      "rows": "0-40",
+      "evidence": "d",
+      "front_edge_line_row": 39,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cornice strip under the roof",
+      "rows": "42-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 40,
+    "front_face_rows": 96,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-40 show the roof seen from above. A gray parapet frame (rows 1-9 at the back, rows 34-39 at the front) encloses green sedum contents (rows 11-33) and a skylight panel, which is evidence (d). A light lavender front-edge line sits near row 39. The vertical south face runs from about row 42 down past row 143: a cream cornice, window rows, balcony railings and a ground-floor entrance with awning. This is far more than 3 rows. The roof top (about 40 rows) is a real horizontal surface, so the building has both a top and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a whole building (roof garden, walls, windows, door), so it matches the reference kind. Measured facts: 15 colours per tile against 18 and 11 for the references, so it is above the stone reference and close to h101. Flat-fill coverage is 4%, which is low and has no large dead areas. 0% of its dark edge pixels are neutral, so the outlines carry a tint. In the image the window frames and the gray parapet edge lean blue-gray, and the foliage edges lean dark green, rather than being a uniform black line. The sedum roof has several greens with red-brown accents and reads as clumped foliage. The cream walls have speckle dots plus a shaded balcony band and trim. The facade is flatter and less stepped than the tiled roofs of the references, at about 4 clear steps on the walls and trim, and its 53 distinct colours are fewer than the references' 185 and 66. The windows are fairly repetitive. Overall it is at the lower edge of the references but not shallow or sticker-like, because the colour counts, tinted outlines and texture dots hold up against the stone reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18399
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat sedum roof with parapet and skylight",
+      "rows": "0-39",
+      "evidence": "d",
+      "front_edge_line_row": 38,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cornice band under roof",
+      "rows": "40-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "balcony ledges",
+      "rows": "76-80",
+      "evidence": "a",
+      "front_edge_line_row": 76,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "door awning",
+      "rows": "118-124",
+      "evidence": "a",
+      "front_edge_line_row": 124,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 38,
+    "front_face_rows": 96,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top ~40 rows show the roof seen from above: a gray parapet frame with a light rim line at row 10, green sedum contents at rows 11-33, and a skylight. The parapet's front edge is a lighter lavender line around rows 36-39. Below it the cream facade (rows 40-143) has windows, balconies and a door as a front face of about 96 rows. The roof is a horizontal surface with visible contents (evidence d), so this is not a front elevation with only a rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts are at or above the references on the main checks. The candidate has a median of 15 colours per tile, against 11 for the stone house and 18 for h101. Flat-fill coverage is 4%, which is low. Dark edge pixels are 0% neutral, so the outlines lean toward a tint, such as grey-violet beside the stone coping and dark green in the foliage, and are not a uniform black sticker line. By eye, the sedum roof is the richest area, with clumped greens in several steps, dark gaps, and small red-brown accents. The grey coping has some stone-like variation. The cream walls carry speckle, and the windows and balcony rails have 3-4 steps each. The facade is more regular and repetitive than the Beodeul houses, and its wall ramp is shallower, about 3-4 steps against 5-6 for the roofs and stone on the references. The total of 53 colours is lower than h101 (185) but close to h112 (66). A careful artist would likely accept it next to the references, though it is a little plainer on the walls.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18838
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat green roof with parapet and sedum planting",
+      "rows": "0-38",
+      "evidence": "d",
+      "front_edge_line_row": 38,
+      "eave_shadow_rows": "39-40"
+     },
+     {
+      "part": "door canopy",
+      "rows": "119-123",
+      "evidence": "a",
+      "front_edge_line_row": 123,
+      "eave_shadow_rows": "124-126"
+     }
+    ],
+    "main_top_rows": 38,
+    "front_face_rows": 100,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-38 show the roof seen from above. A grey parapet frames sedum planting (green contents, rows 11-33) and a rooftop hatch. The parapet's light front edge sits near row 38, and a cream cornice band follows at about rows 40-47. Below it, rows 48-143 are the south facade with windows, two balconies and a ground-floor door with a canopy. The facade is over 95 rows tall, so the building has both a large visible top and a tall front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a whole building, so it matches the reference kind. Measured facts support it: 15 colours per tile sits between the references (18 and 11), flat-fill coverage is only 4%, and 0% of dark edge pixels are neutral, so the outlines carry a tint. By eye, the sedum roof canopy has about 5 greens in clumps with red-brown accent dots, so it has real clump texture rather than a flat fill. The parapet is a shaded grey-lilac stone border. The cream walls carry speckle grain and tinted edge shading, and the balconies have railing detail with curtain accents. Weaknesses: the facade repeats the same window module, and the wall ramp is a little shallower (about 4 steps) than the roof tile ramps on the references. The total of 53 colours is below both references (66 and 185), but that is expected for a simpler flat-faced building. A careful artist would accept it next to the references without it looking sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16408
+  }
+ ],
+ "decidedAt": "2026-10-20T05:09:52.316Z",
+ "cells": {
+  "16": [
+   "034b79c5cc96a6ba",
+   "055d8bf948d22206",
+   "0f61382c8a79337f",
+   "11c06aff35e0433f",
+   "20d1796e66ef2057",
+   "38715610b3cbd17b",
+   "38fd2399e4c48846",
+   "3b332173c36d59fe",
+   "3e149bb302a7e62c",
+   "4bbde3448148a0dc",
+   "52957a3fd725e79c",
+   "5c7fa68c6427c88e",
+   "5d5209b092727980",
+   "605cdd28b5c2e934",
+   "616400ea924be878",
+   "62e83a06e235e70a",
+   "72e2ee404b59fced",
+   "7d01d16cfef0ccad",
+   "7d99e575c264fe02",
+   "7f69254c07958fc0",
+   "88dde40f50537e68",
+   "9391a25f976f21f2",
+   "98da2c04682eef9d",
+   "a363e90b09e81c86",
+   "aa15629cc5c49676",
+   "b19a253cb7477000",
+   "c1ec4842837890cb",
+   "c709d421e0fdb8d4",
+   "c74b67638397dee6",
+   "cd585e03f8dab401",
+   "d541a2e420faa6cf",
+   "d95899d016065fa8",
+   "ddeb6de1f9569368",
+   "df03ba585fe38423",
+   "ea2ccadb85ad9a3e",
+   "f381c3142218fe62",
+   "f8701961e30be105",
+   "f96c77a218cff4f6",
+   "fcbfee6699c9fcea"
+  ],
+  "24": [
+   "00d2665da10bb8eb",
+   "13f416296c17df33",
+   "1ba813b844b7a633",
+   "1fa9f1bca10e4daf",
+   "21830f8ccd8e1e18",
+   "33501670ea317d2c",
+   "39a9c6015f39c9e2",
+   "39b8fae59aa6df8a",
+   "3e014e1f1baa0d83",
+   "41a7cfed9533a271",
+   "59f9e50d69e2bbda",
+   "63ee47711e8bbccb",
+   "6a8cafb0b5f3e0f6",
+   "7b4a5d23c8ba8c36",
+   "95b3edf217702db6",
+   "af75a36d5a82b7f3",
+   "bc4f445808787fe7",
+   "c54207906d315525",
+   "cb29eaedec8d467d",
+   "d845630f690fbfe0",
+   "db2c31da8e2d16e1",
+   "e14105077722e159",
+   "fa970a7057bdf12c",
+   "fdb5da5246c61af7"
+  ],
+  "32": [
+   "028334212a6167d2",
+   "1027d0a44c7e804e",
+   "104376c1e18ca6d4",
+   "2c94e2fff666b065",
+   "2fe28cd1e10f39c2",
+   "47cdb2ca481d6bf0",
+   "494fd4987d63c28a",
+   "6ac9f6cd5a0cb949",
+   "6e26f07d78f6037d",
+   "7bcb06431fe08010",
+   "831ad2fb5cefc052",
+   "862fd6886a531999",
+   "8a564ab45dfde8d2",
+   "8c28a68fb483d6e9",
+   "9f80d75ad6537ee9",
+   "a6452f245eeb995b",
+   "a94a9424da798212",
+   "ac4c527057e23e85",
+   "ad9d3a1c7728ec6e",
+   "b7c24ce1188f9e4e",
+   "baa76981d4d1382a",
+   "c694b00f3b6a3f7e",
+   "c709c4a439c2dc28",
+   "cfd5711bb04d0f17",
+   "d5ab1e73b845643d",
+   "d81f4a7005cae688",
+   "ed48b011dd7ba8d2",
+   "f08a8e5ce2b805cc",
+   "fa91ccccc8e50975",
+   "fbe7826908cc0139"
+  ],
+  "48": [
+   "1a8915eac936ab6f",
+   "3925530937edd332",
+   "789917252ea76c02",
+   "ae236912ae256a54",
+   "af1e9c9b77cd91a9",
+   "c3c022c99d2a7b62"
+  ]
+ }
+}
