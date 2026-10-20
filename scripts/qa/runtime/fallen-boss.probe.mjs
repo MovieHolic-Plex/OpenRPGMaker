@@ -13,7 +13,11 @@ const out = resolve(process.env.QA_OUT_DIR ?? "verify-shots/runtime-qa/fallen-bo
 const fixture = JSON.parse(await readFile(resolve(process.env.FS_FIXTURE ?? ".omo/fs/v11.json"), "utf8"));
 const project = fixture.project ?? fixture;
 // 보스 앞 파티 = 카엘·엘레나·이리스(관에서 깨어난 뒤). 이리스 합류 이벤트는 fallen-audit 이 밟으니 여기선 처음부터 넣는다.
-if (!project.system.startActorIds.includes("actor_fs_iris")) project.system.startActorIds.push("actor_fs_iris");
+// 시작 파티는 startActorIds 가 아니라 장 구성기가 정한다 — 광장 첫 자동 이벤트(포고) 맨 앞에서 이리스를 넣는다.
+{
+  const auto = project.maps.fs_hub.events.find((e) => e.pages?.[0]?.trigger?.kind === "auto");
+  auto.pages[0].commands.unshift({ kind: "changeParty", actorId: "actor_fs_iris", action: "add" });
+}
 
 const RUNS = [
   { id: "attack", seed: 11, plan: "attack" },
@@ -105,17 +109,17 @@ async function drainDialogue(page, max = 60) {
   for (let i = 0; i < max; i++) {
     const open = await page.evaluate(() => !!document.querySelector('[data-testid="dialogue-box"]') && !document.querySelector('[data-testid="runtime-choices"]'));
     if (!open) { await page.waitForTimeout(400); if (!(await page.evaluate(() => !!document.querySelector('[data-testid="dialogue-box"]')))) return; continue; }
-    await page.keyboard.press("Enter", { delay: 90 }); await page.waitForTimeout(250);
+    await page.keyboard.press("Enter", { delay: 350 }); await page.waitForTimeout(250);
   }
 }
 async function chooseOption(page, index) {
   for (let i = 0; i < 40; i++) {
     if (await page.evaluate(() => !!document.querySelector('[data-testid="runtime-choices"]'))) break;
-    await page.keyboard.press("Enter", { delay: 90 }); await page.waitForTimeout(300);
+    await page.keyboard.press("Enter", { delay: 350 }); await page.waitForTimeout(300);
   }
   await page.waitForTimeout(300);
-  for (let i = 0; i < index; i++) { await page.keyboard.press("ArrowDown", { delay: 90 }); await page.waitForTimeout(80); }
-  await page.keyboard.press("Enter", { delay: 90 }); await page.waitForTimeout(500);
+  for (let i = 0; i < index; i++) { await page.keyboard.press("ArrowDown", { delay: 350 }); await page.waitForTimeout(80); }
+  await page.keyboard.press("Enter", { delay: 350 }); await page.waitForTimeout(500);
 }
 
 async function playRun(browser, serverUrl, run) {
@@ -133,11 +137,15 @@ async function playRun(browser, serverUrl, run) {
     await page.route("**/__fs-boss/project.json", (route) => route.fulfill({ contentType: "application/json", body: JSON.stringify(project) }));
     await page.goto(`${serverUrl}/player.html?e2eVitals=1`, { waitUntil: "domcontentloaded", timeout: 180_000 });
     await page.waitForSelector('[data-testid="title-screen"]', { timeout: 180_000 });
-    await page.keyboard.press("Enter", { delay: 90 });
-    // 오프닝 건너뛰기.
-    for (let i = 0; i < 40; i++) {
+    // 타이틀 입장 연출 중의 첫 Enter 는 연출만 건너뛴다 — 오프닝이나 맵이 뜰 때까지 누르고, 오프닝은 Escape 로 건너뛴다.
+    for (let i = 0; i < 240; i++) {
+      const state = await page.evaluate(() => ({ title: !!document.querySelector('[data-testid="title-screen"]'), cine: !!document.querySelector('[data-testid="cinematic-sequence"]') }));
+      if (!state.title) break;
+      await page.keyboard.press("Enter", { delay: 350 }); await page.waitForTimeout(1200);
+    }
+    for (let i = 0; i < 240; i++) {
       if (await page.evaluate(() => !!window.__oprnDebug?.readState?.().currentMapId && !document.querySelector('[data-testid="cinematic-sequence"]'))) break;
-      await page.keyboard.press("Escape", { delay: 90 }); await page.waitForTimeout(500);
+      await page.keyboard.press("Escape", { delay: 350 }); await page.waitForTimeout(500);
     }
     await page.waitForTimeout(1500);
     await drainDialogue(page);
@@ -157,6 +165,10 @@ async function playRun(browser, serverUrl, run) {
     for (let i = 0; i < LOOP_MAX && Date.now() - startedAt < RUN_DEADLINE_MS; i++) {
       const ui = await readUi(page);
       if (i % 40 === 0) (record.trace ??= []).push({ i, ...ui, menu: ui.menu.slice(0, 6), pos: await page.evaluate(() => { const s = window.__oprnDebug.readState(); return [s.currentMapId, s.x, s.y, s.switches.sw_fs_main_step0, s.switches.sw_fs_main_step1, s.switches.sw_fs_main_started]; }) });
+      // 말을 걸어도 결전이 시작되지 않았으면(부하 걸린 머신에서 첫 입력이 씹힌다) 다시 건다.
+      if (!ctx.sawScene && !ui.scene && !ui.dialogue && i > 0 && i % 15 === 0) {
+        await page.evaluate(() => { window.__oprnInput.face("up"); window.__oprnInput.action(); });
+      }
       if (ui.gameOver) {
         record.outcome = "gameover";
         break;
@@ -190,11 +202,11 @@ async function playRun(browser, serverUrl, run) {
         record.resultAtPanel = ui.battleResult;
       }
       if (ui.resultConfirm) {
-        await page.keyboard.press("Enter", { delay: 90 });
+        await page.keyboard.press("Enter", { delay: 350 });
         continue;
       }
       if (ui.dialogue) {
-        await page.keyboard.press("Enter", { delay: 90 });
+        await page.keyboard.press("Enter", { delay: 350 });
         continue;
       }
       if (ui.targetPrompt) {
@@ -206,28 +218,28 @@ async function playRun(browser, serverUrl, run) {
         }
         if (run.plan === "cancelOnce" && ctx.cancels === 0) {
           ctx.cancels += 1;
-          await page.keyboard.press("x", { delay: 90 }); // 대상 선택 취소 → 커맨드로 회귀하는지가 관전 포인트
+          await page.keyboard.press("x", { delay: 350 }); // 대상 선택 취소 → 커맨드로 회귀하는지가 관전 포인트
           continue;
         }
         const targets = ui.menu.filter((id) => id.startsWith("battle-target-") && id !== "battle-target-cancel");
         const target = run.plan === "lastTarget" ? targets.at(-1) : targets[0];
-        if (!target) { await page.keyboard.press("x", { delay: 90 }); continue; }
+        if (!target) { await page.keyboard.press("x", { delay: 350 }); continue; }
         // 대상 메뉴에는 data-battle-command-cursor 가 없다 — 선택 대상은 aria-pressed 가 나르고
         // 이동은 ← → 로 한다(프롬프트 문구 "← →로 대상 변경"가 실측과 일치).
         for (let m = 0; m < targets.length + 2; m++) {
           const selected = await page.evaluate(() =>
             document.querySelector('[data-testid^="battle-target-"][aria-pressed="true"]')?.dataset.testid ?? null);
           if (selected === target) break;
-          await page.keyboard.press("ArrowRight", { delay: 90 });
+          await page.keyboard.press("ArrowRight", { delay: 350 });
           await page.waitForTimeout(60);
         }
-        await page.keyboard.press("Enter", { delay: 90 });
+        await page.keyboard.press("Enter", { delay: 350 });
         continue;
       }
       // 서브메뉴(스킬/아이템 행이 보임): 첫 행을 고른다.
       const submenu = ui.menu.filter((id) => id.startsWith("actor-skill-") || id.startsWith("actor-item-"));
       if (submenu.length > 0 && !ui.busy) {
-        if (await moveCursorTo(page, submenu[0])) await page.keyboard.press("Enter", { delay: 90 });
+        if (await moveCursorTo(page, submenu[0])) await page.keyboard.press("Enter", { delay: 350 });
         ctx.decisions += 1;
         continue;
       }
@@ -245,17 +257,17 @@ async function playRun(browser, serverUrl, run) {
         if (usable.length === 0) {
           // "뒤로"만 있다 = 빈 서브메뉴(빈 소지품 등). 닫고 이후 공격으로 강등.
           ctx.preferAttack = true;
-          await page.keyboard.press("x", { delay: 90 });
+          await page.keyboard.press("x", { delay: 350 });
           continue;
         }
         let pick = pickCommand(ui, run, ctx);
         if (!usable.includes(pick)) pick = "actor-command-attack";
         if (usable.includes(pick)) {
-          if (await moveCursorTo(page, pick)) await page.keyboard.press("Enter", { delay: 90 });
+          if (await moveCursorTo(page, pick)) await page.keyboard.press("Enter", { delay: 350 });
           ctx.decisions += 1;
           continue;
         }
-        await page.keyboard.press("Enter", { delay: 90 });
+        await page.keyboard.press("Enter", { delay: 350 });
         continue;
       }
       // 중간 관측샷 — 적이 실제로 행동해 파티 HP/상태 배지가 변한 프레임을 잡는다.
@@ -266,7 +278,7 @@ async function playRun(browser, serverUrl, run) {
         record.shots.push(shot);
       }
       // charging / 전이 / 메시지 — 텍스트 진행용으로 z 한 번.
-      await page.keyboard.press("Enter", { delay: 90 });
+      await page.keyboard.press("Enter", { delay: 350 });
       await page.waitForTimeout(120);
     }
     record.decisions = ctx.decisions;

@@ -44,8 +44,8 @@ export default {
   beats: [
     { id: "title", note: "타이틀", ops: [{ kind: "waitFor", testid: "title-screen", state: "present", timeoutMs: 60000 }], shot: true },
     { id: "boot", note: "새 게임 → 오프닝 건너뛰기", ops: [
-      { kind: "key", key: "Enter" },
-      { kind: "waitFor", testid: "cinematic-sequence", state: "present", timeoutMs: 30000 },
+      // 타이틀 입장 연출 중의 첫 Enter 는 연출만 건너뛴다 — 오프닝이 뜰 때까지 누른다.
+      { kind: "pressUntil", key: "Enter", testid: "cinematic-sequence", state: "present", maxPresses: 8, timeoutMs: 2500 },
       { kind: "hold", dir: null, ms: 600 },
       { kind: "pressUntil", key: "Escape", testid: "cinematic-sequence", state: "absent", maxPresses: 6 },
       { kind: "waitForRuntime", timeoutMs: 120000 },

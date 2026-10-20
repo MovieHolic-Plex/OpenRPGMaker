@@ -3,7 +3,7 @@
 import audit from "./fallen-audit.scenario.mjs";
 
 const opening = [
-  { id: "op-1-town", note: "오프닝 ① 밤의 도시", ops: [{ kind: "key", key: "Enter" }, { kind: "waitFor", testid: "cinematic-sequence", state: "present", timeoutMs: 30000 }, { kind: "hold", dir: null, ms: 3500 }], shot: true },
+  { id: "op-1-town", note: "오프닝 ① 밤의 도시", ops: [{ kind: "pressUntil", key: "Enter", testid: "cinematic-sequence", state: "present", maxPresses: 8, timeoutMs: 2500 }, { kind: "hold", dir: null, ms: 3500 }], shot: true },
   { id: "op-2-fall", note: "오프닝 ② 떨어지는 별", ops: [{ kind: "hold", dir: null, ms: 7000 }], shot: true },
   { id: "op-3-obs", note: "오프닝 ③ 천문대", ops: [{ kind: "hold", dir: null, ms: 6500 }], shot: true },
   { id: "op-4-crash", note: "오프닝 ④ 추락지(관으로 다가감)", ops: [{ kind: "hold", dir: null, ms: 9300 }], shot: true },
