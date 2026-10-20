@@ -525,7 +525,8 @@ function tunePacing(project: Project): void {
     // 관장 8·9 는 정직 여정(Lv8~9)에서 5~10턴 승이었지만 첫 10분 길(Lv6~7)로 온 플레이어는 졌다(r24) → 7·8.
     // 첫 10분 길(Lv7, 동료 없음)의 풀 스타터는 선봉 베르카부 Lv7 의 두 배 더듬이쏘기에 4턴에 졌다(r26) → 선봉 6, 에이스 8 그대로.
     mx_enemy_mx_map_grove_gym_leader_0: { species: "mx_enemy_podback", level: 6 },
-    mx_enemy_mx_map_grove_gym_leader_1: { species: "mx_enemy_brambleboar", level: 8 },
+    // 선봉 6 으로도 첫 10분 길 풀 스타터(Lv7 혼자)는 깃바람 세 방을 버틴 브램보어 Lv8 에게 5턴에 졌다(r27) → 에이스 7. 불은 3턴·물은 서리발 4배라 그대로 이긴다.
+    mx_enemy_mx_map_grove_gym_leader_1: { species: "mx_enemy_brambleboar", level: 7 },
   };
   for (const [enemyId, { species, level }] of Object.entries(reskin)) {
     const enemy = byId(enemyId), template = byId(species);
