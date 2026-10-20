@@ -365,36 +365,42 @@ export interface JpForestAreaOptions {
   readonly forestType?: JpForestType;
   /** 나무 밑 땅 그늘(r6 접지: 숲 바닥 그늘 변형 + 숲 밖 잔디 둘레 그늘). 기본 true. */
   readonly grounding?: boolean;
+  /** grove 덩이 모양 씨앗(나무 배치는 위치 해시로 정해지고 씨앗을 쓰지 않는다). */
   readonly seed?: number;
 }
 export interface JpForestAreaReport { readonly floorCells: number; readonly skipped: number; readonly changed: number; readonly forestType: JpForestType; readonly grounding: boolean }
 
-/** grove: 값 잡음(4칸 격자 보간)으로 덩이를 고르고, 3칸 미만 폭은 지운다(나무 한 그루 크기 3×4 보다 좁은 숲은 밑동이 서지 않는다). */
-function groveMask(W: number, H: number, inArea: (x: number, y: number) => boolean, seed: number): Uint8Array {
+/** k×k 열기(침식 → 팽창): k×k 정사각형이 통째로 들어가는 칸만 남긴다 — 나무가 설 수 없는 가는 띠·외톨이 칸을 지운다. */
+function openMask(W: number, H: number, m: Uint8Array, k: number): Uint8Array {
+  const at = (x: number, y: number): number => (x < 0 || y < 0 || x >= W || y >= H ? 0 : m[y * W + x]!);
+  const out = new Uint8Array(W * H);
+  for (let y = 0; y + k <= H; y++) for (let x = 0; x + k <= W; x++) {
+    let ok = true;
+    for (let dy = 0; dy < k && ok; dy++) for (let dx = 0; dx < k && ok; dx++) if (!at(x + dx, y + dy)) ok = false;
+    if (ok) for (let dy = 0; dy < k; dy++) for (let dx = 0; dx < k; dx++) out[(y + dy) * W + x + dx] = 1;
+  }
+  return out;
+}
+
+/**
+ * grove: 숲이 될 수 있는 칸 중 값 잡음(5칸 격자 보간)이 높은 쪽 약 55% 를 덩이로 고르고(분위수 문턱 — 잔디 조각이 작아도 비율이 같다),
+ * 3×3 열기로 덩이 폭을 3칸 이상으로 맞춘다. 나머지는 잔디 빈터로 남는다.
+ */
+function groveMask(W: number, H: number, ok: Uint8Array, seed: number): Uint8Array {
   const g = (gx: number, gy: number): number => h01(gx, gy, 9001 + seed * 7);
   const val = (x: number, y: number): number => {
-    const fx = x / 4, fy = y / 4, ix = Math.floor(fx), iy = Math.floor(fy), tx = fx - ix, ty = fy - iy;
+    const fx = x / 5, fy = y / 5, ix = Math.floor(fx), iy = Math.floor(fy), tx = fx - ix, ty = fy - iy;
     const a = g(ix, iy) * (1 - tx) + g(ix + 1, iy) * tx, b = g(ix, iy + 1) * (1 - tx) + g(ix + 1, iy + 1) * tx;
     return a * (1 - ty) + b * ty;
   };
+  const vals: number[] = [];
+  for (let i = 0; i < W * H; i++) if (ok[i]) vals.push(val(i % W, Math.floor(i / W)));
+  if (!vals.length) return new Uint8Array(W * H);
+  vals.sort((a, b) => a - b);
+  const cut = vals[Math.floor(vals.length * 0.45)]!;
   const m = new Uint8Array(W * H);
-  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (inArea(x, y) && val(x, y) > 0.47) m[y * W + x] = 1;
-  // 열기(3×3 침식 → 팽창): 가는 띠·외톨이 칸을 지운다
-  const er = new Uint8Array(W * H);
-  const at = (a: Uint8Array, x: number, y: number): number => (x < 0 || y < 0 || x >= W || y >= H ? 0 : a[y * W + x]!);
-  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
-    let ok = 1;
-    for (let dy = -1; dy <= 1 && ok; dy++) for (let dx = -1; dx <= 1 && ok; dx++) if (!at(m, x + dx, y + dy)) ok = 0;
-    er[y * W + x] = ok;
-  }
-  const out = new Uint8Array(W * H);
-  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
-    if (!m[y * W + x]) continue;
-    let hit = 0;
-    for (let dy = -1; dy <= 1 && !hit; dy++) for (let dx = -1; dx <= 1 && !hit; dx++) if (at(er, x + dx, y + dy)) hit = 1;
-    out[y * W + x] = hit;
-  }
-  return out;
+  for (let i = 0; i < W * H; i++) if (ok[i] && val(i % W, Math.floor(i / W)) >= cut) m[i] = 1;
+  return openMask(W, H, m, 3);
 }
 
 /**
@@ -422,17 +428,71 @@ export function paintJpForestArea(map: GameMap, tileset: JpForestTilesetView, wa
     for (const L of [2, 3, 4] as const) { const t = layerTileAt(map, L, i); if (t >= 0 && !own.has(t)) return false; }
     return true;
   };
-  const inWant = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < W && y < H && want[y * W + x] === 1;
-  const mask = forestType === "grove" ? groveMask(W, H, inWant, seed) : want;
-  let floorCells = 0, skipped = 0;
+  // 숲이 될 수 있는 칸 = 요청 칸 ∩ 잔디(남의 칸 없음). 모양(dense 2×2 열기 · grove 덩이)은 이 칸들 위에서 정한다 —
+  // 길·건물에 잘려 남은 1칸 띠는 나무가 못 서고 막힌 숲 바닥만 남으므로 숲으로 칠하지 않는다.
+  const ok = new Uint8Array(W * H);
+  let skipped = 0;
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
     const i = y * W + x;
+    if (!want[i]) continue;
+    if (eligible(x, y)) ok[i] = 1; else skipped++;
+  }
+  const mask = forestType === "grove" ? groveMask(W, H, ok, seed) : openMask(W, H, ok, 2);
+  let floorCells = 0;
+  for (let i = 0; i < W * H; i++) {
     if (!mask[i]) continue;
-    if (!eligible(x, y)) { skipped++; continue; }
     setLayerTileAt(map, 1, i, floor);
     floorCells++;
   }
   const group = (grounding || !cp.ground ? g0 : { ...g0, composer: { ...cp, ground: undefined } }) as unknown as AutotileGroup;
-  const changed = composeTreesAll(map, group, seed);
+  // composer 씨앗은 늘 0 — 편집기 붓(shapeAutotileGroupAround)이 씨앗 0 으로 다시 짜므로, 다른 씨앗으로 세우면 붓질 한 번에 둘레 나무가 바뀐다.
+  const changed = composeTreesAll(map, group, 0);
   return { floorCells, skipped, changed, forestType, grounding };
+}
+
+// ── 숲 구조 검사(참고문서 「정상/오류」와 조수 확인용, 2026-10-21) ──────────────────────────────
+/** 구조·통행만 본다(보기 좋은지는 판정하지 않는다). 칸 좌표는 0 기준. */
+export type JpForestIssueCode = "FOREST_TILE_ON_LAYER1" | "FOREST_ROOT_OFF_FOREST" | "FOREST_OVER_FOREIGN" | "FOREST_TRUNK_MISSING" | "FOREST_APRON_OFF_LAWN";
+export interface JpForestIssue { readonly code: JpForestIssueCode; readonly x: number; readonly y: number; readonly layer: number; readonly tile: number }
+
+export function checkJpForest(map: GameMap, tileset: JpForestTilesetView): JpForestIssue[] {
+  const g = r4Group(tileset, "bl");
+  const cp = g?.composer;
+  if (!g || !cp) return [];
+  const W = map.width, H = map.height;
+  const floor = new Set(g.memberTileIds ?? []);
+  const hold = new Set<number>([...(cp.overhangOnTiles ?? []), ...floor]);
+  const apron = new Set((cp.ground?.apronTiles ?? []).filter((t) => t >= 0));
+  const apronBases = new Set(cp.ground?.apronBases ?? []);
+  // 칸 번호 → 그림 속 자리(같은 칸이 여러 나무에 쓰일 수 있다)
+  const occ = new Map<number, { onlyRoot: boolean; onlyAboveRoot: boolean }>();
+  for (const sp of cp.sprites) {
+    for (let k = 0; k < sp.tiles.length; k++) {
+      const t = sp.tiles[k]!;
+      if (t < 0 || floor.has(t)) continue;     // 숲 바닥과 같은 그림으로 합쳐진 칸(불투명 밑동 칸)은 바닥으로 본다
+      const cy = Math.floor(k / sp.w), cx = k % sp.w;
+      const root = cy === sp.h - 1 && (cp.trunkCols?.[sp.shape] ?? []).includes(cx);   // 줄기 기둥 밑칸만(옆으로 뻗은 뿌리·그늘 칸은 잔디에 걸쳐도 된다)
+      const below = (cy + 1) * sp.w + cx;
+      const above = cy === sp.h - 2 && (sp.tiles[below] ?? -1) >= 0 && !floor.has(sp.tiles[below]!) && (sp.cover[below] ?? 0) > 2;
+      const prev = occ.get(t);
+      occ.set(t, prev ? { onlyRoot: prev.onlyRoot && root, onlyAboveRoot: prev.onlyAboveRoot && above } : { onlyRoot: root, onlyAboveRoot: above });
+    }
+  }
+  const out: JpForestIssue[] = [];
+  const spriteAt = (i: number): boolean => ([2, 3, 4] as const).some((L) => occ.has(layerTileAt(map, L, i)));
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const i = y * W + x;
+    const base = layerTileAt(map, 1, i);
+    if (occ.has(base) || (apron.has(base) && !floor.has(base))) out.push({ code: "FOREST_TILE_ON_LAYER1", x, y, layer: 1, tile: base });
+    for (const L of [2, 3, 4] as const) {
+      const t = layerTileAt(map, L, i);
+      if (apron.has(t) && !apronBases.has(base)) out.push({ code: "FOREST_APRON_OFF_LAWN", x, y, layer: L, tile: t });
+      const o = occ.get(t);
+      if (!o) continue;
+      if (!hold.has(base)) out.push({ code: "FOREST_OVER_FOREIGN", x, y, layer: L, tile: t });
+      else if (o.onlyRoot && !floor.has(base)) out.push({ code: "FOREST_ROOT_OFF_FOREST", x, y, layer: L, tile: t });
+      if (o.onlyAboveRoot && (y + 1 >= H || !spriteAt(i + W))) out.push({ code: "FOREST_TRUNK_MISSING", x, y, layer: L, tile: t });
+    }
+  }
+  return out;
 }

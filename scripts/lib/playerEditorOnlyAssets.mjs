@@ -30,6 +30,7 @@ export const PLAYER_EDITOR_ONLY_ASSETS = Object.freeze({
   "src/assets/gothicManorReferences.json": "whole",
   "src/assets/joseonBaramReferences.json": "whole",
   "src/assets/jpCityReferences.json": "whole",
+  "src/assets/jpForestReferences.json": "whole",
   "src/assets/modernCampusInteriorReferences.json": "whole",
   "src/assets/modernCampusReferences.json": "whole",
   "src/assets/modernCityReferences.json": "whole",

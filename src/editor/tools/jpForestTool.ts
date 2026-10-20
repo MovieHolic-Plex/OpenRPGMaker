@@ -42,7 +42,7 @@ export const PAINT_JP_FOREST_TOOL: ToolDefinition = {
     + "나무 키트(jp-prop-tree-*)를 여러 번 stamp 하거나 수관 칸을 번호로 칠하지 않는다. 잔디·자갈잔디 칸만 숲이 되고 길·물·건물·소품 칸은 건너뛴다(수관도 그 위로 넘치지 않는다). "
     + "자리: rect(숲 사각형) 또는 beside({x,y,w,h, side, depth}) — 기준 사각형(신사 경내·공원·건물) 옆 띠, 또는 besideLocation(맵 위치 이름표 id·이름) + side·depth. "
     + "forestType: dense(기본, 빽빽한 숲 — 신사 숲·산비탈·경계 숲) | grove(공원 숲 — 덩이 숲 사이에 잔디 빈터를 남긴다). grounding: 나무 밑 땅 그늘(기본 true, 끄면 나무가 떠 보인다). "
-    + "숲은 폭·높이 4칸 이상이어야 나무가 선다(3칸 이하 띠는 나무가 거의 안 선다). 같은 자리를 다시 불러도 같은 숲이 나온다(seed 로 바꾼다). 지금 수종은 활엽 하나다.",
+    + "rect·beside 는 숲을 원하는 잔디 구역만 준다 — 맵 전체를 주면 모든 잔디 조각(집 뒤 틈·길섶)에 숲이 흩어진다. 숲은 4×4 칸 이상 권장(2칸 띠는 한 줄 가로수처럼 보이고, 1칸 틈은 칠하지 않는다). 같은 자리를 다시 불러도 같은 숲이 나온다(grove 덩이 모양만 seed 로 바꾼다). 지금 수종은 활엽 하나다.",
   parameters: {
     type: "object",
     properties: {
@@ -70,7 +70,7 @@ export const PAINT_JP_FOREST_TOOL: ToolDefinition = {
       depth: { type: "integer", minimum: 3, maximum: 20, description: "besideLocation 과 쓸 때 띠 두께(기본 6)" },
       forestType: { type: "string", enum: [...JP_FOREST_TYPES], description: "dense 빽빽한 숲(기본) | grove 공원 숲(덩이 사이 잔디 빈터)" },
       grounding: { type: "boolean", description: "나무 밑 땅 그늘(접지). 기본 true" },
-      seed: { type: "integer", minimum: 0, description: "나무 배치 씨앗(기본 0)" },
+      seed: { type: "integer", minimum: 0, description: "grove 덩이 모양 씨앗(기본 0). 나무 배치는 자리로 정해진다" },
     },
     additionalProperties: false,
   },
