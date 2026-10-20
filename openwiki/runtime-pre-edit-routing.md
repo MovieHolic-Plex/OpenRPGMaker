@@ -37,7 +37,7 @@
 `bundled.ts`는 맵 이벤트/공간 구조가 참조한 아이콘만 로드한다(도감의 아이템 1,000개 그림 전체를 미리 싣지 않는다). `toolImageEventSprites`도 같은 크기/원본 알파로
 그린다. `ensureBundledProjectTextures`도 새 사물 참조를 로드하여 편집 직후 재로드 없이 보이게 한다. 기존 공용 그림의 표시 경로를 재사용한다. 회중시계 예: `cc0-jetrel-clock`.
 
-- **도트 대화창 (2026-10-04):** `pixel-cinematic`은 별도 저작 스타일이다(`project/dialogueStyles.ts`, `styles/dialogueStyles.css`). 새 관계·연애 프리셋의 기본이며 기존 프로젝트의 cream/gold를 이관하지 않는다. 각진 반투명 창·Galmuri9·25% 높이를 사용하고 긴 본문은 기존 페이지 나누기를 따른다. 긴 선택지는 내부 리스트에서 줄바꿈/스크롤하며 `dialogue.ts`가 선택된 행만 리스트 안으로 옮긴다. DOM 측정값과 scrollTop의 배율이 달라 단계 스케일로 나누며 페이지나 게임 무대를 스크롤하지 않는다. 검증 증거는 `verify-shots/romance-art/SUMMARY.md`; 합성 긴 문구 fixture와 실제 SQLite 장면의 출하 플레이어 증거를 구별한다.
+- **도트 대화창 (2026-10-04):** `pixel-cinematic`은 별도 저작 스타일이다(`project/dialogueStyles.ts`, `styles/dialogueStyles.css`). 새 관계·연애 프리셋의 기본이며 기존 프로젝트의 cream/gold를 이관하지 않는다. 각진 반투명 창·Galmuri9·25% 높이를 사용하고 긴 본문은 기존 페이지 나누기를 따른다. 선택지 창은 모든 스타일에서 내용 높이로 자란다(2026-10-20): `--runtime-choice-panel-height`는 최소 높이이고 상한은 보이는 화면 높이−8px(`dialogue.css`·`playSurface.css`). 그 상한을 넘을 때만 목록이 스크롤되며 `dialogue.ts`가 선택된 행만 리스트 안으로 옮긴다. 예전엔 25%(480×270에서 67px) 고정이라 질문+3지선다의 셋째가 잘렸다. 검증 `npm run qa:runtime -- --scenario choice-fit-480`(픽스처 `choice-fit-480-fixture.mts`, `CHOICE_STYLE`). DOM 측정값과 scrollTop의 배율이 달라 단계 스케일로 나누며 페이지나 게임 무대를 스크롤하지 않는다. 검증 증거는 `verify-shots/romance-art/SUMMARY.md`; 합성 긴 문구 fixture와 실제 SQLite 장면의 출하 플레이어 증거를 구별한다.
 
 - **런타임 프레임 예산 (2026-09-27, 렉 조사):** 매 프레임·주기 경로에서 아래를 다시 넣지 않는다.
   회귀는 `test/runtimeLagFixes.test.ts`(예전 구현과 같은 답을 내는지 대조한다).
