@@ -34,7 +34,7 @@
   `--ai-config harness-data/assistant-capability/ai-configs/local-claude.json`(space-craft·assistant-capability 공용, editorDriver 가 엔진 칸을 심는다).
 - 실제 입력창 결과(2026-10-20, `verify-shots/assistant-claude-p/editor-e2e/summary.json`): claude CLI(sonnet) 농장 마을 2회·서재 2회 모두 저장·재로드 일치,
   45~122초·$0.22~0.53(구독 환산), 첫 도구 목록 38~50개·4.9만~5.7만 자(전체 목록 79만 자의 6~7%). 이벤트(reward-once) 실행·요구·보존·저장 통과,
-  플레이에서 보상 1회·재대화·재입장 무보상 통과(맵 나가기 두 항목만 실패 — 픽스처 출구 관측, 조수 변경과 무관한지 별도 확인 필요).
+  플레이에서 보상 1회·재대화·재입장 무보상 통과(맵 나가기 두 항목 실패는 기존 하네스 경합이다: `dir:null` 뒤에도 한 걸음 더 가 x=1 에서 조사한다. 조수가 아무것도 안 바꾼 Pi 실행 저장본도 같은 x=1 로 실패, 같은 사건 정답본은 통과 — 엔진·이번 변경 무관).
   같은 날 Pi 기준선은 Argon 이 응답하지 않아 막혔고(의도 선언 실패), gpt-6.1-sol Pi 는 서재 212초·98만 토큰, 농장은 서버 과부하로 끝, 이벤트는 240초 초과.
   codex CLI 는 차례 자체는 끝냈으나(서재 완성·배치 품질 통과) 뒤이은 시각 검토가 느려 하네스 900초 안에 한가해지지 않았다 — codex 는 오늘 용량 거절이 잦았다.
 
