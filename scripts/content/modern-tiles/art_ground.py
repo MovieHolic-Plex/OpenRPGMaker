@@ -31,8 +31,8 @@ CLOVER = (150, 176, 140)   # r2: 밝은 흰 점 → 잔디보다 조금 밝은 �
 # 보도 r3(감독 VQA 2026-10-20: 대비가 낮아 평평한 회색으로 읽힘) — 몸을 한 단 올리고(S4) 이음은 한 단 내리고(S1),
 # 판마다 위 1px 밝은 테(S5 쪽), 가까운 두 톤(바탕·한 끗 어둠)을 칸 해시로 드물게. 바둑판 없음, 러닝 본드 그대로.
 SW_BASE = S[4]
-SW_ALT = (87, 105, 111)                                   # 가까운 둘째 톤(한 끗 어둠, S3 와 S4 사이)
-SW_ALT_L = (99, 118, 124)                                 # 가까운 둘째 톤(한 끗 밝음) — r4: 어둠·밝음 반반이라 줄 평균 밝기가 그대로
+SW_ALT = (85, 103, 109)                                   # 둘째 톤(한 끗 어둠) — r5: 판 통째, 바탕과 ±8 정도라 판 단위로 보인다
+SW_ALT_L = (101, 121, 127)                                # 둘째 톤(한 끗 밝음) — 어둠·밝음 반반이라 줄 평균 밝기가 그대로
 SW_TONES = {0: S[4], 1: SW_ALT, -1: SW_ALT, -2: (78, 95, 101)}   # 바탕 · 둘째 톤 · (호환) · 닳은 판(드묾)
 SW_END = (84, 101, 107)   # r4: 판 오른쪽 끝 1px 그늘
 SW_JOINT_H = (60, 73, 79)  # r4: 가로 이음(세로 이음 S1 보다 반 단 밝게 — 거리 전체에 이어지는 가로 줄 무늬를 누그러뜨린다)
@@ -340,9 +340,7 @@ def sidewalk(var=0):
                     c = SW_END if body == SW_BASE else lit(body, -1)
                 elif yy == 0 and x != lx:
                     c = SW_LIT if body == SW_BASE else lit(body, 2)
-                elif x == lx and yy > 0:
-                    c = SW_LIT_W if body == SW_BASE else lit(body, 1)
-                else:
+                else:                                       # r5: 판 몸은 평평한 한 톤(왼쪽 밝은 열 없앰)
                     c = body
                 t[y][x] = c
     r = random.Random(300 + var)
@@ -382,7 +380,7 @@ def tactile():
 # ---------------------------------------------------------------- 연석(8방향): 보도 칸 안에 연석을 그린다. 경계는 SDF.
 # 경계 위 바깥 법선(도로 쪽)이 남쪽이면 윗면 2 + 앞면 3 + 밑 윤곽 1 이 보이고(남향 앞면), 북쪽이면 윤곽 + 윗면만, 동서면 윗면 띠만.
 SOUTH_BANDS = [C[1], C[2], C[2], C[3], C[5], C[6], SW_JOINT]   # d=0(경계, 도로 쪽) → 안쪽
-NORTH_BANDS = [C[0], C[6], C[5], C[3], SW_JOINT]
+NORTH_BANDS = [C[0], C[6], C[5], C[3], SW_JOINT_H]
 SIDE_BANDS_E = [C[0], C[3], C[5], C[6], SW_JOINT]               # 동쪽이 도로: 바깥 윤곽 → 윗면
 SIDE_BANDS_W = [C[0], C[4], C[6], C[5], SW_JOINT]
 
@@ -435,7 +433,12 @@ def curb(kind, var=0):
                 t[13][x] = C[1]
         for y in range(10, 16):
             t[y][0] = C[1] if y < 12 else C[0]
-    elif kind == 'N':
+    if kind in ('N', 'NE', 'NW'):   # r5: 북향 연석 아래 윗줄 판이 2px 조각(이음 점 하나)이라 결이 끊겨 보였다 → 8px 마구리 판 줄(이음 x7·x15)
+        for y in (5, 6):
+            for x in (7, 15):
+                if sdf(x, y) >= 5:
+                    t[y][x] = SW_JOINT
+    if kind == 'N':
         for y in range(0, 4):
             t[y][0] = C[1]
         t[1][0] = C[4]
