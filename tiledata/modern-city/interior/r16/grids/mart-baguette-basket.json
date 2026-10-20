@@ -22,8 +22,6 @@
  "rows": [
   "................",
   "................",
-  "................",
-  "................",
   "..bk.bk.bk.bk...",
   "..bkgbkgbkgbkg..",
   "..bkgbkgbkgbkg..",
@@ -37,6 +35,8 @@
   "..jomjejomjeg...",
   ".bbbbbbbbbbbbbb.",
   ".biiiiiiiiiiiib.",
+  ".bdjjddjjddjjdb.",
+  ".bnnnnnnnnnnnnb.",
   ".bffhhffhhffhhb.",
   ".bhhffhhffhhffb.",
   ".bhhffhhffhhffb.",
@@ -53,5 +53,5 @@
   "..aaaaaaaaaaaaa.",
   "................"
  ],
- "note": ""
+ "note": "r16: basket opening 1 -> 4 rows (far rim i -> dark inside with baguette butts -> lit front rim n); baguettes moved up 2 rows"
 }

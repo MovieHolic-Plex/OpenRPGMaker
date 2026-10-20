@@ -18,11 +18,11 @@
   "m": "#ffb641ff"
  },
  "rows": [
-  "................",
-  "................",
   "..c..........c..",
   "...cc......cc...",
   ".bbbbcceeccbbbb.",
+  ".bddddddddddddb.",
+  ".bffffffffffffb.",
   ".bmmmmmmmmmmmjb.",
   ".bllllllllllljb.",
   ".bbbbeeeeeebbbb.",
@@ -51,5 +51,5 @@
   ".aaaaaaaaaaaaaaa",
   "................"
  ],
- "note": ""
+ "note": "r16: top basket opening visible (dark inside d -> f, then the orange lit rim); moved up into the empty rows"
 }

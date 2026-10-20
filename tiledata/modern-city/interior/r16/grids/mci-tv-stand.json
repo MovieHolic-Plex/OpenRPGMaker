@@ -16,7 +16,8 @@
   "k": "#8a6128ff",
   "l": "#a35f4cff",
   "m": "#a67a37ff",
-  "n": "#bc9250ff"
+  "n": "#bc9250ff",
+  "o": "#cba76cff"
  },
  "rows": [
   "................................",
@@ -39,10 +40,10 @@
   "...baaaaaaaaaaaaaaaaaaaaaaallll.",
   "..............eeee.........llll.",
   "bbbbbbbbbbbbbbeeeebbbbbbbbbbbbbb",
-  "bnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnb",
-  "bmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmb",
   "bmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmb",
   "bnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnb",
+  "bnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnb",
+  "boooooooooooooooooooooooooooooob",
   "biiiiiiiiiiiiiiiiiiiiiiiiiiiiiib",
   "bmmmmmmmmmmmmmikkmmmmmmmmmmmmiib",
   "bmmkkkkkkkkkkkikkmkkkkkkkkkkkiib",
@@ -52,5 +53,5 @@
   "bmkkkkkkkkkkkkkkkkkkkkkkkkkkkkib",
   "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
  ],
- "note": ""
+ "note": "r16: cabinet top relit far-to-near (m far -> n -> #cba76c lit edge), dark line below is the shadow"
 }

@@ -13,9 +13,9 @@
   "................",
   "................",
   "..aaaaaaaaaaaa..",
-  "..aceeeeeeeeca..",
   "..acccccccccca..",
-  "..acccccccccca..",
+  "..aeeeeeeeeeea..",
+  "..aeeeeeeeeeea..",
   ".aaccccccccccaa.",
   ".aaccccccccccaa.",
   ".aacccaaaacccaa.",
@@ -27,5 +27,5 @@
   "..aaaaaaaaaaaa..",
   "................"
  ],
- "note": ""
+ "note": "r16: flap top relit far-to-near (c far -> e lit 2 rows) instead of one highlight row at the far edge"
 }

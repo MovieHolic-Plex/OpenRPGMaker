@@ -121,13 +121,13 @@
  },
  {
   "id": "gym-hoop-e",
-  "real": true,
-  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+  "real": false,
+  "why": "false FAIL: side-facing hoop: L-shaped side profile is correct, base plate top visible"
  },
  {
   "id": "gym-hoop-w",
-  "real": true,
-  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+  "real": false,
+  "why": "false FAIL: side-facing hoop: L-shaped side profile is correct, base plate top visible"
  },
  {
   "id": "home-electric-fan",
@@ -221,8 +221,8 @@
  },
  {
   "id": "hotel-luggage-cart",
-  "real": true,
-  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+  "real": false,
+  "why": "false FAIL: frame cart: deck is covered by the suitcases (like gondola goods)"
  },
  {
   "id": "ind-forklift",
@@ -351,8 +351,8 @@
  },
  {
   "id": "mci-basket-stack",
-  "real": true,
-  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+  "real": false,
+  "why": "false FAIL: top basket shows its mesh opening ~8 rows from above"
  },
  {
   "id": "mci-bedside",
@@ -501,8 +501,8 @@
  },
  {
   "id": "tr-fuel-pump",
-  "real": true,
-  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+  "real": false,
+  "why": "false FAIL: island top is 6+ rows from above; pumps are slim columns with a white cap"
  },
  {
   "id": "tr-xray-lane",
@@ -741,8 +741,8 @@
  },
  {
   "id": "mart-promo-endcap",
-  "real": true,
-  "why": "horizontal top (lid/top cap/counter/opening) <=2px — counters_stalls"
+  "real": false,
+  "why": "false FAIL: stacked goods pyramid: each tier shows its top; no flat lid"
  },
  {
   "id": "mart-sale-endcap",

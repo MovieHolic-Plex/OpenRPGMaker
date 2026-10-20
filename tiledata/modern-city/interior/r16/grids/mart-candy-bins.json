@@ -24,11 +24,11 @@
   "................",
   "................",
   "................",
-  "................",
-  "................",
   "bbbbbbbbbbbbbbbb",
-  "boooooooooooooob",
   "bjjjjjjjjjjjjjjb",
+  "boooooooooooooob",
+  "boooooooooooooob",
+  "bnnnnnnnnnnnnnnb",
   "bhhhhhhhhhhhhhhb",
   "bbbbbbbbbbbbbbbb",
   "bbmiiigbbmiiigbb",
@@ -53,5 +53,5 @@
   ".aaaaaaaaaaaaaaa",
   "................"
  ],
- "note": ""
+ "note": "r16: lid top 3 -> 4 rows relit far-to-near (j far -> o -> white-pink lit edge) + shadow row h"
 }

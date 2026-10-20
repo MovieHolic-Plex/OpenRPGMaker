@@ -20,9 +20,6 @@
   "................................",
   "................................",
   "................................",
-  "................................",
-  "................................",
-  "................................",
   ".aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.",
   ".acccccccccccccccccccccccccccca.",
   ".acccccccccccccccccccccccccccca.",
@@ -34,6 +31,9 @@
   "...............a................",
   ".aaaaaaaaaaaaaaiaaaaaaaaaaaaaaa.",
   ".aggbbbbggggggbbbbggggggbbbbgga.",
+  ".ahhhhhhhhhhhhhhhhhhhhhhhhhhhha.",
+  ".ahhhhhhhhhhhhhhhhhhhhhhhhhhhha.",
+  ".aiiiiiiiiiiiiiiiiiiiiiiiiiiiia.",
   ".agggggggggggggggggggggggggggga.",
   ".aeeeeeeeeefdddddddddljjjjjjjja.",
   ".aeeeeeeeeefdddddddddljjjjjjjja.",
@@ -50,5 +50,5 @@
   ".aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.",
   "................................"
  ],
- "note": ""
+ "note": "r16: bin lids 2 -> 5 rows (slots at the far edge -> h -> i lit edge -> g shadow); sign moved up 3 rows"
 }

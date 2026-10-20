@@ -14,8 +14,8 @@
   "i": "#f4f6f8ff"
  },
  "rows": [
-  "................",
   "...aaaaaaaaaa...",
+  "...ahhhhhhhha...",
   "...ahhhhhhhha...",
   "...aiiiiiiiia...",
   "...aiiiiiiiia...",
@@ -47,5 +47,5 @@
   "................",
   "................"
  ],
- "note": ""
+ "note": "r16: column cap 3 -> 4 rows (h far -> white lit edge) using the empty row above, dark band below is the shadow"
 }

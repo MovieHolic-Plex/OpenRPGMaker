@@ -16,9 +16,9 @@
  },
  "rows": [
   "................",
-  "................",
-  "................",
   "..bbbbbbbbbbbb..",
+  "..beeeeeeeeeeb..",
+  "..bffffffffffb..",
   "..biiiiiiiiiib..",
   "..bggggbbggggb..",
   "..bgggbhhbgggb..",
@@ -48,5 +48,5 @@
   "...aaaaaaaaaaa..",
   "................"
  ],
- "note": ""
+ "note": "r16: vitrine glass-box top 1 -> 3 rows (e far -> f -> white lit edge) using the empty rows above"
 }
