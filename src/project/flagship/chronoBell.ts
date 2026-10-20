@@ -835,7 +835,19 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   {
     const padX = 6, padY = 3;
     const wallUpper = [3170, 3172, 3166, 3168], wallLower = [3134, 3176, 3174, 3132];
-    padMapCentered(M(ids.observatory), padX, padY, (x, y) => ((y % 2 === 0 ? wallUpper : wallLower)[x % 4]!));
+    // 방 바로 바깥은 같은 지도 안의 어두운 벽 덩어리(1번 칸 — 방 사이 빈 곳과 같은 칸)로 이어 건물 속처럼 읽히게 하고,
+    // 멀어질수록 암반 벽면 조각을 섞어 가장자리로 갈수록 바위로 사그라지게 한다(VQA r6 — 균일한 갈색 바위 카펫 지적).
+    const obs = M(ids.observatory), ow = obs.width, oh = obs.height;
+    const dark = 1;
+    const hash = (x: number, y: number, salt: number): number => ((((x * 73856093) ^ (y * 19349663) ^ (salt * 83492791)) >>> 0) % 1000) / 1000;
+    padMapCentered(obs, padX, padY, (x, y) => {
+      const dx = Math.max(padX - x, x - (padX + ow - 1), 0), dy = Math.max(padY - y, y - (padY + oh - 1), 0);
+      const d = Math.max(dx, dy) + (dx > 0 && dy > 0 ? 1 : 0);
+      const rock = (y % 2 === 0 ? wallUpper : wallLower)[x % 4]!;
+      // 거리 1~2 는 전부 어두운 벽 덩어리, 3 이후로는 거리에 따라 바위가 섞이는 비율이 커진다.
+      const rockShare = d <= 2 ? 0 : d === 3 ? 0.35 : d === 4 ? 0.7 : 1;
+      return hash(x, y, 11) < rockShare ? rock : dark;
+    });
     for (const from of Object.values(project.maps)) {
       for (const event of from.events) for (const list of eventCommandLists(event)) for (const cmd of list) {
         const rec = cmd as unknown as Record<string, unknown>;
