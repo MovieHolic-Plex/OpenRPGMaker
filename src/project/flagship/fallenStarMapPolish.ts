@@ -173,6 +173,41 @@ export function varyVaultFloor(map: GameMap, floorTiles: ReadonlySet<number>, cr
 }
 
 /**
+ * 균일한 회색 포석이 한 방을 덮는 경우(VQA — 세이브 결정의 방 「평평한 회색 바닥」) 구역 안에 흙·이끼 얼룩을 흩뿌려 깬다.
+ * 칸 좌표 해시 값 잡음 두 겹으로 덩이를 만들고, 덩이 안의 평평한 칸(floorTiles)만 `dirtTiles`/`mossTiles` 로 바꾼다.
+ * 가운데 길(`keepX` 두 값 사이)은 건드리지 않는다. 새 그림은 쓰지 않는다.
+ */
+export function scatterVaultFloorPatches(
+  map: GameMap,
+  rect: { x0: number; y0: number; x1: number; y1: number },
+  floorTiles: ReadonlySet<number>,
+  dirtTiles: readonly number[],
+  mossTiles: readonly number[],
+  keepX?: readonly [number, number],
+): number {
+  const hash = (x: number, y: number, salt: number): number => ((((x * 73856093) ^ (y * 19349663) ^ (salt * 83492791)) >>> 0) % 1000) / 1000;
+  const smooth = (x: number, y: number, cell: number, salt: number): number => {
+    const gx = Math.floor(x / cell), gy = Math.floor(y / cell), fx = (x / cell) - gx, fy = (y / cell) - gy;
+    const sx = fx * fx * (3 - 2 * fx), sy = fy * fy * (3 - 2 * fy);
+    const a = hash(gx, gy, salt), b = hash(gx + 1, gy, salt), c = hash(gx, gy + 1, salt), d = hash(gx + 1, gy + 1, salt);
+    return (a + (b - a) * sx) + ((c + (d - c) * sx) - (a + (b - a) * sx)) * sy;
+  };
+  let changed = 0;
+  for (let y = rect.y0; y <= rect.y1; y += 1) {
+    for (let x = rect.x0; x <= rect.x1; x += 1) {
+      if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
+      if (keepX && x >= keepX[0] && x <= keepX[1]) continue;
+      const c = y * map.width + x;
+      if (!floorTiles.has(map.lowerTiles[c] ?? -1)) continue;
+      const n = smooth(x, y, 4, 1) * 0.65 + smooth(x, y, 2, 2) * 0.35;
+      if (n > 0.66) { map.lowerTiles[c] = dirtTiles[Math.floor(hash(x, y, 3) * dirtTiles.length) % dirtTiles.length]!; changed += 1; }
+      else if (n < 0.27) { map.lowerTiles[c] = mossTiles[Math.floor(hash(x, y, 4) * mossTiles.length) % mossTiles.length]!; changed += 1; }
+    }
+  }
+  return changed;
+}
+
+/**
  * 화면(480×270)보다 작은 방은 바깥이 검은 허공이 되고 흙먼지 입자가 별밭처럼 얹힌다(VQA r4 — 화로의 방).
  * 방을 가운데 두고 사방에 `padX`×`padY` 칸 바위 둘레를 덧붙인다. 타일 층·덧그림·이벤트 좌표·방 안 칸 바꾸기/입자 좌표를 함께 민다.
  * 다른 맵에서 이 방으로 들어오는 이동 좌표는 호출자가 같은 만큼 옮긴다.
