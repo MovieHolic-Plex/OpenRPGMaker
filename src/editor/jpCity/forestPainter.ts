@@ -4,8 +4,11 @@
 // 그 밑 줄이 줄기 띠 자리다 — 띠도 숲 구획 안에 들어가므로 폭 3~4칸 얕은 띠(수관 2줄 + 띠 1줄)도 칠해진다.
 // 순수 함수: 맵·타일셋 구조만 읽고 칸 쓰기는 콜백으로 한다(regionComposer 단계 실행기 jpRegionTool 이 부른다).
 
-export const JP_FOREST_BROADLEAF = 1;
+export const JP_FOREST_BROADLEAF = 1;   // 느티나무·잡목 활엽
 export const JP_FOREST_BAMBOO = 2;
+export const JP_FOREST_SAKURA = 3;      // 벚나무 숲
+export const JP_FOREST_SUGI = 4;        // 삼나무 숲(사토야마 산비탈·신사 숲)
+export const JP_FOREST_MAPLE = 5;       // 단풍 숲(가을 활엽)
 
 interface KitRowView { readonly tiles?: readonly number[]; readonly upperTiles?: readonly number[] }
 interface KitView { readonly id: string; readonly width: number; readonly height: number; readonly rows: readonly KitRowView[] }
@@ -60,7 +63,7 @@ interface KindSet {
   readonly bands: ReadonlyMap<string, readonly Kit[]>;     // L·M·R·one → 변형
 }
 
-function kindSet(tileset: JpForestTilesetView, k: "bl" | "bb", code: number): KindSet | null {
+function kindSet(tileset: JpForestTilesetView, k: "bl" | "bb" | "sk" | "sg" | "mp", code: number): KindSet | null {
   const at = (tileset.autotileGroups ?? []).find((a) => a.id === `jp-forest-${k}`);
   if (!at) return null;
   const kits = (tileset.structureKits ?? []).filter((x) => x.id.startsWith(`jp-forest-${k}-`));
@@ -98,13 +101,14 @@ export function hasJpForestPack(tileset: JpForestTilesetView): boolean {
 }
 
 /**
- * kind[y*W+x] = 0 숲 아님 · 1 활엽 · 2 대숲. 3층에 수관·하늘선·머리·줄기 띠, 4층에 하늘선 윗줄·머리 덧그림을 쓴다.
+ * kind[y*W+x] = 0 숲 아님 · 1 활엽 · 2 대숲 · 3 벚나무 · 4 삼나무 · 5 단풍. 그 종류가 칩셋에 없으면 활엽으로 칠한다. 3층에 수관·하늘선·머리·줄기 띠, 4층에 하늘선 윗줄·머리 덧그림을 쓴다.
  * 4층은 비어 있는 칸에만 쓴다. 3층은 마스크 안 칸에만 쓴다(마스크는 부르는 쪽이 이미 점유 칸을 뺐다).
  */
 export function paintJpForest(target: JpForestTarget, tileset: JpForestTilesetView, kind: Uint8Array, seed = 0): JpForestReport {
   const W = target.width, H = target.height;
   const rep = { canopy: 0, sky: 0, heads: 0, overlays: 0, bands: 0 };
-  const sets = [kindSet(tileset, "bl", JP_FOREST_BROADLEAF), kindSet(tileset, "bb", JP_FOREST_BAMBOO)].filter((s): s is KindSet => s !== null);
+  const sets = [kindSet(tileset, "bl", JP_FOREST_BROADLEAF), kindSet(tileset, "bb", JP_FOREST_BAMBOO), kindSet(tileset, "sk", JP_FOREST_SAKURA), kindSet(tileset, "sg", JP_FOREST_SUGI), kindSet(tileset, "mp", JP_FOREST_MAPLE)]
+    .filter((s): s is KindSet => s !== null);
   const put3 = (x: number, y: number, t: number): void => { if (t >= 0) target.setLayer(3, y * W + x, t); };
   const put4 = (x: number, y: number, t: number): boolean => {
     if (t < 0) return true;
@@ -113,6 +117,8 @@ export function paintJpForest(target: JpForestTarget, tileset: JpForestTilesetVi
     target.setLayer(4, i, t);
     return true;
   };
+  const have = new Set(sets.map((k) => k.code));
+  if (have.has(JP_FOREST_BROADLEAF)) for (let i = 0; i < kind.length; i++) if (kind[i] && !have.has(kind[i]!)) kind[i] = JP_FOREST_BROADLEAF;
   for (const ks of sets) {
     const F = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < W && y < H && kind[y * W + x] === ks.code;
     // 1) 마스크: 아래로 띠 높이만큼 같은 숲이 이어지는 칸(맵 아래 끝 밖은 숲으로 본다 — 띠를 맵 밖에 둘 수 없다)
@@ -151,7 +157,7 @@ export function paintJpForest(target: JpForestTarget, tileset: JpForestTilesetVi
     const headOk = (x: number, y: number): boolean => {
       if (x < 0 || y < 0 || x >= W || y >= H || !C[y * W + x]) return false;
       const m = masks[y * W + x]!;
-      return m === 255 || (ks.code === JP_FOREST_BROADLEAF && (m | S | SE | SW) === 255);
+      return m === 255 || (ks.code !== JP_FOREST_BAMBOO && (m | S | SE | SW) === 255);
     };
     const used = new Uint8Array(W * H);
     // 3) 하늘선: 곧은 위 가장자리 칸 줄 + 밑 몸통 줄. 윗줄(숲 밖)은 4층 덧그림.

@@ -106,8 +106,12 @@ export const JP_PALETTE_FAMILIES: readonly JpPaletteFamily[] = [
         ramp: ["#222b18", "#2e3820", "#3a4527", "#46532d", "#5f6d3b", "#7a874e", "#98a466"],
         chromaCap: 0.26, use: "이끼 낀 돌·습원 풀·논 모·산길 풀섶.",
       },
-      { id: "sakura_petal", ko: "벚꽃잎", en: "Sakura Petal Pink", steps: ["#6b4350", "#956373", "#bf8c99", "#ddb2b8", "#f2d6d6"], chromaCap: 0.22, use: "벚꽃·봄 꽃잎·료칸 장식(형광 분홍 pinku 대신)." },
-      { id: "autumn_maple", ko: "가을 단풍", en: "Autumn Maple Crimson", steps: ["#4a1a1e", "#722428", "#9a352f", "#b8553c", "#d07e58"], chromaCap: 0.5, use: "단풍·가을 계곡. 봄·여름 장면에는 쓰지 않는다." },
+      { id: "sakura_petal", ko: "벚꽃잎", en: "Sakura Petal Pink", steps: ["#6b4350", "#956373", "#bf8c99", "#ddb2b8", "#f2d6d6"], chromaCap: 0.22, use: "벚꽃·봄 꽃잎·료칸 장식(형광 분홍 pinku 대신).",
+        // 2026-10-20 숲 팩: 벚나무 숲(꽃 핀 수관 덩이)을 버들항식 9단으로 칠한다 — 핵심 5단을 순서대로 품는다.
+        ramp: ["#3c2830", "#523540", "#6b4350", "#80535f", "#956373", "#aa7784", "#bf8c99", "#ddb2b8", "#f2d6d6"] },
+      { id: "autumn_maple", ko: "가을 단풍", en: "Autumn Maple Crimson", steps: ["#4a1a1e", "#722428", "#9a352f", "#b8553c", "#d07e58"], chromaCap: 0.5, use: "단풍·가을 계곡. 봄·여름 장면에는 쓰지 않는다.",
+        // 2026-10-20 숲 팩: 단풍 숲(가을 활엽 수관)을 버들항식 9단으로 — 핵심 5단을 순서대로 품는다.
+        ramp: ["#2c1214", "#3b161a", "#4a1a1e", "#5e1f23", "#722428", "#86302c", "#9a352f", "#b8553c", "#d07e58"] },
     ],
   },
   {

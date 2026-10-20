@@ -13,7 +13,8 @@
   키트 headx-<배치>-<v>                    같은 머리의 투명 덧그림(4층, 첫 머리 층의 키트 경계에 엇갈려 얹는다). 활엽만.
   키트 sky-<v>                             하늘선(윗줄 = 숲 밖 덧그림 ★, 가운데 줄 = 위 가장자리, 아랫줄 = 몸통).
   키트 band-<L|M|R|one>-<v>                S 가장자리 밑 줄기 띠(활엽 1칸·대숲 2칸 높이).
-  키트 tree-<t2x3|t3x4|t4x4>-<v>          성긴 숲용 한 그루(활엽).
+  키트 tree-<t2x3|t3x4|t4x4>-<v>          성긴 숲용 한 그루(활엽). 삼나무는 tree-<s2x4|s2x5|s3x5>-<v>.
+  종류 bl 활엽(느티나무·잡목) · bb 대숲 · sk 벚나무 숲 · sg 삼나무 숲 · mp 단풍 숲(가을). 한 그루 느티나무·벚나무는 jp_street_trees(가로수 3×4)를 쓴다.
 
   python3 scripts/content/jp-city/blocks/jp_forest_pack.py [OUT_DIR]   # selftest + 미리보기
 """
@@ -32,7 +33,7 @@ import forest_kit_proto as F  # noqa: E402
 BLOCK = 'jp_forest_pack'
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..', '..'))
 OUTDIR = os.path.join(ROOT, 'tiledata', 'jp-city', 'blocks', BLOCK)
-KINDS = (('bl', 'broadleaf', '활엽 혼효림'), ('bb', 'bamboo', '대숲'))
+KINDS = (('bl', 'broadleaf', '활엽 혼효림(느티나무·잡목)'), ('bb', 'bamboo', '대숲'), ('sk', 'sakura', '벚나무 숲'), ('sg', 'sugi', '삼나무 숲'), ('mp', 'maple', '단풍 숲'))
 _CACHE = {}
 
 
@@ -96,14 +97,14 @@ def _finalize():
         groups.append(dict(id=f'jp:forest-{k}-canopy', name=f'숲 수관 · {ko}', role='green', defaultLayer='upper', cells=member,
                            desc=f'{ko} 숲 구획을 덮는 수관(위층·막힘). 숲 칠하기(forestPainter)가 마스크 → 오토타일 → 하늘선 → 머리 → 줄기 띠 순서로 쓴다.',
                            rules='낱칸으로 찍지 말고 숲 칠하기 도구 또는 오토타일 jp-forest-%s 로 칠한다. 마지막 줄(활엽 1줄·대숲 2줄)은 줄기 띠 자리다.' % k))
-        if kind == 'broadleaf':
+        if kind != 'bamboo':
             for side in 'nswe':
                 groups.append(dict(id=f'jp:forest-{k}-edge-{side}', name=f'숲 수관 {side} 가장자리 변형 · {ko}', role='green', defaultLayer='upper', cells=edges[side],
                                    desc=f'{ko} 수관의 곧은 {side} 가장자리 변형 칸.', rules='숲 칠하기가 위치 해시로 고른다.'))
         # 2) 머리 키트
         for (key, v), arr in sorted(kit.patches.items()):
             opaque = arr.copy()
-            if kind == 'broadleaf':
+            if kind != 'bamboo':
                 # 3층 불투명 머리 = 몸통 질감(변형 0) 위에 투명 머리를 합성
                 h, w = arr.shape[0] // 16, arr.shape[1] // 16
                 body = np.zeros_like(arr)
@@ -202,14 +203,15 @@ def export_gate(out=None):
     os.makedirs(out, exist_ok=True)
     _, _, _, kits, renders = _finalize()
     lines = []
-    names = {'head': 'forest canopy crown heads (tile overlay on forest roof)', 'headx': 'forest canopy crown heads overlay',
+    names = {'head': 'forest canopy crown heads (tile overlay on forest roof)',  # 삼나무 머리는 원뿔 수관 'headx': 'forest canopy crown heads overlay',
              'sky': 'forest north-edge skyline of treetops', 'band': 'forest south edge: trunk band under the canopy', 'tree': 'single deciduous tree'}
     for kt in kits:
         kid = kt['id'][3:]
         p = os.path.join(out, kt['id'] + '.png')
         Image.fromarray(renders[kid]).save(p)
         part = kid.split('-')[2]
-        lines.append(json.dumps(dict(png=os.path.basename(p), kind='organic', name=names.get(part, 'forest piece') + (' (bamboo)' if '-bb-' in kid else ''), label='jp_city/' + kt['id'])))
+        sp = {'-bb-': ' (bamboo)', '-sk-': ' (cherry blossom)', '-sg-': ' (japanese cedar)', '-mp-': ' (autumn maple)'}
+        lines.append(json.dumps(dict(png=os.path.basename(p), kind='organic', name=names.get(part, 'forest piece') + next((v for k_, v in sp.items() if k_ in kid), ''), label='jp_city/' + kt['id'])))
     # 수관 오토타일 표본: 6×4 마스크 지도
     for k, kind, _ in KINDS:
         kit = F.Kit(kind)

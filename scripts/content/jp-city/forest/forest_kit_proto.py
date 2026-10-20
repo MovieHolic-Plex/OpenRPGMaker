@@ -60,6 +60,19 @@ BARK = 'aged_cedar/bark'      # 나무껍질(7단)
 DEEP = R(SUN, 0)              # 수관 속 가장 깊은 그늘 — 검정이 아닌 짙은 청록(버들항 틈 색)
 NLV = 9                       # 잎 단 수 0..8
 
+SAK = 'sakura_petal+'         # 벚나무 숲(꽃 핀 수관) 9단
+MPL = 'autumn_maple+'         # 단풍 숲(가을 활엽) 9단
+BROAD_KINDS = ('broadleaf', 'sakura', 'sugi', 'maple')   # 활엽 문법(덩이 수관·1칸 줄기 띠)을 쓰는 종류. 대숲만 따로.
+
+
+def _broad(kind):
+    return kind in BROAD_KINDS
+
+
+def _layout_kind(kind):
+    return 'bamboo' if kind == 'bamboo' else 'broadleaf'
+
+
 def h01(x, y, s):
     return GA.h01(x, y, s)
 
@@ -78,6 +91,18 @@ def _lv_color(kind, L, x, y, s=0, hue=None):
     if kind == 'bamboo':
         if L >= 7: return R(CULM, 6) if k > 0.6 else R(SUN, 8)
         return R(SUN, min(8, L + (1 if L >= 3 else 0)))
+    if kind == 'sakura':
+        # 꽃 덩이: 분홍 9단. 가장 깊은 틈 두 단은 잎 그늘 청록(꽃 사이로 보이는 가지·잎 그늘) — 덩이 30% 는 한 단 낮춰 색 덩이 변화
+        if L <= 1: return R(SUN, L)
+        return R(SAK, max(2, L - (1 if (k < 0.3 and L < 8) else 0)))
+    if kind == 'maple':
+        # 단풍: 가장 깊은 틈 한 단은 잎 그늘 청록, 덩이 30% 는 한 단 낮춰 붉은 색 덩이 변화
+        if L == 0: return R(SUN, 0)
+        return R(MPL, max(1, L - (1 if (k < 0.3 and L < 8) else 0)))
+    if kind == 'sugi':
+        # 삼나무: 차가운 짙은 청록(pine_bamboo+) 위주, 빛 끝 두 단만 햇빛 잎 램프
+        if L >= 7: return R(SUN, L - 1)
+        return R(PBX, L)
     if L <= 5 and k < 0.3:
         return R(PBX, L)
     return R(SUN, L)
@@ -91,7 +116,7 @@ def crown_levels(W, H, cx, cy, rx, ry, seed, kind='broadleaf', sub=None, wrap=Fa
     if own is None: own = np.zeros((H, W), bool)
     if hue is None: hue = np.zeros((H, W), np.float32)
     lcx, lcy, lrx, lry = light or (cx, cy, rx, ry)     # 빛 계산용 타원(덩이 무리 전체) — 둥근 공 명암을 피하려고 엽(lobe)과 분리
-    sub = sub or (3.4 if kind == 'broadleaf' else 2.7)
+    sub = sub or (3.4 if _broad(kind) else 2.7)
     pts = []
     step = sub * 1.3
     if wrap:
@@ -141,7 +166,7 @@ def crown_levels(W, H, cx, cy, rx, ry, seed, kind='broadleaf', sub=None, wrap=Fa
                 lv[y, x] = int(math.floor(max(0, min(8, base + 0.5))))
                 own[y, x] = True
                 hue[y, x] = hv
-    if kind == 'broadleaf':
+    if _broad(kind):
         for i, (px, py, r) in enumerate(pts):          # 해 드는 덩이 머리에만 잎 끝 2점
             mx, my = (px - lcx) / lrx, (py - lcy) / lry
             if -(mx * 0.6 + my * 0.8) * macro < 0.15: continue
@@ -466,8 +491,8 @@ def _leaf_texture(kind, variant=0):
     """16 주기 몸통 질감 = 엇갈린 작은 나무 머리(가운데 하나 + 네 모서리를 잇는 하나)의 벽돌 배치.
     SNES 숲 몸통 칸의 문법(칸마다 나무 머리 하나)을 잎 덩이로 그린다. 머리 사이 틈은 깊은 그늘.
     variant 는 가운데 머리만 바꾼다(가장자리 2px 는 variant 0 과 같다 → 이웃과 이어짐). 반환 (단, 색 계열)."""
-    seed = 500 if kind == 'broadleaf' else 600
-    if kind == 'broadleaf':
+    seed = 500 if _broad(kind) else 600
+    if _broad(kind):
         return _undergrowth_texture(variant)
     if kind == 'broadleaf_bubble':
         # (r4 까지의 거품 격자 — Argon r4: 16px 마다 같은 공이 줄 서는 「달걀판」이라 버림. 기록용)
@@ -533,8 +558,8 @@ def _edge_profile(kind, side, nvar=0):
     """16 주기 잎 덩이 윗선: 덩이(반경 3~5) 여럿의 머리선 최솟값 + 잎 끝 1px 톱니 → 둥근 물결이 아닌 들쭉 잎 덩이 윤곽."""
     key = (kind, side, nvar)
     if key in _EDGE_CACHE: return _EDGE_CACHE[key]
-    seed = {'N': 801, 'S': 802, 'W': 803, 'E': 804}[side] + (0 if kind == 'broadleaf' else 50)
-    if kind == 'broadleaf':
+    seed = {'N': 801, 'S': 802, 'W': 803, 'E': 804}[side] + (0 if _broad(kind) else 50)
+    if _broad(kind):
         cl = {'N': [(2.5, 6.0, 4.8), (8.0, 5.0, 5.6), (13.2, 6.3, 4.4)],
               'S': [(3.0, 4.2, 3.6), (9.5, 3.8, 4.4), (14.5, 4.6, 3.2)],
               'W': [(3.5, 4.4, 4.2), (10.5, 3.6, 4.6)],
@@ -544,7 +569,7 @@ def _edge_profile(kind, side, nvar=0):
               'S': [(2.0, 3.0, 2.4), (6.5, 2.6, 2.8), (11.0, 3.2, 2.4), (14.5, 2.8, 2.2)],
               'W': [(2.0, 3.6, 3.0), (7.5, 3.0, 3.2), (12.5, 3.8, 3.0)],
               'E': [(3.0, 3.4, 3.0), (8.5, 3.6, 3.2), (13.5, 3.0, 3.0)]}[side]
-    if kind == 'broadleaf' and side in ('N', 'S'):
+    if _broad(kind) and side in ('N', 'S'):
         # (가운데 u, 반지름 r, 가장자리에서 덩이 끝까지 b px) — 덩이 끝 깊이가 변형마다 0~6px 로 달라 하늘선·아랫선이 들쭉날쭉하다
         bub = {'N': {0: [(2.5, 4.8, 1.2), (8.0, 5.6, 0.0), (13.2, 4.4, 1.9)],
                      1: [(2.5, 4.8, 1.2), (6.5, 4.0, 3.0), (11.0, 5.2, 0.0), (13.8, 3.6, 3.0)],
@@ -583,7 +608,7 @@ def _cell_inside(m, u, v, kind, nvar=0, svar=0):
     n, e, s, w = m & 1, m & 2, m & 4, m & 8
     ne, se, sw, nw = m & 16, m & 32, m & 64, m & 128
     if not n and v < edge_depth(u, 'N', kind, nvar): return False
-    if not s and kind != 'broadleaf' and 15 - v < edge_depth(u, 'S', kind, svar): return False   # 활엽 아랫선은 줄기 띠의 늘어진 잎 덩이가 만든다
+    if not s and not _broad(kind) and 15 - v < edge_depth(u, 'S', kind, svar): return False   # 활엽 아랫선은 줄기 띠의 늘어진 잎 덩이가 만든다
     if not w and u < edge_depth(v, 'W', kind): return False
     if not e and 15 - u < edge_depth(v, 'E', kind): return False
     R0 = 6.5
@@ -642,7 +667,7 @@ def render_levels(lv, ins, kind, pad=2, hue=None):
             L = int(lv[v, u])
             if not I(0, -2): L = min(8, L + 2)
             elif pad >= 3 and not I(0, -3): L = min(8, L + 1)
-            if not I(0, 2): L = max(0, L - (1 if kind == 'broadleaf' else 2))
+            if not I(0, 2): L = max(0, L - (1 if _broad(kind) else 2))
             elif not I(1, 1): L = max(0, L - 1)
             if not I(2, 0): L = max(0, L - 1)
             if not I(-2, 0): L = min(8, L + 1)
@@ -657,7 +682,7 @@ def paint_canopy_tile(m, kind, tex, nvar=0, svar=0):
     for j in range(16 + 2 * pad):
         for i in range(16 + 2 * pad):
             ins[j, i] = _inside_global(g, 32 + i - pad, 32 + j - pad, kind, nvar, svar=svar)
-    if kind == 'broadleaf' and not m & 4:
+    if _broad(kind) and not m & 4:
         ins[pad + 16:, :] = ins[pad + 15, :]     # 아래 칸은 줄기 띠(늘어진 잎 덩이)가 잇는다 — 아랫줄에 윤곽·그늘 줄을 긋지 않는다
     a = render_levels(tex[0], ins, kind, pad, tex[1])
     if not m & 4:
@@ -679,12 +704,12 @@ def _under_shade(a, m, kind):
 
 def build_canopy(kind):
     """canon 47 + 몸통 변형(얕은/깊은 두 단 × 4)."""
-    tex = [leaf_texture(kind, v) for v in range(N_BODY if kind == 'broadleaf' else 4)]
+    tex = [leaf_texture(kind, v) for v in range(N_BODY if _broad(kind) else 4)]
     tiles = {m: paint_canopy_tile(m, kind, tex[0]) for m in CANON}
     interior = []
     for tier in range(2):
         row = []
-        for v in range(N_BODY) if kind == 'broadleaf' else range(4):
+        for v in range(N_BODY) if _broad(kind) else range(4):
             t = paint_canopy_tile(255, kind, tex[v])
             row.append(t)
         interior.append(row)
@@ -718,9 +743,9 @@ N_HEAD_VARIANTS = {'c1x1': 6, 'c2x1': 3, 'c1x2': 3, 'c2x2': 6, 'c3x2': 5, 'c2x3'
 
 def head_masses(kind, key, variant):
     """변형마다 덩이 자리 ±4px·크기 ±20%·가로세로비를 흔들고, 일부 변형은 덩이를 둘로 쪼갠다(같은 머리가 줄 서지 않게)."""
-    w, h, crowns = CROWN_LAYOUTS[kind][key]
+    w, h, crowns = CROWN_LAYOUTS[_layout_kind(kind)][key]
     out = []
-    if kind == 'broadleaf':
+    if _broad(kind):
         # 키트를 거의 다 덮는 잎 덩이 묶음(엇갈린 격자 간격 ~12px, 반지름 6~9.5, 밝기 덩이마다 다름, 가끔 빈 자리 = 깊은 틈).
         # 한 덩이짜리 머리는 몸통 위 「스티커」가 된다(r5 자체 검수) — 여러 덩이가 겹친 선반이어야 숲 지붕이다.
         W, H = w * 16, h * 16
@@ -768,7 +793,7 @@ def fit_silhouette(W, H, cx, cy, rx, ry, seed, small, margin=2):
 
 def crown_patch(kind, key, tex, seed, variant=0):
     """몸통 칸(마스크 255)들 위에 놓는 수관 머리 키트. 바깥 2px 는 몸통 질감 그대로라 이웃과 이어진다."""
-    w, h, crowns = CROWN_LAYOUTS[kind][key]
+    w, h, crowns = CROWN_LAYOUTS[_layout_kind(kind)][key]
     W, H = w * 16, h * 16
     base = _tiled_tex(tex[0], W, H)
     bhue = _tiled_tex(tex[1], W, H)
@@ -794,6 +819,13 @@ def crown_patch(kind, key, tex, seed, variant=0):
             lv[sl] = base[sl]; hue[sl] = bhue[sl]
         ins = np.ones((H + 6, W + 6), bool)
         return render_levels(lv, ins, kind, 3, hue)
+    if kind == 'sugi':
+        lv = np.full((H, W), -1, np.int16)
+        hue = np.zeros((H, W), np.float32)
+        U = np.zeros((H, W), bool)
+        for ci, (cx, top, base, hw, lit) in enumerate(sorted(sugi_cones(W, H, seed, variant), key=lambda c: c[2])):
+            U |= cone_draw(lv, hue, cx, top, base, hw, seed + ci * 13, lit)
+        return _finish_overlay(lv, hue, U, kind)
     masses = head_masses(kind, key, variant)
     small = w * h <= 2
     # 활엽 머리는 투명 덧그림(몸통 위 한 층 위)이다 — 칸 테두리를 몸통과 맞출 필요가 없어 덩이가 키트 안 칸 경계를 마음대로 넘고,
@@ -810,6 +842,11 @@ def crown_patch(kind, key, tex, seed, variant=0):
         lv[S & (lv < 0)] = 0
         mass_levels(lv, hue, S, cx, cy, rx, ry, seed + ci * 17, kind, lit=lit, shadow=None, rim_dark=2.2, sp=6.4, crack=0.55)
         U |= S
+    return _finish_overlay(lv, hue, U, kind)
+
+
+def _finish_overlay(lv, hue, U, kind):
+    H, W = lv.shape
     # 덩이 그림자(오른쪽 1·아래 2): 몸통 위에 짙은 청록으로 떨어진다
     sh = np.zeros_like(U)
     sh[2:, 1:] = U[:-2, :-1]
@@ -822,6 +859,68 @@ def crown_patch(kind, key, tex, seed, variant=0):
     out = render_levels(np.maximum(lv, 0), ins, kind, 3, hue)
     for y, x in zip(*np.nonzero(sh)):
         out[y, x] = R(SUN, 0) if h01(x, y, 97) < 0.7 else R(SUN, 1)
+    return out
+
+
+# ───────────────────────── 삼나무(杉) 원뿔 수관 ─────────────────────────
+def cone_draw(lv, hue, cx, top, base, halfw, seed, lit=4.8, tier=4.5):
+    """삼나무 한 그루 수관: 뾰족한 끝 + 아래로 처진 가지 층(층마다 끝이 1~2px 바깥으로 처지고 아랫면 한 줄 그늘).
+    빛은 왼쪽 위: 왼쪽 반 밝게, 오른쪽 반·층 아랫면 어둡게. 검은 윤곽 없음(재료 색 가장자리). 반환: 칠한 칸 마스크."""
+    H, W = lv.shape
+    S = np.zeros((H, W), bool)
+    hgt = max(4.0, base - top)
+    rows = {}
+    for y in range(int(top), int(math.ceil(base)) + 1):
+        if not (0 <= y < H): continue
+        t = (y - top) / hgt
+        k = (y - top) % tier
+        tier_i = int((y - top) // tier)
+        hw = halfw * (t ** 0.72) * (0.8 + 0.2 * (k / tier))       # 층 안에서 아래로 갈수록 넓어진다(층마다 폭이 들쭉)
+        hw *= 0.92 + h01(tier_i, 2, seed) * 0.16
+        hw += (h01(y, 1, seed) - 0.5) * 0.9
+        if y == int(top): hw = 0.4
+        rows[y] = (hw, k)
+        for x in range(int(cx - hw - 1), int(cx + hw + 2)):
+            if 0 <= x < W and abs(x + 0.5 - cx) <= hw + 0.25:
+                S[y, x] = True
+    for y in range(H):
+        if y not in rows: continue
+        hw, k = rows[y]
+        for x in range(W):
+            if not S[y, x]: continue
+            dx = (x + 0.5 - cx) / max(1.0, hw)
+            L = lit - dx * 1.6 - (y - top) / hgt * 0.8
+            if k > tier - 1.2 and y < base - 1 and h01(x, y, seed + 7) > 0.25 - dx * 0.2: L -= 1.3   # 층 아랫면 그늘(끊기고 오른쪽이 짙다)
+            elif k < 1.0: L += 0.7                                            # 층 윗면 빛
+            if abs(x + 0.5 - cx) < 0.8 and k < tier - 1.2: L += 0.4           # 가운데 줄기 쪽 결
+            if h01(x, y, seed + 3) < 0.05: L -= 1.5
+            right = not (x + 1 < W and S[y, x + 1]); below = not (y + 1 < H and S[y + 1, x])
+            left = not (x > 0 and S[y, x - 1])
+            if right or below: L = min(L, 1.6)
+            elif left: L = max(L, 4.5)
+            lv[y, x] = int(max(0, min(NLV - 1, math.floor(L + 0.5))))
+            hue[y, x] = h01(int(cx), int(top), seed + 5)
+    return S
+
+
+def sugi_cones(W, H, seed, variant, margin=1, min_top=1, band=(0.7, 1.0)):
+    """키트 칸 안을 덮는 삼나무 원뿔 줄(뒤 줄 → 앞 줄). 반환 [(cx, top, base, halfw, lit)]."""
+    out = []
+    rows_ = max(1, round(H / 11))
+    for r in range(rows_):
+        base = min(H - margin - 1, (r + 1) * H / rows_ + 3)
+        sp = 7.0 + h01(r, variant, seed) * 2.0
+        x = margin + 3 + h01(r, variant, seed + 1) * sp * 0.6
+        i = 0
+        while x < W - margin - 3:
+            hw = 4.8 + h01(i, r + variant * 7, seed + 2) * 2.2
+            hw = min(hw, x - margin, W - margin - 1 - x)
+            ht = min(base - min_top, 13 + h01(i, r + variant * 7, seed + 3) * 9) * (band[0] + h01(i, r, seed + 6) * (band[1] - band[0]))
+            top = max(min_top, base - ht)
+            if hw >= 2.5:
+                out.append((x, top, base, hw, 4.3 + h01(i, r + variant * 7, seed + 4) * 1.3))
+            x += sp * (0.85 + h01(i, r, seed + 5) * 0.35)
+            i += 1
     return out
 
 
@@ -859,6 +958,17 @@ def edge_crown_kit(kind, tex, seed, wide=2, rise=10, variant=0):
             lv[m] = tmp[m]; hue[m] = th[m]
             ins[pad:pad + H, pad:pad + W] |= m
         return render_levels(lv, ins, kind, pad, hue)
+    if kind == 'sugi':
+        # 삼나무 하늘선: 뾰족한 끝이 위 가장자리 위로 rise~rise+6 px 솟는 원뿔 2~3그루(좌우 끝 2열은 표준 칸)
+        n = 2 if wide == 2 else 3
+        for k in range(n):
+            cx = 2 + (k + 0.5) * (W - 4) / n + (h01(k, variant, seed) - 0.5) * 3
+            top = 16 - rise - h01(k, variant, seed + 1) * 6
+            base = 16 + 18 + h01(k, variant, seed + 2) * 8
+            hw = min(5.5 + h01(k, variant, seed + 3) * 1.5, cx - 2, W - 3 - cx)
+            S = cone_draw(lv, hue, cx, max(0, top), min(H - 3, base), hw, seed + k * 19, 4.8 + h01(k, variant, seed + 4))
+            ins[pad:pad + H, pad:pad + W] |= S
+        return render_levels(np.maximum(lv, 0), ins, kind, pad, hue)
     masses = []
     if wide == 2:
         masses = [(W / 2 - 0.5 + (h01(variant, 1, seed) - 0.5) * 3, 16 + 13 - rise * 0.5, 12.0, 11.0)]
@@ -891,6 +1001,8 @@ def tree_kit(key, seed, kind='broadleaf', variant=0):
     W, H = w * 16, h * 16
     a = np.zeros((H, W, 4), np.uint8)
     foot = H - 4
+    if kind == 'sugi':
+        return _sugi_tree(key, seed, variant)
     # 땅 그림자: 수관 그림자(오른쪽 아래로 밀린 덩이 모양) + 밑동 접지 그늘
     for ci, (cx, cy, rx, ry) in enumerate(crowns):
         gx, gy = cx + rx * 0.25, foot - 1
@@ -949,6 +1061,44 @@ def tree_kit(key, seed, kind='broadleaf', variant=0):
     return a
 
 
+SUGI_TREE_LAYOUTS = {'s2x4': (2, 4), 's2x5': (2, 5), 's3x5': (3, 5)}
+
+
+def _sugi_tree(key, seed, variant):
+    """한 그루 삼나무: 곧은 붉은 줄기(아래 1/4 드러남) + 층진 원뿔 수관 + 왼쪽 아래 비낀 길쭉한 그림자."""
+    w, h = SUGI_TREE_LAYOUTS[key]
+    W, H = w * 16, h * 16
+    a = np.zeros((H, W, 4), np.uint8)
+    foot = H - 4
+    cx = W / 2 + (h01(variant, 1, seed) - 0.5) * 2
+    hw = min(W / 2 - 1.5, 7.5 + w * 1.8 + h01(variant, 2, seed) * 1.5)
+    top = 1 + h01(variant, 3, seed) * 3
+    base = foot - 4 - h01(variant, 4, seed) * 3
+    # 땅 그림자(오른쪽 아래로 길게)
+    for y in range(foot - 3, H):
+        for x in range(W):
+            dx, dy = (x + 0.5 - cx - 3) / (hw * 0.9), (y + 0.5 - foot) / 2.6
+            if dx * dx + dy * dy <= 1 + (h01(x, y, seed + 9) - 0.5) * 0.3:
+                a[y, x] = R(PBX, 2) if dx * dx + dy * dy < 0.5 else R(PBX, 3)
+    tw = 3 + (variant % 2)
+    tx = int(cx - tw / 2)
+    for y in range(int(base) - 6, foot + 1):
+        fl = 1 if y >= foot - 1 else 0
+        for x in range(tx - fl, tx + tw + fl):
+            i = x - (tx - fl)
+            a[y, x] = R(BARK, 4 if i == 0 else (2 if i == tw + 2 * fl - 1 else 3))
+        a[y, tx - fl - 1] = R(PBX, 1); a[y, tx + tw + fl] = R(PBX, 1)
+    lv = np.full((H, W), -1, np.int16)
+    hue = np.zeros((H, W), np.float32)
+    S = cone_draw(lv, hue, cx, top, base, hw, seed + variant * 7, 5.0, tier=4.0 + (variant % 2))
+    ins = np.zeros((H + 6, W + 6), bool)
+    ins[3:-3, 3:-3] = S
+    crown = render_levels(np.maximum(lv, 0), ins, 'sugi', 3, hue)
+    m = crown[:, :, 3] > 0
+    a[m] = crown[m]
+    return a
+
+
 # ───────────────────────── 앞줄 줄기 띠 ─────────────────────────
 def _bark(y, i, tw, top_dark, lit_x=0):
     """나무껍질 단(0..6): 왼쪽 1px 빛, 오른쪽 그늘, 위쪽(수관 밑)은 어둡다."""
@@ -960,7 +1110,7 @@ def _bark(y, i, tw, top_dark, lit_x=0):
     return L
 
 
-def _broadleaf_band(a, P, part, variant, s, x0, x1, H):
+def _broadleaf_band(a, P, part, variant, s, x0, x1, H, kind='broadleaf'):
     """활엽 숲 벽(S 가장자리 밑 한 칸). 버들항식: 수관 밑 그늘은 검정이 아닌 짙은 청록, 줄기는 굵기 3~8px·뿌리 퍼짐·이끼,
     위에서 잎 뭉치가 1~6px 늘어지고, 밑동에는 고사리·덤불 덩이, 맨 아래는 투명(땅이 비친다) + 잔디 위 그늘 점."""
     floor_y = H - 3
@@ -1065,7 +1215,7 @@ def _broadleaf_band(a, P, part, variant, s, x0, x1, H):
     for y in range(H):
         for x in range(16):
             if lv[y, x] >= 0:
-                P(x, y, _lv_color('broadleaf', int(lv[y, x]), x, y, 7, hue=0.6))
+                P(x, y, _lv_color(kind, int(lv[y, x]), x, y, 7, hue=0.6))
     # 6) 잔디 위 그늘(숲 벽 밑, 두 단 덩이 — 바둑 무늬 아님). 아래 끝은 2~3px 들쭉.
     for x in range(16):
         if open_ and not (3 <= x <= 12): continue
@@ -1081,7 +1231,7 @@ def trunk_band(kind, part, variant):
     """수관 덩이 아랫줄(S 가장자리) 바로 밑 칸. part: 'L','M','R','one'.
     활엽: 1칸(16x16). 대숲: 2칸(16x32) — 대나무는 키가 커서 3/4 정면이 길다.
     큰 덩이(L/M/R): 줄기 사이가 숲 속 어둠. 'one'(폭 1칸 끝): 줄기 하나 + 잔디."""
-    H = 16 if kind == 'broadleaf' else 32
+    H = 16 if _broad(kind) else 32
     a = np.zeros((H, 16, 4), np.uint8)
     s = 200 + variant * 13 + (ord(part[0]) * 3)
 
@@ -1092,8 +1242,8 @@ def trunk_band(kind, part, variant):
     x0 = 3 if part in ('L', 'one') else 0
     x1 = 12 if part in ('R', 'one') else 15
     floor_y = H - 4
-    if kind == 'broadleaf':
-        return _broadleaf_band(a, P, part, variant, s, x0, x1, H)
+    if _broad(kind):
+        return _broadleaf_band(a, P, part, variant, s + (0 if kind == 'broadleaf' else 7), x0, x1, H, kind)
 
     # ── 대숲 줄기 벽(2칸) ──
     return _bamboo_band(a, P, part, variant, s, x0, x1, H)
@@ -1259,13 +1409,13 @@ class Kit:
         self.bands = build_bands(kind)
         # 가장 흔한 곧은 가장자리(위·아래·왼·오른)는 윤곽 변형 × 몸통 변형을 섞어 칸마다 다르게 한다
         nt = len(self.tex)
-        self.n_edge = [self.tiles[EDGE_MASK]] + ([paint_canopy_tile(EDGE_MASK, kind, self.tex[(v * 3) % nt], v % 4) for v in range(1, 6)] if kind == 'broadleaf' else [])
-        self.s_edge = [self.tiles[S_EDGE_MASK]] + ([paint_canopy_tile(S_EDGE_MASK, kind, self.tex[v % nt]) for v in range(1, 6)] if kind == 'broadleaf' else [])
-        self.w_edge = [self.tiles[W_EDGE_MASK]] + ([paint_canopy_tile(W_EDGE_MASK, kind, self.tex[(v * 5) % nt]) for v in range(1, 4)] if kind == 'broadleaf' else [])
-        self.e_edge = [self.tiles[E_EDGE_MASK]] + ([paint_canopy_tile(E_EDGE_MASK, kind, self.tex[(v * 7) % nt]) for v in range(1, 4)] if kind == 'broadleaf' else [])
+        self.n_edge = [self.tiles[EDGE_MASK]] + ([paint_canopy_tile(EDGE_MASK, kind, self.tex[(v * 3) % nt], v % 4) for v in range(1, 6)] if _broad(kind) else [])
+        self.s_edge = [self.tiles[S_EDGE_MASK]] + ([paint_canopy_tile(S_EDGE_MASK, kind, self.tex[v % nt]) for v in range(1, 6)] if _broad(kind) else [])
+        self.w_edge = [self.tiles[W_EDGE_MASK]] + ([paint_canopy_tile(W_EDGE_MASK, kind, self.tex[(v * 5) % nt]) for v in range(1, 4)] if _broad(kind) else [])
+        self.e_edge = [self.tiles[E_EDGE_MASK]] + ([paint_canopy_tile(E_EDGE_MASK, kind, self.tex[(v * 7) % nt]) for v in range(1, 4)] if _broad(kind) else [])
         self.patches = {}
-        for key in CROWN_LAYOUTS[kind]:
-            for v in range(N_HEAD_VARIANTS.get(key, 2) if kind == 'broadleaf' else 2):
+        for key in CROWN_LAYOUTS[_layout_kind(kind)]:
+            for v in range(N_HEAD_VARIANTS.get(key, 2) if _broad(kind) else 2):
                 self.patches[(key, v)] = crown_patch(kind, key, self.tex[0], 700 + v * 31 + len(key) * 7, v)
         self.edge_kits = ([edge_crown_kit(kind, self.tex[0], 900 + v * 41, 2, rise=(5, 9, 12)[v], variant=v) for v in range(3)] +
                           [edge_crown_kit(kind, self.tex[0], 960 + v * 41, 3, rise=(8, 12)[v], variant=v) for v in range(2)])
@@ -1274,6 +1424,10 @@ class Kit:
             for key in TREE_LAYOUTS:
                 for v in range(4):
                     self.trees[(key, v)] = tree_kit(key, 1100 + v * 53 + len(key), variant=v)
+        elif kind == 'sugi':           # 한 그루 느티·벚은 jp_street_trees(가로수 3×4, 사용자 승인 시안)를 쓴다 — 여기서 다시 그리지 않는다
+            for key in SUGI_TREE_LAYOUTS:
+                for v in range(4):
+                    self.trees[(key, v)] = _sugi_tree(key, 1300 + v * 53 + len(key), v)
 
     def unique_cells(self):
         cells = set()
@@ -1303,7 +1457,7 @@ def _head_ok(canopy, x, y, kind):
     """머리 키트를 얹을 수 있는 칸: 속칸(255). 활엽은 아래 가장자리 칸도 된다(아랫선을 줄기 띠가 만들어 칸 그림이 속칸과 같은 결이다)."""
     m = canon(mask_at(canopy, x, y))
     if m == 255: return True
-    return kind == 'broadleaf' and (m | 4 | 32 | 64) == 255
+    return _broad(kind) and (m | 4 | 32 | 64) == 255
 
 
 def paint_forest(base, canopy, kit, seed=0, patch_cover=0.95):
@@ -1362,13 +1516,13 @@ def paint_forest(base, canopy, kit, seed=0, patch_cover=0.95):
             else:
                 x += 1
     # 4) 몸통 위 큰 수관 머리 — 위에서 아래로 훑으며 큰 키트부터 촘촘히
-    keys = [k for k in CROWN_LAYOUTS[kind] if CROWN_LAYOUTS[kind][k][0] * CROWN_LAYOUTS[kind][k][1] >= 4]
+    keys = [k for k in CROWN_LAYOUTS[_layout_kind(kind)] if CROWN_LAYOUTS[_layout_kind(kind)][k][0] * CROWN_LAYOUTS[_layout_kind(kind)][k][1] >= 4]
     for y in range(H):
         for x in range(W):
             if used[y, x]: continue
             order = sorted([k for k in keys if k != 'c1x1'], key=lambda k: GA.h01(x, y, seed + 7 + sum(map(ord, k)))) + (['c1x1'] if 'c1x1' in keys else [])
             for key in order:
-                w, h, _ = CROWN_LAYOUTS[kind][key]
+                w, h, _ = CROWN_LAYOUTS[_layout_kind(kind)][key]
                 if x + w > W or y + h > H: continue
                 if any(used[y + j, x + i] or not canopy[y + j, x + i] or not _head_ok(canopy, x + i, y + j, kind)
                        for j in range(h) for i in range(w)): continue
@@ -1378,14 +1532,14 @@ def paint_forest(base, canopy, kit, seed=0, patch_cover=0.95):
                 used[y:y + h, x:x + w] = True
                 break
     # 5) 활엽: 둘째 머리 층(한 층 위) — 첫 층 키트 경계에 걸쳐 엇갈리게 얹어 키트 사이 골을 덮는다(덩이가 서로 겹친 지붕)
-    if kind == 'broadleaf':
+    if _broad(kind):
         used2 = np.zeros((H, W), bool)
         big = [k for k in keys if k != 'c1x1']
         for y in range(1, H):
             for x in range(1, W):
                 if used2[y, x] or GA.h01(x, y, seed + 31) > 0.5: continue
                 for key in sorted(big, key=lambda k: GA.h01(x, y, seed + 37 + sum(map(ord, k)))):
-                    w, h, _ = CROWN_LAYOUTS[kind][key]
+                    w, h, _ = CROWN_LAYOUTS[_layout_kind(kind)][key]
                     if x + w > W or y + h > H: continue
                     if any(used2[y + j, x + i] or not canopy[y + j, x + i] or not _head_ok(canopy, x + i, y + j, kind)
                            for j in range(h) for i in range(w)): continue

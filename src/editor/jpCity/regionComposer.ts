@@ -5,7 +5,7 @@
 import type { JpRegion, JpRegionCategory, JpRegionOp, JpZoneHint } from "./japaneseRegionsCatalog";
 
 export interface JpRegionStep {
-  /** paint_forest: args.kinds(칸마다 0 숲 아님·1 활엽·2 대숲, 길이 W*H)·args.seed — forestPainter.paintJpForest 가 칠한다. */
+  /** paint_forest: args.kinds(칸마다 0 숲 아님·1 활엽·2 대숲·3 벚나무·4 삼나무·5 단풍, 길이 W*H)·args.seed — forestPainter.paintJpForest 가 칠한다. */
   readonly tool: "fill_region" | "stamp_object" | "paint_forest";
   readonly args: Record<string, unknown>;
   readonly note: string;
@@ -1079,15 +1079,21 @@ export function planJpRegionScene(input: {
         }
         comp++;
         if (region.id === "bamboo_mountain_trail") {
-          // 서쪽은 대숲, 동쪽은 활엽 — 경계 열 한 줄은 비워 두 숲이 서로 가장자리를 갖게 한다
+          // 서쪽은 대숲, 동쪽은 삼나무 — 경계 열 한 줄은 비워 두 숲이 서로 가장자리를 갖게 한다
           const n = Math.sin(seed * 0.9) * 2.5;
           for (const i of cells) {
             const x = i % W;
             const edge = W * 0.48 - n;
-            kinds[i] = Math.abs(x - edge) < 0.5 ? 0 : x < edge ? 2 : 1;
+            kinds[i] = Math.abs(x - edge) < 0.5 ? 0 : x < edge ? 2 : 4;   // 동쪽은 삼나무(옛 흩뿌리기와 같은 짝)
           }
-        } else if (bambooPool && cells.length >= 12 && rand() < 0.25) {
-          for (const i of cells) kinds[i] = 2;
+        } else {
+          // 덩이마다 수종: 산·신사·절 숲은 삼나무가 주(사토야마 杉林), 봄은 벚나무 숲, 가끔 대숲, 나머지는 활엽(느티나무·잡목)
+          const q = rand();
+          const sugiBias = /mountain|shrine|temple|gorge|forest_railway|jizo|ropeway|ruins/u.test(region.id) ? 0.55 : 0.2;
+          const sakuraBias = region.season === "spring" ? 0.35 : region.id.includes("castle") || region.id.includes("park") ? 0.25 : 0.05;
+          const broad = region.season === "autumn" ? 5 : 1;   // 가을 지역의 활엽 숲은 단풍(계약 계절 규칙: 활엽수 잎을 단풍 램프로)
+          const k = q < sugiBias ? 4 : q < sugiBias + sakuraBias ? 3 : (bambooPool && cells.length >= 12 && q < sugiBias + sakuraBias + 0.2) ? 2 : broad;
+          for (const i of cells) kinds[i] = k;
         }
       }
     }
