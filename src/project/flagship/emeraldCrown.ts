@@ -526,8 +526,8 @@ function tunePacing(project: Project): void {
       enemy.rewards = { ...enemy.rewards, exp: enemy.rewards.exp * 2 };
     }
   }
-  // 신전 보스는 배지 하나 직후라 Lv9 셋, 챔피언 나루는 Lv10 넷(마지막 승부라 한 단 높게).
-  for (const enemy of enemies) if (/^mx_enemy_mx_map_observatory_boss_\d+$/.test(enemy.id)) rescaleEnemy(enemy, 9);
+  // 신전 보스는 배지 하나 직후라 Lv8 셋(Lv9 셋에는 관장을 막 이긴 Lv9+Lv5 파티가 두 번 졌다, 2026-10-20), 챔피언 나루는 Lv10 넷(마지막 승부라 높게).
+  for (const enemy of enemies) if (/^mx_enemy_mx_map_observatory_boss_\d+$/.test(enemy.id)) rescaleEnemy(enemy, 8);
   const trim: Record<string, number> = { mx_troop_mx_map_observatory_boss: 3, mx_troop_mx_map_league_0_league_challenge: 4 };
   for (const troop of project.database.troops) {
     const keep = trim[troop.id];
