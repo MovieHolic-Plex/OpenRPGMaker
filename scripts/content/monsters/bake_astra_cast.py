@@ -2,7 +2,7 @@
   python3 scripts/content/monsters/bake_astra_cast.py <cid>=<char-gen job out 폴더> ...
 - char-gen 의 흉상·전신은 화소 격자를 정수배로 키운 그림이다. 칸 크기를 재서 원래 도트 크기로 되돌린다(칸 가운데 화소, 다시 그리지 않는다).
 - public/assets/emerald-monster/cast/<cid>/bust-<표정>.png · full-<표정>.png
-- 트레이너 소개 그림(naru·yurim·muyeong): public/assets/battle-trainers/astra_<cid>/front.png — 128×192 투명 판에 전신 1배, 발이 바닥.
+- 트레이너 소개 그림(naru·yurim·muyeong): fronts=<dir> 로 <dir>/<cid>/front.png(128×128, 64격자 ×2) → public/assets/battle-trainers/astra_<cid>/front.png.
 - 출처: public/assets/emerald-monster/cast/provenance.json (원본 화소 해시)."""
 import hashlib, json, sys
 from collections import Counter
@@ -54,6 +54,17 @@ prov_path = OUT / 'provenance.json'
 prov = json.loads(prov_path.read_text()) if prov_path.exists() else {'judge': 'char-gen 눈가림 표정 판정(Codex CLI) 통과분만 — KEEP 참고', 'source': 'char-gen (OPRN 자체 생성기, 우리 산출물) · 후보는 감독이 골랐다(by: supervisor) · 유료 대체 경로·스토어 크레딧 사용 없음', 'cast': {}}
 for arg in sys.argv[1:]:
     cid, src = arg.split('=', 1); src = Path(src)
+    if cid == 'fronts':
+        # 트레이너 소개 앞모습: char-gen 으로 따로 그린 GBA 비율 128×128(64격자 ×2, 주인공 뒷모습과 같은 키). <dir>/<cid>/front.png
+        for t in sorted(TRAINERS):
+            im = Image.open(src / t / 'front.png').convert('RGBA')
+            if im.size != (128, 128): raise SystemExit(f'{t} 앞모습 {im.size} 은 128×128 이 아니다')
+            a = np.array(im)
+            if not (a[0::2, 0::2] == a[1::2, 1::2]).all(): raise SystemExit(f'{t} 앞모습이 2×2 격자가 아니다')
+            td = ROOT / f'public/assets/battle-trainers/astra_{t}'; td.mkdir(parents=True, exist_ok=True)
+            im.save(td / 'front.png', optimize=True)
+            prov.setdefault('trainerFronts', {})[t] = {'from': str(src / t / 'front.png'), 'size': [128, 128], 'pixelSha256': sha(im)}
+        continue
     dst = OUT / cid; dst.mkdir(parents=True, exist_ok=True)
     rec = {'from': str(src), 'pictures': {}}
     for f in sorted(src.glob('bust-*.png')) + sorted(src.glob('full-*.png')):
@@ -69,13 +80,6 @@ for arg in sys.argv[1:]:
     card.alpha_composite(full, ((card.width - full.width) // 2, card.height - 8 - full.height))
     card.save(dst / 'card-base.png', optimize=True)
     rec['pictures']['card-base.png'] = {'size': list(card.size), 'pixelSha256': sha(card)}
-    if cid in TRAINERS:
-        full = Image.open(dst / 'full-base.png').convert('RGBA')
-        if full.width > 128 or full.height > 190: raise SystemExit(f'{cid} 전신 {full.size} 이 128×192 판보다 크다')
-        board = Image.new('RGBA', (128, 192), (0, 0, 0, 0)); board.alpha_composite(full, ((128 - full.width) // 2, 190 - full.height))
-        td = ROOT / f'public/assets/battle-trainers/astra_{cid}'; td.mkdir(parents=True, exist_ok=True)
-        board.save(td / 'front.png', optimize=True)
-        rec['trainerFront'] = f'battle-trainers/astra_{cid}/front.png'
     prov['cast'][cid] = rec
     print(cid, {k: v['size'] for k, v in rec['pictures'].items() if k.endswith('base.png')})
 prov_path.write_text(json.dumps(prov, ensure_ascii=False, indent=1) + '\n')
