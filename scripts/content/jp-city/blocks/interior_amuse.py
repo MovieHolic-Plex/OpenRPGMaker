@@ -510,6 +510,25 @@ def _prize_shelf(c):
     outline(c, 0, 0, W, 32)
 
 
+@R.obj('am-autodoor', '게임 센터 자동문 문턱', w=2, h=1, up=0, kind='flat', use=('travel',), tags=GC + ('입구', '문', '자동문'),
+       place='게임 센터 맨 아래 줄 출입구 틈 두 칸',
+       desc='게임 센터 입구 자동문 문턱 2×1(밟는 바닥 무늬) — 짙은 틀에 검게 짙은 색 유리(선팅) 두 짝이 좌우로 밀려 열려 있고 틀 위·안쪽 끝에 분홍·청록 네온 띠, 은색 레일 두 줄, 앞쪽 짙은 보라 매트. 편의점 자동문(밝은 은색 틀·맑은 유리)과 다르다.')
+def _am_autodoor(c):
+    rc(c, 0, 0, 32, 8, kc('yoru', -2)); hl(c, 10, 0, 12, kc('sumi', 0))                                   # 열린 틈: 어두운 입구 안쪽
+    for x0 in (0, 21):                                                                                   # 밀린 두 짝(각 11px): 짙은 틀 + 선팅 유리
+        rc(c, x0, 0, 11, 8, kc('yoru', 0)); hl(c, x0, 7, 11, kc('sumi', 0))
+        rc(c, x0 + 2, 1, 7, 5, kc('garasu', -2)); hl(c, x0 + 2, 1, 7, kc('garasu', -1))
+        px(c, x0 + 3, 4, kc('garasu', 0)); px(c, x0 + 4, 3, kc('garasu', 0)); px(c, x0 + 5, 2, kc('garasu', 1))   # 유리 반사 사선(어둡게)
+        px(c, x0 + 6, 4, kc('neonP', -1)); px(c, x0 + 7, 3, kc('neonC', -1))                              # 유리에 비친 네온
+        vl(c, x0 + 1, 1, 6, kc('yoru', 1)); vl(c, x0 + 9, 1, 6, kc('yoru', -1))
+        hl(c, x0, 0, 11, kc('neonP', 1)); px(c, x0 + (0 if x0 else 10), 0, kc('neonP', 0))                # 위 네온 띠(분홍)
+    vl(c, 10, 0, 8, kc('neonC', 1)); vl(c, 21, 0, 8, kc('neonC', 1)); px(c, 10, 7, kc('neonC', 0)); px(c, 21, 7, kc('neonC', 0))   # 안쪽 끝 네온(청록)
+    hl(c, 0, 8, 32, kc('tekko', 2)); hl(c, 0, 9, 32, kc('tekko', -1)); hl(c, 0, 10, 32, kc('tekko', 3)); hl(c, 0, 11, 32, kc('yoru', -2))   # 레일 두 줄
+    rc(c, 3, 12, 26, 4, kc('murasaki', -1)); hl(c, 3, 12, 26, kc('murasaki', 1)); vl(c, 3, 12, 4, kc('murasaki', 0)); vl(c, 28, 12, 4, kc('murasaki', -2))
+    rc(c, 5, 13, 22, 2, kc('murasaki', -2))
+    for x0, y0 in ((8, 13), (14, 14), (19, 13), (23, 14)): px(c, x0, y0, kc('neonP', -1))
+
+
 @R.obj('am-neon-sign', '네온 장식(별·번개)', w=1, kind='hang', hrows=2, tags=GC + ('네온', '장식'),
        place='게임 센터 북쪽 벽면 윗줄 — 의자·낮은 기기 위(키 큰 기기 위에 걸면 기기 꼭대기에 가린다). 둘을 띄워 건다. 글자 대신 모양만.',
        desc='짙은 세로 판 위에 분홍 네온관 별(위)과 청록 네온관 번개(아래)가 빛나는 걸이 장식 1칸 — 관마다 같은 색 낮은 단 번짐, 노란 반짝이 점. 글자·로고 없음.')

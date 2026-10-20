@@ -597,14 +597,23 @@ def _glass_door(c):
     rc(c, 3, 29, 10, 3, kc('tekko', 2)); hl(c, 3, 29, 10, kc('tekko', 4)); hl(c, 3, 31, 10, kc('tekko', -2))
 
 
-@R.obj('of-fire-door', '비상계단 철문(열림)', kind='door', use=('travel', 'open'), tags=TAGS + ('비상구', '문'),
+@R.obj('of-fire-door', '비상계단 철문(열림)', kind='door', use=('travel', 'open'), tags=TAGS + ('비상구', '문', '철문', '방화문'),
        place='사무층·로비와 비상계단통 사이 가로 칸막이의 1칸 틈 칸',
-       desc='회색 철제 방화문이 열려 문틀 옆에 붙어 있는 비상계단 출입구. 두꺼운 문짝 옆면과 레버 손잡이, 철 문턱.')
+       desc='짙은 철 문틀에 회녹색 칠 철제 방화문이 서쪽으로 열려 붙은 비상계단 출입구 — 두꺼운 문짝 옆면, 가로 푸시 바·레버, 문틀 위 도어 클로저와 팔, 철 문턱. 유리 없음.')
 def _fire_door(c):
-    _door_frame(c, 'conc')
-    rc(c, 3, 4, 4, 26, kc('conc', 1)); vl(c, 3, 4, 26, kc('conc', 3)); vl(c, 6, 4, 26, kc('conc', -2)); rc(c, 5, 15, 2, 2, kc('tekko', 4))   # 열린 문짝(서쪽)
-    hl(c, 3, 4, 4, kc('conc', 4))
-    rc(c, 3, 29, 10, 3, kc('tekko', 1)); hl(c, 3, 29, 10, kc('tekko', 3)); hl(c, 3, 31, 10, kc('tekko', -2))
+    _door_frame(c, 'yoru')
+    L = lambda t: kc('lino', t)
+    rc(c, 3, 5, 5, 24, L(0)); vl(c, 3, 5, 24, L(1)); hl(c, 3, 5, 5, L(2)); hl(c, 3, 28, 5, L(-2))      # 열린 문짝 앞면(회녹색 칠 철판)
+    vl(c, 4, 6, 22, L(1)); px(c, 5, 9, L(1)); px(c, 6, 21, L(-1)); px(c, 4, 24, L(-1))                    # 칠 얼룩·밝은 쪽
+    rc(c, 8, 6, 2, 23, L(-2)); vl(c, 8, 6, 23, L(-1)); px(c, 8, 6, L(1)); px(c, 9, 6, L(-1))              # 두꺼운 문짝 옆면(4cm 철판)
+    vl(c, 10, 7, 22, kc('yoru', -3))                                                                      # 문짝 그림자
+    rc(c, 3, 15, 5, 2, kc('tekko', 1)); hl(c, 3, 15, 5, kc('tekko', 3)); px(c, 3, 15, kc('tekko', -1))   # 가로 푸시 바
+    rc(c, 6, 13, 2, 1, kc('tekko', 3)); px(c, 7, 14, kc('tekko', -1))                                     # 레버
+    rc(c, 3, 25, 5, 1, L(-1))                                                                             # 아래 보강 띠
+    rc(c, 4, 4, 4, 2, kc('tekko', -1)); hl(c, 4, 4, 4, kc('tekko', 2)); px(c, 7, 5, kc('tekko', -3))      # 도어 클로저 몸통(문틀 위)
+    px(c, 8, 5, kc('tekko', 2)); px(c, 9, 6, kc('tekko', 2)); px(c, 9, 7, kc('tekko', 0))                 # 클로저 팔
+    rc(c, 3, 29, 10, 3, kc('tekko', 0)); hl(c, 3, 29, 10, kc('tekko', 3)); hl(c, 3, 31, 10, kc('tekko', -3))   # 철 문턱
+    for x in (5, 9): px(c, x, 30, kc('tekko', -1))
 
 
 @R.obj('of-window-blind', '블라인드 창', w=2, kind='hang', hrows=2, tags=TAGS + ('창',),

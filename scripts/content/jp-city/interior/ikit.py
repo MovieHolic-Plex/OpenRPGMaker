@@ -38,6 +38,7 @@ import numpy as np                                             # noqa: E402
 from PIL import Image                                          # noqa: E402
 from modern_style_bible_proof import K, Cv, RAMPS              # noqa: E402
 import categories as CATS                                       # noqa: E402
+import outline_rule                                             # noqa: E402
 
 OL = K('sumi', -1)
 TOP_SHADE = (-2, -2, -1, -1)            # 벽면 윗줄 위 4행(천장 띠 밑 그늘) — room2.py 0.62~0.86 배
@@ -160,7 +161,8 @@ class Registry:
         o = self.objs[id_]
         U = math.ceil(o['up'] / 16)
         rows = 2 if o['kind'] == 'door' else 3 if o['kind'] == 'sidedoor' else o['hrows'] if o['kind'] == 'hang' else U + o['h']
-        return self._canvas(o['draw'], o['w'] * 16, rows * 16), U
+        a = self._canvas(o['draw'], o['w'] * 16, rows * 16)
+        return outline_rule.outline(a, id_, o), U          # 기물별 외곽선 규칙(검정·재료색·없음) — outline_rule.py
 
     def floor_cell(self, id_, x, y, sh):
         f = self.floors[id_]

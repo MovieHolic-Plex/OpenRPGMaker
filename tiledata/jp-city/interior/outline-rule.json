@@ -1,0 +1,2312 @@
+{
+ "note": "outline_rule.py --survey 가 쓴다. items = 규칙을 쓰는 기물과 놓이는 바닥·벽 상대 휘도. redraw83 = 3/4 다시 그리기 83종.",
+ "T": 0.05,
+ "LIGHT": 0.55,
+ "redraw83": [
+  "cs-item-helmet-shelf",
+  "cs-pay-machine",
+  "hp-item-locker",
+  "as-podium-broken",
+  "as-locker-open",
+  "ug-panel",
+  "ug-pump",
+  "wh-pump",
+  "am-crane",
+  "am-crane-big",
+  "am-prize-shelf",
+  "am-arcade-n",
+  "am-rhythm",
+  "am-racing",
+  "am-pachinko-n",
+  "am-pachinko-back",
+  "fr-booth-n",
+  "fr-drink-bar",
+  "fr-dessert-case",
+  "fr-rice-jar",
+  "fd-stockpot",
+  "fd-fridge",
+  "fd-sake-shelf",
+  "fd-ticket-machine",
+  "fd-neta-case",
+  "fd-coffee-machine",
+  "gy-picture-books",
+  "h2-ac-outdoor",
+  "h2-old-fridge",
+  "hs-patient-locker",
+  "hs-drug-drawers",
+  "ht-slipper-rack",
+  "zaisu-e",
+  "zaisu-w",
+  "kr-drink-bar",
+  "kr-ice-cream",
+  "kr-speaker",
+  "cv-gondola",
+  "cv-gondola-end",
+  "cv-baskets",
+  "cv-open-case",
+  "cv-meat-case",
+  "cv-magazine",
+  "cv-coffee",
+  "cv-back-shelf",
+  "cv-atm",
+  "cv-basket-stack",
+  "cv-trash",
+  "fridge",
+  "microwave-rack",
+  "cupboard",
+  "trash-bins",
+  "bookshelf",
+  "of-desk-n",
+  "of-cabinet",
+  "of-server-rack",
+  "of-pantry-sink",
+  "of-vending",
+  "pb-locker",
+  "pb-basket-shelf",
+  "pb-milk-fridge",
+  "pb-dryer",
+  "pb-vending",
+  "pb-changer",
+  "pb-file-cabinet",
+  "pb-lost-found-shelf",
+  "pb-steel-locker",
+  "pb-med-cabinet",
+  "pb-magazine-rack",
+  "sc-cleaning-locker",
+  "sc-washstand",
+  "sh-wall-shelf",
+  "sh-bread-shelf",
+  "sh-bookshelf",
+  "sh-drug-shelf",
+  "sh-oven",
+  "sh-flower-cooler",
+  "sh-proof-rack",
+  "sh-returns-shelf",
+  "sh-stock-shelf",
+  "sh-basket-shelf",
+  "st-kiosk",
+  "butsudan"
+ ],
+ "items": {
+  "cs-item-helmet-shelf": {
+   "surf": [
+    0.087,
+    0.213,
+    0.242
+   ],
+   "on": [
+    "f:cs-slab",
+    "w:cs-mesh-sheet",
+    "w:cs-wall-bare"
+   ]
+  },
+  "cs-pay-machine": {
+   "surf": [
+    0.095,
+    0.26
+   ],
+   "on": [
+    "f:cs-parking-floor",
+    "w:cs-parking-wall"
+   ]
+  },
+  "hp-item-locker": {
+   "surf": [
+    0.151,
+    0.164
+   ],
+   "on": [
+    "f:hp-floor-dirty",
+    "w:hp-wall-peel"
+   ]
+  },
+  "as-podium-broken": {
+   "surf": [
+    0.102
+   ],
+   "on": [
+    "f:as-wood-rotten",
+    "w:as-wall-peel"
+   ]
+  },
+  "as-locker-open": {
+   "surf": [
+    0.102,
+    0.171,
+    0.175,
+    0.212
+   ],
+   "on": [
+    "f:as-tile-cracked",
+    "f:as-wood-rotten",
+    "w:as-wall-peel",
+    "w:as-wall-vine"
+   ]
+  },
+  "ug-panel": {
+   "surf": [
+    0.13,
+    0.147
+   ],
+   "on": [
+    "f:ug-room-floor",
+    "w:ug-room-wall"
+   ]
+  },
+  "ug-pump": {
+   "surf": [
+    0.13
+   ],
+   "on": [
+    "f:ug-room-floor",
+    "w:ug-room-wall"
+   ]
+  },
+  "wh-pump": {
+   "surf": [
+    0.118,
+    0.137
+   ],
+   "on": [
+    "f:wh-warehouse-floor",
+    "w:wh-service-wall"
+   ]
+  },
+  "am-crane": {
+   "surf": [
+    0.014,
+    0.078
+   ],
+   "on": [
+    "f:am-carpet",
+    "w:am-wall"
+   ]
+  },
+  "am-crane-big": {
+   "surf": [
+    0.014,
+    0.078
+   ],
+   "on": [
+    "f:am-carpet",
+    "w:am-wall"
+   ]
+  },
+  "am-prize-shelf": {
+   "surf": [
+    0.014,
+    0.049,
+    0.078,
+    0.172
+   ],
+   "on": [
+    "f:am-carpet",
+    "f:am-pachinko-carpet",
+    "w:am-mirror-wall",
+    "w:am-wall"
+   ]
+  },
+  "am-arcade-n": {
+   "surf": [
+    0.014
+   ],
+   "on": [
+    "f:am-carpet",
+    "w:am-wall"
+   ]
+  },
+  "am-rhythm": {
+   "surf": [
+    0.014,
+    0.078
+   ],
+   "on": [
+    "f:am-carpet",
+    "w:am-wall"
+   ]
+  },
+  "am-racing": {
+   "surf": [
+    0.014,
+    0.078
+   ],
+   "on": [
+    "f:am-carpet",
+    "w:am-wall"
+   ]
+  },
+  "am-pachinko-n": {
+   "surf": [
+    0.049,
+    0.172
+   ],
+   "on": [
+    "f:am-pachinko-carpet",
+    "w:am-mirror-wall"
+   ]
+  },
+  "am-pachinko-back": {
+   "surf": [
+    0.049
+   ],
+   "on": [
+    "f:am-pachinko-carpet",
+    "w:am-mirror-wall"
+   ]
+  },
+  "fr-booth-n": {
+   "surf": [
+    0.211
+   ],
+   "on": [
+    "f:fr-floor",
+    "w:fr-wall"
+   ]
+  },
+  "fr-drink-bar": {
+   "surf": [
+    0.211,
+    0.357
+   ],
+   "on": [
+    "f:fr-floor",
+    "w:fr-wall"
+   ]
+  },
+  "fr-dessert-case": {
+   "surf": [
+    0.211,
+    0.357
+   ],
+   "on": [
+    "f:fr-floor",
+    "w:fr-wall"
+   ]
+  },
+  "fr-rice-jar": {
+   "surf": [
+    0.082,
+    0.364
+   ],
+   "on": [
+    "f:fr-kitchen-floor",
+    "w:fd-plaster"
+   ]
+  },
+  "fd-stockpot": {
+   "surf": [
+    0.082,
+    0.364,
+    0.418,
+    0.555
+   ],
+   "on": [
+    "f:fd-kitchen-tile",
+    "f:fr-kitchen-floor",
+    "w:fd-plaster",
+    "w:kitchen-panel"
+   ]
+  },
+  "fd-fridge": {
+   "surf": [
+    0.058,
+    0.082,
+    0.364,
+    0.418,
+    0.555
+   ],
+   "on": [
+    "f:fd-kitchen-tile",
+    "f:fr-kitchen-floor",
+    "w:fd-plaster",
+    "w:fd-wood-wall",
+    "w:kitchen-panel"
+   ]
+  },
+  "fd-sake-shelf": {
+   "surf": [
+    0.364,
+    0.418
+   ],
+   "on": [
+    "f:fd-kitchen-tile",
+    "w:fd-plaster"
+   ]
+  },
+  "fd-ticket-machine": {
+   "surf": [
+    0.076,
+    0.088,
+    0.364
+   ],
+   "on": [
+    "f:fd-tile-red",
+    "f:fr-gyudon-floor",
+    "w:fd-plaster"
+   ]
+  },
+  "fd-neta-case": {
+   "surf": [
+    0.058,
+    0.076,
+    0.082,
+    0.088,
+    0.113,
+    0.211,
+    0.357,
+    0.364,
+    0.418,
+    0.555,
+    0.597,
+    0.794
+   ],
+   "on": [
+    "f:fd-kitchen-tile",
+    "f:fd-tile-red",
+    "f:fd-wood-dark",
+    "f:fr-floor",
+    "f:fr-gyudon-floor",
+    "f:fr-kitchen-floor",
+    "f:ml-floor",
+    "w:fd-plaster",
+    "w:fd-wood-wall",
+    "w:fr-wall",
+    "w:kitchen-panel",
+    "w:ml-wall"
+   ]
+  },
+  "fd-coffee-machine": {
+   "surf": [
+    0.058,
+    0.113
+   ],
+   "on": [
+    "f:fd-wood-dark",
+    "w:fd-wood-wall"
+   ]
+  },
+  "gy-picture-books": {
+   "surf": [
+    0.568,
+    0.583
+   ],
+   "on": [
+    "f:gy-kinder-floor",
+    "w:gy-kinder-wall"
+   ]
+  },
+  "h2-ac-outdoor": {
+   "surf": [
+    0.227,
+    0.45
+   ],
+   "on": [
+    "f:h2-veranda-floor",
+    "f:sc-roof-conc",
+    "w:cloth-beige",
+    "w:sc-parapet"
+   ]
+  },
+  "h2-old-fridge": {
+   "surf": [
+    0.555,
+    0.676
+   ],
+   "on": [
+    "f:cushion",
+    "w:kitchen-panel"
+   ]
+  },
+  "hs-patient-locker": {
+   "surf": [
+    0.705,
+    0.745
+   ],
+   "on": [
+    "f:hs-floor-ward",
+    "w:hs-wall-room"
+   ]
+  },
+  "hs-drug-drawers": {
+   "surf": [
+    0.472,
+    0.528,
+    0.745
+   ],
+   "on": [
+    "f:hs-floor-sheet",
+    "w:hs-wall",
+    "w:hs-wall-room"
+   ]
+  },
+  "ht-slipper-rack": {
+   "surf": [
+    0.104,
+    0.178
+   ],
+   "on": [
+    "f:ht-ryokan-wood",
+    "w:ht-ryokan-wall"
+   ]
+  },
+  "zaisu-e": {
+   "surf": [
+    0.101,
+    0.104,
+    0.113,
+    0.167,
+    0.434,
+    0.568
+   ],
+   "on": [
+    "f:fd-wood-dark",
+    "f:flooring-dark",
+    "f:gy-kinder-floor",
+    "f:h2-engawa",
+    "f:ht-ryokan-wood",
+    "f:tatami",
+    "w:fd-plaster",
+    "w:fd-wood-wall",
+    "w:gy-kinder-wall",
+    "w:ht-ryokan-wall",
+    "w:juraku"
+   ]
+  },
+  "zaisu-w": {
+   "surf": [
+    0.101,
+    0.104,
+    0.113,
+    0.167,
+    0.434,
+    0.568
+   ],
+   "on": [
+    "f:fd-wood-dark",
+    "f:flooring-dark",
+    "f:gy-kinder-floor",
+    "f:h2-engawa",
+    "f:ht-ryokan-wood",
+    "f:tatami",
+    "w:fd-plaster",
+    "w:fd-wood-wall",
+    "w:gy-kinder-wall",
+    "w:ht-ryokan-wall",
+    "w:juraku"
+   ]
+  },
+  "kr-drink-bar": {
+   "surf": [
+    0.027,
+    0.055,
+    0.265,
+    0.352
+   ],
+   "on": [
+    "f:kr-cafe-floor",
+    "f:kr-corridor",
+    "w:kr-cafe-wall",
+    "w:kr-wall"
+   ]
+  },
+  "kr-ice-cream": {
+   "surf": [
+    0.265,
+    0.352
+   ],
+   "on": [
+    "f:kr-cafe-floor",
+    "w:kr-cafe-wall"
+   ]
+  },
+  "kr-speaker": {
+   "surf": [
+    0.055,
+    0.063
+   ],
+   "on": [
+    "f:kr-room-floor",
+    "w:kr-wall"
+   ]
+  },
+  "cv-gondola": {
+   "surf": [
+    0.408,
+    0.625
+   ],
+   "on": [
+    "f:cv-vinyl",
+    "w:cv-panel"
+   ]
+  },
+  "cv-gondola-end": {
+   "surf": [
+    0.014,
+    0.049,
+    0.055,
+    0.078,
+    0.172,
+    0.265,
+    0.275,
+    0.337,
+    0.352,
+    0.367,
+    0.408,
+    0.425,
+    0.437,
+    0.446,
+    0.455,
+    0.472,
+    0.486,
+    0.492,
+    0.52,
+    0.528,
+    0.558,
+    0.597,
+    0.619,
+    0.625,
+    0.649,
+    0.667,
+    0.794
+   ],
+   "on": [
+    "f:am-carpet",
+    "f:am-pachinko-carpet",
+    "f:cv-backroom",
+    "f:cv-vinyl",
+    "f:hs-floor-sheet",
+    "f:ht-lobby-floor",
+    "f:kr-cafe-floor",
+    "f:mc-entrance-tile",
+    "f:ml-floor",
+    "f:ml-shop-floor",
+    "f:of-lobby-stone",
+    "f:po-floor",
+    "f:sh-concrete",
+    "f:st-concourse",
+    "w:am-mirror-wall",
+    "w:am-wall",
+    "w:cv-panel",
+    "w:hs-wall",
+    "w:ht-hotel-wall",
+    "w:kr-cafe-wall",
+    "w:kr-wall",
+    "w:mc-wall",
+    "w:ml-wall",
+    "w:of-lobby-wall",
+    "w:po-wall",
+    "w:sh-white",
+    "w:st-wall"
+   ]
+  },
+  "cv-baskets": {
+   "surf": [
+    0.408
+   ],
+   "on": [
+    "f:cv-vinyl",
+    "w:cv-panel"
+   ]
+  },
+  "cv-open-case": {
+   "surf": [
+    0.408,
+    0.625
+   ],
+   "on": [
+    "f:cv-vinyl",
+    "w:cv-panel"
+   ]
+  },
+  "cv-meat-case": {
+   "surf": [
+    0.408,
+    0.625
+   ],
+   "on": [
+    "f:cv-vinyl",
+    "w:cv-panel"
+   ]
+  },
+  "cv-magazine": {
+   "surf": [
+    0.014,
+    0.049,
+    0.055,
+    0.078,
+    0.172,
+    0.265,
+    0.275,
+    0.337,
+    0.352,
+    0.367,
+    0.408,
+    0.425,
+    0.437,
+    0.446,
+    0.455,
+    0.472,
+    0.486,
+    0.492,
+    0.52,
+    0.528,
+    0.558,
+    0.597,
+    0.619,
+    0.625,
+    0.649,
+    0.667,
+    0.794
+   ],
+   "on": [
+    "f:am-carpet",
+    "f:am-pachinko-carpet",
+    "f:cv-backroom",
+    "f:cv-vinyl",
+    "f:hs-floor-sheet",
+    "f:ht-lobby-floor",
+    "f:kr-cafe-floor",
+    "f:mc-entrance-tile",
+    "f:ml-floor",
+    "f:ml-shop-floor",
+    "f:of-lobby-stone",
+    "f:po-floor",
+    "f:sh-concrete",
+    "f:st-concourse",
+    "w:am-mirror-wall",
+    "w:am-wall",
+    "w:cv-panel",
+    "w:hs-wall",
+    "w:ht-hotel-wall",
+    "w:kr-cafe-wall",
+    "w:kr-wall",
+    "w:mc-wall",
+    "w:ml-wall",
+    "w:of-lobby-wall",
+    "w:po-wall",
+    "w:sh-white",
+    "w:st-wall"
+   ]
+  },
+  "cv-coffee": {
+   "surf": [
+    0.408,
+    0.625
+   ],
+   "on": [
+    "f:cv-vinyl",
+    "w:cv-panel"
+   ]
+  },
+  "cv-back-shelf": {
+   "surf": [
+    0.265,
+    0.337,
+    0.352,
+    0.446,
+    0.558,
+    0.625
+   ],
+   "on": [
+    "f:cv-backroom",
+    "f:kr-cafe-floor",
+    "f:sh-concrete",
+    "w:cv-panel",
+    "w:kr-cafe-wall",
+    "w:sh-white"
+   ]
+  },
+  "cv-atm": {
+   "surf": [
+    0.408,
+    0.625
+   ],
+   "on": [
+    "f:cv-vinyl",
+    "w:cv-panel"
+   ]
+  },
+  "cv-basket-stack": {
+   "surf": [
+    0.014,
+    0.049,
+    0.055,
+    0.078,
+    0.172,
+    0.265,
+    0.275,
+    0.337,
+    0.352,
+    0.367,
+    0.408,
+    0.425,
+    0.437,
+    0.446,
+    0.455,
+    0.472,
+    0.486,
+    0.492,
+    0.52,
+    0.528,
+    0.558,
+    0.597,
+    0.619,
+    0.625,
+    0.649,
+    0.667,
+    0.794
+   ],
+   "on": [
+    "f:am-carpet",
+    "f:am-pachinko-carpet",
+    "f:cv-backroom",
+    "f:cv-vinyl",
+    "f:hs-floor-sheet",
+    "f:ht-lobby-floor",
+    "f:kr-cafe-floor",
+    "f:mc-entrance-tile",
+    "f:ml-floor",
+    "f:ml-shop-floor",
+    "f:of-lobby-stone",
+    "f:po-floor",
+    "f:sh-concrete",
+    "f:st-concourse",
+    "w:am-mirror-wall",
+    "w:am-wall",
+    "w:cv-panel",
+    "w:hs-wall",
+    "w:ht-hotel-wall",
+    "w:kr-cafe-wall",
+    "w:kr-wall",
+    "w:mc-wall",
+    "w:ml-wall",
+    "w:of-lobby-wall",
+    "w:po-wall",
+    "w:sh-white",
+    "w:st-wall"
+   ]
+  },
+  "cv-trash": {
+   "surf": [
+    0.014,
+    0.408,
+    0.437,
+    0.446,
+    0.794
+   ],
+   "on": [
+    "f:am-carpet",
+    "f:cv-vinyl",
+    "f:ml-floor",
+    "f:sh-concrete",
+    "f:st-concourse",
+    "w:am-wall",
+    "w:cv-panel",
+    "w:ml-wall",
+    "w:sh-white",
+    "w:st-wall"
+   ]
+  },
+  "fridge": {
+   "surf": [
+    0.199,
+    0.238,
+    0.405,
+    0.434,
+    0.555,
+    0.676
+   ],
+   "on": [
+    "f:cushion",
+    "f:flooring",
+    "f:tatami",
+    "w:cloth",
+    "w:juraku",
+    "w:kitchen-panel"
+   ]
+  },
+  "microwave-rack": {
+   "surf": [
+    0.199,
+    0.227,
+    0.238,
+    0.405,
+    0.418,
+    0.434,
+    0.446,
+    0.555,
+    0.558,
+    0.676
+   ],
+   "on": [
+    "f:cushion",
+    "f:fd-kitchen-tile",
+    "f:flooring",
+    "f:sh-concrete",
+    "f:tataki",
+    "f:tatami",
+    "w:cloth",
+    "w:juraku",
+    "w:kitchen-panel",
+    "w:sh-white"
+   ]
+  },
+  "cupboard": {
+   "surf": [
+    0.555,
+    0.676
+   ],
+   "on": [
+    "f:cushion",
+    "w:kitchen-panel"
+   ]
+  },
+  "trash-bins": {
+   "surf": [
+    0.676
+   ],
+   "on": [
+    "f:cushion",
+    "w:kitchen-panel"
+   ]
+  },
+  "bookshelf": {
+   "surf": [
+    0.042,
+    0.199,
+    0.405,
+    0.476
+   ],
+   "on": [
+    "f:carpet",
+    "f:flooring",
+    "w:cloth",
+    "w:cloth-beige"
+   ]
+  },
+  "of-desk-n": {
+   "surf": [
+    0.132
+   ],
+   "on": [
+    "f:of-carpet-tile",
+    "w:of-glass-wall",
+    "w:of-wall"
+   ]
+  },
+  "of-cabinet": {
+   "surf": [
+    0.027,
+    0.055,
+    0.132,
+    0.154,
+    0.207,
+    0.265,
+    0.352,
+    0.386,
+    0.455,
+    0.472,
+    0.487,
+    0.528,
+    0.602,
+    0.667
+   ],
+   "on": [
+    "f:hs-floor-sheet",
+    "f:ht-lobby-floor",
+    "f:kr-cafe-floor",
+    "f:kr-corridor",
+    "f:of-carpet-tile",
+    "f:pb-linoleum",
+    "f:wh-office-floor",
+    "w:hs-wall",
+    "w:ht-hotel-wall",
+    "w:kr-cafe-wall",
+    "w:kr-wall",
+    "w:of-wall",
+    "w:sc-wall",
+    "w:wh-office-wall"
+   ]
+  },
+  "of-server-rack": {
+   "surf": [
+    0.132,
+    0.14,
+    0.162,
+    0.602
+   ],
+   "on": [
+    "f:hp-floor-conc",
+    "f:of-carpet-tile",
+    "w:hp-wall-conc",
+    "w:of-wall"
+   ]
+  },
+  "of-pantry-sink": {
+   "surf": [
+    0.602,
+    0.716
+   ],
+   "on": [
+    "f:of-pantry-tile",
+    "w:of-wall"
+   ]
+  },
+  "of-vending": {
+   "surf": [
+    0.132,
+    0.455,
+    0.602,
+    0.667
+   ],
+   "on": [
+    "f:ht-lobby-floor",
+    "f:of-carpet-tile",
+    "w:ht-hotel-wall",
+    "w:of-wall"
+   ]
+  },
+  "pb-locker": {
+   "surf": [
+    0.199,
+    0.238
+   ],
+   "on": [
+    "f:flooring",
+    "w:juraku"
+   ]
+  },
+  "pb-basket-shelf": {
+   "surf": [
+    0.104,
+    0.199,
+    0.238,
+    0.248
+   ],
+   "on": [
+    "f:flooring",
+    "f:ht-ryokan-wood",
+    "w:ht-onsen-wall",
+    "w:juraku"
+   ]
+  },
+  "pb-milk-fridge": {
+   "surf": [
+    0.104,
+    0.178,
+    0.199,
+    0.238
+   ],
+   "on": [
+    "f:flooring",
+    "f:ht-ryokan-wood",
+    "w:ht-ryokan-wall",
+    "w:juraku"
+   ]
+  },
+  "pb-dryer": {
+   "surf": [
+    0.386,
+    0.738
+   ],
+   "on": [
+    "f:pb-linoleum",
+    "w:pb-office-wall"
+   ]
+  },
+  "pb-vending": {
+   "surf": [
+    0.386,
+    0.738
+   ],
+   "on": [
+    "f:pb-linoleum",
+    "w:pb-office-wall"
+   ]
+  },
+  "pb-changer": {
+   "surf": [
+    0.386,
+    0.738
+   ],
+   "on": [
+    "f:pb-linoleum",
+    "w:pb-office-wall"
+   ]
+  },
+  "pb-file-cabinet": {
+   "surf": [
+    0.14,
+    0.151,
+    0.154,
+    0.162,
+    0.164,
+    0.207,
+    0.295,
+    0.339
+   ],
+   "on": [
+    "f:hp-floor-conc",
+    "f:hp-floor-dirty",
+    "f:hp-floor-tile-dirty",
+    "f:wh-office-floor",
+    "w:hp-wall-conc",
+    "w:hp-wall-peel",
+    "w:hp-wall-tile",
+    "w:wh-office-wall"
+   ]
+  },
+  "pb-lost-found-shelf": {
+   "surf": [
+    0.14,
+    0.162,
+    0.386,
+    0.738
+   ],
+   "on": [
+    "f:hp-floor-conc",
+    "f:pb-linoleum",
+    "w:hp-wall-conc",
+    "w:pb-office-wall"
+   ]
+  },
+  "pb-steel-locker": {
+   "surf": [
+    0.154,
+    0.207,
+    0.238,
+    0.265,
+    0.295,
+    0.339,
+    0.352,
+    0.434
+   ],
+   "on": [
+    "f:hp-floor-tile-dirty",
+    "f:kr-cafe-floor",
+    "f:tatami",
+    "f:wh-office-floor",
+    "w:hp-wall-tile",
+    "w:juraku",
+    "w:kr-cafe-wall",
+    "w:wh-office-wall"
+   ]
+  },
+  "pb-med-cabinet": {
+   "surf": [
+    0.199,
+    0.295,
+    0.339,
+    0.386,
+    0.405,
+    0.558,
+    0.705,
+    0.738,
+    0.745
+   ],
+   "on": [
+    "f:flooring",
+    "f:hp-floor-tile-dirty",
+    "f:hs-floor-ward",
+    "f:pb-linoleum",
+    "w:cloth",
+    "w:hp-wall-tile",
+    "w:hs-wall-room",
+    "w:pb-office-wall",
+    "w:sh-white"
+   ]
+  },
+  "pb-magazine-rack": {
+   "surf": [
+    0.386,
+    0.472,
+    0.528,
+    0.738
+   ],
+   "on": [
+    "f:hs-floor-sheet",
+    "f:pb-linoleum",
+    "w:hs-wall",
+    "w:pb-office-wall"
+   ]
+  },
+  "sc-cleaning-locker": {
+   "surf": [
+    0.282,
+    0.338,
+    0.487
+   ],
+   "on": [
+    "f:sc-classroom-wood",
+    "f:sc-corridor",
+    "w:sc-wall"
+   ]
+  },
+  "sc-washstand": {
+   "surf": [
+    0.338,
+    0.487
+   ],
+   "on": [
+    "f:sc-corridor",
+    "w:sc-wall"
+   ]
+  },
+  "sh-wall-shelf": {
+   "surf": [
+    0.118,
+    0.137,
+    0.154,
+    0.325,
+    0.367,
+    0.446,
+    0.476,
+    0.558,
+    0.597
+   ],
+   "on": [
+    "f:ml-shop-floor",
+    "f:sh-concrete",
+    "f:sh-wood",
+    "f:wh-office-floor",
+    "f:wh-warehouse-floor",
+    "w:cloth-beige",
+    "w:ml-wall",
+    "w:sh-white",
+    "w:wh-service-wall"
+   ]
+  },
+  "sh-bread-shelf": {
+   "surf": [
+    0.325,
+    0.558
+   ],
+   "on": [
+    "f:sh-wood",
+    "w:sh-white"
+   ]
+  },
+  "sh-bookshelf": {
+   "surf": [
+    0.325,
+    0.558
+   ],
+   "on": [
+    "f:sh-wood",
+    "w:sh-white"
+   ]
+  },
+  "sh-drug-shelf": {
+   "surf": [
+    0.386,
+    0.558
+   ],
+   "on": [
+    "f:pb-linoleum",
+    "w:sh-white"
+   ]
+  },
+  "sh-oven": {
+   "surf": [
+    0.418,
+    0.555
+   ],
+   "on": [
+    "f:fd-kitchen-tile",
+    "w:kitchen-panel"
+   ]
+  },
+  "sh-flower-cooler": {
+   "surf": [
+    0.446,
+    0.558
+   ],
+   "on": [
+    "f:sh-concrete",
+    "w:sh-white"
+   ]
+  },
+  "sh-proof-rack": {
+   "surf": [
+    0.418,
+    0.555
+   ],
+   "on": [
+    "f:fd-kitchen-tile",
+    "w:kitchen-panel"
+   ]
+  },
+  "sh-returns-shelf": {
+   "surf": [
+    0.058,
+    0.113
+   ],
+   "on": [
+    "f:fd-wood-dark",
+    "w:fd-wood-wall"
+   ]
+  },
+  "sh-stock-shelf": {
+   "surf": [
+    0.14,
+    0.162,
+    0.446,
+    0.558
+   ],
+   "on": [
+    "f:hp-floor-conc",
+    "f:sh-concrete",
+    "w:hp-wall-conc",
+    "w:sh-white"
+   ]
+  },
+  "sh-basket-shelf": {
+   "surf": [
+    0.446,
+    0.558
+   ],
+   "on": [
+    "f:sh-concrete",
+    "w:sh-white"
+   ]
+  },
+  "st-kiosk": {
+   "surf": [
+    0.437,
+    0.52
+   ],
+   "on": [
+    "f:st-concourse",
+    "w:st-wall"
+   ]
+  },
+  "butsudan": {
+   "surf": [
+    0.101,
+    0.238,
+    0.434
+   ],
+   "on": [
+    "f:flooring-dark",
+    "f:tatami",
+    "w:juraku"
+   ]
+  },
+  "cv-cooler": {
+   "surf": [
+    0.408,
+    0.625
+   ],
+   "on": [
+    "f:cv-vinyl",
+    "w:cv-panel"
+   ]
+  },
+  "cv-copier": {
+   "surf": [
+    0.408,
+    0.625
+   ],
+   "on": [
+    "f:cv-vinyl",
+    "w:cv-panel"
+   ]
+  },
+  "cv-hotcase": {
+   "surf": [
+    0.408,
+    0.625
+   ],
+   "on": [
+    "f:cv-vinyl",
+    "w:cv-panel"
+   ]
+  },
+  "cv-register": {
+   "surf": [
+    0.408,
+    0.625
+   ],
+   "on": [
+    "f:cv-vinyl",
+    "w:cv-panel"
+   ]
+  },
+  "cv-counter": {
+   "surf": [
+    0.408
+   ],
+   "on": [
+    "f:cv-vinyl",
+    "w:cv-panel"
+   ]
+  },
+  "sh-crate-stack": {
+   "surf": [
+    0.337,
+    0.446,
+    0.558,
+    0.625
+   ],
+   "on": [
+    "f:cv-backroom",
+    "f:sh-concrete",
+    "w:cv-panel",
+    "w:sh-white"
+   ]
+  },
+  "h2-cardboard": {
+   "surf": [
+    0.014,
+    0.049,
+    0.137,
+    0.14,
+    0.325,
+    0.337,
+    0.434,
+    0.446,
+    0.676
+   ],
+   "on": [
+    "f:am-carpet",
+    "f:am-pachinko-carpet",
+    "f:cushion",
+    "f:cv-backroom",
+    "f:hp-floor-conc",
+    "f:sh-concrete",
+    "f:sh-wood",
+    "f:tatami",
+    "f:wh-warehouse-floor",
+    "w:am-mirror-wall",
+    "w:am-wall",
+    "w:cv-panel",
+    "w:hp-wall-conc",
+    "w:juraku",
+    "w:kitchen-panel",
+    "w:sh-white",
+    "w:wh-service-wall"
+   ]
+  },
+  "cv-freezer": {
+   "surf": [
+    0.408
+   ],
+   "on": [
+    "f:cv-vinyl",
+    "w:cv-panel"
+   ]
+  },
+  "window-sash": {
+   "surf": [
+    0.058,
+    0.357,
+    0.368,
+    0.476,
+    0.487,
+    0.555
+   ],
+   "on": [
+    "f:carpet",
+    "f:cushion",
+    "f:fd-wood-dark",
+    "f:flooring-dark",
+    "f:fr-floor",
+    "f:pb-linoleum",
+    "f:sc-classroom-wood",
+    "w:cloth-beige",
+    "w:fd-wood-wall",
+    "w:fr-wall",
+    "w:kitchen-panel",
+    "w:sc-soundwall",
+    "w:sc-wall"
+   ]
+  },
+  "wall-clock": {
+   "surf": [
+    0.055,
+    0.207,
+    0.352,
+    0.357,
+    0.364,
+    0.368,
+    0.405,
+    0.425,
+    0.455,
+    0.476,
+    0.486,
+    0.487,
+    0.52,
+    0.528,
+    0.583,
+    0.602,
+    0.738,
+    0.745
+   ],
+   "on": [
+    "f:flooring",
+    "f:flooring-dark",
+    "f:fr-floor",
+    "f:fr-gyudon-floor",
+    "f:gy-kinder-floor",
+    "f:hs-floor-sheet",
+    "f:hs-floor-ward",
+    "f:ht-lobby-floor",
+    "f:kr-cafe-floor",
+    "f:kr-corridor",
+    "f:of-carpet-tile",
+    "f:of-lobby-stone",
+    "f:pb-linoleum",
+    "f:po-floor",
+    "f:sc-classroom-wood",
+    "f:sc-corridor",
+    "f:st-concourse",
+    "f:wh-office-floor",
+    "w:cloth",
+    "w:cloth-beige",
+    "w:fd-plaster",
+    "w:fr-wall",
+    "w:gy-kinder-wall",
+    "w:hs-wall",
+    "w:hs-wall-room",
+    "w:ht-hotel-wall",
+    "w:kr-cafe-wall",
+    "w:kr-wall",
+    "w:of-lobby-wall",
+    "w:of-wall",
+    "w:pb-office-wall",
+    "w:po-wall",
+    "w:sc-soundwall",
+    "w:sc-wall",
+    "w:st-wall",
+    "w:wh-office-wall"
+   ]
+  },
+  "fr-booth-divider": {
+   "surf": [
+    0.211,
+    0.357
+   ],
+   "on": [
+    "f:fr-floor",
+    "w:fr-wall"
+   ]
+  },
+  "fr-pass-window": {
+   "surf": [
+    0.211,
+    0.357
+   ],
+   "on": [
+    "f:fr-floor",
+    "w:fr-wall"
+   ]
+  },
+  "fr-soup-bar": {
+   "surf": [
+    0.211,
+    0.357
+   ],
+   "on": [
+    "f:fr-floor",
+    "w:fr-wall"
+   ]
+  },
+  "fr-register": {
+   "surf": [
+    0.211,
+    0.357
+   ],
+   "on": [
+    "f:fr-floor",
+    "w:fr-wall"
+   ]
+  },
+  "fd-prep": {
+   "surf": [
+    0.082,
+    0.364,
+    0.418,
+    0.555
+   ],
+   "on": [
+    "f:fd-kitchen-tile",
+    "f:fr-kitchen-floor",
+    "w:fd-plaster",
+    "w:kitchen-panel"
+   ]
+  },
+  "fd-fryer": {
+   "surf": [
+    0.082,
+    0.364,
+    0.418,
+    0.555
+   ],
+   "on": [
+    "f:fd-kitchen-tile",
+    "f:fr-kitchen-floor",
+    "w:fd-plaster",
+    "w:kitchen-panel"
+   ]
+  },
+  "fd-sink": {
+   "surf": [
+    0.082,
+    0.364,
+    0.418,
+    0.555
+   ],
+   "on": [
+    "f:fd-kitchen-tile",
+    "f:fr-kitchen-floor",
+    "w:fd-plaster",
+    "w:kitchen-panel"
+   ]
+  },
+  "of-window-blind": {
+   "surf": [
+    0.486,
+    0.602
+   ],
+   "on": [
+    "f:of-carpet-tile",
+    "f:of-lobby-stone",
+    "w:of-lobby-wall",
+    "w:of-wall"
+   ]
+  },
+  "of-desk-s": {
+   "surf": [
+    0.132
+   ],
+   "on": [
+    "f:of-carpet-tile",
+    "w:of-wall"
+   ]
+  },
+  "of-boss-desk-e": {
+   "surf": [
+    0.132
+   ],
+   "on": [
+    "f:of-carpet-tile",
+    "w:of-wall"
+   ]
+  },
+  "of-boss-desk-w": {
+   "surf": [
+    0.132
+   ],
+   "on": [
+    "f:of-carpet-tile",
+    "w:of-wall"
+   ]
+  },
+  "of-partition": {
+   "surf": [
+    0.132
+   ],
+   "on": [
+    "f:of-carpet-tile",
+    "w:of-wall"
+   ]
+  },
+  "of-copier": {
+   "surf": [
+    0.132,
+    0.386,
+    0.472
+   ],
+   "on": [
+    "f:hs-floor-sheet",
+    "f:of-carpet-tile",
+    "f:pb-linoleum",
+    "w:hs-wall",
+    "w:of-wall",
+    "w:sc-wall"
+   ]
+  },
+  "of-whiteboard": {
+   "surf": [
+    0.132,
+    0.235,
+    0.602
+   ],
+   "on": [
+    "f:of-carpet-tile",
+    "w:of-glass-wall",
+    "w:of-wall"
+   ]
+  },
+  "of-coat-rack": {
+   "surf": [
+    0.132,
+    0.602
+   ],
+   "on": [
+    "f:of-carpet-tile",
+    "w:of-wall"
+   ]
+  },
+  "pb-water-dispenser": {
+   "surf": [
+    0.049,
+    0.104,
+    0.132,
+    0.172,
+    0.178,
+    0.338,
+    0.386,
+    0.472,
+    0.487,
+    0.528,
+    0.602,
+    0.738
+   ],
+   "on": [
+    "f:am-pachinko-carpet",
+    "f:hs-floor-sheet",
+    "f:ht-ryokan-wood",
+    "f:of-carpet-tile",
+    "f:pb-linoleum",
+    "f:sc-corridor",
+    "w:am-mirror-wall",
+    "w:hs-wall",
+    "w:ht-ryokan-wall",
+    "w:of-wall",
+    "w:pb-office-wall",
+    "w:sc-wall"
+   ]
+  },
+  "of-fridge-small": {
+   "surf": [
+    0.472,
+    0.528,
+    0.602,
+    0.716,
+    0.745
+   ],
+   "on": [
+    "f:hs-floor-sheet",
+    "f:of-pantry-tile",
+    "w:hs-wall",
+    "w:hs-wall-room",
+    "w:of-wall"
+   ]
+  },
+  "of-stairwell-down": {
+   "surf": [
+    0.439,
+    0.472,
+    0.486,
+    0.528,
+    0.602,
+    0.649
+   ],
+   "on": [
+    "f:hs-floor-sheet",
+    "f:of-lobby-stone",
+    "f:of-stair-conc",
+    "w:hs-wall",
+    "w:of-lobby-wall",
+    "w:of-wall"
+   ]
+  },
+  "of-elevator": {
+   "surf": [
+    0.472,
+    0.486,
+    0.528,
+    0.649
+   ],
+   "on": [
+    "f:hs-floor-sheet",
+    "f:of-lobby-stone",
+    "w:hs-wall",
+    "w:of-lobby-wall"
+   ]
+  },
+  "am-photo-booth": {
+   "surf": [
+    0.014,
+    0.078
+   ],
+   "on": [
+    "f:am-carpet",
+    "w:am-wall"
+   ]
+  },
+  "am-exchange": {
+   "surf": [
+    0.014,
+    0.078
+   ],
+   "on": [
+    "f:am-carpet",
+    "w:am-wall"
+   ]
+  },
+  "am-arcade-back": {
+   "surf": [
+    0.014
+   ],
+   "on": [
+    "f:am-carpet",
+    "w:am-wall"
+   ]
+  },
+  "am-neon-sign": {
+   "surf": [
+    0.078
+   ],
+   "on": [
+    "f:am-carpet",
+    "w:am-wall"
+   ]
+  },
+  "am-medal-pusher": {
+   "surf": [
+    0.014,
+    0.078
+   ],
+   "on": [
+    "f:am-carpet",
+    "w:am-wall"
+   ]
+  },
+  "houseplant": {
+   "surf": [
+    0.014,
+    0.038,
+    0.047,
+    0.049,
+    0.078,
+    0.101,
+    0.172,
+    0.199,
+    0.227,
+    0.275,
+    0.282,
+    0.294,
+    0.338,
+    0.386,
+    0.405,
+    0.425,
+    0.437,
+    0.472,
+    0.476,
+    0.486,
+    0.487,
+    0.492,
+    0.52,
+    0.528,
+    0.597,
+    0.619,
+    0.649,
+    0.738,
+    0.794
+   ],
+   "on": [
+    "f:am-carpet",
+    "f:am-pachinko-carpet",
+    "f:flooring",
+    "f:flooring-dark",
+    "f:hs-floor-sheet",
+    "f:mc-entrance-tile",
+    "f:ml-cinema-carpet",
+    "f:ml-floor",
+    "f:of-lobby-stone",
+    "f:pb-linoleum",
+    "f:po-floor",
+    "f:sc-classroom-wood",
+    "f:sc-corridor",
+    "f:sc-roof-conc",
+    "f:st-concourse",
+    "w:am-mirror-wall",
+    "w:am-wall",
+    "w:cloth",
+    "w:cloth-beige",
+    "w:hs-wall",
+    "w:mc-wall",
+    "w:ml-cinema-wall",
+    "w:ml-wall",
+    "w:of-lobby-wall",
+    "w:pb-office-wall",
+    "w:po-wall",
+    "w:sc-parapet",
+    "w:sc-wall",
+    "w:st-wall"
+   ]
+  },
+  "am-register": {
+   "surf": [
+    0.014,
+    0.049,
+    0.078,
+    0.172
+   ],
+   "on": [
+    "f:am-carpet",
+    "f:am-pachinko-carpet",
+    "w:am-mirror-wall",
+    "w:am-wall"
+   ]
+  },
+  "am-counter": {
+   "surf": [
+    0.014,
+    0.049
+   ],
+   "on": [
+    "f:am-carpet",
+    "f:am-pachinko-carpet",
+    "w:am-mirror-wall",
+    "w:am-wall"
+   ]
+  },
+  "tokonoma": {
+   "surf": [
+    0.238,
+    0.434
+   ],
+   "on": [
+    "f:tatami",
+    "w:juraku"
+   ]
+  },
+  "shoji-window": {
+   "surf": [
+    0.238
+   ],
+   "on": [
+    "f:h2-engawa",
+    "f:tatami",
+    "w:juraku"
+   ]
+  },
+  "zataku": {
+   "surf": [
+    0.113,
+    0.434
+   ],
+   "on": [
+    "f:fd-wood-dark",
+    "f:tatami",
+    "w:fd-plaster",
+    "w:fd-wood-wall",
+    "w:juraku"
+   ]
+  },
+  "andon": {
+   "surf": [
+    0.434
+   ],
+   "on": [
+    "f:tatami",
+    "w:juraku"
+   ]
+  },
+  "ikebana": {
+   "surf": [
+    0.104,
+    0.434
+   ],
+   "on": [
+    "f:ht-ryokan-wood",
+    "f:tatami",
+    "w:ht-ryokan-wall",
+    "w:juraku"
+   ]
+  },
+  "toilet": {
+   "surf": [
+    0.34,
+    0.364,
+    0.378,
+    0.405,
+    0.418,
+    0.573,
+    0.676,
+    0.717
+   ],
+   "on": [
+    "f:bathtile",
+    "f:cushion",
+    "f:fd-kitchen-tile",
+    "f:sc-genkan-tile",
+    "w:bathwall",
+    "w:cloth",
+    "w:fd-plaster",
+    "w:sc-wall-tile"
+   ]
+  },
+  "toilet-mat": {
+   "surf": [
+    0.418,
+    0.676
+   ],
+   "on": [
+    "f:cushion",
+    "f:fd-kitchen-tile",
+    "w:cloth",
+    "w:fd-plaster"
+   ]
+  },
+  "toilet-slippers": {
+   "surf": [
+    0.418,
+    0.676
+   ],
+   "on": [
+    "f:cushion",
+    "f:fd-kitchen-tile",
+    "w:cloth",
+    "w:fd-plaster"
+   ]
+  },
+  "toilet-paper": {
+   "surf": [
+    0.364,
+    0.405
+   ],
+   "on": [
+    "f:cushion",
+    "f:fd-kitchen-tile",
+    "w:cloth",
+    "w:fd-plaster"
+   ]
+  },
+  "toilet-handwash": {
+   "surf": [
+    0.364,
+    0.405
+   ],
+   "on": [
+    "f:cushion",
+    "f:fd-kitchen-tile",
+    "w:cloth",
+    "w:fd-plaster"
+   ]
+  },
+  "kitchen-worktop": {
+   "surf": [
+    0.199,
+    0.405,
+    0.555,
+    0.676
+   ],
+   "on": [
+    "f:cushion",
+    "f:flooring",
+    "w:cloth",
+    "w:kitchen-panel"
+   ]
+  },
+  "kitchen-sink": {
+   "surf": [
+    0.199,
+    0.405,
+    0.418,
+    0.446,
+    0.555,
+    0.558,
+    0.676
+   ],
+   "on": [
+    "f:cushion",
+    "f:fd-kitchen-tile",
+    "f:flooring",
+    "f:sh-concrete",
+    "w:cloth",
+    "w:kitchen-panel",
+    "w:sh-white"
+   ]
+  },
+  "kitchen-stove": {
+   "surf": [
+    0.199,
+    0.227,
+    0.405,
+    0.555,
+    0.676
+   ],
+   "on": [
+    "f:cushion",
+    "f:flooring",
+    "f:tataki",
+    "w:cloth",
+    "w:kitchen-panel"
+   ]
+  },
+  "bathtub": {
+   "surf": [
+    0.34,
+    0.573
+   ],
+   "on": [
+    "f:bathtile",
+    "w:bathwall"
+   ]
+  },
+  "shower-faucet": {
+   "surf": [
+    0.573
+   ],
+   "on": [
+    "f:bathtile",
+    "w:bathwall"
+   ]
+  },
+  "bath-mirror": {
+   "surf": [
+    0.405,
+    0.573
+   ],
+   "on": [
+    "f:bathtile",
+    "f:cushion",
+    "w:bathwall",
+    "w:cloth"
+   ]
+  },
+  "bath-stool": {
+   "surf": [
+    0.34
+   ],
+   "on": [
+    "f:bathtile",
+    "w:bathwall"
+   ]
+  },
+  "bath-bucket": {
+   "surf": [
+    0.34,
+    0.495
+   ],
+   "on": [
+    "f:bathtile",
+    "f:pb-sento-tile",
+    "w:bathwall",
+    "w:pb-sento-wall"
+   ]
+  },
+  "washbasin": {
+   "surf": [
+    0.104,
+    0.248,
+    0.325,
+    0.34,
+    0.386,
+    0.405,
+    0.476,
+    0.558,
+    0.573,
+    0.676
+   ],
+   "on": [
+    "f:bathtile",
+    "f:cushion",
+    "f:ht-ryokan-wood",
+    "f:pb-linoleum",
+    "f:sh-wood",
+    "w:bathwall",
+    "w:cloth",
+    "w:cloth-beige",
+    "w:ht-onsen-wall",
+    "w:sh-white"
+   ]
+  },
+  "washing-machine": {
+   "surf": [
+    0.676
+   ],
+   "on": [
+    "f:cushion",
+    "w:cloth",
+    "w:kitchen-panel"
+   ]
+  },
+  "towel-rack": {
+   "surf": [
+    0.405,
+    0.573
+   ],
+   "on": [
+    "f:bathtile",
+    "f:cushion",
+    "w:bathwall",
+    "w:cloth"
+   ]
+  },
+  "bath-mat": {
+   "surf": [
+    0.34,
+    0.676
+   ],
+   "on": [
+    "f:bathtile",
+    "f:cushion",
+    "w:bathwall",
+    "w:cloth"
+   ]
+  },
+  "stairs-up-wood": {
+   "surf": [
+    0.199,
+    0.405
+   ],
+   "on": [
+    "f:flooring",
+    "w:cloth"
+   ]
+  },
+  "calendar": {
+   "surf": [
+    0.238,
+    0.405,
+    0.476,
+    0.738
+   ],
+   "on": [
+    "f:flooring",
+    "f:flooring-dark",
+    "f:pb-linoleum",
+    "f:tatami",
+    "w:cloth",
+    "w:cloth-beige",
+    "w:juraku",
+    "w:pb-office-wall"
+   ]
+  },
+  "agarikamachi": {
+   "surf": [
+    0.199,
+    0.676
+   ],
+   "on": [
+    "f:cushion",
+    "f:flooring",
+    "w:cloth",
+    "w:kitchen-panel"
+   ]
+  },
+  "genkan-mat": {
+   "surf": [
+    0.199,
+    0.386
+   ],
+   "on": [
+    "f:flooring",
+    "f:pb-linoleum",
+    "w:cloth",
+    "w:pb-office-wall"
+   ]
+  },
+  "slippers": {
+   "surf": [
+    0.104,
+    0.199
+   ],
+   "on": [
+    "f:flooring",
+    "f:ht-ryokan-wood",
+    "w:cloth",
+    "w:ht-ryokan-wall"
+   ]
+  },
+  "getabako": {
+   "surf": [
+    0.227,
+    0.405
+   ],
+   "on": [
+    "f:tataki",
+    "w:cloth"
+   ]
+  },
+  "umbrella-stand": {
+   "surf": [
+    0.104,
+    0.199,
+    0.227,
+    0.378
+   ],
+   "on": [
+    "f:flooring",
+    "f:ht-ryokan-wood",
+    "f:sc-genkan-tile",
+    "f:tataki",
+    "w:cloth",
+    "w:ht-ryokan-wall",
+    "w:sc-wall"
+   ]
+  },
+  "shoes-pair": {
+   "surf": [
+    0.227
+   ],
+   "on": [
+    "f:tataki",
+    "w:cloth",
+    "w:juraku",
+    "w:kitchen-panel"
+   ]
+  },
+  "tv-board": {
+   "surf": [
+    0.199,
+    0.405
+   ],
+   "on": [
+    "f:flooring",
+    "w:cloth"
+   ]
+  },
+  "low-table": {
+   "surf": [
+    0.042,
+    0.199,
+    0.434
+   ],
+   "on": [
+    "f:carpet",
+    "f:flooring",
+    "f:tatami",
+    "w:cloth",
+    "w:cloth-beige",
+    "w:juraku"
+   ]
+  },
+  "floor-lamp": {
+   "surf": [
+    0.199,
+    0.405
+   ],
+   "on": [
+    "f:flooring",
+    "w:cloth"
+   ]
+  },
+  "ac-unit": {
+   "surf": [
+    0.405,
+    0.476
+   ],
+   "on": [
+    "f:flooring",
+    "w:cloth",
+    "w:cloth-beige"
+   ]
+  },
+  "rug": {
+   "surf": [
+    0.199
+   ],
+   "on": [
+    "f:flooring",
+    "w:cloth",
+    "w:cloth-beige"
+   ]
+  }
+ }
+}

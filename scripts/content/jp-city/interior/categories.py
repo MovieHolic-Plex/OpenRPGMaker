@@ -8,7 +8,8 @@ CATEGORIES = [
     ('entry', '현관', ['genkan-door', 'agarikamachi', 'getabako', 'getabako-narrow', 'genkan-mat', 'slippers', 'shoes-pair',
                       'umbrella-stand']),
     ('stairs', '계단', ['stairs-up-wood', 'stairs-up-wood-wide', 'stairwell-down-wood']),
-    ('door', '문', ['door-open-western', 'door-open-toilet', 'fusuma-open', 'door-side-western', 'door-side-sliding', 'door-western']),
+    ('door', '문', ['door-open-western', 'door-open-toilet', 'fusuma-open', 'shoji-open', 'door-open-staff', 'door-side-western', 'door-side-sliding',
+                 'door-side-bath', 'door-western']),
     ('window', '창', ['window-sash', 'window-sash-small', 'shoji-window', 'curtain-window']),
     ('wallhang', '벽걸이', ['intercom', 'ac-unit', 'wall-clock', 'calendar', 'light-switch', 'kamidana']),
     ('kitchen', '부엌', ['kitchen-sink', 'kitchen-worktop', 'kitchen-stove', 'fridge', 'microwave-rack', 'cupboard', 'trash-bins']),
@@ -142,7 +143,7 @@ CATEGORIES = [
     # ── 5묶음(2026-10-09~): 오락·숙박·상업 실내. 블록마다 자기 칸 아래에만. ──
     # [interior_amuse am-]
     ('amusement', '게임 센터', ['am-crane', 'am-crane-big', 'am-arcade-n', 'am-arcade-back', 'am-arcade-stool', 'am-rhythm', 'am-racing',
-                             'am-medal-pusher', 'am-photo-booth', 'am-exchange', 'am-prize-shelf', 'am-neon-sign']),
+                             'am-medal-pusher', 'am-photo-booth', 'am-exchange', 'am-prize-shelf', 'am-neon-sign', 'am-autodoor']),
     ('pachinko', '파친코', ['am-pachinko-n', 'am-pachinko-back', 'am-pachinko-stool', 'am-pachinko-island-end', 'am-ball-box', 'am-counter', 'am-register',
                          'am-ashtray-stand', 'am-ball-counter', 'am-smoke-eater']),
     # (오락실 끝)
