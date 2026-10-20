@@ -7,6 +7,7 @@ import { deserialize, serialize } from "@/project/io";
 import type { Command, EventPageMovement, GameEvent, GameMap, Project } from "@/project/types";
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import { DAWNING_SKYBIRDS_CHARSET_ID } from "./dawningSkybirdsAsset";
+import { polishFirstTenMinutes } from "./emeraldCrownFirstTen";
 import type { FlagshipDemoBuildResult } from "./types";
 
 /**
@@ -111,11 +112,11 @@ function swapNames(text: string): string {
 /** 생성기 문장 중 이 세계에서 어색하거나 틀린 것 — 문장 그대로 찾아 바꾼다(맵 전체). */
 const LINE_REWRITES: Readonly<Record<string, string>> = {
   "다우닝 시티에 온 걸 환영해요. 북동쪽 집이 천문박사의 연구소예요. 북쪽의 안내원이 다음 길을 알려 줍니다.":
-    "다우닝 시티에 온 걸 환영해요. 광장 오른쪽 위 회색 지붕 건물이 오르비스 천문 연구소예요. 북쪽 길로 나가면 1번 도로예요.",
+    "다우닝 시티에 온 걸 환영해요. 광장 오른쪽 위 초록 지붕의 큰 건물이 오르비스 천문 연구소예요. 북쪽 길로 나가면 1번 도로예요.",
   "새벽이면 언덕의 등대와 몬스터들이 함께 눈을 뜬다.":
     "요즘 새벽마다 등대 불빛이 깜빡여. 그래서인지 여명의 날개 새들이 바다 위에서 자꾸 길을 잃는대.",
   "연구소 친구가 기다릴 거예요.\n북동쪽 파란 지붕을 찾아보세요.":
-    "나루가 아침부터 연구소 앞을 서성이던데요.\n광장 오른쪽 위 회색 지붕 건물이에요.",
+    "나루가 아침부터 연구소 앞을 서성이던데요.\n광장 오른쪽 위 초록 지붕의 큰 건물이에요.",
   "실바나 마을에 온 걸 환영해요. 북동쪽 건물에서 지역의 관장에게 도전할 수 있어요. 북쪽의 안내원이 다음 길을 알려 줍니다.":
     "실바나 마을에 온 걸 환영해요. 오른쪽 위 유리 지붕 건물이 실바나 체육관이에요. 관장 유림 님은 풀 타입 몬스터를 써요.",
   "숲을 돌보는 사람과 몬스터가 매년 새 나무를 심는다.":
@@ -249,9 +250,9 @@ const DAWNING_CITY_SKETCH: TownSketch = {
     "##.==....==..==.............##",
     "##.====================.....##",
     "##.====================.===.##",
-    "##...f~~~~f..==..T...f......##",
-    "##...F~~~~F..==.............##",
-    "##....~~~~...==.............##",
+    "##.T....U....==..T...f......##",
+    "##...f.......==.............##",
+    "##.....F.....==.............##",
     "##############################",
     "##############################",
     "##############################",
@@ -375,7 +376,7 @@ function retellMom(project: Project): void {
       kind: "fork",
       condition: { kind: "switch", switchId: "mx_starter", value: true },
       then: [textCommand("모험에서 가장 중요한 건 무사히 돌아오는 일이야. 힘들면 언제든 쉬어 가렴.", "엄마")],
-      else: [textCommand("박사님이 아침부터 기다리셔. 연구소는 광장 오른쪽 위 회색 지붕 건물이야. 나루는 벌써 나갔단다!", "엄마")],
+      else: [textCommand("박사님이 아침부터 기다리셔. 연구소는 광장 오른쪽 위 초록 지붕의 큰 건물이야. 나루는 벌써 나갔단다!", "엄마")],
     },
     ...page.commands.filter((c) => c.kind !== "text"),
   ];
@@ -405,8 +406,9 @@ function rebuildDawningCity(project: Project): GameMap {
   composeTown(project, homeMap, overworldTemplate, DAWNING_CITY_SKETCH);
   const portalCoords: Readonly<Record<string, { readonly x: number; readonly y: number; readonly returnMapId?: string; readonly returnX?: number; readonly returnY?: number }>> = {
     mx_map_home_to_mx_map_home_house: { x: 9, y: 9, returnMapId: "mx_map_home_house", returnX: 9, returnY: 10 },
-    mx_map_home_to_mx_map_lab: { x: 18, y: 9, returnMapId: "mx_map_lab", returnX: 18, returnY: 10 },
-    mx_map_home_to_mx_map_school: { x: 24, y: 10, returnMapId: "mx_map_school", returnX: 24, returnY: 11 },
+    // 연구소는 광장 오른쪽 위 가장 큰 초록 지붕 건물(gable_a), 트레이너 학교는 그 왼쪽 회색 지붕 통나무집 — 박사의 연구소가 민가와 똑같은 집이었다(2026-10-20 첫 10분 검수).
+    mx_map_home_to_mx_map_lab: { x: 24, y: 10, returnMapId: "mx_map_lab", returnX: 24, returnY: 11 },
+    mx_map_home_to_mx_map_school: { x: 18, y: 9, returnMapId: "mx_map_school", returnX: 18, returnY: 10 },
     mx_map_home_to_mx_map_home_mart: { x: 3, y: 14, returnMapId: "mx_map_home_mart", returnX: 3, returnY: 15 },
     mx_map_home_to_mx_map_home_center: { x: 9, y: 14, returnMapId: "mx_map_home_center", returnX: 9, returnY: 15 },
     mx_map_home_to_mx_map_meadow: { x: 14, y: 2, returnMapId: "mx_map_meadow", returnX: 14, returnY: 3 },
@@ -715,6 +717,7 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
   softenTrainerDefeats(project);
   recastPeople(project);
   tidyMeadowDecor(project);
+  polishFirstTenMinutes(project);
 
   // 1번 도로와 신전에도 여명의 날개 — 길 위를 날 뿐 막지 않는다.
   project.maps["mx_map_meadow"]?.events.push(

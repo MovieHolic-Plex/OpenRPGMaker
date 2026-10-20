@@ -381,7 +381,7 @@
 }
 .player-layout.system-shell .rm-title-screen[data-monster-style="emerald"] .rm-title-screen-title[data-logo-style] {
   left: 6%; top: 12%; width: 57%; max-width: 57%;
-  margin: 0; font: 36px/40px Galmuri9, monospace;
+  margin: 0; font: 33px/40px "Galmuri11 Bold", Galmuri9, monospace;
   letter-spacing: 0; color: #f5efc5; text-shadow: 2px 2px #153b48;
   -webkit-text-stroke: 0; overflow-wrap: anywhere;
 }
@@ -443,7 +443,8 @@
 .cinematic-shot .cinematic-layer[data-depth='foreground'] { z-index: 3; }
 
 /* 시네마틱 오프닝: 건너뛰기 안내(3초 뒤 서서히) · 레터박스 막대 안 한 줄 자막. */
-.cinematic-skip-hint { position: absolute; top: 10px; right: 14px; z-index: 5; font: 12px/1.2 Galmuri9, system-ui, sans-serif; color: #fff9; text-shadow: 0 1px 2px #000; pointer-events: none; opacity: 0; animation: cinematic-skip-hint-in .6s ease 3s forwards; }
+/* 밝은 하늘·모래 위에서 흰 글자만으로는 보이지 않았다(2026-10-20 검수) — 어두운 바탕 띠를 깐다. */
+.cinematic-skip-hint { position: absolute; top: 8px; right: 10px; z-index: 5; font: 9px/12px Galmuri9, system-ui, sans-serif; color: #fff; background: #0b1420c0; padding: 2px 6px; text-shadow: none; pointer-events: none; opacity: 0; animation: cinematic-skip-hint-in .6s ease 3s forwards; }
 @keyframes cinematic-skip-hint-in { to { opacity: 1; } }
 .cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="bar"] { position: absolute; left: 0; right: 0; bottom: 0; height: var(--cinematic-letterbox); width: auto; max-width: none; max-height: none; padding: 0 6%; display: flex; align-items: center; justify-content: center; text-align: center; background: none; overflow: hidden; }
 

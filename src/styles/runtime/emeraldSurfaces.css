@@ -624,7 +624,7 @@
 }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-box .dialogue-content { height: 100%; display: block; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-box .dialogue-text-column { height: 100%; padding: 0; }
-.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-box .body { font: 18px/24px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; color: #384840; text-align: left; text-shadow: none; height: 48px; min-height: 0; max-height: 48px; overflow: hidden; margin: 0; }
+.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-box .body { font: 18px/24px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; color: #384840; text-align: left; text-shadow: none; height: 48px; min-height: 0; max-height: 48px; overflow: hidden; margin: 0; word-break: keep-all; overflow-wrap: anywhere; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-box.has-speaker { padding-top: 12px; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] :is(.speaker-nameplate, .dialogue-face, .dialogue-log-button) { display: none; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-page-cursor { right: 12px; bottom: 12px; color: #c85048; font: 18px/20px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; text-shadow: none; }
