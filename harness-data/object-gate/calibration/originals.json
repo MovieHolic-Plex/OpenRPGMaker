@@ -255,6 +255,13 @@
    "note": "same pew redrawn: green shows the seat plank as a top plane (rows of seat seen from above) in front of the backrest; red shows the backrest face-on with only a thin strip where the seat should be"
   },
   {
+   "pattern": "side-facing seat",
+   "kind": "seat",
+   "good": "pairs/new-chair-e",
+   "bad": "interior/chair_E__v5",
+   "note": "same east-facing chair redrawn: green shows the seat as a horizontal plane of about 4 rows seen from above in front of the backrest post; red shows the seat as a thin edge under the side silhouette"
+  },
+  {
    "pattern": "wooden stand frame",
    "kind": "frame",
    "good": "style/prehistoric__fish-rack__after",

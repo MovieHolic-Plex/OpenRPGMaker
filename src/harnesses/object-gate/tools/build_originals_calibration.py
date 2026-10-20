@@ -122,6 +122,8 @@ def base_name(label: str) -> str:
 CONTRAST = [
     {"pattern": "seat backrest vs seat", "kind": "seat", "good": "pairs/new-pew-e", "bad": "interior/pew__v5",
      "note": "same pew redrawn: green shows the seat plank as a top plane (rows of seat seen from above) in front of the backrest; red shows the backrest face-on with only a thin strip where the seat should be"},
+    {"pattern": "side-facing seat", "kind": "seat", "good": "pairs/new-chair-e", "bad": "interior/chair_E__v5",
+     "note": "same east-facing chair redrawn: green shows the seat as a horizontal plane of about 4 rows seen from above in front of the backrest post; red shows the seat as a thin edge under the side silhouette"},
     {"pattern": "wooden stand frame", "kind": "frame", "good": "style/prehistoric__fish-rack__after", "bad": "style/prehistoric__fish-rack__before",
      "note": "same rack: green draws the beams and posts with lit top faces and tinted outlines; red is the flat early version"},
     {"pattern": "composite house", "kind": "structure", "good": "style/beodeul__house-h122_0", "bad": "style/synthetic__house-h122_0", "allowHard": True,
