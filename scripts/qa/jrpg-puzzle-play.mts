@@ -11,6 +11,7 @@
  */
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { chromium, type Page } from "@playwright/test";
@@ -144,6 +145,8 @@ const server = await startPlayerQaServer({ logLevel: "error" });
 const browser = await chromium.launch({ headless: true, args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu", "--disable-dev-shm-usage"] });
 const pageErrors: string[] = [];
 const results: Array<Record<string, unknown>> = [];
+/** 실제로 내려받은 퍼즐 효과음 파일(주소·상태·sha256) — 「파일이 있다」가 아니라 플레이어가 받아 갔다는 증거. */
+const sfxFetches: Array<{ file: string; status: number; bytes: number; sha256: string }> = [];
 
 async function present(page: Page, id: string): Promise<boolean> {
   return (await page.locator(`[data-testid="${id}"]`).count()) > 0;
@@ -176,6 +179,14 @@ try {
   const context = await browser.newContext({ viewport: { width: 640, height: 480 } });
   const page = await context.newPage();
   page.on("pageerror", (err) => pageErrors.push(String(err?.message ?? err)));
+  page.on("response", (res) => {
+    const m = /\/assets\/puzzle-sfx\/([^?#]+\.ogg)/.exec(res.url());
+    if (!m) return;
+    void res.body().then(
+      (b) => sfxFetches.push({ file: m[1]!, status: res.status(), bytes: b.length, sha256: createHash("sha256").update(b).digest("hex") }),
+      () => sfxFetches.push({ file: m[1]!, status: res.status(), bytes: -1, sha256: "" }),
+    );
+  });
   await page.addInitScript(() => {
     try {
       localStorage.clear();
@@ -450,7 +461,7 @@ try {
   const byId = new Map<string, Record<string, unknown>>(prevResults.map((r) => [String(r.presetId), r]));
   for (const r of results) byId.set(String(r.presetId), r);
   const mergedResults = PUZZLE_PRESET_CATALOG.map((p) => byId.get(p.id)).filter((r): r is Record<string, unknown> => Boolean(r));
-  fs.writeFileSync(reportPath, JSON.stringify({ generatedAt: new Date().toISOString(), legacy: LEGACY, sqliteRoundtrip, results: mergedResults, pageErrors }, null, 2));
+  fs.writeFileSync(reportPath, JSON.stringify({ generatedAt: new Date().toISOString(), legacy: LEGACY, sqliteRoundtrip, results: mergedResults, sfxFetches, pageErrors }, null, 2));
   await browser.close();
   await server.close();
 }

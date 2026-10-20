@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""퍼즐 효과음 SNES 샘플 악기풍 비교 예제 (칩튠 현행 vs SNES 풍 A/B).
+"""퍼즐 효과음 SNES 샘플 악기풍 합성기 + 비교 예제.
 
-에디터에 넣지 않는 **비교 예제**다. 현행 칩튠(`build.py` 의 PATCHES)과, 같은 역할을 SNES(스파 시절 젤다류)
-「샘플 악기」 방식으로 다시 만든 두 변형을 나란히 렌더한다.
+출하 퍼즐 효과음은 `build.py` 가 이 모듈의 변형 A(`build_cues(...)[cue]["A"]`, 오르간은 `organ_note`)로 굽는다.
+이 파일을 직접 실행하면 옛 칩튠(`build.py` 의 CHIP_PATCHES) | 변형 A | 변형 B 비교용 WAV 를 쓴다.
 
 녹음·샘플·원작 멜로디는 쓰지 않는다. 악기 「샘플」도 전부 이 파일에서 수식으로 합성한다:
   하프 = Karplus-Strong, 글로켄·셀레스타·금속 = FM/가산, 마림바·팀파니·우드블록 = 감쇠 부분음 가산,
@@ -15,7 +15,7 @@
   5. 에코: 16 ms 단위 지연 + 8탭 FIR + 되먹임 + 에코 음량.
   6. 16비트 클리핑 후 32 kHz → 44.1 kHz.
 
-  python3 scripts/content/puzzle-sfx/snes_examples.py [OUT_DIR]   # 기본 ~/claude-viz/puzzle-sfx-snes-1
+  python3 scripts/content/puzzle-sfx/snes.py [OUT_DIR]   # 기본 ~/claude-viz/puzzle-sfx-snes-1
 """
 from __future__ import annotations
 
@@ -421,6 +421,24 @@ ECHO_ROOM = {"edl": 4, "efb": 0.35, "evol": 0.32}     # 64 ms, 돌방 울림
 ECHO_SHORT = {"edl": 2, "efb": 0.25, "evol": 0.25}    # 32 ms
 
 
+def organ_note(S: dict[str, Sample], nt: str) -> np.ndarray:
+    """오르간 발판 한 음(출하 organ-c/e/g/c2) — 파이프오르간 + 옥타브 아래 겹, 64 ms 에코. 같은 음색·음높이만 다르다."""
+    s = Song(0.75, ECHO_ROOM)
+    s.add(0, 0.0, play(S["organ"], nt, 0.42, a=0.01, d=0.15, sl=0.75, rel=0.12), 0.55)
+    s.add(1, 0.0, play(S["organ"], hz(nt) / 2, 0.42, a=0.01, d=0.15, sl=0.75, rel=0.12), 0.3)
+    return s.render()
+
+
+def all_samples() -> dict[str, Sample]:
+    makers = [make_harp, make_glock, make_celesta, make_marimba, make_timpani, make_woodblock, make_metal,
+              make_grit, make_strings, make_brass, make_organ, make_ocarina, make_bass]
+    return {smp.name: smp for smp in (m() for m in makers)}
+
+
+def aram_kib(S: dict[str, Sample]) -> float:
+    return sum(len(s.data) // 16 * 9 for s in S.values()) / 1024
+
+
 def build_cues(S: dict[str, Sample]) -> dict[str, dict[str, tuple[np.ndarray, str]]]:
     cues: dict[str, dict[str, tuple[np.ndarray, str]]] = {}
 
@@ -557,10 +575,10 @@ def current_versions() -> dict[str, np.ndarray]:
     mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)  # type: ignore[union-attr]
     out = {}
     for cue in ("secret-solved", "stone-push", "switch-clack", "plate-press", "wrong", "crystal-ping"):
-        out[cue] = synth.normalise(synth.render({"id": cue, **mod.PATCHES[cue]}), mod.PEAK_DBFS.get(cue, -4.0))
+        out[cue] = synth.normalise(synth.render({"id": cue, **mod.CHIP_PATCHES[cue]}), mod.PEAK_DBFS.get(cue, -4.0))
     seq = np.zeros(int(2.4 * synth.SR))
     for k, cue in enumerate(("organ-c", "organ-e", "organ-g", "organ-c2")):
-        y = synth.normalise(synth.render({"id": cue, **mod.PATCHES[cue]}), -4.0)
+        y = synth.normalise(synth.render({"id": cue, **mod.CHIP_PATCHES[cue]}), -4.0)
         s0 = int(k * 0.5 * synth.SR)
         seq[s0:s0 + len(y)] += y[: len(seq) - s0]
     out["organ-seq"] = synth.normalise(seq, -4.0)
@@ -576,14 +594,8 @@ TITLES = {
 def main(argv: list[str]) -> int:
     out = Path(argv[1]) if len(argv) > 1 else Path.home() / "claude-viz" / "puzzle-sfx-snes-1"
     out.mkdir(parents=True, exist_ok=True)
-    makers = [make_harp, make_glock, make_celesta, make_marimba, make_timpani, make_woodblock, make_metal,
-              make_grit, make_strings, make_brass, make_organ, make_ocarina, make_bass]
-    S = {}
-    for m in makers:
-        smp = m()
-        S[smp.name] = smp
-        print(f"sample {smp.name:9s} {len(smp.data):6d} smp  {len(smp.data) // 16 * 9:6d} B BRR  loop={smp.loop}", flush=True)
-    print(f"ARAM 합계 {sum(len(s.data) // 16 * 9 for s in S.values()) / 1024:.1f} KiB (실기 64 KiB)")
+    S = all_samples()
+    print(f"ARAM 합계 {aram_kib(S):.1f} KiB (실기 64 KiB)")
     cur = current_versions()
     cues = build_cues(S)
     meta = {}
