@@ -120,19 +120,24 @@ def gable_top(c, x0, x1, ytop, yeave, mat, base, ridge_frac=0.22):
         c.P(x0, y, K('shiro', 1)); c.P(x0 + 1, y, K(mat, base + 3)); c.P(x0 + 2, y, K(mat, base + 2))   # けらば(빛 쪽) 3px: 흰 테 + 밝은 기와 두 줄
         c.P(x1, y, OL); c.P(x1 - 1, y, K(mat, base - 3)); c.P(x1 - 2, y, K(mat, base - 2))             # けらば(그늘 쪽) 3px
         c.P(x0 - 1, y, OL); c.P(x1 + 1, y, OL)
-    if flat_back:                                                            # 棟瓦 7줄: 흰 冠 + 熨斗 2단(마디) + 그늘 띠, 양 끝 鬼瓦 5×8
+    if flat_back:                                                            # 棟瓦 7줄: 冠瓦 + 漆喰(따뜻한 흰) 줄 사이 熨斗 2단 + 그늘, 양 끝 鬼瓦(기와 끝 모양)
         W = x1 - x0 + 1
-        c.HL(x0, yr - 7, W, K('shiro', 1)); c.HL(x0, yr - 6, W, K(mat, base + 3))          # 冠瓦 윗면
-        c.HL(x0, yr - 5, W, K('shiro', 0))                                                       # 漆喰 줄
-        c.HL(x0, yr - 4, W, K(mat, base + 2))                                                    # 熨斗 1단
+        c.HL(x0, yr - 7, W, K(mat, base + 3)); c.HL(x0, yr - 6, W, K(mat, base + 2))       # 冠瓦 윗면(빛) · 앞면
+        for x in range(x0 + 1, x1, 4): c.P(x, yr - 6, K(mat, base))                         # 冠瓦 이음
+        c.HL(x0, yr - 5, W, K('kinari', 1))                                                    # 漆喰 줄(따뜻한 흰)
+        c.HL(x0, yr - 4, W, K(mat, base + 1))                                                  # 熨斗 1단
         for x in range(x0 + 2, x1 - 1, 3): c.P(x, yr - 4, K(mat, base - 1))
-        c.HL(x0, yr - 3, W, K('shiro', -1))                                                      # 漆喰 줄
-        c.HL(x0, yr - 2, W, K(mat, base + 1))                                                    # 熨斗 2단
+        c.HL(x0, yr - 3, W, K('kinari', -1))                                                   # 漆喰 줄(그늘진)
+        c.HL(x0, yr - 2, W, K(mat, base + 1))                                                  # 熨斗 2단
         for x in range(x0 + 3, x1 - 1, 3): c.P(x, yr - 2, K(mat, base - 2))
-        c.HL(x0, yr - 1, W, K(mat, base - 4)); c.HL(x0, yr, W, K(mat, base - 2))                # 棟 아래 그늘
+        c.HL(x0, yr - 1, W, K(mat, base - 4)); c.HL(x0, yr, W, K(mat, base - 2))              # 棟 아래 그늘
+        ONI = ('.LLL.', 'LHHMD', 'LHMMD', 'LMMMD', 'LMMDD', 'DDDDD')                          # 鬼瓦: 둥근 머리 기와 끝(위 빛 · 오른쪽 그늘), 점 없음
+        col = {'L': K(mat, base + 3), 'H': K(mat, base + 2), 'M': K(mat, base + 1), 'D': K(mat, base - 2)}
         for ex in (x0, x1 - 4):
-            c.R(ex, yr - 8, 5, 8, K('yoru', -1)); c.HL(ex, yr - 8, 5, K('yoru', 2)); c.R(ex, yr - 8, 1, 8, K('yoru', 1))
-            c.P(ex + 2, yr - 5, K('yoru', -3)); c.HL(ex, yr, 5, OL)
+            for j, row in enumerate(ONI):
+                for i, ch in enumerate(row):
+                    if ch != '.': c.P(ex + i, yr - 7 + j, col[ch])
+            c.R(ex + 5 if ex == x0 else ex - 1, yr - 6, 1, 6, K(mat, base - 4))               # 안쪽 끝 그늘: 棟 띠와 떨어진 기와 끝으로 읽히게
     else:
         c.HL(x0 + 2, yr - 2, x1 - x0 - 3, K(mat, base + 4)); c.HL(x0 + 2, yr - 1, x1 - x0 - 3, K(mat, base + 3)); c.HL(x0 + 2, yr, x1 - x0 - 3, K(mat, base - 4))
     c.HL(x0 - 1, ytop - 1, x1 - x0 + 3, OL)
@@ -348,10 +353,18 @@ def flat_top(c, x0, x1, ytop, yb, mat='conc', items=(), rail=False, floor=None):
         if iy + bh > hi: iy = max(lo, hi - bh)                               # 앞 난간을 덮지 않게 위로 올린다
         if iy + bh > hi: return None
         ix = max(x0 + 4, min(ix, x1 - 4 - bw))
-        if not free(ix, iy, bw, bh):                                         # 막히면 데크 안에서 빈자리를 찾는다(위→아래, 왼→오른)
-            spot = next(((ax, ay) for ay in range(lo, hi - bh + 1, 2) for ax in range(x0 + 4, x1 - 3 - bw, 2) if free(ax, ay, bw, bh)), None)
-            if spot is None: return None
-            ix, iy = spot
+
+        def hug(ax, ay):                                                     # 난간 또는 다른 물건과의 틈(작을수록 붙어 있다)
+            g = [ax - (x0 + 4), (x1 - 4 - bw) - ax, ay - lo, (hi - bh) - ay]
+            for a0, a1, b0, b1 in taken:
+                dx = max(a0 - (ax + bw), ax - a1, 0); dy = max(b0 - (ay + bh), ay - b1, 0)
+                g.append(max(dx, dy))
+            return min(g)
+        small = kind in ('plant', 'pot')
+        if not free(ix, iy, bw, bh) or (small and hug(ix, iy) > 4):          # 막혔거나, 화분이 데크 한가운데 외톨이면 난간·물건 곁 빈자리로
+            spots = [(ax, ay) for ay in range(lo, hi - bh + 1, 1) for ax in range(x0 + 4, x1 - 3 - bw, 1) if free(ax, ay, bw, bh)]
+            if not spots: return None
+            ix, iy = min(spots, key=lambda p: (hug(*p) if small else 0, abs(p[0] - ix) + abs(p[1] - iy)))
         taken.append((ix, ix + bw, iy, iy + bh))
         if kind == 'ac': _ac(c, ix, iy)
         elif kind == 'tank': _tank(c, ix, iy)
@@ -445,9 +458,9 @@ ROOF_DEPTH = 36                                         # 지붕 면(妻入り�
 def cap_roof(r):
     import copy
     r = copy.deepcopy(r)
-    # 주택·역은 따뜻한 기와(kawara −1, 2026-10-20 VQA 2판: −3 은 검붉게 뭉개진다). 상점가는 townify 가 흑갈(ita)로 먼저 바꾼다.
-    if r.get('rmat') in ('renga', 'aka'): r['rmat'], r['rbase'] = 'kawara', -1
-    if r.get('rmat') == 'kawara': r['rbase'] = -1
+    # 주택·역은 따뜻한 기와(kawara −2, 2026-10-20 VQA 3판: −1 은 밝은 주황, −3 은 검붉게 뭉개진다). 상점가는 townify 가 흑갈(ita)로 먼저 바꾼다.
+    if r.get('rmat') in ('renga', 'aka'): r['rmat'], r['rbase'] = 'kawara', -2
+    if r.get('rmat') == 'kawara': r['rbase'] = -2
     rk, ro = r['roof']
     if 'h' not in ro: return r
     hgt = {'lean': 16, 'lean_bal': 16, 'belt': 4, 'none': 0, 'corridor': 4, **hk.JOIN_H}
@@ -482,8 +495,8 @@ def townify(r, id_, narrow_w=6, force=None):
     r = copy.deepcopy(r)
     seed = zlib.crc32(id_.encode())
     rk = r['roof'][0]
-    # 상점가 지붕 한 계열: 슬레이트(yoru·tairu) · 흑갈 기와(ita −1) · 골판(tekko). 빨강·주황·분홍 기와(kawara·renga·aka)는 흑갈로.
-    if r.get('rmat') in ('kawara', 'renga', 'aka'): r['rmat'], r['rbase'] = 'ita', -1
+    # 상점가 지붕 한 계열: 슬레이트(yoru·tairu) · 흑갈 기와(ita −2, VQA 3판: −1 은 회갈 베이지) · 골판(tekko). 빨강·주황·분홍 기와(kawara·renga·aka)는 흑갈로.
+    if r.get('rmat') in ('kawara', 'renga', 'aka'): r['rmat'], r['rbase'] = 'ita', -2
     if force == 'gable_front' or (force is None and rk in PITCHED_OLD and r['w'] <= narrow_w):
         r['roof'] = ('gable_front', {})
     elif force == 'flat':

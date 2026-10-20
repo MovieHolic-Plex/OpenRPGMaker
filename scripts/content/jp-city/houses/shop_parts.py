@@ -42,17 +42,32 @@ def text_w(s, step=17):
     return step * len(s) - (step - 16)
 
 
-SIGN_SHORT = {'酒のヤマ': '酒', 'ブックス': '本', '喫茶ルナ': '喫茶', 'フラワー': '花', 'サイクル': '自転車', 'ランドリー': '洗たく', 'さくら駅': 'さくら駅'}
+SIGN_SHORT = {'酒のヤマ': '酒', 'ブックス': '本', '喫茶ルナ': '喫茶', 'フラワー': '花', 'サイクル': '自転車', 'ランドリー': '洗たく',
+              'ラーメン': '拉麺', 'いざかや': '酒場', 'テナント': '貸'}
+SIGN_PAD = 6                                                                 # 판 가장자리 ~ 잉크(굵은 획+그림자) 최소 여백
+
+
+def _ink(s, step):
+    """굵은 획 + 오른쪽 아래 그림자까지 포함한 잉크 가로 범위 (왼, 오른) — 글리프 안쪽 빈칸을 빼고 잰다."""
+    xs = [i * step + k + d for i, ch in enumerate(s) if ch != ' ' for j in range(16) for k in range(16) if jfont.glyph(ch)[j, k] for d in (0, 1, 2)]
+    return min(xs), max(xs)
+
+
+def _has(t):
+    try: return all(jfont.glyph(ch) is not None for ch in t if ch != ' ')
+    except KeyError: return False
 
 
 def sign_fit(s, w):
-    """간판 글자가 판 안쪽(테 2px)에서 좌우 여백 4px 이상 남게 — 넘치면 짧은 이름으로(2026-10-20 VQA)."""
-    t = SIGN_SHORT.get(s)                                                    # 긴 이름은 짧은 이름을 먼저(VQA: 글자가 판을 꽉 채운다)
-    if t and t != s and all(jfont.glyph(ch) is not None for ch in t) and text_w(t, 18) <= w - 12: return t
-    if text_w(s, 18) <= w - 12: return s
-    if t and all(jfont.glyph(ch) is not None for ch in t) and text_w(t, 18) <= w - 12: return t
-    while len(s) > 1 and text_w(s, 18) > w - 12: s = s[:-1]
-    return s
+    """간판 이름과 글자 간격을 고른다. 글자를 자르지 않는다(2026-10-20 VQA 3차).
+    순서: 원래 이름 18px 간격 → 등록된 짧은 이름 18 → 원래 이름 17·16(좁힘) → 짧은 이름 17·16. 다 안 맞으면 오류(판을 넓혀야 한다)."""
+    t = SIGN_SHORT.get(s)
+    cands = [(s, 18)] + ([(t, 18)] if t and _has(t) else []) + [(s, 17), (s, 16)] + ([(t, 17), (t, 16)] if t and _has(t) else [])
+    if t and t != s and _has(t) and len(t) < len(s): cands.insert(0, (t, 18))    # 긴 이름은 짧은 이름을 먼저(판을 꽉 채우지 않게)
+    for name, step in cands:
+        l, r = _ink(name, step)
+        if r - l + 1 <= w - 2 * SIGN_PAD: return name, step
+    raise ValueError(f'간판 {s!r} 이 판 {w}px 에 안 들어간다 — 판을 넓히거나 짧은 이름을 SIGN_SHORT 에 등록')
 
 
 def sign_text(c, x, y, s, col, shadow, step=18):
@@ -77,9 +92,9 @@ def sign(c, x, y, w, s, bg='sora', fg=('shiro', 2), h=20, frame=True):
     c.HL(x, y + h + 2, w, K(bg, -2))
     c.HL(x - 1, y - 1, w + 2, OL); c.VL(x - 1, y, h + 3, OL); c.VL(x + w, y, h + 3, OL); c.HL(x - 1, y + h + 3, w + 2, OL)
     if s:
-        s = sign_fit(s, w)
-        tw = text_w(s, 18)
-        sign_text(c, x + (w - tw) // 2, y + 2 + (h - 16) // 2 + 1, s, K(*fg), K(bg, -2))
+        s, step = sign_fit(s, w)
+        l, r = _ink(s, step)
+        sign_text(c, x + (w - (r - l + 1)) // 2 - l, y + 2 + (h - 16) // 2 + 1, s, K(*fg), K(bg, -2), step)
     return y + h + 4
 
 
