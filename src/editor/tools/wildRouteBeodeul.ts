@@ -173,7 +173,7 @@ function dressBeodeulVerge(project: Project, map: GameMap, tileset: TilesetDef, 
   rng: Rng, stampObject: ToolDefinition): number {
   const w = map.width;
   const decor = (tileset.structureKits ?? []).filter(kit => kit.width === 1 && kit.height === 1
-    && /^bd-pick-deep-forest-path-(fern|heath|wild|stones|stump|toadstools)-/.test(kit.id));
+    && /^bd-pick-deep-forest-path-(fern-c|heath|wild|stones|stump|toadstools)-/.test(kit.id));
   if (decor.length === 0) return 0;
   let placed = 0;
   for (const index of reserved) {
@@ -200,10 +200,10 @@ function fringeBeodeulThicket(project: Project, map: GameMap, tileset: TilesetDe
   rng: Rng, stampObject: ToolDefinition): number {
   // 2026-10-20(폴른 스타 감사 3차 「각진 풀숲」): 짙은 잎 풀 칸만 깔면 납작한 짙은 깔개로 보였다(시트에 키큰 풀이 없다).
   // 풀숲 칸마다 고사리·헤더 덤불을 거의 다 채우고(포켓몬 풀숲처럼 칸마다 풀포기), 바깥 한 칸 둘레에도 드문드문 흘려
-  // 네모 가장자리를 흐린다. 조우는 칸 무늬가 아니라 로케이션(「풀숲 N」)이 정하므로 그림만 바뀐다.
+  // 네모 가장자리를 흐린다. fern-a/b 는 네모 울타리 덩이(큐브)로 읽혀 4× 에서 각져 보인다 — 풀 무늬 fern-c 와 열매 덤불 heath 만 쓴다(2026-10-21, 폴른 스타 시각 수리). 조우는 칸 무늬가 아니라 로케이션(「풀숲 N」)이 정하므로 그림만 바뀐다.
   const w = map.width;
   const tufts = (tileset.structureKits ?? []).filter(kit => kit.width === 1 && kit.height === 1
-    && /^bd-pick-deep-forest-path-(fern|heath)-/.test(kit.id));
+    && /^bd-pick-deep-forest-path-(fern-c|heath)-/.test(kit.id));
   if (tufts.length === 0) return 0;
   let placed = 0;
   const stamp = (index: number) => {
