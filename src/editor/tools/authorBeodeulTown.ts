@@ -13,6 +13,7 @@ import { assertMapIdAvailable } from "./mapHelpers";
 import { MAP_TOOLS } from "./mapTools";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+import { BEODEUL_FOREST_TYPES, parseBeodeulForestType, type BeodeulForestType } from "./beodeulForest";
 import { BEODEUL_VILLAGE_FORMS, BEODEUL_VILLAGE_THEMES, buildBeodeulVillage, themeDefaultSize, type BeodeulVillageTheme } from "./beodeulVillage";
 import { VILLAGE_TERRAINS } from "./beodeulTerrain";
 
@@ -73,6 +74,7 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
       form: { type: "string", enum: [...BEODEUL_VILLAGE_FORMS], description: "마을 형태(theme 마을만, city·houseCount 에는 없음): street 길가 · riverbank 물가 띠(river 만) · scatter 흩어진 · plaza 광장(장터일 때만). 생략하면 seed 로 고른다." },
       terrain: { type: "string", enum: [...VILLAGE_TERRAINS], description: "지형(theme 마을만) — 마을보다 먼저 정하는 땅 모양: terraces 계단식 비탈(river·coast, 큰길 북쪽 집 띠 뒤로 한두 단, 강은 곧은 골) · hillside 눈 덮인 비탈(snow) · basin 오아시스 골(desert) · ridge 마른 둔덕(swamp, 북쪽 높은 마른 땅·늪물은 낮은 땅에만) · flat 평지. 생략하면 seed 로 고른다(결과 data.terrain)." },
       theme: { type: "string", enum: [...BEODEUL_VILLAGE_THEMES, "city"], description: "마을 문법(기본 river): river 강가 · coast 포구(바다) · desert 사막 오아시스 · snow 설원 · swamp 늪 · city 로마풍 블록 도시(도시를 말할 때만)" },
+      forestType: { type: "string", enum: [...BEODEUL_FOREST_TYPES], description: "숲 덩이 종류(theme river·coast 마을만): broadleaf 활엽수림(기본) · conifer 침엽수림(전나무·측백) · mixed 혼효림(큰 활엽수 사이 측백·전나무)" },
       harbour: { type: "boolean", description: `true 이고 가로 ${HARBOUR_W} 이상이면 맨 아래에 항구 호수를 붙인다(세로 ${HARBOUR_H}칸 추가).` },
     },
   },
@@ -566,7 +568,9 @@ function buildVillage(draft: Project, args: Record<string, unknown>, theme: Beod
   const form = typeof args.form === "string" && args.form.trim() ? args.form.trim() : undefined;
   const terrain = typeof args.terrain === "string" && args.terrain.trim() ? args.terrain.trim() : undefined;
   const rebuilt = !!(typeof args.mapId === "string" && args.mapId.trim());
-  const r = buildBeodeulVillage(draft, mapId, theme, seed, form, terrain);
+  let forestType: BeodeulForestType;
+  try { forestType = parseBeodeulForestType(args.forestType); } catch (e) { throw new ToolError((e as Error).message, { code: "invalid-args", mapId }); }
+  const r = buildBeodeulVillage(draft, mapId, theme, seed, form, terrain, forestType);
   // 지형 도입(2026-10-11)으로 같은 seed 도 배치가 달라졌다 — 예전 마을 맵을 가진 사용자·조수가 알 수 있게 결과에도 짧게
   const note = rebuilt
     ? " 같은 mapId 로 다시 지어 맵 전체를 새로 깔았다(손으로 고친 부분은 사라졌다)."

@@ -5,6 +5,7 @@ import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
+import { layerTileAt } from "@/project/mapLayers";
 import type { GameMap, Project } from "@/project/types";
 
 function routeProject(seed: number): { ctx: ToolContext; map: GameMap } {
@@ -51,8 +52,8 @@ describe("버들항 도로", () => {
       if (!touchesEdge) expect(piece.length, `seed ${seed} 토막 ${piece.slice(0, 4).join(",")}`).toBeGreaterThan(4);
     }
 
-    // 숲 벽: 맵의 절반 이상이 나무·덤불로 덮인다(예전 흩뿌림은 3할 남짓).
-    const covered = map.upperTiles.filter(tile => tile >= 0).length;
+    // 숲 벽: 맵의 절반 이상이 나무·덤불로 덮인다(예전 흩뿌림은 3할 남짓). 나무 composer 는 2~4층에 겹쳐 쌓는다(2026-10-20).
+    const covered = map.lowerTiles.filter((_, i) => ([2, 3, 4] as const).some(L => layerTileAt(map, L, i) >= 0)).length;
     expect(covered / (map.width * map.height)).toBeGreaterThan(0.5);
     expect(map.mapRole).toBe("field");
   });

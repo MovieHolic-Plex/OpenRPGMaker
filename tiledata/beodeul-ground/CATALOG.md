@@ -1,6 +1,6 @@
 # 정확한 칸 배열
 
-시트 tex_beodeul_ground, 16px, 8열, 648칸. 배열은 원본 source 칸 번호다.
+시트 tex_beodeul_ground, 16px, 8열, 848칸. 배열은 원본 source 칸 번호다.
 빈칸 -1은 기존 층을 보존한다. 일반 stamp_object 키트는 빈 잔디에만 쓴다. 집·나무 보강은 dress_beodeul_ground로 한다.
 
 ## bdg-grass-0 · 풀 무더기 1
@@ -8373,7 +8373,7 @@
 }
 ```
 
-## bdg-woodland-fence-horizontal · 숲 깊이 · fence-horizontal
+## bdg-woodland-fence-horizontal · 숲 울타리 · 가로
 크기 1×1, 도구의 홈 층 3, 통·장작 몸통 차단 false.
 ```json
 {
@@ -8408,7 +8408,7 @@
 }
 ```
 
-## bdg-woodland-fence-vertical · 숲 깊이 · fence-vertical
+## bdg-woodland-fence-vertical · 숲 울타리 · 세로(서쪽 변)
 크기 1×1, 도구의 홈 층 3, 통·장작 몸통 차단 false.
 ```json
 {
@@ -8443,7 +8443,7 @@
 }
 ```
 
-## bdg-woodland-fence-corner · 숲 깊이 · fence-corner
+## bdg-woodland-fence-corner · 숲 울타리 · 남서 모서리
 크기 1×1, 도구의 홈 층 3, 통·장작 몸통 차단 false.
 ```json
 {
@@ -8477,6 +8477,150 @@
   ]
 }
 ```
+
+## bdg-woodland-fence-vertical-east · 숲 울타리 · 세로(동쪽 변)
+크기 1×1, 도구의 홈 층 3, 통·장작 몸통 차단 false.
+```json
+{
+  "kind": "fence",
+  "blockingCells": [
+    [
+      0,
+      0
+    ]
+  ],
+  "upperCells": [],
+  "lowerTiles": [
+    [
+      -1
+    ]
+  ],
+  "lowerOverlayTiles": [
+    [
+      -1
+    ]
+  ],
+  "upperTiles": [
+    [
+      646
+    ]
+  ],
+  "upperOverlayTiles": [
+    [
+      -1
+    ]
+  ]
+}
+```
+
+## bdg-woodland-fence-corner-se · 숲 울타리 · 남동 모서리
+크기 1×1, 도구의 홈 층 3, 통·장작 몸통 차단 false.
+```json
+{
+  "kind": "fence",
+  "blockingCells": [
+    [
+      0,
+      0
+    ]
+  ],
+  "upperCells": [],
+  "lowerTiles": [
+    [
+      -1
+    ]
+  ],
+  "lowerOverlayTiles": [
+    [
+      -1
+    ]
+  ],
+  "upperTiles": [
+    [
+      647
+    ]
+  ],
+  "upperOverlayTiles": [
+    [
+      -1
+    ]
+  ]
+}
+```
+
+## bdg-woodland-fence-corner-nw · 숲 울타리 · 북서 모서리
+크기 1×1, 도구의 홈 층 3, 통·장작 몸통 차단 false.
+```json
+{
+  "kind": "fence",
+  "blockingCells": [
+    [
+      0,
+      0
+    ]
+  ],
+  "upperCells": [],
+  "lowerTiles": [
+    [
+      -1
+    ]
+  ],
+  "lowerOverlayTiles": [
+    [
+      -1
+    ]
+  ],
+  "upperTiles": [
+    [
+      648
+    ]
+  ],
+  "upperOverlayTiles": [
+    [
+      -1
+    ]
+  ]
+}
+```
+
+## bdg-woodland-fence-corner-ne · 숲 울타리 · 북동 모서리
+크기 1×1, 도구의 홈 층 3, 통·장작 몸통 차단 false.
+```json
+{
+  "kind": "fence",
+  "blockingCells": [
+    [
+      0,
+      0
+    ]
+  ],
+  "upperCells": [],
+  "lowerTiles": [
+    [
+      -1
+    ]
+  ],
+  "lowerOverlayTiles": [
+    [
+      -1
+    ]
+  ],
+  "upperTiles": [
+    [
+      649
+    ]
+  ],
+  "upperOverlayTiles": [
+    [
+      -1
+    ]
+  ]
+}
+```
+
+## 숲 접지 칸 bdg-forest-ground-* (나무 composer 전용)
+숲 바닥(1층) floor 64칸 650~, 가장자리 바닥 edge 64칸, 둘레 땅 그늘(2층 투명) apron 63칸. 번호는 그늘 코드(0~63) 순.
+칸 번호 표는 tiledata/beodeul-ground/forest-ground.json. 손으로 찍지 않는다 — author_wild_route·author_beodeul_town 의 숲(composer)이 그늘 코드로 고른다. WOODLAND 문서 「접지」 절 참고.
 
 ## 전체 조립 예제
 버들항 시트에 밑동 칸을 이식한 3×4 완성 맵. 원본 737 잔디는 그대로다.
