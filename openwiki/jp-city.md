@@ -41,6 +41,10 @@ modern3 팔레트(154색) 손 도트로 그린 일본 도시(상가·주택·역
 
 - 행인 `person.*`(Actor1 프레임)은 번들에서 **제외**한다. Actor1 은 타일이 아니고 출처·라이선스가 불확실하다.
 - 새 칸의 색은 modern3 팔레트(`tiledata/atlas-pick/palette/modern3.pal`) 안이어야 한다. modern4(modern_city 쪽)로 확장하지 않는다.
+- **일본 로케일 팔레트 계약**(`src/editor/jpCity/paletteContract.ts` → `bun scripts/content/jp-city/export_palette_contract.mts` → `tiledata/jp-city/palette-contract.json`): 6계열 × 재료 3~4개. 바깥 칸(실내·던전 블록 제외)은 굽기에서 퇴출 램프 색이 계약 색으로 옮겨지고, 허용 색 = modern3 ∪ 계약 색(`bake_jp.py`·`bake_inaka.py`).
+  - **2026-10-20 사용자 결정: 「재료당 5단」 제한을 푼다.** 재료는 핵심 5단(`steps`, 뜻 불변 — 시간대 단 이동·퇴출 램프 짝·`jp_regions_pack` 의 단 번호) 위에 버들항식 **확장 램프** `ramp`(6~10단, 핵심 5단을 순서대로 품는다)와 **하위 램프** `subRamps`(3~10단, 같은 재료의 다른 결)를 가질 수 있다. JSON v2 의 `ramps` 가 이름 붙은 램프 전부를 펼친다: `<재료>`(핵심) · `<재료>+`(확장) · `<재료>/<하위>`. jp_city 와 시골 팩(`jp_inaka_pack`) 모두 적용.
+  - 처음 넣은 것: `pine_bamboo+`(9단) · `pine_bamboo/sunleaf`(9단, 그늘 청록 → 빛 연두로 색상이 도는 버들항 숲 실측 램프, 채도 ≤ 0.49) · `pine_bamboo/culm`(대 줄기 7단) · `moss+`(7단) · `aged_cedar/bark`(나무껍질 7단). 새 재료 결이 필요하면 같은 자리로 더한다 — 램프 밖 낱색은 여전히 금지.
+  - 검사 `validateJpPaletteContract()`(내보내기가 부르고 실패하면 JSON 을 안 쓴다): 핵심 5단 · 확장 6~10단·핵심 포함 · 하위 3~10단 · 단마다 밝기 증가 · 채도 ≤ 램프 상한 ≤ 0.50. 정규화(`nearestContractColor`)는 핵심 5단 색만 본다 — 확장 전에 구운 칸의 정규화 결과가 그대로다.
 
 ## 조수 정책
 
