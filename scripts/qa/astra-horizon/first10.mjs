@@ -621,7 +621,12 @@ try {
   await mark("lab");
   await shot("06-lab");
   await talkTo(labId, /_professor$/);
-  await readThrough(80, { choose: async () => { await page.keyboard.press("Enter"); } });
+  // QA_STARTER=0|1|2 — 스타터 고르기(첫 선택 창에서만 아래로 그만큼). 스타터 3종 균형 비교용.
+  let starterPicked = false;
+  await readThrough(80, { choose: async () => {
+    if (!starterPicked) { starterPicked = true; for (let k = 0; k < Number(process.env.QA_STARTER ?? 0); k++) { await page.keyboard.press("ArrowDown"); await page.waitForTimeout(120); } }
+    await page.keyboard.press("Enter");
+  } });
   const party = (await live()).party;
   step("starter", party.length > 0, party.map((m) => `${m.speciesId} Lv${m.level}`).join(", "), await shot("07-after-starter"));
   await mark("starter");
