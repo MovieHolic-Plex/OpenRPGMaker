@@ -497,11 +497,12 @@ function tunePacing(project: Project): void {
     // 연구소 라이벌의 첫 동료: 포포비(벌레)는 불 스타터에 두 배·풀 스타터에 반감이라 불은 1턴, 풀은 5턴이었다(2026-10-21 적대 검수 r3) →
     // 세 스타터 모두 보통 상성인 볼트온(전기). 기술은 아래에서 몸통 기술만 남긴다(전기 기술은 물에 두 배).
     mx_enemy_mx_map_lab_rival_0: { species: "mx_enemy_zaptoe", level: 4 },
-    mx_enemy_mx_map_grove_gym_grunt_0_0: { species: "mx_enemy_podback", level: 5 },
-    mx_enemy_mx_map_grove_gym_grunt_1_0: { species: "mx_enemy_brambleboar", level: 5 },
-    mx_enemy_mx_map_grove_gym_grunt_2_0: { species: "mx_enemy_orchardant", level: 5 },
-    mx_enemy_mx_map_grove_gym_leader_0: { species: "mx_enemy_podback", level: 6 },
-    mx_enemy_mx_map_grove_gym_leader_1: { species: "mx_enemy_brambleboar", level: 7 },
+    // 스타터마다 2배 위협이 하나씩 갈린 뒤(아래 nativeMove)로는 세 스타터 모두 관장 Lv6·7 을 Lv9 로 3~4턴에 눌렀다(2026-10-21 적대 검수 r4: 관장이 약하다) → 수련생 6, 관장 8·9.
+    mx_enemy_mx_map_grove_gym_grunt_0_0: { species: "mx_enemy_podback", level: 6 },
+    mx_enemy_mx_map_grove_gym_grunt_1_0: { species: "mx_enemy_brambleboar", level: 6 },
+    mx_enemy_mx_map_grove_gym_grunt_2_0: { species: "mx_enemy_orchardant", level: 6 },
+    mx_enemy_mx_map_grove_gym_leader_0: { species: "mx_enemy_podback", level: 8 },
+    mx_enemy_mx_map_grove_gym_leader_1: { species: "mx_enemy_brambleboar", level: 9 },
   };
   for (const [enemyId, { species, level }] of Object.entries(reskin)) {
     const enemy = byId(enemyId), template = byId(species);
@@ -522,7 +523,8 @@ function tunePacing(project: Project): void {
     rival.actions = rival.actions.filter((a) => !a.skillId || !bug.has(a.skillId));
     const tackle = project.database.skills.find((s) => s.name === "어깨툭")?.id;
     if (tackle) rival.actions = rival.actions.filter((a) => !a.skillId || a.skillId === tackle);
-    rescaleEnemy(rival, 4);
+    // 볼트온(보통 상성)으로 바꾼 뒤 Lv4 는 2턴에 체력 3/4 를 남기고 끝나 위협이 없었다(r4) → 스타터와 같은 Lv5.
+    rescaleEnemy(rival, 5);
     // 1번 도로 트레이너의 포포비도 같은 벌레 기술로 Lv5 스타터를 3턴에 쓰러뜨렸다(2026-10-20 실플레이) — 첫 도로에서는 몸통 기술만.
     const routeBug = byId("mx_enemy_mx_map_meadow_trainer_1_0");
     if (routeBug) routeBug.actions = routeBug.actions.filter((a) => !a.skillId || !bug.has(a.skillId));
@@ -563,7 +565,7 @@ function tunePacing(project: Project): void {
   // 무영의 몬스터가 챔피언 나루와 같은 종(베르카부·피오르·볼트온)이었고, 2단 진화 베르카부를 앞세워 Lv10 풀 스타터가 두 번 졌다(2026-10-21 정직 여정).
   // 「밤막회사」답게 그림자·독·꿈 계열 기본 종 셋(Lv7, 셋째를 Lv8 로 두니 Lv10 풀 스타터 + Lv5 동료가 둘까지 잡고 졌다)으로 바꾼다 — 불은 셋 모두 보통, 풀은 꿈방울로 독을, 물은 물 기술로 셋 모두를 보통 이상으로 친다.
   // 경험치 나누기 뒤에도 잡은 동료가 약하면(Lv10 풀 + Lv8 벌레) 두 번 졌다(2026-10-21 r13) → 앞의 둘 Lv6, 마지막 Lv7.
-  const templeTeam: readonly [string, number][] = [["mx_enemy_threadimp", 6], ["mx_enemy_miretail", 6], ["mx_enemy_dozemite", 7]];
+  const templeTeam: readonly [string, number][] = [["mx_enemy_threadimp", 8], ["mx_enemy_miretail", 8], ["mx_enemy_dozemite", 9]];
   templeTeam.forEach(([templateId, level], i) => {
     const enemy = byId(`mx_enemy_mx_map_observatory_boss_${i}`), template = byId(templateId);
     if (!enemy || !template) return;
@@ -586,7 +588,9 @@ function tunePacing(project: Project): void {
     league.members = [...rest, ace!];
     league.enemyIds = league.members.map((m) => m.enemyId);
     // 셋으로 줄인 뒤에도 Lv12 풀 + Lv9 비행 정직 파티가 두 번 졌다(2026-10-21 r15) → 앞 둘 Lv8, 에이스 Lv10 그대로.
-    for (const m of rest) { const e = byId(m.enemyId); if (e) rescaleEnemy(e, 8); }
+    for (const m of rest) { const e = byId(m.enemyId); if (e) rescaleEnemy(e, 9); }
+    // 스타터 보조 기술·경험치 나누기 뒤로는 신전(Lv6·6·7)·리그(8·8·10)가 Lv12 파티에 약했다(r4) → 신전 8·8·9, 리그 9·9·에이스 11.
+    const aceEnemy = byId(ace!.enemyId); if (aceEnemy) rescaleEnemy(aceEnemy, 11);
   }
 }
 

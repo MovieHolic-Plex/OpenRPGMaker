@@ -514,6 +514,16 @@ function gbaFeel(project: Project): void {
   // 나루 대사 상자에 직함을 붙인다(적대 검수 R2-6: 「나루」 이름만).
   const titled = (commands: Command[]) => walkLists(commands, (list) => { for (const c of list) if (c.kind === "text" && c.speaker === "나루") c.speaker = "라이벌 나루"; });
   for (const map of Object.values(project.maps)) for (const event of map.events) for (const page of event.pages ?? []) titled(page.commands);
+  // 간호사 인사: 두 줄짜리 한 쪽이 찍는 중간에 「…건강하게」에서 잘린 것처럼 보였다(r3·r4) — 인사와 물음을 두 쪽으로.
+  const greet = "회복 센터에 어서 오세요!\n동료들을 건강하게 해 드릴까요?";
+  for (const map of Object.values(project.maps)) for (const event of map.events) for (const page of event.pages ?? []) walkLists(page.commands, (list) => {
+    for (let i = 0; i < list.length; i++) {
+      const c = list[i]!;
+      if (c.kind !== "text" || c.body !== greet) continue;
+      list.splice(i, 1, { ...c, body: "회복 센터에 어서 오세요!" }, { ...c, body: "동료들을 건강하게 해 드릴까요?" });
+      i++;
+    }
+  });
   const bottom = (commands: Command[]) => walkLists(commands, (list) => { for (const c of list) if (c.kind === "text" && !c.position) c.position = "bottom"; });
   for (const map of Object.values(project.maps)) for (const event of map.events) for (const page of event.pages ?? []) bottom(page.commands);
   for (const common of project.commonEvents ?? []) bottom(common.commands);
