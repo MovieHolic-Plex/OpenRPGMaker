@@ -5,6 +5,20 @@
 
 <!-- releases -->
 
+## 0.285.0 — 2026-10-20
+
+### 기능
+
+- **object-gate** — calibrate profile ee216f0de5822996 — front_prop out of the clean-pass denominator, label fixes (fresh 31/38, violations 0/84, adversarial 0/144) (#3068) (`6e29818`)
+- **puzzle-sfx** — SNES sample-instrument puzzle SFX (ALttP-like), same ids (#3067) (`f86b8dd`)
+- **battle** — battle-feel prototype — widescreen side-view stage, crisp hit flashes, bold damage numbers, less chatter, cast charge ring (#3063) (`c60f014`)
+- **store** — one-command asset contribution path for coding agents (#3064) (`222dcbb`)
+
+### 수정
+
+- **monster** — 눈 판정 2차 불합격 15종 눈 3차 손 도트 + 걷기 칩 눈 잔상 정리 (#3066) (`980b473`)
+- **monster** — 룬 둘러싼 부유 조각돌 전투 도트 다시 그리기 + (0,2) 스킬 칸 (18차, 140/140) (#3065) (`71d2593`)
+
 ## 0.284.1 — 2026-10-20
 
 ### 수정
