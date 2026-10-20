@@ -31,14 +31,24 @@
 
 woodland-normal-error.png 왼쪽은 앞 나무가 뒤 나무를 가린 정상 순서, 오른쪽은 동일한 원본 나무들의 순서를 뒤집은 실제 합성 오류다. woodland-errors.json의 back-tree-over-front 좌표/픽셀 차이를 확인한다. 전체 네 층 배열과 모든 graft 규칙은 공동마당 예제 문서들에 있으며 원본 게임 픽셀 렌더도 함께 확인한다. 저장+재로드와 실제 player.html에서 6문 앞 도보 통행을 따로 확인한다. 기계적 검사가 시각적 자연스러움에 대한 사람의 판단을 대신하지 않는다.
 
-## 붓으로 까는 숲 — 나무 composer (2026-10-20)
+## 붓으로 까는 숲 — 나무 composer·접지·숲 종류 (2026-10-20 r2)
 
-위 숲 조각(north/west/east…)은 공동마당 예제 전용 고정 그림이다. 도로 숲 벽(`author_wild_route`, 이야기 산책 맵)과 강가·해안 마을(`author_beodeul_town` river/coast)의 숲은
-나무 composer(`src/project/defaults/treeComposer.ts` 의 `composeTreesInMask`, jp 숲 r4 와 같은 규칙)가 원본 줄기 나무 `bd-tree-d43edd`·`5844f6`(4×5), `1a786c`·`d61d7e`(3×4)를
-2줄·3칸 간격 밑동에 세우고 칸마다 남쪽(앞) 나무부터 4·3·2층에 쌓는다. 그래서 앞 나무 수관이 뒤 나무 줄기를 가리고 숲 남쪽 끝 줄만 줄기·뿌리가 보인다.
-그림 정의는 `src/assets/beodeulForestComposer.json`(원본 칸 번호와 칸별 불투명 비율, 새 그림 없음, `scripts/content/build-beodeul-forest-composer.py`).
+위 숲 조각(north/west/east…)은 공동마당 예제 전용 고정 그림이다. 도로 숲 벽(`author_wild_route`, 이야기 산책 맵)과 강가·해안 마을(`author_beodeul_town` river/coast) 숲은
+나무 composer(`src/project/defaults/treeComposer.ts` `composeTreesInMask`, jp 숲 r6 와 같은 규칙)가 짓는다. 2줄 간격 밑동에 나무를 세우고 칸마다 남쪽(앞) 나무부터 4·3·2층에 쌓는다 —
+앞 나무 수관이 뒤 나무 줄기를 가리고 숲 남쪽 끝 줄만 줄기·뿌리가 보인다. 정의 `src/assets/beodeulForestComposer.json`(빌더 `scripts/content/build-beodeul-forest-composer.py`), 도구 쪽 입구 `src/editor/tools/beodeulForest.ts` `composeBeodeulForest`.
 
-- 수관만 있는 3×3(줄기 없이 떠 보인다)·측백(이가 빠진다)은 숲에 쓰지 않는다. 숲 속을 3×3 수관으로 바꿔 보니 3칸 격자 무늬와 풀밭 틈이 다시 드러나 되돌렸다.
-- composer 는 숲 칸(과 마을에서는 숲에 붙은 빈 풀밭)에만 쓴다. 따로 찍은 낱 나무·덤불은 칸 번호가 같아도 지우지 않는다.
-- 나무 칸은 모두 X(막힘)다. 도로 숲 벽은 길 둘레 1칸·출구 둘레 2칸을 비우고, 마을 숲 수관은 길에서 2칸 안으로 넘치지 않는다.
-- 이 숲 나무를 낱칸으로 찍거나 지우지 않는다. 손으로 고치려면 숲 영역을 다시 짓는 도구를 쓴다.
+### 숲 종류 forestType (두 도구 모두 같은 인자)
+
+- `broadleaf` 활엽수림(기본): 줄기 나무 `bd-tree-d43edd`·`5844f6`(4×5), `1a786c`·`d61d7e`(3×4), 틈 덤불 `37f48b`·`f4f319`(2×2).
+- `conifer` 침엽수림: 해안 절벽길 전나무 `bd-pick-coast-cliff-road-fir-l`(3×4)·`-m`·`-m2`·`-s`(2×3)와 원본 도시 숲의 측백 `bd-tree-eef4bc`·`28ad5e`·`c27062`(1×3). 2칸 간격.
+- `mixed` 혼효림: 원본 도시 숲(`tiledata/beodeul-city/render-full/city6.png`)처럼 큰 활엽수 사이에 측백·전나무가 선다.
+- 모두 원본 버들항 칸이다(새 그림·재채색 없음). 수관만 있는 3×3 은 쓰지 않는다(떠 보이고 3칸 격자 무늬가 드러났다).
+
+### 접지 (TreeComposerGround)
+
+- 원본 숲 그늘 두 단을 그대로 쓴다 — 가 (30,49,27) α65(잔디 ×0.82), 속 (29,43,23) α115(×0.67). 버들항은 반투명을 쓸 수 있어 숲 밖 둘레 그늘은 투명 덧칸(2층)이고,
+  숲 칸 1층은 민무늬 잔디 737 에 같은 색을 합성한 숲 바닥 칸이다. 칸은 공용 기초 칩셋 `bdg-forest-ground-floor/edge/apron-<코드>`(빌더 `scripts/content/build-beodeul-forest-ground.py`), 런타임에 대상 칩셋으로 이식한다.
+- 그늘 코드 = 가운데·북·서·북서·동·북동 칸이 나무 그림 아랫줄(shadeRows: 활엽·혼효 2줄, 침엽 1줄)에 덮였는가. 그늘 덩이는 덮개 칸 위 4~5px 을 비우고 오른쪽 아래로 밀려(빛이 왼쪽 위) 보이는 부분이 줄기 오른쪽 아래 5~9px 에 진다.
+  가장자리는 4×4 바둑 점묘로 2~3px 에 걸쳐 풀린다(원본 도시 숲 그늘의 점묘). 숲 칸이라고 바닥을 통째로 어둡게 하지 않는다 — 작은 마을 숲에서 칸 네모가 드러났다.
+- 나무 칸은 모두 X(막힘), 숲 바닥·둘레 그늘은 통행 칸이다. 도로 숲 벽은 길 둘레 1칸·출구 둘레 2칸을 비우고 수관은 숲 칸 밖으로 나가지 않으며, 둘레 그늘만 빈 잔디로 번진다.
+- composer 는 다시 쓰는 칸(write) 밖을 건드리지 않는다. 따로 찍은 낱 나무·덤불은 칸 번호가 같아도 지우지 않는다. 숲 나무·숲 바닥을 낱칸으로 찍거나 지우지 않는다.

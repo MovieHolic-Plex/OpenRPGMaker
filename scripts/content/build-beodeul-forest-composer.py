@@ -27,7 +27,7 @@ def kid(name): return name if name.startswith('bd-') else 'bd-tree-' + name
 FIR = 'bd-pick-coast-cliff-road-fir-'
 CYP = ['eef4bc', '28ad5e', 'c27062']
 
-def build(shapes, order, odds, rowStep, colStep, skip, shadeCover):
+def build(shapes, order, odds, rowStep, colStep, skip, shadeCover, shadeRows):
     sprites, trunk = [], {}
     for shape, names in shapes.items():
         for dark in (False, True):
@@ -42,16 +42,16 @@ def build(shapes, order, odds, rowStep, colStep, skip, shadeCover):
                     trunk[shape] = [i for i, v in enumerate(bottom) if v > 30 and v * 2 >= best] or [bottom.index(best)]
     return dict(kind='trees', version=1, layers=[4, 3, 2], rowStep=rowStep, colStep=colStep, skip=skip,
                 shapeOrder=order, shapeOdds=odds, trunkCols=trunk, overhangOnGroups=['버들항 풀밭'], overhangOnTiles=[], sprites=sprites,
-                groundShadeCover=shadeCover)  # 접지 그늘 덮개 문턱(가는 침엽수는 칸을 덜 덮으므로 낮춘다)
+                groundShadeCover=shadeCover, groundShadeRows=shadeRows)  # 그늘은 수관 아랫부분 몇 줄에서만 — 북쪽 숲 끝 수관 꼭대기 밑 잔디엔 그늘이 없다  # 접지 그늘 덮개 문턱(가는 침엽수는 칸을 덜 덮으므로 낮춘다)
 
 # 숲 속도 줄기 나무를 쓴다 — 수관만 있는 3×3 은 작아서 3칸 격자 무늬와 풀밭 틈이 드러났다(2026-10-20 시험).
 defs = {
     'broadleaf': build({'T4': ['d43edd', '5844f6'], 'T3': ['1a786c', 'd61d7e'], 'B2': ['37f48b', 'f4f319']},
-                       ['T4', 'T3', 'B2'], [0.4, 0.95], 2, 3, 0.05, 30),
+                       ['T4', 'T3', 'B2'], [0.4, 0.95], 2, 3, 0.05, 30, 2),
     'conifer': build({'C3': [FIR + 'l'], 'C2': [FIR + 'm', FIR + 'm2', FIR + 's'], 'P1': CYP},
-                     ['C3', 'C2', 'P1'], [0.45, 0.85], 2, 2, 0.04, 12),
+                     ['C3', 'C2', 'P1'], [0.45, 0.85], 2, 2, 0.04, 12, 1),
     'mixed': build({'T4': ['d43edd', '5844f6'], 'S': CYP + [FIR + 'm', FIR + 'm2'], 'T3': ['1a786c', 'd61d7e', FIR + 'l']},
-                   ['T4', 'S', 'T3'], [0.35, 0.7], 2, 3, 0.04, 20),
+                   ['T4', 'S', 'T3'], [0.35, 0.7], 2, 3, 0.04, 20, 2),
 }
 ground = json.loads((R / 'tiledata/beodeul-ground/forest-ground.json').read_text())
 out = dict(source='beodeul_city 원본 키트 칸(새 그림 없음). 규칙 #3058 treeComposer.ts. 접지 칸은 beodeul_ground(forest-ground.json).',
