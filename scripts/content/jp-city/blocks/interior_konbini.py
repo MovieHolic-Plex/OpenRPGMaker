@@ -271,11 +271,18 @@ def cv_freezer(c):
 
 
 # ───────────────────────── 카운터 ─────────────────────────
+def _counter_front(c, y0, y1):
+    """카운터 앞판 — 밝은 나무 판(흰 윗면·회색 바닥과 갈린다). y0 = 앞 모서리 줄, y1 = 받침 위 줄(제외)."""
+    c.R(0, y0, 16, y1 - y0, k('yuka', 1)); c.HL(0, y0, 16, k('yuka', -1)); c.HL(0, y0 + 1, 16, k('yuka', 2))
+    for x in (5, 10): c.VL(x, y0 + 2, y1 - y0 - 2, k('yuka', 0))                   # 판 이음
+    c.VL(0, y0, y1 - y0, k('yuka', 2)); c.VL(15, y0, y1 - y0, k('yuka', -1))
+
+
 def _counter_body(c, y_top, m=('shiro', 1)):
     c.R(0, y_top, 16, 5, k('shiro', 2)); c.HL(0, y_top + 4, 16, k('conc', 1))
-    c.R(0, y_top + 5, 16, 16 - (y_top + 5), k(*m)); c.HL(0, y_top + 5, 16, k('conc', -1))
+    _counter_front(c, y_top + 5, 13)
     c.R(0, 13, 16, 3, k('tekko', -2)); c.HL(0, 13, 16, k('tekko', 0))
-    c.VL(0, y_top, 16 - y_top, k('shiro', 2)); c.VL(15, y_top, 16 - y_top, k('conc', -1))
+    c.VL(0, y_top, 5, k('shiro', 2)); c.VL(15, y_top, 5, k('conc', -1))
 
 
 @R.obj('cv-counter', '카운터 몸통', 1, 1, up=0, kind='floor', surface=True, use=('counter',),
@@ -297,8 +304,8 @@ def cv_register(c):
     c.R(11, 11, 3, 4, k('daidai', 0)); c.P(12, 12, k('shiro', 3))                                                          # 카드 단말
     ol_in(c, o)
     c.R(0, 16, 16, 5, k('shiro', 2)); c.HL(0, 16, 16, k('shiro', 2)); c.HL(0, 20, 16, k('conc', 1))
-    c.R(0, 21, 16, 7, k('shiro', 1)); c.HL(0, 21, 16, k('conc', -1)); c.R(0, 28, 16, 3, k('tekko', -2)); c.HL(0, 28, 16, k('tekko', 0)); c.HL(0, 31, 16, o)
-    c.VL(0, 16, 15, k('shiro', 2)); c.VL(15, 16, 15, k('conc', -1))
+    _counter_front(c, 21, 28); c.R(0, 28, 16, 3, k('tekko', -2)); c.HL(0, 28, 16, k('tekko', 0)); c.HL(0, 31, 16, o)
+    c.VL(0, 16, 5, k('shiro', 2)); c.VL(15, 16, 5, k('conc', -1))
     c.R(3, 16, 10, 2, k('shiro', 2))
 
 
@@ -312,9 +319,9 @@ def cv_hotcase(c):
     for x0 in (2, 6, 10): c.R(x0, 8, 4, 4, k('ki', 0)); c.HL(x0, 8, 4, k('ki', 2)); c.HL(x0, 11, 4, k('daidai', -2)); c.P(x0 + 1, 9, k('shiro', 3))   # 튀김 더미
     c.HL(1, 13, 14, k('tekko', 0)); c.HL(1, 14, 14, k('daidai', -1)); c.VL(0, 3, 13, k('shiro', 2)); c.VL(15, 3, 13, k('conc', 0))
     ol_in(c, o)
-    c.R(0, 16, 16, 5, k('shiro', 2)); c.HL(0, 20, 16, k('conc', 1))
-    c.R(0, 21, 16, 7, k('shiro', 1)); c.HL(0, 21, 16, k('conc', -1)); c.R(0, 28, 16, 3, k('tekko', -2)); c.HL(0, 28, 16, k('tekko', 0)); c.HL(0, 31, 16, o)
-    c.VL(0, 16, 15, k('shiro', 2)); c.VL(15, 16, 15, k('conc', -1))
+    c.R(0, 16, 16, 5, k('shiro', 2)); c.HL(0, 20, 16, k('conc', 1))   # 카운터 흰 윗면
+    _counter_front(c, 21, 28); c.R(0, 28, 16, 3, k('tekko', -2)); c.HL(0, 28, 16, k('tekko', 0)); c.HL(0, 31, 16, o)   # 앞판은 계산대 줄과 같은 밝은 나무
+    c.VL(0, 16, 5, k('conc', 1)); c.VL(15, 16, 5, k('conc', -1))
 
 
 @R.obj('cv-coffee', '셀프 커피 머신', 1, 1, up=16, kind='floor', use=('push',),
@@ -329,9 +336,9 @@ def cv_coffee(c):
     c.R(5, 8, 6, 2, k('conc', -3)); c.R(7, 10, 2, 1, k('daidai', 1))                                                       # 추출구·떨어지는 커피
     c.R(5, 11, 6, 4, k('conc', -2)); c.R(6, 11, 4, 4, k('shiro', 3)); c.HL(6, 11, 4, k('conc', 1)); c.HL(6, 12, 4, k('daidai', -2))   # 컵과 받침
     ol_in(c, o)
-    c.R(0, 16, 16, 5, k('shiro', 2)); c.HL(0, 20, 16, k('conc', 1))
-    c.R(0, 21, 16, 7, k('shiro', 1)); c.HL(0, 21, 16, k('conc', -1)); c.R(0, 28, 16, 3, k('tekko', -2)); c.HL(0, 28, 16, k('tekko', 0)); c.HL(0, 31, 16, o)
-    c.VL(0, 16, 15, k('shiro', 2)); c.VL(15, 16, 15, k('conc', -1))
+    c.R(0, 16, 16, 5, k('shiro', 2)); c.HL(0, 20, 16, k('conc', 1))   # 카운터 흰 윗면
+    _counter_front(c, 21, 28); c.R(0, 28, 16, 3, k('tekko', -2)); c.HL(0, 28, 16, k('tekko', 0)); c.HL(0, 31, 16, o)   # 앞판은 계산대 줄과 같은 밝은 나무
+    c.VL(0, 16, 5, k('conc', 1)); c.VL(15, 16, 5, k('conc', -1))
 
 
 

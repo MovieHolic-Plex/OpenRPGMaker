@@ -12,6 +12,7 @@
   4 black    — 놓이는 바닥(키 큰 것은 뒤 벽 포함) 어느 하나와 테두리 재료 휘도 차가 T 미만. 팔레트에서 가장 어두운 무채색(sumi 0, #000 아님).
   5 material — 그 밖. 테두리 재료 램프의 가장 어두운 단. 그 단마저 놓이는 바닥·벽과 휘도 차가 RIM 미만이면(밝은 재료의 0단은 중간 회색) 거의 검정.
 어둡지 않은 테두리 화소(밝은 옆 테)도 놓이는 바닥·벽과 휘도 차가 RIM 미만이면 묻히므로 같은 외곽선으로 칠한다. 김·물방울 같은 떨어진 잔 화소(8 이웃 둘 이하)는 건드리지 않는다.
+좌우로 이어 붙이는 기물(surface 또는 쓰임 counter)은 캔버스 좌우 끝을 옆 칸으로 보고 외곽선을 긋지 않는다(카운터 줄 사이 검은 이음 방지).
 선택 외곽선(selout): 위·왼쪽 테는 그 외곽선보다 한 단 밝게, 오른쪽은 외곽선 그대로, 바닥 닿는 맨 아랫줄은 늘 가장 어두운 무채색(물건을 앉힌다).
 
 보정 기록(2026-10-20, 다섯 방 실측):
@@ -74,11 +75,18 @@ def _darkest(p):
     return (_rgb(_R[o[0]][0]), _rgb(_R[o[0]][1])) if o else (INK, INK_HI)
 
 
-def edges(a, every=False):
+def joins(meta):
+    """좌우로 이어 붙이는 기물(카운터·윗면 있는 칸 가구) — 캔버스 좌우 끝은 투명이 아니라 옆 칸과 이어진다."""
+    return bool(meta.get('surface')) or 'counter' in meta.get('use', ())
+
+
+def edges(a, every=False, join=False):
     """테두리 외곽선 화소 [(x, y, fill, sides)] — 투명과 맞닿은 불투명 화소 가운데 안쪽 재료보다 확실히 어두운 것.
     every=True 면 어둡지 않은 테두리 화소도 [(x, y, fill, sides, is_outline)] 로 함께 준다."""
     h, w = a.shape[:2]; op = a[..., 3] > 0
-    def T_(x, y): return not (0 <= x < w and 0 <= y < h) or not op[y, x]
+    def T_(x, y):
+        if join and not (0 <= x < w) and 0 <= y < h: return False    # 이어 붙는 쪽 — 옆 칸 재료가 계속된다
+        return not (0 <= x < w and 0 <= y < h) or not op[y, x]
     out = []
     for y in range(h):
         for x in range(w):
@@ -90,6 +98,7 @@ def edges(a, every=False):
             if tl and not T_(x + 1, y): cand.append((x + 1, y))
             if tr and not T_(x - 1, y): cand.append((x - 1, y))
             if td and not T_(x, y - 1): cand.append((x, y - 1))
+            cand = [(cx, cy) for cx, cy in cand if 0 <= cx < w and 0 <= cy < h]
             if not cand: continue
             fx, fy = cand[0]; fill = a[fy, fx]
             if _lum(fill) < _lum(a[y, x]) + 20:                          # 안쪽도 테면 한 칸 더 안쪽
@@ -134,7 +143,7 @@ def is_small(meta, a):
 
 def classify(a, meta, surf):
     """→ (갈래, 최소 대비, 테두리 휘도). surf = 놓이는 바닥·벽 상대 휘도 목록."""
-    e = edges(a); r = ring_rl(a, e)
+    e = edges(a, join=joins(meta)); r = ring_rl(a, e)
     con = min((abs(r - s) for s in surf), default=1.0)
     if is_none(meta, a): return 'none', con, r
     if r >= LIGHT: return 'light', con, r
@@ -151,11 +160,11 @@ def grey_for(surf):
     return _rgb(hodo[0]), _rgb(hodo[1])
 
 
-def apply(a, branch, surf=()):
+def apply(a, branch, surf=(), join=False):
     """갈래대로 테두리 외곽선 화소를 다시 칠한다. 팔레트 밖 색은 만들지 않는다."""
     out = a.copy()
     grey = grey_for(surf)
-    for x, y, fill, (tu, td, tl, tr), dark in edges(a, every=True):
+    for x, y, fill, (tu, td, tl, tr), dark in edges(a, every=True, join=join):
         if _thin(a, x, y): continue                                  # 김·잔 화소는 그대로
         if not dark:
             # 어둡지 않은 테(밝은 옆 테 등) — 놓이는 바닥·벽 어느 것과 휘도 차가 RIM 미만이면 바닥에 묻히므로 외곽선으로 칠한다
@@ -194,7 +203,7 @@ def outline(a, id_, meta):
     mode = os.environ.get('OPRN_OUTLINE', 'rule')                   # 비교용: off(그린 그대로) · black · material
     if not it or mode == 'off': return a
     branch = mode if mode in ('black', 'material') else classify(a, meta, it['surf'])[0]
-    return apply(a, branch, it['surf'])
+    return apply(a, branch, it['surf'], joins(meta))
 
 
 # ───────── 표 다시 재기(--survey) ─────────
