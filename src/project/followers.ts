@@ -408,7 +408,12 @@ function besideSlots(
   );
 }
 
-export type FollowerWorld = { readonly project: Project; readonly map: GameMap };
+export type FollowerWorld = {
+  readonly project: Project;
+  readonly map: GameMap;
+  /** 칸을 막는 런타임 이벤트(NPC·간판 등). 걷는 NPC 가 궤적 칸에 들어서도 동료를 그 위에 세우지 않는다. */
+  readonly blocked?: (x: number, y: number) => boolean;
+};
 
 export function followerPositions(
   session: Pick<PlaySession, "followers" | "followerTrail" | "x" | "y">,
@@ -433,14 +438,16 @@ export function followerPositions(
   const minDistance = followerMinDistance(session, config);
   // 옆자리(beside) 동료는 저작자가 고른 붙어 서기라 거리 판정에 넣지 않는다 — 그 대형의 기존 계약 그대로다.
   const taken: { x: number; y: number }[] = [{ x: session.x, y: session.y }];
+  const blocked = world?.blocked;
   const clear = (point: { readonly x: number; readonly y: number }): boolean =>
-    taken.every((other) => Math.max(Math.abs(other.x - point.x), Math.abs(other.y - point.y)) >= minDistance);
+    !blocked?.(point.x, point.y)
+    && taken.every((other) => Math.max(Math.abs(other.x - point.x), Math.abs(other.y - point.y)) >= minDistance);
   const trail = session.followerTrail ?? [];
   const followers = session.followers ?? [];
   // 같은 궤적·같은 주인공 칸이면 같은 답 — 조명·동료 공격이 한 프레임에 여러 번 물어도 「기다리기」가 흔들리지 않는다.
   const memo = followerPlacementMemo.get(session);
   if (memo && memo.trail === trail && memo.x === session.x && memo.y === session.y && memo.followers === followers
-    && memo.gap === gap && memo.minDistance === minDistance && slots.length === 0 && formation === "line") {
+    && memo.gap === gap && memo.minDistance === minDistance && slots.length === 0 && formation === "line" && !blocked) {
     return memo.result;
   }
   const previous = memo?.result;
@@ -448,7 +455,7 @@ export function followerPositions(
   const result = followers.map((follower, index) => {
     // 옆자리가 모자라면(인접 4칸 초과 인원, 또는 물·벽으로 막힌 칸) 그 동료는 일렬로 떨어진다.
     const slot = slots[index];
-    if (slot) return { follower, x: slot.x, y: slot.y, direction: slot.direction };
+    if (slot && !blocked?.(slot.x, slot.y)) return { follower, x: slot.x, y: slot.y, direction: slot.direction };
     // 1) 앞사람에게서 gap 칸 뒤 궤적 점.
     // 2) 그 점이 주인공·앞 동료와 붙어 있으면(모퉁이·되돌아오기) 지금 선 칸에서 **기다린다** — 그 칸이
     //    여전히 궤적 위·앞사람 뒤이고 붙어 있지 않을 때. 더 뒤 점으로 뛰었다 돌아오면 두 칸씩 미끄러진다.
