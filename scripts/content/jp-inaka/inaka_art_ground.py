@@ -124,15 +124,14 @@ def _tuft(a, x, y, kind=0):
 def grass_body(seed=0) -> np.ndarray:
     """풀밭 몸통: 넓고 낮은 대비 덩이(몸·몸 어둠) + 드문 풀잎 획 + 풀포기 2개. 버들항 풀처럼 넓게 깔아도 점 격자가 서지 않는다."""
     a = blank(GRASS[4])
-    mottle(a, GRASS, (4, 4, 3), 11, cell=6)
-    for k in range(9):
+    mottle(a, GRASS, (4, 4, 3), 11, cell=8, jitter=0.5)
+    for k in range(5):
         x = int(h(k, 3, 21) * 16); y = int(h(k, 7, 22) * 16)
         put(a, x, y, GRASS[5] if h(k, 1, 23) < .7 else GRASS[6])
         put(a, x, y + 1, GRASS[3])
     for k in range(2):
         _tuft(a, 3 + int(h(k, 9, 31) * 10), 2 + int(h(k, 13, 32) * 10), k % 2)
-    for k in range(3):
-        put(a, int(h(k, 5, 41) * 16), int(h(k, 6, 42) * 16), GRASS[2])
+    put(a, int(h(0, 5, 41) * 16), int(h(0, 6, 42) * 16), GRASS[2])
     return a
 
 
@@ -166,12 +165,12 @@ def _pebble(a, x, y, big=False):
 
 def dirt_body() -> np.ndarray:
     a = blank(DIRT[4])
-    mottle(a, DIRT, (4, 3, 5), 51, cell=5)
-    for k in range(9):                                        # 흙 알갱이 결(밝은 위 + 어두운 아래 2px)
+    mottle(a, DIRT, (4, 4, 3), 51, cell=8, jitter=0.5)
+    for k in range(5):                                        # 흙 알갱이 결(밝은 위 + 어두운 아래 2px)
         x = int(h(k, 3, 61) * 16); y = int(h(k, 4, 62) * 16)
-        put(a, x, y, DIRT[5] if h(k, 9, 63) < .6 else DIRT[6]); put(a, x, y + 1, DIRT[2])
-    for k in range(3):
-        _pebble(a, int(h(k, 1, 71) * 16), int(h(k, 2, 72) * 16), big=(k == 0))
+        put(a, x, y, DIRT[5]); put(a, x, y + 1, DIRT[3])
+    # 2칸 폭 길은 모두 가장자리 칸이라 몸통 변형이 안 들어간다 → 몸통에 눈에 띄는 돌을 두면 16px 마다 같은 돌이 줄 선다. 잔돌 하나만.
+    put(a, 5, 11, PEBBLE[2]); put(a, 6, 11, PEBBLE[1]); put(a, 6, 12, DIRT[2])
     x = 3 + int(h(0, 5, 81) * 9); y = 3 + int(h(0, 6, 82) * 9)   # 잔금 하나
     put(a, x, y, DIRT[2]); put(a, x + 1, y + 1, DIRT[1]); put(a, x + 2, y + 1, DIRT[2])
     return a
