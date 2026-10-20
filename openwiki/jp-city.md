@@ -430,4 +430,5 @@ python3 scripts/content/jp-city/bake_refs.py                   # 문서·그림�
 - 항구(28): 연석 띠를 빼고 바다 위 1줄 `부두 콘크리트` 띠 + 부두(세로 4칸)도 부두 콘크리트. 해안(29)은 바닥 그대로(모래↔바다 물가가 저절로 생긴다).
 - 굽기: 정본 루트는 3/4 관문 `enforce` 가 거절하므로 `--out-root` 사본에서 굽고 산출물만 옮겼다. 핀 17027 → 17312(덧붙임 285, 옮겨진 키 0). 관문 그림·목록 `tiledata/jp-city/blocks/jp_shore/_gate/items.jsonl`(물가 판 5 terrain · 등대·폭포 structure · 가로수 organic; `python3 scripts/content/jp-city/blocks/jp_shore.py` 가 다시 쓴다). 2026-10-20 현재 **3/4 관문 미통과**(판정 대기).
 - 장면 확인: `bun scripts/qa/jp-shore-scenes.mts` → `tiledata/jp-city/qa/modern-tiles/{gorge,harbor,coast}.json`(맵 객체 통째, id `mt-jp-*`)·`~/claude-viz/modern-tiles-proto/baked/jp-*-1x.png`. 출하 경로 캡처는 `scripts/qa/runtime/modern-tiles.capture.mjs`.
-- 한계: 안쪽 모서리 1px 계단, 모래와 부두가 맞닿는 자리는 안벽으로 타협, 강 몸통 세로 결이 칸마다 비슷해 넓게 보면 줄무늬가 읽힌다, 외곽선 색 재지정(시안의 outline 판)은 미적용.
+- 둘째 판(같은 날, 감독 지시): 넓은 바다가 16px 격자로 읽혀 몸통 6벌(`water_art.SEA_BODY`, v0 = gnd/sea · v1~v5 = sea.v1..v5)을 손으로 다시 배치했다 — 둘레 1px 는 공통 바탕, 벌마다 물결 행·밀도가 다르고(거의 빈 칸·엇갈린 짝·긴 물결·밝은 짧은 물결·납작한 얕은 물 덩이) 흰 반짝임은 바다·강 몸통에서 뺐다. shorePass 가 칸 위치 해시로 고른다(전과 같음). 자연 둑은 시안 쪽으로 두껍게(풀 어두운 테 → 흙 입술 2px → 젖은 띠, 북쪽 둑 높이면 4px). 다시 굽기: 옮겨진 키 0, 바뀐 칸 63(16106 · 17073~17077 · 17080 · 17132 · 17187~17241).
+- 한계: 안쪽 모서리 1px 계단, 모래와 부두가 맞닿는 자리는 안벽으로 타협, 강 몸통 세로 결은 아직 칸마다 비슷하다, 외곽선 색 재지정(시안의 outline 판)은 미적용.

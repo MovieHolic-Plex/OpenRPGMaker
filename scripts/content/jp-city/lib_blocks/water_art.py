@@ -93,12 +93,28 @@ def pnoise(x, y, period=16, cell=4, s=0):
 
 
 # ═══════════════════════════ 물 몸통(16px 주기, 칸 안 디테일) ═══════════════════════════
+# 바다 몸통 6벌(v0 = gnd/sea, v1~v5 = jp:sea-body; 2026-10-20 둘째 판). 칸 둘레 1px 는 모두 바탕 단색이라 어느 두 벌이 붙어도 이음매가 같다.
+# 넓은 바다에서 16px 격자가 읽히지 않게 벌마다 밀도·줄(행) 위치를 일부러 다르게 둔다 — 거의 빈 칸, 엇갈린 짝, 한 줄 긴 물결, 반짝임,
+# 옅은 누운 덩이(얕은 물 garasu 2, 납작하게). 흰 반짝임은 넓은 바다에 격자로 찍혀 보여 몸통에는 두지 않는다. 같은 행에 물결이 두 벌 넘게 오지 않는다.
+#   dash = (x, y, 길이, 밝기 단 3|4) — 아래 행 x+1 부터 그늘 1px.  light = (중심x, 중심y, 반지름x, 반지름y).
+SEA_BODY = {
+    0: dict(light=[], dark=[], dash=[(3, 5, 4, 3), (9, 11, 3, 3)], glint=None),
+    1: dict(light=[], dark=[], dash=[(10, 3, 3, 3)], glint=None),
+    2: dict(light=[(7.5, 9.0, 3.6, 0.85)], dark=[], dash=[(2, 13, 4, 3)], glint=None),
+    3: dict(light=[], dark=[], dash=[(2, 6, 3, 3), (7, 8, 5, 3)], glint=None),
+    4: dict(light=[], dark=[], dash=[(4, 10, 3, 3), (11, 4, 2, 4)], glint=None),
+    5: dict(light=[(5.0, 6.5, 2.6, 0.8)], dark=[], dash=[(1, 2, 3, 3), (8, 12, 5, 4)], glint=None),
+}
+
+
 def _features(kind, v):
     """변형 v 의 칸 안 디테일 목록. 모두 칸 가장자리 1px 안쪽에 머문다(바탕 단색 테두리 → 어느 변형끼리도 이음매 없음).
     v >= 100 은 물가 가장자리 칸용(디테일을 줄인다 — 같은 마스크 칸이 물가를 따라 되풀이되므로)."""
     edge = v >= 100
     rnd = lambda k, s: H(v * 7 + 3, k, s + (0 if kind == 'sea' else 50))
     f = dict(light=[], dark=[], dash=[], glint=None)
+    if kind == 'sea' and not edge and v in SEA_BODY:
+        return {k: (list(x) if isinstance(x, list) else x) for k, x in SEA_BODY[v].items()}
     if kind == 'sea':
         # 얕은 물 덩이(garasu 2)는 가로로 눕힌 물결 덩이, 깊은 물(canal 1)은 사용자 지시로 줄여 가는 골 한 줄만(변형 셋에 하나)
         if rnd(1, 1) < (0.35 if edge else 0.55):
@@ -122,8 +138,7 @@ def _features(kind, v):
             if any(abs(x0 - q) < 3 for q in xs): continue
             xs.append(x0)
             f['dash'].append((x0, 1 + int(rnd(40 + k, 1) * (12 - L)), L, 4 if (not edge and rnd(50 + k, 1) > 0.85) else 3))
-        if v == 2:
-            f['glint'] = (3 + int(rnd(60, 1) * 10), 3 + int(rnd(61, 1) * 10))
+        # 흰 반짝임은 두지 않는다(2026-10-20 둘째 판) — 강 몸통 4벌이 위치 해시로 섞여도 반짝임 칸이 격자로 읽혔다.
     return f
 
 
@@ -191,18 +206,21 @@ def band_natural(t, side, d, x, y):
         if e < 6.5: return J('onsen_mineral_teal', 3) if pnoise(x, y, 16, 4, 35) > 0.45 else J('onsen_mineral_teal', 2)
         if e < 9.5: return J('garasu', 3) if pnoise(x, y, 16, 4, 36) > 0.5 else J('canal_indigo', 3)
         return None
-    # G 둑: 북쪽 땅이면 흙 높이면 3px 이 보인다(3/4). 동·서·남은 같은 1px 흙 테(좌우 대칭).
+    # G 둑(2026-10-20 둘째 판: 시안 쪽으로 두껍게) — 풀 가장자리 어두운 테 → 흙 입술(밝은 윗면·그늘) → 젖은 띠 → 얕은 물.
+    # 북쪽 땅이면 흙 높이면 4px 이 보인다(3/4). 동·서·남은 같은 2px 흙 테(좌우 대칭).
     if side == 'N':
         if d < 1: return J('moss', 0)
         if d < 2: return J('soil', 3) if H(x, y, 41) > 0.25 else J('soil', 2)
-        if d < 4: return (J('soil', 1) if H(x, y, 42) > 0.8 else J('soil', 2)) if d < 3 else J('soil', 1)
-        if d < 5: return J('canal_indigo', 0)
-        if d < 8: return J('canal_indigo', 2) if (d >= 7 and H(x, y, 43) > 0.6) else J('canal_indigo', 1)
+        if d < 3: return J('soil', 2) if H(x, y, 42) > 0.3 else J('soil', 3)
+        if d < 5: return J('soil', 1) if (d >= 4 or H(x, y, 45) > 0.35) else J('soil', 2)
+        if d < 6: return J('canal_indigo', 0)
+        if d < 9: return J('canal_indigo', 2) if (d >= 8 and H(x, y, 43) > 0.6) else J('canal_indigo', 1)
         return None
-    if d < 1: return J('soil', 3) if side != 'S' else J('moss', 1)
-    if d < 2: return J('soil', 1)
-    if d < 3: return J('canal_indigo', 0)
-    if d < 5: return J('canal_indigo', 2) if (d >= 4 and H(x, y, 44) > 0.5) else J('canal_indigo', 1)
+    if d < 1: return J('moss', 0) if side != 'S' else J('moss', 1)
+    if d < 2: return J('soil', 3) if (side != 'S' and H(x, y, 46) > 0.3) else J('soil', 2)
+    if d < 3: return J('soil', 1)
+    if d < 4: return J('canal_indigo', 0)
+    if d < 6: return J('canal_indigo', 2) if (d >= 5 and H(x, y, 44) > 0.5) else J('canal_indigo', 1)
     return None
 
 
