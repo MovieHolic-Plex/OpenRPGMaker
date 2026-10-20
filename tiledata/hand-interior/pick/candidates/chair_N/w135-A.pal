@@ -1,0 +1,13 @@
+// chair_N w135-A palette (ramp colours only)
+~ #1c1418 110
+- #1c1418 58
+# #e040c0
+
+A #000000   // = wood:0
+B #411e05   // = wood:1
+C #63310b   // = wood:2
+D #6d3b15   // = wood:3
+E #9a5435   // = wood:4
+F #9e684b   // = wood:5
+G #b77246   // = wood:6
+H #d59147   // = wood:7

@@ -73,3 +73,55 @@ def silhouette(c, col, x0=0, y0=0, x1=None, y1=None):
                 xx, yy = x + dx, y + dy
                 if not (0 <= xx < W and 0 <= yy < H) or not op[yy, xx]: hits.append((x, y)); break
     for (x, y) in hits: c.P(x, y, col)
+
+
+# ══ seats study 2 (사람 합격 2026-10-20) ══
+# 정본 그림 = tiledata/seats34/study2/art/jp_city/<id>.png, 사람 판정 = tiledata/seats34/study2/human-verdicts.json(화소 해시에 묶임).
+# 그림 코드 = scripts/content/jp-city/interior/seats_study2/. 사람 합격은 3/4 관문 영수증을 대신하지 않는다 —
+# 굽는 캔버스 그림에 object-gate pass 영수증(kind seat, 보정된 프로필)이 있는 id 만 굽는 그림을 바꾼다. 없으면 옛 그림 그대로.
+import json as _json, os as _os, sys as _sys
+_REPO = _os.path.abspath(_os.path.join(_os.path.dirname(_os.path.abspath(__file__)), '..', '..', '..', '..'))
+STUDY2 = _os.path.join(_REPO, 'tiledata', 'seats34', 'study2')
+
+
+def study2_items(tileset='jp_city_interior'):
+    p = _os.path.join(STUDY2, 'human-verdicts.json')
+    if not _os.path.exists(p): return {}
+    return {it['id']: it for it in _json.load(open(p, encoding='utf-8'))['items'] if it['tileset'] == tileset and it['verdict'] == 'pass'}
+
+
+def study2_draw(id_):
+    """합격 그림을 캔버스 왼아래에 그대로 놓는다(캔버스가 더 높으면 위가 빈다 — gy-kid-chair-n 16×16 → 16×32)."""
+    import numpy as np
+    from PIL import Image
+    png = np.array(Image.open(_os.path.join(_REPO, study2_items()[id_]['png'])).convert('RGBA'))
+    def f(c):
+        H, W = c.a.shape[:2]; h, w = png.shape[:2]
+        assert w <= W and h <= H, (id_, '합격 그림이 칸보다 크다')
+        c.a[:] = 0; c.a[H - h:H, 0:w] = png
+    return f
+
+
+def study2_gate(img):
+    """굽는 그림의 관문 상태: None = 통과, 아니면 이유."""
+    _sys.path.insert(0, _os.path.join(_REPO, 'src', 'harnesses', '_core'))
+    import object_gate as OG
+    from PIL import Image
+    im = Image.fromarray(img, 'RGBA')
+    r = OG.read_receipt(OG.pixel_sha256(im))
+    if not r: return '영수증 없음'
+    if r.get('kind') != 'seat' or r.get('verdict') != 'pass': return '%s/%s' % (r.get('kind'), r.get('verdict'))
+    return OG.refusal(im, kind='seat', context='bundle')
+
+
+def apply_study2(R):
+    """블록 R 의 앉는 기물 중 사람 합격 + 관문 pass 인 것만 그림을 바꾼다. 바꾼 id·보류 id 를 돌려준다."""
+    done, held = [], []
+    for id_ in study2_items():
+        if id_ not in R.objs: continue
+        old = R.objs[id_]['draw']; R.objs[id_]['draw'] = study2_draw(id_)
+        why = study2_gate(R.obj_image(id_)[0])
+        if why is None: done.append(id_)
+        else: R.objs[id_]['draw'] = old; held.append((id_, why))
+    return done, held
+# ══ /seats study 2 ══

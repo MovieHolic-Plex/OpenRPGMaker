@@ -1,0 +1,1088 @@
+{
+ "status": "human pass 2026-10-20, not baked: no valid 3/4 gate receipt (object-gate profile 1db03a95223e5b0b rejected/uncalibrated; v10 in progress)",
+ "rule": "Each image needs an object-gate pass receipt (kind seat) for bakePixelSha256 under a calibrated profile. The human verdict in human-verdicts.json does not replace it.",
+ "humanVerdicts": "tiledata/seats34/study2/human-verdicts.json",
+ "counts": {
+  "total": 89,
+  "jp_city_interior": 57,
+  "modern_city_interior": 25,
+  "atlas_biome_interior": 7
+ },
+ "items": [
+  {
+   "id": "fr-kids-chair",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/fr-kids-chair.png",
+   "pixelSha256": "8eb54075689dfc9db5fb405f565f2923c0219e931fe434f97752fec312f18de1",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "8eb54075689dfc9db5fb405f565f2923c0219e931fe434f97752fec312f18de1",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_famires.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "fd-chair-n",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/fd-chair-n.png",
+   "pixelSha256": "c1edb68401ce61c26ddb5403724ea60ec66a8efda5653a61c22eb8b2435f681b",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "c1edb68401ce61c26ddb5403724ea60ec66a8efda5653a61c22eb8b2435f681b",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_food.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "fd-chair-e",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/fd-chair-e.png",
+   "pixelSha256": "0b913ef3ad469973fbbe00b613cfaf95f53dbb1a81c68d76a876ac63567ca03f",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "0b913ef3ad469973fbbe00b613cfaf95f53dbb1a81c68d76a876ac63567ca03f",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_food.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "fd-chair-w",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/fd-chair-w.png",
+   "pixelSha256": "3552a12781bea9c19a014e91b404ad94159954ec9c3a1909a4e187c1338f6ad7",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "3552a12781bea9c19a014e91b404ad94159954ec9c3a1909a4e187c1338f6ad7",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_food.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "gy-pipe-chair",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/gy-pipe-chair.png",
+   "pixelSha256": "af768eed81c1d1e47c4213c4b8794ff8dc2fb287cfedb433ebf2768625ac9890",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "af768eed81c1d1e47c4213c4b8794ff8dc2fb287cfedb433ebf2768625ac9890",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_gym.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "kr-sofa-e",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/kr-sofa-e.png",
+   "pixelSha256": "4fb6cf7b0d98eaed58b8e2b5ca4ab7396f9400bf2135c912ab67d5f8f1a3cec0",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "4fb6cf7b0d98eaed58b8e2b5ca4ab7396f9400bf2135c912ab67d5f8f1a3cec0",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_karaoke.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "kr-sofa-w",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/kr-sofa-w.png",
+   "pixelSha256": "74a9140148a5a9864067d6fbed76251f425098f8a13e7e8df9e79bf14e343a0a",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "74a9140148a5a9864067d6fbed76251f425098f8a13e7e8df9e79bf14e343a0a",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_karaoke.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "kr-reclining-seat",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/kr-reclining-seat.png",
+   "pixelSha256": "f8d64babefdcf8e38f4f51f8c3cb43d5be2b5c85a89f8fe2a9e06b833080cb10",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "f8d64babefdcf8e38f4f51f8c3cb43d5be2b5c85a89f8fe2a9e06b833080cb10",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_karaoke.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "chair-dining-n",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/chair-dining-n.png",
+   "pixelSha256": "6745bd22e47a3d297414321494c280e876b514bc16cfb82c8b832ff6ae96d214",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "6745bd22e47a3d297414321494c280e876b514bc16cfb82c8b832ff6ae96d214",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_ldk.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "chair-dining-e",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/chair-dining-e.png",
+   "pixelSha256": "00219ccf79b1042da3038fa55847a094011027a36eacca6c428f50caa412507d",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "00219ccf79b1042da3038fa55847a094011027a36eacca6c428f50caa412507d",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_ldk.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "chair-dining-w",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/chair-dining-w.png",
+   "pixelSha256": "c6d13721486b8228d33dc1570c3c2240390d59efd1e5814af0219b08e17b7cf5",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "c6d13721486b8228d33dc1570c3c2240390d59efd1e5814af0219b08e17b7cf5",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_ldk.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "of-lobby-sofa-n",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/of-lobby-sofa-n.png",
+   "pixelSha256": "7885626032edfb09436f19a578f5f1f51691b38ec26fc8cc5599c6cda76df1bd",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "7885626032edfb09436f19a578f5f1f51691b38ec26fc8cc5599c6cda76df1bd",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_office.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "of-desk-chair-e",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/of-desk-chair-e.png",
+   "pixelSha256": "9cabbc04e12269bbc5e1dc8f4b60d6fa616472e4abd1c2c71a25517e9e900e3e",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "9cabbc04e12269bbc5e1dc8f4b60d6fa616472e4abd1c2c71a25517e9e900e3e",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_office.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "of-desk-chair-w",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/of-desk-chair-w.png",
+   "pixelSha256": "68653448d54ec9749bc0da22ed81f9e2b571539437eb537d78553c5fd65b8e91",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "68653448d54ec9749bc0da22ed81f9e2b571539437eb537d78553c5fd65b8e91",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_office.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "pb-waiting-sofa-n",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/pb-waiting-sofa-n.png",
+   "pixelSha256": "f905f4d1ba4fa7dff1fdb83519c161aff2b1eebd6abb4cc2cf3a0576ac66c97f",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "f905f4d1ba4fa7dff1fdb83519c161aff2b1eebd6abb4cc2cf3a0576ac66c97f",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_public.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "sh-barber-chair-n",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/sh-barber-chair-n.png",
+   "pixelSha256": "1facc84b2a5c08b0596216bd25280b75da6d27157477decaf43c5dd55ae37b75",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "1facc84b2a5c08b0596216bd25280b75da6d27157477decaf43c5dd55ae37b75",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_shop.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "sh-barber-chair-s",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/sh-barber-chair-s.png",
+   "pixelSha256": "d14cb31f2a6eeaea404c6be57955f8321317d8a375977dec5a407efa0834f260",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "d14cb31f2a6eeaea404c6be57955f8321317d8a375977dec5a407efa0834f260",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_shop.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "sh-barber-chair-e",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/sh-barber-chair-e.png",
+   "pixelSha256": "6027904d10ac17cae182d87c2527393c9455e69c8671191317ee0c508117fbfd",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "6027904d10ac17cae182d87c2527393c9455e69c8671191317ee0c508117fbfd",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_shop.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "sh-barber-chair-w",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/sh-barber-chair-w.png",
+   "pixelSha256": "681acef7be5bcee1ecbac3230ae75a10fd12332f58a652e67a267393dfeb66d5",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "681acef7be5bcee1ecbac3230ae75a10fd12332f58a652e67a267393dfeb66d5",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_shop.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "st-long-seat-s",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/st-long-seat-s.png",
+   "pixelSha256": "11473aadc54202a5481cb191c7fdc7f9607ed366642f070cf205fb098c5083cf",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "11473aadc54202a5481cb191c7fdc7f9607ed366642f070cf205fb098c5083cf",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_station.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "st-priority-seat-s",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/st-priority-seat-s.png",
+   "pixelSha256": "bb7c6dcaf5fb3af7918e3af29fcb2044ea32d9bda2ec255a811e106b480aacd0",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "bb7c6dcaf5fb3af7918e3af29fcb2044ea32d9bda2ec255a811e106b480aacd0",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_station.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "hp-chair-fallen",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/hp-chair-fallen.png",
+   "pixelSha256": "178de537177953a198513045e9666f007ef985f9cc0aa367a9f261b00d4ab904",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "178de537177953a198513045e9666f007ef985f9cc0aa367a9f261b00d4ab904",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/dungeon_hospital.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "pb-wash-stool",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/pb-wash-stool.png",
+   "pixelSha256": "e852fb802b229ff047eab5ffc1211914a7fc0a735124cd4f1b7525e1c2ece678",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "e852fb802b229ff047eab5ffc1211914a7fc0a735124cd4f1b7525e1c2ece678",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_public.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "am-arcade-stool",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/am-arcade-stool.png",
+   "pixelSha256": "7b2f5b20f900ce0daa9b02a6b23e0d88ee461e72d63e46fc585f27efc1ebc4b3",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "7b2f5b20f900ce0daa9b02a6b23e0d88ee461e72d63e46fc585f27efc1ebc4b3",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_amuse.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "am-pachinko-stool",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/am-pachinko-stool.png",
+   "pixelSha256": "7f4a1eeeaeb070b43eaf676f5304bbb41ab1cef5b61a364cf5d573ae30d06b93",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "7f4a1eeeaeb070b43eaf676f5304bbb41ab1cef5b61a364cf5d573ae30d06b93",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_amuse.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "desk-chair-s",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/desk-chair-s.png",
+   "pixelSha256": "0423ace0130c22b64b638b08bba9198bc9fb8eea5b19abbcb7b0ef76f7fd86ea",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "0423ace0130c22b64b638b08bba9198bc9fb8eea5b19abbcb7b0ef76f7fd86ea",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_bed.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "desk-chair-n",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/desk-chair-n.png",
+   "pixelSha256": "a3d476ea5c786dc7ceb00bae5bdb48bc98562151cd042d426b3d94f7eb0f5959",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "a3d476ea5c786dc7ceb00bae5bdb48bc98562151cd042d426b3d94f7eb0f5959",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_bed.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "desk-chair-e",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/desk-chair-e.png",
+   "pixelSha256": "e41e25a9b8f019cc1ae519b4eafb09ee62acf63bd2af7860235319c0d6a93e68",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "e41e25a9b8f019cc1ae519b4eafb09ee62acf63bd2af7860235319c0d6a93e68",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_bed.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "desk-chair-w",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/desk-chair-w.png",
+   "pixelSha256": "a577833d6e1d0185743d17aa7113744c0a749c48ac5744ba5658e4e118893866",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "a577833d6e1d0185743d17aa7113744c0a749c48ac5744ba5658e4e118893866",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_bed.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "fr-counter-stool",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/fr-counter-stool.png",
+   "pixelSha256": "ffda780aea5ce83bbdb4560534785f1ef98db8b14900cb34f8c2fe013e9b438f",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "ffda780aea5ce83bbdb4560534785f1ef98db8b14900cb34f8c2fe013e9b438f",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_famires.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "fd-stool",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/fd-stool.png",
+   "pixelSha256": "e36c97a41f374ead3ca5e9b3366f4eb8f56e8849dfcff4981ca6f3e48b31d9e5",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "e36c97a41f374ead3ca5e9b3366f4eb8f56e8849dfcff4981ca6f3e48b31d9e5",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_food.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "fd-chair-s",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/fd-chair-s.png",
+   "pixelSha256": "6e2d14a08223c911c06faa899b3f613900d38203f7c4202650ca850a90abbaca",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "6e2d14a08223c911c06faa899b3f613900d38203f7c4202650ca850a90abbaca",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_food.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "gy-kid-chair-s",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/gy-kid-chair-s.png",
+   "pixelSha256": "2af16e3964aad93ad955f3c036274ea87d9aba7764298156231252c4cbdf08ee",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "2af16e3964aad93ad955f3c036274ea87d9aba7764298156231252c4cbdf08ee",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_gym.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "gy-kid-chair-n",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/gy-kid-chair-n.png",
+   "pixelSha256": "c2834a29f1e7a9f2737e6762adb675fbb62ec8fd140f46a7034d10d3c30b3f52",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "c2834a29f1e7a9f2737e6762adb675fbb62ec8fd140f46a7034d10d3c30b3f52",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_gym.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "gy-kid-chair-e",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/gy-kid-chair-e.png",
+   "pixelSha256": "3ddd682f3d9d17747237182dc85e567621817bd1661c6db9bd5d971ff8889cc0",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "3ddd682f3d9d17747237182dc85e567621817bd1661c6db9bd5d971ff8889cc0",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_gym.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "gy-kid-chair-w",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/gy-kid-chair-w.png",
+   "pixelSha256": "1b17a381a7ed10670bef80934ba52fb0f675d0030b5dd10dbefa5ffd7c92617f",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "1b17a381a7ed10670bef80934ba52fb0f675d0030b5dd10dbefa5ffd7c92617f",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_gym.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "hs-wheelchair",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/hs-wheelchair.png",
+   "pixelSha256": "9fb6c879c3754c6d56ab25ff876a939d564e8e1253e04f7c6a16c6484f78d977",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "9fb6c879c3754c6d56ab25ff876a939d564e8e1253e04f7c6a16c6484f78d977",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_hospital.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "hs-exam-stool",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/hs-exam-stool.png",
+   "pixelSha256": "03866f751aacf9c2ec81beab5e0f497cb947888844b773f9af350ac1fc85df95",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "03866f751aacf9c2ec81beab5e0f497cb947888844b773f9af350ac1fc85df95",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_hospital.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "chair-dining-s",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/chair-dining-s.png",
+   "pixelSha256": "c20b38908918118020065f2e3825a5371940b5c0efd587eeb0a9a026da2673d0",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "c20b38908918118020065f2e3825a5371940b5c0efd587eeb0a9a026da2673d0",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_ldk.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "of-desk-chair-s",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/of-desk-chair-s.png",
+   "pixelSha256": "fa62e1246e4355c7fc7d99a7153126a5a518c553d2b97370c3292c022021e5e6",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "fa62e1246e4355c7fc7d99a7153126a5a518c553d2b97370c3292c022021e5e6",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_office.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "of-desk-chair-n",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/of-desk-chair-n.png",
+   "pixelSha256": "56c9fb4a393e9b64af08e436b378bc9045878ee55b32f80dfffc0734a29d074a",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "56c9fb4a393e9b64af08e436b378bc9045878ee55b32f80dfffc0734a29d074a",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_office.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "of-stool",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/of-stool.png",
+   "pixelSha256": "9adc4812b033e003ff4261eef2d3d33510b8ac0bb2bbf2deca25e37a3428c0a1",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "9adc4812b033e003ff4261eef2d3d33510b8ac0bb2bbf2deca25e37a3428c0a1",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_office.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "ox-bar-stool",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/ox-bar-stool.png",
+   "pixelSha256": "ce589d18503ecfc2ce0c070e92401432e4bcdf7a9d981a3c061aa61a08cc0b3a",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "ce589d18503ecfc2ce0c070e92401432e4bcdf7a9d981a3c061aa61a08cc0b3a",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_office2.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "pb-massage-chair",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/pb-massage-chair.png",
+   "pixelSha256": "398cbd0c4be36b5d7afca916670f2f31850a538ac585bc40371a226cd1fd05ec",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "398cbd0c4be36b5d7afca916670f2f31850a538ac585bc40371a226cd1fd05ec",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_public.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "pb-office-chair-s",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/pb-office-chair-s.png",
+   "pixelSha256": "fa62e1246e4355c7fc7d99a7153126a5a518c553d2b97370c3292c022021e5e6",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "fa62e1246e4355c7fc7d99a7153126a5a518c553d2b97370c3292c022021e5e6",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_public.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "pb-office-chair-n",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/pb-office-chair-n.png",
+   "pixelSha256": "56c9fb4a393e9b64af08e436b378bc9045878ee55b32f80dfffc0734a29d074a",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "56c9fb4a393e9b64af08e436b378bc9045878ee55b32f80dfffc0734a29d074a",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_public.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "sc-staff-chair-s",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/sc-staff-chair-s.png",
+   "pixelSha256": "fa62e1246e4355c7fc7d99a7153126a5a518c553d2b97370c3292c022021e5e6",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "fa62e1246e4355c7fc7d99a7153126a5a518c553d2b97370c3292c022021e5e6",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_school.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "sc-staff-chair-n",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/sc-staff-chair-n.png",
+   "pixelSha256": "56c9fb4a393e9b64af08e436b378bc9045878ee55b32f80dfffc0734a29d074a",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "56c9fb4a393e9b64af08e436b378bc9045878ee55b32f80dfffc0734a29d074a",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_school.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "sc-chair-s",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/sc-chair-s.png",
+   "pixelSha256": "cc7583c88637c31c7c422bc7a775f39d623dbf1bdb507e932d4625d162406acf",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "cc7583c88637c31c7c422bc7a775f39d623dbf1bdb507e932d4625d162406acf",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_school.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "sc-music-chair-n",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/sc-music-chair-n.png",
+   "pixelSha256": "45a0a67649ffaf614d432f6e60b97c096304a22da9350a3866fc02a74ce8a512",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "45a0a67649ffaf614d432f6e60b97c096304a22da9350a3866fc02a74ce8a512",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_school.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "sc-lab-stool",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/sc-lab-stool.png",
+   "pixelSha256": "732dc33d9db22e4740586a0670f429f03c069a5333fc0011e3062835d833d1bd",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "732dc33d9db22e4740586a0670f429f03c069a5333fc0011e3062835d833d1bd",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_school.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "bath-stool",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/bath-stool.png",
+   "pixelSha256": "63e8b84a8369b0a12304fe12ce0647c938fc0358980418305dd81cd18ffe9dfc",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "63e8b84a8369b0a12304fe12ce0647c938fc0358980418305dd81cd18ffe9dfc",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_wet.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "hp-wheelchair",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/hp-wheelchair.png",
+   "pixelSha256": "c6e812df551d79d70059dcf2be2ab1172c30eb3fa3fe4ca2dbcc5c1532395ebc",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "c6e812df551d79d70059dcf2be2ab1172c30eb3fa3fe4ca2dbcc5c1532395ebc",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/dungeon_hospital.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "as-chair-toppled",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/as-chair-toppled.png",
+   "pixelSha256": "936f1885ccfcf2bcffe9a91ae264fcff5ff23da728337d1c09af5ea2726eedda",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "936f1885ccfcf2bcffe9a91ae264fcff5ff23da728337d1c09af5ea2726eedda",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/dungeon_school.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "as-music-chair-n",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/as-music-chair-n.png",
+   "pixelSha256": "f7ee1c8c09e7268a2617fce95df1c4f1dcd746af0c566de8168c6b32ed1dc302",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "f7ee1c8c09e7268a2617fce95df1c4f1dcd746af0c566de8168c6b32ed1dc302",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/dungeon_school.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "zabuton",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/zabuton.png",
+   "pixelSha256": "a9754203ff393c91ac9036458c8a593d38972f231f3537d0fc9e60341fd959b0",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "a9754203ff393c91ac9036458c8a593d38972f231f3537d0fc9e60341fd959b0",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_washitsu.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "ht-engawa-chairs",
+   "tileset": "jp_city_interior",
+   "png": "tiledata/seats34/study2/art/jp_city/ht-engawa-chairs.png",
+   "pixelSha256": "26854027d613b76c7d67e3d8077c6eb16d67cff2ed9c5bc1955d802962045e3f",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "26854027d613b76c7d67e3d8077c6eb16d67cff2ed9c5bc1955d802962045e3f",
+   "bakeVia": "scripts/content/jp-city/bake_jp.py (blocks/interior_hotel.py → seat34.apply_study2: swaps only with a pass receipt for bakePixelSha256)"
+  },
+  {
+   "id": "mci-cafe-chair-e",
+   "tileset": "modern_city_interior",
+   "png": "tiledata/seats34/study2/art/modern_city/mci-cafe-chair-e.png",
+   "pixelSha256": "6e49429d44b9ce4cb3ae81a5e07af8d961daac09c716be1c3bc04629fee07173",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "6e49429d44b9ce4cb3ae81a5e07af8d961daac09c716be1c3bc04629fee07173",
+   "bakeVia": "scripts/content/modern-city-int/rebake_seats34.py mci-cafe-chair-e"
+  },
+  {
+   "id": "mci-cafe-chair-w",
+   "tileset": "modern_city_interior",
+   "png": "tiledata/seats34/study2/art/modern_city/mci-cafe-chair-w.png",
+   "pixelSha256": "358ac80835eaf42147c1d16590fe59f2ab4ccca684311114dbd93ec2026e25f4",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "358ac80835eaf42147c1d16590fe59f2ab4ccca684311114dbd93ec2026e25f4",
+   "bakeVia": "scripts/content/modern-city-int/rebake_seats34.py mci-cafe-chair-w"
+  },
+  {
+   "id": "cinema-seat-row",
+   "tileset": "modern_city_interior",
+   "png": "tiledata/seats34/study2/art/modern_city/cinema-seat-row.png",
+   "pixelSha256": "ae883f47dd8e6927c3fe52a0299a8979b4a4353394566de9b8d81f8acd3a7e42",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "ae883f47dd8e6927c3fe52a0299a8979b4a4353394566de9b8d81f8acd3a7e42",
+   "bakeVia": "scripts/content/modern-city-int/rebake_seats34.py cinema-seat-row"
+  },
+  {
+   "id": "hospital-wheelchair",
+   "tileset": "modern_city_interior",
+   "png": "tiledata/seats34/study2/art/modern_city/hospital-wheelchair.png",
+   "pixelSha256": "f4027a7c12726bbcc694d52d2094c65b3ea877a9d49c05177d9d0d8e6f3c1e79",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "f4027a7c12726bbcc694d52d2094c65b3ea877a9d49c05177d9d0d8e6f3c1e79",
+   "bakeVia": "scripts/content/modern-city-int/rebake_seats34.py hospital-wheelchair"
+  },
+  {
+   "id": "aud-seat-row",
+   "tileset": "modern_city_interior",
+   "png": "tiledata/seats34/study2/art/modern_city/aud-seat-row.png",
+   "pixelSha256": "adaf2ad280d2d534b5fd1a88ce3b7e9994b4fb1647acc50f22a929ee59910874",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "adaf2ad280d2d534b5fd1a88ce3b7e9994b4fb1647acc50f22a929ee59910874",
+   "bakeVia": "scripts/content/modern-city-int/rebake_seats34.py aud-seat-row"
+  },
+  {
+   "id": "karaoke-sofa",
+   "tileset": "modern_city_interior",
+   "png": "tiledata/seats34/study2/art/modern_city/karaoke-sofa.png",
+   "pixelSha256": "2c1305e48ae3f3521f91289e946151ea01447717f8e358134025d665f1c5e3e5",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "2c1305e48ae3f3521f91289e946151ea01447717f8e358134025d665f1c5e3e5",
+   "bakeVia": "scripts/content/modern-city-int/rebake_seats34.py karaoke-sofa"
+  },
+  {
+   "id": "court-judge-bench",
+   "tileset": "modern_city_interior",
+   "png": "tiledata/seats34/study2/art/modern_city/court-judge-bench.png",
+   "pixelSha256": "a9854651aa2711791806a1796f0240913a01e3a51b3f49247b1c39b3a7352cf2",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "a9854651aa2711791806a1796f0240913a01e3a51b3f49247b1c39b3a7352cf2",
+   "bakeVia": "scripts/content/modern-city-int/rebake_seats34.py court-judge-bench"
+  },
+  {
+   "id": "mci-chair-office-e",
+   "tileset": "modern_city_interior",
+   "png": "tiledata/seats34/study2/art/modern_city/mci-chair-office-e.png",
+   "pixelSha256": "7e4a42b8f7ab830eee73f323d4c2fa471029ca366ace7565a6256d41924fd8be",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "7e4a42b8f7ab830eee73f323d4c2fa471029ca366ace7565a6256d41924fd8be",
+   "bakeVia": "scripts/content/modern-city-int/rebake_seats34.py mci-chair-office-e"
+  },
+  {
+   "id": "mci-chair-office-w",
+   "tileset": "modern_city_interior",
+   "png": "tiledata/seats34/study2/art/modern_city/mci-chair-office-w.png",
+   "pixelSha256": "31097ef43f410c7f81a734248f86731359a316752ed47aea4ac5ac0c807e8a7d",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "31097ef43f410c7f81a734248f86731359a316752ed47aea4ac5ac0c807e8a7d",
+   "bakeVia": "scripts/content/modern-city-int/rebake_seats34.py mci-chair-office-w"
+  },
+  {
+   "id": "mci-chair-wood-n",
+   "tileset": "modern_city_interior",
+   "png": "tiledata/seats34/study2/art/modern_city/mci-chair-wood-n.png",
+   "pixelSha256": "71d6e33e3d3357cfcf6459524a68c6e77148bbe76a674d622a23631c54f1e3a7",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "71d6e33e3d3357cfcf6459524a68c6e77148bbe76a674d622a23631c54f1e3a7",
+   "bakeVia": "scripts/content/modern-city-int/rebake_seats34.py mci-chair-wood-n"
+  },
+  {
+   "id": "mci-armchair-n",
+   "tileset": "modern_city_interior",
+   "png": "tiledata/seats34/study2/art/modern_city/mci-armchair-n.png",
+   "pixelSha256": "192300b9043db95db480b2167895df25439cfb4aba05cd7cca5828564d80b3e5",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "192300b9043db95db480b2167895df25439cfb4aba05cd7cca5828564d80b3e5",
+   "bakeVia": "scripts/content/modern-city-int/rebake_seats34.py mci-armchair-n"
+  },
+  {
+   "id": "mci-sofa-n",
+   "tileset": "modern_city_interior",
+   "png": "tiledata/seats34/study2/art/modern_city/mci-sofa-n.png",
+   "pixelSha256": "63fb9d8a552f29f8a2bd1a43595fcdc8984385eaed21eea986ae60a452feec40",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "63fb9d8a552f29f8a2bd1a43595fcdc8984385eaed21eea986ae60a452feec40",
+   "bakeVia": "scripts/content/modern-city-int/rebake_seats34.py mci-sofa-n"
+  },
+  {
+   "id": "mci-chair-wood-e",
+   "tileset": "modern_city_interior",
+   "png": "tiledata/seats34/study2/art/modern_city/mci-chair-wood-e.png",
+   "pixelSha256": "e69d616677b44f087285b33d6ee6ff2bf25103c5d84bb89b63490e90cce22a8f",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "e69d616677b44f087285b33d6ee6ff2bf25103c5d84bb89b63490e90cce22a8f",
+   "bakeVia": "scripts/content/modern-city-int/rebake_seats34.py mci-chair-wood-e"
+  },
+  {
+   "id": "mci-chair-wood-w",
+   "tileset": "modern_city_interior",
+   "png": "tiledata/seats34/study2/art/modern_city/mci-chair-wood-w.png",
+   "pixelSha256": "f547a50e35eba1f287af15b77e9afd31bab2c9580cf1ee7e67c373105d90bc6b",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "f547a50e35eba1f287af15b77e9afd31bab2c9580cf1ee7e67c373105d90bc6b",
+   "bakeVia": "scripts/content/modern-city-int/rebake_seats34.py mci-chair-wood-w"
+  },
+  {
+   "id": "mci-chair-wood-s",
+   "tileset": "modern_city_interior",
+   "png": "tiledata/seats34/study2/art/modern_city/mci-chair-wood-s.png",
+   "pixelSha256": "fb7ecf7fa5ffddf8682ac8c3aa0b7030bc2c07927d8808222cfef3d7d3353b03",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "fb7ecf7fa5ffddf8682ac8c3aa0b7030bc2c07927d8808222cfef3d7d3353b03",
+   "bakeVia": "scripts/content/modern-city-int/rebake_seats34.py mci-chair-wood-s"
+  },
+  {
+   "id": "mci-armchair",
+   "tileset": "modern_city_interior",
+   "png": "tiledata/seats34/study2/art/modern_city/mci-armchair.png",
+   "pixelSha256": "13782540803a4272de175bbe3cfa5c74183a83539b060c203b4299a65a0c832c",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "13782540803a4272de175bbe3cfa5c74183a83539b060c203b4299a65a0c832c",
+   "bakeVia": "scripts/content/modern-city-int/rebake_seats34.py mci-armchair"
+  },
+  {
+   "id": "mci-armchair-e",
+   "tileset": "modern_city_interior",
+   "png": "tiledata/seats34/study2/art/modern_city/mci-armchair-e.png",
+   "pixelSha256": "4d85c4cc2d5f4dd75e5f98694ebf9d4b1f39712f84b8e00265041c6c7fcf21cc",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "4d85c4cc2d5f4dd75e5f98694ebf9d4b1f39712f84b8e00265041c6c7fcf21cc",
+   "bakeVia": "scripts/content/modern-city-int/rebake_seats34.py mci-armchair-e"
+  },
+  {
+   "id": "mci-armchair-w",
+   "tileset": "modern_city_interior",
+   "png": "tiledata/seats34/study2/art/modern_city/mci-armchair-w.png",
+   "pixelSha256": "41ab034ea735f71a1690edf8b1803b1f0cdb3d06dffbd874a3fb21642b322662",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "41ab034ea735f71a1690edf8b1803b1f0cdb3d06dffbd874a3fb21642b322662",
+   "bakeVia": "scripts/content/modern-city-int/rebake_seats34.py mci-armchair-w"
+  },
+  {
+   "id": "home-bath-stool",
+   "tileset": "modern_city_interior",
+   "png": "tiledata/seats34/study2/art/modern_city/home-bath-stool.png",
+   "pixelSha256": "c24b299209f247562fd1283ab57b1b700576e2bc11285c5e4e9428c48d3c283c",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "c24b299209f247562fd1283ab57b1b700576e2bc11285c5e4e9428c48d3c283c",
+   "bakeVia": "scripts/content/modern-city-int/rebake_seats34.py home-bath-stool"
+  },
+  {
+   "id": "mci-bar-stool",
+   "tileset": "modern_city_interior",
+   "png": "tiledata/seats34/study2/art/modern_city/mci-bar-stool.png",
+   "pixelSha256": "74140f115facb4593fcaa7bb425409744bdd34a4404dd30c5497491d4f13783a",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "74140f115facb4593fcaa7bb425409744bdd34a4404dd30c5497491d4f13783a",
+   "bakeVia": "scripts/content/modern-city-int/rebake_seats34.py mci-bar-stool"
+  },
+  {
+   "id": "mci-chair-office-n",
+   "tileset": "modern_city_interior",
+   "png": "tiledata/seats34/study2/art/modern_city/mci-chair-office-n.png",
+   "pixelSha256": "ff3ea120ae54a1a4890e96fc07410406e81a0f374d1833f489c8f0f05742e650",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "ff3ea120ae54a1a4890e96fc07410406e81a0f374d1833f489c8f0f05742e650",
+   "bakeVia": "scripts/content/modern-city-int/rebake_seats34.py mci-chair-office-n"
+  },
+  {
+   "id": "hosp-wheelchair-bay",
+   "tileset": "modern_city_interior",
+   "png": "tiledata/seats34/study2/art/modern_city/hosp-wheelchair-bay.png",
+   "pixelSha256": "5e130a2931648fb3c7f9315e27583c5bc75cf36e206125167baecf2bf7d995fd",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "5e130a2931648fb3c7f9315e27583c5bc75cf36e206125167baecf2bf7d995fd",
+   "bakeVia": "scripts/content/modern-city-int/rebake_seats34.py hosp-wheelchair-bay"
+  },
+  {
+   "id": "clinic-dental-chair",
+   "tileset": "modern_city_interior",
+   "png": "tiledata/seats34/study2/art/modern_city/clinic-dental-chair.png",
+   "pixelSha256": "63b0e6282cacbb6497ef7adb404debd719d68169ef6e7bebbd351d6303259fc5",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "63b0e6282cacbb6497ef7adb404debd719d68169ef6e7bebbd351d6303259fc5",
+   "bakeVia": "scripts/content/modern-city-int/rebake_seats34.py clinic-dental-chair"
+  },
+  {
+   "id": "svc-barber-chair",
+   "tileset": "modern_city_interior",
+   "png": "tiledata/seats34/study2/art/modern_city/svc-barber-chair.png",
+   "pixelSha256": "560dd9cefaa56a90b66d477b5017b7bd0365d076f3c828a77a274b60457577ff",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "560dd9cefaa56a90b66d477b5017b7bd0365d076f3c828a77a274b60457577ff",
+   "bakeVia": "scripts/content/modern-city-int/rebake_seats34.py svc-barber-chair"
+  },
+  {
+   "id": "home-zabuton",
+   "tileset": "modern_city_interior",
+   "png": "tiledata/seats34/study2/art/modern_city/home-zabuton.png",
+   "pixelSha256": "4f8e54dcef6d3de8e6f927acaa6bde1910192f1d1b8b6909ef3d3349f6ffd3a2",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)"
+   ],
+   "bakePixelSha256": "4f8e54dcef6d3de8e6f927acaa6bde1910192f1d1b8b6909ef3d3349f6ffd3a2",
+   "bakeVia": "scripts/content/modern-city-int/rebake_seats34.py home-zabuton"
+  },
+  {
+   "id": "chair E",
+   "tileset": "atlas_biome_interior",
+   "png": "tiledata/seats34/study2/art/atlas_biome_interior/chair_E.png",
+   "pixelSha256": "36dd7f42c7200e5f9c1b056c8021d23ccb814733d1c67c2670e081bf5271c8e1",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)",
+    "hand v5: not installed — needs pick record + build_tileset after the receipt"
+   ],
+   "bakePixelSha256": "36dd7f42c7200e5f9c1b056c8021d23ccb814733d1c67c2670e081bf5271c8e1",
+   "bakeVia": "tiledata/hand-interior/pick/candidates/chair_E/w135-A.pxg — install via pick (18302) + build_tileset.py"
+  },
+  {
+   "id": "chair W",
+   "tileset": "atlas_biome_interior",
+   "png": "tiledata/seats34/study2/art/atlas_biome_interior/chair_W.png",
+   "pixelSha256": "b9e5647cd28589bb94c0292fb033b61ab41430d226f5d2b4b23e25663f787a81",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)",
+    "hand v5: not installed — needs pick record + build_tileset after the receipt"
+   ],
+   "bakePixelSha256": "b9e5647cd28589bb94c0292fb033b61ab41430d226f5d2b4b23e25663f787a81",
+   "bakeVia": "tiledata/hand-interior/pick/candidates/chair_W/w135-A.pxg — install via pick (18302) + build_tileset.py"
+  },
+  {
+   "id": "armchair",
+   "tileset": "atlas_biome_interior",
+   "png": "tiledata/seats34/study2/art/atlas_biome_interior/armchair.png",
+   "pixelSha256": "49fbbb60684157baebbcea4f997bbcccfcc1a0748c2d6ee5eaec8bb44feb730d",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)",
+    "hand v5: not installed — needs pick record + build_tileset after the receipt"
+   ],
+   "bakePixelSha256": "49fbbb60684157baebbcea4f997bbcccfcc1a0748c2d6ee5eaec8bb44feb730d",
+   "bakeVia": "tiledata/hand-interior/pick/candidates/armchair/w135-A.pxg — install via pick (18302) + build_tileset.py"
+  },
+  {
+   "id": "bar stool",
+   "tileset": "atlas_biome_interior",
+   "png": "tiledata/seats34/study2/art/atlas_biome_interior/bar_stool.png",
+   "pixelSha256": "0f89ae8eacd84bd7fd43b1b0059e7a1e54e100cd6f769bf8236f55705656625f",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)",
+    "hand v5: not installed — needs pick record + build_tileset after the receipt"
+   ],
+   "bakePixelSha256": "0f89ae8eacd84bd7fd43b1b0059e7a1e54e100cd6f769bf8236f55705656625f",
+   "bakeVia": "tiledata/hand-interior/pick/candidates/bar_stool/w135-A.pxg — install via pick (18302) + build_tileset.py"
+  },
+  {
+   "id": "chair N",
+   "tileset": "atlas_biome_interior",
+   "png": "tiledata/seats34/study2/art/atlas_biome_interior/chair_N.png",
+   "pixelSha256": "c38637618b61fc50d29b66ed0f00bc22b06ab0affcca9135dae4418802455e19",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)",
+    "hand v5: not installed — needs pick record + build_tileset after the receipt"
+   ],
+   "bakePixelSha256": "c38637618b61fc50d29b66ed0f00bc22b06ab0affcca9135dae4418802455e19",
+   "bakeVia": "tiledata/hand-interior/pick/candidates/chair_N/w135-A.pxg — install via pick (18302) + build_tileset.py"
+  },
+  {
+   "id": "theater seat",
+   "tileset": "atlas_biome_interior",
+   "png": "tiledata/seats34/study2/art/atlas_biome_interior/theater_seat.png",
+   "pixelSha256": "59e8e67380f531cd3f24e2f0caf5af2a8ec32c940c16e515b99a2dd6a92cd712",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)",
+    "hand v5: not installed — needs pick record + build_tileset after the receipt"
+   ],
+   "bakePixelSha256": "59e8e67380f531cd3f24e2f0caf5af2a8ec32c940c16e515b99a2dd6a92cd712",
+   "bakeVia": "tiledata/hand-interior/pick/candidates/theater_seat/w135-A.pxg — install via pick (18302) + build_tileset.py"
+  },
+  {
+   "id": "curule seat",
+   "tileset": "atlas_biome_interior",
+   "png": "tiledata/seats34/study2/art/atlas_biome_interior/curule_seat.png",
+   "pixelSha256": "9e63b78365f3481de267fbb8260352a63b7a4aadbc61864ad29dd234b8ac6462",
+   "kind": "seat",
+   "reasons": [
+    "3/4 gate receipt missing (object-gate profile uncalibrated)",
+    "hand v5: not installed — needs pick record + build_tileset after the receipt"
+   ],
+   "bakePixelSha256": "9e63b78365f3481de267fbb8260352a63b7a4aadbc61864ad29dd234b8ac6462",
+   "bakeVia": "scripts/content/interior-plus/pieces/arena.py curule_seat_s2 (not registered yet)"
+  }
+ ]
+}
