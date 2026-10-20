@@ -49,6 +49,8 @@ export interface BattleLookAxes {
   readonly field: BattleLookField;
   readonly turnOrder: boolean;
   readonly enemyNames: boolean;
+  /** 적 머리 위 체력 막대(숫자 없이 남은 비율만). 보스전처럼 「얼마나 남았나」가 판단의 축일 때 켠다. */
+  readonly enemyHp: boolean;
   readonly letterbox: boolean;
   readonly window: BattleLookWindow;
   /** 생략 = 창 꾸밈 기본 글꼴. */
@@ -66,7 +68,7 @@ export interface BattleLookAxes {
 export type BattleLookSettings = { preset?: BattleLookPresetId } & { -readonly [K in keyof BattleLookAxes]?: BattleLookAxes[K] };
 
 const BASE: BattleLookAxes = {
-  party: "rows", command: "corner", field: "band", turnOrder: false, enemyNames: false, letterbox: false,
+  party: "rows", command: "corner", field: "band", turnOrder: false, enemyNames: false, enemyHp: false, letterbox: false,
   window: "pixel", light: 0, dust: 0, vignette: 0, blur: 0, grade: false,
 };
 
@@ -143,6 +145,7 @@ export function normalizeBattleLook(value: unknown): BattleLookSettings | undefi
   pick("window", (v): v is BattleLookWindow => isOneOf(BATTLE_LOOK_WINDOW_IDS, v));
   pick("turnOrder", (v): v is boolean => typeof v === "boolean");
   pick("enemyNames", (v): v is boolean => typeof v === "boolean");
+  pick("enemyHp", (v): v is boolean => typeof v === "boolean");
   pick("letterbox", (v): v is boolean => typeof v === "boolean");
   pick("grade", (v): v is boolean => typeof v === "boolean");
   pick("font", (v): v is FontFamilyId => isFontFamilyId(v));

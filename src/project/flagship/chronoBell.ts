@@ -76,6 +76,9 @@ function setupCast(project: Project): void {
     characterResourceId: "easyrpg-charset-actor4", characterIndex: 7,
     battleCharacterResourceId: "charset-battler-actor4-7", faceResourceId: "easyrpg-faceset-actor2-15", initialLevel: 6,
   });
+  // 경험치 곡선 — 견본 곡선(extra 677)은 Lv6 에서 다음 레벨까지 1만이 넘어 한 막 내내 레벨이 오르지 않았다(가혹 검수 r1).
+  // 숲 전투 몇 판이면 한 번, 결전 보상으로 한 번 더 오르게 줄인다.
+  for (const actor of actors) if (actor.id === hero.id || actor.id === ELENA_ID || actor.id === IRIS_ID) actor.expCurve = { base: 30, extra: 60, acceleration: 20 };
   project.system.startActorIds = [hero.id, ELENA_ID];
   // 런타임은 새 게임 파티를 session.partyActorIds 에서 읽는다 — 둘 다 맞춘다(감사 2차: 엘레나가 대사에만 있고 파티에 없었다).
   project.session.partyActorIds = [hero.id, ELENA_ID];
@@ -83,6 +86,8 @@ function setupCast(project: Project): void {
   project.system.companions = { ...project.system.companions, fromParty: true };
   // 턴제 파티 RPG — 필드에 액션 전투용 하트 HUD 를 띄우지 않는다(감사 2차: 지도 왼쪽 위를 늘 가렸다).
   project.system.fieldHud = JRPG_CLASSIC_FIELD_HUD;
+  // 보스전에서 남은 체력이 보이게 — 도트 측면 스킨은 적 체력을 숨긴다(가혹 검수 r1: 「적 HP 표시가 전혀 없음」).
+  project.system.battleLook = { ...project.system.battleLook, enemyHp: true };
 }
 
 // ── 적 ──────────────────────────────────────────────────────────────────
@@ -116,6 +121,37 @@ function setupFoes(project: Project): { field: string[]; boss: string } {
   // 발렌은 필드와 같은 걷기 칩의 전투 시트로 싸운다(감사 3차: 필드는 망토 마법사, 전투는 보라 후드 — 다른 사람처럼 보였다).
   const valen = project.database.enemies.find((e) => e.id === "enemy_fs_valen");
   if (valen) valen.monsterResourceId = "charset-battler-actor1-4";
+  // 보스 압박(가혹 검수 r1: 「공격 연타만으로 이긴다」) — 발렌은 둘째 차례부터 세 차례마다 「심판의 기도」로 예고하고 다음 차례에
+  // 파티 전체에 「심판의 빛」을 쏟는다. 수호상은 둘째 차례부터 격 차례로 「수호의 철퇴」. 자기 치유는 체력 30% 아래에서만.
+  // 헤드리스 시뮬레이터(battle/simulate, 60판) 기준: 공격만 10% 승, 기술·회복을 쓰면 100% 승(평균 19~24 결정).
+  const skills = project.database.skills;
+  const cloneSkill = (fromId: string, id: string, patch: Record<string, unknown>): void => {
+    const base = skills.find((s) => s.id === fromId);
+    if (!base) throw new Error(`[fallen-star] 스킬 견본 ${fromId} 이 없다`);
+    const next = { ...clone(base), ...patch, id } as typeof base;
+    const at = skills.findIndex((s) => s.id === id);
+    if (at >= 0) skills[at] = next; else skills.push(next);
+  };
+  const noMp = { flat: 0, percentMax: 0 };
+  cloneSkill("skill_focus", "skill_fs_prayer", { name: "심판의 기도", mpCost: noMp, description: "빛을 모은다. 다음 차례에 큰 빛이 쏟아진다." });
+  cloneSkill("skill_mage_blizzard", "skill_fs_judgment", { name: "심판의 빛", power: 130, mpCost: noMp, description: "모은 빛을 파티 전체에 쏟아붓는다." });
+  cloneSkill("skill_sword_slash", "skill_fs_maul", { name: "수호의 철퇴", power: 120, description: "돌 팔을 크게 내리친다." });
+  const act = (skillId: string, priority: number, condition: Enemy["actions"][number]["condition"] = { kind: "always" }) =>
+    ({ skillId, priority, condition, switchOnAfterAction: { enabled: false }, switchOffAfterAction: { enabled: false } });
+  const guardian = project.database.enemies.find((e) => e.id === "enemy_fs_guardian");
+  if (valen) {
+    valen.actions = [
+      act("skill_fs_prayer", 10, { kind: "turn", start: 2, interval: 3 }),
+      act("skill_fs_judgment", 10, { kind: "turn", start: 3, interval: 3 }),
+      act("skill_sword_slash", 6), act("skill_weaken", 4),
+      act("skill_heal", 9, { kind: "hp", minPercent: 0, maxPercent: 30 }),
+    ];
+    valen.stats = { ...valen.stats, maxHp: 1300 };
+  }
+  if (guardian) {
+    guardian.actions = [act("skill_fs_maul", 9, { kind: "turn", start: 2, interval: 2 }), act("skill_earth", 7), act("skill_attack", 6)];
+    guardian.stats = { ...guardian.stats, maxHp: 1000 };
+  }
   // 표시 레벨 — 견본 몬스터에서 복제한 레벨(발렌 33·수호상 27)이 Lv6 파티 앞에 그대로 떠 이야기와 어긋났다(감사 VQA).
   // 보상은 위에서 직접 정했으므로 레벨은 표시와 레벨 차 경험치 보정에만 쓰인다.
   const levels: Record<string, number> = { enemy_fs_wolf: 5, enemy_fs_spider: 4, enemy_fs_wisp: 6, enemy_fs_valen: 9, enemy_fs_guardian: 8 };
@@ -484,6 +520,49 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   if (!project.switches.some((s) => s.id === SW_IRIS_AWAKE)) project.switches.push({ id: SW_IRIS_AWAKE, name: "이리스 깨어남" });
   podList.splice(opened + 1, 0, { kind: "setSwitch", switchId: SW_IRIS_AWAKE, value: true } as Command);
   const podSpot = M(ids.forest).events.find((e) => e.id === `ev_${FS_PREFIX}_main_inspect1`)!;
+  // 단계별 재시도(가혹 검수 r1: 「어느 단계에서 틀려도 1단계로 되돌아간다」) — 틀리면 그 단계 선택지로만 돌아간다.
+  // 선택지를 닫으면 관에서 물러선다(다시 조사하면 처음부터). gotoLabel 은 바깥 프레임까지 거슬러 찾는다.
+  {
+    const podPage = podSpot.pages![0]!;
+    const WRONG = "이 단계만 다시 해 보자.";
+    const isWrong = (branch: Command[]): boolean => branch.some((c) => c.kind === "text" && (c as { body?: string }).body === WRONG);
+    const stageLabels: string[] = [];
+    const wire = (list: Command[]): void => {
+      const at = list.findIndex((c) => c.kind === "choices");
+      if (at < 0) return;
+      const ask = list[at] as ChoicesCommand & { cancelBehavior?: string; cancelBranch?: Command[] };
+      const label = `fs_pod_stage${stageLabels.length + 1}`;
+      stageLabels.push(label);
+      list.splice(at, 0, { kind: "label", name: label } as Command);
+      ask.cancelBehavior = "branch";
+      ask.cancelBranch = [narrate("관에서 한 걸음 물러섰다."), { kind: "gotoLabel", name: "fs_pod_leave" } as Command];
+      for (const option of ask.options) {
+        if (isWrong(option.branch)) option.branch.push({ kind: "gotoLabel", name: label } as Command);
+        else wire(option.branch);
+      }
+    };
+    wire(podPage.commands);
+    if (stageLabels.length !== 3) throw new Error(`[fallen-star] 관 퍼즐 단계가 ${stageLabels.length}개다(3개여야 한다)`);
+    podPage.commands.push({ kind: "label", name: "fs_pod_leave" } as Command);
+    // 해제 연출의 섬광에 value 가 빠져 실행기가 「missing field: value」를 냈다.
+    const fixFlash = (list: Command[]): void => {
+      for (const c of list as (Command & { kind: string; commandId?: string; fields?: Record<string, unknown>; options?: { branch: Command[] }[] })[]) {
+        if (c.kind === "m2Command" && c.commandId === "m2-047-flash-screen" && c.fields && c.fields.value === undefined) c.fields.value = "flash";
+        for (const option of c.options ?? []) fixFlash(option.branch);
+      }
+    };
+    fixFlash(podPage.commands);
+  }
+  // 처음엔 소지품이 비어 첫 전투에서 「아이템」이 쓸모없었다(가혹 검수 r1) — 포고 뒤 엘레나가 회복약 셋을 건넨다.
+  {
+    const herald = findTextList(M(ids.hub), "선생님이 천문대에서 기다리셔");
+    if (!herald) throw new Error("[fallen-star] 포고 끝 대사를 찾지 못했다");
+    herald.list.splice(herald.index + 1, 0,
+      say("엘레나", "아, 이것도 챙겨. 숲에 짐승이 많대."),
+      { kind: "changeItem", itemId: "item_potion", op: "+=", amount: 3 } as Command,
+      narrate("「회복약」 3개를 받았다."),
+    );
+  }
   const irisAt = [{ x: podSpot.x + 1, y: podSpot.y }, { x: podSpot.x - 1, y: podSpot.y }]
     .find((p) => isPassable(project, M(ids.forest), p.x, p.y) && !M(ids.forest).events.some((e) => e.x === p.x && e.y === p.y));
   if (irisAt) {

@@ -763,7 +763,8 @@ function resultPartyCard(project: Project, context: BattleResultContext | undefi
         class: "battle-result-party-level",
         children: [`Lv ${fromLevel}`, ...(levelUp ? [el("span", { class: "battle-result-party-arrow", text: " → " }), el("span", { class: "battle-result-party-to", text: String(toLevel) })] : [])],
       }),
-      el("span", { class: "battle-result-party-badge", text: levelUp ? "LEVEL UP" : "", attrs: { "aria-hidden": levelUp ? "false" : "true" } }),
+      // 쓰러진 사람은 「쓰러짐」 배지로 읽히게 한다 — 회색 그림만으로는 그림이 깨진 것처럼 보였다(가혹 검수 r1).
+      el("span", { class: "battle-result-party-badge", text: levelUp ? "LEVEL UP" : actor.hp <= 0 ? "쓰러짐" : "", attrs: { "aria-hidden": levelUp || actor.hp <= 0 ? "false" : "true" } }),
       el("span", {
         class: "battle-result-party-track",
         children: [el("span", { class: "battle-result-party-fill", attrs: { style: `width:${fromPct}%` }, dataset: { fromPct: String(fromPct), toPct: String(toPct), shownPct: String(fromPct) } })],

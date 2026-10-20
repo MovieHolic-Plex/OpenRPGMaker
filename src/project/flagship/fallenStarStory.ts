@@ -134,7 +134,8 @@ export const FALLEN_STAR_ACT1: ChapterSpec = {
     intro: [
       "그을린 구덩이에 사람 키만 한 은빛 관이 박혀 있다. 아직 따뜻하다.",
       "엘레나: 별이… 아니야. 이건 누군가 만든 거야.",
-      "표면의 무늬 세 개가 차례로 깜빡인다. 별, 달, 해… 다시 별, 달…",
+      "표면의 무늬 세 개가 늘 같은 순서로 깜빡인다. 별 → 달 → 해, 별 → 달 → 해, 별 → 달 → …",
+      "…그리고 거기서 멈췄다. 다음 차례가 비어 있다.",
     ],
     stages: [
       {
@@ -159,7 +160,7 @@ export const FALLEN_STAR_ACT1: ChapterSpec = {
         miss: { lines: ["목소리가 뚝 끊겼다. 관이 다시 차갑게 식는다."] },
       },
     ],
-    wrong: ["처음부터 다시 해 보자."],
+    wrong: ["이 단계만 다시 해 보자."],
     wrongFx: ["shake:1"],
     solvedFx: ["shake:3", "flash:white", "particles:sparkle"],
     reward: {

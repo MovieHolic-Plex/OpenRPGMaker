@@ -35,7 +35,7 @@ function particles(id: string, preset: "stars" | "sparks" | "dust", color: strin
 }
 
 function caption(cues: readonly { atMs: number; text: string }[]): AnimaticLayer {
-  return { id: "caption", kind: "caption", x: 0, y: 0, width: STAGE.width, height: 38, color: CAPTION_COLOR, typography: { fontSize: 12, align: "center", weight: 600 },
+  return { id: "caption", kind: "caption", x: 0, y: 0, width: STAGE.width, height: 38, color: CAPTION_COLOR, typography: { fontSize: 14, align: "center", weight: 700 },
     caption: { cues: cues.map(cue => ({ ...cue, typewriterMs: 600 })), fadeOutMs: 400 } };
 }
 

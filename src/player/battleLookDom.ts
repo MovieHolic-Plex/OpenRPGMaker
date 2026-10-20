@@ -24,6 +24,7 @@ export function applyBattleLook(root: HTMLElement, field: HTMLElement, look: Res
   root.dataset.lookField = look.field;
   root.dataset.lookTurns = look.turnOrder ? "on" : "off";
   root.dataset.lookNames = look.enemyNames ? "on" : "off";
+  root.dataset.lookEnemyHp = look.enemyHp ? "on" : "off";
   root.dataset.lookLetterbox = look.letterbox ? "on" : "off";
   if (look.fontStack) root.style.setProperty("--battle-look-font", look.fontStack);
   if (look.accent) {

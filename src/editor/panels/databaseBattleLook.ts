@@ -141,7 +141,7 @@ export function battleLookFields(project: Project, updateSystem: SystemUpdate, r
     });
     return field(label, select);
   };
-  const toggle = (label: string, testid: string, key: "turnOrder" | "enemyNames" | "letterbox" | "grade"): HTMLElement => {
+  const toggle = (label: string, testid: string, key: "turnOrder" | "enemyNames" | "enemyHp" | "letterbox" | "grade"): HTMLElement => {
     const input = el("input", { attrs: { type: "checkbox" }, dataset: { testid } }) as HTMLInputElement;
     input.checked = look[key];
     input.addEventListener("change", () => patch({ [key]: input.checked } as Partial<BattleLookSettings>));
@@ -195,6 +195,7 @@ export function battleLookFields(project: Project, updateSystem: SystemUpdate, r
     children: [
       toggle("차례 순서 줄", "db-battle-look-turn-order", "turnOrder"),
       toggle("적 이름표", "db-battle-look-enemy-names", "enemyNames"),
+      toggle("적 체력 막대", "db-battle-look-enemy-hp", "enemyHp"),
       toggle("영화 띠", "db-battle-look-letterbox", "letterbox"),
       toggle("색보정", "db-battle-look-grade", "grade"),
     ],

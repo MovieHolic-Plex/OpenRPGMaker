@@ -1412,6 +1412,35 @@
   text-overflow: ellipsis;
 }
 
+/* 적 체력 막대(battleLook.enemyHp) — 도트 측면 스킨은 원작처럼 적 체력을 숨기는데, 보스전에서 「얼마나 남았나」를 볼 수 없었다
+   (폴른 스타 가혹 검수). 숫자 없이 남은 비율만 머리 위에 띄운다. 이름표를 함께 켜면 이름표 아래에 붙는다. */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-enemy-hp="on"] .battle-enemy:not(.defeated) .battle-enemy-chrome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  top: auto;
+  bottom: calc(100% + 4px);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-enemy-hp="on"]:not([data-look-names="on"]) .battle-enemy:not(.defeated) .battle-enemy-chrome {
+  background: none;
+  box-shadow: none;
+  padding: 0;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-enemy-hp="on"]:not([data-look-names="on"]) .battle-enemy .battle-enemy-chrome > .battle-enemy-name { display: none; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-enemy-hp="on"] .battle-enemy .battle-enemy-chrome > .battle-enemy-hud {
+  display: block;
+  width: 56px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-enemy-hp="on"] .battle-enemy .battle-enemy-hud > :not(.battle-enemy-hp-bar) { display: none; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-enemy-hp="on"] .battle-enemy .battle-enemy-hud > .battle-enemy-hp-bar {
+  display: block;
+  height: 4px;
+  width: 100%;
+  box-shadow: 0 0 0 1px #10101a;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-enemy-hp="on"]:has(.battle-command-menu > .battle-submenu-header) .battle-enemy:not(.defeated) .battle-enemy-chrome { display: flex; }
+
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-look-letterbox {
   position: absolute;
   left: 0;
