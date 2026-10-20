@@ -563,7 +563,8 @@ function tunePacing(project: Project): void {
     const [ace, , ...rest] = league.members;
     league.members = [...rest, ace!];
     league.enemyIds = league.members.map((m) => m.enemyId);
-    for (const m of rest) { const e = byId(m.enemyId); if (e) rescaleEnemy(e, 9); }
+    // 셋으로 줄인 뒤에도 Lv12 풀 + Lv9 비행 정직 파티가 두 번 졌다(2026-10-21 r15) → 앞 둘 Lv8, 에이스 Lv10 그대로.
+    for (const m of rest) { const e = byId(m.enemyId); if (e) rescaleEnemy(e, 8); }
   }
 }
 

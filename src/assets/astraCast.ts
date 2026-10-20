@@ -20,9 +20,12 @@ export const ASTRA_CAST_EXPRESSIONS: Readonly<Record<AstraCastId, readonly Astra
 export const astraCastBustId = (cid: AstraCastId, expression: AstraCastExpression = 'base'): string => `oprn_astra_cast_${cid}_bust_${expression}`;
 export const astraCastFullId = (cid: AstraCastId, expression: AstraCastExpression = 'base'): string => `oprn_astra_cast_${cid}_full_${expression}`;
 
+/** 전신 카드(대사 상자와 같은 테두리 창 + 전신 1배, 기본 표정). 첫 만남 장면에 쓴다. */
+export const astraCastCardId = (cid: AstraCastId): string => `oprn_astra_cast_${cid}_card`;
+
 export const ASTRA_CAST_URLS: Readonly<Record<string, string>> = Object.fromEntries(
   (Object.entries(ASTRA_CAST_EXPRESSIONS) as [AstraCastId, readonly AstraCastExpression[]][]).flatMap(([cid, expressions]) => expressions.flatMap((expression) => [
     [astraCastBustId(cid, expression), `/assets/emerald-monster/cast/${cid}/bust-${expression}.png`],
     [astraCastFullId(cid, expression), `/assets/emerald-monster/cast/${cid}/full-${expression}.png`],
-  ])),
+  ]).concat([[astraCastCardId(cid), `/assets/emerald-monster/cast/${cid}/card-base.png`]])),
 );

@@ -13,6 +13,11 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[3]
 OUT = ROOT / 'public/assets/emerald-monster/cast'
 TRAINERS = {'naru', 'yurim', 'muyeong'}
+# 눈가림 표정 판정(char-gen, Codex)을 통과한 표정만 굽는다. base 는 감독이 고른 그림 그대로(옅은 미소라 smile/content 로 읽혀도 기본 얼굴로 받아들임).
+# src/assets/astraCast.ts ASTRA_CAST_EXPRESSIONS 와 같아야 한다. 판정 원본: /home/main/astra-qa/cast/final.json
+KEEP = {'hero': ['base', 'happy', 'surprised'], 'mom': ['base', 'happy', 'angry', 'surprised'], 'professor': ['base', 'happy', 'angry', 'surprised'],
+        'naru': ['base', 'happy', 'sad', 'angry', 'surprised'], 'nurse': ['base', 'happy', 'sad', 'surprised'],
+        'yurim': ['base', 'happy', 'sad', 'angry', 'surprised'], 'muyeong': ['base', 'happy', 'sad', 'angry', 'surprised', 'serious']}
 
 def cell(a):
     runs = Counter()
@@ -46,15 +51,24 @@ def native(path):
 def sha(im): return hashlib.sha256(np.array(im.convert('RGBA')).tobytes()).hexdigest()
 
 prov_path = OUT / 'provenance.json'
-prov = json.loads(prov_path.read_text()) if prov_path.exists() else {'source': 'char-gen (OPRN 자체 생성기, 우리 산출물) · 후보는 감독이 골랐다(by: supervisor) · 유료 대체 경로·스토어 크레딧 사용 없음', 'cast': {}}
+prov = json.loads(prov_path.read_text()) if prov_path.exists() else {'judge': 'char-gen 눈가림 표정 판정(Codex CLI) 통과분만 — KEEP 참고', 'source': 'char-gen (OPRN 자체 생성기, 우리 산출물) · 후보는 감독이 골랐다(by: supervisor) · 유료 대체 경로·스토어 크레딧 사용 없음', 'cast': {}}
 for arg in sys.argv[1:]:
     cid, src = arg.split('=', 1); src = Path(src)
     dst = OUT / cid; dst.mkdir(parents=True, exist_ok=True)
     rec = {'from': str(src), 'pictures': {}}
     for f in sorted(src.glob('bust-*.png')) + sorted(src.glob('full-*.png')):
+        if f.stem.split('-', 1)[1] not in KEEP[cid]: continue
         im, s, u = native(f)
         im.save(dst / f.name, optimize=True)
         rec['pictures'][f.name] = {'size': list(im.size), 'cell': s, 'uniform': round(u, 4), 'sourceSha256': sha(Image.open(f)), 'pixelSha256': sha(im)}
+    # 전신 카드: 대사 상자와 같은 테두리 창(4px #487068 + 안쪽 4px #a8c0a0, 바탕 #e8f0d8)에 전신 1배 — 맵 위에 그냥 세우면 화소 크기가 섞이고 맵 인물을 가린다.
+    full = Image.open(dst / 'full-base.png').convert('RGBA')
+    card = Image.new('RGBA', (full.width + 24, full.height + 20), (0x48, 0x70, 0x68, 255))
+    card.paste((0xa8, 0xc0, 0xa0, 255), (4, 4, card.width - 4, card.height - 4))
+    card.paste((0xe8, 0xf0, 0xd8, 255), (8, 8, card.width - 8, card.height - 8))
+    card.alpha_composite(full, ((card.width - full.width) // 2, card.height - 8 - full.height))
+    card.save(dst / 'card-base.png', optimize=True)
+    rec['pictures']['card-base.png'] = {'size': list(card.size), 'pixelSha256': sha(card)}
     if cid in TRAINERS:
         full = Image.open(dst / 'full-base.png').convert('RGBA')
         if full.width > 128 or full.height > 190: raise SystemExit(f'{cid} 전신 {full.size} 이 128×192 판보다 크다')

@@ -260,6 +260,11 @@ async function walkThroughDoor(fromMapId, toMapId) {
 async function fight(label, { capture = false, run = false } = {}) {
   const log = [];
   const switchedFor = new Set();
+  // 트레이너 승부는 시작 소개(상대 인물 그림이 들어오고 몬스터를 내보냄)를 연속으로 찍는다 — 5초 간격 프레임으로는 안 잡힌다.
+  if (/rival|leader|trainer/.test(label)) {
+    await mkdir(join(out, "intro"), { recursive: true });
+    for (let k = 0; k < 6; k++) { await page.screenshot({ path: join(out, "intro", `${label}-${k}.png`) }).catch(() => {}); await page.waitForTimeout(350); }
+  }
   for (let turn = 0; turn < 40; turn++) {
     if (!(await present("battle-scene"))) break;
     if (await present("battle-result-panel")) {
