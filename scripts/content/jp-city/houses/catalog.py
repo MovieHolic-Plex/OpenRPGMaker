@@ -341,7 +341,7 @@ def _shut(src, paper=False, sign=None):
 for _src, _paper in (('shop_fish', False), ('shop_butcher', False), ('shop_books', True), ('shop_cleaning', False),
                      ('shop_bicycle', False), ('shop_sake', True), ('shop_flower', False), ('shop_realestate', False)):
     add(_src + '_shut', CATALOG[_src][0] + ' · 셔터 내림', 'shop', _shut(_src, _paper))
-add('shop_vacant', '빈 점포 · テナント募集', 'shop', _shut('shop_pharmacy', True, ''))
+add('shop_vacant', '빈 점포 · テナント募集', 'shop', _shut('shop_pharmacy', True, 'テナント'))   # 일본어 간판 허용(2026-10-20)
 
 
 # ── 동네 거점(조사 03: 역·학교·신사·코인 세탁소·町工場·주유소) ──
