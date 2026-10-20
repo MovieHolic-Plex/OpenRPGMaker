@@ -51,10 +51,15 @@ export interface BeodeulWildRouteInput {
   readonly rng: Rng;
   /** 숲 종류(기본 활엽수림). */
   readonly forestType?: BeodeulForestType;
+  /**
+   * 길섶·풀숲 둘레 소품. "default"(기본) = 고사리 fern-a/b/c 와 열매 덤불을 모두 쓴다.
+   * "soft" = fern-a/b(네모 울타리 덩이로 읽히는 큐브)를 빼고 풀 무늬 fern-c·열매 덤불만 쓴다(폴른 스타 숲).
+   */
+  readonly edgeDecor?: "default" | "soft";
 }
 
 export function paintBeodeulWildRoute(input: BeodeulWildRouteInput): { roadCells: number; treeCells: number; decor: number } {
-  const { project, map, tileset, road, grass, patches, exits, clearings = [], rng, forestType = "broadleaf" } = input;
+  const { project, map, tileset, road, grass, patches, exits, clearings = [], rng, forestType = "broadleaf", edgeDecor = "default" } = input;
   const fillRegion = requireTool(CONSTRUCTION_TOOLS_V3, "fill_region");
   const stampObject = requireTool(SHARED_OBJECT_TOOLS, "stamp_object");
   const w = map.width;
@@ -124,8 +129,8 @@ export function paintBeodeulWildRoute(input: BeodeulWildRouteInput): { roadCells
 
   const treeCells = plantBeodeulForestWall(project, map, tileset, reserved, rng, stampObject, forestType);
   // 공터는 비워 둔다 — 길섶 소품이 공터 안에 흩어지면 그 자리에 놓을 장면(추락지 등)이 돌·풀포기에 막혔다.
-  const decor = dressBeodeulVerge(project, map, tileset, road, new Set([...reserved].filter(index => !open.has(index))), rng, stampObject)
-    + fringeBeodeulThicket(project, map, tileset, thicket, rng, stampObject);
+  const decor = dressBeodeulVerge(project, map, tileset, road, new Set([...reserved].filter(index => !open.has(index))), rng, stampObject, edgeDecor)
+    + fringeBeodeulThicket(project, map, tileset, thicket, rng, stampObject, edgeDecor);
   return { roadCells: roadCells.length, treeCells, decor };
 }
 
@@ -170,10 +175,10 @@ export function plantBeodeulForestWall(project: Project, map: GameMap, tileset: 
 
 /** 길섶 꾸미기 — 깊은 숲길 세트의 작은 소품(고사리·들꽃·돌·그루터기·버섯)을 길 둘레 빈 풀밭에 드문드문. */
 function dressBeodeulVerge(project: Project, map: GameMap, tileset: TilesetDef, road: ReadonlySet<number>, reserved: ReadonlySet<number>,
-  rng: Rng, stampObject: ToolDefinition): number {
+  rng: Rng, stampObject: ToolDefinition, edgeDecor: "default" | "soft" = "default"): number {
   const w = map.width;
   const decor = (tileset.structureKits ?? []).filter(kit => kit.width === 1 && kit.height === 1
-    && /^bd-pick-deep-forest-path-(fern-c|heath|wild|stones|stump|toadstools)-/.test(kit.id));
+    && (edgeDecor === "soft" ? /^bd-pick-deep-forest-path-(fern-c|heath|wild|stones|stump|toadstools)-/ : /^bd-pick-deep-forest-path-(fern|heath|wild|stones|stump|toadstools)-/).test(kit.id));
   if (decor.length === 0) return 0;
   let placed = 0;
   for (const index of reserved) {
@@ -197,13 +202,13 @@ function dressBeodeulVerge(project: Project, map: GameMap, tileset: TilesetDef, 
  * 짙은 풀 무늬가 맨 풀밭과 칼로 자른 듯 만나던 경계를 풀포기가 삐져나온 모양으로 흐린다.
  */
 function fringeBeodeulThicket(project: Project, map: GameMap, tileset: TilesetDef, thicket: ReadonlySet<number>,
-  rng: Rng, stampObject: ToolDefinition): number {
+  rng: Rng, stampObject: ToolDefinition, edgeDecor: "default" | "soft" = "default"): number {
   // 2026-10-20(폴른 스타 감사 3차 「각진 풀숲」): 짙은 잎 풀 칸만 깔면 납작한 짙은 깔개로 보였다(시트에 키큰 풀이 없다).
   // 풀숲 칸마다 고사리·헤더 덤불을 거의 다 채우고(포켓몬 풀숲처럼 칸마다 풀포기), 바깥 한 칸 둘레에도 드문드문 흘려
-  // 네모 가장자리를 흐린다. fern-a/b 는 네모 울타리 덩이(큐브)로 읽혀 4× 에서 각져 보인다 — 풀 무늬 fern-c 와 열매 덤불 heath 만 쓴다(2026-10-21, 폴른 스타 시각 수리). 조우는 칸 무늬가 아니라 로케이션(「풀숲 N」)이 정하므로 그림만 바뀐다.
+  // 네모 가장자리를 흐린다. edgeDecor "soft" 는 네모 울타리 덩이(큐브)로 읽히는 fern-a/b 를 빼고 fern-c·heath 만 쓴다(2026-10-21, 폴른 스타). 조우는 칸 무늬가 아니라 로케이션(「풀숲 N」)이 정하므로 그림만 바뀐다.
   const w = map.width;
   const tufts = (tileset.structureKits ?? []).filter(kit => kit.width === 1 && kit.height === 1
-    && /^bd-pick-deep-forest-path-(fern-c|heath)-/.test(kit.id));
+    && (edgeDecor === "soft" ? /^bd-pick-deep-forest-path-(fern-c|heath)-/ : /^bd-pick-deep-forest-path-(fern|heath)-/).test(kit.id));
   if (tufts.length === 0) return 0;
   let placed = 0;
   const stamp = (index: number) => {
