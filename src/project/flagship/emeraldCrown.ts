@@ -565,7 +565,7 @@ function tunePacing(project: Project): void {
   // 무영의 몬스터가 챔피언 나루와 같은 종(베르카부·피오르·볼트온)이었고, 2단 진화 베르카부를 앞세워 Lv10 풀 스타터가 두 번 졌다(2026-10-21 정직 여정).
   // 「밤막회사」답게 그림자·독·꿈 계열 기본 종 셋(Lv7, 셋째를 Lv8 로 두니 Lv10 풀 스타터 + Lv5 동료가 둘까지 잡고 졌다)으로 바꾼다 — 불은 셋 모두 보통, 풀은 꿈방울로 독을, 물은 물 기술로 셋 모두를 보통 이상으로 친다.
   // 경험치 나누기 뒤에도 잡은 동료가 약하면(Lv10 풀 + Lv8 벌레) 두 번 졌다(2026-10-21 r13) → 앞의 둘 Lv6, 마지막 Lv7.
-  const templeTeam: readonly [string, number][] = [["mx_enemy_threadimp", 8], ["mx_enemy_miretail", 8], ["mx_enemy_dozemite", 9]];
+  const templeTeam: readonly [string, number][] = [["mx_enemy_threadimp", 6], ["mx_enemy_miretail", 7], ["mx_enemy_dozemite", 7]];
   templeTeam.forEach(([templateId, level], i) => {
     const enemy = byId(`mx_enemy_mx_map_observatory_boss_${i}`), template = byId(templateId);
     if (!enemy || !template) return;
@@ -588,9 +588,9 @@ function tunePacing(project: Project): void {
     league.members = [...rest, ace!];
     league.enemyIds = league.members.map((m) => m.enemyId);
     // 셋으로 줄인 뒤에도 Lv12 풀 + Lv9 비행 정직 파티가 두 번 졌다(2026-10-21 r15) → 앞 둘 Lv8, 에이스 Lv10 그대로.
-    for (const m of rest) { const e = byId(m.enemyId); if (e) rescaleEnemy(e, 9); }
-    // 스타터 보조 기술·경험치 나누기 뒤로는 신전(Lv6·6·7)·리그(8·8·10)가 Lv12 파티에 약했다(r4) → 신전 8·8·9, 리그 9·9·에이스 11.
-    const aceEnemy = byId(ace!.enemyId); if (aceEnemy) rescaleEnemy(aceEnemy, 11);
+    for (const m of rest) { const e = byId(m.enemyId); if (e) rescaleEnemy(e, 8); }
+    // r4 「너무 쉽다」에 신전 8·8·9, 리그 9·9·11 로 올리자 스타터 셋 모두 정직 여정에서 신전에 두 번씩 졌고 불·물은 리그도 두 번 졌다(2026-10-21 r22) →
+    // 신전 6·7·7, 리그 8·8·10. 관장(8·9)만 올린 채 둔다.
   }
 }
 
