@@ -9,6 +9,7 @@
  */
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { isPassable } from "@/project/collision";
+import { JRPG_CLASSIC_FIELD_HUD } from "@/project/fieldHud";
 import { createBlankProject } from "@/project/defaults";
 import { DEFAULT_ACTOR_ID } from "@/project/defaults/constants";
 import { deserialize, serialize } from "@/project/io";
@@ -77,6 +78,8 @@ function setupCast(project: Project): void {
   project.session.partyActorIds = [hero.id, ELENA_ID];
   // 동료는 맵에서도 뒤따라 걷는다 — 대사에만 있고 화면에 없는 동료가 없게.
   project.system.companions = { ...project.system.companions, fromParty: true };
+  // 턴제 파티 RPG — 필드에 액션 전투용 하트 HUD 를 띄우지 않는다(감사 2차: 지도 왼쪽 위를 늘 가렸다).
+  project.system.fieldHud = JRPG_CLASSIC_FIELD_HUD;
 }
 
 // ── 적 ──────────────────────────────────────────────────────────────────
@@ -331,6 +334,30 @@ function vanishWhen(map: GameMap | undefined, eventId: string, switchId: string)
 }
 
 /** origin 에서 가장 가까운, 걸을 수 있고 다른 이벤트와 붙지 않은 빈 칸. */
+/**
+ * 결전 승리 뒤 흐름(감사 2차): 장 구성기는 승리 즉시 단계 스위치를 켜 발렌이 「연기 속으로」 대사 전에 사라졌고,
+ * 렌즈가 빛을 쏘아 올린다는 줄에서도 화면이 그대로였다. 스위치는 발렌의 퇴장 대사 뒤로 미루고(연기와 함께),
+ * 렌즈 자리에 빛 효과와 화면 섬광을 넣는다.
+ */
+function stageBossVictory(vault: GameMap, lens: { x: number; y: number }): void {
+  const hit = findTextList(vault, "발렌은 연기 속으로");
+  if (!hit) throw new Error("[fallen-star] 결전 승리 대사를 찾지 못했다");
+  const list = hit.list;
+  const firstText = list.findIndex((c) => c.kind === "text");
+  const progress = list.slice(0, firstText).filter((c) => c.kind === "setSwitch" || c.kind === "setVariable");
+  for (const c of progress) list.splice(list.indexOf(c), 1);
+  const exitAt = list.findIndex((c) => c.kind === "text" && String((c as { body?: string }).body).includes("발렌은 연기 속으로"));
+  const fx = (commandId: string, fields: Record<string, unknown>) => ({ kind: "m2Command", commandId, fields } as unknown as Command);
+  list.splice(exitAt, 0, fx("m2-224-particle-effect", { preset: "smoke", target: "tile", x: lens.x, y: lens.y + 3, durationMs: 900, wait: false }));
+  list.splice(exitAt + 2, 0, ...progress);
+  const beamAt = list.findIndex((c) => c.kind === "text" && String((c as { body?: string }).body).includes("렌즈가 빛을 모아"));
+  list.splice(beamAt, 0,
+    fx("m2-224-particle-effect", { preset: "sparkle", target: "tile", x: lens.x, y: lens.y, durationMs: 1600, wait: false }),
+    fx("m2-047-flash-screen", { color: "white", value: "flash", durationMs: 400 }),
+    { kind: "playAudio", resourceId: "easyrpg-sound-chime2", loop: false, channel: "se" } as unknown as Command,
+  );
+}
+
 function nearFree(project: Project, map: GameMap, origin: { x: number; y: number }, maxR: number, selfId?: string): { x: number; y: number } | undefined {
   const others = map.events.filter((e) => e.id !== selfId);
   for (let r = 0; r <= maxR; r += 1) {
@@ -407,8 +434,10 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   if (bossEvent) {
     setEventChip(M(ids.vault), bossEvent.id, "tex_easyrpg_charset_actor1", 4);
     // 보스 자리에는 옛 렌즈가 서 있어 발렌이 렌즈 그림 속에 묻혔다(감사 2차) — 렌즈 앞(남쪽) 빈 바닥으로 내려 세운다.
+    const lens = { x: bossEvent.x, y: bossEvent.y };
     const front = nearFree(project, M(ids.vault), { x: bossEvent.x, y: bossEvent.y + 3 }, 3, bossEvent.id);
     if (front) { bossEvent.x = front.x; bossEvent.y = front.y; }
+    stageBossVictory(M(ids.vault), lens);
   }
 
   // 떨어진 별을 열면 이리스가 깨어나 동료가 된다. 별빛 열쇠는 알 안에 있다 — 뚜껑이 열린 뒤 이리스가 건넨다.
@@ -423,7 +452,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   podList.splice(opened + 1, 0,
     say("이리스", "…여기는 어디죠? 제 배는… 부서졌군요."),
     say("카엘", "괜찮아? 너… 별에서 떨어진 거야?"),
-    say("이리스", "별이 아니라 배예요. 저는 이리스. 사람을 닮게 만든 기계예요."),
+    say("이리스", "별이 아니에요. 하늘을 건너는 배예요. 저는 이리스, 사람을 닮게 만든 기계고요."),
     say("엘레나", "기계라고? 말도 하고, 숨도 쉬는데…"),
     say("이리스", "숨은 흉내예요. 사람들이 덜 무서워하라고요."),
     say("이리스", "집에 돌아가려면 신호를 보내야 해요. 높은 곳에, 커다란 렌즈가 있는 곳이 필요해요."),
@@ -450,7 +479,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
         if (rec.kind === "fork" && (rec.condition as { kind?: string } | undefined)?.kind === "battleResult") {
           rec.else = [
             { kind: "recoverAll" },
-            say("엘레나", "물러서자! 숨을 고르고 다시 가."),
+            say("엘레나", "물러서자! 숨을 고르고 다시 하자."),
           ];
         }
       }

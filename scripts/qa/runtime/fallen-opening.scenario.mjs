@@ -3,7 +3,7 @@ const [vw, vh] = (process.env.RES_VP ?? "480x270").split("x").map(Number);
 const SHOT_MS = 7000;
 export default {
   id: "fallen-opening",
-  projectFixture: process.env.RES_FIXTURE ?? ".omo/fs/v3.json",
+  projectFixture: process.env.RES_FIXTURE ?? ".omo/fs/v9.json",
   viewport: { width: vw, height: vh },
   beats: [
     { id: "title", note: "타이틀", ops: [{ kind: "waitFor", testid: "title-screen", state: "present", timeoutMs: 60000 }], expect: { testidPresent: ["title-screen"] }, shot: true },
