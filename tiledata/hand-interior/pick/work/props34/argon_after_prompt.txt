@@ -1,0 +1,13 @@
+You are an independent, adversarial pixel-art reviewer for a 16px RPG interior tileset (3/4 top view: FRONT face + TOP surface visible as a foreshortened plane; horizontal tops must read as a lit plane of >=3-4 rows, lighter than the front face). Do not edit files except the output file.
+
+Images (open each with the Read tool):
+- /home/main/z-project/rpg-zzu-v5-interior-props-34/tiledata/hand-interior/pick/work/props34/after_board.png : first row = known-good references; then before/after pairs at 6x (1x copy right of each) for: cabinet (3 of 13 stock variants), helmet shelf, orrery (animated, frame 0), control console, slot machine, confessional, relic cabinet, wide cabinet, ship bunk.
+- /home/main/z-project/rpg-zzu-v5-interior-props-34/tiledata/hand-interior/pick/work/props34/after_cabinets.png : all 13 cabinet stock variants after the fix, 4x.
+- /home/main/z-project/rpg-zzu-v5-interior-props-34/tiledata/hand-interior/pick/work/props34/orrery_new_frames.png : all 12 animation frames of the new orrery at 8x.
+- Quality rubric + anchors: /home/main/claude-viz/interior-props-quality-rubric-1.json , /home/main/claude-viz/interior-props-quality-anchors-1.png
+
+The fixes were meant to keep each design (colours, footprint) and only fix: unlit/too-thin top planes (cabinets, helmet shelf, confessional roof, relic/wide cabinet, ship bunk), the orrery's floating flat arc (now an orbit ring seen from above), and the flat unshaded fronts of the control console and slot machine.
+
+For each of the 11 items write one JSON line to /home/main/z-project/rpg-zzu-v5-interior-props-34/tiledata/hand-interior/pick/work/props34/argon_after.jsonl:
+{"id": "...", "v34": "pass"|"fail", "quality": "pass"|"fail", "worse_than_before": true|false, "why": "one sentence citing rows/parts"}
+Try to find failures: is the top really a plane (back edge, lit band, front lip) or just a recoloured strip? Did anything get worse, noisier, or lose its identity? Is any part floating? Reply at the end with the list of fails.

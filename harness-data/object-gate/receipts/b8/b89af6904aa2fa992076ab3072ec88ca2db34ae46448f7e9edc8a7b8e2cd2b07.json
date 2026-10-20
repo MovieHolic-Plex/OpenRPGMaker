@@ -1,0 +1,358 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b89af6904aa2fa992076ab3072ec88ca2db34ae46448f7e9edc8a7b8e2cd2b07",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "투구 진열 선반 (helmet shelf)",
+ "label": "atlas_biome_interior/props34/helmet shelf",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 19,
+  "darkV5": 26,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top board of the cabinet",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "middle shelf plank",
+      "rows": "13-16",
+      "evidence": "none",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "16-17"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-3 form a mottled wood top band, and row 4 (#f4b370) is a lighter front-edge line. Below it the interior is dark, from row 5, and acts as eave shadow. This matches the 'cabinet: top 5 + edge + eave' reference rather than a 1-2 row rim. The front face runs from row 5 to row 31 and shows the helmet compartments and shelf planks, 27 rows in total. The shelf plank at rows 13-16 has a light top row at 13 and a darker front at 14-16. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a wooden shelf holding helmets. Measured facts: 14 colours per 16x16 tile, close to the stall (17) and well (20) and above the hedge (10). Flat-fill coverage is 15%, about the same as the stall's 13%, so large flat areas are not a problem. Dark edge pixels are 0% neutral, so the outline is tinted, a dark brown beside the wood, which matches Beodeul's practice. Weaknesses: only 23 distinct colours in total against 38-40 for the stall and well. The wood frame and shelf boards look like 3-4 steps with little grain, and the helmets are small, with 2-3 tones each. The structure is clean and the outline craft is right, but the piece is a little thinner than the richest references. It would sit acceptably beside the bench and hedge, but it is slightly below the stall and the well.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20772
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top board of the shelf unit",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "middle shelf board",
+      "rows": "13-15",
+      "evidence": "none",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower shelf board",
+      "rows": "25-27",
+      "evidence": "none",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a wood-grain top band. It ends in a lighter front-edge line at row 4 (#f4b370), and the dark open interior starts at row 5, which reads as eave shadow. Below that the front face runs rows 5-31 as open shelf bays holding helmets, separated by shelf boards at rows 13-16 and 25-28. The shelf boards are drawn with a light edge line over a darker front. No side face is drawn. The top band is only about 4 rows deep, so this is a borderline pass."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a wooden shelf holding helmets. Measured facts: 14 colours per tile, which sits between the hedge (10) and the cheese stall (17) and below the roofed well (20). Flat-fill coverage is 15%, close to the stall's 13%. Dark edge pixels are 0% neutral, so the outline is tinted dark brown rather than black, matching the better references. It has only 23 distinct colours against 38-40 for the stall and well, and from the board the wood frame shows about 3-4 brown steps with limited grain. The helmets are small, with a few metal tones each. The shelf boards and the back panel look like fairly flat brown areas, with less grain and fewer per-plank highlights than the stall's wood and roof. It is competent and tinted but shallower than the strongest references in ramp depth and texture variety.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15827
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top board of shelf unit",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "middle shelf plank",
+      "rows": "13-16",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "16"
+     },
+     {
+      "part": "lower shelf plank",
+      "rows": "25-28",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": "28"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Row 0 is the outline. Rows 1-4 form a wood top band, textured with light and dark dither, and it ends in a lighter front-edge line at row 4 (L=191). Directly below, rows 5-12 are dark interior, which acts as eave shadow and shows the open compartment. The front face is the frame, compartments and shelf planks, and it runs from row 5 to row 31 (about 27 rows). The middle plank (rows 13-16) and lower plank (rows 25-28) each have a light top edge line followed by a front face and a darker bottom row. No side face is drawn. The top band is fairly thin at 4 rows, so this is a borderline but valid top surface, similar to the 'cabinet: top 5 + edge + eave' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a two-shelf wooden rack holding helmets and pots. It is about the size of the stall and well, so the kind matches. Measured facts: 14 colours per tile sits between the hedge (10) and the stall (17). Flat-fill coverage of 15% is close to the stall's 13%. 0% neutral dark edge pixels means the outline is tinted, a dark brown beside the wood, as in the hedge and stall. Total distinct colours is 23, well below the stall (40) and well (38), but this is a smaller piece. By eye, the wood frame has about 3-4 steps, which is shallower than the roofs and stonework of the stall and well at 5-6. The helmets are small and carry some highlight dots, but the shelf boards and side posts look fairly flat, with little grain or per-plank variation. It is not a sticker look, since the outline is tinted and the tile density is reasonable, but it is thinner and flatter than the best references in shading depth and wood texture. A careful artist would likely ask for more wood grain and ramp steps on the frame before placing it next to the stall and well. Because of this I rate it as not yet meeting the standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 22663
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top board of the shelf unit",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "middle shelf board",
+      "rows": "13-16",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "lower shelf board",
+      "rows": "25-28",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": "28-29"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a wood-textured top band. Row 4 is a lighter front-edge line (#f4b370, L=191) and row 5 onward is a dark interior (L=38) that reads as eave shadow. The front face runs from rows 5 to 31, with open compartments holding helmets and shelf boards that have lighter edge lines at rows 13 and 25. The silhouette is a constant 32 px wide, so no side face is drawn. The structure matches the green 'cabinet: top 5 + edge + eave' reference. The top band is slightly thin at 4 rows, but it has an edge line and a shadow below it, so it is more than a 1-2 row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a wooden shelf holding helmets, and it reads as the same kind as the reference props. Measured facts: 14 colours per tile sits between hedge (10) and stall-cheese (17), and well-roofed is higher at 20. Flat-fill coverage is 15%, close to stall-cheese at 13%, and the dark edge pixels are 0% neutral, so the outline is tinted dark brown beside the wood rather than a black sticker line. Weaknesses: only 23 distinct colours against 38-40 for the richest references, and the wood ramp is about 4 steps against Beodeul's 5-6. The shelf boards and uprights have large smooth areas with little grain, and the helmets are small and simple. Overall it is competent and tinted, but it looks thinner and flatter than the stall and well references, so it falls short of the bar. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16405
+  }
+ ],
+ "decidedAt": "2026-10-20T07:22:59.450Z",
+ "cells": {
+  "16": [
+   "396ae0e436c0d186",
+   "53ece063d7673f4a",
+   "6cd571f7d5116904",
+   "db18c605db9f6a03"
+  ],
+  "24": [
+   "022a450f310974f8",
+   "0b6f162fa55c7779",
+   "1902f0ca55c9a09f",
+   "1f4f475b047fa55b",
+   "223d99d3b718dd34",
+   "2593e1a1707be306",
+   "289a1f0ef9a97aef",
+   "29753922fd0423b9",
+   "2b22f5c60c2d6a97",
+   "3e11ae8db35d57e2",
+   "706b65cf5242bade",
+   "722114718fedd646",
+   "7bca5d4cb724ab6b",
+   "98825e7e0a688d2a",
+   "9d1340e6aeae54ef",
+   "9dc3ce957ec0b117",
+   "adaaa958cea8f862",
+   "b25f0923965e5825",
+   "b4168573f52e29eb",
+   "ccb1c9688f402500",
+   "d88f3ef8e5ef9a79",
+   "decf9ac11dff76aa",
+   "e6b83a2c813d5ba0",
+   "f03a9495020b6e78"
+  ],
+  "32": [
+   "d2d8f74f8d0487b5"
+  ],
+  "48": [
+   "28176e8c8cb4fbfb",
+   "60d14b2d6fd58653",
+   "6eec2eb1d523cd6b",
+   "7c5ebbadf36c1eb9",
+   "93d81b7c6925ecc9",
+   "d54b07a2c4a827b4"
+  ]
+ }
+}

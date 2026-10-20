@@ -1,0 +1,315 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6bd635f57ea4adc320db7d807dfca2cce06684fc9e5c1246b0e4d7d325d28d89",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "둥근빵 진열장 (cabinet:bun)",
+ "label": "atlas_biome_interior/props34/cabinet:bun",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 14,
+  "darkV5": 0,
+  "nearBlackEdge": 0.71,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top band / cornice",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-1 are the dark outline and a dark transition. Rows 2-4 form a lighter plank-textured band, and row 5 is a lighter 1-row front-edge line (#d59147). Rows 6-7 below it are black and could be read either as eave shadow or as the open top compartment, so the band is borderline between a top surface and a face-on cornice. Rows 6-31 are the front face: shelf compartments with buns at rows 9-10, 18-19 and 26-27, separated by lighter shelf-edge strips at rows 12-13, 21-22 and 29-30. The silhouette is a constant 16 wide with no side face, so it is a flat-fronted cabinet with a thin top band."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small, narrow shelf cabinet holding buns. It has 14 colours in total and a tile median of 14, with 0% flat-fill. On those numbers it is level with the bench and lamp, and above the hedge's tile median of 10. The weakness is shading and outline. The wood frame and the bun rows each show only about 3-4 lightness steps, while the larger references (stall, well) use 5-6 steps with per-element highlights. 68% of its dark edge pixels are near-neutral, well above the bench (44%), the stall (1%) and the hedge (0%), so the frame reads as a fairly uniform dark line rather than a dark tone of each material. The buns and shelves are flatly lit with little grain, so the piece looks more like a sticker-style silhouette than the references. Because the outline leans near-black and the ramps are shallow, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 23755
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "front face with shelves and buns",
+      "rows": "6-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a textured brown band, and row 5 is a lighter front-edge line (L=157). Rows 6-7 below it are black and read as eave shadow. The shelved front face with buns runs from row 6 to row 31, which is 26 rows. The silhouette is a constant 16 px wide with no side face. The band may be a front-facing cornice, but the edge line plus the dark rows below it match the 'cabinet: top 5 + edge + eave' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The cabinet is a small, narrow piece (about 15x32 source px) with only 14 distinct colours in total. That is level with the bench and lamp but far below the stall (40) and well (38). Its median of 14 colours per tile is comparable to the references, and flat-fill coverage is 0%, so it is not a flat fill. But 68% of its dark edge pixels are near-neutral, which is much higher than the tinted outlines of the hedge (0%), stall (1%) and well (33%). The dark frame therefore reads as a fairly uniform black-ish outline, not a dark tone of the adjacent wood. The wood frame and shelves carry only about 3-4 lightness steps, against 5-6 for the references. The buns show a little dot detail but no per-item shading or wood grain. Overall it is cleanly drawn but shallower and more sticker-like than the references, so it fails the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20023
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel of cabinet",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "front face with bun shelves",
+      "rows": "6-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a top band: row 1 is a darker outline, rows 2-4 are mid-brown, and row 5 is a lighter front-edge line (#d59147). Rows 6-7 are black eave shadow directly below it. Below that is a tall front face of about 26 rows, with shelves holding buns at rows 9-12, 18-22 and 26-30. No side face is drawn. The top band is about 5 rows, which is similar to the green cabinet and bookshelf references. It could be read as a front-facing cornice, but the distinct edge line and shadow below it support a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small, narrow cabinet. It has 14 colours in total, against 38-40 for the large references, but it is only about one tile wide, so its 14 colours per tile are comparable to the references (10-20), and flat-fill coverage is 0%. The weakness is the outline. 68% of its dark edge pixels are near-neutral, higher than the bench (44%), the well (33%), and the tinted hedge and cheese stall (0-1%). Only the thin lamp is higher, at 100%. This suggests a fairly uniform dark frame line, closer to the 'sticker' look than to Beodeul's dark-material-tone edges. The wood frame and the buns each show only about 4 lightness steps, short of the 5-6 steps of the references. The buns carry some dot texture and highlights, but the cabinet body is plain, with little grain. A careful artist would likely find it a bit flatter and more outlined than the cheese stall or the roofed well, so it fails on the neutral outline and the shallower ramps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20006
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band of cabinet",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a top band: row 1 is dark, rows 2-4 are mid-tone, and row 5 is a lighter front-edge line (#d59147). Rows 6-7 are black and read as eave shadow. Below that, rows 6-31 are the south face, with shelves (lighter edge rows at 9-10, 18-19, 26-27) holding buns. The silhouette is a constant 16 wide with no isometric side face. The top band is thin and could also be read as a front-facing header, but it has both an edge line and a shadow, so I count it as a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small one-tile shelf cabinet with buns. It has 14 colours in total, against 38-40 for the stall and well, the closest references in size and richness. Its per-tile median of 14 is close to the stall's 17, so density per tile is only slightly lower. Flat-fill coverage is 0%, and the buns and shelves give some variation. The weaker point is the outline. 68% of its dark edge pixels are near-neutral, whereas the stall, hedge and well sit at 0-33% with tinted outlines. That reads as a dark, fairly uniform sticker-like line around the frame instead of a dark brown tone matched to the wood. The wood frame also looks shallow, with roughly 3 steps (dark frame, mid wood, a little light) against the 5-6 that Beodeul uses. A careful artist would find it flatter and more outlined than the wood and stall references, so I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20143
+  }
+ ],
+ "decidedAt": "2026-10-20T07:04:17.686Z",
+ "cells": {
+  "16": [
+   "6e8d0e5381626d52",
+   "a66c24e3b7b02241"
+  ],
+  "24": [
+   "064211a0bddd995e",
+   "0a85e0e8639b339c",
+   "41e8bcfaa1e69a26",
+   "55d27d3ff74e6ee5",
+   "6ed51dc3d8a71631",
+   "77bc80a9c3db5f05",
+   "82da711fa9603ff8",
+   "afb28adcf308d5f5",
+   "d45c0a66ce4ce16e",
+   "eeae20ae1397b185",
+   "f8ab314c0d5d6fd2",
+   "fd48cadbc8632c2d"
+  ],
+  "32": [
+   "9b52dc12cbe7607d",
+   "b7d1986b96984f49",
+   "f8b9cf934054138e"
+  ],
+  "48": [
+   "4434f7dde8c3c02c",
+   "51e919423063ba56",
+   "55b01e5bb59625b3",
+   "5cba6e6fdb1b5bae",
+   "a7fe9f10aa1ebc85",
+   "b37c4f0466504629"
+  ]
+ }
+}

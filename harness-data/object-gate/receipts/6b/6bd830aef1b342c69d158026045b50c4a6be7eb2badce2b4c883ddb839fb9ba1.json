@@ -1,0 +1,324 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6bd830aef1b342c69d158026045b50c4a6be7eb2badce2b4c883ddb839fb9ba1",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "옷감 진열장 (cabinet:bolt+boltg+boltr)",
+ "label": "atlas_biome_interior/props34/cabinet:bolt+boltg+boltr",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (2/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (2/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 20,
+  "tileColorsP90": 20,
+  "darkV5": 0,
+  "nearBlackEdge": 0.71,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a brown top band, with a darker outline row at row 1 and lighter brown at rows 2-4. Row 5 is a lighter front-edge line (#d59147), followed by black eave shadow at rows 6-7. Below that, rows 8-31 show the front face: shelf compartments holding red, purple and green cloth bolts, separated by shelf boards at rows 12-13, 21-22 and 29-30. The face is about 26 rows tall, and no receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small cabinet with three shelves of coloured bolts. Its density is acceptable: 20 colours per tile matches the roofed well and the cheese stall, and 8% flat-fill coverage is below the stall's 13%. The weak points are structural. The wood frame has only about 3 lightness steps (light edge, mid, dark) against the 5-6 steps on the references' wood and roofs. 68% of its dark edge pixels are near-neutral, far above the tinted outlines of the hedge (0%), the cheese stall (1%) and the well (33%). That reads as a near-black outline around the whole cabinet, the 'sticker' look, instead of a dark brown that follows the wood. The bolts on the shelves are small flat blocks with little per-item shading or grain. The piece is not plainly as rich as the Beodeul references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18401
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top plate",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "shelf boards (3 tiers with cloth bolts inside)",
+      "rows": "12-30",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Column scans at x=4, 8 and 11 all show row 0 as the outline and row 1 as a darker line. Rows 2-4 form a lighter brown top band of about 3 rows, which ends in a lighter front-edge line at row 5 (#d59147). Rows 6-7 are black eave shadow. Below that is a front face of about 26 rows (rows 6-31) with an open shelf interior, where the bolts of cloth are visible (evidence d). The shelf boards at rows 12-13, 21-22 and 29-30 are 1-2 row strips and are not top surfaces. The top band is about 5 rows, matching the green 'cabinet: top 5 + edge + eave' reference rather than the 1-2 row rim-only or flat front-elevation ones. The width is a constant 16 px, so no side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small wooden shelf holding bolts of cloth in pink, purple and red. Its colours per tile (20) match prop-well-roofed, and flat-fill coverage is low (8%), so it is not flat and the tile density is fine. Two things keep it below the bar. First, 68% of its dark edge pixels are near-neutral, against 0-1% for the hedge and cheese stall, so the outline leans towards a near-black sticker line rather than a dark brown tone beside the wood. Second, it has only 24 distinct colours in total, against 38-40 for the well and stall. Spread across the wood frame and three or four cloth colours, that is about 3-4 steps per material, shallower than Beodeul's 5-6. The wood has little grain and the cloth rolls are mostly simple blocks with one highlight. It is clean, but a careful artist would likely see it as flatter and more outlined than the references, so I fail it on the outline and the shallow ramps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17060
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel of cabinet",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "front face with three shelf bays holding cloth bolts",
+      "rows": "6-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-5 form a wood top band, with an outline at row 0 and a darker row 1. Rows 2-4 are mid-brown, and row 5 is a lighter front-edge line (#d59147). Rows 6-7 are black eave shadow above the first shelf bay. Below that is a 26-row front face with shelf boards at rows 12-13, 21-22 and 29-30, and bolts of red, purple and green cloth in the bays. The width stays at 16 px from row 1 down, and no receding side face is drawn. This matches the green cabinet reference with a 5-row top, edge line and eave shadow."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small shelf cabinet with a dark brown frame, lighter wood shelves and small cloth bolts in pink, purple and red, each with a highlight and shadow. It has 24 distinct colours and a median of 20 per tile, equal to the roofed well (20) and above the hedge (10). Flat-fill coverage is only 8%, below the cheese stall's 13%, so there are no big flat areas. The weak point is the outline: 68% of dark edge pixels are near-neutral, higher than the bench (44%) and well (33%). Visually the dark edges still lean brown beside the wood, so I call it mixed rather than a uniform black sticker line. The wood ramp has about 4 steps, a little under the references' 5-6. A careful artist would accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18740
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "shelf boards (rims)",
+      "rows": "12-13, 21-22, 29-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a lighter brown top band (rows 2-4 L~130) ending in a lighter front-edge line at row 5 (#d59147). Rows 6-7 are black eave shadow, like the cabinet reference with a top, edge line and eave. Below, rows 6-31 are the front face: open shelf bays holding red, purple and green bolts, split by 2-row shelf boards at rows 12-13, 21-22 and 29-30. Those boards are rims, not top surfaces. The silhouette is a constant 16 wide, and no isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Density is not the problem: 20 colours per tile matches the roofed well and stall (17-20), and flat-fill coverage is only 8%, below the stall's 13%. The weakness is the outline and the shading depth. 68% of the dark edge pixels are near-neutral, against 0-1% for the hedge and stall and 33% for the well, so the cabinet reads as a dark neutral keyline around the frame and shelves, which is the sticker look. That said, it is still more tinted than the lamp's 100%. The wood frame shows about 3-4 lightness steps, and each cloth bolt has only 2-3 shades, while the references use 5-6 steps per material. With 24 distinct colours in total, it has far fewer than the stall (40) and well (38). Texture is limited to a few grain and fold dots on the bolts and shelves. Because the outline is mostly neutral and the ramps are shallower than the references, I fail it rather than pass it on density alone.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 19110
+  }
+ ],
+ "decidedAt": "2026-10-20T07:04:17.684Z",
+ "cells": {
+  "16": [
+   "2318b6b44c520961",
+   "efb1325d77ac770a"
+  ],
+  "24": [
+   "08c8edb4484b291a",
+   "240b5e8dd3a6d76e",
+   "41e8bcfaa1e69a26",
+   "482387004214882f",
+   "553fb47430e1e20f",
+   "59be602e205393e3",
+   "7834a51254b05cf7",
+   "91284cedf791471a",
+   "bd87d15afe77621a",
+   "c7dcf5042e2a5c48",
+   "d45c0a66ce4ce16e",
+   "f8ab314c0d5d6fd2"
+  ],
+  "32": [
+   "2125d02b1cfc5418",
+   "a5c7e0444f478a6b",
+   "aa709b37a1781e44"
+  ],
+  "48": [
+   "160b807708444c63",
+   "5947f987e81de301",
+   "68be7666a01b9951",
+   "81366167e419824c",
+   "94dc0b0a7627d7c0",
+   "eac27d76fa9f1b00"
+  ]
+ }
+}

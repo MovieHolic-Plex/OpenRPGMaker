@@ -1,0 +1,291 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b665c656f35ad42cda39b6e2cab05f03c28e4063b2bbc2288b00b49704761248",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "책 진열장 (cabinet:book+bookb+bookg)",
+ "label": "atlas_biome_interior/props34/cabinet:book+bookb+bookg",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 22,
+  "tileColorsP90": 22,
+  "darkV5": 0,
+  "nearBlackEdge": 0.71,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top plank of bookshelf",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "shelf boards (interior shelves)",
+      "rows": "12-13, 21-22, 29-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-4 form a plank band (the darker row 1 sits under the row-0 outline). It ends in a lighter front-edge line at row 5 (#d59147), followed by black eave shadow in rows 6-7. This makes a top surface of about 5 rows, like the green bookshelf reference with its top cap. Below it the front face runs from row 6 to row 31, about 26 rows. It shows three shelf bays with books and shelf boards at rows 12-13, 21-22 and 29-30. The width is a constant 16 from row 1 down, with no side face. The object reads as a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small bookcase with a wooden frame, shelves and multicoloured book spines. It has 25 distinct colours and a median of 22 per 16x16 tile, which is level with the well (20) and above the bench (14 colours) and lamp (14 colours). Flat-fill coverage is 0%, so there are no dead areas, and the book spines and shelf gaps give real variation. The wood frame shows about 4 lightness steps, a little below the 5-6 on the stall and well. The outline is the weak point: 68% of dark edge pixels are near-neutral, against 0-1% on the hedge and stall. It does read as dark and brownish where it meets the wood frame, and the bench (44%) and well (33%) are also partly neutral, so I rate it mixed rather than a uniform black sticker line. Overall it is acceptable next to the references, with small shortfalls in outline tint and wood ramp depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20866
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top board of bookshelf",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "front face with three shelf bays and books",
+      "rows": "6-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-4 are a lighter wood band (#bd764d). Row 5 is a lighter front-edge line (#d59147). Rows 6-7 are black eave shadow above the first shelf bay. This matches the green 'cabinet: top 5 + edge + eave' reference. Row 1 is a darker back-edge line and row 0 is the outline. The front face runs from row 6 to row 31, which is 26 rows. It holds three shelf bays with books, separated by shelf boards at rows 12-13, 21-22 and 29-30. No receding side face is drawn, and the silhouette stays 16 wide from row 1 to row 31."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small bookcase. It has 22 distinct colours per full tile against 10-20 for the references that have a tile median, and 25 colours in total for a small piece. Flat-fill coverage is 0%, so there are no big flat areas. The frame is dark brown wood with a lighter top and shelf edges, about 4 wood steps against the references' 5-6. The book spines add varied red, blue and green with highlights, which gives real texture and variety. Outline: 68% of dark edge pixels are near-neutral, which is above the wood references (bench 44%, well 33%) but is partly the dark book gaps and shelf shadows, and the frame still leans brown. I call it mixed, not a uniform black sticker line. It is somewhat simpler than the well and stall in wood grain, but it is not thinner or flatter than the same-kind references, so a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22978
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice/top plank of bookshelf",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a wood top band: row 1 is a darker back edge, rows 2-4 are a lighter plank, and row 5 (#d59147) is a lighter front-edge line. Rows 6-7 are black and act as eave shadow above the first shelf row. The front face runs from row 6 to row 31 (26 rows) with three shelf compartments of books, separated by shelf boards at rows 12-13, 21-22 and 29-30. No side face is drawn. This matches the green bookshelf reference, which has a top cornice with an edge line and a front face below."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small two-tile bookcase. It has 22 distinct colours per full tile, which is at or above the richest references (well 20, cheese stall 17, hedge 10). It has 25 colours in total and 0% flat-fill coverage, so no area reads as a flat fill. The wood frame shows about 3-4 lightness steps, and the books vary in colour with spine highlights, which gives it some grain and variation. Shading is a little shallower than the roofed well or the cheese stall, which have about 5. The outline is the weak point: 68% of dark edge pixels are near-neutral, which leans toward a black sticker line. The reference bench (44%) and the reference well (33%) are lower, but the lamp is 100% and is accepted as a reference. I judge the outline mixed, not fully near-black, because the frame reads as dark brown beside the wood and the shelves separate by value. Overall it sits at the reference level on density and texture, so a careful artist would accept it next to the references. It is a borderline pass, held back by the outline.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22493
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bookshelf top cornice/cap",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-4 are a lighter wood band, and row 5 (#d59147) is a lighter front-edge line. Rows 6-7 are a black eave shadow over the top shelf opening. Below that, rows 6-31 form the front face: three shelf compartments with books, separated by shelf boards at rows 12-13, 21-22 and 29-30. The top band is about 4 rows and resembles the green 'right' bookshelf reference with its top cap. The silhouette is a constant 16 wide, with no side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "Measured facts favour the candidate. It has 22 distinct colours per 16x16 tile, against 17-20 for the stall and well and 10 for the hedge. Flat-fill coverage is 0%. It uses 25 colours in total, which is plenty for a piece only about 15x30 source pixels. By eye, the wood frame shows a lighter top and edge, mid brown and dark brown. The shelves carry books in several hues, each with its own highlight and shade, so the interior is varied and not a flat fill. The weak point is the outline: 68% of the dark edge pixels are near-neutral, which is above the bench (44%) and well (33%) but below the lamp (100%). At this scale the frame edge reads as dark brown, not pure black. I rate it mixed, leaning slightly toward sticker. The frame has about 4 wood steps against the references' 5-6, but the density and the book detail keep it level with the references, so I pass it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19461
+  }
+ ],
+ "decidedAt": "2026-10-20T07:04:17.685Z",
+ "cells": {
+  "16": [
+   "4de16ccb3bab093e",
+   "83313510f2aab6a4"
+  ],
+  "24": [
+   "071d2a3d4034e0df",
+   "1454a4f4e853f831",
+   "1f2163d621cc17c4",
+   "392c2f4c76249033",
+   "3b1dedd8b5dc3440",
+   "41e8bcfaa1e69a26",
+   "8012bf6d2bc1c483",
+   "a0b923de7c54aa74",
+   "c92c986acc609441",
+   "d45c0a66ce4ce16e",
+   "f8ab314c0d5d6fd2",
+   "f97f550c4d57e977"
+  ],
+  "32": [
+   "84a700bc82f636e3",
+   "edc255513c113584",
+   "ef32a47e44242903"
+  ],
+  "48": [
+   "2911660905689552",
+   "4ad985413c0341e8",
+   "546bcbfb27676081",
+   "5dd3cd604ed43386",
+   "61c2bbddbf2f5c94",
+   "ca540ee38eab2efe"
+  ]
+ }
+}

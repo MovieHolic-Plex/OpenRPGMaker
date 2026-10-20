@@ -1,0 +1,291 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f4b2a9ba99c3a05008a4d4550749260679b147881ecbb6785236030af7e67269",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "물약 진열장 (cabinet:potion+potionb+potiong)",
+ "label": "atlas_biome_interior/props34/cabinet:potion+potionb+potiong",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 25,
+  "tileColorsP90": 25,
+  "darkV5": 26,
+  "nearBlackEdge": 0.71,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a wood top band, darker at row 1 and mid-brown at rows 2-4. Row 5 is a lighter front-edge line (#d59147), followed by dark eave shadow at rows 6-8. Below that is a front face of about 26 rows (rows 6-31) with three open potion shelves. Shelf ledges at rows 12-13, 21-22 and 29-30 each have a light edge line over a dark row. The silhouette is a constant 16 wide, with no side face drawn. This matches the green cabinet reference: a top of about 5 rows, an edge line, shadow, then the front."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The cabinet is a small standing prop of the same kind as the references (stall, well, bench). It has a dark brown wood frame, shelves with small multi-coloured potion bottles, and highlight and shadow variation on the wood. The measured facts support this: 25 distinct colours per tile against 17-20 for the stall and well, 26 distinct colours in total, and 0% 5x5 flat-fill coverage. Dark edge pixels are 0% neutral, so the outline carries a brown tint and is a dark material tone, not a sticker-style black line. The wood ramp looks about 4 steps against the references' 5-6, and the piece is small, so texture is 'some' rather than fully rich. Overall it holds up beside the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17581
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "front face with three potion shelves",
+      "rows": "6-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 are a wood band, and the lighter line at row 5 (#d59147) marks its front edge. Rows 6-8 below it are very dark eave shadow (L=31). The potion shelves start under that shadow at row 9 and run to row 31, giving a front face of about 26 rows. The shelf ledges at rows 12-13, 21-22 and 29-30 are only 1-2 row rims. The structure matches the green cabinet reference (top 5 + edge + eave) and not the red front-elevation one. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wooden potion shelf with bottles on each tier. The measured facts favour it. It has a median of 25 colours per 16x16 tile, above the stall (17) and the roofed well (20) and well above the hedge (10). It has 0% 5x5 flat-fill coverage and 0% neutral dark edge pixels, so the outline is a tinted dark brown, not a near-black sticker line. It has 26 distinct colours, which is plenty for a one-tile-wide prop; the larger references have more only because they are bigger. By eye, the wood frame has a highlight, mid and dark ramp with shelf shadows, and the bottles carry per-bottle highlights, corks and varied liquid tones. Wood grain is modest and the frame is a little less textured than the stall's awning and counter, which is why shading steps are 4 against 5. Overall it sits next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20137
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a lighter wood top band (rows 2-4 at L~130) that ends in a bright front-edge line at row 5 (#d59147, L=157). Rows 6-8 below it are dark eave shadow (L=31), and the front face with potion shelves runs from row 6 to row 31, about 26 rows. The shelf boards at rows 12-13, 21-22 and 29-30 are 2-row front-facing strips that only divide the face, not extra tops. The dark side columns are just the frame, with no receding side face. The structure matches the green 'cabinet: top 5 + edge + eave' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small potion cabinet, 16 px wide and about 2 tiles tall, and it fits the prop kind. Its measured facts are at or above the references. It has 25 colours per tile against 10-20 for the hedge, stall and well. Flat-fill coverage is 0%, so there are no big flat areas. Dark edge pixels are 0% near-neutral, so the outline carries a tint. By eye it reads as a dark brown wood frame, not a black sticker line. The shelves hold small potion bottles in several tones with highlights, and the wood has a few steps of light and dark. It is smaller and simpler than the stall or well, but it is not thinner or flatter than the same-scale references. Wood shading is about 4 steps, slightly under the references' 5-6, and texture is moderate, so I rate it 'some' and not 'rich'. Overall a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22818
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "shelf boards",
+      "rows": "12-13, 21-22, 29-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band (rows 2-5, mid-brown L~125-135) ends in a lighter front-edge line at row 5 (#d59147, L=157). Rows 6-8 are dark eave shadow (L=31). Below that is a front face of about 26 rows (6-31) with three shelf compartments holding potions, and shelf boards with light edge lines at rows 12, 21 and 29. This matches the green cabinet reference (top, edge line, eave). The width is 16 for rows 1-31, with row 0 at 14. There is no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wooden potion shelf, the same kind as the prop references. The measured facts support it: 25 median colours per 16x16 tile against 10-20 for the hedge, stall and well, 0% flat-fill coverage, and 0% neutral dark edge pixels. That last figure means the outline is a tinted dark brown rather than black, so it is not a sticker look. The frame and shelf boards show about 4 wood steps, and each shelf holds several differently coloured potion bottles with their own highlights. It has 26 distinct colours in total, below the big stall and well (38-40), but it is a much smaller piece. The shading is slightly shallower than the references' 5-6 steps. Overall it would sit acceptably next to the Beodeul references without looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19878
+  }
+ ],
+ "decidedAt": "2026-10-20T07:22:59.447Z",
+ "cells": {
+  "16": [
+   "7ede81c47c636467",
+   "aefefef2ad5f5f31"
+  ],
+  "24": [
+   "29ca377e4375a9c6",
+   "37a0d792d9069f0d",
+   "42ee8bbe1322eea9",
+   "5af2e1d61cb81342",
+   "5c0ff22b94700741",
+   "799c7b5897f66919",
+   "9d7e6cd2cee18f9b",
+   "c1fe26897836b5a3",
+   "e80318b5a93c7abb",
+   "ef8ffdcb42e9ccce",
+   "f8d4df128a56e3c1",
+   "fa9b33f3f5e8a705"
+  ],
+  "32": [
+   "915bfc6e48e99e18",
+   "c46c55ea76891f3e",
+   "c64f772ac69181f9"
+  ],
+  "48": [
+   "0a767284b8e5a03d",
+   "2548a46fe50c1fb9",
+   "9e831ec49b55b247",
+   "d5bc1262a46b9d05",
+   "d91aca947db3f610",
+   "efba2435a722868f"
+  ]
+ }
+}

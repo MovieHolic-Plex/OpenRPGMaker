@@ -1,0 +1,305 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "03f1fccc9c62ed30e1e39eb995efcf19fd7c7c953587668ba64b38552fd2976a",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "둥근빵 진열장 (cabinet:bun)",
+ "label": "atlas_biome_interior/props34/cabinet:bun",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 15,
+  "darkV5": 26,
+  "nearBlackEdge": 0.71,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top plank/cornice band of the cabinet",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "shelf boards (fronts) with buns",
+      "rows": "12-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a brown top band. Row 1 is a darker outline, rows 2-4 are the plank, and row 5 (#d59147) is a lighter front-edge line. Rows 6-8 are a dark band (L≈31) directly under that line, which reads as eave shadow. Below it, rows 6-31 (about 26 rows) are the front face: open shelves with bun rows at 9-10, 18-19 and 26-27, and shelf boards at rows 12-13, 21-22 and 29-30. The silhouette is 16 wide with a 14-wide first row and no receding side face. This matches the green 'cabinet: top + edge + eave' reference rather than the 'front elevation, top 1' or 'rim only' reds. The top band is fairly thin, but it has an edge line and a shadow."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wooden bun shelf with buns on its tiers. Its outline is a dark brown tinted to the wood (0% near-neutral dark edge pixels), not a black sticker line, and it matches the hedge and stall references on this. Flat-fill coverage is 0%, so no 5x5 block is a single flat colour. The shelf frame shows a few wood tones, and the buns have highlight and shadow dots. The median is 15 colours per tile against 10 for the hedge and 17 for the cheese stall, so it sits within the reference range. Its 15 distinct colours are close to the bench (14), lamp (14) and hedge (11). It is a small, simple piece and is a little shallower than the richest references (well, stall at 38-40 colours) with about 4 wood steps against 5-6. A careful artist would still accept it next to the references without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21387
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "front face with open shelves and buns",
+      "rows": "6-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 are a mid-brown band (L about 125-135). Row 5 is a lighter front-edge line (#d59147, L=157). Rows 6-8 are a very dark band (L=31) that reads as eave shadow, with the open shelf compartment beneath it. The front face runs from row 6 to row 31 and shows shelf boards at rows 12-13, 21-22 and 29-30, plus the buns. The width is a constant 16 with no side face. Structurally this matches the green cabinet reference: a top of about 5 rows, an edge line, a shadow, then the front."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small wooden shelf holding rows of buns. Its outline is a dark brown tinted to the wood, with 0% neutral dark edge pixels. That matches the hedge and stall references and avoids the sticker look. There are no flat fills (0% coverage). It has 15 distinct colours and a median of 15 per tile, which is close to the stall (17) and well (20) and above the hedge (10). That is also above the bench and lamp, whose 14 colours sit on thin objects. The wood has about 4 lightness steps (highlight top, mid frame, dark sides and shelf shadows), a little under the 5-6 of the richer references. The buns carry per-bun highlight and shadow variation, so texture is present but modest. Overall it is slightly below the richest props such as the stall and well, but it is structurally sound and would sit acceptably beside the references without looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20508
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice/top plane",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "front face with bun shelves",
+      "rows": "6-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a brown top band with a darker outline at row 1. Row 5 (#d59147) is a lighter front-edge line, and rows 6-8 below it are dark, like eave shadow or the shelf opening. The front face runs from row 6 to row 31 and contains shelves, with buns at rows 9-10, 18-21 and 26-29, separated by shelf edges at rows 11-13, 22 and 29-30. The silhouette is a constant 16 px wide, so there is no visible side face. The top band is only about 5 rows and could also be read as a front-facing cornice, but the edge line followed by dark shadow matches the 'cabinet: top 5 + edge + eave' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wooden shelf cabinet holding rows of buns. Its outline is a dark brown tinted to the wood, not a black sticker line, and the measured 0% near-neutral dark edge pixels confirms the tint. The measured facts place it inside the reference range: 15 colours per tile against 10 for the hedge, 17 for the cheese stall and 20 for the well. It has 0% flat-fill coverage, so no large single-colour areas. Its total of 15 distinct colours is far below the cheese stall (40) and the well (38), but those are large multi-material props. It matches the simple props (bench 14, lamp 14, hedge 11). By eye, the wood frame has about 4 value steps and the buns show highlight and shadow dots, which is slightly shallower than the 5-6 step reference ramps but not a flat or sticker look. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19387
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "front face with shelves and buns",
+      "rows": "6-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Row 0 is the outline (width 14). Rows 1-5 form a lighter brown top band, about 5 rows, and row 5 (L=157) is a lighter front-edge line. Rows 6-8 (L=31) are dark eave shadow above the first shelf of buns. The front face runs from row 6 to row 31 (26 rows) and has open shelves with buns and shelf boards at rows 12-13, 21-22 and 30. This matches the green cabinet and bookshelf references, which have a top band, an edge line and a shadow. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small bun display shelf, about one tile across. It has 15 distinct colours per tile, against 10 for the hedge, 17 for the cheese stall and 20 for the well. Flat-fill coverage is 0%. The dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood, not a black sticker line. The wood has about 4 lightness steps, with a lighter frame, shelf dividers and darker interior recesses. The buns are shaded in orange-brown with highlights. It is a little simpler than the stall and well (40 and 38 colours, 5-6 steps), but in the picture it sits comfortably next to the hedge and bench, with no flat areas and no uniform black outline. A careful artist would accept it at this size.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19536
+  }
+ ],
+ "decidedAt": "2026-10-20T07:22:59.443Z",
+ "cells": {
+  "16": [
+   "5368b1d2b13a58cd",
+   "c22d5faae9a81850"
+  ],
+  "24": [
+   "21e91892edb6ae90",
+   "37a0d792d9069f0d",
+   "4775fff05d67d3d0",
+   "47962604acba326b",
+   "6e66e3dca5485cea",
+   "a7542a01eeb2482f",
+   "ac92cbb0864a5076",
+   "adada32ffb8cf3fa",
+   "c1fe26897836b5a3",
+   "db3f7917f9b2e187",
+   "e80318b5a93c7abb",
+   "f2649c0c835081f2"
+  ],
+  "32": [
+   "21b3190e4592604b",
+   "7e06df7860dc3ebe",
+   "c6c23ce3811a022d"
+  ],
+  "48": [
+   "48b1b50507bd2fd9",
+   "4d03ed08a4786380",
+   "9fde8dd8a892819e",
+   "c96ad4f9e5147fc4",
+   "ecc87374f1606c4d",
+   "f706b904f8703de8"
+  ]
+ }
+}
