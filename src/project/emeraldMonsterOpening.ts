@@ -15,7 +15,16 @@ export type EmeraldOpeningPage = { id: string; text: string; shot: EmeraldOpenin
 /** Anchors belong to the bundled stag/coastal sunset artwork, in image coordinates. */
 export const createEmeraldMonsterTitleEffects = createStagTitleEffects;
 
-// 컷의 사람들은 별빛섬 캠페인이 쓰는 내장 캐릭터 시트에서 고른다(천문박사·라이벌·새순 체육관 관장).
+/** 게임 속 그 인물(이벤트 첫 페이지 그림)과 컷의 인물을 맞춘다 — 데모가 칩을 바꾸면 오프닝도 따라간다. 내장 시트 그림만. */
+function fieldChip(project: Project, id: RegExp): EmeraldOpeningChip | undefined {
+  for (const map of Object.values(project.maps)) {
+    const graphic = map.events.find(event => id.test(event.id))?.pages?.[0]?.graphic;
+    if (graphic?.sprite?.type === 'bundled' && graphic.pattern !== undefined) return { resourceId: graphic.sprite.id, index: charsetPatternIndex(graphic.pattern) };
+  }
+  return undefined;
+}
+
+// 컷의 사람들은 별빛섬 캠페인이 쓰는 내장 캐릭터 시트에서 고른다(천문박사·라이벌·새순 체육관 관장). 게임에 같은 인물 이벤트가 있으면 그 칩.
 const PROFESSOR: EmeraldOpeningChip = { resourceId: 'tex_oprn_charset_scarloxy_people3', index: charsetPatternIndex(76) };
 const RIVAL: EmeraldOpeningChip = { resourceId: 'tex_scarloxy_charset_people1', index: charsetPatternIndex(34) };
 const LEADER: EmeraldOpeningChip = { resourceId: 'tex_scarloxy_charset_people2', index: charsetPatternIndex(28) };
@@ -32,7 +41,7 @@ function emeraldOpeningCast(project: Project): EmeraldOpeningCast {
   const lead = project.database.actors[0];
   return {
     hero: lead?.characterResourceId ? { resourceId: lead.characterResourceId, index: lead.characterIndex ?? 0 } : HERO,
-    professor: PROFESSOR, rival: RIVAL, leader: LEADER, flyer: FLYER, wild: WILD,
+    professor: fieldChip(project, /_lab_professor$/u) ?? PROFESSOR, rival: fieldChip(project, /_lab_rival$/u) ?? RIVAL, leader: fieldChip(project, /_gym_leader$/u) ?? LEADER, flyer: FLYER, wild: WILD,
     starters: ['grass', 'fire', 'water'].flatMap(type => {
       const starter = species.find(s => s.types?.includes(type)), front = starter?.graphic.monsterResourceId;
       return starter && front ? [{ frontResourceId: front, chip: chipOf(starter.graphic.fieldGraphic) }] : [];

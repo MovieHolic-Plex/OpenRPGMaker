@@ -1,151 +1,70 @@
 {
  "source": "char-gen (OPRN 자체 생성기, 우리 산출물) · 후보는 감독이 골랐다(by: supervisor) · 유료 대체 경로·스토어 크레딧 사용 없음",
  "cast": {
-  "naru": {
-   "from": "/home/main/astra-qa/cast/naru/job/out",
+  "hero": {
+   "from": "/home/main/astra-qa/cast/hero/job2/out",
    "pictures": {
-    "bust-angry.png": {
-     "size": [
-      103,
-      116
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "a77ff5969f0aaabc95eafb7fcfa20e9437dac22024e0701bd00b6d7273699b4f",
-     "pixelSha256": "b2580da81020854cca8ab1f6b5397f2fba4b345fdd8e0bfadf45e6ad8083aead"
-    },
     "bust-base.png": {
      "size": [
-      103,
-      116
+      98,
+      111
      ],
      "cell": 6,
      "uniform": 1.0,
-     "sourceSha256": "098e0834636d3a280805f2e5b9febb725cb1352730777828192ee42eb3cdbf21",
-     "pixelSha256": "74b4e0217d03d771813514b7067b8900db0492035c8267edbd45ee936f9eb759"
-    },
-    "bust-determined.png": {
-     "size": [
-      103,
-      116
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "108a7498426027a3a9fa2bde7d55f56c617245b23df5057179bee5aebcc6f6c4",
-     "pixelSha256": "33b49fa19365e87448bde83b01b5d552672158de7bb450861ce710b4ff62f988"
+     "sourceSha256": "1600f15025d3b9c63055a020188a1b480e08640cad04052060be89590d1edbff",
+     "pixelSha256": "2d0183b27df6e189ce1d24e9490839bf5a82b5711a0cdd02c7e784c6a3ad56ca"
     },
     "bust-happy.png": {
      "size": [
-      103,
-      116
+      98,
+      111
      ],
      "cell": 6,
      "uniform": 1.0,
-     "sourceSha256": "bb9b41fe0db07bc3bed2e26165ad8b206a28d7edc00f06fba58c42f0a31e4d98",
-     "pixelSha256": "ffc9fc30da71e6c7e222159f07d918c3ce5499b31b048e12550c4ccbdcc6bad5"
-    },
-    "bust-sad.png": {
-     "size": [
-      103,
-      116
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "13487c862483ae82b61ecfd73b4f3295c3076a9072ae4d42429c0d89c55ac662",
-     "pixelSha256": "0cf3e3703ebac2da0fc7712b13f479e9bafb54c0c93d02913cb4d49392b270a2"
-    },
-    "bust-serious.png": {
-     "size": [
-      103,
-      116
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "4599c0f135b9980dd6cf9895f7e1e6da90c41ce260e8c8058d10c43865f30947",
-     "pixelSha256": "e79b664181d910c62dbe0030e463c413cc1b702c54ff64c0fee7ce4b2405f1a9"
+     "sourceSha256": "9ab4bd00b32ca82cd103d3b18c315a22ead8ff0d967782c7e2b7c8815815a50d",
+     "pixelSha256": "be6006b0f5ab20c46ce10f3074af596cabe20b6480060c0c5152bbeab1ab58e8"
     },
     "bust-surprised.png": {
      "size": [
-      103,
-      116
+      98,
+      111
      ],
      "cell": 6,
      "uniform": 1.0,
-     "sourceSha256": "359aa82f00111ec3d045785260344e2f5395f9594885d91023c3238a3b3627bc",
-     "pixelSha256": "5ed4b6684b38c9fdacec260294c5fcfe4e032c933f2676e4c4cf732585ca0656"
-    },
-    "full-angry.png": {
-     "size": [
-      62,
-      166
-     ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "46889fbffc08d6479a2d7c032a33c3213f27e55ea2aec0a530d554634a4c514d",
-     "pixelSha256": "2ee5ef20c61e01c826d5afac3e9ef1b6e7a1f816d6b0e5410d37c31574c0ece8"
+     "sourceSha256": "5e05f34aacf7e1d00e76aecf40d38c6e197808e978dc4baf1efea5661c9a647c",
+     "pixelSha256": "894b733844f98a0eede5db5791c3655939a35e3cf52c48dfec0a29476002efcd"
     },
     "full-base.png": {
      "size": [
-      62,
-      166
+      59,
+      168
      ],
      "cell": 5,
      "uniform": 1.0,
-     "sourceSha256": "4f9026f1f08bd209fa4113ab2e59800a0d51611ba43daa1c1f40f8d47e69e80f",
-     "pixelSha256": "e78acea127940222e15f60d6cc39c5b366519132b002dde5eb7e47eca4b81e9e"
-    },
-    "full-determined.png": {
-     "size": [
-      62,
-      166
-     ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "29ef309edf4540a63ed9b303ce9b47e72f134c204429e450a8f10c9bb5324779",
-     "pixelSha256": "2479a9634cff55d5ded57c4ee3a430f5cf6567a732805c9e3ffc539ab9e1ffb3"
+     "sourceSha256": "84a6151777ca1ab136853a127b7dd4ee04d8e8ff81d078476d83e281102e4b16",
+     "pixelSha256": "e4774f126cc4c6ee14a0c9fbaceeba564f87ee91adba0cfbaa585df1e89eea82"
     },
     "full-happy.png": {
      "size": [
-      62,
-      166
+      59,
+      168
      ],
      "cell": 5,
      "uniform": 1.0,
-     "sourceSha256": "db45fc6cfbac002fcd6cdadb87fff437c665486d78fa570cf1d6d3982aadecaa",
-     "pixelSha256": "343e16870cd11dfb94a2a87987aa69f827c763c152a0f7cacd9ca7a2291d8050"
-    },
-    "full-sad.png": {
-     "size": [
-      62,
-      166
-     ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "5140c23a9b2877cb22d5accdf6082ae0125a886c4d640d7144d328ada25f3e8d",
-     "pixelSha256": "aab8398013bb3e95b071f4992b4508be26c17eee260f2e205826b2a0c9c51ca1"
-    },
-    "full-serious.png": {
-     "size": [
-      62,
-      166
-     ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "d0facabf901d8ca1abf5bb2a517833aea8c2603ef1f4cd2b4f60c3bc78a2cbf4",
-     "pixelSha256": "371c1e386f6f955e3a9cbcb92785f5b1cac2facc4ad243641cd6f844a1542dff"
+     "sourceSha256": "287c175be98467b52116958b6125d74434b4c1e366d82f153c92b8dd055fb8f1",
+     "pixelSha256": "ccf3401816cf564fe9b2403281173d11ce2ab99f12140b607b9ea490e8ed2eb9"
     },
     "full-surprised.png": {
      "size": [
-      64,
-      166
+      59,
+      168
      ],
      "cell": 5,
      "uniform": 1.0,
-     "sourceSha256": "487cff347d077feb9117503c15e46eea7e214fe0dd5afb1beb44fda03cbff33d",
-     "pixelSha256": "15fd4961ec2e0e143cf8ba18ce74769a0fb1fcf4190fa5481fdd4bd3c7d9234f"
+     "sourceSha256": "16a3a3d9b993ca68192e9e6b7fbb07d4c0a59c7609a75ad3e244be06c0aa9696",
+     "pixelSha256": "dd0e513ddc5a523de152b2b13bf39bd54769cd8450e9394a6676fdebf5a535e7"
     }
-   },
-   "trainerFront": "battle-trainers/astra_naru/front.png"
+   }
   },
   "mom": {
    "from": "/home/main/astra-qa/cast/mom/job/out",
@@ -179,16 +98,6 @@
      "uniform": 1.0,
      "sourceSha256": "66cc853c7e09195903898c601af78113451a51e1e7463031dbbb7484f833a0b3",
      "pixelSha256": "e9b840f697d9f7f7dff8f3d74577b2645504bee4f5e430d59ee18310f0ab0d31"
-    },
-    "bust-sad.png": {
-     "size": [
-      93,
-      109
-     ],
-     "cell": 7,
-     "uniform": 1.0,
-     "sourceSha256": "200525e02bebe208cf720567730d3597f3ff16b98b302633350df1fbf30edec5",
-     "pixelSha256": "035506175ae95c2573e2d1e834d47a5833adecf40d7c8591b80959029ac428d6"
     },
     "bust-surprised.png": {
      "size": [
@@ -230,16 +139,6 @@
      "sourceSha256": "a5eeb29fd0d054584bf86a8acdf365186d92f5e535f36d349e12bebab4165ec0",
      "pixelSha256": "a76a35c7119805cdf77d5c8dc47b5c991e9fa5cbb68246d9fdba06d4e3a19d5b"
     },
-    "full-sad.png": {
-     "size": [
-      58,
-      167
-     ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "75bb9ad2b8f6ea63ca045520438d565c3aecac2199b097e15e4044df7c6fb88f",
-     "pixelSha256": "72c5ec2e5473b9efd3a1e638fde784c64912a7d8d0ae39cf7980f33e103cf04d"
-    },
     "full-surprised.png": {
      "size": [
       66,
@@ -249,6 +148,282 @@
      "uniform": 1.0,
      "sourceSha256": "c4441e0283e4bd8232b19c28ac6e8fe5a8ef679cb7533663883c66d06fbd7d9d",
      "pixelSha256": "08e020fda58bae74aaa8a48d8bc7565f544ed6de89f86ef21b06e7495b2aab02"
+    }
+   }
+  },
+  "professor": {
+   "from": "/home/main/astra-qa/cast/professor/job2/out",
+   "pictures": {
+    "bust-angry.png": {
+     "size": [
+      107,
+      111
+     ],
+     "cell": 6,
+     "uniform": 1.0,
+     "sourceSha256": "1e28adbd11a8cd5494c284fa1af7d371827f9342e1ba1e2fe480412e044c645b",
+     "pixelSha256": "27036a38ae0f5b881493773409c6fe18877a0c2337448b1ed1a3338af9b43acf"
+    },
+    "bust-base.png": {
+     "size": [
+      107,
+      111
+     ],
+     "cell": 6,
+     "uniform": 1.0,
+     "sourceSha256": "a1a6b113429d6088efcf8c76c01cf763411a194e6d3ad9fe4ce9f46c12037e43",
+     "pixelSha256": "138668caf648631f418acedbc9bf159ac1c0416099aac4ee8a60a512708eb53c"
+    },
+    "bust-happy.png": {
+     "size": [
+      107,
+      111
+     ],
+     "cell": 6,
+     "uniform": 1.0,
+     "sourceSha256": "e415df0ff0f2561bdf817edd20a493a9d104c550d14d27438839f14c26a1e2a0",
+     "pixelSha256": "049da644fc8c83cf52d37d017aac493cb7c938f99841c1c42b85bf5522bf8dda"
+    },
+    "bust-surprised.png": {
+     "size": [
+      107,
+      111
+     ],
+     "cell": 6,
+     "uniform": 1.0,
+     "sourceSha256": "19f72dc5c285907c0bea3c7caa165b0470a15bf10e2a94c236d0e602a69c4293",
+     "pixelSha256": "de08a94d6e6dce43fdbb4754888439f7c9111612842c62244a685af4705d5ddf"
+    },
+    "full-angry.png": {
+     "size": [
+      61,
+      166
+     ],
+     "cell": 5,
+     "uniform": 1.0,
+     "sourceSha256": "7f932b1c321ae35fce0eb3a0491499cc4511b44dadb277c1d3c75d70e15fe638",
+     "pixelSha256": "ee243e190fa8c53a0147e62d1dd7571de9088ac1cc793b7b9a54c2be11c33d72"
+    },
+    "full-base.png": {
+     "size": [
+      61,
+      166
+     ],
+     "cell": 5,
+     "uniform": 1.0,
+     "sourceSha256": "2baf6fc932fcae8418ffd879958270907b9a185b6fc361b30765dc464e9c2659",
+     "pixelSha256": "963d64afc4f0d0ece0916fd7176ca30f57c92e5a53faa1763e4fe2949e0f66a6"
+    },
+    "full-happy.png": {
+     "size": [
+      61,
+      166
+     ],
+     "cell": 5,
+     "uniform": 1.0,
+     "sourceSha256": "15d8926898050fa72d4fb6ea3fd4de4a30bf921d406cc6947147007268a7dad8",
+     "pixelSha256": "30303393e2af47575188da8b95ba91f1644710e23bafed79922d04a574972e9c"
+    },
+    "full-surprised.png": {
+     "size": [
+      62,
+      166
+     ],
+     "cell": 5,
+     "uniform": 1.0,
+     "sourceSha256": "bd14291a3d249b8cb61cf87a80457505855e9f296c2ed723c403d5571f2629ad",
+     "pixelSha256": "2f4eed3d9c20b2a31fdea1a0b59a176221282dfcbbbe8f27d5512dbdf23b1d04"
+    }
+   }
+  },
+  "naru": {
+   "from": "/home/main/astra-qa/cast/naru/job/out",
+   "pictures": {
+    "bust-angry.png": {
+     "size": [
+      103,
+      116
+     ],
+     "cell": 6,
+     "uniform": 1.0,
+     "sourceSha256": "a77ff5969f0aaabc95eafb7fcfa20e9437dac22024e0701bd00b6d7273699b4f",
+     "pixelSha256": "b2580da81020854cca8ab1f6b5397f2fba4b345fdd8e0bfadf45e6ad8083aead"
+    },
+    "bust-base.png": {
+     "size": [
+      103,
+      116
+     ],
+     "cell": 6,
+     "uniform": 1.0,
+     "sourceSha256": "098e0834636d3a280805f2e5b9febb725cb1352730777828192ee42eb3cdbf21",
+     "pixelSha256": "74b4e0217d03d771813514b7067b8900db0492035c8267edbd45ee936f9eb759"
+    },
+    "bust-happy.png": {
+     "size": [
+      103,
+      116
+     ],
+     "cell": 6,
+     "uniform": 1.0,
+     "sourceSha256": "bb9b41fe0db07bc3bed2e26165ad8b206a28d7edc00f06fba58c42f0a31e4d98",
+     "pixelSha256": "ffc9fc30da71e6c7e222159f07d918c3ce5499b31b048e12550c4ccbdcc6bad5"
+    },
+    "bust-sad.png": {
+     "size": [
+      103,
+      116
+     ],
+     "cell": 6,
+     "uniform": 1.0,
+     "sourceSha256": "13487c862483ae82b61ecfd73b4f3295c3076a9072ae4d42429c0d89c55ac662",
+     "pixelSha256": "0cf3e3703ebac2da0fc7712b13f479e9bafb54c0c93d02913cb4d49392b270a2"
+    },
+    "bust-surprised.png": {
+     "size": [
+      103,
+      116
+     ],
+     "cell": 6,
+     "uniform": 1.0,
+     "sourceSha256": "359aa82f00111ec3d045785260344e2f5395f9594885d91023c3238a3b3627bc",
+     "pixelSha256": "5ed4b6684b38c9fdacec260294c5fcfe4e032c933f2676e4c4cf732585ca0656"
+    },
+    "full-angry.png": {
+     "size": [
+      62,
+      166
+     ],
+     "cell": 5,
+     "uniform": 1.0,
+     "sourceSha256": "46889fbffc08d6479a2d7c032a33c3213f27e55ea2aec0a530d554634a4c514d",
+     "pixelSha256": "2ee5ef20c61e01c826d5afac3e9ef1b6e7a1f816d6b0e5410d37c31574c0ece8"
+    },
+    "full-base.png": {
+     "size": [
+      62,
+      166
+     ],
+     "cell": 5,
+     "uniform": 1.0,
+     "sourceSha256": "4f9026f1f08bd209fa4113ab2e59800a0d51611ba43daa1c1f40f8d47e69e80f",
+     "pixelSha256": "e78acea127940222e15f60d6cc39c5b366519132b002dde5eb7e47eca4b81e9e"
+    },
+    "full-happy.png": {
+     "size": [
+      62,
+      166
+     ],
+     "cell": 5,
+     "uniform": 1.0,
+     "sourceSha256": "db45fc6cfbac002fcd6cdadb87fff437c665486d78fa570cf1d6d3982aadecaa",
+     "pixelSha256": "343e16870cd11dfb94a2a87987aa69f827c763c152a0f7cacd9ca7a2291d8050"
+    },
+    "full-sad.png": {
+     "size": [
+      62,
+      166
+     ],
+     "cell": 5,
+     "uniform": 1.0,
+     "sourceSha256": "5140c23a9b2877cb22d5accdf6082ae0125a886c4d640d7144d328ada25f3e8d",
+     "pixelSha256": "aab8398013bb3e95b071f4992b4508be26c17eee260f2e205826b2a0c9c51ca1"
+    },
+    "full-surprised.png": {
+     "size": [
+      64,
+      166
+     ],
+     "cell": 5,
+     "uniform": 1.0,
+     "sourceSha256": "487cff347d077feb9117503c15e46eea7e214fe0dd5afb1beb44fda03cbff33d",
+     "pixelSha256": "15fd4961ec2e0e143cf8ba18ce74769a0fb1fcf4190fa5481fdd4bd3c7d9234f"
+    }
+   },
+   "trainerFront": "battle-trainers/astra_naru/front.png"
+  },
+  "nurse": {
+   "from": "/home/main/astra-qa/cast/nurse2/job/out",
+   "pictures": {
+    "bust-base.png": {
+     "size": [
+      88,
+      107
+     ],
+     "cell": 7,
+     "uniform": 1.0,
+     "sourceSha256": "7bd17390bddaed8ba35a653528ec92f776d9487c394388943448a8b74be842f3",
+     "pixelSha256": "6e6ba1b5aa4d75aab7e46ccf2611b75e38367f9774a68a56112ed038b0f82f98"
+    },
+    "bust-happy.png": {
+     "size": [
+      88,
+      107
+     ],
+     "cell": 7,
+     "uniform": 1.0,
+     "sourceSha256": "efef24ae8a7cbd43f7b82e3d7a0ee10ba4273faecdfaa573db2f8e16770d1568",
+     "pixelSha256": "3809b6ac00cf1e619a790050c18cf22dfa6bef6b44bfa6e738c6633c1f754183"
+    },
+    "bust-sad.png": {
+     "size": [
+      88,
+      107
+     ],
+     "cell": 7,
+     "uniform": 1.0,
+     "sourceSha256": "ded29567afc6cd8640ed56d22d7165c228defd61ad58947a6dbec3b2234fb2f6",
+     "pixelSha256": "0f50acde517c59fb98e492c58d103e12ab371a2d73e38d1fdd94ff422ec2fbcf"
+    },
+    "bust-surprised.png": {
+     "size": [
+      88,
+      107
+     ],
+     "cell": 7,
+     "uniform": 1.0,
+     "sourceSha256": "5387a2dd607d21d0d16024e1581099ec0a508281cb7d7bf9263ec51a8f9aa2fb",
+     "pixelSha256": "02d70c02fa4d41a29ea8df60d3bdff2544359993f356eba98c95df201251c13f"
+    },
+    "full-base.png": {
+     "size": [
+      46,
+      164
+     ],
+     "cell": 5,
+     "uniform": 1.0,
+     "sourceSha256": "fe9ff913d81cf46dc67fd30945ee7a91ad1b04a48d59e7ebb0e3899b4ed8e3dd",
+     "pixelSha256": "fa14e541e51d4cc1daeac9f7b44ccacc388e4f98d6557816df8ded13c22670a1"
+    },
+    "full-happy.png": {
+     "size": [
+      46,
+      164
+     ],
+     "cell": 5,
+     "uniform": 1.0,
+     "sourceSha256": "37fa9d50ed698f3e2c72ffbbd82dc025abe5fe8b11a99a7694784d89c0211d5a",
+     "pixelSha256": "04e0b0e3910be9401d54d7cc4445291e4ebae9aa4edc851a18136475a7f829cc"
+    },
+    "full-sad.png": {
+     "size": [
+      43,
+      164
+     ],
+     "cell": 5,
+     "uniform": 1.0,
+     "sourceSha256": "38029f7225fe0aba69e5bc86d4cf3fffb55345cce1a064d8311bbda7172ef2d4",
+     "pixelSha256": "b1cee3d71e7184a67b3a250d207b87d7bcd766e0f5ecd7f864cfbb799f89777b"
+    },
+    "full-surprised.png": {
+     "size": [
+      52,
+      164
+     ],
+     "cell": 5,
+     "uniform": 1.0,
+     "sourceSha256": "f03cf710ee69001de270d1f924ee40f8e28c0844a50fb527f002b30117e63fae",
+     "pixelSha256": "782553d58d48bf474e0e340b7224647b7044bc3f3459045eb0ee9fcaccad8252"
     }
    }
   },
@@ -275,16 +450,6 @@
      "sourceSha256": "d7e130d4be7865972eb6da52db41aa9f10e3ccf863a16cac259a3ec9fbe5326a",
      "pixelSha256": "f6c7b6900e525f59c1aadfeebc473b514b7eae1125f21ba2a84d4582f2947bfb"
     },
-    "bust-determined.png": {
-     "size": [
-      97,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "288b182e642c594a90b34c6d6233bf47c33c6f34179d71857e3ae66eabbb70a8",
-     "pixelSha256": "0868cbe30bcc9b9f8a26b7b41637ac2c14ad03dfac881a9dd4054accf385c9ab"
-    },
     "bust-happy.png": {
      "size": [
       97,
@@ -304,16 +469,6 @@
      "uniform": 1.0,
      "sourceSha256": "314f7eea219efb713d89d34a71aa8c70c41b1cae031b2f5066be5307bf1b8e7d",
      "pixelSha256": "c63dacffed1219243dd661133feed69455c1443f07ac07ecea3c7495f8ddc027"
-    },
-    "bust-serious.png": {
-     "size": [
-      97,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "8d0a42ead692d217d22709950c62d798c155810ca61c15b52aaee73d1b0f7942",
-     "pixelSha256": "edab8716bf6d8a9a4bc4c95af8163e6119e847afec621c3aef3a7472e0b4244a"
     },
     "bust-surprised.png": {
      "size": [
@@ -345,16 +500,6 @@
      "sourceSha256": "c366b0a5f9f61e24a86653bdf646f0b948511df74b5eeeb1a6947e649ffc0f2b",
      "pixelSha256": "787ccd2a86973a4b2e355c64340c4b6d1efd89b7b47d73113df14511579f867e"
     },
-    "full-determined.png": {
-     "size": [
-      54,
-      166
-     ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "d4928c4da449881389741fa84b6ed19550a042ca867b8e81d228f759570563ef",
-     "pixelSha256": "866a383ffc9e5437ee863a3e7b31c6507ad4be37c8b77630df35f68ff2f6dc6a"
-    },
     "full-happy.png": {
      "size": [
       54,
@@ -374,16 +519,6 @@
      "uniform": 1.0,
      "sourceSha256": "f32d0011477b969ad78f5c242b43deb9f823103bbee47885e2b81e4d76e3e8d8",
      "pixelSha256": "9e279fad290a865606563a482552ca8817cd467bcffea20318aa29be23f15d65"
-    },
-    "full-serious.png": {
-     "size": [
-      54,
-      166
-     ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "1cd2e3aac7e3050849cea1de0cda38a3a5dc636063c8492b03b3e963c56f48ea",
-     "pixelSha256": "2910f730bf2c288441078d68b8df8252106c2749f7ed265378af29ad6009f84c"
     },
     "full-surprised.png": {
      "size": [
@@ -420,16 +555,6 @@
      "uniform": 1.0,
      "sourceSha256": "c1a46c92915e88cac7e51a550bc9ae6996efc5d760bb4777e6e8bd9aa70abbaa",
      "pixelSha256": "74e50d630f03c9364561752d699c65b43758a9cccf96e5ad23266ac6e1e5b192"
-    },
-    "bust-determined.png": {
-     "size": [
-      107,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "8cd8a41c3fa113ed830a89ebb1ac33e9fccf68d6bebdc9010d7a4e8dfe75fdae",
-     "pixelSha256": "e91f1f45ad63aa5d5ec82e87194e992c402f6a9082f07f0cadce40cf5a139c94"
     },
     "bust-happy.png": {
      "size": [
@@ -491,16 +616,6 @@
      "sourceSha256": "d145867385f5809f1adadef937c64c2b8b4cbb37d9e544acb0aea3cf07c6aa89",
      "pixelSha256": "224ca336219f7a0187def29a0a956b362e624e3e44db94ae514357c14d9c3025"
     },
-    "full-determined.png": {
-     "size": [
-      62,
-      166
-     ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "0ab903993da6c8cf9f3996a55100991349128297f82ce64b1a413d5ac4645b6f",
-     "pixelSha256": "7a41275e64a56e917ea28f5e814a2278d87d8a8a9c782048400d06e5ded88de1"
-    },
     "full-happy.png": {
      "size": [
       62,
@@ -544,5 +659,6 @@
    },
    "trainerFront": "battle-trainers/astra_muyeong/front.png"
   }
- }
+ },
+ "judge": "char-gen 판정(Codex CLI, 눈가림 표정 판정): 통과한 표정만 남겼다. base 는 감독이 고른 그림 그대로(옅은 미소라 smile/content 로 읽힘 — 친근한 기본 얼굴로 받아들임). 판정 원본: /home/main/astra-qa/cast/final.json"
 }
