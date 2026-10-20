@@ -1,1310 +1,575 @@
+/**
+ * 대표 데모 1 『폴른 스타』(데모 id chrono-bell / fallen-star) — 제1막.
+ *
+ * 2026-10-20 다시 지었다. 이전 판은 크로노·FF6풍 장 7개를 지은 뒤 글자만 치환했고(SF 월면 기지가 「마법숲」이었다),
+ * 시작 칸 옆 NPC 메뉴에서 최종 보스로 바로 갈 수 있어 타이틀부터 엔딩까지 2분이었다.
+ * 지금은 이야기 사양 하나(fallenStarStory.ts)를 장 구성기에 넘겨 버들항 한 계열로 짓는다:
+ *   왕도 아스텔 → 별빛 천문대(의뢰) → 속삭이는 숲(숲지기 → 떨어진 별 퍼즐 → 이리스 합류)
+ *   → 천문대 지하(별빛 열쇠로 열림, 화로 퍼즐, 발렌과 수호상 결전) → 천문대 보고 → 엔딩.
+ */
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
-import { canMove, isPassable } from "@/project/collision";
+import { isPassable } from "@/project/collision";
 import { createBlankProject } from "@/project/defaults";
 import { DEFAULT_ACTOR_ID } from "@/project/defaults/constants";
 import { deserialize, serialize } from "@/project/io";
-import type { AnimaticLayer } from "@/project/openingAnimatic";
-import type { Command, EventPage, GameEvent, GameMap, Project } from "@/project/types";
+import type { ActorRecord as Actor, Command, EnemyRecord as Enemy, EventPage, GameEvent, GameMap, Project, TroopRecord as Troop } from "@/project/types";
 import { runTool } from "@/editor/tools/toolRunner";
 import "@/editor/tools/toolRegistry";
+import { buildJrpgChapter } from "@/editor/tools/jrpgChapterTools";
+import { pickSpot, placeRoamer } from "@/editor/tools/jrpgVolumeTools";
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
+import { buildFallenStarOpening, FALLEN_STAR_TITLE_BACKGROUND } from "./fallenStarOpening";
+import { FALLEN_STAR_ACT1, FS_NAMES, FS_PREFIX, FS_STAR_KEY_ITEM } from "./fallenStarStory";
 import type { FlagshipDemoBuildResult } from "./types";
 
+const ENDING_ID = "end_fs_act1";
+const SW_IRIS_JOINED = "sw_fs_iris_joined";
+const ELENA_ID = "actor_fs_elena";
+const IRIS_ID = "actor_fs_iris";
+
+/**
+ * 도구 실행 — 도구는 초안 사본에 쓰고 그 결과를 project 에 덮는다. 그래서 도구를 부른 뒤에는 맵·이벤트 참조가 낡는다.
+ * 맵은 늘 maps() 로 다시 꺼내 쓴다(낡은 참조에 쓴 변경은 조용히 사라진다 — 2026-10-20 문지기 위치·엔딩 명령 유실).
+ */
 function execTool(project: Project, name: string, args: Record<string, unknown>): void {
   const ctx = { project, assistantRun: false };
   const res = runTool(ctx, name, args, { dryRun: false });
   if (!res.ok) {
-    throw new Error(`[chrono-bell] ${name} failed: ${res.summary} ${JSON.stringify(res.issues ?? [])}`);
+    throw new Error(`[fallen-star] ${name} failed: ${res.summary} ${JSON.stringify(res.issues ?? [])}`);
   }
   Object.assign(project, ctx.project);
 }
 
-function findAdjacentWalkable(
-  project: Project,
-  map: GameMap,
-  origin: { readonly x: number; readonly y: number },
-  avoid: ReadonlySet<string>,
-): { readonly x: number; readonly y: number } {
-  const dirs = [
-    [0, 0],
-    [0, -1],
-    [1, 0],
-    [0, 1],
-    [-1, 0],
-    [1, -1],
-    [-1, -1],
-    [1, 1],
-    [-1, 1],
-    [0, -2],
-    [2, 0],
-  ] as const;
-  for (const [dx, dy] of dirs) {
-    const x = origin.x + dx;
-    const y = origin.y + dy;
-    const k = `${x},${y}`;
-    if (x < 1 || y < 1 || x >= map.width - 1 || y >= map.height - 1) continue;
-    if (avoid.has(k)) continue;
-    if (!isPassable(project, map, x, y)) continue;
-    if (map.events.some((e) => e.x === x && e.y === y)) continue;
-    return { x, y };
-  }
-  return { x: origin.x, y: Math.max(1, origin.y - 1) };
+const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
+
+// ── 배우 ────────────────────────────────────────────────────────────────
+
+function setupCast(project: Project): void {
+  const actors = project.database.actors;
+  const hero = actors.find((a) => a.id === DEFAULT_ACTOR_ID) ?? actors[0]!;
+  hero.name = "카엘";
+  hero.nickname = "견습 별지기";
+  hero.characterResourceId = "easyrpg-charset-actor1";
+  hero.characterIndex = 0;
+  hero.battleCharacterResourceId = "charset-battler-actor1-0";
+  hero.initialLevel = 6;
+
+  const make = (id: string, templateId: string, patch: Partial<Actor>): void => {
+    const template = actors.find((a) => a.id === templateId) ?? hero;
+    const actor = { ...clone(template), ...patch, id } as Actor;
+    const at = actors.findIndex((a) => a.id === id);
+    if (at >= 0) actors[at] = actor; else actors.push(actor);
+  };
+  make(ELENA_ID, "actor_mage", {
+    name: "엘레나", nickname: "천문대의 마도학자",
+    characterResourceId: "easyrpg-charset-actor1", characterIndex: 7,
+    battleCharacterResourceId: "charset-battler-actor1-7", faceResourceId: "easyrpg-faceset-actor1-07", initialLevel: 6,
+  });
+  make(IRIS_ID, "actor_gunner", {
+    name: "이리스", nickname: "별에서 온 기계 소녀",
+    characterResourceId: "easyrpg-charset-actor4", characterIndex: 3,
+    battleCharacterResourceId: "charset-battler-actor4-3", initialLevel: 6,
+  });
+  // Actor4 칩에는 짝 얼굴 그림이 없다 — 남의 얼굴을 빌리지 않는다.
+  delete (actors.find((a) => a.id === IRIS_ID) as { faceResourceId?: string }).faceResourceId;
+  project.system.startActorIds = [hero.id, ELENA_ID];
 }
 
-const FALLEN_STAR_TEXT_REPLACEMENTS: ReadonlyArray<readonly [string, string]> = [
-  ["벨하임 마을 · 천년제 광장", "왕도 아스텔 · 별빛 성채 광장"],
-  ["벨하임 왕성 알현실", "왕립 천문대 · 성좌 홀"],
-  ["중세 벨하임 · 안개 묘지 언덕", "속삭이는 마법숲 · 별빛 안개 언덕"],
-  ["대성당 예배당", "왕립 천문대 · 성좌 오르간 관측실"],
-  ["마왕성 지하 성채", "심문관의 지하 봉인 성채"],
-  ["아리아 돔 크레이터", "속삭이는 마법숲 · 별의 추락지 크레이터"],
-  ["지하 로봇 공장", "추락한 별의 방주 · 태엽 코어실"],
-  ["화산 협곡 · 용암 폭포", "방주의 성소 · 붉은 마력 협곡"],
-  ["고대 용의 소굴 용암 동굴", "방주의 성소 · 심문관의 마도 거신 제단"],
-  ["화산석 부락", "성소 외곽 · 별지기 야영지"],
-  ["아스트라 왕궁 · 하늘 신전", "고대 성좌 유적 · 태엽의 회랑"],
-  ["검은 날개 선착장", "고대 성좌 유적 · 별의 방주 선착장"],
-  ["해저신전", "성좌 유적 심층 · 방주 기억 성소"],
-  ["설원 광산 마을 벨른", "북방 성좌령 · 별빛 광산 마을"],
-  ["벨른 마석 광산", "성좌석 광산 · 푸른 결정 갱도"],
-  ["가르디아 성 지하 보물고 비밀 레버", "아스텔 왕립 천문대 지하 서고 비밀 레버"],
-  ["피가로 기관실 모래 잠항 밸브", "아스텔 마도 기관실 동력 밸브"],
-  ["케프카의 탑 진실의 보물상자 수수께끼", "심문관의 탑 진실의 성좌 상자 수수께끼"],
-  ["천년제 텔레포드 시연대", "별의 방주 공명 신호기"],
-  ["천년제 기념 메달", "아스텔 성좌 공명장"],
-  ["성검 에테르리온", "성좌검 아스트랄리온"],
-  ["에너트론 회복 캡슐", "별의 방주 동면 회복 포드"],
-  ["에너트론", "방주 동면 코어"],
-  ["아리아 돔", "별의 추락지 크레이터"],
-  ["텔레포드", "별의 방주 공명기"],
-  ["천년제", "별빛 성좌제"],
-  ["벨하임", "왕도 아스텔"],
-  ["가르디아", "아스텔"],
-  ["피가로", "아스텔"],
-  ["라보스", "마도 거신 아스칼"],
-  ["케프카", "심문관 발렌"],
-  ["마구스", "심문관 발렌"],
-  ["크로노", "카엘"],
-  ["하람", "카엘"],
-  ["마르", "이리스"],
-  ["세린", "이리스"],
-  ["에이라", "이리스"],
-  ["티나", "이리스"],
-  ["루카", "엘레나"],
-  ["토우", "엘레나"],
-  ["개굴경 바르도", "아이기스-07"],
-  ["기계병 노바", "아이기스-07"],
-  ["프로그", "아이기스-07"],
-  ["로보", "아이기스-07"],
-  ["로크", "카엘"],
-  ["매쉬", "로건"],
-  ["나크타르", "심문관 발렌"],
-];
+// ── 적 ──────────────────────────────────────────────────────────────────
 
-function replaceFallenStarLoreDeep(value: unknown): void {
-  if (Array.isArray(value)) {
-    value.forEach(replaceFallenStarLoreDeep);
-    return;
-  }
-  if (!value || typeof value !== "object") return;
-  const rec = value as Record<string, unknown>;
-  for (const [k, v] of Object.entries(rec)) {
-    if (typeof v === "string") {
-      let next = v;
-      for (const [from, to] of FALLEN_STAR_TEXT_REPLACEMENTS) {
-        if (next.includes(from)) next = next.split(from).join(to);
-      }
-      rec[k] = next;
-    } else {
-      replaceFallenStarLoreDeep(v);
-    }
-  }
+function makeEnemy(project: Project, id: string, name: string, monster: string, stats: Enemy["stats"], exp: number, gold: number): void {
+  const enemies = project.database.enemies;
+  const template = enemies.find((e) => e.monsterResourceId === `generated-enemy-${monster}`) ?? enemies.find((e) => e.id === "enemy_slime")!;
+  const enemy = { ...clone(template), id, name, monsterResourceId: `generated-enemy-${monster}`, stats } as Enemy;
+  enemy.rewards = { ...enemy.rewards, exp, gold };
+  const at = enemies.findIndex((e) => e.id === id);
+  if (at >= 0) enemies[at] = enemy; else enemies.push(enemy);
 }
 
-interface OpeningActorSpec {
-  readonly id: string;
-  readonly charsetResourceId: string;
-  readonly characterIndex: number;
-  readonly role: "hero" | "mage" | "knight" | "villager" | "monster" | "crowd";
-  readonly direction: "down" | "left" | "right" | "up";
-  readonly x: number;
-  readonly y: number;
-  readonly fromX?: number;
-  readonly toX?: number;
-  readonly durationMs?: number;
+function makeTroop(project: Project, id: string, name: string, enemyIds: readonly string[]): void {
+  const troop: Troop = {
+    id, name, enemyIds: [...enemyIds],
+    members: enemyIds.map((enemyId, i) => ({ enemyId, x: 80 + i * 56, y: 96, hidden: false })),
+    autoAlign: true, uncapturable: false, battleEventPages: [],
+  } as Troop;
+  const troops = project.database.troops;
+  const at = troops.findIndex((t) => t.id === id);
+  if (at >= 0) troops[at] = troop; else troops.push(troop);
 }
 
-interface OpeningEmoteSpec {
-  readonly id: string;
-  readonly targetLayerId: string;
-  readonly preset: "exclaim" | "question" | "ellipsis" | "heart" | "sweat";
-  readonly startMs: number;
-  readonly endMs: number;
+function setupFoes(project: Project): { field: string[]; boss: string } {
+  makeEnemy(project, "enemy_fs_wolf", "숲늑대", "wolf-grey", { maxHp: 150, maxMp: 0, attack: 58, defense: 18, mind: 30, agility: 40 }, 40, 12);
+  makeEnemy(project, "enemy_fs_spider", "덤불거미", "spider-cave", { maxHp: 130, maxMp: 0, attack: 55, defense: 16, mind: 30, agility: 34 }, 36, 10);
+  makeEnemy(project, "enemy_fs_wisp", "길 잃은 도깨비불", "wisp-blue", { maxHp: 110, maxMp: 20, attack: 60, defense: 12, mind: 60, agility: 46 }, 38, 14);
+  makeEnemy(project, "enemy_fs_valen", "심문관 발렌", "mage-rogue", { maxHp: 1100, maxMp: 120, attack: 84, defense: 30, mind: 90, agility: 44 }, 400, 300);
+  makeEnemy(project, "enemy_fs_guardian", "별지기의 수호상", "golem-crystal", { maxHp: 900, maxMp: 0, attack: 92, defense: 40, mind: 40, agility: 22 }, 300, 0);
+  makeTroop(project, "troop_fs_wolves", "숲늑대 무리", ["enemy_fs_wolf", "enemy_fs_wolf"]);
+  makeTroop(project, "troop_fs_spiders", "덤불거미", ["enemy_fs_spider", "enemy_fs_spider"]);
+  makeTroop(project, "troop_fs_wisps", "도깨비불", ["enemy_fs_wisp", "enemy_fs_wisp", "enemy_fs_wisp"]);
+  makeTroop(project, "troop_fs_boss", "심문관 발렌과 수호상", ["enemy_fs_valen", "enemy_fs_guardian"]);
+  return { field: ["troop_fs_wolves", "troop_fs_spiders", "troop_fs_wisps"], boss: "troop_fs_boss" };
 }
 
-interface OpeningShotSpec {
-  readonly id: string;
-  readonly bg: string;
-  readonly caption: string;
-  readonly transition?: { readonly kind: "fade" | "dither" | "flash"; readonly durationMs: number; readonly color?: string };
-  readonly actors: readonly OpeningActorSpec[];
-  readonly emotes?: readonly OpeningEmoteSpec[];
-  readonly lightKind: "shaft" | "glow";
-  readonly lightColor: string;
-  readonly lightX: number;
-  readonly lightY: number;
-  readonly lightW: number;
-  readonly lightH: number;
-  readonly lightRotation?: number;
-  readonly lightOpacity: number;
-  readonly particlePreset: "stars" | "sparks" | "dust" | "snow";
-  readonly particleColor: string;
-  readonly fallingStar?: boolean;
-  readonly cameraShake?: boolean;
-}
+// ── 명령 나무 훑기 ────────────────────────────────────────────────────────
 
-function buildFallenStarOpening(project: Project): void {
-  project.system.opening = { enabled: true, skippable: true, scenes: [] };
+type CommandList = Command[];
 
-  const shots: readonly OpeningShotSpec[] = [
-    {
-      id: "cb_shot_1",
-      bg: "oprn-still-kingdom-day",
-      caption: "마법 왕국 아스텔 — 별지기 기사 카엘과 마도학자 엘레나가 천문대를 지키던 밤.",
-      actors: [
-        {
-          id: "kael",
-          charsetResourceId: "easyrpg-charset-actor1",
-          characterIndex: 0,
-          role: "hero",
-          direction: "right",
-          x: 72,
-          y: 118,
-          fromX: 64,
-          toX: 144,
-          durationMs: 4200,
-        },
-        {
-          id: "elena",
-          charsetResourceId: "oprn-charset-heroes1",
-          characterIndex: 2,
-          role: "mage",
-          direction: "left",
-          x: 248,
-          y: 118,
-          fromX: 256,
-          toX: 208,
-          durationMs: 4200,
-        },
-        {
-          id: "astel_guard",
-          charsetResourceId: "easyrpg-charset-actor4",
-          characterIndex: 1,
-          role: "knight",
-          direction: "left",
-          x: 308,
-          y: 116,
-        },
-      ],
-      emotes: [
-        { id: "elena_emote", targetLayerId: "elena", preset: "ellipsis", startMs: 400, endMs: 8000 },
-      ],
-      lightKind: "shaft",
-      lightColor: "#ffe9b0",
-      lightX: 168,
-      lightY: 28,
-      lightW: 88,
-      lightH: 152,
-      lightRotation: 18,
-      lightOpacity: 0.38,
-      particlePreset: "stars",
-      particleColor: "#fff3b0",
-    },
-    {
-      id: "cb_shot_2",
-      bg: "oprn-still-manor-night",
-      caption: "왕립 천문대 관측실 — 밤하늘을 가르며 청록빛 『별의 방주』가 추락했다!",
-      transition: { kind: "fade", durationMs: 220, color: "#080c18" },
-      actors: [
-        {
-          id: "falling_star_ark",
-          charsetResourceId: "easyrpg-charset-vehicles",
-          characterIndex: 7,
-          role: "mage",
-          direction: "left",
-          x: 240,
-          y: 44,
-          fromX: 292,
-          toX: 172,
-          durationMs: 5500,
-        },
-        {
-          id: "kael",
-          charsetResourceId: "easyrpg-charset-actor1",
-          characterIndex: 0,
-          role: "hero",
-          direction: "up",
-          x: 132,
-          y: 118,
-          fromX: 120,
-          toX: 148,
-          durationMs: 5500,
-        },
-        {
-          id: "elena",
-          charsetResourceId: "oprn-charset-heroes1",
-          characterIndex: 2,
-          role: "mage",
-          direction: "up",
-          x: 208,
-          y: 118,
-          fromX: 224,
-          toX: 196,
-          durationMs: 5500,
-        },
-      ],
-      emotes: [
-        { id: "kael_alert", targetLayerId: "kael", preset: "exclaim", startMs: 300, endMs: 8000 },
-        { id: "elena_alert", targetLayerId: "elena", preset: "exclaim", startMs: 450, endMs: 8000 },
-      ],
-      lightKind: "shaft",
-      lightColor: "#64f0ff",
-      lightX: 184,
-      lightY: 24,
-      lightW: 84,
-      lightH: 156,
-      lightRotation: -28,
-      lightOpacity: 0.52,
-      particlePreset: "sparks",
-      particleColor: "#72f2ff",
-      fallingStar: true,
-      cameraShake: true,
-    },
-    {
-      id: "cb_shot_3",
-      bg: "oprn-still-snow-village",
-      caption: "속삭이는 마법숲 깊은 곳 — 푸른 마력 크레이터 한가운데서 고대 방주가 열렸다.",
-      transition: { kind: "flash", durationMs: 200, color: "#d8f8ff" },
-      actors: [
-        {
-          id: "ark_core_pod",
-          charsetResourceId: "easyrpg-charset-vehicles",
-          characterIndex: 7,
-          role: "mage",
-          direction: "down",
-          x: 184,
-          y: 112,
-        },
-        {
-          id: "aegis_guard",
-          charsetResourceId: "oprn-charset-heroes1",
-          characterIndex: 3,
-          role: "knight",
-          direction: "left",
-          x: 244,
-          y: 116,
-        },
-        {
-          id: "kael",
-          charsetResourceId: "easyrpg-charset-actor1",
-          characterIndex: 0,
-          role: "hero",
-          direction: "right",
-          x: 64,
-          y: 118,
-          fromX: 52,
-          toX: 124,
-          durationMs: 5500,
-        },
-        {
-          id: "elena",
-          charsetResourceId: "oprn-charset-heroes1",
-          characterIndex: 2,
-          role: "mage",
-          direction: "right",
-          x: 16,
-          y: 119,
-          fromX: 12,
-          toX: 76,
-          durationMs: 5500,
-        },
-      ],
-      emotes: [
-        { id: "aegis_signal", targetLayerId: "aegis_guard", preset: "ellipsis", startMs: 350, endMs: 8000 },
-      ],
-      lightKind: "glow",
-      lightColor: "#4ce4ff",
-      lightX: 156,
-      lightY: 82,
-      lightW: 116,
-      lightH: 98,
-      lightOpacity: 0.48,
-      particlePreset: "sparks",
-      particleColor: "#80f0ff",
-    },
-    {
-      id: "cb_shot_4",
-      bg: "oprn-still-desert-ruin",
-      caption: "『내 이름은 이리스… 추락한 별의 안드로이드. 천상의 귀환 좌표를 찾고 있어.』",
-      transition: { kind: "fade", durationMs: 220, color: "#0b1320" },
-      actors: [
-        {
-          id: "iris",
-          charsetResourceId: "oprn-charset-heroes1",
-          characterIndex: 5,
-          role: "mage",
-          direction: "left",
-          x: 224,
-          y: 116,
-          fromX: 236,
-          toX: 196,
-          durationMs: 5500,
-        },
-        {
-          id: "aegis",
-          charsetResourceId: "oprn-charset-heroes1",
-          characterIndex: 3,
-          role: "knight",
-          direction: "left",
-          x: 264,
-          y: 118,
-        },
-        {
-          id: "kael",
-          charsetResourceId: "easyrpg-charset-actor1",
-          characterIndex: 0,
-          role: "hero",
-          direction: "right",
-          x: 96,
-          y: 118,
-          fromX: 88,
-          toX: 144,
-          durationMs: 5500,
-        },
-        {
-          id: "elena",
-          charsetResourceId: "oprn-charset-heroes1",
-          characterIndex: 2,
-          role: "mage",
-          direction: "right",
-          x: 44,
-          y: 119,
-        },
-      ],
-      emotes: [
-        { id: "iris_awaken", targetLayerId: "iris", preset: "ellipsis", startMs: 300, endMs: 8000 },
-        { id: "kael_vow", targetLayerId: "kael", preset: "exclaim", startMs: 500, endMs: 8000 },
-      ],
-      lightKind: "glow",
-      lightColor: "#88ecff",
-      lightX: 168,
-      lightY: 78,
-      lightW: 112,
-      lightH: 108,
-      lightOpacity: 0.46,
-      particlePreset: "stars",
-      particleColor: "#b8f4ff",
-    },
-    {
-      id: "cb_shot_5",
-      bg: "oprn-still-dark-citadel",
-      caption: "그러나 별의 동력원을 노리는 성좌 심문관 발렌과 마도 거신이 숲을 포위했다!",
-      transition: { kind: "flash", durationMs: 240, color: "#ffd6e0" },
-      actors: [
-        {
-          id: "valen",
-          charsetResourceId: "oprn-charset-heroes1",
-          characterIndex: 6,
-          role: "knight",
-          direction: "left",
-          x: 264,
-          y: 116,
-          fromX: 276,
-          toX: 220,
-          durationMs: 4100,
-        },
-        {
-          id: "inquisitor_knight",
-          charsetResourceId: "easyrpg-charset-actor3",
-          characterIndex: 0,
-          role: "knight",
-          direction: "left",
-          x: 316,
-          y: 118,
-          fromX: 324,
-          toX: 276,
-          durationMs: 4100,
-        },
-        {
-          id: "kael",
-          charsetResourceId: "easyrpg-charset-actor1",
-          characterIndex: 0,
-          role: "hero",
-          direction: "right",
-          x: 112,
-          y: 118,
-        },
-        {
-          id: "iris",
-          charsetResourceId: "oprn-charset-heroes1",
-          characterIndex: 5,
-          role: "mage",
-          direction: "right",
-          x: 60,
-          y: 118,
-        },
-      ],
-      emotes: [
-        { id: "valen_order", targetLayerId: "valen", preset: "exclaim", startMs: 350, endMs: 8000 },
-      ],
-      lightKind: "shaft",
-      lightColor: "#ff5c8a",
-      lightX: 212,
-      lightY: 28,
-      lightW: 84,
-      lightH: 152,
-      lightRotation: -18,
-      lightOpacity: 0.42,
-      particlePreset: "sparks",
-      particleColor: "#ff7597",
-    },
-    {
-      id: "cb_shot_6",
-      bg: "oprn-still-farm-golden",
-      caption: "추락한 별의 성녀 이리스를 고향 하늘로 돌려보내기 위한 약속 — 『폴른 스타』 제1막!",
-      transition: { kind: "fade", durationMs: 220, color: "#0b0e14" },
-      actors: [
-        {
-          id: "kael",
-          charsetResourceId: "easyrpg-charset-actor1",
-          characterIndex: 0,
-          role: "hero",
-          direction: "right",
-          x: 136,
-          y: 118,
-          fromX: 120,
-          toX: 192,
-          durationMs: 4200,
-        },
-        {
-          id: "iris",
-          charsetResourceId: "oprn-charset-heroes1",
-          characterIndex: 5,
-          role: "mage",
-          direction: "right",
-          x: 184,
-          y: 116,
-          fromX: 168,
-          toX: 240,
-          durationMs: 4200,
-        },
-        {
-          id: "elena",
-          charsetResourceId: "oprn-charset-heroes1",
-          characterIndex: 2,
-          role: "mage",
-          direction: "right",
-          x: 84,
-          y: 119,
-          fromX: 72,
-          toX: 144,
-          durationMs: 4200,
-        },
-        {
-          id: "aegis",
-          charsetResourceId: "oprn-charset-heroes1",
-          characterIndex: 3,
-          role: "knight",
-          direction: "right",
-          x: 32,
-          y: 118,
-          fromX: 24,
-          toX: 96,
-          durationMs: 4200,
-        },
-      ],
-      emotes: [
-        { id: "iris_promise", targetLayerId: "iris", preset: "heart", startMs: 350, endMs: 8000 },
-      ],
-      lightKind: "glow",
-      lightColor: "#ffd166",
-      lightX: 156,
-      lightY: 62,
-      lightW: 132,
-      lightH: 112,
-      lightOpacity: 0.44,
-      particlePreset: "stars",
-      particleColor: "#fff3b0",
-    },
-  ];
-
-  for (const [idx, s] of shots.entries()) {
-    execTool(project, "create_opening_animatic_shot", {
-      shotId: s.id,
-      durationMs: 8500,
-      width: 384,
-      height: 216,
-      background: s.bg,
-      narration: "",
-      replace: true,
-      clearLayers: true,
-    });
-    // Clear pixelGrid so the renderer does not posterize the backdrop into 44 colors or freeze camera pans
-    execTool(project, "set_opening_pixel_grid", {
-      shotId: s.id,
-    });
-    if (idx === 0) {
-      const sc = project.system.opening?.scenes[0];
-      if (sc?.kind === "animatic") delete sc.composition.transition;
-    } else if (s.transition) {
-      execTool(project, "set_opening_transition", {
-        shotId: s.id,
-        transition: s.transition,
-        letterbox: 0.14,
-      });
-    }
-    execTool(project, "place_opening_background", {
-      shotId: s.id,
-      layerId: "bg",
-      resourceId: s.bg,
-    });
-
-    // Atmospheric light FX (never opaque — we tune layer opacity right after)
-    execTool(project, "upsert_opening_light_fx", {
-      shotId: s.id,
-      layerId: "light_fx",
-      kind: s.lightKind,
-      x: s.lightX,
-      y: s.lightY,
-      width: s.lightW,
-      height: s.lightH,
-      ...(s.lightRotation !== undefined ? { rotation: s.lightRotation } : {}),
-      color: s.lightColor,
-      blend: "lighter",
-      ...(s.lightKind === "shaft"
-        ? {
-            spread: 0.68,
-            softness: 0.82,
-            dust: { count: 22, seed: idx + 5, speed: 18, size: 1.5 },
-            pulse: { hz: 0.65, amount: 0.22, pattern: "pulse", seed: idx + 1 },
+/** 이벤트 명령 나무의 모든 명령 배열을 돈다(선택지 갈래·조건 분기·전투 결과 안쪽까지). */
+function forEachCommandList(commands: CommandList, visit: (list: CommandList) => void): void {
+  visit(commands);
+  for (const cmd of commands) {
+    const rec = cmd as unknown as Record<string, unknown>;
+    for (const value of Object.values(rec)) {
+      if (Array.isArray(value) && value.length && typeof value[0] === "object" && value[0] && "kind" in (value[0] as object)) {
+        forEachCommandList(value as CommandList, visit);
+      } else if (Array.isArray(value)) {
+        for (const opt of value) {
+          if (opt && typeof opt === "object" && Array.isArray((opt as { branch?: unknown }).branch)) {
+            forEachCommandList((opt as { branch: CommandList }).branch, visit);
           }
-        : { inner: 0.28, pulse: { hz: 0.6, amount: 0.25, pattern: "pulse", seed: idx + 1 } }),
-    });
-
-    if (s.fallingStar) {
-      execTool(project, "upsert_opening_light_fx", {
-        shotId: s.id,
-        layerId: "falling_star_orb",
-        kind: "glow",
-        x: 280,
-        y: 28,
-        width: 52,
-        height: 52,
-        color: "#a8f8ff",
-        blend: "lighter",
-        inner: 0.38,
-        pulse: { hz: 1.4, amount: 0.3, pattern: "pulse", seed: 9 },
-      });
-      execTool(project, "animate_opening_layer", {
-        shotId: s.id,
-        layerId: "falling_star_orb",
-        keys: {
-          x: [
-            { atMs: 0, value: 284, ease: "linear" },
-            { atMs: 3800, value: 152, ease: "ease-out" },
-          ],
-          y: [
-            { atMs: 0, value: 26, ease: "linear" },
-            { atMs: 3800, value: 94, ease: "ease-in" },
-          ],
-        },
-      });
-    }
-
-    // Place 2x scale (48x64) foreground CharSet actors at proper ground plane
-    for (const actor of s.actors) {
-      execTool(project, "place_opening_charset_actor", {
-        shotId: s.id,
-        layerId: actor.id,
-        charsetResourceId: actor.charsetResourceId,
-        characterIndex: actor.characterIndex,
-        characterRole: actor.role,
-        direction: actor.direction,
-        scale: 2,
-        x: actor.x,
-        y: actor.y,
-        ...(actor.fromX !== undefined ? { fromX: actor.fromX } : {}),
-        ...(actor.toX !== undefined ? { toX: actor.toX } : {}),
-        ...(actor.durationMs !== undefined ? { durationMs: actor.durationMs } : {}),
-        stride: 16,
-      });
-    }
-
-    // Floating starlight / mana particles
-    const particleLayer: AnimaticLayer = {
-      id: "starlight_particles",
-      kind: "particles",
-      role: "effect",
-      x: 0,
-      y: 24,
-      width: 384,
-      height: 160,
-      color: s.particleColor,
-      opacity: 0.8,
-      blend: "lighter",
-      particles: {
-        preset: s.particlePreset,
-        count: 28,
-        seed: idx * 7 + 11,
-        speed: s.particlePreset === "sparks" ? 34 : 14,
-        size: 1.5,
-      },
-    };
-    execTool(project, "upsert_opening_layer", {
-      shotId: s.id,
-      layer: particleLayer,
-    });
-
-    // Emote bubbles above key actors
-    for (const em of s.emotes ?? []) {
-      execTool(project, "upsert_opening_emote", {
-        shotId: s.id,
-        layerId: em.id,
-        preset: em.preset,
-        targetLayerId: em.targetLayerId,
-        width: 20,
-        height: 22,
-        startMs: em.startMs,
-        endMs: em.endMs,
-        popMs: 160,
-        outMs: 160,
-      });
-    }
-
-    // Camera pan & zoom
-    execTool(project, "animate_opening_camera", {
-      shotId: s.id,
-      camera: {
-        x: 192,
-        y: 108,
-        zoom: 1.03,
-        keys: {
-          x: [
-            { atMs: 0, value: 188, ease: "ease-out" },
-            { atMs: 4500, value: 196, ease: "ease-in-out" },
-          ],
-          y: [
-            { atMs: 0, value: 112, ease: "ease-out" },
-            { atMs: 4500, value: 104, ease: "ease-in-out" },
-          ],
-          zoom: [
-            { atMs: 0, value: 1.02, ease: "linear" },
-            { atMs: 4500, value: 1.08, ease: "ease-out" },
-          ],
-        },
-        ...(s.cameraShake
-          ? { shake: { atMs: 1100, durationMs: 850, amplitude: 3, frequency: 12, seed: 2 } }
-          : {}),
-      },
-    });
-
-    // Single clean caption track inside the bottom letterbox bar
-    execTool(project, "set_opening_caption", {
-      shotId: s.id,
-      layerId: "caption",
-      letterbox: 0.14,
-      fontSize: 12,
-      color: "#fff0dc",
-      cues: [{ atMs: 120, text: s.caption, typewriterMs: 420 }],
-    });
-
-    // Tune light_fx opacity so it blends atmospherically over the backdrop
-    const shotScene = project.system.opening?.scenes.find((sc) => sc.id === s.id);
-    if (shotScene?.kind === "animatic") {
-      const lfx = shotScene.composition.layers.find((l) => l.id === "light_fx");
-      if (lfx) lfx.opacity = s.lightOpacity;
-      const orb = shotScene.composition.layers.find((l) => l.id === "falling_star_orb");
-      if (orb) orb.opacity = 0.72;
+        }
+      }
     }
   }
 }
+
+function eventCommandLists(event: GameEvent): CommandList[] {
+  const out: CommandList[] = [];
+  forEachCommandList(event.commands, (l) => out.push(l));
+  for (const page of event.pages ?? []) forEachCommandList(page.commands, (l) => out.push(l));
+  return out;
+}
+
+const SPEAKER_LINE = /^([^\s:：「」『』()…—][^:：「」『』()]{0,9})[:：]\s*(.+)$/su;
+
+const GENERIC_GIVER = "의뢰인";
+
+/**
+ * 「이름: 말」 로 쓴 대사를 화자 칸으로 옮긴다. 줄바꿈으로 여러 화자를 이은 대사(의뢰·보고)는 여러 창으로 나눈다.
+ * 화자 없는 서술 줄은 그대로 둔다.
+ */
+function applySpeakerPrefixes(project: Project): void {
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      for (const list of eventCommandLists(event)) {
+        for (let i = 0; i < list.length; i += 1) {
+          const cmd = list[i] as Command & { kind: string; body?: string; speaker?: string };
+          // 장 구성기가 의뢰 대사에 붙이는 기본 화자 「의뢰인」은 비어 있는 것으로 본다(본문의 「이름: 말」이 이긴다).
+          if (cmd.kind !== "text" || typeof cmd.body !== "string" || (cmd.speaker && cmd.speaker !== GENERIC_GIVER)) continue;
+          const parts = cmd.body.split("\n").map((s) => s.trim()).filter(Boolean);
+          const parsed = parts.map((line) => {
+            const m = SPEAKER_LINE.exec(line);
+            return m ? { speaker: m[1]!.trim(), body: m[2]!.trim() } : { body: line };
+          });
+          if (!parsed.some((p) => "speaker" in p)) continue;
+          // 같은 화자가 이어지는 줄은 한 창에 모은다.
+          const merged: Array<{ speaker?: string; body: string }> = [];
+          for (const p of parsed) {
+            const last = merged[merged.length - 1];
+            if (last && last.speaker === (p as { speaker?: string }).speaker) last.body += `\n${p.body}`;
+            else merged.push({ ...p });
+          }
+          const replacement = merged.map((p) => {
+            const { speaker: _old, ...rest } = cmd;
+            return { ...rest, body: p.body, ...(p.speaker ? { speaker: p.speaker } : {}) } as Command;
+          });
+          list.splice(i, 1, ...replacement);
+          i += replacement.length - 1;
+        }
+      }
+    }
+  }
+}
+
+function findTextList(map: GameMap, needle: string): { list: CommandList; index: number } | undefined {
+  for (const event of map.events) {
+    for (const list of eventCommandLists(event)) {
+      const index = list.findIndex((c) => c.kind === "text" && typeof (c as { body?: string }).body === "string" && (c as { body: string }).body.includes(needle));
+      if (index >= 0) return { list, index };
+    }
+  }
+  return undefined;
+}
+
+const say = (speaker: string, body: string): Command => ({ kind: "text", speaker, body } as Command);
+const narrate = (body: string): Command => ({ kind: "text", body } as Command);
+
+/** 이벤트의 모든 페이지에서 본문이 정확히 같은 대사를 찾아 바꾼다. 못 찾으면 짓기를 멈춘다(문구가 바뀌면 여기도 고친다). */
+function replaceLine(map: GameMap, eventId: string, body: string, next: Command[]): void {
+  const event = map.events.find((e) => e.id === eventId);
+  for (const list of event ? eventCommandLists(event) : []) {
+    const at = list.findIndex((c) => c.kind === "text" && (c as { body?: string }).body === body);
+    if (at >= 0) { list.splice(at, 1, ...next); return; }
+  }
+  throw new Error(`[fallen-star] ${eventId} 에서 「${body}」 대사를 찾지 못했다`);
+}
+
+function replaceLineAnywhere(map: GameMap, body: string, next: Command[]): void {
+  const hit = map.events.find((e) => eventCommandLists(e).some((l) => l.some((c) => c.kind === "text" && (c as { body?: string }).body === body)));
+  if (!hit) throw new Error(`[fallen-star] ${map.id} 에서 「${body}」 대사를 찾지 못했다`);
+  replaceLine(map, hit.id, body, next);
+}
+
+type ForkCommand = Command & { kind: "fork"; then?: Command[]; else?: Command[] };
+type ChoicesCommand = Command & { kind: "choices"; prompt?: string; options: { text: string; branch: Command[] }[] };
+
+/**
+ * 장 구성기가 넣는 기본 문구(「의뢰인」 화자, 「아직 할 일이 남은 것 같군」, 「고맙네」, 「확인을 마쳤다」, 기본 상자 물건)를
+ * 이 게임 인물의 말로 바꾼다. 문구가 바뀌어 못 찾으면 짓기를 멈춘다.
+ */
+function polishLines(observatory: GameMap, forest: GameMap, vault: GameMap): void {
+  const H = `천문대장 ${FS_NAMES.master}`;
+  const hanel = observatory.events.find((e) => e.id === `ev_${FS_PREFIX}_hanel`);
+  const [askPage, progressPage] = hanel?.pages ?? [];
+  if (!askPage || !progressPage) throw new Error("[fallen-star] 하넬 의뢰 페이지가 없다");
+
+  // 의뢰: 요약 한 줄(「의뢰인」) 대신 하넬의 부탁을 먼저 말하고, 수락하면 짧게 배웅한다.
+  const ask = askPage.commands;
+  const summaryAt = ask.findIndex((c) => c.kind === "text" && (c as { body?: string }).body === FALLEN_STAR_ACT1.quest.summary);
+  const choices = ask.find((c) => c.kind === "choices") as ChoicesCommand | undefined;
+  if (summaryAt < 0 || !choices || choices.options.length < 2) throw new Error("[fallen-star] 하넬 의뢰 대사 구조가 바뀌었다");
+  const accept = choices.options[0]!.branch;
+  const askLines = accept.filter((c) => c.kind === "text");
+  choices.options[0]!.branch = [...accept.filter((c) => c.kind !== "text"), say(H, "조심하거라. 동문으로 나가면 바로 숲이다.")];
+  ask.splice(summaryAt, 1, ...askLines);
+  choices.prompt = "숲으로 가 볼까?";
+  choices.options[0]!.text = "가 보겠습니다";
+  choices.options[1]!.text = "조금 있다가";
+  replaceLine(observatory, hanel!.id, "마음이 바뀌면 다시 오게.", [say(H, "너무 늦지는 말거라. 심문관들이 먼저 닿을지도 모른다.")]);
+
+  // 진행 중: 어디까지 왔는지에 따라 다음 갈 곳을 알려 준다(브람 → 공터 → 지하 철문).
+  const hints = [
+    "동문으로 나가면 숲이다. 숲길은 숲지기 브람에게 물어보거라.",
+    "브람이 말한 북쪽 끝 공터로 가 보거라.",
+    "바닥 철문 말이냐? 별 모양 홈이 있지. 그 열쇠가 맞을지도 모른다. 조심해서 내려가거라.",
+  ];
+  let fork = progressPage.commands.find((c) => c.kind === "fork") as ForkCommand | undefined;
+  for (const hint of hints) {
+    if (!fork) throw new Error("[fallen-star] 하넬 진행 대사 분기가 모자라다");
+    fork.else = [say(H, hint)];
+    fork = (fork.then ?? []).find((c) => c.kind === "fork") as ForkCommand | undefined;
+  }
+  replaceLine(observatory, hanel!.id, "자네 덕분에 살았어. 정말 고맙네.", [say(H, "북쪽 하늘탑으로 가거라. 이리스를 부탁한다.")]);
+
+  replaceLine(forest, `ev_${FS_PREFIX}_bram`, "고맙네.", [say("숲지기 브람", "북쪽 끝 공터다. 길만 따라가라. 풀숲에선 늑대를 조심하고.")]);
+  replaceLine(forest, `ev_${FS_PREFIX}_main_inspect1`, "확인을 마쳤다.", [narrate("금속 알은 텅 비었다. 안쪽에 아직 온기가 남아 있다.")]);
+
+  // 지하 상자 — 기본 표의 「기본 새우」 대신 상급 회복약.
+  const chest = vault.events.find((e) => e.id === `ev_${FS_PREFIX}_vault_chest1`);
+  for (const list of chest ? eventCommandLists(chest) : []) for (const c of list) {
+    const rec = c as unknown as Record<string, unknown>;
+    if (rec.kind === "changeItem" && rec.itemId === "item_shared_fishing_shrimp-1") rec.itemId = "item_hi_potion";
+  }
+  replaceLine(vault, `ev_${FS_PREFIX}_vault_chest1`, "보물상자를 열었다! 기본 새우를 손에 넣었다.", [narrate("보물상자를 열었다! 상급 회복약을 손에 넣었다.")]);
+
+  // 남은 기본 화자 「의뢰인」은 하넬이다(이 장의 의뢰인은 하넬 하나).
+  for (const map of [observatory, forest, vault]) for (const event of map.events) for (const list of eventCommandLists(event)) for (const c of list) {
+    const rec = c as { kind: string; speaker?: string };
+    if (rec.kind === "text" && rec.speaker === GENERIC_GIVER) rec.speaker = H;
+  }
+}
+
+/** 얼굴 그림을 칩과 같은 인물로 맞추거나(faceId) 뺀다(undefined — 맞는 얼굴이 없는 칩). */
+function setEventFace(map: GameMap, eventId: string, faceId: string | undefined): void {
+  const event = map.events.find((e) => e.id === eventId);
+  for (const list of event ? eventCommandLists(event) : []) {
+    for (let i = list.length - 1; i >= 0; i -= 1) {
+      const cmd = list[i] as Command & { resourceId?: string };
+      if (cmd.kind !== "changeFace") continue;
+      if (faceId) cmd.resourceId = faceId; else list.splice(i, 1);
+    }
+  }
+}
+
+// ── 그림 ────────────────────────────────────────────────────────────────
+
+function setEventChip(map: GameMap | undefined, eventId: string, texture: string, characterIndex: number): void {
+  const event = map?.events.find((e) => e.id === eventId);
+  if (!event) return;
+  for (const page of event.pages ?? []) {
+    if (!page.graphic?.sprite) continue;
+    const direction = page.graphic.direction ?? "down";
+    page.graphic = {
+      ...page.graphic,
+      sprite: { type: "bundled", id: texture },
+      direction,
+      pattern: charsetFrameIndex({ characterIndex, direction, pattern: 1 }),
+    };
+  }
+}
+
+/** 조건을 만족하면 이벤트가 맵에서 사라지는 마지막 페이지(나중 페이지가 이긴다). */
+function vanishWhen(map: GameMap | undefined, eventId: string, switchId: string): void {
+  const event = map?.events.find((e) => e.id === eventId);
+  if (!event?.pages) return;
+  event.pages.push({
+    id: `${eventId}_gone`,
+    name: "떠남",
+    conditions: [{ kind: "switch", switchId, value: true }],
+    graphic: { transparent: true },
+    movement: { type: "fixed", speed: 3, frequency: 3 },
+    priority: "below",
+    trigger: { kind: "action" },
+    commands: [],
+  } as EventPage);
+}
+
+/** origin 에서 가장 가까운, 걸을 수 있고 다른 이벤트와 붙지 않은 빈 칸. */
+function nearFree(project: Project, map: GameMap, origin: { x: number; y: number }, maxR: number, selfId?: string): { x: number; y: number } | undefined {
+  const others = map.events.filter((e) => e.id !== selfId);
+  for (let r = 0; r <= maxR; r += 1) {
+    for (let dy = -r; dy <= r; dy += 1) for (let dx = -r; dx <= r; dx += 1) {
+      if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
+      const x = origin.x + dx, y = origin.y + dy;
+      if (x < 1 || y < 1 || x >= map.width - 1 || y >= map.height - 1 || !isPassable(project, map, x, y)) continue;
+      if (others.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 1)) continue;
+      return { x, y };
+    }
+  }
+  return undefined;
+}
+
+/** 소품 발자국이 모두 걸을 수 있는 빈 바닥이고 이벤트와 붙지 않을 때만 찍는다(길·조사 칸을 막지 않는다). */
+function tryStamp(project: Project, map: GameMap, objectId: string, x: number, y: number): boolean {
+  const m = /^kit:([^/]+)\/(.+)$/u.exec(objectId);
+  const kit = m ? project.tilesets[m[1]!]?.structureKits?.find((k) => k.id === m[2]) : undefined;
+  if (!kit) return false;
+  for (let dy = 0; dy < kit.height; dy += 1) for (let dx = 0; dx < kit.width; dx += 1) {
+    const cx = x + dx, cy = y + dy;
+    if (cx < 1 || cy < 1 || cx >= map.width - 1 || cy >= map.height - 1 || !isPassable(project, map, cx, cy)) return false;
+    if (map.events.some((e) => Math.abs(e.x - cx) + Math.abs(e.y - cy) <= 1)) return false;
+  }
+  try {
+    execTool(project, "stamp_object", { objectId, mapId: map.id, x, y });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// ── 짓기 ────────────────────────────────────────────────────────────────
 
 export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   const project = createBlankProject();
   const initialBlankMapIds = Object.keys(project.maps);
 
-  project.meta.title = "폴른 스타: 추락한 별과 태엽의 성녀";
+  project.meta.title = "폴른 스타";
   project.meta.author = "OPRN Flagship Studio";
-  // 480×270 · 배율 1 = 30×17칸(2026-10-20 사용자 결정: 640×360·배율 2 의 20×11칸은 너무 좁았다). 배율 1 은 생략이 기본값이다.
+  // 480×270 · 배율 1 = 30×17칸(2026-10-20 사용자 결정). 배율 1 은 생략이 기본값이다.
   project.system.playResolution = { width: 480, height: 270 };
   delete project.system.cameraZoom;
   project.system.dialogueStyle = "pixel-cinematic";
 
-  const hero = project.database.actors.find((a) => a.id === DEFAULT_ACTOR_ID) ?? project.database.actors[0];
-  if (hero) {
-    hero.name = "카엘";
-    hero.nickname = "왕립 천문대의 별지기 기사";
-    hero.initialLevel = 15;
-    hero.characterResourceId = "easyrpg-charset-actor1";
-    hero.characterIndex = 0;
+  setupCast(project);
+  const troops = setupFoes(project);
+  if (!project.switches.some((s) => s.id === SW_IRIS_JOINED)) project.switches.push({ id: SW_IRIS_JOINED, name: "이리스 합류" });
+
+  const built = buildJrpgChapter(project, FALLEN_STAR_ACT1, { chapterId: "fallen_star_act1", prefix: FS_PREFIX, seed: 7, troops });
+  if (process.env.FS_DEBUG) console.error("[fallen-star] chapter:", built.summary, JSON.stringify(built.warnings ?? [], null, 1));
+  const data = built.data as { hubMapId: string; maps: Array<{ key: string; mapId: string }> };
+  const mapIdOf = (key: string): string => data.maps.find((m) => m.key === key)!.mapId;
+  const ids = { hub: data.hubMapId, observatory: mapIdOf("observatory"), forest: mapIdOf("forest"), vault: mapIdOf("vault") };
+  for (const id of Object.values(ids)) if (!project.maps[id]) throw new Error(`[fallen-star] 맵이 덜 지어졌다: ${id} ${JSON.stringify(built.warnings ?? [])}`);
+  // 도구를 부를 때마다 맵 객체가 바뀐다 — 늘 새로 꺼낸다.
+  const M = (id: string): GameMap => project.maps[id]!;
+
+  applySpeakerPrefixes(project);
+
+  // 인물 칩 — 검색어로 고른 그림 대신 정해 둔 배우를 쓴다(같은 인물이 맵마다 다른 그림이면 안 된다).
+  setEventChip(M(ids.hub), `ev_${FS_PREFIX}_valen`, "tex_easyrpg_charset_actor1", 4);
+  setEventChip(M(ids.hub), `ev_${FS_PREFIX}_knight`, "tex_easyrpg_charset_actor1", 2);
+  setEventChip(M(ids.observatory), `ev_${FS_PREFIX}_hanel`, "tex_easyrpg_charset_people1", 6);
+  setEventChip(M(ids.forest), `ev_${FS_PREFIX}_bram`, "tex_easyrpg_charset_actor2", 2);
+  setEventChip(M(ids.hub), `ev_${FS_PREFIX}_elder`, "tex_easyrpg_charset_people1", 7);
+  // 얼굴은 칩과 같은 인물만(People1 은 칩·얼굴 번호가 같다). 맞는 얼굴이 없는 칩은 얼굴을 뺀다.
+  setEventFace(M(ids.observatory), `ev_${FS_PREFIX}_hanel`, "easyrpg-faceset-people1-06");
+  setEventFace(M(ids.hub), `ev_${FS_PREFIX}_elder`, "easyrpg-faceset-people1-07");
+  setEventFace(M(ids.hub), `ev_${FS_PREFIX}_gate`, undefined);
+  setEventFace(M(ids.forest), `ev_${FS_PREFIX}_bram`, undefined);
+  polishLines(M(ids.observatory), M(ids.forest), M(ids.vault));
+  const bossEvent = M(ids.vault).events.find((e) => (e.pages ?? []).some((p) => JSON.stringify(p.commands).includes("battleProcessing")) && e.id.includes("kill"));
+  if (bossEvent) setEventChip(M(ids.vault), bossEvent.id, "tex_easyrpg_charset_actor1", 4);
+
+  // 떨어진 별을 열면 이리스가 깨어나 동료가 된다. 별빛 열쇠는 알 안에 있다 — 뚜껑이 열린 뒤 이리스가 건넨다.
+  // 장 구성기 기본값인 「풀이 칸 바닥을 풀숲으로 바꾸기」(changeTile)는 그을린 흙 위에 풀 한 칸을 남겨 뺀다.
+  const podOpened = findTextList(M(ids.forest), "치익— 뚜껑이 열리고");
+  if (!podOpened) throw new Error("[fallen-star] 떨어진 별 조사 대사를 찾지 못했다");
+  const podList = podOpened.list;
+  const keyAt = podList.findIndex((c) => c.kind === "changeItem" && (c as { itemId?: string }).itemId === FS_STAR_KEY_ITEM);
+  const keyGain = keyAt >= 0 ? podList.splice(keyAt, 2)[0]! : ({ kind: "changeItem", itemId: FS_STAR_KEY_ITEM, op: "+=", amount: 1 } as Command);
+  for (let i = podList.length - 1; i >= 0; i -= 1) if (podList[i]!.kind === "changeTile") podList.splice(i, 1);
+  const opened = podList.findIndex((c) => c.kind === "text" && String((c as { body?: string }).body).includes("치익— 뚜껑이 열리고"));
+  podList.splice(opened + 1, 0,
+    say("이리스", "…여기는 어디죠? 제 배는… 부서졌군요."),
+    say("카엘", "괜찮아? 너… 별에서 떨어진 거야?"),
+    say("이리스", "별이 아니라 배예요. 저는 이리스. 사람을 닮게 만든 기계예요."),
+    say("엘레나", "기계라고? 말도 하고, 숨도 쉬는데…"),
+    say("이리스", "숨은 흉내예요. 사람들이 덜 무서워하라고요."),
+    say("이리스", "집에 돌아가려면 신호를 보내야 해요. 높은 곳에, 커다란 렌즈가 있는 곳이 필요해요."),
+    say("엘레나", "렌즈라면… 천문대에 있어."),
+    say("이리스", "그리고 이거요. 배 안쪽에 박혀 있던 거예요."),
+    keyGain,
+    narrate("「별빛 열쇠」를 얻었다."),
+    say("엘레나", "이 별 무늬… 천문대 바닥 철문에 파인 홈이랑 똑같아."),
+    say("카엘", "돌아가자. 심문관들이 여길 찾기 전에."),
+    { kind: "changeParty", actorId: IRIS_ID, action: "add" } as Command,
+    { kind: "setSwitch", switchId: SW_IRIS_JOINED, value: true } as Command,
+    narrate("이리스가 동료가 되었다."),
+  );
+  // 이리스가 합류하면 광장의 발렌 일행은 숲으로 떠난다(지하에서 다시 만난다).
+  vanishWhen(M(ids.hub), `ev_${FS_PREFIX}_valen`, SW_IRIS_JOINED);
+  vanishWhen(M(ids.hub), `ev_${FS_PREFIX}_knight`, SW_IRIS_JOINED);
+
+  // 보스 — 발렌 혼자가 아니라 깨운 수호상과 함께. 지면 엔딩 대신 숨을 고르고 다시 도전한다.
+  if (bossEvent) {
+    for (const list of eventCommandLists(bossEvent)) {
+      for (const cmd of list) {
+        const rec = cmd as unknown as Record<string, unknown>;
+        if (rec.kind === "battleProcessing") { rec.troopId = troops.boss; rec.canLose = true; rec.canEscape = false; }
+        if (rec.kind === "fork" && (rec.condition as { kind?: string } | undefined)?.kind === "battleResult") {
+          rec.else = [
+            { kind: "recoverAll" },
+            say("엘레나", "물러서자! 숨을 고르고 다시 가."),
+          ];
+        }
+      }
+    }
   }
 
+  // 엔딩 — 하넬에게 보고하면 제1막이 끝난다.
+  execTool(project, "define_ending", {
+    id: ENDING_ID,
+    name: "제1막 · 떨어진 별",
+    conditions: [],
+    epilogue: [
+      { kind: "say", speaker: "이리스", text: "북쪽 하늘에서 아직 대답이 들려요. 아주 작게." },
+      { kind: "say", speaker: "카엘", text: "그럼 거기까지 가 보자. 같이." },
+    ],
+  });
+  const reported = findTextList(M(ids.observatory), "이리스를 집에 데려다주거라");
+  if (!reported) throw new Error("[fallen-star] 보고 대사를 찾지 못했다");
+  reported.list.push({ kind: "triggerEnding", endingId: ENDING_ID } as Command);
+
+  // 숲길 — 보이는 적 셋(부딪히면 전투). 입구에서 공터까지 고르게 둔다.
+  const forestEntry = M(ids.forest).events.find((e) => JSON.stringify(e).includes(`"mapId":"${M(ids.hub).id}"`));
+  const origin = forestEntry ? { x: forestEntry.x, y: forestEntry.y } : { x: Math.floor(M(ids.forest).width / 2), y: M(ids.forest).height - 2 };
+  const taken = new Set<string>();
+  [0.25, 0.45, 0.62].forEach((rank, i) => {
+    const at = pickSpot(project, M(ids.forest), origin, taken, rank, 3);
+    if (at && at.y < 13) return; // 추락지 공터에는 짐승을 두지 않는다.
+    if (!at) return;
+    taken.add(`${at.x},${at.y}`);
+    placeRoamer(project, { mapId: M(ids.forest).id, x: at.x, y: at.y, troopId: troops.field[i % troops.field.length], behavior: "patrol", id: `ev_${M(ids.forest).id}_foe${i + 1}` }, i % 2 === 0);
+  });
+
+  // 천문대 지하 첫 방 — 화로 순서 퍼즐(품질 프리셋은 20×15 빈 방 전체를 짓는다). 천문대 뚜껑문 → 이 방 → 풀면 북쪽 창살 → 옛 별지기의 방.
+  const PUZZLE_ROOM = "fs_vault_gate";
+  execTool(project, "create_map", { id: PUZZLE_ROOM, name: "천문대 지하 · 네 화로의 방", width: 20, height: 15, tilesetId: "atlas_biome_interior" });
+  execTool(project, "author_map_puzzle", { mapId: PUZZLE_ROOM, presetId: "brazier_ignition_order", puzzleId: "fs_braziers", title: "네 화로의 방" });
+  M(PUZZLE_ROOM).atmosphereEffects = M(ids.vault).atmosphereEffects;
+  replaceLineAnywhere(M(PUZZLE_ROOM), "퍼즐 해독 보상! 「태양의 불씨 보관함」과(와) 250G를 획득했다!", [narrate("화로 사이 바닥이 열리고, 「태양의 불씨 보관함」과 250G가 나왔다.")]);
+  const retarget = (map: GameMap, fromMapId: string, to: { mapId: string; x: number; y: number; facing?: string }): GameEvent | undefined => {
+    const event = map.events.find((e) => eventCommandLists(e).some((l) => l.some((c) => c.kind === "transfer" && (c as { mapId?: string }).mapId === fromMapId)));
+    if (!event) return undefined;
+    for (const list of eventCommandLists(event)) for (const cmd of list) {
+      const rec = cmd as unknown as Record<string, unknown>;
+      if (rec.kind === "transfer" && rec.mapId === fromMapId) Object.assign(rec, to);
+    }
+    return event;
+  };
+  const touchTransfer = (map: GameMap, id: string, x: number, y: number, to: { mapId: string; x: number; y: number; facing: string }): void => {
+    map.events.push({
+      id, name: "출입구", x, y, trigger: { kind: "playerTouch" }, commands: [],
+      pages: [{
+        id: `${id}_p`, name: "출입구", conditions: [], graphic: { transparent: true }, trigger: { kind: "playerTouch" },
+        priority: "below", overlapForbidden: false, movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [{ kind: "transfer", ...to, fade: "black" } as Command],
+      }],
+    } as GameEvent);
+  };
+  const hatch = retarget(M(ids.observatory), M(ids.vault).id, { mapId: PUZZLE_ROOM, x: 10, y: 13, facing: "up" });
+  if (!hatch) throw new Error("[fallen-star] 천문대 뚜껑문을 찾지 못했다");
+  // 뚜껑문이 보이게 — 투명 출입구 칸에 바닥 뚜껑문 그림을 찍는다.
+  execTool(project, "stamp_object", { objectId: "kit:atlas_biome_interior/hand-interior:trapdoor", mapId: M(ids.observatory).id, x: hatch.x, y: hatch.y });
+  const hatchFront = pickSpot(project, M(ids.observatory), { x: hatch.x, y: hatch.y }, new Set([`${hatch.x},${hatch.y}`]), 0.01, 1) ?? { x: hatch.x, y: hatch.y + 1 };
+  touchTransfer(M(PUZZLE_ROOM), "ev_fs_vault_gate_down", 10, 14, { mapId: M(ids.observatory).id, x: hatchFront.x, y: hatchFront.y, facing: "down" });
+  const vaultStairs = retarget(M(ids.vault), M(ids.observatory).id, { mapId: PUZZLE_ROOM, x: 10, y: 3, facing: "down" });
+  const vaultEntry = vaultStairs ? { x: vaultStairs.x, y: vaultStairs.y + 2 } : { x: 30, y: 58 };
+  for (const gx of [9, 10]) touchTransfer(M(PUZZLE_ROOM), `ev_fs_vault_gate_up${gx}`, gx, 2, { mapId: M(ids.vault).id, x: vaultEntry.x, y: vaultEntry.y, facing: "up" });
+
+  // 동문 문지기는 숲으로 나가는 출입구 곁에 세운다.
+  const forestGate = M(ids.hub).events.find((e) => JSON.stringify(e).includes(`"mapId":"${M(ids.forest).id}"`));
+  const guard = M(ids.hub).events.find((e) => e.id === `ev_${FS_PREFIX}_gate`);
+  if (forestGate && guard) {
+    const spot = nearFree(project, M(ids.hub), { x: forestGate.x - 2, y: forestGate.y - 1 }, 4, guard.id);
+    if (spot) { guard.x = spot.x; guard.y = spot.y; }
+  }
+
+  // 추락지 — 금속 알 둘레를 그을린 흙(농장 흙길 오토타일)으로 타원형으로 칠하고, 가장자리에 불씨 자국·쓰러진 나무·그루터기를 둔다.
+  // 민무늬 풀 칸만 칠한다(알 그림·길은 건드리지 않는다). 알 앞 조사 칸과 숲길은 비운다.
+  const pod = M(ids.forest).events.find((e) => e.id === `ev_${FS_PREFIX}_main_inspect1`);
+  if (pod) {
+    const fm = M(ids.forest);
+    const cx = pod.x, cy = pod.y - 1, rx = 5.2, ry = 3.4;
+    for (let y = Math.max(1, Math.floor(cy - ry)); y <= Math.min(fm.height - 2, Math.ceil(cy + ry)); y += 1) {
+      let runStart = -1;
+      for (let x = Math.max(1, Math.floor(cx - rx)); x <= Math.min(fm.width - 1, Math.ceil(cx + rx) + 1); x += 1) {
+        const wob = ((x * 7 + y * 13) % 5) * 0.06;
+        const inside = x <= fm.width - 2 && ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1 - wob
+          && fm.lowerTiles[y * fm.width + x] === 737 && (fm.upperTiles[y * fm.width + x] ?? -1) < 0;
+        if (inside && runStart < 0) runStart = x;
+        if (!inside && runStart >= 0) {
+          execTool(project, "fill_region", { mapId: fm.id, x: runStart, y, w: x - runStart, h: 1, layer: "lower", material: "버들항 농장 흙길" });
+          runStart = -1;
+        }
+      }
+    }
+    const debris: Array<[string, number, number]> = [
+      ["bd-pick-volcano-cave-ember-a", -2, -2], ["bd-pick-volcano-cave-ember-a", 2, 0], ["bd-pick-volcano-cave-ember-a", -3, 0],
+      ["bd-pick-deep-forest-path-log-fallen", -7, 1], ["bd-pick-deep-forest-path-log-fallen", 5, 2],
+      ["bd-pick-deep-forest-path-stump", -6, -3], ["bd-pick-deep-forest-path-stump", 6, -2], ["bd-pick-deep-forest-path-stump", -7, -1],
+      ["bd-pick-mining-valley-slagrock", 3, -3], ["bd-pick-sea-cave-rubble-cave", -4, 2],
+    ];
+    for (const [kit, dx, dy] of debris) tryStamp(project, M(ids.forest), `kit:beodeul_city/${kit}`, pod.x + dx, pod.y + dy);
+  }
+  // 숲지기 곁 모닥불.
+  const bram = M(ids.forest).events.find((e) => e.id === `ev_${FS_PREFIX}_bram`);
+  if (bram) for (const [dx, dy] of [[1, 1], [-1, 1], [1, -1], [-1, -1]] as const) if (tryStamp(project, M(ids.forest), "kit:beodeul_city/bd-pick-deep-forest-path-campfire", bram.x + dx, bram.y + dy)) break;
+
+  // 시작 — 광장, 천문대 문이 보이는 곳.
+  const observatoryDoor = M(ids.hub).events.find((e) => JSON.stringify(e).includes(`"mapId":"${M(ids.observatory).id}"`));
+  let start = observatoryDoor ? { x: observatoryDoor.x, y: observatoryDoor.y + 3 } : { x: Math.floor(M(ids.hub).width / 2), y: Math.floor(M(ids.hub).height / 2) };
+  if (!isPassable(project, M(ids.hub), start.x, start.y) || M(ids.hub).events.some((e) => e.x === start.x && e.y === start.y)) {
+    start = pickSpot(project, M(ids.hub), start, new Set(), 0.02, 0) ?? start;
+  }
+  project.startMapId = M(ids.hub).id;
+  project.startPos = start;
+
+  // 빈 시작 맵 정리 + 맵 나무.
+  for (const blankId of initialBlankMapIds) {
+    if (blankId !== M(ids.hub).id) delete project.maps[blankId];
+  }
+  project.mapTree = {
+    mapId: M(ids.hub).id,
+    children: [
+      { mapId: M(ids.observatory).id, children: [{ mapId: PUZZLE_ROOM, children: [{ mapId: M(ids.vault).id, children: [] }] }] },
+      { mapId: M(ids.forest).id, children: [] },
+    ],
+  };
+
+  // 타이틀·오프닝 — 게임 안 맵을 1:1 로 구운 그림 위에 같은 배우 칩을 1배로 세운다(fallenStarOpening.ts).
   execTool(project, "set_title_screen", {
-    title: "폴른 스타: 추락한 별과 태엽의 성녀",
-    backgroundResourceId: "oprn-still-kingdom-day",
+    title: "폴른 스타",
+    backgroundResourceId: FALLEN_STAR_TITLE_BACKGROUND,
     logoStyle: "gold",
   });
   if (project.system.titleScreen) {
-    project.system.titleScreen.logoSubtitle = "Fallen Star — 추락한 별과 태엽의 마도 인형 · 제1막";
+    project.system.titleScreen.logoSubtitle = "제1막 · 떨어진 별";
+    // 배경은 게임 맵을 1배로 구운 밤 왕도 — 늘리지 않고 도트 그대로 보인다.
+    project.system.titleScreen.backgroundFit = "cover";
+    project.system.titleScreen.backgroundRendering = "pixelated";
   }
-
   buildFallenStarOpening(project);
-
-  // Build the canonical chapters across the Kingdom of Astel, Royal Observatory, Starfall Crater, Astral Ruins, and Sanctuary
-  execTool(project, "author_jrpg_chapter", { chapter: "ct_truce_fair", seed: 7 });
-  const hubMapId = "ct_truce_fair_hub";
-  execTool(project, "author_jrpg_chapter", { chapter: "ct_middle_ages", seed: 7, timeGateFrom: hubMapId });
-  execTool(project, "author_jrpg_chapter", { chapter: "ff6_narshe", seed: 7, timeGateFrom: hubMapId });
-  execTool(project, "author_jrpg_chapter", { chapter: "ff6_zozo_kefka", seed: 7, timeGateFrom: hubMapId });
-  execTool(project, "author_jrpg_chapter", { chapter: "ct_future", seed: 7, timeGateFrom: hubMapId });
-  execTool(project, "author_jrpg_chapter", { chapter: "ct_prehistory", seed: 7, timeGateFrom: hubMapId });
-  execTool(project, "author_jrpg_chapter", { chapter: "ct_zeal", seed: 7, timeGateFrom: hubMapId });
-
-  // Remap all chapter lore, map names, NPC names, and quest text to Fallen Star (폴른 스타) Act 1
-  replaceFallenStarLoreDeep(project.maps);
-  replaceFallenStarLoreDeep(project.quests);
-  replaceFallenStarLoreDeep(project.database.items);
-
-  // Update companion actors to Fallen Star cast (Iris, Elena, Aegis-07, Logan)
-  const actorCustomizations: Readonly<
-    Record<
-      string,
-      {
-        readonly name: string;
-        readonly nickname: string;
-        readonly charsetId: string;
-        readonly index: number;
-        readonly battleCharacterResourceId: string;
-      }
-    >
-  > = {
-    actor_ct_truce_fair_marle: {
-      name: "이리스",
-      nickname: "추락한 별의 태엽 안드로이드 성녀",
-      charsetId: "oprn-charset-heroes1",
-      index: 5,
-      battleCharacterResourceId: "charset-battler-actor4-6",
-    },
-    actor_ct_truce_fair_lucca: {
-      name: "엘레나",
-      nickname: "왕도 아스텔의 성좌 마도학자",
-      charsetId: "oprn-charset-heroes1",
-      index: 2,
-      battleCharacterResourceId: "charset-battler-actor1-5",
-    },
-    actor_ct_middle_ages_frog: {
-      name: "아이기스-07",
-      nickname: "별의 방주 수호 오토마톤",
-      charsetId: "oprn-charset-heroes1",
-      index: 3,
-      battleCharacterResourceId: "party-pixel-monster5-6",
-    },
-    actor_ff6_zozo_kefka_sabin: {
-      name: "로건",
-      nickname: "아스텔 성채 수호단장",
-      charsetId: "easyrpg-charset-actor4",
-      index: 1,
-      battleCharacterResourceId: "charset-battler-actor4-5",
-    },
-  };
-  for (const actor of project.database.actors) {
-    const spec = actorCustomizations[actor.id];
-    if (spec) {
-      actor.name = spec.name;
-      actor.nickname = spec.nickname;
-      actor.characterResourceId = spec.charsetId;
-      actor.characterIndex = spec.index;
-      actor.battleCharacterResourceId = spec.battleCharacterResourceId;
-    }
-    actor.initialLevel = Math.max(actor.initialLevel ?? 1, 15);
-  }
-
-  // Define the two canonical Act 1 endings of Fallen Star
-  execTool(project, "define_ending", {
-    id: "end_chrono_bell_true",
-    name: "폴른 스타 제1막 완결 — 부서진 별에서 피어난 태엽의 약속",
-    conditions: [],
-    epilogue: [
-      {
-        kind: "say",
-        speaker: "이리스",
-        text: "심문관 발렌의 마도 거신이 멈추고, 내 태엽 코어에 천상 방주의 첫 번째 귀환 좌표가 복원됐어… 고마워, 카엘!",
-      },
-      {
-        kind: "say",
-        speaker: "엘레나",
-        text: "이 성좌 좌표는 왕국 북방의 천공 첨탑을 가리키고 있어. 이리스가 고향 별로 돌아갈 여정은 이제부터가 진짜 시작이야!",
-      },
-      {
-        kind: "say",
-        speaker: "아이기스-07",
-        text: "삐빅— 방주 코어 동력 42% 회복 완료. 수호 프로토콜에 따라 이리스 님과 카엘 님의 제2막 귀환 여정을 끝까지 호위합니다.",
-      },
-    ],
-  });
-  execTool(project, "define_ending", {
-    id: "end_chrono_bell_epoch",
-    name: "별빛 성좌의 날개 — 제2막 천공의 첨탑을 향하여",
-    conditions: [],
-    epilogue: [
-      {
-        kind: "say",
-        speaker: "엘레나",
-        text: "추락한 별의 방주 날개가 다시 마력을 되찾고 있어! 저 구름 너머 성좌의 바다로 나아가자!",
-      },
-      {
-        kind: "say",
-        speaker: "이리스",
-        text: "내 태엽 심장이 뛰는 한, 카엘과 함께한 이 별의 기억을 절대 잊지 않을게!",
-      },
-    ],
-  });
-
-  const hub = project.maps[hubMapId];
-  if (!hub) throw new Error("[chrono-bell] Missing ct_truce_fair_hub");
-
-  // Place player in the Royal Capital Astel Plaza on a passable cell with open neighbors
-  const hubSpawn = { x: Math.floor(hub.width / 2), y: Math.floor(hub.height / 2) };
-  let startPos = hubSpawn;
-  for (let r = 0; r < 16; r++) {
-    let found: { x: number; y: number } | undefined;
-    for (let dy = -r; dy <= r && !found; dy++) {
-      for (let dx = -r; dx <= r && !found; dx++) {
-        const cx = hubSpawn.x + dx;
-        const cy = hubSpawn.y + dy;
-        if (cx < 2 || cy < 2 || cx >= hub.width - 2 || cy >= hub.height - 2) continue;
-        if (!isPassable(project, hub, cx, cy)) continue;
-        if (hub.events.some((e) => Math.abs(e.x - cx) + Math.abs(e.y - cy) <= 1)) continue;
-        if (canMove(project, hub, cx, cy, cx, cy - 1) && canMove(project, hub, cx, cy, cx + 1, cy)) {
-          found = { x: cx, y: cy };
-        }
-      }
-    }
-    if (found) {
-      startPos = found;
-      break;
-    }
-  }
-  project.startMapId = hubMapId;
-  project.startPos = startPos;
-
-  // Remove untouched initial blank seed map so every map in the project is a real authored flagship map
-  for (const blankId of initialBlankMapIds) {
-    if (blankId !== hubMapId && project.maps[blankId]) {
-      delete project.maps[blankId];
-    }
-  }
-  for (const map of Object.values(project.maps)) {
-    for (const ev of map.events) {
-      if (ev.trigger.kind === "auto") {
-        ev.trigger = { kind: "action" };
-      }
-      for (const page of ev.pages ?? []) {
-        if (page.trigger.kind === "auto") {
-          page.trigger = { kind: "action" };
-        }
-      }
-    }
-  }
-  project.mapTree = {
-    mapId: hubMapId,
-    children: Object.keys(project.maps)
-      .filter((id) => id !== hubMapId)
-      .map((mapId) => ({ mapId, children: [] })),
-  };
-
-  // Ensure switches for our flagship interactive showcase events
-  const ensureSw = (id: string, name: string): void => {
-    if (!project.switches.some((s) => s.id === id)) project.switches.push({ id, name });
-  };
-  ensureSw("sw_chrono_bell_rung", "별의 방주 신호기 공명 완료");
-  ensureSw("sw_chrono_party_joined", "이리스·엘레나·아이기스-07 합류 완료");
-  ensureSw("sw_chrono_sword_restored", "천상 귀환 좌표 제1장 복원");
-  ensureSw("sw_chrono_final_won", "성좌 심문관 발렌 & 마도 거신 격파");
-
-  // Rename and tune boss enemies so 9-cell animations and skills play out briskly
-  for (const enemy of project.database.enemies) {
-    if (enemy.id.includes("zozo_kefka_boss") || enemy.id.includes("middle_ages_boss")) {
-      enemy.name = "성좌 심문관 발렌 & 마도 거신";
-    } else if (enemy.id.includes("prehistory_boss")) {
-      enemy.name = "방주의 수호 거신 아스칼";
-    }
-    if (enemy.id.includes("boss")) {
-      enemy.stats = {
-        ...enemy.stats,
-        maxHp: 35,
-        attack: 6,
-        defense: 2,
-        mind: 5,
-        agility: 5,
-      };
-    }
-  }
-  for (const troop of project.database.troops) {
-    if (troop.id.includes("zozo_kefka_boss") || troop.id.includes("middle_ages_boss")) {
-      troop.name = "성좌 심문관 발렌 & 마도 거신";
-    } else if (troop.id.includes("prehistory_boss")) {
-      troop.name = "방주의 수호 거신 아스칼";
-    }
-  }
-
-  const avoid = new Set<string>([`${startPos.x},${startPos.y}`]);
-
-  // 1) North of spawn: Android Saintess Iris & Star Ark Resonance Tablet (2-step choice puzzle + changeTile + party joins 이리스·엘레나·아이기스-07·로건)
-  const bellPos = { x: startPos.x, y: startPos.y - 1 };
-  avoid.add(`${bellPos.x},${bellPos.y}`);
-  const curTile = hub.lowerTiles[bellPos.y * hub.width + bellPos.x] ?? 0;
-  const altFloorTile =
-    hub.lowerTiles.find((t, idx) => t >= 0 && t !== curTile && isPassable(project, hub, idx % hub.width, Math.floor(idx / hub.width))) ?? curTile;
-
-  const joinActorIds = ["actor_ct_truce_fair_marle", "actor_ct_truce_fair_lucca", "actor_ct_middle_ages_frog"].filter(
-    (aid) => project.database.actors.some((a) => a.id === aid),
-  );
-  const joinCommands: Command[] = joinActorIds.map((actorId) => ({
-    kind: "changeParty",
-    actorId,
-    action: "add",
-  }));
-
-  const bellEvent: GameEvent = {
-    id: "ev_chrono_bell_seal",
-    name: "태엽의 성녀 이리스 & 별의 방주 공명 석판",
-    x: bellPos.x,
-    y: bellPos.y,
-    trigger: { kind: "action" },
-    commands: [],
-    pages: [
-      {
-        id: "ev_chrono_bell_seal_p1",
-        name: "귀환 좌표 복원 전",
-        conditions: [],
-        graphic: {
-          sprite: { type: "bundled", id: "tex_oprn_charset_heroes1" },
-          direction: "down",
-          pattern: charsetFrameIndex({ characterIndex: 5, direction: "down", pattern: 1 }),
-          transparent: false,
-        },
-        movement: { type: "fixed", speed: 3, frequency: 3 },
-        priority: "same",
-        overlapForbidden: true,
-        trigger: { kind: "action" },
-        commands: [
-          {
-            kind: "text",
-            speaker: "이리스",
-            body: "카엘… 내 태엽 코어가 왕도 아스텔의 『성좌 공명 석판』과 반응해! 추락한 별의 귀환 좌표를 깨워 보자!",
-          },
-          {
-            kind: "text",
-            speaker: "엘레나",
-            body: "먼저 방주 신호기를 울려 성좌 마력을 모은 뒤, 이리스의 태엽 코어 주파수를 천상 파장에 동기화하면 바닥의 비밀 문양이 열릴 거야!",
-          },
-          {
-            kind: "choices",
-            prompt: "1단계 — 추락한 별의 방주 신호기를 어떻게 울릴까?",
-            options: [
-              {
-                text: "별지기 기사의 성좌 마력을 담아 힘껏 울린다",
-                branch: [
-                  { kind: "playAudio", resourceId: "easyrpg-sound-bell", loop: false, channel: "se" },
-                  {
-                    kind: "text",
-                    speaker: "엘레나",
-                    body: "청아한 성좌의 종소리가 아스텔 광장 전체에 울려 퍼졌어! 이제 이리스의 태엽 코어 공명 파장을 맞춰 봐!",
-                  },
-                  {
-                    kind: "choices",
-                    prompt: "2단계 — 안드로이드 이리스의 태엽 코어 파장을 어디에 맞출까?",
-                    options: [
-                      {
-                        text: "천상 방주의 청록빛 귀환 파장 (정밀 동기화)",
-                        branch: [
-                          { kind: "changeTile", mapId: hubMapId, layer: "lower", x: bellPos.x, y: bellPos.y, tile: altFloorTile },
-                          ...joinCommands,
-                          { kind: "changeItem", itemId: "item_lava_flint", op: "+=", amount: 1 },
-                          { kind: "changeItem", itemId: "item_zozo_clock_key", op: "+=", amount: 1 },
-                          { kind: "setSwitch", switchId: "sw_chrono_bell_rung", value: true },
-                          { kind: "setSwitch", switchId: "sw_chrono_party_joined", value: true },
-                          { kind: "setSwitch", switchId: "sw_chrono_sword_restored", value: true },
-                          {
-                            kind: "text",
-                            speaker: "이리스",
-                            body: "바닥 석판이 청록빛으로 열리며 귀환 좌표가 기록됐어! 태엽 성녀 『이리스』·마도학자 『엘레나』·수호 로봇 『아이기스-07』이 파티에 합류했다!",
-                          },
-                        ],
-                      },
-                      {
-                        text: "과부하 최대 출력",
-                        branch: [{ kind: "text", speaker: "엘레나", body: "마력 파장이 너무 거세서 태엽 코어가 흔들려! 다시 정밀하게 맞춰 보자." }],
-                      },
-                    ],
-                  },
-                ],
-              },
-              {
-                text: "살살 건드린다",
-                branch: [{ kind: "text", speaker: "이리스", body: "신호기 파장이 약해서 방주 코어에 닿지 않아. 성좌 마력을 담아 울려 보자!" }],
-              },
-            ],
-          },
-        ],
-      },
-      {
-        id: "ev_chrono_bell_seal_p2",
-        name: "귀환 좌표 복원 완료",
-        conditions: [{ kind: "switch", switchId: "sw_chrono_bell_rung", value: true }],
-        graphic: {
-          sprite: { type: "bundled", id: "tex_oprn_charset_heroes1" },
-          direction: "down",
-          pattern: charsetFrameIndex({ characterIndex: 5, direction: "down", pattern: 1 }),
-          transparent: false,
-        },
-        movement: { type: "fixed", speed: 3, frequency: 3 },
-        priority: "same",
-        overlapForbidden: true,
-        trigger: { kind: "action" },
-        commands: [
-          {
-            kind: "text",
-            speaker: "이리스",
-            body: "카엘, 엘레나, 아이기스-07… 모두 고마워! 바로 오른쪽의 『성좌의 회랑 관문』을 조사하면 제1막의 핵심 지역과 심문관 발렌 결전으로 이동할 수 있어!",
-          },
-        ],
-      },
-    ],
-  };
-  hub.events.push(bellEvent);
-
-  // 2) East of spawn: Astral Gate Nexus & Act 1 Climax Boss Battle (`성좌 심문관 발렌 & 마도 거신` -> `방주의 수호 거신 아스칼`) + Ending
-  const nexusPos = findAdjacentWalkable(project, hub, { x: startPos.x + 1, y: startPos.y }, avoid);
-  avoid.add(`${nexusPos.x},${nexusPos.y}`);
-
-  // 2b) Northwest of spawn: Clockwork Automaton Aegis-07 (`oprn-charset-heroes1` index 3) standing visibly in the plaza
-  const aegisPos = findAdjacentWalkable(project, hub, { x: startPos.x - 1, y: startPos.y - 1 }, avoid);
-  avoid.add(`${aegisPos.x},${aegisPos.y}`);
-  hub.events.push({
-    id: "ev_fallen_star_aegis",
-    name: "방주 수호 오토마톤 아이기스-07",
-    x: aegisPos.x,
-    y: aegisPos.y,
-    trigger: { kind: "action" },
-    commands: [],
-    pages: [
-      {
-        id: "ev_fallen_star_aegis_p1",
-        name: "아이기스-07 대기",
-        conditions: [],
-        graphic: {
-          sprite: { type: "bundled", id: "tex_oprn_charset_heroes1" },
-          direction: "down",
-          pattern: charsetFrameIndex({ characterIndex: 3, direction: "down", pattern: 1 }),
-          transparent: false,
-        },
-        movement: { type: "fixed", speed: 3, frequency: 3 },
-        priority: "same",
-        overlapForbidden: true,
-        trigger: { kind: "action" },
-        commands: [
-          {
-            kind: "text",
-            speaker: "아이기스-07",
-            body: "삐빅— 천상 방주 호위기 『아이기스-07』 가동 중. 추락 충격으로 손상된 이리스 님의 귀환 좌표를 복구하기 위해 별지기 기사 카엘 님을 보좌합니다.",
-          },
-        ],
-      },
-    ],
-  });
-  const demonLordTroopId =
-    project.database.troops.find((t) => t.id === "troop_ff6_zozo_kefka_boss")?.id ??
-    project.database.troops.find((t) => t.id === "troop_ct_middle_ages_boss")?.id ??
-    project.database.troops[0]!.id;
-  const dragonRedTroopId =
-    project.database.troops.find((t) => t.id === "troop_ct_prehistory_boss")?.id ??
-    demonLordTroopId;
-
-  const chapelMap = project.maps["ct_middle_ages_chapel"];
-  const futureMap = project.maps["ct_future_hub"];
-  const volcanoMap = project.maps["ct_prehistory_canyon"];
-
-  // Also place Android Iris & Automaton Aegis-07 right beside the Star Ark Pod in the Starfall Crater (`ct_future_hub`) for visual richness
-  if (futureMap) {
-    const craterCenter = { x: Math.floor(futureMap.width / 2), y: Math.floor(futureMap.height / 2) };
-    const craterAvoid = new Set<string>([`${craterCenter.x},${craterCenter.y}`]);
-    for (const ev of futureMap.events) craterAvoid.add(`${ev.x},${ev.y}`);
-    const irisCraterPos = findAdjacentWalkable(project, futureMap, { x: craterCenter.x - 1, y: craterCenter.y }, craterAvoid);
-    craterAvoid.add(`${irisCraterPos.x},${irisCraterPos.y}`);
-    futureMap.events.push({
-      id: "ev_crater_iris_memory",
-      name: "추락한 별의 방주 · 이리스의 기억 잔향",
-      x: irisCraterPos.x,
-      y: irisCraterPos.y,
-      trigger: { kind: "action" },
-      commands: [],
-      pages: [
-        {
-          id: "ev_crater_iris_memory_p1",
-          name: "방주 크레이터 조사",
-          conditions: [],
-          graphic: {
-            sprite: { type: "bundled", id: "tex_oprn_charset_heroes1" },
-            direction: "down",
-            pattern: charsetFrameIndex({ characterIndex: 5, direction: "down", pattern: 1 }),
-            transparent: false,
-          },
-          movement: { type: "fixed", speed: 3, frequency: 3 },
-          priority: "same",
-          overlapForbidden: true,
-          trigger: { kind: "action" },
-          commands: [
-            {
-              kind: "text",
-              speaker: "이리스",
-              body: "여기가 내가 타고 온 『별의 방주』가 추락한 크레이터야… 옆의 동면 포드를 조사하면 마력을 완전히 회복할 수 있어.",
-            },
-          ],
-        },
-      ],
-    });
-  }
-
-  const nexusPage: EventPage = {
-    id: "ev_chrono_era_gate_p1",
-    name: "성좌의 회랑 관문",
-    conditions: [],
-    graphic: {
-      sprite: { type: "bundled", id: "tex_oprn_charset_heroes1" },
-      direction: "left",
-      pattern: charsetFrameIndex({ characterIndex: 2, direction: "left", pattern: 1 }),
-      transparent: false,
-    },
-    movement: { type: "fixed", speed: 3, frequency: 3 },
-    priority: "same",
-    overlapForbidden: true,
-    trigger: { kind: "action" },
-    commands: [
-      {
-        kind: "text",
-        speaker: "엘레나",
-        body: "별의 방주와 연결된 『성좌의 회랑』이 열렸어! 제1막의 어느 지역이나 심문관 발렌 결전지로 이동할까?",
-      },
-      {
-        kind: "choices",
-        prompt: "폴른 스타 제1막 — 이동할 지역과 결전을 선택하세요",
-        options: [
-          {
-            text: "방주의 성소 · 성좌 심문관 발렌 & 마도 거신 결전 (제1막 보스전 → 엔딩)",
-            branch: [
-              {
-                kind: "text",
-                speaker: "성좌 심문관 발렌",
-                body: "추락한 별의 태엽 인형 이리스여! 네 심장의 성좌 코어를 왕국 심문회에 바쳐라! 마도 거신이여, 저들을 짓밟아라!",
-              },
-              {
-                kind: "battleProcessing",
-                troopId: demonLordTroopId,
-                canEscape: true,
-                canLose: true,
-                branchOnResult: true,
-                victoryBranch: [
-                  { kind: "setSwitch", switchId: "sw_chrono_final_won", value: true },
-                  {
-                    kind: "text",
-                    speaker: "이리스",
-                    body: "해냈어, 카엘! 심문관 발렌의 마도 거신이 무너지고, 내 코어에 천상으로 돌아갈 첫 번째 귀환 좌표가 빛나고 있어!",
-                  },
-                  {
-                    kind: "fork",
-                    condition: { kind: "switch", switchId: "sw_chrono_sword_restored", value: true },
-                    then: [{ kind: "triggerEnding", endingId: "end_chrono_bell_true" }],
-                    else: [{ kind: "triggerEnding", endingId: "end_chrono_bell_epoch" }],
-                  },
-                ],
-                defeatBranch: [
-                  { kind: "recoverAll" },
-                  {
-                    kind: "text",
-                    speaker: "이리스",
-                    body: "별의 방주 코어가 우리를 다시 일으켜 세웠어! 천상의 귀환 좌표를 향해 날아오르자!",
-                  },
-                  { kind: "triggerEnding", endingId: "end_chrono_bell_epoch" },
-                ],
-                escapeBranch: [
-                  { kind: "text", speaker: "엘레나", body: "전열을 가다듬고 다시 심문관 발렌에게 맞서자!" },
-                ],
-              },
-            ],
-          },
-          ...(chapelMap
-            ? [
-                {
-                  text: "왕립 천문대 · 성좌 오르간 관측실 (천구의 파이프 오르간 퍼즐)",
-                  branch: [{ kind: "transfer" as const, mapId: chapelMap.id, x: Math.floor(chapelMap.width / 2), y: Math.floor(chapelMap.height / 2) }],
-                },
-              ]
-            : []),
-          ...(futureMap
-            ? [
-                {
-                  text: "속삭이는 마법숲 · 별의 추락지 크레이터 (방주 동면 포드 & 이리스 각성지)",
-                  branch: [{ kind: "transfer" as const, mapId: futureMap.id, x: Math.floor(futureMap.width / 2), y: Math.floor(futureMap.height / 2) }],
-                },
-              ]
-            : []),
-          ...(volcanoMap
-            ? [
-                {
-                  text: "방주의 성소 · 붉은 마력 협곡 (마력 부싯돌 봉인 & 수호 거신 아스칼)",
-                  branch: [
-                    {
-                      kind: "text" as const,
-                      speaker: "방주의 수호 거신 아스칼",
-                      body: "크르르릉!! 추락한 별의 성소를 넘는 자들이여, 고대 성좌의 불꽃 시험을 받아라!",
-                    },
-                    {
-                      kind: "battleProcessing" as const,
-                      troopId: dragonRedTroopId,
-                      canEscape: true,
-                      canLose: true,
-                      branchOnResult: true,
-                      victoryBranch: [
-                        { kind: "text" as const, speaker: "이리스", body: "수호 거신 아스칼이 우리의 의지를 인정했어! 방주의 성소 심층 길이 열렸어!" },
-                        { kind: "transfer" as const, mapId: volcanoMap.id, x: Math.floor(volcanoMap.width / 2), y: Math.floor(volcanoMap.height / 2) },
-                      ],
-                      defeatBranch: [{ kind: "recoverAll" as const }],
-                      escapeBranch: [],
-                    },
-                  ] satisfies Command[],
-                },
-              ]
-            : []),
-          {
-            text: "폴른 스타 제1막 완결 — 부서진 별에서 피어난 태엽의 약속 (에필로그)",
-            branch: [{ kind: "triggerEnding", endingId: "end_chrono_bell_true" }],
-          },
-        ],
-      },
-    ],
-  };
-
-  hub.events.push({
-    id: "ev_chrono_era_gate",
-    name: "엘레나 · 성좌의 회랑 관문 & 심문관 결전",
-    x: nexusPos.x,
-    y: nexusPos.y,
-    trigger: { kind: "action" },
-    commands: [],
-    pages: [nexusPage],
-  });
 
   const serialized = serialize(project);
   const reloaded = deserialize(serialized);
@@ -1313,10 +578,5 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     mapCount: Object.keys(reloaded.maps).length,
     endingCount: reloaded.endings?.length ?? 0,
   };
-  return {
-    id: "chrono-bell",
-    manifest,
-    project: reloaded,
-    serialized,
-  };
+  return { id: "chrono-bell", manifest, project: reloaded, serialized };
 }

@@ -292,6 +292,17 @@ const authorWildRoute: ToolDefinition = {
       encounterRate: { type: "integer", description: `풀숲 조우율(기본 ${DEFAULT_ROUTE_ENCOUNTER_RATE})` },
       seed: { type: "integer", description: "길 굽이·풀숲·숲 무늬 시드(기본 1)" },
       replace: { type: "boolean", description: "이미 칠해진 맵을 다시 깔지(기본 false). 이벤트는 그대로 둔다." },
+      end: {
+        type: "object",
+        description: "막다른 길 끝(맵 안쪽 칸, 선택) — 주면 마지막 출구 다음에 이 칸까지 길을 이어 끝낸다. 출구가 하나뿐인 숲속 공터·추락지·사당 길에 쓴다(exits 는 1개여도 된다).",
+        properties: { x: { type: "integer" }, y: { type: "integer" } },
+        required: ["x", "y"],
+      },
+      clearings: {
+        type: "array",
+        description: "나무를 심지 않고 풀밭으로 비워 둘 공터 [{x,y,w,h}](선택) — 길 끝 공터에 소품·사건을 세울 자리.",
+        items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, w: { type: "integer" }, h: { type: "integer" } }, required: ["x", "y", "w", "h"] },
+      },
     },
     required: ["mapId", "exits"],
     additionalProperties: false,
@@ -303,8 +314,21 @@ const authorWildRoute: ToolDefinition = {
       throw new ToolError(`author_wild_route 는 버들항 타일셋 맵에서만 시공합니다(현재 ${map.tilesetId}). 숲마을·combined_town 도로는 2026-10-07 저작권 정리로 지웠습니다.`, { code: "wild-route-tileset", mapId: map.id });
     }
     if (map.width < 12 || map.height < 12) throw new ToolError("도로 맵은 12×12 이상이어야 합니다.", { code: "invalid-args", mapId: map.id });
-    if (!Array.isArray(args.exits) || args.exits.length < 2) throw new ToolError("exits 는 가장자리 출구 2개 이상이어야 합니다.", { code: "invalid-args", mapId: map.id });
-    const exits = args.exits.map((exit, index) => edgeExit(map, exit, `exits[${index}]`));
+    const endInput = args.end as { x?: unknown; y?: unknown } | undefined;
+    const end = endInput === undefined ? undefined : { x: Number(endInput.x), y: Number(endInput.y) };
+    if (end && (!Number.isInteger(end.x) || !Number.isInteger(end.y) || end.x < 2 || end.y < 2 || end.x >= map.width - 2 || end.y >= map.height - 2)) {
+      throw new ToolError(`end 는 가장자리에서 2칸 이상 안쪽 {x,y} 정수 칸이어야 합니다(맵 ${map.width}×${map.height}).`, { code: "invalid-args", mapId: map.id });
+    }
+    if (!Array.isArray(args.exits) || args.exits.length < (end ? 1 : 2)) throw new ToolError(end ? "exits 는 가장자리 출구 1개 이상이어야 합니다." : "exits 는 가장자리 출구 2개 이상이어야 합니다(출구가 하나면 end 로 길 끝을 준다).", { code: "invalid-args", mapId: map.id });
+    const edgeExits = args.exits.map((exit, index) => edgeExit(map, exit, `exits[${index}]`));
+    // 길 끝(end)은 마지막 경유점으로 이어 붙인다 — 길 계획·나무 비움·도달 검사가 출구와 똑같이 다룬다.
+    const exits = end ? [...edgeExits, end] : edgeExits;
+    const clearings: Rect[] = (Array.isArray(args.clearings) ? args.clearings : []).map((raw, index) => {
+      const r = raw as { x?: unknown; y?: unknown; w?: unknown; h?: unknown };
+      const rect = { x: Number(r.x), y: Number(r.y), w: Number(r.w), h: Number(r.h) };
+      if (![rect.x, rect.y, rect.w, rect.h].every(Number.isInteger) || rect.w < 1 || rect.h < 1) throw new ToolError(`clearings[${index}] 는 {x,y,w,h} 정수여야 합니다.`, { code: "invalid-args", mapId: map.id });
+      return rect;
+    });
     const patchCount = args.grassPatches === undefined ? 3 : Number(args.grassPatches);
     if (!Number.isInteger(patchCount) || patchCount < 1 || patchCount > 6) throw new ToolError("grassPatches 는 1~6 정수입니다.", { code: "invalid-args", mapId: map.id });
     const seed = args.seed === undefined ? 1 : Number(args.seed);
@@ -342,7 +366,7 @@ const authorWildRoute: ToolDefinition = {
     // 숲마을·combined_town 분기(흙길·키큰 풀 오토타일·굽이숲)는 2026-10-07 저작권 정리로 지웠다.
     const { path, road, patches, grass } = planRouteCorridor(map, exits, patchCount, rng, noise, relayDoors, warnings,
       (from, to) => routePathStraight(map, from, to, noise), true);
-    const laid = paintBeodeulWildRoute({ project: draft, map, tileset, road, grass, patches, exits, rng });
+    const laid = paintBeodeulWildRoute({ project: draft, map, tileset, road, grass, patches, exits, clearings, rng });
     const roadCellCount = laid.roadCells;
     const treeCells = laid.treeCells;
     const fillNote = `, 길섶 소품 ${laid.decor}개, 풀숲은 짙은 잎 풀(버들항엔 키큰 풀이 없다)`;
