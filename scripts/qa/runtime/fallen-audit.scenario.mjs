@@ -39,7 +39,7 @@ const dumpState = (name) => ({
 
 export default {
   id: "fallen-audit",
-  projectFixture: process.env.RES_FIXTURE ?? ".omo/fs/v16.json",
+  projectFixture: process.env.RES_FIXTURE ?? ".omo/fs/v18.json",
   viewport: { width: vw, height: vh },
   beats: [
     { id: "title", note: "타이틀", ops: [
@@ -113,24 +113,8 @@ export default {
       { kind: "pressUntil", key: "Enter", testid: "battle-scene", state: "present", maxPresses: 20, timeoutMs: 900 },
       { kind: "hold", dir: null, ms: 2500 },
     ], shot: true },
-    { id: "battle-1", note: "전투 1(Enter 25번씩, 공격만)", ops: [
-      { kind: "repeatUntil", testid: "battle-scene", state: "absent", maxRounds: 25, ops: [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 350 }] },
-    ], shot: true },
-    { id: "battle-2", note: "전투 2(Enter 25번씩, 공격만)", ops: [
-      { kind: "repeatUntil", testid: "battle-scene", state: "absent", maxRounds: 25, ops: [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 350 }] },
-    ], shot: true },
-    { id: "battle-3", note: "전투 3(Enter 25번씩, 공격만)", ops: [
-      { kind: "repeatUntil", testid: "battle-scene", state: "absent", maxRounds: 25, ops: [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 350 }] },
-    ], shot: true },
-    { id: "battle-4", note: "전투 4(Enter 25번씩, 공격만)", ops: [
-      { kind: "repeatUntil", testid: "battle-scene", state: "absent", maxRounds: 25, ops: [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 350 }] },
-    ], shot: true },
-    { id: "battle-5", note: "전투 5(Enter 25번씩, 공격만)", ops: [
-      { kind: "repeatUntil", testid: "battle-scene", state: "absent", maxRounds: 25, ops: [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 350 }] },
-    ], shot: true },
-    { id: "battle-6", note: "전투 6(Enter 25번씩, 공격만)", ops: [
-      { kind: "repeatUntil", testid: "battle-scene", state: "absent", maxRounds: 25, ops: [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 350 }] },
-    ], shot: true },
+    // 전투 한가운데 한 장 — 예전엔 「Enter 25번 안에 끝나야」 하는 조각 여섯 개라 끝나지 않은 조각이 실패로 찍혔다.
+    { id: "battle-mid", note: "전투 중간(Enter 12번, 공격만)", ops: Array.from({ length: 12 }, () => [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 350 }]).flat(), shot: true },
 
     { id: "battle-end", note: "전투 끝", ops: [
       { kind: "repeatUntil", testid: "battle-scene", state: "absent", maxRounds: 260, ops: [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 350 }] },
