@@ -5,7 +5,7 @@
  * 마차 칩으로 그린 「떨어진 별」. 이제는
  * - 배경 = 게임이 실제로 쓰는 맵(왕도·천문대·숲 추락지)을 1:1 로 구운 그림(src/assets/fallenStarOpeningBackdrops.ts).
  * - 무대 = 게임 화면과 같은 480×270, 사람 칩은 1배(24×32) — 맵 위 크기와 똑같다.
- * - 별똥별·추락 섬광·알의 빛은 빛 효과 레이어(glow)다. 새 도트 그림은 없다.
+ * - 별똥별·추락 섬광·관의 빛은 빛 효과 레이어(glow)다. 새 도트 그림은 없다.
  * - 자막은 그 컷에 보이는 것만 말한다. 이야기는 컷 5 의 심문관 입성에서 게임 첫 컷신(포고)으로 바로 이어진다.
  */
 import { fallenStarBackdrop, type FallenStarBackdropId } from "@/assets/fallenStarOpeningBackdrops";
@@ -91,8 +91,8 @@ function nightTownShot(): OpeningAnimatic {
     { ...walking("elena", ELENA, "down", [{ atMs: 2200, x: elenaFrom.x, y: elenaFrom.y }, { atMs: 3800, x: elenaStop.x, y: elenaStop.y }]), startMs: 2200 },
     stars(3),
     caption([
-      { atMs: 300, text: "왕도 아스텔. 별을 지켜보는 천문대가 있는 도시." },
-      { atMs: 3600, text: "견습 별지기 카엘과 마도학자 엘레나는 오늘 밤도 하늘을 보러 나왔다." },
+      { atMs: 300, text: "왕도 아스텔. 별을 읽는 천문대의 도시." },
+      { atMs: 3600, text: "견습 별지기 카엘과 마도학자 엘레나. 오늘 밤도 관측 당번이다." },
     ]),
   ], { x: 440, keys: { y: [{ atMs: 0, value: 190 }, { atMs: 4200, value: 340, ease: "ease-in-out" }] } }, { kind: "fade", durationMs: 900 });
 }
@@ -123,7 +123,7 @@ function fallingStarShot(): OpeningAnimatic {
     emote("elena-emote", "exclaim", elena, 1150, 2300),
     caption([
       { atMs: 400, text: "그날 밤, 별 하나가 하늘을 가로질렀다." },
-      { atMs: 3300, text: "별은 동쪽 숲 너머로 떨어졌고, 한참 뒤에야 땅이 울렸다." },
+      { atMs: 3300, text: "별은 동쪽 숲에 떨어졌다. 한참 뒤, 땅이 울렸다." },
     ]),
   ], { x: 470, y: 330, shake: { atMs: 3000, durationMs: 700, amplitude: 2, frequency: 16, seed: 4 } }, { kind: "cut", durationMs: 1 });
 }
@@ -139,15 +139,15 @@ function observatoryShot(): OpeningAnimatic {
     emote("hanel-think", "ellipsis", hanel, 600, 3000),
     emote("hanel-turn", "exclaim", hanel, 3400, 4800),
     caption([
-      { atMs: 300, text: "천문대장 하넬은 그 빛을 처음부터 끝까지 지켜보았다." },
-      { atMs: 3500, text: "떨어지기 직전, 별은 스스로 방향을 틀었다. 별똥별은 그러지 않는다." },
+      { atMs: 300, text: "천문대장 하넬은 그 빛을 끝까지 지켜보았다." },
+      { atMs: 3500, text: "떨어지기 직전, 별은 방향을 틀었다. 별똥별은 그러지 않는다." },
     ]),
   ], { x: 144, keys: { y: [{ atMs: 0, value: 120 }, { atMs: 5000, value: 150, ease: "ease-in-out" }] } }, { kind: "dither", durationMs: 650 });
 }
 
-/** 4. 숲 북쪽 끝 공터 — 그을린 흙 한가운데의 금속 알. 숲지기 브람이 숲길 끝에서 그것을 본다. */
+/** 4. 숲 북쪽 끝 공터 — 그을린 흙 한가운데의 은빛 관. 숲지기 브람이 숲길 끝에서 그것을 본다. */
 function crashShot(): OpeningAnimatic {
-  const pod = { x: 232, y: 60 }, bram = standAt(17, 9);
+  const pod = { x: 232, y: 64 }, bram = standAt(17, 9);
   return shot([
     backdrop("forest-night"),
     glow("pod-glow", "#8ff0ff", pod, 96, { glow: { inner: 0.35, pulse: { hz: 1.1, amount: 0.4, pattern: "pulse", seed: 7 } } }),
@@ -158,10 +158,17 @@ function crashShot(): OpeningAnimatic {
     walking("bram", BRAM, "up", [{ atMs: 0, x: bram.x, y: bram.y + TILE * 3 }, { atMs: 2600, x: bram.x, y: bram.y }]),
     emote("bram-emote", "exclaim", bram, 2800, 4400),
     caption([
-      { atMs: 300, text: "동쪽 숲 북쪽 끝. 나무가 쓰러지고 흙이 검게 그을렸다." },
-      { atMs: 3600, text: "그 한가운데, 사람 키만 한 금속 알이 아직 빛나고 있었다." },
+      { atMs: 300, text: "동쪽 숲 깊은 곳. 나무가 쓰러지고 흙이 검게 탔다." },
+      { atMs: 3600, text: "그 한가운데, 유리창 달린 은빛 관이 빛나고 있었다." },
     ]),
-  ], { x: 240, keys: { y: [{ atMs: 0, value: 185 }, { atMs: 3800, value: 135, ease: "ease-in-out" }] } }, { kind: "fade", durationMs: 700 });
+  ], {
+    // 브람을 따라 올라온 뒤 은빛 관으로 다가선다(감사 3차: 1배로는 관이 칩 크기라 무엇인지 읽히지 않았다). 정수 배율 2 — 도트가 뭉개지지 않는다.
+    keys: {
+      x: [{ atMs: 0, value: 240 }, { atMs: 3600, value: 240 }, { atMs: 6200, value: pod.x, ease: "ease-in-out" }],
+      y: [{ atMs: 0, value: 185 }, { atMs: 3200, value: 135, ease: "ease-in-out" }, { atMs: 6200, value: 78, ease: "ease-in-out" }],
+      zoom: [{ atMs: 0, value: 1 }, { atMs: 3600, value: 1 }, { atMs: 6200, value: 2, ease: "ease-in-out" }],
+    },
+  }, { kind: "fade", durationMs: 700 });
 }
 
 /** 5. 이튿날 아침 — 심문관 발렌과 기사가 다리를 건너 왕도에 들어선다. 카엘과 엘레나가 그 앞에 선다. */
@@ -176,25 +183,26 @@ function morningShot(): OpeningAnimatic {
     standing("elena", ELENA, "left", elena),
     emote("elena-emote", "ellipsis", elena, 4300, 6400),
     caption([
-      { atMs: 300, text: "이튿날 아침. 교단의 심문관이 기사를 데리고 왕도에 들어섰다." },
-      { atMs: 3800, text: "하늘에서 떨어진 것을 거두러 온 사람들이었다." },
+      { atMs: 300, text: "이튿날 아침. 교단의 심문관이 왕도에 들어섰다." },
+      { atMs: 3800, text: "하늘에서 떨어진 것을, 모두 거두러 온 자들이었다." },
     ]),
   ], { y: 352, keys: { x: [{ atMs: 0, value: 290 }, { atMs: 5200, value: 470, ease: "ease-in-out" }] } }, { kind: "flash", durationMs: 300, color: "#fff6d8" });
 }
 
-const SHOTS: readonly { id: string; build: () => OpeningAnimatic }[] = [
+/** 컷 길이 — 녹화로 잰 뒤 맞췄다(감사 3차): 천문대 컷은 하넬이 돌아선 뒤 할 일이 없어 6초, 추락지는 다가서는 시간만큼 7.5초. */
+const SHOTS: readonly { id: string; build: () => OpeningAnimatic; ms?: number }[] = [
   { id: "fs_op_night_town", build: nightTownShot },
   { id: "fs_op_falling_star", build: fallingStarShot },
-  { id: "fs_op_observatory", build: observatoryShot },
-  { id: "fs_op_crash", build: crashShot },
+  { id: "fs_op_observatory", build: observatoryShot, ms: 6000 },
+  { id: "fs_op_crash", build: crashShot, ms: 7500 },
   { id: "fs_op_morning", build: morningShot },
 ];
 
 export function buildFallenStarOpening(project: Project): void {
-  const scenes = SHOTS.map(({ id, build }) => {
+  const scenes = SHOTS.map(({ id, build, ms = SHOT_MS }) => {
     const composition = build();
-    validateOpeningAnimatic(composition, SHOT_MS, `opening.${id}`);
-    return { id, kind: "animatic" as const, composition, durationMs: SHOT_MS, narration: "" };
+    validateOpeningAnimatic(composition, ms, `opening.${id}`);
+    return { id, kind: "animatic" as const, composition, durationMs: ms, narration: "" };
   });
   project.system.opening = { enabled: true, skippable: true, scenes };
   // 도구 경로가 남긴 저작 타임라인이 있으면 이 오프닝을 덮어쓴다 — 지운다.

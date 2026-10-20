@@ -57,11 +57,17 @@ export function paintBeodeulWildRoute(input: BeodeulWildRouteInput): { roadCells
 
   // 풀숲: 네모 판으로 보이지 않게 모서리 한 칸씩 깎는다(5×4 이상만). 길이 지나는 풀숲 칸은 풀숲으로 둔다 —
   // 길이 풀숲을 가로질러야 돌아갈 수 없다(포켓몬 도로의 문법, 합본 마을 경로와 같다).
+  // 2026-10-20(폴른 스타 감사 3차 「각진 풀숲」): 모서리 한 칸 깎기로는 여전히 네모 판이었다. 사각형 안에 타원을 그리고
+  // 가장자리를 칸마다 흔들어 덩이 모양으로 남긴다. 길이 지나는 칸은 그대로 풀숲이다(길이 풀숲을 가로질러야 한다).
   const thicket = new Set(grass);
   for (const rect of patches) {
-    if (rect.w < 5 || rect.h < 4) continue;
-    for (const [cx, cy] of [[rect.x, rect.y], [rect.x + rect.w - 1, rect.y], [rect.x, rect.y + rect.h - 1], [rect.x + rect.w - 1, rect.y + rect.h - 1]] as const) {
-      if (rng() < 0.75) thicket.delete(cy * w + cx);
+    if (rect.w < 3 || rect.h < 3) continue;
+    const cx = rect.x + (rect.w - 1) / 2, cy = rect.y + (rect.h - 1) / 2, rx = rect.w / 2, ry = rect.h / 2;
+    for (let y = rect.y; y < rect.y + rect.h; y++) for (let x = rect.x; x < rect.x + rect.w; x++) {
+      const index = y * w + x;
+      if (road.has(index)) continue;
+      const d = ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2;
+      if (d > 1 - rng() * 0.4) thicket.delete(index);
     }
   }
   for (const index of thicket) map.lowerTiles[index] = BEODEUL_THICKET_TILE;
@@ -107,12 +113,15 @@ export function paintBeodeulWildRoute(input: BeodeulWildRouteInput): { roadCells
   for (const index of road) reserve(index % w, Math.floor(index / w), 1);
   for (const exit of exits) reserve(exit.x, exit.y, 2);
   for (const event of map.events) reserve(event.x, event.y, 1);
+  const open = new Set<number>();
   for (const rect of clearings) for (let y = rect.y; y < rect.y + rect.h; y++) for (let x = rect.x; x < rect.x + rect.w; x++) {
-    if (x >= 0 && y >= 0 && x < w && y < map.height) reserved.add(y * w + x);
+    if (x >= 0 && y >= 0 && x < w && y < map.height) { reserved.add(y * w + x); open.add(y * w + x); }
   }
 
   const treeCells = plantBeodeulForestWall(project, map, tileset, reserved, rng, stampObject);
-  const decor = dressBeodeulVerge(project, map, tileset, road, reserved, rng, stampObject);
+  // 공터는 비워 둔다 — 길섶 소품이 공터 안에 흩어지면 그 자리에 놓을 장면(추락지 등)이 돌·풀포기에 막혔다.
+  const decor = dressBeodeulVerge(project, map, tileset, road, new Set([...reserved].filter(index => !open.has(index))), rng, stampObject)
+    + fringeBeodeulThicket(project, map, tileset, thicket, rng, stampObject);
   return { roadCells: roadCells.length, treeCells, decor };
 }
 
@@ -197,6 +206,34 @@ function dressBeodeulVerge(project: Project, map: GameMap, tileset: TilesetDef, 
     if (map.events.some(event => Math.abs(event.x - x) + Math.abs(event.y - y) <= 1)) continue;
     if (rng() > 0.12) continue;
     const kit = decor[Math.floor(rng() * decor.length)]!;
+    try {
+      stampObject.run(project, { objectId: `kit:${BEODEUL_ID}/${kit.id}`, mapId: map.id, x, y });
+      placed++;
+    } catch {
+      // 찍을 수 없는 자리는 건너뛴다.
+    }
+  }
+  return placed;
+}
+
+/**
+ * 풀숲 가장자리 술 — 풀숲 덩이 테두리 칸 위에 고사리·낮은 덤불(통행 가능, 캐릭터 아래 층)을 얹는다.
+ * 짙은 풀 무늬가 맨 풀밭과 칼로 자른 듯 만나던 경계를 풀포기가 삐져나온 모양으로 흐린다.
+ */
+function fringeBeodeulThicket(project: Project, map: GameMap, tileset: TilesetDef, thicket: ReadonlySet<number>,
+  rng: Rng, stampObject: ToolDefinition): number {
+  const w = map.width;
+  const tufts = (tileset.structureKits ?? []).filter(kit => kit.width === 1 && kit.height === 1
+    && /^bd-pick-deep-forest-path-(fern|heath)-/.test(kit.id));
+  if (tufts.length === 0) return 0;
+  let placed = 0;
+  for (const index of thicket) {
+    const x = index % w, y = Math.floor(index / w);
+    const edge = [index - w, index + w, x > 0 ? index - 1 : -1, x < w - 1 ? index + 1 : -1]
+      .some(next => next < 0 || next >= map.lowerTiles.length || !thicket.has(next));
+    if (!edge || map.upperTiles[index]! >= 0 || rng() > 0.45) continue;
+    if (map.events.some(event => event.x === x && event.y === y)) continue;
+    const kit = tufts[Math.floor(rng() * tufts.length)]!;
     try {
       stampObject.run(project, { objectId: `kit:${BEODEUL_ID}/${kit.id}`, mapId: map.id, x, y });
       placed++;
