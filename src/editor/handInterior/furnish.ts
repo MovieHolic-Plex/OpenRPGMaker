@@ -86,13 +86,17 @@ export function furnishRooms(base: HandInteriorInput, rooms: readonly LayoutRoom
     if (o?.kind === "hang") {
       const w = Math.max(1, o.w);
       const out = Array.from({ length: w * 2 }, (_, i) => `h:${it.x + (i % w)},${it.y + Math.floor(i / w)}`);
-      for (let dx = 0; dx < w; dx++) out.push(`wcol:${it.x + dx},${it.y}`);
+      for (let dx = 0; dx < w; dx++) for (let dy = 0; dy < 2; dy++) out.push(`wcol:${it.x + dx},${it.y + dy}`);
       return out;
     }
     const out = footprint(it, S).map((c) => `s:${c}`);
+    // 키 큰 가구가 벽면(두 줄)에 걸린 게시판·창·칠판을 가리지 않게 한다 — 그림 꼭대기 줄(up 만큼 솟은 칸)을 벽면 칸으로 잡는다.
+    // 벽에 붙는 가구(wall)는 첫 바닥 줄에서 벽면 맨 윗줄까지 닿는다. 한 줄 앞(y+1)에 놓인 키 큰 바닥 가구도 꼭대기가 벽면에 닿으면 막힌다.
+    // 꼭대기 줄 하나만 잡아 바닥 가구끼리 앞뒤로 놓는 배치는 막지 않는다.
     if (o && (o.kind === "wall" || (o.kind === "floor" && o.up >= 8))) {
       const w = Math.max(1, o.w);
-      for (let dx = 0; dx < w; dx++) out.push(`wcol:${it.x + dx},${it.y - 2}`);
+      const top = it.y - (o.kind === "wall" ? 2 : Math.min(2, Math.ceil(o.up / 16)));
+      for (let dx = 0; dx < w; dx++) out.push(`wcol:${it.x + dx},${top}`);
     }
     return out;
   };

@@ -412,7 +412,7 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
         hang: ["court-emblem", "m:wall-clock"],
         at: [
           ["council-trophy-case", 0, 2], ["m:shelf-office", 9, 2],
-          ["m:filing", 0, 4], ["council-table-u", 4, 3], ["m:shelf-office", 9, 4],
+          ["m:plant-tall", 0, 4], ["council-table-u", 4, 3], ["m:planter", 9, 4],
           ["court-gallery-pew", 1, 6], ["court-gallery-pew", 5, 6], ["court-gallery-pew", 8, 6],
         ],
       }),
