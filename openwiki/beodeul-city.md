@@ -597,6 +597,7 @@ refine_beodeul_courtyard_vegetation({mapId})는 인식된 54×34 예제의 건�
   칸마다 앞 나무부터 4·3·2층에 쌓는다. 예전 3칸 격자 3×3 수관(반복·풀밭 틈·떠 있는 수관)과 leaf 수관 오토타일(칸 경계로 곧게 잘린 숲 가장자리)을 대신한다. 설원 수관은 그대로.
 - composer 는 hold 칸 밖을 쓰지 않는다 — 같은 bd-tree 칸 번호로 따로 찍은 낱 나무·덤불을 지우던 함정(그림자만 남음)을 막는다. 마을에서는 composer 나무도 nature 밑동 그림자를 받는다.
 - `bdg-woodland-fence-*` 는 원본 밭 울타리 칸 화소 복사로 바뀌었고 남동·북서·북동 모서리와 동쪽 세로가 늘었다(643~649, `scripts/content/build-beodeul-woodland-fence.py`). 공동마당 보정은 남서/남동 모서리와 서/동변을 따로 쓴다.
+- r2(같은 날): 접지 — #3058 r6 `TreeComposerGround` 를 버들항 원본 숲 그늘 색(α65/α115 두 단)으로 채운다(`scripts/content/build-beodeul-forest-ground.py`, 공용 기초 칩셋 `bdg-forest-ground-*` 192칸 → 런타임 이식). 숲 종류 `forestType`(broadleaf·conifer·mixed)을 `author_wild_route`·`author_beodeul_town` 에 더했다. 침엽은 원본 해안 절벽길 전나무·도시 숲 측백 칸 그대로(새 그림 없음). 입구 `src/editor/tools/beodeulForest.ts` `composeBeodeulForest`. treeComposer.ts 는 #3058 2c72aeed32 와 같고 `composeTreesInMask` 의 `write` 인자만 더했다(#3058 에 넘길 것). 감사 렌더 숲 종류는 `BW_TYPES=broadleaf,conifer,mixed`.
 - 감사 렌더: `bun scripts/qa/beodeul-woodlands-audit.mts <dir> <tag>`(도로 숲 벽·공동마당·강가 마을을 실제 도구로 짓고 renderMapPng).
 - 남은 것: 공동마당 고정 숲 조각(north·west·east 를 두 번씩 반복)과 그 밑 밝은 잔디 사각 패치, 강가 마을 예제(river-town)의 남쪽 숲 조각 반복은 예제·참고문서 재생성이 필요해 이번에 손대지 않았다. 풀 군락 fringe 는 PIL 도형 그림이라 원본 결이 아니다 — 새 그림은 하네스·3/4 관문을 거쳐야 한다.
 ## 기와 복원 · stone 박공 벽/중앙 창 (2026-10-04 사용자 정정)

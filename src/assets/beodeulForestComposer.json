@@ -693,7 +693,8 @@
      ]
     }
    ],
-   "groundShadeCover": 30
+   "groundShadeCover": 30,
+   "groundShadeRows": 2
   },
   "conifer": {
    "kind": "trees",
@@ -1043,7 +1044,8 @@
      ]
     }
    ],
-   "groundShadeCover": 12
+   "groundShadeCover": 12,
+   "groundShadeRows": 1
   },
   "mixed": {
    "kind": "trees",
@@ -1691,7 +1693,8 @@
      ]
     }
    ],
-   "groundShadeCover": 20
+   "groundShadeCover": 20,
+   "groundShadeRows": 2
   }
  }
 }

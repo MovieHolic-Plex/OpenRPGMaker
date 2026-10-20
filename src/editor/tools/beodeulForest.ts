@@ -27,7 +27,7 @@ export function parseBeodeulForestType(value: unknown, fallback: BeodeulForestTy
  */
 export function beodeulForestComposer(project: Project, target: TilesetDef, type: BeodeulForestType,
   grassBases: readonly number[] = data.ground.apronBases): TreeComposerDef {
-  const { groundShadeCover, ...rest } = structuredClone(data.types[type]);
+  const { groundShadeCover, groundShadeRows, ...rest } = structuredClone(data.types[type]);
   const def = rest as unknown as TreeComposerDef;
   const g = data.ground;
   const common = project.tilesets.beodeul_ground ??= createBeodeulGroundTileset();
@@ -35,7 +35,7 @@ export function beodeulForestComposer(project: Project, target: TilesetDef, type
   const tr = translateTiles(common, target, [...g.floorTiles, ...g.floorEdgeTiles, ...g.apronTiles].filter((n) => n >= 0)).map;
   const to = (n: number) => (n >= 0 ? tr.get(n) ?? -1 : -1);
   def.ground = {
-    shadeBits: g.shadeBits.map((b) => [...b]), shadeCover: groundShadeCover ?? g.shadeCover, shadeCoverBase: g.shadeCoverBase,
+    shadeBits: g.shadeBits.map((b) => [...b]), shadeCover: groundShadeCover ?? g.shadeCover, shadeCoverBase: g.shadeCoverBase, shadeRows: groundShadeRows,
     floorTiles: g.floorTiles.map(to), apronLayer: g.apronLayer, apronBases: [...grassBases], apronTiles: grassBases.flatMap(() => g.apronTiles.map(to)),
   };
   edgeFloor.set(def, new Map(g.floorTiles.map((n, k) => [to(n), to(g.floorEdgeTiles[k]!)] as const)));

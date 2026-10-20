@@ -32,8 +32,9 @@ def raw(X, Y, forest):
         for i in (-1, 0, 1):
             if not forest(i, j): continue
             x0, y0 = i * T, j * T
-            if x0 + 3 <= X < x0 + T + 4 and y0 + 3 <= Y < y0 + T + 4: return 2
-            if x0 - 2 <= X < x0 + T + 7 and y0 <= Y < y0 + T + 7: lev = 1
+            # 그늘 덩이는 대부분 나무 밑에 숨는다 — 덮개 칸의 윗부분은 비우고(위 4~5px) 오른쪽 아래로 민다(보이는 부분 +5~9px).
+            if x0 + 3 <= X < x0 + T + 4 and y0 + 5 <= Y < y0 + T + 4: return 2
+            if x0 - 1 <= X < x0 + T + 7 and y0 + 4 <= Y < y0 + T + 7: lev = 1
     return lev
 
 BAYER = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]]
@@ -83,27 +84,16 @@ def slot(rid):
 floor_ids, edge_ids, apron_ids = [], [], []
 for code in range(NCODES):
     ov = overlay(code)
-    # 숲 바닥은 어디나 적어도 가(×0.83) 그늘 — 숲 속 빈 틈이 바깥 잔디처럼 밝게 비치지 않게(원본 도시 숲 바닥).
-    f = grass.copy(); f.alpha_composite(Image.new('RGBA', (T, T), OUTER))
-    core = Image.new('RGBA', (T, T))
-    for py in range(T):
-        for px in range(T):
-            if ov.getpixel((px, py)) == CORE: core.putpixel((px, py), (CORE[0], CORE[1], CORE[2], 70))  # 속은 가 위에 덧 — 합쳐서 원본 속 밝기
-    f.alpha_composite(core)
-    if code == 0:  # 그늘 덮개가 없는 숲 바닥 — 잔디 결 점 두 개로 숲 칸임을 표시
-        for p in ((4, 11), (12, 5)): f.alpha_composite(Image.new('RGBA', (1, 1), CORE), p)
+    # 숲 바닥 = 잔디에 나무 그늘(코드)만. 「숲 칸이면 어디나 그늘」은 덩이가 작은 마을 숲에서 칸 네모로 드러났다(2026-10-20 r2 시험).
+    f = grass.copy(); f.alpha_composite(ov)
+    if code == 0:  # 그늘 덮개가 없는 숲 바닥 — 잔디 결 점 두 개로 숲 칸임을 표시(붓·도구가 숲 칸을 알아본다)
+        for p in ((4, 11), (12, 5)): f.alpha_composite(Image.new('RGBA', (1, 1), OUTER), p)
     rid = f'bdg-forest-ground-floor-{code}'; n = slot(rid)
     while len(cells) <= n: cells.append(Image.new('RGBA', (T, T)))
     cells[n] = f; floor_ids.append(n)
     recipes[rid] = recipes.get(rid) or dict(id=rid, name=f'숲 바닥 그늘 {code}', width=1, height=1, layer=1, rows=[[n]], blocked=False, kind='forest-floor', forestGround=True)
     # 숲 가장자리 칸(8이웃 중 숲 밖이 있다)의 바닥 — 그늘 코드대로만 어둡게(바깥 잔디와 칸 경계 없이 이어진다)
-    # 가장자리 바닥은 옅은 그늘을 반만(바둑 점묘) 깔아 숲 속 바닥(전부)과 바깥 잔디(없음) 사이를 두 단으로 넘긴다.
-    e = grass.copy()
-    half = Image.new('RGBA', (T, T))
-    for py in range(T):
-        for px in range(T):
-            if (px + py) % 2 == 0: half.putpixel((px, py), OUTER)
-    e.alpha_composite(half); e.alpha_composite(ov)
+    e = f.copy()  # 가장자리 바닥 = 숲 바닥(같은 그림, 칸 번호만 따로 — 나중에 가장자리만 달리 칠할 자리)
     rid = f'bdg-forest-ground-edge-{code}'; n = slot(rid)
     while len(cells) <= n: cells.append(Image.new('RGBA', (T, T)))
     cells[n] = e; edge_ids.append(n)
