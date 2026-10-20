@@ -158,8 +158,8 @@ const WET_MATERIALS: Readonly<Record<string, true>> = {
   "연못": true,
 };
 
-/** jp_city 전봇대 줄 규칙(town.mjs poleRow): 전선 키트 윗줄은 콘크리트 전봇대(10칸) 꼭대기에 맞춘다. */
-const WIRE_TOP_POLE_HEIGHT = 10;
+/** 전봇대 키트 높이를 모를 때 쓰는 jp_city 콘크리트 전봇대(jp-pole, 10칸) 높이. 전선 키트 윗줄(애자 행)은 전봇대 키트 맨 윗칸에 맞춘다. */
+const FALLBACK_POLE_HEIGHT = 10;
 
 export function inakaKitId(id: string): string {
   const trimmed = id.trim();
@@ -368,16 +368,16 @@ export const INAKA_SHOWCASE_SCENES: readonly InakaShowcaseScene[] = [
     titleKo: "04. 다랑논(棚田)과 물레방아간·농수로·수문",
     subtitleJa: "棚田と水車小屋・用水路の水門",
     descriptionKo:
-      "이끼 돌담과 石垣 축대로 층층이 쌓은 황금·물논·여름 다랑논, 동쪽 농수로에 걸친 물레방아간과 철제 수문, 비닐하우스·함석 헛간·트랙터·경트럭, 아랫길의 볏단 걸이와 허수아비·소방 망루.",
+      "이끼 돌담 축대로 층층이 쌓은 황금·물논·여름 다랑논(논마다 아래 가장자리에 흙 논두렁 한 줄, 그 아래 돌담), 다랑논 동쪽 끝을 따라 내려가는 흙 농로, 동쪽 농수로에 걸친 물레방아간과 철제 수문, 비닐하우스·함석 헛간·트랙터·경트럭, 아랫길의 볏단 걸이와 허수아비·소방 망루.",
     width: W40,
     height: H26,
     baseGround: "잔디",
     fills: [
       { x: 0, y: 0, w: 27, h: 22, material: "산길 흙" },
-      { x: 0, y: 0, w: 26, h: 5, material: "inaka-paddy-golden" },
-      { x: 0, y: 7, w: 12, h: 5, material: "inaka-paddy-water" },
-      { x: 12, y: 7, w: 14, h: 4, material: "inaka-paddy-water" },
-      { x: 0, y: 14, w: 26, h: 5, material: "inaka-paddy-summer" },
+      // 다랑논 3단: 논(24칸) → 흙 논두렁 1줄 → 돌담 축대 2줄 → 아랫단 논. 돌담과 논의 동쪽 끝을 x=23 에 맞추고 x=24..26 은 흙 농로.
+      { x: 0, y: 0, w: 24, h: 4, material: "inaka-paddy-golden" },
+      { x: 0, y: 7, w: 24, h: 4, material: "inaka-paddy-water" },
+      { x: 0, y: 14, w: 24, h: 5, material: "inaka-paddy-summer" },
       { x: 33, y: 0, w: 2, h: 26, material: "수로" },
       { x: 0, y: 21, w: 33, h: 2, material: "산길 흙" },
       { x: 35, y: 9, w: 5, h: 17, material: "산길 흙" },
@@ -392,12 +392,12 @@ export const INAKA_SHOWCASE_SCENES: readonly InakaShowcaseScene[] = [
       { kit: "inaka-mossy-stone-wall", x: 0, y: 12 },
       { kit: "inaka-mossy-stone-wall", x: 4, y: 12 },
       { kit: "inaka-mossy-stone-wall", x: 8, y: 12 },
-      { kit: "inaka-mossy-stone-wall", x: 12, y: 11 },
-      { kit: "inaka-mossy-stone-wall", x: 16, y: 11 },
-      { kit: "inaka-mossy-stone-wall", x: 20, y: 11 },
+      { kit: "inaka-mossy-stone-wall", x: 12, y: 12 },
+      { kit: "inaka-mossy-stone-wall", x: 16, y: 12 },
+      { kit: "inaka-mossy-stone-wall", x: 20, y: 12 },
       { kit: "inaka-rice-rack-hasagi", x: 4, y: 0, allowWet: true },
       { kit: "jp-rg-hazakake", x: 14, y: 1, allowWet: true },
-      { kit: "rg-kakashi", x: 6, y: 8, allowWet: true },
+      { kit: "rg-kakashi", x: 6, y: 10, allowWet: true },
       { kit: "inaka-scarecrow-pair", x: 18, y: 15, allowWet: true },
       { kit: "inaka-agri-tin-shed", x: 28, y: 0 },
       { kit: "inaka-waterwheel-mill", x: 30, y: 8, allowWet: true },
@@ -406,7 +406,7 @@ export const INAKA_SHOWCASE_SCENES: readonly InakaShowcaseScene[] = [
       { kit: "inaka-vinyl-greenhouse", x: 35, y: 1 },
       { kit: "inaka-vinyl-greenhouse", x: 35, y: 5 },
       { kit: "inaka-keitora-white", x: 36, y: 11 },
-      { kit: "inaka-fire-watchtower", x: 37, y: 15 },
+      { kit: "inaka-fire-watchtower", x: 38, y: 13 },
       { kit: "inaka-rice-rack-hasagi", x: 2, y: 23 },
       { kit: "jp-rg-hazakake", x: 7, y: 23 },
       { kit: "jp-rg-sunflower", x: 13, y: 23 },
@@ -423,17 +423,23 @@ export const INAKA_SHOWCASE_SCENES: readonly InakaShowcaseScene[] = [
     titleKo: "05. 산골 개울의 붉은 철교와 징검다리",
     subtitleJa: "山あいの清流・赤い鉄橋と飛び石",
     descriptionKo:
-      "돌 테 두른 개울이 굽이쳐 흐르는 산골, 윗길을 잇는 붉은 철교와 아랫길 징검다리, 물가에 걸친 물레방아간과 매어 둔 어선, 강가의 초가 고민가·기와 농가·토장 창고, 단풍과 삼나무·대숲.",
+      "돌 테 두른 개울이 한두 칸씩 굽이치며 흐르는 산골, 윗길을 잇는 붉은 철교와 아랫길 징검다리, 물가에 걸친 물레방아간, 강가의 초가 고민가·기와 농가·토장 창고, 단풍과 삼나무·대숲.",
     width: W40,
     height: H26,
     baseGround: "잔디",
     fills: [
-      { x: 14, y: 0, w: 6, h: 5, material: "연못" },
-      { x: 15, y: 4, w: 4, h: 6, material: "연못" },
-      { x: 12, y: 9, w: 9, h: 5, material: "연못" },
-      { x: 13, y: 13, w: 7, h: 4, material: "연못" },
-      { x: 14, y: 16, w: 4, h: 5, material: "연못" },
-      { x: 15, y: 20, w: 7, h: 6, material: "연못" },
+      // 개울: 2줄마다 1칸씩 기슭이 비키는 4~7칸 폭 물길(큰 사각 웅덩이를 이어 붙인 계단 운하가 되지 않게).
+      { x: 14, y: 0, w: 5, h: 2, material: "연못" },
+      { x: 15, y: 2, w: 5, h: 2, material: "연못" },
+      { x: 15, y: 4, w: 4, h: 5, material: "연못" },
+      { x: 14, y: 9, w: 5, h: 2, material: "연못" },
+      { x: 12, y: 11, w: 7, h: 2, material: "연못" },
+      { x: 13, y: 13, w: 6, h: 2, material: "연못" },
+      { x: 14, y: 15, w: 5, h: 2, material: "연못" },
+      { x: 14, y: 17, w: 4, h: 3, material: "연못" },
+      { x: 15, y: 20, w: 5, h: 2, material: "연못" },
+      { x: 16, y: 22, w: 5, h: 2, material: "연못" },
+      { x: 17, y: 24, w: 5, h: 2, material: "연못" },
       { x: 0, y: 6, w: 14, h: 3, material: "생활도로" },
       { x: 20, y: 6, w: 20, h: 3, material: "생활도로" },
       { x: 3, y: 18, w: 11, h: 2, material: "산길 흙" },
@@ -452,7 +458,6 @@ export const INAKA_SHOWCASE_SCENES: readonly InakaShowcaseScene[] = [
       { kit: "inaka-red-iron-bridge", x: 14, y: 6, allowWet: true, allowOverlap: true },
       { kit: "inaka-keitora-white", x: 29, y: 7 },
       { kit: "inaka-waterwheel-mill", x: 9, y: 10, allowWet: true },
-      { kit: "rg-fishing-boat", x: 13, y: 10, allowWet: true },
       { kit: "rg-maple", x: 2, y: 10, allowOverlap: true },
       { kit: "rg-sugi", x: 6, y: 12, allowOverlap: true },
       { kit: "rg-sugi", x: 22, y: 10, allowOverlap: true },
@@ -486,21 +491,23 @@ export const INAKA_SHOWCASE_SCENES: readonly InakaShowcaseScene[] = [
       { x: 0, y: 18, w: 40, h: 3, material: "산길 흙" },
     ],
     stamps: [
-      // 양옆 진수의 숲
-      { kit: "rg-bamboo-grove", x: 0, y: -1, allowOverlap: true },
+      // 양옆 진수의 숲: 발 행 순서로 찍고, 위아래로 이웃한 나무는 종류를 바꾸고 1~2칸 비켜 세로 기둥 줄이 생기지 않게 한다.
+      { kit: "rg-bamboo-grove", x: 0, y: -2, allowOverlap: true },
       { kit: "rg-sugi", x: 4, y: -1, allowOverlap: true },
       { kit: "rg-sugi", x: 7, y: 1, allowOverlap: true },
-      { kit: "rg-bamboo-grove", x: 1, y: 5, allowOverlap: true },
-      { kit: "rg-sugi", x: 5, y: 6, allowOverlap: true },
-      { kit: "rg-sugi", x: 0, y: 10, allowOverlap: true },
-      { kit: "rg-bamboo-grove", x: 4, y: 11, allowOverlap: true },
+      { kit: "rg-sugi", x: 1, y: 3, allowOverlap: true },
+      { kit: "rg-bamboo-grove", x: 5, y: 5, allowOverlap: true },
+      { kit: "rg-sugi", x: 7, y: 9, allowOverlap: true },
+      { kit: "rg-bamboo-grove", x: 1, y: 10, allowOverlap: true },
+      { kit: "rg-sugi", x: 4, y: 12, allowOverlap: true },
+      { kit: "rg-bamboo-grove", x: 33, y: -2, allowOverlap: true },
       { kit: "rg-sugi", x: 30, y: -1, allowOverlap: true },
-      { kit: "rg-bamboo-grove", x: 33, y: -1, allowOverlap: true },
-      { kit: "rg-sugi", x: 37, y: 1, allowOverlap: true },
-      { kit: "rg-sugi", x: 31, y: 5, allowOverlap: true },
-      { kit: "rg-bamboo-grove", x: 35, y: 5, allowOverlap: true },
-      { kit: "rg-bamboo-grove", x: 31, y: 11, allowOverlap: true },
-      { kit: "rg-sugi", x: 36, y: 11, allowOverlap: true },
+      { kit: "rg-sugi", x: 37, y: 0, allowOverlap: true },
+      { kit: "rg-bamboo-grove", x: 31, y: 5, allowOverlap: true },
+      { kit: "rg-sugi", x: 36, y: 6, allowOverlap: true },
+      { kit: "rg-sugi", x: 37, y: 9, allowOverlap: true },
+      { kit: "rg-sugi", x: 30, y: 10, allowOverlap: true },
+      { kit: "rg-bamboo-grove", x: 34, y: 11, allowOverlap: true },
       // 경내
       { kit: "jp-bldg-shrine-haiden", x: 16, y: 1, allowOverlap: true },
       { kit: "jp-prop-chozuya", x: 10, y: 4, allowOverlap: true },
@@ -526,7 +533,8 @@ export const INAKA_SHOWCASE_SCENES: readonly InakaShowcaseScene[] = [
       { kit: "rg-maple", x: 22, y: 21, allowOverlap: true },
       { kit: "rg-sugi", x: 37, y: 20, allowOverlap: true },
     ],
-    poleRows: [{ footY: 21, xs: [13, 25], kit: "jp-pole-wood" }],
+    // 전봇대는 石垣 축대(11..14행) 앞을 가리지 않게 윗칸이 15행에 오도록 고갯길 남쪽 풀밭에 세운다.
+    poleRows: [{ footY: 23, xs: [11, 25], kit: "jp-pole-wood" }],
   },
 ] as const;
 
@@ -621,11 +629,13 @@ export function planInakaShowcaseScene(input: {
 
   for (const row of scene.poleRows ?? []) {
     const poleKit = row.kit ?? "jp-pole-wood";
-    const poleH = kitSize(poleKit)?.h ?? WIRE_TOP_POLE_HEIGHT;
-    for (const x of row.xs) place({ kit: poleKit, x, y: row.footY - poleH + 1, layer: 4, allowOverlap: true });
+    const poleH = kitSize(poleKit)?.h ?? FALLBACK_POLE_HEIGHT;
+    const top = row.footY - poleH + 1;
+    for (const x of row.xs) place({ kit: poleKit, x, y: top, layer: 4, allowOverlap: true });
+    // 전선 윗줄은 쓰는 전봇대 키트의 윗칸에 건다(나무 전봇대 9칸에 콘크리트 10칸 높이를 쓰면 전선이 꼭대기 위 허공에 뜬다).
     for (let i = 0; i + 1 < row.xs.length; i++) {
       const span = row.xs[i + 1]! - row.xs[i]!;
-      place({ kit: `jp-wire-${span}`, x: row.xs[i]! + 3, y: row.footY - WIRE_TOP_POLE_HEIGHT + 1, layer: 4, allowOverlap: true });
+      place({ kit: `jp-wire-${span}`, x: row.xs[i]! + 3, y: top, layer: 4, allowOverlap: true });
     }
   }
 
