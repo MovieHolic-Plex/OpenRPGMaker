@@ -138,6 +138,11 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   // 지하철 입구: 구성기가 공원 옆에 둔다(요약 문장 「지하철 입구 (x,y)」). 데이터에 없으면 공원 오른쪽 아래.
   const subwayMatch = /지하철 입구 \((\d+),(\d+)\)/.exec(String((composed as { summary?: string }).summary ?? ""));
   const subway: Cell = subwayMatch ? { x: Number(subwayMatch[1]), y: Number(subwayMatch[2]) } : { x: 17, y: 8 };
+  // 지하철 입구 덩어리는 막혀 있고 계단이 아래로 열린다 — 덩어리 바로 아래 첫 통행 칸이 발판.
+  let subwayStepY = subway.y;
+  while (subwayStepY < street.height - 1 && !isPassable(project, street, subway.x, subwayStepY)) subwayStepY += 1;
+  const subwayStep: Cell = { x: subway.x, y: subwayStepY };
+  const below = (c: Cell): Cell => nearestFree(project, street, { x: c.x, y: c.y + 1 });
 
   const officeRoom = project.maps[FL_MAP.office]!;
   const konbiniRoom = project.maps[FL_MAP.konbini]!;
@@ -154,10 +159,11 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
       heroMeet: nearestFree(project, platform, { x: 10, y: 6 }),
     },
     street: {
-      officeDoor: office.doors[0]!, officeOut: office.access[0]!,
-      konbiniDoor: conv.doors[1] ?? conv.doors[0]!, konbiniOut: conv.access[1] ?? conv.access[0]!,
-      subway, subwayOut: nearestFree(project, street, { x: subway.x + 1, y: subway.y + 3 }),
-      arrive: nearestFree(project, street, { x: subway.x + 1, y: subway.y + 3 }),
+      // 문 칸 자체는 막혀 있다(건물 정면) — 밟는 발판은 문 바로 아래 접근칸, 나오는 칸은 그 한 칸 아래.
+      officeDoor: office.access[0]!, officeOut: below(office.access[0]!),
+      konbiniDoor: conv.access[1] ?? conv.access[0]!, konbiniOut: below(conv.access[1] ?? conv.access[0]!),
+      subway: subwayStep, subwayOut: below(subwayStep),
+      arrive: below(subwayStep),
     },
     office: {
       elevator: { x: 18, y: 14 }, elevatorOut: nearestFree(project, officeRoom, { x: 19, y: 15 }),

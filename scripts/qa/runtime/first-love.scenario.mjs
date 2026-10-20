@@ -82,12 +82,16 @@ const subwayPm = at("fl_street_pm", "ev_fl_subway_pm");
 
 export default {
   id: `first-love-${PATH}`,
-  projectFixture: FIXTURE,
+  // 출하 경로 그대로: player.html?demo=first-love 가 데모를 스스로 짓는다(픽스처 JSON 은 좌표 읽기에만 쓴다).
+  projectFixture: "scripts/qa/runtime/first-love-empty.json",
+  query: { demo: "first-love" },
   viewport: { width: vw, height: vh },
   beats: [
     { id: "title", note: "타이틀", ops: [{ kind: "waitFor", testid: "title-screen", state: "present", timeoutMs: 120000 }, shotPause(2500)], shot: true },
-    { id: "intro", note: "새 게임 → 승강장 첫 대사", ops: [
-      { kind: "key", key: "Enter" },
+    { id: "opening-1", note: "오프닝 1컷 — 10년 전 교복의 두 사람", ops: [{ kind: "key", key: "Enter" }, shotPause(4200)], shot: true },
+    { id: "opening-2", note: "오프닝 2컷 — 편지의 빛", ops: [shotPause(5600)], shot: true },
+    { id: "opening-4", note: "오프닝 4컷 — 지금", ops: [shotPause(13000)], shot: true },
+    { id: "intro", note: "오프닝 넘김 → 승강장 첫 대사", ops: [
       { kind: "pressUntilJs", key: "Escape", fn: "() => !document.querySelector(\"[data-testid='cinematic-sequence']\")", maxPresses: 8, settleMs: 800 },
       { kind: "waitForRuntime", timeoutMs: 120000 },
       { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 30000 },
