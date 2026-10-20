@@ -1,7 +1,9 @@
 /**
  * 사람 검토 대기열 — `npm run harness -- object-gate serve-holds [--port 18323] [--host 0.0.0.0]`.
  *
- * 2026-10-20 사용자 결정(옵션 A): AI 판정은 1차 거름·조언이고, 최종 통과는 서명된 사람 허용이다(AI 판정 보정 2회 실패, 사용자가 매번 눈으로 판정).
+ * 2026-10-21 사용자 결정: 최종 판정은 Opus 5.5 medium 적대적 VQA(final.mts)다 — 옵션 A(사람 허용이 최종)를 대체. 이 화면은 Opus 판정·이유를 보이고 「Opus 불합격」만 거를 수 있다.
+ * 사람 거절은 그대로 최종 차단(Opus 통과도 뒤집는다). 사람 허용은 이제 선택이며 Opus 판정이 없는 그림에만 효력이 있다.
+ * (옛 설명) 2026-10-20 사용자 결정(옵션 A): AI 판정은 1차 거름·조언이고, 최종 통과는 서명된 사람 허용이다(AI 판정 보정 2회 실패, 사용자가 매번 눈으로 판정).
  * 이 화면은 AI 가 한 번이라도 판정한(영수증이 있는) 그림 중 사람 결정이 없는 것 — 보류(REFER)·불합격(FAIL)·보정 안 된 프로필의 통과(PASS) — 을
  * 묶음별로 보여 준다. 그림은 1배·4배로, 같은 종류 버들항 화풍 기준 그림·3/4 기준 쌍 옆에 놓고, AI 판정과 이유는 조언으로 함께 보인다.
  * 보정된 프로필의 통과는 사람 결정 없이도 지나가므로 대기열에 넣지 않는다(숫자만 센다).
@@ -17,8 +19,8 @@ import http from 'node:http';
 import { existsSync, readFileSync } from 'node:fs';
 import { randomBytes, timingSafeEqual } from 'node:crypto';
 import { resolve } from 'node:path';
-import { OBJECT_GATE_KINDS, humanDecision, type ObjectGateHoldDecision, type ObjectGateReceipt } from '../../_core/objectGate';
-import { GATE_DATA, calibratedProfiles, gateProfileHash, heldImage, holdKey, listQueueBatches, listReceipts, readHoldDecision, readProfiles, readReceipt, styleRefs, writeHoldDecision } from './store';
+import { OBJECT_GATE_KINDS, finalApplies, humanDecision, type ObjectGateFinal, type ObjectGateHoldDecision, type ObjectGateReceipt } from '../../_core/objectGate';
+import { GATE_DATA, calibratedFinalProfiles, readFinal, calibratedProfiles, gateProfileHash, heldImage, holdKey, listQueueBatches, listReceipts, readHoldDecision, readProfiles, readReceipt, styleRefs, writeHoldDecision } from './store';
 
 const PAGE = resolve(import.meta.dirname ?? __dirname, '..', 'web', 'holds.html');
 const equal = (a?: string, b?: string) => typeof a === 'string' && typeof b === 'string' && a.length === b.length && timingSafeEqual(Buffer.from(a), Buffer.from(b));
@@ -61,10 +63,20 @@ function buildQueue(fresh = false): { entries: Map<string, Entry>; batches: Batc
   return { entries, batches };
 }
 
-type Status = 'no-receipt' | 'auto-pass' | 'allowed' | 'rejected' | 'waiting';
+type Status = 'no-receipt' | 'auto-pass' | 'allowed' | 'rejected' | 'waiting' | 'opus-pass' | 'opus-fail';
+let finalCalibrated = new Set<string>();
+/** 이 그림의 Opus 최종 기록(종류가 같은 것만). 효력(보정된 프로필)은 finalApplies 로 따로 본다. */
+function finalOf(e: Entry): ObjectGateFinal | null { const f = readFinal(e.sha); return f && f.kind === e.kind ? f : null; }
 function statusOf(e: Entry, calibrated: Set<string>): { status: Status; decision: ObjectGateHoldDecision | null } {
+  const d = readHoldDecision(e.sha);
+  const f = finalOf(e);
+  if (f && finalApplies(f, e.sha, finalCalibrated)) {
+    // Opus 최종 판정이 있으면 그것이 상태다. 사람 거절만 그 위에 있다.
+    if (humanDecision(d, { pixelSha256: e.sha, kind: f.kind } as ObjectGateReceipt) === 'reject') return { status: 'rejected', decision: d };
+    return { status: f.verdict === 'pass' ? 'opus-pass' : 'opus-fail', decision: humanDecision(d, { pixelSha256: e.sha, kind: f.kind } as ObjectGateReceipt) ? d : null };
+  }
   if (!e.receipt) return { status: 'no-receipt', decision: null };
-  const d = readHoldDecision(e.sha), h = humanDecision(d, e.receipt);
+  const h = humanDecision(d, e.receipt);
   if (h === 'allow') return { status: 'allowed', decision: d };
   if (h === 'reject') return { status: 'rejected', decision: d };
   if (e.receipt.verdict === 'pass' && calibrated.has(e.receipt.profileHash)) return { status: 'auto-pass', decision: null };
@@ -107,37 +119,41 @@ export async function serveHolds({ host, port }: { host: string; port: number })
         const current = await gateProfileHash();
         const profile = readProfiles().find(p => p.profileHash === current);
         const calibrated = calibratedProfiles();
+        finalCalibrated = calibratedFinalProfiles();
         const { entries, batches } = buildQueue(url.searchParams.get('fresh') === '1');
         const statusCache = new Map<string, ReturnType<typeof statusOf>>();
         const st = (sha: string) => statusCache.get(sha) ?? statusCache.set(sha, statusOf(entries.get(sha)!, calibrated)).get(sha)!;
         const summary = batches.map(b => {
-          const c = { total: b.shas.length, waiting: 0, allowed: 0, rejected: 0, autoPass: 0, noReceipt: 0, withImage: 0, ai: { pass: 0, refer: 0, fail: 0 } };
+          const c = { total: b.shas.length, waiting: 0, allowed: 0, rejected: 0, autoPass: 0, noReceipt: 0, withImage: 0, ai: { pass: 0, refer: 0, fail: 0 }, opusPass: 0, opusFail: 0 };
           for (const sha of b.shas) {
             const s = st(sha).status, r = entries.get(sha)!.receipt;
-            if (s === 'waiting') { c.waiting++; if (existsSync(heldImagePath(sha))) c.withImage++; if (r) c.ai[r.verdict]++; }
+            if (s === 'opus-pass') c.opusPass++; else if (s === 'opus-fail') c.opusFail++;
+            else if (s === 'waiting') { c.waiting++; if (existsSync(heldImagePath(sha))) c.withImage++; if (r) c.ai[r.verdict]++; }
             else if (s === 'allowed') c.allowed++; else if (s === 'rejected') c.rejected++; else if (s === 'auto-pass') c.autoPass++; else c.noReceipt++;
           }
           return { id: b.id, title: b.title, note: b.note ?? '', auto: b.auto, ...c };
         });
         // 전체 수는 그림(해시) 하나를 한 번만 센다(한 그림이 여러 묶음에 들 수 있다).
-        const totals = { waiting: 0, allowed: 0, rejected: 0, autoPass: 0 };
-        for (const sha of entries.keys()) { const s = st(sha).status; if (s === 'waiting') totals.waiting++; else if (s === 'allowed') totals.allowed++; else if (s === 'rejected') totals.rejected++; else if (s === 'auto-pass') totals.autoPass++; }
+        const totals = { waiting: 0, allowed: 0, rejected: 0, autoPass: 0, opusPass: 0, opusFail: 0 };
+        for (const sha of entries.keys()) { const s = st(sha).status; if (s === 'waiting') totals.waiting++; else if (s === 'allowed') totals.allowed++; else if (s === 'rejected') totals.rejected++; else if (s === 'auto-pass') totals.autoPass++; else if (s === 'opus-pass') totals.opusPass++; else if (s === 'opus-fail') totals.opusFail++; }
         const pick = url.searchParams.get('batch') ?? summary.find(b => !b.auto && b.waiting)?.id ?? summary.find(b => b.waiting)?.id ?? summary[0]?.id;
         const showDecided = url.searchParams.get('decided') === '1';
         const batch = batches.find(b => b.id === pick);
         const items = batch ? batch.shas.flatMap(sha => {
           const e = entries.get(sha)!, { status, decision } = st(sha), r = e.receipt;
-          if (status === 'auto-pass' || (!showDecided && (status === 'allowed' || status === 'rejected'))) return [];
+          if (status === 'auto-pass' || (!showDecided && (status === 'allowed' || status === 'rejected' || status === 'opus-pass'))) return [];
+          const f = finalOf(e);
           return [{
+            opus: f ? { verdict: f.verdict, reasons: f.reasons, view34: f.view34, style: f.style, kindOk: f.kindOk, sure: f.sure, profileHash: f.profileHash, calibrated: finalCalibrated.has(f.profileHash), decidedAt: f.decidedAt } : null,
             sha, label: e.label, name: r?.name ?? e.label, kind: e.kind, kindMeaning: OBJECT_GATE_KINDS[e.kind as keyof typeof OBJECT_GATE_KINDS]?.meaning ?? '', width: r?.width ?? 0, height: r?.height ?? 0,
             status, aiVerdict: r?.verdict ?? null, profileHash: r?.profileHash ?? null, calibrated: !!r && calibrated.has(r.profileHash), reasons: r?.reasons ?? [],
             view34: r?.view34?.verdict ?? null, style: r?.style?.verdict ?? null, styleKind: r?.style?.styleKind ?? null, refs: r?.style?.refs ?? [],
             hasImage: existsSync(heldImagePath(sha)), decision: decision ? { decision: decision.decision, decidedBy: decision.decidedBy, decidedAt: decision.decidedAt, note: decision.note } : null,
           }];
         }) : [];
-        const order: Record<string, number> = { waiting: 0, 'no-receipt': 1, allowed: 2, rejected: 3 };
+        const order: Record<string, number> = { 'opus-fail': 0, waiting: 1, 'no-receipt': 2, 'opus-pass': 3, allowed: 4, rejected: 5 };
         items.sort((a, b) => order[a.status]! - order[b.status]! || a.label.localeCompare(b.label));
-        json(200, { currentProfile: current, profileStatus: profile?.status ?? 'uncalibrated', totals, batches: summary, batch: pick, items }); return;
+        json(200, { currentProfile: current, profileStatus: profile?.status ?? 'uncalibrated', finalProfiles: [...finalCalibrated], totals, batches: summary, batch: pick, items }); return;
       }
       const img = url.pathname.match(/^\/img\/([0-9a-f]{64})\.png$/);
       if (req.method === 'GET' && img) { const path = existsSync(heldImagePath(img[1]!)) ? heldImagePath(img[1]!) : null; if (!path) { json(404, { error: '그림 없음' }); return; } png(path); return; }
@@ -154,7 +170,9 @@ export async function serveHolds({ host, port }: { host: string; port: number })
         if (!SHA.test(sha)) throw Error('그림 해시가 없다');
         if (q.decision !== 'allow' && q.decision !== 'reject') throw Error('결정은 allow 또는 reject');
         const decidedBy = who(q);
-        const receipt = readReceipt(sha);
+        const final = readFinal(sha);
+        if (q.decision === 'allow' && final && finalApplies(final, sha, calibratedFinalProfiles())) throw Error('Opus 최종 판정이 있는 그림이다 — 허용은 효력이 없다(최종은 Opus, 사람은 거절만 덮어쓴다)');
+        const receipt = readReceipt(sha) ?? (final ? ({ pixelSha256: sha, kind: final.kind, profileHash: final.profileHash, reasons: final.reasons } as unknown as ObjectGateReceipt) : null);
         // AI 가 한 번도 판정하지 않은 그림은 결정할 수 없다(조언 없이 허용하는 길을 막는다).
         if (!receipt) throw Error('이 해시의 판정 영수증이 없다 — object-gate enqueue/review 로 AI 조언을 먼저 받아라');
         if (typeof q.kind === 'string' && q.kind !== receipt.kind) throw Error(`화면의 종류(${q.kind})와 영수증 종류(${receipt.kind})가 다르다. 새로고침하세요`);
@@ -172,6 +190,7 @@ export async function serveHolds({ host, port }: { host: string; port: number })
       if (req.method === 'POST' && url.pathname === '/api/decide-batch') {
         const q = await guardedBody(1 << 20);
         const decidedBy = who(q);
+        finalCalibrated = calibratedFinalProfiles();
         const { entries, batches } = buildQueue(true);
         const batch = batches.find(b => b.id === q.batch);
         if (!batch) throw Error('없는 묶음이다. 새로고침하세요');

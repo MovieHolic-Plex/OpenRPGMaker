@@ -4,7 +4,7 @@ import { homedir } from 'node:os';
 import { existsSync, mkdirSync, readFileSync, readdirSync, unlinkSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { PNG } from 'pngjs';
-import { OBJECT_GATE_PROFILE, objectGatePixelSha256, objectGateProfileHash, type ObjectGateFrontPropApproval, type ObjectGateHoldDecision, type ObjectGateProfileRecord, normalizeObjectGateImage, objectGateHoldPayload, type ObjectGateReceipt, type ObjectGateStyleKind } from '../../_core/objectGate';
+import { OBJECT_GATE_PROFILE, objectGatePixelSha256, objectGateProfileHash, type ObjectGateFinal, type ObjectGateFinalProfileRecord, type ObjectGateFrontPropApproval, type ObjectGateHoldDecision, type ObjectGateProfileRecord, normalizeObjectGateImage, objectGateHoldPayload, type ObjectGateReceipt, type ObjectGateStyleKind } from '../../_core/objectGate';
 
 export const GATE_DATA = resolve(process.env.OBJECT_GATE_DATA ?? 'harness-data/object-gate');
 const receiptPath = (sha: string) => resolve(GATE_DATA, 'receipts', sha.slice(0, 2), `${sha}.json`);
@@ -185,4 +185,40 @@ export function writeQueueBatch(batch: ObjectGateQueueBatch): string {
   mkdirSync(dirname(path), { recursive: true });
   writeFileSync(path, `${JSON.stringify(batch, null, 1)}\n`);
   return path;
+}
+
+/** Opus 최종 판정 기록(2026-10-21) — final/<해시 앞 2자>/<화소 해시>.json, 최종 프로필 final-profiles/<해시>.json. */
+const finalPath = (sha: string) => resolve(GATE_DATA, 'final', sha.slice(0, 2), `${sha}.json`);
+export function readFinal(sha: string): ObjectGateFinal | null {
+  const path = finalPath(sha);
+  return existsSync(path) ? JSON.parse(readFileSync(path, 'utf8')) as ObjectGateFinal : null;
+}
+export function writeFinal(record: ObjectGateFinal): string {
+  const path = finalPath(record.pixelSha256);
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, `${JSON.stringify(record, null, 1)}\n`);
+  return path;
+}
+export function listFinals(): ObjectGateFinal[] {
+  const root = resolve(GATE_DATA, 'final');
+  if (!existsSync(root)) return [];
+  return readdirSync(root).flatMap(dir => readdirSync(resolve(root, dir)).filter(f => f.endsWith('.json')).map(f => JSON.parse(readFileSync(resolve(root, dir, f), 'utf8')) as ObjectGateFinal));
+}
+export function readFinalProfiles(): ObjectGateFinalProfileRecord[] {
+  const root = resolve(GATE_DATA, 'final-profiles');
+  if (!existsSync(root)) return [];
+  return readdirSync(root).filter(f => f.endsWith('.json')).map(f => JSON.parse(readFileSync(resolve(root, f), 'utf8')) as ObjectGateFinalProfileRecord);
+}
+export function calibratedFinalProfiles(): Set<string> {
+  return new Set(readFinalProfiles().filter(p => p.status === 'calibrated').map(p => p.profileHash));
+}
+export function writeFinalProfile(record: ObjectGateFinalProfileRecord): string {
+  const path = resolve(GATE_DATA, 'final-profiles', `${record.profileHash}.json`);
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, `${JSON.stringify(record, null, 1)}\n`);
+  return path;
+}
+/** 출구 입력 한 벌(영수증·승인·사람 결정·Opus 최종) — 노드 출구가 같은 것을 넘기게. */
+export function exitInputs(sha: string) {
+  return { receipt: readReceipt(sha), approval: readApproval(sha), hold: readHoldDecision(sha), final: readFinal(sha), calibratedProfiles: calibratedProfiles(), calibratedFinalProfiles: calibratedFinalProfiles() };
 }
