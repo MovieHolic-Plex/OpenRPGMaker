@@ -52,42 +52,57 @@ def wall_shader(rl, x, y, r):
 def draw_wall(m): return shade_roles(slab.roles_for(m, WALL_SPEC), wall_shader)
 
 # ═══════════════ 2. 생울타리 ═══════════════
-_BUMP = [1, 0, 0, 0, 1, 2, 3, 2]
+# 3/4 슬래브: 윗면 = 다듬은 잎 덩이가 빛을 받는 면, 앞면 = 한 단 그늘진 잎 → 아래로 갈수록 어둡고 밑동은 깊은 파임 + 줄기.
+# 잎 지도(LEAF)는 16 주기 손 도트 — 바탕 2 위에 크기가 다른 빛 받는 잎 뭉치(3, 드물게 4)와 그 오른쪽 아래 그늘(1). 홈으로 테를 두르면 비늘·자갈로 읽혀 뺐다.
+# 4방 오토타일은 칸별 변형이 없어서 16px 마다 같은 그림이 온다 → 덩이 크기·자리·윗변 굴곡을 칸 안에서 일부러 고르지 않게 짰다.
+_TOP16 = [0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 2, 1, 0, 0]          # 윗변 굴곡(덩이 꼭대기 사이가 파인다)
+_SIDE_L = [0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]          # 세로 띠 왼쪽 굴곡
+_SIDE_R = [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0]          # 세로 띠 오른쪽 굴곡
 HEDGE_SPEC = slab.Spec(ty0=1, ty1=5, fy1=14, sx0=3, sx1=12,
-                       top_prof=lambda x: _BUMP[x % 8],
-                       side_prof=lambda y: (min(2, _BUMP[(y + 2) % 8]), min(2, _BUMP[(y + 6) % 8])))
-OLH = K('midori', -2)
-_CEN = [(2, 2), (6, 6)]
-def _leaf(x, y):
-    best = None
-    for cx, cy in _CEN:
-        for ox in (-8, 0, 8):
-            for oy in (-8, 0, 8):
-                dx = x - (cx + ox); dy = y - (cy + oy); d = (dx * dx + dy * dy) ** 0.5
-                if best is None or d < best[0]: best = (d, dx, dy)
-    return best
-def _leaf_tone(x, y):
-    """덩이 하나(반지름 3)의 명암: 왼쪽 위 +2 · 가운데 +1 · 오른쪽 아래 0 · 덩이 사이 홈 -1."""
-    d, dx, dy = _leaf(x, y)
-    lit = dx + dy
-    if d >= 3.2: return -1
-    if d <= 1.2: return 2 if lit < 0 else 1
-    if d <= 2.4: return 1 if lit <= 0 else 0
-    return 0 if lit < 0 else -1
+                       top_prof=lambda x: _TOP16[x % 16],
+                       side_prof=lambda y: (_SIDE_L[y % 16], _SIDE_R[y % 16]))
+LEAF = [
+    "2333222233322223",
+    "2343332233433322",
+    "3343322333432232",
+    "2332223223332132",
+    "3232233322322233",
+    "2332222332223332",
+    "2222232222223222",
+    "2223332212233322",
+    "1222322122223221",
+    "2112221222122212",
+    "2223222232211222",
+    "2233322333222122",
+    "1222212222212212",
+    "2112221121122211",
+    "1221112211211221",
+    "2211222221122112",
+]
+_STEM = {3, 9}                                                    # 밑동에 줄기가 비치는 자리(가로 16 주기)
+OLH = K('ki', -2)                                                  # 재질 톤 윤곽(짙은 녹, 순흑 아님)
+def _lt(x, y): return int(LEAF[y % 16][x % 16])
 def hedge_shader(rl, x, y, r):
     nb = lambda dx, dy: rl.at(x + dx, y + dy)
     L, R, U, D = nb(-1, 0), nb(1, 0), nb(0, -1), nb(0, 1)
-    if 0 in (L, R, U, D): return OLH
-    t = _leaf_tone(x, y)
-    yy = y
-    while rl.at(x, yy - 1) in (1, 2): yy -= 1
+    t = _lt(x, y)
+    if 0 in (L, R, U, D):
+        if D == 0 and r == 2: return K('ki', -3)                   # 땅에 닿는 밑줄(가장 깊은 그늘)
+        return OLH
     yb = y
     while rl.at(x, yb + 1) == 2: yb += 1
-    below = yb - y if r == 2 else 9
-    if r == 2 and below <= 1: return K('midori', -1)                 # 밑동 그늘
-    if r == 2 and below == 2: return K('midori', -1) if t <= 0 else K('midori', 0)
-    if r == 1 and D == 2: return K('midori', 0) if t <= 0 else K('midori', 1)   # 윗면과 앞면 사이: 한 단 어둡게
-    return K('midori', t) if t >= -1 else K('midori', -1)
+    if r == 2:
+        below = yb - y
+        yt = y
+        while rl.at(x, yt - 1) == 2: yt -= 1
+        v = y - yt                                                   # 앞면 위에서부터 몇 번째 줄
+        if below == 0: return K('ki', -3)
+        if below == 1: return K('ita', -2) if x % 16 in _STEM else (K('ki', -3) if t <= 2 else K('ki', -2))   # 밑동 파임 + 줄기
+        if v == 0: return K('ki', -2) if t <= 1 else K('ki', -1)       # 윗면 아래 접힌 줄(다듬은 윗면이 앞면에 드리운 그늘)
+        tone = t - 2 - (1 if v >= 5 else 0)                          # 앞면은 한 단(아래쪽은 두 단) 어둡게
+        return K('ki', max(-2, min(1, tone)))
+    # 윗면: 잔디(ki 1~2 근처)보다 한 단 밝게 떠야 울타리 윗면으로 읽힌다
+    return K('ki', min(3, t) if t >= 1 else 0)
 def draw_hedge(m): return shade_roles(slab.roles_for(m, HEDGE_SPEC), hedge_shader)
 
 # ═══════════════ 3. 철망 울타리 ═══════════════
