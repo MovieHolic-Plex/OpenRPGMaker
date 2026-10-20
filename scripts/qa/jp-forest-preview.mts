@@ -97,6 +97,20 @@ if (MODE === "regions") {
     const foot = new Map<number, number[]>();
     if (!BEFORE) {
       const tmp = new Uint8Array(W * H);
+      // 나무 아닌 기물(집·담·기둥…)이 차지할 칸 — 숲 덩이 크기에서 미리 뺀다(뒤에서 빼면 집 뒤 나무가 숲도 한 그루도 아니게 사라진다)
+      const occ = new Uint8Array(W * H);
+      for (const st of steps) {
+        if (st.tool !== "stamp_object") continue;
+        const kitId = kitOfStep(st);
+        if (TREE.test(kitId)) continue;
+        const sh = kitShapes.get(kitId);
+        if (!sh) continue;
+        const sx = Number(st.args.x), sy = Number(st.args.y);
+        for (let j = 0; j < sh.h; j++) for (let i = 0; i < sh.w; i++) {
+          const x = sx + i, y = sy + j;
+          if (x >= 0 && y >= 0 && x < W && y < H && sh.opaque[j * sh.w + i]) occ[y * W + x] = 1;
+        }
+      }
       steps.forEach((st, si) => {
         const kitId = kitOfStep(st);
         if (!TREE.test(kitId) || kitId.startsWith("jp-prop-tree-")) return;
@@ -105,7 +119,7 @@ if (MODE === "regions") {
         const cells: number[] = [];
         if (sh) for (let j = 0; j < sh.h; j++) for (let i = 0; i < sh.w; i++) {
           const x = sx + i, y = sy + j;
-          if (x >= 0 && y >= 0 && x < W && y < H && sh.opaque[j * sh.w + i]) { tmp[y * W + x] = species(kitId); cells.push(y * W + x); }
+          if (x >= 0 && y >= 0 && x < W && y < H && sh.opaque[j * sh.w + i] && !occ[y * W + x]) { tmp[y * W + x] = species(kitId); cells.push(y * W + x); }
         }
         foot.set(si, cells);
       });
@@ -149,13 +163,21 @@ if (MODE === "regions") {
       }
       const kitId = kitOfStep(step);
       if (foot.has(si)) { trees++; continue; }
-      let stampArgs: Record<string, unknown> = (({ layer: _l, ...rest }) => rest)(step.args);
+      const stampArgs: Record<string, unknown> = (({ layer: _l, ...rest }) => rest)(step.args);
       if (!BEFORE && kitId.startsWith("jp-rg-sugi")) {
+        // 외딴 삼나무 → 새 한 그루(jp-forest-sg-tree-*). stamp_object 는 이 키트에서 ok 를 돌려주고도 맵을 바꾸지 않아(사후 검사 되돌림 추정)
+        // 칸을 3층에 직접 쓴다. 발 줄을 원래 나무와 맞춘다.
         const sh = kitShapes.get(kitId);
         const v = (Number(step.args.x) * 7 + Number(step.args.y) * 3) % 4;
-        const nk = `jp-forest-sg-tree-${sh && sh.h >= 6 ? "s3x5" : "s2x5"}-${v}`;
-        const ns = kitShapes.get(nk);
-        if (sh && ns) stampArgs = { ...stampArgs, objectId: `kit:jp_city/${nk}`, x: Number(step.args.x) + Math.floor((sh.w - ns.w) / 2), y: Number(step.args.y) + sh.h - ns.h };
+        const nk = (p.tilesets.jp_city!.structureKits ?? []).find((k) => k.id === `jp-forest-sg-tree-${sh && sh.h >= 6 ? "s3x5" : "s2x5"}-${v}`);
+        if (sh && nk) {
+          const ox = Number(step.args.x) + Math.floor((sh.w - nk.width) / 2), oy = Number(step.args.y) + sh.h - nk.height;
+          nk.rows.forEach((row, j) => row.upperTiles.forEach((t, i) => {
+            const x = ox + i, y = oy + j;
+            if (t >= 0 && x >= 0 && y >= 0 && x < W && y < H) setLayerTileAt(m, 3, y * W + x, t);
+          }));
+          continue;
+        }
       }
       const prev = m.upperTiles.slice();
       const layer = typeof step.args.layer === "number" ? step.args.layer : 3;
