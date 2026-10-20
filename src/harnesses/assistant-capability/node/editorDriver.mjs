@@ -91,8 +91,10 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
       loads.push({sha256:body.sha256,revision:body.revision,maps:document.maps,database:document.database});
     }).catch(()=>{});
   });
-  await page.addInitScript(config=>{
+  await page.addInitScript(({assistantEngine,...config})=>{
     localStorage.setItem('oprn:ai-config',JSON.stringify({configVersion:2,piTeam:false,piApply:'default',piApplyPolicyVersion:1,...config}));
+    // 조수 엔진(로컬 CLI) 선택은 설정과 따로 저장된다 — 제품 설정 화면이 쓰는 그 칸(src/ai/localCliEngine.ts).
+    if(assistantEngine)localStorage.setItem('oprn:assistant-engine',JSON.stringify(assistantEngine));
     window.__capEvents=[];
     const original=window.fetch;
     window.fetch=async function(...args){

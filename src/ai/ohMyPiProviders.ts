@@ -18,6 +18,7 @@ import {
   listKnownOpenAiCompatEndpoints,
   openAiCompatSlug,
 } from "./openAiCompat.ts";
+import { isLocalCliProviderId, LOCAL_CLI_DEFAULT_MODELS, LOCAL_CLI_LABELS, localCliOfProvider } from "./localCliEngine.ts";
 
 /**
  * 자격 증명 종류. 레지스트리에는 oauth 만 남았지만 세 값을 유지한다 — 동반 서비스의
@@ -97,8 +98,14 @@ function compatProviderRow(id: string): OhMyPiProvider {
   };
 }
 
+/** 사용자 PC 의 에이전트 CLI(local-cli:claude 등). 자격은 그 CLI 가 갖고 있다 — 우리 쪽엔 아무 비밀도 없다. */
+function localCliProviderRow(id: string): OhMyPiProvider | undefined {
+  const cli = localCliOfProvider(id);
+  return cli ? { id, label: LOCAL_CLI_LABELS[cli], defaultModel: LOCAL_CLI_DEFAULT_MODELS[cli].routine, envVars: [], authKind: "local" } : undefined;
+}
+
 export function getOhMyPiProvider(id: string): OhMyPiProvider | undefined {
-  return BY_ID.get(id) ?? (isOpenAiCompatProviderId(id) ? compatProviderRow(id) : undefined);
+  return BY_ID.get(id) ?? (isOpenAiCompatProviderId(id) ? compatProviderRow(id) : localCliProviderRow(id));
 }
 
 /**
@@ -107,7 +114,7 @@ export function getOhMyPiProvider(id: string): OhMyPiProvider | undefined {
  * 엔드포인트가 이미 지워졌어도 id 는 살려 둔다 — 말없이 Google 로 바꿔치지 않고 요청 시점에 「없는 엔드포인트」 오류를 낸다.
  */
 export function parseOhMyPiProvider(raw: unknown, fallback = DEFAULT_OH_MY_PI_PROVIDER): string {
-  if (typeof raw === "string" && (BY_ID.has(raw) || isOpenAiCompatProviderId(raw))) return raw;
+  if (typeof raw === "string" && (BY_ID.has(raw) || isOpenAiCompatProviderId(raw) || isLocalCliProviderId(raw))) return raw;
   return fallback;
 }
 

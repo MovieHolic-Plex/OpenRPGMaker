@@ -26,6 +26,8 @@ export class PiTilesetReferenceGate {
     this.pending.set(JSON.stringify(result.data), structuredClone(result));
     return this.evidence.imagesForRead(project, result);
   }
+  /** 직전 read 에서 이미 전달돼 다시 싣지 않은 그림 이름. */
+  get skippedImages(): readonly string[] { return this.evidence.skipped; }
   payload(value: unknown): void {
     this.outgoingResults = []; this.outgoingImages.clear();
     const consider = (text: string): void => {

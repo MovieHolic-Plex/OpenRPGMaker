@@ -212,6 +212,12 @@ export async function createOhMyPiAdapters() {
   return {
     listProviders: async () => listOhMyPiProviders(),
     async status(provider) {
+      // 로컬 CLI 엔진: 연결 여부는 그 CLI 가 스스로 말한 로그인 상태다(우리 저장소엔 자격이 없다).
+      if (String(provider).startsWith("local-cli:")) {
+        const { clis } = await workerJson("/local-agents", {});
+        const row = (clis ?? []).find((entry) => `local-cli:${entry.id}` === provider);
+        return { connected: row?.state === "ready", authKind: "local", ...(row && row.state !== "ready" ? { lastLoginError: `${row.label}: ${row.stateLabel}` } : {}) };
+      }
       // 만료됐지만 갱신 가능한 로그인은 여기서 되살린다(single-flight + 백오프, aiAuthRuntime.providerStatus).
       return providerStatus(provider);
     },
@@ -250,6 +256,8 @@ export async function createOhMyPiAdapters() {
     async complete(provider, body) {
       // 호스트 직전 검사 — 차단·비허용 모델은 키를 꺼내거나 워커를 부르기 전에 거절한다(폴백 없음).
       assertOpenAiCompatModelsAllowed([{ provider, model: body?.model }]);
+      // 로컬 CLI 엔진은 키가 없다 — 워커가 사용자의 CLI 로 한 차례 돌린다.
+      if (String(provider).startsWith("local-cli:")) return workerJson("/complete", { provider, body });
       const apiKey = await resolveRequestApiKey(provider);
       // 사용자 지정 엔드포인트는 워커가 주소·헤더를 알아야 모델을 만든다. 키는 apiKey 로 따로 간다.
       if (isOpenAiCompatProviderId(provider)) {
@@ -258,6 +266,9 @@ export async function createOhMyPiAdapters() {
       }
       return workerJson("/complete", { provider, body, apiKey });
     },
+    /** 로컬 에이전트 CLI 감지 — 워커(Bun)가 CLI 를 띄워 버전·로그인 상태만 읽는다. */
+    async localAgents(body) { return workerJson("/local-agents", body ?? {}); },
+    async localAgentHealth(body) { return workerJson("/local-agents/health", body ?? {}); },
     /** Pi 에이전트 실행. 워커의 NDJSON 본문(web ReadableStream)을 그대로 넘긴다. */
     async resolveRender(body) { return workerJson("/agent/render", body); },
     async resolveCheckpoint(body) {
@@ -271,7 +282,8 @@ export async function createOhMyPiAdapters() {
         { provider, model: body.model },
         ...["deep", "writer", "vision", "build"].map((role) => ({ provider: body.roleModels?.[role]?.provider, model: body.roleModels?.[role]?.model })),
       ]);
-      const apiKey = await resolveRequestApiKey(provider);
+      // 로컬 CLI 엔진(local-cli:*)은 키가 없다 — 사용자가 그 CLI 에 직접 로그인해 있다. 키를 찾지 않는다.
+      const apiKey = String(provider).startsWith("local-cli:") ? undefined : await resolveRequestApiKey(provider);
       const providerApiKeys = { [provider]: apiKey };
       // 사용자 지정 엔드포인트: 역할 넷 중 하나라도 쓰면 주소·헤더를 워커에 싣는다(없는 엔드포인트는 여기서 404 로 끝낸다).
       const compat = await resolveOpenAiCompatRun([

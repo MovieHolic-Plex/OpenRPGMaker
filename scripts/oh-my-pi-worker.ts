@@ -15,6 +15,8 @@ import { runPiAgent } from "./lib/piAgentRuntime.ts";
 import { isMonsterRequestTurn } from "../src/ai/piAgent/monsterGameRequest.ts";
 import { runPiTeam } from "./lib/piTeamRuntime.ts";
 import { createPiAgentNdjsonStream } from "./lib/piAgentStream.ts";
+import { detectLocalClis, healthCheckLocalCli, pickDefaultLocalCli } from "./lib/localCliAgent/registry.ts";
+import { localCliIdOf } from "./lib/localCliAgent/types.ts";
 import { preparePiWorkerSharedContent } from "./lib/piWorkerSharedContent.ts";
 import { preparePiWorkerAudio } from './lib/piWorkerAudio.ts';
 import { holdWorkerKeys, refreshWorkerKeys } from "./lib/piWorkerKeys.ts";
@@ -93,6 +95,17 @@ const server = Bun.serve({
         const apiKey = typeof body.apiKey === "string" ? body.apiKey : undefined;
         registerOpenAiCompatEndpoints(body.compatEndpoints as never);
         return json(await completeProvider(provider, payload, { apiKey }));
+      }
+      if (request.method === "POST" && url.pathname === "/local-agents") {
+        const body = await request.json().catch(() => ({})) as { fresh?: boolean };
+        const clis = await detectLocalClis({ fresh: body.fresh === true });
+        return json({ clis, recommended: pickDefaultLocalCli(clis) ?? null });
+      }
+      if (request.method === "POST" && url.pathname === "/local-agents/health") {
+        const body = await request.json().catch(() => ({})) as { id?: string; model?: string };
+        const id = localCliIdOf(`local-cli:${body.id ?? ""}`);
+        if (!id) return json({ error: "알 수 없는 CLI 입니다" }, 400);
+        return json(await healthCheckLocalCli(id, typeof body.model === "string" && body.model ? body.model : undefined, request.signal));
       }
       if (request.method === "POST" && url.pathname === "/agent/render") {
         const body = await request.json();

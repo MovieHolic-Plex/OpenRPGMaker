@@ -47,6 +47,8 @@ export function isCompanionPath(url = "") {
     || path === "/v1/agent/render"
     || path === "/v1/agent/checkpoint"
     || path === "/v1/worldmap/build"
+    || path === "/v1/local-agents"
+    || path === "/v1/local-agents/health"
   );
 }
 
@@ -261,6 +263,18 @@ export async function handleCompanionRequest(req, adapters) {
   if (method === "POST" && path === "/v1/worldmap/build") {
     // 조수의 지형 편집(edit_world_terrain) — 월드맵 키트(Python)를 호스트에서 돌린다.
     return json(200, await buildWorldmap(body));
+  }
+
+  // 로컬 에이전트 CLI(claude·codex·gemini) 감지·건강 확인 — 설정 화면의 엔진 카드가 쓴다.
+  // 우리는 그 CLI 의 토큰을 보지 않는다: 설치 여부·버전·CLI 자신이 말한 로그인 상태만 돌려준다.
+  if (method === "GET" && path === "/v1/local-agents") {
+    if (typeof adapters.localAgents !== "function") return json(501, { error: "로컬 에이전트 감지를 지원하지 않습니다." });
+    const query = new URL(req.url ?? "", "http://companion.local").searchParams;
+    return json(200, await adapters.localAgents({ fresh: query.get("fresh") === "1" }));
+  }
+  if (method === "POST" && path === "/v1/local-agents/health") {
+    if (typeof adapters.localAgentHealth !== "function") return json(501, { error: "로컬 에이전트 확인을 지원하지 않습니다." });
+    return json(200, await adapters.localAgentHealth(body));
   }
 
   if (method === "POST" && path === "/v1/agent/render") {
