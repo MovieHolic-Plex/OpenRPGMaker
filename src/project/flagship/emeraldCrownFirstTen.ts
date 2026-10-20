@@ -100,21 +100,6 @@ function polishLab(project: Project): void {
     text("북쪽 1번 도로를 따라가면 실바나 마을이 나온단다. 거기 체육관 관장 유림을 만나 보렴.", "천문박사"),
     text("다음 목표는 언제든 메뉴의 「배지」에서 볼 수 있단다.", "천문박사"),
   ]);
-  // 첫 길 선물 — 회복약 둘. 체육관은 연달아 싸우므로 새 플레이어가 전투 중 「가방」을 한 번은 쓸 수 있게(아무 때나 다시 말 걸어도 한 번만).
-  replaceText(professor, /^북쪽 1번 도로를 따라가면/, [
-    text("북쪽 1번 도로를 따라가면 실바나 마을이 나온단다. 거기 체육관 관장 유림을 만나 보렴.", "천문박사"),
-    {
-      kind: "fork",
-      condition: { kind: "switch", switchId: "mx_lab_potions", value: false },
-      then: [
-        { kind: "setSwitch", switchId: "mx_lab_potions", value: true },
-        { kind: "changeItem", itemId: "item_potion", op: "+=", amount: 2 },
-        text("회복약 두 개를 받았다! 전투 중 「가방」에서 쓸 수 있다."),
-      ],
-      else: [],
-    },
-  ]);
-  if (!project.switches.some((sw) => sw.id === "mx_lab_potions")) project.switches.push({ id: "mx_lab_potions", name: "mx_lab_potions" });
 
   const rival = eventOf(project, "mx_map_lab", "mx_map_lab_rival");
   const page = rival?.pages?.[0];
@@ -133,6 +118,9 @@ function polishLab(project: Project): void {
     { kind: "recoverAll" },
     { kind: "playAudio", resourceId: "easyrpg-sound-chime2", channel: "se", loop: false },
     text("둘 다 잘 싸웠다. 동료들은 기운을 되찾았단다.", "천문박사"),
+    // 첫 길 선물 — 1번 도로는 연달아 싸우므로 새 플레이어가 전투 중 「가방」을 한 번은 쓸 수 있게(2026-10-20 녹화: 체력 4로 다음 야생에 졌다).
+    { kind: "changeItem", itemId: "item_potion", op: "+=", amount: 2 },
+    text("이 회복약 두 개도 챙겨 가렴. 싸우다 위험하면 「가방」에서 쓰는 거란다.", "천문박사"),
     { kind: "changeItem", itemId: "item_capture_orb", op: "+=", amount: 3 },
     text("이거, 내 몫 포획 구슬 세 개 나눠 줄게. 대신 도감은 내가 먼저 채운다!", "나루"),
     text("난 1번 도로로 먼저 간다! 실바나 마을 체육관에서 보자!", "나루"),
@@ -182,7 +170,11 @@ function nurseBehindCounter(project: Project): void {
     for (const page of nurse.pages ?? []) {
       page.graphic = { transparent: true };
       walkLists(page.commands, (list) => {
-        for (const c of list) if (c.kind === "moveEvent" && !c.eventId) c.eventId = sprite.id;
+        for (const c of list) {
+          if (c.kind === "moveEvent" && !c.eventId) c.eventId = sprite.id;
+          // 방이 작아 카메라가 위에 붙으면 「자동」 대화창이 위로 가서 카운터 뒤 직원을 가렸다(2026-10-20 녹화). 직원 대사는 아래 창.
+          if (c.kind === "text") c.position = "bottom";
+        }
       });
     }
     map.events.push(sprite);

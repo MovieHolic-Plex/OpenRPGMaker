@@ -280,8 +280,9 @@ async function fight(label, { capture = false, run = false } = {}) {
     const ready = await page.locator('[data-testid="actor-command-fight"]').count();
     if (!ready) { await page.keyboard.press("Enter"); await page.waitForTimeout(300); continue; }
     // 플레이어처럼: 체력이 바닥이면 회복약, 상성이 크게 불리하면 더 나은 동료로 교체(적 한 마리당 한 번).
-    if (!capture) {
-      const tactic = await playerTactic(switchedFor);
+    {
+      // 잡으려는 싸움에서도 체력이 바닥이면 회복약은 쓴다(교체는 안 한다).
+      const tactic = await playerTactic(switchedFor, { potionOnly: Boolean(capture) });
       if (tactic) { log.push(`turn ${turn}: ${tactic}`); await page.waitForTimeout(400); continue; }
     }
     // 적 체력은 화면 HUD 글자(「현재/최대」)에서 읽는다 — 플레이어가 보는 그 값.
@@ -370,7 +371,7 @@ function moveScore(speciesId, level, enemyTypes) {
   let taken = 1; for (const et of enemyTypes) for (const mt of sp.types ?? []) taken *= CHART[et]?.[mt] ?? 1;
   return best / Math.max(0.5, taken);
 }
-async function playerTactic(switchedFor) {
+async function playerTactic(switchedFor, { potionOnly = false } = {}) {
   const info = await page.evaluate(() => {
     const scene = document.querySelector('[data-testid="battle-scene"]');
     const enemy = [...document.querySelectorAll(".battle-enemy-name")].map((n) => n.textContent?.trim()).find(Boolean) ?? "";
@@ -403,6 +404,7 @@ async function playerTactic(switchedFor) {
       await back();
     }
   }
+  if (potionOnly) return null;
   // 2) 교체 — 다른 동료의 상성 점수가 1.6배 이상이고 체력이 반 이상이면(적 한 마리에 한 번).
   if (active && enemyTypes.length && !switchedFor.has(enemyName)) {
     const mine = moveScore(active.speciesId, active.level, enemyTypes);
