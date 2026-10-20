@@ -1,0 +1,113 @@
+{
+ "schema": "oprn-object-gate-final-profile/1",
+ "profileHash": "f3a641ef15d50fe9",
+ "status": "rejected",
+ "calibratedAt": "2026-10-20T15:49:59.626Z",
+ "judge": {
+  "provider": "claude-cli",
+  "model": "claude-opus-5-5",
+  "effort": "medium"
+ },
+ "bad": {
+  "total": 2,
+  "caught": 2,
+  "missed": []
+ },
+ "good": {
+  "total": 1,
+  "passed": 0,
+  "falseFail": [
+   "holdout/mir_tea_table__B"
+  ]
+ },
+ "sets": {
+  "holdout": {
+   "bad": {
+    "total": 1,
+    "caught": 1
+   },
+   "good": {
+    "total": 1,
+    "passed": 0
+   }
+  },
+  "fresh5": {
+   "bad": {
+    "total": 1,
+    "caught": 1
+   },
+   "good": {
+    "total": 0,
+    "passed": 0
+   }
+  }
+ },
+ "tiers": {
+  "A-style": {
+   "bad": {
+    "total": 1,
+    "passed": 0
+   },
+   "good": {
+    "total": 1,
+    "passed": 0
+   }
+  },
+  "A": {
+   "bad": {
+    "total": 2,
+    "passed": 0
+   },
+   "good": {
+    "total": 1,
+    "passed": 0
+   }
+  },
+  "C": {
+   "bad": {
+    "total": 1,
+    "passed": 0
+   },
+   "good": {
+    "total": 2,
+    "passed": 0
+   }
+  },
+  "U": {
+   "bad": {
+    "total": 2,
+    "passed": 0
+   },
+   "good": {
+    "total": 1,
+    "passed": 0
+   }
+  },
+  "D": {
+   "bad": {
+    "total": 1,
+    "passed": 0
+   },
+   "good": {
+    "total": 0,
+    "passed": 0
+   }
+  }
+ },
+ "errors": [],
+ "note": "위반 = 등급 A 3/4 위반(적대 시험 adv-* 포함) + 강한 라벨 화풍 얕음. 정상 통과율 하한 0.5. 부분 표본 — 효력 없음",
+ "lines": [
+  "위반A3/4  FAIL column         holdout/mir_column_marble__w51-A               6: the capital (rows 3-7) is a rectangular slab with a flat white highlight band, not an elliptical cap plate narrowing above and below · 6: the base slab repea",
+  "위반A3/4  FAIL seat           fresh5/s078_modern_city                        Charge 5: a pink rectangle framed by an outline, a pure plan view with no front face rows (top-down slab like the guide's red example). · Charge 7: it reads as ",
+  "위반A화풍 FAIL structure      style/snow__longhouse__before                  charge 8: the snow roof covers about 51 source rows by 100+ columns in only about 2-3 near-white/pale-blue lightness steps, with faint horizontal banding. It co",
+  "위반C3/4  FAIL front_prop     adv-front-prop/interior__chopping_block__v5    Charge 7: this is a rounded pot/sack-like body with a white lid, a container with volume, not a flat front panel sign or drying frame, so front_prop is the wron",
+  "위반D3/4  FAIL front_prop     adv-front-prop/fresh__c62_modern_city          7: this is a counter or stall holding goods (a box and a teal tray of food); a body with volume is not front_prop · 1: the white counter body is a flat front el",
+  "위반U3/4  FAIL front_prop     adv-front-prop/holdout__mir_chair_S__v5        7: the object reads as a ladder-back chair or rack frame, which is seat or storage furniture rather than a sign or drying frame, so front_prop does not match · ",
+  "위반U3/4  FAIL seat           interior/chair_N__v5                           Charge 2: the seat surface between the backrest and the front legs reads as only a ~2-row band, not the 4 rows a seat needs. · Charge 8: the wood uses about 3 f",
+  "정상A3/4  FAIL low_furniture  holdout/mir_tea_table__B                       8: front apron is a near-uniform red/orange band and the legs are flat dark red: about 2-3 lightness steps per material against the Beodeul bench's grained wood",
+  "정상A화풍 FAIL terrain        style/pirate__sand__after                      Charge 8: the sand body is random per-pixel mottling in about 3 close lightness steps. It has no structured grain, ripples or clusters like the Beodeul ground r",
+  "정상C3/4  FAIL figure         fresh4/q084_interior                           7: the name 'q084 interior' and the drawing (a wrapped gold bundle or bell on a dish) do not read clearly as a statue or figure · 5: the orange round base is a ",
+  "정상C3/4  FAIL figure         fresh5/s001_interior                           Charge 1/3: the white plinth is drawn as stacked flat front bands (rows ~16-30); there is no foreshortened top surface where the bust sits, only band edges. · C",
+  "정상U3/4  FAIL box            fresh3/b3_prop-fish_crates                     box front rows: the front face is only about 7 rows, below the box minimum of 8 · 8: the crate fronts are large flat brown fills (well over 5x5) with only a cou"
+ ]
+}
