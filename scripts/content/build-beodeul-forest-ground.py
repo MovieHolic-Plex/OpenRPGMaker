@@ -44,8 +44,9 @@ def depth(px, py):
     # 최소 깊이 3 ≥ 여백 3 — canon 이 지운 대각 이웃의 실제 값과 상관없이 여백 화소가 같게 계산된다(dark_mask).
     return 6.0 + 1.5 * math.sin(2 * math.pi * (px + py) / T) + 0.9 * math.sin(2 * math.pi * (2 * py - px) / T + 1.3) + 0.6 * math.sin(2 * math.pi * (3 * px - 3 * py) / T + 0.4)
 
-MARGIN = 3
+MARGIN = 6
 DITHER = 3.5
+CORNER_R = 11.0
 CARD = {N: (0, -1), E: (1, 0), S: (0, 1), W: (-1, 0)}
 
 def in_block(cells, ax, ay):
@@ -59,23 +60,28 @@ def thin_seam(cells, ax, ay, dx, dy):
     return not any((ax + px * k, ay + py * k) in cells and (bx + px * k, by + py * k) in cells for k in (-1, 1))
 
 def spine(cx, cy, dark_cells, X, Y):
-    """한 칸 폭 띠·외딴 칸의 뼈대(4차 독립 Opus 적대 VQA, 2026-10-21): 굴곡 경계만으로는 한 칸 폭 띠가 다 깎여
-    대각 한 화소로만 닿거나 끊긴 점 사슬이 됐고, 외딴 칸은 5px 낱점(풀포기)으로 읽혔다.
-    2×2 덩이에 들지 않는 짙은 칸에는 가운데 둥근 속(반지름 4.0, 디더 1px), 「한 칸 폭」 이음매 쪽으로는 다리(반폭 3.3, 디더 1px)를
-    더한다. 덩이 가장자리는 굴곡 경계 그대로(r6). 다리 중심선은 가장자리에서 잰 거리 u 의 함수(1.2·sin(πu/8))라 이음매 양쪽이 같은 열/행에서 만난다."""
+    """한 칸 폭 띠·외딴 칸(4·5차 독립 Opus 적대 VQA, 2026-10-21):
+    · 굴곡 경계만으로는 한 칸 폭 띠가 다 깎여 끊긴 점 사슬이 됐다 → 「한 칸 폭」 이음매마다 칸 가운데까지 가는 띠를 깐다.
+    · 가운데 둥근 속을 크게 두면 구슬 사슬(가운데 불룩·이음매 잘록)이 됐다 → 속은 띠 반폭과 같게(불룩함 없음).
+    · 띠 테두리가 곧으면 디더가 빗살처럼 반복됐다 → 왼·오른 테두리를 서로 다른 물결로 흔든다.
+    띠 중심선·테두리는 그 이음매에서 잰 거리 u 만의 함수라 이음매 양쪽 칸이 같은 열/행에서 만난다.
+    반환값 ≤0 단단함, 0~1.5 디더."""
     lx, ly = X - cx * T, Y - cy * T
-    best = 99.0 if in_block(dark_cells, cx, cy) else math.hypot(lx - 8, ly - 8) - 4.0
+    best = 99.0
+    arms = 0
     for b, (dx, dy) in CARD.items():
         if (cx + dx, cy + dy) not in dark_cells or not thin_seam(dark_cells, cx, cy, dx, dy): continue
-        if dy:
-            u = ly if dy < 0 else T - ly
-            if u > 8: continue
-            best = min(best, abs(lx - (8 + 1.2 * math.sin(math.pi * u / 8))) - 3.3)
-        else:
-            u = lx if dx < 0 else T - lx
-            if u > 8: continue
-            best = min(best, abs(ly - (8 + 1.2 * math.sin(math.pi * u / 8))) - 3.3)
-    return best  # ≤0 단단함, 0~1 디더(절반)
+        arms += 1
+        along, across = (ly if dy < 0 else T - ly, lx) if dy else (lx if dx < 0 else T - lx, ly)
+        u = along
+        if u > 8.5: continue
+        c = 8 + 1.0 * math.sin(math.pi * u / 8)
+        lo = c - (3.2 + 0.7 * math.sin(2 * math.pi * u / 8 + 0.7))
+        hi = c + (3.2 + 0.7 * math.sin(2 * math.pi * u / 8 + 2.6))
+        best = min(best, max(lo - across, across - hi))
+    if arms:
+        best = min(best, math.hypot(lx - 8, ly - 8) - 3.2)  # 팔들이 가운데서 만나는 마디(띠 반폭과 같음)
+    return best
 
 def dark_mask(m):
     """칸 하나의 짙은 화소 — 전역 필드(밝은 이웃 칸까지 거리·전역 좌표 물결·Bayer) ∪ 뼈대(spine)를 칸+여백 3px 창에서
@@ -92,13 +98,40 @@ def dark_mask(m):
             if (cx, cy) not in dark_cells: continue
             px, py = int(math.floor(X)) % T, int(math.floor(Y)) % T
             bay = (BAYER[py % 4][px % 4] + 0.5) / 16
-            best = 99.0
+            if dark_cells == {(0, 0)}:
+                # 외딴 짙은 칸 하나: 단단한 덩이는 풀포기·구멍(물건)으로 읽혔다(4·5차 VQA) — 가운데로 갈수록 짙어지는 성긴 디더 그늘만.
+                # 외딴 짙은 칸 하나: 둥근 덩이·마름모는 풀포기·구멍(물건)으로 읽혔다(5·6차) — 테두리가 고르지 않은 얼룩(성긴 디더 가장자리).
+                # 납작한 가로 타원 그늘(그림자처럼 땅에 깔림) + 약한 물결, 테두리는 성긴 디더 2px.
+                ex, ey = (X - 8) / 6.6, (Y - 8.3) / 4.4
+                r, th = math.hypot(ex, ey), math.atan2(ey, ex)
+                rad = 1.0 + 0.08 * math.sin(3 * th + 0.5) + 0.05 * math.sin(5 * th + 2.0)
+                t = (rad - r) * 4.4 / 2.0 + 0.5
+                win[wy, wx] = t >= 1 or (t > 0 and bay < t)
+                continue
+            dV = dH = dD = 99.0
             for dx, dy in light:
                 x0, y0 = dx * T, dy * T
-                best = min(best, math.hypot(max(x0 - X, 0, X - x0 - T), max(y0 - Y, 0, Y - y0 - T)))
-            t = (best - depth(px, py)) / DITHER
+                gx, gy = max(x0 - X, 0, X - x0 - T), max(y0 - Y, 0, Y - y0 - T)
+                if gx == 0: dV = min(dV, gy)
+                elif gy == 0: dH = min(dH, gx)
+                else: dD = min(dD, math.hypot(gx, gy))
+            best = min(dV, dH, dD)
+            dep = depth(px, py)
+            if dV < CORNER_R and dH < CORNER_R:
+                # 볼록 모서리(위·옆이 다 밝음)를 둥글린다 — 각진 모서리에 디더가 45° 가시처럼 남았다(5차 VQA).
+                # 모서리 안쪽에서는 물결의 얕은 골(깊이 3 근처)이 가시를 다시 만들므로 깊이를 5.5 이상으로 부드럽게 올린다.
+                best = min(best, CORNER_R - math.hypot(CORNER_R - dV, CORNER_R - dH))
+                w = min(1.0, (CORNER_R - max(dV, dH)) / 3.0)
+                dep = dep + w * (max(dep, 5.5) - dep)
+            t = (best - dep) / DITHER
             sp = spine(cx, cy, dark_cells, X, Y)
-            win[wy, wx] = t >= 1 or (t > 0 and bay < t) or sp <= 0 or (sp <= 1 and bay < 0.5)
+            win[wy, wx] = t >= 1 or (t > 0 and bay < t) or sp <= 0 or (sp <= 1.5 and bay < 0.5 * (1.5 - sp) / 1.5 + 0.15)
+    # 가시 다듬기(5차 VQA: 볼록 모서리·띠 테두리에 45° 낱화소 줄이 가시처럼 남았다): 짙은 8이웃이 2개 이하인 화소를
+    # 세 번 걷어 낸다. 바둑판 디더 속 화소는 이웃이 4개라 남는다. 창 전체(여백 포함)에서 계산하므로 옆 칸도 같게 걷는다.
+    for _ in range(3):
+        pad = np.pad(win, 1)
+        cnt = sum(np.roll(np.roll(pad, ddy, 0), ddx, 1) for ddx in (-1, 0, 1) for ddy in (-1, 0, 1) if ddx or ddy)[1:-1, 1:-1]
+        win = win & (cnt > 2)
     seen = np.zeros_like(win)
     for sy in range(Wn):
         for sx in range(Wn):
