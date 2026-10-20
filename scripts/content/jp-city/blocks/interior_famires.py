@@ -218,13 +218,10 @@ def _(c):
     for x, y, n in ((4, 2, 6), (15, 3, 7), (24, 2, 5)): c.HL(x, y, n, K('ita', 0))                       # 나뭇결
     c.HL(1, 5, W - 2, K('ita', -2))                                                                      # 갓 앞 모서리(어둡게)
     c.VL(0, 6, 8, OL); c.VL(W - 1, 6, 8, OL)
-    for x0 in (1, 11, 21):                                                                               # 비닐 뒷면: 누빔 판 셋(볼록)
-        c.R(x0, 6, 10, 8, K(VINYL, -1))
-        c.HL(x0, 6, 10, K(VINYL, -2))                                                                    # 갓 밑 그늘
-        c.HL(x0 + 1, 7, 7, K(VINYL, 1)); c.HL(x0 + 1, 8, 8, K(VINYL, 0)); c.VL(x0 + 1, 7, 5, K(VINYL, 0))   # 위·왼쪽 볼록 빛
-        c.HL(x0 + 1, 12, 8, K(VINYL, -2)); c.VL(x0 + 8, 8, 4, K(VINYL, -2))                             # 아래·오른쪽 그늘
-        c.P(x0 + 5, 10, K(VINYL, -2))                                                                    # 누빔 단추
-    for x in (10, 20): c.VL(x, 6, 8, OL)                                                                 # 누빔 이음
+    c.R(1, 6, W - 2, 8, K(VINYL, -1)); c.HL(1, 6, W - 2, K(VINYL, -2))                                  # 비닐 뒷면 · 갓 밑 그늘
+    c.HL(1, 7, W - 2, K(VINYL, 0)); c.VL(1, 7, 6, K(VINYL, 0)); c.VL(W - 2, 7, 6, K(VINYL, -2))         # 위·왼쪽 빛, 오른쪽 그늘
+    for x in (10, 20): c.VL(x, 7, 6, K(VINYL, -2)); c.VL(x + 1, 7, 6, K(VINYL, 0))                      # 누빔 이음(S 벤치와 같은 줄)
+    c.HL(1, 12, W - 2, K(VINYL, -2))
     c.HL(1, 13, W - 2, K(VINYL, -2))
     c.R(0, 14, W, 2, K('ita', -2)); c.HL(0, 15, W, OL)
 

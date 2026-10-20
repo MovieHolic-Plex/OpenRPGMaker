@@ -241,8 +241,8 @@ def _(c):
         c.HL(x0, 19, w, K('conc', -2))
         c.VL(x0 - 1 if x0 > 1 else 0, 12, 2, K('tekko', 0)) if x0 > 1 else None
         c.HL(x0, 13, w, K('conc', 0))
-        ell(c, x0 + w / 2, 8, w / 2, 2.7, 'conc')                                                                  # 솥 테 + 뚜껑 윗면(타원)
-        c.P(x0 + w // 2, 7, K('tekko', 1)); c.P(x0 + w // 2, 8, K('tekko', -1))                                    # 꼭지
+        ell(c, x0 + w / 2, 8.5, w / 2, 1.9, 'conc')                                                                # 솥 테 + 뚜껑 윗면(납작한 타원)
+        c.P(x0 + w // 2, 7, K('tekko', 1))                                                                         # 꼭지
     c.R(0, yb + 4, 16, 11, K('tekko', 0)); c.HL(0, yb + 4, 16, K('tekko', 2)); c.HL(0, yb + 5, 16, K('tekko', 1))
     c.VL(0, yb + 4, 11, K('tekko', 2)); c.VL(15, yb + 4, 11, K('tekko', -2))
     for x in (4, 11): ell(c, x, yb + 9, 2.2, 2.2, 'tekko', ol=True, hi=False); c.P(x, yb + 9, K('daidai', 1))     # 화구 불빛

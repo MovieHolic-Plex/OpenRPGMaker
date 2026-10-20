@@ -630,7 +630,7 @@ def _sink(c):
     rc(c, 3, 13, 12, 4, kc('tekko', -1)); hl(c, 3, 13, 12, kc('tekko', 1)); vl(c, 3, 13, 4, kc('tekko', 0)); vl(c, 14, 14, 3, kc('tekko', -2))   # 개수구: 먼 안벽(밝게) + 바닥
     hl(c, 4, 16, 10, kc('tekko', -2)); px(c, 9, 15, kc('yoru', -1))
     vl(c, 9, 7, 6, kc('tekko', 4)); hl(c, 9, 7, 3, kc('tekko', 4)); px(c, 11, 8, kc('tekko', 1))            # 수도꼭지
-    rc(c, 20, 7, 6, 8, kc('shiro', 3)); hl(c, 20, 7, 6, kc('shiro', 4)); rc(c, 20, 14, 6, 2, kc('yoru', 0)); rc(c, 26, 9, 2, 3, kc('shiro', 1)); outline(c, 19, 6, 8, 10)   # 전기 포트
+    rc(c, 20, 7, 6, 8, kc('shiro', 3)); rc(c, 20, 7, 6, 3, kc('shiro', 4)); hl(c, 20, 10, 6, kc('conc', 2)); rc(c, 20, 14, 6, 2, kc('yoru', 0)); rc(c, 26, 9, 2, 3, kc('shiro', 1)); outline(c, 19, 6, 8, 10)   # 전기 포트
     rc(c, 28, 12, 3, 3, kc('aka', 1)); px(c, 28, 12, kc('aka', 3))
     rc(c, 0, 18, 32, 14, kc('shiro', 1)); vl(c, 15, 18, 14, kc('conc', 2)); vl(c, 16, 18, 14, kc('shiro', 3))
     hl(c, 0, 18, 32, kc('conc', 1)); rc(c, 12, 22, 2, 3, kc('tekko', 2)); rc(c, 18, 22, 2, 3, kc('tekko', 2))
