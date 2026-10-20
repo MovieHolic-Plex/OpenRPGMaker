@@ -79,12 +79,21 @@ async function electronRun(projectDir, configHome) {
   const ipcLog = opt("ipc-timing", null);
   if (ipcLog) app.process().stderr?.on("data", (chunk) => { for (const line of String(chunk).split("\n")) if (line.includes("[ipc-timing]")) writeFileSync(ipcLog, `${line}\n`, { flag: "a" }); });
   try {
-    const page = await app.firstWindow();
+    // 스플래시 창(electron/main/splash.ts)이 따로 뜬다 — 시작 화면 문서를 연 창을 고른다.
+    const isAppPage = (candidate) => /start-screen\.html|index\.html/.test(candidate.url());
+    let page = app.windows().find(isAppPage);
+    while (!page) page = await app.waitForEvent("window", { predicate: isAppPage, timeout: 120_000 }).catch(() => app.windows().find(isAppPage));
     // 시작 화면: 최근 월드 카드(누르면 편집)가 그려진 순간. 카드가 생기기 전까지는 홈이 쓸모가 없다.
     // 서재 홈(#3094)은 카드 `start-world-0`, 그 전 판은 `start-world-make-*` 단추다.
     const card = page.locator(WORLD_CARD).first();
     await card.waitFor({ state: "visible", timeout: 120_000 });
     t.home = Date.now() - t0;
+    // 메인이 창을 보이는 것은 시작 화면이 카드를 그린 다음 프레임이다 — 그 표시까지 잠깐 기다린다.
+    await app.evaluate(() => new Promise((done) => {
+      const started = Date.now();
+      const tick = () => (globalThis.__oprnMainTiming?.windowShown !== undefined && globalThis.__oprnMainTiming?.startScreenReady !== undefined) || Date.now() - started > 5000 ? done(null) : setTimeout(tick, 20);
+      tick();
+    }));
     const mainTiming = await app.evaluate(() => ({
       processStart: performance.timeOrigin,
       timing: globalThis.__oprnMainTiming ?? null,

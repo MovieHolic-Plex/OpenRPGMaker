@@ -639,6 +639,8 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     .finally(() => {
       state.loaded = true;
       refresh("entries");
+      // 데스크톱: 카드가 그려진 다음 프레임에 메인이 창을 보이고 스플래시를 닫는다(electron/main/splash.ts).
+      requestAnimationFrame(() => window.oprn?.startScreenReady?.());
       whenIdle(COVER_IDLE_DELAY_MS, () => void refreshCovers());
     });
 }

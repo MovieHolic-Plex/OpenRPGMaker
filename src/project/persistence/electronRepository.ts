@@ -124,6 +124,8 @@ export type OprnBridge = {
   readonly windowFullscreen?: () => Promise<boolean>;
   /** 네이티브 전체화면 변화(F11·메뉴 포함) 구독. 해지 함수를 돌려준다. */
   readonly onWindowFullscreen?: (callback: (fullscreen: boolean) => void) => () => void;
+  /** 데스크톱 전용 — 시작 화면이 첫 카드를 그렸다. 메인이 숨겨 둔 창을 보이고 스플래시를 닫는다(electron/main/splash.ts). */
+  readonly startScreenReady?: () => void;
   readonly team?: import("../../../electron/shared/team").TeamBridge;
   /** true 면 닫기 절차를 호스트(일렉트론 메인)가 연다. 브라우저 로컬 서버는 false 라서 페이지가 직접 막는다. */
   readonly closeIsHostDriven: boolean;
