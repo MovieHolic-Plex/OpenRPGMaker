@@ -22,13 +22,15 @@ const SPECIES_NAMES: Readonly<Record<string, string>> = {
   mx_species_spriglet: "토리프",
   mx_species_bramblet: "실바리온",
   mx_species_canopine: "벨데로드",
-  mx_species_coalbit: "파이린",
+  mx_species_coalbit: "숯꼬미",
   mx_species_kilnclaw: "볼케이건",
   mx_species_pyroscale: "마그렉스",
-  mx_species_rivulet: "아쿠링",
+  mx_species_rivulet: "아가핀",
   mx_species_tideling: "마린웨이",
   mx_species_abyssal: "네레이드",
   // 헤라크로스와 한 글자 차이라 겹치던 이름 — 과수원 딱정벌레.
+  mx_enemy_coalbit: "숯꼬미",
+  mx_enemy_rivulet: "아가핀",
   mx_species_orchardant: "과수뿔",
   mx_enemy_orchardant: "과수뿔",
 };
@@ -47,8 +49,11 @@ const PLACE = {
 /** 생성기 고유명 → 이 세계 고유명. 긴 것부터 바꾼다(「새벽섬 마을」이 「새벽섬」보다 먼저). */
 const NAME_SWAPS: ReadonlyArray<readonly [string, string]> = [
   ["꼬마초", "토리프"],
-  ["불씨점", "파이린"],
-  ["물방울", "아쿠링"],
+  ["불씨점", "숯꼬미"],
+  ["물방울", "아가핀"],
+  // 생성기 로스터의 옛 이름이 한글 원작 이름과 한 글자 차이라 먼저 바꾼다.
+  ["파이린", "숯꼬미"],
+  ["아쿠링", "아가핀"],
   ["1번길 · 별싹 들판", PLACE.route1],
   ["별빛 리그 · 챔피언", PLACE.league],
   ["별빛 리그", "아스트라 리그"],
@@ -88,7 +93,7 @@ function fixJosa(text: string, names: readonly string[]): string {
   return next;
 }
 
-const JOSA_NAMES = [...new Set(NAME_SWAPS.map(([, to]) => to)), "토리프", "파이린", "아쿠링", "과수뿔"];
+const JOSA_NAMES = [...new Set(NAME_SWAPS.map(([, to]) => to)), "토리프", "숯꼬미", "아가핀", "과수뿔"];
 
 function rewriteStrings(value: unknown, rewrite: (text: string) => string): void {
   if (Array.isArray(value)) {
@@ -209,7 +214,7 @@ const OPENING_PAGES: EmeraldOpeningPage[] = [
   { id: "emerald_intro_welcome", shot: "lab", text: "안녕! 만나서 반갑구나.\n나는 오르비스 천문 연구소의 천문박사란다." },
   { id: "emerald_intro_world", shot: "route", text: "아스트라 군도의 새벽 하늘에는 「여명의 날개」 새떼가\n등대 불빛을 따라 섬과 섬을 건넌단다." },
   { id: "emerald_intro_lab", shot: "dawn", text: "그런데 요즘 등대가 자꾸 꺼져 가는구나.\n밤막회사가 별모래 신전의 별빛을 모으고 있다더군." },
-  { id: "emerald_intro_companions", shot: "stage", text: "풀의 토리프, 불의 파이린, 물의 아쿠링.\n첫 동료는 네가 직접 고르렴." },
+  { id: "emerald_intro_companions", shot: "stage", text: "풀의 토리프, 불의 숯꼬미, 물의 아가핀.\n첫 동료는 네가 직접 고르렴." },
   { id: "emerald_intro_rival", shot: "gym", text: "실바나 체육관의 관장 유림, 그리고 네 소꿉친구 나루도\n너를 기다리고 있단다." },
   { id: "emerald_intro_departure", shot: "town", text: "다우닝 시티의 네 방에서 모험이 시작된다.\n준비가 되면 연구소로 오렴!" },
 ];
