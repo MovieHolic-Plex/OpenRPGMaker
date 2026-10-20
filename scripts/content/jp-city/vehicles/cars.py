@@ -113,7 +113,7 @@ def _done(c):
 
 # ── 옆모습 공통(3/4: 위에서 보이는 윗면 띠 + 남쪽 옆면) ─────────────────────
 # 행 좌표는 48 높이 캔버스 기준. 보닛·트렁크 윗면 DY..DF-1, 접힘선 DF, 아래 몸체 옆면 BY0..BY1.
-DY, DF, BY0, BY1 = 20, 29, 30, 40       # 2026-10-20 깊이: 보닛·트렁크 윗면 7→9줄(차폭을 위에서 본 면), 옆창은 6줄 남긴다
+DY, DF, BY0, BY1 = 21, 29, 30, 40       # 2026-10-20 깊이: 보닛·트렁크 윗면 7→8줄(지붕은 7→10줄), 보닛은 옆창 가운데보다 낮게
 
 
 def _lerp(a, b, f):
@@ -134,6 +134,7 @@ def _side(c, T, bx0, bx1, rx0, rx1, tx, fx, RY, RF, pillars=(), seams=(), handle
     """승용·경차 옆모습 몸체. 지붕 윗면 rx0..rx1 (행 RY..RF-1, 접힘 RF), 옆 유리 띠 RF+1..DF,
     앞유리 = 지붕 앞 끝 rx1 에서 보닛 뒤 끝 fx 로 내려오는 평행사변형, 뒷유리 = rx0 → 트렁크 앞 끝 tx."""
     g1, g2, g0, ghi = K('garasu', -1), K('garasu', -2), K('garasu', 0), K('garasu', 1)
+    dy = DY if deck_y is None else deck_y                                       # 보닛 윗면 먼 끝(앞유리 아래 끝이 여기서 만난다)
     # 아래 몸체 옆면
     c.R(bx0, BY0, bx1 - bx0, BY1 - BY0 + 1, T['bod'])
     c.HL(bx0 + 1, BY0 + 1, bx1 - bx0 - 2, T['top'])                              # 어깨선
@@ -156,7 +157,7 @@ def _side(c, T, bx0, bx1, rx0, rx1, tx, fx, RY, RF, pillars=(), seams=(), handle
     # 앞유리(위를 향해 기운 면): 먼 끝 → 가까운 끝(A 기둥)
     for x in range(rx1 + 1, fx + 1):
         s = (x - rx1) / max(1, fx - rx1)
-        yf = _lerp(RY, DY, s); yn = _lerp(RF, DF, s)
+        yf = _lerp(RY, dy, s); yn = _lerp(RF, DF, s)
         for y in range(yf, yn + 1):
             k = y - yf
             c.P(x, y, T['bod'] if y == yn else ghi if k == 1 and s < .6 else g0 if k <= 2 else g1)
@@ -168,9 +169,14 @@ def _side(c, T, bx0, bx1, rx0, rx1, tx, fx, RY, RF, pillars=(), seams=(), handle
             c.P(x, y, T['bod'] if y == yn else g0 if y - yf == 1 else g1 if y - yf < 3 else g2)
     # 윗면 띠: 지붕·보닛·트렁크
     _deck(c, rx0, rx1 + 1, RY, RF - RY, T)
-    dy = DY if deck_y is None else deck_y
     if bonnet and bx1 - fx > 3: _deck(c, fx + 1, bx1, dy, DF - dy, T)
     if trunk and tx - bx0 >= 3: _deck(c, bx0, tx, DY, DF - DY, T)
+    if bonnet and bx1 - fx > 3: c.a[dy, fx + 1, 3] = 255; c.a[dy, fx + 1, :3] = c.a[dy, fx + 2, :3]   # 앞유리-보닛 이음 틈 메움
+    if trunk and tx - bx0 >= 3: c.a[DY, tx - 1, 3] = 255; c.a[DY, tx - 1, :3] = c.a[DY, tx - 2, :3]
+    if not trunk:                                                                # 뒤 기둥(D 필러): 바깥 실루엣에 유리가 드러나지 않게
+        for y in range(RY + 1, DF + 1):
+            for x in range(bx0, bx0 + 2):
+                if c.a[y, x, 3]: c.P(x, y, T['top'] if x == bx0 else T['bod'])
     # 등화·그림자
     c.R(bx1 - 3, BY0 + 1, 3, 3, K('kii', 2)); c.P(bx1 - 1, BY0 + 3, K('daidai', 1))
     c.R(bx0, BY0 + 1, 2, 3, K('aka', 1)); c.P(bx0, BY0 + 1, K('aka', 2))
@@ -191,8 +197,8 @@ def _sedan_side(tone, body='sedan', taxi=False):
         _side(c, T, 4, 76, 26, 50, 20, 58, 10, 20, pillars=(37,), seams=(23, 37, 57), handles=(40, 25))
         _wheels(c, (17, 62))
     if taxi:                                                                      # 지붕 표시등(글자 없음)
-        c.R(33, 10, 10, 3, K('shiro', 2)); c.R(33, 13, 10, 3, K('shiro', 0)); c.VL(33, 10, 6, K('shiro', 2))   # 행등: 지붕 면 가운데 위에 선 상자(윗면 3 + 남쪽 면 3)
-        c.R(34, 13, 8, 2, K('aka', 1)); c.VL(42, 10, 6, K('conc', 0)); c.HL(33, 16, 11, K('kii', -1))
+        c.R(33, 6, 10, 3, K('shiro', 2)); c.R(33, 9, 10, 4, K('shiro', 0)); c.VL(33, 6, 7, K('shiro', 2))   # 행등: 지붕 위로 솟은 상자(윗면 3 + 남쪽 면 4)
+        c.R(34, 10, 8, 2, K('aka', 1)); c.VL(42, 7, 6, K('conc', 0)); c.HL(34, 13, 9, K('kii', -1))
     return _done(c)
 
 
@@ -304,7 +310,7 @@ def _sedan_up(tone, L=5, taxi=False):
 def _kei_side(color):
     """64×48(L=4), 오른쪽 진행. 짧은 보닛·지붕이 꽁무니까지(서 있는 뒷면)·창 셋·뒷문 슬라이드."""
     c = Cv(64, 48); T = _tone(*KEI_TONE[color])
-    _side(c, T, 4, 61, 7, 46, 4, 53, 8, 18, pillars=(16, 32), seams=(16, 33, 52), handles=(35, 19), trunk=False, deck_y=25)
+    _side(c, T, 4, 61, 7, 46, 4, 53, 8, 18, pillars=(16, 32), seams=(16, 33, 52), handles=(35, 19), trunk=False, deck_y=24)
     c.HL(18, BY0 + 4, 14, T['dk'])                                               # 슬라이드 레일
     _wheels(c, (14, 51))
     return _done(c)
@@ -387,12 +393,11 @@ def _ktruck_side():
     c.R(4, BY1 - 2, 34, 3, K('tekko', -2))                                       # 차대
     # 헤드보드(캡 뒤 보호틀)
     c.R(36, 14, 2, 15, K('tekko', 0)); c.VL(36, 14, 15, K('tekko', 1))
-    for yy in (16, 20, 24): c.HL(33, yy, 3, K('tekko', 0))
     # 캡: 지붕 윗면 띠 + 서 있는 앞유리 + 문 창
     _deck(c, 38, 58, 8, 10, T)                                                   # 캡 지붕 윗면(깊이 7→10줄)
     c.R(38, 19, 22, BY1 - 18, T['bod']); c.VL(38, 19, BY1 - 18, T['top']); c.VL(59, 19, BY1 - 18, T['lo'])
     for x in range(58, 61):                                                      # 앞유리 옆 단면(살짝 기움)
-        c.VL(x, 13 + (x - 58), 13, g1); c.P(x, 13 + (x - 58), ghi)
+        c.VL(x, 18 + (x - 58), 9, g1); c.P(x, 18 + (x - 58), ghi)
     c.R(40, 19, 15, 10, g1); c.R(40, 27, 15, 2, g2); c.HL(41, 20, 4, ghi); c.P(41, 21, ghi)
     c.VL(55, 19, BY1 - 18, T['lo'])                                              # 문 틈
     c.HL(38, BY0 + 1, 22, T['top']); c.R(38, BY0 + 5, 22, 2, T['lo']); c.HL(38, BY1, 22, T['dk'])

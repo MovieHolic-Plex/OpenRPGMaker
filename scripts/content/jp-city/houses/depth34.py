@@ -160,16 +160,14 @@ def gable_front_top(c, x0, x1, ytop, yeave, ywall, mat, base, rise, wx0, wx1, wm
 
 
 def shed_top(c, x0, x1, ytop, yeave, mat, base):
-    """片流れ를 위에서: 한 장 직사각 경사면(뒤가 높다). 뒤→앞으로 어두워지는 명암 + 16줄마다 가로 판 이음,
+    """片流れ를 위에서: 한 장 직사각 경사면(뒤가 높다). 한 톤 면 + 뒤 끝 밝게·앞 끝 어둡게(가로 이음선·명암 띠는 판넬 격자로 읽혀 뺐다),
     골은 얕게(세로 줄은 약하게), 양옆 마구리 판(왼쪽 밝음 · 오른쪽 그늘) 3px, 뒤 끝 밝은 판금 캡, 앞 처마 물받이."""
     D = yeave - ytop
     for y in range(ytop, yeave):
         f = (y - ytop) / max(1, D)
-        g = 2 if f < 0.15 else 1 if f < 0.6 else 0
+        g = 2 if y - ytop < 3 else 0 if yeave - y <= 3 else 1               # 한 장 면: 뒤 끝 3줄 밝게 · 앞 끝 3줄 한 단 낮게(띠·격자 없음)
         for x in range(x0 + 3, x1 - 2):
-            t = base + g + (1 if (x % 4 == 1 and (y // 2) % 2) else -1 if x % 8 == 3 else 0)
-            if (y - ytop) % 16 == 15: t -= 1
-            elif (y - ytop) % 16 == 0 and y > ytop: t += 1
+            t = base + min(2, g) + (1 if (x - x0) % 4 == 0 else -1 if (x - x0) % 4 == 2 else 0)   # 끊기지 않는 세로 골(물매 방향)
             c.P(x, y, K(mat, t))
         c.P(x0, y, K(mat, base + 3)); c.P(x0 + 1, y, K(mat, base + 2)); c.P(x0 + 2, y, K(mat, base + 2))   # 마구리(빛)
         c.P(x1, y, K(mat, base - 3)); c.P(x1 - 1, y, K(mat, base - 2)); c.P(x1 - 2, y, K(mat, base))      # 마구리(그늘)
