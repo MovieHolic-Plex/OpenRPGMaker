@@ -1354,25 +1354,6 @@ def _tun_ns(sx, sy, cx, r, base, L, rib=10.0):
     return None
 
 
-def _tun_ew(sx, sy, x0, r, base, L, rib=10.0):
-    """동서 터널 화소 → ('film', v, rib, yy) | None. 보이는 면 = 같은 화면 y 의 가장 남쪽 해."""
-    c = _TUN_C
-    x = sx - x0
-    if not (0 <= x <= L):
-        return None
-    best = None
-    for k in range(0, 721):
-        ph = math.pi * k / 720
-        yy, zz = r + r * math.cos(ph), r * math.sin(ph)
-        if abs(base - c * yy - zz - sy) < 0.5 and (best is None or yy < best[0]):
-            best = (yy, zz, ph)
-    if not best:
-        return None
-    yy, zz, ph = best
-    v = 0.2 + 0.8 * _tun_lam(0, math.cos(ph), math.sin(ph))
-    return ('film', v, (x % rib) < 1.0 or x > L - 1, yy)
-
-
 def _tun_shadow(gx, gy, inside):
     """바닥 점(gx, gy)에서 빛 쪽으로 쏘아 터널에 막히면 그늘."""
     for i in range(1, 200):
@@ -1509,87 +1490,6 @@ def greenhouse(c, base):
         for sx in range(c.w):
             if c.a[sy, sx, 3] == 0 and (sx + sy) % 2 == 0:
                 if _tun_shadow(sx + 0.5 - cx, (base_y - sy - 0.5) / _TUN_C, inside):
-                    c.P(sx, sy, K('yoru', -1))
-
-
-@kit('inaka-vinyl-greenhouse-ew', '비닐하우스(동서로 긴 터널, 3/4 탑뷰): 북쪽 먼 치마 · 용마루 빛 · 남쪽 비탈 필름 · 세로 늑재 · 서쪽 아치 끝면 미닫이(7×4)', 7, 4, 'building',
-     solid=rows(7, [1, 2, 3]), tags=['inaka', '비닐하우스', '온실', 'ハウス'],
-     rules='밭 옆 흙 위에 둔다. 여러 동을 위아래로 나란히 놓는다. 서쪽(왼쪽) 아래 첫 칸이 출입구(좁은 끝면 미닫이).', role='building', doors=[(0, 3, 1)])
-def greenhouse_ew(c, base):
-    # 동서로 누운 터널(밑그림 tunnel_underdraw.py ew 와 같은 투영): 위 끝 = 북쪽 치마, 가운데 위 가로 용마루 빛, 아래로 남쪽 비탈이
-    # 어두워져 맨 아래 곧은 남쪽 치마. 남북 갈비대는 필름을 가로지르는 세로선. 이 투영에서 서쪽 끝면은 폭 0 이므로,
-    # 문을 위해 의도적 속임 하나: 서쪽 끝에 7px 폭의 좁은 ∩ 끝면(살짝 비스듬히 본)과 좁은 미닫이.
-    VW = 'vending_cool_white'
-    FW = 7                                                                 # 서쪽 끝면(속임) 폭
-    X0, r, base_y = 3 + FW, 22.0, 61
-    L = c.w - 3 - X0
-    info = {}
-    for sy in range(c.h):
-        for sx in range(c.w):
-            t = _tun_ew(sx + 0.5, sy + 0.5, X0, r, base_y, L)
-            if t:
-                info[(sx, sy)] = t
-    ytop = min(sy for (_, sy) in info)
-    for (sx, sy), t in info.items():
-        st = min(3, _film_step(t[1]) - 1)
-        if t[2]:
-            st += 1
-        elif H(sx // 3, sy // 2, 52) < 0.04:
-            st += 1
-        c.P(sx, sy, J(VW, min(4, st)) if st >= 0 else K('tekko', 2 + max(-1, st)))
-    # 필름 너머 작물: 동서 고랑 3줄(yy = 8, 22, 36)의 떨어진 잎 덩이(갈비대 사이)
-    for k, gy in enumerate((8, 22, 36)):
-        for gx in range(5 + (k % 2) * 3, int(L) - 3, 10):
-            px_, py_ = X0 + gx, base_y - _TUN_C * gy - 3
-            for yy in range(int(py_) - 2, int(py_) + 3):
-                for xx in range(int(px_) - 3, int(px_) + 4):
-                    dx, dy = (xx + 0.5 - px_) / 2.6, (yy + 0.5 - py_) / 1.8
-                    t = info.get((xx, yy))
-                    if dx * dx + dy * dy > 1.0 or not t or t[2]:
-                        continue
-                    lit = t[1] > 0.58
-                    tt = (2 if lit else 1) + (1 if dy < -0.3 and dx < 0.3 else 0) - (1 if dx > 0.5 or dy > 0.6 else 0)
-                    c.P(xx, yy, K('lino', tt))
-    # 남쪽 치마(땅에 닿는 곧은 짙은 선) · 북쪽 치마(먼 가장자리 파이프)
-    for sx in range(X0, X0 + int(L) + 1):
-        col_y = [sy for (x, sy) in info if x == sx]
-        if not col_y:
-            continue
-        c.P(sx, max(col_y), K('lino', -1)); c.P(sx, max(col_y) - 1, K('lino', 0))
-        c.P(sx, min(col_y), K('tekko', 3))
-    # 서쪽 좁은 ∩ 끝면(속임, 7px): 몸통 서쪽 끝 단면을 비스듬히 — 왼쪽으로 갈수록 위가 낮아지고 어둡다
-    col0 = sorted(sy for (x, sy) in info if x == X0)
-    t0, b0 = col0[0], col0[-1]
-    for i in range(FW):
-        sx = X0 - FW + i
-        d = FW - i                                                         # 몸통에서 멀어질수록 ∩ 의 어깨가 내려간다
-        top = t0 + round(d * d * 0.28) + 1
-        for sy in range(top, b0 + 1):
-            c.P(sx, sy, J(VW, 0) if i > 1 else K('tekko', 1))
-        c.P(sx, top, K('tekko', 3 if i > 2 else 2))
-    # 좁은 미닫이(끝면 안, 폭 5 · 높이 27): 문틀 + 가운데 문살
-    DX0, DY0 = X0 - FW + 1, base_y - 27
-    c.R(DX0 - 1, DY0 - 1, 7, base_y - DY0 + 1, OL)
-    for yy in range(DY0, base_y):
-        for xx in range(DX0, DX0 + 5):
-            col = K('tekko', 2) if xx in (DX0, DX0 + 4) or yy == DY0 else (J(VW, 2 if yy < base_y - 10 else 0) if xx < DX0 + 2 else J(VW, 1 if yy < base_y - 10 else 0))
-            c.P(xx, yy, col)
-        c.P(DX0 + 2, yy, K('tekko', 1))
-    c.HL(DX0, base_y - 10, 5, K('tekko', 3))
-    add_outline(c)
-    for xx in range(0, c.w):                                               # 남쪽 치마 앞 흙 띠
-        c.P(xx, base_y, K('soil', 1 if H(xx, 0, 47) > 0.3 else 2))
-        c.P(xx, base_y + 1, K('soil', 0 if H(xx, 1, 47) > 0.25 else 1))
-        c.P(xx, base_y + 2, K('soil', -1 if xx % 4 else 0))
-    for xx in range(X0, X0 + int(L)):                                      # 북쪽 치마 위 흙 알갱이
-        if ytop - 2 >= 0 and H(xx, 2, 51) < 0.4 and c.a[ytop - 2, xx, 3] == 0:
-            c.P(xx, ytop - 2, K('soil', 0 if H(xx, 3, 51) > 0.5 else -1))
-    _finish(c)
-    inside = lambda X, Y, Z: 0 <= X <= L and (Y - r) ** 2 + Z * Z <= r * r
-    for sy in range(c.h):
-        for sx in range(c.w):
-            if c.a[sy, sx, 3] == 0 and (sx + sy) % 2 == 0:
-                if _tun_shadow(sx + 0.5 - X0, (base_y - sy - 0.5) / _TUN_C, inside):
                     c.P(sx, sy, K('yoru', -1))
 
 
