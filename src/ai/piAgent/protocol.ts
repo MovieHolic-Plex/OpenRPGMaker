@@ -120,6 +120,8 @@ export interface PiAgentStats {
   readonly billing?: "subscription" | "api" | "unknown";
   /** CLI 가 스스로 보고한 비용(claude 만). 구독이면 한도 사용을 달러로 환산한 값이다. */
   readonly costUsd?: number;
+  /** 로컬 CLI 엔진: 지시문 글자 수·마지막 도구 목록(개수·스키마 글자 수)·목록 바뀜 알림 횟수 — 토큰 절감 측정용. */
+  readonly exposure?: { readonly systemChars: number; readonly toolsListed: number; readonly listChars: number; readonly listChanged: number };
 }
 
 /**

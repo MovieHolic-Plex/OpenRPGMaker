@@ -19,6 +19,11 @@ export class TilesetReferenceEvidence {
   private imageMetadata = new Set<string>();
   private images = new Set<string>();
   private pendingImages = new Map<string, string>();
+  /**
+   * 큰 참고 그림 줄이기(D5). 실행 쪽(Bun 워커)이 꽂는다 — 브라우저 세션은 비워 둔다. 줄인 그림이 실제로 보내는 그림이고
+   * 관문은 그 그림의 전달을 확인한다(인정 기준은 그대로, 바이트만 작다).
+   */
+  shrinkImage?: (dataUrl: string) => Promise<string>;
   /** 마지막 imagesForRead 에서 «이미 전달됨»이라 뺀 그림 이름. 도구 결과 글에 한 줄로 알린다. */
   skipped: string[] = [];
   clear(): void { this.pages.clear(); this.imageMetadata.clear(); this.images.clear(); this.pendingImages.clear(); }
@@ -42,7 +47,8 @@ export class TilesetReferenceEvidence {
       // 같은 실행에서 이미 모델이 받은(제공자 확인까지 끝난) 그림은 다시 싣지 않는다 — 대화 기록에 그대로 있다.
       // 관문 판정은 그대로다: 이미 인정된 그림이라 다시 받을 이유가 없을 뿐이다(D5, 2026-10-20).
       if (this.images.has(`${key(data)}:image:${image.id}`)) { this.skipped.push(image.name); continue; }
-      const dataUrl = await resolveReferenceImageDataUrl(image.dataUrl);
+      const original = await resolveReferenceImageDataUrl(image.dataUrl);
+      const dataUrl = this.shrinkImage ? await this.shrinkImage(original).catch(() => original) : original;
       this.pendingImages.set(`${key(data)}:image:${image.id}`, dataUrl);
       out.push({ label: `타일셋 참고 이미지 (${category.name}): ${image.name}\n${image.caption}`, dataUrl });
     }

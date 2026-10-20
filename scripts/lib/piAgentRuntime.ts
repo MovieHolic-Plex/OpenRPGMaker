@@ -88,6 +88,7 @@ import { runFfmpegHost, type FfmpegRequest } from './piFfmpegTool.ts';
 import { activityThumbnail, generateBestStill, type StillCritique } from './openingStillCritic.ts';
 import { localCliIdOf } from './localCliAgent/types.ts';
 import { createLocalCliLoop, type LocalCliLoop } from './localCliAgent/localCliLoop.ts';
+import { shrinkReferenceImage } from './referenceImageShrink.ts';
 import { LOCAL_CLI_ADAPTERS, localCliBinary } from './localCliAgent/registry.ts';
 import { PiOpeningProduction, OPENING_ANIMATIC_AUTHORING_TOOLS, OPENING_PRODUCTION_PROMPT, requestsFullGameOpeningProduction, requestsOpeningProduction, openingImageProject } from '../../src/ai/piAgent/openingProduction.ts';
 
@@ -297,6 +298,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   setClientEditHistory(request.editHistory ?? []);
   setupTimer.mark("clone");
   const referenceGate = new PiTilesetReferenceGate();
+  // 큰 참고 그림은 손실 없을 때만 정수 배율로 줄여 보낸다(D5) — 두 엔진 공통. 관문은 줄인 그 그림의 전달을 확인한다.
+  referenceGate.evidence.shrinkImage = shrinkReferenceImage;
   const charsetGate = new PiCharsetSelectionGate();
   const model = localCli ? ({ id: request.model ?? "" } as unknown as ReturnType<typeof resolvePiModel>) : options.model ?? resolvePiModel(request.provider, request.model);
   // 어댑터와 코어 이벤트의 호출 id로 결과를 연결한다. 같은 이름의 병렬 호출도 섞지 않는다.
@@ -1073,7 +1076,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     type: "done",
     ...(fatal ? { stoppedEarly: fatal } : {}),
     project: ctx.project,
-    stats: { ms: Date.now() - started, turns, toolCalls, toolErrors, ...(usage ? { usage } : {}), ...(localLoop ? { engine: localLoop.stats().engine, billing: localLoop.stats().billing, ...(localLoop.stats().costUsd !== undefined ? { costUsd: localLoop.stats().costUsd } : {}) } : {}) },
+    stats: { ms: Date.now() - started, turns, toolCalls, toolErrors, ...(usage ? { usage } : {}), ...(localLoop ? (() => { const local = localLoop.stats(); return { engine: local.engine, billing: local.billing, ...(local.costUsd !== undefined ? { costUsd: local.costUsd } : {}),
+      exposure: { systemChars: local.weight.systemChars, toolsListed: local.weight.listCount, listChars: local.weight.listChars, listChanged: local.listChanged } }; })() : {}) },
     changedKeys: changedProjectKeys(base, ctx.project),
     // 정본 증거는 이 프로세스 안에만 살아 있다 — 브라우저 수용 게이트가 쓸 수 있게 다이제스트로 내보낸다.
     spatialProof: exportSpatialToolProof(ctx.project),
