@@ -31,6 +31,8 @@ const TOOLS = new Map(allTools().map((t) => [t.name, t]));
 const tool = (name: string) => TOOLS.get(name) ?? (() => { throw new Error(`도구 없음: ${name}`); })();
 const ST = SPEC.street;
 const SW = ST.sw!, ROAD = ST.road_c!, GRAVEL = ST.gravel!, LAWN = ST.lawn!, WATER = ST.water!;
+const G1 = (id: string) => TS.tileGroups!.find((g) => g.id === id)!.tileIds[0]!;
+const SAND = G1("jp:region-sand"), SEA = G1("jp:region-sea");   // 물가 블록 jp_shore(2026-10-20) 시연 바깥
 
 type Layers = { "1": number[]; "2": number[]; "3": number[]; "4": number[] };
 function mkProject(W: number, H: number, fill: number): { p: Project; map: GameMap } {
@@ -131,6 +133,10 @@ const AT_DEMOS: AtDemo[] = [
   { id: "jp-crosswalk-ew", layer: 2, outside: ROAD, under: ROAD, pattern: ["............", "............", ".##########.", ".##########.", "............", "............", "............", "............"] },
   { id: "jp-crosswalk-ns", layer: 2, outside: ROAD, under: ROAD, pattern: ["............", "..##........", "..##........", "..##........", "..##........", "..##........", "..##........", "............"] },
   { id: "jp-tactile", layer: 2, outside: SW, under: SW, pattern: P4 },
+  { id: "jp-shore-sea-sand", layer: 1, outside: SAND, under: SAND, pattern: P8 },
+  { id: "jp-shore-sea-quay", layer: 1, outside: LAWN, under: LAWN, pattern: P8 },
+  { id: "jp-river-bank", layer: 1, outside: LAWN, under: LAWN, pattern: P8 },
+  { id: "jp-quay-deck", layer: 1, outside: SEA, under: SEA, pattern: P8 },
 ];
 
 function atIssues(map: GameMap, g: AutotileGroup, expectLayer: 1 | 2 | 3) {
