@@ -5,6 +5,23 @@
 
 <!-- releases -->
 
+## 0.288.0 — 2026-10-20
+
+### 기능
+
+- **store** — per-asset generation method so the AI label is accurate (#3090) (`8288a32`)
+- **battle** — battle-feel r3 — enemy formation spaced by sprite bounding boxes, victory windows leave the party visible (#3088) (`25917dc`)
+- **modern-city-int** — r16 quality redraw of 21 modern interior props that did not read (racks, tokonoma, witness stand, booths...), baked in place (#3086) (`9ba0a4e`)
+- **monster** — 눈 판정 1차 불합격 14종 몸 전체 4차 손 도트 재그림 (#3085) (`5b7db9a`)
+
+### 수정
+
+- **interior** — v5 non-seat props 3/4 + quality re-judge — 17 redraws baked in place behind object-gate (#3087) (`eedc48f`)
+
+### 잡무
+
+- **modern-city-int** — list 142 redrawn props that still need a 3/4 gate receipt (#3089) (`9f8389d`)
+
 ## 0.287.0 — 2026-10-20
 
 ### 기능
