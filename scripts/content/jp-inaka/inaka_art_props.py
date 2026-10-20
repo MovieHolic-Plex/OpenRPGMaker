@@ -308,103 +308,109 @@ def keitora(c, base):
     finish(c, [(5, 63, 45, 3, SHADOW, 0)])
 
 
-@kit('inaka-red-tractor', '빨간 농기계 트랙터 - 3/4 탑뷰: 위에서 내려다본 차양 캐노피 윗면·긴 보닛 윗면·로터리 작업기 윗면·얇은 옆 띠·가까운 바퀴 트레드 윗면(4×4)', 4, 4, 'vehicle',
+@kit('inaka-red-tractor', '빨간 농기계 트랙터 - 위쪽 3/4: 차양 캐노피 윗면·보닛 윗면·운전석 바닥과 좌석·로터리 덮개 윗면, 양옆 큰 뒷바퀴는 위에서 본 트레드 띠(4×4)', 4, 4, 'vehicle',
      solid=rows(4, [2, 3]), tags=['inaka', '트랙터', 'トラクター', '농기계'],
      rules='논 가장자리·헛간 앞. 오른쪽(동)을 보고 둔다.', role='prop')
 def tractor(c, base):
-    # 투영: 화면 y = 60 - 0.55·높이 z - 북쪽 깊이 n (높이는 눌리고 폭이 넓게 보이는 진짜 3/4).
-    # 차 폭 n 0..30: 가까운 바퀴 n0~9 · 차체 n10~26 · 먼 바퀴는 캐노피·보닛 뒤에 숨긴다.
+    # 위쪽 3/4 투영: 화면 y = 58 - 0.4·높이 z - 북쪽 깊이 n. 높이는 크게 눌리고 윗면이 주인공이다.
     def Y(z, n):
-        return round(60 - 0.55 * z - n)
-    yellow = [K('kii', 2), K('kii', 1), K('kii', 0), K('kii', -1), K('kii', -2)]
-    # 1) 로터리 작업기(뒤, x2~11): 덮개 윗면(n4~28) → 남쪽 앞면 얇은 띠 → 칼날
-    for n in range(4, 29):
-        y = Y(8, n)
-        for x in range(2, 12):
-            lv = 0.6 + (x - 2) / 10 * 1.0 + (28 - n) * 0.02 + (1.0 if n == 4 else 0) + (0.9 if n % 6 == 0 else 0)
-            c.P(x, y, pick(ORANGE, lv, x, y))
-    for y in range(Y(8, 4) + 1, Y(1, 4) + 1):
-        for x in range(2, 12):
-            c.P(x, y, pick(ORANGE, 2.8 + (y - Y(8, 4)) * 0.4 + (x - 2) / 10 * 0.5, x, y))
-    speck(c, 2, Y(8, 4) - 3, 10, 6, SOIL[2], 0.15, 7)
-    for x in (3, 6, 9):
-        c.VL(x, Y(1, 4) + 1, 2, CONC[1]); c.VL(x + 1, Y(1, 4) + 1, 2, CONC[3])
-    line(c, 12, Y(12, 14), 10, Y(8, 14), STEEL[2])                     # 유압 암
-    # 2) 운전대 바닥(x12~32, n10~26, z13) — 철판 줄무늬
-    for n in range(10, 27):
-        y = Y(13, n)
-        for x in range(12, 33):
-            c.P(x, y, pick(STEEL, 2.8 + (0.9 if n % 3 == 0 else 0) + (H(x, n, 7) - 0.5) * 0.5, x, y))
-    # 3) 긴 보닛(x33~59, n10~26, z17): 넓은 윗면 17줄(빛 반사 띠·냉각 구멍·흰 줄) → 남쪽 얇은 옆 띠 4줄 → 앞 그릴 모서리
-    for n in range(10, 27):
-        y = Y(17, n)
-        for x in range(33, 59):
-            lv = 0.6 + (x - 33) / 26 * 1.1 + (1.3 if n == 10 else 0) + (0.6 if n == 26 else 0)
-            c.P(x, y, pick(RED, lv, x, y))
-    for x in range(34, 57):
-        c.P(x, Y(17, 21), RED[0]); c.P(x, Y(17, 20), K('daidai', 1) if x < 44 else RED[0])
-    for x in range(36, 54, 4):
-        for n in (14, 15, 16):
-            c.HL(x, Y(17, n), 2, RED[4])
-    for n in range(11, 26):
-        c.P(36, Y(17, n), W_PAINT[1])                                   # 흰 줄(보닛 위 가로질러)
-    for n in range(10, 27):
-        c.P(59, Y(17, n), RED[3]); c.P(60, Y(17, n), RED[4])            # 앞 둥근 끝
-    for y in range(Y(17, 10) + 1, Y(9, 10) + 1):                       # 남쪽 옆 띠(얇게)
-        for x in range(33, 61):
-            c.P(x, y, pick(RED, 2.4 + (y - Y(17, 10)) * 0.5 + (x - 33) / 28 * 0.4, x, y))
-    for x in range(36, 56, 3):
-        c.P(x, Y(17, 10) + 2, K('tekko', -2))
-    ball(c, 60, Y(17, 12), 1.3, [K('shiro', 2), K('kii', 2), K('kii', 1), K('kii', 0)])
-    ball(c, 60, Y(17, 24), 1.3, [K('shiro', 2), K('kii', 2), K('kii', 1), K('kii', 0)])
-    # 4) 배기 연통(보닛 n22 에서 솟는다)
-    top = Y(32, 22)
-    cyl(c, 49, top, 3, Y(17, 22) - top, STEEL); hgrad(c, 48, top - 1, 5, 2, STEEL, 0.2, 3.0)
-    # 5) 가까운 앞바퀴(x51, n1~7): 트레드 윗면 → 옆면(눌린 타원)
-    for (cx, R, n0, n1, hub) in ((51, 5.5, 1, 7, 3.0), (22, 10.0, 0, 9, 5.0)):
-        for n in range(n1, n0 - 1, -1):                                # 트레드 윗면(가로 러그 줄)
-            for x in range(int(cx - R), int(cx + R) + 1):
-                dx = x - cx
-                if abs(dx) > R:
-                    continue
-                zt = R + math.sqrt(max(0.0, R * R - dx * dx))
+        return round(63 - 0.4 * z - 1.3 * n)
+
+    def tread(x0, x1, n0, n1, R, dim=0.0):
+        """위에서 본 바퀴: 트레드 윗면 띠(가로 러그 줄, 가운데가 가장 높고 밝다) + 아래 납작한 옆 반달."""
+        cx = (x0 + x1) / 2
+        for x in range(x0, x1 + 1):
+            u = (x - cx) / ((x1 - x0) / 2 + 0.5)
+            zt = R + R * math.sqrt(max(0.0, 1 - u * u))
+            for n10 in range(n1 * 10, n0 * 10 - 1, -5):
+                n = n10 / 10
                 y = Y(zt, n)
-                lug = (n + x // 2) % 2
-                c.P(x, y, pick(RUBBER, 0.6 + (0.0 if lug else 1.3) + abs(dx) / R * 0.9 + (n1 - n) * 0.04, x, y))
-                c.P(x, y + 1, pick(RUBBER, 1.6 + abs(dx) / R * 0.8, x, y + 1))
-        cy = 60 - 0.55 * R - n0
-        ry = R * 0.55
-        for y in range(int(cy - ry - 1), int(cy + ry + 2)):          # 옆면: 고무 테 + 노란 휠(눌린 타원)
-            for x in range(int(cx - R - 1), int(cx + R + 2)):
-                u, v = (x - cx) / R, (y - cy) / ry
-                d = math.hypot(u, v)
-                if d > 1:
-                    continue
-                s = (u + v) / 1.414
-                if d > hub / R:
-                    c.P(x, y, pick(RUBBER, 1.6 + s * 1.2 + (0.8 if d > 0.88 else 0), x, y))
-                elif d > hub / R * 0.45:
-                    c.P(x, y, pick(yellow, 1.0 + s * 1.8, x, y))
-                else:
-                    c.P(x, y, pick(RED[1:], 1.6 + s, x, y))
-    # 6) 펜더(뒷바퀴 꼭대기만 덮는 작은 판, x18~26, n0~9)
-    for n in range(9, -1, -1):
-        y = Y(22, n)
-        for x in range(18, 27):
-            c.P(x, y, pick(RED, 0.4 + (x - 18) / 9 * 1.0 + (1.6 if n == 0 else 0), x, y))
-    # 7) 차양 캐노피: 남쪽 기둥 두 개(n8) + 윗면(z34, x12~36, n8~28 → 21줄, 붉은·흰 줄, 왼쪽 위 빛) + 앞 테
-    for px in (14, 34):
-        top = Y(34, 8)
-        cyl(c, px, top, 2, Y(13, 8) - top, STEEL)
-    for n in range(8, 29):
-        y = Y(34, n)
-        for x in range(12, 37):
+                lug = (x - x0) % 3 == 0
+                lv = (0.0 if abs(u) < 0.5 else 1.0) + (2.0 if lug else 0) + dim + (1.0 if n == n1 else 0)
+                c.P(x, y, RUBBER[max(0, min(3, round(lv)))])
+            yb = Y(zt, n0)                                             # 옆 반달: 납작하게 2~3줄
+            for k in range(1, 3 if abs(u) < 0.7 else 2):
+                c.P(x, yb + k, pick(RUBBER, 2.0 + k * 0.6 + abs(u) * 0.5 + dim, x, yb + k))
+            if abs(u) < 0.18:
+                c.P(x, yb + 1, K('kii', -1) if dim == 0 else RUBBER[2])   # 작은 허브 점
+    yellow = [K('kii', 2), K('kii', 1), K('kii', 0), K('kii', -1), K('kii', -2)]
+    # 1) 먼 쪽 바퀴(n24~30): 캐노피 뒤 가장자리로 조금만
+    tread(11, 33, 24, 29, 10, dim=0.8)
+    tread(45, 54, 22, 26, 5, dim=0.8)
+    # 2) 로터리 작업기(뒤, x1~11): 덮개 윗면 n5~27 → 앞 띠 3줄 → 칼날 점
+    for n in [k / 2 for k in range(10, 55)]:
+        y = Y(9, n)
+        for x in range(1, 12):
+            lv = 0.5 + (x - 1) / 11 * 1.1 + (27 - n) * 0.02 + (1.0 if n == 5 else 0) + (0.9 if int(n) % 5 == 0 else 0)
+            c.P(x, y, pick(ORANGE, lv, x, y))
+    for y in range(Y(9, 5) + 1, Y(9, 5) + 4):
+        for x in range(1, 12):
+            c.P(x, y, pick(ORANGE, 2.8 + (y - Y(9, 5)) * 0.5 + (x - 1) / 11 * 0.4, x, y))
+    speck(c, 1, Y(9, 27), 11, 22, SOIL[2], 0.12, 7)
+    for x in (2, 5, 8):
+        c.P(x, Y(9, 5) + 4, CONC[1]); c.P(x + 1, Y(9, 5) + 4, CONC[3])
+    line(c, 12, Y(14, 16), 11, Y(9, 16), STEEL[2])                    # 유압 암
+    # 3) 운전석 바닥(x12~31, n8~23, z12): 철판 줄무늬 + 좌석(쿠션 윗면) + 변속 레버
+    for n in [k / 2 for k in range(16, 47)]:
+        y = Y(12, n)
+        for x in range(12, 32):
+            c.P(x, y, pick(STEEL, 1.4 + (0.9 if int(n) % 3 == 0 else 0) + (H(x, int(n * 2), 7) - 0.5) * 0.5 + (x - 12) / 20 * 0.5, x, y))
+    for y in range(Y(12, 8) + 1, Y(12, 8) + 3):
+        c.HL(12, y, 20, STEEL[3 + (y - Y(12, 8)) // 2])
+    for n in [k / 2 for k in range(18, 29)]:                           # 좌석 윗면(검은 비닐 쿠션, 왼쪽 위 빛)
+        y = Y(20, n)
+        for x in range(15, 23):
+            lv = 0.6 + (x - 15) / 8 * 1.6 + (n - 9) * 0.08 + (1.0 if x == 15 else 0)
+            c.P(x, y, RUBBER[max(0, min(3, round(lv)))])
+    c.HL(15, Y(20, 9) + 1, 8, RUBBER[3]); c.HL(16, Y(20, 13.5), 5, STEEL[3])   # 앞 모서리 그늘 · 쿠션 접힘
+    for n in [k / 2 for k in range(18, 30)]:                           # 등받이 윗면(좌석 뒤 x13~14)
+        c.P(13, Y(26, n), STEEL[3]); c.P(14, Y(26, n), RUBBER[2])
+    for k in range(24):                                                # 핸들(위에서 본 납작한 고리)
+        th = k / 24 * 2 * math.pi
+        x, y = round(28 + 2.6 * math.cos(th)), round(Y(24, 13) + 1.3 * math.sin(th))
+        c.P(x, y, RUBBER[1] if math.sin(th) < 0 else RUBBER[3])
+    c.VL(28, Y(24, 13) + 1, 3, STEEL[3])
+    c.VL(27, Y(22, 10), 3, STEEL[1]); c.P(27, Y(22, 10) - 1, RED[1])  # 변속 레버
+    # 4) 긴 보닛(x31~58, n9~21, z18): 윗면 13줄(빛 띠·냉각 구멍·흰 줄) → 옆 띠 4줄 → 앞 그릴
+    for n in [k / 2 for k in range(18, 43)]:
+        y = Y(18, n)
+        for x in range(31, 58):
+            lv = 0.5 + (x - 31) / 27 * 1.1 + (1.3 if n == 9 else 0) + (0.6 if n == 21 else 0)
+            c.P(x, y, pick(RED, lv, x, y))
+    for x in range(33, 56):
+        c.P(x, Y(18, 18), RED[0]); c.P(x, Y(18, 17), K('daidai', 1) if x < 42 else RED[0])
+    for x in range(38, 54, 4):
+        for n in (12, 13):
+            c.HL(x, Y(18, n), 2, RED[4])
+    for n in range(10, 21):
+        c.P(34, Y(18, n), W_PAINT[1])
+    for n in range(9, 22):
+        c.P(58, Y(18, n), RED[3]); c.P(59, Y(18, n), RED[4])
+    for y in range(Y(18, 9) + 1, Y(18, 9) + 5):                        # 남쪽 옆 띠 4줄
+        for x in range(31, 60):
+            c.P(x, y, pick(RED, 2.5 + (y - Y(18, 9)) * 0.5 + (x - 31) / 29 * 0.4, x, y))
+    ball(c, 59, Y(18, 11), 1.2, [K('shiro', 2)] + yellow[:3])
+    ball(c, 59, Y(18, 19), 1.2, [K('shiro', 2)] + yellow[:3])
+    # 5) 배기 연통(보닛 n19 에서, 위에서 보면 짧은 원통 + 입구 타원)
+    top = Y(30, 19)
+    cyl(c, 48, top, 3, Y(18, 19) - top, STEEL); c.HL(48, top - 1, 3, STEEL[4]); c.P(49, top - 1, RUBBER[3])
+    # 6) 가까운 바퀴(n0~6 큰 뒷바퀴, n3~7 앞바퀴): 위에서 본 트레드 띠
+    tread(11, 33, 1, 7, 10)
+    tread(45, 54, 3, 8, 5)
+    for x in range(17, 28):                                            # 작은 펜더: 바퀴 꼭대기 뒤쪽 가운데 얇은 판(트레드가 드러난다)
+        c.P(x, Y(21, 7) - 1, RED[1] if x < 23 else RED[2]); c.P(x, Y(21, 7), RED[3])
+    # 7) 차양 캐노피(z38, x12~33, n10~26 → 17줄, 붉은·흰 줄, 왼쪽 위 빛) + 기둥 + 앞 테 2줄
+    for px in (13, 32):
+        cyl(c, px, Y(38, 15), 2, Y(12, 15) - Y(38, 15), STEEL)
+    for n in [k / 2 for k in range(30, 55)]:
+        y = Y(38, n)
+        for x in range(12, 34):
             cols = RED if ((x - 12) // 4) % 2 == 0 else W_PAINT
-            c.P(x, y, pick(cols, 0.4 + (x - 12) / 25 * 1.2 + (28 - n) * 0.02 + (0.7 if n == 28 else 0), x, y))
-    for x in range(12, 37):
+            c.P(x, y, pick(cols, 0.4 + (x - 12) / 22 * 1.2 + (27 - n) * 0.02 + (0.7 if n >= 26.5 else 0), x, y))
+    for x in range(12, 34):
         cols = RED if ((x - 12) // 4) % 2 == 0 else W_PAINT
-        c.P(x, Y(34, 8) + 1, cols[3]); c.P(x, Y(34, 8) + 2, cols[4])
-    finish(c, [(3, 62, 61, 3, SHADOW, 1)])
+        c.P(x, Y(38, 15) + 1, cols[3]); c.P(x, Y(38, 15) + 2, cols[4])
+    finish(c, [(2, 62, 58, 5, SHADOW, 1)])
 
 
 @kit('inaka-single-car-train', '단량 디젤 동차(キハ40 국철색) - AU75 냉방기·물탱크·배기구 지붕 윗면·크림+주홍 투톤 차체·폴딩 도어·전조등·대차(8×3)', 8, 3, 'vehicle',

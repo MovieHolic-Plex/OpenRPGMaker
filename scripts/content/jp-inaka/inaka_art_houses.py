@@ -698,7 +698,7 @@ def kominka(c, base):
     # 처마 그늘(깊은 초가 처마)
     _eave_shade(c, X0, WT, W, 5)
     c.VL(X0 - 1, WT, WB - WT, OL); c.VL(X1 + 1, WT, WB - WT, OL)
-    thatch_roof(c0, 2, 93, 12, 44 + D, 28)
+    thatch_roof(c0, 2, 93, 30, 44 + D, 20)                                 # 가로 용마루(폭 ≈70%) · 짧은 隅면
     stone_base(c, X0, WB, W, 5)
     engawa(c, 40, WB - 4, 50, depth=5, front=3)
     _shade(c, 40, WB + 4, 50, 1, 0.7)                                       # 툇마루 밑 그늘
@@ -1210,129 +1210,86 @@ def waterwheel_mill(c, base):
      solid=rows(3, [1, 2, 3, 4, 5, 6]), tags=['inaka', '비닐하우스', '온실', 'ハウス'],
      rules='밭(inaka-paddy 아님) 옆 흙 위에 둔다. 여러 동을 옆으로 나란히 놓는다. 맨 아래 가운데 칸이 출입구.', role='building', doors=[(1, 6, 1)])
 def greenhouse(c, base):
-    # 투영: 화면 y = yb - 높이 z - 북쪽 깊이 d. 터널 폭 x0~x1(동서), 아치 높이 rise, 길이 depth(남북).
-    x0, x1, yb, rise, depth = 2, 45, 106, 22, 80
-    cx, half = (x0 + x1) / 2, (x1 - x0) / 2
+    # 남북으로 긴 터널을 위에서 본 3/4: 긴 세로 직사각형 필름 윗면(원통 명암: 가운데 용마루 빛 띠 → 동·서 처마로 어두움),
+    # 곧은 가로 늑재 띠, 비친 작물 줄, 곧은 북쪽 끝, 남쪽 끝에만 낮은 반원 끝벽 + 미닫이, 긴 양옆 치마 비닐 + 흙 둔덕 선.
     VW = 'vending_cool_white'
+    x0, x1 = 3, 44                      # 터널 동서 폭(처마~처마)
+    YN, YB, A = 3, 106, 13              # 북쪽 끝 직선 y, 남쪽 바닥 y, 남쪽 끝벽 아치 높이
+    cx, half = (x0 + x1) / 2, (x1 - x0) / 2
 
-    def arch_h(x):
+    def arch(x):
         u = (x - cx) / half
-        return None if abs(u) > 1 else rise * math.sqrt(1 - u * u)
-    # 1) 긴 아치 비닐 윗면: 원통 명암(왼쪽 빛 · 가운데 용마루 빛 띠 · 오른쪽 그늘 옆구리)
-    #    × 골조 칸 처짐(파이프 바로 밑 팽팽한 빛, 칸 가운데 처진 그늘) × 주름 빛 × 필름 너머 작물 줄(남북으로 이어진 세 줄)
-    RIB = 6
+        return 0.0 if abs(u) >= 1 else A * math.sqrt(1 - u * u)
+    RIB = 8
+    # 1) 필름 윗면
     for x in range(x0, x1 + 1):
-        ah = arch_h(x)
-        if ah is None:
-            continue
         u = (x - cx) / half
-        tb = 1 if u < -0.85 else 2 if u < -0.6 else 3 if u < -0.2 else 4 if u < 0.12 else 3 if u < 0.4 else 2 if u < 0.75 else 1
-        crop = any(abs(u - cu) < 0.09 for cu in (-0.5, 0.0, 0.5))
-        for y in range(round(yb - depth - ah), round(yb - ah)):
-            d = yb - ah - y
-            k = int(d) % RIB
-            t = tb + (1 if k == 1 else -1 if k in (3, 4) else 0)
-            if H(x // 3, int(d) // 2, 44) < 0.07:
+        au = abs(u + 0.08)                                                 # 빛 왼쪽 위: 빛 띠가 살짝 왼쪽
+        tb = 4 if au < 0.12 else 3 if au < 0.4 else 2 if au < 0.72 else 1
+        if u > 0.75:
+            tb -= 1
+        crop = any(abs(u - cu) < 0.08 for cu in (-0.48, 0.48))
+        ys = round(YB - arch(x))
+        for y in range(YN, ys):
+            k = (y - YN) % RIB
+            t = tb + (1 if k == 1 else -1 if k in (4, 5) else 0)          # 늑재 밑 팽팽한 빛 · 칸 가운데 처짐
+            if H(x // 3, (y - YN) // 2, 44) < 0.06:
                 t += 1                                                     # 주름 빛
             col = J(VW, t)
-            if crop and 3 <= d <= depth - 3 and k in (2, 3, 4) and H(x, int(d) // 2, 45) < 0.7:
-                col = K('lino', 2 if tb >= 3 else 1)                       # 비닐 너머 작물 줄
+            if crop and 2 < k < 7 and H(x, y // 2, 45) < 0.75:
+                col = K('lino', 2 if tb >= 2 else 1)                       # 필름 너머 작물 줄(남북으로)
+            if k == 0:
+                col = K('tekko', 2 if u < -0.2 else 1 if u < 0.5 else 0)  # 곧은 가로 늑재 띠
             c.P(x, y, col)
-    # 2) 골조: 가로 아치 파이프(일정 간격, 먼 쪽은 한 단 어둡게) + 용마루 파이프 + 양 옆 밑단 띠
-    for d in range(0, depth + 1, RIB):
-        far = d > depth * 0.6
-        for x in range(x0, x1 + 1):
-            ah = arch_h(x)
-            if ah is None:
+    for y in range(YN, YB):                                                # 긴 양옆 치마 비닐(진한 필름, 세로 주름)
+        for x, t in ((x0, -1), (x0 + 1, 0), (x1 - 1, -1), (x1, -2)):
+            if y >= round(YB - arch(x)):
                 continue
-            u = (x - cx) / half
-            t = (3 if u < 0 else 1) if d == 0 else (2 if u < -0.2 else 1 if u < 0.4 else 0) - (1 if far else 0)
-            c.P(x, round(yb - d - ah), K('tekko', t))
-    xr = round(cx)
-    for y in range(round(yb - depth - rise), round(yb - rise)):
-        c.P(xr, y, K('tekko', 2 if y % 3 else 1))
-    for x in (x0, x0 + 1, x1 - 1, x1):                                     # 옆 밑단 비닐 띠(진한 필름)
-        ah = arch_h(x)
-        for y in range(round(yb - depth - ah), round(yb - ah)):
-            c.P(x, y, K('lino', 0 if x <= x0 + 1 else -1))
-    # 3) 앞 아치 끝(남향 반원 면, y≈84~106): 위 밝은 비닐 → 아래 안쪽 그늘, 비친 작물 포기, 세로 샛기둥
+            c.P(x, y, K('lino', t + (1 if (y // 3) % 3 == 0 else 0)))
+    for x in range(x0, x1 + 1):                                            # 곧은 북쪽 끝(끝 파이프)
+        c.P(x, YN, K('tekko', 3 if x < cx else 1))
+    # 2) 남쪽 끝벽(낮은 반원): 위 밝은 비닐 → 아래 그늘, 비친 작물, 미닫이
     for x in range(x0, x1 + 1):
-        ah = arch_h(x)
-        if ah is None:
+        a = arch(x)
+        if a < 1:
             continue
         u = (x - cx) / half
-        fy = yb - ah
-        for y in range(round(fy) + 1, yb):
-            g = (y - fy) / max(1, ah)
-            t = 3 if g < 0.3 else 2
+        for y in range(round(YB - a), YB):
+            g = (y - (YB - a)) / max(1.0, a)
+            t = 3 if g < 0.35 else 2
             if u > 0.55:
                 t -= 1
-            if (x + y * 2) % 11 == 0 and g < 0.6:
-                t += 1                                                     # 사선 주름 빛
+            if y == round(YB - a):
+                t = 4 if u < 0.3 else 2                                    # 아치 끝 파이프 빛
             col = J(VW, t)
-            if y >= yb - 4 and (x + y) % 2 == 0:
-                col = J(VW, t - 1)                                         # 아래 안쪽 그늘
-            elif y == yb - 13:
-                col = J(VW, 1)                                             # 비닐 너머 도리
+            if y >= YB - 6 and (x + y) % 2 == 0:
+                col = K('lino', 1 if u < 0.5 else 0)                       # 비친 작물 포기
             c.P(x, y, col)
-    for (ry, rw, rh, dark) in ((yb - 10, 3, 3, 0), (yb - 6, 4, 3, 1)):    # 비친 작물 포기
-        for px in range(x0 + 3 + (1 if dark else 0), x1 - 3, rw + 1):
-            if 15 <= px + rw and px <= 32:
-                continue
-            ah = arch_h(px)
-            if ah is None or yb - ah > ry - 1:
-                continue
-            for j in range(rh):
-                for i in range(rw):
-                    t = 1 - dark + (1 if i == 0 and j == 0 else 0) - (1 if i == rw - 1 or j == rh - 1 else 0)
-                    c.P(px + i, ry + j, K('lino', t))
-    for sxx in (x0 + 7, x1 - 8):                                           # 세로 샛기둥
-        for y in range(round(yb - arch_h(sxx)), yb):
-            c.P(sxx, y, K('tekko', 1)); c.P(sxx + 1, y, J(VW, 1))
-    # 4) 가운데 미닫이(x16~31): 왼 문짝은 닫힌 비닐, 오른쪽은 열린 어둠(안쪽 작물 줄·고랑)
-    DX0, DX1, DY0 = 16, 31, yb - 18
-    c.R(DX0, DY0, DX1 - DX0 + 1, yb - DY0, K('tekko', 2)); c.VL(DX0, DY0, yb - DY0, K('tekko', 3)); c.VL(DX1, DY0, yb - DY0, K('tekko', 0))
-    for yy in range(DY0 + 1, yb):
+    DX0, DX1, DY0 = 17, 30, YB - 11
+    c.R(DX0, DY0, DX1 - DX0 + 1, YB - DY0, K('tekko', 2)); c.VL(DX0, DY0, YB - DY0, K('tekko', 3)); c.VL(DX1, DY0, YB - DY0, K('tekko', 0))
+    for yy in range(DY0 + 1, YB):
         for xx in range(DX0 + 1, 24):
-            t = 3 if yy < DY0 + 5 else 2
-            if xx == DX0 + 1:
-                t = 4
-            if (xx + yy) % 9 == 0:
-                t += 1
-            c.P(xx, yy, J(VW, t))
+            c.P(xx, yy, J(VW, 4 if xx == DX0 + 1 else 3 if yy < DY0 + 4 else 2))
         for xx in range(24, DX1):
-            t = -2 if yy < DY0 + 8 else -1
-            if yy >= DY0 + 8 and (xx - 24) % 3 != 1 and H(xx, yy // 2, 65) < 0.6:
-                t = 0 if yy % 3 else -1
-            elif yy >= yb - 3:
-                t = -2
-            c.P(xx, yy, K('lino', t) if yy < yb - 3 or (xx - 24) % 3 != 1 else K('soil', 0))
-    c.VL(24, DY0 + 1, yb - DY0 - 1, K('tekko', 3))
-    for y in (DY0 + 6, DY0 + 12):
-        c.HL(DX0 + 1, y, 7, K('tekko', 1))
-    # 5) 앞 腰 비닐 띠
-    for x in range(x0, x1 + 1):
-        ah = arch_h(x)
-        if ah is None or DX0 <= x <= DX1:
-            continue
-        for y in range(yb - 3, yb):
-            if y <= yb - ah:
-                continue
-            t = (0 if y < yb - 1 else -1) + (-1 if x % 5 == 0 else 1 if x % 5 == 1 else 0)
-            c.P(x, y, K('lino', t))
+            t = -2 if yy < DY0 + 4 else (0 if (xx - 24) % 3 != 1 and yy % 3 else -1)
+            c.P(xx, yy, K('lino', t))
+    c.VL(24, DY0 + 1, YB - DY0 - 1, K('tekko', 3)); c.HL(DX0 + 1, DY0 + 5, 6, K('tekko', 1))
     add_outline(c)
-    # 6) 흙 둔덕(앞) + 동쪽 옆 땅 그늘(빛 왼쪽 위 → 그늘은 오른쪽으로 긴 띠)
-    for xx in range(0, 48):
-        c.P(xx, yb, K('soil', 1 if H(xx, 0, 47) > 0.3 else 2))
-        c.P(xx, yb + 1, K('soil', 0 if H(xx, 1, 47) > 0.25 else 1))
-        c.P(xx, yb + 2, K('soil', -1 if xx % 4 else 0))
-        c.P(xx, yb + 3, K('soil', -2))
-    _shade(c, x0 + 1, yb, x1 - x0 - 1, 1, 0.7)
-    for y in range(yb - depth, yb):
-        for xx in (x1 + 2,):
-            if c.a[y, xx, 3] == 0 and y % 2 == 0:
-                c.P(xx, y, K('tairu', -2))
+    # 3) 흙 둔덕: 남쪽 앞 + 긴 양옆 선
+    for xx in range(1, 47):
+        c.P(xx, YB, K('soil', 1 if H(xx, 0, 47) > 0.3 else 2))
+        c.P(xx, YB + 1, K('soil', 0 if H(xx, 1, 47) > 0.25 else 1))
+        c.P(xx, YB + 2, K('soil', -1 if xx % 4 else 0))
+        c.P(xx, YB + 3, K('soil', -2))
+    for y in range(YN, YB):
+        c.P(x0 - 2, y, K('soil', 1 if H(0, y, 48) > 0.4 else 0))
+        c.P(x1 + 2, y, K('soil', -1 if H(1, y, 48) > 0.4 else -2))
+    _shade(c, x0, YB, x1 - x0 + 1, 1, 0.7)
     _finish(c)
+    for y in range(YN + 2, YB + 2):                                        # 동쪽 땅 그늘(긴 띠 = 땅에 누운 터널)
+        for xx in (x1 + 3, x1 + 4):
+            if xx < c.w and c.a[y, xx, 3] == 0 and (xx + y) % 2 == 0:
+                c.P(xx, y, K('yoru', -1))
 
 
 # ═══════════════════════════ 9. 함석 헛간 ═══════════════════════════
