@@ -5,6 +5,18 @@
 
 <!-- releases -->
 
+## 0.292.0 — 2026-10-20
+
+### 기능
+
+- **jp-city** — 3/4 top-view depth for city buildings and vehicles (draft) (#3098) (`563991c`)
+
+### 수정
+
+- **runtime** — field followers no longer flank or overlap the hero (#3124) (`4e30d70`)
+- **interior** — 실내 조수 RCA r2 — remove_map 행·상층 출구·school 견본·벽면 걸이 겹침·공공시설 program (#3123) (`d98b243`)
+- **battle** — keep the emerald enemy HP box solid while the enemy stands (#3121) (`bc6d02c`)
+
 ## 0.291.0 — 2026-10-20
 
 ### 기능
