@@ -918,11 +918,12 @@ def _tarp(c):
        place='기계실 바닥 — 벽에서 한 칸 띄워(뒤로 배관이 지나간다)', pair=('wh-pipes', 'wh-panel-board'),
        desc='초록 칠 모터와 둥근 펌프 몸통이 콘크리트 받침에 얹힌 양수 펌프 2칸(멈춤). 위로 굵은 배관이 올라가고 빨간 밸브 손잡이, 둥근 압력계(눈금만).')
 def _pump(c):
-    rc(c, 1, 22, 30, 7, K('conc', -1)); hl(c, 1, 22, 30, K('conc', 0)); outline(c, 0, 21, 32, 9); hl(c, 1, 30, 30, K('yoru', -2))
-    rc(c, 3, 10, 14, 12, K('midori', -1)); hl(c, 3, 10, 14, K('midori', 0)); vl(c, 3, 10, 12, K('midori', 0))
-    for x in range(5, 16, 2): vl(c, x, 12, 8, K('midori', -2))
+    rc(c, 1, 22, 30, 7, K('conc', -1)); rc(c, 1, 22, 30, 3, K('conc', 0)); hl(c, 1, 22, 30, K('conc', 1)); hl(c, 1, 25, 30, K('conc', -2)); outline(c, 0, 21, 32, 9); hl(c, 1, 30, 30, K('yoru', -2))   # 받침 윗면 3줄
+    rc(c, 3, 10, 14, 12, K('midori', -1)); rc(c, 3, 10, 14, 4, K('midori', 1)); hl(c, 3, 10, 14, K('midori', 2)); hl(c, 3, 14, 14, K('midori', -2)); vl(c, 3, 15, 7, K('midori', 0))   # 모터 윗면 4줄
+    for x in range(5, 16, 2): vl(c, x, 15, 6, K('midori', -2))
+    for x in range(5, 16, 4): px(c, x, 12, K('midori', 0))
     outline(c, 2, 9, 16, 14)
-    rc(c, 19, 12, 10, 10, K('midori', -1)); hl(c, 20, 12, 8, K('midori', 0)); outline(c, 18, 11, 12, 12)
+    rc(c, 19, 12, 10, 10, K('midori', -1)); rc(c, 19, 12, 10, 3, K('midori', 1)); hl(c, 19, 12, 10, K('midori', 2)); hl(c, 19, 15, 10, K('midori', -2)); outline(c, 18, 11, 12, 12)   # 펌프 몸통 윗면 3줄
     rc(c, 22, 0, 4, 12, K('tekko', -1)); vl(c, 22, 0, 12, K('tekko', 0)); vl(c, 21, 0, 12, OL); vl(c, 26, 0, 12, OL)
     rc(c, 20, 4, 8, 2, K('aka', 0)); hl(c, 20, 4, 8, K('aka', 1)); outline(c, 19, 3, 10, 4)
     rc(c, 9, 3, 5, 5, K('shiro', 0)); px(c, 11, 5, K('aka', 0)); px(c, 12, 4, K('aka', 0)); outline(c, 8, 2, 7, 7); vl(c, 11, 9, 1, K('tekko', 0))

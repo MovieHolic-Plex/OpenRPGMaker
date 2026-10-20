@@ -734,7 +734,7 @@ def _rathole(c):
        place='기계실·계전실 북쪽 벽 바로 아래 줄, 2~3대 나란히', pair=('ug-fan', 'ug-locker'),
        desc='회색 철 배전반(1.8m). 윗면, 앞 가장자리 밝은 줄과 처마 그늘, 들어간 문짝에 빨강(켜짐)·초록 표시등, 노란 번개 삼각 표지(글자 없음), 손잡이, 아래 통풍 살, 밑동 녹. 전원을 켜고 끄는 장치로 쓴다.')
 def _panel(c):
-    rc(c, 1, 2, 14, 5, K('tekko', 0)); hl(c, 1, 2, 14, K('tekko', 1)); hl(c, 1, 6, 14, K('tekko', 2))
+    rc(c, 1, 2, 14, 5, K('tekko', 1)); hl(c, 1, 2, 14, K('tekko', 2)); px(c, 4, 4, K('tekko', 0)); px(c, 11, 5, K('tekko', 0))   # 윗면 5줄(앞판보다 밝다)
     hl(c, 1, 7, 14, K('tekko', -3)); hl(c, 1, 8, 14, K('tekko', -2))
     rc(c, 1, 9, 14, 20, K('tekko', 0)); vl(c, 1, 9, 20, K('tekko', 1))
     rc(c, 3, 10, 10, 17, K('tekko', -1)); hl(c, 3, 10, 10, K('tekko', -3)); vl(c, 3, 10, 17, K('tekko', -3)); hl(c, 3, 26, 10, K('tekko', 1))
@@ -754,16 +754,16 @@ def _panel(c):
        place='펌프실·합류 수조 옆 바닥, 수조 쪽으로 관이 나간다', pair=('ug-valve', 'ug-pipe-v', 'ug-panel'),
        desc='콘크리트 받침 위 배수 펌프(2칸). 왼쪽은 냉각 지느러미가 있는 녹색 전동기 원통, 오른쪽은 회색 펌프 몸통과 위로 솟은 토출관·작은 압력계. 칠이 벗겨지고 녹이 슬었다. 막힘.')
 def _pump(c):
-    rc(c, 1, 20, 30, 5, K('conc', -2)); hl(c, 1, 20, 30, K('conc', -1)); vl(c, 1, 20, 5, K('conc', -1))
+    rc(c, 1, 20, 30, 5, K('conc', -1)); hl(c, 1, 20, 30, K('conc', 0)); vl(c, 1, 20, 5, K('conc', 0)); hl(c, 1, 24, 30, K('conc', -2))   # 받침 윗면
     rc(c, 1, 25, 30, 3, K('conc', -3)); outline(c, 0, 19, 32, 10, OL)
     hl(c, 1, 29, 30, K('yoru', -1)); hl(c, 2, 30, 28, K('yoru', 0))
-    rows = (K('midori', 0), K('midori', 0), K('midori', -1), K('midori', -1), K('midori', -1), K('midori', -1), K('midori', -2), K('midori', -2), K('midori', -2), K('sumi', 1))
+    rows = (K('midori', 1), K('midori', 1), K('midori', 1), K('midori', 0), K('midori', 0), K('midori', -1), K('midori', -1), K('midori', -2), K('midori', -2), K('sumi', 1))   # 누운 원통: 위가 밝다
     for i, col in enumerate(rows): hl(c, 3, 9 + i, 14, col)
-    for x in range(5, 16, 2): vl(c, x, 10, 8, K('midori', -2))
+    for x in range(5, 16, 2): vl(c, x, 12, 6, K('midori', -2))
     for x in range(4, 17):
         if rnd(x, 12, 281, 150): px(c, x, 12 + hs(x, 0, 281) % 4, K('conc', -1))          # 벗겨진 칠
     rc(c, 1, 9, 3, 10, K('tekko', 0)); vl(c, 1, 9, 10, K('tekko', 1)); outline(c, 0, 8, 18, 12, OL)
-    rc(c, 18, 11, 11, 9, K('tekko', -1)); hl(c, 18, 11, 11, K('tekko', 1)); vl(c, 18, 11, 9, K('tekko', 0)); outline(c, 17, 10, 13, 11, OL)
+    rc(c, 18, 11, 11, 9, K('tekko', -1)); rc(c, 18, 11, 11, 3, K('tekko', 1)); hl(c, 18, 11, 11, K('tekko', 2)); hl(c, 18, 14, 11, K('tekko', -2)); vl(c, 18, 15, 5, K('tekko', 0)); outline(c, 17, 10, 13, 11, OL)   # 펌프 몸통 윗면 3줄
     disc(c, 23, 15.5, 3, 2.5, K('tekko', -2)); px(c, 22, 14, K('tekko', 1))
     rc(c, 21, 1, 5, 10, K('tekko', -1)); vl(c, 21, 1, 10, K('tekko', 1)); vl(c, 25, 1, 10, K('tekko', -3)); outline(c, 20, 0, 7, 11, OL)
     rc(c, 19, 5, 9, 2, K('tekko', 0)); hl(c, 19, 5, 9, K('tekko', 2)); outline(c, 18, 4, 11, 4, OL)

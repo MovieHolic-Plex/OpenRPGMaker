@@ -359,9 +359,9 @@ def _desk_front_monitor(c, seat_n):
         rc(c, 0, 16, 16, 12, kc('conc', 4)); hl(c, 0, 16, 16, kc('shiro', 2)); vl(c, 0, 16, 12, kc('shiro', 2))     # 상판(이어진 섬 — 앞판은 얇게)
         rc(c, 0, 28, 16, 4, kc('tekko', 1)); hl(c, 0, 28, 16, kc('tekko', -1)); hl(c, 0, 31, 16, kc('tekko', -3))
         _keyboard(c, 4, 17, 8)
-        rc(c, 2, 13, 12, 11, kc('yoru', 0)); hl(c, 2, 13, 12, kc('yoru', 2)); vl(c, 2, 13, 11, kc('yoru', 1))        # 모니터 등판
-        rc(c, 6, 15, 4, 3, kc('yoru', -1)); outline(c, 1, 12, 14, 13)
-        rc(c, 7, 25, 2, 2, kc('tekko', 0)); hl(c, 5, 27, 6, kc('tekko', 2))
+        rc(c, 4, 13, 8, 9, kc('yoru', 0)); hl(c, 4, 13, 8, kc('yoru', 2)); vl(c, 4, 13, 9, kc('yoru', 1))           # 모니터 등판(좁게 — 양옆·앞으로 상판이 보인다)
+        rc(c, 6, 15, 4, 3, kc('yoru', -1)); outline(c, 3, 12, 10, 11)
+        rc(c, 7, 23, 2, 2, kc('tekko', 0)); hl(c, 5, 25, 6, kc('tekko', 2)); hl(c, 5, 26, 6, kc('tekko', -2))
         outline(c, 0, 15, 16, 17, kc('tekko', -3))
     else:
         rc(c, 0, 16, 16, 9, kc('conc', 4)); hl(c, 0, 16, 16, kc('shiro', 2)); vl(c, 0, 16, 9, kc('shiro', 2)); hl(c, 0, 24, 16, kc('shiro', 3))
@@ -489,7 +489,7 @@ def _partition(c):
        place='사무실 북쪽 벽 아래, 가로로 2~4칸 이어 붙임',
        desc='회색 철제 서류장(높이 1.8m) — 위 두 짝은 유리문이라 색색 바인더 등이 보이고, 아래 두 짝은 철문에 손잡이. 윗면이 보인다.')
 def _cabinet(c):
-    rc(c, 0, 8, 16, 4, kc('conc', 4)); hl(c, 0, 8, 16, kc('shiro', 3)); hl(c, 0, 11, 16, kc('shiro', 2))     # 윗면 T
+    rc(c, 0, 6, 16, 6, kc('conc', 4)); hl(c, 0, 7, 16, kc('shiro', 3)); px(c, 5, 9, kc('conc', 3)); px(c, 11, 10, kc('conc', 3))   # 윗면 5줄
     rc(c, 0, 12, 16, 36, kc('conc', 2)); vl(c, 0, 12, 36, kc('conc', 4)); vl(c, 15, 12, 36, kc('conc', 0))
     hl(c, 0, 12, 16, kc('conc', 0)); hl(c, 0, 13, 16, kc('conc', 1))                                          # 처마 그림자
     rc(c, 1, 14, 14, 14, kc('garasu', -1)); outline(c, 1, 14, 14, 14, kc('conc', 0))
@@ -503,7 +503,7 @@ def _cabinet(c):
     for y0 in (30, 39):
         rc(c, 1, y0, 14, 8, kc('conc', 3)); hl(c, 1, y0, 14, kc('conc', 4)); hl(c, 1, y0 + 7, 14, kc('conc', 0))
         vl(c, 8, y0, 8, kc('conc', 0)); rc(c, 6, y0 + 3, 1, 2, kc('tekko', 4)); rc(c, 9, y0 + 3, 1, 2, kc('tekko', 4))
-    hl(c, 0, 47, 16, kc('conc', -3)); outline(c, 0, 8, 16, 40, kc('conc', -3))
+    hl(c, 0, 47, 16, kc('conc', -3)); outline(c, 0, 6, 16, 42, kc('conc', -3))
 
 
 @R.obj('of-copier', '복합기', w=1, h=1, up=8, kind='floor', use=('search',), tags=TAGS + ('복합기', '복사기'),
@@ -554,7 +554,8 @@ def _meeting(c, w, h):
        place='사무실 구석 북쪽 벽 아래(복합기·서류장 줄 끝)',
        desc='검은 서버 랙(높이 2m) — 타공 앞문 너머로 장비 단 줄과 초록·호박색 LED 점. 윗면이 보인다.')
 def _rack(c):
-    rc(c, 0, 8, 16, 4, kc('yoru', 1)); hl(c, 0, 8, 16, kc('yoru', 3)); hl(c, 0, 11, 16, kc('yoru', 2))
+    rc(c, 0, 6, 16, 6, kc('yoru', 1)); hl(c, 0, 7, 16, kc('yoru', 3))                                              # 윗면 5줄
+    for x in range(3, 13, 3): px(c, x, 9, kc('yoru', 0)); px(c, x + 1, 9, kc('yoru', 0))                           # 윗면 통풍 구멍
     rc(c, 0, 12, 16, 36, kc('yoru', -2)); vl(c, 0, 12, 36, kc('yoru', 0)); hl(c, 0, 12, 16, kc('sumi', -1))
     for r in range(8):
         y = 14 + r * 4
@@ -562,7 +563,7 @@ def _rack(c):
         px(c, 3, y + 1, kc('midori', 3) if (r % 3) else kc('kii', 3)); px(c, 5, y + 1, kc('midori', 2) if r % 2 else kc('yoru', 1))
         for x in range(8, 13, 2): px(c, x, y + 1, kc('yoru', 1))
     vl(c, 14, 14, 32, kc('tekko', 1))
-    hl(c, 0, 47, 16, OL); outline(c, 0, 8, 16, 40)
+    hl(c, 0, 47, 16, OL); outline(c, 0, 6, 16, 42)
 
 
 @R.obj('of-coat-rack', '옷걸이 스탠드', w=1, h=1, up=24, kind='floor', tags=TAGS + ('옷걸이',),
@@ -625,7 +626,9 @@ def _sink(c):
     for x in range(0, 32, 6): vl(c, x, 0, 12, kc('shiro', 1))
     for y in (4, 8): hl(c, 0, y, 32, kc('shiro', 1))
     rc(c, 0, 12, 32, 6, kc('tekko', 3)); hl(c, 0, 12, 32, kc('tekko', 4)); hl(c, 0, 17, 32, kc('tekko', 4))   # 상판
-    rc(c, 3, 13, 12, 4, kc('tekko', 0)); hl(c, 3, 13, 12, kc('tekko', -2)); px(c, 9, 15, kc('yoru', -1))     # 개수구
+    hl(c, 0, 17, 32, kc('tekko', 1))                                                                         # 상판 앞 모서리(어둡게)
+    rc(c, 3, 13, 12, 4, kc('tekko', -1)); hl(c, 3, 13, 12, kc('tekko', 1)); vl(c, 3, 13, 4, kc('tekko', 0)); vl(c, 14, 14, 3, kc('tekko', -2))   # 개수구: 먼 안벽(밝게) + 바닥
+    hl(c, 4, 16, 10, kc('tekko', -2)); px(c, 9, 15, kc('yoru', -1))
     vl(c, 9, 7, 6, kc('tekko', 4)); hl(c, 9, 7, 3, kc('tekko', 4)); px(c, 11, 8, kc('tekko', 1))            # 수도꼭지
     rc(c, 20, 7, 6, 8, kc('shiro', 3)); hl(c, 20, 7, 6, kc('shiro', 4)); rc(c, 20, 14, 6, 2, kc('yoru', 0)); rc(c, 26, 9, 2, 3, kc('shiro', 1)); outline(c, 19, 6, 8, 10)   # 전기 포트
     rc(c, 28, 12, 3, 3, kc('aka', 1)); px(c, 28, 12, kc('aka', 3))
@@ -647,7 +650,7 @@ def _fridge(c):
        place='휴게 코너·엘리베이터 홀 북쪽 벽 아래',
        desc='빨간 음료 자판기(높이 1.8m) — 진열창에 색색 캔이 3단, 단마다 작은 버튼 점, 동전 투입구와 아래 꺼내는 칸. 글자·상표 없음.')
 def _vending(c):
-    rc(c, 0, 8, 16, 4, kc('aka', 1)); hl(c, 0, 8, 16, kc('aka', 2)); hl(c, 0, 11, 16, kc('aka', 2))
+    rc(c, 0, 6, 16, 6, kc('aka', 1)); hl(c, 0, 7, 16, kc('aka', 2)); px(c, 4, 9, kc('aka', 0)); px(c, 11, 10, kc('aka', 0))   # 윗면 5줄
     rc(c, 0, 12, 16, 36, kc('aka', 0)); vl(c, 0, 12, 36, kc('aka', 1)); vl(c, 15, 12, 36, kc('aka', -2)); hl(c, 0, 12, 16, kc('aka', -2))
     rc(c, 2, 14, 12, 19, kc('shiro', 2)); outline(c, 1, 13, 14, 21, kc('aka', -2))
     cans = ('sora', 'kii', 'midori', 'daidai', 'kon', 'shiro')
@@ -660,7 +663,7 @@ def _vending(c):
     vl(c, 2, 14, 19, kc('shiro', 4))
     rc(c, 10, 35, 3, 4, kc('yoru', 0)); px(c, 11, 36, kc('tekko', 4))                                        # 투입구
     rc(c, 3, 41, 10, 4, kc('yoru', -2)); hl(c, 3, 41, 10, kc('aka', -2))                                      # 꺼내는 칸
-    hl(c, 0, 47, 16, OL); outline(c, 0, 8, 16, 40, kc('aka', -2))
+    hl(c, 0, 47, 16, OL); outline(c, 0, 6, 16, 42, kc('aka', -2))
 
 
 @R.table('of-break-table', '휴게 탁자', desc='밝은 나무 상판에 흰 모서리 띠, 양 끝 철제 다리의 휴게 코너 탁자. 어떤 w×h 로도 이어 붙는다.', tags=TAGS + ('휴게', '급탕실'))

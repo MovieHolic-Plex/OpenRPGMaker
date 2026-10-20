@@ -886,14 +886,14 @@ def _hose(c):
        place='주차장 출입구(계단) 가까운 북쪽 벽 바로 아래. 앞 두 줄을 비운다.',
        desc='회색 주차 정산기 — 윗면, 꺼진 어두운 화면, 색 점 버튼, 표·카드 넣는 틈, 아래 동전 받이. 글자·숫자 없음. 조사 자리.')
 def _pay(c):
-    rc(c, 1, 4, 14, 4, kc('tekko', 2)); hl(c, 1, 4, 14, kc('tekko', 3)); hl(c, 1, 7, 14, kc('tekko', 3))   # 윗면
+    rc(c, 1, 1, 14, 6, kc('tekko', 2)); hl(c, 1, 1, 14, kc('tekko', 3)); hl(c, 4, 4, 8, kc('tekko', 1))   # 윗면 6줄 + 뚜껑 이음
     rc(c, 1, 8, 14, 23, kc('tekko', 0)); vl(c, 1, 8, 23, kc('tekko', 1)); vl(c, 14, 8, 23, kc('tekko', -2))
-    hl(c, 1, 8, 14, kc('tekko', -2))
+    hl(c, 1, 7, 14, kc('tekko', -2)); hl(c, 1, 8, 14, kc('tekko', 1))                                       # 앞 모서리 · 앞판 윗날
     rc(c, 3, 10, 10, 6, kc('garasu', -3)); outline(c, 2, 9, 12, 8, kc('tekko', -2)); px(c, 4, 11, kc('garasu', -1)); hl(c, 4, 14, 3, kc('sora', -2))   # 화면
     for i, col in enumerate(('kii', 'midori', 'aka', 'sora')): px(c, 3 + i * 3, 18, kc(col, 1)); px(c, 3 + i * 3, 19, kc(col, -1))
     hl(c, 4, 21, 6, kc('yoru', -2)); hl(c, 11, 21, 2, kc('yoru', -2))     # 표·카드 틈
     rc(c, 5, 25, 6, 3, kc('yoru', -2)); hl(c, 5, 25, 6, kc('tekko', -2)); hl(c, 5, 28, 6, kc('tekko', 2))   # 동전 받이
-    hl(c, 1, 30, 14, kc('tekko', -3)); outline(c, 0, 3, 16, 29)
+    hl(c, 1, 30, 14, kc('tekko', -3)); outline(c, 0, 0, 16, 32)
 
 
 @R.obj('cs-shutter', '셔터(반쯤 열림)', kind='door', use=('travel', 'open', 'key'), tags=TP + TC[:1] + ('셔터', '문'),
@@ -981,15 +981,15 @@ def _toolbox(c):
        place='현장 사무실 곁 막다른 곳의 북쪽 벽 바로 아래(벽 붙이).', pair=('cs-site-office',),
        desc='철 선반 세 단 — 위에 흰·노란 안전모, 가운데 헤드램프 달린 안전모, 아래 장화 한 켤레. 조사 자리.')
 def _helmets(c):
-    rc(c, 1, 4, 14, 3, kc('tekko', 2)); hl(c, 1, 4, 14, kc('tekko', 3))   # 윗면
-    for x0 in (1, 14): vl(c, x0, 4, 27, kc('tekko', 1) if x0 == 1 else kc('tekko', -1))
+    rc(c, 1, 1, 14, 5, kc('tekko', 2)); hl(c, 1, 1, 14, kc('tekko', 3)); px(c, 5, 3, kc('tekko', 1)); px(c, 11, 4, kc('tekko', 1))   # 윗면 5줄(철판)
+    for x0 in (1, 14): vl(c, x0, 6, 25, kc('tekko', 1) if x0 == 1 else kc('tekko', -1))
     for y0 in (17, 27): hl(c, 1, y0, 14, kc('tekko', 2)); hl(c, 1, y0 + 1, 14, kc('tekko', -1))
-    hl(c, 2, 7, 12, kc('tekko', -2))
+    hl(c, 1, 6, 14, kc('tekko', -2)); hl(c, 2, 7, 12, kc('tekko', -2))                   # 앞 모서리 · 위 칸 그늘
     for (x0, col) in ((2, 'shiro'), (8, 'kii')):                          # 안전모 둘
         disc(c, x0 + 3, 13, 3, 4, kc(col, 0)); disc(c, x0 + 2.5, 12, 1.6, 2, kc(col, 1)); hl(c, x0, 16, 7, kc(col, -1)); px(c, x0 + 1, 11, kc(col, 2))
     disc(c, 8, 23, 3, 3.6, kc('shiro', -1)); px(c, 7, 21, kc('shiro', 1)); rc(c, 7, 23, 2, 2, kc('kii', 2)); hl(c, 4, 26, 8, kc('shiro', -2))   # 헤드램프 안전모
     for x0 in (4, 9): rc(c, x0, 29 - 1, 3, 3, kc('yoru', 0)); px(c, x0, 28, kc('yoru', 1))   # 장화
-    outline(c, 0, 3, 16, 29)
+    outline(c, 0, 0, 16, 32)
 
 
 @R.obj('cs-item-blueprint', '설계도 통(단서)', w=1, h=1, up=0, kind='floor', use=('search', 'read'), tags=TC + ('보물', '단서'),

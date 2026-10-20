@@ -352,11 +352,14 @@ def _blackboard_cracked(c):
 def _podium_broken(c):
     sc_draw(c, 'sc-teacher-desk')
     age(c, -1)
-    for y in range(1, 7):                                                         # 오른쪽 상판이 내려앉음
-        for x in range(9, 15): px(c, x, y, WD(-2) if y < 3 else c_get(c, x, y - 2))
-    vl(c, 8, 1, 7, K('sumi', 0)); px(c, 9, 1, WD(0)); px(c, 9, 3, WD(-1))
+    # 오른쪽 상판이 금을 따라 안쪽으로 내려앉음: 위로 벌어진 틈(속 어둠) + 기울어 어두운 판 윗면 + 그 앞날
+    rc(c, 9, 1, 6, 2, K('sumi', 0)); hl(c, 9, 1, 6, K('sumi', 1))                # 틈으로 보이는 속
+    rc(c, 9, 3, 6, 3, WD(0)); hl(c, 9, 3, 6, WD(1)); px(c, 14, 4, WD(-1))         # 내려앉은 판 윗면(기울어 한 단 어둡다)
+    px(c, 9, 3, K('sumi', 0)); px(c, 10, 3, WD(-1)); px(c, 9, 4, WD(-1))          # 부러진 끝 들쭉날쭉
+    hl(c, 9, 6, 6, WD(-2))                                                        # 내려앉은 판 앞날
+    vl(c, 8, 1, 6, WD(-2)); px(c, 8, 2, K('sumi', 0)); px(c, 8, 5, K('sumi', 0)); px(c, 7, 3, WD(-1))   # 갈라진 금
     rc(c, 4, 10, 4, 3, K('sumi', 0)); px(c, 4, 10, WD(-2)); px(c, 7, 12, WD(0))      # 앞판 구멍
-    speck(c, 74, 200, (K('kinari', -1),), (1, 1, 8, 7))
+    speck(c, 74, 50, (K('kinari', -1),), (1, 1, 7, 6))
     px(c, 2, 12, LF(-2)); px(c, 3, 13, LF(-2))
 
 
@@ -370,8 +373,7 @@ def c_get(c, x, y):
        place='폐교 교무실·교실 뒤·과학실 북쪽 벽 바로 아래 첫 바닥 줄',
        desc='문이 열린 채 녹슨 회색 철제 사물함(1.8m) — 안은 어둡고 선반 하나에 먼지만, 열린 문짝이 남쪽으로 젖혀져 있고 환기 살 아래로 녹물이 흘렀다. 벽 붙이.')
 def _locker_open(c):
-    y = block3(c, 0, 2, 12, 30, 4, 'tekko', 0, front_t=-1)                                  # 몸통 x0~11, 앞면 y 부터
-    hl(c, 1, 7, 10, ST(3))                                                                   # 앞 가장자리 하이라이트(윗면 T 5)
+    y = block3(c, 0, 0, 12, 32, 5, 'tekko', 0, front_t=-1)                                  # 몸통 x0~11, 윗면 5줄, 앞면 y 부터
     rc(c, 2, y + 1, 8, 28 - y, K('yoru', -2)); outline(c, 1, y, 10, 30 - y, ST(-3))         # 들어간 안쪽 어둠
     hl(c, 2, y + 9, 8, ST(-1)); hl(c, 2, y + 10, 8, K('yoru', -1))                          # 선반
     rc(c, 3, y + 6, 3, 3, K('soil', -1)); px(c, 3, y + 6, K('soil', 0))                      # 낡은 걸레 덩이
