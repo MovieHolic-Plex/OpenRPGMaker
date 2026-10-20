@@ -626,7 +626,17 @@
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-box .dialogue-text-column { height: 100%; padding: 0; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-box .body { font: 18px/24px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; color: #384840; text-align: left; text-shadow: none; height: 48px; min-height: 0; max-height: 48px; overflow: hidden; margin: 0; word-break: keep-all; overflow-wrap: anywhere; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-box.has-speaker { padding-top: 12px; }
-.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] :is(.speaker-nameplate, .dialogue-face, .dialogue-log-button) { display: none; }
+.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] :is(.speaker-nameplate, .dialogue-face:not(.dialogue-face-bust), .dialogue-log-button) { display: none; }
+/* 흉상(changeFace presentation bust)은 보인다 — 상자 위(위쪽 상자면 아래)에 1배 도트로 서고, 글은 상자 전체 폭을 그대로 쓴다.
+   작은 얼굴·이름표는 3세대 상자처럼 계속 숨긴다(2026-10-21 아스트라 인물 흉상). */
+.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] {
+  --runtime-dialogue-bust-height: 112px;
+  --runtime-dialogue-bust-width: 112px;
+}
+.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-face.dialogue-face-bust { bottom: 100%; left: 8px; }
+.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-box.bust-right .dialogue-face.dialogue-face-bust { left: auto; right: 8px; }
+.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].position-top .dialogue-face.dialogue-face-bust { bottom: auto; top: 100%; }
+.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-content.has-bust { padding-inline: 0; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-page-cursor { right: 12px; bottom: 12px; color: #c85048; font: 18px/20px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; text-shadow: none; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].choices-active { box-sizing: border-box; height: auto; min-height: 0; padding: 0 8px 8px; max-height: 240px; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].choices-active .dialogue-box.choices { width: 224px; height: auto; min-height: 0; max-height: 232px; padding: 8px 12px; margin-left: auto; overflow-y: auto; }

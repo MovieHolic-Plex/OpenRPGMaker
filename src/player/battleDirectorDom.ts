@@ -93,10 +93,13 @@ export function sendOutDirectorState(snapshot: BattleSnapshot): BattleDirectorSt
 
 /** 행동 로그 엔트리 하나를 이름이 드러나는 메시지로 변환(다중 적 턴 개별 연출용). */
 export function enemyActionDirectorState(entry: BattleActionResultSnapshot, snapshot: BattleSnapshot, effect?: { readonly resource: "hp" | "mp"; readonly healing: boolean }): BattleDirectorState {
-  const user = snapshot.enemies.find((enemy) => enemy.recordId === entry.userRecordId)
-    ?? snapshot.actors.find((actor) => actor.recordId === entry.userRecordId);
+  // 이 차례에 쓰러져 교체된 적(departedEnemies)도 찾는다 — 못 찾으면 이름 없이 「상대의 어깨툭!」이 나왔다(2026-10-20 아스트라 관장전).
+  // 어떤 엔트리는 userRecordId 에 레코드 id 대신 전투 개체 id 를 싣는다(runtime 의 side 판정도 둘 다 본다) — 둘 다 맞춰 본다.
+  const isUser = (battler: { readonly recordId: string; readonly id: string }) => battler.recordId === entry.userRecordId || battler.id === entry.userRecordId;
+  const user = snapshot.enemies.find(isUser) ?? snapshot.departedEnemies?.find(isUser) ?? snapshot.actors.find(isUser);
   const target = snapshot.actors.find((actor) => actor.id === entry.targetId)
-    ?? snapshot.enemies.find((enemy) => enemy.id === entry.targetId);
+    ?? snapshot.enemies.find((enemy) => enemy.id === entry.targetId)
+    ?? snapshot.departedEnemies?.find((enemy) => enemy.id === entry.targetId);
   const userName = user?.name ?? "적";
   // 적의 기본 공격은 내부적으로 "공격" 스킬로 굴러가지만, "○○가 공격을 사용했다!"는
   // 아군의 "주인공의 공격!"과 문체가 어긋난다 — 기본 공격은 같은 문형으로 맞춘다.

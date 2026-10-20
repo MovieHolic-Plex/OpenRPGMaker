@@ -112,6 +112,8 @@ const textOverflow = () => page.evaluate(() => {
   return out;
 });
 const shot = async (name) => {
+  // 맵을 옮긴 직후엔 화면이 검은색에서 밝아지는 중이다 — 다 밝아진 뒤에 찍는다(검수자가 페이드 중간을 「어두운 맵」으로 읽었다).
+  await page.waitForTimeout(700);
   await page.screenshot({ path: join(out, `${name}.png`) });
   const overflow = await textOverflow().catch(() => null);
   if (overflow?.length) step(`layout:${name}`, false, `전투 문장이 창 밖으로 나감: ${overflow.join(" / ")}`, `${name}.png`);
@@ -455,10 +457,17 @@ async function go(fromMapId, toMapId) {
 async function approachAndTalk(mapId, event) {
   const spot = besideOf(mapId, event);
   if (!spot) return false;
-  const now = await here();
-  if (now.currentMapId === mapId) {
+  // 걷다가 트레이너 눈에 띄면(시선) 플레이어처럼 그 자리에서 대사를 읽고 싸운 뒤 다시 걷는다 — 예전엔 순간이동으로 건너뛰었다.
+  for (let tries = 0; tries < 4 && (await here()).currentMapId === mapId; tries++) {
     const r = await walkTo(mapId, spot, 200);
     if (r === "battle") return "battle";
+    if (r !== "dialogue") break;
+    const read = await readThrough();
+    if (read === "battle" || await present("battle-scene")) {
+      await mark(`sighted on the way to ${event.id}`);
+      step(`sight-${event.id}`, true, await battleAsNewPlayer(`sight-${event.id}`));
+      await readThrough();
+    }
   }
   const at = await here();
   if (at.currentMapId !== mapId || at.x !== spot.x || at.y !== spot.y) await teleport(mapId, spot.x, spot.y);
