@@ -1,0 +1,408 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "34d419af2ca8fdddf8d2a84e36b9260d1f5100c472e3f1b33ad54645809b6a77",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "art plinth",
+ "label": "modern_city_interior/art-plinth",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 4 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 4 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 22,
+  "tileColorsP90": 22,
+  "darkV5": 41,
+  "nearBlackEdge": 0.16,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "glass display case with figurine on top of plinth",
+      "rows": "0-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plinth top cap (wider slab)",
+      "rows": "15-16",
+      "evidence": "none",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17"
+     },
+     {
+      "part": "plinth shaft front face",
+      "rows": "17-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plinth base flange",
+      "rows": "27-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The plinth is a flat front elevation. Its cap at rows 15-16 is only a 2-row lip (light row 15, slightly darker row 16, a 1-row shadow at row 17 on the right). That is a rim, not a top surface seen from above. Below it are a flat shaft (rows 17-26, width 12) and a base flange (rows 27-31, width 14) with no top plane of their own. The display case and figurine in rows 0-14 are decor on top of the plinth. No ellipse, no visible contents, and no band of 3+ rows with a front-edge line."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small stone plinth with a bust or figure on top. It measures 22 visible tones per full tile, against 17 for the cheese stall and 20 for the roofed well, so it is at or above the references on the main density fact. Near-flat coverage is 0%, so there are no large flat fills; the stone shows stepped light-to-dark faces and the top figure has its own accent tones. Only 22% of its dark edge pixels are neutral, which means the outline leans toward the tint of the neighbouring stone and is not a uniform black sticker line. It is slightly shallower than the best references, at roughly 5 stone steps against 5-6, and it is small and simple. Even so, it would sit next to the well and stall without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17301
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "statue figure inside the display case",
+      "rows": "6-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass case / back panel above the plinth",
+      "rows": "0-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plinth cap slab (wider, 14px) as a front-facing strip",
+      "rows": "15-16",
+      "evidence": "none",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "plinth shaft front face",
+      "rows": "17-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plinth base strip",
+      "rows": "27-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The plinth is drawn as a vertical stack. The widths are 12 for rows 0-14, 14 for the cap at rows 15-16, 12 for the shaft at rows 17-26, and 14 for the base at rows 27-31. The cap is a 2-row front-facing lip, with a dark line at row 14 above it and light/shade bands at rows 15-17. The width profile shows no ellipse and no receding horizontal plane. The statue sits on rows 6-12 inside a vertical glass case, so it counts as decor. The shaft face at rows 17-26 is flat shaded with no top surface. This gives a rim of 1-2 rows, not a real top, so the drawing reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small marble plinth with a bust or figure on top, at the same scale as the references. It measures 22 visible tones per 16x16 tile. That is level with prop-well-roofed (20) and prop-stall-cheese (17) and well above prop-hedge (9). Near-flat coverage is 0%, so there are no large flat fills. Only 22% of its dark edge pixels are neutral, so the outline mostly leans toward the material tone (a darker grey-blue or brown) rather than a uniform black sticker line, which fits the Beodeul style. The stone shows roughly 5 lightness steps, with highlight, light, mid and shadow faces plus a darker base and cap. Texture is moderate rather than lavish, with a few speckle and edge-shading details. The picture is tiny, so this is a judgement mainly from the measured facts. Next to the references it does not look thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16795
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "figure and glass backdrop above the plinth",
+      "rows": "0-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plinth cornice slab",
+      "rows": "14-16",
+      "evidence": "none",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plinth shaft",
+      "rows": "17-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plinth base",
+      "rows": "27-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is the plinth at rows 14-31. Its widest bands, rows 15-16 and rows 27-31, are 14 wide against a 12-wide shaft. Row 14 is a dark line (L=113), row 15 is a light line (L=242) and row 16 is shaded (L=202). That is only a 1-2 row rim or lip. It has no ellipse, no deep top band and no visible contents. The shaft at rows 17-26 is a flat vertical face with shading and cracks. The base at rows 27-31 is also a front-facing strip with no top. The figure inside the glass case at rows 1-13 is decor on the plinth. The plinth therefore reads as a front elevation with no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small stone plinth with a bust or ornament on top. It shows 22 visible tones per full tile, above the well (20) and cheese stall (17) references and well above the hedge (9). Near-flat coverage is 0%, so there are no large flat fills; the pedestal and top figure are broken up by shaded stone faces and small highlights. Only 22% of the dark edge pixels are near-neutral, so the outline mostly leans toward the material's own tone, as in the well and stall references, rather than a uniform black sticker line. The piece is small at 2x, so my read of the stone ramp is approximate. It looks like about 5 lightness steps on the stone, in line with the references. Texture is a little less rich than the stall or well but still has grain and shading steps. Density matches the same-kind references on the primary facts.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17387
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "statue figure on plinth top",
+      "rows": "6-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pale backdrop panel behind statue",
+      "rows": "0-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plinth top / cap",
+      "rows": "13-16",
+      "evidence": "none",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plinth shaft and base",
+      "rows": "17-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The plinth is the pedestal from row 13 down: a 2-row cap slab at rows 15-16 (width 14, highlight on row 15, shade on row 16), a plain vertical shaft at rows 17-26 (width 12), and a flared base at rows 27-31 (width 14). The only candidate top surface is rows 13-14, a thin light strip with a dark line at row 14, which is about 2 rows and reads as a rim. No ellipse or sloped plane is visible, and the statue above it is decor. The rest is a flat front face with no visible horizontal top, so it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The plinth is a small pale-stone pedestal with a bust or figure on top. The stone has about 5 lightness steps: highlight, light, mid, shadow and dark base, with a molded cap and base. The edges are dark but tinted to the stone and the figure, not a uniform black line, and only 22% of dark edge pixels are near-neutral. Measured facts support this: 22 visible tones per tile is at or above the stall (17) and the well (20), and near-flat coverage is 0%. There are no large single-colour areas. Texture is moderate, with shaded faces and small details on the figure, but less grain than the well's stonework. At this scale it would sit acceptably beside the references without looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18899
+  }
+ ],
+ "decidedAt": "2026-10-20T22:55:59.240Z",
+ "cells": {
+  "16": [
+   "22c5263a1a7012cf",
+   "3457286096a4c811"
+  ],
+  "24": [
+   "1b47a8b4faa9ebf9",
+   "26fa3185ab155fc0",
+   "2e979108c7449d84",
+   "35484b7fd685f73d",
+   "66f56c15c95ec7f9",
+   "72702df2f1341f65",
+   "bc21af7ecd9eda19",
+   "c0d9497bdd0c7d47",
+   "c413bcfe5cfd7657",
+   "d4f93b6a52f4e1da",
+   "e3ed51c38f408160",
+   "fa8c24a8e0e404c2"
+  ],
+  "32": [
+   "038eaeca003ef725",
+   "387a5d4b95f7cd6e",
+   "be0e9f7c2112bdd5"
+  ],
+  "48": [
+   "0f92800850f582e8",
+   "788839d35a478206",
+   "a02b379cbe9474a2",
+   "a82f0afed2247b7d",
+   "c7d6d7a477fb7488",
+   "f7e1afba637ee76c"
+  ]
+ }
+}
