@@ -127,7 +127,7 @@ def gable_top(c, x0, x1, ytop, yeave, mat, base, ridge_frac=0.22):
     return yr
 
 
-def gable_front_top(c, x0, x1, ytop, yeave, ywall, mat, base, rise, wx0, wx1, wmat, wbase, wkind='plaster'):
+def gable_front_top(c, x0, x1, ytop, yeave, ywall, mat, base, rise, wx0, wx1, wmat, wbase, wkind='plaster', wall_px=None):
     """妻入り 切妻를 위에서: 용마루가 남북(화면 세로) 가운데선. 왼쪽 경사 빛 · 오른쪽 그늘, 기와 줄은 세로(처마와 나란).
     뒤 끝·앞 끝 바깥선은 납작한 Λ(가운데가 rise 만큼 높다). 앞 끝 아래로 박공 삼각벽이 벽 위(ywall)까지 보인다."""
     xc = (x0 + x1) // 2; half = max(1, (x1 - x0) / 2)
@@ -155,6 +155,10 @@ def gable_front_top(c, x0, x1, ytop, yeave, ywall, mat, base, rise, wx0, wx1, wm
         c.P(x, yt - 1, OL)
         if wx0 <= x <= wx1:                                                  # 박공 삼각벽
             for y in range(yb + 2, ywall):
+                if wall_px is not None:                                      # 아래층 벽과 같은 재질·같은 무늬 위상(이음매 없음)
+                    if y < yb + 4: c.P(x, y, K(wmat, wbase - (2 if y < yb + 3 else 1)))
+                    else: c.a[y, x] = wall_px[y, x]
+                    continue
                 if wkind == 'vboard':
                     tt = wbase + (-1 if x % 4 == 0 else 1 if x % 4 == 1 else 0)
                 elif wkind == 'siding':
@@ -296,7 +300,6 @@ def flat_top(c, x0, x1, ytop, yb, mat='conc', items=(), rail=False, floor=None):
     c.HL(x0, yb - 5, W, K(mat, -2))                                              # 캡 뒤(바닥 쪽) 그늘
     c.HL(x0, yb - 4, W, K(mat, 3)); c.HL(x0, yb - 3, W, K(mat, 2)); c.HL(x0, yb - 2, W, K(mat, 1))
     c.HL(x0, yb - 1, W, K(mat, -2)); c.HL(x0 - 1, yb, W + 2, OL)                 # 앞 난간 립 그늘 + 윤곽: 옥상/벽 경계를 또렷이
-    c.R(x0 + 6, yb - 9, 4, 3, K('tekko', -2)); c.HL(x0 + 6, yb - 9, 4, K('tekko', -3))   # 배수구
     c.HL(x0 - 1, ytop - 1, W + 2, OL); c.VL(x0 - 1, ytop, yb - ytop, OL); c.VL(x1 + 1, ytop, yb - ytop, OL)
     if rail: _railing(c, x0, x1, ytop, yb, mat)
     taken = []
@@ -306,9 +309,12 @@ def flat_top(c, x0, x1, ytop, yb, mat='conc', items=(), rail=False, floor=None):
         ix += x0; iy += ytop
         bw, bh = BW.get(kind, 14), BH.get(kind, 15)
         pt = 16
-        if iy + bh > yb - 7:                                                 # 앞 난간을 덮지 않게 위로 올린다(모자라면 塔屋 윗면을 줄인다)
-            iy = max(ytop + 1, yb - 7 - bh)
-            if kind == 'pent' and iy + bh > yb - 7: pt = max(6, 16 - (iy + bh - (yb - 7))); bh = pt + 18
+        lo, hi = ytop + 11, yb - 7                                           # 뒤 난간 안쪽 면(+그늘) 아래 ~ 앞 난간 위
+        iy = max(lo, iy)
+        if iy + bh > hi:                                                     # 앞 난간을 덮지 않게 위로 올린다(모자라면 塔屋 윗면을 줄인다)
+            iy = max(lo, hi - bh)
+            if kind == 'pent' and iy + bh > hi: pt = max(5, 16 - (iy + bh - hi)); bh = pt + 18
+        if iy + bh > hi: continue                                            # 그래도 안 들어가면 뺀다
         moved = True
         while moved:                                                         # 겹치면(가로·세로 모두) 오른쪽으로 민다
             moved = False
@@ -368,7 +374,14 @@ def _flat_top(cv, X0, X1, top, h, r, opt):
 def _gable_front_top(cv, X0, X1, top, h, r, opt):
     f = r['floors'][-1]
     rise = opt.get('rise', 14)
-    gable_front_top(cv, X0 - 4, X1 + 4, top - h, top, top, r['rmat'], r['rbase'], rise, X0, X1, f['mat'], f['base'], f['kind'])
+    fy = top + 4                                                             # 맨 위층 벽 시작(지붕·벽 사이 4줄 틈도 박공벽으로 메운다)
+    tmp = hk.Cv(cv.w, cv.h)
+    ys = fy - 48 * ((fy - (top - h)) // 48 + 1)                              # 무늬 주기(4·6·8·12·16·24)의 배수만큼 위에서 시작 → 위상 일치
+    hk.wall(tmp, X0, ys, X1 - X0 + 1, fy - ys, f['mat'], f['base'], f['kind']) if ys >= 0 else None
+    if ys < 0:
+        tmp2 = hk.Cv(cv.w, cv.h + 96); hk.wall(tmp2, X0, ys + 96, X1 - X0 + 1, fy - ys, f['mat'], f['base'], f['kind'])
+        tmp.a[:] = tmp2.a[96:96 + cv.h]
+    gable_front_top(cv, X0 - 4, X1 + 4, top - h, top, fy, r['rmat'], r['rbase'], rise, X0, X1, f['mat'], f['base'], f['kind'], wall_px=tmp.a)
 
 
 def _shed_top(cv, X0, X1, top, h, r, opt):
