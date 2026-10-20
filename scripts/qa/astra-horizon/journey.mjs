@@ -567,7 +567,18 @@ try {
   await pressEnterUntil(async () => !(await present("dialogue-box")), 40);
   const afterLeader = await state();
   step("gym-leader", started && afterLeader.battleResult === "victory", `${log.length}턴 → ${afterLeader.battleResult} · badge=${afterLeader.switches.mx_badge_1} · ${report.levelBeforeLeader.join(", ")}`, await shot("22-after-leader"));
+  // 지면 회복 센터에서 깨어난다(눈앞이 캄캄 → 센터). 플레이어처럼 그대로 한 번 더 도전해 본다 — 디버그 없이.
   if (afterLeader.switches.mx_badge_1 !== true) {
+    await pressEnterUntil(async () => !(await eventRunning()) && !(await present("dialogue-box")), 60);
+    if ((await here()).currentMapId !== gym.id) { if (town2 && (await here()).currentMapId === `${town2.id}_center`) await go(`${town2.id}_center`, town2.id); await go(town2?.id ?? home, gym.id); }
+    await approachAndTalk(gym.id, leader);
+    const again = await pressEnterUntil(() => present("battle-scene"), 40);
+    const log2 = again ? await fight("21d-leader-rematch") : [];
+    await pressEnterUntil(async () => !(await present("dialogue-box")), 40);
+    const st2 = await state();
+    step("gym-leader-rematch", again && st2.switches.mx_badge_1 === true, `${log2.length}턴 → ${st2.battleResult} · badge=${st2.switches.mx_badge_1} · ${await partyLine()}`);
+  }
+  if ((await state()).switches.mx_badge_1 !== true) {
     await page.evaluate(() => { const s = window.__oprnHooksScene.session; for (const id of s.monsterParty) { const m = s.monsterInstances[id]; m.level = Math.max(m.level, 16); m.currentHp = undefined; } });
     report.debugWrites.push("관장 패배 뒤 파티 Lv16 으로 재도전");
     await approachAndTalk(gym.id, leader);
@@ -592,8 +603,17 @@ try {
     if (st && await present("battle-scene")) { await page.waitForTimeout(2000); await shot(`24-${key}-battle`); await fight(`24b-${key}`); }
     const res = (await state()).battleResult;
     step(`boss-${key}-result`, res === "victory", `${res} · ${await partyLine()}`);
+    let res2 = res;
     if (res !== "victory") {
-      // 진 경우: 기록만 남기고, 엔딩 화면까지 보려고 레벨을 올려 다시 도전한다(디버그 쓰기로 적는다).
+      // 진 경우: 센터에서 깨어나 그대로 한 번 더(플레이어처럼).
+      await pressEnterUntil(async () => !(await eventRunning()) && !(await present("dialogue-box")), 60);
+      await approachAndTalk(map.id, ev);
+      if (await pressEnterUntil(() => present("battle-scene"), 40)) await fight(`24d-${key}-rematch`);
+      res2 = (await state()).battleResult;
+      step(`boss-${key}-rematch`, res2 === "victory", `${res2} · ${await partyLine()}`);
+    }
+    if (res2 !== "victory") {
+      // 또 진 경우: 기록만 남기고, 엔딩 화면까지 보려고 레벨을 올려 다시 도전한다(디버그 쓰기로 적는다).
       await pressEnterUntil(async () => !(await present("dialogue-box")), 40);
       await page.evaluate(() => { const s = window.__oprnHooksScene.session; for (const id of s.monsterParty) { const m = s.monsterInstances[id]; m.level = Math.max(m.level, 20); m.currentHp = undefined; } });
       report.debugWrites.push(`${key}: 패배 뒤 파티 Lv20 으로 재도전`);
