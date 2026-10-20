@@ -62,6 +62,13 @@ section{{background:#2a2622;padding:8px 10px;margin:8px 0}}h3{{margin:0 0 6px;fo
 <h1>atlas_biome_interior 기물 3/4·품질 — 2판 (2026-10-20)</h1>
 <p>#3087 로 넣은 17종은 유효한 관문 없이 들어갔다. 21종 전부를 독립 적대 판정자(Gemini 4 Argon, 3번 판정 과반, 3/4 + 품질 기준표, 좋은 기준 빵 선반·옷장·지구본 / 나쁜 기준 안락의자)로 다시 보고, 떨어진 것을 다시 그렸다.
 반영 조건은 둘 다: Argon 과반 통과 <i>그리고</i> object-gate 현재 프로필 PASS. 결과: <b class="ok">{len(okids)}종 통과·반영</b>, <b class="no">{len(held)}종 보류</b>({", ".join(KO[k] for k in held)}). object-gate 는 보정된 프로필이 아직 없어(현재 1db03a95 도 rejected) 정식 영수증이 불가능하다. REFER 3종은 사람 확인 대기 — 아래 회색 글씨는 현재 프로필 잠정 판정.</p>
+<h2>3판 (감독 결정 반영)</h2>
+<section><h3>새 기물 <code>ship bunk 2w</code> (2칸 폭 선원 침상) <b class="no">보류 — 사람 확인 대기</b> <span class="v ok">Argon 3/3 (2라운드)</span> <span class="g">object-gate 1db03a95 REFER · 독립 눈 3/12 「정면 입면」 · 화풍 ok</span></h3>
+<div class="row">{col("후보", Image.open(os.path.join(W, 'rv', 'ship_bunk_2w_candidate.png')).convert('RGBA'), 3)}</div>
+<p class="why">기존 16×48 침상은 그대로 둔다. REFER 는 사람 검토 화면(object-gate serve-holds)에서 허용되기 전까지 굽지 않는다 — 그래서 조각 등록·배 선실 예제 교체도 넣지 않았다(소스 diff 는 rv/ship_bunk_2w_candidate.diff).</p></section>
+<section><h3>옷감·초 진열장 마지막 시도 <b class="no">둘 다 Argon 0/3 → 중단</b></h3>
+<div class="row"><div class="c"><p>나선 보이는 천 두루마리 끝 · 상자 속 안 켠 초(심지 점)</p><img src="{uri(Image.open(os.path.join(W, 'rv', 'c10.png')).convert('RGBA').crop((0, 218, 262, 436)), 2)}"></div></div>
+<p class="why">천: 「정면 원판이 칸을 꽉 채운 색 원반」. 초: 「점 찍힌 체크무늬 와플」. 시트는 #3087 그림 그대로.</p></section>
 <h2>보류 {len(held)}종</h2>{"".join(item(k) for k in held)}
 <h2>통과·반영 {len(okids)}종</h2>{"".join(item(k) for k in okids)}'''
 open(OUT, 'w', encoding='utf-8').write(page); print(OUT, len(held), len(okids))

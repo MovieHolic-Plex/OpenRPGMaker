@@ -1,0 +1,3 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"P1","view34":"PASS","quality":"FAIL","reason":"The outer wood frame has a 4px lit top plane, but both mattresses split vertically into a full-height 11x8px grey block with a sticker-like white rectangle on the left and a flat banded block on the right instead of a pillow resting on bedding, and the upper porthole reads as a blurry 6x5 yellow-blue blob."}

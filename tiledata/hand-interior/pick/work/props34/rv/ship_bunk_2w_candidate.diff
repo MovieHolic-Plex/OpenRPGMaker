@@ -1,0 +1,94 @@
+diff --git a/scripts/content/interior-plus/pieces/ship.py b/scripts/content/interior-plus/pieces/ship.py
+index d776d8bb43..d2c1fe1f02 100644
+--- a/scripts/content/interior-plus/pieces/ship.py
++++ b/scripts/content/interior-plus/pieces/ship.py
+@@ -559,3 +559,89 @@ def ship_bunk(c):
+             c.p(x, y, K(m, k))
+     c.hl(1, 14, 43, K(m, 1))
+     c.outline()
++
++
++@REG.piece('ship bunk 2w', '선원 2단 침상(넓은)', 'ship', 'wall', 2, 1, 32, 'tall_furniture',
++           '벽에 붙인 넓은 나무 2단 침상 — 칸마다 위에서 보이는 매트, 머리맡 베개, 발치 담요, 앞 난간. 한쪽 끝에 짧은 사다리, 뒤는 선체 판벽.',
++           TAGS + ['선원 선실', '침대'],
++           '선원 선실 북쪽 벽 앞 첫 바닥 줄에 1~2개 나란히.', ['hammock', 'sea chest'], use=('sleep',))
++def ship_bunk_2w(c):
++    m = 'dwood'
++    c.shadow(1, 44, 31, 47)
++    X0, X1 = 3, 28                                   # 칸 안(26칸) — 양 끝 기둥 2칸씩
++
++    # 천판(윗면 4줄, 위에서 받는 빛) + 앞면 2줄
++    c.rect(1, 2, 30, 5, K('wood', 6)); c.hl(1, 30, 2, K('wood', 5)); c.vl(30, 2, 5, K('wood', 5)); c.hl(1, 29, 5, K('wood', 7))
++    c.hl(1, 30, 6, K(m, 4)); c.hl(1, 30, 7, K(m, 3))
++
++    def hull(y0, y1):
++        """칸 뒤 선체 판벽: 가로 널 두 줄마다 이음, 널 끝 이음은 어긋나게, 맨 윗줄은 위 판 그늘."""
++        for y in range(y0, y1 + 1):
++            r = y - y0
++            c.hl(X0, X1, y, K(m, 1 if r == 0 or r % 2 == 0 else 3))
++            if r % 2:
++                for bx in ((7, 19) if (r // 2) % 2 else (13, 25)): c.p(bx, y, K(m, 2))
++            if r and r % 2 == 0:
++                c.hl(X0, X1, y, K(m, 2))
++        c.hl(X0, X1, y0, K(m, 0))
++
++    def pillow(x, y):
++        """베개(머리맡, 위에서 본 6×4): 가운데가 도톰한 크림색 — 왼쪽 위 한 점만 가장 밝고, 가장자리로 갈수록 한 단씩 어둡다."""
++        rows = ((None, 6, 6, 6, 5, None), (6, 6, 6, 6, 5, 5), (6, 6, 6, 5, 5, 4), (None, 5, 5, 5, 4, None))
++        for j, row in enumerate(rows):
++            for i, k in enumerate(row):
++                if k is not None: c.p(x + i, y + j, K('linen', k))
++        c.p(x + 6, y + 1, K('linen', 2)); c.p(x + 6, y + 2, K('linen', 2)); c.hl(x + 1, x + 4, y + 4, K('linen', 2))   # 시트에 진 그늘
++
++    def berth(y0, bl, rumple, porthole=False):
++        """침상 한 칸(18줄): 판벽 5줄 → 매트 윗면 7줄(위에서 본 판, 뒤 밝고 앞으로 한 단씩) → 앞 모서리
++        → 앞 난간(윗면 1 + 앞면 2) → 어두운 아래 2줄."""
++        hull(y0, y0 + 4)
++        if porthole:
++            for j, row in enumerate(("..ooo..", ".oBBbo.", "oBwGgbo", "oBgggbo", ".obbbo.")):
++                for i, ch in enumerate(row):
++                    if ch != '.':
++                        c.p(15 + i, y0 + j, {'o': K('brass', 1), 'B': K('brass', 5), 'b': K('brass', 3), 'G': K('glass', 6),
++                                              'w': K('glass', 5), 'g': K('glass', 3)}[ch])
++        for j, k in enumerate((4, 4, 4, 3, 3, 3, 3)):              # 시트 윗면
++            c.hl(X0, X1, y0 + 5 + j, K('linen', k))
++        c.hl(X0, X1, y0 + 12, K('linen', 2))                       # 매트 앞 모서리(두께)
++        pillow(X0 + 1, y0 + 6)
++        # 담요: 몸 쪽 반(오른쪽)을 덮고, 앞 모서리로 접혀 내려온다. 위 끝은 시트를 한 번 접어 덮은 밝은 띠.
++        bx = X0 + 10
++        for j, k in enumerate((4, 5, 5, 4, 4, 3, 3)):              # 담요 윗면: 뒤가 밝고 앞으로 한 단씩
++            c.hl(bx + (1 if j < 2 else 0), X1, y0 + 5 + j, K(bl, k))
++        c.p(bx + 1, y0 + 5, K(bl, 5)); c.vl(bx, y0 + 7, y0 + 11, K(bl, 6))       # 접어 젖힌 위 끝(가장자리 빛 한 줄)
++        c.p(bx, y0 + 6, K('linen', 4)); c.p(bx, y0 + 5, K('linen', 4))
++        c.vl(X1, y0 + 5, y0 + 11, K(bl, 2))                        # 발치 끝 그늘
++        if rumple:
++            for x, y in ((bx + 5, 7), (bx + 6, 8), (bx + 12, 7), (bx + 13, 8)): c.p(x, y0 + y, K(bl, 6))
++            for x, y in ((bx + 6, 9), (bx + 7, 9), (bx + 13, 9), (bx + 14, 10)): c.p(x, y0 + y, K(bl, 2))
++        else:
++            c.hl(bx + 3, X1 - 2, y0 + 9, K(bl, 2)); c.hl(bx + 3, X1 - 2, y0 + 8, K(bl, 5))   # 반듯이 갠 접힘(빛 위·그늘 아래)
++        c.hl(bx, X1, y0 + 12, K(bl, 2)); c.p(X1, y0 + 12, K(bl, 1))   # 앞 모서리로 접혀 내려온 단
++        # 앞 난간(lee-rail)
++        c.hl(X0, X1, y0 + 13, K('wood', 6)); c.p(X0, y0 + 13, K('wood', 7))
++        for x in range(X0, X1 + 1):
++            c.p(x, y0 + 14, K('wood', 4 - (1 if hnoise(x, y0, 7) > .75 else 0)))
++            c.p(x, y0 + 15, K('wood', 3))
++        c.hl(X0, X1, y0 + 16, K(m, 2)); c.hl(X0, X1, y0 + 17, K(m, 1))
++
++    berth(8, 'stone', False)
++    berth(26, 'blue', True)
++    # 양 끝 기둥: 천판 밑에서 바닥까지 통으로, 왼쪽 밝은 결·오른쪽 그늘
++    for y in range(6, 44):
++        g = 1 if hnoise(1, y // 3, 3) > .72 else 0
++        c.p(1, y, K('wood', 5 - g)); c.p(2, y, K('wood', 4 - g))
++        c.p(29, y, K('wood', 4 - g)); c.p(30, y, K('wood', 3))
++    for y0 in (8, 26):
++        c.p(2, y0 + 13, K('wood', 6)); c.p(29, y0 + 13, K('wood', 5))
++    # 발치 쪽 짧은 사다리(아래 칸 앞에 기대어 위 칸 난간까지)
++    for y in range(21, 44):
++        c.p(23, y, K('wood', 5)); c.p(24, y, K('wood', 3)); c.p(27, y, K('wood', 5)); c.p(28, y, K('wood', 3))
++    for y in (25, 30, 35, 40):
++        c.hl(25, 26, y, K('wood', 6)); c.hl(25, 26, y + 1, K('wood', 3))
++    c.p(23, 21, K('wood', 6)); c.p(27, 21, K('wood', 6))
++    c.hl(3, 28, 43, K(m, 2))
++    # 바깥 윤곽: 짙은 나무(검정 아님)
++    c.vl(0, 2, 43, K(m, 1)); c.vl(31, 2, 43, K(m, 0)); c.hl(1, 30, 1, K(m, 1)); c.hl(1, 30, 44, K(m, 0))
