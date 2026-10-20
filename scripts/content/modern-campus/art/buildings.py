@@ -543,15 +543,16 @@ for w in ('kr', 'gl', 'br', 'cr'):
 #   매트 위 테 = b 줄 y10 · 아래 테 = f 줄 y2 · 왼 테 = L 칸 x9 · 오른 테 = R 칸 x9. 그 바깥(파라펫 안쪽까지)은 자갈.
 # 덩이는 칸 안에 가둬(칸 경계를 넘지 않는다) 어느 변형끼리 붙여도 이음이 없다. 잎 점·자갈 결은 16 주기 공용.
 GREEN_VARIANTS = 3
-SEDUM = (('ki', 2, 3, 4, 5), ('shiba', 1, 2, 3, 4), ('ki', 2, 3, 4, 5), ('kawara', 2, 3, 4, 5), ('ki', 2, 3, 4, 5), ('shiba', 1, 2, 3, 4))
+# r3(감독 VQA 2026-10-20): 화단이 평면도처럼 읽히고 채도가 캠퍼스보다 높았다 → 짙은 shiba 단을 빼고 ki(채도 낮음) 위주, 붉은 세덤은 밝은 단.
+SEDUM = (('ki', 2, 3, 4, 5), ('ki', 3, 4, 5, 6), ('ki', 2, 3, 4, 5), ('kawara', 3, 4, 5, 6), ('ki', 2, 3, 4, 5), ('shiba', 2, 3, 3, 4))
 
 
 def _mat_box(row, col):
     """칸 안 매트 영역 (x0, y0, x1, y1) — 끝 포함 아님. 테두리는 이 상자의 가장자리 1px."""
     x0 = 9 if col == 'L' else 0
     x1 = 10 if col == 'R' else 16
-    y0 = 10 if row == 'b' else 0
-    y1 = 3 if row == 'f' else 16
+    y0 = 6 if row == 'b' else 0       # r3: 화단을 뒤 파라펫에 붙인다(잎이 파라펫 안쪽 면 위로 2–3px 넘어온다)
+    y1 = 3 if row == 'f' else 16      # f 줄: 매트 y0..1 · 화분 테 윗면 y2 · 앞면 y3..5
     return x0, y0, x1, y1
 
 
@@ -569,7 +570,7 @@ def _sedum_cell(c, var, row, col, x0, y0, x1, y1):
     바탕 = ki 3 + 공용 잎 점(16 주기), 덩이 = 변형별 고정 배치(칸 안에 가둔다)."""
     ix0 = x0 + 1 if col == 'L' else x0
     ix1 = x1 - 1 if col == 'R' else x1
-    iy0 = y0 + 1 if row == 'b' else y0
+    iy0 = y0
     iy1 = y1 - 1 if row == 'f' else y1
     for y in range(iy0, iy1):
         for x in range(ix0, ix1):
@@ -624,7 +625,7 @@ def flat_green(c, row, col, wall='kr', var=0):
             if (5, y) not in keep and not (row == 'b' and y < 6): c.P(5, y, 'hodo', 2)
     _sedum_cell(c, var, row, col, x0, y0, x1, y1)
     if col == 'W':                                     # 점검 보도판: 6px 판 두 줄, 8px 마다 가로 이음
-        ys0 = y0 + 1 if row == 'b' else y0
+        ys0 = y0
         ys1 = y1 - 1 if row == 'f' else y1
         for y in range(ys0, ys1):
             for x in range(2, 14):
@@ -633,16 +634,36 @@ def flat_green(c, row, col, wall='kr', var=0):
                 c.P(x, y, 'conc', t)
             c.P(1, y, 'conc', 2); c.P(14, y, 'conc', 1)
     # 알루미늄 테: 위·왼 밝음, 아래·오른 어두움 (칸 경계에 걸친 쪽은 그리지 않는다 = 이웃 칸으로 이어짐)
-    if row == 'b':
-        for x in range(x0, x1): c.P(x, y0, 'shiro', 3)
-    if row == 'f':
-        for x in range(x0, x1): c.P(x, y1 - 1, 'conc', 2)
+    if row == 'b' and col != 'W':                      # 뒤 파라펫 그늘이 화단 뒤쪽 두 줄에 진다(한두 단 어둡게)
+        for y, k in ((y0, 2), (y0 + 1, 1)):
+            for x in range(x0 + (1 if col == 'L' else 0), x1 - (1 if col == 'R' else 0)):
+                g = c.get(x, y)
+                if g and g[0] in ('ki', 'shiba', 'kawara'): c.P(x, y, g[0], max(0, g[1] - k))
     if col == 'L':
-        for y in range(y0, y1): c.P(x0, y, 'shiro', 3)
+        for y in range(y0, y1 - 1 if row == 'f' else y1): c.P(x0, y, 'shiro', 3)
     if col == 'R':
-        for y in range(y0, y1): c.P(x1 - 1, y, 'conc', 2)
-    if row == 'f' and col == 'L': c.P(x0, y1 - 1, 'conc', 3)
-    if row == 'b' and col == 'R': c.P(x1 - 1, y0, 'shiro', 2)
+        for y in range(y0, y1 - 1 if row == 'f' else y1): c.P(x1 - 1, y, 'conc', 2)
+    if row == 'b':                                     # 잎이 뒤 파라펫 안쪽 면(y4·5) 위로 넘어온다: 열마다 2–3px, 군데군데 빈다
+        for x in range(x0 + 1 if col == 'L' else x0, x1 - 1 if col == 'R' else x1):
+            if col == 'W' and 2 <= x <= 13: continue
+            k = rnd(x, 0, 91 + var)
+            if k < 0.12: continue
+            hgt = 3 if k > 0.62 else 2
+            mat = 'ki'
+            for j in range(hgt):
+                y = y0 - 1 - j
+                c.P(x, y, mat, (4 if mat == 'ki' else 5) if j == hgt - 1 else 3)
+            if rnd(x, 2, 93 + var) < 0.35: c.P(x, y0 - hgt, mat, 5 if mat == 'ki' else 6)
+    if row == 'f':                                     # 화분 테 앞면(3px, 남향): 윗면 밝은 선 + 앞면 + 아래 접촉 그늘
+        for x in range(x0, x1):
+            c.P(x, y1 - 1, 'conc', 6)
+            c.P(x, y1, 'conc', 4); c.P(x, y1 + 1, 'conc', 3); c.P(x, y1 + 2, 'conc', 2)
+            if (x, y1 + 3) not in keep: c.P(x, y1 + 3, 'hodo', 1)
+            if (x + 1) % 8 == 0 and x0 < x < x1 - 1: c.P(x, y1, 'conc', 3); c.P(x, y1 + 1, 'conc', 2)   # 테 이음
+        if col == 'L':
+            for y in range(y1 - 1, y1 + 3): c.P(x0, y, 'conc', 5 if y >= y1 else 6)
+        if col == 'R':
+            for y in range(y1 - 1, y1 + 3): c.P(x1 - 1, y, 'conc', 1 if y >= y1 else 4)
 
 
 for w in ('kr', 'gl', 'br', 'cr'):
