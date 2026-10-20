@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.283.2 — 2026-10-20
+
+### 수정
+
+- **monster** — 새끼용·그리핀·불새·삼두룡·와이번·코카트리스·동굴 박쥐·가시 거미·풀잎 여우·불꽃 도롱뇽 전투 도트 다시 그리기 + (0,2) 스킬 칸 (16차) (#3051) (`1f72df9`)
+- **jp-inaka** — R4 VQA layout fixes - wire height, watchtower/pole overlap, terraces, stream, forest stagger (#3049) (`a58b645`)
+
 ## 0.283.1 — 2026-10-20
 
 ### 수정
