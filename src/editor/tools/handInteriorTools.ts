@@ -567,6 +567,14 @@ function shiftIncomingTransfers(draft: Project, mapId: string, dx: number, dy: n
   return moved;
 }
 
+/** 공공시설 program 별칭 → modern_city·jp_city 공통 표준 구성. */
+const PUBLIC_PROGRAM_ALIASES: Readonly<Record<string, string>> = {
+  library: "central-library", "public-library": "central-library", "city-library": "central-library", 도서관: "central-library", 시립도서관: "central-library",
+  "city-hall": "city-hall", cityhall: "city-hall", "town-hall": "city-hall", 시청: "city-hall", 구청: "city-hall", 市役所: "city-hall",
+  bank: "bank-branch", "bank-branch": "bank-branch", 은행: "bank-branch", 銀行: "bank-branch",
+  clinic: "private-clinic", "private-clinic": "private-clinic", 의원: "private-clinic", 클리닉: "private-clinic", 동네의원: "private-clinic",
+};
+
 export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
   name: "build_hand_interior_room",
   mode: "write",
@@ -575,7 +583,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     + "plan = 한 줄씩 문자열 배열, '#' = 막힌 칸(외벽·칸막이·건물 밖), 그 밖 문자('.') = 실내. 벽면(막힌 칸 바로 아래 두 줄)·천장 띠·바닥·그림자는 자동이다. "
     + "방을 네모 하나로만 그리지 않는다 — 바깥 모양을 ㄱ·ㄷ·T 자로 꺾거나 알코브(벽에서 들어간 자리)·칸막이로 공간을 나눈다. 꺾인 모서리 벽·천장도 자동이다(예: [\"################\",\"#......#########\",\"#......#########\",\"#..............#\",\"#..............#\",\"#######..#######\"] = ㄱ자 방). "
     + "★ 건물·방이 둘 이상인 실내(집·가게+뒤채·여관·대장간·저택·일본 집·편의점 등)는 layout 하나만 준다: layout:{program:\"house-1f\"} 또는 layout:{rooms:[{kind:\"genkan\"},{kind:\"hall\"},{kind:\"ldk\"},{kind:\"toilet\"},{kind:\"bath\"}]} — 도구가 방 크기·배치(칸막이·문·트인 곳·출구, ㄱ·ㄷ자 바깥 모양)를 짜고 방마다 제작자 예제 방의 가구 한 벌을 심는다. "
-    + "박물관·미술관 = program:\"museum\", 배 안 위 갑판(선장실·조타실·배 주방·선원 숙소) = \"ship\", 아래 갑판(포 갑판·화물칸·배 감방) = \"ship_hold\", 투기장·콜로세움 = \"arena\"(방 종류 museum_*·ship_*·arena_*·gladiator_cell). 호러·고딕 미술관은 build_gothic_place. "
+    + "공공시설은 modern_city·jp_city 모두 program 하나로 짓는다: 도서관 = program:\"library\", 시청·구청 민원실 = \"city-hall\", 은행 지점 = \"bank\", 동네 의원·클리닉 = \"clinic\" (보고 있는 맵 칩셋을 tileset 에 그대로). 일본 집 2층 = \"house-2f\", 일본 학교 = \"school-1f\"·\"school-2f\"·\"school-3f\" — 2층·3층 program 은 남쪽 외부 출구를 뚫지 않고 계단으로만 잇는다. 박물관·미술관 = program:\"museum\", 배 안 위 갑판(선장실·조타실·배 주방·선원 숙소) = \"ship\", 아래 갑판(포 갑판·화물칸·배 감방) = \"ship_hold\", 투기장·콜로세움 = \"arena\"(방 종류 museum_*·ship_*·arena_*·gladiator_cell). 호러·고딕 미술관은 build_gothic_place. "
     + "program·방 종류(roomKinds) 목록은 list_hand_interior_parts({tileset}) 인자 없이. 보고 있는 맵 크기에 맞추지 않는다 — 크기는 방 구성이 정한다. 결과 data.layout.picture 로 배치를 보고, 다른 배치는 layout.variant 1·2, 다른 견본은 layout.seed. "
     + `modern_city 공간 규모 규격(벽 포함 가로×세로 — program 은 이 크기로 서고, rooms 를 직접 짤 때도 이 규모를 따른다. 대형마트를 30×20 으로 줄이지 않는다): ${venueScaleBrief()}. `
     + "가구를 더하거나 빼려면 data.rebuild(rooms·connect·exit·objects…)를 고쳐 같은 mapId·replace:true 로 넘긴다. "
@@ -600,9 +608,9 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       name: { type: "string", description: "맵 이름" },
       replace: { type: "boolean", description: "같은 칩셋의 기존 맵을 통째로 다시 짓기(기본 false)" },
       plan: { type: "array", items: { type: "string" }, description: "평면 — 줄마다 같은 길이, '#' 막힘 · '.' 실내. 방이 여럿이면 plan 대신 rooms 를 준다." },
-      layout: { type: "object", description: "건물·여러 방 실내는 이것을 쓴다 — 방 구성만 주면 도구가 방 배치(칸막이·문·출구)를 짜고 방마다 제작자 예제 방의 가구 한 벌을 심는다. program = 예제 구성 id(list_hand_interior_parts 인자 없이 → data.programs: house-1f·bakery·inn…) 또는 rooms = 방 종류 목록(roomKinds: genkan·hall·ldk·kitchen·toilet·bath·washitsu·bedroom… / bakery_shop·forge·tavern·inn_room…, w·h 생략하면 견본 크기). plan·rooms 와 같이 주지 않는다.",
+      layout: { type: "object", description: "건물·여러 방 실내는 이것을 쓴다 — 방 구성만 주면 도구가 방 배치(칸막이·문·출구)를 짜고 방마다 제작자 예제 방의 가구 한 벌을 심는다. program = 예제 구성 id(list_hand_interior_parts 인자 없이 → data.programs: house-1f·bakery·inn…, 공공시설 library·city-hall·bank·clinic 은 modern_city·jp_city 공통) 또는 rooms = 방 종류 목록(roomKinds: genkan·hall·ldk·kitchen·toilet·bath·washitsu·bedroom… / bakery_shop·forge·tavern·inn_room…, w·h 생략하면 견본 크기). plan·rooms 와 같이 주지 않는다.",
         properties: {
-          program: { type: "string" },
+          program: { type: "string", description: "예제 구성 id — 공공시설: library(도서관)·city-hall(시청)·bank(은행)·clinic(의원) / 일본 집·학교 층: house-1f·house-2f·school-1f·school-2f·school-3f" },
           rooms: { type: "array", items: { type: "object", properties: { id: { type: "string" }, kind: { type: "string" }, w: { type: "integer", minimum: 2 }, h: { type: "integer", minimum: 4, description: "세로(벽면 두 줄 포함) — 방은 5 이상, 복도·화장실은 4" },
             floor: { type: "string", enum: FLOOR_IDS }, wall: { type: "string", enum: WALL_IDS } }, required: ["kind"], additionalProperties: false } },
           entrance: { type: "string", description: "출구 방 id 또는 종류(생략 시 현관·입구·복도·가게 순)" },
@@ -705,6 +713,14 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
           const { plan: _p, zones: _z, objects: _o, tables: _t, goods: _g, lines: _l, daises: _d, start: _s, exits: _e, ...rest } = args as Record<string, unknown>;
           args = { ...rest, layout: { program: matchedProgram } } as typeof args;
         }
+      }
+      // 공공시설 짧은 이름(library·city-hall·bank·clinic, 한국어 이름)은 두 칩셋 모두 같은 표준 구성으로 맞춘다 — 2026-10-19 RCA r2: jp_city 에서 "library" 가
+      // 「방 구성이 없다」로 거부돼 조수가 수백 줄 plan 을 손으로 짰다.
+      if (args.layout && typeof args.layout === "object") {
+        const lbag = args.layout as Record<string, unknown>;
+        const raw = typeof lbag.program === "string" ? lbag.program.trim() : "";
+        const canon = raw && !programKinds(tilesetId, raw) ? PUBLIC_PROGRAM_ALIASES[raw.toLowerCase()] : undefined;
+        if (canon && programKinds(tilesetId, canon)) args = { ...args, layout: { ...lbag, program: canon } };
       }
     }
     let picked: { c: LayoutCandidate; variant: number; variants: number; furnish: boolean } | undefined;

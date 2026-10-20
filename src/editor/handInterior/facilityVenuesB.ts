@@ -422,7 +422,7 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
           ["m:elevator", 1, 2], ["m:elevator", 4, 2], ["subway-vending-machine", 9, 2], ["pub-atm", 13, 2], ["pub-atm", 15, 2],
           ["m:reception", 2, 5], ["dept-directory-kiosk", 7, 5], ["pub-ticket-dispenser", 11, 5], ["dept-directory-kiosk", 15, 5],
           ["hosp-wait-row-n", 2, 8], ["hosp-wait-row-n", 7, 8], ["m:wait-bench", 12, 8],
-          ["m:wait-bench", 2, 10], ["m:coffee-table", 7, 10], ["m:wait-bench", 11, 10],
+          ["m:wait-bench", 2, 10], ["m:coffee-table", 7, 10], ["m:wait-bench", 13, 10],
         ],
         pl: [16, 10],
       }),
