@@ -24,9 +24,9 @@ import { OBJECT_GATE_KINDS, OBJECT_GATE_STYLE_KINDS, defaultObjectGateStyleKind,
 import { GATE_DATA, calibratedFinalProfiles, listFinals, listQueueBatches, readFinal, readFinalProfiles, readPng, readReceipt, styleRefs, writeFinal, writeFinalProfile, writeHeldImage } from './store';
 import { receiptCells, sheetCells } from './cells';
 
-export const FINAL_RULES_VERSION = 10;
+export const FINAL_RULES_VERSION = 11;
 export const FINAL_JUDGE = { provider: 'claude-cli' as const, model: 'claude-opus-5-5', effort: 'medium' };
-export const FINAL_BATCH = 6;
+export const FINAL_BATCH = 3; // v11: 한 호출 3장(v1~v10 은 6장) — 한 그림에 주의를 더 준다
 /** 표 수. 각 표는 다른 묶음 섞기·다른 기준 그림으로 따로 부른다. 과반(3표 중 2표)이 판정이다 — 두 표가 같으면 세 번째는 부르지 않는다(규칙 v7, 감독 지시 2026-10-21; v3~v6 은 만장일치). */
 export const FINAL_VOTES = 3;
 const MAX_SIDE = 640; // 확대 그림의 긴 변 상한(8배가 넘치면 정수 배율을 낮춘다)
