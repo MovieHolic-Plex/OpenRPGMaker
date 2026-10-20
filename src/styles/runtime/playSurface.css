@@ -391,7 +391,11 @@
   background: transparent; color: #334940; text-shadow: none;
 }
 .player-layout.system-shell .rm-title-screen[data-monster-style="emerald"] .rm-title-menu[data-menu-style="plain"] .rm-title-menu-button.selected::before {
-  content: '▶'; left: 2px; color: #334940; font-size: 18px;
+  /* 기본 plain 커서(4px 마름모: rotate 45°·노란 바탕·빛)를 물려받아 ▶ 글자가 비틀린 얼룩으로 「모」를 덮었다(2026-10-20 아스트라 검수).
+     대화 선택지와 같은 테두리 삼각형으로 바꾸고 물려받은 회전·바탕·빛을 지운다. */
+  content: ""; left: 4px; top: 50%; width: 0; height: 0; margin: -6px 0 0;
+  border: 6px solid transparent; border-left: 8px solid #334940; border-right: 0;
+  transform: none; background: none; box-shadow: none; font-size: 0; line-height: 0;
 }
 
 /* Authored opening typography uses logical stage pixels, shared with database preview. */
