@@ -30,7 +30,6 @@ export const FINAL_BATCH = 6;
 /** 표 수. 각 표는 다른 묶음 섞기로 따로 부른다. 모든 표가 pass 일 때만 pass — 앞 표가 fail 이면 뒤 표는 부르지 않는다(규칙 v3: 한 번만 보면 같은 그림이 판마다 뒤집혔다). */
 export const FINAL_VOTES = 3;
 const MAX_SIDE = 640; // 확대 그림의 긴 변 상한(8배가 넘치면 정수 배율을 낮춘다)
-const MIN_GOOD_RATE = 0.5; // 모두 떨어뜨리는 판정자를 막는 하한(정상 통과율). 위반은 하나도 놓치면 안 된다.
 
 const STANDING = Object.entries(OBJECT_GATE_KINDS).filter(([, v]) => !v.exempt).map(([k, v]) => `- ${k}: ${v.meaning}. Minimum top rows ${v.minTopRows ?? '-'}${v.minOpeningRows ? `, opening interior rows ${v.minOpeningRows}` : ''}${v.minFrontRows ? `, front face rows ${v.minFrontRows}` : ''}.`).join('\n');
 const EXEMPT = Object.entries(OBJECT_GATE_KINDS).filter(([, v]) => v.exempt).map(([k, v]) => `- ${k}: ${v.meaning}.`).join('\n');
@@ -138,7 +137,7 @@ export function referenceBoard(kinds: ObjectGateStyleKind[]): Buffer {
 const fileHash = (p: string) => (existsSync(p) ? createHash('sha256').update(readFileSync(p)).digest('hex').slice(0, 16) : null);
 export function finalProfile() {
   const manifest = resolve(GATE_DATA, 'style-refs', 'manifest.json');
-  return { version: FINAL_RULES_VERSION, judge: FINAL_JUDGE, system: FINAL_SYSTEM, batch: FINAL_BATCH, votes: FINAL_VOTES, maxSide: MAX_SIDE, minGoodRate: MIN_GOOD_RATE,
+  return { version: FINAL_RULES_VERSION, judge: FINAL_JUDGE, system: FINAL_SYSTEM, batch: FINAL_BATCH, votes: FINAL_VOTES, maxSide: MAX_SIDE,
     guide: fileHash(resolve(GATE_DATA, 'view34-guide.png')), pairs: fileHash(resolve(GATE_DATA, 'view34-pairs.png')), styleRefs: fileHash(manifest), board: 'v1-1x+grid' };
 }
 const stable = (v: unknown): string => Array.isArray(v) ? `[${v.map(stable).join(',')}]` : v && typeof v === 'object' ? `{${Object.keys(v).sort().map(k => `${JSON.stringify(k)}:${stable((v as Record<string, unknown>)[k])}`).join(',')}}` : JSON.stringify(v);
@@ -382,10 +381,12 @@ if (stage === 'final-calibrate') {
   console.log(lines.sort().join('\n'));
   const goodRate = good ? (good - falseFail.length) / good : 0;
   const full = !limit && !onlySets;
-  const ok = missed.length === 0 && errors.length === 0 && goodRate >= MIN_GOOD_RATE;
+  // 효력 조건 = 사용자 기준(2026-10-21): 확실 위반을 하나도 놓치지 않는다. 정상 통과율은 보고만 한다(v1~v4 에 두었던 자체 하한 50% 는 사용자 기준이 아니라 뺐다 —
+  // v4 는 위반 217/217 을 잡았고 정상 통과는 라벨 반쪽 45.8%·전체 7.5% 였다. 같은 지시문의 답 캐시로 다시 셌다).
+  const ok = missed.length === 0 && errors.length === 0;
   const record: ObjectGateFinalProfileRecord = { schema: 'oprn-object-gate-final-profile/1', profileHash: hash, status: ok && full ? 'calibrated' : 'rejected', calibratedAt: new Date().toISOString(), judge: FINAL_JUDGE,
     bad: { total: bad, caught: bad - missed.length, missed }, good: { total: good, passed: good - falseFail.length, falseFail }, sets, tiers, errors,
-    note: `위반 = 등급 A 3/4 위반(적대 시험 adv-* 포함) + 강한 라벨 화풍 얕음, 전체 판정으로 센다. 정상 = 라벨 반쪽(3/4 라벨은 3/4·종류, 화풍 라벨은 화풍)으로 센다, 하한 ${MIN_GOOD_RATE}. 전체 판정 정상 통과 ${overallPass}/${overallGood}. ${full ? '전체 표본' : '부분 표본 — 효력 없음'}` };
+    note: `위반 = 등급 A 3/4 위반(적대 시험 adv-* 포함) + 강한 라벨 화풍 얕음, 전체 판정으로 센다. 정상 = 라벨 반쪽(3/4 라벨은 3/4·종류, 화풍 라벨은 화풍)으로 센다(보고만, 하한 없음). 전체 판정 정상 통과 ${overallPass}/${overallGood}. ${full ? '전체 표본' : '부분 표본 — 효력 없음'}` };
   if (full) writeFinalProfile(record);
   writeFileSync(resolve(root, `final-run-${hash}.json`), `${JSON.stringify({ ...record, lines: lines.sort() }, null, 1)}\n`);
   console.log(`\n== 최종 보정 ${hash}: ${record.status}`);
