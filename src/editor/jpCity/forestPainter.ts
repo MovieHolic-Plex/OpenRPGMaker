@@ -7,6 +7,7 @@
 import type { AutotileGroup, GameMap } from "@/project/types";
 import { autotileVariantForMask } from "@/project/defaults/autotileEngine";
 import { composeTreesAll } from "@/project/defaults/treeComposer";
+import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
 
 export const JP_FOREST_BROADLEAF = 1;   // 느티나무·잡목 활엽
 export const JP_FOREST_BAMBOO = 2;
@@ -180,11 +181,13 @@ export function paintJpForestR4Floor(target: JpForestTarget, tileset: JpForestTi
 }
 
 /** r4: 숲 바닥이 칠린 맵 전체에 나무를 세운다(편집기 붓·조수 지형 도구와 같은 composer). 바뀐 칸 수. */
-export function composeJpForestR4(map: GameMap, tileset: JpForestTilesetView, seed = 0): number {
+export function composeJpForestR4(map: GameMap, tileset: JpForestTilesetView, seed = 0, grounding = true): number {
   let n = 0;
   for (const [, k] of R4_CODES) {
     const g = r4Group(tileset, k);
-    if (g) n += composeTreesAll(map, g, seed);
+    if (!g) continue;
+    const cp = g.composer;
+    n += composeTreesAll(map, (grounding || !cp?.ground ? g : { ...g, composer: { ...cp, ground: undefined } }) as unknown as AutotileGroup, seed);
   }
   return n;
 }
@@ -194,6 +197,8 @@ export function composeJpForestR4(map: GameMap, tileset: JpForestTilesetView, se
  * 4층은 비어 있는 칸에만 쓴다. 3층은 마스크 안 칸에만 쓴다(마스크는 부르는 쪽이 이미 점유 칸을 뺐다).
  */
 export function paintJpForest(target: JpForestTarget, tileset: JpForestTilesetView, kind: Uint8Array, seed = 0): JpForestReport {
+  // r4 만 구워진 칩셋(다른 종 오토타일·숲 팩 없음): 모든 종을 활엽 composer 숲으로 — 안 그러면 다른 종 칸이 빈 땅으로 남는다
+  if (hasJpForestR4(tileset) && !hasJpForestR3(tileset) && !hasJpForestPack(tileset)) for (let i = 0; i < kind.length; i++) if (kind[i]) kind[i] = JP_FOREST_BROADLEAF;
   const floor = hasJpForestR4(tileset) ? paintJpForestR4Floor(target, tileset, kind) : 0;
   if (floor > 0 && !kind.some((k) => k > 0)) return { canopy: floor, sky: 0, heads: 0, overlays: 0, bands: 0 };
   if (hasJpForestR3(tileset)) {
@@ -350,4 +355,84 @@ function keyCode(k: string): number {
   let s = 0;
   for (let i = 0; i < k.length; i++) s += k.charCodeAt(i);
   return s;
+}
+
+// ── 조수 숲 칠하기(paint_jp_forest · 공원 숲 · 지역 숲 공용, 2026-10-21) ──────────────────────────
+/** dense = 빽빽한 숲(신사 진수의 숲·산비탈, 영역 전체) · grove = 공원 숲(덩이 숲 사이에 잔디 빈터·산책 틈을 남긴다). */
+export type JpForestType = "dense" | "grove";
+export const JP_FOREST_TYPES: readonly JpForestType[] = ["dense", "grove"];
+export interface JpForestAreaOptions {
+  readonly forestType?: JpForestType;
+  /** 나무 밑 땅 그늘(r6 접지: 숲 바닥 그늘 변형 + 숲 밖 잔디 둘레 그늘). 기본 true. */
+  readonly grounding?: boolean;
+  readonly seed?: number;
+}
+export interface JpForestAreaReport { readonly floorCells: number; readonly skipped: number; readonly changed: number; readonly forestType: JpForestType; readonly grounding: boolean }
+
+/** grove: 값 잡음(4칸 격자 보간)으로 덩이를 고르고, 3칸 미만 폭은 지운다(나무 한 그루 크기 3×4 보다 좁은 숲은 밑동이 서지 않는다). */
+function groveMask(W: number, H: number, inArea: (x: number, y: number) => boolean, seed: number): Uint8Array {
+  const g = (gx: number, gy: number): number => h01(gx, gy, 9001 + seed * 7);
+  const val = (x: number, y: number): number => {
+    const fx = x / 4, fy = y / 4, ix = Math.floor(fx), iy = Math.floor(fy), tx = fx - ix, ty = fy - iy;
+    const a = g(ix, iy) * (1 - tx) + g(ix + 1, iy) * tx, b = g(ix, iy + 1) * (1 - tx) + g(ix + 1, iy + 1) * tx;
+    return a * (1 - ty) + b * ty;
+  };
+  const m = new Uint8Array(W * H);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (inArea(x, y) && val(x, y) > 0.47) m[y * W + x] = 1;
+  // 열기(3×3 침식 → 팽창): 가는 띠·외톨이 칸을 지운다
+  const er = new Uint8Array(W * H);
+  const at = (a: Uint8Array, x: number, y: number): number => (x < 0 || y < 0 || x >= W || y >= H ? 0 : a[y * W + x]!);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    let ok = 1;
+    for (let dy = -1; dy <= 1 && ok; dy++) for (let dx = -1; dx <= 1 && ok; dx++) if (!at(m, x + dx, y + dy)) ok = 0;
+    er[y * W + x] = ok;
+  }
+  const out = new Uint8Array(W * H);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    if (!m[y * W + x]) continue;
+    let hit = 0;
+    for (let dy = -1; dy <= 1 && !hit; dy++) for (let dx = -1; dx <= 1 && !hit; dx++) if (at(er, x + dx, y + dy)) hit = 1;
+    out[y * W + x] = hit;
+  }
+  return out;
+}
+
+/**
+ * 맵의 칸 묶음(want[y*W+x]=1)에 나무 composer 숲(jp-forest4-bl)을 칠한다 — 1층 숲 바닥을 깔고 맵 전체 composer 를 다시 돌린다.
+ * 잔디·자갈잔디(composer overhangOnTiles)나 이미 숲 바닥인 칸만 숲이 된다. 2~4층에 남의 칸(집·소품·길 덧칸)이 있는 칸은 건너뛴다.
+ * 이 칩셋에 r4 composer 가 없으면 null.
+ */
+export function paintJpForestArea(map: GameMap, tileset: JpForestTilesetView, want: Uint8Array, opts: JpForestAreaOptions = {}): JpForestAreaReport | null {
+  const g0 = r4Group(tileset, "bl");
+  const floor = g0?.memberTileIds?.[0];
+  if (!g0 || floor === undefined || !g0.composer) return null;
+  const forestType: JpForestType = opts.forestType === "grove" ? "grove" : "dense";
+  const grounding = opts.grounding !== false;
+  const seed = opts.seed ?? 0;
+  const W = map.width, H = map.height;
+  const cp = g0.composer;
+  const own = new Set<number>();
+  for (const sp of cp.sprites) for (const t of sp.tiles) if (t >= 0) own.add(t);
+  for (const t of cp.ground?.apronTiles ?? []) if (t >= 0) own.add(t);
+  const floorSet = new Set(g0.memberTileIds ?? []);
+  const groundOk = new Set<number>([...(cp.overhangOnTiles ?? []), ...floorSet]);
+  const eligible = (x: number, y: number): boolean => {
+    const i = y * W + x;
+    if (!groundOk.has(layerTileAt(map, 1, i))) return false;
+    for (const L of [2, 3, 4] as const) { const t = layerTileAt(map, L, i); if (t >= 0 && !own.has(t)) return false; }
+    return true;
+  };
+  const inWant = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < W && y < H && want[y * W + x] === 1;
+  const mask = forestType === "grove" ? groveMask(W, H, inWant, seed) : want;
+  let floorCells = 0, skipped = 0;
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const i = y * W + x;
+    if (!mask[i]) continue;
+    if (!eligible(x, y)) { skipped++; continue; }
+    setLayerTileAt(map, 1, i, floor);
+    floorCells++;
+  }
+  const group = (grounding || !cp.ground ? g0 : { ...g0, composer: { ...cp, ground: undefined } }) as unknown as AutotileGroup;
+  const changed = composeTreesAll(map, group, seed);
+  return { floorCells, skipped, changed, forestType, grounding };
 }

@@ -88,6 +88,7 @@ export const COMPOSE_JP_REGION_TOOL: ToolDefinition = {
       region: { type: "string", enum: REGION_IDS, description: "지역 id(list_jp_regions)" },
       seed: { type: "integer", minimum: 0, description: "배치 씨앗 - 다른 값이면 다른 배치. 생략하면 0" },
       replace: { type: "boolean", description: "이미 칠한 맵을 지우고 다시 짓는다(이벤트는 남는다)" },
+      grounding: { type: "boolean", description: "숲 나무 밑 땅 그늘(접지). 기본 true — 끄면 나무가 떠 보인다. 숲 구획이 있는 지역(신사 경내·산길·사토야마 등)에만 의미가 있다" },
     },
     required: ["region"],
     additionalProperties: false,
@@ -119,9 +120,12 @@ export const COMPOSE_JP_REGION_TOOL: ToolDefinition = {
     target.lowerTiles.fill(blankFillTileFor(JP_CITY_ID, 0, next.tilesets[map.tilesetId]!));
     for (let i = 0; i < target.lowerTiles.length; i++) { setLayerTileAt(target, 3, i, -1); setLayerTileAt(target, 4, i, -1); clearTileStack(target, "upper", i); }
     const kits = new Map((tileset.structureKits ?? []).map((k) => [k.id, { w: k.width, h: k.height }]));
-    let plan = planJpRegionScene({ region, mapId, width: map.width, height: map.height, seed, kitSize: (id) => kits.get(id), forestAutotile: hasJpForestR3(tileset) || hasJpForestR4(tileset) });
+    // 숲 구획: r3 오토타일이 있거나, 나무 composer(r4 활엽)가 있으면 paint_forest 로 칠한다. 대숲 등산로는 r4(활엽만)로 바꾸면 대숲이 사라지므로 r3 가 없을 땐 옛 키트(대숲·삼나무)로 둔다.
+    const useForestAutotile = hasJpForestR3(tileset) || (hasJpForestR4(tileset) && region.id !== "bamboo_mountain_trail");
+    const grounding = args.grounding !== false;
+    let plan = planJpRegionScene({ region, mapId, width: map.width, height: map.height, seed, kitSize: (id) => kits.get(id), forestAutotile: useForestAutotile });
     for (let retry = 1; retry < 8 && plan.violations.length > 0; retry++) {
-      const candidate = planJpRegionScene({ region, mapId, width: map.width, height: map.height, seed: seed + retry, kitSize: (id) => kits.get(id), forestAutotile: hasJpForestR3(tileset) || hasJpForestR4(tileset) });
+      const candidate = planJpRegionScene({ region, mapId, width: map.width, height: map.height, seed: seed + retry, kitSize: (id) => kits.get(id), forestAutotile: useForestAutotile });
       if (candidate.violations.length < plan.violations.length) plan = candidate;
       if (plan.violations.length === 0) break;
     }
@@ -179,7 +183,7 @@ export const COMPOSE_JP_REGION_TOOL: ToolDefinition = {
       }
     }
     // r4 나무 composer: 숲 바닥만 칠해 두었다가 집·소품을 다 찍은 뒤 한 번에 나무를 세운다(수관이 집·길·물 위로 넘치지 않게).
-    if (forest && hasJpForestR4(next.tilesets[map.tilesetId]!)) composeJpForestR4(target, next.tilesets[map.tilesetId]!, seed);
+    if (forest && hasJpForestR4(next.tilesets[map.tilesetId]!)) composeJpForestR4(target, next.tilesets[map.tilesetId]!, seed, grounding);
     if (stamped === 0) throw new ToolError(`${region.id} 키트를 하나도 세우지 못했다 — 맵을 ${region.size[0]}×${region.size[1]} 로 키우거나 다른 seed 를 준다`, { code: "compose-failed", mapId });
     draft.maps[mapId] = next.maps[mapId]!;
     for (const [id, ts] of Object.entries(next.tilesets)) draft.tilesets[id] = ts;
