@@ -235,10 +235,10 @@ def _penthouse(c, x, y, w=28, top=16, face=18):
     """塔屋(계단실): 윗면(난간 캡) + 남쪽 면에 철문."""
     _box(c, x, y, w, top, face, 'conc', 1, 1)
     c.R(x, y, w, 2, K('conc', 3)); c.R(x, y, 2, top, K('conc', 2)); c.R(x + w - 2, y, 2, top, K('conc', 0))
-    dx = x + (w - 12) // 2
-    c.R(dx, y + top + face - 17, 12, 17, K('tekko', 0)); c.VL(dx, y + top + face - 17, 17, K('tekko', 2)); c.VL(dx + 11, y + top + face - 17, 17, K('tekko', -2))
-    c.HL(dx, y + top + face - 17, 12, K('tekko', 2)); c.P(dx + 9, y + top + face - 9, K('kii', 2))
-    c.HL(dx - 1, y + top + face - 18, 14, K('conc', -2))
+    dx = x + (w - 12) // 2; dh = min(17, face - 1)                          # 철문(낮은 塔屋이면 문도 낮게)
+    c.R(dx, y + top + face - dh, 12, dh, K('tekko', 0)); c.VL(dx, y + top + face - dh, dh, K('tekko', 2)); c.VL(dx + 11, y + top + face - dh, dh, K('tekko', -2))
+    c.HL(dx, y + top + face - dh, 12, K('tekko', 2)); c.P(dx + 9, y + top + face - dh // 2, K('kii', 2))
+    c.HL(dx - 1, y + top + face - dh - 1, 14, K('conc', -2))
 
 
 def _plant(c, x, y):
@@ -309,11 +309,15 @@ def flat_top(c, x0, x1, ytop, yb, mat='conc', items=(), rail=False, floor=None):
         ix += x0; iy += ytop
         bw, bh = BW.get(kind, 14), BH.get(kind, 15)
         pt = 16
-        lo, hi = ytop + 11, yb - 7                                           # 뒤 난간 안쪽 면(+그늘) 아래 ~ 앞 난간 위
+        lo, hi = ytop + 10, yb - 8                                           # 뒤 난간 안쪽 면(+그늘) 아래 ~ 앞 난간 앞 2줄 바닥
+        pf = 18
+        if kind == 'pent':                                                   # 塔屋은 문 앞에 바닥이 3줄 이상 남게: 윗면 16→5, 남쪽 면 18→12 순으로 줄이고 그래도 안 되면 뺀다
+            room = hi - 3 - lo
+            pt = max(5, min(16, room - 18)); pf = max(12, min(18, room - pt))
+            if pt + pf > room: continue
+            bh = pt + pf; iy = lo
         iy = max(lo, iy)
-        if iy + bh > hi:                                                     # 앞 난간을 덮지 않게 위로 올린다(모자라면 塔屋 윗면을 줄인다)
-            iy = max(lo, hi - bh)
-            if kind == 'pent' and iy + bh > hi: pt = max(5, 16 - (iy + bh - hi)); bh = pt + 18
+        if iy + bh > hi: iy = max(lo, hi - bh)                               # 앞 난간을 덮지 않게 위로 올린다
         if iy + bh > hi: continue                                            # 그래도 안 들어가면 뺀다
         moved = True
         while moved:                                                         # 겹치면(가로·세로 모두) 오른쪽으로 민다
@@ -326,7 +330,7 @@ def flat_top(c, x0, x1, ytop, yb, mat='conc', items=(), rail=False, floor=None):
         taken.append((ix, ix + bw, iy, iy + bh))
         if kind == 'ac': _ac(c, ix, iy)
         elif kind == 'tank': _tank(c, ix, iy)
-        elif kind == 'pent': _penthouse(c, ix, iy, top=pt)
+        elif kind == 'pent': _penthouse(c, ix, iy, top=pt, face=pf)
         elif kind == 'plant': _plant(c, ix, iy)
         elif kind == 'laundry': _laundry(c, ix, iy)
 
@@ -413,7 +417,7 @@ def cap_roof(r):
     c = ROOF_CAP.get(rk, ROOF_CAP_PITCHED)
     r_max = int(c / (1 - c) * (walls + 4))              # 지붕 줄 상한(R = h + 1)
     if rk == 'gable_front_top': r_max += ro.get('rise', 14)   # 앞 박공 삼각벽은 벽이다(지붕 면 깊이만 센다)
-    h_new = max(ROOF_MIN_H, min(ro['h'], r_max - 1))
+    h_new = max(ROOF_MIN_H, min(ro['h'], r_max - 2))
     if h_new == ro['h']: return r
     ro = dict(ro, h=h_new)
     if rk == 'flat_top' and ro.get('items'):
@@ -427,7 +431,7 @@ def cap_roof(r):
 # 좁은 상점·주택(폭 ≤ 6칸)은 妻入り(용마루 남북) 박공, 평지붕은 사방 난간 + 화분·실외기·塔屋·빨래가 있는 데크.
 # 지붕 색은 어둡고 중립(슬레이트·흑갈·녹), 두 경사면 명암을 또렷이. 밝은 빨강 지붕은 기와색으로 내린다.
 PITCHED_OLD = ('gable_side', 'shed', 'gable_front', 'gable_front_big', 'hip')
-FLOORS = (('midori', -1), ('conc', -1), ('tairu', 0), ('midori', 0))
+FLOORS = (('midori', -2), ('conc', -1), ('tairu', 0), ('conc', 0))   # 어둡고 중립(밝은 초록 금지)
 
 
 def townify(r, id_, narrow_w=6, force=None):
