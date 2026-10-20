@@ -1,0 +1,258 @@
+[
+ {
+  "id": "q033",
+  "kind": "wall_mounted",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "flat ring prop seen face-on, not a 3/4 standing object"
+ },
+ {
+  "id": "q034",
+  "kind": "wall_mounted",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "wall-mounted air conditioner"
+ },
+ {
+  "id": "q035",
+  "kind": "wall_mounted",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "hanging hams on a beam, wall/ceiling mounted"
+ },
+ {
+  "id": "q036",
+  "kind": "wall_mounted",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "wall window glass"
+ },
+ {
+  "id": "q037",
+  "kind": "terrain",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "wall tile strip"
+ },
+ {
+  "id": "q038",
+  "kind": "terrain",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "wall fragment with arched opening"
+ },
+ {
+  "id": "q039",
+  "kind": "container",
+  "top_rows": 2,
+  "front_rows": 7,
+  "label": "bad",
+  "why": "Barrel opening is only the 2-row rim at rows 8-9 with weapons poking up; front elevation, below 4."
+ },
+ {
+  "id": "q040",
+  "kind": "other",
+  "top_rows": 0,
+  "front_rows": 50,
+  "label": "bad",
+  "why": "Two arcade cabinets drawn face-on (screens, seats, pedals); no readable top surface."
+ },
+ {
+  "id": "q041",
+  "kind": "container",
+  "top_rows": 5,
+  "front_rows": 5,
+  "label": "good",
+  "why": "Ice water interior rows 2-6 inside the rim, wooden front face rows 8-12."
+ },
+ {
+  "id": "q042",
+  "kind": "seat",
+  "top_rows": 0,
+  "front_rows": 22,
+  "label": "bad",
+  "why": "Backrest cushions rows 6-12 and seat cushions rows 14-21 are face-on; no seat top surface."
+ },
+ {
+  "id": "q043",
+  "kind": "box",
+  "top_rows": 5,
+  "front_rows": 7,
+  "label": "bad",
+  "why": "Open crate contents rows 1-5, front rows 6-12 = 7, below box front minimum of 8."
+ },
+ {
+  "id": "q044",
+  "kind": "organic",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "potted plant (organic)"
+ },
+ {
+  "id": "q045",
+  "kind": "frame",
+  "top_rows": 0,
+  "front_rows": 48,
+  "label": "bad",
+  "why": "Vertical post/rail strips repeat face-on with no top surface rows."
+ },
+ {
+  "id": "q046",
+  "kind": "organic",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "snow-covered rock (organic)"
+ },
+ {
+  "id": "q047",
+  "kind": "other",
+  "top_rows": 8,
+  "front_rows": 8,
+  "label": "unsure",
+  "why": "Plate rows 10-17 and ring opening rows 12-24 with bed, but back panel rows 2-9 reads face-on; ambiguous."
+ },
+ {
+  "id": "q048",
+  "kind": "low_furniture",
+  "top_rows": 9,
+  "front_rows": 6,
+  "label": "good",
+  "why": "Mattress and pillow top rows 12-20, frame front rows 21-26 with wheels."
+ },
+ {
+  "id": "q049",
+  "kind": "debris",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "rope pile (debris/organic)"
+ },
+ {
+  "id": "q050",
+  "kind": "low_furniture",
+  "top_rows": 8,
+  "front_rows": 4,
+  "label": "unsure",
+  "why": "Upper mattress rows 3-10, frame front rows 11-14, but the stacked lower bunk rows 15-24 reads as front elevation."
+ },
+ {
+  "id": "q051",
+  "kind": "round_body",
+  "top_rows": 8,
+  "front_rows": 8,
+  "label": "good",
+  "why": "Drum head ellipse rows 1-8 then red/white body rows 9-16."
+ },
+ {
+  "id": "q052",
+  "kind": "structure",
+  "top_rows": 23,
+  "front_rows": 28,
+  "label": "good",
+  "why": "Large sloped tile roof plane rows ~5-28 over shopfront rows ~48-76."
+ },
+ {
+  "id": "q053",
+  "kind": "terrain",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "wall-base tile fragment"
+ },
+ {
+  "id": "q054",
+  "kind": "column",
+  "top_rows": 5,
+  "front_rows": 16,
+  "label": "good",
+  "why": "Capital cap ellipse rows 1-5 with front edge row 6, shaft rows 7-22."
+ },
+ {
+  "id": "q055",
+  "kind": "low_furniture",
+  "top_rows": 5,
+  "front_rows": 6,
+  "label": "good",
+  "why": "Seat top rows 0-4, front apron rows 5-7 plus legs rows 8-10."
+ },
+ {
+  "id": "q056",
+  "kind": "flat",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "tar puddle flat ellipse on the ground"
+ },
+ {
+  "id": "q057",
+  "kind": "low_furniture",
+  "top_rows": 9,
+  "front_rows": 5,
+  "label": "good",
+  "why": "Desktop rows 1-9 with edge line, drawer front rows 10-14."
+ },
+ {
+  "id": "q058",
+  "kind": "wall_mounted",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "key ring hanging, wall-mounted"
+ },
+ {
+  "id": "q059",
+  "kind": "debris",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "scattered ice hole, rod, stool and fish props"
+ },
+ {
+  "id": "q060",
+  "kind": "figure",
+  "top_rows": 0,
+  "front_rows": 32,
+  "label": "bad",
+  "why": "Bust and plinth drawn face-on; plinth rows 28-31 has no top surface."
+ },
+ {
+  "id": "q061",
+  "kind": "low_furniture",
+  "top_rows": 4,
+  "front_rows": 0,
+  "label": "unsure",
+  "why": "Horizontal bands (rows 1-4, 7-12, 13-16, 19-23) read as a face-on arrangement; no clear tabletop plane."
+ },
+ {
+  "id": "q062",
+  "kind": "container",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "bad",
+  "why": "Plan view from above on a floor mat; no front face."
+ },
+ {
+  "id": "q063",
+  "kind": "low_furniture",
+  "top_rows": 12,
+  "front_rows": 8,
+  "label": "good",
+  "why": "Cloth-covered top rows 1-12, legs and drape rows 14-21."
+ },
+ {
+  "id": "q064",
+  "kind": "wall_mounted",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "curtained window, wall-mounted"
+ }
+]

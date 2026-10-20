@@ -1,0 +1,258 @@
+[
+ {
+  "id": "q001",
+  "kind": "tall_furniture",
+  "top_rows": 2,
+  "front_rows": 30,
+  "label": "bad",
+  "why": "Closed-door wardrobe in front elevation; top is only a cornice strip, no edge line."
+ },
+ {
+  "id": "q002",
+  "kind": "other",
+  "top_rows": 2,
+  "front_rows": 10,
+  "label": "bad",
+  "why": "Scooter drawn in side view; seat is a 2-row slab, no readable top."
+ },
+ {
+  "id": "q003",
+  "kind": "container",
+  "top_rows": 4,
+  "front_rows": 5,
+  "label": "good",
+  "why": "Bucket openings with water span rows 1-4 and 7-10; bucket bodies rows 11-15."
+ },
+ {
+  "id": "q004",
+  "kind": "figure",
+  "top_rows": 0,
+  "front_rows": 16,
+  "label": "unsure",
+  "why": "Pedestal topped by a red/white ball; no plinth top surface readable, just a dome."
+ },
+ {
+  "id": "q005",
+  "kind": "other",
+  "top_rows": 0,
+  "front_rows": 28,
+  "label": "bad",
+  "why": "Oval mirror in front elevation, rounded frame top only."
+ },
+ {
+  "id": "q006",
+  "kind": "wall_mounted",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Wall-mounted shield rack plank."
+ },
+ {
+  "id": "q007",
+  "kind": "wall_mounted",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Wall lever."
+ },
+ {
+  "id": "q008",
+  "kind": "low_furniture",
+  "top_rows": 9,
+  "front_rows": 4,
+  "label": "good",
+  "why": "Table top rows 1-9 with grain, edge/apron rows 10-13 with legs."
+ },
+ {
+  "id": "q009",
+  "kind": "flat",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Rug."
+ },
+ {
+  "id": "q010",
+  "kind": "wall_mounted",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Framed portrait."
+ },
+ {
+  "id": "q011",
+  "kind": "low_furniture",
+  "top_rows": 7,
+  "front_rows": 15,
+  "label": "good",
+  "why": "Desk top rows 1-7, edge rows 8-9, drawer front rows 10-22."
+ },
+ {
+  "id": "q012",
+  "kind": "terrain",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Stone floor tile."
+ },
+ {
+  "id": "q013",
+  "kind": "box",
+  "top_rows": 3,
+  "front_rows": 12,
+  "label": "unsure",
+  "why": "Mixed pile of barrels, crate and sack; crate top is cropped and the lids are hard to read."
+ },
+ {
+  "id": "q014",
+  "kind": "tall_furniture",
+  "top_rows": 5,
+  "front_rows": 17,
+  "label": "good",
+  "why": "Vanity top rows 9-13 with a front-edge line at row 14, drawer front rows 15-31 (mirror above)."
+ },
+ {
+  "id": "q015",
+  "kind": "other",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "unsure",
+  "why": "Composite gym zone of mats, beam and steps; no single main body."
+ },
+ {
+  "id": "q016",
+  "kind": "figure",
+  "top_rows": 2,
+  "front_rows": 19,
+  "label": "bad",
+  "why": "Statue on a plinth in front elevation; plinth cap is only about 2 rows (28-30), no top surface."
+ },
+ {
+  "id": "q017",
+  "kind": "column",
+  "top_rows": 1,
+  "front_rows": 30,
+  "label": "bad",
+  "why": "Front-facing stack of skulls and bands; no cap plate."
+ },
+ {
+  "id": "q018",
+  "kind": "low_furniture",
+  "top_rows": 9,
+  "front_rows": 3,
+  "label": "unsure",
+  "why": "Hammock bed seen mostly from above (rows 3-12), front sag only rows 13-14."
+ },
+ {
+  "id": "q019",
+  "kind": "structure",
+  "top_rows": 40,
+  "front_rows": 18,
+  "label": "good",
+  "why": "Thatched cone roof plane fills the top ~40 rows; wall with door rows ~45-62."
+ },
+ {
+  "id": "q020",
+  "kind": "flat",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Small flat tied scroll."
+ },
+ {
+  "id": "q021",
+  "kind": "container",
+  "top_rows": 0,
+  "front_rows": 10,
+  "label": "bad",
+  "why": "Distiller flask and burner in front elevation; no opening seen from above."
+ },
+ {
+  "id": "q022",
+  "kind": "wall_mounted",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Wall bottle shelf."
+ },
+ {
+  "id": "q023",
+  "kind": "terrain",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Stairs-down opening, not a standing object."
+ },
+ {
+  "id": "q024",
+  "kind": "frame",
+  "top_rows": 2,
+  "front_rows": 22,
+  "label": "bad",
+  "why": "Fence corner post in front elevation; only a 2-row cap."
+ },
+ {
+  "id": "q025",
+  "kind": "structure",
+  "top_rows": 38,
+  "front_rows": 36,
+  "label": "good",
+  "why": "Sloped tiled roof rows ~4-41, plank wall front rows 42-79."
+ },
+ {
+  "id": "q026",
+  "kind": "terrain",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Concrete stairs seen from above, tile-like."
+ },
+ {
+  "id": "q027",
+  "kind": "terrain",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Wall fragment with a door opening."
+ },
+ {
+  "id": "q028",
+  "kind": "column",
+  "top_rows": 6,
+  "front_rows": 22,
+  "label": "good",
+  "why": "Capital widens 8-16 then narrows over rows 0-6 as an elliptical cap; shaft rows 11-30."
+ },
+ {
+  "id": "q029",
+  "kind": "low_furniture",
+  "top_rows": 9,
+  "front_rows": 4,
+  "label": "good",
+  "why": "Table top rows 1-9 with fish, edge rows 10-13, legs below."
+ },
+ {
+  "id": "q030",
+  "kind": "structure",
+  "top_rows": 50,
+  "front_rows": 38,
+  "label": "good",
+  "why": "Large tiled roof plane rows 0-52 with dormer; timber-frame wall front rows 54-91."
+ },
+ {
+  "id": "q031",
+  "kind": "low_furniture",
+  "top_rows": 9,
+  "front_rows": 6,
+  "label": "good",
+  "why": "White top with basin rows 1-9, door front rows 10-15."
+ },
+ {
+  "id": "q032",
+  "kind": "column",
+  "top_rows": 5,
+  "front_rows": 12,
+  "label": "good",
+  "why": "Green cap rows 0-6 widens 10-16 with front-edge band and shadow; clock drum below."
+ }
+]
