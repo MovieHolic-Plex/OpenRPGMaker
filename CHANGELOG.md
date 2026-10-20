@@ -5,6 +5,17 @@
 
 <!-- releases -->
 
+## 0.296.0 — 2026-10-21
+
+### 기능
+
+- **object-gate** — Opus final judge v5/v6 — chipset-original anchors, condition (b), per-family report (both profiles rejected) (#3144) (`b5df7b9`)
+- **desktop** — splash at click, light boot entry, show home when cards are drawn (#3142) (`41a4ac9`)
+
+### 수정
+
+- **jp-city** — house interior passes the Opus interior gate by layout only; 2F inside 1F, 3-wide dressing room off the north corridor (#3143) (`c57c4d9`)
+
 ## 0.295.1 — 2026-10-21
 
 ### 수정
