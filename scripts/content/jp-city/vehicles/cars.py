@@ -192,9 +192,9 @@ def _wheels(c, xs):
 # 캐빈 옆면 = 옆창 띠(6줄), 앞유리·뒷유리 = 지붕 끝과 보닛/트렁크 먼 끝을 잇는 기운 면.
 # 몸체 옆면 14줄(한 단 어둡다), 바퀴는 치마 밑으로 아래 절반만. 48 높이(발자국 = 아래 32줄).
 H34 = 48
-GH = 6                      # 캐빈 옆면(옆창 띠) 높이
-R_Y, R_F = 7, 18            # 지붕 윗면(먼 가장자리 · 가까운 접힘)
-D_Y, D_F = R_Y + GH, R_F + GH   # 보닛·트렁크 윗면 13..24
+GH = 8                      # 캐빈 옆면(옆창 띠) 높이 — 잉크가 위아래 한 줄씩 먹으므로 유리는 5~6줄 남는다
+R_Y, R_F = 6, 16            # 지붕 윗면(먼 가장자리 · 가까운 접힘) 11줄
+D_Y, D_F = R_Y + GH, R_F + GH   # 보닛·트렁크 윗면 14..24(마지막 줄 = 어두운 접힘)
 B_Y0, B_Y1 = 25, 38         # 몸체 옆면 14줄
 W_Y = 39                    # 바퀴 중심(아래 절반 39..45)
 
@@ -218,10 +218,10 @@ def _deck34(c, x0, x1, y0, y1, T, front=True):
     c.R(x0, y0, x1 - x0, y1 - y0, T['top'])
     c.HL(x0, y0, x1 - x0, T['topE'])
     for j in range(1, 4): c.HL(x0 + (2 if front else 1), y0 + j, max(0, (x1 - x0) - 4 - 3 * j), T['topE'])
-    c.HL(x0, y1 - 1, x1 - x0, T['top'])
+    c.HL(x0, y1 - 1, x1 - x0, T['lo'])                                     # 보닛·트렁크 → 옆면 접힘
     ox = x1 - 1 if front else x0
     c.a[y0, ox, 3] = 0
-    c.VL(ox, y0 + 1, y1 - y0 - 1, T['bod'] if front else T['topE'])
+    c.VL(ox, y0 + 1, y1 - y0 - 2, T['bod'] if front else T['topE'])
 
 
 def _arches(c, wheels, wy=None):
@@ -262,8 +262,9 @@ def _side34(c, T, bx0, bx1, rx0, rx1, tx, fx, pillars=(), seams=(), handles=(), 
         xl = _lerp(rx0, tx, f); xr = _lerp(rx1, fx, f)
         c.HL(xl, y, xr - xl + 1, T['bod'])
         if R_F + 2 <= y <= D_F - 1:
-            c.HL(xl + 2, y, xr - xl - 3, g2 if y >= D_F - 1 else g1)
+            c.HL(xl + 2, y, xr - xl - 3, g2 if y >= D_F - 2 else g1)
     for p in pillars: c.R(p, R_F + 1, 2, GH, T['bod']); c.VL(p + 1, R_F + 2, GH - 2, T['lo'])
+    c.HL(_lerp(rx0, tx, 1.0), D_F, _lerp(rx1, fx, 1.0) - _lerp(rx0, tx, 1.0) + 1, T['lo'])
     for sx in [_lerp(rx0, tx, 0.3) + 3] + [p + 3 for p in pillars]: c.HL(sx, R_F + 2, 3, ghi); c.P(sx, R_F + 3, ghi)
     c.HL(_lerp(rx0, tx, 1.0), D_F, _lerp(rx1, fx, 1.0) - _lerp(rx0, tx, 1.0) + 1, T['lo'])     # 허리선(창 밑틀)
     # 4) 앞유리: 지붕 앞 끝(rx1, R_Y..R_F) → 보닛 뒤 끝(fx, D_Y..D_F) 의 기운 면
@@ -317,8 +318,8 @@ def _sedan_side(tone, body='sedan', taxi=False):
         wh = (17, 62)
         _side34(c, T, 4, 76, 25, 47, 15, 60, pillars=(36,), seams=(21, 36, 57), handles=(39, 24), wheels=wh)
     if taxi:                                                                      # 행등: 지붕 위 작은 상자(윗면 2 + 남쪽 면 3), 글자 없음
-        c.R(31, 3, 10, 2, K('shiro', 2)); c.R(31, 5, 10, 3, K('shiro', 0))
-        c.R(32, 5, 8, 2, K('aka', 1)); c.HL(31, 8, 10, K('kii', -1))
+        c.R(31, 2, 10, 2, K('shiro', 2)); c.R(31, 4, 10, 3, K('shiro', 0))
+        c.R(32, 4, 8, 2, K('aka', 1)); c.HL(31, 7, 10, K('kii', -1))
     return _done34(c, wh)
 
 
@@ -504,13 +505,13 @@ def _ktruck_side():
     wh = (13, 50)
     x0, x1 = 4, 37
     # 짐칸(아래 상자 윗면 D_Y..D_F): 먼 난간 윗면 → 먼 난간 안쪽 면(그늘) → 바닥 판(길이 방향 판자) → 가까운 난간 윗면
-    c.R(x0, D_Y, x1 - x0, 2, T['topE'])
-    c.R(x0, D_Y + 2, x1 - x0, 2, T['lo'])
-    c.R(x0, D_Y + 4, x1 - x0, D_F - D_Y - 5, K('conc', 1))
-    for yy in range(D_Y + 5, D_F - 1, 2): c.HL(x0 + 2, yy, x1 - x0 - 4, K('conc', 0))
-    c.R(x0, D_Y, 2, D_F - D_Y + 1, T['top']); c.R(x1 - 2, D_Y, 2, D_F - D_Y + 1, T['top'])      # 뒤·앞 난간 윗면
-    c.VL(x0 + 2, D_Y + 2, D_F - D_Y - 3, T['lo'])
-    c.R(x0, D_F - 1, x1 - x0, 2, T['topE'])                                          # 가까운 난간 윗면
+    c.HL(x0, D_Y, x1 - x0, T['topE'])                                               # 먼 난간 윗면(1줄)
+    c.HL(x0, D_Y + 1, x1 - x0, T['lo'])                                             # 먼 난간 안쪽 면(그늘)
+    c.R(x0, D_Y + 2, x1 - x0, D_F - D_Y - 3, K('tekko', 0))                         # 바닥 판(위에서 보임)
+    c.HL(x0, D_Y + 2, x1 - x0, K('tekko', -1))                                      # 먼 난간이 바닥에 드리운 그늘
+    for yy in range(D_Y + 4, D_F - 1, 2): c.HL(x0 + 3, yy, x1 - x0 - 6, K('tekko', 1))
+    c.R(x0, D_Y, 2, D_F - D_Y + 1, T['top']); c.R(x1 - 2, D_Y, 2, D_F - D_Y + 1, T['top'])      # 뒤 난간·헤드보드 윗면
+    c.R(x0, D_F - 1, x1 - x0, 2, T['topE']); c.HL(x0, D_F, x1 - x0, T['lo'])                    # 가까운 난간 윗면 → 접힘
     _body_side(c, T, x0, x1, B_Y0, B_Y1 - 2, seams=(15, 26), lamps=False)
     c.R(x0 + 1, B_Y0 + 1, 2, 3, K('aka', 1)); c.R(x0, B_Y1 - 1, x1 - x0, 2, K('tekko', -2))
     # 캡: 지붕 윗면(R_Y..R_F) → 앞유리(짧게 기운 면) → 캡 옆면(문 창은 지붕 바로 밑 띠)
@@ -518,13 +519,13 @@ def _ktruck_side():
     c.R(cx0, R_F + 1, cx1 - cx0 + 4, B_Y1 - R_F, T['bod'])
     c.HL(cx0, R_F + 1, cx1 - cx0 + 4, T['top'])
     c.VL(cx0, R_F + 1, B_Y1 - R_F - 1, T['top']); c.VL(cx1 + 3, R_F + 1, B_Y1 - R_F - 1, T['lo'])
-    c.R(cx0 + 3, R_F + 2, 14, 5, g1); c.HL(cx0 + 3, R_F + 6, 14, g2); c.HL(cx0 + 4, R_F + 2, 3, ghi); c.P(cx0 + 4, R_F + 3, ghi)
-    c.VL(cx0 + 18, R_F + 2, B_Y1 - R_F - 5, T['lo']); c.HL(cx0 + 4, R_F + 9, 3, T['dk'])
+    c.R(cx0 + 3, R_F + 2, 14, 7, g1); c.HL(cx0 + 3, R_F + 8, 14, g2); c.HL(cx0 + 4, R_F + 2, 3, ghi); c.P(cx0 + 4, R_F + 3, ghi)
+    c.VL(cx0 + 18, R_F + 2, B_Y1 - R_F - 5, T['lo']); c.HL(cx0 + 4, R_F + 11, 3, T['dk'])
     c.HL(cx0, B_Y0 + 5, cx1 - cx0 + 4, T['lo']); c.R(cx0, B_Y1 - 3, cx1 - cx0 + 4, 3, T['lo']); c.HL(cx0, B_Y1, cx1 - cx0 + 4, T['dk'])
     c.R(cx1 + 1, B_Y0 + 1, 2, 3, K('kii', 2))
     for x in range(cx1, cx1 + 4):                                                     # 앞유리: 지붕 앞 끝에서 앞으로 기운 짧은 면
         k = x - cx1
-        for y in range(R_Y + k, R_F + 1 + k): c.P(x, y, g0 if y - (R_Y + k) <= 1 else g1)
+        for y in range(R_Y + k, R_F + 9): c.P(x, y, g0 if y - (R_Y + k) <= 1 else g2 if y > R_F + 6 else g1)
     _roof34(c, cx0, cx1 + 1, R_Y, R_F + 1, T)
     _arches(c, wh)
     c.R(6, B_Y1 + 1, 54, 2, K('sumi', 0))
@@ -616,19 +617,19 @@ def _box_side():
     c.VL(4, rf + 1, by1 - rf - 3, T['top']); c.VL(65, rf + 1, by1 - rf - 3, T['lo'])
     for xx in range(14, 64, 10): c.VL(xx, rf + 3, by1 - rf - 9, T['lo']); c.VL(xx + 1, rf + 3, by1 - rf - 9, T['topE'])
     c.R(4, by1 - 6, 62, 2, T['lo']); c.HL(4, by1 - 4, 62, T['dk'])
-    c.R(4, by1 - 3, 62, 3, K('tekko', -2)); c.R(5, rf + 4, 2, 4, K('aka', 1))
+    c.R(4, by1 - 3, 62, 3, K('tekko', -2)); c.R(5, by1 - 11, 2, 4, K('aka', 1))
     # 캡: 지붕 윗면 R_Y+o.. → 옆면(문 창은 지붕 밑 띠) → 앞유리 짧게 기운 면
     cy, cf = R_Y + o, R_F + o
     cx0, cx1 = 66, 88
     c.R(cx0, cf + 1, cx1 - cx0 + 4, by1 - cf, T['bod']); c.HL(cx0, cf + 1, cx1 - cx0 + 4, T['lo'])
     c.VL(cx0, cf + 1, by1 - cf - 1, T['top']); c.VL(cx1 + 3, cf + 1, by1 - cf - 1, T['lo'])
-    c.R(cx0 + 3, cf + 2, 14, 5, g1); c.HL(cx0 + 3, cf + 6, 14, g2); c.HL(cx0 + 4, cf + 2, 3, ghi); c.P(cx0 + 4, cf + 3, ghi)
-    c.VL(cx0 + 18, cf + 2, by1 - cf - 5, T['lo']); c.HL(cx0 + 4, cf + 9, 3, T['dk'])
+    c.R(cx0 + 3, cf + 2, 14, 7, g1); c.HL(cx0 + 3, cf + 8, 14, g2); c.HL(cx0 + 4, cf + 2, 3, ghi); c.P(cx0 + 4, cf + 3, ghi)
+    c.VL(cx0 + 18, cf + 2, by1 - cf - 5, T['lo']); c.HL(cx0 + 4, cf + 11, 3, T['dk'])
     c.HL(cx0, by1 - 8, cx1 - cx0 + 4, T['lo']); c.R(cx0, by1 - 3, cx1 - cx0 + 4, 3, T['lo']); c.HL(cx0, by1, cx1 - cx0 + 4, T['dk'])
     c.R(cx1 + 1, by1 - 12, 2, 3, K('kii', 2))
     for x in range(cx1, cx1 + 4):
         k = x - cx1
-        for y in range(cy + k, cf + 1 + k): c.P(x, y, g0 if y - (cy + k) <= 1 else g1)
+        for y in range(cy + k, cf + 9): c.P(x, y, g0 if y - (cy + k) <= 1 else g2 if y > cf + 6 else g1)
     _roof34(c, cx0, cx1 + 1, cy, cf + 1, T)
     c.VL(cx0 - 1, rf + 1, by1 - rf - 3, K('tekko', -1))                              # 캡·화물칸 틈
     _arches(c, wh, W_Y + o)

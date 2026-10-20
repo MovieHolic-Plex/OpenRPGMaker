@@ -113,5 +113,5 @@ flags: `overlay`(투명 덧칠: 윤곽·접지·귀퉁이 검사 제외) · `thi
 건물 카탈로그(`scripts/content/jp-city/houses/catalog.py`)의 주택 전부·파출소·창고·작은 역사·우체국은 `houses/depth34.py` 의 위에서 본 지붕을 쓴다:
 `hip_top`(寄棟: 용마루 = 윗선, 바깥선 직사각형 + 위 귀퉁이 사선, 얇은 옆 쐐기) · `gable_top`(平入り) · `gable_front_top`(妻入り: 남북 용마루, 앞뒤 끝 Λ, 앞 박공벽) ·
 `shed_top`(片流れ 한 장 면) · `flat_top`(陸屋根: 뒤 난간 안쪽 면, 옥상 설비는 윗면+남쪽 면 상자). `depth34.deepen(r)` 이 옛 레시피 지붕을 바꾸고 지붕 높이를 벽 높이에 맞춘다(그림 높이의 40~50%).
-간판·노렌 글자는 색 판으로 비운다. 탈것: `vehicles/heavy.py` 버스 옆 프레임(지붕 윗면 22줄·어깨 띠·휠 아치), `vehicles/cars.py` 승용·경차(지붕 10줄·보닛 8줄, 옆면 한 단 어둡게),
+간판·노렌 글자는 색 판으로 비운다. 탈것: `vehicles/heavy.py` 버스 옆 프레임(지붕 윗면 22줄·어깨 띠·휠 아치), `vehicles/cars.py` 승용·경차·트럭(두 상자 모형: 지붕 윗면과 보닛·트렁크 윗면이 같은 12줄 깊이, 옆창 띠 6줄, 앞·뒷유리는 기운 면, 몸체 옆면 14줄 한 단 어둡게, 바퀴 아래 절반만 · 옆 프레임 48 높이, 2톤 트럭 56 · 기준 = 경찰차),
 정지 소품 `lib/parts_vehicles.py` 의 `car()`·`bus()` 는 같은 그림을 부른다. 비교판: `scripts/content/jp-city/qa/depth_pilot.py OLD_DIR OUT_DIR`. 굽기·관문은 별도(gate_kinds 우회 금지).
