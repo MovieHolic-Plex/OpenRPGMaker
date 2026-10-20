@@ -1,0 +1,304 @@
+{
+ "note": "Real editor input box → companion → runPiAgent (local CLI or Pi) → apply → toolbar save → project.sqlite → reload in a fresh browser context. Source runs under qa-runs/harnesses (gitignored).",
+ "fullCatalog": {
+  "tools": 404,
+  "schemaChars": 794000
+ },
+ "rows": [
+  {
+   "engine": "claude-cli",
+   "case": "farm-village-r1",
+   "status": "ran",
+   "failure": null,
+   "runMs": 122326,
+   "toolCalls": 17,
+   "toolErrors": 7,
+   "tokens": 1158656,
+   "costUsd": 0.5297927,
+   "exposure": null,
+   "reloadEqual": true,
+   "measure": "machine-fail",
+   "maps": [
+    [
+     "map_beodeul_river_7",
+     [
+      64,
+      40
+     ]
+    ]
+   ]
+  },
+  {
+   "engine": "claude-cli",
+   "case": "farm-village-r2",
+   "status": "ran",
+   "failure": null,
+   "runMs": 44693,
+   "toolCalls": 3,
+   "toolErrors": 0,
+   "tokens": 202759,
+   "costUsd": 0.21594729999999998,
+   "exposure": {
+    "systemChars": 35498,
+    "toolsListed": 50,
+    "listChars": 49120,
+    "listChanged": 0
+   },
+   "reloadEqual": true,
+   "measure": "machine-fail",
+   "maps": [
+    [
+     "map_beodeul_river_7",
+     [
+      64,
+      40
+     ]
+    ]
+   ]
+  },
+  {
+   "engine": "claude-cli",
+   "case": "room-study-r1",
+   "status": "ran",
+   "failure": null,
+   "runMs": 28182,
+   "toolCalls": 3,
+   "toolErrors": 0,
+   "tokens": 268675,
+   "costUsd": 0.23025789999999996,
+   "exposure": {
+    "systemChars": 35321,
+    "toolsListed": 38,
+    "listChars": 56784,
+    "listChanged": 0
+   },
+   "reloadEqual": true,
+   "measure": "machine-fail",
+   "maps": [
+    [
+     "map_8e473dec-c953-4011-afc6-dfe016f93f20",
+     [
+      11,
+      10
+     ]
+    ]
+   ]
+  },
+  {
+   "engine": "claude-cli",
+   "case": "room-study-r2",
+   "status": "ran",
+   "failure": null,
+   "runMs": 32909,
+   "toolCalls": 4,
+   "toolErrors": 2,
+   "tokens": 333269,
+   "costUsd": 0.23995910000000004,
+   "exposure": {
+    "systemChars": 35321,
+    "toolsListed": 38,
+    "listChars": 56784,
+    "listChanged": 0
+   },
+   "reloadEqual": true,
+   "measure": "machine-fail",
+   "maps": [
+    [
+     "map_0895bd76-f5a8-46a5-93bd-dea2918d869a",
+     [
+      12,
+      9
+     ]
+    ]
+   ]
+  },
+  {
+   "engine": "codex-cli",
+   "case": "room-study-r1",
+   "status": "harness-error",
+   "failure": "Turn did not settle within 900000ms: page.waitForFunction: Timeout 900000ms exceeded.",
+   "runMs": null,
+   "toolCalls": null,
+   "toolErrors": null,
+   "tokens": null,
+   "costUsd": null,
+   "exposure": null,
+   "reloadEqual": null,
+   "measure": "not-measured",
+   "maps": []
+  },
+  {
+   "engine": "codex-cli",
+   "case": "room-study-r3",
+   "status": "harness-error",
+   "failure": "Turn did not settle within 900000ms: page.waitForFunction: Timeout 900000ms exceeded.",
+   "runMs": null,
+   "toolCalls": null,
+   "toolErrors": null,
+   "tokens": null,
+   "costUsd": null,
+   "exposure": null,
+   "reloadEqual": null,
+   "measure": "not-measured",
+   "maps": []
+  },
+  {
+   "engine": "pi-argon",
+   "case": "farm-village-r1",
+   "status": "run-error",
+   "failure": null,
+   "runMs": null,
+   "toolCalls": null,
+   "toolErrors": null,
+   "tokens": null,
+   "costUsd": null,
+   "exposure": null,
+   "reloadEqual": true,
+   "measure": "no-map",
+   "maps": []
+  },
+  {
+   "engine": "pi-argon",
+   "case": "room-study-r1",
+   "status": "run-error",
+   "failure": null,
+   "runMs": null,
+   "toolCalls": null,
+   "toolErrors": null,
+   "tokens": null,
+   "costUsd": null,
+   "exposure": null,
+   "reloadEqual": true,
+   "measure": "no-map",
+   "maps": []
+  },
+  {
+   "engine": "pi-gpt-6.1-sol",
+   "case": "farm-village-r2",
+   "status": "run-error",
+   "failure": null,
+   "runMs": 595081,
+   "toolCalls": 15,
+   "toolErrors": 0,
+   "tokens": 509166,
+   "costUsd": null,
+   "exposure": null,
+   "reloadEqual": true,
+   "measure": "machine-fail",
+   "maps": [
+    [
+     "farm_village",
+     [
+      64,
+      40
+     ]
+    ]
+   ]
+  },
+  {
+   "engine": "pi-gpt-6.1-sol",
+   "case": "room-study-r2",
+   "status": "ran",
+   "failure": null,
+   "runMs": 212364,
+   "toolCalls": 21,
+   "toolErrors": 7,
+   "tokens": 977618,
+   "costUsd": null,
+   "exposure": null,
+   "reloadEqual": true,
+   "measure": "machine-fail",
+   "maps": [
+    [
+     "map_small_study",
+     [
+      10,
+      9
+     ]
+    ]
+   ]
+  },
+  {
+   "engine": "claude-cli",
+   "case": "reward-once",
+   "status": "fail",
+   "gates": {
+    "execution": "pass",
+    "requirements": "pass",
+    "adversarial": "pass",
+    "persistence": "pass",
+    "visual": "pending",
+    "runtime": "fail"
+   },
+   "runtimeFailedChecks": [
+    "leave-map",
+    "return-map"
+   ],
+   "failure": null,
+   "runMs": 51702,
+   "toolCalls": 4,
+   "toolErrors": 1,
+   "tokens": 410143,
+   "costUsd": 0.28146530000000003,
+   "exposure": {
+    "systemChars": 16912,
+    "toolsListed": 43,
+    "listChars": 89899,
+    "listChanged": 0
+   }
+  },
+  {
+   "engine": "pi-argon",
+   "case": "reward-once",
+   "status": "fail",
+   "gates": {
+    "execution": "fail",
+    "requirements": "fail",
+    "adversarial": "pass",
+    "runtime": "fail",
+    "persistence": "pass",
+    "visual": "pending"
+   },
+   "runtimeFailedChecks": [
+    "first-message",
+    "first-reward",
+    "repeat-message",
+    "repeat-no-reward",
+    "walk-to-exit",
+    "leave-map",
+    "return-map",
+    "walk-back",
+    "after-reentry",
+    "after-reentry-no-reward"
+   ],
+   "failure": null,
+   "runMs": null,
+   "toolCalls": null,
+   "toolErrors": null,
+   "tokens": null,
+   "costUsd": null,
+   "exposure": null
+  },
+  {
+   "engine": "pi-gpt-6.1-sol",
+   "case": "reward-once",
+   "status": "fail",
+   "gates": {
+    "execution": "fail",
+    "requirements": "pending",
+    "adversarial": "pending",
+    "runtime": "pending",
+    "persistence": "pending",
+    "visual": "pending"
+   },
+   "runtimeFailedChecks": [],
+   "failure": "Turn did not settle within 240000ms: page.waitForFunction: Timeout 240000ms exceeded.",
+   "runMs": null,
+   "toolCalls": null,
+   "toolErrors": null,
+   "tokens": null,
+   "costUsd": null,
+   "exposure": null
+  }
+ ]
+}
