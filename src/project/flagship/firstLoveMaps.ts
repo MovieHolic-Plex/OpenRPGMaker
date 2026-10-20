@@ -114,6 +114,24 @@ function light(id: string, at: Cell, radius: number, color: string, intensity = 
   return { id, at: { x: at.x, y: at.y }, radius, color, intensity };
 }
 
+/**
+ * 옥상 좌상단 계단탑 윗면 — 평면의 '#' 덩이는 빌더가 검은 허공으로 두므로, 그 윗면(x0..5, y0..2)을
+ * 옥상 바닥과 같은 콘크리트 판 + 난간 모서리 띠로 덮는다. 전부 막힌 칸(문 위 벽·좌우 가장자리)에 둘러싸여 못 걷는 칸이라
+ * 통행·앵커에는 영향이 없다(데모 전용 후처리).
+ */
+function paintStairwellRoof(map: GameMap): void {
+  const W = map.width;
+  const CAP_TOP = 9347, EDGE_LEFT = 9338;
+  for (let y = 0; y <= 2; y++) {
+    for (let x = 0; x <= 5; x++) {
+      const i = y * W + x;
+      if (y === 0) map.lowerTiles[i] = CAP_TOP;
+      else if (x === 0) map.lowerTiles[i] = EDGE_LEFT;
+      else map.lowerTiles[i] = map.lowerTiles[(y + 4) * W + (x + 7)]!;
+    }
+  }
+}
+
 export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveAnchors {
   project.tilesets[JP_CITY_ID] = createJpCityTileset();
 
@@ -148,6 +166,7 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   const konbiniRoom = project.maps[FL_MAP.konbini]!;
   const roofRoom = project.maps[FL_MAP.rooftop]!;
   const platform = project.maps[FL_MAP.platformAm]!;
+  paintStairwellRoof(roofRoom);
   const broadcast = project.maps[FL_MAP.broadcast]!;
 
   // 사무층 좌표(예제 office-floor 평면 기준): 위 큰 방 = 자리, 아래 왼쪽 = 회의실, 가운데 = 탕비실, 계단실, 엘리베이터 홀.
