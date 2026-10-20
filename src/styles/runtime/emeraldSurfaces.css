@@ -32,7 +32,7 @@
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-backdrop[data-backdrop-resource-id="battle-skin-pokemon-backdrop"] { display: none; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-group, .battle-actor-group, .battle-animation-layer, .battle-effect-layer) { inset: 0; height: 240px; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-enemy-group .battle-enemy:only-child { left: 74%; top: 58%; }
-.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-actor-group .battle-actor:only-child { left: 23%; top: 100%; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-actor-group .battle-actor:only-child { left: 23%; top: calc(100% - 12px); }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy, .battle-actor-group .battle-actor) {
   width: 128px;
   height: 128px;
