@@ -1,0 +1,44 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b1",
+ "round": 7,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png"
+ ],
+ "items": [
+  {
+   "id": "arcade-racing-cabinet",
+   "pixelSha256": "667a43981eae1c090730c59137ed15268066638a3793dc5058f6e7daad3a12b3",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "The cabinet is a flat front view. The checkered marquee and screen sit straight on the front with no lit top plane, so it doesn't match the 3/4 view of the originals (wardrobe, cooler). The seat is a separate red blob under the console, with a muddy dark base around it and no clean ground line where it meets the floor."
+  },
+  {
+   "id": "dept-accessory-wall",
+   "pixelSha256": "99b59c1e6e1e3fbcb4170dea29ca0de7de8c1bed8bf2effa0d30305b46b841ff",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "At 1x it reads as a brown-orange block. The tall dark-red/black hanging items on the left and the dark boxes on the right have too little contrast to read as accessories (bags, belts, umbrellas). The interior is muddy and noisy compared with the clean shelf rows of mci-cooler and mci-wardrobe."
+  }
+ ]
+}

@@ -1,0 +1,204 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b1",
+ "round": 1,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png",
+  "board-3.png",
+  "board-4.png",
+  "board-5.png"
+ ],
+ "items": [
+  {
+   "id": "amuse-bowling-pins",
+   "pixelSha256": "3d15dfe933d97a62a6d1c02ab068dc64b4e331e6fa003a75692b5bf7b04e4837",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3,
+    4
+   ],
+   "reasons": "A flat front view of a tall dark box with a white cluster of pins stuck onto its face, sitting on a wooden lane stub, with no top plane. At 1x it reads as an odd wooden cabinet, not a bowling pin setup."
+  },
+  {
+   "id": "amuse-pachinko-island",
+   "pixelSha256": "e1447bb03f7dcd23e0f52bbff5b12fff7c61be14dd92d276eeadcadb13435e3f",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    5
+   ],
+   "reasons": "The machines are drawn as a flat front view with only a thin 1–2 row grey top strip, so there is no real top plane. The red stools sit on a separate beige band that looks detached from the island instead of standing on the floor in front of it."
+  },
+  {
+   "id": "amuse-speaker-stack",
+   "pixelSha256": "f4b948f89c2c52dbfa118d873260f71857343ed8cebfb7a18260b4159d260ba2",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    3
+   ],
+   "reasons": "Very low-contrast black-on-dark-grey shading turns into a muddy dark column at 1x, and the woofer cone barely shows. The thin strip is also too narrow and small next to the originals."
+  },
+  {
+   "id": "arcade-cabinet-pair",
+   "pixelSha256": "8d7e817f0c8228f379ca491911367d67bc43dc243a41d72cb0c89dbb54d7567f",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "Under each cabinet there is a brown block with a face-like pair of dots, with a red stool stacked straight below it. The cabinet, base and stool stack into one confusing column. The brown/orange cabinet sides look muddy next to the originals' clean dark outlines."
+  },
+  {
+   "id": "arcade-prize-counter",
+   "pixelSha256": "af065d9e73ec885b4e2b3b5ec391ed6c16ed5dcfc7862c143d11beba676bd7ce",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    4
+   ],
+   "reasons": "The saturated purple sits outside the chipset's muted palette. The candy pile on the counter top and the cubby contents are noisy rainbow 'sticker' clusters with no form shading."
+  },
+  {
+   "id": "arcade-purikura",
+   "pixelSha256": "3a00ede4b09183a441371bad7ed3cd7b476d4c9bd72c40f4d78f4402b6cfa1d2",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2
+   ],
+   "reasons": "Mostly a flat pink front view with only a thin light top band and no readable roof plane. The outline is pink/magenta rather than the originals' dark navy outline weight."
+  },
+  {
+   "id": "arcade-racing-cabinet",
+   "pixelSha256": "f7612c2149bf708f0a8c7a44ff2523c4a589ae212ebaf10245d24a1a74a8b997",
+   "verdict": "FAIL",
+   "failed": [
+    4
+   ],
+   "reasons": "The screen is filled with random white/green speckle noise, and the grey seat/base area is a flat slab that blends into the floor. Too busy compared with the originals' clean shading."
+  },
+  {
+   "id": "arcade-rhythm",
+   "pixelSha256": "24cb61f8e0d8a91fe7a3434a76e1ba0821e2fa916efc1fe1c8c1b6e34db17117",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The blue cabinet shows a clear top plane with the screen and a row of coloured buttons on the control deck. The outline and palette sit close to the originals, and it stands on the floor cleanly."
+  },
+  {
+   "id": "art-plinth",
+   "pixelSha256": "b970075aaa77bd06cdbc35c6aa35cb78a6b7c8c9b0598a25a6597a2d335f5834",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    3
+   ],
+   "reasons": "The pale beige outline and low-contrast shading don't match the originals' dark outlines. The plinth has a drawer and handle, so it reads as a nightstand with a jar on it rather than a display plinth."
+  },
+  {
+   "id": "aud-lectern",
+   "pixelSha256": "230e87be33749fa5d3a090d7925b3594bace4997f3a5de59155f4460d5c7636c",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The slanted lectern top is visible from above, with a crest on the front panel and two microphone goosenecks. The outline and wood shading match the chipset, and it sits on the floor."
+  },
+  {
+   "id": "book-shelf",
+   "pixelSha256": "f6357ca2e6e27066f1dc5f62d804a240edc54b304c84228657a7f20547a62e86",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The top plank is visible as a lit plane above a short front face, with varied book spines in four cubbies. The dark outline and wood palette match the wardrobe original, and it stands cleanly against the wall."
+  },
+  {
+   "id": "cafe-maid-stage",
+   "pixelSha256": "915310549ee5026421e1c308b89dd08020006cbb5353f08bc6d3b85569473ae7",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The wooden stage deck is visible from above as a wide lit plane, with a pink striped heart backdrop and a mic stand. The front skirt has a ground line, and the scale fits the room."
+  },
+  {
+   "id": "cinema-concession",
+   "pixelSha256": "58f9eb2f3188207fd4023c7efa4c4d42b15808e055f96cf8b8efc025fefa1143",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The counter top is a clear lit plane holding a popcorn machine, drink dispenser, cups and register, over a striped front face. It reads at 1x and sits on the floor."
+  },
+  {
+   "id": "clinic-pet-kennels",
+   "pixelSha256": "5054769ab745122c46bf0f1a9675927382eb744672c01a002c225b1e832d1b28",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "The animals in the cages are brown/grey blobs with stray red pixels and can't be read. The blue bundle on top looks like a pasted-on sticker, and at 1x the whole thing reads as a grey fridge."
+  },
+  {
+   "id": "clinic-pharmacy-shelf",
+   "pixelSha256": "f6576f970210dcdc21e336c28bc48b4ec719a124cbf664ad82e4cb1420963204",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The shelf top plane is visible, with clear rows of medicine boxes and a drawer base. The green cross sign sits on top within the footprint, and the outline and wood palette match the originals."
+  },
+  {
+   "id": "council-trophy-case",
+   "pixelSha256": "af8003b566801d6e5100801fcfa6ea9217146481bc42561e6dc919aa72e8bdfb",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The wooden top plank is lit from above, with gold/silver trophies behind the glass panes. Clean outline, it reads at 1x and stands on the floor."
+  },
+  {
+   "id": "court-witness-stand",
+   "pixelSha256": "d76c1beebfdcb4ce6467a134b77b8365e480998b6ca774a8ac7893f66736c8fb",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The enclosed wooden box shows its desk top from above, with a black microphone and paneled front. The wood palette and outline match the wardrobe original, and the ground line is clear."
+  },
+  {
+   "id": "dept-accessory-wall",
+   "pixelSha256": "8fa92044ba9ff0598502a3a273bb7597e3885570278a24fa73684e3a7bae818a",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "The pegboard items are muddy red/yellow clusters that can't be identified as bags, belts or scarves. The beige frame is low contrast against the floor, and at 1x it reads as noise."
+  },
+  {
+   "id": "dept-directory-kiosk",
+   "pixelSha256": "64fb1b1f533b9abefbf1cfccb86cc7ce71da71285c5ddb10b0298633963b6b73",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2
+   ],
+   "reasons": "A flat front view of a grey slab with no top plane at all. It is also very narrow and small next to the chipset's furniture."
+  },
+  {
+   "id": "dept-eyewear-tower",
+   "pixelSha256": "ba556cf737194c9d5387941ec6219b692f53b878212e52cca9621e59106b4572",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3
+   ],
+   "reasons": "A flat front-view white tower with no visible top surface. The glasses are dark 2–3px blobs that don't read as eyewear at 1x."
+  }
+ ]
+}

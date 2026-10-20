@@ -1,0 +1,400 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d76c1beebfdcb4ce6467a134b77b8365e480998b6ca774a8ac7893f66736c8fb",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "court witness stand",
+ "label": "modern_city_interior/court-witness-stand",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 8,
+  "darkV5": 49,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gray back top strip",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper back rail band",
+      "rows": "3-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "side posts of upper frame",
+      "rows": "2-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower counter top band",
+      "rows": "15-18",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-21"
+     },
+     {
+      "part": "microphone",
+      "rows": "7-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the lower counter. Rows 15-18 form a 4-row band that brightens toward the bottom (L 124, 124, 151, 171). A dark edge line at row 19 follows it, then a darker face from row 20. The front face runs rows 20-31, 12 rows, with two recessed panels and a light kick band at rows 28-29. The upper back section repeats the pattern: band at rows 3-5, edge line at row 6, shadow at rows 7-8. The microphone is decor. The top bands are short but have edge lines, so this is not a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The outline is a tinted dark brown beside the wood (0% neutral dark edge pixels), which matches the Beodeul approach and is not a black sticker line. The structure reads clearly, with a panelled lower cabinet, a railing and a small lectern. The shading is shallow: only 9 distinct colours in total and 7 visible tones per tile, against 38-40 colours and 17-20 tones for the stall and well. The wood has about 4 lightness steps (dark, mid, light, highlight), against roughly 6 on the references. Most panels are one mid-brown with an edge highlight, with little grain, per-plank variation or knots, and no scattered texture dots. Near-flat coverage is 0%, so there are no large flat fills, but the surfaces are plainer than the stall and well. Next to those references it looks thinner and flatter, and when in doubt this fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "맨 위의 큰 부분(12행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "맨 위의 큰 부분(12행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20076
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper back rail/panel top band",
+      "rows": "3-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "main witness box top (ledge)",
+      "rows": "15-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19"
+     },
+     {
+      "part": "microphone / lamp on stand",
+      "rows": "7-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front panelled face of box",
+      "rows": "20-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main lower box has a 4-row top band (rows 15-18). Its lightness rises from L=124 to L=151 to L=171, so row 18 is the light front-edge line. Row 19 (#3c2414) is the dark eave shadow. Below it, rows 20-31 form a 12-row front face with two recessed panels and a base trim. The upper back panel repeats the pattern: a band at rows 3-5, with the edge line at row 5 and shadow at row 6. The black microphone arm is decor placed on the structure. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a wooden witness stand in warm brown tones, with a small dark fixture on top. It shows about 3 lightness steps on the wood (light panel, mid, dark outline and recess), against roughly 5-6 on the references such as the well and stall. Its outline is dark brown, with 0% near-neutral edge pixels, so it reads as a tinted material tone and not a black sticker line. The 7 visible tones per tile fall between the hedge (9) and the lower-density bench and lamp, but well below the well (20) and stall (17). Near-flat coverage is 0%, so there are no large flat fills, but the panels and top rail are mostly uniform with little grain, per-plank highlights or wood texture. Compared with the stall and well it looks thinner and flatter, with shallow shading and little surface detail, so it would not sit comfortably beside the richer references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18712
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper rail/top beam",
+      "rows": "3-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "upper back panel with lever",
+      "rows": "7-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "main lower box top",
+      "rows": "15-18",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "19-20"
+     },
+     {
+      "part": "lower front panels",
+      "rows": "20-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main lower box has a light gradient band at rows 15-18 (L 124 to 171). It ends in a dark front-edge line at row 19, followed by a darker row 20. Below it is a 12-row front face of panels, rows 20-31. The upper rail at rows 3-5 follows the same pattern, with a light band, a dark line at row 6, and shadow at rows 7-8. The width profile steps from 30 to 32. No receding side face is drawn. The top band is only 4 rows, but it carries an edge line and eave shadow, so it counts as a top surface and not a rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The witness stand is a wooden cabinet-like prop with a small lever or figure on top. Its dark brown outline leans visibly brown, and the measured near-neutral share of dark edge pixels is 0%, so it is not a sticker-style black line. Nothing is flat-filled (near-flat coverage 0%). The main wood ramp has only about 4 steps (light plank, mid, dark, outline) against the references' 5-6, with little grain, per-plank variation or highlight dots. It has 9 distinct colours in total and 7 visible tones per tile, which is well below the cheese stall (17 per tile, 40 total) and the roofed well (20 per tile, 38 total). Only the hedge (9 per tile) is near it. The panel and drawer blocks read as simple shapes with light grain rather than the per-element shading of the stall and well. A careful artist would find it thinner than the same-kind references, and when in doubt this fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17218
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper back panel header band",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "witness rail / counter ledge",
+      "rows": "15-18",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "microphone on back panel",
+      "rows": "7-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the lower box. Its ledge at rows 15-18 steps from L=124 to 171 and ends in a dark front-edge line at row 19, with rows 13-14 of dark shadow above it. Below that, the front face runs rows 20-31 with two recessed panels and a base strip at rows 28-31. The upper back panel (rows 2-13) has its own light header band (rows 3-5) with a dark line at row 6. The microphone is a small decor item. The top reads as a shallow 4-row band rather than a deep surface, but it has an edge line, so it counts as a top surface. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a wooden witness-stand cabinet, the same kind as the references. Its dark edge pixels are 0% near-neutral, so the outline is a tinted dark brown beside the wood. That matches Beodeul and is not a sticker outline. The wood ramp is shallow, though, at about 4 steps (light top rail, mid panel, dark panel recess, dark edge) against 5-6 in the references. Only 9 distinct colours cover a piece of roughly 2x2 tiles, and 7 visible tones per tile. The comparable stall (17 tones, 40 colours) and roofed well (20 tones, 38 colours) carry far more. Only the hedge (9 tones) is close, and it is a simpler material. There are no flat fills (0% near-flat), but the surface shows panel insets and little else: no per-plank grain, no knots, no speckle, no highlight dots. Next to the stall and well it reads cleaner, flatter and thinner. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 22173
+  }
+ ],
+ "decidedAt": "2026-10-20T22:55:59.279Z",
+ "cells": {
+  "16": [
+   "0ec085d58f3e0483",
+   "b8a864afefc4af61",
+   "bd749a5232e81fc6",
+   "edcea9deb6bf67b3"
+  ],
+  "24": [
+   "1b183eda7c5ce789",
+   "1c54d904ed8f04de",
+   "2ae2b19c9fedcc26",
+   "2b7b278002bb1d9d",
+   "2ebc664dcfae4d87",
+   "354b6d116a8dc574",
+   "3ebb453a40c83e0d",
+   "431a1eec98d28d41",
+   "4701a384fee4134c",
+   "56f588fcb2c9d32e",
+   "79659804af54b978",
+   "9be75ddfcb053129",
+   "a170ca7adb18eb3c",
+   "a655fcd7d00daf53",
+   "b6c8e60118e7b9b2",
+   "b914188969bd0383",
+   "cbeb4ac9453ae997",
+   "d73f1c4fcba0bd06",
+   "d7f897b1c36fbd8c",
+   "d937165660a8e7bb",
+   "e751c22a8dc2e4a7",
+   "ea40a2c2c0ff516f",
+   "eca810a04b400be3",
+   "f9d63226000f61be"
+  ],
+  "32": [
+   "9f2fd12f4fc42739"
+  ],
+  "48": [
+   "2f3d82968308c079",
+   "66fdbbd6d47efb58",
+   "6989be5cef7fcea4",
+   "a2015b4e8d617712",
+   "e08c4a490817d5e9",
+   "ed601ad19794df29"
+  ]
+ }
+}

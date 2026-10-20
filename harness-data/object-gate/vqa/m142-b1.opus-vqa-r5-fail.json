@@ -1,0 +1,66 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b1",
+ "round": 5,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png"
+ ],
+ "items": [
+  {
+   "id": "amuse-speaker-stack",
+   "pixelSha256": "022c68acc7a6eb959cedf1ed598e3c2f303ef755512f80ab0f9f91c6c0909227",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    3
+   ],
+   "reasons": "It is drawn as a flat front view: a grey box with a woofer circle and no lit top plane, so it doesn't match the top-down view of the originals. It is also very narrow and dark next to them, and at 1x it reads as a PC tower more than a speaker stack."
+  },
+  {
+   "id": "arcade-purikura",
+   "pixelSha256": "a8de5ac0031a43d7ddedebb6d9e374077f7c10b84a36864600498de31effc00d",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3
+   ],
+   "reasons": "The booth is a flat front view: the top edge is only a 1–2 row grey strip, with no roof or top plane seen from above. At 1x, the pink striped curtain and small screen panel read as a vending machine or wardrobe, not a photo-sticker booth."
+  },
+  {
+   "id": "arcade-racing-cabinet",
+   "pixelSha256": "c085ff3c50d497655c4dc6b23c01f42a721d3bb74b447199e96e3b4dd8895225",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3,
+    4
+   ],
+   "reasons": "The view is mixed: an upright marquee and screen are stacked over a console shown from above, with a red seat pasted on the front face inside the cabinet outline, so the seat and cabinet don't sit in one believable depth. The red wheel and seat are muddy blobs with noisy dither on the screen, and at 1x it all merges into one red-grey clump."
+  },
+  {
+   "id": "dept-accessory-wall",
+   "pixelSha256": "1167de9414dcebd73c3e2a2443c184dfcbc4375d6bdf65aa1f8e60421fd16858",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "The shelf frame and the lit top plank match the wardrobe original, but the left bay's colourful vertical stripes read as books, so at 1x it looks like a bookcase rather than an accessory display. Apart from the single briefcase, the small items are noisy, high-contrast specks."
+  }
+ ]
+}
