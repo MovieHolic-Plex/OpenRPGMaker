@@ -8,6 +8,7 @@ import { createBlankProject } from "../../src/project/defaults.ts";
 import type { Project } from "../../src/project/types.ts";
 import { renderMapPng } from "../qa-game/render.mts";
 import { PNG } from "pngjs";
+import forestGround from "../../tiledata/beodeul-ground/forest-ground.json";
 
 const out = process.argv[2] ?? "/tmp/bw-show";
 fs.mkdirSync(out, { recursive: true });
@@ -18,6 +19,13 @@ const save = (p: Project, id: string, name: string) => {
   const pad = png.height - m.height * 16, cut = new PNG({ width: png.width, height: m.height * 16 });
   png.data.copy(cut.data, 0, pad * png.width * 4);
   fs.writeFileSync(`${out}/${name}.png`, PNG.sync.write(cut));
+  // 짙은 풀 칸 표(설명 그림용): 맵 칸 → beodeul_ground 칸 번호(가장자리) 또는 원본 속 칸
+  const ts = p.tilesets[m.tilesetId]!, fams = forestGround.darkGrass.families as Record<string, Record<string, number>>;
+  const toGround = new Map<number, number>();
+  for (const f of ["plain", "woodland"]) { const g = ts.autotileGroups?.find((x) => x.id === (f === "plain" ? "beodeul_dark_grass" : "beodeul_dark_grass_woodland")); if (g) for (const [k, t] of Object.entries(fams[f]!)) toGround.set(g.variantMap[k]!, t); }
+  const cells: [number, number, number][] = [];
+  m.lowerTiles.forEach((t, i) => { const gid = toGround.get(t); if (gid !== undefined) cells.push([i % m.width, Math.floor(i / m.width), gid]); else if (forestGround.darkGrass.interior.includes(t)) cells.push([i % m.width, Math.floor(i / m.width), -1]); });
+  fs.writeFileSync(`${out}/${name}.darkgrass.json`, JSON.stringify(cells));
   console.log(name);
 };
 const fresh = (): Ctx => { resetMapEditHistory(); return { project: createBlankProject() }; };
