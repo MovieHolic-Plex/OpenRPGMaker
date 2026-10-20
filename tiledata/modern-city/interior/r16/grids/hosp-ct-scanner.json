@@ -32,11 +32,11 @@
   "A": "#f4f6f8ff"
  },
  "rows": [
-  "................................................",
-  "................................................",
-  "................................................",
   ".bbbbbbbbbbbbbbbbbbbb...........................",
+  "bppppppppppppppppppppb..........................",
+  "bttttttttttttttttttttb..........................",
   "bAAAAAAAAAAAAAAAAAAAAb..........................",
+  "booooooooooooooooooonb..........................",
   "bAAhhhhhhhhhhhhhhhhAnb..........................",
   "bAAffffffffffffffffAnb..........................",
   "bAAAAAAAAAAAAAAAAAAAnb..........................",
@@ -81,5 +81,5 @@
   ".aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.",
   "................................................"
  ],
- "note": ""
+ "note": "r16: gantry top face 3 rows (far p -> t -> white lit edge) + cornice shadow row, using the empty rows above"
 }

@@ -39,11 +39,11 @@
   "H": "#ffffffff"
  },
  "rows": [
-  "................................................................",
-  "................................................................",
-  "................................................................",
   "..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.......................",
-  ".bDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFDb......................",
+  ".btttttttttttttttttttttttttttttttttttttttb......................",
+  ".bBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBb......................",
+  ".bHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHb......................",
+  ".bwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwb......................",
   ".bDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDb......................",
   ".bDDzzzzzzzzzDDDDDDDDDDDDDDDbbbbbbbbbbbDDb......................",
   ".bDDDDDDDDDDDDDDDDDDDDDDDDDDbcccccccccbDDb......................",
@@ -104,5 +104,5 @@
   "................................................................",
   "................................................................"
  ],
- "note": ""
+ "note": "r16: gantry housing top face 3 rows (far t -> B -> white lit edge) + cornice shadow row in the empty rows above"
 }

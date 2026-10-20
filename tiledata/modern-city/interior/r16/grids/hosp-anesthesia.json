@@ -32,9 +32,9 @@
   ".bccccccccccccb.",
   ".bbbbbbbbbbbbbb.",
   ".bbbbbbbbbbbbbb.",
+  ".boooooooooooob.",
+  ".boooooooooooob.",
   ".bqqqqqqqqqqqqb.",
-  ".boooooooooooob.",
-  ".boooooooooooob.",
   ".bmlmlmlmmmbmmb.",
   ".bnlnlnlnnbdbnb.",
   ".bnpnpnpnbgggbb.",
@@ -55,5 +55,5 @@
   "..aaaaaaaaaaaaa.",
   "................"
  ],
- "note": ""
+ "note": "r16: machine top 3 rows relit far-to-near (lightest row is now the front edge) under the monitor"
 }

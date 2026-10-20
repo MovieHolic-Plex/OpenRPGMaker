@@ -21,8 +21,6 @@
  "rows": [
   "................",
   "................",
-  "................",
-  "................",
   "...bbbbbbbbbbb..",
   "...bccccccdddb..",
   "...bccceeebbbb..",
@@ -32,6 +30,8 @@
   "...bddddddbbbb..",
   ".bbbbbbbbbbbbbb.",
   ".bnnnnnnnnnnnnb.",
+  ".bllllllllllllb.",
+  ".bllllllllllllb.",
   "fbllllllllllllb.",
   "fbllllllllllllb.",
   "fbiiiikkkkiiiib.",
@@ -52,5 +52,5 @@
   "..aaaaaaaaaaaaa.",
   "................"
  ],
- "note": ""
+ "note": "r16: cart top deepened to 5 rows (defibrillator moved up into the empty rows)"
 }

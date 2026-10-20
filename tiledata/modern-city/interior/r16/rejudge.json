@@ -166,8 +166,8 @@
  },
  {
   "id": "hosp-icu-pod",
-  "real": true,
-  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+  "real": false,
+  "why": "false FAIL: bed is a top-down mattress and the side cart already has a 4-row white top"
  },
  {
   "id": "hosp-iv-pump",
@@ -581,8 +581,8 @@
  },
  {
   "id": "jumbo-park-box-truck-e",
-  "real": true,
-  "why": "horizontal top (lid/top cap/counter/opening) <=2px — cabinets_lockers"
+  "real": false,
+  "why": "false FAIL: side-facing truck: cargo-box roof is 8 light rows from above and cab roof 6 rows"
  },
  {
   "id": "kinder-cubby",
@@ -751,13 +751,13 @@
  },
  {
   "id": "mart-sashimi-case",
-  "real": true,
-  "why": "horizontal top (lid/top cap/counter/opening) <=2px — counters_stalls"
+  "real": false,
+  "why": "false FAIL: ice well and trays are already seen from above (open top ~8 rows)"
  },
  {
   "id": "mart-self-checkout",
-  "real": true,
-  "why": "horizontal top (lid/top cap/counter/opening) <=2px — counters_stalls"
+  "real": false,
+  "why": "false FAIL: counter top with scanner is already ~6 rows"
  },
  {
   "id": "mart-veg-pyramid",
@@ -1081,8 +1081,8 @@
  },
  {
   "id": "mci-gondola",
-  "real": true,
-  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+  "real": false,
+  "why": "false FAIL: goods hide the top; a light shelf-top ledge is visible above them"
  },
  {
   "id": "mci-magazine",

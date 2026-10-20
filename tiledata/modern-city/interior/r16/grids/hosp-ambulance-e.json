@@ -26,7 +26,9 @@
   "u": "#a35f4cff",
   "v": "#afb1b8ff",
   "w": "#bcbdc3ff",
-  "x": "#c1cfccff"
+  "x": "#c1cfccff",
+  "y": "#e4e9e8ff",
+  "z": "#f1f3f3ff"
  },
  "rows": [
   "................................................................................................",
@@ -41,12 +43,12 @@
   "................................................................................................",
   ".................................................................aaaaaaaa.......................",
   "..........aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa....auuaajka.......................",
-  "........aawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaa.aaaarraahjaaaa....................",
-  ".......axxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwvvawwwwwwwwwwwwwpaa..................",
-  "......axxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwvvawwwwwwwwwwwwwvpa..................",
-  ".....axxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwvvawwwwwwwwwwwwwwvpa.................",
-  ".....axxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwvvawwwwwwwwwwwwwwwpa.................",
-  "....axxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwvvawwwwwwwwwwwwwwwvpa................",
+  "........aaxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxaa.aaaarraahjaaaa....................",
+  ".......ayyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyvvayyyyyyyyyyyyypaa..................",
+  "......ayyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyvvayyyyyyyyyyyyyvpa..................",
+  ".....ayyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyvvayyyyyyyyyyyyyyvpa.................",
+  ".....azzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzvvazzzzzzzzzzzzzzzpa.................",
+  "....avvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvavvvvvvvvvvvvvvvvpa................",
   "....axxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwvvawwwwwwwwwwwwwwwvvpa...............",
   "...axxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwvvawwwwwwwwwwwwwwwvvpa...............",
   "...axxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwvvawvvvvvvvvvvvvpppppda..............",
@@ -78,5 +80,5 @@
   "............bbbbaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbaaaaaabb.............",
   ".................aaaa.......................................................aaaa................"
  ],
- "note": ""
+ "note": "r16: roof read from above: 5 lighter rows (far x -> pale -> white lit edge) + crease row over the white side"
 }

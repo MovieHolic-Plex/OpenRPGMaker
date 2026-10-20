@@ -18,7 +18,8 @@
   "m": "#dde0e7ff",
   "n": "#e4cfaeff",
   "o": "#f1f3f3ff",
-  "p": "#f3f4f7ff"
+  "p": "#f3f4f7ff",
+  "q": "#f4f6f8ff"
  },
  "rows": [
   "................",
@@ -32,7 +33,7 @@
   ".bpnnpooppfffpb.",
   ".bmnnmoommmmmmb.",
   ".bmmmmmmmmmmmmb.",
-  ".bmmmmmmmmmmmmb.",
+  ".bqqqqqqqqqqqqb.",
   ".bppppppppppppb.",
   ".bhhhhhhhhhhhhb.",
   ".bmffffffffffhb.",
@@ -54,5 +55,5 @@
   "..cc........cc..",
   "................"
  ],
- "note": ""
+ "note": "r16: cart top 3 rows now end in a white lit front edge (items on top unchanged)"
 }

@@ -18,11 +18,11 @@
   "m": "#fdffffff"
  },
  "rows": [
-  "................................",
-  "................................",
-  "................................",
-  "................................",
   ".bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.",
+  ".bhhhhhhhhhhhhhhhhhhhhhhhhhhhhb.",
+  ".bjjjjjjjjjjjjjjjjjjjjjjjjjjjjb.",
+  ".bkkkkkkkkkkkkkkkkkkkkkkkkkkkkb.",
+  ".bllllllllllllllllllllllllllllb.",
   ".bmmmmmmmmmmmmmmmmmmmmmmmmmmmmb.",
   ".bkkkkkkkkkkkkkkkkkkkkbbbbbbbbb.",
   ".bkkbbbbbbbbbbbbbbbbbkbccccccbb.",
@@ -51,5 +51,5 @@
   "................................",
   "................................"
  ],
- "note": ""
+ "note": "r16: machine bed top 1 -> 5 rows (h far -> j -> k -> l -> white lit edge) in the empty rows above"
 }

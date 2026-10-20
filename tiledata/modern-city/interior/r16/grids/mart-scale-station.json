@@ -19,8 +19,6 @@
  },
  "rows": [
   "................",
-  "................",
-  "................",
   "....bbbbbbbb....",
   "....bccccccb....",
   "....bcffffcb....",
@@ -34,7 +32,9 @@
   ".blbkkkkkkkkblb.",
   ".bjbbbbbbbbbbjb.",
   ".bjjjjjjjjjjjjb.",
-  ".bjjjjjjjjjjjjb.",
+  ".bkkkkkkkkkkkkb.",
+  ".bllllllllllllb.",
+  ".bmmmmmmmmmmmmb.",
   ".bhhhhhhhhhhhhb.",
   ".beeeeeeeeeeeeb.",
   ".biiiiiiiiiiiib.",
@@ -51,5 +51,5 @@
   ".aaaaaaaaaaaaaa.",
   "................"
  ],
- "note": ""
+ "note": "r16: counter top 2 -> 4 rows (j -> k -> l -> white lit edge); scale moved up 2 rows"
 }

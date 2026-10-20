@@ -21,10 +21,6 @@
  },
  "rows": [
   "................................................",
-  "................................................",
-  "................................................",
-  "................................................",
-  "................................................",
   ".....aaaaaaaaaaaaaaaaaaaa.....aaaaaaaaaa........",
   ".....addddddddbbcccccccca.....adddddddda........",
   ".....addddddddbbcccccccca.....adddddddda........",
@@ -37,9 +33,13 @@
   ".........aa........aa....anna.....aa.....aoooa..",
   ".........aa........aa....anna.....aa.....aoooa..",
   ".aaaaaaaaggaaaaaaaaggaaaannnnaaaaaggaaaaaiiiiia.",
+  ".alllllllllllllllllllllllllllllllllllllllllllla.",
+  ".alllllllllllllllllllllllllllllllllllllllllllla.",
   ".ammmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmma.",
   ".ammmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmma.",
   ".ammmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmma.",
+  ".ammmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmma.",
+  ".aooooooooooooooooooooooooooooooooooooooooooooa.",
   ".ahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhha.",
   ".alllllllllllllllllllllllllllllllllllllllllllla.",
   ".aeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeea.",
@@ -53,5 +53,5 @@
   ".aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.",
   "................................................"
  ],
- "note": ""
+ "note": "r16: counter top 3 -> 7 rows (l far -> m -> white lit edge); monitors moved up into the empty rows"
 }

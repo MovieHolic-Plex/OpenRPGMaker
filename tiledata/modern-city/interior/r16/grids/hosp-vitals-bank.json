@@ -33,11 +33,11 @@
   "................................",
   "................................",
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-  "bkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkb",
-  "bjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjb",
-  "bjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjb",
-  "bhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhb",
   "biiiiiiiiiiiiiiiiiiiiiiiiiiiiiib",
+  "bjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjb",
+  "bjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjb",
+  "bkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkb",
+  "bhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhb",
   "biiibiiiiibiiiiibiiiiibiiiiibiib",
   "biibbbiiibbbiiibbbiiibbbiiibbbib",
   "biiibiiiiibiiiiibiiiiibiiiiibiib",
@@ -50,5 +50,5 @@
   ".aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
   "................................"
  ],
- "note": ""
+ "note": "r16: counter top 3 rows relit far-to-near + white lit edge + shadow row"
 }

@@ -36,10 +36,12 @@
  },
  "rows": [
   ".bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.",
-  "bjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjb",
-  "bjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjb",
-  "bjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjb",
   "bffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb",
+  "bjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjb",
+  "bjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjb",
+  "bjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjb",
+  "bllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllb",
+  "bccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccb",
   "bfffffffffffffffffbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbfffffffffffffffffb",
   "bfffffffffffffffffbBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBbfffffffffffffffffb",
   "bfffffffffffffffffbCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCbfffffffffffffffffb",
@@ -104,9 +106,7 @@
   "..bzzzzzzzzboooooooooooooooooooooooooooooooooooooooooooooooooooooooobzzzzzzzzb..",
   "..bzzzzzzzzboooooooooooooooooooooooooooooooooooooooooooooooooooooooobzzzzzzzzb..",
   "..bzzzzzzzzboooooooooooooooooooooooooooooooooooooooooooooooooooooooobzzzzzzzzb..",
-  "..bzzzzzzzzboooooooooooooooooooooooooooooooooooooooooooooooooooooooobzzzzzzzzb..",
   "..bbbbbbbbboooooooooooooooooooooooooooooooooooooooooooooooooooooooooobbbbbbbbb..",
-  "..boooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooob..",
   "..boooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooob..",
   "..bqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqb..",
   "...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb...",
@@ -116,5 +116,5 @@
   "..aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.",
   "................................................................................"
  ],
- "note": ""
+ "note": "r16: booth roof top 3 -> 5 rows (dark far edge -> green -> bright lit edge) + cornice shadow; dropped 2 repeated plain rows"
 }
