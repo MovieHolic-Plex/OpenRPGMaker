@@ -52,61 +52,73 @@ def _led(c, X, y, w, col='daidai'):
 BUS_BAND = 'midori'
 
 def bus_side(front_right=True, open_=False):
+    """3/4 탑뷰 옆모습(2026-10-20 깊이 다시 그림): 지붕 윗면이 화면 세로 22줄(차폭 2.5m를 위에서 본 면) →
+    둥근 어깨 2줄 → 옆면 26줄. 옥상 설비는 윗면 + 남쪽 면이 있는 상자. 옛 그림은 지붕 13줄 + 옆면 37줄의 입면도였다."""
     s = Side(144, 64, front_right); c = s.c
-    SH, SB = K('shiro', 2), K('shiro', 1)
-    # 지붕 윗면(밝음) — 둥근 앞뒤 모서리
-    c.R(2, 4, 138, 13, SH); c.HL(4, 3, 134, SH); c.VL(139, 5, 11, K('shiro', 0)); c.HL(2, 16, 138, K('conc', 1))
-    c.HL(4, 3, 60, K('shiro', 3)); c.VL(2, 4, 8, K('shiro', 3))                                         # 왼쪽 위 밝은 단
-    c.HL(2, 15, 138, K('shiro', 1))                                                                     # 지붕 → 옆 둥근 어깨
-    for x in (12, 52):                                                                                  # 에어컨 · 뒤쪽 냉각기(뒤 절반) — 윗면 위
-        s.R(x, 6, 24, 7, K('conc', 2)); s.HL(x, 6, 24, K('shiro', 3)); s.VL(x, 6, 7, K('shiro', 2))
-        s.HL(x, 12, 24, K('conc', 0)); s.VL(x + 23, 6, 7, K('conc', 0))
-        for i in range(4, 21, 4): s.HL(x + 2, 6 + 2 + (i // 4) % 2 * 2, 20, K('conc', 1)) if i == 4 else None
-        for i in range(3, 22, 4): s.VL(x + i, 8, 3, K('conc', 1))
-    X = s.fx(76, 22); c.R(X, 9, 22, 3, K('conc', 1)); c.HL(X, 9, 22, K('conc', 3)); c.HL(X, 11, 22, K('conc', 0))   # 환기 덮개
-    # 옆면
-    c.R(2, 17, 138, 37, SB); c.VL(2, 18, 35, K('shiro', 2)); c.VL(139, 18, 35, K('conc', 0)); c.HL(2, 17, 138, K('conc', 2))
-    c.HL(2, 19, 138, K(BUS_BAND, 1))                                                                    # 처마 가는 띠
-    c.R(2, 38, 138, 5, K(BUS_BAND, 1)); c.HL(2, 38, 138, K(BUS_BAND, 2)); c.HL(2, 42, 138, K(BUS_BAND, -1))   # 허리 띠
-    c.HL(2, 46, 138, K(BUS_BAND, 0))
-    # 창 (뒤 → 중문 → 앞문 사이)
+    RT, RB = 3, 25                     # 지붕 윗면 줄(먼 쪽 가장자리 RT, 가까운 쪽 RB-1)
+    ST = RB + 2                         # 옆면 시작(어깨 2줄 아래)
+    # ── 지붕 윗면: 먼 가장자리 밝은 단 · 가운데 · 가까운 쪽으로 한 단 어두워짐(둥근 지붕) ──
+    for y in range(RT, RB):
+        t = 3 if y < RT + 2 else 2 if y < RB - 5 else 1
+        c.HL(3, y, 136, K('shiro', t))
+    c.HL(5, RT - 1, 132, K('shiro', 3)); c.HL(8, RT - 2, 126, K('shiro', 2))                         # 먼 쪽 둥근 가장자리
+    for y in range(RT - 1, RB):                                                                         # 앞뒤 끝: 둥근 모서리(왼쪽 빛 · 오른쪽 그늘)
+        c.P(2, y, K('shiro', 3)); c.P(140, y, K('conc', 0)); c.P(139, y, K('shiro', 1))
+    for x in range(14, 132, 22): c.VL(x, RT + 1, RB - RT - 2, K('shiro', 1))                          # 지붕 판 이음(차폭 방향 = 세로)
+    # 옥상 설비: 에어컨(긴 상자) · 냉각기 · 환기 덮개 — 윗면 + 남쪽 면 + 바닥 그늘
+    def roofbox(x, y, w, top, face):
+        X = s.fx(x, w)
+        c.R(X, y, w, top, K('conc', 3)); c.HL(X, y, w, K('shiro', 3)); c.VL(X, y, top, K('shiro', 3))
+        for i in range(X + 3, X + w - 2, 3): c.VL(i, y + 2, top - 3, K('conc', 2))                     # 윗면 환기 살
+        c.R(X, y + top, w, face, K('conc', 1)); c.HL(X, y + top, w, K('conc', 0)); c.VL(X + w - 1, y, top + face, K('conc', -1))
+        c.HL(X + 1, y + top + face, w, K('shiro', 0)); c.VL(X + w, y + 2, top + face - 1, K('shiro', 0))   # 지붕 위 그늘
+        c.HL(X - 1, y - 1, w + 2, K('conc', -1)); c.VL(X - 1, y, top + face, K('conc', -1))
+    roofbox(14, 6, 30, 9, 3)
+    roofbox(54, 6, 22, 9, 3)
+    roofbox(88, 9, 14, 6, 2)
+    # 앞 끝 위 행선 LED(지붕 앞 가장자리 아래로 내려온 판)
+    # ── 어깨: 지붕 → 옆면 둥근 모서리 2줄 ──
+    c.HL(2, RB, 139, K('shiro', 0)); c.HL(2, RB + 1, 139, K('conc', 1))
+    # ── 옆면 ──
+    c.R(2, ST, 139, 54 - ST, K('shiro', 1)); c.VL(2, ST, 54 - ST, K('shiro', 2)); c.VL(140, ST, 54 - ST, K('conc', 0))
+    c.HL(2, ST, 139, K(BUS_BAND, 1))                                                                    # 처마 가는 띠
+    WY, WH = ST + 2, 11                                                                                 # 창 줄
+    c.R(2, 41, 139, 4, K(BUS_BAND, 1)); c.HL(2, 41, 139, K(BUS_BAND, 2)); c.HL(2, 44, 139, K(BUS_BAND, -1))   # 허리 띠
+    c.HL(2, 47, 139, K(BUS_BAND, 0))
     doors = () if front_right else (66, 116)   # 일본 버스 문은 왼쪽(인도) 면에만. 동쪽 진행이면 보이는 면은 운전석 쪽
     if doors:
-        for x in (6, 20, 34, 48): s.glass(x, 22, 12, 13)
-        s.glass(82, 22, 12, 13); s.glass(96, 22, 12, 13); s.glass(110, 22, 4, 13)
-        _led(c, s.fx(82, 12), 22, 12)                                                                   # 옆 행선 LED (중문 옆 창 위)
+        for x in (6, 20, 34, 48): s.glass(x, WY, 12, WH)
+        s.glass(82, WY, 12, WH); s.glass(96, WY, 12, WH); s.glass(110, WY, 4, WH)
+        _led(c, s.fx(82, 12), WY, 12)
     else:
-        for x in (6, 20, 34, 48, 62, 76, 90, 104): s.glass(x, 22, 12, 13)
-        s.glass(118, 22, 11, 13)                                                                        # 운전석 옆 창
-        s.VL(129, 21, 16, K('conc', 0))
-    # 문: 중문(66..79) · 앞문(116..129) — 저상: 문 아래가 치마 바로 위까지
-    for dx in doors:
+        for x in (6, 20, 34, 48, 62, 76, 90, 104): s.glass(x, WY, 12, WH)
+        s.glass(118, WY, 11, WH)
+        s.VL(129, WY - 1, WH + 2, K('conc', 0))
+    for dx in doors:                                                                                    # 중문 · 앞문(저상: 치마 바로 위까지)
         X = s.fx(dx, 14)
-        c.R(X - 1, 21, 16, 33, K('conc', 0))                                                            # 문틀
+        c.R(X - 1, WY - 1, 16, 55 - WY, K('conc', 0))
         if open_:
-            c.R(X, 22, 14, 31, K('yoru', -2)); c.R(X, 22, 14, 2, K('yoru', -3))
-            c.HL(X, 51, 14, K('yoru', 0)); c.HL(X, 52, 14, K('conc', 1))                                  # 바닥 · 디딤
-            c.R(X, 22, 2, 30, K('garasu', -3)); c.R(X + 12, 22, 2, 30, K('garasu', -3))                    # 접힌 문짝
-            c.VL(X + 3, 26, 24, K('kii', 1)); c.VL(X + 10, 26, 24, K('kii', 0))                           # 손잡이 봉
-            c.R(X + 5, 28, 4, 10, K('yoru', -1))                                                         # 실내 반대편 창
+            c.R(X, WY, 14, 53 - WY, K('yoru', -2)); c.R(X, WY, 14, 2, K('yoru', -3))
+            c.HL(X, 51, 14, K('yoru', 0)); c.HL(X, 52, 14, K('conc', 1))
+            c.R(X, WY, 2, 52 - WY, K('garasu', -3)); c.R(X + 12, WY, 2, 52 - WY, K('garasu', -3))
+            c.VL(X + 3, WY + 3, 48 - WY, K('kii', 1)); c.VL(X + 10, WY + 3, 48 - WY, K('kii', 0))
+            c.R(X + 5, WY + 4, 4, 8, K('yoru', -1))
         else:
-            c.R(X, 22, 14, 31, K('garasu', -1)); c.HL(X, 22, 14, K('garasu', 1)); c.VL(X + 13, 22, 31, K('garasu', -3))
-            c.VL(X + 6, 22, 31, K('tekko', 1)); c.VL(X + 7, 22, 31, K('conc', 2))                         # 두 짝 이음
-            c.HL(X, 36, 14, K('conc', 1)); c.HL(X, 52, 14, K('tekko', 1))
-    # 앞(운전석 옆 큰 유리 · 앞 행선)
-    s.glass(131, 21, 9, 16, base=0, hi=2)
-    X = s.fx(131, 9); c.VL(X if front_right else X + 8, 21, 16, K('conc', 0))
-    _led(c, s.fx(124, 15), 10, 15)
-    s.R(134, 44, 5, 3, K('kii', 3)); s.HL(134, 44, 5, K('kii', 2))                                    # 전조등
-    s.R(130, 49, 9, 2, K('conc', 0))                                                                    # 앞 범퍼 모서리
-    # 뒤: 세로 후미등 + 뒤 창
-    s.R(3, 23, 2, 10, K('aka', 0)); s.VL(3, 23, 10, K('aka', 2)); s.R(3, 44, 2, 3, K('aka', -1))
+            c.R(X, WY, 14, 53 - WY, K('garasu', -1)); c.HL(X, WY, 14, K('garasu', 1)); c.VL(X + 13, WY, 53 - WY, K('garasu', -3))
+            c.VL(X + 6, WY, 53 - WY, K('tekko', 1)); c.VL(X + 7, WY, 53 - WY, K('conc', 2))
+            c.HL(X, WY + WH + 1, 14, K('conc', 1)); c.HL(X, 52, 14, K('tekko', 1))
+    # 앞(운전석 옆 큰 유리 · 앞 행선 LED는 지붕 앞 가장자리 밑)
+    s.glass(131, WY - 1, 9, WH + 4, base=0, hi=2)
+    X = s.fx(131, 9); c.VL(X if front_right else X + 8, WY - 1, WH + 4, K('conc', 0))
+    s.R(134, 46, 5, 2, K('kii', 3))                                                                     # 전조등
+    s.R(130, 49, 10, 2, K('conc', 0))                                                                   # 앞 범퍼 모서리
+    s.R(3, WY + 1, 2, 9, K('aka', 0)); s.VL(3, WY + 1, 9, K('aka', 2)); s.R(3, 46, 2, 2, K('aka', -1))  # 뒤 후미등
     # 치마 · 바퀴
-    c.R(2, 51, 138, 3, K('tekko', 1)); c.HL(2, 51, 138, K('tekko', 2))
+    c.R(2, 51, 139, 3, K('tekko', 1)); c.HL(2, 51, 139, K('tekko', 2))
     for dx in doors:
         if not open_: s.R(dx - 1, 51, 16, 3, K('conc', 0))
     for x in (28, 102):
-        s.arch(x, 52, 8); s.wheel(x, 55, 7)
+        s.arch(x, 52, 8); s.wheel(x, 56, 7)
     out = ink2(c)
     return out.a
 

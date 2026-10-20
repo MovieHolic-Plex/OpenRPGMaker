@@ -8,6 +8,7 @@ sys.path.insert(0, HERE)
 import house_kit as hk  # noqa: E402
 import shop_parts  # noqa: E402,F401  (PARTS/ROOFS/JOINS 등록)
 import landmark_parts as LP  # noqa: E402
+import depth34  # noqa: E402,F401  (3/4 깊이 지붕 hip_top·gable_top·flat_top 등록)
 from shop_parts import vsign, chimney, red_lamp  # noqa: E402
 from house_kit import RECIPES as R0  # noqa: E402
 
@@ -32,7 +33,15 @@ def add(id_, name, cat, r):
 
 
 # ── 주택(기존 6) ──
-add('house_hip2', '2층 寄棟 단독주택', 'house', R0['hip2'])
+def _deep(r, roof, **floors_h):
+    """3/4 깊이 지붕으로 바꾼 사본(2026-10-20): roof = ('hip_top'|'gable_top'|'flat_top', opt). floors_h = {층 번호: 높이}."""
+    import copy
+    r = copy.deepcopy(r); r['roof'] = roof
+    for k, h in floors_h.items(): r['floors'][int(k[1:])]['h'] = h
+    return r
+
+
+add('house_hip2', '2층 寄棟 단독주택', 'house', _deep(R0['hip2'], ('hip_top', {'h': 60, 'ridge': 0.0, 'run': 14}), f1=26))
 add('house_gable_garage', '2층 박공 단독주택 · 차고', 'house', R0['gable2_garage'])
 add('house_hiraya', '단층 寄棟 平屋', 'house', R0['hip1'])
 add('house_shed_modern', '2층 片流れ 모던주택', 'house', R0['shed2'])
@@ -265,8 +274,8 @@ add('office6', '6층 오피스 빌딩', 'commercial', dict(
            [fl(28, 'garasu', 0, 'curtain') for _ in range(5)],
     joins=[('belt', {})] * 5))
 add('post_office', '郵便局', 'public', dict(
-    w=7, rmat='conc', rbase=0, roof=('flat', {'items': (('ac', 20),)}),
-    floors=[fl(56, 'shiro', 2, T, ('sign', 1, 80, '郵便局', 'aka', WH, 1, 18), ('shopglass', 0, 96, 'paper', 0, 23, 'mid'), ('postbox', 6, 2)),
+    w=7, rmat='conc', rbase=0, roof=('flat_top', {'h': 72, 'items': (('pent', 8, 18), ('ac', 46, 34), ('ac', 64, 34), ('tank', 86, 8))}),
+    floors=[fl(48, 'shiro', 2, T, ('sign', 1, 80, '', 'aka', WH, 1, 14), ('shopglass', 0, 96, 'paper', 0, 19, 'mid'), ('postbox', 6, 2)),
             fl(28, 'shiro', 2, T, ('sash', 0, 48, 14, 8, 8, False, True), ('sash', 4, 32, 14, 8, 8, False, True))],
     joins=[('shop_band', {})]))
 add('koban', '交番 파출소', 'public', dict(
