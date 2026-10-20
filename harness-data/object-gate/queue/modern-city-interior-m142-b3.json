@@ -1,0 +1,87 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "modern-city-interior-m142-b3",
+ "title": "modern_city 실내 기물 m142-b3 (13) — object-gen 다시 그림, 사용자 위임·Opus 적대 VQA 통과 2026-10-21",
+ "note": "delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/m142-b3.opus-vqa-r*.json",
+ "createdAt": "2026-10-20T23:48:05.982Z",
+ "items": [
+  {
+   "sha": "0c992f55872d44aca66963ecc69e1c9f678de68ca3484d8d5fa52a7553e9b35c",
+   "kind": "container",
+   "label": "modern_city_interior/hospital-med-cabinet",
+   "source": "/home/main/.cache/ogm142/ship/m142-b3/hospital-med-cabinet.png"
+  },
+  {
+   "sha": "420b37cea9ca61be1a6b646219d0457ddb036333e999d64bfc6272d00f52e6d3",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/hospital-nurse-station",
+   "source": "/home/main/.cache/ogm142/ship/m142-b3/hospital-nurse-station.png"
+  },
+  {
+   "sha": "46584f5be27460c2536f858930360f6107e7fa643be6796eba6ff74c97b3c292",
+   "kind": "wall_mounted",
+   "label": "modern_city_interior/infirmary-eye-chart",
+   "source": "/home/main/.cache/ogm142/ship/m142-b3/infirmary-eye-chart.png"
+  },
+  {
+   "sha": "a7fb8acc0af6ee9d1fa0df6339558ef75f1005c90db11fa54612cc7febb178c5",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/jp-tokonoma",
+   "source": "/home/main/.cache/ogm142/ship/m142-b3/jp-tokonoma.png"
+  },
+  {
+   "sha": "bd41a6a81fbdbb5f7a9883fad05c8d71c830b4efbb3b55e767fc40c5a1fa15bb",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/jumbo-arcade-dance-stage",
+   "source": "/home/main/.cache/ogm142/ship/m142-b3/jumbo-arcade-dance-stage.png"
+  },
+  {
+   "sha": "845f235ae7d038b448ae5cc53e3164e2f2661f898251ee7146840d19e41e5a3f",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/jumbo-arcade-racing-twin",
+   "source": "/home/main/.cache/ogm142/ship/m142-b3/jumbo-arcade-racing-twin.png"
+  },
+  {
+   "sha": "461ffeca34bd6c702670d80cc4d46d97504a54a80161ce54602393add5e3f2fa",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/jumbo-hosp-mri",
+   "source": "/home/main/.cache/ogm142/ship/m142-b3/jumbo-hosp-mri.png"
+  },
+  {
+   "sha": "3643b3c433082fd6594f4fa55a15dc6c39c4bb42658465c693cc64373d5e32cb",
+   "kind": "structure",
+   "label": "modern_city_interior/jumbo-station-ticket-office",
+   "source": "/home/main/.cache/ogm142/ship/m142-b3/jumbo-station-ticket-office.png"
+  },
+  {
+   "sha": "22d44acd0522d6fa51dae768db0d59ee51890e97739917e36fcce2c0cff89447",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/kinder-cubby",
+   "source": "/home/main/.cache/ogm142/ship/m142-b3/kinder-cubby.png"
+  },
+  {
+   "sha": "dc6e9ceb320237220cb2a28608eac7cc6d515c02986a34fd8f61b6a2d9cd3e68",
+   "kind": "flat",
+   "label": "modern_city_interior/kinder-play-mat",
+   "source": "/home/main/.cache/ogm142/ship/m142-b3/kinder-play-mat.png"
+  },
+  {
+   "sha": "006f1283fb5a4f106339ad7e28e074f561d846340d98c8d8dfd313e34e9d85e8",
+   "kind": "container",
+   "label": "modern_city_interior/konbini-bento",
+   "source": "/home/main/.cache/ogm142/ship/m142-b3/konbini-bento.png"
+  },
+  {
+   "sha": "021e6e1c7647808e50273ce77d6c718cd93b408a1b993865cd0c61d2fa5ede36",
+   "kind": "container",
+   "label": "modern_city_interior/konbini-hot-snack",
+   "source": "/home/main/.cache/ogm142/ship/m142-b3/konbini-hot-snack.png"
+  },
+  {
+   "sha": "57b5248dd9ac413ed81cf71f29ee4cb54de75a3b63ad8ea33d58567c955884a3",
+   "kind": "container",
+   "label": "modern_city_interior/konbini-magazine-rack",
+   "source": "/home/main/.cache/ogm142/ship/m142-b3/konbini-magazine-rack.png"
+  }
+ ]
+}

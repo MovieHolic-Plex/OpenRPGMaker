@@ -1,0 +1,217 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b3",
+ "round": 1,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png",
+  "board-3.png",
+  "board-4.png",
+  "board-5.png"
+ ],
+ "items": [
+  {
+   "id": "hospital-med-cabinet",
+   "pixelSha256": "e3705f62f9e048372b3611b611c85103bf2c2e8620368bab672b8f0c1cedba4c",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2
+   ],
+   "reasons": "Drawn as a flat front elevation with no lit top plane, only a 1-row grey cap. The outline is light grey, not the dark navy outline the originals use."
+  },
+  {
+   "id": "hospital-nurse-station",
+   "pixelSha256": "7c23b2329df68e2e6abafe2bf0e535ce85c18cf4c3d2e16122bec6de2f32a840",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    4
+   ],
+   "reasons": "The counter top is visible, but the outline is pale grey and much weaker than the originals. The clipboard hangs off the right monitor, and the green ECG screens and tiny binders add noisy detail at 1x."
+  },
+  {
+   "id": "hospital-water-dispenser",
+   "pixelSha256": "eae91a8fca725f833cbb7ad03830fd90973d44e89513baa659eafed6658ed29b",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2
+   ],
+   "reasons": "Pure front elevation: the bottle and body have no top surface, and the dispenser body is just a flat face. The grey outline and pale palette don't match the dark-outlined originals."
+  },
+  {
+   "id": "hotel-capsule-pods",
+   "pixelSha256": "3e3d934e4b0b5bde686050f9b7a98800e9a8c2317741e7ce96010f5297a72df1",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    4
+   ],
+   "reasons": "A flat wall of capsule fronts with no 3/4 depth, just a thin grey strip on top. Corner nubs stick out past the frame at the canvas edges, and the light grey outline is off-chipset."
+  },
+  {
+   "id": "ind-lathe",
+   "pixelSha256": "f221b8e08ef772db88b60c1729d918ffe1c02a7267e495b0d97b96679b5655bb",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    3
+   ],
+   "reasons": "At 1x it reads as a grey box with an orange panel. There's no recognisable spindle, bed or tailstock. The outline is light grey and the blue blob at the bottom left is unclear."
+  },
+  {
+   "id": "infirmary-eye-chart",
+   "pixelSha256": "0e6a9bac706f9af896fb38acd0441faf5913a252bcbc7baf67ad18b1b722c91d",
+   "verdict": "FAIL",
+   "failed": [
+    4,
+    5
+   ],
+   "reasons": "In the room it straddles the wall and floor, neither hung nor standing on a ground line. The letters merge into black blobs, with an oversized C, rather than a readable chart of letters getting smaller."
+  },
+  {
+   "id": "izakaya-beer-server",
+   "pixelSha256": "8487885f6ebd35bae9664592b424ba98619c324c32b6cc7496363a9ee0c3a55d",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4,
+    5
+   ],
+   "reasons": "At 1x it's an unreadable tiny brown column. The beer mug floats detached at the upper left of the tap tower, and the cabinet has no clear top plane or ground line."
+  },
+  {
+   "id": "jp-tokonoma",
+   "pixelSha256": "c0f18146b39d43868df46b56618c91109d692fe14f23300dcad00679c01a53a7",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2
+   ],
+   "reasons": "Front elevation of an alcove: the inside is shown flat, and the floor board shows only as a thin strip. Its scale covers wall and floor like an oversized cabinet, and the brown outline is lighter than the originals."
+  },
+  {
+   "id": "jp-torii",
+   "pixelSha256": "6ca1c87cf55306b1d2aa9733f7bbdfe1a324dbcf6786247f6dabcd9a69c68a0f",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2
+   ],
+   "reasons": "Flat front elevation: the beams and pillars have no top planes. It's toy-sized for a torii, about one desk wide, so the scale is wrong for the object."
+  },
+  {
+   "id": "jumbo-arcade-dance-stage",
+   "pixelSha256": "bd41a6a81fbdbb5f7a9883fad05c8d71c830b4efbb3b55e767fc40c5a1fa15bb",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The dance pad platform is a lit top plane with clear arrow panels, and the cabinet has a short front. The dark outline and neon palette fit the chipset, and it sits grounded in the room."
+  },
+  {
+   "id": "jumbo-arcade-racing-twin",
+   "pixelSha256": "96c97a06837b2caec6a0cf021e3bad4941170560f9306d25fd77b2f839da7d49",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "Seats and screens are shown in front elevation with no visible top planes. The black centre column with yellow eye-like pixels reads as a stray figure, and the noisy small lights clutter the front."
+  },
+  {
+   "id": "jumbo-hosp-mri",
+   "pixelSha256": "767562edf7562b890f5255820005b5a471aef02a83a7c6857a65de137eec729b",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2
+   ],
+   "reasons": "The gantry ring is a flat frontal face with no top plane. Pale grey outlines with no dark contour don't match the originals, and the console beside it looks like it floats on a thin pedestal."
+  },
+  {
+   "id": "jumbo-station-ticket-office",
+   "pixelSha256": "3643b3c433082fd6594f4fa55a15dc6c39c4bb42658465c693cc64373d5e32cb",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The green roof reads as a lit top plane above a short front with windows, clerks and ticket machines. The dark brown outline and density match, and it sits on the floor."
+  },
+  {
+   "id": "kinder-cubby",
+   "pixelSha256": "ef2d63965d1a3c52516a62d3f4239f526a4c54b2bb8d5652ac6e9b8966c9c9cc",
+   "verdict": "FAIL",
+   "failed": [
+    1
+   ],
+   "reasons": "The top plane is only about 2 rows, well short of the wardrobe original. It reads as a flat front-view shelf of cubbies."
+  },
+  {
+   "id": "kinder-play-mat",
+   "pixelSha256": "dc6e9ceb320237220cb2a28608eac7cc6d515c02986a34fd8f61b6a2d9cd3e68",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "A flat floor mat seen from above with clear interlocking A–F tiles. It lies on the floor inside its footprint, and the scale is fine."
+  },
+  {
+   "id": "konbini-bento",
+   "pixelSha256": "88d8eb3fd73981bf04dfa58534e6dfaace3477fc8e7e9dce977eb43303184d7b",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    4
+   ],
+   "reasons": "The shelf contents are a noisy jumble of single bright pixels at 1x. The case has a thin light grey outline instead of the chipset's dark contour."
+  },
+  {
+   "id": "konbini-copier",
+   "pixelSha256": "0edc88066086fdcb68e06376f570b2d0961078609f548c7a648c18c2087301e6",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3
+   ],
+   "reasons": "A tall narrow beige box in front elevation with only a small lid plane. At 1x it reads as a cabinet or ATM; the copier's wide body and paper trays are missing."
+  },
+  {
+   "id": "konbini-hot-snack",
+   "pixelSha256": "557b0870dda143f99db057f49c4bf05980cdf825e7f2351c7804758b8df23aa6",
+   "verdict": "FAIL",
+   "failed": [
+    4,
+    5
+   ],
+   "reasons": "A red pixel strip pokes out past the right side of the case at the middle shelf, painted outside its footprint. The food is a muddy orange blob, and there's no top plane."
+  },
+  {
+   "id": "konbini-magazine-rack",
+   "pixelSha256": "57b5248dd9ac413ed81cf71f29ee4cb54de75a3b63ad8ea33d58567c955884a3",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "Tiered slanted shelves are shown from above with magazine covers visible. The brown outline and shading match the wardrobe original, and it's grounded in the room."
+  },
+  {
+   "id": "lab-fume-hood",
+   "pixelSha256": "84478f054b9b429a0b9a2244af5e2762bfbb8c43d7bd353060cb23f5f6e9446b",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    3
+   ],
+   "reasons": "The light grey outline and washed-out palette don't match the dark-outlined originals. At 1x it reads as a generic display cabinet, with no clear sash window and exhaust top that would make it a fume hood."
+  }
+ ]
+}

@@ -1,0 +1,297 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dc6e9ceb320237220cb2a28608eac7cc6d515c02986a34fd8f61b6a2d9cd3e68",
+ "width": 48,
+ "height": 32,
+ "kind": "flat",
+ "name": "kinder play mat",
+ "label": "modern_city_interior/kinder-play-mat",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 11,
+  "darkV5": 82,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "play mat made of six interlocking letter tiles (A-F) in a 3x2 grid, seen from above",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a near-rectangular plate 44-46 px wide and 32 rows tall, with puzzle-like scalloped edges. The six tiles (red A, yellow B, green C, blue D, green E, red F) are all drawn as flat surfaces seen straight from above, with letters laid flat on them. There is no front face, no front-edge line, no eave shadow and no vertical side. This is a flat mat, which suits the kind 'flat'."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The mat is six rounded puzzle pieces (A-F) on a dark backdrop. Each piece has only about 3 steps: a base colour, a light top-left edge and a darker rim. The letters are flat white. The measured 8 visible tones per tile beat the grass reference (3) and are close to the paving reference (7), but most of those tones come from the dark backdrop, the white letters and the piece borders, not from shading inside a material. 24% near-flat coverage against 0% in both references fits the large single-colour piece interiors, which have no speckle, grain or per-piece variation. The dark edge pixels are tinted (0% neutral), so the outline reads as dark material tone and avoids the black-sticker look. Even so, the glossy foam pieces look like separate stickers, not a ground surface with the layered ramps and texture dots of the Beodeul grass and paving. Several 5x5 or larger areas are flat fills, and the piece reads thinner and flatter than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 13663
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "puzzle-tile play mat (6 interlocking tiles A-F)",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The whole sprite is a flat plate seen from directly above. It is a 2x3 grid of interlocking jigsaw-edged tiles (red A, yellow B, green C, blue D, green E, red F), each with a white letter. Row widths stay at 44-46 across rows 1-31, so there is no widening or narrowing that would indicate an ellipse. There is no front-edge line, no eave shadow and no vertical south face. The darker tile edges and the shadow under each letter are decoration, not a front face. For a flat kind this top-down read is expected."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are not bad: 8 visible tones per tile (paving reference 7, grass 3), tinted outlines (0% neutral dark edge pixels) and 24% near-flat coverage. By eye, though, each foam piece is a flat colour (red, yellow, green or blue) with only one highlight edge and one dark rim, so each material ramp has about 3 steps against the references' 5-6. The piece faces are broad, untextured fills with no speckle, grain or foam texture; the only variation is the flat letter glyphs. The grass and paving references carry grain, clumps and per-stone shading across the whole tile, and the candidate reads as a clean, sticker-like icon beside them. The outlines are dark tints of each piece's own colour, which is correct, but shallow ramps and flat fills still leave it below the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 16016
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "alphabet play mat: six interlocking puzzle tiles (A red, B yellow, C green, D blue, E green, F red) seen from above",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a flat foam puzzle mat made of six lettered interlocking tiles in a 3x2 grid, viewed straight from above. The silhouette width is nearly constant at 44-46 px across rows 1-31, with only small puzzle-tab notches. There is no front-edge line, no eave shadow, no ellipse, and no vertical south face. The only dark rows (row 15 at x=12, row 17 at x=35) are borders between tiles, not a front face. It fits the flat kind as a plate seen from above, with no front face of 3 or more rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small set of six jigsaw-style letter mats (A-F) on a dark, empty background. It is not a 4x3-tile ground patch that tiles like the grass or paving references, so it does not read as a ground surface of the same kind. Each mat has only about 3 lightness steps (a base colour, a lighter top edge, a darker rim) against roughly 5 in the references. The outlines are tinted dark tones of each mat colour, with 0% neutral dark edge pixels, which is a point in its favour. The measured 8 visible tones per tile is above the grass reference (3) and about equal to the paving reference (7), but 24% near-flat coverage versus 0% in both references shows large flat colour areas inside the mats and the dark background. The references carry per-stone shading, grass tufts and grain. The candidate has none of that surface grain, and its letters and puzzle shapes are flat, sticker-like fills.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 9697
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "play mat made of six interlocking letter tiles (A-F) seen from above",
+      "rows": "0-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a flat grid of six puzzle-piece foam tiles (red A, yellow B, green C, blue D, green E, red F) with white letters. The silhouette is a near-constant 44-46 px wide for rows 1-31, with no front face, no front-edge line and no eave shadow. Tile borders and letters are drawn straight-on. This is a flat plate with no vertical south face, which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a set of six jigsaw foam mats, each with a base colour, a lighter top edge and a darker bottom edge, so about 3 steps per colour against roughly 5 in the references. The outlines lean towards the neighbouring material colour (0% neutral dark edge pixels), which is acceptable. The mats have no grain, speckle or per-tile variation, and the letters are drawn as flat white glyphs. Near-flat coverage is 24%, against 0% for both references, which fits the large single-colour areas visible in each piece. The 8 visible tones per tile are in line with the paving (7) and above the grass (3), but they come from a few flat colour blocks rather than texture. Next to the grass and paving references the candidate looks like a flat, sticker-like icon on a plain dark backdrop, not a textured ground patch. It also looks smaller than a 4x3 tile patch.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 12184
+  }
+ ],
+ "decidedAt": "2026-10-20T23:53:05.174Z",
+ "cells": {
+  "16": [
+   "048ca3e67839ba8a",
+   "07d84284c8367bbd",
+   "563a631be4911a5d",
+   "718576810da6f34d",
+   "8ff9e4b66348f6f1",
+   "ac31c74ab697e1de"
+  ],
+  "24": [
+   "01cfb5482f136ee3",
+   "36ef07f2e8216c55",
+   "763f535b7e908fb9",
+   "7b5eb479231dc23e",
+   "8b5076614fbffb20",
+   "ad9ea347908173ce",
+   "afc80cf4aa6f518e",
+   "d7937c187e99d221"
+  ],
+  "32": [
+   "16f64ccfb0c32292",
+   "4203d2983ab48250",
+   "47707b76c6e7a24a",
+   "889f5190bff1665e",
+   "ae54ee2f69c7f3ff",
+   "f9738249e25c96cb"
+  ],
+  "48": [
+   "cdc1a95b39197c73",
+   "f87a849b5d8863da"
+  ]
+ }
+}
