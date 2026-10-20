@@ -10,7 +10,7 @@ import type { Command, Project } from "@/project/types";
 const SPEAKERS: readonly [RegExp, AstraCastId][] = [
   [/^엄마$/u, "mom"],
   [/^천문박사$/u, "professor"],
-  [/(^|· )나루$/u, "naru"],
+  [/(^|· |라이벌 )나루$/u, "naru"],
   [/^센터 직원$/u, "nurse"],
   [/(^|· |관장 )유림$/u, "yurim"],
   [/(^|· )무영$/u, "muyeong"],
