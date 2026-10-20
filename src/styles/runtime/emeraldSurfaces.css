@@ -561,9 +561,10 @@
    안내 창도 두 줄이 들어가게 캠페인 화면에서만 글줄을 줄인다. */
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .campaign-menu-detail [data-testid="campaign-next-objective"] :is(.status-menu-detail-description, .status-menu-detail-value) { display: none; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"]:has(.campaign-menu-detail) .status-menu-message { font: 14px/18px var(--runtime-pixel-font); }
-/* 배지·목표: 목록 높이를 32px 행의 정수배(5줄=160px)로 맞춰 맨 아래 줄이 안내 창에 반쯤 잘리지 않게 한다. */
-.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="campaign-progress"] .status-menu-detail { bottom: 84px; }
-.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="campaign-progress"] .status-menu-detail-list { grid-auto-rows: 32px; }
+/* 배지·목표: 6줄(다음 목표 1 + 배지 1 + 목표 4)이 스크롤 없이 모두 보이도록 28px 행의 정수배(6줄=168px)로 맞춘다. */
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="campaign-progress"] .status-menu-detail { bottom: 76px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="campaign-progress"] .status-menu-detail-list { grid-auto-rows: 28px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="campaign-progress"] .status-menu-detail-row { min-height: 28px; }
 /* 아직 못 받은 배지는 흐리게 — 받은 배지(아이콘 있음)가 한눈에 구분된다. */
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .campaign-menu-detail [data-badge-acquired="false"] :is(.status-menu-detail-label, .status-menu-detail-value) { opacity: 0.55; }
 /* 보관함(PC): 머리 줄 [◀ 상자 이름 ▶] + 6×5 칸. 칸은 그림만 보이고 이름·레벨은 아래 설명창이 읽어 준다. */
