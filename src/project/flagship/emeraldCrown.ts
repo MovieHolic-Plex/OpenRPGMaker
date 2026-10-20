@@ -484,6 +484,8 @@ function rescaleEnemy(enemy: Project["database"]["enemies"][number], level: numb
  * - 신전 보스 4마리·챔피언 6마리는 배지 하나짜리 데모에 길다 → 3마리·4마리.
  */
 function tunePacing(project: Project): void {
+  // 정직한 여정에서 신전 보스·리그를 두 번씩 졌다 — 둘째 몬스터가 싸울 일이 없어 Lv5 에 머물렀다(2026-10-21 실측). 경험치 나누기를 켜 벤치도 절반을 받게 한다.
+  project.system.rewardPolicy = { ...(project.system.rewardPolicy ?? {}), expShare: true };
   const enemies = project.database.enemies;
   const byId = (id: string) => enemies.find((e) => e.id === id);
   const reskin: Record<string, { species: string; level?: number }> = {
@@ -554,8 +556,10 @@ function tunePacing(project: Project): void {
   // 챔피언 나루: Lv10 넷에 2단 진화 베르카부가 선봉이라 신전 보스를 정직하게 이긴 Lv12·Lv9 파티가 두 번 졌다(2026-10-21 정직 여정).
   // 나루의 첫 동료(포포비→베르카부)를 마지막 에이스(Lv10)로 돌리고 나머지 셋은 Lv9 — 마지막 승부의 긴장은 에이스에 둔다.
   const league = project.database.troops.find((t) => t.id === "mx_troop_mx_map_league_0_league_challenge");
+  // 그래도 경험치 나누기를 켠 정직한 여정(Lv12 풀·Lv10 비행)이 선봉 피오르(비행)에게 풀 스타터가 막혀 두 번 졌다(2026-10-21) — 넷은 이 데모의 두 마리 파티에 과하다.
+  // 선봉 피오르를 빼고 셋(Lv9·Lv9·에이스 Lv10)으로 줄인다.
   if (league?.members?.length === 4) {
-    const [ace, ...rest] = league.members;
+    const [ace, , ...rest] = league.members;
     league.members = [...rest, ace!];
     league.enemyIds = league.members.map((m) => m.enemyId);
     for (const m of rest) { const e = byId(m.enemyId); if (e) rescaleEnemy(e, 9); }
