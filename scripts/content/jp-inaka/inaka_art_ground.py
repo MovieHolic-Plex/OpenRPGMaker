@@ -573,16 +573,125 @@ def furrow_body() -> np.ndarray:
     return a
 
 
+# ═══════════════════ 단일 칸 바닥(R14: 넓게 깔아도 16px 격자가 안 보이게) ═══════════════════
+# 단일 칸은 변형 없이 같은 칸만 되풀이되므로, 눈에 띄는 무리 하나가 서면 16px 마다 줄·대각선·물방울 무늬가 선다.
+# 작은 결을 칸 전체에 고르게(토러스 거리로 서로 떨어지게) 흩고, 크기·간격·톤을 섞어 주된 줄·열·대각선이 없게 한다.
+def _scatter(n: int, mind: float, seed: int, tries: int = 400) -> list[tuple[int, int]]:
+    """16×16 토러스 위 결정적 포아송 원반 흩뿌림(같은 입력 → 같은 점). 같은 행·열에 3개 이상 몰리지 않게 한다."""
+    pts: list[tuple[int, int]] = []
+    rows: collections.Counter = collections.Counter()
+    cols: collections.Counter = collections.Counter()
+    for t in range(tries):
+        if len(pts) >= n:
+            break
+        x = int(GA.h01(t, 1, seed) * 16) % 16
+        y = int(GA.h01(t, 2, seed) * 16) % 16
+        if rows[y] >= 2 or cols[x] >= 2:
+            continue
+        ok = True
+        for (px, py) in pts:
+            dx = min(abs(px - x), 16 - abs(px - x)); dy = min(abs(py - y), 16 - abs(py - y))
+            if dx * dx + dy * dy < mind * mind:
+                ok = False; break
+        if ok:
+            pts.append((x, y)); rows[y] += 1; cols[x] += 1
+    return pts
+
+
+def _speckle(a, col, seed, rate):
+    for y in range(16):
+        for x in range(16):
+            if h(x, y, seed) < rate:
+                a[y, x] = col
+
+
+def aze_path_body() -> np.ndarray:
+    """논두렁·흙마당 단일 칸: 다진 흙 + 칸 전체에 흩어진 잔 알갱이·잔돌 + 옅은 풀싹. 가로 돌 줄을 두지 않는다."""
+    a = blank(DIRT[4])
+    _speckle(a, DIRT[3], 201, .10)                               # 다진 흙 얼룩(1px, 옅게)
+    pts = _scatter(14, 3.2, 202, tries=900)
+    for i, (x, y) in enumerate(pts):
+        k = i % 5
+        if k == 0:                                              # 알갱이: 빛 위 + 그늘 아래
+            put(a, x, y, DIRT[5]); put(a, x, y + 1, DIRT[2])
+        elif k == 1:                                            # 잔돌 한 알
+            put(a, x, y, PEBBLE[2]); put(a, x + 1, y + 1, DIRT[2])
+        elif k == 2:                                            # 패인 점
+            put(a, x, y, DIRT[2]); put(a, x - 1, y, DIRT[3])
+        elif k == 3:                                            # 밝은 흙 알
+            put(a, x, y, DIRT[5])
+        elif i in (4, 9):                                       # 옅은 풀싹(따뜻한 잎끝 1 + 그늘 1)
+            put(a, x, y, GRASS[5]); put(a, x, y + 1, DIRT[2])
+        else:
+            put(a, x, y, DIRT[3]); put(a, x + 1, y, DIRT[2])
+    return a
+
+
+def gravel_road_tile_body() -> np.ndarray:
+    """자갈 신작로 단일 칸: 다진 흙 위 촘촘한 잔자갈(돌 3~4톤, 1~2px, 돌마다 오른쪽 아래 그늘)."""
+    a = blank(DIRT[3])
+    _speckle(a, DIRT[4], 211, .35)                              # 다진 흙(두 톤 섞임)
+    _speckle(a, DIRT[2], 212, .08)
+    pts = _scatter(26, 2.3, 213, tries=900)
+    for i, (x, y) in enumerate(pts):
+        tone = 1 + int(h(i, 3, 214) * 3.99)                     # 1..4
+        r = h(i, 4, 215)
+        put(a, x + 1, y + 1, DIRT[1]); put(a, x, y + 1, DIRT[2])
+        put(a, x, y, PEBBLE[tone])
+        if r < .2:                                              # 가로 긴 돌
+            put(a, x + 1, y, PEBBLE[max(0, tone - 1)]); put(a, x + 2, y + 1, DIRT[1])
+        elif r < .35:                                           # 세로 긴 돌
+            put(a, x, y + 1, PEBBLE[max(0, tone - 1)]); put(a, x, y + 2, DIRT[2]); put(a, x + 1, y + 2, DIRT[1])
+    return a
+
+
+def canal_water_tile_body() -> np.ndarray:
+    """농수로 물 단일 칸: 짙은 흐르는 물 + 칸 곳곳에 짧은 가로 물살(길이 2~4, 행이 겹치지 않게)."""
+    a = blank(P('canal_indigo', 2))
+    _speckle(a, P('canal_indigo', 1), 221, .22)
+    _speckle(a, P('canal_indigo', 3), 222, .05)
+    used_rows: set[int] = set()
+    for i, (x, y) in enumerate(_scatter(6, 4.2, 223)):
+        if y in used_rows:
+            y = (y + 1) % 16
+        used_rows.add(y)
+        ln = 2 + int(h(i, 5, 224) * 2.99)
+        for j in range(ln):
+            put(a, x + j, y, P('canal_indigo', 4) if 0 < j < ln - 1 or ln == 2 else P('canal_indigo', 3))
+        put(a, x + 1, y + 1, P('canal_indigo', 1))
+    return a
+
+
+def meadow_flower_body() -> np.ndarray:
+    """여름 풀밭(토끼풀 꽃) 단일 칸: 풀 몸 + 흩어진 풀 그늘·잎끝 + 크기 둘의 토끼풀 꽃을 고르지 않게(한 번에 흩어 행·열이 겹치지 않음)."""
+    W4, W2 = P('vending_cool_white', 4), P('vending_cool_white', 2)
+    a = blank(GRASS[4])
+    _speckle(a, GRASS[3], 231, .09)
+    _speckle(a, GRASS[5], 232, .03)
+    pts = _scatter(11, 3.3, 233, tries=900)
+    for i, (x, y) in enumerate(pts):
+        if i in (0, 6):                                         # 큰 꽃(둥근 머리 3px + 잎 그늘)
+            put(a, x, y, W4); put(a, x + 1, y, W2); put(a, x, y + 1, W2)
+            put(a, x + 1, y + 1, GRASS[2]); put(a, x, y + 2, GRASS[2])
+        elif i in (2, 4, 8, 10):                                # 작은 꽃(1px)
+            put(a, x, y, W2 if i % 4 else W4); put(a, x, y + 1, GRASS[2])
+        elif i == 5:                                            # 꽃봉오리(덜 핀 흰 꽃, 1px 흐림)
+            put(a, x, y, W2); put(a, x + 1, y, GRASS[3])
+        else:                                                   # 풀잎 획
+            put(a, x, y, GRASS[6] if i % 2 else GRASS[5]); put(a, x, y + 1, GRASS[3])
+    return a
+
+
 _BODY = {
     'gnd/inaka-paddy-water': (paddy_water_body, 'solidfloor'),
     'gnd/inaka-paddy-summer': (paddy_summer_body, 'solidfloor'),
     'gnd/inaka-paddy-golden': (paddy_golden_body, 'solidfloor'),
-    'gnd/inaka-aze-path': (dirt_body, 'floor'),
-    'gnd/inaka-canal-water': (canal_water_body, 'solidfloor'),
+    'gnd/inaka-aze-path': (aze_path_body, 'floor'),
+    'gnd/inaka-canal-water': (canal_water_tile_body, 'solidfloor'),
     'gnd/inaka-canal-wall': (canal_wall_body, 'solidfloor'),
-    'gnd/inaka-gravel-road': (gravel_road_body, 'floor'),
+    'gnd/inaka-gravel-road': (gravel_road_tile_body, 'floor'),
     'gnd/inaka-river-shallow': (stream_body, 'solidfloor'),
-    'gnd/inaka-meadow-wildflower': (lambda: grass_var(_GRASS_TEX, 1), 'floor'),
+    'gnd/inaka-meadow-wildflower': (meadow_flower_body, 'floor'),
     'gnd/inaka-vegetable-furrow': (furrow_body, 'solidfloor'),
 }
 

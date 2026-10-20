@@ -152,6 +152,14 @@ R4 의 PR-A(#3054)·PR-B(#3056)를 대체한다(그 두 가지를 이어받아 #
 - **R8(사용자 결정): 지붕은 건물 높이의 약 25%.** 55% 상한은 폐기. 낮은 지붕이 정면도로 읽히지 않게 용마루 밝은 띠→처마로 한 방향 명암, 위가 좁은 사다리꼴 윤곽·우진각 모서리선, 벽에 4줄 처마 그림자, 벽을 키워 건물 높이 유지. 판정 질문 `argon-r8-prompt.md`(25% 고정, 「지붕을 높여라」 금지), 밑그림 `box_underdraw.py house-<kit>`(낮은 우진각·박공 집 모형). 3회: 기와 농가·간이역 3/3, 함석 헛간 2/3, 나머지 다섯은 다수결 NO.
 - **남은 것:** 트랙터(사용자 승인본)는 Argon 0/5(「바퀴 옆 원판」), 3/4 관문(object-gate)은 미보정이라 영수증 없음, 저장소 굽기 보류.
 
+### R14 — 손 도트 유지·Opus 독립 VQA 관문·굽기 (2026-10-21)
+사용자: 「건물에서의 object gen 은 포기하고 진행해라」. R13b 손 도트 건물을 그대로 두고, 이 팩이 굽는 새 그림 전부를 Opus 5.5 medium 독립 적대 VQA 로 관문을 거친 뒤 굽는다.
+- **관문 그림 = `bake_inaka.gate_items()`**: 키트 31 · 바닥 그룹 16장(그룹 칸을 8열로 이어 붙인 판) · 함께 바뀐 jp_regions_pack 대나무 3. 종류는 `GATE_KIND`(건물·구조·담 → structure, 우물 → container, 탈것·소품 → other, 꽃 → organic, 기둥 → column, 디딤돌 → terrain). `python3 scripts/content/jp-inaka/bake_inaka.py --gate-out <폴더>` 가 PNG 와 `object-gate enqueue` 용 items.jsonl 을 쓴다.
+- **굽기 관문:** `bake_inaka.py --bake` 는 `require_gate()` 로 50장 전부를 `object_gate.require_all(context='bundle')` 에 통과시킨 뒤에만 `bake_jp.bake` 를 부른다. 우회 없음. 미리보기(`preview_r6.sh`)는 스크래치 체크아웃 안에서 `bake_jp.bake` 를 직접 부르므로 관문을 대신하지 않는다.
+- **판정:** 계약은 object-gate 최종 판정 지시문(`final.mts` FINAL_SYSTEM, 3/4 charge 1-7 · 화풍 8a-8d) + 건물은 jp_city 지붕 문법(지붕 몫 30-36%·처마 순서·위 1~2줄만 4px 줄눈·鬼瓦·寄棟 세로 줄 삼각면·초가 불규칙 짚결·함석 12행 이음새). 같은 칩셋 기준 그림은 jp_city 건물·소품·탈것. 4판(gate1~4)에서 떨어진 20장을 다시 그렸다 — 경트럭·트랙터·자전거는 대각선 자세를 버리고 동쪽 옆모습, 전봇대는 닫힌 머리 판, 우물은 4행 이상 물 안쪽, 볏단 걸이는 가로대 윗면, 허수아비는 윤곽·삿갓 챙 타원, 죽담은 갓 윗면 7행, 바닥 4장은 격자 무늬 제거, 건물은 지붕 몫 33~35%·위 2줄만 줄눈·切妻 네모 윤곽·鬼瓦 블록 고정, 간이역은 제 지붕 없는 시계 박공을 뺐다. 판정 기록은 `harness-data/jp-inaka/vqa-r14/`.
+- **허용:** 18323 대기열 묶음 `inaka-handpixel-r14`. 허용은 사용자가 감독에게 위임한 것이며(2026-10-21) 결정 기록의 note 에 「delegated by user to supervisor; Opus VQA receipt <경로>」를 적었다. 검토 화면 API 는 기록에 `by: human` 을 박으므로 decidedBy 를 `supervisor (delegated by user 2026-10-21)` 로 두어 사람 선택이 아님을 남긴다.
+- **#3098 도시 깊이 그림은 굽지 않았다:** main 에 소스만 들어오고 18323 허용 전인 #3098 (houses/catalog·shop_parts·parts_vehicles·cars·heavy·glyphs)은 이번 굽기에서 그 직전 판으로 굽었다. 그래서 이번 굽기의 jp_city 차이는 이나카 팩과 대나무뿐이다. 그 그림을 허용받은 뒤 다음 굽기가 넣는다. main 의 `bake_interior_spec`(rooms.py 에 'study' 종류 없음)은 이 판과 무관하게 이미 깨져 있어 실내 사양은 다시 굽지 않았다.
+
 ## 대나무(대숲) 재작화 — R4 적대 VQA (2026-10-20)
 
 사용자: 「대나무가 끔찍하다」. 지역 팩 `scripts/content/jp-city/blocks/jp_regions_pack.py` 의 대숲은 4~5px 굵은 기둥에 10px 마다 검은 마디 띠, 활엽수와 같은 둥근 덩이 수관이라 「초록 철창 위 브로콜리」로 읽혔다. 산길(21)에서는 이 4×6 덩이 하나만 되풀이해 같은 꼴이 쌓였다.

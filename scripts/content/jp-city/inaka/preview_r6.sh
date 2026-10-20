@@ -23,5 +23,7 @@ mkdir -p "$OUT"
 cp "$W"/scripts/content/jp-inaka/*.py "$P/scripts/content/jp-inaka/"
 cp "$W/src/editor/jpCity/inakaCountrysideComposer.ts" "$P/src/editor/jpCity/"
 cd "$P"
-python3 scripts/content/jp-inaka/bake_inaka.py --bake --sheet-out "$OUT/sheet.png" 2>&1 | grep -E '"tiles"|문제|Error|error' | head -5
+# 스크래치 안에서만 굽는다(미리보기). 저장소 굽기는 bake_inaka.py --bake 이고 그쪽은 3/4 관문(require_gate)이 막는다 — 여기서 그 관문을 대신하지 않는다.
+python3 scripts/content/jp-inaka/bake_inaka.py --sheet-out "$OUT/sheet.png" 2>&1 | grep -E '문제|Error|error' | head -5
+python3 -c "import sys; sys.path[:0] = ['scripts/content/jp-city', 'scripts/content/jp-inaka']; import bake_jp; print(bake_jp.bake('$P', dry=False)['report']['tiles'])" 2>&1 | tail -2
 timeout 900 bun scripts/qa/jp-inaka-showcase.mts --out "$OUT" ${ONLY:+--only "$ONLY"} 2>&1 | grep -E 'stamped|rror' | head -12

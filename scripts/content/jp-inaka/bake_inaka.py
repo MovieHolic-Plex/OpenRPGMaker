@@ -355,10 +355,70 @@ def render_contact_sheet(out_path: str = DEFAULT_SHEET_OUT, scale: int = 3) -> s
     return out_path
 
 
+# object-gate 종류(키트 kind → 관문 종류). R5 영수증과 같은 대응이다. 정직하게 붙인다(면제 종류로 도망가지 않는다).
+GATE_KIND: Final[dict[str, str]] = {
+    'building': 'structure', 'structure': 'structure', 'wall': 'structure', 'water': 'container',
+    'vehicle': 'other', 'prop': 'other', 'tree': 'organic', 'column': 'column', 'terrain': 'terrain',
+}
+GATE_REGION_KITS: Final[tuple[str, ...]] = ('rg-bamboo-clump', 'rg-bamboo-grove', 'rg-bamboo-grove-b')   # 이 팩이 함께 바꾼 jp_regions_pack 대나무
+
+
+def _group_sheet(cells: dict, ids: list[str], per_row: int = 8) -> Image.Image:
+    """바닥 그룹 칸들을 8열로 빈틈없이 이어 붙인 관문 그림(결정적 — 같은 칸이면 같은 해시)."""
+    n = len(ids)
+    cols = min(per_row, n)
+    rows_n = (n + per_row - 1) // per_row
+    im = Image.new('RGBA', (cols * 16, rows_n * 16), (0, 0, 0, 0))
+    for i, cid in enumerate(ids):
+        im.alpha_composite(cells[cid]['img'], ((i % per_row) * 16, (i // per_row) * 16))
+    return im
+
+
+def gate_items() -> list[tuple[str, str, Image.Image]]:
+    """[(라벨, 관문 종류, 그림)] — 이 팩이 굽는 새 그림 전부: 키트 31 · 바닥 그룹 16장 · 대나무 3(jp_regions_pack)."""
+    cells, _, renders, groups = _finalize()
+    out = [('jp_inaka_pack/jp-%s' % k['id'], GATE_KIND[k['kind']], renders[k['id']]) for k in KITS]
+    for g in groups:
+        out.append(('jp_inaka_pack/ground/%s' % g['id'].split(':', 1)[-1], 'terrain', _group_sheet(cells, list(g['cells']))))
+    import jp_regions_pack as _rg
+    _, _, rg_renders, _ = _rg._finalize()
+    kinds_rg = _rg.kinds()
+    for rid in GATE_REGION_KITS:
+        out.append(('jp_regions_pack/jp-%s' % rid, GATE_KIND.get(kinds_rg['jp-' + rid], kinds_rg['jp-' + rid]), rg_renders[rid]))
+    return out
+
+
+def write_gate_batch(outdir: str) -> str:
+    """관문 그림 PNG 와 object-gate enqueue 용 items.jsonl 을 outdir 에 쓴다."""
+    os.makedirs(outdir, exist_ok=True)
+    lines = []
+    for label, kind, im in gate_items():
+        fn = label.replace('/', '__') + '.png'
+        im.save(os.path.join(outdir, fn))
+        lines.append(json.dumps(dict(png=fn, kind=kind, name=label.split('/')[-1], label=label), ensure_ascii=False))
+    path = os.path.join(outdir, 'items.jsonl')
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write('\n'.join(lines) + '\n')
+    return path
+
+
+def require_gate() -> None:
+    """3/4 관문: 굽기 전에 이 팩의 새 그림 전부가 object-gate 출구(bundle)를 통과해야 한다. 우회 없음."""
+    sys.path.insert(0, os.path.join(ROOT, 'src', 'harnesses', '_core'))
+    import object_gate as OG
+    try:
+        OG.require_all([(im, kind, label) for label, kind, im in gate_items()], context='bundle')
+    except OG.ObjectGateRefused as e:
+        print('3/4 관문 거절 — 굽지 않는다 (OBJECT_GATE_DATA=%s)\n%s' % (OG.GATE_DATA, e), file=sys.stderr)
+        sys.exit(3)
+    print('3/4 관문: jp_inaka_pack 새 그림 %d장 통과' % len(gate_items()))
+
+
 def bake_into_jp_city() -> None:
     """Run `bake_jp.bake(ROOT, dry=False)` and `bake_interior_spec.main()` to bundle `jp_inaka_pack` into `jp_city`."""
     import bake_interior_spec
     import bake_jp
+    require_gate()
     out = bake_jp.bake(ROOT, dry=False)
     rep = out['report']
     bad = (
@@ -393,8 +453,12 @@ def main() -> None:
     """CLI entry point for `bake_inaka.py`."""
     ap = argparse.ArgumentParser(description='Bake jp-inaka countryside pixel-art kits and ground tiles.')
     ap.add_argument('--bake', action='store_true', help='Also bake jp_inaka_pack into jp_city chipset and JSON')
+    ap.add_argument('--gate-out', help='Write object-gate PNGs + items.jsonl for `object-gate enqueue` into this folder and exit')
     ap.add_argument('--sheet-out', default=DEFAULT_SHEET_OUT, help='Output path for 3x contact sheet PNG')
     args = ap.parse_args()
+    if args.gate_out:
+        print(write_gate_batch(args.gate_out))
+        return
     bad = selftest(verbose=True)
     if bad:
         sys.exit(1)

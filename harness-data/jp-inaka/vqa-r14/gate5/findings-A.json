@@ -1,0 +1,33 @@
+{
+ "group": "A",
+ "items": [
+  {
+   "label": "jp_inaka_pack/jp-inaka-wooden-station",
+   "kind": "structure",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 24,
+   "front_rows": 49,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "No 3/4 charge holds: hipped tile roof is a foreshortened plane of 24 rows (21 outline to 44 eave ink), front 49 rows (45-93); no side faces, no rhombus top, nothing above the ridge.",
+    "Roof share measured: rows 21..44 = 24 of visible bbox rows 21..93 = 73 -> 32.9% (rule 1, 30-36%: pass).",
+    "Main eave matches jp-station_small: course 3 rows 37-40, tip 854a38 row 41, 3d151f rows 42-43, #1a1226 row 44, wall shadow 353946/3f5250 row 45 (rule 3 OK).",
+    "OLD CHARGE CLEARED (rule 8 tin canopy): ribs rows 49-51 on a 4px period (eff2f6/dce1e8/dce1e8/c3c9d3), e6e2f0 row 52, cac7d6 row 53, ink row 54. Tip-then-pale pair present.",
+    "OLD CHARGE CLEARED (rule 3 canopy wall shadow): row 55 is now a dark shadow row (546b64 x8-55 and x86-103, 546b64/331f21/4b4943 in the centre, only 3 801223 lamp px at x63-65).",
+    "Roof grammar OK: ridge box rows 22-27 (b88165 / 9e644d / e0dbb7 noshi / 854a38 / 948771 / 521e21), onigawara d1a181 blocks at both ends with 3d151f inner divider; joints every 4px only on courses 1-2 (rows 30-31, 34-35); course 3 only 3px marks at x23-25 and x67-69 (44px apart); hip faces ~11px wide at top, vertical 4px stripes, light west / dark east.",
+    "Style: same palette system and tinted shading as jp_city anchors; no 8a-8d.",
+    "Minor, not charged: platform (rows 82-92) is a top plane with only a 1-row 8a8580 front edge (row 92), no riser; right platform edge has a 2px ink column (x109-110) vs 1px on the left (x1) - a doubled outline (rule 2 nit).",
+    "Minor, not charged: centre board x53-65 rows 60-70 is a 6x3 white dot grid (+1 red) - reads as a lit timetable, not glyphs.",
+    "Map 03 at 1x (placed x112,y16): reads clearly as a small wooden rural station beside the accepted station_small; roof/front proportion matches."
+   ],
+   "fixes": [
+    "Optional: make the platform right edge a single 1px #1a1226 column (recolour x109 to the platform tones) to match the left edge.",
+    "Optional: give the platform a 2-3 row riser (8a8580 / 6e6a66) above the bottom ink so it reads as a raised slab rather than a painted pad."
+   ]
+  }
+ ],
+ "summary": "Group A: 1 candidate. jp-inaka-wooden-station PASSES. Both old roof-rule charges (missing cac7d6 canopy tip row; missing canopy wall shadow) are fixed. Roof share 32.9%, top 24 rows / front 49 rows, roof grammar matches jp-station_small. Only nits: doubled 2px right-edge ink on the platform and a riser-less platform slab."
+}

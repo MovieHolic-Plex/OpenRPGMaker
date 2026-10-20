@@ -271,8 +271,9 @@ def bamboo_culm(c, x, top, bot, w=3, depth=2, seed=0, lean=0):
 
 
 def _takegaki_panel(c, x0, x1, top, bot, seed, cap=7):
-    """建仁寺垣 판(3/4 탑뷰): 위에서 내려다본 넓은 갓(玉縁·押縁 묶음) 윗면 띠 cap 줄 + 그 아래 짧은 쪼갠 대 정면 +
-    가운데 누름대(押縁) 1줄과 검은 종려 끈 매듭. 줄기마다 마디 높이가 어긋나 사다리 가로대로 읽히지 않는다."""
+    """建仁寺垣 판(3/4 탑뷰). 위에서 내려다본 笠木(갓) 윗면: 먼 끝선 1줄 → 나란히 묶은 쪼갠 대 윗면 cap-3 줄(먼 쪽 밝고
+    앞으로 한 단씩 어두움, 길이 방향 결·엇갈린 마디·묶음 끈) → 앞 모서리 빛 1줄 → 갓 앞면(둥근 대) 1줄 → 판에 진 그늘 1줄.
+    그 아래 쪼갠 대 정면 + 누름대(押縁)·종려 끈."""
     ft = top + cap                                                 # 정면(대 판) 시작
     k = 0
     c.R(x0, ft, x1 - x0, bot - ft + 1, BAMB[1])                    # 판 뒤 그늘
@@ -281,33 +282,36 @@ def _takegaki_panel(c, x0, x1, top, bot, seed, cap=7):
         depth = 3 if H(x, 4, seed) < 0.10 else ((1, 0, 1, 2, 0)[k % 5] if h > 0.25 else 0)
         bamboo_culm(c, x, ft, bot, w=min(3, x1 - x), depth=depth, seed=seed + k)
         k += 1
-    # 갓(玉縁) = 위에서 내려다본 상자: 먼 끝선 · 밝은 윗면 4줄(길이 방향 결·마디) · 앞 모서리 빛 · 갓 앞면 · 판에 진 그늘.
+    TOPR = [STRAW[1], STRAW[2], STRAW[3], STRAW[4]]                # 마른 대 윗면(어둠 → 밝음)
+    n = cap - 4                                                    # 윗면 줄 수
     for x in range(x0, x1):
-        h = H(x, top, seed + 11)
-        node = (x + int(H(x // 9, 1, seed) * 5)) % 9 == 0          # 대 마디(가닥마다 어긋남)
         for j in range(cap):
             y = top + j
             g = H(x, y, seed + 14)
             if j == 0:
-                col = BAMB[2] if h > 0.3 else MOSS[2]                # 먼 끝선
-            elif j <= cap - 4:                                     # 윗면(밝음)
-                col = MOSS[4] if g < 0.62 else BAMB[4]
-                if j == 2 and g > 0.8:
-                    col = STRAW[3]                                 # 길이 방향 결
-                if node:
-                    col = STRAW[2]
-            elif j == cap - 3:
-                col = STRAW[3] if g < 0.5 else MOSS[4]              # 앞 모서리 빛
-            elif j == cap - 2:
-                col = BAMB[2] if not node else BAMB[1]             # 갓 앞면
+                col = STRAW[1] if g < 0.7 else CEDAR[1]            # 먼 끝선(뒤 모서리)
+            elif j <= n:                                           # 윗면: 먼 쪽 밝음 → 앞 한 단 어둠
+                lv = 3 - (j - 1) * 1.0 / max(1, n - 1) * 1.6
+                if (y + (x // 7)) % 2 == 0 and g < 0.35:
+                    lv -= 1                                        # 쪼갠 대 사이 결(길이 방향)
+                col = TOPR[max(0, min(3, round(lv)))]
+                if (x + int(H(x // 11, j, seed) * 5)) % 11 == 0:
+                    col = STRAW[1]                                 # 마디(가닥마다 어긋남)
+            elif j == n + 1:
+                col = STRAW[4] if g < 0.8 else STRAW[3]            # 앞 모서리 빛
+            elif j == n + 2:
+                col = BAMB[2] if g < 0.7 else BAMB[3]              # 갓 앞면(둥근 대)
             else:
                 col = BAMB[0]                                      # 판에 진 그늘
             c.P(x, y, col)
+    for x in range(x0 + 4, x1 - 2, 10):                            # 갓을 묶은 종려 끈: 앞 모서리를 감아 앞면으로 내려온 매듭만
+        c.P(x, top + n + 1, CEDAR[1]); c.P(x, top + n + 2, K('sumi', 1)); c.P(x + 1, top + n + 2, MOSS[0])
     y = ft + (bot - ft) // 2 - 1                                   # 누름대(쪼갠 대) 한 줄: 밝은 등 + 판에 진 그늘
     for x in range(x0, x1):
         h = H(x, y, seed + 12)
-        c.P(x, y, MOSS[4] if h < 0.3 else BAMB[4])
-        if H(x, y + 1, seed + 13) < 0.7:
+        c.P(x, y - 1, BAMB[4] if h < 0.5 else MOSS[4])
+        c.P(x, y, BAMB[3] if h < 0.3 else BAMB[2])
+        if H(x, y + 1, seed + 13) < 0.8:
             c.P(x, y + 1, BAMB[0])
     for x in range(x0 + 2 + (y % 3), x1 - 1, 6):
         c.P(x, y, K('sumi', 1)); c.P(x, y + 1, K('sumi', 0)); c.P(x + 1, y + 1, MOSS[0])   # 종려 끈 매듭
@@ -369,8 +373,8 @@ def _mini_kawara_roof(c, x0, x1, y0, rows_n=8):
      rules='농가 마당 경계. 세 번째 칸이 드나드는 문.', role='fence')
 def bamboo_fence(c, base):
     t = Cv(c.w, c.h)
-    _takegaki_panel(t, 0, 33, 13, 28, 3, cap=7)
-    _takegaki_panel(t, 57, 64, 13, 28, 8, cap=7)
+    _takegaki_panel(t, 0, 33, 10, 28, 3, cap=9)
+    _takegaki_panel(t, 57, 64, 10, 28, 8, cap=9)
     for x in (33, 54):                                           # 문 기둥(삼나무 결)
         _cedar_post(t, x, 12, 18)
     for x in range(36, 54):                                      # 꿰뚫은 가로대(貫): 윗면 2줄 + 앞면 + 그늘
