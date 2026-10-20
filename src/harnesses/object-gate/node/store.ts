@@ -172,12 +172,20 @@ export const gatePromptHash = (half: 'view34' | 'style' | 'eye' = 'view34') => {
  */
 export type ObjectGateQueueBatch = {
   schema: 'oprn-object-gate-queue/1'; id: string; title: string; note?: string; createdAt: string;
+  /** 선택 — 검토하는 사람에게 「이 묶음이 무엇이고 어디에 쓰이는지」 보여 줄 그림(queue/ 안 파일 이름, png)과 쉬운 말 한 단락. 효력은 없다. */
+  explainImage?: string; explainText?: string;
   items: Array<{ sha: string; kind: string; label: string; source?: string }>;
 };
 const queueDir = () => resolve(GATE_DATA, 'queue');
 export function listQueueBatches(): ObjectGateQueueBatch[] {
   if (!existsSync(queueDir())) return [];
   return readdirSync(queueDir()).filter(f => f.endsWith('.json')).sort().map(f => JSON.parse(readFileSync(resolve(queueDir(), f), 'utf8')) as ObjectGateQueueBatch);
+}
+/** 묶음 설명 그림의 경로 — queue/ 바로 아래의 png 파일 이름만 받는다(경로 이동 금지). 없으면 null. */
+export function queueExplainImagePath(name: string | undefined): string | null {
+  if (!name || !/^[a-z0-9][-a-z0-9_.]{0,120}\.png$/.test(name)) return null;
+  const path = resolve(queueDir(), name);
+  return existsSync(path) ? path : null;
 }
 export function writeQueueBatch(batch: ObjectGateQueueBatch): string {
   if (!/^[a-z0-9][-a-z0-9_.]{0,80}$/.test(batch.id)) throw Error(`묶음 id 는 영문 소문자·숫자·-_. 만: ${batch.id}`);

@@ -76,7 +76,9 @@ OPUS_RUN_NOTE
 - 서버 확인: 세션 쿠키 + CSRF + 같은 출처, 영수증 존재(없으면 거절), 저장된 그림을 다시 재 해시 확인, 거절된 그림은 다시 결정할 수 없음.
 - `holds` 는 묶음별 현황(대기·허용·거절)을 터미널에 낸다.
 
-**대기열에 올리기** — `npm run harness -- object-gate enqueue --batch items.jsonl --id <묶음 id> --title <묶음 이름> [--note 메모] [--no-review]`
+**대기열에 올리기** — `npm run harness -- object-gate enqueue --batch items.jsonl --id <묶음 id> --title <묶음 이름> [--note 메모] [--explain-image <png 이름>] [--explain-text 쉬운 설명] [--no-review]`
+
+- **묶음 설명(선택, 2026-10-21):** 사용자가 「뭘 한 건지 모르겠다」고 했다 — 칸 낱장만으로는 무엇을 허용하는지 알 수 없다. `explainImage`(`queue/` 바로 아래 png 파일 이름 — 쓰이는 장면·전후 비교)와 `explainText`(쉬운 말 한 단락: 무엇인지, 어디에 쓰이는지, 허용하면/거절하면 어떻게 되는지)를 묶음 JSON 에 적으면 검토 화면 묶음 머리에 보인다. 다시 `enqueue` 해도 옵션을 안 주면 앞 값을 이어받는다. 효력은 없다(결정은 그림마다 서명 기록).
 - `items.jsonl` 은 `review --batch` 와 같은 형식(`{png, kind, styleKind?, name, label}`, png 는 jsonl 기준 상대 경로 가능).
 - 묶음 목록을 쓰고 `review --advisory` 를 부른다: 같은 해시·종류의 영수증이 어느 프로필로든 있으면 다시 부르지 않고 그림만 저장하며, 눈 호출은 보정과 같은 답 캐시를 쓴다. 판정 규칙·프로필은 그대로다.
 - review 는 이제 판정한 모든 그림을 `held-images/` 에 둔다(예전에는 보류만).

@@ -73,7 +73,7 @@ export async function run(argv: string[]): Promise<number> {
   // 판정은 조언이고 최종 통과는 검토 화면(serve-holds)의 사람 허용이다. 이 단계는 아무것도 허용하지 않는다.
   if (stage === 'enqueue') {
     const batch = option('batch'), id = option('id'), title = option('title');
-    if (!batch || !id || !title) throw Error('enqueue --batch items.jsonl({png,kind,styleKind?,name,label}) --id <묶음 id> --title <묶음 이름> [--note 메모] [--no-review]');
+    if (!batch || !id || !title) throw Error('enqueue --batch items.jsonl({png,kind,styleKind?,name,label}) --id <묶음 id> --title <묶음 이름> [--note 메모] [--explain-image <queue/ 안 png 이름>] [--explain-text 쉬운 설명] [--no-review]');
     const lines = readFileSync(resolve(batch), 'utf8').split('\n').filter(l => l.trim()).map(l => JSON.parse(l) as { png: string; kind: string; label?: string; name?: string });
     const items = [];
     for (const l of lines) {
@@ -81,7 +81,7 @@ export async function run(argv: string[]): Promise<number> {
       items.push({ sha: await pngPixelSha256(png), kind: l.kind, label: l.label ?? l.name ?? png, source: png.startsWith(process.cwd()) ? png.slice(process.cwd().length + 1) : png });
     }
     const prev = listQueueBatches().find(b => b.id === id);
-    const file = writeQueueBatch({ schema: 'oprn-object-gate-queue/1', id, title, ...(option('note') ? { note: option('note') } : {}), createdAt: prev?.createdAt ?? new Date().toISOString(), items });
+    const file = writeQueueBatch({ schema: 'oprn-object-gate-queue/1', id, title, ...(option('note') ? { note: option('note') } : {}), ...((option('explain-image') ?? prev?.explainImage) ? { explainImage: option('explain-image') ?? prev?.explainImage } : {}), ...((option('explain-text') ?? prev?.explainText) ? { explainText: option('explain-text') ?? prev?.explainText } : {}), createdAt: prev?.createdAt ?? new Date().toISOString(), items });
     console.log(`대기열 묶음 ${file} — ${items.length}장`);
     if (argv.includes('--no-review')) return 0;
     const code = await spawnBun(['review', '--advisory', '--batch', resolve(batch)]);
