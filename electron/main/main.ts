@@ -183,6 +183,10 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
       if (!isMainFrame || code === -3) return; // -3 = 다른 이동으로 취소됨(정상)
       fail(`${description || "load failed"} (${code})\n${url}`);
     });
+    // app:// 이 문서를 못 찾으면(빌드 누락·손상) did-fail-load 없이 오류 응답을 그린다 — 응답 코드로 잡는다.
+    window.webContents.on("did-navigate", (_event, url, httpResponseCode, httpStatusText) => {
+      if (httpResponseCode >= 400) fail(`${httpResponseCode} ${httpStatusText}\n${url}`);
+    });
     window.webContents.on("render-process-gone", (_event, details) => fail(`renderer ${details.reason} (exit ${details.exitCode})`));
     window.webContents.on("preload-error", (_event, _path, error) => fail(`preload: ${error.message}`));
     window.webContents.on("did-start-loading", () => { failed = false; });
