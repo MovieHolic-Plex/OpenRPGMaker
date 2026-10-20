@@ -2,14 +2,14 @@
 //
 // 숲 종류(forestType): broadleaf 활엽 · conifer 침엽 · mixed 혼효. 그림은 모두 beodeul_city 원본 키트 칸이다
 // (src/assets/beodeulForestComposer.json, 빌더 scripts/content/build-beodeul-forest-composer.py).
-// 접지(TreeComposerGround, #3058 r6): 숲 바닥 그늘(1층)·숲 둘레 땅 그늘(2층) 칸은 공용 기초 칩셋 beodeul_ground 에 있어
-// translateTiles 로 대상 칩셋에 이식한 번호로 바꿔 넘긴다(통행·우선순위는 source 그대로 — 둘 다 걸을 수 있다).
+// 나무 밑 땅(r5, 2026-10-21 사용자 정정): 원본 도시처럼 「짙은 풀」 — 속은 원본 칸 11628, 가장자리 46모양은 원본 화소 조합 칸(beodeul_ground,
+// 빌더 scripts/content/build-beodeul-forest-ground.py)을 translateTiles 로 대상 칩셋에 이식해 오토타일 그룹(ensureBeodeulDarkGrass)으로 단다.
 import data from "@/assets/beodeulForestComposer.json";
 import { createBeodeulGroundTileset, ensureBeodeulGroundReferences } from "@/project/defaults/beodeulGround";
 import { translateTiles } from "@/project/objectStamp";
-import type { GameMap, Project, TilesetDef, TreeComposerDef, TreeComposerSprite } from "@/project/types";
+import type { AutotileGroup, GameMap, Project, TilesetDef, TreeComposerDef, TreeComposerSprite } from "@/project/types";
 import { composeTreesPlaced, treeComposerOwnTiles, treeHash, type TreePlacement } from "@/project/defaults/treeComposer";
-import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
+import { layerTileAt } from "@/project/mapLayers";
 
 export const BEODEUL_FOREST_TYPES = ["broadleaf", "conifer", "mixed"] as const;
 export type BeodeulForestType = (typeof BEODEUL_FOREST_TYPES)[number];
@@ -21,27 +21,17 @@ export function parseBeodeulForestType(value: unknown, fallback: BeodeulForestTy
   throw new Error(`forestType 은 ${BEODEUL_FOREST_TYPES.join("|")} 중 하나입니다(받은 값 ${String(value)}).`);
 }
 
+/** 짙은 풀 가장자리 두 벌 — plain: 민무늬 잔디 737 위(마을·마당 숲), woodland: 숲 장면 잔디(채도 낮춤) 위(도로 숲 벽). */
+export type BeodeulDarkGrassFamily = "plain" | "woodland";
+export const BEODEUL_DARK_GRASS_GROUP: Record<BeodeulDarkGrassFamily, string> = { plain: "beodeul_dark_grass", woodland: "beodeul_dark_grass_woodland" };
+
 /**
- * 대상 칩셋(beodeul_city 계열)에서 쓸 composer 정의 — 접지 칸 번호를 이식해 채운다.
- * grassBases: 둘레 그늘을 깔 1층 잔디 칸(기본 민무늬 잔디 737). 둘레 그늘은 투명 덧칸이라 어느 잔디 위에서나 같은 칸을 쓴다.
+ * 대상 칩셋(beodeul_city 계열)에서 쓸 composer 정의. r5(2026-10-21 사용자 정정): 코드가 그린 그늘 칸(접지 ground)은 쓰지 않는다 —
+ * 나무 밑 땅은 원본 「짙은 풀」 오토타일(ensureBeodeulDarkGrass)이 맡는다. 그래서 def.ground 가 없고 composer 는 2~4층 나무만 쌓는다.
  */
-export function beodeulForestComposer(project: Project, target: TilesetDef, type: BeodeulForestType,
-  grassBases: readonly number[] = data.ground.apronBases, woodlandGround = false): TreeComposerDef {
-  const { groundShadeCover, groundShadeRows, ...rest } = structuredClone(data.types[type]);
-  const def = rest as unknown as TreeComposerDef;
-  const g = data.ground;
-  const common = project.tilesets.beodeul_ground ??= createBeodeulGroundTileset();
-  ensureBeodeulGroundReferences(common);
-  // woodlandGround(r4 B): 숲 장면 잔디(채도 낮춤) 위 숲 바닥 칸 — 도로 숲 벽처럼 맵 바닥 전체가 숲 장면 잔디일 때
-  const floorSrc = woodlandGround ? g.woodlandFloorTiles : g.floorTiles;
-  const tr = translateTiles(common, target, [...floorSrc, ...g.floorEdgeTiles, ...g.apronTiles].filter((n) => n >= 0)).map;
-  const to = (n: number) => (n >= 0 ? tr.get(n) ?? -1 : -1);
-  def.ground = {
-    shadeBits: g.shadeBits.map((b) => [...b]), shadeCover: groundShadeCover ?? g.shadeCover, shadeCoverBase: g.shadeCoverBase, shadeRows: groundShadeRows,
-    floorTiles: floorSrc.map(to), apronLayer: g.apronLayer, apronBases: [...grassBases], apronTiles: grassBases.flatMap(() => g.apronTiles.map(to)),
-  };
-  edgeFloor.set(def, woodlandGround ? new Map() : new Map(g.floorTiles.map((n, k) => [to(n), to(g.floorEdgeTiles[k]!)] as const)));
-  return def;
+export function beodeulForestComposer(_project: Project, _target: TilesetDef, type: BeodeulForestType): TreeComposerDef {
+  const { groundShadeCover: _c, groundShadeRows: _r, ...rest } = structuredClone(data.types[type]);
+  return rest as unknown as TreeComposerDef;
 }
 
 /** 숲 장면 잔디(737 채도 ×0.84, r4 B) 를 대상 칩셋으로 이식한 칸 번호. 공용 잔디 737 은 바꾸지 않는다. */
@@ -51,7 +41,76 @@ export function beodeulWoodlandGrass(project: Project, target: TilesetDef): numb
   return translateTiles(common, target, [data.ground.woodlandGrass]).map.get(data.ground.woodlandGrass) ?? -1;
 }
 
-const edgeFloor = new WeakMap<TreeComposerDef, Map<number, number>>();
+const N = 1, E = 2, S = 4, Wb = 8, NE = 16, SE = 32, SW = 64, NW = 128;
+const DIRS: readonly (readonly [number, number, number])[] = [[N, 0, -1], [E, 1, 0], [S, 0, 1], [Wb, -1, 0], [NE, 1, -1], [SE, 1, 1], [SW, -1, 1], [NW, -1, -1]];
+function canonMask(m: number): number {
+  if (!(m & N && m & E)) m &= ~NE;
+  if (!(m & S && m & E)) m &= ~SE;
+  if (!(m & S && m & Wb)) m &= ~SW;
+  if (!(m & N && m & Wb)) m &= ~NW;
+  return m;
+}
+
+/**
+ * 「버들항 짙은 풀」 오토타일 그룹을 대상 칩셋에 단다(없으면 만들고, 있으면 같은 내용으로 맞춘다). 돌려주는 그룹은 편집기 붓·fill 이 그대로 쓴다.
+ * 속(이웃 8칸 모두 짙은 풀) = 원본 칸 11628(그리고 같은 결 원본 속 칸 변형). 가장자리 46모양은 beodeul_ground 의 원본 화소 조합 칸을 이식한다.
+ * 두 벌(plain·woodland)은 서로 이어진다(connect 공유) — 바탕 잔디만 다르다. 맵 가장자리 밖은 이어진 이웃으로 본다(숲이 맵 밖으로 이어진다).
+ */
+export function ensureBeodeulDarkGrass(project: Project, target: TilesetDef, family: BeodeulDarkGrassFamily): AutotileGroup {
+  const common = project.tilesets.beodeul_ground ??= createBeodeulGroundTileset();
+  ensureBeodeulGroundReferences(common);
+  const dg = data.ground.darkGrass;
+  const fams = dg.families as Record<BeodeulDarkGrassFamily, Record<string, number>>;
+  const tr = translateTiles(common, target, [...Object.values(fams.plain), ...Object.values(fams.woodland)]).map;
+  const variantsOf = (f: BeodeulDarkGrassFamily): Record<string, number> => {
+    const out: Record<string, number> = {};
+    for (let m = 0; m < 256; m++) {
+      const c = canonMask(m);
+      out[String(m)] = c === 255 ? dg.native : tr.get(fams[f][String(c)]!) ?? dg.native;
+    }
+    return out;
+  };
+  const all = [...new Set([...dg.interior, ...Object.values(variantsOf("plain")), ...Object.values(variantsOf("woodland"))])];
+  const groups = target.autotileGroups ??= [];
+  let result: AutotileGroup | undefined;
+  for (const f of ["plain", "woodland"] as const) {
+    const variantMap = variantsOf(f);
+    // 속 칸(원본 11628 등)은 멤버가 아니라 이웃(connect)으로만 든다 — 「버들항 풀밭」 땅 변형으로 낱칸 깔린 11628 을 편집기가 가장자리 모양으로 바꾸지 않게.
+    const members = [...new Set(Object.values(variantMap))].filter((t) => !dg.interior.includes(t));
+    const group: AutotileGroup = {
+      id: BEODEUL_DARK_GRASS_GROUP[f], name: f === "plain" ? "버들항 짙은 풀(숲 바닥)" : "버들항 짙은 풀(숲 장면 잔디 가)",
+      neighborhood: 8, memberTileIds: members, connectTileIds: all, variantMap, edgeConnects: true,
+    };
+    const at = groups.findIndex((g) => g.id === group.id);
+    if (at >= 0) groups[at] = group; else groups.push(group);
+    if (f === family) result = group;
+  }
+  return result!;
+}
+
+/**
+ * 짙은 풀을 칸 집합 dark 에 깐다(1층). 이웃 8칸이 dark 이거나 이미 짙은 풀(두 벌 모두)이면 이어진 것으로 보고 47모양 칸을 고른다.
+ * 속 칸은 원본 11628 과 같은 결 변형 중 칸 위치 해시로 고른다. 바뀐 칸 수.
+ */
+export function paintBeodeulDarkGrass(project: Project, map: GameMap, target: TilesetDef, family: BeodeulDarkGrassFamily,
+  dark: ReadonlySet<number>, write: (x: number, y: number) => boolean = () => true): number {
+  const group = ensureBeodeulDarkGrass(project, target, family);
+  const connect = new Set(group.connectTileIds ?? group.memberTileIds);
+  const W = map.width, H = map.height;
+  const on = (x: number, y: number) => x < 0 || y < 0 || x >= W || y >= H || dark.has(y * W + x) || connect.has(map.lowerTiles[y * W + x]!);
+  const interior = data.ground.darkGrass.interior;
+  let n = 0;
+  for (const i of dark) {
+    const x = i % W, y = Math.floor(i / W);
+    if (!write(x, y)) continue;
+    let m = 0;
+    for (const [bit, dx, dy] of DIRS) if (on(x + dx, y + dy)) m |= bit;
+    const c = canonMask(m);
+    const t = c === 255 ? interior[treeHash(x, y, 4099) % interior.length]! : group.variantMap[String(c)]!;
+    if (map.lowerTiles[i] !== t) { map.lowerTiles[i] = t; n++; }
+  }
+  return n;
+}
 
 /**
  * 숲 종류별 심기 규칙(woodland r3, 2026-10-21 독립 검수 D1~D6 대응).
@@ -67,7 +126,7 @@ const PLANT: Record<BeodeulForestType, { gx: number; gy: number; rim: Shapes; co
 };
 const CONIFER_ART = /fir|eef4bc|28ad5e|c27062/u;
 
-export interface BeodeulForestPlan { readonly placements: TreePlacement[]; readonly shade: Uint8Array }
+export interface BeodeulForestPlan { readonly placements: TreePlacement[]; readonly shade: Uint8Array; readonly dark: ReadonlySet<number> }
 
 /**
  * 밑동 자리 고르기. 지키는 것:
@@ -180,52 +239,28 @@ export function planBeodeulForest(map: GameMap, def: TreeComposerDef, type: Beod
       if (done) break;
     }
   }
-  const shade = new Uint8Array(W * H), gr = def.ground;
-  for (const p of placed) {
-    const sp = p.sprite, conifer = CONIFER_ART.test(sp.name);
-    const tcols = def.trunkCols[sp.shape] ?? [0];
-    for (let j = 0; j < sp.h; j++) for (let i = 0; i < sp.w; i++) {
-      const xx = p.x0 + i, yy = p.y0 + j, cv = sp.cover[j * sp.w + i] ?? 0;
-      if (!inMap(xx, yy)) continue;
-      const base = j === sp.h - 1;
-      const on = conifer ? base && tcols.includes(i)
-        : !!gr && j >= sp.h - (gr.shadeRows ?? sp.h) && cv >= (base ? gr.shadeCoverBase : gr.shadeCover);
-      if (on) shade[yy * W + xx] = 1;
-    }
-  }
-  // 숲 속 바닥(r4 B — jp 숲처럼 덩이 밑이 고르게 어둡다): 거리 2 이상은 그늘(3+ 전부, 2 는 80%), 가장자리 25%.
-  // 나무가 없는 숲 칸(맵 위 끝처럼 그림이 다 들어가지 못해 비운 줄)에는 덩이를 깔지 않는다 — 나무 없는 그늘(D1)
+  // 나무 밑 땅(r5): 나무 그림이 3×3 안에 닿는 숲 칸 = 짙은 풀. 나무가 없는 숲 칸(맵 위 끝처럼 그림이 다 들어가지 못해 비운 줄)은 잔디로 둔다.
+  // 가장자리 모양은 짙은 풀 오토타일의 47모양이 둥글게 푼다 — 숲 덩이 경계가 칸 선이 아니다.
+  const dark = new Set<number>();
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
-    const d = depth[y * W + x]!;
-    if (!d) continue;
+    if (!depth[y * W + x]) continue;
     let tree = false;
-    for (let dy = -1; dy <= 1 && !tree; dy++) for (let dx = -1; dx <= 1; dx++) if (stacks.has((y + dy) * W + x + dx) && inMap(x + dx, y + dy)) { tree = true; break; }
-    const pct = d >= 3 ? 100 : d === 2 ? 80 : 25;
-    if (tree && treeHash(x, y, sd + 31) % 100 < pct) shade[y * W + x] = 1;
+    for (let dy = -1; dy <= 1 && !tree; dy++) for (let dx = -1; dx <= 1; dx++) if (inMap(x + dx, y + dy) && stacks.has((y + dy) * W + x + dx)) { tree = true; break; }
+    if (tree) dark.add(y * W + x);
   }
-  return { placements: placed.map(({ sprite, x0, y0, z }) => ({ sprite, x0, y0, z })), shade };
+  return { placements: placed.map(({ sprite, x0, y0, z }) => ({ sprite, x0, y0, z })), shade: new Uint8Array(W * H), dark };
 }
 
 /**
- * 버들항 숲 한 번 짓기: 밑동 고르기(planBeodeulForest) → composer 칸 쌓기·접지 → 숲 가장자리 칸 바닥을 가장자리 변형으로.
+ * 버들항 숲 한 번 짓기: 밑동 고르기(planBeodeulForest) → composer 가 2~4층에 나무 칸 쌓기 → 나무 밑 땅에 짙은 풀 오토타일(1층).
+ * family: 짙은 풀 가장자리의 바탕 잔디(plain 737 · woodland 숲 장면 잔디).
  */
 export function composeBeodeulForest(project: Project, map: GameMap, target: TilesetDef, type: BeodeulForestType,
   forest: (x: number, y: number) => boolean, hold: (x: number, y: number) => boolean, seed: number,
-  write: (x: number, y: number) => boolean = hold, grassBases?: readonly number[], woodlandGround = false): TreeComposerDef {
-  const def = beodeulForestComposer(project, target, type, grassBases, woodlandGround);
+  write: (x: number, y: number) => boolean = hold, family: BeodeulDarkGrassFamily = "plain"): TreeComposerDef {
+  const def = beodeulForestComposer(project, target, type);
   const plan = planBeodeulForest(map, def, type, forest, hold, seed);
   composeTreesPlaced(map, def, plan.placements, plan.shade, forest, hold, write);
-  const edge = edgeFloor.get(def)!;
-  for (let y = 0; y < map.height; y++) for (let x = 0; x < map.width; x++) {
-    if (!forest(x, y) || !write(x, y)) continue;
-    let rim = false;
-    for (let dy = -1; dy <= 1 && !rim; dy++) for (let dx = -1; dx <= 1; dx++) {
-      const nx = x + dx, ny = y + dy;
-      if (nx >= 0 && ny >= 0 && nx < map.width && ny < map.height && !forest(nx, ny)) { rim = true; break; }
-    }
-    if (!rim) continue;
-    const i = y * map.width + x, t = edge.get(layerTileAt(map, 1, i));
-    if (t !== undefined && t >= 0) setLayerTileAt(map, 1, i, t);
-  }
+  paintBeodeulDarkGrass(project, map, target, family, plan.dark, write);
   return def;
 }

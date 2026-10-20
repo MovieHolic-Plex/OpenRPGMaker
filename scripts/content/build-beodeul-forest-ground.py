@@ -1,83 +1,65 @@
-"""버들항 숲 접지(r6 TreeComposerGround) 칸 — 숲 바닥 그늘 64 + 숲 둘레 땅 그늘 64.
+"""버들항 숲 바닥 — 「짙은 풀」 오토타일(47 이웃 모양) + 숲 장면 잔디. 공용 기초 칩셋 beodeul_ground 에 굽는다.
 
-규칙은 jp 숲 r6(scripts/content/jp-city/forest/forest_r6_ground.py, #3058)과 같은 그늘 코드·영역이다:
-  비트 = 가운데·북·서·북서·동·북동 칸이 「그늘 덮개」(나무 그림이 덮은 칸)인가. 속 = 덮개 칸을 오른쪽 아래로 민 사각형,
-  가 = 왼 2 · 오른 7 · 아래 7px 넓힌 사각형(빛이 왼쪽 위 — 그늘은 오른쪽 아래로 길다), 원판 다수결로 둥글리고 1px 흔든다.
-색은 버들항 원본 숲 조각 그림자(public/assets/beodeul-ground/woodland-*-shadow.png) 두 단 그대로다:
-  가 (30,49,27) α65 · 속 (29,43,23) α115. 버들항은 반투명을 쓸 수 있으므로 둘레 그늘은 투명 덧칸(어느 잔디 위에도 같은 칸),
-  숲 바닥은 민무늬 잔디 737 에 같은 색을 합성한 불투명 칸이다. 경계는 단색 덩이 밖 듬성한 낱점(원본 도시 숲 그늘 결).
-새 그림이 아니라 원본 잔디·원본 그림자 색의 합성이다.
+r5(2026-10-21 사용자 정정 「저 짙은풀은 오토타일로 깔리는 바닥타일이잖아. 숲 내부를 꾸미는 용도로 쓰는」):
+원본 도시(tiledata/beodeul-city/render/city6_ground.png)는 나무 밑 땅을 짙은 풀 덩이로 칠했다 — 짙은 결(원본 칸 11628,
+「버들항 풀밭」 땅 변형에 든 속 칸) 둘레를 3~4px 디더 띠로 밝은 잔디에 풀어 둔 둥근 덩이다. 버들항 칩셋에는 이 덩이의
+가장자리 칸이 오토타일로 정리돼 있지 않아서(autotileGroups 에 없음), 도로 도구가 속 칸 11628 을 네모 판으로 그냥 깔았다.
+여기서 그 가장자리를 47 이웃 모양으로 만든다:
+  · 속(이웃 8칸 모두 짙은 풀) = 원본 칸 11628 그대로(새 화소 0). 원본의 같은 결 속 칸 1597·12939·12946·12947·15152 는 속 변형.
+  · 가장자리 46모양 = 화소마다 원본 11628 화소 또는 바탕 잔디 화소를 그대로 옮긴 조합 — 새 색이 없다.
+    경계는 밝은 이웃 칸까지 거리 5.5±2.8px(주기 16 물결 — 옆 칸과 이음새 없이 이어진다), 바깥 3.5px 는 4×4 Bayer 디더 띠.
+  · 바탕 잔디 두 벌: 민무늬 잔디 737(마을 숲·마당 숲) · 숲 장면 잔디(737 채도 ×0.84, r4 B 사용자 승인 — 도로 숲 벽).
+코드가 그린 그늘 칸(r2~r4 의 floor/edge/apron 그늘 코드 칸 256장)은 모두 뺐다 — 짙은 풀이 나무 밑 땅을 맡는다.
 
   python3 scripts/content/build-beodeul-forest-ground.py [--draft]   (반복 실행해도 같은 칸 번호에 다시 쓴다)
 
-3/4·화풍 관문(AGENTS hard rule, 2026-10-21 독립 검수 D11): 이 칸들은 원본 화소 복사가 아니라 원본 색으로 코드가 그린 새 그림이다.
-굽기 전에 object-gate 출구(bundle)를 칸마다 확인하고, 하나라도 막히면 쓰지 않는다. 사람이 18323 검토 화면에서
-묶음 「버들항 숲 바닥 그늘」(beodeul-forest-ground-r3)을 허용하기 전에는 --draft 로만 쓸 수 있다(초안 PR 전용, 머지 금지).
-판정 데이터는 OBJECT_GATE_DATA(기본: 검토 서버 체크아웃 ~/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate).
+3/4·화풍 관문(AGENTS hard rule): 가장자리 칸과 숲 장면 잔디는 새 배열·새 색이다. object-gate 출구(bundle)를 칸마다 확인하고,
+하나라도 막히면 쓰지 않는다 — 판정자(Opus 적대 판정)가 통과시키기 전에는 --draft 로만 쓸 수 있다(초안 PR 전용, 머지 금지).
 """
 from pathlib import Path
-import os, sys
+import os, sys, math, json, colorsys
 os.environ.setdefault('OBJECT_GATE_DATA', str(Path.home() / 'z-project/rpg-zzu-object-gate-holds/harness-data/object-gate'))
 from PIL import Image
-import json, hashlib
+import numpy as np
 R = Path(__file__).resolve().parents[2]
 OUT = R / 'public/assets/beodeul-ground'
 T = 16
-OUTER = (30, 49, 27, 65)
-CORE = (29, 43, 23, 115)
-SHADE_BITS = (('C', 0, 0), ('N', 0, -1), ('W', -1, 0), ('NW', -1, -1), ('E', 1, 0), ('NE', 1, -1))
-NCODES = 1 << len(SHADE_BITS)
-DISK = [(dx, dy) for dy in range(-4, 5) for dx in range(-4, 5) if dx * dx + dy * dy <= 13]
+DARK_NATIVE = 11628                                   # 원본 짙은 풀 속 칸(beodeul_city)
+DARK_INTERIOR = [11628, 1597, 12939, 12946, 12947, 15152]  # 같은 결 원본 속 칸(가장자리 화소 차 0~2)
+N, E, S, W, NE, SE, SW, NW = 1, 2, 4, 8, 16, 32, 64, 128
+OFF = {N: (0, -1), E: (1, 0), S: (0, 1), W: (-1, 0), NE: (1, -1), SE: (1, 1), SW: (-1, 1), NW: (-1, -1)}
+BAYER = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]]
 
-def h(px, py, salt):
-    v = hashlib.blake2b(f'bdg-ground|{salt}|{px}|{py}'.encode(), digest_size=4).digest()
-    return int.from_bytes(v, 'little') / 4294967296.0
+def canon(m):
+    if not (m & N and m & E): m &= ~NE
+    if not (m & S and m & E): m &= ~SE
+    if not (m & S and m & W): m &= ~SW
+    if not (m & N and m & W): m &= ~NW
+    return m
 
-# r4(2026-10-21 독립 검수 N1·N3): 그늘 덮개 칸마다 원(반지름 RADIUS, 중심은 칸 가운데에서 오른쪽 +3·아래 +5)을 그리고
-# 그 합집합을 그늘 덩이로 삼는다 — 이웃 칸 원이 겹쳐 한 덩이로 이어지고, 바깥 경계는 칸 선이 아니라 둥근 물결이 된다.
-# 덮이지 않은 칸 하나가 덩이 안에 있으면 칸 네모가 아니라 지름 8~10px 둥근 볕 구멍만 남는다.
-# 원은 반지름 12 · 중심 (+3,+5) 라 이 칸에 닿는 원은 가운데·북·서·북서·동 칸뿐이다(남·남서·남동·북동 원은 닿지 않는다) —
-# 그늘 코드 6비트로 이웃 칸과 정확히 이어진다. 색은 원본 숲 그늘의 「가」 단(×0.82) 하나 — 「속」 은 쓰지 않는다(N3 너무 어둡다).
-RADIUS = 12.0
-CENTER = (T / 2 + 3, T / 2 + 5)
+def depth(px, py):
+    # 경계 깊이 — 칸 좌표의 주기 16 물결이라 옆 칸 경계와 이어진다
+    return 5.5 + 1.8 * math.sin(2 * math.pi * (px + py) / T) + 1.0 * math.sin(2 * math.pi * (2 * py - px) / T + 1.3)
 
-def edge_dist(X, Y, forest):
-    best = 99.0
-    for j in (-1, 0, 1):
-        for i in (-1, 0, 1):
-            if not forest(i, j): continue
-            cx, cy = i * T + CENTER[0], j * T + CENTER[1]
-            best = min(best, ((X + 0.5 - cx) ** 2 + (Y + 0.5 - cy) ** 2) ** 0.5 - RADIUS)
-    return best
-
-def lone(px, py):
-    v = h(px, py, 'd')
-    return all(v > h(px + dx, py + dy, 'd') for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))
-
-def level(px, py, forest):
-    """0 잔디 · 1 그늘. 원 합집합 안은 단색, 밖 2.5px 띠에는 듬성한 낱점(원본 도시 숲 그늘 결 — 4이웃보다 해시가 큰 화소만)."""
-    d = edge_dist(px, py, forest)
-    if d <= 0: return 1
-    if d < 2.5 and lone(px, py) and h(px, py, 'e') < (1 - d / 2.5) * 0.55: return 1
-    return 0
-
-def forest_of(code):
-    pos = {(dx, dy): bool(code >> k & 1) for k, (_, dx, dy) in enumerate(SHADE_BITS)}
-    return lambda i, j: pos.get((i, j), False)
-
-def overlay(code):
-    f = forest_of(code); im = Image.new('RGBA', (T, T))
+def dark_mask(m):
+    light = [OFF[b] for b in OFF if not m & b]
+    out = np.zeros((T, T), bool)
     for py in range(T):
         for px in range(T):
-            L = level(px, py, f)
-            if L: im.putpixel((px, py), OUTER)
-    return im
+            X, Y = px + 0.5, py + 0.5
+            best = 99.0
+            for dx, dy in light:
+                x0, y0 = dx * T, dy * T
+                best = min(best, math.hypot(max(x0 - X, 0, X - x0 - T), max(y0 - Y, 0, Y - y0 - T)))
+            t = (best - depth(px, py)) / 3.5
+            out[py, px] = t >= 1 or (t > 0 and (BAYER[py % 4][px % 4] + 0.5) / 16 < t)
+    return out
 
 city = Image.open(R / 'public/assets/beodeul-city/beodeul-city-chipset.png').convert('RGBA')
-grass = city.crop((737 % 128 * T, 737 // 128 * T, 737 % 128 * T + T, 737 // 128 * T + T))
-# woodland r4(B, 2026-10-21 사용자 승인): 숲 장면(도로 숲 벽)의 바닥 잔디만 채도를 조금 낮춘다 — 공용 잔디 737 은 그대로.
-# 화소마다 HSV 채도 ×0.84(밝기·색상 그대로). 새 그림이라 3/4·화풍 관문(Opus 판정자) 대상이다.
-import colorsys
+def native(i): return np.array(city.crop((i % 128 * T, i // 128 * T, i % 128 * T + T, i // 128 * T + T)))
+DARK = native(DARK_NATIVE)
+grass = Image.fromarray(native(737))
+
 def desat(im, k=0.84):
     out = im.copy()
     for yy in range(im.height):
@@ -87,85 +69,61 @@ def desat(im, k=0.84):
             r2, g2, b2 = colorsys.hsv_to_rgb(hh, ss * k, vv)
             out.putpixel((xx, yy), (round(r2 * 255), round(g2 * 255), round(b2 * 255), a))
     return out
-wgrass = desat(grass)
+wgrass = desat(grass)  # r4 B: 숲 장면(도로 숲 벽) 바닥 잔디만 채도 ×0.84 — 공용 잔디 737 은 그대로
+
 cat_paths = [R / 'src/assets/beodeulGroundCatalog.json', R / 'tiledata/beodeul-ground/manifest.json']
 m = json.loads(cat_paths[0].read_text())
 sheet = Image.open(OUT / 'chipset.png').convert('RGBA')
 cells = [sheet.crop((n % 8 * T, n // 8 * T, n % 8 * T + T, n // 8 * T + T)) for n in range(sheet.height // T * 8)]
-recipes = {r['id']: r for r in m['recipes']}
-used = max(n for r in m['recipes'] if not r['id'].startswith('bdg-forest-ground-') and r['id'] != 'bdg-woodland-grass' for row in r['rows'] for n in row)
+mine = lambda r: r.get('forestGround') or r['id'].startswith('bdg-forest-ground') or r['id'] == 'bdg-woodland-grass'
+m['recipes'] = [r for r in m['recipes'] if not mine(r)]  # 옛 숲 접지 칸(그늘 코드)·이전 판 짙은 풀 칸을 지우고 다시 쓴다
+used = max(n for r in m['recipes'] for row in r['rows'] for n in row)
 keep = [c.tobytes() for c in cells[:used + 1]]
-nxt = max(n for r in m['recipes'] for row in r['rows'] for n in row) + 1  # 새 칸은 시트 끝에 — 옛 칸 번호는 그대로
+cells = cells[:used + 1]
+nxt = used + 1
+new_recipes = []
 
-def slot(rid):
+def put(rid, name, img, kind):
     global nxt
-    if rid in recipes: return recipes[rid]['rows'][0][0]
-    n = nxt; nxt += 1; return n
+    n = nxt; nxt += 1
+    cells.append(img)
+    new_recipes.append(dict(id=rid, name=name, width=1, height=1, layer=1, rows=[[n]], blocked=False, kind=kind, forestGround=True))
+    return n
 
-floor_ids, edge_ids, apron_ids, wfloor_ids = [], [], [], []
-rid = 'bdg-woodland-grass'; wgrass_id = slot(rid)
-while len(cells) <= wgrass_id: cells.append(Image.new('RGBA', (T, T)))
-cells[wgrass_id] = wgrass
-recipes[rid] = recipes.get(rid) or dict(id=rid, name='숲 장면 잔디(채도 낮춤)', width=1, height=1, layer=1, rows=[[wgrass_id]], blocked=False, kind='woodland-grass', forestGround=True)
-for code in range(NCODES):
-    ov = overlay(code)
-    # 숲 바닥 = 잔디에 나무 그늘(코드)만. 「숲 칸이면 어디나 그늘」은 덩이가 작은 마을 숲에서 칸 네모로 드러났다(2026-10-20 r2 시험).
-    f = grass.copy(); f.alpha_composite(ov)
-    if code == 0:  # 그늘 덮개가 없는 숲 바닥 — 잔디 결 점 두 개로 숲 칸임을 표시(붓·도구가 숲 칸을 알아본다)
-        for p in ((4, 11), (12, 5)): f.alpha_composite(Image.new('RGBA', (1, 1), OUTER), p)
-    rid = f'bdg-forest-ground-floor-{code}'; n = slot(rid)
-    while len(cells) <= n: cells.append(Image.new('RGBA', (T, T)))
-    cells[n] = f; floor_ids.append(n)
-    recipes[rid] = recipes.get(rid) or dict(id=rid, name=f'숲 바닥 그늘 {code}', width=1, height=1, layer=1, rows=[[n]], blocked=False, kind='forest-floor', forestGround=True)
-    # 숲 가장자리 칸(8이웃 중 숲 밖이 있다)의 바닥 — 그늘 코드대로만 어둡게(바깥 잔디와 칸 경계 없이 이어진다)
-    e = f.copy()  # 가장자리 바닥 = 숲 바닥(같은 그림, 칸 번호만 따로 — 나중에 가장자리만 달리 칠할 자리)
-    rid = f'bdg-forest-ground-edge-{code}'; n = slot(rid)
-    while len(cells) <= n: cells.append(Image.new('RGBA', (T, T)))
-    cells[n] = e; edge_ids.append(n)
-    recipes[rid] = recipes.get(rid) or dict(id=rid, name=f'숲 가장자리 바닥 그늘 {code}', width=1, height=1, layer=1, rows=[[n]], blocked=False, kind='forest-floor-edge', forestGround=True)
-    wf = wgrass.copy(); wf.alpha_composite(ov)
-    if code == 0:
-        for p in ((4, 11), (12, 5)): wf.alpha_composite(Image.new('RGBA', (1, 1), OUTER), p)
-    rid = f'bdg-forest-ground-wfloor-{code}'; n = slot(rid)
-    while len(cells) <= n: cells.append(Image.new('RGBA', (T, T)))
-    cells[n] = wf; wfloor_ids.append(n)
-    recipes[rid] = recipes.get(rid) or dict(id=rid, name=f'숲 장면 숲 바닥 그늘 {code}', width=1, height=1, layer=1, rows=[[n]], blocked=False, kind='forest-floor', forestGround=True)
-    if ov.getbbox():
-        rid = f'bdg-forest-ground-apron-{code}'; n = slot(rid)
-        while len(cells) <= n: cells.append(Image.new('RGBA', (T, T)))
-        cells[n] = ov; apron_ids.append(n)
-        recipes[rid] = recipes.get(rid) or dict(id=rid, name=f'숲 둘레 땅 그늘 {code}', width=1, height=1, layer=2, rows=[[n]], blocked=False, kind='forest-apron', forestGround=True)
-    else:
-        apron_ids.append(-1)
-known = {r['id'] for r in m['recipes']}
-for rid, r in recipes.items():
-    if rid not in known: m['recipes'].append(r)
+wgrass_id = put('bdg-woodland-grass', '숲 장면 잔디(채도 낮춤)', wgrass, 'woodland-grass')
+masks = sorted({canon(k) for k in range(256)} - {255})
+families = {}
+for fam, base, label in (('plain', grass, '민무늬 잔디'), ('woodland', wgrass, '숲 장면 잔디')):
+    b = np.array(base); ids = {}
+    for mk in masks:
+        a = b.copy(); dm = dark_mask(mk); a[dm] = DARK[dm]
+        ids[str(mk)] = put(f'bdg-dark-grass-{fam}-{mk}', f'짙은 풀 가장자리({label}) {mk}', Image.fromarray(a), 'dark-grass-edge')
+    families[fam] = ids
+m['recipes'] += new_recipes
 m['count'] = (len(cells) + 7) // 8 * 8
 img = Image.new('RGBA', (128, m['count'] // 8 * T))
 for n, c in enumerate(cells): img.paste(c, (n % 8 * T, n // 8 * T))
 assert [img.crop((n % 8 * T, n // 8 * T, n % 8 * T + T, n // 8 * T + T)).tobytes() for n in range(used + 1)] == keep  # 앞 칸은 그대로
+
 sys.path.insert(0, str(R / 'src/harnesses/_core'))
 from object_gate import refusal  # noqa: E402
-new_cells, seen = [], set()
-for n in [*floor_ids, *edge_ids, *wfloor_ids, wgrass_id, *[a for a in apron_ids if a >= 0]]:
-    c = cells[n]
-    if c.tobytes() in seen: continue
-    seen.add(c.tobytes()); why = refusal(c, kind='terrain', context='bundle')
-    if why: new_cells.append(f'칸 {n}: {why}')
-print(f'object-gate(bundle): 고유 칸 {len(seen)} 중 막힘 {len(new_cells)}' + (f' — 예: {new_cells[0]}' if new_cells else ''))
-if new_cells and '--draft' not in sys.argv:
-    sys.exit('3/4·화풍 관문 미통과 — 18323 에서 사람이 허용하기 전에는 공용 번들에 굽지 않는다(초안은 --draft)')
+new_ids = [r['rows'][0][0] for r in new_recipes]
+blocked = []
+for n in new_ids:
+    why = refusal(cells[n], kind='terrain', context='bundle')
+    if why: blocked.append(f'칸 {n}: {why}')
+print(f'object-gate(bundle): 새 칸 {len(new_ids)} 중 막힘 {len(blocked)}' + (f' — 예: {blocked[0]}' if blocked else ''))
+if blocked and '--draft' not in sys.argv:
+    sys.exit('3/4·화풍 관문 미통과 — 판정자가 통과시키기 전에는 공용 번들에 굽지 않는다(초안은 --draft)')
 img.save(OUT / 'chipset.png'); img.resize((512, img.height * 4), Image.Resampling.NEAREST).save(OUT / 'atlas.png')
 for p in cat_paths: p.write_text(json.dumps(m, ensure_ascii=False, indent=2) + '\n')
-ground = dict(shadeBits=[[dx, dy] for _, dx, dy in SHADE_BITS], shadeCover=30, shadeCoverBase=15,
-              floorTiles=floor_ids, floorEdgeTiles=edge_ids, woodlandGrass=wgrass_id, woodlandFloorTiles=wfloor_ids, apronLayer=2, apronBases=[737], apronTiles=apron_ids, source='beodeul_ground')
+ground = dict(source='beodeul_ground', woodlandGrass=wgrass_id,
+              darkGrass=dict(native=DARK_NATIVE, interior=DARK_INTERIOR, edgeConnects=True, families=families))
 (R / 'tiledata/beodeul-ground/forest-ground.json').write_text(json.dumps(ground, indent=1) + '\n')
-# 미리보기: 코드별 숲 바닥·둘레 그늘
-pv = Image.new('RGBA', (NCODES * 18, 36), (40, 40, 46, 255))
-for code in range(NCODES):
-    pv.paste(cells[floor_ids[code]], (code * 18, 0))
-    g = grass.copy()
-    if apron_ids[code] >= 0: g.alpha_composite(cells[apron_ids[code]])
-    pv.paste(g, (code * 18, 18))
+# 미리보기: 47모양(민무늬 잔디 위) + 둥근 덩이 시험
+pv = Image.new('RGBA', ((len(masks) + 1) * 18, 36), (40, 40, 46, 255))
+for k, mk in enumerate(masks):
+    pv.paste(cells[families['plain'][str(mk)]], (k * 18, 0)); pv.paste(cells[families['woodland'][str(mk)]], (k * 18, 18))
+pv.paste(Image.fromarray(DARK), (len(masks) * 18, 0))
 pv.resize((pv.width * 3, pv.height * 3), Image.Resampling.NEAREST).save(OUT / 'forest-ground-preview.png')
-print(json.dumps(dict(count=m['count'], floor=floor_ids[:3], apron=[a for a in apron_ids if a >= 0][:3], apronCount=sum(a >= 0 for a in apron_ids))))
+print(json.dumps(dict(count=m['count'], woodlandGrass=wgrass_id, first=new_ids[1], last=new_ids[-1], new=len(new_ids))))

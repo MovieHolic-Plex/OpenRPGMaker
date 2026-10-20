@@ -2,10 +2,11 @@
 // author_wild_route 의 버들항(beodeul_city) 시공 — 합본 마을 경로와 같은 길 계획(planRouteCorridor)을 버들항 재료로 칠한다.
 //
 // 왜 따로 있나(2026-10-01): 새 프로젝트 기본이 버들항이 되자(#1789) 몬스터 수집 첫 구간 뼈대가 이 도구에서 멈췄다
-// (「숲마을·combined_town 계열에서만 시공」). 버들항 시트에는 키큰 풀 오토타일이 없어서,
-// 풀숲은 시트의 짙은 잎 무늬 풀(통행 가능 한 칸 무늬)로 깐다. 제대로 된 키큰 풀은 시트에 손 도트로 더해야 한다.
+// (「숲마을·combined_town 계열에서만 시공」). 버들항 시트에는 키큰 풀 오토타일이 없다.
+// 조우 풀숲(patches)은 몬스터 수집 게임에서만 깐다(wildRouteTool.ts 가 isDeclaredMonsterGame 으로 거른다, 2026-10-21 사용자 정정
+// 「포켓몬 칩이 아닌데 '조우 풀숲'은 또 왜 쓴거임?」). 깔 때도 짙은 풀 속 칸 11628 을 네모 판으로 칠하지 않고 짙은 풀 오토타일로 둥글게 푼다.
 // - 길: 버들항 모랫길(fill_region 재료, 줄 단위 사각형) — 모랫길 오토타일이 잔디 가장자리를 맞춘다. 길 계획은 꺾임 비용을 준 직선 위주.
-// - 풀숲: 짙은 잎 풀 BEODEUL_THICKET_TILE.
+// - 풀숲(몬스터 수집 게임만): 짙은 풀 오토타일(beodeulForest.ts paintBeodeulDarkGrass).
 // - 숲: 길 둘레 1칸·출구 둘레를 비운 풀밭을 앞줄 줄기 나무 + 안쪽 수관 + 덤불로 빈틈없이 막는다(plantBeodeulForestWall).
 // - 길섶: 깊은 숲길 세트의 작은 소품을 드문드문(dressBeodeulVerge).
 
@@ -15,7 +16,7 @@ import { CONSTRUCTION_TOOLS_V3 } from "./v3/constructionTools";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import type { ToolDefinition } from "./types";
 import { layerTileAt } from "@/project/mapLayers";
-import { beodeulWoodlandGrass, composeBeodeulForest, type BeodeulForestType } from "./beodeulForest";
+import { beodeulWoodlandGrass, composeBeodeulForest, paintBeodeulDarkGrass, type BeodeulDarkGrassFamily, type BeodeulForestType } from "./beodeulForest";
 
 const BEODEUL_TEXTURE = "tex_beodeul_city";
 const BEODEUL_ID = "beodeul_city";
@@ -24,7 +25,7 @@ export const BEODEUL_SAND_PATH = "버들항 모랫길";
 const PATH_MATERIAL = BEODEUL_SAND_PATH;
 /** 버들항 민무늬 풀(defaultMaps.ts plainGrassTileFor 와 같다). */
 export const BEODEUL_PLAIN_GRASS = 737;
-/** 짙은 잎 무늬 풀 — 통행 가능, 3×3 으로 이어 깔아도 이음새가 없다. 키큰 풀이 없는 시트의 풀숲 대용. */
+/** 짙은 풀 속 칸(원본) — 통행 가능. 낱칸으로 네모 판을 깔지 말고 짙은 풀 오토타일(paintBeodeulDarkGrass)로 깐다. */
 export const BEODEUL_THICKET_TILE = 11628;
 
 export function canPaintBeodeulWildRoute(tileset: TilesetDef): boolean {
@@ -68,7 +69,7 @@ export function paintBeodeulWildRoute(input: BeodeulWildRouteInput): { roadCells
       if (rng() < 0.75) thicket.delete(cy * w + cx);
     }
   }
-  for (const index of thicket) map.lowerTiles[index] = BEODEUL_THICKET_TILE;
+  paintBeodeulDarkGrass(project, map, tileset, "woodland", thicket);
 
   // 길: 풀숲이 아닌 길 칸(깎인 모서리 포함). 행마다 이어진 칸을 사각형 하나로 칠한다(칸마다 부르면 오토타일 재합성이 칸 수만큼 돈다).
   // 풀숲 사각형 안의 길 칸은 모랫길로 칠하지 않는다 — 깎인 모서리에 모랫길 토막이 삐져나왔다(2026-10-06).
@@ -115,7 +116,7 @@ export function paintBeodeulWildRoute(input: BeodeulWildRouteInput): { roadCells
     if (x >= 0 && y >= 0 && x < w && y < map.height) reserved.add(y * w + x);
   }
 
-  const treeCells = plantBeodeulForestWall(project, map, tileset, reserved, rng, stampObject, forestType);
+  const treeCells = plantBeodeulForestWall(project, map, tileset, reserved, rng, stampObject, forestType, "woodland");
   const decor = dressBeodeulVerge(project, map, tileset, road, reserved, rng, stampObject);
   // r4 B(2026-10-21 사용자 승인): 숲 장면의 바닥 잔디만 채도를 조금 낮춘 잔디로 — 공용 잔디 737 그림은 그대로, 이 맵의 칸만 바꾼다.
   const woodlandGrass = beodeulWoodlandGrass(project, tileset);
@@ -132,13 +133,11 @@ export function paintBeodeulWildRoute(input: BeodeulWildRouteInput): { roadCells
  * 이제 나무 composer(#3058 treeComposer.ts, jp 숲 r4 와 같은 규칙)가 원본 줄기 나무(4×5·3×4)를 2줄·3칸 간격 밑동에 세우고,
  * 칸마다 남쪽(앞) 나무부터 4·3·2층에 쌓는다 — 앞 수관이 뒤 나무의 줄기를 가리고, 숲 남쪽 끝 줄만 줄기가 보인다.
  * 그림은 bd-tree 원본 칸 그대로다(src/assets/beodeulForestComposer.json, 새 그림 없음). 수관은 숲 칸 밖으로 넘치지 않는다(길 둘레 통행 보존).
- * 그래도 남은 2×2 빈 풀밭만 덤불로 메운다(1칸 틈은 풀밭으로 둔다).
  */
 export function plantBeodeulForestWall(project: Project, map: GameMap, tileset: TilesetDef, reserved: ReadonlySet<number>, rng: Rng,
-  _stampObject: ToolDefinition, forestType: BeodeulForestType = "broadleaf"): number {
+  _stampObject: ToolDefinition, forestType: BeodeulForestType = "broadleaf", family: BeodeulDarkGrassFamily = "plain"): number {
   const w = map.width, h = map.height;
-  let groundTiles: ReadonlySet<number> = new Set();
-  const empty = (index: number): boolean => ([2, 3, 4] as const).every(L => { const t = layerTileAt(map, L, index); return t < 0 || groundTiles.has(t); });
+  const empty = (index: number): boolean => ([2, 3, 4] as const).every(L => layerTileAt(map, L, index) < 0);
   const plantable = (x: number, y: number): boolean => {
     if (x < 0 || y < 0 || x >= w || y >= h) return false;
     const index = y * w + x;
@@ -148,18 +147,11 @@ export function plantBeodeulForestWall(project: Project, map: GameMap, tileset: 
   const forest = new Set<number>();
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (plantable(x, y)) forest.add(y * w + x);
   const inForest = (x: number, y: number) => x >= 0 && y >= 0 && x < w && y < h && forest.has(y * w + x);
-  // 접지(r6): 숲 칸 1층은 숲 바닥 그늘, 숲 밖 빈 잔디(아무것도 안 찍힌 칸)에는 오른쪽 아래로 진 땅 그늘 덧칸.
-  // 수관은 숲 칸 안에만(hold), 다시 쓰는 칸은 숲 칸 + 빈 칸(write) — 이미 찍힌 소품·덤불 칸은 건드리지 않는다.
-  const bare = new Set<number>();
-  for (let i = 0; i < w * h; i++) if (empty(i)) bare.add(i);
-  // 숲 바닥은 숲 장면 잔디(채도 낮춤) 위 그늘 칸 — 시공 끝에 맵의 737 잔디도 같은 잔디로 바꾼다(paintBeodeulWildRoute)
-  const composer = composeBeodeulForest(project, map, tileset, forestType, inForest, inForest, Math.floor(rng() * 997), (x, y) => inForest(x, y) || bare.has(y * w + x), undefined, true);
+  // 나무 밑 땅(r5): 짙은 풀 오토타일(family = 가장자리 바탕 잔디). 수관은 숲 칸 안에만(hold·write) — 길 둘레 통행 보존.
+  composeBeodeulForest(project, map, tileset, forestType, inForest, inForest, Math.floor(rng() * 997), inForest, family);
   let cells = 0;
-  groundTiles = new Set((composer.ground?.apronTiles ?? []).filter(n => n >= 0));
   for (const index of forest) if (!empty(index)) cells++;
-  // 틈 메우기 — 덤불(2×2)만. 숲 칸 안의 빈 풀밭 2×2 에만.
-  // 틈 메우기 덤불은 따로 찍지 않는다(2026-10-20 r2) — 덤불은 composer 활엽 그림(B2)에 들어 있고, 숲 속 빈 틈은 숲 바닥 그늘이 메운다.
-  // 따로 찍은 덤불은 땅 그늘을 못 받아 숲 바닥 위에 밝게 떠 보였다.
+  // 틈 메우기 덤불은 따로 찍지 않는다(2026-10-20 r2) — 덤불은 composer 활엽 그림(B2)에 들어 있고, 숲 속 빈 틈은 짙은 풀이 메운다.
   return cells;
 }
 

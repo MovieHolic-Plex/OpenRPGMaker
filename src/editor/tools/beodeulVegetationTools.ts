@@ -67,7 +67,7 @@ export function refineBeodeulVegetation(project:Project,mapId:string){
  const grassy=(x:number,y:number)=>inMap(x,y)&&bare(y*m.width+x)&&lawn.has(layerTileAt(m,1,y*m.width+x));
  composeBeodeulForest(project,m,ts,'mixed',(x,y)=>inMap(x,y)&&groveCells.has(y*m.width+x),
   (x,y)=>inMap(x,y)&&(groveCells.has(y*m.width+x)||grassy(x,y)&&near1(x,y)),54,
-  (x,y)=>inMap(x,y)&&(groveCells.has(y*m.width+x)||grassy(x,y)&&nearGrove(x,y)),[...lawn]);
+  (x,y)=>inMap(x,y)&&(groveCells.has(y*m.width+x)||grassy(x,y)&&nearGrove(x,y)));
  // Three connected edges enclose the actual vegetable bed; the north side opens onto the main lane.
  for(let x=30;x<=35;x++)stamp('fence-horizontal',x,22);
  // 모서리·세로는 원본 밭 울타리 칸(남서·남동·서변·동변)이다 — 예전 한 가지 「모서리」를 양쪽에 쓰면 동쪽 모서리 레일이 밖으로 삐졌다.
