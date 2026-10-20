@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""3/4 깊이 다시 그리기 비교판: 옛 그림 | 새 그림 | 버들항 집 | Actor1(24x32) — 1배·4배, 조각마다 PNG 한 쌍 + 목록 JSON.
+"""3/4 깊이 다시 그리기 비교판: 옛 그림 | 새 그림 | 기준(건물 = 버들항 집, 탈것 = modern-city 경찰차) | Actor1(24x32) — 1배·4배, 조각마다 PNG 한 쌍 + 목록 JSON.
   python3 scripts/content/jp-city/qa/depth_pilot.py OLD_DIR OUT_DIR
 OLD_DIR 에는 origin/main 으로 렌더한 옛 그림 <id>.png 가 있어야 한다(건물 id · 탈것 <id>-right.png · bus-*.png · static-*.png)."""
 import json, os, sys
@@ -62,11 +62,12 @@ def main(old_dir, out):
     os.makedirs(out, exist_ok=True)
     act = actor()
     beo = Image.open(os.path.join(ROOT, 'public/assets/beodeul-architecture/cream-native.png')).convert('RGBA')
+    police = Image.open(os.path.join(ROOT, 'public/assets/modern-city/vehicles/mc-veh-police-a.png')).convert('RGBA').crop((0, 0, 48, 40))   # 탈것 기준(같은 배율)
     idx = []
     for grp, k, name, im, oldf in pieces():
         old = Image.open(os.path.join(old_dir, oldf)).convert('RGBA')
         im.save(os.path.join(out, f'{k}-new.png'))
-        r = row([old, im, beo, act])
+        r = row([old, im, police if grp != '건물' else beo, act])
         r.save(os.path.join(out, f'{k}-1x.png'))
         r.resize((r.width * 4, r.height * 4), Image.NEAREST).save(os.path.join(out, f'{k}-4x.png'))
         idx.append(dict(group=grp, key=k, name=name))

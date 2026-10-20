@@ -23,12 +23,14 @@ def _veh_mods():
 
 
 def _as_cv(a, flip=False):
-    c = Cv(a.shape[1], a.shape[0]); c.a[:] = a[:, ::-1] if flip else a
+    """정지 소품 칸 자르기(build.reg_prop)는 16 배수 높이를 가정한다 → 위쪽을 투명으로 채워 16 배수로(밑변 = 발 그대로)."""
+    h = -(-a.shape[0] // 16) * 16
+    c = Cv(a.shape[1], h); c.a[h - a.shape[0]:] = a[:, ::-1] if flip else a
     return c
 
 
 def car(color='white', kind='sedan', flip=False):
-    """80x48 정지 차 소품. 진행 방향 오른쪽(flip 이면 왼쪽). 윗면(지붕·보닛·트렁크)이 위에서 본 면으로 화면 세로 11~13줄."""
+    """80x64 정지 차 소품(그림 80x56 + 위 투명 8). 진행 방향 오른쪽(flip 이면 왼쪽). 3/4 깊이판: 지붕 윗면 ≈35%, 보닛·트렁크 윗면 6줄, 바퀴 아래 절반."""
     cars, _ = _veh_mods()
     tone = cars.CAR_TONE[color]
     a = cars._van_side(tone) if kind == 'van' else cars._sedan_side(tone, taxi=(color == 'taxi'))
