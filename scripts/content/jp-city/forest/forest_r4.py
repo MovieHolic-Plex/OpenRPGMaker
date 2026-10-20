@@ -49,7 +49,15 @@ def harmonized_pal():
     return P
 
 
-PAL_R5 = harmonized_pal()
+def contract_pal():
+    """계약에 올린 r5 램프(paletteContract.ts 의 keyaki_g/h·leafhi_g·bark_g — harmonized_pal() 로 만들어 올렸다)."""
+    P = dict(F.PAL)
+    P['keyaki_a'] = F.fine('pine_bamboo', 'keyaki_g'); P['keyaki_b'] = F.fine('pine_bamboo', 'keyaki_h')
+    P['hi'] = F.ramp('pine_bamboo/leafhi_g'); P['bark'] = F.ramp('aged_cedar/bark_g')
+    return P
+
+
+PAL_R5 = contract_pal()
 PAL = dict(PAL_R5) if os.environ.get('JPF_PAL', 'r5') == 'r5' else dict(PAL_R4)
 hf = F.hf
 
