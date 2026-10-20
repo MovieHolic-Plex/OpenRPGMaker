@@ -73,7 +73,7 @@ export function runShort(binary: string, args: readonly string[], timeoutMs = 20
 
 /** 모델 요청이 일시적으로 거절됐는가(용량·속도 제한) — 같은 차례를 잠시 뒤 다시 보낼 만한 오류. */
 export function isTransientCliError(message: string | undefined): boolean {
-  return !!message && /at capacity|overloaded|rate.?limit|429|503|temporarily unavailable|try again/iu.test(message);
+  return !!message && /at capacity|high demand|overloaded|rate.?limit|429|503|temporarily unavailable|try again/iu.test(message);
 }
 
 export const sleep = (ms: number, signal?: AbortSignal) => new Promise<void>((resolve) => {

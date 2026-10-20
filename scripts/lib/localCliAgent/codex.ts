@@ -122,7 +122,10 @@ function openCodexSession(options: LocalCliSessionOptions, toolsEnabled = true):
           options.onEvent({ kind: "result", ok: true, ...(usage ? { usage } : {}), ...(thread ? { sessionId: thread } : {}) });
         } else if (line.type === "turn.failed" || line.type === "error") {
           const message = (line.error as { message?: string } | undefined)?.message ?? (typeof line.message === "string" ? line.message : "Codex 실행 실패");
-          error ??= message;
+          // 「Reconnecting... 2/5 (high demand)」는 codex 가 스스로 다시 붙는 중이라는 알림이다 — 실패가 아니다(2026-10-20 실측).
+          // 다시 붙기를 다 쓰면 turn.failed 가 따로 온다.
+          if (line.type === "error" && /^Reconnecting\b/iu.test(message)) options.onEvent({ kind: "stderr", text: `${message}\n` });
+          else error ??= message;
         }
       },
       onStderr: (chunk) => { if (!/Reading additional input from stdin/u.test(chunk)) options.onEvent({ kind: "stderr", text: chunk }); },
