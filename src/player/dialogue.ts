@@ -2611,6 +2611,8 @@ function dialoguePortraitMode(face: FaceGraphic | undefined): "face" | "bust" | 
   return face.presentation ?? facePresentationForResource(face.resourceId);
 }
 
+const loadedPortraitUrls = new Set<string>();
+
 function renderFace(face: FaceGraphic): HTMLElement {
   const url = safeResourceImageUrl(resolveAssetResourceUrl(face.resourceId, { project: store.getCurrent() }));
   if (!url) {
@@ -2623,7 +2625,9 @@ function renderFace(face: FaceGraphic): HTMLElement {
   const mode = dialoguePortraitMode(face);
   if (mode !== "face") {
     const side = face.position === "right" ? "right" : "left";
-    return el("div", {
+    // 그림이 아직 안 왔으면 틀(테두리·배경색)만 빈 채로 먼저 보였다(2026-10-21 아스트라 첫 10분 녹화) — 받을 때까지 숨긴다.
+    const pending = !loadedPortraitUrls.has(url);
+    const node = el("div", {
       class: [
         "dialogue-face",
         "dialogue-face-bust",
@@ -2646,6 +2650,16 @@ function renderFace(face: FaceGraphic): HTMLElement {
         portraitRender: sharedPortraitRendering(face.resourceId),
       },
     });
+    if (pending) {
+      node.style.visibility = "hidden";
+      const probe = new Image();
+      const reveal = () => { loadedPortraitUrls.add(url); node.style.visibility = ""; };
+      probe.onload = reveal;
+      probe.onerror = () => { node.style.visibility = ""; };
+      probe.src = url;
+      if (probe.complete && probe.naturalWidth > 0) reveal();
+    }
+    return node;
   }
   // 얼굴은 낱장 파일(48×48) 한 장이다 — 상자 크기만 정하고 이미지를 통째로 그린다.
   const style = [
