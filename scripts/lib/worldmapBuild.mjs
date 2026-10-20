@@ -1,4 +1,4 @@
-// 월드맵 키트(tiledata/worldmap-kit, Python) 를 돌려 세계 지도 한 장을 만든다 — 조수의 지형 편집 도구가 쓴다.
+// 월드맵 키트(공개 저장소 oprn-worldmap-kit 의 tiledata/worldmap-kit, Python — 위치는 worldmapKitDir.mjs) 를 돌려 세계 지도 한 장을 만든다 — 조수의 지형 편집 도구가 쓴다.
 // 호스트 쪽(동반 서비스 /v1/worldmap/build, Pi 워커)에서만 돈다. 브라우저는 동반 서비스 경로로 부른다.
 //
 // 입력 { theme, terrain?: worldmap-terrain/1 객체({base?, ops, fit_salt?}), preview?: boolean }
@@ -7,12 +7,11 @@
 import { spawn } from "node:child_process";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { homedir, tmpdir } from "node:os";
-import { join, resolve, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join } from "node:path";
+import { requireWorldmapKitDir, worldmapKitDir as kitDir } from "./worldmapKitDir.mjs";
 
 // 키트 경로는 쓸 때만 계산한다. Electron 메인(CJS 번들)에서는 import.meta.url 이 비어 fileURLToPath 가 던진다 —
 // 모듈 로드 때 평가하면 앱이 켜지지도 않는다(2026-10-04 실측: v0.108.0 윈도우 앱 시작 실패).
-const kitDir = () => process.env.OPRN_WORLDMAP_KIT || join(resolve(dirname(fileURLToPath(import.meta.url)), "..", ".."), "tiledata", "worldmap-kit");
 const CACHE = process.env.OPRN_WORLDMAP_CACHE || join(homedir(), ".cache", "oprn", "worldmap-kit");
 const THEME_RE = /^[a-z0-9][a-z0-9-]{0,40}$/;
 /** 전체 렌더는 지형이 바뀌면 100초 남짓 걸린다(캐시가 맞으면 몇 초). */
@@ -66,6 +65,7 @@ export async function buildWorldmap(request = {}) {
   const theme = typeof request.theme === "string" && request.theme ? request.theme : "fantasy";
   if (!THEME_RE.test(theme)) return { ok: false, error: `theme 이름이 올바르지 않다: ${theme}` };
   const preview = request.preview === true;
+  try { requireWorldmapKitDir(); } catch (error) { return { ok: false, error: error instanceof Error ? error.message : String(error) }; }
   const dir = await mkdtemp(join(tmpdir(), "oprn-worldmap-"));
   try {
     // 여정은 테마가 고른다(starmap = 우주 5막, 나머지 = 판타지 5막)

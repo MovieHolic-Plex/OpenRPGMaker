@@ -6,7 +6,7 @@
  * (src/editor/worldmap/worldmapBuild.ts). 결과 지도는 `worldmap_<mapId>` 타일셋(재사용 지형 재료와 별도 위층 거점)과
  * 키트의 걷기 표로 통행을 갖는 맵이 된다. 장소는 맵의 이름 붙은 로케이션으로 들어간다.
  *
- * 작업 문법·검사의 정본: tiledata/worldmap-kit/kit/lib/kit_terrain.py (이 파일의 스키마는 그 거울).
+ * 작업 문법·검사의 정본: oprn-worldmap-kit 저장소 tiledata/worldmap-kit/kit/lib/kit_terrain.py (이 파일의 스키마는 그 거울).
  */
 import { mapCharacterSizeFactor } from "@/project/characterScale";
 import type { GameMap, MapId, MapNamedLocation, Project, TilesetId, WorldmapVariantSpec } from "@/project/types";

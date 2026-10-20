@@ -16,7 +16,7 @@ function cell(out, tile, x, y, scale = 1) {
     }
   }
 }
-const dir = 'public/assets/worldmap-icons-references', source = 'tiledata/worldmap-kit/selected/materials';
+const dir = 'public/assets/worldmap-icons-references', source = 'tiledata/worldmap-editor/materials';
 await mkdir(dir, { recursive: true }); await mkdir(source, { recursive: true });
 const atlas = image(8 * 64, Math.ceil(p.groups.length / 8) * 64);
 p.groups.forEach((g, i) => cell(atlas, g.representative, i % 8 * 64, Math.floor(i / 8) * 64, 4));

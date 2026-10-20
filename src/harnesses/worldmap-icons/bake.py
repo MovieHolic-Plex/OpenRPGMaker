@@ -9,14 +9,17 @@ import sqlite3
 
 from PIL import Image, ImageDraw
 
+import sys
 ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from kitdir import kit_asset, kit_dir  # noqa: E402
 DATA = Path(os.environ.get('WMI_HARNESS_DATA', '~/.local/share/oprn/worldmap-icon-harness')).expanduser()
 LEDGER = ROOT / 'harness-data/worldmap-icons/slots.json'
-SOURCE = ROOT / 'tiledata/worldmap-kit/selected'
+SOURCE = kit_dir(ROOT) / 'selected'   # 정본은 공개 키트 저장소 — build 는 그 체크아웃에 쓴다(커밋·푸시 후 고정 커밋 갱신)
 SHEET = ROOT / 'public/assets/worldmap-icons/worldmap-selected.png'
 META = ROOT / 'src/assets/worldmapSelectedSheet.json'
 REFS = ROOT / 'src/assets/worldmapSelectedReferences.json'
-BASE = ROOT / 'public/assets/easyrpg-chipset-world-transparent.png'
+BASE = kit_asset(ROOT, 'public/assets/easyrpg-chipset-world-transparent.png')
 COLS, TILE, BASE_ROWS = 30, 16, 16
 THEMES = {'fantasy': '판타지', 'desert-east': '사막·동양풍', 'modern-sf': '현대·SF'}
 

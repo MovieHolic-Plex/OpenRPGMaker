@@ -43,7 +43,7 @@ def render_set(iset, kx=0.0, light=(0.0, -.35, .8), sun=(0.0, .55, 1.0)):
     정면 카메라에서는 빛도 정면 위에서 온다(light·sun 의 x=0). 원래 빛(왼쪽 위)은 팔각·원통 탑의 오른쪽 면과 땅 그림자를 오른쪽으로
     몰아 검수자가 「오른쪽 옆면」으로 읽었다(2026-10-02, 정면 렌더 20장 중 14장 SIDE). light=None 이면 원래 빛."""
     import numpy as np
-    sdir = H.ROOT / 'tiledata' / 'worldmap-kit' / 'iconsets' / iset
+    sdir = H.KIT_DIR / 'iconsets' / iset
     for m in _LIBMODS:
         sys.modules.pop(m, None)
     sys.path.insert(0, str(sdir / 'lib'))

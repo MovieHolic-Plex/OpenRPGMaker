@@ -41,7 +41,7 @@ LegacyDb/원격에는 쓰지 않는다. `--dry`는 준비·그림 대조만 한�
 - 받기·후보 선택·일괄 받기는 화면에서 읽은 원본 SHA1을 먼저 대조한다. 바뀐 그림을 옛 화면에서 선택하면 거부한다.
 - pick은 자기 아이콘의 완료된 판·시도만 허용한다. 새 결정은 그림 SHA256·후보 시도 번호를 함께 기록한다.
   기존 결정은 첫 굽기의 `slots.json.selections`에 그림 SHA256을 고정한다. 그림이 바뀌면 새 선택 없이 굽지 못한다.
-- 원본 사본·현재 선택 사전은 `tiledata/worldmap-kit/selected/`, 칸 위치·해시 고정은 `harness-data/worldmap-icons/slots.json`.
+- 원본 사본·현재 선택 사전은 공개 키트(oprn-worldmap-kit, `npm run worldmap-kit:sync` → `.worldmap-kit/tiledata/worldmap-kit/selected/`) — `build` 가 그 체크아웃에 쓰므로 공개 저장소 PR → lock 커밋 갱신으로 올린다. 칸 위치·해시 고정은 `harness-data/worldmap-icons/slots.json`.
 - 재작성 검수에도 판의 교정 지시를 전달한다. 명시적으로 바꾼 색·소품은 옛 설명보다 우선하되 시점·지도 1배 식별 검사는 유지한다.
 - 칸은 덧붙이기 전용이다. 미선택으로 돌아간 옛 칸은 비워 두고 번호를 다른 아이콘에 재사용하지 않는다.
 - `--snapshot`은 커밋한 사람 선택·PNG 사본으로 재현한다. SQLite에 쓰지 않는다.
