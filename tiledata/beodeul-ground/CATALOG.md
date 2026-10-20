@@ -1,6 +1,6 @@
 # 정확한 칸 배열
 
-시트 tex_beodeul_ground, 16px, 8열, 648칸. 배열은 원본 source 칸 번호다.
+시트 tex_beodeul_ground, 16px, 8열, 656칸. 배열은 원본 source 칸 번호다.
 빈칸 -1은 기존 층을 보존한다. 일반 stamp_object 키트는 빈 잔디에만 쓴다. 집·나무 보강은 dress_beodeul_ground로 한다.
 
 ## bdg-grass-0 · 풀 무더기 1
@@ -8373,7 +8373,7 @@
 }
 ```
 
-## bdg-woodland-fence-horizontal · 숲 깊이 · fence-horizontal
+## bdg-woodland-fence-horizontal · 숲 울타리 · 가로
 크기 1×1, 도구의 홈 층 3, 통·장작 몸통 차단 false.
 ```json
 {
@@ -8408,7 +8408,7 @@
 }
 ```
 
-## bdg-woodland-fence-vertical · 숲 깊이 · fence-vertical
+## bdg-woodland-fence-vertical · 숲 울타리 · 세로(서쪽 변)
 크기 1×1, 도구의 홈 층 3, 통·장작 몸통 차단 false.
 ```json
 {
@@ -8443,7 +8443,7 @@
 }
 ```
 
-## bdg-woodland-fence-corner · 숲 깊이 · fence-corner
+## bdg-woodland-fence-corner · 숲 울타리 · 남서 모서리
 크기 1×1, 도구의 홈 층 3, 통·장작 몸통 차단 false.
 ```json
 {
@@ -8468,6 +8468,146 @@
   "upperTiles": [
     [
       645
+    ]
+  ],
+  "upperOverlayTiles": [
+    [
+      -1
+    ]
+  ]
+}
+```
+
+## bdg-woodland-fence-vertical-east · 숲 울타리 · 세로(동쪽 변)
+크기 1×1, 도구의 홈 층 3, 통·장작 몸통 차단 false.
+```json
+{
+  "kind": "fence",
+  "blockingCells": [
+    [
+      0,
+      0
+    ]
+  ],
+  "upperCells": [],
+  "lowerTiles": [
+    [
+      -1
+    ]
+  ],
+  "lowerOverlayTiles": [
+    [
+      -1
+    ]
+  ],
+  "upperTiles": [
+    [
+      646
+    ]
+  ],
+  "upperOverlayTiles": [
+    [
+      -1
+    ]
+  ]
+}
+```
+
+## bdg-woodland-fence-corner-se · 숲 울타리 · 남동 모서리
+크기 1×1, 도구의 홈 층 3, 통·장작 몸통 차단 false.
+```json
+{
+  "kind": "fence",
+  "blockingCells": [
+    [
+      0,
+      0
+    ]
+  ],
+  "upperCells": [],
+  "lowerTiles": [
+    [
+      -1
+    ]
+  ],
+  "lowerOverlayTiles": [
+    [
+      -1
+    ]
+  ],
+  "upperTiles": [
+    [
+      647
+    ]
+  ],
+  "upperOverlayTiles": [
+    [
+      -1
+    ]
+  ]
+}
+```
+
+## bdg-woodland-fence-corner-nw · 숲 울타리 · 북서 모서리
+크기 1×1, 도구의 홈 층 3, 통·장작 몸통 차단 false.
+```json
+{
+  "kind": "fence",
+  "blockingCells": [
+    [
+      0,
+      0
+    ]
+  ],
+  "upperCells": [],
+  "lowerTiles": [
+    [
+      -1
+    ]
+  ],
+  "lowerOverlayTiles": [
+    [
+      -1
+    ]
+  ],
+  "upperTiles": [
+    [
+      648
+    ]
+  ],
+  "upperOverlayTiles": [
+    [
+      -1
+    ]
+  ]
+}
+```
+
+## bdg-woodland-fence-corner-ne · 숲 울타리 · 북동 모서리
+크기 1×1, 도구의 홈 층 3, 통·장작 몸통 차단 false.
+```json
+{
+  "kind": "fence",
+  "blockingCells": [
+    [
+      0,
+      0
+    ]
+  ],
+  "upperCells": [],
+  "lowerTiles": [
+    [
+      -1
+    ]
+  ],
+  "lowerOverlayTiles": [
+    [
+      -1
+    ]
+  ],
+  "upperTiles": [
+    [
+      649
     ]
   ],
   "upperOverlayTiles": [
