@@ -32,6 +32,12 @@
 | `seats34-study2-89` | 의자 89 — 사용자 눈 합격 2026-10-20 | 89 | `tiledata/seats34/study2/needs-receipt.json`·`human-verdicts.json` |
 | `modern-city-interior-r16-142` | modern_city 실내 기물 142 (r16) | 142 | `tiledata/modern-city/interior/r16/needs-receipt.json`, 그림은 `grids/<id>.json` 을 화소로 옮긴 것 |
 | `v5-props34` | 손 도트 v5 실내 기물 22 (props34·plus) | 22 | `tiledata/hand-interior/props34/` + `ship bunk 2w`(보류 그림) — #3107 허용 4장 포함 |
+| `jp-roof-47` | jp 지붕 47 — 사용자 눈 OK 2026-10-20 | 47 | #3098 건물 단품(kind `structure`), 그림은 사용자가 본 `claude-viz/jp-depth-pilot-1/*-new.png`, 목록 `~/.cache/jp-depth/needs-receipt-jp-roof-47.json` |
+| `jp-vehicles-12` | jp 탈것 12 — 사용자 OK 2026-10-20 | 12 | #3098 버스 2·승용차 8·트럭 2(kind `box`, 지붕 윗면) |
+
+- 상점가 줄 키트 8개(`row_*`)는 위 47 단품을 화소 그대로 합친 것이라 따로 올리지 않았다. 굽기 관문이 칸 단위로 단품 허용을 알아보지 못하면(정렬이 16px 칸과 어긋나면) 그 8개를 자기 묶음으로 `enqueue` 해 사람이 따로 허용한다.
+- AI 조언(프로필 `4d8774b5`) 분포: 의자 89 = 통과 1·보류 2·불합격 86, modern_city 142 = 통과 16·보류 27·불합격 99, jp 지붕 47 = 통과 3·보류 2·불합격 42, jp 탈것 12 = 불합격 12, v5 22 = 통과 16·보류 4(허용됨)·불합격 2. 사용자가 이미 눈으로 합격한 묶음도 대부분 AI 불합격이다 — 그래서 결정이 사람에게 넘어왔다.
+- **정본이 아닌 데이터 주의:** 오래된 워크트리 `rpg-zzu-object-gate-calib2`(브랜치 `agent/object-gate-v10-seat-backrest`, #3119 로 병합됨)의 `harness-data/object-gate/` 에 커밋 안 된 영수증 58·그림 7장(object-gen 소파·대형 후보 `~/.cache/ogsofa/` 의 조언)이 남아 있다. 정본 데이터가 아니다 — 가져오지 말고, 사용자가 고른 후보만 정본 체크아웃에서 `enqueue` 로 다시 받는다.
 
 **나중에 올릴 것(초안 PR 이 머지되면):** jp_city 지붕(평지붕·철도·고가 키트), inaka, 숲 그림. 그 PR 의 그림 PNG 로 `items.jsonl`(종류는 `structure`·`roof` 화풍 등 그 PR 이 쓰는 값)을 만들어 `enqueue --id jp-city-roofs-<날짜> --title "…"` 처럼 올리고, 화면 주소를 사용자에게 준다. 굽기는 사용자가 허용한 뒤에만.
 
