@@ -610,6 +610,8 @@ function tunePacing(project: Project): void {
     for (const m of rest) { const e = byId(m.enemyId); if (e) rescaleEnemy(e, 8); }
     // 선봉 볼트온(전기)의 두 배 톡번개 세 방에 물 스타터가 리그를 두 번 졌다(2026-10-21 r25, Lv12) → 선봉만 Lv7.
     const vanguard = byId(rest[0]?.enemyId ?? ""); if (vanguard?.speciesId === "mx_species_zaptoe") rescaleEnemy(vanguard, 7);
+    // 그래도 물 스타터(Lv11)가 에이스 베르카부 Lv10 에게 근소하게 두 번 졌고 풀은 체력 0 직전에 이겼다(r26) → 에이스 Lv9.
+    const aceEnemy = byId(ace!.enemyId); if (aceEnemy) rescaleEnemy(aceEnemy, 9);
     // 볼트온의 전류실(마비)·로키온의 굳히기 같은 보조 기술로 두 마리 파티가 끌려다니다 졌다(2026-10-21 r24, 물·불 각 두 번) — 챔피언 셋은 공격 기술만.
     for (const m of league.members) { const e = byId(m.enemyId); if (e) e.actions = e.actions.filter((a) => !a.skillId || !/^mx_skill_[a-z]+_6$/.test(a.skillId)); }
     // r4 「너무 쉽다」에 신전 8·8·9, 리그 9·9·11 로 올리자 스타터 셋 모두 정직 여정에서 신전에 두 번씩 졌고 불·물은 리그도 두 번 졌다(2026-10-21 r22) →
