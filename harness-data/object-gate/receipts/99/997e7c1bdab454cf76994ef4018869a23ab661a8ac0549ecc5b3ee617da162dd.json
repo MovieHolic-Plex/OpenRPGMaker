@@ -1,0 +1,306 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "997e7c1bdab454cf76994ef4018869a23ab661a8ac0549ecc5b3ee617da162dd",
+ "width": 96,
+ "height": 16,
+ "kind": "terrain",
+ "name": "inaka-at-grass",
+ "label": "jp_inaka_pack/ground/inaka-at-grass",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 7,
+  "darkV5": 120,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground field",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small grass/flower tuft with dark base (around x=40-49)",
+      "rows": "4-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a 96x16 strip of flat green grass, fully opaque in every row (width 96 for rows 0-15). It is scattered with darker green tufts, a few light flecks and small brown or white dots. All three column scans are almost uniform, L~135 with only 1-2 rows of darker tuft pixels. There is no edge line, no eave shadow and no vertical front face. The one small raised clump (rows 4-12) is a decor tuft, not a structure. This is a flat top-down ground texture, which is normal for terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a thin grass strip with a flat mid-green base. 74% near-flat coverage against 0% in both references, and only 9 distinct colours overall against 80 in the grass reference. It shows about 3 distinct green steps plus a few sparse white or yellow flower dots and small tuft marks, so the shading is shallow compared with the reference's layered greens. Large areas are one flat colour with no grain or tile-to-tile variation. At 5 visible tones per tile it is nominally above the grass reference's 3, but those tones come from sparse accent marks on a flat field, not from surface texture. The reference grass has dense mottled clumps and grain across every tile. The candidate reads as a sticker-like flat fill with scattered decorations, so it is clearly lower in information density. No outline is used, which is neutral for a ground patch.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 12528
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground tile with scattered tufts, flowers and a small bush",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full 96x16 opaque grass terrain strip: a uniform green field (#689e63) with small dark-green tufts, a few white and yellow flowers, and a small bush near x=40-49 (rows 4-12). It is a flat ground tile with no standing body, no front face and no edge line, so it reads as a flat top-down terrain surface. That is expected for the terrain kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a thin strip, not a 4x3 patch, and its large areas are one flat green. Measured near-flat coverage is 74%, against 0% for both references. It has only 9 distinct colours in total (5 per tile) versus 80 for the grass reference, and a few sparse tufts and flower dots sit on a flat base. Visible tones per tile are 5, above the grass reference's 3, but that number comes from isolated accents on mostly one flat colour and does not give the dense, varied grain the grass reference shows across the whole tile. The grass reference has mottled clumps and soil grain everywhere. There is no real outline to judge (0% neutral dark edge), so the shape reads as flat with few shading steps. A careful artist would find it thinner and flatter than the reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 14389
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground tile with scattered tufts, flowers and a small bush",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full 96x16 opaque green grass terrain strip with scattered darker tufts, small flowers, and a small bush around x=40-49 and rows 4-12. It is a flat ground tile with no standing body, front face, or edge line. As a terrain tile it is meant to be flat, so a top-down surface is the expected reading. The column scan shows uniform grass colour, with only small dark tuft pixels at rows 2 and 13-14."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 4,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a thin strip of mostly one flat mid-green with a few sparse tufts and flower dots. 74% of its pixels sit in flat 5x5 blocks, while the grass reference has 0% and the paving reference has 0%. It has only 9 distinct colours in total, against 80 for the grass reference. The visible-tone count of 5 per tile is above the grass reference's 3, but that count comes from a few isolated accent pixels on a flat base, not from the continuous grain and clump variation the reference carries across every tile. Its dark edge pixels are tinted (0% neutral), which is acceptable, but it has no real outline structure. A careful artist would see it as flatter and sparser than the reference grass.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11784
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground tile with scattered tufts, flowers and a small bush",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a flat, full-width (96px) grass terrain tile with a uniform green base (#689e63) across rows 0-15. Small dark-green tufts, a few white/yellow flowers and a tan-and-light-green clump (rows 4-12) are scattered over it. There is no standing body, front face, edge line or eave shadow. This is a ground texture seen from above, which is correct for terrain. The kind matches."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a thin strip, much of it a flat mid-green. Measured near-flat coverage is 74% against 0% for both references, so large areas are flat fills. It has only 9 distinct colours in total against 80 for the grass reference. It shows 5 visible tones per tile, which is above the grass reference's 3, but those tones come from sparse isolated marks (small flowers, a bush, a few dashes) on a uniform base, not from grain across the surface. The references have dense tufts, clumps and speckle everywhere, and the paving has stones shaded one by one. The candidate has no real outline (dark edge pixels are 0% neutral, so no sticker line), but it reads as flat and sticker-like next to the reference. Shading is shallow, with about 3 green steps against the reference's 5 or more.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 12712
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:04.247Z",
+ "cells": {
+  "16": [
+   "135169e0495ad45c",
+   "77cebd14e1f5d4a7",
+   "8452ff191a5f4b38",
+   "956b73e75b0b11df",
+   "ec5acbb7094686f4",
+   "f27117170615003b"
+  ],
+  "24": [
+   "259b3287f69dfe31",
+   "46cf546646f06ea6",
+   "67e037b17d5781a4",
+   "b9ce9e41cd0fdaca",
+   "e035e7c2fa3b3575",
+   "eb479b5e6ae7f941",
+   "edb2f31ec9290479",
+   "fd95b71a5f8ddb2d"
+  ],
+  "32": [
+   "1dfde5dffa0fcc5f",
+   "319afbe13b5aff12",
+   "431728cf923d2162",
+   "5450202415766476",
+   "7fde73778f43c844",
+   "ed9fa4a6b3725225"
+  ],
+  "48": [
+   "1c86c94b5a610053",
+   "8d0d255508f56cd1",
+   "bd719626e3244919",
+   "fd83610a139938bf"
+  ]
+ }
+}

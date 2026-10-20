@@ -1,0 +1,238 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e0604dfc83484de1c9ce6eb1c07ae65d05784ad0e9f41e0746243328c9ee0714",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "inaka-meadow-wildflower",
+ "label": "jp_inaka_pack/ground/inaka-meadow-wildflower",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 7,
+  "darkV5": 109,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "meadow ground tile with scattered grass tufts and small white wildflowers",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full-bleed 16x16 tile of green grass with darker green tufts and a few white and grey flower pixels. The width is 16 on every row. There is no silhouette, front face, edge line or eave shadow. It is a flat ground texture, which is correct for terrain. The column scans show only alternating grass tones and flower pixels, with no structural bands."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a green meadow ground with dotted grass tufts and small wildflower specks, and it is much smaller than the reference patches on the board. It has 7 visible tones per 16x16 tile against 3 for the reference grass and 7 for the paving. Near-flat coverage is 0%, the same as both references, so there are no flat fills. Dark edge pixels are 0% neutral, so any dark pixels lean green rather than black. This is a ground fill with no sticker outline, so 'none' fits. Tone variation reads clearly, with light, mid and dark greens plus flower accents. It is not as clumpy as the reference grass's tuft clusters, but at equal scale it is at least as rich on the measured facts and does not look flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23501
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The candidate is a full 16x16 square of green grass with scattered darker and lighter pixels and a few white and grey flower dots (for example rows 2, 5, 11 and 14). Every row is 16 px wide, so there is no silhouette, no front face, no front-edge line, no eave shadow and no ellipse. It is a flat, tileable ground texture seen from above, which is what the terrain kind expects."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 4,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a grass ground patch with scattered wildflower dots, and the reference grass is the same kind. It has 7 visible tones per 16x16 tile against 3 for the reference grass and 7 for the paving. Near-flat coverage is 0%, the same as both references, so no 5x5 area is a flat fill. Ground tiles carry no outline, and 0% of the dark edge pixels are neutral, so nothing reads as a black sticker line. By eye, the greens step through about 4 lightness levels with flower accents on top. That is comparable to the reference grass's clumped texture, though the board shows only a small patch to judge. It uses only 7 colours in total against 80 for the reference grass, but the visible-tone count is at or above the reference, so it is not shallow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12629
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "meadow ground tile with grass texture and small white and gray flower specks",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full 16x16 opaque ground tile (width 16 on every row) with a green grass texture and scattered light flower pixels. There is no silhouette, front face, edge line or eave shadow. It is a flat terrain tile, which matches the terrain kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 4,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a ground tile with about 5 green steps plus pale flower dots. It has no outline, which suits a ground surface and means there is no black sticker edge. Measured facts: 7 visible tones per tile against 3 for the reference grass, 0% near-flat coverage matching the references, and 0% neutral dark edge pixels. Scattered light and dark speckles and flower dots break up the surface, so there are no flat fills. Only 7 raw colours is expected from a locked palette and is not a weakness. It is less varied than the reference grass in broad tonal patches, since the speckle is fairly uniform. By eye its density is at least the reference grass level. It reads as a single tile rather than a full 4x3 patch, but that is a layout matter, not a shading or structure failure.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17609
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The 16x16 tile is fully opaque (width 16 on every row 0-15) and is a green meadow ground texture with scattered darker grass flecks and a few white/grey flower pixels. It has no silhouette, no front-edge line, no eave shadow, no ellipse and no front face. It is a flat seamless ground tile, which fits the terrain kind. Nothing is drawn as a standing volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 4,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small ground tile: mid green with darker and lighter green speckle plus light flower dots, and no outline. It shows 7 visible tones per tile against 3 for the Beodeul grass reference and 7 for the paving. Near-flat coverage is 0%, the same as both references, so there are no 5x5 flat fills. Dark edge pixels are 0% neutral, so nothing reads as a black sticker line. It has about 4 green steps plus the flower accents, close to the grass reference's 4-5. Its total of 7 colours is small, but it is a locked palette and the visible variation matches or beats the grass reference. The piece is tiny in the board, so my read of the clump structure is limited, but the measured facts and the visible speckle support a pass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15907
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:04.223Z",
+ "cells": {
+  "16": [
+   "d8ab04e2965aa30c"
+  ],
+  "24": [
+   "14b5470865712e8b",
+   "2e74c179fe26fd73",
+   "559833bf8176d69f",
+   "6c48e5b1b21faf0c",
+   "83361a65e00bb513",
+   "d4fe0d03cb23e5b9"
+  ],
+  "32": [
+   "016d80ecf788fd05",
+   "196758bb468e09c4",
+   "2206d03694b8ad6a",
+   "470a93bd9b603bae",
+   "9566b0ba6ab5bbf1",
+   "dbdd57ab01a02b94"
+  ],
+  "48": [
+   "12fbdabbb904dc8a",
+   "64c319113005eac6",
+   "8cb0c8e94e231a90",
+   "d42391dce89c39e0",
+   "d70d1e256ebec0b6",
+   "f5c99c846cc54e60"
+  ]
+ }
+}

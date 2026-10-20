@@ -569,7 +569,8 @@ def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=Fal
         conn = sorted(set(conn) | set(extra_conn.get(a['id'], [])))
         vm = {str(k): L(b, a['variantMap'][str(k)]) for k in range(16 if a['neighborhood'] == 4 else 256)}
         assert len(a['variantMap']) == len(vm), ('variantMap 키 수', a['id'])
-        at = dict(id=a['id'], name=a['name'], neighborhood=a['neighborhood'], memberTileIds=sorted(set(mem)), connectTileIds=conn, variantMap=vm, layer=a['layer'], edgeConnects=bool(a.get('edgeConnects')))
+        at = dict(id=a['id'], name=a['name'], neighborhood=a['neighborhood'], memberTileIds=sorted(set(mem)), connectTileIds=conn, variantMap=vm, layer=a['layer'], edgeConnects=bool(a.get('edgeConnects')),
+                  **({'outsideConnects': True} if a.get('outsideConnects') else {}))   # #3061: 맵 밖도 같은 재료(굽기가 떨어뜨리지 않게)
         if a.get('interior'): at['interiorVariants'] = [[L(b, x) for x in lst] for lst in a['interior']]
         autotiles.append(at)
     block_groups = []

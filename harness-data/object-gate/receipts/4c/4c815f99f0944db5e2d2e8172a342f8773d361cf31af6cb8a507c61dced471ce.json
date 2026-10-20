@@ -1,0 +1,408 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4c815f99f0944db5e2d2e8172a342f8773d361cf31af6cb8a507c61dced471ce",
+ "width": 96,
+ "height": 80,
+ "kind": "structure",
+ "name": "jp-inaka-kawara-farmhouse",
+ "label": "jp_inaka_pack/jp-inaka-kawara-farmhouse",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 17,
+  "darkV5": 33,
+  "nearBlackEdge": 0.76,
+  "opaqueTiles": 24
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof (ridge, sloped tile courses, hipped ends)",
+      "rows": "11-34",
+      "evidence": "c",
+      "front_edge_line_row": 33,
+      "eave_shadow_rows": "33-34"
+     },
+     {
+      "part": "white plaster wall with windows and timber frame (front face)",
+      "rows": "35-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower front: sliding doors, paper-screen window, engawa/veranda platform",
+      "rows": "48-75",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 24,
+    "front_face_rows": 41,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a farmhouse. Rows 11-34 are a large sloped tile roof with a ridge band at rows 13-16, stepped tile courses at rows 17-32 and a dark eave line and shadow at rows 33-34. The silhouette widens from 80 to 92 px across these rows, which is consistent with the roof slope and its overhanging eaves. Below it the front (south) face runs from about row 35 to row 75: plaster wall, timber posts, doors, screens and a veranda step. The veranda platform at rows 68-75 is drawn as a front face, but it is a minor detail. The roof reads as a top surface through criterion (c), and the front face is well over 3 rows, so the building reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a whole building (roof, plaster wall, timber lattice, shoji, stone footing), so it matches the reference kind. Measured facts support a pass: 14 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage, the same as both references. Shading shows about 5 steps on the blue-grey roof, with a ridge highlight and tile rows. The plaster is speckled, the wood has several browns, and the lattice and shoji panels add structure. The outline is mixed. Dark edges are 28% near-neutral, higher than the references' 7-9%, but most edges lean navy on the roof and brown on the wood, so they read as material tones. The roof is the weakest area: its rows are smoother than the references' scalloped tiles with per-tile highlights, and the palette is smaller (40 colours against 185 and 66). Overall it carries enough information not to look thinner or more sticker-like next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15118
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled hip roof (sloped roof plane with tile rows, ridge at top, hip sides)",
+      "rows": "11-34",
+      "evidence": "c",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": "33-34"
+     },
+     {
+      "part": "white plaster wall with window slits",
+      "rows": "35-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "timber lower facade with doors and paper-screen windows",
+      "rows": "48-70",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden veranda step / engawa platform",
+      "rows": "68-75",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 24,
+    "front_face_rows": 41,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The building has a large sloped tiled roof covering rows 11-34, with horizontal tile courses, a ridge band at rows 13-16 and hip slopes at the sides. The roof ends in a dark eave line at rows 33-34 and overhangs the wall below, which fits evidence (c). Below it is a south front face of about 41 rows (rows 35-75): a plaster wall, timber posts, doors and screens, and a base. The roof is the main top surface and is clearly a foreshortened plane, not a front-facing strip."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a whole building with roof, plaster wall, lattice and door, so it matches the reference kind. Measured facts are at or above the references: 14 visible tones per tile against 12 and 10, 0% near-flat coverage like both references, and no 5x5 flat fills. The roof has a ridge highlight, tile rows and several blue-grey steps. The wall has plaster speckle, and the wooden lattice and door are shaded with grain. Dark edges are 28% near-neutral, higher than the references (7% and 9%), but most outline pixels lean toward blue-grey or brown beside the roof and wood. That makes the outline mixed rather than a uniform black sticker line. The roof tile scallops are less pronounced than the references' per-tile highlights, so the ramp is slightly shallower, but a careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15570
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled hip roof (upper ridge band and sloped tile tiers)",
+      "rows": "11-33",
+      "evidence": "c",
+      "front_edge_line_row": 33,
+      "eave_shadow_rows": "34"
+     },
+     {
+      "part": "white plaster upper wall with lattice windows",
+      "rows": "35-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden lower wall, sliding doors and shoji windows",
+      "rows": "47-70",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front engawa/step platform and stone base",
+      "rows": "69-75",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 23,
+    "front_face_rows": 42,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The large hip roof fills rows 11-33 as a sloped tile plane with a ridge band at rows 12-16, then stepped tile courses (rows 17-32) that widen from 80 to 92 px, ending in a light eave edge at about row 33 and a dark shadow line at row 34. Below it a front face of about 40 rows (plaster wall, timber frame, doors, shoji) runs from row 35 to about 75. The roof is the main top surface, so the building reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a whole building (roof, plaster wall, lattice and sliding doors, stone footings), the same kind as the references. The measured facts support it: 14 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage, the same as both references. The roof has a highlight ridge, several blue-grey tile tones and darker eave bands. The plaster wall is speckled, and the wooden lattice and doors have clear light and dark grain. There are no large flat fills. Its tile rows are less scalloped than the references' per-tile highlights, so the roof is a little shallower at about 5 steps against 6. Dark edges are 28% near-neutral, higher than the references' 7-9%. By eye, though, the outlines lean dark blue-grey beside the roof and dark brown beside the wood, so I call it mixed rather than a uniform black sticker line. A careful artist would accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15754
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof (ridge cap and sloped tile courses, stepped eaves)",
+      "rows": "11-34",
+      "evidence": "c",
+      "front_edge_line_row": 33,
+      "eave_shadow_rows": "33-34"
+     },
+     {
+      "part": "white plaster upper wall with lattice windows",
+      "rows": "35-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden lower wall, sliding doors, paper-screen windows, and veranda/engawa porch",
+      "rows": "48-75",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 24,
+    "front_face_rows": 41,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof fills rows 11-34 as a large sloped plane. It has a ridge highlight at rows 12-16, tile courses at rows 19-32 that step outward, and a dark front-edge/eave line at rows 33-34. The silhouette widens from 80 to 92 px over those rows, which matches a hipped roof seen from above. Below it the south wall (rows 35-75) is a front face of well over 3 rows, with plaster, doors, and a porch. The roof is the main top surface, so the building reads as three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured facts are on par with the references: 14 visible tones per tile against 12 and 10, 0% near-flat coverage. Dark edge pixels are 28% neutral against 7-9% for the references, so the outline leans toward neutral and I call it mixed. By eye, the slate roof has roughly 4-5 steps (highlight ridge, light, mid, dark, deep eave) with only faint tile texture. The reference roofs have per-tile scallops with highlights and dark tile-shadow rows, so the candidate's roof reads smoother and more banded. The plaster wall has speckle, and the wooden lattice, shoji and door show several browns. The stone base is dark and has little per-stone shading, while the reference stone wall shades each stone. The candidate's outline is dark and fairly neutral around the roof and eaves, which gives some sticker feel next to the reference's tinted dark-material lines. Overall the candidate is competent and not flat, but it falls a little short of the references in roof texture and in the tint of its outlines. With only 40 distinct colours it is also less varied than the references' 66-185. Doubt goes to fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 12355
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:03.808Z",
+ "cells": {
+  "16": [
+   "016b59f378d9fd12",
+   "0354f139b72b165c",
+   "1fd0d96f59546895",
+   "28157ff825083b37",
+   "3217852b92751d4e",
+   "3b771eb831f604ef",
+   "418617298663db3c",
+   "48bf8cc92e7d8ffb",
+   "5d825c7a4b1d308c",
+   "62a898fef9744138",
+   "65e345daa208b42d",
+   "6ef10740f89cc1af",
+   "73c9d6a4adc6baf4",
+   "76573e5f77cf1a16",
+   "768ec502c9cab350",
+   "7c3b7d872a19499c",
+   "7f81e60d27bef8ce",
+   "871733c55de1f26b",
+   "8a77c5edd95ffd72",
+   "8fcc0efcb8332365",
+   "9003f104d2a9353f",
+   "95cc715df9695eb1",
+   "984656f9be3b76c0",
+   "a61b3c206bf7e3f0",
+   "a979fed02b482da6",
+   "b69b32caabea6a5b",
+   "c9fc6a0fcdc9c334",
+   "e8ec940795a739c6",
+   "f5747e0faf46c7d3"
+  ],
+  "24": [
+   "01172b5735fe4aa7",
+   "037619d993570aad",
+   "1a173802a7b5e801",
+   "1aa46e09a6d30980",
+   "3df05d42a303dc96",
+   "4be3857f002107d9",
+   "557f734bbf582281",
+   "58a4dd1d05b6d036",
+   "6222482e29b5c8b7",
+   "6e6432832cdd87a4",
+   "7fb3d857dd856a26",
+   "8c167334cb472c2e",
+   "a119d3ea9949b0c3",
+   "a21822c85aebf488",
+   "a548279d56f20bd8",
+   "b4015981e35799e0",
+   "b460c7513dcdc0ed",
+   "ba4478fe12c555af",
+   "ba844904df4ee31d",
+   "c0cbfc78dbd2072d",
+   "c207093483317cfd",
+   "c55ed0590b0acfa3",
+   "d0558ddba54d736a",
+   "d46ed109d4f6609c",
+   "db58965618d930d3",
+   "ddc30976e18f25cc",
+   "ea4619dcbc9d43f8",
+   "fc4c96dddfa3d33a"
+  ],
+  "32": [
+   "0a04c3c2a56d55c2",
+   "17eba76d213f0eb7",
+   "1d825572fc7e3dee",
+   "2485f94d5799377d",
+   "29bc8fe831d2ae4a",
+   "3b6fad63cb017507",
+   "3d98f8b21291afbf",
+   "485a1cedd1995f14",
+   "506daaf4fb753133",
+   "524c9bafa98cb144",
+   "5c652ccea308a06f",
+   "621758dcf432b7d5",
+   "7e93d7b95b7c8ee3",
+   "af30fe079f3dea9e",
+   "b7b3efd21679decc",
+   "e03d3c208ad83e88",
+   "e5360b927c7d0635",
+   "f75e0f7ceb777e29"
+  ],
+  "48": [
+   "18a1133396f04b17",
+   "234273250548a78c",
+   "72555e0235b0a8cb",
+   "aad376fcf40e1399",
+   "c0d13f522eb1a51d",
+   "e26bf111f539e208",
+   "ead68ed90057721c",
+   "ed1977c45c83163b"
+  ]
+ }
+}

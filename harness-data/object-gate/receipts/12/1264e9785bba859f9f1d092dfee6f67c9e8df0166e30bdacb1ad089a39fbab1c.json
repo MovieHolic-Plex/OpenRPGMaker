@@ -1,0 +1,402 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1264e9785bba859f9f1d092dfee6f67c9e8df0166e30bdacb1ad089a39fbab1c",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-inaka-retro-postbox-vending",
+ "label": "jp_inaka_pack/jp-inaka-retro-postbox-vending",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 2행 < 3 (2/4)",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 2행 < 3 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 19,
+  "tileColorsP90": 32,
+  "darkV5": 64,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 3
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "postbox top ellipse (left object)",
+      "rows": "9-16",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vending machine top edge (right object)",
+      "rows": "7-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vending machine upper white panel (vertical face)",
+      "rows": "8-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vending machine blue stripe, window and dispensing slot",
+      "rows": "18-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The sprite holds two objects side by side. On the left is a red cylindrical postbox with a peach elliptical lid at about rows 9-16. On the right is a white vending machine, slightly wider and taller (rows 7-31), which I took as the main body. Column x=24 shows a 1-row outline at row 7 and a 1-2 row light rim at rows 8-9. Below that is one uniform white face down to row 17, with no front-edge line or eave shadow. A blue band (rows 18-19), a dark window (rows 20-25) and a slot panel (rows 26-31) follow. That is only a rim, about 2 rows, on a tall vertical face, so the main body reads as front elevation. The postbox does show a top ellipse, but it is the smaller part."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is two small props (a red postbox and a vending machine), not a roofed building, so the kind match is only loose. Judged on craft, the measured facts favour it: 18 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and 0% neutral dark edge pixels. That means the outlines lean toward the material colour (dark red beside the postbox, dark blue-grey beside the machine casing) rather than being a black sticker line. The postbox cylinder shows highlight, mid and shadow bands plus a label. The vending machine has a frame, a lit panel and a grid of coloured buttons that break up the surface. Each material ramp has about 4 steps, slightly fewer than Beodeul's 5-6, and the pale machine face is the flattest area. Even so, there are no large flat 5x5 fills and the tile density matches the references, so a careful artist would likely accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21648
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "red postbox cylinder top (ellipse with slot)",
+      "rows": "9-17",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white vending machine upper panel",
+      "rows": "8-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vending machine blue sign band",
+      "rows": "18-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vending machine dark window and slot front",
+      "rows": "20-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is two objects side by side: a red postbox on the left and a white vending machine on the right. The vending machine is the larger volume. Its white upper block (rows 8-17) is a flat, nearly uniform panel with no front-edge line and no eave shadow below it. The blue band at rows 18-19 sits directly on the dark window (rows 20-25) and slot area (rows 26-30), so it reads as a sign band on the front face. The whole machine therefore reads as a flat front elevation. The postbox does have an ellipse top (rows 9-17, widening then narrowing), but it is the smaller part. The kind (large structure) also fits poorly, since this is a small appliance cluster."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The candidate is two small props, a red cylindrical postbox and a pale vending machine with a few coloured buttons. It has no roof, walls or door, so the house references are not a like-for-like comparison. On the measured facts it holds up: 18 visible tones per tile against 10-12 for the references, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outlines are tinted dark red and blue-grey rather than black. By eye, though, each material ramp is only about 4 steps (postbox red: highlight, mid, dark, deep) against the roughly 6 on the references' tile roofs and stone. The vending machine's panel and body read fairly smooth, with few grain or speckle dots and none of the per-tile highlights or stone-by-stone shading that give the references their texture. Because it is not the requested building kind, has shallower ramps and lighter texture, and given the instruction to fail when in doubt, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 24244
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "red postbox cylinder lid (left object)",
+      "rows": "9-17",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white vending machine upper rim (right object)",
+      "rows": "8-9",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The drawing shows two objects side by side. The red postbox on the left has an elliptical orange lid at rows 9-17, with the width growing from 17 at row 7 to 30 by row 11. The white vending machine on the right is the larger volume. Its upper rows 8-17 are a uniform white face (L about 233 at x=16), and only a 1-2 row light rim at rows 8-9 sits above it. There is no front-edge line with eave shadow and no ellipse or roof plane. Below the face are a blue band at rows 18-19, a dark display panel with items at rows 20-25, and a slot area at rows 26-31. The main body therefore reads as a front elevation with only a rim on top, even though the postbox lid has a top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is two small street props (a red cylindrical postbox and a vending machine), not a roofed building, so the house references are only a loose comparison. On the measured facts it holds up: 18 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage (the same as both references), and 0% neutral dark edge pixels, so the outlines carry a tint. By eye the postbox has a lit side, a mid tone, a shadow side and a darker rim, about 4 steps, which is fewer than the 5-6 on Beodeul roofs. The vending machine's front panel has coloured product dots and shaded edges, so it does not read as a flat fill or a sticker. The outlines lean toward the material colours (dark red beside the red body, dark blue-grey beside the casing) rather than pure black. The shading is a little shallower than the references, but the density and outline craft match them, so a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21113
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "red postbox drum top (ellipse with slot)",
+      "rows": "9-17",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vending machine upper white panel / sign header",
+      "rows": "8-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue header stripe above product window",
+      "rows": "18-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vending machine product window and dispensing slot (front face)",
+      "rows": "20-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The scene is two objects side by side. The larger one is the white vending machine, at x≈18-35 and rows 7-31. Its row 7 is the outline and row 8 is a light edge, with at most a 1-row rim. Rows 8-17 are a flat white front panel with faint grid lines and no front-edge line or eave shadow. Rows 18-19 are a blue stripe, which reads as a sign header. Rows 20-31 hold the window with goods and the slot, so the whole machine is a vertical front face. The red postbox on the left does have an elliptical top at about rows 9-17, but it is the smaller part. The main body therefore reads as a front elevation without a real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is two small props, a red postbox and a vending machine. It has no roof, walls or door, so the house references are not the same kind of piece. The measured facts favour it: 18 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outlines are tinted. By eye the craft is thinner than the references. The postbox cylinder shows only about 3-4 red steps with a simple highlight strip and little grain. The vending machine is a pale body with a few coloured button dots and no per-surface texture. Neither prop has the roof-tile scallops, plaster speckle or stone-by-stone shading of the references. The tone count is probably inflated by edge and outline pixels on such a small sprite. With the kind mismatch and shallower shading, a careful artist would not accept it next to the references as equally rich.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 22295
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:03.993Z",
+ "cells": {
+  "16": [
+   "6383a98d93b91a1c",
+   "71568f408d7ad758",
+   "db3b88c97d6cabd5",
+   "f579adc425892b10"
+  ],
+  "24": [
+   "06801075ac0d9092",
+   "0b4501fdcdcfc226",
+   "23fe9144e57a151d",
+   "28210bc717ac1f10",
+   "4619fc38a7364e66",
+   "5f1e1f76ac9f10e9",
+   "5f4113cddc9687d0",
+   "8e00af5ca15554ce",
+   "a4c7adb4f7a44ebc",
+   "a5cf5e04784cbded",
+   "b7647bd08ece9080",
+   "b88f8dc524b43613",
+   "b9b5f8eb95899e69",
+   "bd718384703803cb",
+   "cdde1034b02af1e3",
+   "d20f5c5eb1c8d5af",
+   "d5b09385be2ef6e2",
+   "d840849ca41926dd",
+   "d8929d26be2c95c6",
+   "df13939ab117c47d",
+   "fc0488476c737d0d",
+   "fdd2e104f174c127",
+   "feb3de0149377365"
+  ],
+  "32": [
+   "77dcd62c169f74ca"
+  ],
+  "48": [
+   "016797a2c0a87579",
+   "3cf7d8f0f71591ce",
+   "3e192917bf297bbe",
+   "6bee450d76306093",
+   "7acf2c25288f23e8",
+   "f8684b174fec2be4"
+  ]
+ }
+}

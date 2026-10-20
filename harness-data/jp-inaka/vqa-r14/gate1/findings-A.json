@@ -1,0 +1,202 @@
+{
+  "group": "A",
+  "items": [
+    {
+      "label": "jp_inaka_pack/jp-inaka-kominka-thatched",
+      "kind": "structure",
+      "verdict": "fail",
+      "kind_ok": true,
+      "closest_kind": "structure",
+      "top_rows": 31,
+      "front_rows": 42,
+      "charges": [
+        "roof_rule_1",
+        "roof_rule_7",
+        "roof_rule_9"
+      ],
+      "sure": true,
+      "reasons": [
+        "Roof share 39.7% (top row 13 to outline row 43 = 31 rows / bbox 78), outside the 30-36% band.",
+        "Thatch grain sits in identical 2-row pairs across the full width every 4 rows (19-20, 23-24, 27-28, 31-32, 35-36). Rule 7 wants irregular strokes 3-5px apart; this reads as ruler rows, and there is no broken darker band-separator row.",
+        "The noren carries a white crest mark at rows 54-56, a glyph banned by rule 9.",
+        "The view passes: the top band runs from the ridge cap to a thick eave (bfb77f x2, #593e39, #452b2d, outline, wall shadow), and the front face reads cleanly at 1x in map 01."
+      ],
+      "fixes": [
+        "Drop about 4-5 roof rows (for example from the thatch body) so the share lands near 33-34%.",
+        "Break up the grain: stagger the 1px x 2-row strokes 3-5px apart with varying row offsets, and add a broken darker row between the 4-row bands.",
+        "Remove the crest from the noren and leave it plain."
+      ]
+    },
+    {
+      "label": "jp_inaka_pack/jp-inaka-kawara-farmhouse",
+      "kind": "structure",
+      "verdict": "fail",
+      "kind_ok": true,
+      "closest_kind": "structure",
+      "top_rows": 28,
+      "front_rows": 41,
+      "charges": [
+        "roof_rule_1",
+        "roof_rule_4"
+      ],
+      "sure": true,
+      "reasons": [
+        "Roof share 38.4% (rows 7-34 = 28 / bbox 73), outside the 30-36% band.",
+        "All 4 kawara courses (rows 16-17, 20-21, 24-25, 28-29) carry 4px vertical joints across the full width. Rule 4 allows joints only on the top 1-2 courses.",
+        "The other roof elements pass: the ridge box has the cream noshi row (row 10), hip triangles are present with a bright west line, and the eave sequence is correct (tip #8588ad, dark rows, outline at 34, shadow at 35).",
+        "The view passes at 1x in map 01."
+      ],
+      "fixes": [
+        "Cut about 3 roof rows (one course) to reach about 33-35%.",
+        "Keep joints only on the top 1-2 courses. Strip joints from the lower courses and use sparse staggered 3px light marks about 44px apart."
+      ]
+    },
+    {
+      "label": "jp_inaka_pack/jp-inaka-kura-storehouse",
+      "kind": "structure",
+      "verdict": "fail",
+      "kind_ok": true,
+      "closest_kind": "structure",
+      "top_rows": 24,
+      "front_rows": 41,
+      "charges": [
+        "roof_rule_4",
+        "roof_rule_6"
+      ],
+      "sure": true,
+      "reasons": [
+        "Roof share 33.8% passes.",
+        "All 3 courses (rows 18-19, 22-23, 26-27) are jointed every 4px. Rule 4 allows joints only on the top 1-2 courses.",
+        "The hip ends are a stepped trapezoid silhouette with no distinct triangle faces about 10px wide, no vertical 4px stripes, and no light-west/dark-east hip lines (rule 6).",
+        "The ridge box has onigawara at both ends, and the eave sequence is correct.",
+        "The view passes: the namako walls and plinth read as a front face in map 01."
+      ],
+      "fixes": [
+        "Remove joints from the lowest course and use sparse staggered 3px marks about 44px apart.",
+        "Paint hip triangle faces at both ends (about 10px wide at the top) with vertical 4px stripes, a light hip line on the west and dark on the east, and the west face lighter than the east."
+      ]
+    },
+    {
+      "label": "jp_inaka_pack/jp-inaka-dagashiya",
+      "kind": "structure",
+      "verdict": "fail",
+      "kind_ok": true,
+      "closest_kind": "structure",
+      "top_rows": 24,
+      "front_rows": 44,
+      "charges": [
+        "roof_rule_4",
+        "roof_rule_6"
+      ],
+      "sure": true,
+      "reasons": [
+        "Roof share 35.3% passes.",
+        "All 3 courses (rows 37-38, 41-42, 45-46) are jointed every 4px, violating rule 4.",
+        "There are no hip triangle faces or stripes at the roof ends (rule 6).",
+        "The onigawara and eave sequence are fine. The signboard has no text (it uses dots), and the striped awning is fabric, so it is exempt.",
+        "The view passes in map 02."
+      ],
+      "fixes": [
+        "Keep joints on the top 1-2 courses only. Give the lower course sparse staggered 3px marks about 44px apart.",
+        "Add hip triangle end faces about 10px wide, with 4px vertical stripes and light-west/dark-east hip lines."
+      ]
+    },
+    {
+      "label": "jp_inaka_pack/jp-inaka-wooden-station",
+      "kind": "structure",
+      "verdict": "fail",
+      "kind_ok": true,
+      "closest_kind": "structure",
+      "top_rows": 26,
+      "front_rows": 49,
+      "charges": [
+        "roof_rule_2",
+        "roof_rule_3"
+      ],
+      "sure": true,
+      "reasons": [
+        "Roof share 34.7% passes. Joints sit only on the top 2 courses, and the hip faces have stripes, so rules 4 and 6 are compliant.",
+        "The central front gable (board triangle with clock, rows 21-46) is pasted onto the roof plane with no roof slopes of its own. It runs below the eave outline row 44 at x≈34-74, which breaks the continuous #1a1226 eave outline and the tip/dark/outline/shadow eave sequence across about 40px (rules 2 and 3).",
+        "The full-width white band at rows 48-54 sticks out past the walls (x4-107). As a fascia or sign it is fine; if it is meant as a canopy it has no top surface. This is a minor view doubt and not charged.",
+        "At 1x in map 03 the building still reads as a 3/4 station."
+      ],
+      "fixes": [
+        "Run the eave sequence and #1a1226 outline unbroken across the full width, and end the gable triangle above the eave.",
+        "Give the gable its own short roof slopes (bargeboards with tile edge) so it sits as a dormer-style gable, not a decal.",
+        "If the white band is a canopy, give it a 1-2 row top surface; otherwise keep it flush with the walls."
+      ]
+    },
+    {
+      "label": "jp_inaka_pack/jp-inaka-bus-stop-shelter",
+      "kind": "structure",
+      "verdict": "fail",
+      "kind_ok": true,
+      "closest_kind": "structure",
+      "top_rows": 20,
+      "front_rows": 35,
+      "charges": [
+        "roof_rule_8"
+      ],
+      "sure": true,
+      "reasons": [
+        "Roof share 33.9% passes.",
+        "The tin ribs run on a 4px period over rows 3-18 (16 rows) with no 1-row darker seam. Rule 8 requires a seam every 12 rows.",
+        "The eave tip #e6e2f0 then #cac7d6 then outline is correct.",
+        "The dark diagonal zone at x≈27-34 reads as an east hip shadow at 1x in map 02, not a receding side face, so view charge 4 is not applied."
+      ],
+      "fixes": [
+        "Insert a 1-row darker seam about 12 rows below the roof top (around row 14)."
+      ]
+    },
+    {
+      "label": "jp_inaka_pack/jp-inaka-waterwheel-mill",
+      "kind": "structure",
+      "verdict": "fail",
+      "kind_ok": true,
+      "closest_kind": "structure",
+      "top_rows": 21,
+      "front_rows": 37,
+      "charges": [
+        "roof_rule_1",
+        "roof_rule_7"
+      ],
+      "sure": true,
+      "reasons": [
+        "Roof share 36.2% (rows 5-25 = 21 / bbox 58) is 1 row over the 36% cap.",
+        "The thatch grain uses the same regular 2-row pairs on every 4-row band (11-12, 15-16, 19-20), with no broken darker separator row (rule 7).",
+        "The thick thatch eave (bfb77f x2, #593e39, #452b2d, outline) and the dark ridge cap are fine. The flume, wheel and basin read correctly in front view, and the basin has a water top and a front face.",
+        "The view passes in map 04."
+      ],
+      "fixes": [
+        "Trim one roof row, or extend the basin/plinth by one row, so the share is 36% or less (target about 34%).",
+        "Stagger the grain strokes irregularly 3-5px apart and add a broken darker row between bands."
+      ]
+    },
+    {
+      "label": "jp_inaka_pack/jp-inaka-agri-tin-shed",
+      "kind": "structure",
+      "verdict": "fail",
+      "kind_ok": true,
+      "closest_kind": "structure",
+      "top_rows": 27,
+      "front_rows": 38,
+      "charges": [
+        "roof_rule_1",
+        "roof_rule_8"
+      ],
+      "sure": true,
+      "reasons": [
+        "Roof share 41.5% (rows 11-37 = 27 / bbox 65), well over 36%.",
+        "The ribs run on a 4px period over rows 12-34 (23 rows) with no 1-row darker seam every 12 rows (rule 8).",
+        "The white eave tip (#e6e2f0, #cac7d6, outline) is fine.",
+        "The dark band at x≈47-58 is the east hip shading: the silhouette steps inward at the top, which reads as a hipped roof, not an isometric side face.",
+        "The view passes in map 04."
+      ],
+      "fixes": [
+        "Cut about 4-5 roof rows to reach about 34%.",
+        "Add 1-row darker seams at 12-row intervals across the ribs."
+      ]
+    }
+  ],
+  "summary": "Group A: 0/8 pass. The 3/4 view contract holds for all 8 (clear top band, front face, no side faces, reads correctly at 1x in maps 01-04), so no view charges 1-7 and no style 8a-8d charges were raised. Every candidate fails the binding roof_rules: roof share over 36% (kominka 39.7, kawara 38.4, tin shed 41.5, waterwheel 36.2); all kawara courses jointed (kawara, kura, dagashiya); no hip triangle faces (kura, dagashiya); regular thatch grain rows (kominka, waterwheel); no 12-row tin seam (bus stop, tin shed); the station gable breaks the eave outline; and a glyph on the kominka noren. Note: the anchors measured the same way sit at about 38-39% roof share, so the 30-36% band is stricter than the anchors. It was enforced as written. All fixes are local and small."
+}

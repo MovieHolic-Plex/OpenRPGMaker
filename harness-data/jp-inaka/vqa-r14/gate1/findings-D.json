@@ -1,0 +1,156 @@
+{
+ "group": "D",
+ "items": [
+  {
+   "label": "jp_inaka_pack/jp-inaka-sunflower-patch",
+   "kind": "organic",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 0,
+   "front_rows": 0,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "organic (exempt from 1-6): flower heads seen from the front with leaves, soil bed rows 23-31 shows a light top rows 23-24 and a darker front; #1a1226/#331a18 tinted outlines match anchors; crisp 1px grid; reads as sunflowers at 1x in map 01"
+   ],
+   "fixes": []
+  },
+  {
+   "label": "jp_inaka_pack/jp-inaka-hydrangea-hedge",
+   "kind": "organic",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 0,
+   "front_rows": 0,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "organic (exempt): mounded blue/pink flower clusters over foliage, low stone curb rows 23-31 mostly hidden under the overhanging leaves (decor-style base); tinted outlines, crisp grid; legible at 1x in map 01 (next to the shed)"
+   ],
+   "fixes": [
+    "optional: make 1-2 light rows on the stone curb (rows 24-25) read more clearly as its top"
+   ]
+  },
+  {
+   "label": "jp_inaka_pack/jp-inaka-bamboo-fence-gate",
+   "kind": "structure",
+   "verdict": "fail",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 1,
+   "front_rows": 17,
+   "charges": [
+    1
+   ],
+   "sure": false,
+   "reasons": [
+    "charge 1 (fence wings x0-32 and x57-63): the fence's 'top' is the 1-row outline on row 12, then rows 13-17 are a horizontal bamboo rail band shaded like a cylinder seen from the front (dark-light-light-mid-dark) with no back edge and no foreshortened top plane behind it; rows 18-29 are vertical slats seen face-on. The fence body is a front elevation",
+    "the same-chipset gate/wall anchors (jp-gate, jp-school-gate, jp-gatepost) all draw a capped top plane 6-7 rows deep; the mossy stone wall in this same batch shows 9 rows of top. In map 01 the fence reads flat next to the hedges and the wall",
+    "the gate part is OK: roof rows 0-11 shows ridge (rows 0-2) and a flaring tiled slope (rows 4-11) seen from above, with eave shadow rows 12-13 over the lintel",
+    "sure=false: a thin bamboo fence's top could arguably be read as this rail band, so the view is uncertain, and by the contract that fails"
+   ],
+   "fixes": [
+    "give the fence wings a real cap: 3-4 rows above the rail band showing the top of a split-bamboo or small roofed cap (light top face, darker back-edge line, 1-row shadow under it) running behind the posts, like jp-gate's capped top",
+    "or keep rows 13-17 as the front rail and add 2-3 rows behind/above it showing the slat tops/cap seen from above (back-edge line plus a lighter plane)",
+    "make the gate's post tops meet the fence cap so the cap continues through the gate frame"
+   ]
+  },
+  {
+   "label": "jp_inaka_pack/jp-inaka-mossy-stone-wall",
+   "kind": "structure",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 9,
+   "front_rows": 17,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "top: moss-covered top plane on rows 3-11 (grass tufts on rows 0-2), ending in a dark front-edge line on rows 11-12; front: two stone courses on rows 12-28 with mortar; cast dither shadow on row 29. That is clearly 3/4, deeper than the anchors' 6-7 rows; 22-26 tones; tinted outlines; reads correctly in map 01"
+   ],
+   "fixes": []
+  },
+  {
+   "label": "jp_inaka_pack/jp-inaka-mossy-stone-wall-mid",
+   "kind": "structure",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 9,
+   "front_rows": 17,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "same build as the end piece: moss top on rows 3-11 with a front-edge line, stone front on rows 12-28; tiles horizontally in map 01 without a seam"
+   ],
+   "fixes": []
+  },
+  {
+   "label": "jp_inaka_pack/jp-inaka-stepping-stones",
+   "kind": "terrain",
+   "verdict": "pass",
+   "kind_ok": false,
+   "closest_kind": "flat",
+   "top_rows": 5,
+   "front_rows": 3,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "kind correction: these are loose stepping stones lying on the ground, not a ground tile, so closest kind is flat (exempt from 1-6). Each stone still shows about 5 top rows and a 2-3 row front, which is consistent",
+    "style: no nameable 8a-8d. The navy checker X shapes east of each stone are a dithered cast shadow (dither is not chargeable); crisp grid; recognisable as stones at 1x"
+   ],
+   "fixes": [
+    "advisory (not a gate charge): the near-white #f6f1fc rim under and left of every stone reads as foam or snow on grass and gravel at 1x; tone it down to a mid ground-shadow tone",
+    "advisory: replace the X-shaped checker shadow with a compact ellipse dither under the stone's south-east edge"
+   ]
+  },
+  {
+   "label": "jp_regions_pack/jp-rg-bamboo-clump",
+   "kind": "organic",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 0,
+   "front_rows": 0,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "organic (exempt): leaf canopy with culms and a ground base; #1a1226 outline matches same-chipset anchors; 16 tones; crisp; legible in map 01 (top right)"
+   ],
+   "fixes": []
+  },
+  {
+   "label": "jp_regions_pack/jp-rg-bamboo-grove",
+   "kind": "organic",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 0,
+   "front_rows": 0,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "organic (exempt): layered canopy over many segmented culms, base on the bottom rows; outlines match the anchors; reads as a bamboo grove in map 01"
+   ],
+   "fixes": []
+  },
+  {
+   "label": "jp_regions_pack/jp-rg-bamboo-grove-b",
+   "kind": "organic",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 0,
+   "front_rows": 0,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "organic (exempt): a variant of the grove with a narrower canopy; same outline and tone system (12 colours, culms shaded in 3+ greens); legible in map 01"
+   ],
+   "fixes": []
+  }
+ ],
+ "summary": "8 pass, 1 fail. The bamboo-fence-gate fails charge 1 (sure=false): its fence wings are a front elevation whose top is only the row-12 outline plus a 5-row front rail band, while the anchors and the mossy wall show 6-9 row top planes. Its gate roof is fine. Stepping stones get the kind correction terrain->flat and pass, with advisory notes on the white halo and X-shaped checker shadow. Mossy walls (9-row moss top, 17-row front), the flower beds and the bamboo all pass."
+}

@@ -1,0 +1,407 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0837c47f65ac72defb78bf867096475890f75a2b8099ca93ba9b1f0b3f3dac25",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "jp-inaka-roadside-mirror",
+ "label": "jp_inaka_pack/jp-inaka-roadside-mirror",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+  "3/4: 윗면 2행 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+   "윗면 2행 < 4 (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 18,
+  "darkV5": 44,
+  "nearBlackEdge": 0.14,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "mirror head hood/rim (orange band)",
+      "rows": "0-5",
+      "evidence": "none",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mirror face (blue glass, face-on disc)",
+      "rows": "6-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pole shaft",
+      "rows": "14-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base block",
+      "rows": "27-31",
+      "evidence": "none",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 14,
+     "cap_width": 15,
+     "shaft_width": 5,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The head (rows 0-13) is a round disc seen face-on. Its silhouette widens from 7 to 15 px and narrows again to 6 px, but that is the outline of a vertical mirror face. It is not a horizontal cap plate seen from above. The orange hood (rows 1-4) with a dark line at row 5 reads as a thin visor or rim, and the blue mirror face and green stripe below it are vertical. The pole (5 px wide, rows 14-27) is a plain vertical shaft. The base (rows 27-31) has a 1-row light top edge at row 28 and no real top surface. No part of the column shows a top surface that overhangs the shaft."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a pole-mounted curve mirror with an orange rim, a blue-grey glass face, a post and a small base. It sits at the same scale as the references and is a plausible standing prop. Measured facts support it: 18 visible tones per tile, against 17 for the cheese stall, 20 for the roofed well and 9 for the hedge. Near-flat coverage is 0%, so there are no flat fills of about 5x5 pixels or more. None of its dark edge pixels are neutral, so the outline carries a tint. By eye, the rim and post are outlined in dark brown or rust rather than black, and the mirror face and post show about 4-5 steps of shading with highlight dots. Texture is moderate, as expected for a thin prop, and it does not look noticeably thinner or flatter than the lamp or the bench. It is slightly simpler than the stall and well, but this is a single-pole prop and the facts are at the reference level.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20817
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "mirror hood/visor band above the mirror face",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-5"
+     },
+     {
+      "part": "round mirror face (vertical disc, seen face-on)",
+      "rows": "6-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "thin pole shaft",
+      "rows": "14-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "light grey base block",
+      "rows": "27-31",
+      "evidence": "a",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 14,
+     "cap_width": 15,
+     "shaft_width": 5,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The head (rows 0-13) is a round disc whose width runs 7, 11, 13, 14, 12, 13, 15, 13, 11, 9, 6 and then drops to the 5px pole, so it is bounded by narrower rows above and below. Its mirror face is vertical and seen face-on. The only hint of a horizontal surface is the light orange band at rows 1-3, followed by a darker edge line at row 4 and a very dark shadow row at row 5, which reads as a small hood over the mirror and is about 4 rows deep. The pole (rows 14-27, 5px wide) is a plain vertical face. The base (rows 27-31, 8-10px wide) has a light top row at 28 above darker rows. The head is mostly a face-on disc rather than a true overhanging ellipse cap, so the top-surface evidence is weak."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a thin pole-mounted curve mirror, so it is judged by eye against the lamp-crook and bench references. It measures 18 visible tones per 16x16 tile, close to the stall (17) and well (20) and far above the hedge (9). Near-flat coverage is 0%. Dark edge pixels are 0% neutral, so the outline is tinted and follows the material rather than being a uniform black sticker line. The mirror disc shows a rim, a highlight and a mid tone, and the pole has a light/dark split with a small base. That gives about 5 steps against the references' 5-6. It is not thinner or flatter than the lamp-crook, which has only a thin dark pole. The small size means texture is modest, but there are no flat fills.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22723
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "mirror head: orange rim and visor band",
+      "rows": "0-5",
+      "evidence": "none",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "convex mirror glass, a vertical face seen face-on",
+      "rows": "6-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "thin pole",
+      "rows": "13-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey base block",
+      "rows": "27-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 14,
+     "cap_width": 15,
+     "shaft_width": 5,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The head (rows 0-13) is a round disc facing the viewer. Its width profile (7, 11, 13, 14, 12, 13, 15, 13, 11, 9, 6) widens and then narrows, so the silhouette is rounded at both edges. Its interior is a vertical mirror face: sky-blue glass over a green strip, inside an orange rim. It is not a horizontal plate, and no row range shows a top surface. Rows 1-5 are an orange rim with a dark line at row 5 above the glass, which reads as a rim or visor and not as a top surface. The pole (rows 14-27, 5 wide) and the base (rows 27-31, 10 wide) are drawn as front faces only. The base has a light row at 28, but it is a 1-row highlight and not a top surface. The whole object is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a thin pole-mounted curve mirror with a rim and a small base. It shows 18 visible tones per tile, matching the stall (17) and well (20) and well above the hedge (9). Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, so the outline is tinted with the neighbouring material (dark brown/rust beside the rim and pole) and is not a uniform black sticker line. The mirror face, rim and pole each show several lightness steps (about 5), slightly below the references' 5-6. For a thin prop the density is on par with the lamp and bench references and is not thinner or flatter than them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17949
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "orange visor/hood over the mirror disc",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-5"
+     },
+     {
+      "part": "mirror disc (blue face, face-on)",
+      "rows": "6-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "thin pole",
+      "rows": "14-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base slab",
+      "rows": "27-31",
+      "evidence": "a",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 14,
+     "cap_width": 15,
+     "shaft_width": 5,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "This is a curve mirror on a pole. The head spans rows 0-13 and its width profile widens (7 to 15) and then narrows (to 6 at row 14), so its silhouette is an ellipse over a 5px shaft. The mirror face (rows 6-13) is a face-on vertical disc. The only top-like surface is the orange hood, rows 1-4: it ends in a darker front-edge line at row 4 and is followed by a dark eave-shadow row at row 5. The shaft is a 5px pole in rows 15-26, and the base slab at rows 27-31 has a lighter top row at row 28. The pole and base give a front face well over 3 rows. The top surface is thin (4 rows) and the disc itself is drawn face-on, so this is a borderline three_quarter reading."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a thin curve-mirror prop: an orange rim around a pale mirror face, a short pole and a small base. It is drawn at the same scale as the references, so judging by eye against the lamp and well is fair. Measured facts: 18 visible tones per full tile, which matches the cheese stall (17) and the roofed well (20) and is well above the hedge (9). Near-flat coverage is 0%. Dark edge pixels are 0% neutral, so the outline is a tinted dark version of the neighbouring rim and pole colours, not a black sticker line. The rim, mirror face and pole each show about 4-5 lightness steps with highlight and shadow dots. The mirror face has a gradient, not a single flat fill. It is simple and has less grain than the stall or well, but it is not thinner or flatter than the lamp-crook reference, and a careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 28808
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:03.984Z",
+ "cells": {
+  "16": [
+   "1b7d53281f3b6193",
+   "d9f8d13f5dfbfcbf"
+  ],
+  "24": [
+   "04884476555157cd",
+   "2605ce38d8d32898",
+   "298a67367e1418b7",
+   "66c43305cc599353",
+   "6b7a72ba959d2588",
+   "7af67ff049d2de2c",
+   "81d1c30c85a1c3b8",
+   "df39bb4f4738287e",
+   "df404ca663f5988e",
+   "f3893ac519fa768b",
+   "f876b05b924b6fbe",
+   "fc103e0990c10a23"
+  ],
+  "32": [
+   "3945cf7c890570b5",
+   "8fb943c30b353c8a",
+   "92fefde961bdb4d4"
+  ],
+  "48": [
+   "36cffe4ef5b3d264",
+   "81aa3837ddbfa399",
+   "97e79f4f7634f07a",
+   "bdb1ae1aa5bd345d",
+   "de0f391489b2dae3",
+   "e855e3e07c70eea9"
+  ]
+ }
+}

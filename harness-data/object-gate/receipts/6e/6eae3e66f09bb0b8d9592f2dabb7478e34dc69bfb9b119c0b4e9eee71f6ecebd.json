@@ -1,0 +1,380 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6eae3e66f09bb0b8d9592f2dabb7478e34dc69bfb9b119c0b4e9eee71f6ecebd",
+ "width": 64,
+ "height": 32,
+ "kind": "terrain",
+ "name": "jp-inaka-stepping-stones",
+ "label": "jp_inaka_pack/jp-inaka-stepping-stones",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (2/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 18,
+  "darkV5": 73,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 3
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone tops (five rounded stones, lit mossy upper surfaces)",
+      "rows": "2-21",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone front faces (dark undersides)",
+      "rows": "6-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "water splash and ripple around the stone bases",
+      "rows": "8-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Each of the five stones has a domed, lit top whose width profile widens and narrows again. For the lower-left stone the width runs 27, 31, 36, 38 over rows 17-21, which is about 5 rows of top surface. Below the top, a darker band of about 3 rows (rows 22-24, widths 36, 35, 34) forms the front face. Water ripples and splash sit under each stone as decor. The stones look like volumes seen from above and in front, not flat top-down slabs. The kind is terrain, so the tile-style scatter fits."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a handful of small mossy stones, about 5 of them, floating on a flat dark slate backdrop. It does not read as a 4x3 ground surface like the grass and paving references, which fill every tile with grain and tufts. The backdrop is a large flat area with no grain, soil or grass, and it looks like empty or transparent space. The measured 18 tones per tile and 0% flat coverage probably come from the stones and their pale rim shapes, not from a textured ground. The stones have only about 4 steps each (moss highlight, mid grey-green, dark underside), against 5-6 in the references. The pale blue-white rim under each stone looks like a detached sticker or splash rather than ground blending into surrounding soil. The dark edge pixels are tinted (12% neutral), so the outline reads as dark material tone, which is fine. Overall the piece is too sparse and shallow for a ground patch and would look thinner and flatter than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 18980
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stepping stones (5 rounded stones; top stone at x=32 measured)",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "lower stones (x=16 and x=47 columns)",
+      "rows": "18-20",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "water ripple ring and foam under the stones",
+      "rows": "9-16",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Each stone has a lighter, grey-green mossy top that shades darker toward the front. In the x=32 column, rows 2-6 go from L=151 down to L=98, then rows 7-8 drop to L=77 and 57, which is the front edge and shadow. The dark blue-grey front face sits below that, with white and blue water foam beneath. The lower stones repeat this: x=16 has a light top at rows 18-20 (L=179, 213, 151), then a dark front at rows 21-22 (L=102, 77), then water at rows 23-25. The silhouette widens and then narrows, so each stone reads as a dome with a top surface and a front face, not a flat slab or a pure front elevation. This is a terrain-style decal and the stones read as a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The references are full-coverage ground tiles (grass, paving). The candidate is six small stones with pale ripple rings on an empty dark backdrop, so it reads as scattered props rather than a 4x3 ground patch. Each stone has only about 4 steps: a moss-green top, a grey mid, and a dark underside. That is shallower than the 5-6 steps of the references. The stones have little per-stone grain or clump texture, and the ripple edges look like thin sticker outlines. The measured facts do not argue against it: 18 visible tones per tile against 3 and 7 for the references, 0% near-flat coverage, and only 12% neutral dark edges. But those numbers come from a few tiny stones, not a continuous surface. A careful artist would find it thinner and more sticker-like than the references, and it does not match the kind. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19367
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stepping stone tops (five rounded stones)",
+      "rows": "2-6",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone front faces (dark slate band)",
+      "rows": "7-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "water ripple rings",
+      "rows": "9-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Terrain-type scatter of five flat boulders. Each shows a lighter gray, mossy domed top (for example, the x=32 column runs rows 2-6 from light to mid gray), then a darker slate front band (rows 7-8), then white and blue water ripples beneath. The lower-left stone has the same structure: top at rows 17-20, dark face at rows 21-22, water at 23-25. The silhouette widens and then narrows, so the tops read as ellipse-like surfaces. The darker front face is about 3 rows, so the stones read as 3/4 view, not as a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a handful of small mossy stones, each with a grey-green body, a lighter moss top and a pale blue-white rim. They sit on an almost empty, dark slate field. The measured facts (18 visible tones per tile, 0% near-flat, 12% neutral dark edges) look rich, but they probably include the slate backdrop and the pale rim pixels. By eye each stone has only about 3-4 lightness steps, against 5-6 on the Beodeul grass and paving. The stones show little per-stone texture such as grain, speckle or individually shaded facets. The pale rim around each stone reads closer to a sticker or splash outline than to a dark tone of the adjacent material. The 4x3 patch is not a continuous ground surface like the grass and paving references. It has no surrounding grass, soil or paving carrying tile-level texture, so a large share of the area carries no ground information at all. I judged this by eye and did not rely on the 18-tone figure. A careful artist would not accept it next to the references as a ground patch: it is thinner and flatter, and the stones are shaded less than the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19434
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stepping stone, bottom-left (largest) top, mossy",
+      "rows": "16-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22"
+     },
+     {
+      "part": "stepping stone, top-center top",
+      "rows": "2-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "stepping stone, top-left top",
+      "rows": "7-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "water splash and foam under the stones",
+      "rows": "22-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a cluster of five rounded stones. Each shows a lighter top with moss patches that darkens down the column (x=16: rows 18-20 light, 21-22 dark). The top gradient of about 5-6 rows ends in a darker front band of 2-3 rows, then white and blue water foam. The stones therefore read as lumps seen from above with a short front face, not flat slabs. The silhouette widens and then narrows again, as for an ellipse. The front face is short, but the top and front together read as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a handful of small grey-green stones with pale ripple strokes, scattered over a plain dark blue-grey field. The references are full-coverage ground tiles: grass with tufts and clumps in several greens, and paving with per-stone shading. The candidate does not read as a continuous 4x3 ground patch, and the empty field between the stones looks like one flat colour. Each stone has only about 3-4 lightness steps (a light top, a mid body, a dark underside, and a pale ripple edge), which is shallower than the 5-6 steps in the references. The measured 18 visible tones per tile and 0% flat coverage look generous, but they probably come from the stones and ripples only and don't match what the picture shows. The dark edge pixels are only 12% neutral, so the outlines lean toward a tint rather than a pure black sticker line, but they are inconsistent. Overall the piece looks thinner and more sticker-like than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 22538
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:04.163Z",
+ "cells": {
+  "16": [
+   "308166fb55b1995c",
+   "506c0eeba8facfe6",
+   "5d36e63ae0bca85d",
+   "840f18df42bae98c",
+   "c1693799481448f8",
+   "d5a9eb9c83a48243",
+   "dca39001545209a6",
+   "f15e6f7ef7574008"
+  ],
+  "24": [
+   "0441dd7226a7a996",
+   "1576d6f32aca011d",
+   "1b9b38a29df782a9",
+   "2a80bd963395816e",
+   "3ced3bbb4634e2d7",
+   "3ede15515cc6223f",
+   "40cbcfdcd9d6f474",
+   "4102b96f13f3fb61",
+   "4c3fa681befb75f5",
+   "5d804e4d72422ded",
+   "7e7d67c037f13b80",
+   "8633c9d16a36807a",
+   "895d876a7a3e7208",
+   "8f9dc858d45a4078",
+   "92d71d89e78eab30",
+   "938db138d50dbea5",
+   "9731e4a05ed3ac98",
+   "9a037f55e4d6fd9c",
+   "a0c01e88482542f3",
+   "a28e8d673b880af8",
+   "a53f0be907b7e867",
+   "a8839aa4adeafb2b",
+   "aa17d731484526a1",
+   "b90c417a2acb08c6",
+   "c410dc058307d4ea",
+   "c638903f10d6d5ee",
+   "c9a09ec4556d8244",
+   "d2bdfd6df5caf6bb",
+   "d5799ad98b22056b",
+   "ebbcc2850b25abe0",
+   "f33a43b9a49476f0",
+   "f3c7dc70d819ba69",
+   "f7cc40ce7d891f33",
+   "fb06fa0e98e26baf"
+  ],
+  "32": [
+   "89e1179ea1916e71",
+   "92c2d316882f4523"
+  ],
+  "48": [
+   "089ab71098c6bc17",
+   "2dc2aa30ad745701",
+   "3b2b4ae3fa0e8047",
+   "3b9cc1ba1f671c27",
+   "71c23f4791743706",
+   "735d228e24f93599",
+   "8440e184d6b642a4",
+   "97c4d2615e3a2732",
+   "c1311c779330172d",
+   "cc434a1627b648f2",
+   "cc843a4cf4f40115",
+   "f2fc985ba617b234"
+  ]
+ }
+}
