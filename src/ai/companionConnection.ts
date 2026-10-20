@@ -163,6 +163,8 @@ export async function reconnectFromNotice(): Promise<boolean> {
     const response = await fetchCompanion(`${typeof window !== "undefined" && window.oprn?.companionOrigin ? window.oprn.companionOrigin : ""}/auth/status?provider=openai-codex`, { method: "GET" });
     if (response.ok) {
       clearProblem();
+      // 상단 연결 칩(「응답 오류(403)」)도 바로 풀어 준다 — 다음 조수 요청까지 붉게 남지 않게. llmClient 가 이 모듈을 가져오므로 늦게 부른다.
+      void import("@/ai/llmClient").then((llm) => llm.reportTransportHealth(true, response.status)).catch(() => undefined);
       toast(refreshed.changed ? "AI 연결을 다시 맺었습니다." : "AI 연결이 살아 있습니다.", { kind: "ok", durationMs: 2500 });
       return true;
     }
