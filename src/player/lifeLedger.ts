@@ -69,39 +69,8 @@ const TAB_ART: Readonly<Record<LifeLedgerTabId, string>> = {
   recovery: FARMING_LIFE_UI_ASSETS.buildings,
 };
 
-/** 몬스터만 낚이는 낚시터(catches 비어 있음)는 도감에 올릴 어종이 없다 — 그것만으로 생활 기록 메뉴를 만들지 않는다. */
-function fishingHasLedgerData(project: Project): boolean {
-  return project.system.fishing?.enabled === true && project.system.fishing.spots.some((spot) => spot.catches.length > 0 || (spot.monsterCatches?.length ?? 0) === 0);
-}
-
-/** Project-authored life packages only. Session claims are checked separately. */
-export function hasProjectLifeLedgerData(project: Project): boolean {
-  return project.system.shipping?.enabled === true
-    || (project.system.bundles?.length ?? 0) > 0
-    || (project.system.skillSystem?.enabled === true && (project.database.lifeSkills?.length ?? 0) > 0)
-    || (project.system.makers?.length ?? 0) > 0
-    || (project.database.farmAnimalSpecies?.length ?? 0) > 0
-    || (project.system.farmAnimalBuildings?.length ?? 0) > 0
-    || (project.session.farmAnimals?.length ?? 0) > 0
-    || (project.database.farmBuildingTypes?.length ?? 0) > 0
-    || (project.database.homeDecorationTypes?.length ?? 0) > 0
-    || (project.session.farmBuildingPlacements?.length ?? 0) > 0
-    || (project.session.homeDecorationPlacements?.length ?? 0) > 0
-    || fishingHasLedgerData(project)
-    || project.system.seasonalForage?.enabled === true
-    || project.system.collections?.enabled === true
-    || project.system.museum?.enabled === true;
-}
-
-export function hasSessionLifeRecoveryClaims(session: PlaySession): boolean {
-  const claims = session.lifeRecovery?.claims;
-  return !!claims && Object.keys(claims).length > 0;
-}
-
-/** Optional session unlocks the recovery-only resume path when packages are all off. */
-export function hasLifeLedgerData(project: Project, session?: PlaySession): boolean {
-  return hasProjectLifeLedgerData(project) || (session ? hasSessionLifeRecoveryClaims(session) : false);
-}
+export { hasLifeLedgerData, hasProjectLifeLedgerData, hasSessionLifeRecoveryClaims } from "@/player/lifeLedgerData";
+import { fishingHasLedgerData, hasProjectLifeLedgerData, hasSessionLifeRecoveryClaims } from "@/player/lifeLedgerData";
 
 export function resolveLifeLedgerTab(
   project: Project,
