@@ -770,6 +770,42 @@ function softenTrainerDefeats(project: Project): void {
   }
 }
 
+/**
+ * 기본기 이름을 종 첫째 타입에 따라 나눈다 — 모든 종이 「어깨툭!」을 쳐서 전투 글줄이 다 같았다(2026-10-21 적대 검수 r6 minor).
+ * 위력·우선도·속성(보통)은 그대로 두고 이름만 다른 사본을 만든다. 보통·비행은 원래 어깨툭.
+ */
+const TACKLE_NAMES: Readonly<Record<string, string>> = {
+  grass: "줄기후리기", fire: "앞발톡", ice: "앞발톡", water: "지느러미툭", dragon: "지느러미툭", bug: "껍질부딪기",
+  electric: "발끝톡", rock: "바위어깨", ground: "바위어깨", fighting: "바위어깨", poison: "슬쩍밀기", ghost: "슬쩍밀기", psychic: "슬쩍밀기",
+};
+function varyTackle(project: Project): void {
+  const skills = project.database.skills;
+  const base = skills.find((s) => s.id === "mx_skill_normal_1");
+  if (!base) return;
+  const variantFor = new Map<string, string>();
+  const variant = (type: string | undefined): string => {
+    const name = type ? TACKLE_NAMES[type] : undefined;
+    if (!name) return base.id;
+    const known = variantFor.get(name);
+    if (known) return known;
+    const id = `${base.id}_${type}`;
+    skills.push({ ...structuredClone(base), id, name, description: (base.description ?? "").replace(base.name, name) });
+    variantFor.set(name, id);
+    return id;
+  };
+  const speciesType = new Map((project.database.monsterSpecies ?? []).map((sp) => [sp.id, sp.types?.[0]]));
+  for (const sp of project.database.monsterSpecies ?? []) {
+    const id = variant(sp.types?.[0]);
+    for (const entry of sp.skillsByLevel ?? []) if (entry.skillId === base.id) entry.skillId = id;
+  }
+  for (const enemy of project.database.enemies) {
+    const id = variant(enemy.speciesId ? speciesType.get(enemy.speciesId) : undefined);
+    if (id === base.id) continue;
+    for (const action of enemy.actions) if (action.skillId === base.id) action.skillId = id;
+    if (enemy.skillIds) enemy.skillIds = enemy.skillIds.map((sk) => (sk === base.id ? id : sk));
+  }
+}
+
 export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
   const { project } = createMonsterExpedition({ firstGymType: "grass", gymCount: 1 });
 
@@ -815,6 +851,7 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
   recastPeople(project);
   tidyMeadowDecor(project);
   polishFirstTenMinutes(project);
+  varyTackle(project);
 
   // 1번 도로와 신전에도 여명의 날개 — 길 위를 날 뿐 막지 않는다.
   project.maps["mx_map_meadow"]?.events.push(
