@@ -26,6 +26,7 @@ import {
 } from "@/project/mapTree";
 import { store } from "@/project/store";
 import { toast } from "@/util/toast";
+import { isJpCityMap, openJpCityPinRepairDialog } from "@/editor/jpCityPinRepairDialog";
 import type { MapId, MapTreeNode, Project } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { isMapPanelCollapsed, setMapPanelCollapsed, toggleMapPanelCollapsed } from "@/editor/workspace/mapPanelSection";
@@ -275,6 +276,8 @@ function inspectorActions(project: Project, inspection: MapInspection): readonly
         toast(`'${inspection.name}'을 시작 맵으로 지정했습니다`, "ok");
       },
     },
+    // 2026-10-14~18 칸 번호가 밀린 판에서 그린 jp_city 맵 — 판마다 미리보기를 보고 사람이 고른다(editor/jpCityPinRepairDialog.ts).
+    ...(isJpCityMap(mapId) ? [{ id: "jp-pin-repair", label: "jp_city 칸 번호 복구", run: () => void openJpCityPinRepairDialog(mapId) }] : []),
     {
       disabled: !canDelete,
       disabledReason: "맵이 하나뿐이라 지울 수 없습니다",
@@ -1112,6 +1115,15 @@ function mapContextMenuItems(context: MapActionContext): readonly MapContextMenu
       label: "시작 맵으로 지정",
       testId: `map-set-start-${context.mapId}`,
     });
+    if (isJpCityMap(context.mapId)) {
+      items.push({
+        action: () => void openJpCityPinRepairDialog(context.mapId),
+        icon: "map-settings",
+        id: "jp-pin-repair",
+        label: "jp_city 칸 번호 복구",
+        testId: `map-menu-jp-pin-repair-${context.mapId}`,
+      });
+    }
   }
   items.push({
     action: () => moveMapInTree(context.mapId, ""),

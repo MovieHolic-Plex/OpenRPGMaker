@@ -811,6 +811,8 @@ export interface Project {
     /** Full timelines preserved through older host schema validators. */
     oprnCinematicTimelines?: import("../cinematicWire").CinematicWireCapsule;
     bootNormalization?: { v: number; lib: string };
+    /** 「jp_city 칸 번호 복구」로 옮긴 맵 기록(맵마다 한 번). project/defaults/jpCityPinRepair.ts */
+    oprnJpCityPinRepairs?: import("../defaults/jpCityPinRepair").JpCityPinRepairRecord[];
   };
   assets: AssetSet;
   resourceProfiles: ResourceProfile[];
