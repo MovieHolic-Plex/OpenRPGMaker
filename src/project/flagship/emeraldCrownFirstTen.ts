@@ -100,6 +100,21 @@ function polishLab(project: Project): void {
     text("북쪽 1번 도로를 따라가면 실바나 마을이 나온단다. 거기 체육관 관장 유림을 만나 보렴.", "천문박사"),
     text("다음 목표는 언제든 메뉴의 「배지」에서 볼 수 있단다.", "천문박사"),
   ]);
+  // 첫 길 선물 — 회복약 둘. 체육관은 연달아 싸우므로 새 플레이어가 전투 중 「가방」을 한 번은 쓸 수 있게(아무 때나 다시 말 걸어도 한 번만).
+  replaceText(professor, /^북쪽 1번 도로를 따라가면/, [
+    text("북쪽 1번 도로를 따라가면 실바나 마을이 나온단다. 거기 체육관 관장 유림을 만나 보렴.", "천문박사"),
+    {
+      kind: "fork",
+      condition: { kind: "switch", switchId: "mx_lab_potions", value: false },
+      then: [
+        { kind: "setSwitch", switchId: "mx_lab_potions", value: true },
+        { kind: "changeItem", itemId: "item_potion", op: "+=", amount: 2 },
+        text("회복약 두 개를 받았다! 전투 중 「가방」에서 쓸 수 있다."),
+      ],
+      else: [],
+    },
+  ]);
+  if (!project.switches.some((sw) => sw.id === "mx_lab_potions")) project.switches.push({ id: "mx_lab_potions", name: "mx_lab_potions" });
 
   const rival = eventOf(project, "mx_map_lab", "mx_map_lab_rival");
   const page = rival?.pages?.[0];
@@ -288,6 +303,20 @@ function firstWildOnRouteOne(project: Project): void {
   }
 }
 
+/**
+ * 첫 체육관(풀·벌레)을 어느 스타터로든 기술만으로 넘을 수 있게 — 2026-10-20 첫 10분 녹화에서 토리프(풀)는 몸통 기술 하나로 버티다 관장에게 졌다.
+ * 풀·물 스타터는 원래 16레벨에 배우던 보조 타입 기술을 6레벨(1번 도로 첫 승리 즈음)로 당긴다. 불 스타터는 이미 유리하다.
+ */
+function starterCoverage(project: Project): void {
+  const early: Record<string, string> = { mx_species_spriglet: "mx_skill_psychic_1", mx_species_rivulet: "mx_skill_ice_1" };
+  for (const species of project.database.monsterSpecies ?? []) {
+    const skillId = early[species.id];
+    const entry = species.skillsByLevel?.find((s) => s.skillId === skillId);
+    if (entry && entry.level > 6) entry.level = 6;
+    species.skillsByLevel?.sort((a, b) => a.level - b.level);
+  }
+}
+
 export function polishFirstTenMinutes(project: Project): void {
   polishBedroom(project);
   polishMom(project);
@@ -298,5 +327,6 @@ export function polishFirstTenMinutes(project: Project): void {
   quickerHealing(project);
   nameGymTrainers(project);
   firstWildOnRouteOne(project);
+  starterCoverage(project);
 }
 
