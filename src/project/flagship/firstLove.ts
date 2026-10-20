@@ -887,13 +887,11 @@ function defineEndings(project: Project, themeId: string): void {
     presentation: { musicResourceId: BGM_TOWN, tone: "warm", kicker: "엔딩 C · 첫 주의 끝" },
     epilogue: [
       { kind: "say", text: "회식 자리. 민호 씨가 건배사를 세 번째 하고 있다." },
-      { kind: "say", speaker: "오 팀장", text: "서하 씨, 첫 주 수고했어요. 다음 주부터 진짜 시작이에요." },
-      { kind: "say", text: "오후 9시 41분. 막차가 떠난 시각. 휴대폰이 짧게 울렸다." },
-      { kind: "say", text: "‘하루끝’ 알림 — 지난 사연에 늦은 답장이 도착했습니다." },
-      { kind: "say", text: "내가 그린 버튼. 오늘 발표한 기능. 첫 번째 답장의 받는 사람은, 바나나우유 님." },
-      { kind: "say", text: "‘10년 전 금요일의 사연, 이제야 답장해요. 그때도, 이번 주도, 인사를 못 했네요. — 방송부 강지후’" },
-      { kind: "say", speaker: "서하", text: "…이러는 게 어디 있어요. 답장만 하고, 가 버리면." },
-      { kind: "say", text: "건배 소리 사이에서, 혼자 조금 울었다. 다음 주 금요일엔 내가 먼저 사연을 보내야지. 부산까지 닿게." },
+      { kind: "say", text: "오후 9시 41분, 막차가 떠난 시각. ‘하루끝’ 알림이 울렸다." },
+      { kind: "say", text: "늦은 답장이 도착했습니다 — 오늘 발표한, 내가 그린 버튼으로." },
+      { kind: "say", text: "‘10년 전 금요일의 사연, 이제야 답장해요. 이번에도 인사는 못 했네요.’" },
+      { kind: "say", speaker: "서하", text: "…답장만 하고 가 버리면, 어떡해요." },
+      { kind: "say", text: "다음 주 금요일엔 내가 먼저 사연을 보내야지. 부산까지 닿게." },
     ],
   });
 }
