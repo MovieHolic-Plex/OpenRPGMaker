@@ -1,0 +1,285 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "222df2d163ae5d3c1dbb09974dfd813435948b21c98db9dfec07d1ae7671790d",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "썩은 판자 다리(멀쩡) (plank bridge)",
+ "label": "atlas_biome_interior/plus/plank bridge",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 15,
+  "darkV5": 66,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper plank segment",
+      "rows": "0-5",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-5"
+     },
+     {
+      "part": "lower plank segment",
+      "rows": "8-13",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-13"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image has two identical 14px-wide plank segments (rows 0-5 and 8-13) joined by 4px-wide posts (rows 6-7 and 14-15). Each segment has a light plank surface of about 4 rows (rows 0-4 and 8-11). Below it is a 1-row darker edge and a 1-row dark outline (rows 4-5 and 12-13). That leaves only 1-2 rows of front face, under the 3-row minimum, so the object reads as a flat plank plate seen from above, which suits the 'flat' kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is small, about one tile in size, and reads as a plank piece in several wood tones with a darker brown edge. The measured facts support this. It has 15 distinct colours and a median of 15 colours per tile, which is above the hedge at 10 and close to the stall at 17 and the well at 20. Flat-fill coverage is 0%. None of its dark edge pixels are neutral, so the outline carries a brown tint rather than a black sticker line, in contrast to the lamp (100% neutral) and bench (44%). The planks show grain and per-plank tone variation, and I see no large single-colour areas. At this scale a careful artist would accept it next to the references without it looking thinner or flatter. Fine detail is hard to read at this size, so the verdict leans on the numbers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24060
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper plank segment",
+      "rows": "0-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-5"
+     },
+     {
+      "part": "lower plank segment",
+      "rows": "8-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-13"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The bridge is two 14px-wide plank segments, rows 0-5 and 8-13, joined by narrow 4px connectors in rows 6-7 and 14-15. Each segment is a lit plank surface (rows 0-3 in the upper one, 8-11 in the lower one) with a darker edge row and a darkest bottom row (rows 4-5 and 12-13). That leaves only about 2 rows of front face per segment, under the 3-row minimum. It reads as a flat plate seen mostly from above, which fits the 'flat' kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wooden plank piece. It has 15 distinct colours and a median of 15 colours per full tile, which is above the bench (14 colours) and in the range of the stall (17) and well (20) tiles. Flat-fill coverage is 0%. None of its dark edge pixels are neutral (0%), so the outline leans brown and follows the wood tone rather than a black sticker line, as in the hedge reference. By eye, the planks show a highlight, light, mid and dark step with grain and nail or knot dots, about 5 steps like the bench. It is simple and small but not thinner or flatter than the bench reference, so a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 28019
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper plank segment",
+      "rows": "0-5",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower plank segment",
+      "rows": "8-13",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "Two stacked plank segments, each 14px wide and 6 rows tall (rows 0-5 and 8-13), with 4px-wide posts or ropes between them (rows 6-7, 14-15). Each segment has a light top (row 0 is the lightest, L=211), mid-tone plank rows, then one darker row (row 4 or 12) and a 1-row dark outline (row 5 or 13). That leaves only about 2 rows of front face and no eave shadow, below the 3-row minimum. It reads as a flat plate seen from above, which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wooden plank piece. It has 15 distinct colours and a median of 15 per full tile, which is above the hedge (10) and in the range of the stall (17) and well (20). Its 5x5 flat-fill coverage is 0%. Its dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood, not a black sticker line. By eye, the planks show a light highlight, mid and dark wood tones, grain dots and gaps between boards, so it reads as about 5 steps against 5-6 for the references. The piece is simpler and has fewer total colours than the stall or well (38-40), but it is equal to or richer than the bench and lamp (14 colours each) and the hedge (11). It would not look thinner or flatter next to the same-kind references, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 30792
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper plank segment",
+      "rows": "0-5",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-5"
+     },
+     {
+      "part": "lower plank segment",
+      "rows": "8-13",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-13"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is two stacked 14px-wide plank segments (rows 0-5 and 8-13), separated by a transparent gap (rows 6-7), with narrow 4px posts at rows 14-15. In each segment, the plank-grain top fills about rows 0-3 (rows 8-11 in the second). One darker row follows (row 4 or 12), then a near-black outline row (row 5 or 13). That leaves only about 1-2 rows of thickness on the south edge, so there is no front face of 3+ rows. This is a flat plank plate seen from above, which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wooden plank piece, roughly 12x19 source pixels. Its median is 15 distinct colours per full tile, above the 10 of prop-hedge and near the 17-20 of the stall and well. It uses 15 colours in total, which is about the same as the bench and lamp (14 each) at a much smaller size. 5x5 flat-fill coverage is 0%. The share of neutral dark edge pixels is 0%, so the outline carries a brown tint, like the hedge and stall, rather than the neutral black of the lamp. By eye, each plank has a few wood steps (highlight, mid, dark, grain), roughly 5 in all. It is a little simpler than the roofed well or the stall, but it is not thinner or flatter than the bench, and it does not look like a black-outlined sticker. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20160
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:38.682Z",
+ "cells": {
+  "16": [
+   "2751612d9a8eaae8"
+  ],
+  "24": [
+   "214032e73efd44ec",
+   "3a79e586cb5d275a",
+   "765ae971cbf8b851",
+   "8a4ee93993cbd75b",
+   "8e771c6ed2f35757",
+   "d562c5e1fd663170"
+  ],
+  "32": [
+   "1fea48a107f7c4cb",
+   "399b1308c314c285",
+   "71c2e6dd19e9ff95",
+   "83d9a3d6caa42a64",
+   "c68a52e4d77ecb6c",
+   "f87efe7681ca0838"
+  ],
+  "48": [
+   "0189b0d42ea7c738",
+   "1048c9a471fdd7ba",
+   "5418f866461c0d25",
+   "b3a70e34dbea3bbf",
+   "bd62b6a7be72ebcc",
+   "d342930ff0c55a35"
+  ]
+ }
+}

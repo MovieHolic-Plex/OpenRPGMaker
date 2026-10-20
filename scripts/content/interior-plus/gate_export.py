@@ -14,7 +14,7 @@ def export():
     reg = loader.load(); os.makedirs(OUT, exist_ok=True); rows = []
     for pid in reg.order:
         p = reg.pieces[pid]; path = os.path.join(OUT, slug(pid) + '.png'); iplib.render(p).save(path)
-        rows.append(dict(png=path, kind=p['gate'], name=f"{p['ko']} ({pid})", label=f'atlas_biome_interior/plus/{pid}'))
+        rows.append(dict(png=path, kind=p['gate'], name=f"{p['ko']} ({pid})", label=f'atlas_biome_interior/plus/{pid}', **({'styleKind': p['style']} if p.get('style') else {})))
     import gate_rooms   # 바닥·벽면 조립 방(kind structure)
     os.makedirs(gate_rooms.OUT, exist_ok=True)
     for r in gate_rooms.rooms(reg):

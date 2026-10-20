@@ -1,0 +1,294 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b2150d801677b4ec8757e02b0c1b7653c53eb1ac4a9d284829d980690b862d34",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "경비병 등불 빛(빛줄기) (guard lantern light)",
+ "label": "atlas_biome_interior/plus/guard lantern light",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 4,
+  "tileColorsP90": 4,
+  "darkV5": 239,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "light pool / beam decal (whole sprite)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The sprite is a 15px-wide, 14-row near-rectangular patch (rows 1-14 are all width 15, rows 0 and 15 narrower at 8) with soft yellow/orange light tones (#fff8b0, #efdd7d, #ffd8a0, #f4b370) blended irregularly. No front-edge line, no eave shadow, no vertical face, and no standing volume. It is a flat ground decal seen from above, so there is no front face (0 rows). That matches the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate has only 4 distinct colours in total and a median of 4 per tile. The grass reference has 80 colours and 26 per tile, and even the simple paving reference has 7 distinct colours and 7 per tile. The candidate shows a faint speckle with no flat 5x5 blocks (0% coverage), but the speckle is built from only about 3 lightness steps, against 5-6 for Beodeul materials. It has no outline, and its edge pixels are not neutral, so it is not a black-line sticker. There are no clumps, no grain in several tones and no per-element shading, which is what makes the reference tiles information-rich. It would look thin and flat next to the grass ground. Soft light patches can be low-colour, but this is below even the paving reference on colour count and tonal variety.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 22621
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "light beam decal (whole sprite)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The sprite is a roughly 15x16 patch of blended yellow/orange light with a soft gradient. Width is constant at 15 for rows 1-14, with 8 px at rows 0 and 15 (rounded corners). There are no edge lines, eave shadows, legs or vertical faces, only a flat decal-like glow, which fits a flat floor decal seen from above. No front face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small beige light patch with only 4 distinct colours in total, and a median of 4 colours per tile. The grass reference has 80 colours and 26 per tile, and the paving reference has 7 colours and 7 per tile. Even the sparse paving reference carries more per tile. The candidate shows about 3 lightness steps and only faint speckle, with none of the multi-tone clumps, grain or per-element shading of the references. There is no outline (it is a light patch), so the outline is not at fault. The flat-fill measure is 0%, but this comes from the tiny speckled patch and does not make up for how few colours it uses. Next to the references it looks thin and shallow, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 22007
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "light patch (glow decal)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a 15x16 px patch of pale yellow and orange glow. The column scans show mottled light and warm tones with no front-edge line, eave shadow or ellipse width profile. The silhouette is 15 px wide from rows 1-14 and narrows to 8 px at rows 0 and 15, so it reads as a flat glow shape lying on the ground. No front face is drawn, which fits the flat kind (a ground decal)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate has only 4 distinct colours in total and a median of 4 per tile. The grass reference has 80 colours and 26 per tile, and even the paving reference has 7 colours and 7 per tile. The candidate shows a small beige/tan speckled square with about 3 lightness steps and no clear clumps or grain, against the grass reference's 5 or more greens in clumps and tufts. The 0% flat-fill figure only comes from dithering between very few colours, not from real variation. It has no outline, and the 0% neutral edge share is not meaningful here. A light-pool patch can be soft, but this reads as a thin, near-flat tint well below the Beodeul ground standard, so it fails on shading depth and tile density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 21683
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "light pool / beam decal",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a near-rectangular blob. Row 0 is 8 px wide, rows 1-14 are 15 px wide, and row 15 is 8 px wide, so the ends are rounded. The colour scan shows only a mottled pale-yellow, cream and orange glow (#fff8b0, #efdd7d, #ffd8a0, #f4b370). There is no front-edge line, no eave shadow, no vertical face and no legs. It is a flat light decal seen from above, which fits the 'flat' kind, with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny patch (about one tile) with only 4 distinct colours and a median of 4 per tile. The grass reference has 80 colours and 26 per tile, and the paving reference has 7 colours and 7 per tile. The candidate is a pale, speckled sand-like swatch with very little variation. It has no real light-beam gradient and no clumps, grain or per-pixel shading, so it reads as a flat, shallow fill. It has no outline, so tint cannot be judged. Flat-fill coverage is 0% only because the patch is small. It carries about 3 lightness steps against roughly 5 in the grass reference, so it looks thinner and flatter than the references. The paving reference's low colour count comes from its stone-block structure, and the candidate has no comparable structure.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 17930
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:38.690Z",
+ "cells": {
+  "16": [
+   "e12f7f5a8d8fb868"
+  ],
+  "24": [
+   "128a63787121e51c",
+   "776e880b4b3e0441",
+   "b7df64735932af95",
+   "c40209959605c5f0",
+   "c4dac44bf74f2e7f",
+   "fa68285d7ad66163"
+  ],
+  "32": [
+   "13d762a44b999514",
+   "1dc1f1903ffabf0f",
+   "92dd9613e3481d20",
+   "98bcf4240a475b6d",
+   "b5784c37533d1354",
+   "c321915d1664477b"
+  ],
+  "48": [
+   "42d57afe2e67c3fe",
+   "5c99027740b6bf00",
+   "96a40671c371b0d0",
+   "dff8780156a81fa5",
+   "f2dfa0e49ab2c9d6",
+   "f965797865bc42c1"
+  ]
+ }
+}

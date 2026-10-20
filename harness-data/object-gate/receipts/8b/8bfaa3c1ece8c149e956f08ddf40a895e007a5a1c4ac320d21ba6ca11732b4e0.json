@@ -1,0 +1,309 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8bfaa3c1ece8c149e956f08ddf40a895e007a5a1c4ac320d21ba6ca11732b4e0",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "저울 추 받침(추 3 — 무쇠) (weight stand 3)",
+ "label": "atlas_biome_interior/plus/weight stand 3",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 16,
+  "darkV5": 46,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "borderline",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lower tray/base (open container with dark interior)",
+      "rows": "19-24",
+      "evidence": "d",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper weight block seated in the tray",
+      "rows": "13-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the wide tray (width 14, rows 19-28). Its dark interior with a checker pattern, rows 20-24, reads as an open container seen from above, ending at a dark line on row 24. Below it is a light front face on rows 25-29 (5 rows) with a highlight on row 26. The narrower block above (rows 13-18, width 9) is drawn mostly as a vertical face, but it is a small detail sitting inside the tray and not the main volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small single-tile iron weight stand. It has 16 distinct colours in one 16x16 tile, above the hedge's 10 and close to the cheese stall's 17 and the roofed well's 20. Its 5x5 flat-fill coverage is 0%, so there are no flat areas. None of its dark edge pixels are neutral (0%), so the outline leans toward the material tone rather than a black sticker line. By eye, the cool grey iron body reads as about 5 lightness steps, with highlight and shadow facets and a few texture dots on the top plate. It is not thinner or flatter than the references of the same size, such as the lamp and the bench. It is slightly simpler than the well and stall, which is expected for a small prop.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23589
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "open tray / base (main body)",
+      "rows": "19-24",
+      "evidence": "d",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "weight block on top",
+      "rows": "13-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tray front face",
+      "rows": "25-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a wide tray (width 14, rows 19-28). Its opening at rows 20-24 shows dark checkered contents (evidence d), ending in a bright front-edge line at row 24 (column x=4 L=34, x=8 L=34). Below it, rows 25-29 form a light front face of 5 rows with a shaded bottom row. The narrower weight block above (rows 13-18, width 7-9) has a light front and a dark right side. It is a small detail and does not change the reading of the base."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small cast-iron stand, roughly one tile in size. The facts support it. It has 16 distinct colours, against 11-14 for the bench, hedge and lamp, and a median of 16 colours per full tile, against 10 for the hedge and 17-20 for the stall and well. Flat-fill coverage is 0%. None of its dark edge pixels are neutral, so the outline carries a tint, a dark steel/blue-brown lean rather than a black sticker line. By eye it shows about 5 lightness steps on the metal, with a lit top plate, mid body and dark underside, plus some dot detail. That is comparable to the simple references, such as the lamp and bench, and is not shallower. It is plainly simpler than the stall and well, but it is a small single-tile prop, so that is not a reason to fail it. Texture is moderate rather than rich, but a careful artist would accept it next to the references without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 29219
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tray / base opening with dark contents",
+      "rows": "19-24",
+      "evidence": "d",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": "23-24"
+     },
+     {
+      "part": "iron weight block on top",
+      "rows": "13-17",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18-19"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The wide base (rows 19-29, width 14) is an open tray. Rows 19-24 show the dark interior and contents seen from above, ending at the lighter front-rim row 25. Below it the light front wall is rows 25-29, about 5 rows. The upper weight block (rows 13-18, width 9) has a light top band at rows 14-17 with an edge line at row 17, followed by a darker front face. Both parts show a horizontal surface and a front face, so this is a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small cast-iron stand, about one tile in size. It carries 16 distinct colours in a single full 16x16 tile. That is above the hedge (10) and close to the cheese stall (17) and well (20) per tile, and well above the bench and lamp, which measure 0 because they are thin. Flat-fill coverage is 0%, so there are no large single-colour areas. 0% of its dark edge pixels are neutral, so the outline is tinted, a dark version of the iron/grey-blue material rather than a black sticker line. By eye it shows about 5 lightness steps on the iron (highlight, light, mid, dark, deep) with some dot variation. That is slightly fewer than the roughly 6 on the richer references, but a careful artist would accept it next to the bench and lamp without it looking thinner or flatter. The image is very small, so this is a judgment at low resolution; the measured facts support a pass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 29877
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tray/base opening with dark interior and checkered contents",
+      "rows": "19-24",
+      "evidence": "d",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": "21-23"
+     },
+     {
+      "part": "upper weight block",
+      "rows": "13-17",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18-19"
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the wide tray (width 14, rows 19-29). Rows 19-24 show an open top: the rim and a dark interior with a checkered heap of contents, and a bright pixel at the front corners on row 24 marks the front edge. Rows 25-29 are the light front face of the tray, 5 rows, with a gradient from L=170 to 196 to 138. The narrower weight block above (rows 13-18) has a light top edge at row 14, a face on rows 15-16 and a light line at row 17 before the dark shadow, so it also reads as having a top. The drawing is a three-quarter view with a top and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small iron weight-stand prop, about one tile in size. It has 16 distinct colours and a median of 16 colours per full tile, which matches the richer references (stall 17, well 20, hedge 10) and beats the thin bench and lamp. Flat-fill coverage is 0%, so there are no large single-colour areas. Dark edge pixels are 0% neutral, so the outline leans toward a tint, a dark blue-grey beside the iron, rather than a uniform black sticker line. By eye, the iron body is split into roughly 5 value steps (highlight, light, mid, dark, deep), with some dot and edge variation. This is close to the reference ramps for a piece this small. It looks a little less textured than the well or stall, but it is not thinner or flatter than the bench or lamp, and a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24456
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:38.688Z",
+ "cells": {
+  "16": [
+   "bfd26b2922dc4e34",
+   "f474e62a99e884a9"
+  ],
+  "24": [
+   "03933c3591643825",
+   "0719de4e083b7f08",
+   "0da3640dabfa8f0b",
+   "0eff93808ea6b2b6",
+   "1d2f1ee43938e18f",
+   "32efa029907494d3",
+   "7c81696afcaeee71",
+   "bba66b18e2093653",
+   "dafe3a3f67fec815"
+  ],
+  "32": [
+   "57b7a8d12a202a4f",
+   "6d1548ba41aacde8",
+   "f9365fa4fbd1bcea"
+  ],
+  "48": [
+   "23222f420de7e89d",
+   "39f8c35bc9f728e8",
+   "569a6d41da814730",
+   "a01c144c5407e092",
+   "f9674361c4c19355",
+   "fe372e76c8971620"
+  ]
+ }
+}

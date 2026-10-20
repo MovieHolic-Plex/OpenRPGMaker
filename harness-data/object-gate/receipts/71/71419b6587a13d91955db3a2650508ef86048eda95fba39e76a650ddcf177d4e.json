@@ -1,0 +1,294 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "71419b6587a13d91955db3a2650508ef86048eda95fba39e76a650ddcf177d4e",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "경비병 등불 빛(빛줄기 끝) (guard lantern light end)",
+ "label": "atlas_biome_interior/plus/guard lantern light end",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 0,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dithered light pool (checkerboard glow, brightest near the centre)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The column scan is empty and the width profile reads 0 for every row, so I judged from the magnified image. It shows a roughly circular, checkerboard-dithered glow across rows 0-15, brightest at the centre and fading toward the edges. It has no front-edge line, no eave shadow, no vertical face and no ellipse rim. It is a flat floor decal seen from directly above, with no front face. That is the expected look for a flat object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small round glow blob on a dark background, not a 4x3-tile ground patch like the grass and paving references. The measured facts show 0 colours and 0 colours per tile, so the numbers give no evidence for it. By eye it has about 3 soft concentric tan steps, from a pale centre to a darker rim. It has no grain, speckle, tufts or per-element shading, so it lacks the texture of the grass reference (26 colours per tile, 80 colours in total). It is also far sparser than the paving reference, whose stones are shaded one by one. There is no outline, so that check cannot help it. It would look thinner and flatter than either reference, and the piece is too small and ambiguous to show Beodeul-level craft, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 16462
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dithered light pool (whole object)",
+      "rows": "1-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a soft, roughly circular glow drawn as a checkerboard-dithered patch. It is brighter yellow-green in the centre and fades to darker brown-grey at the edges. It has no front face, no edge line, no eave shadow and no vertical faces. It reads as a flat decal seen straight down, which matches the 'flat' kind. The silhouette width scan was given as 0 for every row, so the extent comes from the image itself."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny round glow blob, far smaller than the references and nowhere near a 4x3-tile ground patch. The per-tile facts read 0, so I judged by eye. It shows about 3 soft concentric tan steps with a faint halo. It has no grain, no tile structure, no tufts and no stone shading. The grass reference carries 26 colours per tile and 80 distinct colours, and the paving reference has individually shaded stones. Beside them the candidate looks like a thin, smooth sticker-like radial gradient. It has no outline, so the outline criterion does not apply. The 0% flat-fill figure comes from the 0-colour reading and does not show richness. It is not an acceptable ground piece next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15779
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "light glow disc (checkered, semi-transparent)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "Image 1 shows a flat radial glow with a checkered dither pattern. It is brightest at the center, around rows 5-10, and fades toward the edges. It has no front face, no vertical faces, no edge line and no eave shadow. It reads as a flat floor decal seen from above, which fits the 'flat' kind. The column scan is empty and the width profile reports 0 opaque pixels, so I judged from the image alone."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a small round glowing blob (about 3 soft tan steps) on a plain dark-grey backdrop. It is nowhere near a 4x3-tile ground patch, so it does not match the grass/paving references. It has no ground texture, no grain, no tufts and no per-stone shading. The measured facts show 0 colours and 0 colours per tile, so they give no usable evidence and I judged by eye. Next to the grass reference (26 colours per tile, 80 colours in total, rich clumps and tufts) it is far thinner and flatter. It has no outline, so the outline cannot be judged as dark_material_tone. It reads as a single soft sprite rather than a Beodeul-quality tileable ground surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12375
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "light glow disc (dithered checker pattern, brighter at center)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image shows a flat, dithered radial glow that is brightest near rows 6-10 and fades toward the edges. It has no front face, no front-edge line, no eave shadow and no vertical faces. It is a plain ground decal seen from above, which fits the 'flat' kind. The silhouette-width scan lists 0 opaque pixels on every row, but the image clearly shows a semi-transparent checker pattern across the whole 16x16 tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small round soft glow blob on a plain dark slate background. It is not a 4x3-tile ground patch, so it does not match the grass/paving references. The measured facts show 0 colours and 0 per tile, so the numbers say nothing and I judged by eye. By eye the glow has about 3 radial lightness steps (pale centre, tan ring, dim edge) and no grain, dots or tile variation. The grass reference carries 26 colours per tile and 80 colours overall, with tufts and mottling in several greens, and the paving reference has individually shaded stones. The candidate has no outline, so there is no tinted material edge to judge. It reads as a single soft sprite, much thinner and flatter than either reference, and it does not cover a ground area.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14122
+  }
+ ],
+ "decidedAt": "2026-10-20T05:59:10.986Z",
+ "cells": {
+  "16": [
+   "be44dfa073bac9f6"
+  ],
+  "24": [
+   "074c8925012604fe",
+   "a2f483eef64e00bf",
+   "e39883a48f792ac6",
+   "e7d434a23e80ceca",
+   "f6f3fb35567b93ab",
+   "fe09582198417810"
+  ],
+  "32": [
+   "36f622e96face0af",
+   "8375fb3aff7ee27d",
+   "c590f4bc00228f20",
+   "d37cdfa2ed6df8e3",
+   "deec3a870e86f3fa",
+   "f48597a37b4987f0"
+  ],
+  "48": [
+   "07e742206a25ead5",
+   "352030fb651e9fe8",
+   "65162e18faaa9f00",
+   "846b1910af41205c",
+   "98b237ffe55e8a27",
+   "add703f68a0ddce6"
+  ]
+ }
+}

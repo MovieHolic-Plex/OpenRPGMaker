@@ -1,0 +1,352 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "639c1c56ae4a3534be25ed8c8c9691e10c5e0cce06e5946875a2718dd682ed53",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "저울 추 받침(추 5 — 가장 무거운 납 덩이) (weight stand 5)",
+ "label": "atlas_biome_interior/plus/weight stand 5",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 15,
+  "darkV5": 48,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper lead block with handle loop",
+      "rows": "10-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "lower dark checkered body",
+      "rows": "19-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "light grey base plate",
+      "rows": "25-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The upper block is a 12-13 px wide band in rows 10-15 with a lighter 1-row front-edge line at row 16 (L=208, #c2d4df). Dark eave-shadow rows 17-18 follow it. Below that, the checkered dark body (rows 19-24) and the light base (rows 25-29) form a front face of about 13 rows. The top band could also be read as a flat front-facing light panel, so the top reading is less certain than the edge line and shadow suggest."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small grey-blue lead weight with a ring handle. Its 15 distinct colours per full tile beat prop-hedge (10) and sit close to prop-stall-cheese (17) and prop-well-roofed (20). Flat-fill coverage is 0%, so no 5x5 block is a single colour. None of its dark edge pixels are neutral (0%), so the outline leans dark blue-grey, the tone of the neighbouring metal, rather than a uniform black sticker line. I count about 5 lightness steps on the metal, from a top highlight through the mid tones to a dark base, plus a few marks on the face. That is slightly shallower than the 6 or so on the richer references. It has only 18 colours in total, against 38-40 for the larger stall and well, but it is a much smaller single-material object, so that is expected. At this scale it would sit next to the references without looking flatter or thinner, so I pass it. The small size limits how much I can verify by eye, but the measured facts support the pass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19100
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "handle ring on top",
+      "rows": "6-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper light-blue lead weight block",
+      "rows": "9-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle dark checkered band",
+      "rows": "19-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "light grey base plate",
+      "rows": "25-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette widens stepwise from 6 to 14 px with no ellipse. The upper block (rows 10-15) is a uniform face colour. Row 10 is only a 1-row highlight at the outline. Row 16 is a bright line, but it sits at the bottom of the face above a dark step (row 17), so it is a ledge or rim, not the edge of a top plane. The checkered band (rows 19-24) and the base (rows 25-29, highlight at row 26) are vertical faces. No part shows a foreshortened top band with an edge line and eave shadow, and no part shows contents. This is a flat front elevation, not a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small lead weight block with a top handle. It reads with about 5 lightness steps: a highlight edge, light and mid faces, a dark side and a deep base. The measured facts match this. It has 15 distinct colours per full tile, above the bench and lamp references (which are too thin to fill a tile) and in line with the hedge (10), stall (17) and well (20). It has 18 distinct colours overall against 14 for the bench and lamp. Flat-fill coverage is 0%, and 0% of its dark edge pixels are neutral, so the outline carries a visible blue-grey tint of the adjacent metal rather than a near-black sticker line. It has some surface variation and facet shading but no heavy grain, so texture is 'some' rather than rich. At this scale a careful artist would accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21545
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main block top (light blue plate)",
+      "rows": "10-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "handle loop on top",
+      "rows": "6-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower dark checkered band and grey base",
+      "rows": "19-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 10-15 form a 12px-wide light-blue band, which is the top surface. Row 16 is a lighter front-edge line (L=208 in all three columns). Rows 17-18 are dark eave shadow (L=34-82). Below that, the front face runs from row 19 to row 29: a dark checkered band at rows 19-24 and a lighter grey base at rows 25-29. The loop handle at rows 6-9 is a small detail. The top band is a plausible top plane, so the object reads as three-quarter, though the blue area could also be a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small lead-weight block with a ring handle on a stand. It has 18 distinct colours and a median of 15 colours per full tile, which is above the sparse props (bench 14 colours, lamp 14) and close to the stall (17) and well (20) tiles. Flat-fill coverage is 0%, so there are no large single-colour areas. Dark edge pixels are 0% neutral, so the outline leans toward a dark blue-grey of the lead rather than black. At this size I can see roughly 4-5 lightness steps, with a highlight face and a darker side face. The surface texture is modest: some speckle, not the per-stone or per-tile detail of the well. It would sit next to the references without looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18217
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main weight block (upper body)",
+      "rows": "10-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "handle ring on top",
+      "rows": "6-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark checkered middle band and light base (front face)",
+      "rows": "19-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 10-15 form a 12px-wide pale blue band with a bright 1-row edge line at row 16 (L=208 in all three columns). Rows 17-18 are dark eave shadow (L=34-99). Below that the front face is the dark checkered band at rows 19-24 and the light base at rows 25-29, about 11 rows in total. The silhouette widens from 12 to 14px going down, with no isometric side face. The handle ring at rows 6-9 is a small detail. The top band is somewhat ambiguous because it could be read as a face, but the edge line plus shadow structure matches evidence (a)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small lead-weight block with a handle on a base. It has a median of 15 colours per 16x16 tile, above the hedge (10) and close to the cheese stall (17) and roofed well (20). Flat-fill coverage is 0%, so no large single-colour areas. Dark edge pixels are 0% neutral, so the outline carries a tint rather than being a black sticker line. Its 18 distinct colours are fewer than the large stall and well (38-40) but in line with the bench, hedge and lamp (11-14), which suits a small single-material prop. By eye, the metal has roughly 5 lightness steps: highlight, light, mid, dark and deep, with edge highlights and speckle. It does not look thinner or flatter than the same-kind references. The image is small, so the step count is an estimate.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23903
+  }
+ ],
+ "decidedAt": "2026-10-20T06:28:15.446Z",
+ "cells": {
+  "16": [
+   "1480ce682b2d38d5",
+   "222e26875d809e91"
+  ],
+  "24": [
+   "1541da3660a384b8",
+   "2c8adc9511cc91ee",
+   "6178173e7073783e",
+   "772ae037c73da117",
+   "7917585ec08c9288",
+   "81754ae354807eb0",
+   "8c1d17d0cb9aac48",
+   "af11ecf441a4d01b",
+   "afc1340ec2ec0b0b",
+   "c867bfc426a823c9",
+   "d902ede4eb198327",
+   "e37ef307067d1201"
+  ],
+  "32": [
+   "28b9e1501ba4c2d3",
+   "36c71a6dc2322a96",
+   "7a1e6982844298c6"
+  ],
+  "48": [
+   "2165346439d58647",
+   "8c5cd006bcc40fa0",
+   "9b0176f3ea881909",
+   "c9794531e67a6d80",
+   "df6cfb5f1a0520c4",
+   "f69b5d25af240d06"
+  ]
+ }
+}

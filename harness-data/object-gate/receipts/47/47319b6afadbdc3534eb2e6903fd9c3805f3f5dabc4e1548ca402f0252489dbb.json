@@ -1,0 +1,294 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "47319b6afadbdc3534eb2e6903fd9c3805f3f5dabc4e1548ca402f0252489dbb",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "경비병 등불 빛(빛줄기 끝) (guard lantern light end)",
+ "label": "atlas_biome_interior/plus/guard lantern light end",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 239,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "light pool (oval glow on ground)",
+      "rows": "3-10",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a small oval blob spanning rows 3-10. Its width profile is 1,4,6,9,7,7,7,3, so it widens and then narrows. The whole shape is one flat glowing patch with soft warm yellow-to-orange shading and no vertical face, no front-edge line, no eave shadow and no legs. There is no front face (0 rows), so it reads as a flat decal on the ground, which fits the 'flat' kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny round blob (about one tile or less) on a dark grey background, not a 4x3-tile ground patch like the grass and paving references. It has only 4 distinct colours against 80 for grass and 7 for paving. The per-tile median of 0 means it is smaller than one tile, so I judged by eye. It shows a soft radial tan disc with 2-3 lightness steps, no grain, no tile structure and no tinted outline. The references carry grass tufts in several greens and cobble stones shaded one by one, so the candidate looks much thinner and flatter. It does not read as a ground surface at all, and it is not comparable to the references in structure or richness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 16961
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "light pool disc (flat floor decal)",
+      "rows": "3-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a rounded oval blob (widths 1,4,6,9,7,7,7,3 over rows 3-10) that is a flat glowing light patch with soft yellow/orange shading. It has no front face, no vertical wall, no edge line and no eave shadow. It is a flat floor decal seen from above, which matches the 'flat' kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny round blob of about 4 colours (tan/beige radial dot) on a dark grey background, nowhere near a 4x3-tile ground patch. It has 4 distinct colours against 80 for the grass reference and 7 for the paving reference. The median per-tile count is 0 because the piece is smaller than one tile, so I judged by eye. It reads as a small sticker-like orb with a soft gradient and no grain, tufts or tile structure. It carries far less detail than either reference ground surface. The measured 0% flat-fill coverage only reflects its small size. The outline is effectively absent: the edge is a soft darker rim, not a tinted outline. It does not work as a ground patch matching the grass or paving references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 24945
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "light pool (oval glow on the ground)",
+      "rows": "3-10",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a single oval about 9 px wide and 8 rows tall (rows 3-10). Width goes 1, 4, 6, 9, 7, 7, 7, 3, so it widens and then narrows, which is an ellipse. The column scans show only soft, light-colored gradient bands (#fff8b0, #efdd7d, #ffd8a0, #f4b370). There is no front-edge line, no eave shadow and no vertical front face, so it is a flat glow decal lying on the ground. That matches the declared kind, flat."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny round blob of about 4 colours (tan/beige) on a dark grey background. It is nowhere near a 4x3-tile ground patch. The grass reference has 80 colours and 26 per tile, and the paving reference has 7 colours with 5-6 steps of stone shading. The candidate has only 4 colours in total and a soft gradient disc with no grain, texture dots or tile structure. The measured flat-fill coverage of 0% only reflects its small size, not richness. It does not read as a ground surface patch, and next to the references it looks thinner and flatter. It has no outline to compare. The light is a sparse object, so I judged by eye rather than by the per-tile median. By eye it is still much simpler than the references, with about 3 visible steps against 5-6.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 20521
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "light pool (glowing disc on ground)",
+      "rows": "3-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a small roughly elliptical glowing disc (rows 3-10, width profile 1,4,6,9,7,7,7,3) with a warm yellow-to-orange gradient. It has no front face, no vertical faces, no eave line and no shadow band. It is a flat decal lying on the ground and seen from above, so it fits the flat kind. It has no front face, so it reads as top_down_slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny round blob of about 4 colours on a plain dark background. It is not a 4x3-tile ground patch like the grass and paving references. Its distinct colours (4) are far below grass (80) and paving (7). It has no per-tile information and no grain, tufts or stone shading. It shows only a soft radial gradient of 3 tan steps, against 5 or more steps in the references. It has no outline, so tint cannot be judged. The 0% flat-fill figure only reflects how small the object is. By eye it is a thin, sticker-like dot, much sparser than the references' textured surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 19917
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:38.690Z",
+ "cells": {
+  "16": [
+   "2e282ab9085409b9"
+  ],
+  "24": [
+   "03d75ec17be935a9",
+   "0b96f80cdcea4612",
+   "12eaabf76934363f",
+   "1ad6abb49fd8c165",
+   "228b857e153d0220",
+   "a4246f6147949407"
+  ],
+  "32": [
+   "0957598de8cbc676",
+   "138d27ceabac2094",
+   "5d4c6689376efabf",
+   "7198520fdc4d4659",
+   "a028f2d88875f418",
+   "e6489b3efadae273"
+  ],
+  "48": [
+   "1fb96b69292bdb59",
+   "546ee8c7c2c30874",
+   "58f829e8d62255f6",
+   "6cec9eb0663a6587",
+   "72a1686814b20428",
+   "7f8a871cd766eb7d"
+  ]
+ }
+}

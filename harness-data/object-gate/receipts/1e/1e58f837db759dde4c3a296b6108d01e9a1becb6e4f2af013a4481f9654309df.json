@@ -1,0 +1,285 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1e58f837db759dde4c3a296b6108d01e9a1becb6e4f2af013a4481f9654309df",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "썩은 판자 다리(금 감) (plank bridge cracked)",
+ "label": "atlas_biome_interior/plus/plank bridge cracked",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 20,
+  "tileColorsP90": 20,
+  "darkV5": 30,
+  "nearBlackEdge": 0.02,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper plank section",
+      "rows": "0-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower plank section",
+      "rows": "9-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The bridge is drawn as two broken plank sections seen straight from above. Rows 0-5 are 14 px wide and rows 9-15 are 13 px wide, with a narrow gap of 3-4 px at rows 6-8 where the planks crack apart. Each section is planks, nail marks and a dark crack, with a dark 1-row outline at the bottom (row 5, row 14). There is no front-edge line, no eave shadow and no vertical south face of 3 or more rows. The scan shows no ellipse and no contents. It is a flat plate, which matches the 'flat' kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, roughly one-tile prop, and it is hard to make out at 2x. The measured facts carry most of this judgement. It has 20 distinct colours and a median of 20 per 16x16 tile, which matches prop-well-roofed (20) and exceeds prop-hedge (10) and prop-stall-cheese (17). Flat-fill coverage is 0%, so there are no large single-colour areas. None of its dark edge pixels are neutral (0%), so the outline is tinted. By eye it reads as dark brown beside the wood, not a black sticker line. The planks show several wood tones, plus grain and crack variation, giving about 5 lightness steps against roughly 6 on the references. Its structure is simple, but it is not thinner or flatter than the references of the same kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19431
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper plank segment",
+      "rows": "0-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower plank segment",
+      "rows": "9-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The bridge is drawn as two broken plank segments (rows 0-5 and 9-15) with a narrow gap and a few hanging splinters (rows 6-8, width 3-4). It is seen straight down. The planks run across the full 14-px width, with only 1-row dark outlines at the bottom edges (row 5, rows 14-15). There is no front face of 3+ rows, no eave shadow and no vertical face, so it is a flat plate. That matches the 'flat' kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, roughly single-tile wooden plank prop, so I judged it mostly from the measured facts. It has 20 distinct colours, all within one 16x16 tile, which is above the bench (14), hedge (11) and lamp (14) and equal to the roofed well's per-tile median of 20. Flat-fill coverage is 0%. None of its dark edge pixels are neutral (0%), so the outline leans brown, which fits dark_material_tone rather than a black sticker line. By eye, the wood shows several lightness steps and grain or crack variation, with no large flat areas. It is less elaborate than the stall or well, but it is as rich as the simple same-kind props (bench, hedge) and does not look thinner or flatter than them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19485
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper plank segment (planks seen from above)",
+      "rows": "0-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower plank segment (broken, narrowing to the bottom)",
+      "rows": "9-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "Two plank pieces are separated by a transparent gap at rows 6-8, which is the crack. The upper piece is a 14px-wide plank plate over rows 0-5, with dark outline and shadow at rows 4-5 (L about 50-85). The lower piece, rows 9-15, is a similar plank plate that narrows from 13px to 8px at the bottom. Both read as flat plank surfaces seen from above. There is no ellipse, no roof plane, and no 3+ row vertical south face, so it reads as a flat plate. That fits the 'flat' kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is small and hard to read on the board, so this leans on the measured facts. It has 20 distinct colours, and its one full 16x16 tile holds all 20, the same as prop-well-roofed (20) and above prop-hedge (10) and prop-stall-cheese (17). Flat-fill coverage is 0%, so no 5x5 block is a single flat colour. 0% of its dark edge pixels are neutral, so the outline is tinted and consistent with a dark brown beside wood, not a black sticker line. By eye, the planks show several brown steps, with light and dark boards and a visible crack. This reads as grain and variation, not a one-shade fill with an outline. The wood ramp looks like about 5 steps against 5-6 in the references. It would sit acceptably beside the references, though the small size limits how much I can verify.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 31443
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper plank segment",
+      "rows": "0-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower plank segment",
+      "rows": "9-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is two broken plank pieces seen straight from above, with a narrow gap at rows 6-8 where the width drops to 3-4 px. Rows 0-5 are 14 px wide and rows 10-13 are 13 px wide. The planks are shown only as flat wood texture with grain and crack lines. There is no front-edge line, no eave shadow and no vertical south face of 3 or more rows. This fits a flat ground decal, which is the stated kind, so the drawing is a top-down slab with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, roughly one-tile cracked plank piece, so I judged it mostly on the measured facts, since the board image is tiny. It has a median of 20 distinct colours per 16x16 tile, equal to the richest references (well 20, cheese stall 17, hedge 10). Flat-fill coverage is 0%, so there are no large single-colour areas. 0% of its dark edge pixels are neutral, so the outline is tinted, a dark brown beside the wood, as in the Beodeul pieces, and not a black sticker line. Its 20 total colours are fewer than the large props (38-40) but about equal to the small ones (11-14). By eye the planks show several brown steps with grain and crack marks, though possibly fewer steps than the roofed well. A careful artist would accept it next to the references without it looking flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14711
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:38.683Z",
+ "cells": {
+  "16": [
+   "06d3f66eef80e7b2"
+  ],
+  "24": [
+   "694175580499a3eb",
+   "6dfd4309e9619a69",
+   "9054af2e8e62180a",
+   "a2f9674256d5d5c5",
+   "ce2f470f85db371c",
+   "cf104e6f1fdb1f50"
+  ],
+  "32": [
+   "1a0775517379e44b",
+   "1f54e133dce82cff",
+   "55c514a4b9c0d02f",
+   "6507ede047506f23",
+   "96ad4fa16b57919c",
+   "cd4fe46a1dc63c01"
+  ],
+  "48": [
+   "32b2557a15bf05fa",
+   "49eec1b4cecea849",
+   "64c11fc4624a854c",
+   "8077495779c27997",
+   "bcc64ef363842f81",
+   "d79c4db9564a94c6"
+  ]
+ }
+}

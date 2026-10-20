@@ -1,0 +1,294 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "287ce419f9928600806054597a0e4ddeb10a661b3006ce7b4cc473e5a72231d6",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "경비병 등불 빛(빛줄기) (guard lantern light)",
+ "label": "atlas_biome_interior/plus/guard lantern light",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 2
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 255,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "light pool decal (checkered, mostly transparent)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a flat checkered translucent floor decal with scattered opaque pixels (widths 1-3 on rows 1, 10, 13, 14). It has no raised body, no front-edge line, no eave shadow and no front face of 3+ rows. That matches a flat ground decal, which fits the 'flat' kind, and it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 1,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate has 1 distinct colour, against 80 for the grass reference and 7 for the paving reference. That means one flat tone with no shading ramp, no grain or texture dots, and no tile variation. It is also smaller than one 16x16 tile, so the per-tile median is 0, but the 1-colour count shows it is flat by eye as well. The 0% flat-fill figure only reflects the piece being too small for a 5x5 block, so it is not evidence of richness. There is no outline, so the 0% neutral edge share says nothing about outline quality. The grass reference has about 5 green steps with clumps and tufts, and the paving reference has individually shaded stones, so the candidate sits far below both. A light-shaft ground patch laid 4x3 would need a stepped glow falloff and some grain, and this has neither.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 16547
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "light beam decal (sparse checkered translucent pattern)",
+      "rows": "0-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a flat checkerboard-like pattern of muted tan and brown tiles covering the whole 16x15 area, with no outline, no front face, no eave shadow and no ellipse. The silhouette width scan shows almost no opaque pixels (a few scattered ones), which indicates a faint translucent light decal. It has no vertical face (fewer than 3 rows), so it reads as a flat top-down decal, which is consistent with a flat object lying on the ground."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 1,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny sand or brown swatch with a single distinct colour, against 80 colours in the grass reference and 7 in the paving reference. It has no shading ramp, no texture dots or grain and no outline. The 0% flat-fill figure and the 0 per-tile median come from the piece being smaller than one 16x16 tile, so they do not count in its favour. By eye it reads as one uniform fill, with nothing like the grass tufts or per-stone shading of the references. It also does not look like a 4x3-tile light-beam ground patch. It is much flatter and less informative than either reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 12006
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "light beam decal (checkered translucent glow patch)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "Image 1 is a uniform checkerboard of tan and olive tones across the whole tile, like a dithered translucent light patch. It has no outline, no front-edge line, no eave shadow and no vertical face. The silhouette width scan is nearly empty (only a few opaque pixels at rows 1, 10, 13 and 14), which fits a sparse, semi-transparent decal. With no front face of 3 or more rows, it reads as a flat top-down plate. That matches the 'flat' kind, a floor decal seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 1,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 1,
+    "evidence": "The candidate is a single flat tan swatch with 1 distinct colour. It is smaller than one 16x16 tile, so the per-tile median is 0 and I judged by eye. The reference grass has 80 colours and 26 per tile, with clumps and tufts in several greens. The reference paving has 7 colours and stones shaded one by one. The candidate has one lightness step against about 5-6 in the references, no outline, and no grain, dots or variation. The 0% flat-fill figure is misleading because the swatch is under 5x5 source pixels at this size. By eye it is one uniform colour with no gradient or falloff, so it reads as a placeholder rather than a lantern light patch. It is far below the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 14560
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "light beam decal (sparse faint pixels)",
+      "rows": "1-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is almost empty: 1 px wide at row 1, 2 px at row 10, 1 px at row 13 and 3 px at row 14, with nothing in between. The column scans return no opaque runs. There is no body, no front-edge line, no eave shadow, no ellipse and no front face of 3 or more rows. It reads as a faint flat floor decal or light patch with no height, which fits the 'flat' kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 1,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate has only 1 distinct colour, against 80 for the grass reference and 7 for the paving reference. It is a single tan or brown swatch with no shading ramp, no grain and no dots. Its 5x5 flat-fill coverage is reported as 0%, but that figure is misleading here: the piece is smaller than one 16x16 tile and measures 0 colours per tile. By eye the whole area is one flat colour. It has no outline, so the 0% near-neutral edge share carries no information. The reference grass has about 5 green steps and tufts, and the paving has individually shaded stones. The candidate is a plain sticker-like fill and is far below both references. A 4x3 tile light-beam ground patch would also be expected to show layered light falloff, which is absent.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 13190
+  }
+ ],
+ "decidedAt": "2026-10-20T05:59:10.985Z",
+ "cells": {
+  "16": [
+   "7e781f609fd35bd4"
+  ],
+  "24": [
+   "134971edbf9d0ed6",
+   "56a750e7956fdbe3",
+   "886dab932d8f5391",
+   "ac95306d925fbd10",
+   "ea2592d4b1f1321b",
+   "efd64ae924d925e7"
+  ],
+  "32": [
+   "26411b501f28ead4",
+   "9d147dff99c24a0f",
+   "ae25ee67b78774e1",
+   "c28cb0fd8f84550e",
+   "ce839cb307e34809",
+   "fef66827fdde4580"
+  ],
+  "48": [
+   "17563c8e00b4f414",
+   "1efaf66253795583",
+   "2aec8e7c8b5764c4",
+   "37977502ce197695",
+   "7e6f2c6c5d2c6b6b",
+   "e2b1338fc0892942"
+  ]
+ }
+}

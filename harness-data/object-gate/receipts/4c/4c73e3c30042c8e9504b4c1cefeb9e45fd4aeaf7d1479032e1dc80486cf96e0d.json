@@ -1,0 +1,258 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4c73e3c30042c8e9504b4c1cefeb9e45fd4aeaf7d1479032e1dc80486cf96e0d",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "경비병 등불 빛(빛줄기) (guard lantern light)",
+ "label": "atlas_biome_interior/plus/guard lantern light",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 231,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "light pool (whole decal)",
+      "rows": "0-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a near-uniform 15px-wide patch from rows 1-14, with narrower rows only at row 0 (8px) and row 15 (9px). It is a soft glowing light patch with mottled yellow and orange shading and no front-edge line, eave shadow, or vertical face. It has no front face and is a flat decal seen from above, which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a speckled sand-coloured light patch with no outline, so there is no black sticker line (0% neutral dark edge pixels). It has 0% 5x5 flat-fill coverage, and the dithered grain and darker edge speckle show per-pixel variation. Its median of 9 colours per tile is close to Beodeul's median of about 10 and above the paving reference's 7. It is well below the grass reference's 26 per tile and 80 colours in total. Its 9 colours give roughly 4 lightness steps, against 5 or more on the references. I judge this acceptable for a simple light-glow ground overlay, because it is not a flat fill and it matches the paving reference's level of detail. It would be thin beside the grass, so it is a borderline pass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22593
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "light pool / beam decal",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a near-uniform 15px-wide block from rows 1-14, with a narrower row 0 and row 15 (8-9px). It has no front face, no vertical faces, no edge line and no eave shadow. Colors are soft, mottled yellow and orange glow tones with no structure. This is a flat floor decal of light seen from above, with no standing volume, which matches the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small light-beam ground patch: a pale beige base with speckle dots and slightly darker, warm-tinted edges. It has 9 distinct colours and a median of 9 per tile. That is below the grass reference (26 per tile, 80 colours) but above the paving reference (7 per tile, 7 colours), which is itself an accepted Beodeul ground piece. Flat-fill coverage is 0%, and 0% of the dark edge pixels are neutral, so there is no black sticker outline. The speckle gives some grain and there are about 4 lightness steps, a little shallower than the references' 5. It is simple but not flat, and a careful artist would accept it next to the paving reference as a light overlay.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22197
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "light pool decal (whole sprite)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The sprite is a roughly 15x16 translucent-looking glow patch with soft yellow, orange and white pixel noise and no outline. The silhouette is 15 wide for rows 1-14, with narrower rows only at 0 and 15. There are no vertical faces, legs, edge lines or eave shadows. It reads as a flat ground decal seen from above, which matches the 'flat' kind, with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a speckled sandy-beige light patch with about 5 lightness steps and visible dot grain. There are no flat 5x5 areas (0% coverage). There is no hard outline, and its dark edge pixels are 0% neutral, so it has no sticker look. It has a median of 9 colours per tile, close to Beodeul's typical median of about 10 and above the paving reference's 7. Its 9 distinct colours in total are far fewer than the grass reference's 80, so it is a little lower in variety. The paving reference is similarly sparse at 7 colours, and a light-beam ground overlay is naturally simple. A careful artist would accept it next to the references without it looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21567
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "light patch (whole decal)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a near-uniform 15px-wide block from rows 1-14, with narrower rows only at row 0 (8px) and row 15 (9px). It is a soft glowing patch with mottled yellow and orange tones. The column scans show only gradual lightness variation, with no front-edge line, no eave shadow, no vertical face and no legs or supports. It has no front face, so it reads as a flat decal seen from above, which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small sandy light-pool patch with only 9 distinct colours across the whole piece. That is about 4 lightness steps with light speckle and no clumps or per-detail shading. Its 9 colours per tile is close to the paving reference (7 per tile, 7 total), but well below the grass reference (26 per tile, 80 total). Paving is a structured hard surface that reads richly through its stone shapes, whereas this soft glow patch has no comparable structure. Flat-fill coverage is 0%, so there are no large flat areas. It has no outline, and its dark edge pixels are 0% neutral, so it is not a sticker look. The main weakness is shallow ramp depth and texture, with the whole patch resting on a few close tones. Next to the grass reference it looks thinner, and with the doubt rule I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 23830
+  }
+ ],
+ "decidedAt": "2026-10-20T06:37:20.797Z",
+ "cells": {
+  "16": [
+   "7bf7a79338e6db42"
+  ],
+  "24": [
+   "12eec7f4c5a895ca",
+   "1332ce19ff2202bf",
+   "2dcb92d87a68981e",
+   "aea37e90171c6b90",
+   "bc08b4d5a7767a23",
+   "d88eddf52ea28a3e"
+  ],
+  "32": [
+   "0763a1125f2db7dc",
+   "2b3fd514eb209ce0",
+   "3e390e2d53e8c0c0",
+   "4f2e973fa6e3f571",
+   "e7e6f28ac65516e9",
+   "ee06d19a80d47223"
+  ],
+  "48": [
+   "0af00ddfda8511a5",
+   "3e0b5aeaad815e5a",
+   "906b05943cd01e69",
+   "989fd42cc0d163f6",
+   "d4dc57bd0b7c3449",
+   "d7620daaa8d37157"
+  ]
+ }
+}

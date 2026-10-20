@@ -1,0 +1,257 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7f67f0a440b60c661e4176455defbebfac391e9cbf7d75b5e9abab1bf83255cc",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "썩은 판자 다리(떨어짐 2) (plank bridge falling 2)",
+ "label": "atlas_biome_interior/plus/plank bridge falling 2",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 42,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scattered plank debris fragments",
+      "rows": "3-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a sparse scatter of a few brown pixels (widths 1-7 across rows 3-14) forming a diagonal debris cluster, with no solid body, no front-edge line, no eave shadow, and no ellipse. It has no front face of 3+ rows, so it reads as a flat decal-like scatter lying on the ground, which matches the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a very small falling-plank debris sprite, about 9x9 source pixels, so the per-tile median of 0 says nothing here and I judged density by eye. It uses 10 distinct colours in that tiny footprint. That is close to the hedge (11) and bench (14) references, and clearly fewer than the stall (40) or well (38), which are far larger pieces. Dark edge pixels are 0% neutral, so the outline leans brown, the dark tone of the wood, and is not a black sticker line. Flat-fill coverage is 0%. The wood shows about 4 lightness steps with some grain and splinter variation, against about 5 on the bench and stall. It is slightly thinner than the references but is not flat, and a careful artist would accept it beside the bench and hedge, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14982
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scattered plank debris fragments",
+      "rows": "3-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a sparse, diagonal scatter of a few brown pixels (width 1-2 at rows 3-6, widest 7 at row 7, tapering to 1 by row 13-14). It is broken, fragmentary plank debris lying flat on the ground. There is no front-edge line, eave shadow, ellipse, or roof plane, and no vertical front face of 3+ rows. It reads as a flat decal-like scatter with no height, which is consistent with the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small debris sprite of rotten planks, under one tile in size. Its measured facts are 10 distinct colours, 0% flat-fill coverage and 0% neutral dark edge pixels. That puts it close to the hedge (11 colours) and the thin props (bench 14, lamp 14), and clear of the 5x5 flat-fill problem. The outline pixels lean brown rather than neutral black, so it is a dark tone of the wood and not a sticker line. By eye there are about 4 wood steps (dark brown, mid, light, highlight) with broken plank ends and grain dots. That is a little shallower than the 5-6 steps in the bench and well, but fair for a tiny fragment. The per-tile median of 0 is expected for an object this small, so I did not use it against the piece. A careful artist would accept it beside the references, though it is slightly thinner than the bench.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13793
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scattered plank debris",
+      "rows": "3-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The sprite is a sparse, irregular scatter of brown pixels with a silhouette width of 1-7 px across rows 3-14. It reads as fragments of a broken plank bridge lying flat on the ground. It has no front-edge line, no eave shadow, no ellipse and no vertical face of 3 or more rows, so it reads as a flat decal. That matches the 'flat' kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a tiny, sparse fragment (a few broken planks), so the per-tile median of 0 says nothing about it and I judged density by eye. It has 10 distinct colours, close to prop-hedge (11) and prop-bench-wood (14). That is plausible for a piece this small. Flat-fill coverage is 0%, so there are no flat fills. 0% of its dark edge pixels are neutral, so the outline leans brown, like the wood it borders, rather than being a black sticker line. That matches the reference habit of using the dark tone of the adjacent material. Its wood ramp looks like about 4 steps (dark brown, mid, light, a few highlight grains) against about 5 on the references, and the plank grain is only suggested. It is a bit thinner than the bench, but a careful artist could accept it next to the references without it looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14450
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scattered plank debris fragments",
+      "rows": "3-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a sparse scatter of brown pixels (silhouette width 1-2 px at rows 3-6, widest 7 px at row 7, tapering to 1 px by row 14). It has no solid body, no front-edge line, no eave shadow, no ellipse, and no vertical front face of 3+ rows. It reads as flat debris or a decal lying on the ground, which matches the 'flat' kind. It has no volume, so it is a top-down slab with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a tiny debris cluster of broken planks, only about 10x8 source pixels, so the per-tile median of 0 says nothing about it and I judged by eye. It uses 10 distinct colours in that small area, about as many as the whole hedge reference (11) and close to the bench and lamp (14). 5x5 flat-fill coverage is 0%, so there are no flat blocks. None of its dark edge pixels are neutral (0%), and by eye the outline leans dark brown beside the wood, so it reads as dark_material_tone and not as a black sticker line. I count about 4 lightness steps in the brown wood ramp, against 5-6 in the references, so shading is slightly shallower. Grain and splinter dots are visible but limited by the size. It does not look thinner or flatter than a small prop should, so I pass it, but it is not as rich as the larger references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14262
+  }
+ ],
+ "decidedAt": "2026-10-20T06:28:15.430Z",
+ "cells": {
+  "16": [
+   "0c272a83d434d968"
+  ],
+  "24": [
+   "31de4ed81155242b",
+   "3a8cdf827061cda9",
+   "7b4991f1628744f2",
+   "a4725ec0e242bb90",
+   "e94a2840d0a6bad6",
+   "f6b0e3b47195f432"
+  ],
+  "32": [
+   "43857d6bea80bd60",
+   "4b5c604d4d2eb041",
+   "5af962267dba4007",
+   "89ff79e8bf76a5f7",
+   "aa87846f749d0c7c",
+   "aba6aed706e756dc"
+  ],
+  "48": [
+   "99c926f41453ffd9",
+   "b2b815f128723fd7",
+   "baef8da68a0b763b",
+   "c0214d34418880b5",
+   "c2c2ce47e6735b0b",
+   "fc7425caebd99139"
+  ]
+ }
+}

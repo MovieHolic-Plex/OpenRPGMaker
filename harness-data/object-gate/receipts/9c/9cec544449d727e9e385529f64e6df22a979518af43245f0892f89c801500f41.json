@@ -1,0 +1,302 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9cec544449d727e9e385529f64e6df22a979518af43245f0892f89c801500f41",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "저울 추 받침(추 5 — 가장 무거운 납 덩이) (weight stand 5)",
+ "label": "atlas_biome_interior/plus/weight stand 5",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 17,
+  "darkV5": 40,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lead weight block (top plane with handle bump)",
+      "rows": "13-18",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-21"
+     },
+     {
+      "part": "stand base / front face with slots",
+      "rows": "20-29",
+      "evidence": "none",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette tapers at rows 12-16 (widths 4, 6, 10, 12) into a block 14 px wide. In column x=8, rows 16-18 are a mid-gray band, and row 19 (L=206) is a bright front-edge line. Rows 20-21 below it are darker (L=79, eave shadow). At x=4 and x=11 the same pattern appears: a lighter band over rows 15-18, an edge line at row 19, then a dark face. The front face runs from row 20 to row 28 and has slots, a mid-line at row 22, and a light base line at row 28. That is about 9 rows, so the body has a top surface and a front face of 3+ rows. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small grey lead-weight block with a ring handle on top. It has about 5 lightness steps on the body: a highlight edge, light, mid, dark and a deep shadow side. The outline leans blue-grey, matching the metal beside it, rather than being a neutral black line. The facts agree: 0% of dark edge pixels are neutral, against 100% for the lamp reference. Its 17 distinct colours per tile match the cheese stall (17) and are close to the roofed well (20), and it is above the hedge (10). Flat-fill coverage is 0%. Its 19 distinct colours in total are reasonable for a piece this small. The surface carries some highlight and shadow variation, though it is less textured than the roofed well or cheese stall. Placed next to the references, it would not look thinner, flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17183
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main body top plate (lead weight lid)",
+      "rows": "15-19",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-21"
+     },
+     {
+      "part": "small knob/handle on top",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Columns x=4 and x=8 show a light band at rows 15-18 (L 137-171) ending in a bright 1-row front-edge line at row 19 (L=206). Dark eave-shadow rows 20-21 follow (L 33-103), so evidence (a) holds. Below that is the front face, rows 20-29, with a dotted row at 22, dark panel rows 23-27 and a light base line at 28. The width profile grows from 4 to 14 over rows 12-17, then stays at 14 through row 28. The small knob on top (rows 12-13) is a minor detail. No receding side face is drawn; the dark right-hand columns are shading on the south face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small lead-weight block, a single prop that is a plausible match for the reference kind. The measured facts support it: 19 distinct colours (the bench and lamp have 14), a median of 17 colours per full tile (equal to the cheese stall, above the hedge at 10), and 0% flat-fill coverage. 0% of its dark edge pixels are neutral, so the outline is tinted, a dark bluish-grey version of the metal rather than a black sticker line. By eye it has a highlight, light, mid, dark and deep ramp on the body with a lit top edge and a shaded underside, which is about the same step count as the references. Texture is modest (some speckle and facets) but there are no large flat areas. It would sit acceptably next to the bench and lamp without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18320
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main body top (lid band)",
+      "rows": "15-19",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-21"
+     },
+     {
+      "part": "top handle/knob (small rounded hump)",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The body is 14 px wide from row 17 to row 28. In columns x=4, 8 and 11, a mid-tone band runs over rows 15-18 and ends in a 1-row light front-edge line at row 19 (L about 206 at x=8). Rows 20-21 below it are much darker and read as eave shadow. The front face runs from row 20 to about row 29 with a dark panel, a lighter row 22, and a light base line at row 28. The small rounded hump at rows 12-14 is a handle, not the main body. The top band is a 4-row surface, so the object reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a single lead-weight prop, a rounded metal block with a handle ring on top. It has 19 distinct colours and a median of 17 colours per 16x16 tile, which matches the richer references (stall 17, well 20) and beats the hedge (10) and bench (0, sparse). Flat-fill coverage is 0%. Dark edge pixels are 0% neutral, so the outline leans toward a tinted dark slate or blue-grey instead of a uniform black sticker line. I judge by eye that it has about 5 lightness steps on the metal, with a highlight on the shoulder and a darker lower side. It carries some speckle and variation, though less texture than the well stones or the stall. At this size it reads as an equal-quality prop next to the references, not thinner or flatter. Its colour count is lower than the well and stall, but it is a single small object of one material, so that is acceptable.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15612
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main body top plane (lead weight block)",
+      "rows": "15-18",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-21"
+     },
+     {
+      "part": "small handle/knob on top",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The body is 14px wide from row 17 to row 28. Rows 15-18 form a mid-tone top band (L≈103-137). Row 19 is a bright 1-row front-edge line (L≈206 at x=8, 171 at x=11), followed by darker eave-shadow rows 20-21 (L≈79 at x=8, 33 at x=11). Below that, rows 20-28 are the front face, with a dark slot/stripe pattern and a light base line at row 28. The narrow rows 12-15 are only a small handle on top. The darker right side of the front face looks like shading, not a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small grey lead weight on a stand, about one tile in size. The measured facts support it: 17 distinct colours in its median full tile, equal to prop-stall-cheese and close to prop-well-roofed (20) and above prop-hedge (10). Flat-fill coverage is 0%, and 0% of its dark edge pixels are neutral, so the outline leans toward a tinted dark tone of the metal rather than a black sticker line. By eye, the body shows a highlight, light, mid, dark and deep ramp with a lit top edge and a shadowed base. It is a little simpler than the large multi-material props, but only because it is small, and it is not thinner or flatter than the references. Its 19 total colours are well below the 38-40 of the big props, but that follows from its size. A careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16498
+  }
+ ],
+ "decidedAt": "2026-10-20T06:45:51.591Z",
+ "cells": {
+  "16": [
+   "39be4de64dd7215d",
+   "6804bf3291e06c24"
+  ],
+  "24": [
+   "14260a9336a2b1f4",
+   "3b9904f44f93aeff",
+   "70adf22b4ad0d0ec",
+   "7293b98ccca60cca",
+   "a1640634fd117213",
+   "bf2965dcd45120c7",
+   "c94b4ed40bb87ef3",
+   "d3c65813d1e6ed5f",
+   "d3f8dff37e3e0397"
+  ],
+  "32": [
+   "054db4404dcc0790",
+   "d7c083b1ce7de68a",
+   "eaa341d68c299a2c"
+  ],
+  "48": [
+   "0993e8b0faba0666",
+   "7bfa79f11c491dfc",
+   "8ee7b2b667734b0f",
+   "c69cdd3daa41900e",
+   "fb5adc9872cd917a",
+   "fbe7e1dcc21a267c"
+  ]
+ }
+}

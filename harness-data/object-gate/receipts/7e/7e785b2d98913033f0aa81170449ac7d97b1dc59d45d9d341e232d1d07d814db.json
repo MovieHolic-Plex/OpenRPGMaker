@@ -1,0 +1,340 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7e785b2d98913033f0aa81170449ac7d97b1dc59d45d9d341e232d1d07d814db",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "저울 추 받침(추 4 — 큰 무쇠) (weight stand 4)",
+ "label": "atlas_biome_interior/plus/weight stand 4",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 22,
+  "nearBlackEdge": 0.53,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "iron weight top (light grey slab)",
+      "rows": "11-15",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "weight front face",
+      "rows": "16-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden base",
+      "rows": "25-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 11-14 form a light grey top band. Row 15 is a bright (L=215) front-edge line across the columns. Darker rows 16-20 below it act as eave shadow and front face. The front face continues down through a black band at row 21, a checker row at rows 22-23 and the brown wooden base at rows 25-28, about 13 rows in total. The width grows from 9-11 at the top to 14 at the base, so this is a standing block with a visible top, not a flat slab. The wooden base reads as a plinth face, which is acceptable."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small cast-iron stand. Its measured density is acceptable: 12 colours per tile (hedge has 10, stall 17, well 20), 10% flat-fill coverage (stall has 13%), and 13 distinct colours (lamp has 14, the larger stall and well have about 40). So it is not flat or sparse by the numbers. The weak point is the outline. 100% of its dark edge pixels are neutral, with no tint, which gives a uniform near-black outline around the whole silhouette. The lamp-crook reference is also neutral iron, so some neutrality is defensible for metal. But the stall, well, hedge and bench references all use tinted dark-material edges, and the candidate reads as a dark-outlined sticker. With only about 13 colours spread over outline, body and display, the iron ramp appears to have about 4 steps, against about 5-6 in the references. The board image is too small to show the per-surface grain a careful artist would expect on cast iron. Because of the neutral outline and the slightly shallow ramp, and with the rule to fail when in doubt, the piece does not clearly meet the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 22766
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "iron weight top",
+      "rows": "11-15",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "wooden base",
+      "rows": "25-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The column scans show a light gray top band at rows 11-14 (L 126-170). It ends in a bright 1-row front-edge line at row 15 (L=215, #d0d8e0). Darker face rows follow at 16-20 (L 61-82), and the dark rows under the edge line act as eave shadow. The front face continues below the top as a gray body, a dark band, and a brown wooden base at rows 25-28, about 13 rows in total. The silhouette widens from 11 to 14 px at the base. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small cast-iron block, about one tile in size. Its 12 colours per tile is at the hedge's level (10) but below the stall (17) and well (20). Its 13 distinct colours match the lamp and bench (14), but are far below the stall and well (38-40). Flat-fill coverage of 10% is acceptable and close to the stall's 13%. The dark edge pixels are 100% near-neutral. The lamp reference also has a neutral outline, but it is a thin pole where the neutral line reads as part of the iron. Here the whole silhouette is wrapped in a uniform neutral dark line, which gives the sticker look. The body ramp reads as about 4 steps (a light top, mid and dark grey faces, and a dark base), and the surface shows only a few grain or highlight dots. It is clean but flatter and thinner than the references' material-toned outlines and per-piece shading. Since it is a close call and the rule is to fail when in doubt, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 20838
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "iron weight block (upper body)",
+      "rows": "11-15",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "wooden base/plinth",
+      "rows": "25-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The iron block has a light top band at rows 11-15, ending in a bright 1-row front-edge line at row 15 (L=215 in all three scanned columns). Darker front-face rows follow, with the shadow at rows 16-17 grading to about L=61-82. The front face runs from row 16 down to the wooden base at rows 25-28, which is a low plinth drawn as a vertical face. The silhouette widens from 11 to 14 px at row 19, so the lower part reads as a base. No isometric side face is drawn. The pattern matches the cabinet 'top 5 + edge + eave' reference rather than the 'front elevation' or 'rim only' ones."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small grey cast-iron stand, roughly one tile in size. Its 12 colours per tile and 13 distinct colours are on par with the hedge (10 per tile, 11 distinct) and the lamp, so density alone would not fail it. Flat-fill coverage is 10%, in the range of the cheese stall (13%). The problem is the outline. 100% of its dark edge pixels are neutral, and by eye it is a uniform near-black line around the whole silhouette. The closest reference of the same material, the iron lamp, is also neutral, but the richer references (hedge, stall, well) use tinted outlines. The grey ramp has only about 4 steps (highlight, light, mid, dark), against 5-6 in Beodeul. The top face and body are mostly big flat grey blocks, with little per-surface grain, rivets, or pitting. Overall it looks thinner and more sticker-like than the references, so I fail it on the near-black outline and shallow ramp.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 22539
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main iron weight block top (light grey plate)",
+      "rows": "11-15",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "front face of grey block with checker strip",
+      "rows": "16-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden base plinth",
+      "rows": "25-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 11-14 form a light grey top band. Row 15 is a bright 1-row front-edge line (L=215 across x=4, 8 and 11). Rows 16-20 below are much darker and act as eave shadow before the front face. The front face (grey block, checker strip, dark band and wooden base) runs from row 16 to row 28, which is 13 rows. The silhouette widens from 9 to 11 to 14 px and has no receding side face. The top is a flat slab with a front-edge line, not an ellipse."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The candidate is a small cast-iron prop. It has 13 distinct colours and a median of 12 per full tile, which is on par with prop-hedge (10 per tile, 11 colours) and above prop-bench-wood and prop-lamp-crook (14 colours each, per-tile median 0 because they are thin). Flat-fill coverage is 10%, close to prop-stall-cheese at 13% and nowhere near a flat sticker. The dark edge pixels are 100% neutral, which is the weak point. Iron is a grey material, though, and prop-lamp-crook, the iron reference, measures the same 100%. The dark tone follows the grey metal rather than a uniform black line around every shape, so I rate the outline mixed. The metal ramp shows about 4 steps (dark body, mid grey, light grey top and edge highlights), a little below the 5-6 of the larger references, but this is a small single-tile-scale object. A careful artist would accept it next to the lamp and bench without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22341
+  }
+ ],
+ "decidedAt": "2026-10-20T05:59:10.984Z",
+ "cells": {
+  "16": [
+   "2d0659209416698a",
+   "c0bfd510358ccb55"
+  ],
+  "24": [
+   "044ce19ccd333847",
+   "11f69b05a995a147",
+   "45c2fdb304dcc742",
+   "77c3543a1477de05",
+   "9054386b92273815",
+   "ad462efde458a643",
+   "bfe69dfbbd71ed89",
+   "c26dcedff7d13ea5",
+   "e556a5ef4d7e608d"
+  ],
+  "32": [
+   "125930848a7a262d",
+   "c80863a181820725",
+   "f050bbc375421755"
+  ],
+  "48": [
+   "329e445d467251e4",
+   "3baa0482e527d4f7",
+   "3fa5cffb1abddcc1",
+   "46cf964d588f06ab",
+   "8c8ba468ca709b09",
+   "ac2597bc099c9a82"
+  ]
+ }
+}
