@@ -612,12 +612,44 @@ export interface AutotileGroup {
   // [0] 2칸 안에 이어지지 않은 칸이 있는 속, [1] 그보다 깊은 속. 칠하는 도구가 칸 위치 해시로 고른다
   // (autotileEngine.shadeAutotileInterior). 굽이숲 수관의 잎 채움(forestGrove.ts)이 쓴다.
   interiorVariants?: number[][];
+  // 위치 위상 변형(2026-10-20 jp 숲 r3): 칸 그림이 이웃 마스크뿐 아니라 (x mod w, y mod h) 에도 달린다.
+  // 여러 칸에 걸친 수관처럼 세계 좌표로 이어지는 그림을 오토타일로 칠하기 위한 것이다. maps[(y%h)*w + x%w] 는 8방 마스크(정규화된 47 키 또는 256 키) → 칸.
+  // 키가 없으면 variantMap 으로 내려간다. 좌표를 모르는 호출(autotileVariantForMask 의 x,y 생략)도 variantMap 을 쓴다.
+  phaseVariants?: { w: number; h: number; maps: Record<string, number>[] };
+  // 나무 composer(2026-10-20 jp 숲 r4): 이 그룹은 1층 「숲 바닥」 표시이고, 칠하거나 지운 칸 둘레를
+  // src/project/defaults/treeComposer.ts 가 나무 그림 조각으로 2~4층에 다시 짠다(칸마다 깊이 순 — 이웃 수관이 겹친다).
+  composer?: TreeComposerDef;
   // 이웃을 세고 모양을 바꾸는 레이어. 생략 = lower. "upper" 는 바닥 위에 겹치는 투명 오토타일
   // (RPG Maker MV A2 오른쪽 절반의 울타리·주차선·균열처럼)이다 — 아래층 지면을 지우지 않는다.
   layer?: "lower" | "upper";
   // 맵 가장자리 바깥을 이어진 이웃으로 본다. 둘 다 같은 뜻이다. edgeConnects 는 MZ 팩, outsideConnects 는 MV 팩 프리셋.
   edgeConnects?: boolean;
   outsideConnects?: boolean;
+}
+
+/** 나무 composer 정의(오토타일 그룹 composer). 규칙 원형 scripts/content/jp-city/forest/forest_r4_compose.py anchor_at·cell_stack. */
+export interface TreeComposerSprite {
+  name: string;
+  shape: string;          // T4 · T3 · T2 …
+  dark: boolean;          // 숲 속(줄기 바로 아래도 숲) 나무용 그늘판
+  w: number;
+  h: number;
+  tiles: number[];        // w*h, 행 우선, -1 = 투명 칸
+  cover: number[];        // 칸마다 불투명 비율(0~100)
+}
+export interface TreeComposerDef {
+  kind: "trees";
+  version: number;
+  layers: number[];                       // 칸마다 앞에서부터 놓는 층(예: [4, 3, 2])
+  rowStep: number;                        // 밑동 줄 간격(짝수 줄 + 숲 남쪽 끝 줄)
+  colStep: number;                        // 줄 안 밑동 간격
+  skip: number;                           // 밑동을 비우는 비율
+  shapeOrder: string[];                   // 모양 순서(첫째 우선 · 둘째 우선 · 셋째 우선 경계는 shapeOdds)
+  shapeOdds: number[];
+  trunkCols: Record<string, number[]>;    // 모양별 줄기 열(그림 왼쪽 기준)
+  overhangOnGroups: string[];             // 수관이 숲 밖으로 넘쳐도 되는 1층 오토타일 그룹(잔디) — 사람이 읽는 이름
+  overhangOnTiles: number[];              // 굽기가 위 그룹 멤버 + 제 숲 바닥으로 풀어 둔 칸 번호(엔진은 이것만 본다)
+  sprites: TreeComposerSprite[];
 }
 
 export interface SpriteDef {
