@@ -5,6 +5,17 @@
 
 <!-- releases -->
 
+## 0.297.0 — 2026-10-21
+
+### 기능
+
+- **object-gate** — review page shows an optional per-batch explanation (scene image + plain text) (#3150) (`ca78853`)
+- **object-gate** — Opus final judge v7 — audit of v6 misses, per-kind negative example, reshuffled anchors, majority of 3 (rejected) (#3147) (`cebdcc8`)
+
+### 수정
+
+- **ai** — Codex(ChatGPT) connection test always failed with 400 — worker now reads the {cli} body the settings screen sends (#3148) (`f6a1e7e`)
+
 ## 0.296.0 — 2026-10-21
 
 ### 기능
