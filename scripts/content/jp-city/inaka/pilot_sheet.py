@@ -15,6 +15,13 @@ sys.path.insert(0, os.path.join(ROOT, 'scripts', 'content', 'jp-inaka'))
 KITS7 = os.path.join(ROOT, 'tiledata', 'beodeul-city', 'kits7')
 ROW_OF = {'inaka-vinyl-greenhouse'}
 REF = {'inaka-vinyl-greenhouse': 'bd-out-longhouse', 'inaka-kominka-thatched': 'bd-out-longhouse', 'inaka-red-tractor': 'bd-out-cabin-small'}
+REF.update({k: 'bd-out-cabin-small' for k in ('inaka-kura-storehouse', 'inaka-bus-stop-shelter', 'inaka-agri-tin-shed', 'inaka-waterwheel-mill',
+                                              'inaka-keitora-white', 'inaka-single-car-train', 'inaka-unmanned-veg-stand', 'inaka-jizo-shrine-row')})
+REF.update({k: 'bd-out-cabin' for k in ('inaka-dagashiya', 'inaka-wooden-station')})
+REF.update({k: 'bd-out-well-plaza' for k in ('inaka-well-handpump', 'inaka-retro-postbox-vending', 'inaka-sluice-gate', 'inaka-stepping-stones')})
+REF.update({k: 'bd-out-woodpile' for k in ('inaka-rice-rack-hasagi', 'inaka-bicycle-parked', 'inaka-scarecrow-pair', 'inaka-sunflower-patch', 'inaka-hydrangea-hedge')})
+REF.update({k: 'bd-out-fence-run' for k in ('inaka-bamboo-fence-gate', 'inaka-mossy-stone-wall', 'inaka-mossy-stone-wall-mid', 'inaka-red-iron-bridge')})
+REF.update({k: 'bd-out-signpost' for k in ('inaka-wooden-pole-transformer', 'inaka-roadside-mirror', 'inaka-fire-watchtower')})
 
 
 def beo(name):
