@@ -347,7 +347,24 @@ export function planJpRegionScene(input: {
       } else {
         const x = X(op.at) - Math.floor(op.size / 2);
         const y0 = snapY(a), y1 = snapY(b);
-        fill(x, y0, op.size, y1 - y0 + 1, op.mat, true);
+        if (op.meander) {
+          // 굽이치는 세로 띠: 줄마다 가로 오프셋(사인, keep 범위는 0, 경계 3줄에서 서서히). 위상은 seed 로만(rand 순서를 건드리지 않는다).
+          const { amp, period, keep = [] } = op.meander;
+          const keepRows = keep.map(([k0, k1]) => [Y(k0), Y(k1)] as const);
+          const env = (yy: number) => {
+            let d = Infinity;
+            for (const [k0, k1] of keepRows) {
+              if (yy >= k0 && yy <= k1) return 0;
+              d = Math.min(d, yy < k0 ? k0 - yy : yy - k1);
+            }
+            return Math.min(1, d / 3);
+          };
+          const phase = (seed % 7) * 0.9;
+          for (let yy = y0; yy <= y1; yy++) {
+            const off = Math.round(amp * env(yy) * Math.sin((2 * Math.PI * yy) / period + phase));
+            fill(x + off, yy, op.size, 1, op.mat, true);
+          }
+        } else fill(x, y0, op.size, y1 - y0 + 1, op.mat, true);
         const z = matToSurface(op.mat);
         if (z !== JpSurface.WATER && z !== JpSurface.PADDY && op.size >= 2 && op.size <= 6) {
           vWalks.push({ x0: x, x1: x + op.size - 1, y0, y1, mat: op.mat });

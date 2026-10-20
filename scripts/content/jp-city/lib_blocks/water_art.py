@@ -93,18 +93,25 @@ def pnoise(x, y, period=16, cell=4, s=0):
 
 
 # ═══════════════════════════ 물 몸통(16px 주기, 칸 안 디테일) ═══════════════════════════
-# 바다 몸통 6벌(v0 = gnd/sea, v1~v5 = jp:sea-body; 2026-10-20 둘째 판). 칸 둘레 1px 는 모두 바탕 단색이라 어느 두 벌이 붙어도 이음매가 같다.
-# 넓은 바다에서 16px 격자가 읽히지 않게 벌마다 밀도·줄(행) 위치를 일부러 다르게 둔다 — 거의 빈 칸, 엇갈린 짝, 한 줄 긴 물결, 반짝임,
-# 옅은 누운 덩이(얕은 물 garasu 2, 납작하게). 흰 반짝임은 넓은 바다에 격자로 찍혀 보여 몸통에는 두지 않는다. 같은 행에 물결이 두 벌 넘게 오지 않는다.
-#   dash = (x, y, 길이, 밝기 단 3|4) — 아래 행 x+1 부터 그늘 1px.  light = (중심x, 중심y, 반지름x, 반지름y).
+# 바다 몸통 10벌(v0 = gnd/sea, v1~v9 = jp:sea-body; 2026-10-20 셋째 판, 적대 VQA 뒤). 칸 둘레 1px 는 모두 바탕 단색이라 어느 두 벌이 붙어도 이음매가 같다.
+# 넓은 바다가 «16px 마다 짧은 줄 하나» 의 고른 리듬으로 읽혀서: 벌을 10개로 늘리고 그중 셋은 완전히 비우고, 물결은 바탕과 가까운 색(garasu 2, 바탕과 거리 14)
+# 한 가지로 그늘 줄 없이 짧게, 두 벌만 긴 물결(가운데 2px 만 canal 3)로 둔다. 같은 행에 물결이 두 벌 넘게 오지 않는다(행 2·3·6·8·9·11·12·13).
+#   dash = (x, y, 길이, 'g' 옅은 짧은 물결 | 'r' 긴 물결 — 가운데 2px canal 3).  light = (중심x, 중심y, 반지름x, 반지름y) — garasu 2 납작 덩이.
 SEA_BODY = {
-    0: dict(light=[], dark=[], dash=[(3, 5, 4, 3), (9, 11, 3, 3)], glint=None),
-    1: dict(light=[], dark=[], dash=[(10, 3, 3, 3)], glint=None),
-    2: dict(light=[(7.5, 9.0, 3.6, 0.85)], dark=[], dash=[(2, 13, 4, 3)], glint=None),
-    3: dict(light=[], dark=[], dash=[(2, 6, 3, 3), (7, 8, 5, 3)], glint=None),
-    4: dict(light=[], dark=[], dash=[(4, 10, 3, 3), (11, 4, 2, 4)], glint=None),
-    5: dict(light=[(5.0, 6.5, 2.6, 0.8)], dark=[], dash=[(1, 2, 3, 3), (8, 12, 5, 4)], glint=None),
+    0: dict(light=[], dark=[], dash=[(4, 6, 3, 'g')], glint=None),
+    1: dict(light=[], dark=[], dash=[], glint=None),
+    2: dict(light=[], dark=[], dash=[(9, 11, 2, 'g')], glint=None),
+    3: dict(light=[], dark=[], dash=[(2, 9, 8, 'r')], glint=None),
+    4: dict(light=[], dark=[], dash=[(10, 3, 3, 'g'), (3, 13, 2, 'g')], glint=None),
+    5: dict(light=[(6.0, 7.5, 2.8, 0.8)], dark=[], dash=[], glint=None),
+    6: dict(light=[], dark=[], dash=[(6, 2, 2, 'g')], glint=None),
+    7: dict(light=[], dark=[], dash=[], glint=None),
+    8: dict(light=[], dark=[], dash=[(10, 8, 3, 'g')], glint=None),
+    9: dict(light=[], dark=[], dash=[(1, 12, 6, 'r')], glint=None),
 }
+N_SEA_BODY = len(SEA_BODY)
+WATER = lambda: J('canal_indigo', 2)       # 물 바탕
+SOFT = lambda: J('garasu', 2)              # 옅은 물결·얕은 물 덩이(바탕과 거리 14)
 
 
 def _features(kind, v):
@@ -116,29 +123,24 @@ def _features(kind, v):
     if kind == 'sea' and not edge and v in SEA_BODY:
         return {k: (list(x) if isinstance(x, list) else x) for k, x in SEA_BODY[v].items()}
     if kind == 'sea':
-        # 얕은 물 덩이(garasu 2)는 가로로 눕힌 물결 덩이, 깊은 물(canal 1)은 사용자 지시로 줄여 가는 골 한 줄만(변형 셋에 하나)
-        if rnd(1, 1) < (0.35 if edge else 0.55):
-            f['light'].append((5.0 + rnd(2, 1) * 6, 4.0 + rnd(3, 1) * 8, 2.8 + rnd(4, 1) * 1.6, 1.1 + rnd(5, 1) * 0.6))
-        if not edge and v % 3 == 1:
-            f['dark'].append((5.0 + rnd(6, 1) * 6, 4.0 + rnd(7, 1) * 8, 2.6 + rnd(8, 1) * 1.2, 0.75))
-        nd = 1 if edge else 1 + int(rnd(10, 1) * 2.4)
-        for k in range(nd):
-            L = 3 + int(rnd(20 + k, 1) * 3)
-            f['dash'].append((1 + int(rnd(30 + k, 1) * (14 - L)), 2 + int(rnd(40 + k, 1) * 11), L, 4 if (not edge and rnd(50 + k, 1) > 0.82) else 3))
-        if v in (2, 5):
-            f['glint'] = (3 + int(rnd(60, 1) * 10), 3 + int(rnd(61, 1) * 10))
-    else:  # 강: 세로 물살 줄(흐름 남북) + 옅은 얼룩
-        if rnd(1, 1) < 0.4:
-            f['light'].append((4.5 + rnd(2, 1) * 7, 4.5 + rnd(3, 1) * 7, 1.3 + rnd(4, 1) * 0.6, 2.8 + rnd(5, 1) * 1.4))
-        nd = 1 if edge else 1 + int(rnd(10, 1) * 2.6)
+        # 가장자리 칸: 반은 비우고 나머지는 옅은 짧은 물결 하나(넓은 바다 몸통과 같은 결)
+        if rnd(1, 1) < 0.25:
+            f['light'].append((5.0 + rnd(2, 1) * 6, 4.0 + rnd(3, 1) * 8, 2.4 + rnd(4, 1) * 1.2, 0.8))
+        if rnd(10, 1) < 0.5:
+            L = 2 + int(rnd(20, 1) * 2)
+            f['dash'].append((2 + int(rnd(30, 1) * (12 - L)), 3 + int(rnd(40, 1) * 10), L, 'g'))
+    else:  # 강: 세로 물살 줄(흐름 남북) — 셋째 판: 줄 수를 줄이고(칸에 0~1개) 바탕과 가까운 색, 그늘 열 없음
+        if rnd(1, 1) < 0.3:
+            f['light'].append((4.5 + rnd(2, 1) * 7, 4.5 + rnd(3, 1) * 7, 1.2 + rnd(4, 1) * 0.5, 2.6 + rnd(5, 1) * 1.2))
+        n = 0 if (edge and rnd(9, 1) < 0.5) else 1
+        if not edge and v == 2: n = 2
         xs = []
-        for k in range(nd):
+        for k in range(n):
             L = 4 + int(rnd(20 + k, 1) * 4)
             x0 = 2 + int(rnd(30 + k, 1) * 11)
-            if any(abs(x0 - q) < 3 for q in xs): continue
+            if any(abs(x0 - q) < 4 for q in xs): continue
             xs.append(x0)
-            f['dash'].append((x0, 1 + int(rnd(40 + k, 1) * (12 - L)), L, 4 if (not edge and rnd(50 + k, 1) > 0.85) else 3))
-        # 흰 반짝임은 두지 않는다(2026-10-20 둘째 판) — 강 몸통 4벌이 위치 해시로 섞여도 반짝임 칸이 격자로 읽혔다.
+            f['dash'].append((x0, 1 + int(rnd(40 + k, 1) * (12 - L)), L, 'r' if (not edge and rnd(50 + k, 1) > 0.5) else 'g'))
     return f
 
 
@@ -146,34 +148,29 @@ _FEAT = {}
 
 
 def water_px(kind, x, y, v=0, calm=False):
-    """물 한 화소(칸 안 좌표 x,y). kind 'sea'|'river'. calm=True 면 물결·반짝임 없이(안벽 밑 그늘 물)."""
+    """물 한 화소(칸 안 좌표 x,y). kind 'sea'|'river'. calm=True 면 물결 없이(벽 밑 그늘 물)."""
     key = (kind, v)
     if key not in _FEAT: _FEAT[key] = _features(kind, v)
     f = _FEAT[key]
-    col = J('canal_indigo', 2)
+    col = WATER()
     if calm: return col
     def inside(e, sx, sy):
         ex, ey, rx, ry = e
         wob = (pnoise(sx * 2, sy * 2, 16, 4, 77 + v) - 0.5) * 0.5
         return ((x + 0.5 - ex) / rx) ** 2 + ((y + 0.5 - ey) / ry) ** 2 <= 1.0 + wob
     for e in f['light']:
-        if inside(e, x, y): col = J('garasu', 2)
+        if inside(e, x, y): col = SOFT()
     for e in f['dark']:
         if inside(e, x, y): col = J('canal_indigo', 1)
     if kind == 'sea':
         for dx, dy, L, tone in f['dash']:
-            if y == dy and dx <= x < dx + L: return J('canal_indigo', tone)
-            if y == dy + 1 and dx + 1 <= x < dx + L: return J('canal_indigo', 1)
+            if y == dy and dx <= x < dx + L:
+                mid = dx + L // 2
+                return J('canal_indigo', 3) if (tone == 'r' and mid - 1 <= x <= mid) else SOFT()
     else:
         for dx, dy, L, tone in f['dash']:
-            if x == dx and dy <= y < dy + L + 2:
-                k = y - dy
-                return J('canal_indigo', 4) if k == 1 and tone == 4 else J('canal_indigo', 3) if k < L else J('garasu', 3)
-            if x == dx + 1 and dy + 1 <= y < dy + L: return J('canal_indigo', 1)
-    if f['glint']:
-        gx0, gy0 = f['glint']
-        if (x, y) == (gx0, gy0): return J('vending_cool_white', 4)
-        if (x, y) in ((gx0 - 1, gy0), (gx0 + 1, gy0)): return J('garasu', 4)
+            if x == dx and dy <= y < dy + L:
+                return J('canal_indigo', 3) if (tone == 'r' and y - dy == 1) else SOFT()
     return col
 
 
@@ -182,6 +179,128 @@ def water_body(kind, v):
     for y in range(16):
         for x in range(16):
             c.P(x, y, water_px(kind, x, y, v))
+    return c
+
+
+# ═══════════════════════════ 벽·둑 그늘(깊이) — 2026-10-20 셋째 판 ═══════════════════════════
+# 버들항처럼 안벽·둑 옆 물을 6~10px 어둡게 두고 바다 쪽으로 옅어지게 한다. 그늘은 «땅 사각형까지의 거리» 하나의 장(場)으로 계산한다:
+#   땅 칸 하나 = 16×16 사각형(+ 부두 안벽이면 남쪽 물 칸 안으로 높이면 FACE px), 화소마다 가장 가까운 땅까지 거리 s → 방향별 윤곽(PROF) → 0..1.
+# 가장자리 칸(3×3 이웃의 땅)과 한 칸 바깥 «깊이 고리» 칸(5×5 둘레의 땅)이 같은 사각형들을 보므로 칸 경계에서 값이 이어지고,
+# 4×4 베이어 디더(칸 안 좌표, 주기 4 → 칸끼리 이어짐)로 바탕 → garasu 1 → canal 1 세 단으로 옮긴다. 모래 해변(S)은 그늘을 두지 않는다(얕은 물).
+#   PROF[땅][방향] = (온 그늘 거리, 0 이 되는 거리)  N = 북쪽 땅(벽 높이면 밑), V = 동·서, S = 남쪽 땅.
+PROF = {'D': {'N': (6, 18), 'V': (6, 22), 'S': (2, 7)},
+        'G': {'N': (9, 22), 'V': (6, 20), 'S': (4, 9)}}
+FACE = {'D': 12, 'G': 0}
+BAYER = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]]
+
+
+def _prof(s, fz):
+    f, z = fz
+    return 1.0 if s <= f else 0.0 if s >= z else (z - s) / (z - f)
+
+
+def shade_field(lands, land, X, Y):
+    """lands = [(cx, cy, face[, w칸[, h칸]])] 칸 상대 좌표의 땅 사각형(그늘을 드리우는). cx/cy 에 아주 큰 음수·w/h 를 주면 반평면.
+    X·Y 화소 중심(칸 안). 0..1."""
+    P = PROF[land]; a = 0.0
+    for L in lands:
+        cx, cy, face = L[0], L[1], L[2]
+        wc = L[3] if len(L) > 3 else 1
+        hc = L[4] if len(L) > 4 else 1
+        x0, x1, y0, y1 = cx * 16, (cx + wc) * 16, cy * 16, (cy + hc) * 16 + face
+        dx = max(0.0, x0 - X, X - x1); dy = max(0.0, y0 - Y, Y - y1)
+        vert = P['N'] if Y >= y1 else P['S']
+        if dy == 0: v = _prof(dx, P['V'])
+        elif dx == 0: v = _prof(dy, vert)
+        else:
+            h = math.hypot(dx, dy); t = dy / (dx + dy)
+            v = (1 - t) * _prof(h, P['V']) + t * _prof(h, vert)
+        if v > a: a = v
+    return a
+
+
+BRIDGE_PROF = (3, 11)   # 다리 상판 남쪽 물: 위 3px 짙은 그늘 → 11px 에서 0
+
+
+def shade_level(a, x, y, steps=2):
+    """0..1 그늘 → 단(0 = 그늘 없음). 베이어 디더."""
+    if a <= 0: return 0
+    q = a * steps
+    k = int(q); fr = q - k
+    xi, yi = min(x, 15 - x) % 4, min(y, 15 - y) % 4     # 칸 가운데서 거울 — 칸 양끝 열(행)이 같은 문턱이라 옆 칸과 화소 그대로 이어진다
+    return min(steps, k + (1 if fr > (BAYER[yi][xi] + 0.5) / 16 else 0))
+
+
+SHADE_TONE = {1: lambda: J('garasu', 1), 2: lambda: J('canal_indigo', 1), 3: lambda: J('canal_indigo', 0)}
+
+
+def shaded_water(kind, x, y, v, a, bridge=False):
+    """그늘 a(0..1) 를 얹은 물 화소. bridge=True 면 다리 상판 그늘(3단, 더 짙다)을 겹친다."""
+    lvl = shade_level(a, x, y)
+    if bridge:
+        lvl = max(lvl, shade_level(_prof(y + 0.5, BRIDGE_PROF), x, y, 3))
+    if lvl: return SHADE_TONE[lvl]()
+    return water_px(kind, x, y, v, calm=(a > 0.15))
+
+
+def _lands_from_mask(m, land):
+    """가장자리 칸 canon 마스크(켜진 비트 = 물) → 그늘 땅 목록. 곧은 변(북·동·남·서)의 땅은 그 변을 따라 끝없는 반평면으로 본다 —
+    canon 마스크는 그 변 옆 대각 칸이 땅인지 모르므로(벽 끝 칸과 곧은 칸이 같은 칸), 같은 변 칸끼리 이어지게 한다.
+    대각만 땅이면 4분면. 부두(D) 높이면은 북·북서·북동 땅(남쪽이 물)만."""
+    on = lambda b: bool(m & DIRS[b])
+    face = FACE[land]
+    INF = 4096
+    out = []
+    if not on('N'): out.append((-INF, -1, face, 2 * INF))
+    if not on('S'): out.append((-INF, 1, 0, 2 * INF))
+    if not on('W'): out.append((-1, -INF, 0, 1, 2 * INF))
+    if not on('E'): out.append((1, -INF, 0, 1, 2 * INF))
+    for nm, (dx, dy) in dict(NE=(1, -1), SE=(1, 1), SW=(-1, 1), NW=(-1, -1)).items():
+        if on(nm[0]) and on(nm[1]) and not on(nm):
+            out.append((dx, dy, face if dy < 0 else 0))
+    return out
+
+
+RING_SIDES = {'N': ((-1, -2), (0, -2), (1, -2)), 'W': ((-2, -1), (-2, 0), (-2, 1)), 'E': ((2, -1), (2, 0), (2, 1))}
+
+
+def ring_key(n, w, e):
+    return 'N%sW%sE%s' % (n, w, e)
+
+
+def ring_lands(key, land):
+    """«깊이 고리» 키 'N111W000E000'(5×5 둘레 북 줄·서 열·동 열의 땅 비트) → 그늘 땅 목록."""
+    bits = {'N': key[1:4], 'W': key[5:8], 'E': key[9:12]}
+    out = []
+    for side, cells in RING_SIDES.items():
+        b = bits[side]
+        for i, (cx, cy) in enumerate(cells):
+            if b[i] != '1': continue
+            f = 0
+            if FACE[land]:
+                if side == 'N': f = FACE[land]
+                elif i < 2 and b[i + 1] != '1': f = FACE[land]       # 남쪽 칸(같은 열 다음 비트)이 물이면 높이면이 보인다
+            out.append((cx, cy, f))
+    return out
+
+
+def ring_cell(kind, land, key, v=0, bridge=False):
+    """물 몸통 칸(3×3 이 다 물) 중 5×5 둘레에 그늘 땅이 있는 «깊이 고리» 칸. v = 밑 물 변형(강 물살 위치)."""
+    lands = ring_lands(key, land)
+    c = Cv(16, 16)
+    base_v = (1 if v == 0 else (7 if v == 1 else 2)) if kind == 'sea' else v
+    for y in range(16):
+        for x in range(16):
+            c.P(x, y, shaded_water(kind, x, y, base_v, shade_field(lands, land, x + 0.5, y + 0.5), bridge))
+    return c
+
+
+def bridge_body_cell(kind, v=0):
+    """다리 상판 바로 남쪽의 물 몸통 칸(둑 그늘 없음)."""
+    c = Cv(16, 16)
+    for y in range(16):
+        for x in range(16):
+            c.P(x, y, shaded_water(kind, x, y, v, 0.0, True))
     return c
 
 
@@ -227,8 +346,17 @@ def band_natural(t, side, d, x, y):
 FH = 12  # 부두 안벽 높이면(물 칸 안 px)
 
 
-def quay_face_px(x, y):
-    """북쪽이 부두일 때 물 칸 윗부분: 갓돌 밑 그늘 → 콘크리트 블록 높이면 → 젖은 이끼 띠 → 찰랑 거품 → 그늘 물."""
+def _foam(t, alt, s):
+    """안벽 밑 물가 거품 — 드문드문 불규칙한 1px(칸 양끝 2px 은 비운다 → 대체 칸끼리 이어짐). 주기 무늬가 아니다."""
+    if t < 2 or t > 13: return None
+    h = H(t, alt * 13 + s, 90 + s)
+    if h < 0.04: return J('vending_cool_white', 2)
+    if h < 0.13: return J('vending_cool_white', 0)
+    return None
+
+
+def quay_face_px(x, y, alt=0):
+    """북쪽이 부두일 때 물 칸 윗부분: 갓돌 밑 그늘 → 콘크리트 블록 높이면 → 젖은 이끼 띠 → 젖은 물때 선(드문 거품) → 그늘 물."""
     if y == 0: return J('conc', 1)
     if y < 10:
         course = (y - 1) // 3; r = (y - 1) % 3
@@ -244,9 +372,9 @@ def quay_face_px(x, y):
     edge = 10 + (1 if pnoise(x, 0, 16, 4, 52) > 0.55 else 0)
     if y < edge: return J('onsen_mineral_teal', 1) if H(x, y, 53) > 0.3 else J('moss', 1)
     if y < 12: return J('onsen_mineral_teal', 0) if H(x, y, 54) > 0.35 else OL2
-    if y == 12: return J('vending_cool_white', 4) if pnoise(x, 0, 16, 2, 55) > 0.45 else J('vending_cool_white', 1)
-    if y == 13: return J('canal_indigo', 0) if H(x, y, 56) > 0.3 else J('vending_cool_white', 1)
-    return J('canal_indigo', 1)
+    if y == 12: return _foam(x, alt, 1) or J('canal_indigo', 0)
+    if y == 13: return J('canal_indigo', 0)
+    return None
 
 
 DIRS = dict(N=1, E=2, S=4, W=8, NE=16, SE=32, SW=64, NW=128)
@@ -272,43 +400,50 @@ def _bump(t, alt):
     return a * env + 0.35 * a * math.sin(2 * math.pi * u + 0.6 * alt) * env
 
 
-def shore_cell(kind, land, m, land_px=None, v=0, alt=0):
+def shore_cell(kind, land, m, land_px=None, v=0, alt=0, bridge=False):
     """물 칸 하나(16×16). kind 'sea'|'river', land 'S' 모래 · 'G' 풀/숲 둑 · 'D' 부두 안벽(땅 질감 없음),
-    m = canon 8방 마스크(켜진 비트 = 물 이웃). land_px(x,y) → 자연 물가 안쪽으로 파고든 땅 화소(그 땅 몸통 칸과 같은 그림)."""
+    m = canon 8방 마스크(켜진 비트 = 물 이웃). land_px(x,y) → 자연 물가 안쪽으로 파고든 땅 화소(그 땅 몸통 칸과 같은 그림).
+    bridge=True 면 북쪽이 다리 상판(다리 그늘을 얹는다). 안벽(D)·둑(G) 옆 물에는 거리 그늘(shade_field)을 얹는다."""
     W = 'W'
     nb = _nb_from_mask(m, W, land)
     N, S, E, Wn = nb(0, -1), nb(0, 1), nb(1, 0), nb(-1, 0)
     NW, NE, SW, SE = nb(-1, -1), nb(1, -1), nb(-1, 1), nb(1, 1)
     isl = lambda t: t != W
+    lands = _lands_from_mask(m, land) if land in PROF else []
+    wv = v if m == 255 else 100 + v
     c = Cv(16, 16)
     for y in range(16):
         for x in range(16):
             col = None
             if land == 'D':
-                # 1) 부두 안벽(곧은 모양)
+                # 1) 부두 안벽(곧은 모양) — 2026-10-20 셋째 판: 물가 흰 점선(주기 무늬) 대신 2px 짙은 벽 그늘 줄 + 드문 불규칙 거품
                 if N == 'D' and y <= 13:
-                    col = quay_face_px(x, y)
+                    col = quay_face_px(x, y, alt)
                     if E == 'D' and x == 15 and y < 10: col = J('conc', 1)
                     if Wn == 'D' and x == 0 and y < 10: col = J('conc', 2)
-                elif NW == 'D' and not isl(N) and not isl(Wn) and x < 5 and y <= 13:
-                    col = J('canal_indigo', 0) if x < 2 else J('canal_indigo', 1)
+                elif NW == 'D' and not isl(N) and not isl(Wn) and x < 2 and y <= 13:
+                    col = J('canal_indigo', 0)
+                elif NE == 'D' and not isl(N) and not isl(E) and x > 13 and y <= 13:
+                    col = J('canal_indigo', 0)
                 if col is None and Wn == 'D':
                     if x == 0: col = OL
-                    elif x < 2: col = J('canal_indigo', 0)
-                    elif x < 5: col = J('canal_indigo', 1)
+                    elif x < 3: col = J('canal_indigo', 0)
+                    elif x == 3: col = _foam(y, alt, 2)
                 if col is None and E == 'D':
                     if x == 15: col = OL
-                    elif x == 14: col = J('canal_indigo', 0)
-                    elif x == 13 and pnoise(0, y, 16, 4, 61) > 0.62: col = J('vending_cool_white', 2)
+                    elif x > 12: col = J('canal_indigo', 0)
+                    elif x == 12: col = _foam(y, alt, 3)
                 if col is None and S == 'D':
                     if y == 15: col = OL
                     elif y == 14: col = J('canal_indigo', 0)
-                    elif y == 13 and pnoise(x, 0, 16, 4, 62) > 0.55: col = J('vending_cool_white', 2)
+                    elif y == 13: col = _foam(x, alt, 4)
                 if col is None and SW == 'D' and not isl(S) and not isl(Wn) and x < 2 and y >= 14:
+                    col = J('canal_indigo', 0)
+                if col is None and SE == 'D' and not isl(S) and not isl(E) and x > 13 and y >= 14:
                     col = J('canal_indigo', 0)
                 if col is not None:
                     c.P(x, y, col); continue
-                c.P(x, y, water_px(kind, x, y, v if m == 255 else 100 + v, calm=(N == 'D')))
+                c.P(x, y, shaded_water(kind, x, y, wv, shade_field(lands, 'D', x + 0.5, y + 0.5), bridge))
                 continue
             # 2) 자연 물가: 방향별 거리 + 흔들림, 부드러운 최소
             cands = []
@@ -332,7 +467,8 @@ def shore_cell(kind, land, m, land_px=None, v=0, alt=0):
                 col = band_natural(land, side, d, x, y)
                 if col is not None:
                     c.P(x, y, col); continue
-            c.P(x, y, water_px(kind, x, y, v if m == 255 else 100 + v))
+            a = shade_field(lands, land, x + 0.5, y + 0.5) if lands else 0.0
+            c.P(x, y, shaded_water(kind, x, y, wv, a, bridge))
     return c
 
 

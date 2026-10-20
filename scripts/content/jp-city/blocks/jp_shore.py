@@ -10,7 +10,8 @@
   jp-river-bank      계곡 강 ↔ 숲 바닥 : 북쪽 둑은 흙 높이면 3px + 그늘 물, 동·서·남 둑은 1px 흙 테 + 젖은 띠. 숲 바닥(gnd/forest) 질감을 품는다.
   jp-quay-deck       부두 콘크리트 판 ↔ 물 : 판석 + 물 쪽 갓돌 테(남쪽은 갓돌 윗면·앞면). 땅 쪽(광장·보도)은 이어진 것으로 센다.
 바닥 단칸 그룹(지역 구성기 paintJpRegionGround 재료): jp:region-river 「계곡 강」, jp:region-quay 「부두 콘크리트」.
-바다 몸통 변형 sea.v1..v5(jp:sea-body) — jp_regions_pack 의 gnd/sea(v0)와 같은 바탕·테두리라 어느 순서로 붙여도 이음매가 없다.
+바다 몸통 변형 sea.v1..v9(jp:sea-body) — jp_regions_pack 의 gnd/sea(v0)와 같은 바탕·테두리라 어느 순서로 붙여도 이음매가 없다.
+깊이 고리(jp:shore-ring:…)·다리 그늘(jp:shore-bridge:…) 칸 — 안벽·둑 옆 물이 바다 쪽으로 옅어지는 그늘(2026-10-20 셋째 판, water_art.shade_field).
 구성기(src/editor/jpCity/shorePass.ts)가 바다·강·부두 칸의 이웃을 보고 이 칸들로 바꾼다.
 
   python3 scripts/content/jp-city/blocks/jp_shore.py [OUT_DIR]   # selftest + 판 렌더 + 3/4 관문 그림(_gate/items.jsonl)
@@ -27,7 +28,7 @@ BLOCK = 'jp_shore'
 ROOT = WA.ROOT
 OUTDIR = os.path.join(ROOT, 'tiledata', 'jp-city', 'blocks', BLOCK)
 CANON = GA.CANON
-N_SEA_VAR = 6            # 바다 몸통 변형 v0(gnd/sea, jp_regions_pack) + v1..v5(여기)
+N_SEA_VAR = WA.N_SEA_BODY   # 바다 몸통 변형 v0(gnd/sea, jp_regions_pack) + v1..v9(여기; v6..v9 는 2026-10-20 셋째 판 덧붙임)
 N_RIVER_VAR = 4
 N_QUAY_VAR = 4
 
@@ -44,6 +45,23 @@ def _ground_px(name):
 def _mloc(prefix, m):
     return '%s.m%d' % (prefix, m)
 
+
+# 깊이 고리 키: 'N<북 줄 3>W<서 열 3>E<동 열 3>' — 5×5 둘레(거리 2)의 그늘 땅 비트(북 줄은 서→동, 열은 북→남).
+_PATS = ('111', '110', '011', '100', '001', '010')
+_CPATS = ('111', '110', '011', '100', '001')
+RING_KEYS = []
+for _p in _PATS:
+    RING_KEYS += [WA.ring_key(_p, '000', '000'), WA.ring_key('000', _p, '000'), WA.ring_key('000', '000', _p)]
+for _a in _CPATS:
+    for _b in _CPATS:
+        RING_KEYS += [WA.ring_key(_a, _b, '000'), WA.ring_key(_a, '000', _b)]
+RING_KEYS += [WA.ring_key('000', '111', '111'), WA.ring_key('111', '111', '111')]
+RING_KEYS = list(dict.fromkeys(RING_KEYS))
+# 곧은 벽·둑 옆 고리는 길게 되풀이되므로 변형 3벌(밑 물 무늬만 다르다)
+RING_VARIANTS = {WA.ring_key('111', '000', '000'): 3, WA.ring_key('000', '111', '000'): 3, WA.ring_key('000', '000', '111'): 3}
+# 다리 그늘: 강 가장자리(서·동 둑) 마스크와 4칸 폭 강의 고리 키(다리가 둑 위까지 덮으므로 다리 줄 칸은 물로 센다 → 011)
+BRIDGE_MASKS = (55, 205)
+BRIDGE_RING_KEYS = (WA.ring_key('000', '011', '000'), WA.ring_key('000', '000', '011'), WA.ring_key('000', '111', '000'), WA.ring_key('000', '000', '111'))
 
 SETS = (
     # prefix, autotile id, kind, land, 이름, 바깥 땅 질감
@@ -92,7 +110,8 @@ def build():
                                '%s 오토타일 칸(마스크 %d). 물(걸을 수 없음).' % (name, m), ['물', 'autotile', prefix])
         # 곧은 물가(한 변만 땅) 대체 칸 2개씩 — 긴 해안·강둑이 16px 마다 똑같이 되풀이되지 않게 구성기가 해시로 섞는다.
         # 칸 양끝 흔들림이 기본 칸과 같아 어느 순서로 붙어도 이어진다. 그룹 jp:shore-alt:<오토타일>:<마스크>.
-        if land != 'D':
+        # 부두 안벽(D)도 셋째 판부터 대체 칸 2개 — 거품 점 위치만 다르다(긴 부두 옆면이 16px 마다 같은 무늬로 읽히지 않게).
+        if True:
             for side in ('N', 'E', 'S', 'W'):
                 m = GA.canon(255 & ~GA.DIRS[side] & ~{'N': 16 | 128, 'S': 32 | 64, 'E': 16 | 32, 'W': 64 | 128}[side])
                 alts = []
@@ -103,23 +122,51 @@ def build():
                 members += alts
                 groups.append(dict(id='jp:shore-alt:%s:%d' % (aid, m), name='%s · %s 대체' % (name, GA.describe_mask(m)), role='water', defaultLayer='lower', cells=alts,
                                    desc='%s 곧은 물가(마스크 %d) 대체 칸 2개. 구성기가 칸 위치 해시로 기본 칸과 섞는다.' % (name, m), rules='물가 다듬기(shorePass)가 고른다. 손으로 칠하지 않는다.'))
+        # 깊이 고리(셋째 판): 몸통 칸(3×3 이 다 물) 중 5×5 둘레에 안벽·둑이 있는 칸 — 벽 그늘이 바다 쪽으로 옅어진다. 모래 해변은 없음.
+        if land in WA.PROF:
+            for key in RING_KEYS:
+                nv = RING_VARIANTS.get(key, 1)
+                locs = []
+                for vv in range(nv):
+                    loc = '%s.ring.%s%s' % (prefix, key, '' if vv == 0 else '.v%d' % vv); locs.append(loc)
+                    cells[loc] = _cell(WA.ring_cell(kind, land, key, v=vv).img(), 'solidfloor', '%s · 깊이 그늘 %s%s' % (name, key, '' if vv == 0 else ' 변형 %d' % vv),
+                                       '%s 벽·둑 옆 몸통 물의 깊이 그늘 칸(한 칸 바깥 고리, 둘레 땅 %s). 물(걸을 수 없음).' % (name, key), ['물', 'depth', prefix])
+                groups.append(dict(id='jp:shore-ring:%s:%s' % (aid, key), name='%s · 깊이 그늘 %s' % (name, key), role='water', defaultLayer='lower', cells=locs,
+                                   desc='%s 몸통 물 중 둘레 5×5 에 그늘 땅(%s)이 있는 칸.' % (name, key), rules='물가 다듬기(shorePass)가 고른다. 손으로 칠하지 않는다.'))
+        # 다리 그늘(셋째 판, 강만): 다리 상판 바로 남쪽 물 칸 — 다리가 물에 납작 붙어 보이지 않게
+        if kind == 'river':
+            bkeys = [('body', lambda: WA.bridge_body_cell(kind, 1))]
+            for m in BRIDGE_MASKS:
+                bkeys.append(('m%d' % m, lambda m=m: WA.shore_cell(kind, land, m, lp, v=CANON.index(m) % 3, bridge=True)))
+            for key in BRIDGE_RING_KEYS:
+                bkeys.append((key, lambda key=key: WA.ring_cell(kind, land, key, v=0, bridge=True)))
+            for key, fn in bkeys:
+                loc = '%s.bridge.%s' % (prefix, key)
+                cells[loc] = _cell(fn().img(), 'solidfloor', '%s · 다리 그늘 %s' % (name, key), '%s 다리 상판 바로 남쪽 물(다리 그늘). 물(걸을 수 없음).' % name, ['물', 'bridge-shadow', prefix])
+                groups.append(dict(id='jp:shore-bridge:%s:%s' % (aid, key), name='%s · 다리 그늘 %s' % (name, key), role='water', defaultLayer='lower', cells=[loc],
+                                   desc='%s 다리 상판 남쪽 물 칸(%s).' % (name, key), rules='물가 다듬기(shorePass)가 다리 키트 남쪽에 고른다.'))
         full = river_vars[0] if kind == 'river' else _mloc(prefix, 255)
         loc_of = lambda m, prefix=prefix, full=full: full if m == 255 else _mloc(prefix, m)
+        extra = [] if kind == 'sea' else [l for l in cells if l.startswith(prefix + '.ring.') or l.startswith(prefix + '.bridge.')]
         if kind == 'sea':
             other = [x for x in ('jp-shore-sea-sand', 'jp-shore-sea-quay') if x != aid][0]
-            connect = list(members) + sea_vars + ['other:' + other]
+            connect = list(members) + sea_vars + ['other:' + other] + extra
             # 바다 몸통 변형(sea.v*·gnd/sea)은 두 바다 오토타일이 같이 쓰므로 어느 쪽 멤버도 아니다 → 속칸 변형(멤버여야 함)으로 걸지 않는다.
             # 넓은 바다의 변형 섞기는 구성기(shorePass)가 칸 위치 해시로 한다.
             interior = None
         else:
             members += river_vars[1:]
-            connect = list(members)
+            connect = list(members) + extra
             interior = [[full] + river_vars[1:], [full] + river_vars[1:]]
         autotiles.append(dict(id=aid, name=name, neighborhood=8, layer='lower', member=members, connect=connect,
                               variantMap=GA.variant_map(loc_of), interior=interior, edgeConnects=True, outsideConnects=True))
         groups.append(dict(id='jp:shore-' + prefix, name=name, role='water', defaultLayer='lower', cells=list(members),
                            desc='%s — 8방 오토타일(물, 걸을 수 없음).' % name,
                            rules='지역 구성기가 바다·강 칸의 이웃을 보고 자동으로 깐다(shorePass). 붓으로 칠할 때는 같은 물 칸끼리 이웃으로 센다.'))
+    # 바다 깊이 고리 칸(안벽 쪽에만 구움)은 두 바다 오토타일이 모두 물 이웃으로 센다(붓으로 칠할 때 땅으로 보지 않게)
+    sea_rings = [l for l in cells if l.startswith('sea-quay.ring.') or l.startswith('sea-quay.bridge.')]
+    for a in autotiles:
+        if a['id'] in ('jp-shore-sea-sand', 'jp-shore-sea-quay'): a['connect'] += sea_rings
     # 부두 콘크리트 판 오토타일
     members = []
     for m in CANON:
@@ -165,8 +212,30 @@ def _sea_v0():
     return Image.fromarray(c.a, 'RGBA')
 
 
+def ring_key_at(at_, x, y, caster):
+    """shorePass.ts ringKeyAt 와 같은 규칙: 5×5 둘레의 북 줄·서 열·동 열 그늘 땅 비트."""
+    bit = lambda dx, dy: '1' if caster(at_(x + dx, y + dy)) else '0'
+    n = ''.join(bit(dx, -2) for dx in (-1, 0, 1))
+    w = ''.join(bit(-2, dy) for dy in (-1, 0, 1))
+    e = ''.join(bit(2, dy) for dy in (-1, 0, 1))
+    return WA.ring_key(n, w, e)
+
+
+def best_ring_key(key, baked):
+    """구운 고리 키 중 가장 가까운 것(없는 그늘을 더하는 비트는 2배 벌점). 비트가 하나도 없으면 None. shorePass.ts bestRingKey 와 같다."""
+    bits = key[1:4] + key[5:8] + key[9:12]
+    if '1' not in bits: return None
+    if key in baked: return key
+    best, bs = None, 1e9
+    for k in baked:
+        kb = k[1:4] + k[5:8] + k[9:12]
+        sc = sum(2 if (q == '1' and a == '0') else 1 if (q == '0' and a == '1') else 0 for a, q in zip(bits, kb))
+        if sc < bs: best, bs = k, sc
+    return best
+
+
 def compose_grid(grid, b=None):
-    """문자 격자 → RGBA. W 바다 · R 강 · S 모래 · G 숲 바닥 · D 부두 콘크리트 · L 잔디(다른 땅).
+    """문자 격자 → RGBA. W 바다 · R 강 · S 모래 · G 숲 바닥 · D 부두 콘크리트 · L 잔디(다른 땅) · B 다리 상판(물로 센다).
     shorePass.ts 와 같은 규칙: 물 칸은 8방 물 마스크로 가장자리/몸통, 바다는 이웃 땅에 모래가 있으면 모래 물가, 없으면 안벽.
     부두 칸은 물 쪽만 열림(땅은 이어짐). 맵 밖은 이어진 것으로 본다."""
     b = b or build()
@@ -180,7 +249,7 @@ def compose_grid(grid, b=None):
     riv_body = [C['river.v%d' % v]['img'] for v in range(N_RIVER_VAR)]
     quay_body = [C['quay.v%d' % v]['img'] for v in range(N_QUAY_VAR)]
     Hh, Ww = len(grid), len(grid[0])
-    water = lambda t: t in 'WR'
+    water = lambda t: t in 'WRB'
     def at_(x, y):
         if 0 <= x < Ww and 0 <= y < Hh: return grid[y][x]
         return None
@@ -194,16 +263,38 @@ def compose_grid(grid, b=None):
     def pick(aid, m, h):
         pool = [at[aid]['variantMap'][str(m)]] + alts.get('%s:%d' % (aid, m), [])
         return pool[h % len(pool)]
+    rings = {}; bridges = {}
+    for g in b['groups']:
+        if g['id'].startswith('jp:shore-ring:'):
+            aid, key = g['id'][len('jp:shore-ring:'):].rsplit(':', 1); rings.setdefault(aid, {})[key] = g['cells']
+        elif g['id'].startswith('jp:shore-bridge:'):
+            aid, key = g['id'][len('jp:shore-bridge:'):].rsplit(':', 1); bridges.setdefault(aid, {})[key] = g['cells']
+    deck = RP._finalize()[0]['rg-tsuribashi/b0.1']['img']
     out = Image.new('RGBA', (Ww * 16, Hh * 16))
     for y in range(Hh):
         for x in range(Ww):
             t = grid[y][x]; h = GA.cell_hash(x, y)
-            if water(t):
+            if t == 'B':
+                im = deck
+            elif water(t):
                 m = mask(x, y, water)
+                under_bridge = at_(x, y - 1) == 'B'
                 if m == 255:
-                    im = (sea_body if t == 'W' else riv_body)[h % (N_SEA_VAR if t == 'W' else N_RIVER_VAR)]
+                    aid = 'jp-river-bank' if t == 'R' else 'jp-shore-sea-quay'
+                    caster = (lambda q: q is not None and not water(q)) if t == 'R' else (lambda q: q is not None and not water(q) and q != 'S')
+                    key = ring_key_at(at_, x, y, caster)
+                    best = best_ring_key(key, rings.get(aid, {}))
+                    im = None
+                    if under_bridge and t == 'R':
+                        pool = bridges.get(aid, {}).get(best or 'body')
+                        if pool: im = C[pool[0]]['img']
+                    if im is None and best:
+                        pool = rings[aid][best]; im = C[pool[h % len(pool)]]['img']
+                    if im is None:
+                        im = (sea_body if t == 'W' else riv_body)[h % (N_SEA_VAR if t == 'W' else N_RIVER_VAR)]
                 elif t == 'R':
-                    im = C[pick('jp-river-bank', m, h)]['img']
+                    pool = bridges.get('jp-river-bank', {}).get('m%d' % m) if under_bridge else None
+                    im = C[pool[0]]['img'] if pool else C[pick('jp-river-bank', m, h)]['img']
                 else:
                     nbs = [at_(x + dx, y + dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1)]
                     north = at_(x, y - 1)
@@ -249,10 +340,38 @@ BLOB = [
 ]
 
 
+HARBOR_BOARD = [
+    'LLLLLLLLLLLLLLLLLL',
+    'DDDDDDDDDDDDDDDDDD',
+    'WWWWWWWDDDDDDWWWWW',
+    'WWWWWWWDDDDDDWWWWW',
+    'WWWWWWWDDDDDDWWWWW',
+    'WWWWWWWDDDDDDWWWWW',
+    'WWWWWWWDDDDDDWWWWW',
+    'WWWWWWWWWWWWWWWWWW',
+    'WWWWWWWWWWWWWWWWWW',
+    'WWWWWWWWWWWWWWWWWW',
+]
+RIVER_BOARD = [
+    'GGGGRRRRGGGGG',
+    'GGGGRRRRGGGGG',
+    'GGGGGRRRRGGGG',
+    'GGGGGRRRRGGGG',
+    'GGGGGGRRRRGGG',
+    'GGBBBBBBBBGGG',
+    'GGGGGGRRRRGGG',
+    'GGGGGGRRRRGGG',
+    'GGGGGRRRRGGGG',
+    'GGGGRRRRGGGGG',
+    'GGGGRRRRGGGGG',
+    'GGGGGRRRRGGGG',
+]
+
+
 def boards():
     """(이름, 격자) — 관문·눈 확인용 판."""
     return [('sea-sand', canonical('S', 'W')), ('sea-sand-blob', BLOB), ('river-bank', canonical('G', 'R')),
-            ('quay-wall', QUAY_BOARD), ('sea-quay', canonical('D', 'W'))]
+            ('quay-wall', QUAY_BOARD), ('sea-quay', canonical('D', 'W')), ('harbor-depth', HARBOR_BOARD), ('river-meander-bridge', RIVER_BOARD)]
 
 
 def _allowed():

@@ -3,6 +3,8 @@
 {"png": "/home/main/z-project/rpg-zzu-modern-tiles-r1/tiledata/jp-city/blocks/jp_shore/_gate/jp-shore-river-bank.png", "kind": "terrain", "name": "jp-shore-river-bank", "label": "jp_city/water/jp-shore-river-bank"}
 {"png": "/home/main/z-project/rpg-zzu-modern-tiles-r1/tiledata/jp-city/blocks/jp_shore/_gate/jp-shore-quay-wall.png", "kind": "terrain", "name": "jp-shore-quay-wall", "label": "jp_city/water/jp-shore-quay-wall"}
 {"png": "/home/main/z-project/rpg-zzu-modern-tiles-r1/tiledata/jp-city/blocks/jp_shore/_gate/jp-shore-sea-quay.png", "kind": "terrain", "name": "jp-shore-sea-quay", "label": "jp_city/water/jp-shore-sea-quay"}
+{"png": "/home/main/z-project/rpg-zzu-modern-tiles-r1/tiledata/jp-city/blocks/jp_shore/_gate/jp-shore-harbor-depth.png", "kind": "terrain", "name": "jp-shore-harbor-depth", "label": "jp_city/water/jp-shore-harbor-depth"}
+{"png": "/home/main/z-project/rpg-zzu-modern-tiles-r1/tiledata/jp-city/blocks/jp_shore/_gate/jp-shore-river-meander-bridge.png", "kind": "terrain", "name": "jp-shore-river-meander-bridge", "label": "jp_city/water/jp-shore-river-meander-bridge"}
 {"png": "/home/main/z-project/rpg-zzu-modern-tiles-r1/tiledata/jp-city/blocks/jp_shore/_gate/jp-rg-lighthouse.png", "kind": "structure", "name": "jp-rg-lighthouse", "label": "jp_city/water/jp-rg-lighthouse"}
 {"png": "/home/main/z-project/rpg-zzu-modern-tiles-r1/tiledata/jp-city/blocks/jp_shore/_gate/jp-rg-waterfall.png", "kind": "structure", "name": "jp-rg-waterfall", "label": "jp_city/water/jp-rg-waterfall"}
 {"png": "/home/main/z-project/rpg-zzu-modern-tiles-r1/tiledata/jp-city/blocks/jp_shore/_gate/jp-prop-tree-zelkova.png", "kind": "organic", "name": "jp-prop-tree-zelkova", "label": "jp_city/water/jp-prop-tree-zelkova"}

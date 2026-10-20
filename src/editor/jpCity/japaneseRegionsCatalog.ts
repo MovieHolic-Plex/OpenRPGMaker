@@ -22,7 +22,9 @@ export type JpRegionOp =
   /** 사각 영역 바닥. clear:true 면 그 칸에 소품을 놓지 않는다(물·논·광장 중심·운동장). zone 은 표면 구획 힌트. */
   | { readonly op: "area"; readonly mat: string; readonly box: readonly [number, number, number, number]; readonly clear?: boolean; readonly zone?: JpZoneHint }
   /** 맵을 가로지르는 길·물·선로 띠. 늘 비워 둔다(onPath 소품만 위에 선다). span 은 띠 방향 범위 비율. */
-  | { readonly op: "band"; readonly mat: string; readonly dir: "h" | "v"; readonly at: number; readonly size: number; readonly span?: readonly [number, number] }
+  | { readonly op: "band"; readonly mat: string; readonly dir: "h" | "v"; readonly at: number; readonly size: number; readonly span?: readonly [number, number];
+      /** 세로 띠(dir v)만: 줄마다 가로로 ±amp 칸 굽이친다(주기 period 줄, 위상은 seed). keep 은 곧게 둘 세로 범위 비율 — 다리·폭포 자리. 경계에서 3줄에 걸쳐 0 으로 줄어든다. */
+      readonly meander?: { readonly amp: number; readonly period: number; readonly keep?: readonly (readonly [number, number])[] } }
   /** 굴절·연결 거리/산길/데크(A2) - [x,y] 꼭짓점 폴리라인을 따라 폭 size 칸으로 바닥을 깐다. */
   | { readonly op: "street"; readonly mat: string; readonly points: readonly (readonly [number, number])[]; readonly size: number; readonly deadEnd?: boolean }
   /** 지형 단차와 석축(A10) - y 위치에 rg-ishigaki 옹벽을 세우고 stairAt 위치마다 돌계단을 걸친다(계단 위아래로 길을 보장). */
@@ -671,7 +673,8 @@ const DEFS: readonly RegionDef[] = [
       // 계곡 강(자연 흙 둑, 4칸 폭)은 산길 뒤에 깐다 — 산길이 강을 메우지 않고 둑에서 끊겨 출렁다리가 물을 건넌다.
       // 폭포(10×6)는 3..6열이 강 4칸과 겹치게 같은 at 에 둔다(band x = X(at)-2, put x = X(at)-5).
       { op: "street", mat: M.trail, size: 2, points: [[0.24, 1], [0.24, 0.76], [0.36, 0.76], [0.36, 0.56], [0.74, 0.56], [0.74, 0.34], [0.84, 0.34], [0.84, 0]] },
-      { op: "band", mat: M.river, dir: "v", at: 0.54, size: 4, span: [0, 1] },
+      // 강은 폭포(위)·출렁다리 자리만 곧게 두고 그 사이·아래는 1~2칸씩 굽이친다(2026-10-20 셋째 판, 자로 그은 수로처럼 보이던 것).
+      { op: "band", mat: M.river, dir: "v", at: 0.54, size: 4, span: [0, 1], meander: { amp: 1.7, period: 13, keep: [[0, 0.24], [0.48, 0.62]] } },
       { op: "put", kit: "rg-waterfall", at: [0.54, 0.18], foot: true, onPath: true },
       { op: "put", kit: "rg-tsuribashi", at: [0.54, 0.56], onPath: true },
       { op: "put", kit: "rg-stone-ruin", at: [0.43, 0.36], onPath: true },
@@ -827,9 +830,10 @@ const DEFS: readonly RegionDef[] = [
       { op: "area", mat: M.sea, box: [0, 0.62, 1, 1], clear: true },
       // 부두 안벽 한 줄 + 방파제 부두(부두 콘크리트) — 물 쪽 갓돌 테와 바다 칸의 안벽 높이면은 shorePass 가 단다.
       { op: "band", mat: M.quay, dir: "h", at: 0.61, size: 1 },
-      { op: "band", mat: M.quay, dir: "v", at: 0.78, size: 4, span: [0.58, 0.96] },
-      { op: "put", kit: "rg-lighthouse", at: [0.78, 0.94], foot: true, onPath: true },
-      { op: "line", kit: "rg-tetrapod", dir: "v", at: 0.86, span: [0.64, 0.94], step: 3, onPath: true },
+      // 방파제 부두는 6칸 폭, 등대는 부두 끝(남쪽) 동쪽 3칸에 — 서쪽 3칸(48px)으로 사람이 등대 옆을 지나 끝까지 간다(2026-10-20 셋째 판; 4칸 폭에 가운데 등대면 11px 만 남았다).
+      { op: "band", mat: M.quay, dir: "v", at: 0.78, size: 6, span: [0.58, 0.96] },
+      { op: "put", kit: "rg-lighthouse", at: [0.8, 0.94], foot: true, onPath: true },
+      { op: "line", kit: "rg-tetrapod", dir: "v", at: 0.9, span: [0.64, 0.94], step: 3, onPath: true },
       { op: "put", kit: "rg-fishing-boat", at: [0.14, 0.67], onPath: true },
       { op: "put", kit: "rg-fishing-boat", at: [0.34, 0.67], onPath: true },
       { op: "put", kit: "rg-fishing-boat", at: [0.54, 0.67], onPath: true },

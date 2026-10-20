@@ -7,6 +7,9 @@
 //   강 칸   — jp-river-bank(숲 바닥 흙 둑) / 몸통 변형.
 //   부두 칸 — jp-quay-deck: 물 쪽 변에만 갓돌 테(땅 쪽은 이어진 것으로 센다) / 판 변형.
 // 다리 키트(출렁다리 등)의 바닥 칸은 물로 센다 — 다리 밑에서 강이 끊겨 둑이 생기지 않게.
+// 깊이(2026-10-20 셋째 판): 몸통 물 칸 중 5×5 둘레(거리 2)의 북 줄·서 열·동 열에 안벽·둑(모래 아닌 땅)이 있으면 «깊이 고리» 칸
+// (jp:shore-ring:<오토타일>:<키>)으로 바꿔 벽 그늘이 바다 쪽으로 옅어지게 한다. 구운 키가 없으면 가장 가까운 키(bestRingKey).
+// 다리 상판 바로 남쪽 강 칸은 다리 그늘 칸(jp:shore-bridge:…)으로 바꾼다. 그림·키 규칙은 jp_shore.py ring_key_at / best_ring_key 와 같다.
 // 칩셋에 물가 블록이 없으면(옛 프로젝트 사본) 아무것도 하지 않는다.
 import type { AutotileGroup, TilesetDef } from "@/project/types";
 
@@ -49,6 +52,31 @@ interface ShoreTiles {
   readonly quayDeck: AutotileGroup;
   /** 곧은 물가 대체 칸: "<오토타일 id>:<마스크>" → 기본 칸과 섞을 대체 칸들(그룹 jp:shore-alt:…). */
   readonly alts: ReadonlyMap<string, readonly number[]>;
+  /** 깊이 고리 칸: 오토타일 id → (키 'N111W000E000' → 칸들). */
+  readonly rings: ReadonlyMap<string, ReadonlyMap<string, readonly number[]>>;
+  /** 다리 그늘 칸: 오토타일 id → (키 'm55' | 'body' | 고리 키 → 칸들). */
+  readonly bridgeShade: ReadonlyMap<string, ReadonlyMap<string, readonly number[]>>;
+  /** 다리 키트의 1층(바닥) 칸 — 이 칸 바로 남쪽 물에 다리 그늘. */
+  readonly bridgeDeck: ReadonlySet<number>;
+}
+
+const cellsOf = (m: ReadonlyMap<string, ReadonlyMap<string, readonly number[]>>, id: string): number[] => [...(m.get(id)?.values() ?? [])].flat();
+
+const RING_BITS = (key: string) => key.slice(1, 4) + key.slice(5, 8) + key.slice(9, 12);
+
+/** 구운 고리 키 중 가장 가까운 것(없는 그늘을 더하는 비트는 2배 벌점). 비트가 없으면 undefined. jp_shore.best_ring_key 와 같다. */
+export function bestRingKey(key: string, baked: ReadonlyMap<string, unknown>): string | undefined {
+  const bits = RING_BITS(key);
+  if (!bits.includes("1")) return undefined;
+  if (baked.has(key)) return key;
+  let best: string | undefined, bs = Infinity;
+  for (const k of baked.keys()) {
+    const kb = RING_BITS(k);
+    let sc = 0;
+    for (let i = 0; i < 9; i++) sc += kb[i] === "1" && bits[i] === "0" ? 2 : kb[i] === "0" && bits[i] === "1" ? 1 : 0;
+    if (sc < bs) { best = k; bs = sc; }
+  }
+  return best;
 }
 
 function shoreTiles(ts: Ts): ShoreTiles | undefined {
@@ -65,16 +93,32 @@ function shoreTiles(ts: Ts): ShoreTiles | undefined {
     if (!/tsuribashi|bridge/.test(k.id)) continue;
     for (const r of k.rows ?? []) for (const t of r.tiles ?? []) if (t >= 0) bridge.add(t);
   }
+  const bridgeDeck = new Set<number>();
+  for (const k of ts.structureKits ?? []) {
+    if (!/tsuribashi|bridge/.test(k.id)) continue;
+    for (const r of k.rows ?? []) for (const t of r.tiles ?? []) if (t >= 0) bridgeDeck.add(t);
+  }
   const alts = new Map<string, number[]>();
-  for (const g of ts.tileGroups ?? []) if (g.id.startsWith("jp:shore-alt:")) alts.set(g.id.slice("jp:shore-alt:".length), [...g.tileIds]);
+  const rings = new Map<string, Map<string, number[]>>(), bridgeShade = new Map<string, Map<string, number[]>>();
+  const nested = (into: Map<string, Map<string, number[]>>, rest: string, ids: readonly number[]) => {
+    const cut = rest.lastIndexOf(":");
+    const aid = rest.slice(0, cut), key = rest.slice(cut + 1);
+    if (!into.has(aid)) into.set(aid, new Map());
+    into.get(aid)!.set(key, [...ids]);
+  };
+  for (const g of ts.tileGroups ?? []) {
+    if (g.id.startsWith("jp:shore-alt:")) alts.set(g.id.slice("jp:shore-alt:".length), [...g.tileIds]);
+    else if (g.id.startsWith("jp:shore-ring:")) nested(rings, g.id.slice("jp:shore-ring:".length), g.tileIds);
+    else if (g.id.startsWith("jp:shore-bridge:")) nested(bridgeShade, g.id.slice("jp:shore-bridge:".length), g.tileIds);
+  }
   return {
-    alts,
+    alts, rings, bridgeShade, bridgeDeck,
     seaBody,
     riverBody: interior(riverBank),
     quayBody: interior(quayDeck),
     sand: new Set(group("jp:region-sand")),
-    sea: new Set([...seaBody, ...seaSand.memberTileIds, ...seaQuay.memberTileIds]),
-    river: new Set([...river0, ...riverBank.memberTileIds]),
+    sea: new Set([...seaBody, ...seaSand.memberTileIds, ...seaQuay.memberTileIds, ...cellsOf(rings, seaQuay.id), ...cellsOf(rings, seaSand.id), ...cellsOf(bridgeShade, seaQuay.id)]),
+    river: new Set([...river0, ...riverBank.memberTileIds, ...cellsOf(rings, riverBank.id), ...cellsOf(bridgeShade, riverBank.id)]),
     quay: new Set([...quay0, ...quayDeck.memberTileIds]),
     bridge,
     seaSand, seaQuay, riverBank, quayDeck,
@@ -106,6 +150,27 @@ export function applyJpShores(map: { readonly width: number; readonly height: nu
     const pool = [base, ...alt];
     return pool[cellHash(x, y) % pool.length];
   };
+  /** 5×5 둘레 북 줄(서→동)·서 열·동 열(북→남)의 그늘 땅 비트(맵 밖은 물). */
+  const ringKeyAt = (x: number, y: number, caster: (t: number) => boolean): string => {
+    const bit = (dx: number, dy: number) => { const t = at(x + dx, y + dy); return t !== undefined && caster(t) ? "1" : "0"; };
+    return `N${bit(-1, -2)}${bit(0, -2)}${bit(1, -2)}W${bit(-2, -1)}${bit(-2, 0)}${bit(-2, 1)}E${bit(2, -1)}${bit(2, 0)}${bit(2, 1)}`;
+  };
+  const pickOf = (pool: readonly number[] | undefined, x: number, y: number) => (pool?.length ? pool[cellHash(x, y) % pool.length] : undefined);
+  /** 몸통 칸(8방이 다 물): 다리 그늘 → 깊이 고리 → 몸통 변형 순. */
+  const body = (a: AutotileGroup, plain: readonly number[], caster: (t: number) => boolean, x: number, y: number): number | undefined => {
+    const ringsOf = T.rings.get(a.id);
+    const key = ringsOf ? bestRingKey(ringKeyAt(x, y, caster), ringsOf) : undefined;
+    const north = at(x, y - 1);
+    if (north !== undefined && T.bridgeDeck.has(north)) {
+      const shade = T.bridgeShade.get(a.id);
+      const b = pickOf(shade?.get(key ?? "body"), x, y) ?? pickOf(shade?.get("body"), x, y);
+      if (b !== undefined) return b;
+    }
+    if (key) return pickOf(ringsOf!.get(key), x, y);
+    return plain[cellHash(x, y) % plain.length];
+  };
+  const seaCaster = (t: number) => !isWater(t) && !T.sand.has(t);
+  const riverCaster = (t: number) => !isWater(t);
   let changed = 0;
   for (let y = 0; y < H; y++) {
     for (let x = 0; x < W; x++) {
@@ -113,7 +178,7 @@ export function applyJpShores(map: { readonly width: number; readonly height: nu
       let next: number | undefined;
       if (T.sea.has(t)) {
         const m = mask(x, y, isWater);
-        if (m === 255) next = T.seaBody[cellHash(x, y) % T.seaBody.length];
+        if (m === 255) next = body(T.seaQuay, T.seaBody, seaCaster, x, y);
         else {
           let sandy = false;
           for (const [dx, dy] of NB) { const n = at(x + dx, y + dy); if (n !== undefined && T.sand.has(n)) { sandy = true; break; } }
@@ -123,7 +188,12 @@ export function applyJpShores(map: { readonly width: number; readonly height: nu
         }
       } else if (T.river.has(t)) {
         const m = mask(x, y, isWater);
-        next = m === 255 ? T.riverBody[cellHash(x, y) % T.riverBody.length] : edge(T.riverBank, m, x, y);
+        if (m === 255) next = body(T.riverBank, T.riverBody, riverCaster, x, y);
+        else {
+          const north = at(x, y - 1);
+          const shaded = north !== undefined && T.bridgeDeck.has(north) ? pickOf(T.bridgeShade.get(T.riverBank.id)?.get(`m${m}`), x, y) : undefined;
+          next = shaded ?? edge(T.riverBank, m, x, y);
+        }
       } else if (T.quay.has(t)) {
         const m = mask(x, y, (n) => !isWater(n));
         next = m === 255 ? T.quayBody[cellHash(x, y) % T.quayBody.length] : T.quayDeck.variantMap[String(m)];
