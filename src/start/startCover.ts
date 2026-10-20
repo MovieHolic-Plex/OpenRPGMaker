@@ -16,7 +16,7 @@ import {
 import { createTransparentColorKeyCanvas, isColorKeyedChipsetTextureKey } from "@/assets/chipsetTransparency";
 import { activeTileGrafts, createGraftedTilesetCanvas } from "@/assets/tileGrafts";
 import { normalizeRgbHexColor } from "@/assets/transparentColorKey";
-import { renderMapCoverJpeg } from "@/editor/mapCoverRender";
+import { isMostlyEmptyMap, renderMapCoverJpeg } from "@/editor/mapCoverRender";
 import type { TilesetCanvasImage } from "@/editor/mapTileDrawCore";
 import type { GameMap, TilesetDef } from "@/project/types";
 import { PROJECT_COVER_HEIGHT, PROJECT_COVER_WIDTH, type ProjectCoverSource } from "../../electron/shared/start";
@@ -87,14 +87,22 @@ function isRenderableTileset(value: unknown): value is TilesetDef {
     && typeof tileset.count === "number" && !!tileset.image && typeof tileset.image.id === "string";
 }
 
-/** 재료로 480×300 JPEG data URL 을 굽는다. 그릴 수 없으면 null. */
-export async function renderProjectCover(source: ProjectCoverSource): Promise<string | null> {
-  if (!isRenderableMap(source.map) || !isRenderableTileset(source.tileset)) return null;
+export type ProjectCoverResult =
+  | { readonly kind: "cover"; readonly dataUrl: string }
+  /** 빈 맵(풀밭 한 장) — 초록 네모 대신 자리표를 보이도록 「그림 없음」으로 기록한다. */
+  | { readonly kind: "empty" }
+  | { readonly kind: "failed" };
+
+/** 재료로 480×300 JPEG 를 굽는다 — 시작 칸을 가운데 둔 2배 장면. 빈 맵이면 empty, 그릴 수 없으면 failed. */
+export async function renderProjectCover(source: ProjectCoverSource): Promise<ProjectCoverResult> {
+  if (!isRenderableMap(source.map) || !isRenderableTileset(source.tileset)) return { kind: "failed" };
+  if (isMostlyEmptyMap(source.map)) return { kind: "empty" };
   const image = await loadCoverTilesetImage(source.tileset, source.uploadedImage);
-  if (!image) return null;
+  if (!image) return { kind: "failed" };
   try {
-    return renderMapCoverJpeg(source.map, source.tileset, image, PROJECT_COVER_WIDTH, PROJECT_COVER_HEIGHT, source.focus);
+    const dataUrl = renderMapCoverJpeg(source.map, source.tileset, image, PROJECT_COVER_WIDTH, PROJECT_COVER_HEIGHT, source.focus);
+    return dataUrl ? { kind: "cover", dataUrl } : { kind: "failed" };
   } catch {
-    return null;
+    return { kind: "failed" };
   }
 }

@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { START_SCREEN_INTENT_KEY, START_PLAY_URL, takeStartPlayRequest, takeStartScreenIntent, writeStartScreenIntent } from "@/start/startIntent";
 import { entriesNeedingCover, formatRelativeTime, partitionRecentEntries } from "@/start/startScreen";
-import { LAUNCHER_MODE_KEY, readLauncherMode, writeLauncherMode } from "@/start/launcherShell";
+import { displayTitles } from "@/start/home/homeView";
+import { conceptStageArt } from "@/start/conceptFeed/stageArt";
+import { isMostlyEmptyMap } from "@/editor/mapCoverRender";
 import { PLAYED_KEY, readPlayedLog, recordPlayed, worldsByLastPlayed } from "@/start/playFeed/playFeed";
 import { startScreenPrompt } from "@/editor/startScreenHandoff";
 import { projectCoverSchema } from "../electron/shared/schemas";
@@ -94,6 +96,7 @@ describe("시작 화면 최근 목록", () => {
       { projectDir: "/a", title: "그림 없음" },
       { projectDir: "/b", title: "그림 있음", cover: "data:image/jpeg;base64,/9j/" },
       { projectDir: "/c", title: "낡음", cover: "data:image/jpeg;base64,/9j/", coverStale: true },
+      { projectDir: "/e", title: "빈 맵", coverEmpty: true },
       { projectDir: "/tmp/x", title: "임시", hiddenReason: "temporary" },
       { projectDir: "/gone", title: "사라짐", hiddenReason: "missing" },
     ]);
@@ -109,17 +112,43 @@ describe("대표 그림 채널", () => {
   });
 });
 
-describe("플레이·만들기 갈래", () => {
-  it("마지막으로 고른 갈래를 기억하고, 모르는 값은 버린다", () => {
-    const storage = memoryStorage();
-    expect(readLauncherMode(storage)).toBeNull();
-    writeLauncherMode(storage, "play");
-    expect(readLauncherMode(storage)).toBe("play");
-    storage.setItem(LAUNCHER_MODE_KEY, "edit");
-    expect(readLauncherMode(storage)).toBeNull();
-    expect(readLauncherMode(null)).toBeNull();
+describe("라이브러리 홈", () => {
+  it("같은 이름이 여럿이면 날짜를 붙여 구분하고, 하나뿐이면 그대로 둔다", () => {
+    const titles = displayTitles([
+      { projectDir: "/a", title: "새 게임", updatedAt: "2026-10-17T09:00:00" },
+      { projectDir: "/b", title: "새 게임", updatedAt: "2026-10-18T09:00:00" },
+      { projectDir: "/c", title: "별의 노래", updatedAt: "2026-10-18T09:00:00" },
+    ]);
+    expect(titles.get("/a")).toBe("새 게임 · 10월 17일");
+    expect(titles.get("/b")).toBe("새 게임 · 10월 18일");
+    expect(titles.get("/c")).toBe("별의 노래");
+    expect(displayTitles([
+      { projectDir: "/a", title: "New", updatedAt: "2026-10-17T09:00:00" },
+      { projectDir: "/b", title: "New", updatedAt: "2026-10-18T09:00:00" },
+    ], "en").get("/a")).toBe("New · Oct 17");
   });
 
+  it("빈 맵(한 타일 90% 초과, 위층 거의 없음)은 그림을 내지 않는다", () => {
+    const grass = { width: 10, height: 10, lowerTiles: Array(100).fill(5), upperTiles: Array(100).fill(-1) };
+    expect(isMostlyEmptyMap(grass)).toBe(true);
+    const town = { ...grass, upperTiles: grass.upperTiles.map((tile, index) => (index % 4 === 0 ? 40 : tile)) };
+    expect(isMostlyEmptyMap(town)).toBe(false);
+  });
+
+  it("컨셉 카드 무대는 지을 칩셋의 장소 그림이고, 같은 컨셉은 늘 같은 장면이다", () => {
+    const a = conceptStageArt({ slug: "joseon-wizard", tilesetHint: "joseon_baram" });
+    expect(a).toMatch(/^\/assets\/start\/stages\/joseon-/);
+    expect(conceptStageArt({ slug: "joseon-wizard", tilesetHint: "joseon_baram" })).toBe(a);
+    expect(conceptStageArt({ slug: "harbor", tilesetHint: "beodeul_city" })).toBeNull();
+  });
+
+  it("같은 칩셋 컨셉이 나란히 같은 무대 그림이 되지 않는다", () => {
+    const shots = ["wz-a", "wz-b", "wz-c", "wz-d"].map((slug) => conceptStageArt({ slug, tilesetHint: "wizarding_world" }));
+    expect(new Set(shots).size).toBe(4);
+  });
+});
+
+describe("플레이 기록", () => {
   it("플레이 기록은 최근에 플레이한 순서로, 플레이한 적 없는 월드는 빼고 고른다", () => {
     const storage = memoryStorage();
     recordPlayed(storage, "/games/a", Date.parse("2026-10-17T09:00:00Z"));

@@ -8,6 +8,8 @@ export type ProjectFolderSummary = {
   readonly title: string | null;
   readonly updatedAt: string | null;
   readonly mapCount: number;
+  /** 저장된 문서의 해시(project.current_sha256) — 시작 화면 카드 그림 캐시 열쇠. 옛 저장소면 null. */
+  readonly contentHash: string | null;
 };
 
 /**
@@ -27,13 +29,14 @@ export function readProjectFolderSummary(projectDir: string): ProjectFolderSumma
   try {
     driver.exec("PRAGMA busy_timeout=2000");
     driver.exec("PRAGMA query_only=1");
-    const row = driver.prepare("SELECT project_id, title, updated_at FROM project WHERE id = 1").get([]);
-    if (!row) return { title: null, updatedAt: null, mapCount: 0 };
+    const row = driver.prepare("SELECT project_id, title, updated_at, current_sha256 FROM project WHERE id = 1").get([]);
+    if (!row) return { title: null, updatedAt: null, mapCount: 0, contentHash: null };
     const count = driver.prepare("SELECT COUNT(*) AS count FROM maps WHERE project_id = ?").get([String(row.project_id)]);
     return {
       title: row.title === null || row.title === undefined ? null : String(row.title),
       updatedAt: row.updated_at === null || row.updated_at === undefined ? null : String(row.updated_at),
       mapCount: count ? Number(count.count ?? 0) : 0,
+      contentHash: typeof row.current_sha256 === "string" && row.current_sha256 ? row.current_sha256 : null,
     };
   } catch {
     return null;

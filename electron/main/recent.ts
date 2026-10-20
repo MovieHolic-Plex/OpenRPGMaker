@@ -1,10 +1,11 @@
-import { existsSync, readFileSync, readdirSync, realpathSync, statSync, writeFileSync, mkdirSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { existsSync, readFileSync, readdirSync, realpathSync, rmSync, statSync, writeFileSync, mkdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, isAbsolute, join, resolve, sep } from "node:path";
 import { app } from "electron";
 import { readProjectCoverSource, readProjectFolderSummary } from "../local-store/summary";
-import { PROJECT_COVER_FILE, PROJECT_STORE_FILE } from "../local-store/schema";
-import type { ProjectCoverSource, RecentProjectEntry, SuggestedProjectDir } from "../shared/start";
+import { PROJECT_STORE_FILE } from "../local-store/schema";
+import { PROJECT_COVER_VERSION, type ProjectCoverSource, type RecentProjectEntry, type SuggestedProjectDir } from "../shared/start";
 import type { RecentTeamEntry } from "../shared/start";
 
 type RecentEntry = { readonly projectDir: string; readonly title: string; readonly lastOpenedAt: string };
@@ -84,27 +85,38 @@ function isTemporaryDir(projectDir: string, roots: readonly string[]): boolean {
   return roots.some((root) => projectDir === root || projectDir.startsWith(root + sep));
 }
 
-function coverDataUrl(projectDir: string): string | null {
-  const path = join(projectDir, PROJECT_COVER_FILE);
-  try {
-    if (!existsSync(path) || statSync(path).size > MAX_COVER_BYTES) return null;
-    const bytes = readFileSync(path);
-    // JPEG 표식(FF D8)이 아니면 싣지 않는다 — data URL 로 무엇이든 시작 화면에 그리게 두지 않는다.
-    if (bytes[0] !== 0xff || bytes[1] !== 0xd8) return null;
-    return "data:image/jpeg;base64," + bytes.toString("base64");
-  } catch {
-    return null;
-  }
+/**
+ * 시작 화면 카드 그림 캐시(2026-10-20). 프로젝트 폴더의 cover.jpg(편집기가 남기는 옛 1배 그림)를 쓰지 않고,
+ * 앱 데이터 폴더에 「폴더 해시-문서 해시」 이름으로 둔다. 문서가 바뀌면(current_sha256) 열쇠가 바뀌어 다시 굽는다 —
+ * 목록을 읽을 때는 파일이 있는지만 본다(맵을 읽거나 그리지 않는다). 빈 맵은 .empty 표식만 남긴다.
+ */
+function coverCacheDir(): string {
+  return join(app.getPath("userData"), "start-covers");
 }
 
-/** cover.jpg 가 마지막 저장보다 1분 넘게 오래됐는가. 편집기는 저장 뒤 1분 안에 다시 굽는다. */
-function isCoverStale(projectDir: string, updatedAt: string | null): boolean {
-  const saved = updatedAt ? Date.parse(updatedAt) : NaN;
-  if (!Number.isFinite(saved)) return false;
+function dirKey(projectDir: string): string {
+  return createHash("sha256").update(projectDir).digest("hex").slice(0, 16);
+}
+
+/** 문서 해시가 없는 옛 저장소는 마지막 저장 시각으로 대신한다. 둘 다 없으면 null(캐시하지 않는다). */
+function coverKey(projectDir: string, contentHash: string | null, updatedAt: string | null): string | null {
+  const content = contentHash ?? updatedAt;
+  if (!content) return null;
+  return `${dirKey(projectDir)}-${createHash("sha256").update(`${PROJECT_COVER_VERSION}\n${content}`).digest("hex").slice(0, 16)}`;
+}
+
+function readCachedCover(key: string): { readonly cover: string | null; readonly empty: boolean } {
+  const base = join(coverCacheDir(), key);
+  if (existsSync(base + ".empty")) return { cover: null, empty: true };
   try {
-    return statSync(join(projectDir, PROJECT_COVER_FILE)).mtimeMs + 60_000 < saved;
+    const path = base + ".jpg";
+    if (!existsSync(path) || statSync(path).size > MAX_COVER_BYTES) return { cover: null, empty: false };
+    const bytes = readFileSync(path);
+    // JPEG 표식(FF D8)이 아니면 싣지 않는다 — data URL 로 무엇이든 시작 화면에 그리게 두지 않는다.
+    if (bytes[0] !== 0xff || bytes[1] !== 0xd8) return { cover: null, empty: false };
+    return { cover: "data:image/jpeg;base64," + bytes.toString("base64"), empty: false };
   } catch {
-    return false;
+    return { cover: null, empty: false };
   }
 }
 
@@ -115,15 +127,17 @@ export function describeRecentProjects(): readonly RecentProjectEntry[] {
     const exists = existsSync(join(entry.projectDir, PROJECT_STORE_FILE));
     const summary = exists ? readProjectFolderSummary(entry.projectDir) : null;
     const storedTitle = entry.title && entry.title !== entry.projectDir ? entry.title : null;
-    const cover = exists ? coverDataUrl(entry.projectDir) : null;
+    const key = summary ? coverKey(entry.projectDir, summary.contentHash, summary.updatedAt) : null;
+    const cached = key ? readCachedCover(key) : { cover: null, empty: false };
     return {
       projectDir: entry.projectDir,
       title: summary?.title || storedTitle || entry.projectDir.split(/[\\/]/).filter(Boolean).pop() || entry.projectDir,
       lastOpenedAt: entry.lastOpenedAt ?? null,
       updatedAt: summary?.updatedAt ?? null,
       mapCount: summary?.mapCount ?? null,
-      cover,
-      coverStale: cover !== null && isCoverStale(entry.projectDir, summary?.updatedAt ?? null),
+      cover: cached.cover,
+      coverEmpty: cached.empty,
+      coverStale: false,
       hiddenReason: !exists ? "missing" : isTemporaryDir(entry.projectDir, roots) ? "temporary" : null,
     };
   });
@@ -144,15 +158,31 @@ export function recentProjectCoverSource(projectDir: unknown): ProjectCoverSourc
   return dir ? readProjectCoverSource(dir) : null;
 }
 
-/** 시작 화면이 구운 카드 그림을 최근 목록의 그 폴더에 남긴다. JPEG·1MB 상한은 편집기 경로와 같다. */
+/**
+ * 시작 화면이 구운 카드 그림을 캐시에 남긴다. dataUrl 이 "empty" 면 빈 맵 표식. JPEG·1MB 상한은 편집기 경로와 같다.
+ * 같은 폴더의 옛 열쇠 파일은 지운다(문서가 바뀔 때마다 쌓이지 않게).
+ */
 export function writeRecentProjectCover(projectDir: unknown, dataUrl: unknown): boolean {
   const dir = recentProjectDir(projectDir);
   if (!dir || typeof dataUrl !== "string") return false;
-  const match = /^data:image\/jpeg;base64,([A-Za-z0-9+/]+=*)$/.exec(dataUrl);
-  if (!match) return false;
-  const bytes = Buffer.from(match[1]!, "base64");
-  if (bytes.length > MAX_COVER_BYTES || bytes[0] !== 0xff || bytes[1] !== 0xd8) return false;
-  writeFileSync(join(dir, PROJECT_COVER_FILE), bytes);
+  const summary = readProjectFolderSummary(dir);
+  const key = summary ? coverKey(dir, summary.contentHash, summary.updatedAt) : null;
+  if (!key) return false;
+  let bytes: Buffer | null = null;
+  if (dataUrl !== "empty") {
+    const match = /^data:image\/jpeg;base64,([A-Za-z0-9+/]+=*)$/.exec(dataUrl);
+    if (!match) return false;
+    bytes = Buffer.from(match[1]!, "base64");
+    if (bytes.length > MAX_COVER_BYTES || bytes[0] !== 0xff || bytes[1] !== 0xd8) return false;
+  }
+  const folder = coverCacheDir();
+  mkdirSync(folder, { recursive: true });
+  const prefix = dirKey(dir) + "-";
+  for (const name of readdirSync(folder)) {
+    if (name.startsWith(prefix) && !name.startsWith(key + ".")) rmSync(join(folder, name), { force: true });
+  }
+  if (bytes) writeFileSync(join(folder, key + ".jpg"), bytes);
+  else writeFileSync(join(folder, key + ".empty"), "");
   return true;
 }
 

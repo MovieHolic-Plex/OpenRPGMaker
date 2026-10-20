@@ -133,30 +133,42 @@ width/height와 기존 전체 셀 배열 형태는 그대로이며 스키마/릴
 affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는 바이트 그대로. `normalizeSkillRecord` 화이트리스트(0 초과만 남김)·
 `updateSkillRecord` 패치 키 목록에 있다. 전투는 시전자 자신을 대상으로 한 타임라인 엔트리(대가 damage·흡수 healing)를 남겨 숫자가 뜬다. 상세는 runtime-battle.md 「스킬 기믹 명시화」.
 
-## 데스크톱 시작 화면 — 플레이·만들기 런처 (2026-10-17, 2026-10-07 컨셉 피드 홈을 감쌈)
+## 데스크톱 시작 화면 — 라이브러리 홈 (2026-10-20, 2026-10-17 플레이·만들기 두 갈래를 대체)
 
-첫 화면은 두 갈래다. 왼쪽 레일에 「플레이」·「만들기」 둘만 있고, 위 막대·본문이 갈래를 따라 바뀐다. 이 앱은 만든 게임을 하는 샌드박스로 가므로
-「만드는 홈」 하나였던 2026-10-07 판(레일 「홈·탐색·내 프로젝트·템플릿」, 위 막대 「새 게임」)에는 플레이를 끼울 자리가 없었다.
-만들기 갈래 안쪽은 여전히 컨셉 피드다 — 썸네일 격자를 내려 보며 고르고, 상세에서 「이 게임 만들기」 한 번이면
-기획이 확정된 채 편집기로 넘어가 조수 팀이 첫 구간을 짓는다. 설계: `docs/superpowers/specs/2026-10-07-concept-feed-design.md`.
+첫 화면은 한 본문을 내려 보는 「라이브러리 홈」이다(설계 http://mdc-server:18301/home-redesign-1.html A안, 사용자 선택 2026-10-20).
+위에서부터 큰 배너 하나(「이어서 만들기」 — 마지막으로 편집한 게임) → 「내 게임」 선반 → 「기본 게임」 선반 → 「컨셉에서 시작」 피드.
+2026-10-17 판의 「플레이」·「만들기」 두 갈래는 없앴다 — 게임 카드마다 「플레이」와 「편집」이 같이 있어 갈래를 나눌 이유가 없다(`oprn:start-mode` 는 더 읽지 않는다).
+컨셉 피드 설계: `docs/superpowers/specs/2026-10-07-concept-feed-design.md`.
 옛 시네마틱 로비(`startLobby.ts`)·첫 문장 입구(`firstWorldArrival.ts`)·장르 프리셋 인터뷰(`runStartScreenPresetInterview`)·
 편집기 새 프로젝트 다이얼로그(`newProjectDialog.ts`)는 지웠다. 메뉴 「게임 기획」 수정 창(`projectInterviewDialog`)은 그대로 있고 세계 지도 영상도 거기서만 쓴다.
 
-- **엔트리**: 루트 `start-screen.html` → `src/start/startScreen.ts` + `startScreen.css`(tokens.css 만 싣는 바탕 시트, layer `tokens, start`).
-  틀은 `src/start/launcherShell.ts` + `launcher.css`(`ln-` 접두): 레일(브랜드 · 갈래 둘 · 바닥에 언어 `start-locale-select`·판 번호),
-  위 막대(왼쪽 입력 칸 + 오른쪽 글자 단추), 본문 한 칸. 아이콘은 `src/start/icons.ts` 의 선 SVG 하나뿐 — 이모지·색 배지를 쓰지 않는다.
-  고른 갈래는 `localStorage` 의 `oprn:start-mode`. 고른 적이 없으면 「만들기」 — 처음 켠 사람은 아직 플레이할 월드가 없다.
-- **플레이 갈래**: 위 막대 = 월드 찾기(`start-world-search`) + 「게임 파일 열기」(`start-open-game-file`). 본문 =
-  「이어서 플레이」(이 화면에서 마지막으로 플레이한 월드 큰 판 + 「최근 플레이」 줄) → 「내 월드」 격자(이 컴퓨터에 있는 게임, 주 단추 「플레이」, 곁 「편집」).
-  플레이 기록은 `localStorage` 의 `oprn:start-played`(폴더 → ISO 시각, 40개, `src/start/playFeed/playFeed.ts`). 월드가 없으면 빈 안내와 「게임 파일 열기」·「만들기로 가기」.
-  「플레이」 = `start.openRecent` 로 폴더를 연 뒤 `/index.html?play=1`(`START_PLAY_URL`). 편집기 부팅(`src/app/mode.ts`)이 `takeStartPlayRequest` 로
-  표시를 읽고 지운 뒤 플레이 모드로 연다 — 플레이 중 새로고침은 편집 화면이다.
-  「게임 파일 열기」 = `.oprn` 을 `readOprnGameFile` 로 읽어 그 프로젝트를 씨앗으로 `문서/OPRN Games/<제목>` 새 폴더를 만들고 바로 플레이한다(이후 「내 월드」에 남는다).
-  공유 월드(store.openrpgmaker.com)는 아직 잇지 않는다 — 빈 줄을 미리 그려 두지 않는다.
-- **만들기 갈래**: 위 막대 = 컨셉 입력창 + 「폴더 열기」·「팀에 참여」. 본문 = `conceptFeed.ts`(`mode: "launcher"`) — 맨 위 「이어서 만들기」
-  (최근 편집한 월드 큰 판 + 「내 월드」 줄, 주 단추 「이어서 만들기」, 곁 「플레이」, 「모두 보기」로 격자), 「새로 만들기」 한 줄(장르 → 빠른 인터뷰, 끝에 빈 프로젝트),
-  「컨셉에서 시작」 격자. 런처 모드의 피드는 자기 위 막대를 그리지 않고 입력창을 셸에 넘긴다. 편집기 「새 프로젝트」 덮는 창은 예전 모양 그대로다.
-  팀 참여는 별도 보기(`start-join-view`).
+- **엔트리**: 루트 `start-screen.html` → `src/start/startScreen.ts` + `startScreen.css`(tokens.css 만 싣는 바탕 시트, layer `tokens, start`)
+  + 지연 툴팁 시트(`@/styles/map/delayed-tooltip.css` — 없으면 창 단추 툴팁 「닫기」가 레일 위에 맨 글자로 남았다).
+  틀은 `src/start/launcherShell.ts` + `launcher.css`(`ln-`·`hm-` 접두, 층 밖): 레일(브랜드 · 홈 · 내 게임 · 기본 게임 · 새로 만들기 | 에셋 스토어,
+  바닥에 AI 상태 줄 `start-ai-status` · 설정 `start-settings-open` · 판 번호 · 언어), 위 막대(컨셉 입력창 + 「폴더 열기」·「팀에 참여」), 본문 한 칸.
+  레일의 홈·내 게임·기본 게임·새로 만들기는 화면을 바꾸지 않고 본문 안 선반(`data-nav`)으로 스크롤하며, 스크롤 위치가 레일 표시를 바꾼다. 에셋 스토어는 브라우저 창.
+  아이콘은 `src/start/icons.ts` 의 선 SVG 하나뿐 — 이모지·색 배지를 쓰지 않는다.
+- **본문 위쪽**: `src/start/home/homeView.ts` 가 그리고 컨셉 피드(`mode: "launcher"`)의 `lead` 로 넘긴다.
+  - 배너: 표지를 흐린 배경 + 오른쪽 16:9 액자, 주 단추 금색 「▶ 이어서 만들기」, 곁 「플레이」. 게임이 없으면 「처음이라면 먼저 해 보세요」 — 기본 게임 폴른 스타.
+  - 「내 게임」: 최근 편집 순 5장 + 「새 게임」 칸, 「게임 파일 열기」·「모두 보기 (n)」. 마우스를 올리면 「플레이」·「편집」.
+    같은 이름이 여럿이면 화면 언어 날짜를 붙인다(`displayTitles`, 「새 게임 · 10월 12일」). 처음 켠 상태는 「첫 게임 만들기」 + (AI 가 없으면) 막지 않는 안내 카드.
+  - 「기본 게임」: `src/start/home/builtinGames.ts` 한 표(편집기 「새 게임」 덮는 창도 같은 표). 그림은 출하 플레이어(player.html)로 기본 해상도 그대로 찍어
+    (`scripts/qa/runtime/home-builtin.scenario.mjs`, 픽스처 `home-builtin-fixture.mts`) `scripts/content/bake-home-builtin-art.py` 가 논리 480×270 의 정확히 2배 webp 로 굽는다
+    (`public/assets/start/builtin/`). 아스트라는 480×320(GBA 비율, 장르 고정)이라 무대 가운데 16:9 를 자른다. 마우스를 올리면 오프닝·첫 필드를 넘겨 보인다.
+    소개는 하는 사람 기준 한 줄 — 「96px 보스전」 같은 만든 사람 수치는 쓰지 않는다.
+  - 「컨셉에서 시작」 머리 오른쪽 글자 단추 「골라서 만들기 ›」(빠른 인터뷰)·「빈 프로젝트 ›」. 카드 큰 그림은 그 컨셉이 지어질 칩셋의 등록 장소 그림
+    (`src/start/conceptFeed/stageArt.ts`, 굽기 `scripts/content/bake-home-stage-art.py` → `public/assets/start/stages/`, 조선·일본 도시·마법 학교),
+    생성 일러스트는 오른쪽 아래 작은 창. 무대 그림이 없는 칩셋은 일러스트 그대로.
+- **설정 창**(`src/start/settings/settingsDialog.ts` + `settings.css`, `st-` 접두, 누를 때만 동적 로드): 탭 「AI 엔진·모델」·「일반·언어」(언어 고르기 `start-locale-select` 는 여기로 옮겼다)·「정보」.
+  AI 엔진은 이 PC 의 Claude Code · Codex · Gemini CLI 카드(상태 글자는 백엔드 `stateLabel` 그대로), 역할 표(처음엔 「모든 일」 한 줄, 「역할별로 나누기」로 조수 / 그림·큰 계획),
+  생각 깊이, 「연결 시험」, 비용 한 줄(구독이면 「청구 아님」), API 키는 「고급」 접이 안에 설명만. 백엔드는 PR #3072(`agent/assistant-claude-p`)의
+  동반 서비스 `GET /v1/local-agents[?fresh=1]` · `POST /v1/local-agents/health {cli}` — 그 모양을 `src/start/settings/localAgents.ts` 에 복사해 두었다(합쳐지면 `src/ai/localCliEngine.ts` 로 바꾼다).
+  합쳐지기 전에는 깃발(`localStorage oprn:flag:local-agents=1` 또는 `?localAgents=1`)이 꺼져 있어 요청을 보내지 않고 「곧 켜져요」만 보인다. `?localAgentsMock=1` 은 화면 확인용 가짜 응답.
+  고르는 것은 사용자다(#3072 D1 opt-in) — 추천은 카드에 「추천 · 눌러서 쓰기」로만 보이고, 고른 값은 `oprn:assistant-engine` 에 남으며 「원래 AI 연결로 되돌리기」가 지운다.
+- **만들기·플레이 동작**: 「플레이」 = `start.openRecent` 로 폴더를 연 뒤 `/index.html?play=1`(`START_PLAY_URL`). 편집기 부팅(`src/app/mode.ts`)이 `takeStartPlayRequest` 로
+  표시를 읽고 지운 뒤 플레이 모드로 연다 — 플레이 중 새로고침은 편집 화면이다. 플레이 기록 `oprn:start-played` 는 `src/start/playFeed/playFeed.ts` 에 남아 있다.
+  「게임 파일 열기」 = `.oprn` 을 `readOprnGameFile`(동적 로드)로 읽어 그 프로젝트를 씨앗으로 `문서/OPRN Games/<제목>` 새 폴더를 만들고 바로 플레이한다.
+  런처 모드의 피드는 자기 위 막대를 그리지 않고 입력창을 셸에 넘긴다. 편집기 「새 프로젝트」 덮는 창은 예전 모양 그대로다. 팀 참여는 별도 보기(`start-join-view`).
   편집기 트리를 import 하지 않는다. 장르 씨앗·AI 모듈을 여기서 부르면 수십 MB 가 된다(실측 esbuild 90MB) —
   `launcherMake.ts` 는 `brief.ts`(gameDesignBrief 는 타입만)·`newProjectChoices`·`startIntent` 만 정적으로 부른다.
   `vite.config.ts` 의 `startScreen` 입력, `scripts/mac-launch.mjs` 빌드 입력 목록에 들어 있다.
@@ -172,13 +184,16 @@ affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는
 - **최근 목록**: `electron/main/recent.ts` 의 `describeRecentProjects()` 가 폴더의 `project.sqlite` 를 **읽기 전용**
   (`electron/local-store/summary.ts`, `query_only`, 본문 `current_json` 안 읽음)으로 열어 제목·편집 시각·맵 수를 채운다.
   임시 폴더(`/tmp`·`os.tmpdir()`) 아래와 사라진 폴더는 `hiddenReason` 을 달아 **기본 숨김** — 목록 파일에서 지우지 않는다.
-- **카드 그림**: `<폴더>/cover.jpg` 는 정본이 아니라 캐시다. 두 곳이 같은 코드로 굽는다 —
-  시작 맵(`startPos` 둘레, 30칸 창)을 480×300 JPEG 로(`src/editor/mapCoverRender.ts`).
-  - 편집기: 부팅 4초 뒤 한 번, 이후 저장 뒤 1분에 한 번까지 `oprn:project.saveCover`(`src/editor/projectCover.ts`). 호스트는 **세션의 폴더**에만 쓴다.
-  - 시작 화면: 그림이 없거나(편집기에서 한 번도 안 연 프로젝트) 마지막 저장보다 1분 넘게 낡은(`coverStale`) 보이는 항목을
-    한 장씩 굽는다(`src/start/startCover.ts`, 필요할 때만 동적 로드). 재료는 `oprn:start.coverSource` 가 읽기 전용으로 꺼낸
-    시작 맵(맵 거울 표) + 그 타일셋(참고문서 제외, 접힌 행이면 `tileset_blobs`, 업로드 그림판이면 16MB 이하 data URL)이고,
-    `oprn:start.saveCover` 로 남긴다. 두 채널 모두 **최근 목록에 있는 폴더만** 받는다(`electron/main/recent.ts`).
+- **카드 그림**(2026-10-20 판, `PROJECT_COVER_VERSION = 2`): 시작 화면 카드는 프로젝트 폴더가 아니라 **앱 사용자 데이터의 캐시**에서 읽는다 —
+  `<userData>/start-covers/<sha256(폴더)[:16]>-<sha256(판 번호 + current_sha256)[:16]>.jpg`(빈 맵이면 `.empty`). 열쇠가 프로젝트 내용 해시라
+  저장할 때마다 낡음을 따로 재지 않는다(`coverStale` 은 데스크톱에서 늘 false). 같은 폴더의 옛 열쇠 파일은 쓸 때 지운다.
+  - 그림: 시작 맵을 **주인공 시작 칸 중심, 15칸 창(2배)** 으로 480×270 에 가깝게(`src/editor/mapCoverRender.ts`, 예전 30칸 창은 지붕만 보였다).
+    한 타일이 90% 넘고 윗층이 거의 없는 빈 맵(`isMostlyEmptyMap`)은 그림을 내지 않고 `.empty` 를 남긴다 — 카드는 무늬 자리표 + 첫 글자 + 「아직 그림 없음」.
+  - 굽는 때: 목록이 뜨고 **한가해진 뒤**(`whenIdle` 2.5초) 그림도 `.empty` 도 없는 항목만 한 장씩, 사이에 50ms 쉬며(`src/start/startCover.ts`, 동적 로드).
+    시작 경로에서 맵을 컴파일하지 않는다. 재료는 `oprn:start.coverSource` 가 읽기 전용으로 꺼낸 시작 맵(맵 거울 표) + 그 타일셋
+    (참고문서 제외, 접힌 행이면 `tileset_blobs`, 업로드 그림판이면 16MB 이하 data URL)이고, `oprn:start.saveCover`(`dataUrl` 또는 `"empty"`)로 남긴다.
+    두 채널 모두 **최근 목록에 있는 폴더만** 받는다(`electron/main/recent.ts`).
+  - 편집기의 `<폴더>/cover.jpg`(부팅 4초 뒤 · 저장 뒤 1분에 한 번, `src/editor/projectCover.ts`)는 그대로 쓰지만 시작 화면은 더 읽지 않는다.
   - 그리기는 store 없는 `src/editor/mapTileDrawCore.ts`(쿼터 합성 판정 `chipsetComposition.ts`)라 편집기 썸네일과 같다.
     `mapTileDraw.ts` 는 그 코어를 다시 내보내고 편집기 쪽 그림 로드만 더한다. 시작 화면은 이식(tileGrafts)·투명색을 편집기와 같이 합성하고,
     재료가 하나라도 없으면(번들에 없는 칩셋 등) 반쪽 그림 대신 첫 글자로 둔다. 맵 없는 빈 폴더도 첫 글자.
@@ -195,7 +210,9 @@ affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는
   환영은 지금 열린 빈 프로젝트의 시스템을 장르 틀 씨앗으로 바꾸고(화면 크기 보존) 기획을 심는다. 「빈 프로젝트로 시작」은 장르 없는 새 폴더(메뉴) 또는 그냥 닫기(환영).
 - **기획 필드 `gameDesignBrief.concept?`**: `{slug, title, hook, tweak?}`(각 80/40/120/300자). 컨셉에서 온 기획만 있고 `interview` 와 동시에 있을 수 없다.
   `summary` 마지막 줄은 `사용자 변경: …` 이며 4000자 제한에 걸려도 남는다. 장르 프리셋 프롬프트의 이름은 `<컨셉 제목> (<장르 틀>)`.
-- **증거**: `verify-shots/concept-feed/`. `scripts/qa/electronStartScreenProbe.mjs` 는 옛 로비를 기준으로 쓴 것이라 새 피드 흐름으로 다시 써야 한다.
+- **증거**: `verify-shots/home-redesign/`(웹, 가짜 브리지 · `scripts/qa/home-redesign-capture.mjs`), `verify-shots/home-redesign-electron/`
+  (실제 Electron + 실제 프로젝트 사본, 표지 캐시까지 · `scripts/qa/electronHomeCapture.mjs`), 옛 `verify-shots/concept-feed/`.
+  `scripts/qa/electronStartScreenProbe.mjs` 는 2026-10-17 판 선택자(`cf-continue-*`)를 쓰므로 새 홈으로 다시 써야 한다.
   단위(작성, 이 변경에서 미실행): `test/conceptFeed.test.ts`·`test/conceptMakeGame.test.ts`·`test/conceptDraft.test.ts`·`test/conceptSource.test.ts`·`test/concepts.test.ts`.
 
 ## 강하게 다시 하기·장 표시 선택 필드 (2026-09-26)
