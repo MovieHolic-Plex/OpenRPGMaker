@@ -135,7 +135,7 @@ export const PIXEL_ENEMY_SHEETS: readonly PixelEnemySheet[] = [
   { resourceId: "generated-enemy-leaf-fox", path: "assets/generated/pixel-enemies/leaf-fox.png", cell: 64, motion: "dash", idleFrameMs: 180, skillCell: true },
   { resourceId: "generated-enemy-fire-pup", path: "assets/generated/pixel-enemies/fire-pup.png", cell: 64, motion: "dash", idleFrameMs: 180, skillCell: true },
   // arcane: 39종 — 저작 원본과 검토 해시는 retirement/arcane, verify-shots/legacy-monsters/arcane.
-  { resourceId: "generated-enemy-ontology-8da61312", path: "assets/generated/pixel-enemies/ontology-8da61312.png", cell: 64, motion: "float", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-ontology-8da61312", path: "assets/generated/pixel-enemies/ontology-8da61312.png", cell: 64, motion: "float", idleFrameMs: 180, skillCell: true },
   { resourceId: "generated-enemy-sylph-hornet", path: "assets/generated/pixel-enemies/sylph-hornet-transparent.png", cell: 64, motion: "swoop", idleFrameMs: 180, skillCell: true },
   { resourceId: "generated-enemy-skeleton-01", path: "assets/generated/pixel-enemies/skeleton-01.png", cell: 64, motion: "stomp", idleFrameMs: 180, skillCell: true },
   { resourceId: "generated-enemy-ghost-01", path: "assets/generated/pixel-enemies/ghost-01.png", cell: 64, motion: "float", idleFrameMs: 180, skillCell: true },
