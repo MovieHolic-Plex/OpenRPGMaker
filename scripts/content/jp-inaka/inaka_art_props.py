@@ -559,24 +559,68 @@ def sluice(c, base):
     c.P(13, 1, K('aka', 3)); c.P(16, 2, K('tekko', 3))
 
 
-@kit('inaka-bamboo-fence-gate', '대나무 울타리와 문(四つ目垣) - 기둥 갓 윗면·대나무 가로대·작은 기와 문(4×2)', 4, 2, 'structure',
+# 대나무 줄기 문법: PR #3026(jp_regions_pack.bamboo_culm, 보류 중)과 같은 규칙을 이나카 팩 안에 둔다.
+#   줄기 2~3px(왼쪽 빛·몸·오른쪽 그늘), 줄기마다 윤곽선 없음, 마디 7~9px 간격으로 줄기마다 어긋남(마디 줄 + 바로 위 밝은 턱).
+def bamboo_culm(c, x, top, bot, w=3, depth=2, seed=0, lean=0):
+    """대나무 줄기 하나: x = 밑동 왼쪽 열, top~bot(포함), 폭 w(2|3), depth 0 뒤(그늘) · 1 가운데 · 2 앞(밝음)."""
+    hi, body, sh = ((('pine_bamboo', 2), ('pine_bamboo', 1), ('pine_bamboo', 0)),
+                    (('pine_bamboo', 4), ('pine_bamboo', 3), ('pine_bamboo', 2)),
+                    (('moss', 4), ('pine_bamboo', 4), ('pine_bamboo', 3)))[depth]
+    hi, body, sh = J(*hi), J(*body), J(*sh)
+    node = J('pine_bamboo', (0, 1, 2)[depth])
+    ridge = J(*(('pine_bamboo', 3), ('moss', 4), ('tatami_straw', 3))[depth])
+    span = max(1, bot - top)
+    gap = 7 + int(H(x, depth, seed) * 3)
+    first = bot - 3 - int(H(x, top, seed + 1) * gap)
+    dark = J('pine_bamboo', max(0, (0, 1, 2)[depth] - (depth == 0)))
+    for y in range(top, bot + 1):
+        ox = x + round(lean * ((bot - y) / span) ** 2)
+        ww = w if y > top + 6 else max(2, w - 1)
+        seg = (first - y) % gap if y < first else gap
+        c.P(ox, y, hi)
+        if ww == 3: c.P(ox + 1, y, body if seg not in (1, 2) else sh)
+        c.P(ox + ww - 1, y, sh if seg != 1 else dark)
+        if y < first and y > top + 2 and seg == 0:
+            c.HL(ox, y, ww, node)
+        elif y < first - 1 and y > top + 2 and seg == gap - 1:
+            c.HL(ox, y, ww - 1, ridge)
+
+
+def _takegaki_panel(c, x0, x1, top, bot, seed):
+    """建仁寺垣 판: 3px 쪼갠 대를 빈틈없이 세운 판(줄기 사이 윤곽 없음, 앞뒤 단을 섞어 결을 낸다) +
+    위 갓대(玉縁) + 가로 누름대(押縁) 2줄 + 검은 종려 끈 매듭. 줄기마다 마디 높이가 어긋나 사다리 가로대로 읽히지 않는다."""
+    k = 0
+    c.R(x0, top, x1 - x0, bot - top + 1, J('pine_bamboo', 1))      # 판 뒤 그늘: 줄기 끝이 가늘어진 틈이 투명하면 윤곽이 검은 눈금으로 들어찬다
+    for x in range(x0, x1, 3):
+        tp = top + (1 if H(x, 1, seed) > 0.55 else 0)
+        bamboo_culm(c, x, tp, bot, w=min(3, x1 - x), depth=(2, 1, 2, 1, 0)[k % 5] if H(x, 2, seed) > 0.25 else 1, seed=seed + k)
+        k += 1
+    # 갓대(玉縁) 윗면: 위에서 내려다본 반쪽 대 3줄(밝은 등·몸·그늘) + 앞 처마 그늘 1줄 — 3/4 윗면이 2줄로 얇으면 정면 입면으로 읽힌다.
+    c.HL(x0, top - 2, x1 - x0, J('pine_bamboo', 4)); c.HL(x0, top - 1, x1 - x0, J('pine_bamboo', 3))
+    for x in range(x0, x1):
+        c.P(x, top, J('pine_bamboo', 2 if (x // 5 + top) % 3 else 3))      # 반쪽 대 이음 마디가 윗면에 드문드문
+    c.HL(x0, top + 1, x1 - x0, J('pine_bamboo', 0))
+    for y in (top + 6, bot - 5):                                   # 누름대: 밝은 윗면 + 그늘
+        c.HL(x0, y, x1 - x0, J('tatami_straw', 3)); c.HL(x0, y + 1, x1 - x0, J('tatami_straw', 1))
+        for x in range(x0 + 2 + (y % 3), x1 - 1, 6):
+            c.P(x, y, K('sumi', 1)); c.P(x, y + 1, K('sumi', 0))   # 종려 끈 매듭
+
+
+@kit('inaka-bamboo-fence-gate', '대나무 울타리와 문(建仁寺垣) - 쪼갠 대 판·갓대·누름대·종려 끈·작은 기와 문(4×2)', 4, 2, 'structure',
      solid=[(0, 1), (1, 1), (3, 1)], tags=['inaka', '대나무울타리', '竹垣', '문'],
      rules='농가 마당 경계. 세 번째 칸이 드나드는 문.', role='fence')
 def bamboo_fence(c, base):
-    bam = 'pine_bamboo'
-    for x in list(range(2, 32, 4)) + [62]:                       # 세로 대
-        c.R(x, 12, 2, 18, J(bam, 2)); c.P(x, 12, J(bam, 4)); c.VL(x + 1, 13, 17, J(bam, 1))
-        c.HL(x, 20, 2, J(bam, 1))
-    for y in (15, 22, 27):                                       # 가로대 + 매듭
-        c.HL(0, y, 34, J(bam, 3)); c.HL(0, y + 1, 34, J(bam, 1))
-        c.HL(56, y, 8, J(bam, 3)); c.HL(56, y + 1, 8, J(bam, 1))
-        for x in range(3, 32, 4): c.P(x, y, J('aged_cedar', 1))
+    t = Cv(c.w, c.h)
+    _takegaki_panel(t, 0, 33, 12, 28, 3)
+    _takegaki_panel(t, 57, 64, 12, 28, 8)
     for x in (33, 54):                                           # 문 기둥 + 갓(윗면)
-        post(c, x, 6, 25, 'aged_cedar', 2, 3)
-        rect_3d(c, x - 2, 3, 7, 4, 2, 'kawara_dark_tile', top_t=3, front_t=1)
-    rect_3d(c, 31, 1, 28, 5, 2, 'kawara_dark_tile', top_t=3, front_t=1)   # 문 위 작은 기와 지붕
-    c.HL(36, 10, 18, J('aged_cedar', 2)); c.HL(36, 11, 18, J('aged_cedar', 0))
-    add_outline(c)
+        post(t, x, 6, 25, 'aged_cedar', 2, 3)
+        rect_3d(t, x - 2, 3, 7, 4, 2, 'kawara_dark_tile', top_t=3, front_t=1)
+    rect_3d(t, 31, 1, 28, 5, 2, 'kawara_dark_tile', top_t=3, front_t=1)   # 문 위 작은 기와 지붕
+    t.HL(36, 10, 18, J('aged_cedar', 2)); t.HL(36, 11, 18, J('aged_cedar', 0))
+    add_outline(t)                                               # 실루엣만 윤곽(대 판 안쪽은 윤곽 없음)
+    c.HL(1, 30, 31, K('yoru', -1)); c.HL(58, 30, 6, K('yoru', -1))   # 발치 그늘
+    _blit(c, t)
 
 
 def _mossy_wall(c, seed):
