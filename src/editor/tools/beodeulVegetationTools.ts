@@ -65,6 +65,9 @@ export function refineBeodeulVegetation(project:Project,mapId:string){
  // 숲 둘레 풀: 민무늬 잔디 737 과 숲 조각 밑에 깔려 있던 잔디 변형(공동마당 잔디밭) — 길·마당 바닥은 아니다
  const lawn=new Set<number>([737,...[...groveCells].map(i=>layerTileAt(m,1,i))]);
  const grassy=(x:number,y:number)=>inMap(x,y)&&bare(y*m.width+x)&&lawn.has(layerTileAt(m,1,y*m.width+x));
+ // 3차 검수 N5: 숲 칸 둘레 2칸의 마당 잔디(밝은 잔디 띠)는 737 로 되돌린 뒤 짙은 풀을 깐다 — 짙은 풀 가장자리는 737 쪽으로만 풀려서
+ // 마당 잔디와 맞닿으면 칸 선으로 곧게 잘리고 숲 덩이가 L자 띠에 갈려 네모 판처럼 보였다.
+ for(let y=0;y<m.height;y++)for(let x=0;x<m.width;x++){const i=y*m.width+x,t=layerTileAt(m,1,i);if(t!==737&&lawn.has(t)&&bare(i)&&nearGrove(x,y))setLayerTileAt(m,1,i,737);}
  composeBeodeulForest(project,m,ts,'mixed',(x,y)=>inMap(x,y)&&groveCells.has(y*m.width+x),
   (x,y)=>inMap(x,y)&&(groveCells.has(y*m.width+x)||grassy(x,y)&&near1(x,y)),54,
   (x,y)=>inMap(x,y)&&(groveCells.has(y*m.width+x)||grassy(x,y)&&nearGrove(x,y)));

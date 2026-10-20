@@ -97,6 +97,27 @@ export function paintBeodeulDarkGrass(project: Project, map: GameMap, target: Ti
   const group = ensureBeodeulDarkGrass(project, target, family);
   const connect = new Set(group.connectTileIds ?? group.memberTileIds);
   const W = map.width, H = map.height;
+  // 짙은 풀 가장자리는 바탕 잔디(737·숲 장면 잔디) 쪽으로만 풀린다. 오토타일이 아닌 다른 바닥(공동마당의 밝은 마당 잔디 띠 등)과
+  // 맞닿으면 칸 선으로 곧게 잘리므로(3차 검수 N5), 그런 바닥과 8이웃으로 닿는 칸은 짙은 풀에서 뺀다 — 뺀 칸이 그 바닥이면 다시 번진다.
+  // 다른 오토타일(길·모랫길·물 등)은 가장자리가 잔디와 만나게 그려져 있어 그대로 둔다.
+  const base = new Set<number>([737, beodeulWoodlandGrass(project, target), ...connect]);
+  for (const g of target.autotileGroups ?? []) if ((g.layer ?? "lower") === "lower") for (const t of g.memberTileIds) base.add(t);
+  const keep = new Set([...dark].filter((i) => write(i % W, Math.floor(i / W))));
+  for (let changed = true; changed;) {
+    changed = false;
+    for (const i of [...keep]) {
+      const x = i % W, y = Math.floor(i / W);
+      let foreign = false;
+      for (const [, dx, dy] of DIRS) {
+        const nx = x + dx, ny = y + dy;
+        if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue;
+        const j = ny * W + nx;
+        if (!keep.has(j) && !base.has(map.lowerTiles[j]!)) { foreign = true; break; }
+      }
+      if (foreign) { keep.delete(i); changed = true; }
+    }
+  }
+  dark = keep;
   const on = (x: number, y: number) => x < 0 || y < 0 || x >= W || y >= H || dark.has(y * W + x) || connect.has(map.lowerTiles[y * W + x]!);
   const interior = data.ground.darkGrass.interior;
   let n = 0;
@@ -120,9 +141,10 @@ export function paintBeodeulDarkGrass(project: Project, map: GameMap, target: Ti
 type Shapes = readonly (readonly [string, number])[];
 const PLANT: Record<BeodeulForestType, { gx: number; gy: number; rim: Shapes; core: Shapes }> = {
   // r4 B(2026-10-21 사용자 승인): 숲 덩이 한 톤 — 속(가장자리에서 2칸 이상)은 짙은 초록(D3 3×4·D2 덤불), 가장자리만 밝은 연두(큰 4×5 포함)
-  broadleaf: { gx: 2, gy: 2, rim: [["T3", 0.5], ["B2", 0.3], ["T4", 0.2]], core: [["D3", 0.85], ["D2", 0.15]] },
+  // 3차 검수 W1: 짙은 3×4 원본 나무는 1e09f0 한 종뿐이라 속이 벽지처럼 반복됐다 — 속에도 연두 T3(3종)·짙은 덤불(4종)을 섞는다
+  broadleaf: { gx: 2, gy: 2, rim: [["T3", 0.5], ["B2", 0.3], ["T4", 0.2]], core: [["D3", 0.55], ["T3", 0.2], ["D2", 0.25]] },
   conifer: { gx: 2, gy: 2, rim: [["C3", 0.45], ["C2", 0.35], ["P1", 0.2]], core: [["C3", 0.45], ["C2", 0.35], ["P1", 0.2]] },
-  mixed: { gx: 2, gy: 2, rim: [["T4", 0.4], ["T3", 0.35], ["S", 0.25]], core: [["D3", 0.55], ["S", 0.4], ["D2", 0.05]] },
+  mixed: { gx: 2, gy: 2, rim: [["T4", 0.4], ["T3", 0.35], ["S", 0.25]], core: [["D3", 0.4], ["S", 0.35], ["T3", 0.15], ["D2", 0.1]] },
 };
 const CONIFER_ART = /fir|eef4bc|28ad5e|c27062/u;
 
@@ -224,6 +246,8 @@ export function planBeodeulForest(map: GameMap, def: TreeComposerDef, type: Beod
         // 침엽 꼭대기가 다른 나무 줄기 칸에 꽂히지 않게(2차 검수 N4) — 꼭대기 칸 ↔ 줄기 칸이 겹치는 배치는 건너뛴다
         const tips = tipCells(sp, x0, y0), trunks = (def.trunkCols[sp.shape] ?? [0]).map((i) => y * W + x + i);
         if (tips.some((k) => trunkSet.has(k)) || trunks.some((k) => tipSet.has(k))) continue;
+        // 3차 검수 W2: 2칸 높이 덤불이 같은 밑동 줄·가로 3칸 안에 또 서면 같은 높이로 늘어선다 — 건너뛴다
+        if (sp.h <= 2 && placed.some((p) => p.sprite.h <= 2 && p.ay === y && Math.abs(p.ax - x) <= 3)) continue;
         if (!fits(sp, x0, y0, z)) continue;
         if (touch) topTouch.push(x);
         for (const k of tips) tipSet.add(k);
