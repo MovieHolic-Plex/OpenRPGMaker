@@ -163,7 +163,9 @@ affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는
   AI 엔진은 이 PC 의 Claude Code · Codex · Gemini CLI 카드(상태 글자는 백엔드 `stateLabel` 그대로), 역할 표(처음엔 「모든 일」 한 줄, 「역할별로 나누기」로 조수 / 그림·큰 계획),
   생각 깊이, 「연결 시험」, 비용 한 줄(구독이면 「청구 아님」), API 키는 「고급」 접이 안에 설명만. 백엔드는 PR #3072(`agent/assistant-claude-p`)의
   동반 서비스 `GET /v1/local-agents[?fresh=1]` · `POST /v1/local-agents/health {cli}` — 그 모양을 `src/start/settings/localAgents.ts` 에 복사해 두었다(합쳐지면 `src/ai/localCliEngine.ts` 로 바꾼다).
-  합쳐지기 전에는 깃발(`localStorage oprn:flag:local-agents=1` 또는 `?localAgents=1`)이 꺼져 있어 요청을 보내지 않고 「곧 켜져요」만 보인다. `?localAgentsMock=1` 은 화면 확인용 가짜 응답.
+  합쳐지기 전에는 `LOCAL_AGENTS_BACKEND_AVAILABLE = false` 라 깃발(`localStorage oprn:flag:local-agents=1` 또는 `?localAgents=1`)을 켜도 요청을 보내지 않고(없는 경로라 404 였다) 「곧 켜져요」만 보인다. `?localAgentsMock=1` 은 화면 확인용 가짜 응답.
+  고른 로컬 엔진이 없으면 레일 AI 상태 줄·「AI 엔진이 아직 없어요」 안내는 편집기의 AI 연결(`aiConnectionStatus`, Google·ChatGPT 로그인)을 본다 — 연결돼 있으면 「Google 연결됨」.
+  시작 화면에서 띄우는 AI 연결 창(`aiConnectGate`)은 `src/start/aiModalStyles.ts` 로 AI 창 CSS 를 같이 받는다(없으면 창이 위치 없이 첫 화면 뒤로 숨는다). 편집기에서는 이 모듈을 가져오지 말 것 — 계층 없는 사본이 `@layer shell` 규칙을 이긴다.
   고르는 것은 사용자다(#3072 D1 opt-in) — 추천은 카드에 「추천 · 눌러서 쓰기」로만 보이고, 고른 값은 `oprn:assistant-engine` 에 남으며 「원래 AI 연결로 되돌리기」가 지운다.
 - **만들기·플레이 동작**: 「플레이」 = `start.openRecent` 로 폴더를 연 뒤 `/index.html?play=1`(`START_PLAY_URL`). 편집기 부팅(`src/app/mode.ts`)이 `takeStartPlayRequest` 로
   표시를 읽고 지운 뒤 플레이 모드로 연다 — 플레이 중 새로고침은 편집 화면이다. 플레이 기록 `oprn:start-played` 는 `src/start/playFeed/playFeed.ts` 에 남아 있다.

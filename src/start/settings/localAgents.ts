@@ -65,9 +65,17 @@ function query(name: string): string | null {
   try { return typeof location === "undefined" ? null : new URLSearchParams(location.search).get(name); } catch { return null; }
 }
 
-/** 백엔드가 합쳐졌을 때 켠다. 그 전에는 화면만 보이고 요청은 보내지 않는다. */
+/**
+ * 백엔드(/v1/local-agents, PR #3072)가 이 빌드에 들어 있는가. 들어오기 전에는 깃발·주소 인자가 있어도 **요청을 보내지 않는다** —
+ * 없는 경로를 부르면 동반 서비스가 404 를 돌려주고 화면은 «목록을 읽지 못했어요» 가 된다. #3072 가 합쳐질 때 true 로 바꾼다.
+ */
+export const LOCAL_AGENTS_BACKEND_AVAILABLE = false;
+
+/** 백엔드가 있고 깃발이 켜졌을 때만 켠다. 그 전에는 화면만 「준비 중」으로 보이고 요청은 보내지 않는다(목업은 예외 — 요청 없음). */
 export function localAgentsEnabled(): boolean {
-  if (query("localAgents") === "1" || query("localAgentsMock") === "1") return true;
+  if (query("localAgentsMock") === "1") return true;
+  if (!LOCAL_AGENTS_BACKEND_AVAILABLE) return false;
+  if (query("localAgents") === "1") return true;
   return storage()?.getItem(LOCAL_AGENTS_FLAG_KEY) === "1";
 }
 
