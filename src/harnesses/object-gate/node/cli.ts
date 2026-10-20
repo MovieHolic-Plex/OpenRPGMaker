@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 import { OBJECT_GATE_PROFILE, objectGateRefusal, type ObjectGateContext, type ObjectGateKind } from '../../_core/objectGate';
 import { createInterface } from 'node:readline/promises';
 import { validFrontPropApproval } from '../../_core/objectGate';
-import { calibratedProfiles, gateProfileHash, listApprovals, listReceipts, pngPixelSha256, readApproval, readProfiles, readReceipt, removeApproval, writeApproval } from './store';
+import { calibratedProfiles, gateProfileHash, listApprovals, listReceipts, pngPixelSha256, readApproval, readHoldDecision, readProfiles, readReceipt, removeApproval, writeApproval } from './store';
 
 const spawnBun = (argv: string[]): Promise<number> => new Promise((done, reject) => {
   const child = spawn('bun', [resolve('src/harnesses/object-gate/node/judge.mts'), ...argv], { stdio: 'inherit', cwd: process.cwd() });
@@ -18,7 +18,7 @@ export async function run(argv: string[]): Promise<number> {
     const png = option('png'), context = option('context') as ObjectGateContext | undefined;
     if (!png || !context) throw Error('check --png <그림> --context bundle|shared|store|workshop-local [--kind 종류]');
     const sha = await pngPixelSha256(resolve(png));
-    const refusal = objectGateRefusal({ receipt: readReceipt(sha), pixelSha256: sha, kind: option('kind') as ObjectGateKind | undefined, context, calibratedProfiles: calibratedProfiles(), approval: readApproval(sha) });
+    const refusal = objectGateRefusal({ receipt: readReceipt(sha), pixelSha256: sha, kind: option('kind') as ObjectGateKind | undefined, context, calibratedProfiles: calibratedProfiles(), approval: readApproval(sha), hold: readHoldDecision(sha) });
     console.log(refusal ? `거절: ${refusal}` : `통과 (${sha.slice(0, 12)})`);
     return refusal ? 3 : 0;
   }
@@ -52,6 +52,19 @@ export async function run(argv: string[]): Promise<number> {
     for (const a of approvals) console.log(`  ${a.pixelSha256.slice(0, 12)} ${a.approvedBy} ${a.approvedAt}${a.note ? ` — ${a.note}` : ''}`);
     return 0;
   }
+  // 보류 판정 사람 검토 화면. 결정 기록은 이 서버만 쓴다(서명). 감독·에이전트는 띄울 수는 있어도 대신 누르지 않는다.
+  if (stage === 'serve-holds') {
+    const { serveHolds } = await import('./holds');
+    await serveHolds({ host: option('host') ?? '0.0.0.0', port: Number(option('port') ?? 18323) });
+    await new Promise(() => {});
+  }
+  if (stage === 'holds') {
+    const current = await gateProfileHash();
+    const held = listReceipts().filter(r => r.verdict === 'refer' && r.profileHash === current);
+    const decided = held.map(r => readHoldDecision(r.pixelSha256)).filter(Boolean);
+    console.log(`현재 프로필 ${current} 보류 ${held.length}장 — 허용 ${decided.filter(d => d!.decision === 'allow').length}, 거절 ${decided.filter(d => d!.decision === 'reject').length}, 미결 ${held.length - decided.length} · 검토 화면 serve-holds`);
+    return 0;
+  }
   if (stage === 'status') {
     const current = await gateProfileHash();
     const profiles = readProfiles();
@@ -69,5 +82,5 @@ export async function run(argv: string[]): Promise<number> {
     console.log(`  현재 프로필 영수증 ${now.length}장 — 통과 ${now.filter(r => r.verdict === 'pass').length}, 보류 ${now.filter(r => r.verdict === 'refer').length} (3/4 통과 ${now.filter(r => r.view34?.verdict === 'pass').length}, 화풍 통과 ${now.filter(r => r.style?.verdict === 'pass').length}) · 옛 프로필 ${receipts.length - now.length}장은 무효(재검수 필요: rereview)`);
     return 0;
   }
-  throw Error('단계: review | calibrate | rereview | check | status | audit | preview | approve-front-prop | revoke-front-prop | approvals');
+  throw Error('단계: review | calibrate | rereview | check | status | audit | preview | approve-front-prop | revoke-front-prop | approvals | serve-holds | holds');
 }

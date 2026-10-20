@@ -12,7 +12,7 @@ import {
   decideObjectGate, decideObjectGateBoth, decideObjectGateStyle, defaultObjectGateStyleKind, objectGatePixelSha256,
   type ObjectGateKind, type ObjectGateReceipt, type ObjectGateRun, type ObjectGateStyleKind,
 } from '../../_core/objectGate';
-import { GATE_DATA, gatePromptHash, gateProfileHash, readPng, readReceipt, styleRefs, writeProfile, writeReceipt } from './store';
+import { GATE_DATA, gatePromptHash, gateProfileHash, readPng, readReceipt, styleRefs, writeHeldImage, writeProfile, writeReceipt } from './store';
 import { receiptCells } from './cells';
 import { auxMetrics } from './metrics';
 import { columnScan, factsLine, styleFacts, widthProfile } from './facts';
@@ -225,6 +225,8 @@ async function judgeItems(items: Item[], opts: JudgeOpts): Promise<ObjectGateRec
       for (const [ts, list] of Object.entries(more)) { const merged = [...new Set([...(cells[ts] ?? []), ...list])].sort(); if (merged.length !== (cells[ts] ?? []).length) grew = true; cells[ts] = merged; }
       const receipt = grew ? { ...cached, cells } : cached;
       if (grew && opts.write) writeReceipt(receipt);
+      // 보류 영수증의 그림은 검토 화면(serve-holds)이 보여 줄 수 있게 따로 둔다(영수증에는 그림이 없다).
+      if (opts.write && receipt.verdict === 'refer') writeHeldImage(sha, width, height, data);
       prepared.push({ item, styleKind, sha, width, height, metrics, refNames, scale: BOARD_SCALE, cached: receipt }); continue;
     }
     const image = magnify(width, height, data).png;
@@ -287,6 +289,7 @@ async function judgeItems(items: Item[], opts: JudgeOpts): Promise<ObjectGateRec
       metrics: p.metrics, ...(ey.length ? { eye: { verdicts: ey.map(r => String((r.answer as { verdict?: string } | null)?.verdict ?? 'unread')) } } : {}), runs, decidedAt: new Date().toISOString(), cells: p.cells,
     };
     if (opts.write) writeReceipt(receipt);
+    if (opts.write && receipt.verdict === 'refer') { const im = readPng(p.item.png); writeHeldImage(p.sha, im.width, im.height, im.data); }
     receipts.push(receipt);
   }
   return receipts;

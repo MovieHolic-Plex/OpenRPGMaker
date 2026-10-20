@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>오브젝트 게이트 — 보류 사람 확인</title>
+<style>
+  body { margin: 0; font: 14px/1.5 system-ui, sans-serif; background: #1d1f24; color: #e8e6e1; }
+  header { padding: 14px 20px; background: #26292f; border-bottom: 1px solid #3a3d44; position: sticky; top: 0; z-index: 2; }
+  header h1 { margin: 0 0 4px; font-size: 17px; }
+  header .meta { color: #a9a59c; font-size: 13px; }
+  header label { margin-left: 14px; }
+  input[type=text] { background: #15171b; color: #e8e6e1; border: 1px solid #4a4d55; padding: 3px 6px; border-radius: 4px; }
+  main { padding: 16px 20px; display: grid; gap: 16px; }
+  .card { background: #26292f; border: 1px solid #3a3d44; border-radius: 8px; padding: 12px 14px; }
+  .card.done { opacity: .6; }
+  .row { display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap; }
+  .title { font-weight: 600; font-size: 15px; }
+  .sub { color: #a9a59c; font-size: 12px; word-break: break-all; }
+  .why { margin: 6px 0; color: #e7c27a; font-size: 13px; }
+  .pix { image-rendering: pixelated; background: repeating-conic-gradient(#c8b48c 0 25%, #b9a57d 0 50%) 0 0 / 16px 16px; display: block; }
+  figure { margin: 0; }
+  figcaption { color: #a9a59c; font-size: 12px; margin-top: 4px; }
+  .refs { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+  .btns button { font-size: 14px; padding: 6px 16px; margin-right: 8px; border-radius: 5px; border: 1px solid transparent; cursor: pointer; }
+  .allow { background: #2f6b3d; color: #fff; }
+  .reject { background: #7a2f2f; color: #fff; }
+  .status { margin-left: 6px; font-weight: 600; }
+  .empty { color: #a9a59c; padding: 30px; text-align: center; }
+</style>
+</head>
+<body>
+<header>
+  <h1>보류(사람 확인) 판정 — 허용 / 거절</h1>
+  <div class="meta" id="meta">불러오는 중…</div>
+  <div class="meta" style="margin-top:6px">결정한 사람 <input type="text" id="who" size="12" placeholder="이름">
+    <label><input type="checkbox" id="all"> 옛 프로필 보류도 보기(결정은 현재 프로필만)</label></div>
+  <div class="meta" style="margin-top:4px">허용은 이 그림(화소 해시)·이 판정 프로필·이 종류에만 묶인다. 그림이 한 화소라도 바뀌거나 프로필이 바뀌면 다시 결정해야 한다. 프로필이 보정(calibrated)되지 않았으면 허용해도 출구는 열리지 않는다.</div>
+</header>
+<main id="list"></main>
+<script>
+let csrf = '';
+const who = document.getElementById('who');
+who.value = localStorage.getItem('og-holds-who') || '';
+who.addEventListener('change', () => localStorage.setItem('og-holds-who', who.value.trim()));
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const word = v => v === 'pass' ? '통과' : v === 'refer' ? '보류' : v === 'fail' ? '불합격' : '-';
+async function load() {
+  csrf = (await (await fetch('/api/session')).json()).csrf;
+  const data = await (await fetch('/api/holds' + (document.getElementById('all').checked ? '?all=1' : ''))).json();
+  document.getElementById('meta').textContent = `현재 판정 프로필 ${data.currentProfile} (${data.profileStatus}) · 보류 ${data.items.length}장 · 결정 ${data.items.filter(i => i.decision).length}장`;
+  const list = document.getElementById('list');
+  if (!data.items.length) { list.innerHTML = '<div class="empty">보류 영수증이 없다. 현재 프로필로 object-gate review 를 받은 그림 중 보류만 여기 온다.</div>'; return; }
+  list.innerHTML = data.items.map(i => {
+    const z4 = 4, w = i.width, h = i.height;
+    const img = i.hasImage ? `<figure><img class="pix" src="/img/${i.sha}.png" width="${w}" height="${h}"><figcaption>1배</figcaption></figure>
+      <figure><img class="pix" src="/img/${i.sha}.png" width="${w * z4}" height="${h * z4}"><figcaption>4배</figcaption></figure>` : '<div class="why">그림이 저장돼 있지 않다 — object-gate review 로 다시 받아야 결정할 수 있다.</div>';
+    const refs = (i.refs || []).map(r => `<figure><img class="pix ref" data-src="/ref/${esc(i.styleKind)}/${esc(r)}.png"><figcaption>버들항 ${esc(r)} (4배)</figcaption></figure>`).join('');
+    const dec = i.decision ? `<span class="status" style="color:${i.decision.decision === 'allow' ? '#7fd38f' : '#f08a8a'}">${i.decision.decision === 'allow' ? '허용됨' : '거절됨'} — ${esc(i.decision.decidedBy)} ${esc(i.decision.decidedAt.slice(0, 16))}</span>` : '';
+    const can = i.current && i.hasImage;
+    return `<section class="card ${i.decision ? 'done' : ''}" data-sha="${i.sha}" data-profile="${i.profileHash}">
+      <div class="title">${esc(i.label)} <span class="sub">· 종류 ${esc(i.kind)} · 3/4 ${word(i.view34)} · 화풍 ${word(i.style)}${i.current ? '' : ' · 옛 프로필 ' + esc(i.profileHash)}</span></div>
+      <div class="sub">종류 뜻: ${esc(i.kindMeaning)}</div>
+      <div class="sub">해시 ${i.sha}</div>
+      <div class="why">${(i.reasons || []).map(esc).join('<br>')}</div>
+      <div class="row">${img}<div class="refs">${refs}<figure><img class="pix" src="/guide/pairs.png" style="max-width:420px;height:auto"><figcaption>3/4 기준 쌍(초록 = 맞음, 빨강 = 틀림)</figcaption></figure></div></div>
+      <div class="btns" style="margin-top:10px">${can ? `<button class="allow">허용</button><button class="reject">거절</button> 메모 <input type="text" class="note" size="30">` : ''}${dec}</div>
+    </section>`;
+  }).join('');
+  for (const im of document.querySelectorAll('img.ref')) { im.onload = () => { im.width = im.naturalWidth * 4; im.height = im.naturalHeight * 4; }; im.src = im.dataset.src; }
+  for (const card of document.querySelectorAll('.card')) for (const b of card.querySelectorAll('button')) b.onclick = () => decide(card, b.classList.contains('allow') ? 'allow' : 'reject');
+}
+async function decide(card, decision) {
+  const decidedBy = who.value.trim();
+  if (!decidedBy) { alert('결정한 사람 이름을 먼저 적어 주세요.'); who.focus(); return; }
+  const note = card.querySelector('.note')?.value || '';
+  const r = await fetch('/api/decide', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Holds-Csrf': csrf }, body: JSON.stringify({ sha: card.dataset.sha, profileHash: card.dataset.profile, decision, decidedBy, note }) });
+  const out = await r.json();
+  if (!r.ok) { alert(out.error || '저장 실패'); return; }
+  await load();
+}
+document.getElementById('all').addEventListener('change', load);
+load();
+</script>
+</body>
+</html>

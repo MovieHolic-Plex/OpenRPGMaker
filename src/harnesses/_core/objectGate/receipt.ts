@@ -65,6 +65,24 @@ export function validFrontPropApproval(approval: ObjectGateFrontPropApproval | n
     && approval.pixelSha256 === pixelSha256 && typeof approval.approvedBy === 'string' && approval.approvedBy.trim().length > 0 && !!approval.approvedAt;
 }
 
+/**
+ * 보류(refer) 판정에 대한 사람의 허용/거절 기록. 그림 화소 해시·프로필·종류에 묶이고, 검토 화면 서버가 저장소 밖 키로 HMAC 서명한다.
+ * 출구는 서명을 확인한 기록만 받는다(노드 store.readHoldDecision · Python read_hold_decision). 감독·에이전트·MCP 도구는 쓰지 않는다.
+ */
+export type ObjectGateHoldDecision = {
+  schema: 'oprn-object-gate-hold-decision/1'; pixelSha256: string; profileHash: string; kind: ObjectGateKind;
+  decision: 'allow' | 'reject'; decidedBy: string; decidedAt: string; by: 'human'; via: 'review-page'; reasons: string[]; note?: string; sig: string;
+};
+/** 서명 대상 문자열(sig 제외, 키 이름순). Python hold_payload 와 같다. */
+export function objectGateHoldPayload(d: ObjectGateHoldDecision): string {
+  const keys = ['schema', 'pixelSha256', 'profileHash', 'kind', 'decision', 'decidedBy', 'decidedAt', 'by', 'via', 'reasons', 'note'] as const;
+  return JSON.stringify(keys.map(k => [k, (d as Record<string, unknown>)[k] ?? null]));
+}
+export function holdAllows(d: ObjectGateHoldDecision | null | undefined, receipt: ObjectGateReceipt): boolean {
+  return !!d && d.schema === 'oprn-object-gate-hold-decision/1' && d.by === 'human' && d.via === 'review-page' && d.decision === 'allow'
+    && d.pixelSha256 === receipt.pixelSha256 && d.profileHash === receipt.profileHash && d.kind === receipt.kind && d.decidedBy.trim().length > 0 && !!d.decidedAt;
+}
+
 export type ObjectGateConfusion = { badTotal: number; caught: number; missed: string[]; goodTotal: number; passed: number; falseFail: string[] };
 
 export type ObjectGateProfileRecord = {
@@ -136,6 +154,8 @@ export function objectGateRefusal(input: {
   calibratedProfiles: ReadonlySet<string>;
   /** front_prop 종류의 사람 승인 기록(없으면 null). 이 그림 해시에 묶인 유효한 승인이 있을 때만 3/4 반쪽을 면제한다. */
   approval?: ObjectGateFrontPropApproval | null;
+  /** 보류 판정의 사람 결정(서명 확인을 마친 것만 넘긴다). 허용이면 보류를 통과로 받는다. */
+  hold?: ObjectGateHoldDecision | null;
 }): string | null {
   const { receipt, pixelSha256, kind, context } = input;
   if (!receipt) return '3/4·화풍 판정 영수증이 없다 — object-gate review 를 먼저 받아라';
@@ -151,6 +171,8 @@ export function objectGateRefusal(input: {
   }
   if (receipt.verdict === 'pass') return null;
   if (receipt.verdict === 'refer') {
+    // 사람이 검토 화면에서 이 그림·이 프로필·이 종류의 보류를 허용했으면 통과(서명은 호출자가 확인했다). 거절 기록은 아래로 내려가 막힌다.
+    if (holdAllows(input.hold, receipt)) return null;
     // 보류는 통과로 세지 않는다(번들·공용·스토어 출구는 예외 없이 막는다). 공방 로컬만 사람이 직접 누른 「그래도 넣기」로 확인할 수 있다(Python refusal 과 같다).
     if (context === 'workshop-local' && receipt.override?.by === 'human') return null;
     return `판정 보류(사람 확인 필요: ${receipt.reasons.join(' · ') || '판정자 의견이 갈림'}) — 보류는 통과로 세지 않는다. 그림을 더 분명하게 고치거나 사람이 고르는 하네스 경로를 거쳐라`;
