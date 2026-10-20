@@ -213,9 +213,10 @@ def _mirror(c):
 def _crane(c, W, ramp, prizes, sign):
     """UFO 캐처: 꼭대기 빛 간판 상자(윗면 3 + 앞 4) · 유리 상자(집게·경품) · 조작 받침(윗면) · 아랫단(경품 출구·동전 투입구)."""
     # 꼭대기 상자
-    rc(c, 1, 1, W - 2, 3, kc('shiro', 1)); hl(c, 1, 1, W - 2, kc('shiro', 2)); hl(c, 1, 3, W - 2, kc('shiro', 2))   # 윗면 + 앞 가장자리
-    rc(c, 1, 4, W - 2, 4, kc(sign, 0)); hl(c, 1, 4, W - 2, kc(sign, 1))
-    for x in range(2, W - 2, 3): px(c, x + (1 if (x // 3) % 2 else 0), 6, kc('kii', 2) if (x // 3) % 2 else kc('shiro', 2))   # 전구 점
+    rc(c, 1, 1, W - 2, 5, kc('shiro', 1)); hl(c, 1, 1, W - 2, kc('shiro', 2)); hl(c, 1, 5, W - 2, kc('shiro', 2))   # 꼭대기 상자 윗면 5px + 앞 가장자리
+    for x in range(3, W - 3, 5): px(c, x, 3, kc('conc', 2))                                            # 윗면 나사·결
+    rc(c, 1, 6, W - 2, 2, kc(sign, 0)); hl(c, 1, 6, W - 2, kc(sign, 1))                                  # 간판 앞면
+    for x in range(2, W - 2, 3): px(c, x + (1 if (x // 3) % 2 else 0), 7, kc('kii', 2) if (x // 3) % 2 else kc('shiro', 2))   # 전구 점
     hl(c, 1, 8, W - 2, kc(ramp, -2))                                                                   # 간판 밑 그늘
     # 기둥
     vl(c, 1, 8, 16, kc(ramp, 1)); vl(c, W - 2, 8, 16, kc(ramp, -1))
@@ -268,7 +269,7 @@ def _crane2(c): _crane(c, 32, 'sora', _big_prizes, 'neonC')
        place='대전 기기 줄의 남쪽 줄. 바로 북쪽에 맞은편 기기 뒷면(am-arcade-back)을 등 맞대어 놓고, 남쪽에 의자(am-arcade-stool).', pair=('am-arcade-back', 'am-arcade-stool'),
        desc='흰 캔디 캐비닛 대전 기기 — 손님이 남쪽에 앉아 북쪽을 본다(화면이 남쪽으로 보인다). 꼭대기 빛 띠, 화면에는 위 생명 막대 둘과 색 덩이 둘(글자·캐릭터 없음), 비스듬한 조작판 윗면에 빨간 레버와 색 단추 셋, 아래 동전 문.')
 def _arcade_n(c):
-    rc(c, 1, 9, 14, 3, kc('shiro', 1)); hl(c, 1, 9, 14, kc('shiro', 2)); hl(c, 1, 11, 14, kc('shiro', 2))          # 윗면
+    rc(c, 1, 6, 14, 6, kc('shiro', 1)); hl(c, 1, 6, 14, kc('shiro', 2)); hl(c, 1, 11, 14, kc('shiro', 2)); px(c, 4, 8, kc('conc', 2)); px(c, 11, 9, kc('conc', 2))   # 윗면 6px
     rc(c, 1, 12, 14, 3, kc('sora', 1)); hl(c, 1, 12, 14, kc('sora', 2)); hl(c, 3, 13, 10, kc('neonC', 1)); hl(c, 1, 14, 14, kc('sora', -1))   # 빛 띠
     rc(c, 1, 15, 14, 8, kc('yoru', -2))                                                                            # 화면 테
     rc(c, 2, 16, 12, 6, kc('sora', 1)); rc(c, 2, 19, 12, 1, kc('kon', 1)); rc(c, 2, 20, 12, 2, kc('midori', 0)); hl(c, 2, 20, 12, kc('midori', 1))
@@ -282,7 +283,7 @@ def _arcade_n(c):
     rc(c, 1, 27, 14, 4, kc('shiro', 0)); vl(c, 1, 27, 4, kc('shiro', 1)); vl(c, 14, 27, 4, kc('conc', 1))           # 아랫단
     rc(c, 5, 27, 6, 3, kc('tekko', 0)); px(c, 6, 28, kc('kii', 2)); px(c, 9, 28, kc('aka', 2)); hl(c, 5, 27, 6, kc('tekko', 2))   # 동전 문
     hl(c, 1, 30, 14, kc('yoru', 0))
-    outline(c, 0, 8, 16, 24)
+    outline(c, 0, 5, 16, 27)
 
 
 @R.obj('am-arcade-back', '대전 게임 기기(뒷면)', w=1, h=1, up=8, kind='floor', use=('block',), facing='S', tags=GC + ('비디오 게임', '대전', 'アーケード'),
@@ -321,7 +322,7 @@ def _astool(c): _stool(c, 'aka')
        place='벽 앞이나 기기 줄 끝(키가 크다 — 북쪽 벽 앞 첫 바닥 줄이 좋다). 앞(남쪽)에 서서 친다. 2대를 나란히.', pair=('am-racing',),
        desc='높은 화면 아래 큰 북이 놓인 리듬 게임 — 화면에는 회색 길 위로 흘러오는 빨강·파랑 동그라미와 왼쪽 판정 고리(글자 없음), 북은 크림색 가죽 윗면과 금 징을 박은 붉은 몸통, 아래 받침.')
 def _rhythm(c):
-    rc(c, 1, 9, 14, 3, kc('kon', 1)); hl(c, 1, 9, 14, kc('kon', 2)); hl(c, 1, 11, 14, kc('kon', 2))              # 윗면
+    rc(c, 1, 5, 14, 7, kc('kon', 1)); hl(c, 1, 5, 14, kc('kon', 2)); hl(c, 1, 11, 14, kc('kon', 2)); px(c, 4, 7, kc('kon', 0)); px(c, 11, 8, kc('kon', 0))   # 윗면 7px
     rc(c, 1, 12, 14, 3, kc('kii', 1)); hl(c, 1, 12, 14, kc('kii', 2))
     for x in (3, 7, 11): px(c, x, 13, kc('aka', 1)); px(c, x + 1, 13, kc('daidai', 2))
     hl(c, 1, 14, 14, kc('kii', -2))
@@ -352,8 +353,8 @@ def _rhythm(c):
        place='기기 줄 끝·벽 쪽에 세로로(북쪽이 화면, 남쪽이 좌석). 2대를 나란히 붙여 대전.', pair=('am-rhythm',),
        desc='세로 2칸 레이싱 게임 — 북쪽 화면에 하늘과 가운데 흰 점선의 회색 길(글자 없음), 그 아래 계기판과 검은 운전대, 남쪽 칸에 뒤에서 본 빨간 버킷 좌석과 낮은 받침대.')
 def _racing(c):
-    rc(c, 1, 1, 14, 3, kc('yoru', 2)); hl(c, 1, 1, 14, kc('yoru', 3)); hl(c, 1, 3, 14, kc('yoru', 3))              # 윗면
-    rc(c, 1, 4, 14, 2, kc('aka', 1)); hl(c, 1, 4, 14, kc('aka', 2)); hl(c, 4, 5, 8, kc('kii', 2))
+    rc(c, 1, 1, 14, 4, kc('yoru', 2)); hl(c, 1, 1, 14, kc('yoru', 3)); hl(c, 1, 4, 14, kc('yoru', 3)); px(c, 5, 2, kc('yoru', 1)); px(c, 10, 3, kc('yoru', 1))   # 윗면 4px
+    rc(c, 1, 5, 14, 1, kc('aka', 1)); hl(c, 4, 5, 8, kc('kii', 2))
     rc(c, 1, 6, 14, 12, kc('yoru', -2))
     rc(c, 2, 7, 12, 4, kc('sora', 2)); px(c, 4, 8, kc('shiro', 2)); px(c, 5, 8, kc('shiro', 2)); px(c, 11, 9, kc('shiro', 1))
     rc(c, 2, 11, 12, 6, kc('midori', 0)); hl(c, 2, 11, 12, kc('midori', 1))
@@ -481,8 +482,9 @@ def _exchange(c):
        desc='흰 철제 경품 선반 2칸(키 1.8m, 벽 붙이) — 윗면과 처마 그늘, 짙은 뒤판 앞 세 단에 리본 두른 색 상자·색 공 모양 인형·과자 상자가 빽빽하다(글자·상표 없음).')
 def _prize_shelf(c):
     W = 32
-    rc(c, 1, 1, 30, 4, kc('shiro', 1)); hl(c, 1, 1, 30, kc('shiro', 2)); hl(c, 1, 4, 30, kc('shiro', 2))
-    hl(c, 1, 5, 30, kc('conc', -1)); hl(c, 1, 6, 30, kc('conc', 0))
+    rc(c, 1, 1, 30, 5, kc('shiro', 1)); hl(c, 1, 1, 30, kc('shiro', 2)); hl(c, 1, 5, 30, kc('shiro', 2))   # 윗면 5px
+    for x in (6, 15, 24): px(c, x, 3, kc('conc', 2))
+    hl(c, 1, 6, 30, kc('conc', -1))
     rc(c, 2, 7, 28, 22, kc('yoru', -1))                                                                         # 뒤판
     for x0 in (1, 30): vl(c, x0, 5, 26, kc('shiro', 0 if x0 == 1 else -1))
     vl(c, 1, 5, 26, kc('shiro', 1))
@@ -531,18 +533,19 @@ def _neon(c):
 
 
 # ══ 파친코 ═══════════════════════════════════════════════════════════════════
-def _island_top(c, y0):
-    """섬 윗면: 짙은 나무 갓 3줄 + 앞 가장자리 + 그늘."""
-    rc(c, 0, y0, 16, 3, kc('ita', 1)); hl(c, 0, y0, 16, kc('ita', 2)); hl(c, 0, y0 + 2, 16, kc('ita', 3))
-    hl(c, 0, y0 + 3, 16, kc('ita', -2))
+def _island_top(c, y0, d=3):
+    """섬 윗면: 짙은 나무 갓 d줄 + 앞 가장자리 + 그늘."""
+    rc(c, 0, y0, 16, d, kc('ita', 1)); hl(c, 0, y0, 16, kc('ita', 2)); hl(c, 0, y0 + d - 1, 16, kc('ita', 3))
+    if d > 3: px(c, 4, y0 + 1, kc('ita', 0)); px(c, 11, y0 + 2, kc('ita', 0))
+    hl(c, 0, y0 + d, 16, kc('ita', -2))
 
 
 @R.obj('am-pachinko-n', '파친코 기기', w=1, h=1, up=16, kind='floor', use=('search',), facing='N', tags=PA + ('파친코 기기', '台'),
        place='파친코 섬의 남쪽 줄(또는 북쪽 벽 앞 한 줄) — 가로로 이어 붙여 벽처럼 줄 세운다. 남쪽에 의자(am-pachinko-stool) 한 대씩, 북쪽에는 등 맞댄 뒷면(am-pachinko-back) 줄.', pair=('am-pachinko-stool', 'am-pachinko-back', 'am-pachinko-island-end'),
        desc='파친코 기기 한 대(손님이 남쪽에 앉아 북쪽을 본다) — 섬 윗면 위 빨간 데이터 램프, 금빛 틀 위 분홍·노랑 빛 띠, 둥근 테 안 흰 판에 핀 점과 가운데 색 칸 셋의 액정(숫자 없음), 아래 은구슬이 담긴 받침 접시와 검은 손잡이, 붉은 받침대.')
 def _pachinko(c):
-    _island_top(c, 1)
-    disc(c, 8, 1.6, 2, 1.3, kc('aka', 1)); px(c, 7, 1, kc('aka', 2))                                            # 데이터 램프
+    _island_top(c, 1, 4)
+    disc(c, 8, 2.1, 2, 1.3, kc('aka', 1)); px(c, 7, 2, kc('aka', 2))                                            # 데이터 램프
     rc(c, 1, 5, 14, 17, kc('kii', 0)); vl(c, 1, 5, 17, kc('kii', 1)); vl(c, 14, 5, 17, kc('kii', -2))            # 금 틀
     for x in range(2, 14): px(c, x, 6, kc('neonP', 1) if x % 3 else kc('kii', 2))
     rc(c, 2, 7, 12, 12, kc('shiro', 1)); hl(c, 2, 7, 12, kc('shiro', 2))                                        # 판
@@ -567,13 +570,13 @@ def _pachinko(c):
        place='파친코 섬의 북쪽 줄 — am-pachinko-n 줄 바로 북쪽에 등을 맞대 같은 길이로. 이 줄 손님은 북쪽 의자(am-pachinko-stool)에 앉아 남쪽을 본다.', pair=('am-pachinko-n', 'am-pachinko-stool'),
        desc='맞은편 파친코 기기 줄의 뒷면 — 같은 나무 섬 윗면, 등 뒤 데이터 램프, 회색 철판 뒤판에 구슬 관 두 줄. 기기 얼굴은 북쪽이라 안 보인다.')
 def _pachinko_back(c):
-    _island_top(c, 9)
+    _island_top(c, 8, 4)
     disc(c, 8, 9.6, 1.8, 1.1, kc('aka', 0))
     rc(c, 1, 13, 14, 18, kc('conc', 0)); vl(c, 1, 13, 18, kc('conc', 1)); vl(c, 14, 13, 18, kc('conc', -2))
     for x in (4, 11): vl(c, x, 13, 17, kc('tekko', 2)); vl(c, x + 1, 13, 17, kc('tekko', 0))                   # 구슬 관
     rc(c, 6, 15, 4, 3, kc('conc', 2)); outline(c, 6, 15, 4, 3, kc('conc', -2))
     hl(c, 1, 30, 14, kc('yoru', 0))
-    outline(c, 0, 8, 16, 24)
+    outline(c, 0, 7, 16, 25)
 
 
 @R.obj('am-pachinko-stool', '파친코 의자', w=1, h=1, up=0, kind='floor', use=('sit',), tags=PA + ('의자',),

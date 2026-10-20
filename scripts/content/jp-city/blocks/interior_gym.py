@@ -559,7 +559,10 @@ def _piano(c):
 @R.obj('gy-picture-books', '그림책 낮은 선반', w=2, h=1, up=4, kind='wall', use=('read',), tags=('유치원', '놀이방', '도서'),
        place='놀이방 북쪽 벽 바로 아래 첫 바닥 줄', desc='아이 키 높이의 나무 선반 — 그림책 표지가 앞을 보게 두 단으로 세워 꽂혔다(표지는 색 덩이·도형뿐, 글자·사람 없음).')
 def _picture_books(c):
-    rc(c, 0, 12, 32, 3, kc('mado', 1)); hl(c, 0, 12, 32, kc('mado', 0)); hl(c, 0, 15, 32, kc('mado', 2))
+    # 윗면 6px: 밝은 나무 상판(결 두어 줄) → 앞 모서리 → 그림책 표지 두 단
+    rc(c, 0, 10, 32, 6, kc('mado', 1)); hl(c, 0, 10, 32, kc('mado', 2)); hl(c, 0, 11, 32, kc('mado', 2))
+    for x0, y0, n in ((3, 12, 7), (14, 13, 9), (25, 12, 5), (8, 14, 6), (21, 14, 4)): hl(c, x0, y0, n, kc('mado', 0))
+    hl(c, 0, 15, 32, kc('mado', 0))
     rc(c, 0, 16, 32, 14, kc('mado', -1)); hl(c, 0, 16, 32, kc('mado', -2))
     cols = ('aka', 'sora', 'kii', 'midori', 'pinku', 'daidai', 'kon', 'kii')
     for row, y in enumerate((17, 24)):
@@ -570,7 +573,8 @@ def _picture_books(c):
             if (i + row) % 2: disc(c, x + 2.5, y + 3.5, 1.4, 1.4, kc('shiro', 3))                   # 해·동그라미
             else: hl(c, x + 1, y + 4, 3, kc('shiro', 3))
         hl(c, 0, y + 6, 32, kc('mado', 0))
-    rc(c, 0, 30, 32, 2, kc('mado', -2)); outline(c, 0, 11, 32, 21)
+    rc(c, 0, 30, 32, 2, kc('mado', -2)); outline(c, 0, 9, 32, 23)
+
 
 
 @R.obj('gy-toy-box', '장난감 상자', w=1, h=1, up=0, kind='floor', use=('open', 'search'), tags=('유치원', '놀이방'),

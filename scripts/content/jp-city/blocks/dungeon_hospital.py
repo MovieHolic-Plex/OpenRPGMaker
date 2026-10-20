@@ -807,14 +807,14 @@ def _records(c):
 @R.obj('hp-item-locker', '찌그러진 사물함', w=1, h=1, up=16, kind='wall', use=('search', 'open'), tags=TAGS + ('보물', '탈의실', '진찰실'),
        place='진찰실·탈의실·경비실 북쪽 벽 아래(막다른 곳)', desc='칠이 바래고 찌그러진 철제 사물함 — 위아래 문 중 위 문이 비스듬히 벌어져 어두운 속이 보인다. 녹 줄과 통풍 슬릿.')
 def _locker(c):
-    y = block3(c, 1, 3, 14, 29, 4, 'sora', -1, olc=K('sumi', 0), front_t=-1)
+    y = block3(c, 1, 0, 14, 32, 6, 'sora', 0, olc=K('sumi', 0), front_t=-1) + 1
     rc(c, 3, y, 10, 10, K('yoru', -2)); hl(c, 3, y + 3, 10, ST(-1))             # 열린 위 칸 속
     rc(c, 11, y - 1, 3, 11, K('sora', 0)); vl(c, 11, y - 1, 11, K('sora', 1)); vl(c, 13, y - 1, 11, K('sora', -2))   # 벌어진 문짝
     rc(c, 3, y + 11, 10, 12, K('sora', -1)); hl(c, 3, y + 11, 10, K('sora', 0)); vl(c, 12, y + 11, 12, K('sora', -2))
     for i in range(3): hl(c, 5, y + 13 + i * 2, 5, K('sora', -2))
     px(c, 10, y + 18, ST(2))
     line(c, 4, y + 20, 7, y + 22, K('sora', -2))                                # 찌그러짐
-    rust(c, 1, 3, 14, 29, 281, 110); drip(c, 4, y + 11, 8, RU(-2))
+    rust(c, 1, 9, 14, 23, 281, 110); drip(c, 4, y + 11, 8, RU(-2))
     hl(c, 1, 31, 14, K('sumi', 0))
 
 

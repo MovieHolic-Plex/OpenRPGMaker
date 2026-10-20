@@ -285,15 +285,19 @@ def _office_window(c):
        place='개찰 밖 콘코스 한쪽, 벽에서 떨어진 곳', pair=('st-newspaper', 'st-ekiben'),
        desc='작은 역 매점 2칸. 위 주황 간판 띠(글자 없음), 뒤 선반에 과자·음료 색 덩이, 앞 카운터 위에 신문 더미, 앞면에 잡지 표지(색 덩이). 카운터 위에 신문·도시락을 놓는다.')
 def _kiosk(c):
-    rc(c, 1, 1, 30, 3, K('daidai', 0)); hl(c, 1, 1, 30, K('daidai', 1)); hl(c, 1, 3, 30, K('daidai', -1)); outline(c, 0, 0, 32, 5, OL)
-    rc(c, 2, 5, 28, 13, K('tekko', -1)); vl(c, 1, 5, 13, OL); vl(c, 30, 5, 13, OL)
+    # 지붕 윗면 5px(밝은 회색 판) → 앞으로 주황 간판 띠 → 뒤 선반 → 카운터 상판 → 앞면 잡지
+    rc(c, 1, 1, 30, 5, K('conc', 2)); hl(c, 1, 1, 30, K('conc', 3)); hl(c, 1, 2, 30, K('conc', 3)); hl(c, 1, 5, 30, K('conc', 1))
+    for x in (6, 13, 19, 26): px(c, x, 3, K('conc', 1))
+    hl(c, 1, 6, 30, K('daidai', -2)); rc(c, 1, 7, 30, 2, K('daidai', 0)); hl(c, 1, 7, 30, K('daidai', 1))
+    outline(c, 0, 0, 32, 10, OL)
+    rc(c, 2, 10, 28, 8, K('tekko', -1)); vl(c, 1, 10, 8, OL); vl(c, 30, 10, 8, OL)
     cols = ('aka', 'kii', 'sora', LINE, 'daidai', 'pinku', 'shiro')
-    for r, y in enumerate((6, 11)):
+    for r, y in enumerate((10, 14)):
         for i in range(6):
             x = 3 + i * 4 + (r % 2)
             col = cols[(i + r * 3) % len(cols)]
-            rc(c, x, y, 3, 4, K(col, 0)); hl(c, x, y, 3, K(col, 1))
-        hl(c, 2, y + 4, 28, K('tekko', 2))
+            rc(c, x, y, 3, 3, K(col, 0)); hl(c, x, y, 3, K(col, 1))
+        hl(c, 2, y + 3, 28, K('tekko', 2))
     rc(c, 0, 17, 32, 6, K('shiro', 1)); hl(c, 0, 17, 32, K('shiro', 2)); vl(c, 0, 17, 6, K('shiro', 2))
     for i in range(3): rc(c, 2 + i, 18 + i, 8, 3, K('shiro', 2)); hl(c, 3, 19 + i, 6, K('conc', 0))
     rc(c, 20, 18, 4, 3, K('aka', 0)); rc(c, 25, 18, 4, 3, K('kii', 1)); hl(c, 20, 18, 9, K('shiro', 2))
@@ -303,6 +307,7 @@ def _kiosk(c):
         rc(c, x, 24, 3, 5, K(col, -1 if col != 'shiro' else 0)); hl(c, x, 24, 3, K(col, 1)); px(c, x + 1, 26, K('shiro', 2))
     rc(c, 1, 29, 30, 2, K('daidai', -1))
     outline(c, 0, 16, 32, 15, OL); hl(c, 1, 31, 30, K('conc', -2))
+
 
 
 @R.obj('st-bench', '대합실 벤치', w=2, h=1, up=0, kind='floor', cat='station', cat_ko='역사·개찰', use=('sit',), facing='S', tags=('역', '역사', '대합실'),

@@ -247,14 +247,14 @@ def sh_shutter2(c): threshold(c, 2)
 @R.obj('sh-wall-shelf', '벽 선반(빈 것)', 1, 1, up=16, kind='wall', use=('search',),
        desc='나무 벽 선반 3단. 비어 있어 가게마다 물건을 놓아 쓴다. 빵·책·약 선반과 같은 높이로 이어진다.',
        tags=('선반', '가게'), place='북쪽 벽면 아래, 다른 가게 선반 옆에', pair=('sh-bread-shelf', 'sh-bookshelf', 'sh-drug-shelf'))
-def sh_wall_shelf(c): shelf(c, 0, 3, 16, 29, 'ki', 3, None)
+def sh_wall_shelf(c): shelf(c, 0, 1, 16, 31, 'ki', 3, None, T=5)
 
 
 # ─────────────────────────── 빵집 ───────────────────────────
 @R.obj('sh-bread-shelf', '빵 진열장', 2, 1, up=16, kind='wall', use=('search',),
        desc='2칸 벽 진열장. 3단 선반에 바게트·둥근 빵·식빵·초승달 빵 덩이가 가득하다. 앞 매대와 같은 갈색 빵 색.',
        tags=('빵집', '진열', '빵'), place='북쪽 벽면 아래 2칸, 앞에 빵 매대', pair=('sh-bread-table', 'sh-oven'))
-def sh_bread_shelf(c): shelf(c, 0, 3, 32, 29, 'ki', 3, f_bread, seed=3)
+def sh_bread_shelf(c): shelf(c, 0, 1, 32, 31, 'ki', 3, f_bread, T=5, seed=3)
 
 
 @R.obj('sh-bread-table', '빵 매대', 2, 1, up=0, kind='floor', surface=True, use=('search',),
@@ -283,8 +283,9 @@ def sh_tray_stand(c):
 @R.obj('sh-oven', '오븐', 1, 1, up=16, kind='wall', surface=False, use=('search',),
        desc='스테인리스 오븐. 유리창 속에 주황색 불빛과 빵 줄, 위에 환기 홈, 아래 다이얼 점.', tags=('빵집', '오븐'), place='북쪽 벽면 아래, 빵 진열장 옆', pair=('sh-bread-shelf',))
 def sh_oven(c):
-    cab(c, 0, 3, 16, 5, 24, 'conc', face=0)
-    for x in range(2, 14, 2): c.P(x, 5, K('conc', -2))
+    cab(c, 0, 2, 16, 6, 24, 'conc', face=0)
+    c.P(5, 4, K('conc', 1)); c.P(10, 5, K('conc', 1))
+    for x in range(2, 14, 2): c.P(x, 9, K('conc', -2))                                          # 환기 홈(앞면 위쪽)
     c.R(2, 11, 12, 11, K('yoru', -2)); box(c, 2, 11, 12, 11, K('tekko', 1)); c.R(3, 12, 10, 9, K('daidai', 1))
     c.HL(3, 12, 10, K('daidai', 2)); c.HL(3, 20, 10, K('daidai', -1))
     for y in (14, 17): c.HL(3, y, 10, K('tekko', -1)); c.HL(4, y - 1, 8, K('kii', 1))                                      # 빵 줄
@@ -294,9 +295,9 @@ def sh_oven(c):
 
 # ─────────────────────────── 서점 ───────────────────────────
 @R.obj('sh-bookshelf', '서가(서점)', 1, 1, up=16, kind='wall', use=('search', 'read'),
-       desc='서점 벽 서가. 집 책장보다 책등이 촘촘하고 4단. 다양한 색 책등 줄(띠는 글자가 아니다).',
+       desc='서점 벽 서가. 집 책장보다 책등이 촘촘하고 3단. 다양한 색 책등 줄(띠는 글자가 아니다).',
        tags=('서점', '서가', '책'), place='북쪽 벽면 아래 여러 칸 이어서', pair=('sh-book-table', 'sh-book-island'))
-def sh_bookshelf(c): shelf(c, 0, 3, 16, 29, 'ki', 4, f_books, seed=7)
+def sh_bookshelf(c): shelf(c, 0, 1, 16, 31, 'ki', 3, f_books, T=5, seed=7)
 
 
 @R.obj('sh-book-table', '평대(서점)', 2, 1, up=0, kind='floor', surface=True, use=('search',),
@@ -328,7 +329,7 @@ def sh_book_island(c): island(c, f_books, 3, 9, 'sora')
 # ─────────────────────────── 약국 ───────────────────────────
 @R.obj('sh-drug-shelf', '약 선반', 1, 1, up=16, kind='wall', use=('search',),
        desc='약국 벽 선반. 작은 약 상자(흰·청·녹·분홍) 줄이 5단 빽빽하다. 상자 가운데에 색 띠(글자 아님).', tags=('약국', '약', '선반'), place='북쪽 벽면 아래 여러 칸', pair=('sh-drug-island', 'sh-consult'))
-def sh_drug_shelf(c): shelf(c, 0, 3, 16, 29, 'shiro', 5, f_boxes, seed=11, back=-1)
+def sh_drug_shelf(c): shelf(c, 0, 1, 16, 31, 'shiro', 5, f_boxes, T=5, seed=11, back=-1)
 
 
 @R.obj('sh-drug-island', '약 섬 선반', 2, 1, up=16, kind='floor', use=('search',),
@@ -374,7 +375,7 @@ def sh_flower_buckets(c):
 @R.obj('sh-flower-cooler', '꽃 냉장고', 1, 1, up=16, kind='wall', use=('search',),
        desc='유리문 꽃 냉장고. 흰 틀에 하늘색 유리, 안에 꽃 줄기와 꽃 덩이가 두 단.', tags=('꽃집', '냉장고', '꽃'), place='북쪽 벽면 아래', pair=('sh-flower-buckets',))
 def sh_flower_cooler(c):
-    cab(c, 0, 3, 16, 4, 25, 'shiro', face=0)
+    cab(c, 0, 1, 16, 6, 25, 'shiro', face=0)
     c.R(2, 9, 12, 20, K('garasu', 1)); box(c, 2, 9, 12, 20, K('conc', -1)); c.HL(3, 10, 10, K('garasu', 3)); c.VL(3, 10, 17, K('garasu', 2))
     c.HL(3, 18, 10, K('conc', 1))
     f_flowers_cool(c, 3, 11, 10, 7, 0, 5); f_flowers_cool(c, 3, 19, 10, 8, 1, 6)
@@ -589,7 +590,7 @@ def sh_dough_bench(c):
        place='뒷방 벽 쪽, 반죽대 옆', pair=('sh-dough-bench',))
 def sh_proof_rack(c):
     c.R(0, 7, 16, 25, K('tekko', -2)); box(c, 0, 7, 16, 25, K('yoru', 0))
-    slab(c, 0, 3, 16, 4, 'conc')
+    slab(c, 0, 1, 16, 6, 'conc')
     for yy in (14, 21, 28):                                                   # 쟁반 단
         c.R(1, yy, 14, 2, K('conc', 2)); c.HL(1, yy, 14, K('conc', 3)); c.HL(1, yy + 2, 14, K('yoru', 0))
         for k, bx in enumerate((4, 8, 12)):
@@ -632,8 +633,8 @@ def f_bundles(c, x0, y0, w, h, lvl, seed):
        desc='서점 뒷방 반품 서가. 노끈으로 묶은 책 더미가 3단으로 쌓여 있고 위쪽 귀퉁이에 붉은 꼬리표가 붙었다.', tags=('서점', '반품', '서가', '뒷방'),
        place='뒷방 북쪽 벽 아래', pair=('sh-book-crates',))
 def sh_returns_shelf(c):
-    shelf(c, 0, 3, 16, 29, 'ki', 3, f_bundles, seed=5, back=-2)
-    c.R(12, 5, 3, 2, K('aka', 0)); c.HL(12, 5, 3, K('aka', 2)); c.HL(12, 7, 3, K('aka', -3))
+    shelf(c, 0, 1, 16, 31, 'ki', 3, f_bundles, T=5, seed=5, back=-2)
+    c.R(11, 2, 3, 3, K('aka', 0)); c.HL(11, 2, 3, K('aka', 2)); c.HL(11, 4, 3, K('aka', -2)); c.HL(11, 5, 3, K('ki', -1))   # 윗면에 얹힌 반품 상자
 
 
 @R.obj('sh-dispense-counter', '조제대', 2, 1, up=0, kind='floor', surface=True, use=('counter',),
@@ -673,7 +674,7 @@ def f_stock(c, x0, y0, w, h, lvl, seed):
 @R.obj('sh-stock-shelf', '재고 약장', 1, 1, up=16, kind='wall', use=('search',),
        desc='약국 뒷방 재고 약장. 쇠 회색 4단 선반 위 3단에는 갈색·남색 약병이, 맨 아래에는 포장 상자가 쌓였다.', tags=('약국', '재고', '약병', '뒷방'),
        place='뒷방 북쪽 벽 아래', pair=('sh-dispense-counter',))
-def sh_stock_shelf(c): shelf(c, 0, 3, 16, 29, 'conc', 4, f_stock, seed=17, back=-2)
+def sh_stock_shelf(c): shelf(c, 0, 1, 16, 31, 'conc', 4, f_stock, T=5, seed=17, back=-2)
 
 
 @R.obj('sh-bucket-row', '꽃 양동이 줄', 2, 1, up=16, kind='floor', use=('search',),
@@ -832,7 +833,7 @@ def f_baskets(c, x0, y0, w, h, lvl, seed):
 @R.obj('sh-basket-shelf', '바구니 선반', 1, 1, up=16, kind='wall', use=('search',),
        desc='나무 벽 선반 3단. 단마다 엮은 바구니에 채소·과일이 담겨 있다. 채소가게 북쪽 벽면.',
        tags=('채소가게', '선반', '바구니'), place='북쪽 벽면 아래, 앞에 경사 진열대', pair=('sh-veg-stand', 'sh-fruit-box'))
-def sh_basket_shelf(c): shelf(c, 0, 3, 16, 29, 'ki', 3, f_baskets, seed=5)
+def sh_basket_shelf(c): shelf(c, 0, 1, 16, 31, 'ki', 3, f_baskets, T=5, seed=5)
 
 
 def build(): return R.build()

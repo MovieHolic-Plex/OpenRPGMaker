@@ -106,14 +106,24 @@ def _zaisu_n(c):                                          # 남쪽 아래에 등
     c.HL(2, 13, 12, W(-2)); c.HL(2, 12, 12, W(0))
 
 
-def _zaisu_side(c, west):                                 # 옆모습: 등받이 단면이 세로 막대(ㄴ자 옆모습)로 보인다
-    bx = 1 if west else 12                                # 등받이 슬랩 x (가로 3)
-    sx = 4 if west else 1                                 # 앉는 판 x
-    box3(c, bx, 0, 3, 10, 5, W(2), W(0), W(3), lip=W(2))                      # 슬랩 윗면 0..9 + 앞면 10..14
-    c.VL(bx + 1, 2, 7, W(1))
-    box3(c, sx, 5, 11, 6, 3, K('kon', 1), W(-1), K('kon', 2), lip=K('kon', 2))   # 앉는 판 윗면 5..10 + 앞면 11..13
-    px(c, sx + 5, 7, K('kon', 0))
-    c.HL(sx, 14, 11, OL)
+def _zaisu_side(c, west):                                 # 옆모습(ㄴ자): 뒤로 살짝 누운 등받이(나무 틀 + 남색 쿠션) + 앉는 판(윗면 3줄·앞 나무 띠)
+    from ikit import Cv
+    t = Cv(16, 16)
+    t.R(5, 7, 11, 7, OL)                                                                               # 앉는 판 윤곽(동쪽)
+    t.R(6, 8, 9, 3, K('kon', 1)); t.HL(6, 8, 9, K('kon', 2)); t.VL(14, 8, 3, K('kon', 0))            # 방석 윗면(밝게)
+    t.HL(6, 10, 9, K('kon', 2)); t.P(10, 9, K('kon', 0))                                              # 앞 불룩 줄 · 단추
+    t.R(6, 11, 9, 2, W(-1)); t.HL(6, 11, 9, W(1))                                                     # 앉는 판 나무 앞 띠
+    for y in range(1, 13):                                                                             # 등받이(서쪽): 위가 서쪽으로 1px 누운 판
+        x0 = 1 if y < 6 else 2
+        t.P(x0, y, OL); t.P(x0 + 1, y, W(0)); t.P(x0 + 2, y, K('kon', 0)); t.P(x0 + 3, y, K('kon', 1)); t.P(x0 + 4, y, OL)
+    t.HL(1, 0, 5, OL); t.HL(2, 1, 3, W(3)); t.HL(2, 2, 3, W(2))                                        # 등받이 윗마구리(위에서 보인다)
+    t.P(4, 3, K('kon', 2)); t.P(4, 4, K('kon', 2)); t.P(5, 7, K('kon', 2))                            # 쿠션 빛(왼위 빛)
+    t.HL(2, 13, 4, OL); t.R(3, 12, 2, 1, W(-2))
+    t.HL(5, 14, 11, OL)
+    a = t.a if west else t.a[:, ::-1]
+    for y in range(16):
+        for x in range(16):
+            if a[y, x, 3]: c.P(x, y, (int(a[y, x, 0]) << 16) | (int(a[y, x, 1]) << 8) | int(a[y, x, 2]))
 
 
 R.obj('zaisu-s', '좌의자(남향)', w=1, h=1, up=0, kind='floor', use=('sit',), facing='S', tags=('화실', '거실'), place='탁자 북쪽, 앉은 사람이 남쪽을 본다',
@@ -121,9 +131,9 @@ R.obj('zaisu-s', '좌의자(남향)', w=1, h=1, up=0, kind='floor', use=('sit',)
 R.obj('zaisu-n', '좌의자(북향)', w=1, h=1, up=0, kind='floor', use=('sit',), facing='N', tags=('화실', '거실'), place='탁자 남쪽, 앉은 사람이 북쪽을 본다',
       pair=('chabudai', 'zataku'), desc='다리 없는 좌의자 북향 1칸 — 등받이 뒷면이 남쪽 앞에 서고 앉는 판 윗면이 보인다.')(_zaisu_n)
 R.obj('zaisu-e', '좌의자(동향)', w=1, h=1, up=0, kind='floor', use=('sit',), facing='E', tags=('화실', '거실'), place='탁자 서쪽, 앉은 사람이 동쪽을 본다',
-      pair=('chabudai', 'zataku'), desc='다리 없는 좌의자 동향 1칸 — 등받이 단면이 서쪽 세로 막대, 앉는 판이 동쪽.')(lambda c: _zaisu_side(c, True))
+      pair=('chabudai', 'zataku'), desc='다리 없는 좌의자 동향 1칸 — 등받이가 서쪽(나무 틀·남색 쿠션의 ㄴ자 옆모습), 앉는 판이 동쪽.')(lambda c: _zaisu_side(c, True))
 R.obj('zaisu-w', '좌의자(서향)', w=1, h=1, up=0, kind='floor', use=('sit',), facing='W', tags=('화실', '거실'), place='탁자 동쪽, 앉은 사람이 서쪽을 본다',
-      pair=('chabudai', 'zataku'), desc='다리 없는 좌의자 서향 1칸 — 등받이 단면이 동쪽 세로 막대, 앉는 판이 서쪽.')(lambda c: _zaisu_side(c, False))
+      pair=('chabudai', 'zataku'), desc='다리 없는 좌의자 서향 1칸 — 등받이가 동쪽(나무 틀·남색 쿠션의 ㄴ자 옆모습), 앉는 판이 서쪽.')(lambda c: _zaisu_side(c, False))
 
 
 @R.obj('kotatsu', '고타쓰', w=2, h=1, up=0, kind='floor', surface=True, use=('block',), tags=('화실', '거실', '겨울'),
@@ -171,8 +181,8 @@ def d_butsudan(c):
     y = lambda s: K('yoru', s)
     k = lambda s: K('kii', s)
     c.R(0, 0, 16, 32, OL)
-    c.R(1, 1, 14, 5, y(1)); c.HL(1, 1, 14, y(3)); c.VL(1, 1, 5, y(3)); c.HL(1, 3, 14, y(2)); c.HL(1, 5, 14, y(0))   # 지붕 T6
-    c.HL(2, 5, 12, k(0))                                              # 금 선 하나
+    c.R(1, 1, 14, 4, y(2)); c.HL(1, 1, 14, y(3)); c.VL(1, 1, 4, y(3)); c.HL(1, 4, 14, y(3)); px(c, 5, 2, y(1)); px(c, 10, 3, y(1))   # 지붕 윗면 4px(옻칠 반사)
+    c.HL(1, 5, 14, y(-1)); c.HL(2, 5, 12, k(0))                       # 앞 모서리 금 선
     c.R(1, 6, 14, 12, y(0))                                           # 감실 틀
     c.R(3, 7, 10, 10, k(-1)); c.HL(3, 7, 10, k(-2)); c.VL(3, 7, 10, k(-2))      # 안쪽 금빛 벽(어둡게)
     c.R(6, 9, 4, 6, y(-3)); c.HL(6, 9, 4, k(1))                          # 위패

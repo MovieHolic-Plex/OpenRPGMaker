@@ -188,12 +188,14 @@ def h2_laundry(c):
 @R.obj('h2-ac-outdoor', '에어컨 실외기', 1, 1, up=0, kind='floor', use=('block',), place='베란다 구석', pair=('h2-veranda-floor',),
        tags=('베란다', '에어컨', '실외기'), desc='흰 실외기. 둥근 팬 그릴. 베란다 한쪽 구석에 둔다.')
 def h2_ac(c):
-    x, y, iw, ih = box(c, 1, 3, 14, 12, 'shiro', 4, hi=4, mid=2, lo=0)
-    disc(c, 8, 10, 4.6, 4.2, OL); disc(c, 8, 10, 3.8, 3.5, kc('tekko', 1))
+    x, y, iw, ih = box(c, 1, 0, 14, 15, 'shiro', 5, hi=4, mid=2, lo=0)          # 윗면 5px(1~5행) + 앞면 6~13행
+    c.HL(2, 6, 12, kc('conc', 0))                                                  # 윗면 앞 모서리
+    px(c, 4, 3, kc('shiro', 2)); px(c, 10, 2, kc('shiro', 2)); c.R(11, 2, 2, 1, kc('conc', 0))   # 윗면 결 + 단자 덮개
+    disc(c, 7.5, 10, 4.2, 3.5, OL); disc(c, 7.5, 10, 3.4, 2.8, kc('tekko', 1))
     for k in range(-3, 4):      # 십자 그릴
-        px(c, 8 + k, 10, kc('tekko', -1)); px(c, 8, 10 + k, kc('tekko', -1))
-    px(c, 6, 8, kc('tekko', 3)); px(c, 7, 8, kc('tekko', 3)); px(c, 6, 9, kc('tekko', 3))
-    c.R(11, 5, 2, 1, kc('conc', 0))     # 단자 덮개
+        px(c, 7 + k, 10, kc('tekko', -1))
+    for k in range(-2, 3): px(c, 7, 10 + k, kc('tekko', -1))
+    px(c, 5, 8, kc('tekko', 3)); px(c, 6, 8, kc('tekko', 3))
     c.HL(2, 15, 12, kc('conc', -2))      # 그림자
 
 
@@ -320,10 +322,10 @@ def h2_old_sink(c):
 @R.obj('h2-old-fridge', '작은 2도어 냉장고', 1, 1, up=16, kind='wall', use=('open',), place='목조 아파트 부엌 옆',
        pair=('h2-old-sink',), tags=('목조아파트', '냉장고', '부엌'), desc='낡은 흰 2도어 소형 냉장고. 위가 냉동실.')
 def h2_old_fridge(c):
-    c.R(1, 3, 14, 29, OL)
-    for y in range(4, 31):
+    c.R(1, 1, 14, 31, OL)
+    for y in range(2, 31):
         for x in range(2, 14):
-            if y <= 6: v = 4 if y == 4 else 3                 # 윗면
+            if y <= 6: v = 4 if y in (2, 6) else 3            # 윗면 5px(2~6행)
             elif y == 7: v = 0                                # 처마 그늘
             else: v = 2
             if y > 7 and x == 2: v = 3

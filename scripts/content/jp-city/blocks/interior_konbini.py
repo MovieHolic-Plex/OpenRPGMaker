@@ -126,15 +126,22 @@ def _panel(c):
        tags=('편의점', '슈퍼', '진열', '곤돌라'), place='매장 가운데, 같은 높이로 2~3줄 나란히(줄 사이 통로 1칸)', pair=('cv-gondola-end', 'cv-baskets'))
 def cv_gondola(c):
     o = k('conc', -3)
-    c.R(0, 8, 32, 5, k('shiro', 1)); c.HL(0, 8, 32, k('shiro', 2)); c.HL(0, 12, 32, k('conc', -1)); c.HL(1, 10, 30, k('conc', 1))   # 윗면 + 가운데 이음
-    for x0 in (4, 11, 20, 26): c.HL(x0, 9, 3, k('sora', 1))                                                                     # 가격 라벨 띠
-    c.R(0, 13, 32, 17, k('conc', 0)); c.R(1, 14, 30, 15, k('conc', 1))                                                           # 틀과 뒷판
+    # 윗면(깊이 1칸 = 7px): 밝고 고른 면 + 가운데 이음선(양면 곤돌라 등판 꼭대기), 앞 가장자리는 어두운 1px 턱
+    c.R(0, 5, 32, 7, k('shiro', 1)); c.HL(0, 5, 32, k('shiro', 2)); c.HL(0, 6, 32, k('shiro', 2))
+    c.HL(1, 8, 30, k('conc', 2)); c.HL(1, 9, 30, k('shiro', 2))
+    for x in range(1, 31):
+        if rnd(x, 7, 61, 90): c.P(x, 7, k('conc', 2))
+        if rnd(x, 10, 62, 90): c.P(x, 10, k('conc', 2))
+    c.HL(0, 11, 32, k('shiro', 0))
+    c.R(0, 12, 32, 18, k('conc', 0)); c.R(1, 13, 30, 16, k('conc', 1))                                                           # 틀과 뒷판
+    c.HL(0, 12, 32, k('conc', -1)); c.HL(1, 13, 30, k('shiro', 0))                                                              # 앞 턱 + 가격 라벨 띠
+    for x0 in (4, 11, 20, 26): c.HL(x0, 13, 3, k('sora', 1))
     for i, (y0, h) in enumerate(((14, 5), (21, 5), (27, 3))):
         goods_row(c, 2, y0, 28, h, 11 + i)
         shelf_lip(c, 1, y0 + h, 30) if i < 2 else None
     c.R(0, 29, 32, 3, k('tekko', -2)); c.HL(0, 29, 32, k('tekko', 0))                                                           # 받침
-    c.VL(0, 13, 17, k('shiro', 2)); c.VL(31, 13, 17, k('conc', -2))
-    ol_in(c, o); c.P(0, 8, None); c.P(31, 8, None)
+    c.VL(0, 12, 18, k('shiro', 2)); c.VL(31, 12, 18, k('conc', -2))
+    ol_in(c, o); c.P(0, 5, None); c.P(31, 5, None)
 
 
 @R.obj('cv-gondola-v', '진열 곤돌라(세로)', 1, 2, up=16, kind='floor', use=('search',),
@@ -160,14 +167,19 @@ def cv_gondola_v(c):
        tags=('편의점', '슈퍼', '진열', '세일'), place='곤돌라 줄 끝·통로 모서리', pair=('cv-gondola',))
 def cv_gondola_end(c):
     o = k('conc', -3)
-    c.R(1, 6, 14, 3, k('aka', 1)); c.HL(1, 6, 14, k('aka', 2)); c.HL(1, 8, 14, k('aka', -2)); c.HL(3, 7, 4, k('kii', 2)); c.HL(9, 7, 4, k('shiro', 2))   # 세일 띠
-    c.R(1, 9, 14, 3, k('shiro', 1)); c.HL(1, 9, 14, k('shiro', 2)); c.HL(1, 11, 14, k('conc', -1))
-    c.R(1, 12, 14, 18, k('conc', 1))
-    for i, (y0, h) in enumerate(((13, 5), (20, 5), (26, 3))):
+    # 윗면 6px(곤돌라 본체와 같은 높이·같은 흰 면) → 앞 턱 → 붉은 세일 띠(앞면 머리) → 3단 상품 더미
+    c.R(1, 5, 14, 6, k('shiro', 1)); c.HL(1, 5, 14, k('shiro', 2)); c.HL(1, 6, 14, k('shiro', 2))
+    for x in range(2, 14):
+        if rnd(x, 8, 63, 110): c.P(x, 8, k('conc', 2))
+    c.HL(1, 10, 14, k('shiro', 0)); c.HL(1, 11, 14, k('conc', -1))
+    c.R(1, 12, 14, 3, k('aka', 1)); c.HL(1, 12, 14, k('aka', 2)); c.HL(1, 14, 14, k('aka', -2)); c.HL(3, 13, 4, k('kii', 2)); c.HL(9, 13, 4, k('shiro', 2))   # 세일 띠
+    c.R(1, 15, 14, 14, k('conc', 1))
+    for i, (y0, h) in enumerate(((15, 4), (21, 4), (26, 3))):
         goods_row(c, 2, y0, 12, h, 31 + i, pal=[('kii', 1), ('daidai', 0), ('aka', 0), ('ki', 1)]); shelf_lip(c, 1, y0 + h, 14) if i < 2 else None
     c.R(1, 29, 14, 3, k('tekko', -2)); c.HL(1, 29, 14, k('tekko', 0))
     c.VL(1, 12, 18, k('shiro', 2)); c.VL(14, 12, 18, k('conc', -2))
     ol_in(c, o)
+
 
 
 @R.obj('cv-cooler', '음료 쿨러(벽)', 1, 2, up=0, kind='wall', use=('open',),
@@ -190,16 +202,22 @@ def cv_cooler(c):
 
 def _open_case(c, band, pal, seed, shelves=3):
     o = k('conc', -3)
-    c.R(1, 3, 30, 4, k('shiro', 1)); c.HL(1, 3, 30, k('shiro', 2)); c.HL(1, 6, 30, k('conc', -1)); c.HL(2, 5, 28, k(*band))      # 위 덮개 + 간판 띠
-    c.R(1, 7, 30, 15, k('conc', 2)); c.VL(1, 7, 15, k('shiro', 2)); c.VL(30, 7, 15, k('conc', 0))                                   # 개방된 안쪽(밝은 뒷판)
-    ys = (8, 13, 18)[:shelves]
+    # 위 덮개 윗면 6px(밝고 고른 면, 앞 가장자리 어두운 턱) → 앞면 머리 간판 띠 → 열린 3단 → 앞판
+    c.R(1, 1, 30, 6, k('shiro', 1)); c.HL(1, 1, 30, k('shiro', 2)); c.HL(1, 2, 30, k('shiro', 2))
+    for x in range(2, 30):
+        if rnd(x, 4, seed + 70, 90): c.P(x, 4, k('conc', 2))
+    c.HL(1, 6, 30, k('shiro', 0)); c.HL(1, 7, 30, k('conc', -1))
+    c.R(1, 8, 30, 2, k(*band)); c.HL(1, 8, 30, k(band[0], band[1] + 2)); c.HL(1, 9, 30, k(band[0], band[1] - 2))
+    c.R(1, 10, 30, 12, k('conc', 2)); c.VL(1, 10, 12, k('shiro', 2)); c.VL(30, 10, 12, k('conc', 0)); c.HL(1, 10, 30, k('conc', 0))   # 열린 안쪽(밝은 뒷판, 위는 덮개 그늘)
+    ys = (11, 15, 19)[:shelves]
     for i, y0 in enumerate(ys):
         goods_row(c, 2, y0, 27, 3, seed + i, pal=pal, pitch=4 if pal is BENTO else 3)
-        c.HL(1, y0 + 3, 30, k('conc', 3)); c.HL(1, y0 + 4, 30, k('conc', -1))
+        c.HL(1, y0 + 3, 30, k('conc', 3))
     c.R(1, 22, 30, 9, k('shiro', 1)); c.HL(1, 22, 30, k('shiro', 2)); c.HL(1, 23, 30, k('conc', -1)); c.HL(2, 25, 28, k(*band))
     c.R(1, 28, 30, 3, k('tekko', -2)); c.HL(1, 28, 30, k('tekko', 0))
     for x0 in range(4, 28, 5): c.P(x0, 26, k('conc', 0))                                                                           # 앞판 홈
     ol_in(c, o)
+
 
 
 @R.obj('cv-open-case', '도시락·삼각김밥 오픈 케이스', 2, 1, up=16, kind='wall', use=('search',),
@@ -218,15 +236,20 @@ def cv_meat_case(c): _open_case(c, ('aka', 0), MEAT, 61)
        desc='창가 잡지 진열대 2×1, 낮다. 3px 윗면 아래 세로로 꽂힌 잡지 표지들(색색, 흰 제목 블록), 아래 받침. 입구 옆 유리창 아래에 놓는다.',
        tags=('편의점', '잡지', '창가'), place='입구 옆 유리창 아래 벽면', pair=('cv-gondola',))
 def cv_magazine(c):
-    o = k('conc', -3)
-    c.R(0, 0, 32, 3, k('ki', 2)); c.HL(0, 0, 32, k('ki', 3)); c.HL(0, 2, 32, k('ki', -1))
-    c.R(0, 3, 32, 10, k('conc', 1))
-    for i in range(8):
-        x0 = i * 4; ramp, st = PROD[hs(i, 3, 9) % len(PROD)]
-        c.R(x0, 3, 3, 10, k(ramp, st)); c.VL(x0, 3, 10, k(ramp, st + 2)); c.HL(x0 + 1, 4, 2, k('shiro', 2)); c.HL(x0 + 1, 8, 1, k('shiro', 1))
-        c.P(x0 + 2, 11, k('kii', 1))
-    c.R(0, 13, 32, 3, k('ki', -1)); c.HL(0, 13, 32, k('ki', 1)); c.HL(0, 15, 32, o)
+    o = k('ki', -3)
+    # 낮은 창가 잡지대: 윗단(경사 판)에 잡지가 표지를 위로 누워 보이고(윗면 7px), 앞 나무 턱 아래로 세워 꽂은 잡지 등.
+    c.R(0, 0, 32, 7, k('ki', 2)); c.HL(0, 0, 32, k('ki', 3))
+    for i in range(6):                                                          # 누운 잡지 표지(윗면)
+        x0 = 1 + i * 5; ramp, st = PROD[hs(i, 1, 9) % len(PROD)]
+        c.R(x0, 1, 4, 5, k(ramp, st + 1)); c.HL(x0, 1, 4, k(ramp, st + 2)); c.R(x0 + 1, 2, 2, 1, k('shiro', 3)); c.HL(x0, 5, 4, k(ramp, st - 1))
+    c.HL(0, 6, 32, k('ki', 0)); c.R(0, 7, 32, 2, k('ki', 1)); c.HL(0, 7, 32, k('ki', 3)); c.HL(0, 8, 32, k('ki', -2))   # 앞 나무 턱
+    c.R(0, 9, 32, 5, k('conc', 0))
+    for i in range(10):                                                         # 세워 꽂은 잡지 윗부분
+        x0 = 1 + i * 3; ramp, st = PROD[hs(i, 3, 19) % len(PROD)]
+        c.R(x0, 9, 2, 5, k(ramp, st)); c.HL(x0, 9, 2, k(ramp, st + 2)); c.P(x0, 11, k('shiro', 2))
+    c.R(0, 14, 32, 2, k('ki', -1)); c.HL(0, 14, 32, k('ki', 1)); c.HL(0, 15, 32, o)
     ol_in(c, o)
+
 
 
 @R.obj('cv-freezer', '아이스크림 냉동고', 2, 1, up=8, kind='floor', use=('open',),
@@ -298,9 +321,11 @@ def cv_hotcase(c):
        tags=('편의점', '카운터', '커피'), place='계산대 줄 끝, 출입구에서 안쪽', pair=('cv-register',))
 def cv_coffee(c):
     o = k('conc', -3)
-    c.R(3, 0, 10, 16, k('yoru', 0)); c.HL(3, 0, 10, k('tekko', 2)); c.VL(3, 0, 16, k('tekko', 1)); c.VL(12, 0, 16, k('yoru', -2))   # 검은 머신 몸통
-    c.R(4, 2, 8, 3, k('conc', -2)); c.P(5, 3, k('midori', 2)); c.P(7, 3, k('aka', 2)); c.P(9, 3, k('sora', 2)); c.P(10, 3, k('ki', 2))   # 버튼줄
-    c.R(5, 6, 6, 2, k('conc', -3)); c.R(7, 8, 2, 2, k('daidai', 1))                                                         # 추출구·떨어지는 커피
+    # 검은 머신: 윗면(뚜껑) 4px 가 몸통보다 밝은 철 회색 면, 그 아래 앞면에 버튼줄·추출구·컵
+    c.R(3, 0, 10, 4, k('tekko', 1)); c.HL(3, 0, 10, k('tekko', 2)); c.HL(3, 3, 10, k('tekko', -1)); c.R(5, 1, 4, 2, k('tekko', 2)); c.P(10, 1, k('tekko', 0))   # 뚜껑 윗면 + 원두 투입 덮개
+    c.R(3, 4, 10, 12, k('yoru', 0)); c.VL(3, 4, 12, k('tekko', 0)); c.VL(12, 4, 12, k('yoru', -2))   # 몸통 앞면
+    c.R(4, 5, 8, 2, k('conc', -2)); c.P(5, 5, k('midori', 2)); c.P(7, 5, k('aka', 2)); c.P(9, 5, k('sora', 2)); c.P(10, 5, k('ki', 2))   # 버튼줄
+    c.R(5, 8, 6, 2, k('conc', -3)); c.R(7, 10, 2, 1, k('daidai', 1))                                                       # 추출구·떨어지는 커피
     c.R(5, 11, 6, 4, k('conc', -2)); c.R(6, 11, 4, 4, k('shiro', 3)); c.HL(6, 11, 4, k('conc', 1)); c.HL(6, 12, 4, k('daidai', -2))   # 컵과 받침
     ol_in(c, o)
     c.R(0, 16, 16, 5, k('shiro', 2)); c.HL(0, 20, 16, k('conc', 1))
@@ -308,13 +333,16 @@ def cv_coffee(c):
     c.VL(0, 16, 15, k('shiro', 2)); c.VL(15, 16, 15, k('conc', -1))
 
 
+
 @R.obj('cv-back-shelf', '뒷벽 담배·상품 선반', 2, 1, up=16, kind='wall', use=('search',),
        desc='계산대 뒤 벽 선반 2×1. 위 칸에 작은 담배 갑(색색 점무늬)이 격자로, 아래는 서랍 문. 점원이 쓰는 자리. 카운터 바로 뒤 북쪽 벽에 둔다.',
        tags=('편의점', '카운터', '담배', '선반'), place='카운터 뒤 북쪽 벽면 아래', pair=('cv-register', 'cv-counter'))
 def cv_back_shelf(c):
     o = k('conc', -3)
-    c.R(1, 2, 30, 4, k('conc', 2)); c.HL(1, 2, 30, k('conc', 3)); c.HL(1, 5, 30, k('conc', -1))
-    c.R(1, 6, 30, 16, k('conc', 0))
+    c.R(1, 0, 30, 6, k('conc', 2)); c.HL(1, 0, 30, k('conc', 3)); c.HL(1, 1, 30, k('conc', 3)); c.HL(1, 5, 30, k('conc', 1))   # 윗면 6px
+    for x in range(2, 30):
+        if rnd(x, 3, 77, 80): c.P(x, 3, k('conc', 1))
+    c.R(1, 6, 30, 16, k('conc', 0)); c.HL(1, 6, 30, k('conc', -2))
     for r in range(4):
         for i in range(14):
             ramp, st = PROD[hs(i, r, 14) % len(PROD)]
@@ -326,14 +354,16 @@ def cv_back_shelf(c):
     ol_in(c, o)
 
 
+
 # ───────────────────────── 기타 설비 ─────────────────────────
 @R.obj('cv-atm', 'ATM', 1, 1, up=16, kind='wall', use=('counter',),
        desc='벽에 붙인 은행 ATM 1×1. 윗면, 큰 화면과 키패드, 카드 투입구, 아래 지폐 구멍(노란 불). 카운터 맞은편 벽이나 입구 옆에 둔다.',
        tags=('편의점', 'ATM', '은행'), place='입구 쪽 북쪽 벽 아래 또는 복사기 옆', pair=('cv-copier',))
 def cv_atm(c):
     o = k('conc', -3)
-    c.R(1, 4, 14, 4, k('conc', 2)); c.HL(1, 4, 14, k('conc', 3)); c.HL(1, 7, 14, k('conc', -1))
-    c.R(1, 8, 14, 23, k('sora', 0)); c.VL(1, 8, 23, k('sora', 2)); c.VL(14, 8, 23, k('sora', -2))
+    c.R(1, 2, 14, 6, k('conc', 2)); c.HL(1, 2, 14, k('conc', 3)); c.HL(1, 3, 14, k('conc', 3)); c.HL(1, 7, 14, k('conc', 0))   # 윗면 6px
+    c.P(4, 5, k('conc', 1)); c.P(10, 4, k('conc', 1))
+    c.R(1, 8, 14, 23, k('sora', 0)); c.HL(1, 8, 14, k('sora', -2)); c.VL(1, 8, 23, k('sora', 2)); c.VL(14, 8, 23, k('sora', -2))
     c.R(3, 10, 10, 7, k('yoru', 0)); c.R(4, 11, 8, 5, k('garasu', 2)); c.HL(4, 11, 8, k('shiro', 2)); c.P(6, 14, k('midori', 1)); c.P(9, 13, k('aka', 1))
     for r in range(3):
         for i in range(3): c.P(4 + i * 2, 19 + r * 2, k('shiro', 2))
@@ -341,6 +371,7 @@ def cv_atm(c):
     c.R(3, 26, 10, 2, k('tekko', -2)); c.HL(4, 26, 8, k('kii', 1))
     c.R(1, 29, 14, 2, k('tekko', -1))
     ol_in(c, o)
+
 
 
 @R.obj('cv-copier', '복합 복사기', 1, 1, up=16, kind='floor', use=('push',),
@@ -361,12 +392,19 @@ def cv_copier(c):
        tags=('편의점', '슈퍼', '바구니', '입구'), place='입구 안쪽 곤돌라 첫 줄 앞', pair=('cv-autodoor', 'cv-cart'))
 def cv_baskets(c):
     o = k('aka', -3)
-    for i, y0 in enumerate((13, 18, 23)):
-        c.R(2, y0, 12, 6, k('aka', 0)); c.HL(2, y0, 12, k('aka', 2)); c.HL(2, y0 + 5, 12, k('aka', -2))
+    # 맨 위 바구니는 위에서 들여다보인다: 밝은 테두리 + 어두운 바닥(그물 점) + 손잡이 두 개. 그 아래 겹친 바구니 앞면 셋.
+    c.R(2, 9, 12, 6, k('aka', -1)); c.HL(2, 9, 12, k('aka', 2)); c.VL(2, 9, 6, k('aka', 1)); c.VL(13, 9, 6, k('aka', 0)); c.HL(2, 14, 12, k('aka', 1))
+    for x0 in range(4, 12, 2):
+        for y0 in (11, 13): c.P(x0 + (y0 // 2) % 2, y0, k('aka', -2))
+    c.HL(3, 10, 10, k('aka', -2))
+    c.HL(2, 12, 12, k('aka', 0))                                                                          # 바닥 가운데 살
+    for i, y0 in enumerate((15, 20, 24)):
+        hh = 5 if i < 2 else 5
+        c.R(2, y0, 12, hh, k('aka', 0)); c.HL(2, y0, 12, k('aka', 2)); c.HL(2, y0 + hh - 1, 12, k('aka', -2))
         for x0 in range(3, 13, 2): c.P(x0, y0 + 2, k('aka', -1)); c.P(x0 + 1, y0 + 3, k('aka', -1))
-        c.HL(4, y0 - 1, 8, k('aka', -1)) if i == 0 else None
     ol_in(c, o)
     c.R(1, 29, 14, 2, k('tekko', -2)); c.HL(1, 29, 14, k('tekko', 0)); c.HL(1, 31, 14, k('conc', -3))
+
 
 
 @R.obj('cv-autodoor', '자동문 문턱', 2, 1, up=0, kind='flat', use=('travel',),
@@ -408,14 +446,19 @@ def cv_cart_rack(c):
        tags=('슈퍼', '바구니', '입구'), place='카트 보관대 옆, 자동문 안쪽', pair=('cv-cart-rack', 'cv-autodoor'))
 def cv_basket_stack(c):
     o = k('conc', -3)
+    # 맨 위 바구니 속(초록 테두리 + 어두운 바닥)이 윗면으로 보이고, 아래로 초록·주황 바구니가 겹겹이.
+    c.R(2, 1, 12, 6, k('midori', -1)); c.HL(2, 1, 12, k('midori', 2)); c.VL(2, 1, 6, k('midori', 1)); c.VL(13, 1, 6, k('midori', 0)); c.HL(2, 6, 12, k('midori', 1))
+    c.HL(3, 2, 10, k('midori', -3))
+    for x0 in range(4, 12, 2):
+        for y0 in (3, 5): c.P(x0 + (y0 // 2) % 2, y0, k('midori', -2))
     for i, (ramp, st) in enumerate((('midori', 0), ('daidai', 0), ('midori', 0), ('daidai', 0), ('midori', 0))):
-        y0 = 4 + i * 4
-        c.R(2, y0, 12, 5, k(ramp, st)); c.HL(2, y0, 12, k(ramp, st + 2)); c.HL(2, y0 + 4, 12, k(ramp, st - 2))
-        c.HL(3, y0 + 1, 10, k(ramp, st - 1)) if i % 2 == 0 else None
+        y0 = 7 + i * 4
+        c.R(2, y0, 12, 4, k(ramp, st)); c.HL(2, y0, 12, k(ramp, st + 2)); c.HL(2, y0 + 3, 12, k(ramp, st - 2))
         for x0 in range(4, 13, 3): c.P(x0, y0 + 2, k(ramp, st - 1))
     ol_in(c, o)
-    c.VL(1, 4, 25, k('tekko', 0)); c.VL(14, 4, 25, k('tekko', -2))
+    c.VL(1, 2, 25, k('tekko', 0)); c.VL(14, 2, 25, k('tekko', -2))
     c.R(0, 26, 16, 4, k('tekko', -2)); c.HL(0, 26, 16, k('tekko', 0)); c.HL(0, 29, 16, o); c.R(1, 29, 14, 2, k('tekko', -2))
+
 
 
 @R.obj('cv-trash', '분리수거 쓰레기통', 1, 1, up=8, kind='floor', use=('search',),
@@ -423,13 +466,17 @@ def cv_basket_stack(c):
        tags=('편의점', '쓰레기통', '분리수거'), place='입구 곁 바깥쪽 또는 쿨러 줄 끝', pair=('cv-cooler',))
 def cv_trash(c):
     o = k('conc', -3)
+    # 세 통 뚜껑 윗면(6px, 밝은 회색)에 투입구(페트병 = 둥근 구멍, 캔 = 둥근 구멍, 일반 = 가로 틈)가 위에서 보인다.
     for i, (ramp, st) in enumerate((('sora', 0), ('midori', 0), ('daidai', 0))):
         x0 = 1 + i * 5
-        c.R(x0, 12, 5, 4, k('conc', 1)); c.HL(x0, 12, 5, k('conc', 3)); c.HL(x0 + 1, 14, 3, k('yoru', 0))
-        c.R(x0, 16, 5, 14, k(ramp, st)); c.VL(x0, 16, 14, k(ramp, st + 2)); c.VL(x0 + 4, 16, 14, k(ramp, st - 2)); c.HL(x0, 16, 5, k(ramp, st + 1))
-        c.HL(x0 + 1, 21, 3, k('shiro', 2))
+        c.R(x0, 9, 5, 6, k('conc', 2)); c.HL(x0, 9, 5, k('conc', 3)); c.VL(x0, 9, 6, k('conc', 3)); c.HL(x0, 14, 5, k('conc', 0))
+        if i < 2: c.R(x0 + 1, 11, 3, 2, k('yoru', -1)); c.HL(x0 + 1, 13, 3, k(ramp, st + 1))
+        else: c.HL(x0 + 1, 11, 3, k('yoru', -1)); c.HL(x0 + 1, 12, 3, k('conc', 0))
+        c.R(x0, 15, 5, 14, k(ramp, st)); c.VL(x0, 15, 14, k(ramp, st + 2)); c.VL(x0 + 4, 15, 14, k(ramp, st - 2)); c.HL(x0, 15, 5, k(ramp, st - 1))
+        c.HL(x0 + 1, 20, 3, k('shiro', 2))
     ol_in(c, o)
     c.R(1, 29, 15, 2, k('tekko', -2))
+
 
 
 # ───────────────────────── 슈퍼 ─────────────────────────

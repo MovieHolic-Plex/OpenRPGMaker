@@ -248,12 +248,12 @@ def _kr_register(c):
        desc='벽에 붙은 셀프 드링크 바 2칸 — 위 은색 디스펜서 넷(빨강·주황·초록·노랑 색 패널, 글자 없음)과 꼭지, 물받이, 왼쪽에 엎어 쌓은 컵 더미, 아래 흰 수납장. 노래방·만화 카페 로비에 하나.')
 def _kr_drink(c):
     W = 32
-    tall_box(c, 0, 1, W, 31, 'tekko', 1, top=4)                                                       # 몸통(은색)
+    tall_box(c, 0, 0, W, 32, 'tekko', 1, top=5)                                                       # 몸통(은색) 윗면 5px
     eave(c, 0, 6, W, 'tekko', 1)
     for i, col in enumerate(('aka', 'daidai', 'midori', 'kii')):                                     # 디스펜서 머리 넷
         x = 7 + i * 6
-        rc(c, x, 8, 5, 6, kc(col, 1)); hl(c, x, 8, 5, kc(col, 2)); vl(c, x + 4, 8, 6, kc(col, -1))
-        px(c, x + 1, 10, kc('shiro', 2)); rc(c, x + 1, 12, 3, 1, kc(col, 0))                           # 색 패널의 빛(글자 아님)
+        rc(c, x, 8, 5, 6, kc(col, 1)); hl(c, x, 8, 5, kc(col, 2)); hl(c, x, 9, 5, kc(col, 2)); hl(c, x, 10, 5, kc(col, 0)); vl(c, x + 4, 11, 3, kc(col, -1))   # 머리 윗면 2px + 앞
+        px(c, x + 1, 11, kc('shiro', 2)); rc(c, x + 1, 12, 3, 1, kc(col, 0))                           # 색 패널의 빛(글자 아님)
         outline(c, x - 1, 7, 7, 8, kc('tekko', -2))
         rc(c, x + 2, 15, 1, 3, kc('tekko', -1)); px(c, x + 2, 15, kc('tekko', 2))                       # 꼭지
     for k in range(4):                                                                                # 왼쪽 컵 더미(엎은 컵 4단)
@@ -266,7 +266,7 @@ def _kr_drink(c):
     vl(c, 16, 22, 8, kc('conc', 0)); px(c, 14, 25, kc('tekko', 2)); px(c, 18, 25, kc('tekko', 2))
     vl(c, 1, 21, 9, kc('shiro', 2)); vl(c, 30, 21, 9, kc('conc', 0))
     rc(c, 1, 30, 30, 1, kc('tekko', -2))
-    outline(c, 0, 1, W, 31)
+    outline(c, 0, 0, W, 32)
 
 
 @R.obj('kr-ice-cream', '소프트아이스크림 기계', w=1, h=1, up=16, kind='wall', cat=MC, cat_ko=MC_KO, use=('push',),
@@ -274,7 +274,7 @@ def _kr_drink(c):
        pair=('kr-drink-bar',),
        desc='셀프 소프트아이스크림 기계 — 은색 몸통 위 윗면, 앞에 손잡이 레버 둘과 꼭지, 아래 물받이, 옆에 콘 꽂이(콘 두 개). 드링크 바 옆에 하나.')
 def _kr_ice(c):
-    tall_box(c, 1, 2, 14, 21, 'tekko', 1, top=4)
+    tall_box(c, 1, 0, 14, 23, 'tekko', 1, top=6)
     eave(c, 1, 7, 14, 'tekko', 1)
     rc(c, 3, 9, 10, 4, kc('shiro', 2)); hl(c, 3, 9, 10, kc('shiro', 2)); rc(c, 4, 10, 3, 2, kc('pinku', 1)); rc(c, 8, 10, 3, 2, kc('kinari', 2))   # 맛 패널(분홍·바닐라)
     outline(c, 2, 8, 12, 6, kc('tekko', -2))
@@ -461,7 +461,7 @@ def _kr_screen(c):
        tags=TK + ('노래방 방', '스피커', '파티룸'), place='방 북쪽 벽 바로 아래, 화면 양옆(한두 개)', pair=('kr-screen', 'kr-mic-stand'),
        desc='검은 바닥형 스피커 — 윗면이 보이는 검은 상자, 앞에 큰 우퍼·작은 트위터 원과 파란 전원 불. 화면 양옆 벽 앞에 선다.')
 def _kr_speaker(c):
-    tall_box(c, 2, 8, 12, 23, 'yoru', -1, top=4)
+    tall_box(c, 2, 5, 12, 26, 'yoru', 0, top=7)
     eave(c, 2, 13, 12, 'yoru', -1)
     ring(c, 8, 24, 4.5, kc('tekko', 0)); disc(c, 8, 24, 3.5, 3.5, kc('sumi', 0)); disc(c, 8, 24, 1.5, 1.5, kc('yoru', 0)); px(c, 7, 23, kc('tekko', 2))   # 우퍼
     ring(c, 8, 17, 2.2, kc('tekko', 1)); px(c, 8, 17, kc('yoru', 1))                                  # 트위터

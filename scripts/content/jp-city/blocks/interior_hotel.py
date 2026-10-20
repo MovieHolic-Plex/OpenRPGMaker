@@ -497,11 +497,12 @@ def _genkan_step(c):
        place='현관 큰 단 옆 마루(타타키가 아니라 올라선 쪽)', pair=('ht-genkan-step', 'slippers'),
        desc='밝은 나무 3단 슬리퍼 선반 — 단마다 감색·팥색 손님 슬리퍼가 발끝을 앞으로 두 켤레씩 꽂혀 있다.')
 def _slipper_rack(c):
-    rc(c, 1, 1, 14, 31, OL)
-    rc(c, 2, 2, 12, 3, YK(1)); hl(c, 2, 2, 12, YK(2)); hl(c, 2, 4, 12, YK(3))         # 윗면 T4
-    hl(c, 2, 5, 12, YK(-2))
-    vl(c, 2, 5, 26, YK(1)); vl(c, 13, 5, 26, YK(-1))                                # 옆판
-    rc(c, 3, 6, 10, 25, YK(-2))                                                     # 안쪽 그늘
+    rc(c, 1, 0, 14, 32, OL)
+    rc(c, 2, 1, 12, 5, YK(1)); hl(c, 2, 1, 12, YK(2)); hl(c, 2, 5, 12, YK(3))         # 윗면 5px
+    hl(c, 4, 3, 5, YK(0)); hl(c, 9, 4, 3, YK(0))                                    # 나뭇결
+    hl(c, 2, 6, 12, YK(-2))
+    vl(c, 2, 6, 25, YK(1)); vl(c, 13, 6, 25, YK(-1))                                # 옆판
+    rc(c, 3, 7, 10, 24, YK(-2))                                                     # 안쪽 그늘
     for i, y in enumerate((12, 20, 28)):                                            # 선반 3단
         hl(c, 3, y, 10, YK(2)); hl(c, 3, y + 1, 10, YK(0))
         ramp = 'kon' if i != 1 else 'kawara'
