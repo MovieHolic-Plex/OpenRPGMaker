@@ -287,6 +287,10 @@ Gemini 4 Argon(`claude -p --model gemini-4-argon-high`, 8319/cc)으로 3번씩 �
 - 보류 8종(시트는 #3087 그림 그대로, 후보는 `tiledata/hand-interior/props34/`·`rv/`): Argon 탈락 — 옷감 진열장(천이 16px 에서 천으로 안 읽힘, 0/3)·초 진열장(1/3)·선원 침상(3/4 는 통과,
   1칸 폭이라 침대로 안 읽힘 — 발자국을 2칸으로 바꿀지는 사람 결정, 후보 그림만 `rv/ship_bunk_r5_candidate.png`). object-gate 탈락(Argon 은 통과) — 슬롯머신·고해실(화풍 FAIL),
   투구 선반·제어반·유물 진열장(REFER, 사람 확인 대기 — #3101 의 보류 판정 사람 검토 화면 대상). 유물 진열장 원본 함수는 main 그림으로 되돌렸다(후보 `rv/relic_cabinet_r2_candidate.png`).
+- 3판(감독 결정, 2026-10-20): 기존 16×48 선원 침상은 그대로 두고 2칸 폭 새 기물 `ship bunk 2w`(32×48)를 그렸다 — Argon 3/3 통과, object-gate 1db03a95 는 REFER(독립 눈 3/12 「정면 입면」).
+  REFER 는 사람 검토(`npm run harness -- object-gate serve-holds` → :18323)에서 허용되기 전에는 굽지 않으므로 조각 등록·배 선실(crew) 예제 교체는 넣지 않았다.
+  후보는 `tiledata/hand-interior/pick/work/props34/rv/ship_bunk_2w_candidate.{png,diff}` — 허용되면 diff 를 ship.py 에 붙이고 plans/ship.json 의 (21,12)·(22,12) `ship bunk` 둘을 (21,12) `ship bunk 2w` 하나로 바꾼 뒤
+  `rooms_json.py` → `bake.py` → `templates.mts`. 옷감(나선 두루마리 끝)·초(상자 속 심지 점) 마지막 시도는 둘 다 Argon 0/3 이라 중단(`rv/r2_cabinet_r4_attempt.py.txt`, `rv/c10.png`).
 - object-gate 는 보정 프로필이 없어(미보정) 정식 영수증이 불가능하다. 보정되면 이 21종을 다시 받아야 한다.
 
 ## 퍼즐 방 조각 — interior-plus `puzzle` (2026-10-20)

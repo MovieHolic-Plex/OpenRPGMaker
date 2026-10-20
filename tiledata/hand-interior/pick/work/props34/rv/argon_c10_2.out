@@ -1,0 +1,4 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"cabinet.bolt+boltg+boltr","view34":"PASS","quality":"FAIL","reason":"The cabinet has a clear 5px lit top plane, but each shelf cavity is completely filled floor-to-ceiling by two 6x6 flat front-facing circular discs that read as pinwheels or cushions rather than 3/4 cylindrical fabric bolts in a recessed shelf."}
+{"id":"cabinet.candle","view34":"PASS","quality":"FAIL","reason":"While the cabinet shell has a proper 5px top plane, the shelves contain a 3x2 checkerboard grid of 2x2 cream squares with single dark pixels that looks like waffles or dominoes rather than recognizable candles."}
