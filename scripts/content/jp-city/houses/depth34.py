@@ -28,6 +28,17 @@ def _course(c, x, y, ytop, mat, t, seam_x=True):
     c.P(x, y, K(mat, t))
 
 
+def _anchor(yr, yeave):
+    """기와 단 기준선: 마지막 단이 처마 바로 위에서 끝나도록(처마 쪽 단이 잘리지 않게) 위로 맞춘다."""
+    return yr - ((4 - (yeave - yr) % 4) % 4)
+
+
+def _up(y, ya, yr, fd):
+    """앞 경사면 위쪽 밝은 띠는 단 단위로(단 중간에서 바뀌면 같은 색 3줄이 생긴다)."""
+    cy = y - ((y - ya) % 4)
+    return 1 if (cy - yr) < fd * 0.35 else 0
+
+
 def _eave_lip(c, x0, x1, y, mat, base):
     """앞 처마 끝(軒先) 3px + 윤곽."""
     c.HL(x0, y, x1 - x0 + 1, K(mat, base + 2))
@@ -46,6 +57,7 @@ def hip_top(c, x0, x1, ytop, yeave, mat, base, ridge_frac=0.24, run=None):
     run = run if run is not None else round(fd * 0.62)        # 옆 삼각면 폭(용마루 끝까지)
     flat_back = ridge_frac <= 0.08                            # 뒤 경사면을 안 보이게(버들항식: 용마루 = 윗선)
     rl, rr = x0 + run, x1 - run
+    ya = _anchor(yr, yeave)
     for y in range(ytop, yeave):
         if y < yr:   # 뒤 경사면 + 뒤쪽 隅棟
             f = 1.0 if flat_back else (y - ytop) / max(1, yr - ytop)
@@ -53,7 +65,7 @@ def hip_top(c, x0, x1, ytop, yeave, mat, base, ridge_frac=0.24, run=None):
         else:
             f = (yeave - y) / max(1, fd)
             bl = round(x0 + run * f); br = round(x1 - run * f)
-        up = 1 if y >= yr and (y - yr) < fd * 0.35 else 0
+        up = _up(y, ya, yr, fd) if y >= yr else 0
         for x in range(x0, x1 + 1):
             if x < bl:                                       # 왼쪽 옆면(서향 · 빛) — 기와 줄 세로
                 t = base + 2 - (2 if (x - x0) % 4 == 3 else 0) + (1 if (x - x0) % 4 == 0 else 0)
@@ -66,7 +78,7 @@ def hip_top(c, x0, x1, ytop, yeave, mat, base, ridge_frac=0.24, run=None):
             elif y < yr and not flat_back:                   # 뒤 경사면(북향 · 빛을 받아 밝다)
                 _course(c, x, y, ytop, mat, base + 1)
             else:                                            # 앞 경사면
-                _course(c, x, y, yr, mat, base + up)
+                _course(c, x, y, ya, mat, base + up)
         # 隅棟(마루): 밝은 1px + 아래 그늘 1px
         if bl > x0:
             c.P(bl, y, K(mat, base + 3)); c.P(bl + 1, y, K(mat, base - 2))
@@ -81,15 +93,15 @@ def hip_top(c, x0, x1, ytop, yeave, mat, base, ridge_frac=0.24, run=None):
     c.HL(x0 - 1, ytop - 1, x1 - x0 + 3, OL)
     if not flat_back: c.HL(x0, ytop, x1 - x0 + 1, K(mat, base + 2))
     _eave_lip(c, x0 - 1, x1 + 1, yeave, mat, base)
-    if flat_back:                                                            # 위 바깥 귀퉁이를 사선으로 깎아 寄棟 실루엣(옆면 쐐기가 윤곽이 된다)
+    if flat_back:                                                            # 바깥선을 지붕 높이 전체에 걸쳐 안으로 기울인다(寄棟 사다리꼴 실루엣)
         ch = max(3, run // 2)
-        for j in range(ch):
-            n = ch - j
+        for y in range(ytop - 1, yeave):
+            n = round(ch * (yeave - y) / max(1, yeave - ytop + 1))
+            if n <= 0: continue
             for x in list(range(x0 - 1, x0 - 1 + n)) + list(range(x1 + 2 - n, x1 + 2)):
-                if 0 <= ytop + j < c.h: c.a[ytop + j, x] = 0
-            c.P(x0 - 1 + n, ytop + j, OL); c.P(x1 + 1 - n, ytop + j, OL)
-        for x in range(x0 - 1, x0 - 1 + ch): c.a[ytop - 1, x] = 0
-        for x in range(x1 + 2 - ch, x1 + 2): c.a[ytop - 1, x] = 0
+                if 0 <= y < c.h: c.a[y, x] = 0
+            if y >= ytop: c.P(x0 - 1 + n, y, OL); c.P(x1 + 1 - n, y, OL)
+            else: c.HL(x0 - 1 + n, y, x1 - x0 + 3 - 2 * n, OL)
     return yr
 
 
@@ -99,11 +111,12 @@ def gable_top(c, x0, x1, ytop, yeave, mat, base, ridge_frac=0.22):
     flat_back = ridge_frac <= 0.08                            # 버들항식: 용마루 = 윗선(뒤 경사면 안 보임)
     yr = ytop + (2 if flat_back else max(5, round(D * ridge_frac)))
     fd = yeave - yr
+    ya = _anchor(yr, yeave)
     for y in range(ytop, yeave):
-        up = 1 if y >= yr and (y - yr) < fd * 0.35 else 0
+        up = _up(y, ya, yr, fd) if y >= yr else 0
         for x in range(x0, x1 + 1):
             if y < yr and not flat_back: _course(c, x, y, ytop, mat, base + 1)
-            else: _course(c, x, y, yr, mat, base + up)
+            else: _course(c, x, y, ya, mat, base + up)
         c.P(x0, y, K(mat, base + 3)); c.P(x0 + 1, y, K(mat, base + 1))       # 케라바(빛 쪽): 기와 톤 밝게 1px
         c.P(x1, y, K(mat, base - 3)); c.P(x1 - 1, y, K(mat, base - 2))       # 케라바(그늘 쪽)
         c.P(x0 - 1, y, OL); c.P(x1 + 1, y, OL)
@@ -155,8 +168,9 @@ def gable_front_top(c, x0, x1, ytop, yeave, ywall, mat, base, rise, wx0, wx1, wm
     c.VL(x0 - 1, ytop + rise_b - 1, yeave - ytop - rise_b + 3, OL); c.VL(x1 + 1, ytop + rise_b - 1, yeave - ytop - rise_b + 3, OL)
     gy = yeave - rise // 2 - 1                                               # 박공 환기창(박공벽 가운데, 처마선 아래)
     if rise >= 16 and gy > yeave - rise + 3 and gy + 5 < ywall:
-        c.R(xc - 3, gy, 7, 5, K('tekko', -1)); c.HL(xc - 3, gy, 7, K('tekko', 2))
-        for i in range(xc - 2, xc + 4, 2): c.VL(i, gy + 1, 4, K('tekko', 1))
+        c.R(xc - 4, gy - 1, 9, 7, OL)
+        c.R(xc - 3, gy, 7, 5, K('sumi', 1)); c.HL(xc - 3, gy, 7, K('shiro', 0))
+        for j in range(gy + 1, gy + 5, 2): c.HL(xc - 3, j, 7, K('shiro', -1))
 
 
 def shed_top(c, x0, x1, ytop, yeave, mat, base):
@@ -165,9 +179,12 @@ def shed_top(c, x0, x1, ytop, yeave, mat, base):
     D = yeave - ytop
     for y in range(ytop, yeave):
         f = (y - ytop) / max(1, D)
-        g = 2 if y - ytop < 3 else 0 if yeave - y <= 3 else 1               # 한 장 면: 뒤 끝 3줄 밝게 · 앞 끝 3줄 한 단 낮게(띠·격자 없음)
         for x in range(x0 + 3, x1 - 2):
-            t = base + min(2, g) + (1 if (x - x0) % 4 == 0 else -1 if (x - x0) % 4 == 2 else 0)   # 끊기지 않는 세로 골(물매 방향)
+            # 위(뒤)에서 아래(처마)로 밝음 → 어두움 그러데이션(경계는 체커 디더, 띠·격자 없음) + 왼쪽 위 반사
+            d = f + 0.25 * (x - x0) / max(1, x1 - x0)
+            g = 2 if d < 0.22 else (2 if (x + y) % 2 else 1) if d < 0.34 else 1 if d < 0.62 else (1 if (x + y) % 2 else 0) if d < 0.76 else 0
+            m = (x - x0) % 8
+            t = base + g + (1 if m == 0 else -1 if m == 1 else 0)          # 성긴 골(8px)
             c.P(x, y, K(mat, t))
         c.P(x0, y, K(mat, base + 3)); c.P(x0 + 1, y, K(mat, base + 2)); c.P(x0 + 2, y, K(mat, base + 2))   # 마구리(빛)
         c.P(x1, y, K(mat, base - 3)); c.P(x1 - 1, y, K(mat, base - 2)); c.P(x1 - 2, y, K(mat, base))      # 마구리(그늘)
@@ -249,10 +266,15 @@ def flat_top(c, x0, x1, ytop, yb, mat='conc', items=()):
         for a, b in taken:                                                   # 겹치면 오른쪽으로 민다
             if ix < b + 4 and ix + bw > a - 4: ix = b + 5
         if ix + bw > x1 - 4: continue                                        # 옥상 밖으로 나가면 뺀다
+        bh = {'pent': 34, 'ac': 15, 'tank': 17}.get(kind, 15)
+        pt = 16
+        if iy + bh > yb - 7:                                                 # 앞 난간을 덮지 않게 위로 올린다(모자라면 塔屋 윗면을 줄인다)
+            iy = max(ytop + 1, yb - 7 - bh)
+            if kind == 'pent' and iy + bh > yb - 7: pt = max(6, 16 - (iy + bh - (yb - 7)))
         taken.append((ix, ix + bw))
         if kind == 'ac': _ac(c, ix, iy)
         elif kind == 'tank': _tank(c, ix, iy)
-        elif kind == 'pent': _penthouse(c, ix, iy)
+        elif kind == 'pent': _penthouse(c, ix, iy, top=pt)
 
 
 # ─────────────────────────── house_kit 등록 ───────────────────────────
@@ -315,7 +337,7 @@ ROOFS['flat_top'] = _flat_top
 # ── 지붕 높이 상한(2026-10-20 사용자: 「지붕이 너무 세로로 길어지는 경우」) ─────────────────────
 # 지붕 줄 R = 그림 맨 위 → 처마선, 그림 높이 H = R + 벽(층+이음) + 기초 4. 경사 지붕 ≤ 40%, 평지붕 데크 ≤ 35%.
 # 줄 수만 줄이고(무늬는 같은 간격으로 그려진다) 벽·문은 그대로 둔다. 기준: 버들항 단층 60%·2층 43%(cream/ochre/brick-native).
-ROOF_CAP = {'flat_top': 0.35}
+ROOF_CAP = {'flat_top': 0.35, 'shed_top': 0.35}
 ROOF_CAP_PITCHED = 0.40
 ROOF_MIN_H = 24
 
@@ -329,6 +351,7 @@ def cap_roof(r):
     walls = sum(f['h'] for f in r['floors']) + sum(hgt[j[0]] for j in r.get('joins', []))
     c = ROOF_CAP.get(rk, ROOF_CAP_PITCHED)
     r_max = int(c / (1 - c) * (walls + 4))              # 지붕 줄 상한(R = h + 1)
+    if rk == 'gable_front_top': r_max += ro.get('rise', 14)   # 앞 박공 삼각벽은 벽이다(지붕 면 깊이만 센다)
     h_new = max(ROOF_MIN_H, min(ro['h'], r_max - 1))
     if h_new == ro['h']: return r
     ro = dict(ro, h=h_new)
