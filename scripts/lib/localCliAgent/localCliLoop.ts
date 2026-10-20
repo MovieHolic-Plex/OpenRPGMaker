@@ -144,12 +144,12 @@ export async function createLocalCliLoop(setup: LocalCliLoopSetup): Promise<Loca
         const result = await tool.execute(id, args, setup.signal);
         emit({ type: "tool_execution_end", toolCallId: id, toolName: name, isError: false, result });
         weigh(name, result.content as never);
-        if (!adapter.echoesResults) sentResults.push({ name, content: result.content as never, isError: false });
+        sentResults.push({ name, content: result.content as never, isError: false });
         return { content: result.content as LocalMcpContent[] };
       } catch (error) {
         const text = error instanceof Error ? error.message : String(error);
         emit({ type: "tool_execution_end", toolCallId: id, toolName: name, isError: true, result: { content: [{ type: "text", text }] } });
-        if (!adapter.echoesResults) sentResults.push({ name, content: [{ type: "text", text }], isError: true });
+        sentResults.push({ name, content: [{ type: "text", text }], isError: true });
         return { content: [{ type: "text", text }], isError: true };
       } finally {
         release();
@@ -159,14 +159,37 @@ export async function createLocalCliLoop(setup: LocalCliLoopSetup): Promise<Loca
     },
   });
 
-  // 원문을 되돌려 주지 않는 CLI 용 — 우리가 돌려준 결과를 호출 순서대로 둔다(같은 이름끼리 먼저 온 것부터 짝짓는다).
+  // 우리가 돌려준 결과(호출 순서). 원문을 되돌려 주지 않는 CLI 는 acknowledged 와 짝짓고(같은 이름끼리 먼저 온 것부터),
+  // 되돌려 주는 CLI 는 그림을 다시 인코딩했을 때 짝짓는다(아래 restoreReencodedImages).
   const sentResults: { name: string; content: readonly { type: string; text?: string; data?: string; mimeType?: string }[]; isError: boolean }[] = [];
   const asDelivered = (row: (typeof sentResults)[number]) => ({
     type: "tool_result", ...(row.isError ? { is_error: true } : {}),
     content: row.content.map((part) => part.type === "image" ? { type: "image", source: { type: "base64", media_type: part.mimeType ?? "image/png", data: part.data ?? "" } } : { type: "text", text: part.text ?? "" }),
   });
+  /**
+   * CLI 가 큰 그림을 스스로 줄여 다시 인코딩해 넘긴다(실측 2026-10-20: Claude Code 는 긴 변 2000px 초과를 2000px 로 줄인다 —
+   * 2304×288 농장 아틀라스가 2000×250 으로 넘어가 바이트가 달라지고, 관문이 「이미지 전달 필요」로 영영 막았다).
+   * CLI 가 «그 도구 결과의 그 자리에 그림을 넘겼다»고 되돌려 준 것은 전달 증거다(D5) — 글이 우리 결과와 똑같고 그림 수가 같을 때만
+   * 우리가 보낸 원본으로 바꿔 관문에 넘긴다. 글이 잘렸거나 그림 수가 다르면 그대로 두어 인정하지 않는다.
+   */
+  const ourImageData = (row: (typeof sentResults)[number]) => row.content.filter((part) => part.type === "image").map((part) => part.data ?? "");
+  const textOf = (parts: readonly { type?: string; text?: string }[]) => parts.filter((part) => part.type === "text").map((part) => part.text ?? "").join("\n");
+  const restoreReencodedImages = (payload: readonly unknown[]): unknown[] => payload.map((item) => {
+    const result = item as { type?: string; content?: unknown };
+    if (result?.type !== "tool_result" || !Array.isArray(result.content)) return item;
+    const parts = result.content as { type?: string; text?: string; source?: { data?: string; media_type?: string } }[];
+    const echoed = parts.filter((part) => part.type === "image").map((part) => part.source?.data ?? "");
+    if (!echoed.length) return item;
+    const index = sentResults.findIndex((row) => { const ours = ourImageData(row); return ours.length === echoed.length && textOf(row.content) === textOf(parts); });
+    if (index < 0) return item;
+    const [row] = sentResults.splice(index, 1);
+    const ours = ourImageData(row!);
+    if (ours.every((data, i) => data === echoed[i])) return item;
+    let next = 0;
+    return { ...result, content: parts.map((part) => part.type === "image" ? { type: "image", source: { type: "base64", media_type: part.source?.media_type ?? "image/png", data: ours[next++] ?? "" } } : part) };
+  });
   const onCliEvent = (event: LocalCliEvent) => {
-    if (event.kind === "delivered") { pendingDelivered.push(...event.payload); return; }
+    if (event.kind === "delivered") { pendingDelivered.push(...restoreReencodedImages(event.payload)); return; }
     if (event.kind === "acknowledged") {
       const index = sentResults.findIndex((row) => event.toolName === row.name || event.toolName.endsWith(`_${row.name}`) || event.toolName.endsWith(`__${row.name}`));
       if (index >= 0) { const [row] = sentResults.splice(index, 1); if (event.ok && !row!.isError) pendingDelivered.push(asDelivered(row!)); }

@@ -8,7 +8,7 @@
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { emptyWorkDir, isTransientCliError, runShort, sleep, spawnJsonLines, type SpawnedLines } from "./process.ts";
-import type { LocalCliAdapter, LocalCliBlock, LocalCliSession, LocalCliSessionOptions, LocalCliStatus, LocalCliUsage } from "./types.ts";
+import type { LocalCliAdapter, LocalCliBlock, LocalCliSession, LocalCliSessionOptions, LocalCliStatus, LocalCliUsage, LocalCliImage } from "./types.ts";
 
 export const CLAUDE_MCP_SERVER_NAME = "oprn";
 export const MCP_TOKEN_ENV = "OPRN_MCP_TOKEN";
@@ -42,8 +42,11 @@ export function buildClaudeArgs(configPath: string, systemPromptPath: string, op
   ];
 }
 
-function userLine(text: string): string {
-  return JSON.stringify({ type: "user", message: { role: "user", content: [{ type: "text", text }] } });
+function userLine(text: string, images: readonly LocalCliImage[] = []): string {
+  return JSON.stringify({ type: "user", message: { role: "user", content: [
+    ...images.map((image) => ({ type: "image", source: { type: "base64", media_type: image.mimeType, data: image.data } })),
+    { type: "text", text },
+  ] } });
 }
 
 function usageOf(raw: unknown, calls: number): LocalCliUsage | undefined {
@@ -119,7 +122,7 @@ function openClaudeSession(options: LocalCliSessionOptions, toolsEnabled = true)
   const abort = () => proc?.kill();
   options.signal?.addEventListener("abort", abort, { once: true });
   return {
-    async prompt(text) {
+    async prompt(text, images) {
       if (closed) throw new Error("세션이 이미 닫혔습니다");
       for (let attempt = 0; ; attempt++) {
         proc ??= start();
@@ -129,7 +132,7 @@ function openClaudeSession(options: LocalCliSessionOptions, toolsEnabled = true)
         let exitedEarly: string | undefined;
         const done = new Promise<void>((resolve) => { waiting = { resolve }; });
         const exited = current.exited.then((code) => { if (waiting) { waiting = undefined; exitedEarly = `Claude Code 가 코드 ${code} 로 끝났습니다`; } });
-        current.write(userLine(text));
+        current.write(userLine(text, images));
         await Promise.race([done, exited]);
         if (exitedEarly) { proc = undefined; heldFailure = { kind: "result", ok: false, error: exitedEarly }; }
         const error = exitedEarly ?? lastResultError;
@@ -192,7 +195,7 @@ export const claudeAdapter: LocalCliAdapter = {
         if (event.kind === "assistant") for (const block of event.blocks) if (block.type === "text") text += block.text;
       },
     }, false);
-    try { await session.prompt(prompt); } finally { await session.close(); }
+    try { await session.prompt(prompt, options.images); } finally { await session.close(); }
     return text;
   },
 };

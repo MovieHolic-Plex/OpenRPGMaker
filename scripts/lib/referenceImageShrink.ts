@@ -15,9 +15,10 @@ export async function shrinkReferenceImage(dataUrl: string, maxEdge = REFERENCE_
   const source = PNG.sync.read(Buffer.from(match[1]!, "base64"));
   const needed = Math.ceil(Math.max(source.width, source.height) / maxEdge);
   if (needed <= 1) return dataUrl;
-  // 손실 없는 가장 큰 배율(needed 이하). k×k 칸이 모두 같은 색일 때만 k 로 줄인다.
+  // 손실 없는 배율 중 needed 이상의 가장 작은 것(도트가 3배로 키워졌으면 3 — 2 는 칸 경계와 안 맞아 손실이다).
+  // k×k 칸이 모두 같은 색일 때만 k 로 줄인다.
   let factor = 1;
-  for (let k = needed; k >= 2; k--) if (uniformBlocks(source, k)) { factor = k; break; }
+  for (let k = needed; k <= 8; k++) if (uniformBlocks(source, k)) { factor = k; break; }
   if (factor <= 1) return dataUrl;
   const width = Math.floor(source.width / factor), height = Math.floor(source.height / factor);
   const out = new PNG({ width, height });

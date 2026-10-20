@@ -12,7 +12,7 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { emptyWorkDir, isTransientCliError, runShort, sleep, spawnJsonLines } from "./process.ts";
 import { MCP_TOKEN_ENV } from "./claude.ts";
-import type { LocalCliAdapter, LocalCliModel, LocalCliSession, LocalCliSessionOptions, LocalCliStatus, LocalCliUsage } from "./types.ts";
+import type { LocalCliAdapter, LocalCliModel, LocalCliSession, LocalCliSessionOptions, LocalCliStatus, LocalCliUsage, LocalCliImage } from "./types.ts";
 
 const DISABLED_FEATURES = [
   "shell_tool", "unified_exec", "apps", "browser_use", "browser_use_external", "computer_use", "image_generation",
@@ -25,7 +25,7 @@ const FALLBACK_MODELS: LocalCliModel[] = [
   { id: "gpt-6-luna", label: "GPT-6 Luna (빠름·가벼움)", roles: ["routine"] },
 ];
 
-export function buildCodexArgs(work: string, instructionsPath: string, mcpUrl: string | undefined, options: { model?: string; effort?: string; resume?: string }): string[] {
+export function buildCodexArgs(work: string, instructionsPath: string, mcpUrl: string | undefined, options: { model?: string; effort?: string; resume?: string; images?: readonly string[] }): string[] {
   return [
     "exec", ...(options.resume ? ["resume", options.resume] : []),
     "--json", "--skip-git-repo-check", "--ignore-user-config", "--ignore-rules",
@@ -43,6 +43,7 @@ export function buildCodexArgs(work: string, instructionsPath: string, mcpUrl: s
     ...DISABLED_FEATURES.flatMap((feature) => ["--disable", feature]),
     ...(options.model ? ["-m", options.model] : []),
     ...(options.effort ? ["-c", `model_reasoning_effort="${options.effort}"`] : []),
+    ...(options.images ?? []).flatMap((file) => ["-i", file]),
     "-",
   ];
 }
@@ -89,7 +90,14 @@ function openCodexSession(options: LocalCliSessionOptions, toolsEnabled = true):
   const abort = () => current?.kill();
   options.signal?.addEventListener("abort", abort, { once: true });
 
-  async function once(text: string): Promise<{ error?: string; toolCalls: number }> {
+  let imageSeq = 0;
+  async function once(text: string, images: readonly LocalCliImage[] = []): Promise<{ error?: string; toolCalls: number }> {
+    // 그림은 빈 작업 폴더에 파일로 두고 -i 로 붙인다(codex exec 는 표준 입력 글에 그림을 못 싣는다).
+    const imageFiles = images.map((image) => {
+      const file = join(work.dir, `image-${++imageSeq}.${/jpe?g/u.test(image.mimeType) ? "jpg" : "png"}`);
+      writeFileSync(file, Buffer.from(image.data, "base64"), { mode: 0o600 });
+      return file;
+    });
     let error: string | undefined;
     let calls = 0;
     let toolCalls = 0;
@@ -102,7 +110,7 @@ function openCodexSession(options: LocalCliSessionOptions, toolsEnabled = true):
     };
     current = spawnJsonLines({
       binary: options.binary ?? "codex",
-      args: buildCodexArgs(work.dir, instructionsPath, toolsEnabled ? options.mcpUrl : undefined, { ...(options.model ? { model: options.model } : {}), ...(options.effort ? { effort: options.effort } : {}), ...(thread ? { resume: thread } : {}) }),
+      args: buildCodexArgs(work.dir, instructionsPath, toolsEnabled ? options.mcpUrl : undefined, { ...(options.model ? { model: options.model } : {}), ...(options.effort ? { effort: options.effort } : {}), ...(thread ? { resume: thread } : {}), ...(imageFiles.length ? { images: imageFiles } : {}) }),
       cwd: work.dir,
       env: { ...process.env, [MCP_TOKEN_ENV]: options.mcpToken },
       stdin: text,
@@ -137,14 +145,14 @@ function openCodexSession(options: LocalCliSessionOptions, toolsEnabled = true):
   }
 
   return {
-    async prompt(text) {
+    async prompt(text, images) {
       if (closed) throw new Error("세션이 이미 닫혔습니다");
       const steer = queued.length ? `${queued.join("\n\n")}\n\n` : "";
       queued = [];
       let next = steer + text;
       let progressed = false;
       for (let attempt = 0; ; attempt++) {
-        const outcome = await once(next);
+        const outcome = await once(next, attempt === 0 || !progressed ? images : []);
         if (outcome.toolCalls > 0) progressed = true;
         if (!outcome.error || !isTransientCliError(outcome.error) || attempt >= 5 || options.signal?.aborted) {
           if (outcome.error) options.onEvent({ kind: "result", ok: false, error: outcome.error });
@@ -203,7 +211,7 @@ export const codexAdapter: LocalCliAdapter = {
       ...(options.model ? { model: options.model } : {}), ...(options.signal ? { signal: options.signal } : {}), ...(options.binary ? { binary: options.binary } : {}),
       onEvent: (event) => { if (event.kind === "assistant") for (const block of event.blocks) if (block.type === "text") text = block.text; },
     }, false);
-    try { await session.prompt(prompt); } finally { await session.close(); }
+    try { await session.prompt(prompt, options.images); } finally { await session.close(); }
     return text;
   },
 };

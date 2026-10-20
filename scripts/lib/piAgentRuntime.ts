@@ -109,12 +109,19 @@ interface PiLoopDriver {
 /** 로컬 CLI 제공자(`local-cli:claude|codex|gemini`)의 한 번짜리 글 생성 — 내부 보조 호출(event_command_assist·도트 글)용. */
 function localCliChat(cli: NonNullable<ReturnType<typeof localCliIdOf>>, model: string | undefined) {
   return async (messages: readonly unknown[], signal?: AbortSignal): Promise<string> => {
+    const images: { mimeType: string; data: string }[] = [];
     const text = messages.map((message) => {
       const m = message as { role?: string; content?: unknown };
-      const body = typeof m.content === "string" ? m.content : Array.isArray(m.content) ? m.content.map((part) => (part as { text?: string }).text ?? "").join("\n") : "";
+      const body = typeof m.content === "string" ? m.content : Array.isArray(m.content) ? m.content.map((part) => {
+        const p = part as { type?: string; text?: string; image_url?: { url?: string } | string };
+        const url = typeof p.image_url === "string" ? p.image_url : p.image_url?.url;
+        const match = p.type === "image_url" && typeof url === "string" ? /^data:(image\/[a-z+.-]+);base64,(.+)$/isu.exec(url) : null;
+        if (match) { images.push({ mimeType: match[1]!, data: match[2]! }); return `[그림 ${images.length}]`; }
+        return p.text ?? "";
+      }).join("\n") : "";
       return `[${m.role ?? "user"}]\n${body}`;
     }).join("\n\n");
-    return LOCAL_CLI_ADAPTERS[cli].complete(text, { binary: localCliBinary(cli), ...(model ? { model } : {}), ...(signal ? { signal } : {}) });
+    return LOCAL_CLI_ADAPTERS[cli].complete(text, { binary: localCliBinary(cli), ...(model ? { model } : {}), ...(signal ? { signal } : {}), ...(images.length ? { images } : {}) });
   };
 }
 

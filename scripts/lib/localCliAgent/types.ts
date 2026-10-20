@@ -99,9 +99,12 @@ export interface LocalCliSessionOptions {
   readonly binary?: string;
 }
 
+/** 보조 글 생성에 붙이는 그림(그림 검토·시각 판정). */
+export interface LocalCliImage { readonly mimeType: string; readonly data: string }
+
 export interface LocalCliSession {
-  /** 사용자 차례 하나를 보내고 그 차례가 끝날 때(result) 돌아온다. 같은 대화를 이어 간다. */
-  prompt(text: string): Promise<void>;
+  /** 사용자 차례 하나를 보내고 그 차례가 끝날 때(result) 돌아온다. 같은 대화를 이어 간다. 그림은 그 차례에 함께 싣는다. */
+  prompt(text: string, images?: readonly LocalCliImage[]): Promise<void>;
   /** 진행 중인 차례에 끼워 넣을 말(반복 경고·팀 메시지). 즉시 못 넣는 CLI 는 다음 prompt 앞에 붙인다. */
   steer(text: string): void;
   /** 즉시 멈춘다(프로세스 종료). */
@@ -118,5 +121,6 @@ export interface LocalCliAdapter {
   detect(binary?: string): Promise<LocalCliStatus>;
   openSession(options: LocalCliSessionOptions): LocalCliSession;
   /** 도구 없는 한 번짜리 글 생성(event_command_assist·도트 글 저작 같은 내부 보조 호출). */
-  complete(prompt: string, options?: { readonly model?: string; readonly signal?: AbortSignal; readonly binary?: string }): Promise<string>;
+  /** 그림을 못 받는 CLI(gemini 비대화 모드)는 images 가 있으면 오류를 낸다 — 그림 없이 「봤다」고 답하게 두지 않는다. */
+  complete(prompt: string, options?: { readonly model?: string; readonly signal?: AbortSignal; readonly binary?: string; readonly images?: readonly LocalCliImage[] }): Promise<string>;
 }

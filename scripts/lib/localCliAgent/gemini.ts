@@ -172,6 +172,8 @@ export const geminiAdapter: LocalCliAdapter = {
   },
   openSession: (options) => openGeminiSession(options),
   async complete(prompt, options = {}) {
+    // 비대화 gemini 는 표준 입력 글에 그림을 못 싣는다(@파일 읽기 도구는 잠금으로 껐다). 그림 없이 「봤다」고 답하게 두지 않는다.
+    if (options.images?.length) throw Object.assign(new Error("Gemini CLI 엔진은 그림 검토를 아직 못 합니다 — 그림 판정은 Claude Code·Codex 엔진에서 하세요."), { status: 501 });
     let text = "";
     const session = openGeminiSession({
       mcpUrl: "", mcpToken: "none", systemPrompt: "Answer the user's request directly. You have no tools.",
