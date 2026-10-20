@@ -133,6 +133,7 @@ def cv_gondola(c):
         if rnd(x, 7, 61, 90): c.P(x, 7, k('conc', 2))
         if rnd(x, 10, 62, 90): c.P(x, 10, k('conc', 2))
     c.HL(0, 11, 32, k('shiro', 0))
+    c.VL(0, 5, 7, k('conc', 1)); c.VL(31, 5, 7, k('conc', -1))                                                                # 윗면 옆 테
     c.R(0, 12, 32, 18, k('conc', 0)); c.R(1, 13, 30, 16, k('conc', 1))                                                           # 틀과 뒷판
     c.HL(0, 12, 32, k('conc', -1)); c.HL(1, 13, 30, k('shiro', 0))                                                              # 앞 턱 + 가격 라벨 띠
     for x0 in (4, 11, 20, 26): c.HL(x0, 13, 3, k('sora', 1))
