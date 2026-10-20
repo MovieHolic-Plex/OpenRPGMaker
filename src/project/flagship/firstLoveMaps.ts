@@ -132,6 +132,23 @@ function paintStairwellRoof(map: GameMap): void {
   }
 }
 
+/**
+ * 역 운임표(st-fare-map, 3×2) — 글자 없이 흰 판에 점만 있어 「0000000」 플레이스홀더처럼 읽힌다.
+ * 승강장 프리셋이 깔아 주는 두 장을 걷어 내고, 승강장 쪽은 벽시계 한 칸으로 바꾼다(데모 전용 후처리).
+ */
+function removeFareMapBoards(map: GameMap): void {
+  const W = map.width, H = map.height;
+  const CLOCK = 9409;
+  for (let y = 0; y < H; y++) {
+    for (let x = 0; x < W; x++) {
+      const i = y * W + x;
+      const id = map.upperTiles[i]!;
+      if (id < 11457 || id > 11462) continue;
+      map.upperTiles[i] = id === 11458 && y >= H / 2 ? CLOCK : -1;
+    }
+  }
+}
+
 export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveAnchors {
   project.tilesets[JP_CITY_ID] = createJpCityTileset();
 
@@ -167,6 +184,7 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   const roofRoom = project.maps[FL_MAP.rooftop]!;
   const platform = project.maps[FL_MAP.platformAm]!;
   paintStairwellRoof(roofRoom);
+  removeFareMapBoards(platform);
   const broadcast = project.maps[FL_MAP.broadcast]!;
 
   // 사무층 좌표(예제 office-floor 평면 기준): 위 큰 방 = 자리, 아래 왼쪽 = 회의실, 가운데 = 탕비실, 계단실, 엘리베이터 홀.
