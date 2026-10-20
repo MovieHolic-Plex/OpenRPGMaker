@@ -171,7 +171,7 @@ if __name__ == '__main__':
     kinds = sys.argv[sys.argv.index('--kinds') + 1].split(',') if '--kinds' in sys.argv else F.KINDS
     Image.fromarray(beodeul_ref()).save(os.path.join(out, 'ref-beodeul.png'))
     if '--mix' in sys.argv:
-        for name, pair in (('adj-bl-sg', ('bl', 'sg')), ('adj-sk-mx', ('sk', 'mx'))):
+        for name, pair in (('adj-bl-sg', ('bl', 'sg')), ('adj-sk-mh', ('sk', 'mh'))):
             Image.fromarray(adjacent_scene(pair)).save(os.path.join(out, f'{name}.png')); print(name, 'ok', flush=True)
         sys.exit(0)
     for sp in kinds:

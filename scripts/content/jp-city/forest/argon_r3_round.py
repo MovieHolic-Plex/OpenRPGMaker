@@ -10,7 +10,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SP = dict(bl='broadleaf (keyaki / mixed deciduous)', bb='bamboo grove (culms with feathery leaves)', sk='cherry blossom (sakura) forest',
-          sg='japanese cedar (sugi) forest, narrow conical crowns', mp='autumn maple forest', mx='mixed shrine forest: japanese pine (flat cloud pads) and maple crowns mixed in one canopy',
+          sg='japanese cedar (sugi) forest, narrow conical crowns', mp='autumn maple forest',
           mh='mixed hillside forest: cedar cones and broadleaf crowns mixed in one canopy')
 SHAPES = dict(blob='irregular blob of forest painted with the brush',
               strips='long horizontal strips 1, 2 and 3 tiles tall, and vertical strips 1 and 2 tiles wide (the 1-tile strips must still read as hedge or a row of small trees)',
@@ -24,7 +24,7 @@ def main():
     ap.add_argument('--scenes', required=True)
     ap.add_argument('--out', required=True)
     ap.add_argument('--jobs', type=int, default=6)
-    ap.add_argument('--kinds', default='bl,bb,sk,sg,mp,mx,mh')
+    ap.add_argument('--kinds', default='bl,bb,sk,sg,mp,mh')
     ap.add_argument('--no-mix', action='store_true')
     a = ap.parse_args()
     S = a.scenes
@@ -35,7 +35,7 @@ def main():
             args += ['--scene', f'{k}-{sh}={os.path.join(S, f"{k}-{sh}.png")}={d}={SP[k]}{peer}']
     if not a.no_mix:
         for n, d in (('adj-bl-sg', 'two different forest autotiles painted next to each other: broadleaf (west) and cedar (east); judge especially the BOUNDARY between them'),
-                     ('adj-sk-mx', 'two different forest autotiles painted next to each other: cherry (west) and shrine pine+maple mix (east); judge especially the BOUNDARY between them')):
+                     ('adj-sk-mh', 'two different forest autotiles painted next to each other: cherry (west) and cedar+broadleaf mix (east); judge especially the BOUNDARY between them')):
             args += ['--scene', f'{n}={os.path.join(S, n + ".png")}={d}=mixed stand={os.path.join(S, "bl-blob.png")}']
     sys.exit(subprocess.call(args))
 

@@ -89,6 +89,8 @@ PAL = {
     'sakurabark': ramp('aged_cedar/sakurabark'),
     # 잔디 위 그늘(jp 잔디 (73,128,76) 보다 1~3단 어둡게): pine_bamboo+ 의 3·4·5 단
     'gsh': [ramp('pine_bamboo+')[i] for i in (3, 4, 5)],
+    # 단풍 숲에 섞는 노란 잎(등롱 호박색 램프를 20단으로 늘린다 — 계약 색만)
+    'amber': [ramp('lantern_amber')[min(len(ramp('lantern_amber')) - 1, max(0, (i - 6) * len(ramp('lantern_amber')) // 14))] for i in range(20)],
 }
 
 # ---------------------------------------------------------------- 수관 밭(세계 좌표, 주기 PW×PH 칸)
@@ -105,21 +107,20 @@ SPECIES = {
     'sg': dict(ko='삼나무 숲', crowns=[(10, 24, 15, 30, 'cone', 'sugi'), (41, 18, 13, 28, 'cone', 'sugi'), (73, 27, 16, 31, 'cone', 'sugi'),
                                   (25, 55, 14, 31, 'cone', 'sugi'), (58, 49, 12, 27, 'cone', 'sugi'), (90, 57, 15, 30, 'cone', 'sugi')], trunk='sugibark',
                style=[(0.04, 0), (-0.06, 0), (0.08, 0), (-0.02, 0), (0.05, 0), (-0.08, 0)]),
-    'bb': dict(ko='대숲', crowns=[(14, 18, 17, 18, 'fan', 'bamboo'), (47, 13, 15, 16, 'fan', 'bamboo'), (79, 21, 18, 18, 'fan', 'bamboo'),
-                                (1, 49, 16, 18, 'fan', 'bamboo'), (31, 51, 17, 17, 'fan', 'bamboo'), (63, 45, 15, 18, 'fan', 'bamboo')], trunk='culm'),
+    'bb': dict(ko='대숲', crowns=[(9, 14, 15, 16, 'fan', 'bamboo'), (36, 9, 17, 14, 'fan', 'bamboo'), (62, 17, 14, 17, 'fan', 'bamboo'),
+                                (87, 8, 13, 13, 'fan', 'bamboo'), (22, 40, 16, 17, 'fan', 'bamboo'), (50, 44, 13, 15, 'fan', 'bamboo'),
+                                (77, 40, 18, 16, 'fan', 'bamboo'), (4, 60, 12, 12, 'fan', 'bamboo')], trunk='culm'),
     # 소나무 숲(신사·해안): 납작한 구름 잎판, 수관 사이가 성기다
-    # 섞인 숲(주기 4×4 — 시트 한도): 신사 숲 = 소나무 구름 잎판 + 단풍 돔, 산비탈 = 삼나무 원뿔 + 활엽 돔. 한 수관 밭 안에서 종이 섞인다
-    'mx': dict(ko='신사 숲(소나무+단풍)', crowns=[(14, 14, 22, 15, 'pads', 'pine'), (48, 12, 20, 17, 'dome', 'maple'), (30, 44, 22, 18, 'dome', 'maple'),
-                                            (60, 50, 20, 14, 'pads', 'pine'), (2, 54, 13, 10, 'pads', 'pine')], trunk='bark', period=(4, 4),
-               style=[(0.04, 0), (0.02, 0), (-0.04, 0), (0.0, 0), (-0.06, 0)]),
-    'mh': dict(ko='산비탈 숲(삼나무+활엽)', crowns=[(10, 24, 14, 29, 'cone', 'sugi'), (40, 14, 22, 18, 'dome', 'keyaki_a'), (26, 52, 22, 19, 'dome', 'keyaki_a'),
-                                             (56, 50, 13, 28, 'cone', 'sugi')], trunk='bark', period=(4, 4),
-               style=[(0.04, 0), (0.05, 0.3), (-0.03, 0.15), (-0.04, 0)]),
+    # 섞인 숲(진수의 숲·산비탈): 삼나무 원뿔 + 활엽 돔이 한 수관 밭 안에 불규칙하게 섞인다. 주기 6×4(시트 한도로 하나만)
+    'mh': dict(ko='섞인 숲(삼나무+활엽)', crowns=[(8, 20, 12, 26, 'cone', 'sugi'), (34, 14, 20, 17, 'dome', 'keyaki_a'), (58, 10, 10, 22, 'cone', 'sugi'),
+                                            (80, 22, 18, 16, 'dome', 'keyaki_a'), (20, 50, 17, 15, 'dome', 'keyaki_a'), (48, 44, 12, 25, 'cone', 'sugi'),
+                                            (70, 54, 15, 13, 'dome', 'keyaki_a'), (92, 50, 11, 24, 'cone', 'sugi')],
+               trunk='bark', style=[(0.04, 0), (0.05, 0.3), (-0.03, 0), (-0.02, 0.5), (-0.03, 0.15), (-0.04, 0), (0.02, 0.4), (0.03, 0)]),
 }
-BRIGHT = dict(sugi=0.14, pine=0.14, sakura=0.10, maple=0.08, bamboo=0.06)   # 색 계열별 밝기 올림(어두운 램프)
-DEEP_OFF = dict(bb=5, sg=2, sk=3, mp=2, mx=2, mh=2)
+BRIGHT = dict(sugi=0.30, pine=0.14, sakura=0.08, maple=0.14, bamboo=0.04)   # 색 계열별 밝기 올림(어두운 램프)
+DEEP_OFF = dict(bl=2, bb=5, sg=3, sk=5, mp=3, mh=3)
 DEEP = dict(bl='keyaki_a', sk='sakura', mp='maple', sg='sugi', bb='bamboo', mx='pine', mh='sugi')
-KINDS = ['bl', 'bb', 'sk', 'sg', 'mp', 'mx', 'mh']
+KINDS = ['bl', 'bb', 'sk', 'sg', 'mp', 'mh']
 BROAD64 = [(13, 16, 26, 22, 'dome'), (46, 9, 21, 18, 'dome'), (30, 45, 25, 21, 'dome'), (60, 50, 21, 18, 'dome'), (3, 53, 13, 11, 'dome')]
 for _k in ('sk', 'mp'):   # 벚·단풍: 4×4 주기의 활엽 배치, 색만 다르다
     SPECIES[_k]['crowns'] = [c[:5] + (SPECIES[_k]['fam'],) for c in SPECIES['bl']['crowns']]
@@ -365,14 +366,21 @@ def render_cell(sp, mask, cx, cy):
             gr = _LGRAD[(wx, wy, sp, size)]
             # 바깥 둘레 잎 무리 경계는 파내 톱니 윤곽(잎 하나 빠진 홈)
             if dd[yy, xx] > 0.78 and le > 0.55 and hf('notch', lx, ly, sp) < 0.55: continue
-            nv = v[yy, xx] + 0.17 * lv + 0.20 * gr - 0.42 * le * (1.0 if gr < 0.2 else 0.3)
+            tk = 0.55 if c['fam'] == 'sakura' else 1.0
+            nv = v[yy, xx] + tk * (0.17 * lv + 0.20 * gr - 0.42 * le * (1.0 if gr < 0.2 else 0.3))
             if c['shape'] == 'fan':
-                # 대 잎 칼날: 4×4 격자마다 비스듬한 잎 하나(방향은 격자 해시). 칼날은 밝고 그 밑은 어둡다
-                bu, bv = wx % 4, wy % 4
-                o = hf('bo', (wx // 4) % (perpx(sp)[0] // 4), (wy // 4) % (perpx(sp)[1] // 4), sp)
-                on = (bu == bv) if o < 0.5 else (bu == 3 - bv)
-                under = (bu == bv - 1) if o < 0.5 else (bu == 2 - bv)
-                nv = v[yy, xx] + 0.10 * lv + (0.20 if on else -0.16 if under else -0.02)
+                # 대숲: 늘어진 대 잎 다발(밝은 칼날) 사이로 마디 있는 대줄기가 비친다
+                tb, tc = _bamboo_tex(sp)
+                ph_, pw_ = tb.shape
+                b = tb[wy % ph_, wx % pw_]; cu = tc[wy % ph_, wx % pw_]
+                if b > 0:
+                    nv = v[yy, xx] + 0.05 * lv - 0.10 + 0.30 * b
+                elif cu > 0:
+                    nv = 0.50 + 0.18 * cu + 0.04 * lv
+                else:
+                    nv = v[yy, xx] - 0.30 + 0.05 * lv + (0.0 if b == 0 else -0.10)
+                lev[yy, xx] = int(np.clip(round(nv * 19), 0, 19)); fam[yy, xx] = c['fam']; own[yy, xx] = c['crown'] * 1000 + c['k']
+                continue
             L = int(np.clip(round(nv * 19), 0, 19))
             # 반짝임: 잎 무리 하나의 왼쪽 위 2~3화소만(낱점 흩뿌림 아님)
             if v[yy, xx] + 0.12 * lv > 0.60 and gr > 0.55 and le < 0.5 and hf('hl', lx, ly, sp) < 0.55:
@@ -390,6 +398,8 @@ def render_cell(sp, mask, cx, cy):
             # 잎 무리 단위로 따뜻한 잎(황록)을 섞는다 — 수관마다 비율이 달라 두 계열로 갈리지 않는다
             if c['fam'] == 'keyaki_a' and L < 100 and lv > -0.2 and hf('fm', lx, ly, sp, c['crown']) < mixf:
                 fam[yy, xx] = 'keyaki_b'; lev[yy, xx] = max(0, L - 2)
+            if c['fam'] == 'maple' and L < 100 and L >= 10 and hf('am', lx, ly, sp, c['crown']) < 0.28:
+                fam[yy, xx] = 'amber'
             own[yy, xx] = c['crown'] * 1000 + c['k']
     pal_hi = PAL['hi']
     # 2) 속 그늘 채움 + 가지
@@ -423,21 +433,15 @@ def render_cell(sp, mask, cx, cy):
             else: out[yy, xx, :3] = PAL[fam[yy, xx]][L]
             out[yy, xx, 3] = 255
     # 대숲: 잎 덩이 위 깃털 획(세계 좌표 선분)
-    if sp == 'bb':
-        _bamboo_strokes(out, lev, X0, Y0)
     # 가장자리 깎기: 북쪽은 수관 돔 하늘선, 동·서쪽은 수관 줄의 둥근 옆선(세계 좌표 함수라 이웃 칸과 이어진다)
     _carve(out, lev, sp, cx, cy, g)
     _edge_rim(out, lev, fam, g)
     # 윤곽: 칸 안 투명 화소나 바깥 칸에 닿은 화소를 한두 단 어둡게(오른쪽·아래쪽 면은 더)
     _outline(out, lev, fam, g)
     # 4) 남쪽 줄기 띠
-    if s_edge and n_edge:
+    if (s_edge and n_edge) or (not g[1, 0] and not g[1, 2]):
         out[:] = 0
-        _hedge(out, sp, cx, cy, g)
-        return out
-    if not g[1, 0] and not g[1, 2]:
-        out[:] = 0
-        _narrow(out, sp, cx, cy, g, s_edge, n_edge)
+        _small_tree(out, sp, cx, cy, g, s_edge)
         return out
     if s_edge:
         _band(out, sp, cx, cy, g, n_edge, lev, fam)
@@ -494,6 +498,59 @@ def _narrow(out, sp, cx, cy, g, s_edge, n_edge):
 
 
 HEDGE_PAL = dict(bl='keyaki_a', sk='sakura', mp='maple', sg='sugi', bb='bamboo', mx='pine', mh='keyaki_a')
+
+
+def _small_tree(out, sp, cx, cy, g, s_edge):
+    """1칸 띠(가로·세로) = 칸마다 작은 나무 한 그루(둥근 수관 + 짧은 줄기 + 그림자). 크기·치우침은 칸 위상 해시라
+    주기 안에서 그루마다 다르다. 삼나무는 원뿔, 섞인 숲은 위상마다 원뿔/돔이 갈린다."""
+    X0, Y0 = cx * T, cy * T
+    pw, ph = per(sp)
+    q = (cx % pw, cy % ph)
+    fam = HEDGE_PAL[sp]
+    cone = sp == 'sg' or (sp == 'mh' and hf('stc', *q) < 0.45)
+    if sp == 'mh' and cone: fam = 'sugi'
+    P = PAL[fam]
+    bark = PAL[SPECIES[sp]['trunk']] if SPECIES[sp]['trunk'] in PAL else PAL['bark']
+    jx = (hf('stx', sp, *q) - 0.5) * 3.0
+    big = hf('sts', sp, *q)
+    rw = 5.6 + 1.6 * big if not cone else 4.2 + 1.2 * big
+    top = 1.0 + (1.0 - big) * 2.0
+    bot = 11.5
+    ccx = 8.0 + jx
+    lev = np.full((T, T), -1, int)
+    # 줄기: 수관 밑으로 2~3px 보인다(남쪽이 열려 있을 때). 세로 띠에서 아래 칸이 숲이면 다음 그루 수관이 덮는다
+    tx = int(round(ccx - 1))
+    for y in range(9, 14 if s_edge else 16):
+        for x in (tx, tx + 1):
+            if 0 <= x < T: out[y, x, :3] = bark[3 if x == tx else 1]; out[y, x, 3] = 255
+    if s_edge:
+        for x in range(T):
+            for y in (13, 14):
+                d = abs(x + 0.5 - ccx) / (rw + 0.5)
+                if d < 1.0 and not out[y, x, 3] and (y == 13 or d < 0.7): out[y, x, :3] = PAL['gsh'][0 if y == 13 else 1]; out[y, x, 3] = 255
+    for y in range(T):
+        for x in range(T):
+            ny = (y + 0.5 - (top + bot) / 2) / ((bot - top) / 2)
+            if cone:
+                half = rw * (0.25 + 0.75 * (ny + 1) / 2)
+                if not (-1 <= ny <= 1) or abs(x + 0.5 - ccx) > half: continue
+                nx = (x + 0.5 - ccx) / max(half, 1)
+            else:
+                nx = (x + 0.5 - ccx) / rw
+                wob = 0.12 * math.sin((x + X0) * 1.7 + (y + Y0) * 0.9)
+                if nx * nx + ny * ny > 1.0 + wob: continue
+            lv, le, _, _ = leaf(X0 + x, Y0 + y, sp if sp != 'bb' else 'bl', 3)
+            gr = _LGRAD[(X0 + x, Y0 + y, sp if sp != 'bb' else 'bl', 3)]
+            v = 0.62 - 0.20 * ny - 0.14 * nx + BRIGHT.get(fam, 0.0) + 0.14 * lv + 0.14 * gr - 0.30 * le * (1.0 if gr < 0.2 else 0.3)
+            if nx * 0.6 + ny * 0.8 > 0.75: v -= 0.18
+            lev[y, x] = int(np.clip(round(v * 19), 0, 19))
+    for y in range(T):
+        for x in range(T):
+            L = lev[y, x]
+            if L < 0: continue
+            if any(not (0 <= x + a < T and 0 <= y + b < T) or lev[y + b, x + a] < 0 for a, b in ((1, 0), (0, 1), (-1, 0), (0, -1))):
+                L = max(0, min(L - 4, 5))
+            out[y, x, :3] = P[L]; out[y, x, 3] = 255
 
 
 def _hedge(out, sp, cx, cy, g):
@@ -599,6 +656,41 @@ def _carve(out, lev, sp, cx, cy, g):
                 out[y, x] = 0; lev[y, x] = -1
             for x in xr(min(T, k + 4)):
                 if lev[y, x] < 0: out[y, x] = 0
+
+
+_BTEX = {}
+
+
+def _bamboo_tex(sp):
+    """주기 상자 크기 토러스 결: (잎 칼날 밝기 0..1, 칼날 바로 밑 그림자 -1, 틈 0), (대줄기 밝기 0..1, 마디 0.2, 없음 0)."""
+    if sp in _BTEX: return _BTEX[sp]
+    pw, ph = perpx(sp)
+    bl = np.zeros((ph, pw)); cu = np.zeros((ph, pw))
+    # 대줄기: 6~8px 간격 세로 2px 줄, 오른쪽 열은 어둡다, 마디는 5~7px 마다
+    x = 0.0; k = 0
+    while x < pw - 1:
+        xi = int(x); off = int(hf('cn', sp, k) * 6)
+        for y in range(ph):
+            node = ((y + off) % (5 + int(hf('cm', sp, k) * 3))) == 0
+            cu[y, xi % pw] = 0.2 if node else 1.0
+            cu[y, (xi + 1) % pw] = 0.2 if node else 0.55
+        x += 6 + hf('cg', sp, k) * 3; k += 1
+    # 잎 다발: 5×5 지터 격자, 다발마다 칼날 2~3장이 한 점에서 아래 양쪽으로 늘어진다
+    for gy in range(0, ph, 5):
+        for gx in range(0, pw, 5):
+            ox = gx + hf('lx', sp, gx, gy) * 5; oy = gy + hf('ly', sp, gx, gy) * 5
+            n = 2 + int(hf('ln', sp, gx, gy) * 2)
+            for j in range(n):
+                a = math.radians(25 + 130 * (j + 0.5) / n + (hf('la', sp, gx, gy, j) - 0.5) * 30)
+                L = 4 + int(hf('ll', sp, gx, gy, j) * 3)
+                for t in range(L + 1):
+                    px = int(round(ox + math.cos(a) * t)) % pw; py = int(round(oy + math.sin(a) * t * 0.8)) % ph
+                    lit = 1.0 - 0.6 * t / L if math.cos(a) < 0 else 0.75 - 0.5 * t / L
+                    bl[py, px] = max(bl[py, px], max(0.15, lit))
+                    qy = (py + 1) % ph
+                    if bl[qy, px] == 0: bl[qy, px] = -1
+    _BTEX[sp] = (bl, cu)
+    return _BTEX[sp]
 
 
 def _bamboo_strokes(out, lev, X0, Y0):
@@ -724,16 +816,18 @@ def _band(out, sp, cx, cy, g, n_edge, lev=None, fam=None):
     # 밑풀 덩이: 폭 5~10 · 높이 2~5 의 낮은 잎 덩이가 밑동 몇을 덮어 밑선이 한 줄로 서지 않게 한다
     und = PAL['keyaki_a'] if kind not in ('sg', 'mh') else PAL['sugi']
     for b in range(3):
-        if hf('ug', cx, cy, b, sp) < 0.45: continue
-        ux = 1 + hf('ux', cx, cy, b, sp) * 14; uw = 2.5 + hf('uw', cx, cy, b, sp) * 2.5; uh = 2 + hf('uh', cx, cy, b, sp) * 3
-        ub = 14.6 + hf('ub', cx, cy, b, sp) * 1.2
-        for y in range(max(0, int(ub - uh) - 1), T):
+        if hf('ug', cx, cy, b, sp) < 0.3: continue
+        ux = 1 + hf('ux', cx, cy, b, sp) * 14; uw = 3 + hf('uw', cx, cy, b, sp) * 3.5; uh = 3 + hf('uh', cx, cy, b, sp) * 3
+        ub = 11.5 + hf('ub', cx, cy, b, sp) * 3.0        # 밑동 높이가 덤불마다 달라 밑선이 한 줄로 서지 않는다
+        bh = 1.5 + hf('ubh', cx, cy, b, sp) * 1.5          # 덤불 아래쪽도 둥글게(납작한 바닥 없음)
+        for y in range(max(0, int(ub - uh) - 1), min(T, int(ub + bh) + 1)):
             for x in range(max(0, int(ux - uw) - 1), min(T, int(ux + uw) + 2)):
-                dx, dy = (x + 0.5 - ux) / uw, (y + 0.5 - ub) / uh
-                if dy > 0.15 or dx * dx + dy * dy > 1: continue
+                dx = (x + 0.5 - ux) / uw
+                dy = (y + 0.5 - ub) / (uh if y + 0.5 < ub else bh)
+                if dx * dx + dy * dy > 1: continue
                 lv, le, llx, lly = leaf(X0 + x, Y0 + y, sp, 3)
                 if dx * dx + dy * dy > 0.6 and le > 0.6: continue
-                Lu = int(np.clip(round(7 + 5 * (-dy) - 2 * dx + 3 * lv - 3 * le), 2, 14))
+                Lu = int(np.clip(round(7 + 5 * (-dy) - 2 * dx + 3 * lv - 3 * le - (3 if dy > 0.3 else 0)), 2, 14))
                 out[y, x, :3] = und[Lu]; out[y, x, 3] = 255
     # 고사리 술: 줄기 사이 드문드문 2~3px 잎 획(공 모양 덤불 없음)
     fern = PAL['keyaki_a'] if kind not in ('sg', 'bb') else PAL['sugi'] if kind == 'sg' else PAL['bamboo']
@@ -781,16 +875,23 @@ def _trunk_crowns(sp):
     pw = perpx(sp)[0]
     kept = []
     for c in sorted(SPECIES[sp]['crowns'], key=lambda c: -c[1]):
-        if hf('tkeep', c[0], c[1], sp) < 0.3: continue      # 수관 셋 중 하나는 줄기를 덤불 뒤에 감춘다(울타리 방지)
+        if hf('tkeep', c[0], c[1], sp) < 0.45: continue      # 수관 셋 중 하나는 줄기를 덤불 뒤에 감춘다(울타리 방지)
         if all(min((c[0] - k[0]) % pw, (k[0] - c[0]) % pw) >= 14 for k in kept): kept.append(c)
     return kept
 
 
 def _culms(out, prof, X0, Y0):
     C = PAL['culm']
+    pw = 96
+    starts = []
+    u = 0; k = 0
+    while u < pw - 2:
+        if hf('cs', k) < 0.8: starts.append(u)
+        u += 4 + int(hf('cg2', k) * 5); k += 1
     for x in range(T):
         wx = X0 + x
-        ph = wx % 5
+        u = wx % pw
+        ph = next((u - s0 for s0 in starts if 0 <= u - s0 <= 1), -1)
         if ph in (0, 1):
             top = prof[x] - 2
             for y in range(max(0, top), 15):

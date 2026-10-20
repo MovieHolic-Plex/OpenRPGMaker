@@ -12,8 +12,8 @@ export const JP_FOREST_BAMBOO = 2;
 export const JP_FOREST_SAKURA = 3;      // 벚나무 숲
 export const JP_FOREST_SUGI = 4;        // 삼나무 숲(사토야마 산비탈·신사 숲)
 export const JP_FOREST_MAPLE = 5;       // 단풍 숲(가을 활엽)
-export const JP_FOREST_PINE = 6;        // 소나무 숲(신사·해안) — r3 에서는 신사 숲(mx)으로 칠한다
-export const JP_FOREST_MIX_SHRINE = 7;  // 섞인 숲: 신사(소나무+단풍) — r3 오토타일 jp-forest3-mx
+export const JP_FOREST_PINE = 6;        // 소나무 숲(신사·해안) — r3 에서는 섞인 숲(mh)으로 칠한다(시트 한도로 소나무 단독 오토타일 없음)
+export const JP_FOREST_MIX_SHRINE = 7;  // 섞인 숲: 신사(진수의 숲) — r3 오토타일 jp-forest3-mh
 export const JP_FOREST_MIX_HILL = 8;    // 섞인 숲: 산비탈(삼나무+활엽) — r3 오토타일 jp-forest3-mh
 
 interface KitRowView { readonly tiles?: readonly number[]; readonly upperTiles?: readonly number[] }
@@ -106,9 +106,9 @@ export function hasJpForestPack(tileset: JpForestTilesetView): boolean {
   return (tileset.autotileGroups ?? []).some((a) => a.id === "jp-forest-bl");
 }
 
-// 소나무(6)는 소나무가 앞선 신사 숲(mx)으로 칠한다. 섞인 숲은 한 오토타일 안에서 수관마다 종이 섞인다.
+// 소나무(6)·신사(7)는 섞인 숲(mh, 삼나무+활엽)으로 칠한다. 섞인 숲은 한 오토타일 안에서 수관마다 종이 섞인다.
 const R3_CODES: readonly (readonly [number, string])[] = [[JP_FOREST_BROADLEAF, "bl"], [JP_FOREST_BAMBOO, "bb"], [JP_FOREST_SAKURA, "sk"], [JP_FOREST_SUGI, "sg"], [JP_FOREST_MAPLE, "mp"],
-  [JP_FOREST_PINE, "mx"], [JP_FOREST_MIX_SHRINE, "mx"], [JP_FOREST_MIX_HILL, "mh"]];
+  [JP_FOREST_PINE, "mh"], [JP_FOREST_MIX_SHRINE, "mh"], [JP_FOREST_MIX_HILL, "mh"]];
 
 /** 이 타일셋에 붓으로 칠하는 숲 오토타일 r3(jp_forest_r3, jp-forest3-<k>)이 구워져 있는가. */
 export function hasJpForestR3(tileset: JpForestTilesetView): boolean {

@@ -111,13 +111,14 @@ flags: `overlay`(투명 덧칠: 윤곽·접지·귀퉁이 검사 제외) · `thi
 
 ## 붓으로 칠하는 숲 오토타일 `jp_forest_r3` (2026-10-20, PR #3058 — 그림 머지 보류)
 
-- r1/r2 숲 팩(키트를 흩뿌리고 머리·하늘선·줄기 띠를 손으로 찍는 방식)을 대신하는 r3. 종마다 오토타일 하나 `jp-forest3-<bl|bb|sk|sg|mp|pn>`(활엽·대숲·벚·삼나무·단풍·소나무).
+- r1/r2 숲 팩(키트를 흩뿌리고 머리·하늘선·줄기 띠를 손으로 찍는 방식)을 대신하는 r3. 종마다 오토타일 하나 `jp-forest3-<bl|bb|sk|sg|mp|mh>`(활엽·대숲·벚·삼나무·단풍·섞인 숲 삼나무+활엽).
 - 칸 그림 = 8방 마스크(정규화 47) × 칸 위치 위상. 엔진 `AutotileGroup.phaseVariants {w,h,maps}`(`src/project/defaults/autotileEngine.ts` `autotileVariantForMask(group, mask, x, y)`)를 더했다.
   편집기 붓(`shapeAutotileGroupAround`)·조수 지형 도구·`forestPainter.paintJpForestR3` 가 같은 표를 쓴다. 위상을 모르는 호출자는 `variantMap`(위상 0,0)으로 떨어진다.
-- 위상 주기: 활엽 6×4, 나머지 4×4. jp 시트 4096px 한도 때문이다(임시 굽기 실측: 19004번부터 4,777칸, 합계 23781 / 24576).
-- 섞인 숲(코드 7 신사 = 소나무+단풍, 8 산비탈 = 삼나무+활엽)은 새 칸 없이 `resolveJpForestMix` 가 3×3 덩이마다 종을 고른다. 다른 종 칸은 서로 숲 밖으로 본다.
-- 그림 `scripts/content/jp-city/forest/forest_r3.py`(버들항 역설계 `tiledata/jp-city/forest-r3/SPEC.md`), 장면·붓 시험 GIF `forest_r3_scenes.py`, 적대 검수 `argon_r3_judge.py`, 상태 쪽 `forest_r3_viz.py` → `~/claude-viz/jp-forest-kit-1.html`.
-- 상태: Argon 적대 검수 6판 모두 NO-SHIP(막는 결함 7~10 → 7~9), object-gate 프로필 미보정. **저장소 굽기 금지** — `BLOCK_ORDER` 에는 올렸지만 관문 보정 뒤에 굽는다.
+- 위상 주기: 여섯 종 모두 6×4. jp 시트 4096px 한도(24576칸) 때문에 `jp_forest_pack` 은 한 그루 나무 키트만 남기고(`TREES_ONLY`), 소나무 단독·소나무+단풍 섞인 숲은 뺐다(임시 굽기 실측 합계 23232 / 24576).
+- 섞인 숲은 그 자체가 오토타일 `mh`(한 수관 밭 안에서 수관마다 삼나무 원뿔/활엽 돔). 코드 6 소나무·7 신사·8 산비탈을 모두 `mh` 로 칠한다. 다른 오토타일끼리 맞닿으면 서로 숲 밖으로 보아 사이에 풀 틈이 남는다.
+- 1칸 띠(가로 1줄·세로 1칸)는 칸마다 작은 나무 한 그루(`_small_tree`, 크기·치우침은 위상 해시). 대숲은 잎 다발 + 마디 있는 대줄기 결(`_bamboo_tex`), 단풍은 등롱 호박색 노란 잎을 섞는다.
+- 그림 `scripts/content/jp-city/forest/forest_r3.py`(버들항 역설계 `tiledata/jp-city/forest-r3/SPEC.md`), 장면·붓 시험 GIF `forest_r3_scenes.py`, 적대 검수 `argon_r3_judge.py`·`argon_r3_round.py`(종 6 × 모양 5 + 맞닿음, 활엽을 옆에 두고 1× 가시성 순위), 상태 쪽 `forest_r3_viz.py` → `~/claude-viz/jp-forest-kit-1.html`.
+- 상태: Argon 적대 검수 10판 모두 NO-SHIP(장면당 막는 결함 7~8). 가장 보이는 결함은 주기 반복(6칸)·남쪽 줄기 줄·직선 가장자리. object-gate 프로필 미보정. **저장소 굽기 금지** — `BLOCK_ORDER` 에는 올렸지만 관문 보정 뒤에 굽는다.
 
 ## 이어지는 숲 팩 `jp_forest_pack` (2026-10-20, PR #3058 — 그림 머지 보류)
 
