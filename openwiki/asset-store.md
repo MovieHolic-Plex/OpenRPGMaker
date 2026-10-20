@@ -61,6 +61,16 @@ gzip 은 풀린 크기에도 같은 상한(`maxOutputLength`). 캐시 blob 은 �
 `applyPackToProject` 는 프로젝트를 건드리기 전에 그림 규격(캐릭터 시트 등)과 타일셋 칸이 그림 안에 드는지 본다.
 `validateManifest` 는 `__proto__`·`constructor`·`prototype` id, `count` 와 통행·층 배열 길이가 다른 타일셋, `--` 든 slug 를 받지 않는다.
 
+### 캐릭터 칸의 짝 초상 (char-gen 캐릭터 세트, 2026-10-20)
+
+`content.characters[i].portraits` = `{ face?, bust?: {표정: 에셋 id}, full?: {표정: 에셋 id}, extra? }` — 같은 팩의
+faceset(48×48 얼굴)·picture(흉상·전신) 에셋을 가리킨다. 표정 이름은 공용 초상 16표정(`STORE_PORTRAIT_EXPRESSIONS`,
+`SHARED_PORTRAIT_EXPRESSIONS` 와 같은 순서)이고 bust/full 은 `base` 가 있어야 한다. `extra`(thinking, hurt …)는 그림으로만 들어온다.
+넣으면 칸마다 캐릭터 외형 `storeAppearanceId(slug, 시트, 칸)` 이 생긴다: 칩·얼굴·흉상·전신 base + `portraitExpressions`(표정 짝).
+대사 표정은 `faceForDialogueEmotion` / `appearancePortraitForEmotion` 이 같은 모양의 그 표정 그림으로 바꾼다(없으면 base).
+되돌리기·빼기(`storeUndo.ts`)는 그 외형도 같이 되돌리고, 쓰는 곳 검색에서 외형 자신은 세지 않는다(액터·이벤트가 그 외형을 쓰면 막는다).
+만드는 쪽은 공개 저장소 [char-gen](https://github.com/MovieHolic-Plex/char-gen) `set` 명령·MCP 도구. 양쪽 전신 베일(promoteFaceToFullPortrait)은 아직 공용 초상만 승격한다.
+
 ## 게시기
 
 주소와 토큰은 코드·문서에 두지 않는다. 환경 변수로만 받고, 없으면 아무것도 보내지 않는다(plan 은 `configured:false`).

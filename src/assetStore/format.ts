@@ -150,6 +150,24 @@ export interface StorePackAsset {
  * 캐릭터 시트 한 칸의 설명. 팩을 넣으면 프로젝트 charsetLabels(spriteType "uploaded")로 들어가
  * NPC 그림 검색(list_npc_graphics·그래픽 고르기)이 외형으로 찾는다. 없으면 「시트 이름 / 칸 N」으로만 보인다.
  */
+/**
+ * 캐릭터 칸의 짝 초상(char-gen 캐릭터 세트, 2026-10-20). 같은 팩의 에셋 id 를 가리킨다.
+ * face = faceset(48×48 낱장), bust·full = 표정 → picture. 표정 이름은 공용 초상 16표정과 같고 base 가 있어야 한다.
+ * extra 는 그 밖의 표정(thinking, hurt …) — 그림으로만 들어오고 대사 표정이 저절로 바꾸지는 않는다.
+ * 넣으면 그 칸의 캐릭터 외형(database.characterAppearances)이 생기고 표정 짝이 portraitExpressions 로 들어간다.
+ */
+export const STORE_PORTRAIT_EXPRESSIONS = [
+  "base", "smile", "happy", "content", "surprised", "embarrassed", "doubtful", "serious",
+  "annoyed", "angry", "sad", "crying", "worried", "determined", "shy", "wink",
+] as const;
+export type StorePortraitExpression = (typeof STORE_PORTRAIT_EXPRESSIONS)[number];
+export interface StorePackCharacterPortraits {
+  face?: string;
+  bust?: Partial<Record<StorePortraitExpression, string>>;
+  full?: Partial<Record<StorePortraitExpression, string>>;
+  extra?: Record<string, { bust?: string; full?: string }>;
+}
+
 export interface StorePackCharacter {
   /** content.assets 의 charset 에셋 id. */
   asset: string;
@@ -162,6 +180,8 @@ export interface StorePackCharacter {
   appearance?: string;
   /** 이 캐릭터(칩·초상 묶음)를 만든 방법. 칩은 스크립트 + 초상은 생성 모델이면 mixed. */
   generation?: StoreGeneration;
+  /** 짝 초상(선택). */
+  portraits?: StorePackCharacterPortraits;
 }
 
 /**
@@ -306,6 +326,37 @@ export function slugify(title: string, suffix: string): string {
 }
 
 /** 프로젝트에 넣을 때의 id. 같은 상품의 다음 판본이 같은 id 를 덮어써 맵 참조가 유지된다. */
+/** content.characters[i].portraits 검사 — 가리키는 에셋의 종류·표정 이름·base. */
+function portraitProblems(raw: unknown, assets: Record<string, unknown>, where: string): string[] {
+  const out: string[] = [];
+  if (!isRecord(raw)) return [`캐릭터 초상 설명이 올바르지 않습니다: ${where}`];
+  const kindOf = (id: unknown): unknown => (typeof id === "string" && Object.hasOwn(assets, id) && isRecord(assets[id]) ? (assets[id] as Record<string, unknown>).kind : undefined);
+  if (raw.face !== undefined && kindOf(raw.face) !== "faceset") out.push(`캐릭터 얼굴은 팩의 얼굴(faceset) 에셋이어야 합니다: ${where}`);
+  for (const mode of ["bust", "full"] as const) {
+    const map = raw[mode];
+    if (map === undefined) continue;
+    if (!isRecord(map)) { out.push(`캐릭터 ${mode} 초상 목록이 올바르지 않습니다: ${where}`); continue; }
+    const names = Object.keys(map);
+    if (names.length > 0 && !Object.hasOwn(map, "base")) out.push(`캐릭터 ${mode} 초상에 기본(base) 표정이 없습니다: ${where}`);
+    for (const name of names) {
+      if (!(STORE_PORTRAIT_EXPRESSIONS as readonly string[]).includes(name)) out.push(`캐릭터 ${mode} 초상 표정 이름이 올바르지 않습니다(${name.slice(0, 24)}): ${where}`);
+      else if (kindOf(map[name]) !== "picture") out.push(`캐릭터 ${mode} ${name} 초상은 팩의 그림(picture) 에셋이어야 합니다: ${where}`);
+    }
+  }
+  if (raw.extra !== undefined) {
+    if (!isRecord(raw.extra) || Object.keys(raw.extra).length > 16) out.push(`캐릭터 추가 표정은 16개 이하의 목록이어야 합니다: ${where}`);
+    else {
+      for (const [name, pair] of Object.entries(raw.extra)) {
+        if (!/^[a-z][a-z0-9-]{0,23}$/u.test(name) || !isRecord(pair)) { out.push(`캐릭터 추가 표정이 올바르지 않습니다(${name.slice(0, 24)}): ${where}`); continue; }
+        for (const mode of ["bust", "full"] as const) {
+          if (pair[mode] !== undefined && kindOf(pair[mode]) !== "picture") out.push(`캐릭터 추가 표정 ${name} ${mode} 는 그림(picture) 에셋이어야 합니다: ${where}`);
+        }
+      }
+    }
+  }
+  return out;
+}
+
 export const storeProjectId = (slug: string, originalId: string): string => `store_${slug.replace(/-/g, "_")}${STORE_SLUG_SEPARATOR}${originalId}`;
 
 export function packGrade(content: StorePackContent): StoreGrade {
@@ -506,6 +557,7 @@ export function validateManifest(input: unknown): Validation<StorePackManifest> 
           if (c.age !== undefined && !["child", "youth", "middle", "elder"].includes(c.age as string)) errors.push(`캐릭터 나이 값이 올바르지 않습니다: ${where}`);
           if (c.appearance !== undefined && !isString(c.appearance, STORE_LIMITS.characterAppearance)) errors.push(`캐릭터 외형 설명은 ${STORE_LIMITS.characterAppearance}자 이하여야 합니다: ${where}`);
           if (c.generation !== undefined) errors.push(...storeGenerationProblems(c.generation, `캐릭터 ${where}`));
+          if (c.portraits !== undefined) errors.push(...portraitProblems(c.portraits, assets, where));
           const key = `${c.asset as string}#${String(c.characterIndex)}`;
           if (seen.has(key)) errors.push(`같은 캐릭터 칸이 두 번 적혔습니다: ${where}`);
           seen.add(key);
