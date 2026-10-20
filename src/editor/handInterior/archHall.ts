@@ -34,9 +34,9 @@ export function hallItems(room: { readonly x0: number; readonly y0: number; read
     }
   };
   if (w >= 8) {
-    lay(set.north, room.y0 + 2, 5, 2);
-    lay(set.hang, room.y0, 4, 3);
-    lay(set.south, room.y1, 8, 3);
+    lay(set.north, room.y0 + 2, 3, 2);
+    lay(set.hang, room.y0, 4, 2);
+    lay(set.south, room.y1, 4, 2);
   }
   return out;
 }

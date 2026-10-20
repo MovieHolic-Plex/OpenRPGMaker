@@ -13,6 +13,7 @@ import { createWizardingWorldTileset, ensureWizardingWorldTileset } from "@/proj
 import { createModernCityTileset, ensureModernCityTileset } from "@/project/defaults/modernCity";
 import { kitHandObjects } from "@/project/roomKit";
 import { passabilityOf } from "@/project/collision";
+import { isUntouchedMap } from "@/project/projectBlankness";
 import type { Command, GameEvent, GameMap, Project, TilesetDef } from "@/project/types";
 import { workshopHandObjects } from "@/project/workshopTiles";
 import { referenceOwner } from "@/project/tilesetReferences";
@@ -59,17 +60,44 @@ function inferTileset(project: Project, args: Record<string, unknown>): string {
     const found = typeof id === "string" ? TILESET_IDS.filter((t) => HAND_INTERIOR_SPECS[t]![key][id]) : [];
     if (found.length === 1) return found[0]!;
   }
+  const nameText = typeof args.name === "string" ? args.name : "";
+  const briefText = [project.gameDesignBrief?.summary, project.gameDesignBrief?.interview?.concept, project.gameDesignBrief?.interview?.notes].filter(Boolean).join("\n");
+  const text = [nameText, briefText].filter(Boolean).join("\n");
+  const jpRe = /일본|도쿄|신주쿠|시부야|교토|오사카|사쿠라|다다미|화실|昇降口|和室|玄関|jp_city/iu;
+  const campusRe = /대학교|대학\s*강의|캠퍼스|학부|고등학교\s*교실|중학교\s*교실|학생회관|기숙사|modern_campus/iu;
+  const modernCityRe = /현대\s*도시|현대\s*은행|현대\s*동네|백화점|대형\s*마트|지하철역|종합병원|오피스\s*타워|시중\s*은행|은행\s*지점|초등학교|개인\s*병원|의원|클리닉|시청|도서관|파출소|지구대|편의점|원룸|오피스텔|modern_city/iu;
+  const nameWantsJp = jpRe.test(nameText);
+  const nameWantsCampus = campusRe.test(nameText);
+  const nameWantsModernCity = modernCityRe.test(nameText) && !nameWantsJp;
+  const hasJp = Object.values(project.maps).some((m) => m.tilesetId === JP_INTERIOR_TILESET_ID);
+  const hasCampus = Object.values(project.maps).some((m) => m.tilesetId === "modern_campus");
+  const hasModernCity = Object.values(project.maps).some((m) => m.tilesetId === MODERN_CITY_INTERIOR_TILESET_ID);
   const prog = args.layout && typeof args.layout === "object" ? (args.layout as Record<string, unknown>).program : undefined;
   if (typeof prog === "string" && prog.trim()) {
     const p = prog.trim();
     const pOwners = TILESET_IDS.filter((t) => programKinds(t, p));
     if (pOwners.length === 1) return pOwners[0]!;
-    const hasJp = Object.values(project.maps).some((m) => m.tilesetId === JP_INTERIOR_TILESET_ID);
-    if (hasJp && pOwners.includes(JP_INTERIOR_TILESET_ID)) return JP_INTERIOR_TILESET_ID;
+    if (nameWantsJp && pOwners.includes(JP_INTERIOR_TILESET_ID)) return JP_INTERIOR_TILESET_ID;
+    if (nameWantsCampus && pOwners.includes("modern_campus")) return "modern_campus";
+    if (nameWantsModernCity && pOwners.includes(MODERN_CITY_INTERIOR_TILESET_ID)) return MODERN_CITY_INTERIOR_TILESET_ID;
+    if (hasJp && !hasModernCity && pOwners.includes(JP_INTERIOR_TILESET_ID)) return JP_INTERIOR_TILESET_ID;
+    if (hasCampus && pOwners.includes("modern_campus")) return "modern_campus";
+    if (hasModernCity && pOwners.includes(MODERN_CITY_INTERIOR_TILESET_ID)) return MODERN_CITY_INTERIOR_TILESET_ID;
+    if (jpRe.test(briefText) && pOwners.includes(JP_INTERIOR_TILESET_ID)) return JP_INTERIOR_TILESET_ID;
     if (pOwners.includes(MODERN_CITY_INTERIOR_TILESET_ID) && (!pOwners.includes(HAND_INTERIOR_TILESET_ID) || p === "museum-gallery")) {
       return MODERN_CITY_INTERIOR_TILESET_ID;
     }
   }
+  if (nameWantsJp) return JP_INTERIOR_TILESET_ID;
+  if (nameWantsCampus) return "modern_campus";
+  if (nameWantsModernCity) return MODERN_CITY_INTERIOR_TILESET_ID;
+  const startMap = project.maps[project.startMapId];
+  if (startMap && HAND_INTERIOR_SPECS[startMap.tilesetId] && startMap.tilesetId !== HAND_INTERIOR_TILESET_ID) {
+    return startMap.tilesetId;
+  }
+  if (jpRe.test(text)) return JP_INTERIOR_TILESET_ID;
+  if (campusRe.test(text)) return "modern_campus";
+  if (modernCityRe.test(text)) return MODERN_CITY_INTERIOR_TILESET_ID;
   return HAND_INTERIOR_TILESET_ID;
 }
 /** 방 구성표 — 예제 맵마다 방 종류 목록, 방 견본 종류별 크기. build_hand_interior_room 의 layout.program·layout.rooms 에 쓴다. */
@@ -319,7 +347,8 @@ function fitDoorsToPlan(
     for (const event of other.events) for (const t of eventTransfers(event)) {
       if (t.mapId !== mapId) continue;
       if (other.climate?.mode === "indoor" && built.travel.length) {
-        const tr = built.travel[0]!;
+        const tr = [...built.travel]
+          .sort((a, b) => (Math.abs(a.x - t.x) + Math.abs(a.y - t.y)) - (Math.abs(b.x - t.x) + Math.abs(b.y - t.y)))[0]!;
         const landY = isWalkableFloor(tr.x, tr.y + 1) && !doorCells.has(`${tr.x},${tr.y + 1}`) ? tr.y + 1 : tr.y;
         if (t.x !== tr.x || t.y !== landY) {
           notes.push(`${other.id}/${event.id} 도착 (${t.x},${t.y}) → 층 이동 앞 (${tr.x},${landY})`);
@@ -538,6 +567,14 @@ function shiftIncomingTransfers(draft: Project, mapId: string, dx: number, dy: n
   return moved;
 }
 
+/** 공공시설 program 별칭 → modern_city·jp_city 공통 표준 구성. */
+const PUBLIC_PROGRAM_ALIASES: Readonly<Record<string, string>> = {
+  library: "central-library", "public-library": "central-library", "city-library": "central-library", 도서관: "central-library", 시립도서관: "central-library",
+  "city-hall": "city-hall", cityhall: "city-hall", "town-hall": "city-hall", 시청: "city-hall", 구청: "city-hall", 市役所: "city-hall",
+  bank: "bank-branch", "bank-branch": "bank-branch", 은행: "bank-branch", 銀行: "bank-branch",
+  clinic: "private-clinic", "private-clinic": "private-clinic", 의원: "private-clinic", 클리닉: "private-clinic", 동네의원: "private-clinic",
+};
+
 export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
   name: "build_hand_interior_room",
   mode: "write",
@@ -546,7 +583,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     + "plan = 한 줄씩 문자열 배열, '#' = 막힌 칸(외벽·칸막이·건물 밖), 그 밖 문자('.') = 실내. 벽면(막힌 칸 바로 아래 두 줄)·천장 띠·바닥·그림자는 자동이다. "
     + "방을 네모 하나로만 그리지 않는다 — 바깥 모양을 ㄱ·ㄷ·T 자로 꺾거나 알코브(벽에서 들어간 자리)·칸막이로 공간을 나눈다. 꺾인 모서리 벽·천장도 자동이다(예: [\"################\",\"#......#########\",\"#......#########\",\"#..............#\",\"#..............#\",\"#######..#######\"] = ㄱ자 방). "
     + "★ 건물·방이 둘 이상인 실내(집·가게+뒤채·여관·대장간·저택·일본 집·편의점 등)는 layout 하나만 준다: layout:{program:\"house-1f\"} 또는 layout:{rooms:[{kind:\"genkan\"},{kind:\"hall\"},{kind:\"ldk\"},{kind:\"toilet\"},{kind:\"bath\"}]} — 도구가 방 크기·배치(칸막이·문·트인 곳·출구, ㄱ·ㄷ자 바깥 모양)를 짜고 방마다 제작자 예제 방의 가구 한 벌을 심는다. "
-    + "박물관·미술관 = program:\"museum\", 배 안 위 갑판(선장실·조타실·배 주방·선원 숙소) = \"ship\", 아래 갑판(포 갑판·화물칸·배 감방) = \"ship_hold\", 투기장·콜로세움 = \"arena\"(방 종류 museum_*·ship_*·arena_*·gladiator_cell). 호러·고딕 미술관은 build_gothic_place. "
+    + "공공시설은 modern_city·jp_city 모두 program 하나로 짓는다: 도서관 = program:\"library\", 시청·구청 민원실 = \"city-hall\", 은행 지점 = \"bank\", 동네 의원·클리닉 = \"clinic\" (보고 있는 맵 칩셋을 tileset 에 그대로). 일본 집 2층 = \"house-2f\", 일본 학교 = \"school-1f\"·\"school-2f\"·\"school-3f\" — 2층·3층 program 은 남쪽 외부 출구를 뚫지 않고 계단으로만 잇는다. 박물관·미술관 = program:\"museum\", 배 안 위 갑판(선장실·조타실·배 주방·선원 숙소) = \"ship\", 아래 갑판(포 갑판·화물칸·배 감방) = \"ship_hold\", 투기장·콜로세움 = \"arena\"(방 종류 museum_*·ship_*·arena_*·gladiator_cell). 호러·고딕 미술관은 build_gothic_place. "
     + "program·방 종류(roomKinds) 목록은 list_hand_interior_parts({tileset}) 인자 없이. 보고 있는 맵 크기에 맞추지 않는다 — 크기는 방 구성이 정한다. 결과 data.layout.picture 로 배치를 보고, 다른 배치는 layout.variant 1·2, 다른 견본은 layout.seed. "
     + `modern_city 공간 규모 규격(벽 포함 가로×세로 — program 은 이 크기로 서고, rooms 를 직접 짤 때도 이 규모를 따른다. 대형마트를 30×20 으로 줄이지 않는다): ${venueScaleBrief()}. `
     + "가구를 더하거나 빼려면 data.rebuild(rooms·connect·exit·objects…)를 고쳐 같은 mapId·replace:true 로 넘긴다. "
@@ -571,9 +608,9 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       name: { type: "string", description: "맵 이름" },
       replace: { type: "boolean", description: "같은 칩셋의 기존 맵을 통째로 다시 짓기(기본 false)" },
       plan: { type: "array", items: { type: "string" }, description: "평면 — 줄마다 같은 길이, '#' 막힘 · '.' 실내. 방이 여럿이면 plan 대신 rooms 를 준다." },
-      layout: { type: "object", description: "건물·여러 방 실내는 이것을 쓴다 — 방 구성만 주면 도구가 방 배치(칸막이·문·출구)를 짜고 방마다 제작자 예제 방의 가구 한 벌을 심는다. program = 예제 구성 id(list_hand_interior_parts 인자 없이 → data.programs: house-1f·bakery·inn…) 또는 rooms = 방 종류 목록(roomKinds: genkan·hall·ldk·kitchen·toilet·bath·washitsu·bedroom… / bakery_shop·forge·tavern·inn_room…, w·h 생략하면 견본 크기). plan·rooms 와 같이 주지 않는다.",
+      layout: { type: "object", description: "건물·여러 방 실내는 이것을 쓴다 — 방 구성만 주면 도구가 방 배치(칸막이·문·출구)를 짜고 방마다 제작자 예제 방의 가구 한 벌을 심는다. program = 예제 구성 id(list_hand_interior_parts 인자 없이 → data.programs: house-1f·bakery·inn…, 공공시설 library·city-hall·bank·clinic 은 modern_city·jp_city 공통) 또는 rooms = 방 종류 목록(roomKinds: genkan·hall·ldk·kitchen·toilet·bath·washitsu·bedroom… / bakery_shop·forge·tavern·inn_room…, w·h 생략하면 견본 크기). plan·rooms 와 같이 주지 않는다.",
         properties: {
-          program: { type: "string" },
+          program: { type: "string", description: "예제 구성 id — 공공시설: library(도서관)·city-hall(시청)·bank(은행)·clinic(의원) / 일본 집·학교 층: house-1f·house-2f·school-1f·school-2f·school-3f" },
           rooms: { type: "array", items: { type: "object", properties: { id: { type: "string" }, kind: { type: "string" }, w: { type: "integer", minimum: 2 }, h: { type: "integer", minimum: 4, description: "세로(벽면 두 줄 포함) — 방은 5 이상, 복도·화장실은 4" },
             floor: { type: "string", enum: FLOOR_IDS }, wall: { type: "string", enum: WALL_IDS } }, required: ["kind"], additionalProperties: false } },
           entrance: { type: "string", description: "출구 방 id 또는 종류(생략 시 현관·입구·복도·가게 순)" },
@@ -647,7 +684,18 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
         /백화점|면세점|아울렛|부티크\s*몰|department\s*store/iu.test(mapName) ? "department-store"
         : /대형\s*마트|슈퍼마켓|할인점|하이퍼마켓|식자재\s*마트|supermarket|mart/iu.test(mapName) ? "supermarket-mart"
         : /지하철|전철역|승강장|개찰구|대합실|subway|station/iu.test(mapName) ? "subway-station"
-        : /종합\s*병원|대학\s*병원|병원|병동|입원실|응급실|진료실|hospital|ward/iu.test(mapName) ? "hospital-ward"
+        : /종합\s*병원|대학\s*병원|병동|입원실|응급실|hospital|ward/iu.test(mapName) ? "hospital-ward"
+        : /의원|클리닉|개인\s*병원|진찰실|내과|소아과|이비인후과|정형외과|가정의학과|clinic/iu.test(mapName) ? "private-clinic"
+        : /은행|창구.*금고|금고.*창구|금융\s*지점|bank/iu.test(mapName) ? "bank-branch"
+        : /시청|구청|주민센터|동사무소|민원실|관공서|city\s*hall|ward\s*office/iu.test(mapName) ? "city-hall"
+        : !/학교|3층/u.test(mapName) && /중앙\s*도서관|시립\s*도서관|공공\s*도서관|도서관|열람실|library/iu.test(mapName) ? "central-library"
+        : tilesetId === "modern_city" && /초등학교|국민학교|elementary\s*school/iu.test(mapName) ? "elementary-school"
+        : tilesetId === "modern_city" && /고등학교|중학교|high\s*school/iu.test(mapName) ? "high-school"
+        : tilesetId === "jp_city" && /학교.*3층|3층.*교실|음악실.*과학실|과학실.*도서실|특별실.*3층|school[\s_-]*3f/iu.test(mapName) ? "school-3f"
+        : tilesetId === "jp_city" && /학교.*2층|2층.*교실|교실.*2층|학급.*2층|school[\s_-]*2f/iu.test(mapName) ? "school-2f"
+        : tilesetId === "jp_city" && /학교.*1층|1층.*교무실|교무실.*보건실|신발장.*교무실|昇降口|school[\s_-]*1f/iu.test(mapName) ? "school-1f"
+        : tilesetId === "jp_city" && /(집|주택|민가|가정집).*2층|2층.*(침실|아이방|서재|발코니)|house[\s_-]*2f/iu.test(mapName) ? "house-2f"
+        : tilesetId === "jp_city" && /(집|주택|민가|가정집).*1층|1층.*(거실|화실|현관|LDK)|단독주택\s*1층|house[\s_-]*1f/iu.test(mapName) ? "house-1f"
         : /영화관|시네마|상영관|오락실|아케이드|게임\s*센터|복합\s*문화|cinema|arcade/iu.test(mapName) ? "cinema-arcade"
         : /레스토랑|다이닝\s*바|비스트로|스테이크\s*하우스|재즈\s*바|라운지\s*바|와인\s*바|restaurant|dining\s*bar/iu.test(mapName) ? "restaurant-bar"
         : /미술관|박물관|전시실|전시관|갤러리|아트\s*센터|museum|gallery/iu.test(mapName) ? "museum-gallery"
@@ -656,7 +704,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
         : undefined;
       if (args.layout && typeof args.layout === "object") {
         const lbag = args.layout as Record<string, unknown>;
-        if (matchedProgram && typeof lbag.program === "string" && ["lobby", "konbini", "cafe", "mall-1f", "supermarket", "station", "hospital-1f", "cinema", "game-center", "famires"].includes(lbag.program) && lbag.program !== matchedProgram) {
+        if (matchedProgram && typeof lbag.program === "string" && ["lobby", "konbini", "cafe", "mall-1f", "supermarket", "station", "hospital-1f", "cinema", "game-center", "famires", "bank", "clinic"].includes(lbag.program) && lbag.program !== matchedProgram) {
           args = { ...args, layout: { ...lbag, program: matchedProgram } };
         }
       } else if (matchedProgram && Array.isArray(args.plan) && args.plan.length > 0 && typeof args.plan[0] === "string") {
@@ -665,6 +713,14 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
           const { plan: _p, zones: _z, objects: _o, tables: _t, goods: _g, lines: _l, daises: _d, start: _s, exits: _e, ...rest } = args as Record<string, unknown>;
           args = { ...rest, layout: { program: matchedProgram } } as typeof args;
         }
+      }
+      // 공공시설 짧은 이름(library·city-hall·bank·clinic, 한국어 이름)은 두 칩셋 모두 같은 표준 구성으로 맞춘다 — 2026-10-19 RCA r2: jp_city 에서 "library" 가
+      // 「방 구성이 없다」로 거부돼 조수가 수백 줄 plan 을 손으로 짰다.
+      if (args.layout && typeof args.layout === "object") {
+        const lbag = args.layout as Record<string, unknown>;
+        const raw = typeof lbag.program === "string" ? lbag.program.trim() : "";
+        const canon = raw && !programKinds(tilesetId, raw) ? PUBLIC_PROGRAM_ALIASES[raw.toLowerCase()] : undefined;
+        if (canon && programKinds(tilesetId, canon)) args = { ...args, layout: { ...lbag, program: canon } };
       }
     }
     let picked: { c: LayoutCandidate; variant: number; variants: number; furnish: boolean } | undefined;
@@ -737,10 +793,10 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       throw error;
     }
     if (!Array.isArray(args.plan) || !args.plan.length) throw new ToolError("plan(평면 글자) 또는 rooms(방 사각형 목록) 중 하나를 준다", { code: "plan-missing" });
-    const exitWidth = (args.exitWidth as number | undefined) ?? 1;
+    const exitWidth = (args.exitWidth as number | undefined) ?? (picked?.c.exit.width === 0 ? 0 : 1);
     const exits = Array.isArray(args.plan) && args.plan.every(row => typeof row === 'string')
       ? handInteriorPlanExits(args.plan as string[]) : [];
-    const mismatch = exits.find(exit => exit.width !== exitWidth);
+    const mismatch = exitWidth === 0 ? undefined : exits.find(exit => exit.width !== exitWidth);
     if (mismatch) throw new ToolError(`남쪽 출구 (${mismatch.x},${mismatch.y})가 가로 ${mismatch.width}칸으로 열려 있지만 문 폭은 ${exitWidth}칸입니다. 마지막 줄의 '.' 틈을 ${exitWidth}칸으로 고치세요. start는 통행 검사 출발점이며 출구 폭을 정하지 않습니다. 한 칸 문을 두 칸 출구에 연결하지 않습니다.`, { code: 'interior-exit-width', x: mismatch.x, y: mismatch.y });
     const tileset = ensureInteriorTileset(draft, tilesetId);
     if (!tileset) throw new ToolError(`타일셋 ${tilesetId} 이 없다`, { code: "tileset-not-found" });
@@ -763,9 +819,17 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     if (errors.length) {
       throw new ToolError(`실내를 짓지 않았다 — 오류 ${errors.length}건: ${errors.slice(0, 8).map((e) => e.message).join(" / ")}${errors.length > 8 ? " …" : ""}`, { code: errors[0]!.code });
     }
-    const mapId = typeof args.mapId === "string" && args.mapId.trim() ? args.mapId.trim() : genId("map");
+    const soleStartMap = Object.keys(draft.maps).length === 1 ? draft.maps[draft.startMapId] : undefined;
+    const reuseUntouchedStart = (!args.mapId || typeof args.mapId !== "string" || !args.mapId.trim())
+      && soleStartMap
+      && isUntouchedMap(soleStartMap)
+      && (soleStartMap.tilesetId === tilesetId || soleStartMap.id === "map_blank_start");
+    const mapId = typeof args.mapId === "string" && args.mapId.trim()
+      ? args.mapId.trim()
+      : reuseUntouchedStart ? soleStartMap!.id : genId("map");
     const existing = draft.maps[mapId];
-    if (existing && !(args.replace === true && existing.tilesetId === tilesetId)) {
+    const existingUntouched = existing ? isUntouchedMap(existing) : false;
+    if (existing && !existingUntouched && !(args.replace === true && existing.tilesetId === tilesetId)) {
       throw new ToolError(existing.tilesetId === tilesetId
         ? `맵 ${mapId} 가 이미 있다 — 다시 지으려면 replace:true`
         : roomSpecOf(draft.tilesets[existing.tilesetId])
@@ -813,7 +877,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     }
     // 현대 실내(캠퍼스·도시·일본 도시)를 새로 지을 때 BGM 이 비면 맵 이름으로 곡을 고른다 — 연애·학원물 실내가 무음으로 남던 구멍(2026-10-16 실제 Argon 시험).
     // 다시 짓는 맵(replace)은 저작자가 정했을 수 있으니 건드리지 않는다. 환상 실내(손 도트 v5 등)는 그대로 둔다.
-    if (!existing && !map.bgm && MODERN_BGM_TILESETS.has(tilesetId)) assignCreatedMapBgm(map, {}, { draft, fallbackTheme: "everyday" });
+    if ((!existing || existingUntouched) && !map.bgm && MODERN_BGM_TILESETS.has(tilesetId)) assignCreatedMapBgm(map, {}, { draft, fallbackTheme: "everyday" });
     draft.maps[mapId] = map;
     const trimNote = trimmed.trimmed
       ? `평면 바깥 막힌 여백을 잘라 ${built.width}×${built.height} 로 지었다 — 입력 좌표는 왼쪽 ${trimmed.dx}·위 ${trimmed.dy} 칸만큼 옮겨졌다. 이후 이 맵 좌표는 새 기준을 쓴다.`
@@ -822,6 +886,9 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       if (!draft.maps[draft.mapTree.mapId]) draft.mapTree = { mapId, children: [] };
       else if (draft.mapTree.mapId !== mapId && !draft.mapTree.children.some((c) => c.mapId === mapId)) draft.mapTree.children.push({ mapId, children: [] });
       if (!draft.maps[draft.startMapId]) { draft.startMapId = mapId; const s = built.start[Math.floor(built.start.length / 2)]; draft.startPos = { x: s?.x ?? 0, y: s?.y ?? 0 }; }
+    } else if (existingUntouched && draft.startMapId === mapId) {
+      const s = built.start[Math.floor(built.start.length / 2)];
+      if (s) draft.startPos = { x: s.x, y: s.y };
     }
     const warnings = [...(trimNote ? [trimNote] : []), ...built.issues.filter((i) => i.severity === "warning").map((i) => i.message)];
     if (shape.plainBox && shape.innerCells >= PLAIN_BOX_MIN_CELLS) warnings.push(`방이 칸막이·알코브 없는 직사각형 하나(ㅁ자, 실내 ${shape.innerCells}칸)다 — 큰 방은 ㄱ·ㄷ자 외곽, 벽에서 들어간 알코브, 두꺼운 칸막이('#' 덩이)로 공간을 나누거나 평면을 줄인다`);

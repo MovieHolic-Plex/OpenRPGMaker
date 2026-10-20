@@ -7,14 +7,18 @@ const cls = (kind: string, w: number, h: number, floor: string = F.oak): FRoom =
   const bx = Math.floor((w - 3) / 2);
   const px = Math.floor((w - 2) / 2);
   const rws = Math.max(1, Math.floor((h - 4) / 2));
-  const dxL = w >= 11 ? 2 : 1, dxR = w >= 11 ? w - 4 : w - 3;
+  const dxL = 1, dxR = w - 3;
+  const cols = w >= 11 ? 3 : 2;
+  const dxMid = Math.floor((w - 2) / 2);
   return R(kind, w, h, floor, W.office, {
     at: [
       ["m:window-curtain", 1, 0], ["school-blackboard", bx, 0], ["m:wall-clock", bx + 3, 0],
       ["school-cleaning-locker", 0, 2], ["m:shelf-office", w - 2, 2],
       ["school-teacher-podium", px, 3],
     ],
-    desks: [[dxL, 5, 1, rws, 3, 2], [dxR, 5, 1, rws, 3, 2]],
+    desks: cols === 3
+      ? [[dxL, 5, 1, rws, 3, 2], [dxMid, 5, 1, rws, 3, 2], [dxR, 5, 1, rws, 3, 2]]
+      : [[dxL, 5, 1, rws, 3, 2], [dxR, 5, 1, rws, 3, 2]],
   });
 };
 
@@ -26,11 +30,11 @@ export const FACILITIES_A: readonly FacilityVenue[] = [
     rooms: [
       cls("el-class-a", 11, 10),
       cls("el-class-b", 11, 9),
-      R("el-genkan", 9, 10, F.stone, W.lobby, {
+      R("el-genkan", 9, 9, F.stone, W.lobby, {
         hang: ["m:notice-board", "m:wall-clock"],
         wall: ["sento-shoe-locker", "sento-shoe-locker", "_", "sento-shoe-locker"],
-        at: [["home-umbrella-stand", 1, 5], ["home-school-bag", 7, 5], ["home-genkan-shoes", 1, 6], ["home-genkan-shoes", 6, 6]],
-        pl: [8, 8],
+        at: [["home-umbrella-stand", 1, 5], ["home-school-bag", 7, 5], ["m:wait-bench", 3, 5], ["home-genkan-shoes", 1, 7], ["home-genkan-shoes", 6, 7]],
+        pl: [8, 7],
       }),
       R("el-music", 9, 8, F.oak, W.office, {
         hang: ["m:whiteboard", "m:window-curtain"],
@@ -40,10 +44,10 @@ export const FACILITIES_A: readonly FacilityVenue[] = [
         ],
         grid: [["m:chair-wood-n", 1, 5, 3, 2, 1, 2]],
       }),
-      R("el-gym", 14, 8, F.oak, W.office, {
+      R("el-gym", 13, 8, F.oak, W.office, {
         openFloor: true,
         hang: ["gym-scoreboard", "m:wall-clock"],
-        at: [["gym-hoop", 1, 2], ["gym-hoop", 11, 2], ["gym-mat", 4, 5], ["gym-vault", 8, 5]],
+        at: [["gym-hoop", 1, 2], ["gym-hoop", 10, 2], ["gym-mat", 2, 4], ["gym-mat", 5, 4], ["gym-vault", 8, 4], ["m:wait-bench", 2, 6], ["m:wait-bench", 8, 6]],
       }),
     ] }),
   facility({ cat: "교육시설", p: "mc_middle_school", map: "middle-school", ko: "중학교", shape: "ㄷ자형", entrance: "ms-genkan",
@@ -204,7 +208,7 @@ export const FACILITIES_A: readonly FacilityVenue[] = [
     ] }),
 
   // ── 의료시설 ──
-  facility({ cat: "의료시설", p: "mc_clinic", map: "private-clinic", ko: "개인병원", shape: "L자형", entrance: "cl-reception",
+  facility({ cat: "의료시설", p: "mc_clinic", map: "private-clinic", aliases: ["clinic"], ko: "개인병원", shape: "L자형", entrance: "cl-reception",
     rows: [["cl-exam-a", "cl-exam-b", "~"], ["cl-reception", "cl-waiting"]],
     open: [["cl-reception", "cl-waiting"]],
     rooms: [
@@ -220,12 +224,19 @@ export const FACILITIES_A: readonly FacilityVenue[] = [
       }),
       R("cl-reception", 12, 9, F.hosp, W.hosp, {
         hang: ["m:wall-clock", "hosp-number-display"],
-        at: [["hospital-pharmacy-window", 0, 2], ["hospital-water-dispenser", 8, 2], ["m:reception", 2, 4], ["hosp-ticket-dispenser", 0, 4], ["m:wait-bench", 1, 6], ["m:wait-bench", 8, 6]],
+        at: [
+          ["hospital-pharmacy-window", 0, 2], ["m:shelf-office", 4, 2], ["hospital-water-dispenser", 8, 2], ["m:filing", 10, 2],
+          ["m:chair-office-s", 3, 3], ["m:reception", 2, 4], ["hosp-ticket-dispenser", 0, 4],
+          ["m:wait-bench", 1, 6], ["m:wait-bench", 5, 6], ["m:wait-bench", 9, 6],
+        ],
       }),
-      R("cl-waiting", 15, 7, F.hosp, W.hosp, {
+      R("cl-waiting", 14, 7, F.hosp, W.hosp, {
         hang: ["hosp-floor-directory", "m:tv-wall", "m:art-frame"],
         wall: ["m:magazine", "_", "hospital-water-dispenser"],
-        at: [["hosp-wait-row-s", 2, 4], ["hosp-wait-row-s", 9, 4], ["hosp-wait-row-n", 2, 6], ["hosp-wait-row-n", 9, 6]],
+        at: [
+          ["hosp-wait-row-s", 1, 4], ["hosp-wait-row-s", 6, 4], ["hosp-wait-row-s", 10, 4],
+          ["hosp-wait-row-n", 1, 6], ["hosp-wait-row-n", 6, 6], ["hosp-wait-row-n", 10, 6],
+        ],
         pl: [13, 6],
       }),
     ] }),

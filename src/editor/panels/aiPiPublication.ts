@@ -6,6 +6,7 @@ import { mapLossConfirmRequest } from "@/ai/mapDestructionConfirm";
 import { applyProposedProject, captureApplyAuthority } from "@/editor/tools/applyChangesetToStore";
 import { describeMergeConflicts } from "@/project/projectMerge";
 import { adoptSpatialToolProof } from "@/editor/tools/spatialToolState";
+import { isUntouchedMap } from "@/project/projectBlankness";
 import type { Project } from "@/project/types";
 import { requestAssistantDecision } from "./aiDecisionPrompt";
 import { createPendingReviewPrompt } from "./aiPendingReview";
@@ -51,7 +52,18 @@ export function createPiPublication(base: Project, mode: PiApplyMode, surface: P
     const next = restoreCheckpointProject(project, checkpoint.project, checkpoint.unchangedKeys, checkpoint.unchangedTilesetIds);
     if (!changedProjectKeys(project, next).length) return project;
     if (mode === "step") await approveStage(next, checkpoint.label);
-    const loss = mapLossConfirmRequest(project, next) ?? (isMapDestruction(checkpoint.toolName) ? { title: "맵 전체 청소 확인", message: "맵의 타일을 전부 비웁니다. 계속할까요?", confirmLabel: "전체 청소", cancelNotice: "맵 청소를 취소했습니다." } : null);
+    const rawLoss = mapLossConfirmRequest(project, next);
+    const turnProtectedBefore: Project = {
+      ...project,
+      maps: Object.fromEntries(
+        Object.entries(project.maps).filter(([id]) => {
+          const initial = base.maps[id];
+          return initial !== undefined && !isUntouchedMap(initial);
+        }),
+      ),
+    };
+    const loss = mapLossConfirmRequest(turnProtectedBefore, next)
+      ?? (isMapDestruction(checkpoint.toolName) ? { title: "맵 전체 청소 확인", message: "맵의 타일을 전부 비웁니다. 계속할까요?", confirmLabel: "전체 청소", cancelNotice: "맵 청소를 취소했습니다." } : null);
     if (loss && mode !== "yolo" && mode !== "auto") {
       const lostIds = "removedMapIds" in loss ? [...loss.removedMapIds, ...loss.emptiedMapIds] : [];
       const repeat = lostIds.length > 0 && lostIds.every(id => declinedLoss.has(id));
@@ -73,7 +85,7 @@ export function createPiPublication(base: Project, mode: PiApplyMode, surface: P
       humanEdits: presentation?.humanEdits,
       base: authority, baseline, source: "agent-milestone",
       summary: checkpoint.label, toolNames: [checkpoint.toolName],
-      mapDestructionApproved: !!loss || mode === "yolo" || mode === "auto",
+      mapDestructionApproved: !!rawLoss || !!loss || mode === "yolo" || mode === "auto",
       skipSnapshot: mode !== "step" && count > 0,
       snapshotLabel: `AI ${checkpoint.label}`, snapshotMapId: surface.getCurrentMapId(),
       rebase: { lineage: project },
