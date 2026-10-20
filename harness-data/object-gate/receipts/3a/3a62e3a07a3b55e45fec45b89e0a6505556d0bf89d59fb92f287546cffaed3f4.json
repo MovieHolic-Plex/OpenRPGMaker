@@ -1,0 +1,317 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3a62e3a07a3b55e45fec45b89e0a6505556d0bf89d59fb92f287546cffaed3f4",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "unmanned veg stand",
+ "label": "jp-inaka-r5:inaka-unmanned-veg-stand",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 8
+ },
+ "metrics": {
+  "tileColorsMedian": 23,
+  "tileColorsP90": 28,
+  "darkV5": 35,
+  "nearBlackEdge": 0.39,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "awning/canopy",
+      "rows": "2-9",
+      "evidence": "c",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-13"
+     },
+     {
+      "part": "counter with produce",
+      "rows": "14-21",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-9 are a striped awning plane. A light edge line at row 10 is followed by dark eave shadow in rows 11-13, so the awning has a top surface. Below it, rows 14-21 show produce (red, green, purple, yellow) inside the open counter, which is evidence (d) for a top. The south-facing counter front, a brown panel, spans rows 22-29 (about 8 rows), so the main body has a top surface and a front face of 3+ rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate has 42 distinct colours and a median of 23 per 16x16 tile, which is at or above the stall-cheese (17, 40 colours) and well-roofed (20, 38 colours) references. Flat-fill coverage is 0%. Only 8% of its dark edge pixels are neutral, so the outline carries a tint and reads as a dark version of the neighbouring material rather than a black sticker line. The grey striped awning shows several lightness steps, and the produce crate holds many small varied dots (red, green, brown) with wood grain on the counter. Shading depth and texture match the references, and nothing looks thinner or flatter beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23409
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "striped awning/canopy",
+      "rows": "2-12",
+      "evidence": "c",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-13"
+     },
+     {
+      "part": "produce counter/crate with visible goods",
+      "rows": "14-21",
+      "evidence": "d",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-23"
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The awning is a sloped canopy plane in rows 3-9. It ends in a light front-edge line at row 10 (L=184), followed by darker eave shadow in rows 11-13. Below it the counter shows produce (red, green, purple items) in rows 14-21, which is contents visible in an open container, and a brown wood front face in rows 22-29 (about 8 rows). The south-facing view has both a top surface and a front face, and no receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate has 42 distinct colours and a median of 23 per full tile. That is at or above the stall-cheese (17, 40 colours) and well-roofed (20, 38 colours) references. 5x5 flat-fill coverage is 0%, and only 8% of dark edge pixels are neutral, so the outline carries a tint rather than being a black sticker line. The corrugated grey awning shows several lightness steps, and the produce crates hold small multi-colour speckle. The piece is small and compact but not thinner or flatter than the stall reference. It would sit acceptably beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20775
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "striped awning/canopy",
+      "rows": "2-12",
+      "evidence": "c",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "counter top with produce",
+      "rows": "14-21",
+      "evidence": "d",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stall has a sloped gray striped awning at rows 2-10. A light front-edge line at row 10 (L=184) is followed by darker eave shadow at rows 11-12 and a dark row at 13. Below it, the counter shows produce (red, green and purple goods) inside the open top at rows 14-21. The brown wooden front face runs from about row 22 to row 29. That gives a top surface plus a front face of 3+ rows, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate has 23 median colours per tile and 42 distinct colours. That is above prop-stall-cheese (17 per tile, 40 distinct) and close to prop-well-roofed (20 per tile, 38 distinct). Flat-fill coverage is 0%, whereas the cheese stall has 13%. Only 8% of dark edge pixels are neutral, so the outlines lean toward the neighbouring material's tone rather than a uniform black sticker line. By eye, the grey striped awning shows several lightness steps with slat or tile dither. The counter body is shaded, and the produce crates carry small multi-colour dots. It is a compact piece, but it sits next to the stall and well references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15581
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "striped awning/canopy",
+      "rows": "2-12",
+      "evidence": "c",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "counter top with produce",
+      "rows": "14-21",
+      "evidence": "d",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The awning fills rows 2-9 with striped slope rows. Row 10 is a light front-edge line (L=184), and rows 11-12 are darker eave shadow before the dark outline at row 13. Below it, rows 14-21 show produce and goods heaped in the open counter, so the counter has a visible top. The brown front face of the counter runs rows 22-29, about 8 rows. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate has 42 distinct colours and a median of 23 per full tile, against 38-40 colours and 17-20 per tile for the stall-cheese and well-roofed references. Flat-fill coverage is 0%, below the stall's 13%. Only 8% of its dark edge pixels are neutral, so the outlines lean toward brown or grey-green material tones rather than a black sticker line. By eye, the grey striped roof has banded tile or slat highlights and shadow. The wooden counter and the produce crates are shaded in several steps with speckled detail, so the shading ramps look comparable to the stall reference. It is a small piece, but nothing in it reads as flatter or thinner than the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21429
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:08.452Z",
+ "cells": {
+  "16": [
+   "195d8dc922081168",
+   "223ebbe269826ecc",
+   "a355b950918ca3cb",
+   "bea2fe49b4107aa3"
+  ],
+  "24": [
+   "22a403409cd6d357",
+   "2475339baf72487a",
+   "295da8a17c9bafda",
+   "2d374ff50c5386fc",
+   "30f6c9ca514621c3",
+   "33c5ddd8c95b2cf4",
+   "354e037d9b698dc1",
+   "3d309edb8b0c5030",
+   "60003b39bfcf7f6c",
+   "6b93de9ecb6c83ba",
+   "6ccfaeab9c114578",
+   "7583d211a7582e80",
+   "7d2a29a2e64935e0",
+   "8164a795e3978c39",
+   "af15d8864633e150",
+   "b81902baac4835a1",
+   "b950d10196d71319",
+   "c6df886a06641159",
+   "cccdbe26038c99ae",
+   "d21357a9405fd526",
+   "df5d4740fb1ead71",
+   "dfe918c167e75819",
+   "e475f1ba40ae34f6",
+   "f31a80eb12b28b28"
+  ],
+  "32": [
+   "f5ec3c36a2b7e917"
+  ],
+  "48": [
+   "20906460bfecf0dd",
+   "5c600513cfbe2937",
+   "5d98b00564be464a",
+   "6ba8e2441165f65f",
+   "93619df9032e2a19",
+   "eb06d3269c59a018"
+  ]
+ }
+}

@@ -1,0 +1,393 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0e7b50e6757d0ed89db243a98541382697caedc4c7c0fe5d96eefa72b512ed1e",
+ "width": 64,
+ "height": 32,
+ "kind": "other",
+ "name": "keitora white",
+ "label": "jp-inaka-r5:inaka-keitora-white",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(side_profile_no_top) (3/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+  "3/4: 윗면 2행 < 3 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(side_profile_no_top) (3/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+   "윗면 2행 < 3 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 8
+ },
+ "metrics": {
+  "tileColorsMedian": 21,
+  "tileColorsP90": 25,
+  "darkV5": 38,
+  "nearBlackEdge": 0.27,
+  "opaqueTiles": 8
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cab roof",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cargo bed top rail",
+      "rows": "5-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cargo bed with crates",
+      "rows": "8-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "This is a white kei truck seen in pure side profile, facing east. The main body is the long cargo bed and lower body, rows 5-26. Its top is only a 2-3 row light rail at rows 5-7, with no front-edge line and no eave shadow. Below it, rows 8-14 show crates of green, red and blue goods framed by the rails. They are drawn face-on through a side opening, not looking down into an open container, so they do not count as a top surface. The cab roof at rows 1-6 is a small cream band, but it is a minor part. Rows 15-26 are a vertical body panel with wheels. The silhouette widths of 57-62 across rows 5-26 are constant, so nothing widens and narrows like an ellipse. The whole drawing reads as a side elevation without a real top surface on the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a white kei truck with a produce load. The measured facts support it. It has 21 distinct colours per tile, against 17 for the stall and 20 for the well. It has 61 distinct colours in total, against 38-40 for the richest references. Flat-fill coverage is 0%. Dark edge pixels are 0% near-neutral, so the outlines lean toward a tint (a dark blue-grey or brown) and are not a uniform black sticker line. The body shows several white/grey/blue-grey steps (about 5) with panel lines, a windshield highlight, wheels and a cargo of green crates. Texture is moderate: the white panels are smooth, but they have shading variation and details such as the grille, lights and crates. It sits comfortably next to the stall and well in richness, and it is a standing prop of the right kind.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17183
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cargo bed (open, crates and contents visible)",
+      "rows": "8-14",
+      "evidence": "d",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cab roof",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The truck faces east, so its south face is a side profile with wheels. The cargo bed shows crates of produce and blue contents in rows 8-14, which sit between the rim at rows 5-7 and the side wall at rows 15-23. That is an open container seen from above (evidence d). The cab roof is a cream band at rows 1-6 ending in an edge line at row 7. The white side body below is about 12 rows tall (rows 15-26), above the wheels."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a white kei truck with a produce-filled bed. It matches the references on the measured facts. It has 21 colours per tile against 17-20 for the stall and well, 61 distinct colours against 38-40, and 0% flat-fill coverage. Its dark edge pixels are 0% neutral, so the outline carries a tint, as in the hedge and stall, and is not a uniform black sticker line. The white body is shaded in several steps, from bright highlights through light grey and blue-grey to a darker shadow. The windows have reflections, the bed carries green crates with detail, and the wheels and bumper are shaded. I could not see any large flat panels. It sits at the reference level on structure and shading craft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23993
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cargo bed with produce crates",
+      "rows": "5-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cab roof and windshield",
+      "rows": "1-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels and lower body",
+      "rows": "19-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "This is a small white truck drawn in pure side profile, facing east. The silhouette is nearly flat-topped across the cargo bed at rows 5-8, and the cab rises to rows 1-4 at the right. The 2-3 row white band at the top of the bed (rows 5-7) is a side rail seen face-on, with no front-edge line and no eave shadow. The produce crates (green, orange and red items, and blue crates, rows 8-14) sit in the vertical side face, not in a view down into the bed from above. The cab roof is a short, light face-on strip with no receding plane. The windshield and the door are vertical faces. Wheels, wheel arches and the dark underbody (rows 19-31) confirm a side elevation. No row shows a horizontal surface seen from above, so the object reads as a side profile with no top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a white kei truck with a cargo bed of green crates. Measured facts put it at or above the references: 21 distinct colours per tile against 17-20 for the stall and well, 61 distinct colours in total against 38-40, and 0% flat-fill coverage. The body shows about 5 lightness steps (white highlight, light grey, mid grey-blue, shadow, deep). Dark edge pixels are 0% neutral, so the outline is tinted: dark blue-grey beside the body, not a uniform black sticker line. Windows, wheels, bumper and crate details carry varied dots and shading, and the surfaces show panel seams and reflections instead of flat fills. A careful artist would accept it next to the stall and well references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 26541
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cab roof",
+      "rows": "1-6",
+      "evidence": "c",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cargo bed top rail",
+      "rows": "5-7",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cargo contents (produce and water seen through the side opening)",
+      "rows": "8-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The truck is a pure side profile facing east, with the cab on the right and the cargo bed on the left. The main body (rows 5-26) is a vertical side panel: a white rail at rows 5-7, a framed produce and water panel at rows 8-14, white body panels at rows 15-23, and wheels and an undercarriage at rows 19-31. The cargo bed shows no horizontal top plane. Its contents are drawn face-on in the side panel, not seen from above. The cab roof at rows 1-6 is only a small light strip, about 6 rows and only 14-21 px wide, with no eave shadow, so it is not a real top surface for the main body. The silhouette width is nearly constant (57-62 px) from rows 5-26, which fits a flat side elevation and not a body with a top plane."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a white kei truck with a produce load, drawn at the same scale as the references. Measured facts support it: 21 colours per 16x16 tile (stall 17, well 20), 61 distinct colours (references 11-40), 0% flat-fill coverage, and 0% neutral dark edge pixels, so the outline is tinted and not a neutral black sticker line. By eye, the white body has about 5 steps (highlight white, light grey, mid blue-grey, shadow, deep). The panels carry reflections and the windows have gradients. The green crates have leaf dots and the wheels are shaded. Dark edges lean blue-grey and match the adjacent material, as in the references. It is at least as rich as the stall and well and would sit next to them without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 30653
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:08.447Z",
+ "cells": {
+  "16": [
+   "171a56e5d7c91e6d",
+   "1fb90f9f635cc1f3",
+   "3ac526cc370793a8",
+   "40c164ab34344dcf",
+   "7c2f48856e851b6e",
+   "ddce6598239bb78a",
+   "e792f23cbf7b1e61",
+   "e9f77ad888f0944e"
+  ],
+  "24": [
+   "008136a6dbf84d66",
+   "03103b2ee3d3fdd7",
+   "191c06a942c749d1",
+   "22157bd5a3ab96cb",
+   "233de8982068de40",
+   "2a910e4936cae7e3",
+   "396546680bbf6804",
+   "3d87194c54acb1b9",
+   "3f94a6c07cf60df3",
+   "50e4f0fb6ee6a0a5",
+   "54ca159b47041da4",
+   "6d87117fed084983",
+   "80bdd11b4e559ac8",
+   "858a8128112fd4fc",
+   "9473726d765e875f",
+   "966260a82a3ea34d",
+   "a3079276405f45cd",
+   "a4f350af8f12aef0",
+   "a524ee484a65821e",
+   "a6cb09eb13ca3e65",
+   "b4513bfe9efe8788",
+   "b98756e598c8cb80",
+   "bd382217383c8350",
+   "bdef9eef807c640c",
+   "bffc9c566e0ef4b7",
+   "cb2800bee9feabf9",
+   "d16600aeffae48fd",
+   "d4e991b2844d65e7",
+   "d5a4c406485ec26c",
+   "dd24a8491d1d68af",
+   "e6d6d39a0608b44f",
+   "ef15c44336b4cfd3",
+   "f029b293d4bebaf0",
+   "f1dded76a644bf57",
+   "f1ed8f7429c23645",
+   "fa9cc290e995a051"
+  ],
+  "32": [
+   "51ba0c1e2bc4b207",
+   "764e30f108110914"
+  ],
+  "48": [
+   "02895f3c561728c6",
+   "0fee4b29c60daedb",
+   "24cbcbafc2640f8f",
+   "4cf2c436458220e4",
+   "802bf2746b0857ce",
+   "8113314e071521e0",
+   "961cd748101fcd37",
+   "aaf7d8e1724df77a",
+   "db159ee5bfb0b240",
+   "dc349d0d037bb2d3",
+   "f6ac0b3a2d6fbbe9",
+   "fddc5ebf7b17dfd7"
+  ]
+ }
+}

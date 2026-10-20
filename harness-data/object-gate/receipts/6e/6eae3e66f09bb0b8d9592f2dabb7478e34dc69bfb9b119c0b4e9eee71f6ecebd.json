@@ -1,0 +1,346 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6eae3e66f09bb0b8d9592f2dabb7478e34dc69bfb9b119c0b4e9eee71f6ecebd",
+ "width": 64,
+ "height": 32,
+ "kind": "terrain",
+ "name": "river stepping stones",
+ "label": "jp-inaka-r5:inaka-stepping-stones",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 18,
+  "darkV5": 73,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 3
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stepping stone cluster (largest stone, lower left-center)",
+      "rows": "18-21",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "upper stones",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "7-8"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Each stone has a lighter, mossy domed top band (e.g. rows 18-21 in x=16 and x=47: L 179/213 down to 102) that ends in a darker edge line at row 22, with a darker slate front face of about 2-3 rows (rows 22-24) above white foam and ripples at rows 24-26. The upper stone at x=32 shows the same pattern, with the top at rows 2-6 and a dark front at rows 7-8. The stones are objects sitting on water, so the kind is plausible as terrain or water decoration. They read as 3/4 view, not as a flat slab or a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The numbers are acceptable: 18 colours per tile is above the paving reference (7) and below the grass (26), flat-fill coverage is 0%, and only 12% of dark edge pixels are neutral, so the outlines lean toward the material tone and are not a near-black sticker line. The structure is the problem. Each stone is a small blob with about 4 tones (a mossy top, grey mid, a dark underside and pale foam flecks), where Beodeul uses 5-6 steps per material. The stones are also few and scattered, like cut-outs on a nearly uniform dark slate water field. The water has almost no ripple, grain or tonal variation by eye, and the whole piece uses only 18 colours against 80 in the grass reference. It does not read as a full 4x3 ground patch with the information density of the references. A careful artist would see it as thinner and flatter than the grass reference, so it fails on the stricter reading.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 37554
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stepping stones (five rocks with moss)",
+      "rows": "2-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The image shows five separate rounded stones with moss patches, each ringed by white and blue water ripples. This is a scattered terrain or water decal rather than a standing object. The stones have shaded, dome-like tops, and the darker underside rows (for example rows 12-14 and 22-25) read as the bottom of each stone sitting in water. There is no flat top plane with a front-edge line, no eave shadow and no ellipse lid. The kind is terrain, so the view rules for a standing object don't apply, and I classify it as other."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has 18 colours in total against 80 for the grass reference, and its stones are small and few. The measured 18 colours per tile is above the paving reference (7) but below the grass reference (26). The measured 0% flat-fill coverage means the water background has some variation, but by eye it reads as a nearly uniform dark blue-grey slab with little ripple or grain. Each stone has only about 3-4 lightness steps (a pale top, a mid grey-green, a dark underside) plus a thin white ripple rim, which is shallower than the 5-6 steps in the references. The stones have a few moss dots, but they look like separate stickers on a flat backdrop, not part of a richly textured ground patch. Dark edge pixels are only 12% neutral, so the outlines lean toward the neighbouring material tone and do not look like a uniform black line. Overall the ground is sparse and flat with shallow stone shading, and a careful artist would not place it next to the grass reference without it looking thinner.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 30407
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "large lower-left stone (main body)",
+      "rows": "16-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "upper stone",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "water splash ring around the stones",
+      "rows": "23-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The image shows five rounded stones sitting in water. In the column scans, each stone has a lit, mossy upper dome with a light-to-dark gradient. At x=16 this runs from L=179-213 on rows 18-20 and drops to 102 and 77 on rows 21-22. At x=32 it runs from 151 down to 57 over rows 2-8. Each stone has a darker front band of 2-3 rows, and a white and blue water ring below it. The tops and fronts are both visible, so it is not a flat slab. There is no isometric side face. The terrain kind is plausible for a scatter of stones with water."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 18 colours in total, against 80 for the grass reference. It has no 5x5 flat blocks, and only 12% of its dark edge pixels are neutral, so the outlines lean toward the material tone rather than a black sticker line. Its per-tile median of 18 sits between paving (7) and grass (26). By eye, though, the water ground reads as nearly flat slate between the stones. Each stone is tiny and carries only about 4 steps: a mossy top highlight, a grey body, a dark underside and a white ripple ring. The reference grass has 5-6 steps and layered tufts and clumps. Stone-by-stone grain and surface variation are thin, and the scattered stones leave most of the 4x3 patch as plain background. A careful artist would find it a little shallower than the Beodeul grass, and when in doubt this fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 27978
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lower-left stepping stone, top plane",
+      "rows": "17-21",
+      "evidence": "b",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "lower-left stepping stone, front face and wet base",
+      "rows": "22-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper stone (centre-top), top plane",
+      "rows": "2-6",
+      "evidence": "b",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "7-8"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The sprite is five domed stones with white water splash. In the column scan at x=32, the top stone runs light to dark over rows 2-6 (L=151 down to 98). A darker front band follows at rows 7-8 (L=77, 57). The lower stones repeat this. At x=16, rows 18-20 are light stone (L=179, 213, 151), followed by a darker front band at rows 21-23, and white and blue water below. Each stone therefore has a lit, mossy top plane of about 4-5 rows, a front edge, and a shaded front face of about 3 rows. The splash only decorates the base. Because the object is a terrain-type cluster, the top reading is modest but present."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 18 distinct colours and a median of 18 per tile, which is above the paving reference (7) and below the grass reference (26 per tile, 80 colours in total). Flat-fill coverage is 0%. Only 12% of dark edge pixels are neutral, so the outlines lean tinted (a dark blue-grey/green-brown beside the stones), not the near-black sticker line. The stones carry about 4 steps (a light top, mid moss, dark underside) plus pale water-ripple highlights, and some moss speckle. However, the piece is only a handful of small stones on a flat dark slate background, so the ground patch is sparse. The background reads as one flat field with little grain or variation, and the stones are small and simple next to the richly textured grass. The shading is shallower than the reference's 5-6 steps. The piece is close, but the plain background and the limited ramp keep it slightly below the Beodeul bar for a ground patch.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 23709
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:08.458Z",
+ "cells": {
+  "16": [
+   "308166fb55b1995c",
+   "506c0eeba8facfe6",
+   "5d36e63ae0bca85d",
+   "840f18df42bae98c",
+   "c1693799481448f8",
+   "d5a9eb9c83a48243",
+   "dca39001545209a6",
+   "f15e6f7ef7574008"
+  ],
+  "24": [
+   "0441dd7226a7a996",
+   "1576d6f32aca011d",
+   "1b9b38a29df782a9",
+   "2a80bd963395816e",
+   "3ced3bbb4634e2d7",
+   "3ede15515cc6223f",
+   "40cbcfdcd9d6f474",
+   "4102b96f13f3fb61",
+   "4c3fa681befb75f5",
+   "5d804e4d72422ded",
+   "7e7d67c037f13b80",
+   "8633c9d16a36807a",
+   "895d876a7a3e7208",
+   "8f9dc858d45a4078",
+   "92d71d89e78eab30",
+   "938db138d50dbea5",
+   "9731e4a05ed3ac98",
+   "9a037f55e4d6fd9c",
+   "a0c01e88482542f3",
+   "a28e8d673b880af8",
+   "a53f0be907b7e867",
+   "a8839aa4adeafb2b",
+   "aa17d731484526a1",
+   "b90c417a2acb08c6",
+   "c410dc058307d4ea",
+   "c638903f10d6d5ee",
+   "c9a09ec4556d8244",
+   "d2bdfd6df5caf6bb",
+   "d5799ad98b22056b",
+   "ebbcc2850b25abe0",
+   "f33a43b9a49476f0",
+   "f3c7dc70d819ba69",
+   "f7cc40ce7d891f33",
+   "fb06fa0e98e26baf"
+  ],
+  "32": [
+   "89e1179ea1916e71",
+   "92c2d316882f4523"
+  ],
+  "48": [
+   "089ab71098c6bc17",
+   "2dc2aa30ad745701",
+   "3b2b4ae3fa0e8047",
+   "3b9cc1ba1f671c27",
+   "71c23f4791743706",
+   "735d228e24f93599",
+   "8440e184d6b642a4",
+   "97c4d2615e3a2732",
+   "c1311c779330172d",
+   "cc434a1627b648f2",
+   "cc843a4cf4f40115",
+   "f2fc985ba617b234"
+  ]
+ }
+}

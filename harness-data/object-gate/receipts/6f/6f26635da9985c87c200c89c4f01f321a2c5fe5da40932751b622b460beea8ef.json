@@ -1,0 +1,421 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6f26635da9985c87c200c89c4f01f321a2c5fe5da40932751b622b460beea8ef",
+ "width": 96,
+ "height": 80,
+ "kind": "structure",
+ "name": "kominka thatched",
+ "label": "jp-inaka-r5:inaka-kominka-thatched",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 32,
+  "darkV5": 39,
+  "nearBlackEdge": 0.03,
+  "opaqueTiles": 24
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "thatched hip roof (main plane)",
+      "rows": "12-43",
+      "evidence": "c",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "50-51"
+     },
+     {
+      "part": "thick thatch eave band",
+      "rows": "44-49",
+      "evidence": "none",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ridge beam with ornaments",
+      "rows": "4-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile grows steadily from 42 px at row 12 to 96 px at row 44, so the thatch is a large sloped roof plane (rows 12-43) with tile-like courses. A light edge line at row 44 (L=208 at x=71) starts the thick eave band (rows 44-49), and a dark shadow follows under it. Below that, the south wall (rows 50-76) is a full front face with a noren door, plaster panels, shoji windows and a veranda. The ridge log at rows 4-11 is a front-facing strip, but it is a minor detail on top of a roof that clearly shows its top slope."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has a thatched roof with several yellow-green steps, fibre streaks and a ridge with small tufts, so it is not a flat fill. Its walls and veranda carry wood grain, a shoji pattern, a noren curtain and a stone base. Measured facts are close to the references: 17 colours per tile against 18 and 11, 0% flat-fill coverage, and 62 distinct colours against 66 for the stone reference. Its dark edges are 34% near-neutral, higher than the references at 7-9%, so the outline is mixed: some dark pixels around the wall and veranda look close to black, while the roof edge leans brown-green. The thatch is less scalloped and less per-tile highlighted than the reference roofs, and the lower walls are somewhat flatter and darker. These weaknesses are minor, and a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15750
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "thatched hip roof (main body)",
+      "rows": "12-43",
+      "evidence": "c",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "48-49"
+     },
+     {
+      "part": "ridge beam/cap on top",
+      "rows": "4-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "eave thatch band",
+      "rows": "44-49",
+      "evidence": "a",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "48-49"
+     },
+     {
+      "part": "porch/veranda wooden platform",
+      "rows": "67-76",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The widening trapezoid silhouette (rows 12-44, width 42 to 96) is a sloped thatched roof plane with tile-like rows of thatch, ending in a light eave band at rows 44-47 with darker shadow at rows 48-49. Below it the south wall (rows 50-76) has shoji panels, a noren-style door, and a wooden porch, giving a front face over 3 rows. The ridge cap at rows 4-11 is a smaller detail on top of the roof. The roof is the dominant top surface, so this reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate's measured facts are close to the references: 17 colours per tile against 18 and 11, and 0% flat-fill coverage. It has 62 distinct colours against 185 and 66, which matches the stone reference. The thatch roof has about 5 olive-yellow steps with streaky grain and a ridge with small details, so it is not a flat fill. The walls, shoji and the door area are smaller and simpler, with fewer steps than the reference plaster and half-timbering. Neutral share of dark edge pixels is 34%, higher than the references at 7-9%. By eye, the dark lines under the eaves and around the windows lean near-black in places, while the wood posts read as dark brown. That makes the outline mixed, and it drifts toward the sticker look. Overall the piece is a little thinner than the references, mainly on the lower walls and the base, but it is not shallow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13497
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "thatched hip roof (main slope)",
+      "rows": "12-43",
+      "evidence": "c",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "48-49"
+     },
+     {
+      "part": "eave thatch band (lower edge)",
+      "rows": "44-49",
+      "evidence": "c",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "49-50"
+     },
+     {
+      "part": "ridge beam / roof ridge cap",
+      "rows": "4-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front veranda/porch ledge",
+      "rows": "67-74",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The widest part is a large sloped thatched roof, rows 12-43, widening from 42 to 90 px and ending in a lighter eave band at rows 44-49 with a dark shadow line beneath. This reads as a roof plane (evidence c) above a front wall. Below the eave, the south wall (rows 50-76) has windows, a door with a blue noren curtain, and a wooden veranda, giving a front face of about 27 rows. The ridge beam at rows 4-11 is drawn as a front-facing strip, so it is a minor detail. The roof is the main top surface, so the object reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a whole building (thatched roof, walls, door) like the references. Its thatch has about 4-5 lightness steps with fibre streaks and a ridge cap, and the wall, shoji panels and stone base carry some variation. Tile density is 17 colours against 18 and 11 for the references, so it is on par, and flat-fill coverage is 0%. Its total of 62 colours is far below h101's 185 but close to h112's 66. The dark edge pixels are 34% near-neutral, against 7-9% for the references, so part of the outline is a tint-free dark line, especially around the dark wall frame and the sign. The rest leans brown or olive, so I call it mixed. The thatch texture is less granular than the reference roof tiles, which have per-tile highlights, and the wall and veranda areas look flatter and more sticker-like than the plaster and stone of the references. Overall it is slightly shallower than the references, and when in doubt the rule is to fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14173
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "thatched roof slope",
+      "rows": "12-43",
+      "evidence": "c",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "49-50"
+     },
+     {
+      "part": "eave thatch band",
+      "rows": "44-48",
+      "evidence": "a",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "49-50"
+     },
+     {
+      "part": "ridge log",
+      "rows": "4-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens steadily from 50px at row 12 to 96px at row 44. That is a large sloped thatch roof plane with tile-like straw courses over rows 12-43. A light eave edge band at rows 44-48 ends in a dark shadow line at rows 49-50. Below it is a south wall of about 27 rows (rows 50-76) with a noren curtain, shoji panels and a veranda. The ridge log at rows 4-11 is a front-facing strip, but the main roof body clearly shows its top surface. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a whole building (thatched roof, walls, door, windows), so it matches the reference kind. It has 17 colours per tile against 18 and 11 for the references, and 0% flat-fill coverage, so it is not shallow on tile density. Its 62 distinct colours are well below h101's 185 and about level with the stone house's 66. The thatch roof carries streaky grain in about 4-5 olive tones with highlight dashes, which is decent texture. The walls and the lower veranda are simpler, with darker brown timber and a plain blue noren, and read flatter than the references' plaster speckle and individually shaded stones. 34% of the dark edge pixels are neutral, against 7-9% for the references. That means some near-black lines, mostly under the eaves and around the dark wall, so the outline is mixed rather than a consistently tinted material tone. This is a bit sticker-like in places. Overall it is slightly lower in craft than the references, and I am failing it because of the doubt over the outline and the flatter lower half.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15906
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:08.435Z",
+ "cells": {
+  "16": [
+   "2fb941fdf9e1c02c",
+   "3d10ee830c063dd9",
+   "4aebcb1dde20d2a4",
+   "4b221aa560ad7df7",
+   "61d2f51b306c5671",
+   "63d60bd9fc4fad04",
+   "669e3df09f269635",
+   "6da0ebd53a043d7d",
+   "7710f711e676fb1b",
+   "79e466ba3a737f93",
+   "80e5e8782c4458e3",
+   "88e86c91efa46d30",
+   "8b083e1de304ed43",
+   "8b385d650008070e",
+   "9ec672386cafd76f",
+   "a4a652f3cb0f3c46",
+   "b1b2e8ddecd23cd2",
+   "b8884463f1a2b055",
+   "b947a25acfd2a3d7",
+   "c2b4225c753b7ae6",
+   "d46114b2857a81d2",
+   "dede02afed0ae83d",
+   "e2fafae51735c77e",
+   "e6eeafe24a5e3015",
+   "e8015fecb64f7bbd",
+   "f326411dd58e0c56",
+   "f5d861cefd7f33b7",
+   "fbda53e7f00137ed"
+  ],
+  "24": [
+   "01620c9006a9b0b4",
+   "125c82416fd69b50",
+   "16771dc11527c405",
+   "1f96a9ed9c7faef2",
+   "248679ad27e8ff17",
+   "29f199ec360bfdd7",
+   "4686a13941123046",
+   "533768ae9bf0a68e",
+   "5346468e862d0741",
+   "54592b8f3426970b",
+   "5e6900813fbd4dc2",
+   "5ead528e8d488ecf",
+   "63da9c22590688a0",
+   "64efe21366d74af2",
+   "6c352affd1416eb6",
+   "75de6ec0d880d25f",
+   "7d98891cf7ea8b47",
+   "836e78242eda6656",
+   "84dc2417c32bdd4a",
+   "885d742df165468c",
+   "a82536909e61c075",
+   "a951452e098bdd31",
+   "bd2665615d62c1aa",
+   "bd3c35b7e79789ea",
+   "c4cf85d3cb38cf0b",
+   "c76317f7746f3f33",
+   "d000516d3cf028e7",
+   "d1f1c5b905b18912",
+   "d3c2f33fde2ac59b",
+   "e069847b0cd97b5d",
+   "e6cb7a2d4e370590",
+   "e7b9668a3681596e"
+  ],
+  "32": [
+   "0aa4f02501c596d1",
+   "1c97f680dd5c4675",
+   "21daf394315dcbf7",
+   "21fa25bbf49d5de2",
+   "26a4693a53f2364d",
+   "2d151ef8b9400fa7",
+   "3313a7c0544f118d",
+   "3c670626bcbff7cb",
+   "44157a1db4817b5e",
+   "46ededaafd00487b",
+   "4c1b0eaeae63c365",
+   "632e6f4bb9fd3796",
+   "74d9e78fcbf09208",
+   "8b379e8dff85c828",
+   "adea160e01462298",
+   "ae33161cfff27bab",
+   "b50404c00a42a4e2",
+   "c094dc69781508e3"
+  ],
+  "48": [
+   "1029a901f1fc49e7",
+   "1fefec2e0573fe1b",
+   "348f549fbb51f72f",
+   "3a15f96fae0ce955",
+   "44fdfcea6bc463ed",
+   "4b22de07b724b223",
+   "51a33b0b64d0f48a",
+   "8bb5711145371c50"
+  ]
+ }
+}

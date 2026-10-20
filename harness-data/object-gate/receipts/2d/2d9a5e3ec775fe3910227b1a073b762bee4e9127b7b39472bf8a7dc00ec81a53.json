@@ -1,0 +1,383 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2d9a5e3ec775fe3910227b1a073b762bee4e9127b7b39472bf8a7dc00ec81a53",
+ "width": 32,
+ "height": 32,
+ "kind": "other",
+ "name": "bicycle parked",
+ "label": "jp-inaka-r5:inaka-bicycle-parked",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(side_profile_no_top) (4/4)",
+  "3/4: 윗면 0행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(side_profile_no_top) (4/4)",
+   "윗면 0행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 8
+ },
+ "metrics": {
+  "tileColorsMedian": 23,
+  "tileColorsP90": 26,
+  "darkV5": 38,
+  "nearBlackEdge": 0.3,
+  "opaqueTiles": 3
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "front basket",
+      "rows": "6-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "saddle",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "frame and wheels (side profile)",
+      "rows": "13-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The bicycle is a pure side silhouette facing east, with two wheels, a thin blue frame, a small brown saddle at rows 9-12 and a basket at the right edge, rows 6-14. No band ends in a front-edge line with eave shadow, no ellipse is drawn, and no contents are visible. The wheels are drawn as flat side-on discs, not as ellipses seen from above. The basket is a front-facing grid panel with only a thin dark rim at the top, which does not count as a top surface. The result is a side profile with no horizontal surface, like the side-elevation chair reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate has 41 distinct colours, 23 per 16x16 tile and 0% flat-fill coverage. That matches or exceeds the stall (40 colours, 17 per tile, 13% flat) and the well (38 colours, 20 per tile). Its dark edge pixels are 0% neutral, so the outline is tinted rather than a uniform black line. By eye, the bicycle's dark blue frame outlines lean blue, the wheels carry grey and blue spoke and tyre variation, and the frame, basket and seat show several lightness steps. This is about the same craft level as the references, with no sticker look and no large flat areas. The bike is thin and sparse, as expected for the object, but it is not flatter or poorer than the reference props.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25049
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bicycle frame and wheels (side profile)",
+      "rows": "6-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front basket",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat",
+      "rows": "10-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The bicycle is drawn in pure side profile: two wheels with spokes, a blue frame, a brown saddle at rows 10-12, handlebars and a basket at the right. The silhouette widens from row 6 to about 31 px at rows 20-24 and narrows toward the bottom shadow, which comes from the wheel circles and not from a horizontal top. The wheels are seen face-on as circles, not as ellipses seen from above. There is no band with a front-edge line and eave shadow, and no ellipse top. The saddle is a small detail of about 3 rows. The basket (rows 7-14) shows a mesh face with no visible interior or contents. No horizontal surface is visible anywhere on the main body, so it is a flat side elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a blue bicycle with a basket and a rack, and it matches the prop kind. Measured facts: 23 colours per tile (references: 10-20), 41 distinct colours (stall 40, well 38), 0% flat-fill coverage, and 0% near-neutral dark edge pixels, so the outlines carry a tint. Visually the frame is outlined in dark navy-blue rather than black, and the tyres are dark with grey spokes and highlights. The frame, wheels, basket and seat each show several lightness steps (about 5), with highlights on the tubes and spoke detail. It is thin and sparse by nature, but it holds up next to the stall and well in density and shading. It is not a sticker look.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25536
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "saddle",
+      "rows": "8-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front basket",
+      "rows": "6-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "frame and wheels",
+      "rows": "12-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The bicycle is drawn as a flat side profile, facing east, with the basket at the right. Two circular wheels sit side-on at rows 15-31, with a diagonal frame, handlebar and saddle above them. The main body has no horizontal top surface: no band ends in a front-edge line, no eave shadow follows one, and no ellipse widens and narrows again. The saddle (rows 8-11) and the basket's light grid top (rows 6-14) are small details drawn face-on, not a top plane. The width profile grows steadily from 8 to 31 and then tapers, which is the outline of wheels and frame, not a top-plus-front box. The wheels read as vertical discs seen from the side, like the side-elevation chair in the reference images."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate's measured facts are at or above the references: 23 colours per 16x16 tile against 17-20 for the stall and well, 41 distinct colours against 38-40, and 0% flat-fill coverage. Dark edge pixels are 0% near-neutral, so the outline is tinted rather than a black sticker line. By eye, the blue frame and wheels show several lightness steps with highlights and darker shading. The tyres and spokes read as dark blue rather than pure black. The basket and the rack/box have small variation. The bicycle is thin and sparse, but it is not flatter or thinner than the references and sits comfortably next to the stall and well. Texture is some rather than rich because the large frame areas are fairly clean, but nothing is a flat fill.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22022
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "basket",
+      "rows": "6-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat",
+      "rows": "10-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "frame and wheels",
+      "rows": "13-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The bicycle is drawn in pure side profile, facing east with the basket on the right. The wheels are circular rings (rows 13-31), and the frame tubes, brown saddle (rows 10-12) and handlebar/basket (rows 6-14) are all seen from the side. No horizontal surface has a front-edge line and eave shadow, and no band of rows reads as a top plane. The basket looks like a face-on mesh panel with only a 1-2 row rim. The width profile shows no ellipse widening and narrowing at the top. It is a side silhouette with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The measured facts put the candidate at or above the references. It has 23 distinct colours per tile against 17-20 for the stall and well, and 41 distinct colours overall against 38-40. Flat-fill coverage is 0%, and 0% of its dark edge pixels are near-neutral, so the outline carries a tint rather than being a black sticker line. By eye, the blue frame has several lightness steps (highlight, mid, dark), the wheels show spokes and tire shading, and the basket and rack have small detail. The outline is a dark blue tone beside the blue frame, not uniform black. Texture is modest because the object is small and mostly metal and rubber, but there are no flat blocks. It would sit acceptably next to the stall and well references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19247
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:08.449Z",
+ "cells": {
+  "16": [
+   "3573387567e43daf",
+   "3d78828823afc53e",
+   "93fba42b89840cf9",
+   "cc22e779f302dc26"
+  ],
+  "24": [
+   "09d88be0f373a70b",
+   "2986f6103ea0781c",
+   "29b82df2384129d6",
+   "374befdef8f1e57a",
+   "41cda0028a8cbaf2",
+   "447e156cb999db03",
+   "50a1725fe8709eb3",
+   "60524145a950c14f",
+   "63018c679694c3e7",
+   "64b99254afd91ce0",
+   "69727da9a5726e77",
+   "69ccf878fc0076ef",
+   "6ba6754b6f37f18d",
+   "701f4c9ddf2cb14e",
+   "8e80ecfe4d824754",
+   "a7cb27f4d22c5b1e",
+   "cac883ed8e58ed79",
+   "d17ae21bed01c18f",
+   "d9e6335467828a9e",
+   "eba2608c158e3061",
+   "fa2580a2bef48ea4",
+   "fd708b2ee8df6499"
+  ],
+  "32": [
+   "8df8cca262e48a57"
+  ],
+  "48": [
+   "2c5d28b22a2f2f72",
+   "333aaf04bb99bd54",
+   "4ac33df4398d8bd2",
+   "d7f1128dc50495df",
+   "e3d26e01a171449d",
+   "e9c9d712fdc61137"
+  ]
+ }
+}

@@ -1,0 +1,382 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "06142ec127ccc83dc6c315e402d57adcf92fc4c873b773854adb4a3db292cff9",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "red iron bridge",
+ "label": "jp-inaka-r5:inaka-red-iron-bridge",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 22,
+  "darkV5": 63,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 18
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bridge deck (plank surface between the far and near railings)",
+      "rows": "15-27",
+      "evidence": "a",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "15-17"
+     },
+     {
+      "part": "far railing and posts",
+      "rows": "3-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "near railing and posts",
+      "rows": "28-37",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front girder/beam face",
+      "rows": "39-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The deck is a horizontal plank surface about 13 rows tall (rows 15-27). It starts with a dark shadow band under the far railing (rows 15-17), shows plank stripes in rows 18-27, and ends in a dark front-edge line at row 28. Below that, the near railing (rows 28-37) and a red girder front face (rows 39-46, with a light top edge at row 39 and a dark underside at rows 45-47) give a front face of 8 rows. The far railing at the top shows the receding depth. The stone abutments at the left and right ends are small details. The structure reads as a bridge seen from the south at about 45 degrees, not a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts favour the candidate. It has 12 colours per tile against a reference median of about 10-20, 0% flat-fill coverage, and 30 distinct colours, well above the bench, hedge and lamp. Only 3% of its dark edge pixels are neutral, so the outline leans visibly red-brown beside the red iron rather than reading as a black sticker line. By eye, the red railing has roughly 4 steps (highlight, light, mid, dark), slightly fewer than the 5-6 on the stall and well. The grey-brown deck planking in the middle carries plank and grain variation, and the dark base has some texture. The rails are fairly regular and repetitive, which is why texture is rated 'some' rather than 'rich'. Overall a careful artist would accept it next to the references without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22703
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "plank deck between back and front railings",
+      "rows": "16-27",
+      "evidence": "a",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "back railing and top rail",
+      "rows": "3-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front railing",
+      "rows": "29-37",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front girder / bridge face",
+      "rows": "39-46",
+      "evidence": "none",
+      "front_edge_line_row": 39,
+      "eave_shadow_rows": "45-46"
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The bridge is seen from the south. Rows 16-27 are a 12-row plank deck seen from above, and the dark line at row 28 (#4c0717) closes it as a front edge. The deck sits between a back railing (rows 3-14) and a front railing (rows 29-37). Below it, the red girder face (rows 39-46) has a highlight on row 39 and a dark underside on rows 45-46. That gives a top surface plus a front face of well over 3 rows. The deck is more than a 1-2 row rim, and the girder face is a vertical south face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a wide red bridge with railings, a central plank/deck band and a dark base. Measured facts support it: median 12 colours per tile (references 10-20, hedge 10), 0% flat-fill coverage, 30 distinct colours (references 11-40). Only 3% of its dark edge pixels are neutral, so the outlines lean dark red-brown and match the adjacent material rather than a near-black sticker line. The red rails show roughly 5 lightness steps (highlight, light, mid, dark, deep), with post caps and rail highlights. The planked deck carries grain and per-plank variation. The weakest part is the very regular, repeated railing structure, which looks slightly mechanical and less hand-shaded than the well or stall, but it is not shallow and sits within the reference range for this kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 26989
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "plank deck between far and near railings",
+      "rows": "16-27",
+      "evidence": "a",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "far railing with posts",
+      "rows": "3-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "near railing top rail and posts",
+      "rows": "28-37",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front girder (south face)",
+      "rows": "39-46",
+      "evidence": "none",
+      "front_edge_line_row": 39,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 16-27 are a 12-row deck of vertical planks with nail dots, seen from above between the far railing (rows 3-15) and the near railing (rows 28-37). It starts under dark shadow rows 16-17 beneath the far rail and ends at the dark edge line on row 28. Below the near railing, rows 39-46 form a red front girder with a lighter top edge on row 39 and a dark underside on rows 45-46. That gives 8 rows of south face. The bridge therefore has both a visible horizontal surface and a front face. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 30 distinct colours and a median of 12 per tile, which is in line with the hedge (10) and below the richer stall (17) and well (20). Flat-fill coverage is 0%. Only 3% of its dark edge pixels are neutral, so the outlines carry a tint. In the picture they read as dark red-brown beside the red iron, which is a dark material tone and not a black sticker line. The rails and posts show about 5 steps, from highlight red through mid and dark red to a deep red-brown. The lower span has a repeating pattern of dots and grain, plus a darker base with blue-grey lower detail. The texture is less varied than the references' per-element shading. The red railings are fairly regular and repetitive, which looks a bit mechanical, but they hold up next to the references in structure and density. A careful artist would accept this next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25224
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bridge deck (plank walkway between far and near railings)",
+      "rows": "15-27",
+      "evidence": "a",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "15-17"
+     },
+     {
+      "part": "far railing (top rail, balusters, finial posts)",
+      "rows": "3-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "near railing",
+      "rows": "28-37",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front red girder face",
+      "rows": "39-46",
+      "evidence": "none",
+      "front_edge_line_row": 39,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The far rail (rows 3-14) is followed by a dark shadow band (rows 15-17) and then a 10-row plank deck (rows 18-27) seen from above. The deck ends in a dark front-edge line at row 28, which is the top surface of the walkway. The near railing (rows 28-37) sits in front of it, and a red girder front face (rows 39-46, highlight at row 39, dark base at rows 45-47) gives 8 rows of south face. This is a top deck plus front face, not a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a wide red railed bridge. Its 12 median colours per tile and 30 distinct colours put it at or above the hedge (10 per tile, 11 colours) and near the stall and well. Flat-fill coverage is 0%. Only 3% of its dark edge pixels are neutral, so the outlines lean dark red-brown beside the red rails rather than near-black. The red rails show about 5 steps (highlight, light, mid, dark, deep) with post caps and cross-brace highlights, and the deck planking has grain and variation. The dark underside has tinted shading, not a sticker line. Next to the references it looks no thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 28518
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:08.458Z",
+ "cells": {
+  "16": [
+   "106728165c7ffccd",
+   "2b085039a33b4213",
+   "395b3be0c91f186e",
+   "4b7b81514120afad",
+   "4d5846a3714b0ffd",
+   "607ea027b6fa8870",
+   "7700f386482230da",
+   "8944a8e12581e19c",
+   "995d483f9e74e1e2",
+   "9cee4745060f713a",
+   "a23dcf85b97cefe8",
+   "b08fcf15a8ce1921",
+   "b28495f7ece00520",
+   "c3f59cecaa3ce176",
+   "cc36696c089f9e6f",
+   "eb8bd737fcffdbe4",
+   "f6fcefcb43feed8a",
+   "fbefc637662ffd38"
+  ],
+  "24": [
+   "0c28e7c0682edb68",
+   "114815f166a4c521",
+   "253c3a6d084da938",
+   "27c061f734113b06",
+   "6623fd19eada9f6a",
+   "709ad3ee7dd6980a",
+   "9c2a41340e847b51",
+   "e80fe13a9b0dd8b4"
+  ],
+  "32": [
+   "0a0b3ddf831973c0",
+   "0a489580853e0d6e",
+   "0e411a958bd93729",
+   "187e20185c965c0c",
+   "1e2c5b86ab100240",
+   "3340f62314353491",
+   "4a0026eb8d8967ea",
+   "4dbed60ece34b3f5",
+   "8fc095c251e6b7c5",
+   "ae4b3a0738935a45",
+   "d109fdc117dae355",
+   "d902192877738dc4"
+  ],
+  "48": [
+   "6bdfb776ade10b3c",
+   "87d41f68180a2ddc"
+  ]
+ }
+}

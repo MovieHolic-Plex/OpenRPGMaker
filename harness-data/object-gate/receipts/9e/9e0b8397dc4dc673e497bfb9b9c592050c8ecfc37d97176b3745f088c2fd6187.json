@@ -1,0 +1,323 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9e0b8397dc4dc673e497bfb9b9c592050c8ecfc37d97176b3745f088c2fd6187",
+ "width": 48,
+ "height": 32,
+ "kind": "organic",
+ "name": "hydrangea hedge",
+ "label": "jp-inaka-r5:inaka-hydrangea-hedge",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (3/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 26,
+  "tileColorsP90": 30,
+  "darkV5": 35,
+  "nearBlackEdge": 0.3,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hydrangea foliage and flower heap inside planter",
+      "rows": "2-23",
+      "evidence": "d",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "stone planter box front face",
+      "rows": "24-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 18,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The hedge is a mound of leaves and flower heads that fills an open stone planter. Rows 2-22 show the heap from above, with flowers and leaves stacked up and back, which is evidence (d). A dark rim and shadow at rows 22-23 (x=24 reaches L=25 at row 23) separate the heap from the planter's front face. Rows 24-31 are the stone south face, 8 rows, with a darker base at rows 30-31. No receding side face is drawn, so it reads as a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a small hydrangea hedge in a stone planter, much smaller than the full trees. Measured facts show 26 colours per tile and 42 distinct colours, against about 108 per tile and 427-567 distinct colours in the references. That is far below every reference. Flat-fill coverage is 0% and the dark edge pixels are tinted rather than neutral, so the outline is not a near-black sticker line. By eye, though, the blossom clusters are small blobs with only about 3 tones each (light, mid, dark), and the leaf mass between them is thin and dark. The planter base is a flat grey strip with little stone-by-stone shading. Overall the piece is simpler and flatter than the lush multi-green clumps of the reference canopies. A small, sparse object should not fail on size alone, but the shading ramps are shallower and density is clearly lower than the reference, so a careful artist would see it as thinner next to the trees.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14981
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "foliage and flower heap",
+      "rows": "2-22",
+      "evidence": "d",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "stone planter box",
+      "rows": "23-31",
+      "evidence": "none",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "23"
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "A stone planter box (rows 24-31, light grey face with a dark rim line at row 23) holds a heap of leaves and hydrangea blooms that rises from row 2 to row 22. The blooms are domed clusters with highlights on top, and the leaf mass spreads behind and between them. This counts as contents visible in an open container (d). The planter front face is 8-9 rows tall. The top of the foliage is organic and not a flat plane, but it reads as a volume seen from above and the front, not a flat elevation. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a small hydrangea planter hedge with clustered blue, purple and pink blooms over a green base and a stone curb. Blooms are shaded with only about 3 steps (light, mid, dark) and read as round dots, not the 5-6 step clumps in the references. Outline pixels are tinted (0% neutral), so dark_material_tone. Flat-fill coverage is 0%, which matches the references. Colour counts are far lower: 42 distinct colours against 427 and 567 for the references, and 26 per tile against about 108. The hedge is a small, simple object, but the foliage and stone base look thinner and less layered than the reference canopies. A careful artist would see it as noticeably shallower next to them, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16280
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "foliage and hydrangea blooms heaped in the planter",
+      "rows": "3-22",
+      "evidence": "d",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "stone planter box",
+      "rows": "23-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 20,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stone planter has a front face of about 9 rows (rows 23-31), topped by a dark rim and shadow line at row 23. Above it, rows 3-22 show a heap of leaves and rounded flower heads piled in the open container, which counts as contents visible inside (evidence d). The silhouette stays about 48 px wide from row 9 down, and narrows to a rounded outline only at rows 2-8. No receding side face is drawn. The planter box face is a flat south face, but the leafy mass above reads as a volume seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a small hydrangea hedge in a stone planter. It has clustered blossoms in blue, pink and purple with a few green leaves, and no 5x5 flat fills. Its dark edge pixels are tinted rather than neutral (0% near-neutral), so the outline reads as dark material tone, not sticker black. The depth is still well short of the references. Each flower clump has only about 3-4 lightness steps, and the greenery behind is sparse. The planter base is nearly flat grey with little stone-by-stone shading. Measured facts point the same way: 42 distinct colours against 427 and 567 for the references, and 26 colours per tile against 108 and 109. Its overall mass is small and thin beside the layered, multi-green canopies of the references. A careful artist would see it as thinner and simpler than the reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 16658
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hydrangea foliage and flower heap (contents of the planter)",
+      "rows": "3-22",
+      "evidence": "d",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "stone planter box front",
+      "rows": "24-31",
+      "evidence": "none",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 18,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 24-31 are the stone planter's south face, 8 rows of light grey-beige stone with moss flecks. Above it, rows 3-22 show a leafy mass with pink, blue and violet flower heads. The mass fills the open planter and stacks leaf clumps and blooms over many rows, so it reads as contents seen from above (d). A dark shadow row at 23 sits under the foliage and above the stone face. The silhouette is a full-width box from row 7 down (48 px), with a dome-like bush top at rows 2-6. The object shows both a top surface and a front face, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a small hydrangea hedge in a stone planter. Its blossom clusters are drawn in blue, pink and purple blobs with only about 2-3 lightness steps each, and the greenery between them is sparse. The reference trees use 5-6 greens in layered leaf clumps. Measured facts: the candidate has 42 distinct colours and a median of 26 per tile, against 427-567 colours and a median of about 108 per tile for the references. That is far below both, though the piece is small and sparse, so some of the gap is due to size. Flat-fill coverage is 0% and the dark edge pixels are tinted (0% neutral), so there is no sticker-style black outline. The planter base is fairly flat, with a pale stone strip and little per-stone shading. Overall the shading is shallower and the clusters less modelled than the references, so it would look thinner and flatter next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15741
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:08.454Z",
+ "cells": {
+  "16": [
+   "602453cf7db24a71",
+   "70d1f804772c9c93",
+   "99bf8d2e7cc79c28",
+   "ad5f5ddc02077b70",
+   "b1fd48cba9bfec39",
+   "c8c79ef3d2467053"
+  ],
+  "24": [
+   "0c0916839da1eb8e",
+   "3692ff44931dc4bd",
+   "3954a3f48d9931a2",
+   "97c83e699f9908ff",
+   "b4710ec1793e55e5",
+   "c6a71c462439ba44",
+   "e07c7b695562cd30",
+   "ef0f492a5a81b8c5"
+  ],
+  "32": [
+   "2a9078666086366a",
+   "395bcf2c75776a21",
+   "5cc95eecca7c8598",
+   "7956c4aca4725223",
+   "84cf4e09c614eeb9",
+   "b43f9f4990cfd97d"
+  ],
+  "48": [
+   "403da69f4f5feb0c",
+   "9f54e295153a5300"
+  ]
+ }
+}
