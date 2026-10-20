@@ -1,0 +1,1227 @@
+{
+ "format": 1,
+ "license": "CC0-1.0",
+ "originality": "Synthesised from numeric patches (pulse/triangle/LFSR-noise oscillators and envelopes) written by hand. No recording, sample or game melody is used.",
+ "synth": "scripts/content/monster-sfx/synth.py",
+ "builder": "scripts/content/puzzle-sfx/build.py",
+ "sampleRate": 44100,
+ "channels": 1,
+ "codec": "vorbis q5",
+ "sounds": {
+  "secret-solved": {
+   "file": "secret-solved.ogg",
+   "title": "퍼즐 해결 징글",
+   "bytes": 19604,
+   "sha256": "cae2591942f2e2c3b0bed38dd8b49a810e1cc0b35dcd0301814f36380677b8b4",
+   "durationSeconds": 1.25,
+   "peakDbfs": -3.0,
+   "rmsDbfs": -17.95,
+   "patch": {
+    "id": "secret-solved",
+    "duration": 1.25,
+    "seed": 4242,
+    "voices": [
+     {
+      "wave": "pulse",
+      "duty": 0.25,
+      "gain": 0.8,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.002,
+       "d": 0.07,
+       "s": 0.55,
+       "r": 0.03,
+       "curve": "exp"
+      },
+      "vibrato": {
+       "rate_hz": 6.0,
+       "depth_semitones": 0.18,
+       "delay": 0.12
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.075,
+        "pitch": "A4",
+        "vel": 0.8
+       },
+       {
+        "t": 0.08,
+        "dur": 0.075,
+        "pitch": "C#5",
+        "vel": 0.85
+       },
+       {
+        "t": 0.16,
+        "dur": 0.075,
+        "pitch": "E5",
+        "vel": 0.9
+       },
+       {
+        "t": 0.24,
+        "dur": 0.075,
+        "pitch": "G#5",
+        "vel": 0.95
+       },
+       {
+        "t": 0.32,
+        "dur": 0.075,
+        "pitch": "B5",
+        "vel": 0.95
+       },
+       {
+        "t": 0.4,
+        "dur": 0.075,
+        "pitch": "E6",
+        "vel": 1.0
+       },
+       {
+        "t": 0.48,
+        "dur": 0.62,
+        "pitch": "A6",
+        "vel": 1.0,
+        "duty": [
+         [
+          0.0,
+          0.25
+         ],
+         [
+          0.2,
+          0.5
+         ]
+        ],
+        "env": {
+         "a": 0.002,
+         "d": 0.4,
+         "s": 0.35,
+         "r": 0.2,
+         "curve": "exp"
+        }
+       }
+      ]
+     },
+     {
+      "wave": "pulse",
+      "duty": 0.125,
+      "gain": 0.34,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.002,
+       "d": 0.06,
+       "s": 0.4,
+       "r": 0.03,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.04,
+        "dur": 0.07,
+        "pitch": "E5",
+        "vel": 0.7
+       },
+       {
+        "t": 0.12,
+        "dur": 0.07,
+        "pitch": "A5",
+        "vel": 0.75
+       },
+       {
+        "t": 0.2,
+        "dur": 0.07,
+        "pitch": "C#6",
+        "vel": 0.8
+       },
+       {
+        "t": 0.28,
+        "dur": 0.07,
+        "pitch": "E6",
+        "vel": 0.8
+       },
+       {
+        "t": 0.36,
+        "dur": 0.07,
+        "pitch": "G#6",
+        "vel": 0.8
+       },
+       {
+        "t": 0.48,
+        "dur": 0.55,
+        "pitch": "C#6",
+        "vel": 0.85,
+        "arp": {
+         "steps": [
+          0,
+          3,
+          7,
+          12
+         ],
+         "rate_hz": 40
+        },
+        "env": {
+         "a": 0.002,
+         "d": 0.45,
+         "s": 0.15,
+         "r": 0.2,
+         "curve": "exp"
+        }
+       }
+      ]
+     },
+     {
+      "wave": "triangle",
+      "steps": 32,
+      "gain": 0.38,
+      "env": {
+       "a": 0.002,
+       "d": 0.1,
+       "s": 0.6,
+       "r": 0.04,
+       "curve": "lin"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.15,
+        "pitch": "A3",
+        "vel": 0.9
+       },
+       {
+        "t": 0.16,
+        "dur": 0.15,
+        "pitch": "E4",
+        "vel": 0.9
+       },
+       {
+        "t": 0.32,
+        "dur": 0.15,
+        "pitch": "C#4",
+        "vel": 0.9
+       },
+       {
+        "t": 0.48,
+        "dur": 0.55,
+        "pitch": "A3",
+        "vel": 1.0,
+        "env": {
+         "a": 0.002,
+         "d": 0.4,
+         "s": 0.3,
+         "r": 0.2,
+         "curve": "exp"
+        }
+       }
+      ]
+     },
+     {
+      "wave": "noise",
+      "lfsr": 7,
+      "gain": 0.16,
+      "highpass_hz": 4000,
+      "env": {
+       "a": 0.001,
+       "d": 0.05,
+       "s": 0.0,
+       "r": 0.02,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.48,
+        "dur": 0.2,
+        "clock": [
+         [
+          0.0,
+          120000
+         ],
+         [
+          0.2,
+          70000
+         ]
+        ],
+        "vel": 0.9,
+        "env": {
+         "a": 0.001,
+         "d": 0.18,
+         "s": 0.0,
+         "r": 0.04,
+         "curve": "exp"
+        }
+       },
+       {
+        "t": 0.72,
+        "dur": 0.1,
+        "clock": 130000,
+        "vel": 0.5
+       }
+      ]
+     }
+    ],
+    "post": {
+     "highpass_hz": 70,
+     "lowpass_hz": 11000,
+     "echo": {
+      "delay": 0.09,
+      "feedback": 0.25,
+      "mix": 0.2
+     }
+    }
+   }
+  },
+  "stone-push": {
+   "file": "stone-push.ogg",
+   "title": "바위 밀기",
+   "bytes": 7962,
+   "sha256": "631fe1521b5af56a21e1989b272f98789ae21cfb63e402fcd1d8940b70de8550",
+   "durationSeconds": 0.46,
+   "peakDbfs": -4.0,
+   "rmsDbfs": -17.94,
+   "patch": {
+    "id": "stone-push",
+    "duration": 0.46,
+    "seed": 917,
+    "voices": [
+     {
+      "wave": "noise",
+      "lfsr": 15,
+      "gain": 1.0,
+      "lowpass_hz": 1400,
+      "highpass_hz": 120,
+      "env": {
+       "a": 0.03,
+       "d": 0.12,
+       "s": 0.7,
+       "r": 0.08,
+       "curve": "lin"
+      },
+      "tremolo": {
+       "rate_hz": 23,
+       "depth": 0.45
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.4,
+        "clock": [
+         [
+          0.0,
+          5200
+         ],
+         [
+          0.08,
+          7800
+         ],
+         [
+          0.16,
+          5600
+         ],
+         [
+          0.24,
+          8200
+         ],
+         [
+          0.32,
+          6000
+         ],
+         [
+          0.4,
+          4200
+         ]
+        ],
+        "vel": 1.0
+       }
+      ]
+     },
+     {
+      "wave": "noise",
+      "lfsr": 7,
+      "gain": 0.35,
+      "lowpass_hz": 2600,
+      "env": {
+       "a": 0.01,
+       "d": 0.3,
+       "s": 0.0,
+       "r": 0.05,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.02,
+        "dur": 0.35,
+        "clock": [
+         [
+          0.0,
+          9000
+         ],
+         [
+          0.35,
+          5000
+         ]
+        ],
+        "vel": 0.8
+       }
+      ]
+     },
+     {
+      "wave": "triangle",
+      "steps": 32,
+      "gain": 0.9,
+      "env": {
+       "a": 0.001,
+       "d": 0.12,
+       "s": 0.0,
+       "r": 0.02,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.12,
+        "pitch": [
+         [
+          0.0,
+          110
+         ],
+         [
+          0.12,
+          52
+         ]
+        ],
+        "vel": 1.0
+       }
+      ]
+     }
+    ],
+    "post": {
+     "highpass_hz": 45,
+     "lowpass_hz": 4000
+    }
+   }
+  },
+  "plate-press": {
+   "file": "plate-press.ogg",
+   "title": "발판 눌림",
+   "bytes": 7025,
+   "sha256": "b0e22ef3cc87ac22e49b669a6bc4ea4160e3b2b777e5b6dfe3ac4693dfda862c",
+   "durationSeconds": 0.3,
+   "peakDbfs": -4.0,
+   "rmsDbfs": -20.46,
+   "patch": {
+    "id": "plate-press",
+    "duration": 0.3,
+    "seed": 311,
+    "voices": [
+     {
+      "wave": "triangle",
+      "steps": 32,
+      "gain": 1.0,
+      "env": {
+       "a": 0.001,
+       "d": 0.06,
+       "s": 0.0,
+       "r": 0.01,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.08,
+        "pitch": [
+         [
+          0.0,
+          160
+         ],
+         [
+          0.08,
+          60
+         ]
+        ],
+        "vel": 1.0
+       }
+      ]
+     },
+     {
+      "wave": "noise",
+      "lfsr": 7,
+      "gain": 0.5,
+      "lowpass_hz": 3000,
+      "env": {
+       "a": 0.001,
+       "d": 0.025,
+       "s": 0.0,
+       "r": 0.01,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.03,
+        "clock": [
+         [
+          0.0,
+          24000
+         ],
+         [
+          0.03,
+          8000
+         ]
+        ],
+        "vel": 1.0
+       }
+      ]
+     },
+     {
+      "wave": "pulse",
+      "duty": 0.25,
+      "gain": 0.45,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.002,
+       "d": 0.06,
+       "s": 0.2,
+       "r": 0.03,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.09,
+        "dur": 0.05,
+        "pitch": "C6",
+        "vel": 0.8
+       },
+       {
+        "t": 0.15,
+        "dur": 0.1,
+        "pitch": "G6",
+        "vel": 0.9
+       }
+      ]
+     }
+    ],
+    "post": {
+     "highpass_hz": 50,
+     "lowpass_hz": 9000
+    }
+   }
+  },
+  "switch-clack": {
+   "file": "switch-clack.ogg",
+   "title": "레버·스위치",
+   "bytes": 5407,
+   "sha256": "35b44cbbe7bef66abe5a89c37ded4769ad61cc451273a78918a0666411c86434",
+   "durationSeconds": 0.2,
+   "peakDbfs": -5.0,
+   "rmsDbfs": -27.07,
+   "patch": {
+    "id": "switch-clack",
+    "duration": 0.2,
+    "seed": 512,
+    "voices": [
+     {
+      "wave": "noise",
+      "lfsr": 7,
+      "gain": 0.9,
+      "highpass_hz": 900,
+      "env": {
+       "a": 0.001,
+       "d": 0.018,
+       "s": 0.0,
+       "r": 0.006,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.02,
+        "clock": [
+         [
+          0.0,
+          40000
+         ],
+         [
+          0.02,
+          18000
+         ]
+        ],
+        "vel": 0.8
+       },
+       {
+        "t": 0.07,
+        "dur": 0.024,
+        "clock": [
+         [
+          0.0,
+          52000
+         ],
+         [
+          0.024,
+          20000
+         ]
+        ],
+        "vel": 1.0
+       }
+      ]
+     },
+     {
+      "wave": "pulse",
+      "duty": 0.125,
+      "gain": 0.6,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.001,
+       "d": 0.03,
+       "s": 0.0,
+       "r": 0.01,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.03,
+        "pitch": [
+         [
+          0.0,
+          900
+         ],
+         [
+          0.03,
+          500
+         ]
+        ],
+        "vel": 0.7
+       },
+       {
+        "t": 0.07,
+        "dur": 0.05,
+        "pitch": [
+         [
+          0.0,
+          1400
+         ],
+         [
+          0.05,
+          700
+         ]
+        ],
+        "vel": 1.0
+       }
+      ]
+     },
+     {
+      "wave": "triangle",
+      "steps": 32,
+      "gain": 0.7,
+      "env": {
+       "a": 0.001,
+       "d": 0.06,
+       "s": 0.0,
+       "r": 0.01,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.07,
+        "dur": 0.06,
+        "pitch": [
+         [
+          0.0,
+          220
+         ],
+         [
+          0.06,
+          90
+         ]
+        ],
+        "vel": 0.9
+       }
+      ]
+     }
+    ],
+    "post": {
+     "highpass_hz": 60,
+     "lowpass_hz": 9000
+    }
+   }
+  },
+  "wrong": {
+   "file": "wrong.ogg",
+   "title": "오답",
+   "bytes": 7127,
+   "sha256": "665b0e434c0608b93d7a569e276fa0cb4a92de768007c8aba3118a91f998a65c",
+   "durationSeconds": 0.34,
+   "peakDbfs": -5.0,
+   "rmsDbfs": -14.85,
+   "patch": {
+    "id": "wrong",
+    "duration": 0.34,
+    "seed": 66,
+    "voices": [
+     {
+      "wave": "pulse",
+      "duty": 0.5,
+      "gain": 0.7,
+      "amp_steps": 16,
+      "lowpass_hz": 2600,
+      "env": {
+       "a": 0.002,
+       "d": 0.05,
+       "s": 0.6,
+       "r": 0.03,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.1,
+        "pitch": "D#4",
+        "vel": 1.0
+       },
+       {
+        "t": 0.12,
+        "dur": 0.18,
+        "pitch": [
+         [
+          0.0,
+          "A3"
+         ],
+         [
+          0.18,
+          "G#3"
+         ]
+        ],
+        "vel": 1.0
+       }
+      ]
+     },
+     {
+      "wave": "pulse",
+      "duty": 0.25,
+      "gain": 0.4,
+      "amp_steps": 16,
+      "lowpass_hz": 2200,
+      "env": {
+       "a": 0.002,
+       "d": 0.05,
+       "s": 0.5,
+       "r": 0.03,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.1,
+        "pitch": "E4",
+        "vel": 0.8
+       },
+       {
+        "t": 0.12,
+        "dur": 0.18,
+        "pitch": [
+         [
+          0.0,
+          "A#3"
+         ],
+         [
+          0.18,
+          "A3"
+         ]
+        ],
+        "vel": 0.8
+       }
+      ]
+     },
+     {
+      "wave": "triangle",
+      "steps": 32,
+      "gain": 0.6,
+      "env": {
+       "a": 0.002,
+       "d": 0.08,
+       "s": 0.4,
+       "r": 0.03,
+       "curve": "lin"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.3,
+        "pitch": "A2",
+        "vel": 0.9
+       }
+      ]
+     }
+    ],
+    "post": {
+     "highpass_hz": 55,
+     "lowpass_hz": 3200
+    }
+   }
+  },
+  "crystal-ping": {
+   "file": "crystal-ping.ogg",
+   "title": "수정·판 뒤집힘",
+   "bytes": 8085,
+   "sha256": "52ced9d0b5fe94e6921afe380d96a6606814c833b41970d4fdcacd13b28fae0e",
+   "durationSeconds": 0.42,
+   "peakDbfs": -4.0,
+   "rmsDbfs": -22.51,
+   "patch": {
+    "id": "crystal-ping",
+    "duration": 0.42,
+    "seed": 808,
+    "voices": [
+     {
+      "wave": "triangle",
+      "steps": 32,
+      "gain": 0.8,
+      "env": {
+       "a": 0.001,
+       "d": 0.18,
+       "s": 0.0,
+       "r": 0.06,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.05,
+        "pitch": "E6",
+        "vel": 0.8
+       },
+       {
+        "t": 0.05,
+        "dur": 0.25,
+        "pitch": "B6",
+        "vel": 1.0
+       }
+      ]
+     },
+     {
+      "wave": "pulse",
+      "duty": 0.125,
+      "gain": 0.35,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.001,
+       "d": 0.12,
+       "s": 0.0,
+       "r": 0.05,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.05,
+        "pitch": "E7",
+        "vel": 0.6
+       },
+       {
+        "t": 0.05,
+        "dur": 0.18,
+        "pitch": "B7",
+        "vel": 0.7
+       }
+      ]
+     },
+     {
+      "wave": "noise",
+      "lfsr": 7,
+      "gain": 0.12,
+      "highpass_hz": 5000,
+      "env": {
+       "a": 0.001,
+       "d": 0.03,
+       "s": 0.0,
+       "r": 0.01,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.03,
+        "clock": 140000,
+        "vel": 0.8
+       }
+      ]
+     }
+    ],
+    "post": {
+     "highpass_hz": 200,
+     "lowpass_hz": 12000,
+     "echo": {
+      "delay": 0.07,
+      "feedback": 0.25,
+      "mix": 0.22
+     }
+    }
+   }
+  },
+  "organ-c": {
+   "file": "organ-c.ogg",
+   "title": "오르간 발판 · 도",
+   "bytes": 11626,
+   "sha256": "2ec2c298bd0e168c4db2ee89c92b72e57541a3c845d0f5c3c534a3ea04390ee7",
+   "durationSeconds": 0.62,
+   "peakDbfs": -4.0,
+   "rmsDbfs": -19.0,
+   "patch": {
+    "id": "organ-c",
+    "duration": 0.62,
+    "seed": 701,
+    "voices": [
+     {
+      "wave": "pulse",
+      "duty": 0.5,
+      "gain": 0.55,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.012,
+       "d": 0.12,
+       "s": 0.55,
+       "r": 0.16,
+       "curve": "exp"
+      },
+      "vibrato": {
+       "rate_hz": 5.5,
+       "depth_semitones": 0.08,
+       "delay": 0.12
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.42,
+        "pitch": "C5",
+        "vel": 1.0
+       }
+      ]
+     },
+     {
+      "wave": "pulse",
+      "duty": 0.125,
+      "gain": 0.28,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.012,
+       "d": 0.12,
+       "s": 0.55,
+       "r": 0.16,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.42,
+        "pitch": "C6",
+        "vel": 0.9
+       }
+      ]
+     },
+     {
+      "wave": "triangle",
+      "steps": 32,
+      "gain": 0.6,
+      "env": {
+       "a": 0.012,
+       "d": 0.12,
+       "s": 0.55,
+       "r": 0.16,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.42,
+        "pitch": "C5",
+        "vel": 0.8
+       }
+      ]
+     }
+    ],
+    "post": {
+     "highpass_hz": 80,
+     "lowpass_hz": 7000,
+     "echo": {
+      "delay": 0.11,
+      "feedback": 0.25,
+      "mix": 0.22
+     }
+    }
+   }
+  },
+  "organ-e": {
+   "file": "organ-e.ogg",
+   "title": "오르간 발판 · 미",
+   "bytes": 11479,
+   "sha256": "7fbcd645e4553d047abaa05f635e491760266c27ca2c97f69ffe81b5f6fd4301",
+   "durationSeconds": 0.62,
+   "peakDbfs": -4.0,
+   "rmsDbfs": -18.59,
+   "patch": {
+    "id": "organ-e",
+    "duration": 0.62,
+    "seed": 701,
+    "voices": [
+     {
+      "wave": "pulse",
+      "duty": 0.5,
+      "gain": 0.55,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.012,
+       "d": 0.12,
+       "s": 0.55,
+       "r": 0.16,
+       "curve": "exp"
+      },
+      "vibrato": {
+       "rate_hz": 5.5,
+       "depth_semitones": 0.08,
+       "delay": 0.12
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.42,
+        "pitch": "E5",
+        "vel": 1.0
+       }
+      ]
+     },
+     {
+      "wave": "pulse",
+      "duty": 0.125,
+      "gain": 0.28,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.012,
+       "d": 0.12,
+       "s": 0.55,
+       "r": 0.16,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.42,
+        "pitch": "E6",
+        "vel": 0.9
+       }
+      ]
+     },
+     {
+      "wave": "triangle",
+      "steps": 32,
+      "gain": 0.6,
+      "env": {
+       "a": 0.012,
+       "d": 0.12,
+       "s": 0.55,
+       "r": 0.16,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.42,
+        "pitch": "E5",
+        "vel": 0.8
+       }
+      ]
+     }
+    ],
+    "post": {
+     "highpass_hz": 80,
+     "lowpass_hz": 7000,
+     "echo": {
+      "delay": 0.11,
+      "feedback": 0.25,
+      "mix": 0.22
+     }
+    }
+   }
+  },
+  "organ-g": {
+   "file": "organ-g.ogg",
+   "title": "오르간 발판 · 솔",
+   "bytes": 11341,
+   "sha256": "fcdfba6f9704a55266bd394e83c7682077906036682c8c9d4a82bac829ea0fc3",
+   "durationSeconds": 0.62,
+   "peakDbfs": -4.0,
+   "rmsDbfs": -17.74,
+   "patch": {
+    "id": "organ-g",
+    "duration": 0.62,
+    "seed": 701,
+    "voices": [
+     {
+      "wave": "pulse",
+      "duty": 0.5,
+      "gain": 0.55,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.012,
+       "d": 0.12,
+       "s": 0.55,
+       "r": 0.16,
+       "curve": "exp"
+      },
+      "vibrato": {
+       "rate_hz": 5.5,
+       "depth_semitones": 0.08,
+       "delay": 0.12
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.42,
+        "pitch": "G5",
+        "vel": 1.0
+       }
+      ]
+     },
+     {
+      "wave": "pulse",
+      "duty": 0.125,
+      "gain": 0.28,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.012,
+       "d": 0.12,
+       "s": 0.55,
+       "r": 0.16,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.42,
+        "pitch": "G6",
+        "vel": 0.9
+       }
+      ]
+     },
+     {
+      "wave": "triangle",
+      "steps": 32,
+      "gain": 0.6,
+      "env": {
+       "a": 0.012,
+       "d": 0.12,
+       "s": 0.55,
+       "r": 0.16,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.42,
+        "pitch": "G5",
+        "vel": 0.8
+       }
+      ]
+     }
+    ],
+    "post": {
+     "highpass_hz": 80,
+     "lowpass_hz": 7000,
+     "echo": {
+      "delay": 0.11,
+      "feedback": 0.25,
+      "mix": 0.22
+     }
+    }
+   }
+  },
+  "organ-c2": {
+   "file": "organ-c2.ogg",
+   "title": "오르간 발판 · 높은 도",
+   "bytes": 10740,
+   "sha256": "d7edae94c3365057329351132c1479ff3686ebad213eddb516309876df8f026e",
+   "durationSeconds": 0.62,
+   "peakDbfs": -4.0,
+   "rmsDbfs": -16.49,
+   "patch": {
+    "id": "organ-c2",
+    "duration": 0.62,
+    "seed": 701,
+    "voices": [
+     {
+      "wave": "pulse",
+      "duty": 0.5,
+      "gain": 0.55,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.012,
+       "d": 0.12,
+       "s": 0.55,
+       "r": 0.16,
+       "curve": "exp"
+      },
+      "vibrato": {
+       "rate_hz": 5.5,
+       "depth_semitones": 0.08,
+       "delay": 0.12
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.42,
+        "pitch": "C6",
+        "vel": 1.0
+       }
+      ]
+     },
+     {
+      "wave": "pulse",
+      "duty": 0.125,
+      "gain": 0.28,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.012,
+       "d": 0.12,
+       "s": 0.55,
+       "r": 0.16,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.42,
+        "pitch": "C7",
+        "vel": 0.9
+       }
+      ]
+     },
+     {
+      "wave": "triangle",
+      "steps": 32,
+      "gain": 0.6,
+      "env": {
+       "a": 0.012,
+       "d": 0.12,
+       "s": 0.55,
+       "r": 0.16,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.42,
+        "pitch": "C6",
+        "vel": 0.8
+       }
+      ]
+     }
+    ],
+    "post": {
+     "highpass_hz": 80,
+     "lowpass_hz": 7000,
+     "echo": {
+      "delay": 0.11,
+      "feedback": 0.25,
+      "mix": 0.22
+     }
+    }
+   }
+  }
+ }
+}

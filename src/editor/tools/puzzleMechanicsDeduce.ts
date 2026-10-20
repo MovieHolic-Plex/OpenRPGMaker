@@ -30,11 +30,13 @@ import {
   rect,
   revealInWaves,
   se,
+  sfx,
   setSw,
   setVar,
   shake,
   textCmd,
   tintPulse,
+  wait,
   TRANSPARENT,
   type PropState,
   type PuzzleRoomSpec,
@@ -82,7 +84,7 @@ function actEvent(ctx: MechanicContext, b: Built, suffix: string, name: string, 
   ]);
 }
 
-const wrongBuzz = (line: string): Command[] => [se("buzzer1"), ...tintPulse("200,40,40", 0.3, 100, 400), shake(3, 300), textCmd(line)];
+const wrongBuzz = (line: string): Command[] => [sfx("wrong"), ...tintPulse("200,40,40", 0.3, 100, 400), shake(3, 300), textCmd(line)];
 
 function planFrom(b: Built): PlayPlanner {
   return new PlayPlanner(b.walk, ORIGIN);
@@ -167,8 +169,21 @@ export const liarChests: MechanicDef = {
         i === treasure
           ? [se("chime2"), ...b.room.set(`chest_${i}`, 1), particles("sparkle", 900, b.at(c)), ...finale(ctx, b, `${CHEST_NAMES[i]} 상자가 진짜였다! 바닥의 창살이 걷힌다.`, goldTheme)]
           : [
-              se("monster1"),
               ...b.room.set(`chest_${i}`, 1),
+              se("monster1"),
+              shake(3, 200),
+              // 상자 바로 앞에 서면 주인공 머리가 상자 칸을 가린다 — 한 칸 뒤로 튕겨 나가야 미믹이 화면에 보인다.
+              {
+                kind: "moveEvent",
+                eventId: "@player",
+                route: {
+                  moves: [{ kind: "setDirectionFix", enabled: true }, { kind: "jump", dx: 0, dy: 1, heightPx: 10, durationMs: 260 }, { kind: "setDirectionFix", enabled: false }],
+                  repeat: false,
+                  wait: true,
+                  skippable: true,
+                },
+              },
+              wait(450),
               ...wrongBuzz(`${CHEST_NAMES[i]} 상자가 이빨을 드러냈다 — 미믹이다! 덥석 물리고 입구까지 튕겨 나갔다.`),
               ...b.room.set(`chest_${i}`, 0),
               textCmd("미믹은 다시 상자인 척 입을 다물었다."),
@@ -247,7 +262,7 @@ export const numberCodeLock: MechanicDef = {
       { x: 9, y: 4 },
       [
         { kind: "inputNumber", variableId: vCode, digits: 3, prompt: "자물쇠 번호(세 자리)", showPad: true },
-        ifVar(vCode, "==", code, [se("key"), ...finale(ctx, b, "딸깍— 자물쇠가 풀리며 창살이 올라간다!", goldTheme)], wrongBuzz("철컥, 자물쇠가 꿈쩍도 하지 않는다.")),
+        ifVar(vCode, "==", code, [sfx("switch-clack"), ...finale(ctx, b, "딸깍— 자물쇠가 풀리며 창살이 올라간다!", goldTheme)], wrongBuzz("철컥, 자물쇠가 꿈쩍도 하지 않는다.")),
       ],
       "열린 자물쇠다.",
     );
@@ -283,6 +298,8 @@ export const numberCodeLock: MechanicDef = {
 // ---------------------------------------------------------------------------
 
 const ORB_NAMES = ["불꽃", "얼음", "바람", "대지"] as const;
+/** 원소별 제단 모습(손 도트 실내 칩셋의 기존 기물): 불꽃 = 용암 화로, 얼음 = 마나 결정, 바람 = 청록 소용돌이 룬석, 대지 = 돌 구. */
+const ORB_OBJECTS = ["lava brazier", "mana crystal", "rune stone", "stone sphere"] as const;
 const PEDESTAL_NAMES = ["북서", "북동", "남서", "남동"] as const;
 const PEDESTAL_CELLS: readonly Cell[] = [
   { x: 6, y: 7 },
@@ -348,7 +365,9 @@ export const elementalOrbPlacement: MechanicDef = {
       objects: [obj("wall torch", 5, 3), obj("wall torch", 14, 3), obj("magic circle", 9, 8), obj("hint tablet", 10, 11)],
       props: {
         gate: GATE,
-        ...Object.fromEntries(PEDESTAL_CELLS.map((c, i) => [`pedestal_${i}`, [{ objects: [obj("plinth", c.x, c.y)] }, { objects: [obj("orb pedestal", c.x, c.y)] }]])),
+        // 제단 상태 0 = 빈 받침, 1~4 = 그 원소 구슬이 놓인 모습. 원소마다 모양·색이 달라야 지금 어디에 무엇을 놓았는지 화면만 보고 안다
+        // (옛 판은 네 원소가 모두 같은 「포획 구슬 받침」 그림이었다).
+        ...Object.fromEntries(PEDESTAL_CELLS.map((c, i) => [`pedestal_${i}`, [{ objects: [obj("plinth", c.x, c.y)] }, ...ORB_OBJECTS.map((id) => ({ objects: [obj(id, c.x, c.y)] }))]])),
         shelf: [{ objects: [obj("crystal ball", 3, 12), obj("crystal ball", 4, 12), obj("crystal ball", 15, 12), obj("crystal ball", 16, 12)] }, { objects: [] }],
       },
     };
@@ -374,7 +393,7 @@ export const elementalOrbPlacement: MechanicDef = {
         { kind: "changeItem", itemId: orbItems[o]!, op: "-=", amount: 1 },
         setVar(vPlaced[i]!, o + 1),
         setVar(vCount, 1, "+="),
-        ...b.room.set(`pedestal_${i}`, 1),
+        ...b.room.set(`pedestal_${i}`, o + 1),
         se("magic1"),
         particles("magic", 700, b.at(c)),
         textCmd(`${PEDESTAL_NAMES[i]} 제단에 ${ORB_NAMES[o]}의 구슬을 올렸다.`),
@@ -406,7 +425,7 @@ export const elementalOrbPlacement: MechanicDef = {
       ]);
     });
     const shelf = actEvent(ctx, b, "orb_shelf", "구슬 진열대", { x: 3, y: 12 }, [
-      ifSw(swTaken, false, [setSw(swTaken, true), ...giveBack, ...b.room.set("shelf", 1), se("item1"), textCmd("진열대에서 원소 구슬 넷(불꽃·얼음·바람·대지)을 챙겼다.")], [textCmd("진열대는 비어 있다.")]),
+      ifSw(swTaken, false, [setSw(swTaken, true), ...giveBack, ...b.room.set("shelf", 1), { kind: "playAudio", resourceId: "cc0-sound-monster-item-get", loop: false, channel: "se" }, textCmd("진열대에서 원소 구슬 넷(불꽃·얼음·바람·대지)을 챙겼다.")], [textCmd("진열대는 비어 있다.")]),
     ]);
     const tablet = actEvent(ctx, b, "hint_tablet", "단서 석판", { x: 10, y: 11 }, [se("decision1"), textCmd(ctx.hint ?? `석판: 「네 제단에 네 구슬을 하나씩. ${clues.map((c) => c.text).join(" ")}」`)]);
     const model: PuzzleModel<string> = {
@@ -468,14 +487,16 @@ export const twinCisterns: MechanicDef = {
       wall: "stone",
       ceiling: "dark",
       zones: [
-        { x0: 4, y0: 8, x1: 6, y1: 13, floor: "grate" },
-        { x0: 13, y0: 7, x1: 15, y1: 13, floor: "grate" },
+        // 쇠살 바닥 = 수조 크기 그대로(작은 3칸·큰 5칸). 옛 판은 6·7줄이라 「3칸」이 화면에서 안 읽혔다.
+        { x0: 4, y0: 13 - capA, x1: 6, y1: 12, floor: "grate" },
+        { x0: 13, y0: 13 - capB, x1: 15, y1: 12, floor: "grate" },
       ],
       objects: [obj("wall torch", 6, 3), obj("wall torch", 13, 3), obj("drain grate", 10, 7), obj("hint tablet", 10, 9), obj("water trough", 9, 5)],
       props: {
         gate: GATE,
-        ...Object.fromEntries(gaugeA.map((c, k) => [`a_${k}`, [{ objects: [obj("pot", c.x, c.y)] }, { objects: [obj("water jar", c.x, c.y)] }]])),
-        ...Object.fromEntries(gaugeB.map((c, k) => [`b_${k}`, [{ objects: [obj("pot", c.x, c.y)] }, { objects: [obj("water jar", c.x, c.y)] }]])),
+        // 빈 칸 = 빈 질항아리(주황), 찬 칸 = 물 담긴 물동이(파랑). 옛 판의 「항아리 ↔ 물 항아리」는 뚜껑 한 점만 달라 수위가 안 보였다.
+        ...Object.fromEntries(gaugeA.map((c, k) => [`a_${k}`, [{ objects: [obj("pot", c.x, c.y)] }, { objects: [obj("water bucket", c.x, c.y)] }]])),
+        ...Object.fromEntries(gaugeB.map((c, k) => [`b_${k}`, [{ objects: [obj("pot", c.x, c.y)] }, { objects: [obj("water bucket", c.x, c.y)] }]])),
       },
     };
     const valveA: Cell = { x: 7, y: 9 };
@@ -543,7 +564,7 @@ export const twinCisterns: MechanicDef = {
         { event: tablet, role: "수문지기 석판(목표 수위)" },
       ],
       revealCommandCount: b.gateCmds.length,
-      solveSteps: ["3칸·5칸 두 수조를 채우고·비우고·서로 부어 큰 수조를 정확히 4칸으로 맞춘다(최소 6번)", "수위는 수조 옆 항아리(빈 항아리 ↔ 물 항아리) 줄로 보인다"],
+      solveSteps: ["3칸·5칸 두 수조를 채우고·비우고·서로 부어 큰 수조를 정확히 4칸으로 맞춘다(최소 6번)", "수위는 수조 쇠살 위 줄로 보인다(빈 질항아리 ↔ 물 찬 물동이)"],
       model,
       toPlaytest: (solution) => {
         const p = planFrom(b).actOn({ x: 10, y: 9 });
@@ -602,7 +623,7 @@ export const balanceScaleWeights: MechanicDef = {
         ifSw(
           swOn[i]!,
           false,
-          [setSw(swOn[i]!, true), setVar(vSum, weights[i]!, "+="), ...b.room.set(`weight_${i}`, 1), se("item1"), textCmd(`${weights[i]}근 추를 저울에 올렸다.`)],
+          [setSw(swOn[i]!, true), setVar(vSum, weights[i]!, "+="), ...b.room.set(`weight_${i}`, 1), sfx("plate-press"), textCmd(`${weights[i]}근 추를 저울에 올렸다.`)],
           [setSw(swOn[i]!, false), setVar(vSum, weights[i]!, "-="), ...b.room.set(`weight_${i}`, 0), se("cancel1"), textCmd(`${weights[i]}근 추를 받침에 되돌렸다.`)],
         ),
       ]),
@@ -690,7 +711,7 @@ export const flipFloorTiles: MechanicDef = {
           priority: "below",
           graphic: TRANSPARENT,
           commands: [
-            ifSw(swFlip[i]!, false, [setSw(swFlip[i]!, true), ...b.room.set(`tile_${i}`, 1), se("cursor2")], [setSw(swFlip[i]!, false), ...b.room.set(`tile_${i}`, 0), se("cancel2")]),
+            ifSw(swFlip[i]!, false, [setSw(swFlip[i]!, true), ...b.room.set(`tile_${i}`, 1), sfx("crystal-ping")], [setSw(swFlip[i]!, false), ...b.room.set(`tile_${i}`, 0), se("cancel2")]),
             particles("magic", 300, b.at(c)),
             ...allBlue(finale(ctx, b, "열두 판이 모두 푸르게 물들자 창살이 올라간다!", blueTheme)),
           ],

@@ -22,6 +22,7 @@ import { playerPassageRect, resolvePlayerBody, type PlayerBody } from "@/project
 import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
 import { isActionCombatMap, resolveActionCombatConfig } from "@/project/actionCombat";
 import { playMonsterSfx } from "@/player/monsterSfx";
+import { playSoundEffect } from "@/player/audio";
 import { store } from "@/project/store";
 import type { MoveCommand } from "@/project/types";
 import { characterSpriteY, footprintSpriteX, updateCharacterDepth } from "@/player/characterDepth";
@@ -545,6 +546,8 @@ export function tryStartFurniturePush(scene: PlaySceneContext, event: RuntimeEve
   scene.lastActionTargetKey = '';
   beginPlayerStep(scene, nx, ny);
   beginFurniturePush(scene, event, delta.x, delta.y);
+  const pushSound = event.page?.interaction?.sound;
+  if (pushSound) playSoundEffect(pushSound, project);
   return true;
 }
 

@@ -441,6 +441,7 @@ export const NATIVE_EVENT_PAGE_SCHEMA: JsonSchema = {
       properties: {
         kind: { type: "string", enum: ["pushable", "hiding"] },
         directions: { type: "array", items: { type: "string", enum: ["down", "left", "right", "up"] } },
+        sound: { type: "string", description: "pushable 전용: 밀 때 울리는 효과음 리소스 id(예: cc0-sound-puzzle-stone-push)." },
       },
       required: ["kind"],
     },
