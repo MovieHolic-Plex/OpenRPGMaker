@@ -95,7 +95,7 @@ width/height와 기존 전체 셀 배열 형태는 그대로이며 스키마/릴
   미룬 일이 한 덩어리로 도는 것은 막았다: `primeSharedEntryDigests`(contentDigest.ts)가 타일셋·업로드 자산 항목을 하나씩 `yieldToTask` 하며 먼저 요약해, 첫 화면 뒤 메인 스레드가 5~8초 멈추지 않게 한다. (미루기만 하면 7.8초짜리 긴 작업 하나가 첫 화면 뒤에 생겼다 — `--settle` 로 확인.)
 - **원인 4(작음) — 모듈 평가 때 번들 타일셋 전부를 만들었다.** `spatial/assets.ts` 가 `defaultTilesets()[한 id]` 로 시트 하나의 모양만 읽으려 번들 전체(3~9MB 복제 수십 개, 0.6초)를 만들었고 그 id(EasyRPG 실내)는 2026-10-07 부터 번들에도 없다. `bundledTilesetById(id)` 로 필요한 것만, 첫 사용 때 만든다.
 - **새 칩셋 10종(2026-10-14) 자체는 큰 원인이 아니다.** 번들 데이터 청크 46.1→55.6MB(+21%), 웜 부팅 +약 1초, 새 칩셋을 처음 받는 부팅 1회 +수 초. 문제는 «정규화를 건너뛰지 못하는 부팅» 이 늘었다는 것이다.
-- **남은 비용(후속 후보):** ① `store.baselineFrom` 의 `cloneProjectSharingReferenceDocuments`(타일셋 98MB 깊은 복사 약 1.4초 — 정규화를 건너뛸 문서는 타일셋을 공유해도 되지만 «기준본은 사적 사본» 계약을 건드려 보류), ② `installReferenceOwners.bundledTilesets()`(번들 전체를 만들어 소유자 참고문서를 읽는다, 약 0.9초 — 테마가 늘수록 선형으로 늘며 id 별 지연 생성은 ensure* 와 결과가 같은지 확인이 필요), ③ 번들 데이터 청크(55MB JS, 첫 접속·캐시 미스 때 4.4MB gzip) — 테마별 지연 로드는 `ensureBundledTilesets` 가 모든 프로젝트에 모든 번들 타일셋을 심는 계약(AGENTS.md 「새 타일은 공용에 추가한다」)과 부딪혀 설계가 따로 필요하다.
+- **남은 비용(후속 후보):** ① `store.baselineFrom` 의 `cloneProjectSharingReferenceDocuments`(타일셋 98MB 깊은 복사 약 1.4초 — 정규화를 건너뛸 문서는 타일셋을 공유해도 되지만 «기준본은 사적 사본» 계약을 건드려 보류), ② ~~`installReferenceOwners` 의 번들 생성~~ — 2026-10-20 참고문서 전용 경로(`bundledReferenceDocumentsById`)로 해결, ③ ~~번들 데이터 청크~~ — 2026-10-20 큰 칩셋 정의 43MB 를 지연 로드로 뺐다(`bundledJson.ts`, [architecture.md](architecture.md) 「편집기 열기 2단계」). 계약(모든 프로젝트가 모든 번들 타일셋을 갖는다)은 그대로다 — 정의는 만들거나 맞출 때만 읽는다.
 
 ## 스킬 도트 연출 빌리기 — 선택 필드 retroChoreographyId (2026-09-30)
 

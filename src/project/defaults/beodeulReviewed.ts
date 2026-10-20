@@ -16,3 +16,5 @@ export const createBeodeulReviewedTileset=bundle.createTileset;
 export const createBeodeulReviewedStandalone=bundle.createStandalone;
 export const ensureBeodeulReviewedTileset=bundle.ensureTileset;
 export const ensureBeodeulReviewed=bundle.ensureHost;
+/** 호스트(beodeul_city)에 심는 참고문서 원본 — 읽기 전용. */
+export const beodeulReviewedHostReferences=bundle.hostReferences;

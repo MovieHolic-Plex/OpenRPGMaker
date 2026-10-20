@@ -10,6 +10,11 @@ export function isEmeraldMonsterKitTexture(textureKey: string): boolean {
   return !!emeraldMonsterKitSheet(textureKey);
 }
 
+/** 새 사본의 참고문서만(`createEmeraldMonsterKitTileset(textureKey).referenceDocuments` 와 같은 값) — 칸 표를 복제하지 않는다. */
+export function emeraldMonsterKitBundledReferenceDocuments(textureKey: string): TilesetReferenceCategory[] {
+  return structuredClone((references as unknown as Record<string, TilesetReferenceCategory[]>)[textureKey] ?? []);
+}
+
 /** Deep clone: groups, kits, home layers and passability retain original indices. */
 export function createEmeraldMonsterKitTileset(textureKey: string): TilesetDef {
   const sheet = emeraldMonsterKitSheet(textureKey);

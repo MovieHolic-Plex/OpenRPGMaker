@@ -5,7 +5,10 @@
 // — 그림은 public/assets/sengoku-edo-references/ 경로만(바이트 없음). 위키: openwiki/sengoku-edo.md.
 //
 // 칸 번호는 덧붙이기 전용이다(자리 키 핀 tiledata/sengoku-edo/bake-pins.json). 번들 소유 = id 가 `se-` 로 시작하는 조립 부품·참고문서. 구조는 modernCampus·wizardingWorld 와 같다.
-import data from "@/assets/sengokuEdoTileset.json";
+import sheet from "@/assets/sengokuEdoSheet.json";
+import { bundledJson } from "./bundledJson";
+/** 번들 정의 JSON — 처음 쓸 때 읽는다(bundledJson.ts). 칸 수·한 줄 폭은 같은 굽기가 쓰는 작은 시트 메타(`sengokuEdoSheet.json`)에서 읽는다. */
+const data = () => bundledJson("sengokuEdoTileset");
 import references from "@/assets/sengokuEdoReferences.json";
 import type { AutotileGroup, PassFlag, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
@@ -14,34 +17,39 @@ export const SENGOKU_EDO_ID = "sengoku_edo";
 export const SENGOKU_EDO_TEXTURE = "tex_sengoku_edo";
 /** 전국·에도 칩셋 계열. 다른 번들과 칸 번호 체계가 달라, 맵이 있는 채로 말없이 바꾸면 깨진다. */
 export const SENGOKU_EDO_FAMILY = "oprn-sengoku";
-export const SENGOKU_EDO_COUNT: number = data.count;
-export const SENGOKU_EDO_TILES_PER_ROW: number = data.tilesPerRow;
+export const SENGOKU_EDO_COUNT: number = sheet.count;
+export const SENGOKU_EDO_TILES_PER_ROW: number = sheet.tilesPerRow;
 /** 조립 부품·참고문서 id 머리(`se-` 야외·실내 키트·참고문서). 번들이 소유한다(기존 사본에서 같은 id 는 번들 것으로 바꾼다). */
 export const SENGOKU_EDO_PREFIX = "se-";
 const REFERENCES = references as unknown as TilesetReferenceCategory[];
 
 const isOwned = (id: string): boolean => id.startsWith(SENGOKU_EDO_PREFIX);
 
+/** 새 사본이 들고 태어나는 참고문서 — 정의 JSON 없이 만든다(로드가 저장본에서 뺀 번들 참고문서를 되돌릴 때 쓴다, installReferenceOwners.ts). */
+export function sengokuEdoBundledReferenceDocuments(): TilesetReferenceCategory[] {
+  return structuredClone(REFERENCES);
+}
+
 /** 번들 정의의 독립 사본 — 참고문서를 들고 태어난다. */
 export function createSengokuEdoTileset(): TilesetDef {
   return {
     id: SENGOKU_EDO_ID,
-    name: data.name,
+    name: data().name,
     image: { type: "bundled", id: SENGOKU_EDO_TEXTURE },
     kind: "custom",
     family: SENGOKU_EDO_FAMILY,
-    tileSize: data.tileSize,
-    tilesPerRow: data.tilesPerRow,
-    count: data.count,
-    passability: structuredClone(data.passability) as PassFlag[],
-    priority: [...data.priority] as ("lower" | "upper")[],
-    terrain: [...data.terrain],
-    tileMeta: structuredClone(data.tileMeta) as TileAiMetadata[],
-    tileGroups: structuredClone(data.tileGroups) as unknown as TileGroupMetadata[],
-    autotileGroups: structuredClone(data.autotileGroups) as unknown as AutotileGroup[],
-    animationStrips: structuredClone(data.animationStrips),
-    structureKits: structuredClone(data.structureKits) as unknown as StructureKitDef[],
-    referenceDocuments: structuredClone(REFERENCES),
+    tileSize: data().tileSize,
+    tilesPerRow: sheet.tilesPerRow,
+    count: sheet.count,
+    passability: structuredClone(data().passability) as PassFlag[],
+    priority: [...data().priority] as ("lower" | "upper")[],
+    terrain: [...data().terrain],
+    tileMeta: structuredClone(data().tileMeta) as TileAiMetadata[],
+    tileGroups: structuredClone(data().tileGroups) as unknown as TileGroupMetadata[],
+    autotileGroups: structuredClone(data().autotileGroups) as unknown as AutotileGroup[],
+    animationStrips: structuredClone(data().animationStrips),
+    structureKits: structuredClone(data().structureKits) as unknown as StructureKitDef[],
+    referenceDocuments: sengokuEdoBundledReferenceDocuments(),
     // 방 짓기 역할표 — 사양은 편집기(src/assets/sengokuEdoRoomSpec.json, HAND_INTERIOR_SPECS)가 들고 있다.
     roomKit: { builtin: SENGOKU_EDO_ID },
   };
@@ -100,13 +108,13 @@ function shapeSignature(t: Pick<TilesetDef, "priority" | "passability" | "tileMe
 let bundledShape: string | undefined;
 function bundleShape(): string {
   return bundledShape ??= shapeSignature({
-    priority: data.priority as ("lower" | "upper")[],
-    passability: data.passability as PassFlag[],
-    tileMeta: data.tileMeta as TileAiMetadata[],
-    tileGroups: data.tileGroups as unknown as TileGroupMetadata[],
-    autotileGroups: data.autotileGroups as unknown as AutotileGroup[],
-    animationStrips: data.animationStrips,
-    structureKits: data.structureKits as unknown as StructureKitDef[],
+    priority: data().priority as ("lower" | "upper")[],
+    passability: data().passability as PassFlag[],
+    tileMeta: data().tileMeta as TileAiMetadata[],
+    tileGroups: data().tileGroups as unknown as TileGroupMetadata[],
+    autotileGroups: data().autotileGroups as unknown as AutotileGroup[],
+    animationStrips: data().animationStrips,
+    structureKits: data().structureKits as unknown as StructureKitDef[],
   });
 }
 
@@ -122,9 +130,9 @@ export function ensureSengokuEdoTileset(tileset: TilesetDef): boolean {
   let changed = false;
   if (tileset.family !== SENGOKU_EDO_FAMILY) { tileset.family = SENGOKU_EDO_FAMILY; changed = true; }
   if (!tileset.roomKit) { tileset.roomKit = { builtin: SENGOKU_EDO_ID }; changed = true; }
-  if (tileset.tilesPerRow === data.tilesPerRow) {
-    if (tileset.count > data.count) return changed;
-    if (tileset.count === data.count && shapeSignature(tileset) === bundleShape()) return changed;
+  if (tileset.tilesPerRow === sheet.tilesPerRow) {
+    if (tileset.count > sheet.count) return changed;
+    if (tileset.count === sheet.count && shapeSignature(tileset) === bundleShape()) return changed;
     const fresh = createSengokuEdoTileset();
     const authoredKits = (tileset.structureKits ?? []).filter((kit) => !isOwned(kit.id));
     const authoredAutotiles = (tileset.autotileGroups ?? []).filter((group) => !isOwned(group.id));

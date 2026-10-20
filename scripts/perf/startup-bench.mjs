@@ -66,6 +66,8 @@ const pageMarks = () => {
   return { timeOrigin: performance.timeOrigin, marks, resources };
 };
 
+const WORLD_CARD = '[data-testid="start-world-0"], [data-testid^="start-world-make"]';
+
 async function electronRun(projectDir, configHome) {
   const t0 = Date.now();
   const app = await electron.launch({
@@ -78,8 +80,10 @@ async function electronRun(projectDir, configHome) {
   if (ipcLog) app.process().stderr?.on("data", (chunk) => { for (const line of String(chunk).split("\n")) if (line.includes("[ipc-timing]")) writeFileSync(ipcLog, `${line}\n`, { flag: "a" }); });
   try {
     const page = await app.firstWindow();
-    // 시작 화면: 최근 월드 카드(편집 단추)가 그려진 순간. 카드가 생기기 전까지는 홈이 쓸모가 없다.
-    await page.locator('[data-testid^="start-world-make"]').first().waitFor({ state: "visible", timeout: 120_000 });
+    // 시작 화면: 최근 월드 카드(누르면 편집)가 그려진 순간. 카드가 생기기 전까지는 홈이 쓸모가 없다.
+    // 서재 홈(#3094)은 카드 `start-world-0`, 그 전 판은 `start-world-make-*` 단추다.
+    const card = page.locator(WORLD_CARD).first();
+    await card.waitFor({ state: "visible", timeout: 120_000 });
     t.home = Date.now() - t0;
     const mainTiming = await app.evaluate(() => ({
       processStart: performance.timeOrigin,
@@ -100,7 +104,7 @@ async function electronRun(projectDir, configHome) {
     const cdp = profileOut ? await page.context().newCDPSession(page) : null;
     if (cdp) { await cdp.send("Profiler.enable"); await cdp.send("Profiler.setSamplingInterval", { interval: 500 }); await cdp.send("Profiler.start"); }
     const clickAt = Date.now();
-    await page.locator('[data-testid^="start-world-make"]').first().click();
+    await card.click();
     await page.waitForURL(/index\.html/, { timeout: 60_000 });
     await page.waitForFunction(() => performance.getEntriesByName("oprn:boot:settled").length > 0, null, { timeout: 180_000, polling: 50 });
     const editor = await page.evaluate(pageMarks);
