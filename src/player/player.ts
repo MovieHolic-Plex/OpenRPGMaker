@@ -47,6 +47,8 @@ import type { PlayScene } from "@/player/PlayScene";
 import { isPlayScene } from "@/player/playerGuards";
 import { createPlaySurface } from "@/player/playSurface";
 import type { PlaySurfaceScaleMode } from "@/player/playSurfaceScale";
+import { resolvePlaySurfaceScaleMode } from "@/project/playSurfaceScaleMode";
+import type { Project } from "@/project/types";
 import { createTouchPad, isTouchDevice, type TouchPadHandle } from "@/player/touchPad";
 import { renderPlayerLoadPanel } from "@/player/playerLoadPanel";
 import { createPlayerStatusMenuController } from "@/player/playerStatusMenuController";
@@ -131,8 +133,8 @@ export type RenderPlayerOptions = {
   readonly startOverride?: { readonly mapId: string; readonly x: number; readonly y: number };
   // 커뮤니티 호스팅 셸이 주입한 기능(전체화면 토글 등). 에디터 테스트플레이에서는 없다 → 아무것도 렌더되지 않음.
   readonly hostBridge?: HostBridge;
-  // 플레이 서피스 배율 정책. 내보낸 게임과 테스트 플레이는 fit으로 창에 맞춘다.
-  // 명시적인 integer 호스트는 정수 배율을 유지한다.
+  // 플레이 서피스 배율 정책 덮어쓰기. 생략하면 프로젝트가 정한다(resolvePlaySurfaceScaleMode —
+  // 해상도를 저장한 프로젝트는 정수 배율+여백, 옛 320×240 은 창에 맞춤, 몬스터 수집은 정수 고정).
   readonly surfaceScaleMode?: PlaySurfaceScaleMode;
   // 마우스·터치 입력을 연다(D15). 기본은 키보드 전용이다 — RM2003 계열 게임은 호버·클릭을 일부러 막는다.
   // 켜면 메뉴·전투 명령·대사 상자의 클릭이 키보드와 같은 핸들러를 타고, 오른쪽 클릭은 취소(Esc)가 되며,
@@ -198,7 +200,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   let lastBootRequest: PlayBootRequest = { safeMode: options.safeMode === true };
   // teardownPlayer 이후에 호스트 버튼/F5 가 들어와도 새 런(타이머·리스너)을 만들지 않는다.
   let shellActive = true;
-  const surfaceScaleMode: PlaySurfaceScaleMode = options.surfaceScaleMode ?? "integer";
+  const surfaceScaleFor = (project: Project): PlaySurfaceScaleMode => options.surfaceScaleMode ?? resolvePlaySurfaceScaleMode(project);
   const pointerInput = options.pointerInput === true;
   // 재시작용 시작 지점. 선택-이벤트 테스트는 호출자가 세션을 주므로 그 세션이 플레이 중
   // 이동하기 전인 마운트 시점의 스폰만 붙잡아 둔다.
@@ -319,7 +321,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const startedAt = performance.now();
     playStartedAt = startedAt;
     clearChildren(layout);
-    const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleMode, store.getCurrent().system.displayFilter, { topAlignPortrait: pointerInput });
+    const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleFor(store.getCurrent()), store.getCurrent().system.displayFilter, { topAlignPortrait: pointerInput });
     playStage = surface.stage;
     layout.append(surface.viewport);
     mountHostControls(surface.viewport);
@@ -711,7 +713,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       onLoadAutosave: () => loadAutosave(fromTitle),
     });
     if (fromTitle) {
-      const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleMode, store.getCurrent().system.displayFilter, { topAlignPortrait: pointerInput });
+      const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleFor(store.getCurrent()), store.getCurrent().system.displayFilter, { topAlignPortrait: pointerInput });
       clearChildren(surface.stage);
       playStage = surface.stage;
       cleanupPlaySurface = surface.cleanup;
@@ -915,7 +917,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     titleMenuIndex = clampTitleMenuIndex(titleMenuIndex, options.length);
     // 타이틀을 보는 동안 맵/캐릭셋 이미지를 HTTP 캐시에 미리 올려
     // "새 게임" 직후 로딩 체감을 줄인다(Phaser 텍스처 등록은 여전히 씬 preload).
-    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleMode, project.system.displayFilter, { topAlignPortrait: pointerInput });
+    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleFor(project), project.system.displayFilter, { topAlignPortrait: pointerInput });
     clearChildren(surface.stage);
     playStage = surface.stage;
     cleanupPlaySurface = surface.cleanup;
@@ -983,7 +985,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const project = store.getCurrent(), sequence = project.system.opening;
     if (!sequence?.enabled || sequence.entry?.mode !== 'before-title' || !sequence.scenes.length) { renderTitle(); return; }
     stopGame(); stopAllAudio();
-    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleMode, undefined, { topAlignPortrait: pointerInput });
+    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleFor(project), undefined, { topAlignPortrait: pointerInput });
     playStage = surface.stage; cleanupPlaySurface = surface.cleanup; layout.append(surface.viewport); surface.sync();
     const controller = new AbortController(); openingController = controller;
     const playback = playCinematicSequence({ host: surface.stage, project, sequence, signal: controller.signal, dismissOnAnyInput: true });
@@ -1019,7 +1021,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     stopGame();
     clearChildren(layout);
     const project = store.getCurrent();
-    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleMode, project.system.displayFilter, { topAlignPortrait: pointerInput });
+    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleFor(project), project.system.displayFilter, { topAlignPortrait: pointerInput });
     clearChildren(surface.stage);
     playStage = surface.stage;
     cleanupPlaySurface = surface.cleanup;

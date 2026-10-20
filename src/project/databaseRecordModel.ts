@@ -22,6 +22,7 @@ import { DEFAULT_BATTLE_SKIN_ID, resolveSkinId, retiredSkinLookWindow } from "@/
 import { isPokemonMoveMotion } from "@/battle/pokemonMoveMotion";
 import { DEFAULT_BATTLE_HIT_FEEL, isBattleHitFeel } from "@/project/battleHitFeel";
 import { normalizeDisplayFilter } from "@/project/displayFilter";
+import { normalizePlaySurfaceScale } from "@/project/playSurfaceScaleMode";
 import { normalizeBattleLook } from "@/project/battleLook";
 import { DEFAULT_MENU_SKIN_ID, isMenuSkinId } from "@/player/menuSkins/registry";
 import { normalizeBattleAnimationRecord } from "@/project/databaseAnimationRecordModel";
@@ -253,6 +254,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   const playResolution = normalizePlayResolution(system.playResolution);
   const cameraZoom = normalizeCameraZoom(system.cameraZoom);
   const displayFilter = normalizeDisplayFilter(system.displayFilter);
+  const playSurfaceScale = normalizePlaySurfaceScale(system.playSurfaceScale);
   const battleLook = normalizeBattleLook(battleLookWithRetiredSkinWindow(system));
   const fullPortrait = normalizeDialogueFullPortraitSettings(system.dialogueFullPortrait);
   const battleTeams = normalizeBattleTeams(system.battleTeams);
@@ -318,6 +320,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   // 타격감도 같은 계약 — 기본(impact)과 미등록 값은 저장하지 않고 명시 선택만 남긴다.
   if (isBattleHitFeel(system.battleHitFeel) && system.battleHitFeel !== DEFAULT_BATTLE_HIT_FEEL) records.battleHitFeel = system.battleHitFeel;
   if (displayFilter) records.displayFilter = displayFilter;
+  if (playSurfaceScale) records.playSurfaceScale = playSurfaceScale;
   // 전투 화면 꾸미기도 같은 계약 — 프리셋과 같은 칸·미등록 값은 저장하지 않는다(project/battleLook.ts).
   if (battleLook) records.battleLook = battleLook;
   // ESC 메뉴 스킨도 같은 계약 — 기본(workbench)과 미등록 값은 저장하지 않고 명시 선택만 남긴다.

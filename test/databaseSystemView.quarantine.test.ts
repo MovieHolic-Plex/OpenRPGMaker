@@ -178,6 +178,23 @@ describe("database system view", () => {
     expect(findByTestId(host, "db-system-nav-display")).not.toBeNull();
   });
 
+  it("sets resolution and camera zoom together from the view-range preset", () => {
+    // Break named: 「가깝게」 must store 640x360 with zoom 2, and 「기본」 must clear zoom back to 1 (omitted).
+    const host = renderSystem();
+    const view = findByTestId(host, "db-field-system-view-preset");
+    if (!view) throw new Error("missing view-range preset");
+
+    view.value = "close";
+    view.dispatchEvent(new Event("change"));
+    expect(store.getCurrent().system.playResolution).toEqual({ width: 640, height: 360 });
+    expect(store.getCurrent().system.cameraZoom).toBe(2);
+
+    view.value = "default";
+    view.dispatchEvent(new Event("change"));
+    expect(store.getCurrent().system.playResolution).toEqual({ width: 480, height: 270 });
+    expect(store.getCurrent().system.cameraZoom).toBeUndefined();
+  });
+
   // Break caught: authored calendars always used the hidden 28-day default.
   it("edits the season length while preserving the existing start and end clock", () => {
     const host = renderSystem();

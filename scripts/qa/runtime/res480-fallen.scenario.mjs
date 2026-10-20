@@ -1,8 +1,9 @@
-// 해상도 기본값(640×360) 플레이어 캡처. 픽스처: .omo/runtime-qa/res/fallen.json (scripts/qa/runtime/res640-fixture.mts 로 생성, RES_WHICH=fallen).
+// 『폴른 스타』 기본 해상도 캡처(타이틀 → 시작 맵). 픽스처: res480-fixture.mts RES_WHICH=fallen. 창 크기 RES_VP.
+const [vw, vh] = (process.env.RES_VP ?? "1920x1080").split("x").map(Number);
 export default {
-  id: "res640-fallen",
-  projectFixture: ".omo/runtime-qa/res/fallen.json",
-  viewport: { width: 1280, height: 720 },
+  id: "res480-fallen",
+  projectFixture: process.env.RES_FIXTURE ?? ".omo/runtime-qa/res/fallen.json",
+  viewport: { width: vw, height: vh },
   beats: [
     { id: "title", note: "타이틀", expect: { testidPresent: ["title-screen"] }, shot: true },
     { id: "field", note: "새 게임 → 시작 맵", ops: [

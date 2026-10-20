@@ -110,6 +110,7 @@ import {
 } from "@/project/playResolution";
 import { setDatabaseSubLocation } from "@/editor/panels/databaseWayfinding";
 import { CAMERA_ZOOM_LIMITS, resolveCameraZoom, storeCameraZoom } from "@/project/cameraZoom";
+import { PLAY_SURFACE_SCALE_MODES, normalizePlaySurfaceScale, resolvePlaySurfaceScaleMode, type PlaySurfaceScaleMode } from "@/project/playSurfaceScaleMode";
 import { DISPLAY_FILTER_LABELS, DISPLAY_FILTERS, normalizeDisplayFilter } from "@/project/displayFilter";
 import type { PlayResolution, RewardPolicy, SystemRecords } from "@/project/types";
 
@@ -819,9 +820,9 @@ function playResolutionFieldset(project: Project, rerender: SystemRefresh): HTML
   const presetSelect = el("select", { dataset: { testid: "db-field-system-resolution-preset" } }) as HTMLSelectElement;
   const labels: Record<PlayResolutionPreset, string> = {
     "320x240": "320 × 240 · 클래식 4:3",
-    "480x270": "480 × 270 · 와이드 16:9",
+    "480x270": "480 × 270 · 와이드 16:9 (새 프로젝트 기본, 추천)",
     "426x240": "426 × 240 · 와이드 (정수 배율 안 맞음)",
-    "640x360": "640 × 360 · 와이드 16:9 (새 프로젝트 기본, 배율 1)",
+    "640x360": "640 × 360 · 와이드 16:9 넓게",
     "640x480": "640 × 480 · 확장 4:3",
     custom: "직접 입력",
   };
@@ -842,6 +843,7 @@ function playResolutionFieldset(project: Project, rerender: SystemRefresh): HTML
       text: "플레이 화면이 보여 주는 논리 영역입니다. 값이 커질수록 한 화면에 더 넓은 맵이 보이며, 다음 테스트 플레이부터 적용됩니다.",
       dataset: { testid: "db-system-resolution-help" },
     }),
+    viewPresetField(rerender),
     field("빠른 선택", presetSelect),
     numberField("가로 (px)", "db-field-system-resolution-width", () => resolvePlayResolution(store.getCurrent().system).width, (value) => {
       updateSystem((draft) => {
@@ -868,7 +870,60 @@ function playResolutionFieldset(project: Project, rerender: SystemRefresh): HTML
     }),
     playResolutionDiagnostics(project, resolution),
     cameraZoomField(rerender),
+    surfaceScaleField(project),
     displayFilterField(project),
+  ]);
+}
+
+/**
+ * 「보기 범위」 — 해상도와 카메라 배율을 한 번에 고른다(둘이 함께 시야를 정한다). 16px 칸 기준 칸 수를 보여 준다.
+ * 2026-10-20 사용자 결정: 기본 480×270·배율 1(30×17칸)을 추천, 넓게·가깝게는 640×360 의 배율 1·2.
+ */
+const VIEW_PRESETS = [
+  { id: "wide", label: "넓게 · 640 × 360 · 배율 1 (16px 칸 40 × 22)", width: 640, height: 360, zoom: 1 },
+  { id: "default", label: "기본 · 480 × 270 · 배율 1 (16px 칸 30 × 17, 추천)", width: 480, height: 270, zoom: 1 },
+  { id: "close", label: "가깝게 · 640 × 360 · 배율 2 (16px 칸 20 × 11)", width: 640, height: 360, zoom: 2 },
+] as const;
+
+function viewPresetField(rerender: SystemRefresh): HTMLElement {
+  const select = el("select", { dataset: { testid: "db-field-system-view-preset" } }) as HTMLSelectElement;
+  for (const preset of VIEW_PRESETS) select.append(el("option", { text: preset.label, attrs: { value: preset.id } }));
+  select.append(el("option", { text: "직접 정함", attrs: { value: "custom", disabled: "" } }));
+  const system = store.getCurrent().system;
+  const resolution = resolvePlayResolution(system);
+  const zoom = resolveCameraZoom(system);
+  select.value = VIEW_PRESETS.find((preset) => preset.width === resolution.width && preset.height === resolution.height && preset.zoom === zoom)?.id ?? "custom";
+  select.addEventListener("change", () => {
+    const preset = VIEW_PRESETS.find((candidate) => candidate.id === select.value);
+    if (!preset) return;
+    updateSystem((draft) => {
+      storePlayResolution(draft.system, { width: preset.width, height: preset.height });
+      storeCameraZoom(draft.system, preset.zoom);
+    }, "system:view-preset");
+    rerender("values");
+  });
+  return field("보기 범위", select);
+}
+
+/** 화면 맞춤 — 정수 배율(도트 굵기 고름, 남는 창은 여백) 또는 창에 꽉 맞춤. 생략 = 프로젝트 규칙(resolvePlaySurfaceScaleMode). */
+function surfaceScaleField(project: Project): HTMLElement {
+  const select = el("select", { dataset: { testid: "db-field-system-surface-scale" } }) as HTMLSelectElement;
+  const labels: Record<PlaySurfaceScaleMode, string> = {
+    integer: "정수 배율 · 도트가 고르게, 남는 창은 검은 여백 (추천)",
+    fit: "창에 꽉 맞춤 · 여백 없음, 도트 굵기가 조금 섞임",
+  };
+  for (const mode of PLAY_SURFACE_SCALE_MODES) select.append(el("option", { text: labels[mode], attrs: { value: mode } }));
+  select.value = resolvePlaySurfaceScaleMode(project);
+  select.addEventListener("change", () => {
+    updateSystem((draft) => {
+      const next = normalizePlaySurfaceScale(select.value);
+      if (next) draft.system.playSurfaceScale = next;
+      else delete draft.system.playSurfaceScale;
+    }, "system:surface-scale");
+  });
+  return rm2k3Fieldset("화면 맞춤", [
+    el("p", { class: "db-system-resolution-help", text: "게임 화면을 창 크기에 맞춰 키우는 방식입니다. 480 × 270 은 FHD 에서 4배, 4K 에서 8배로 꽉 차고 QHD 에서만 얇은 여백이 남습니다. 다음 플레이부터 적용됩니다." }),
+    field("맞춤", select),
   ]);
 }
 
@@ -919,7 +974,7 @@ function cameraZoomField(rerender: SystemRefresh): HTMLElement {
 function playResolutionDiagnostics(project: Project, resolution: Readonly<PlayResolution>): HTMLElement {
   const analysis = analyzePlayResolution(resolution, project.maps);
   const viewport = estimatedTestPlayViewport();
-  const fitScale = calculatePlaySurfaceScale(viewport.width, viewport.height, resolution.width, resolution.height);
+  const fitScale = calculatePlaySurfaceScale(viewport.width, viewport.height, resolution.width, resolution.height, resolvePlaySurfaceScaleMode(project));
   const incompatible = analysis.incompatibleMaps;
   const warnings: HTMLElement[] = [];
   if (analysis.partialTileX || analysis.partialTileY) {
