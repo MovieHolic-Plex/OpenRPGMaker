@@ -296,6 +296,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
 
   // Keyboard controls stay keyboard-only. This is a status line, not a button bar.
   const playbackStatus = document.createElement("div");
+  let playbackStatusTimer = 0;
   playbackStatus.className = "battle-playback-status";
   playbackStatus.dataset.testid = "battle-playback-status";
   playbackStatus.setAttribute("role", "status");
@@ -363,7 +364,18 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
 
   function syncPlaybackStatus(): void {
     const text = `${AUTO_BATTLE_KEY_LABEL} 자동 ${autoBattle ? "켜짐" : "꺼짐"} · ${SPEED_KEY_LABEL} ${speedMultiplier}×${skipping ? " · 넘기는 중" : ""}`;
-    if (playbackStatus.textContent !== text) playbackStatus.textContent = text;
+    if (playbackStatus.textContent !== text) {
+      const first = playbackStatus.textContent === "";
+      playbackStatus.textContent = text;
+      // battle-feel 2026-10-20: 단축키 안내가 전투 내내 무대 오른쪽 위에 떠 디버그 표시처럼 읽혔다.
+      // 바뀐 순간에만 1.6초 보이고, 자동 전투가 켜져 있으면 작은 표지로 남는다(CSS 가 data-recent/data-auto 를 읽는다).
+      playbackStatus.dataset.auto = autoBattle ? "true" : "false";
+      if (!first) {
+        playbackStatus.dataset.recent = "true";
+        window.clearTimeout(playbackStatusTimer);
+        playbackStatusTimer = window.setTimeout(() => { delete playbackStatus.dataset.recent; }, 1600);
+      }
+    }
   }
 
   /** 이 시퀀스 한 번만 빨리감기. onSequenceBusy(false) 에서 원래 배속으로 되돌린다. */

@@ -9,6 +9,9 @@
   quality-after      같은 조각의 병합 후 판. **라벨은 약하다**: 고쳤다고 해서 버들항 수준인지는 PR 이 보증하지 않는다(weak).
   beodeul-heldout    버들항 번들 시트의 다른 조각(판정자에게 보여 주는 기준 그림에는 안 쓴 키트)
   synthetic-shallow  버들항 조각을 4색 양자화 + 근흑 윤곽으로 일부러 얕게 만든 것(통제 표본, 실제 증거 아님)
+
+주의(2026-10-20): 버들항 번들 원본이 표본을 만든 뒤 바뀌어, 지금 다시 돌리면 beodeul__*/synthetic__* 그림 일부가 달라진다.
+라벨(weak 등)만 바꿀 때는 items.json 만 남기고 PNG 는 git 으로 되돌린다 — 그림이 바뀌면 답 캐시·이전 보정과 비교가 끊긴다.
 """
 import json
 import sys
@@ -43,7 +46,15 @@ BEODEUL = [
     ("bd-prop-goods_pile", "prop", "other", None), ("bd-prop-table_mugs", "prop", "low_furniture", "good"), ("bd-prop-lamp_double", "prop", "column", None),
 ]
 BEODEUL_GROUND = [("plaza", [1509, 1212, 2364, 2366, 1509, 1212, 1509, 2364, 2366, 1212, 1509, 2364]), ("farm-lane", None)]
-WEAK_FARM = {"farm-plot-wheat"}
+# 농장 라벨은 판(PR #2541) 단위 사용자 판정이다. 아래 조각은 조각 단위 측정이 판 라벨과 맞지 않아 약한 라벨로 둔다(2026-10-20):
+#   farm-plot-wheat  2·3판 구조·명암 단이 같고 색만 다르다(칸당 색 13 vs 13).
+#   farm-fenced-plot 3판이 칸당 색 6, 2판 11 — 수락된 판의 조각이 더 얇다(판 라벨과 조각 밀도가 역전).
+#   farm-fence-v-3   3판 고유색 6, 2판 8 — 같은 역전.
+# 약한 라벨은 v2·v3 양쪽에 붙인다(한쪽만 약하면 다른 쪽이 강한 라벨로 남아 같은 조각의 반대 라벨이 기준에 섞인다).
+WEAK_FARM = {"farm-plot-wheat", "farm-fenced-plot", "farm-fence-v-3"}
+# 버들항 원본 중 화풍 강한 라벨에서 빼는 것(약한 라벨): 흑철 가로등은 재질 자체가 무채색 검정이라 그 윤곽(측정 무채색 비율 0.99)이
+# 「이웃 재질의 어두운 톤」인데도 윤곽 규칙(near_black)에 걸린다. 원본은 정상이지만 윤곽 규칙과 어긋나는 예외라 기준 집계에서 뺀다.
+BEODEUL_STYLE_WEAK = {"bd-prop-lamp_double"}
 DEGRADE = ["bd-house-h106_1", "bd-house-h122_0", "bd-tree-5844f6", "bd-tree-7ecdb8", "bd-prop-stall_herb_flower", "bd-prop-goods_pile"]
 
 
@@ -108,10 +119,10 @@ def main() -> None:
                 continue
             slug = spec.replace("g:", "g-").replace(" ", "_").replace("·", "")
             if theme == "farm":
-                # 밭 밀(farm-plot-wheat)은 2·3판의 구조·명암 단이 같고 색만 다르다(눈으로 6배 대조) — 화풍 라벨이 약하다.
+                # WEAK_FARM 조각은 판 라벨과 조각 측정이 어긋난다(위 WEAK_FARM 주석) — 화풍 라벨이 약하다.
                 weak_piece = spec in WEAK_FARM
-                add(f"{theme}__{slug}__v2", b, kind34, style_kind, None, "bad", "farm-user", "농장 2판(사용자 반려: 칸 정보량·윤곽·질감이 얕다)" + (" — 이 조각은 구조가 같고 색만 다르다(약한 라벨)" if weak_piece else ""), weak=weak_piece)
-                add(f"{theme}__{slug}__v3", a, kind34, style_kind, None, "good", "farm-user", "농장 3판(PR #2541, 사용자 수락)")
+                add(f"{theme}__{slug}__v2", b, kind34, style_kind, None, "bad", "farm-user", "농장 2판(사용자 반려: 칸 정보량·윤곽·질감이 얕다)" + (" — 조각 단위로는 판 라벨과 맞지 않는다(약한 라벨)" if weak_piece else ""), weak=weak_piece)
+                add(f"{theme}__{slug}__v3", a, kind34, style_kind, None, "good", "farm-user", "농장 3판(PR #2541, 사용자 수락)" + (" — 조각 단위로는 판 라벨과 맞지 않는다(약한 라벨)" if weak_piece else ""), weak=weak_piece)
             else:
                 add(f"{theme}__{slug}__before", b, kind34, style_kind, None, "bad", "quality-before", f"{note} 부모 커밋 판(이 PR 이 고치려던 얕은 판)", weak=True)
                 add(f"{theme}__{slug}__after", a, kind34, style_kind, None, "good", "quality-after", f"{note} 병합 후 판 — 약한 라벨(수준 미달일 수 있음)", weak=True)
@@ -119,7 +130,7 @@ def main() -> None:
     bt, bs = load_commit(None, "src/assets/beodeulCityTileset.json", "public/assets/beodeul-city/beodeul-city-chipset.png")
     kits = {k["id"]: k for k in bt["structureKits"]}
     for kid, style_kind, kind34, view in BEODEUL:
-        add(f"beodeul__{kid.replace('bd-', '')}", trim(render_kit(kits[kid], bs, bt["tilesPerRow"])), kind34, style_kind, view, "good", "beodeul-heldout", f"버들항 번들 키트 {kid}(기준 그림 아님)")
+        add(f"beodeul__{kid.replace('bd-', '')}", trim(render_kit(kits[kid], bs, bt["tilesPerRow"])), kind34, style_kind, view, "good", "beodeul-heldout", f"버들항 번들 키트 {kid}(기준 그림 아님)" + (" — 흑철 무채색 윤곽 예외(약한 라벨)" if kid in BEODEUL_STYLE_WEAK else ""), weak=kid in BEODEUL_STYLE_WEAK)
     tpr = bt["tilesPerRow"]
     plaza = Image.new("RGBA", (64, 48), (0, 0, 0, 0))
     for i, tid in enumerate(BEODEUL_GROUND[0][1]):

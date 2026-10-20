@@ -121,3 +121,19 @@
   }
   .battle-scene[data-battle-motion="retro"] .battle-scenery-ambient { display: none; }
 }
+
+/* 넓은 무대(16:9, battleStageScale.calculateBattleStageWidth)에서는 640×360 도트 그림을 가로로 늘리지 않는다.
+   같은 비율로 키워 아래(땅)에 붙이고 남는 위(하늘)만 자른다 — 4:3 에서는 가로 1.0·세로 0.91 로 찌그러져 있었다.
+   720p 출력에서 그림 한 칸 = 화면 2px(정수)로 떨어진다. */
+.battle-scene[data-battle-motion="retro"][data-battle-stage-wide] .battle-scenery-layer {
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-stage-wide] .battle-scenery-sky {
+  background-size: var(--battle-stage-width) auto;
+  background-position: 0 bottom;
+  background-repeat: repeat-x;
+  animation-name: retro-scenery-clouds-wide;
+}
+@keyframes retro-scenery-clouds-wide { to { background-position-x: var(--battle-stage-width); } }

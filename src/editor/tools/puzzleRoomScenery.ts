@@ -727,7 +727,7 @@ function elementalDesign(): RoomDesign {
     { x: 5, y: 11 },
     { x: 15, y: 11 },
   ];
-  const activeObjIds = ["lava brazier", "mana crystal", "orb pedestal", "rune stone"] as const;
+  const activeObjIds = ["lava brazier", "mana crystal", "rune stone", "stone sphere"] as const;
   const state = (awake: readonly boolean[], solved: boolean): RoomState => ({
     input: {
       plan: roomPlan({ top: 3, left: 2, door, ...(solved ? { open: [{ x0: 9, y0: 1, x1: 11, y1: 2 }] } : {}) }),

@@ -30,6 +30,7 @@ import {
   rect,
   revealInWaves,
   se,
+  sfx,
   setSw,
   setVar,
   shake,
@@ -38,6 +39,7 @@ import {
   wait,
   type PuzzleRoomSpec,
 } from "./puzzleKit";
+import { puzzleSfxResourceId } from "@/assets/puzzleSfxAssets";
 
 const getEventId = (variableId: string, at: Cell): Command => m2("Get Event ID", { variableId, x: at.x, y: at.y });
 const setEventLocation = (target: string, mapId: string, at: Cell): Command => m2("Set Event Location", { target, mapId, x: at.x, y: at.y });
@@ -137,7 +139,7 @@ export const sokobanPlates: MechanicDef = {
           vOcc[i]!,
           "!=",
           0,
-          [ifSw(swPlate[i]!, false, [setSw(swPlate[i]!, true), ...room.set(key, 1), se("key"), particles("dust", 600, p), shake(1, 120)])],
+          [ifSw(swPlate[i]!, false, [setSw(swPlate[i]!, true), ...room.set(key, 1), sfx("plate-press"), particles("dust", 600, p), shake(1, 120)])],
           [ifSw(swPlate[i]!, true, [setSw(swPlate[i]!, false), ...room.set(key, 0), se("cursor2")])],
         ),
       ];
@@ -164,7 +166,7 @@ export const sokobanPlates: MechanicDef = {
         priority: "below",
         graphic: TRANSPARENT,
         commands: [
-          se("earth6"),
+          // 낮은 굉음은 revealInWaves 첫 물결(earth2)이 낸다 — 여기서 또 울리면 두 번 겹친다.
           shake(3, 400),
           textCmd("쿠웅…! 두 바위가 발판을 동시에 짓누르자 울타리 철창이 사슬 소리를 내며 올라간다."),
           ...revealInWaves(gateCmds, { flash: "white", pulse: "255,236,180", waves: ["dust", "dust", "sparkle"] }),
@@ -181,7 +183,7 @@ export const sokobanPlates: MechanicDef = {
           name: "바위",
           graphic: objGraphic("object2", 5),
           priority: "same",
-          interaction: { kind: "pushable" },
+          interaction: { kind: "pushable", sound: puzzleSfxResourceId("stone-push") },
           animationType: "normal",
           commands: [],
         }),
@@ -408,9 +410,14 @@ export const crackedPlankBridge: MechanicDef = {
           ],
         }),
         makePage({ id: `${id}_gone`, name: "판자(무너짐)", conditions: [{ kind: "switch", switchId: swBroken[i]!, value: true }], priority: "below", graphic: TRANSPARENT, commands: [] }),
+        // 풀린 뒤에는 다리가 튼튼한 새 판자로 다시 놓인다(아래 해제 연출) — 밟아도 무너지지 않는다.
+        makePage({ id: `${id}_solved`, name: "판자(해결 뒤 튼튼함)", conditions: [{ kind: "switch", switchId: ctx.solveSwitchId, value: true }], priority: "below", graphic: TRANSPARENT, commands: [] }),
       ]);
     });
     const gateCmds = room.set("gate", 1);
+    // 해제 연출은 철창만 여는 게 아니라 무너진 다리를 남쪽부터 다시 놓는다. 방의 유일한 출입문은 남쪽이라
+    // 다리를 그대로 두면 북쪽 둑에 갇힌다(2026-10-20 적대 검수에서 발견한 진행 불능).
+    const rebuildCmds = planks.flatMap((_, i) => room.set(`plank_${i}`, 0));
     // 출구 앞 둑: 판자를 모두 밟았으면 마지막 판자도 무너지며 철창이 열린다.
     const exitId = ctx.evId("exit_gate");
     const exitEvent = puzzleEvent(exitId, "북쪽 둑 봉인 철창", at(exit), [
@@ -426,8 +433,8 @@ export const crackedPlankBridge: MechanicDef = {
             planks.length - 1,
             [
               ...planks.map((_, k) => ifVar(vCur, "==", k + 1, [ifSw(swBroken[k]!, false, breakPlank(k))])),
-              textCmd("마지막 판자가 무너져 내리자 철창의 사슬이 풀렸다!"),
-              ...revealInWaves(gateCmds, { flash: "white", pulse: "255,230,170", waves: ["dust", "smoke", "sparkle"] }),
+              textCmd("마지막 판자가 무너져 내리자 철창의 사슬이 풀리고, 심연 위로 새 판자가 차례로 놓인다!"),
+              ...revealInWaves([...gateCmds, ...rebuildCmds], { flash: "white", pulse: "255,230,170", waves: ["dust", "smoke", "sparkle"] }),
               ...ctx.rewardCommands,
               setSw(ctx.solveSwitchId, true),
             ],

@@ -16,6 +16,7 @@
 | 컨셉 게시 | `src/harnesses/game-concepts/node/publish.ts` | 사람이 받은 컨셉 카드만 올린다 |
 | 서버·DB·검열·R2 | `OpenRPGMaker-store/src/`, `migrations/` | 업로드 검증, 심사, 목록, 파일 제공 |
 | 서버 CLI | `OpenRPGMaker-store/scripts/storeCli.ts` | 운영자용 찾기·받기·올리기·숨기기 |
+| 코딩 에이전트 제출 | `scripts/store/agentStore.mts` (`npm run -s store -- …`) | 주인이 발급한 에이전트 토큰으로 제출 — 항상 확인 대기. `openwiki/store-agent-contribution.md` |
 
 스테이징 실행 상태는 저장소가 아니라 배포가 정한다. 2026-10-20 감사 때 스테이징은 분리 전 10-07 빌드였다
 (concepts 경로·`/bundle` 없음). 배포는 스토어 저장소 쪽 일이다.
