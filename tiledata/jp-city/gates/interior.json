@@ -1,63 +1,42 @@
 {
  "stage": "interior",
- "verdict": "fail",
- "reviewerVerdict": "fail",
+ "verdict": "pass",
+ "reviewerVerdict": "pass",
  "reviewer": "claude -p --model opus --effort medium",
- "rounds": 16,
- "seconds": 137,
- "focus": "일본 2층 단독주택 실내 구조 개편 15회차. 14회차 지적(방별 빈 바닥) 반영: 부엌 작업대(kcounter)·탈의실 빨래 건조대·침실 깔개·서재 식기장+화분, 2층 빈 바닥 6%·1층 16%. 1층 복도 북쪽 벽면의 열린 문 둘은 북쪽 복도(11,11)·탈의실(14,11)로 가는 실제 문이다. 의도된 것(결함 아님 — 사용자가 준 구조 참고 그림이 이렇다): 거실은 부엌과만 트여 복도와 직접 잇지 않는다, 화장실 문은 부엌과 트인 북쪽 복도에 열린다. 엔진 관례(결함 아님): 막힌 칸 아래 두 줄 = 벽면, 세로 칸막이 3줄 틈 + 옆문, 1칸 계단 조각과 2칸 계단통, sofa-n 은 북쪽(TV)을 보는 소파 그림, 걸이(창)는 북쪽 벽면만. 문서 「알려진 한계·보류」 절 항목(층 겹침·축척·방별 빈 바닥 측정·세면실 입구)은 보류로 본다. 방 구성·동선·가구 앵커·문 위치·문서와 그림 일치를 본다.",
+ "rounds": 18,
+ "seconds": 144,
+ "focus": "일본 2층 단독주택 실내 18회차. 17회차 지적 두 건을 고쳤다: (major) 2층 계단통을 1층 계단 바로 위로 옮겼다 — 1층 stairs-up-wood (10,8)(그림 y6~8), 2층 stairwell-down-wood (10,8) 2×2(아랫줄 (10,10)(11,10)이 1층 (11,9)로, 1층 (10,9)에서 오르면 2층 (11,11)), 옛 자리의 책장·화분은 치우고 화분을 복도 가운데로. (minor) 문서의 부엌 빈 바닥 수치를 실측 26%로 고쳤다(기준 30% 그대로). 15·16회차 고친 것(2층이 1층 바깥선 안, 탈의실 3×3·북쪽 복도 옆문, 방마다 빈 바닥 ≤30%)은 그대로. 의도된 것(결함 아님 — 사용자가 준 구조 참고 그림이 이렇다): 거실은 부엌과만 트여 복도와 직접 잇지 않는다, 화장실 문은 부엌과 트인 북쪽 복도에 열린다. 엔진 관례(결함 아님): 막힌 칸 아래 두 줄 = 벽면, 세로 칸막이 3줄 틈 + 옆문, 1칸 계단 조각과 2칸 계단통, sofa-n 은 북쪽(TV)을 보는 소파 그림, 걸이(창)는 북쪽 벽면만. 방 구성·동선·가구 앵커·문 위치·방별 빈 바닥·층 겹침(계단 포함)·문서와 그림 일치를 본다.",
  "files": {
-  "verify-shots/jp-city/interior-house-1f-x2.png": "24436521098754c293bc3e09ad3ea37c4121b7095baccb18e2d52e7f85471c9e",
-  "verify-shots/jp-city/interior-house-2f-x2.png": "1d86ca5005ea9bfcbd3387206e98c98f4d773c0cd46fd5c939b28b81a6e2ddcb",
-  "public/assets/jp-city-references/interior-house-structure-1f.png": "4b4a50189dad6d5546e20c4c118e45b6e2e31a203b33980e535e5f027ec351a5",
-  "public/assets/jp-city-references/interior-house-structure-2f.png": "be8ecd5d183d067e1cb623c50d3a1d0a9a85b2fcdb4fe05580bd9a07cbbf9db4",
-  "tiledata/jp-city/refs/interior-house-structure.md": "fc99bd5a17db995c6d96c56371c42d9511f81c31ef73d9125470de6e50d4e9bf",
-  "scripts/content/jp-city/maps/out/interior-house-1f.report.json": "3bbc48b0c4278af937ac5f4ddfda1f8656e635afb8f387a8e4c023a82deb373c",
-  "scripts/content/jp-city/maps/out/interior-house-2f.report.json": "81081332d727bfb17baedb27044f345d0312151454fd607ed3df7120436feec5"
+  "verify-shots/jp-city/interior-house-1f-x2.png": "c028268924c261aed384080d7011af2f80c020f8bea66f1520c3558b685563b1",
+  "verify-shots/jp-city/interior-house-2f-x2.png": "3017fbd10c7c09f1f98131228eb533f52d0b5ad5d2676d74711275f9dcd264fa",
+  "public/assets/jp-city-references/interior-house-structure-1f.png": "2e62a1126bf3870cfa707952e93039adced74bd6803c84dcce19a0cb93d9792a",
+  "public/assets/jp-city-references/interior-house-structure-2f.png": "101d8927e2acc923fda5aadf25bc46734673aefaa4e4a1047215686bc173ffeb",
+  "tiledata/jp-city/refs/interior-house-structure.md": "799e8cd4c70ede27e613325def64a00579604efeb5725c8c854d1ed003a9da49",
+  "scripts/content/jp-city/maps/out/interior-house-1f.report.json": "34f6d12ce8fcc0f5b4d3ae93967d2708c92ddd2999da04b8633b2fa7696d2a7f",
+  "scripts/content/jp-city/maps/out/interior-house-2f.report.json": "2f16f20a3996fcd9ab79da53f1fc8a352c1ccb0dd44823e795fc3f7e2ae09072"
  },
  "findings": [
   {
-   "severity": "major",
-   "file": "src/editor/handInterior/jpHouseBlueprint.ts (jp-house-2f seed 1)",
-   "where": "부부 침실 x1-8 y10-15 — 빈 칸: y12 한 줄 전체(x1-8), (3-8,11), (8,10), (1,13), (6-8,13), (2,14), (4,14), (2-4,15)",
-   "problem": "바닥 48칸 중 약 50%가 비어 30% 기준을 넘는다. 이전 지적 58%에서 조금 줄었을 뿐이고, y11-12가 두 줄짜리 복도처럼 읽힌다.",
-   "fix": "방을 y10-13으로 줄인다. 아니면 y12에 서랍장·화장대·책장 같은 앵커를 배치한다."
+   "severity": "minor",
+   "file": "src/editor/handInterior/jpHouseBlueprint.ts (jp-house-1f), verify-shots/jp-city/interior-house-1f-x2.png",
+   "where": "1F 화분 (11,7–8), 2F stairwell 동쪽 열 (11,8)–(11,9) 바로 아래",
+   "problem": "2층 계단 구멍의 동쪽 절반이 1층 계단이 아닌 복도 바닥과 화분 위에 뚫려 있어, 위에서 보면 구멍 아래가 화분이다.",
+   "fix": "1층 화분을 (11,8)에서 빼서 복도 남쪽 끝이나 신발장 옆으로 옮긴다."
   },
   {
-   "severity": "major",
-   "file": "src/editor/handInterior/jpHouseBlueprint.ts (jp-house-2f seed 1)",
-   "where": "서재 x15-20 y10-15 — y12 한 줄 전체(x15-20), (15-19,13), (15-16,14), (16-19,15)",
-   "problem": "36칸 중 약 56%가 비어 있고 y12 한 줄이 여전히 비어 있다. 위아래 가구 무리가 빈 띠로 끊긴다. 고쳐지지 않았다.",
-   "fix": "방을 y10-13으로 줄이고 벤치 무리를 y13으로 올린다. 아니면 y12-13 가운데에 깔개와 작업 탁자를 둔다."
+   "severity": "minor",
+   "file": "scripts/content/jp-city/maps/out/interior-house-1f.report.json, interior-house-2f.report.json",
+   "where": "1F travel cell (10,9)·2F 도착 (11,11), 2F link (10,10)/(11,10) → 1F (11,9)",
+   "problem": "오르는 칸 (10,9)와 내려와 닿는 칸 (11,9)가 다르고, 2층 도착 칸도 x11이라 오르내릴 때마다 한 칸씩 옆으로 밀린다.",
+   "fix": "2F→1F 도착을 (10,9)로, 1F→2F 도착을 (10,10) 또는 (10,11)로 같은 열 x10에 맞춘다."
   },
   {
-   "severity": "major",
-   "file": "src/editor/handInterior/jpHouseBlueprint.ts (jp-house-1f seed 1)",
-   "where": "탈의·세면실 x14-20 y8-10 — (14,8-10), (20,8-10), (15-17,9-10), (18,10)",
-   "problem": "21칸 중 약 62%가 비어 있다. 건조대와 매트만 늘었다.",
-   "fix": "폭을 x15-19로 줄인다. 아니면 (14,9-10)에 수납 선반, (20,8-9)에 수건장이나 세탁 바구니를 둔다."
-  },
-  {
-   "severity": "major",
-   "file": "src/editor/handInterior/jpHouseBlueprint.ts (jp-house-1f seed 1)",
-   "where": "부엌 x1-9 y8-10 — y9의 x2-6·x8-9, y10의 x5-9, y8의 x8-9",
-   "problem": "조리대 아래 띠가 여전히 비어 있다(27칸 중 약 56%). y10의 x5-9는 거실·식당 입구 (5-6,11)와 이어져 통로로 읽힌다.",
-   "fix": "아일랜드를 x3-6으로 늘리고 (8-9,9-10)에 식기장이나 작업대를 둔다. 아니면 한 줄 줄인다."
-  },
-  {
-   "severity": "major",
-   "file": "src/editor/handInterior/jpHouseBlueprint.ts (jp-house-1f seed 1)",
-   "where": "거실·식당 x1-8 y14-19 — (3-7,14-15), (3-7,18-19), (4,16-17)",
-   "problem": "48칸 중 약 52%가 비어 있다. TV장·깔개·소파와 식탁 무리 사이, 그리고 남쪽 두 줄이 비어 있다.",
-   "fix": "소파를 깔개 아래로 붙이고 (3-4,18-19)에 사이드테이블과 스탠드를 둔다. (6-7,14-15)에 수납을 두거나 남단을 1줄 줄인다."
-  },
-  {
-   "severity": "major",
-   "file": "src/editor/handInterior/jpHouseBlueprint.ts (jp-house-2f seed 1)",
-   "where": "아이방 x1-8 y3-6 — (1-4,5-6), (2,3-4), (4,4), (6-8,3), (8,4-6)",
-   "problem": "32칸 중 약 53%가 비어 있고, 이층 침대 앞 남서쪽 8칸이 통째로 비어 있다.",
-   "fix": "깔개를 (2-4,5-6)으로 옮기고 (7-8,3)에 옷장이나 장난감 상자를 둔다. 아니면 동쪽을 1열 줄인다."
+   "severity": "minor",
+   "file": "src/editor/handInterior/jpHouseBlueprint.ts (jp-house-2f), verify-shots/jp-city/interior-house-2f-x2.png",
+   "where": "2F 복도 화분 (10,11–12), (10,14–15)",
+   "problem": "3칸 폭 복도의 같은 열에 같은 그림의 화분이 두 번 반복되어 기계적 반복이고 통로를 두 번 좁힌다.",
+   "fix": "하나만 남기고 다른 하나는 빼거나 다른 바닥 기물로 바꾸며, 위치를 x10과 x12에 엇갈리게 둔다."
   }
  ],
- "report": "**1. [major] 2층 부부 침실 x1-8 y10-15는 아직 덜 고쳐졌다.**\n- 바닥 48칸 가운데 약 24칸(50%)이 비어 있다.\n- 빈 칸: y12 한 줄 전체(x1-8), (3-8,11), (8,10), (1,13), (6-8,13), (2,14), (4,14), (2-4,15).\n- 이전 지적의 58%에서 조금 줄었을 뿐 30% 기준을 넘는다. 특히 y11-12가 침대·장 앞에서 두 줄짜리 복도처럼 읽힌다.\n- 고칠 방법:\n  - 방 남단을 2줄 줄여 y10-13으로 만든다.\n  - 줄이지 못하면 y12에 서랍장·화장대·책장 같은 앵커를 배치한다.\n\n**2. [major] 2층 서재 x15-20 y10-15는 고쳐지지 않았다.**\n- 36칸 가운데 약 20칸(56%)이 비어 있다.\n- y12 한 줄 전체(x15-20)가 여전히 비어 있다. (15-19,13), (15-16,14), (16-19,15)도 비어 있다.\n- 위쪽 줄(y10-11)의 책상·책장 무리와 아래쪽 줄(y14-15)의 벤치·램프 무리가 빈 띠로 끊겨 있다.\n- 고칠 방법:\n  - 방을 y10-13으로 줄이고 벤치 무리를 y13으로 올린다.\n  - 아니면 y12-13 가운데에 깔개와 작업 탁자를 둔다.\n\n**3. [major] 1층 탈의·세면실 x14-20 y8-10은 아직 덜 고쳐졌다.**\n- 21칸 가운데 약 13칸(62%)이 비어 있다.\n- 빈 칸: (14,8-10), (20,8-10), (15-17,9-10), (18,10).\n- 건조대 하나와 매트 하나가 늘었을 뿐 30%를 넘는다.\n- 고칠 방법:\n  - 폭을 x15-19로 줄인다. 문서의 「축척」 한계로 미뤄 둔 7×3을 이번에 해소하는 방법이기도 하다.\n  - 아니면 (14,9-10)에 수납 선반, (20,8-9)에 세탁 바구니나 수건장을 둔다.\n\n**4. [major] 1층 부엌 x1-9 y8-10은 아직 덜 고쳐졌다.**\n- 조리대 줄 아래 y9의 x2-6과 x8-9, y10의 x5-9가 비어 있다. 27칸 가운데 약 15칸(56%)이다.\n- 아일랜드 (3-4,10) 하나로는 띠가 끊기지 않는다. y10의 x5-9는 거실·식당으로 내려가는 입구 (5-6,11)와 이어진 통로처럼 읽힌다.\n- 고칠 방법:\n  - 아일랜드를 x3-6으로 늘린다.\n  - (8-9,9-10)에 식탁 겸 작업대나 식기장을 둔다.\n  - 아니면 부엌 북벽 면 아래를 한 줄 줄인다.\n\n**5. [major] 1층 거실·식당 x1-8 y14-19가 새로 걸린다.**\n- 48칸 가운데 약 25칸(52%)이 비어 있다.\n- 빈 칸: (3-7,14-15), (3-7,18-19), (4,16-17).\n- TV장 (1-2,14)과 소파 (1-2,18-19) 사이는 깔개 하나만 있고, 동쪽 식탁과의 사이 x3-4도 비어 있다.\n- 고칠 방법:\n  - 소파를 깔개 바로 아래 (2-3,18)로 붙인다.\n  - (3-4,18-19)에 사이드테이블과 스탠드를 둔다.\n  - (6-7,14-15)에 식기장 옆 수납을 둔다.\n  - 아니면 남단을 1줄 줄인다.\n\n**6. [major] 2층 아이방 x1-8 y3-6이 새로 걸린다.**\n- 32칸 가운데 약 17칸(53%)이 비어 있다.\n- 빈 칸: (1-4,5-6), (2,3-4), (4,4), (6-8,3), (8,4-6).\n- 이층 침대 앞 남서쪽 사분면 8칸이 통째로 비어 있다.\n- 고칠 방법:\n  - 깔개를 (2-4,5-6)으로 옮긴다.\n  - (7-8,3)에 장난감 상자나 옷장을 둔다.\n  - 아니면 동쪽을 1열 줄인다.\n\n이번에 걸린 여섯 개는 모두 같은 문제다. 문서 줄 43 「빈 바닥은 30% 이하 — 남으면 방을 줄인다」 규칙이 방 단위로 지켜지지 않았다. 집 전체 비율로 낸 수치(1층 16%, 2층 6%)는 위 실측과 맞지 않는다. 방 단위 측정이 미뤄진 것은 측정 도구의 한계이지, 빈 방을 받아들인다는 뜻이 아니다.\n\n```json\n{\"verdict\":\"fail\",\"findings\":[\n{\"severity\":\"major\",\"file\":\"src/editor/handInterior/jpHouseBlueprint.ts (jp-house-2f seed 1)\",\"where\":\"부부 침실 x1-8 y10-15 — 빈 칸: y12 한 줄 전체(x1-8), (3-8,11), (8,10), (1,13), (6-8,13), (2,14), (4,14), (2-4,15)\",\"problem\":\"바닥 48칸 중 약 50%가 비어 30% 기준을 넘는다. 이전 지적 58%에서 조금 줄었을 뿐이고, y11-12가 두 줄짜리 복도처럼 읽힌다.\",\"fix\":\"방을 y10-13으로 줄인다. 아니면 y12에 서랍장·화장대·책장 같은 앵커를 배치한다.\"},\n{\"severity\":\"major\",\"file\":\"src/editor/handInterior/jpHouseBlueprint.ts (jp-house-2f seed 1)\",\"where\":\"서재 x15-20 y10-15 — y12 한 줄 전체(x15-20), (15-19,13), (15-16,14), (16-19,15)\",\"problem\":\"36칸 중 약 56%가 비어 있고 y12 한 줄이 여전히 비어 있다. 위아래 가구 무리가 빈 띠로 끊긴다. 고쳐지지 않았다.\",\"fix\":\"방을 y10-13으로 줄이고 벤치 무리를 y13으로 올린다. 아니면 y12-13 가운데에 깔개와 작업 탁자를 둔다.\"},\n{\"severity\":\"major\",\"file\":\"src/editor/handInterior/jpHouseBlueprint.ts (jp-house-1f seed 1)\",\"where\":\"탈의·세면실 x14-20 y8-10 — (14,8-10), (20,8-10), (15-17,9-10), (18,10)\",\"problem\":\"21칸 중 약 62%가 비어 있다. 건조대와 매트만 늘었다.\",\"fix\":\"폭을 x15-19로 줄인다. 아니면 (14,9-10)에 수납 선반, (20,8-9)에 수건장이나 세탁 바구니를 둔다.\"},\n{\"severity\":\"major\",\"file\":\"src/editor/handInterior/jpHouseBlueprint.ts (jp-house-1f seed 1)\",\"where\":\"부엌 x1-9 y8-10 — y9의 x2-6·x8-9, y10의 x5-9, y8의 x8-9\",\"problem\":\"조리대 아래 띠가 여전히 비어 있다(27칸 중 약 56%). y10의 x5-9는 거실·식당 입구 (5-6,11)와 이어져 통로로 읽힌다.\",\"fix\":\"아일랜드를 x3-6으로 늘리고 (8-9,9-10)에 식기장이나 작업대를 둔다. 아니면 한 줄 줄인다.\"},\n{\"severity\":\"major\",\"file\":\"src/editor/handInterior/jpHouseBlueprint.ts (jp-house-1f seed 1)\",\"where\":\"거실·식당 x1-8 y14-19 — (3-7,14-15), (3-7,18-19), (4,16-17)\",\"problem\":\"48칸 중 약 52%가 비어 있다. TV장·깔개·소파와 식탁 무리 사이, 그리고 남쪽 두 줄이 비어 있다.\",\"fix\":\"소파를 깔개 아래로 붙이고 (3-4,18-19)에 사이드테이블과 스탠드를 둔다. (6-7,14-15)에 수납을 두거나 남단을 1줄 줄인다.\"},\n{\"severity\":\"major\",\"file\":\"src/editor/handInterior/jpHouseBlueprint.ts (jp-house-2f seed 1)\",\"where\":\"아이방 x1-8 y3-6 — (1-4,5-6), (2,3-4), (4,4), (6-8,3), (8,4-6)\",\"problem\":\"32칸 중 약 53%가 비어 있고, 이층 침대 앞 남서쪽 8칸이 통째로 비어 있다.\",\"fix\":\"깔개를 (2-4,5-6)으로 옮기고 (7-8,3)에 옷장이나 장난감 상자를 둔다. 아니면 동쪽을 1열 줄인다.\"}\n]}\n```"
+ "report": "**적대적 검수: jp 2층 단독주택 실내 18판**\n\n**지난 major 재확인 (1층 계단과 2층 계단 구멍이 겹치지 않음).** 이번 판에서는 해소됐다고 본다.\n- 1층 `stairs-up-wood`는 @(10,8)이다. 그림은 y6–8에 걸치지만 y6–7은 북쪽 벽면이고(오른쪽 시계·화장실 문과 같은 줄), 실제 바닥 칸은 (10,8)이다. 오르는 칸은 (10,9)이다.\n- 2층 `stairwell-down-wood`는 @(10,8)에 2×2(x10–11, y8–9)로 놓였다.\n- 따라서 같은 열 x10, 같은 줄 y8이 수직으로 겹친다. 1칸 계단 위에 2칸 구멍을 두는 것은 엔진 관례라 결함으로 보지 않는다.\n- 참고 구조 그림 `interior-house-structure-1f.png`·`interior-house-structure-2f.png`도 두 렌더와 같은 위치를 보인다.\n\n**남은 결함 (모두 minor)**\n1. **2층 구멍 동쪽 절반이 1층 화분 바로 위에 뚫려 있다.** 2층 (11,8)–(11,9)는 계단이 아닌 1층 복도 바닥 위이고, 그중 (11,8)에는 1층 화분이 있다. 위에서 내려다보면 계단이 아니라 화분과 바닥이 보이는 구멍이 된다.\n   - 고칠 것: 1층 화분을 (11,8)에서 빼서 복도 남쪽 끝이나 신발장 옆으로 옮긴다.\n2. **오르내리는 칸이 좌우로 맞지 않는다.** 1층에서는 (10,9)에서 오르는데 2층 도착은 (11,11)이다. 2층에서 내려오면 1층 (11,9)에 닿아, 계단 앞 칸(10,9)이 아니라 그 옆 칸에 선다. 오르고 내릴 때 한 칸씩 옆으로 밀린다.\n   - 고칠 것: 2층→1층 도착 칸을 (10,9)로, 1층→2층 도착 칸을 (10,10) 또는 (10,11)로 맞춘다.\n3. **2층 복도에 같은 화분이 두 번 반복된다.** 3칸 폭 복도의 같은 열 x10에 같은 그림의 화분이 (10,11–12)와 (10,14–15)에 있다. 기계적으로 반복된 것이고, 복도 서쪽 열을 두 번 막는다.\n   - 고칠 것: 하나만 남긴다. 다른 하나는 빼거나 서로 다른 기물(작은 장, 벽걸이 액자는 북벽에만 가능하므로 바닥 기물)로 바꾸고, 위치도 x10과 x12에 엇갈리게 둔다.\n\n```json\n{\"verdict\": \"pass\", \"findings\": [\n  {\"severity\": \"minor\", \"file\": \"src/editor/handInterior/jpHouseBlueprint.ts (jp-house-1f), verify-shots/jp-city/interior-house-1f-x2.png\", \"where\": \"1F 화분 (11,7–8), 2F stairwell 동쪽 열 (11,8)–(11,9) 바로 아래\", \"problem\": \"2층 계단 구멍의 동쪽 절반이 1층 계단이 아닌 복도 바닥과 화분 위에 뚫려 있어, 위에서 보면 구멍 아래가 화분이다.\", \"fix\": \"1층 화분을 (11,8)에서 빼서 복도 남쪽 끝이나 신발장 옆으로 옮긴다.\"},\n  {\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/out/interior-house-1f.report.json, interior-house-2f.report.json\", \"where\": \"1F travel cell (10,9)·2F 도착 (11,11), 2F link (10,10)/(11,10) → 1F (11,9)\", \"problem\": \"오르는 칸 (10,9)와 내려와 닿는 칸 (11,9)가 다르고, 2층 도착 칸도 x11이라 오르내릴 때마다 한 칸씩 옆으로 밀린다.\", \"fix\": \"2F→1F 도착을 (10,9)로, 1F→2F 도착을 (10,10) 또는 (10,11)로 같은 열 x10에 맞춘다.\"},\n  {\"severity\": \"minor\", \"file\": \"src/editor/handInterior/jpHouseBlueprint.ts (jp-house-2f), verify-shots/jp-city/interior-house-2f-x2.png\", \"where\": \"2F 복도 화분 (10,11–12), (10,14–15)\", \"problem\": \"3칸 폭 복도의 같은 열에 같은 그림의 화분이 두 번 반복되어 기계적 반복이고 통로를 두 번 좁힌다.\", \"fix\": \"하나만 남기고 다른 하나는 빼거나 다른 바닥 기물로 바꾸며, 위치를 x10과 x12에 엇갈리게 둔다.\"}\n]}\n```"
 }
