@@ -12,6 +12,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 SP = dict(bl='broadleaf (keyaki / mixed deciduous)', bb='bamboo grove (culms with feathery leaves)', sk='cherry blossom (sakura) forest',
           sg='japanese cedar (sugi) forest, narrow conical crowns', mp='autumn maple forest',
           mh='mixed hillside forest: cedar cones and broadleaf crowns mixed in one canopy')
+SP['bd'] = SP['bl']
 SHAPES = dict(blob='irregular blob of forest painted with the brush',
               strips='long horizontal strips 1, 2 and 3 tiles tall, and vertical strips 1 and 2 tiles wide (the 1-tile strips must still read as hedge or a row of small trees)',
               lshape='L-shaped forest (inner corner at the bend)', ring='forest ring around a clearing (inner edges face the clearing)',

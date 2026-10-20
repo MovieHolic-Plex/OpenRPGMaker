@@ -67,10 +67,10 @@ def shapes():
     blob = ((xx - 12.5) / 9.5) ** 2 + ((yy - 7.5) / 6.0) ** 2 + 0.18 * np.sin(xx * 0.9) * np.cos(yy * 0.7) < 1.0
     out.append(('blob', 'irregular blob of forest painted with the brush', W_, H_, blob, lambda: ground(W_, H_)))
     st = np.zeros((H_, W_), bool)
-    st[1, 2:24] = True                 # 1줄 띠
-    st[4:6, 2:24] = True               # 2줄 띠
-    st[8:11, 2:24] = True              # 3줄 띠
-    st[12:16, 3] = True; st[12:16, 7:9] = True   # 세로 1·2칸 띠
+    st[2, 2:24] = True                 # 1줄 띠(위로 넘치는 수관이 보이게 맵 위 끝에서 두 줄 띄운다)
+    st[5:7, 2:24] = True               # 2줄 띠
+    st[9:12, 2:24] = True              # 3줄 띠
+    st[13:16, 3] = True; st[13:16, 7:9] = True   # 세로 1·2칸 띠
     out.append(('strips', 'long horizontal strips 1, 2 and 3 tiles tall, and vertical strips 1 and 2 tiles wide', W_, H_, st, lambda: ground(W_, H_)))
     L = np.zeros((H_, W_), bool); L[2:14, 3:9] = True; L[9:14, 9:22] = True
     out.append(('lshape', 'L-shaped forest (inner corner at the bend)', W_, H_, L, lambda: ground(W_, H_)))

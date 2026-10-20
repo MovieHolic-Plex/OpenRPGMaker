@@ -22,8 +22,8 @@ from argon_judge import ask, uri  # noqa: E402
 PROMPT = """You are an adversarial pixel-art QA judge. Your only job is to FIND FAULTS that should block shipping. Do not grade on a curve,
 do not praise, do not compare against "typical AI art". The bar is the REFERENCE, which is hand-made art from this same project.
 
-Context: a 16px-per-tile, 3/4 top-down JRPG map editor. The candidate is a FOREST AUTOTILE: the user paints a forest region with a brush
-and every tile is chosen automatically from its 8 neighbours (plus its position), so the forest must look hand-drawn for ANY painted shape.
+Context: a 16px-per-tile, 3/4 top-down JRPG map editor. The candidate is a FOREST BRUSH: the user paints a forest region with a brush
+and the trees are composed automatically into that region, so the forest must look hand-drawn for ANY painted shape.
 Species: {species}. Painted shape in this scene: {desc}.
 
 Images:
@@ -66,7 +66,7 @@ def judge(name, img, desc, species, ref, out, rnd, peer=None):
     rf = Image.open(ref).convert('RGBA')
     rc = rf.crop((rf.width // 4, rf.height // 8, rf.width // 4 + im.width // 2, rf.height // 8 + im.height // 2))
     rc = rc.resize((rc.width * 4, rc.height * 4), Image.NEAREST)
-    peer_txt = (' 8) PEER at 1x: the BROADLEAF species of this same autotile painted in the same shape. Say in "vs_peer" whether the candidate is worse/same/better than this peer.\n'
+    peer_txt = (' 8) PEER at 1x: the BROADLEAF species of this same forest brush painted in the same shape. Say in "vs_peer" whether the candidate is worse/same/better than this peer.\n'
                 if peer else '')
     content = [{'type': 'text', 'text': PROMPT.format(species=species, desc=desc, peer_txt=peer_txt)},
                {'type': 'image_url', 'image_url': {'url': uri(rf)}}, {'type': 'image_url', 'image_url': {'url': uri(im)}},
