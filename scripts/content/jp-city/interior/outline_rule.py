@@ -10,7 +10,8 @@
                밝은 바닥 위에서는 회색 테도 묻혀서, 놓이는 바닥·벽과 휘도 차가 RIM(0.15) 이상 날 때까지 hodo 를 한 단씩 내린다.
   3 small    — 1칸 이하·높이 20px 이하·쓰임이 있는 작은 물건(스위치·전화·작은 상자). 1배에서 읽히게 거의 검정.
   4 black    — 놓이는 바닥(키 큰 것은 뒤 벽 포함) 어느 하나와 테두리 재료 휘도 차가 T 미만. 팔레트에서 가장 어두운 무채색(sumi 0, #000 아님).
-  5 material — 그 밖. 테두리 재료 램프의 가장 어두운 단.
+  5 material — 그 밖. 테두리 재료 램프의 가장 어두운 단. 그 단마저 놓이는 바닥·벽과 휘도 차가 RIM 미만이면(밝은 재료의 0단은 중간 회색) 거의 검정.
+어둡지 않은 테두리 화소(밝은 옆 테)도 놓이는 바닥·벽과 휘도 차가 RIM 미만이면 묻히므로 같은 외곽선으로 칠한다. 김·물방울 같은 떨어진 잔 화소(8 이웃 둘 이하)는 건드리지 않는다.
 선택 외곽선(selout): 위·왼쪽 테는 그 외곽선보다 한 단 밝게, 오른쪽은 외곽선 그대로, 바닥 닿는 맨 아랫줄은 늘 가장 어두운 무채색(물건을 앉힌다).
 
 보정 기록(2026-10-20, 다섯 방 실측):
@@ -73,8 +74,9 @@ def _darkest(p):
     return (_rgb(_R[o[0]][0]), _rgb(_R[o[0]][1])) if o else (INK, INK_HI)
 
 
-def edges(a):
-    """테두리 외곽선 화소 [(x, y, fill, sides)] — 투명과 맞닿은 불투명 화소 가운데 안쪽 재료보다 확실히 어두운 것."""
+def edges(a, every=False):
+    """테두리 외곽선 화소 [(x, y, fill, sides)] — 투명과 맞닿은 불투명 화소 가운데 안쪽 재료보다 확실히 어두운 것.
+    every=True 면 어둡지 않은 테두리 화소도 [(x, y, fill, sides, is_outline)] 로 함께 준다."""
     h, w = a.shape[:2]; op = a[..., 3] > 0
     def T_(x, y): return not (0 <= x < w and 0 <= y < h) or not op[y, x]
     out = []
@@ -94,9 +96,16 @@ def edges(a):
                 nx, ny = fx + (fx - x), fy + (fy - y)
                 if 0 <= nx < w and 0 <= ny < h and op[ny, nx]: fill = a[ny, nx]
             p = a[y, x]
-            if not (_lum(p) <= _lum(fill) - 18 or _lum(p) < 46): continue
-            out.append((x, y, tuple(int(v) for v in fill[:3]), (tu, td, tl, tr)))
+            dark = _lum(p) <= _lum(fill) - 18 or _lum(p) < 46
+            if every: out.append((x, y, tuple(int(v) for v in fill[:3]), (tu, td, tl, tr), dark))
+            elif dark: out.append((x, y, tuple(int(v) for v in fill[:3]), (tu, td, tl, tr)))
     return out
+
+
+def _thin(a, x, y):
+    """김·물방울 같은 떨어진 잔 화소 — 8 이웃 불투명이 둘 이하."""
+    h, w = a.shape[:2]
+    return sum(1 for dy in (-1, 0, 1) for dx in (-1, 0, 1) if (dx or dy) and 0 <= x + dx < w and 0 <= y + dy < h and a[y + dy, x + dx, 3] > 0) <= 2
 
 
 def ring_rl(a, e=None):
@@ -146,12 +155,19 @@ def apply(a, branch, surf=()):
     """갈래대로 테두리 외곽선 화소를 다시 칠한다. 팔레트 밖 색은 만들지 않는다."""
     out = a.copy()
     grey = grey_for(surf)
-    for x, y, fill, (tu, td, tl, tr) in edges(a):
+    for x, y, fill, (tu, td, tl, tr), dark in edges(a, every=True):
+        if _thin(a, x, y): continue                                  # 김·잔 화소는 그대로
+        if not dark:
+            # 어둡지 않은 테(밝은 옆 테 등) — 놓이는 바닥·벽 어느 것과 휘도 차가 RIM 미만이면 바닥에 묻히므로 외곽선으로 칠한다
+            if branch == 'none' or not surf or min(abs(rl(a[y, x]) - s_) for s_ in surf) >= RIM: continue
+            fill = tuple(int(v) for v in a[y, x, :3])
         if branch == 'none':
             out[y, x, :3] = fill; continue
         if td:                                                       # 바닥 닿는 줄 — 늘 가장 어두운 무채색
             out[y, x, :3] = INK; continue
-        if branch == 'material': lo, hi = _darkest(fill)
+        if branch == 'material':
+            lo, hi = _darkest(fill)
+            if surf and min(abs(rl(lo) - s_) for s_ in surf) < RIM: lo, hi = INK, INK_HI   # 재료 가장 어두운 단도 바닥에 묻히면(흰 재료 0단 = 회색) 거의 검정
         elif branch == 'light': lo, hi = grey
         else: lo, hi = INK, INK_HI
         out[y, x, :3] = hi if (tu or tl) and not tr else lo

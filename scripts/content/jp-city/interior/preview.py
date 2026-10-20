@@ -105,6 +105,10 @@ def render_room(room, lib=None):
         elif d['kind'] == 'hang':
             if not all(0 <= o['x'] + dx < W and face[o['y']][o['x'] + dx] == 1 for dx in range(d['w'])): issues.append('%s 걸이 — 벽면 윗줄이 아니다' % label)
             key = o['y'] * 16; py = o['y'] * 16
+        elif d['kind'] == 'door':                                    # 그림 = 틈 아래 벽면 두 줄(builder.ts drawKey 와 같은 순서)
+            key = (o['y'] + 3) * 16; py = (o['y'] + 1) * 16
+        elif d['kind'] == 'sidedoor':                                # 그림 = 통로 칸 위 칸막이 끝 벽면 두 줄 + 통로 칸
+            key = (o['y'] + 1) * 16; py = (o['y'] - 2) * 16
         else:
             key = -1; py = o['y'] * 16
         draws.append((key, n, o['x'] * 16, py, arr))
