@@ -64,7 +64,7 @@ function fallingStarShot(): OpeningAnimatic {
   return shot([
     backdrop("fall"),
     particles("stars", "stars", "#dfe8ff", { x: 0, y: 0, width: 528, height: 80 }, 24, 5),
-    glow("star-halo", "#c8f6ff", head, 54, { opacity: 0.8, glow: { inner: 0.45, pulse: { hz: 2.2, amount: 0.35, pattern: "pulse", seed: 3 } } }),
+    glow("star-halo", "#c8f6ff", head, 36, { opacity: 0.5, glow: { inner: 0.45, pulse: { hz: 2.2, amount: 0.35, pattern: "pulse", seed: 3 } } }),
     flicker("bridge-lamp", { x: 334, y: 194 }, 24), flicker("lamp-b", { x: 268, y: 190 }), flicker("win-c", { x: 160, y: 200 }),
     // 꼬리 끝이 향하는 동쪽 지평선 너머 섬광.
     { ...glow("impact", "#e8fbff", { x: 0, y: 0 }, 220, { startMs: 3000, endMs: 5600 }), x: 400, y: -10,
@@ -89,8 +89,10 @@ function observatoryShot(): OpeningAnimatic {
       { atMs: 300, text: "천문대장 하넬은 그 빛을 끝까지 지켜보았다." },
       { atMs: 3200, text: "떨어지기 직전, 별은 방향을 틀었다. 별똥별은 그러지 않는다." },
     ]),
-  ], { keys: { x: [{ atMs: 0, value: 264 }, { atMs: 6000, value: 252, ease: "ease-in-out" }], y: [{ atMs: 0, value: 158 }, { atMs: 6000, value: 146, ease: "ease-in-out" }] } },
-  { kind: "dither", durationMs: 650 });
+  // 돔 틈의 별똥별 꼬리가 화면 위쪽에 있다 — 레터박스를 얇게, 카메라를 위로 둔다(감사 VQA: 위 띠가 꼬리를 가렸다).
+  // 바둑판 디더 전환은 원화를 망친 것처럼 보였다 — 다른 컷처럼 페이드.
+  ], { keys: { x: [{ atMs: 0, value: 264 }, { atMs: 6000, value: 252, ease: "ease-in-out" }], y: [{ atMs: 0, value: 146 }, { atMs: 6000, value: 136, ease: "ease-in-out" }] } },
+  { kind: "fade", durationMs: 700 }, "#05070f", 0.06);
 }
 
 /** 4. 동쪽 숲 — 쓰러진 나무와 그을린 구덩이, 그 한가운데 유리창 달린 은빛 관. 관으로 다가선다(정수 2배). */
@@ -98,7 +100,7 @@ function crashShot(): OpeningAnimatic {
   const pod = { x: 272, y: 166 };
   return shot([
     backdrop("crash"),
-    glow("pod-glow", "#8ff0ff", pod, 90, { opacity: 0.85, glow: { inner: 0.35, pulse: { hz: 1.1, amount: 0.4, pattern: "pulse", seed: 7 } } }),
+    glow("pod-glow", "#8ff0ff", pod, 80, { opacity: 0.55, glow: { inner: 0.35, pulse: { hz: 1.1, amount: 0.4, pattern: "pulse", seed: 7 } } }),
     particles("embers", "sparks", "#ffb070", { x: pod.x - 80, y: pod.y - 40, width: 160, height: 90 }, 16, 9, { opacity: 0.8 }),
     particles("smoke", "dust", "#8090a8", { x: pod.x - 40, y: pod.y - 90, width: 110, height: 90 }, 18, 12, { opacity: 0.4, blend: undefined }),
     caption([

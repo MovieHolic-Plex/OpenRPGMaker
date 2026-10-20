@@ -18,6 +18,7 @@ import { runTool } from "@/editor/tools/toolRunner";
 import "@/editor/tools/toolRegistry";
 import { buildJrpgChapter } from "@/editor/tools/jrpgChapterTools";
 import { pickSpot, placeRoamer } from "@/editor/tools/jrpgVolumeTools";
+import { BEODEUL_THICKET_TILE } from "@/editor/tools/wildRouteBeodeul";
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import { buildFallenStarOpening, FALLEN_STAR_TITLE_BACKGROUND } from "./fallenStarOpening";
 import { clearOrphanShadows, clearUpperByLabel, rimPit } from "./fallenStarMapPolish";
@@ -26,6 +27,7 @@ import type { FlagshipDemoBuildResult } from "./types";
 
 const ENDING_ID = "end_fs_act1";
 const SW_IRIS_JOINED = "sw_fs_iris_joined";
+const SW_IRIS_AWAKE = "sw_fs_iris_awake";
 const ELENA_ID = "actor_fs_elena";
 const IRIS_ID = "actor_fs_iris";
 
@@ -114,6 +116,10 @@ function setupFoes(project: Project): { field: string[]; boss: string } {
   // 발렌은 필드와 같은 걷기 칩의 전투 시트로 싸운다(감사 3차: 필드는 망토 마법사, 전투는 보라 후드 — 다른 사람처럼 보였다).
   const valen = project.database.enemies.find((e) => e.id === "enemy_fs_valen");
   if (valen) valen.monsterResourceId = "charset-battler-actor1-4";
+  // 표시 레벨 — 견본 몬스터에서 복제한 레벨(발렌 33·수호상 27)이 Lv6 파티 앞에 그대로 떠 이야기와 어긋났다(감사 VQA).
+  // 보상은 위에서 직접 정했으므로 레벨은 표시와 레벨 차 경험치 보정에만 쓰인다.
+  const levels: Record<string, number> = { enemy_fs_wolf: 5, enemy_fs_spider: 4, enemy_fs_wisp: 6, enemy_fs_valen: 9, enemy_fs_guardian: 8 };
+  for (const enemy of project.database.enemies) if (levels[enemy.id] !== undefined) enemy.level = levels[enemy.id];
   makeTroop(project, "troop_fs_wolves", "숲늑대 무리", ["enemy_fs_wolf", "enemy_fs_wolf"]);
   makeTroop(project, "troop_fs_spiders", "덤불거미", ["enemy_fs_spider", "enemy_fs_spider"]);
   makeTroop(project, "troop_fs_wisps", "도깨비불", ["enemy_fs_wisp", "enemy_fs_wisp", "enemy_fs_wisp"]);
@@ -469,6 +475,30 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     { kind: "setSwitch", switchId: SW_IRIS_JOINED, value: true } as Command,
     narrate("이리스가 동료가 되었다."),
   );
+  // 뚜껑이 열리면 이리스가 관 곁에 선다 — 대사만 오가고 화면에 아무도 없었다(감사 VQA). 합류하면 일행 뒤로 들어가 사라진다.
+  if (!project.switches.some((s) => s.id === SW_IRIS_AWAKE)) project.switches.push({ id: SW_IRIS_AWAKE, name: "이리스 깨어남" });
+  podList.splice(opened + 1, 0, { kind: "setSwitch", switchId: SW_IRIS_AWAKE, value: true } as Command);
+  const podSpot = M(ids.forest).events.find((e) => e.id === `ev_${FS_PREFIX}_main_inspect1`)!;
+  const irisAt = [{ x: podSpot.x + 1, y: podSpot.y }, { x: podSpot.x - 1, y: podSpot.y }]
+    .find((p) => isPassable(project, M(ids.forest), p.x, p.y) && !M(ids.forest).events.some((e) => e.x === p.x && e.y === p.y));
+  if (irisAt) {
+    const chip = (direction: "left" | "right" | "down") => ({
+      sprite: { type: "bundled", id: "tex_easyrpg_charset_actor4" }, direction,
+      pattern: charsetFrameIndex({ characterIndex: 7, direction, pattern: 1 }),
+    });
+    const facing = irisAt.x > podSpot.x ? "left" : "right";
+    M(ids.forest).events.push({
+      id: `ev_${FS_PREFIX}_iris_field`, name: "이리스", x: irisAt.x, y: irisAt.y, trigger: { kind: "action" }, commands: [],
+      pages: [
+        { id: `ev_${FS_PREFIX}_iris_field_up`, name: "깨어남", conditions: [{ kind: "switch", switchId: SW_IRIS_AWAKE, value: true }],
+          graphic: chip(facing), trigger: { kind: "action" }, priority: "same", overlapForbidden: false,
+          movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [] },
+        { id: `ev_${FS_PREFIX}_iris_field_gone`, name: "합류", conditions: [{ kind: "switch", switchId: SW_IRIS_JOINED, value: true }],
+          graphic: { transparent: true }, trigger: { kind: "action" }, priority: "below", overlapForbidden: false,
+          movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [] },
+      ],
+    } as unknown as GameEvent);
+  }
   // 이리스가 합류하면 광장의 발렌 일행은 숲으로 떠난다(지하에서 다시 만난다).
   vanishWhen(M(ids.hub), `ev_${FS_PREFIX}_valen`, SW_IRIS_JOINED);
   vanishWhen(M(ids.hub), `ev_${FS_PREFIX}_knight`, SW_IRIS_JOINED);
@@ -595,7 +625,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     for (const c of [...pit].sort((p, q) => p - q)) {
       if (pit.has(c - 1)) continue;
       let end = c; while (pit.has(end + 1) && Math.floor((end + 1) / fm.width) === Math.floor(c / fm.width)) end += 1;
-      execTool(project, "fill_region", { mapId: fm.id, x: c % fm.width, y: Math.floor(c / fm.width), w: end - c + 1, h: 1, layer: "lower", material: "버들항 농장 흙길" });
+      execTool(project, "fill_region", { mapId: fm.id, x: c % fm.width, y: Math.floor(c / fm.width), w: end - c + 1, h: 1, layer: "lower", material: "버들항 모랫길" });
     }
     const debris: Array<[string, number, number]> = [
       ["bd-pick-volcano-cave-ember-a", -2, -2], ["bd-pick-volcano-cave-ember-a", 2, 1], ["bd-pick-volcano-cave-ember-a", -3, 0],
@@ -611,6 +641,36 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     for (let c = 0; c < live.lowerTiles.length; c += 1) if (live.lowerTiles[c] !== fm.lowerTiles[c] && fm.lowerTiles[c] === 737) pit.add(c);
     rimPit(project, live, pit); // fill_region 이 맵 객체를 바꿔 끼우므로 fm 이 아니라 지금 맵에 얹는다.
     for (const [kit, dx, dy] of debris) tryStamp(project, M(ids.forest), `kit:beodeul_city/${kit}`, pod.x + dx, pod.y + dy);
+  }
+  // 선포하는 발렌이 광장 가장자리 수정 기둥에 겹쳐 서 몸이 가렸다(감사 VQA) — 광장 포석 쪽 빈 칸으로 옮긴다.
+  const herald = M(ids.hub).events.find((e) => e.id === `ev_${FS_PREFIX}_valen`);
+  if (herald) {
+    const spot = nearFree(project, M(ids.hub), { x: herald.x + 2, y: herald.y }, 3, herald.id);
+    if (spot) { herald.x = spot.x; herald.y = spot.y; }
+  }
+  // 천문대 입구가 재단사 가게집(가위 간판·차양)이라 천문대로 읽히지 않았다(감사 VQA) — 간판·차양 칸을 같은 집의 민벽·창으로 바꾸고
+  // 집 곁에 놋쇠 혼천의를 세운다. 그림 칸 번호는 버들항 집 키트 bd-house-h123_1(재단사)과 민가 행(같은 지붕·벽)에서 가져왔다.
+  const obsDoor = M(ids.hub).events.find((e) => JSON.stringify(e).includes(`"mapId":"${M(ids.observatory).id}"`));
+  if (obsDoor) {
+    const hub: GameMap = M(ids.hub);
+    const swap: Record<number, number> = { 10287: 2652, 6046: 6041, 10596: 757, 10597: 2493, 10711: 5742, 10712: 2656 };
+    const ox: number = obsDoor.x, oy: number = obsDoor.y;
+    for (let y: number = oy - 4; y <= oy - 1; y += 1) for (let x: number = ox - 3; x <= ox + 3; x += 1) {
+      if (x < 0 || y < 0 || x >= hub.width || y >= hub.height) continue;
+      const i: number = y * hub.width + x;
+      const t: number = hub.upperTiles[i] ?? -1;
+      if (swap[t] !== undefined) hub.upperTiles[i] = swap[t]!;
+    }
+    for (const [dx, dy] of [[3, -3], [-4, -3], [3, 1], [-3, 1]] as const) {
+      if (tryStamp(project, hub, "kit:beodeul_city/bd-pick-wizard-tower-armillary", obsDoor.x + dx, obsDoor.y + dy)) break;
+    }
+  }
+  // 풀숲(짙은 풀 한 칸 그림)의 가장자리가 직각 네모로 끊겼다(감사 VQA 「각진 풀숲」) — 바깥 테두리 칸에 풀 둑 덧그림을 얹어 흐린다.
+  {
+    const fm = M(ids.forest);
+    const thicket = new Set<number>();
+    for (let c = 0; c < fm.lowerTiles.length; c += 1) if (fm.lowerTiles[c] === BEODEUL_THICKET_TILE) thicket.add(c);
+    rimPit(project, fm, thicket);
   }
   // 맵 마감(감사 3차) — 주인 없는 그림자, 화로의 방 긴 화덕 띠.
   for (const map of [M(ids.hub), M(ids.forest), M(ids.vault)]) clearOrphanShadows(project, map);

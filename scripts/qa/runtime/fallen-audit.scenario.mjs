@@ -39,13 +39,17 @@ const dumpState = (name) => ({
 
 export default {
   id: "fallen-audit",
-  projectFixture: process.env.RES_FIXTURE ?? ".omo/fs/v15.json",
+  projectFixture: process.env.RES_FIXTURE ?? ".omo/fs/v16.json",
   viewport: { width: vw, height: vh },
   beats: [
-    { id: "title", note: "타이틀", ops: [{ kind: "waitFor", testid: "title-screen", state: "present", timeoutMs: 60000 }], shot: true },
+    { id: "title", note: "타이틀", ops: [
+      { kind: "waitFor", testid: "title-screen", state: "present", timeoutMs: 60000 },
+      // 입장 연출(로고·메뉴가 차례로 뜬다)이 끝난 뒤 찍는다 — 연출 중에 찍어 로고 없는 타이틀로 보였다(감사 VQA).
+      { kind: "waitForAttr", testid: "title-screen", attr: "data-seq-state", value: "done", timeoutMs: 30000 },
+    ], shot: true },
     { id: "boot", note: "새 게임 → 오프닝 건너뛰기", ops: [
       // 타이틀 입장 연출 중의 첫 Enter 는 연출만 건너뛴다 — 오프닝이 뜰 때까지 누른다.
-      { kind: "pressUntil", key: "Enter", testid: "cinematic-sequence", state: "present", maxPresses: 8, timeoutMs: 2500 },
+      { kind: "pressUntil", key: "Enter", testid: "cinematic-sequence", state: "present", maxPresses: 4, timeoutMs: 12000 },
       { kind: "hold", dir: null, ms: 600 },
       { kind: "pressUntil", key: "Escape", testid: "cinematic-sequence", state: "absent", maxPresses: 6 },
       { kind: "waitForRuntime", timeoutMs: 120000 },

@@ -68,10 +68,36 @@ async function moveCursorTo(page, wanted) {
     const wantIdx = ui.menu.indexOf(wanted);
     if (wantIdx < 0) return false;
     if (cur === wantIdx) return true;
-    await page.keyboard.press(cur < 0 || wantIdx > cur ? "ArrowDown" : "ArrowUp");
-    await page.waitForTimeout(50);
+    // 커맨드 카드는 두 열(공격|스킬 / 방어|아이템)이라 위아래만으로는 옆 열에 못 간다 — 커서가 안 움직이면 옆으로.
+    const forward = cur < 0 || wantIdx > cur;
+    for (const key of forward ? ["ArrowDown", "ArrowRight"] : ["ArrowUp", "ArrowLeft"]) {
+      await page.keyboard.press(key, { delay: 120 });
+      await page.waitForTimeout(80);
+      if ((await readUi(page)).cursor !== cur) break;
+    }
   }
   return false;
+}
+
+// 커서로 못 가면(두 열 카드에서 키가 씹힘) 그 칸을 직접 누른다.
+async function choose(page, id) {
+  if (await moveCursorTo(page, id)) { await page.keyboard.press("Enter", { delay: 350 }); return true; }
+  if (process.env.FS_DEBUG) console.error("DBG rects", await page.evaluate(() => JSON.stringify([...document.querySelectorAll("button.battle-command")].map((b) => [b.dataset.testid, b.disabled, b.dataset.battleCommandCursor, Math.round(b.getBoundingClientRect().x), Math.round(b.getBoundingClientRect().y), getComputedStyle(b).visibility, document.activeElement === b]))));
+  if (process.env.FS_DEBUG_KEYS) {
+    const cur = () => page.evaluate(() => [...document.querySelectorAll("button.battle-command")].findIndex((b) => b.dataset.battleCommandCursor === "true"));
+    console.error("DBG key before", await cur());
+    await page.keyboard.press("ArrowRight", { delay: 150 }); await page.waitForTimeout(400);
+    console.error("DBG key after pw ArrowRight", await cur());
+    await page.evaluate(() => document.activeElement?.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true, cancelable: true })));
+    await page.waitForTimeout(300);
+    console.error("DBG key after synthetic", await cur(), await page.evaluate(() => document.activeElement?.outerHTML.slice(0, 120)));
+    await page.keyboard.press("d", { delay: 150 }); await page.waitForTimeout(400);
+    console.error("DBG key after d", await cur());
+  }
+  // DOM 클릭 — Playwright 클릭은 커서 깜빡임 애니메이션 때문에 「안정 대기」에서 시간이 다 갔다.
+  const clicked = await page.evaluate((testid) => { const b = document.querySelector(`[data-testid="${testid}"]`); if (!b || b.disabled) return false; b.click(); return true; }, id);
+  if (clicked) { if (process.env.FS_DEBUG) console.error("DBG domclick", id); return true; }
+  try { await page.click(`[data-testid="${id}"]`, { timeout: 2000 }); if (process.env.FS_DEBUG) console.error("DBG click", id); return true; } catch (e) { if (process.env.FS_DEBUG) console.error("DBG click-fail", id, String(e).slice(0, 160)); return false; }
 }
 
 // 커맨드 단계에서 plan 에 맞는 testid 를 고른다.
@@ -164,6 +190,7 @@ async function playRun(browser, serverUrl, run) {
     const ctx = { decisions: 0, cancels: 0, shotCommand: false, shotTarget: false, shotResult: false, sawScene: false };
     for (let i = 0; i < LOOP_MAX && Date.now() - startedAt < RUN_DEADLINE_MS; i++) {
       const ui = await readUi(page);
+      if (process.env.FS_DEBUG) console.error("DBG", i, ctx.decisions, ui.directorStep, ui.busy, ui.cursor, JSON.stringify(ui.menu.slice(0, 8)));
       if (i % 40 === 0) (record.trace ??= []).push({ i, ...ui, menu: ui.menu.slice(0, 6), pos: await page.evaluate(() => { const s = window.__oprnDebug.readState(); return [s.currentMapId, s.x, s.y, s.switches.sw_fs_main_step0, s.switches.sw_fs_main_step1, s.switches.sw_fs_main_started]; }) });
       // 말을 걸어도 결전이 시작되지 않았으면(부하 걸린 머신에서 첫 입력이 씹힌다) 다시 건다.
       if (!ctx.sawScene && !ui.scene && !ui.dialogue && i > 0 && i % 15 === 0) {
@@ -239,7 +266,11 @@ async function playRun(browser, serverUrl, run) {
       // 서브메뉴(스킬/아이템 행이 보임): 첫 행을 고른다.
       const submenu = ui.menu.filter((id) => id.startsWith("actor-skill-") || id.startsWith("actor-item-"));
       if (submenu.length > 0 && !ui.busy) {
-        if (await moveCursorTo(page, submenu[0])) await page.keyboard.press("Enter", { delay: 350 });
+        // 스킬은 「공격」 스킬을 빼고 돌아가며 고른다(첫 행만 고르면 일반 공격과 같아 스킬 검증이 안 된다).
+        const real = submenu.filter((id) => !/skill_attack$/.test(id));
+        const pick = real.length > 0 ? real[ctx.decisions % real.length] : submenu[0];
+        (record.picks ??= []).push(pick);
+        await choose(page, pick);
         ctx.decisions += 1;
         continue;
       }
@@ -263,7 +294,7 @@ async function playRun(browser, serverUrl, run) {
         let pick = pickCommand(ui, run, ctx);
         if (!usable.includes(pick)) pick = "actor-command-attack";
         if (usable.includes(pick)) {
-          if (await moveCursorTo(page, pick)) await page.keyboard.press("Enter", { delay: 350 });
+          await choose(page, pick);
           ctx.decisions += 1;
           continue;
         }
