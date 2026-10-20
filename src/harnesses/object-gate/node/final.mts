@@ -24,7 +24,7 @@ import { OBJECT_GATE_KINDS, OBJECT_GATE_STYLE_KINDS, defaultObjectGateStyleKind,
 import { GATE_DATA, calibratedFinalProfiles, listFinals, listQueueBatches, readFinal, readFinalProfiles, readPng, readReceipt, styleRefs, writeFinal, writeFinalProfile, writeHeldImage } from './store';
 import { receiptCells, sheetCells } from './cells';
 
-export const FINAL_RULES_VERSION = 4;
+export const FINAL_RULES_VERSION = 6;
 export const FINAL_JUDGE = { provider: 'claude-cli' as const, model: 'claude-opus-5-5', effort: 'medium' };
 export const FINAL_BATCH = 6;
 /** 표 수. 각 표는 다른 묶음 섞기로 따로 부른다. 모든 표가 pass 일 때만 pass — 앞 표가 fail 이면 뒤 표는 부르지 않는다(규칙 v3: 한 번만 보면 같은 그림이 판마다 뒤집혔다). */
@@ -34,31 +34,41 @@ const MAX_SIDE = 640; // 확대 그림의 긴 변 상한(8배가 넘치면 정�
 const STANDING = Object.entries(OBJECT_GATE_KINDS).filter(([, v]) => !v.exempt).map(([k, v]) => `- ${k}: ${v.meaning}. Minimum top rows ${v.minTopRows ?? '-'}${v.minOpeningRows ? `, opening interior rows ${v.minOpeningRows}` : ''}${v.minFrontRows ? `, front face rows ${v.minFrontRows}` : ''}.`).join('\n');
 const EXEMPT = Object.entries(OBJECT_GATE_KINDS).filter(([, v]) => v.exempt).map(([k, v]) => `- ${k}: ${v.meaning}.`).join('\n');
 
-export const FINAL_SYSTEM = `You are the PROSECUTOR at the final art gate of a 16px top-down JRPG chipset. Several candidate sprites are put before you. For EACH candidate your job is to find every reason it is NOT an acceptable map object of its declared kind. A candidate passes only when you looked hard for a defect and found none. When you are unsure, or the evidence is ambiguous, the verdict is FAIL. A wrong pass is far worse than a wrong fail: failed art is simply redrawn.
+export const FINAL_SYSTEM = `You are the PROSECUTOR at the final art gate of a 16px top-down JRPG chipset. Several candidate sprites are put before you. Each verdict has two halves.
+(1) THE 3/4 VIEW — the hard criterion. Find every reason the candidate is NOT a correct 3/4 top-view object of its declared kind. When you are unsure about the view, it FAILS (sure=false).
+(2) THE STYLE — fail only for a clear, nameable mismatch with the house art (listed under charge 8). When you cannot name one, the style passes.
 
-THE VIEW CONTRACT ("3/4 top view"): the camera is south of the object looking down about 45 degrees. A standing object shows (1) its TOP surfaces — horizontal surfaces seen from above, foreshortened into a band of several rows that ends in a front-edge line, often with 1-2 rows of eave shadow — AND (2) its FRONT (south) face below. An object turned east or west shows its own side profile as its south face; that is normal, but its horizontal surfaces must still be seen from above.
+THE VIEW CONTRACT ("3/4 top view"): the camera is south of the object looking down about 45 degrees. A standing object shows (1) its TOP surfaces — horizontal surfaces seen from above, foreshortened into a band of rows that ends in a front-edge line, often with 1-2 rows of eave shadow — AND (2) its FRONT (south) face below. An object turned east or west shows its own side profile as its south face; that is normal, but its horizontal surfaces must still be seen from above.
 
-CHARGES — fail the candidate if ANY one holds (cite it in "reasons"):
-1. FRONT ELEVATION: the main body is drawn as a flat orthographic front view; its "top" is only the 1-row outline, a 1-2 row rim/lip, or a front-facing strip (cornice, beam, panel) with no foreshortened plane behind it. Count rows on the 8x view.
-2. TOP TOO THIN: the top plane exists but is shallower than the minimum rows for the declared kind (listed below), or the opening of a container does not show its inside from above.
+ANCHORS: image 3 shows ACCEPTED ORIGINAL pieces of the same declared kind, taken from the house chipsets (Beodeul city, Japanese city, the hand-drawn v5 interior). They are on-style and pass this gate by definition. They are your yardstick for how deep a top plane is drawn at this size and how the house art is shaded and outlined. A candidate that draws its top plane as clearly as the anchors of its kind is not charged under 1-2; a candidate whose top is clearly thinner than the anchors, or absent where the anchors show one, is.
+
+VIEW CHARGES — fail the 3/4 half if ANY one holds (cite it in "reasons"):
+1. FRONT ELEVATION: the main body is drawn as a flat orthographic front view; its "top" is only the 1-row outline, a 1-2 row rim/lip, or a front-facing strip (cornice, beam, panel) with no foreshortened plane behind it. Count rows on the magnified view.
+2. TOP TOO THIN: the top plane exists but is clearly shallower than the anchors of the same kind draw it at the same size. The minimum rows listed below are the default yardstick; when an anchor of the same kind and similar height draws its top or opening with fewer rows, the anchor wins (one row less than that anchor still fails). FILLED TOPS: when a container, barrel, crate, basket, pot or shelf is filled with goods, soil, a plant or liquid that is drawn heaped or spread as seen from above (you see the tops of the fruit/loaves/bottles/leaves and the far rim or back edge behind them), that fill IS the top seen from above — count it as the top and do not charge 2 for a hidden opening. Charge only when the fill and the rim are both a flat front-facing band.
 2b. SEAT vs BACKREST (kind seat): the sitting surface is the plane at sitting height that the legs or frame attach directly under. A large panel at the top of a chair drawn like a framed picture — outlined on all sides, a bevel highlight inside, flat face shading — is the BACKREST seen face-on, not the seat. If the only possibly-horizontal part between that panel and the legs is a 1-3 row strip, charge 1. If you cannot tell whether a panel is a seat top seen from above or a backrest seen face-on, charge 1 and set sure=false.
-3. A MAJOR PART HAS NO TOP: some big structural part (a cabinet hood, a second crate, a staircase, a chimney, a canopy frame, a machine housing) is drawn only as a vertical face where a horizontal surface should be visible. Decor riding on the object (a plant in a pot, a statue figure on its plinth, goods on a counter, a water jet) is not charged; the body carrying it is. For kind seat ONLY, the backrest and armrests may be vertical faces, but the SITTING SURFACE must show its top.
+3. A MAJOR PART HAS NO TOP: some big structural part (a cabinet hood, a second crate, a staircase, a chimney, a canopy frame, a machine housing) is drawn only as a vertical face where a horizontal surface should be visible. Decor riding on the object (a plant in a pot, a statue figure on its plinth, goods on a counter or shelf, a water jet) is not charged; the body carrying it is. FABRIC COVERS (an awning, a parasol, a market-stall canopy, a bed canopy curtain) slope toward the viewer; their visible striped face IS their top seen at an angle and is not charged under 3, as long as the counter, table or bed under them shows its top. For kind seat ONLY, the backrest and armrests may be vertical faces, but the SITTING SURFACE must show its top.
 4. SIDE FACE / ISOMETRIC: a receding diagonal side face, a two-point or isometric projection, a visible east or west side plane next to the south face of a box-like body, or a rhombus-shaped top. 3/4 view has no receding side faces.
 5. TOP-DOWN SLAB: no front face (fewer than 3 rows) — a pure plan view of a standing object.
-6. COLUMN CAP: a column-like object whose top end is a dome, hat or flat band instead of an elliptical cap plate that is narrower again above and below its widest rows.
-7. WRONG KIND: the declared kind does not describe the object. Exempt kinds skip charges 1-6 ONLY when the object truly is that kind (a cabinet, rack, crate, display case or sign stand called organic, debris, flat, wall_mounted, terrain or front_prop is a WRONG KIND and fails). front_prop is only a single flat front panel (A-frame sign, post sign, laundry/net drying frame, banner stand) with no volume and holding no goods.
-8. STYLE BELOW THE BEODEUL BAR: compare with the Beodeul reference pieces of the same style kind at the same scale. Each theme keeps its own palette — never judge hue, brightness or saturation. Charge shallow craft: about 2-3 lightness steps per material instead of Beodeul's 5-6; a uniform near-black or pure-black outline around every shape instead of the darker tone of the adjacent material; large flat fills (5x5 source pixels or more of one colour with no grain, dot or variation); clearly less visible information per 16x16 tile than the reference; muddy or broken pixel clusters; pillow shading. The references ARE the bar, texture included: Beodeul foliage, grass, soil and stone are built from dense multi-tone speckle and dither, and that is texture, not noise. Charge "noisy", "muddy" or "speckled" only when the candidate is clearly LESS readable or LESS structured than the reference shown beside it — a piece drawn with the same kind of texture and value range as the reference does not get charge 8 for that texture. Small or thin pieces are not failed for being small, but they must look as crafted as the reference beside them.
+6. COLUMN CAP: a pillar, stele or column whose top end is a dome, hat or flat band instead of an elliptical cap plate that is narrower again above and below its widest rows.
+7. WRONG KIND: the declared kind does not describe the object — it is plainly a different category (a seat declared as a box, a building declared as a prop). A standing object declared as the nearest-fitting standing kind (a cart or stall called low_furniture, a display stand called frame) is NOT a wrong kind. Exempt kinds skip charges 1-6 ONLY when the object truly is that kind (a cabinet, rack, crate, display case or sign stand called organic, debris, flat, wall_mounted, terrain or front_prop is a WRONG KIND and fails). front_prop is only a single flat front panel (A-frame sign, post sign, laundry/net drying frame, banner stand) with no volume and holding no goods.
+
+STYLE CHARGE — fail the style half only when you can name one of these with the rows/parts where it occurs:
+8a. STICKER OUTLINE: a uniform pure-black or near-neutral black line around every shape and part, where the anchors outline with darker tinted tones of the adjacent material.
+8b. FLAT FILL: a main material drawn in only 1-2 tones over large areas (5x5 source pixels or more) where the anchors shade the same material in 4 or more tones.
+8c. FOREIGN PIXEL SYSTEM: mixed pixel sizes, anti-aliasing or blur, smooth gradients, painterly or photographic texture — anything not drawn on the same crisp 1-pixel grid as the anchors.
+8d. ILLEGIBLE: at 1x the object cannot be recognised as what it is.
+Never charge palette, hue, brightness, saturation, texture density, dither or speckle, or "less detailed than the anchor" by itself. Each theme keeps its own palette.
 
 STANDING KINDS (charges 1-6 apply; minimum top rows are SOURCE pixel rows of the main top plane, back edge to front-edge line inclusive):
 ${STANDING}
 EXEMPT KINDS (charges 1-6 do not apply if the kind is right; charges 7-8 always apply):
 ${EXEMPT}
 
-HOW TO WORK: Image 1 is a GUIDE of synthetic shapes (green = right, red = wrong). Image 2 shows REAL pairs of the same object drawn wrong (red) and right (green). Image 3 shows Beodeul REFERENCE pieces for the style kinds in this call, each at 1x and magnified. Then each candidate gets one image labelled with its number: the candidate at 1x (left; how it reads in the game) and magnified with a faint 1-pixel grid and a brighter line every 4 source rows (right; count rows there). The grey/checker background is not part of the sprite. Judge each candidate on its own; the others in the call are unrelated. Do not let a detailed or pretty drawing talk you out of a structural charge.
+HOW TO WORK: Image 1 is a GUIDE of synthetic shapes (green = right, red = wrong). Image 2 shows REAL pairs of the same object drawn wrong (red) and right (green). Image 3 shows the ANCHORS for the kinds in this call, one row per kind, each at 1x and magnified. Then each candidate gets one image labelled with its number: the candidate at 1x (left; how it reads in the game) and magnified with a faint 1-pixel grid and a brighter line every 4 source rows (right; count rows there). The grey/checker background is not part of the sprite. Judge each candidate on its own; the others in the call are unrelated. Do not let a detailed or pretty drawing talk you out of a structural charge.
 
 Reply ONLY a JSON array, one object per candidate in order:
-[{"id": <number>, "kind_ok": bool, "facing": "south"|"east"|"west"|"north"|"round"|"unclear", "top_rows": int, "front_rows": int, "charges": [<numbers of charges that hold>], "view34": "pass"|"fail", "style": "pass"|"fail", "sure": bool, "reasons": [short strings, each naming the charge and pointing at rows/parts], "verdict": "pass"|"fail"}]
-"verdict" is "pass" only if kind_ok is true, view34 and style are both "pass", charges is empty and sure is true. Otherwise "fail" with at least one reason.`;
+[{"id": <number>, "kind_ok": bool, "facing": "south"|"east"|"west"|"north"|"round"|"unclear", "top_rows": int, "front_rows": int, "charges": [<charges that hold, e.g. 1, 2, "8a">], "view34": "pass"|"fail", "style": "pass"|"fail", "sure": bool, "reasons": [short strings, each naming the charge and pointing at rows/parts], "verdict": "pass"|"fail"}]
+"sure" is about the 3/4 half. "verdict" is "pass" only if kind_ok is true, view34 and style are both "pass", charges is empty and sure is true. Otherwise "fail" with at least one reason.`;
 
 // ---------- 그림 ----------
 type Img = { width: number; height: number; data: Uint8Array };
@@ -133,12 +143,65 @@ export function referenceBoard(kinds: ObjectGateStyleKind[]): Buffer {
   return c.buf();
 }
 
+// ---------- 기준 원본(anchors) ----------
+/** 원본 묶음(calibration/originals.json) — 칩셋의 받아들여진 원본. 판정자에게 같은 종류의 기준으로 보이고(자기 자신은 빼고), 보정 조건 (b) 의 표본이기도 하다. */
+type Anchor = { label: string; png: string; kind: ObjectGateKind; family: string; sha: string; img: Img };
+let anchorCache: Anchor[] | null = null;
+export async function anchors(): Promise<Anchor[]> {
+  if (anchorCache) return anchorCache;
+  const root = resolve(GATE_DATA, 'calibration'), file = resolve(root, 'originals.json');
+  const out: Anchor[] = [];
+  if (existsSync(file)) {
+    const groups = (JSON.parse(readFileSync(file, 'utf8')) as { groups: Record<string, string[]> }).groups;
+    const kindOf = new Map<string, ObjectGateKind>();
+    for (const set of readdirSync(root)) {
+      const items = resolve(root, set, 'items.json');
+      if (existsSync(items)) for (const it of JSON.parse(readFileSync(items, 'utf8')) as Array<{ name: string; kind: ObjectGateKind }>) kindOf.set(`${set}/${it.name}`, it.kind);
+    }
+    for (const [family, labels] of Object.entries(groups)) for (const label of labels) {
+      const png = resolve(root, `${label}.png`), kind = kindOf.get(label);
+      if (!kind || !existsSync(png)) continue;
+      const { width, height, data } = readPng(png);
+      out.push({ label, png, kind, family, sha: await objectGatePixelSha256(width, height, data), img: { width, height, data } });
+    }
+  }
+  return (anchorCache = out.sort((a, b) => a.sha.localeCompare(b.sha)));
+}
+const KIND_NEAR: Partial<Record<ObjectGateKind, ObjectGateKind[]>> = { other: ['low_furniture', 'box', 'container'], frame: ['tall_furniture', 'low_furniture'], column: ['other', 'container'], figure: ['other', 'container'], front_prop: ['tall_furniture', 'other'], organic: ['container'], terrain: ['flat'], debris: ['flat'], wall_mounted: ['tall_furniture'] };
+/** 종류마다 기준 원본 최대 3장: 같은 종류(없으면 가까운 종류), 이 호출의 후보와 같은 그림은 뺀다, 칩셋을 섞어 고른다(해시 순서로 결정적). */
+function pickAnchors(all: Anchor[], kind: ObjectGateKind, exclude: Set<string>): Anchor[] {
+  for (const k of [kind, ...(KIND_NEAR[kind] ?? [])]) {
+    const pool = all.filter(a => a.kind === k && !exclude.has(a.sha));
+    if (!pool.length) continue;
+    const byFamily = new Map<string, Anchor[]>();
+    for (const a of pool) (byFamily.get(a.family) ?? byFamily.set(a.family, []).get(a.family)!).push(a);
+    const picked: Anchor[] = [];
+    for (let i = 0; picked.length < 3 && i < 4; i++) for (const list of byFamily.values()) if (list[i] && picked.length < 3) picked.push(list[i]!);
+    return picked;
+  }
+  return [];
+}
+export function anchorBoard(rows: Anchor[][]): Buffer {
+  const pad = 10, gap = 16, cap = 260;
+  const sc = (img: Img) => Math.max(2, Math.min(6, Math.floor(cap / Math.max(img.width, img.height))));
+  const dims = rows.map(list => list.reduce((d, a) => ({ w: d.w + a.img.width + pad + a.img.width * sc(a.img) + gap, h: Math.max(d.h, a.img.height * sc(a.img)) }), { w: pad, h: 20 }));
+  const W = Math.max(200, ...dims.map(d => d.w)), H = dims.reduce((s2, d) => s2 + d.h + pad * 2, pad);
+  const c = new Canvas(W, H, [64, 66, 76]);
+  let y = pad;
+  rows.forEach((list, r) => {
+    let x = pad;
+    for (const a of list) { const k = sc(a.img); c.blit(a.img, x, y + dims[r]!.h - a.img.height, 1, false); x += a.img.width + pad; c.blit(a.img, x, y + dims[r]!.h - a.img.height * k, k, false); x += a.img.width * k + gap; }
+    y += dims[r]!.h + pad * 2;
+  });
+  return c.buf();
+}
+
 // ---------- 프로필 ----------
 const fileHash = (p: string) => (existsSync(p) ? createHash('sha256').update(readFileSync(p)).digest('hex').slice(0, 16) : null);
 export function finalProfile() {
   const manifest = resolve(GATE_DATA, 'style-refs', 'manifest.json');
   return { version: FINAL_RULES_VERSION, judge: FINAL_JUDGE, system: FINAL_SYSTEM, batch: FINAL_BATCH, votes: FINAL_VOTES, maxSide: MAX_SIDE,
-    guide: fileHash(resolve(GATE_DATA, 'view34-guide.png')), pairs: fileHash(resolve(GATE_DATA, 'view34-pairs.png')), styleRefs: fileHash(manifest), board: 'v1-1x+grid' };
+    guide: fileHash(resolve(GATE_DATA, 'view34-guide.png')), pairs: fileHash(resolve(GATE_DATA, 'view34-pairs.png')), originals: fileHash(resolve(GATE_DATA, 'calibration', 'originals.json')), board: 'v2-anchors-by-kind' };
 }
 const stable = (v: unknown): string => Array.isArray(v) ? `[${v.map(stable).join(',')}]` : v && typeof v === 'object' ? `{${Object.keys(v).sort().map(k => `${JSON.stringify(k)}:${stable((v as Record<string, unknown>)[k])}`).join(',')}}` : JSON.stringify(v);
 export const finalProfileHash = () => createHash('sha256').update(stable(finalProfile())).digest('hex').slice(0, 16);
@@ -178,11 +241,14 @@ const cachePath = (profile: string, p: Prepared, vote: number) => resolve(CACHE,
 
 /** 한 호출 = 같은 화풍 종류 묶음 최대 FINAL_BATCH 장. 답이 모자라거나 틀리면 그 호출을 다시(3번까지). */
 async function judgeCall(batch: Prepared[], profile: string, vote: number): Promise<Map<Prepared, Answer | { error: string }>> {
-  const kinds = [...new Set(batch.map(p => p.styleKind))];
+  const kinds = [...new Set(batch.map(p => p.kind))];
+  const all = await anchors(), exclude = new Set(batch.map(p => p.sha));
+  const rows = kinds.map(k => pickAnchors(all, k, exclude));
   const guide = readFileSync(resolve(GATE_DATA, 'view34-guide.png')), pairs = readFileSync(resolve(GATE_DATA, 'view34-pairs.png'));
-  const images = [guide, pairs, referenceBoard(kinds), ...batch.map((p, i) => candidateBoard(p.img, i + 1))];
+  const images = [guide, pairs, anchorBoard(rows), ...batch.map((p, i) => candidateBoard(p.img, i + 1))];
   const lines = batch.map((p, i) => `#${i + 1}: declared kind "${p.kind}" — ${OBJECT_GATE_KINDS[p.kind].meaning}. Style kind "${p.styleKind}" (${OBJECT_GATE_STYLE_KINDS[p.styleKind]}). Name: ${p.name}. Size ${p.img.width}x${p.img.height} source pixels (shown at 1x and ${scaleFor(p.img)}x).`);
-  const text = `Image 3 rows (top to bottom): Beodeul references for style kinds ${kinds.join(', ')}.\nCandidates (images 4..${3 + batch.length}):\n${lines.join('\n')}\nProsecute each candidate. Reply only the JSON array with ${batch.length} objects.`;
+  const anchorText = kinds.map((k, i) => `row ${i + 1}: kind ${k} — ${rows[i]!.length ? rows[i]!.map(a => `${a.family} ${a.label.split('/').pop()}${a.kind !== k ? ` (kind ${a.kind})` : ''}`).join('; ') : 'no anchor of this kind'}`).join('\n');
+  const text = `Image 3 anchors (accepted originals, one row per kind):\n${anchorText}\nCandidates (images 4..${3 + batch.length}):\n${lines.join('\n')}\nProsecute each candidate. Reply only the JSON array with ${batch.length} objects.`;
   const content = [{ type: 'text', text }, ...images.map(b => ({ type: 'image', source: { type: 'base64', media_type: 'image/png', data: b.toString('base64') } }))];
   let last = '';
   for (let attempt = 0; attempt < 6; attempt++) {
@@ -249,7 +315,7 @@ export async function judgeFinal(items: FinalItem[], opts: { concurrency: number
     let seed = 7919 * vote; const rnd = () => ((seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff);
     const order = vote === 1 ? todo : todo.map(p => [rnd(), p] as const).sort((a, b) => a[0] - b[0]).map(x => x[1]);
     const groups = new Map<string, Prepared[]>();
-    for (const p of order) (groups.get(p.styleKind) ?? groups.set(p.styleKind, []).get(p.styleKind)!).push(p);
+    for (const p of order) (groups.get(p.kind) ?? groups.set(p.kind, []).get(p.kind)!).push(p);
     const calls: Prepared[][] = [];
     for (const list of groups.values()) {
       let cur: Prepared[] = [];
@@ -323,7 +389,7 @@ if (stage === 'final-review') {
 if (stage === 'final-calibrate') {
   const root = resolve(GATE_DATA, 'calibration');
   type Tier = 'A' | 'B' | 'C' | 'U' | 'D' | 'K';
-  type Cal = FinalItem & { truth: 'bad' | 'good'; half: 'view34' | 'style'; set: string; tier: Tier; weak?: boolean };
+  type Cal = FinalItem & { truth: 'bad' | 'good'; half: 'view34' | 'style'; set: string; tier: Tier; weak?: boolean; uncertain?: boolean };
   const tierMap = existsSync(resolve(root, 'tiers.json')) ? (JSON.parse(readFileSync(resolve(root, 'tiers.json'), 'utf8')) as { tiers: Record<string, { tier: Tier }> }).tiers : {};
   const onlySets = option('set')?.split(',');
   const cal: Cal[] = [];
@@ -337,9 +403,11 @@ if (stage === 'final-calibrate') {
         cal.push({ png: resolve(root, set, `${name}.png`), kind: labels.kinds[name]!, name: name.replace(/^props?[._]/, '').replace(/__.*$/, '').replace(/_/g, ' '), label, truth, half: 'view34', set, tier: tierMap[label]?.tier ?? 'A' });
       }
     } else {
-      for (const it of JSON.parse(readFileSync(itemsPath, 'utf8')) as Array<{ name: string; kind: ObjectGateKind; styleKind: ObjectGateStyleKind; view34: 'good' | 'bad' | null; style: 'good' | 'bad' | null; weak?: boolean; tier?: Tier }>) {
+      for (const it of JSON.parse(readFileSync(itemsPath, 'utf8')) as Array<{ name: string; kind: ObjectGateKind; styleKind: ObjectGateStyleKind; view34: 'good' | 'bad' | null; style: 'good' | 'bad' | null; weak?: boolean; tier?: Tier; group?: string }>) {
         const label = `${set}/${it.name}`, base = { png: resolve(root, set, `${it.name}.png`), kind: it.kind, styleKind: it.styleKind, name: it.name.replace(/__.*$/, '').replace(/[_-]/g, ' '), label, set, tier: tierMap[label]?.tier ?? it.tier ?? 'A' as Tier, weak: it.weak };
-        if (it.view34) cal.push({ ...base, truth: it.view34, half: 'view34' });
+        // 불확실(10-01 전수조사가 표시했거나 조사에 없던 실내 원본): 판정만 받고 (a)·(b) 어디에도 세지 않는다(보고만).
+        if (it.group?.startsWith('uncertain')) cal.push({ ...base, truth: 'good', half: 'view34', uncertain: true });
+        else if (it.view34) cal.push({ ...base, truth: it.view34, half: 'view34' });
         else if (it.style) cal.push({ ...base, truth: it.style, half: 'style' });
       }
     }
@@ -361,8 +429,22 @@ if (stage === 'final-calibrate') {
   const sets: Record<string, { bad: { total: number; caught: number }; good: { total: number; passed: number } }> = {};
   const tiers: Record<string, { bad: { total: number; passed: number }; good: { total: number; passed: number } }> = {};
   const lines: string[] = [];
+  const uncertain: Array<{ label: string; verdict: string; reasons: string[] }> = [];
+  // 칩셋 계열(보고용): 위반·원본을 계열별로 따로 센다 — 섞은 숫자는 판정자가 어디서 약한지 숨긴다(감독 지시 2026-10-21).
+  const familyOf = (label: string) => {
+    const [set, name = ''] = label.split('/');
+    if (set === 'originals-jp') return 'jp_city';
+    if (set === 'originals-interior' || set === 'uncertain-interior' || set === 'interior' || set === 'holdout' || set === 'pairs') return 'interior(hand)';
+    if (set === 'originals-v5large') return 'oprn-interior-v5-large';
+    if (set === 'fresh3') return 'beodeul_city';
+    if (set === 'murim' || set === 'adv-front-prop') return set;
+    if (set === 'style') return name.split('__')[0] === 'beodeul' ? 'beodeul_city' : name.split('__')[0]!;
+    const m = name.match(/^[a-z]+\d+_(.+)$/); return m ? m[1]! : set!;
+  };
+  const fam: Record<string, { bad: number; caught: number; good: number; passed: number }> = {};
   for (const c of shuffled) {
     const a = bySrc.get(`${c.label}|${c.kind}`);
+    if (c.uncertain) { uncertain.push({ label: c.label!, verdict: isErr(a) ? 'error' : decideFinal(a).verdict, reasons: isErr(a) ? [] : decideFinal(a).reasons }); continue; }
     if (isErr(a)) { errors.push(c.label!); continue; }
     const d = decideFinal(a);
     // 정상: 라벨이 보증하는 반쪽으로 센다(3/4 라벨은 화풍을, 화풍 라벨은 3/4 를 보증하지 않는다 — 옛 보정과 같다). 전체 통과는 따로 센다.
@@ -374,6 +456,8 @@ if (stage === 'final-calibrate') {
     t[c.truth].total++; if (pass) t[c.truth].passed++;
     lines.push(`${c.truth === 'bad' ? '위반' : '정상'}${c.tier}${c.half === 'style' ? '화풍' : '3/4 '} ${pass ? 'PASS' : 'FAIL'} ${c.kind.padEnd(14)} ${c.label!.padEnd(46)} ${d.reasons.join(' · ').slice(0, 160)}`);
     if (!strict(c)) continue;
+    const fm = (fam[familyOf(c.label!)] ??= { bad: 0, caught: 0, good: 0, passed: 0 });
+    if (c.truth === 'bad') { fm.bad++; if (d.verdict !== 'pass') fm.caught++; } else { fm.good++; if (d.verdict === 'pass') fm.passed++; }
     const s = (sets[c.set] ??= { bad: { total: 0, caught: 0 }, good: { total: 0, passed: 0 } });
     if (c.truth === 'bad') { bad++; s.bad.total++; if (pass) missed.push(c.label!); else s.bad.caught++; }
     else { good++; s.good.total++; if (pass) s.good.passed++; else falseFail.push(c.label!); }
@@ -383,15 +467,33 @@ if (stage === 'final-calibrate') {
   const full = !limit && !onlySets;
   // 효력 조건 = 사용자 기준(2026-10-21): 확실 위반을 하나도 놓치지 않는다. 정상 통과율은 보고만 한다(v1~v4 에 두었던 자체 하한 50% 는 사용자 기준이 아니라 뺐다 —
   // v4 는 위반 217/217 을 잡았고 정상 통과는 라벨 반쪽 45.8%·전체 7.5% 였다. 같은 지시문의 답 캐시로 다시 셌다).
-  const ok = missed.length === 0 && errors.length === 0;
+  // 조건 (b)(2026-10-21 감독 지시): 칩셋의 받아들여진 원본(originals.json)을 전체 판정으로 90% 이상 통과. 원본은 판정자에게 기준으로도 보이지만 자기 자신은 빠진다.
+  const origGroups = existsSync(resolve(root, 'originals.json')) ? (JSON.parse(readFileSync(resolve(root, 'originals.json'), 'utf8')) as { groups: Record<string, string[]> }).groups : {};
+  const originals: Record<string, { total: number; passed: number; failed: string[] }> = {};
+  for (const [g, labels] of Object.entries(origGroups)) {
+    const o = (originals[g] = { total: 0, passed: 0, failed: [] as string[] });
+    for (const label of labels) {
+      const c = shuffled.find(x => x.label === label); if (!c) continue;
+      const a = bySrc.get(`${c.label}|${c.kind}`); o.total++;
+      if (!isErr(a) && decideFinal(a).verdict === 'pass') o.passed++; else o.failed.push(label);
+    }
+  }
+  const oT = Object.values(originals).reduce((s2, o) => s2 + o.total, 0), oP = Object.values(originals).reduce((s2, o) => s2 + o.passed, 0);
+  const ORIGINALS_MIN = 0.9;
+  const ok = missed.length === 0 && errors.length === 0 && oT > 0 && oP / oT >= ORIGINALS_MIN;
   const record: ObjectGateFinalProfileRecord = { schema: 'oprn-object-gate-final-profile/1', profileHash: hash, status: ok && full ? 'calibrated' : 'rejected', calibratedAt: new Date().toISOString(), judge: FINAL_JUDGE,
-    bad: { total: bad, caught: bad - missed.length, missed }, good: { total: good, passed: good - falseFail.length, falseFail }, sets, tiers, errors,
-    note: `위반 = 등급 A 3/4 위반(적대 시험 adv-* 포함) + 강한 라벨 화풍 얕음, 전체 판정으로 센다. 정상 = 라벨 반쪽(3/4 라벨은 3/4·종류, 화풍 라벨은 화풍)으로 센다(보고만, 하한 없음). 전체 판정 정상 통과 ${overallPass}/${overallGood}. ${full ? '전체 표본' : '부분 표본 — 효력 없음'}` };
+    bad: { total: bad, caught: bad - missed.length, missed }, good: { total: good, passed: good - falseFail.length, falseFail }, sets, tiers, errors, originals, families: fam, uncertain,
+    note: `조건 (a) 위반 = 등급 A 3/4 위반(적대 시험 adv-*·object-gen 반려 포함) + 강한 라벨 화풍 얕음, 전체 판정으로 하나도 놓치면 안 된다. 조건 (b) 칩셋 원본 전체 판정 통과 ${oP}/${oT} ≥ ${ORIGINALS_MIN * 100}%. 정상 = 라벨 반쪽으로 센다(보고만). 전체 판정 정상 통과 ${overallPass}/${overallGood}. ${full ? '전체 표본' : '부분 표본 — 효력 없음'}` };
   if (full) writeFinalProfile(record);
   writeFileSync(resolve(root, `final-run-${hash}.json`), `${JSON.stringify({ ...record, lines: lines.sort() }, null, 1)}\n`);
   console.log(`\n== 최종 보정 ${hash}: ${record.status}`);
   console.log(`   위반 잡음 ${bad - missed.length}/${bad}${missed.length ? ` — 놓침: ${missed.join(', ')}` : ''}`);
   console.log(`   정상 통과(라벨 반쪽) ${good - falseFail.length}/${good} (${(goodRate * 100).toFixed(1)}%) · 전체 판정 통과 ${overallPass}/${overallGood} (${overallGood ? (overallPass / overallGood * 100).toFixed(1) : 0}%)`);
+  console.log(`   (b) 칩셋 원본 전체 판정 통과 ${oP}/${oT} (${oT ? (oP / oT * 100).toFixed(1) : 0}%) — 기준 90%`);
+  for (const [g, o] of Object.entries(originals)) console.log(`       ${g.padEnd(24)} ${o.passed}/${o.total}${o.failed.length ? ` — 떨어짐: ${o.failed.slice(0, 12).join(', ')}${o.failed.length > 12 ? ' …' : ''}` : ''}`);
+  console.log('   계열별 — (a) 위반 잡음 · 정상 전체 판정 통과');
+  for (const [k, v] of Object.entries(fam).sort()) console.log(`       ${k.padEnd(24)} (a) ${v.caught}/${v.bad} · 정상 ${v.passed}/${v.good}`);
+  if (uncertain.length) console.log(`   불확실(보고만) ${uncertain.length}장: 통과 ${uncertain.filter(u => u.verdict === 'pass').length} · ${uncertain.map(u => `${u.label.split('/')[1]}=${u.verdict}`).join(', ')}`);
   for (const [k, v] of Object.entries(sets).sort()) console.log(`   ${k.padEnd(16)} 위반 ${v.bad.caught}/${v.bad.total} · 정상 ${v.good.passed}/${v.good.total}`);
   for (const [k, v] of Object.entries(tiers).sort()) console.log(`   등급 ${k.padEnd(8)} 위반 통과 ${v.bad.passed}/${v.bad.total} · 정상 통과 ${v.good.passed}/${v.good.total}`);
   if (errors.length) console.log(`   답 못 받음 ${errors.length}: ${errors.slice(0, 10).join(', ')}`);

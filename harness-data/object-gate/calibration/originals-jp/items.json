@@ -1,0 +1,592 @@
+[
+ {
+  "name": "jp__jp-bldg-post-office",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-house-hip2",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-koban",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-warehouse",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-station-small",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-house-gable-garage",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-house-hiraya",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-house-shed-modern",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-house-flat3",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-house-hip2-wide",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-house-machiya",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-house-nagaya",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-house-western",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-house-nisetai",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-house-tile3",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-house-terrace",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-house-hiraya-gable",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-garage-carport-house",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-shop-greengrocer",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-shop-fish",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-shop-butcher",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-shop-bakery",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-shop-flower",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-shop-books",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-shop-pharmacy",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-shop-cleaning",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-shop-ramen",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-shop-izakaya",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-shop-cafe",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-shop-barber",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-shop-tabako",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-shop-sushi",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-shop-teishoku",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-shop-dagashi",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-shop-sake",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-shop-bicycle",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-shop-realestate",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-shop-salon",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-shop-fish-shut",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-shop-butcher-shut",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-shop-books-shut",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-shop-cleaning-shut",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-shop-bicycle-shut",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-shop-sake-shut",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-shop-flower-shut",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-shop-realestate-shut",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__jp-bldg-shop-vacant",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-roof-47",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-roof-47"
+ },
+ {
+  "name": "jp__vehicle__bus-left_open",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-vehicles-12",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-vehicles-12"
+ },
+ {
+  "name": "jp__vehicle__bus-right",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-vehicles-12",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-vehicles-12"
+ },
+ {
+  "name": "jp__vehicle__jp-car-black",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-vehicles-12",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-vehicles-12"
+ },
+ {
+  "name": "jp__vehicle__jp-car-blue",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-vehicles-12",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-vehicles-12"
+ },
+ {
+  "name": "jp__vehicle__jp-car-kei-mint",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-vehicles-12",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-vehicles-12"
+ },
+ {
+  "name": "jp__vehicle__jp-car-kei-yellow",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-vehicles-12",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-vehicles-12"
+ },
+ {
+  "name": "jp__vehicle__jp-car-red",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-vehicles-12",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-vehicles-12"
+ },
+ {
+  "name": "jp__vehicle__jp-car-silver",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-vehicles-12",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-vehicles-12"
+ },
+ {
+  "name": "jp__vehicle__jp-car-taxi",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-vehicles-12",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-vehicles-12"
+ },
+ {
+  "name": "jp__vehicle__jp-car-white",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-vehicles-12",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-vehicles-12"
+ },
+ {
+  "name": "jp__vehicle__jp-truck-box",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-vehicles-12",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-vehicles-12"
+ },
+ {
+  "name": "jp__vehicle__jp-truck-kei",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-jp-jp-vehicles-12",
+  "original": "jp_city",
+  "note": "사용자 OK 2026-10-20 묶음 jp-vehicles-12"
+ }
+]
