@@ -7,6 +7,7 @@
 // 「이 기물을 상태 i 로」 바꾸는 절대 changeTile 묶음을 만든다. 절대 묶음이라 어떤 순서·몇 번을 오가도 그림이 어긋나지 않는다.
 
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
+import { puzzleSfxResourceId, type PuzzleSfxCue } from "@/assets/puzzleSfxAssets";
 import type { HandInteriorInput, HandInteriorLine, HandInteriorObject, HandInteriorZone, HandInteriorDais } from "@/editor/handInterior/builder";
 import { changeTileProblems } from "@/project/changeTileValidation";
 import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
@@ -37,6 +38,11 @@ export function se(name: string): Command {
   return { kind: "playAudio", resourceId: `easyrpg-sound-${name}`, loop: false, channel: "se" };
 }
 
+/** 퍼즐 전용 원본 효과음(밀기·발판·레버·오답·해결 징글…). public/assets/puzzle-sfx. */
+export function sfx(cue: PuzzleSfxCue): Command {
+  return { kind: "playAudio", resourceId: puzzleSfxResourceId(cue), loop: false, channel: "se" };
+}
+
 export function flash(color: string, durationMs = 300): Command {
   return m2("Flash Screen", { color, durationMs });
 }
@@ -63,6 +69,8 @@ export function tintPulse(rgb: string, peakAlpha = 0.3, inMs = 120, outMs = 520)
   ];
 }
 
+const FLASH_RGB: Readonly<Record<string, string>> = { white: "255,255,255", red: "255,120,90", yellow: "255,230,120", blue: "150,200,255", gold: "255,236,170" };
+
 /** 해제 연출의 색과 세 물결 입자(1물결 균열 먼지 → 2물결 본 붕괴 → 3물결 완성 빛). pulse 를 주면 섬광 대신 색조 펄스. */
 export interface RevealTheme {
   readonly flash: string;
@@ -87,7 +95,9 @@ export function revealInWaves(cmds: readonly Command[], theme: RevealTheme): Com
   if (cells.length === 0) return [...cmds];
   // 직전 대사·선택지 창이 완전히 닫힌 뒤 연출이 시작되고, 마지막 물결 뒤에도 잠깐 여유를 두어
   // 캡처 프레임에 반쯤 닫히는 대사창이 절대 겹치지 않게 한다.
-  const out: Command[] = [{ kind: "wait", ms: 250 }, ...(theme.pulse ? tintPulse(theme.pulse) : [flash(theme.flash, 350)])];
+  // 풀린 순간 해결 징글이 먼저 울리고(젤다식 「비밀 발견」), 첫 물결에서 문·창살이 갈리는 낮은 굉음이 이어진다.
+  // Flash Screen 은 런타임이 최소 800ms 동안 85% 로 붙잡아 해제 장면을 통째로 가린다(옛 판 시간의 문에서 흰 화면만 찍혔다) — 늘 색조 펄스로 낸다.
+  const out: Command[] = [{ kind: "wait", ms: 250 }, sfx("secret-solved"), ...(theme.pulse ? tintPulse(theme.pulse) : tintPulse(FLASH_RGB[theme.flash] ?? "255,255,255", 0.4))];
   const per = Math.ceil(cells.length / 3);
   const mid = cells[Math.floor(cells.length / 2)]!;
   for (let wave = 0; wave < 3; wave += 1) {
@@ -96,6 +106,7 @@ export function revealInWaves(cmds: readonly Command[], theme: RevealTheme): Com
     // 물결마다 입자는 최대 4곳 — 칸마다 뿜으면 큰 다리·갱도에서 입자가 수십 개 겹쳐 오히려 뭉개진다.
     const step = Math.max(1, Math.floor(group.length / 4));
     for (let i = 0; i < group.length; i += step) out.push(particles(theme.waves[wave]!, 1200, group[i]!));
+    if (wave === 0) out.push(se("earth2"));
     if (wave === 2) out.push(particles("sparkle", 1200, mid));
     for (const cell of group) out.push(...cell.cmds);
     out.push(shake(wave === 2 ? 10 : 6, wave === 2 ? 600 : 300));

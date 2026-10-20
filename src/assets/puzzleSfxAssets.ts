@@ -1,0 +1,41 @@
+/**
+ * JRPG 퍼즐 방 효과음 세트 — 원본 칩튠 합성음(CC0).
+ *
+ * 만드는 법: `scripts/content/puzzle-sfx/build.py` 가 손으로 쓴 합성기 패치를 몬스터 효과음과 같은 합성기
+ * (`scripts/content/monster-sfx/synth.py`)로 렌더한다. 녹음·샘플·원작 멜로디는 쓰지 않았다.
+ * 패치·수치는 `public/assets/puzzle-sfx/manifest.json`. 퍼즐 프리셋(`puzzleKit.sfx`)이 쓴다.
+ */
+export const PUZZLE_SFX_CUES = [
+  "secret-solved",
+  "stone-push",
+  "plate-press",
+  "switch-clack",
+  "wrong",
+  "crystal-ping",
+  "organ-c",
+  "organ-e",
+  "organ-g",
+  "organ-c2",
+] as const;
+export type PuzzleSfxCue = (typeof PUZZLE_SFX_CUES)[number];
+
+export const PUZZLE_SFX_TITLES: Readonly<Record<PuzzleSfxCue, string>> = {
+  "secret-solved": "퍼즐 해결 징글",
+  "stone-push": "바위 밀기",
+  "plate-press": "발판 눌림",
+  "switch-clack": "레버·스위치",
+  wrong: "오답",
+  "crystal-ping": "수정·판 뒤집힘",
+  "organ-c": "오르간 발판 · 도",
+  "organ-e": "오르간 발판 · 미",
+  "organ-g": "오르간 발판 · 솔",
+  "organ-c2": "오르간 발판 · 높은 도",
+};
+
+export function puzzleSfxResourceId(cue: PuzzleSfxCue): string {
+  return `cc0-sound-puzzle-${cue}`;
+}
+
+export function puzzleSfxPath(cue: PuzzleSfxCue): string {
+  return `assets/puzzle-sfx/${cue}.ogg`;
+}

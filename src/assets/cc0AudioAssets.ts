@@ -6,6 +6,7 @@
  */
 import { PRODUCT_BRAND } from "@/brand";
 import { MONSTER_SFX_CUES, MONSTER_SFX_TITLES, monsterSfxPath, monsterSfxResourceId } from "@/assets/monsterSfxAssets";
+import { PUZZLE_SFX_CUES, PUZZLE_SFX_TITLES, puzzleSfxPath, puzzleSfxResourceId } from "@/assets/puzzleSfxAssets";
 
 export type Cc0AudioAsset = {
   readonly id: string;
@@ -86,6 +87,15 @@ export const CC0_AUDIO_ASSETS = [
     kind: "sound" as const,
     license: "CC0-1.0" as const,
     sourceName: `${PRODUCT_BRAND} original chip synthesis (monster-sfx)`,
+  })),
+  // ── JRPG 퍼즐 방 효과음(원본 칩튠 합성, 패치는 puzzle-sfx/manifest.json) ──
+  ...PUZZLE_SFX_CUES.map((cue) => ({
+    id: puzzleSfxResourceId(cue),
+    name: `${PUZZLE_SFX_TITLES[cue]} · 퍼즐 효과음 (CC0)`,
+    path: puzzleSfxPath(cue),
+    kind: "sound" as const,
+    license: "CC0-1.0" as const,
+    sourceName: `${PRODUCT_BRAND} original chip synthesis (puzzle-sfx)`,
   })),
 ] as const satisfies readonly Cc0AudioAsset[];
 

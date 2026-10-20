@@ -353,11 +353,25 @@ try {
     await page.waitForTimeout(500);
     await key("idle");
     const marks: string[] = [];
+    /** 단계마다 실제로 요청된 효과음(AudioEngine QA 관측) — 들리는지는 증명하지 않는다. */
+    const sfx: Array<{ step: string; sounds: string[] }> = [];
+    let audioSeen = await page.evaluate(() => (window as unknown as { __oprnAudioObserved?: string[] }).__oprnAudioObserved?.length ?? 0);
+    const noteSfx = async (label: string): Promise<void> => {
+      const all = await page.evaluate(() => [...((window as unknown as { __oprnAudioObserved?: string[] }).__oprnAudioObserved ?? [])]);
+      const fresh = all.slice(audioSeen).map((id) => id.replace(/^easyrpg-sound-/, ""));
+      audioSeen = all.length;
+      const last = sfx[sfx.length - 1];
+      if (last && last.step === label && fresh.length === 0) return;
+      sfx.push({ step: label, sounds: fresh });
+    };
     if (a.steps) {
       for (const step of a.steps) {
         switch (step.kind) {
           case "walk":
-            await walk(step.moves);
+            for (const ch of step.moves) {
+              await walk(ch);
+              await noteSfx(`walk ${ch}`);
+            }
             break;
           case "goto": {
             const c = room(step.x, step.y);
@@ -373,12 +387,14 @@ try {
             numberQueue = step.number !== undefined ? [step.number] : [];
             presentQueue = [...(step.present ?? [])];
             await act();
+            await noteSfx(`act${step.choose ? ` choose=${step.choose.join("/")}` : ""}${step.number !== undefined ? ` number=${step.number}` : ""}${step.present ? ` present=${step.present.join("/")}` : ""}`);
             break;
           case "wait":
             await page.waitForTimeout(step.ms);
             await settle();
             break;
           case "mark": {
+            await noteSfx(`mark:${step.label}`);
             marks.push(step.label);
             await key(step.label);
             if (step.expectSolved !== undefined) {
@@ -400,10 +416,12 @@ try {
         } else {
           await standNextAndAct(step.act, step.choose ?? []);
         }
+        await noteSfx("touch" in step ? `touch ${step.touch}` : `act ${step.act}`);
       }
     }
     await page.waitForTimeout(400);
     await settle();
+    await noteSfx("end");
     const solvedState = await state();
     const solved = solvedState.switches[a.solveSwitchId] === true;
     // 해제 후: 같은 시작점 시점으로 돌아가 한 장.
@@ -421,7 +439,7 @@ try {
       "-vf", "scale=320:240:flags=neighbor,split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=none",
       gif,
     ]);
-    const rec = { presetId: a.presetId, solved, sawVfx, frames: frame, marks, keyShots, gif, x: solvedState.x, y: solvedState.y };
+    const rec = { presetId: a.presetId, solved, sawVfx, frames: frame, marks, keyShots, gif, x: solvedState.x, y: solvedState.y, sfx: sfx.filter((e) => e.sounds.length > 0 || e.step.startsWith("mark")) };
     results.push(rec);
     console.log(JSON.stringify(rec));
   }
