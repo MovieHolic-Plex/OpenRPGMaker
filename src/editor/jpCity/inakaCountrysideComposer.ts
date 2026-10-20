@@ -331,7 +331,8 @@ export const INAKA_SHOWCASE_SCENES: readonly InakaShowcaseScene[] = [
       { x: 34, y: 13, w: 4, h: 13, material: "생활도로" },
       { x: 0, y: 16, w: 33, h: 10, material: "시골 흙길" },
       { x: 1, y: 17, w: 15, h: 8, material: "시골 황금 논" },
-      { x: 17, y: 17, w: 15, h: 8, material: "시골 여름 논" },
+      // 여름 논은 x=17..27 까지만 — 동쪽 x=28..32 는 동서 흙길에 이어진 경트럭 주차 자리(경트럭은 동향 옆모습이라 남북 도로를 가로질러 세우지 않는다).
+      { x: 17, y: 17, w: 11, h: 8, material: "시골 여름 논" },
     ],
     stamps: [
       { kit: "rg-sugi", x: 5, y: -2, allowOverlap: true },
@@ -363,8 +364,8 @@ export const INAKA_SHOWCASE_SCENES: readonly InakaShowcaseScene[] = [
       { kit: "inaka-rice-rack-hasagi", x: 9, y: 17, allowWet: true },
       { kit: "inaka-red-tractor", x: 12, y: 20, allowWet: true },
       { kit: "rg-kakashi", x: 22, y: 20, allowWet: true },
-      { kit: "inaka-scarecrow-pair", x: 27, y: 20, allowWet: true },
-      { kit: "inaka-keitora-white", x: 34, y: 18 },
+      { kit: "inaka-scarecrow-pair", x: 25, y: 20, allowWet: true },
+      { kit: "inaka-keitora-white", x: 28, y: 18 },
     ],
   },
   {
