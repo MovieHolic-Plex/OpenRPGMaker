@@ -71,8 +71,8 @@
  },
  {
   "id": "dept-bag-stand",
-  "real": true,
-  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+  "real": false,
+  "why": "false FAIL: rack like the clothing racks (false): base plinth top 3 rows with mat, bags hang from the bar"
  },
  {
   "id": "dept-eyewear-tower",
@@ -1136,23 +1136,23 @@
  },
  {
   "id": "court-gallery-pew",
-  "real": true,
-  "why": "horizontal top (lid/top cap/counter/opening) <=2px — sofas_benches"
+  "real": false,
+  "why": "false FAIL: seat (other agent scope): seat tops ~4 rows visible"
  },
  {
   "id": "hosp-wait-row-n",
-  "real": true,
-  "why": "horizontal top (lid/top cap/counter/opening) <=2px — sofas_benches"
+  "real": false,
+  "why": "false FAIL: seat (other agent scope): north-facing row, seat band visible behind backs"
  },
  {
   "id": "train-priority-orange-n",
-  "real": true,
-  "why": "horizontal top (lid/top cap/counter/opening) <=2px — sofas_benches"
+  "real": false,
+  "why": "false FAIL: seat (other agent scope): cushions seen from above"
  },
  {
   "id": "train-priority-pink-s",
-  "real": true,
-  "why": "horizontal top (lid/top cap/counter/opening) <=2px — sofas_benches"
+  "real": false,
+  "why": "false FAIL: seat (other agent scope): cushions seen from above"
  },
  {
   "id": "home-wall-ac",
