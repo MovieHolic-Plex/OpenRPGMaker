@@ -690,6 +690,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     // 아래 왼쪽 돌 홀과 오른쪽 방 사이 벽 틈(9,15)은 문틀 없이 뚫려 있었다 — 열린 철문 틀을 세운다(바닥 칸은 그대로 통행).
     // 쇠창살 문틀: 앵커가 발밑 칸(dy1)이라 (9,14)에 찍으면 아래 줄이 문 칸(9,15) 위에 선다(tryStamp 는 위 칸이 벽이라 거절해 직접 호출).
         try { execTool(project, "stamp_object", { objectId: "kit:atlas_biome_interior/hand-interior:iron gate open", mapId: obs.id, x: 9, y: 14 }); } catch { /* 문틀은 장식이라 실패해도 통행은 그대로 */ }
+        // 아래 줄(문틀 옆기둥 6424)은 통행을 막으므로 걷어 낸다 — 위 줄(상인방 6423)만 벽 칸에 남아 문 위를 두른다.
+        { const om = M(ids.observatory); const door = om.upperTiles; const di = 15 * om.width + 9; if (door[di] === 6424) door[di] = -1; }
   }
   // 숲지기 곁 모닥불.
   const bram = M(ids.forest).events.find((e) => e.id === `ev_${FS_PREFIX}_bram`);
