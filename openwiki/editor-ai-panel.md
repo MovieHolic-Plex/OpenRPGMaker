@@ -1,5 +1,22 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 로컬 에이전트 CLI 엔진 스파이크 — `local-cli:claude` (2026-10-20, 미병합 초안)
+
+방향: 조수의 LLM 루프를 우리가 사용자 구독 OAuth 로 중계하지 않고, 사용자가 직접 로그인한 순정 `claude -p`(이후 `codex exec`·`gemini`)가 돈다.
+에디터 도구는 실행마다 뜨는 MCP 서버(127.0.0.1·실행별 Bearer 비밀값·Origin 거절)로만 노출한다. 설계 그림: `http://mdc-server:18301/assistant-local-agent-1.html`.
+
+- 코드: `scripts/lib/localCliAgent/` — `mcpHttpServer.ts`(최소 Streamable HTTP MCP), `claudeCli.ts`(감지 `claude auth status` · 인자 · stream-json),
+  `runLocalCliAgent.ts`(PiAgentRequest → 같은 PiAgentEvent·`done`). 워커 `/agent/run` 은 provider `local-cli:claude` 일 때 이 엔진으로 간다.
+  그래서 piRunRelay 맵 잠금·이어 받기·map_delta·mergeMapBundles·applyProposedProject 는 그대로다.
+- 권한: `--tools ""`(내장 도구 전부 끔) · `--allowedTools mcp__oprn` · `--permission-mode dontAsk` · `--strict-mcp-config` · `--no-session-persistence`
+  · `--settings {"disableAllHooks":true}` · 빈 임시 cwd. 비밀값은 MCP 설정 파일에 `${OPRN_MCP_TOKEN}` 자리표시로만 두고 자식 env 로 준다.
+  `--bare` 는 쓰지 않는다 — OAuth(구독 로그인)를 읽지 않는다.
+- **참고문서 선행 읽기 관문**(`PiTilesetReferenceGate`)은 제공자 요청 본문을 보고 읽음을 인정한다. CLI 엔진은 그 본문을 못 본다.
+  대신 stream-json 의 `user` 줄(모델에 실제로 넘긴 tool_result 글·그림 원문)을 모아 뒤이은 `assistant` 줄에서 `payload`+`complete(true)`.
+  이걸 빼면 읽기를 다 해도 쓰기가 전부 막힌다(첫 시험: 55호출·변경 0칸).
+- 아직 안 옮긴 것: 실시간 체크포인트·칩셋 선택 관문·spatialProof·팀 모드 — runPiAgent 안의 「도구 표면」을 공용으로 뽑아야 한다.
+- 증거 `verify-shots/assistant-claude-p/`(summary·events·slim stream·전후 PNG·worker-path). 재현 `bun scripts/spike/claude-cli-turn.mts --model sonnet`.
+
 ## 조수 「턴 사이 기록」 (2026-10-05)
 
 사용자 요청: 「각 턴 사이의 로그만 읽고 싶다」. 조수 툴바인 「표시·실행 기록」 안에 접이식 「턴 사이 기록」을

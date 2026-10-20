@@ -14,6 +14,7 @@ import { CODEX_PROVIDER_ID } from "../src/ai/oauth/credentials.ts";
 import { runPiAgent } from "./lib/piAgentRuntime.ts";
 import { isMonsterRequestTurn } from "../src/ai/piAgent/monsterGameRequest.ts";
 import { runPiTeam } from "./lib/piTeamRuntime.ts";
+import { LOCAL_CLAUDE_PROVIDER, runLocalCliAgent } from "./lib/localCliAgent/runLocalCliAgent.ts";
 import { createPiAgentNdjsonStream } from "./lib/piAgentStream.ts";
 import { preparePiWorkerSharedContent } from "./lib/piWorkerSharedContent.ts";
 import { preparePiWorkerAudio } from './lib/piWorkerAudio.ts';
@@ -131,6 +132,16 @@ const server = Bun.serve({
         // Team members reuse this revision rather than blocking its heartbeat.
         await preparePiWorkerSharedContent();
         await preparePiWorkerAudio();
+        // 스파이크: 사용자의 로컬 Claude Code 가 루프를 돈다. 키를 쥐지 않는다 — 로그인은 사용자의 CLI 가 갖고 있다.
+        // 하류(piRunRelay 맵 잠금·이어 받기·map_delta·done)는 같은 NDJSON 이라 그대로다.
+        if (agentRequest.provider === LOCAL_CLAUDE_PROVIDER) {
+          const stream = createPiAgentNdjsonStream((onEvent) => runLocalCliAgent(agentRequest, {
+            signal: request.signal,
+            onEvent,
+            renderToolImage: (project, toolName, data) => requestPiRender(project, agentRequest.project, toolName, data, onEvent, request.signal),
+          }));
+          return new Response(stream, { status: 200, headers: { "Content-Type": "application/x-ndjson; charset=utf-8", "Cache-Control": "no-cache", "X-Oprn-Heavy-Refs": "1" } });
+        }
         const held = holdWorkerKeys(body.providerApiKeys, agentRequest.provider, apiKey);
         const stream = createPiAgentNdjsonStream((onEvent) => (agentRequest.mode === "team" ? runPiTeam : runPiAgent)(agentRequest, {
           apiKey,
