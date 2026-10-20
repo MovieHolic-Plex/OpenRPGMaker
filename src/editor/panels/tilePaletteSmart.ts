@@ -444,6 +444,10 @@ function selectTerrainCard(card: TerrainCard): void {
     tool: keep ? state.tool : "paint",
     autoConnectMode: card.kind === "autotile" ? true : state.autoConnectMode,
   });
+  // 수동으로 둔 이웃 연결이 지형 카드를 고르는 순간 말없이 자동으로 바뀌던 문제(F11) — 바꾸되 알린다.
+  if (card.kind === "autotile" && !state.autoConnectMode) {
+    toast("지형 카드라 「이웃 연결」을 자동으로 켰어요. 끄려면 위의 「이웃 연결」을 누르세요.", "ok");
+  }
   if (state.layer !== "event" && state.layer !== nextLayer) {
     toast(nextLayer === "upper" ? "상위 레이어 타일 — 상위 레이어 편집으로 전환" : "하위 레이어 타일 — 하위 레이어 편집으로 전환", "ok");
   }
