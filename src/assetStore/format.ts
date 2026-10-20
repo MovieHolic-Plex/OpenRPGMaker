@@ -4,6 +4,7 @@
  * 설계: docs/superpowers/specs/2026-10-06-asset-store-design.md, 위키 openwiki/asset-store.md.
  */
 import type { TilesetDef, UploadedAsset } from "../project/types";
+import { validateObjectSpec, type ObjectSpecV1 } from "../project/objectSpec";
 
 export const STORE_PACK_SCHEMA = "oprn-store-pack/1" as const;
 /** 매니페스트 안의 data URL 을 대신하는 blob 자리표시. 받을 때 data URL 로 되돌린다. */
@@ -80,6 +81,8 @@ export const STORE_LIMITS = {
   characters: 2048,
   characterLabel: 40,
   characterAppearance: 240,
+  /** 기물 설명서(content.objects): 타일셋 하나에 기물 수백 개가 들어간다(버들항 키트 120). */
+  objects: 4096,
 } as const;
 
 /** 에디터 UploadedAsset.kind 중 스토어로 오갈 수 있는 것. */
@@ -141,10 +144,24 @@ export interface StorePackCharacter {
   appearance?: string;
 }
 
+/**
+ * 팩에 든 기물 하나(2026-10-20). 정본은 그 타일셋 구조 킷의 `spec`(ObjectSpec v1)이고, 이 목록은 거기서 만든 사본이다 —
+ * 스토어 상품 화면이 타일셋 정의를 다 풀지 않고 「들어 있는 기물」을 보여 주고, tile-gen 이 만든 팩을 같은 꼴로 읽는다.
+ */
+export interface StorePackObject {
+  /** content.tilesets 의 키. */
+  tileset: string;
+  /** 그 타일셋 structureKits 의 id. */
+  kit: string;
+  spec: ObjectSpecV1;
+}
+
 export interface StorePackContent {
   assets: Record<string, StorePackAsset>;
   tilesets: Record<string, TilesetDef>;
   characters?: StorePackCharacter[];
+  /** 기물 설명서 목록(없어도 된다 — 옛 팩·캐릭터·소리 팩). */
+  objects?: StorePackObject[];
 }
 
 export interface StorePackManifest {
@@ -420,6 +437,27 @@ export function validateManifest(input: unknown): Validation<StorePackManifest> 
           if (c.appearance !== undefined && !isString(c.appearance, STORE_LIMITS.characterAppearance)) errors.push(`캐릭터 외형 설명은 ${STORE_LIMITS.characterAppearance}자 이하여야 합니다: ${where}`);
           const key = `${c.asset as string}#${String(c.characterIndex)}`;
           if (seen.has(key)) errors.push(`같은 캐릭터 칸이 두 번 적혔습니다: ${where}`);
+          seen.add(key);
+        }
+      }
+    }
+    if (content.objects !== undefined) {
+      if (!Array.isArray(content.objects) || content.objects.length > STORE_LIMITS.objects) {
+        errors.push(`기물 설명서는 ${STORE_LIMITS.objects}개 이하의 목록이어야 합니다.`);
+      } else {
+        const seen = new Set<string>();
+        for (const raw of content.objects as unknown[]) {
+          const o = isRecord(raw) ? raw : null;
+          const tileset = o && typeof o.tileset === "string" && Object.hasOwn(tilesets, o.tileset) ? tilesets[o.tileset] : undefined;
+          const where = o && typeof o.tileset === "string" && typeof o.kit === "string" ? `${o.tileset.slice(0, 40)}/${o.kit.slice(0, 40)}` : "?";
+          if (!o || !isRecord(tileset)) { errors.push(`기물 설명서가 팩의 타일셋을 가리키지 않습니다: ${where}`); continue; }
+          const kits = Array.isArray(tileset.structureKits) ? tileset.structureKits as unknown[] : [];
+          if (typeof o.kit !== "string" || !kits.some((kit) => isRecord(kit) && kit.id === o.kit)) errors.push(`기물 설명서의 킷이 그 타일셋에 없습니다: ${where}`);
+          const spec = validateObjectSpec(o.spec);
+          if (!spec.ok) errors.push(...spec.errors.slice(0, 4).map((e) => `${where}: ${e}`));
+          else if (spec.value.id !== o.kit) errors.push(`기물 설명서 id(${spec.value.id.slice(0, 40)})가 킷 id 와 다릅니다: ${where}`);
+          const key = `${o.tileset as string}\u0000${String(o.kit)}`;
+          if (seen.has(key)) errors.push(`같은 기물이 두 번 적혔습니다: ${where}`);
           seen.add(key);
         }
       }

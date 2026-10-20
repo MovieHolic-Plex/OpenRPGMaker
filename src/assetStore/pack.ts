@@ -25,7 +25,9 @@ import {
   type StorePackAsset,
   type StorePackCharacter,
   type StorePackManifest,
+  type StorePackObject,
 } from "./format";
+import { validateObjectSpec } from "../project/objectSpec";
 import { base64ToBytes, bytesToBase64, dataUrlParts, pngSize, sniffMime } from "./sniff";
 import { WORKSHOP_ASSET_PREFIX } from "../project/workshopTiles";
 
@@ -186,6 +188,7 @@ export async function buildPack(project: Project, selection: PackSelection, meta
     tilesets[id] = mapStrings(tileset, (text) => replacements.get(text) ?? text) as TilesetDef;
   }
   const characters = packCharacters(project, assets);
+  const objects = packObjects(tilesets);
   const previewShas: string[] = [];
   for (const bytes of previews) previewShas.push((await addBlob(bytes, "미리보기")).sha);
   if (previewShas.length === 0) {
@@ -202,11 +205,27 @@ export async function buildPack(project: Project, selection: PackSelection, meta
     license: meta.license,
     aiGenerated: meta.aiGenerated || closed.assetIds.some((id) => aiMaker(project.assets.uploaded[id]!) !== null),
     credits: meta.credits.trim(),
-    content: { assets, tilesets, ...(characters.length > 0 ? { characters } : {}) },
+    content: { assets, tilesets, ...(characters.length > 0 ? { characters } : {}), ...(objects.length > 0 ? { objects } : {}) },
     previews: previewShas.slice(0, 6),
     blobs: [...blobs].map(([sha256, blob]) => ({ sha256, mime: blob.mime, bytes: blob.bytes.byteLength })),
   };
   return { manifest, blobs };
+}
+
+/**
+ * 팩 타일셋들의 구조 킷 중 설명서(spec, ObjectSpec v1)가 있는 것 → content.objects. 정본은 킷의 spec 이고 이건 사본이다.
+ * 설명서 검사를 통과한 것만 넣는다. 옛 공방 태그 킷은 불러올 때 설명서로 옮겨지므로(attachWorkshopTiles) 여기서 다시 짐작하지 않는다.
+ */
+export function packObjects(tilesets: Readonly<Record<string, TilesetDef>>): StorePackObject[] {
+  const out: StorePackObject[] = [];
+  for (const [key, tileset] of Object.entries(tilesets)) {
+    for (const kit of tileset.structureKits ?? []) {
+      if (!kit.spec || kit.spec.id !== kit.id || !validateObjectSpec(kit.spec).ok) continue;
+      out.push({ tileset: key, kit: kit.id, spec: structuredClone(kit.spec) });
+      if (out.length >= STORE_LIMITS.objects) return out;
+    }
+  }
+  return out;
 }
 
 /** 팩에 넣는 캐릭터 시트의 칸 설명(프로젝트 charsetLabels 중 그 시트 것). */
@@ -383,6 +402,12 @@ export function applyPackToProject(project: Project, manifest: StorePackManifest
     if (tileset.image.type === "uploaded") tileset.image = { type: "uploaded", id: assetIdMap.get(tileset.image.id) ?? tileset.image.id };
     if (tileset.tileGrafts) tileset.tileGrafts = tileset.tileGrafts.map((graft) => ({ ...graft, sourceChipset: assetIdMap.get(graft.sourceChipset) ?? graft.sourceChipset }));
     if (tileset.referenceSourceTilesetId) tileset.referenceSourceTilesetId = tilesetIdMap.get(tileset.referenceSourceTilesetId) ?? tileset.referenceSourceTilesetId;
+    // 기물 설명서: 킷에 spec 이 없고 팩 목록(content.objects)에만 있으면 킷에 붙인다(tile-gen 이 목록만 채운 팩).
+    for (const object of manifest.content.objects ?? []) {
+      if (object.tileset !== id) continue;
+      const kit = tileset.structureKits?.find((k) => k.id === object.kit);
+      if (kit && !kit.spec && validateObjectSpec(object.spec).ok) kit.spec = structuredClone(object.spec);
+    }
     project.tilesets[tileset.id] = tileset;
   }
   return { assetIds: [...assetIdMap.values()], tilesetIds: [...tilesetIdMap.values()], replaced };

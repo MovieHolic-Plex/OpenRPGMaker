@@ -8,6 +8,7 @@
 | 조각 | 위치 | 하는 일 |
 |---|---|---|
 | 팩 계약 `oprn-store-pack/1` | `src/assetStore/format.ts` | 매니페스트 형식·한도·`validateManifest`·`storeThirdPartyName`(제3자 팩 이름). 서버 번들에도 그대로 들어간다 |
+| 기물 설명서 | `src/project/objectSpec.ts` | ObjectSpec v1(계약 파일, 의존 없음). 팩 `content.objects[]` = `{tileset, kit, spec}`, `buildPack` 이 킷 spec 에서 만든다 — `openwiki/object-spec.md` |
 | 팩 만들기·넣기 | `src/assetStore/pack.ts` | `buildPack`(닫힌 의존 전체 검사)·`applyPackToProject`·OPK1 `encodePackBundle`/`decodePackBundle`·크레딧 |
 | 바이트 판정 | `src/assetStore/sniff.ts` | 시그니처로 형식 판정(확장자·선언 mime 은 믿지 않는다) |
 | 스토어 창 | `src/editor/assetStore/*` | 둘러보기·받기·넣기·올리기 화면. 올리기 후보는 `storeUpload.ts` |
@@ -23,7 +24,7 @@
 
 ## 계약 동기화 절차
 
-계약 파일은 `src/assetStore/{format,pack,sniff}.ts`(+ 컨셉 `src/concepts/format.ts`)다. 스토어 저장소는 같은 파일을
+계약 파일은 `src/assetStore/{format,pack,sniff}.ts` + `src/project/objectSpec.ts`(2026-10-20, 기물 설명서)(+ 컨셉 `src/concepts/format.ts`)다. 스토어 저장소는 같은 파일을
 바이트 그대로 들고, CI(`scripts/check-contract.mjs`)가 편집기 커밋 하나에 고정한 해시와 비교한다.
 
 1. 편집기 PR 에서 계약 파일을 바꾼다 — 필드는 **더하기만** 한다(`oprn-store-pack/1` 이름은 그대로). 검증을 조이는 변경은
