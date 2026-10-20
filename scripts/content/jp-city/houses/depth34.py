@@ -122,8 +122,8 @@ def gable_top(c, x0, x1, ytop, yeave, mat, base, ridge_frac=0.22):
         c.P(x0 - 1, y, OL); c.P(x1 + 1, y, OL)
     if flat_back:                                                            # 棟瓦 7줄: 冠瓦 + 漆喰(따뜻한 흰) 줄 사이 熨斗 2단 + 그늘, 양 끝 鬼瓦(기와 끝 모양)
         W = x1 - x0 + 1
-        c.HL(x0, yr - 7, W, K(mat, base + 3)); c.HL(x0, yr - 6, W, K(mat, base + 2))       # 冠瓦 윗면(빛) · 앞면
-        for x in range(x0 + 1, x1, 4): c.P(x, yr - 6, K(mat, base))                         # 冠瓦 이음
+        c.HL(x0, yr - 7, W, K(mat, 3)); c.HL(x0, yr - 6, W, K(mat, 2))                     # 冠瓦 2줄: 램프 맨 위 빛 + 앞면(슬레이트 위에서 띠로 읽히게)
+        for x in range(x0 + 1, x1, 4): c.P(x, yr - 6, K(mat, 0)); c.P(x, yr - 7, K(mat, 1))   # 冠瓦 이음(기와 한 장씩)
         c.HL(x0, yr - 5, W, K('kinari', 1))                                                    # 漆喰 줄(따뜻한 흰)
         c.HL(x0, yr - 4, W, K(mat, base + 1))                                                  # 熨斗 1단
         for x in range(x0 + 2, x1 - 1, 3): c.P(x, yr - 4, K(mat, base - 1))
