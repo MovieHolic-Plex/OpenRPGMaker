@@ -5,6 +5,7 @@
 // 모두 「플레이어가 어디에 서고 무엇을 미느냐」가 풀이다. 모형은 플레이어 칸 단위 BFS 이고, 최단 해가 그대로 걸음 절차가 된다.
 
 import type { Command, GameEvent } from "@/project/types";
+import { HAND_INTERIOR_SPEC } from "@/editor/handInterior/builder";
 import type { Cell } from "./jrpgVolumeTools";
 import {
   analysePuzzleModel,
@@ -283,6 +284,9 @@ export const sokobanPlates: MechanicDef = {
  * 판자를 전부 무너뜨려야(= 모두 한 번씩 밟아야) 북쪽 둑의 봉인 철창이 열린다. 갇히면 떨어져 처음으로 돌아간다.
  */
 // 해밀턴 경로 전수 탐색으로 고른 판(해 1~3가지, 판자 14~16장). 판자를 대충 밟으면 거의 반드시 고립된다.
+/** 심연 위 판자 프레임(멀쩡 → 금 감 → 꺾임 → 떨어짐) — interior-plus 손 도트 조각. */
+const PLANK_FRAMES = ["plank bridge", "plank bridge cracked", "plank bridge falling 1", "plank bridge falling 2"] as const;
+
 const PLANK_VARIANTS: readonly (readonly string[])[] = [
   [" E   ", "oooo ", "oooo ", "oo o ", "oo o ", "   S "],
   ["  E  ", "  oo ", "oooo ", "ooooo", " oooo", "   S "],
@@ -310,7 +314,8 @@ export const crackedPlankBridge: MechanicDef = {
     // 판자 띠 전체(진입 칸·출구 칸이 있는 둑 가장자리 줄까지)를 심연으로 두고 판자·진입·출구 칸만 남긴다 —
     // 그래야 판자에서 둑 아무 데로나 내려서는 지름길이 없다.
     const chasm = rect(2, OY, 17, OY + grid.length - 1);
-    const keep = new Set([...idx.keys(), `${entry.x},${entry.y}`, `${exit.x},${exit.y}`]);
+    const plankArtPresent = PLANK_FRAMES.every((id) => Boolean(HAND_INTERIOR_SPEC.objects[id]));
+    const keep = new Set([...(plankArtPresent ? [] : idx.keys()), `${entry.x},${entry.y}`, `${exit.x},${exit.y}`]);
     const spec: PuzzleRoomSpec = {
       top: 1,
       left: 2,
@@ -345,8 +350,22 @@ export const crackedPlankBridge: MechanicDef = {
         return out;
       })(),
     };
+    // 판자 그림(2026-10-20 r4): 심연 위에 얹는 판자 프레임 넷(멀쩡 → 금 감 → 꺾임 → 떨어짐)이 칩셋에 있으면 판자 칸도 심연으로 파고
+    // 2층에 판자를 얹는다(상태 0 멀쩡 · 1 사라짐 · 2 금 감(올라섬) · 3·4 무너지는 중). 없으면 옛 마루 바닥 판자.
+    const plankArt = plankArtPresent;
     const plankProps = Object.fromEntries(
-      planks.map((c, i) => [`plank_${i}`, [{ zones: [{ x0: c.x, y0: c.y, x1: c.x, y1: c.y, floor: "dplank" }] }, { voids: [rect(c.x, c.y, c.x, c.y)] }]]),
+      planks.map((c, i) => [
+        `plank_${i}`,
+        plankArt
+          ? [
+              { overlays: [obj(PLANK_FRAMES[0], c.x, c.y)] },
+              { voids: [rect(c.x, c.y, c.x, c.y)] },
+              { overlays: [obj(PLANK_FRAMES[1], c.x, c.y)] },
+              { overlays: [obj(PLANK_FRAMES[2], c.x, c.y)] },
+              { overlays: [obj(PLANK_FRAMES[3], c.x, c.y)] },
+            ]
+          : [{ zones: [{ x0: c.x, y0: c.y, x1: c.x, y1: c.y, floor: "dplank" }] }, { voids: [rect(c.x, c.y, c.x, c.y)] }],
+      ]),
     );
     const room = new PuzzleRoom(
       ctx.draft,
@@ -379,6 +398,7 @@ export const crackedPlankBridge: MechanicDef = {
     ];
     const breakPlank = (i: number): Command[] => [
       setSw(swBroken[i]!, true),
+      ...(plankArt ? [...room.set(`plank_${i}`, 3), se("knock"), wait(90), ...room.set(`plank_${i}`, 4), wait(90)] : []),
       ...room.set(`plank_${i}`, 1),
       se("collapse1"),
       particles("dust", 700, at(planks[i]!)),
@@ -404,6 +424,7 @@ export const crackedPlankBridge: MechanicDef = {
           commands: [
             ...leave,
             setVar(vCur, i + 1),
+            ...(plankArt ? room.set(`plank_${i}`, 2) : []),
             se("knock"),
             particles("dust", 400, at(c)),
             ...trapped,

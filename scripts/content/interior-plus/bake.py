@@ -21,7 +21,9 @@ SHJ = os.path.join(ROOT, 'src/assets/atlasBiomeInteriorSheet.json')
 SPJ = os.path.join(ROOT, 'src/assets/handInteriorSpec.json')
 PINS = os.path.join(TD, 'pins.json')
 MARK = 'interior-plus'
-CAT_KO = {'museum': '박물관·미술관', 'ship': '배 선실', 'arena': '투기장'}
+CAT_KO = {'museum': '박물관·미술관', 'ship': '배 선실', 'arena': '투기장', 'puzzle': '퍼즐 방'}
+SLIDE = {'ice': 'ice'}   # 미끄러지는 바닥 → 타일셋 slideTiles 규칙(src/project/slideTiles.ts)
+PIT_SIDE = (('N', 1, '북'), ('E', 4, '동'), ('S', 16, '남'), ('W', 64, '서'))
 STAR = ' 솟은 칸·걸이(★): 캐릭터 위에 그리고 통행은 아래 층이 정한다.'
 FLAT = ' 밟는 칸(o): 붓은 위층에 깔고(바닥 유지), 캐릭터 밑에 그린다. 조립 도구는 2층에 둔다.'
 
@@ -96,7 +98,7 @@ def main(repack=False):
     # 기존 덧붙임 지우기(사양·정의에서 plus 항목)
     plus_prev = set(pins.get('ids', []))
     for k in ('passability', 'priority', 'terrain', 'tileMeta'): ts[k] = ts[k][:base]
-    ts['tileGroups'] = [g for g in ts['tileGroups'] if not g['id'].startswith('hand-interior:plus')]
+    ts['tileGroups'] = [g for g in ts['tileGroups'] if not g['id'].startswith('hand-interior:plus') and not g['id'].startswith('hand-interior:pit:')]
     ts['tileGroups'] = [g for g in ts['tileGroups'] if g['id'] not in {f'hand-interior:floor:{f}' for f in reg.floors} | {f'hand-interior:wall:{w}' for w in reg.walls}]
     ts['structureKits'] = [k for k in ts['structureKits'] if k['id'][len('hand-interior:'):] not in plus_prev]
     clash = [f for f in list(reg.floors) + list(reg.walls) if (f in sp['floors'] or f in sp['walls']) and f not in mine]
@@ -104,6 +106,9 @@ def main(repack=False):
     for f in reg.floors: sp['floors'].pop(f, None)
     for w in reg.walls: sp['walls'].pop(w, None)
     for o in plus_prev: sp['objects'].pop(o, None)
+    sp.setdefault('pits', {})
+    for pid in reg.pits: sp['pits'].pop(pid, None)
+    ts['slideTiles'] = {k: v for k, v in (ts.get('slideTiles') or {}).items() if int(k) < base}
 
     import gate_rooms   # 기물 영수증 + 바닥·벽면 조립 방 영수증(미보정 프로필이면 현재 프로필 PASS 를 임시 통과로 센다 — 보고에 적힌다). 우회 인자는 없다(--no-gate 는 2026-10-15 제거)
     gate_rooms.require_structure(reg)
@@ -142,6 +147,24 @@ def main(repack=False):
         ts['tileGroups'].append({'id': f'hand-interior:wall:{wid}', 'name': f'벽면 · {wd["ko"]}', 'role': 'wall', 'defaultLayer': 'lower', 'tileIds': ids,
             'description': f'손 도트 실내 벽면 {wd["ko"]}: {len(ids)}칸 = 윗줄/아랫줄 × {wd["cols"]}열(x%{wd["cols"]}) × 서쪽 그림자. 번호 = 첫 칸 + ((줄*{wd["cols"]} + x%{wd["cols"]})*2 + 서쪽).',
             'placementRules': '막힌 칸 바로 아래 두 줄. 이어진 벽 하나에 재질 하나.', 'source': 'bundled-default', 'confidence': 'high'})
+
+    for fid, rule in SLIDE.items():
+        if fid in sp['floors'] and fid in reg.floors:
+            for n in sp['floors'][fid]['tiles']: ts['slideTiles'][str(n)] = rule
+
+    for pid, pd in reg.pits.items():
+        ids = []
+        for m in iplib.PIT_MASKS:
+            sides = [ko for _, b, ko in PIT_SIDE if not m & b]
+            inner = [ko for b, ko, need in ((2, '북동', 1 | 4), (8, '남동', 16 | 4), (32, '남서', 16 | 64), (128, '북서', 1 | 64)) if (m & need) == need and not m & b]
+            name = ('가장자리 ' + '·'.join(sides) if sides else '속') + (' + 안모서리 ' + '·'.join(inner) if inner else '')
+            desc = f'{pd["ko"]}(밑 없는 구멍) {name} — 마스크 {m}. 막힌 칸. 위에 판자 다리(plank bridge)를 2층에 덮어 건너게 한다.'
+            ids.append(put(f'pit:{pid}:{m}', iplib.pit_render(pd, m), meta(f'{pd["ko"]} · {name}', desc, 'terrain', 'solid', 'lower', [pd['ko'], '구멍', '퍼즐 방']), True, 'lower'))
+        sp['pits'][pid] = {'ko': pd['ko'], 'masks': list(iplib.PIT_MASKS), 'tiles': ids}
+        ts['tileGroups'].append({'id': f'hand-interior:pit:{pid}', 'name': f'{pd["ko"]} 가장자리(47)', 'role': 'terrain', 'defaultLayer': 'lower', 'tileIds': ids,
+            'description': f'{pd["ko"]} 오토타일 47칸: 8이웃 마스크(N=1 NE=2 E=4 SE=8 S=16 SW=32 W=64 NW=128, 켜짐 = 그 이웃도 구멍, 대각은 양옆 직교가 둘 다 켜졌을 때만) → 칸. '
+                           f'사양 handInteriorSpec.pits.{pid} 의 masks[i] ↔ tiles[i]. 북이 바닥이면 먼 벽 바위 낯, 남이 바닥이면 가까운 바닥 입술, 서·동은 옆벽 띠.',
+            'placementRules': '구멍 칸마다 이웃으로 마스크를 계산해 고른다. 지도 밖은 바닥으로 본다. 건너는 길은 판자 다리를 2층에 덮는다.', 'source': 'bundled-default', 'confidence': 'high'})
 
     clash = [pid for pid in reg.order if pid in sp['objects']]
     if clash: raise SystemExit(f'이미 있는 v5 기물 id 와 겹친다 — 이름을 바꾼다: {clash}')
@@ -222,7 +245,7 @@ def main(repack=False):
     pins['ids'] = ids_done
     os.makedirs(TD, exist_ok=True)
     json.dump(pins, open(PINS, 'w'), ensure_ascii=False, indent=0)
-    print(f'base {base} → count {count} (+{count - base}), 기물 {len(ids_done)}, 바닥 {len(reg.floors)}, 벽면 {len(reg.walls)}')
+    print(f'base {base} → count {count} (+{count - base}), 기물 {len(ids_done)}, 바닥 {len(reg.floors)}, 벽면 {len(reg.walls)}, 구멍 {len(reg.pits)}, 미끄럼 {len(ts["slideTiles"])}')
 
 
 if __name__ == '__main__':

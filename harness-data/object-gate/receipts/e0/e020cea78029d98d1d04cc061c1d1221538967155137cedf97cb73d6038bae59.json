@@ -1,0 +1,341 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e020cea78029d98d1d04cc061c1d1221538967155137cedf97cb73d6038bae59",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "저울 추 받침(빈 것) (weight stand)",
+ "label": "atlas_biome_interior/plus/weight stand",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 30,
+  "nearBlackEdge": 0.5,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main body top (tray with recessed opening)",
+      "rows": "4-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The columns show a top band at rows 4-7, with a dark recess inside a lighter rim. It ends in a bright 1-row front-edge line at row 8 (L=148 in all three columns). Below it is a darker front face at rows 9-12 (4 rows), then a dark outline at row 13. The silhouette is a 14px-wide box from rows 3-12. This matches the 'cabinet: top 5 + edge' reference: a top surface with an edge line above a front face of 3 or more rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small wooden tray or crate on a stand, drawn with only 9 distinct colours. That is below the wood bench (14) and the roofed well and cheese stall (38-40). Its tile median of 9 is close to the hedge's 10, and flat-fill coverage is 0%, so it is not a flat fill. All of its dark edge pixels are near-neutral (100%), so the outline is a uniform near-black line. The wood bench and well have tinted dark-brown edges (44% and 33% neutral), and the hedge and stall are near 0-1%. The wood has only about 3 lightness steps (light top, mid body, dark outline). It shows little per-plank grain or highlight work, where the references use 5-6 steps with material-toned outlines. This is the sticker look the standard rejects for a wooden object, so I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14553
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main tray/box top (recessed opening with rim)",
+      "rows": "4-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-9"
+     },
+     {
+      "part": "front face",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The column scan shows a 1-row dark outline at row 3. Rows 4-7 form a recessed top area with a dark interior and some lighter pixels. Row 8 is a light line (L=148, #ac9067) that works as a front-edge line, and it is followed by a darker front face in rows 9-12 (4 rows, L about 64-71). Row 13 is the bottom outline. The silhouette is a 14px-wide box with no receding side face. The top is about 5 rows including the edge line, over a 4-row front face, so it matches the cabinet/seat 'OK' references more than the 'rim only' or 'front elevation' ones."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small wooden box drawn at about 9 colours in total. Its dark edge pixels are 100% near-neutral, so the outline is a uniform near-black line around the whole shape (the sticker look), not a dark brown tone of the wood. The body shows only about 3 wood steps (light plank, mid, dark) plus the outline. The references use about 5-6 steps per material and 11-40 colours; the well and stall carry 38-40 colours with tinted outlines. The bench and hedge have tinted or mixed outlines and more ramp steps. The lamp also has a neutral outline, but it is a thin object and has more colours (14). Flat-fill coverage is 0%, so the surface is not flat, but the grain is sparse. The 9 colours per tile is similar to the hedge, but the box has less shading depth and a flatter outline treatment than every same-kind reference, so it would look thinner and more sticker-like next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14965
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tray body top (open recess with rim)",
+      "rows": "4-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Column scans show an outline at row 3, a lighter rim at row 4, and dark recessed interior at rows 5-7. A distinct light front-edge line at row 8 (L=148) follows, then a darker front face at rows 9-12 and a bottom outline at row 13. The top band (rows 4-8) is about 5 rows, ending in a front-edge line, with 4 rows of front face below. The silhouette is a constant 14 wide, so it is a rectangular tray with an empty top opening seen from above and in front. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small wooden box-like stand with only 9 distinct colours in total. The comparable references have 14 (bench), 38 (well) and 40 (stall). Its dark edge pixels are 100% near-neutral, so the outline is a uniform near-black line with no brown lean beside the wood. The bench's outline is 44% neutral, and the hedge, stall and well outlines are tinted. The wood ramp has about 3 lightness steps against roughly 5 on the references. There is no 5x5 flat fill, and a few plank and grain dots keep it from being flat. Even so, the near-black sticker-style outline and the shallow shading make it noticeably thinner than the Beodeul pieces, so it would not sit comfortably next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15945
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "weight tray top (open recess with dark interior)",
+      "rows": "3-7",
+      "evidence": "d",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face of the box",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 3-7 form the top of a box. The outline is at row 3, and rows 4-7 show a dark inset opening with tan contents in it. Row 8 is a light front-edge line (L=148 against about 64-92 above and 64-71 below). Rows 9-12 are a darker vertical front face (4 rows), and row 13 is the bottom outline. The top has a front-edge line and the front face is 3 or more rows, so it reads as a 3/4 view rather than a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small wooden tray or box with only 9 distinct colours in total. The references have 11 to 40 colours, and the other wooden prop, the bench, has 14. Its dark edge pixels are 100% near-neutral, so the outline is a uniform dark line around the shape rather than the dark brown tone of the adjacent wood. The references that are wood or other materials (bench 44%, hedge 0%, stall 1%, well 33%) show tinted outlines. Wood shading reads as about 3 steps, a light top, a mid body and a dark outline, against the 5-6 steps the references use. The few grain dots are sparse. The 9 colours per tile is close to the hedge's 10, but the hedge has tinted outlines and much more varied clumps, and the candidate's neutral outline gives it the sticker look. It would look thinner and flatter next to the bench, stall and well, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 20928
+  }
+ ],
+ "decidedAt": "2026-10-20T05:59:10.982Z",
+ "cells": {
+  "16": [
+   "68d90a6a7b75dcb9"
+  ],
+  "24": [
+   "1a4b633088ad1877",
+   "1dcc8b9c50a11a37",
+   "8ffd4fd3ae14e486",
+   "b4d8f4d5a8a50456",
+   "ce976ce3709a11ce",
+   "da9868f8847f8568"
+  ],
+  "32": [
+   "2ef9d940f33f6889",
+   "498734f163838d9c",
+   "5808a644d15a4ae4",
+   "6d322d595b550838",
+   "7078833e1a524f37",
+   "8c59ad63f80d5464"
+  ],
+  "48": [
+   "0019c5b4067d64a7",
+   "4b13472940f6e669",
+   "4d63943b43ad4267",
+   "8272c88251ecdc4d",
+   "b83dab8ff9233c34",
+   "c758d2b758888b63"
+  ]
+ }
+}

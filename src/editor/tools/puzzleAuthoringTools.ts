@@ -1019,6 +1019,7 @@ function runMechanicPreset(
     const page = event.pages?.[0];
     const kind = page?.trigger.kind;
     if (kind === "auto" || kind === "parallel" || page?.priority !== "same") continue;
+    if (built.stagedReach?.includes(event.id)) continue;
     if (!analysisPlacement.hasInteractionPosition(event, origin)) {
       throw new ToolError(`퍼즐 이벤트 '${event.id}'(${event.x},${event.y}) 에 시작점 (${origin.x},${origin.y}) 에서 닿을 수 없습니다 — 롤백합니다.`, {
         code: "puzzle-softlock-prevented",
@@ -1066,13 +1067,13 @@ function runMechanicPreset(
 const listPuzzlePresetsTool: ToolDefinition = {
   name: "list_puzzle_presets",
   description:
-    "AI 조수가 맵·던전·실내에 바로 설치할 수 있는 20종 JRPG·어드벤처 퍼즐 프리셋 카탈로그(상태 공간 BFS 검증 품질 프리셋 12종 + 호환 프리셋 8종)를 조회한다. " +
-    "① 레버-비밀통로(lever_secret_passage) ② 4레버 마스터마인드 판정(two_step_sequence) " +
+    "AI 조수가 맵·던전·실내에 바로 설치할 수 있는 20종 JRPG·어드벤처 퍼즐 프리셋 카탈로그(상태 공간 BFS 검증 품질 프리셋 16종 + 호환 프리셋 4종)를 조회한다. " +
+    "① 떨어지는 쇠창살 감옥 회랑 레버(lever_secret_passage) ② 4레버 마스터마인드 판정(two_step_sequence) " +
     "③ 성당 오르간 5음 메아리 기억(cathedral_organ_tuning) ④ 사방 화로 관계 단서 점화(brazier_ignition_order) " +
-    "⑤ 석상 밀기 발판 소코반(statue_pressure_plates) ⑥ 얼음/컨베이어 미끄럼(ice_conveyor_slide) " +
-    "⑦ 시간의 문 시대 연동(time_gate_causality) ⑧ 다이너마이트 장애물 폭파(dynamite_rock_blast) " +
+    "⑤ 석상 밀기 발판 소코반(statue_pressure_plates) ⑥ 빙판 동굴 미끄럼(ice_conveyor_slide) " +
+    "⑦ 모래시계 신전 과거↔현재(time_gate_causality) ⑧ 다이너마이트 장애물 폭파(dynamite_rock_blast) " +
     "⑨ 거짓말쟁이 상자 추론(riddle_mimic_chests) ⑩ 두 저수조 3·5칸 수위 맞추기(sluice_lava_bridge) " +
-    "⑪ 경비병 시야/순찰 잠입(stealth_guard_patrol) ⑫ 보스 결계 3×3 수정 뒤집기 라이츠아웃(boss_seal_monoliths) " +
+    "⑪ 초소 경비 등불 시야 잠입(stealth_guard_patrol) ⑫ 보스 결계 3×3 수정 뒤집기 라이츠아웃(boss_seal_monoliths) " +
     "⑬ 거대 바위 굴리기·구렁 메우기(rolling_boulder_chasm) ⑭ 고대 거울 빛줄기 굴절(mirror_beam_refraction) " +
     "⑮ 광산 선로 전환기 & 광차 충돌(minecart_track_switch) ⑯ 사원소 구슬 제단 배치 추론(elemental_pedestal_swap) " +
     "⑰ 무너지는 판자 다리 한붓 건너기(cracked_plank_bridge) ⑱ 서재 유물 세기 세 자리 자물쇠(number_code_lock) " +

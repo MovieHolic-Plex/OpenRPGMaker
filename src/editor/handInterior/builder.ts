@@ -63,6 +63,11 @@ export interface HandInteriorSpec {
   readonly daises: Readonly<Record<string, { readonly ko: string; readonly pieces: Readonly<Record<string, number>> }>>;
   readonly goods: Readonly<Record<string, number>>;
   readonly rooms?: HandInteriorRoomTable;
+  /**
+   * 심연(구덩이) 자동 타일(선택, interior-plus 굽기): masks[i] 이웃 8비트(N1 NE2 E4 SE8 S16 SW32 W64 NW128, 같은 구덩이면 1,
+   * 대각선은 낀 두 직교 이웃이 모두 1일 때만) → tiles[i]. 47가지 정규 마스크.
+   */
+  readonly pits?: Readonly<Record<string, { readonly ko: string; readonly masks: readonly number[]; readonly tiles: readonly number[] }>>;
 }
 export const HAND_INTERIOR_SPEC = spec as unknown as HandInteriorSpec;
 /** 일본 실내(jp_city 번들 안) — 같은 모양의 사양을 scripts/content/jp-city/bake_interior_spec.py 가 굽는다. 조립 규칙은 같다. */

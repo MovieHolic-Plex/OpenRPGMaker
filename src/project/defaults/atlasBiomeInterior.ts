@@ -9,7 +9,7 @@
 // 조립은 src/editor/handInterior/builder.ts(평면 문자열 → 구조 자동, 가구는 v5 물건 id), 도구 build_hand_interior_room.
 import data from "@/assets/atlasBiomeInteriorTileset.json";
 import references from "@/assets/sharedHandInteriorReferences.json";
-import type { AutotileGroup, PassFlag, Project, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
+import type { AutotileGroup, PassFlag, Project, SlideRule, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
 import { attachWorkshopTiles, detachWorkshopTiles } from "../workshopTiles";
 
@@ -21,6 +21,11 @@ export const ATLAS_BIOME_INTERIOR_TILES_PER_ROW: number = data.tilesPerRow;
 /** 옛(Tibo 번호 기반) 정의가 번들로 심은 참고문서 분류 — 새 정의로 바꿀 때 함께 뺀다. */
 const RETIRED_REFERENCE_PREFIX = "atlas-interior-";
 const REFERENCES = references as unknown as readonly { tilesetId: string; category: TilesetReferenceCategory }[];
+
+/** 굽기 JSON 의 빙판 규칙(없을 수 있다 — 얼음 바닥을 굽기 전 판본). */
+function slideTilesOf(json: unknown): Record<string, SlideRule> | undefined {
+  return (json as { slideTiles?: Record<string, SlideRule> }).slideTiles;
+}
 
 export function createAtlasBiomeInteriorTileset(): TilesetDef {
   return {
@@ -40,6 +45,8 @@ export function createAtlasBiomeInteriorTileset(): TilesetDef {
     autotileGroups: structuredClone(data.autotileGroups) as unknown as AutotileGroup[],
     animationStrips: structuredClone(data.animationStrips),
     structureKits: structuredClone(data.structureKits) as unknown as StructureKitDef[],
+    // 빙판(퍼즐 얼음 미끄럼 방) — interior-plus 굽기가 얼음 바닥 칸을 "ice" 규칙으로 적는다.
+    ...(slideTilesOf(data) ? { slideTiles: structuredClone(slideTilesOf(data)!) } : {}),
     referenceDocuments: REFERENCES.filter((r) => r.tilesetId === ATLAS_BIOME_INTERIOR_ID).map((r) => structuredClone(r.category)),
     roomKit: { builtin: ATLAS_BIOME_INTERIOR_ID },
   };
@@ -133,6 +140,7 @@ function refreshAtlasBiomeInterior(project: InteriorProject, id: string): boolea
     for (const key of ["count", "passability", "priority", "terrain", "tileMeta", "tileGroups", "autotileGroups", "animationStrips", "structureKits"] as const) {
       (tileset as unknown as Record<string, unknown>)[key] = fresh[key];
     }
+    if (fresh.slideTiles) tileset.slideTiles = fresh.slideTiles;
     // the bundle-owned reference category (furniture dictionary, examples) follows the new build; authored categories stay
     tileset.referenceDocuments = (tileset.referenceDocuments ?? []).map((c) => fresh.referenceDocuments!.find((f) => f.id === c.id) ?? c);
     ensureAtlasBiomeInteriorReferences(tileset);

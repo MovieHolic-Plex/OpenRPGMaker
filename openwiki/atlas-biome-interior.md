@@ -272,3 +272,20 @@ v5 시트 **끝에 덧붙인** 손 도트 조각(같은 팔레트 v6·같은 램
 - **관문:** `rebake_inplace.py` 는 그림(프레임 0, 팔레트 v6)에 object-gate 영수증이 PASS 일 때만 덮는다(보정 프로필 PASS, 또는 현재 미보정 프로필의 PASS = interior-plus `gate_rooms.state` 와 같은 임시 통과). 우회 인자 없음.
   2026-10-20 결과: 17종 덮음(진열장 13·슬롯머신·유물 진열장 둘·선원 침상), 4종 보류(투구 선반·천체 모형·제어반 = 3/4 판정 갈림 REFER, 고해실 = 화풍 FAIL) —
   옛 그림 그대로이고 후보 그림은 `tiledata/hand-interior/props34/` 에 있다. 영수증이 PASS 로 바뀌면 `rebake_inplace.py` 를 다시 돌리면 들어간다.
+
+## 퍼즐 방 조각 — interior-plus `puzzle` (2026-10-20)
+
+`scripts/content/interior-plus/pieces/puzzle.py` (카테고리 `puzzle` = 「퍼즐 방」). 칸은 7157부터 덧붙였다(핀 덧붙이기 전용, 옛 칸 0개 변경 — 굽기 대조).
+
+- **무너지는 판자**: `plank bridge` · `plank bridge cracked` · `plank bridge falling 1` · `plank bridge falling 2`(flat, 1칸). 구멍 칸 위에 얹어 쓴다.
+- **심연 오토타일** `abyss`(47 마스크, 비트 N=1 NE=2 E=4 SE=8 S=16 SW=32 W=64 NW=128 = 그 이웃도 구멍, `iplib.pit_reduce` 로 47개로 줄임):
+  사양 `pits.abyss = {ko, masks, tiles}`(masks[i] ↔ tiles[i]), 정의 tileGroup `hand-interior:pit:abyss`, 칸은 통행 불가·층 lower·역할 terrain.
+  그림: 먼 벽(북이 바닥) 바위 낯 15줄 — 남도 바닥인 한 칸 높이 구멍은 9줄로 눌러 그린다, 옆벽 4px 띠, 가까운 입술(남이 바닥), 안모서리 홈. 바위 램프 `rk` 는 v6 팔레트의 기존 색만 쓴다.
+- **저울 추**: `weight stand`(빈 받침, 놋 홈) → `weight stand 1`…`5` 가벼운 순(놋 2 · 쇠 2 · 납 원통 1). 3~5 는 2칸 높이.
+- **빙판** `REG.floor('ice')` 8×6 주기(빈틈 없이 이어짐, 눈 매트·대리석과 다른 푸른 유리 결) + 정의 `slideTiles = {칸: 'ice'}`(굽기가 base 아래 키만 남기고 다시 쓴다).
+- **경비 등불 빛** `guard lantern light`(flat, 반투명 따뜻한 빛, 줄로 놓으면 이어진다). 끝 조각은 화풍 4회 불합격이라 뺐다.
+- **관문 그림**: 기물은 `gate_export.py pending`. 바닥 `ice` 는 지형 조각 그림 `ground-{fid}`(gate_rooms.GROUND, kind terrain)로 덮는다 — 얼음 동굴 방 `room-rock-ice` 는 3/4 불합격이지만
+  「다른 통과 그림이 대신 덮음」으로 막지 않는다(그 그림이 덮는 바닥·벽면이 전부 통과 그림에 덮일 때만). 구멍 칸은 `puzzle_scene.PIT_GRIDS` 의 지형 그림(abyss-b 18 + abyss-c 29 마스크)이
+  **통과한 그림의 마스크 합집합**으로만 덮인다. 칸을 한 화소라도 다시 그리면 그림 해시가 바뀌어 다시 받아야 한다.
+- **재보정 후 영수증 필요(통과 아님)**: 옛 판정 프로필 영수증은 무효다. 현재 프로필 영수증이 없지만 핀 칸의 main 시트 화소와 지금 그림이 같은 조각은 「재보정 후 영수증 필요」 묶음으로 따로 센다(`gate_rooms._shipped_unchanged`). 이미 main 에 실려 있어 굽기는 그 칸을 화소 그대로 다시 쓰고 목록을 `!!` 줄로 크게 찍는다 — 통과·면제로 세지 않고, 다른 그림을 「덮는」 근거로도 쓰지 않는다. 새 것·바뀐 것은 이 묶음에 들 수 없다(현재 프로필 PASS 필요). 2026-10-20 폐지 전에는 「소급 면제」로 셌다.
+- 모의 장면·GIF: `python3 scripts/content/interior-plus/puzzle_scene.py <out>` → scene.png · plank.gif · pit47.png · abyss-*.png.

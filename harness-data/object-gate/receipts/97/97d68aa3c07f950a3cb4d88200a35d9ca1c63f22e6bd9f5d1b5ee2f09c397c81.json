@@ -1,0 +1,306 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "97d68aa3c07f950a3cb4d88200a35d9ca1c63f22e6bd9f5d1b5ee2f09c397c81",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "저울 추 받침(추 4 — 큰 무쇠) (weight stand 4)",
+ "label": "atlas_biome_interior/plus/weight stand 4",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 3/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 3/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 15,
+  "darkV5": 47,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "right",
+   "wrong",
+   "right",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper body top band (weight stand top)",
+      "rows": "11-15",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-19"
+     },
+     {
+      "part": "lower base slab",
+      "rows": "25-27",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "In the main body, rows 11-15 form a lighter top band (L~170) ending in a bright front-edge line at row 16 (#d0d8e0). Rows 17-20 are a darker eave shadow, and a darker front face with a checker pattern runs through row 24. That gives a top band of 5 rows over a front face of about 8 rows. A light base slab sits at rows 25-29, with a highlight at row 26 and shading at row 28. The light strip on the right at rows 19-24 reads as the base extending behind, not a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small cast-iron stand, about 12x16 source pixels. It is at or above the thin references on the measured facts. It has 15 distinct colours against 14 for the bench and lamp, and a per-tile median of 15, which sits between the hedge (10) and the stall (17). Flat-fill coverage is 0%. Neutral dark edge pixels are 0%, so the outline is tinted, unlike the lamp (100%) and bench (44%). By eye the iron ramp runs from a pale top highlight through mid greys to a dark base, with a few dots of grain. That is about 5 steps against Beodeul's 5-6. The piece is small and the image is low-resolution, so fine texture is hard to confirm. It does not look thinner or more sticker-like than the references, so it passes, though not with a wide margin.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22500
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper block top (main body)",
+      "rows": "11-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-19"
+     },
+     {
+      "part": "lower base plate",
+      "rows": "25-27",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Columns x=4, 8 and 11 show a light band at rows 11-15 that ends in a bright 1-row front-edge line at row 16 (L=215). Rows 17-20 below it are darker eave shadow (L 39-82), and the dark front face with a checker detail runs through row 24. A lighter base slab at rows 25-28 has its own highlight line at row 26. The top band is about 6 rows and the front face is about 13 rows (17-29), so the object has both a top surface and a front face. The small lighter strip at the right, rows 20-28, is a bracket or edge detail rather than a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, roughly one-tile cast-iron stand. It has 15 distinct colours and a median of 15 per full tile. That is above the small references (bench 14, lamp 14, hedge 11 colours in total) and in line with the per-tile density of the stall (17) and well (20). Flat-fill coverage is 0%, so there are no large single-colour areas. The dark edge pixels are 0% neutral, so the outline leans visibly toward the iron's own dark tone rather than a black sticker line, unlike the lamp reference at 100% neutral. By eye it shows about 5 value steps: a lit top face, mid body, shadowed side and a dark base, with a small plate or detail on the front. It is simpler than the stall and well, but those are much larger objects. Next to the bench and lamp it does not look thinner or flatter, so it is acceptable at this scale. The picture is small, so the judgement leans on the measured facts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23390
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper iron weight block",
+      "rows": "11-15",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "lower base or step",
+      "rows": "25-28",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "In column x=8, rows 11-15 are a light band (L about 170) at the top of the main body. Row 16 is a brighter 1-row front-edge line (L215), followed by darker rows 17-20 (L82) that act as eave shadow and front face. The front face runs about rows 17-28. A lighter base band at rows 25-28 has its own highlight row at 26. The 5-row top plus an edge line and 12 rows of front face match the green 'cabinet: top 5 + edge + eave' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small cast-iron weight stand, about one tile in size. The measured facts support it. It has 15 distinct colours and a median of 15 per full tile, which is above prop-hedge (10) and close to prop-stall-cheese (17). Flat-fill coverage is 0%. The dark edge pixels are 0% near-neutral, so the outline is tinted, a dark blue-grey of the iron rather than neutral black. By eye it shows a lit top face, a mid body, a darker inset panel and small plaque or weight detail. That gives about 5 lightness steps with some speckle, and it is not a flat sticker. It has fewer colours than the large well and stall, but it is a small single-tile prop, and its colour count matches the bench (14) and lamp (14). A careful artist could place it next to these references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19732
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper slab top (light grey band)",
+      "rows": "11-15",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-19"
+     },
+     {
+      "part": "lower base/plinth ledge",
+      "rows": "25-29",
+      "evidence": "none",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 11-15 form a light grey band across the full width, which is the top surface. Row 16 is a bright front-edge line (L=215 at x=4, 8 and 11). Rows 17-20 below it are much darker (L=39-82), which is the eave shadow and the start of the front face. The dark recessed front face runs through row 24, and a lighter base ledge with a highlight at row 26 fills rows 25-29. The front face is about 13 rows in total. The silhouette is a steady 12-14 px wide with no ellipse. The small lighter strip at x=13, rows 20-24, is a step or edge detail, not a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small grey cast-iron weight stand. It has a lighter top face, a mid-grey body and a darker base and sides, which I read as about 5 lightness steps. That is slightly below the 5-6 of the references, but fair for a small single-block prop. Its dark edge pixels are 0% near-neutral, so the outline carries a tint (a dark blue-grey lean) rather than a black sticker line. It has 0% 5x5 flat-fill coverage, so no large flat areas, and a few speckle and edge-highlight pixels. Its 15 colours per 16x16 tile are above the hedge (10) and close to the stall (17) and well (20). Its 15 distinct colours are comparable to the bench, lamp and hedge, though well below the large stall and well. Next to the references it does not look thinner or flatter, so I pass it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19060
+  }
+ ],
+ "decidedAt": "2026-10-20T06:37:20.795Z",
+ "cells": {
+  "16": [
+   "9d14170816bcaa2c",
+   "da642e30d94d9019"
+  ],
+  "24": [
+   "029ad3de2b47def0",
+   "2387af4f5640d0f8",
+   "4848d5bed41a2651",
+   "650467216950afbd",
+   "81e99a4f61cc13fd",
+   "a32ba8c8c15be03b",
+   "a9b6ec01bf62326f",
+   "b596ea4c445e172a",
+   "d5b924c99b183d53"
+  ],
+  "32": [
+   "93fd9619d8b4f1aa",
+   "9b67efe20d4b47f1",
+   "e6ba88dffaf23a76"
+  ],
+  "48": [
+   "1a813473cd49863f",
+   "27a8b69825eb8720",
+   "51afbe5345040477",
+   "6aec5761d3bfc57e",
+   "9795ab5cb107dd9c",
+   "ed8f5d61164b733a"
+  ]
+ }
+}
