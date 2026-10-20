@@ -1,3 +1,4 @@
+import { ensureHighResFullbodyPlayResolution } from "@/project/playResolution";
 import { isCatalogBgmAvailable } from '@/assets/audioResourceCatalog';
 import { createBlankProject } from "@/project/defaults";
 import { retitlePlaceholderOpening } from "@/project/defaults/defaultOpeningSequence";
@@ -138,6 +139,7 @@ const resetProject: ToolDefinition = {
       // 장르에 어울리는 대화창을 먼저 깐다. 톤이 다르면 AI 가 set_project_settings 로 바꾼다.
       const dialogueStyle = recommendedDialogueStyleForPreset(genrePreset);
       if (dialogueStyle !== DEFAULT_DIALOGUE_STYLE_ID) seed.system.dialogueStyle = dialogueStyle;
+      if (dialogueStyle === "dual-fullbody-veil") ensureHighResFullbodyPlayResolution(seed.system);
     }
     replaceProjectContents(draft, seed);
     return {

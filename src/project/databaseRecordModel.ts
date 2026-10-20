@@ -81,7 +81,7 @@ import { normalizeCaptureCondition } from "@/battle/captureBalls";
 import { isStatStageKey, STAT_STAGE_MAX, STAT_STAGE_MIN } from "@/battle/statStages";
 import { normalizeSkillWeather } from "@/battle/weather";
 import { normalizeCharacterFootprint, normalizePassRows } from "@/project/footprint";
-import { normalizePlayResolution } from "@/project/playResolution";
+import { keepsExplicitDefaultResolution, normalizePlayResolution } from "@/project/playResolution";
 import { normalizeCameraZoom } from "@/project/cameraZoom";
 import { normalizeWorldGenRulesForStorage } from "@/project/worldGenRules";
 import { normalizeCinematicSequence, normalizeGameOverSettings } from "@/project/cinematicSettings";
@@ -251,8 +251,10 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   const actionCombat = normalizeActionCombatConfig(system.actionCombat);
   const playerFootprint = normalizeCharacterFootprint(system.playerFootprint);
   const genreLock = normalizeGenreLock(system.genreLock);
-  const playResolution = normalizePlayResolution(system.playResolution);
-  const cameraZoom = normalizeCameraZoom(system.cameraZoom);
+  // 양쪽 전신 대화창이면 생략이 1024×768·3.2배를 뜻하므로 작가가 고른 기본값(320×240·1배)도 값으로 남긴다.
+  const keepDefaults = keepsExplicitDefaultResolution(system);
+  const playResolution = normalizePlayResolution(system.playResolution, { keepDefault: keepDefaults });
+  const cameraZoom = normalizeCameraZoom(system.cameraZoom, { keepDefault: keepDefaults });
   const displayFilter = normalizeDisplayFilter(system.displayFilter);
   const playSurfaceScale = normalizePlaySurfaceScale(system.playSurfaceScale);
   const battleLook = normalizeBattleLook(battleLookWithRetiredSkinWindow(system));
