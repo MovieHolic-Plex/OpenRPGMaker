@@ -5,6 +5,7 @@ import {translateTiles} from '@/project/objectStamp';
 import {layerTileAt,setLayerTileAt,compactMapLayers} from '@/project/mapLayers';
 import {computeReachableCells} from '@/project/lint/reachability';
 import type {Project,StructureKitDef} from '@/project/types';
+import {composeBeodeulForest} from './beodeulForest';
 import {COURTYARD_HOUSES,COURTYARD_TREES} from './beodeulCourtyardTools';
 import {ToolError,type ToolDefinition} from './types';
 
@@ -51,7 +52,22 @@ export function refineBeodeulVegetation(project:Project,mapId:string){
   for(let dy=0;dy<r.height;dy++)for(let dx=0;dx<r.width;dx++){const n=r.rows[dy]![dx]!;if(n>=0)setLayerTileAt(m,r.layer as 2|3|4,(y+dy)*m.width+x+dx,translated.map.get(n)!);}
   placements.push({recipe:r.id,x,y,layer:r.layer});
  };
- for(const g of COURTYARD_GROVES){stamp(g.recipe+'-shadow',g.x,g.y);stamp(g.recipe,g.x,g.y);}
+ // 숲(woodland r3, 2026-10-21 독립 검수 D9): 고정 숲 조각 8장을 그대로 찍으면 북서·북동이 같은 그림으로 반복되고 접지 그늘도 없었다.
+ // 조각이 덮던 칸(본체 수관 윤곽)을 숲 칸으로 삼아 composer 로 원본 나무를 다시 세운다 — 접지·숲 바닥 그늘이 같이 깔린다(혼효: 원본 도시 숲처럼 측백이 섞인다).
+ const groveMask=new Set<number>();
+ for(const g of COURTYARD_GROVES){const r=newRecipes.find(r=>r.id===`bdg-woodland-${g.recipe}`)!;r.rows.forEach((row,dy)=>row.forEach((n,dx)=>{if(n>=0)groveMask.add((g.y+dy)*m.width+g.x+dx);}));placements.push({recipe:`composer:${r.id}`,x:g.x,y:g.y,layer:3});}
+ const inMap=(x:number,y:number)=>x>=0&&y>=0&&x<m.width&&y<m.height;
+ const bare=(i:number)=>([2,3,4] as const).every(L=>layerTileAt(m,L,i)<0);
+ const grove=(x:number,y:number)=>inMap(x,y)&&groveMask.has(y*m.width+x)&&bare(y*m.width+x);
+ const nearGrove=(x:number,y:number)=>{for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++)if(grove(x+dx,y+dy))return true;return false;};
+ const groveCells=new Set([...groveMask].filter(i=>grove(i%m.width,Math.floor(i/m.width))));
+ const near1=(x:number,y:number)=>{for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)if(grove(x+dx,y+dy))return true;return false;};
+ // 숲 둘레 풀: 민무늬 잔디 737 과 숲 조각 밑에 깔려 있던 잔디 변형(공동마당 잔디밭) — 길·마당 바닥은 아니다
+ const lawn=new Set<number>([737,...[...groveCells].map(i=>layerTileAt(m,1,i))]);
+ const grassy=(x:number,y:number)=>inMap(x,y)&&bare(y*m.width+x)&&lawn.has(layerTileAt(m,1,y*m.width+x));
+ composeBeodeulForest(project,m,ts,'mixed',(x,y)=>inMap(x,y)&&groveCells.has(y*m.width+x),
+  (x,y)=>inMap(x,y)&&(groveCells.has(y*m.width+x)||grassy(x,y)&&near1(x,y)),54,
+  (x,y)=>inMap(x,y)&&(groveCells.has(y*m.width+x)||grassy(x,y)&&nearGrove(x,y)),[...lawn]);
  // Three connected edges enclose the actual vegetable bed; the north side opens onto the main lane.
  for(let x=30;x<=35;x++)stamp('fence-horizontal',x,22);
  // 모서리·세로는 원본 밭 울타리 칸(남서·남동·서변·동변)이다 — 예전 한 가지 「모서리」를 양쪽에 쓰면 동쪽 모서리 레일이 밖으로 삐졌다.

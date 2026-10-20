@@ -22,7 +22,9 @@ export function treeHash(x: number, y: number, s: number): number {
 }
 const h01 = (x: number, y: number, s: number): number => treeHash(x, y, s) / 4294967296;
 
-interface Placement { readonly sprite: TreeComposerSprite; readonly x0: number; readonly y0: number; readonly z: number }
+/** 나무 한 그루: 그림, 왼쪽 위 칸, 깊이(클수록 앞). */
+export interface TreePlacement { readonly sprite: TreeComposerSprite; readonly x0: number; readonly y0: number; readonly z: number }
+type Placement = TreePlacement;
 
 interface Ctx {
   readonly map: GameMap;
@@ -126,18 +128,25 @@ function anchorAt(c: Ctx, x: number, y: number): Placement | null {
 }
 
 /** 영역 [x0,x1)×[y0,y1) 칸을 다시 짠다(나무 칸 + r6 땅 그늘). 바뀐 칸 수. */
-function rewrite(c: Ctx, x0: number, y0: number, x1: number, y1: number, canWrite?: (x: number, y: number) => boolean): number {
+function rewrite(c: Ctx, x0: number, y0: number, x1: number, y1: number, canWrite?: (x: number, y: number) => boolean,
+  pre?: { readonly placements: readonly Placement[]; readonly cover: Uint8Array }): number {
   x0 = Math.max(0, x0); y0 = Math.max(0, y0); x1 = Math.min(c.W, x1); y1 = Math.min(c.H, y1);
   if (x1 <= x0 || y1 <= y0) return 0;
   const gr = c.cp.ground;
   // 그늘 덮개는 영역 바깥 한 칸까지 알아야 한다(그늘 코드가 이웃을 본다)
   const ex0 = Math.max(0, x0 - 1), ey0 = Math.max(0, y0 - 1), ex1 = Math.min(c.W, x1 + 1), ey1 = Math.min(c.H, y1 + 1);
-  const cover = new Uint8Array(c.W * c.H);
+  const cover = pre ? pre.cover : new Uint8Array(c.W * c.H);
   const stacks = new Map<number, { z: number; tile: number; cover: number }[]>();
-  for (let y = ey0; y < Math.min(c.H, ey1 + c.maxH); y++) {
+  const found: Placement[] = [];
+  if (pre) found.push(...pre.placements);
+  else for (let y = ey0; y < Math.min(c.H, ey1 + c.maxH); y++) {
     for (let x = ex0 - c.maxW; x < ex1; x++) {
       const p = anchorAt(c, x, y);
-      if (!p) continue;
+      if (p) found.push(p);
+    }
+  }
+  {
+    for (const p of found) {
       const sp = p.sprite;
       for (let j = 0; j < sp.h; j++) {
         for (let i = 0; i < sp.w; i++) {
@@ -147,7 +156,7 @@ function rewrite(c: Ctx, x0: number, y0: number, x1: number, y1: number, canWrit
           const xx = p.x0 + i, yy = p.y0 + j;
           if (xx < ex0 || yy < ey0 || xx >= ex1 || yy >= ey1) continue;
           const key = yy * c.W + xx;
-          if (gr && j >= sp.h - (gr.shadeRows ?? sp.h) && cv >= (j === sp.h - 1 ? gr.shadeCoverBase : gr.shadeCover)) cover[key] = 1;
+          if (!pre && gr && j >= sp.h - (gr.shadeRows ?? sp.h) && cv >= (j === sp.h - 1 ? gr.shadeCoverBase : gr.shadeCover)) cover[key] = 1;
           if (xx < x0 || yy < y0 || xx >= x1 || yy >= y1) continue;
           const list = stacks.get(key) ?? [];
           list.push({ z: p.z, tile, cover: cv });
@@ -159,7 +168,9 @@ function rewrite(c: Ctx, x0: number, y0: number, x1: number, y1: number, canWrit
   const shadeCode = (x: number, y: number): number => {
     let code = 0;
     gr!.shadeBits.forEach(([dx, dy], k) => {
-      const xx = x + dx!, yy = y + dy!;
+      let xx = x + dx!, yy = y + dy!;
+      // composeTreesPlaced: 숲은 맵 끝 너머로 이어진다고 보고 맵 밖 이웃은 맵 끝 칸을 읽는다(맵 위 끝 숲 줄에 밝은 띠가 남지 않게)
+      if (pre) { xx = Math.min(c.W - 1, Math.max(0, xx)); yy = Math.min(c.H - 1, Math.max(0, yy)); }
       if (xx >= 0 && yy >= 0 && xx < c.W && yy < c.H && cover[yy * c.W + xx]) code |= 1 << k;
     });
     return code;
@@ -235,4 +246,23 @@ export function composeTreesInMask(map: GameMap, cp: TreeComposerDef, forest: (x
   // write: 다시 짜도 되는 칸(기본 hold). 접지 둘레 그늘(apron)은 수관이 못 가는 숲 밖 잔디에 깔리므로 hold 보다 넓게 줄 수 있다(버들항 도로 숲 벽).
   const c = contextFor(map, cp, [], seed, forest, hold);
   return c ? rewrite(c, 0, 0, c.W, c.H, write) : 0;
+}
+
+/**
+ * 밑동 자리를 부르는 쪽이 정한 나무 목록으로 짠다(버들항 woodland r3, 2026-10-21). 칸 쌓기·접지 그늘 칸 고르기는
+ * composeTreesInMask 와 같고, 밑동 격자(anchorAt) 대신 placements, 그림 덮개 그늘 대신 shade(맵 칸마다 1 = 그늘 덮개)를 쓴다.
+ * 침엽 숲처럼 격자 식재가 조림지로 읽히는 숲, 칸당 층 수를 넘는 겹침을 미리 빼야 하는 숲에 쓴다.
+ */
+export function composeTreesPlaced(map: GameMap, cp: TreeComposerDef, placements: readonly TreePlacement[], shade: Uint8Array,
+  forest: (x: number, y: number) => boolean, hold: (x: number, y: number) => boolean, write: (x: number, y: number) => boolean = hold): number {
+  const c = contextFor(map, cp, [], 0, forest, hold);
+  return c ? rewrite(c, 0, 0, c.W, c.H, write, { placements, cover: shade }) : 0;
+}
+
+/** composer 정의가 「제 것」으로 보는 칸 번호(나무 그림 + 둘레 그늘). 이 밖의 칸이 2~4층에 있으면 남의 칸이다. */
+export function treeComposerOwnTiles(cp: TreeComposerDef): Set<number> {
+  const own = new Set<number>();
+  for (const t of cp.ground?.apronTiles ?? []) if (t >= 0) own.add(t);
+  for (const sp of cp.sprites ?? []) for (const t of sp.tiles) if (t >= 0) own.add(t);
+  return own;
 }

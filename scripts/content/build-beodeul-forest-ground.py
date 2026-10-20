@@ -5,7 +5,7 @@
   가 = 왼 2 · 오른 7 · 아래 7px 넓힌 사각형(빛이 왼쪽 위 — 그늘은 오른쪽 아래로 길다), 원판 다수결로 둥글리고 1px 흔든다.
 색은 버들항 원본 숲 조각 그림자(public/assets/beodeul-ground/woodland-*-shadow.png) 두 단 그대로다:
   가 (30,49,27) α65 · 속 (29,43,23) α115. 버들항은 반투명을 쓸 수 있으므로 둘레 그늘은 투명 덧칸(어느 잔디 위에도 같은 칸),
-  숲 바닥은 민무늬 잔디 737 에 같은 색을 합성한 불투명 칸이다. 경계 한 줄은 바둑 점묘(원본 도시 숲 그늘의 점묘 가장자리).
+  숲 바닥은 민무늬 잔디 737 에 같은 색을 합성한 불투명 칸이다. 경계는 단색 덩이 밖 듬성한 낱점(원본 도시 숲 그늘 결).
 새 그림이 아니라 원본 잔디·원본 그림자 색의 합성이다.
 
   python3 scripts/content/build-beodeul-forest-ground.py   (반복 실행해도 같은 칸 번호에 다시 쓴다)
@@ -37,20 +37,24 @@ def raw(X, Y, forest):
             if x0 - 1 <= X < x0 + T + 7 and y0 + 4 <= Y < y0 + T + 7: lev = 1
     return lev
 
-BAYER = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]]
+def lone(px, py):
+    v = h(px, py, 'd')
+    return all(v > h(px + dx, py + dy, 'd') for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))
 
 def level(px, py, forest):
-    """0 잔디 · 1 가 · 2 속. 원판(반지름 √13) 평균 비율을 4×4 바둑 점묘로 문턱 — 그늘 가장자리가 칸 네모 선 대신
-    원본 도시 숲 그늘처럼 2~3px 점묘 띠로 풀린다. 문턱은 세계 좌표(칸 안 좌표 = 세계 좌표 mod 16, 16 은 4 의 배수)라 이웃 칸과 이어진다."""
+    """0 잔디 · 1 가 · 2 속. 원본 도시 숲 그늘 결(woodland r3, 2026-10-21 독립 검수 D7): 속은 단색 덩이, 가장자리 밖으로만
+    듬성한 낱점. 원판(반지름 √13) 평균 비율이 절반을 넘으면 덩이, 그보다 옅은 띠에서는 해시 확률로 낱점만 찍는다
+    (정규 바둑 무늬 없음). 낱점 자리는 4이웃 해시보다 큰 화소뿐이라 낱점끼리 붙지 않고 무늬도 없다."""
     jx, jy = int(h(px, py, 'x') * 3) - 1, int(h(px, py, 'y') * 3) - 1
     core = outer = 0
     for dx, dy in DISK:
         r = raw(px + dx + jx, py + dy + jy, forest)
         core += r == 2; outer += r >= 1
     n = len(DISK)
-    t = (BAYER[py % 4][px % 4] + 0.5) / 16
-    if core / n > t: return 2
-    if outer / n > t * 0.9 + 0.05: return 1
+    cf, of = core / n, outer / n
+    if cf > 0.5: return 2
+    if of > 0.5: return 1 if cf <= 0.3 or h(px, py, 'c') > (cf - 0.3) * 2.0 else 2
+    if of > 0.12 and lone(px, py) and h(px, py, 'e') < (of - 0.12) * 3.0: return 1
     return 0
 
 def forest_of(code):
