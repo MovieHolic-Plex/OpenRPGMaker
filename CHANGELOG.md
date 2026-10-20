@@ -5,6 +5,20 @@
 
 <!-- releases -->
 
+## 0.293.0 — 2026-10-21
+
+### 기능
+
+- **jp-city** — 「jp_city 칸 번호 복구」 — 밀린 판에서 그린 사용자 맵을 판 미리보기로 골라 지금 번호로 (#3132) (`036b48b`)
+- **object-gate** — signed human allow is the final pass; 18323 review queue with batches (#3130) (`0832641`)
+
+### 수정
+
+- **object-gate** — review queue counts an image once — duplicate hashes in a batch broke 'allow this whole batch' (#3131) (`2d9c450`)
+- **runtime** — choice window grows to fit 3-5 options at 480x270 (#3128) (`2b0af42`)
+- **jp-city** — remap 32 published places to the current tile pins; block stale-pin bakes (#3127) (`38bcd79`)
+- **build** — scope bundled-JSON lazy loader to browser transforms so vite-node runs work again (#3126) (`8f9da4d`)
+
 ## 0.292.0 — 2026-10-20
 
 ### 기능
