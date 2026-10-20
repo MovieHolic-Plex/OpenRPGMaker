@@ -1586,6 +1586,12 @@ collector/classic/horror/chase/hearts 프리셋을 추가했다. 기존 미설�
 DB 시스템 화면: 「보기 범위」(`db-field-system-view-preset`)가 해상도+배율을 한 번에 고른다 — 넓게 640×360·1(40×22칸) / **기본 480×270·1(30×17칸, 추천)** / 가깝게 640×360·2(20×11칸).
 해상도만 고르는 「빠른 선택」의 「새 프로젝트 기본」 표시도 480×270 에 붙는다. 장르 고정 해상도(몬스터 수집 480×320 등)는 그대로다.
 『폴른 스타』(`createChronoBellFlagshipDemo`, `flagship/chronoBell.ts`, `CHRONO_BELL_STYLE_LOCK`)는 480×270 · 배율 1(30×17칸, 코드 생성이라 저장본 없음 — 640×360·2 는 너무 좁다는 판정).
+- 1막 재구성(2026-10-20, 감사 `~/claude-viz/fallen-star-audit-1.html`): 이야기·대사 사양은 `flagship/fallenStarStory.ts`(장 구성기 `buildJrpgChapter` 입력), 짓기·후처리는 `chronoBell.ts`.
+  맵 5장 = 왕도 → 천문대 → 숲길(`author_wild_route` 막다른 길+공터) → 화로의 방(20×15, `brazier_ignition_order`) → 지하. 오프닝 5컷은 `fallenStarOpening.ts` —
+  게임 맵을 1:1 로 구운 배경(`src/assets/fallenStarOpeningBackdrops.ts`, 굽기 `scripts/content/flagship/bake_fallen_star_backdrops.mts`) 위 1배 칩.
+  통짜 플레이 `scripts/qa/runtime/fallen-audit.scenario.mjs`, 맵 순회 `fallen-tour`, 오프닝 `fallen-opening`(픽스처 `RES_WHICH=fallen res480-fixture.mts`).
+  함정: 새 게임 파티는 `session.partyActorIds` 에서 온다(`system.startActorIds` 만 바꾸면 동료가 대사에만 있다) · 장 구성기가 의뢰 적으로
+  `troop_<prefix>_boss` 를 만들므로 같은 id 로 무리를 미리 만들면 덮인다 · 480×270 에서 질문+보기 셋 선택창은 아래 위치일 때 셋째 보기가 잘린다(엔진 미수정, 내용 쪽에서 질문을 앞 대사로 뺐다).
 
 `system.playSurfaceScale?: "integer" | "fit"`(2026-10-20, `src/project/playSurfaceScaleMode.ts`): 플레이 화면을 창에 키우는 방식. 생략값 규칙 `resolvePlaySurfaceScaleMode` —
 몬스터 수집(에메랄드)은 항상 integer, 저작값이 있으면 그 값, 해상도를 저장한 프로젝트는 integer(정수 배율, 남는 창은 여백, 창이 1배보다 작을 때만 비정수 축소),

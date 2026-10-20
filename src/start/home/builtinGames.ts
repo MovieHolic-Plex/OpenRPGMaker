@@ -26,9 +26,9 @@ const ART = "/assets/start/builtin/";
 export const BUILTIN_GAMES: readonly BuiltinGame[] = [
   {
     id: "chrono-bell",
-    title: "폴른 스타: 추락한 별과 태엽의 성녀",
-    genre: "판타지 JRPG · 약 40분",
-    description: "추락한 별에서 깨어난 안드로이드 소녀가 별지기 기사와 함께 하늘로 돌아갈 길을 찾는다.",
+    title: "폴른 스타: 떨어진 별",
+    genre: "판타지 JRPG · 제1막 약 20분",
+    description: "동쪽 숲에 떨어진 별 속에서 기계 소녀가 깨어난다. 심문관보다 먼저, 그 아이를 집에 보낼 신호를 찾아라.",
     cover: ART + "fallen-title.webp",
     frames: [ART + "fallen-title.webp", ART + "fallen-op1.webp", ART + "fallen-op2.webp", ART + "fallen-field.webp"],
   },

@@ -16,7 +16,8 @@ export default {
       { kind: "hold", dir: null, ms: 3500 },
     ], shot: true },
     { id: "op2", note: "오프닝 둘째 장면", ops: [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 3500 }], shot: true },
-    { id: "op3", note: "오프닝 셋째 장면", ops: [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 3500 }], shot: true },
+    // 폴른 스타의 넷째 컷(추락지)은 둘째 자막이 3.6초에 시작한다 — 타자 효과가 끝난 뒤 찍는다.
+    { id: "op3", note: "오프닝 셋째 장면", ops: [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: which === "fallen" ? 4700 : 3500 }], shot: true },
     { id: "field", note: "첫 필드", ops: [
       skipOpening,
       { kind: "waitForRuntime", timeoutMs: 120000 },
