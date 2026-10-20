@@ -10,7 +10,9 @@
         "prompt": "Draw on this flat magenta canvas. Original creature design for a monster-collecting RPG, finished pixel art battle sprite in the style of Pokemon Black and White (Nintendo DS, 2010) opponent sprites (cute, bold, instantly readable monsters). Designed by a professional monster designer: a strong readable silhouette and ONE exaggerated signature feature - NOT a realistic zoological animal drawing, NOT a flat well-balanced animal. PROPORTIONS (first-stage creature, must be genuinely adorable): chibi proportions - the head is 40-50% of the total body height, a round head, large round glossy sparkling eyes (each about a fifth of the head width, dark with a 2x2 white highlight), short plump rounded torso, stubby short limbs, a soft rounded overall silhouette, gentle sweet expression, smooth soft textures (no scaly, chitinous, insect-like or reptilian roughness on the face). The cuteness comes from the proportions and the big eyes, not from decoration: no blush marks, no hearts, no sparkles, no stickers, no wide mascot grin. SIGNATURE FEATURE (the most important thing in the picture): a huge round tail club - the short thick tail ends in a giant cracked-charcoal ball almost as big as its own head, with glowing orange cracks and one crisp pixel flame tuft on top (flat colors, dark outline, not glowing), so the tail looks like a smoldering mace it drags behind it. Draw this ONE feature boldly exaggerated - much larger than a realistic animal would have, taking a big share of the whole silhouette and being the first thing the eye sees; keep every other part simple so the signature stands out. Silhouette test: if the picture is filled solid black, the outline alone must still be unique and recognizable from this feature - not a generic balanced animal outline. EYES (the most important part of cuteness, readable at 64 pixels): draw TWO clearly visible eyes on the face - three-quarter view, the near eye bigger, the far eye a little smaller, both on the same level on the head. BIG shiny round eyes (each pupil at least 6 art pixels wide and 6 tall, about a fifth of the head width - eyes are the biggest feature of the face): a solid dark round or oval pupil (dark brown or navy) with a pure-white shiny highlight made of a 2x2 block of art pixels in the upper-left of the pupil plus, when room allows, one more white pixel at the lower right - the highlight is MANDATORY, a dark bead eye without a white highlight is forbidden, sitting on a LIGHT skin area with at least one art pixel of light skin color between the eye and the dark outline - the pupil never touches or merges with the outline, and is never a single dot, a thin slit, a smudge or hidden under hair or leaves. Sweet, friendly, alive expression - sparkling eyes, a gentle face you want to befriend. NOT creepy: no compound or insect eyes, no slit or reptile pupils, no dead dark beads, no scowl, no bared teeth, no menacing glare. COLOR PLAN: only 3-4 body colors (main, secondary, light belly, dark) with 2-3 shading tones each, dark colored outline (a dark version of the local color, not pure black), plus ONE vivid accent color (bright yellow-orange (the glowing cracks and the flame tuft)) used only on the signature feature, so the eye lands there. Total at most 14 colors. Light from the upper left, flat clean shading areas, no dithering noise, no gradients, no anti-aliasing. Pose: three-quarter view turned to the LEFT, standing on its feet, head and chest facing left, tail on the right. NOT facing the viewer. Every art pixel is one clean square block of about 12x12 image pixels; the creature is about 80 art pixels wide. FRAMING: the entire creature including its signature feature (mane, tail, ears, horns, flames) stays inside the middle 70% of the canvas width and height with a wide empty magenta margin on every side - never larger, never touching the edges. The whole background stays flat solid pure magenta #FF00FF: absolutely NO glow, NO aura, NO halo, NO embers, NO smoke, NO light bloom around the creature, no ground, no shadow, no text. Creature (fire type, evolution stage 1): A baby fire newt starter standing on four tiny stubby legs: a big round head with big eyes and a small cheerful mouth, a plump short rounded body, ember-orange back with two dark red stripes across it, cream belly and cream chin. Main colors: ember orange, dark red, cream, charcoal grey. It must NOT resemble any existing official monster, especially: Bulbasaur, Ivysaur, Charmander, Charmeleon, Squirtle, Leafeon, Eevee, Pidgey, Pidove, Torchic, Rowlet, Weedle, Caterpie, Wurmple, Venipede, Pikachu, Geodude, Rhyhorn, Wooloo, Diglett, Krabby, Horsea, Seadra, Zigzagoon, Totodile, Marill, Zoroark, Gligar, Wooper, Quagsire, Fennekin, Skiddo, Sceptile.",
         "block": 11,
         "pickedAt": "2026-10-16T10:40:08.570Z",
-        "note": "v4 cute-first, Opus 5.5 judge: 가장 큰 동그란 눈에 흰 하이라이트가 선명하고 둥근 큰 머리라 친근하다. 꼬리 숯덩이 공도 크고 금이 또렷하다"
+        "note": "v4 cute-first, Opus 5.5 judge: 가장 큰 동그란 눈에 흰 하이라이트가 선명하고 둥근 큰 머리라 친근하다. 꼬리 숯덩이 공도 크고 금이 또렷하다",
+        "previousAuthoredSha256": "0a0ac0c8116b86055afe3d2ff29b700c6a69d59ada73938c996e90d82a1ae58a",
+        "authoredSha256": "bf1980ad4fb96700488f0e43829738aadc8f8ae71eb13fa10d82c9ba781002d0"
       },
       "back": {
         "authored": "authored/sparkit-back.png",
@@ -54,7 +56,9 @@
         "prompt": "Draw on this flat magenta canvas. Original creature design for a monster-collecting RPG, finished pixel art battle sprite in the style of Pokemon Black and White (Nintendo DS, 2010) opponent sprites (cute, bold, instantly readable monsters). Designed by a professional monster designer: a strong readable silhouette and ONE exaggerated signature feature - NOT a realistic zoological animal drawing, NOT a flat well-balanced animal. PROPORTIONS (first-stage creature, must be genuinely adorable): chibi proportions - the head is 40-50% of the total body height, a round head, large round glossy sparkling eyes (each about a fifth of the head width, dark with a 2x2 white highlight), short plump rounded torso, stubby short limbs, a soft rounded overall silhouette, gentle sweet expression, smooth soft textures (no scaly, chitinous, insect-like or reptilian roughness on the face). The cuteness comes from the proportions and the big eyes, not from decoration: no blush marks, no hearts, no sparkles, no stickers, no wide mascot grin. SIGNATURE FEATURE (the most important thing in the picture): two gigantic leaf ears - broad pointed leaves growing from the head, each as tall as its entire body, tilted outward like wide antennas with a visible vein line. Draw this ONE feature boldly exaggerated - much larger than a realistic animal would have, taking a big share of the whole silhouette and being the first thing the eye sees; keep every other part simple so the signature stands out. Silhouette test: if the picture is filled solid black, the outline alone must still be unique and recognizable from this feature - not a generic balanced animal outline. EYES (the most important part of cuteness, readable at 64 pixels): draw TWO clearly visible eyes on the face - three-quarter view, the near eye bigger, the far eye a little smaller, both on the same level on the head. BIG shiny round eyes (each pupil at least 6 art pixels wide and 6 tall, about a fifth of the head width - eyes are the biggest feature of the face): a solid dark round or oval pupil (dark brown or navy) with a pure-white shiny highlight made of a 2x2 block of art pixels in the upper-left of the pupil plus, when room allows, one more white pixel at the lower right - the highlight is MANDATORY, a dark bead eye without a white highlight is forbidden, sitting on a LIGHT skin area with at least one art pixel of light skin color between the eye and the dark outline - the pupil never touches or merges with the outline, and is never a single dot, a thin slit, a smudge or hidden under hair or leaves. Sweet, friendly, alive expression - sparkling eyes, a gentle face you want to befriend. NOT creepy: no compound or insect eyes, no slit or reptile pupils, no dead dark beads, no scowl, no bared teeth, no menacing glare. COLOR PLAN: only 3-4 body colors (main, secondary, light belly, dark) with 2-3 shading tones each, dark colored outline (a dark version of the local color, not pure black), plus ONE vivid accent color (bright lime green (the leaf ears)) used only on the signature feature, so the eye lands there. Total at most 14 colors. Light from the upper left, flat clean shading areas, no dithering noise, no gradients, no anti-aliasing. Pose: three-quarter view turned to the LEFT, standing on its feet, head and chest facing left, tail on the right. NOT facing the viewer. Every art pixel is one clean square block of about 12x12 image pixels; the creature is about 80 art pixels wide. FRAMING: the entire creature including its signature feature (mane, tail, ears, horns, flames) stays inside the middle 70% of the canvas width and height with a wide empty magenta margin on every side - never larger, never touching the edges. The whole background stays flat solid pure magenta #FF00FF: absolutely NO glow, NO aura, NO halo, NO embers, NO smoke, NO light bloom around the creature, no ground, no shadow, no text. Creature (grass type, evolution stage 1): A baby grass fox starter standing on four tiny stubby legs: a big round head with big brown eyes and a small brown seed-shell acorn cap on top, a plump short body with green fur and a cream chest tuft, a small leafy tail. Main colors: leaf green, cream, acorn brown, dark green. It must NOT resemble any existing official monster, especially: Bulbasaur, Ivysaur, Charmander, Charmeleon, Squirtle, Leafeon, Eevee, Pidgey, Pidove, Torchic, Rowlet, Weedle, Caterpie, Wurmple, Venipede, Pikachu, Geodude, Rhyhorn, Wooloo, Diglett, Krabby, Horsea, Seadra, Zigzagoon, Totodile, Marill, Zoroark, Gligar, Wooper, Quagsire, Fennekin, Skiddo, Sceptile.",
         "block": 12,
         "pickedAt": "2026-10-16T10:40:57.349Z",
-        "note": "v4 cute-first, Opus 5.5 judge: 큰 동그란 갈색 눈에 흰 하이라이트가 또렷하고 머리가 크다. 잎사귀 귀 두 장이 크고 위로 높이 솟아 있다"
+        "note": "v4 cute-first, Opus 5.5 judge: 큰 동그란 갈색 눈에 흰 하이라이트가 또렷하고 머리가 크다. 잎사귀 귀 두 장이 크고 위로 높이 솟아 있다",
+        "previousAuthoredSha256": "64731cbabb7996ce9f86acca15b2ae9ca4a75eba64b7c08b4ea878f128c5e8cf",
+        "authoredSha256": "56872ec997688983994a6d4a87c3a084eaaa1021c89b496716193ba885e192a8"
       },
       "back": {
         "authored": "authored/leafling-back.png",
@@ -77,8 +81,8 @@
         "pickedAt": "2026-10-16T10:41:20.318Z",
         "note": "v4 cute-first, Opus 5.5 judge: 크고 둥근 눈에 흰 하이라이트가 선명해 반짝이고, 통통한 몸에 하늘색 볏이 크게 솟았다",
         "authored": "authored/gustchick-front.png",
-        "previousAuthoredSha256": "c4a127de3c1dad4532dc1ca90816fcb8cb70efbbcd8feb2cea6ea8fbe7093eab",
-        "authoredSha256": "5214fd9e783d3c397839d509c6cc48b5bbb00be6657d423c2075140eaf002adf"
+        "previousAuthoredSha256": "5214fd9e783d3c397839d509c6cc48b5bbb00be6657d423c2075140eaf002adf",
+        "authoredSha256": "77635aa59f4a52b6f50b80c1b6df3c6472a27857a3bd1c82a210f569b96fd55a"
       },
       "back": {
         "grid": "grids/gustchick-back.png",
@@ -100,8 +104,8 @@
         "pickedAt": "2026-10-16T10:41:42.825Z",
         "note": "v4 cute-first, Opus 5.5 judge: 가장 크고 둥근 눈에 흰 하이라이트가 또렷하고, 큰 머리와 통통한 몸, 큰 두 잎 새싹이 선명하다",
         "authored": "authored/pipbug-front.png",
-        "previousAuthoredSha256": "6d6e3ac52c5d280ccea1dd37a35b584dc772a5b8217b5ab26daacfe757389a10",
-        "authoredSha256": "ea87b6a4ebcca5f839d6721f8c1f56653e945efe0ee9c918d4ceb6f0f2dfc153"
+        "previousAuthoredSha256": "ea87b6a4ebcca5f839d6721f8c1f56653e945efe0ee9c918d4ceb6f0f2dfc153",
+        "authoredSha256": "ba271dfffc7db9a799e8ccda3878538bc31495996e480fd62d854ba0030e062a"
       },
       "back": {
         "grid": "grids/pipbug-back.png",
@@ -122,7 +126,9 @@
         "block": 14,
         "pickedAt": "2026-10-16T10:42:05.961Z",
         "note": "v4 cute-first, Opus 5.5 judge: 둥근 큰 머리에 흰 하이라이트가 반짝이는 큰 눈 두 개, 표정이 순하고 불꽃이 머리만큼 크다",
-        "authored": "authored/wickworm-front.png"
+        "authored": "authored/wickworm-front.png",
+        "previousAuthoredSha256": "ef186f7b6dc14be4f429bb859fa6dc52d93c338bf53884b44395caa4c0eb5220",
+        "authoredSha256": "83abc7cf08ebc91b3d264fb5f18e3a69f6c249068257fcb8e3761a27a7d430c6"
       },
       "back": {
         "grid": "grids/wickworm-back.png",
@@ -187,8 +193,8 @@
         "pickedAt": "2026-10-16T10:59:49.139Z",
         "note": "v4 cute-first, Opus 5.5 judge: 가장 큰 눈에 흰 하이라이트가 뚜렷하고, 머리가 둥글며 표정이 순하다. 금 간 숯 철퇴 꼬리가 크고 선명하며 도트도 가장 깔끔하다",
         "authored": "authored/kilnclaw-front.png",
-        "previousAuthoredSha256": "020b05c4f86b86ac1ca4da2fe9d59e8caa9a0cca7c873f5b3d7b2a8c078f8aa6",
-        "authoredSha256": "d0a266df4dfaeea5b54b5fa040c6b9cf16799c320ae5cb32b062c4019d5e919e"
+        "previousAuthoredSha256": "d0a266df4dfaeea5b54b5fa040c6b9cf16799c320ae5cb32b062c4019d5e919e",
+        "authoredSha256": "0199fc519e385f79c934b9a565e9bf4131110859711dc10ecad3f0ffa9df7578"
       },
       "back": {
         "grid": "grids/kilnclaw-back.png",
@@ -253,8 +259,8 @@
         "pickedAt": "2026-10-16T10:42:43.635Z",
         "note": "v4 cute-first, Opus 5.5 judge: 깨끗한 큰 눈에 흰 하이라이트가 또렷하고 얼굴이 순하며, 몸만 한 나선 꼬리와 조약돌이 깔끔하다",
         "authored": "authored/curlfin-front.png",
-        "previousAuthoredSha256": "e83f13612e4362fad1012e820f4aa5e126dd2950cf6b195a04d1fd9a888fd859",
-        "authoredSha256": "f835736f65d4b4d1415ec8659db1f7570636c5584b7dc98257ee2aaeb10c09fc"
+        "previousAuthoredSha256": "f835736f65d4b4d1415ec8659db1f7570636c5584b7dc98257ee2aaeb10c09fc",
+        "authoredSha256": "90b49cf17eaeed8b1fc3c9bf0aba8ad9918516018e19b29b7521037a06674de6"
       },
       "back": {
         "grid": "grids/curlfin-back.png",
@@ -277,8 +283,8 @@
         "pickedAt": "2026-10-16T10:43:01.808Z",
         "note": "v4 cute-first, Opus 5.5 judge: Biggest, roundest eye with clear white highlight squares; friendly smile; tall ridged coil with bright orb reads first",
         "authored": "authored/zaptoe-front.png",
-        "previousAuthoredSha256": "961f3f510240043cfb373742929413c700767d47c5f180fed9d08471ec4e50a1",
-        "authoredSha256": "733dc9dfe6c9eaca51bdbc17954ea4213fd8d4d2e6213134da167830c9f3db4e"
+        "previousAuthoredSha256": "733dc9dfe6c9eaca51bdbc17954ea4213fd8d4d2e6213134da167830c9f3db4e",
+        "authoredSha256": "71c33c08e39093f302edae6962413ffb3380635f727a82fd8f6fdb9896d8fa94"
       },
       "back": {
         "grid": "grids/zaptoe-back.png",
@@ -300,8 +306,8 @@
         "pickedAt": "2026-10-16T10:43:19.765Z",
         "note": "v4 cute-first, Opus 5.5 judge: Large round eye with a crisp white highlight, soft round face, big swirling stone horns frame the head cleanly",
         "authored": "authored/pebblekid-front.png",
-        "previousAuthoredSha256": "2e5f56bab3d449bcd438c42b7bef818bd97443a4eac60ff26de033fe761cbb77",
-        "authoredSha256": "39c383f32db4bbddba2556c5f243e2777b5ddc44f9ec75c12d51c838ab844e07"
+        "previousAuthoredSha256": "39c383f32db4bbddba2556c5f243e2777b5ddc44f9ec75c12d51c838ab844e07",
+        "authoredSha256": "2006872dde8e188edd8bd0136eabf26c7835c06215692af7cf7bc9b8f085360d"
       },
       "back": {
         "grid": "grids/pebblekid-back.png",
@@ -346,8 +352,8 @@
         "pickedAt": "2026-10-18T09:11:43.168Z",
         "note": "2026-10-18-진화-몸집-단조-증가",
         "authored": "authored/podback-front.png",
-        "previousAuthoredSha256": "67bca8fb3d08b80f775f4cb682a3b511e50b97a07a94f2cef77b6d5600b3ae47",
-        "authoredSha256": "f28716e3228bfcc817f19c8ac41e5bbe2d2dbcc05b0a662a1a9dd1bfc0c2ff4c"
+        "previousAuthoredSha256": "f28716e3228bfcc817f19c8ac41e5bbe2d2dbcc05b0a662a1a9dd1bfc0c2ff4c",
+        "authoredSha256": "aae252aabb5709059ad8cda0db96956e3db12f8c22db54a06a19482133be6e37"
       },
       "back": {
         "grid": "grids/podback-back.png",
@@ -370,8 +376,8 @@
         "pickedAt": "2026-10-18T08:10:12.529Z",
         "note": "2026-10-18-진화계통-하네스-통일",
         "authored": "authored/coilcrest-front.png",
-        "previousAuthoredSha256": "7b30009a5c78ea3de78aa95351ded8e8ad900f27792fc74718bbfd5407a0e171",
-        "authoredSha256": "5b5fbef525824d6c101fbd35b85a47d3137b93d494a94ac4d9b421d21742e6c2"
+        "previousAuthoredSha256": "5b5fbef525824d6c101fbd35b85a47d3137b93d494a94ac4d9b421d21742e6c2",
+        "authoredSha256": "ba09d31aef1a1230e21e373e05279b8dc04c17cb6fadeaaec2c8ccd485d9a913"
       },
       "back": {
         "grid": "grids/coilcrest-back.png",
@@ -393,8 +399,8 @@
         "pickedAt": "2026-10-18T08:10:30.115Z",
         "note": "2026-10-18-진화계통-하네스-통일",
         "authored": "authored/lanternwing-front.png",
-        "previousAuthoredSha256": "c9084b5f579134a205c4a2628bb490c232a5da9c6cea26fa4661d36be655aaae",
-        "authoredSha256": "6b01450e81439b537f0e8a70696b6952a7e988ff8f682ea2b8536fdae7466f44"
+        "previousAuthoredSha256": "6b01450e81439b537f0e8a70696b6952a7e988ff8f682ea2b8536fdae7466f44",
+        "authoredSha256": "64c8801ecb0ab8250ff6f70ade300c0c68552423c9baa94773b16b2942c8edf1"
       },
       "back": {
         "grid": "grids/lanternwing-back.png",
@@ -508,8 +514,8 @@
         "pickedAt": "2026-10-18T08:44:25.071Z",
         "note": "2026-10-18-눈규칙-통과-후보로-교체",
         "authored": "authored/ribbonwing-front.png",
-        "previousAuthoredSha256": "e9ef140852b643b7dd0e4d657f29f1a61311cc605eeee5c26d25dc62927f41da",
-        "authoredSha256": "4fca2b57c5f4ed5a00c301edd86cd018ae585212bd249a2feedbb760a4a4197b"
+        "previousAuthoredSha256": "4fca2b57c5f4ed5a00c301edd86cd018ae585212bd249a2feedbb760a4a4197b",
+        "authoredSha256": "9d348017bc54c632baf50ab321d0292215c75706b51f72ccb02187f596e0c8bd"
       },
       "back": {
         "grid": "grids/ribbonwing-back.png",
@@ -531,8 +537,8 @@
         "pickedAt": "2026-10-18T08:44:40.985Z",
         "note": "2026-10-18-눈규칙-통과-후보로-교체",
         "authored": "authored/craghoof-front.png",
-        "previousAuthoredSha256": "325d5e6f0db0d3d0e1578a62abfb9b6f3b6040995a4e03b26372f7a04e6c36c0",
-        "authoredSha256": "1b3e62ab7eecd6a8c2d55114b64cf49b98fc4ca0c7a433a3e324465bfbc32247"
+        "previousAuthoredSha256": "1b3e62ab7eecd6a8c2d55114b64cf49b98fc4ca0c7a433a3e324465bfbc32247",
+        "authoredSha256": "2f90a7dfc5ad591c3182f09cec45f11744a721e2f18adde547e96fd762b49a8a"
       },
       "back": {
         "grid": "grids/craghoof-back.png",
@@ -739,8 +745,8 @@
         "pickedAt": "2026-10-18T09:17:08.640Z",
         "note": "2026-10-18-진화-몸집-단조-증가",
         "authored": "authored/briartusk-front.png",
-        "previousAuthoredSha256": "55f27100fd0e77aec0da1e5a81d2a6901018c9d47812b8fada220d2255ffcaea",
-        "authoredSha256": "c9f535730bec4a7a017829643268754e678c0fda103c1307bfb84cee319cfd51"
+        "previousAuthoredSha256": "c9f535730bec4a7a017829643268754e678c0fda103c1307bfb84cee319cfd51",
+        "authoredSha256": "b6e7540779af32f7fcd614055d4f9b5a507529ea5362eaf478cfa3d71cf9efe2"
       },
       "back": {
         "grid": "grids/briartusk-back.png",
@@ -830,8 +836,8 @@
         "pickedAt": "2026-10-18T09:35:23.650Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/sandnip-front.png",
-        "previousAuthoredSha256": "433fa085df7f278fcee1dae390b23879b6b7a633e5dfc9ba8d5d1aa1c18f8954",
-        "authoredSha256": "fdc0d1568f22928ab529dbbdec73f91194871814aa1d2761a91ff16cb4a4bbcd"
+        "previousAuthoredSha256": "fdc0d1568f22928ab529dbbdec73f91194871814aa1d2761a91ff16cb4a4bbcd",
+        "authoredSha256": "e96958901be71619b089a2acde951c43f40d488f60e97c06d8e38425405a456b"
       },
       "back": {
         "grid": "grids/sandnip-back.png",
@@ -876,8 +882,8 @@
         "pickedAt": "2026-10-18T09:36:04.770Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/miretail-front.png",
-        "previousAuthoredSha256": "38f3c2c58d7052909f7e3be2ddedecc8fa19cf70fc924c1e1ce221351ab3bd2c",
-        "authoredSha256": "3e41cb663ef8daede4fd66b1ffa64bd2470971292582a9fa0d108592614d318f"
+        "previousAuthoredSha256": "3e41cb663ef8daede4fd66b1ffa64bd2470971292582a9fa0d108592614d318f",
+        "authoredSha256": "3122af8dde53c1d739112885c9b98ac3cff365e81deb536a24e617d719c541bb"
       },
       "back": {
         "grid": "grids/miretail-back.png",
@@ -899,8 +905,8 @@
         "pickedAt": "2026-10-18T09:36:23.535Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/dozemite-front.png",
-        "previousAuthoredSha256": "3ff8e9083c3afb95268432877e2a79673c10c3d2dc20ba90cfaa66370ba73bb6",
-        "authoredSha256": "b3a1f8af9735206f5c3ef14c77072d0e2aefac6bc8dd0d9c339b5958cd2c7277"
+        "previousAuthoredSha256": "b3a1f8af9735206f5c3ef14c77072d0e2aefac6bc8dd0d9c339b5958cd2c7277",
+        "authoredSha256": "473dbfbdb5d4fe5e4819cc939c223d6cf2387c69843875e098c2289a5ae36bb4"
       },
       "back": {
         "grid": "grids/dozemite-back.png",
@@ -922,8 +928,8 @@
         "pickedAt": "2026-10-18T09:36:45.202Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/threadimp-front.png",
-        "previousAuthoredSha256": "ec4bc4753c63b6c01e3401e3b743f2539ffe647559535712893e36865057eaf6",
-        "authoredSha256": "f176162ad9f17c09cd59eec902b4b6cc2c6e6495e33991e1df5bdcb480571a90"
+        "previousAuthoredSha256": "f176162ad9f17c09cd59eec902b4b6cc2c6e6495e33991e1df5bdcb480571a90",
+        "authoredSha256": "4c2776a2151e9e0b37846127a152b61323ab3e4ad52a44ea97016742924e576c"
       },
       "back": {
         "grid": "grids/threadimp-back.png",
@@ -968,8 +974,8 @@
         "pickedAt": "2026-10-18T09:37:21.031Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/thundercairn-front.png",
-        "previousAuthoredSha256": "24cbe8d8095446633b5f74b9122ed33416d936d48d8508702794b3155577ec69",
-        "authoredSha256": "ec02788d695cefc7b39aa4d0eb5e34079fe1103d4c6f242eb3fa097076291a79"
+        "previousAuthoredSha256": "ec02788d695cefc7b39aa4d0eb5e34079fe1103d4c6f242eb3fa097076291a79",
+        "authoredSha256": "fbe6e1f8f3d4c01f5c670ae68d1c0837642b600ae94909bc102cc67b23b784cf"
       },
       "back": {
         "grid": "grids/thundercairn-back.png",
@@ -1012,8 +1018,8 @@
         "pickedAt": "2026-10-18T09:46:48.772Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/solmane-front.png",
-        "previousAuthoredSha256": "70d7f9abee840ebf6e03317fcadfb619568cb18e56652cacd886385c2f7f8495",
-        "authoredSha256": "ee6613e1f2c5fd682ecc2f9df4fb45196f6239512ffbbaaefe069b49b0912f58"
+        "previousAuthoredSha256": "ee6613e1f2c5fd682ecc2f9df4fb45196f6239512ffbbaaefe069b49b0912f58",
+        "authoredSha256": "38d6753d42bfb2d8021ffbbae7d7272e1519639929a142659827056cc4e11f32"
       },
       "back": {
         "grid": "grids/solmane-back.png",
@@ -1035,8 +1041,8 @@
         "pickedAt": "2026-10-18T09:47:04.025Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/lunavane-front.png",
-        "previousAuthoredSha256": "f53b45abf4450c754772665f274ac5628561b8ddfbdae19bca9a60326f6ca8ff",
-        "authoredSha256": "1e2388751604805a0bfc908b631097eeb02288ecbd161a327dc6412b63ec5af6"
+        "previousAuthoredSha256": "1e2388751604805a0bfc908b631097eeb02288ecbd161a327dc6412b63ec5af6",
+        "authoredSha256": "b666b9ab6a7aa6c749fd5c0c156fa900c4476412b682e9d4421b04211bde26fa"
       },
       "back": {
         "grid": "grids/lunavane-back.png",
@@ -1058,8 +1064,8 @@
         "pickedAt": "2026-10-18T09:38:24.011Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/relicarab-front.png",
-        "previousAuthoredSha256": "7f91269727be127dc9a47c23cdc100278d251d6115fee3a4b664b467f2c07bf3",
-        "authoredSha256": "8500da824dba98a3990c7869a827e2ae713622172700f206e13334d5dd4c2470"
+        "previousAuthoredSha256": "8500da824dba98a3990c7869a827e2ae713622172700f206e13334d5dd4c2470",
+        "authoredSha256": "50175a051530a46f021eb0486d3442c18f85db1abc665732d662c191abee7c9a"
       },
       "back": {
         "grid": "grids/relicarab-back.png",
@@ -1081,8 +1087,8 @@
         "pickedAt": "2026-10-18T09:38:37.978Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/astralhart-front.png",
-        "previousAuthoredSha256": "af9d68e1782107957329f43fb6bc20d72993d6f32f0fe3929bfb39387270ce16",
-        "authoredSha256": "90c1a72809d02f8fad1a700c6c1b7d7b5b00cdb6c5b431d8fd897ff5edbee851"
+        "previousAuthoredSha256": "90c1a72809d02f8fad1a700c6c1b7d7b5b00cdb6c5b431d8fd897ff5edbee851",
+        "authoredSha256": "a8493a6796638939b5385aa38894ba362ccc2b33e5f45fa8dd93c6be028be0a7"
       },
       "back": {
         "grid": "grids/astralhart-back.png",
@@ -1127,8 +1133,8 @@
         "pickedAt": "2026-10-18T10:02:54.626Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/venomfrill-front.png",
-        "previousAuthoredSha256": "a4818282729a7b139ef6c9f33f9166c239e36d40eba7cca5d78d563d0d531631",
-        "authoredSha256": "80af81fa8815e334be48d1e9b517b060225f460adf9f672348936c557cb94e52"
+        "previousAuthoredSha256": "80af81fa8815e334be48d1e9b517b060225f460adf9f672348936c557cb94e52",
+        "authoredSha256": "5c9dfba99b214bca34451c71c7c40a17a905feb6ea99710fa6bd776617464852"
       },
       "back": {
         "grid": "grids/venomfrill-back.png",
@@ -1150,8 +1156,8 @@
         "pickedAt": "2026-10-18T10:03:08.659Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/hushdoll-front.png",
-        "previousAuthoredSha256": "f71415b96e6faaa46aa26166321d68c438d9ea72f8e09ba25b4baa72b476d046",
-        "authoredSha256": "422a9445d8105ec87d7692616a48d5868aca1b02a5c2be5578c415ed5cf6666c"
+        "previousAuthoredSha256": "422a9445d8105ec87d7692616a48d5868aca1b02a5c2be5578c415ed5cf6666c",
+        "authoredSha256": "a4e5be681a0ae58da90003721e107cf3b176405a0bbf705a216090d7efbcc27e"
       },
       "back": {
         "grid": "grids/hushdoll-back.png",
@@ -1196,8 +1202,8 @@
         "pickedAt": "2026-10-18T10:07:59.448Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/rimepelt-front.png",
-        "previousAuthoredSha256": "fc46ca3f0bd21b69c82c218e148405ba8dbbcd16656d6bcfe2ce19765eeca7b9",
-        "authoredSha256": "7a0869ca63d96552d8fe643236f8c707e0163d6b6efb57dbae3b3f5f6a1f031c"
+        "previousAuthoredSha256": "7a0869ca63d96552d8fe643236f8c707e0163d6b6efb57dbae3b3f5f6a1f031c",
+        "authoredSha256": "8b2295439895d921c1484289626fa2588a3fcd0449629af81d8477476ce45cf6"
       },
       "back": {
         "grid": "grids/rimepelt-back.png",
@@ -1219,8 +1225,8 @@
         "pickedAt": "2026-10-18T10:08:15.378Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/trancescythe-front.png",
-        "previousAuthoredSha256": "07424d17fc99396c718aa02c68c86f47387f66b5df7e037ed3a1b7bd171b28ce",
-        "authoredSha256": "86afc962c1b75163870bb1acd77a7f3ae7a3fab8a88f8e7649312de948887583"
+        "previousAuthoredSha256": "86afc962c1b75163870bb1acd77a7f3ae7a3fab8a88f8e7649312de948887583",
+        "authoredSha256": "62d01d78ef52d0e9edfc8ef062b3fc73b7d38803caeefe9317f6d546dc940c1d"
       },
       "back": {
         "grid": "grids/trancescythe-back.png",
@@ -1265,8 +1271,8 @@
         "pickedAt": "2026-10-18T10:17:57.676Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/glaciermane-front.png",
-        "previousAuthoredSha256": "95e00240ebab11b105f1d53c69d637de3a3b44d692e6e78f3d1d295400f0d07b",
-        "authoredSha256": "8b4e07b1df1c8bf16be9b2ade9e589a157e42cd22d248b76d2697c849a17cfa8"
+        "previousAuthoredSha256": "8b4e07b1df1c8bf16be9b2ade9e589a157e42cd22d248b76d2697c849a17cfa8",
+        "authoredSha256": "a29763f52320c0e8c9667814c1293979750f6cc1acb714d2fec395ca6e1b6d66"
       },
       "back": {
         "grid": "grids/glaciermane-back.png",
@@ -1288,8 +1294,8 @@
         "pickedAt": "2026-10-18T10:18:15.341Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/marshcrown-front.png",
-        "previousAuthoredSha256": "4c439c3d63cb6f7c9db6a299736a004d2babd59611feb6f85710a527caf64ee0",
-        "authoredSha256": "5d2eeb9bdd870188bb46845aaa251bf87479e4b7617553c94123dfc0c3e481b4"
+        "previousAuthoredSha256": "5d2eeb9bdd870188bb46845aaa251bf87479e4b7617553c94123dfc0c3e481b4",
+        "authoredSha256": "74599f1c7815a00e2d2b27f5fca58ac1e732689fae2b7b2b4dcb89ab29f8250b"
       },
       "back": {
         "grid": "grids/marshcrown-back.png",
@@ -1311,8 +1317,8 @@
         "pickedAt": "2026-10-18T10:32:42.925Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/oraclemantis-front.png",
-        "previousAuthoredSha256": "11ff428ada4da192e49ae8a575a3ad7adb7b8f1a62318fbff4dc572976e6eca6",
-        "authoredSha256": "51b61f338c9e0d73ebc16b577dc6ab88be97b35a7779e0632830de142c278284"
+        "previousAuthoredSha256": "51b61f338c9e0d73ebc16b577dc6ab88be97b35a7779e0632830de142c278284",
+        "authoredSha256": "7f4d3e75322ea61bed394e173fde553730b3861ae3c6c9e9ca647b406d9c4ee5"
       },
       "back": {
         "grid": "grids/oraclemantis-back.png",
@@ -1334,8 +1340,8 @@
         "pickedAt": "2026-10-18T10:33:00.333Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/veilmaster-front.png",
-        "previousAuthoredSha256": "b01b5f974f5e7f624fb596d79afc4c37057c768d97cee46c9d81340a0d5927b9",
-        "authoredSha256": "1cbc2b5d8ca20cefea93e9dd5789ec1241f866bcf65f81ace3bbc57aac16e3d6"
+        "previousAuthoredSha256": "1cbc2b5d8ca20cefea93e9dd5789ec1241f866bcf65f81ace3bbc57aac16e3d6",
+        "authoredSha256": "dbd662ff696a21e2ef05cc2fb88b27e407716ea6f09666559e3eaa1ca1747de5"
       },
       "back": {
         "grid": "grids/veilmaster-back.png",

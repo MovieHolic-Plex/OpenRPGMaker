@@ -378,11 +378,39 @@ def _place(body, lift=0, step=0):
     return frame
 
 
-def derive_frames(front, back):
-    """앞·뒤 전투 그림 → frames[(dir, f)] (down·up·right × 0·1·2)."""
+def _stamp_chip_eyes(body, front, eye):
+    """손 도트 2차 눈(eyes.json 의 patch 종): 줄인 몸에서 사라지는 눈을 앞모습 눈 자리에 다시 찍는다.
+    가까운 눈 = 2x2(왼쪽 위 흰 반짝임 + 어두운 3칸), 먼 눈 = 1x2 어두운 칸. 투명·실루엣 가장자리 칸에는 찍지 않는다."""
+    src = front.convert('RGBA'); bb = src.getbbox(); w, h = bb[2] - bb[0], bb[3] - bb[1]
+    s = max(w / DERIVE_W, h / DERIVE_H, 1)
+    px = body.load(); bw, bh = body.size; sp = src.load()
+    nx, ny, nw, nh = eye['near']
+    cells = [sp[x, y] for x in range(nx, nx + nw) for y in range(ny, ny + nh) if sp[x, y][3]]
+    dark = min(cells, key=_lum)[:3] + (255,); white = max(cells, key=_lum)[:3] + (255,)
+    inner = lambda x, y: 0 < x < bw - 1 and 0 < y < bh - 1 and all(px[x + dx, y + dy][3] for dx, dy in ((0, 0), (1, 0), (-1, 0), (0, 1), (0, -1)))
+    def at(box):
+        return round((box[0] + box[2] / 2 - bb[0]) / s - 0.5), round((box[1] + box[3] / 2 - bb[1]) / s - 0.5)
+    cx, cy = at(eye['near'])
+    cx, cy = min(cx, bw - 2), min(cy, bh - 2)
+    spots = [(cx, cy, white), (cx + 1, cy, dark), (cx, cy + 1, dark), (cx + 1, cy + 1, dark)]
+    if all(inner(x, y) for x, y, _ in spots):
+        for x, y, c in spots: px[x, y] = c
+    if eye.get('far'):
+        fx, fy = at(eye['far'])
+        fx = min(fx, cx - 2)
+        if all(inner(fx, y) and _lum(px[fx, y]) > 110 for y in (fy, fy + 1)):
+            px[fx, fy] = dark; px[fx, fy + 1] = dark
+    return body
+
+
+def derive_frames(front, back, eye=None):
+    """앞·뒤 전투 그림 → frames[(dir, f)] (down·up·right × 0·1·2). eye = eyes.json 항목(patch 종만 칩 눈을 다시 찍는다)."""
     ink = min((c[:3] for _, c in front.convert('RGBA').getcolors(1 << 16) if c[3] >= 128), key=_lum)
+    down = _outline(_reduce(front, DERIVE_W, DERIVE_H), ink)
+    if eye and eye.get('patch'):
+        down = _stamp_chip_eyes(down, front, eye)
     bodies = {
-        'down': _outline(_reduce(front, DERIVE_W, DERIVE_H), ink),
+        'down': down,
         'up': _outline(_reduce(back, DERIVE_W, DERIVE_H), ink),
     }
     bodies['right'] = bodies['down'].transpose(Image.FLIP_LEFT_RIGHT)  # 전투 앞모습은 왼쪽을 본다
@@ -400,7 +428,8 @@ def cmd_derive(a):
     if not (os.path.exists(front) and os.path.exists(back)): raise SystemExit('번들에 %s 앞·뒤 그림이 없다(build 먼저)' % sid)
     run = 'derive-' + datetime.datetime.now().strftime('%Y%m%d-%H%M%S')
     cdir = os.path.join(OUT, sid, run, 'cand-1'); os.makedirs(cdir, exist_ok=True)
-    frames = derive_frames(Image.open(front), Image.open(back))
+    eyes = json.load(open(os.path.join(ROOT, 'harness-data/monster-collect-species/eyes.json'), encoding='utf-8'))['species']
+    frames = derive_frames(Image.open(front), Image.open(back), eyes.get(sid))
     errs, warns = [], []
     for (d, f), im in frames.items():
         e, w = check_frame('%s_%d' % (d, f), im); errs += e; warns += w
