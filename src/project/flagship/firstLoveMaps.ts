@@ -119,15 +119,17 @@ function light(id: string, at: Cell, radius: number, color: string, intensity = 
  * 옥상 바닥과 같은 콘크리트 판 + 난간 모서리 띠로 덮는다. 전부 막힌 칸(문 위 벽·좌우 가장자리)에 둘러싸여 못 걷는 칸이라
  * 통행·앵커에는 영향이 없다(데모 전용 후처리).
  */
+/** 옥상 한 판 = 이웃 건물 낮은 옥상(둘레) + 우리 옥상 블록(20×14). 블록의 왼쪽 위 좌표. */
+const ROOF_OX = 6, ROOF_OY = 4;
 function paintStairwellRoof(map: GameMap): void {
   const W = map.width;
   const CAP_TOP = 9347, EDGE_LEFT = 9338;
   for (let y = 0; y <= 2; y++) {
     for (let x = 0; x <= 5; x++) {
-      const i = y * W + x;
+      const i = (y + ROOF_OY) * W + (x + ROOF_OX);
       if (y === 0) map.lowerTiles[i] = CAP_TOP;
       else if (x === 0) map.lowerTiles[i] = EDGE_LEFT;
-      else map.lowerTiles[i] = map.lowerTiles[(y + 4) * W + (x + 7)]!;
+      else map.lowerTiles[i] = map.lowerTiles[(y + 4 + ROOF_OY) * W + (x + 7 + ROOF_OX)]!;
     }
   }
 }
@@ -220,8 +222,8 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
       whiteboard: nearestFree(project, officeRoom, { x: 21, y: 9 }),
     },
     rooftop: {
-      door: nearestFree(project, roofRoom, { x: 3, y: 6 }), doorOut: nearestFree(project, roofRoom, { x: 3, y: 7 }),
-      rail: nearestFree(project, roofRoom, { x: 10, y: 4 }), bench: nearestFree(project, roofRoom, { x: 6, y: 10 }),
+      door: nearestFree(project, roofRoom, { x: 3 + ROOF_OX, y: 6 + ROOF_OY }), doorOut: nearestFree(project, roofRoom, { x: 3 + ROOF_OX, y: 7 + ROOF_OY }),
+      rail: nearestFree(project, roofRoom, { x: 10 + ROOF_OX, y: 4 + ROOF_OY }), bench: nearestFree(project, roofRoom, { x: 6 + ROOF_OX, y: 10 + ROOF_OY }),
     },
     konbini: {
       door: bottomGap(konbiniRoom, project), doorOut: nearestFree(project, konbiniRoom, { x: 6, y: 9 }),
