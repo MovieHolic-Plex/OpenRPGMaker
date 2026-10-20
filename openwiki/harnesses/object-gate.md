@@ -25,6 +25,28 @@ LLM 검수자 하나·한 번은 일부 증거만 보고 통과시킨다. 실측
 | `src/harnesses/object-gate/node/sheets.ts` | 번들 칩셋·공용 라이브러리 아틀라스 목록 |
 | `harness-data/object-gate/` | `receipts/<sha[:2]>/<sha>.json`, `profiles/<hash>.json`, `calibration/<set>/{labels.json,*.png}`, `calibration/history/` |
 
+### 저장소 위치 — 개별 저장소 `MovieHolic-Plex/object-gate` (2026-10-20 분리)
+
+위 네 경로의 공유 정본은 비공개 저장소 `MovieHolic-Plex/object-gate`(로컬 체크아웃 기본 `~/z-project/object-gate`, 다른 곳이면 `--repo`·`OBJECT_GATE_REPO`)다.
+`git filter-repo` 로 네 경로의 이력(72커밋, 파일 9,183개)을 그대로 옮겼고, 분리 시점 트리 해시가 이 저장소 `a9a8b5456` 과 네 경로 모두 같다.
+object-gen·char-gen·스토어가 같은 관문·같은 영수증을 쓰려고 뗐다.
+
+이 저장소는 **같은 경로에 바이트 그대로 사본**을 둔다(vendored). 그래서 `npm run harness -- object-gate …`, 굽기 스크립트의 `require_pass`,
+스토어 관문(`scripts/store/agentStore.mts`), `serve-holds`(18323), `gate_kinds.enforce` 등 호출자는 하나도 바뀌지 않았다.
+
+| 할 일 | 명령 |
+|---|---|
+| 두 쪽이 같은지 | `npm run object-gate:sync -- status` (같으면 exit 0, 차이 1, 충돌 2) |
+| 여기서 병합된 관문 변경을 올리기 | `npm run object-gate:sync -- export --push` — 항상 `origin/main` 을 내보낸다(미병합 커밋은 안 나간다) |
+| 그 저장소에서 바뀐 것 들이기 | `npm run object-gate:sync -- import` → 커밋 → PR → 병합 → `export` |
+
+- 경로마다 3-way 다. 기준은 그 저장소의 `.monorepo-sync`(마지막으로 내보낸 이 저장소 `origin/main` 커밋). 한쪽만 바뀐 것만 옮기고, 양쪽이 다르게 바뀌면 멈춘다.
+- 스크립트는 git blob 을 그대로 옮긴다. 영수증·승인·보류 결정은 그림 화소 해시·서명에 묶여 있으니 손으로 고치지 않는다.
+- 보류 승인 서명 키(`~/.config/oprn/object-gate-hold.key`)는 두 저장소 어디에도 넣지 않는다.
+- 판정(`review`·`calibrate`)은 아직 이 저장소 안에서만 돈다. 판정기가 `src/assets/bundled`·`_core/manifest`·재검수용 `tiledata` 를 import 하기 때문이다.
+  다른 도구는 그 저장소 체크아웃에서 `OBJECT_GATE_DATA=<체크아웃>/harness-data/object-gate` 로 영수증을 읽고, Python 은 `<체크아웃>/src/harnesses/_core` 를 `sys.path` 에 넣어 `require_pass` 를 쓴다.
+- 왜 사본인가: 네 경로가 흩어져 있어 서브모듈 하나로 덮을 수 없고(심링크+서브모듈이면 `wt create`·기존 워크트리 수십 개가 초기화 전까지 깨진다), 판정기가 이 저장소 모듈을 import 해서 npm/pip 패키지로 떼려면 판정기를 고쳐야 한다(프로필 해시·진행 중 보정과 충돌). 영수증을 커밋하는 PR 흐름(#3107 등)도 그대로 둔다.
+
 ## 판정
 
 - (2026-10-14 부터) 판정자 `claude-cli claude-sonnet-5-5`(effort high) 하나 × 네 번 — 판정자 신원·effort 는 프로필 해시에 들어가고 `status` 가 보여 준다. 옛 구성: gemini-4-argon medium×4(10-14 오전, 보정 rejected), gemini-3.8-flash×4(10-13), gpt+gemini×2(10-09). **Sonnet 이 안 되면(할당량·과부하 429/529·응답 모델이 다름) 다른 모델로 넘어가지 않고 멈춘다**(종료코드 4, 받은 답은 캐시에 남아 같은 명령으로 이어 돌림).
