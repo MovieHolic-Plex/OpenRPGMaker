@@ -421,6 +421,17 @@ function gymBloomPuzzle(project: Project): void {
     page.commands = [
       text("관장님 정원의 새싹은 해를 따라 깨어나요.", "체육관 안내원"),
       text("해가 뜨는 쪽부터 차례로 물을 주면 덩굴 문이 열리고, 안쪽 가시 덤불은 정원 가위로 정리할 수 있대요.", "체육관 안내원"),
+      // 관장(Lv8·9) 앞에서 센터까지 되돌아가지 않아도 되게 — 수련생 셋을 이긴 뒤 체력이 바닥난 채 관장에게 들어가 졌다(2026-10-21 스타터 3종 봇).
+      text("관장님께 도전하기 전에 동료들을 쉬게 해 줄까요?", "체육관 안내원"),
+      {
+        kind: "choices",
+        options: [
+          { text: "부탁해요", branch: [{ kind: "recoverAll" }, { kind: "playAudio", resourceId: "easyrpg-sound-chime2", channel: "se", loop: false }, text("동료들이 기운을 되찾았다!")] },
+          { text: "괜찮아요", branch: [] },
+        ],
+        cancelBehavior: "branch",
+        cancelBranch: [],
+      },
     ];
   }
 }
@@ -500,14 +511,13 @@ function gbaFeel(project: Project): void {
       }
     });
   }
-  // 스타터 고르기: 이름 세 줄뿐이었고 미리보기 설명이 「토리프⏎풀 타입」 같은 덜 다듬은 줄이었다(적대 검수 m5·R2-3) — 목록에 타입을 붙이고 설명을 문장으로.
+  // 스타터 미리보기 설명이 「토리프⏎풀 타입」 같은 덜 다듬은 줄이었다(적대 검수 m5) — 문장으로. 목록의 타입 표시는 starterChoice.ts 가 한다.
   const typeName: Record<string, string> = { grass: "풀", fire: "불꽃", water: "물" };
   const starterType = new Map((db.monsterSpecies ?? []).filter((sp) => ["mx_species_spriglet", "mx_species_coalbit", "mx_species_rivulet"].includes(sp.id)).map((sp) => [sp.name, typeName[sp.types?.[0] ?? ""] ?? ""]));
   const topic = (word: string) => { const code = word.charCodeAt(word.length - 1) - 0xac00; return `${word}${code >= 0 && code <= 11171 && code % 28 ? "은" : "는"}`; };
   const lab = project.maps.mx_map_lab?.events.find((e) => e.id === "mx_map_lab_professor");
   for (const page of lab?.pages ?? []) walkLists(page.commands, (list) => {
     for (const c of list) {
-      if (c.kind === "choices" && c.prompt === "첫 동료를 선택하자") for (const o of c.options) { const t = starterType.get(o.text); if (t) o.text = `${o.text} · ${t}`; }
       if (c.kind === "text") { const m = /^(\S+)\n(\S+) 타입$/u.exec(c.body); if (m && starterType.has(m[1]!)) c.body = `${topic(m[1]!)} ${m[2]} 타입이란다.`; }
     }
   });
