@@ -536,18 +536,18 @@ function tunePacing(project: Project): void {
  * ScarloxyPeople 변형 칩(시트, 칸)에서 역할에 맞는 사람을 골라 한 사람 한 그림으로 맞춘다. 새로 그린 그림은 없다.
  */
 const PEOPLE_CAST: Record<string, readonly [sheet: number, index: number]> = {
-  mx_map_lab_rival: [2, 3], mx_map_grove_rival: [2, 3], mx_map_league_0_league_challenge: [2, 3], // 나루 — 붉은 모자 라이벌
   mx_map_home_center_nurse: [1, 2], mx_map_grove_center_nurse: [1, 2], // 센터 직원 — 간호사
   mx_map_home_house_resident: [6, 3], // 엄마 — 머릿수건 앞치마
   mx_map_home_mart_shop: [5, 0], mx_map_grove_mart_shop: [5, 1], // 도구점 점원
-  mx_map_home_guide: [12, 5], mx_map_grove_guide: [4, 0], // 여행 안내원 · 숲 마을 레인저
+  mx_map_home_guide: [12, 5], mx_map_grove_guide: [2, 1], // 여행 안내원 · 숲 마을 숲지기
   mx_map_home_local: [6, 2], mx_map_home_ambient_resident_1: [6, 0], mx_map_home_ambient_resident_2: [6, 4],
   mx_map_grove_local: [11, 4], mx_map_grove_house_resident: [6, 1], mx_map_grove_house_2f_kid: [6, 6],
-  mx_map_home_center_2f_traveler: [1, 7], mx_map_grove_center_2f_traveler: [2, 2],
+  mx_map_home_center_2f_traveler: [9, 3], mx_map_grove_center_2f_traveler: [2, 2],
   mx_map_home_sign_meadow: [13, 3], mx_map_meadow_sign_grove: [12, 3], mx_map_meadow_trail_sign: [12, 0], mx_map_grove_sign_garden: [13, 4],
-  mx_map_meadow_trainer_0: [10, 4], mx_map_meadow_trainer_1: [9, 2], mx_map_meadow_trainer_2: [2, 4], // 산책 소년 · 연구원 · 조련사
+  // 길 트레이너·수련생은 전투 초상(boy·scientist·hiker·girl)과 같은 사람으로 읽히게 고른다.
+  mx_map_meadow_trainer_0: [10, 0], mx_map_meadow_trainer_1: [9, 2], mx_map_meadow_trainer_2: [1, 7], // 산책 소년 · 연구원 · 조련사(등산 차림)
   mx_map_garden_researcher: [9, 1],
-  mx_map_grove_gym_grunt_0: [2, 1], mx_map_grove_gym_grunt_1: [9, 4], mx_map_grove_gym_grunt_2: [11, 5], // 덩굴지기 하람 · 정원사 소이 · 수련생 도윤
+  mx_map_grove_gym_grunt_0: [12, 6], mx_map_grove_gym_grunt_1: [2, 4], mx_map_grove_gym_grunt_2: [4, 0], // 덩굴지기 하람 · 정원사 소이 · 수련생 도윤
   mx_map_grove_gym_gym_guide: [13, 2],
   mx_map_league_0_return_home: [8, 4], // 리그 안내원 — 제복
 };
@@ -564,6 +564,13 @@ function recastPeople(project: Project): void {
         page.graphic = { ...page.graphic, sprite: { type: "bundled", id: `tex_oprn_charset_scarloxy_people${sheet}` }, pattern: charsetFrameIndex({ characterIndex, direction, pattern: 1 }) };
       }
     }
+  }
+  // 나루는 전투 초상(hero_f_front: 짙은 남보라 긴 머리)과 같은 원래 칩(People1 3번, 보라 긴 머리)을 그대로 쓴다 — 같은 칩을 쓰던 센터 직원 쪽을 바꿨다.
+  // 전투 초상: 관장 유림(초록 머리·초록 후드)은 소녀 초상이었다 → 초록 옷 bug_catcher, 밤막회사 무영(불꽃 머리·검은 마스크)은 과학자 → punk.
+  const portrait: Record<string, "bug_catcher" | "punk"> = { mx_troop_mx_map_grove_gym_leader: "bug_catcher", mx_troop_mx_map_observatory_boss: "punk" };
+  for (const troop of project.database.troops) {
+    const front = portrait[troop.id];
+    if (front && troop.trainerSprite) troop.trainerSprite = { ...troop.trainerSprite, front };
   }
   // 리그 안내원이 결투장 한복판(4,9)에 서 있었다 — 계단 올라온 옆자리로.
   const leagueGuide = project.maps.mx_map_league_0?.events.find((e) => e.id === "mx_map_league_0_return_home");
@@ -715,8 +722,7 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
   ];
 
   // 오프닝·타이틀은 이름을 다 바꾼 뒤에 만든다(타이틀이 meta.title 을 읽는다).
-  // 오프닝 컷의 나루도 게임 속 나루(붉은 모자 라이벌, ScarloxyPeople2 3번)와 같은 사람으로.
-  configureEmeraldMonsterOpening(project, { pages: OPENING_PAGES, cast: { rival: { resourceId: "tex_oprn_charset_scarloxy_people2", index: 3 } } });
+  configureEmeraldMonsterOpening(project, { pages: OPENING_PAGES });
   if (project.system.titleScreen) {
     project.system.titleScreen.title = "아스트라 호라이즌";
     project.system.titleScreen.logoSubtitle = "다우닝 시티와 여명의 날개";
