@@ -54,7 +54,7 @@
   "buubbibrbbeeebbbibbunb..........................",
   "buubbibrbeebbbbbibbunb..........................",
   "buubbibrbebbcbbbibbunb..........................",
-  "bubbixrbeeAAAbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbAA..",
+  "bubbixrbeeAAAbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.",
   "bubbibrbebqqbvAAAAAAhhhhhhhhhhhhAAAAAAbtzzztbqb.",
   "bubbibAbebqqbyvvvvvvkkkkkkkkkkkkvvvvvvbwtttlbqb.",
   "bubbibAbebqqbyvvvvvvkkkkkkkkkkkkvvvvvvbwtttlbqb.",
@@ -76,10 +76,10 @@
   "booooooooooooobbbbbbob.....bjjjjjjjjjjjjb.......",
   "booooooooooooobggggbob.....bjjjjjjjjjjjjb.......",
   "booooooooooooobddddbob......bbbbbbbbbbbb........",
-  "booooooooooooobbbbbbob..........................",
+  "booooooooooooobbbbbbob......aaaaaaaaaaaa........",
   ".bbbbbbbbbbbbbbbbbbbb...........................",
-  ".aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.",
+  ".aaaaaaaaaaaaaaaaaaaa...........................",
   "................................................"
  ],
- "note": "r16: gantry top face 3 rows (far p -> t -> white lit edge) + cornice shadow row, using the empty rows above"
+ "note": "r16: gantry top face 3 rows (far p -> t -> white lit edge) + cornice shadow row, using the empty rows above; r16-2: floating floor line under the bed removed, pedestal contact shadow placed directly under it (row 44), stray white px at the bed top-right closed with the outline"
 }

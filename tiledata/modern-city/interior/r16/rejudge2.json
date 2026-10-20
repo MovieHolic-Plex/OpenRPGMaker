@@ -1,0 +1,4751 @@
+{
+ "date": "2026-10-20",
+ "judge": "Gemini 4 Argon high",
+ "note": "rounds[0] = merged r16 art (#3080/#3083/#3086); later rounds = redraws of FAILs",
+ "items": [
+  {
+   "id": "amuse-bowling-pins",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The pinsetter housing at the top only has a 2px grey strip (rows 2-3) inside a thick front bezel with no cornice separation, and the 10 pins are front-on 3x5 crosses arranged on a flat unshaded top-down tan rectangle (rows 12-45). Neither the wood lane nor the housing has a >=3-tone ramp or plank texture."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Although the pinsetter machine hood now has a 5px 3/4 top surface (rows 1-5, #6c7076 to #f3f4f7) above a dark cornice (row 6, #2a2c34), the 10 bowling pins (rows 12-28) were moved out of the pin pit onto the lane as un-outlined 2x4 rectangular blocks (white left col #f3f4f7, grey right col #c6cad4/#8d9095, red stripe #cc343c/#983840) touching corner-to-corner across the entire lane width (cols 1-14) over 17 rows, reading at 1x as a red-and-white checkered floor pattern rather than tapered pins."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Instead of drawing 10 distinct tapered pins on the pin deck (rows 9-22), the redraw fuses every rank of pins horizontally into solid white/grey step-bars (12px wide at rows 11-12, 9px at rows 14-15, 6px at rows 17-18, 3px at rows 20-21) separated by continuous full-width #4a4c56 dark-grey horizontal stripes studded with single red pixels (rows 10, 13, 16, 19, 22) and zero side outlines against the tan lane, reading as an upside-down striped ziggurat/stepped triangle rather than individual bowling pins."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Each of the 10 pins on the deck (rows 10-29) is drawn as an un-outlined, untapered 2x5 vertical rectangle (#f3f4f7/#c6cad4 at head and belly, #cc343c/#983840 at neck, #c6cad4/#8d9095 above a 2x1 #1a1b21 black block at the base) whose left column is painted in #cba76c (one of the wooden lane floor tones) instead of a dark contour, so the pins lack side/top outlines and bottle taper and read as 10 floating 2x5 striped posts/cigarettes sitting on black squares."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "All 10 bowling pins (rows 10-33) are now enclosed in consistent 1px #4a4c56 dark contours on top, sides, and base with upper-left lit #f3f4f7/#c6cad4 white bodies, #cc343c/#983840 red neck stripes, and #a67a37/#d6b073 contact shadows arranged in a clean 4-3-2-1 triangle below the 3/4 pinsetter hood (rows 1-8)."
+    }
+   ]
+  },
+  {
+   "id": "amuse-pachinko-island",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "A 3px grey-white bar was pasted across rows 1-3 of the outer black slab without connecting to the four individual cabinets, while the four red stools at rows 19-23 are flat 4x4 octagons on 1px sticks with no 3/4 seat top vs front apron. Each coloured cabinet frame (pink, blue, yellow, green) is a single flat 1-tone block with a circle inside."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 1-4 form a 4px foreshortened wooden/brass island canopy top plane (#b88628, #fac83c, #fef096) separated by a 1px dark cornice (#1c121e at row 5) from the four multi-tone pachinko cabinets (rows 6-16, each with >=3 frame tones, dark glass playfield, and silver lower tray at rows 15-16), and the four stools at rows 18-23 now show a 3px lighter red 3/4 seat top (#f06464/#dc3232 at rows 19-21) above a darker front apron (#961e24 at row 22) and chrome base."
+    }
+   ]
+  },
+  {
+   "id": "amuse-speaker-stack",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "The top plane (rows 1-6) has a bright stripe in the middle (row 4) and bleeds directly into the front face at cols 2-3 and 12-13 because the dark divider at rows 6-8 only spans cols 4-11. The front baffle and two speaker cones are nearly indistinguishable dark charcoal tones at 1x, and there is a missing border pixel notch at the bottom-left corner (col 1, row 30)."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 1-4 provide a clean 4px top surface (#505660, #68707c, #828a96, #a4acb8) separated across the full width by a 1px dark cornice (#101218 at row 5), the upper and lower speaker enclosures (rows 6-16 and 18-29) have lit left/top bevels (#505660) and distinct circular woofer rims (#68707c/#828a96) around dark dust caps, and the bottom-left border notch at col 1, row 30 is fixed."
+    }
+   ]
+  },
+  {
+   "id": "arcade-cabinet-pair",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "A single shared 3px grey bar (rows 1-3) was pasted across two separate cyan and pink cabinets, while the control panel has no foreshortened 3/4 deck and the two stools at the bottom are flat 1-tone lollipop circles on sticks with no seat top or front face. Every sub-block (marquee, screen, coin door, stool) is a flat 1-tone rectangle inside a black box outline."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "While the two cabinets now have separate 4px top planes (rows 1-4) and 3-tone shading, the two stools at rows 36-46 retain the exact 7x7 circular lollipop silhouette on a 1px grey stick (cols 4-10 and 19-25, rows 36-42) instead of foreshortened 3/4 horizontal seat discs with a distinct front rim, and the screens have a broken 2px diagonal pixel stairstep (#3b82f6/#a855f7) at cols 5-6 and 20-21 (rows 12-13) plus an isolated 1x1 yellow dot at cols 9 and 24 (row 12)."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Both cabinets have a 4px 3/4 top surface (rows 1-4) above a dark cornice (row 5), clean symmetric spaceship sprites on multi-tone screens (rows 11-18), foreshortened 3/4 control decks (rows 20-22) with joysticks and buttons, and the two stools (rows 36-46) now show a 3px lighter horizontal seat top plane (rows 37-39, #67e8f9/#38c4e8 and #f0a0c8/#f472b6) above a 2px darker front rim (rows 40-41) and a sturdy outlined pedestal base."
+    }
+   ]
+  },
+  {
+   "id": "arcade-claw-machine",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Rows 1-3 only add a 2px dark-slate bar and 1px light-blue line that do not match the yellow/pink cabinet or read as a lighter 3-4px top plane, and the lower control ledge has no 3/4 top surface. The interior prizes are five flat 1-tone 3x3 squares in a black checkerboard row, the pink side strips (cols 2 and 21) float detached, and all parts use flat 1-tone fills with heavy black box outlines."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 1-4 form a 4px pink 3/4 roof plane (#d24c78 to #ff9ebe) above a #782040 cornice (row 5) and shaded yellow marquee, the glass bay has connected pink frame stiles, diagonal glass reflections, a 3-tone claw, and four 3-tone plush prizes, and rows 20-22 form a 3px foreshortened control ledge with a red joystick and yellow buttons."
+    }
+   ]
+  },
+  {
+   "id": "arcade-medal-changer",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Although rows 1-4 form a 4px lighter yellow/white top band above the red header and front face, the entire front body (rows 7-29), green screen, and black dispenser slot are flat 1-tone fills inside thick black box outlines. The pale yellow oval in the middle barely contrasts with the yellow face and reads as an indistinct blotch at 1x."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Uses a dark warm-brown #533020 outer contour, a 4px top surface (rows 1-4, #e2b448 to #fffff6) separated by a 1px #a87828 cornice (row 5), a 3-tone red header (rows 6-8), a 3-tone yellow front body (#ffe678 left highlight, #fac83c mid, #e2b448 right shadow), a recessed dark-green display with reflections (rows 11-15), a distinct #a87828-ringed 3-tone gold medal emblem (rows 17-22), and a recessed coin hopper (rows 23-26)."
+    }
+   ]
+  },
+  {
+   "id": "arcade-prize-counter",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "The counter top (rows 13-15) is only 3px tall with oversized flat 1-tone animal heads emerging out of the back black outline, and the white rabbit's ears are clipped flat against the top canvas border (row 0). The counter front consists of flat black and purple bands decorated with unshaded pink/yellow plus-signs and squares."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "While the glass showcase now has a 4px foreshortened light-blue top plane (rows 9-12), the two smaller counter-top prizes on the right—a gumball dome (cols 31-35, rows 4-9) and a yellow duck (cols 38-42, rows 5-9)—have zero outer outline against the light beige floor checker (unlike the #533020/#7a4945-outlined bear and rabbit on the left and #0b1224-outlined counter), the duck's orange base overwrites the counter's top black border at row 8, and the bear (cols 5-14, rows 1-10) and rabbit (cols 20-26, rows 1-10) remain oversized waist-cut blocks nearly as tall as the display case."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The counter top (rows 11-16) has an unbroken #16141c back border and a 5px foreshortened light-blue glass top plane, the gumball machine (cols 32-37) and yellow duck (cols 40-45) now have continuous 1px #24222c dark outlines, and the bear (cols 7-14, rows 6-13) and rabbit (cols 20-26, rows 3-13) are scaled into compact full-body sitting plushies with contact shadows on the glass."
+    }
+   ]
+  },
+  {
+   "id": "arcade-purikura",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "The top pink gradient (rows 1-4) has no cornice separator from the front header (row 5), so the three lopsided white cross blobs on the header bleed directly into row 4. The curtain (2 flat pinks), off-white booth wall (1 flat tone), and dark screen box (1 flat tone) lack >=3-tone shading and are enclosed in a thick black square outline."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "While rows 1-4 add a 4px pink top surface (#ea6ca0 to #fce4f0) separated by a 1px dark plum cornice (#4a1532 at row 5) and the curtain (cols 1-14, rows 15-42) and white booth wall (cols 16-30) now have >=3 shading tones, the three header decals at rows 7-10 (cols 4-9, 13-18, 22-27) were not made symmetric as required: each has a lopsided 2x3 white block on the left with a 1px white tooth (#f4f6f8) hanging down at row 10 (cols 5, 14, 23) and pink/magenta smudges (#f08cb4, #d24682) on the right."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 1-4 form a 4px pink 3/4 top surface above a 2px dark cornice (rows 5-6), the three marquee lights at rows 7-9 (cols 4-9, 13-18, 22-27) are now clean horizontally and vertically symmetric 6x3 pill lights, the left curtain (cols 2-19, rows 14-28) has 4-tone vertical pleats under a silver rod, and the right kiosk panel houses a recessed reflective screen and slot."
+    }
+   ]
+  },
+  {
+   "id": "arcade-racing-cabinet",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "The driver seat at rows 21-29 is separated from the cabinet by a full row of bare floor checker (row 20) and is drawn as a flat rectangular block without a 3/4 seat top, backrest, or base. The red cabinet body, screen graphic, and seat use flat 1-2 tone fills with heavy black box outlines."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "While the floor gap at row 20 is closed and the marquee (rows 1-4) has a 4px top surface, the lower dashboard and seat assembly (rows 20-45) are heavily compartmentalized by internal #16141c black box outlines (vertical black dividers at cols 9, 11, 13, 18, 20, 22 and horizontal black bars at rows 20, 30, 35, 43, failing Q3), the steering wheel (cols 12-19, rows 21-27) is embedded flat inside the horizontal dashboard stripes, and the seat proportions (Q1/Q4) are inverted: a tiny 4x3 center cushion (cols 14-17, rows 32-34) sits behind a huge 8x7 vertical red block (cols 12-19, rows 36-42) that looks like a closed red box rather than a bucket seat open toward the screen."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The steering wheel (cols 11-20, rows 21-27) is still a flat dark wireframe ring whose interior (cols 12-19, rows 22-26) is filled with the exact same uninterrupted horizontal pink/red dashboard stripes (#fa7882, #ff8c96, #f03c50, #cc343c) as the surrounding dash, and the seat (rows 32-43) still has inverted proportions where a massive 14x7 pink-to-red striped rectangular block (cols 9-22, rows 37-43) towers behind a small 5-row grey recess (rows 32-36), reading as a closed red chest rather than a bucket seat (failing Q1/Q4)."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Although the steering wheel hub (cols 11-20, rows 21-27) is now filled in dark grey, the driver seat (cols 9-22, rows 32-43) still has unreadable proportions and structure: the upper section (rows 32-37) consists of two narrow 2px vertical grey strips (cols 13-14 and 17-18) split down the middle by a 2px dark-red vertical stripe (#862e38 at cols 15-16) and flanked by narrow red side strips, while the south section (rows 38-43) is still a massive 6-row bright pink-to-red horizontal block (#ffc8d2/#ff8c96/#fa7882/#f03c50), reading as a red chest or barrier in front of vertical pipes rather than a 3/4 bucket seat."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "PASS",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "In the driver seat area (cols 9-22, rows 31-43), the north-to-south anatomy of the north-facing bucket seat is inverted: rows 32-37 (closest to the pedals/steering wheel) are drawn as a stepped pyramid of bright pink/white-pink highlight bands (#ffc8d2/#ff8c96/#fa7882) while rows 38-42 (the south back of the seat closest to the viewer) have a 6x5 dark-grey square cutout (#4a4c56/#3e404a at cols 13-18) framed in red, making the seat read as a miniature red car with a grey rear window or a backwards chair facing south away from the wheel."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Both previous r8 defects on the rear-facing bucket seat are fixed: the stray grey pixels above the seat top outline are gone and the upper-right shoulder now shades monotonically toward the shadow side, while the cabinet hood, control deck, steering wheel, and bolstered seat maintain clear 3/4 top planes and readable silhouette at 1x and 8x."
+    }
+   ]
+  },
+  {
+   "id": "arcade-rhythm",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The top band (rows 1-4) is dark purple without a lighter 3-4px top surface or cornice separation, and the five coloured cross buttons span the full vertical height of the control bar (rows 22-25) as a front-on strip rather than sitting on a foreshortened 3/4 deck. All cabinet, screen, speaker, and button regions are flat 1-tone fills."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 1-4 provide a 4-tone purple top surface above the row 5 cornice, the screen displays a clear rhythm note highway with a judgment line (rows 7-15) above shaded stereo speakers (rows 17-21), and the 5 colored buttons sit as foreshortened 4x2 pads on a 3/4 control deck (rows 22-25) above a shaded lower apron."
+    }
+   ]
+  },
+  {
+   "id": "art-plinth",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "A 3px grey-white strip was inserted at rows 2-4 inside the glass case without a front rim, while the white plinth column below the thick black divider (row 13) only has a 2px white strip above a flat grey face, making the prop read as a two-door locker with an egg icon. The dark base at rows 27-28 is also asymmetric (indented 1px on the left at col 2 but flush on the right at col 11)."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Row 5 draws a solid 1px opaque grey bar (#dce0e8, cols 3-12) cutting across the glass vitrine directly on top of the gold sculpture, the sculpture itself (cols 6-9, rows 6-11) has no dark outline and blurs into an amorphous L-shaped yellow-brown blob against the white glass highlight (#ffffff at cols 4-5, rows 6-8), and there is a stray bright pixel (#f4f6f8) at the bottom-left of the dark base trim (col 3, row 27)."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The opaque grey bar cutting across row 5 is removed in favor of a continuous #eef9ff/#ffffff 3/4 glass top plane (rows 3-5), the gold sculpture inside the vitrine (cols 6-10, rows 6-10) now has a symmetric chalice silhouette enclosed in a 1px #5d3e20 dark bronze outline separated from the left glass highlight by #dcf0fa glass, and the stray bright pixel at (col 3, row 27) is fixed."
+    }
+   ]
+  },
+  {
+   "id": "aud-lectern",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "While rows 9-12 provide a 4px brown top plane above the row 13 dark cornice, the front face (rows 14-27) is a single flat brown block dominated by a huge 7x8 yellow square and two giant asymmetric 6px black diagonal sticks on top (rows 2-6), making it read as a retro CRT TV with rabbit-ear antennae at 1x."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Uses a dark brown #4a2b29 contour, a 5px slanted reading ledge (rows 9-14) holding white lecture notes (#f1f3f3/#c1cfcc) and a compact 3px gooseneck microphone (cols 9-10, rows 6-11), and a 4-tone recessed wood front panel (#a35f4c, #8c5a46, #6e3c28, #50281e in rows 16-26) with a compact 3x3 gold crest (cols 7-9, rows 20-22) above a stepped podium base (rows 27-29)."
+    }
+   ]
+  },
+  {
+   "id": "book-shelf",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 1-4 form a clean 4px wooden top surface, but the side uprights and horizontal shelves (rows 11, 18) use a single flat brown tone enclosed in a pure-black outer box outline, and all three shelves repeat flat neon rainbow bars with no recessed shelf shadow or wood grain."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The bookcase has a 4px grained wooden 3/4 top surface (rows 1-4, #96623a to #e8c170) above a dark cornice (row 5, #5d3e20), a consistent 1px #241911 dark-brown wood outline, recessed #241911/#3c2a1e shelf shadows, and varied 2-3 tone vertical and horizontal book stacks across all three shelves."
+    }
+   ]
+  },
+  {
+   "id": "cafe-maid-stage",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The redrawn stage clearly separates the 8px foreshortened wooden platform top (rows 14-21, with plank seams and a bright front lip) from the 3px plum front apron with five glowing footlights (rows 22-24) and the striped heart backdrop above, using >=3 tones per material and a consistent dark-plum outline."
+    }
+   ]
+  },
+  {
+   "id": "cinema-concession",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Only 1 row of white (row 17) was added to the counter top, while the popcorn machine on the left (rows 1-13) floats in mid-air with bare floor checker visible underneath at row 14, and all three counter-top appliances are flat front-only boxes with no 3/4 top planes, flat 1-tone fills, and 14 isolated single yellow pixels."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The row 14 floor gap under the popcorn machine is closed, the counter top (rows 16-20) is a 5px foreshortened plane (#d8d2bf to #ffffff) above the red-and-white striped front face (rows 22-30), and the popcorn popper (cols 2-15, 3px red roof at rows 2-4 and clustered 3-tone yellow popcorn mound at rows 10-13), soda dispenser (cols 17-30, 3px grey top at rows 3-5), and POS register (cols 37-45, top plane at rows 5-6) all sit grounded on the counter with >=3 shading tones."
+    }
+   ]
+  },
+  {
+   "id": "clinic-pet-kennels",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Rows 4-8 provide a 5px grey-to-white top plane, but the entire front cabinet face (rows 10-29) is a single flat mid-grey fill with thick black box outlines around the outer frame and all four cage windows, and the animals inside are unreadable blocky blobs with stray black pixels on the right bars."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The stainless-steel kennel bank now has a 5px top surface (rows 4-8, #9da2ab to #f2f4f8), 3-tone frame bevels, and softened slate cage borders (#3e424c), but inside all four cages (rows 17-24 and 33-40) the animals are drawn strictly inside the single 4px-wide center bar gap (cols 7-10 in the left cages and cols 21-24 in the right cages, with 0px of pet body in the adjacent gaps at cols 5 and 12), turning every dog and cat into a 4x8 vertical rectangular totem strip wedged between two bars."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "In all four cages (rows 19-24 and 35-40), the animals are still flat, blocky 4x6 front-facing square totem masks wedged inside the center bar gap (cols 7-10 and 21-24): in the cat cages (top-right and bottom-left) the outer columns (cols 5, 12, 19, 26) use #6c7076/#4a4c56 grey that blends into the grey cage interior, and in the dog cages they form disconnected 1px vertical strips with no head-to-body taper (failing Q1/Q4)."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The animals inside the four cages (rows 18-23 and 34-39) now span across multiple bar gaps with readable profile silhouettes on blue mats—tan/cream dogs (top-left and bottom-right) with pointed ears, #1a1b21 noses, and #f4f6f8 white chest/paws, and russet tabby cats (top-right and bottom-left) with #8b4f3f stripes and #f0c838 yellow eyes—inside a stainless-steel 4-cage bank with a 5px 3/4 top surface (rows 7-11)."
+    }
+   ]
+  },
+  {
+   "id": "clinic-pharmacy-shelf",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "The green cross sign at the top (rows 0-5, cols 10-17) has no outline and no 3/4 top surface, and bottles #3, #6, and #9 puncture the row 10 cornice line (with bottle #6's white cap merging directly into the white top plane at rows 8-10). At 1x the 36 identical rainbow rectangles with single white dots read as a colour spreadsheet rather than a pharmacy shelf."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The top green cross sign (rows 0-7) now has a #1e5a3c outline and 3px lighter top plane (rows 1-3), the main shelf top surface (rows 9-13) is cleanly separated by an unbroken cornice (rows 14-16), and the three shelves hold varied, shaded medicine boxes and bottles with realistic spacing."
+    }
+   ]
+  },
+  {
+   "id": "council-trophy-case",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 1-4 show a 4px wooden top surface, but the glass interior, wooden middle shelf, wooden base, three top T-shapes, and three bottom red/navy rectangles with yellow plus-signs are all flat 1-tone fills surrounded by a pure-black outer box outline."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Enclosed in a 1px #241911 dark-brown wood outline with a 4px grained wood top plane (rows 1-4), 3-tone wood stiles/shelf/base, diagonal glass reflections over recessed dark-blue glass, three 3-tone metallic gold/silver/bronze cup trophies on the upper shelf, and hanging medals with blue ribbons flanking a shaded plaque on the lower shelf."
+    }
+   ]
+  },
+  {
+   "id": "court-witness-stand",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The redrawn witness stand shows both the 3px lighter tan desk ledge (rows 12-14) and the recessed enclosure rail/cavity behind it (rows 8-11), separated from the wainscot-paneled front face (rows 16-26) by a 1px dark cornice row (row 15), with a 5-tone wood ramp, dark-brown outline, and shaded microphone."
+    }
+   ]
+  },
+  {
+   "id": "dept-accessory-wall",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Although rows 1-4 form a 4px tan top plane, the front display panel is a flat 1-tone cream fill containing five flat vertical bars, five tiny squares inside thick 2px black boxes (rows 21-25), ~13 isolated single-pixel brown dots floating in columns, and a missing outer border pixel at the bottom-left corner (col 0, row 31)."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Fixes the bottom-left pixel at (0, 31) with a continuous #091125 base shadow and #533020 outer wood outline; features a 4px top plane (rows 1-4), a #dde0e7 hanging rod (row 7) with five 3-tone scarves/belts casting shadows onto a 3-tone zoned beige backing, four small purses with gold clasps sitting on a 3px wooden shelf (rows 21-24), and two shaded lower drawers (rows 25-29)."
+    }
+   ]
+  },
+  {
+   "id": "dept-directory-kiosk",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 1-3 provide a 3px grey-to-white top plane, but the front bezel (rows 4-18), neck (rows 19-22), pedestal (rows 23-27), and base are flat horizontal grey bands with no left-to-right directional shading or metallic edge highlights, and the kiosk has thick pure-black double outlines around the outer frame and screen."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The kiosk has a 4px metallic 3/4 top surface (rows 1-4, #8d9095 to #f3f4f7) separated by a #6c7076 cornice (row 5), a 3px foreshortened pedestal base top (rows 25-27), a 1px #2a3539 dark-slate outer outline and #3d4b51 screen bezel, and upper-left-to-right shading across the body, neck, and floor map display."
+    }
+   ]
+  },
+  {
+   "id": "dept-eyewear-tower",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 1-2 only add a 2px light-grey strip that merges directly into the flat white front backing (rows 3-4) with no cornice separator, and the four eyewear rows (rows 5-6, 10-11, 15-16, 20-21) are solid full-width 1-tone bars with center notches that read as coloured drawers rather than glasses. The bottom grey base slab (rows 28-29) is completely unoutlined while the tower above has a thick black box outline."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 1-3 provide a 3px top plane (#b4bac4/#d6dce4/#f4f6f8) above a 1px dark cornice (row 4, #505660) and the base (rows 24-30) is now outlined and shaded, but the four pairs of glasses (rows 6-8, 10-12, 14-16, 18-20 at cols 5-10) are drawn as 6x3 bowtie/dumbbell blocks—2px top and bottom dark bars at cols 5-6 and 9-10 sandwiching unframed 2x1 cyan squares (#8ce6f0/#ffffff at rows 7, 11, 15, 19) with a 2x1 bridge at cols 7-8—resting directly on full-width grey shelf bars (rows 9, 13, 17, 21), so they read as stacked bowties/dumbbells rather than eyeglasses."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "On all four eyewear tiers (rows 6-8, 10-12, 14-16, 18-20), each pair of glasses has disconnected 1px diagonal pixels at cols 3 and 12 (rows 6, 10, 14, 18) separated from the upper frame bar (cols 5-10) by #f4f6f8 white background pixels at cols 4 and 11, while the lenses at rows 7, 11, 15, 19 lack continuous outer/inner side rims, making all four pairs read as jagged space-invader bugs with diagonal antennae touching the outer cabinet walls (failing Q1/Q4/Q6)."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The disconnected diagonal pixels at cols 3 and 12 are removed, all four eyewear frames (rows 6-8, 10-12, 14-16, 18-20) now have clean 8px brow bars (cols 4-11) and two framed 3x2 lenses with #b0dcec/#7ca8be glass centers separated by a 2px nose bridge (cols 7-8) inside 1px #f4f6f8 margins, and the tower top (rows 1-4) and base (rows 27-31) show clear 3/4 top planes."
+    }
+   ]
+  },
+  {
+   "id": "dept-handbag-vitrine",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "The 5px wood top surface (rows 1-5), six 3-tone handbags, and two lower drawers read well, but the entire cubby surround (rows 6-22) is a single flat mustard-yellow fill with an isolated single pale-blue pixel in the upper-right of each cubby, and the thick near-black outer border has a missing pixel at the bottom-left corner (col 0, row 31)."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The missing bottom-left pixel at (0, 31) is filled, the outer outline is warm dark wood (#2a1808), the isolated pale-blue pixels in the cubby corners are gone, and the six display cubbies (rows 6-22) now have recessed warm-amber inner top/left shadows (#b88628/#d8a848) and 2px wood shelf ledges (#8c5828/#ecc695 at rows 13-14 and 21-22) behind the six 3-tone handbags."
+    }
+   ]
+  },
+  {
+   "id": "dept-nail-bar",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Despite the 4px pink-to-white top band (rows 1-4), the front face is a repetitive 10x5 grid of 50 unshaded 1-tone 2x2 squares with 1x1 black caps on flat white/grey stripes that reads as noisy rainbow static at 1x rather than a nail bar, and the heavy black outer border has a missing pixel at the bottom-left corner (col 0, row 31)."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Enclosed in a dark plum outline (#613849) with the bottom-left pixel fixed, the unit combines a 4px pink top surface (rows 1-4), two upper display shelves of 3-tone nail polish bottles, a mid-height manicure counter (rows 20-23) with a pink wrist rest and white UV lamp, and a 3-panel bevelled lower counter front."
+    }
+   ]
+  },
+  {
+   "id": "dept-perfume-wall",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Adding 2 rows to the top band (rows 1-4) pushed the interior down and crushed the bottom drawer (rows 28-29) into a 1px beige strip where the yellow handle touches the gold border, while the 12 perfume bottles inside the 6 niches remain un-outlined 2-tone flat blocks with floating white sticker rectangles at the top of each niche."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Retains the 4px top plane (rows 1-4) and #b08830 cornice (row 5) while restoring a 4px-tall bottom drawer (rows 26-29) with a centered 4x2 gold handle (cols 14-17, rows 27-28); the 6 display niches have 3-tone recessed wall shading (#9d937f top shadow, #d2c4aa mid, #ffeec4 lit shelf back) without floating white stickers, and all 12 perfume bottles are shaded in 3-4 tones with dark glass contours and gold caps."
+    }
+   ]
+  },
+  {
+   "id": "dept-rack-cool",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": true,
+     "why": "The redraw is a flat 2D front elevation of a rail (rows 3-6 have only a 2px front bar with 5 vertical pegs sticking out of row 1-2 and no 3/4 top surface plane), the side posts (x=1, 30, rows 7-27) lack outer dark outlines against the floor checker, the bottom corners (rows 28-30) are oversized 5x3 grey blocks, and the 5 garments have artificial comb-like horizontal teeth on their left edges."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Four un-outlined 3x2 colored blocks float in the transparent gap at rows 3-4 above the front hanging bar (rows 5-6) completely detached from the garments below (rows 7-22), the inner edges of the top frame at rows 3-4 (cols 2, 29) lack dark outlines against the floor checker, and garments 2-4 have lopsided single right-side sleeves with garments 2 and 4 colliding into the bottom rail at row 22."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": true,
+     "why": "Replaced the original circular boutique carousel rack with a generic rectangular frame (breaking set consistency with dept-rack-warm and worsening the design), while the three hanging shirts (cols 4-11, 12-19, 20-27 at rows 8-20) abut with 2px-thick double outlines at cols 11-12 and 19-20 (rows 9-13, failing Q3) and have 3px-wide horizontal dark bars at row 13 plus inner vertical cuts at rows 11-12 that pinch each shirt's chest/waist down to a 2px-wide strip, reading as three T-shaped keyholes (failing Q1/Q4)."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "On the left and right hanging shirts (cols 1-9 and 22-30, rows 12-22), the dark outline color (#202b48 at col 8 rows 15-17 and #17373c at col 29 rows 15-17) is placed inward at the armpit while the outer right sleeve columns (col 9 rows 14-17 #486090 and col 30 rows 13-17 #265359) have no dark outer outline and merge into/abut the adjacent outlines; meanwhile, the center shirt's sleeves at rows 15-18 (cols 11 and 20) are 1px #345bc3 strips pinched between double #203878 outlines (cols 10, 12 and 19, 21), and row 12 has 3px solid #34363e blocks at cols 9-11 and 20-22 between the shoulders."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The outer sleeve edges of the left and right hanging shirts (col 1 and col 30, rows 13-18) are now properly enclosed by 1px dark outlines (#202b48 and #17373c) with mid-tone armpit creases (#6f83a0 at cols 3, 8 and #265359 at cols 24, 27), the center blue shirt's sleeves (cols 11-12 and 19-20) are 2px wide without double inner outlines, and the 3/4 chrome ring (rows 1-11) and base (rows 26-31) read clearly."
+    }
+   ]
+  },
+  {
+   "id": "dept-rack-mono",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": true,
+     "why": "Uses the same flat 2D front-elevation rack template as dept-rack-cool with no 3/4 top surface on the upper rail (rows 3-6), missing outer outlines on the vertical side posts (x=1, 30, rows 7-27) and on the top/left edges of the white center garment (x=14-18, rows 8-20), oversized 5x3 bottom corner blocks, and comb-toothed garment edges."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The upper rack bar now has a 4px 3/4 top surface (rows 2-5: #a6a9ad, #dde0e7, #f3f4f7 top plane over a #6c7076 front edge), the vertical side posts (cols 1-3 and 28-30) and all four monochrome garments (rows 8-22) are fully enclosed in 1px dark outlines (#34363e, #1a1b21, #585a64) with smooth vertical edges and 3-tone fold shading, and the bottom corners are reduced to compact 3x2 caster wheels (rows 28-29)."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Shares the same flawed shirt template as dept-rack-cool: on the left charcoal and right grey shirts (cols 1-9 and 22-30), the dark outline (#1a1b21 at col 8 rows 15-17 and #34363e at col 29 rows 15-17) is placed inside the sleeve while the outer right sleeve edge (col 9 #2a2c34 and col 30 #6c7076 at rows 14-17) lacks an outer outline, and the center white shirt's sleeves (cols 11 and 20, rows 15-18) are 1px #c6cad4 strips pinched between double #585a64 outlines at cols 10, 12 and 19, 21."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The charcoal, white, and grey shirts now have proper 1px outer sleeve outlines (#1a1b21, #585a64, #34363e) and single mid-tone armpit fold lines (#3e404a, #c6cad4, #6c7076) with clear 2px sleeves on the center shirt and a well-shaded 3/4 circular chrome rack."
+    }
+   ]
+  },
+  {
+   "id": "dept-rack-pastel",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": true,
+     "why": "Uses the same flat 2D front-elevation rack template with no 3/4 top plane (rows 3-6), and all 5 pastel garments have un-outlined near-white upper-left blocks and un-outlined left edges (rows 8-22) that blend directly into the light beige floor checker."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Shares the broken dept-rack-cool template: four un-outlined 3x2 pastel blocks (#fabed2, #b9c9bb, #d2c8f0, #faecb4) float at rows 3-4 above the hanging bar (rows 5-6) and bleed directly into the #e2dbcb/#d6cebc floor checker, the inner frame edges at cols 2 and 29 (rows 3-4) lack dark outlines, and garments 2-4 have lopsided one-sided sleeves with garments 2 and 4 touching the bottom rail at row 22."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": true,
+     "why": "Uses the same rectangular keyhole-shirt template as dept-rack-cool (2px double outlines at cols 11-12 and 19-20 and 2px pinched torsos at row 13, failing Q1/Q3/Q4), and in the middle green and right lavender garments (cols 12-19 and 20-27) the dark outline colors (#5d6b5c and #7a4a5c) are also used as the right-side body fill and right sleeve fill (cols 16-18 and 25-27, rows 11-13), completely erasing the right sleeves into solid 3px dark outline blocks (failing Q2/Q6)."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Shares the same flawed shirt template as dept-rack-cool: on the left sage and right lavender shirts (cols 1-9 and 22-30), the dark outline (#4a5649 at col 8 rows 15-17 and #3e5480 at col 29 rows 15-17) is placed inside the sleeve while the outer right edge (col 9 #70806f and col 30 #848794 at rows 14-17) lacks an outer outline, and the center pink shirt's sleeves (cols 11 and 20, rows 15-18) are 1px #905d70 strips pinched between double #7a4a5c outlines at cols 10, 12 and 19, 21."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The sage, pink, and lavender shirts now have consistent 1px dark outer contours (#4a5649, #7a4a5c, #3e5480) around their sleeves and hems with soft mid-tone armpit creases (#8fa992, #905d70, #848794) and clean 3/4 chrome ring and pedestal geometry."
+    }
+   ]
+  },
+  {
+   "id": "dept-rack-warm",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": true,
+     "why": "Uses the same flat 2D front-elevation rack template as dept-rack-cool with no 3/4 top plane on the top rail (rows 3-6), missing outer outlines on the vertical frame posts (x=1, 30, rows 7-27) and garment left edges, oversized 5x3 bottom caster blocks (rows 28-30), and repetitive comb-tooth notches on every garment."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": true,
+     "why": "Replaced the original circular boutique rack design with a generic rectangular frame where the 4 garments (cols 4-27, rows 9-22) are sleeveless rectangular slabs hanging from un-outlined 2x2 grey blocks (rows 7-8, #a6a9ad) that abut each other with 2px-thick double outlines at cols 9-10, 15-16, and 21-22, and rows 13, 17, and 21 have isolated alternating pixels that read as ladder rungs instead of cloth folds."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Although the circular rack frame was restored, the clothes hanging below the ring (rows 10-23) are 5 sleeveless vertical strips of erratic lengths ending at rows 20, 22, 20, 23, and 21 that read as jagged stalactites/banners with 1px floor-checker holes at cols 5 and 26 rows 18-19 (failing Q1/Q4/Q5/Q6); the front white ring bar (#f3f4f7 at row 10, cols 6-25) has no lower dark outline and three isolated 1px #dde0e7 teeth at row 9 (cols 8, 15, 22), while the upper ring interior (rows 5-9) is filled solid like a striped drum touching the un-outlined #a6a9ad back arc at row 5 (failing Q3)."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Shares the exact same flawed shirt template as dept-rack-cool: on the left orange and right gold shirts (cols 1-9 and 22-30), the dark outline (#70402f at col 8 rows 15-17 and #8a6128 at col 29 rows 15-17) sits inside the sleeve while the outer right sleeve edge (col 9 #c06038 and col 30 #c89a2b at rows 14-17) is un-outlined, and the center red shirt's sleeves (cols 11 and 20, rows 15-18) are 1px #a02030 strips trapped between double #601e28 outlines at cols 10, 12 and 19, 21."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "All three front hanging shirts (orange cols 1-9, red cols 10-21, gold cols 22-30) now have clean 1px dark outer sleeve outlines (#70402f at col 1, #601e28 at cols 10 and 21, #8a6128 at col 30) and 1px mid-tone armpit creases (#f07846, #a02030, #c89a2b) instead of inverted or double outlines, beneath a clear 3/4 circular rack ring."
+    }
+   ]
+  },
+  {
+   "id": "dept-shoe-wall",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "While rows 1-5 form a valid 3/4 top plane on the cabinet, all 15 shoes on the three shelves (rows 9-12, 16-19, 23-26) are un-outlined 1-tone L-shaped tetromino blocks with a single lighter pixel that read as Tetris blocks rather than shoes, and the cream back wall (#f4f0e8) has zero shelf cast shadows."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "5px wooden 3/4 top plane (rows 1-5) and three wooden shelves (rows 13, 20, 27) with 1px #cfccc5 cast shadows below each, holding 15 varied 3-4 tone shoes (sneakers, loafers, ankle boots) with distinct soles, heels, and sloped vamps."
+    }
+   ]
+  },
+  {
+   "id": "dept-sneaker-wall",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "PASS",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Despite the 5px top band (rows 1-5), the 15 items inside (rows 9-27) are 4x5 upright rectangles (taller than wide, with 1px grey top, 3px flat color middle, 1px white bottom) floating in a black void without shelves, reading as paint cans or battery icons rather than sneakers."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Cramming 5 sneakers across 28 interior pixels (cols 2-29) on each shelf fuses the 4th and 5th sneakers together at cols 20-29 with zero gap, 2px abutting double outlines at cols 24-25, and merged 8px-wide white soles (#f4f6f8 at cols 21-28, rows 12 and 26), while each shoe upper has an isolated 1px #202329 black dot (rows 10, 17, 24) that reads as an eye on a triangle."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "All 12 items on the three shelves (rows 9-12, 16-19, 23-26) are flat 6x4 rectangular bricks topped by a hardcoded 4x1 dark-maroon bar (#7a1f24 at rows 9, 16, 23—even on the blue, white, yellow, green, and orange shoes, alternating left and right so adjacent shoes face each other) and a centered 2x1 white rectangle (#f4f6f8 at rows 10, 17, 24), with no height drop from ankle collar to toe box, reading as cassette tapes or bento boxes rather than sneakers (failing Q1/Q3/Q4/Q5/Q6)."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Every sneaker on all three shelves (rows 9-12, 16-19, 23-26) lacks an outer dark outline and instead uses its dark accent color (#7a1f24, #263456, #6c7076, #a86223, #1e5a3c, #8b4f3f) as two vertical 1px columns at the heel (col+0) and midfoot (col+2) separated by a 1px #22252c dark shelf-back gap at col+1 on rows 9, 16, and 23, which creates a two-pronged fork/plug notch on top of every shoe and vertical dark stripes slicing down through the shoe uppers at rows 10-11, 17-18, and 24-25."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "All nine sneakers across the three shelves (rows 8-12, 15-19, 22-26) now have clean side-profile high-top silhouettes with a 4px ankle collar on the left, dark collar opening, white lace highlight dot, sloped toe box on the right, 1px dark outer contour, and a continuous 6px #f4f6f8 white sole resting on 3/4 shelves under a 5-row top plane."
+    }
+   ]
+  },
+  {
+   "id": "food-drink-bar",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The front face (rows 8-28) is a flat single-tone grey slab (#c8ced6) with four 2x7 vertical stripes (rows 11-17) in 100% flat single colors (#cc343c, #eb8a2f, #388a50, #366bc4) and two flat grey bars below, lacking any recessed alcove, spouts, drip tray grate, or 3-tone shading."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "4px foreshortened top surface (rows 3-6) above a #767c88 cornice (row 7), 3-tone shaded flavor modules (rows 10-15), dark recessed dispensing alcove (rows 16-20) with 4 #22242c nozzle spouts, perforated drip-tray grate (row 21) and lit ledge (rows 22-23), and left-to-right cabinet shading."
+    }
+   ]
+  },
+  {
+   "id": "food-ticket-machine",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "All 6 selection buttons on the front face (rows 8-21, x=3..6 and x=8..11) are 2x2 cream squares wrapped in heavy 4x4 #0b1224 black box outlines (violating Q3 no boxed sub-blocks), and the red front body (rows 7-27) is a single flat #cc343c fill with no shading steps or texture."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 1-5 form a clear 5px foreshortened red/peach top surface (#cc343c to #fcc4a0) above a 1px dark cornice (#a32930 at row 6), the 6 buttons (rows 9-19) use 2-tone cream caps (#fff5de/#fae6be) with 1px #742630 bottom/right shadows instead of heavy black box outlines, and the red body has a 4-tone upper-left lit ramp."
+    }
+   ]
+  },
+  {
+   "id": "home-appliance-rack",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The upper microwave and shelf (rows 0-15) float completely detached in mid-air above the bottom shelf (rows 28-29) with no vertical rack posts on rows 16-27, the two shelves (rows 14-15, 28-29) are flat 1-tone grey bars with no 3/4 top surface, and the lower rice cooker (rows 20-27, x=3..12) has no side outlines against the floor checker."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Upper microwave has a 4px top surface (rows 1-4) and glass reflection, middle and bottom shelves (rows 13-15, 26-28) have 3-tone 3/4 top planes and front lips connected by outlined vertical rack posts (cols 0-1 and 14-15, rows 16-25), and the lower rice cooker is cleanly outlined (#091125) with a 3/4 domed lid and 4-tone cylindrical shading."
+    }
+   ]
+  },
+  {
+   "id": "home-drying-rack",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": true,
+     "why": "Outline treatment is broken across parts: the blue towel (x=9..15) has a dark #243a5e outline, the white towel has a mid-grey outline, and the pink cloth (x=20..24, rows 9-14) and entire metal rack frame/X-legs (x=3..8, 25..30, rows 9-28) have no outline at all, causing the 1px diagonal legs and pastel pink cloth to dissolve into jagged pixels on the light floor checker."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "The diagonal metal X-legs (rows 17-28, cols 3-8 and 23-28, #a6a9ad/#6c7076) still have zero dark outline against the light floor checker, the upper-right vertical post is missing its inner #34363e outline at col 26 (rows 9-15), the three cloths use inconsistent border weights (#283c60 vs mid-grey #8d9095 vs #a85271), and a notched brown/yellow block (cols 21-24, rows 16-20) hangs awkwardly below the pink cloth."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The diagonal metal X-legs (rows 17-29) are now cleanly enclosed in a 1px #34363e dark outline with #1a1b21 feet, the upper-right vertical post has its inner #34363e outline restored at col 26 (rows 9-16), the awkward notched yellow block below the pink towel is removed, and the white middle towel now uses a consistent #34363e contour matching the rack frame."
+    }
+   ]
+  },
+  {
+   "id": "home-ofuro",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Shows a clear 3/4 bathtub with a lit top rim (rows 6-7), recessed north inner wall (rows 8-12), shaded water surface (rows 13-20), south rim (rows 21-22), and 3-panel front apron (rows 23-29) with upper-left lighting and a consistent #585a64 outline (minor 1px right-edge step on rows 8-21)."
+    }
+   ]
+  },
+  {
+   "id": "home-school-bag",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Remains a flat 2D front-elevation square icon (x=2..13, rows 2-14) where recoloring rows 3-5 inside the upper flap does not create a separate 3/4 top surface plane above the flap front, and the central clasp (x=6..9, rows 7-10) is a 2x2 grey square inside a thick 4x4 #0b1224 black box outline."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "3px lighter red 3/4 top dome (rows 2-4, #cc343c/#ee6c6c) separated by a 1px dark seam (row 5, #601e28) from the 3-tone shaded front flap (rows 6-10) and darker lower bag body (rows 11-13), with a clean 2x2 metal clasp (#ccd0d8/#8d9095 at rows 9-10) free of heavy black box outlines."
+    }
+   ]
+  },
+  {
+   "id": "home-umbrella-stand",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The 3 umbrellas (rows 3-14) are un-outlined 2px-wide vertical sticks with 1x1 black caps and no curved J-handles or folds (reading as colored pipes/test tubes, with the white stick at x=10..11 blending into the floor checker), and the stand front face (rows 19-28) has only flat horizontal grey bands with no left-to-right shading."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "The stand's back rim (row 14 #0b1224 and row 15 #ccd0d8) cuts uninterrupted across the front of all three umbrellas while isolated red (#8e242a) and grey (#8d9095) pixels reappear inside the dark cavity at row 16, making the umbrellas look stuck behind the exterior back wall rather than standing inside the hollow opening; additionally, the umbrella shafts (#a6a9ad at rows 3-6) and handles (#533020 at rows 1-5) have no dark outer outline against the floor checker, and the right umbrella's right edge (col 12, rows 7-13) uses pale #8d9095."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "All three umbrellas now extend continuously down into the dark hollow opening (rows 14-17) behind the bright #e4e8f1 front rim (row 18), all three have #533020-outlined curved wooden J-handles (rows 0-5) and darkened right edges (#585a64 at col 12), and the cylindrical stand body (rows 18-29) is shaded left-to-right across 5 metallic tones."
+    }
+   ]
+  },
+  {
+   "id": "home-washing-machine",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Features a clear 5px 3/4 top surface (rows 2-6, graded #a0a6b2 to #ffffff) separated from the control panel (rows 7-9) and front face (rows 10-29) with a well-read circular drum window, specular glass highlight, laundry inside, and clean 1px #0b1224 outline."
+    }
+   ]
+  },
+  {
+   "id": "hosp-ambulance-e",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Shows a clear 4-5px lighter roof plane (#f4f6f8/#e2e8f0 at rows 13-17) separated by a #b8bec8 seam from the #c4cad4 side body on both the rear module and cab, with clean 1px dark outlines, multi-tone wheel/glass shading, and crisp ambulance markings."
+    }
+   ]
+  },
+  {
+   "id": "hosp-ambulance-w",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Shows a clear 4-5px lighter roof plane (#f4f6f8/#e2e8f0 at rows 13-17) separated by a #b8bec8 seam from the #c4cad4 side body on both the cab and rear box, with consistent 1px dark outlines, multi-tone shading, and clean ambulance details."
+    }
+   ]
+  },
+  {
+   "id": "hosp-anesthesia",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The top monitor section (rows 0-8) is a flat 2D screen hitting row 0 with zero top plane, the lower grey T-body (rows 13-26) is a single flat #b0b8c4 fill with a crude black diamond (x=9..12, rows 12-19), and the lower third (rows 20-29) fills the space around the blue and green rectangles with solid 2-3px thick #0b1224 black blocks."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Upper monitor hood has a 3px 3/4 top surface (rows 1-3) and middle work shelf has a 3px lit plane (rows 10-12), flowmeter tubes and pressure gauge are cleanly articulated (rows 14-18), and the lower gas cylinders (rows 23-28) are 3-tone shaded inside recessed #525662 bays without thick black blocks."
+    }
+   ]
+  },
+  {
+   "id": "hosp-crash-cart",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "The top defibrillator monitor (rows 2-9, x=3..12) has zero 3/4 top surface and sits behind the cart's 4px pink top plane (rows 10-13) like a flat 2D cutout, while the left push-handle (x=0, rows 12-17) is an un-outlined 1x6 grey strip (#6c7480) stuck outside the black outline."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Top defibrillator monitor now has a 2px lit 3/4 top plane (rows 2-3, #767c88/#ccd0d8) and sits inside the cart's 4-tone red top surface (rows 9-12) with a #96222c contact shadow at row 10, while the left handle loop (cols 0-1, rows 12-17) is capped with #0b1224 and darkened to #3c404c and the drawer front is shaded left-to-right."
+    }
+   ]
+  },
+  {
+   "id": "hosp-ct-scanner",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "A 1px dark line (#091125) at row 46 (x=22..46) runs across the bottom of the canvas completely detached from the table pedestal (which ends at row 43, leaving a 2px empty floor gap at rows 44-45), and an un-outlined bright white pixel (#f4f6f8) sticks out at the top-right corner of the bed (x=45, row 22)."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The detached black floor line at row 46 is gone (pedestal contact shadow #091125 now sits directly under the pedestal at row 44, cols 28-39), the top-right couch outline at col 45 row 22 is closed with #0b1224, and both the gantry (rows 1-3) and couch (rows 23-25) have clean 3/4 top planes."
+    }
+   ]
+  },
+  {
+   "id": "hosp-ticket-dispenser",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "FAIL",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "The narrow grey pedestal (x=4..11, rows 16-29) has a bright white highlight band (#ffffff/#e8eef5 at rows 16-17) directly underneath the overhanging red head unit where a cast shadow belongs, both the red head and grey column lack left-to-right shading, and the base has asymmetric 1px black spurs (x=3 at row 15 and x=12 at row 30)."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The overhanging red head has a 4px 3/4 top surface (rows 1-4) and left-to-right front shading (rows 6-12), the recessed grey pedestal now has a proper 2px cast shadow (#585a64/#8d9095 at rows 14-15) under the head and 4-tone cylindrical shading across cols 5-10, and the bottom base (rows 28-30) is symmetric."
+    }
+   ]
+  },
+  {
+   "id": "hosp-vitals-bank",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The two upper ECG monitors (rows 1-13, x=1..14 and x=17..30) are flat 2D front screens with zero 3/4 top surface and float completely detached in mid-air above the lower console with a 2px gap of empty floor checker (rows 14-15), while the lower front panel (rows 21-28) is flat unshaded grey stamped with 5 giant black plus signs."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Both upper ECG monitors now have 3px 3/4 top planes (rows 2-4) and shaded monitor stands (rows 12-14) connecting them to the lower console's 4px top surface (rows 16-19), and the lower front panel (rows 21-25) replaces the black plus signs with 5 bevel-shaded module bays and colored LED indicators."
+    }
+   ]
+  },
+  {
+   "id": "hospital-curtain-screen",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": true,
+     "why": "The top frame rail (rows 2-5) is only a 2px front bar with no 3-4px 3/4 top surface, the vertical side posts (x=1, 14, rows 6-42) lack outer dark outlines against the floor checker, the bottom feet (rows 43-45) are oversized 4x3 boxed cubes, and a clipped 1px sliver of a third green curtain on the right (x=12, rows 6-40) has no dark-green border."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Upper rail has a 3px 3/4 top surface (rows 3-5, #a6a9ad/#dde0e7/#f3f4f7) above a #6c7076 front bar (row 6), vertical side posts have continuous 1px #34363e outer outlines and slim caster feet (rows 44-45), and two symmetric pleated curtains (cols 2-7 and 8-13) fill the frame cleanly."
+    }
+   ]
+  },
+  {
+   "id": "hospital-med-cabinet",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Pushing the top down squished the green cross on the header (rows 6-8, x=14..17) into a solid 4x3 green rectangle that no longer reads as a cross, all medicine items inside the doors are 1-tone flat blocks with thick #64748b boxed outlines around the lower white squares (x=5..9, 18..22, rows 17-22), every cabinet band lacks left-to-right shading, and rows 24-25 have 1x2 white gaps in the inner grey frame at x=2 and x=29."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Header has a 4px 3/4 top surface (rows 1-4) and a crisp 3x3 green cross (cols 14-16, rows 6-8), medicine bottles inside the glass doors are varied 3-tone shaded bottles without grey box outlines, the cabinet stiles and drawers are shaded left-to-right, and the frame gaps at cols 2 and 29 (rows 24-25) are filled."
+    }
+   ]
+  },
+  {
+   "id": "hospital-nurse-station",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "While the lower counter has a foreshortened top surface (rows 13-19, #d6e2e6 to #f4f6f8) above the lip (row 20, #a4b0b4), all desk-top objects (dual monitor housing at cols 5-24 rows 1-9, right monitor at cols 30-39 rows 1-9, and file box at cols 40-44 rows 5-12) remain pure front-only elevations with a 1px #16141c top border and zero top-plane rows, and every sub-block is boxed in heavy #16141c outlines."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Although the two monitors (cols 5-24 and 30-39) now have 2px top bezel planes (rows 2-3), the vertical blue file box on the right (cols 40-44, rows 5-12) and the small tan box in the center (cols 25-28, rows 8-12) still lack a 2-3px 3/4 top surface and have zero outer dark outlines (their #4678b4/#ffffff and #dcaa64 pixels touch the light beige floor checker directly, unlike the #16141c-outlined monitors and desk), and the white cross badge on the front panel (cols 20-27, rows 24-29) has an asymmetric #c2ced2 grey smudge in its bottom-right corner (cols 25-27, rows 28-29)."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Both the center supply box (cols 25-29, rows 7-12) and right file organizer (cols 40-46, rows 4-12) are now enclosed in 1px #16141c dark outlines with 2px #ecf0f2/#f4f6f8 3/4 top planes matching the monitors, and the front white cross badge (cols 20-27, rows 25-29) is cleanly shaded without the bottom-right smudge."
+    }
+   ]
+  },
+  {
+   "id": "hospital-water-dispenser",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "FAIL",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Only 1px row (row 12, #e6ecf4) was changed at the bottle neck, which is slightly darker than the front panel (#f4f6f8 in rows 13-17) with no cornice or lip separation, leaving both the white dispenser cabinet (rows 12-29) and the blue water jug (rows 1-11) as flat front-only elevations with a flat 1-tone white front fill."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The blue water jug (rows 1-11) now has a 3px elliptical top cap (rows 1-3, #6ea0e0/#d2f0ff) and 4-tone cylindrical left-to-right shading with horizontal ribs, while the white dispenser body features a 3px foreshortened top shoulder (rows 12-14, #dde0e7/#f3f4f7/#ffffff) separated by a 1px #b4bac4 lip (row 15) from a 3-tone shaded front face (#e6ecf4 left, #dde0e7 mid, #c6cad4 right) with 2-tone red/blue taps and a recessed drip bay."
+    }
+   ]
+  },
+  {
+   "id": "hotel-capsule-pods",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Although the outer housing now has a 5px foreshortened top surface (rows 4-8, #99a1b0 to #ffffff) and cornice (row 9, #b4bed0), each of the six capsule openings (rows 10-24 and 29-43) is wrapped in a heavy 1px near-black box outline (#0b1224) on all four sides inside the grey frame (#b4bed0), and the capsule interiors use flat unshaded rectangles for the ceiling (#3c4664) and mattress (#ece0c8)."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 1-4 provide a 4px lighter 3/4 top surface (#a0a6b2 to #ffffff) above the row 5 cornice (#767c88), the heavy internal black boxes were replaced with recessed slate bevel frames (#3e404a/#767c88), and all four capsule berths show a 3-tone interior ceiling depth gradient (#1e2a44 to #3a4e7a) over shaded mattresses, pillows, and warm reading lights."
+    }
+   ]
+  },
+  {
+   "id": "ind-lathe",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 1-5 add a 5px shaded top plane (#aeb6c4 to #fdffff) that flows into the left front (#e2e6ec at rows 6-11) without a cornice seam, and the body (rows 6-27) is a single flat rectangle (#aeb6c4) containing two heavy black-outlined boxes (#0b1224 at cols 4-20 rows 7-17 and cols 22-29 rows 6-15) and an unshaded grey bar (#767c88 at rows 20-23), reading as a washing machine rather than an industrial lathe."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The heavy #0b1224 boxed sub-panels are gone; the lathe now has a distinct left headstock (cols 1-11, rows 1-16) with a 4px top surface (rows 2-5, #aeb6c4 to #fdffff) and dark cornice (row 6, #464e5a), a shaded rotary chuck (cols 12-14) gripping a cylindrical workpiece along the recessed bed ways (cols 15-23, rows 10-16), a distinct tailstock with handwheel on the right (cols 24-30, top plane at rows 5-7), and a 3-tone lower cabinet base (rows 17-29)."
+    }
+   ]
+  },
+  {
+   "id": "infirmary-eye-chart",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Exempt as a flat wall-hung chart, and the redraw upgrades the piece from 4 unreadable black bars into a clean Landolt-C eye chart (rows 2-28) with upper-left frame beveling (#dde0e7 top, #a6a9ad left, #6c7076 right/bottom), a blue header band (row 4), graded optotype rows, and a red acuity line (row 21)."
+    }
+   ]
+  },
+  {
+   "id": "izakaya-beer-server",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "PASS",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The metallic dispenser body shows a 4px top surface (rows 10-13, #ccd0d8 to #eaeef6) bisected by a vertical black line at col 7, while the upper tap tower (rows 1-9) is a flat 2-tone white/blue front-only box with no 3/4 top plane, and the front face (rows 16-27) is a flat #a0a6b2 slab painted with an oversized flat 2-color yellow/white beer-mug sticker (#fad250/#f4f6f8) and no drip tray."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The upper tap tower head (cols 4-11, rows 1-9) now has a 3px lighter top plane (#b4bac4/#d6dce4/#f4f6f8 at rows 2-4) above a dark cornice (row 5, #505660) and two gold tap handles/nozzles (cols 6 and 9), the main dispenser housing has a 4px top surface (rows 10-13) without the bisecting black line and a 4-tone vertical metallic cylinder ramp (rows 15-23, #f4f6f8 left highlight to #6e7480 right shadow) replacing the giant flat mug sticker, and a protruding 3/4 drip tray with grated slots sits at rows 24-29."
+    }
+   ]
+  },
+  {
+   "id": "jp-tokonoma",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The recessed alcove shows a clear 6px foreshortened wooden platform floor (rows 38-43, #bc9250 with #cba76c highlights and #966c34 cast shadows) above the dark front框 step (rows 44-46, #4a4c56 to #1a1b21), flanked by 3-tone wooden pillars, a textured plaster back wall, a landscape kakejiku scroll, a shaded ceramic vase with flowers, and an incense burner."
+    }
+   ]
+  },
+  {
+   "id": "jp-torii",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Rows 0-1 contain two unoutlined 5x2 dark blocks (#22242c at cols 0-4 and 43-47) with a 38px transparent floor gap (cols 5-42) above the #0b1224 top outline at row 2, and the dark kasagi beam (rows 3-7, #1e1e28/#2a3539/#3d4b51) is darkest at row 3 and lightest at row 6 with no cornice lip separating a lighter 3/4 top surface from a darker south front face."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "The vermilion nuki beam (rows 9-14) is a solid 6px slab glued directly to the bottom of the kasagi lintel (row 8) with no open air gap or central strut between the two crossbeams, row 30 has a solid 46px #091125 black bar spanning across the open walkway between the two pillars, the red pillars/nuki (rows 9-23) and upper stone bases (rows 24-25, #beb8ac) have zero outer outline while the kasagi and lower bases use #0b1224 black outlines, and the right pillar dark edge (#96222c at col 40, rows 9-14) cuts asymmetrically through the right nuki tip."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The kasagi lintel has a 4px 3/4 slate top plane (rows 2-5) above a 2px dark front face (rows 6-7), a 2px open air gap (rows 9-10) separates the kasagi from the symmetric vermilion nuki tie-beam (rows 11-16) with an outlined central gakuzuka strut (cols 22-25), the entire gate and stone bases are enclosed in a continuous 1px #0b1224 outline, and the open walkway at row 30 is clear."
+    }
+   ]
+  },
+  {
+   "id": "jumbo-arcade-dance-stage",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The dance pad stage (rows 52-77) is drawn as a pure 2D top-down plan view (un-foreshortened 3x3 square arrow grids in rows 54-70) tacked onto a vertical front base (rows 71-76) and disconnected from the upper cabinet across transparent row 47, while the grey bars in rows 48-51 (#ccd0d8/#767c88 at cols 3-60) have no outer outline against the floor checker."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "FAIL",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "While the dance stage platform is now connected to the cabinet across rows 47-51 and slightly foreshortened (rows 52-74), it still lacks the required 3/4 safety grab bars behind the pads, and the upper cabinet front (rows 18-46) retains flat 1-tone sub-blocks from the round-1 failure: unshaded 1-tone red/cyan/yellow rectangles inside the two screens (rows 21-33), flat 1px cyan/pink stripes inside a black-boxed middle panel (rows 37-44), and flat 1-tone grey speaker boxes with dark '+' crosses on the side wings (cols 5-12 and 51-58, rows 20-34)."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Added 3/4 metallic safety grab bars along the back and outer sides of the stage (rows 46-63), replaced the flat '+' speaker boxes with 4-tone dual speaker cones and LED corner accents (cols 5-9 and 54-58, rows 36-45), and shaded the marquee lights, screen note highways, middle neon deck, and 3x3 dance pad arrows in >=3 tones."
+    }
+   ]
+  },
+  {
+   "id": "jumbo-arcade-racing-twin",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Both driver seats (rows 42-60) are detached from the cabinet across transparent row 41 and drawn as flat front-facing red slabs (rows 44-54, #cc343c) instead of N-facing bucket seat backs with a 2-3px lit top rim, every sub-panel is boxed in heavy #0b1224 outlines, and row 62 has a detached 61px #091125 shadow bar separated by transparent row 61."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Shows a 4px top plane on the upper marquee (rows 1-4) and 3px 3/4 top planes on both monitor hoods (rows 14-16), steering dashboards (rows 32-34), and the central coin box (rows 43-45); connects the twin cockpits across rows 39-40, redraws both racing seats (rows 43-59) as N-facing bucket backs with a 3px lit red top rim (#ff7676/#ee6c6c/#d8373f at rows 44-46) over a darker shaded shell (#b4202a/#8c1820) and grey side bolsters, and removes the detached bottom line at row 62."
+    }
+   ]
+  },
+  {
+   "id": "jumbo-hosp-mri",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "The gantry top band (rows 1-4, #a0a6b2 to #ffffff) merges directly into the #f4f6f8 front face (row 5) without a cornice seam, the protruding patient bed (cols 15-59, rows 31-44) is an untouched side-view blue bar (rows 33-38, #78d2fa) divided into black-boxed segments with no 3/4 horizontal bed plane vs front apron split, and rows 59-60 have a detached #091125 black bar below transparent rows 57-58."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "While the gantry top now has a 3px lighter top surface (rows 1-3) above a #767c88 cornice (row 4), the patient table has a foreshortened mattress top (rows 25-28) above a shaded side apron (rows 29-31), and the detached bottom shadow bar is gone, there is a 1px missing outline gap at the right edge of the gantry (col 31, row 6 is #ffffff next to #f4f6f8 instead of the #091125 border), and the magnet bore (cols 10-21, rows 8-19) is a flat symmetric bullseye ring with no 3/4 interior tunnel wall on its upper/left inner arc."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The right gantry border at col 41 now has an unbroken #0b1224 outline, the magnet bore (cols 10-33, rows 15-46) is shaded as a recessed 3/4 cylindrical tunnel with an offset deep bore (#1c2232/#2c3446 at upper-left) and curved inner wall (#424c60/#5c687c/#767c88 at lower-right), and both the gantry top (rows 1-5) and patient table (rows 32-38) have clear 3/4 top planes."
+    }
+   ]
+  },
+  {
+   "id": "jumbo-station-ticket-office",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "The overhead green canopy (rows 1-5) and counter ledge (rows 49-53) pass V34, but the three clerks behind the glass (rows 27-48) are faceless dark-blue blobs with chest octagons, sub-panels and side machines are boxed in heavy #0b1224 outlines, and rows 77-78 have a detached 77px #091125 black bar separated from the booth base by two full transparent rows (rows 75-76)."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The detached 2px black bar at rows 77-78 is removed, the heavy #0b1224 inner boxes around the side ticket machines (cols 3-10, 69-76) and front green sign (cols 30-49, rows 57-62) are replaced with clean material bevels (#767c88/#143c23), the overhead green canopy (rows 1-4) and counter ledge (rows 49-53) preserve clear 3/4 top planes, and the interior behind the three counter windows (rows 27-47) now shows structured shelves, monitors, and speaking grilles instead of faceless blobs."
+    }
+   ]
+  },
+  {
+   "id": "kinder-cubby",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "FAIL",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Rows 1-4 form a 4px foreshortened wooden top surface (#bc9250 to #f7d5a2) above a 1px cornice (row 5, #9f7c44), but all six coloured cubby bins (rows 8-15 and 19-26) and the wooden frame dividers are flat 1-tone fills lacking >=3 shading steps (Q2, Q5), and (0, 31) is an asymmetric missing pixel next to the #091125 bottom border across cols 1-31 (Q6)."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The missing pixel at (0, 31) is fixed and the outer border uses dark wood (#2a1808), the 4px top surface (rows 1-4, #bc9250 to #f7d5a2) sits above a dark under-lip (row 5, #5c3c18), the wooden frame stiles and shelf dividers have 3-tone bevels (#d6ac6e, #bc9250, #805828), and all six coloured storage bins (rows 8-15 and 19-26) now have top rim highlights, recessed dark handle slots, and bottom/right shadow steps (>=4 tones per bin)."
+    }
+   ]
+  },
+  {
+   "id": "kinder-play-mat",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Exempt as a flat floor foam mat, and the redraw replaces the six identical crosses with interlocking jigsaw puzzle tabs and distinct embossed icons (star, circle, triangle, A, B, heart) with consistent upper-left bevel highlights and bottom-right drop shadows across all six 16x16 tiles."
+    }
+   ]
+  },
+  {
+   "id": "konbini-atm",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "FAIL",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 1-4 provide a 4px top surface (#b4bac4 to #f4f6f8), but the entire front chassis (rows 8-28) is a single flat #dce0e8 fill (the exact same tone as rows 2-3 of the top surface) containing a flat 1-tone #40c8ec screen (rows 10-15) and flat #b4bac4 keypad (rows 18-23) with no recessed counter hood or >=3-tone front shading."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The 4px top surface (rows 1-4) and blue header sign (rows 5-7) sit above a 3-tone shaded grey chassis featuring a recessed cyan monitor with glass reflection (rows 10-17), a protruding 3/4 keypad ledge (rows 18-20), and a recessed keypad and cash slot below."
+    }
+   ]
+  },
+  {
+   "id": "konbini-bento",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 1-4 establish a 4px top surface (#b4bac4 to #f4f6f8), but the upper two shelves hold 16 identical flat 2x5 tricolor vertical stripes (rows 9-13 and 16-20, #cc343c/#fad23c/#50a03c) and the bottom shelf holds 8 flat white/black T-plug blocks (rows 23-27, #f4f6f8/#1e1e28) that lack >=3 shading tones and do not read as bento trays or triangular onigiri."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "On the top shelf (rows 7-10), 1px white pixels (#f4f6f8/#ffffff) jut out from the bottom-left of every onigiri at rows 9-10 so the five rice balls run together into a jagged strip while leaving a 4px empty grey gap on the right (cols 26-29), isolated 1x1 orange dots (#eb8a2f) sit on the white shelf price rails at (col 15, row 12) and (col 15, row 18), and unexplained 1x3 vertical grey bars (#767c88, cols 8, 15, 22) stick up between every bento tray on the middle and bottom shelves."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The top shelf now holds 7 evenly spaced onigiri (cols 3-43, rows 9-13) with 1px dark gaps and varied fillings above 3px orange price tags (row 14), and the middle and bottom shelves (rows 16-20, 23-27) display 5 multi-compartment bento trays per row without the stray vertical grey bars or isolated 1x1 orange dots."
+    }
+   ]
+  },
+  {
+   "id": "konbini-copier",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "While the scanner lid has a 5px top surface (rows 3-7, #b4b4aa to #fffff6), the front body (rows 13-28) is a single flat 1-tone #d6d6cc slab with a huge 6x5 solid #0b1224 black block (cols 10-15, rows 13-17) around a 3x3 blue square and a 6x2 black hole (cols 2-7, rows 18-19), plus an asymmetric 1px floor-colored notch at (0, 31)."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Uses a #2a2c34 outline with a complete #091125 shadow row at row 31 (fixing pixel 0, 31), a 5px scanner top surface (rows 3-7) with a #8d9095 front lip (row 8), a 1px #4a4c56 bezel around a 3-tone blue screen (cols 8-12, rows 11-15), a recessed dark-grey paper output tray (rows 17-19), and two articulated lower paper drawers with handles (rows 20-29) shaded left-to-right (#f1f3f3, #dde0e7, #c1cfcc)."
+    }
+   ]
+  },
+  {
+   "id": "konbini-hot-snack",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Rows 1-5 form a clear 5px foreshortened metal top plane (#767c88 to #f4f6f8) above two warm-lit glass shelves of 3-4 tone shaded fried snacks (rows 7-19, #f5b43c/#de8a28/#b4641e) and a shaded orange warmer base (rows 22-28); only (0, 30) has a minor 1px corner notch (fails Q6 alone, which passes under verdict_rule)."
+    }
+   ]
+  },
+  {
+   "id": "konbini-magazine-rack",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Rows 1-6 add a 6px top plane, but the rack interior (cols 2-30, rows 7-26) is filled with solid near-black #0b1224 void where 18 3x5 tricolor blocks float with no visible shelf ledges, the vertical frame post is present at col 1 (#f4f6f8/#d6b48c) but missing at col 30 (solid #0b1224), and row 31 has a missing corner pixel at (0, 31)."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The rack has a 4px lighter top surface (rows 1-4, #96a0aa to #f4f6f8) above the row 5 cornice, symmetric left and right vertical frame posts (cols 1 and 30), three tiered shelf lip bars (rows 11-12, 18-19, 25-26), varied 3-tone magazine covers across all three tiers, and intact bottom corners."
+    }
+   ]
+  },
+  {
+   "id": "lab-fume-hood",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "PASS",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 2-5 add a 4px lighter grey top plane (#b4bac4 to #f4f6f8), but the chamber interior (rows 10-20) is a flat dark rectangle (#282e38) containing an unshaded 1-tone yellow diamond blob (#fad23c at rows 14-19) and a 3x8 cyan bar (#40c8ec at rows 12-19), and the lower front panel (rows 21-29, #c8ccd4) is a single flat fill with no worktop counter lip or cabinet doors."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 2-5 form a 4px top surface (#b4bac4 to #f4f6f8) above a 1px cornice (#6e7480 at row 6), the dark chamber (rows 10-19) now holds a recognizable conical flask with green liquid and glass highlights (cols 7-12, rows 12-19) beside a graduated cyan beaker (cols 17-22, rows 12-19) resting on a 2px foreshortened worktop ledge (rows 20-21, #dce0e8/#a0a8b4) with a dark lip (row 22, #505660), and the lower cabinet (rows 23-29) is split into two shaded doors with handles."
+    }
+   ]
+  },
+  {
+   "id": "lab-reagent-shelf",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "FAIL",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "While rows 1-5 provide a 5px foreshortened top surface (#969ca6 to #f0f0f4) above a recessed cornice (row 6, #969ca6), all 18 reagent bottles across the three shelves (rows 7-12, 15-20, 23-28) are completely flat 1-tone 3x5 rectangles (#8c5028, #b0dcec, #3c783c, #f4f6f8, #b43c3c) with a 1px black dot cap (#24222c) and zero cylindrical shading or glass highlights."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 1-5 provide a clean 5px foreshortened top surface above the row 6 cornice, and all 18 reagent bottles across the three shelves now have varied silhouettes, 3-tone cylindrical shading, specular highlights, labels, and 2-tone shelf lips."
+    }
+   ]
+  },
+  {
+   "id": "lecture-podium",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "The slanted wooden reading desk has a 5px 3-tone top surface (rows 10-14, #6e4428 to #b48058) above a dark lip (row 15, #3c1200), but the microphone (rows 2-5) is a broken 1px diagonal Y-stick on raw floor checker, and the entire front body (rows 16-29) is a flat 1-tone #6e4428 slab with a huge flat 6x5 #e2b448 yellow square (rows 17-21)."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The microphone (rows 2-5) is now a clean outlined capsule on a vertical stem, the slanted reading desk (rows 10-14) has a 3-tone wood top plane above a dark lip (row 15), and the front body (rows 16-30) has recessed wood panelling, a small 3-tone brass crest, and a stepped base plinth."
+    }
+   ]
+  },
+  {
+   "id": "library-carrel",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "FAIL",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The top of the carrel privacy partition wall has only a 1px lighter line (row 2, #96623a over flat #6e5032 in rows 3-13) instead of a 3-4px 3/4 top edge with side partition walls, and the back wall (#6e5032), desk surface (#b88454), and lower front panel (rows 23-29, flat #96623a) are flat single-tone fills with no leg cutout/knee space or wood grain."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "The carrel now has a 3px lighter wood top plane (rows 2-4), side partition wings, green study lamps, and books on the desk, but row 30 draws a continuous 1px #16141c black bottom outline all the way across Both open knee-space cavities (cols 5-14 and 17-26) so the leg openings look like closed brown panels rather than open floor under the desk, and the upper back walls contain isolated 1px #5d3e20 dark blotches at (col 13, row 6), (col 14, row 8), (col 18, row 9), and (col 18, row 11)."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Both under-desk knee-space cavities (cols 6-13 and 18-25, rows 27-30) are now open to the floor checker between the three #16141c-outlined wooden legs (cols 1-5, 14-17, 26-30), the stray dark blotches on the upper back walls are smoothed into horizontal wood grain lines (row 11), and the 3/4 top canopy (rows 2-4) and desk surface (rows 15-21) read clearly."
+    }
+   ]
+  },
+  {
+   "id": "library-shelf",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 1-5 form a clear 5px foreshortened wooden top plane (#6e5032 to #d6b073) separated by a 1px dark cornice (row 6, #6e5032) and recessed shadow (row 7, #3c281e) from three shelves of multi-colored books that each have a 1px lighter top-edge highlight (rows 8, 15, 22) and a 3-tone wooden base plinth (rows 28-30)."
+    }
+   ]
+  },
+  {
+   "id": "manga-booth",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "PASS",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The red booth chair (rows 26-40) has inverted/incoherent anatomy: grey armrests sit at the north end (rows 26-34) while a narrow pillow-shaded red strip protrudes 6px south past the armrests (rows 35-40) instead of showing a N-facing backrest with a 2px lit top rim. Additionally, the booth is walled off across the entire south edge (rows 42-47) with no entrance gap, and the desk top (rows 16-21) is speckled with noisy 2x2 blotches."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The booth partition walls have a 3px lit wooden top rim (rows 1-3 and side tops) and an 8px entrance opening in the south wall (cols 12-19, rows 40-47); the desk surface (rows 16-23) is shaded in smooth horizontal wood planks with a monitor and keyboard, and the chair (rows 25-39) is properly N-facing with grey armrests on the north side (rows 26-31) and a wider backrest on the south side featuring a 2px lit top rim (#c46264, #b65256 at rows 32-33) above a darker shaded back shell (rows 34-38)."
+    }
+   ]
+  },
+  {
+   "id": "manga-shelf",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Shows a clear 5px foreshortened top surface (rows 1-5, graded #c8ccd4 to #ffffff) separated by a 1px cornice (#c8ccd4 at row 6) above three distinct recessed rows of shaded manga spines and a base strip."
+    }
+   ]
+  },
+  {
+   "id": "mart-baguette-basket",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "While the wicker basket now has a 3px rim/opening band (rows 14-16), the baguettes above it (rows 2-12) are corrupted: 2x5 vertical black blocks (#0b1224 at cols 3-4 and 8-9, rows 6-10) and transparent holes at (col 6, row 6), (col 11, row 6), and row 2 punch through the loaves, making them read as broken black-and-tan tuning forks rather than bread."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Although the three baguettes (rows 2-14) are now solid and shaded with diagonal score marks, the basket itself has only a 1px cream line at row 15 (#f5dfa6) with no 3/4 elliptical rim or dark interior basket opening behind the loaves, the left rim outline (col 1, rows 12-14) sticks up 3px higher than the right rim (col 14, row 15), the wicker body (rows 17-29) is a flat 2-tone #dcaa64/#b47846 checkerboard with no left-to-right cylindrical shading, and the price chalkboard (cols 9-15, rows 20-26) overwrites the right basket border and juts 1px out at col 15."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "While the wicker cylinder (rows 18-26) now has a 4-tone left-to-right gradient and a centered chalkboard tag (cols 5-11), rows 14-15 draw an unbroken 10px-wide dark-brown horizontal band (#2b1a13 at row 14 and #6e4a24 at row 15, cols 3-12) cutting across IN FRONT OF all three baguettes above the cream front rim (row 16, #fadca0), severing the loaves from the basket opening as if a dark slot were carved across their fronts, and (col 1, row 13) retains an asymmetric extra #3c281e outline pixel creating a 2px double border on the left."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "All three baguettes (cols 3-5, 6-9, 10-12) now extend continuously down through rows 11-15 to meet the #fadca0 cream front rim at row 16 with #2b1a13/#6e4a24 dark interior cavity pixels visible only in the gaps between/behind the loaves, the stray asymmetric pixel at (col 1, row 13) is gone so the basket walls start symmetrically at row 12, and the wicker body and chalkboard label are cleanly shaded."
+    }
+   ]
+  },
+  {
+   "id": "mart-basket-stacker",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "The top of the stack (rows 3-4) is just a 2px dark blue strip (#24487e/#2a5493) directly above an orange basket rim (rows 5-6), which fails the 3-4px top-surface requirement, mismatches the top orange basket's color, and doesn't depict the hollow rectangular opening of a shopping basket. Furthermore, the wire handles at rows 0-1 (cols 2-4 and 11-13) are jagged 1px diagonal pixels."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 3-7 now show an orange top rim around a dark hollow cavity (cols 4-11, rows 4-6, #4a1e0a/#281208), but the two wire handles at rows 1-2 (cols 3-6 and 9-12, #767c88/#bec4ce) have zero outer outline against the transparent floor while the rest of the sprite uses a thick #0b1224 black outline (failing Q3) and sit side-by-side along the back edge like binder clips rather than left/right basket handles (failing Q1/Q4). In addition, each stacked basket tier is separated by a heavy full-width black/charcoal line (#0b1224/#282c34 at rows 10, 13, 16, 19)."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Row 30 draws a 15px solid #091125 black bar from col 1 all the way to the right canvas edge col 15, which both bridges across the open floor gap (cols 4-11) between the two caster wheels (trapping a 8x2 beige floor box) and sticks out 1px asymmetrically past the right wheel at col 15 (failing Q1/Q3/Q6); additionally, the grey handle columns at cols 2 and 13 (rows 2-4, #dde0e7/#ccd0d8) merge directly into the orange basket rim at row 5 with no horizontal separator while flanked by thick 4px inner #0b1224 lines at cols 3 and 12."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The wheel contact shadows at row 30 (#091125) are now restricted to cols 1-3 and 12-14 directly under the two casters (leaving the center floor gap cols 4-11 and col 15 transparent), the raised side handles at rows 1-4 are cleanly separated from the orange top basket rim (row 5) by dark #22242c/#643008 pixels at row 4, and the top basket opening (rows 2-8) clearly shows a recessed 3/4 interior grid."
+    }
+   ]
+  },
+  {
+   "id": "mart-bread-rack",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Displays a 5px foreshortened light top plane (rows 1-5, graded #c8c5bc to #f4f6f8) above a dark recessed header (rows 6-7) and three well-separated shelves of packaged bread trays with price tags."
+    }
+   ]
+  },
+  {
+   "id": "mart-cake-showcase",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Features a clear 4px wooden top surface (rows 1-4, graded #966c34 to #e4cfae) separated by a 1px dark seam (row 5) above the lit glass display case with two tiers of cakes and a paneled wood base."
+    }
+   ]
+  },
+  {
+   "id": "mart-candy-bins",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Shows a 4px pink/white top plane (rows 5-8, #f078a0 to #faf0f0) above a 1px darker front lip (#d4cccc at row 9) and two tiers of clear acrylic candy bins over a white base cabinet."
+    }
+   ]
+  },
+  {
+   "id": "mart-cart-bay",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Cleanly depicts five nested shopping carts in 3/4 side-profile with 3px red handle tops (rows 4-6), foreshortened upper basket openings (rows 10-14), tapered wire bodies with vertical dividers (rows 15-20), lower rails, and caster wheels."
+    }
+   ]
+  },
+  {
+   "id": "mart-cold-case",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Has a 4px metallic top plane (rows 1-4, graded #8896a8 to #ffffff) distinct from the 3px blue front canopy (rows 5-7) and double glass doors with handles and three shelves of chilled items."
+    }
+   ]
+  },
+  {
+   "id": "mart-dairy-open",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Shows a 4px light grey top plane (rows 1-4, #a0a6b2 to #f4f6f8) above a 3px blue front awning (rows 5-7) and three open refrigerated shelves stocked with milk cartons and dairy packs."
+    }
+   ]
+  },
+  {
+   "id": "mart-donut-case",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Displays a 4px cream/white top surface (rows 1-4, #d4ccc8 to #f4f6f8) above a 2px pink front trim band (rows 5-6), two glass-enclosed shelves of glazed donuts with diagonal glass sheen, and a pink-accented base."
+    }
+   ]
+  },
+  {
+   "id": "mart-drink-open",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Shows a 4px metallic top plane (rows 1-4, #a0a6b2 to #f4f6f8) above a 3px red front header (rows 5-7) and three open cooler shelves of shaded beverage bottles."
+    }
+   ]
+  },
+  {
+   "id": "mart-gondola-cans",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Has a 5px light top surface (rows 1-5, #a0a6b2 to #f4f6f8) above the front header and three shelves of cylindrically shaded cans; minor two-gap white break in row 6 header does not hurt 1x readability."
+    }
+   ]
+  },
+  {
+   "id": "mart-gondola-cereal",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Has a 5px light top surface (rows 1-5, #a0a6b2 to #f4f6f8) above the purple front sign strip and three shelves of cereal boxes with top/front planes; minor gap in row 6 sign strip."
+    }
+   ]
+  },
+  {
+   "id": "mart-gondola-detergent",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Has a 5px light top surface (rows 1-5, #a0a6b2 to #f4f6f8) above the blue front header and three shelves of handled detergent jugs with clear 3-tone shading."
+    }
+   ]
+  },
+  {
+   "id": "mart-gondola-household",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Has a 5px light top surface (rows 1-5, #a0a6b2 to #f4f6f8) above the pink front header and three shelves of paper rolls, tissue packs, and household bottles."
+    }
+   ]
+  },
+  {
+   "id": "mart-gondola-ramen",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Has a 5px light top surface (rows 1-5, #a0a6b2 to #f4f6f8) above the red front header and three shelves of cup noodles and ramen multi-packs with clear label details."
+    }
+   ]
+  },
+  {
+   "id": "mart-gondola-snack",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Has a 5px light top surface (rows 1-5, #a0a6b2 to #f4f6f8) above the yellow front header and three shelves of snack boxes and bags with distinct top edges and front faces."
+    }
+   ]
+  },
+  {
+   "id": "mart-gondola-tea",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Has a 5px light top surface (rows 1-5, #a0a6b2 to #f4f6f8) above the green front header and three shelves of shaded tea bottles and canisters."
+    }
+   ]
+  },
+  {
+   "id": "mart-gondola-water",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Has a 5px light top surface (rows 1-5, #a0a6b2 to #f4f6f8) above the blue front header, two shelves of water bottles, and a bottom shelf of bulk water cases."
+    }
+   ]
+  },
+  {
+   "id": "mart-liquor-fridge",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Shows a 4px metallic top plane (rows 1-4, #999ca2 to #f4f6f8) above a 2px green lit header (rows 5-6) and a double-door glass fridge stocked with bottles and cans."
+    }
+   ]
+  },
+  {
+   "id": "mart-meat-case",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Displays a 4px metallic top surface (rows 1-4, #767c88 to #f4f6f8) above a 2px red/white front canopy (rows 5-6) and three refrigerated shelves of packaged meat trays."
+    }
+   ]
+  },
+  {
+   "id": "mart-meat-showcase",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Shows a 4px metallic top plane (rows 2-5, #a0a6b2 to #f4f6f8) above a 2px bright glass lip (rows 7-8), a dark display interior with two rows of meat cuts and diagonal glass reflections, and a red-striped front base."
+    }
+   ]
+  },
+  {
+   "id": "mart-sale-endcap",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Shows a 3px wooden top surface on the rack body (rows 9-11, graded #a17744 to #ffc978) below the mounted yellow sale sign (rows 0-6) and above three wooden crate shelves holding colored sale boxes."
+    }
+   ]
+  },
+  {
+   "id": "mart-scale-station",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The top display monitor head (rows 1-6) is a pure front-only elevation with no visible 3/4 top plane, and every sub-block (monitor head, weighing tray at rows 7-12, and front printer panel at rows 20-27) is wrapped in a heavy 1px black box outline (#0b1224) on all four sides."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The display head now has a 3px lighter top plane (rows 2-4) above the recessed green readout (rows 5-7), the weighing platter (rows 10-15) and lower body (rows 18-28) have >=3-tone metallic shading, and the heavy black inner box outlines were replaced with #767c88 grey bevels."
+    }
+   ]
+  },
+  {
+   "id": "mart-veg-wall",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Rows 1-4 clearly establish a 4px lighter metal top plane (#a0a6b2 to #f4f6f8) above the green awning cornice (rows 5-8) and three shaded produce shelves below. A single stray floor-colored pixel at (0,31) inside the bottom black border fails Q6, but V34, Q1-Q5 all pass."
+    }
+   ]
+  },
+  {
+   "id": "mci-fridge",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The fridge shows a distinct 5px lighter top plane (rows 1-5, #c4cad4 to #f0f2f6) with a cardboard box sitting on it (rows 0-3), separated by a dark lip (row 6, #9ea4ae) from the upper freezer door and lower fridge door with upper-left lighting."
+    }
+   ]
+  },
+  {
+   "id": "mci-hosp-bed",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Clearly improved over OLD: the headboard top rim (rows 4-8), pillow and sheet top plane (rows 10-37) with diagonal fold texture, footboard top plane (rows 39-40) and front panel (rows 41-44) with legs read cleanly in 3/4 top view with soft consistent outlines."
+    }
+   ]
+  },
+  {
+   "id": "mci-magazine",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": true,
+     "why": "The 5 upright magazines on the top tier (rows 3-11) are wrapped in thick all-around black box outlines (#0b1224) with jagged asymmetric dark blocks at rows 10-12, and NEW flattened row 14 into a solid 3px grey band (#8a909a at rows 13-15), losing OLD's tiered step shading and failing 3/4 top-plane clarity."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The five upper magazines (rows 3-10) now use dark material outlines and 3-tone covers with white title bands, sitting cleanly above a stepped 3/4 shelf plane (rows 11-17) and two lower tiers of shaded magazines."
+    }
+   ]
+  },
+  {
+   "id": "mci-mailboxes",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 3-6 form a clean 4px lighter top surface (#9ea4ae to #dce0e8) above a 1px shadow cornice (row 7, #8a909a) and a 4x4 grid of mailbox doors lit consistently from the upper-left."
+    }
+   ]
+  },
+  {
+   "id": "mci-med-cart",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 8-12 show a bright 5px recessed top tray (#dce0e8 to #f4f6f8) holding three medical supplies, separated by a grey rim (row 13, #9ea4ae) from the four color-coded drawers and caster wheels below."
+    }
+   ]
+  },
+  {
+   "id": "mci-pallet",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Major improvement over OLD: each stacked carton and the wooden pallet base have distinct lighter 3/4 top planes (rows 5-8, 11-15, and 23), packing tape and shipping label details, and warm brown outlines (#4e3222) instead of harsh black boxes."
+    }
+   ]
+  },
+  {
+   "id": "mci-shelf-office",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "While the bookcase has a 6px tan top surface (rows 1-6) with a lit front edge at row 6 (#e8d2b0) above three shelves of books, the two storage boxes sitting on the top plane (rows 1-5) are flat front-only rectangles encased in heavy 1px black outlines (#0b1224) that merge into the outer top outline."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The bookcase retains its 6px tan top surface (rows 1-6) with a #e8d2b0 front lip, while the two storage bins on top (cols 3-11 and 17-24, rows 1-5) replaced the heavy #0b1224 black box outlines with 1px #8d9095 and #3d578a contours and added 2px lighter top planes (#f1f3f3/#f3f4f7 and #5e80b2/#8397b3) above their darker front faces."
+    }
+   ]
+  },
+  {
+   "id": "mci-toilet",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Significantly improved over OLD: the cistern tank has a clear 3/4 top lid with flush button (rows 5-8) and front face (rows 9-11), and the foreshortened bowl rim (rows 15-23) with water reflection sits cleanly above a shaded porcelain pedestal base (rows 24-27)."
+    }
+   ]
+  },
+  {
+   "id": "mci-tv-stand",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Although the wooden cabinet below has a 4px lighter top surface (rows 20-23), the large television monitor (rows 1-17) and the small terracotta plant pot (rows 15-18) are drawn as pure front-only elevations with no visible top rim or pot opening."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Adds a 2px lighter dark-grey top bezel plane (#3e404a, #4a4c56 at rows 2-3) above the #22232a front bezel (row 4) of the TV monitor, and gives the terracotta plant pot a 2px rim/soil top (#b27361 rim with #533020 soil at rows 15-16) above its shaded body (#a35f4c/#8b4f3f at rows 17-18), complementing the 4px wooden cabinet top surface (rows 20-23)."
+    }
+   ]
+  },
+  {
+   "id": "museum-partition-wall",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 1-4 provide a clear 4px top surface (#8e8e8e, #dfd3b5, #f0f2f5) with a mounted gallery lamp casting a warm glow, cleanly separated from the cream front wall face and framed artwork below."
+    }
+   ]
+  },
+  {
+   "id": "music-amp",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 1-3 add a 3px lighter top plane (#464852, #5a5a6e, #757886) above the gold control panel (rows 4-5) and three textured speaker cabinet sections below."
+    }
+   ]
+  },
+  {
+   "id": "office-water-cooler",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The top of the water jug (rows 1-2) is only 2px tall and the white dispenser body's top ledge (rows 13-15) is interrupted across columns 3-12 by the jug sitting flush against the front face, leaving only 1px side shoulders at x=2 and x=13 instead of a visible 3-4px 3/4 top surface."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The blue water jug has a 4px foreshortened elliptical top cap (rows 1-4) and a narrowed neck (rows 10-12) that reveals a 4px white dispenser top shoulder (rows 12-15, #b0b5bc to #ffffff) above a darker front lip (row 16, #a6abb1), with cylindrical left-to-right shading on both the bottle and lower cabinet."
+    }
+   ]
+  },
+  {
+   "id": "park-pay-machine",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 1-4 form a distinct 4px lighter grey top plane (#9ea4b0, #ccd0d8, #f4f6f8) above the yellow/gold header band (rows 5-6) and the blue kiosk front face with screen, card slot, and buttons."
+    }
+   ]
+  },
+  {
+   "id": "park-pillar",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 2-4 show a 3px lighter top cap (#b8b8b4, #e2e6ea, #f4f6f8) with a 1px shadow lip at row 5 (#90949e) above the pillar's front face with blue parking sign and yellow hazard stripes. Although the grey front shaft is a flat 1-tone fill (failing Q5), V34 and Q1-Q4, Q6 pass."
+    }
+   ]
+  },
+  {
+   "id": "pub-atm",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The recessed screen bezel (rows 6-14) has a heavy 1px black box outline (#0b1224) on all four sides (failing Q3), and the entire front body below the screen (rows 15-27) is a single flat blue fill (#3264aa) with zero vertical or horizontal shading steps (failing Q5)."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The heavy #0b1224 box around the screen bezel was replaced with a recessed blue/slate bevel (#1b3b75, #282c34, #6496dc at rows 6-14), a foreshortened grey keypad shelf (rows 15-16, #b4bac4/#8a909a) projects below the screen, and the lower blue front panel (rows 18-29) now has a 4-tone horizontal and vertical shading ramp (#6496dc left highlight, #4878c0/#3264aa midtones, #24487e/#1b3b75 right and base shadows)."
+    }
+   ]
+  },
+  {
+   "id": "pub-fire-locker",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "FAIL",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "While rows 4-8 add a 5px lighter grey top surface above row 9's cornice, the two yellow firefighter coats inside (rows 15-34) are completely flat 2-color rectangles (#eca02c and #dce274) with zero shading tones (failing Q2 and Q5), and the circular helmets above them are flat 1-tone gold ovals (#c4961e) with heavy black outlines."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The locker top plane (rows 4-8) sits cleanly above row 9's cornice, while the helmets (rows 10-14), turnout coats with reflective stripes and center plackets (rows 15-34), and lower compartment boots (rows 37-43) all use 3-4 tone shading without heavy inner black outlines."
+    }
+   ]
+  },
+  {
+   "id": "pub-service-window",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The upper row of 4 glass windows (rows 0-15) is a pure front-only elevation with no top wall/frame plane, every window and the 4 counter trays (rows 17-23) are wrapped in heavy black box outlines (#0b1224), and the entire lower counter front (rows 23-44) is a huge unshaded flat grey fill (#96a0b0)."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 1-3 add a 3-tone top frame plane above the 4 glass service windows (rows 5-14), the heavy black inner boxes on the windows and 4 counter trays (rows 17-21) were replaced with grey metallic bevels, and the lower counter front (rows 24-42) has vertical pilasters, a 4-step vertical gradient, and bevelled blue plaques."
+    }
+   ]
+  },
+  {
+   "id": "pub-ticket-dispenser",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Although rows 1-4 form a 4px lighter top plane (#8ca0ba to #ffffff), the red display box (rows 5-11) and green button (rows 15-20) are wrapped in heavy 1px black outlines (#0b1224), and the entire front body (rows 6-27) is a single flat steel-blue fill (#8ca0ba) with no left/right light direction or surface texture."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 1-5 form a 5px lighter top plane (#b4bed0 to #f4f6f8) separated by a 1px #8296b4 cornice at row 6; the front body (rows 7-28) is shaded left-to-right across 4 steel-blue tones (#b4bed0 left bevel, #96aac8 mid, #8296b4/#7f90aa right shadow), and the red display (rows 8-12) and green button (rows 16-20) use dark-slate/light-grey recessed bevels (#2d3e64/#c4cad4) instead of #0b1224 black boxes."
+    }
+   ]
+  },
+  {
+   "id": "rest-bottle-shelf",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 1-4 establish a 4px wooden top surface (#745238, #aa7942, #d4a359, #e6be7a) above the cream interior back and three rows of multi-colored bottles with specular highlights and a stepped wooden base."
+    }
+   ]
+  },
+  {
+   "id": "rest-wine-rack",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 1-5 add a clear 5px wooden top plane (#6e4a2e, #9c6e44, #ba8754, #dcb074) separated by a dark brown cornice (row 6, #4e321e) from the 7-column wine cubby grid below."
+    }
+   ]
+  },
+  {
+   "id": "roof-fence",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Thin wire-mesh fence with a 2px lighter green top rail (rows 0-1, #628c74 and #78a88c) above the dark green frame (#385244), side posts, and diagonal wire mesh."
+    }
+   ]
+  },
+  {
+   "id": "roof-stair-hut",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 2-5 form a 4px lighter concrete roof top plane (#8e9094, #ccd0d8, #e6eaee) above the overhang shadow line (row 6) and the front wall with exit sign, metal door, and window. The concrete wall is a relatively flat fill (failing Q5), but V34 and Q1-Q4, Q6 pass."
+    }
+   ]
+  },
+  {
+   "id": "roof-water-tank",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Row 4 adds a dead-straight horizontal white stripe across a curved dome cap while the cylinder ring seams at rows 9 and 15 are also completely straight horizontal lines, so the tank reads as a 2D elevation with rounded ends rather than a 3/4 cylinder with an elliptical top plane. The right-side pipe/ladder is a flat unshaded 2px grey bar and the outer contour uses pure black."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Uses a #2a3539 dark-slate contour, a foreshortened elliptical dome top (rows 1-7) with a central hatch and curved highlight/cornice seam (rows 6-8), a 6-tone left-to-right cylindrical body gradient (#f4f6f8 highlight at cols 6-7 down to #5a6474 right shadow) with curved horizontal ring seams (rows 14-16 and 24-26), and a shaded right-side ladder (cols 23-26) with distinct lit rungs."
+    }
+   ]
+  },
+  {
+   "id": "school-cleaning-locker",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "The broom on the left is an unrecognizable 4x4 flat green square attached to a stepped 1px yellow line, and the locker door (rows 6-29) is a single flat grey fill (#8e98a4) with no shading steps and a 2px-thick black bottom border."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "The steel locker itself has a clean 4px 3/4 top surface (rows 1-4) and shaded louver vents, but the broom added on the left (cols 0-4, rows 3-30) has an un-outlined 1px brown handle along col 0 (rows 3-23, #cba76c/#a67a37) touching the left canvas edge and a jagged green 3-pronged fork at the bottom (cols 0-4, rows 25-30, #5caa6e/#3c8c54/#2d693f interleaved with #0b1224 gaps) that looks like a cactus or claw rather than a broom head."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The un-outlined external broom on cols 0-4 was removed and the steel locker widened to cols 1-14 inside a clean 1px #0b1224 outline, with a 4px lighter 3/4 top surface (rows 1-4), #767c88 cornice (row 5), lit left/top door bevels (#ccd0d8), upper and lower louver vents, and a recessed door handle pocket."
+    }
+   ]
+  },
+  {
+   "id": "school-piano",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "PASS",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The keyboard (rows 19-25) is drawn as a giant 7px-tall flat front-facing strip spanning the full width with no protruding horizontal keybed plane or side cheek blocks, and the two gold pedals touch the underside of the keys because the lower front panel is missing. The upper body is a flat black fill with a barely visible dark grey top strip (rows 1-3)."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 1-4 form a clearly visible 4px top lid plane (#3e424c, #525866, #6e7482) above a 1px dark cornice (#16141c at row 5), the upper front board with a music sheet (cols 12-19, rows 9-13) sits behind a protruding keybed with side cheek blocks (cols 2-3 and 28-29, rows 15-19) and a 3px white/black key surface (rows 16-18), and a shaded lower front board and side legs (rows 20-28) separate the keybed from the gold pedals at rows 27-28."
+    }
+   ]
+  },
+  {
+   "id": "sento-shoe-locker",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "PASS",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "The cabinet face consists of 16 identical flat-filled squares each stamped with an oversized centered 2x3 dark brown block, and the continuous light tan cornice line at row 4 runs unbroken across the vertical frame dividers while rows 2-4 have split inner highlights."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 1-4 form a 4-tone wooden top plane separated from the 4x4 locker grid by a full-width dark under-lip shadow at row 5 (#3c2814), and each compartment door has upper-left bevel highlights, wood grain shading, and a small off-center lock plate above a shaded plinth."
+    }
+   ]
+  },
+  {
+   "id": "shop-drug-gondola",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": true,
+     "why": "The shelves are 1px flat pink lines with no horizontal shelf plane or recess shadow on the flat pastel-pink back panel, and the merchandise is 14 copy-pasted 3x6 rectangles each with a single centered 1x1 pink dot. Pushing the header sign down squashed it to 2px with white 1px side gaps at cols 1 and 29, and row 29 col 0 has a missing corner pixel in the black base outline."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The 5px top surface (rows 1-5) and full-width pink header sign (rows 6-8) sit above two gondola shelves with 2px white horizontal shelf planes, pink front lips, under-shelf recess shadows, and varied 3-tone merchandise clusters, with the bottom-left outline pixel fixed."
+    }
+   ]
+  },
+  {
+   "id": "shop-flower-cooler",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "The four grey flower buckets float in mid-air inside a flat cyan fill with no shelves supporting them, the leftmost green stem of every bucket hangs 1px out in mid-air to the left of the bucket rim, and the 2x2 flower heads are wrapped in heavy pure-black outlines."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The cooler has a 6px top plane (rows 4-9) and now includes two horizontal interior shelves (rows 24-25 and 38-39) supporting the four 3-tone shaded grey buckets; all green stems (#5aa05a/#28683e/#1e502d) align cleanly inside the bucket openings, the black-outlined squares are replaced by soft 3-tone bouquet clusters, and the glass doors feature white specular highlight streaks."
+    }
+   ]
+  },
+  {
+   "id": "shop-peg-wall",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": true,
+     "why": "The yellow top sign has zero outline (unlike the black-outlined body) and displays giant red 'IC' letters, while the display board is 24 identical 4x5 rainbow-cycled rectangles on a flat unshaded beige fill with the bottom row shifted down flush against the bottom border."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The top yellow header sign (cols 9-22, rows 0-7) is enclosed in a 1px #2a2c34 outline with a 2px lighter top plane (#f0c838, #ffff48 at rows 1-2) and mounting posts (row 7); the cabinet has a 5px top surface (rows 9-13) with a #7a6f5a overhang shadow (row 14), textured pegboard holes (#8d9095/#a8987e), varied 3-tone blister packs with white header cards (#fffdd4), and a 2px bottom base rail (rows 44-45)."
+    }
+   ]
+  },
+  {
+   "id": "shop-stationery-rack",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The top blue sign lacks an outline while the body has a heavy black outline, the back panel is a flat unshaded grey fill with 1px shelf lines, and each shelf repeats 5 identical rainbow-cycled stamps (with the bottom shelf reading as 5 black crosses)."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The top sign is enclosed in the same #1e1e28 dark outline with a 2px lit top rim (rows 1-2), the cabinet has a 4px 3/4 top surface (rows 5-8) above a dark cornice (row 9), and the three shelves have recessed cast shadows and recognizable 3-tone notebooks, pen cups, notepad, tape dispenser, and glue sticks."
+    }
+   ]
+  },
+  {
+   "id": "shop-used-shelf",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Outlines are completely inconsistent (some items have thick 1px black boxes while the middle-shelf rectangles, lamp base, and bottom-right blue block have zero outline), the bottom-left framed box floats 1px above the shelf, the middle shelf has 5 identical flat rectangles with a 1px white dot, and row 31 col 0 has a 1x1 missing pixel in the outer border."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The missing bottom-left corner pixel at (0, 31) is fixed, the outer border is unified to dark brown (#231309), rows 1-4 show a 4px wooden top surface (#9f723c to #ecc695) above a dark cornice (row 5, #563218), and all three shelf cavities (rows 6-11, 14-19, 22-27) have dark recess shadows (#3c2210) behind grounded, multi-tone secondhand items (crt monitor, stacked books, lamp, retro radio, boxes)."
+    }
+   ]
+  },
+  {
+   "id": "station-coin-lockers",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Each locker door is a single-tone flat blue rectangle floating inside 2px-wide solid black gaps rather than contiguous doors separated by 1px seams, and row 31 col 0 has a 1x1 missing pixel hole at the bottom-left corner."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The 4px top surface (rows 1-4) sits above a dark navy cornice (row 5), the small and large locker doors are separated by 1px #2d3e64 seams with 3-tone blue shading and coin locks, a payment kiosk column is integrated on the right (cols 26-29), and the bottom-left border pixel is fixed."
+    }
+   ]
+  },
+  {
+   "id": "station-ic-charger",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "FAIL",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Below row 6, the entire front body is a single flat green fill (#2f8f5f) with flat geometric rectangles pasted on it and no recessed screen hood, side bevels, or console shelf depth."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Below the 5px top surface (rows 1-5) and row 6 cornice, the green body now features left highlight and right shadow bevels, a dark recessed screen hood around a reflective blue display (rows 8-16), a protruding 3/4 IC card reader ledge (rows 17-19), and a shaded lower panel slot."
+    }
+   ]
+  },
+  {
+   "id": "subway-pillar-sign",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The green sign box and orange band protrude 1px wider than the pillar on both sides (cols 1-14 vs 2-13) but have zero visible top rims, while the top of the pillar (rows 1-5) is just alternating horizontal grey/white stripes; both the green sign and orange band are flat 1-tone fills."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The pillar top (rows 1-4) has a foreshortened cap, the pillar shaft is shaded horizontally from left (#f4f6f8, #dde0e7) to right (#8d9095, #6c7076) as a cylinder, the protruding green sign collar (rows 7-15) has a 2px lighter green top rim (#5aa05a, #78be5a at rows 7-8) and 1px bottom shadow (#184a25 at row 15) with a 3-tone emblem, and the orange band (rows 18-21) has a lighter top rim (#f0c838) and dark bottom edge (#b06e2e)."
+    }
+   ]
+  },
+  {
+   "id": "subway-ticket-machine",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "FAIL",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": true,
+     "why": "The added grey/white top rows (rows 1-4) merge directly into the white front header panel without a separating cornice edge, making the blue front header stripe (row 5) appear to sit inside the top surface; the lower blue front face (#3a5ea6) is a single flat fill with flat rectangles pasted on."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The 4px lighter top surface (rows 1-4, #a6a9ad to #f4f6f8) is cleanly separated by a 1px #8d9095 cornice line (row 5) from the 3-tone white header (rows 6-7), and each twin kiosk body (rows 8-28) is shaded in 3 blue tones (#4a6ba1 left highlight, #4060a0 mid, #2c4278 right shadow) with a recessed #181e2c screen hood, 3-tone cyan touchscreen, shaded yellow coin/bill bezel, and recessed ticket payout tray."
+    }
+   ]
+  },
+  {
+   "id": "subway-trash-bins",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "PASS",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "A large 28x7 dark rectangle floats above the bins on a single 1px center stick (col 15, rows 10-13) with no 3/4 top plane of its own, and the three black bin openings (row 14) are pushed flush against the back border of the lid while the green/blue/yellow fronts are flat fills."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The rear sorting hood is connected to the unit with a 3px lit top plane (rows 2-4) and color-coded legend, the slanted lid plane (rows 9-14) features three recessed dark disposal slots (#1e1e28/#3e404a), and the green, blue, and yellow bin fronts are shaded left-to-right in >=3 tones with crisp recycling icons."
+    }
+   ]
+  },
+  {
+   "id": "subway-vending-machine",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "FAIL",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The front cabinet is a flat blue fill (#1c41a6) with a flat cyan display box containing 10 identical 1x4 coloured sticks and a huge 15x6 solid black rectangle at bottom-left with no recessed interior depth or shading steps."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "Rows 1-5 form a 5px blue top surface (#4878c0 to #a2c8fa) above a dark cornice (#0f2460 at row 6), the display window (cols 3-17, rows 8-19) now has a dark upper recess shadow (row 8) and two shelves of 2px-wide 2-tone drink cans/bottles with white caps, the lower pickup chute (cols 4-17, rows 24-28) is shaded as a recessed metal flap (#161820/#282c34/#3e4452), and the blue cabinet body has a 4-tone bevel ramp."
+    }
+   ]
+  },
+  {
+   "id": "svc-arcade-shopfront",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The red-and-white awning shows a clear 5px sloped top surface above a darker scalloped valance and shadow row, framed by 3-tone stone pillars, a lit invader marquee, and glass doors revealing 3/4 mini arcade cabinets inside."
+    }
+   ]
+  },
+  {
+   "id": "svc-dryer-stack",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Each unit is double-boxed in a heavy 1px pure-black inner outline, and the two drum windows are squashed 11x8 horizontal ovals with jagged asymmetric rims, a 3x1 black stem at the bottom, and an amorphous brown blob inside that does not read as a dryer drum."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The 4px top plane (rows 1-4) and control strips (rows 6-9, 25-28) read cleanly, the heavy double black inner boxes are gone, and both dryer drums (rows 11-22, 30-41) are symmetric circular metallic portholes showing dark glass and tumbled laundry."
+    }
+   ]
+  },
+  {
+   "id": "svc-salon-basin",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "Row 16 is completely transparent across the chair, severing the blue backrest (rows 11-15) from the lower seat and armrests (rows 17-26) so the chair is split in two over the floor checker; there is also a stray 2x1 pale grey pixel smudge outside the top border at row 2 cols 11-12, and the seat lacks a distinct 3-4px lighter horizontal top plane."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "The oversized 26x13 grey backing rectangle (cols 3-28, rows 3-15) was not trimmed, leaving 5px-wide flat grey wings hanging in mid-air on both sides of the porcelain basin (cols 8-22); the white basin rim (#ffffff at rows 5-12) has no outer outline, rows 3-4 cols 14-15 have a 2px #6c7076 smudge breaking the top #606478 border, and the chair seat (rows 19-23) has only a 2px #6f83a0 highlight stripe sandwiched between darker #486090 bands so it reads as a round tube rather than a flat >=3px 3/4 seat top plane."
+    },
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "PASS",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "The shampoo basin unit (cols 6-25, rows 3-14) is still an oversized 20x12 grey rectangular slab whose lower corners (cols 6-9 and 22-25, rows 12-14) stick out 4px on each side of the chair back (cols 10-21) as flat horizontal grey stripes before terminating in mid-air (failing Q1/Q4); the armrests (cols 5-8 and 23-26, rows 17-24) are boxed in #202b48 on all sides and detached from the backrest by 1px floor-checker holes at cols 9 and 22 row 17 (failing Q3/Q6); and the bottom base row 31 (cols 11-20, #6c7076) lacks a dark outer outline against the floor."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The ceramic shampoo bowl (cols 10-21, rows 0-10) is now rounded and proportionate to the chair back (cols 10-21, rows 11-17) with a recessed basin interior, drain, and top faucet; the armrests (cols 6-9 and 22-25, rows 17-24) attach seamlessly to the chair with no floor-checker holes or double inner outlines; and the chrome pedestal base (rows 29-31) is enclosed in a 1px #3c4254 bottom outline."
+    }
+   ]
+  },
+  {
+   "id": "svc-salon-mirror",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "FAIL",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "PASS",
+      "Q4": "FAIL",
+      "Q5": "FAIL",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The protruding upper mirror frame (rows 1-6) has no 3/4 top rim, the lower vanity body (rows 20-30) is a single flat beige fill (#cbc6be) with no cabinet shading, and the blue bottle/towel hangs downward across the wooden counter edge instead of sitting on top of the counter plane."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The upper mirror frame now has a 3px lighter top plane (rows 2-4, #f4f6f8/#ffffff/#ccd0d8) above the silver frame, salon bottles and tools sit atop the 5px wooden counter shelf (rows 24-28, overlapping rows 22-26) rather than hanging below the counter lip, and the lower vanity (rows 30-44) is articulated into two shaded drawers (rows 31-33), two recessed cabinet doors with handles (rows 35-41), and a dark grey toe-kick (rows 43-44)."
+    }
+   ]
+  },
+  {
+   "id": "svc-washer-row",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "FAIL",
+     "v34": "PASS",
+     "q": {
+      "Q1": "FAIL",
+      "Q2": "FAIL",
+      "Q3": "FAIL",
+      "Q4": "FAIL",
+      "Q5": "PASS",
+      "Q6": "FAIL"
+     },
+     "worse": false,
+     "why": "The top blue sign (rows 0-4) has no outline and floats completely detached above a 1px transparent floor-checker gap at row 5, each washer is double-boxed in black outlines, and the 6x11 vertically stretched drum ovals pinch into the side outlines at row 19 and read like skull masks."
+    },
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The top blue sign (rows 0-6) has a 1px #0b1224 outline, a 2px lighter blue top rim (#5a96dc, #3c82c8 at rows 1-2), and connects directly to the washer bank at row 7 with no gap; the bank has a 4px top surface (rows 8-11) with a #767c88 cornice (row 12), replaces the inner black boxes with 2px #b5bcc5/#ffffff divider seams, and features round 10x10 porthole doors (rows 20-29) with 4-tone blue glass and lower vent kickplates."
+    }
+   ]
+  },
+  {
+   "id": "tr-bus-bay",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The shelter canopy shows a 6px-deep glazed top roof plane above a 3px front fascia, paired with a 3/4 wooden bench (lighter seat top + darker front apron), route map, yellow tactile platform curb, and bus stop sign pole."
+    }
+   ]
+  },
+  {
+   "id": "train-luggage-rack",
+   "final": "PASS",
+   "rounds": [
+    {
+     "overall": "PASS",
+     "v34": "PASS",
+     "q": {
+      "Q1": "PASS",
+      "Q2": "PASS",
+      "Q3": "PASS",
+      "Q4": "PASS",
+      "Q5": "PASS",
+      "Q6": "PASS"
+     },
+     "worse": false,
+     "why": "The overhead rack shows a slatted horizontal top plane supporting a 3/4 blue suitcase and tan bag (each with lighter top surfaces and shaded front faces) above a front metal rail and four hanging ad panels."
+    }
+   ]
+  }
+ ]
+}

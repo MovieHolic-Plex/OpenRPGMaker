@@ -19,7 +19,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/amuse-bowling-pins.json",
-   "gridSha256": "186f2bd02155e6359dcab8e3117c7e58fc909b6c8691017d57e29745c4ff4a29"
+   "gridSha256": "5523039f3c892c7ede75ca19606bb1bf5bf17830a58160ff36187ac1378e4f32"
   },
   {
    "id": "amuse-pachinko-island",
@@ -27,7 +27,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/amuse-pachinko-island.json",
-   "gridSha256": "85f9afcfa05930b0f7352d40a9c988e02568679502dc5da3f20e60f73ee814c0"
+   "gridSha256": "03f2d4df39aba525998d7d377d1b966f623ae47025010a2e579787446c6dced7"
   },
   {
    "id": "amuse-speaker-stack",
@@ -35,7 +35,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/amuse-speaker-stack.json",
-   "gridSha256": "12dd9afc65e95129896b9c4578c0dfa8a55c5f4f8f1b447b81c6cad02179ade3"
+   "gridSha256": "915aac517645326420513af155cea67eebf200e04edb6b3e947b52618d21a7c0"
   },
   {
    "id": "arcade-cabinet-pair",
@@ -43,7 +43,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/arcade-cabinet-pair.json",
-   "gridSha256": "77cc153267a3e2b6aa0d53e5695a9d87aaaea44058502d904edfdb38d2a6e182"
+   "gridSha256": "1f8a87d34d67fa4b1af1d3127bc1135bafb15dc993a9709bfd309d23e81ce0dd"
   },
   {
    "id": "arcade-claw-machine",
@@ -51,7 +51,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/arcade-claw-machine.json",
-   "gridSha256": "ceb5ee5bec15cee1d19de36895cfcc5e9b84f853408c315ec3b1e091de7e296d"
+   "gridSha256": "a0a85e263b8184099960aa9da122e4b83b0f38d4fe3201d2eb9759bf758fbc72"
   },
   {
    "id": "arcade-medal-changer",
@@ -59,7 +59,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/arcade-medal-changer.json",
-   "gridSha256": "d5d6a90ad612dc43c09eaf171fe521533820361fec708456cc4535ead2f7ff35"
+   "gridSha256": "e039fe483d35af38478f4ae1d038b19a0def46554399fa24c128f7d45cde1aac"
   },
   {
    "id": "arcade-prize-counter",
@@ -67,7 +67,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/arcade-prize-counter.json",
-   "gridSha256": "f3a480bd3fa769cb8169e6e14b29b2cf29a9382ca740222a28eb5bce543a6351"
+   "gridSha256": "72fc0c3d046ed47d23f69936bf66fe1f51e31301e391ec2b3052880015813f23"
   },
   {
    "id": "arcade-purikura",
@@ -75,7 +75,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/arcade-purikura.json",
-   "gridSha256": "aa18ca1568608124d7cfdb67ebad9b15e470a6e078d3eb4f6c280791462a9279"
+   "gridSha256": "41b79681f45605e902f97d3aa17b585d8015be36241335f32f23890eb4bec8d9"
   },
   {
    "id": "arcade-racing-cabinet",
@@ -83,7 +83,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/arcade-racing-cabinet.json",
-   "gridSha256": "9f08831665a1b723f71b3cde04e924daf6dc00cabba030e1155ca4200568aaf7"
+   "gridSha256": "a0d25caf9fbd2410affa982da16cae6135fb3120690834d1259cb16a61aa5a26"
   },
   {
    "id": "arcade-rhythm",
@@ -91,7 +91,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/arcade-rhythm.json",
-   "gridSha256": "edb70ebdd88ae5027fb956055ac8c71e6c243a6bed1c59f80dcfbb5c8eafb88b"
+   "gridSha256": "4bf18a0e3724f669fde0116fc06c016d2b19482a3a74903abd2d3aa5a661798e"
   },
   {
    "id": "art-plinth",
@@ -99,7 +99,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/art-plinth.json",
-   "gridSha256": "850503f1c0b5699af9050ebef97a55c80feae57ad68ad880d35eac6f6052d9e2"
+   "gridSha256": "fe817370d33e738fee7376b74425972cbb9a9d65ef69ce8d9829da91ab0460ce"
   },
   {
    "id": "aud-lectern",
@@ -107,7 +107,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/aud-lectern.json",
-   "gridSha256": "4ad3c2248384524ff29e45f8f46cbcf67d30aee15f01882dcc0c28274b61f61e"
+   "gridSha256": "ded40d99d7cf966f9b281dd3125ffdbbca0a736230711754d4fac45caf36e4f4"
   },
   {
    "id": "book-shelf",
@@ -115,7 +115,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/book-shelf.json",
-   "gridSha256": "41acf60f07589dd677929261ee1ec961e45be324f54620ca1783f61518ca8b96"
+   "gridSha256": "e88db0feda08747c9b11ae0fc551cbc30f0d315012926b4e2653370792fb75d6"
   },
   {
    "id": "cafe-maid-stage",
@@ -131,7 +131,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/cinema-concession.json",
-   "gridSha256": "7a68c9b7b43582def6f99bc34fa7753c42da68e79ca7d2fdb26ff6c11f4f8ab3"
+   "gridSha256": "4800da7058fc72458a16b87b541ca6a62fe486477ff16d1ac5ff20bc5adbf3d7"
   },
   {
    "id": "clinic-pet-kennels",
@@ -139,7 +139,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/clinic-pet-kennels.json",
-   "gridSha256": "12230d66c4a6a94fc4d8c2e88ab83be234cba4b872db61e71a6794c6f4170484"
+   "gridSha256": "213e45e9229d6c2de6dd398c7eb7fb4c9a96e73359a013085e22bca659474e3e"
   },
   {
    "id": "clinic-pharmacy-shelf",
@@ -147,7 +147,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/clinic-pharmacy-shelf.json",
-   "gridSha256": "fc8d7b41d443ff8379f6ee18994f2cd6f8fefebd70f541d1fd21b0ca6270e1b1"
+   "gridSha256": "2cc054089f8b8fbef296563a3f383740cb20b3143a2ee2037912363e75a47a61"
   },
   {
    "id": "council-trophy-case",
@@ -155,7 +155,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/council-trophy-case.json",
-   "gridSha256": "ba7316c14e5dc82c1e115199b3e7e04bd9c90c10fca79dec2ec00878b1d0ba52"
+   "gridSha256": "0b457bbe2d0c81017cf10a04c7474c137fa5d94d3a4af80308a05521d260b985"
   },
   {
    "id": "court-witness-stand",
@@ -171,7 +171,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/dept-accessory-wall.json",
-   "gridSha256": "66d02fbd508cc7dbfe237c6a4f645e9d5ff30beaf5482ad612daf9695a25c1f1"
+   "gridSha256": "afea99a1f0f1c17bf2063f3bed46329017a7e2a6a9584dd3c8f70f169928fb14"
   },
   {
    "id": "dept-directory-kiosk",
@@ -179,7 +179,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/dept-directory-kiosk.json",
-   "gridSha256": "da1de2ec54f6828df6f2816d78700cb9e5ba7729a202ce10f14c4b60f0617d6e"
+   "gridSha256": "e8e11c6e2082c7b4ad79a891697270eb5b34fe4a3004007953f896c58212f07c"
   },
   {
    "id": "dept-eyewear-tower",
@@ -187,7 +187,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/dept-eyewear-tower.json",
-   "gridSha256": "56c96099676a559983e8a3accf960a7718f0b32c5a78a79fe99ffe7b4c7ef1de"
+   "gridSha256": "5ffafae971e661980c3535735cfe889ad9c36926110dd19c566eba0e8c985ebe"
   },
   {
    "id": "dept-handbag-vitrine",
@@ -195,7 +195,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/dept-handbag-vitrine.json",
-   "gridSha256": "b0f0c2898d66830ca1d965a03f8d73cd6f59ce6a673541a2823072ab8e0ecc87"
+   "gridSha256": "682c34fec214926cb36d6c124237970f9b97debf362f0071d2fa762d3d5d3a4d"
   },
   {
    "id": "dept-nail-bar",
@@ -203,7 +203,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/dept-nail-bar.json",
-   "gridSha256": "c34a3aa3d5e4a2b10d86be78ba16a47ff6fc6c48f5ee422a642c71d3507a59bf"
+   "gridSha256": "2f7d097c4cfd8c6fab447639723f69514c8c988356cc91dfc29b2266f430e1f5"
   },
   {
    "id": "dept-perfume-wall",
@@ -211,7 +211,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/dept-perfume-wall.json",
-   "gridSha256": "f3610e30a8a21b73e00097174cba45c1a2235140c0a1f0a8db6a14ce307583ec"
+   "gridSha256": "d4ea096cbfa6f496749862f4fffb2533f868ace2646cfbf9ce5d01a3cbece752"
   },
   {
    "id": "dept-rack-cool",
@@ -219,7 +219,7 @@
     "quality"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/dept-rack-cool.json",
-   "gridSha256": "a762f73b83b6033d34ce6d142307295580003fc8f579796c28a07b413afbd7a9"
+   "gridSha256": "731b2a938f41a9d23fc197316fa248eb5ff5e5a46cbdfa7273aa877edf460b24"
   },
   {
    "id": "dept-rack-mono",
@@ -227,7 +227,7 @@
     "quality"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/dept-rack-mono.json",
-   "gridSha256": "b911bcdc4c4124e5f3d3b99a39660024761781bdf889015a336f196e78157a3f"
+   "gridSha256": "d38e0ed41e573703f63516840e7982818b494b40aec1deb981fce0ce7f930671"
   },
   {
    "id": "dept-rack-pastel",
@@ -235,7 +235,7 @@
     "quality"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/dept-rack-pastel.json",
-   "gridSha256": "9203a85141c5623dcf7f4518cf9c44ba0075cb1da13458ca693078ae4ff793ea"
+   "gridSha256": "40652bdaf56db621a3cd48b091bcca9c1d005eee8168cf55479505b8885b333c"
   },
   {
    "id": "dept-rack-warm",
@@ -243,7 +243,7 @@
     "quality"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/dept-rack-warm.json",
-   "gridSha256": "c73d5ea4007f34cda52ec8b5471cced5cbc04f20c59ccb43d2be318e5e417787"
+   "gridSha256": "efb3eafc658c78b320f2287bb0707c1f19905b6b2cd8e99c0d46bfa66663542d"
   },
   {
    "id": "dept-shoe-wall",
@@ -251,7 +251,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/dept-shoe-wall.json",
-   "gridSha256": "1f2b50b93f60239f9cecba843ef81e66883f3834a8c9d78270d2ded53368f791"
+   "gridSha256": "ee9011ec4224d1c0d09eb83f46bb10fe8b9db3ad283881cc64dfeeca85f96b34"
   },
   {
    "id": "dept-sneaker-wall",
@@ -259,7 +259,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/dept-sneaker-wall.json",
-   "gridSha256": "dcf15dfa920d55ef2d3d8a90564bb1b0f855062ffec3dbe2707e76a3b9b375a8"
+   "gridSha256": "7126b0a155bc50bd36cb9b81724cee339670e17fae3ec54459d1121597a0a3fe"
   },
   {
    "id": "food-drink-bar",
@@ -267,7 +267,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/food-drink-bar.json",
-   "gridSha256": "a19a54894bf4c19b1524fd1ebf7551e451317126f915e232eb9b88a82fa9a4d2"
+   "gridSha256": "9209b14ad610698de7556ac0c8b188dc3b659922c75f590be07990a8c424c20e"
   },
   {
    "id": "food-ticket-machine",
@@ -275,7 +275,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/food-ticket-machine.json",
-   "gridSha256": "b994b502cd45c90df2a1d9f10a47c073e2a87b4158407159145694d5fd5f56ab"
+   "gridSha256": "fa14274583e3510de325e5dccf616d8cbe8c4dcf23db3c86f7c9ecd239ccae2d"
   },
   {
    "id": "home-appliance-rack",
@@ -283,7 +283,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/home-appliance-rack.json",
-   "gridSha256": "91b1e064016bf75629d0082a106249b3c799f4e875cd4f3058068fafc2bfbd6d"
+   "gridSha256": "916d2d96772e00ed39b631896ee39e9a1c8c4b99bdd1aef4b9125231da348b9b"
   },
   {
    "id": "home-drying-rack",
@@ -291,7 +291,7 @@
     "quality"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/home-drying-rack.json",
-   "gridSha256": "80585f56253a62e4d5823c6387c5fc3f30a9a9a4063a13952c97ac941d9b977a"
+   "gridSha256": "864ce903953aac44c2079856f13d4293636370bf3919f7220a5f464987c388f1"
   },
   {
    "id": "home-ofuro",
@@ -307,7 +307,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/home-school-bag.json",
-   "gridSha256": "c3bce375d9464652b6f3def6800a6d2a96debcdb1f2516fab2766abab7bba072"
+   "gridSha256": "91c227aabb876a36c96c3360fffa76f81d84038c66891256312de583fc9a553e"
   },
   {
    "id": "home-umbrella-stand",
@@ -315,7 +315,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/home-umbrella-stand.json",
-   "gridSha256": "7d4314f559a241b42da12d85e9eb63a025893ef397c5ec879d1178840c17bec8"
+   "gridSha256": "1489179a75965b376fc6f270a966cd9d891cc3c1ae9269db66a8b082df157c88"
   },
   {
    "id": "home-washing-machine",
@@ -347,7 +347,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/hosp-anesthesia.json",
-   "gridSha256": "0f635d3b5877ac94b4d2ffe312b1c675bc3fd0e0ee72b430a306f7beb6610a5d"
+   "gridSha256": "b89fca18b8771f93f2e7e88e3dff52f47055c7a4ecc7b6d7ca74f4d920896a15"
   },
   {
    "id": "hosp-crash-cart",
@@ -355,7 +355,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/hosp-crash-cart.json",
-   "gridSha256": "814ed54f1511f6af81acffa2fb9321d36f592c94252df73c264510fd12e3c419"
+   "gridSha256": "e3e35a942742c334028d11fccfbb58447b0494e67c948a942b28f6e445b9dda9"
   },
   {
    "id": "hosp-ct-scanner",
@@ -363,7 +363,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/hosp-ct-scanner.json",
-   "gridSha256": "ff3dd7d048785026e42a069363dbd248fb27d7d7e1437b05303646ef2365f2ea"
+   "gridSha256": "0fdec6b65a50ccd43ca4aed9fde5fae1a4c6f3e98c360c82d10a2e06c9729613"
   },
   {
    "id": "hosp-ticket-dispenser",
@@ -371,7 +371,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/hosp-ticket-dispenser.json",
-   "gridSha256": "779a6e474869766251de9735b2a711e783637e8bcfa27c3123a9e229a6162244"
+   "gridSha256": "c1a374e178cedfc54dacf730d15a00c672cd49930d49fce3bd813f822740e571"
   },
   {
    "id": "hosp-vitals-bank",
@@ -379,7 +379,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/hosp-vitals-bank.json",
-   "gridSha256": "5b3736aa12a71aeae353ee52a8fc69aab550203c9eaa3a82e065f8a9b6965cb6"
+   "gridSha256": "89650188e11649a9f209388962bcf317bba6cb9e24a17dadbf6338d07f4f10bd"
   },
   {
    "id": "hospital-curtain-screen",
@@ -387,7 +387,7 @@
     "quality"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/hospital-curtain-screen.json",
-   "gridSha256": "89fb2c47e4671213d871a6ca9edce61cb2bdac330c0a1a84ba00815677433dcf"
+   "gridSha256": "2030ed1355e4f2f9bec3a4f8bc1d18fc358b4eb216a87d39c0bbe26c7fcf015b"
   },
   {
    "id": "hospital-med-cabinet",
@@ -395,7 +395,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/hospital-med-cabinet.json",
-   "gridSha256": "f29c93061548df6294d4406274e0020459220d958d8dfd8e87e191056a2faa39"
+   "gridSha256": "59ca9697591fc3bf75b68e0df3e7fe783ab4223ef53ab793d625e631cc781dd6"
   },
   {
    "id": "hospital-nurse-station",
@@ -403,7 +403,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/hospital-nurse-station.json",
-   "gridSha256": "676e4503140577a9f9655d4d82be264184a82ff8c090a7d74436cc08c7096d92"
+   "gridSha256": "e4f91618cfb8076be6bdab2c486ce58a44c25f225f1730c29bf3d55c79388ec4"
   },
   {
    "id": "hospital-water-dispenser",
@@ -411,7 +411,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/hospital-water-dispenser.json",
-   "gridSha256": "4aa1ef9b26a7bf58a2255c05bcc7468a64aa2e40ecb8e86cec07d670688c47d3"
+   "gridSha256": "7572e34a73ca7ac74da7cc954888b4c0e4464abde68b918785f65a30d8be2bbf"
   },
   {
    "id": "hotel-capsule-pods",
@@ -419,7 +419,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/hotel-capsule-pods.json",
-   "gridSha256": "0bbb8309bcb36ca52a175a94ec01861aea0bd4a15856291069756537f4dcedd3"
+   "gridSha256": "8ec390b542ff8d23f6abf2599900d7a403a1e64fb5a10b4fa88f9608dc4d721b"
   },
   {
    "id": "ind-lathe",
@@ -427,7 +427,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/ind-lathe.json",
-   "gridSha256": "066847cda48dac051b717e873ca31aa8106c1a732d34502fa38231c0895fe52d"
+   "gridSha256": "757b7138ccfceeecc174f5cfa1192438d592bec457fff9085e19dc511f9ade79"
   },
   {
    "id": "infirmary-eye-chart",
@@ -443,7 +443,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/izakaya-beer-server.json",
-   "gridSha256": "2319954163200236aa512004d15ba796d4a39d6630e01ea02b5f63b3248a3d40"
+   "gridSha256": "d6e359f898bdaba67c318bda80e15d976b277d2754e9d31177cde1f6b038560e"
   },
   {
    "id": "jp-tokonoma",
@@ -459,7 +459,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/jp-torii.json",
-   "gridSha256": "9b2b784aeda8b540746a56f7377187f942ce0397ce6022884c6c50182f2eb54e"
+   "gridSha256": "b56af8e7b8f66234e822b79a8411b98debd5cb5c6bea8d5cef9231ef70ba687c"
   },
   {
    "id": "jumbo-arcade-dance-stage",
@@ -467,7 +467,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/jumbo-arcade-dance-stage.json",
-   "gridSha256": "29d391864b7bf67c1da81a06948bf3c804f00834dcbb300212d3ff762628f53c"
+   "gridSha256": "b8b2cb43950593f6fe22c01566014ed85341d7dd95a15b1a2b371b2c8322d0d8"
   },
   {
    "id": "jumbo-arcade-racing-twin",
@@ -475,7 +475,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/jumbo-arcade-racing-twin.json",
-   "gridSha256": "2c1836ed951af26806d89b4307d7eed169ad3fd427efebf805d8c8064c0bb366"
+   "gridSha256": "380e1b6491a4f2a03dfff4208f25cbcd63dbe282ba810386e6181b17459f1133"
   },
   {
    "id": "jumbo-hosp-mri",
@@ -483,7 +483,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/jumbo-hosp-mri.json",
-   "gridSha256": "ab60f39f9a4ebb8797233e0ef50abcf3c4efa2a98cea121e3c88f1dae3553e36"
+   "gridSha256": "b1c1252e7ad41ca294a612e45579a944a589ab41d66d6e525ae1fb41e6951afd"
   },
   {
    "id": "jumbo-station-ticket-office",
@@ -491,7 +491,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/jumbo-station-ticket-office.json",
-   "gridSha256": "064b2168ad90c2621ada6eda64a1b1d0f6eca7b44dda51570cf1366bddd8224f"
+   "gridSha256": "425b3fe2003ae0662327f62303ff1eebb6136ae36edf0f00a4469e6905769bfe"
   },
   {
    "id": "kinder-cubby",
@@ -499,7 +499,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/kinder-cubby.json",
-   "gridSha256": "23154fdfcf3fb4208adddb104ca01d67a9d62b04c05440a2b4969455ff7e5953"
+   "gridSha256": "35e86c25456cb8c8248d61e460a735e9dd3266a80edeee868eab0ad53e9d58c9"
   },
   {
    "id": "kinder-play-mat",
@@ -515,7 +515,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/konbini-atm.json",
-   "gridSha256": "67c6d63b217b500b504c84e16bfc19f4c61438c1c10f142113b7b83f3329c094"
+   "gridSha256": "483c3a9eadcc9591738e81dbe818eb18fb3da5f2975b8999f3c6f08977c60298"
   },
   {
    "id": "konbini-bento",
@@ -523,7 +523,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/konbini-bento.json",
-   "gridSha256": "3eb53ba332f724849d742a5a4a63692ed92e2ad878b3e5f06831ce5473bb16c9"
+   "gridSha256": "1f641dd5e30603163b1befeec85b9bb47393c0a14bdb138522e367bc1b0174e0"
   },
   {
    "id": "konbini-copier",
@@ -531,7 +531,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/konbini-copier.json",
-   "gridSha256": "4fb441c1796f2f8bb59276aa7de7a386c053e6534375ec1071f68342953537ef"
+   "gridSha256": "6412fba769071dd719ed03c71ab617736ecfb70bcb9b71f00932cb1f04826930"
   },
   {
    "id": "konbini-hot-snack",
@@ -547,7 +547,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/konbini-magazine-rack.json",
-   "gridSha256": "448f125ede7cdd2ff46a96672b119b08375ebae1076c0216457f7bcc248c9502"
+   "gridSha256": "f005e412101b7cb62c8e0c3cfa7a47341d4355f7c0931b1737eea4c84f5fb057"
   },
   {
    "id": "lab-fume-hood",
@@ -555,7 +555,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/lab-fume-hood.json",
-   "gridSha256": "e93aeb0a8259b695b5f745a73702b220e16ada23628823da038e26276c7aae0d"
+   "gridSha256": "e2efd6edc6670298d662bd99f56ea36c5ce028ae7a11f2cfbdbe87e85e6eea61"
   },
   {
    "id": "lab-reagent-shelf",
@@ -563,7 +563,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/lab-reagent-shelf.json",
-   "gridSha256": "e311883b0b3e43aeb4c9fc30a0a6510d9d48fc76573d60b2294f7d2e729a8266"
+   "gridSha256": "14c22e26a87f0ed59b16f91d3b553722263f837812453ae4529b4628a2a7a9ee"
   },
   {
    "id": "lecture-podium",
@@ -571,7 +571,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/lecture-podium.json",
-   "gridSha256": "cfe221e751ebc6a34d77d6c758b45d6c88158e0d6e380223945db25e27a3b588"
+   "gridSha256": "6d4048286ff9cbc52e1cb19bc6b41d17c0e2c59a96d50addc6f719857f249e0c"
   },
   {
    "id": "library-carrel",
@@ -579,7 +579,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/library-carrel.json",
-   "gridSha256": "9e80377f17ce9058ca24b69ff7a3cd7382c67156fd92fa58d32401d97e2ee072"
+   "gridSha256": "4a2e05bd28143efb3f5fc8b69a92efad98f1fa2f47f784948f7ec657d0617132"
   },
   {
    "id": "library-shelf",
@@ -595,7 +595,7 @@
     "quality"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/manga-booth.json",
-   "gridSha256": "7879c58f10bc86da308ea0b22a58f1fe2272782e7952ee4eb711bf14301cb2a4"
+   "gridSha256": "81b4bad41158e84642f79671534b0daf61ea90582af8fdbd80aacf0fc7abc79f"
   },
   {
    "id": "manga-shelf",
@@ -611,7 +611,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/mart-baguette-basket.json",
-   "gridSha256": "620f29a01df506c290d2eab89e969014a6fa8669b6189403754860b38c7d7fcc"
+   "gridSha256": "22513cba6e09598e41854298eea010bc2c10edef46db233c0ba0bf588a5c1efa"
   },
   {
    "id": "mart-basket-stacker",
@@ -619,7 +619,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/mart-basket-stacker.json",
-   "gridSha256": "d0da915b5750cbaf0ed2291d006b1ef4bb5f648af4acaf72b5a23c7d5a0f2b4d"
+   "gridSha256": "acd8cf0930dafe0c4e3ec4e75492cdc35c7f4a74acaad94ca6d22813298fcdaf"
   },
   {
    "id": "mart-bread-rack",
@@ -787,7 +787,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/mart-scale-station.json",
-   "gridSha256": "841444b42438bb9d6a58382786324abc89abe526133cf45a057692a85d77c830"
+   "gridSha256": "729a921e5cf7d5fbaa85dd7bf06ed228a094c96aec93d865565997d62e93e9dd"
   },
   {
    "id": "mart-veg-wall",
@@ -819,7 +819,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/mci-magazine.json",
-   "gridSha256": "336afbdc300e8372df92035accaafe319cbacc490df773a7f4f5feff62d10a76"
+   "gridSha256": "5266ecd4211715b7b4e7a102f2c94925d07cf1a2c679c263d6bec882de71fc40"
   },
   {
    "id": "mci-mailboxes",
@@ -851,7 +851,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/mci-shelf-office.json",
-   "gridSha256": "02619627daa3bc3a18327dfe4f788d34827be5ca96fec6aee9c434bc9aea1bdb"
+   "gridSha256": "91c6568c748bda3ada25c7af67c710d0fe0144cfc67176200595ecfa812a3aef"
   },
   {
    "id": "mci-toilet",
@@ -867,7 +867,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/mci-tv-stand.json",
-   "gridSha256": "ae7e1d9b74823263469ddd869ab7a2b21c1be9ee17607d1366c44aa471fc94cc"
+   "gridSha256": "719e266e19217959e50c5d6b056d4db21fa40588c0a45fb99c4b94995b27e0f4"
   },
   {
    "id": "museum-partition-wall",
@@ -891,7 +891,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/office-water-cooler.json",
-   "gridSha256": "0555a3d11cb92f0f579787e1bea4603056a9ec6e35896fcbbdecf57eb4a4a87d"
+   "gridSha256": "fa039ebc399ba68281deafeacb32aea0d500c9d5cff4b743197ef053035c692a"
   },
   {
    "id": "park-pay-machine",
@@ -915,7 +915,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/pub-atm.json",
-   "gridSha256": "8c6a0f7e63d6f2e49c066a8bebf6d72b2048dc08ce26e729f0e6ce074f4d4407"
+   "gridSha256": "5337b5321a11d7d2b2db10a14b1b9f793ade6c3caa248cfebc45183db99613a3"
   },
   {
    "id": "pub-fire-locker",
@@ -923,7 +923,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/pub-fire-locker.json",
-   "gridSha256": "712edcb95d1b15f3f17852744593145f5e53ddb0d5d7b1605e10d67873390107"
+   "gridSha256": "a11ebc62945902577f808eb3903d948c73d5fffaf2ab9b27813a718ab17f7d5a"
   },
   {
    "id": "pub-service-window",
@@ -931,7 +931,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/pub-service-window.json",
-   "gridSha256": "51510006185b32775ce973902f7a4c43177758e68043a14975ca0ee6ddadfde4"
+   "gridSha256": "78a91cda94c504f545a75dde183f13beea51f05ff11eb7686a39835eaa288c7c"
   },
   {
    "id": "pub-ticket-dispenser",
@@ -939,7 +939,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/pub-ticket-dispenser.json",
-   "gridSha256": "b4b9323c7fa9c6a9c0cd9583491168ad0b0cfe2e887ca2e1c86f1b1a593644b1"
+   "gridSha256": "8cad30cd975662a0724b54f5f867a71f3c87690ee50637db3ebaa624e00a3fb3"
   },
   {
    "id": "rest-bottle-shelf",
@@ -979,7 +979,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/roof-water-tank.json",
-   "gridSha256": "eeccd43aed0801dc2378d22a73704c0ebab09e46de08a2696fb7c52f6dd5db8c"
+   "gridSha256": "b31933563305ab173828e2d7c60b0de10a7c70aad5f865c98b705423ee0c3f33"
   },
   {
    "id": "school-cleaning-locker",
@@ -987,7 +987,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/school-cleaning-locker.json",
-   "gridSha256": "7bcedf936c5ba224cbe574a6f51866d3cc400cca509e2ffa27ff6bc78df5272a"
+   "gridSha256": "b4b58ec415d23c4843773d73317ba51b51c919d39e4b8729cf2a420e613d6afd"
   },
   {
    "id": "school-piano",
@@ -995,7 +995,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/school-piano.json",
-   "gridSha256": "ccb75b1dd2b564f670b3618447d24f4610f4c8211b08cc38692835f3204447a1"
+   "gridSha256": "110f63383731e2768c69dd470abe6bc82263100cb924f82791254f74109d5312"
   },
   {
    "id": "sento-shoe-locker",
@@ -1003,7 +1003,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/sento-shoe-locker.json",
-   "gridSha256": "72e306436f355422f19a52b44fb5cb918322b2e6bf308238bb582b090ba7438e"
+   "gridSha256": "68a33ca975e3fee20356c617d78be2463cc19f36b4cac73b62018622dcfa903d"
   },
   {
    "id": "shop-drug-gondola",
@@ -1011,7 +1011,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/shop-drug-gondola.json",
-   "gridSha256": "2e4af83b4094538d5b64d0c48b09b0adb3d4b18221e513464c49e7effdebd785"
+   "gridSha256": "faf26e4d50cb5818d9d59c12db9e0eeb8b0ff36e1dc34d48074f833f7c206af3"
   },
   {
    "id": "shop-flower-cooler",
@@ -1019,7 +1019,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/shop-flower-cooler.json",
-   "gridSha256": "2ca57e5214eb1f841bf3575390b3e66fdc781bef346eb8b9c9853e853f2dc000"
+   "gridSha256": "94d958141aec789cf29ce0141d0875121a7cabbb7d48ea149427a1961668bd81"
   },
   {
    "id": "shop-peg-wall",
@@ -1027,7 +1027,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/shop-peg-wall.json",
-   "gridSha256": "37b4a02cc517d2d279eba8f5ec07b4e94d31894adac99f2d14b24cc9990081a6"
+   "gridSha256": "3491a39acbe224fa5b1c36657001e94b4fe6adf2c6ecfe41b35c57f7a6f01499"
   },
   {
    "id": "shop-stationery-rack",
@@ -1035,7 +1035,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/shop-stationery-rack.json",
-   "gridSha256": "4aad9da06e48f401dc848f85cb1af65f22b224671fe6ec348a1f160dc61c9f20"
+   "gridSha256": "5bafd60f7f9e0cb4fc8a2eaf84da4a3b248b8fb8ad76b753325b6eea46b23a63"
   },
   {
    "id": "shop-used-shelf",
@@ -1043,7 +1043,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/shop-used-shelf.json",
-   "gridSha256": "165f85af83bd6b1defc99b7b25f3d1fd1564c0ac15652b5627b55088fd248aac"
+   "gridSha256": "0d6f57cd97cf7fe09c9be718297d4b036fcd1c16aba7ba590285828d18e4ef4e"
   },
   {
    "id": "station-coin-lockers",
@@ -1051,7 +1051,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/station-coin-lockers.json",
-   "gridSha256": "a24202f34788523dd37745a8c9919ba5cea9e47af3bcb72bca30df0361b29dcd"
+   "gridSha256": "de50cec3df553833b9bf494a31701f1917bb7b462e6d1fa7aaf4f2508e6fb6e1"
   },
   {
    "id": "station-ic-charger",
@@ -1059,7 +1059,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/station-ic-charger.json",
-   "gridSha256": "403b5c6e9177fc6aa7c69bc5ae1055159b11fc2d251948823dd8aab39f85e084"
+   "gridSha256": "b96123b612165722ed3d067ebddbb40b76dfe73661c1a8e07df10a83043163b5"
   },
   {
    "id": "subway-pillar-sign",
@@ -1067,7 +1067,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/subway-pillar-sign.json",
-   "gridSha256": "28bdd596f3f83867bfd6fbdfec18e37e6ef29fedf380a34a47e7bdea719df742"
+   "gridSha256": "afdcd3423b4c38fbc55d20661d42e5dfdfb4e87513d44a6d26e90342c88e6ce6"
   },
   {
    "id": "subway-ticket-machine",
@@ -1075,7 +1075,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/subway-ticket-machine.json",
-   "gridSha256": "c39f9727a687f0c69e43c954f5431cb01d6969536e3afcda344e36d987b05e0c"
+   "gridSha256": "05f36020c2c37108f5afbc5d35d9e2bff6dadb2d1c4e6d6b0147f0a9b0431d66"
   },
   {
    "id": "subway-trash-bins",
@@ -1083,7 +1083,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/subway-trash-bins.json",
-   "gridSha256": "8b7dcbbbe689abfdf0467ccc98db473adbeeb2a9552ff07acd7d38f413d26797"
+   "gridSha256": "b5624b187c6b8a47c38e154871da4a7b55c41222d346259be88a58b39e8e96bc"
   },
   {
    "id": "subway-vending-machine",
@@ -1091,7 +1091,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/subway-vending-machine.json",
-   "gridSha256": "c69a3c55762c3378f649d829537172b59fa140678cd413726772697c57b4d8e4"
+   "gridSha256": "05226996d205f5b9fc2deeb8f432367ae7426758396a7cfd92e52764041e2992"
   },
   {
    "id": "svc-arcade-shopfront",
@@ -1107,7 +1107,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/svc-dryer-stack.json",
-   "gridSha256": "d4373fbcec845a16112a0e775bcb5ffa92c6d2f02bf6636818cd475d1acb3f8e"
+   "gridSha256": "6f732f12c8dd3b4e576dbd79709a2307ee0c62bc221953fdd9082d5c40a01745"
   },
   {
    "id": "svc-salon-basin",
@@ -1115,7 +1115,7 @@
     "quality"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/svc-salon-basin.json",
-   "gridSha256": "ee2e27d2202f7f997c12d08a433b8c9d305931c041f57b35c09ac4103a1c3688"
+   "gridSha256": "f816421619b842924e9767676f06aa6018d1c71af9986d87405b035c4995cbc4"
   },
   {
    "id": "svc-salon-mirror",
@@ -1123,7 +1123,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/svc-salon-mirror.json",
-   "gridSha256": "489ea29cf616ccacc376cf6d8f839a109264e07931bb8b81ce04ed92e8819034"
+   "gridSha256": "d9835107717dbda2f2e277a4e239083297ea0ec1640decb258aa0a3b373880e5"
   },
   {
    "id": "svc-washer-row",
@@ -1131,7 +1131,7 @@
     "3/4"
    ],
    "grid": "tiledata/modern-city/interior/r16/grids/svc-washer-row.json",
-   "gridSha256": "4018d1c40ede8490d953c33dc1c0d9675f9922a676910e26607323b8155a35c3"
+   "gridSha256": "28da3b50816a478a79eecdec24879a904afc16e291ffc1c675d0b665b2b8c075"
   },
   {
    "id": "tr-bus-bay",
@@ -1149,5 +1149,12 @@
    "grid": "tiledata/modern-city/interior/r16/grids/train-luggage-rack.json",
    "gridSha256": "860bfb4c3db020e57ed1675cd94821b2ec7fc9c6d55cfc5403a60874bc285a8d"
   }
- ]
+ ],
+ "adversarialRecheck": {
+  "judge": "Gemini 4 Argon high (independent, not the drawer)",
+  "rubric": "claude-viz/interior-props-quality-rubric-1.json",
+  "file": "tiledata/modern-city/interior/r16/rejudge2.json",
+  "finalPass": 142,
+  "finalFail": []
+ }
 }
