@@ -106,5 +106,5 @@ export const gatePromptHash = (half: 'view34' | 'style' | 'eye' = 'view34') => {
   if (half === 'eye') return objectGateProfileHash({ half, judges: p.judges, eyeRubric: p.eyeRubric, eyeOutputFormat: p.eyeOutputFormat, view34Pairs: p.view34Pairs, magnify: p.magnify });
   return objectGateProfileHash(half === 'view34'
     ? { half, judges: p.judges, factsVersion: p.factsVersion, rubric: p.rubric, outputFormat: p.outputFormat, view34Guide: p.view34Guide, view34Pairs: p.view34Pairs, magnify: p.magnify, kinds: Object.fromEntries(Object.entries(p.kinds as Record<string, { meaning: string }>).filter(([k]) => k !== 'front_prop').map(([k, v]) => [k, v.meaning])) }
-    : { half, judges: p.judges, factsVersion: p.factsVersion, styleRubric: p.styleRubric, styleOutputFormat: p.styleOutputFormat, styleKinds: p.styleKinds, styleRefs: p.styleRefs });
+    : { half, judges: p.judges, factsVersion: p.factsVersion, styleFactsVersion: p.styleFactsVersion, styleRubric: p.styleRubric, styleOutputFormat: p.styleOutputFormat, styleKinds: p.styleKinds, styleRefs: p.styleRefs });
 };

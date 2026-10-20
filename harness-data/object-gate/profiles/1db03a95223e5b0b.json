@@ -1,0 +1,211 @@
+{
+ "schema": "oprn-object-gate-profile/1",
+ "profileHash": "1db03a95223e5b0b",
+ "status": "rejected",
+ "calibratedAt": "2026-10-20T08:55:02.822Z",
+ "bad": {
+  "total": 30,
+  "caught": 30,
+  "missed": [],
+  "refer": 9
+ },
+ "good": {
+  "total": 29,
+  "passed": 25,
+  "falseFail": [
+   "interior/roundtable__v5",
+   "interior/timber_prop__w53-B",
+   "interior/cheese_wheels__v5",
+   "interior/bookshelf_1w__w41-A"
+  ],
+  "refer": 4
+ },
+ "tiers": {
+  "A": {
+   "bad": {
+    "total": 103,
+    "passed": 1
+   },
+   "good": {
+    "total": 149,
+    "passed": 121
+   }
+  },
+  "B": {
+   "bad": {
+    "total": 7,
+    "passed": 2
+   },
+   "good": {
+    "total": 0,
+    "passed": 0
+   }
+  },
+  "C": {
+   "bad": {
+    "total": 43,
+    "passed": 15
+   },
+   "good": {
+    "total": 28,
+    "passed": 8
+   }
+  },
+  "U": {
+   "bad": {
+    "total": 16,
+    "passed": 1
+   },
+   "good": {
+    "total": 15,
+    "passed": 0
+   }
+  },
+  "D": {
+   "bad": {
+    "total": 16,
+    "passed": 11
+   },
+   "good": {
+    "total": 0,
+    "passed": 0
+   }
+  },
+  "K": {
+   "bad": {
+    "total": 0,
+    "passed": 0
+   },
+   "good": {
+    "total": 10,
+    "passed": 0
+   }
+  }
+ },
+ "holdout": {
+  "bad": {
+   "total": 47,
+   "caught": 47,
+   "missed": []
+  },
+  "good": {
+   "total": 47,
+   "passed": 43,
+   "falseFail": [
+    "holdout/mir_straw_bed__w44-A",
+    "holdout/mir_cheese_wheels__v5",
+    "holdout/mir_bookshelf_1w__w41-A",
+    "holdout/hue_cheese_wheels__v5"
+   ]
+  }
+ },
+ "fresh": {
+  "bad": {
+   "total": 7,
+   "caught": 7,
+   "missed": []
+  },
+  "good": {
+   "total": 42,
+   "passed": 31,
+   "falseFail": [
+    "fresh3/b3_prop-stall_jug_bottle",
+    "fresh3/b3_prop-anchor_display",
+    "fresh3/b3_prop-mooring_bollard",
+    "fresh3/b3_prop-tree_planter",
+    "fresh3/b3_prop-statue_sage",
+    "fresh/g6_snow",
+    "fresh/g20_campus",
+    "fresh/g53_modern_city",
+    "fresh/g18_modern_city",
+    "fresh2/g7_steampunk",
+    "fresh2/g12_modern_city"
+   ]
+  }
+ },
+ "frozen": {
+  "set": "fresh4",
+  "bad": {
+   "total": 19,
+   "caught": 18,
+   "missed": [
+    "fresh4/q001_gothic"
+   ]
+  },
+  "good": {
+   "total": 31,
+   "passed": 22,
+   "falseFail": [
+    "fresh4/q008_interior",
+    "fresh4/q031_sf",
+    "fresh4/q048_modern_city",
+    "fresh4/q054_desert",
+    "fresh4/q078_interior",
+    "fresh4/q092_modern_city",
+    "fresh4/q102_steampunk",
+    "fresh4/q110_beodeul",
+    "fresh4/q118_modern_city"
+   ]
+  },
+  "style": {
+   "shallow": {
+    "total": 6,
+    "caught": 6,
+    "missed": []
+   },
+   "beodeul": {
+    "total": 15,
+    "passed": 11,
+    "falseFail": [
+     "fresh4/q086_beodeul",
+     "fresh4/g4_beodeul-road",
+     "fresh4/g4_beodeul-sand",
+     "fresh4/g4_beodeul-farmland"
+    ]
+   }
+  }
+ },
+ "probe": {
+  "total": 144,
+  "passed": 0,
+  "missed": []
+ },
+ "humanOnly": {
+  "total": 4,
+  "refer": 4,
+  "autoPassed": []
+ },
+ "style": {
+  "badTotal": 8,
+  "caught": 8,
+  "missed": [],
+  "badRefer": 0,
+  "goodTotal": 14,
+  "passed": 14,
+  "falseFail": [],
+  "goodRefer": 0,
+  "groups": {
+   "farm-user": {
+    "total": 10,
+    "passed": 5
+   },
+   "quality-before": {
+    "total": 60,
+    "passed": 13
+   },
+   "quality-after": {
+    "total": 60,
+    "passed": 17
+   },
+   "beodeul-heldout": {
+    "total": 13,
+    "passed": 12
+   },
+   "synthetic-shallow": {
+    "total": 6,
+    "passed": 0
+   }
+  }
+ },
+ "judge": "claude-sonnet-5-5(high)"
+}

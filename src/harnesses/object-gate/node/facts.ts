@@ -36,7 +36,7 @@ export function columnScan({ width, height, data }: Img): string {
   return lines.join('\n');
 }
 
-export type StyleFacts = { tileColorsMedian: number; flatFill: number; neutralEdge: number; distinctColors: number; opaquePixels: number };
+export type StyleFacts = { tileColorsMedian: number; flatFill: number; neutralEdge: number; distinctColors: number; opaquePixels: number; visibleTonesMedian: number; nearFlatFill: number };
 
 /** 화풍 측정: 16px 칸당 고유색 중앙값 · 같은 색 5×5 평면 채움이 덮는 비율 · 어두운 가장자리 화소 중 거의 무채색(채도 ≤12)인 비율 · 고유색 수. */
 export function styleFacts({ width, height, data }: Img): StyleFacts {
@@ -49,6 +49,22 @@ export function styleFacts({ width, height, data }: Img): StyleFacts {
     if (op >= 128) counts.push(set.size);
   }
   counts.sort((p, q) => p - q);
+  // 규칙 v9(화풍 측정 v3): 보이는 색조 — 채널마다 16단(>>4)으로 묶은 색 수. 버들항 풀·나무는 눈에 같은 색인 거의 같은 초록 수십 개로 원색 수가 부풀어 있다(풀 칸 원색 26 → 보이는 색조 3).
+  const bin = (x: number, y: number) => ((data[(y * width + x) * 4]! >> 4) << 8) | ((data[(y * width + x) * 4 + 1]! >> 4) << 4) | (data[(y * width + x) * 4 + 2]! >> 4);
+  const tones: number[] = [];
+  for (let ty = 0; ty < height; ty += 16) for (let tx = 0; tx < width; tx += 16) {
+    const set = new Set<number>(); let op = 0;
+    for (let y = ty; y < Math.min(height, ty + 16); y++) for (let x = tx; x < Math.min(width, tx + 16); x++) if (a(x, y)) { op++; set.add(bin(x, y)); }
+    if (op >= 128) tones.push(set.size);
+  }
+  tones.sort((p, q) => p - q);
+  const nearFlat = new Uint8Array(width * height);
+  for (let y = 0; y + 4 < height; y++) for (let x = 0; x + 4 < width; x++) {
+    if (!a(x, y)) continue; const k = bin(x, y); let same = true;
+    for (let dy = 0; dy < 5 && same; dy++) for (let dx = 0; dx < 5; dx++) if (!a(x + dx, y + dy) || bin(x + dx, y + dy) !== k) { same = false; break; }
+    if (same) for (let dy = 0; dy < 5; dy++) for (let dx = 0; dx < 5; dx++) nearFlat[(y + dy) * width + x + dx] = 1;
+  }
+  let nearFlatN = 0; for (const v of nearFlat) nearFlatN += v;
   const flat = new Uint8Array(width * height); let opaque = 0;
   const all = new Set<number>();
   for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) if (a(x, y)) { opaque++; all.add(key(x, y)); }
@@ -66,10 +82,10 @@ export function styleFacts({ width, height, data }: Img): StyleFacts {
     if (Math.max(r, g, b) >= 110) continue;
     edge++; if (Math.max(r, g, b) - Math.min(r, g, b) <= 12) neutral++;
   }
-  return { tileColorsMedian: counts.length ? counts[Math.floor(counts.length / 2)]! : 0, flatFill: opaque ? Math.round((flatN / opaque) * 100) / 100 : 0, neutralEdge: edge ? Math.round((neutral / edge) * 100) / 100 : 0, distinctColors: all.size, opaquePixels: opaque };
+  return { tileColorsMedian: counts.length ? counts[Math.floor(counts.length / 2)]! : 0, flatFill: opaque ? Math.round((flatN / opaque) * 100) / 100 : 0, neutralEdge: edge ? Math.round((neutral / edge) * 100) / 100 : 0, distinctColors: all.size, opaquePixels: opaque, visibleTonesMedian: tones.length ? tones[Math.floor(tones.length / 2)]! : 0, nearFlatFill: opaque ? Math.round((nearFlatN / opaque) * 100) / 100 : 0 };
 }
 
-export const factsLine = (name: string, f: StyleFacts) => `${name}: median distinct colours per full 16x16 tile=${f.tileColorsMedian}, 5x5 flat-fill coverage=${Math.round(f.flatFill * 100)}%, near-neutral share of dark edge pixels=${Math.round(f.neutralEdge * 100)}%, distinct colours=${f.distinctColors}`;
+export const factsLine = (name: string, f: StyleFacts) => `${name}: VISIBLE tones per full 16x16 tile (colours merged to 16 levels per channel)=${f.visibleTonesMedian}, near-flat coverage (5x5 blocks with no visible change)=${Math.round(f.nearFlatFill * 100)}%, near-neutral share of dark edge pixels=${Math.round(f.neutralEdge * 100)}% | raw: distinct colours per tile=${f.tileColorsMedian}, exact 5x5 flat-fill=${Math.round(f.flatFill * 100)}%, distinct colours=${f.distinctColors}`;
 
 /** 행마다 불투명 화소 수(실루엣 폭)를 같은 폭끼리 묶은 표 — 타원 뚜껑·기둥 머리가 「넓어졌다 좁아지는지」를 판정자가 글자로 읽게 한다. */
 export function widthProfile({ width, height, data }: Img): string {
