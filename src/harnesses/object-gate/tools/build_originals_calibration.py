@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 import argparse
+import re
 import hashlib
 import json
 import shutil
@@ -35,7 +36,7 @@ INTERIOR_KIND = {
     "basket": "container", "pot": "container", "water jar": "container", "cauldron": "container", "bathtub": "container",
     "holy water font": "container", "potted fern": "container", "potted flowering": "container", "potted cactus": "container",
     "barrel": "round_body", "quench barrel": "round_body",
-    "shelf": "wall_mounted", "cabinet": "tall_furniture", "cupboard": "tall_furniture", "wardrobe": "tall_furniture", "bookshelf 1w": "tall_furniture",
+    "shelf": "wall_structure", "cabinet": "tall_furniture", "cupboard": "tall_furniture", "wardrobe": "tall_furniture", "bookshelf 1w": "tall_furniture",
     "bookshelf 2w": "tall_furniture", "bookshelf 3w": "tall_furniture", "apothecary drawers": "tall_furniture", "fireplace": "tall_furniture", "stove": "tall_furniture",
     "washbasin": "low_furniture", "table": "low_furniture", "roundtable": "low_furniture", "nightstand": "low_furniture", "dining 2x1": "low_furniture", "desk 2x1": "low_furniture",
     "work 2x1": "low_furniture", "tea 2x1": "low_furniture", "counter 2x1": "low_furniture", "bed green": "low_furniture", "double bed red": "low_furniture",
@@ -107,6 +108,50 @@ def apply_audit_to_sets(audit: list[dict]) -> None:
         path.write_text(json.dumps(items, ensure_ascii=False, indent=1) + "\n")
 
 
+def base_name(label: str) -> str:
+    """같은 물건의 변형(거울·눌림·얇게·색조·다른 묶음 사본)을 한 이름으로 — 틀린 예·대조 쌍과 같은 물건은 채점에서 같이 뺀다(누설 방지)."""
+    n = label.split("/", 1)[1]
+    n = re.sub(r"^(holdout|interior|murim|fresh2?|style)__", "", n)
+    n = re.sub(r"^(mir|flat|thin|hue|real|realbad)_", "", n)
+    return re.sub(r"^(int|v5l|jp|beodeul|synthetic)__", "", n)
+
+
+# 대조 쌍(v9, 감독 지시 2026-10-21): 약한 유형마다 같은 칩셋의 맞는 그림 하나와 위반 하나. 판정자에게 같은 종류 줄에 보이고, 채점에서 뺀다.
+# 고르는 규칙: v7·v8 에서 판정이 틀린 「어려운」 그림(hard-2026-10-21.json)과 같은 물건은 쓰지 않는다 — 어려운 표본을 채점에서 지우는 것이 되기 때문.
+# 예외 하나: 합성 집은 위반이 h106·h122 둘뿐이라 h122 쌍을 쓰고 h106 은 채점에 남긴다(보고에 적는다).
+CONTRAST = [
+    {"pattern": "seat backrest vs seat", "kind": "seat", "good": "pairs/new-pew-e", "bad": "interior/pew__v5",
+     "note": "same pew redrawn: green shows the seat plank as a top plane (rows of seat seen from above) in front of the backrest; red shows the backrest face-on with only a thin strip where the seat should be"},
+    {"pattern": "wooden stand frame", "kind": "frame", "good": "style/prehistoric__fish-rack__after", "bad": "style/prehistoric__fish-rack__before",
+     "note": "same rack: green draws the beams and posts with lit top faces and tinted outlines; red is the flat early version"},
+    {"pattern": "composite house", "kind": "structure", "good": "style/beodeul__house-h122_0", "bad": "style/synthetic__house-h122_0", "allowHard": True,
+     "note": "same house: green is the original; red is the same house quantised to 4 colours with a near-black outline (charge 8a/8b)"},
+    {"pattern": "counter or cart with goods", "kind": "low_furniture", "good": "fresh3/b3_prop-veg_cart", "bad": "holdout/flat_nightstand__w8-C",
+     "note": "green: goods heaped on a deck whose top plane is visible behind and between them; red: the top is a 1-2 row lip over a flat front"},
+    {"pattern": "barrel", "kind": "round_body", "good": "originals-interior/int__barrel__apple", "bad": "interior/powder_kegs__w9-B",
+     "note": "green: a barrel filled with apples seen from above inside the rim; red: barrel ends drawn face-on with no top ellipse"},
+    {"pattern": "cauldron or basin", "kind": "container", "good": "originals-interior/int__holy_water_font", "bad": "fresh4/q039_interior",
+     "note": "green: liquid surface seen from above inside an elliptical rim, about 3 rows at 16px; red: the rim is a 1-2 row dark band and nothing inside is seen"},
+    {"pattern": "potted plant", "kind": "container", "good": "originals-interior/int__potted_flowering", "bad": None,
+     "note": "green: the plant fills the pot mouth seen from above; the rim ellipse shows behind the stems"},
+    {"pattern": "bed footboard", "kind": "low_furniture", "good": "originals-interior/int__double_bed_red", "bad": None,
+     "note": "green: a bed is mostly its top (pillows, blanket) seen from above with a short footboard front of 2-4 rows — that is correct for beds"},
+]
+
+
+def check_contrast() -> list[dict]:
+    for c in CONTRAST:
+        for side in ("good", "bad"):
+            lab = c.get(side)
+            if not lab:
+                continue
+            if not (CAL / f"{lab}.png").exists():
+                raise SystemExit(f"대조 쌍 그림 없음: {lab}")
+            if base_name(lab) in HARD_BASES and not c.get("allowHard"):
+                raise SystemExit(f"대조 쌍 {lab} 은 어려운 표본과 같은 물건이다 — 쓰지 않는다")
+    return CONTRAST
+
+
 def negatives(skip: set[str]) -> dict[str, list[str]]:
     """종류마다 확실(A) 3/4 위반 2장 — 판정자에게 같은 종류의 「틀린 예」로 보인다. 이 그림들은 보정 (a)·(b) 에서 뺀다(누설 방지)."""
     tiers = json.loads((CAL / "tiers.json").read_text()).get("tiers", {})
@@ -128,10 +173,13 @@ def negatives(skip: set[str]) -> dict[str, list[str]]:
     out = {}
     for k, labels in pool.items():
         # 감사한 표본(놓친 위반 등)은 쓰지 않는다 — 틀린 예로 쓰면 (a) 에서 빠져 숫자가 좋아진다. 고르는 순서는 이름의 해시(결정적, 판정 결과와 무관).
-        ok = sorted((x for x in labels if tiers.get(x, {}).get("tier", "A") == "A" and x not in skip), key=lambda x: hashlib.sha256(x.encode()).hexdigest())
+        ok = sorted((x for x in labels if tiers.get(x, {}).get("tier", "A") == "A" and x not in skip and base_name(x) not in HARD_BASES), key=lambda x: hashlib.sha256(x.encode()).hexdigest())
         if ok:
             out[k] = ok[:2]
     return out
+
+
+HARD_BASES = {base_name(x) for x in json.loads((CAL / "hard-2026-10-21.json").read_text())} if (CAL / "hard-2026-10-21.json").exists() else set()
 
 
 def main() -> None:
@@ -222,6 +270,7 @@ def main() -> None:
         "defects": sorted(["uncertain-interior/int__crate__cabbage", "uncertain-interior/int__table__cake_pie", "uncertain-interior/int__stove"]
                           + [x["label"] for x in audit21 if x["class"] == "iii"]),
         "negatives": negatives({x["label"] for x in audit21}),
+        "contrast": check_contrast(),
     }, ensure_ascii=False, indent=1) + "\n")
     print("beodeul", len(beodeul))
 

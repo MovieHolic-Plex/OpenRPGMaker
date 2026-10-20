@@ -17,9 +17,7 @@
    "fresh3/b3_prop-cloth_stand",
    "fresh3/b3_prop-door_pots",
    "fresh3/b3_prop-parasol_table",
-   "fresh3/b3_prop-planter_round",
    "fresh3/b3_prop-sword_barrel",
-   "fresh3/b3_prop-flowerbox_long",
    "fresh3/b3_prop-laundry_rack",
    "fresh3/b3_prop-tree_planter",
    "fresh3/b3_prop-flowerbed",
@@ -42,9 +40,6 @@
    "style/beodeul__tree-a80c85",
    "style/beodeul__tree-7ecdb8",
    "style/beodeul__prop-stall_herb_flower",
-   "style/beodeul__prop-flower_cart",
-   "style/beodeul__prop-goods_pile",
-   "style/beodeul__prop-table_mugs",
    "style/beodeul__prop-lamp_double",
    "style/beodeul__ground-plaza",
    "fresh4/g4_beodeul-road",
@@ -188,13 +183,20 @@
   "uncertain-interior/int__desk_2x1",
   "uncertain-interior/int__tea_2x1",
   "fresh3/b3_prop-mooring_bollard",
+  "fresh3/b3_prop-flowerbox_long",
   "fresh3/b3_prop-column_monument",
-  "fresh3/b3_prop-statue_sage"
+  "fresh3/b3_prop-statue_sage",
+  "fresh3/b3_prop-planter_round"
  ],
  "defects": [
   "fresh3/b3_prop-column_monument",
+  "fresh3/b3_prop-flowerbox_long",
   "fresh3/b3_prop-mooring_bollard",
+  "fresh3/b3_prop-planter_round",
   "fresh3/b3_prop-statue_sage",
+  "style/beodeul__prop-flower_cart",
+  "style/beodeul__prop-goods_pile",
+  "style/beodeul__prop-table_mugs",
   "uncertain-interior/int__crate__cabbage",
   "uncertain-interior/int__stove",
   "uncertain-interior/int__table__cake_pie"
@@ -230,11 +232,11 @@
   ],
   "container": [
    "holdout/flat_water_trough__w4-A",
-   "holdout/flat_coal_bin__w10-B"
+   "fresh4/q062_modern_city"
   ],
   "frame": [
-   "holdout/thin_timber_prop__w53-B",
-   "holdout/flat_timber_prop__w53-B"
+   "interior/spear_rack__w70-A",
+   "fresh4/q024_wizarding"
   ],
   "structure": [
    "fresh4/q068_interior"
@@ -243,5 +245,64 @@
    "fresh4/q060_interior",
    "fresh4/q016_interior"
   ]
- }
+ },
+ "contrast": [
+  {
+   "pattern": "seat backrest vs seat",
+   "kind": "seat",
+   "good": "pairs/new-pew-e",
+   "bad": "interior/pew__v5",
+   "note": "same pew redrawn: green shows the seat plank as a top plane (rows of seat seen from above) in front of the backrest; red shows the backrest face-on with only a thin strip where the seat should be"
+  },
+  {
+   "pattern": "wooden stand frame",
+   "kind": "frame",
+   "good": "style/prehistoric__fish-rack__after",
+   "bad": "style/prehistoric__fish-rack__before",
+   "note": "same rack: green draws the beams and posts with lit top faces and tinted outlines; red is the flat early version"
+  },
+  {
+   "pattern": "composite house",
+   "kind": "structure",
+   "good": "style/beodeul__house-h122_0",
+   "bad": "style/synthetic__house-h122_0",
+   "allowHard": true,
+   "note": "same house: green is the original; red is the same house quantised to 4 colours with a near-black outline (charge 8a/8b)"
+  },
+  {
+   "pattern": "counter or cart with goods",
+   "kind": "low_furniture",
+   "good": "fresh3/b3_prop-veg_cart",
+   "bad": "holdout/flat_nightstand__w8-C",
+   "note": "green: goods heaped on a deck whose top plane is visible behind and between them; red: the top is a 1-2 row lip over a flat front"
+  },
+  {
+   "pattern": "barrel",
+   "kind": "round_body",
+   "good": "originals-interior/int__barrel__apple",
+   "bad": "interior/powder_kegs__w9-B",
+   "note": "green: a barrel filled with apples seen from above inside the rim; red: barrel ends drawn face-on with no top ellipse"
+  },
+  {
+   "pattern": "cauldron or basin",
+   "kind": "container",
+   "good": "originals-interior/int__holy_water_font",
+   "bad": "fresh4/q039_interior",
+   "note": "green: liquid surface seen from above inside an elliptical rim, about 3 rows at 16px; red: the rim is a 1-2 row dark band and nothing inside is seen"
+  },
+  {
+   "pattern": "potted plant",
+   "kind": "container",
+   "good": "originals-interior/int__potted_flowering",
+   "bad": null,
+   "note": "green: the plant fills the pot mouth seen from above; the rim ellipse shows behind the stems"
+  },
+  {
+   "pattern": "bed footboard",
+   "kind": "low_furniture",
+   "good": "originals-interior/int__double_bed_red",
+   "bad": null,
+   "note": "green: a bed is mostly its top (pillows, blanket) seen from above with a short footboard front of 2-4 rows — that is correct for beds"
+  }
+ ]
 }

@@ -1,0 +1,267 @@
+{
+ "schema": "oprn-object-gate-final-profile/1",
+ "profileHash": "0b5db6b84dd48c02",
+ "status": "rejected",
+ "calibratedAt": "2026-10-20T19:12:33.658Z",
+ "judge": {
+  "provider": "claude-cli",
+  "model": "claude-opus-5-5",
+  "effort": "medium"
+ },
+ "bad": {
+  "total": 1,
+  "caught": 1,
+  "missed": []
+ },
+ "good": {
+  "total": 4,
+  "passed": 4,
+  "falseFail": []
+ },
+ "sets": {
+  "originals-interior": {
+   "bad": {
+    "total": 0,
+    "caught": 0
+   },
+   "good": {
+    "total": 1,
+    "passed": 1
+   }
+  },
+  "originals-jp": {
+   "bad": {
+    "total": 0,
+    "caught": 0
+   },
+   "good": {
+    "total": 1,
+    "passed": 1
+   }
+  },
+  "holdout": {
+   "bad": {
+    "total": 0,
+    "caught": 0
+   },
+   "good": {
+    "total": 1,
+    "passed": 1
+   }
+  },
+  "fresh": {
+   "bad": {
+    "total": 1,
+    "caught": 1
+   },
+   "good": {
+    "total": 0,
+    "passed": 0
+   }
+  },
+  "fresh4": {
+   "bad": {
+    "total": 0,
+    "caught": 0
+   },
+   "good": {
+    "total": 1,
+    "passed": 1
+   }
+  }
+ },
+ "tiers": {
+  "A-style": {
+   "bad": {
+    "total": 2,
+    "passed": 1
+   },
+   "good": {
+    "total": 0,
+    "passed": 0
+   }
+  },
+  "A": {
+   "bad": {
+    "total": 1,
+    "passed": 0
+   },
+   "good": {
+    "total": 4,
+    "passed": 4
+   }
+  },
+  "C": {
+   "bad": {
+    "total": 1,
+    "passed": 0
+   },
+   "good": {
+    "total": 1,
+    "passed": 0
+   }
+  }
+ },
+ "errors": [],
+ "originals": {
+  "beodeul_city": {
+   "total": 0,
+   "passed": 0,
+   "failed": []
+  },
+  "jp_city": {
+   "total": 1,
+   "passed": 1,
+   "failed": []
+  },
+  "atlas_biome_interior": {
+   "total": 1,
+   "passed": 1,
+   "failed": []
+  },
+  "oprn-interior-v5-large": {
+   "total": 0,
+   "passed": 0,
+   "failed": []
+  }
+ },
+ "families": {
+  "hand_interior": {
+   "bad": 0,
+   "caught": 0,
+   "good": 2,
+   "passed": 2
+  },
+  "jp_city": {
+   "bad": 0,
+   "caught": 0,
+   "good": 1,
+   "passed": 1
+  },
+  "modern_city": {
+   "bad": 1,
+   "caught": 1,
+   "good": 0,
+   "passed": 0
+  },
+  "wizarding": {
+   "bad": 0,
+   "caught": 0,
+   "good": 1,
+   "passed": 1
+  }
+ },
+ "uncertain": [
+  {
+   "label": "uncertain-interior/int__chair_S",
+   "verdict": "fail",
+   "reasons": [
+    "2b/1: the upper rows 0-7 are a ladder-back backrest seen face-on. Its horizontal orange slats have grey gaps between them, and none of it is a horizontal plane.",
+    "1: the only possibly-horizontal part between the backrest and the legs is a ~2-3 row orange strip (about rows 8-10). It reads as a front-facing seat rail, not a foreshortened seat plane with a back edge.",
+    "2: even read generously, that seat strip is below the 4-row minimum for a seat. It is thinner than the same-chipset stool and bench anchors, which show their seat tops from above.",
+    "Unsure whether the 8-10 band is a seat top or a rail, so sure=false; under 2b this ambiguity fails.",
+    "Style: shaded wood tones with tinted dark outlines on a crisp 1px grid, consistent with the hand_interior anchors.",
+    "판정자가 확신하지 못함(애매하면 불합격)"
+   ]
+  }
+ ],
+ "excludedNegatives": [
+  "fresh5/s011_modern_city",
+  "fresh5/s087_jp_city_interior",
+  "fresh4/q016_interior",
+  "fresh4/q024_wizarding",
+  "fresh4/q039_interior",
+  "fresh4/q060_interior",
+  "fresh4/q062_modern_city",
+  "fresh4/q068_interior",
+  "fresh4/q095_modern_city",
+  "fresh4/q125_interior",
+  "originals-interior/int__barrel__apple",
+  "originals-interior/int__holy_water_font",
+  "originals-interior/int__potted_flowering",
+  "originals-interior/int__double_bed_red",
+  "holdout/mir_new-pew-e",
+  "holdout/mir_beodeul__house-h122_0",
+  "holdout/mir_pew__v5",
+  "holdout/mir_votive_stand__v5",
+  "holdout/mir_coffin__w73-A",
+  "holdout/mir_column_marble__w51-A",
+  "holdout/mir_column_stone__w51-A",
+  "holdout/mir_sofa__v5",
+  "holdout/mir_powder_kegs__w9-B",
+  "holdout/mir_spear_rack__w70-A",
+  "holdout/mir_hay_bale__w44-A",
+  "holdout/mir_nightstand__w8-C",
+  "holdout/mir_water_trough__w4-A",
+  "holdout/mir_wardrobe__w42-A",
+  "holdout/mir_scroll_shelf__B",
+  "holdout/hue_nightstand__w8-C",
+  "holdout/hue_wardrobe__w42-A",
+  "holdout/flat_wardrobe__w42-A",
+  "holdout/thin_wardrobe__w42-A",
+  "holdout/flat_nightstand__w8-C",
+  "holdout/thin_nightstand__w8-C",
+  "holdout/flat_water_trough__w4-A",
+  "holdout/thin_water_trough__w4-A",
+  "holdout/real_potted_flowering",
+  "holdout/real_barrel_apple",
+  "fresh3/b3_prop-veg_cart",
+  "adv-front-prop/interior__pew__v5",
+  "adv-front-prop/interior__votive_stand__v5",
+  "adv-front-prop/interior__coffin__w73-A",
+  "adv-front-prop/interior__column_marble__w51-A",
+  "adv-front-prop/interior__column_stone__w51-A",
+  "adv-front-prop/interior__sofa__v5",
+  "adv-front-prop/interior__powder_kegs__w9-B",
+  "adv-front-prop/interior__spear_rack__w70-A",
+  "adv-front-prop/interior__hay_bale__w44-A",
+  "adv-front-prop/murim__scroll_shelf__B",
+  "adv-front-prop/holdout__mir_pew__v5",
+  "adv-front-prop/holdout__mir_votive_stand__v5",
+  "adv-front-prop/holdout__mir_coffin__w73-A",
+  "adv-front-prop/holdout__mir_column_marble__w51-A",
+  "adv-front-prop/holdout__mir_column_stone__w51-A",
+  "adv-front-prop/holdout__mir_sofa__v5",
+  "adv-front-prop/holdout__mir_powder_kegs__w9-B",
+  "adv-front-prop/holdout__mir_spear_rack__w70-A",
+  "adv-front-prop/holdout__mir_hay_bale__w44-A",
+  "adv-front-prop/holdout__mir_scroll_shelf__B",
+  "adv-front-prop/holdout__flat_wardrobe__w42-A",
+  "adv-front-prop/holdout__thin_wardrobe__w42-A",
+  "adv-front-prop/holdout__flat_nightstand__w8-C",
+  "adv-front-prop/holdout__thin_nightstand__w8-C",
+  "adv-front-prop/holdout__flat_water_trough__w4-A",
+  "adv-front-prop/holdout__thin_water_trough__w4-A",
+  "pairs/new-pew-e",
+  "style/prehistoric__fish-rack__before",
+  "style/prehistoric__fish-rack__after",
+  "style/beodeul__house-h122_0",
+  "style/synthetic__house-h122_0",
+  "interior/pew__v5",
+  "interior/votive_stand__v5",
+  "interior/coffin__w73-A",
+  "interior/column_marble__w51-A",
+  "interior/column_stone__w51-A",
+  "interior/sofa__v5",
+  "interior/powder_kegs__w9-B",
+  "interior/spear_rack__w70-A",
+  "interior/hay_bale__w44-A",
+  "interior/holy_water_font__w7-A",
+  "interior/nightstand__w8-C",
+  "interior/water_trough__w4-A",
+  "interior/wardrobe__w42-A",
+  "murim/scroll_shelf__B"
+ ],
+ "note": "조건 (a) 위반 = 등급 A 3/4 위반(적대 시험 adv-*·object-gen 반려 포함) + 강한 라벨 화풍 얕음, 전체 판정으로 하나도 놓치면 안 된다. 조건 (b) 칩셋 원본 전체 판정 통과 2/2 ≥ 90%. 정상 = 라벨 반쪽으로 센다(보고만). 전체 판정 정상 통과 4/4. 부분 표본 — 효력 없음",
+ "lines": [
+  "위반A3/4  FAIL other          fresh/b76_modern_city                          charge 1: the two outer cabinet bodies (rows ~0-21) read as a flat front elevation. The teal panel in rows ~1-6 is framed like a front-facing screen. The light-",
+  "위반A화풍 FAIL organic        style/snow__woodpile__before                   종류 정정: box 로 판정 · Kind: this is a built wooden crate or lattice box with corner posts, capped with snow. It is not organic, so it is judged as a box. · Charge 1",
+  "위반A화풍 PASS terrain        style/steampunk__g-판석_보도__before               ",
+  "위반C3/4  FAIL front_prop     adv-front-prop/holdout__mir_medicine_cabinet__B 종류 정정: tall_furniture 로 판정 · Kind: this is a goods shelf or cabinet with 12 stocked compartments and a box body with volume, so it is not front_prop. Judged as ",
+  "정상A3/4  PASS container      holdout/mir_coal_bin__w10-B                    ",
+  "정상A3/4  PASS low_furniture  fresh4/q011_wizarding                          ",
+  "정상A3/4  PASS structure      originals-jp/jp__jp-bldg-shop-bakery           ",
+  "정상A3/4  PASS tall_furniture originals-interior/int__cabinet__bun           ",
+  "정상C3/4  FAIL figure         fresh5/s001_interior                           Charge 1: the plinth (rows ~15-31) is a front elevation. It is drawn as stacked horizontal white and grey bands, and no foreshortened top plane recedes behind t"
+ ]
+}
