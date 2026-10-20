@@ -172,8 +172,8 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
       jihuDesk: nearestFree(project, officeRoom, { x: 10, y: 4 }),
       leadDesk: nearestFree(project, officeRoom, { x: 20, y: 8 }),
       pantry: nearestFree(project, officeRoom, { x: 10, y: 15 }),
-      meeting: nearestFree(project, officeRoom, { x: 4, y: 15 }),
-      meetingSeat: nearestFree(project, officeRoom, { x: 3, y: 14 }),
+      meeting: nearestFree(project, officeRoom, { x: 5, y: 15 }),
+      meetingSeat: nearestFree(project, officeRoom, { x: 3, y: 15 }),
       whiteboard: nearestFree(project, officeRoom, { x: 21, y: 9 }),
     },
     rooftop: {
