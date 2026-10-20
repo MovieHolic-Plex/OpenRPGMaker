@@ -29,6 +29,8 @@ import town_lib as TL  # noqa: E402
 T = 16
 # 파라펫(난간벽) 콘크리트 램프 — 시안 그대로
 P = [(40, 42, 48), (84, 88, 96), (122, 127, 134), (160, 166, 170), (196, 202, 203), (226, 231, 230), (244, 246, 245)]
+# 파라펫 안쪽 면 슬레이트(r4) — 밝음 → 어둠. 지붕 바탕(갈회 104,96,94)보다 살짝 밝은 중간 단 두 줄 + 그늘 단.
+SL = [(150, 156, 166), (128, 134, 145), (110, 116, 127), (92, 98, 109)]
 RAMPS5 = dict(base=TL.ROOF_BASE, **TL.ROOF_VARIANTS)
 
 
@@ -175,7 +177,7 @@ def _mix(a, b):
 
 # 옥상 설비 r3 — 옛 설비는 남색 거의 검정 윤곽(9,17,37)이라 지붕 위에 떠 보였다. 윤곽을 지붕·파라펫과 같은 계열의 어두운 슬레이트로,
 # 회색 설비 덩이는 윗면 3px 를 밝게(위 테 다음 줄 가장 밝게) + 윗면/앞면 경계 한 줄, 지붕에는 오른쪽 아래로 2px 드리운 그림자.
-EQ_OUTLINE = (40, 46, 56)                                   # 어두운 슬레이트(P0 와 같은 명도, 조금 푸른 쪽)
+EQ_OUTLINE = (54, 60, 72)                                   # 어두운 슬레이트(r4: 40,46,56 은 1배에서 남색 검정처럼 읽혀 한 단 올림)
 EQ_GREYS = {(103, 106, 119), (117, 120, 134), (132, 135, 148), (148, 150, 161), (161, 163, 172), (175, 177, 184), (188, 189, 195),
             (193, 207, 204), (228, 233, 232), (241, 243, 243), (161, 178, 174), (115, 144, 138)}
 EQ_TOP = ((214, 216, 220), (198, 200, 206), (188, 189, 195))
@@ -330,23 +332,20 @@ def reroof(img, stem, ramp_name=None):
 
     def get(x, y):
         return tuple(int(v) for v in out[y, x, :3])
-    # 파라펫 r3(감독 VQA 2026-10-20: 평면도처럼 읽힘) — 북쪽 파라펫: 윤곽 1 + 밝은 두겁 2 + «그늘진 안쪽 면» 4(남향 세로 면,
-    # 지붕보다 어둡다, 16px 마다 패널 이음) + 지붕 위 그늘 2줄. 서쪽 안쪽 면 1px 그늘(P1) + 지붕 그늘 2열, 동쪽 안쪽 면 1px 밝게(P4).
-    # → 지붕이 파라펫보다 «한 단 낮게 파인 3/4 면»으로 읽힌다.
-    NF = 7   # 북쪽 파라펫 줄 수(윤곽·두겁 2·안쪽 면 4)
+    # 파라펫 r4(감독 VQA r2 2026-10-20) — 북쪽 파라펫: 윤곽 1 + 밝은 두겁 2 + 안쪽 면 «중간 슬레이트 두 줄»(SL[1]·SL[2], 16px 마다
+    # 옅은 패널 이음) + 지붕 위 접촉 그늘 2줄. r3 의 P1·P0 안쪽 면은 1배에서 검은 틈(슬롯)처럼 읽혀 버렸다. 모든 키트가 같은 단을 쓴다.
+    # 서쪽 안쪽 면 1px SL[3](그늘) + 지붕 그늘 2열, 동쪽 안쪽 면 1px P4(빛).
+    NF = 5   # 북쪽 파라펫 줄 수(윤곽·두겁 2·안쪽 면 2)
     for xx in range(bx0, bx1 + 1):
         setc(xx, by0 + NF, _darken(get(xx, by0 + NF), 2, R)); setc(xx, by0 + NF + 1, _darken(get(xx, by0 + NF + 1), 1, R))
     for yy in range(by0 + NF, by1 - 5):
         setc(bx0 + 4, yy, _darken(get(bx0 + 4, yy), 2, R)); setc(bx0 + 5, yy, _darken(get(bx0 + 5, yy), 1, R))
-    FACE = (P[2], P[1], P[1], P[1])
     for xx in range(bx0, bx1 + 1):
         setc(xx, by1 - 5, R[1])
-        for k, c in enumerate((P[0], P[6], P[5]) + FACE):
+        for k, c in enumerate((P[0], P[6], P[5], SL[1], SL[2])):
             setc(xx, by0 + k, c)
-        if xx % T == 8 and bx0 + 4 < xx < bx1 - 4:        # 안쪽 면 패널 이음(어둡게)
-            for yy in (by0 + 4, by0 + 5):
-                setc(xx, yy, P[0])
-        setc(xx, by0 + NF - 1, _mix(P[1], P[0]))          # 안쪽 면 밑 = 지붕과 닿는 선
+        if xx % T == 8 and bx0 + 4 < xx < bx1 - 4:        # 안쪽 면 패널 이음(한 단만 어둡게)
+            setc(xx, by0 + 3, SL[2]); setc(xx, by0 + 4, SL[3])
         for k, c in enumerate((P[6], P[5], P[3], P[2], P[0])):
             setc(xx, by1 - 4 + k, c)
     for xx in range(bx0, bx1 + 1):
@@ -358,9 +357,9 @@ def reroof(img, stem, ramp_name=None):
         if by0 + 3 <= yy <= by1 - 5:
             setc(bx0 + 1, yy, P[5]); setc(bx0 + 2, yy, P[4]); setc(bx1 - 1, yy, P[4]); setc(bx1 - 2, yy, P[5])
         if by0 + NF <= yy <= by1 - 6:
-            setc(bx0 + 3, yy, P[1]); setc(bx1 - 3, yy, P[4])
+            setc(bx0 + 3, yy, SL[3]); setc(bx1 - 3, yy, P[4])
     for yy in range(by0 + 3, by0 + NF):                   # 서·동 두겁 안쪽 모서리: 안쪽 면과 만나는 곳
-        setc(bx0 + 3, yy, P[1] if yy < by0 + NF - 1 else _mix(P[1], P[0])); setc(bx1 - 3, yy, P[2])
+        setc(bx0 + 3, yy, SL[2]); setc(bx1 - 3, yy, SL[1])
     setc(bx0 + 1, by0 + 1, P[6]); setc(bx0 + 1, by0 + 2, P[5])
     for yy in (by1 - 2, by1 - 1):
         setc(bx0 + 1, yy, P[4]); setc(bx1 - 1, yy, P[1])

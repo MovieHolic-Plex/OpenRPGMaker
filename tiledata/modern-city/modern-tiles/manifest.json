@@ -1317,7 +1317,11 @@
 "slot:dress:a32e7c660ed2870fec3b": 15130,
 "slot:dress:0a89843e9b42447f781d": 15131,
 "slot:dress:9e473ca09225839d9a11": 15132,
-"slot:dress:d3d72818cf59909f64e9": 15133
+"slot:dress:d3d72818cf59909f64e9": 15133,
+"slot:kit:95:mc-bld-tower10-A-roof-teal:0:2:upperTiles": 15134,
+"slot:kit:7009:mc-bld-police-B-roof-brick:0:1:upperTiles": 15135,
+"slot:kit:7031:mc-bld-police-B-roof-navy:0:2:upperTiles": 15136,
+"slot:kit:7031:mc-bld-police-B-roof-navy:0:3:upperTiles": 15137
 },
 "repaint": [
 1,
@@ -11319,7 +11323,7 @@
 "14861": {
 "group": "mc:paving",
 "src": 7,
-"label": "보도(바탕(알갱이 배치 2))"
+"label": "보도(밝은 둘째 톤 판 하나)"
 },
 "14862": {
 "group": "mc:paving",
@@ -12680,6 +12684,26 @@
 "group": "mc:dress",
 "src": 58,
 "label": "건물 기초·접촉선·남쪽 그늘(2층)"
+},
+"15134": {
+"group": "kit",
+"src": 95,
+"label": "유리 오피스 타워(10층) A (3,1)"
+},
+"15135": {
+"group": "kit",
+"src": 7009,
+"label": "경찰서 B · 벽돌색 지붕 (2,1)"
+},
+"15136": {
+"group": "kit",
+"src": 7031,
+"label": "경찰서 B · 남색 지붕 (2,1)"
+},
+"15137": {
+"group": "kit",
+"src": 7031,
+"label": "경찰서 B · 남색 지붕 (2,1)"
 }
 },
 "roofs": {
@@ -16884,7 +16908,7 @@
 "report": {
 "baseCount": 13814,
 "countBefore": null,
-"count": 15134,
+"count": 15138,
 "sheet": [
 768,
 5056
@@ -16974,10 +16998,10 @@
 ],
 "kitCells": 4701
 },
-"appendedCells": 1316,
+"appendedCells": 1320,
 "stats": {
 "kit_inplace": 4701,
-"kit_appended_uses": 1193
+"kit_appended_uses": 1197
 },
 "lostCells": [],
 "lostCount": 0,
