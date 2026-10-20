@@ -110,8 +110,9 @@ function setupFoes(project: Project): { field: string[]; boss: string } {
   makeTroop(project, "troop_fs_wolves", "숲늑대 무리", ["enemy_fs_wolf", "enemy_fs_wolf"]);
   makeTroop(project, "troop_fs_spiders", "덤불거미", ["enemy_fs_spider", "enemy_fs_spider"]);
   makeTroop(project, "troop_fs_wisps", "도깨비불", ["enemy_fs_wisp", "enemy_fs_wisp", "enemy_fs_wisp"]);
-  makeTroop(project, "troop_fs_boss", "심문관 발렌과 수호상", ["enemy_fs_valen", "enemy_fs_guardian"]);
-  return { field: ["troop_fs_wolves", "troop_fs_spiders", "troop_fs_wisps"], boss: "troop_fs_boss" };
+  // 장 구성기가 의뢰 적으로 troop_fs_boss·enemy_fs_boss 를 따로 만든다 — 같은 id 를 쓰면 덮여 발렌 혼자 남았다(감사 2차).
+  makeTroop(project, "troop_fs_finale", "심문관 발렌과 수호상", ["enemy_fs_valen", "enemy_fs_guardian"]);
+  return { field: ["troop_fs_wolves", "troop_fs_spiders", "troop_fs_wisps"], boss: "troop_fs_finale" };
 }
 
 // ── 명령 나무 훑기 ────────────────────────────────────────────────────────
@@ -454,6 +455,11 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
         }
       }
     }
+  }
+  // 장 구성기가 만든 단독 보스(troop_fs_boss·enemy_fs_boss)는 이제 아무도 부르지 않는다 — 지운다.
+  if (!JSON.stringify(project.maps).includes('"troop_fs_boss"')) {
+    project.database.troops = project.database.troops.filter((t) => t.id !== "troop_fs_boss");
+    if (!project.database.troops.some((t) => t.enemyIds?.includes("enemy_fs_boss"))) project.database.enemies = project.database.enemies.filter((e) => e.id !== "enemy_fs_boss");
   }
 
   // 엔딩 — 하넬에게 보고하면 제1막이 끝난다.

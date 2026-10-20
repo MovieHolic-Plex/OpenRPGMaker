@@ -39,7 +39,7 @@ const dumpState = (name) => ({
 
 export default {
   id: "fallen-audit",
-  projectFixture: process.env.RES_FIXTURE ?? ".omo/fs/v6.json",
+  projectFixture: process.env.RES_FIXTURE ?? ".omo/fs/v7.json",
   viewport: { width: vw, height: vh },
   beats: [
     { id: "title", note: "타이틀", ops: [{ kind: "waitFor", testid: "title-screen", state: "present", timeoutMs: 60000 }], shot: true },
@@ -100,18 +100,34 @@ export default {
     ...[["se", 13, 12], ["nw", 6, 8], ["ne", 13, 8], ["sw", 6, 12]].map(([name, x, y]) => ({
       id: `brazier-${name}`, note: `화로 ${name}`, ops: [{ kind: "teleport", mapId: "fs_vault_gate", x, y }, { kind: "hold", dir: null, ms: 400 }, ...talk("up"), ...closeDialogue()], shot: name === "sw",
     })),
-    { id: "gate-open", note: "창살이 녹은 문", ops: [{ kind: "teleport", mapId: "fs_vault_gate", x: 10, y: 5 }, { kind: "hold", dir: null, ms: 800 }], shot: true },
+    { id: "gate-open", note: "창살이 녹은 문", ops: [{ kind: "hold", dir: null, ms: 1500 }, ...closeDialogue(), { kind: "hold", dir: null, ms: 1500 }, ...closeDialogue(),{ kind: "teleport", mapId: "fs_vault_gate", x: 10, y: 5 }, { kind: "hold", dir: null, ms: 800 }], shot: true },
     { id: "to-vault", note: "지하로", ops: [{ kind: "hold", dir: "up", ms: 1200 }, { kind: "hold", dir: null, ms: 1500 }, dumpState("vault")], shot: true },
     { id: "save-crystal", note: "세이브 결정", ops: [{ kind: "teleport", mapId: "fs_vault", x: 32, y: 23 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
     { id: "save-crystal-close", note: "", ops: [...closeDialogue()], shot: false },
-    { id: "valen", note: "발렌", ops: [{ kind: "teleport", mapId: "fs_vault", x: 25, y: 26 }, { kind: "hold", dir: null, ms: 400 }, { kind: "hold", dir: "up", ms: 300 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
+    { id: "valen", note: "발렌", ops: [...closeDialogue(),{ kind: "teleport", mapId: "fs_vault", x: 25, y: 25 }, { kind: "hold", dir: null, ms: 600 }, ...talk("up")], shot: true },
     { id: "battle", note: "결전 시작", ops: [
       { kind: "pressUntil", key: "Enter", testid: "battle-scene", state: "present", maxPresses: 20, timeoutMs: 900 },
       { kind: "hold", dir: null, ms: 2500 },
     ], shot: true },
-    { id: "battle-mid", note: "전투 중간(Enter = 공격만)", ops: [
-      { kind: "repeatUntil", testid: "battle-scene", state: "absent", maxRounds: 40, ops: [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 350 }] },
+    { id: "battle-1", note: "전투 1(Enter 25번씩, 공격만)", ops: [
+      { kind: "repeatUntil", testid: "battle-scene", state: "absent", maxRounds: 25, ops: [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 350 }] },
     ], shot: true },
+    { id: "battle-2", note: "전투 2(Enter 25번씩, 공격만)", ops: [
+      { kind: "repeatUntil", testid: "battle-scene", state: "absent", maxRounds: 25, ops: [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 350 }] },
+    ], shot: true },
+    { id: "battle-3", note: "전투 3(Enter 25번씩, 공격만)", ops: [
+      { kind: "repeatUntil", testid: "battle-scene", state: "absent", maxRounds: 25, ops: [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 350 }] },
+    ], shot: true },
+    { id: "battle-4", note: "전투 4(Enter 25번씩, 공격만)", ops: [
+      { kind: "repeatUntil", testid: "battle-scene", state: "absent", maxRounds: 25, ops: [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 350 }] },
+    ], shot: true },
+    { id: "battle-5", note: "전투 5(Enter 25번씩, 공격만)", ops: [
+      { kind: "repeatUntil", testid: "battle-scene", state: "absent", maxRounds: 25, ops: [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 350 }] },
+    ], shot: true },
+    { id: "battle-6", note: "전투 6(Enter 25번씩, 공격만)", ops: [
+      { kind: "repeatUntil", testid: "battle-scene", state: "absent", maxRounds: 25, ops: [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 350 }] },
+    ], shot: true },
+
     { id: "battle-end", note: "전투 끝", ops: [
       { kind: "repeatUntil", testid: "battle-scene", state: "absent", maxRounds: 260, ops: [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 350 }] },
       { kind: "hold", dir: null, ms: 1000 }, dumpState("boss"),
@@ -122,7 +138,7 @@ export default {
       ...stepInto("fs_vault", 30, 57, "up"),
       ...stepInto("fs_vault_gate", 10, 13, "down"),
     ], shot: true },
-    { id: "report", note: "하넬에게 보고", ops: [{ kind: "teleport", mapId: "fs_observatory", x: 11, y: 14 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
+    { id: "report", note: "하넬에게 보고", ops: [...closeDialogue(),{ kind: "teleport", mapId: "fs_observatory", x: 11, y: 14 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
     { id: "ending", note: "엔딩까지", ops: [
       { kind: "repeatUntil", testid: "ending-screen", state: "present", maxRounds: 40, ops: [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 400 }] },
       { kind: "hold", dir: null, ms: 2500 },
