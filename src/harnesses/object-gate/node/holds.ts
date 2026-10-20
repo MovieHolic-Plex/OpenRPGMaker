@@ -20,7 +20,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { randomBytes, timingSafeEqual } from 'node:crypto';
 import { resolve } from 'node:path';
 import { OBJECT_GATE_KINDS, finalApplies, humanDecision, type ObjectGateFinal, type ObjectGateHoldDecision, type ObjectGateReceipt } from '../../_core/objectGate';
-import { GATE_DATA, calibratedFinalProfiles, readFinal, calibratedProfiles, gateProfileHash, heldImage, holdKey, listQueueBatches, listReceipts, readHoldDecision, readProfiles, readReceipt, styleRefs, writeHoldDecision } from './store';
+import { GATE_DATA, calibratedFinalProfiles, readFinal, calibratedProfiles, gateProfileHash, heldImage, holdKey, listQueueBatches, listReceipts, queueExplainImagePath, readHoldDecision, readProfiles, readReceipt, styleRefs, writeHoldDecision } from './store';
 
 const PAGE = resolve(import.meta.dirname ?? __dirname, '..', 'web', 'holds.html');
 const equal = (a?: string, b?: string) => typeof a === 'string' && typeof b === 'string' && a.length === b.length && timingSafeEqual(Buffer.from(a), Buffer.from(b));
@@ -28,7 +28,7 @@ const SHA = /^[0-9a-f]{64}$/;
 const heldImagePath = (sha: string) => resolve(GATE_DATA, 'held-images', sha.slice(0, 2), `${sha}.png`);
 
 type Entry = { receipt: ObjectGateReceipt | null; sha: string; kind: string; label: string; batches: string[] };
-type BatchInfo = { id: string; title: string; note?: string; auto: boolean; shas: string[] };
+type BatchInfo = { id: string; title: string; note?: string; explainImage?: string; explainText?: string; auto: boolean; shas: string[] };
 
 /** 영수증 5,000장 넘게 매번 읽지 않게 잠깐 담아 둔다(결정 기록은 매번 새로 읽는다). */
 let receiptCache: { at: number; list: ObjectGateReceipt[] } | null = null;
@@ -52,7 +52,7 @@ function buildQueue(fresh = false): { entries: Map<string, Entry>; batches: Batc
       names.set(it.sha, [it.label]); e.batches.push(b.id); entries.set(it.sha, e); shas.push(it.sha);
     }
     for (const [sha, list] of names) entries.get(sha)!.label = list.length > 1 ? `${list[0]} (같은 그림 ${list.length}개: ${list.join(', ')})` : list[0]!;
-    batches.push({ id: b.id, title: b.title, note: b.note, auto: false, shas });
+    batches.push({ id: b.id, title: b.title, note: b.note, explainImage: b.explainImage, explainText: b.explainText, auto: false, shas });
   }
   const auto = new Map<string, string[]>();
   for (const e of entries.values()) if (!e.batches.length) {
@@ -131,7 +131,7 @@ export async function serveHolds({ host, port }: { host: string; port: number })
             else if (s === 'waiting') { c.waiting++; if (existsSync(heldImagePath(sha))) c.withImage++; if (r) c.ai[r.verdict]++; }
             else if (s === 'allowed') c.allowed++; else if (s === 'rejected') c.rejected++; else if (s === 'auto-pass') c.autoPass++; else c.noReceipt++;
           }
-          return { id: b.id, title: b.title, note: b.note ?? '', auto: b.auto, ...c };
+          return { id: b.id, title: b.title, note: b.note ?? '', explainText: b.explainText ?? '', hasExplainImage: !!queueExplainImagePath(b.explainImage), auto: b.auto, ...c };
         });
         // 전체 수는 그림(해시) 하나를 한 번만 센다(한 그림이 여러 묶음에 들 수 있다).
         const totals = { waiting: 0, allowed: 0, rejected: 0, autoPass: 0, opusPass: 0, opusFail: 0 };
@@ -157,6 +157,12 @@ export async function serveHolds({ host, port }: { host: string; port: number })
       }
       const img = url.pathname.match(/^\/img\/([0-9a-f]{64})\.png$/);
       if (req.method === 'GET' && img) { const path = existsSync(heldImagePath(img[1]!)) ? heldImagePath(img[1]!) : null; if (!path) { json(404, { error: '그림 없음' }); return; } png(path); return; }
+      const explain = url.pathname.match(/^\/explain\/([a-z0-9][-a-z0-9_.]{0,80})\.png$/);
+      if (req.method === 'GET' && explain) {
+        const path = queueExplainImagePath(listQueueBatches().find(b => b.id === explain[1])?.explainImage);
+        if (!path) { json(404, { error: '설명 그림 없음' }); return; }
+        png(path); return;
+      }
       const ref = url.pathname.match(/^\/ref\/([a-z_]+)\/([-_a-z0-9]+)\.png$/);
       if (req.method === 'GET' && ref) {
         const found = styleRefs(ref[1] as never).find(r => r.name === ref[2]);
