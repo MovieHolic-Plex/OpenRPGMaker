@@ -173,18 +173,11 @@ function setupFoes(project: Project): { field: string[]; boss: string } {
   const finale = project.database.troops.find((t) => t.id === "troop_fs_finale");
   // 가혹 검수 r5: 「배경이 평평하다」 — 안개 층을 하나 더 깔아 깊이를 준다.
   if (finale) finale.backdropLayers = [{ preset: "mist", opacity: 30 }, { preset: "lightRays", opacity: 45 }, { preset: "stars", opacity: 55 }];
-  // 가혹 검수 r5: 「전투 스프라이트가 화면 대비 작다」 — 결전의 둘은 크게 세운다(발렌 정수 2배, 수호상 1.5배).
-  for (const [id, scale] of [["enemy_fs_valen", 200], ["enemy_fs_guardian", 150]] as const) {
+  // 가혹 검수 r5: 「전투 스프라이트가 화면 대비 작다」 — 수호상을 1.5배로 세운다. 발렌 시트는 칸(96px) 안의 인물이 작아
+  // 키우면 상자가 전투 필드 높이를 넘어 맞춤(battleEnemyFit)이 도로 1배로 줄인다 — 그대로 둔다.
+  for (const [id, scale] of [["enemy_fs_guardian", 150]] as const) {
     const enemy = project.database.enemies.find((e) => e.id === id);
     if (enemy) enemy.battleScalePercent = scale;
-  }
-  // 자동 정렬은 발렌을 위쪽에 세워 2배 그림이 화면 위 여백에 걸려 도로 1배로 줄었다 — 발밑을 낮춰 직접 세운다.
-  if (finale) {
-    finale.autoAlign = false;
-    finale.members = [
-      { enemyId: "enemy_fs_valen", x: 84, y: 128, hidden: false },
-      { enemyId: "enemy_fs_guardian", x: 156, y: 124, hidden: false },
-    ] as typeof finale.members;
   }
   return { field: ["troop_fs_wolves", "troop_fs_spiders", "troop_fs_wisps"], boss: "troop_fs_finale" };
 }
