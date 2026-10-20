@@ -3,7 +3,8 @@
 // - 127.0.0.1 에만 묶는다. 포트는 0(운영체제가 고른 빈 포트).
 // - 실행마다 새 비밀값(Bearer)을 요구한다. 루프백은 같은 머신의 다른 프로세스에도 열려 있기 때문이다.
 // - Origin 헤더가 붙은 요청은 거절한다. CLI 는 Origin 을 보내지 않고, 브라우저 탭(DNS 리바인딩 포함)만 보낸다.
-// - MCP Streamable HTTP 의 최소 부분만 구현한다: POST 한 번에 JSON 응답 하나. 서버 → 클라이언트 SSE 는 쓰지 않는다(GET 은 405).
+// - MCP Streamable HTTP 의 최소 부분만 구현한다: POST 한 번에 JSON 응답 하나. 서버 → 클라이언트 알림은 GET SSE 스트림 하나로만
+//   보낸다 — 지금은 `notifications/tools/list_changed` 뿐이다(find_tools 로 찾은 도구를 다음 호출부터 선언한다).
 //
 // 도구 실행 자체는 호출자가 준 `callTool` 이 한다 — 이 파일은 프로젝트·편집 규칙을 모른다.
 
@@ -36,6 +37,10 @@ export interface LocalMcpServerOptions {
 
 export interface LocalMcpServer {
   readonly url: string;
+  /** 도구 목록이 바뀌었다고 연결된 클라이언트에 알린다(GET SSE). 열린 스트림이 없으면 아무 일도 없다 — 다음 tools/list 가 새 목록을 준다. */
+  notifyToolsChanged(): void;
+  /** 지금 열려 있는 알림 스트림 수(진단용). */
+  readonly listeners: () => number;
   /** CLI 자식 프로세스에 환경 변수로만 넘긴다. 명령줄 인자(ps 로 보임)·로그에 남기지 않는다. */
   readonly token: string;
   close(): Promise<void>;
@@ -68,6 +73,7 @@ type JsonRpc = { jsonrpc?: string; id?: string | number | null; method?: string;
 
 export async function startLocalMcpServer(options: LocalMcpServerOptions): Promise<LocalMcpServer> {
   const token = randomBytes(32).toString("base64url");
+  const streams = new Set<ServerResponse>();
 
   async function handle(message: JsonRpc): Promise<unknown | null> {
     const id = message.id ?? null;
@@ -80,7 +86,7 @@ export async function startLocalMcpServer(options: LocalMcpServerOptions): Promi
         const asked = typeof message.params?.protocolVersion === "string" ? message.params.protocolVersion : SUPPORTED_PROTOCOLS[0]!;
         return reply({
           protocolVersion: SUPPORTED_PROTOCOLS.includes(asked) ? asked : SUPPORTED_PROTOCOLS[0],
-          capabilities: { tools: { listChanged: false } },
+          capabilities: { tools: { listChanged: true } },
           serverInfo: { name: options.name, version: "0.1.0" },
         });
       }
@@ -116,7 +122,15 @@ export async function startLocalMcpServer(options: LocalMcpServerOptions): Promi
       if (req.headers.origin) return done(403, { error: "browser origins are not allowed" });
       if (!tokenMatches(req.headers.authorization, token)) return done(401, { error: "unauthorized" });
       if (req.url !== "/mcp") return done(404, { error: "not found" });
-      if (req.method === "GET") return done(405);
+      if (req.method === "GET") {
+        if (!String(req.headers.accept ?? "").includes("text/event-stream")) return done(405);
+        options.onRequest?.({ method: "GET", status: 200 });
+        res.writeHead(200, { "content-type": "text/event-stream", "cache-control": "no-cache", connection: "keep-alive" });
+        res.write(": open\n\n");
+        streams.add(res);
+        req.on("close", () => streams.delete(res));
+        return;
+      }
       if (req.method === "DELETE") return done(200, {});
       if (req.method !== "POST") return done(405);
       let parsed: JsonRpc | JsonRpc[];
@@ -134,6 +148,11 @@ export async function startLocalMcpServer(options: LocalMcpServerOptions): Promi
   return {
     url: `http://127.0.0.1:${port}/mcp`,
     token,
-    close: () => new Promise<void>((resolve) => { server.closeAllConnections?.(); server.close(() => resolve()); }),
+    notifyToolsChanged() {
+      const line = `event: message\ndata: ${JSON.stringify({ jsonrpc: "2.0", method: "notifications/tools/list_changed" })}\n\n`;
+      for (const stream of streams) stream.write(line);
+    },
+    listeners: () => streams.size,
+    close: () => new Promise<void>((resolve) => { for (const stream of streams) stream.end(); streams.clear(); server.closeAllConnections?.(); server.close(() => resolve()); }),
   };
 }

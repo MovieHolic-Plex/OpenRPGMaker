@@ -86,10 +86,36 @@ import { prepareOpeningImageRequest, prepareOpeningLayerRequest } from '../../sr
 import type { CinematicStillResult } from '../../src/editor/openingImageGeneration.ts';
 import { runFfmpegHost, type FfmpegRequest } from './piFfmpegTool.ts';
 import { activityThumbnail, generateBestStill, type StillCritique } from './openingStillCritic.ts';
+import { localCliIdOf } from './localCliAgent/types.ts';
+import { createLocalCliLoop, type LocalCliLoop } from './localCliAgent/localCliLoop.ts';
+import { LOCAL_CLI_ADAPTERS, localCliBinary } from './localCliAgent/registry.ts';
 import { PiOpeningProduction, OPENING_ANIMATIC_AUTHORING_TOOLS, OPENING_PRODUCTION_PROMPT, requestsFullGameOpeningProduction, requestsOpeningProduction, openingImageProject } from '../../src/ai/piAgent/openingProduction.ts';
 
 // 조수 도구는 이 Bun 일꾼 안에서 돈다 — 편집기 기본값(상대 /v1 fetch)은 여기서 닿지 않으므로 월드맵 빌드를 프로세스 안에서 부른다.
 setWorldmapBuilder(buildWorldmap);
+
+/**
+ * 루프 운전기의 얼굴 — `@oh-my-pi/pi-agent-core` 의 Agent 와 로컬 CLI 루프(localCliAgent/localCliLoop.ts)가 같이 맞춘다.
+ * 이 파일의 도구 표면·관문·체크포인트·완료 검사는 이 네 가지만 부른다. 그래서 두 엔진이 같은 코드로 돈다.
+ */
+interface PiLoopDriver {
+  subscribe(listener: (event: { type: string; [key: string]: unknown }) => void): () => void;
+  prompt(text: string): Promise<void>;
+  steer(message: { role: "user"; content: { type: "text"; text: string }[]; timestamp: number }): void;
+  abort(reason?: string): void;
+}
+
+/** 로컬 CLI 제공자(`local-cli:claude|codex|gemini`)의 한 번짜리 글 생성 — 내부 보조 호출(event_command_assist·도트 글)용. */
+function localCliChat(cli: NonNullable<ReturnType<typeof localCliIdOf>>, model: string | undefined) {
+  return async (messages: readonly unknown[], signal?: AbortSignal): Promise<string> => {
+    const text = messages.map((message) => {
+      const m = message as { role?: string; content?: unknown };
+      const body = typeof m.content === "string" ? m.content : Array.isArray(m.content) ? m.content.map((part) => (part as { text?: string }).text ?? "").join("\n") : "";
+      return `[${m.role ?? "user"}]\n${body}`;
+    }).join("\n\n");
+    return LOCAL_CLI_ADAPTERS[cli].complete(text, { binary: localCliBinary(cli), ...(model ? { model } : {}), ...(signal ? { signal } : {}) });
+  };
+}
 
 export interface RunPiAgentOptions {
   /** Trusted request requirements for direct-authoring observations; no layout coordinates. */
@@ -252,8 +278,12 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   setCutsceneAssetFetcher(async url => `data:image/png;base64,${readBundledAsset(joinBundledAsset(process.cwd(), 'public', url.replace(/^\/+/u, '').split('?')[0]!)).toString('base64')}`);
   const workerKeyFor = (provider: string) => options.providerApiKeys?.[provider] ?? (provider === request.provider ? options.apiKey : undefined);
   setCutsceneArtGenerator(createWorkerImageGenerator(request, workerKeyFor));
+  // 로컬 CLI 엔진: LLM 루프는 사용자의 CLI 가 돈다. 우리는 키를 쥐지 않는다(내부 보조 글 생성도 같은 CLI 로).
+  const localCli = localCliIdOf(request.provider);
   // 도트(컷신 style:game 소품·아이콘·generate_pixel_art)는 이미지 모델이 아니라 도트 저작 모델(텍스트)이 찍는다.
-  setDotTextChat(createWorkerDotTextChat(request, workerKeyFor));
+  setDotTextChat(localCli && !request.pixelModel
+    ? async (messages, signal) => ({ text: await localCliChat(localCli, request.model)(messages, signal), model: request.model ?? "", provider: request.provider })
+    : createWorkerDotTextChat(request, workerKeyFor));
   const base = request.project;
   // 지금 보는 맵·승인 계열은 실행기의 칩셋 계열 검사와 create_map 기본 칩셋이 읽는다(ToolContext 주석).
   const ctx: ToolContext = {
@@ -268,7 +298,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   setupTimer.mark("clone");
   const referenceGate = new PiTilesetReferenceGate();
   const charsetGate = new PiCharsetSelectionGate();
-  const model = options.model ?? resolvePiModel(request.provider, request.model);
+  const model = localCli ? ({ id: request.model ?? "" } as unknown as ReturnType<typeof resolvePiModel>) : options.model ?? resolvePiModel(request.provider, request.model);
   // 어댑터와 코어 이벤트의 호출 id로 결과를 연결한다. 같은 이름의 병렬 호출도 섞지 않는다.
   const pendingSummaries = new Map<string, { ok: boolean; summary: string; result: unknown; visuals?: readonly ActivityVisual[] }>();
   const toolStartedAt = new Map<string, number>();
@@ -303,6 +333,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const findToolsCallable = (name: string): boolean => allowedNames.has(name);
   // event_command_assist 는 안에서 LLM 을 한 번 더 부른다 — 워커에는 편집기 동반 서비스가 없으니 이 실행의 제공자로 보낸다.
   const eventAssistChat = async (_config: unknown, chat: { messages: readonly unknown[]; signal?: AbortSignal }) => {
+    if (localCli) return { message: { role: "assistant" as const, content: await localCliChat(localCli, request.model)(chat.messages, chat.signal) }, finishReason: "stop" };
     const key = (options.providerApiKeys ? options.providerApiKeys[request.provider] : undefined) ?? options.apiKey;
     const result = await completeProvider(request.provider, {
       model: String((model as { id?: string }).id ?? request.model ?? ""), max_tokens: 8192, messages: chat.messages,
@@ -651,7 +682,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const writerKeyFor = (role: RoleModel) => options.providerApiKeys?.[role.provider] ?? (role.provider === request.provider ? options.apiKey : undefined);
   // 작문 계정(예: ChatGPT 주 계정 + Google 작문)이 연결돼 있지 않으면 작문을 실행 모델로 대신한다.
   // 연결 없는 계정 때문에 대사 작업 전체가 죽지 않게 한다(providerSelection.workProviderIds 와 짝).
-  const writer = selectedWriter && !writerKeyFor(selectedWriter) && selectedWriter.provider !== request.provider
+  // 로컬 CLI 엔진은 키가 없다 — 키가 연결된 작문 계정이 따로 있을 때만 작문을 맡기고, 아니면 실행 모델(CLI)이 직접 쓴다.
+  const writer = localCli ? (selectedWriter && writerKeyFor(selectedWriter) ? selectedWriter : undefined)
+    : selectedWriter && !writerKeyFor(selectedWriter) && selectedWriter.provider !== request.provider
     ? (request.roleModels?.deep ?? { provider: request.provider, model: String((model as { id?: string }).id ?? request.model ?? ""), thinkingLevel: "medium" as const })
     : selectedWriter;
   if (writer && !options.toolNames) {
@@ -687,8 +720,45 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 사고 강도는 여기서 한 번 낮춘다 — 레인·팀·CLI 호출자가 자기 요청을 짜도 antigravity 실행이 죽지 않게 한다.
   // 실측(2026-09-26): "off" 를 보내면 HTTP 200 스트림에 error 이벤트 `Thinking effort off is not supported by
   // google-antigravity/gemini-3.8-flash. Supported efforts: minimal, low, medium, high` 가 실려 첫 턴에서 끝난다.
-  const thinkingLevel = normalizePiThinkingLevel(request.provider, request.thinkingLevel);
-  const agent = new Agent({
+  const thinkingLevel = localCli ? undefined : normalizePiThinkingLevel(request.provider, request.thinkingLevel);
+  const onPayload = (payload: unknown) => {
+    const outgoing = request.provider === "google-antigravity"
+      ? antigravityToolEnumPayload(String((model as { id?: string }).id ?? ""), tools)(payload)
+      : payload;
+    referenceGate.payload(outgoing);
+    charsetGate.payload(outgoing);
+    // 로컬 CLI 는 요청 본문을 우리가 못 본다 — 관문에 넘기는 것은 «모델에게 넘어간 도구 결과»뿐이라 프롬프트 검사로 내보내지 않는다.
+    if (localCli) return outgoing;
+    // Observe the actual provider payload after normalization, not a rebuilt prompt.
+    try {
+      emit({ type: "prompt_inspection", snapshot: inspectPromptPayload(outgoing,
+        "Pi provider payload · 전송 시도", String((model as { id?: string }).id ?? ""),
+        [apiKey ?? "", ...Object.values(options.providerApiKeys ?? {}).filter((key): key is string => Boolean(key))]) });
+    } catch { /* inspection must never change provider behavior */ }
+    return outgoing;
+  };
+  // 미노출 툴 호출 구제 — 축소 노출(core+도메인) 아래서 모델이 find_tools 없이 곧바로 이름을
+  // 쳐도, 레지스트리에 있고 실행 경계(readOnly·toolNames) 안이면 실제로 실행된다.
+  // 경계 밖 이름은 undefined → 평범한 "tool not found" 결과가 모델의 자가수정을 돌린다.
+  const resolveFallbackTool = (name: string) => {
+    const shape = shapeFor(name);
+    if (shape && !exposed.has(name)) declare(shape);
+    return shape;
+  };
+  const localLoop: LocalCliLoop | undefined = localCli ? await createLocalCliLoop({
+    cli: localCli,
+    systemPrompt: [
+      "너는 OPRN 에디터(RPG 제작 도구)의 조수다. 프로젝트는 oprn MCP 서버의 도구로만 읽고 고친다. 파일·셸·웹 도구는 없다.",
+      "find_tools 로 찾은 도구는 다음 단계부터 도구 목록에 나타난다(이름 앞에 CLI 가 붙이는 접두가 있을 수 있다). 끝나면 사용자에게 한국어로 무엇을 바꿨는지 짧게 보고한다.",
+      ...systemPrompt,
+    ],
+    tools, onPayload, resolveFallbackTool,
+    ...(request.model ? { model: request.model } : {}),
+    ...(request.thinkingLevel === "low" || request.thinkingLevel === "medium" || request.thinkingLevel === "high" ? { effort: request.thinkingLevel } : {}),
+    ...(options.signal ? { signal: options.signal } : {}),
+    onStatus: (name, summary, data) => emit({ type: "execution_status", name, ok: true, summary, data }),
+  }) : undefined;
+  const agent: PiLoopDriver = localLoop ?? new Agent({
     initialState: {
       systemPrompt,
       model,
@@ -711,29 +781,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     // 실행 하나 = 캐시 세션 하나. 제공자 프롬프트 캐시(prompt_cache_key 등)가 이 id 로 같은 접두부를 묶는다 —
     // 없으면 매 호출 도구 스키마·시스템 프롬프트 전체가 새로 과금됐다.
     sessionId: `oprn-${randomUUID()}`,
-    onPayload: ((payload: unknown) => {
-      const outgoing = request.provider === "google-antigravity"
-        ? antigravityToolEnumPayload(String((model as { id?: string }).id ?? ""), tools)(payload)
-        : payload;
-      referenceGate.payload(outgoing);
-      charsetGate.payload(outgoing);
-      // Observe the actual provider payload after normalization, not a rebuilt prompt.
-      try {
-        emit({ type: "prompt_inspection", snapshot: inspectPromptPayload(outgoing,
-          "Pi provider payload · 전송 시도", String((model as { id?: string }).id ?? ""),
-          [apiKey ?? "", ...Object.values(options.providerApiKeys ?? {}).filter((key): key is string => Boolean(key))]) });
-      } catch { /* inspection must never change provider behavior */ }
-      return outgoing;
-    }) as never,
-    // 미노출 툴 호출 구제 — 축소 노출(core+도메인) 아래서 모델이 find_tools 없이 곧바로 이름을
-    // 쳐도, 레지스트리에 있고 실행 경계(readOnly·toolNames) 안이면 실제로 실행된다.
-    // 경계 밖 이름은 undefined → 평범한 "tool not found" 결과가 모델의 자가수정을 돌린다.
-    resolveFallbackTool: (name: string) => {
-      const shape = shapeFor(name);
-      if (shape && !exposed.has(name)) declare(shape);
-      return shape as never;
-    },
-  });
+    onPayload: onPayload as never,
+    resolveFallbackTool: resolveFallbackTool as never,
+  }) as unknown as PiLoopDriver;
   const maxTurns = request.maxTurns ?? DEFAULT_MAX_TURNS;
   let turns = 0;
   let toolCalls = 0;
@@ -999,6 +1049,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     options.signal?.removeEventListener("abort", onAbort);
     unsubscribe();
     deltas.dispose();
+    await localLoop?.dispose();
   }
   if (rejected) throw new Error(fatal || "적용이 중단되었습니다.");
   // 마지막 한 방울 — 툴 경계 밖에서 바뀐 것까지 캔버스에 닿게 한다. 이미 보낸 것은 diff 가 걸러낸다.
@@ -1022,7 +1073,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     type: "done",
     ...(fatal ? { stoppedEarly: fatal } : {}),
     project: ctx.project,
-    stats: { ms: Date.now() - started, turns, toolCalls, toolErrors, ...(usage ? { usage } : {}) },
+    stats: { ms: Date.now() - started, turns, toolCalls, toolErrors, ...(usage ? { usage } : {}), ...(localLoop ? { engine: localLoop.stats().engine, billing: localLoop.stats().billing, ...(localLoop.stats().costUsd !== undefined ? { costUsd: localLoop.stats().costUsd } : {}) } : {}) },
     changedKeys: changedProjectKeys(base, ctx.project),
     // 정본 증거는 이 프로세스 안에만 살아 있다 — 브라우저 수용 게이트가 쓸 수 있게 다이제스트로 내보낸다.
     spatialProof: exportSpatialToolProof(ctx.project),

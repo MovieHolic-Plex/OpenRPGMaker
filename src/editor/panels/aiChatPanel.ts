@@ -1103,7 +1103,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
    * 안내(toast)를 하지 않는다: 사용자가 누른 새 대화와 프로젝트 전환은 같은 정리를 하지만
    * 사용자에게 할 말이 다르다.
    */
-  let conversationSpend = { turns: 0, tokens: 0 };
+  let conversationSpend: { turns: number; tokens: number; costUsd?: number; billing?: "subscription" | "api" | "unknown" } = { turns: 0, tokens: 0 };
   /**
    * 이 대화에서 사용자가 질문 카드(aiTilesetChangeCard)로 승인한 칩셋 계열. 새 대화면 비운다.
    * Pi 요청의 approvedTilesetFamilies·채팅 세션 도구 ctx 로 간다.
@@ -2167,9 +2167,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         // (2026-09-16 실측). 세션 항목과 같은 자리에 누적해 bridge·내보내기가 같은 원천을 본다.
         onRunAudit: (rows) => { controller.auditHistory.push(...rows); },
         onSpend: (spend) => {
+          const costUsd = spend.costUsd !== undefined ? (conversationSpend.costUsd ?? 0) + spend.costUsd : conversationSpend.costUsd;
+          const billing = spend.billing ?? conversationSpend.billing;
           conversationSpend = {
             turns: conversationSpend.turns + spend.turns,
             tokens: conversationSpend.tokens + spend.tokens,
+            ...(costUsd !== undefined ? { costUsd } : {}),
+            ...(billing ? { billing } : {}),
           };
           paintConversationSpend();
         },
@@ -3339,7 +3343,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   }
   paintConversationSpend = (): void => {
     const quiet = conversationSpend.turns === 0 && conversationSpend.tokens === 0;
-    composerShell.setSpend(quiet ? null : `${formatTokenCount(conversationSpend.turns)}턴 · ${formatTokenCount(conversationSpend.tokens)}토큰`);
+    // 로컬 CLI 엔진(D8): 대화 누적에 「구독 한도 사용 · 환산 $」를 붙인다. 구독이면 청구가 아니다.
+    const cost = conversationSpend.billing === "subscription"
+      ? ` · 구독 한도 사용${conversationSpend.costUsd !== undefined ? ` · 환산 $${conversationSpend.costUsd.toFixed(2)}` : ""}`
+      : conversationSpend.costUsd !== undefined ? ` · $${conversationSpend.costUsd.toFixed(2)}` : "";
+    composerShell.setSpend(quiet ? null : `${formatTokenCount(conversationSpend.turns)}턴 · ${formatTokenCount(conversationSpend.tokens)}토큰${cost}`);
   };
   const commandBar = composerShell.commandBar;
   const commandMenu = composerShell.commandMenu;

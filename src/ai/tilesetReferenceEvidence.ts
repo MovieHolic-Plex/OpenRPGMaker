@@ -19,6 +19,8 @@ export class TilesetReferenceEvidence {
   private imageMetadata = new Set<string>();
   private images = new Set<string>();
   private pendingImages = new Map<string, string>();
+  /** 마지막 imagesForRead 에서 «이미 전달됨»이라 뺀 그림 이름. 도구 결과 글에 한 줄로 알린다. */
+  skipped: string[] = [];
   clear(): void { this.pages.clear(); this.imageMetadata.clear(); this.images.clear(); this.pendingImages.clear(); }
   observe(result: ToolResult): void {
     if (!result.ok || !result.data) return;
@@ -33,9 +35,13 @@ export class TilesetReferenceEvidence {
     if (!category || referenceRevision(category) !== data.revision) return [];
     const wanted = [...(data.image ? [data.image.id] : []), ...(data.images ?? []).map(image => image.id)];
     const out: { label: string; dataUrl: string }[] = [];
+    this.skipped = [];
     for (const id of wanted) {
       const image = category.images.find(i => i.id === id);
       if (!image) continue;
+      // 같은 실행에서 이미 모델이 받은(제공자 확인까지 끝난) 그림은 다시 싣지 않는다 — 대화 기록에 그대로 있다.
+      // 관문 판정은 그대로다: 이미 인정된 그림이라 다시 받을 이유가 없을 뿐이다(D5, 2026-10-20).
+      if (this.images.has(`${key(data)}:image:${image.id}`)) { this.skipped.push(image.name); continue; }
       const dataUrl = await resolveReferenceImageDataUrl(image.dataUrl);
       this.pendingImages.set(`${key(data)}:image:${image.id}`, dataUrl);
       out.push({ label: `타일셋 참고 이미지 (${category.name}): ${image.name}\n${image.caption}`, dataUrl });

@@ -4,6 +4,8 @@
 // 이 파일은 이미 부혼 자겁문자열(apiKey)를 받아 모델 호출만 한다. pi-ai 는 bun:sqlite 를
 // 싣고 오므로 Bun 에서만 로드되며, 그 Bun 의존이 인증 경로로 새지 않는 것이 이 경계의 목적이다.
 
+import { localCliIdOf } from "./localCliAgent/types.ts";
+import { LOCAL_CLI_ADAPTERS, localCliBinary } from "./localCliAgent/registry.ts";
 import { completeSimple } from "@oh-my-pi/pi-ai";
 import { resolveOhMyPiModel } from "./ohMyPiModel.ts";
 import { getOhMyPiProvider } from "../../src/ai/ohMyPiProviders.ts";
@@ -192,12 +194,35 @@ function assistantToOpenAI(message: {
   };
 }
 
+/** OpenAI chat 본문 → CLI 한 차례 지시문. 그림은 싣지 않는다(이름만 남긴다). JSON 응답 요청은 문장으로 옮긴다. */
+function openAiBodyAsPrompt(body: Record<string, unknown>): string {
+  const messages = Array.isArray(body.messages) ? body.messages as { role?: string; content?: unknown }[] : [];
+  const text = messages.map((message) => {
+    const content = typeof message.content === "string" ? message.content
+      : Array.isArray(message.content) ? message.content.map((part) => {
+        const p = part as { type?: string; text?: string };
+        return p.type === "text" || p.type === "input_text" ? p.text ?? "" : p.type ? `[${p.type} 생략]` : "";
+      }).join("\n") : "";
+    return `[${message.role ?? "user"}]\n${content}`;
+  }).join("\n\n");
+  const format = (body.response_format as { type?: string } | undefined)?.type;
+  return format === "json_object" || format === "json_schema" ? `${text}\n\n[응답 형식] 다른 말 없이 JSON 객체 하나만 출력하라.` : text;
+}
+
 export async function completeProvider(
   provider: string,
   body: Record<string, unknown>,
   options?: { fetch?: typeof fetch; apiKey?: string; signal?: AbortSignal },
 ) {
   const modelId = typeof body.model === "string" ? body.model : getOhMyPiProvider(provider)?.defaultModel ?? "";
+  // 로컬 CLI 엔진(local-cli:*): 보조 글 생성(의도 선언·JSON 응답 등)도 사용자의 CLI 가 한다. 도구 호출(tools)은 싣지 않는다 —
+  // 그런 호출자는 글 응답을 받는다(조수 본 루프의 도구는 runPiAgent 가 MCP 로 따로 준다).
+  const cli = localCliIdOf(provider);
+  if (cli) {
+    const text = await LOCAL_CLI_ADAPTERS[cli].complete(openAiBodyAsPrompt(body), { binary: localCliBinary(cli), ...(modelId ? { model: modelId } : {}), ...(options?.signal ? { signal: options.signal } : {}) });
+    return { stream: false, completion: { id: `local-cli-${Date.now()}`, object: "chat.completion", model: modelId, provider,
+      choices: [{ index: 0, message: { role: "assistant", content: text }, finish_reason: "stop" }] } };
+  }
   const model = resolveOhMyPiModel(provider, modelId);
   if (!model) {
     const err = new Error(`oh-my-pi 카탈로그에 ${provider} 모델이 없습니다`);

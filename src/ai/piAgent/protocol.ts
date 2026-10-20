@@ -114,6 +114,12 @@ export interface PiAgentStats {
   readonly toolCalls: number;
   readonly toolErrors: number;
   readonly usage?: PiAgentUsage;
+  /** 어느 엔진이 돌았나 — 로컬 CLI 엔진이면 `local-cli:claude` 등. 없으면 Pi(oh-my-pi) 엔진. */
+  readonly engine?: string;
+  /** 로컬 CLI 의 청구 방식. subscription 이면 비용은 청구가 아니라 구독 한도 사용이다(D8). */
+  readonly billing?: "subscription" | "api" | "unknown";
+  /** CLI 가 스스로 보고한 비용(claude 만). 구독이면 한도 사용을 달러로 환산한 값이다. */
+  readonly costUsd?: number;
 }
 
 /**

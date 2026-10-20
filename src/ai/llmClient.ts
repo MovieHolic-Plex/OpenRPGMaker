@@ -1,4 +1,5 @@
 import { inspectPromptPayload, publishPromptInspection, inspectionEpoch } from "./authoring/promptInspection";
+import { applyAssistantEngine, loadAssistantEngine } from "./localCliEngine";
 import { DEFAULT_PI_APPLY, normalizePiApplyMode, type PiApplyMode } from "./piAgent/applyMode";
 import { configForRole, parseRoleModels, type RoleModel, type SpecialistModels } from "./modelRoles";
 import { DEFAULT_PIXEL_MODEL, parsePixelModel } from "./pixelModel";
@@ -329,6 +330,11 @@ function withoutLegacySeededDeepRole(roles: SpecialistModels, providerId: string
 // 게이트웨이를 저장한 브라우저는 env 를 고쳐도 계속 죽은 경로를 쳤다 — 이번 장애의 절반이
 // 이것이다(실측: 저장된 baseUrl `/api/cliproxy` 가 POST 404).
 export function loadAiConfig(): AiConfig {
+  // 조수 엔진을 사용자 PC 의 CLI 로 고른 사람(opt-in, src/ai/localCliEngine.ts)은 모든 대화 역할이 그 CLI 로 간다.
+  return applyAssistantEngine(loadStoredAiConfig(), loadAssistantEngine());
+}
+
+function loadStoredAiConfig(): AiConfig {
   if (typeof localStorage === "undefined") return defaultAiConfig();
   const base = legacyStoredAiConfigBase();
   try {
@@ -439,7 +445,14 @@ export function saveAiConfig(config: AiConfig): void {
   // 제공자는 저장 시점에도 레지스트리 값으로 정규화한다. 프로그램 경로(설정 저장·마이그레이션)가
   // 레지스트리 밖 id 를 디스크에 남기면 다음 판독이 흔들리기 때문 — 두 제공자 중 하나로 못박되,
   // 사용자가 고른 Codex 를 Antigravity 로 되돌리지는 않는다.
-  const normalized: AiConfig = { ...config, piApplyPolicyVersion: 1, roleModelsPolicyVersion: 1, providerId: parseOhMyPiProvider(config.providerId) };
+  // 로컬 CLI 엔진을 고른 동안 loadAiConfig 가 입힌 역할·제공자 칸은 저장하지 않는다 — 엔진을 끄면 원래 계정 설정으로 돌아가야 한다.
+  const stored = loadAssistantEngine() ? loadStoredAiConfig() : undefined;
+  const owned = stored ? {
+    providerId: stored.providerId, model: stored.model, liteModel: stored.liteModel, roleModels: stored.roleModels, pixelModel: stored.pixelModel,
+    ultrabrainProviderId: stored.ultrabrainProviderId, ultrabrainModel: stored.ultrabrainModel, ultrabrainReasoningEffort: stored.ultrabrainReasoningEffort,
+  } : {};
+  const merged: AiConfig = { ...config, ...owned };
+  const normalized: AiConfig = { ...merged, piApplyPolicyVersion: 1, roleModelsPolicyVersion: 1, providerId: parseOhMyPiProvider(merged.providerId) };
   localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify(normalized));
   if (typeof window !== "undefined" && typeof window.dispatchEvent === "function") {
     window.dispatchEvent(new CustomEvent(AI_CONFIG_CHANGED_EVENT));
