@@ -1,0 +1,258 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a9415e42977fe338d832672b3153c186ed632a8f1d9cdda5da45668d029ed961",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "inaka-aze-path",
+ "label": "jp_inaka_pack/ground/inaka-aze-path",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 6,
+  "darkV5": 137,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dirt path ground tile",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full 16x16 opaque square of brown dirt (width 16 on every row) with scattered single-pixel speckles of lighter and darker tones. There is no silhouette, no front-edge line, no eave shadow and no vertical face. The few darker pixels (rows 7, 12, 13) are noise, not edge lines. It is a flat ground texture, which suits the terrain kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a brown soil path with about 5 visible tones (6 raw colours): a mid brown base, speckled grain dots, a lighter rim and a darker edge. Measured facts: 5 visible tones per 16x16 tile, above the grass reference (3) and a little below the paving reference (7). Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% neutral, so the edge carries a brown tint and reads as a dark material tone rather than a black sticker line. It has less grain variety than the Beodeul grass tufts, and it is not a rich multi-step ramp. For a simple soil ground at this palette size it holds up next to the references on the primary facts. The board shows the candidate as a small swatch, so I could not check the full 4x3 layout by eye and relied on the measured facts. I judged it pass, at moderate confidence.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15361
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dirt path ground tile",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a uniform 16x16 brown dirt ground texture with scattered darker and lighter speckle pixels. It is full width on every row (16 px) and has no front face, edge line, eave shadow or silhouette change. As a terrain tile it is flat ground seen from above, so it is a top-down surface with no standing front face, which is expected for this kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small brown soil swatch. It has a lighter top edge, a darker bottom and side edge, and scattered grain dots in several brown tones. The measured facts back this up: 5 visible tones per tile, above the grass reference (3) and just under the paving reference (7), with 0% near-flat coverage. Its dark edge pixels are 0% neutral, so the edges lean brown (dark soil tone) rather than black, and there is no sticker-style outline. It uses only 6 raw colours, which is expected under a locked palette. The swatch is tiny, so the texture is less rich than the dense grass reference, but it reads as a real dirt tile with grain and edge shading rather than a flat fill. It would sit acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12745
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground tile (dirt path) filling the full 16x16 square with scattered speckles",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The candidate is a full 16x16 opaque tile with a uniform brown dirt texture and scattered lighter and darker speckle pixels (rows 7, 11, 12 in the column scans). There is no front-edge line, eave shadow, ellipse, or standing front face. It is flat ground terrain, so it reads as a top-down surface with no vertical face, which is normal for a terrain tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small soil/dirt path tile with 5 visible tones per tile, against 3 for the reference grass and 7 for the paving, so it sits between the two references and is above the grass. Near-flat coverage is 0%, so there are no 5x5 flat fills. Its dark edge pixels are 0% neutral, which means the edge is a tinted dark brown, not a black sticker line. Only 6 raw colours are used, but they read as a graded brown ramp with speckle and grain. That fits a locked palette and gives about 5 shading steps against roughly 5-6 in the references. It is simpler than the paving, but it is not thinner or flatter than the grass reference. The image is small, so the texture judgement rests partly on the measured facts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13693
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dirt path ground tile with scattered pebbles/speckles",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a uniform 16x16 brown dirt ground texture with scattered lighter and darker speckles (pebbles). The silhouette is a full 16-wide square on every row. There is no front face, edge line, eave shadow or ellipse. The single darker pixels in column scans are noise speckles, not edge lines. This is a flat terrain tile, so a top-down read is expected."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a single small brown soil swatch, roughly one tile, not a 4x3 patch, so it is hard to judge as a path ground. Measured facts are acceptable: 5 visible tones per tile (grass reference 3, paving 7), 0% near-flat coverage, and 0% neutral dark edge pixels, so the edge tones are tinted brown rather than black. The craft looks shallow by eye. There are only 6 raw colours in total, against 26 per tile in the grass reference and 80 in total. The soil grain is sparse, with a few scattered speckles. The shading reads as a light top/left edge and a darker bottom edge around a mostly uniform brown interior. That gives about 4 usable ramp steps and a bevelled, sticker-like block instead of the clumped, multi-tone grain the references carry. The numbers do not fail it, but it is thinner than the references, so I fail it under the 'when in doubt, fail' rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16790
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:04.194Z",
+ "cells": {
+  "16": [
+   "981db6b6133a9a21"
+  ],
+  "24": [
+   "2da32c641081f9e8",
+   "2ec8c9e783b7d17e",
+   "383266fcaafb5238",
+   "429145ba3ddfa2dc",
+   "5acdfa80b86436cd",
+   "7dc0105fa0fb0a14"
+  ],
+  "32": [
+   "2eb533b6f749e869",
+   "40264da80d111120",
+   "58a642254010c38f",
+   "7ed3597fcf3ad466",
+   "b1257868152243c0",
+   "b6922cb61053d50e"
+  ],
+  "48": [
+   "30a9fbd22e34927b",
+   "4559a3b2d301cab1",
+   "7907440256f19e81",
+   "89954ef1a7696ba1",
+   "9c194a44ca923f92",
+   "ef438cab2d9df601"
+  ]
+ }
+}

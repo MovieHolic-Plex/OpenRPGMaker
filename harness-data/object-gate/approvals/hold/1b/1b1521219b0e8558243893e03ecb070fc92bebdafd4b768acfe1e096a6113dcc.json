@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "1b1521219b0e8558243893e03ecb070fc92bebdafd4b768acfe1e096a6113dcc",
+ "profileHash": "4d8774b517f41638",
+ "kind": "other",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-20T22:16:46.309Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 8/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "note": "delegated by user to supervisor 2026-10-21; Opus 5.5 medium adversarial VQA receipt harness-data/jp-inaka/vqa-r14/gate2/findings-C.json (PR #3071)",
+ "sig": "ce889a1b44f699ef6c1ac99130b6db3d3cbc904e698bcdd3fb537d0fce94b336"
+}

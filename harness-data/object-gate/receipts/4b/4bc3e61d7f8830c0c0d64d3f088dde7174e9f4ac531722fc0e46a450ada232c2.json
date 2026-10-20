@@ -4,29 +4,32 @@
  "width": 32,
  "height": 32,
  "kind": "structure",
- "name": "sluice gate",
- "label": "jp-inaka-r5:inaka-sluice-gate",
- "profileHash": "ee216f0de5822996",
+ "name": "jp-inaka-sluice-gate",
+ "label": "jp_inaka_pack/jp-inaka-sluice-gate",
+ "profileHash": "4d8774b517f41638",
  "verdict": "refer",
  "reasons": [
-  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 윗면 2행 < 3 (2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
  ],
  "view34": {
   "verdict": "refer",
   "reasons": [
-   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "윗면 2행 < 3 (2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
   ]
  },
  "style": {
   "verdict": "pass",
   "reasons": [],
-  "styleKind": "prop",
+  "styleKind": "building",
   "refs": [
-   "prop-bench-wood",
-   "prop-hedge",
-   "prop-lamp-crook",
-   "prop-stall-cheese",
-   "prop-well-roofed"
+   "house-h101_0",
+   "house-h112_0-stone"
   ],
   "scale": 2,
   "score": 7
@@ -63,45 +66,59 @@
     "kind_matches": true,
     "surfaces": [
      {
-      "part": "top beam with red wheel/handle",
-      "rows": "1-3",
+      "part": "top beam with red ornament",
+      "rows": "0-4",
       "evidence": "none",
       "front_edge_line_row": null,
       "eave_shadow_rows": null
      },
      {
-      "part": "stone crossbeam / walkway slab",
-      "rows": "6-10",
+      "part": "stone lintel band across the gate top",
+      "rows": "5-10",
       "evidence": "a",
       "front_edge_line_row": 9,
       "eave_shadow_rows": "10-11"
      },
      {
-      "part": "side piers and gate panel with water",
-      "rows": "11-31",
+      "part": "inner gate frame with bars and foam",
+      "rows": "12-23",
       "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "water channel below the gate",
+      "rows": "24-31",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "moss tufts at the sides",
+      "rows": "24-31",
+      "evidence": "decor",
       "front_edge_line_row": null,
       "eave_shadow_rows": null
      }
     ],
     "main_top_rows": 4,
-    "front_face_rows": 21,
+    "front_face_rows": 20,
     "side_face_visible": false,
     "all_major_parts_have_top": true,
     "round_cap": null,
     "reads_as": "three_quarter",
-    "evidence": "A crossbeam spans the full width at rows 6-10. It has a light back highlight at row 6, a mid-tone band at rows 7-8, and a light front-edge line at row 9. Darker rows 10-11 follow as eave shadow, so the beam reads as a thin top surface of about 4 rows. Below it, rows 11-31 are the front face: stone piers on both sides and a central channel with gate bars, a pale water lip at rows 22-23 and water below. The strip at rows 1-3 with the red wheel is a front-facing beam with no edge line. This is a borderline case because the top band is thin and could also be read as a front-facing striped lintel."
+    "evidence": "The lintel at rows 5-10 has a light top plane at rows 5-8. A lighter front-edge line sits at row 9 in columns 8, 16 and 23. Darker shadow rows 10-11 follow it, and below them is a front face with a gate frame, bars and water, rows 12-31. The top beam at rows 0-4 is a front-facing strip with no edge line. The top surface is shallow and the distinction is marginal, but it is a banded plane that ends in an edge line plus shadow, with a front face of about 20 rows below. The water at rows 24-31 adds weak evidence of contents seen from above."
    },
    "styleAnswer": {
     "ref_kind_matches": true,
-    "shading_steps": 5,
+    "shading_steps": 4,
     "reference_steps": 6,
     "outline": "dark_material_tone",
     "texture": "some",
     "flat_fills": false,
     "density": "equal_or_richer",
     "score": 7,
-    "evidence": "The candidate is a stone sluice gate with a red wheel on top and flowing water. It holds up against the references on the measured facts. It has 21 distinct colours per 16x16 tile, against 20 for the roofed well and 17 for the cheese stall. It has 0% 5x5 flat-fill coverage and 29 distinct colours overall. Only 3% of its dark edge pixels are neutral, so the outline carries a tint (dark blue-grey and dark stone tones) rather than a black sticker line, much like the tinted outlines on the hedge and stall. By eye, the stone blocks show about five lightness steps with per-block variation, and the water has several blues with highlight streaks. This is slightly less layered than the well's roof and stonework, but it is not shallow. A careful artist would accept it next to the references without it looking flatter or more sticker-like. The picture is small and low in resolution, so I rely partly on the measured facts.",
+    "evidence": "The candidate is a tiny stone sluice structure, not a full house, so it has no tile roof to compare. I judged it as a small building prop against the references. The measured facts support it: 19 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage (same as both references), and only 3% neutral dark edge pixels. That last figure means the outline leans toward the material (dark grey-blue beside stone, dark green beside the plants), not a uniform black sticker line. By eye, the stone body is split into light and dark bands with a gate slot, the water has several blue steps with highlights, there are green plant tufts at the base, and the red cap on top has its own highlight and shadow. The stone ramp has about 4 steps, below Beodeul's 5-6, and the texture is less rich than the references' per-tile scallops and stone-by-stone shading. Even so, a careful artist would accept it next to the references without it looking flatter or more sticker-like, and no area is a flat fill.",
     "verdict": "pass"
    },
    "pass": true,
@@ -114,7 +131,7 @@
     "pass": true,
     "reasons": []
    },
-   "ms": 21142
+   "ms": 23036
   },
   {
    "judge": "sonnet",
@@ -124,58 +141,80 @@
     "kind_matches": true,
     "surfaces": [
      {
-      "part": "top crossbeam with red wheel",
+      "part": "red ornament on top beam",
+      "rows": "0-4",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top cornice beam",
       "rows": "1-3",
       "evidence": "none",
       "front_edge_line_row": null,
       "eave_shadow_rows": null
      },
      {
-      "part": "main walkway/lintel band over gate",
-      "rows": "6-10",
-      "evidence": "a",
+      "part": "stone lintel band",
+      "rows": "5-11",
+      "evidence": "none",
       "front_edge_line_row": 9,
-      "eave_shadow_rows": "10-11"
+      "eave_shadow_rows": "11"
      },
      {
-      "part": "side pillars and gate frame with water (front face)",
+      "part": "side stone piers",
+      "rows": "11-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gate opening with bars and water",
       "rows": "11-31",
       "evidence": "none",
       "front_edge_line_row": null,
       "eave_shadow_rows": null
      }
     ],
-    "main_top_rows": 4,
-    "front_face_rows": 21,
+    "main_top_rows": 2,
+    "front_face_rows": 26,
     "side_face_visible": false,
-    "all_major_parts_have_top": true,
+    "all_major_parts_have_top": false,
     "round_cap": null,
-    "reads_as": "three_quarter",
-    "evidence": "Rows 6-9 form a light horizontal band across the full 32px width. It ends in a light front-edge line at row 9, followed by darker rows 10-11 that act as eave shadow, so it reads as a top surface. Below it, rows 11-31 are a tall front face: stone pillars, a dark gate frame with slats, and water. Rows 1-3 are a front-facing beam strip with the red wheel and are not counted as a top. The top is thin (about 4 rows) but has an edge line and shadow, so the reading is only marginally three_quarter."
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a full-width 32 px rectangle. Rows 1-3 are a flat front-facing beam with a red ornament, and rows 5-10 are a lintel band. The lintel has a bright line at row 6 and another at row 9, then dark row 11. It reads as a front-facing cornice with highlights, not a receding top plane, and no roof slope or ellipse is visible. Below it are vertical piers, bars and water seen face-on, so no major part shows a horizontal top surface. This is a flat front elevation. The lintel is the only ambiguous part, at most a 2-row rim."
    },
    "styleAnswer": {
     "ref_kind_matches": true,
     "shading_steps": 5,
-    "reference_steps": 5,
+    "reference_steps": 6,
     "outline": "dark_material_tone",
     "texture": "some",
     "flat_fills": false,
     "density": "equal_or_richer",
     "score": 7,
-    "evidence": "The candidate is a stone-framed sluice gate with a red valve wheel and falling water. Its median is 21 distinct colours per 16x16 tile, level with prop-well-roofed (20) and above prop-stall-cheese (17) and prop-hedge (10). Its flat-fill coverage is 0%, so there are no large single-colour areas. Only 3% of its dark edge pixels are neutral, so the outline is tinted, a dark blue-grey beside the stone and water, rather than a black sticker line. By eye the stone blocks and the water show about 4-5 lightness steps with per-block variation and speckle. Its 29 distinct colours are somewhat below the well (38) and stall (40) but above the simpler props, which is acceptable for a compact single-object prop. The small size limits how much texture I can judge, but a careful artist would accept it next to the references without it looking thinner or flatter.",
+    "evidence": "The candidate is a small stone sluice gate, much smaller than the two reference houses, so the comparison is loose. On the measured facts it holds up: 19 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and only 3% near-neutral dark edge pixels. That means the outlines are tinted, a dark version of the neighbouring stone, wood and water, not a black sticker line. By eye, the grey stone body shows several lightness steps with a top ledge highlight. The gate slats and the water at the base add varied tones, and the foliage and the red accent add grain. I see no large flat fills. It is simpler than a full roofed house, but a careful artist would accept it next to the references without it looking thinner or flatter.",
     "verdict": "pass"
    },
-   "pass": true,
-   "reasons": [],
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
    "view34": {
-    "pass": true,
-    "reasons": []
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
    },
    "style": {
     "pass": true,
     "reasons": []
    },
-   "ms": 19101
+   "ms": 34547
   },
   {
    "judge": "sonnet",
@@ -185,51 +224,73 @@
     "kind_matches": true,
     "surfaces": [
      {
-      "part": "main lintel/top slab over the gate",
-      "rows": "5-10",
+      "part": "top beam with red ornament",
+      "rows": "0-4",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lintel beam",
+      "rows": "5-11",
       "evidence": "a",
       "front_edge_line_row": 9,
       "eave_shadow_rows": "10-11"
      },
      {
-      "part": "upper cap beam with red ornament",
-      "rows": "1-3",
+      "part": "side stone piers",
+      "rows": "12-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gate opening with water and crossbars",
+      "rows": "12-31",
       "evidence": "none",
       "front_edge_line_row": null,
       "eave_shadow_rows": null
      }
     ],
-    "main_top_rows": 4,
-    "front_face_rows": 21,
+    "main_top_rows": 2,
+    "front_face_rows": 20,
     "side_face_visible": false,
-    "all_major_parts_have_top": true,
+    "all_major_parts_have_top": false,
     "round_cap": null,
-    "reads_as": "three_quarter",
-    "evidence": "The wide lintel at rows 5-10 has a bright top row at row 6 and a bright front-edge line at row 9 (L=181). Darker shadow rows follow at 10-11 (L=130, then 81), so the slab reads as a top surface about 4 rows tall. Below it is a front face of about 21 rows (rows 11-31): side piers, a recessed gate slot with crossbars, and water at the bottom. The strip at rows 1-3 is a front-facing beam with no edge line, so it does not count as a top. The evidence for the top is moderate, because the lintel could also be read as a front-facing strip. I read it as three_quarter because the edge line and shadow are present."
+    "reads_as": "front_elevation",
+    "evidence": "The gate is a flat frontal drawing. The lintel at rows 5-11 is a stack of horizontal strips: light at row 6, mid at rows 7-8, light at row 9, dark at rows 10-11. It could be read as a 2-3 row top with an edge line at row 9, but it looks more like a front-facing beam. The side piers (rows 12-31) and the gate panel are vertical faces with no top surface. The water at rows 22-31 is seen face-on, not as a surface from above. No receding side face is drawn. The top surface is therefore only a thin strip of about 2 rows against a front face of about 20 rows."
    },
    "styleAnswer": {
     "ref_kind_matches": true,
-    "shading_steps": 5,
+    "shading_steps": 4,
     "reference_steps": 6,
     "outline": "dark_material_tone",
     "texture": "some",
     "flat_fills": false,
     "density": "equal_or_richer",
     "score": 7,
-    "evidence": "The candidate is a grey stone sluice gate with a red wheel and a water channel. It has about 5 lightness steps on the stone, plus separate ramps for the water and the red wheel. The measured facts match the richer references. It has 21 colours per 16x16 tile, against 20 for the well and 17 for the stall. It has 29 distinct colours, 0% 5x5 flat-fill coverage, and only 3% neutral dark edge pixels, so the outline is tinted and not a black sticker line. The stone blocks and the water show per-block variation and speckle. The candidate is small and the picture is low-resolution, so texture is judged 'some' rather than 'rich'. Nothing looks thinner or flatter than the well or stall next to it.",
+    "evidence": "The candidate is a small sluice-gate structure (grey stone body, red valve wheel on top, water below), not a full roof-and-walls house, so it is much simpler than the references. I judged it on craft, not size. The stone has about 4 lightness steps (highlight, light, mid, dark) with visible block edges and speckle. The water has banded blues with highlights. The red wheel carries its own highlight. Outlines lean toward the neighbouring material (dark grey-brown beside stone, dark blue beside water), and only 3% of dark edge pixels are neutral, against 7% and 9% for the references, so this is not a sticker outline. Measured facts: 19 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage, the same as the references. There are no large flat fills. It has fewer shading steps than the roof tiles of the houses, but a careful artist would accept it next to them without it looking thinner or flatter.",
     "verdict": "pass"
    },
-   "pass": true,
-   "reasons": [],
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
    "view34": {
-    "pass": true,
-    "reasons": []
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
    },
    "style": {
     "pass": true,
     "reasons": []
    },
-   "ms": 23945
+   "ms": 19909
   },
   {
    "judge": "sonnet",
@@ -239,27 +300,34 @@
     "kind_matches": true,
     "surfaces": [
      {
-      "part": "top beam/wall cap",
-      "rows": "5-10",
-      "evidence": "a",
-      "front_edge_line_row": 9,
-      "eave_shadow_rows": "10-11"
+      "part": "red ornament/lantern on top beam",
+      "rows": "0-4",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
      },
      {
-      "part": "upper crossbar with red wheel/handle",
+      "part": "upper cornice beam",
       "rows": "1-3",
       "evidence": "none",
       "front_edge_line_row": null,
       "eave_shadow_rows": null
+     },
+     {
+      "part": "main lintel top band",
+      "rows": "6-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-11"
      }
     ],
     "main_top_rows": 4,
-    "front_face_rows": 21,
+    "front_face_rows": 20,
     "side_face_visible": false,
     "all_major_parts_have_top": true,
     "round_cap": null,
     "reads_as": "three_quarter",
-    "evidence": "Rows 1-3 are a front-facing strip with a red handle, which is not a top surface. Rows 5-10 form a lighter band: row 6 is light, rows 7-8 are mid-tone, row 9 is a light edge line, and rows 10-11 are darker shadow. That reads as a top surface of about 4 rows with a front-edge line and eave shadow. Below it, rows 11-31 are the front face, with side piers, a gate slot with crossbars, and water at rows 22-31. The main top is thin and borderline, but it has an edge line and shadow, so it passes as a weak three-quarter read. No receding side face is drawn."
+    "evidence": "The main lintel has a band at rows 6-9. Row 6 is light (L=181), rows 7-8 are mid-tone, and row 9 is a light front-edge line (L=181). Dark eave shadow follows at rows 10-11 (L=130 then 81). Below it is a front face of about 20 rows (rows 12-31): stone side piers, a gate frame with crossbars and posts, and water at the bottom. The 4-row band is a modest top surface, and the evidence is borderline. The row 1-3 cornice and the red ornament at rows 0-4 read as a front-facing strip and decor, so they do not count as the top surface."
    },
    "styleAnswer": {
     "ref_kind_matches": true,
@@ -270,7 +338,7 @@
     "flat_fills": false,
     "density": "equal_or_richer",
     "score": 7,
-    "evidence": "The candidate has 21 median colours per tile, which is level with the well (20) and above the stall (17). It has 29 distinct colours against 38-40 for the richer references. Flat-fill coverage is 0%. Only 3% of its dark edge pixels are neutral, so the outline carries a tint and reads as dark material tone, like the hedge and stall, not the near-black line of the lamp. By eye, the stone lintel and piers show several grey-blue steps with individual block shading. The water in the channel has some highlight variation, and the red valve wheel adds an accent. The overall ramps look about 5 steps, close to the references, and I see no sticker-like uniform outline. It is at the lower end of the reference range on texture, but a careful artist would accept it next to the references.",
+    "evidence": "The candidate is a small single-tile-scale waterworks prop, not a full house with roof and walls. It is still the same 'building' kind, and I judged it as a small piece without penalising its size. The measured facts support it. It has 19 visible tones per 16x16 tile against 12 and 10 in the references. Near-flat coverage is 0%, the same as the references. Only 3% of its dark edge pixels are neutral, so the outlines are tinted material tones rather than a black sticker line. By eye, the stone body has several grey steps with block separation, and the water has a dark-to-light ramp with white highlights. The grass at the base and the red cap on top add variation, and the dark gate openings are separated from the stone by value. It is simpler than the tiled roofs and stone walls of the references, but no large flat fills appear and a careful artist would accept it beside them.",
     "verdict": "pass"
    },
    "pass": true,
@@ -283,10 +351,10 @@
     "pass": true,
     "reasons": []
    },
-   "ms": 18264
+   "ms": 24956
   }
  ],
- "decidedAt": "2026-10-20T06:19:08.455Z",
+ "decidedAt": "2026-10-20T22:15:04.109Z",
  "cells": {
   "16": [
    "1b015de83173cff9",

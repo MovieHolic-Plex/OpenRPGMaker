@@ -1,0 +1,372 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "64b53896f8bdea9548992a73a6d8e1e3b4da29140233daf53302a16db8eab1b3",
+ "width": 48,
+ "height": 32,
+ "kind": "organic",
+ "name": "jp-inaka-sunflower-patch",
+ "label": "jp_inaka_pack/jp-inaka-sunflower-patch",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (3/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 21,
+  "darkV5": 50,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sunflower heads",
+      "rows": "1-19",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "leaves and stems",
+      "rows": "8-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "soil bed top (heap of earth with lighter textured surface)",
+      "rows": "22-25",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "soil bed front face",
+      "rows": "26-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the soil bed that carries the sunflowers, which count as decor (plants in a planter). Rows 22-25 are a lighter, speckled earth surface (#a68e73, #876d54) whose width grows from 37 to 47 as it moves toward the viewer, so it reads as a heap of soil seen from above. Rows 26-31 are a darker front face (#694d38 down to #331a18), 6 rows tall, that narrows toward the bottom. The flower heads and leaves are plants standing on the bed and are not required to show a top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a small sunflower planter, much smaller than the reference trees, and fits only about one tile. Its 16 visible tones per tile are well below the references' 26 and 29, and it has only 22 distinct colours in total against 427 and 567. Each element has about 3 steps: the petals are yellow-orange with a darker rim, the leaves are two or three greens, and the soil bed is dark brown. The references use 5-6 steps per material with clumped leaf highlights, stone-like bark shading and many leaf clusters. The candidate's outlines are dark and tinted brown or green, with 0% neutral edge pixels, so the outline is fine. There are no flat 5x5 fills, but the flowers are simple shapes with little grain, and the leaves and soil show few texture dots. The piece is thinner and flatter than the references, with shallow ramps, so it falls short of the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14474
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sunflower heads",
+      "rows": "1-19",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "leaves and stems",
+      "rows": "8-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "soil bed top (heap of earth seen from above)",
+      "rows": "23-25",
+      "evidence": "d",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": "26-27"
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the soil bed at rows 23-31. Rows 23-25 are a lighter, tan-brown band (#a68e73 and #876d54) that reads as the earth surface seen from above, and it ends at a slightly lighter line at row 25. Below it are the darker brown front face (rows 26-28) and the darkest base (rows 29-31), about 6 rows of front. The silhouette narrows at the bottom (width 47 down to 33), which suggests a rounded mound. The sunflower discs, petals and leaves above it (rows 1-22) are plants growing out of the bed, so they count as decor and are not expected to show a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a small sunflower planter bed, much smaller than the reference trees and under one full tile of volume, so the per-tile facts are only partly meaningful. By eye it is clearly thinner than the references. Each sunflower is a flat yellow-orange disc with one or two shades and a dark brown centre. The leaves are a flat green with maybe 2-3 steps, and the soil bed is a brown strip with little grain. The references show 5-6 greens in clumped leaf masses, with a trunk and roots shaded stone by stone. The candidate has 16 visible tones per tile against 26-29 for the references, and only 22 distinct colours overall against 427-567, so it is far less varied. The outlines lean to dark brown and orange, which is tinted and not neutral (0% near-neutral), but they are applied around every petal and look sticker-like. Flat coverage is 0%, so there are no large flat fills, but the shading ramps are shallow and there are no leaf clumps. A careful artist would not accept it next to the references without it looking flatter and more simplified.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14032
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sunflower heads (four upper, three lower, drawn face-on)",
+      "rows": "3-20",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green leaves and stems",
+      "rows": "8-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "soil bed top (heap, lighter brown speckled surface)",
+      "rows": "22-26",
+      "evidence": "d",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-28"
+     },
+     {
+      "part": "soil bed front face (dark brown)",
+      "rows": "27-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the soil bed that carries the plants. Its silhouette widens from 37 px at row 22 to 47 px at rows 26-27, then narrows to 33 px at row 31, which gives a rounded mound. Rows 22-26 show lighter speckled soil (#a68e73, #876d54), which reads as a heap seen from above. Rows 27-31 darken to #331a18 and form the front face, 5 rows tall. The sunflower heads and leaves above are plants standing on the bed, so they are decor and not expected to show a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a small sunflower planter bed, much smaller than the full-tree references, so the comparison is only partly like for like. Its dark edge pixels are tinted (0% neutral), so the outline reads as dark material tone: brown soil and dark green leaves. That is fine. The shading is shallow, though. The yellow petals show about 2-3 steps (yellow, orange-yellow, dark orange), the leaves about 2-3 greens, and the soil about 2-3 browns, against roughly 5-6 steps per material in the references. The flower heads and leaves are fairly uniform shapes repeated across the patch, with little clumping or grain. The 16 visible tones per tile is well under the references' 26 and 29, and the raw count of 22 distinct colours for the whole piece is far below their 427 and 567. Near-flat coverage is 0%, so there are no big flat fills, but the density is clearly lower than the references. A careful artist would find it thinner and flatter than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16327
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "soil bed top (heap of earth in the planter bed)",
+      "rows": "22-27",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "soil bed front face (dark earth)",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sunflower heads",
+      "rows": "1-19",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "leaves and stems",
+      "rows": "8-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the soil bed at rows 22-31. Its silhouette widens from 37 px at row 22 to 47 px at rows 26-27, then narrows to 33 px at row 31, which gives a rounded mound. Rows 23-27 are lighter, textured soil seen from above (L about 83-146 in the column scan). Rows 28-31 step down to the darkest brown (L about 33-55) and form the front face, about 4 rows. The sunflower heads, which face the viewer, and the leaves are plants growing out of the bed, so they count as decor. The top surface is modest but present and is read as the heap of soil (evidence d). The front face is short but at least 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small sunflower bed, and the references are full leafy trees, so the kinds only loosely match. Its outlines are tinted dark brown or green, with no neutral black ring. The measured near-neutral share of dark edge pixels is 0%, the same as both references. Near-flat coverage is 0%, so there are no large flat fills. The tones are thin, though. There are only 22 distinct colours in total. Visible tones per tile are 16, against 26 and 29 for the references. By eye, each material has only about 3 lightness steps: petals are yellow and orange with a dark centre, leaves are one or two greens, and the soil is dark brown with a few lighter dots. The references run 5-6 steps with clustered leaf-clump highlights. The leaves and soil read as simple blocks with little grain or per-clump variation. Set beside the references it looks thinner and flatter in shading depth, so I am failing it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18714
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:04.052Z",
+ "cells": {
+  "16": [
+   "57c38f8eca9cfae3",
+   "618938ffa9cea4fe",
+   "93505d8861d59db8",
+   "c6ecd07bb2d12fc1",
+   "c9c9337718421794",
+   "ed1505b67a8e20bf"
+  ],
+  "24": [
+   "40d521e9c83540e9",
+   "45805b77f13f58cc",
+   "8cadc80f743e9da7",
+   "982bb8a70a92f7ce",
+   "b14744c5a82ba2b5",
+   "dc2bea51b3957fc8",
+   "de0ade77f92ece10",
+   "fb6bd376f57e68d0"
+  ],
+  "32": [
+   "194779eab05a5c66",
+   "36ab6ed61db243fd",
+   "62f1147ddb8bcae8",
+   "76dc9b7b7986be8f",
+   "852e87f4640a6ef9",
+   "ea709b7ab846d04e"
+  ],
+  "48": [
+   "5152549b2206c27c",
+   "b69ea95980e6e160"
+  ]
+ }
+}

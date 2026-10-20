@@ -4,9 +4,9 @@
  "width": 32,
  "height": 64,
  "kind": "organic",
- "name": "small bamboo clump (2x4)",
- "label": "jp_city/jp-rg-bamboo-clump",
- "profileHash": "ee216f0de5822996",
+ "name": "jp-rg-bamboo-clump",
+ "label": "jp_regions_pack/jp-rg-bamboo-clump",
+ "profileHash": "4d8774b517f41638",
  "verdict": "fail",
  "reasons": [
   "화풍: 판정자 fail (4/4)",
@@ -42,18 +42,180 @@
    "judge": "sonnet",
    "run": 1,
    "answer": {
-    "facing": "round",
+    "facing": "south",
     "kind_matches": true,
     "surfaces": [
      {
-      "part": "upper leaf canopy (two tiers of foliage blobs)",
-      "rows": "4-26",
+      "part": "upper leaf canopy cluster",
+      "rows": "4-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle leaf canopy cluster (wide foliage mass)",
+      "rows": "17-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bamboo culms (vertical stalks)",
+      "rows": "27-59",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base tufts and dirt",
+      "rows": "55-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The bamboo clump is drawn as vertical stalks (rows 27-59) with leaf masses above (rows 4-26). The stalks are vertical cylinders with no ellipse cap and no front-edge line or eave shadow. The foliage is an irregular organic mass seen face-on, with no horizontal surface plane. The silhouette widens and narrows as foliage lumps, not as a lid or ellipse. Overall it is a flat front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The bamboo clump is small and has green stalks with segment nodes and a few leaf clusters on top. It has about 4 green steps, against about 6 on the references. Measured visible tones per tile are 8 against 26-29 on the references, which is far lower. Raw colours per tile are 8 against about 108. Outlines are dark green-tinted, with 0% near-neutral edge pixels, so they are not near-black, and flat coverage is 0%. The stalks are narrow vertical bands with little grain, and the leaf tufts are small and sparse. Per-leaf highlighting and clump variation are far thinner than the references' multi-green leaf clumps and shaded trunk. It is a thin, sparse object, so sparseness alone does not fail it. Even so, the tone count is well under half the references', and by eye it looks flatter and simpler than the reference trees. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12128
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper leaf cluster",
+      "rows": "4-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right leaf clusters",
+      "rows": "16-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "23-25"
+     },
+     {
+      "part": "lower leaf tufts",
+      "rows": "27-42",
       "evidence": "none",
       "front_edge_line_row": null,
       "eave_shadow_rows": null
      },
      {
       "part": "bamboo stalks (vertical cylinders)",
+      "rows": "27-60",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ground tufts and small stump at base",
+      "rows": "55-63",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 34,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a bundle of vertical bamboo stalks (rows 27-60) under leaf masses (rows 4-26). The stalks are straight vertical columns, about 19px wide in rows 44-54, with no cap, no ellipse, no front-edge line and no top plane. The stalk tops disappear into the foliage. The leaf clusters are lumpy blobs with light speckles on top and a dark underside at rows 23-26. This suggests volume but not a flat horizontal surface with a front-edge line, so at most 1-2 rows of rim-like shading count. The silhouette is a front-facing vertical elevation with a front face of well over 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The bamboo clump is a small, thin, sparse object, but it is clearly simpler than the references. It has 8 visible tones per tile against 26-29 in the references, and only 16 distinct colours in total against 427-567. Per-tile density is not the sole basis for the failure, though, since the piece is sparse. By eye, the canopy is a few flat-ish dark green leaf blobs with only 3-4 greens and little per-leaf clumping, unlike the references' multi-tone leaf clusters with highlights. The culms show about 3 tones of green with simple segment joints, with little grain or highlight variation. Outlines lean dark green and are tinted (0% near-neutral), which is correct, and there are no large flat fills. Even so, next to the references the piece looks thinner and flatter, with fewer shading steps (about 4 vs 5-6) and less texture, so a careful artist would not accept it as equal.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 16647
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper leaf cluster",
+      "rows": "4-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle leaf canopy (wide)",
+      "rows": "16-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bamboo stalks with lower leaves",
       "rows": "27-62",
       "evidence": "none",
       "front_edge_line_row": null,
@@ -66,7 +228,7 @@
     "all_major_parts_have_top": false,
     "round_cap": null,
     "reads_as": "front_elevation",
-    "evidence": "The clump has two leaf tiers (rows 4-26) above vertical stalks (rows 27-62). The foliage is irregular blobs with highlight speckle. It has no front-edge line, no eave shadow and no ellipse width profile. The widths change irregularly (17, 21, 24, 26, then 19 in the stalk zone), so there is no ellipse. The stalks are straight vertical bands with light and dark stripes, and their tops are hidden by leaves. They show no horizontal surface. Rows 55-60 only widen into a ground and base patch. The object reads as a front elevation of a plant, with no clearly drawn top surface."
+    "evidence": "The main body is a bundle of vertical stalks (rows 27-62, width about 19-26) topped by leaf clumps. The stalks are cylinders with vertical light/dark stripes and no cap ellipse. They end in foliage with no front-edge line and no eave shadow. The leaf clusters at rows 4-15 and 16-26 are drawn as face-on blobs. No horizontal surface is visible and no band ends in a front-edge line. The silhouette widens and narrows only as an organic leaf shape, not as an ellipse top. The clump therefore reads as a flat front elevation."
    },
    "styleAnswer": {
     "ref_kind_matches": true,
@@ -77,7 +239,7 @@
     "flat_fills": false,
     "density": "much_lower",
     "score": 5,
-    "evidence": "The candidate has 16 distinct colours and a median of 8 per tile, against 427-567 colours and about 108 per tile in the references. That is far lower on both measures. Its dark edge pixels are 0% neutral, so the outline leans green and is a dark material tone, which matches the references. Flat-fill coverage is 0%, so there are no large flat areas. By eye, the bamboo culms show about 3-4 green steps, with a few leaf-cluster highlights at the top. This is much shallower than the 5-6 steps and the clumped, multi-green foliage of the references. The leaf canopy is small and sparse, and the stalks are fairly uniform vertical bars with little grain. It reads as a simplified, thinner piece next to the richly textured reference trees. Bamboo is a thin, sparse plant, so the per-tile density fact is not held against it alone. Even so, the limited colour variety and shallow ramps leave it visibly flatter than the references, so it does not reach the Beodeul standard.",
+    "evidence": "The candidate bamboo clump is small and reads clearly, with dark green edges and no neutral black outline (0% near-neutral dark edge pixels). Its stalks have a few green steps and the leaf tufts are clumped, so there are no flat fills. It carries only 8 visible tones per 16x16 tile against 26 and 29 in the two references, and only about 16 colours in total against 427 and 567. The canopy tufts are small and sparse, and the stalks are mostly 2-3 tone vertical stripes with little grain or per-leaf clump shading. Next to the references it looks thinner and simpler, with fewer ramp steps (about 4 against 6) and less texture. For a thin, sparse object I judge by eye rather than by the density fact. Even so, it is clearly flatter than the lush, multi-tone references.",
     "verdict": "fail"
    },
    "pass": false,
@@ -96,44 +258,44 @@
      "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
     ]
    },
-   "ms": 15825
+   "ms": 14035
   },
   {
    "judge": "sonnet",
-   "run": 2,
+   "run": 4,
    "answer": {
-    "facing": "round",
+    "facing": "south",
     "kind_matches": true,
     "surfaces": [
      {
-      "part": "upper leaf canopy",
+      "part": "upper leaf canopy cluster",
       "rows": "4-16",
       "evidence": "none",
       "front_edge_line_row": null,
       "eave_shadow_rows": null
      },
      {
-      "part": "mid leaf canopy (two lobes)",
+      "part": "middle leaf canopy cluster",
       "rows": "17-26",
       "evidence": "none",
       "front_edge_line_row": null,
       "eave_shadow_rows": null
      },
      {
-      "part": "bamboo culms (vertical stalks)",
-      "rows": "27-60",
+      "part": "bamboo stalks (vertical cylinders)",
+      "rows": "27-58",
       "evidence": "none",
       "front_edge_line_row": null,
       "eave_shadow_rows": null
      }
     ],
     "main_top_rows": 0,
-    "front_face_rows": 34,
+    "front_face_rows": 32,
     "side_face_visible": false,
     "all_major_parts_have_top": false,
     "round_cap": null,
     "reads_as": "front_elevation",
-    "evidence": "The object is a clump of tall vertical culms (rows 27-60, widths about 17-26) under rounded leaf masses (rows 4-26). The culms are drawn as straight vertical bands with highlight and shadow stripes, as seen in the column scan at x=16 (rows 33-55 constant) and x=23 (rows 49-59 constant). No culm top ends in a flat or elliptical top, and the leaf masses have no front-edge line or eave shadow. The width profile only swells and narrows irregularly like foliage, with no ellipse or horizontal plane. The result is a front-facing elevation of vertical stalks and leaves with no distinct horizontal top surface."
+    "evidence": "The clump is a leafy canopy (rows 4-26) over vertical stalks (rows 27-58). The canopy is a mottled mass of leaves with no front-edge line, no eave shadow band and no ellipse width profile. The stalks are straight vertical columns with constant width (19 px, rows 44-54), and none shows a horizontal top or cap. The base at rows 55-62 is a small mound of dirt and grass. The whole object reads as a front-facing elevation with no distinct top surface."
    },
    "styleAnswer": {
     "ref_kind_matches": true,
@@ -144,7 +306,7 @@
     "flat_fills": false,
     "density": "much_lower",
     "score": 5,
-    "evidence": "The candidate is a small bamboo clump with 16 distinct colours and a median of 8 colours per 16x16 tile. The references have 427 and 567 colours and a median of about 108 per tile, so the candidate is far below them. The dark edge pixels are 0% neutral, so the outline is tinted dark green and works as a material tone, which matches the reference approach. Flat-fill coverage is 0%. The leaf tufts on top have a few greens, and the culms have light and dark stripes plus node marks. Even so, the ramps are about 3-4 steps against the references' 5-6, with no per-clump leaf variation and little grain. The piece is a thin, sparse object, so the density fact is not held against it alone. By eye it still looks flatter and thinner than the references: the culms are close to uniform vertical bands and the canopy tufts are small and simple. A careful artist would not accept it next to the richly clumped reference canopies without calling it shallower.",
+    "evidence": "The candidate bamboo clump is small and sparse. It measures 8 visible tones per 16x16 tile against 26 and 29 for the references, which is well below both. Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% neutral, so the outlines are tinted dark green rather than near-black. The stalks have only about 3-4 green steps, with simple node marks and a few leaf clumps at the top. The references have 5-6 step canopies built from many clumped leaves and dense grain. By eye the candidate looks thinner and flatter than the references. Its leaf tufts are small and carry little per-clump highlight variation, and the stalks are mostly uniform vertical bands. The sparseness is partly inherent to bamboo, but the shading depth and tone count still fall clearly short of the reference standard.",
     "verdict": "fail"
    },
    "pass": false,
@@ -163,137 +325,10 @@
      "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
     ]
    },
-   "ms": 16574
-  },
-  {
-   "judge": "sonnet",
-   "run": 3,
-   "answer": {
-    "facing": "round",
-    "kind_matches": true,
-    "surfaces": [
-     {
-      "part": "leaf canopy",
-      "rows": "4-27",
-      "evidence": "none",
-      "front_edge_line_row": null,
-      "eave_shadow_rows": null
-     },
-     {
-      "part": "bamboo stalks",
-      "rows": "28-62",
-      "evidence": "none",
-      "front_edge_line_row": null,
-      "eave_shadow_rows": null
-     }
-    ],
-    "main_top_rows": 0,
-    "front_face_rows": 35,
-    "side_face_visible": false,
-    "all_major_parts_have_top": false,
-    "round_cap": null,
-    "reads_as": "front_elevation",
-    "evidence": "The object is a bamboo clump: a lumpy leaf canopy (rows 4-27) over vertical stalks (rows 28-62). The canopy is a blob of foliage seen face-on. It has no front-edge line, no eave shadow and no ellipse. Its width profile only swells and shrinks irregularly (18-32 px). The stalks are plain vertical bands with constant width (19 px in rows 44-54). They show only a 1-row dark outline at the top and no horizontal surface. There is no isometric side face. A tall front face exists, but nothing reads as a top surface, so the drawing is a front elevation."
-   },
-   "styleAnswer": {
-    "ref_kind_matches": true,
-    "shading_steps": 4,
-    "reference_steps": 6,
-    "outline": "dark_material_tone",
-    "texture": "some",
-    "flat_fills": false,
-    "density": "much_lower",
-    "score": 5,
-    "evidence": "The bamboo clump is a plausible small plant of the same kind, with tinted dark-green edges (0% neutral edge pixels) and no 5x5 flat fills. However, it has only 16 distinct colours against 427 and 567 for the references, and a median of 8 colours per tile against about 108. The culms show roughly 3-4 green steps. Leaf clumps at the top are small and repeat a few greens, with little of the multi-green clump layering and per-leaf highlights seen in the references. The stalks are fairly uniform vertical bands with limited grain. Next to the references it looks thinner and flatter, so the shading and density fall below the Beodeul bar.",
-    "verdict": "fail"
-   },
-   "pass": false,
-   "reasons": [
-    "판정자 fail (1/1)",
-    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
-   ],
-   "view34": {
-    "pass": true,
-    "reasons": []
-   },
-   "style": {
-    "pass": false,
-    "reasons": [
-     "판정자 fail (1/1)",
-     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
-    ]
-   },
-   "ms": 14812
-  },
-  {
-   "judge": "sonnet",
-   "run": 4,
-   "answer": {
-    "facing": "round",
-    "kind_matches": true,
-    "surfaces": [
-     {
-      "part": "upper leaf canopy",
-      "rows": "4-14",
-      "evidence": "b",
-      "front_edge_line_row": null,
-      "eave_shadow_rows": "12-14"
-     },
-     {
-      "part": "main leaf canopy",
-      "rows": "15-27",
-      "evidence": "b",
-      "front_edge_line_row": null,
-      "eave_shadow_rows": "23-26"
-     },
-     {
-      "part": "bamboo culms (vertical stalks)",
-      "rows": "28-62",
-      "evidence": "none",
-      "front_edge_line_row": null,
-      "eave_shadow_rows": null
-     }
-    ],
-    "main_top_rows": 12,
-    "front_face_rows": 35,
-    "side_face_visible": false,
-    "all_major_parts_have_top": true,
-    "round_cap": null,
-    "reads_as": "three_quarter",
-    "evidence": "The width profile shows two leaf canopy masses that each widen and then narrow again. The upper one runs rows 4-14 (8 to 22 wide, back to 18). The lower one runs rows 15-28 (17 to 32 wide, back to 17 at row 28). They read as rounded, ellipse-like foliage volumes seen from above, with darker shaded undersides around rows 11-14 and 23-26. Below them, bamboo culms with lighter highlight and darker shaded stripes make up the front face, about 35 rows (28-62) at a steady 19 px width. There is no receding side face. The top reading rests on foliage lobes rather than a crisp edge line, so it is a modest three-quarter reading."
-   },
-   "styleAnswer": {
-    "ref_kind_matches": true,
-    "shading_steps": 4,
-    "reference_steps": 6,
-    "outline": "dark_material_tone",
-    "texture": "some",
-    "flat_fills": false,
-    "density": "much_lower",
-    "score": 5,
-    "evidence": "The candidate has 16 distinct colours against 427 and 567 for the references, and a median of 8 colours per tile against about 108. That is far below both references. The bamboo canopy is a few dark-green leaf clumps with 3-4 greens, and the culms are green stalks with a lighter and a darker side and little node detail. The dark edge pixels are 0% neutral, so the outline leans green and is a dark material tone. The 5x5 flat-fill coverage is 0%, so there are no large flat areas. It is a small, thin object, so I did not fail it on sparseness alone. By eye, though, the shading is shallower than the references' 5-6 steps per material. The culms read as flat vertical stripes, and the leaf clumps lack the per-clump highlights and varied greens the references carry. Next to the references it looks thinner and flatter, so it fails.",
-    "verdict": "fail"
-   },
-   "pass": false,
-   "reasons": [
-    "판정자 fail (1/1)",
-    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
-   ],
-   "view34": {
-    "pass": true,
-    "reasons": []
-   },
-   "style": {
-    "pass": false,
-    "reasons": [
-     "판정자 fail (1/1)",
-     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
-    ]
-   },
-   "ms": 17219
+   "ms": 12865
   }
  ],
- "decidedAt": "2026-10-19T16:22:52.897Z",
+ "decidedAt": "2026-10-20T22:15:04.499Z",
  "cells": {
   "16": [
    "03da1ee6f88feb10",
