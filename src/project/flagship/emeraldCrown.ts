@@ -1,4 +1,4 @@
-import { charsetFrameIndex } from "@/assets/easyrpgRtp";
+import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { configureEmeraldMonsterOpening, type EmeraldOpeningPage } from "@/project/emeraldMonsterOpening";
 import { createMonsterExpedition } from "@/project/examples/monsterExpedition";
 import mapTemplates from "@/project/examples/monsterExpedition/mapTemplates.json";
@@ -577,6 +577,10 @@ function recastPeople(project: Project): void {
     const front = portrait[troop.id];
     if (front && troop.trainerSprite) troop.trainerSprite = { ...troop.trainerSprite, front };
   }
+  // 챔피언 나루는 관장 유림과 같은 초록 칩이었다 — 연구소 나루의 칩을 그대로 입힌다.
+  const naru = project.maps.mx_map_lab?.events.find((e) => e.id === "mx_map_lab_rival")?.pages?.[0]?.graphic;
+  const champion = project.maps.mx_map_league_0?.events.find((e) => e.id === "mx_map_league_0_league_challenge");
+  if (naru && champion) for (const page of champion.pages ?? []) if (page.graphic) page.graphic = { ...page.graphic, sprite: naru.sprite, pattern: charsetFrameIndex({ characterIndex: decodeCharsetFrameIndex(naru.pattern ?? 0).characterIndex, direction: page.graphic.direction ?? "down", pattern: 1 }) };
   // 리그 안내원이 결투장 한복판(4,9)에 서 있었다 — 계단 올라온 옆자리로.
   const leagueGuide = project.maps.mx_map_league_0?.events.find((e) => e.id === "mx_map_league_0_return_home");
   if (leagueGuide) { leagueGuide.x = 5; leagueGuide.y = 10; }
