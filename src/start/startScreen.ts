@@ -639,6 +639,9 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     .finally(() => {
       state.loaded = true;
       refresh("entries");
+      // 데스크톱: 카드를 그렸다 — 메인이 숨겨 둔 창을 보이고 스플래시를 닫는다(electron/main/splash.ts).
+      // requestAnimationFrame 은 쓰지 않는다: 숨은 창에서는 프레임이 돌지 않아 0.5s 넘게 늦었다.
+      window.oprn?.startScreenReady?.();
       whenIdle(COVER_IDLE_DELAY_MS, () => void refreshCovers());
     });
 }

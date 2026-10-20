@@ -6,6 +6,8 @@ export const OPRN_CHANNELS = {
   windowFullscreen: "oprn:window.fullscreen",
   /** 최대화·전체화면 상태 조회(invoke)와 변화 알림(push). 같은 이름으로 오간다. */
   windowState: "oprn:window.state",
+  /** 시작 화면이 첫 카드를 그렸다(렌더러 → 메인, 단방향). 메인은 숨긴 창을 보이고 스플래시를 닫는다. */
+  startScreenReady: "oprn:start.screenReady",
   teamStatus: "oprn:team.status",
   teamInvite: "oprn:team.invite",
   teamRevoke: "oprn:team.revoke",
