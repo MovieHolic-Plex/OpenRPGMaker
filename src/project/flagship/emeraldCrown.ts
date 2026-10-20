@@ -154,7 +154,7 @@ const LINE_REWRITES: Readonly<Record<string, string>> = {
   "실바나 마을의 별모래 신전에서 밤막회사를 막고 등대를 복구하라.": "별모래 신전에서 밤막회사를 막고 등대의 빛을 되찾아라.",
   "아스트라 리그의 사천왕과 챔피언 나루에게 도전하라.": "챔피언 전당에서 나루와 마지막 승부를 겨뤄라.",
   "포획구슬 세 개와 고급 회복약, 성장 사탕 하나를 찾았다!": "포획 구슬 세 개와 상급 회복약, 성장 사탕 하나를 찾았다!",
-  "몬스터 센터에 어서 오세요! 동료들을 건강하게 해 드릴까요?": "회복 센터에 어서 오세요! 동료들을 건강하게 해 드릴까요?",
+  "몬스터 센터에 어서 오세요! 동료들을 건강하게 해 드릴까요?": "회복 센터에 어서 오세요!\n동료들을 건강하게 해 드릴까요?",
   "리그에서 다시 만나자. 서로 끝까지 동료들을 지키는 거야.": "챔피언 전당에서 다시 만나자. 그때는 내가 이길 거야!",
   "희귀 몬스터가 당신을 기다리고 있다.": "별빛 속으로 사라졌다. 언젠가 다시 나타날 것이다.",
   "빛을 잃은 별무늬가 새겨져 있다. 섬의 등불이 모두 돌아온 뒤 다시 와 보자.": "빛을 잃은 별무늬가 새겨져 있다. 챔피언이 된 뒤에 다시 와 보자.",
@@ -494,6 +494,9 @@ function tunePacing(project: Project): void {
   const byId = (id: string) => enemies.find((e) => e.id === id);
   const reskin: Record<string, { species: string; level?: number }> = {
     // 다 싸운 플레이어가 Lv6 일 때 수련생 Lv6~7 에게 6턴 만에, 관장 Lv8·10 에게 2턴 만에 졌다(2026-10-20 실플레이) → 수련생 5·5·6, 관장 7·8. 다시 재니 Lv7 스타터가 수련생 Lv6 개미(벌레)·관장 7·8 에게 6턴 만에 두 번 졌다 → 수련생 5·5·5, 관장 6·7.
+    // 연구소 라이벌의 첫 동료: 포포비(벌레)는 불 스타터에 두 배·풀 스타터에 반감이라 불은 1턴, 풀은 5턴이었다(2026-10-21 적대 검수 r3) →
+    // 세 스타터 모두 보통 상성인 볼트온(전기). 기술은 아래에서 몸통 기술만 남긴다(전기 기술은 물에 두 배).
+    mx_enemy_mx_map_lab_rival_0: { species: "mx_enemy_zaptoe", level: 4 },
     mx_enemy_mx_map_grove_gym_grunt_0_0: { species: "mx_enemy_podback", level: 5 },
     mx_enemy_mx_map_grove_gym_grunt_1_0: { species: "mx_enemy_brambleboar", level: 5 },
     mx_enemy_mx_map_grove_gym_grunt_2_0: { species: "mx_enemy_orchardant", level: 5 },
@@ -517,6 +520,8 @@ function tunePacing(project: Project): void {
     // 풀 스타터는 벌레에게 기술이 반감이라 같은 Lv5 로는 7턴 싸우다 졌다(2026-10-20 실측) → Lv4·몸통 기술만.
     const bug = new Set(project.database.skills.filter((s) => /더듬이/.test(s.name)).map((s) => s.id));
     rival.actions = rival.actions.filter((a) => !a.skillId || !bug.has(a.skillId));
+    const tackle = project.database.skills.find((s) => s.name === "어깨툭")?.id;
+    if (tackle) rival.actions = rival.actions.filter((a) => !a.skillId || a.skillId === tackle);
     rescaleEnemy(rival, 4);
     // 1번 도로 트레이너의 포포비도 같은 벌레 기술로 Lv5 스타터를 3턴에 쓰러뜨렸다(2026-10-20 실플레이) — 첫 도로에서는 몸통 기술만.
     const routeBug = byId("mx_enemy_mx_map_meadow_trainer_1_0");

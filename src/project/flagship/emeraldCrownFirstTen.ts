@@ -46,7 +46,7 @@ function polishBedroom(project: Project): void {
   for (const page of intro?.pages ?? []) {
     page.commands = [
       // 한 쪽에 한 생각(적대 검수 m1: 문장 가운데서 쪽이 넘어갔다).
-      text("드디어 오늘이다. 천문박사님께 첫 동료를 받는 날!"),
+      text("드디어 오늘! 박사님께 첫 동료를 받는 날이다."),
       text("창밖에서는 여명의 날개 새들이 길을 잃은 듯 맴돌고 있다."),
       text("〔방향키〕 걷기 · 〔Z〕 말 걸기 · 〔X〕 메뉴"),
       { kind: "setSwitch", switchId: "mx_intro", value: true },
@@ -138,14 +138,14 @@ function polishLab(project: Project): void {
     { kind: "playAudio", resourceId: "mx_audio_town", channel: "bgm", loop: true },
     { kind: "m2Command", commandId: "m2-086-erase-event", fields: {} },
   ];
-  battle.victoryBranch = [text("으으, 졌다! …그래도 포포비랑 손발은 딱 맞았어.", "나루"), ...afterBattle];
+  battle.victoryBranch = [text("으으, 졌다! …그래도 볼트온이랑 손발은 딱 맞았어.", "나루"), ...afterBattle];
   battle.defeatBranch = [text("내가 이겼다! 너도 처음치고는 꽤 하던데?", "나루"), ...afterBattle];
   page.commands = [
     {
       kind: "fork",
       condition: { kind: "switch", switchId: "mx_starter", value: true },
       then: [
-        text("왔다! 나도 방금 포포비를 받았어. 박사님이 우리 둘에게 똑같이 맡기셨대.", "나루"),
+        text("왔다! 나도 방금 볼트온을 받았어. 박사님이 우리 둘에게 똑같이 맡기셨대.", "나루"),
         text("누구 동료가 더 센지 지금 확인해 보자. 봐주기 없기다!", "나루"),
         { kind: "m2Command", commandId: "m2-027-change-system-bgm", fields: { cue: "battle", operation: "set", resourceId: "mx_audio_trainerBattle", volume: 100 } },
         battle,
@@ -332,6 +332,17 @@ function starterCoverage(project: Project): void {
     const entry = species.skillsByLevel?.find((s) => s.skillId === skillId);
     if (entry && entry.level > 6) entry.level = 6;
     species.skillsByLevel?.sort((a, b) => a.level - b.level);
+  }
+  // 그래도 풀·벌레 체육관에서 불은 3턴 무패, 물은 수련생에게 전멸, 풀은 관장에게 10턴 끝에 졌다(2026-10-21 적대 검수 r3).
+  // 처음부터(Lv5) 풀은 깃바람(비행 — 풀·벌레에 두 배), 물은 서리발(얼음 — 풀에 두 배)을 갖고 시작한다. 불은 숯불톡이 같은 몫이다.
+  const fromStart: Record<string, string> = { mx_species_spriglet: "mx_skill_flying_1", mx_species_rivulet: "mx_skill_ice_1" };
+  for (const species of project.database.monsterSpecies ?? []) {
+    const skillId = fromStart[species.id];
+    if (!skillId || !project.database.skills.some((s) => s.id === skillId)) continue;
+    const list = (species.skillsByLevel ??= []);
+    const entry = list.find((s) => s.skillId === skillId);
+    if (entry) entry.level = Math.min(entry.level, 5); else list.push({ level: 5, skillId });
+    list.sort((a, b) => a.level - b.level);
   }
 }
 
