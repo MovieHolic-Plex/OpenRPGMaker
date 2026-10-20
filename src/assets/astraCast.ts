@@ -6,15 +6,15 @@
 export type AstraCastId = 'hero' | 'mom' | 'professor' | 'naru' | 'nurse' | 'yurim' | 'muyeong';
 export type AstraCastExpression = 'base' | 'happy' | 'sad' | 'angry' | 'surprised' | 'serious' | 'determined';
 
-/** 인물마다 구운 표정. serious·determined 는 나루·유림·무영만 있다. */
+/** 인물마다 구운 표정 — 눈가림 표정 판정(char-gen, Codex)을 통과한 것만. base 는 감독이 고른 그림 그대로(옅은 미소). 없는 표정은 base 로 대신한다. */
 export const ASTRA_CAST_EXPRESSIONS: Readonly<Record<AstraCastId, readonly AstraCastExpression[]>> = {
-  hero: ['base', 'happy', 'sad', 'angry', 'surprised'],
-  mom: ['base', 'happy', 'sad', 'angry', 'surprised'],
-  professor: ['base', 'happy', 'sad', 'angry', 'surprised'],
-  nurse: ['base', 'happy', 'sad', 'angry', 'surprised'],
-  naru: ['base', 'happy', 'sad', 'angry', 'surprised', 'serious', 'determined'],
-  yurim: ['base', 'happy', 'sad', 'angry', 'surprised', 'serious', 'determined'],
-  muyeong: ['base', 'happy', 'sad', 'angry', 'surprised', 'serious', 'determined'],
+  hero: ['base', 'happy', 'surprised'],
+  mom: ['base', 'happy', 'angry', 'surprised'],
+  professor: ['base', 'happy', 'angry', 'surprised'],
+  nurse: ['base', 'happy', 'sad', 'surprised'],
+  naru: ['base', 'happy', 'sad', 'angry', 'surprised'],
+  yurim: ['base', 'happy', 'sad', 'angry', 'surprised'],
+  muyeong: ['base', 'happy', 'sad', 'angry', 'surprised', 'serious'],
 };
 
 export const astraCastBustId = (cid: AstraCastId, expression: AstraCastExpression = 'base'): string => `oprn_astra_cast_${cid}_bust_${expression}`;

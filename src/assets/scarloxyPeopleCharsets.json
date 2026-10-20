@@ -1,10 +1,10 @@
 {
  "version": 1,
- "sheets": 13,
+ "sheets": 14,
  "sheetName": "ScarloxyPeople{n} · Scarloxy 변형 인물 · OPRN",
  "selection": {
   "by": "user-delegated-to-supervisor",
-  "note": "2026-10-16 사용자 「몬스터 사람 칩은 Scarloxy 칩에서 변형해 늘린다」 + 감독 위임(「직접 걸러 설치」). 모델 호출 없는 스크립트 변형(머리 이식 + 부위 색 바꾸기) 후보 22종 중 8배 눈 검수와 서로 구별 기준(가장 가까운 칩과 화소 27% 이상 다름)을 통과한 21종. 칸 번호는 덧붙이기 전용. | 2차(2026-10-16, 8318 스트리밍 gemini-4-argon-high 실제 Argon 부분 편집): 12 후보 중 4종 채택(박사·남학생·요리사·레인저). 학생·요리사는 Argon edit.json 그대로 + 몸 안쪽 1~4px 구멍만 스크립트로 메움(scarloxy_repair.py, 하네스 재검증 통과). 기각: 뱃사람(기존 칩과 거의 같음 0.39)·연구원(여)(뒷모습 덩어리)·상인·수영 선수·등산가·단원·노인·도장 보스(땅)(하네스 거절 또는 3회 안에 통과 못 함). | 3차(2026-10-16, Argon 부분 편집 확대): 8318 스트리밍 gemini-4-argon-high 3.8~ 후보 중 눈 검수·화소 고정 검사·유사도 거름을 통과한 신규 칩을 ScarloxyPeople5~ 에 덧붙임. | 3차(2026-10-16, 재제작): 1차 스크립트 칩 12종 중 11종을 Argon 부분 편집(눈·피부·손 12프레임 고정 검사 통과 + 독립 판정 8점 이상)으로 같은 id·칸 번호 그대로 교체. 단원(남) 1종은 판정 미달로 기존 칩 유지. | 4차(2026-10-17, 사용자 「22종은 넣어야할듯」): char-gen 갤러리 4 의 스크립트 합성 22종(머리 이식 + 부위 색 이동, 모델 호출 없음, 눈가림 판정자 3명 다수결 + 세트 중복 검사 통과)을 갤러리 그림 그대로 ScarloxyPeople11~13 에 덧붙임. 기존 시트의 빈 칸(4#1~7·10#5~7)은 채우지 않았다.",
+  "note": "2026-10-16 사용자 「몬스터 사람 칩은 Scarloxy 칩에서 변형해 늘린다」 + 감독 위임(「직접 걸러 설치」). 모델 호출 없는 스크립트 변형(머리 이식 + 부위 색 바꾸기) 후보 22종 중 8배 눈 검수와 서로 구별 기준(가장 가까운 칩과 화소 27% 이상 다름)을 통과한 21종. 칸 번호는 덧붙이기 전용. | 2차(2026-10-16, 8318 스트리밍 gemini-4-argon-high 실제 Argon 부분 편집): 12 후보 중 4종 채택(박사·남학생·요리사·레인저). 학생·요리사는 Argon edit.json 그대로 + 몸 안쪽 1~4px 구멍만 스크립트로 메움(scarloxy_repair.py, 하네스 재검증 통과). 기각: 뱃사람(기존 칩과 거의 같음 0.39)·연구원(여)(뒷모습 덩어리)·상인·수영 선수·등산가·단원·노인·도장 보스(땅)(하네스 거절 또는 3회 안에 통과 못 함). | 3차(2026-10-16, Argon 부분 편집 확대): 8318 스트리밍 gemini-4-argon-high 3.8~ 후보 중 눈 검수·화소 고정 검사·유사도 거름을 통과한 신규 칩을 ScarloxyPeople5~ 에 덧붙임. | 3차(2026-10-16, 재제작): 1차 스크립트 칩 12종 중 11종을 Argon 부분 편집(눈·피부·손 12프레임 고정 검사 통과 + 독립 판정 8점 이상)으로 같은 id·칸 번호 그대로 교체. 단원(남) 1종은 판정 미달로 기존 칩 유지. | 4차(2026-10-17, 사용자 「22종은 넣어야할듯」): char-gen 갤러리 4 의 스크립트 합성 22종(머리 이식 + 부위 색 이동, 모델 호출 없음, 눈가림 판정자 3명 다수결 + 세트 중복 검사 통과)을 갤러리 그림 그대로 ScarloxyPeople11~13 에 덧붙임. 기존 시트의 빈 칸(4#1~7·10#5~7)은 채우지 않았다. | 5차(2026-10-21, 아스트라 호라이즌 등장인물): char-gen 으로 다듬은 엄마·천문박사·주인공·센터 직원 4칩을 ScarloxyPeople14 칸 0~3 에 덧붙임(감독 선택, 흉상·전신과 같은 인물).",
   "notAdopted": [
    "sc-professor-a(흰 머리 소년처럼 읽힘)",
    "sc-student-m(밋밋)",
@@ -2304,6 +2304,101 @@
     "baseChip": "head Scarloxy1:5 + body Scarloxy1:3",
     "gridSha256": "33f73e903d10a46bb551a5aa36e488c60d80aaf9994704b57c02caad80e4b5f7",
     "slotRgbaSha256": "8b3b2d6af18a79d5599b3ed55d6c872f85467203e63f0f8c143d4209615a47e7"
+   }
+  },
+  {
+   "id": "astra-mom",
+   "name": "아스트라 엄마",
+   "desc": "갈색 곱슬머리를 높이 묶고, 갈색 니트 위에 흰 앞치마를 두른 상냥한 어머니.",
+   "genre": "몬스터 수집",
+   "role": "마을 주민",
+   "gender": "female",
+   "age": "adult",
+   "tags": [
+    "엄마",
+    "앞치마",
+    "갈색 머리",
+    "아스트라"
+   ],
+   "sheet": 14,
+   "index": 0,
+   "source": {
+    "harnessKey": "astra-cast-1",
+    "model": "char-gen (OPRN 자체 생성기, codex 엔진) 칩 편집 + 감독 선택(by: supervisor); 옛 바탕 머리색 잔재(보라)는 같은 칩의 머리색으로 화소 치환",
+    "baseChip": "scarloxy-charset-people1:3 (char-gen edit)",
+    "slotRgbaSha256": "521ab1b8ba1bb3251454540a7a9813f68397be831bf77ee9739443be3232218b"
+   }
+  },
+  {
+   "id": "astra-professor",
+   "name": "아스트라 천문박사",
+   "desc": "회색이 섞인 갈색 머리를 뒤로 묶고 안경을 쓴 40대 후반 박사. 흰 가운 안에 남색 목폴라, 가슴에 금색 별.",
+   "genre": "몬스터 수집",
+   "role": "박사",
+   "gender": "male",
+   "age": "adult",
+   "tags": [
+    "박사",
+    "연구원",
+    "흰 가운",
+    "별",
+    "아스트라"
+   ],
+   "sheet": 14,
+   "index": 1,
+   "source": {
+    "harnessKey": "astra-cast-1",
+    "model": "char-gen (OPRN 자체 생성기, codex 엔진) 칩 편집 + 감독 선택(by: supervisor); 옛 바탕 머리색 잔재(보라)는 같은 칩의 머리색으로 화소 치환",
+    "baseChip": "scarloxy-charset-people1:3 (char-gen edit)",
+    "slotRgbaSha256": "0f995a54b5cc4ff353a86d1e4b79a1ec05559ec4f468f4cb0bcb4078d8a85f8d"
+   }
+  },
+  {
+   "id": "astra-hero",
+   "name": "아스트라 주인공",
+   "desc": "청록 별 모자, 남색 재킷에 청록 띠, 주황 가방, 청록 바지를 입은 소년 트레이너.",
+   "genre": "몬스터 수집",
+   "role": "주인공",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "주인공",
+    "트레이너",
+    "별 모자",
+    "남색 재킷",
+    "아스트라"
+   ],
+   "sheet": 14,
+   "index": 2,
+   "source": {
+    "harnessKey": "astra-cast-1",
+    "model": "char-gen (OPRN 자체 생성기, codex 엔진) 칩 편집 + 감독 선택(by: supervisor); 옛 바탕 머리색 잔재(보라)는 같은 칩의 머리색으로 화소 치환",
+    "baseChip": "scarloxy-charset-people1:0 (char-gen edit)",
+    "slotRgbaSha256": "cfbfc41a169bdd12da26127e200bfd9825e04e8a23c8e710169e4462b08212b8"
+   }
+  },
+  {
+   "id": "astra-nurse",
+   "name": "아스트라 센터 직원",
+   "desc": "짙은 청록 단발, 흰 제복 재킷에 노란 별 엠블럼을 단 회복 센터 직원.",
+   "genre": "몬스터 수집",
+   "role": "센터 직원",
+   "gender": "female",
+   "age": "adult",
+   "tags": [
+    "센터 직원",
+    "간호사",
+    "제복",
+    "별",
+    "아스트라"
+   ],
+   "sheet": 14,
+   "index": 3,
+   "source": {
+    "harnessKey": "astra-cast-1",
+    "model": "char-gen (OPRN 자체 생성기, codex 엔진) 칩 편집 + 감독 선택(by: supervisor); 옛 바탕 머리색 잔재(보라)는 같은 칩의 머리색으로 화소 치환",
+    "baseChip": "ScarloxyPeople12:7 (char-gen edit)",
+    "slotRgbaSha256": "89031fd550cb4657d9fb961d1cebc244d3bd400650a9dfbc61114b0e548f1856"
    }
   }
  ]

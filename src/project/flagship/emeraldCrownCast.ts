@@ -4,6 +4,7 @@
 // - 나루·유림·무영 트레이너 소개 그림은 같은 전신에서 구운 번들 그림(battle-trainers/astra_<id>)을 쓴다.
 // 그림: src/assets/astraCast.ts(char-gen 산출물, 감독 선택, 원래 도트 크기).
 import { ASTRA_CAST_EXPRESSIONS, astraCastBustId, astraCastFullId, type AstraCastExpression, type AstraCastId } from "@/assets/astraCast";
+import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import type { Command, Project } from "@/project/types";
 
 const SPEAKERS: readonly [RegExp, AstraCastId][] = [
@@ -62,10 +63,11 @@ function castList(list: Command[], spotlight?: Spotlight): void {
     if (lit && cid === lit) {
       if (i === list.findIndex((c) => c.kind === "text")) {
         const full = astraCastFullId(lit);
-        list.splice(i, 0, CLEAR(), { kind: "showPicture", pictureId: SPOTLIGHT, resourceId: full, x: 209, y: 40, scale: 100, opacity: 255, durationMs: 300, waitForPicture: false } as Command);
+        list.splice(i, 0, CLEAR(), { kind: "showPicture", pictureId: SPOTLIGHT, resourceId: full, x: 209, y: 74, scale: 100, opacity: 255, durationMs: 300, waitForPicture: false } as Command);
         current = null; i += 2; shown = true;
       }
-      if (shown) continue;
+      // 전신은 아래 상자 바로 위에 선다(상자 위쪽 끝 ≈ 240px) — 상자가 위로 가면 머리를 덮는다.
+      if (shown) { (command as { position?: string }).position = "bottom"; continue; }
     }
     if (lit && shown) { list.splice(i, 0, { kind: "erasePicture", pictureId: SPOTLIGHT }); i++; }
     lit = undefined;
@@ -107,7 +109,32 @@ const TRAINER_FRONTS: Readonly<Record<string, string>> = {
   muyeong: "astra_muyeong",
 };
 
+/** 같은 인물의 걷기 칩: ScarloxyPeople14 칸(0 엄마 · 1 천문박사 · 2 주인공 · 3 센터 직원). 나루·유림·무영은 원래 칩이 흉상과 맞아 그대로 둔다. */
+export const ASTRA_CAST_CHIP_SHEET = "oprn-charset-scarloxy-people14";
+const ASTRA_CAST_CHIP_TEXTURE = "tex_oprn_charset_scarloxy_people14";
+const CHIP_SLOT: readonly [RegExp, number][] = [
+  [/^mx_map_home_house_resident$/u, 0],
+  [/^mx_map_lab_professor$/u, 1],
+  [/_center_nurse(_sprite)?$/u, 3],
+];
+
+function dressChips(project: Project): void {
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      const slot = CHIP_SLOT.find(([re]) => re.test(event.id))?.[1];
+      if (slot === undefined) continue;
+      for (const page of event.pages ?? []) {
+        if (!page.graphic?.sprite) continue;
+        page.graphic = { ...page.graphic, sprite: { type: "bundled", id: ASTRA_CAST_CHIP_TEXTURE }, pattern: charsetFrameIndex({ characterIndex: slot, direction: page.graphic.direction ?? "down", pattern: 1 }) };
+      }
+    }
+  }
+  const hero = project.database.actors[0];
+  if (hero) { hero.characterResourceId = ASTRA_CAST_CHIP_SHEET; hero.characterIndex = 2; }
+}
+
 export function castTheAstraHorizon(project: Project): void {
+  dressChips(project);
   for (const [mapId, map] of Object.entries(project.maps)) {
     for (const event of map.events) {
       const pages = event.pages ?? [];
