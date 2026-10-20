@@ -71,8 +71,8 @@ async function moveCursorTo(page, wanted) {
     // 커맨드 카드는 두 열(공격|스킬 / 방어|아이템)이라 위아래만으로는 옆 열에 못 간다 — 커서가 안 움직이면 옆으로.
     const forward = cur < 0 || wantIdx > cur;
     for (const key of forward ? ["ArrowDown", "ArrowRight"] : ["ArrowUp", "ArrowLeft"]) {
-      await page.keyboard.press(key, { delay: 120 });
-      await page.waitForTimeout(80);
+      await page.keyboard.press(key, { delay: 150 });
+      await page.waitForTimeout(350);
       if ((await readUi(page)).cursor !== cur) break;
     }
   }
@@ -81,7 +81,8 @@ async function moveCursorTo(page, wanted) {
 
 // 커서로 못 가면(두 열 카드에서 키가 씹힘) 그 칸을 직접 누른다.
 async function choose(page, id) {
-  if (await moveCursorTo(page, id)) { await page.keyboard.press("Enter", { delay: 350 }); return true; }
+  if (await moveCursorTo(page, id)) { await page.keyboard.press("Enter", { delay: 350 }); choose.keyboard = (choose.keyboard ?? 0) + 1; return true; }
+  choose.dom = (choose.dom ?? 0) + 1;
   if (process.env.FS_DEBUG) console.error("DBG rects", await page.evaluate(() => JSON.stringify([...document.querySelectorAll("button.battle-command")].map((b) => [b.dataset.testid, b.disabled, b.dataset.battleCommandCursor, Math.round(b.getBoundingClientRect().x), Math.round(b.getBoundingClientRect().y), getComputedStyle(b).visibility, document.activeElement === b]))));
   if (process.env.FS_DEBUG_KEYS) {
     const cur = () => page.evaluate(() => [...document.querySelectorAll("button.battle-command")].findIndex((b) => b.dataset.battleCommandCursor === "true"));
@@ -326,6 +327,7 @@ async function playRun(browser, serverUrl, run) {
     try { await page.screenshot({ path: resolve(out, `${run.id}-failure.png`) }); } catch { /* noop */ }
   } finally {
     record.durationMs = Date.now() - startedAt;
+    record.menuMoves = { keyboard: choose.keyboard ?? 0, domClick: choose.dom ?? 0 }; choose.keyboard = 0; choose.dom = 0;
     await page.close();
   }
   return record;

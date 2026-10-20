@@ -125,6 +125,9 @@ function setupFoes(project: Project): { field: string[]; boss: string } {
   makeTroop(project, "troop_fs_wisps", "도깨비불", ["enemy_fs_wisp", "enemy_fs_wisp", "enemy_fs_wisp"]);
   // 장 구성기가 의뢰 적으로 troop_fs_boss·enemy_fs_boss 를 따로 만든다 — 같은 id 를 쓰면 덮여 발렌 혼자 남았다(감사 2차).
   makeTroop(project, "troop_fs_finale", "심문관 발렌과 수호상", ["enemy_fs_valen", "enemy_fs_guardian"]);
+  // 옛 별지기의 방 — 동굴 배경만으로는 종유석 굴처럼 보였다(감사 VQA 2차). 천장 렌즈에서 내려오는 빛줄기와 별빛 겹을 얹는다.
+  const finale = project.database.troops.find((t) => t.id === "troop_fs_finale");
+  if (finale) finale.backdropLayers = [{ preset: "lightRays", opacity: 45 }, { preset: "stars", opacity: 55 }];
   return { field: ["troop_fs_wolves", "troop_fs_spiders", "troop_fs_wisps"], boss: "troop_fs_finale" };
 }
 
@@ -422,11 +425,13 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // 인물 칩 — 검색어로 고른 그림 대신 정해 둔 배우를 쓴다(같은 인물이 맵마다 다른 그림이면 안 된다).
   setEventChip(M(ids.hub), `ev_${FS_PREFIX}_valen`, "tex_easyrpg_charset_actor1", 4);
   setEventChip(M(ids.hub), `ev_${FS_PREFIX}_knight`, "tex_easyrpg_charset_actor1", 2);
-  setEventChip(M(ids.observatory), `ev_${FS_PREFIX}_hanel`, "tex_easyrpg_charset_people1", 6);
+  // 하넬 — 오프닝 그림의 백발 학자와 맞게 People3 #4(흰 머리·흰 수염·회색 옷)와 그 짝 얼굴 People2 #4.
+  // 예전 People1 #6 칩은 대머리·녹색 옷이라 오프닝·초상화와 다른 사람으로 읽혔다(감사 VQA 2차).
+  setEventChip(M(ids.observatory), `ev_${FS_PREFIX}_hanel`, "tex_easyrpg_charset_people3", 4);
   setEventChip(M(ids.forest), `ev_${FS_PREFIX}_bram`, "tex_easyrpg_charset_actor2", 2);
   setEventChip(M(ids.hub), `ev_${FS_PREFIX}_elder`, "tex_easyrpg_charset_people1", 7);
   // 얼굴은 칩과 같은 인물만(People1 은 칩·얼굴 번호가 같다). 맞는 얼굴이 없는 칩은 얼굴을 뺀다.
-  setEventFace(M(ids.observatory), `ev_${FS_PREFIX}_hanel`, "easyrpg-faceset-people1-06");
+  setEventFace(M(ids.observatory), `ev_${FS_PREFIX}_hanel`, "easyrpg-faceset-people2-04");
   setEventFace(M(ids.hub), `ev_${FS_PREFIX}_elder`, "easyrpg-faceset-people1-07");
   setEventFace(M(ids.hub), `ev_${FS_PREFIX}_gate`, undefined);
   setEventFace(M(ids.forest), `ev_${FS_PREFIX}_bram`, undefined);

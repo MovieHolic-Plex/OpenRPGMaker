@@ -259,7 +259,7 @@ export const FLAGSHIP_BEAT_MANIFESTS: Readonly<Record<FlagshipDemoId, FlagshipBe
       { id: "actor_hero", name: "카엘", role: "주인공 · 견습 별지기", assetId: "easyrpg-charset-actor1" },
       { id: "actor_fs_elena", name: "엘레나", role: "마도학자 · 카엘의 동료", assetId: "easyrpg-charset-actor1" },
       { id: "actor_fs_iris", name: "이리스", role: "별에서 온 기계 소녀", assetId: "easyrpg-charset-actor4" },
-      { id: "npc_fs_hanel", name: "하넬", role: "천문대장", assetId: "easyrpg-charset-people1" },
+      { id: "npc_fs_hanel", name: "하넬", role: "천문대장", assetId: "easyrpg-charset-people3" },
       { id: "npc_fs_bram", name: "브람", role: "숲지기", assetId: "easyrpg-charset-actor2" },
       { id: "enemy_fs_valen", name: "심문관 발렌", role: "제1막 보스", assetId: "charset-battler-actor1-4" },
       { id: "enemy_fs_guardian", name: "별지기의 수호상", role: "제1막 보스와 함께 깨어나는 수호상", assetId: "generated-enemy-golem-crystal" },
