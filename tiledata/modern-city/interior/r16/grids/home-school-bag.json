@@ -1,0 +1,31 @@
+{
+ "id": "home-school-bag",
+ "w": 16,
+ "h": 16,
+ "legend": {
+  "a": "#0b1224ff",
+  "b": "#96222cff",
+  "c": "#cc343cff",
+  "d": "#ccd0d8ff",
+  "e": "#ee6c6cff"
+ },
+ "rows": [
+  "................",
+  "................",
+  "..aaaaaaaaaaaa..",
+  "..acccccccccca..",
+  "..aeeeeeeeeeea..",
+  "..aeeeeeeeeeea..",
+  ".aaccccccccccaa.",
+  ".aaccccccccccaa.",
+  ".aacccaaaacccaa.",
+  ".aabbbaddabbbaa.",
+  ".aabbbaddabbbaa.",
+  ".aabbbaaaabbbaa.",
+  ".aabbbbbbbbbbaa.",
+  "..abbbbbbbbbba..",
+  "..aaaaaaaaaaaa..",
+  "................"
+ ],
+ "note": "r16: flap top relit far-to-near (c far -> e lit 2 rows) instead of one highlight row at the far edge"
+}

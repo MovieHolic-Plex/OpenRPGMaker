@@ -69,6 +69,15 @@ modern-chipset 하네스가 합성한 도시(건물·도로·소품·차량)를 
   1회차(판 안 명암 3단·칸 정보량 낮음)는 화풍 불합격이라 결 점·옹이·끊긴 빛을 더해 2회차에 넘었다. 지금 그대로의 예전 바닥도 같은 프로필에서 화풍 불합격이었다.
 - **앉는 기물 다시 그림(굽지 않음):** `art_seat.py` 가 나무·사무·카페 의자 네 방향과 금속 벤치를 같은 칸 크기로 다시 그렸다(호두 틀 + 세이지 방석으로 나무 바닥·탁자와 다른 단, 등받이 윗면, 판 밑 그늘). 관문 2회차 11장 통과 0·보류 2 — 옆·뒤를 보는 의자는 규칙상 자동 통과가 없다(`rules.ts HUMAN_DEFINED_SEAT_FACINGS`). 사람 승인 경로가 생기면 `rebake_wood_seat.py --seats`. 안락의자·3인 소파는 다시 그려도 나무 바닥 대비가 떨어져(47→27) 뺐다.
 
+- **3/4 다시 그림 r16 (2026-10-20, `scripts/content/modern-city-int/r16/`):** 감사(`~/claude-viz/interior-props-34-audit-1`)의 의자 밖 FAIL 234종을 4배로 다시 판정해
+  진짜 121 · 거짓 113(`tiledata/modern-city/interior/r16/rejudge.json`, 항목마다 한 줄 근거)으로 나누고 진짜만 고쳤다.
+  원본은 기물마다 행 문자열 격자 `interior/r16/grids/<id>.json`(`grid.py extract|check|show|colors`, 색은 램프+원래 실내 그림 색만).
+  고친 방식: 윗면 4~6행(먼 가장자리 어둡게 → 앞 가장자리 밝게) + 처마 그늘 1행, 자리는 위쪽 빈 행이나 앞면의 반복 행 1~2개에서 얻는다 — 크기·칸·통행 불변.
+  굽기는 **제자리** `r16/rebake.py [--check] [--only ids.json]`(사양 칸 번호에 붙이고 `pins.json`·`interior/baked.json` 키를 새 내용 해시로). 다른 기물과 같이 쓰는 칸을 혼자 바꾸면 멈춘다.
+  `r10/rebake_inplace.py` 가 끝에서 r16 굽기를 다시 불러 코드 그림이 격자를 되돌리지 않게 한다.
+  런타임 확인: `r16/qa_project.mts`(실조수 modern_city 저장본 + 예제 9장) → `npm run qa:runtime -- --scenario modern-interior-props --project …`(크로미움 백지면 `unshare -rn` 안에서).
+  object-gate: `r16/gate_items.py` 로 내보내 `object-gate review --batch` — 프로필이 미보정(rejected)이라 영수증은 임시일 뿐 통과가 아니다.
+
 ## 공간 규모 규격 · 학생/직장인 하루 18곳 (2026-10-18, `src/editor/handInterior/venueScale.ts`·`dailyVenues.ts`)
 
 - 사용자 「대형마트는 시발 너무 작다… 50x50 정도로」 → `VENUE_SCALE_CONTRACT` 가 program 마다 벽 포함 맵 크기를 정한다. XL 48~52×38~48(대형마트 50×46·백화점 48×38·체육관 46×34) · L 40~46×26~34(교사동 46×34·지하철역 46×32·오피스 46×32·강의동 42×30·센토 40×30·게임센터 40×28) · M 30~38×20~28(레스토랑 38×28·이자카야/학생회실 36×26·옥상 36×24·가정집 34×26·오피스텔/베이커리 32×24·32×22·편의점 30×22) · S 엘리베이터 24×16.
