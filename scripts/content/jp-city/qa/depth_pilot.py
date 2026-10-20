@@ -62,7 +62,7 @@ def main(old_dir, out):
     os.makedirs(out, exist_ok=True)
     act = actor()
     beo = Image.open(os.path.join(ROOT, 'public/assets/beodeul-architecture/cream-native.png')).convert('RGBA')
-    police = Image.open(os.path.join(ROOT, 'public/assets/modern-city/vehicles/mc-veh-police-a.png')).convert('RGBA').crop((0, 0, 48, 40))   # 탈것 기준(같은 배율)
+    police = Image.open(os.path.join(ROOT, 'public/assets/modern-city/vehicles/mc-veh-police-a.png')).convert('RGBA').crop((0, 0, 48, 32))   # 탈것 기준(같은 배율)
     idx = []
     for grp, k, name, im, oldf in pieces():
         old = Image.open(os.path.join(old_dir, oldf)).convert('RGBA')
