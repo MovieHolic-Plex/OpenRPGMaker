@@ -120,7 +120,7 @@ export const INAKA_KITS: readonly InakaKitSpec[] = [
   { id: "inaka-vinyl-greenhouse", jpId: "jp-inaka-vinyl-greenhouse", ko: "비닐하우스", w: 3, h: 7, allowWet: false },
   { id: "inaka-sunflower-patch", jpId: "jp-inaka-sunflower-patch", ko: "여름 해바라기 군락", w: 3, h: 2, allowWet: false },
   { id: "inaka-hydrangea-hedge", jpId: "jp-inaka-hydrangea-hedge", ko: "수국 꽃덤불", w: 3, h: 2, allowWet: false },
-  { id: "inaka-jizo-shrine-row", jpId: "jp-inaka-jizo-shrine-row", ko: "길가 지장보살 사당(3기)", w: 3, h: 2, allowWet: false },
+  { id: "inaka-jizo-shrine-row", jpId: "jp-inaka-jizo-shrine-row", ko: "길가 지장보살 사당(3기)", w: 3, h: 3, allowWet: false },
   { id: "inaka-wooden-pole-transformer", jpId: "jp-inaka-wooden-pole-transformer", ko: "시골 나무 전봇대", w: 1, h: 3, allowWet: false },
   { id: "inaka-retro-postbox-vending", jpId: "jp-inaka-retro-postbox-vending", ko: "둥근 붉은 우체통과 자판기", w: 2, h: 2, allowWet: false },
   { id: "inaka-waterwheel-mill", jpId: "jp-inaka-waterwheel-mill", ko: "시골 물레방아간", w: 4, h: 5, allowWet: true },
@@ -532,7 +532,7 @@ export const INAKA_SHOWCASE_SCENES: readonly InakaShowcaseScene[] = [
       { kit: "inaka-hillside-torii-stairs", x: 18, y: 11 },
       { kit: "rg-ishigaki", x: 22, y: 11 },
       // 산기슭 고갯길
-      { kit: "inaka-jizo-shrine-row", x: 3, y: 21 },
+      { kit: "inaka-jizo-shrine-row", x: 3, y: 20 },
       { kit: "rg-doshirube", x: 7, y: 21 },
       { kit: "rg-moss-buddha", x: 9, y: 21 },
       { kit: "inaka-hydrangea-hedge", x: 13, y: 21 },

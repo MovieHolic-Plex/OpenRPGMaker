@@ -219,165 +219,205 @@ def crate(c, x, y, w, h, content):
 
 
 # ═══════════════════════════ 탈것 ═══════════════════════════
-@kit('inaka-keitora-white', '흰 경트럭(軽トラ) - 캡 지붕 윗면·짐칸 윗면(양 난간·채소 상자·파란 방수포)·노란 경차 번호판(4×2)', 4, 2, 'vehicle',
-     solid=rows(4, [0, 1]), tags=['inaka', '경트럭', '軽トラ', '탈것'],
+@kit('inaka-keitora-white', '흰 경트럭(軽トラ) - 3/4 탑뷰: 넓은 캡 지붕 윗면·기운 앞유리·짧은 보닛 윗면·짐칸 골 바닥(먼 난간 → 바닥 → 가까운 난간)·낮은 옆면·바퀴 아래 절반(4×3)', 4, 3, 'vehicle',
+     solid=rows(4, [1, 2]), tags=['inaka', '경트럭', '軽トラ', '탈것'],
      rules='농가 마당·논두렁 옆 자갈길에 오른쪽(동)을 보고 세운다.', role='prop')
 def keitora(c, base):
-    # 짐칸 골바닥(먼 난간 그늘 → 앞으로 밝게) + 골
-    vgrad(c, 4, 8, 34, 8, STEEL, 4.6, 3.2)
-    for x in range(7, 38, 5):
-        c.VL(x, 8, 8, K('tekko', 1)); c.VL(x + 1, 8, 8, K('tekko', -2))
-    c.HL(3, 6, 36, W_PAINT[0]); c.HL(3, 7, 36, W_PAINT[2])         # 먼 난간 윗면
-    c.HL(4, 8, 34, K('tekko', -2))                                  # 난간 밑 그늘
-
-    def cabbage(x, y, w):
-        for i in range(0, w, 3):
-            ball(c, x + i + 1, y + 1, 1.8, LEAF, ry=1.5)
-    def roots(x, y, w):
-        for i in range(0, w, 2):
-            col = ORANGE if (i // 2) % 3 else RED
-            ball(c, x + i + 0.5, y + 1 + (i % 4 == 0), 1.2, col[1:], ry=1.1)
-    crate(c, 5, 8, 10, 7, cabbage)
-    crate(c, 16, 8, 10, 7, roots)
-    # 파란 방수포: 위쪽 빛 → 주름 골 → 앞으로 처진 그늘
+    # 투영: 화면 y = 46 - 높이 z - 북쪽 깊이 n. 차 폭 n = 0..13 → 윗면은 14줄, 옆면은 그보다 낮다.
+    def Y(z, n):
+        return 46 - z - n
+    # 1) 바퀴(아래 절반만 보인다: 위는 옆판이 덮는다) — 먼저 그린다
+    wheel(c, 13, 41, 4.8); wheel(c, 49, 41, 4.8)
+    # 2) 짐칸(x3~39): 먼 난간 윗면 → 먼 판 안쪽 면(남향) → 넓은 골 바닥 → 가까운 난간 윗면 → 옆판
+    BX0, BX1 = 3, 39
+    for x in range(BX0, BX1 + 1):
+        for y in range(Y(15, 13), Y(15, 13) + 2):                        # 먼 난간 윗면 y18~19
+            c.P(x, y, W_PAINT[0] if y == Y(15, 13) else W_PAINT[2])
+        for y in range(Y(15, 13) + 2, Y(9, 13)):                         # 먼 판 안쪽 면 y20~23
+            c.P(x, y, pick(W_PAINT, 1.6 + (y - Y(15, 13)) * 0.35 + (x - BX0) / 36 * 0.5, x, y))
+        for y in range(Y(9, 13), Y(15, 0)):                              # 골 바닥 y24~30(가로 골: 차 길이 방향)
+            r = (y - Y(9, 13)) % 3
+            c.P(x, y, pick(STEEL, (1.2 if r == 0 else 3.4 if r == 2 else 2.2) + (x - BX0) / 36 * 0.5, x, y))
+    c.HL(BX0, Y(9, 13), BX1 - BX0 + 1, STEEL[4])                          # 먼 판 밑 그늘
+    # 바닥 위 작은 짐: 채소 상자 하나 + 방수포 덮은 짐 하나(바닥이 둘레로 보이게)
+    for j in range(5):
+        for i in range(7):
+            x, y = 8 + i, 23 + j
+            if j < 3:
+                c.P(x, y, pick(CEDAR, 0.4 + i * 0.12, x, y) if (j == 0 or i in (0, 6)) else LEAF[2])
+            else:
+                c.P(x, y, pick(CEDAR, 1.8 + (j - 3) * 0.6 + i * 0.1, x, y))
+    for (bx, by) in ((10, 24), (12, 25)):
+        ball(c, bx, by, 1.4, LEAF, ry=1.0)
     blue = [K('sora', 2), K('sora', 1), K('garasu', 1), K('sora', 0), K('sora', -1), K('kon', -1)]
-    for y in range(8, 15):
-        for x in range(27, 38):
-            fold = 0.9 * math.sin((x - 27) * 1.15 + (y - 8) * 0.4)
-            c.P(x, y, pick(blue, 1.2 + (y - 8) * 0.38 + fold + (x - 27) * 0.06, x, y))
-    c.HL(27, 8, 10, blue[0])
-    # 가까운 난간 윗면 + 짐칸 옆판(위 밝음 → 아래 그늘, 프레스 선)
-    c.HL(3, 15, 36, W_PAINT[0])
-    vgrad(c, 3, 16, 36, 8, W_PAINT, 1.0, 3.6)
-    c.HL(3, 19, 36, W_PAINT[4]); c.HL(3, 20, 36, W_PAINT[1])
+    for y in range(22, 29):
+        for x in range(24, 34):
+            u = (x - 28.5) / 5.5; v = (y - 25.2) / 3.4
+            if u * u + v * v <= 1:
+                c.P(x, y, pick(blue, 0.8 + (u + v) * 1.4 + 0.6 * math.sin(x * 1.3 + y), x, y))
+    # 가까운 난간 윗면 y30~31 + 옆판 y32~39(8줄): 위 밝음 → 아래 그늘, 프레스 선
+    c.HL(BX0, 30, BX1 - BX0 + 1, W_PAINT[0]); c.HL(BX0, 31, BX1 - BX0 + 1, W_PAINT[1])
+    vgrad(c, BX0, 32, BX1 - BX0 + 1, 8, W_PAINT, 2.0, 4.0)
+    c.HL(BX0, 34, BX1 - BX0 + 1, W_PAINT[4]); c.HL(BX0, 35, BX1 - BX0 + 1, W_PAINT[1])
     for x in (15, 27):
-        c.VL(x, 16, 7, W_PAINT[4]); c.VL(x + 1, 16, 7, W_PAINT[1]); c.P(x + 2, 18, K('tekko', 0))
-    c.VL(3, 6, 18, W_PAINT[1])
-    ball(c, 4, 18.5, 1.6, RED[1:], ry=2.2)                          # 후미등
-    speck(c, 4, 21, 34, 3, K('kinari', -1), 0.08, 12)               # 흙 튄 자국
-    # 캡 뒷벽 가드 프레임(원통 철)
-    cyl(c, 39, 4, 2, 20, STEEL)
-    for yy in (6, 10, 14):
-        c.HL(37, yy, 2, STEEL[2])
-    # 캡 지붕 윗면: 왼쪽 빛 반사(따뜻한 흰빛) → 오른쪽 · 앞 가장자리로 그늘
-    for y in range(2, 8):
-        for x in range(41, 55):
-            lv = 0.3 + (x - 41) / 14 * 1.4 + (1.6 if y == 7 else 0) + (0.7 if y == 2 else 0)
+        c.VL(x, 32, 7, W_PAINT[4]); c.VL(x + 1, 32, 7, W_PAINT[1])
+    for y in range(Y(15, 13), 32):                                       # 뒤 문짝 윗선(서쪽 끝 판)
+        c.P(BX0, y, W_PAINT[1]); c.P(BX0 + 1, y, W_PAINT[3] if Y(15, 13) + 2 <= y < 30 else W_PAINT[1])
+    ball(c, 4, 35, 1.5, RED[1:], ry=2.0)                                  # 후미등
+    speck(c, 4, 37, 34, 3, K('kinari', -1), 0.08, 12)
+    # 3) 캡 뒤 가드 프레임(x40, 남·북 기둥 + 깊이 방향 윗대 = 세로 줄)
+    for y in range(Y(22, 13), 32):
+        c.P(40, y, STEEL[1] if y % 3 else STEEL[3])
+    # 4) 캡: 넓은 지붕 윗면(x41~56, n0~13, z22 → y11~24) — 왼쪽 위 빛, 지붕 홈 두 줄, 남쪽 가장자리 빛 테
+    CX0, CX1 = 41, 56
+    for n in range(14):
+        y = Y(20, n)
+        for x in range(CX0, CX1 + 1):
+            lv = 0.0 + (x - CX0) / 16 * 0.9 + (0.9 if n == 13 else 0) + (0.6 if x in (CX0, CX1) else 0)
             c.P(x, y, pick(W_PAINT, lv, x, y))
-    c.HL(43, 3, 6, K('kinari', 2)); c.P(49, 3, W_PAINT[0])
-    # 경사 앞유리(위 하늘빛 → 아래 실내 그늘, 사선 반사)
-    for y in range(3, 14):
-        x0 = 54 + (y - 3) // 2
-        for x in range(x0, x0 + 4):
-            c.P(x, y, pick(GLASS, 0.8 + (y - 3) * 0.36 + (x - x0) * 0.2, x, y))
-    line(c, 55, 5, 57, 9, GLASS[0]); c.P(56, 4, K('shiro', 2))
-    # 캡 옆면(문짝): 위 밝음 → 아래 그늘, 창문 유리 그라데이션 + 반사
-    vgrad(c, 41, 8, 17, 16, W_PAINT, 0.8, 3.4)
-    for y in range(9, 16):
-        for x in range(43, 53):
-            c.P(x, y, pick(GLASS, 2.0 + (y - 9) * 0.45 - (x - 43) * 0.05, x, y))
-    c.HL(43, 9, 10, GLASS[4]); c.VL(52, 9, 7, GLASS[5])
-    line(c, 44, 15, 49, 10, GLASS[0]); line(c, 45, 15, 50, 10, GLASS[1])
-    c.R(52, 13, 2, 3, K('tekko', -2)); c.P(52, 13, K('tekko', 2))   # 사이드미러
-    c.VL(42, 8, 15, W_PAINT[1]); c.VL(54, 9, 14, W_PAINT[4]); c.VL(55, 9, 14, W_PAINT[1])
-    c.HL(44, 18, 3, K('tekko', -1)); c.HL(44, 19, 3, W_PAINT[1])     # 문 손잡이
-    c.HL(41, 16, 17, W_PAINT[3])
-    # 차 앞면(그늘 쪽) + 전조등 + 번호판
-    vgrad(c, 58, 13, 3, 11, W_PAINT, 3.0, 5.0)
-    ball(c, 59.5, 16, 1.4, [K('shiro', 2), K('kii', 2), K('kii', 1), K('kii', 0)], ry=1.6)
-    c.R(57, 21, 4, 2, K('kii', 1)); c.HL(57, 21, 4, K('kii', 2)); c.P(60, 22, K('kii', 0))
-    # 범퍼·사이드 스커트 + 차체 밑 그늘
-    hgrad(c, 41, 23, 20, 1, CONC, 1.0, 3.5)
-    vgrad(c, 4, 24, 56, 2, [K('tekko', -1), K('tekko', -2), K('sumi', 1)], 0.6, 2.0)
-    wheel(c, 13, 25, 4.8); wheel(c, 49, 25, 4.8)
-    finish(c, [(5, 62, 29, 3, SHADOW, 0)])
+    for n in (4, 9):
+        c.HL(CX0 + 1, Y(20, n), CX1 - CX0 - 1, W_PAINT[2]); c.HL(CX0 + 1, Y(20, n) - 1, CX1 - CX0 - 1, W_PAINT[0])
+    c.HL(CX0, Y(20, 0), CX1 - CX0 + 1, K('kinari', 2)); c.HL(CX0, Y(20, 0) + 1, CX1 - CX0 + 1, W_PAINT[4])   # 지붕 → 옆면 꺾임(빛 테 + 그늘 줄)
+    c.HL(43, Y(20, 11), 5, K('kinari', 2))
+    # 기운 앞유리: 지붕 앞 끝(x57, z22) → 앞 아래(x60, z15), 깊이 n 마다 같은 띠
+    for n in range(14):
+        for k in range(4):
+            x = 57 + k; y = Y(20 - k * 2.0, n)
+            c.P(x, round(y), pick(GLASS, 0.6 + k * 0.8 + (13 - n) * 0.08, x, round(y)))
+            c.P(x, round(y) + 1, pick(GLASS, 1.0 + k * 0.8 + (13 - n) * 0.08, x, round(y) + 1))
+    for n in (2, 3, 9):
+        line(c, 57, Y(20, n), 59, Y(15, n), GLASS[0])
+    # 짧은 보닛 윗면(x61~62, z14)
+    for n in range(14):
+        c.P(61, Y(14, n), W_PAINT[1]); c.P(62, Y(14, n), W_PAINT[3])
+    # 캡 옆면(남향, z7~22 → y25~39): 위 밝음 → 아래 그늘 · 문 창 · 손잡이 · 미러 · 전조등·번호판
+    for y in range(Y(20, 0) + 1, 40):
+        xe = 57 + min(5, max(0, (y - Y(20, 0)) * 4 // 9))
+        for x in range(CX0, xe + 1):
+            c.P(x, y, pick(W_PAINT, 2.0 + (y - Y(20, 0)) * 0.14 + (x - CX0) / 20 * 0.4, x, y))
+    for y in range(29, 34):
+        for x in range(43, 53 + (y - 29) // 2):
+            c.P(x, y, pick(GLASS, 2.0 + (y - 29) * 0.5, x, y))
+    line(c, 44, 33, 47, 30, GLASS[0])
+    c.HL(41, 33, 18, W_PAINT[4]); c.HL(44, 34, 3, K('tekko', -1))
+    c.R(56, 28, 2, 2, K('tekko', -2)); c.P(56, 28, K('tekko', 2))
+    ball(c, 61, 34, 1.3, [K('shiro', 2), K('kii', 2), K('kii', 1), K('kii', 0)], ry=1.4)
+    c.R(58, 37, 4, 2, K('kii', 1)); c.HL(58, 37, 4, K('kii', 2))
+    hgrad(c, 41, 39, 22, 1, CONC, 1.0, 3.5)
+    vgrad(c, 4, 40, 58, 1, [K('tekko', -1), K('tekko', -2)], 0.5, 1.5)    # 차체 밑 그늘(바퀴 사이)
+    finish(c, [(5, 63, 45, 3, SHADOW, 0)])
 
 
-@kit('inaka-red-tractor', '빨간 농기계 트랙터 - 캐노피 지붕 윗면·긴 보닛·배기 연통·운전석·대형 러그 뒷바퀴·로터리 작업기(4×3)', 4, 3, 'vehicle',
-     solid=rows(4, [1, 2]), tags=['inaka', '트랙터', 'トラクター', '농기계'],
+@kit('inaka-red-tractor', '빨간 농기계 트랙터 - 3/4 탑뷰: 차양 캐노피 윗면·넓은 보닛 윗면·좌석과 펜더 윗면·러그 트레드 윗면·먼 쪽 바퀴·로터리 작업기 윗면(4×4)', 4, 4, 'vehicle',
+     solid=rows(4, [2, 3]), tags=['inaka', '트랙터', 'トラクター', '농기계'],
      rules='논 가장자리·헛간 앞. 오른쪽(동)을 보고 둔다.', role='prop')
 def tractor(c, base):
-    # 로터리 경운 작업기: 유압 암 → 주황 덮개 윗면 → 앞면(원통처럼 둥근 그늘) → 칼날
-    line(c, 15, 31, 7, 27, STEEL[2]); line(c, 15, 32, 7, 28, STEEL[4])
-    line(c, 15, 35, 7, 34, STEEL[4])
-    for y in range(26, 30):
-        for x in range(2, 14):
-            c.P(x, y, pick(ORANGE, 0.6 + (x - 2) / 12 * 1.3 + (y - 26) * 0.35, x, y))
-    for y in range(30, 39):
-        for x in range(2, 14):
-            c.P(x, y, pick(ORANGE, 2.2 + (y - 30) * 0.33 + (x - 2) / 12 * 0.8, x, y))
-    c.HL(2, 30, 12, ORANGE[4]); c.VL(2, 26, 13, ORANGE[1])
-    speck(c, 2, 34, 12, 5, SOIL[2], 0.18, 7)                        # 논흙 묻음
-    for x in (3, 6, 9, 12):
-        vgrad(c, x, 39, 2, 4, CONC, 0.5, 3.5)
-    # 롤바 기둥(원통 철) + 차양 캐노피 윗면(붉은·흰 줄, 앞으로 갈수록 그늘)
-    cyl(c, 16, 9, 2, 18, STEEL); cyl(c, 31, 9, 2, 14, STEEL)
-    for y in range(4, 9):
-        for x in range(13, 35):
-            stripe = ((x - 13) // 4) % 2
-            cols = RED if stripe == 0 else W_PAINT
-            lv = 0.5 + (x - 13) / 22 * 1.3 + (y - 4) * 0.35 + (2.0 if y == 8 else 0)
-            c.P(x, y, pick(cols, lv, x, y))
-    c.HL(14, 4, 20, RED[0])
-    # 운전석(검은 비닐: 고무 단) + 조향 핸들
-    cyl(c, 19, 17, 3, 6, RUBBER); vgrad(c, 19, 21, 7, 3, RUBBER, 0.3, 2.6)
-    line(c, 28, 24, 32, 16, STEEL[3]); line(c, 29, 24, 33, 16, STEEL[5])
-    c.R(29, 15, 6, 2, RUBBER[2]); c.HL(29, 15, 6, STEEL[1])
-    # 보닛 윗면(왼쪽 빛 반사 → 오른쪽) + 옆면(위 밝음 → 아래 깊은 그늘) + 흰 줄 + 루버
-    for y in range(19, 25):
-        for x in range(32, 57):
-            lv = 0.6 + (x - 32) / 25 * 1.5 + (1.5 if y == 24 else 0) + (0.4 if y == 19 else 0)
-            c.P(x, y, pick(RED, lv, x, y))
-    c.HL(34, 20, 8, RED[0]); c.HL(42, 20, 3, K('daidai', 1))
-    vgrad(c, 32, 25, 25, 11, RED, 2.0, 4.6)
-    c.HL(33, 27, 22, W_PAINT[1]); c.HL(33, 28, 22, RED[4])
-    for y in (30, 32, 34):
-        c.HL(36, y, 16, K('tekko', -2)); c.HL(36, y + 1, 16, RED[2])
-    speck(c, 32, 33, 25, 3, SOIL[3], 0.07, 9)
-    # 앞 그릴 + 전조등 + 웨이트
-    vgrad(c, 57, 20, 3, 15, STEEL, 2.0, 5.0)
-    for y in range(23, 33, 2):
-        c.HL(57, y, 3, STEEL[5])
-    ball(c, 58.5, 23, 1.5, [K('shiro', 2), K('kii', 2), K('kii', 1), K('kii', 0)])
-    vgrad(c, 59, 32, 3, 5, STEEL, 1.5, 4.5)
-    # 배기 연통(원통) + 갓
-    cyl(c, 47, 7, 3, 12, STEEL); speck(c, 47, 13, 3, 6, K('daidai', -2), 0.2, 3)
-    hgrad(c, 46, 5, 5, 2, STEEL, 0.2, 3.0)
-    # 차대
-    vgrad(c, 24, 35, 32, 4, STEEL, 3.6, 5.0); c.HL(28, 36, 12, STEEL[3])
-    # 둥근 펜더 윗면(빛 왼쪽 위)
-    for x in range(12, 33):
-        u = (x - 22.5) / 10.5
-        yt = round(23 - 4.5 * math.sqrt(max(0.0, 1 - u * u)))
-        for k in range(3):
-            c.P(x, yt + k, pick(RED, 0.4 + k * 1.1 + (x - 12) / 21 * 1.2, x, yt + k))
-    # 대형 러그 뒷바퀴: 러그(돌기) 결 + 고무 4단 + 노란 휠 5단
-    cx, cy, R = 22.5, 34, 10.6
+    # 투영: 화면 y = 62 - 높이 z - 북쪽 깊이 n. 차 폭(바퀴 바깥까지) n = 0..16.
+    def Y(z, n):
+        return 62 - z - n
     yellow = [K('kii', 2), K('kii', 1), K('kii', 0), K('kii', -1), K('kii', -2)]
-    for y in range(int(cy - R - 1), int(cy + R + 2)):
-        for x in range(int(cx - R - 1), int(cx + R + 2)):
-            dx, dy = x - cx, y - cy
-            d = math.hypot(dx, dy)
-            if d > R:
-                continue
-            s = (dx + dy) / (R * 1.414)
-            ang = math.atan2(dy, dx)
-            lug = int((ang + math.pi) * 14 / (2 * math.pi) + d * 0.25) % 2
-            if d > R - 0.9 and not lug:
-                continue                                          # 러그 사이 홈(톱니 실루엣)
-            if d > 5.6:
-                lv = 1.2 + s * 1.5 + (0.0 if lug else 1.0) + (0.8 if d > R - 0.9 else 0) + (0.9 if d < 6.6 else 0)
-                c.P(x, y, pick(RUBBER, lv, x, y))
-            elif d > 2.6:
-                c.P(x, y, pick(yellow, 1.2 + s * 1.9 + (0.8 if d > 4.8 else 0), x, y))
-            else:
-                c.P(x, y, pick(RED[1:], 1.5 + s * 1.5, x, y))
-    c.P(21, 32, K('kii', 2)); c.P(20, 33, K('kii', 2))
-    for k in range(6):
-        a = k * math.pi / 3
-        c.P(round(cx + math.cos(a) * 3.8), round(cy + math.sin(a) * 3.8), yellow[3])
-    wheel(c, 51, 38, 6.0, 'kii')
-    finish(c, [(4, 62, 44, 4, SHADOW, 1)])
+
+    def tire(cx, z0, R, n0, n1, hub_r, dim=0.0):
+        """세운 바퀴(축 남북): 깊이 n1 → n0 으로 트레드 윗면(가로 러그 줄)을 쌓고, 마지막 n0 에 옆면(휠)을 그린다."""
+        for n in range(n1, n0 - 1, -1):
+            cy = Y(z0, n)
+            side = n == n0
+            for y in range(int(cy - R - 1), int(cy + R + 2)):
+                for x in range(int(cx - R - 1), int(cx + R + 2)):
+                    dx, dy = x - cx, y - cy
+                    d = math.hypot(dx, dy)
+                    if d > R:
+                        continue
+                    if not side:
+                        if dy > -R * 0.15:
+                            continue                                     # 트레드 윗면은 위쪽 둘레만 보인다
+                        lug = (n + (x // 2)) % 2
+                        lv = 0.9 + (0.0 if lug else 1.4) + (n - n0) * 0.1 + dim + (dx / R) * 0.6
+                        c.P(x, y, pick(RUBBER, lv, x, y))
+                        continue
+                    s = (dx + dy) / (R * 1.414)
+                    if d > hub_r:
+                        lv = 1.4 + s * 1.3 + (0.8 if d > R - 0.9 else 0) + (0.9 if d < hub_r + 1 else 0) + dim
+                        c.P(x, y, pick(RUBBER, lv, x, y))
+                    elif d > hub_r * 0.45:
+                        c.P(x, y, pick(yellow, 1.0 + s * 1.9 + (0.8 if d > hub_r - 1 else 0) + dim, x, y))
+                    else:
+                        c.P(x, y, pick(RED[1:], 1.5 + s * 1.5 + dim, x, y))
+    # 1) 먼 쪽(북) 바퀴: 트레드 윗면 + 옆면 일부(차체 뒤 위로)
+    tire(22, 8.5, 8.4, 17, 22, 4.4, dim=0.9)
+    tire(51, 5, 4.8, 17, 20, 2.6, dim=0.9)
+    # 2) 로터리 작업기(뒤 x2~13): 덮개 윗면(n1~14, z12 → y35~48) → 앞면(z3~12) → 칼날
+    for n in range(1, 19):
+        y = Y(10, n)
+        for x in range(2, 14):
+            c.P(x, y, pick(ORANGE, 0.5 + (x - 2) / 12 * 1.2 + (18 - n) * 0.03 + (1.2 if n == 1 else 0), x, y))
+    for n in (5, 10, 15):
+        c.HL(2, Y(10, n), 12, ORANGE[2])
+    for y in range(Y(10, 0), Y(3, 0)):
+        for x in range(2, 14):
+            c.P(x, y, pick(ORANGE, 2.6 + (y - Y(10, 0)) * 0.3 + (x - 2) / 12 * 0.6, x, y))
+    speck(c, 2, 54, 12, 5, SOIL[2], 0.18, 7)
+    for x in (3, 6, 9, 12):
+        vgrad(c, x, Y(3, 0), 2, 3, CONC, 0.5, 3.5)
+    line(c, 16, 47, 8, 43, STEEL[2])
+    # 3) 운전대 바닥(z14, n3~12) + 좌석(윗면 z20, n5~10) + 등받이 + 핸들(타원 윗면)
+    for n in range(3, 18):
+        y = Y(12, n)
+        for x in range(15, 31):
+            c.P(x, y, pick(STEEL, 3.0 + (H(x, n, 7) - 0.5) * 0.6 + (0.6 if n % 3 == 0 else 0), x, y))
+    for n in range(6, 14):
+        y = Y(18, n)
+        for x in range(18, 26):
+            c.P(x, y, pick(RUBBER, 0.2 + (x - 18) * 0.12 + (13 - n) * 0.1, x, y))
+    for y in range(Y(18, 13) - 4, Y(18, 13)):
+        for x in range(18, 26):
+            c.P(x, y, pick(RUBBER, 0.6 + (x - 18) * 0.15, x, y))
+    for y in range(Y(18, 6) + 1, Y(12, 6)):
+        c.HL(18, y, 8, RUBBER[2])
+    line(c, 29, Y(12, 10), 30, Y(21, 10), STEEL[3])
+    ball(c, 30, Y(21, 10), 2.6, RUBBER, ry=2.2); ball(c, 30, Y(21, 10), 1.0, STEEL[3:], ry=0.8)
+    # 4) 보닛: 넓은 윗면(x31~57, z17, n2~12 → y33~43, 11줄) — 왼쪽 위 빛 반사 · 냉각 구멍 · 앞 둥근 끝 / 옆면(z9~17 → y44~51, 8줄)
+    for n in range(1, 18):
+        y = Y(14, n)
+        for x in range(31, 58):
+            lv = 0.5 + (x - 31) / 27 * 1.2 + (17 - n) * 0.03 + (1.2 if n == 1 else 0) + (0.5 if n == 17 else 0)
+            c.P(x, y, pick(RED, lv, x, y))
+    c.HL(33, Y(14, 13), 16, RED[0]); c.HL(33, Y(14, 12), 7, K('daidai', 1))
+    for x in range(37, 54, 4):
+        for n in (6, 7, 9, 10):
+            c.HL(x, Y(14, n), 2, RED[4])
+    for n in range(1, 18):
+        c.P(58, Y(14, n), RED[3]); c.P(58, Y(14, n) + 1, RED[4])           # 앞 둥근 끝
+    vgrad(c, 31, Y(14, 1) + 1, 28, 6, RED, 2.2, 4.4)
+    c.HL(32, Y(14, 1) + 2, 26, W_PAINT[1])
+    for y in (Y(14, 1) + 4,):
+        c.HL(35, y, 18, K('tekko', -2))
+    ball(c, 58, Y(14, 1) + 2, 1.3, [K('shiro', 2), K('kii', 2), K('kii', 1), K('kii', 0)])
+    vgrad(c, 57, Y(8, 1), 4, 3, STEEL, 1.5, 4.5)
+    # 5) 배기 연통(보닛 위 n10 에서 솟는다)
+    cyl(c, 49, Y(28, 14), 3, 14, STEEL); hgrad(c, 48, Y(28, 14) - 2, 5, 2, STEEL, 0.2, 3.0)
+    # 6) 가까운 바퀴: 트레드 윗면(n0~8, 가로 러그 줄) + 옆면(작게)
+    tire(22, 8.5, 8.6, 0, 8, 4.6)
+    c.P(20, round(Y(8.5, 0)) - 2, K('kii', 2))
+    tire(51, 5, 5.0, 0, 5, 2.7)
+    # 7) 펜더: 뒷바퀴 꼭대기만 덮는 짧은 둥근 판의 윗면(폭 n0~8) — 앞뒤로 트레드 윗면이 드러난다
+    for x in range(15, 30):
+        u = (x - 22) / 10
+        zt = 8.5 + 9.8 * math.sqrt(max(0.0, 1 - u * u))
+        for n in range(8, -1, -1):
+            y = round(Y(zt, n))
+            c.P(x, y, pick(RED, 0.4 + (8 - n) * 0.06 + (x - 15) / 15 * 1.1 + (1.8 if n == 0 else 0), x, y))
+    # 8) 차양 캐노피: 남쪽 기둥(n0) + 윗면(z34, n0~15 → y13~28, 붉은·흰 줄) + 앞 테
+    cyl(c, 14, Y(30, 0), 2, 16, STEEL); cyl(c, 33, Y(30, 0), 2, 16, STEEL)
+    for n in range(22):
+        y = Y(30, n)
+        for x in range(11, 37):
+            cols = RED if ((x - 11) // 4) % 2 == 0 else W_PAINT
+            c.P(x, y, pick(cols, 0.4 + (x - 11) / 26 * 1.3 + (21 - n) * 0.03 + (0.6 if n == 21 else 0), x, y))
+    for x in range(11, 37):
+        cols = RED if ((x - 11) // 4) % 2 == 0 else W_PAINT
+        c.P(x, Y(30, 0) + 1, cols[3]); c.P(x, Y(30, 0) + 2, cols[4])
+    finish(c, [(4, 63, 60, 4, SHADOW, 1)])
 
 
 @kit('inaka-single-car-train', '단량 디젤 동차(キハ40 국철색) - AU75 냉방기·물탱크·배기구 지붕 윗면·크림+주홍 투톤 차체·폴딩 도어·전조등·대차(8×3)', 8, 3, 'vehicle',
@@ -487,6 +527,13 @@ def single_car_train(c, base):
      solid=[(0, 1), (1, 1)], tags=['inaka', '자전거', 'ママチャリ'],
      rules='가게 앞·역 앞·집 처마 밑에 오른쪽을 보고 세운다.', role='prop')
 def bicycle(c, base):
+    for cx in (8, 24):                                           # 타이어 트레드 윗면(폭 2줄): 위쪽 둘레가 깊이 방향으로 두껍다
+        for off in (2, 1):
+            for x in range(cx - 7, cx + 8):
+                for y in range(14 - off, 22 - off):
+                    d = math.hypot(x - cx, y + off - 22)
+                    if 5.0 < d <= 6.6 and y + off < 20:
+                        c.P(x, y, pick(RUBBER, 1.4 + off * 0.5 + ((x + off) % 2) * 0.8, x, y))
     for cx in (8, 24):                                           # 바퀴: 고무 3단 → 은색 림 → 살 → 허브
         for y in range(14, 30):
             for x in range(cx - 8, cx + 8):
@@ -515,16 +562,23 @@ def bicycle(c, base):
         u = (x - 8) / 6.5
         yt = round(22 - 6.6 * math.sqrt(max(0.0, 1 - u * u))) - 1
         c.P(x, yt, CONC[1 if x < 8 else 2])
-    vgrad(c, 3, 14, 9, 2, STEEL, 0.3, 2.5); line(c, 4, 16, 7, 21, STEEL[2]); line(c, 5, 16, 8, 21, STEEL[4])
+    for y in range(11, 16):                                      # 짐받이 윗면(깊이 5줄, 길이 방향 살)
+        for x in range(3, 12):
+            c.P(x, y, pick(STEEL, (0.3 if y % 2 == 1 else 3.6) + (x - 3) * 0.08 + (y - 11) * 0.15, x, y))
+    line(c, 4, 16, 7, 21, STEEL[2]); line(c, 5, 16, 8, 21, STEEL[4])
     # 안장(갈색 가죽 공 명암) + 기둥
-    ball(c, 12, 10.5, 3.2, [K('ita', 3), K('ita', 2), K('ita', 1), K('ita', 0), K('ita', -1), K('ita', -2)], ry=1.4)
+    ball(c, 12, 10.5, 3.2, [K('ita', 3), K('ita', 2), K('ita', 1), K('ita', 0), K('ita', -1), K('ita', -2)], ry=2.3)
     c.VL(12, 12, 2, STEEL[2]); c.VL(13, 12, 2, STEEL[4])
     # 핸들 + 앞 바구니(윗면 입구 → 철망 앞면)
-    c.VL(21, 8, 6, STEEL[2]); c.VL(22, 9, 5, STEEL[4])
-    c.HL(18, 8, 6, STEEL[1]); c.HL(17, 8, 1, RUBBER[1]); c.HL(17, 9, 2, RUBBER[2])
-    c.HL(23, 7, 8, CONC[0])
-    vgrad(c, 24, 8, 6, 2, STEEL, 3.0, 4.6); c.VL(23, 8, 2, CONC[2]); c.VL(30, 8, 2, CONC[4])
-    ball(c, 25.5, 8.3, 1.4, LEAF, ry=1.0); c.P(27, 8, K('shiro', 1)); c.P(28, 8, LEAF[1])   # 파 한 단
+    c.VL(21, 9, 5, STEEL[2]); c.VL(22, 10, 4, STEEL[4])            # 핸들 기둥
+    for y in range(4, 12):                                         # 핸들바 윗면: 남북으로 뻗은 막대 + 양 끝 손잡이
+        c.P(20, y, STEEL[1] if 6 <= y <= 9 else RUBBER[1]); c.P(21, y, STEEL[3] if 6 <= y <= 9 else RUBBER[2])
+    # 앞 바구니: 윗면 입구(깊이 5줄: 테 → 어두운 안 → 파 한 단) → 철망 앞면
+    for y in range(4, 10):
+        for x in range(23, 31):
+            rim = y in (4, 9) or x in (23, 30)
+            c.P(x, y, pick(CONC, 0.2 + (x - 23) * 0.1, x, y) if rim else pick(STEEL, 3.0 + (y - 4) * 0.3, x, y))
+    ball(c, 25.5, 6.5, 1.5, LEAF, ry=1.2); c.P(27, 6, K('shiro', 1)); c.P(28, 7, LEAF[1]); c.P(28, 5, K('shiro', 2))   # 파 한 단
     for y in range(10, 15):
         for x in range(23, 31):
             wire = (x % 2 == 0) or (y % 2 == 1)
@@ -1057,56 +1111,67 @@ def hydrangea(c, base):
     finish(c, [(4, 47, 32, 0, SHADOW, 1)])
 
 
-@kit('inaka-jizo-shrine-row', '길가 지장보살 세 분 사당 - 片流れ 나무 지붕 윗면·붉은 턱받이·돌 기단(3×2)', 3, 2, 'structure',
-     solid=[(0, 1), (1, 1), (2, 1)], tags=['inaka', '지장', '地蔵', '사당'],
+@kit('inaka-jizo-shrine-row', '길가 지장보살 세 분 사당 - 片流れ 나무 지붕 윗면(깊이 1.5칸)·붉은 턱받이·돌 기단(3×3)', 3, 3, 'structure',
+     solid=rows(3, [1, 2]), tags=['inaka', '지장', '地蔵', '사당'],
      rules='마을 갈림길·다리 옆. 앞 1칸 비운다.', role='prop')
 def jizo_row(c, base):
-    cyl(c, 3, 9, 2, 18, CEDAR, add=0.6); cyl(c, 43, 9, 2, 18, CEDAR, add=1.2)
-    # 안 벽(처마 밑이라 어둡다, 널 이음)
-    for y in range(10, 24):
-        for x in range(5, 43):
-            lv = 3.2 + (1.0 if y < 13 else 0) + (H(x // 5, 0, 70) - 0.5) * 0.8 + (0.9 if x % 5 == 0 else 0)
-            c.P(x, y, pick(CEDAR, lv, x, y))
-    # 돌 기단: 윗면 판석 → 앞면 돌 한 개씩
-    c.R(1, 22, 46, 9, OL)
-    for y in range(23, 30):
-        for x in range(2, 46):
-            if y < 26:
-                lv = 0.4 + (y - 23) * 0.4 + (H(x // 8, 1, 71) - 0.5) * 0.8 + (1.5 if x % 8 == 0 else 0)
-            else:
-                st = (x + (y // 2) * 4) // 7
-                lv = 2.0 + (H(st, y // 2, 72) - 0.5) * 1.2 + (y - 26) * 0.3 + (2.0 if (x + (y // 2) * 4) % 7 == 0 else 0)
-            c.P(x, y, pick(STONE, lv, x, y))
-    speck(c, 2, 26, 44, 4, K('ki', -1), 0.08, 73)
-    for x in (12, 24, 36):
-        # 몸(돌 원통 + 이끼 점) → 머리(돌 공) → 붉은 턱받이(주름 명암)
-        for yy in range(11, 22):                                  # 뒤 벽에 진 지장 그림자(오른쪽)
-            c.P(x + 5, yy, CEDAR[5]); c.P(x + 4, yy - 2, CEDAR[5])
-        cyl(c, x - 4, 15, 9, 9, STONE, add=0.0, grain=0.8, seed=x)
-        ball(c, x, 12, 3.4, STONE, bias=-0.15)
-        c.HL(x - 1, 13, 3, STONE[3]); c.P(x - 1, 12, STONE[2]); c.P(x + 1, 12, STONE[2])   # 감은 눈
-        speck(c, x - 4, 20, 9, 4, K('ki', -1), 0.08, x + 1)
-        for j in range(5):
-            hw = 3 + j // 2
-            for dx in range(-hw, hw + 1):
-                px, py = x + dx, 15 + j
-                lv = 0.8 + dx / hw * 1.2 + j * 0.3 + (1.0 if (dx + j) % 3 == 0 else 0)
-                c.P(px, py, pick(VERM, lv, px, py))
-        c.HL(x - 3, 15, 7, VERM[0])
-        hgrad(c, x - 3, 22, 7, 1, STONE, 0.5, 2.5)
-    for x in (17, 30):                                            # 공양 꽃(작은 병 + 꽃)
-        cyl(c, x, 23, 2, 2, CONC); c.P(x, 22, K('kii', 2)); c.P(x + 1, 21, K('aka', 1)); c.P(x + 1, 22, LEAF[2])
-    # 片流れ 나무 지붕: 널판 결(판마다 명암) → 앞 처마 판 그늘
-    for y in range(0, 10):
+    D = 14                                                        # 깊어진 지붕 면만큼 지장·기단을 아래로
+    v = Cv.__new__(Cv)
+    v.w, v.h, v.a = c.w, c.h - D, c.a[D:]
+
+    def front(c):
+        cyl(c, 3, 9, 2, 18, CEDAR, add=0.6); cyl(c, 43, 9, 2, 18, CEDAR, add=1.2)
+        # 안 벽(처마 밑이라 어둡다, 널 이음)
+        for y in range(10, 24):
+            for x in range(5, 43):
+                lv = 3.2 + (1.0 if y < 13 else 0) + (H(x // 5, 0, 70) - 0.5) * 0.8 + (0.9 if x % 5 == 0 else 0)
+                c.P(x, y, pick(CEDAR, lv, x, y))
+        # 돌 기단: 윗면 판석 → 앞면 돌 한 개씩
+        c.R(1, 22, 46, 9, OL)
+        for y in range(23, 30):
+            for x in range(2, 46):
+                if y < 26:
+                    lv = 0.4 + (y - 23) * 0.4 + (H(x // 8, 1, 71) - 0.5) * 0.8 + (1.5 if x % 8 == 0 else 0)
+                else:
+                    st = (x + (y // 2) * 4) // 7
+                    lv = 2.0 + (H(st, y // 2, 72) - 0.5) * 1.2 + (y - 26) * 0.3 + (2.0 if (x + (y // 2) * 4) % 7 == 0 else 0)
+                c.P(x, y, pick(STONE, lv, x, y))
+        speck(c, 2, 26, 44, 4, K('ki', -1), 0.08, 73)
+        for x in (12, 24, 36):
+            # 몸(돌 원통 + 이끼 점) → 머리(돌 공) → 붉은 턱받이(주름 명암)
+            for yy in range(11, 22):                                  # 뒤 벽에 진 지장 그림자(오른쪽)
+                c.P(x + 5, yy, CEDAR[5]); c.P(x + 4, yy - 2, CEDAR[5])
+            cyl(c, x - 4, 15, 9, 9, STONE, add=0.0, grain=0.8, seed=x)
+            ball(c, x, 12, 3.4, STONE, bias=-0.15)
+            c.HL(x - 1, 13, 3, STONE[3]); c.P(x - 1, 12, STONE[2]); c.P(x + 1, 12, STONE[2])   # 감은 눈
+            speck(c, x - 4, 20, 9, 4, K('ki', -1), 0.08, x + 1)
+            for j in range(5):
+                hw = 3 + j // 2
+                for dx in range(-hw, hw + 1):
+                    px, py = x + dx, 15 + j
+                    lv = 0.8 + dx / hw * 1.2 + j * 0.3 + (1.0 if (dx + j) % 3 == 0 else 0)
+                    c.P(px, py, pick(VERM, lv, px, py))
+            c.HL(x - 3, 15, 7, VERM[0])
+            hgrad(c, x - 3, 22, 7, 1, STONE, 0.5, 2.5)
+        for x in (17, 30):                                            # 공양 꽃(작은 병 + 꽃)
+            cyl(c, x, 23, 2, 2, CONC); c.P(x, 22, K('kii', 2)); c.P(x + 1, 21, K('aka', 1)); c.P(x + 1, 22, LEAF[2])
+    front(v)
+    # 片流れ 나무 지붕 윗면(y0~21 ≈ 1.5칸): 뒤(위)가 높고 앞(아래)으로 흘러내린다.
+    # 널판은 경사 따라 세로(판마다 명암·이음 그늘), 7줄마다 겹친 판 끝(빛 + 그늘), 위쪽 빛 → 처마 쪽 그늘, 이끼
+    for y in range(0, 10 + D):
         for x in range(0, 48):
             pl = x // 3
-            lv = 0.4 + (y * 0.18) + (H(pl, 0, 74) - 0.5) * 1.2 + (x / 48) * 0.6 + (1.6 if x % 3 == 2 else 0)
-            if y >= 8:
-                lv = 3.0 + (y - 8) * 0.8
+            lv = 0.4 + (y * 0.07) + (H(pl, y // 7, 74) - 0.5) * 1.2 + (x / 48) * 0.6 + (1.6 if x % 3 == 2 else 0)
+            if y % 7 == 6:
+                lv += 1.3                                         # 겹친 판 밑 그늘
+            elif y % 7 == 0 and y > 0:
+                lv -= 0.6                                         # 겹친 판 끝 빛
+            if y >= 8 + D:
+                lv = 3.0 + (y - 8 - D) * 0.8                      # 앞 처마 판(측면 두께)
             c.P(x, y, pick(CEDAR, lv, x, y))
     c.HL(0, 0, 48, CEDAR[0])
-    speck(c, 0, 1, 48, 6, J('moss', 2), 0.05, 75)                 # 지붕 이끼
-    finish(c, [(3, 47, 31, 1, SHADOW, 0)])
+    speck(c, 0, 1, 48, 6 + D, J('moss', 2), 0.05, 75)              # 지붕 이끼
+    finish(c, [(3, 47, 31 + D, 2, SHADOW, 0)])
 
 
 # ═══════════════════════════ 물·담·다리 ═══════════════════════════
