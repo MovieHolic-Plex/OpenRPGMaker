@@ -28,6 +28,9 @@ const SPECIES_NAMES: Readonly<Record<string, string>> = {
   mx_species_rivulet: "아쿠링",
   mx_species_tideling: "마린웨이",
   mx_species_abyssal: "네레이드",
+  // 헤라크로스와 한 글자 차이라 겹치던 이름 — 과수원 딱정벌레.
+  mx_species_orchardant: "과수뿔",
+  mx_enemy_orchardant: "과수뿔",
 };
 
 const PLACE = {
@@ -85,7 +88,7 @@ function fixJosa(text: string, names: readonly string[]): string {
   return next;
 }
 
-const JOSA_NAMES = [...new Set(NAME_SWAPS.map(([, to]) => to)), "토리프", "파이린", "아쿠링"];
+const JOSA_NAMES = [...new Set(NAME_SWAPS.map(([, to]) => to)), "토리프", "파이린", "아쿠링", "과수뿔"];
 
 function rewriteStrings(value: unknown, rewrite: (text: string) => string): void {
   if (Array.isArray(value)) {
@@ -481,7 +484,7 @@ function rescaleEnemy(enemy: Project["database"]["enemies"][number], level: numb
 /**
  * 생성기 기본값 위에서 난도·속도를 맞춘다 — 트레이너와 거의 다 싸우는 보통 플레이어가 15~20분에 엔딩.
  * - 연구소 라이벌의 포포비는 첫 턴부터 풀 스타터에 두 배인 벌레 기술을 써서 2턴에 졌다(2026-10-20 실측) → 몸통 기술만.
- * - 실바나 체육관은 수련생 셋·관장 모두 플레이어 스타터 토리프였다 → 같은 풀 계열 다른 종(베르카부·브램보어·헤라크론).
+ * - 실바나 체육관은 수련생 셋·관장 모두 플레이어 스타터 토리프였다 → 같은 풀 계열 다른 종(베르카부·브램보어·과수뿔).
  * - 신전 보스 4마리·챔피언 6마리는 배지 하나짜리 데모에 길다 → 3마리·4마리.
  */
 function tunePacing(project: Project): void {
