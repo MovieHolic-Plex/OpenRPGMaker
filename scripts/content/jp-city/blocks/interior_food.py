@@ -237,12 +237,12 @@ def _(c):
     yb = 16
     steam(c, 5, 5, 3); steam(c, 11, 3, 4)
     for x0, w in ((1, 7), (8, 7)):
-        c.R(x0, 8, w, 12, K('conc', 1)); c.VL(x0, 8, 12, K('conc', 3)); c.VL(x0 + w - 1, 8, 12, K('conc', -1))
-        c.HL(x0, 8, w, K('shiro', 2)); c.HL(x0, 9, w, K('conc', 2)); c.HL(x0, 19, w, K('conc', -2))
-        c.VL(x0 - 1 if x0 > 1 else 0, 11, 2, K('tekko', 0)) if x0 > 1 else None
-        c.R(x0 + 1, 6, w - 2, 2, K('conc', 0)); c.HL(x0 + 1, 6, w - 2, K('conc', 2))                               # 뚜껑
-        c.P(x0 + w // 2, 5, K('tekko', -1))
-        c.HL(x0, 12, w, K('conc', 0))
+        c.R(x0, 9, w, 11, K('conc', 1)); c.VL(x0, 9, 11, K('conc', 3)); c.VL(x0 + w - 1, 9, 11, K('conc', -1))
+        c.HL(x0, 19, w, K('conc', -2))
+        c.VL(x0 - 1 if x0 > 1 else 0, 12, 2, K('tekko', 0)) if x0 > 1 else None
+        c.HL(x0, 13, w, K('conc', 0))
+        ell(c, x0 + w / 2, 8, w / 2, 2.7, 'conc')                                                                  # 솥 테 + 뚜껑 윗면(타원)
+        c.P(x0 + w // 2, 7, K('tekko', 1)); c.P(x0 + w // 2, 8, K('tekko', -1))                                    # 꼭지
     c.R(0, yb + 4, 16, 11, K('tekko', 0)); c.HL(0, yb + 4, 16, K('tekko', 2)); c.HL(0, yb + 5, 16, K('tekko', 1))
     c.VL(0, yb + 4, 11, K('tekko', 2)); c.VL(15, yb + 4, 11, K('tekko', -2))
     for x in (4, 11): ell(c, x, yb + 9, 2.2, 2.2, 'tekko', ol=True, hi=False); c.P(x, yb + 9, K('daidai', 1))     # 화구 불빛
@@ -278,11 +278,13 @@ def _(c):
 
 @O('fd-fridge', '업소용 냉장고', w=1, h=2, up=0, kind='wall', use=('open',), desc='스테인리스 업소용 냉장고(2칸 높이). 문 두 짝 + 긴 손잡이 + 온도 표시등.', tags=('주방', '냉장'))
 def _(c):
-    c.R(1, 1, 14, 31, K('conc', 2)); box(c, 1, 1, 14, 31, K('conc', -3))
-    c.HL(2, 2, 12, K('shiro', 3)); c.VL(2, 2, 29, K('conc', 3)); c.VL(13, 3, 28, K('conc', 1))
-    c.R(3, 3, 10, 3, K('conc', 0)); c.HL(3, 3, 10, K('conc', 1)); c.P(4, 4, K('midori', 1)); c.P(5, 4, K('midori', 1)); c.P(11, 4, K('aka', 0))
-    c.HL(2, 7, 12, K('conc', -2))
-    c.VL(8, 8, 22, K('conc', -2)); c.VL(7, 8, 22, K('conc', 3))
+    c.R(1, 0, 14, 32, K('conc', 2)); box(c, 1, 0, 14, 32, K('conc', -3))
+    c.R(2, 1, 12, 4, K('conc', 3)); c.HL(2, 1, 12, K('shiro', 3)); c.HL(4, 3, 8, K('conc', 2))          # 윗면 4줄(스테인리스, 가장 밝게)
+    c.HL(2, 5, 12, K('conc', -1))                                                                        # 앞 모서리
+    c.VL(2, 6, 24, K('conc', 3)); c.VL(13, 6, 24, K('conc', 1))
+    c.R(3, 6, 10, 3, K('conc', 0)); c.HL(3, 6, 10, K('conc', 1)); c.P(4, 7, K('midori', 1)); c.P(5, 7, K('midori', 1)); c.P(11, 7, K('aka', 0))
+    c.HL(2, 9, 12, K('conc', -2))
+    c.VL(8, 10, 20, K('conc', -2)); c.VL(7, 10, 20, K('conc', 3))
     for x in (6, 9):
         c.VL(x, 14, 8, K('tekko', 1) if x == 6 else K('tekko', -2))
     c.HL(1, 30, 14, K('tekko', 0)); c.R(1, 31, 14, 1, K('tekko', -3))
@@ -292,8 +294,10 @@ def _(c):
 @O('fd-sake-shelf', '술병 선반', w=2, h=1, up=16, kind='wall', use=('search',), desc='나무 선반장 가득한 술병(초록·남·흰·붉은 라벨 띠). 아래는 수납 문.', tags=('이자카야', '술'))
 def _(c):
     W = 32; yb = 16
-    c.R(0, 2, W, 30, K('ita', -1)); c.VL(0, 2, 30, K('ita', 1)); c.VL(W - 1, 2, 30, K('ita', -3)); c.HL(0, 2, W, K('ita', 1))
-    c.R(2, 4, W - 4, 22, K('ita', -3))
+    c.R(0, 0, W, 32, K('ita', -1)); c.VL(0, 0, 32, K('ita', 1)); c.VL(W - 1, 0, 32, K('ita', -3))
+    c.HL(0, 0, W, K('ita', -3)); c.R(1, 1, W - 2, 3, K('ita', 1)); c.HL(1, 1, W - 2, K('ita', 2))          # 선반장 윗면 3줄
+    c.HL(5, 2, 7, K('ita', 0)); c.HL(19, 3, 6, K('ita', 0)); c.HL(1, 4, W - 2, K('ita', -2))              # 나뭇결 · 앞 모서리
+    c.R(2, 5, W - 4, 21, K('ita', -3))
     cols = ['midori', 'kon', 'shiro', 'aka', 'midori', 'kon', 'kii', 'shiro']
     for sy in (4, 15):
         for i in range(7):
@@ -311,18 +315,20 @@ def _(c):
 # ───────────────────────── 손님 쪽 소품 ─────────────────────────
 @O('fd-ticket-machine', '식권 자판기', w=1, h=1, up=16, kind='floor', surface=False, use=('counter',), desc='라멘집 식권기(벽에 붙여 세우는 상자형). 은회색 몸통, 위쪽에 작은 색 버튼이 촘촘한 격자(글자 없음), 중간에 지폐 투입 슬롯, 아래에 식권이 나오는 어두운 출구.', tags=('라멘', '식권'))
 def _(c):
-    c.R(1, 2, 14, 29, K('conc', 1)); box(c, 1, 2, 14, 29, K('conc', -3)); c.HL(2, 3, 12, K('conc', 3)); c.VL(2, 3, 27, K('conc', 2)); c.VL(13, 4, 26, K('conc', -1))
-    c.R(3, 5, 10, 14, K('conc', -2)); box(c, 3, 5, 10, 14, K('sumi', 1))                                # 버튼 패널(어두운 판)
+    c.R(1, 0, 14, 31, K('conc', 1)); box(c, 1, 0, 14, 31, K('conc', -3))
+    c.R(2, 1, 12, 4, K('conc', 2)); c.HL(2, 1, 12, K('conc', 3)); c.HL(2, 5, 12, K('conc', -1))          # 윗면 4줄 + 앞 모서리
+    c.VL(2, 6, 24, K('conc', 2)); c.VL(13, 6, 24, K('conc', -1))
+    c.R(3, 7, 10, 14, K('conc', -2)); box(c, 3, 7, 10, 14, K('sumi', 1))                                # 버튼 패널(어두운 판)
     cols = ('shiro', 'kii', 'midori', 'sora', 'daidai', 'pinku', 'aka')
     for r in range(6):
         for q in range(4):
             col = cols[(r * 2 + q * 3 + (r // 2)) % len(cols)]
-            x, y = 4 + q * 2 + (0 if q < 4 else 0), 6 + r * 2
+            x, y = 4 + q * 2, 8 + r * 2
             c.R(x, y, 1, 1, K(col, 1)); c.P(x + 1, y, K('sumi', 2))
-    c.R(4, 20, 8, 3, K('conc', 0)); box(c, 4, 20, 8, 3, K('conc', -3))                                  # 지폐 투입구 둘레
-    c.R(5, 21, 6, 1, K('sumi', -2)); c.HL(5, 21, 6, K('sumi', -2))
-    c.R(4, 24, 8, 5, K('tekko', -2)); box(c, 4, 24, 8, 5, K('sumi', -2)); c.HL(5, 25, 6, K('sumi', -3))   # 식권 출구
-    c.R(6, 27, 4, 2, K('shiro', 1)); c.HL(6, 27, 4, K('shiro', 3))                                       # 나오는 식권
+    c.R(4, 22, 8, 3, K('conc', 0)); box(c, 4, 22, 8, 3, K('conc', -3))                                  # 지폐 투입구 둘레
+    c.HL(5, 23, 6, K('sumi', -2))
+    c.R(4, 25, 8, 5, K('tekko', -2)); box(c, 4, 25, 8, 5, K('sumi', -2)); c.HL(5, 26, 6, K('sumi', -3))   # 식권 출구
+    c.R(6, 28, 4, 1, K('shiro', 1)); c.HL(6, 27, 4, K('shiro', 3))                                       # 나오는 식권
     c.R(2, 31, 12, 1, K('conc', -3))
 
 
@@ -354,14 +360,16 @@ def _(c):
 def _(c):
     yb = 16
     # 유리 상자: 위 테두리(철) + 뒤판 + 앞유리, 안에 네타 3줄
-    c.R(1, 3, 14, 11, K('garasu', 1)); box(c, 1, 3, 14, 11, K('tekko', -2))
-    c.R(2, 4, 12, 2, K('garasu', 3)); c.HL(2, 4, 12, K('shiro', 1))
+    c.R(1, 0, 14, 14, K('garasu', 1)); box(c, 1, 0, 14, 14, K('tekko', -2))
+    c.R(2, 1, 12, 4, K('garasu', 3)); c.HL(2, 1, 12, K('shiro', 1))                                      # 윗면 유리판 4줄
+    c.P(4, 2, K('shiro', 2)); c.P(5, 3, K('shiro', 2)); c.P(11, 2, K('shiro', 1))                        # 유리 반사
+    c.HL(2, 5, 12, K('tekko', 0))                                                                        # 앞 모서리(철 테)
     c.R(2, 6, 12, 6, K('garasu', 2))
     for i, col in enumerate(('aka', 'pinku', 'kinari', 'aka')):
         x = 3 + i * 3
         c.R(x, 8, 3, 2, K('shiro', 0)); c.R(x, 7, 3, 2, K(col, 0)); c.HL(x, 7, 3, K(col, 2)); c.HL(x, 9, 3, K(col, -2))
     c.HL(2, 10, 12, K('tekko', 1))
-    c.R(2, 11, 12, 2, K('garasu', 0)); c.HL(2, 11, 12, K('shiro', 2)); c.VL(2, 4, 8, K('shiro', 2))
+    c.R(2, 11, 12, 2, K('garasu', 0)); c.HL(2, 11, 12, K('shiro', 2)); c.VL(2, 6, 6, K('shiro', 2))
     c.R(1, 13, 14, 2, K('tekko', 0)); c.HL(1, 13, 14, K('tekko', 2)); c.HL(1, 14, 14, K('tekko', -2))
     # 나무 카운터
     c.R(0, yb, 16, 5, K('yuka', 1)); c.HL(0, yb, 16, K('yuka', 2)); c.HL(0, yb + 4, 16, K('yuka', -2))
@@ -556,18 +564,18 @@ def _(c):
 @O('fd-coffee-machine', '에스프레소 머신', w=1, h=1, up=16, kind='floor', surface=False, use=('counter',), desc='카운터 위 스테인리스 에스프레소 머신 — 붉은 띠, 압력계, 추출구 아래 잔 두 개, 위에 포개 둔 잔.', tags=('킷사텐', '커피', '카페'))
 def _(c):
     # 위에 포개 둔 잔
-    for x in (3, 8):
-        c.R(x, 1, 4, 2, K('shiro', 1)); box(c, x, 1, 4, 2, K('conc', -2)); c.HL(x + 1, 1, 2, K('shiro', 3))
-    # 몸통
-    c.R(1, 3, 14, 11, st(0)); box(c, 1, 3, 14, 11, st(-3)); c.HL(2, 4, 12, st(3)); c.VL(2, 4, 9, st(2)); c.VL(13, 4, 9, st(-2))
-    c.R(3, 5, 10, 2, K('aka', 0)); c.HL(3, 5, 10, K('aka', 2)); c.HL(3, 6, 10, K('aka', -2))
-    # 압력계 + 버튼
-    c.R(7, 7, 2, 2, K('shiro', 1)); box(c, 7, 7, 2, 2, K('sumi', -1)); c.P(8, 8, K('aka', 0))
-    c.P(4, 8, K('midori', 1)); c.P(11, 8, K('kii', 1))
+    # 몸통 + 윗면 4줄(데우는 판)
+    c.R(1, 1, 14, 13, st(0)); box(c, 1, 1, 14, 13, st(-3))
+    c.R(2, 2, 12, 4, st(2)); c.HL(2, 2, 12, st(3)); c.HL(2, 6, 12, st(-2))                               # 윗면 + 앞 모서리
+    c.VL(2, 7, 6, st(2)); c.VL(13, 7, 6, st(-2))
+    for x in (3, 8):                                                                                   # 윗면에 포개 둔 잔(엎어 둠)
+        c.R(x, 2, 4, 3, K('shiro', 1)); box(c, x, 2, 4, 3, K('conc', -2)); c.HL(x + 1, 2, 2, K('shiro', 3))
+    c.HL(3, 7, 10, K('aka', 1)); c.HL(3, 8, 10, K('aka', -2)); c.P(3, 7, K('aka', 2))                    # 붉은 띠
+    c.P(5, 7, K('midori', 1)); c.P(8, 7, K('shiro', 2)); c.P(11, 7, K('kii', 1))                         # 압력계 · 버튼
     # 추출구 홈 + 잔
     c.R(3, 9, 10, 4, K('sumi', 0)); c.HL(3, 9, 10, K('sumi', -1))
     for x in (4, 9):
-        c.R(x + 1, 9, 2, 2, K('tekko', 1)); c.P(x + 1, 11, K('ita', 0))
+        c.R(x + 1, 9, 2, 1, K('tekko', 1)); c.P(x + 1, 10, K('ita', 0))
         c.R(x, 11, 4, 2, K('shiro', 0)); c.HL(x, 11, 4, K('ita', -2)); c.HL(x, 12, 4, K('conc', -1)); c.P(x, 11, K('ita', 0))
     # 스팀 완드
     c.VL(14, 7, 6, K('tekko', 1)); c.P(14, 13, K('tekko', 3))

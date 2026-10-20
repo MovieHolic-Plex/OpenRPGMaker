@@ -104,9 +104,9 @@ def kitchen_stove(c):
        tags=('부엌', '주방'), place='북쪽 벽면 아래, 붙박이 줄 끝', pair=('kitchen-worktop',))
 def fridge(c):
     o = K('conc', -3)
-    c.R(2, 0, 12, 4, K('shiro', 2)); c.HL(2, 0, 12, K('shiro', 2)); c.HL(2, 3, 12, K('shiro', -1))
-    c.R(2, 4, 12, 28, K('shiro', 1)); c.VL(2, 4, 28, K('shiro', 2)); c.VL(3, 6, 25, K('shiro', 2)); c.VL(13, 4, 28, K('shiro', -1))
-    c.HL(2, 4, 12, K('shiro', 2)); c.HL(2, 5, 12, K('shiro', -1))
+    c.R(2, 6, 12, 26, K('shiro', 1)); c.VL(2, 6, 26, K('shiro', 2)); c.VL(3, 8, 23, K('shiro', 2)); c.VL(13, 6, 26, K('shiro', -1))
+    c.R(2, 1, 12, 5, K('shiro', 2)); c.HL(2, 1, 12, K('shiro', 3)); c.HL(4, 3, 8, K('shiro', 1))          # 윗면 5줄(가장 밝게) + 이음
+    c.HL(2, 6, 12, K('shiro', -1)); c.HL(2, 7, 12, K('shiro', 2))                                        # 앞 모서리 · 문 윗날
     c.HL(2, 14, 12, K('conc', -2)); c.HL(2, 15, 12, K('shiro', 2))                                  # 냉동/냉장 이음
     c.R(3, 29, 10, 3, K('tekko', -2)); c.HL(3, 29, 10, K('tekko', 0))                               # 발받침
     for y0, h in ((8, 4), (19, 8)):                                                                 # 손잡이
@@ -120,18 +120,19 @@ def fridge(c):
 def microwave_rack(c):
     m = 'tekko'
     for y0 in (19, 31, 43):                                                                          # 선반 3단 (윗면+앞 테두리)
-        c.R(1, y0, 14, 3, K(m, 2)); c.HL(1, y0, 14, K(m, 3)); c.HL(1, y0 + 2, 14, K(m, -1))
+        c.R(1, y0, 14, 4, K(m, 2)); c.HL(1, y0, 14, K(m, 3)); c.HL(1, y0 + 3, 14, K(m, -1))
     c.R(1, 21, 2, 27, K(m, 0)); c.VL(1, 19, 29, K(m, 2)); c.R(13, 21, 2, 27, K(m, -1)); c.VL(14, 19, 29, K(m, -2))   # 기둥
     c.HL(1, 47, 14, K(m, -3)); c.P(1, 47, K(m, -3))
     # 전자레인지(맨 위)
-    c.R(3, 10, 10, 9, K('shiro', 1)); c.HL(3, 10, 10, K('shiro', 2)); c.HL(3, 11, 10, K('shiro', -1)); box(c, 3, 10, 10, 9, K('conc', -3))
-    c.R(4, 12, 6, 5, K('yoru', -1)); c.HL(4, 12, 6, K('yoru', 1)); c.VL(11, 12, 5, K('conc', -2)); c.P(12, 13, K('conc', 1))
+    c.R(3, 7, 10, 13, K('shiro', 1)); box(c, 3, 7, 10, 13, K('conc', -3))
+    c.R(4, 8, 8, 4, K('shiro', 2)); c.HL(4, 8, 8, K('shiro', 3)); c.HL(4, 12, 8, K('shiro', -1))          # 레인지 윗면 4줄 + 앞 모서리
+    c.R(4, 13, 6, 5, K('yoru', -1)); c.HL(4, 13, 6, K('yoru', 1)); c.VL(11, 13, 5, K('conc', -2)); c.P(12, 14, K('conc', 1))
     # 중간 칸: 밥솥 상자·바구니
-    c.R(4, 24, 5, 7, K('shiro', 0)); box(c, 4, 24, 5, 7, K('conc', -3)); c.HL(4, 24, 5, K('shiro', 2)); c.P(6, 26, K('aka', 0))
-    c.R(10, 26, 3, 5, K('ki', 0)); box(c, 10, 26, 3, 5, K('ki', -3)); c.HL(10, 26, 3, K('ki', 2))
+    c.R(4, 24, 5, 7, K('shiro', 0)); box(c, 4, 24, 5, 7, K('conc', -3)); c.R(5, 25, 3, 2, K('shiro', 2)); c.P(6, 28, K('aka', 0))
+    c.R(10, 26, 3, 5, K('ki', 0)); box(c, 10, 26, 3, 5, K('ki', -3)); c.P(11, 27, K('ki', -2))
     # 아래 칸: 바구니 두 개
-    c.R(4, 37, 4, 6, K('sora', 0)); box(c, 4, 37, 4, 6, K('sora', -2)); c.HL(4, 37, 4, K('sora', 2))
-    c.R(9, 38, 4, 5, K('midori', 0)); box(c, 9, 38, 4, 5, K('midori', -2)); c.HL(9, 38, 4, K('midori', 2))
+    c.R(4, 37, 4, 6, K('sora', 0)); box(c, 4, 37, 4, 6, K('sora', -2)); c.HL(5, 38, 2, K('sora', -2)); c.HL(5, 39, 2, K('sora', 2))
+    c.R(9, 38, 4, 5, K('midori', 0)); box(c, 9, 38, 4, 5, K('midori', -2)); c.HL(10, 39, 2, K('midori', -2)); c.HL(10, 40, 2, K('midori', 2))
 
 
 @R.obj('cupboard', '식기장', 1, 2, up=0, kind='wall', use=('open',),
@@ -139,11 +140,11 @@ def microwave_rack(c):
        tags=('부엌', '다이닝'), place='북쪽 벽면 아래, 냉장고 옆이나 식탁 쪽 벽', pair=('dining',))
 def cupboard(c):
     m = 'ki'; o = K(m, -3)
-    c.R(2, 0, 12, 4, K(m, 2)); c.HL(2, 0, 12, K(m, 3)); c.HL(2, 3, 12, K(m, -1))
-    c.R(2, 4, 12, 28, K(m, 1)); c.VL(2, 4, 28, K(m, 3)); c.VL(13, 4, 28, K(m, -1))
-    c.HL(2, 4, 12, K(m, 3)); c.HL(2, 5, 12, K(m, -2))
+    c.R(2, 7, 12, 25, K(m, 1)); c.VL(2, 7, 25, K(m, 3)); c.VL(13, 7, 25, K(m, -1))
+    c.R(2, 1, 12, 5, K(m, 2)); c.HL(2, 1, 12, K(m, 3)); c.HL(4, 3, 5, K(m, 1)); c.HL(9, 4, 4, K(m, 1))   # 윗면 5줄 + 나뭇결
+    c.HL(2, 6, 12, K(m, -2)); c.HL(2, 7, 12, K(m, 3))                                                    # 앞 모서리 · 앞판 윗날
     # 유리문(위)
-    c.R(4, 7, 8, 13, K('garasu', 1)); box(c, 4, 7, 8, 13, K(m, -2)); c.VL(7, 8, 11, K(m, -2)); c.VL(8, 8, 11, K(m, 2))
+    c.R(4, 8, 8, 12, K('garasu', 1)); box(c, 4, 8, 8, 12, K(m, -2)); c.VL(7, 9, 10, K(m, -2)); c.VL(8, 9, 10, K(m, 2))
     for x0 in (5, 9):                                                                               # 접시 쌓임 + 그릇
         c.HL(x0, 10, 2, K('shiro', 2)); c.HL(x0, 11, 2, K('sora', 0)); c.HL(x0, 15, 2, K('shiro', 2)); c.HL(x0, 16, 2, K('shiro', -1))
         c.R(x0, 17, 2, 2, K('daidai', 0)); c.P(x0, 17, K('daidai', 2))
@@ -159,10 +160,12 @@ def cupboard(c):
        desc='분리수거용 쓰레기통 세 개(파랑·초록·노랑 뚜껑). 부엌 구석에 놓는다.',
        tags=('부엌',), place='부엌 줄 끝이나 문 옆 바닥')
 def trash_bins(c):
-    for x0, m in ((1, 'sora'), (6, 'midori'), (11, 'kii')):
-        c.R(x0, 6, 4, 3, K(m, 2)); c.HL(x0, 6, 4, K(m, 2)); box(c, x0, 6, 4, 3, K(m, -2)); c.HL(x0 + 1, 7, 2, K(m, 2))     # 뚜껑 윗면
-        c.R(x0, 9, 4, 6, K(m, 0)); c.VL(x0, 9, 6, K(m, 2)); c.VL(x0 + 3, 9, 6, K(m, -1)); c.HL(x0, 14, 4, K(m, -2))
-        c.HL(x0, 9, 4, K(m, -1)); c.P(x0 + 1, 11, K('shiro', 2))                                                           # 뚜껑 밑 그늘·표시 점
+    for x0, m in ((0, 'sora'), (5, 'midori'), (10, 'kii')):
+        box(c, x0, 3, 6, 6, K(m, -2)); c.R(x0 + 1, 4, 4, 4, K(m, 2)); c.HL(x0 + 1, 4, 4, K(m, 2))               # 뚜껑 윗면 4줄
+        c.HL(x0 + 2, 5, 2, K(m, -2)); c.HL(x0 + 2, 6, 2, K(m, 0))                                              # 넣는 구멍
+        c.R(x0, 9, 6, 6, K(m, 0)); c.VL(x0, 9, 6, K(m, -2)); c.VL(x0 + 5, 9, 6, K(m, -2)); c.HL(x0, 14, 6, K(m, -2))
+        c.VL(x0 + 1, 9, 5, K(m, 1)); c.VL(x0 + 4, 9, 5, K(m, -1))
+        c.HL(x0 + 1, 9, 4, K(m, -1)); c.P(x0 + 2, 11, K('shiro', 2))                                           # 뚜껑 밑 그늘·표시 점
 
 
 # ───────────────────────── 다이닝 ─────────────────────────
@@ -317,18 +320,18 @@ def houseplant(c):
        tags=('거실', '서재'), place='북쪽 벽면 아래')
 def bookshelf(c):
     m = 'ki'; o = K(m, -3)
-    c.R(2, 0, 12, 4, K(m, 2)); c.HL(2, 0, 12, K(m, 3)); c.HL(2, 3, 12, K(m, -1))
-    c.R(2, 4, 12, 28, K(m, 1)); c.VL(2, 4, 28, K(m, 3)); c.VL(13, 4, 28, K(m, -1)); c.HL(2, 4, 12, K(m, 3)); c.HL(2, 5, 12, K(m, -2))
+    c.R(2, 6, 12, 26, K(m, 1)); c.VL(2, 6, 26, K(m, 3)); c.VL(13, 6, 26, K(m, -1))
+    c.R(2, 1, 12, 5, K(m, 2)); c.HL(2, 1, 12, K(m, 3)); c.HL(4, 3, 5, K(m, 1)); c.HL(9, 4, 4, K(m, 1))   # 윗면 5줄 + 나뭇결
+    c.HL(2, 6, 12, K(m, -2))                                                                             # 앞 모서리
     spines = ['aka', 'sora', 'midori', 'kii', 'murasaki', 'daidai', 'kinari', 'kon', 'aka', 'midori', 'sora', 'kii']
-    for r, y0 in enumerate((6, 12, 18, 24)):
+    for r, y0 in enumerate((7, 13, 19, 25)):
         c.R(4, y0, 8, 5, K(m, -3)); c.HL(4, y0, 8, K(m, -2))                                         # 칸 속(어둡게)
         x = 4; n = r * 3
         while x < 12:
             wd = 1 if (n + r) % 3 else 2; hh = 4 - ((n * 7 + r) % 2)
             if x + wd > 12: break
             c.R(x, y0 + 5 - hh, wd, hh, K(spines[n % len(spines)], 0)); c.P(x, y0 + 5 - hh, K(spines[n % len(spines)], 2)); x += wd; n += 1
-        c.HL(3, y0 + 5, 10, K(m, 2)); c.HL(3, y0 + 6, 10, K(m, -1))                                  # 선반 판
-    c.R(3, 29, 10, 3, K('tekko', -2)); c.HL(3, 29, 10, K('tekko', 0))
+        c.HL(3, y0 + 5, 10, K(m, 2)); c.HL(3, y0 + 6, 10, K(m, -1))                                  # 선반 판(맨 아래는 굽)
     c.VL(1, 1, 31, o); c.VL(14, 1, 31, o); c.HL(2, 0, 12, o)
 
 
