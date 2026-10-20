@@ -1,17 +1,19 @@
 // start/settings/localAgents.ts
 // 설정 화면 「AI 엔진·모델」이 읽는 로컬 에이전트 백엔드의 얼굴.
 //
-// 백엔드는 PR #3072(agent/assistant-claude-p)가 짓는다(동반 서비스):
+// 백엔드(동반 서비스, scripts/lib/localCliAgent/):
 //   GET  /v1/local-agents[?fresh=1]   → { clis: LocalCliStatus[], recommended?: "claude"|"codex"|"gemini" }  (30초 캐시, fresh 로 우회)
 //   POST /v1/local-agents/health {cli} → 그 프로그램으로 아주 짧은 「OK」 왕복 한 번
-// 이 모듈은 그 모양만 안다(타입을 복사해 둔다 — 그쪽 src/ai/localCliEngine.ts · scripts/lib/localCliAgent/types.ts 가 정본). 합쳐지기 전에는
-// 깃발(oprn:flag:local-agents=1 또는 ?localAgents=1)이 꺼져 있어 아무 요청도 보내지 않고, 화면은 「곧 켜져요」로 둔다.
-// 엔진 선택 저장 키·모양은 그쪽 src/ai/localCliEngine.ts 와 같다(oprn:assistant-engine) — 고른 값은 조수가 그대로 읽는다.
-//
-// 첫 화면 번들을 키우지 않게 이 파일은 아무것도 가져오지 않는다(동반 서비스 주소·토큰은 window 에서 직접 읽는다).
+// 응답 모양은 scripts/lib/localCliAgent/types.ts 가 정본이다(Node 전용 모듈이라 여기 모양만 옮겨 둔다).
+// 엔진 선택 저장·해석은 조수가 읽는 src/ai/localCliEngine.ts 하나를 쓴다(그 모듈은 타입 말고 아무것도 가져오지 않아 첫 화면 번들이 늘지 않는다).
+// 고르는 것은 여전히 opt-in 이다 — 고르지 않으면(또는 「원래 AI 연결로 되돌리기」) 기존 엔진이다.
 
-export type LocalCliId = "claude" | "codex" | "gemini";
-export const LOCAL_CLI_IDS: readonly LocalCliId[] = ["claude", "codex", "gemini"];
+import { ASSISTANT_ENGINE_STORAGE_KEY, LOCAL_CLI_ENGINE_IDS, loadAssistantEngine, saveAssistantEngine, type AssistantEngineChoice, type LocalCliEngineId } from "@/ai/localCliEngine";
+
+export { ASSISTANT_ENGINE_STORAGE_KEY, type AssistantEngineChoice };
+
+export type LocalCliId = LocalCliEngineId;
+export const LOCAL_CLI_IDS: readonly LocalCliId[] = LOCAL_CLI_ENGINE_IDS;
 
 export type LocalCliModel = { readonly id: string; readonly label: string; readonly roles?: readonly ("routine" | "deep")[] };
 
@@ -45,16 +47,6 @@ export type LocalAgentsApi = {
   health(id: LocalCliId): Promise<HealthResult>;
 };
 
-/** 고른 엔진 — #3072 AssistantEngineChoice 와 같은 저장 모양. 비우면 기존 엔진(편집기의 AI 연결)이다. */
-export type AssistantEngineChoice = {
-  readonly kind: "local-cli";
-  readonly cli: LocalCliId;
-  readonly routineModel?: string;
-  readonly deepModel?: string;
-  readonly effort?: "low" | "medium" | "high";
-};
-
-export const ASSISTANT_ENGINE_STORAGE_KEY = "oprn:assistant-engine";
 export const LOCAL_AGENTS_FLAG_KEY = "oprn:flag:local-agents";
 
 function storage(): Storage | null {
@@ -65,46 +57,23 @@ function query(name: string): string | null {
   try { return typeof location === "undefined" ? null : new URLSearchParams(location.search).get(name); } catch { return null; }
 }
 
-/**
- * 백엔드(/v1/local-agents, PR #3072)가 이 빌드에 들어 있는가. 들어오기 전에는 깃발·주소 인자가 있어도 **요청을 보내지 않는다** —
- * 없는 경로를 부르면 동반 서비스가 404 를 돌려주고 화면은 «목록을 읽지 못했어요» 가 된다. #3072 가 합쳐질 때 true 로 바꾼다.
- */
-export const LOCAL_AGENTS_BACKEND_AVAILABLE = false;
+/** 백엔드(/v1/local-agents)가 이 빌드에 들어 있는가 — #3072 로 들어왔다. 끄면 깃발이 있어도 요청을 보내지 않는다(없는 경로는 404). */
+export const LOCAL_AGENTS_BACKEND_AVAILABLE = true;
 
-/** 백엔드가 있고 깃발이 켜졌을 때만 켠다. 그 전에는 화면만 「준비 중」으로 보이고 요청은 보내지 않는다(목업은 예외 — 요청 없음). */
+/** 감지를 켤지. 기본으로 켠다 — 화면 확인용 깃발 값 "0" 으로만 끈다(감지는 상태 명령뿐이라 싸다). 목업은 요청 없이 항상 켠다. */
 export function localAgentsEnabled(): boolean {
   if (query("localAgentsMock") === "1") return true;
   if (!LOCAL_AGENTS_BACKEND_AVAILABLE) return false;
-  if (query("localAgents") === "1") return true;
-  return storage()?.getItem(LOCAL_AGENTS_FLAG_KEY) === "1";
+  if (query("localAgents") === "0") return false;
+  return storage()?.getItem(LOCAL_AGENTS_FLAG_KEY) !== "0";
 }
 
 export function loadEngineChoice(): AssistantEngineChoice | null {
-  const raw = storage()?.getItem(ASSISTANT_ENGINE_STORAGE_KEY);
-  if (!raw) return null;
-  try {
-    const value = JSON.parse(raw) as Partial<AssistantEngineChoice>;
-    if (value?.kind !== "local-cli" || !LOCAL_CLI_IDS.includes(value.cli as LocalCliId)) return null;
-    const text = (v: unknown): string | undefined => (typeof v === "string" && v.trim() ? v.trim() : undefined);
-    const routineModel = text(value.routineModel);
-    const deepModel = text(value.deepModel);
-    return {
-      kind: "local-cli", cli: value.cli as LocalCliId,
-      ...(routineModel ? { routineModel } : {}), ...(deepModel ? { deepModel } : {}),
-      ...(value.effort === "low" || value.effort === "medium" || value.effort === "high" ? { effort: value.effort } : {}),
-    };
-  } catch {
-    return null;
-  }
+  return loadAssistantEngine() ?? null;
 }
 
 export function saveEngineChoice(choice: AssistantEngineChoice | null): void {
-  const store = storage();
-  if (!store) return;
-  try {
-    if (choice) store.setItem(ASSISTANT_ENGINE_STORAGE_KEY, JSON.stringify(choice));
-    else store.removeItem(ASSISTANT_ENGINE_STORAGE_KEY);
-  } catch { /* 저장을 못 해도 이번 화면은 그대로 */ }
+  try { saveAssistantEngine(choice ?? undefined); } catch { /* 저장을 못 해도 이번 화면은 그대로 */ }
 }
 
 /** 동반 서비스 주소. 데스크톱은 preload 가 준 값(chatgptOAuthClient 의 companionOrigin 과 같은 규칙), 없으면 같은 오리진. */
@@ -148,7 +117,7 @@ export function mockLocalAgentsApi(): LocalAgentsApi {
   };
 }
 
-/** 비용 한 줄(#3072 D8 와 같은 규칙). 구독이면 청구가 아니라 한도 사용이다. */
+/** 비용 한 줄(D8 와 같은 규칙, 조수 쪽은 localCliEngine.formatLocalCliCost). 구독이면 청구가 아니라 한도 사용이다. */
 export function costLine(billing: LocalCliStatus["billing"], costUsd?: number): string {
   if (billing === "subscription") return costUsd === undefined ? "구독 한도에서 써요(따로 청구되지 않아요)" : `구독 한도에서 써요 · 환산 $${costUsd.toFixed(2)}(청구 아님)`;
   if (billing === "api") return costUsd === undefined ? "쓴 만큼 키 계정에 청구돼요" : `이번 달 $${costUsd.toFixed(2)}`;
