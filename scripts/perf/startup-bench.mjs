@@ -91,17 +91,31 @@ async function electronRun(projectDir, configHome) {
     if (mainTiming.timing) for (const [key, value] of Object.entries(mainTiming.timing)) t[`main.${key}`] = Math.round(mainTiming.processStart + value - t0);
     const homeBytes = home.resources.reduce((sum, entry) => sum + entry.size, 0);
     t.homeKB = Math.round(homeBytes / 1024);
-    // 편집기: 첫 카드의 편집 단추 → index.html 부팅 → settled.
+    // 편집기: 첫 카드의 편집 단추 → index.html 부팅 → settled. --think 는 사람이 카드를 보고 누르기까지의 시간(기본 0).
+    const think = Number(opt("think", "0"));
+    if (think > 0) await page.waitForTimeout(think);
+    const profileOut = opt("cpuprofile", null);
+    const cdp = profileOut ? await page.context().newCDPSession(page) : null;
+    if (cdp) { await cdp.send("Profiler.enable"); await cdp.send("Profiler.setSamplingInterval", { interval: 500 }); await cdp.send("Profiler.start"); }
     const clickAt = Date.now();
     await page.locator('[data-testid^="start-world-make"]').first().click();
     await page.waitForURL(/index\.html/, { timeout: 60_000 });
     await page.waitForFunction(() => performance.getEntriesByName("oprn:boot:settled").length > 0, null, { timeout: 180_000, polling: 50 });
     const editor = await page.evaluate(pageMarks);
+    if (cdp) { const { profile } = await cdp.send("Profiler.stop"); writeFileSync(profileOut, JSON.stringify(profile)); }
     const navAt = editor.timeOrigin;
     t.editorClick = clickAt - t0;
     t["editor.nav"] = Math.round(navAt - clickAt);
     for (const [name, at] of Object.entries(editor.marks)) t[`editor.${name}`] = Math.round(navAt - clickAt + at);
     t.editorKB = Math.round(editor.resources.reduce((sum, entry) => sum + entry.size, 0) / 1024);
+    // 사용자는 편집하다 자동 저장된다 — 부팅 정규화 표식이 저장돼야 다음 실행이 «웜 부팅»이다. 측정 뒤에 저장해 둔다.
+    // 자동 저장(부팅 정규화 표식 포함)을 기다린다 — 새 빌드의 첫 실행 뒤 다음 실행을 «웜 부팅»으로 만든다.
+    const saveWait = Number(opt("save-wait", "0"));
+    if (saveWait > 0) await page.waitForTimeout(saveWait);
+    // 창 닫기 = 주 프로세스의 flush-before-close → 렌더러가 저장하고 flushDone → 창 파기. 사람이 앱을 닫는 것과 같은 경로다.
+    const closed = page.waitForEvent("close", { timeout: 60_000 }).catch(() => {});
+    await app.evaluate(({ BrowserWindow }) => { for (const window of BrowserWindow.getAllWindows()) window.close(); }).catch(() => {});
+    await closed;
     return { t, homeResources: home.resources, editorResources: editor.resources };
   } finally {
     await Promise.race([app.evaluate(({ app: electronApp }) => electronApp.exit(0)).catch(() => {}), new Promise((r) => setTimeout(r, 3000))]);
@@ -133,7 +147,7 @@ async function webRun(url, profileDir) {
 }
 
 const samples = [];
-const meta = { mode, runs, warmup, startedAt: new Date().toISOString(), load: [], commit: execFileSync("git", ["rev-parse", "--short", "HEAD"], { cwd: REPO, encoding: "utf8" }).trim() };
+const meta = { mode, runs, warmup, think: Number(opt("think", "0")), startedAt: new Date().toISOString(), load: [], commit: execFileSync("git", ["rev-parse", "--short", "HEAD"], { cwd: REPO, encoding: "utf8" }).trim() };
 
 if (mode === "electron") {
   const projectDir = realpathSync(resolve(opt("project", join(homedir(), "fs-bench/fallen-proj"))));

@@ -20,7 +20,8 @@ import { preloadProjectCore } from "./projectCorePreload";
 import type { JoinTeamResult } from "../shared/start";
 
 protocol.registerSchemesAsPrivileged([
-  { scheme: OPRN_APP_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, corsEnabled: true } },
+  // codeCache: 편집기 번들(약 90MB)의 V8 컴파일 결과를 다음 실행에 다시 쓴다(standard 와 함께여야 켜진다).
+  { scheme: OPRN_APP_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, corsEnabled: true, codeCache: true } },
   { scheme: OPRN_ASSET_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, corsEnabled: true } },
 ]);
 
