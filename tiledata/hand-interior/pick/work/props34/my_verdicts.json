@@ -1,0 +1,482 @@
+[
+{
+"id": "cabinet:loaf",
+"mine": "REAL",
+"why": "top plane is 3 rows but painted the same mid-brown as the front posts (no lit top), so it reads as a front cornice band"
+},
+{
+"id": "cabinet:bun",
+"mine": "REAL",
+"why": "top plane is 3 rows but painted the same mid-brown as the front posts (no lit top), so it reads as a front cornice band"
+},
+{
+"id": "cabinet:pie",
+"mine": "REAL",
+"why": "top plane is 3 rows but painted the same mid-brown as the front posts (no lit top), so it reads as a front cornice band"
+},
+{
+"id": "cabinet:potion+potionb+potiong",
+"mine": "REAL",
+"why": "top plane is 3 rows but painted the same mid-brown as the front posts (no lit top), so it reads as a front cornice band"
+},
+{
+"id": "cabinet:vial+flask",
+"mine": "REAL",
+"why": "top plane is 3 rows but painted the same mid-brown as the front posts (no lit top), so it reads as a front cornice band"
+},
+{
+"id": "cabinet:jar+jarb+jarg",
+"mine": "REAL",
+"why": "top plane is 3 rows but painted the same mid-brown as the front posts (no lit top), so it reads as a front cornice band"
+},
+{
+"id": "cabinet:book+bookb+bookg",
+"mine": "REAL",
+"why": "top plane is 3 rows but painted the same mid-brown as the front posts (no lit top), so it reads as a front cornice band"
+},
+{
+"id": "cabinet:gem+gemr",
+"mine": "REAL",
+"why": "top plane is 3 rows but painted the same mid-brown as the front posts (no lit top), so it reads as a front cornice band"
+},
+{
+"id": "cabinet:bolt+boltg+boltr",
+"mine": "REAL",
+"why": "top plane is 3 rows but painted the same mid-brown as the front posts (no lit top), so it reads as a front cornice band"
+},
+{
+"id": "cabinet:bottle+bottler+bottley",
+"mine": "REAL",
+"why": "top plane is 3 rows but painted the same mid-brown as the front posts (no lit top), so it reads as a front cornice band"
+},
+{
+"id": "cabinet:candle",
+"mine": "REAL",
+"why": "top plane is 3 rows but painted the same mid-brown as the front posts (no lit top), so it reads as a front cornice band"
+},
+{
+"id": "cabinet:cheese",
+"mine": "REAL",
+"why": "top plane is 3 rows but painted the same mid-brown as the front posts (no lit top), so it reads as a front cornice band"
+},
+{
+"id": "cabinet:toy",
+"mine": "REAL",
+"why": "top plane is 3 rows but painted the same mid-brown as the front posts (no lit top), so it reads as a front cornice band"
+},
+{
+"id": "apothecary drawers",
+"mine": "FALSE",
+"why": "top plane 4 rows lit, same as known-good wardrobe"
+},
+{
+"id": "balance scale",
+"mine": "FALSE",
+"why": "small tabletop instrument on a base whose top is visible"
+},
+{
+"id": "fish tank",
+"mine": "FALSE",
+"why": "water surface band + rim visible from above"
+},
+{
+"id": "meat hooks",
+"mine": "FALSE",
+"why": "wall-hung rack (exempt)"
+},
+{
+"id": "bread oven",
+"mine": "FALSE",
+"why": "dome oven + chimney; dome has no flat top"
+},
+{
+"id": "forge",
+"mine": "FALSE",
+"why": "hood top and coal bed seen from above"
+},
+{
+"id": "armor stand",
+"mine": "FALSE",
+"why": "figure on a stand (no horizontal top)"
+},
+{
+"id": "altar",
+"mine": "FALSE",
+"why": "slab top ~4 rows lit above cloth front"
+},
+{
+"id": "pipe organ",
+"mine": "FALSE",
+"why": "round pipes + keyboard seen from above"
+},
+{
+"id": "candelabra",
+"mine": "FALSE",
+"why": "thin pole"
+},
+{
+"id": "scroll rack",
+"mine": "FALSE",
+"why": "top 3 rows lit + lit lip"
+},
+{
+"id": "vanity mirror",
+"mine": "FALSE",
+"why": "dresser top behind mirror; standing mirror exempt"
+},
+{
+"id": "spinning wheel",
+"mine": "FALSE",
+"why": "small wheel, base visible"
+},
+{
+"id": "fabric bolt rack",
+"mine": "FALSE",
+"why": "top 3 rows"
+},
+{
+"id": "tailor mirror",
+"mine": "FALSE",
+"why": "standing mirror"
+},
+{
+"id": "bookshelf 1w",
+"mine": "FALSE",
+"why": "top 4 rows"
+},
+{
+"id": "bookshelf 2w",
+"mine": "FALSE",
+"why": "top 4 rows"
+},
+{
+"id": "bookshelf 3w",
+"mine": "FALSE",
+"why": "top 4 rows"
+},
+{
+"id": "wardrobe",
+"mine": "FALSE",
+"why": "is the known-good reference redraw (interior-new-wardrobe)"
+},
+{
+"id": "clock",
+"mine": "FALSE",
+"why": "tall thin clock, cap 3 rows"
+},
+{
+"id": "fireplace",
+"mine": "FALSE",
+"why": "is the known-good reference redraw (interior-new-fireplace)"
+},
+{
+"id": "stove",
+"mine": "FALSE",
+"why": "cooktop plane rows 6-9 lit grey"
+},
+{
+"id": "bread shelf",
+"mine": "FALSE",
+"why": "top 4 rows lit"
+},
+{
+"id": "bread shelf pie",
+"mine": "FALSE",
+"why": "top 4 rows lit"
+},
+{
+"id": "bread shelf baguette",
+"mine": "FALSE",
+"why": "top 4 rows lit"
+},
+{
+"id": "kitchen range",
+"mine": "FALSE",
+"why": "hood/flue on wall, range top visible"
+},
+{
+"id": "rune stone",
+"mine": "FALSE",
+"why": "standing stone"
+},
+{
+"id": "elven harp",
+"mine": "FALSE",
+"why": "thin instrument"
+},
+{
+"id": "owl perch",
+"mine": "FALSE",
+"why": "thin pole"
+},
+{
+"id": "orrery",
+"mine": "REAL",
+"why": "orbit rings drawn as a flat side arc floating above a 1px post; no rings seen from above, sparse parts"
+},
+{
+"id": "timber prop",
+"mine": "FALSE",
+"why": "crossbeam top visible"
+},
+{
+"id": "control console",
+"mine": "FALSE",
+"why": "5-row control panel top with lights, levers stand at the back"
+},
+{
+"id": "magitek armor",
+"mine": "FALSE",
+"why": "figure"
+},
+{
+"id": "curtain wing",
+"mine": "FALSE",
+"why": "hanging fabric"
+},
+{
+"id": "scenery flat",
+"mine": "FALSE",
+"why": "flat stage backdrop (exempt)"
+},
+{
+"id": "slot machine",
+"mine": "FALSE",
+"why": "5-row lit gold top; right strip is the lever"
+},
+{
+"id": "chocobo",
+"mine": "FALSE",
+"why": "creature"
+},
+{
+"id": "hay bale",
+"mine": "FALSE",
+"why": "lighter top 5 rows over darker front, twine bands"
+},
+{
+"id": "pulpit",
+"mine": "FALSE",
+"why": "lectern top + step treads visible"
+},
+{
+"id": "confessional",
+"mine": "FALSE",
+"why": "roof cornice top visible, wall-backed booth"
+},
+{
+"id": "votive stand",
+"mine": "FALSE",
+"why": "tier tops visible"
+},
+{
+"id": "anchor",
+"mine": "FALSE",
+"why": "figure-like object"
+},
+{
+"id": "birdcage",
+"mine": "FALSE",
+"why": "stand + dome"
+},
+{
+"id": "catalog drawers",
+"mine": "FALSE",
+"why": "top 3-4 rows"
+},
+{
+"id": "chained bookcase",
+"mine": "FALSE",
+"why": "top cap 3 rows; busy chains are the design"
+},
+{
+"id": "cheese press",
+"mine": "FALSE",
+"why": "frame top visible"
+},
+{
+"id": "coffin",
+"mine": "FALSE",
+"why": "floor 1x2 coffin: the lid IS seen from above, front foot face below"
+},
+{
+"id": "cursed mirror",
+"mine": "FALSE",
+"why": "standing mirror"
+},
+{
+"id": "folding screen",
+"mine": "FALSE",
+"why": "thin screen panels"
+},
+{
+"id": "gilded wardrobe",
+"mine": "FALSE",
+"why": "top 5 rows"
+},
+{
+"id": "grave bouquet",
+"mine": "FALSE",
+"why": "thin tombstone + flowers"
+},
+{
+"id": "guild lockers",
+"mine": "FALSE",
+"why": "top 5 rows"
+},
+{
+"id": "helmet shelf",
+"mine": "REAL",
+"why": "top board plane only 1-2 rows above the open interior"
+},
+{
+"id": "hint tablet",
+"mine": "FALSE",
+"why": "thin stele"
+},
+{
+"id": "item shop shelf",
+"mine": "FALSE",
+"why": "top 4 rows"
+},
+{
+"id": "knight armor",
+"mine": "FALSE",
+"why": "figure"
+},
+{
+"id": "leather armor stand",
+"mine": "FALSE",
+"why": "figure"
+},
+{
+"id": "library ladder",
+"mine": "FALSE",
+"why": "thin ladder"
+},
+{
+"id": "locked door",
+"mine": "FALSE",
+"why": "door (exempt)"
+},
+{
+"id": "magic mirror",
+"mine": "FALSE",
+"why": "standing mirror"
+},
+{
+"id": "rocking horse",
+"mine": "FALSE",
+"why": "side-facing toy, L profile allowed"
+},
+{
+"id": "safe",
+"mine": "FALSE",
+"why": "top 4 rows"
+},
+{
+"id": "seal stone",
+"mine": "FALSE",
+"why": "standing stone"
+},
+{
+"id": "seedling shelf",
+"mine": "FALSE",
+"why": "top 4 rows"
+},
+{
+"id": "ship wheel",
+"mine": "FALSE",
+"why": "wheel on post"
+},
+{
+"id": "specimen shelf",
+"mine": "FALSE",
+"why": "top 3-4 rows"
+},
+{
+"id": "staff rack",
+"mine": "FALSE",
+"why": "staves enter the box opening"
+},
+{
+"id": "storage terminal",
+"mine": "FALSE",
+"why": "hooded terminal"
+},
+{
+"id": "sword rack",
+"mine": "FALSE",
+"why": "stand top 3 rows (desc)"
+},
+{
+"id": "scenery flat#2",
+"mine": "FALSE",
+"why": "flat stage backdrop (exempt)"
+},
+{
+"id": "scenery flat#3",
+"mine": "FALSE",
+"why": "flat stage backdrop (exempt)"
+},
+{
+"id": "scenery flat#4",
+"mine": "FALSE",
+"why": "flat stage backdrop (exempt)"
+},
+{
+"id": "scenery flat#5",
+"mine": "FALSE",
+"why": "flat stage backdrop (exempt)"
+},
+{
+"id": "scenery flat#6",
+"mine": "FALSE",
+"why": "flat stage backdrop (exempt)"
+},
+{
+"id": "relic cabinet",
+"mine": "FALSE",
+"why": "top 4 rows"
+},
+{
+"id": "wide cabinet",
+"mine": "FALSE",
+"why": "top 4 rows"
+},
+{
+"id": "bronze warrior",
+"mine": "FALSE",
+"why": "statue on plinth with top"
+},
+{
+"id": "painted sarcophagus",
+"mine": "FALSE",
+"why": "lid seen from above"
+},
+{
+"id": "mast",
+"mine": "FALSE",
+"why": "round pole"
+},
+{
+"id": "ship ladder",
+"mine": "FALSE",
+"why": "ladder on wall"
+},
+{
+"id": "ship bunk",
+"mine": "FALSE",
+"why": "mattress/pillow tops visible per tier, like bunk bed"
+},
+{
+"id": "gladiator rack",
+"mine": "FALSE",
+"why": "rack top visible"
+},
+{
+"id": "training dummy",
+"mine": "FALSE",
+"why": "figure"
+}
+]

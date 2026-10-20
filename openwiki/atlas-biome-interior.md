@@ -252,3 +252,20 @@ v5 시트 **끝에 덧붙인** 손 도트 조각(같은 팔레트 v6·같은 램
 - **적대 검수(2026-10-14)**: 9방(전시실·유물실·선장실·배 주방·화물칸·포 갑판·관중석·모래 마당·검투사 방)을 원본 해상도로 새 검수자가 보고 결함 47건(높음 8). 한 번 고친 것:
   그림 액자 한 중심선·관람 줄이 그림을 가리던 것·진열장 윗면 판·쇠창살 문을 벽면 걸이로(모래 위에 서 있던 문)·물통 거치대와 자루가 발밑 칸보다 7px 떠 있던 것·삼베 자루 색·닻 사슬 고리·고패 지렛대·핀 막대·북채(뿔처럼 보임)·허수아비 얼굴 제거·선체 벽 걸레받이·투기장 모래 반복·관중석 좌석 정렬·사다리와 돛대가 한 기둥으로 보이던 것·주방 탁상 물건이 탁자 앞턱에 그려지던 것(2줄 탁자로).
   남은 것: v5 조각(족쇄·짚 더미·화로)이 사암·돌무더기 벽 위에서 잘 안 보인다, 대리석 바닥 광택 줄 반복(v5 바닥), 관중석 계단 단차(층 높이는 이 칩셋 구조 밖).
+
+## 3/4·품질 재검 — 의자 밖 기물 (2026-10-20, props34)
+
+감사 `~/claude-viz/interior-props-34-audit-1.*` 가 이 칩셋 기물 100종을 FAIL 로 냈지만 사유가 분류 틀 문장이라, 의자 4종을 뺀 96종을 4배·8배로
+알려진 합격 그림(`tiledata/atlas-pick/style-demo-view34/interior-new-*`, 빵 진열대·옷장)과 나란히 다시 판정했다. 독립 검수(Argon)와 맞춰 본 결과
+**실제 위반은 23종**(진열장 재고 변형 13 = 몸통 하나, 투구 선반, 천체 모형, 제어반·슬롯머신(앞면 평칠), 고해실 지붕, 유물 진열장 둘, 선원 침상),
+나머지 73종은 오판(벽걸이·거울·인물·기둥·문·무대 배경처럼 윗면 규칙 면제이거나 윗면이 이미 4행 이상). 판정 원본 `tiledata/hand-interior/pick/work/props34/`
+(`my_verdicts.json`, `argon_verdicts.jsonl`, `argon_after.jsonl`).
+
+- **전체 재굽기(`build_tileset.py`)는 지금 못 돈다** — 공개 기준 정리(2026-10-09)로 `room2.py` 가 여는 `public/assets/atlas-biomes/jungle-chipset.png` 가 저장소에 없다.
+  그래서 고친 그림을 **이미 가진 칸 위에 그대로 덮는다**: `scripts/content/hand-interior/props34/redraw.py`(기준 = `PROPS34_BASE` 커밋의 시트, 다시 돌려도 같다)
+  → `rebake_inplace.py`(사양 cells 의 칸, 움직이는 칸은 띠의 k 번째 프레임, 등록 안 된 칸에 그리면 멈춤). 칸 번호·발밑·통행·정의 JSON 은 그대로라
+  `ensureAtlasBiomeInteriorCurrent` 를 올릴 일이 없다(기존 프로젝트도 같은 시트 그림을 읽는다).
+- 움직이는 기물(제어반·슬롯머신)은 **프레임마다 달라지는 화소는 건드리지 않고** 정지 화소만 고친다(`static_edit`). 천체 모형은 12프레임을 새로 그렸다.
+- interior-plus 조각(유물 진열장 둘·선원 침상)은 원본 `scripts/content/interior-plus/pieces/*.py` 를 고치고 같은 렌더를 덮는다 — `interior-plus/bake.py` 는
+  판정 프로필이 바뀌어 나머지 70조각의 옛 영수증이 무효라 지금 통째로 막힌다(고친 세 조각은 현재 프로필 영수증 PASS).
+- 런타임 확인: `bun tiledata/hand-interior/pick/work/props34/fixture.mts` → `npm run qa:runtime -- --scenario props34-v5-rooms`(이 머신은 `unshare -rn` netns 안에서).

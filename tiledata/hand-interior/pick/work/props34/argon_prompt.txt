@@ -1,0 +1,14 @@
+You are an independent, adversarial pixel-art reviewer. Do NOT edit any files except the one output file named below.
+
+Context: 16px RPG interior furniture tileset (hand-pixel, "3/4 top view" = like classic RPG Maker: you see the FRONT face of an object plus its TOP surface as a foreshortened plane; horizontal surfaces such as tabletops, shelf tops, lids, seat planes must be visible from above as a band of >=3 pixel rows that is lit (lighter than the front face). Exempt from the top-surface rule: thin poles/stands, standing mirrors, figures/statues/mannequins/creatures, doors, ladders, curtains/backdrops, wall-hung items, flat floor items. Side-facing objects may be drawn as an L side profile.)
+
+An automated audit flagged 96 props as FAIL; its reasons are category templates and many are believed false. A first reviewer judged each one; verdicts (REAL = genuinely violates 3/4 or clearly poor quality; FALSE = audit wrong) with reasons are in:
+/home/main/z-project/rpg-zzu-v5-interior-props-34/tiledata/hand-interior/pick/work/props34/my_verdicts.json
+Images, in the same order as that file, 8 per strip (each card = prop at 4x on a checker, 1x copy in the card's top-right corner):
+/home/main/z-project/rpg-zzu-v5-interior-props-34/tiledata/hand-interior/pick/work/props34/judge_00.png ... judge_11.png
+Known-good references at 4x: refs_pass.png and style_demo.png in the same folder (in style_demo.png "new-*" are accepted 3/4 redraws, "old-*" rejected originals). Quality rubric + anchors: /home/main/claude-viz/interior-props-quality-rubric-1.json and /home/main/claude-viz/interior-props-quality-anchors-1.png (negative anchors: armchair = one red slab with floating pink blocks; chair = flat tan box next to a pole).
+
+Try hard to find where the first reviewer was too lenient (FALSE that should be REAL) or too harsh. Open every strip image with the Read tool. For each of the 96 ids append one JSON line to
+/home/main/z-project/rpg-zzu-v5-interior-props-34/tiledata/hand-interior/pick/work/props34/argon_verdicts.jsonl
+{"id": "...", "v34": "pass"|"fail", "quality": "pass"|"fail", "agree_with_first": true|false, "why": "one sentence"}
+Append after each strip so nothing is lost. "It reads as X" is not a pass reason — cite what surface is or is not visible. When done, reply with a short list of ids where you DISAGREE with the first reviewer, and why.
