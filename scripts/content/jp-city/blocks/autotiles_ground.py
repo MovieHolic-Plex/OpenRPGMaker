@@ -53,60 +53,60 @@ def grid(rows, legend):
 #    아주 드문 반짝 알(w). 몸통은 고르게(큰 얼룩·보수 이음·잔금은 변형 b1 b2 에만 — 몸통에 넣으면 16px 마다 도장처럼 반복된다).
 ASPH = {"k": J("asphalt", 0), "D": J("asphalt", 1), "d": J("asphalt", 2), ".": J("asphalt", 3), "l": J("asphalt", 4), "w": C("yoru", 6)}
 LANE_BODY = [
-    "....d.......l...",
-    "..l......d......",
-    "...d.........dD.",
-    "......l..wl.....",
-    ".d.....d..dd...l",
-    "...............d",
-    ".....d...l......",
-    "..l...........d.",
-    "...d...l......l.",
-    "........d.......",
-    "l..dD.....l.....",
-    ".d.........d....",
-    "......d.l....dd.",
-    "...l.....d......",
-    "....d........l..",
-    ".........d....d.",
+    "..d...dd........",
+    "..ll........ll..",
+    "..ld.......lwd..",
+    "...d........dd..",
+    ".........d......",
+    "....D.....ll....",
+    "...dd.....ldd...",
+    "..............l.",
+    ".l.....dd.....ld",
+    ".ld....dk.......",
+    "..d.............",
+    "........lll.....",
+    "....d...ldd.....",
+    "...dD.....d...d.",
+    "............dD..",
+    ".ll.............",
 ]
-# b1: 기름·물이 밴 옅은 얼룩(경계가 딱딱하지 않게 어두운 알의 밀도로만) — 네모 보수판은 칸마다 도장처럼 읽혀 뺐다
+# b1: 기름 얼룩 — 짙은 심(D)이 불규칙하게 퍼진 5x5 남짓, 바깥으로 옅게 번진 그늘(d). 가장 깊은 단(k)을 넣으면 구멍·맨홀처럼 읽혀 뺐다.
 LANE_B1 = [
-    "....d.......l...",
-    "..l......d......",
-    "...d.........dD.",
-    "......l..wl.....",
-    ".d.....d..dd...l",
-    "....d...d......d",
-    "..d...d...l.....",
-    "..l.d..d.d....d.",
-    "...d..d..l.d..l.",
-    "....d...d.......",
-    "l..dD.d...l.....",
-    ".d....d....d....",
-    "......d.l....dd.",
-    "...l.....d......",
-    "....d........l..",
-    ".........d....d.",
+    "..d...dd........",
+    "..ll........ll..",
+    "..ld.......lwd..",
+    "...d........dd..",
+    ".....d.d........",
+    "....dDDdd.ll....",
+    "...dDDDDd.ldd...",
+    "..dDDdDDDd....l.",
+    ".l.dDDDDd.....ld",
+    ".ld.dDDdd.......",
+    "..d..ddd.d......",
+    "........lll.....",
+    "....d...ldd.....",
+    "...dD.....d...d.",
+    "............dD..",
+    ".ll.............",
 ]
-# b2: 짧은 잔금(갈래 하나, 금 왼쪽 위 가장자리만 군데군데 밝게)
+# b2: 갈래 진 잔금 9px(가운데 k) — 금의 오른쪽 아래 가장자리가 빛을 받아(l) 파인 것으로 읽힌다
 LANE_B2 = [
-    "....d.......l...",
-    "..l......d......",
-    "...d.........dD.",
-    "......l..wl.....",
-    ".d.....d..dd...l",
-    "...............d",
-    ".....d..........",
-    "..l..l....l...d.",
-    "...dDDD..DDD..l.",
-    ".......DD...D...",
-    "l..dD.......D...",
-    ".d.........d....",
-    "......d.l....dd.",
-    "...l.....d......",
-    "....d........l..",
-    ".........d....d.",
+    "..d...dd........",
+    "..ll........ll..",
+    "..ld.......lwd..",
+    "...d........dd..",
+    ".........d......",
+    "..DD......ll....",
+    "...lkD....ldd...",
+    "....lkDD......l.",
+    ".l....lkD.....ld",
+    ".ld....lkDD.....",
+    "..d....D.lkD....",
+    "......D.l..lD...",
+    "....d.l.ldd.....",
+    "...dD.....d...d.",
+    "............dD..",
+    ".ll.............",
 ]
 
 
@@ -118,56 +118,56 @@ def lane_tex():
 WATER = {"o": J("canal_indigo", 0), "a": J("canal_indigo", 1), ".": J("canal_indigo", 2), "r": J("canal_indigo", 3), "h": J("canal_indigo", 4)}
 CANAL_BODY = [
     "................",
-    "..rrr...........",
-    "...a............",
-    ".......aa.......",
+    "..rrrrr.........",
     "................",
-    "..........rr....",
-    "...........a....",
-    ".....h..........",
+    "..........aaaa..",
     "................",
     "................",
-    "rrr.............",
-    ".a..............",
+    "rr............rr",
     "................",
-    "........rrrr....",
-    ".........aa.....",
+    "....hrr.........",
+    "................",
+    "........rrrrr...",
+    ".........aaa....",
+    "................",
+    "aa............aa",
+    "................",
     "................",
 ]
 CANAL_B1 = [
     "................",
-    "..rrr...........",
-    "...a............",
+    "......rrrr......",
+    ".......aa.......",
     "................",
-    "........rrr.....",
-    ".........a......",
-    "...aa...........",
+    "...aaaa.........",
     "................",
-    "............h...",
+    "rr............rr",
     "................",
-    "rrr.............",
-    ".a..............",
-    ".....rr.........",
-    "......a.........",
-    "...........aa...",
+    "...........rrh..",
+    "................",
+    "..rrrrr.........",
+    "................",
+    "........aaa.....",
+    "aa............aa",
+    "................",
     "................",
 ]
 CANAL_B2 = [
     "................",
-    "..rrr...........",
-    "...a............",
+    "................",
+    "...rrrrrr.......",
+    "....aaa.........",
+    "................",
+    "...........aaa..",
+    "rr............rr",
     "................",
     "................",
-    "....rr.....aa...",
-    ".....a..........",
-    "................",
-    "..........rrr...",
-    "...........a....",
-    "rrr.............",
-    ".a.....h........",
+    "......hrrrr.....",
     "................",
     "................",
-    "...aa...........",
+    "..aaa.....rrr...",
+    "aa............aa",
+    "................",
     "................",
 ]
 
@@ -218,20 +218,35 @@ def style_sidewalk(side, d, s, x, y):
     return _pick([C("conc", 2), C("conc", 4), C("conc", 5)], d)         # E
 
 
-# 흰 외측선의 낡음(변을 따라 16 주기): 끊김(본바닥이 드러남)·때(한 단 탁함)
-_LINE_GAP = {5, 12}
-_LINE_DIRT = {2, 3, 9, 14}
-_EDGE_DARK = {0, 7, 8, 13}
+# 흰 외측선의 낡음(변을 따라 16 주기, 칸 안에서 고르지 않게): W 흰 · g 때 낀 흰 · f 거의 지워진 흰 · x 닳아 끊김(바닥이 드러남)
+_LINE = "WWWWggWWWWWfxgWW"
+_EDGE_DEEP = {0, 6, 7, 13}
 
 
 def style_lane(side, d, s, x, y):
-    """생활도로(보도 없음): 집 앞 땅과 맞닿는 줄 한 칸(어두운 가장자리, 군데군데 더 깊음) + 1px 간격 + 낡은 흰 외측선 1px."""
+    """생활도로(보도 없음): 집 앞 땅과 맞닿는 줄(3/4 — 북·서 변은 턱 그늘이 길에 떨어지고, 남·동 변은 턱 윗모서리가 빛을 받는다)
+    + 1px 간격 + 낡은 흰 외측선 1px."""
     k = s % 16
-    if d == 0: return J("asphalt", 0) if k in _EDGE_DARK else J("asphalt", 1)
+    if d == 0:
+        if side in "NW": return J("asphalt", 0) if k in _EDGE_DEEP or side == "N" else J("asphalt", 1)
+        if side == "S": return C("conc", 1) if k not in _EDGE_DEEP else C("conc", 0)
+        return J("asphalt", 1) if k in _EDGE_DEEP else J("asphalt", 2)
+    if d == 1 and side == "N": return J("asphalt", 1) if k not in (3, 10) else J("asphalt", 2)   # 북쪽 턱 그늘이 한 줄 더
     if d == 2:
-        if k in _LINE_GAP: return J("asphalt", 4)                         # 선이 닳아 끊긴 곳(바닥이 드러난 밝은 자국)
-        return C("shiro", 2) if k in _LINE_DIRT else C("shiro", 3)
+        ch = _LINE[k]
+        return {"W": C("shiro", 3), "g": C("shiro", 2), "f": C("shiro", 1), "x": J("asphalt", 4)}[ch]
     return None
+
+
+def _lane_notch(nb, x, y):
+    """안쪽 모서리: 흰 외측선의 직각 꼭짓점 3칸을 비운다(바퀴가 긁어 지워지는 자리). 나머지는 기본 둘레 띠."""
+    gx = 15 - x if nb[1] == "E" else x
+    gy = 15 - y if nb[0] == "S" else y
+    d = max(gx, gy)
+    if d >= 3: return None
+    eff = nb[1] if gx > gy else nb[0] if gy > gx else min((nb[0], nb[1]), key=("N", "W", "E", "S").index)
+    if d == 2 and min(gx, gy) >= 1: return J("asphalt", 4) if (gx, gy) == (2, 2) else None
+    return style_lane(eff, d, x if eff in "NS" else y, x, y)
 
 
 # 풀 가장자리 높낮이(맨흙이 파고드는 깊이, 16 주기, 이웃 칸과 이어지게 끝-처음 차 ≤1)
@@ -322,50 +337,56 @@ def style_pond(side, d, s, x, y):
 
 
 # 수로 호안(콘크리트 conc + 물때 moss/onsen_mineral_teal + 물 canal_indigo). 북쪽 호안 = 수직 앞면이 보인다(깊이 CANAL_N).
-CANAL_N, CANAL_S, CANAL_W, CANAL_E = 13, 6, 6, 5
+CANAL_N, CANAL_S, CANAL_W, CANAL_E = 15, 6, 8, 5
 _FORM = {11}                       # 거푸집 이음(세로 줄) — 16 주기에 하나(둘이면 8px 눈금으로 읽혔다)
 _TIE = {4, 13}                     # 거푸집 고정 구멍(폼타이) 자리 — 간격이 고르지 않게
+_JOINT = {6}                       # 갓돌 신축 이음(옆·남 호안 윗면)
 _MOSS = [1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1]   # 물때 띠 종류(0 이끼 / 1 옥빛 물때)
+_DRIP = {7: 7, 11: 6, 2: 8}                                  # 젖은 물때가 흘러내린 세로 자국(이 높이 d 부터 아래로)
 
 
 def style_canal(side, d, s, x, y):
-    """수로: 콘크리트 호안. 윗면 입술(이음 줄 → 윗면 → 밝은 모서리) 뒤로, 북쪽은 수직 앞면(입술 밑 그늘·거푸집 이음·폼타이 구멍·물때 띠)
-    아래 물이 벽 그림자로 짙다가 가운데로 갈수록 밝아진다. 서·동·남은 윗면 띠 + 얇은 안쪽 벽 + 물에 비친 그늘."""
+    """수로: 콘크리트 호안. 윗면 입술(이음 줄 → 윗면 → 밝은 모서리) 뒤로, 북쪽은 높은 수직 앞면(입술 밑 그늘·거푸집 이음·폼타이 구멍·
+    물때 띠가 이음을 타고 올라감) 아래 물이 벽 그림자로 짙다가 몇 줄에 걸쳐 밝아진다. 서쪽 호안은 그림자를 물 위 오른쪽으로 길게 떨어뜨리고,
+    동·남 호안은 윗면 띠(신축 이음) + 물에 비친 얇은 그늘."""
     k = s % 16
     if side == "N":
         if d == 0: return C("conc", 2)                                   # 보도 판과 갓돌 사이 줄
         if d == 1: return C("conc", 5)                                   # 갓돌 윗면
         if d == 2: return C("conc", 6)                                   # 갓돌 앞 모서리(빛)
-        if 3 <= d <= 7:                                                  # 수직 앞면(5px)
-            if d == 3: return C("conc", 1)                               # 갓돌이 드리운 그늘
-            if k in _FORM: return C("conc", 1) if d < 7 else J("moss", 0)
-            if k in _TIE and d == 5: return C("conc", 1)
-            if k == 7 and d in (5, 6): return J("onsen_mineral_teal", 1)   # 물때가 흘러내린 자국
-            if d == 7:                                                   # 물때 띠(수면 바로 위)
-                return J("moss", 1) if _MOSS[k] == 0 else J("onsen_mineral_teal", 1)
-            return C("conc", 2) if d == 6 else C("conc", 3)
-        if d == 8: return J("moss", 0) if _MOSS[k] else J("canal_indigo", 0)   # 물 닿는 선
-        if d in (9, 10): return J("canal_indigo", 0)                     # 벽 그림자 속 물
-        if d == 11: return J("canal_indigo", 0) if k % 5 in (1, 3) else J("canal_indigo", 1)
-        if d == 12: return J("canal_indigo", 1) if k % 4 != 2 else None
+        if d == 3: return C("conc", 1)                                   # 갓돌이 드리운 그늘
+        if 4 <= d <= 9:                                                  # 수직 앞면 6px
+            if k in _DRIP and d >= _DRIP[k]: return J("onsen_mineral_teal", 0)
+            if d == 9: return J("onsen_mineral_teal", 0) if k % 5 != 2 else C("conc", 1)   # 수면 위 젖은 띠(짙게)
+            if k in _FORM: return C("conc", 1)
+            if k in _TIE and d == 6: return C("conc", 1)
+            return C("conc", 3) if d <= 6 else C("conc", 2)
+        if d == 10: return J("moss", 1) if _MOSS[k] == 0 else J("onsen_mineral_teal", 1)   # 물때 띠(수면 바로 위)
+        if d == 11: return J("moss", 0) if _MOSS[k] else J("canal_indigo", 0)             # 물 닿는 선
+        if d in (12, 13): return J("canal_indigo", 0)                    # 벽 그림자 속 물
+        if d == 14: return J("canal_indigo", 0) if k % 3 == 1 else J("canal_indigo", 1)
         return None
     if side == "W":
+        if d <= 2 and k in _JOINT: return C("conc", 2) if d else C("conc", 1)
         if d == 0: return C("conc", 2)
         if d == 1: return C("conc", 5)
         if d == 2: return C("conc", 6)
         if d == 3: return C("conc", 1)                                   # 안쪽 벽(그늘 쪽, 한 줄)
-        if d == 4: return J("canal_indigo", 0)
-        if d == 5: return J("canal_indigo", 1) if k % 3 else None
+        if d in (4, 5): return J("canal_indigo", 0)                      # 서쪽 호안 그림자가 물 위로
+        if d == 6: return J("canal_indigo", 0) if k % 4 == 0 else J("canal_indigo", 1)
+        if d == 7: return J("canal_indigo", 1) if k % 3 else None
         return None
     if side == "S":
+        if 1 <= d <= 3 and k in _JOINT: return C("conc", 3)
         if d == 0: return C("conc", 2)
         if d == 1: return C("conc", 4)
         if d == 2: return C("conc", 5)
         if d == 3: return C("conc", 6)                                   # 물 쪽 모서리(빛)
-        if d == 4: return J("canal_indigo", 1) if k not in (4, 10) else J("canal_indigo", 0)   # 호안이 물에 비친 얇은 그늘
-        if d == 5: return J("canal_indigo", 1) if k in (1, 2, 7, 12, 13) else None
+        if d == 4: return J("canal_indigo", 1) if k not in (4, 10) else J("canal_indigo", 0)   # 호안이 물에 비친 그늘
+        if d == 5: return J("canal_indigo", 1) if k in (1, 2, 3, 9, 10) else None
         return None
     # E: 오른쪽 호안 — 안쪽 벽이 빛을 받는 쪽이라 밝은 줄
+    if 1 <= d <= 2 and k in _JOINT: return C("conc", 3)
     if d == 0: return C("conc", 1)
     if d == 1: return C("conc", 4)
     if d == 2: return C("conc", 5)
@@ -494,7 +515,7 @@ def sets():
              rank=_s_rank, notch=_raised_notch(style_sidewalk), pc="floor", outside=lambda: rc, interior_n=2, tactile_b2=True, body_weights=(2, 1, 0),
              desc="보도(점자블록 줄 변형 포함) ↔ 아스팔트 도로. 바깥은 아스팔트 한 가지. 남쪽 변은 연석 앞면이 보이는 3/4."),
         dict(key="lane", id="jp-lane-road", name="생활도로", role="road", tex=lt, style=style_lane, var=lane_variants(lt),
-             rank=None, pc="floor", outside=lambda: chip("sw"), interior_n=2,
+             rank=None, notch=_lane_notch, pc="floor", outside=lambda: chip("sw"), interior_n=2,
              desc="보도 없는 생활도로 아스팔트. 집 앞 콘크리트와 맞닿는 가장자리에 1px 간격의 흰 외측선."),
         dict(key="lawn", id="jp-lawn-dirt", name="잔디", role="green", tex=lawn, style=style_lawn, var=lawn_variants(lawn),
              rank=None, pc="floor", outside=lambda: chip("gravel"), interior_n=2,
