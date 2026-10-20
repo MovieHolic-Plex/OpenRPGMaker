@@ -233,16 +233,14 @@
 
 /* ── 결과 화면 전환(battle-feel r2) ─────────────────────────────────────────────
    녹화 실측: 「승리!」 도장 0.7초 뒤 불투명 남색 판이 한 프레임에 무대를 통째로 덮었다(전장이 사라진 표).
-   판은 반투명 막으로 두고 가운데 줄을 비워 이긴 파티가 뒤에 보이게 하고, 창 셋은 위에서부터 차례로 내려앉는다. */
+   판은 왼쪽 기둥의 반투명 막으로 두어 오른쪽의 이긴 파티가 그대로 보이고, 창 셋은 위에서부터 차례로 내려앉는다. */
 .battle-scene[data-battle-motion="retro"]:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-panel.battle-result-pixel {
   animation: bf-result-dim 420ms ease-out both;
-  background: rgb(6 8 30 / 0.45);
-  /* 전리품 창이 남은 높이를 다 먹어 창 셋이 무대를 빈틈없이 덮었다 — 가운데 줄을 비워 이긴 파티가 보이게 한다. */
-  grid-template-areas: "summary summary" "party party" ". ." "cards cards" "prompt confirm";
-  grid-template-rows: auto auto minmax(0, 1fr) auto auto;
-}
-.battle-scene[data-battle-motion="retro"]:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-panel.battle-result-pixel > .battle-result-cards {
-  min-height: 92px;
+  background: rgb(6 8 30 / 0.5);
+  /* r3: 창이 무대를 다 덮어 이긴 파티(승리 포즈)가 창 뒤에 숨었다. 창은 왼쪽 58% 기둥에만 두고 — 적이 서던 자리 —
+     오른쪽은 비워 승리 포즈를 그대로 보인다(아군 발 x 222~294/320 = 무대의 69~92%). */
+  right: auto;
+  width: 58%;
 }
 .battle-scene[data-battle-motion="retro"]:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-panel.battle-result-pixel > :is(.battle-result-summary, .battle-result-party, .battle-result-cards, .battle-result-next-prompt, .battle-result-confirm) {
   animation: bf-result-window 340ms cubic-bezier(0.2, 0.9, 0.3, 1.12) both;

@@ -21,6 +21,13 @@ r2(도트 측면만):
 - **결과**: 도트 결과 판은 반투명 막, 가운데 줄을 비워(`grid-template-areas` 에 `". ."`) 이긴 파티가 보이고 창 넷이 차례로 내려앉는다. 전멸은 무대가 잿빛으로 식은 뒤 창이 떠오른다.
 - **죽은 시간**: 메뉴가 닫힌 게이지 충전 구간은 틱을 3배로 감고(`BATTLE_IDLE_CHARGE_BOOST`), 연출이 끝나면 다음 틱을 바로 돈다(`battleTick`). 행동 순서는 그대로.
 
+r3:
+- **진형 간격**: 진형 자리는 고정 오프셋이라 그림이 커지면 앞뒤 적이 겹쳤다. `syncEnemyGroup` → `spreadRetroEnemyRow` 가 각 적 그림의 레이아웃 크기 ×
+  대기 포즈 불투명 범위(`battleContactBounds(url,"idle")`, 등록 안 된 그림은 칸 전체)로 저작 단위 상자를 만들고, `battlerPlacements.spreadEnemyFormation` 이
+  세로로 겹치는 두 상자의 가로 겹침을 좁은 쪽 폭 12% 이하로 좌우로 벌린 뒤 무게중심을 되돌린다(상자 x 8~206, 아군 222 앞). 결과는 그룹 크기·적 id 키로 `group.dataset.formation` 에 둔다.
+  옮겨진 적(moved)이 있거나 필드 위 전투면 건너뛴다.
+- **승리 화면**: 도트 결과 판을 왼쪽 58% 기둥으로 — 오른쪽 아군 승리 포즈가 가리지 않는다.
+
 ## 포획 연출 · 도감 등록 문장 (2026-10-16, poke-sys ⑦)
 
 - 시각 QA: `MODE=success|fail|both [SHAKES=0..3] [VIDEO=1] unshare -rn sh -c "ip link set lo up && node scripts/qa/runtime/monster-capture.scenario.mjs <campaign.json> <outDir>"` — 실제 가방 버튼으로 볼을 던져 프레임 연속 캡처(+녹화)·전투 문장 로그(`<mode>MsgLog`)를 남긴다. 진단 전용.
