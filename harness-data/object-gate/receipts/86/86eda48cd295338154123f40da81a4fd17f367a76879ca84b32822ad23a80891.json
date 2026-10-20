@@ -1,0 +1,317 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "86eda48cd295338154123f40da81a4fd17f367a76879ca84b32822ad23a80891",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "금속 벤치",
+ "label": "modern_city/interior/mci-bench-metal",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 8,
+  "darkV5": 36,
+  "nearBlackEdge": 0.98,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "slatted seat top",
+      "rows": "2-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "10-11"
+     },
+     {
+      "part": "front apron and legs",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-8 alternate light and dark slat bands, which read as a seat top seen from above. Row 8 is a light front-edge line (L=224). Below it, rows 9-12 form the front face. The middle of that face is lighter (legs or apron, L=202), and the gaps between are darker shadow (L=144 on rows 10-11, then L=111 on row 12). The silhouette is 32 px wide with a 1 px dark outline. The top is a distinct 7-row surface with a 4-row front face under it, so the seat surface is visible from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small grey slatted metal bench. Its dark edge pixels are only 3% neutral, so the outline leans cool blue-grey and counts as a dark material tone, not a black sticker line. Flat-fill coverage is 0%, so there are no big flat areas. It uses only 8 distinct colours, against 14 for the similar-sized wood bench and lamp references. By eye the slats and legs have about 4 lightness steps (light highlight, light grey, mid grey, dark line), where Beodeul props carry 5-6. The slats look like uniform stripes with little grain, scuffing or per-slat variation, and the legs are plain. The bench-wood reference has more shading steps and grain across its seat and backrest. Because of the shallower ramp and lower colour count, a careful artist would find it flatter than the reference. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15728
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat slats (top)",
+      "rows": "2-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "10-11"
+     },
+     {
+      "part": "front apron and legs",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The body is 32 px wide across rows 1-13. Rows 2-8 alternate light (L~224-244) and dark (L~111) stripes. This reads as a foreshortened slatted seat top seen from above, and it ends in a light front-edge row at row 8. Rows 9-12 form a uniform front face (L~202) with vertical leg posts. Columns x=8 and x=23 darken to L~144 and 111 at rows 10-11, which reads as shadow under the seat. That gives a 7-row top surface and a 4-row front face. The stripes could instead be a face-on backrest, but their height and the front-edge row make the seat-top reading more likely."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small slatted metal bench, comparable to the prop-bench-wood reference. It uses only 8 distinct colours, against 14 for both the wood bench and the crook lamp, which are the nearest thin props. Its main grey ramp has about 4 steps (near-white highlight, light grey, mid grey, dark slat gap) against about 5 on the wood bench. The dark edge pixels are only 3% neutral, so the outline leans toward a tinted dark grey-blue rather than a black sticker line. There are no flat 5x5 fills (0%), and the slat rows give some banding. There is no per-slat grain, no speckle, and no distinct leg or frame shading comparable to the reference's wood grain and per-plank highlights. It reads cleaner and flatter than the reference bench, so it looks slightly thinner next to it. Since it falls short on colour count and ramp depth, I fail it when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21429
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "slatted seat top",
+      "rows": "2-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front apron/face with leg stubs",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The body is 32px wide over rows 1-13. Rows 2-8 form a band of alternating light and dark slat stripes, which reads as a seat surface seen from above. The band ends in a light edge line at row 8. Rows 9-12 are a uniform, flatter front face about 4 rows tall, with darker leg or support marks at rows 10-12. Rows 14-15 show only tiny 2px feet. The top is clearly more than a 1-2 row rim and the front face is 3+ rows, so it reads as three-quarter. The slats could also be a face-on backrest, so this reading is not certain. There is no eave shadow row below the edge line."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a pale metal slat bench with 8 distinct colours. The same-kind references prop-bench-wood and prop-lamp-crook have 14 each, and the larger props have 38-40. Its dark edge pixels are only 3% neutral, so the outline leans cool and tinted rather than black. That fits dark_material_tone and is not a sticker outline. Flat-fill coverage is 0%, and the median of 8 colours per tile sits near the hedge's 10. By eye, though, the slats are close to uniform pale bands with one highlight and one shade each. The ramp is about 4 steps against roughly 5 on the wooden bench. There is little per-slat grain, no wear or rivet dots, and the legs are plain. It reads cleaner and flatter than the references, so a careful artist would see it as slightly thinner than the Beodeul bench. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20163
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "slatted seat top",
+      "rows": "2-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "10-11"
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-8 are alternating light (L=224-244) and dark (L=111) 1-row stripes, which read as metal slats seen from above and foreshortened. The last light slat at row 8 acts as the front-edge line. Rows 9-12 are the front face, with a darker band at rows 10-11 and lighter vertical leg strips, and rows 14-15 show 2px-wide feet. The front face is 4 rows, so the body is not a flat slab. The slats could instead be a face-on backrest, but the 7-row slat band over a separate apron and legs fits a seat top better."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small light-grey slatted bench with dark legs, the same kind and scale as the Beodeul prop-bench-wood. It has only 8 distinct colours against 14 for the wooden bench, and about 4 lightness steps on the slats and frame against roughly 5 on the reference. Only 3% of its dark edge pixels are neutral, so the outline leans toward a tinted material tone rather than a black sticker line. There are no 5x5 flat fills (0%). The slats read as nearly uniform pale bands with little grain, scuffing or per-slat highlight variation, and the legs are thin and plain. Its per-tile median of 8 is close to the hedge's 10 but far below the stall (17) and well (20). The bench reference's median is 0 because it is sparse, so that fact does not count against the candidate. By eye, a careful artist would find it slightly thinner and flatter than the wooden bench reference, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21997
+  }
+ ],
+ "decidedAt": "2026-10-19T16:50:54.498Z",
+ "cells": {
+  "16": [
+   "1c321a2d677062e5",
+   "f5a30f6f49ca1157"
+  ],
+  "24": [
+   "0153e2c44383eb57",
+   "086a20ef0f69eda1",
+   "0efeb48ceb2237bf",
+   "1ba60c3d02db5e92",
+   "22737198bb9301fe",
+   "22d873531ee1ecf4",
+   "47439fdca2c9add9",
+   "574fa6a6df40bc77",
+   "668e1f6b283d24fb",
+   "80f9a656da450120",
+   "850dcc5a60822397",
+   "ca359bb89c6a18e8"
+  ],
+  "32": [
+   "8b2c893cdfdb4c4d",
+   "d6321b8e74332d02"
+  ],
+  "48": [
+   "04148a01f6819112",
+   "07a2f353bf2e6bb6",
+   "0d725cc45daa90d5",
+   "1c1dec2bf12bbe65",
+   "266823c547ea2cbf",
+   "2904ba52a5d9d291"
+  ]
+ }
+}

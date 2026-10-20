@@ -1,0 +1,335 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dc2da516703a4c2c393f4a7931ac8e058301cc7d39aea716f6bf5740b4f3dac9",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "사무용 의자(남향)",
+ "label": "modern_city/interior/mci-chair-office-s",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 36,
+  "nearBlackEdge": 0.89,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion with armrests",
+      "rows": "15-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "backrest",
+      "rows": "3-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base and wheels",
+      "rows": "25-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is 16 px wide and spans rows 14-24. Rows 15-20 are a cushion top plane with a highlight at row 16. Row 21 is a lighter front-edge line (L=128 against L=94 above). Rows 22-23 are darker eave shadow (L=52). Below that, a pedestal and wheel base (rows 25-30) forms the front face, so the front face is at least 3 rows. The backrest (rows 4-13, width 10) is a face-on panel with a light-to-dark gradient. It reads as a thin backrest rather than a missing top, so I counted it as acceptable. The seat surface is seen from above, so the object reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small navy office chair with about 4 blue steps (highlight on the backrest and seat edge, mid blue, dark blue, deep navy) and a grey base and wheels. Its dark edge pixels are only 6% neutral, so the outline is a navy tint of the adjacent material, not a black sticker line. That matches prop-hedge (0% neutral) and is better than prop-lamp-crook (100%). Flat-fill coverage is 0%, with no 5x5 block of one colour. It has a median of 9 colours per tile, close to prop-hedge's 10, and 12 distinct colours against 11 for the hedge and 14 for the bench. It is below the richer stall (40 colours) and well (38 colours), which are larger and more complex pieces. For a small single-material furniture piece it has comparable structure, though its ramps are slightly shallower and its texture is limited to a few seat and backrest highlight dots. A careful artist would accept it next to the bench and hedge without it looking noticeably flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22739
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "15-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "backrest",
+      "rows": "4-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is the 16px-wide part at rows 14-24. Rows 15-20 form a top band with a highlight at row 16. Row 21 is a lighter front-edge line (L=128 against 94 above). Rows 22-23 are a darker shadow or front lip (L=52), and row 24 is the outline. Below it, rows 25-30 show the pole, base and casters, which gives a front face of 3+ rows. The backrest (rows 4-13, width 10) is a face-on vertical panel with a light-to-dark gradient. It has no edge line and no visible top surface, so it counts as a major part drawn only as a vertical face. The seat top is still clearly visible from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small navy office chair of about 12x20 source pixels. It has 12 distinct colours and a median of 9 per full tile, which sits next to the hedge (11 colours, median 10) and the bench (14 colours). Flat-fill coverage is 0%, so there are no dead 5x5 areas. Only 6% of its dark edge pixels are neutral, so the outline is a dark blue tint of the chair body rather than a black sticker line, much like the hedge's 0%. The padded backrest and seat show highlight, mid and dark blue steps, with a darker base and wheels. That is about 4 steps against 5-6 on the richer references, and the texture is modest, so density is slightly lower than the best references. For a plain, small, simple prop it still holds up beside the bench and hedge without looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21901
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "15-20",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "backrest",
+      "rows": "4-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base and wheels",
+      "rows": "25-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is the widest part (width 16, rows 14-20). Rows 15-20 are a band of seat top with a highlight at row 16. It ends in a light front-edge line at row 21, followed by darker shadow on rows 22-23. Below that the front face and base run through rows 22-30, about 9 rows. The backrest (rows 4-13, width 10) is a face-on vertical panel with a light-to-dark gradient and no edge line or shadow, so it has no visible top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small blue office chair seen from the front, with a dark navy outline that leans blue rather than neutral; the measured near-neutral share of dark edge pixels is only 6%, which agrees with that. Shading is about 4 blue steps: a highlight on the backrest and seat, a mid tone, a dark tone and a deep tone, plus a grey base and wheels. The References use 5-6 steps. Flat-fill coverage is 0%, so there are no big flat areas, and the backrest and seat carry some panel and cushion variation. Median colours per tile is 9, close to the hedge's 10 but well below the stall's 17 and the well's 20. Total colours is 12 against 38-40 for the richer references, which is a similar range to the bench, hedge and lamp. The chair is a small single-tile-sized prop, so I judge density mostly by eye. It is clean and consistent, but a little simpler and thinner than the richer references, with a modest ramp and little grain on the fabric. Not sticker-like given the tinted outline, but not fully at the Beodeul level either. A careful artist would probably accept it next to the bench and hedge, though it is lower than the stall and well.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21139
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat",
+      "rows": "15-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "backrest",
+      "rows": "4-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat (width 16, rows 14-24) has a top band in rows 15-21, with a lighter highlight at row 16 and a lighter front-edge line at row 21 (L=128 against L=94 around it). Rows 22-23 are a darker shadow (L=52), and row 24 is the outline. Below that, rows 25-30 show the post, star base and casters, so the front face and supports run about rows 22-30. The backrest (width 10, rows 3-13) is a face-on vertical panel with a light-to-dark gradient and no edge line or shadow. It shows no horizontal surface, so not every major part has a top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a blue office chair with a navy-blue ramp: a lighter highlight on the backrest and seat edge, mid-blue cushion, dark blue shadow, and a deep navy outline plus dark base and wheels. Only 6% of its dark edge pixels are neutral, so the outline leans blue and is the dark tone of the material, not a black sticker line. Its 9 colours per 16x16 tile is close to prop-hedge (10), and its 12 distinct colours is in line with the simple references (hedge 11, bench 14, lamp 14). It has 0% flat-fill coverage, so the cushion and backrest show shading variation and not one flat colour. It is a small, simple single-material prop, so about 4 steps is acceptable next to the simple references. It is a little less rich than the stall and well, but those are far larger, more complex pieces. A careful artist would accept it next to the bench and hedge without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22033
+  }
+ ],
+ "decidedAt": "2026-10-19T16:50:54.485Z",
+ "cells": {
+  "16": [
+   "9ebdfb7fcd99ecc5",
+   "ab8e3f8b7972e159"
+  ],
+  "24": [
+   "05fda3e7cd118442",
+   "1595477e4f60d569",
+   "1eed5ecd14a38fed",
+   "666c3273cbb8c509",
+   "9555751feedec8ff",
+   "a2c0ecb804799a2c",
+   "a6e645f9fd9b69d5",
+   "a8f8e8cb84096887",
+   "bfef52093ef63a6f",
+   "cf7204da4579fc5a",
+   "de2978c3c1095392",
+   "e2bdf89e6a6d8bbc"
+  ],
+  "32": [
+   "572b96cba3aa559b",
+   "ed47abdcb824da0b",
+   "f7cec5aa06e049f6"
+  ],
+  "48": [
+   "30ab23db806c7aa1",
+   "3d400ba048af8f64",
+   "4b126b4087c63285",
+   "59405a981b4635cc",
+   "d70f61f2702ad1cc",
+   "e7f913dffdcd270a"
+  ]
+ }
+}

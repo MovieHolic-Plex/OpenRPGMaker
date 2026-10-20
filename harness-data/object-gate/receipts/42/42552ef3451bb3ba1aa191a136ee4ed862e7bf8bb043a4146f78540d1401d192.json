@@ -1,0 +1,317 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "42552ef3451bb3ba1aa191a136ee4ed862e7bf8bb043a4146f78540d1401d192",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "나무 의자(남향)",
+ "label": "modern_city/interior/mci-chair-wood-s",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 6/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 6/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 7,
+  "darkV5": 36,
+  "nearBlackEdge": 0.89,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "17-23",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest top",
+      "rows": "6-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat (rows 16-27) has a light-edged green cushion in rows 17-23, seen from above. It ends at a darker brown front-edge line at row 24, and the brown apron runs rows 24-25. The front face is the apron plus the dark outline (rows 24-27) and the legs (rows 28-30), so about 7 rows. The backrest in rows 5-12 has a light top band (rows 6-9), an edge line at row 10 and dark shadow in rows 11-12, so it also reads as having a top. Two thin legs at rows 13-15 connect the backrest to the seat."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small wooden chair seen from the front, about 12x20 source px. It has 9 distinct colours and a median of 7 per full tile. That is a little below the hedge (10 per tile, 11 colours) and the bench (14 colours), but a chair this small has fewer pixels to spend. Flat-fill coverage is 0%, so there are no dead 5x5 areas. Its dark edge pixels are 0% neutral, so the outline leans brown, like the wood it borders, and does not read as a black sticker line. The wood has about 4 lightness steps (light seat and slats, mid, dark, and the tinted outline), against about 5 on the bench. The slats and seat carry some grain and edge highlights. It is slightly simpler than the references but not flat or sticker-like, and a careful artist would accept it next to the bench.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 28733
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat (green cushion in wood frame)",
+      "rows": "17-23",
+      "evidence": "d",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest panel",
+      "rows": "5-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "11-12"
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is the main body. Rows 16-17 are the back frame rim, and rows 18-23 are a light green cushion surface about 7 rows deep, so the seat is seen from above. Its front edge is the darker wood line at row 24, and the apron is rows 24-25. The front face then continues through the outline rows 26-27 and the legs at rows 28-30, about 7 rows in total. The backrest at rows 5-12 is a face-on wood panel with a darker lower band and two thin posts at rows 13-15. It shows no horizontal top of its own, so I marked it as having no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small, thin prop, about 12x20 source pixels. Its dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood, not a sticker-style black line. Flat-fill coverage is 0%, so there are no large single-colour areas. It has 9 distinct colours and a median of 7 per full tile. That is below the bench (14 colours), but the hedge reference has only 11 colours and 10 per tile, so it sits in the same range. By eye it shows about 4 wood steps, with a lighter seat and back slats against a darker frame and legs. That is slightly fewer than the bench's roughly 5 steps, with a little less grain. It is slightly lower in density but not thinner or flatter in a way a careful artist would reject next to the references, so it passes narrowly.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24394
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat (green cushion with wood frame)",
+      "rows": "17-23",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest",
+      "rows": "6-11",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is a 12px-wide block on rows 16-27. A 1-row back rim (16) and a wood frame row (17) lead into a light green cushion on rows 18-23, so the seat surface is seen from above as a 6-row top. Wood rows 24-25 (L=103) form the front edge, and outline rows 26-27 plus thin legs on rows 28-30 give the front face about 7 rows. The backrest on rows 5-12 has a lighter top band (rows 6-9), an edge line on row 10 and a dark shadow on row 11, so it also reads as having a top. Rows 13-15 are narrow back posts. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small ladder-back chair. Its dark edge pixels are 0% neutral, so the outline leans brown and follows the wood tone, which matches Beodeul practice. It has no flat 5x5 fills (0% coverage). It is thinner than the references on shading and detail. It has only 9 distinct colours against 14 for the wood bench, and the wood ramp reads as about 4 steps against the bench's 5-6. The back slats and seat are mostly two or three tones with little grain or per-plank highlight. Its per-tile median of 7 is below the hedge (10) and well below the stall (17) and well (20). On a piece this small and simple that gap is modest, but it still looks slightly flatter and more sticker-like beside the bench. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 22827
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "17-23",
+      "evidence": "d",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest",
+      "rows": "6-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is a framed green cushion plate on rows 17-23, seen from above, about 7 rows tall. Row 24-25 is the wooden front apron, with legs on rows 26-30, so the front face is about 7 rows. The backrest on rows 5-12 has a light top band on rows 6-9 that ends in a darker edge line on row 10 and shadow on row 11. A gap on rows 13-15 shows the posts. The chair faces south with no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small ladder-back chair, roughly 12x20 source pixels. It has 9 distinct colours against 14 for the wood bench and 11 for the hedge. Its median is 7 colours per full tile, which is dense for a piece this small. Flat-fill coverage is 0%, and the dark edge pixels are 0% neutral, so the outline carries a brown tint like the wood it borders rather than a black sticker line. The wood has about 4 lightness steps (highlight, light, mid, dark) against about 5 on the reference bench. The slats and seat show some grain and variation, with no large flat areas. It is slightly lower than the references in steps and colour count, but a careful artist would accept it next to the bench without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19920
+  }
+ ],
+ "decidedAt": "2026-10-19T16:50:54.482Z",
+ "cells": {
+  "16": [
+   "88bd6ef503e07045",
+   "b111674c726d432c"
+  ],
+  "24": [
+   "06af2e7c82bb1af8",
+   "19ddaa892d32c7dc",
+   "1b0c082421692f12",
+   "25e3690cf6af5ca1",
+   "5e3fc4e34c290f50",
+   "681b5c806aa5e67c",
+   "8da9ad7b3a07697e",
+   "c958700d9c355d62",
+   "d5ce3084ce990c6f",
+   "d8713adc5c733f31",
+   "dabdde36d1c7ca42",
+   "fec234767065d0bf"
+  ],
+  "32": [
+   "4d09b759ef43b4cd",
+   "53adb5802c1f07a4",
+   "a7161ef65bf9f2c4"
+  ],
+  "48": [
+   "54355d06a2f7d4e5",
+   "6bad2a8d39ac9690",
+   "9d0ca5443a148df1",
+   "b124d57bdab2cd57",
+   "e212308e2bc5206e",
+   "f79cbd2b77715a80"
+  ]
+ }
+}
