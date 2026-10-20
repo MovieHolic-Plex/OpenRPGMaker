@@ -1337,100 +1337,91 @@ def greenhouse(c, base):
     # 필름은 반투명: 가로 명암(가운데 빛 띠 → 동·서 치마 어둡게) 위로 남북 작물 줄이 비친다.
     VW = 'vending_cool_white'
     x0, x1 = 3, 60
-    R, RN, RS = 30, 6, 13                                                  # 화면 고리 높이: 북쪽 머리 6(얕은 호 — 먼 끝 아치는 눌려 보인다) · 늑재 6→13 · 남쪽 아치 끝면 30(높은 ∩)
-    GN, YB = 8, 107                                                         # 북쪽 끝 땅 y, 남쪽 끝 땅 y
+    R, RN, RS = 30, 4, 4                                                   # 화면 고리 높이: 남쪽 아치 끝면 30(높은 ∩) · 북쪽 끝과 늑재는 모두 같은 얕은 ∩(가운데 4px 높다)
+    GN, YB = 6, 107                                                        # 북쪽 끝 땅 y, 남쪽 끝 땅 y
     cx, half = (x0 + x1) / 2, (x1 - x0) / 2
 
     def prof(x):
         u = (x - cx) / half
-        return 0.0 if abs(u) >= 1 else (1 - u * u) ** 0.6                 # 가운데까지 고루 굽은 고리(늑재 곡선이 읽히게)
+        return 0.0 if abs(u) >= 1 else (1 - u * u) ** 0.6
+
+    def arc(x):
+        u = (x - cx) / half
+        return 0.0 if abs(u) >= 1 else 1 - u * u                          # 늑재·북쪽 끝: 폭 전체로 고르게 굽은 얕은 ∩
 
     def hgt(x, g=None):
-        """땅 y=g 에 선 고리의 화면 높이(북쪽일수록 납작). g 없으면 남쪽 끝."""
-        rg = R if g is None else RN + (RS - RN) * (g - GN) / (YB - GN)
-        return rg * prof(x)
+        """g 없으면 남쪽 아치 끝면 높이, 있으면 그 땅 y 에 선 늑재(얕은 ∩) 높이."""
+        return R * prof(x) if g is None else RN * arc(x)
 
-    def tone(u):
-        a = abs(u)
+    def tone(u):                                                           # 빛은 서북: 하이라이트는 용마루 조금 서쪽, 동쪽 치마 짙게
         if u < -0.9: return 0
-        if u > 0.88: return -1
-        if a < 0.14: return 3                                              # 꼭대기 빛 띠
-        if a < 0.45: return 2
-        if a < 0.75: return 1 if u > 0 else 2
-        return 1 if u < 0 else 0
+        if u < -0.62: return 1
+        if u < -0.38: return 2
+        if u < -0.06: return 3
+        if u < 0.3: return 2
+        if u < 0.62: return 1
+        if u < 0.86: return 0
+        return -1
     crops = (-0.52, 0.0, 0.52)
     for x in range(x0, x1 + 1):
         u = (x - cx) / half
-        h = hgt(x)
-        p = prof(x)
-        top, bot = round(GN - RN * p), round(YB - h)                       # 북 머리 곡선(납작), 남 아치 끝면 위 곡선
+        top, bot = round(GN - RN * arc(x)), round(YB - hgt(x))            # 북쪽 끝 = 마지막 늑재(얕은 ∩), 남 아치 끝면 위
         tb = tone(u)
-        cd = min(abs(u - cu) for cu in crops)
         for y in range(top, bot):
-            t = tb
-            fl = (y - top) / max(1, bot - top)                             # 북(먼 쪽) → 남(가까운 쪽)
-            if fl < 0.3 and abs(u) < 0.55:
-                t += 1                                                     # 먼 북쪽 윗면은 하늘빛을 더 받는다
-            elif fl > 0.72 and abs(u) > 0.3:
-                t -= 1                                                     # 남쪽 끝 가까이 어깨는 한 단 그늘
-            rib = False
-            if rib:
-                t -= 1
-            elif H(x // 2, (y - top) // 3, 44) < 0.05:
-                t += 1
-            col = J(VW, max(0, min(4, t))) if t >= 0 else K('lino', 0)
-            c.P(x, y, col)
-        if h >= 1:
-            c.P(x, top, K('tekko', 3 if u < 0.3 else 1))                    # 북쪽 끝 아치 파이프(둥근 머리 테)
-    # 필름 너머 바닥: 작물 줄 3개를 먼저 칠한다 — 고랑의 짙은 흙 바닥(폭 9) 위에 남쪽 아치부터 북쪽 머리 가까이까지
-    # 끊기지 않고 곧게 이어진 잎 띠(폭 5~6). 그 위에 반투명 필름 빛을 얹고, 늑재는 가늘고 옅게 — 줄을 끊지 않는다.
-    rowmask = set()
+            t = tb + (1 if H(x // 2, (y - top) // 3, 44) < 0.05 else 0)
+            c.P(x, y, J(VW, max(0, min(4, t))) if t >= 0 else K('lino', 0))
+    # 필름 너머 작물: 남북 줄 3개, 줄마다 따로 떨어진 잎 덩이(점선 줄). 덩이 밑은 그늘 한 줄.
     for k, cu in enumerate(crops):
         px = cx + cu * half
-        for xx in range(int(px) - 5, int(px) + 6):
-            ytop_r = round(GN - RN * prof(xx)) + 4
-            ybot_r = round(YB - hgt(xx)) - 1
-            d = (xx - px) / 3.6
-            for y in range(ytop_r, ybot_r):
-                if not c.a[y, xx, 3]:
-                    continue
-                if abs(d) > 1.0:
-                    continue
-                ph = (y + 2 * k) % 4                                      # 포기 마디(4px): 가운데 부풀고 마디 끝은 좁다
-                lw = 2.4 + (0.9 if ph in (1, 2) else 0) - (0.7 if ph == 3 else 0)
-                dd = (xx - px) / lw
-                if abs(dd) <= 1.0:
-                    t = 2 + (1 if dd < -0.3 else -1 if dd > 0.5 else 0) + (1 if ph == 1 and dd < 0.3 else 0)   # 대비 한 단 낮춤: 필름 빛에 가깝게(세로 판처럼 튀지 않게)
-                    col = K('lino', t)
-                else:
-                    col = K('soil', 2 if xx < px else 1)                   # 포기 사이로 비치는 흙 고랑(필름에 비쳐 한 단 옅게)
-                c.P(xx, y, col)
-                rowmask.add((xx, y))
-    # 필름 빛 얹기: 꼭대기 쪽 성긴 하이라이트 띠(줄 위로도 지나간다)
+        for yc in range(GN + 6, YB - 4, 7):
+            yc2 = yc + (k % 2) * 3
+            jx = (H(k, yc2, 46) - 0.5) * 1.4
+            if yc2 + 3 >= round(YB - hgt(round(px))):
+                continue
+            tb = tone(cu)
+            for yy in range(yc2 - 2, yc2 + 3):
+                for xx in range(int(px + jx) - 3, int(px + jx) + 4):
+                    dx, dy = (xx - (px + jx)) / 2.7, (yy - yc2) / 1.9
+                    if dx * dx + dy * dy > 1.0 or not c.a[yy, xx, 3]:
+                        continue
+                    t = (1 if tb >= 2 else 0) + (1 if dy < -0.3 and dx < 0.3 else 0) - (1 if dx > 0.5 else 0)
+                    c.P(xx, yy, K('lino', t))
+            for xx in range(int(px + jx) - 2, int(px + jx) + 3):
+                if c.a[yc2 + 2, xx, 3]:
+                    c.P(xx, yc2 + 2, K('lino', -1 if tb < 2 else 0))
+    # 필름 반짝임: 용마루 조금 서쪽에 성긴 세로 빛
     for x in range(x0 + 2, x1 - 1):
         u = (x - cx) / half
-        if -0.3 < u < 0.08:
-            for y in range(round(GN - RN * prof(x)) + 2, round(YB - hgt(x)) - 1):
-                if (x, y) not in rowmask and H(x, y // 3, 50) < 0.25:
-                    c.P(x, y, J(VW, 4))                                    # 필름 반짝임(성기게, 세로로 길쭉)
-    for g in range(GN + 13, YB - 6, 13):                                   # 아치 늑재: 간격 넓게 · 1px · 필름보다 한 단 밝은 옅은 선
+        if -0.34 < u < -0.1:
+            for y in range(round(GN - RN * arc(x)) + 2, round(YB - hgt(x)) - 1):
+                if H(x, y // 3, 50) < 0.2:
+                    c.P(x, y, J(VW, 4))
+    # 아치 늑재: 북쪽 끝과 같은 얕은 ∩(가운데 4px 높다) — 1px 밝은 선 + 바로 밑 어두운 1px
+    for g in list(range(GN + 11, YB - 6, 11)):
         prev = None
         for x in range(x0 + 1, x1):
             u = (x - cx) / half
             y = round(g - hgt(x, g))
-            ys = [y] if prev is None else list(range(min(y, prev + (1 if y > prev else 0)), max(y, prev - (1 if y < prev else 0)) + 1))
+            if y + 1 >= round(YB - hgt(x)):
+                prev = y
+                continue
+            tb = tone(u)
+            ys = [y] if prev is None or prev == y else list(range(min(y, prev), max(y, prev) + 1))
             for yy in ys:
-                if not c.a[yy, x, 3] or yy >= round(YB - hgt(x)):
-                    continue
-                if (x, yy) in rowmask:
-                    c.P(x, yy, K('lino', 3))                               # 작물 줄 위: 필름 너머 옅은 초록 빛 — 늑재 호는 이어지고 줄 색도 끊기지 않는다
-                    continue
-                c.P(x, yy, K('tekko', 3) if abs(u) < 0.7 else K('tekko', 2))  # 가는 쇠 파이프(1px, 위로 볼록한 호)
+                c.P(x, yy, J(VW, max(0, min(4, tb + 1))) if tb >= 0 else J(VW, 0))
+            c.P(x, max(ys) + 1, J(VW, max(0, tb - 1)) if tb >= 1 else K('lino', -1))
             prev = y
-    for y in range(GN - 2, YB):                                            # 동·서 치마(땅에 닿는 세로 면) 짙게
-        for x, t in ((x0, -1), (x0 + 1, 0), (x1 - 1, -1), (x1, -2)):
-            if round(GN - hgt(x, GN)) <= y < round(YB - hgt(x)):
-                c.P(x, y, K('lino', t + (1 if y % 8 == 0 else 0)))
+    # 북쪽 끝: 마지막 늑재(같은 얕은 ∩) — 그 너머엔 아무것도 없다
+    for x in range(x0 + 1, x1):
+        u = (x - cx) / half
+        y = round(GN - RN * arc(x))
+        c.P(x, y, K('tekko', 3) if u < 0.3 else K('tekko', 2))
+        c.P(x, y + 1, J(VW, max(0, tone(u) - 1)) if tone(u) >= 1 else K('lino', -1))
+    # 양옆 치마: 땅에 닿는 곧은 짙은 선(서 lino 0 · 동 더 짙게)
+    for y in range(GN, YB):
+        for x, t in ((x0, 0), (x0 + 1, 1), (x1 - 1, -1), (x1, -2)):
+            if round(GN - RN * arc(x)) <= y < round(YB - hgt(x)):
+                c.P(x, y, K('lino', t))
     # 남쪽 반원 아치 끝면(세로 면: 윗면보다 한두 단 어둡다) + 아치 늑재(바깥 파이프, 안쪽 아치, 세로 기둥, 가로대)
     for x in range(x0, x1 + 1):
         u = (x - cx) / half
@@ -1488,10 +1479,150 @@ def greenhouse(c, base):
         c.P(xx, YB + 1, K('soil', 0 if H(xx, 1, 47) > 0.25 else 1))
         c.P(xx, YB + 2, K('soil', -1 if xx % 4 else 0))
         c.P(xx, YB + 3, K('soil', -2))
+    for y in range(GN + 2, YB):                                            # 치마가 묻힌 흙(성긴 흙 알갱이, 기둥처럼 보이지 않게)
+        if H(0, y, 51) < 0.4:
+            c.P(x0 - 2, y, K('soil', 0 if H(1, y, 51) > 0.5 else -1))
     _shade(c, x0, YB, x1 - x0 + 1, 1, 0.7)
     _finish(c)
     for y in range(GN - 2, YB + 3):                                        # 동쪽 치마 밖 땅 그림자: 터널 길이 내내 3px 디더 띠
         for k, xx in enumerate((x1 + 1, x1 + 2, x1 + 3)):
+            if xx < c.w and y < c.h and c.a[y, xx, 3] == 0 and ((True if k == 0 else (xx + y) % 2 == 0) if k < 2 else (xx + y) % 4 == 0):
+                c.P(xx, y, K('yoru', -1))
+
+
+@kit('inaka-vinyl-greenhouse-ew', '비닐하우스(동서로 긴 터널, 3/4 탑뷰): 북쪽 먼 치마 · 용마루 빛 · 남쪽 비탈 필름 · 세로 늑재 · 서쪽 아치 끝면 미닫이(7×4)', 7, 4, 'building',
+     solid=rows(7, [1, 2, 3]), tags=['inaka', '비닐하우스', '온실', 'ハウス'],
+     rules='밭 옆 흙 위에 둔다. 여러 동을 위아래로 나란히 놓는다. 서쪽(왼쪽) 아래 둘째 칸이 출입구.', role='building', doors=[(1, 3, 1)])
+def greenhouse_ew(c, base):
+    # 동서로 누운 터널을 남쪽 위에서 본 3/4: 위 끝 = 북쪽 치마(먼 가장자리), 그 아래 북쪽 비탈 → 용마루 빛 → 남쪽 비탈 필름 →
+    # 맨 아래 곧은 남쪽 치마(땅). 남북으로 걸린 아치 늑재는 필름을 가로지르는 세로선. 서쪽 끝은 비스듬히 보이는 높은 ∩ 끝면 + 문.
+    VW = 'vending_cool_white'
+    XB0, XB1 = 22, 107                                                     # 몸통(서쪽 끝면 가운데 ~ 동쪽 끝)
+    YT, YR, YB = 6, 16, 59                                                 # 북쪽 치마(먼 끝) · 용마루 · 남쪽 치마(땅)
+    FX0, FX1, FH = 6, 40, 34                                               # 서쪽 ∩ 끝면 가로 범위 · 높이
+    fcx, fhalf = (FX0 + FX1) / 2, (FX1 - FX0) / 2
+
+    def fprof(x):
+        u = (x - fcx) / fhalf
+        return 0.0 if abs(u) >= 1 else (1 - u * u) ** 0.6
+
+    def tone_y(y):                                                         # 세로 명암: 북쪽 비탈 옅게 · 용마루 조금 아래 빛 · 남쪽 비탈 아래로 어둡게
+        if y < YT + 2: return 1
+        if y < YR - 1: return 2
+        if y < YR + 5: return 3
+        if y < YR + 18: return 2
+        if y < YB - 8: return 1
+        return 0
+    APX = YB - FH                                                          # 서쪽 끝면 꼭대기 y
+
+    def xl(y):                                                             # 몸통 서쪽 가장자리: 끝 고리가 비스듬히 보이는 둥근 어깨(끝면 꼭대기 → 북쪽 치마)
+        if y >= APX:
+            return XB0
+        f = (APX - y) / (APX - YT)
+        return round(fcx + 17 * (1 - (1 - f) ** 2) ** 0.5)
+    # 몸통 필름
+    for x in range(XB0, XB1 + 1):
+        ytop = YT + (2 if x > XB1 - 3 else 1 if x > XB1 - 6 else 0)        # 동쪽 끝 위 모서리 둥글게
+        for y in range(ytop, YB):
+            if x < xl(y):
+                continue
+            t = tone_y(y) - (1 if x > XB1 - 10 else 0) + (1 if H(x // 3, y // 2, 52) < 0.05 else 0)
+            c.P(x, y, J(VW, max(0, min(4, t))) if t >= 0 else K('lino', 0))
+    # 필름 너머 작물: 동서 줄 3개, 줄마다 떨어진 잎 덩이(점선 줄)
+    for k, yc in enumerate((YR + 6, YR + 18, YR + 30)):
+        for xc in range(XB0 + 22 + k * 3, XB1 - 4, 7):
+            jy = (H(xc, k, 46) - 0.5) * 1.2
+            tb = tone_y(yc)
+            for yy in range(int(yc + jy) - 2, int(yc + jy) + 3):
+                for xx in range(xc - 3, xc + 4):
+                    dx, dy = (xx - xc) / 2.7, (yy - (yc + jy)) / 1.9
+                    if dx * dx + dy * dy > 1.0:
+                        continue
+                    t = (1 if tb >= 2 else 0) + (1 if dy < -0.3 and dx < 0.3 else 0) - (1 if dx > 0.5 else 0)
+                    c.P(xx, yy, K('lino', t))
+            for xx in range(xc - 2, xc + 3):
+                c.P(xx, int(yc + jy) + 2, K('lino', -1 if tb < 2 else 0))
+    # 필름 반짝임: 용마루 조금 아래로 성긴 가로 빛
+    for x in range(XB0, XB1 - 6):
+        for y in (YR + 1, YR + 2):
+            if x > xl(y) + 1 and H(x // 3, y, 53) < 0.22:
+                c.P(x, y, J(VW, 4))
+    # 늑재: 필름을 가로지르는 세로선(1px 밝은 선 + 오른쪽 어두운 1px), 위·아래 끝은 치마에 닿는다
+    for rx in range(XB0 + 24, XB1 - 3, 11):
+        for y in range(YT + 1, YB):
+            if rx < xl(y) + 1:
+                continue
+            tb = tone_y(y)
+            c.P(rx, y, J(VW, max(0, min(4, tb + 1))))
+            c.P(rx + 1, y, J(VW, max(0, tb - 1)) if tb >= 1 else K('lino', -1))
+    # 북쪽 치마(먼 가장자리 파이프)와 남쪽 치마(땅에 닿는 곧은 짙은 선), 동쪽 끝 그늘
+    for x in range(XB0, XB1 + 1):
+        ytop = YT + (2 if x > XB1 - 3 else 1 if x > XB1 - 6 else 0)
+        if x >= xl(ytop):
+            c.P(x, ytop, K('tekko', 3) if x < XB1 - 12 else K('tekko', 2))
+    for y in range(YT, APX):                                               # 서쪽 끝 고리(둥근 어깨) 파이프
+        c.P(xl(y), y, K('tekko', 3))
+        c.P(x, YB - 2, K('lino', 0)); c.P(x, YB - 1, K('lino', -1))
+    for y in range(YT + 2, YB):
+        c.P(XB1, y, K('lino', -2)); c.P(XB1 - 1, y, K('lino', -1))
+    # 서쪽 ∩ 끝면(비스듬히 본 세로 면: 필름보다 두 단 어둡다) + 바깥 파이프 · 안쪽 아치 · 기둥 · 가로대
+    for x in range(FX0, FX1 + 1):
+        u = (x - fcx) / fhalf
+        h = FH * fprof(x)
+        top = round(YB - h)
+        for y in range(top, YB):
+            c.P(x, y, J(VW, 0) if u < 0.45 else K('tekko', 1))
+        if h >= 1:
+            c.P(x, top - 1, K('tekko', 3 if u < 0.2 else 2))
+            c.P(x, top, K('tekko', 2 if u < 0.2 else 1))
+            c.P(x, top + 1, K('yoru', 0))
+        ih = 0.72 * h
+        if ih >= 2:
+            c.P(x, round(YB - ih), K('tekko', 1))
+    for sx in (FX0 + 5, FX1 - 5):
+        for y in range(round(YB - FH * fprof(sx)) + 1, YB):
+            c.P(sx, y, K('tekko', 1 if sx < fcx else 0))
+    for (px, sgn) in ((FX0 + 3, 0), (FX1 - 3, -1)):                         # 끝면 너머 작물 포기
+        for yy in range(YB - 7, YB):
+            for xx in range(px - 3, px + 4):
+                dx, dy = (xx - px) / 3.2, (yy - (YB - 2)) / 4.5
+                if dx * dx + dy * dy <= 1.0 and yy > round(YB - FH * fprof(xx)) + 1:
+                    c.P(xx, yy, K('lino', sgn + (1 if dy < -0.4 else 0)))
+    # 문: 폭 16 · 높이 27 양쪽 미닫이(칸 1 = x16..31)
+    DX0, DX1, DY0 = 16, 31, YB - 27
+    c.R(DX0 - 1, DY0 - 1, DX1 - DX0 + 3, YB - DY0 + 1, OL)
+    c.R(DX0, DY0, DX1 - DX0 + 1, YB - DY0, K('tekko', 2))
+    c.HL(DX0, DY0, DX1 - DX0 + 1, K('tekko', 3)); c.VL(DX0, DY0, YB - DY0, K('tekko', 3)); c.VL(DX1, DY0, YB - DY0, K('tekko', 0))
+    mid = (DX0 + DX1) // 2
+    for (lx0, lx1, sh) in ((DX0 + 1, mid - 1, 0), (mid + 2, DX1 - 1, -1)):
+        for yy in range(DY0 + 2, YB - 1):
+            for xx in range(lx0, lx1 + 1):
+                if yy < YB - 10:
+                    col = J(VW, max(0, (3 if xx == lx0 else 2 if yy < DY0 + 6 else 1) + sh))
+                    if (xx + yy) % 3 == 0 and yy > DY0 + 6:
+                        col = K('lino', 1 + sh)
+                else:
+                    col = K('tekko', 1 + sh)
+                c.P(xx, yy, col)
+        c.HL(lx0, YB - 10, lx1 - lx0 + 1, K('tekko', 3 + sh))
+        c.HL(lx0, DY0 + 1, lx1 - lx0 + 1, K('tekko', 1))
+    c.VL(mid, DY0 + 1, YB - DY0 - 1, K('tekko', 0)); c.VL(mid + 1, DY0 + 1, YB - DY0 - 1, K('tekko', 3))
+    c.P(mid - 2, YB - 15, K('kinari', 1)); c.P(mid + 3, YB - 15, K('kinari', 0))
+    c.HL(DX0 - 1, YB - 1, DX1 - DX0 + 3, K('tekko', 0))
+    add_outline(c)
+    # 흙: 남쪽 치마 앞 흙 띠 + 북쪽 먼 치마 위 흙 알갱이
+    for xx in range(FX0 - 2, XB1 + 3):
+        if 0 <= xx < c.w:
+            c.P(xx, YB, K('soil', 1 if H(xx, 0, 47) > 0.3 else 2))
+            c.P(xx, YB + 1, K('soil', 0 if H(xx, 1, 47) > 0.25 else 1))
+            c.P(xx, YB + 2, K('soil', -1 if xx % 4 else 0))
+    for xx in range(XB0 + 18, XB1 - 2):
+        if H(xx, 2, 51) < 0.4 and c.a[YT - 2, xx, 3] == 0:
+            c.P(xx, YT - 2, K('soil', 0 if H(xx, 3, 51) > 0.5 else -1))
+    _shade(c, FX0, YB, XB1 - FX0 + 1, 1, 0.7)
+    _finish(c)
+    for y in range(YT, YB + 3):                                            # 동쪽 끝 밖 땅 그림자(3px 디더)
+        for k, xx in enumerate((XB1 + 1, XB1 + 2, XB1 + 3)):
             if xx < c.w and y < c.h and c.a[y, xx, 3] == 0 and ((True if k == 0 else (xx + y) % 2 == 0) if k < 2 else (xx + y) % 4 == 0):
                 c.P(xx, y, K('yoru', -1))
 
