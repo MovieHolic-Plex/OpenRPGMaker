@@ -24,9 +24,11 @@ import { OBJECT_GATE_KINDS, OBJECT_GATE_STYLE_KINDS, defaultObjectGateStyleKind,
 import { GATE_DATA, calibratedFinalProfiles, listFinals, listQueueBatches, readFinal, readFinalProfiles, readPng, readReceipt, styleRefs, writeFinal, writeFinalProfile, writeHeldImage } from './store';
 import { receiptCells } from './cells';
 
-export const FINAL_RULES_VERSION = 2;
+export const FINAL_RULES_VERSION = 3;
 export const FINAL_JUDGE = { provider: 'claude-cli' as const, model: 'claude-opus-5-5', effort: 'medium' };
 export const FINAL_BATCH = 6;
+/** 표 수. 각 표는 다른 묶음 섞기로 따로 부른다. 모든 표가 pass 일 때만 pass — 앞 표가 fail 이면 뒤 표는 부르지 않는다(규칙 v3: 한 번만 보면 같은 그림이 판마다 뒤집혔다). */
+export const FINAL_VOTES = 3;
 const MAX_SIDE = 640; // 확대 그림의 긴 변 상한(8배가 넘치면 정수 배율을 낮춘다)
 const MIN_GOOD_RATE = 0.5; // 모두 떨어뜨리는 판정자를 막는 하한(정상 통과율). 위반은 하나도 놓치면 안 된다.
 
@@ -136,7 +138,7 @@ export function referenceBoard(kinds: ObjectGateStyleKind[]): Buffer {
 const fileHash = (p: string) => (existsSync(p) ? createHash('sha256').update(readFileSync(p)).digest('hex').slice(0, 16) : null);
 export function finalProfile() {
   const manifest = resolve(GATE_DATA, 'style-refs', 'manifest.json');
-  return { version: FINAL_RULES_VERSION, judge: FINAL_JUDGE, system: FINAL_SYSTEM, batch: FINAL_BATCH, maxSide: MAX_SIDE, minGoodRate: MIN_GOOD_RATE,
+  return { version: FINAL_RULES_VERSION, judge: FINAL_JUDGE, system: FINAL_SYSTEM, batch: FINAL_BATCH, votes: FINAL_VOTES, maxSide: MAX_SIDE, minGoodRate: MIN_GOOD_RATE,
     guide: fileHash(resolve(GATE_DATA, 'view34-guide.png')), pairs: fileHash(resolve(GATE_DATA, 'view34-pairs.png')), styleRefs: fileHash(manifest), board: 'v1-1x+grid' };
 }
 const stable = (v: unknown): string => Array.isArray(v) ? `[${v.map(stable).join(',')}]` : v && typeof v === 'object' ? `{${Object.keys(v).sort().map(k => `${JSON.stringify(k)}:${stable((v as Record<string, unknown>)[k])}`).join(',')}}` : JSON.stringify(v);
@@ -170,13 +172,13 @@ function askOpus(system: string, content: Array<Record<string, unknown>>): Promi
 
 export type FinalItem = { png: string; kind: ObjectGateKind; styleKind?: ObjectGateStyleKind; name: string; label?: string };
 type Prepared = FinalItem & { img: Img; sha: string; styleKind: ObjectGateStyleKind };
-type Answer = { id: number; kind_ok: boolean; view34: string; style: string; sure: boolean; charges: number[]; reasons: string[]; verdict: string; top_rows?: number; front_rows?: number; facing?: string };
+type Answer = { votes?: string[]; id: number; kind_ok: boolean; view34: string; style: string; sure: boolean; charges: number[]; reasons: string[]; verdict: string; top_rows?: number; front_rows?: number; facing?: string };
 
 const CACHE = resolve(process.env.OPUS_GATE_CACHE ?? resolve(homedir(), '.cache', 'opus-gate'), 'answers');
-const cachePath = (profile: string, p: Prepared) => resolve(CACHE, profile, `${p.sha.slice(0, 24)}-${p.kind}-${p.styleKind}.json`);
+const cachePath = (profile: string, p: Prepared, vote: number) => resolve(CACHE, profile, `${p.sha.slice(0, 24)}-${p.kind}-${p.styleKind}-v${vote}.json`);
 
 /** 한 호출 = 같은 화풍 종류 묶음 최대 FINAL_BATCH 장. 답이 모자라거나 틀리면 그 호출을 다시(3번까지). */
-async function judgeCall(batch: Prepared[], profile: string): Promise<Map<Prepared, Answer | { error: string }>> {
+async function judgeCall(batch: Prepared[], profile: string, vote: number): Promise<Map<Prepared, Answer | { error: string }>> {
   const kinds = [...new Set(batch.map(p => p.styleKind))];
   const guide = readFileSync(resolve(GATE_DATA, 'view34-guide.png')), pairs = readFileSync(resolve(GATE_DATA, 'view34-pairs.png'));
   const images = [guide, pairs, referenceBoard(kinds), ...batch.map((p, i) => candidateBoard(p.img, i + 1))];
@@ -191,7 +193,7 @@ async function judgeCall(batch: Prepared[], profile: string): Promise<Map<Prepar
       const arr = m ? JSON.parse(m[0]) as Answer[] : null;
       if (!arr || arr.length !== batch.length || arr.some((a, i) => Number(a.id) !== i + 1)) { last = `답 형식이 맞지 않다: ${reply.slice(0, 200)}`; continue; }
       const out = new Map<Prepared, Answer>();
-      batch.forEach((p, i) => { const a = arr[i]!; out.set(p, a); mkdirSync(dirname(cachePath(profile, p)), { recursive: true }); writeFileSync(cachePath(profile, p), JSON.stringify(a)); });
+      batch.forEach((p, i) => { const a = arr[i]!; out.set(p, a); mkdirSync(dirname(cachePath(profile, p, vote)), { recursive: true }); writeFileSync(cachePath(profile, p, vote), JSON.stringify(a)); });
       return out;
     } catch (e) {
       if (e instanceof JudgeUnavailable) throw e;
@@ -231,32 +233,51 @@ async function pool<T>(items: T[], limit: number, fn: (x: T, i: number) => Promi
   await Promise.all(Array.from({ length: Math.min(limit, items.length) }, async () => { while (next < items.length) { const i = next++; await fn(items[i]!, i); } }));
 }
 
-/** 판정. 캐시(프로필·그림·종류)가 있으면 다시 부르지 않는다. 같은 화풍 종류끼리 묶고, 한 호출에 같은 해시를 두 번 넣지 않는다. */
-export async function judgeFinal(items: FinalItem[], opts: { concurrency: number; onCall?: (done: number, total: number) => void; order?: 'mix' }): Promise<Map<Prepared, Answer | { error: string }>> {
+/**
+ * 판정. 표마다 캐시(프로필·그림·종류·표 번호)가 있으면 다시 부르지 않는다. 같은 화풍 종류끼리 묶고, 한 호출에 같은 해시를 두 번 넣지 않는다.
+ * 표 r 은 r 로 씨앗을 준 섞기로 묶음을 다시 짠다(같은 이웃과 또 묶이지 않게). 앞 표가 fail 이면 그 그림은 거기서 멈춘다.
+ * 돌려주는 답: 처음 fail 한 표의 답(없으면 마지막 표의 답) + votes(표마다 pass/fail).
+ */
+export async function judgeFinal(items: FinalItem[], opts: { concurrency: number; onCall?: (done: number, total: number) => void }): Promise<Map<Prepared, Answer | { error: string }>> {
   const profile = finalProfileHash();
   const prepared = await prepare(items);
-  const results = new Map<Prepared, Answer | { error: string }>();
-  const todo: Prepared[] = [];
-  for (const p of prepared) { const c = cachePath(profile, p); if (existsSync(c)) results.set(p, JSON.parse(readFileSync(c, 'utf8'))); else todo.push(p); }
-  const groups = new Map<string, Prepared[]>();
-  for (const p of todo) (groups.get(p.styleKind) ?? groups.set(p.styleKind, []).get(p.styleKind)!).push(p);
-  const calls: Prepared[][] = [];
-  for (const list of groups.values()) {
-    let cur: Prepared[] = [];
-    const pending = [...list];
-    while (pending.length) {
-      const i = pending.findIndex(p => !cur.some(q => q.sha === p.sha));
-      if (i < 0 || cur.length >= FINAL_BATCH) { calls.push(cur); cur = []; continue; }
-      cur.push(pending.splice(i, 1)[0]!);
+  const votes = new Map<Prepared, Answer[]>(prepared.map(p => [p, []]));
+  const errors = new Map<Prepared, string>();
+  let alive = prepared;
+  for (let vote = 1; vote <= FINAL_VOTES && alive.length; vote++) {
+    const todo: Prepared[] = [];
+    for (const p of alive) { const c = cachePath(profile, p, vote); if (existsSync(c)) votes.get(p)!.push(JSON.parse(readFileSync(c, 'utf8'))); else todo.push(p); }
+    let seed = 7919 * vote; const rnd = () => ((seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff);
+    const order = vote === 1 ? todo : todo.map(p => [rnd(), p] as const).sort((a, b) => a[0] - b[0]).map(x => x[1]);
+    const groups = new Map<string, Prepared[]>();
+    for (const p of order) (groups.get(p.styleKind) ?? groups.set(p.styleKind, []).get(p.styleKind)!).push(p);
+    const calls: Prepared[][] = [];
+    for (const list of groups.values()) {
+      let cur: Prepared[] = [];
+      const pending = [...list];
+      while (pending.length) {
+        const i = pending.findIndex(p => !cur.some(q => q.sha === p.sha));
+        if (i < 0 || cur.length >= FINAL_BATCH) { calls.push(cur); cur = []; continue; }
+        cur.push(pending.splice(i, 1)[0]!);
+      }
+      if (cur.length) calls.push(cur);
     }
-    if (cur.length) calls.push(cur);
+    let done = 0;
+    if (calls.length) console.error(`  표 ${vote}/${FINAL_VOTES}: ${todo.length}장 · 호출 ${calls.length} (캐시 ${alive.length - todo.length})`);
+    await pool(calls, opts.concurrency, async call => {
+      const got = await judgeCall(call, profile, vote);
+      for (const [p, a] of got) { if ('error' in a) errors.set(p, a.error); else votes.get(p)!.push(a); }
+      opts.onCall?.(++done, calls.length);
+    });
+    alive = alive.filter(p => !errors.has(p) && votes.get(p)!.length === vote && decideFinal(votes.get(p)!.at(-1)!).verdict === 'pass');
   }
-  let done = 0;
-  await pool(calls, opts.concurrency, async call => {
-    const got = await judgeCall(call, profile);
-    for (const [p, a] of got) results.set(p, a);
-    opts.onCall?.(++done, calls.length);
-  });
+  const results = new Map<Prepared, Answer | { error: string }>();
+  for (const p of prepared) {
+    const list = votes.get(p)!;
+    const firstFail = list.find(a => decideFinal(a).verdict === 'fail');
+    if (!firstFail && (errors.has(p) || list.length < FINAL_VOTES)) { results.set(p, { error: errors.get(p) ?? `표 ${list.length}/${FINAL_VOTES} 만 받음` }); continue; }
+    results.set(p, { ...(firstFail ?? list.at(-1)!), votes: list.map(a => decideFinal(a).verdict) });
+  }
   return results;
 }
 
