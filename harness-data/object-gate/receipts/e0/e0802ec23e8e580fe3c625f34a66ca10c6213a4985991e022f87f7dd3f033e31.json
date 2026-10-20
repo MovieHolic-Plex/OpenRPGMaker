@@ -1,0 +1,341 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e0802ec23e8e580fe3c625f34a66ca10c6213a4985991e022f87f7dd3f033e31",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "theater seat facing south",
+ "label": "seats34/atlas_biome_interior/theater seat",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 4 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 4 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 10,
+  "darkV5": 0,
+  "nearBlackEdge": 0.38,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "right",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion with armrests",
+      "rows": "7-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The backrest (rows 1-6, width 10) is a face-on panel. It has a light row at row 2, then a mid-tone face, then a dark base line at row 6, with no top plane or edge line. The seat and armrests (rows 6-13, width 14) show only a 2-row lighter band at rows 7-8. That band then steps down through mid and dark tones (rows 9-12) to the outline at row 13, which reads as a shaded front cushion, not an ellipse or a deep horizontal surface. The 2-row band is only a rim-sized highlight, as in the 'seat: band 2' reference. The legs are rows 14-15. The seat surface is therefore not clearly seen from above, so the drawing reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small red armchair-style seat, about the size of the reference bench. It has a lit top edge, a mid red on the back and cushion, and a darker red on the sides and base, giving roughly 4 distinct steps. Beodeul uses about 5. Flat-fill coverage is 0%, so there are no dead fills. It has 10 distinct colours, close to the hedge (11) and the bench (14), and below the stall and well (about 40). Dark edge pixels are 41% neutral, almost the same as the Beodeul bench (44%), so the outline is mixed rather than a uniform black sticker line, and the edges look dark red-tinted in places. The tile median of 10 matches the hedge. It is slightly lower than the richest references but would sit acceptably beside the bench without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20357
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion with armrests",
+      "rows": "7-13",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "12"
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The backrest (rows 1-6, width 10) is a face-on panel: row 2 is a light highlight, rows 3-5 are the face, and row 6 is a dark shadow. The seat and armrest body (rows 7-13, width 14) has only a 2-row light band at rows 7-8 above the front face at rows 9-11, with a dark row 12 and an outline at row 13. That band is a rim-sized strip like the 'seat: band 2' reference, not a 4-5 row seat surface. There is no ellipse and no visible contents. Legs are at rows 14-15. The seat surface is not seen from above, so the drawing reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small red seat of about 12x14 source pixels. It has 10 distinct colours and 0% 5x5 flat-fill coverage, with a median of 10 colours per tile. That matches prop-hedge (11 colours, 10 per tile) and is a little below prop-bench-wood (14 colours). The red ramp has about 4 steps (highlight on the seat top and backrest, mid red, dark red, deep outline), against roughly 5 on the references. The outline is mixed: 41% of dark edge pixels are neutral, close to the bench's 44%. By eye it leans dark red-brown rather than pure black, so it is not a uniform sticker line. The seat has some form shading (backrest, armrests, cushion) but little grain. It is clearly simpler than the stall and well, but those are much larger pieces. For a single small furniture piece it holds up next to the bench and hedge without looking markedly flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25469
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "seat cushion with armrests",
+      "rows": "7-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The backrest (rows 1-5, width 10) is a face-on vertical panel with a dark base line at row 6. The seat (rows 6-13, width 14) has only a light band at rows 7-8 above a front face at rows 9-12 (#b54252, then #982333, then dark #7a1120), and row 13 is the outline. That 2-row highlight reads as a rim or cushion lip rather than a real top surface. It has no clear front-edge line and no eave shadow, much like the 'seat band 2' reference. The legs at rows 14-15 are narrow (width 4). The whole object reads as a front elevation with at most a thin top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small red seat, about one tile in size. It has 10 distinct colours and a median of 10 per full tile, which matches prop-hedge (11 colours, median 10) and is close to the small references prop-bench-wood (14) and prop-lamp-crook (14). Flat-fill coverage is 0%, so there are no large flat areas. The red ramp has about 4 steps (highlight, light, mid, dark), a little below Beodeul's 5-6, but the backrest and cushion are separated by value and carry some grain. Outline: 41% of dark edge pixels are neutral, about the same as the bench at 44%, so it is a mix of neutral and red-brown tinted edges rather than a uniform black sticker line. It is simpler than the stall (40 colours) and the well (38), but for a single small seat it is not noticeably thinner or flatter than the bench, hedge or lamp. Passing, but borderline.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20709
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "6-6"
+     },
+     {
+      "part": "seat cushion with armrests",
+      "rows": "7-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The backrest (rows 1-6, width 10) is a face-on vertical panel. Its light row 2 is a highlight, and the dark row 6 is a shadow where it meets the seat. The seat (rows 7-13, width 14) has only a 2-row light band (rows 7-8, L=133) before the front face steps down (rows 9-10 L=102, row 11 L=72, row 12 L=50, row 13 outline). That band is too thin to read as a seat surface seen from above, so it resembles the 'seat: band 2' wrong reference. There is no ellipse, no clear front-edge line, and no visible contents. The legs are at rows 14-15. The drawing reads as a front elevation with only a rim-like top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small red theater seat, about the size of the bench and smaller than the stall and well. Its 10 distinct colours and median of 10 per tile match the hedge (11 and 10) and are close to the bench (14). Flat-fill coverage is 0%, so there are no large flat areas. The red body shows roughly 4 steps (highlight, light, mid, dark) across the backrest, seat and armrests. That is slightly below the 5-6 steps of the references. Only 41% of the dark edge pixels are neutral, close to the bench's 44%, so the outline is a mix of tinted dark red-brown and darker neutral pixels rather than a uniform black sticker line. Next to the bench and hedge it looks like a comparable, adequately shaded small prop, only a touch simpler.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16914
+  }
+ ],
+ "decidedAt": "2026-10-20T08:43:41.766Z",
+ "cells": {
+  "16": [
+   "978e236509bed453"
+  ],
+  "24": [
+   "094ed17deeb93354",
+   "65fd1a1580e887c3",
+   "7fde9d5e31479721",
+   "ac33c1873e945673",
+   "b209fecfba581a16",
+   "d84dade8a9e4c78c"
+  ],
+  "32": [
+   "13b75ef74d801bb4",
+   "39dcf52a1f03b21f",
+   "5bdd6bfb7a949149",
+   "6517ad3fb6c8eff7",
+   "75326125c7e0741a",
+   "faa0d73bc59f690a"
+  ],
+  "48": [
+   "567dea69b7219bde",
+   "79ccb9dbff3182b7",
+   "8a95be4d47abb715",
+   "ae1842ede22e2c40",
+   "affd038d87489b21",
+   "c867325993a082d9"
+  ]
+ }
+}

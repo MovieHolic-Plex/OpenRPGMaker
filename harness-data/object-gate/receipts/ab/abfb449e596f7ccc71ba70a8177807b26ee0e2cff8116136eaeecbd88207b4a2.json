@@ -1,0 +1,337 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "abfb449e596f7ccc71ba70a8177807b26ee0e2cff8116136eaeecbd88207b4a2",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "school chair toppled on its side",
+ "label": "seats34/jp_city_interior/as-chair-toppled",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(side_profile_no_top) (4/4)",
+  "3/4: 윗면 0행 < 4 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(side_profile_no_top) (4/4)",
+   "윗면 0행 < 4 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 49,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest (vertical bar)",
+      "rows": "2-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat/leg (horizontal bar lying at bottom)",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The object is an L-shaped silhouette. A vertical bar (x≈8-10, rows 2-13) joins a horizontal bar (rows 10-13, x≈4-12). Both are drawn as flat tan strips with a dark outline. The column scan shows a single tan band at rows 11-12 with dark outline rows 10 and 13. There is no front-edge line, no eave shadow, no ellipse and no visible contents. The seat surface is never seen from above, so this is a flat side profile like the 'side elevation chair' reference. The grey strips at the right (rows 4-5 and 10-11) and the bar at row 15 look like background or floor elements, not part of the body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, sparse prop, so the per-tile median of 0 is not held against it. Its 13 distinct colours are about equal to prop-bench-wood (14), the closest reference of the same kind. Flat-fill coverage is 0%, the same as the bench. Its dark edge pixels are 43% neutral against the bench's 44%, so the outline is mixed: partly tinted and partly neutral, not a uniform black sticker line. By eye it has about 4 lightness steps on the wood and some highlight/shade variation on the seat and legs. That is slightly fewer than the bench's 5, but it is not flat. At this size it sits acceptably next to the bench and is not noticeably thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15222
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "chair back (upright vertical strip, lying toward the north)",
+      "rows": "2-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat (lying flat along the bottom, drawn as a thin L-shaped strip)",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The object is an L-shaped silhouette, a side profile of the toppled chair. The vertical strip (rows 2-11, width about 4-5) is the backrest and the horizontal strip (rows 10-13, width up to 16) is the seat. Both are drawn as narrow flat bands with a dark outline. There is no ellipse, no front-edge line with eave shadow, and no visible seat surface seen from above, only a profile of the pieces. Rows 15 is a separate faint line, likely a shadow. This matches the 'side elevation chair' red reference and not a seat with a visible top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, sparse single-tile prop, so the per-tile median of 0 is not held against it. It has 13 distinct colours against 14 for the bench and lamp references, and 0% flat-fill coverage, the same as those two. Its 43% near-neutral dark edge pixels almost exactly match the bench's 44%, so its outline is mixed, partly tinted and partly neutral, like the bench's. By eye the chair shows about 4 value steps across the seat, back and legs, with some tonal variation and no large flat areas. It is slightly thinner than the bench but would sit acceptably beside it, so I pass it.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13446
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat plank lying horizontally (toppled chair seat)",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest standing vertical (toppled chair back)",
+      "rows": "2-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The object is an L-shaped side profile: a tall narrow vertical strip (rows 2-11, x about 8-9) joined to a horizontal strip (rows 10-13) at the bottom. Both parts are flat, uniformly shaded faces with a dark outline. There is no band ending in a front-edge line with eave shadow, no ellipse, and no visible contents. The seat is only a 2-row light band inside the outline, which reads as a rim or face, not a foreshortened top surface. This matches the 'side elevation chair' red reference. A 1-row shadow sits at row 15, detached below the object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small, sparse prop (about 14x14 source pixels), so the per-tile median of 0 says nothing against it. It has 13 distinct colours, against 14 for the wood bench, which is the closest reference in kind and size. Flat-fill coverage is 0%, the same as the bench, so there are no large single-colour areas. Its dark edge pixels are 43% near-neutral, almost the same as the bench's 44%. That reads as a mix of tinted and neutral dark tones, not a uniform black sticker outline. By eye it has about 4 lightness steps on the wood against roughly 5 on the bench, and the grain is lighter. That is a little thinner than the references but still acceptable next to the bench, and it is not flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14355
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "west",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "vertical bar (backrest or leg)",
+      "rows": "2-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "horizontal bar (seat or leg)",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The silhouette is a thin L: a vertical bar at x~10-12 over rows 2-11 (width 4-5) and a horizontal bar at rows 10-13 (width 16 at rows 10-11, 9 at rows 12-13). Each bar is a 2-row light fill inside a dark outline. The scan shows no band ending in an edge line, no eave shadow, no ellipse and no visible contents. Nothing reads as a seat surface seen from above. It matches the 'side elevation chair' reference, which has a flat profile and no top. The row 15 strip is a detached floor shadow, not part of the body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, thin prop, so the per-tile median of 0 is not held against it. Its measured facts match the closest reference, prop-bench-wood: 13 vs 14 distinct colours, 0% flat-fill coverage against 0%, and 43% vs 44% neutral dark edge pixels. That puts the outline in the mixed range, not a uniform black sticker line. By eye, the chair shows several lightness steps across the frame, the legs and the seat, with no large flat blocks. It is a little simpler than the bench and much smaller than the stall and well, but a careful artist would accept it next to the bench without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16275
+  }
+ ],
+ "decidedAt": "2026-10-20T09:02:37.245Z",
+ "cells": {
+  "16": [
+   "b66e4096ad07169d"
+  ],
+  "24": [
+   "14af4947f9d86011",
+   "34feb230ef2dc5b9",
+   "4e4675e9a4c7c798",
+   "5d22c6779df0fa3b",
+   "77150c6e68456928",
+   "a4e4d552bbef0387"
+  ],
+  "32": [
+   "46e91c31e0d45e76",
+   "64981063f2fe62f2",
+   "c808e557bf48ae37",
+   "dd930938cc67868c",
+   "eb6ccca5b1e8ea7c",
+   "f9efab376654a20f"
+  ],
+  "48": [
+   "0aacb540f6153b12",
+   "7ac8c651391268dc",
+   "86811e09bad7c5b7",
+   "c13f16a1a71c8851",
+   "d37b2876da159362",
+   "e75e1e04147d48d8"
+  ]
+ }
+}

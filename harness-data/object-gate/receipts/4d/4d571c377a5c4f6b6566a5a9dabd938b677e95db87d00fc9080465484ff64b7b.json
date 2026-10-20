@@ -1,0 +1,284 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4d571c377a5c4f6b6566a5a9dabd938b677e95db87d00fc9080465484ff64b7b",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "round stool",
+ "label": "seats34/jp_city_interior/of-stool",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 46,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "round seat cushion top",
+      "rows": "2-8",
+      "evidence": "b",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs",
+      "rows": "9-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile runs 8, then 12 for rows 3-7, then 8 at row 8, so the green seat is an ellipse from its back rim at row 2 to its front rim at row 8. It has a light highlight at rows 3-6 and a dark outline at the top and bottom. Below it, two legs on rows 9-15 form the front support. Together these match the green 'seat: top 5 + legs' reference, so the seat surface is seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The stool is a tiny single-tile prop, so the per-tile median of 0 says nothing against it. It has 10 distinct colours, close to the hedge (11) and the bench (14). Flat-fill coverage is 0%. Only 27% of its dark edge pixels are neutral, so the outline leans toward a tint rather than a black sticker line. The cushion shows a light rim highlight, a mid green and a dark green underside, with a darker green edge instead of black. The legs have a few grey steps. It is a little shallower than the bench's 5-step wood ramp and has less grain, but it does not look thinner or flatter than the references at this scale. A careful artist would accept it next to the bench and hedge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16515
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "round seat cushion",
+      "rows": "2-8",
+      "evidence": "b",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is a green oval with a dark outline. Its width goes 8 (row 2), 12 (rows 3-7), then 8 (row 8), so it widens and narrows again like an ellipse. Light highlight rows 3-6 are bounded by a darker front-edge row at 7 and the dark outline at row 8. Dark shadow beneath the seat shows at rows 8-11 in column x=10. Two lavender legs run from about row 9 to row 15 (4px total width at rows 13-15) and form the front support. The seat surface is seen from above with legs below it, as in the green 'seat: top 5 + legs' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The stool is a small, sparse prop, so the per-tile median of 0 says nothing against it. It has 10 distinct colours, close to the hedge (11) and a little under the bench and lamp (14 each). Its cushion reads as highlight, mid and dark green with a lit rim. The legs carry two or three tones. Only 27% of its dark edge pixels are neutral, so most outline pixels lean green or grey-brown, as Beodeul's do, and it does not have the uniform black sticker line. Flat-fill coverage is 0%. It is slightly simpler than the bench, with about 4 steps against 5, but a careful artist would accept it next to the bench and the lamp without it looking flat or sticker-like. This is a close call and I lean towards pass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17255
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "round seat top (green cushion ellipse)",
+      "rows": "2-8",
+      "evidence": "b",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "8"
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile runs 8, then 12 across rows 3-7, then back to 8 at row 8. That is an ellipse seat spanning rows 2-8, with a dark outline at row 2 and a dark front rim at row 8. Below it, legs run through rows 9-15 with dark leg shadows at x=10, so there is a visible front/leg zone of about 7 rows. The seat is seen from above, matching the 'seat: top 5 + legs' green reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The stool is a small green-cushion round stool with a lighter top ellipse and thin dark legs, about 20 px wide at 2x. The measured facts are mostly fine: 10 distinct colours against 14 for the bench and 11 for the hedge, 0% flat-fill coverage, and only 27% neutral dark edge pixels, so the outline is partly tinted and not a uniform black line. The per-tile median of 0 is expected for a piece this small, so I judged density by eye. By eye the cushion has about 3-4 lightness steps (highlight, light, mid, dark) and the legs have 2-3 flat tones with little grain. The bench has a richer wood ramp with plank highlights and shadows. The stool reads slightly thinner and flatter than the reference props, with little visible texture on the cushion or legs, and the outline is only partly material-toned. It is not a sticker look, but the ramps are shallower than Beodeul's 5-6 steps. Because it is borderline, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16053
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "round seat cushion",
+      "rows": "2-8",
+      "evidence": "b",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is an ellipse whose width runs 8, then 12 for rows 3-7, then 8 at row 8. It is outlined in dark green at rows 2 and 8, and it shows a lit upper area with a lighter row 6 and a darker row 7 near the front rim. Below it, rows 9-15 show legs (dark inner legs and lighter outer legs), which give the open front face. This matches the green 'seat: top 5 + legs' and 'barrel: ellipse top' references, not the thin band or slab drawings."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The stool is a small, sparse prop (under one tile, so the per-tile median of 0 is not held against it). Its 10 distinct colours are close to the hedge (11) and the bench (14), and its 5x5 flat-fill coverage is 0%. The green cushion has about 4 steps: a bright top highlight, a mid tone, a darker rim and a shadow side. Only 27% of its dark edge pixels are neutral, so the outline mostly leans toward a darker version of the adjacent material, but the thin legs read slightly grey. Next to the bench it looks a little thinner and has less grain, but it is not a flat sticker and I would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18599
+  }
+ ],
+ "decidedAt": "2026-10-20T09:02:37.230Z",
+ "cells": {
+  "16": [
+   "528349a1705f4202"
+  ],
+  "24": [
+   "4cc73e044cdd93bd",
+   "5602e8772c4cf488",
+   "b1530818d0a0add0",
+   "b82b00aebef69964",
+   "ef82a9c01b05ddb2",
+   "fc4442492529ce30"
+  ],
+  "32": [
+   "20fdf185c30d02b1",
+   "285d1b80d22a40f6",
+   "3ce929ae24a016db",
+   "b1135c620a0a38f2",
+   "e70eda6e37211c49",
+   "f252982916b7d06e"
+  ],
+  "48": [
+   "1e9ec1eb8d566a3c",
+   "307f155fe73fb285",
+   "7ff48249c43335b1",
+   "8941849e0b6e349e",
+   "ba3c5a5326ad6bbc",
+   "f20abd83a464b187"
+  ]
+ }
+}

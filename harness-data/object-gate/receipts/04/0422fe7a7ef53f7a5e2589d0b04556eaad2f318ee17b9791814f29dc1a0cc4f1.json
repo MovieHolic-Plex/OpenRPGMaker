@@ -1,0 +1,367 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0422fe7a7ef53f7a5e2589d0b04556eaad2f318ee17b9791814f29dc1a0cc4f1",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "dining chair (faces north, seen from behind)",
+ "label": "seats34/jp_city_interior/chair-dining-n",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 31,
+  "nearBlackEdge": 0.24,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat",
+      "rows": "18-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23-24"
+     },
+     {
+      "part": "backrest",
+      "rows": "6-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat spans rows 18-24 and is 8 px wide. Rows 18-21 are a light top plane. Row 22 is a darker front-edge line, and rows 23-24 are darker eave shadow. Below it, 4 px wide legs run down rows 25-30. The backrest (rows 6-11) is a framed panel seen face-on with a light inner band and a dark border. It is a vertical element, so I did not count it as a top surface. The side posts (rows 12-16) join the backrest to the seat. The seat top is 4 rows, which is more than a rim, and it ends in an edge line plus shadow, so the main body reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small green chair seen from behind, with 7 distinct colours against 14 for the bench and lamp and 38-40 for the stall and well. Its outline is tinted dark green (0% neutral edge pixels), which is correct and better than the lamp's 100% neutral line. The shading is shallow, though: about 3 steps (a light top-rail edge, a mid green body and a dark outline). There is no grain, plank texture or per-part highlight on the backrest slats or legs, so it reads as a flat-filled sticker next to the bench's multi-tone wood. The 5x5 flat-fill coverage is 0% only because the piece is thin. Per-tile density is 0 because the piece is smaller than a tile, so I judged by eye, and it looks thinner and flatter than the bench reference. A careful artist would not accept it beside the bench without adding more tonal steps and wood grain.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 31157
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat",
+      "rows": "18-21",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23-24"
+     },
+     {
+      "part": "backrest top rail",
+      "rows": "6-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is a lighter band in rows 18-21 (row 18 is the lightest, L=170). The band ends in a darker edge at row 22 and is followed by shadow in rows 23-24, which gives evidence (a). Below that, the legs run through rows 25-30, so the front face and legs total about 9 rows. The backrest in rows 6-11 is a light panel with a dark outline and vertical posts, which reads as a face-on vertical panel with no separate top surface. That is a small part, so the seat remains the main body with a top surface and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny, narrow green object with only 7 distinct colours, half of the 14 in the bench and the lamp, which are the nearest thin or sparse references. Its outline is tinted dark green (0% neutral edge pixels), so it is not a near-black sticker line, and the flat-fill coverage is 0%. The shading is shallow, though: about 3 lightness steps on the backrest and legs, against 5-6 on the bench wood. It shows little grain or per-slat texture and no wood detail. Because the piece is thin, I judged by eye rather than by the per-tile median. It reads as a plain green block or post more than a chair seen from behind. The bench is clearly more finished, with slat highlights, shaded edges and grain. A careful artist would find the candidate flatter and thinner than the reference, so it fails."
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19165
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat",
+      "rows": "18-21",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23-24"
+     },
+     {
+      "part": "backrest panel",
+      "rows": "6-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is a block at rows 18-24 with a light top band at rows 18-21 (L=170 then 135). Row 22 (L=106) acts as the front-edge line, followed by darker shadow at rows 23-24 (L=60, 25), then two legs at rows 25-30. That gives a top of about 4 rows over a front face of about 9 rows (apron plus legs). The backrest at rows 6-16 is a thin vertical panel seen from behind, so it needs no top surface. Its light patch at rows 7-9 is a face-on cushion or panel, not a top. The structure resembles the 'seat: top 5 + legs' reference, but the top is shorter and its edge line is weaker, so it is somewhat ambiguous."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a very small chair back with only 7 distinct colours, against 14 for the bench and lamp, 11 for the hedge and 38-40 for the stall and well. Its dark edge pixels are 0% neutral, so the outline is a tinted dark green rather than a black sticker line, which is good. The shading is shallow, with roughly 3 lightness steps (dark edge, mid body, one lighter band). I can't see the per-slat highlights, grain dots or wood texture that the bench's slats carry. The 5x5 flat-fill measure is 0% only because the piece is so small. By eye the surfaces are plain bands with no texture variation. Placed next to the bench, it would look thinner and flatter. The piece is thin, so I did not use the per-tile median against it, but even by eye it falls short of the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 23509
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat",
+      "rows": "18-21",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23-24"
+     },
+     {
+      "part": "backrest panel",
+      "rows": "6-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat (rows 18-24, width 8) has a light top band in rows 18-21 (L170 then 135). Row 22 (L106) is a darker front-edge line, and rows 23-24 (L60, L25) are eave shadow. Below it, the legs (rows 25-30, width 4) and the seat's front rows give about 9 rows of front face. The backrest (rows 6-11) is a face-on panel: its light rows 7-9 are symmetrical (170/135/170), with dark outline rows 10-11 below. It reads as a vertical face with no edge line or shadow, so it has no visible top surface. The seat still reads as a top surface above a front face and legs."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small green chair back. Its outline is a tinted dark green (0% neutral edge pixels), which fits the Beodeul approach. The shading is shallow: about 3 green steps (dark outline, mid body, one light slat highlight) and only 7 distinct colours in total. The bench reference has 14 colours with wood grain, and the lamp has 14 with a multi-step ramp. The slats and back panel are mostly uniform strips with little grain, speckle or per-part highlighting. There are no 5x5 flat blocks, but that is only because the piece is thin. Next to the bench it looks thinner and flatter, and it reads more as a green post than a chair seen from behind. The per-tile density fact is 0 because the piece is thin, so I judged density by eye, and it is lower than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 24558
+  }
+ ],
+ "decidedAt": "2026-10-20T07:19:08.311Z",
+ "cells": {
+  "16": [
+   "71d8f02c01a584a1",
+   "896d0dee45e3dddf"
+  ],
+  "24": [
+   "0bf6031c41c3d24e",
+   "191edc96d3a9d73b",
+   "2e2179172cc463be",
+   "4d4d48af5500142e",
+   "57daf55094e0f86c",
+   "5a8b7c12aa764bef",
+   "994e720784bd0b80",
+   "aa72e21dd7051103",
+   "b17de29702b8e32b",
+   "ec3f0d99653cf273",
+   "f03ceeb997e826bf",
+   "f82add14b534e3a3"
+  ],
+  "32": [
+   "9a0b1333fd2dd39d",
+   "bbe4aa92a2b0008f",
+   "c265d5caa3e0124e"
+  ],
+  "48": [
+   "3b729da4855e8240",
+   "41513aaf2df9ca02",
+   "47d9351ca072e21e",
+   "999f13992f46fd4d",
+   "a3ec5b933904522b",
+   "d576a74de045ef94"
+  ]
+ }
+}

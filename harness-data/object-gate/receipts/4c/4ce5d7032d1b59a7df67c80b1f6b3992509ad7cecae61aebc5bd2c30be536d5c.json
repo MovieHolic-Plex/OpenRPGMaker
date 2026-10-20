@@ -1,0 +1,366 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4ce5d7032d1b59a7df67c80b1f6b3992509ad7cecae61aebc5bd2c30be536d5c",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "karaoke sofa segment (faces west)",
+ "label": "seats34/jp_city_interior/kr-sofa-w",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 3/4, 분명한 위반 1/4)",
+  "3/4: 옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+  "3/4: 맨 위의 큰 부분(16행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 3/4, 분명한 위반 1/4)",
+   "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+   "맨 위의 큰 부분(16행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 6,
+  "darkV5": 26,
+  "nearBlackEdge": 0.25,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion / main body",
+      "rows": "0-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-11"
+     },
+     {
+      "part": "backrest strip on east side",
+      "rows": "0-13",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Column x=4 and x=8 show a large top band over rows 0-10. Row 0 and row 10 are light #f78175 lines, and row 10 is the front-edge line. Row 11 is dark #801223 eave shadow. Below that the front face is rows 12-13 (medium red), then dark row 14 and base row 15, so the front face is about 4 rows. The darker vertical strip at the east side is the backrest, which is also seen from above (x=11 is light over rows 0-8 with a dark edge at row 9). No receding isometric side face is drawn. This is a seat top seen from above with a front face, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small red sofa block with only 6 distinct colours, against 11-40 for the references. Its median of 6 colours per tile is below the hedge (10), cheese stall (17) and well (20). 28% of its pixels sit in 5x5 flat-fill blocks, while the hedge and well have 0%. The cushion and seat faces are large areas of one red with no grain, stitching or speckle. Shading is limited to about 3 steps (a light edge, a mid red and a dark red edge), where the references use 5-6. The outline is a dark red-brown with 0% neutral edge pixels, so it reads as tinted and not a black sticker line. That is good, but the form is a simple bevelled block that looks flatter and thinner than the references, so it does not reach the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 16980
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion (main body)",
+      "rows": "0-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "backrest strip on east side",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "At x=4 and x=8, rows 1-9 are a mid-red top plane. Row 10 is a 1-row lighter front-edge line (#f78175), and row 11 is a dark eave shadow (#801223). Below that, rows 12-15 form the south front face (rows 12-13 mid-dark, row 14 dark, row 15 darkest), which gives a front face of about 5 rows (11-15). The seat top is large, about 11 rows, so it is not a thin rim. The dark vertical strip near x=14 is the backrest or arm on the east side, drawn as a narrow vertical part. The silhouette is a full 16-wide square on every row. There is no receding isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small red sofa block with only 6 distinct colours, against 11-40 in the references (the hedge has 11 and a median of 10 per tile, the stall 40 and 17, the well 38 and 20). Its 28% flat-fill coverage is the highest of the set, where the references run 0-13%. The visible shading is roughly a highlight edge, a mid red and a dark red, so about 3 steps against 5-6 in the references. The outline is a dark red tone with 0% neutral edge pixels, so it is tinted and not sticker-black. That is the one point in its favour, but the cushion faces are flat red with no grain, stitching or tuft detail, so it reads as a simple blocky shape beside the richer references. It would look flatter and thinner than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "맨 위의 큰 부분(16행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "맨 위의 큰 부분(16행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 23657
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "0-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "backrest strip at east side",
+      "rows": "0-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat cushion fills rows 0-9 and ends in a light front-edge line at row 10. Row 11 is a dark eave shadow, and rows 12-15 form the front apron (two mid-tone rows, a dark row, a darker base row). That is a top band of about 10 rows over a front face of 4 rows. The dark vertical band near x=14 reads as the backrest or arm divider at the east end, with a lighter strip beyond it. It is not a receding side face. The backrest is thin and flat-looking, but the main seat body clearly has a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small red sofa block with only 6 distinct colours, against 11-40 for the references. Its shading is a flat red body with a lighter top edge and a darker rim, about 3 steps, where Beodeul uses 5-6. Its dark edge pixels are 0% neutral, so the outline is a tinted dark red, not near-black. That part is fine. But 28% of its pixels sit in 5x5 flat-fill blocks, more than the hedge (0%), bench (0%) or cheese stall (13%). The cushion faces are flat red with no grain, stitching, speckle or seat/back texture. At 6 colours per tile against a hedge at 10, a cheese stall at 17 and a well at 20, it is much less dense than the references. A careful artist would find it flatter and more sticker-like beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 18132
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion with backrest strip on the east side",
+      "rows": "0-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "front face / base",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-9 form a large red seat surface seen from above. A lighter 1-row front-edge line (#f78175) sits at row 10, followed by a dark eave shadow at row 11. The front face is rows 11-15: dark band, mid-red rows 12-13, and dark base rows 14-15. A vertical dark strip near x=14 reads as the backrest/arm seen from above on the east side. The read is somewhat ambiguous: the top region could instead be a face-on backrest, but the edge line and shadow structure supports a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a red sofa block with only 6 distinct colours, against 11-40 for the references (hedge 11, stall 40, well 38). Its median is 6 colours per tile, against 10-20 for the references that have a measurable median. 28% of its pixels sit in 5x5 flat-fill blocks, while the references sit at 0-13%. The seat and back faces are large flat red areas with no dots, grain, stitching or fabric texture. It has about 3 lightness steps (light edge, mid red, dark edge), where Beodeul props use 5 or more. The outline is a dark red tone, not neutral black (0% near-neutral dark edge pixels), so it is tinted and acceptable. Overall it reads as a flat, sticker-like block, clearly shallower than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 33142
+  }
+ ],
+ "decidedAt": "2026-10-20T08:33:20.443Z",
+ "cells": {
+  "16": [
+   "89516b8e87ff4441"
+  ],
+  "24": [
+   "7435fa4e7000b47f",
+   "7a6e185d12d400bf",
+   "8bbc4479e10a93d5",
+   "aaffbe4cc0b649c3",
+   "b4526a72e5070445",
+   "b5519fe287dc5a26"
+  ],
+  "32": [
+   "19b9b27e73ed55ce",
+   "1c972d57b746c7c4",
+   "483aeea293ae3e34",
+   "49541ea53479891e",
+   "4c2c5a701aca47a2",
+   "febfba8f6c2054c6"
+  ],
+  "48": [
+   "0f3c7f1407013352",
+   "1adee6dbc3556873",
+   "5d239bd8dee4a97c",
+   "960c954c353b87b5",
+   "a9d231da6975bdc7",
+   "e821110be8ef1c89"
+  ]
+ }
+}

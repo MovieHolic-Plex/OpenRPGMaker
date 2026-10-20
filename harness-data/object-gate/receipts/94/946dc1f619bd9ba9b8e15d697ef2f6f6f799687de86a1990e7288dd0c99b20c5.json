@@ -1,0 +1,313 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "946dc1f619bd9ba9b8e15d697ef2f6f6f799687de86a1990e7288dd0c99b20c5",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "flat Japanese floor cushion (zabuton) on the floor, seen from above-front",
+ "label": "seats34/jp_city_interior/zabuton",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 7,
+  "darkV5": 26,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cushion top (seat surface)",
+      "rows": "1-9",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cushion front thickness (darker band)",
+      "rows": "10-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile runs 10, 12, 14 (rows 3-11), 12, 10, so the silhouette is a rounded, ellipse-like pillow. At x=8 the lighter #304080 top surface covers rows 2-9, with a highlight patch at the upper left (x=4, rows 2-4). Below it, rows 10-12 are a darker #1f295c band, which is the front thickness of the cushion. At x=11 the dark band starts higher, at row 8, so it curves with the front rim. The seat surface is clearly seen from above with a 3-row front face under it, though there is no distinct 1-row front-edge line, only a lightness step at row 10. Rows 1 and 13 are the outline."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small, roughly one-tile cushion. It has 7 distinct colours and a median of 7 per tile, against 10 for the hedge and 17-20 for the stall and well. The 5x5 flat-fill coverage is 0%. Dark edge pixels are 0% neutral, so the outline is a tinted dark blue-violet version of the body, not a black sticker line. A light top-left face, mid body, shadowed lower edge and dark rim give about 4-5 value steps, close to the hedge, which is the nearest reference in size and simplicity. Texture is modest: there is some highlight and shade variation but little grain, and the tufted corners and centre button that would read as a zabuton are only faintly suggested. Density is slightly below the hedge but not thin or flat for an object this small, so it is acceptable next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19914
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cushion top",
+      "rows": "2-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cushion front/side thickness",
+      "rows": "10-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The cushion is a rounded square with widths 10,12,14 and then back to 12,10, outlined at rows 1 and 13. Rows 2-9 are the lighter blue (#304080) top surface with a highlight at the upper left. At rows 10-12 the colour steps to a darker blue (#1f295c), a 3-row front face that shows the cushion's thickness. At x=11 the dark region starts at row 8 because of the rounded corner. The top is about 8 rows, larger than a rim, and the front face is 3 rows, so it reads as a 3/4 view with the seat seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small dark-blue rounded square with a lighter rim and a centre button. Its outline is a tinted dark blue, not neutral black (0% neutral dark edge pixels), and it has no 5x5 flat fills (0%). Its shading is still shallow. It uses only 7 colours in total, against 11 for the hedge, the closest simple reference, and 14-40 for the others. It has about 3-4 lightness steps on the cushion body, where the references use 5-6. The surface has little grain or stitching, and there are no corner tufts, seam or fabric weave. The body reads as one mid tone with a rim highlight and a dark edge, which looks closer to a smooth sticker than to Beodeul's shaded, textured props. It is cleanly drawn but thinner than the references, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16568
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cushion top (seat surface)",
+      "rows": "2-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "10-12"
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The lighter blue top (#304080) fills rows 2-9, with a purple highlight at upper left. At the center columns it changes to darker blue (#1f295c) at row 10, which marks the front edge, and that darker band runs through row 12. On the right (x=11) the boundary rises to row 8, so the front face curves up along the edge. That gives a 3-row front/underside band below a large top plane. A dark outline sits at rows 1 and 13. The silhouette is a rounded rectangle (10, 12, 14, ..., 12, 10), so the top is not a clear ellipse, but it is an 8-row top surface over a 3-row front face. The top is not a flat slab, because the front face is visible."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The cushion is a small dark rounded square with a tinted dark-blue edge and a centre tuft button. The measured outline is 0% neutral, so it is not a sticker outline. There are no 5x5 flat fills (0%). However, it has only 7 distinct colours in total, against 11 for the hedge and 14 for the bench. The body shows about 4 lightness steps (edge, mid, a slightly lighter top face, the button dimple), where Beodeul materials use 5-6. Surface grain is minimal: no fabric weave, stitching dots or per-corner highlights, so the cushion reads as a smooth dark blob. It is clean and the outline is right, but next to the hedge and bench it looks thinner and flatter in shading depth. Since a careful artist would not clearly accept it as equal, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15832
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cushion top (seat surface)",
+      "rows": "2-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cushion front/side thickness",
+      "rows": "10-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a rounded-rectangle cushion, 14px wide. The width profile runs 10, 12, 14 and back to 12, 10, so the corners are rounded. Rows 2-9 are a large lighter blue (#304080) top surface with a small highlight at top-left, rows 2-4. At x=4 and x=8 the tone steps down to darker blue (#1f295c) at row 10, giving a 3-row front face (rows 10-12). At x=11 the step comes earlier, at row 8, because the shading is diagonal. There is no distinct front-edge line, only the tone change. Rows 1 and 13 are the dark outline. The top surface is seen from above with a front thickness below it, so it is not a flat top-down slab and not a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small dark-blue rounded square with only 7 colours in total. It has about 4 lightness steps: a darker edge, a mid body, and a lighter highlight patch at the top-left with a faint centre mark. The dark edge pixels are 0% neutral, so the outline is tinted dark blue, not a black sticker line. There are no flat 5x5 fills. It is still clearly shallower than the references. The hedge reaches 10 colours per tile and 11 in total, and the stall and well have 38-40 colours. The cushion shows no fabric weave, no stitched seams, no corner tufts and no centre button. It also has no top-versus-front-face structure, so it reads as a blob or gem, not a zabuton seen from above-front. Next to the references it looks thinner and more sticker-like, so with doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 22707
+  }
+ ],
+ "decidedAt": "2026-10-20T08:55:46.237Z",
+ "cells": {
+  "16": [
+   "73152f2498700872"
+  ],
+  "24": [
+   "06931c4dff7fa671",
+   "0c157cc73d433e74",
+   "7df22cec703c6be1",
+   "8519de2288b11836",
+   "a57d3365f494d698",
+   "b707c3836c2b3c19"
+  ],
+  "32": [
+   "48970c17a826010a",
+   "79f17d1ff16f1c50",
+   "8f6919fa6d32981e",
+   "b9128a4e04a689d9",
+   "d1e156e7cd4761a0",
+   "eed8c664382c81a4"
+  ],
+  "48": [
+   "103afc22d8da85c1",
+   "233a84a874a94c95",
+   "48e7cdeacf2d5aff",
+   "54d3d75c57cde4fe",
+   "742db870dc549572",
+   "a1219f0933bf7939"
+  ]
+ }
+}

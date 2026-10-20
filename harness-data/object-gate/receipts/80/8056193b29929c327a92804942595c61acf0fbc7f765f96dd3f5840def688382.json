@@ -1,0 +1,351 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8056193b29929c327a92804942595c61acf0fbc7f765f96dd3f5840def688382",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "barber chair (faces south)",
+ "label": "seats34/jp_city_interior/sh-barber-chair-s",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 66,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "17-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23-25"
+     },
+     {
+      "part": "backrest",
+      "rows": "8-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "headrest",
+      "rows": "2-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plate",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat cushion spans rows 17-22. It has a light edge line at row 17 and a light front-edge line at row 22. Dark eave-shadow rows 23-25 sit directly below it, then the pedestal pole (rows 26-27) and the footplate (rows 28-31). That gives a horizontal seat band over a front/support face of 3+ rows. The headrest and backrest (rows 2-16) are face-on vertical panels, which is normal for a chair back. The armrests at the sides are gray vertical strips. This is borderline, because the seat could also read as a face-on cushion, but the light front-edge line followed by shadow supports a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The barber chair is a small, simple prop. Its 13 distinct colours match the bench (14) and lamp (14), and it is close to the hedge (11). Its median of 13 colours per full tile is above the hedge's 10, and its 5x5 flat-fill coverage is 0%. The red upholstery has about 4 steps (highlight, light, mid, dark), plus a pale headrest and a grey chrome base. Its dark edge pixels are 38% neutral, in the same range as the bench (44%) and well-roofed (33%). By eye the outline reads as a mix of dark red-brown and darker neutral, not a uniform black sticker line. Texture is modest, with no big flat areas but little grain. It sits slightly below the richest references (stall, well) but is equal to the comparable simple props, so it passes without looking flatter or thinner than the bench or lamp.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21715
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "17-21",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23-25"
+     },
+     {
+      "part": "headrest",
+      "rows": "2-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest with vertical stripes",
+      "rows": "9-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat cushion spans rows 17-21, widest in the width profile (14 px with the armrests). It has a light top-left highlight at row 17 and a light front-edge line at row 22. Dark rows 23-25 follow as shadow and apron. Below that, the pedestal (rows 26-27) and base (rows 28-31) form the front support, which gives a front face of roughly 9 rows. The headrest and backrest are face-on vertical cushions, so they are not counted as top surfaces. The armrests are side strips on the south face. The seat top is somewhat ambiguous, since the highlight sits on the near edge, but it reads as a seat seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 13 distinct colours and a median of 13 per full tile, which matches the simple references (bench 14, lamp 14, hedge 11 colours; hedge 10 per tile). Flat-fill coverage is 0%, so there are no large single-colour areas. By eye, the red seat, back and headrest have highlight, mid and dark steps, and the grey/white base and footrest are shaded separately, giving about 4 steps on the main ramp against roughly 5 on the references. The dark edge pixels are 38% near-neutral, close to the bench (44%) and well-roofed (33%), and the outline looks like a mix of dark red-brown and darker neutral tones. It is not a uniform black sticker line, and forms are partly separated by value. The piece is small and simple, but a careful artist would accept it next to the bench and lamp without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19022
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "17-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23-25"
+     },
+     {
+      "part": "backrest",
+      "rows": "9-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "headrest",
+      "rows": "2-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal base",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat cushion spans rows 17-22 at width 14 with armrests on both sides. Row 17 is a light edge and rows 18-21 are a mid-tone plane. Row 22 is a light front-edge line, followed by dark shadow and apron in rows 23-25, which gives a front face of 3 rows. The backrest (rows 9-16) and headrest (rows 2-8) are face-on vertical panels, which is normal for a chair. A pole (rows 26-27) and a base disc (rows 28-31) sit below. The seat reads as a top surface from above, so the chair is three-quarter, though the top plane is shallow."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small prop, about 11x23 source pixels, that matches the same-kind references. It has 13 distinct colours and a median of 13 per full tile. That matches the bench and lamp (14 colours each) and beats the hedge's per-tile median of 10. Flat-fill coverage is 0%, the same as most references. The red upholstery shows a highlight, a mid, a dark and a deep step, and the grey base and footrest add a separate ramp, so I count about 4 steps against the references' 5. The outline is mixed: 38% of dark edge pixels are neutral, close to the bench (44%) and well-roofed (33%), and the picture shows a dark red lean on the seat. It is not a uniform black sticker line. Texture is modest because the object is small, but it has no big flat areas. A careful artist would accept it next to the bench and lamp without it looking thinner or flatter, so it passes, though it is a little simpler than the stall and well.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23385
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "17-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23-25"
+     },
+     {
+      "part": "headrest",
+      "rows": "2-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest",
+      "rows": "9-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is a 6-row pink band (rows 17-22). Row 17 is a light back edge and rows 18-21 are mid-tone fill. Row 22 is a light front-edge line, followed by 3 rows of dark shadow or front face (rows 23-25). Below that, a pole and base (rows 26-31) work as the support. The backrest (rows 9-16) and headrest are drawn face-on with vertical stripes, which is acceptable for a backrest. The grey armrests run down both sides and show no isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small red barber chair, so I judged it by eye against the bench and lamp references, which are similarly small. It has 13 distinct colours and a median of 13 per tile, which is above the hedge (10) and in line with the bench and lamp (14 colours each). Flat-fill coverage is 0%. The red upholstery shows about 4 steps (highlight, light, mid, dark), with a grey/chrome base and headrest shaded separately. That is a little below the 5-6 steps in the larger references. Only 38% of the dark edge pixels are neutral, so the outline is mixed: partly dark red-brown tinted and partly grey. It is not a uniform black sticker line. Texture is limited to highlights and shading steps on the cushion, with no grain, which is acceptable for a prop this small. A careful artist would accept it next to the bench and lamp without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19487
+  }
+ ],
+ "decidedAt": "2026-10-20T07:00:39.776Z",
+ "cells": {
+  "16": [
+   "e3ca4fddeee61bd2",
+   "f5d2efbd466b9cc3"
+  ],
+  "24": [
+   "0b4f6612c85e3239",
+   "36decd85e3ef8779",
+   "3ad75b6db2cee656",
+   "518c55a49d4bd2c7",
+   "5be9ce2cebc6ab8a",
+   "86feecc21c69019d",
+   "89ed18307b0c0326",
+   "a93d1a0fc78f4e07",
+   "bc8547d2fb3e9753",
+   "e04ef42f866fa6e9",
+   "faecd6c315cdb33d",
+   "fc1dc70aa82438ac"
+  ],
+  "32": [
+   "35414f936b428fef",
+   "926c03a6ea5c372d",
+   "f1cc591e19d3fa69"
+  ],
+  "48": [
+   "0a32922d8460abb4",
+   "2a76cbdc064d6006",
+   "2eb39834f72a9418",
+   "a2e94bd117f56c18",
+   "a98943371c28ec41",
+   "d1678a34b3da8a35"
+  ]
+ }
+}

@@ -711,6 +711,145 @@ def _g_yukata(c):
     rc(c, 3, 11, 10, 1, SH(-1)); hl(c, 2, 12, 12, OL)
 
 
+# ══ seats34 (3/4 다시 그리기) ══
+# seats34 group A — 코드 손 도트(행 문자열 격자). 글자 → (램프, 단: 0 = 가장 어두운 단). 빛은 왼위(윗면 밝게·앞면 중간·그늘 쪽 어둡게),
+# 거의 검은 윤곽은 바깥 실루엣에만. '.' = 투명. 격자는 srcA/designs.py 에서 만든다.
+from ikit import RAMPS as _RAMPS34
+
+
+def _g34(c, layers):
+    for rows, leg, ox, oy in layers:
+        for j, r in enumerate(rows):
+            for i, ch in enumerate(r):
+                if ch not in '. ':
+                    m, t = leg[ch]; c.P(ox + i, oy + j, K(m, t - len(_RAMPS34[m]) // 2))
+
+_S34_0_0 = [
+    '............',
+    '............',
+    '............',
+    '............',
+    'OOOO........',
+    'OqpO........',
+    'OpoO........',
+    'OpoO........',
+    'OnnO........',
+    'OpoO........',
+    'OpoOOOOOOOOO',
+    'OpopqqqqqqpO',
+    'Opoooooooooo',
+    'OpooBAAABBCO',
+    'OpooAAABBBCO',
+    'OpooABBBBBCO',
+    'OpooBBBBBCCO',
+    'OpooCCCCCCDO',
+    'OpoqqqqqqqpO',
+    'OpopppppppoO',
+    'OpopoooooonO',
+    'OpopoooooonO',
+    'OnnnnnnnnnnO',
+    'OpopoooooonO',
+    'OpopoooooonO',
+    'OnnnnnnnnnmO',
+    'OOOOOOOOOOOO',
+    '.nm.....nm..',
+    '.nm.....nm..',
+]
+_S34_0_0L = {'A': ('kinari', 4), 'B': ('kinari', 3), 'C': ('kinari', 2), 'D': ('kinari', 1), 'O': ('sumi', 0), 'm': ('mado', 0), 'n': ('mado', 1), 'o': ('mado', 2), 'p': ('mado', 3), 'q': ('mado', 4)}
+_S34_0_1 = [
+    '............',
+    '............',
+    '............',
+    '............',
+    '........OOOO',
+    '........OqpO',
+    '........OpoO',
+    '........OpoO',
+    '........OnnO',
+    '........OpoO',
+    'OOOOOOOOOpoO',
+    'OqqqqqqqppoO',
+    'OoooooooopoO',
+    'OBAAABBCopoO',
+    'OAAABBBCopoO',
+    'OABBBBBCopoO',
+    'OBBBBBCCopoO',
+    'OCCCCCCDopoO',
+    'OqqqqqqqppoO',
+    'OpppppppopoO',
+    'OpoooooonpoO',
+    'OpoooooonpoO',
+    'OnnnnnnnnnnO',
+    'OpoooooonpoO',
+    'OpoooooonpoO',
+    'OnnnnnnnmnmO',
+    'OOOOOOOOOOOO',
+    '..nm.....nm.',
+    '..nm.....nm.',
+]
+_S34_0_1L = {'A': ('kinari', 4), 'B': ('kinari', 3), 'C': ('kinari', 2), 'D': ('kinari', 1), 'O': ('sumi', 0), 'm': ('mado', 0), 'n': ('mado', 1), 'o': ('mado', 2), 'p': ('mado', 3), 'q': ('mado', 4)}
+_S34_0_2 = [
+    '........',
+    '........',
+    '........',
+    '........',
+    '........',
+    '........',
+    '........',
+    '........',
+    '........',
+    '........',
+    '........',
+    '........',
+    '........',
+    '........',
+    '........',
+    '..OOOO..',
+    '.O5544O.',
+    'O554443O',
+    'O444433O',
+    '.O3322O.',
+    '..O32O..',
+    '..O32O..',
+    '..O32O..',
+    '..O32O..',
+    '..O32O..',
+    '..O32O..',
+    '.OO32OO.',
+    'O544321O',
+    '.OOOOOO.',
+]
+_S34_0_2L = {'1': ('ita', 1), '2': ('ita', 2), '3': ('ita', 3), '4': ('ita', 4), '5': ('ita', 5), 'O': ('sumi', 0)}
+_S34_0_3 = [
+    '........',
+    '........',
+    '........',
+    '........',
+    '........',
+    '........',
+    '........',
+    '........',
+    '........',
+    '........',
+    '........',
+    '........',
+    '........',
+    '..OwgO..',
+    '..OxyO..',
+    '...OO...',
+]
+_S34_0_3L = {'O': ('sumi', 0), 'g': ('midori', 3), 'w': ('shiro', 4), 'x': ('shiro', 3), 'y': ('shiro', 2)}
+_S34_0 = [(_S34_0_0, _S34_0_0L, 0, 0), (_S34_0_1, _S34_0_1L, 20, 0), (_S34_0_2, _S34_0_2L, 12, 0), (_S34_0_3, _S34_0_3L, 12, 0)]   # ht-engawa-chairs (32x32)
+
+
+PENDING_SEATS34 = {
+    'ht-engawa-chairs': (lambda c, _l=_S34_0: _g34(c, _l)),
+}
+SEATS34_PASS = set()          # object-gate PASS 영수증을 받은 id 만 — 이 id 들만 굽는 그림을 바꾼다
+for _k in SEATS34_PASS: R.objs[_k]['draw'] = PENDING_SEATS34[_k]
+# ══ /seats34 ══
+
+
 def build(): return R.build()
 def selftest(): return R.selftest()
 

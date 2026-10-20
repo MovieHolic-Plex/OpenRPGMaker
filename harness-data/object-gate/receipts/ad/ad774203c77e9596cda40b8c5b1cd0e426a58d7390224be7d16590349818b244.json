@@ -1,0 +1,326 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ad774203c77e9596cda40b8c5b1cd0e426a58d7390224be7d16590349818b244",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "office desk chair (faces south)",
+ "label": "seats34/jp_city_interior/of-desk-chair-s",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 26,
+  "nearBlackEdge": 0.46,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "17-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "backrest",
+      "rows": "4-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pole and caster base",
+      "rows": "23-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is a 12-wide plate at rows 15-22. Rows 17-19 form a light-to-mid band (L=139, then 97), which is the seat top seen from above. Row 20 is a lighter front-edge line (#8d7cd1), followed by dark shadow at rows 21-22. Below the seat, the pole (rows 23-27) and the caster base (rows 28-31) give 9 rows of open support, plus the seat's own front row, so the front face is well over 3 rows. The backrest (rows 4-15) is a face-on panel with a highlight at its top, which does not count as a top surface and is not required to have one. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The chair is a small, thin prop, so the per-tile median of 0 is not held against it. It has 12 distinct colours against 14 for the bench and lamp, which are the closest references in size and sparseness. Flat-fill coverage is 0%. Only 25% of its dark edge pixels are neutral, below the bench's 44%, so the outline leans navy rather than neutral black. The back, seat and base each show a highlight, a mid tone and a dark tone, plus a grey wheel base. That is about 4 steps against the bench's 5, slightly shallower but not flat or sticker-like. A careful artist would accept it next to the bench and lamp.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17387
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "17-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21"
+     },
+     {
+      "part": "backrest",
+      "rows": "5-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat (rows 16-22, 12 px wide) has a light top band in rows 17-19 (L=139 then 97) and a lighter front-edge line at row 20. Row 21 is a dark shadow and row 22 is the outline. That gives about 4 rows of seat top. Below it, the pole (rows 23-27) and the caster base (rows 28-31) act as open supports, about 9 rows. The backrest (rows 4-15, 8 px wide) is a vertical panel seen face-on. Its 2 light rows at the top (5-6) are only a rim and there is no edge line or eave shadow, so it has no top surface. This is why all_major_parts_have_top is false."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, sparse prop, so the per-tile median of 0 says nothing against it and I judged density by eye against the bench and lamp. It has 12 distinct colours against 14 for both the bench and the lamp, and 0% flat-fill coverage, the same as those two. Only 25% of its dark edge pixels are neutral, so the outline mostly leans dark blue, a dark tone of the adjacent material, rather than the uniform black of a sticker. The backrest has a highlight edge, a mid tone and a dark side, and the seat and the grey star base with casters are shaded separately. That is about 4 steps per material against roughly 5 on the bench. It is slightly simpler than the bench, but it does not look flatter or more sticker-like next to it.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21110
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "17-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21"
+     },
+     {
+      "part": "backrest",
+      "rows": "4-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is the 12px-wide part at rows 15-22. At x=8 and x=10, rows 17-19 are a light-to-mid top band, and row 20 is a lighter front-edge line. Row 21 is dark eave shadow, and row 22 is the outline. That gives a seat top of about 4 rows. Below it, the pole (rows 23-27) and the caster base (rows 28-31) act as the supports, so the front is more than 3 rows. The backrest (rows 4-15) is a face-on vertical panel with a 1-2 row highlight rim, and it is not required to show a top. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The chair is a small, thin prop, so the per-tile median of 0 is not held against it. Its 12 distinct colours are close to the bench (14) and the lamp (14). Flat-fill coverage is 0%, the same as those references. Only 25% of its dark edge pixels are neutral, against 44% for the bench and 100% for the lamp. By eye the outline is a dark navy that leans toward the blue material, not a uniform black sticker line. The blue ramp has about 4 steps (deep navy, mid blue, light blue, pale highlight on the back). The grey star base with casters is shaded separately from the upholstery. The back, seat, armrests, stem and base are all readable as separate forms. It is a little less rich than the bench, with fewer steps and less grain, but a careful artist would accept it beside the references without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18828
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "17-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-21"
+     },
+     {
+      "part": "backrest",
+      "rows": "5-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is a wide plate (width 12 then 10) at rows 16-22. Rows 17-19 are a light top band (L=139, then 97). Row 20 is a light front-edge line, and row 21 is dark eave shadow above the outline at row 22. Below the seat, the support is a stem (rows 23-27, width 2) and a caster base (rows 28-31), which together form the front/support face. The backrest (rows 4-15, width 8) is a face-on vertical panel. It has only a 2-row highlight rim at rows 5-6 and a lumbar stripe at row 10, so it shows no top surface of its own. The seat still reads as seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The chair is a small, thin prop, so the per-tile median of 0 says nothing against it. It has 12 distinct colours, close to the bench (14) and lamp (14) references, and 0% 5x5 flat-fill coverage, the same as every reference. Only 25% of its dark edge pixels are neutral, so the outline leans toward a dark navy tone of the blue material rather than a uniform black sticker line; this is a judgement from the measured tint share and a low-resolution view. It shows a lighter backrest highlight, a mid seat, darker shadow planes, and a base with casters, which reads as roughly 4 steps against about 5 for the bench. It is slightly simpler than the richer stall and well, but a careful artist would accept it next to the bench and lamp props without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18096
+  }
+ ],
+ "decidedAt": "2026-10-20T09:02:37.229Z",
+ "cells": {
+  "16": [
+   "0c38097609938a33",
+   "fa2773afaf7bf33a"
+  ],
+  "24": [
+   "045219c49594253d",
+   "1d5b88bb1ea8d653",
+   "1db717a10e24f172",
+   "4c3ebdf40b59ca90",
+   "6ee6d3f68512a367",
+   "73888b68a4057ed8",
+   "75f44e7f62ed2a36",
+   "7a783d5d00a1f095",
+   "7e25b5339d6ed14b",
+   "8dba4c18ffd71312",
+   "b0e630188d2ab534",
+   "c577dd05a1f51e00"
+  ],
+  "32": [
+   "427a4eef498dd81f",
+   "949ebb02168b29b5",
+   "c5867e33499bc78d"
+  ],
+  "48": [
+   "557522e5682fd56c",
+   "6df5514db846373d",
+   "c72fd3f9b8a93a88",
+   "d03629d6e72877a9",
+   "f2837d9d1150a110",
+   "fed6c80f0ef9e5a7"
+  ]
+ }
+}

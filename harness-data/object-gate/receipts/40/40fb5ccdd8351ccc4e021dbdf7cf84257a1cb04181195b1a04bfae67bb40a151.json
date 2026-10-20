@@ -1,0 +1,379 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "40fb5ccdd8351ccc4e021dbdf7cf84257a1cb04181195b1a04bfae67bb40a151",
+ "width": 32,
+ "height": 32,
+ "kind": "seat",
+ "name": "two rattan armchairs facing each other (east-facing and west-facing side profiles) with a small round tea table between",
+ "label": "seats34/jp_city_interior/ht-engawa-chairs",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 26,
+  "nearBlackEdge": 0.89,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "armchair seat cushion (both chairs)",
+      "rows": "13-17",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19"
+     },
+     {
+      "part": "armrest band",
+      "rows": "10-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "round tea table top",
+      "rows": "14-19",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Each armchair is a side profile with a tall backrest on the outer edge. The cream cushion at rows 13-17 reads as a seat surface seen from above, ended by a light front-edge line at row 18. Below it, the rattan front/side face runs rows 19-26 (8 rows) with a darker eave band at 19-20. The armrest band at rows 10-12 has its own edge line at row 12. The table between the chairs has an elliptical top on a pedestal. The backrest is only a vertical strip, but it is a minor part. The seat top is a bit ambiguous because it is drawn in profile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts favour the candidate. It has 19 distinct colours, more than the bench (14), hedge (11) and lamp (14) references, and fewer than the stall (40) and well (38). Its median of 13 colours per 16x16 tile sits between the hedge (10) and the stall (17). Flat-fill coverage is 0%, and 0% of its dark edge pixels are neutral, so the outlines are tinted rather than the sticker-style near-black. The two chairs read as rattan frames with lighter cushions, with weave dots and several tan-to-brown steps (roughly 4-5), and the small dark table is separated by value. The picture is small and I could not make out fine detail, so the texture is rated 'some' rather than 'rich', and the shading is a little shallower than the best Beodeul pieces. It would sit acceptably next to the bench and hedge references, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19801
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left armchair seat (east-facing)",
+      "rows": "11-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19"
+     },
+     {
+      "part": "right armchair seat (west-facing)",
+      "rows": "11-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19"
+     },
+     {
+      "part": "round tea table top",
+      "rows": "15-19",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Each armchair has a seat band at rows 11-17, with a cream cushion at rows 13-17 and a light front-edge line at row 18. Rows 19-26 below it form a darker front face of about 8 rows (apron and arm side, x=8 and x=23 columns). The backrests are narrow vertical strips at rows 4-10, which is normal for a side profile. The small table shows a widened top disc at about rows 15-19 on a narrow dark shaft at rows 19-26. The seat surface is visible from above, so the drawing is not a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 13 distinct colours per full tile, which sits inside the reference range (hedge 10, cheese stall 17, roofed well 20). Its 19 distinct colours exceed the bench (14), the hedge (11) and the lamp (14). Flat-fill coverage is 0%, so there are no large single-colour areas. Dark edge pixels are 0% neutral, so the outline leans brown, like the dark tone of the rattan, rather than a black sticker line. By eye, the armchairs carry about 4 lightness steps with woven-looking dotted texture on the seat and back, and the two mirrored chairs are separated mostly by value. The central tea table is small and a little dark and simple, but it is not thinner or flatter than the bench or lamp references. A careful artist would accept it beside the references, though it is a bit less rich than the cheese stall and well, which have 38-40 colours in total.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19649
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "west chair (east-facing side profile): arm and backrest",
+      "rows": "10-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "chair seat cushion, drawn face-on in profile",
+      "rows": "13-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "east chair (west-facing side profile): arm and backrest",
+      "rows": "10-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small round tea table top",
+      "rows": "15-18",
+      "evidence": "b",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The two chairs are the main volume and are drawn as pure side profiles. Rows 4-9 are the vertical backrests at the outer edges. Rows 10-12 are a 1-3 row arm band with a light highlight at row 11 and a darker row 12, which is a rim and not a top surface. Rows 13-17 are a cream cushion seen face-on, from the side, and its lighter-to-darker banding does not read as a seat surface seen from above. Rows 18-25 are the wicker side panel with dark bands and legs below. The seat surface is therefore not visible from above on either chair, which matches the 'side elevation chair' and 'seat: band 2' wrong examples. Only the small central table shows an ellipse top, at about rows 15-18, and it is a minor part. The shaft below it (rows 19-26) is narrow and the base is at rows 27-28."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is small, so I judged mostly by the measured facts, and the picture is low-resolution. It has 19 distinct colours and a median of 13 per full tile. That is above the bench (14 colours), hedge (11) and lamp (14), and between them and the stall (17 per tile) and well (20 per tile). Flat-fill coverage is 0%, so there are no large single-colour areas. The dark edge pixels are 0% neutral, so the outline carries a tint. It reads as dark brown beside the cream and tan rattan, not as a black sticker line. The rattan seems to have about 4 lightness steps, from a light highlight through mid-tan to a dark brown edge, which is slightly below Beodeul's 5-6 but enough for a small chair. The weave shows some grain variation. The dark round table between the chairs is the flattest element and reads as a simpler 2-3 step shape. Overall a careful artist would accept it next to the bench and hedge without it looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22948
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left armchair seat cushion (east-facing)",
+      "rows": "13-18",
+      "evidence": "d",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right armchair seat cushion (west-facing)",
+      "rows": "13-18",
+      "evidence": "d",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "round tea table top",
+      "rows": "14-18",
+      "evidence": "b",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "chair backrests (outer edges)",
+      "rows": "4-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Each chair has a pale cushion seat at rows 13-17 under the armrest or back band at rows 10-12. A light edge line at row 18 and darker bands follow it, then a wicker front/side face at rows 19-25 (about 7-8 rows). The cushion is a horizontal surface seen from above, not just a side profile. The tea table has a widening and narrowing ellipse top at about rows 14-18 on a pedestal. The tall narrow backrests are vertical faces, but they are secondary to the seat body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is small, about 28x22 source pixels, so I judged it partly by eye and partly by the measured facts. It has 19 distinct colours, which is above the bench (14), lamp (14) and hedge (11) references. Its median of 13 colours per 16x16 tile beats the hedge (10) and is close to the cheese stall (17). Flat-fill coverage is 0%. The dark edge pixels are 0% neutral, so the outlines lean brown, matching the adjacent rattan, as in Beodeul. The chair backs and seats show banded weave with highlight, light, mid and dark steps. The table and chair legs are separated by value rather than a black line. It is simpler than the roofed well or the stall, but it is not thinner or more sticker-like than the bench and hedge references. A careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21027
+  }
+ ],
+ "decidedAt": "2026-10-20T08:55:46.238Z",
+ "cells": {
+  "16": [
+   "2aa314f51b34da6a",
+   "46f76a15390d7a29",
+   "5ad8a2d1a24a6d35",
+   "c7cd4d5e5dff6db3"
+  ],
+  "24": [
+   "06fb34ca6fcd72e4",
+   "0f6bb8f9daa99a14",
+   "1eeb638e7375965d",
+   "26d23341ff2f8f89",
+   "3686477932d96d2f",
+   "36a6707657336895",
+   "3896fba46e8b63be",
+   "41c78f47d94f539f",
+   "4e3d344526843b7b",
+   "535c44ab0c4fad4d",
+   "58831e6d51fa267b",
+   "7101bd76f9df8854",
+   "75f5c7e65058a562",
+   "7c3572c0452558f1",
+   "82612c0f9cf1a0c7",
+   "8d12505ffeafdc39",
+   "92826d7227e1ec2c",
+   "af2a1b6dde493b63",
+   "bf19ebb454289382",
+   "ce9c485dd205a840",
+   "d679d01a56313108",
+   "dc31da963a657b5f",
+   "e8d6dd80b4440e5d",
+   "f0a01937509727cc"
+  ],
+  "32": [
+   "4e48e853f02aee18"
+  ],
+  "48": [
+   "16a3668378592064",
+   "285012804bb2b74a",
+   "2cbd9dbb4e0f0f9d",
+   "7b81d28914a906f3",
+   "a3e0bc6ab4771e09",
+   "f6eee2a395dc3a94"
+  ]
+ }
+}

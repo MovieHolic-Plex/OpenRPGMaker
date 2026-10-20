@@ -1,0 +1,330 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c2a99a8b12d69a09efe0a5e8efffd9b567209b020f4a7c49ea9017b3c9ea57a7",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "tall round bar stool with cushion, chrome stem and foot ring",
+ "label": "seats34/modern_city_interior/mci-bar-stool",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cushion seat",
+      "rows": "8-12",
+      "evidence": "b",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "foot ring",
+      "rows": "20-23",
+      "evidence": "b",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base disc",
+      "rows": "25-29",
+      "evidence": "b",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "28-29"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The cushion is an ellipse. Its width goes 6, 8, 10, 12 over rows 8-11, then narrows to 10 at row 12 and widens to 12 at row 13. Rows 8-12 are the light pinkish top, and rows 13-14 are the darker front band of the cushion, which ends at the dark outline on row 15. Below it the chrome stem (rows 15-19, 4px wide) and the foot ring (rows 20-23, widths 6, 8, 10, 8, with a bright highlight on row 21) read as small ellipses. The round base (rows 25-29) also has a top and a darker front. The seat is seen from above with a visible front and supports, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The stool is a thin, single-tile prop, so the per-tile median of 0 says nothing against it. It has 14 distinct colours, the same as the bench and the crook lamp, which are the closest references in kind. Flat-fill coverage is 0%. The dark edge pixels are 0% neutral, so the outline leans visibly toward the material tone (dark mauve-brown around the cushion, dark grey-blue around the chrome) rather than a black sticker line. By eye, the cushion has about 4 steps, with a highlight, a body tone, a shadow side and a dark underside. The chrome stem, foot ring and base each carry light and dark grey bands. It is not as rich as the stall or well, but it matches the bench and lamp in shading and detail and does not look flatter or thinner than them. A careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25666
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cushion seat",
+      "rows": "8-12",
+      "evidence": "b",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "foot ring",
+      "rows": "20-23",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base disc",
+      "rows": "25-27",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "28-29"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The cushion width profile runs 6,8,10,12 across rows 8-11, then 10,12,10,8 across rows 12-15. That is an ellipse with a light pinkish top at rows 9-12 and a darker brown front band at rows 13-14, so the seat is seen from above. Below it a chrome stem (rows 15-24, 4 px wide) and a ring (rows 20-23) are the supports. The ring has a bright rim at row 21. The base (rows 25-29) is a flat disc with a lighter top at rows 26-27 and a dark front at rows 28-29. The seat shows both a top surface and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The stool is a thin, sparse prop, so the per-tile median of 0 is not held against it. It has 14 distinct colours, the same as the bench and the crook lamp, and 0% 5x5 flat-fill coverage. The cushion shows a highlight, mid and dark rim plus a shaded underside, about 4-5 steps. The chrome stem and foot ring carry light, mid and dark bands. Dark edge pixels are 0% neutral, so the outline is a tinted dark version of the neighbouring material (brownish-mauve beside the cushion, bluish-grey beside the chrome) and not a sticker-style black line. It sits next to the bench and lamp without looking thinner or flatter. The candidate is very small in the image, so I judged the shading by eye with less certainty than the measured facts, which support a pass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22801
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion top",
+      "rows": "8-12",
+      "evidence": "b",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "chrome foot ring",
+      "rows": "20-23",
+      "evidence": "b",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark base disc",
+      "rows": "24-29",
+      "evidence": "b",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-29"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The cushion's silhouette widens from 6 to 12 px over rows 8-11 and narrows again to 10 and 8 px by row 15. Rows 9-12 are light pink and read as the seat top seen from above. Rows 13-14 are a darker brown band, the cushion's front side or eave shadow. Below it, a chrome stem (rows 15-20, 4 px wide) runs down to a foot ring with an ellipse profile (rows 20-23, widths 6-8-10-8) and a highlight row at 21. A dark base disc follows (rows 24-29, widths 4-6-8-10-8). The seat top is a 5-row ellipse and the supports below it give a tall front face, which matches the green 'seat: top 5 + legs' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The stool is a thin, single-tile-width prop, so the per-tile median of 0 is not held against it. It has 14 distinct colours, the same as the bench and the lamp reference. Flat-fill coverage is 0%, and 0% of its dark edge pixels are neutral, so the outline is tinted rather than a black sticker line. By eye, the cushion carries a highlight, a mid tone and a shadow side. The chrome stem and foot ring show light and dark banding, and the base is shaded. It reads as shaded and tinted, in line with the bench and lamp references, though a little simpler than the richest props (stall, well). A careful artist would accept it beside the bench and lamp without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24805
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion top",
+      "rows": "8-12",
+      "evidence": "b",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "foot ring",
+      "rows": "20-23",
+      "evidence": "b",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base disc",
+      "rows": "24-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The cushion's width profile runs 6,8,10,12 and then narrows to 10 at row 12, which makes an ellipse over rows 8-12. Its top is light pink (rows 9-12, L about 154-176), and it ends in a front edge at row 12. Below that are darker brown front-face rows 13-15 (L about 78), which is the cushion side. A narrow chrome stem (width 4, rows 16-19) supports it. The foot ring is a flattened ellipse over rows 20-23 (widths 6,8,10,8) with a bright highlight on row 21. The base disc at rows 24-29 is dark. The seat surface is seen from above, so this is a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The stool is a thin, single-tile-scale prop, so the per-tile median of 0 is not held against it. It has 14 distinct colours, the same as the bench and the crook lamp. Flat-fill coverage is 0%. The dark edge pixels are 0% neutral, so the outline carries a tint. It reads as a darker version of the neighbouring material (cushion rose-brown, chrome blue-grey), not a uniform black sticker line. The cushion has a highlight, mid and shadow underside, and the stem and foot ring have a lit side and a shaded side, giving about 4 steps per material against the reference's 5. There is some grain and variation on the cushion and chrome, with no large flat areas. A careful artist would accept it next to the thin references (bench, lamp) without it looking flatter or more sticker-like. It is a little simpler than the stall and well, but those are much larger objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21067
+  }
+ ],
+ "decidedAt": "2026-10-20T08:30:15.548Z",
+ "cells": {
+  "16": [
+   "71f9c6bef3ad923b",
+   "a678a30ff56c7013"
+  ],
+  "24": [
+   "4ba03d970112dfb0",
+   "563f9ec88cdf5e1d",
+   "63b05fad648b6d04",
+   "7655b93041eaaa87",
+   "8c74ac65f95b4ab9",
+   "94227e6819b1d3a0",
+   "decfc07be8789239",
+   "f62e1f234216afa8",
+   "f6eda980c667aec1"
+  ],
+  "32": [
+   "47b4f8c163a17a22",
+   "d0d46be0d9b99b77",
+   "e3243f7125c75030"
+  ],
+  "48": [
+   "1d8b0dacb49bb922",
+   "4bbaf3c9cf2ce64f",
+   "7661d22bd7a2d83c",
+   "81d7461a52a7c21b",
+   "a8d13a4d16f5e2bb",
+   "c079ec65ac66e6b9"
+  ]
+ }
+}

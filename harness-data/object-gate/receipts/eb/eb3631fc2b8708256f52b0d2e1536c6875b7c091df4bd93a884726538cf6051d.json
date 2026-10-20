@@ -1,0 +1,320 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "eb3631fc2b8708256f52b0d2e1536c6875b7c091df4bd93a884726538cf6051d",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "dining chair (faces south)",
+ "label": "seats34/jp_city_interior/fd-chair-s",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 51,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "16-20",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "21"
+     },
+     {
+      "part": "backrest",
+      "rows": "8-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat spans rows 16-24 at width 10. Rows 16-17 are a light red highlight and rows 18-20 are mid red, so the seat top is about 5 rows. Row 21 is a dark red front-edge line that doubles as shadow. Below it, rows 22-23 are a tan apron and rows 25-31 are narrow legs (width 4), which together give the front face of about 8-10 rows. The backrest (rows 7-15, width 8) is a face-on panel with only a 1-2 row light cap. I count it as a rim, not a top surface, and treat the seat as the main body. This matches the green 'seat: top 5 + legs' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a thin, small prop, so the per-tile median of 0 is not held against it. Its 11 distinct colours are close to the bench and lamp (14 each) and equal to the hedge (11). Flat-fill coverage is 0%. Dark edge pixels are 0% neutral, so the outline is tinted dark brown beside the wood and dark red beside the cushion, not a black sticker line. By eye, the wood has about 3-4 steps (highlighted back rail, mid slats, dark legs) and the red cushion has about 3 (highlight, mid, shadow). That is a little shallower than the bench's wood ramp and the richer pieces, but it is comparable to the simple references of the same kind. Forms are separated by value, and there is no large flat area. A careful artist would accept it next to the bench without it looking noticeably flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20094
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest",
+      "rows": "7-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion",
+      "rows": "16-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "21"
+     },
+     {
+      "part": "seat apron and legs",
+      "rows": "22-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is 10px wide over rows 16-24. Rows 16-17 are a light pink highlight and rows 18-20 are mid red, together a 5-row top plane. Row 21 is a dark red front-edge/shadow line. Below it, rows 22-23 form a tan apron and rows 24-31 are the legs (width 4), giving about 10 rows of front face. The backrest (rows 7-15, width 8) is a face-on vertical panel, which is normal for a chair back. The structure matches the 'seat: top 5 + legs' reference, not the 'band 2' or side-elevation chair references."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The chair is a small, sparse prop, so the per-tile median of 0 is not held against it. Its 11 colours sit close to the bench (14) and lamp (14), and well below the stall and well (about 40), which are far larger pieces. Flat-fill coverage is 0%. The dark edge pixels are 0% neutral, so the outline is tinted: dark brown beside the wood and dark red beside the cushion, not a sticker-like black line. By eye the wood has roughly 3-4 steps (highlight, mid, dark, outline tone) and the red cushion has 2-3, with a lighter top edge. That is slightly shallower than the bench's wood ramp but of the same kind and finish. The chair has no stray flat blocks, and a careful artist would accept it next to the bench without it looking noticeably thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 32245
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "16-17",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest",
+      "rows": "8-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The seat is rows 16-24 (width 10). Rows 16-17 are a lighter pink band (L=163). Below it, rows 18-20 are the red front face (L=119), row 21 is a dark edge, and rows 22-23 are a tan apron. The light band is only 2 rows, with no distinct front-edge line or eave shadow, so it reads as a rim or highlight rather than a seat seen from above. This matches the 'seat: band 2' bad reference. The backrest (rows 8-15, width 8) is a face-on vertical panel with a 1-row highlight at row 8 and no visible horizontal surface. The legs (rows 25-31, width 4) are plain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, sparse prop, so the per-tile median of 0 says nothing against it. It has 11 distinct colours, against 14 for the bench and lamp and 11 for the hedge, so it is close to the same-kind references. Flat-fill coverage is 0%, with no 5x5 block of a single colour. Dark edge pixels are 0% neutral, so the outline is a tinted dark brown or red-brown beside the wood and cushion, not a sticker-style black line. By eye, the wood has about 4 steps (a lighter top rail, a mid tone for the posts and legs, a dark tone and the outline). The red cushion has a highlight and a shadow. That is slightly shallower than the bench's 5 or so wood steps, and the chair has less grain. Even so, it does not look flatter or thinner than the bench next to it, so a careful artist would likely accept it.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22525
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "16-20",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "21-21"
+     },
+     {
+      "part": "backrest",
+      "rows": "7-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is a 10px-wide red block. Rows 16-17 are lighter (L=163) and rows 18-20 are darker (L=119). Row 21 is a dark line (L=53), which acts as the front-edge line and eave shadow. Below it are the tan apron (rows 22-23), a dark base row 24, and legs (rows 25-31, width 4). That gives about 5 rows of seat top over a front face and legs of about 10 rows, close to the 'seat: top 5 + legs' reference. The backrest (rows 7-15, width 8) is a face-on vertical panel, which does not need a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The chair is a small single-tile-scale prop, so the per-tile median of 0 is not held against it. Its 11 distinct colours are close to the bench (14) and equal to the hedge (11). Flat-fill coverage is 0%, the same as the bench and hedge. Edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood and dark red beside the cushion, not the near-black sticker line. Shading is about 4 steps: the wood has highlight, mid and dark tones, and the red cushion has two or three. That is a little shallower than the bench's wood ramp, and grain is minimal. It still looks like a careful artist's piece beside the bench, not a flat fill with an outline, so it passes narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24717
+  }
+ ],
+ "decidedAt": "2026-10-20T09:02:37.227Z",
+ "cells": {
+  "16": [
+   "0eb041fddc1611f2",
+   "cf105b323b6ce839"
+  ],
+  "24": [
+   "06aea753ba6f4bce",
+   "1f144923876e23bf",
+   "313557bebbc5ce2e",
+   "41db7719caacfbe4",
+   "4e6137c1ea1d8921",
+   "620b46ed5e13992f",
+   "6677ae173198a676",
+   "8e91b6d11fd92baa",
+   "8e9ec5a81f76105a",
+   "b26f1904d0e2e705",
+   "bf39ca7a5a0dbf03",
+   "eed4f9639df58591"
+  ],
+  "32": [
+   "0d10a6b4da3ffe59",
+   "749b66ffbca4f6ce",
+   "cbe75d0c0669b187"
+  ],
+  "48": [
+   "0ebe7425683c0a69",
+   "6408c59c02cb1a82",
+   "8bc8d434b53c2122",
+   "b98e2bd019702952",
+   "ea2efb18283b8742",
+   "f703c25135e63e2f"
+  ]
+ }
+}

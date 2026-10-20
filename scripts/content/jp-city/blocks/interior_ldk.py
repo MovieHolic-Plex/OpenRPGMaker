@@ -424,6 +424,46 @@ def kcounter(c, w, h):
         c.VL(x + 7, 9, 4, K('shiro', -1)); c.VL(x + 8, 9, 4, K('shiro', 2)); c.VL(x + 5, 9, 2, K('conc', -2)); c.VL(x + 10, 9, 2, K('conc', -2))
 
 
+# ══ seats34 (3/4 다시 그리기) ══
+def _chair_dining34(c, d):
+    """식탁 의자 4방향(3/4 다시 그리기). 같은 폭(x4~11)·등받이 높이·좌판 높이·다리 자리.
+    남: 등받이 앞면(윗날 2행)이 좌판 뒤 끝에 붙어 솟고, 좌판 윗면 4행 + 앞날.
+    북: 등받이 뒷면 한 판(윗날 2행 밝음, 왼 테 밝게)이 좌판을 가리고 아래로 두 다리.
+    동·서: L자 옆모습 — 기둥 윗면 2행, 좌판 윗면 4행이 옆날보다 밝고 좌판은 윤곽을 두른다. 빛은 두 방향 모두 왼위."""
+    m = 'ki'; yb = 16
+    if d == 's':
+        c.R(4, 6, 8, 12, K(m, 0)); box(c, 4, 6, 8, 12, K(m, -3))                                       # 등받이 앞면(좌판 뒤 끝에서 솟음)
+        c.R(5, 7, 6, 2, K(m, 2)); c.HL(5, 7, 6, K(m, 3))                                                # 윗날 2행
+        c.VL(5, 9, 8, K(m, 1)); c.VL(10, 9, 8, K(m, -1)); c.HL(6, 12, 4, K(m, -1))                      # 앞면(왼 테 밝게)·널 이음
+        box(c, 3, 17, 10, 8, K(m, -3))                                                                 # 좌판(등받이보다 양옆 1칸 넓다)
+        c.R(4, 18, 8, 4, K(m, 2)); c.HL(4, 18, 8, K(m, 3)); c.VL(4, 18, 4, K(m, 3))                      # 좌판 윗면 4행
+        c.R(4, 22, 8, 2, K(m, -1)); c.VL(4, 22, 2, K(m, 0))                                             # 앞날
+        for x in (3, 11): c.R(x, 25, 2, 6, K(m, -1)); c.VL(x, 25, 6, K(m, 1))                           # 다리(좌판 끝에 맞춤)
+    elif d == 'n':
+        c.R(4, 9, 8, 16, K(m, 0)); box(c, 4, 9, 8, 16, K(m, -3))                                       # 등받이 뒷면(남향 등받이와 같은 폭)
+        c.R(5, 10, 6, 2, K(m, 2)); c.HL(5, 10, 6, K(m, 3))                                              # 윗날 2행
+        c.VL(5, 12, 12, K(m, 1)); c.VL(10, 12, 12, K(m, -1))
+        for y in (16, 20): c.HL(6, y, 4, K(m, -1))                                                    # 널 이음(재질 단)
+        for x in (4, 10): c.R(x, yb + 9, 2, 6, K(m, -1)); c.VL(x, yb + 9, 6, K(m, 1))                    # 다리(남향과 같은 자리)
+    else:
+        e = d == 'e'
+        bx = 3 if e else 11
+        sx0, sx1 = 3, 12
+        c.R(bx, 6, 2, 16, K(m, 0)); c.VL(bx, 6, 16, K(m, 1)); c.VL(bx + 1, 6, 16, K(m, -1))              # 등 기둥(옆에서)
+        c.HL(bx, 6, 2, K(m, 3)); c.HL(bx, 7, 2, K(m, 2))                                                 # 기둥 윗면 2행
+        c.VL(bx - 1, 5, 13, K(m, -3)); c.VL(bx + 2, 5, 13, K(m, -3)); c.HL(bx, 5, 2, K(m, -3))
+        box(c, sx0, 17, sx1 - sx0 + 1, 8, K(m, -3))                                                    # 좌판 윤곽
+        c.R(sx0 + 1, 18, sx1 - sx0 - 1, 4, K(m, 2)); c.HL(sx0 + 1, 18, sx1 - sx0 - 1, K(m, 3)); c.VL(sx0 + 1, 18, 4, K(m, 3))   # 좌판 윗면 4행
+        c.R(sx0 + 1, 22, sx1 - sx0 - 1, 2, K(m, -1)); c.VL(sx0 + 1, 22, 2, K(m, 0))                    # 옆날
+        for x in (sx0, sx1 - 1): c.R(x, 25, 2, 6, K(m, -1)); c.VL(x, 25, 6, K(m, 1))                    # 다리(좌판 끝에 맞춤)
+
+
+PENDING_SEATS34 = {'chair-dining-' + _d: (lambda d: (lambda c: _chair_dining34(c, d)))(_d) for _d in 'snew'}
+SEATS34_PASS = set()          # object-gate PASS 영수증을 받은 id 만 — 이 id 들만 굽는 그림을 바꾼다
+for _k in SEATS34_PASS: R.objs[_k]['draw'] = PENDING_SEATS34[_k]
+# ══ /seats34 ══
+
+
 def build(): return R.build()
 def selftest(): return R.selftest()
 

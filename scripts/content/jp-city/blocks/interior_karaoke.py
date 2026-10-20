@@ -721,6 +721,58 @@ def _g_manga(c):
     hl(c, 2, 15, 12, kc('ita', -2))
 
 
+# ══ seats34 (3/4 다시 그리기) ══
+def _cush34(c, x, y, w, ht, hf, m, t=1):
+    """비닐 쿠션 하나: 윗면 ht 행(맨 윗줄·왼쪽 테 한 단 밝게, 오른 테 한 단 어둡게) → 앞 가장자리 선(밝은 입술 1행)
+    → 남쪽 앞면 hf 행(첫 줄 그늘, 가운데 단, 밑줄 어둡게). 안쪽 검은 줄·단추 점 없음."""
+    rc(c, x, y, w, ht, kc(m, t)); hl(c, x, y, w, kc(m, t + 1)); vl(c, x, y, ht, kc(m, t + 1)); vl(c, x + w - 1, y + 1, ht - 1, kc(m, t - 1))
+    hl(c, x, y + ht - 1, w, kc(m, t + 1))                                                             # 앞 가장자리 선(둥근 입술)
+    rc(c, x, y + ht, w, hf, kc(m, t - 1)); hl(c, x, y + ht, w, kc(m, t - 2)); hl(c, x, y + ht + hf - 1, w, kc(m, t - 2))
+    vl(c, x, y + ht + 1, hf - 2, kc(m, t))                                                            # 앞면 왼 테(빛)
+
+
+def _side_run34(c, back_left):
+    """세로 줄 소파 한 칸 = 등 쿠션 하나 + 좌판 쿠션 하나. 칸 아래에 두 쿠션의 남쪽 앞면이 보여 위에서 본 판이 아니라 높이가 읽힌다.
+    등 쿠션이 좌판보다 높아 앞면이 더 길다. 빛은 두 방향 모두 왼위."""
+    if back_left: bx, sx, ox = 1, 6, 0
+    else: bx, sx, ox = 11, 0, 15
+    _cush34(c, bx, 0, 4, 9, 6, SOFA, 1)                                                              # 등 쿠션: 윗면 9 + 앞면 6
+    vl(c, ox, 0, 16, OL)                                                                              # 벽 쪽 윤곽
+    _cush34(c, sx, 0, 10, 11, 4, SOFA, 1)                                                             # 좌판 쿠션: 윗면 11 + 앞면 4
+    sv = 5 if back_left else 10                                                                       # 등받이와 좌판 사이 골(재질 어두운 단)
+    vl(c, sv, 0, 15, kc(SOFA, -1))
+    hl(c, 0, 15, 16, kc(SOFA, -2))                                                                    # 쿠션 사이 밑 그늘
+
+
+def _kr_recliner34(c):
+    """뒤에서 본 리클라이닝 의자: 두툼한 머리 받침·등받이 어깨·팔걸이의 윗면이 4행 넘는 판(앞 가장자리 선 + 처마 그늘), 그 아래 등 뒷면."""
+    m = 'yoru'
+    for ax, t in ((0, 1), (11, 0)):                                                                   # 팔걸이: 윗면 5행 + 뒤끝 면
+        outline(c, ax, 9, 5, 14)
+        rc(c, ax + 1, 10, 3, 5, kc(m, t + 2)); hl(c, ax + 1, 10, 3, kc(m, t + 3))
+        hl(c, ax + 1, 14, 3, kc(m, t + 3)); hl(c, ax + 1, 15, 3, kc(m, -1))                           # 앞 가장자리 선 + 그늘
+        rc(c, ax + 1, 16, 3, 6, kc(m, t - 1)); vl(c, ax + 2, 17, 4, kc(m, t - 2))
+    outline(c, 3, 5, 10, 19)                                                                          # 등받이
+    rc(c, 4, 6, 8, 5, kc(m, 2)); hl(c, 4, 6, 8, kc(m, 3)); vl(c, 4, 6, 5, kc(m, 3)); vl(c, 11, 7, 4, kc(m, 1))   # 어깨 윗면 5행
+    hl(c, 4, 10, 8, kc(m, 3))                                                                         # 앞 가장자리 선
+    rc(c, 4, 11, 8, 12, kc(m, -1)); hl(c, 4, 11, 8, kc(m, -2)); vl(c, 4, 12, 10, kc(m, 0)); vl(c, 11, 12, 10, kc(m, -2))   # 그늘 + 등 뒷면
+    for y in (16,): hl(c, 5, y, 6, kc(m, -2))                                                      # 박음질
+    outline(c, 4, 0, 8, 6)                                                                            # 머리 받침: 윗면 3 + 선 + 그늘
+    rc(c, 5, 1, 6, 4, kc(m, 2)); hl(c, 5, 1, 6, kc(m, 3)); vl(c, 5, 1, 3, kc(m, 3)); hl(c, 5, 3, 6, kc(m, 3)); hl(c, 5, 4, 6, kc(m, -2))
+    rc(c, 6, 24, 4, 3, kc('tekko', -1)); vl(c, 6, 24, 3, kc('tekko', 1))                                # 받침
+    disc(c, 8, 28.5, 5, 1.8, kc('tekko', 0)); hl(c, 4, 28, 6, kc('tekko', 2)); hl(c, 4, 30, 8, kc('tekko', -2))
+
+
+PENDING_SEATS34 = {
+    'kr-sofa-e': lambda c: _side_run34(c, True),
+    'kr-sofa-w': lambda c: _side_run34(c, False),
+    'kr-reclining-seat': _kr_recliner34,
+}
+SEATS34_PASS = set()          # object-gate PASS 영수증을 받은 id 만 — 이 id 들만 굽는 그림을 바꾼다
+for _k in SEATS34_PASS: R.objs[_k]['draw'] = PENDING_SEATS34[_k]
+# ══ /seats34 ══
+
+
 def build(): return R.build()
 
 

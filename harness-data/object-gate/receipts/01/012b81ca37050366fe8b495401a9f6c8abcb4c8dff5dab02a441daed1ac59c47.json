@@ -1,0 +1,364 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "012b81ca37050366fe8b495401a9f6c8abcb4c8dff5dab02a441daed1ac59c47",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "armchair",
+ "label": "seats34/atlas_biome_interior/armchair",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+  "3/4: 윗면 3행 < 4 (2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (1/4)",
+  "화풍: 판정자 fail (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+   "윗면 3행 < 4 (2/4)",
+   "투영이 3/4 아님(front_elevation) (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 7,
+  "darkV5": 58,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest",
+      "rows": "0-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion",
+      "rows": "7-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "arms",
+      "rows": "3-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The armchair is drawn as a flat front elevation. The backrest (rows 1-6) is a face-on panel with a highlight on row 1 and a dark base on row 6. The seat cushion (rows 7-11) is stepped shading from L=198 to 152 to 106, then a dark row 11. This reads as a face-on cushion highlight and not a foreshortened horizontal surface: there is no ellipse, no distinct front-edge line and no eave shadow band. The silhouette widens from 12 to 14 to 16 with no receding top plane. The seat is not seen from above, so at most a 1-2 row highlight rim exists."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The armchair is a small red piece with a dark red-brown outline. The measured 0% neutral edge pixels agree with the tint I see, so it is not a sticker-style black line. It has no flat fills (0% coverage at 5x5). It is still shallow on shading and texture. It has only 7 distinct colours in total, against 14 for the bench and lamp, 11 for the hedge and 38-40 for the stall and well. The red ramp reads as about 4 steps (highlight, mid, dark, outline), with no grain or per-part variation. The cushion, arms and back are separated mostly by one or two tones, which makes it look flatter and simpler than the bench, hedge or stall at the same scale. A careful artist would likely ask for more ramp steps and some texture on the upholstery and the wooden feet. The per-tile median is not decisive here, since the piece is only about one tile in size. I judged density by eye and by total colours, and both come out lower than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19366
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "7-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "backrest",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The armchair is red and faces south. The backrest spans rows 0-6, with a light highlight at row 1 and a dark shadow at row 6. Under that shadow, the seat shows a light-to-mid band at rows 7-9, which reads as the seat top seen from above. A darker line at row 10 marks its front edge. The front face runs through rows 10-13, with the arms at full width (16) on both sides and small feet at row 14. The seat top is only 3 rows and the shading is gradient-like, so the case is borderline, but it has a top band, an edge line and a front face of at least 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small red armchair of about 15x15 source pixels. It has only 7 distinct colours in total, below every reference (11 to 40), and 7 colours per tile against 10 for the hedge and 17-20 for the stall and well. The dark edge pixels are 0% neutral, and by eye the outline is a dark red-brown that follows the cushion, so it reads as dark_material_tone rather than a black sticker line. There are no flat 5x5 fills (0%). The red ramp has about 4 steps (highlight, mid, shadow, deep outline) against 5-6 in the references. Texture is minimal: smooth cushions and arms with no grain, stitching dots or per-form highlights, while the references show per-element shading such as hedge leaf clumps and well stones. The tinted outline and absence of flat fills help, but the shallow ramp, lack of surface texture and low colour count make it look thinner and simpler than the Beodeul pieces. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 22074
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "seat cushion",
+      "rows": "7-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "armrests",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The armchair is seen from the front. The seat cushion has a light band at rows 7-9 (row 7 lightest, rows 8-9 mid-tone). Row 10 is a darker front-edge line, and row 11 is a dark eave shadow. Below that, rows 12-13 are the front face and row 14 holds the legs, so the front face runs from row 10 to row 14 (5 rows). The seat top is only 3 rows and is shaded rather than clearly foreshortened. The backrest (rows 1-6) is a vertical panel with a 2-row highlight at rows 1-2 that reads as a rim, and a dark shadow line at row 6. The armrests are also vertical faces with only a 2-row highlight at the top. The backrest and armrests therefore show no clear top surface, though the seat does."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small red armchair with only 7 distinct colours in total. The references have 11 (hedge), 14 (bench, lamp), 38 (well) and 40 (stall). Its roughly 4 red steps are fewer than the 5-6 on the reference woods, roofs and foliage. The outline is a dark red-brown tinted line, with 0% neutral dark edge pixels, so it is a material-tone outline and not a black sticker line, and that is a point in its favour. There are no 5x5 flat fills (0%), but the cushion, back and arms are smooth, clean shapes with almost no grain, speckle or per-surface texture dots, which is the 'clean but sticker-like' look. The median of 7 colours per tile is below the hedge (10), stall (17) and well (20). The size is simple but a careful artist would still see it as flatter and thinner than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 3행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "윗면 3행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 23925
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "7-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "backrest",
+      "rows": "0-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is a band of rows 7-9 that steps from light (L=198 at row 7, then 152) to darker (L=106 at row 10) and ends in a dark shadow row 11. That reads as a seat top with a front-edge line and eave shadow. Below it are the front apron, base and outline in rows 10-13, then the legs at row 14, which is 4 px wide. The backrest in rows 0-6 is drawn face-on as a vertical cushion panel with no edge line or shadow of its own, so it has no visible top. The arms are also face-on. Overall it is a three-quarter view with a short but valid seat top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small red armchair of about one tile. Its outline is a dark red-brown (0% neutral dark edge pixels), which matches the Beodeul material-tone approach, and there are no 5x5 flat fills (0%). The shading is shallow, though: roughly 4 red steps (highlight, mid, dark, outline) against about 5-6 on the references. It has only 7 distinct colours in total, below the bench (14), hedge (11), lamp (14), stall (40) and well (38). Its median of 7 colours per tile is also below the hedge's 10 and far below the stall's 17 and the well's 20. The cushion and back have little grain or per-area texture variation, so it reads as a cleanly drawn but simplified, somewhat sticker-like icon next to the references. A careful artist would likely want more ramp steps and texture, so I fail it on the 'when in doubt' rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 3행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "윗면 3행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19240
+  }
+ ],
+ "decidedAt": "2026-10-20T06:49:02.291Z",
+ "cells": {
+  "16": [
+   "63b71912ffec2fc3"
+  ],
+  "24": [
+   "2032ae55b9921e75",
+   "6f89095cb9ce65ec",
+   "842f1192917a8c3c",
+   "989ea72c416e1795",
+   "9b16f2760d51a0e2",
+   "ccb41ce8389e2b2b"
+  ],
+  "32": [
+   "46c74f4fa3bf02ea",
+   "53aa11872dc07e1e",
+   "5d8ec44035feb376",
+   "68847f58f2ea4100",
+   "7c5442cde6296c50",
+   "87690acc345761d3"
+  ],
+  "48": [
+   "031d7fa68f22caf4",
+   "09c17d00de382ccc",
+   "64ba3c2f1cb0fef4",
+   "934d47b99dee1602",
+   "cda97fe2863dcc60",
+   "f3299789dbc3c327"
+  ]
+ }
+}

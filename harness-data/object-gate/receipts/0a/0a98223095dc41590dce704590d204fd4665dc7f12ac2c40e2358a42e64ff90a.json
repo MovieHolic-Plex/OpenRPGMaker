@@ -1,0 +1,337 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0a98223095dc41590dce704590d204fd4665dc7f12ac2c40e2358a42e64ff90a",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "armchair (faces south)",
+ "label": "seats34/modern_city_interior/mci-armchair",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 11,
+  "darkV5": 65,
+  "nearBlackEdge": 0.06,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest",
+      "rows": "3-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion",
+      "rows": "15-19",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-21"
+     },
+     {
+      "part": "armrests",
+      "rows": "9-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat cushion is a light band at rows 15-19, brightest at row 18. It ends in a front-edge line at row 19 (L=154), and the darker front face runs below it at rows 20-23, with the base at rows 24-26 and the legs under that. The front face is about 7 rows. The backrest at rows 3-8 reads as a face-on vertical cushion with no edge line or shadow of its own, so it has no visible top surface. The armrests are drawn as side strips at width 16."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The armchair is a small piece of about 14x20 source pixels. Its measured facts match the small references: 11 distinct colours and a median of 11 per tile, against 11 and 10 for prop-hedge and 14 colours for prop-bench-wood. Flat-fill coverage is 0%. None of its dark edge pixels are neutral (0%), so the outline is a tinted dark mauve/red-brown that follows the pink upholstery rather than a black sticker line. By eye, the back, seat cushion and arms are separated by value, with a highlight on the top of the back and darker shading on the arm sides and base. That gives about 4 steps on the main ramp, one or two fewer than Beodeul's 5-6, and the surface grain is modest. It is a little simpler than the stall and well, but those are much larger objects. Next to the bench and hedge it does not look thinner, flatter or more sticker-like, so it is acceptable.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19570
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest",
+      "rows": "3-7",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat top (between the arms)",
+      "rows": "9-13",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "14"
+     },
+     {
+      "part": "arm tops",
+      "rows": "10-12",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The backrest (rows 3-7) is a face-on vertical panel with a dark base line at row 8. Below it, rows 9-13 form a seat surface (light band, mid line at row 11, light band again) that ends in a dark front-edge line at row 14. The front cushion face (rows 15-19) and base or apron (rows 20-23) sit under that line, giving about 9 rows of front face. Dark legs run through rows 24-27. The silhouette widens to 16 at row 10, where the arms start. Overall this is a seat with a visible top and a front face, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The measured facts put the candidate level with prop-hedge: 11 colours against the hedge's 11, a median of 11 colours per tile against 10, and 0% flat-fill coverage. Its dark edge pixels are 0% neutral, so the outline carries a tint, a dark rose-brown that matches the chair body rather than a black sticker line. By eye, the back, arms and seat cushion are separated by value, with highlight, light, mid and dark steps on the upholstery, so about 4 steps against 5-6 in the references. It has less total colour variety than the stall or well (38-40 colours), but it is a small single-material piece, and it is not flatter than the hedge or bench. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 26954
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "15-19",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "14"
+     },
+     {
+      "part": "backrest top/cushion",
+      "rows": "4-8",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "arms",
+      "rows": "9-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "In the column scan the seat has a light band at rows 15-19, with its brightest edge line at row 18. A darker row 14 sits above it as shadow. Below it, the front face of the seat and base runs from rows 20 to 26, followed by the legs. That is a top of about 5 rows over a front face of 7 rows. The backrest at rows 4-8 also has a light band ending in an edge line at row 7 and a dark row 8. The arms are 16 px wide and drawn as side-by-side vertical faces flanking the seat. No isometric receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The armchair is small, about one tile wide. It carries a median of 11 colours per 16x16 tile, which matches the hedge reference (10) and sits between the bench and lamp (0, thin objects) and the stall and well (17-20, larger and more complex). Flat-fill coverage is 0%, so there are no dead 5x5 areas. The dark edge pixels are 0% neutral, so the outline leans a dark rose-brown, close to the body material, and is not a black sticker line. By eye, the seat back, arms and cushion are separated by value steps (highlight, light, mid, dark) with some grain on the upholstery. That gives about 4 usable steps against roughly 5 on the references, slightly shallower but not flat. At this size it would sit next to the hedge and bench without looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20825
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "15-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19"
+     },
+     {
+      "part": "armrests (top strips either side)",
+      "rows": "9-13",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest",
+      "rows": "3-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The backrest (rows 3-8) is a face-on vertical panel with a dark base line at row 8. Below it the arms and seat sit at full width 16 (rows 10-24). A dark line at row 14 starts a light seat band (rows 15-18, L 154-199) with a brightest front-edge line at row 18. Row 19 is a slightly darker eave shadow. Below that is a darker vertical front face (rows 20-24, L about 100) that runs down to the legs at rows 24-27. The seat surface is visible from above, with a front face of 5 rows, so this is not a rim-only or front-elevation drawing."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small armchair, so I compared it mainly with the bench, hedge and lamp. It has 11 distinct colours, the same as the hedge (11) and close to the bench and lamp (14 each). Its median is 11 colours per full tile, above the hedge's 10. Flat-fill coverage is 0%. Dark edge pixels are 0% neutral, so the outline leans visibly toward a dark mauve-brown of the upholstery rather than black. The shading shows about 5 lightness steps: a highlight on the top of the back and arms, a light and mid body, and a dark and deep shadow on the sides and base. Some grain and cushion variation breaks up the surface. It is less detailed than the large stall and well (38-40 colours), but those are much bigger multi-material pieces. A careful artist would accept it next to the bench and hedge without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23833
+  }
+ ],
+ "decidedAt": "2026-10-20T07:20:07.107Z",
+ "cells": {
+  "16": [
+   "955c6756786a3196",
+   "963594561f6eb1ac"
+  ],
+  "24": [
+   "0a1bd1a00b3e043b",
+   "2ce4c4532be47804",
+   "7566666428553839",
+   "8249e3c42971ca70",
+   "a66daa9a1ae9d34c",
+   "aea940f14707fa7d",
+   "c239e816b2ba3f0a",
+   "c662bff701d056e0",
+   "cc0bc21e2a6c370c",
+   "ccfca5fd11fc1ce4",
+   "f4470465e9a6d834",
+   "fbf22ab3830603a4"
+  ],
+  "32": [
+   "3cb925a4a72c5255",
+   "c0c6dee2ed3fd5c4",
+   "e1e112c56ef312a3"
+  ],
+  "48": [
+   "1e1f182e9be4575c",
+   "386594fe9a56112a",
+   "a5e5d0fe3aca5df1",
+   "b2402767ff6c908b",
+   "cc034e71f82d14d8",
+   "f2339e22b14d0b8f"
+  ]
+ }
+}

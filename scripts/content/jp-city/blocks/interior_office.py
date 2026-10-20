@@ -749,6 +749,105 @@ def _cards(c):
     rc(c, 11, 12, 4, 1, kc('kon', 1)); px(c, 14, 12, kc('aka', 1)); hl(c, 3, 13, 10, kc('garasu', -1))
 
 
+# ══ seats34 (3/4 다시 그리기) ══
+import seat34 as S34   # noqa: E402
+
+
+def _back_n34(c, x, y, w, h, m, top=4, seams=()):
+    """뒤에서 본 두툼한 등받이: 윗면 판 top 행(가장 밝음, 왼위 테) → 앞 가장자리 선 → 등 뒷면(안쪽 검은 줄 없음)(가운데 단, 아래로 어둡게)."""
+    outline(c, x, y, w, h)
+    ix, iw = x + 1, w - 2
+    rc(c, ix, y + 1, iw, top, kc(m, 2)); hl(c, ix, y + 1, iw, kc(m, 3)); vl(c, ix, y + 1, top, kc(m, 3))
+    hl(c, ix, y + top, iw, kc(m, 3))                                                                 # 앞 가장자리 선
+    rc(c, ix, y + top + 1, iw, h - top - 2, kc(m, 0)); vl(c, ix, y + top + 1, h - top - 2, kc(m, 1))
+    vl(c, ix + iw - 1, y + top + 1, h - top - 2, kc(m, -1)); hl(c, ix, y + h - 2, iw, kc(m, -1))
+    for sx in seams: vl(c, sx, y + 1, top, kc(m, 1)); vl(c, sx, y + top + 1, h - top - 2, kc(m, -1))
+
+
+def _arm_n34(c, x, y, w, h, m, t=0):
+    """팔걸이 뒤끝: 윗면 2행(밝음) + 뒤끝 면(왼 테 밝게)."""
+    outline(c, x, y, w, h)
+    rc(c, x + 1, y + 1, w - 2, 2, kc(m, t + 2)); hl(c, x + 1, y + 1, w - 2, kc(m, t + 3))
+    rc(c, x + 1, y + 3, w - 2, h - 4, kc(m, t - 1)); vl(c, x + 1, y + 3, h - 4, kc(m, t))
+
+
+def _lobby_sofa_n34(c):
+    m = 'yoru'
+    _back_n34(c, 1, 12, 30, 14, m, top=4, seams=(16,))
+    for y in (21, 23): hl(c, 4, y, 24, kc(m, -1))                                                      # 가죽 뒷면 박음질
+    _arm_n34(c, 0, 10, 4, 16, m); _arm_n34(c, 28, 10, 4, 16, m, -1)
+    for x in (3, 27): rc(c, x, 26, 2, 4, kc('tekko', 3)); vl(c, x + 1, 26, 4, kc('tekko', 0))           # 크롬 다리
+    hl(c, 2, 30, 4, OL); hl(c, 26, 30, 4, OL)
+
+
+def _office_chair_sn34(c, d):
+    """사무 의자 남·북(품질 다시 그리기) — 동·서와 같은 좌판 높이·가스 기둥·별 다리.
+    남: 메시 등받이(윗날 2행 밝음, 가운데 허리 받침 한 단 밝게)가 좌판 뒤 끝에 붙어 솟고, 좌판 윗면 3행 + 앞날, 양옆 가는 팔걸이.
+    북: 등받이 뒷면(윗날 2행)이 좌판을 가리고, 양옆으로 팔걸이 윗면."""
+    m = 'kon'
+    if d == 's':
+        bev(c, 3, 16, 10, 7, m, 0)                                                                   # 좌판
+        rc(c, 4, 17, 8, 3, kc(m, 1)); hl(c, 4, 17, 8, kc(m, 2)); vl(c, 4, 17, 3, kc(m, 2))             # 좌판 윗면 3행
+        hl(c, 4, 20, 8, kc(m, 2)); hl(c, 4, 21, 8, kc(m, -1))                                          # 앞 가장자리 선 + 앞날
+        outline(c, 4, 4, 8, 13)                                                                      # 등받이(좌판에 붙음)
+        rc(c, 5, 5, 6, 11, kc(m, -1)); hl(c, 5, 5, 6, kc(m, 2)); hl(c, 5, 6, 6, kc(m, 1))               # 윗날 2행
+        vl(c, 5, 7, 9, kc(m, 0)); rc(c, 6, 10, 4, 3, kc(m, 0)); hl(c, 6, 10, 4, kc(m, 1))              # 왼 테 · 허리 받침
+        for ax in (2, 13):                                                                           # 팔걸이(윗면 밝게, 기둥)
+            hl(c, ax - (1 if ax == 13 else 0), 15, 2, kc('tekko', 3)); vl(c, ax, 16, 3, kc('tekko', 0) if ax == 2 else kc('tekko', -1))
+    else:
+        bev(c, 3, 16, 10, 7, m, 0)                                                                   # 좌판(양옆 끝만)
+        outline(c, 4, 9, 8, 14)                                                                      # 등받이 뒷면
+        rc(c, 5, 10, 6, 12, kc(m, -1)); hl(c, 5, 10, 6, kc(m, 2)); hl(c, 5, 11, 6, kc(m, 1))            # 윗날 2행
+        vl(c, 5, 12, 10, kc(m, 0)); hl(c, 6, 17, 4, kc(m, -2))                                         # 왼 테 · 뒤판 이음
+        for ax in (2, 13):
+            hl(c, ax - (1 if ax == 13 else 0), 17, 2, kc('tekko', 3)); vl(c, ax, 18, 3, kc('tekko', 0) if ax == 2 else kc('tekko', -1))
+    rc(c, 7, 23, 2, 5, kc('tekko', 1)); vl(c, 7, 23, 5, kc('tekko', 3)); vl(c, 8, 23, 5, kc('tekko', -2))     # 가스 기둥
+    hl(c, 2, 28, 12, kc('yoru', 0)); hl(c, 3, 29, 10, kc('yoru', 1))                                          # 별 다리
+    for x in (2, 7, 12): rc(c, x, 30, 2, 2, kc('yoru', -2)); px(c, x, 30, kc('yoru', 1))
+
+
+def _stool34(c):
+    """둥근 스툴(품질 다시 그리기): 초록 방석 윗면 타원 + 두께 2행, 앞 다리 둘(2px, 왼 밝게)·뒤 다리 둘(짧고 어둡게)·가로대."""
+    for x in (5, 9): S34.leg(c, x, 9, 4, 'tekko', -1)                                                # 뒤 다리
+    hl(c, 4, 12, 8, kc('tekko', 0))                                                                  # 가로대
+    for x in (3, 11): S34.leg(c, x, 9, 7, 'tekko', 2)                                                # 앞 다리
+    S34.round_seat(c, 8, 4.5, 6, 3, 2, 'midori', 1, kc('midori', -2))
+
+
+def _office_chair34(c, d):
+    """사무 의자 동·서(3/4 다시 그리기). 남향과 같은 좌판 높이·가스 기둥·별 다리.
+    동·서: L자 — 등받이 윗날 2행, 좌판 윗면 3행이 옆면보다 밝다. 빛은 왼위."""
+    m = 'kon'
+    e = d == 'e'
+    bx = 3 if e else 9
+    sx = 3 if e else 2
+    outline(c, bx, 4, 4, 17)                                                                      # 등받이(옆에서)
+    rc(c, bx + 1, 5, 2, 15, kc(m, -1)); hl(c, bx + 1, 5, 2, kc(m, 2)); hl(c, bx + 1, 6, 2, kc(m, 1))   # 윗날 윗면 2행
+    vl(c, bx + 1, 7, 13, kc(m, 0))                                                                # 옆면(왼 테 밝게)
+    bev(c, sx, 16, 11, 7, m, 0)                                                                   # 좌판(등받이 밑동을 덮어 이어진다)
+    rc(c, sx + 1, 17, 9, 3, kc(m, 1)); hl(c, sx + 1, 17, 9, kc(m, 2)); vl(c, sx + 1, 17, 3, kc(m, 2))   # 좌판 윗면 3행
+    hl(c, sx + 1, 20, 9, kc(m, 2)); hl(c, sx + 1, 21, 9, kc(m, -1))                                # 앞 가장자리 선 + 옆면
+    ax0 = 7 if e else 4                                                                           # 팔걸이: 등받이에서 앞으로 뻗은 가는 받침 + 기둥
+    hl(c, ax0, 13, 5, kc('tekko', 3)); hl(c, ax0, 14, 5, kc('tekko', -1))
+    vl(c, ax0 + 3 if e else ax0 + 1, 15, 1, kc('tekko', 0))
+    rc(c, 7, 23, 2, 5, kc('tekko', 1)); vl(c, 7, 23, 5, kc('tekko', 3)); vl(c, 8, 23, 5, kc('tekko', -2))     # 가스 기둥
+    hl(c, 2, 28, 12, kc('yoru', 0)); hl(c, 3, 29, 10, kc('yoru', 1))                                          # 별 다리
+    for x in (2, 7, 12): rc(c, x, 30, 2, 2, kc('yoru', -2)); px(c, x, 30, kc('yoru', 1))
+
+
+PENDING_SEATS34 = {
+    'of-desk-chair-s': lambda c: _office_chair_sn34(c, 's'),
+    'of-desk-chair-n': lambda c: _office_chair_sn34(c, 'n'),
+    'of-stool': _stool34,
+    'of-lobby-sofa-n': _lobby_sofa_n34,
+    'of-desk-chair-e': lambda c: _office_chair34(c, 'e'),
+    'of-desk-chair-w': lambda c: _office_chair34(c, 'w'),
+}
+SEATS34_PASS = set()          # object-gate PASS 영수증을 받은 id 만 — 이 id 들만 굽는 그림을 바꾼다
+for _k in SEATS34_PASS: R.objs[_k]['draw'] = PENDING_SEATS34[_k]
+# ══ /seats34 ══
+
+
 def build(): return R.build()
 def selftest(): return R.selftest()
 

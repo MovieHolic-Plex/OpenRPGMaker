@@ -707,6 +707,71 @@ def _g_box(c):
     outline(c, 2, 4, 12, 11)
 
 
+# ══ seats34 (3/4 다시 그리기) ══
+# seats34 group A — 코드 손 도트(행 문자열 격자). 글자 → (램프, 단: 0 = 가장 어두운 단). 빛은 왼위(윗면 밝게·앞면 중간·그늘 쪽 어둡게),
+# 거의 검은 윤곽은 바깥 실루엣에만. '.' = 투명. 격자는 srcA/designs.py 에서 만든다.
+from ikit import RAMPS as _RAMPS34
+
+
+def _g34(c, layers):
+    for rows, leg, ox, oy in layers:
+        for j, r in enumerate(rows):
+            for i, ch in enumerate(r):
+                if ch not in '. ':
+                    m, t = leg[ch]; c.P(ox + i, oy + j, K(m, t - len(_RAMPS34[m]) // 2))
+
+_S34_0_0 = [
+    '................',
+    '....OOOOOOOO....',
+    '..OOBAABBBBCOO..',
+    '.OBAAABBBBBBCCO.',
+    '.OBAABBBBBBBCCO.',
+    '.OCCCCCCCCCCCCO.',
+    '.ODDDDDDDDDDDEO.',
+    '.ODDDDDDDDDEEEO.',
+    '..OOEEEEEEEEOO..',
+    '....OOOOOOOO....',
+    '......O53O......',
+    '......O53O......',
+    '...OOOO53OOOO...',
+    '..O6665543322O..',
+    '..O4333332221O..',
+    '...OOOOOOOOOO...',
+]
+_S34_0_0L = {'1': ('tekko', 1), '2': ('tekko', 2), '3': ('tekko', 3), '4': ('tekko', 4), '5': ('tekko', 5), '6': ('tekko', 6), 'A': ('aka', 4), 'B': ('aka', 3), 'C': ('aka', 2), 'D': ('aka', 1), 'E': ('aka', 0), 'O': ('sumi', 0)}
+_S34_0 = [(_S34_0_0, _S34_0_0L, 0, 0)]   # am-arcade-stool (16x16)
+
+_S34_1_0 = [
+    '................',
+    '....OOOOOOOO....',
+    '..OOBAABBBBCOO..',
+    '.OBAAABBBBBBCCO.',
+    '.OBAABBBBBBBCCO.',
+    '.OCCCCCCCCCCCCO.',
+    '.ODDDDDDDDDDDEO.',
+    '.ODDDDDDDDDEEEO.',
+    '..OOEEEEEEEEOO..',
+    '....OOOOOOOO....',
+    '......O53O......',
+    '......O53O......',
+    '.OOOOOO53OOOOOO.',
+    '.O666665533322O.',
+    '.O333333322221O.',
+    '.OOOOOOOOOOOOOO.',
+]
+_S34_1_0L = {'1': ('tekko', 1), '2': ('tekko', 2), '3': ('tekko', 3), '5': ('tekko', 5), '6': ('tekko', 6), 'A': ('kon', 3), 'B': ('kon', 2), 'C': ('kon', 1), 'D': ('kon', 1), 'E': ('kon', 0), 'O': ('sumi', 0)}
+_S34_1 = [(_S34_1_0, _S34_1_0L, 0, 0)]   # am-pachinko-stool (16x16)
+
+
+PENDING_SEATS34 = {
+    'am-arcade-stool': (lambda c, _l=_S34_0: _g34(c, _l)),
+    'am-pachinko-stool': (lambda c, _l=_S34_1: _g34(c, _l)),
+}
+SEATS34_PASS = set()          # object-gate PASS 영수증을 받은 id 만 — 이 id 들만 굽는 그림을 바꾼다
+for _k in SEATS34_PASS: R.objs[_k]['draw'] = PENDING_SEATS34[_k]
+# ══ /seats34 ══
+
+
 def build(): return R.build()
 def selftest(): return R.selftest()
 
