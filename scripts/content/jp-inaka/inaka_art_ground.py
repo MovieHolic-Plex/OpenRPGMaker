@@ -1,198 +1,645 @@
 #!/usr/bin/env python3
-# noqa: SIZE_OK - jp-inaka ground tiles
+# noqa: SIZE_OK - jp-inaka ground tiles + 8-way countryside autotiles (R5, beodeul depth)
 # /// script
 # requires-python = ">=3.10"
 # dependencies = ["numpy", "pillow"]
 # ///
-"""jp-inaka 바닥(16×16) 단일 칸 그룹. (R5 에서 inaka_art_props.py 에서 떼어 냄)"""
+"""jp-inaka 바닥 — R5(버들항 깊이).
+
+R4 까지는 jp_city 잔디·산길 흙·연못 오토타일을 빌려 깔고, 이나카 고유 바닥은 1px 디더 노이즈 칸(논·개울)이었다.
+버들항 바닥과 나란히 보면 ① 같은 칸이 수십 번 되풀이되는 벽지, ② 1px 점 노이즈(덩이·결이 아님), ③ 재질마다 2~3단,
+④ 논과 흙의 칼 경계가 문제였다. R5 는 이나카 전용 8방 오토타일 6종을 둔다(같은 입력 → 같은 결과, 난수 없음):
+
+  시골 풀밭(inaka-grass)    — 몸통 3변형, 가장자리를 그리지 않는다(다른 재료가 자기 쪽에 풀 테를 그린다). 맵 밖·다른 시골 바닥과 이어짐.
+  시골 흙길(inaka-dirt)     — 다진 흙 + 잔돌·바퀴 자국 결. 가장자리는 풀이 흙 위로 삐죽 덮고 풀 그늘(빛 왼쪽 위 → 북·서 테 아래로 그늘).
+  시골 개울(inaka-stream)   — 맑은 얕은 물(물밑 자갈이 비침·물살). 북쪽은 흙 둑 앞면, 남·옆은 풀 둑 입술.
+  물논·여름 논·황금 논(inaka-paddy-*) — 논 가장자리에 논두렁(畦) 둑을 칸 안에 그린다: 북쪽 둑은 앞면이 보이고, 남쪽은 윗면만.
+
+단일 칸 그룹(R1~R4 의 inaka-paddy-water 등)은 번호를 지키려고 남기고 그림만 오토타일 몸통으로 바꾼다.
+"""
 from __future__ import annotations
 
 import collections
+import os
+import sys
 from typing import Callable, Final
 
-from inaka_art_houses import Cv, H, J, K  # noqa: E402
+import numpy as np
+
+from inaka_art_houses import Cv, H, J, K  # noqa: E402,F401
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
+_JPC = os.path.join(ROOT, 'scripts', 'content', 'jp-city')
+if _JPC not in sys.path:
+    sys.path.insert(0, _JPC)
+from lib_blocks import ground_autotile as GA  # noqa: E402
+
+from inaka_style import palette  # noqa: E402
+
+# ═══════════════════════════ 색 ═══════════════════════════
+_R: dict[str, list[int]] = {}
 
 
-# ═══════════════════════════ 바닥(16×16, 이음매 없는 16 주기) ═══════════════════════════
-def _chip(name):
-    from lib_blocks.ground_autotile import chip
-    return chip(name)
+def _ramps() -> dict[str, list[int]]:
+    if not _R:
+        import json
+        from modern3_check import load_pal
+        _R.update(load_pal())
+        with open(os.path.join(ROOT, 'tiledata', 'jp-city', 'palette-contract.json'), encoding='utf-8') as f:
+            for fam in json.load(f)['families']:
+                for m in fam['materials']:
+                    _R[m['id']] = [int(h[1:], 16) for h in m['steps']]
+    return _R
 
 
-def _put(c, a):
+def P(name: str, i: int) -> tuple[int, int, int, int]:
+    """램프 name 의 절대 단 i(0 = 가장 어두움). RGBA 튜플."""
+    r = _ramps()[name]
+    c = r[max(0, min(len(r) - 1, i))]
+    return ((c >> 16) & 255, (c >> 8) & 255, c & 255, 255)
+
+
+# 재질 램프(어두움 → 밝음). 버들항처럼 재질마다 6~7단, 그늘은 차갑게·빛은 따뜻하게.
+GRASS = [P('ki', 1), P('ki', 2), P('ki', 3), P('ki', 4), P('ki', 5), P('moss', 4), P('ki', 6)]
+#          0 깊은 그늘   1 그늘     2 어둔 풀   3 몸 어둠   4 몸       5 따뜻한 잎끝  6 빛
+DIRT = [P('soil', 1), P('soil', 2), P('soil', 3), P('ita', 5), P('soil', 4), P('kinari', 2), P('kinari', 3)]
+#         0 틈          1 그늘       2 어둠       3 몸 어둠    4 몸         5 밝음        6 빛
+PEBBLE = [P('shrine_flagstone', 1), P('shrine_flagstone', 2), P('shrine_flagstone', 3), P('shrine_flagstone', 4), P('paving_stone', 4)]
+WATER = [P('canal_indigo', 1), P('onsen_mineral_teal', 1), P('onsen_mineral_teal', 2), P('onsen_mineral_teal', 3),
+         P('onsen_mineral_teal', 4), P('lino', 4), P('vending_cool_white', 4)]
+#          0 깊음               1 그늘                       2 몸                          3 밝은 물
+#          4 하늘 비침           5 물살                       6 반짝
+RICE = [P('ki', 1), P('ki', 2), P('pine_bamboo', 2), P('ki', 4), P('pine_bamboo', 4), P('moss', 4), P('ki', 6)]
+GOLD = [P('soil', 2), P('mado', 1), P('tatami_straw', 1), P('tatami_straw', 2), P('mado', 2), P('tatami_straw', 3), P('kii', 3), P('tatami_straw', 4)]
+MUD_WATER = [P('canal_indigo', 1), P('garasu', 2), P('garasu', 3), P('arcade_skylight_slate', 2), P('arcade_skylight_slate', 3),
+             P('garasu', 5), P('garasu', 6)]
+#              0 깊은 그늘          1 그늘            2 몸 어둠          3 몸                                4 하늘 밝음
+#              5 구름 비침          6 반짝
+
+
+def h(x: int, y: int, s: int) -> float:
+    """16 주기 위치 해시(칸 이음매 없음)."""
+    return GA.h01(x % 16, y % 16, s)
+
+
+def blank(col) -> np.ndarray:
+    a = np.zeros((16, 16, 4), np.uint8)
+    a[:, :] = col
+    return a
+
+
+def put(a: np.ndarray, x: int, y: int, col) -> None:
+    a[y % 16, x % 16] = col
+
+
+def blob(a, cx, cy, rx, ry, col, wrap=True):
+    for y in range(int(cy - ry - 1), int(cy + ry + 2)):
+        for x in range(int(cx - rx - 1), int(cx + rx + 2)):
+            if ((x - cx) / max(rx, .1)) ** 2 + ((y - cy) / max(ry, .1)) ** 2 <= 1.0:
+                if wrap or (0 <= x < 16 and 0 <= y < 16):
+                    put(a, x, y, col)
+
+
+def mottle(a, ramp, levels, seed, cell=4, jitter=0.35):
+    """큰 덩이 얼룩(4px 격자를 해시로 일그러뜨린 두세 톤) — 1px 노이즈 대신 버들항식 넓은 명암 결."""
     for y in range(16):
         for x in range(16):
-            r, g, b = (int(v) for v in a[y, x, :3])
-            c.P(x, y, (r << 16) | (g << 8) | b)
+            gx = (x + int(h(x, y, seed + 1) * 3 * jitter * cell)) // cell
+            gy = (y + int(h(y, x, seed + 2) * 3 * jitter * cell)) // cell
+            v = h(gx, gy, seed)
+            t = levels[0] if v < .45 else levels[1] if v < .82 else levels[2]
+            a[y, x] = ramp[t]
 
 
-def Hw(x, y, s):
-    """16 주기로 감기는 칸 해시(이음매가 생기지 않게)."""
-    return H(x % 16, y % 16, s)
+# ═══════════════════════════ 풀밭 ═══════════════════════════
+def _tuft(a, x, y, kind=0):
+    """풀포기: 끝 빛 1 + 잎 2 + 밑동 그늘 1(빛 왼쪽 위 → 그늘은 오른쪽 아래)."""
+    G = GRASS
+    put(a, x, y, G[6] if kind == 0 else G[5])
+    put(a, x - 1, y + 1, G[5]); put(a, x, y + 1, G[4] if kind else G[5]); put(a, x + 1, y + 1, G[4])
+    put(a, x + 1, y + 2, G[2]); put(a, x, y + 2, G[3])
 
 
-def _cluster(c, mat, levels, seed, cell=2):
-    """2px 덩이 단위 3단 클러스터 바탕(노이즈 점 대신)."""
-    for y in range(16):
-        for x in range(16):
-            h = Hw(x // cell + (y // cell) * 3, y // cell, seed)
-            t = levels[0] if h < 0.55 else levels[1] if h < 0.85 else levels[2]
-            c.P(x, y, J(mat, t))
+def grass_body(seed=0) -> np.ndarray:
+    """풀밭 몸통: 넓고 낮은 대비 덩이(몸·몸 어둠) + 드문 풀잎 획 + 풀포기 2개. 버들항 풀처럼 넓게 깔아도 점 격자가 서지 않는다."""
+    a = blank(GRASS[4])
+    mottle(a, GRASS, (4, 4, 3), 11, cell=6)
+    for k in range(9):
+        x = int(h(k, 3, 21) * 16); y = int(h(k, 7, 22) * 16)
+        put(a, x, y, GRASS[5] if h(k, 1, 23) < .7 else GRASS[6])
+        put(a, x, y + 1, GRASS[3])
+    for k in range(2):
+        _tuft(a, 3 + int(h(k, 9, 31) * 10), 2 + int(h(k, 13, 32) * 10), k % 2)
+    for k in range(3):
+        put(a, int(h(k, 5, 41) * 16), int(h(k, 6, 42) * 16), GRASS[2])
+    return a
 
 
-def _meadow(c):
-    """여름 풀밭: jp_city 잔디 칩 그대로(±1단 톤 변화만, 밝은 꽃 점 없음 - 넓게 깔아도 점 격자가 생기지 않는다)."""
-    _put(c, _chip('lawn'))
+def grass_var(base: np.ndarray, kind: int) -> np.ndarray:
+    """둘레 1줄은 몸통과 같게(섞어 깔아도 이음매 없음). 1 = 토끼풀·작은 흰꽃, 2 = 키 큰 풀 덤불."""
+    a = base.copy()
+    if kind == 1:
+        for (x, y) in ((5, 5), (10, 9), (4, 11)):
+            put(a, x, y, P('vending_cool_white', 4)); put(a, x + 1, y, P('vending_cool_white', 2)); put(a, x, y + 1, GRASS[2])
+        put(a, 11, 4, P('kii', 4)); put(a, 11, 5, GRASS[2])
+        for (x, y) in ((7, 7), (8, 7), (7, 8)):
+            put(a, x, y, GRASS[5])
+    else:
+        for i, x in enumerate(range(4, 12)):
+            top = 6 - (i % 3 == 1) - (i == 4)
+            for y in range(top, 11):
+                put(a, x, y, GRASS[6] if y == top else GRASS[5] if y < top + 2 else GRASS[4] if y < 9 else GRASS[3])
+        for x in range(5, 13):
+            put(a, x, 11, GRASS[2]); put(a, x + 1, 12, GRASS[1]) if x % 2 else None
+    return a
 
 
-def _gravel_road(c):
-    """시골 흙자갈길: 다진 흙 2px 덩이 + 한 단 밝은 자갈(눈에 띄는 흰 점 없이)."""
-    _cluster(c, 'aged_cedar', (3, 3, 4), 51)
-    for (x, y) in ((2, 3), (9, 1), (13, 7), (5, 10), (11, 13), (7, 6)):
-        c.P(x, y, J('aged_cedar', 4)); c.P((x + 1) % 16, (y + 1) % 16, J('aged_cedar', 2))
+# ═══════════════════════════ 흙길 ═══════════════════════════
+def _pebble(a, x, y, big=False):
+    S = PEBBLE
+    put(a, x, y, S[3] if big else S[2]); put(a, x + 1, y, S[2] if big else S[1])
+    if big:
+        put(a, x, y - 1, S[4]); put(a, x + 1, y - 1, S[3]); put(a, x + 2, y, S[1])
+    put(a, x + 1, y + 1, DIRT[1]); put(a, x, y + 1, DIRT[2])          # 돌 그늘(오른쪽 아래)
 
 
-def _aze_path(c):
-    """논두렁·마당 흙: 산길 흙(rg trail) 톤 클러스터 + 한 단 차이 풀 기운(점 무늬 없음)."""
-    _cluster(c, 'aged_cedar', (3, 2, 2), 23)
-    for (x, y) in ((3, 4), (12, 11)):
-        c.P(x, y, J('moss', 2)); c.P(x + 1, y, J('moss', 2))
+def dirt_body() -> np.ndarray:
+    a = blank(DIRT[4])
+    mottle(a, DIRT, (4, 3, 5), 51, cell=5)
+    for k in range(9):                                        # 흙 알갱이 결(밝은 위 + 어두운 아래 2px)
+        x = int(h(k, 3, 61) * 16); y = int(h(k, 4, 62) * 16)
+        put(a, x, y, DIRT[5] if h(k, 9, 63) < .6 else DIRT[6]); put(a, x, y + 1, DIRT[2])
+    for k in range(3):
+        _pebble(a, int(h(k, 1, 71) * 16), int(h(k, 2, 72) * 16), big=(k == 0))
+    x = 3 + int(h(0, 5, 81) * 9); y = 3 + int(h(0, 6, 82) * 9)   # 잔금 하나
+    put(a, x, y, DIRT[2]); put(a, x + 1, y + 1, DIRT[1]); put(a, x + 2, y + 1, DIRT[2])
+    return a
 
 
-def _soft_base(c, mat, lv, seed):
-    """jp_city 잔디 칩처럼 1px 단위로 고르게 흩은 한 단 차이 결(덩이·사선 줄·점 격자 없음)."""
-    for y in range(16):
-        for x in range(16):
-            h = Hw(x, y, seed)
-            c.P(x, y, J(mat, lv + 1 if h > 0.86 else lv - 1 if h < 0.05 else lv))
+def dirt_var(base, kind):
+    a = base.copy()
+    if kind == 1:                                             # 바퀴 자국 한 줄(가로) — 둘레 1줄은 그대로
+        for x in range(2, 14):
+            put(a, x, 7, DIRT[2]); put(a, x, 8, DIRT[3] if x % 3 else DIRT[1]); put(a, x, 6, DIRT[5] if x % 4 == 1 else a[6, x])
+    else:                                                     # 잔돌 무리 + 풀 한 포기
+        for (x, y, b) in ((4, 5, True), (8, 9, False), (11, 6, False), (6, 11, True)):
+            _pebble(a, x, y, b)
+        _tuft(a, 10, 10, 1)
+    return a
 
 
-def _rice_rows(c, mat, lv, seed, tip=None):
-    """벼 포기 줄: 4px 간격 4줄 × 4포기(줄마다 2px 엇갈림 + 1px 흔들림). 잎은 바탕보다 한 단 밝게, 밑동은 두 단 어둡게.
-    한 칸에 16포기가 고르게 깔려 점 격자가 아닌 결(texture)로 읽힌다."""
+GRASS_EDGE = {   # 풀이 흙 위로 덮는 깊이(16 주기, 이웃 칸과 끝-처음 차 ≤1)
+    'N': [3, 4, 4, 3, 2, 3, 4, 5, 4, 3, 3, 2, 2, 3, 4, 3],
+    'S': [2, 2, 3, 3, 2, 1, 2, 3, 3, 4, 3, 2, 2, 2, 3, 2],
+    'W': [3, 3, 4, 3, 2, 2, 3, 4, 4, 3, 2, 3, 3, 2, 3, 3],
+    'E': [2, 3, 3, 2, 2, 3, 3, 2, 1, 2, 3, 3, 2, 2, 2, 2],
+}
+
+
+def _grass_px(x, y):
+    return tuple(int(v) for v in _GRASS_TEX[y % 16, x % 16])
+
+
+def style_dirt(side, d, s, x, y):
+    """흙길(member)/바깥 = 시골 풀밭. 풀 테가 흙 위로 삐죽, 풀끝 빛, 북·서 테는 흙 위로 그늘(빛 왼쪽 위)."""
+    depth = GRASS_EDGE[side][s % 16]
+    if d < depth - 1:
+        return _grass_px(x, y)
+    if d == depth - 1:                                        # 풀 끝: 들쭉날쭉 잎끝
+        return GRASS[6] if (s + d) % 3 == 0 else GRASS[5]
+    if d == depth:
+        if side in 'NW':
+            return DIRT[1]                                     # 풀이 드리운 그늘
+        return DIRT[2] if (s % 2) else None
+    if d == depth + 1 and side in 'NW' and s % 2 == 0:
+        return DIRT[2]
+    return None
+
+
+# ═══════════════════════════ 개울 ═══════════════════════════
+def stream_body() -> np.ndarray:
+    W = WATER
+    a = blank(W[2])
+    mottle(a, W, (2, 2, 1), 91, cell=7)
+    for k in range(5):                                        # 물밑 자갈(물에 잠겨 한 단 흐림)
+        cx, cy = h(k, 1, 92) * 16, h(k, 2, 93) * 16
+        blob(a, cx, cy, 1.6, 1.0, W[3]); put(a, int(cx) - 1, int(cy) - 1, W[4]); put(a, int(cx) + 1, int(cy) + 1, W[1])
+    for k in range(4):                                        # 물살(가로 짧은 밝은 획, 앞 끝 반짝)
+        x = int(h(k, 3, 94) * 16); y = int(h(k, 4, 95) * 16); ln = 2 + int(h(k, 5, 96) * 3)
+        for i in range(ln):
+            put(a, x + i, y, W[5])
+        put(a, x + ln, y, W[6] if k % 2 == 0 else W[5]); put(a, x, y + 1, W[1])
+    return a
+
+
+def stream_var(base, kind):
+    a = base.copy()
+    W = WATER
+    if kind == 1:                                             # 물살이 갈라지는 돌 하나
+        blob(a, 8, 8, 2.2, 1.4, PEBBLE[2], wrap=False); put(a, 7, 7, PEBBLE[4]); put(a, 8, 7, PEBBLE[3]); put(a, 9, 9, PEBBLE[0])
+        for x in range(3, 6):
+            put(a, x, 8, W[5])
+        put(a, 11, 7, W[6]); put(a, 11, 9, W[5]); put(a, 12, 9, W[5])
+    else:                                                     # 소용돌이 반짝
+        for (x, y) in ((5, 5), (6, 4), (7, 4), (8, 5), (10, 10), (11, 11)):
+            put(a, x, y, W[5])
+        put(a, 7, 4, W[6])
+    return a
+
+
+def style_stream(side, d, s, x, y):
+    """개울(member)/바깥 = 풀밭. 북쪽 둑: 풀 입술 → 흙 둑 앞면(돌 박힘) → 젖은 선 → 물 그늘. 남·옆: 풀 입술 + 젖은 선 + 물가 빛."""
+    G, D, W = GRASS, DIRT, WATER
+    if side == 'N':
+        lip = 2 + (GRASS_EDGE['N'][s % 16] > 3)
+        if d < lip - 1:
+            return _grass_px(x, y)
+        if d == lip - 1:
+            return G[5] if s % 3 else G[6]
+        face = d - lip                                         # 흙 둑 앞면 4줄(위 밝음 → 아래 어둠)
+        if 0 <= face < 4:
+            if (s // 4 + face // 2) % 3 == 0 and face in (1, 2):
+                return PEBBLE[3] if face == 1 else PEBBLE[1]  # 둑에 박힌 돌
+            return (D[3], D[2], D[1], D[1])[face] if (s + face) % 5 else (D[4], D[3], D[2], D[0])[face]
+        if face == 4:
+            return D[0]                                        # 젖은 둑 발치
+        if face == 5:
+            return W[0]
+        if face == 6:
+            return W[1] if s % 2 else None
+        return None
+    if side == 'S':
+        lip = GRASS_EDGE['S'][s % 16]
+        if d < lip:
+            return _grass_px(x, y) if d < lip - 1 else (G[3] if s % 2 else G[2])   # 풀 둑 윗면, 물 쪽 끝은 어둠
+        if d == lip:
+            return D[1]
+        if d == lip + 1:
+            return W[4] if s % 3 else W[6]                     # 물가 빛
+        return None
+    lip = 2 + (GRASS_EDGE[side][s % 16] > 3)
+    if d < lip - 1:
+        return _grass_px(x, y)
+    if d == lip - 1:
+        return G[5] if side == 'E' else G[3]
+    if d == lip:
+        return D[2] if side == 'W' else D[3]
+    if d == lip + 1:
+        return W[1] if side == 'W' else W[4] if s % 3 else W[3]
+    return None
+
+
+# ═══════════════════════════ 논 ═══════════════════════════
+def paddy_water_body() -> np.ndarray:
+    """모내기 물논: 하늘 비친 잔잔한 물(넓은 밝은 덩이 + 구름 비침) + 4px 간격 줄에 4px 간격으로 심은 작은 모(잎 2·끝 빛·물 그림자)."""
+    M = MUD_WATER
+    a = blank(M[3])
+    mottle(a, M, (3, 4, 2), 101, cell=7)
+    for k in range(3):                                        # 구름 비침(흰 기 도는 넓은 띠)
+        x = int(h(k, 1, 102) * 16); y = int(h(k, 2, 103) * 16)
+        for i in range(5):
+            put(a, x + i, y, M[5])
+        put(a, x + 1, y - 1, M[5]); put(a, x + 2, y - 1, M[6])
     for j, y in enumerate((1, 5, 9, 13)):
         for i in range(4):
-            x = (i * 4 + (j % 2) * 2 + (1 if Hw(i, j, seed) > 0.6 else 0)) % 16
-            c.P(x, y, J(mat, lv + 1) if tip is None or Hw(i, j, seed + 1) < 0.5 else tip)
-            c.P((x - 1) % 16, (y + 1) % 16, J(mat, lv + 1)); c.P(x, (y + 1) % 16, J(mat, lv)); c.P((x + 1) % 16, (y + 1) % 16, J(mat, lv + 1))
-            c.P(x, (y + 2) % 16, J(mat, lv - 2))                   # 밑동 그늘 두 단(1배에서도 포기 줄이 남게)
-    for y in (3, 7, 11, 15):                                       # 포기 줄 사이 고랑: 한 단 어두운 가로 결(1배에서 줄무늬로 읽힌다)
+            x = i * 4 + (j % 2) * 2 + 1
+            put(a, x, y, RICE[6] if (i + j) % 3 else RICE[5]); put(a, x, y + 1, RICE[3]); put(a, x - 1, y + 1, RICE[4])
+            put(a, x + 1, y + 1, M[1]); put(a, x, y + 2, M[2])   # 물에 진 그림자(오른쪽 아래)
+    return a
+
+
+def paddy_summer_body() -> np.ndarray:
+    """여름 푸른 논: 포기 줄마다 둥근 벼 덩이(위 빛·몸·아래 그늘) + 줄 사이 물 그늘 고랑. 1배에서 줄 결로 읽힌다."""
+    R = RICE
+    a = blank(R[2])
+    for y in range(16):
+        r = y % 4
         for x in range(16):
-            if Hw(x, y, seed + 3) < 0.7:
-                c.P(x, y, J(mat, lv - 1))
+            if r == 3:
+                a[y, x] = R[1] if h(x, y, 111) < .6 else MUD_WATER[1]   # 고랑 그늘(물 비침)
+            elif r == 0:
+                a[y, x] = R[5] if h(x, y, 112) < .55 else R[4]           # 이삭 끝 빛
+            elif r == 1:
+                a[y, x] = R[4] if h(x, y, 113) < .55 else R[3]
+            else:
+                a[y, x] = R[3] if h(x, y, 114) < .6 else R[2]
+    for k in range(10):                                       # 바람에 흔들린 잎끝 반짝
+        x = int(h(k, 1, 115) * 16); y = (int(h(k, 2, 116) * 4)) * 4
+        put(a, x, y, R[6]); put(a, x + 1, y, R[5])
+    for j in range(4):                                        # 포기 덩이 사이 틈(줄이 한 덩이 띠로 읽히지 않게)
+        for x in range((j * 5) % 4 + 1, 16, 4 + (j % 2)):
+            put(a, x, j * 4 + 1, R[2]); put(a, x, j * 4 + 2, R[1])
+    return a
 
 
-def _paddy_water(c):
-    """모내기 물논: 하늘 비친 잔잔한 물 + 줄지어 심은 어린 모. 모 끝은 이끼 4단·잎은 대 4단(물 2단보다 두 단 밝게) + 물에 진 1px 그늘이라
-    1배에서도 모 줄이 점선으로 읽힌다."""
-    _soft_base(c, 'onsen_mineral_teal', 2, 3)
-    for j, y in enumerate((1, 5, 9, 13)):
-        for i in range(4):
-            x = (i * 4 + (j % 2) * 2 + (1 if Hw(i, j, 5) > 0.6 else 0)) % 16
-            c.P(x, y, J('moss', 4)); c.P((x - 1) % 16, (y + 1) % 16, J('pine_bamboo', 4)); c.P((x + 1) % 16, (y + 1) % 16, J('pine_bamboo', 3))
-            c.P(x, (y + 1) % 16, J('pine_bamboo', 3)); c.P((x + 1) % 16, (y + 2) % 16, J('onsen_mineral_teal', 0))
-    for y in (3, 7, 11, 15):                                       # 모 줄 사이 물에 비친 하늘: 한 단 밝은 가로 결(1배에서 줄무늬로 읽힌다)
+def paddy_golden_body() -> np.ndarray:
+    """가을 황금 논: 고개 숙인 이삭 줄(이삭 알갱이 빛 점) + 줄 사이 그늘 + 마른 논흙 비침."""
+    Gd = GOLD
+    a = blank(Gd[3])
+    for y in range(16):
+        r = y % 4
         for x in range(16):
-            if Hw(x, y, 9) < 0.55:
-                c.P(x, y, J('onsen_mineral_teal', 3))
+            if r == 3:
+                a[y, x] = Gd[1] if h(x, y, 121) < .55 else Gd[0]
+            elif r == 0:
+                a[y, x] = Gd[6] if h(x, y, 122) < .4 else Gd[5]
+            elif r == 1:
+                a[y, x] = Gd[5] if h(x, y, 123) < .45 else Gd[4]
+            else:
+                a[y, x] = Gd[3] if h(x, y, 124) < .6 else Gd[2]
+    for k in range(10):
+        x = int(h(k, 1, 125) * 16); y = (int(h(k, 2, 126) * 4)) * 4
+        put(a, x, y, Gd[7])
+    for k in range(5):                                        # 숙인 이삭 끝이 아랫줄로 늘어짐
+        x = int(h(k, 3, 127) * 16); y = (int(h(k, 4, 128) * 4)) * 4 + 2
+        put(a, x, y, Gd[5]); put(a, x + 1, y + 1, Gd[4])
+    return a
 
 
-def _paddy_summer(c):
-    """여름 푸른 논: 빽빽한 벼(moss) 결 - 바탕 2단, 잎 3단, 드문 4단 잎끝, 밑동 0단."""
-    _soft_base(c, 'moss', 2, 7)
-    _rice_rows(c, 'moss', 2, 7, tip=J('moss', 4))
+def _paddy_var(base, kind, ramp):
+    a = base.copy()
+    if kind == 1:   # 빈 포기 자리(물이 드러남)
+        for (x, y) in ((6, 6), (7, 6), (6, 7)):
+            put(a, x, y, MUD_WATER[2])
+        put(a, 7, 7, MUD_WATER[4])
+    else:           # 짙은 포기 덩이
+        for (x, y) in ((9, 9), (10, 9), (9, 10), (10, 10)):
+            put(a, x, y, ramp[2])
+        put(a, 9, 9, ramp[4])
+    return a
 
 
-def _paddy_golden(c):
-    """가을 황금 논: 고개 숙인 이삭 결 - 볏짚 2단 바탕, 3단 이삭, 드문 4단 빛, 밑동 0단."""
-    _soft_base(c, 'tatami_straw', 2, 9)
-    _rice_rows(c, 'tatami_straw', 2, 9, tip=J('tatami_straw', 4))
+def style_paddy(fill_ramp):
+    """논(member)/바깥 = 무엇이든. 논두렁(畦) 둑을 논 칸 안에 그린다: 풀 어깨 + 닳은 흙 윗면 + 풀 어깨, 그 안쪽에 둑 안벽.
+    3/4: 북쪽 둑은 남향 안벽(흙 2줄)이 물로 떨어지고, 남쪽 둑은 바깥 남향 비탈(흙 2줄)이 칸 맨 아래에 보인다. 서쪽 안벽 = 그늘, 동쪽 안벽 = 빛."""
+    G, D, M = GRASS, DIRT, MUD_WATER
+
+    def ridge(i, s):
+        """둑 윗면 단면 i(0 바깥 어깨 … 4 안 어깨)."""
+        if i == 0:
+            return G[3] if s % 3 else G[2]
+        if i == 1:
+            return G[4] if h(s, 1, 131) < .6 else G[5]
+        if i in (2, 3):
+            v = h(s, i, 132)
+            return D[5] if v < .35 else D[4] if v < .8 else G[4]
+        return G[5] if h(s, 4, 133) < .5 else G[4]
+
+    def f(side, d, s, x, y):
+        if side == 'N':
+            if d < 5:
+                return ridge(d, s)
+            if d == 5:
+                return D[3] if s % 5 else D[4]
+            if d == 6:
+                return D[2]
+            if d == 7:
+                return D[0] if s % 3 else D[1]
+            if d == 8:
+                return M[0] if s % 2 == 0 else fill_ramp[1]
+            return None
+        if side == 'S':
+            if d == 0:
+                return D[2]
+            if d == 1:
+                return D[3] if s % 4 else D[4]
+            if d < 7:
+                return ridge(d - 2, s)
+            if d == 7:
+                return M[5] if s % 3 else M[6]
+            return None
+        if d < 5:
+            return ridge(d, s)
+        if d == 5:
+            return D[1] if side == 'W' else D[4]
+        if d == 6 and side == 'W':
+            return M[0] if s % 2 else fill_ramp[1]
+        return None
+    return f
 
 
-def _paddy_bank(fn, edge_mat, edge_lv):
-    """논 북쪽 가장자리 칸: 논두렁(산길 흙) 앞면이 논으로 떨어지는 3/4 둑 + 둑 그늘 + 물가 빛 한 줄. 논 면 맨 윗줄에 한 줄 깔아
-    흙과 논이 칼로 자른 사각 경계로 맞닿지 않게 한다(아래 줄은 같은 논 칸과 이음매 없이 이어진다)."""
+# ═══════════════════════════ 오토타일 묶기 ═══════════════════════════
+_GRASS_TEX = grass_body()
+
+
+def _sets():
+    gb, db, sb = _GRASS_TEX, dirt_body(), stream_body()
+    pw, ps, pg = paddy_water_body(), paddy_summer_body(), paddy_golden_body()
+    none = lambda side, d, s, x, y: None  # noqa: E731
+    return [
+        dict(key='grass', id='jp-inaka-at-grass', name='시골 풀밭', role='green', tex=gb, style=none, var=(grass_var(gb, 1), grass_var(gb, 2)),
+             pc='floor', flat=True, weights=(3, 1, 1),
+             desc='시골 여름 풀밭(기본 대지). 풀포기·잎끝 빛·그늘 덩이 6단 녹색. 가장자리를 그리지 않는다 — 흙길·개울·논이 자기 쪽에 풀 테·둑을 그린다.'),
+        dict(key='dirt', id='jp-inaka-at-dirt', name='시골 흙길', role='path', tex=db, style=style_dirt, var=(dirt_var(db, 1), dirt_var(db, 2)),
+             pc='floor', weights=(3, 1, 1),
+             desc='논두렁·마당·고갯길 흙길. 다진 흙 덩이·흙 알갱이·잔돌·바퀴 자국. 풀밭과 닿는 가장자리는 풀이 흙 위로 삐죽 덮고 북·서 풀 테 아래로 그늘이 진다.'),
+        dict(key='stream', id='jp-inaka-at-stream', name='시골 개울', role='water', tex=sb, style=style_stream, var=(stream_var(sb, 1), stream_var(sb, 2)),
+             pc='solidfloor', weights=(3, 1, 1),
+             desc='맑고 얕은 시골 개울(지나갈 수 없음). 물밑 자갈이 비치고 물살이 반짝인다. 북쪽은 흙 둑 앞면(박힌 돌)·젖은 선, 남·옆은 풀 둑 입술과 물가 빛.'),
+        dict(key='paddy-water', id='jp-inaka-at-paddy-water', name='시골 물논', role='terrain', tex=pw, style=style_paddy(MUD_WATER),
+             var=(_paddy_var(pw, 1, RICE), _paddy_var(pw, 2, RICE)), pc='solidfloor', weights=(4, 1, 1),
+             desc='모내기 물논(지나갈 수 없음). 하늘 비친 물에 줄지어 심은 모. 논 가장자리에 풀 덮인 논두렁 둑이 저절로 생긴다(북쪽 둑은 흙 앞면이 물로 떨어진다).'),
+        dict(key='paddy-summer', id='jp-inaka-at-paddy-summer', name='시골 여름 논', role='terrain', tex=ps, style=style_paddy(RICE),
+             var=(_paddy_var(ps, 1, RICE), _paddy_var(ps, 2, RICE)), pc='solidfloor', weights=(4, 1, 1),
+             desc='여름 푸른 논(지나갈 수 없음). 포기 줄마다 벼 덩이(빛·몸·그늘)와 고랑. 가장자리에 논두렁 둑이 저절로 생긴다.'),
+        dict(key='paddy-golden', id='jp-inaka-at-paddy-golden', name='시골 황금 논', role='terrain', tex=pg, style=style_paddy(GOLD),
+             var=(_paddy_var(pg, 1, GOLD), _paddy_var(pg, 2, GOLD)), pc='solidfloor', weights=(4, 1, 1),
+             desc='가을 황금 논(지나갈 수 없음). 고개 숙인 이삭 줄과 그늘 고랑. 가장자리에 논두렁 둑이 저절로 생긴다. 볏단 걸이와 짝.'),
+    ]
+
+
+_PAINT: dict[str, list] = {}
+
+
+def painted(S) -> list:
+    if S['key'] not in _PAINT:
+        if S.get('flat'):
+            _PAINT[S['key']] = [(255, S['tex']), ('b1', S['var'][0]), ('b2', S['var'][1])]
+        else:
+            _PAINT[S['key']] = GA.build_set(S['tex'], S['style'], S['var'], None, None)
+    return _PAINT[S['key']]
+
+
+def autotile_cells():
+    """(cells{loc: (rgba, pc, label, desc, tags)}, autotiles[], groups[]) — bake_inaka 가 칸으로 굽는다."""
+    cells: dict[str, tuple] = {}
+    autotiles, groups = [], []
+    sets = _sets()
+    others = {S['id'] for S in sets}
+    for S in sets:
+        def loc(k, S=S):
+            return 'at/%s.%s' % (S['key'], ('m%d' % k) if isinstance(k, int) else k)
+        members = []
+        for k, a in painted(S):
+            members.append(loc(k))
+            lab = '%s · %s' % (S['name'], GA.describe_mask(k) if isinstance(k, int) else '몸통 변형 ' + k[1:])
+            cells[loc(k)] = (a, S['pc'], lab, '[이나카 시골 팩] %s 오토타일 칸. %s' % (S['name'], S['desc']), ['autotile', 'ground', '일본 시골', 'inaka', S['key']])
+        if S.get('flat'):
+            vm = {str(m): loc(255) for m in range(256)}
+            conn = list(members) + ['other:' + o for o in others if o != S['id']]
+        else:
+            vm = GA.variant_map(lambda m: loc(m))
+            conn = list(members)
+        w3 = S['weights']
+        body = [loc(255)] * w3[0] + [loc('b1')] * w3[1] + [loc('b2')] * w3[2]
+        autotiles.append(dict(id=S['id'], name=S['name'], neighborhood=8, layer='lower', member=members, connect=conn,
+                              variantMap=vm, interior=[list(body), list(body)], edgeConnects=True))
+        groups.append(dict(id='jp:' + S['id'][3:], name=S['name'], role=S['role'], defaultLayer='lower', cells=list(members), desc=S['desc'],
+                           rules='8방 오토타일(fill_region 재료 「%s」). 맵 밖은 이어진 것으로 본다. 가장자리 그림은 이 재료 쪽 칸에 그린다.' % S['name']))
+    return cells, autotiles, groups
+
+
+# ═══════════════════════════ 단일 칸 그룹(R1~R4 번호 유지) ═══════════════════════════
+def _from(arr_fn):
     def draw(c):
-        fn(c)
-        for x in range(16):
-            c.P(x, 0, J('aged_cedar', 3 if Hw(x, 0, 41) > 0.3 else 2))          # 둑 윗면 끝(빛)
-            c.P(x, 1, J('aged_cedar', 1 if Hw(x, 1, 42) > 0.25 else 2))         # 둑 앞면
-            c.P(x, 2, J('aged_cedar', 0) if Hw(x, 2, 43) < 0.55 else J(edge_mat, max(0, edge_lv - 2)))   # 둑 발치가 물·흙에 진 그늘(들쭉날쭉)
-            c.P(x, 3, J(edge_mat, max(0, edge_lv - 1)) if Hw(x, 3, 44) < 0.6 else J(edge_mat, min(4, edge_lv + 1)) if x % 5 == 2 else J(edge_mat, edge_lv))
-        for x in (3, 10):                                             # 둑에 난 풀포기
-            c.P(x, 0, J('pine_bamboo', 3)); c.P(x + 1, 0, J('pine_bamboo', 4)); c.P(x, 1, J('pine_bamboo', 2))
+        a = arr_fn()
+        for y in range(16):
+            for x in range(16):
+                r, g, b = (int(v) for v in a[y, x, :3])
+                c.P(x, y, (r << 16) | (g << 8) | b)
     return draw
 
 
-def _canal_water(c):
-    """농수로 물: jp_city 수로 물 칩(water_tex) 그대로."""
-    from autotiles_ground import water_tex
-    _put(c, water_tex())
+def gravel_road_body() -> np.ndarray:
+    """시골 자갈 신작로: 흙 바탕에 굵은 자갈 무리(돌마다 빛·그늘)."""
+    a = dirt_body()
+    for k in range(9):
+        _pebble(a, int(h(k, 7, 141) * 16), int(h(k, 8, 142) * 16), big=k % 3 == 0)
+    return a
 
 
-def _canal_wall(c):
-    """농수로 석축 윗면 연석(5px) + 젖은 돌 정면 + 물선."""
+def canal_water_body() -> np.ndarray:
+    """농수로 물: 흐르는 짙은 물(남색 → 청록 5단) + 흐름 줄."""
+    a = blank(P('canal_indigo', 2))
+    mottle(a, [P('canal_indigo', 1), P('canal_indigo', 2), P('canal_indigo', 3), P('onsen_mineral_teal', 2)], (1, 2, 3), 151, cell=6)
+    for k in range(6):
+        x = int(h(k, 1, 152) * 16); y = int(h(k, 2, 153) * 16)
+        for i in range(4):
+            put(a, x + i, y, P('canal_indigo', 4))
+        put(a, x + 4, y, P('vending_cool_white', 3)); put(a, x, y + 1, P('canal_indigo', 0))
+    return a
+
+
+def canal_wall_body() -> np.ndarray:
+    """농수로 석축: 윗면 연석(빛 2줄) + 젖은 돌 정면(돌마다 4단) + 이끼 + 물선."""
+    a = blank(P('wet_cobble', 2))
     for x in range(16):
-        c.P(x, 0, J('paving_stone', 4))
-        for y in (1, 2, 3): c.P(x, y, J('paving_stone', 3 if x % 8 != 7 else 2))
-        c.P(x, 4, J('paving_stone', 1))
-    for y in range(5, 13):
+        a[0, x] = P('paving_stone', 4); a[1, x] = P('paving_stone', 3) if x % 8 else P('paving_stone', 2)
+        a[2, x] = P('paving_stone', 3); a[3, x] = P('paving_stone', 1)
+    for y in range(4, 13):
+        row = (y - 4) // 3
         for x in range(16):
-            row = (y - 5) // 4; sx = (x + row * 4) % 8; sy = (y - 5) % 4
-            t = 0 if (sx == 7 or sy == 3) else 3 if (sx == 0 or sy == 0) else 2
-            if y >= 10 and t == 2 and Hw(x, y, 3) < 0.4: c.P(x, y, J('moss', 2)); continue
-            c.P(x, y, J('wet_cobble', t))
-    c.HL(0, 13, 16, J('canal_indigo', 1)); c.HL(0, 14, 16, J('canal_indigo', 2)); c.HL(0, 15, 16, J('canal_indigo', 2))
-    c.P(4, 14, J('vending_cool_white', 4)); c.P(11, 15, J('onsen_mineral_teal', 3))
+            sx = (x + row * 3) % 6; sy = (y - 4) % 3
+            stone = (x + row * 3) // 6 + row * 7
+            tone = 2 + int(h(stone, row, 161) * 2)
+            col = P('wet_cobble', tone + (1 if sy == 0 and sx < 4 else 0))
+            if sx == 5 or sy == 2:
+                col = P('wet_cobble', 0)
+            elif y >= 10 and h(x, y, 162) < .35:
+                col = P('moss', 2) if h(x, y, 163) < .6 else P('moss', 3)
+            a[y, x] = col
+    for x in range(16):
+        a[13, x] = P('canal_indigo', 1); a[14, x] = P('canal_indigo', 2); a[15, x] = P('canal_indigo', 2) if x % 5 else P('canal_indigo', 4)
+    return a
 
 
-def _river_shallow(c):
-    """얕은 개울: jp_city 연못·수로 물 칩(water_tex) 그대로 - 연못(연못) 오토타일 물과 이음매 없이 이어진다."""
-    from autotiles_ground import water_tex
-    _put(c, water_tex())
-
-
-def _furrow(c):
-    """채소밭 이랑: 짙은 흙 + 3/4 양배추·무 포기(왼쪽 위 밝음, 오른쪽 아래 흙에 진 그늘)."""
+def furrow_body() -> np.ndarray:
+    """채소밭 이랑(버들항 밭처럼): 이랑마다 윗면 빛·흙 몸·고랑 그늘 + 포기(잎 4단, 흙에 진 그늘)."""
+    S = [P('soil', 0), P('soil', 1), P('soil', 2), P('soil', 3), P('yuka', 2)]
+    a = blank(S[2])
     for y in range(16):
+        r = y % 8
         for x in range(16):
-            ridge = (y % 8) in (5, 6)
-            h = Hw(x // 2, y // 2, 13)
-            c.P(x, y, K('soil', 0 if ridge else (1 if h < 0.75 else 2)))
-    for (x, y, col) in ((3, 1, 'midori'), (11, 1, 'midori'), (7, 9, 'midori'), (15, 9, 'midori')):
-        c.P((x + 1) % 16, y + 3, K('soil', -2)); c.P((x + 2) % 16, y + 3, K('soil', -2))   # 그늘
-        for dy, dx, t in ((0, 0, 2), (0, 1, 1), (1, -1, 1), (1, 0, 2), (1, 1, 0), (2, 0, 0), (2, 1, -1), (1, 2, -1), (2, -1, 0)):
-            c.P((x + dx) % 16, y + dy, K(col, t))
+            if r in (6, 7):
+                a[y, x] = S[0] if r == 7 else S[1]
+            elif r == 0:
+                a[y, x] = S[4] if h(x, y, 171) < .5 else S[3]
+            else:
+                a[y, x] = S[3] if h(x, y, 172) < .3 else S[2]
+    L = [P('midori', 0), P('midori', 1), P('ki', 4), P('midori', 2), P('ki', 6)]
+    for (x, y) in ((2, 1), (10, 1), (6, 9), (14, 9)):
+        put(a, x + 2, y + 4, S[0]); put(a, x + 3, y + 4, S[1])
+        for dx, dy, t in ((0, 0, 4), (1, 0, 3), (-1, 1, 3), (0, 1, 2), (1, 1, 2), (2, 1, 1), (0, 2, 1), (1, 2, 1), (-1, 2, 2), (2, 2, 0), (1, 3, 0)):
+            put(a, x + dx, y + dy, L[t])
+    return a
 
 
-GROUND: Final[collections.OrderedDict[str, tuple[Callable[[Cv], None], str]]] = collections.OrderedDict((
-    ('gnd/inaka-paddy-water', (_paddy_water, 'solidfloor')),
-    ('gnd/inaka-paddy-summer', (_paddy_summer, 'solidfloor')),
-    ('gnd/inaka-paddy-golden', (_paddy_golden, 'solidfloor')),
-    ('gnd/inaka-aze-path', (_aze_path, 'floor')),
-    ('gnd/inaka-canal-water', (_canal_water, 'solidfloor')),
-    ('gnd/inaka-canal-wall', (_canal_wall, 'solidfloor')),
-    ('gnd/inaka-gravel-road', (_gravel_road, 'floor')),
-    ('gnd/inaka-river-shallow', (_river_shallow, 'solidfloor')),
-    ('gnd/inaka-meadow-wildflower', (_meadow, 'floor')),
-    ('gnd/inaka-vegetable-furrow', (_furrow, 'solidfloor')),
-    ('gnd/inaka-paddy-water-bank', (_paddy_bank(_paddy_water, 'onsen_mineral_teal', 2), 'solidfloor')),
-    ('gnd/inaka-paddy-summer-bank', (_paddy_bank(_paddy_summer, 'moss', 2), 'solidfloor')),
-    ('gnd/inaka-paddy-golden-bank', (_paddy_bank(_paddy_golden, 'tatami_straw', 2), 'solidfloor')),
-))
+_BODY = {
+    'gnd/inaka-paddy-water': (paddy_water_body, 'solidfloor'),
+    'gnd/inaka-paddy-summer': (paddy_summer_body, 'solidfloor'),
+    'gnd/inaka-paddy-golden': (paddy_golden_body, 'solidfloor'),
+    'gnd/inaka-aze-path': (dirt_body, 'floor'),
+    'gnd/inaka-canal-water': (canal_water_body, 'solidfloor'),
+    'gnd/inaka-canal-wall': (canal_wall_body, 'solidfloor'),
+    'gnd/inaka-gravel-road': (gravel_road_body, 'floor'),
+    'gnd/inaka-river-shallow': (stream_body, 'solidfloor'),
+    'gnd/inaka-meadow-wildflower': (lambda: grass_var(_GRASS_TEX, 1), 'floor'),
+    'gnd/inaka-vegetable-furrow': (furrow_body, 'solidfloor'),
+}
+
+GROUND: Final[collections.OrderedDict[str, tuple[Callable[[Cv], None], str]]] = collections.OrderedDict(
+    (k, (_from(fn), pc)) for k, (fn, pc) in _BODY.items()
+)
 
 GROUND_GROUPS: Final[tuple[tuple[str, str, list[str], str], ...]] = (
-    ('jp:inaka-paddy-water', 'inaka-paddy-water', ['gnd/inaka-paddy-water'], '논(모내기 물논) - 하늘이 비친 물에 엇갈려 심은 어린 모 포기. 걸을 수 없으며 사방에 논두렁(inaka-aze-path)을 두른다.'),
-    ('jp:inaka-paddy-summer', 'inaka-paddy-summer', ['gnd/inaka-paddy-summer'], '논(푸른 여름 벼) - 짙은 물 위에 빽빽한 벼 포기. 걸을 수 없다.'),
-    ('jp:inaka-paddy-golden', 'inaka-paddy-golden', ['gnd/inaka-paddy-golden'], '논(황금 가을 벼) - 마른 논흙 위 고개 숙인 이삭 포기. 볏단 걸이(inaka-rice-rack-hasagi)와 짝지어 쓴다.'),
-    ('jp:inaka-aze-path', 'inaka-aze-path', ['gnd/inaka-aze-path'], '논두렁·시골 흙마당 - 다진 흙에 듬성 풀포기. 걸을 수 있는 바닥.'),
-    ('jp:inaka-canal-water', 'inaka-canal-water', ['gnd/inaka-canal-water'], '농수로 물(用水路) - jp_city 수로 물결 그대로.'),
-    ('jp:inaka-canal-wall', 'inaka-canal-wall', ['gnd/inaka-canal-wall'], '농수로 석축 - 3/4 윗면 연석과 젖은 돌 정면·물선. 수로 북쪽 가장자리에 한 줄.'),
-    ('jp:inaka-gravel-road', 'inaka-gravel-road', ['gnd/inaka-gravel-road'], '시골 흙자갈길 - 다진 흙 덩이와 빛 받은 자갈. 걸을 수 있는 주 도로.'),
-    ('jp:inaka-river-shallow', 'inaka-river-shallow', ['gnd/inaka-river-shallow'], '시골 맑은 개울 - 강자갈이 비치는 얕은 물. 징검다리·붉은 철교 아래에 깐다.'),
-    ('jp:inaka-meadow-wildflower', 'inaka-meadow-wildflower', ['gnd/inaka-meadow-wildflower'], '여름 풀밭 - jp_city 잔디 칩에 토끼풀 꽃. 기본 대지 바닥.'),
-    ('jp:inaka-vegetable-furrow', 'inaka-vegetable-furrow', ['gnd/inaka-vegetable-furrow'], '채소밭 이랑 - 짙은 흙 이랑과 양배추 포기. 걸을 수 없다.'),
-    ('jp:inaka-paddy-water-bank', 'inaka-paddy-water-bank', ['gnd/inaka-paddy-water-bank'], '물논 북쪽 둑 가장자리 - 논두렁 앞면이 물로 떨어지는 3/4 둑과 그늘. 물논 맨 윗줄에 한 줄 깐다.'),
-    ('jp:inaka-paddy-summer-bank', 'inaka-paddy-summer-bank', ['gnd/inaka-paddy-summer-bank'], '여름 논 북쪽 둑 가장자리 - 논두렁 앞면과 둑 그늘. 여름 논 맨 윗줄에 한 줄 깐다.'),
-    ('jp:inaka-paddy-golden-bank', 'inaka-paddy-golden-bank', ['gnd/inaka-paddy-golden-bank'], '황금 논 북쪽 둑 가장자리 - 논두렁 앞면과 둑 그늘. 황금 논 맨 윗줄에 한 줄 깐다.'),
+    ('jp:inaka-paddy-water', 'inaka-paddy-water', ['gnd/inaka-paddy-water'], '논(모내기 물논) 한 칸 — 둑 없이 쓰는 몸통. 넓은 논은 오토타일 「시골 물논」으로 깔아 둑을 저절로 두른다.'),
+    ('jp:inaka-paddy-summer', 'inaka-paddy-summer', ['gnd/inaka-paddy-summer'], '논(푸른 여름 벼) 한 칸 — 넓은 논은 오토타일 「시골 여름 논」.'),
+    ('jp:inaka-paddy-golden', 'inaka-paddy-golden', ['gnd/inaka-paddy-golden'], '논(황금 가을 벼) 한 칸 — 넓은 논은 오토타일 「시골 황금 논」.'),
+    ('jp:inaka-aze-path', 'inaka-aze-path', ['gnd/inaka-aze-path'], '논두렁·시골 흙마당 한 칸(가장자리 없음). 길은 오토타일 「시골 흙길」.'),
+    ('jp:inaka-canal-water', 'inaka-canal-water', ['gnd/inaka-canal-water'], '농수로 물(用水路) — 흐르는 짙은 물.'),
+    ('jp:inaka-canal-wall', 'inaka-canal-wall', ['gnd/inaka-canal-wall'], '농수로 석축 — 3/4 윗면 연석과 젖은 돌 정면·이끼·물선. 수로 북쪽 가장자리에 한 줄.'),
+    ('jp:inaka-gravel-road', 'inaka-gravel-road', ['gnd/inaka-gravel-road'], '시골 자갈 신작로 — 흙 바탕에 굵은 자갈.'),
+    ('jp:inaka-river-shallow', 'inaka-river-shallow', ['gnd/inaka-river-shallow'], '시골 맑은 개울 한 칸(둑 없음). 개울은 오토타일 「시골 개울」.'),
+    ('jp:inaka-meadow-wildflower', 'inaka-meadow-wildflower', ['gnd/inaka-meadow-wildflower'], '여름 풀밭(토끼풀 꽃) 한 칸. 넓은 풀밭은 오토타일 「시골 풀밭」.'),
+    ('jp:inaka-vegetable-furrow', 'inaka-vegetable-furrow', ['gnd/inaka-vegetable-furrow'], '채소밭 이랑 — 흙 이랑과 양배추 포기. 걸을 수 없다.'),
 )
+
+
+# ═══════════════════════════ 눈 확인 ═══════════════════════════
+def demo_map(out_png: str, scale: int = 3) -> str:
+    """흙길·개울·논 3종을 풀밭에 깐 32×20 시험 지도(8방 마스크로 칸을 고른다)."""
+    from PIL import Image
+    W_, H_ = 32, 20
+    mat = [['grass'] * W_ for _ in range(H_)]
+
+    def fill(x0, y0, w, hh, m):
+        for y in range(y0, y0 + hh):
+            for x in range(x0, x0 + w):
+                if 0 <= x < W_ and 0 <= y < H_:
+                    mat[y][x] = m
+    fill(0, 8, 32, 2, 'dirt'); fill(14, 0, 2, 20, 'dirt'); fill(16, 3, 3, 1, 'dirt')
+    fill(1, 1, 6, 6, 'paddy-water'); fill(7, 1, 6, 6, 'paddy-summer'); fill(18, 11, 8, 6, 'paddy-golden')
+    fill(1, 11, 6, 5, 'paddy-summer')
+    for y in range(H_):
+        cx = 27 + (1 if y % 6 < 3 else 0) - (1 if y % 6 == 5 else 0)
+        fill(cx, y, 3, 1, 'stream')
+    fill(20, 1, 4, 3, 'stream')
+    sets = {S['key']: S for S in _sets()}
+    tiles = {k: dict(painted(S)) for k, S in sets.items()}
+    img = Image.new('RGBA', (W_ * 16, H_ * 16))
+    for y in range(H_):
+        for x in range(W_):
+            m = mat[y][x]
+            S = sets[m]
+            if S.get('flat'):
+                key = 255
+            else:
+                bits = 0
+                for nb, (dx, dy) in dict(N=(0, -1), E=(1, 0), S=(0, 1), W=(-1, 0), NE=(1, -1), SE=(1, 1), SW=(-1, 1), NW=(-1, -1)).items():
+                    xx, yy = x + dx, y + dy
+                    if not (0 <= xx < W_ and 0 <= yy < H_) or mat[yy][xx] == m:
+                        bits |= GA.DIRS[nb]
+                key = GA.canon(bits)
+            a = tiles[m][key]
+            if key == 255:
+                v = GA.h01(x, y, 7)
+                a = tiles[m]['b1'] if v < .18 else tiles[m]['b2'] if v < .32 else a
+            img.paste(Image.fromarray(a, 'RGBA'), (x * 16, y * 16))
+    img.save(out_png)
+    img.resize((img.width * scale, img.height * scale), Image.Resampling.NEAREST).save(out_png.replace('.png', '-x%d.png' % scale))
+    return out_png
+
+
+if __name__ == '__main__':
+    print(demo_map(sys.argv[1] if len(sys.argv) > 1 else '/tmp/inaka-r5/ground-demo.png'))

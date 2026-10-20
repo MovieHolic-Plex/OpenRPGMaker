@@ -1,6 +1,7 @@
 // 일본 시골(이나카 여름방학, jp-inaka) 칩셋 카탈로그 및 6대 쇼케이스 장면 조립기.
-// 바닥은 jp_city 동네(town.png)와 같은 오토타일 재료(잔디·자갈 참배길·생활도로·보도 연석·수로·연못·산길 흙)를 fill_region 으로 깔아
-// 8방향 가장자리(연석·잔디 테·석축)가 저절로 생기게 하고, 논·밭 같은 시골 전용 면만 inaka-* 단일 타일로 칠한다.
+// R5: 바닥은 이나카 전용 8방 오토타일(시골 풀밭·시골 흙길·시골 개울·시골 물논·시골 여름 논·시골 황금 논)을 fill_region 으로 깐다.
+//   풀밭은 가장자리를 그리지 않고, 흙길·개울·논이 자기 칸 안에 풀 테·흙 둑·논두렁을 그린다(맵 밖은 이어진 것으로 본다).
+//   jp_city 오토타일(자갈 참배길·생활도로·보도 연석·수로)은 신사 참배길·역 앞·찻길에만 그대로 재사용한다.
 // 생울타리·블록담은 jp_city 선(4방향) 오토타일로 긋고, 전봇대(jp-pole-wood)와 전선(jp-wire-N)은 town.mjs 와 같은 규칙으로 4층에 잇는다.
 
 export interface InakaGroundTileSpec {
@@ -99,9 +100,6 @@ export const INAKA_GROUND_TILES: readonly InakaGroundTileSpec[] = [
   { id: "inaka-gravel-road", groupId: "jp:inaka-gravel-road", ko: "시골 자갈 신작로", passable: true, surface: "land" },
   { id: "inaka-river-shallow", groupId: "jp:inaka-river-shallow", ko: "시골 맑은 개울", passable: false, surface: "water" },
   { id: "inaka-meadow-wildflower", groupId: "jp:inaka-meadow-wildflower", ko: "여름 풀밭", passable: true, surface: "land" },
-  { id: "inaka-paddy-water-bank", groupId: "jp:inaka-paddy-water-bank", ko: "물논 북쪽 둑 가장자리", passable: false, surface: "paddy" },
-  { id: "inaka-paddy-summer-bank", groupId: "jp:inaka-paddy-summer-bank", ko: "여름 논 북쪽 둑 가장자리", passable: false, surface: "paddy" },
-  { id: "inaka-paddy-golden-bank", groupId: "jp:inaka-paddy-golden-bank", ko: "황금 논 북쪽 둑 가장자리", passable: false, surface: "paddy" },
 ] as const;
 
 export const INAKA_KITS: readonly InakaKitSpec[] = [
@@ -150,12 +148,13 @@ export const INAKA_REUSED_JP_CITY_KITS: readonly string[] = [
 ] as const;
 
 const WET_MATERIALS: Readonly<Record<string, true>> = {
+  "시골 물논": true,
+  "시골 여름 논": true,
+  "시골 황금 논": true,
+  "시골 개울": true,
   "inaka-paddy-water": true,
   "inaka-paddy-summer": true,
   "inaka-paddy-golden": true,
-  "inaka-paddy-water-bank": true,
-  "inaka-paddy-summer-bank": true,
-  "inaka-paddy-golden-bank": true,
   "inaka-canal-water": true,
   "inaka-canal-wall": true,
   "inaka-river-shallow": true,
@@ -212,18 +211,17 @@ export const INAKA_SHOWCASE_SCENES: readonly InakaShowcaseScene[] = [
       "대숲·삼나무 뒷산 아래 자갈 마당을 낀 초가 고민가·토장 창고와 기와 농가·단층 박공집, 죽담 사립문과 이끼 돌담·생울타리로 두른 집터, 흙길을 따라 이어진 나무 전봇대와 전선, 농수로와 여름 논, 텃밭·해바라기·무인 판매대와 町家.",
     width: W40,
     height: H26,
-    baseGround: "잔디",
+    baseGround: "시골 풀밭",
     fills: [
-      { x: 0, y: 14, w: 40, h: 2, material: "산길 흙" },
-      { x: 18, y: 6, w: 3, h: 8, material: "산길 흙" },
-      { x: 12, y: 16, w: 2, h: 10, material: "산길 흙" },
-      { x: 1, y: 9, w: 15, h: 4, material: "자갈 참배길" },
-      { x: 21, y: 9, w: 17, h: 4, material: "자갈 참배길" },
+      { x: 0, y: 14, w: 40, h: 2, material: "시골 흙길" },
+      { x: 18, y: 6, w: 3, h: 8, material: "시골 흙길" },
+      { x: 12, y: 16, w: 2, h: 10, material: "시골 흙길" },
+      { x: 1, y: 9, w: 15, h: 4, material: "시골 흙길" },
+      { x: 21, y: 9, w: 17, h: 4, material: "시골 흙길" },
       { x: 0, y: 17, w: 12, h: 2, material: "수로" },
-      { x: 0, y: 20, w: 12, h: 6, material: "산길 흙" },
-      { x: 1, y: 21, w: 10, h: 4, material: "inaka-paddy-summer" },
-      { x: 1, y: 21, w: 10, h: 1, material: "inaka-paddy-summer-bank" },
-      { x: 30, y: 24, w: 10, h: 2, material: "자갈 참배길" },
+      { x: 0, y: 20, w: 12, h: 6, material: "시골 흙길" },
+      { x: 1, y: 21, w: 10, h: 4, material: "시골 여름 논" },
+      { x: 30, y: 24, w: 10, h: 2, material: "시골 흙길" },
     ],
     lines: [
       { x: 1, y: 13, w: 6, h: 1, material: "생울타리" },
@@ -279,19 +277,17 @@ export const INAKA_SHOWCASE_SCENES: readonly InakaShowcaseScene[] = [
       "생활도로 삼거리 북쪽에 늘어선 駄菓子屋 두 채와 우체국·파출소, 정류장에 막 들어선 노선버스와 시골 버스 대합실, 볼록거울·둥근 우체통·자전거, 전봇대 전선, 남쪽 논두렁 너머 물논과 푸른 여름 논.",
     width: W40,
     height: H26,
-    baseGround: "잔디",
+    baseGround: "시골 풀밭",
     fills: [
       { x: 0, y: 12, w: 40, h: 4, material: "생활도로" },
       { x: 18, y: 0, w: 4, h: 12, material: "생활도로" },
       { x: 0, y: 11, w: 18, h: 1, material: "보도 연석" },
       { x: 22, y: 11, w: 18, h: 1, material: "보도 연석" },
-      { x: 19, y: 16, w: 2, h: 10, material: "산길 흙" },
-      { x: 0, y: 19, w: 19, h: 7, material: "산길 흙" },
-      { x: 21, y: 19, w: 19, h: 7, material: "산길 흙" },
-      { x: 1, y: 20, w: 17, h: 5, material: "inaka-paddy-summer" },
-      { x: 22, y: 20, w: 17, h: 5, material: "inaka-paddy-water" },
-      { x: 1, y: 20, w: 17, h: 1, material: "inaka-paddy-summer-bank" },
-      { x: 22, y: 20, w: 17, h: 1, material: "inaka-paddy-water-bank" },
+      { x: 19, y: 16, w: 2, h: 10, material: "시골 흙길" },
+      { x: 0, y: 19, w: 19, h: 7, material: "시골 흙길" },
+      { x: 21, y: 19, w: 19, h: 7, material: "시골 흙길" },
+      { x: 1, y: 20, w: 17, h: 5, material: "시골 여름 논" },
+      { x: 22, y: 20, w: 17, h: 5, material: "시골 물논" },
     ],
     lines: [{ x: 22, y: 18, w: 18, h: 1, material: "생울타리" }],
     stamps: [
@@ -327,17 +323,15 @@ export const INAKA_SHOWCASE_SCENES: readonly InakaShowcaseScene[] = [
       "서쪽 시골 목조 간이역(木造駅舎) 앞에 정차한 크림·주홍 국철색 단량 키하 40형 디젤 동차(8×3)와 동쪽 벚나무 さくら駅 앞에 선 2량 통근 전철(jp-train-car-a/b), 노란 점자 승강장·전차선·가선 기둥과 건널목, 선로 둔덕 아래 황금 논과 여름 논·트랙터·경트럭.",
     width: W40,
     height: H26,
-    baseGround: "잔디",
+    baseGround: "시골 풀밭",
     fills: [
       { x: 0, y: 1, w: 6, h: 6, material: "보도 연석" },
       { x: 6, y: 1, w: 12, h: 6, material: "자갈 참배길" },
       { x: 34, y: 0, w: 4, h: 9, material: "생활도로" },
       { x: 34, y: 13, w: 4, h: 13, material: "생활도로" },
-      { x: 0, y: 16, w: 33, h: 10, material: "산길 흙" },
-      { x: 1, y: 17, w: 15, h: 8, material: "inaka-paddy-golden" },
-      { x: 17, y: 17, w: 15, h: 8, material: "inaka-paddy-summer" },
-      { x: 1, y: 17, w: 15, h: 1, material: "inaka-paddy-golden-bank" },
-      { x: 17, y: 17, w: 15, h: 1, material: "inaka-paddy-summer-bank" },
+      { x: 0, y: 16, w: 33, h: 10, material: "시골 흙길" },
+      { x: 1, y: 17, w: 15, h: 8, material: "시골 황금 논" },
+      { x: 17, y: 17, w: 15, h: 8, material: "시골 여름 논" },
     ],
     stamps: [
       { kit: "rg-sugi", x: 5, y: -2, allowOverlap: true },
@@ -383,19 +377,17 @@ export const INAKA_SHOWCASE_SCENES: readonly InakaShowcaseScene[] = [
       "이끼 돌담 축대로 층층이 쌓은 황금·물논·여름 다랑논(논마다 아래 가장자리에 흙 논두렁 한 줄, 그 아래 돌담), 다랑논 동쪽 끝을 따라 내려가는 흙 농로, 동쪽 농수로에 걸친 물레방아간과 철제 수문, 비닐하우스·함석 헛간·트랙터·경트럭, 아랫길의 볏단 걸이와 허수아비·소방 망루.",
     width: W40,
     height: H26,
-    baseGround: "잔디",
+    baseGround: "시골 풀밭",
     fills: [
-      { x: 0, y: 0, w: 27, h: 22, material: "산길 흙" },
+      { x: 0, y: 0, w: 27, h: 22, material: "시골 흙길" },
       // 다랑논 3단: 논(24칸) → 흙 논두렁 1줄 → 돌담 축대 2줄 → 아랫단 논. 돌담과 논의 동쪽 끝을 x=23 에 맞추고 x=24..26 은 흙 농로.
-      { x: 0, y: 0, w: 24, h: 4, material: "inaka-paddy-golden" },
-      { x: 0, y: 7, w: 24, h: 4, material: "inaka-paddy-water" },
-      { x: 0, y: 14, w: 24, h: 5, material: "inaka-paddy-summer" },
+      { x: 0, y: 0, w: 24, h: 4, material: "시골 황금 논" },
+      { x: 0, y: 7, w: 24, h: 4, material: "시골 물논" },
+      { x: 0, y: 14, w: 24, h: 5, material: "시골 여름 논" },
       // 논 맨 윗줄: 위 논두렁 둑 앞면이 논으로 떨어지는 둑 가장자리 칸(흙과 논이 칼로 자른 사각 경계가 되지 않게)
-      { x: 0, y: 7, w: 24, h: 1, material: "inaka-paddy-water-bank" },
-      { x: 0, y: 14, w: 24, h: 1, material: "inaka-paddy-summer-bank" },
       { x: 33, y: 0, w: 2, h: 26, material: "수로" },
-      { x: 0, y: 21, w: 33, h: 2, material: "산길 흙" },
-      { x: 35, y: 9, w: 5, h: 17, material: "산길 흙" },
+      { x: 0, y: 21, w: 33, h: 2, material: "시골 흙길" },
+      { x: 35, y: 9, w: 5, h: 17, material: "시골 흙길" },
     ],
     stamps: [
       { kit: "inaka-mossy-stone-wall", x: 0, y: 5 },
@@ -441,27 +433,27 @@ export const INAKA_SHOWCASE_SCENES: readonly InakaShowcaseScene[] = [
       "돌 테 두른 개울이 한두 칸씩 굽이치며 흐르는 산골, 윗길을 잇는 붉은 철교와 아랫길 징검다리, 물가에 걸친 물레방아간, 강가의 초가 고민가·기와 농가·토장 창고, 단풍과 삼나무·대숲.",
     width: W40,
     height: H26,
-    baseGround: "잔디",
+    baseGround: "시골 풀밭",
     fills: [
       // 개울: 2줄마다 1칸씩 기슭이 비키는 4~7칸 폭 물길(큰 사각 웅덩이를 이어 붙인 계단 운하가 되지 않게).
-      { x: 14, y: 0, w: 5, h: 2, material: "연못" },
-      { x: 15, y: 2, w: 5, h: 2, material: "연못" },
-      { x: 15, y: 4, w: 4, h: 5, material: "연못" },
-      { x: 14, y: 9, w: 5, h: 2, material: "연못" },
-      { x: 12, y: 11, w: 7, h: 2, material: "연못" },
-      { x: 13, y: 13, w: 6, h: 2, material: "연못" },
-      { x: 14, y: 15, w: 5, h: 2, material: "연못" },
-      { x: 14, y: 17, w: 4, h: 3, material: "연못" },
+      { x: 14, y: 0, w: 5, h: 2, material: "시골 개울" },
+      { x: 15, y: 2, w: 5, h: 2, material: "시골 개울" },
+      { x: 15, y: 4, w: 4, h: 5, material: "시골 개울" },
+      { x: 14, y: 9, w: 5, h: 2, material: "시골 개울" },
+      { x: 12, y: 11, w: 7, h: 2, material: "시골 개울" },
+      { x: 13, y: 13, w: 6, h: 2, material: "시골 개울" },
+      { x: 14, y: 15, w: 5, h: 2, material: "시골 개울" },
+      { x: 14, y: 17, w: 4, h: 3, material: "시골 개울" },
       // 징검다리 아래: 한 방향으로만 1칸씩 비키면 계단 운하가 되므로 좌우로 굽이친다. 띠는 2줄 이상(1줄 띠는 연못 테가 삼킨다).
-      { x: 14, y: 20, w: 6, h: 2, material: "연못" },
-      { x: 15, y: 22, w: 6, h: 2, material: "연못" },
-      { x: 14, y: 24, w: 6, h: 2, material: "연못" },
+      { x: 14, y: 20, w: 6, h: 2, material: "시골 개울" },
+      { x: 15, y: 22, w: 6, h: 2, material: "시골 개울" },
+      { x: 14, y: 24, w: 6, h: 2, material: "시골 개울" },
       { x: 0, y: 6, w: 14, h: 3, material: "생활도로" },
       { x: 20, y: 6, w: 20, h: 3, material: "생활도로" },
-      { x: 3, y: 18, w: 11, h: 2, material: "산길 흙" },
-      { x: 18, y: 18, w: 12, h: 2, material: "산길 흙" },
-      { x: 1, y: 4, w: 13, h: 2, material: "자갈 참배길" },
-      { x: 23, y: 4, w: 15, h: 2, material: "자갈 참배길" },
+      { x: 3, y: 18, w: 11, h: 2, material: "시골 흙길" },
+      { x: 18, y: 18, w: 12, h: 2, material: "시골 흙길" },
+      { x: 1, y: 4, w: 13, h: 2, material: "시골 흙길" },
+      { x: 23, y: 4, w: 15, h: 2, material: "시골 흙길" },
     ],
     stamps: [
       { kit: "rg-sugi", x: 9, y: -2, allowOverlap: true },
@@ -500,11 +492,11 @@ export const INAKA_SHOWCASE_SCENES: readonly InakaShowcaseScene[] = [
       "石垣 축대 위 자갈 경내의 拝殿과 오미즈야·석등·도리이·토장 보물고, 가운데 이끼 돌계단 도리이로 오르는 참배길, 양옆 대숲과 삼나무 숲, 산기슭 고갯길의 지장보살 사당·이정표·이끼 석불·버스 대합실.",
     width: W40,
     height: H26,
-    baseGround: "잔디",
+    baseGround: "시골 풀밭",
     fills: [
       { x: 10, y: 0, w: 20, h: 11, material: "자갈 참배길" },
       { x: 18, y: 16, w: 4, h: 2, material: "자갈 참배길" },
-      { x: 0, y: 18, w: 40, h: 3, material: "산길 흙" },
+      { x: 0, y: 18, w: 40, h: 3, material: "시골 흙길" },
     ],
     stamps: [
       // 양옆 진수의 숲: 발 행 순서로 찍고, 위아래로 이웃한 나무는 종류를 바꾸고 1~2칸 비켜 세로 기둥 줄이 생기지 않게 한다.

@@ -29,6 +29,7 @@ for _p in (HERE, os.path.join(JP_CITY_DIR, 'houses'), os.path.join(JP_CITY_DIR, 
 import inaka_art_props as _props  # noqa: E402,F401  (registers kits 11..30 and GROUND)
 from inaka_art_houses import KITS, Cv, _RAMP  # noqa: E402
 from inaka_art_props import GROUND, GROUND_GROUPS  # noqa: E402
+from inaka_art_ground import autotile_cells  # noqa: E402
 
 BLOCK: Final[str] = 'jp_inaka_pack'
 OUTDIR: Final[str] = os.path.join(ROOT, 'tiledata', 'jp-city', 'blocks', BLOCK)
@@ -80,6 +81,9 @@ def _finalize():
             desc='[이나카 시골 팩] ' + desc,
             tags=['바닥', '일본 시골', 'inaka', nm],
         )
+    at_cells, autotiles, at_groups = autotile_cells()
+    for loc, (arr, pc, lab, desc, tags) in at_cells.items():
+        cells[loc] = dict(img=Image.fromarray(arr, 'RGBA'), pc=pc, label=lab, desc=desc, tags=tags)
     for k in KITS:
         up, base = _cv(k['w'], k['h']), _cv(k['w'], k['h'])
         k['draw'](up, base)
@@ -148,7 +152,8 @@ def _finalize():
     groups = [
         dict(id=gid, name=nm, role='terrain', defaultLayer='lower', cells=list(cs), desc=d, rules=d)
         for gid, nm, cs, d in GROUND_GROUPS
-    ]
+    ] + at_groups
+    _CACHE['at'] = autotiles
     _CACHE['r'] = (cells, kits, renders, groups)
     return _CACHE['r']
 
@@ -158,7 +163,8 @@ def build() -> dict:  # noqa: DICT_OK — required by bake_jp.py block interface
     cells, kits, _, groups = _finalize()
     return {
         'cells': collections.OrderedDict((k, dict(v, img=v['img'].copy(), tags=list(v['tags']))) for k, v in cells.items()),
-        'autotiles': [],
+        'autotiles': [dict(a, member=list(a['member']), connect=list(a['connect']), variantMap=dict(a['variantMap']),
+                           interior=[list(t) for t in a['interior']]) for a in _CACHE['at']],
         'groups': [dict(g, cells=list(g['cells'])) for g in groups],
         'kits': [dict(k) for k in kits],
         'notes': NOTES % len(kits),
@@ -183,6 +189,14 @@ def selftest(verbose: bool = True) -> int:
     b = build()
     if len(b['kits']) < 30:
         out.append('키트 수 미달: %d < 30' % len(b['kits']))
+    if len(b['autotiles']) != 6:
+        out.append('오토타일 수 %d != 6' % len(b['autotiles']))
+    for at in b['autotiles']:
+        if set(at['variantMap']) != {str(i) for i in range(256)}:
+            out.append('(c) %s variantMap 키' % at['id'])
+        for v in list(at['variantMap'].values()) + list(at['member']) + [x for t in at['interior'] for x in t]:
+            if v not in b['cells']:
+                out.append('(c) %s 칸 %s 없음' % (at['id'], v)); break
     if len(b['groups']) < 9:
         out.append('바닥 그룹 수 미달: %d < 9' % len(b['groups']))
     for k, c in b['cells'].items():
