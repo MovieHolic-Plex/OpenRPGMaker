@@ -5,7 +5,6 @@
  "legend": {
   "a": "#091125ff",
   "b": "#0b1224ff",
-  "c": "#1f3052ff",
   "d": "#265359ff",
   "e": "#326c72ff",
   "f": "#3d578aff",
@@ -30,15 +29,16 @@
   "y": "#e4cfaeff",
   "z": "#e4e9e8ff",
   "A": "#f1f3f3ff",
-  "B": "#f3f4f7ff"
+  "B": "#f3f4f7ff",
+  "X": "#8d9095ff"
  },
  "rows": [
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-  "bwwbbbbbbbbbwwwwwwwwwwwwwwwwwwwb",
-  "bwwbAAAAAAAbwwwwwbbbbbbbbwwwwwwb",
-  "bwwbsssssssbwwwwwbkkkkkkbwwwwwwb",
-  "bwwbaaaaaaabwwwwwbccccccbwwwwwwb",
-  "bwwwwwwwwwwwwwwwwbaaaaaabwwwwwwb",
+  "bwwXAAAAAAAXwwwwwffffffffwwwwwwb",
+  "bwwXBBBBBBBXwwwwwfkkkkkkfwwwwwwb",
+  "bwwXzzuuuzsXwwwwwfmmmmmmfwwwwwwb",
+  "bwwXssssssuXwwwwwfiihhihfwwwwwwb",
+  "bwwvvvvvvvvvwwwwwfhhhhhhfwwwwwwb",
   "byyyyyyyyyyyyyyyyyyyyyyyyyyyyyyb",
   "bjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjb",
   "bojjjjjjjjjjjjjjjjjjjjjjjjjjjjjb",
@@ -66,5 +66,5 @@
   "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
   "................................"
  ],
- "note": "r16: top (6 rows with items) gets a lit front edge row so the top reads as a plane above the dark shelf interior"
+ "note": "r16-2: top bins lose black boxes -> grey/navy material contours, each gets top plane + lit edge (+ contact shadow)"
 }

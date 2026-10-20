@@ -12,25 +12,27 @@
   "g": "#beb8acff",
   "h": "#cc343cff",
   "i": "#ee6c6cff",
-  "j": "#2a3539ff",
-  "k": "#3d4b51ff"
+  "k": "#3d4b51ff",
+  "l": "#516268ff",
+  "n": "#61767dff",
+  "o": "#738a90ff"
  },
  "rows": [
-  "ddddd......................................ddddd",
-  "ddddd......................................ddddd",
-  "dddddbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbddddd",
+  "bbbbb......................................bbbbb",
+  "bnnnnbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbnnnnb",
+  "bbkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkbb",
+  "..bllllllllllllllllllllllllllllllllllllllllllb..",
+  "..bnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnb..",
+  "..boooooooooooooooooooooooooooooooooooooooooob..",
   "..bccccccccccccccccccccccccccccccccccccccccccb..",
-  "..bjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjb..",
-  "..bjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjb..",
-  "..bkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkb..",
   "..bddddddddddddddddddddddddddddddddddddddddddb..",
   "..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..",
-  ".....iiihhheiiiiiiiiiiiiiiiiiiiiiiiiihhheii.....",
-  ".....hhihhhehhhhhhhhhhhhhhhhhhhhhhhhihhhehh.....",
-  ".....hhihhhehhhhhhhhhhhhhhhhhhhhhhhhihhhehh.....",
-  ".....hhihhhehhhhhhhhhhhhhhhhhhhhhhhhihhhehh.....",
-  ".....hhihhhehhhhhhhhhhhhhhhhhhhhhhhhihhhehh.....",
-  ".....hhihhhehhhhhhhhhhhhhhhhhhhhhhhhihhhehh.....",
+  ".....hiihhheiiiiiiiiiiiiiiiiiiiiiiiiihhheie.....",
+  ".....hiihhheiiiiiiiiiiiiiiiiiiiiiiiiihhheie.....",
+  ".....ehihhhehhhhhhhhhhhhhhhhhhhhhhhhihhhehe.....",
+  ".....ehihhhehhhhhhhhhhhhhhhhhhhhhhhhihhhehe.....",
+  ".....ehihhhehhhhhhhhhhhhhhhhhhhhhhhhihhhehe.....",
+  ".....eeihhheeeeeeeeeeeeeeeeeeeeeeeeeihhheee.....",
   ".......ihhhe........................ihhhe.......",
   ".......ihhhe........................ihhhe.......",
   ".......ihhhe........................ihhhe.......",
@@ -49,5 +51,5 @@
   ".aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.",
   "................................................"
  ],
- "note": "r16: kasagi (top beam) top face c far -> slate -> lit slate edge, 4 rows above the dark front d"
+ "note": "r16-2: kasagi wing tips outlined and joined to the beam; kasagi top = 4-row slate plane (dark far k -> l -> n -> lit front edge o) above a 1px dark lip c and dark front d; red tie beam gets a 2-row lit top rim i, mid h, dark bottom e and shaded ends"
 }

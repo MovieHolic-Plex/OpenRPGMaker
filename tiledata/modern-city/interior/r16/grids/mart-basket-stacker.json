@@ -12,22 +12,25 @@
   "g": "#3c78d2ff",
   "h": "#4e9cffff",
   "i": "#767c88ff",
-  "j": "#a86223ff",
+  "j": "#8a6128ff",
   "k": "#ccd0d8ff",
   "l": "#f08c32ff",
-  "m": "#ffb641ff"
+  "m": "#ffb641ff",
+  "J": "#533020ff",
+  "n": "#a86223ff",
+  "M": "#fad278ff"
  },
  "rows": [
-  "..c..........c..",
-  "...cc......cc...",
-  ".bbbbcceeccbbbb.",
-  ".bddddddddddddb.",
-  ".bffffffffffffb.",
-  ".bmmmmmmmmmmmjb.",
+  "................",
+  "...kiii..kiii...",
+  "...i..i..i..i...",
+  ".bllllllllllllb.",
+  ".bmJJJJJJJJJJlb.",
+  ".bmJJJJJJJJJJlb.",
+  ".bmJjnjnjnjnJlb.",
+  ".bmJnjnjnjnjJlb.",
+  ".bMMMMMMMMMMMlb.",
   ".bllllllllllljb.",
-  ".bbbbeeeeeebbbb.",
-  ".bhhhhhhhhhhhfb.",
-  ".bgggggggggggfb.",
   ".bbbbeeeeeebbbb.",
   ".bhhhhhhhhhhhfb.",
   ".bgggggggggggfb.",
@@ -51,5 +54,5 @@
   ".aaaaaaaaaaaaaaa",
   "................"
  ],
- "note": "r16: top basket opening visible (dark inside d -> f, then the orange lit rim); moved up into the empty rows"
+ "note": "r16-2: 맨 위 바구니를 3/4 로: 주황 테 4면(왼쪽 밝음·오른쪽 짙음·앞 테 하이라이트)이 짙은 안쪽+바닥 망을 둘러싸고, 양옆 U자 손잡이 깔끔히, 위 파란 2행 띠 제거"
 }

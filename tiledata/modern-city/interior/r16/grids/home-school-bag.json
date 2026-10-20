@@ -7,25 +7,27 @@
   "b": "#96222cff",
   "c": "#cc343cff",
   "d": "#ccd0d8ff",
-  "e": "#ee6c6cff"
+  "e": "#ee6c6cff",
+  "f": "#601e28ff",
+  "g": "#8d9095ff"
  },
  "rows": [
-  "................",
   "................",
   "..aaaaaaaaaaaa..",
   "..acccccccccca..",
   "..aeeeeeeeeeea..",
   "..aeeeeeeeeeea..",
-  ".aaccccccccccaa.",
-  ".aaccccccccccaa.",
-  ".aacccaaaacccaa.",
-  ".aabbbaddabbbaa.",
-  ".aabbbaddabbbaa.",
-  ".aabbbaaaabbbaa.",
-  ".aabbbbbbbbbbaa.",
-  "..abbbbbbbbbba..",
+  ".aaffffffffffaa.",
+  ".abeccccccccbba.",
+  ".abeccccccccbba.",
+  ".abeccccccccbba.",
+  ".abecccddccbbba.",
+  ".abbcccggcccbba.",
+  ".abffffffffffba.",
+  ".abbbbbbbbbbbba.",
+  "..affffffffffa..",
   "..aaaaaaaaaaaa..",
   "................"
  ],
- "note": "r16: flap top relit far-to-near (c far -> e lit 2 rows) instead of one highlight row at the far edge"
+ "note": "r16-2: 3-row top dome plane (far c -> lit e, 2 rows) closed by a 1px dark seam; front flap with lit left edge and dark right edge, flap hem shadow, darker side gussets and lower body; clasp = clean 2x2 metal lock (light top / grey bottom) with no black box"
 }
