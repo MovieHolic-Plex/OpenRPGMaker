@@ -135,3 +135,25 @@ lower→mixed 갱신을 저장·재로드했다. 개별 칸의 통행/우선순�
 - `src/project/mapTransit.ts`는 `MODERN_CITY_TRANSIT_VEHICLES`(`mc-veh-police-a`, `mc-veh-taxi-b`, `mc-veh-car2-c-red`, `mc-veh-sedan-a-navy`, `mc-veh-bus-a`, `mc-veh-van-a`, `mc-veh-truck-a`, `mc-veh-ambulance-a`, `mc-veh-firetruck-b` 등 14종)와 교차로 90° 직교 코너 방향지시등(`transitCornerBlinker`: 회전 5칸 전부터 `blinker` 점멸 + 코너에서 `right`/`left` ↔ `up`/`down` 직교 전환)을 제공한다.
 - 차량 그림은 `scripts/content/modern-city/vehicles/`의 도트 생성기 하나가 네 방향(동 `right`·서 `left`·북 `up`·남 `down`)을 같은 색 램프·같은 1px 외곽선·같은 차체 구획(트렁크·뒷유리·지붕·앞유리·보닛·얼굴)으로 **1:1 원본 해상도**로 그려 `public/assets/modern-city/vehicles/<id>.png`에 굽는다(늘이거나 줄이지 않는다). 크기는 동서 `L·16×32` ↔ 남북 `32×L·16`(승용·밴 L=3, 트럭·구급차·소방차 L=4, 버스 L=5)이라 90° 회전해도 크기가 그대로다. 시트 열은 기본·바퀴 `_0.._3`·브레이크등 `_brake`·방향지시등 `_sigL`/`_sigR`·버스 문 열림 `_open`이고, `src/player/playSceneTransit.ts`가 `blinker`(0.4초 점멸)·정지(브레이크)·주행 바퀴 단계에 따라 고른다.
 - AI 조수와 「바로 깔기」(`stampPlanner.ts`, `stampEffect.ts`)는 `set_street_traffic({ mapId, density, includeTurns: true, includeBus: true })`(`src/editor/tools/transitTools.ts`) 한 번으로 `modern_city`·`jp_city` 맵의 차도와 교차로를 자동 감지해 주행·회전 차량을 배치한다.
+
+## 바닥·연석·가로수·그림자·평지붕 제자리 다시 칠하기 (2026-10-20, `scripts/content/modern-tiles/`)
+
+사용자 승인 시안(`~/claude-viz/modern-tiles-proto/`)을 실제 칸으로 옮긴 판. 코드 손 도트만 썼다(`art_ground.py`·`art_tree.py`·`art_roof.py`·`art_dress.py`).
+
+- **입구** `python3 scripts/content/modern-tiles/mc_repaint.py` (`gate` = 관문 그림 내보내기). `bake_tileset.py` main 끝(`bake_anim.apply()` 뒤)에서 `mc_repaint.apply()` 를 부른다.
+  단, **`bake_tileset.py` main 체인은 지금 깨져 있다**: 다시 돌리면 핀 없이 덧붙인 12263..13813(R10–R15 실내)을 버리고, bake_interior/green/anim 단언이 시트 높이 4096px 이하를 요구한다. 그래서 이 패스는 단독으로 돌린다.
+- **칸 번호는 바뀌지 않는다.** 제자리 다시 칠하기:
+  - 바닥 1·2·7·8·17·18, 연석 9–16, 노면 표시 3–6·77–92(옛 표시 모양은 두고 칠 결만 바꿈), 그림자 57–76.
+  - 키트 칸은 «다수결»로 정한다. 한 번호를 쓰는 모든 키트 위치가 원하는 그림을 세고, 범위 밖 키트는 «원래 그림»에 표를 준다. 동률이면 새 그림이 이긴다. 소수 쪽은 새 칸을 덧붙이고 그 키트 칸 번호를 옮긴다(repoint).
+  - 범위 밖 번호가 하나라도 바뀌면 단언으로 멈춘다(`manifest.json` 에 다시 칠한 번호·덧붙인 번호 기록, 번호 순).
+  - 원본 사본 `tiledata/modern-city/modern-tiles/originals.png`·`originals.json` 덕분에 다시 돌려도 바이트가 같다(md5 확인). 덧붙인 칸은 내용 해시(화소+출처)로 핀을 꽂는다.
+- **시트 증가**: 13814 → 15099칸(+1285), 768×4608 → 768×5040px. 키트 제자리 4629번호, 덧붙인 키트 사용 1184.
+- **새 묶음**: `mc:asphalt`(앞 5개 흔함, 뒤 3개 드묾 = 땜질·실금·기름), `mc:paving`(8×4 엇갈림 쌓기, 바둑판 없음), `mc:grass`, `mc:grass-edge-s`·`mc:grass-edge-n`·`mc:paving-under-grass`(잔디/보도 경계석), `mc:tactile`(점자 블록, 교차로 네 모서리), `mc:gutter`(연석 아래 도로 줄 배수 그늘), `mc:dress`(건물 그림자·기초), `mc:prop:tree-pit`.
+- **가로수**: `mc-prop-street-tree-a/-b`(2×3)·`mc-prop-keyaki-a/-b`(3×4) 다시 그림. 나무 구덩이 판 `mc-prop-street-tree-pit-a/-b`·`mc-prop-keyaki-pit-a/-b` 를 새로 둠. 구성기는 보도 나무에 구덩이 판을 쓴다(`pitTree`).
+- **건물 그림자·기초(dress)**: 키트 `ai.dress = [[dx,dy,id],…]`(타입 없는 JSON, ai.access 와 같은 방식). 오른쪽 아래 두 단 그림자, 3px 기초와 문 앞 디딤판, 접촉선. 구성기 `finishGround` 가 `lower2`(2층 lowerOverlay)에 깔고, 건물 칸 위에는 깔지 않는다. 도구는 `setLayerTileAt(target, 2, …)` 로 쓴다. **윤곽색 재매핑은 보류.**
+- **평지붕**: mc-bld-* 228개 키트. 지붕 범위는 자동으로 찾고(위 55% 색 계단, 채움 0.3, 키트 높이 80% 넘거나 위에서 24px 아래에서 시작하면 거부), 재질은 색 계단으로 정한다(lgray=자갈, teal/navy=방수막 이음, sage/brick=도장, base=crc32(이름)%3). 설비(실외기 등)는 남기고 그림자를 다시 넣는다.
+  건너뛴 31개(박공·특수): row-A/B/C·house-A/B/C 각 4, gas-v2-A/B, parking-B, parking-v2-A/C, warehouse-A, dept-C.
+- **팔레트**: palette.py 글자 풀이 거의 찼다(96 중 93). 새 색은 명시 RGB이며 옛 바닥 시트처럼 팔레트 밖이다(보고만 하고 강제하지 않음).
+- **관문 준비**: `tiledata/modern-city/modern-tiles/_gate/items.jsonl` 285줄(terrain 46·flat 3·organic 8·structure 228). object-gate review 는 아직 안 돌렸다 → **3/4 관문 미통과**.
+- **QA 장면**(구운 번호, 맵 객체 통째): `tiledata/modern-city/qa/modern-tiles/mt-mc-ground.json`(20×18)·`mt-mc-street.json`(26×16)·`mt-mc-composer-60x48-s17.json`. 생성 `scripts/content/modern-tiles/qa_scenes.py <compose-street 출력.json>`. 그림 `~/claude-viz/modern-tiles-proto/baked/mc-*.png`.
+- **남은 차이**: 중앙선·횡단보도는 옛 표시 모양(가는 겹선·가는 줄)을 유지해서, 시안의 굵은 한 줄·굵은 띠와 다르다. 버들항 포장은 큰 돌판 무늬이고 modern 보도는 잔잔한 벽돌 결이라 4배에서 대비가 약하다.
