@@ -5,6 +5,14 @@
 
 <!-- releases -->
 
+## 0.284.1 — 2026-10-20
+
+### 수정
+
+- **jp-city** — ground autotiles treat out-of-map as same material; border-only migration for saved maps (#3061) (`3e17750`)
+- **puzzle** — adversarial VQA r3 — Zelda-style puzzle SFX, push sound, readable states, no soft-lock (#3060) (`1d12069`)
+- **monster** — 눈 판정 불합격 32종 눈을 손 도트로 다시 그리기 + 걷기 칩 눈 다시 찍기 (#3059) (`96e7bde`)
+
 ## 0.284.0 — 2026-10-20
 
 ### 기능
