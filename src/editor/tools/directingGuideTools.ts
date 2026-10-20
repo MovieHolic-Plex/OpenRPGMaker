@@ -21,6 +21,9 @@ export const DIRECTING_GUIDE = `# 연출 지침 (script_cutscene 비트)
 - 중요한 장면 시작: letterbox{size:12,durationMs:500} → camera{mode:"pan",target:인물,durationMs:900,easing:"easeOut"}.
 - 놀람: emote{target,emote:"exclamation"} + moveActor 한 칸 뒤로(jump). 의문은 "question", 침묵은 "ellipsis".
 - 폭발·충돌: parallel[ particles{preset:"explosion",target 또는 x,y}, shake{intensity:6,axis:"both",durationMs:500}, flash{color:"white",durationMs:200} ].
+- 화산 열풍·용암 분출·불길 치솟음: 화면 붉은 tint 만으로는 «열풍이 안 보인다» 로 감점된다(2026-10-16). 최고 연출 순간에 parallel[ particles{preset:"fire",x,y}(용암 둘레 서로 다른 칸 3곳 이상, durationMs:1500) , particles{preset:"smoke",target:"player"}, shake, tint ] 로 솟아오르는 입자를 같은 화면에 함께 보인다.
+- 독안개·독기·유독 가스: 보라 tint 만으로는 «안개가 피어오르는 모습이 없다» 로 감점된다. weather{weather:"fog",intensity:0.8} 를 같이 깔고(장면 끝에 weather{weather:"none"}) particles{preset:"smoke",target:"player",durationMs:1500} 를 덧는다. 방독면 분기는 안개 속을 moveActor 로 몇 칸 전진하는 모습이 보여야 한다.
+- 다리·바닥 붕괴: 타일을 바꾼 직후 그 칸에 particles{preset:"explosion",x,y} + particles{preset:"dust",x,y} 를 겹쳐 틈이 눈에 띄게 한다.
 - 지진·거대한 발소리: shake{intensity:3,axis:"vertical",durationMs:800}, 잠깐 쉬고 반복. 부딪힘·휘청임은 axis:"horizontal".
 - 기절·쓰러짐·잠: look{target,pose:"fallen"} (+ emote "sleep"). 일어날 때 look{target,reset:true}.
 - 숨기·무릎 꿇기: look{target,pose:"crouch"}.

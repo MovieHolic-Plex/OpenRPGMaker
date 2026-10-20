@@ -447,13 +447,21 @@ export function createJrpg200FixtureProject(options?: { legacyBlankMaps?: boolea
     { id: "actor_terra", name: "티나", nickname: "환수의 후예" },
     { id: "actor_frog", name: "개구리 기사", nickname: "성검의 수호자" },
   ];
+  // 모든 배우가 템플릿 복제라 같은 걷기 그림이었다 — 심판이 «두 캐릭터가 동일해 마르를 식별 못한다» 로 감점(2026-10-16 18차).
+  const jrpgLooks: Record<string, { resource: string; index: number; face: string }> = {
+    actor_crono: { resource: "easyrpg-charset-actor1", index: 0, face: "easyrpg-faceset-actor1-00" },
+    actor_marle: { resource: "easyrpg-charset-actor1", index: 7, face: "easyrpg-faceset-actor1-00" },
+    actor_lucca: { resource: "easyrpg-charset-actor1", index: 5, face: "easyrpg-faceset-actor1-05" },
+  };
   for (const a of jrpgActors) {
     if (!project.database.actors.some((x) => x.id === a.id)) {
+      const look = jrpgLooks[a.id];
       project.database.actors.push({
         ...structuredClone(templateActor),
         id: a.id,
         name: a.name,
         nickname: a.nickname,
+        ...(look ? { characterResourceId: look.resource, characterIndex: look.index, faceResourceId: look.face } : {}),
       });
     }
   }

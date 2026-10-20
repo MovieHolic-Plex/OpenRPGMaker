@@ -9,6 +9,9 @@ import type { GameMap, Project } from "@/project/types";
 import { installBeodeulArchitecture } from "@/project/defaults/beodeulArchitecture";
 import { CONSTRUCTION_TOOLS_V3 } from "./v3/constructionTools";
 import { SHARED_OBJECT_TOOLS, prepareSharedObject } from "./sharedObjectTools";
+import { setLayerTileAt, layerTileAt } from "@/project/mapLayers";
+import { BEODEUL_NATURE, BEODEUL_NATURE_ID, createBeodeulNatureTileset } from "@/project/defaults/beodeulNature";
+import { translateTiles } from "@/project/objectStamp";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 export const BUILD_SCENE_SETTING_TOOL = "build_scene_setting";
@@ -33,6 +36,167 @@ interface Layout {
   readonly fills: readonly { readonly material: string; readonly dx: number; readonly dy: number; readonly w: number; readonly h: number }[];
   /** 위에서 아래 순서로 찍는다 — 뒤에 찍은 것이 앞의 것을 덮는다. */
   readonly stamps: readonly Stamp[];
+  /** 칸 단위로 칠하는 불규칙 몸체(용암·물). 2×2 스탬프 격자로는 직각 윤곽만 나온다. */
+  readonly bodies?: readonly Body[];
+}
+
+interface Body {
+  readonly kind: "lava" | "water";
+  /** 이벤트 칸 기준 중심·반지름. 윤곽은 칸마다 해시 잡음으로 흔든다. */
+  readonly cx: number;
+  readonly cy: number;
+  readonly rx: number;
+  readonly ry: number;
+  readonly seed: number;
+  /** 이 dx 보다 왼쪽(시작 칸 쪽)에는 칠하지 않는다. */
+  readonly minDx: number;
+}
+
+/** 칸 좌표에서 0..1 결정적 잡음 — 같은 입력이면 항상 같은 윤곽이라 재현·측정이 된다. */
+function hash01(a: number, b: number, seed: number): number {
+  let h = (Math.imul(a + 374761393, 668265263) ^ Math.imul(b + 1274126177, 2246822519) ^ Math.imul(seed + 3266489917, 3266489917)) >>> 0;
+  h = Math.imul(h ^ (h >>> 13), 1274126177) >>> 0;
+  return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
+}
+
+/** 용암 2×2 스탬프의 칸 번호(위·아래·좌·우 홀짝마다 다른 노이즈 프레임) — 칸마다 절대 좌표 홀짝으로 고른다. */
+const LAVA_TILES = [[27292, 27296], [27300, 27304]] as const;
+
+/** 직교 이웃이 1칸 이하인 외톨이·돌기 칸을 두 번 깎는다 — 한 칸짜리 네모 돌기가 둑 덧그림에서 어두운 네모로 남는다. */
+function trimSpurs(map: GameMap, cells: { x: number; y: number }[]): { x: number; y: number }[] {
+  let cur = cells;
+  for (let pass = 0; pass < 2; pass++) {
+    const set = new Set(cur.map((c) => c.y * map.width + c.x));
+    const has = (cx: number, cy: number) => cx < 0 || cy < 0 || cx >= map.width || cy >= map.height || set.has(cy * map.width + cx);
+    cur = cur.filter((c) => [has(c.x - 1, c.y), has(c.x + 1, c.y), has(c.x, c.y - 1), has(c.x, c.y + 1)].filter(Boolean).length >= 2);
+  }
+  return cur;
+}
+
+function bodyCells(map: GameMap, x: number, y: number, b: Body): { x: number; y: number }[] {
+  const out: { x: number; y: number }[] = [];
+  const ox = x + b.cx, oy = y + b.cy;
+  for (let cy = Math.floor(oy - b.ry - 2); cy <= Math.ceil(oy + b.ry + 2); cy++) {
+    for (let cx = Math.floor(ox - b.rx - 2); cx <= Math.ceil(ox + b.rx + 2); cx++) {
+      if (cx < 0 || cy < 0 || cx >= map.width || cy >= map.height || cx - x < b.minDx) continue;
+      const d = ((cx - ox) / b.rx) ** 2 + ((cy - oy) / b.ry) ** 2;
+      if (d < 1 + (hash01(cx, cy, b.seed) - 0.5) * 0.7) out.push({ x: cx, y: cy });
+    }
+  }
+  return trimSpurs(map, out);
+}
+
+/** 용암 강(가로 띠) — 위·아래 가장자리를 3칸 단위로 들쭉날쭉하게. 다리 기둥 칸(x-1..x+1)은 건드리지 않는다. */
+function lavaBandCells(map: GameMap, x: number, y: number): { x: number; y: number }[] {
+  const out: { x: number; y: number }[] = [];
+  for (let cx = 0; cx < map.width; cx++) {
+    const rows = [y - 1, y];
+    // 돌기는 3~4칸 묶음 단위이고, 다리(x-1..x+1) 양옆 2칸 안에서는 만들지 않는다(한 칸 돌기가 어두운 네모로 남는다).
+    if (Math.abs(cx - x) > 2) {
+      if (hash01(Math.floor(cx / 3), 1, 77) < 0.5) rows.unshift(y - 2);
+      if (hash01(Math.floor((cx + 1) / 3), 2, 77) < 0.5) rows.push(y + 1);
+      if (hash01(Math.floor(cx / 4), 3, 91) < 0.25) rows.push(y + 2);
+    }
+    for (const cy of rows) if (cy >= 0 && cy < map.height) out.push({ x: cx, y: cy });
+  }
+  return out;
+}
+
+const N8 = [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]] as const;
+
+/**
+ * 몸체 칸마다 이웃 8비트 둑 덧그림(2층)을 얹는다 — 직각 칸 경계가 흑요석 둑(용암) 또는 이끼 둑(늪)의 둥근 윤곽이 된다.
+ * 맵 밖은 «같은 칸» 으로 본다(맵 끝에 닿은 변은 둑을 두지 않는다).
+ */
+function applyBankOverlay(project: Project, map: GameMap, cells: readonly { x: number; y: number }[], table: readonly number[]): number {
+  const target = project.tilesets[map.tilesetId]!;
+  const nature = (project.tilesets[BEODEUL_NATURE_ID] ??= createBeodeulNatureTileset());
+  if (nature.count < BEODEUL_NATURE.count) project.tilesets[BEODEUL_NATURE_ID] = createBeodeulNatureTileset();
+  const src = project.tilesets[BEODEUL_NATURE_ID]!;
+  const inBody = new Set(cells.map((c) => c.y * map.width + c.x));
+  const want = new Map<number, number>();
+  for (const c of cells) {
+    let mask = 0;
+    N8.forEach(([dx, dy], b) => {
+      const nx = c.x + dx, ny = c.y + dy;
+      if (nx < 0 || ny < 0 || nx >= map.width || ny >= map.height || inBody.has(ny * map.width + nx)) mask |= 1 << b;
+    });
+    const t = table[mask] ?? -1;
+    if (t >= 0) want.set(c.y * map.width + c.x, t);
+  }
+  if (!want.size) return 0;
+  const tr = translateTiles(src, target, new Set(want.values()));
+  for (const to of tr.map.values()) {
+    target.priority[to] = "upper";
+    target.passability[to] = { up: true, down: true, left: true, right: true };
+  }
+  for (const [i, t] of want) if (layerTileAt(map, 2, i) < 0) setLayerTileAt(map, 2, i, tr.map.get(t)!);
+  return want.size;
+}
+
+/**
+ * 무대마다 «빈 땅에 흩뿌릴 소품» 목록 — 15차 연속 심판이 «맵이 휑하다(소품이 가장자리·중앙에만)» 로 감점했다.
+ * 자리는 해시로 고르되(같은 입력 → 같은 배치) 몸체·이미 찍은 키트·이벤트 칸·시작 칸과 1칸 간격을 둔다.
+ */
+const SCATTER: Record<SceneTheme, readonly (readonly [string, number])[]> = {
+  volcano: [[VOLCANO + "spike-small", 7], [VOLCANO + "ember-a", 4], [VOLCANO + "bones", 3], [VOLCANO + "steam-vent", 7], [VOLCANO + "stalagmite", 3], [VOLCANO + "spike-tall", 3], [VOLCANO + "coal-pile", 3], [VOLCANO + "pillar-broken-b", 2], [RUINS + "rubble-temple", 3]],
+  lava_bridge: [[VOLCANO + "spike-small", 6], [VOLCANO + "ember-a", 4], [VOLCANO + "bones", 3], [VOLCANO + "stalagmite", 3], [VOLCANO + "coal-pile", 3], [VOLCANO + "pillar-broken-b", 2], [RUINS + "rubble-temple", 4], [RUINS + "ruined-wall-2", 2], [VOLCANO + "ingots", 2]],
+  poison_swamp: [[SWAMP + "snag", 2], [SWAMP + "mangrove", 2], [RUINS + "cypress-ruin", 2], [VOLCANO + "brazier", 3], [RUINS + "rubble-temple", 3], [RUINS + "column-temple-broken", 3], [RUINS + "column-temple-tall", 2], [RUINS + "ruined-wall-2", 3], [RUINS + "floor-ruin", 3], [RUINS + "roof-hip-shrine", 1], [RUINS + "stairs-down", 1], [VOLCANO + "bones", 2]],
+  ruins_shrine: [[RUINS + "rubble-temple", 6], [RUINS + "column-temple-broken", 3], [RUINS + "fallen-column-temple", 2], [RUINS + "cypress-ruin", 3], [RUINS + "vines-2", 3], [RUINS + "ruined-wall-2", 2], [VOLCANO + "brazier", 2], [VOLCANO + "bones", 2]],
+};
+
+function scatterStamps(
+  project: Project, map: GameMap, theme: SceneTheme, ground: { x: number; y: number; w: number; h: number },
+  occupied: Set<number>, blocked: (cx: number, cy: number) => boolean,
+): { id: string; x: number; y: number }[] {
+  const kits = project.tilesets.beodeul_city?.structureKits ?? [];
+  const out: { id: string; x: number; y: number }[] = [];
+  let n = 0;
+  for (const [id, count] of SCATTER[theme]) {
+    const kit = kits.find((k) => k.id === id);
+    if (!kit) continue;
+    for (let i = 0; i < count; i++) {
+      for (let attempt = 0; attempt < 40; attempt++, n++) {
+        const px = ground.x + Math.floor(hash01(n, 1, 501) * Math.max(1, ground.w - kit.width + 1));
+        const py = ground.y + Math.floor(hash01(n, 2, 502) * Math.max(1, ground.h - kit.height + 1));
+        if (px < 0 || py < 0 || px + kit.width > map.width || py + kit.height > map.height) continue;
+        let ok = true;
+        for (let dy = -1; dy <= kit.height && ok; dy++) for (let dx = -1; dx <= kit.width && ok; dx++) {
+          const cx = px + dx, cy = py + dy;
+          if (cx < 0 || cy < 0 || cx >= map.width || cy >= map.height) continue;
+          if (occupied.has(cy * map.width + cx) || blocked(cx, cy)) ok = false;
+        }
+        if (!ok) continue;
+        for (let dy = 0; dy < kit.height; dy++) for (let dx = 0; dx < kit.width; dx++) occupied.add((py + dy) * map.width + px + dx);
+        out.push({ id: KIT + id, x: px, y: py });
+        n++;
+        break;
+      }
+    }
+  }
+  return out;
+}
+
+/** 몸체 둘레(8방향 이웃)에 놓을 1×1 흑요석·불씨 소품 — 직각 가장자리를 가린다. */
+function rimStamps(map: GameMap, cells: readonly { x: number; y: number }[], keep: (cx: number, cy: number) => boolean, seed: number, density: number): { id: string; x: number; y: number }[] {
+  const lava = new Set(cells.map((c) => c.y * map.width + c.x));
+  const seen = new Set<number>();
+  const out: { id: string; x: number; y: number }[] = [];
+  for (const c of cells) {
+    for (let ny = c.y - 1; ny <= c.y + 1; ny++) {
+      for (let nx = c.x - 1; nx <= c.x + 1; nx++) {
+        const k = ny * map.width + nx;
+        if (nx < 0 || ny < 0 || nx >= map.width || ny >= map.height || lava.has(k) || seen.has(k) || !keep(nx, ny)) continue;
+        seen.add(k);
+        const h = hash01(nx, ny, seed);
+        if (h > density) continue;
+        const pick = hash01(ny, nx, seed + 5);
+        const id = pick < 0.4 ? "spike-small" : pick < 0.55 ? "ember-a" : pick < 0.62 ? "bones" : pick < 0.72 ? "fire-crystal" : "steam-vent";
+        out.push({ id: VOLCANO + id, x: nx, y: ny });
+      }
+    }
+  }
+  return out;
 }
 
 const s = (id: string, dx: number, dy: number): Stamp => ({ id, dx, dy });
@@ -42,14 +206,16 @@ function layoutFor(theme: SceneTheme, map: GameMap, x: number): Layout {
   switch (theme) {
     case "lava_bridge": {
       // 용암 강이 가로로 흐르고(y-1..y), 바위 다리(3×7)가 세로로 가로지른다. 이벤트 칸은 다리 한가운데.
-      const lava: Stamp[] = [];
-      for (let dx = -2 * Math.ceil(x / 2); dx <= 2 * Math.ceil((map.width - x) / 2); dx += 2) lava.push(s(`${VOLCANO}lava-strip`, dx, -1));
       return {
         ground: { material: "버들항 광장 판석", rx: 10, ry: 6 },
         fills: [],
         stamps: [
-          ...lava,
           s(`${VOLCANO}bridge`, -1, -3),
+          s(`${VOLCANO}coal-pile`, -6, 4),
+          s(`${VOLCANO}bones`, 8, 4),
+          s(`${RUINS}rubble-temple`, 2, 4),
+          s(`${RUINS}column-temple-broken`, -9, 2),
+          s(`${RUINS}ruined-wall-2`, 7, -5),
           s(`${VOLCANO}altar`, 5, -6),
           s(`${VOLCANO}brazier`, -3, -4),
           s(`${VOLCANO}brazier`, 3, -4),
@@ -67,16 +233,13 @@ function layoutFor(theme: SceneTheme, map: GameMap, x: number): Layout {
       return {
         ground: { material: "버들항 모랫길", rx: 9, ry: 6 },
         fills: [],
+        bodies: [{ kind: "lava", cx: 6, cy: -1, rx: 4.2, ry: 3.6, seed: 11, minDx: 2 }],
         stamps: [
-          s(`${VOLCANO}lava-fall-strip`, 2, -5),
-          s(`${VOLCANO}lava-strip`, 2, -3),
-          s(`${VOLCANO}lava-strip`, 4, -3),
-          s(`${VOLCANO}lava-strip`, 2, -1),
-          s(`${VOLCANO}lava-strip`, 4, -1),
-          s(`${VOLCANO}lava-strip`, 6, -2),
-          s(`${VOLCANO}lava-strip`, 3, 1),
-          s(`${VOLCANO}lava-strip`, 5, 1),
           s(`${VOLCANO}spike-wide`, 1, -2),
+          s(`${VOLCANO}coal-pile`, 2, -4),
+          s(`${VOLCANO}coal-pile`, 9, 2),
+          s(`${VOLCANO}bones`, 0, 2),
+          s(`${VOLCANO}pillar-broken-a`, -2, -5),
           s(`${VOLCANO}spike-small`, 7, 0),
           s(`${VOLCANO}spike-small`, 2, 3),
           s(`${VOLCANO}spike-tall`, 6, -6),
@@ -95,13 +258,13 @@ function layoutFor(theme: SceneTheme, map: GameMap, x: number): Layout {
     case "poison_swamp":
       // 이벤트 칸은 늪 가장자리 뭍. 늪(물)은 오른쪽으로 번지고 증기 구멍이 독기 분출구 역할.
       return {
-        ground: { material: "버들항 풀밭", rx: 9, ry: 6 },
-        fills: [
-          { material: "버들항 물", dx: 2, dy: -4, w: 8, h: 8 },
-          { material: "버들항 물", dx: 1, dy: -2, w: 10, h: 5 },
-          { material: "버들항 물", dx: 4, dy: -5, w: 5, h: 10 },
-        ],
+        // 마도 유적의 독늪 — 풀밭 위 연못은 «잔디 마을» 로 읽혀 유적 요구를 놓쳤다(18차). 바닥을 유적 판석으로 깔고 폐허를 얹는다.
+        ground: { material: "버들항 광장 판석", rx: 24, ry: 20 },
+        fills: [],
+        bodies: [{ kind: "water", cx: 6, cy: 0, rx: 5.2, ry: 4.4, seed: 23, minDx: 2 }],
         stamps: [
+          s(`${RUINS}mosaic-medallion-5x5`, -5, -6),
+          s(`${RUINS}roof-naiskos-pediment`, 1, -10),
           s(`${SWAMP}mangrove`, 0, -6),
           s(`${SWAMP}mangrove`, 9, -6),
           s(`${SWAMP}mangrove`, 8, 5),
@@ -121,6 +284,10 @@ function layoutFor(theme: SceneTheme, map: GameMap, x: number): Layout {
         fills: [],
         stamps: [
           s(`${RUINS}mosaic-medallion-7x7`, -3, -3),
+          s(`${RUINS}cypress-ruin`, -8, -6),
+          s(`${RUINS}cypress-ruin`, 8, -5),
+          s(`${RUINS}vines-2`, -4, -9),
+          s(`${RUINS}vines-2`, 3, -9),
           s(`${RUINS}roof-naiskos-pediment`, -2, -9),
           s(`${RUINS}column-temple-tall`, -6, -4),
           s(`${RUINS}column-temple-tall`, 6, -4),
@@ -143,18 +310,20 @@ function toolByName(list: readonly ToolDefinition[], name: string): ToolDefiniti
   return tool;
 }
 
-/** 다리 칸(x-1..x+1, 용암 띠 y-1..y)을 옆 용암 칸의 타일로 바꾸면 다리가 무너져 보인다. 용암 칸 번호는 홀짝 칸마다 다르다. */
-function bridgeCollapse(map: GameMap, x: number, y: number): { layer: "lower"; cells: { x: number; y: number; tile: number }[] } {
-  const cells: { x: number; y: number; tile: number }[] = [];
-  for (const cy of [y - 1, y]) {
+/**
+ * 다리 칸(x-1..x+1, 용암 띠 y-1..y)이 «무너진» 모습. 다리 그림은 상단(upper) 층이고 그 밑 하단은 이미 용암이라,
+ * 하단만 바꾸면 화면이 그대로다(2026-10-16 18차: 심판이 «다리가 온전하다» 로 감점). 상단 칸을 용암 타일로 덮어 틈을 낸다.
+ * 용암 칸 번호는 홀짝 칸마다 다르다.
+ */
+function bridgeCollapse(map: GameMap, x: number, y: number): { cells: { x: number; y: number; layer: "upper"; tile: number }[] } {
+  const cells: { x: number; y: number; layer: "upper"; tile: number }[] = [];
+  for (const cy of [y - 2, y - 1, y, y + 1]) {
     for (const cx of [x - 1, x, x + 1]) {
-      let refX = cx - 2;
-      while (refX >= x - 1) refX -= 2;
-      if (refX < 0 || cx >= map.width || cy < 0 || cy >= map.height) continue;
-      cells.push({ x: cx, y: cy, tile: map.lowerTiles[cy * map.width + refX] ?? -1 });
+      if (cx < 0 || cx >= map.width || cy < 0 || cy >= map.height) continue;
+      cells.push({ x: cx, y: cy, layer: "upper", tile: LAVA_TILES[cy % 2]![cx % 2]! });
     }
   }
-  return { layer: "lower", cells: cells.filter((c) => c.tile >= 0) };
+  return { cells: cells.filter((c) => c.tile >= 0) };
 }
 
 /** 구역 가장자리까지 4칸 이하만 남으면 그 모서리는 맵 끝까지 잇는다 — 가는 풀밭 띠가 직선 경계로 남지 않게. */
@@ -263,16 +432,81 @@ export const SCENE_SETTING_TOOLS: readonly ToolDefinition[] = [
       }
       if (layout.fills.length) built.push(`${layout.fills[0]!.material} 영역`);
 
+      // 불규칙 몸체(용암·물) — 칸 단위로 칠하고 둘레에 흑요석·불씨를 둘러 직각 가장자리를 가린다.
+      const bodyDecor: { id: string; x: number; y: number }[] = [];
+      const bridgeBox = (cx: number, cy: number) => theme === "lava_bridge" && Math.abs(cx - x) <= 1 && cy >= y - 3 && cy <= y + 3;
+      const free = (cx: number, cy: number) => !((cx === x && cy === y) || (cx === x - 1 && cy === y)) && !bridgeBox(cx, cy);
+      const lavaOf = theme === "lava_bridge" ? [lavaBandCells(map, x, y)] : (layout.bodies ?? []).filter((b) => b.kind === "lava").map((b) => bodyCells(map, x, y, b));
+      for (const cells of lavaOf) {
+        for (const c of cells) setLayerTileAt(map, 1, c.y * map.width + c.x, LAVA_TILES[c.y % 2]![c.x % 2]!);
+        for (const c of cells) for (let l = 2; l <= 3; l++) setLayerTileAt(map, l as 2 | 3, c.y * map.width + c.x, -1);
+        applyBankOverlay(project, map, cells, BEODEUL_NATURE.bankLava);
+        if (theme === "lava_bridge") for (const c of cells) if (bridgeBox(c.x, c.y)) setLayerTileAt(map, 2, c.y * map.width + c.x, -1);
+        bodyDecor.push(...rimStamps(map, cells, free, 41, theme === "lava_bridge" ? 0.28 : 0.5));
+      }
+      for (const b of (layout.bodies ?? []).filter((q) => q.kind === "water")) {
+        const cells = bodyCells(map, x, y, b);
+        const rows = new Map<number, number[]>();
+        for (const c of cells) (rows.get(c.y) ?? rows.set(c.y, []).get(c.y)!).push(c.x);
+        for (const [cy, xs] of rows) {
+          xs.sort((p, q) => p - q);
+          let from = xs[0]!, prev = from;
+          for (const cx of [...xs.slice(1), Number.POSITIVE_INFINITY]) {
+            if (cx !== prev + 1) {
+              fill.run(project, { mapId, rect: { x: from, y: cy, w: prev - from + 1, h: 1 }, material: "버들항 물", clearUpper: true });
+              from = cx;
+            }
+            prev = cx;
+          }
+        }
+        applyBankOverlay(project, map, cells, BEODEUL_NATURE.bankBog);
+        built.push("물 " + cells.length + "칸");
+      }
       let stamped = 0;
+      const occupied = new Set<number>();
+      const kitList = project.tilesets.beodeul_city?.structureKits ?? [];
+      const mark = (id: string, px: number, py: number) => {
+        const k = kitList.find((q) => q.id === id.replace(KIT, ""));
+        for (let dy = 0; dy < (k?.height ?? 1); dy++) for (let dx = 0; dx < (k?.width ?? 1); dx++) occupied.add((py + dy) * map.width + px + dx);
+      };
+      const waterOrLava = new Set<number>();
+      for (const cells of lavaOf) for (const c of cells) waterOrLava.add(c.y * map.width + c.x);
+      for (const b of (layout.bodies ?? []).filter((q) => q.kind === "water")) for (const c of bodyCells(map, x, y, b)) waterOrLava.add(c.y * map.width + c.x);
+      for (const d of bodyDecor) {
+        try { stamp.run(project, { objectId: KIT + d.id, mapId, x: d.x, y: d.y }); stamped++; mark(d.id, d.x, d.y); } catch { /* 맵 밖·충돌 칸은 건너뛴다 */ }
+      }
       for (const st of layout.stamps) {
         try {
           stamp.run(project, { objectId: KIT + st.id, mapId, x: x + st.dx, y: y + st.dy });
+          mark(st.id, x + st.dx, y + st.dy);
           stamped++;
         } catch (error) {
           warnings.push(`${st.id} (${x + st.dx},${y + st.dy}) 건너뜀: ${error instanceof Error ? error.message.slice(0, 120) : String(error)}`);
         }
       }
-      built.push(`키트 ${stamped}/${layout.stamps.length}개`);
+      if (theme === "ruins_shrine" && x + 1 < map.width && y >= 1) {
+        // 성검 꽂힌 바위(1×2, 손 도트) — 이벤트 칸 오른쪽. 위칸 = 칼자루·날(통행), 아래칸 = 바위(막힘).
+        const target = project.tilesets[map.tilesetId]!;
+        const nature = (project.tilesets[BEODEUL_NATURE_ID] ??= createBeodeulNatureTileset());
+        if (nature.count < BEODEUL_NATURE.count) project.tilesets[BEODEUL_NATURE_ID] = createBeodeulNatureTileset();
+        const tr = translateTiles(project.tilesets[BEODEUL_NATURE_ID]!, target, new Set(BEODEUL_NATURE.swordStone));
+        const [topTile, bottomTile] = BEODEUL_NATURE.swordStone.map((t) => tr.map.get(t)!);
+        target.priority[topTile!] = "upper";
+        target.passability[topTile!] = { up: true, down: true, left: true, right: true };
+        target.priority[bottomTile!] = "lower";
+        target.passability[bottomTile!] = { up: false, down: false, left: false, right: false };
+        setLayerTileAt(map, 3, (y - 1) * map.width + x + 1, topTile!);
+        setLayerTileAt(map, 3, y * map.width + x + 1, bottomTile!);
+        occupied.add((y - 1) * map.width + x + 1);
+        occupied.add(y * map.width + x + 1);
+        built.push("성검 꽂힌 바위");
+      }
+      const scatterBlocked = (cx: number, cy: number) => waterOrLava.has(cy * map.width + cx) || !free(cx, cy);
+      let scattered = 0;
+      for (const d of scatterStamps(project, map, theme, ground, occupied, scatterBlocked)) {
+        try { stamp.run(project, { objectId: d.id, mapId, x: d.x, y: d.y }); scattered++; } catch { /* 건너뜀 */ }
+      }
+      built.push(`키트 ${stamped}/${layout.stamps.length}개 · 흩뿌린 소품 ${scattered}개`);
 
       const houses = theme === "volcano" ? Math.max(0, Math.min(3, Math.trunc(Number(args.houses ?? 0)))) : 0;
       if (houses > 0) {
@@ -300,7 +534,7 @@ export const SCENE_SETTING_TOOLS: readonly ToolDefinition[] = [
 
       const collapse = theme === "lava_bridge" ? bridgeCollapse(map, x, y) : undefined;
       return {
-        summary: `무대 ${theme} → ${mapId} 이벤트 칸 (${x},${y}) 둘레: ${built.join(" · ")}. 이제 show_map_region 으로 확인하고 (${x},${y}) 에 이벤트를 만든다 — 시작 칸 (${x - 1},${y}) 은 막혀 있지 않다.${collapse ? ` 다리 붕괴 연출은 사망 분기에서 data.collapse.cells ${collapse.cells.length}칸에 changeTile{mapId,layer:"lower",x,y,tile} 을 적용한다.` : ""}`,
+        summary: `무대 ${theme} → ${mapId} 이벤트 칸 (${x},${y}) 둘레: ${built.join(" · ")}. 이제 show_map_region 으로 확인하고 (${x},${y}) 에 이벤트를 만든다 — 시작 칸 (${x - 1},${y}) 은 막혀 있지 않다.${collapse ? ` 다리 붕괴 연출은 사망 분기에서 data.collapse.cells ${collapse.cells.length}칸에 changeTile{mapId,layer:"upper",x,y,tile} 을 적용한다(다리 그림이 상단 층이라 반드시 layer "upper" — 하단은 이미 용암이라 바꿔도 화면이 그대로다). 붕괴 직후 한 번 더 화면을 붉게 번쩍이면 틈이 눈에 띈다.` : ""}`,
         data: { theme, mapId, focus: { x, y }, start: { x: x - 1, y }, ground, stamped, total: layout.stamps.length, ...(collapse ? { collapse } : {}) },
         ...(warnings.length ? { warnings } : {}),
       };

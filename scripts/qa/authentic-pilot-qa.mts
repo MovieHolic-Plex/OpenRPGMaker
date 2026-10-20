@@ -26,7 +26,10 @@ import {
 } from "./brutal-prompt-qa-pilot.mts";
 
 const MODEL_PROVIDER = "google-antigravity" as const;
-const JUDGE_MODEL = "gemini-4-argon";
+// 조수(argon)와 심판이 같은 Cloud Code 쿼터 풀을 쓰면 한쪽이 바닥날 때 파이프라인이 통째로 멈춘다(2026-10-16 429 로 4건 중단).
+// 심판은 환경변수로 다른 공급자로 뗄 수 있다. 합격 기준(no 0개·score>=80·3표 중 2표)은 그대로다.
+const JUDGE_PROVIDER = process.env.PILOT_JUDGE_PROVIDER ?? MODEL_PROVIDER;
+const JUDGE_MODEL = process.env.PILOT_JUDGE_MODEL ?? "gemini-4-argon";
 const PILOT_IDS = ["jrpg_016", "jrpg_002", "jrpg_003", "jrpg_046"];
 
 interface Gate {
@@ -251,7 +254,7 @@ JSON으로만 답하라:
   }
   try {
     const { completion } = (await completeProvider(
-      MODEL_PROVIDER,
+      JUDGE_PROVIDER,
       {
         model: JUDGE_MODEL,
         messages: [{ role: "user", content }],
@@ -311,7 +314,7 @@ type JudgeResult = { passed: boolean; score: number; critique: string; requireme
  * strict: no "no" item, score >= 80). The score and critique come from the median-score call. A single call
  * contradicted itself between runs on identical frames, so one noisy "no" must not decide the run.
  */
-async function blindJudge(prompt: string, imagePaths: string[], apiKey: string): Promise<JudgeResult & { votes: number[] }> {
+export async function blindJudge(prompt: string, imagePaths: string[], apiKey: string): Promise<JudgeResult & { votes: number[] }> {
   const runs = await Promise.all([0, 1, 2].map(() => blindJudgeOnce(prompt, imagePaths, apiKey)));
   const sorted = [...runs].sort((x, y) => x.score - y.score);
   const median = sorted[1]!;
@@ -362,6 +365,9 @@ async function main() {
 
   const apiKey = await resolveRequestApiKey(MODEL_PROVIDER);
   if (!apiKey) throw new Error("no credentials for google-antigravity");
+  const judgeApiKey = JUDGE_PROVIDER === MODEL_PROVIDER ? apiKey : await resolveRequestApiKey(JUDGE_PROVIDER);
+  if (!judgeApiKey) throw new Error(`no credentials for judge provider ${JUDGE_PROVIDER}`);
+  console.log(`[Authentic] judge: ${JUDGE_PROVIDER}/${JUDGE_MODEL}`);
 
   // Stage 1: the real assistant builds each case from the raw prompt (parallel; independent project clones).
   console.log(`[Authentic] stage 1: real gemini-4-argon assistant builds ${ids.join(", ")}`);
@@ -423,7 +429,7 @@ async function main() {
       });
 
       const gates = [...mapGates(project, map, mapPng, beforePng), ...eventGates(testCase, map, events), ...branchGates(testCase, a, b)];
-      const judge = await blindJudge(testCase.prompt, [mapPngPath, shotAPre, shotA, shotAPeak, shotBPeak], apiKey);
+      const judge = await blindJudge(testCase.prompt, [mapPngPath, shotAPre, shotA, shotAPeak, shotBPeak], judgeApiKey);
       const overallPassed = gates.every((g) => g.passed) && judge.passed;
       results.push({
         caseId: id,
