@@ -38,9 +38,10 @@ def _outline(c, col, skip=None):
 
 
 def _sedan34(color, mir=False):
-    """80x48 승용차, 동서로 선 차를 남쪽 위에서 비스듬히 내려다본 3/4. 진행 방향 오른쪽(동).
-    줄 배치: 지붕 윗면 10..18(9줄) · 옆 창 면 19..28 · 보닛/트렁크 윗면 21..28(8줄) · 접힘 29 · 옆면 30..41(12줄) · 바퀴 중심 42 · 그림자 43..46.
-    앞유리·뒷유리는 지붕 앞뒤 모서리와 보닛·트렁크 뒤 모서리를 잇는 기운 띠(평행사변형)."""
+    """80x48 승용차, 동서로 선 차를 남쪽 위에서 비스듬히 내려다본 3/4. 진행 방향 오른쪽(동). mir=True 면 반전용(빛 반사를 미리 뒤집어 둔다).
+    줄 배치: 지붕 윗면 10..18(9줄) · 옆 창 면 19..30 · 보닛/트렁크 윗면 21..30(10줄) · 접힘 31 · 옆면 32..41(10줄) · 바퀴 중심 42 · 그림자 43..47.
+    앞유리·뒷유리는 지붕 앞뒤 모서리와 보닛·트렁크 뒤 모서리를 잇는 기운 띠(평행사변형).
+    가운데 아래 칸(x 32..47, y 32..47)은 x=39.5 좌우 대칭이라 반전 차와 같은 칸으로 묶인다(시트 칸 수 유지)."""
     c = Cv(80, 48); mat, b, tb, OLC = CAR34[color]
     R = lambda s: J(mat, s)
     top, topH, side, sideH, lo, dk = R(tb), R(tb + 1), R(b), R(b + 1), R(b - 1), R(b - 2)
@@ -50,83 +51,85 @@ def _sedan34(color, mir=False):
     X0, X1 = 6, 76                                                           # 차체 좌우 끝(트렁크 뒤 · 범퍼 앞)
     RB, RF = 28, 45                                                          # 지붕 뒤·앞 끝 x
     TB, HF = 17, 58                                                          # 트렁크 앞 끝 · 보닛 뒤 끝 x
-    # ── 그림자(차 밑 접지) ──
-    c.R(X0 + 3, 43, X1 - X0 - 1, 4, K('yoru', -3)); c.HL(X0 + 6, 47, X1 - X0 - 8, K('yoru', -2))   # 오른쪽 아래로 1px 밀린 접지 그늘
-    # ── 옆면(남쪽 면) 30..41 ──
-    c.R(X0, 30, X1 - X0 + 1, 12, side)
-    c.HL(X0 + 1, 31, X1 - X0 - 1, sideH)                                     # 어깨 빛(접힘 밑 한 줄)
+    # ── 그림자(차 밑 접지, 오른쪽 아래로 밀림) ──
+    c.R(X0 + 3, 43, X1 - X0, 4, K('yoru', -3)); c.HL(X0 + 6, 47, X1 - X0 - 6, K('yoru', -2))
+    # ── 옆면(남쪽 면) 32..41 ──
+    c.R(X0, 32, X1 - X0 + 1, 10, side)
     c.HL(X0, 35, X1 - X0 + 1, lo)                                            # 캐릭터 라인(오목)
     c.HL(X0 + 1, 36, X1 - X0 - 1, sideH)
     c.R(X0, 38, X1 - X0 + 1, 2, lo); c.R(X0, 40, X1 - X0 + 1, 2, dk)         # 아래 그늘 · 사이드 스커트
-    # 문선·손잡이는 x=39.5 좌우 대칭(가운데 아래 칸이 반전 차와 같은 칸으로 묶여 칸 수가 늘지 않게)
-    for x in (24, 55): c.VL(x, 30, 9, dk)                                    # 앞문 앞 · 뒷문 뒤 문선
-    c.VL(39, 30, 9, dk); c.VL(40, 30, 9, dk)                                 # 가운데 문선(B 기둥 밑)
-    for x in (35, 42): c.HL(x, 33, 3, dk); c.HL(x, 32, 3, sideH)             # 손잡이
-    c.R(X1 - 2, 31, 3, 3, J('lantern_amber', 3)); c.P(X1 - 1, 31, J('lantern_amber', 4)); c.HL(X1 - 2, 34, 3, J('lantern_amber', 1))   # 전조등
-    c.R(X0, 31, 2, 3, J('torii_vermilion', 2) if mat != 'torii_vermilion' else J('lantern_amber', 2)); c.P(X0, 31, J('torii_vermilion', 4))  # 후미등
+    for x in (24, 55): c.VL(x, 32, 7, dk)                                    # 뒷문 뒤 · 앞문 앞 문선
+    c.VL(39, 32, 7, dk); c.VL(40, 32, 7, dk)                                 # 가운데 문선(B 기둥 밑)
+    for x in (35, 42): c.HL(x, 34, 3, dk); c.HL(x, 33, 3, sideH)             # 손잡이
+    c.R(X1 - 2, 32, 3, 3, J('lantern_amber', 3)); c.P(X1 - 1, 32, J('lantern_amber', 4)); c.HL(X1 - 2, 35, 3, J('lantern_amber', 1))   # 전조등
+    c.R(X0, 32, 2, 3, J('autumn_maple', 1)); c.P(X0, 33, J('torii_vermilion', 4)); c.P(X0 + 1, 32, J('autumn_maple', 3))         # 후미등(짙은 진홍)
     c.R(X1 - 3, 38, 4, 2, J('paving_stone', 1)); c.HL(X1 - 3, 38, 4, J('paving_stone', 3))   # 앞 범퍼 하단
     c.R(X0, 38, 3, 2, J('paving_stone', 1)); c.HL(X0, 38, 3, J('paving_stone', 3))           # 뒤 범퍼 하단
-    # ── 보닛·트렁크 윗면 21..28 ──
+    # ── 보닛·트렁크 윗면 21..30 ──
     for (x0, x1) in ((X0, TB), (HF, X1)):
-        c.R(x0, 21, x1 - x0 + 1, 8, top)
+        c.R(x0, 21, x1 - x0 + 1, 10, top)
         c.HL(x0, 21, x1 - x0 + 1, mid)                                       # 뒤(북) 모서리는 둥글게 한 단 어둡게
-        c.HL(x0 + 1, 22, x1 - x0 - 1, topH)                                  # 빛 받는 결
-        c.HL(x0, 28, x1 - x0 + 1, topH)                                      # 앞 모서리 입술
-    c.HL(HF + 3, 25, X1 - HF - 5, sideH); c.HL(HF + 3, 24, X1 - HF - 5, topH)  # 보닛 가운데 주름
+        c.HL(x0 + 1, 22, x1 - x0 - 1, topH); c.HL(x0 + 1, 23, x1 - x0 - 1, topH)   # 빛 받는 결
+        c.HL(x0, 30, x1 - x0 + 1, topH)                                      # 앞 모서리 입술
+    c.HL(HF + 3, 27, X1 - HF - 5, mid); c.HL(HF + 3, 26, X1 - HF - 5, topH)   # 보닛 가운데 주름
+    c.HL(X1 - 3, 28, 3, mid)                                                  # 보닛 끝이 앞으로 기운다
     c.P(X1, 21, None); c.P(X1, 22, None); c.P(X0, 21, None)                  # 모서리 둥글게
-    c.HL(X0, 29, X1 - X0 + 1, dk)                                            # 윗면 ↔ 옆면 접힘선
+    c.HL(X0, 31, X1 - X0 + 1, dk)                                            # 윗면 ↔ 옆면 접힘선
     # ── 앞·뒤 유리(기운 띠) + 옆 창 면 ──
-    for y in range(10, 30):
+    for y in range(10, 32):
         for x in range(X0, X1 + 1):
             tf = (x - RF - 1) / (HF - RF - 1); df = y - 10 - 11 * tf                   # 앞유리: 지붕 앞 → 보닛 뒤
             tr = (RB - 1 - x) / (RB - 1 - TB); dr = y - 10 - 11 * tr                   # 뒷유리: 지붕 뒤 → 트렁크 앞
-            if 0 <= tf <= 1 and 0 <= df <= 8:
-                edge = df < 1 or df > 7 or tf > .9
-                k = side if edge else (G(1) if (df - 2 * tf * 3) % 6 < 2 else G(-1) if df > 5 else G(0))
+            if 0 <= tf <= 1 and 0 <= df <= 9:
+                edge = df < 1 or df > 8 or tf > .9
+                k = side if edge else (G(1) if (df - 2 * tf * 3) % 6 < 2 else G(-1) if df > 6 else G(0))
                 c.P(x, y, k)
-            elif 0 <= tr <= 1 and 0 <= dr <= 8:
-                edge = dr < 1 or dr > 7 or tr > .9
+            elif 0 <= tr <= 1 and 0 <= dr <= 9:
+                edge = dr < 1 or dr > 8 or tr > .9
                 k = side if edge else (G(0) if dr < 3 else G(-1) if dr < 6 else G(-2))
                 c.P(x, y, k)
-    for y in range(19, 29):                                                   # 옆 창 면: 남쪽 기둥 두 줄 사이
-        t = (y - 18) / 11; xl = int(round(RB - 1 - (RB - 1 - TB) * t)); xr = int(round(RF + 1 + (HF - RF - 1) * t))
+    for y in range(19, 31):                                                   # 옆 창 면: 남쪽 기둥 두 줄 사이
+        t = (y - 18) / 12; xl = int(round(RB - 1 - (RB - 1 - TB) * t)); xr = int(round(RF + 1 + (HF - RF - 1) * t))
         for x in range(xl, xr + 1): c.P(x, y, side)
         c.P(xl, y, lo); c.P(xr, y, lo)
-        if 21 <= y <= 26:
+        if 21 <= y <= 28:
             for x in range(xl + 2, xr - 1):
                 if x in (39, 40): continue                                    # B 기둥
-                g = G(-2) if y >= 25 else G(-1) if y >= 22 else G(0)
+                g = G(-2) if y >= 26 else G(-1) if y >= 23 else G(0)
                 q = ((x + y) if mir else (x - y)) % 11                       # 반전 차도 반사가 왼쪽 위 빛을 따르게
-                if q in (0, 1) and y <= 24: g = G(1)                          # 유리 반사 사선 2단
-                if q == 2 and y <= 24: g = G(2)
+                if q in (0, 1) and y <= 25: g = G(1)                          # 유리 반사 사선 2단
+                if q == 2 and y <= 25: g = G(2)
                 c.P(x, y, g)
-    c.VL(39, 21, 6, dk); c.VL(40, 21, 6, side)
+    c.VL(39, 21, 8, dk); c.VL(40, 21, 8, side)
+    c.HL(TB + 2, 29, HF - TB - 3, sideH)                                      # 창 밑 벨트 빛
     # ── 지붕 윗면 10..18 ──
     for y, k in zip(range(10, 19), (mid, top, topH, topH, top, top, top, mid, side)):   # 볼록한 지붕: 먼 모서리 → 마루 빛 → 앞으로 떨어짐
         c.HL(RB, y, RF - RB + 1, k)
     c.P(RB, 10, None); c.P(RF, 10, None)
-    c.VL(RB, 11, 6, topH); c.VL(RF, 11, 7, mid)                               # 빛: 왼쪽 위 · 오른쪽 모서리 그늘
-    c.HL(RB + 2, 12, 5, J('vending_cool_white', 4) if mat != 'vending_cool_white' else topH)   # 마루 반사
-    c.R(HF - 3, 25, 3, 2, sideH); c.HL(HF - 3, 27, 3, dk); c.P(HF - 1, 26, side)   # 사이드 미러(밑 그늘)
-    if color == 'taxi':                                                       # 택시 표시등
+    lx, rx = (RF, RB) if mir else (RB, RF)                                    # 반전 뒤에 왼쪽이 밝도록
+    c.VL(lx, 11, 6, topH); c.VL(rx, 11, 7, mid)
+    spec = J('vending_cool_white', 4) if mat != 'vending_cool_white' else topH
+    c.HL(RF - 6 if mir else RB + 2, 12, 5, spec)                              # 마루 반사
+    c.R(HF - 3, 27, 3, 2, sideH); c.HL(HF - 3, 29, 3, dk); c.P(HF - 1, 28, side)   # 사이드 미러(밑 그늘)
+    if color == 'taxi':                                                       # 택시 행등: 윗면 2줄 + 앞면 + 밑 그늘
         tx = (RB + RF) // 2 - 4
         W_ = lambda s: J('vending_cool_white', s)
-        c.HL(tx + 1, 4, 7, W_(4)); c.HL(tx + 1, 5, 7, W_(3))                   # 행등 윗면(2줄, 밝음)
-        c.R(tx, 6, 9, 4, W_(2)); c.VL(tx, 6, 4, W_(3)); c.VL(tx + 8, 6, 4, W_(0))   # 앞면
+        c.HL(tx + 1, 4, 7, W_(4)); c.HL(tx + 1, 5, 7, W_(3))
+        c.R(tx, 6, 9, 4, W_(2)); c.VL(tx, 6, 4, W_(3)); c.VL(tx + 8, 6, 4, W_(0))
         c.HL(tx + 2, 7, 5, J('torii_vermilion', 2)); c.HL(tx + 2, 8, 5, J('torii_vermilion', 1))
-        c.HL(tx, 10, 9, dk)
-    # ── 바퀴: 휠 아치(오목) + 아래 반원이 몸 밑으로 ──
+        c.HL(tx, 10, 10, dk)
+    # ── 바퀴: 휠 아치(오목) + 아래 반원이 몸 밑으로, 허브는 1px 북쪽 ──
     for wx in (TB - 1, HF + 5):
         for yy in range(36, 42):
             for xx in range(wx - 6, wx + 6):
                 if (xx + .5 - wx) ** 2 + (yy + .5 - 42) ** 2 <= 36: c.P(xx, yy, J('asphalt', 0))
-        c.HL(wx - 5, 35, 10, dk)                                              # 아치 가장자리
+        c.HL(wx - 5, 35, 10, dk)                                              # 아치 가장자리(펜더 입술)
         for yy in range(37, 47):
             for xx in range(wx - 5, wx + 5):
                 d = (xx + .5 - wx) ** 2 + (yy + .5 - 42) ** 2
                 if d <= 25:
-                    dh = (xx + .5 - wx) ** 2 + (yy + .5 - 41) ** 2              # 허브는 1px 북쪽(바퀴집 안으로 들어간 원통)
-                    col = J('asphalt', 1) if d > 9 else J('paving_stone', 3) if dh > 2.5 and yy < 42 else J('paving_stone', 2) if dh > 2.5 else J('asphalt', 2)
+                    dh = (xx + .5 - wx) ** 2 + (yy + .5 - 41) ** 2
+                    col = J('asphalt', 1) if d > 9 else (J('paving_stone', 3) if yy < 41 else J('paving_stone', 1)) if dh > 1 else J('paving_stone', 2)
                     if d > 9 and yy < 40: col = J('asphalt', 0)                # 아치 그늘에 든 위쪽 타이어
                     if d > 9 and (yy >= 45 or xx < wx - 3): col = J('asphalt', 0)   # 타이어 아래·왼쪽 접지면
                     c.P(xx, yy, col)
