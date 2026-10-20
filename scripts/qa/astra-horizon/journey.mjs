@@ -526,7 +526,11 @@ try {
   for (let i = 0; i < 80; i++) {
     const l = await live();
     if (l.party.length > 0 && !(await present("dialogue-box")) && !(await present("runtime-choices"))) break;
-    if (!choiceShot && await present("runtime-choices")) { choiceShot = true; await page.waitForTimeout(500); await shot("07-starter-choice"); }
+    if (!choiceShot && await present("runtime-choices")) {
+      choiceShot = true; await page.waitForTimeout(500); await shot("07-starter-choice");
+      // QA_STARTER=0|1|2 — 첫 선택 창에서 그만큼 아래로(스타터 3종 균형 비교).
+      for (let k = 0; k < Number(process.env.QA_STARTER ?? 0); k++) { await page.keyboard.press("ArrowDown"); await page.waitForTimeout(120); }
+    }
     await page.keyboard.press("Enter");
     await page.waitForTimeout(300);
   }
