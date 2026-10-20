@@ -1224,7 +1224,33 @@ function enemyButton(
   const url = perEnemyUrl ?? skinUrl;
   if (resourceId) enemyNode.dataset.monsterResourceId = resourceId;
   if (record?.collapseEffect) enemyNode.dataset.collapse = record.collapseEffect;
-  if (url) {
+  // 사람 적(보스·인간형): 아군과 같은 걷기 칩 전투 시트(charset-battler-*)를 고르면 아군 배우와 같은 그리기 경로
+  // (actorBattleImage·24칸 포즈·시전 시트)를 탄다. 노드는 적이고, 그림 클래스는 HP·조준·쓰러짐 규칙이 보는 battle-enemy-image 도 단다.
+  // 시트는 왼쪽(적 쪽)을 보도록 그려져 있다 — 적 진영(왼쪽)에 서면 CSS 가 좌우를 뒤집어 아군 쪽을 보게 한다.
+  const charsetEnemy = perEnemyUrl && resourceId && charsetBattler(resourceId) && !Object.hasOwn(store.getCurrent().assets.uploaded, resourceId)
+    ? resourceId : undefined;
+  if (charsetEnemy && perEnemyUrl) {
+    enemyNode.dataset.charsetEnemy = "true";
+    enemyNode.dataset.battlerExtended = "true";
+    enemyNode.dataset.battleCharsetResourceId = charsetEnemy;
+    const sprite = actorBattleImage(enemy.name, charsetEnemy, perEnemyUrl);
+    sprite.classList.add("battle-enemy-image");
+    sprite.dataset.testid = `battle-enemy-sprite-${enemy.id}`;
+    sprite.style.setProperty("--breathe-delay", `-${index * 730}ms`);
+    enemyNode.append(sprite);
+    // 상태 배지를 머리 바로 위에 두도록 대기 칸(0,0)의 위쪽 빈 줄 비율을 잰다 — 도트 적 시트와 같은 계약.
+    const topPad = pixelSheetTopPad.get(perEnemyUrl);
+    if (topPad !== undefined) enemyNode.style.setProperty("--battle-sprite-top-pad", `${Math.round(topPad * 1000) / 10}%`);
+    else {
+      const probe = new Image();
+      probe.addEventListener("load", () => {
+        const pad = measureTopPad(probe, BATTLE_SHEET_CELL);
+        pixelSheetTopPad.set(perEnemyUrl, pad);
+        enemyNode.style.setProperty("--battle-sprite-top-pad", `${Math.round(pad * 1000) / 10}%`);
+      });
+      probe.src = perEnemyUrl;
+    }
+  } else if (url) {
     const image = document.createElement("img");
     image.className = "battle-enemy-image";
     // 일반 스킨은 한 칸의 native 초상을, 도트 측면 스킨은 아래의 포즈 시트를 그린다.

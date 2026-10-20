@@ -3,7 +3,7 @@ import { cssMixBlendMode, isBlendModeName } from "@/project/blendMode";
 import { remainingEnemyCollapseMs } from "@/player/battleEnemyCollapse";
 import { battleEntrySkillRecord, holdRetroSkillPlayback, stopRetroClassSkill, hasRetroChoreography, retroClassSkillBeatMs, retroClassSkillWeight, hasRetroSkillContract, retroSkillForEntry, retroSkillRecipe, startRetroSpecialSkill } from "@/player/retroSkillChoreography";
 import type { BattleActionWeight } from "@/player/battleActionBeats";
-import { retroTimelineEntry, retroCommandPose, initRetroMotion, isTravellingEffect, preloadRetroMotionSe, repaintRetroBattler, retroActionMotion, retroDamage, retroEnemyReach, retroHitRelease, retroVictory, retroWalk } from "@/player/battleRetroMotion";
+import { retroTimelineEntry, retroCommandPose, initRetroMotion, isTravellingEffect, preloadRetroMotionSe, repaintRetroBattler, retroActionMotion, retroDamage, retroEnemyReach, retroHitRelease, ownsRetroHurtFrame, retroVictory, retroWalk } from "@/player/battleRetroMotion";
 import type { BattleAnimationSnapshot, BattleTimelineEntrySnapshot } from "@/battle/types";
 import type {
   ActorCommand,
@@ -625,9 +625,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         const struck = hitStopFeedback;
         hitStopFeedback = undefined;
         const node = findBattlerNode(field, struck.targetId);
-        if (retroMotion && node?.classList.contains("battle-actor")) retroHitRelease(node);
+        if (retroMotion && node && ownsRetroHurtFrame(node)) retroHitRelease(node);
+        // 사람 적(걷기 칩 시트)은 아군처럼 맞은 칸을 풀고, 적이므로 평소처럼 세 번 깜빡이기도 한다.
         // 포켓몬 안무는 넉백이 끝난 뒤 스스로 깜빡인다(battlePokemonMotion.releaseTarget).
-        else if (node && !pokemonMotion && !node.classList.contains("defeated") && !prefersReducedMotion()) blinkBattlerNode(node);
+        if (node && !(retroMotion && node.classList.contains("battle-actor")) && !pokemonMotion && !node.classList.contains("defeated") && !prefersReducedMotion()) blinkBattlerNode(node);
       }
       // 히트스톱이 걸리는 순간 맞은 쪽이 떨기 시작한다(impact). 멈춘 화면이 사진이 아니라 충격으로 읽힌다.
       // 포켓몬 안무는 맞은 그림을 직접 밀고 떨게 한다 — 진동을 겹치면 같은 translate 를 서로 덮는다.
