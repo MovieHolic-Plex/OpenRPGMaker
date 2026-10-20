@@ -485,12 +485,12 @@ function tunePacing(project: Project): void {
   const enemies = project.database.enemies;
   const byId = (id: string) => enemies.find((e) => e.id === id);
   const reskin: Record<string, { species: string; level?: number }> = {
-    // 다 싸운 플레이어가 Lv6 일 때 수련생 Lv6~7 에게 6턴 만에, 관장 Lv8·10 에게 2턴 만에 졌다(2026-10-20 실플레이) → 한 단씩 낮춘다.
+    // 다 싸운 플레이어가 Lv6 일 때 수련생 Lv6~7 에게 6턴 만에, 관장 Lv8·10 에게 2턴 만에 졌다(2026-10-20 실플레이) → 수련생 5·5·6, 관장 7·8. 다시 재니 Lv8+Lv4 로 관장에게 9턴 접전 끝에 졌다 — 회복약을 쓰면 이기는 선.
     mx_enemy_mx_map_grove_gym_grunt_0_0: { species: "mx_enemy_podback", level: 5 },
     mx_enemy_mx_map_grove_gym_grunt_1_0: { species: "mx_enemy_brambleboar", level: 5 },
     mx_enemy_mx_map_grove_gym_grunt_2_0: { species: "mx_enemy_orchardant", level: 6 },
     mx_enemy_mx_map_grove_gym_leader_0: { species: "mx_enemy_podback", level: 7 },
-    mx_enemy_mx_map_grove_gym_leader_1: { species: "mx_enemy_brambleboar", level: 9 },
+    mx_enemy_mx_map_grove_gym_leader_1: { species: "mx_enemy_brambleboar", level: 8 },
   };
   for (const [enemyId, { species, level }] of Object.entries(reskin)) {
     const enemy = byId(enemyId), template = byId(species);
@@ -521,11 +521,53 @@ function tunePacing(project: Project): void {
       enemy.rewards = { ...enemy.rewards, exp: enemy.rewards.exp * 2 };
     }
   }
+  // 신전 보스는 배지 하나 직후라 Lv9 셋, 챔피언 나루는 Lv10 넷(마지막 승부라 한 단 높게).
+  for (const enemy of enemies) if (/^mx_enemy_mx_map_observatory_boss_\d+$/.test(enemy.id)) rescaleEnemy(enemy, 9);
   const trim: Record<string, number> = { mx_troop_mx_map_observatory_boss: 3, mx_troop_mx_map_league_0_league_challenge: 4 };
   for (const troop of project.database.troops) {
     const keep = trim[troop.id];
     if (keep !== undefined && troop.members && troop.members.length > keep) troop.members = troop.members.slice(0, keep);
   }
+}
+
+/**
+ * 사람 칩 다시 입히기 — 생성기는 Scarloxy 원본 두 장의 10명을 돌려 써서 라이벌 나루 = 회복 센터 직원 = 1번 도로 조련사,
+ * 엄마 = 도로 연구원 트레이너, 챔피언 나루 = 체육관 관장 유림이 같은 그림이었다(2026-10-20 실플레이 검수). 이미 설치된
+ * ScarloxyPeople 변형 칩(시트, 칸)에서 역할에 맞는 사람을 골라 한 사람 한 그림으로 맞춘다. 새로 그린 그림은 없다.
+ */
+const PEOPLE_CAST: Record<string, readonly [sheet: number, index: number]> = {
+  mx_map_lab_rival: [2, 3], mx_map_grove_rival: [2, 3], mx_map_league_0_league_challenge: [2, 3], // 나루 — 붉은 모자 라이벌
+  mx_map_home_center_nurse: [1, 2], mx_map_grove_center_nurse: [1, 2], // 센터 직원 — 간호사
+  mx_map_home_house_resident: [6, 3], // 엄마 — 머릿수건 앞치마
+  mx_map_home_mart_shop: [5, 0], mx_map_grove_mart_shop: [5, 1], // 도구점 점원
+  mx_map_home_guide: [12, 5], mx_map_grove_guide: [4, 0], // 여행 안내원 · 숲 마을 레인저
+  mx_map_home_local: [6, 2], mx_map_home_ambient_resident_1: [6, 0], mx_map_home_ambient_resident_2: [6, 4],
+  mx_map_grove_local: [11, 4], mx_map_grove_house_resident: [6, 1], mx_map_grove_house_2f_kid: [6, 6],
+  mx_map_home_center_2f_traveler: [1, 7], mx_map_grove_center_2f_traveler: [2, 2],
+  mx_map_home_sign_meadow: [13, 3], mx_map_meadow_sign_grove: [12, 3], mx_map_meadow_trail_sign: [12, 0], mx_map_grove_sign_garden: [13, 4],
+  mx_map_meadow_trainer_0: [10, 4], mx_map_meadow_trainer_1: [9, 2], mx_map_meadow_trainer_2: [2, 4], // 산책 소년 · 연구원 · 조련사
+  mx_map_garden_researcher: [9, 1],
+  mx_map_grove_gym_grunt_0: [2, 1], mx_map_grove_gym_grunt_1: [9, 4], mx_map_grove_gym_grunt_2: [11, 5], // 덩굴지기 하람 · 정원사 소이 · 수련생 도윤
+  mx_map_grove_gym_gym_guide: [13, 2],
+  mx_map_league_0_return_home: [8, 4], // 리그 안내원 — 제복
+};
+
+function recastPeople(project: Project): void {
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      const cast = PEOPLE_CAST[event.id];
+      if (!cast) continue;
+      const [sheet, characterIndex] = cast;
+      for (const page of event.pages ?? []) {
+        if (!page.graphic) continue;
+        const direction = page.graphic.direction ?? "down";
+        page.graphic = { ...page.graphic, sprite: { type: "bundled", id: `tex_oprn_charset_scarloxy_people${sheet}` }, pattern: charsetFrameIndex({ characterIndex, direction, pattern: 1 }) };
+      }
+    }
+  }
+  // 리그 안내원이 결투장 한복판(4,9)에 서 있었다 — 계단 올라온 옆자리로.
+  const leagueGuide = project.maps.mx_map_league_0?.events.find((e) => e.id === "mx_map_league_0_return_home");
+  if (leagueGuide) { leagueGuide.x = 5; leagueGuide.y = 10; }
 }
 
 /** 명령 나무의 모든 하위 목록(분기·선택지·전투 결과)을 돈다. */
@@ -636,6 +678,7 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
   startInBedroom(project, introEvent);
   tunePacing(project);
   softenTrainerDefeats(project);
+  recastPeople(project);
 
   // 1번 도로와 신전에도 여명의 날개 — 길 위를 날 뿐 막지 않는다.
   project.maps["mx_map_meadow"]?.events.push(
