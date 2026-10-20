@@ -54,8 +54,9 @@ IPC `oprn:store.upload` → `AssetStoreClient.upload`(검증 → `/api/v1/blobs/
 
 ## 받기(가져오기) 경로
 
-`install` 은 `/api/v1/items/:slug/versions/:v/bundle`(OPK1 한 덩어리)을 먼저 묻는다. 서버가 404·405·501 이면 이번 실행
-동안 그 주소에는 다시 묻지 않고, `/manifest` + blob 8개 병렬로 받는다. 응답 상한은 `8 + manifestBytes + packBytes`,
+`install` 은 `/api/v1/items/:slug/versions/:v/bundle`(OPK1 한 덩어리)을 로그인했으면 토큰을 붙여 먼저 묻는다. 서버가 405·501 이면,
+또는 공개 상품(상태 `visible`·상태 없는 옛 서버)이 404 면 이번 실행 동안 그 주소에는 다시 묻지 않는다(`bundleUnsupportedStatus`).
+확인 대기·숨김 상품의 404 는 그 상품만 `/manifest` + blob 8개 병렬로 받는다. 응답 상한은 `8 + manifestBytes + packBytes`,
 gzip 은 풀린 크기에도 같은 상한(`maxOutputLength`). 캐시 blob 은 읽을 때마다 sha256 을 다시 보고 깨졌으면 다시 받는다.
 `applyPackToProject` 는 프로젝트를 건드리기 전에 그림 규격(캐릭터 시트 등)과 타일셋 칸이 그림 안에 드는지 본다.
 `validateManifest` 는 `__proto__`·`constructor`·`prototype` id, `count` 와 통행·층 배열 길이가 다른 타일셋, `--` 든 slug 를 받지 않는다.
@@ -125,3 +126,28 @@ npm run harness -- game-concepts publish --target staging|prod --yes-prod|http:/
 - **보안**: 상품 글(제목·소개·설명·작가·태그·크레딧)은 전부 `textContent` + `translate="no"` — `innerHTML` 을 쓰지 않는다. 그림은 메인이 sha256 을 확인한 blob 의 `blob:` 주소로만. 토큰은 메인 프로세스(safeStorage)에만 있고 DOM·localStorage·로그에 없다.
 - **문구**: 새 문장은 한국어 원문 템플릿 하나로 쓰고 `src/i18n/catalogs/{en,ja,zh}.json` 에 넣었다(종류·라이선스 이름은 `STORE_KIND_NAMES` 그대로).
 - **아직 없는 것**: 서버가 「검증된 작가」를 알려 주지 않아 모든 상품이 「커뮤니티 작품」으로 보인다(서버 필드가 생기면 배지만 붙이면 된다). 넣기를 중간에 취소하는 단추는 없다(받기 IPC 에 취소가 없다).
+
+## 에디터에서 열기 링크 (2026-10-20)
+
+스토어 웹사이트의 「에디터에서 열기」 단추는 `oprn://store/install?store=<스토어 출처>&slug=<slug>&version=<판본, 선택>` 를 연다.
+
+| 조각 | 위치 | 하는 일 |
+|---|---|---|
+| 판정(순수) | `src/assetStore/deepLink.ts` `parseStoreDeepLink` | 경로 `store/install`(`oprn://store/install`·`oprn:store/install` 둘 다), `store` 출처 = 에디터가 쓰는 스토어 주소(`AssetStoreClient.url`)의 출처, slug = `STORE_SLUG`, 판본 = 양의 안전 정수. 틀리면 한국어 사유 |
+| OS 등록·받기 | `electron/main/main.ts` | `setAsDefaultProtocolClient("oprn")`(개발 실행은 `OPRN_REGISTER_PROTOCOL=1` 일 때만), 배포 앱만 한 번만 실행 잠금(QA 하니스가 여러 개 띄우므로), `second-instance`(Windows·Linux 인자)·`open-url`(macOS)·첫 실행 인자. 링크 없는 두 번째 실행은 새 창(시작 화면) |
+| 맡겨 두기 | `electron/main/assetStore.ts` `acceptStoreDeepLink` | 검사한 요청을 맡겨 두고(10분) 프로젝트가 열린 편집기 창에 `oprn:store.openLink` 로 알린다. 편집기는 `oprn:store.takeOpenLink` 로 꺼낸다(프로젝트 세션이 있는 창만). 편집기가 없으면 「프로젝트를 열면 이어서」 안내 |
+| 편집기 | `src/editor/assetStore/storeOpenLink.ts` → `openAssetStoreForLink` | 부팅 뒤 한 번 꺼내고 알림을 듣는다. 스토어 창을 그 상품 상세로 열고 확인 카드(`store-link-confirm`) 「스토어에서 「제목」 vN 을 받아 이 프로젝트에 넣을까요?」. 「받아서 넣기」(`store-link-add`)만 기존 넣기 경로(`addToProject` → 받기 → `addStoreItemToProject`)를 탄다 |
+
+- 링크가 준 주소로는 절대 받지 않는다. 다른 출처면 「다른 스토어 주소의 링크라 열지 않았습니다」 — 받기는 언제나 에디터에 설정된 스토어로 한다.
+- 링크만으로는 아무것도 받지 않는다. 확인 카드에서 누른 뒤에만 받고 넣는다(새 판본으로 바꾸는 경우의 확인은 그대로).
+- 로그인 없이 상품이 안 보이면(401·403·404, 주인 초안) 기존 기기 코드 로그인을 열고, 승인되면 그 상품을 다시 연다.
+- 잘못된 링크는 편집기 알림(+ `console.warn("[store-link]")`), 편집기가 없으면 메인의 메시지 상자.
+- 실제 OS 등록은 패키지 앱에서만 확인할 수 있다. `electron-builder.config.mjs` 의 `protocols` 가 macOS Info.plist·Linux .desktop 에 들어가고, Windows 는 첫 실행 때 앱이 등록한다.
+
+## 주인 초안 (D2, 2026-10-20)
+
+에이전트 제출은 승인 전까지 `status: "pending"` 이다. 같은 계정으로 로그인한 주인은 자기 초안을 자기 편집기에서 쓸 수 있다.
+
+- 받기: 상세(`item`)·`/bundle`·`/manifest` 모두 토큰을 붙인다. 받을 때 상세가 `pending` 이면 `installed.json` 기록에 `draft: true`(선택 필드 — 옛 기록은 그대로 읽힌다).
+- 표시: 받아 둔 것·상세·내 프로젝트 줄에 배지 「초안 · 나만 보임 · 공유 안 됨」(`store-draft-badge`). 받은 목록을 새로 볼 때(1분에 한 번, 로그인 승인 직후 바로) `refreshDrafts` 가 상태를 다시 보고, 공개(`visible`)되면 `draft` 를 떼어 배지가 사라진다.
+- 공유 차단: 넣기는 초안이어도 같은 `applyPackToProject` 라 모든 에셋에 스토어 `origin` 이 남는다. `storePublishBlockReason` 이 `origin` 이 있는 에셋과 그 에셋을 그림으로 쓰는 타일셋을 막으므로 다시 올리거나 나눌 수 없다(`test/assetStoreDeepLink.test.ts` 「keeps store origin on an applied draft」).

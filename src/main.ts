@@ -113,7 +113,10 @@ void bootEditorWithOpenedProject(app)
     dismissBootLoader();
     throw error;
   })
-  .then(openClassicEventEditorCaptureIfRequested);
+  .then(openClassicEventEditorCaptureIfRequested)
+  // 스토어 「에디터에서 열기」 링크: 편집기가 뜬 뒤에 받는다(부팅 전에 온 요청은 메인이 맡겨 두었다).
+  .then(() => import("@/editor/assetStore/storeOpenLink"))
+  .then(({ installStoreOpenLinks }) => installStoreOpenLinks());
 
 /**
  * 시작 화면이 폴더를 열어둔 채 편집기 창으로 넘어오면, 렌더러의 저장소는 그 사실을 모른다 —

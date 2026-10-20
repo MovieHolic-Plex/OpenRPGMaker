@@ -7,7 +7,7 @@
  * 위키: openwiki/asset-store.md 「스토어 창 UX」.
  */
 import "@/styles/database/assetStore/index.css";
-import type { InstalledStoreItem, MyStoreItem, StoreLoginStart, StoreReportReason, StoreStatus } from "@/assetStore/bridgeTypes";
+import type { InstalledStoreItem, MyStoreItem, StoreLoginStart, StoreOpenLinkRequest, StoreReportReason, StoreStatus } from "@/assetStore/bridgeTypes";
 import { STORE_REPORT_REASONS } from "@/assetStore/bridgeTypes";
 import {
   STORE_ITEM_KINDS, STORE_KIND_NAMES, STORE_LICENSE_SHORT,
@@ -73,6 +73,10 @@ interface State {
   report: ReportForm | null;
   urlEditing: boolean;
   advanced: boolean;
+  /** 「에디터에서 열기」 링크로 열었고 아직 확인 카드에서 고르지 않은 요청. */
+  linkRequest: StoreOpenLinkRequest | null;
+  /** 링크 상품을 보려면 로그인이 필요했다 — 로그인이 끝나면 이 slug 를 다시 연다. */
+  resumeLink: string | null;
 }
 
 let host: HTMLElement | null = null;
@@ -86,7 +90,7 @@ const state: State = {
   tab: "browse", status: null, error: null, query: { q: "", kind: "", grade: "", sort: "popular" },
   items: [], total: 0, page: 1, pageSize: 24, loaded: false, loading: false, offline: false,
   selected: null, detail: null, installed: [], latest: new Map(), known: new Map(), busy: new Map(), login: null, mine: null,
-  added: new Map(), report: null, urlEditing: false, advanced: false,
+  added: new Map(), report: null, urlEditing: false, advanced: false, linkRequest: null, resumeLink: null,
 };
 
 export function isAssetStoreOpen(): boolean {
@@ -132,7 +136,10 @@ export function openAssetStore(tab: Tab = state.tab): void {
       state.login = null;
       if (event.result === "denied") toast("브라우저에서 로그인을 거절했습니다.", "info");
       if (event.result === "expired") toast("로그인 코드가 만료되었습니다. 다시 시도해 주세요.", "info");
+      const resume = event.result === "approved" ? state.resumeLink : null;
+      if (event.result !== undefined) state.resumeLink = null;
       void refreshStatus();
+      if (resume) void openLinkDetail(resume);
     } else void refreshInstalled();
   }));
   render();
@@ -152,9 +159,51 @@ export function closeAssetStore(): void {
   state.added.clear();
   state.error = null;
   state.report = null;
+  state.linkRequest = null;
+  state.resumeLink = null;
   host?.remove();
   host = null;
   shell = null;
+}
+
+/**
+ * 「에디터에서 열기」 링크(메인이 출처·slug·판본을 검사했다)로 스토어를 그 상품에 연다.
+ * 받기·넣기는 하지 않는다 — 상세 위에 확인 카드를 띄우고, 사용자가 누를 때만 기존 넣기 경로로 간다.
+ */
+export function openAssetStoreForLink(request: StoreOpenLinkRequest): void {
+  if (!host) openAssetStore("browse");
+  else { state.tab = "browse"; state.error = null; }
+  if (!storeBridge()) return;
+  state.linkRequest = { slug: request.slug, ...(request.version !== undefined ? { version: request.version } : {}) };
+  void openLinkDetail(request.slug);
+}
+
+/** 링크 상품 상세. 공개되지 않은 상품(주인 초안)이 로그인 없이 안 보이면 기존 기기 코드 로그인을 열고, 끝나면 이어서 연다. */
+async function openLinkDetail(slug: string): Promise<void> {
+  const bridge = storeBridge();
+  if (!bridge) return;
+  state.selected = slug;
+  state.detail = null;
+  state.report = null;
+  render();
+  try {
+    const detail = await bridge.item({ slug, lang: getLocale() });
+    if (state.selected !== slug) return;
+    state.detail = detail;
+    state.latest.set(slug, detail.latestVersion);
+  } catch (error) {
+    const failure = storeFailure(error);
+    const loggedIn = (await bridge.status().catch(() => null))?.loggedIn ?? false;
+    if (!loggedIn && [401, 403, 404].includes(failure.status)) {
+      state.resumeLink = slug;
+      toast("이 에셋은 로그인해야 보여요. 브라우저에서 로그인하면 이어서 열게요.", "info");
+      void startLogin();
+      return;
+    }
+    setError(error, () => void openLinkDetail(slug));
+  }
+  render();
+  host?.querySelector<HTMLElement>('[data-testid="store-detail-title"]')?.focus({ preventScroll: true });
 }
 
 function isTyping(target: EventTarget | null): boolean {
@@ -172,7 +221,7 @@ function onKeydown(event: KeyboardEvent): void {
   if (event.key !== "Escape" || event.isComposing) return;
   event.preventDefault();
   if (shell && !shell.suggest.hidden) { hideSuggest(); return; }
-  if (state.login) { state.login = null; render(); return; }
+  if (state.login) { state.login = null; state.resumeLink = null; render(); return; }
   if (state.report) { state.report = null; render(); return; }
   if (state.selected) { closeDetail(); return; }
   closeAssetStore();
@@ -277,21 +326,25 @@ function setQuery(patch: Partial<State["query"]>): void {
   void loadCatalog(true);
 }
 
-/** 한 번 누르면 받기 → 프로젝트에 넣기까지. 큰 파일·버전 바꾸기는 먼저 묻는다. */
-async function addToProject(slug: string, title: string): Promise<void> {
+/**
+ * 한 번 누르면 받기 → 프로젝트에 넣기까지. 큰 파일·버전 바꾸기는 먼저 묻는다.
+ * version 을 주면(「에디터에서 열기」 링크) 그 판본을 받는다. fromLink 면 확인 카드가 이미 크기를 보여 줬으니 크기는 다시 묻지 않는다.
+ */
+async function addToProject(slug: string, title: string, version?: number, fromLink = false): Promise<void> {
   const bridge = storeBridge()!;
   const info = installState(slug);
-  const latest = state.latest.get(slug);
-  if (info.inProject !== null && latest !== undefined && latest > info.inProject
+  const latest = version ?? state.latest.get(slug);
+  if (info.inProject !== null && latest !== undefined && latest !== info.inProject && (version !== undefined || latest > info.inProject)
     && !window.confirm(t(`「${title}」을 버전 ${latest}(으)로 바꿔요. 맵에 이미 칠한 타일과 캐릭터는 그대로 남아요. 계속할까요?`))) return;
-  const bytes = state.detail?.slug === slug ? state.detail.versions[0]?.bytes ?? 0 : 0;
-  if (!info.installed && bytes > STORE_LARGE_DOWNLOAD_BYTES
+  const bytes = state.detail?.slug === slug ? versionBytes(state.detail, version) : 0;
+  if (!fromLink && !info.installed && bytes > STORE_LARGE_DOWNLOAD_BYTES
     && !window.confirm(t(`「${title}」은 ${formatBytes(bytes)}로 큰 편이에요. 받을까요?`))) return;
+  const needInstall = !info.installed || (version !== undefined ? info.installed.version !== version : info.update);
   state.error = null;
-  state.busy.set(slug, { label: info.installed && !info.update ? "내 프로젝트에 넣는 중…" : "받는 중…", done: 0, total: 0 });
+  state.busy.set(slug, { label: needInstall ? "받는 중…" : "내 프로젝트에 넣는 중…", done: 0, total: 0 });
   render();
   try {
-    if (!info.installed || info.update) await bridge.install({ slug });
+    if (needInstall) await bridge.install({ slug, ...(version !== undefined ? { version } : {}) });
     const busy = state.busy.get(slug);
     if (busy) { busy.label = "내 프로젝트에 넣는 중…"; busy.done = busy.total = 0; paintProgress(slug); }
     const result = await addStoreItemToProject(slug);
@@ -303,7 +356,7 @@ async function addToProject(slug: string, title: string): Promise<void> {
     toast(`내 프로젝트에 넣었어요: ${title}`, "ok");
     void refreshInstalled();
   } catch (error) {
-    setError(error, () => void addToProject(slug, title));
+    setError(error, () => void addToProject(slug, title, version, fromLink));
   }
   state.busy.delete(slug);
   render();
@@ -695,6 +748,45 @@ const shareHost: ShareHost = {
 };
 
 const PACK_TITLE = "깔기 안내(참고문서)가 들어 있어 조수가 이 타일로 바로 맵을 칠해요";
+const DRAFT_LABEL = "초안 · 나만 보임 · 공유 안 됨";
+const DRAFT_TITLE = "스토어 확인을 기다리는 내 에셋이에요. 내 편집기에서만 쓸 수 있고, 다른 사람에게는 보이지 않아요.";
+
+/** 주인 초안(D2) 표시. 받은 기록(draft)이나 상품 상세(status pending)로 정한다. */
+function draftBadge(): HTMLElement {
+  return el("span", { class: "store-badge draft", text: DRAFT_LABEL, attrs: { title: DRAFT_TITLE }, dataset: { testid: "store-draft-badge" } });
+}
+
+/** 그 판본의 크기(바이트). 판본을 안 주면 최신. 모르면 0. */
+function versionBytes(detail: StoreItemDetail, version?: number): number {
+  const entry = version === undefined ? detail.versions[0] : detail.versions.find((item) => item.version === version);
+  return entry?.bytes ?? 0;
+}
+
+/** 「에디터에서 열기」 링크 확인 카드. 단추 하나로 기존 넣기 경로(받기 → 넣기)를 탄다. 조용히 넣지 않는다. */
+function linkConfirmCard(detail: StoreItemDetail, request: StoreOpenLinkRequest): HTMLElement {
+  const version = request.version ?? detail.latestVersion;
+  const known = detail.versions.length === 0 || detail.versions.some((item) => item.version === version);
+  const dismiss = (): void => { state.linkRequest = null; render(); };
+  if (!known) {
+    return el("div", { class: "store-link-confirm", attrs: { role: "alert" }, dataset: { testid: "store-link-confirm", state: "missing" }, children: [
+      el("strong", { text: `링크의 버전 ${version}을(를) 스토어에서 찾지 못했어요.` }),
+      el("div", { class: "store-actions", children: [el("button", { class: "store-button ghost small", text: "닫기", attrs: { type: "button" }, on: { click: dismiss } })] }),
+    ] });
+  }
+  const bytes = versionBytes(detail, request.version);
+  return el("div", { class: "store-link-confirm", attrs: { role: "group", "aria-label": "스토어 링크" }, dataset: { testid: "store-link-confirm", state: "ask" }, children: [
+    el("strong", { attrs: DATA, text: t(`스토어에서 「${detail.title}」 v${version} 을 받아 이 프로젝트에 넣을까요?`) }),
+    ...(bytes > 0 ? [el("p", { class: "store-hint", text: `크기 ${formatBytes(bytes)}` })] : []),
+    ...(detail.status === "pending" ? [el("p", { class: "store-hint", children: [draftBadge(), " ", "내 편집기에서만 쓰고, 다시 올리거나 나눌 수 없어요."] })] : []),
+    el("div", { class: "store-actions", children: [
+      el("button", { class: "store-button", text: "받아서 넣기", attrs: { type: "button" }, dataset: { testid: "store-link-add" }, on: { click: () => {
+        state.linkRequest = null;
+        void addToProject(detail.slug, detail.title, request.version, true);
+      } } }),
+      el("button", { class: "store-link", text: "취소", attrs: { type: "button" }, dataset: { testid: "store-link-cancel" }, on: { click: dismiss } }),
+    ] }),
+  ] });
+}
 
 function badges(item: Pick<StoreItemSummary, "grade" | "aiGenerated">): HTMLElement {
   return el("span", { class: "store-badges", children: [
@@ -954,9 +1046,11 @@ function detailView(): HTMLElement {
       el("span", { text: downloadsText(detail.downloads) }),
     ] }),
     badges(detail),
+    ...(detail.status === "pending" || info.installed?.draft === true ? [draftBadge()] : []),
     el("p", { class: "store-summary", attrs: DATA, text: detail.summary }),
     el("div", { class: "store-get", children: [
       el("p", { class: "store-contents", dataset: { testid: "store-contents" }, text: contentsSentence(detail.kind, detail.counts) }),
+      ...(state.linkRequest?.slug === detail.slug && !state.busy.has(detail.slug) ? [linkConfirmCard(detail, state.linkRequest)] : []),
       actionButtons(detail.slug, detail.title),
       ...(added ? [addedPanel(detail.slug, added)] : info.inProject !== null ? [projectNote(detail.slug, detail.title)] : []),
     ] }),
@@ -998,6 +1092,7 @@ function installedView(): HTMLElement {
       el("span", { class: "store-cover small", children: [cover(item.cover, item.kind, item.title)] }),
       el("span", { class: "store-row-body", children: [
         el("strong", { attrs: DATA, text: title }),
+        ...(item.draft === true ? [draftBadge()] : []),
         el("span", { class: "store-card-meta", children: [el("span", { attrs: DATA, text: item.author }), ` · 버전 ${item.version}`, ...(info.update ? [` · 새 버전 ${state.latest.get(item.slug)} 있음`] : []), ...(info.inProject !== null ? [" · 내 프로젝트에 있음"] : [])] }),
       ] }),
       actionButtons(item.slug, title),
@@ -1020,6 +1115,7 @@ function projectView(): HTMLElement {
       return el("div", { class: "store-row", dataset: { testid: `store-project-${item.slug}` }, children: [
         el("span", { class: "store-row-body", children: [
           el("strong", { attrs: DATA, text: title }),
+          ...(state.installed.some((installed) => installed.slug === item.slug && installed.draft === true) ? [draftBadge()] : []),
           el("span", { class: "store-card-meta", children: [el("span", { attrs: DATA, text: item.origin.author }), ` · 버전 ${item.version} · ${STORE_LICENSE_SHORT[item.origin.license]}`, ...(item.origin.aiGenerated ? [" · AI 생성 포함"] : [])] }),
           ...(stale.length > 0 ? [el("span", { class: "store-card-meta", children: [`옛 버전에만 있던 파일 ${stale.length}개 `, el("button", { class: "store-link", text: "정리하기", attrs: { type: "button" }, dataset: { testid: `store-project-cleanup-${item.slug}` }, on: { click: () => cleanStale(item.slug, title, stale) } })] })] : []),
         ] }),

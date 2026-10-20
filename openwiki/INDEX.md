@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **180쪽 / 6394KB / 약 1,869,463 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **180쪽 / 6400KB / 약 1,871,383 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -19,20 +19,20 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
 | `openwiki/editor-ai-panel.md` | 704KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4558 | ~206,699 |
 | `openwiki/editor-ai-tools.md` | 479KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 3496 | ~139,537 |
-| `openwiki/editor-database.md` | 440KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 2577 | ~129,141 |
+| `openwiki/editor-database.md` | 440KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 2577 | ~129,213 |
 | `openwiki/editor-event-authoring.md` | 180KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 1101 | ~52,781 |
 | `openwiki/editor-event-commands.md` | 68KB | 32KB | 303 | ~18,704 |
 | `openwiki/editor-genre-packs.md` | 52KB | 6KB | 356 | ~13,771 |
 | `openwiki/editor-interior-room-harness.md` | 98KB | 6KB | 469 | ~28,406 |
 | `openwiki/editor-observability.md` | 64KB | 6KB | 725 | ~18,890 |
 | `openwiki/editor-pre-edit-routing.md` | 185KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1147 | ~54,275 |
-| `openwiki/editor-workflows-misc.md` | 89KB | 33KB | 631 | ~25,118 |
+| `openwiki/editor-workflows-misc.md` | 90KB | 33KB | 631 | ~25,154 |
 | `openwiki/harnesses/interview-scene-bank.md` | 56KB | 38KB | 197 | ~17,387 |
 | `openwiki/harnesses/super-harness.md` | 102KB | 4KB | 1063 | ~32,225 |
 | `openwiki/jp-city.md` | 84KB | 9KB | 429 | ~24,865 |
 | `openwiki/runtime-battle.md` | 396KB | 32KB | 2193 | ~116,187 |
-| `openwiki/runtime-pre-edit-routing.md` | 131KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 904 | ~39,425 |
-| `openwiki/runtime-project-schema.md` | 237KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1709 | ~66,559 |
+| `openwiki/runtime-pre-edit-routing.md` | 132KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 908 | ~39,624 |
+| `openwiki/runtime-project-schema.md` | 238KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1718 | ~66,999 |
 | `openwiki/runtime-sessions.md` | 143KB | 53KB ⚠상한 초과 — 절을 더 쪼개라 | 850 | ~38,573 |
 | `openwiki/testing.md` | 236KB | 47KB | 2202 | ~66,039 |
 | `openwiki/tileset-reference-documents.md` | 59KB | 4KB | 602 | ~18,202 |
@@ -43,6 +43,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 | 페이지 | 깨진 줄 수 | 예시 줄 번호 |
 |---|---|---|
+| `openwiki/asset-store.md` | 1 | 139 |
 | `openwiki/chipset-gap-inventory.md` | 1 | 20 |
 | `openwiki/editor-ai-panel.md` | 26 | 3047, 3048, 3049, 3050, 3051, 3052, 3066, 3076 |
 | `openwiki/editor-ai-tools.md` | 7 | 2208, 2209, 2213, 2215, 2217, 2405, 3343 |
@@ -70,7 +71,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/agent-worktrees.md` | 1 | `scripts/gen-combined-town-chipset-report.mts` |
 | `openwiki/ai-workflow.md` | 10 | `.omo/evidence/ai-assistant-failure-modes.md`, `20260709000000_ai_activity_logs.sql`, `docs/2026-07-10-tool-calling-architecture-review.md`, `docs/tool-catalog.md`, `latest.json`, `src/ai/plannerSkip.ts`, `test/authorVillageScopeGate.test.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/tilesetAiClient.test.ts`, `test/volumeContractSession.test.ts` |
 | `openwiki/architecture.md` | 3 | `bridge.js`, `player.js`, `project.json` |
-| `openwiki/asset-store.md` | 3 | `DATA/store-uploads.json`, `OpenRPGMaker-store/scripts/storeCli.ts`, `scripts/check-contract.mjs` |
+| `openwiki/asset-store.md` | 4 | `DATA/store-uploads.json`, `OpenRPGMaker-store/scripts/storeCli.ts`, `installed.json`, `scripts/check-contract.mjs` |
 | `openwiki/atlas-biome-interior.md` | 7 | `.loop.json`, `.loop.png`, `interior-merged-palette.html`, `public/assets/atlas-interior/dungeon-chipset.png`, `scripts/content/atlas-dungeon/split-dungeon.mjs`, `src/assets/atlasBiomeDungeonTileset.json`, `verify-shots/interior-bake-4/new-objects.png` |
 | `openwiki/authoring-play-presets.md` | 1 | `catalog-96.json` |
 | `openwiki/autotiles.md` | 13 | `install-pixel-art-world-shared-host.mjs`, `pixelArtWorldAutotiles.ts`, `prepare-pixel-art-world-xp-library.mjs`, `publish-pixel-art-world-xp-library.mjs`, `reports/pr617-621-integration.md`, `src/assets/tiboRecoveredTileset.json`, `src/project/defaults/iceGrandPlain64.ts`, `src/project/defaults/tallGrassArrange.ts`, `test/iceGrandPlain64.test.ts`, `test/placeConceptRender.test.ts`, `test/villageBuilder.test.ts`, `tiboRecovery.test.ts`, `wildRouteForest.ts` |
@@ -288,17 +289,19 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/asset-store.md` — 13KB · 128줄 · ~3,959 토큰
+### `openwiki/asset-store.md` — 17KB · 154줄 · ~5,105 토큰 · 깨진 줄 1
 
 - `L6` 어디에 무엇이 있나
 - `L25` 계약 동기화 절차
 - `L35` 올리기(내보내기) 경로
   - `L40` 제외(Rasak·REFMAP·RPG Maker MV/MZ·PAW) 집행 지점
 - `L55` 받기(가져오기) 경로
-- `L63` 게시기
-- `L93` 상태 확인
-- `L97` 에디터 첫 진입 화면 (2026-10-12)
-- `L104` 스토어 창 UX (2026-10-20, 「사용자들이 매우 쉽게」)
+- `L64` 게시기
+- `L94` 상태 확인
+- `L98` 에디터 첫 진입 화면 (2026-10-12)
+- `L105` 스토어 창 UX (2026-10-20, 「사용자들이 매우 쉽게」)
+- `L130` 에디터에서 열기 링크 (2026-10-20)
+- `L147` 주인 초안 (D2, 2026-10-20)
 
 ### `openwiki/atlas-biome-interior.md` — 46KB · 255줄 · ~13,677 토큰
 
@@ -885,7 +888,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L3483` 바로 깔기 `place_house` — 장식 정리 후 집 배치·`jp_city` 지원 (2026-10-17)
 - `L3488` `list_puzzle_presets` · `author_map_puzzle` — 상태 공간 모형(BFS) 퍼즐 프리셋 카탈로그 20종 (2026-10-20, jrpg-puzzle-presets-r2)
 
-### `openwiki/editor-database.md` — 440KB · 2577줄 · ~129,141 토큰 · 통째읽기 잘림 · 깨진 줄 14
+### `openwiki/editor-database.md` — 440KB · 2577줄 · ~129,213 토큰 · 통째읽기 잘림 · 깨진 줄 14
 
 - `L3` 주인공 마법 5종 · 노출 시간과 앞뒤 층 (2026-10-05)
 - `L15` 아이템·장비 카탈로그의 입력과 가상 스크롤 (2026-10-04)
@@ -1289,7 +1292,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L245` 손붓이 hard 클러스터에 막혔을 때의 복구 경로 (2026-09-10, OPRN-OUT-017)
   - `L291` `bAlt`/`aAlt` 패리티 — 별도 리뷰 결과: **실제 결함이었고 고쳤다** (2026-09-10)
 
-### `openwiki/editor-workflows-misc.md` — 89KB · 631줄 · ~25,118 토큰 · 통째읽기 잘림
+### `openwiki/editor-workflows-misc.md` — 90KB · 631줄 · ~25,154 토큰 · 통째읽기 잘림
 
 - `L9` Other Editor Workflows
   - `L11` 왼쪽 「기물」 — 바로 고르기 (2026-10-07)
@@ -1354,7 +1357,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L110` Existing authored animation compatibility
 - `L127` 2026-10-04 canonical adoption and publication
 
-### `openwiki/emerald-runtime-surfaces.md` — 16KB · 145줄 · ~4,391 토큰 · 깨진 줄 1
+### `openwiki/emerald-runtime-surfaces.md` — 16KB · 145줄 · ~4,418 토큰 · 깨진 줄 1
 
 - `L5` Owners
 - `L14` Geometry and reference
@@ -2578,35 +2581,35 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L306` 그림 컷 준비와 direction (2026-10-04)
 - `L314` 글자·장면 오프닝 연출 (2026-10-04)
 
-### `openwiki/runtime-pre-edit-routing.md` — 131KB · 904줄 · ~39,425 토큰 · 통째읽기 잘림
+### `openwiki/runtime-pre-edit-routing.md` — 132KB · 908줄 · ~39,624 토큰 · 통째읽기 잘림
 
 - `L1` 지상 격자 위로 돌출한 원본 구조 (2026-10-06)
 - `L10` 태양 지형 그림자 (2026-10-04)
-- `L16` 내보낸 게임은 창에 맞춘다 (2026-10-04)
-- `L29` 그림 아이콘을 조사 물체로 쓴다 (2026-10-04)
-- `L554` 게임 화면의 2층·그림자·4층 (MZ식 4층, 2026-09-24)
-- `L574` 맵별 16/32/48px 좌표
-- `L578` ESC skill thumbnails (2026-09-06)
-- `L589` Recovered head emotes (2026-09-05)
-- `L595` 메뉴 입력·불러오기 배율 (2026-09-05)
-- `L603` 가구 밀기 애니메이션 (2026-09-05)
-- `L612` Recovered head emotes (2026-09-05)
-- `L618` Saved uploaded tilesets in the actual player (2026-09-14)
-- `L639` 맵 배경(패럴랙스) 렌더 (2026-09-14)
-- `L666` 맵 배경 다중 레이어 (2026-09-21)
-- `L718` 맵 배경 깊이(카메라 따라가기)·흐름 배율 — 회상 파노라마 (2026-09-27)
-- `L763` 8차 맵 진입 (2026-09-28)
-- `L796` 화면 주변 타일 유지 (2026-10-01)
-- `L825` 자유 크기 인물 프레임의 발 기준점 (2026-10-06)
-- `L837` Independent opening timelines
-- `L841` Monster authoring dogfood (2026-10-03)
-- `L852` 위쪽 대사창의 흉상·전신 초상 (2026-10-17 romance-loop-1)
-  - `L859` 흉상·전신이 있는 대사는 대사창이 항상 아래 (2026-10-17, vn-bust-bottom-1)
-- `L869` 대사창 읽기 보조 — 백로그·오토·스킵·숨기기 (2026-10-17, 미연시 시스템 UI 1단계)
-  - `L880` 대사창 읽기 보조 수리 1 (2026-10-17, 적대 리뷰 D1~D12)
-- `L892` 미연시 추가 화면 — 갤러리 잠금·엔딩 목록·세이브 카드 (2026-10-17, 미연시 시스템 UI 2단계)
+- `L16` 내보낸 게임의 화면 배율 (2026-10-04 → 2026-10-20 개정)
+- `L33` 그림 아이콘을 조사 물체로 쓴다 (2026-10-04)
+- `L558` 게임 화면의 2층·그림자·4층 (MZ식 4층, 2026-09-24)
+- `L578` 맵별 16/32/48px 좌표
+- `L582` ESC skill thumbnails (2026-09-06)
+- `L593` Recovered head emotes (2026-09-05)
+- `L599` 메뉴 입력·불러오기 배율 (2026-09-05)
+- `L607` 가구 밀기 애니메이션 (2026-09-05)
+- `L616` Recovered head emotes (2026-09-05)
+- `L622` Saved uploaded tilesets in the actual player (2026-09-14)
+- `L643` 맵 배경(패럴랙스) 렌더 (2026-09-14)
+- `L670` 맵 배경 다중 레이어 (2026-09-21)
+- `L722` 맵 배경 깊이(카메라 따라가기)·흐름 배율 — 회상 파노라마 (2026-09-27)
+- `L767` 8차 맵 진입 (2026-09-28)
+- `L800` 화면 주변 타일 유지 (2026-10-01)
+- `L829` 자유 크기 인물 프레임의 발 기준점 (2026-10-06)
+- `L841` Independent opening timelines
+- `L845` Monster authoring dogfood (2026-10-03)
+- `L856` 위쪽 대사창의 흉상·전신 초상 (2026-10-17 romance-loop-1)
+  - `L863` 흉상·전신이 있는 대사는 대사창이 항상 아래 (2026-10-17, vn-bust-bottom-1)
+- `L873` 대사창 읽기 보조 — 백로그·오토·스킵·숨기기 (2026-10-17, 미연시 시스템 UI 1단계)
+  - `L884` 대사창 읽기 보조 수리 1 (2026-10-17, 적대 리뷰 D1~D12)
+- `L896` 미연시 추가 화면 — 갤러리 잠금·엔딩 목록·세이브 카드 (2026-10-17, 미연시 시스템 UI 2단계)
 
-### `openwiki/runtime-project-schema.md` — 237KB · 1709줄 · ~66,559 토큰 · 통째읽기 잘림
+### `openwiki/runtime-project-schema.md` — 238KB · 1718줄 · ~66,999 토큰 · 통째읽기 잘림
 
 - `L3` 세계 지도 연결 정의 — 선택 필드 `project.worldAtlases` (2026-10-05)
 - `L11` 맵 캐릭터 크기 — 선택 필드 `map.characterScale` (2026-10-03)
@@ -2690,23 +2693,23 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L1528` HUD 장르·서체 확장 (2026-09-21)
 - `L1540` 타일셋 참고문서 데이터 (2026-09-21)
 - `L1544` 몬스터 보유 조건 연결 작업 (2026-09-25, 진행 중)
-- `L1574` Optional authored slide tables (2026-10-04)
-- `L1584` Uploaded charset pose cadence (2026-10-05)
-- `L1593` 재편집 지형과 게임 높이 규칙 (2026-10-03)
-- `L1602` Optional internal authoring contract
-  - `L1606` Desktop fullscreen and mouse controls (2026-10-04)
-  - `L1621` Cinematic image direction (2026-10-04)
-- `L1630` 글자·장면 오프닝 연출 (2026-10-04)
-- `L1640` 자유 크기 인물 프레임의 발 기준점 (2026-10-06)
-  - `L1657` 공용 native 프레임 정의 보존 (2026-10-06)
-- `L1665` 필드 기술(HM) 선택 필드 (2026-10-15)
-- `L1671` 포켓몬풍 필드·진행 규칙 선택 필드 (2026-10-15, poke-fix-p)
-- `L1678` ItemRecord.heldEffect · MonsterInstance.heldItemId (2026-10-16, poke-depth PR4)
-- `L1683` MonsterSpeciesRecord.ability (2026-10-16, poke-depth PR3)
-- `L1688` StateRecord.volatileStatus·gen1MajorStatus "toxic" (2026-10-16, poke-depth PR2)
-- `L1693` SkillRecord.statStageEffects (2026-10-16, poke-depth PR1)
-- `L1698` SkillRecord.weather (2026-10-16, poke-depth PR5)
-- `L1706` ItemCaptureProfile.condition · MonsterInstance.caughtBallId (2026-10-16, poke-depth PR6)
+- `L1583` Optional authored slide tables (2026-10-04)
+- `L1593` Uploaded charset pose cadence (2026-10-05)
+- `L1602` 재편집 지형과 게임 높이 규칙 (2026-10-03)
+- `L1611` Optional internal authoring contract
+  - `L1615` Desktop fullscreen and mouse controls (2026-10-04)
+  - `L1630` Cinematic image direction (2026-10-04)
+- `L1639` 글자·장면 오프닝 연출 (2026-10-04)
+- `L1649` 자유 크기 인물 프레임의 발 기준점 (2026-10-06)
+  - `L1666` 공용 native 프레임 정의 보존 (2026-10-06)
+- `L1674` 필드 기술(HM) 선택 필드 (2026-10-15)
+- `L1680` 포켓몬풍 필드·진행 규칙 선택 필드 (2026-10-15, poke-fix-p)
+- `L1687` ItemRecord.heldEffect · MonsterInstance.heldItemId (2026-10-16, poke-depth PR4)
+- `L1692` MonsterSpeciesRecord.ability (2026-10-16, poke-depth PR3)
+- `L1697` StateRecord.volatileStatus·gen1MajorStatus "toxic" (2026-10-16, poke-depth PR2)
+- `L1702` SkillRecord.statStageEffects (2026-10-16, poke-depth PR1)
+- `L1707` SkillRecord.weather (2026-10-16, poke-depth PR5)
+- `L1715` ItemCaptureProfile.condition · MonsterInstance.caughtBallId (2026-10-16, poke-depth PR6)
 
 ### `openwiki/runtime-sessions.md` — 143KB · 850줄 · ~38,573 토큰 · 통째읽기 잘림
 
