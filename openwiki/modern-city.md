@@ -76,6 +76,7 @@ modern-chipset 하네스가 합성한 도시(건물·도로·소품·차량)를 
   굽기는 **제자리** `r16/rebake.py [--check] [--only ids.json]`(사양 칸 번호에 붙이고 `pins.json`·`interior/baked.json` 키를 새 내용 해시로). 다른 기물과 같이 쓰는 칸을 혼자 바꾸면 멈춘다.
   `r10/rebake_inplace.py` 가 끝에서 r16 굽기를 다시 불러 코드 그림이 격자를 되돌리지 않게 한다.
   런타임 확인: `r16/qa_project.mts`(실조수 modern_city 저장본 + 예제 9장) → `npm run qa:runtime -- --scenario modern-interior-props --project …`(크로미움 백지면 `unshare -rn` 안에서).
+  화풍 다시 그림 21종(`interior/r16/quality.json`): 3/4 합격·오판 319종을 루브릭(`~/claude-viz/interior-props-quality-rubric-1.json`)으로 훑어 「안 읽히는」 것만(바코드 옷걸이·십자 족자·무덤 같은 증인석 등) 같은 칸 안에서 새로 그렸다. 독립 Argon 재검수 30/30 통과.
   object-gate: `r16/gate_items.py` 로 내보내 `object-gate review --batch` — 프로필이 미보정(rejected)이라 영수증은 임시일 뿐 통과가 아니다.
 
 ## 공간 규모 규격 · 학생/직장인 하루 18곳 (2026-10-18, `src/editor/handInterior/venueScale.ts`·`dailyVenues.ts`)
