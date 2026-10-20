@@ -39,14 +39,16 @@ def canon(m):
     return m
 
 def depth(px, py):
-    # 경계 깊이 — 칸 좌표의 주기 16 물결이라 옆 칸 경계와 이어진다(전역 화소 좌표 mod 16 의 함수).
-    # 3차 검수 W3: 두 겹만으론 세로·가로 한 칸 경계가 곧게 보였다 — 세 겹 물결(넓은 덩이 가장자리는 r6 과 같은 굴곡).
-    # 최소 깊이 3 ≥ 여백 3 — canon 이 지운 대각 이웃의 실제 값과 상관없이 여백 화소가 같게 계산된다(dark_mask).
-    return 6.0 + 1.5 * math.sin(2 * math.pi * (px + py) / T) + 0.9 * math.sin(2 * math.pi * (2 * py - px) / T + 1.3) + 0.6 * math.sin(2 * math.pi * (3 * px - 3 * py) / T + 0.4)
+    # 경계 깊이 — 전역 화소 좌표 mod 16 의 함수라 옆 칸 경계와 이어진다. 3차 검수 W3(곧은 경계) 이후 물결을 두었는데,
+    # 6차 독립 Opus VQA: 주기 16 큰 물결 하나가 칸마다 혹 하나를 만들어 곧은 가장자리가 16px 톱니로 반복됐다 →
+    # 큰 물결은 약하게, 2·3·5배 짧은 물결을 섞어 칸 안에서 여러 번 고르지 않게 흔든다.
+    # 위상은 칸 이음매(px·py = 0, 15) 근처 깊이가 평균에 가깝도록 골랐다 — 이음매마다 홈이 패여 2×2 덩이가 네잎 모양이 됐다(7차).
+    return (5.8 + 0.4 * math.sin(2 * math.pi * (px + py) / T + 0.93) + 1.0 * math.sin(2 * math.pi * (2 * px - 2 * py) / T + 1.64)
+            + 0.8 * math.sin(2 * math.pi * (3 * px + 3 * py) / T + 3.67) + 0.5 * math.sin(2 * math.pi * (5 * px - 5 * py) / T + 4.52))
 
 MARGIN = 6
 DITHER = 3.5
-CORNER_R = 11.0
+CORNER_R = 7.5
 CARD = {N: (0, -1), E: (1, 0), S: (0, 1), W: (-1, 0)}
 
 def in_block(cells, ax, ay):
@@ -59,55 +61,28 @@ def thin_seam(cells, ax, ay, dx, dy):
     px, py = (0, 1) if dx else (1, 0)
     return not any((ax + px * k, ay + py * k) in cells and (bx + px * k, by + py * k) in cells for k in (-1, 1))
 
-def spine(cx, cy, dark_cells, X, Y):
-    """한 칸 폭 띠·외딴 칸(4·5차 독립 Opus 적대 VQA, 2026-10-21):
-    · 굴곡 경계만으로는 한 칸 폭 띠가 다 깎여 끊긴 점 사슬이 됐다 → 「한 칸 폭」 이음매마다 칸 가운데까지 가는 띠를 깐다.
-    · 가운데 둥근 속을 크게 두면 구슬 사슬(가운데 불룩·이음매 잘록)이 됐다 → 속은 띠 반폭과 같게(불룩함 없음).
-    · 띠 테두리가 곧으면 디더가 빗살처럼 반복됐다 → 왼·오른 테두리를 서로 다른 물결로 흔든다.
-    띠 중심선·테두리는 그 이음매에서 잰 거리 u 만의 함수라 이음매 양쪽 칸이 같은 열/행에서 만난다.
-    반환값 ≤0 단단함, 0~1.5 디더."""
-    lx, ly = X - cx * T, Y - cy * T
-    best = 99.0
-    arms = 0
-    for b, (dx, dy) in CARD.items():
-        if (cx + dx, cy + dy) not in dark_cells or not thin_seam(dark_cells, cx, cy, dx, dy): continue
-        arms += 1
-        along, across = (ly if dy < 0 else T - ly, lx) if dy else (lx if dx < 0 else T - lx, ly)
-        u = along
-        if u > 8.5: continue
-        c = 8 + 1.0 * math.sin(math.pi * u / 8)
-        lo = c - (3.2 + 0.7 * math.sin(2 * math.pi * u / 8 + 0.7))
-        hi = c + (3.2 + 0.7 * math.sin(2 * math.pi * u / 8 + 2.6))
-        best = min(best, max(lo - across, across - hi))
-    if arms:
-        best = min(best, math.hypot(lx - 8, ly - 8) - 3.2)  # 팔들이 가운데서 만나는 마디(띠 반폭과 같음)
-    return best
-
 def dark_mask(m):
-    """칸 하나의 짙은 화소 — 전역 필드(밝은 이웃 칸까지 거리·전역 좌표 물결·Bayer) ∪ 뼈대(spine)를 칸+여백 3px 창에서
-    계산하고, 크기 3 이하의 떨어진 짙은 조각(디더 낱점)을 지운다. 조각 판정은 전역 필드의 연결 성분으로 하므로 옆 칸도
-    같은 조각을 같게 지운다(이음매 양쪽 일치). 칸에 닿는 크기 ≤3 조각은 여백 3 안에 다 들어가 판정이 정확하다."""
-    light = [OFF[b] for b in OFF if not m & b]
+    """칸 하나의 짙은 화소.
+    짙은 풀은 「덩이」에만 보인다: 2×2 짙은 덩이에 들지 않는 칸(외딴 칸·한 칸 폭 띠)은 바탕 잔디 그대로이고,
+    덩이 칸은 「한 칸 폭」 이음매(두 칸을 함께 품는 2×2 덩이가 없는 이음매) 너머 이웃을 밝은 칸으로 보고 가장자리를 굴린다.
+    (4~7차 독립 Opus 적대 VQA, 2026-10-21: 외딴 칸·한 칸 폭 띠를 어떻게 그려도 풀포기·덤불 사슬·구슬로 읽혔다 — 16px 칸
+    하나 폭에 땅 그늘을 그릴 자리가 없다. 숲 바닥은 나무 밑 덩이로 깔리므로 가는 부분은 그리지 않는다.)
+    이음매 판정은 양쪽 칸이 같은 답을 내므로(thin_seam) 이음매 양쪽이 함께 물러나 일치한다.
+    전역 필드(밝은 칸까지 거리·전역 좌표 물결·Bayer)를 칸+여백 창에서 계산하고, 가시를 다듬고, 작은 낱점 조각을 지운다."""
     dark_cells = {(0, 0)} | {OFF[b] for b in OFF if m & b}
     Wn = T + 2 * MARGIN
+    if not in_block(dark_cells, 0, 0):
+        return np.zeros((T, T), bool)
+    eff = {c for c in dark_cells if c == (0, 0) or not (abs(c[0]) + abs(c[1]) == 1 and thin_seam(dark_cells, 0, 0, *c))}
+    light = [d for d in OFF.values() if d not in eff]
     win = np.zeros((Wn, Wn), bool)
     for wy in range(Wn):
         for wx in range(Wn):
             X, Y = wx - MARGIN + 0.5, wy - MARGIN + 0.5
             cx, cy = math.floor(X / T), math.floor(Y / T)
-            if (cx, cy) not in dark_cells: continue
+            if (cx, cy) not in eff: continue
             px, py = int(math.floor(X)) % T, int(math.floor(Y)) % T
             bay = (BAYER[py % 4][px % 4] + 0.5) / 16
-            if dark_cells == {(0, 0)}:
-                # 외딴 짙은 칸 하나: 단단한 덩이는 풀포기·구멍(물건)으로 읽혔다(4·5차 VQA) — 가운데로 갈수록 짙어지는 성긴 디더 그늘만.
-                # 외딴 짙은 칸 하나: 둥근 덩이·마름모는 풀포기·구멍(물건)으로 읽혔다(5·6차) — 테두리가 고르지 않은 얼룩(성긴 디더 가장자리).
-                # 납작한 가로 타원 그늘(그림자처럼 땅에 깔림) + 약한 물결, 테두리는 성긴 디더 2px.
-                ex, ey = (X - 8) / 6.6, (Y - 8.3) / 4.4
-                r, th = math.hypot(ex, ey), math.atan2(ey, ex)
-                rad = 1.0 + 0.08 * math.sin(3 * th + 0.5) + 0.05 * math.sin(5 * th + 2.0)
-                t = (rad - r) * 4.4 / 2.0 + 0.5
-                win[wy, wx] = t >= 1 or (t > 0 and bay < t)
-                continue
             dV = dH = dD = 99.0
             for dx, dy in light:
                 x0, y0 = dx * T, dy * T
@@ -119,13 +94,12 @@ def dark_mask(m):
             dep = depth(px, py)
             if dV < CORNER_R and dH < CORNER_R:
                 # 볼록 모서리(위·옆이 다 밝음)를 둥글린다 — 각진 모서리에 디더가 45° 가시처럼 남았다(5차 VQA).
-                # 모서리 안쪽에서는 물결의 얕은 골(깊이 3 근처)이 가시를 다시 만들므로 깊이를 5.5 이상으로 부드럽게 올린다.
+                # 모서리 안쪽에서는 물결의 얕은 골이 가시를 다시 만들므로 깊이를 5.5 이상으로 부드럽게 올린다.
                 best = min(best, CORNER_R - math.hypot(CORNER_R - dV, CORNER_R - dH))
                 w = min(1.0, (CORNER_R - max(dV, dH)) / 3.0)
                 dep = dep + w * (max(dep, 5.5) - dep)
             t = (best - dep) / DITHER
-            sp = spine(cx, cy, dark_cells, X, Y)
-            win[wy, wx] = t >= 1 or (t > 0 and bay < t) or sp <= 0 or (sp <= 1.5 and bay < 0.5 * (1.5 - sp) / 1.5 + 0.15)
+            win[wy, wx] = t >= 1 or (t > 0 and bay < t)
     # 가시 다듬기(5차 VQA: 볼록 모서리·띠 테두리에 45° 낱화소 줄이 가시처럼 남았다): 짙은 8이웃이 2개 이하인 화소를
     # 세 번 걷어 낸다. 바둑판 디더 속 화소는 이웃이 4개라 남는다. 창 전체(여백 포함)에서 계산하므로 옆 칸도 같게 걷는다.
     for _ in range(3):
@@ -153,6 +127,10 @@ city = Image.open(R / 'public/assets/beodeul-city/beodeul-city-chipset.png').con
 def native(i): return np.array(city.crop((i % 128 * T, i // 128 * T, i % 128 * T + T, i // 128 * T + T)))
 DARK = native(DARK_NATIVE)
 grass = Image.fromarray(native(737))
+# 외딴 칸 하나(mask 0)는 짙은 풀의 밝은 점 두 색(잎 반짝임)을 빼고 짙은 두 색만 쓴다 — 반짝임 점이 있으면 작은 덤불로 읽혔다(4~6차 VQA). 새 색 없음.
+DARK_FLAT = DARK.copy()
+_hl = (DARK_FLAT[..., :3].astype(int).sum(-1) > (66 + 106 + 46) + 10)
+DARK_FLAT[_hl] = np.array([66, 106, 46, 255], dtype=DARK_FLAT.dtype)
 
 def desat(im, k=0.84):
     out = im.copy()
@@ -190,7 +168,7 @@ families = {}
 for fam, base, label in (('plain', grass, '민무늬 잔디'), ('woodland', wgrass, '숲 장면 잔디')):
     b = np.array(base); ids = {}
     for mk in masks:
-        a = b.copy(); dm = dark_mask(mk); a[dm] = DARK[dm]
+        a = b.copy(); dm = dark_mask(mk); src = DARK_FLAT if mk == 0 else DARK; a[dm] = src[dm]
         ids[str(mk)] = put(f'bdg-dark-grass-{fam}-{mk}', f'짙은 풀 가장자리({label}) {mk}', Image.fromarray(a), 'dark-grass-edge')
     families[fam] = ids
 m['recipes'] += new_recipes
