@@ -523,7 +523,8 @@ function tunePacing(project: Project): void {
     mx_enemy_mx_map_grove_gym_grunt_1_0: { species: "mx_enemy_brambleboar", level: 6 },
     mx_enemy_mx_map_grove_gym_grunt_2_0: { species: "mx_enemy_orchardant", level: 6 },
     // 관장 8·9 는 정직 여정(Lv8~9)에서 5~10턴 승이었지만 첫 10분 길(Lv6~7)로 온 플레이어는 졌다(r24) → 7·8.
-    mx_enemy_mx_map_grove_gym_leader_0: { species: "mx_enemy_podback", level: 7 },
+    // 첫 10분 길(Lv7, 동료 없음)의 풀 스타터는 선봉 베르카부 Lv7 의 두 배 더듬이쏘기에 4턴에 졌다(r26) → 선봉 6, 에이스 8 그대로.
+    mx_enemy_mx_map_grove_gym_leader_0: { species: "mx_enemy_podback", level: 6 },
     mx_enemy_mx_map_grove_gym_leader_1: { species: "mx_enemy_brambleboar", level: 8 },
   };
   for (const [enemyId, { species, level }] of Object.entries(reskin)) {
