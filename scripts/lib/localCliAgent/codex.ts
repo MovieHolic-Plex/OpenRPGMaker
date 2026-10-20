@@ -169,6 +169,7 @@ function openCodexSession(options: LocalCliSessionOptions, toolsEnabled = true):
 export const codexAdapter: LocalCliAdapter = {
   id: "codex",
   label: "Codex (ChatGPT)",
+  echoesResults: true,
   async detect(binary = "codex"): Promise<LocalCliStatus> {
     const models = codexModels();
     const has = (id: string) => models.some((m) => m.id === id);

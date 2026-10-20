@@ -53,6 +53,7 @@ export function createGeminiLineReader(emit: LocalCliSessionOptions["onEvent"]):
   let calls = 0;
   let session = "";
   let error: string | undefined;
+  const names = new Map<string, string>();
   return (line) => {
     const assistant = (blocks: { type: "text" | "tool_use"; text?: string; name?: string }[]) => {
       if (afterDelivery) { seq += 1; calls += 1; }
@@ -61,10 +62,11 @@ export function createGeminiLineReader(emit: LocalCliSessionOptions["onEvent"]):
     };
     if (line.type === "init" && typeof line.session_id === "string") session = line.session_id;
     else if (line.type === "message" && line.role === "assistant" && typeof line.content === "string" && line.content) assistant([{ type: "text", text: line.content }]);
-    else if (line.type === "tool_use") assistant([{ type: "tool_use", name: String(line.tool_name ?? "") }]);
+    else if (line.type === "tool_use") { names.set(String(line.tool_id ?? ""), String(line.tool_name ?? "")); assistant([{ type: "tool_use", name: String(line.tool_name ?? "") }]); }
     else if (line.type === "tool_result") {
-      // gemini 는 도구 결과를 글(output)로만 되돌려 준다 — 그림은 되돌려 주지 않으므로 그림 읽음은 인정되지 않는다(관문이 막는다, 정직한 동작).
-      emit({ kind: "delivered", payload: [{ type: "tool_result", is_error: line.status !== "success", content: [{ type: "text", text: typeof line.output === "string" ? line.output : JSON.stringify(line.output ?? (line.error as { message?: string } | undefined)?.message ?? "") }] }] });
+      // gemini 는 도구 결과를 글(output)로만, 그림 없이 되돌려 준다 — 원문 대신 «이 호출의 결과를 모델에 넘겼다»는 확인만 보낸다.
+      // 루프가 그 호출에 우리가 돌려준 원문(글·그림)을 짝지어 관문에 넘긴다.
+      emit({ kind: "acknowledged", toolName: names.get(String(line.tool_id ?? "")) ?? "", ok: line.status === "success" });
       afterDelivery = true;
     } else if (line.type === "error") error ??= String(line.message ?? "Gemini CLI 오류");
     else if (line.type === "result") {
@@ -94,7 +96,7 @@ function openGeminiSession(options: LocalCliSessionOptions, toolsEnabled = true)
     let error: string | undefined;
     let toolCalls = 0;
     // 실패한 result 는 prompt() 가 다시 보낼지 정한 뒤에 낸다.
-    const read = createGeminiLineReader((event) => { if (event.kind === "delivered") toolCalls += 1; if (event.kind === "result" && !event.ok) return; options.onEvent(event); });
+    const read = createGeminiLineReader((event) => { if (event.kind === "acknowledged") toolCalls += 1; if (event.kind === "result" && !event.ok) return; options.onEvent(event); });
     let sawResult = false;
     current = spawnJsonLines({
       binary: options.binary ?? "gemini",
@@ -140,6 +142,7 @@ function openGeminiSession(options: LocalCliSessionOptions, toolsEnabled = true)
 export const geminiAdapter: LocalCliAdapter = {
   id: "gemini",
   label: "Gemini CLI",
+  echoesResults: false,
   async detect(binary = "gemini"): Promise<LocalCliStatus> {
     const base = {
       id: "gemini" as const, label: "Gemini CLI",

@@ -157,6 +157,7 @@ function openClaudeSession(options: LocalCliSessionOptions, toolsEnabled = true)
 export const claudeAdapter: LocalCliAdapter = {
   id: "claude",
   label: "Claude Code",
+  echoesResults: true,
   async detect(binary = "claude"): Promise<LocalCliStatus> {
     const base = {
       id: "claude" as const, label: "Claude Code", models: MODELS, defaults: { routine: "sonnet", deep: "sonnet" },

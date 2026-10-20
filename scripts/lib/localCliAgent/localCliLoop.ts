@@ -144,10 +144,12 @@ export async function createLocalCliLoop(setup: LocalCliLoopSetup): Promise<Loca
         const result = await tool.execute(id, args, setup.signal);
         emit({ type: "tool_execution_end", toolCallId: id, toolName: name, isError: false, result });
         weigh(name, result.content as never);
+        if (!adapter.echoesResults) sentResults.push({ name, content: result.content as never, isError: false });
         return { content: result.content as LocalMcpContent[] };
       } catch (error) {
         const text = error instanceof Error ? error.message : String(error);
         emit({ type: "tool_execution_end", toolCallId: id, toolName: name, isError: true, result: { content: [{ type: "text", text }] } });
+        if (!adapter.echoesResults) sentResults.push({ name, content: [{ type: "text", text }], isError: true });
         return { content: [{ type: "text", text }], isError: true };
       } finally {
         release();
@@ -157,8 +159,19 @@ export async function createLocalCliLoop(setup: LocalCliLoopSetup): Promise<Loca
     },
   });
 
+  // 원문을 되돌려 주지 않는 CLI 용 — 우리가 돌려준 결과를 호출 순서대로 둔다(같은 이름끼리 먼저 온 것부터 짝짓는다).
+  const sentResults: { name: string; content: readonly { type: string; text?: string; data?: string; mimeType?: string }[]; isError: boolean }[] = [];
+  const asDelivered = (row: (typeof sentResults)[number]) => ({
+    type: "tool_result", ...(row.isError ? { is_error: true } : {}),
+    content: row.content.map((part) => part.type === "image" ? { type: "image", source: { type: "base64", media_type: part.mimeType ?? "image/png", data: part.data ?? "" } } : { type: "text", text: part.text ?? "" }),
+  });
   const onCliEvent = (event: LocalCliEvent) => {
     if (event.kind === "delivered") { pendingDelivered.push(...event.payload); return; }
+    if (event.kind === "acknowledged") {
+      const index = sentResults.findIndex((row) => event.toolName === row.name || event.toolName.endsWith(`_${row.name}`) || event.toolName.endsWith(`__${row.name}`));
+      if (index >= 0) { const [row] = sentResults.splice(index, 1); if (event.ok && !row!.isError) pendingDelivered.push(asDelivered(row!)); }
+      return;
+    }
     if (event.kind === "stderr") { stderrTail = (stderrTail + event.text).slice(-2000); return; }
     if (event.kind === "assistant") {
       if (event.newRequest) emit({ type: "turn_start" });

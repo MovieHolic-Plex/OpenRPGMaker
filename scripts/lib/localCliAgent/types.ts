@@ -72,6 +72,11 @@ export interface LocalCliUsage {
 export type LocalCliEvent =
   | { readonly kind: "assistant"; readonly messageId: string; readonly newRequest: boolean; readonly blocks: readonly LocalCliBlock[] }
   | { readonly kind: "delivered"; readonly payload: readonly unknown[] }
+  /**
+   * 결과 원문을 되돌려 주지 않는 CLI(gemini stream-json 은 글 output 만, 그림은 안 준다)의 «받았다» 신호.
+   * 루프가 그 도구 호출에 우리가 돌려준 원문을 짝지어 관문에 넘긴다(D5: stream-json 도구 결과를 읽음 증거로 인정).
+   */
+  | { readonly kind: "acknowledged"; readonly toolName: string; readonly ok: boolean }
   | { readonly kind: "result"; readonly ok: boolean; readonly error?: string; readonly usage?: LocalCliUsage; readonly costUsd?: number; readonly sessionId?: string }
   | { readonly kind: "stderr"; readonly text: string };
 
@@ -108,6 +113,8 @@ export interface LocalCliSession {
 export interface LocalCliAdapter {
   readonly id: LocalCliId;
   readonly label: string;
+  /** stream 출력이 모델에 넘긴 도구 결과 원문을 되돌려 주는가(claude·codex 예, gemini 아니오 — acknowledged 로 대신한다). */
+  readonly echoesResults: boolean;
   detect(binary?: string): Promise<LocalCliStatus>;
   openSession(options: LocalCliSessionOptions): LocalCliSession;
   /** 도구 없는 한 번짜리 글 생성(event_command_assist·도트 글 저작 같은 내부 보조 호출). */
