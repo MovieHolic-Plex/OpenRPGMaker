@@ -44,7 +44,7 @@ const CEILING_IDS = uniq((s) => s.ceilings);
 const TILESET_IDS = Object.keys(HAND_INTERIOR_SPECS);
 /** 새 실내 맵에 BGM 을 자동으로 고르는 현대 칩셋. */
 const MODERN_BGM_TILESETS: ReadonlySet<string> = new Set(["modern_campus", MODERN_CITY_INTERIOR_TILESET_ID, JP_INTERIOR_TILESET_ID]);
-const TILESET_PARAM = { type: "string", description: `실내 칩셋 id — 방 짓기 역할표(roomKit)가 있는 타일셋. ${HAND_INTERIOR_TILESET_ID}(기본, 판타지·중세 손 도트) · ${JP_INTERIOR_TILESET_ID}(일본 현대 집: 현관·화실·LDK·욕실·화장실·침실, 일본 거리 jp_city 와 같은 칩셋) · ${WIZARDING_INTERIOR_TILESET_ID}(마법 학교 성채·병동·온실·도서관 — 가구는 그 칩셋 조립 부품 wz-… id) · ${SENGOKU_INTERIOR_TILESET_ID}(전국·에도 일본: 다다미 방·다실·여관 손님방·성 알현실·가게·농가·도장·목욕간 — layout:{program:"samurai-house"|"ryokan-1f"|"ryokan-2f"|"castle-hall"|"machiya"|"minka"|"dojo"}) · modern_campus(현대 학교: 교실·복도·도서관·보건실·급식실·기숙사 — 남쪽 출구가 2칸인 예제 평면이면 exitWidth:2) · ${MODERN_CITY_INTERIOR_TILESET_ID}(도쿄풍 현대 도시 실내: 백화점·대형 마트·지하철역·종합병원·영화관 아케이드·레스토랑 바·미술관 박물관·사무실·편의점·아파트·빌딩 로비·카페·은행·창고 — layout:{program:"department-store"|"supermarket-mart"|"subway-station"|"hospital-ward"|"cinema-arcade"|"restaurant-bar"|"museum-gallery"|"office-floor"|"konbini"|"apartment"|"lobby"|"cafe"|"bank"|"concourse"|"warehouse"}, 남쪽 출구 2칸 이상이면 exitWidth) · 스토어에서 받은 그 사본(store_…)도 된다. 인자 없이 list_hand_interior_parts 를 부르면 이 프로젝트에서 쓸 수 있는 칩셋이 나온다.` } as const;
+const TILESET_PARAM = { type: "string", description: `실내 칩셋 id — 방 짓기 역할표(roomKit)가 있는 타일셋. ${HAND_INTERIOR_TILESET_ID}(기본, 판타지·중세 손 도트) · ${JP_INTERIOR_TILESET_ID}(일본 현대 집: 현관·화실·LDK·욕실·화장실·침실, 일본 거리 jp_city 와 같은 칩셋 — 2층 단독주택은 layout:{program:"jp-house-1f"|"jp-house-2f", seed} 가 가운데 복도·현관·계단·물 쓰는 곳 덩이·독립 화장실 구조로 짓는다) · ${WIZARDING_INTERIOR_TILESET_ID}(마법 학교 성채·병동·온실·도서관 — 가구는 그 칩셋 조립 부품 wz-… id) · ${SENGOKU_INTERIOR_TILESET_ID}(전국·에도 일본: 다다미 방·다실·여관 손님방·성 알현실·가게·농가·도장·목욕간 — layout:{program:"samurai-house"|"ryokan-1f"|"ryokan-2f"|"castle-hall"|"machiya"|"minka"|"dojo"}) · modern_campus(현대 학교: 교실·복도·도서관·보건실·급식실·기숙사 — 남쪽 출구가 2칸인 예제 평면이면 exitWidth:2) · ${MODERN_CITY_INTERIOR_TILESET_ID}(도쿄풍 현대 도시 실내: 백화점·대형 마트·지하철역·종합병원·영화관 아케이드·레스토랑 바·미술관 박물관·사무실·편의점·아파트·빌딩 로비·카페·은행·창고 — layout:{program:"department-store"|"supermarket-mart"|"subway-station"|"hospital-ward"|"cinema-arcade"|"restaurant-bar"|"museum-gallery"|"office-floor"|"konbini"|"apartment"|"lobby"|"cafe"|"bank"|"concourse"|"warehouse"}, 남쪽 출구 2칸 이상이면 exitWidth) · 스토어에서 받은 그 사본(store_…)도 된다. 인자 없이 list_hand_interior_parts 를 부르면 이 프로젝트에서 쓸 수 있는 칩셋이 나온다.` } as const;
 /** 역할표가 있는 이 프로젝트의 칩셋 + 번들 칩셋(프로젝트에 아직 없어도 짓기 전에 넣는다). */
 function roomTilesetIds(project: Project): string[] {
   return [...new Set([...TILESET_IDS, ...Object.values(project.tilesets).filter((t) => roomSpecOf(t)).map((t) => t.id)])];
@@ -707,7 +707,9 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
         if (matchedProgram && typeof lbag.program === "string" && ["lobby", "konbini", "cafe", "mall-1f", "supermarket", "station", "hospital-1f", "cinema", "game-center", "famires", "bank", "clinic"].includes(lbag.program) && lbag.program !== matchedProgram) {
           args = { ...args, layout: { ...lbag, program: matchedProgram } };
         }
-      } else if (matchedProgram && Array.isArray(args.plan) && args.plan.length > 0 && typeof args.plan[0] === "string") {
+      } else if (matchedProgram && Array.isArray(args.plan) && args.plan.length > 0 && typeof args.plan[0] === "string"
+        // 일본 집 층(house-1f·2f)은 가구까지 다 준 평면(예제·참고문서 재현)을 청사진으로 바꾸지 않는다 — 바꾸면 씨앗이 매번 달라 예제가 다른 집이 된다(2026-10-20).
+        && !(/^house-[12]f$/u.test(matchedProgram) && Array.isArray(args.objects) && args.objects.length > 0)) {
         const planH = args.plan.length, planW = args.plan[0].length;
         if (planW < 28 || planH < 18) {
           const { plan: _p, zones: _z, objects: _o, tables: _t, goods: _g, lines: _l, daises: _d, start: _s, exits: _e, ...rest } = args as Record<string, unknown>;
