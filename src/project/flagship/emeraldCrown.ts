@@ -509,11 +509,80 @@ function tunePacing(project: Project): void {
     const bug = new Set(project.database.skills.filter((s) => /더듬이/.test(s.name)).map((s) => s.id));
     rival.actions = rival.actions.filter((a) => !a.skillId || !bug.has(a.skillId));
     rescaleEnemy(rival, 4);
+    // 1번 도로 트레이너의 포포비도 같은 벌레 기술로 Lv5 스타터를 3턴에 쓰러뜨렸다(2026-10-20 실플레이) — 첫 도로에서는 몸통 기술만.
+    const routeBug = byId("mx_enemy_mx_map_meadow_trainer_1_0");
+    if (routeBug) routeBug.actions = routeBug.actions.filter((a) => !a.skillId || !bug.has(a.skillId));
   }
   const trim: Record<string, number> = { mx_troop_mx_map_observatory_boss: 3, mx_troop_mx_map_league_0_league_challenge: 4 };
   for (const troop of project.database.troops) {
     const keep = trim[troop.id];
     if (keep !== undefined && troop.members && troop.members.length > keep) troop.members = troop.members.slice(0, keep);
+  }
+}
+
+/** 명령 나무의 모든 하위 목록(분기·선택지·전투 결과)을 돈다. */
+function forEachNestedCommandList(commands: Command[], visit: (list: Command[]) => void): void {
+  visit(commands);
+  for (const command of commands) {
+    const node = command as unknown as Record<string, unknown>;
+    for (const key of ["then", "else", "branch", "victoryBranch", "defeatBranch", "escapeBranch", "cancelBranch"]) {
+      const child = node[key];
+      if (Array.isArray(child)) forEachNestedCommandList(child as Command[], visit);
+    }
+    if (Array.isArray(node.options)) for (const option of node.options as { branch?: Command[] }[]) if (option.branch) forEachNestedCommandList(option.branch, visit);
+  }
+}
+
+/**
+ * 트레이너에게 지면 생성기 기본은 곧바로 게임 오버였다 — 1번 도로 트레이너 한 번 지면 타이틀로 돌아갔다(2026-10-20 실플레이).
+ * 포켓몬류 관례대로 「눈앞이 캄캄해졌다 → 가까운 회복 센터에서 깨어난다」로 바꾼다. 트레이너는 이긴 표시가 없으니 다시 도전할 수 있다.
+ * 연구소 첫 라이벌전은 져도 이야기가 이어진다(라이벌이 이기고 먼저 떠난다).
+ */
+function softenTrainerDefeats(project: Project): void {
+  const centerFor = (mapId: string) => (/^mx_map_(meadow|lab|home)/.test(mapId) ? "mx_map_home_center" : "mx_map_grove_center");
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      for (const page of event.pages ?? []) {
+        forEachNestedCommandList(page.commands, (list) => {
+          for (const command of list) {
+            if (command.kind !== "battleProcessing") continue;
+            const battle = command as Extract<Command, { kind: "battleProcessing" }>;
+            const defeat = battle.defeatBranch ?? [];
+            const over = defeat.findIndex((c) => c.kind === "gameOver");
+            if (over < 0) continue;
+            const firstRival = (battle.victoryBranch ?? []).some((c) => c.kind === "setSwitch" && c.switchId === "mx_rival_lab");
+            if (firstRival) {
+              battle.defeatBranch = [
+                ...defeat.slice(0, over).filter((c) => c.kind !== "text"),
+                { kind: "text", body: "내가 이겼다! 그래도 너, 처음치고는 꽤 하는데?", speaker: "나루" },
+                { kind: "recoverAll" },
+                ...(battle.victoryBranch ?? []).filter((c) => c.kind !== "m2Command" && c.kind !== "text"),
+                { kind: "text", body: "난 먼저 실바나 마을로 간다. 챔피언 전당에서 다시 만나자!", speaker: "나루" },
+              ];
+              continue;
+            }
+            const center = project.maps[centerFor(map.id)];
+            if (!center) continue;
+            battle.defeatBranch = [
+              ...defeat.slice(0, over),
+              { kind: "text", body: "…정신을 차려 보니 회복 센터였다. 동료들도 기운을 되찾았다." },
+              { kind: "recoverAll" },
+              { kind: "transfer", mapId: center.id, x: 7, y: 7, direction: "up", fade: "black" },
+            ];
+          }
+        });
+      }
+    }
+  }
+  // 라이벌 재대결 선택지가 첫 만남 대사(「우리도 같은 날 출발하는구나!」)를 그대로 다시 말했다.
+  const rival = project.maps.mx_map_lab?.events.find((e) => e.id === "mx_map_lab_rival");
+  for (const page of rival?.pages ?? []) {
+    forEachNestedCommandList(page.commands, (list) => {
+      if (!list.some((c) => c.kind === "battleProcessing")) return;
+      const battle = list.find((c) => c.kind === "battleProcessing") as Extract<Command, { kind: "battleProcessing" }>;
+      if ((battle.victoryBranch ?? []).some((c) => c.kind === "setSwitch")) return;
+      for (const c of list) if (c.kind === "text" && /같은 날 출발/.test(c.body)) c.body = "좋아, 한 번 더 붙어 보자!";
+    });
   }
 }
 
@@ -558,6 +627,7 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
   rebuildDawningCity(project);
   startInBedroom(project, introEvent);
   tunePacing(project);
+  softenTrainerDefeats(project);
 
   // 1번 도로와 신전에도 여명의 날개 — 길 위를 날 뿐 막지 않는다.
   project.maps["mx_map_meadow"]?.events.push(

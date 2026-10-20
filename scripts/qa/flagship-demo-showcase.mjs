@@ -426,16 +426,14 @@ await withTsModule("src/project/flagship/index.ts", "flagship-showcase.mjs", asy
       await page.screenshot({ path: path.join(OUT_DIR, "emerald-03-dawn-island.png") });
       rec.screenshots.push("emerald-03-dawn-island.png");
 
-      // Tour key maps in the 8-map progression before returning to Dawn Island spawn
-      const startState = await page.evaluate(() => window.__oprnDebug.readState());
+      // Tour key maps (Astra Horizon plays its real campaign — the full walk-through lives in scripts/qa/astra-horizon/journey.mjs)
       for (const [slug, mapId, tx, ty] of [
-        ["emerald-04-bedroom-2f.png", "mx_map_home_house_2f", 7, 4],
-        ["emerald-04b-house-1f-stairs.png", "mx_map_home_house", 9, 4],
-        ["emerald-05-prof-lab.png", "mx_map_lab", 7, 7],
-        ["emerald-05b-prof-lab-2f.png", "mx_map_lab_2f", 8, 5],
+        ["emerald-04-bedroom.png", "mx_map_home_house_2f", 5, 5],
+        ["emerald-04b-dawning-city.png", "mx_map_home", 14, 11],
+        ["emerald-05-prof-lab.png", "mx_map_lab", 7, 8],
         ["emerald-06-route1-meadow.png", "mx_map_meadow", 10, 12],
         ["emerald-07-gym-vine-puzzle.png", "mx_map_grove_gym", 8, 16],
-        ["emerald-08-emerald-cave.png", "mx_map_observatory", 10, 8],
+        ["emerald-08-star-sand-temple.png", "mx_map_observatory", 10, 8],
       ]) {
         if (emerald.project.maps[mapId]) {
           await page.evaluate(([id, x, y]) => window.__oprnDebug.teleport(id, x, y), [mapId, tx, ty]);
@@ -445,30 +443,11 @@ await withTsModule("src/project/flagship/index.ts", "flagship-showcase.mjs", asy
         }
       }
 
-      // Verify 1F -> 2F stairs_up and 2F -> 1F stairs_down transfer in Orbis Lab
-      await page.evaluate(() => window.__oprnDebug.teleport("mx_map_lab", 12, 4));
-      await page.waitForTimeout(300);
-      await page.evaluate(() => window.__oprnInput.dir("up"));
-      await page.waitForTimeout(280);
-      await page.evaluate(() => window.__oprnInput.dir(null));
-      await page.waitForTimeout(1300);
-      const lab2fState = await page.evaluate(() => window.__oprnDebug.readState());
-      assert.equal(lab2fState.currentMapId, "mx_map_lab_2f", "Expected 1F->2F lab stair transfer");
-      await page.evaluate(() => window.__oprnInput.dir("up"));
-      await page.waitForTimeout(280);
-      await page.evaluate(() => window.__oprnInput.dir(null));
-      await page.waitForTimeout(1300);
-      const lab1fState = await page.evaluate(() => window.__oprnDebug.readState());
-      assert.equal(lab1fState.currentMapId, "mx_map_lab", "Expected 2F->1F lab stair transfer");
-
-      // Return to Dawning City spawn
-      await page.evaluate(
-        ([id, x, y]) => window.__oprnDebug.teleport(id, x, y),
-        [startState.currentMapId, startState.x, startState.y],
-      );
-      await page.waitForTimeout(500);
-
-      // Step 1: Talk to Professor (`ev_emerald_prof_starter`) -> Choose `토리프` + Follower Companion + Vine Gate `changeTile`
+      // Step 1: lab professor → starter choice (real event)
+      const lab = emerald.project.maps.mx_map_lab;
+      const prof = lab.events.find((e) => e.id === "mx_map_lab_professor");
+      await page.evaluate(([id, x, y]) => window.__oprnDebug.teleport(id, x, y), [lab.id, prof.x, prof.y + 1]);
+      await page.waitForTimeout(600);
       await page.evaluate(() => window.__oprnInput.face("up"));
       await page.evaluate(() => {
         void window.__oprnInput.action();
@@ -478,32 +457,34 @@ await withTsModule("src/project/flagship/index.ts", "flagship-showcase.mjs", asy
       assert.equal(st1, "choices", "Expected starter selection choices");
       await page.screenshot({ path: path.join(OUT_DIR, "emerald-09-starter-choice.png") });
       rec.screenshots.push("emerald-09-starter-choice.png");
-      await clickChoiceButton(page, 0);
-
-      await advanceDialogueToChoicesOrClose(page);
-      await page.waitForTimeout(450);
-      await page.screenshot({ path: path.join(OUT_DIR, "emerald-10-follower-and-vine-open.png") });
-      rec.screenshots.push("emerald-10-follower-and-vine-open.png");
-
+      for (let i = 0; i < 30; i++) {
+        const done = await page.evaluate(() => window.__oprnDebug.readState().switches.mx_starter === true && !document.querySelector('[data-testid="dialogue-box"],[data-testid="runtime-choices"]'));
+        if (done) break;
+        if (await page.locator('[data-testid="runtime-choices"] button').count()) await clickChoiceButton(page, 0);
+        else await page.keyboard.press("Enter");
+        await page.waitForTimeout(260);
+      }
       const afterStarter = await page.evaluate(() => window.__oprnDebug.readState());
-      rec.playthroughLog.push({
-        step: "starter-and-vine-gate",
-        mx_starter: afterStarter.switches.mx_starter,
-        sw_emerald_vine_gate: afterStarter.switches.sw_emerald_vine_gate,
-        partyActorIds: afterStarter.partyActorIds,
-      });
+      rec.playthroughLog.push({ step: "starter", mx_starter: afterStarter.switches.mx_starter });
       assert.equal(afterStarter.switches.mx_starter, true);
-      assert.equal(afterStarter.switches.sw_emerald_vine_gate, true);
+      await page.screenshot({ path: path.join(OUT_DIR, "emerald-10-starter-follower.png") });
+      rec.screenshots.push("emerald-10-starter-follower.png");
 
-      // Step 2: Talk to Gym Leader Yoorim (`ev_emerald_expedition_hub`) -> Battle -> Hall of Fame Ending
-      await page.evaluate(() => window.__oprnInput.face("right"));
+      // Step 2: gym leader (debug: puzzle switches + badge-ready level; the journey script plays these for real)
+      const gym = emerald.project.maps.mx_map_grove_gym;
+      const leader = gym.events.find((e) => e.id === "mx_map_grove_gym_leader");
+      await page.evaluate(() => {
+        for (const id of ["mx_gym_1_puzzle_pivot", "mx_gym_1_puzzle_cut", "mx_gym_1_puzzle"]) window.__oprnDebug.setSwitch(id, true);
+        const s = window.__oprnHooksScene.session;
+        for (const id of s.monsterParty) { const m = s.monsterInstances[id]; m.level = Math.max(m.level, 30); m.currentHp = undefined; }
+      });
+      rec.playthroughLog.push({ step: "debug", note: "gym puzzle switches on, party Lv30 for the showcase leader fight" });
+      await page.evaluate(([id, x, y]) => window.__oprnDebug.teleport(id, x, y), [gym.id, leader.x, leader.y + 1]);
+      await page.waitForTimeout(900);
+      await page.evaluate(() => window.__oprnInput.face("up"));
       await page.evaluate(() => {
         void window.__oprnInput.action();
       });
-      await page.waitForSelector('[data-testid="dialogue-box"], [data-testid="runtime-choices"]', { timeout: 15_000 });
-      const st2 = await advanceDialogueToChoicesOrClose(page);
-      assert.equal(st2, "choices", "Expected Gym Leader challenge choices");
-      await clickChoiceButton(page, 0);
       const battleDeadline = Date.now() + 25_000;
       while (Date.now() < battleDeadline) {
         if (await page.locator('[data-testid="battle-scene"]').count()) break;
@@ -520,6 +501,24 @@ await withTsModule("src/project/flagship/index.ts", "flagship-showcase.mjs", asy
       });
       rec.gifs.push(battleGif);
 
+      // Step 3: champion hall (debug: beacon switch) → ending
+      for (let i = 0; i < 60 && (await page.locator('[data-testid="battle-scene"],[data-testid="dialogue-box"]').count()); i++) {
+        await page.keyboard.press("Enter");
+        await page.waitForTimeout(300);
+      }
+      const hall = emerald.project.maps.mx_map_league_0;
+      const champ = hall.events.find((e) => e.id === "mx_map_league_0_league_challenge");
+      await page.evaluate(() => window.__oprnDebug.setSwitch("mx_story_beacon", true));
+      await page.evaluate(([id, x, y]) => window.__oprnDebug.teleport(id, x, y), [hall.id, champ.x, champ.y + 1]);
+      await page.waitForTimeout(900);
+      await page.evaluate(() => window.__oprnInput.face("up"));
+      await page.evaluate(() => {
+        void window.__oprnInput.action();
+      });
+      for (let i = 0; i < 400 && !(await page.locator('[data-testid="ending-screen"]').count()); i++) {
+        await page.keyboard.press("Enter");
+        await page.waitForTimeout(200);
+      }
       await waitForEndingReady(page, 55_000);
       await page.screenshot({ path: path.join(OUT_DIR, "emerald-12-ending.png") });
       rec.screenshots.push("emerald-12-ending.png");

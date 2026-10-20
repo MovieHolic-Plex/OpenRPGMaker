@@ -204,7 +204,7 @@ async function walkTo(mapId, target, maxSteps = 160) {
         if (x + dx === target.x && y + dy === target.y) { found = true; break; }
       }
     }
-    if (!found) return "no-path";
+    if (!found) { if (process.env.JOURNEY_TRACE) console.log("no-path", mapId, here.x, here.y, "→", target.x, target.y); return "no-path"; }
     let k = `${target.x},${target.y}`;
     while (prev.get(k) !== `${here.x},${here.y}`) k = prev.get(k);
     const [nx, ny] = k.split(",").map(Number);
@@ -236,6 +236,7 @@ async function walkTo(mapId, target, maxSteps = 160) {
 async function walkThroughDoor(fromMapId, toMapId) {
   const door = project.maps[fromMapId].events.find((e) => JSON.stringify(e.pages ?? e.commands).includes(`"mapId":"${toMapId}"`));
   if (!door) return false;
+  if (process.env.JOURNEY_TRACE) console.log("door", fromMapId, "→", toMapId, door.id, door.x, door.y, JSON.stringify(await page.evaluate(() => window.__oprnDebug.readLive())));
   // 건물 문은 아래에서 위로만 들어간다 — 문 아래 칸까지 걷고 위로 민다. 바닥 매트(실내 출구)는 그대로 밟는다.
   const below = { x: door.x, y: door.y + 1 };
   let result = passable(fromMapId, below.x, below.y) ? await walkTo(fromMapId, below) : "skip";
@@ -292,7 +293,7 @@ async function fight(label, { capture = false, run = false } = {}) {
       await page.locator('[data-testid="actor-command-fight"]').focus(); await page.keyboard.press("Enter");
       const skills = page.locator('[data-testid^="actor-skill-"]:not([disabled])');
       await skills.first().waitFor({ timeout: 10000 });
-      const pick = capture ? skills.first() : skills.last();
+      const pick = capture ? skills.first() : await bestSkill(skills);
       log.push(`turn ${turn}: ${await pick.getAttribute("data-testid")}`);
       await pick.focus(); await page.keyboard.press("Enter");
     }
@@ -314,7 +315,36 @@ async function fight(label, { capture = false, run = false } = {}) {
 }
 
 
+// 플레이어처럼 상성을 보고 기술을 고른다 — 「마지막 기술」만 누르면 풀 스타터가 벌레에게 반감 기술만 써서 졌다.
+const CHART = {
+  normal: { rock: 0.5, ghost: 0 }, grass: { water: 2, ground: 2, rock: 2, fire: 0.5, grass: 0.5, bug: 0.5, flying: 0.5, poison: 0.5 },
+  fire: { grass: 2, bug: 2, ice: 2, water: 0.5, rock: 0.5, fire: 0.5 }, water: { fire: 2, ground: 2, rock: 2, water: 0.5, grass: 0.5 },
+  bug: { grass: 2, psychic: 2, fire: 0.5, flying: 0.5, fighting: 0.5 }, ground: { fire: 2, electric: 2, rock: 2, poison: 2, grass: 0.5, bug: 0.5, flying: 0 },
+  flying: { grass: 2, bug: 2, fighting: 2, rock: 0.5, electric: 0.5 }, fighting: { normal: 2, rock: 2, ice: 2, flying: 0.5, psychic: 0.5, bug: 0.5 },
+  electric: { water: 2, flying: 2, ground: 0, grass: 0.5, electric: 0.5 }, rock: { fire: 2, flying: 2, bug: 2, ice: 2, ground: 0.5, fighting: 0.5 },
+};
+const speciesByName = new Map((project.database.monsterSpecies ?? []).map((sp) => [sp.name, sp]));
+const skillById = new Map(project.database.skills.map((sk) => [sk.id, sk]));
+async function bestSkill(skills) {
+  const enemyName = await page.evaluate(() => [...document.querySelectorAll(".battle-enemy-name")].map((n) => n.textContent?.trim()).find(Boolean) ?? "");
+  const enemyTypes = speciesByName.get(enemyName.replace(/\s*Lv.*$/, ""))?.types ?? [];
+  const mine = (await live()).party.find((m) => (m.currentHp ?? 1) > 0);
+  const myTypes = (project.database.monsterSpecies ?? []).find((sp) => sp.id === mine?.speciesId)?.types ?? [];
+  let best = skills.last(), bestScore = -1;
+  for (let i = 0; i < await skills.count(); i++) {
+    const id = (await skills.nth(i).getAttribute("data-testid") ?? "").replace("actor-skill-", "");
+    const sk = skillById.get(id);
+    const el = sk?.elementId ?? "normal";
+    const power = sk?.power ?? sk?.damage?.power ?? 30;
+    let eff = 1; for (const t of enemyTypes) eff *= CHART[el]?.[t] ?? 1;
+    const score = power * eff * (myTypes.includes(el) ? 1.5 : 1);
+    if (score > bestScore) { bestScore = score; best = skills.nth(i); }
+  }
+  return best;
+}
+
 const here = () => page.evaluate(() => window.__oprnDebug.readLive());
+const eventRunning = () => page.evaluate(() => Boolean(window.__oprnHooksScene?.running));
 const findEvent = (mapId, re) => project.maps[mapId]?.events.find((e) => re.test(e.id));
 /** from → to 로 걸어서 들어간다. 못 가면 to 맵 입구로 순간이동하고 기록한다. */
 async function go(fromMapId, toMapId) {
@@ -355,7 +385,8 @@ async function healAt(townId) {
   if (!center || !nurse) return false;
   await go(townId, center.id);
   await approachAndTalk(center.id, nurse);
-  await pressEnterUntil(async () => !(await present("dialogue-box")) && !(await present("runtime-choices")), 40);
+  // 회복 의식(두 번 뛰기·반짝임·섬광)은 대사 없이 5초쯤 돈다 — 대사 상자가 없다고 끝난 게 아니다. 이벤트 실행이 끝날 때까지 기다린다.
+  await pressEnterUntil(async () => !(await eventRunning()) && !(await present("dialogue-box")) && !(await present("runtime-choices")), 80);
   await go(center.id, townId);
   return true;
 }
@@ -465,6 +496,9 @@ try {
     step("capture", owned > before.party.length + before.box.length, `${captureLog.join(" / ")} → 보유 ${owned} · ${JSON.stringify(cap)}`, await shot("14-after-capture"));
   }
 
+  // 포획전으로 지친 동료를 마을 회복 센터에 맡기고 돌아온다(플레이어가 하듯)
+  await go(route.id, home); await healAt(home); await go(home, route.id);
+  step("heal-home", true, await partyLine());
   // 도로 트레이너 — 플레이어처럼 다 싸운다
   const trainers = route.events.filter((e) => /_trainer_\d+$/.test(e.id) && JSON.stringify(e.pages).includes('"battleProcessing"'));
   for (const [k, trainer] of trainers.entries()) {
