@@ -338,17 +338,33 @@ def tractor(c, base):
     tread(11, 33, 24, 29, 10, dim=0.8)
     tread(45, 54, 22, 26, 5, dim=0.8)
     # 2) 로터리 작업기(뒤, x1~11): 덮개 윗면 n5~27 → 앞 띠 3줄 → 칼날 점
-    for n in [k / 2 for k in range(10, 55)]:
-        y = Y(9, n)
+    # 덮개: 남북으로 누운 반원통(가운데 마루가 가장 높고, 왼쪽 빛·오른쪽 그늘, 골 띠) — 앞 끝은 아치 입구
+    def hz(x):
+        u = (x - 6) / 5.6
+        return 5 + 6 * math.sqrt(max(0.0, 1 - u * u)), u
+    for n in [k / 2 for k in range(54, 19, -1)]:
         for x in range(1, 12):
-            lv = 0.5 + (x - 1) / 11 * 1.1 + (27 - n) * 0.02 + (1.0 if n == 5 else 0) + (0.9 if int(n) % 5 == 0 else 0)
+            z, u = hz(x)
+            if abs(u) > 0.8 and (n > 25 or n < 11):
+                continue                                               # 네 모서리를 둥글게
+            y = Y(z, n)
+            lv = 1.4 + u * 2.4 - (1.0 if abs(u + 0.35) < 0.18 else 0) + (0.8 if int(n) % 4 == 0 else 0)
             c.P(x, y, pick(ORANGE, lv, x, y))
-    for y in range(Y(9, 5) + 1, Y(9, 5) + 4):
-        for x in range(1, 12):
-            c.P(x, y, pick(ORANGE, 2.8 + (y - Y(9, 5)) * 0.5 + (x - 1) / 11 * 0.4, x, y))
-    speck(c, 1, Y(9, 27), 11, 22, SOIL[2], 0.12, 7)
-    for x in (2, 5, 8):
-        c.P(x, Y(9, 5) + 4, CONC[1]); c.P(x + 1, Y(9, 5) + 4, CONC[3])
+    for x in range(1, 12):                                             # 덮개 앞 끝 테(아치) → 안쪽 그늘
+        z, u = hz(x)
+        y0 = Y(z, 10)
+        c.P(x, y0, ORANGE[0] if u < 0 else ORANGE[3])
+        for y in range(y0 + 1, Y(2, 10) + 1):
+            c.P(x, y, J('machiya_timber', 2) if y - y0 < 2 else RUBBER[3])
+    # 회전 날(tines): 덮개 앞으로 드러난 굴대(n7) + 엇갈려 휜 칼날, 위에서 본 모양
+    ys = Y(5, 7)
+    c.HL(1, ys, 11, STEEL[2]); c.HL(1, ys + 1, 11, STEEL[4])
+    for k, x in enumerate(range(1, 12, 2)):
+        d = -1 if k % 2 else 1                                         # 칼날이 앞뒤로 엇갈려 휜다
+        c.P(x, ys - 2 * d, STEEL[0]); c.P(x, ys - 1 * d, STEEL[1])
+        c.P(x + 1, ys - 2 * d, STEEL[2]); c.P(x + 1, ys - 3 * d, STEEL[3])
+        c.P(x, ys + 3, SOIL[2] if H(x, 3, 11) < 0.5 else SOIL[3])
+    speck(c, 1, Y(11, 27), 11, 20, SOIL[2], 0.08, 7)
     line(c, 12, Y(14, 16), 11, Y(9, 16), STEEL[2])                    # 유압 암
     # 3) 운전석 바닥(x12~31, n8~23, z12): 철판 줄무늬 + 좌석(쿠션 윗면) + 변속 레버
     for n in [k / 2 for k in range(16, 47)]:
@@ -372,44 +388,56 @@ def tractor(c, base):
     c.VL(28, Y(24, 13) + 1, 3, STEEL[3])
     c.VL(27, Y(22, 10), 3, STEEL[1]); c.P(27, Y(22, 10) - 1, RED[1])  # 변속 레버
     # 4) 긴 보닛(x31~58, n9~21, z18): 윗면 13줄(빛 띠·냉각 구멍·흰 줄) → 옆 띠 4줄 → 앞 그릴
-    for n in [k / 2 for k in range(18, 43)]:
-        y = Y(18, n)
-        for x in range(31, 58):
-            lv = 0.5 + (x - 31) / 27 * 1.1 + (1.3 if n == 9 else 0) + (0.6 if n == 21 else 0)
-            c.P(x, y, pick(RED, lv, x, y))
-    for x in range(33, 56):
-        c.P(x, Y(18, 18), RED[0]); c.P(x, Y(18, 17), K('daidai', 1) if x < 42 else RED[0])
-    for x in range(38, 54, 4):
-        for n in (12, 13):
-            c.HL(x, Y(18, n), 2, RED[4])
-    for n in range(10, 21):
-        c.P(34, Y(18, n), W_PAINT[1])
-    for n in range(9, 22):
-        c.P(58, Y(18, n), RED[3]); c.P(59, Y(18, n), RED[4])
-    for y in range(Y(18, 9) + 1, Y(18, 9) + 5):                        # 남쪽 옆 띠 4줄
+    def hood_z(n):
+        v = (n - 15) / 6.6
+        return 15.5 + 2.5 * math.sqrt(max(0.0, 1 - v * v))
+    for n in [k / 2 for k in range(42, 17, -1)]:
         for x in range(31, 60):
-            c.P(x, y, pick(RED, 2.5 + (y - Y(18, 9)) * 0.5 + (x - 31) / 29 * 0.4, x, y))
-    ball(c, 59, Y(18, 11), 1.2, [K('shiro', 2)] + yellow[:3])
-    ball(c, 59, Y(18, 19), 1.2, [K('shiro', 2)] + yellow[:3])
+            k = max(0, x - 55)                                         # 앞 끝을 평면에서 둥글게
+            if n < 9 + k * 0.9 or n > 21 - k * 0.9:
+                continue
+            y = Y(hood_z(n), n)
+            v = (n - 15) / 6.6
+            lv = 0.6 + (x - 31) / 29 * 1.0 + max(0.0, v) * 1.2 + max(0.0, -v - 0.6) * 1.5 + (1.6 if x >= 58 else 0)
+            c.P(x, y, pick(RED, lv, x, y))
+    for x in range(33, 56):                                            # 마루 빛 줄
+        c.P(x, Y(hood_z(16), 16), RED[0]); c.P(x, Y(hood_z(17), 17), K('daidai', 1) if x < 42 else RED[0])
+    for x in range(39, 55, 2):                                         # 환기구: 마루 양쪽 남북 슬릿(그늘 + 빛 턱)
+        for n in [k / 2 for k in range(22, 29)] + [k / 2 for k in range(36, 41)]:
+            c.P(x, Y(hood_z(n), n), RED[4]); c.P(x + 1, Y(hood_z(n), n), RED[1])
+    for n in range(10, 21):
+        c.P(34, Y(hood_z(n), n), W_PAINT[1])
+    for y in range(Y(15.5, 9) + 1, Y(15.5, 9) + 4):                    # 남쪽 옆 띠 3줄(앞 끝은 둥글게 줄인다)
+        for x in range(31, 59 - (y - Y(15.5, 9))):
+            c.P(x, y, pick(RED, 2.5 + (y - Y(15.5, 9)) * 0.5 + (x - 31) / 29 * 0.4, x, y))
+    ball(c, 57, Y(17, 11), 1.2, [K('shiro', 2)] + yellow[:3])
+    ball(c, 57, Y(17, 19), 1.2, [K('shiro', 2)] + yellow[:3])
     # 5) 배기 연통(보닛 n19 에서, 위에서 보면 짧은 원통 + 입구 타원)
     top = Y(30, 19)
-    cyl(c, 48, top, 3, Y(18, 19) - top, STEEL); c.HL(48, top - 1, 3, STEEL[4]); c.P(49, top - 1, RUBBER[3])
+    cyl(c, 48, top, 3, Y(hood_z(19), 19) - top, STEEL); c.HL(48, top - 1, 3, STEEL[4]); c.P(49, top - 1, RUBBER[3])
     # 6) 가까운 바퀴(n0~6 큰 뒷바퀴, n3~7 앞바퀴): 위에서 본 트레드 띠
     tread(11, 33, 1, 7, 10)
     tread(45, 54, 3, 8, 5)
     for x in range(17, 28):                                            # 작은 펜더: 바퀴 꼭대기 뒤쪽 가운데 얇은 판(트레드가 드러난다)
         c.P(x, Y(21, 7) - 1, RED[1] if x < 23 else RED[2]); c.P(x, Y(21, 7), RED[3])
     # 7) 차양 캐노피(z38, x12~33, n10~26 → 17줄, 붉은·흰 줄, 왼쪽 위 빛) + 기둥 + 앞 테 2줄
-    for px in (13, 32):
-        cyl(c, px, Y(38, 15), 2, Y(12, 15) - Y(38, 15), STEEL)
-    for n in [k / 2 for k in range(30, 55)]:
+    for (px, n, add) in ((13, 26, 1.4), (31, 26, 2.0)):              # 뒤 기둥 둘(캐노피 뒤 끝 아래로 조금)
+        cyl(c, px, Y(38, n), 2, Y(12, n) - Y(38, n), RED, add=add)
+    for n in [k / 2 for k in range(54, 29, -1)]:
         y = Y(38, n)
         for x in range(12, 34):
+            if (x in (12, 33)) and (n < 16 or n > 26):
+                continue                                               # 캐노피 모서리를 둥글게
             cols = RED if ((x - 12) // 4) % 2 == 0 else W_PAINT
             c.P(x, y, pick(cols, 0.4 + (x - 12) / 22 * 1.2 + (27 - n) * 0.02 + (0.7 if n >= 26.5 else 0), x, y))
-    for x in range(12, 34):
+    for x in range(13, 33):
         cols = RED if ((x - 12) // 4) % 2 == 0 else W_PAINT
         c.P(x, Y(38, 15) + 1, cols[3]); c.P(x, Y(38, 15) + 2, cols[4])
+    for (px, add) in ((13, 0.0), (31, 0.8)):                           # 앞 기둥 둘: 캐노피 앞 테 → 바닥, 밝은 쇠(왼쪽 빛)
+        top, bot = Y(38, 15) + 3, Y(12, 15)
+        for y in range(top, bot + 1):
+            c.P(px, y, RED[1 if add == 0 else 2]); c.P(px + 1, y, RED[3 if add == 0 else 4])
+        c.HL(px - 1, bot + 1, 4, STEEL[4])                              # 기둥 발 받침
     finish(c, [(2, 62, 58, 5, SHADOW, 1)])
 
 
