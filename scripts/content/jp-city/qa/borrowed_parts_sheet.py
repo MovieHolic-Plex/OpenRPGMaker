@@ -42,10 +42,10 @@ def _hash(x, y):
 
 
 class Canvas:
-    """칸 격자 장면: 1층(바닥) → 3층(키트 위층) → 4층(전선) 순서로 합성."""
+    """칸 격자 장면: 1층(바닥) → 2층 → 3층(키트 위층) → 4층(전선) 순서로 합성."""
     def __init__(s, S, w, h):
         s.S, s.w, s.h = S, w, h
-        s.low = [[None] * w for _ in range(h)]; s.up = [[None] * w for _ in range(h)]; s.top = [[None] * w for _ in range(h)]
+        s.low = [[None] * w for _ in range(h)]; s.mid = [[None] * w for _ in range(h)]; s.up = [[None] * w for _ in range(h)]; s.top = [[None] * w for _ in range(h)]
 
     def fill_auto(s, aid, mask_rows, layer='low'):
         """mask_rows: 문자열 줄('#' = 이 재료). 8방(아래층)·4방(선) 오토타일을 맵 밖=같은 재료 규칙까지 엔진처럼 고른다."""
@@ -82,11 +82,11 @@ class Canvas:
                 if not (0 <= X < s.w and 0 <= Y < s.h): continue
                 if lo is not None and lo >= 0: s.low[Y][X] = lo
                 if up is not None and up >= 0:
-                    (s.top if layer == 4 else s.up)[Y][X] = up
+                    (s.top if layer == 4 else s.mid if layer == 2 else s.up)[Y][X] = up
 
     def img(s, bg=GRASS):
         im = Image.new('RGBA', (s.w * 16, s.h * 16), bg)
-        for g in (s.low, s.up, s.top):
+        for g in (s.low, s.mid, s.up, s.top):
             for y in range(s.h):
                 for x in range(s.w):
                     if g[y][x] is not None: im.alpha_composite(s.S.tile(g[y][x]), (x * 16, y * 16))
@@ -153,7 +153,7 @@ def v_train(S):
     W, H = 18, 7
     c = Canvas(S, W, H); lawn(c, W, H)
     for x in range(0, W):
-        if 'jp-rail-h' in S.kits: c.kit('jp-rail-h', x, 2)
+        if 'jp-rail-h' in S.kits: c.kit('jp-rail-h', x, 2, 2)   # 선로는 2층(장면 합성처럼 열차 밑에 남는다)
     for i, kid in enumerate(('jp-train-car-a', 'jp-train-car-b', 'jp-train-car-a', 'jp-train-car-b')):
         c.kit(kid, 1 + i * 4, 2)
     for x in (1, 5, 9, 13):

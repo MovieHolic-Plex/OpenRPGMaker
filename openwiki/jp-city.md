@@ -426,3 +426,12 @@ python3 scripts/content/jp-city/bake_refs.py                   # 문서·그림�
 - layout(program·rooms)으로 지은 맵에는 방마다 위치 이름표(`hand-layout-room` + `composed-layout`)를 단다 — 조수 배치 품질 권고(«빈 바닥 → 맵을 줄여라»)가 견본 한 벌짜리 방을 빈 방으로 보고 손으로 다시 짓게 하던 것을 막는다(`piAgentRuntime.ts` 가 composed-layout 맵을 건너뜀). 시설 노트에도 «닿지 못한 빈 바닥 0·경고 0 이면 그대로 두고 다시 짓지 말라, 다른 배치는 layout.variant» 한 줄.
 - 실조수 시험(입력창 경로, `harness-data/assistant-capability/ai-configs/gemini-4-argon.json`: 모든 역할 gemini-4-argon 추론 medium): 새 기본 프로젝트에 4문장(일본 학교 교실·회사 사무실·병원 진료실과 대기실·일본 학교 신발장과 복도). 지침 개선 전 7·7·8·6(c1 은 6번 다시 지음, c4 는 «빈 바닥» 권고에 22×16 손 짓기로 줄임) → 개선 후 7·7·8·7 — 넷 다 jp_city program(school-2f·office-floor·hospital-1f, c4 는 rooms 뒤 school-1f)으로 짓고 다시 짓기 없이 경고 0. 남은 흠: 학교 2층 두 교실이 소품까지 똑같다, 사무 층 자판기 옆 곁문, 학교 1층 계단 옆 짧은 문. 실조수 시험 중에 굽기 사슬(`interiorRoomTemplates.json` 을 origin 판으로 되돌렸다 다시 뽑는다)을 같이 돌리면 «방 구성 "school-2f" 이 없다»가 난다 — 둘을 겹치지 말 것. 3.8-flash·gpt 로 잰 점수와 섞지 않는다.
 - 남은 것: program 배치 후보가 병실을 옆문으로 지나가게 짜는 경우(병동 program 후보 1) · 동·서 벽면 걸이 없음 · 의사·간호사 NPC 는 Actor1 이벤트.
+
+## 시골이 빌려 쓰는 부품 다시 그림 (2026-10-20)
+
+시골(jp-inaka) R5 보고서가 짚은 jp_city 부품을 같은 칸 번호에서 다시 그렸다(도시·시골 모두 바뀐다). 나무는 숲 작업 몫이라 제외.
+- 전봇대·전선 `street_hand.py`: 크림 「갓」 없앤 가는 기둥 + 철 완목·애자·변압기 윗면, 전선은 1px 짙은 회색(계약 `kawara_dark_tile`)·가닥별 처짐. 이음 상수 ARM1/ARM2/CABLE 그대로, 나무 전봇대 고압 완목을 ARM1 로 맞춤.
+- 생활도로 `jp-lane-road`·수로 `jp-water-canal`(`autotiles_ground.py`)·생울타리 `jp-hedge`(`autotiles_lines.py`): 손 도트 아스팔트 결(몸통 변형 6:1:2), 호안 입술·벽면·물때·수면 깊이, 3/4 슬래브 울타리. `roads` 블록의 ln.*/hg.* 복사 칸도 같이 바뀐다. 울타리는 4방 선이라 엔진에 칸별 변형이 없다(한 칸 무늬를 비대칭으로).
+- 주차 승용차 16종 `lib/parts_vehicles.py _sedan34` → 원본 시트 `tiledata/jp-city/sources/jp_shopstreet16.png` 재굽기(칸 수 2880 그대로). 통근 열차 `rail_art._train`. 역 간판 `shop_parts.text_bold`(さくら駅 만 `'bold'`).
+- 미리보기: `scripts/content/jp-city/qa/preview_bake.sh <임시 루트>` → `borrowed_parts_sheet.py`(전후·버들항 기준) → `argon_parts_judge.py`(Argon 독립 적대 검수). 저장소 굽기는 3/4 관문 보정 뒤로 미룸.
+- `bake_jp.py` 가 오토타일 `outsideConnects` 를 내보내지 않던 것(#3061 은 JSON 만 고침)을 고쳤다. 선 selftest(`lib_blocks_lines/core.check_cell`)는 계약 색도 허용한다.
