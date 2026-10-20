@@ -312,6 +312,85 @@ function starterCoverage(project: Project): void {
   }
 }
 
+/**
+ * 체육관 퍼즐 — 원래는 「손을 얹는다」·「덤불을 정리한다」 두 번 예를 누르면 끝이었다(2026-10-20 검수: 퍼즐이 얕다).
+ * 입구 받침을 셋으로 늘리고 안내원의 힌트(새싹은 해를 따라 깬다 → 동쪽부터)대로 차례로 물을 줘야 덩굴 문이 열린다.
+ * 맞으면 받침이 꽃 화분(같은 체육관 칩셋 1258)으로 피고, 틀리면 셋 다 다시 새싹(1253)으로 움츠러든다. 새 그림 없음.
+ */
+function gymBloomPuzzle(project: Project): void {
+  const gym = project.maps.mx_map_grove_gym;
+  const pivot = gym?.events.find((e) => e.id === "mx_map_grove_gym_device_pivot");
+  const guide = gym?.events.find((e) => e.id === "mx_map_grove_gym_gym_guide");
+  if (!gym || !pivot || !guide || gym.events.some((e) => e.id === "mx_map_grove_gym_device_bloom_east")) return;
+  let gateOpen: Command[] | undefined;
+  walkLists(pivot.pages?.[0]?.commands ?? [], (list) => {
+    if (!gateOpen && list.some((c) => c.kind === "changeTile") && list.some((c) => c.kind === "setSwitch" && c.switchId === "mx_gym_1_puzzle_pivot")) gateOpen = structuredClone(list.filter((c) => c.kind !== "text"));
+  });
+  if (!gateOpen) return;
+  const seq = "mx_gym_1_bloom_seq";
+  if (!project.variables.some((v) => v.id === seq)) project.variables.push({ id: seq, name: "실바나 체육관 꽃 받침 순서" });
+  const stands = [{ id: "mx_map_grove_gym_device_bloom_east", x: 11, y: 17 }, { id: "mx_map_grove_gym_device_pivot", x: 8, y: 17 }, { id: "mx_map_grove_gym_device_bloom_west", x: 5, y: 17 }];
+  const tile = (x: number, y: number, t: number): Command => ({ kind: "changeTile", mapId: gym.id, layer: "upper", x, y, tile: t });
+  const reset: Command[] = [...stands.map((st) => tile(st.x, st.y, 1253)), { kind: "setVariable", variableId: seq, op: "=", value: 0 }];
+  const STAND = "새싹 돌 받침";
+  stands.forEach((st, i) => {
+    gym.upperTiles[st.y * gym.width + st.x] = 1253;
+    const commands: Command[] = [{
+      kind: "fork",
+      condition: { kind: "switch", switchId: "mx_gym_1_puzzle_pivot", value: true },
+      then: [text("새싹이 활짝 피어 덩굴 문이 열려 있다.")],
+      else: [{
+        kind: "fork",
+        condition: { kind: "variable", variableId: seq, op: ">", value: i },
+        then: [text("이 받침의 새싹은 벌써 꽃을 피웠다.")],
+        else: [
+          text("새싹이 잠든 돌 받침이다. 물을 줄까?", STAND),
+          {
+            kind: "choices",
+            options: [
+              {
+                text: "물을 준다",
+                branch: [{
+                  kind: "fork",
+                  condition: { kind: "variable", variableId: seq, op: "==", value: i },
+                  then: [
+                    tile(st.x, st.y, 1258),
+                    { kind: "setVariable", variableId: seq, op: "+=", value: 1 },
+                    { kind: "playAudio", resourceId: "easyrpg-sound-chime2", channel: "se", loop: false },
+                    ...(i < stands.length - 1
+                      ? [text("새싹이 기지개를 켜더니 꽃을 피웠다!")]
+                      : [...structuredClone(gateOpen!), text("마지막 새싹이 피자 덩굴 나무 문이 스르르 열렸다!")]),
+                  ],
+                  else: [...structuredClone(reset), text("새싹들이 놀라 다시 움츠러들었다… 깨우는 순서가 틀린 것 같다.")],
+                }],
+              },
+              { text: "그만둔다", branch: [] },
+            ],
+            cancelBehavior: "branch",
+            cancelBranch: [],
+          },
+        ],
+      }],
+    }];
+    const existing = gym.events.find((e) => e.id === st.id);
+    const page = { ...structuredClone(pivot.pages![0]!), id: `${st.id}_page`, name: st.id.replace("mx_map_grove_gym_", ""), commands };
+    if (existing) { existing.pages = [page]; existing.x = st.x; existing.y = st.y; }
+    else gym.events.push({ ...structuredClone(pivot), id: st.id, name: "새싹 받침", x: st.x, y: st.y, pages: [page] });
+  });
+  // 동→가운데→서 순서로 이벤트를 놓는다(안내원 힌트를 따른 플레이어 순서 그대로 — QA 봇도 이 순서로 말을 건다).
+  const order = stands.map((st) => st.id);
+  const standEvents = order.map((id) => gym.events.find((e) => e.id === id)).filter((e): e is GameEvent => Boolean(e));
+  const at = gym.events.findIndex((e) => order.includes(e.id));
+  gym.events = gym.events.filter((e) => !order.includes(e.id));
+  gym.events.splice(Math.min(at, gym.events.length), 0, ...standEvents);
+  for (const page of guide.pages ?? []) {
+    page.commands = [
+      text("관장님 정원의 새싹은 해를 따라 깨어나요.", "체육관 안내원"),
+      text("해가 뜨는 쪽부터 차례로 물을 주면 덩굴 문이 열리고, 안쪽 가시 덤불은 정원 가위로 정리할 수 있대요.", "체육관 안내원"),
+    ];
+  }
+}
+
 export function polishFirstTenMinutes(project: Project): void {
   polishBedroom(project);
   polishMom(project);
@@ -323,5 +402,6 @@ export function polishFirstTenMinutes(project: Project): void {
   nameGymTrainers(project);
   firstWildOnRouteOne(project);
   starterCoverage(project);
+  gymBloomPuzzle(project);
 }
 
