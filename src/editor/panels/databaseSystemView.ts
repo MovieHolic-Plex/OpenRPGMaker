@@ -1288,6 +1288,11 @@ function startPartySlots(
     });
     const empty = selector.querySelector('option[value=""]');
     if (empty) empty.textContent = "빈 슬롯";
+    // 같은 멤버를 두 칸에 넣지 못하게 한다 — 예전에는 고를 수 있었지만 저장·재로드에서 말없이 하나로 줄었다(2026-10-21 감사).
+    const taken = new Set(startActorIds.filter((id, slot) => slot !== index && id));
+    for (const option of Array.from(selector.querySelectorAll<HTMLOptionElement>("option"))) {
+      if (option.value && taken.has(option.value)) option.disabled = true;
+    }
     const face = actor ? recordListThumbnail("actors", actor, store.getCurrent(), START_PARTY_FACE_SIZE) : null;
     return el("div", {
       class: "db-system-party-row", dataset: { testid: `db-system-party-row-${index + 1}` },
@@ -1758,15 +1763,22 @@ function battleResourcesFieldset(project: ReturnType<typeof store.getCurrent>): 
         dataset: { testid: "db-field-system-emotion-cycle" },
       }) as HTMLTextAreaElement;
       textarea.value = formatEmotionCycle(system.emotionCycle);
+      // 형식이 틀린 줄은 버려진다 — 예전에는 말없이 사라져 「저장이 안 된다」로 보였다(2026-10-21 감사).
+      const note = el("p", { class: "db-system-resolution-warning", dataset: { testid: "db-field-system-emotion-cycle-dropped" } });
+      note.hidden = true;
       textarea.addEventListener("change", () => {
         const rules = parseEmotionCycle(textarea.value);
+        const written = textarea.value.split(/\r?\n/).filter((line) => line.trim()).length;
         updateSystem((draft) => {
           if (rules.length > 0) draft.system.emotionCycle = rules;
           else delete draft.system.emotionCycle;
         });
         textarea.value = formatEmotionCycle(rules);
+        const dropped = written - rules.length;
+        note.hidden = dropped <= 0;
+        note.textContent = dropped > 0 ? `형식이 맞지 않는 ${dropped}줄을 버렸습니다. 「기쁨>분노=1.5」처럼 적어 주세요.` : "";
       });
-      return textarea;
+      return el("div", { class: "db-system-emotion-cycle", children: [textarea, note] });
     })()),
   ]);
 }

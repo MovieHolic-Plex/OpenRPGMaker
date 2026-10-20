@@ -16822,4 +16822,5 @@
 "꺼짐 — 켜면 AI 조수가 몬스터 칩셋·캐릭터 칩·얼굴·전투 그림만 새로 씁니다. 손으로 칠한 것은 막지 않습니다.":"Off — when on, the AI assistant only uses monster chipsets, character chips, faces and battle art for new work. Hand painting is not blocked.",
 "몬스터 자산: 몬스터 수집 게임이 아니라서 AI 조수가 포켓몬식 칩셋·캐릭터 칩·전투 그림을 새로 고르지 않습니다. 이미 있는 것과 손 편집은 막지 않습니다.":"Monster assets: this is not a monster-collecting game, so the AI assistant won't pick new monster-style chipsets, character chips or battle art. Existing assets and hand edits are not blocked.",
 "장르 칩셋 잠금 (연애)":"Genre chipset lock (romance)",
-"장르 칩셋 잠금 (몬스터 수집)":"Genre chipset lock (monster collecting)"}
+"장르 칩셋 잠금 (몬스터 수집)":"Genre chipset lock (monster collecting)",
+"형식이 맞지 않는 {0}줄을 버렸습니다. 「기쁨>분노=1.5」처럼 적어 주세요.":"Dropped {0} line(s) with the wrong format. Write them like 「Joy>Anger=1.5」."}
