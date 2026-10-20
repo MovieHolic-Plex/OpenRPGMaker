@@ -529,8 +529,21 @@ function tunePacing(project: Project): void {
     // 관장의 베르카부가 원래 기술 그대로 더듬이쏘기(벌레)를 써서 풀 스타터를 매번 2~3방에 눕혔다(2026-10-20 실입력 여정, Lv7 로 세 번 패배).
     // 풀 체육관이니 그 자리를 새싹치기(풀)로 바꾼다 — 스타터와 서로 반감이라 어깨툭 싸움이 되고, 잡은 동료가 힘을 쓸 자리가 생긴다.
     const sprout = project.database.skills.find((s) => s.name === "새싹치기")?.id;
-    const leaderBug = byId("mx_enemy_mx_map_grove_gym_leader_0");
-    if (leaderBug && sprout) leaderBug.actions = leaderBug.actions.map((a) => (a.skillId && bug.has(a.skillId) ? { ...a, skillId: sprout } : a));
+    // 다시(2026-10-21 적대 검수 r3·스타터 3종 봇): 풀 기술만 쓰는 풀 체육관은 물 스타터만 두 배로 맞아 수련생·관장에게 졌고 불은 무패였다.
+    // 풀이 처음부터 깃바람(비행)을 갖게 된 뒤로는, 체육관 몬스터가 제 첫째 타입 기술을 쓰게 한다 — 벌레(베르카부·과수뿔)는 더듬이쏘기, 땅(브램보어)은 흙먼지.
+    // 그러면 두 배로 맞는 스타터가 갈린다(풀 ← 벌레, 불 ← 땅). 물은 보통으로 맞고 서리발로 두 배를 친다.
+    const skillOf = (name: string) => project.database.skills.find((s) => s.name === name)?.id;
+    const nativeMove: Readonly<Record<string, string | undefined>> = { mx_species_podback: skillOf("더듬이쏘기"), mx_species_orchardant: skillOf("더듬이쏘기"), mx_species_brambleboar: skillOf("흙먼지") };
+    const grassMoves = new Set(project.database.skills.filter((s) => s.id.startsWith("mx_skill_grass_")).map((s) => s.id));
+    for (const enemy of enemies) {
+      if (!/^mx_enemy_mx_map_grove_gym_(grunt|leader)_\d+(_\d+)?$/.test(enemy.id)) continue;
+      const native = enemy.speciesId ? nativeMove[enemy.speciesId] : undefined;
+      if (!native) continue;
+      const seen = new Set<string>();
+      enemy.actions = enemy.actions
+        .map((a) => (a.skillId && (grassMoves.has(a.skillId) || bug.has(a.skillId)) ? { ...a, skillId: native } : a))
+        .filter((a) => !a.skillId || (seen.has(a.skillId) ? false : (seen.add(a.skillId), true)));
+    }
     // 신전 보스 선봉도 같은 베르카부라 Lv8 로 내려도 Lv10 풀 스타터가 두 번 졌다(2026-10-20 실입력 여정).
     // 리그 선봉 베르카부도 같다 — 디버그로 Lv20 까지 올린 파티도 한 번 졌다(journey12). 둘 다 같은 자리 바꿈.
     for (const id of ["mx_enemy_mx_map_observatory_boss_0", "mx_enemy_mx_map_league_0_league_challenge_0"]) {
