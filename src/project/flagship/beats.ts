@@ -87,7 +87,7 @@ export const CHRONO_BELL_BEATS: readonly FlagshipBeat[] = [
     sceneTitle: "밤의 왕도 → 하늘을 가로지른 별 → 천문대의 하넬 → 숲의 은빛 관 → 심문관 입성",
     playerFeel: "게임 화면과 같은 480×270 무대에서 게임 맵을 1:1 로 구운 배경 위에 1배 캐릭터 칩이 걷고, 별똥별·추락 섬광·관의 빛은 빛 효과로 그린다. 자막은 컷에 보이는 것만 말한다.",
     mechanics: ["buildFallenStarOpening", "validateOpeningAnimatic"],
-    sharedAssets: ["oprn_fallen_star_hub_night", "oprn_fallen_star_observatory_night", "oprn_fallen_star_forest_night", "oprn_fallen_star_hub_day"],
+    sharedAssets: ["oprn_fallen_star_art_title", "oprn_fallen_star_art_town", "oprn_fallen_star_art_fall", "oprn_fallen_star_art_observatory", "oprn_fallen_star_art_crash", "oprn_fallen_star_art_morning"],
   },
   {
     id: "cb_beat_01_astel",
