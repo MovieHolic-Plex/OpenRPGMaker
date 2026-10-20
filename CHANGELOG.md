@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.287.0 — 2026-10-20
+
+### 기능
+
+- **modern-city-int** — r16 3/4 redraw of the remaining 60 interior props + review fixes, baked in place (#3083) (`e109f31`)
+- **store-cli** — preview / submit / discard for private store scratch previews (#3082) (`47b9e5c`)
+- **modern-city-int** — r16 3/4 redraw of 61 interior props (tops 4-6 rows, lit edge, cornice shadow), baked in place (#3080) (`e4bd293`)
+- **battle** — battle-feel r2 — integer battler pixel scale, boss entrance, result over the stage, shorter interludes (#3079) (`9f8e6f6`)
+- **store** — open-in-editor deep link (oprn://store/install) and owner drafts (D2) (#3078) (`3df019c`)
+
 ## 0.286.0 — 2026-10-20
 
 ### 기능
