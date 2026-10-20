@@ -21,7 +21,7 @@ import type { Command, Dir, GameEvent, GameMap, Project } from "@/project/types"
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import {
   bgm, caption, CAST, choices, clearTint, emote, event, face, fadeIn, fadeOut, flash, hidePlayer, ifCond, letterbox, page,
-  playSe, say, setSw, setVar, shake, showPlayer, stopBgm, stageAtLeast, stageBelow, stageIs, swOff, swOn, memoryTint, think, transfer, voice, wait, walk,
+  playSe, say, setSw, setVar, shake, showPlayer, stopBgm, stageAtLeast, stageBelow, stageIs, swOff, swOn, memoryTint, memoryPictureIn, memoryPictureOut, think, transfer, voice, wait, walk,
 } from "./firstLoveKit";
 import { buildFirstLoveMaps, FL_MAP, nearestFree, type Cell, type FirstLoveAnchors } from "./firstLoveMaps";
 import { FIRST_LOVE_MEMORY_ARGS, FIRST_LOVE_THEME_ARGS } from "./firstLoveMusic";
@@ -820,7 +820,10 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
           ...say("seoha", "base", "이번엔 내가 먼저 말할게요."),
           ...say("seoha", "embarrassed", "선배. 나 아직도, 금요일마다 급식 줄 늦게 서는 사람이에요."),
           ...say("jihu", "embarrassed", "…그건, 내 대사였어야 하는데."),
+          flash("white", 700),
+          ...memoryPictureIn(150, 1800),
           ...say("jihu", "happy", "윤서하. 10년 늦은 답장이에요.", "나도 좋아했어. 그 금요일에도. 지금도."),
+          ...memoryPictureOut(1600),
           ...emote("ev_fl_p_jihu", "heart", 1600),
           ...say("jihu", "base", "부산은 가야 해요. 아버지 혼자 계시니까. 근데—"),
           ...say("jihu", "happy", "KTX로 두 시간 사십 분이에요. 금요일마다 올게요. 이번엔, 진짜 약속해요."),
@@ -829,7 +832,9 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
           stopBgm(),
           { kind: "triggerEnding", endingId: END_A } as Command,
         ], [
+          ...memoryPictureIn(110, 1600),
           ...say("seoha", "sad", "좋아했어요. 그 금요일에도. 지금도."),
+          ...memoryPictureOut(1400),
           ...say("jihu", "sad", "…고마워요. 정말로."),
           ...say("jihu", "sad", "근데 지금 대답하면, 그건 또 도망치는 대답 같아요. 떠나는 사람이 할 말이 아니라서."),
           ...say("jihu", "base", "답장은 여기 써 뒀어요. 열차 떠나면 읽어요."),

@@ -445,3 +445,8 @@
   text-align: center;
   top: calc(var(--play-stage-top) + var(--play-logical-height) * var(--play-scale) + 16px);
 }
+
+/* Show Picture 가 남기는 리소스 이름 배지는 검사용 표지다. 그림 자체는 picture-layer 가 그리므로 플레이 화면에는 띄우지 않는다. */
+.player-layout .play-stage > .runtime-overlay[data-testid="picture-overlay"] {
+  display: none;
+}
