@@ -100,8 +100,8 @@ def box_top(c, x, y, w, rows, ramp, t=3, ends=(False, False)):
 #   3/4 는 완목(철 각재: 밝은 윗면 1px + 앞면 1px)·애자(사기 윗면)·변압기 뚜껑 타원·클로저 윗면으로 읽힌다.
 #   전선 = 1px 짙은 회색(계약 kawara_dark_tile 0~2단, 순흑 아님) — 고압 2가닥·저압 2가닥·통신선(1px+그늘 1px), 가닥 사이 1px 이상 띄움.
 ARM1, ARM2, CABLE = 9, 21, 37          # 전봇대 키트 맨 위에서 고압 완목·저압 완목·통신선 높이(px). 전선 키트가 이 높이에 맞춘다.
-HV_Y = (ARM1 - 4, ARM1 - 2)            # 고압 두 가닥: 애자 윗머리 위 · 애자 목(옆으로 묶임)
-LV_Y = (ARM2 - 4, ARM2 - 2)            # 저압 두 가닥
+HV_Y = (ARM1 - 5, ARM1 - 3)            # 고압 두 가닥: 애자 윗머리 위 · 애자 목(옆으로 묶임). 완목 뒷모서리와 1px 띄운다
+LV_Y = (ARM2 - 5, ARM2 - 3)            # 저압 두 가닥
 HV_INS = (1, 8, 38, 45)                # 고압 완목 위 애자 x(2px 폭) — 양 끝 애자는 키트 경계에 닿아 전선 키트 끝과 만난다
 LV_INS = (3, 10, 36, 43)
 CABLE_X = 27                           # 세로 통신선(남북 전선 키트)이 내려가는 x — 기둥 오른쪽 클램프
@@ -167,12 +167,12 @@ def pole_body(c, x, top, bot, mat='conc'):
         c.HL(x - 1, top - 3, 3, ol)                                                                         # 머리 윗면(3×2 타원)
         c.P(x - 2, top - 2, ol); c.P(x - 1, top - 2, K('conc', 3)); c.P(x, top - 2, K('conc', 3)); c.P(x + 1, top - 2, K('conc', 2)); c.P(x + 2, top - 2, ol)
         c.P(x - 2, top - 1, ol); c.P(x - 1, top - 1, K('conc', 2)); c.P(x, top - 1, K('conc', 1)); c.P(x + 1, top - 1, K('conc', 0)); c.P(x + 2, top - 1, ol)
-    c.HL(x + 2, bot, 5, K('yoru', -1)); c.HL(x + 3, bot + 1, 3, K('yoru', -1))                             # 바닥 그림자(오른쪽 아래)
+    c.HL(x - 2, bot, 10, K('yoru', -1)); c.HL(x, bot + 1, 7, K('yoru', -1)); c.HL(x + 3, bot + 2, 3, K('yoru', -1))   # 바닥 그림자(오른쪽 아래로 눕는 타원)
 
 
 def crossarm(c, x0, x1, y, ins, cx=24, braces=True):
     """완목(철 각재): 밝은 윗면 1px(결 반짝) + 앞면 1px, 재질 윤곽. ins 의 x 마다 사기 애자(2px, 윗면 밝게 + 목 + 핀).
-    애자 윗머리 바로 위(y-4)에 첫 가닥이 얹히고, 둘째 가닥(y-2)은 애자 목에 옆으로 묶인다. 기둥과 만나는 곳에 띠쇠, 아래로 가는 버팀쇠."""
+    애자 윗머리 바로 위(y-5)에 첫 가닥이 얹히고, 둘째 가닥(y-3)은 애자 몸에 옆으로 묶인다. 기둥과 만나는 곳에 띠쇠, 아래로 가는 버팀쇠."""
     c.HL(x0, y - 1, x1 - x0, STEEL_OL)
     c.HL(x0, y, x1 - x0, K('tekko', 1))
     for i in range(x0 + 2, x1 - 1, 9): c.P(i, y, K('tekko', 2))
@@ -185,8 +185,9 @@ def crossarm(c, x0, x1, y, ins, cx=24, braces=True):
     if braces:
         _seg(c, cx - 11, y + 3, cx - 3, y + 8, K("tekko", -2)); _seg(c, cx + 11, y + 3, cx + 3, y + 8, K('tekko', -2))
     for ix in ins:
-        c.P(ix, y - 3, K('shiro', 2)); c.P(ix + 1, y - 3, K('shiro', 1))                  # 애자 윗면
-        c.P(ix, y - 2, K('shiro', 0)); c.P(ix + 1, y - 2, K('shiro', -1))                 # 몸(오른쪽 그늘)
+        c.P(ix, y - 4, K('shiro', 2)); c.P(ix + 1, y - 4, K('shiro', 1))                  # 애자 윗면
+        c.P(ix, y - 3, K('shiro', 0)); c.P(ix + 1, y - 3, K('shiro', -1))                 # 몸(오른쪽 그늘) — 둘째 가닥이 이 높이에서 묶인다
+        c.P(ix, y - 2, K('shiro', 1)); c.P(ix + 1, y - 2, K('shiro', -1))                 # 아래 갓
         c.P(ix, y - 1, K('tekko', 0)); c.P(ix + 1, y - 1, STEEL_OL)                       # 핀
 
 
@@ -198,20 +199,20 @@ def _wires_through(c, W=48):
 
 
 def transformer(c, x, y):
-    """주상 변압기 원통(폭 6): 뚜껑 타원 윗면 2줄 + 테 + 몸통(왼쪽 빛) + 둥근 밑. 기둥 쪽 걸쇠 2줄."""
+    """주상 변압기 원통(폭 7, 기둥의 두 배): 뚜껑 타원 윗면 2줄 + 테 + 몸통 8줄(왼쪽 빛·띠) + 둥근 밑. 기둥 쪽 걸쇠 2줄, 뚜껑 위 사기 부싱 둘."""
     ol = STEEL_OL
-    c.HL(x + 1, y, 4, ol)
-    c.P(x, y + 1, ol); c.HL(x + 1, y + 1, 4, K('conc', 3)); c.P(x + 4, y + 1, K('conc', 2)); c.P(x + 5, y + 1, ol)
-    c.P(x - 1, y + 2, ol); c.HL(x, y + 2, 6, K('conc', 2)); c.P(x, y + 2, K('conc', 3)); c.P(x + 5, y + 2, K('conc', 1)); c.P(x + 6, y + 2, ol)
-    c.P(x - 1, y + 3, ol); c.HL(x, y + 3, 6, K('conc', -2)); c.P(x + 6, y + 3, ol)                       # 뚜껑 테(앞)
-    for j in range(y + 4, y + 11):
-        c.P(x - 1, j, ol); c.P(x + 6, j, ol)
-        for i, t in enumerate((1, 1, 0, 0, -1, -2)): c.P(x + i, j, K('conc', t))
-    c.HL(x, y + 7, 6, K('conc', -1)); c.P(x, y + 7, K('conc', 0))                                         # 몸통 띠
-    c.P(x - 1, y + 11, ol); c.HL(x, y + 11, 6, K('conc', -2)); c.P(x + 6, y + 11, ol)
-    c.HL(x, y + 12, 6, ol)
-    c.HL(x - 3, y + 5, 2, K('tekko', -2)); c.HL(x - 3, y + 9, 2, K('tekko', -2))                          # 걸쇠
-    c.P(x + 1, y - 1, K('shiro', 2)); c.P(x + 1, y, K('shiro', 0)); c.P(x + 4, y - 1, K('shiro', 2)); c.P(x + 4, y, K('shiro', 0))   # 부싱(사기)
+    c.HL(x + 1, y, 5, ol)
+    c.P(x, y + 1, ol); c.HL(x + 1, y + 1, 5, K('conc', 3)); c.P(x + 5, y + 1, K('conc', 2)); c.P(x + 6, y + 1, ol)
+    c.P(x - 1, y + 2, ol); c.HL(x, y + 2, 7, K('conc', 2)); c.P(x, y + 2, K('conc', 3)); c.P(x + 6, y + 2, K('conc', 1)); c.P(x + 7, y + 2, ol)
+    c.P(x - 1, y + 3, ol); c.HL(x, y + 3, 7, K('conc', -2)); c.P(x + 7, y + 3, ol)                       # 뚜껑 테(앞)
+    for j in range(y + 4, y + 12):
+        c.P(x - 1, j, ol); c.P(x + 7, j, ol)
+        for i, t in enumerate((1, 1, 0, 0, 0, -1, -2)): c.P(x + i, j, K('conc', t))
+    for j in (y + 6, y + 9): c.HL(x, j, 7, K('conc', -1)); c.P(x, j, K('conc', 0))                       # 몸통 띠
+    c.P(x - 1, y + 12, ol); c.HL(x, y + 12, 7, K('conc', -2)); c.P(x + 7, y + 12, ol)
+    c.HL(x, y + 13, 7, ol)
+    c.HL(x - 3, y + 5, 2, K('tekko', -2)); c.HL(x - 3, y + 10, 2, K('tekko', -2))                         # 걸쇠
+    for bx in (x + 1, x + 5): c.P(bx, y - 1, K('shiro', 2)); c.P(bx, y, K('shiro', 0))                   # 부싱(사기)
 
 
 def closure(c, x, y, w=6):
@@ -230,8 +231,8 @@ def _pole(c):
     pole_body(c, 24, 6, 157)
     crossarm(c, 1, 47, ARM1, HV_INS); crossarm(c, 3, 45, ARM2, LV_INS)
     c.R(27, CABLE - 1, 2, 4, K('tekko', -1)); c.P(27, CABLE - 1, K('tekko', 1)); c.HL(27, CABLE + 3, 2, STEEL_OL)   # 통신선 클램프
-    transformer(c, 31, ARM2 + 4)
-    closure(c, 36, CABLE - 1)
+    transformer(c, 30, ARM2 + 4)
+    closure(c, 40, CABLE - 1, 5)
     c.HL(22, 50, 5, K('tekko', -2)); c.VL(22, 51, 6, K('tekko', -2)); c.VL(26, 51, 6, K('tekko', -2)); c.HL(22, 57, 5, K('tekko', -3))   # 번호판
     c.R(23, 51, 3, 6, K('shiro', 1)); c.VL(25, 51, 6, K('shiro', 0)); c.HL(23, 52, 3, K('kon', 0)); c.HL(23, 54, 3, J('kawara_dark_tile', 2)); c.HL(23, 55, 2, J('kawara_dark_tile', 2))
 
@@ -304,8 +305,8 @@ for _L in (6, 8, 10):
               rules=f'같은 x 에 {L}칸 떨어진 두 전봇대(위쪽 전봇대 y = Y) 사이: 위쪽 전봇대와 같은 x, y = Y 에 **4층**으로 찍는다. 아래쪽 전봇대 팔에서 끝난다.')
         def _w(c):
             H = L * 16
-            for xo in (HV_INS[0], HV_INS[-1] + 1): c.VL(xo, ARM1 - 3, H, W_HV)        # 고압: 양 끝 애자에서 내려간다
-            for xo in (LV_INS[0], LV_INS[-1] + 1): c.VL(xo, ARM2 - 3, H, W_LV)        # 저압
+            for xo in (HV_INS[0], HV_INS[-1] + 1): c.VL(xo, ARM1 - 4, H, W_HV)        # 고압: 양 끝 애자에서 내려간다
+            for xo in (LV_INS[0], LV_INS[-1] + 1): c.VL(xo, ARM2 - 4, H, W_LV)        # 저압
             c.VL(CABLE_X, CABLE + 3, H - 3, W_CB); c.VL(CABLE_X + 1, CABLE + 3, H - 3, W_CB_S)   # 통신선(클램프 밑에서)
         return _w
     _mkv(_L)
