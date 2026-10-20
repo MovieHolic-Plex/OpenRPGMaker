@@ -5,19 +5,31 @@
 Each object's cells [dx, dy, tile, layer] come from src/assets/handInteriorSpec.json; animated cells (animationStrips
 baseTile) get frame k at tile+k. Art is already snapped to the shared interior palette v6 by redraw.build().
 Fails if a redraw paints pixels outside its registered cells. --check only reports which tiles would change.
+
+3/4 gate (hard rule): a prop is pasted only if its drawing (frame 0, palette v6) has an object-gate receipt that is PASS
+under a calibrated profile, or PASS under the current (not yet calibrated) profile — the same 'provisional' rule as
+scripts/content/interior-plus/gate_rooms.state(). Anything else (no receipt, FAIL, REFER, old profile) keeps the old art
+and is listed. There is no bypass switch.
 """
 import os, sys
 from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
 import redraw as R
+sys.path.insert(0, os.path.join(R.ROOT, 'scripts/content/interior-plus'))
+sys.path.insert(0, os.path.join(R.ROOT, 'src/harnesses/_core'))
+import gate_rooms
 
 
 def main(check=False):
     # paste onto the sheet on disk (interior-plus bake may have rewritten its appended tail); the redraws themselves
     # are derived from the sheet at BASE_REF, so re-running is idempotent
     sheet = Image.open(os.path.join(R.ROOT, R.SHEET_PATH)).convert('RGBA')
-    changed = []
+    changed, held = [], []
     for oid, frames in R.build().items():
+        kind = 'tall_furniture' if oid in R.PLUS else R.KIND.get(oid, 'tall_furniture')
+        st, why = gate_rooms.state(frames[0], kind)
+        if not st:
+            held.append((oid, why)); continue
         cells, x0, y0, W, H = R.geom(oid)
         own = {((c[0] - x0), (c[1] - y0)) for c in cells}
         for k, f in enumerate(frames):
@@ -35,6 +47,7 @@ def main(check=False):
                     changed.append((oid, idx))
                 sheet.paste(t, (x, y))
     print(f'{len(changed)} tiles changed in {len({c[0] for c in changed})} props')
+    for oid, why in held: print(f'  kept old art (3/4 gate): {oid}: {why}')
     if not check:
         sheet.save(os.path.join(R.ROOT, R.SHEET_PATH), optimize=True)
         print('wrote', R.SHEET_PATH)

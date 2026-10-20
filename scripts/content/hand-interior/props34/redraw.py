@@ -63,6 +63,29 @@ def h2(x, y):
     return (v ^ (v >> 16)) & 0xff
 
 
+WOOD = ['411e05', '63310b', '6d3b15', '9a5435', '9e684b', 'b77246', 'd59147', 'f4b370']
+DWOOD = ['1a0e06', '2a180b', '3a2210', '4a2c16', '5f3d21', '744e2c', '8a6038']
+
+
+def grain(im, y0, y1, ramps=(WOOD, DWOOD), skip=()):
+    """Sparse wood grain on flat wood areas (object-gate style: ramp depth, no big smooth areas): a pixel one step darker
+    or lighter in its own ramp, in short horizontal streaks, only where the pixel and its left/right neighbours are the same colour."""
+    px = im.load(); W = im.width
+    src = im.copy().load()
+    for y in range(y0, y1):
+        for x in range(1, W - 1):
+            c = src[x, y]
+            if not c[3] or (x, y) in skip: continue
+            h = '%02x%02x%02x' % c[:3]
+            for r in ramps:
+                if h in r and src[x - 1, y][:3] == c[:3] and src[x + 1, y][:3] == c[:3]:
+                    i = r.index(h); v = h2(x // 2, y)
+                    if v % 11 == 0 and i > 1: px[x, y] = hx(r[i - 1]); px[x + 1, y] = hx(r[i - 1]) if src[x + 1, y][:3] == c[:3] else px[x + 1, y]
+                    elif v % 17 == 3 and i < len(r) - 1: px[x, y] = hx(r[i + 1])
+                    break
+    return im
+
+
 # ---------------------------------------------------------------- cabinets (13 stock variants, one body)
 CAB_IDS = [k for k in SPEC['objects'] if k.startswith('cabinet:')]
 
@@ -104,7 +127,7 @@ def helmet_shelf(im):
         px[W - 1, y] = RIM if y < 4 else old4_right
     for x in range(1, W - 1):                         # eave shadow under the lip
         if px[x, 5][:3] == hx('3a2210')[:3]: px[x, 5] = hx('2a180b')
-    return im
+    return grain(im, 5, im.height, ramps=(WOOD,))
 
 
 # ---------------------------------------------------------------- orrery (12 frames)
@@ -115,6 +138,8 @@ def orrery_frames(n=12):
     BR_HI, BR_L, BR, BR_D = hx('efdd7d'), hx('dfc872'), hx('bfa045'), hx('7e5c10')
     SUN, SUN2, SUNR = hx('fff8b0'), hx('efdd7d'), hx('f4b370')
     BLUE, PINK = hx('8abae4'), hx('eb7571')
+    HI = {BLUE: hx('d0e6fa'), PINK: hx('f8b8b0')}
+    LO = {BLUE: hx('5491ca'), PINK: hx('c43c4e')}
     RING = {12: [(5, 10)], 13: [(2, 4), (11, 13)], 14: [(1, 1), (14, 14)], 15: [(1, 1), (14, 14)],
             16: [(2, 4), (11, 13)], 17: [(5, 10)]}
     pts = [(x, y) for y, spans in RING.items() for a0, a1 in spans for x in range(a0, a1 + 1)]
@@ -131,13 +156,14 @@ def orrery_frames(n=12):
             x = min(max(p[0], 0), 14)
             for dx in (0, 1):
                 for dy in (-1, 0): put(x + dx, p[1] + dy, c)
+            put(x, p[1] - 1, HI[c]); put(x + 1, p[1], LO[c])
         # round wooden plinth: top seen from above (rows 25-28, back darker, lit front lip), front band, tinted outline
         PLATE = {24: (4, 11), 25: (3, 12), 26: (2, 13), 27: (2, 13), 28: (2, 13), 29: (2, 13), 30: (3, 12), 31: (4, 11)}
         for y, (a, b) in PLATE.items():
             for x in range(a, b + 1):
                 if y in (24, 31) or x in (a, b): c = OUTL
                 elif y == 25: c = WOOD
-                elif y in (26, 27): c = WOOD_L
+                elif y in (26, 27): c = WOOD if (x * 7 + y * 3) % 9 == 0 else WOOD_L
                 elif y == 28: c = hx('f4b370')
                 elif y == 29: c = WOOD
                 else: c = WOOD_D
@@ -158,7 +184,7 @@ def orrery_frames(n=12):
         put(6, 13, SUNR); put(7, 13, SUN); put(8, 13, SUN2); put(9, 13, SUNR)
         for x in (7, 8): put(x, 14, SUNR)
         for x, y in pts:
-            if y >= 15: put(x, y, BR_HI if (y == 17 and x < 8) else BR_L)
+            if y >= 15: put(x, y, BR_HI if (y == 17 and x < 8) else BR_L if x < 11 else BR)
         if not back2: blob(p2, PINK)
         if not back1: blob(p1, BLUE)
         out.append(im)
@@ -186,13 +212,23 @@ def console_body(im):
     px = im.load()
     FACE, LIT, SEAM, DARK, VENT = hx('40454f'), hx('596470'), hx('2a2e36'), hx('22262e'), hx('808996')
     OUTL = hx('1f2433')
-    # deck = the console's top, seen from above: back edge darker, plane lighter than the front face, lit front lip (row 20)
+    # deck = the console's top seen from above, made deeper (rows 12-19 instead of 14-19): back edge, shaded back row,
+    # plane lighter than the front face, lit front lip (row 20). Levers move up so they stand on the deck's back.
+    LEV = [x for x in range(im.width) if px[x, 9][3] and px[x, 9][:3] == hx('eb7571')[:3]]
+    for y in range(6, 17):
+        for x in range(im.width): px[x, y] = (0, 0, 0, 0)
     for x in range(1, 31):
-        if px[x, 15][:3] == hx('596470')[:3]: px[x, 15] = hx('4a5463')
-        for y in (16, 18): 
+        px[x, 12] = hx('a4aebb'); px[x, 13] = hx('4a5463')
+        for y in (14, 15, 16): px[x, y] = hx('6c7787')
+        for y in (17, 18):
             if px[x, y][:3] == hx('596470')[:3]: px[x, y] = hx('6c7787')
-        if px[x, 17][:3] == hx('596470')[:3]: px[x, 17] = hx('6c7787')
         if px[x, 19][:3] == hx('596470')[:3]: px[x, 19] = hx('7f8a99')
+    for y in range(12, 20):
+        px[0, y] = OUTL; px[31, y] = OUTL
+    for x in LEV:
+        px[x, 7] = hx('eb7571'); px[x, 8] = hx('eb7571')
+        for y in range(9, 14): px[x, y] = hx('808996')
+        px[x + 1, 13] = hx('2a2e36'); px[x, 14] = hx('2a2e36')
     for y in range(im.height):
         for x in range(im.width):
             if px[x, y][3] and px[x, y][:3] == hx('110f12')[:3]: px[x, y] = OUTL
@@ -244,7 +280,7 @@ def confessional(im):
     cx = 22
     for x in (cx - 1, cx, cx + 1): px[x, 13] = hx('c09020')
     px[cx, 14] = hx('c09020')
-    return im
+    return grain(im, 15, im.height)
 
 
 def slug(s):

@@ -1,0 +1,314 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "084e6947c84d5e4035ea91e9b5e765dbc27b22e984fc64ab4de8c83ac786bd48",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "인형 진열장 (cabinet:toy)",
+ "label": "atlas_biome_interior/props34/cabinet:toy",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 0,
+  "nearBlackEdge": 0.71,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "front face with three shelf compartments holding dolls",
+      "rows": "6-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a top band (dark back row, then a lighter band in rows 2-4) that ends in a lighter front-edge line at row 5 (#d59147). Rows 6-7 are black eave shadow directly under that line. Below it, rows 6-31 are the front face: three shelf bays separated by lighter shelf rails. The silhouette is a constant 16 px wide with no side face. This matches the cabinet reference with a top of about 5 rows plus an edge line and eave shadow."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small cabinet with three shelves of dolls. It has 13 distinct colours and a median of 13 per tile, which matches the thin references (bench 14, hedge 11, lamp 14) but is well below the richer stall (40 colours, 17 per tile) and well (38 colours, 20 per tile). There are no flat 5x5 fills (0%), and the dolls and shelf slots give some dotted variation. The wood frame reads as only about 3-4 lightness steps, against 5-6 on the stall and well. 68% of the dark edge pixels are near-neutral, much closer to the grey/black lamp (100%) than to the tinted hedge (0%) and stall (1%). The dark frame and shelf lines therefore look like a fairly uniform dark outline rather than a dark brown tone of the wood. Overall it is cleanly drawn but a bit flatter and more sticker-like than the stall and well. With the neutral outline and shallower wood ramp, it falls short of the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19004
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main body top band (cabinet top)",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "shelf rims (rows ~12-13, 21-22, 29-30)",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a lighter orange band at the top. Row 5 is a lighter front-edge line (#d59147), and rows 6-7 are black eave shadow. Below that is the front face (rows 6-31, about 26 rows), which shows open shelves with toys. The shelf dividers at rows ~12-13, 21-22 and 29-30 are 1-2 row rims, not top surfaces. The silhouette is a constant 16 wide, with no side face. This matches the green bookshelf and cabinet references, which have a top band, an edge line and eave shadow above the front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wooden cabinet with shelves of toys. Its measured facts sit inside the reference range: 13 colours per full tile (hedge 10, stall 17, well 20), 13 distinct colours (bench 14, lamp 14, hedge 11), and 0% flat-fill coverage. The frame has a light highlight edge, mid wood, and dark shelf recesses, and the shelf items add small orange and cream dots, so it reads as textured rather than a flat fill. Wood has about 4 steps against the references' 5, which is slightly shallower. 68% of dark edge pixels are neutral, so the outline is mixed with a lean toward near-black. The bench (44%) and the lamp (100%) are references with similarly neutral edges, so this does not break the Beodeul bar here. It reads as a clean, information-dense small prop and would sit acceptably next to the references without looking like a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18076
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "shelf compartments with dolls",
+      "rows": "6-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-4 form a lighter orange top band under a dark back outline (rows 0-1). Row 5 (#d59147) is a lighter front-edge line. Rows 6-7 are black eave shadow above the first shelf opening. Below that, rows 6-31 are the south face with three shelf compartments holding dolls, separated by 1-2 row ledges at rows 12-13, 21-22 and 29-30. These ledges are rims, not tops. The silhouette is a constant 16 wide, so there is no receding side face. The structure matches the green 'cabinet: top + edge + eave' and bookshelf references."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small wooden shelf cabinet with rows of dolls. Its measured facts are fine: 13 colours per tile (the hedge has 10, the stall 17), 0% flat-fill coverage, and 13 colours in total, about the same as the bench and lamp. Three things still count against it. First, 68% of its dark edge pixels are near-neutral, more than the bench (44%), the well (33%) and the stall (1%), so the frame reads as a dark, mostly untinted outline around the whole silhouette, which is the sticker look rather than a dark wood tone. Second, 13 colours spread over the frame, shelf interiors and dolls leaves only about 3-4 lightness steps per material, against about 5-6 on the stall roof, the well roof and the hedge canopy. Third, the wood has little visible grain or highlight work, and the dolls are small, similar blobs. Next to the stall and the well it looks thinner and flatter, so it fails on the benefit of the doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 22088
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a wood band at the top, ending in a lighter front-edge line at row 5 (L=157). Rows 6-7 below it are black eave shadow. The shelved front face with toys runs from row 6 to row 31, about 26 rows. The top band matches the green bookshelf and cabinet references. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The cabinet is a small, narrow piece with a dark wood frame and shelves of doll shapes. The 13 distinct colours are about the level of the bench, lamp and hedge (11-14). They are far below the stall and well (38-40), which are the closest references for a piece with a roof or shelves and goods. The per-tile median of 13 is fine, and flat-fill coverage is 0%, so there are no large flat areas. The wood has only about 4 lightness steps, with little per-plank grain or highlight work. The dolls on the shelves read as small blobs with little internal shading. 68% of the dark edge pixels are near-neutral, which is much closer to the 'sticker' black line than the tinted outlines of the hedge (0%) and cheese stall (1%). The dark outline therefore does not clearly follow the adjacent wood tone. Overall it is clean but shallower in shading and outline craft than the Beodeul standard, and with that doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18348
+  }
+ ],
+ "decidedAt": "2026-10-20T07:04:17.692Z",
+ "cells": {
+  "16": [
+   "5a8056eae9389c7b",
+   "7974315f7f1ab39a"
+  ],
+  "24": [
+   "0409fba72a31b2b4",
+   "202b5edd4490c569",
+   "41e8bcfaa1e69a26",
+   "528f4ab2d7a2d68c",
+   "6d50ff506c29a987",
+   "7ee1f89fd5798463",
+   "99be2b38b1f194a3",
+   "b7bd5f194e7fb444",
+   "d44cef2b22e350ef",
+   "d45c0a66ce4ce16e",
+   "d57271dc38749179",
+   "f8ab314c0d5d6fd2"
+  ],
+  "32": [
+   "363fcdeed9bcfbc6",
+   "5903e6c2b1c59490",
+   "7d0b904c1ff8cfe1"
+  ],
+  "48": [
+   "1c37b05681aa2365",
+   "421a44411807478a",
+   "54498e7f952819b7",
+   "55d35c2565ba6417",
+   "bac159b48600ebde",
+   "f8f47fa0b0e9eaac"
+  ]
+ }
+}

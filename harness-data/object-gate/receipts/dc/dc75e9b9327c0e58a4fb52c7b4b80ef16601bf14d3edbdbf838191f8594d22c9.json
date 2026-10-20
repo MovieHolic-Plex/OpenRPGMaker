@@ -1,0 +1,315 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dc75e9b9327c0e58a4fb52c7b4b80ef16601bf14d3edbdbf838191f8594d22c9",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "식빵 진열장 (cabinet:loaf)",
+ "label": "atlas_biome_interior/props34/cabinet:loaf",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 14,
+  "darkV5": 0,
+  "nearBlackEdge": 0.71,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top board of cabinet",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Row 0 is the outline. Rows 1-4 form a reddish-brown top band, and row 5 (#d59147) is a lighter front-edge line. Rows 6-7 are black eave shadow directly under it. The front face runs from rows 6 to 31 (about 26 rows) and shows shelves with loaves, shelf-edge lines at rows 13, 22 and 30, and a base at row 31. The silhouette is a constant 16 px wide with no receding side face. This matches the green cabinet and bookshelf references, which have a top band, an edge line and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small wooden shelf (about 14x18 source px) with loaves on three shelves. The loaves have a few highlight and shade dots, which gives some texture, and there are no 5x5 flat fills (0%). Its 14 distinct colours match the bench and lamp but are far below the stall (40) and the well (38), which are the richer same-kind props. The wood frame has about 4 lightness steps against roughly 6 on the references. 68% of its dark edge pixels are near-neutral, much higher than the stall (1%), hedge (0%) and well (33%). So the dark frame and outline lean toward a near-black sticker line rather than a dark tone of the adjacent wood. Shelf dividers and the frame read as flat dark bands with little grain. Overall it is cleanly drawn but shallower and more outlined than the references, so it fails under the when-in-doubt rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20618
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top board of cabinet",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Row 0 is the outline. Rows 1-5 form a wood top band with a darker back row at 1 and a lighter front-edge line at row 5 (#d59147). Rows 6-7 are black eave shadow under that edge. Below, rows 8-31 are the front face: open shelf compartments with loaves at rows 9-12, 18-21 and 26-29, separated by shelf-board edges at rows 13, 22 and 30. This matches the green cabinet reference (top about 5 rows, edge line, then eave). No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small wooden shelf cabinet with bread loaves, the same kind as the reference props. Its tile density is fine: 14 colours per full tile against 10-20 for the references that have a full tile, and 0% flat-fill coverage, so there are no large flat areas. The weaknesses are shading and outline. The whole piece has only 14 distinct colours, against 38-40 for the large references (stall, well). The wood frame and the loaves each show only about 3-4 lightness steps, below Beodeul's 5-6 per material. 68% of the dark edge pixels are near-neutral, so most of the outline is a near-black line rather than a dark tone of the adjacent wood. The references that read as dark_material_tone sit at 0-1% (hedge, stall), so the candidate looks more like a sticker outline than they do. The loaf dots give some texture, but less grain than the stall or well. It is cleanly drawn, but I would not accept it next to the stall and well without it looking flatter and more outlined, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21086
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top / cornice band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "shelf planks with loaves",
+      "rows": "9-13",
+      "evidence": "d",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a top band: a darker back row at 1, a reddish-brown plane at 2-4, and a lighter front-edge line at row 5 (#d59147). Rows 6-7 are black eave shadow below it. The front face runs from row 6 to row 31 (26 rows) as an open three-tier shelf unit. Loaves are visible on the shelf planks (rows 9-13 and onward), and each plank has a lit surface and a dark front line at rows 13, 22 and 30. The structure matches the green 'cabinet: top + edge + eave' reference. There is no isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a narrow wooden shelf unit with loaves on three shelves. It has 14 distinct colours in total, split across the wood frame, the bread and the shadows, so each material gets only about 3 lightness steps. The richer references (well, stall) have 38-40 colours and 5-6 steps per material. Flat-fill coverage is 0%, and the loaves show some speckle and highlight dots, so texture is 'some' rather than flat. The main concern is the outline: 68% of the dark edge pixels are near-neutral. That is far from the tinted outlines of the hedge (0%) and the cheese stall (1%), and it leans toward a dark sticker line around the frame instead of a dark wood or bread tone. The 14 colours per tile is decent, but only because the piece is small and packed. Overall it is a clean, readable prop but shallower than the Beodeul references in ramps and outline craft. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17467
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top board / cornice of cabinet",
+      "rows": "0-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "front face with three shelves of loaves",
+      "rows": "6-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a wood-grain top band (L about 125-135) that ends in a lighter front-edge line at row 5 (L=157, #d59147). Rows 6-7 are black eave shadow directly under it. The front face then runs rows 6-31 as an open shelf cabinet with three loaf shelves, each with a lighter shelf-lip row and dark back. This matches the green 'cabinet: top 5 + edge + eave' reference rather than a front elevation with a rim only. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small wooden shelf with three rows of loaves. Measured facts: 14 colours per tile and 14 distinct colours overall, 0% flat-fill coverage, so there are no big flat areas. Per-tile density is in the range of the references (10-20), but the whole piece has far fewer colours than the stall (40) or well (38). The main wood ramp has about 3-4 steps (frame, shelf, dark interior) and the bread has about 3 (crust highlight, mid, dark), against 5-6 steps for Beodeul materials. 68% of the dark edge pixels are near-neutral, much more than the tinted outlines of the hedge (0%), stall (1%) and well (33%). So the outline reads as a mostly dark, near-black line around the frame, not a dark brown tone separated by value. The loaves have only a little crust texture and the wood has little grain. It is clean and readable, but shallower and more sticker-like than the stall or well, so it fails on shading depth and outline tint, not on size or simplicity.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17535
+  }
+ ],
+ "decidedAt": "2026-10-20T07:04:17.690Z",
+ "cells": {
+  "16": [
+   "07beb1164802d27a",
+   "bbcf876505d1922c"
+  ],
+  "24": [
+   "0e6c49b4d5e7ed92",
+   "1e6ff73ae1fc54c9",
+   "3b445d1c7869dc3d",
+   "41e8bcfaa1e69a26",
+   "603a9bd6d5bac5c6",
+   "6fbdd4358553d733",
+   "9b8996c679d66d1a",
+   "a4732a044005d90d",
+   "cc2b4b3340fac658",
+   "d45c0a66ce4ce16e",
+   "e3edaa7e3182da20",
+   "f8ab314c0d5d6fd2"
+  ],
+  "32": [
+   "030fea4344029964",
+   "0c0519f21ff0fd2a",
+   "de52a4e9d2a85588"
+  ],
+  "48": [
+   "15da54e51f1dc3cf",
+   "d06ba27ca9e3c88d",
+   "d5fa0d17339e93b4",
+   "f4c9fcf0238addef",
+   "f905f8d1c7fe3cae",
+   "ffd468c73b8a9958"
+  ]
+ }
+}

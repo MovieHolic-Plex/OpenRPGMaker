@@ -1,0 +1,293 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "aef1cd9608ea3789b3aa0914b7a8019f3aab7e7b50ea707e61d27ea6e0572171",
+ "width": 32,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "넓은 유물 벽 진열장(2칸) (wide cabinet)",
+ "label": "atlas_biome_interior/plus/wide cabinet",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 8
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 25,
+  "darkV5": 26,
+  "nearBlackEdge": 0.76,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "6-10",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 6-10 form a lighter wood band across the full width, and row 11 (#d59147) is a lighter front-edge line. Row 12 is dark eave shadow (#3a2210). Below that, rows 13-38 form a front face with two shelf bays, a central divider, and a dark base. The top band is 5 rows deep, like the green 'cabinet: top 5 + edge + eave' reference. Nothing reads as a side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a wooden wall cabinet with a glass front and shelves holding small items. Measured facts: median 15 colours per 16x16 tile (references 10-20), 35 distinct colours (references 11-40), 0% flat-fill coverage, and 0% neutral dark edge pixels, so the outline is tinted. By eye the frame reads as dark brown wood with a lighter bevel and highlight, with several wood steps. The shelf contents are varied small objects in different colours, so there is no large flat area. It sits at about the level of the stall and well references and above the bench and hedge. Nothing about it looks like a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11704
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top of cabinet",
+      "rows": "6-10",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-12"
+     },
+     {
+      "part": "front face with two shelf bays",
+      "rows": "13-38",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 6-10 form a 5-row orange-brown top band across the full 32px width. Row 11 is a lighter front-edge line (#d59147), and row 12 is a dark eave shadow (#3a2210). Below that, rows 13-38 show the vertical front face: two shelf bays with items and a central divider, ending in a dark base. This matches the green 'cabinet: top 5 + edge + eave' reference. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a wooden wall cabinet with a glass front and shelves holding varied small items. The frame has several brown steps (highlight, light, mid, dark, deep), and the shelf contents add colour variety. Measured facts back this up: 15 colours per tile against 10-20 in the tiled references, 35 distinct colours against 11-40, and 0% flat-fill coverage. The dark edge pixels are 0% near-neutral, so the outline is a tinted dark brown that matches the wood, not a black sticker line. There are no large flat areas, since the glass, back panel and wood all carry variation. It sits comfortably next to the stall and well references at the same scale.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12675
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "6-10",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12"
+     },
+     {
+      "part": "front face with two shelf bays",
+      "rows": "13-38",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 6-10 form a 5-row lighter orange-brown top band. Row 11 is a lighter front-edge line (#d59147) and row 12 is a dark eave-shadow row. Below it, rows 13-38 are the front face, with two shelf bays holding items, a center divider, and a dark base. The structure matches the green 'cabinet: top 5 + edge + eave' reference. No receding side face is drawn, only the dark outline at the sides."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate cabinet has 35 distinct colours and a median of 15 per 16x16 tile, close to the cheese stall (40 / 17) and the well (38 / 20) and well above the bench and lamp. Flat-fill coverage is 0%. The dark edge pixels are 0% neutral, so the outline is tinted. It reads as a dark brown frame next to the wood, not a black sticker line. The wood frame has several lightness steps (highlight, light, mid, dark, deep). The shelves hold small items in varied colours, so there is texture and grain, with no large flat areas. At this scale it looks as rich as the stall and well references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12361
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "6-10",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 6-10 form a 5-row wood top band. It ends in a light front-edge line at row 11, followed by a dark eave shadow at row 12. Below that, rows 13-38 are a 26-row front face with two shelved bays holding artifacts, divided by a center post at x≈16. The thin dark frame at the left and right edges is a frame outline, not a receding side face. Rows 37-38 are a dark base."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a wooden wall cabinet with a framed glass front, shelves and small objects (books, jars, trinkets) in several colours. Measured facts support this: median 15 distinct colours per 16x16 tile, close to the stall (17) and well (20) and above the hedge (10). It has 35 distinct colours against 38-40 for the larger references. 5x5 flat-fill coverage is 0%. Dark edge pixels are 0% near-neutral, so the outline is tinted, a dark brown beside the wood frame, not a black sticker line. The frame shows about 5 wood steps (highlight, light, mid, dark, deep) with grain, and the shelf contents carry per-item shading. I judge it equal to the references in structure, shading and texture, and not thinner or flatter than the stall or well.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13796
+  }
+ ],
+ "decidedAt": "2026-10-20T07:04:17.700Z",
+ "cells": {
+  "16": [
+   "18c621d2b68f75a4",
+   "3ce0fb6f89321391",
+   "57d0cfaea478baf6",
+   "6b26e86d49ac09be",
+   "cf46b901b32d3235",
+   "db627e8f5fb8e46e"
+  ],
+  "24": [
+   "15e80ddef0a73f32",
+   "1abe1e9005a34b6d",
+   "2f54673f11d354da",
+   "5a88efe0987d90d3",
+   "62163ac7c3be5d5a",
+   "67a534805c5a5b21",
+   "8c83a56995da33e7",
+   "9187aa658b6d5b40",
+   "9383fe9c0cb141bd",
+   "b1410d067146bdcc",
+   "c4bf023a01944773",
+   "d85ac6fb727e132b"
+  ],
+  "32": [
+   "03aef6d886b229ac",
+   "342549925a5ec73e",
+   "606b8b535c80cfb8",
+   "afcb4849acaf1296"
+  ],
+  "48": [
+   "7580456d924326ba",
+   "871959a56b7ad405",
+   "918a45b366e43a4f"
+  ]
+ }
+}

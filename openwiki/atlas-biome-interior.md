@@ -257,8 +257,8 @@ v5 시트 **끝에 덧붙인** 손 도트 조각(같은 팔레트 v6·같은 램
 
 감사 `~/claude-viz/interior-props-34-audit-1.*` 가 이 칩셋 기물 100종을 FAIL 로 냈지만 사유가 분류 틀 문장이라, 의자 4종을 뺀 96종을 4배·8배로
 알려진 합격 그림(`tiledata/atlas-pick/style-demo-view34/interior-new-*`, 빵 진열대·옷장)과 나란히 다시 판정했다. 독립 검수(Argon)와 맞춰 본 결과
-**실제 위반은 23종**(진열장 재고 변형 13 = 몸통 하나, 투구 선반, 천체 모형, 제어반·슬롯머신(앞면 평칠), 고해실 지붕, 유물 진열장 둘, 선원 침상),
-나머지 73종은 오판(벽걸이·거울·인물·기둥·문·무대 배경처럼 윗면 규칙 면제이거나 윗면이 이미 4행 이상). 판정 원본 `tiledata/hand-interior/pick/work/props34/`
+**실제 위반은 21종**(진열장 재고 변형 13 = 몸통 하나, 투구 선반, 천체 모형, 제어반·슬롯머신(앞면 평칠), 고해실 지붕, 유물 진열장 둘, 선원 침상),
+나머지 75종은 오판(벽걸이·거울·인물·기둥·문·무대 배경처럼 윗면 규칙 면제이거나 윗면이 이미 4행 이상). 판정 원본 `tiledata/hand-interior/pick/work/props34/`
 (`my_verdicts.json`, `argon_verdicts.jsonl`, `argon_after.jsonl`).
 
 - **전체 재굽기(`build_tileset.py`)는 지금 못 돈다** — 공개 기준 정리(2026-10-09)로 `room2.py` 가 여는 `public/assets/atlas-biomes/jungle-chipset.png` 가 저장소에 없다.

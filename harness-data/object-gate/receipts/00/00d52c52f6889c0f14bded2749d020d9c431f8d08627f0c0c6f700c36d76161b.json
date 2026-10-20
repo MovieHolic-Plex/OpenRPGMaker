@@ -1,0 +1,284 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "00d52c52f6889c0f14bded2749d020d9c431f8d08627f0c0c6f700c36d76161b",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "옷감 진열장 (cabinet:bolt+boltg+boltr)",
+ "label": "atlas_biome_interior/props34/cabinet:bolt+boltg+boltr",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 20,
+  "tileColorsP90": 20,
+  "darkV5": 26,
+  "nearBlackEdge": 0.71,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band spans rows 1-5 in lighter wood (#bd764d) and ends in a light front-edge line at row 5 (#d59147). Dark eave shadow follows in rows 6-7, and the front face with shelves and bolts of cloth runs from row 6 to row 31. The shelf ledges at rows 12-13, 21-22 and 29-30 are front-facing boards and not extra top surfaces. The structure matches the green 'cabinet: top 5 + edge + eave' reference and the green bookshelf reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts support the candidate. It has 20 distinct colours per full tile, level with prop-well-roofed (20) and above prop-stall-cheese (17). Its flat-fill coverage is 8%, below the stall's 13%, so there are no big dead areas. Its dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood rather than a black sticker line. By eye, the frame has a light-to-dark wood ramp of about 4 steps. The shelves and cloth bolts are separated by value and carry several tones each, with small highlights on the folds. The 25 total colours are fewer than the large stall and well (40 and 38), but the candidate is a much smaller piece. It is slightly simpler than the best references but would sit next to them without looking flatter or like a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19461
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "shelf boards (thin lips)",
+      "rows": "12-13, 21-22, 29-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a lighter wood top band (L about 125-135) ending in a lighter front-edge line at row 5 (#d59147). Rows 6-7 are dark eave shadow (L about 28). Below that is a front face of about 26 rows with three shelf compartments holding cloth bolts. The shelf boards at rows 12-13, 21-22 and 29-30 are only 1-2 row lips on the front face, not top surfaces. This matches the green bookshelf and cabinet references (top band, edge line, shadow, front face). It is not a rim-only or front-elevation drawing."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has a dark-brown wood frame with shelves holding several folded cloth bolts in different colours. The measured facts back this up. It carries a median of 20 colours per 16x16 tile, level with prop-well-roofed (20) and above prop-stall-cheese (17) and prop-hedge (10). Flat-fill coverage is 8%, below the stall's 13%. 0% of its dark edge pixels are neutral, so the outline leans brown or tinted rather than the near-black sticker look. With 25 distinct colours it is fewer than the large references (38-40), but it is a much smaller object. The wood shows about 4 lightness steps (highlight, mid, dark, deep) and the bolts carry 2-3 shades each, a little shallower than the 5-6 steps of Beodeul's richest materials. The shelves show some grain and per-bolt highlights, so texture is moderate rather than rich. A careful artist would accept it next to the references without it looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16825
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top plank",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The column scan shows a top band at rows 1-5: a darker row 1, then lighter wood in rows 2-4. Row 5 is a lighter front-edge line (#d59147), followed by 2 rows of dark eave shadow in rows 6-7. Below that is a front face of about 26 rows (rows 6-31) with shelves, ledge lines at rows 12-13, 21-22 and 29-30, and cloth bolts. This matches the green 'cabinet: top 5 + edge + eave' reference rather than the front-elevation or rim-only red ones."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wooden cabinet with shelves of coloured cloth bolts. It has 20 distinct colours per 16x16 tile, matching the well (20) and above the cheese stall (17) and hedge (10). It has 25 distinct colours in total, which is reasonable for a piece this small. Flat-fill coverage is 8%, below the cheese stall's 13%, so the wood frame is not a large flat block. Neutral dark edge pixels are 0%, so the outline leans a dark brown tone like the hedge and cheese stall, not a black sticker line. The frame shows about 4 wood steps with a highlight edge and darker shelf recesses. The bolts are varied in tone and read as separate rolls, not one flat fill. It is a little less textured than the well or stall, but a careful artist would accept it beside the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19773
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The columns show a top band at rows 1-5: a dark outline at row 0, a dark row 1, a lighter wood band in rows 2-4, and a lighter 1-row front-edge line at row 5 (L=157, #d59147). Rows 6-7 are dark eave shadow (L=28). Below that is a front face of about 26 rows (6-31) with three shelf compartments holding bolts of cloth, divided by shelf boards at rows 12-13, 21-22 and 29-30. The structure matches the green reference cabinet with a 5-row top, edge line and eave."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts favour the candidate. It has 20 distinct colours per 16x16 tile, level with prop-well-roofed (20) and above prop-stall-cheese (17) and prop-hedge (10). Flat-fill coverage is 8%, below the stall's 13%. None of its dark edge pixels are neutral (0%), so the outline leans brown, matching the dark-material-tone approach rather than a black sticker line. By eye, the frame is wood with a few brown steps, with a lighter top and side edge. The shelves hold separately shaded cloth bolts in purple, pink and red with highlight and shadow bands. This is a bit simpler than the stall or well, but it is a small single-tile-width prop and reads as equally detailed and not sticker-like next to the references. At 2x the image is small, so shading steps are estimated at about 4 against the references' 5-6; the numbers carry most of the judgement.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21939
+  }
+ ],
+ "decidedAt": "2026-10-20T07:22:59.441Z",
+ "cells": {
+  "16": [
+   "142b51201e5ef2b2",
+   "9a69e4190eec9184"
+  ],
+  "24": [
+   "37a0d792d9069f0d",
+   "48b607b477c4079b",
+   "53c3e71486e4260e",
+   "57d6a00c57e5e67e",
+   "874d9e80634465f8",
+   "90a27ed5ef4a6836",
+   "96a2f045e338a3be",
+   "c1fe26897836b5a3",
+   "d11c5693c9c73371",
+   "de04fc6b141539df",
+   "e80318b5a93c7abb",
+   "ef5f50e5a58b934e"
+  ],
+  "32": [
+   "5da723d2baed7fcd",
+   "a6b456962ddf7490",
+   "eef0cdfa5c99dceb"
+  ],
+  "48": [
+   "1f3847290ac1efc3",
+   "44a910620397716a",
+   "999a25edec141fcf",
+   "dfa3fef833c9f3e1",
+   "eb407e32a5b772cc",
+   "eee933eafe4af649"
+  ]
+ }
+}

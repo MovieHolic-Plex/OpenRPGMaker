@@ -1,0 +1,313 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e3f575205a501fbcff6cb69099acff7be644fdae0fc8b88bcbdd52e488857c57",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "보석 진열장 (cabinet:gem+gemr)",
+ "label": "atlas_biome_interior/props34/cabinet:gem+gemr",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 17,
+  "darkV5": 0,
+  "nearBlackEdge": 0.71,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band of cabinet (cornice/top plane)",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "shelf ledges (rows 12-13, 21-22, 29-30)",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Every column shows the same top: row 0 outline, row 1 dark, rows 2-4 brown band, row 5 a lighter line (#d59147) that works as the front-edge line, then rows 6-7 black as eave shadow. That gives a top band of about 4 rows with a front-edge line and shadow, similar to the 'cabinet: top 5 + edge + eave' reference. Below it is a front face of about 26 rows (rows 6-31) showing open shelves with gems and 1-2 row shelf ledges. The silhouette is a constant 16 px wide, with no receding side face. The top band is thin and could be read as a cornice, but the edge line and the shadow rows below it support a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wooden display cabinet with shelves of coloured gems, and it is the right kind of prop beside the references. Per tile it carries 17 distinct colours, the same as prop-stall-cheese (17) and close to prop-well-roofed (20). It has 0% 5x5 flat fill, so no large area is a single flat colour. Its 17 colours in total are fewer than the stall (40) and well (38), but the cabinet is a smaller, simpler object and is above the bench (14), lamp (14) and hedge (11). The wood ramp has about 4 steps (dark frame, mid, light, shelf shadow), slightly under the reference's 5-6. Gem rows and shelf edges give varied dots. The outline is the weakest point: 68% of dark edge pixels are neutral, higher than the bench (44%) and well (33%), which are accepted references, so it leans toward near-black. The frame and shelf separations are also done by value, so I call the outline mixed rather than a uniform sticker line. Density and texture are at reference level, so I pass it, though the outline is borderline.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24565
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The columns at x=4, 8 and 11 all show a brown top band over rows 1-5 (L about 125-135). It ends in a lighter front-edge line at row 5 (#d59147) and is followed by a 2-row black eave shadow at rows 6-7. Below that is a front face of about 26 rows (rows 6-31) with three shelf compartments holding gems and shelf boards at rows 12-13, 21-22 and 29-30. The silhouette is a constant 16 wide, with no receding side face. The structure matches the green 'cabinet: top 5 + edge + eave' reference, not the 'rim only' or 'front elevation' red ones."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small, one-tile-wide cabinet. Per-tile colours (17) match the richest references (stall 17, well 20) and flat-fill coverage is 0%, so it is not a flat fill. Against that, 68% of its dark edge pixels are neutral, well above the tinted outlines of the stall (1%) and hedge (0%) and above the well (33%) and bench (44%). The dark frame reads as a near-black line around the whole cabinet, a sticker look rather than a dark brown tone beside the wood. The wood ramp looks shallow, about 3 steps (dark frame, mid brown, one lighter brown), against 5-6 on the stall and well. The wood carries little grain, and the shelf contents are small gem dots with little per-item shading. There are only 17 colours in total against 38-40 for the large references. Tile density is fine, but the neutral outline and thin wood ramp fall short of the Beodeul standard, and when in doubt this fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18216
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a brown top band that ends in a lighter front-edge line at row 5 (#d59147). Rows 6-7 are black eave shadow directly under it. Below that is a 26-row front face (rows 6-31) with an open display interior, gems on shelves, and shelf boards at rows 12-13, 21-22 and 29-30. The structure matches the green cabinet reference of top band, edge line, eave shadow, then front. No receding side face is drawn, and the silhouette is a constant 16 px wide from row 1 down."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small shelf cabinet with gem rows. It has 17 distinct colours and 17 colours per tile, which matches the small Beodeul props (bench 14, lamp 14, hedge 11), and it has 0% flat fill. It is well below the richest references, the stall and well at 38-40 colours. The wood frame shows about 4 lightness steps against about 5-6 in the references. 68% of its dark edge pixels are near-neutral, which is above the bench (44%), the well (33%) and the stall (1%). Only the lamp (100%) and the candidate are mostly neutral, and the hedge, with tinted edges, is at 0%. That reads as a largely black, sticker-like outline around the cabinet and shelves rather than a dark tone of the neighbouring wood. The shelf contents are tiny, with few shaded steps and little grain on the wood. Next to the stall and well it looks thinner and more outlined, and the outline is not clearly material-toned, so I fail it in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16907
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top plate",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "shelf interior with gems (front face)",
+      "rows": "8-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Column scans at x=4, 8 and 11 all show the same top band. Row 0 is the outline, row 1 is a darker back rim, and rows 2-4 are an orange top band. Row 5 is a lighter front-edge line (L=157, #d59147), followed by rows 6-7 of black eave shadow. That gives about 5 rows of top surface. The front face runs from row 8 to row 31 and holds the shelves, with planks at rows 12-13, 21-22 and 29-30 and gems resting on them. The silhouette is a constant 16 wide, with no side face. The structure matches the green 'cabinet: top 5 + edge + eave' reference, not the 'front elevation' or 'rim only' red ones."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small cabinet, about 14x31 source pixels, so I judged it by eye against the references as well as the numbers. On the numbers it is not thin: median 17 colours per tile matches prop-stall-cheese (17) and sits near prop-well-roofed (20), and it has 0% flat-fill coverage. Its 17 distinct colours in total are far below the large references (38-40), and they are spread across the frame, the shelves and the small gem items. The wood body reads as only about 3 lightness steps (frame, shelf and dark interior) against about 5-6 on the references' roof and wood. The outline is the weak point: 68% of dark edge pixels are near-neutral, far above prop-stall-cheese (1%) and prop-hedge (0%) and close to the neutral lamp, so the dark frame lines look closer to a uniform dark sticker line than to a tinted material tone. Texture is limited to the small gem dots on the shelves, with little grain on the wood. Because the outline leans neutral and the shading is shallow, it would look slightly flatter than the references next to them, so I fail it when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19139
+  }
+ ],
+ "decidedAt": "2026-10-20T07:04:17.688Z",
+ "cells": {
+  "16": [
+   "d9a9b8a440d0d8fd",
+   "f3d1093f737074de"
+  ],
+  "24": [
+   "0a5902c58a910c0c",
+   "16e879bb8a223185",
+   "1ca132f616f9be63",
+   "21d8180ce655592a",
+   "41e8bcfaa1e69a26",
+   "60b8057266faaf3c",
+   "61645f98ba88c493",
+   "6fae9a3bc4fadee9",
+   "aea138d1ace0b77c",
+   "d45c0a66ce4ce16e",
+   "f8ab314c0d5d6fd2",
+   "fb59f762190e5162"
+  ],
+  "32": [
+   "3fa30c9c1cfd35c7",
+   "da83c8aa78e642bb",
+   "df1f05317f0aa6fe"
+  ],
+  "48": [
+   "0ef32b51b3978b58",
+   "11b584895973d0a1",
+   "5fafba07a8f4027a",
+   "8295c7a063e0612c",
+   "8de260b154e98fb9",
+   "b2e5524c27abe6e0"
+  ]
+ }
+}
