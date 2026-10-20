@@ -83,6 +83,8 @@ leave:function(){document.body.classList.add("leaving");}
 }
 
 export type Splash = {
+  /** 스플래시가 첫 프레임을 그려 화면에 보였다. */
+  readonly painted: Promise<void>;
   /** 스플래시가 아직 떠 있는가. */
   readonly open: () => boolean;
   /** 오류를 보이고 단추를 연다. 「다시 시도」는 onRetry 를 부른다. */
@@ -103,14 +105,21 @@ export function openSplash(options: { readonly rendererDir: string; readonly ico
     maximizable: false,
     minimizable: true,
     fullscreenable: false,
-    show: true,
+    // 내용이 그려진 뒤 보인다(ready-to-show) — 빈 상자가 먼저 비치지 않게. data: 문서라 수십 ms 다.
+    show: false,
     backgroundColor: "#111214",
     title: PRODUCT_BRAND,
     ...(options.icon ? { icon: options.icon } : {}),
     webPreferences: { sandbox: true, contextIsolation: true, nodeIntegration: false, javascript: true, spellcheck: false },
   });
-  mainMark("splashShown");
-  window.webContents.once("did-finish-load", () => mainMark("splashLoaded"));
+  mainMark("splashCreated");
+  let markPainted: () => void = () => {};
+  const painted = new Promise<void>((resolvePainted) => { markPainted = resolvePainted; });
+  window.once("ready-to-show", () => {
+    window.show();
+    mainMark("splashShown");
+    markPainted();
+  });
   window.webContents.on("will-navigate", (event) => event.preventDefault());
   window.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
   void window.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(splashHtml(options.rendererDir, text))}`);
@@ -136,6 +145,7 @@ export function openSplash(options: { readonly rendererDir: string; readonly ico
   });
 
   return {
+    painted,
     open: () => !window.isDestroyed(),
     fail: (detail) => {
       clearTimeout(slowTimer);

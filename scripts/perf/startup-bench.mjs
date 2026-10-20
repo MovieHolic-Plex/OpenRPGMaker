@@ -107,6 +107,7 @@ async function electronRun(projectDir, configHome) {
     if (mainTiming.timing) for (const [key, value] of Object.entries(mainTiming.timing)) t[`main.${key}`] = Math.round(mainTiming.processStart + value - t0);
     const homeBytes = home.resources.reduce((sum, entry) => sum + entry.size, 0);
     t.homeKB = Math.round(homeBytes / 1024);
+    if (opt("home-only", null) === "1") return { t, homeResources: home.resources, editorResources: [] };
     // 편집기: 첫 카드의 편집 단추 → index.html 부팅 → settled. --think 는 사람이 카드를 보고 누르기까지의 시간(기본 0).
     const think = Number(opt("think", "0"));
     if (think > 0) await page.waitForTimeout(think);

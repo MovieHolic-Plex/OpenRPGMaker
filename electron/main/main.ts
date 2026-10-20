@@ -129,7 +129,8 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
     // 창 크기가 바뀌는 순간에 다른 색이 비치지 않게 문서 바탕색과 맞춘다 — 시작 화면은 어두운 #111214(startScreen.css),
     // 편집기는 tokens.css --bg-base.
     backgroundColor: bootsToStartScreen() ? "#111214" : "#F7F8F8",
-    fullscreen: true,
+    // 전체화면은 보일 때 켠다 — 리눅스는 생성자에서 fullscreen 을 주면 show:false 여도 창을 바로 띄워(빈 화면이 스플래시를 덮었다).
+    fullscreen: false,
     autoHideMenuBar: true,
     ...chromeOptions,
     // 리눅스·윈도우 창 제목줄과 작업표시줄 아이콘. 맥은 앱 번들 icns 를 쓰므로 주지 않는다.
@@ -153,7 +154,9 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
     if (shown || failed || window.isDestroyed()) return;
     shown = true;
     revealOnStartReady.delete(id);
-    window.show();
+    // 맥은 숨은 창에 전체화면을 걸면 무시될 수 있어 보인 뒤에 건다. 그 밖은 전체화면을 건 뒤 보여 크기 튐이 없다.
+    if (process.platform === "darwin") { window.show(); window.setFullScreen(true); }
+    else { window.setFullScreen(true); window.show(); }
     mainMark("windowShown");
     if (process.env.OPRN_STARTUP_TRACE === "1") process.stderr.write(`[startup] window shown (${reason})\n`);
     splash()?.close();

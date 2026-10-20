@@ -44,6 +44,9 @@ app.on("second-instance", (_event, argv) => {
 
 mainMark("bootEvaluated");
 
+/** 스플래시가 그려지기를 기다리는 상한. 넘으면 그냥 본체를 읽는다(느린 기계에서 큰 창이 마냥 늦지 않게). */
+const SPLASH_WAIT_MS = 400;
+
 if (!duplicate) {
   void app.whenReady().then(() => {
     mainMark("appReady");
@@ -68,8 +71,8 @@ if (!duplicate) {
         return taken;
       },
     };
-    // 스플래시 문서 요청이 나간 다음 틱에 본체를 읽는다(본체 평가 동안 메인 스레드가 막힌다).
-    setImmediate(() => {
+    // 본체 평가(약 0.3s) 동안 메인 스레드가 막힌다 — 스플래시가 먼저 그려져 보이게 기다린다(늦어도 SPLASH_WAIT_MS).
+    const loadBody = (): void => {
       try {
         // eslint-disable-next-line @typescript-eslint/no-require-imports
         const body = require(join(__dirname, "app.cjs")) as { startApp: (context: BootContext) => Promise<void> };
@@ -83,6 +86,11 @@ if (!duplicate) {
         if (splash) splash.fail(error instanceof Error ? (error.stack ?? error.message) : String(error));
         else app.exit(1);
       }
-    });
+    };
+    if (!splash) { loadBody(); return; }
+    let loaded = false;
+    const once = (): void => { if (!loaded) { loaded = true; loadBody(); } };
+    void splash.painted.then(once);
+    setTimeout(once, SPLASH_WAIT_MS);
   });
 }
