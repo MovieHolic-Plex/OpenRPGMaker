@@ -3,7 +3,7 @@
   "texture": "tex_beodeul_ground",
   "tileSize": 16,
   "tilesPerRow": 8,
-  "count": 648,
+  "count": 656,
   "recipes": [
     {
       "id": "bdg-grass-0",
@@ -3944,7 +3944,7 @@
     },
     {
       "id": "bdg-woodland-fence-horizontal",
-      "name": "숲 깊이 · fence-horizontal",
+      "name": "숲 울타리 · 가로",
       "width": 1,
       "height": 1,
       "layer": 3,
@@ -3962,11 +3962,13 @@
         ]
       ],
       "upperCells": [],
-      "kind": "fence"
+      "kind": "fence",
+      "sourceCityTile": 28288,
+      "sourceKit": "bd-farm-fenced-plot"
     },
     {
       "id": "bdg-woodland-fence-vertical",
-      "name": "숲 깊이 · fence-vertical",
+      "name": "숲 울타리 · 세로(서쪽 변)",
       "width": 1,
       "height": 1,
       "layer": 3,
@@ -3984,11 +3986,13 @@
         ]
       ],
       "upperCells": [],
-      "kind": "fence"
+      "kind": "fence",
+      "sourceCityTile": 28289,
+      "sourceKit": "bd-farm-fenced-plot"
     },
     {
       "id": "bdg-woodland-fence-corner",
-      "name": "숲 깊이 · fence-corner",
+      "name": "숲 울타리 · 남서 모서리",
       "width": 1,
       "height": 1,
       "layer": 3,
@@ -4006,7 +4010,105 @@
         ]
       ],
       "upperCells": [],
-      "kind": "fence"
+      "kind": "fence",
+      "sourceCityTile": 28292,
+      "sourceKit": "bd-farm-fenced-plot"
+    },
+    {
+      "id": "bdg-woodland-fence-vertical-east",
+      "name": "숲 울타리 · 세로(동쪽 변)",
+      "width": 1,
+      "height": 1,
+      "layer": 3,
+      "rows": [
+        [
+          646
+        ]
+      ],
+      "blocked": false,
+      "woodland": true,
+      "blockingCells": [
+        [
+          0,
+          0
+        ]
+      ],
+      "upperCells": [],
+      "kind": "fence",
+      "sourceCityTile": 28300,
+      "sourceKit": "bd-farm-fenced-plot"
+    },
+    {
+      "id": "bdg-woodland-fence-corner-se",
+      "name": "숲 울타리 · 남동 모서리",
+      "width": 1,
+      "height": 1,
+      "layer": 3,
+      "rows": [
+        [
+          647
+        ]
+      ],
+      "blocked": false,
+      "woodland": true,
+      "blockingCells": [
+        [
+          0,
+          0
+        ]
+      ],
+      "upperCells": [],
+      "kind": "fence",
+      "sourceCityTile": 28293,
+      "sourceKit": "bd-farm-fenced-plot"
+    },
+    {
+      "id": "bdg-woodland-fence-corner-nw",
+      "name": "숲 울타리 · 북서 모서리",
+      "width": 1,
+      "height": 1,
+      "layer": 3,
+      "rows": [
+        [
+          648
+        ]
+      ],
+      "blocked": false,
+      "woodland": true,
+      "blockingCells": [
+        [
+          0,
+          0
+        ]
+      ],
+      "upperCells": [],
+      "kind": "fence",
+      "sourceCityTile": 28290,
+      "sourceKit": "bd-farm-fenced-plot"
+    },
+    {
+      "id": "bdg-woodland-fence-corner-ne",
+      "name": "숲 울타리 · 북동 모서리",
+      "width": 1,
+      "height": 1,
+      "layer": 3,
+      "rows": [
+        [
+          649
+        ]
+      ],
+      "blocked": false,
+      "woodland": true,
+      "blockingCells": [
+        [
+          0,
+          0
+        ]
+      ],
+      "upperCells": [],
+      "kind": "fence",
+      "sourceCityTile": 28291,
+      "sourceKit": "bd-farm-fenced-plot"
     }
   ],
   "lighting": {
