@@ -1,9 +1,0 @@
-{
- "schema": "worldmap-theme/1",
- "id": "fantasy-dungeons",
- "name": "판타지 던전·신전",
- "iconset": "fantasy-dungeons",
- "palette": "original",
- "overlays": [],
- "kind": "land"
-}

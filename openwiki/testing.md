@@ -2121,7 +2121,7 @@ dedicated exported player passed. Do not describe this as all browser checks gre
 ## 세계 변형·입구·지형 조우 · ct-vehicle 픽스처 (2026-10-15, worker B)
 
 - 헤드리스 도구 시험: `node scripts/oprn-tools.mjs --project <p.json> --out <o.json> derive_world_variant '{...}'` — 호스트 월드맵 빌더(`scripts/lib/worldmapBuild.mjs`)를 걸어 주므로
-  동반 서비스 없이 약 100초에 돈다(`preview:true` 는 2초). `run_scene_test` 로 월드 입구 ↔ 던전 왕복·지형별 랜덤 인카운터(숲에서 `troop_forest_hornets`)를 본다.
+  동반 서비스 없이 약 100초에 돈다(`preview:true` 는 2초). 키트는 공개 저장소 정본이라 먼저 `npm run worldmap-kit:sync`. `run_scene_test` 로 월드 입구 ↔ 던전 왕복·지형별 랜덤 인카운터(숲에서 `troop_forest_hornets`)를 본다.
 - 크로미움이 이 호스트에서 `ERR_NETWORK_CHANGED` 로 뜨면 `unshare -rn bash -c 'ip link set lo up; node scripts/runtime-qa.mjs --scenario ct-vehicle'`.
 - `ct-vehicle`(`scripts/qa/runtime/ct-vehicle*.{mts,mjs}`) 은 두 번 깨졌다: ① 기본 칩셋이 숲마을 → 버들항이 되어 물 0번·벽 42번이 다른 그림이 됨 → 물 8번·벽 408번·지형 태그 없는 물은
   칸 이름표 `water` 로 배가 다닌다(`vehicleCanEnter`). ② 새 프로젝트의 기본 오프닝이 입력을 잠가 첫 확인 키가 사라짐 → 픽스처가 `delete project.system.opening`.

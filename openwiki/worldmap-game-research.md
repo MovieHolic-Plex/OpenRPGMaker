@@ -94,9 +94,9 @@ Hollow Knight와 Slay the Spire는 개발사 웹사이트·개발사 게시 Stea
 
 확인한 코드:
 
-- `tiledata/worldmap-kit/themes/monster.json`: `iconset: monster`, `palette: bright`, `kind: land`.
+- (공개 키트 oprn-worldmap-kit) `tiledata/worldmap-kit/themes/monster.json`: `iconset: monster`, `palette: bright`, `kind: land`.
   자체 `terrain` 또는 `journey` 지정이 없다.
-- `tiledata/worldmap-kit/kit/build_world.py`: 테마에 여정이 없으면 `fantasy-5act`를 사용한다.
+- (공개 키트) `tiledata/worldmap-kit/kit/build_world.py`: 테마에 여정이 없으면 `fantasy-5act`를 사용한다.
 - `openwiki/worldmap-terrain-editing.md`: 생성 구조에 5막 여정, 31곳, 장벽을 자동 맞춤한다.
 
 따라서 **현재 `monster` 테마를 포켓몬식 월드맵 생성기의 완성으로 보지 않는다.**

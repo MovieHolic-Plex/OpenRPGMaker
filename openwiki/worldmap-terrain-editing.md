@@ -1,12 +1,35 @@
 # 세계 지도 지형 편집 — 조수가 대륙·바다·섬·산맥을 바꾼다 (2026-10-03)
 
+## 키트 정본 = 공개 저장소 oprn-worldmap-kit (2026-10-20)
+
+Python 생성기(`kit/`)·3D 아이콘 레이캐스터(`iconsets/_scene3d/`)·테마/팔레트/지형/여정·아이콘 세트·사람 선택 사본(`selected/`)·
+실제 지리 자료(`geo/`)의 **유일한 정본은 공개 저장소** https://github.com/MovieHolic-Plex/oprn-worldmap-kit 이다
+(로컬 사본 `~/oprn-worldmap-kit-public`). 이 저장소의 `tiledata/worldmap-kit/` 사본(약 700파일·13.6MB)은 지웠다.
+
+- **받기(필수, 체크아웃·워크트리마다 한 번):** `npm run worldmap-kit:sync` → `tiledata/worldmap-kit.lock.json` 의 고정 커밋을
+  `<저장소>/.worldmap-kit/`(gitignore)에 받는다. 확인은 `npm run worldmap-kit:sync -- --check`(다르면 exit 1).
+  다른 곳을 쓰려면 `OPRN_WORLDMAP_KIT=<체크아웃>/tiledata/worldmap-kit`.
+- 키트를 찾는 곳: JS `scripts/lib/worldmapKitDir.mjs`(조수 `edit_world_terrain` 빌더 `worldmapBuild.mjs`, `oprn-serve.mjs`, 준비·QA 스크립트),
+  Python `src/harnesses/worldmap-icons/kitdir.py`(하네스), 굽기 스크립트 두 개는 같은 규칙을 안에 둔다.
+  없으면 빌더는 `{ok:false, error:"월드맵 키트가 없다 — npm run worldmap-kit:sync …"}` 를 돌려준다(편집기·런타임 번들은 키트를 import 하지 않는다).
+- **이 저장소에 남는 것:** 구운 시트(`public/assets/worldmap-icons/*.png`, `public/assets/atlas-cartography/`),
+  참고 그림(`public/assets/worldmap-icons-references/`), 번들 JSON(`src/assets/worldmap*.json`), TS 어댑터(`src/editor/worldmap/`,
+  `src/editor/tools/world*Tools.ts`, `src/project/defaults/worldmap*.ts`), 편집기 저작 원본 `tiledata/worldmap-editor/`
+  (`authoring/pixels.json` 연결 붓 픽셀, 참고문서 거울 README, 공용 실제 지형 사례 문서), 하네스 `src/harnesses/worldmap-icons/`.
+- **키트를 고칠 때:** `.worldmap-kit` 에서 브랜치 → 공개 저장소 PR → 머지 → lock 의 `commit` 을 올리는 편집기 PR.
+  하네스 `bake.py build` 는 선택 사본을 키트의 `selected/` 에 쓰므로 같은 순서로 올린다. 공개 전 개인 경로·비밀 grep 과 라이선스(코드 MIT · 그림 CC BY 4.0, 제3자 그림 금지) 확인.
+- 굽기 재실행(키트를 받은 뒤): `python3 scripts/content/build-worldmap-authoring.py && node scripts/content/prepare-worldmap-authoring-references.mjs`,
+  `node scripts/content/prepare-worldmap-material-references.mjs`, `node scripts/content/prepare-worldmap-theme-catalog.mjs`,
+  `python3 scripts/content/build-atlas-cartography.py`, `npm run harness -- worldmap-icons check` (`bake.py check --snapshot`).
+  2026-10-20 분리 때 모두 다시 돌려 출력이 바이트 단위로 같았다.
+
 ## 빈 지도부터 팔레트로 저작 (2026-10-05)
 
 `worldmap_authoring` / `tex_worldmap_authoring`은 공용 16px 연결 붓이다. 새 맵 창의 **빈 월드맵**은
 48×36 바다(0)에서 시작한다. 지형 47개 연결 상태(8방향 전체 256 입력), 길 16개 상태,
 위층 숲·산, 가로/세로 다리, 기존 사람 선택 판타지 거점 36개를 실제 타일로 놓는다.
 파이프라인은 `scripts/content/build-worldmap-authoring.py` → 번들 PNG/`worldmapAuthoringSheet.json`이다.
-새 경계·길·다리는 `tiledata/worldmap-kit/authoring/pixels.json`의 명시 픽셀 격자, 질감과 숲/산은 현재 키트 원본을 쓴다.
+새 경계·길·다리는 `tiledata/worldmap-editor/authoring/pixels.json`의 명시 픽셀 격자, 질감과 숲/산은 현재 키트 원본을 쓴다.
 완성 대륙은 입력이 아니다. 대표 붓 83개(배경별 변형 포함), 그림 3,823칸이다.
 
 팔레트는 **바탕 자동**이 기본이다. 지형 탭의 붓은 초원·사막·설원마다 배경 변형을 고르며,
@@ -138,7 +161,7 @@ UI 의도 선언 요청과 클릭 흐름은 이 CLI의 검증 범위에 포함�
 조수 ── edit_world_terrain(ops) ─▶ prepare: buildWorldmap(테마, 쌓인 ops + 새 ops)
                                     ├ 편집기: POST /v1/worldmap/build (동반 앱, scripts/lib/ohMyPiHttp.mjs)
                                     └ Bun 일꾼·헤드리스: scripts/lib/worldmapBuild.mjs 를 프로세스 안에서(setWorldmapBuilder)
-                                         └ python3 tiledata/worldmap-kit/kit/build_world.py --theme T --terrain <json> [--preview]
+                                         └ python3 <.worldmap-kit>/tiledata/worldmap-kit/kit/build_world.py --theme T --terrain <json> [--preview]
         run: 완성 PNG → picture assets.uploaded["worldmap_<mapId>_image"]
              지형 재료 PNG → uploaded worldmap_<mapId>_materials (12열, 픽셀·통행·낱말 해시로 중복 제거)
              tilesets["worldmap_<mapId>"]  재사용 지형 + 사람 선택 아이콘 이식, 34개 대표 지형 그룹(판본별 상이)
@@ -151,10 +174,10 @@ UI 의도 선언 요청과 클릭 흐름은 이 CLI의 검증 범위에 포함�
 | `src/editor/tools/worldTerrainTools.ts` | 두 도구. 스키마는 `kit_terrain.py` 의 거울 — 자유 키 객체 금지(Gemini 400) |
 | `src/editor/worldmap/worldmapBuild.ts` | 빌드 요청·결과 타입, 기본 빌더(fetch), `setWorldmapBuilder` |
 | `scripts/lib/worldmapBuild.mjs` | python 키트 실행 → `{imageDataUrl, tilemap, world, ascii, journeyCheck, warnings}` |
-| `tiledata/worldmap-kit/kit/lib/kit_tilemap.py` | 거점 합성 전 지형을 좌표와 독립된 12열 재료로 패킹 |
+| (공개 키트) `kit/lib/kit_tilemap.py` | 거점 합성 전 지형을 좌표와 독립된 12열 재료로 패킹 |
 | `src/editor/worldmap/worldmapTilemap.ts` | 재료 그룹·거점 키트·위층·손 편집 기준 배열 구성 |
-| `tiledata/worldmap-kit/kit/lib/kit_terrain.py` | ops 검사·적용(make_map_v4 목록에 다각형을 얹는다), `coverage` 경고 |
-| `tiledata/worldmap-kit/terrains/<id>.json` | 이름 붙은 지형(예: `archipelago` — 군도 테마가 쓴다) |
+| (공개 키트) `kit/lib/kit_terrain.py` | ops 검사·적용(make_map_v4 목록에 다각형을 얹는다), `coverage` 경고 |
+| (공개 키트) `terrains/<id>.json` | 이름 붙은 지형(예: `archipelago` — 군도 테마가 쓴다) |
 | `scripts/qa-game/worldmap-terrain-offline.mts` | 모델 없이 도구 사슬 끝까지(읽기 → 틀린 작업 → 새 지도 → 작업 누적) |
 | `scripts/qa/runtime/worldmap-terrain.scenario.mjs` | 출하 플레이어로 걷기(절벽은 막히고 평지는 걸어진다) |
 
@@ -168,7 +191,7 @@ UI 의도 선언 요청과 클릭 흐름은 이 CLI의 검증 범위에 포함�
 아이콘 원본의 분홍 키(255,103,139)는 투명, (254,103,139)는 검정 alpha80 그림자로 번들과 동일하게 합성한다.
 
 공용 참고문서 `wmi-materials`는 `worldmap_selected`가 소유하며 파생 지도는 referenceSourceTilesetId로 공유한다.
-출처 `tiledata/worldmap-kit/selected/materials/`, 준비 `node scripts/content/prepare-worldmap-material-references.mjs`,
+출처 거울 `tiledata/worldmap-editor/materials/README.md`, 준비 `node scripts/content/prepare-worldmap-material-references.mjs`,
 번들 `src/assets/worldmapMaterialReferences.json`, 그림 `public/assets/worldmap-icons-references/material*.png`.
 새 프로젝트와 기존 프로젝트의 ensureWorldmapSelectedTileset 양쪽에 배선되어 있다.
 
@@ -225,7 +248,7 @@ style: `blobs`(대륙 몇 개) · `shards`(조각 count 개, 1~40) · `ring`(가
     세토 내해는 한 칸이라 시코쿠가 떨어지면 길이 막혀 아와지 목을 넣었다. 시드 1~8 미리보기 8/8 통과.
   - **`real` — 실제 지리, 지구 어디든**(2026-10-04, 「조수가 이런 걸 정보 없이 할 수 있어야」). 나라마다 꼭짓점을 손으로 넣지 않는다.
     `continents{style:"real", region}` 또는 `{style:"real", box:[서경,남위,동경,북위], home?, beyond?, sands?}` — 범위는 조수가 제 지식으로 정한다.
-    자료 `tiledata/worldmap-kit/geo/`(Natural Earth 해안선·호수·강·이름난 지역 + NOAA ETOPO1 높이 0.25°, 564KB, 출처는 그 폴더 README).
+    자료 공개 키트 `geo/`(Natural Earth 해안선·호수·강·이름난 지역 + NOAA ETOPO1 높이 0.25°, 564KB, 출처는 그 폴더 README).
     `kit/lib/kit_realgeo.py`: 범위를 4:3(가운데 위도 cos)으로 넓혀 칸에 칠한다(4×4 표본 다수결). 산 = 둘레보다 솟은 곳(높이 − 가우스 평균)+이름난 산맥,
     긴 축을 척추 산줄기로(큰 산지는 두 줄). 기후 = 실제 위도 꺾은선(`_temp_of_lat`: 34~43° 온대, 브리튼 온대, 65°~ 툰드라) + 높이 냉각, 사막 지역은 모래.
     강 = 이름난 강 중 긴 것 6줄(바다 쪽 끝을 어귀로). 가장 큰 사막 = 4막 사구 바다(없으면 시작 땅 내륙), 지어낸 산줄기·강은 끈다(`hint_auto=0`).
@@ -242,7 +265,7 @@ style: `blobs`(대륙 몇 개) · `shards`(조각 count 개, 1~40) · `ring`(가
   `edit_world_terrain` 저장이 「그림체 변경」으로 거부돼 세계 지도를 못 만들었다(조수 시험 `scripts/qa-game/briefs/joseon-worldmap.json`).
 - `edit_world_terrain.characterScale`(0.25~1): 빌드한 세계 지도의 `map.characterScale` 을 같이 정한다 — 「월드맵에서 캐릭터 작게」.
 - 시험: `scripts/qa-game/worldmap-generate-offline.mts`(모델 없이 생성 → 저장 → 읽기 → 덧붙이기).
-- 키트 쪽 상세: `tiledata/worldmap-kit/docs/README.md` ⑦.
+- 키트 쪽 상세: 공개 키트 `tiledata/worldmap-kit/docs/README.md` ⑦.
 
 ## 후속 조수 실행·SQLite 재로드 (2026-10-04)
 
@@ -273,7 +296,7 @@ style: `blobs`(대륙 몇 개) · `shards`(조각 count 개, 1~40) · `ring`(가
 
 ## 변형 세계(파멸 전/후) · 지형 태그 · 장소 입구 (2026-10-15, FF6급 감사 #26·#29·#35)
 
-**`derive_world_variant`** (`src/editor/tools/worldVariantTools.ts`, 키트 정본 `tiledata/worldmap-kit/kit/lib/kit_variant.py`) — 기존 세계 지도 한 장에서
+**`derive_world_variant`** (`src/editor/tools/worldVariantTools.ts`, 키트 정본 oprn-worldmap-kit `tiledata/worldmap-kit/kit/lib/kit_variant.py`) — 기존 세계 지도 한 장에서
 같은 대륙의 변형판(바다가 올라오고 땅이 갈라지고 색·숲·마을 아이콘이 바뀐 「파멸 후」)을 새 맵으로 파생한다. 이전엔 `edit_world_terrain` 을 두 번 불러
 5.3% 만 달랐고, 바닥을 재로 덮으면 여정 검사(사구 = 모래 바다 장벽)가 「너무 일찍 3막에 닿는다」며 거부했다.
 - 키트 `terrain.variant`: `ops`(flood·rift·recolor·convert_forest·fissure·clear, 구역 poly/around) + `palette`(ruin·ashfall…) + `icon_preset`(ruin: 같은 칸 수 아이콘만 교체) +

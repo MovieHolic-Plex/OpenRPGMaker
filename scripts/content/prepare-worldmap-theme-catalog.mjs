@@ -2,9 +2,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { requireWorldmapKitDir } from '../lib/worldmapKitDir.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-const kit = path.join(root, 'tiledata/worldmap-kit');
+const kit = requireWorldmapKitDir(); // 정본 = 공개 저장소 oprn-worldmap-kit (npm run worldmap-kit:sync)
 const rows = fs.readdirSync(path.join(kit, 'themes')).filter(name => name.endsWith('.json')).sort().map(name => {
   const theme = JSON.parse(fs.readFileSync(path.join(kit, 'themes', name), 'utf8'));
   const manifest = JSON.parse(fs.readFileSync(path.join(kit, 'iconsets', theme.iconset, 'manifest.json'), 'utf8'));

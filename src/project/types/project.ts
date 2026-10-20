@@ -106,7 +106,7 @@ export interface GameMap {
   /** 배경(패럴랙스) 이미지 설정. 없으면 타일셋 기본 배경. */
   background?: MapBackground;
   /**
-   * 월드맵 키트(tiledata/worldmap-kit)로 만든 세계 지도의 원본(2026-10-03). 조수의 edit_world_terrain 이
+   * 월드맵 키트(공개 저장소 oprn-worldmap-kit 의 tiledata/worldmap-kit)로 만든 세계 지도의 원본(2026-10-03). 조수의 edit_world_terrain 이
    * 여기 쌓인 지형 작업(ops)에 새 작업을 덧붙여 다시 빌드한다. 칸 그림은 타일셋 `worldmap_<mapId>`
    * (재사용 지형 재료와 별도 위층 거점)에 있고, 통행은 키트가 계산한 걷기 표다. tilemap 없는 옛 형식은 지도 PNG를 칸마다 잘랐다. 없으면 일반 맵.
    */
@@ -438,7 +438,7 @@ export interface WorldmapVariantSpec {
 }
 
 export interface WorldmapSource {
-  /** tiledata/worldmap-kit/themes/<id> — 아이콘 세트·팔레트·지형 덧칠(우주·포장도로·철길…). */
+  /** oprn-worldmap-kit 저장소 tiledata/worldmap-kit/themes/<id> — 아이콘 세트·팔레트·지형 덧칠(우주·포장도로·철길…). */
   theme: string;
   /** 테마 지형 위에 얹은 편집 작업들(차례대로). 비면 테마 기본 지형. */
   ops: Array<Record<string, unknown>>;

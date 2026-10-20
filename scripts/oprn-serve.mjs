@@ -53,7 +53,7 @@ process.env.OPRN_OH_MY_PI_WORKER_SCRIPT ??= resolve(REPO_ROOT, "scripts/oh-my-pi
 // a stable checkout root when the bundled module evaluates import.meta.url.
 process.env.OPRN_REPO_ROOT ??= REPO_ROOT;
 // The TypeScript server is bundled in /tmp; its import.meta.url cannot locate repository content.
-process.env.OPRN_WORLDMAP_KIT ??= resolve(REPO_ROOT, "tiledata/worldmap-kit");
+process.env.OPRN_WORLDMAP_KIT ??= resolve(REPO_ROOT, ".worldmap-kit/tiledata/worldmap-kit"); // npm run worldmap-kit:sync
 
 await withTsModule(RUNTIME_ENTRY, "oprn-serve-runtime.mjs", async (runtime) => {
   const server = await runtime.startLocalProjectServer({
