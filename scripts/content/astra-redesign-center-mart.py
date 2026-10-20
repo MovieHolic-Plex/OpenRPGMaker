@@ -13,8 +13,8 @@ house kits (house_a..h, 880-1007) and shop_a's awning (1200):
            wood corner posts (light / mid / dark + outline), stone foundation with mortar ticks.
 * glass  - white frame, dark top pane row, mid pane with two white glints, light bottom row, grey sill shade.
 
-Centre ("rest hall"): teal roof with a small white roof lantern, a board on the eave carrying a gold star with
-two small leaf sprigs, white plaster walls with a teal wainscot band, grey stone corner pillars, teal/white canopy over a glass
+Centre ("rest hall"): teal roof with a small white roof lantern, a board on the eave carrying a pink heart between
+two leaf sprigs, white plaster walls with a teal wainscot band, grey stone corner pillars with warm wood caps, teal/white canopy over a glass
 double door.
 Mart ("supply store"): violet roof with a standing roof sign carrying a potion flask, cream walls, wood posts,
 orange/white awning, display window with goods on shelves, glass double door.
@@ -67,6 +67,8 @@ GL_L = (196, 232, 255)
 # metal gold (door knobs in the sheet)
 GOLD = (242, 208, 92)
 GOLD_D = (191, 108, 39)
+# soft pink (old centre wall tones in the sheet) - used only for the heart emblem
+PINK = [(250, 199, 194), (243, 165, 166), (233, 133, 147)]
 
 
 class Canvas:
@@ -294,44 +296,6 @@ def striped_awning(cv, x0, x1, y0, stripe, white=WHITE, w=4):
 
 # ---- the two kits ------------------------------------------------------------------------------------------
 
-STAR_MASK = [  # five-point star, 13x12; shaded by facet in star()
-    "......#......",
-    ".....###.....",
-    ".....###.....",
-    "....#####....",
-    "#############",
-    ".###########.",
-    "..#########..",
-    "...#######...",
-    "...#######...",
-    "..####.####..",
-    "..###...###..",
-    ".###.....###.",
-]
-
-
-def star(cv, x0, y0):
-    """Gold star: dark-gold rim, light facets up-left, orange-gold facets down-right, two glint pixels."""
-    m = STAR_MASK
-    h, w = len(m), len(m[0])
-
-    def on(x, y):
-        return 0 <= y < h and 0 <= x < w and m[y][x] == '#'
-    for y in range(h):
-        for x in range(w):
-            if not on(x, y):
-                continue
-            if not all(on(x + a, y + b) for a, b in ((1, 0), (-1, 0), (0, 1), (0, -1))):
-                c = GOLD_D
-            elif x + y * 0.6 < 9.5:
-                c = GOLD
-            else:
-                c = ORANGE[0]
-            cv.p(x0 + x, y0 + y, c)
-    cv.p(x0 + 6, y0 + 2, W_HI)
-    cv.p(x0 + 4, y0 + 5, W_HI)
-
-
 def sprig(cv, x0, y0, flip=False):
     """Tiny two-leaf sprig (leaf ramp) used as a laurel under the star."""
     shape = ["..12", ".123", "1234", "..4."]
@@ -341,75 +305,115 @@ def sprig(cv, x0, y0, flip=False):
                 cv.p(x0 + (3 - dx if flip else dx), y0 + dy, LEAF[int(ch) - 1])
 
 
+HEART_MASK = [  # 11x9 heart, shaded by facet in heart()
+    ".###...###.",
+    "#####.#####",
+    "###########",
+    "###########",
+    ".#########.",
+    "..#######..",
+    "...#####...",
+    "....###....",
+    ".....#.....",
+]
+
+
+def heart(cv, x0, y0):
+    """Soft pink heart (care / healing): outline, light facets up-left, deeper pink down-right, glints."""
+    m = HEART_MASK
+    h, w = len(m), len(m[0])
+
+    def on(x, y):
+        return 0 <= y < h and 0 <= x < w and m[y][x] == '#'
+    for y in range(h):
+        for x in range(w):
+            if not on(x, y):
+                continue
+            if not all(on(x + a, y + b) for a, b in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+                c = OUT
+            elif x + y < 7:
+                c = PINK[0]
+            elif x + y < 11:
+                c = PINK[1]
+            else:
+                c = PINK[2]
+            cv.p(x0 + x, y0 + y, c)
+    cv.p(x0 + 2, y0 + 2, WHITE)
+    cv.p(x0 + 2, y0 + 3, W_HI)
+
+
 def draw_center():
     cv = Canvas()
-    # roof lantern (small cupola) sits on the roof; draw roof first, lantern after
-    roof(cv, 1, 62, 3, 34, TEAL)
-    # roof lantern: top face (teal, 3 rows), front face white with a round-ish vent window, outline
+    # rows match the house kits: roof 0..32 (outline 32), wall 33..59, footing 60..61, ground outline 62
+    roof(cv, 1, 62, 0, 32, TEAL)
+    # roof lantern standing on the roof: top face (teal), front face with a small vent window, outline
     lx0, lx1 = 25, 38
-    cv.hline(lx0 + 1, lx1 - 1, 0, OUT)
-    cv.p(lx0, 1, OUT)
-    cv.p(lx1, 1, OUT)
-    cv.hline(lx0 + 1, lx1 - 1, 1, TEAL[0])
-    cv.vline(lx0, 2, 4, OUT)
-    cv.vline(lx1, 2, 4, OUT)
+    cv.hline(lx0 + 1, lx1 - 1, 2, OUT)
+    cv.p(lx0, 3, OUT)
+    cv.p(lx1, 3, OUT)
+    cv.hline(lx0 + 1, lx1 - 1, 3, TEAL[0])
+    cv.vline(lx0, 4, 5, OUT)
+    cv.vline(lx1, 4, 5, OUT)
     for x in range(lx0 + 1, lx1):
-        cv.p(x, 2, TEAL[1] if (x - lx0) % 4 else TEAL[2])
-        cv.p(x, 3, TEAL[2] if (x - lx0) % 4 not in (1, 2) else TEAL[3])
-    cv.p(lx0 + 1, 2, TEAL[0])
-    cv.p(lx0 + 1, 3, TEAL[0])
-    cv.hline(lx0, lx1, 4, OUT)
-    cv.vline(lx0, 5, 11, OUT)
-    cv.vline(lx1, 5, 11, OUT)
-    cv.hline(lx0 + 1, lx1 - 1, 5, W_SH2)
-    cv.rect(lx0 + 1, 6, lx1 - 1, 10, W_MID)
-    cv.vline(lx0 + 1, 6, 10, W_HI)
-    cv.vline(lx1 - 1, 6, 10, W_SH1)
-    cv.rows(lx0 + 4, 6, [".aaaa.", "aGGGLa", "aGMMLa", ".aaaa."], {'a': OUT, 'G': GL_D, 'M': GL_M, 'L': GL_L})
-    cv.hline(lx0, lx1, 11, OUT)
-    # lantern shadow on the roof (falls south-east)
-    for x in range(lx0 + 1, lx1 + 2):
-        cv.p(x, 12, TEAL[4] if x <= lx1 else TEAL[3])
-    cv.vline(lx1 + 1, 5, 11, TEAL[3])
+        cv.p(x, 4, TEAL[1] if (x - lx0) % 4 else TEAL[2])
+        cv.p(x, 5, TEAL[2] if (x - lx0) % 4 not in (1, 2) else TEAL[3])
+    cv.p(lx0 + 1, 4, TEAL[0])
+    cv.p(lx0 + 1, 5, TEAL[0])
+    cv.hline(lx0, lx1, 6, OUT)
+    cv.vline(lx0, 7, 12, OUT)
+    cv.vline(lx1, 7, 12, OUT)
+    cv.hline(lx0 + 1, lx1 - 1, 7, W_SH2)
+    cv.rect(lx0 + 1, 8, lx1 - 1, 11, W_MID)
+    cv.vline(lx0 + 1, 8, 11, W_HI)
+    cv.vline(lx1 - 1, 8, 11, W_SH1)
+    cv.rows(lx0 + 4, 8, ["aGGGLa", "aGMMLa", ".aaaa."], {'a': OUT, 'G': GL_D, 'M': GL_M, 'L': GL_L})
+    cv.hline(lx0, lx1, 12, OUT)
+    for x in range(lx0 + 1, lx1 + 2):   # lantern shadow on the shingles (falls south-east)
+        cv.p(x, 13, TEAL[4] if x <= lx1 else TEAL[3])
+    cv.vline(lx1 + 1, 7, 12, TEAL[3])
 
-    # walls: x3..60 posts, face rows 35..57, foundation 58..60
-    stone_pillar(cv, 3, 35, 57)
-    stone_pillar(cv, 56, 35, 57)
-    wall(cv, 8, 55, 35, 57, W_HI)
-    # teal wainscot band
-    cv.hline(8, 55, 49, OUT)
-    cv.hline(8, 55, 50, TEAL[0])
-    cv.rect(8, 51, 55, 55, TEAL[1])
+    # walls between stone pillars (warm wood cap and dark wood foot tie them to the houses' posts)
+    stone_pillar(cv, 3, 33, 59)
+    stone_pillar(cv, 56, 33, 59)
+    for px in (3, 56):
+        cv.p(px + 1, 33, WD_L)
+        cv.p(px + 2, 33, WD_M)
+        cv.p(px + 3, 33, WD_D)
+        cv.p(px + 1, 34, WD_M)
+        cv.p(px + 2, 34, WD_D)
+        cv.p(px + 3, 34, WD_D)
+        cv.hline(px + 1, px + 3, 59, WD_DD)
+    wall(cv, 8, 55, 33, 59, W_HI)
+    # teal wainscot band (rows 51..59)
+    cv.hline(8, 55, 51, OUT)
+    cv.hline(8, 55, 52, TEAL[0])
+    cv.rect(8, 53, 55, 57, TEAL[1])
     for x in range(8, 56):      # panel insets: lit left edge, shaded right edge, 8 px apart
         k = (x - 8) % 8
         if k == 1:
-            cv.vline(x, 52, 54, TEAL[0])
+            cv.vline(x, 54, 56, TEAL[0])
         elif k == 6:
-            cv.vline(x, 52, 54, TEAL[2])
+            cv.vline(x, 54, 56, TEAL[2])
         elif 1 < k < 6:
-            cv.p(x, 54, TEAL[2])
-    cv.hline(8, 55, 56, TEAL[3])
-    cv.hline(8, 55, 57, OUT)
-    foundation(cv, 4, 59, 58)
-    # under-post plinth, as houses do
-    for x in (4, 5, 6, 57, 58, 59):
-        cv.p(x, 57, WD_DD)
+            cv.p(x, 56, TEAL[2])
+    cv.hline(8, 55, 58, TEAL[3])
+    cv.hline(8, 55, 59, TEAL[4])
+    foundation(cv, 4, 59, 60)
 
     # left narrow window, right double window
-    window(cv, 9, 39, 1, 3, 6)
-    window(cv, 35, 38, 2, 7, 6)
+    window(cv, 9, 38, 1, 3, 7)
+    window(cv, 35, 37, 2, 7, 7)
     # glass double door (tile 13 = x16..31) and its canopy
-    glass_doors(cv, 16, 41, 30, 57)
+    glass_doors(cv, 16, 42, 30, 59)
     striped_awning(cv, 15, 31, 38, TEAL)
 
-    # sign board on the eave with a green two-leaf sprig (healing herb)
-    board(cv, 20, 19, 43, 35)
-    star(cv, 26, 22)
-    sprig(cv, 22, 28)
-    sprig(cv, 38, 28, flip=True)
-    # board shadow on the wall below the eave
-    cv.hline(21, 44, 36, W_SH2)
-    cv.p(44, 35, TEAL[4])
+    # sign board on the eave: pink heart between two leaf sprigs (care / herbs - no cross, no red)
+    board(cv, 20, 17, 43, 33)
+    heart(cv, 26, 20)
+    sprig(cv, 23, 25)
+    sprig(cv, 37, 25, flip=True)
+    cv.hline(21, 44, 34, W_SH2)    # board shadow on the wall below the eave
+    cv.p(44, 33, TEAL[4])
     return cv.im
 
 
@@ -429,39 +433,39 @@ POTION = [  # stoppered flask: cork, glass neck, round body with orange liquid, 
 
 def draw_mart():
     cv = Canvas()
-    roof(cv, 1, 62, 3, 33, VIOLET)
+    roof(cv, 1, 62, 0, 32, VIOLET)
     # standing roof sign: board on two legs, flask emblem + gold sparkle dots
-    board(cv, 17, 6, 46, 23, W_HI, W_MID)
+    board(cv, 17, 4, 46, 21, W_HI, W_MID)
     for lx in (22, 40):
-        cv.vline(lx, 24, 28, OUT)
-        cv.vline(lx + 1, 24, 28, WD_M)
-        cv.vline(lx + 2, 24, 28, OUT)
-        cv.hline(lx - 1, lx + 3, 29, VIOLET[4])   # leg shadow on the shingles
-    cv.hline(18, 47, 24, VIOLET[4])                # board shadow on the roof
-    cv.vline(47, 7, 24, VIOLET[3])
-    cv.rows(28, 9, POTION, {'a': OUT, 'c': WD_L, 'd': WD_D, 'G': GL_M, 'L': GL_L,
+        cv.vline(lx, 22, 26, OUT)
+        cv.vline(lx + 1, 22, 26, WD_M)
+        cv.vline(lx + 2, 22, 26, OUT)
+        cv.hline(lx - 1, lx + 3, 27, VIOLET[4])   # leg shadow on the shingles
+    cv.hline(18, 47, 22, VIOLET[4])                # board shadow on the roof
+    cv.vline(47, 5, 22, VIOLET[3])
+    cv.rows(28, 7, POTION, {'a': OUT, 'c': WD_L, 'd': WD_D, 'G': GL_M, 'L': GL_L,
                             'O': ORANGE[1], 'R': ORANGE[0], 'D': ORANGE[3]})
-    cv.rows(21, 10, ["..1..", ".121.", "..1.."], {'1': GOLD, '2': WHITE})
-    cv.rows(38, 15, ["..1..", ".121.", "..1.."], {'1': GOLD, '2': WHITE})
-    cv.p(23, 17, GOLD_D)
-    cv.p(41, 10, GOLD_D)
+    cv.rows(21, 8, ["..1..", ".121.", "..1.."], {'1': GOLD, '2': WHITE})
+    cv.rows(38, 13, ["..1..", ".121.", "..1.."], {'1': GOLD, '2': WHITE})
+    cv.p(23, 15, GOLD_D)
+    cv.p(41, 8, GOLD_D)
 
     # walls
-    post(cv, 3, 34, 57)
-    post(cv, 56, 34, 57)
-    wall(cv, 8, 55, 34, 57)
-    foundation(cv, 4, 59, 58)
+    post(cv, 3, 33, 59)
+    post(cv, 56, 33, 59)
+    wall(cv, 8, 55, 33, 59)
+    foundation(cv, 4, 59, 60)
     for x in (4, 5, 6, 57, 58, 59):
-        cv.p(x, 57, WD_DD)
+        cv.p(x, 59, WD_DD)
     # long awning across the front (orange/white, like shop_a)
-    striped_awning(cv, 7, 56, 36, ORANGE)
+    striped_awning(cv, 7, 56, 35, ORANGE)
     # under the awning: wall shadow rows
-    cv.hline(8, 55, 43, W_SH2)
-    cv.hline(8, 55, 44, W_SH1)
+    cv.hline(8, 55, 42, W_SH2)
+    cv.hline(8, 55, 43, W_SH1)
     # left narrow window
-    window(cv, 9, 45, 1, 4, 5)
+    window(cv, 9, 46, 1, 4, 5)
     # display window with shelves of goods (right)
-    dx0, dy0, dx1, dy1 = 34, 45, 54, 55
+    dx0, dy0, dx1, dy1 = 34, 46, 54, 56
     cv.box(dx0, dy0, dx1, dy1, OUT)
     cv.rect(dx0 + 1, dy0 + 1, dx1 - 1, dy1 - 1, WHITE)
     cv.rect(dx0 + 2, dy0 + 2, dx1 - 2, dy1 - 2, GL_M)
@@ -480,7 +484,7 @@ def draw_mart():
     cv.vline(dx1 - 1, dy0 + 2, dy1 - 1, ST_HI)
     cv.hline(dx0 - 1, dx1 + 1, dy1 + 1, OUT)
     # glass double door
-    glass_doors(cv, 16, 43, 30, 57, (WD_L, WD_M, WD_D))
+    glass_doors(cv, 16, 44, 30, 59, (WD_L, WD_M, WD_D))
     return cv.im
 
 
