@@ -24,6 +24,9 @@ modern3 팔레트(154색) 손 도트로 그린 일본 도시(상가·주택·역
 ## 굽기 규약 (TS 가 기대하는 것)
 
 - 칸 번호는 덧붙이기 전용(자리 키 핀: 같은 번호에서 그림만 바뀌고 새 칸은 끝에 붙는다).
+- **번호가 실제로 밀린 사고(2026-10-14~18, 2026-10-20 발견):** 낡은 `pins.json` 으로 구운 PR 이 머지되며 번호가 밀렸다 — #2899 한 번에 11,329칸, 그 밖에 fbe80f3·f8a7d06·1e5a3f1·4c8c1df·ec73a64 가 128~458칸. 그 전에 게시한 장소 32곳(`public/assets/region-references/jp-city-*.oprn.json`·`src/project/regionReferences/jp-city-*.json`)이 지금 시트로 엉뚱한 칸을 그렸다(가져오기·조수 `import_region_reference` 모두). 고침: `maps/remap-refs.mjs --from 0d4f13e7c8` 가 그 장소를 만든 굽기의 핀 → 자리 키 → 지금 핀으로 번호를 옮기고 타일셋 사본을 지금 정의(칸 이름표 뺀 사본)로 바꾼다. 동네 한 장은 키트에서 뺀 칸(블록 담 등)을 써서 `town.mjs --publish` 로 다시 지었다. 그 기간에 jp_city 로 맵을 만든 **사용자 프로젝트**는 여전히 옛 번호다(이전 판 핀으로 옮기는 이주는 아직 없다).
+- **재발 막기:** `bake_jp.py` 는 저장소에 굽을 때 `pins.json` 이 `origin/main` 것을 그대로 품지 않으면(키가 빠졌거나 번호가 다르면) 굽기 전에 멈추고, 굽기 뒤에도 한 번 더 본다(`bake_lib.base_pin_problems`). `ci-fast` 는 main 푸시마다 `check-pins.mjs --base HEAD~1` 로 바로 앞 커밋 핀과 비교한다.
+- **키트 모양이 바뀌면 새 자리 키:** 건물 키트(`blocks/buildings.py`)는 `tiledata/jp-city/buildings-shapes-v1.json`(2026-10-20 굽기 모양, 덧붙이기만)과 폭×높이가 다르면 칸 자리 키에 `@폭x높이` 를 붙인다. 옛 번호는 legacy 로 옛 그림이 남아 이미 깔린 맵의 건물이 어긋나지 않고, 새로 찍는 키트만 새 그림을 쓴다. 3/4 깊은 지붕(#3098)으로 46채가 1~2칸 높아진 굽기가 이 경로를 탄다. 코드에 박힌 키트 크기(`jpCityStreetComposer` LANDMARKS 의 `jp-bldg-koban` 6×6 → 6×7)는 굽기가 키트와 대조해 다르면 멈춘다 — 같은 PR 에서 표를 고친다.
 - 굽기가 내놓는 조립 부품 id 와 오토타일 그룹 id 는 반드시 `jp-` 로 시작해야 한다. 아니면 갱신 때 저자 항목으로 보고 번들 것을 새로 바꾸지 못한다.
 - 정의 JSON 의 필수 키는 위 목록 그대로다(`modernCityTileset.json` 과 같은 모양).
 

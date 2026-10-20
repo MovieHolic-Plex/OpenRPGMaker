@@ -1,0 +1,392 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "50646d7c93aad034802ea07019d2058e5179596f0e9913709da334bcea081815",
+ "width": 16,
+ "height": 32,
+ "kind": "frame",
+ "name": "home appliance rack",
+ "label": "modern_city_interior/home-appliance-rack",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 7/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 7/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 36,
+  "nearBlackEdge": 0.8,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top microwave unit top plane",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "microwave front (goods on shelf)",
+      "rows": "5-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle shelf board",
+      "rows": "12-14",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "15"
+     },
+     {
+      "part": "lower appliance top plane",
+      "rows": "17-19",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "20"
+     },
+     {
+      "part": "base shelf board",
+      "rows": "25-27",
+      "evidence": "a",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "28"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top unit has a light band in rows 1-4 that ends in a dark front-edge line at row 5, with the microwave face below it (rows 5-11). The middle shelf (rows 12-14, edge line at row 15) and the base shelf (rows 25-27, edge line at row 28) are drawn as light horizontal bands with highlight and edge lines. The lower appliance has its own top plane in rows 17-19, with an edge line at row 20 and a front face in rows 21-24. The rack's horizontal members therefore show top faces and the front faces are 3+ rows, so it reads as three-quarter. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a narrow, tall white and grey appliance rack. Only 15 distinct colours cover the whole piece, against 38-40 for the stall and well references. Each material ramp (white casing, grey panels, dark interior) has about 3-4 steps, where Beodeul uses 5-6. The measured facts are acceptable: 12 visible tones per tile (hedge 9, stall 17, well 20), 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is tinted. By eye, though, the dark blue-grey outline runs evenly around the whole silhouette, which gives a clean sticker look. The flat casing surfaces have little grain, speckle or per-part highlight, so it reads thinner and flatter than the stall and well. A careful artist would not accept it next to those references without more shading steps and surface texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 22288
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top of rack / upper unit (light band)",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "middle shelf beam",
+      "rows": "12-14",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15"
+     },
+     {
+      "part": "lower unit top (light lid band)",
+      "rows": "17-19",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20"
+     },
+     {
+      "part": "base shelf",
+      "rows": "25-27",
+      "evidence": "a",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": "28"
+     },
+     {
+      "part": "microwave and appliance fronts",
+      "rows": "5-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Light band at rows 1-4 forms the top surface, ending in a dark line at row 5 (eave shadow) with the front face below. The middle shelf (rows 12-15) and base shelf (rows 25-28) each show a 3-row band, a lighter edge line at rows 14 and 27, and a dark shadow row below. The lower unit has its own lid band at rows 17-19 with a shadow at row 20. The front face runs from row 5 to row 28 (about 24 rows). No receding side face is drawn. The tops are shallow at 3-4 rows, but each beam has a top band with an edge line."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 12 visible tones per 16x16 tile, which sits inside the reference range (hedge 9, cheese stall 17, roofed well 20). Near-flat coverage is 0%, so there are no 5x5 flat fills. The dark edge pixels are 0% neutral, so the outline leans toward the material tone rather than being a uniform black sticker line. By eye, the white and grey casing has about 4 lightness steps, with panel and shelf separation and small details such as dials, a screen and a door. That is slightly fewer than the references' 5-6 steps, and the piece is smooth and less textured than the stall or well. It is still comparable to the hedge in richness, and a careful artist would accept it next to the references without it looking noticeably flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22943
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top appliance (microwave) lid",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "middle shelf plank",
+      "rows": "12-14",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15"
+     },
+     {
+      "part": "lower appliance (washer/oven) top",
+      "rows": "17-19",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom shelf/base plank",
+      "rows": "25-27",
+      "evidence": "a",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": "28"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The rack stacks two appliances on shelves. The top appliance has a light band at rows 1-4 that ends in a dark front-edge line at row 5, with its front face (screen and controls) below at rows 5-11. The shelf at rows 12-14 has a lighter edge line at row 14 and a darker shadow row at 15. The lower appliance has a light top at rows 17-19, an edge line at row 20, and its front face at rows 21-24. The base plank at rows 25-27 has an edge line at row 27 and shadow at row 28. Every horizontal beam shows a top band plus an edge line, and the front faces are 3+ rows tall, so it reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The measured facts are acceptable. The candidate has 12 visible tones per tile, above prop-hedge at 9 and below the stall (17) and well (20). Near-flat coverage is 0%, and its dark edge pixels are 0% neutral, so the outline is tinted rather than a black sticker line. The picture is less convincing. The whole piece uses only 15 distinct colours, against 38-40 for the stall and well. It spans several materials: a white or grey casing, a dark screen or panel, and shelves. Each material ramp therefore gets only about 3-4 steps, against 5-6 in the references. The white and grey panels read as fairly smooth, with little grain, speckle or per-part highlighting. It sits next to the richer stall and well props as a thinner, more simplified piece, so with the shallow ramps and doubt about texture I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20394
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top appliance (microwave) top plane",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "middle shelf board",
+      "rows": "12-14",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15"
+     },
+     {
+      "part": "second appliance (washer/oven) top plane",
+      "rows": "17-19",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base shelf board",
+      "rows": "25-27",
+      "evidence": "a",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": "28"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The rack is a south-facing stack of two appliance bays. The top appliance has a light top band at rows 1-4 (L=249). A dark front-edge line at row 5 separates it from the front face at rows 5-11. The middle shelf at rows 12-14 (L=190, then a light line at 14 and a dark row at 15) and the base shelf at rows 25-27 (L=190, a light edge at 27, a dark row at 28) each show a short top band ending in an edge line. The lower unit has its own light top at rows 17-19 above a front face at rows 20-24. The tops are shallow (3-4 rows) but have edge lines and front faces below them, so the object reads as three-quarter rather than flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a narrow two-tile appliance rack, a grey/white unit with a microwave-like box above and a cooker below. Measured facts: 12 visible tones per full tile, which is above prop-hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no large flat fills; panels, dials and windows break up the surfaces. Dark edge pixels are 0% neutral, so the outline carries a tint and sits closer to the adjacent material tone than to a black sticker line. Weaknesses: only about 15 distinct colours in total, roughly 3-4 steps per material against Beodeul's 5-6, and little grain or speckle. The tile information is a little lower than the richest references but equal to or above the hedge, so a careful artist would likely accept it beside the set. This is a borderline pass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21483
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.872Z",
+ "cells": {
+  "16": [
+   "2f59313fd08de0d0",
+   "a82409ad6254f768"
+  ],
+  "24": [
+   "17152f725c0f0c29",
+   "23d73e49637d66a8",
+   "31612c454be7e98b",
+   "3c81c6ea23602a33",
+   "4b36bc03386905a2",
+   "55e89d6b37cd939b",
+   "66bbf2ba9b111dc0",
+   "7561340b25040c9d",
+   "75fb6ad0928b0f60",
+   "c988c606e6c6ba26",
+   "e1b902b9d2f26035",
+   "f36f8d9223467834"
+  ],
+  "32": [
+   "a6e9d93490bd7362",
+   "dfadb26133156a00",
+   "fdcca89f8edae4ff"
+  ],
+  "48": [
+   "01835b8810b4e7bd",
+   "43b5191079a486b4",
+   "68756245d742cfe1",
+   "71b9dadd25f5ee1a",
+   "aedfb75e4c76cb4b",
+   "decdfc845df263c1"
+  ]
+ }
+}

@@ -1,0 +1,357 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1cf305361109af9205564076f823a156d5f85e07e10cc5d0b74148524f639ef9",
+ "width": 16,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "amuse bowling pins",
+ "label": "modern_city_interior/amuse-bowling-pins",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 15,
+  "darkV5": 33,
+  "nearBlackEdge": 0.36,
+  "opaqueTiles": 3
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "header panel (grey/white gradient with red stripe)",
+      "rows": "0-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tan lane face with painted bowling pins",
+      "rows": "9-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 45,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a flat, front-facing panel 16 px wide and about 45 rows tall. Rows 1-4 are a vertical light-to-white gradient, row 5 is dark, row 6 is a red stripe and rows 7-8 are dark. That is a header drawn face-on, with no front-edge line, no eave shadow and no ellipse. Rows 9-44 are a uniform tan face with pins painted flat on it, and no contents are visible inside an open container. No part of the main body shows a horizontal surface. The width stays at 16 from row 1 to row 44, so there is no widening or narrowing that would suggest an ellipse or a receding side. The reference cabinet that is judged RIGHT shows a top band with an edge line and eave, and this drawing has nothing like it."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate (bowling pins in a lane frame) has 13 visible tones per tile, which is within range of the hedge (9), stall (17) and well (20), and only 5% near-flat coverage, so density by the numbers is acceptable. The structure is the weak point. 98% of its dark edge pixels are near-neutral, so the outline is a black/grey line around the pieces. That is the sticker look, unlike the tinted dark-material outlines on the hedge (0%), the stall (1%) and the well (33%). The pins and the lane read as small white and grey blocks with about 3-4 lightness steps each. Beodeul materials use 5-6 steps, with per-element highlights and grain. The red stripe and the top sign are mostly flat bands. Texture is limited to a few dots on the pins. A careful artist would find it flatter and more outlined than the stall and well references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 18378
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "header banner (gray gradient bands and red stripe)",
+      "rows": "0-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lane panel with bowling pins drawn face-on",
+      "rows": "9-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 45,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a flat, face-on panel 16 px wide and 45 rows tall. Rows 1-4 are a gray gradient with a light row at 4, then a dark row at 5 and a red stripe at 6. This reads as a front-facing cornice or banner strip, not a horizontal top surface. The lane below (rows 9-44) is a uniform tan field with pins drawn as vertical sprites. The width is a constant 16 px from rows 1 to 44, with no ellipse, roof or visible contents. There is no receding top plane and no side face, so it is a front elevation. It is also more of a wall panel or poster than tall furniture."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate's tile density is fine: 13 visible tones per tile against 9-20 for the hedge, stall and well, and only 5% near-flat coverage. The weakness is the outline. 98% of its dark edge pixels are neutral, so the pins and lane have a uniform near-black outline. That gives the sticker look rather than the dark-material-tone edges of the hedge (0% neutral), the cheese stall (1%) and the well (33%). The lamp-crook is also 100% neutral, but it is thin iron, and the candidate's whites, greys and reds are not. The pins are small white and grey forms with only about 3-4 shading steps and a few red band accents. That is less graded than the 5-6 steps on the stall and well materials. The lane and backing show little grain or per-object shading, so the piece reads as clean but shallow. A careful artist would not accept it beside the references without tinted outlines and more ramp steps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 18410
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "header band with gray gradient and red stripe",
+      "rows": "1-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lane panel with pins in a triangle layout (top-down plan view)",
+      "rows": "9-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a 16x45 rectangle. Rows 1-4 are a vertical gray-to-white gradient with a dark line at row 5, a red stripe at row 6 and a dark line at row 8. That is a flat header strip, not a top surface with a front-edge line and eave shadow. Rows 9-44 are a flat tan lane with pins in a 4-3-2-1 triangle seen from above. The pins' placement and the lane's wood texture show a plan view, not a south-facing front. There is no cabinet-like front face with a separate top, so it reads as a flat top-down slab. It also does not look like tall furniture."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a bowling-pin rack with a small red/white header. The measured facts show 98% of its dark edge pixels are near-neutral, so the outline is a uniform near-black line, the sticker look. The tinted references (hedge 0%, stall 1%) contrast with this. Its 13 visible tones per tile are in the range of the hedge (9) and stall (17), and near-flat coverage is only 5%, so density is not far off. On shading, each material (pins, backboard, header) has about 3 steps, against 5-6 in Beodeul. The pins are small repeated white shapes with red stripes and little per-pin shading. The overall look is a clean icon with neutral dark outlines rather than material-toned edges, so it falls short of the standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15164
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "metallic header band with red stripe",
+      "rows": "1-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bowling lane panel with pins, face-on",
+      "rows": "9-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 44,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a flat, face-on panel 16 px wide. Rows 1-8 are a header strip: a gray gradient from dark to light (rows 1-4), a dark line at row 5, a red stripe at row 6, and dark rows 7-8. It reads as a front-facing cornice or sign, not a horizontal surface. Rows 9-44 are a tan lane face with pins drawn upright and face-on, with no receding plane, no ellipse and no side face. There is no clear top surface, so this is a front elevation. The header's light-to-dark transition at rows 4-5 is the only thing that could pass as an edge line, and I did not count it."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate's dark edge pixels are 98% near-neutral, so the outline is a neutral black/grey line around the pins and frame. This is the sticker look. The references with tinted outlines (hedge 0%, stall 1%) read as dark material tones. The candidate has 13 visible tones per tile, which is between the hedge (9) and the stall (17), and its near-flat coverage is 5%, so the density numbers are acceptable. By eye, the pins are small white shapes with a red stripe, and each carries only about 2-3 steps (white, grey, red). The lane and frame are mostly flat with little grain. The references show 5-6 steps per material, with per-element highlights and grain. The neutral outline and shallow per-material ramps keep it below the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19251
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.712Z",
+ "cells": {
+  "16": [
+   "4ccf9a96aee84397",
+   "7ba4bdb5f6cce649",
+   "ac5cfae7d7bee699"
+  ],
+  "24": [
+   "10df12246aa102f2",
+   "31a0553f050f13b4",
+   "3b630bfb750f2888",
+   "510ee95e3538bfd6",
+   "5e5b0298c72f1995",
+   "d1e9e627fd8e950b"
+  ],
+  "32": [
+   "2c5dac3cbebdfe84",
+   "390dddca8ae10fd9",
+   "594659d51966168c",
+   "6c2ccf05c8ff34ef",
+   "7ada63f9bbf413a0",
+   "7cf4a24c88998fff",
+   "92c72e63cff4d2f7",
+   "94f0bde5568edd4c",
+   "a98a98d90997d344",
+   "b0d1be5e725cd095",
+   "c151f8ef16b0f98f",
+   "f6aaad8155847d2b"
+  ],
+  "48": [
+   "2f6fa875e28b47d5",
+   "5817c866b8b7d992",
+   "d6396de72ab9d01b"
+  ]
+ }
+}

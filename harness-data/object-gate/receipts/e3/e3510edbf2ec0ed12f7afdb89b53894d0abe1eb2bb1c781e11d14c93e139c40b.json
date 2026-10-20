@@ -1,0 +1,453 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e3510edbf2ec0ed12f7afdb89b53894d0abe1eb2bb1c781e11d14c93e139c40b",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "lab fume hood",
+ "label": "modern_city_interior/lab-fume-hood",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 윗면 2행 < 4 (2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "윗면 2행 < 4 (2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 14,
+  "darkV5": 35,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band / header of hood",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass sash strip",
+      "rows": "7-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hood opening with flask and beaker",
+      "rows": "11-21",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower cabinet front with drawers and handles",
+      "rows": "23-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-5 form a top band that brightens from #b4bac4 to #f4f6f8 and ends in a darker front-edge line at row 6 (#8d9095). That fits evidence (a), but there is no eave shadow below the line, and the gradient could also be a front-facing bevelled header, so the call is borderline. The front face runs from row 7 to row 29: a glass strip (rows 7-9), a dark opening with flasks (rows 11-21), a rail line at row 22, and the lower cabinet (rows 23-28). No receding side face is drawn, and the silhouette is a constant 30 px wide."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small grey-white cabinet with a dark window and a flask inside. It has about 3 lightness steps on the body (white, light grey, mid grey) and the interior is a flat dark block. The measured 100% near-neutral share of dark edge pixels confirms a neutral near-black outline around the whole shape. Beodeul references such as the well and stall use tinted dark edges (1% and 33% neutral) and 5-6 steps per material. At 13 visible tones per tile the candidate sits below the stall (17) and well (20), though near the hedge (9). Near-flat coverage is 5%, so there are few flat fills, but the body panels and the dark window read as flat. Overall it has the sticker look and is shallower than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18044
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice band (bevel gradient, 185 to 246)",
+      "rows": "2-5",
+      "evidence": "none",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass sash strip",
+      "rows": "7-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark hood opening with flask and beaker, seen face-on",
+      "rows": "11-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "work shelf strip inside the opening",
+      "rows": "18-21",
+      "evidence": "none",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower cabinet doors with red and green buttons",
+      "rows": "23-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole object is a flat face-on elevation. The top band (rows 2-5) is a bevel-style gradient that gets lighter toward row 6. Row 6 is a grey line, but nothing below it reads as eave shadow, since the glass strip follows directly. I counted it as a cornice and a rim of about 2 rows, not a receding top surface. The glass sash, the hood opening and the cabinet doors are all vertical faces with no horizontal surface visible. The light strip at rows 18-21 sits inside the opening and ends at the grey line at row 22. It could be read as a worktop, but it is too thin and is framed by the opening. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has 13 visible tones per tile, between the hedge (9) and the cheese stall (17) and well (20), and only 5% near-flat coverage, so density is not the problem. The weak points are structure and shading. The grey cabinet body and frame use about 3-4 lightness steps (light grey face, mid grey, dark edge) against the 5-6 steps on the stall and well. The panels and frame read as smooth, mostly flat grey bands with little grain or per-part highlight. All of the dark edge pixels (100%) are neutral, and the picture shows an even dark grey-black line around the whole box and window. That is the uniform 'sticker' outline, not a darker tone of the neighbouring material as on the stall and well (1% and 33% neutral). The window contents (a flask and beaker) add small colour accents, but the object is still simpler and more outlined than the Beodeul props. Overall it falls slightly below the reference bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 26316
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header / top cornice band",
+      "rows": "2-5",
+      "evidence": "none",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass sash panel",
+      "rows": "7-9",
+      "evidence": "none",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "interior with flasks",
+      "rows": "11-19",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "work-surface ledge",
+      "rows": "20-21",
+      "evidence": "none",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower cabinet with drawer fronts",
+      "rows": "23-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole unit is a flat, face-on elevation. Rows 2-5 are a header strip that shades from 185 to 246 as a bevel, not a flat top plane. The line at row 6 (L=144) separates it from the glass panel at rows 7-9, which is a vertical face, and no dark eave shadow follows. The opening (rows 11-19), the ledge (rows 20-21) and the drawer section (rows 23-27) are all vertical faces. The left edge is light and the right edge dark, which fits a framed front face. Nothing shows a horizontal surface seen from above, so at most a 1-2 row rim reads as a top. This matches the 'front elevation: top 1' and 'rim only' wrong examples."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The hood is a pale box with a dark window frame, a single flask scene and a few grey panel lines. The main body ramp has about 3-4 lightness steps against roughly 5-6 on the stall and well. The measured 100% near-neutral dark edge share confirms a neutral dark outline running round the whole silhouette. That reads as the sticker look, unlike the tinted outlines of the hedge (0%), the stall (1%) and the well (33%). The 13 visible tones per tile are decent, and near-flat coverage is only 5%, so the numbers are not bad. The tones come mostly from the window interior and the panel lines, though, not from shaded material. The body surface has no grain, speckle or per-part highlights, and total colours are 17 against 38-40 for the stall and well. Overall it is cleaner and flatter than the references, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 22304
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hood top cap band",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass sash / window (vertical face)",
+      "rows": "7-9",
+      "evidence": "none",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "interior work surface with flask and beaker",
+      "rows": "20-21",
+      "evidence": "d",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flasks and beaker inside the hood",
+      "rows": "11-19",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower cabinet front with controls",
+      "rows": "23-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-5 form a band that brightens toward the front (L 185 to 246) and ends in a darker front-edge line at row 6 (L=144). That reads as a top surface, 4 rows tall, with no separate eave shadow row because the glass window starts directly below it. The front face runs from row 7 to row 28 (window, dark interior with contents, work-surface ledge at rows 20-22, control panel below). No receding side face is drawn. The top band is short, so this is borderline against a flat cornice strip, but the edge line and the gradient support a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The hood is a pale grey box with a dark window and a few small flasks inside. The measured facts show 100% near-neutral dark edge pixels, so the outline is a neutral dark line around the whole shape. That is the sticker look, unlike the hedge (0%), the cheese stall (1%) and the roofed well (33%), whose edges are tinted to the adjacent material. The body has about 4 lightness steps (white, light grey, mid grey, dark frame), shallower than the 5-6 steps in the references. Measured density is fine (13 visible tones per tile against 9-20 for the references, and only 5% near-flat), but most of those tones sit in the small flask and window detail. The large casing panels are smooth and show little grain, speckle or per-part shading. Overall it reads thinner and flatter than the references because of the neutral outline and the shallow ramp on the main material.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 19456
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.020Z",
+ "cells": {
+  "16": [
+   "4082b6756e654b28",
+   "a48fc50085a0367e",
+   "a6cdfdf4a8980dcc",
+   "ac6a341bc0091ebf"
+  ],
+  "24": [
+   "2123f64415b2f193",
+   "21fafdb5981c9fd0",
+   "2bffd81f2b0fbb59",
+   "3e84f1af05094618",
+   "43eab0c664d7069c",
+   "4d2c61c5239b276f",
+   "53bcc59454023b30",
+   "8b7483a91f506e1f",
+   "9b154985df4b31cd",
+   "a6a24bf558208ec5",
+   "a73174e2e2b49925",
+   "b86b2ffe89d29d43",
+   "b86c25bbc2921248",
+   "c90daf092a0a4f38",
+   "c921d301b8e0447c",
+   "c9c7a5c7cd989468",
+   "cc1fb20fe45adb30",
+   "d20aff1df8d9e508",
+   "dad5c186a8a6018d",
+   "df2c8a7fb9f79e14",
+   "e0f6f24fde86e812",
+   "e4b325833965be4b",
+   "ed6486e597e8997f",
+   "ffe096eb3b01675f"
+  ],
+  "32": [
+   "ccd4544e4fb17e85"
+  ],
+  "48": [
+   "21a5eea0b6360cb1",
+   "63ba37558945fdbf",
+   "8d838bb790f02cb2",
+   "ac15ec7401db4555",
+   "e6b83d898af41faf",
+   "ed9e57f1f27a2597"
+  ]
+ }
+}

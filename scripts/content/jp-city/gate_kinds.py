@@ -117,6 +117,10 @@ def state(png_path: str, kind: str, context: str = 'bundle'):
     sha = OG.pixel_sha256(png_path)
     rc = OG.read_receipt(sha)
     if not rc: return None, '3/4 시점 판정 영수증이 없다 — object-gate review 를 먼저 받아라'
+    # 서명된 사람 결정이 최종이다(2026-10-20): 허용이면 통과, 거절이면 막는다(read_hold_decision 이 서명을 확인한다).
+    human = OG.human_decision(OG.read_hold_decision(sha), rc)
+    if human == 'reject': return None, '사람이 검토 화면에서 거절했다 — 최종'
+    if human == 'allow' and rc.get('kind') == kind: return 'pass', None
     if rc.get('kind') != kind: return None, f"영수증 종류({rc.get('kind')})가 요청 종류({kind})와 다르다"
     if rc.get('profileHash') != current_profile() and rc.get('profileHash') not in OG.calibrated_profiles():
         return None, f"옛 판정 프로필({rc.get('profileHash')}) 영수증이다 — 다시 판정받아라"

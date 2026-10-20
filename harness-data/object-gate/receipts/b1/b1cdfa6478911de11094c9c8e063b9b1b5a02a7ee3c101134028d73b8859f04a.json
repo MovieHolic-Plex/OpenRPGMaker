@@ -1,0 +1,463 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b1cdfa6478911de11094c9c8e063b9b1b5a02a7ee3c101134028d73b8859f04a",
+ "width": 48,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "cinema concession",
+ "label": "modern_city_interior/cinema-concession",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 0/4)",
+  "3/4: 윗면 3행 < 4 (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 0/4)",
+   "윗면 3행 < 4 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 17,
+  "darkV5": 30,
+  "nearBlackEdge": 0.98,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "popcorn machine on counter",
+      "rows": "0-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey machine on counter",
+      "rows": "2-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "straw/drink cup on counter",
+      "rows": "8-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "monitor on counter",
+      "rows": "6-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter top",
+      "rows": "18-20",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "21-21"
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the long red counter. Rows 18-20 form a cream/white top band (3 rows, row 18 slightly darker cream, rows 19-20 white). Row 21 is a dark red line (L=59) that acts as the front-edge line and eave shadow. Below it, rows 21-30 are the red front face with a yellow stripe and a dark base outline, about 10 rows. The popcorn machine, grey machine, straw cup and monitor stand on the counter and are decor. The counter top is thin (3 rows) but has a distinct edge line and shadow. The object is a counter rather than tall furniture, so the kind only loosely fits."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "On the measured facts the candidate is close to the stall-cheese and well references: 16 visible tones per tile against 17 and 20, and 0% near-flat coverage. Density alone would not fail it. The outline is the problem. 100% of its dark edge pixels are near-neutral, so it uses the uniform dark grey/black line around the machine, register and counter that marks the 'sticker' look. The Beodeul stall, hedge and well use tinted dark-material edges (1%, 0% and 33% neutral). Each material on the candidate (the red/white striped counter, the grey machines, the popcorn) shows only about 3 lightness steps, against 5-6 on the references. Texture is limited to a few stripe and screen details with no per-material grain, and the pieces are separated by outline rather than by value. A careful artist would not accept it next to the stall reference without it looking flatter and more outlined.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 25136
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "popcorn machine on counter",
+      "rows": "0-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle machine (printer/dispenser) on counter",
+      "rows": "2-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "striped straw/cup tower on counter",
+      "rows": "8-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "monitor and small device on counter",
+      "rows": "4-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter top (white worktop)",
+      "rows": "18-20",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "21-21"
+     },
+     {
+      "part": "counter front face (red with yellow stripe)",
+      "rows": "21-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the low counter (rows 18-30), since the popcorn machine, dispenser, cup tower and monitor are goods and screens standing on it, so they count as decor. The counter has a 3-row white top band at rows 18-20 (cream highlight at row 18, white at rows 19-20). A dark-red front-edge line at row 21 closes the band, and the red front face with a yellow stripe runs rows 21-30 (10 rows). The top is thin but has an edge line and a shadow, so it is more than a 1-2 row rim. The object is a wide counter rather than tall furniture against a wall, so kind_matches is false."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a popcorn machine on a red-striped counter with a small cash register and monitor. Its 16 visible tones per tile are close to the stall (17) and well (20), and it has 0% near-flat coverage, so it is not a flat fill. Structure and shading are shallower than the references. Its dark edge pixels are 100% near-neutral, so the outline is a uniform near-black line. That matches the sticker look, unlike the cheese stall (1%) and hedge (0%), whose outlines carry a tint. The counter is a red/white stripe with about 2-3 steps, and the machine bodies are grey with only about 3 steps. They lack the 5-6 step ramps and per-element grain of the references. The tone count is respectable but the neutral outline and shallow ramps mean it would look flatter and more sticker-like next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 23160
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "counter top band",
+      "rows": "18-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21"
+     },
+     {
+      "part": "red counter front face",
+      "rows": "21-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "popcorn machine on counter",
+      "rows": "0-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey machine on counter",
+      "rows": "2-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "striped straw/cup on counter",
+      "rows": "6-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "monitor and small display on counter",
+      "rows": "4-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the counter. Rows 18-20 form a cream/white top band (row 18 is slightly darker, rows 19-20 are brightest). The band ends in a front-edge line at row 20, and row 21 is a dark red eave shadow (L=59). Below it, rows 21-30 are the red front face with a yellow stripe and a dark base, about 10 rows. The popcorn machine, grey machine, cup, monitor and display are goods on the counter, so they count as decor. The top is shallow, only 3 rows, but it has an edge line and shadow, so it is a top surface and not just a rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate concession counter holds a popcorn machine, a register and a small screen. It has 16 visible tones per tile, close to the stall (17) and well (20) references, and 0% near-flat coverage, so it is not a flat fill. Structurally it is shallow, though. Each material (red/white striped counter, grey machines, popcorn) has only about 2-3 lightness steps, against 5-6 in the references. The measured dark edge pixels are 100% near-neutral, and the picture shows a uniform dark grey/black outline around the machines and counter. The Beodeul stall and well use tinted dark-material outlines instead (1% and 33% neutral). The result reads as a clean but sticker-like sprite beside the references, which have per-material grain, tile scallops and shaded stones. Density is slightly lower by eye, because the machines are small, flat-shaded blocks with few texture dots.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 26333
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "popcorn machine on counter",
+      "rows": "0-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "coffee/dispenser machine on counter",
+      "rows": "2-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "straw cup and monitor on counter",
+      "rows": "6-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter top",
+      "rows": "18-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21"
+     },
+     {
+      "part": "counter front face",
+      "rows": "21-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the counter, rows 18-30. Rows 18-20 are a light cream/white band across the full 46px width. Row 21 is a dark red line directly under it, which acts as the eave shadow. Below that is the red front face with a yellow stripe at rows 25-26 and a dark base at rows 29-30, giving about 9 rows of front face. The popcorn machine, dispenser, straw cup and monitor stand on the counter and are decor. The top band is thin at 3 rows, but it has a front-edge line and a shadow row, so it is more than a 1-2 row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a popcorn machine, register and striped counter. Density is fine on the numbers: 16 visible tones per tile against 17 for the cheese stall and 20 for the roofed well, with 0% near-flat coverage. The problem is structure. 100% of its dark edge pixels are neutral, and by eye the dark line around the machine, register and counter is uniform and colourless. Beodeul instead uses dark brown, green or red-brown edges tinted to the neighbouring material (cheese stall 1% neutral, hedge 0%, well 33%). That is the sticker look. The red/white counter stripes and the grey register body are close to flat two- or three-step blocks, with little per-material ramping or grain. The popcorn has some speckle but few steps. Overall it is cleanly drawn but shallower than the stall and well references, with about 3 steps per material against their 5-6.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 24871
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.789Z",
+ "cells": {
+  "16": [
+   "0607c8d8e73e7d9b",
+   "34dc3f2b6cffda1c",
+   "54db76089f98a31d",
+   "569d17e98aa2d465",
+   "a63dff77197d0989",
+   "d1f78d51faef3fdf"
+  ],
+  "24": [
+   "369cfd6abc6c17bc",
+   "37c3cf388c8a6528",
+   "7a03aed2f8c9ee08",
+   "82fb0e8986691390",
+   "9c5e70b6b872a931",
+   "ae1f406bb61290fc",
+   "d2c4e2573f2186d4",
+   "f0cdce0f3828749d"
+  ],
+  "32": [
+   "3b3571573635dfc7",
+   "4d11fe02e8d72c50",
+   "6d48680489b4cd74",
+   "a7a1e307604bce0e",
+   "d4c36aa9f9201cd7",
+   "d840a588e67fe868"
+  ],
+  "48": [
+   "10f2ccd5a9d0138d",
+   "1873ec82b4b4bd79"
+  ]
+ }
+}

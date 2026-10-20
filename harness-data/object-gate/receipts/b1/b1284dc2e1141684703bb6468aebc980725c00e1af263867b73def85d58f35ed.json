@@ -1,0 +1,419 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b1284dc2e1141684703bb6468aebc980725c00e1af263867b73def85d58f35ed",
+ "width": 32,
+ "height": 32,
+ "kind": "other",
+ "name": "mart cart bay",
+ "label": "modern_city_interior/mart-cart-bay",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 11,
+  "darkV5": 37,
+  "nearBlackEdge": 0.1,
+  "opaqueTiles": 3
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "goods (red items on posts) on top of the cart",
+      "rows": "4-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cart basket top / opening band",
+      "rows": "9-13",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "basket front wire grid",
+      "rows": "14-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base shelf and wheels",
+      "rows": "22-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a cart basket. Rows 9-12 form a top band (dark outline at row 9, a lighter back rim at row 10, darker interior at rows 11-12). A bright front-edge line at row 13 (L=208-244) closes the band. Below it, rows 14-21 show the wire-grid front face, about 10 rows including the base shelf at rows 22-23. The red goods in rows 4-8 are decor on top. The tapering left edge (width 29 down to 23) is the cart's own front profile, not a receding side face. Wheels sit at rows 24-26. There is a top surface of about 4 rows with an edge line, plus a clear front face, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small grey cart with red goods on top. It has only about 13 colours in total and roughly 3 lightness steps on its grey body. The grid-like basket and wheels read as a uniform dark outline with little grain or per-part shading. 79% of its dark edge pixels are near-neutral, against 0-1% for the hedge and cheese-stall references, so the outline looks like a neutral sticker line rather than a dark tone of the adjacent material. Its 10 visible tones per tile are on par with the hedge (9) but well below the stall (17) and the roofed well (20). The 0% near-flat coverage shows there are no big flat fills, but the shading is shallower and the surfaces carry less texture than the richer references. It would look thinner and flatter next to the cheese stall and well, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18334
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "red goods/items on top",
+      "rows": "4-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cart basket top / opening",
+      "rows": "9-13",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "basket mesh front face and tapered end",
+      "rows": "14-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base platform and wheels",
+      "rows": "22-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The red items on rows 4-8 are goods on the cart, so they count as decor. The main body is the basket, which is 30px wide on rows 9-14. Its top band covers rows 9-13: a dark outline on rows 9-10, darker interior on rows 11-12, and a light front-edge line on row 13 (L=208-244). Below that is a mesh front face on rows 14-21, with a dark base line on row 21 and a light platform band on rows 22-23. Wheels sit on rows 24-26. The top band is only about 5 rows and the mesh face is mostly see-through, but it still has a top band with an edge line and a front face of more than 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small grey cart with a row of red items on top, and it has only 13 distinct colours in total. The comparable props, the stall (40) and the well (38), carry about three times as many. Its grey body ramp has about 3 steps: a light rim, a mid grey and a dark grey, with a dotted grid pattern that reads as mesh. Beodeul props use about 5-6 steps per material. 79% of its dark edge pixels are near-neutral, so the outline is a neutral dark line around the shapes, not a darker tint of each adjacent material. The stall and the hedge, by contrast, measure 1% and 0%. The measured 10 visible tones per tile and 0% near-flat coverage keep it from being plainly flat. But the tones come mostly from the repeated grid and the red items, and the material ramps stay shallow and sticker-like next to the stall and well. It reads as thinner and less crafted than those references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20485
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "red goods with stems on top of the cart",
+      "rows": "4-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "basket opening / top (back rim, dark interior, light front rim)",
+      "rows": "9-13",
+      "evidence": "d",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mesh front face of basket",
+      "rows": "14-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base shelf",
+      "rows": "22-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs and wheels",
+      "rows": "24-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The basket is the main body. Rows 9-12 show the back rim and a dark interior, and row 13 is a bright front-rim line (L=208-244 across x=8, 16 and 23). This reads as an open container seen from above, which is evidence (d) with a front-edge line. Below it, rows 14-21 are a mesh front face, then a base shelf at rows 22-23 and legs and wheels at rows 24-26. The red goods at rows 4-8 sit on top and are decor. The left diagonal (width 29 down to 23 over rows 15-21) is the tapering basket outline, not an isometric side face. The top band is thin (about 5 rows) and ends in a light line rather than a clear eave shadow, so this is a borderline three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small grey and white cart with a few red items on top. Measured facts: 10 visible tones per tile, similar to the hedge (9) but well below the stall (17) and the roofed well (20). Near-flat coverage is 0%, so the surfaces are not flat fills. However, 79% of its dark edge pixels are near-neutral, which matches the neutral sticker outline of the lamp (100%) and not the tinted outlines of the hedge (0%) and stall (1%). The grey body reads as only about 3 lightness steps (white, light grey, mid grey) plus a dark line. The wire basket grid and wheels look like a uniform dark outline with little per-material shading or grain. It is cleanly drawn but flatter and more sticker-like than the references, so it fails on outline and shading depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 21824
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "red goods/boxes on top of cart",
+      "rows": "4-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "basket top / opening",
+      "rows": "10-13",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wire mesh front face of basket",
+      "rows": "14-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base shelf and wheels",
+      "rows": "22-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The cart basket has a band of rows 10-12 (dark interior, rim at 9-10) that ends in a light front-edge line at row 13, so it reads as a foreshortened top or opening. Below it the wire-mesh front face runs rows 14-21 with a diagonal left edge. The base shelf (rows 22-23) and wheels (rows 24-26) sit under that. The red items at rows 4-8 are goods on top and count as decor. The top band is thin (about 4 rows) but has an edge line, so it counts as a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small grey cart with a row of red items on top. Its visible tones per tile are 10, against 17 for the cheese stall and 20 for the roofed well, and it uses 13 colours in total against 38-40 for those two. The hedge reference also sits at 9 visible tones, so tile density is only moderately lower. Its dark edge pixels are 79% near-neutral, while the stall reference is at 1% and the hedge at 0%. The outline reads as a grey-black line around the cart, which gives the sticker look rather than the dark-material-tone outlines of the references. The grey metal body has only about 3 lightness steps, where the references use 5-6 per material. The mesh and wheels have some pattern but no per-part shading or grain. No large flat fills were measured. Overall it is cleanly drawn but shallower in shading and outline craft than the stall and well.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18787
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.059Z",
+ "cells": {
+  "16": [
+   "572b4e9373f74db6",
+   "7d1040e886843428",
+   "852f29b12bb1c405",
+   "c30495b265c2fe29"
+  ],
+  "24": [
+   "00accf1c2ad3aa13",
+   "0ea89c8b1b5000b0",
+   "18f93f7d6e5bc8ec",
+   "1f83b798462ec5b8",
+   "22f126c40491f3ff",
+   "243c72720078a4cc",
+   "2c79ce0cf319feb7",
+   "2cf5534bd2ee1ba6",
+   "33c4bf83cd7b480f",
+   "55442a0a18fde0c4",
+   "659d95ae8827fcee",
+   "6c8d9893fc5e7dc9",
+   "75450ee488f731a4",
+   "7e0481f8439fd8dc",
+   "85ae52fd9badbaa3",
+   "8b89ed91ebb46562",
+   "abef675c9f56a558",
+   "b06f9afdeb6eee4f",
+   "b16aafed1375d5bf",
+   "c3b1be2813508c7a",
+   "e2469562aa7d3b00",
+   "fa9920039a12b795",
+   "fb9a7b4747b3996e"
+  ],
+  "32": [
+   "713275e232cda1b5"
+  ],
+  "48": [
+   "0ca53cad67ba9003",
+   "2921178effc78abb",
+   "2cdaa047b5e25a76",
+   "4c886bf156b905dd",
+   "a438f13070fbfbbb",
+   "b5574034b6a42677"
+  ]
+ }
+}

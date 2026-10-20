@@ -5,6 +5,34 @@
 
 <!-- releases -->
 
+## 0.292.0 — 2026-10-20
+
+### 기능
+
+- **jp-city** — 3/4 top-view depth for city buildings and vehicles (draft) (#3098) (`563991c`)
+
+### 수정
+
+- **runtime** — field followers no longer flank or overlap the hero (#3124) (`4e30d70`)
+- **interior** — 실내 조수 RCA r2 — remove_map 행·상층 출구·school 견본·벽면 걸이 겹침·공공시설 program (#3123) (`d98b243`)
+- **battle** — keep the emerald enemy HP box solid while the enemy stands (#3121) (`bc6d02c`)
+
+## 0.291.0 — 2026-10-20
+
+### 기능
+
+- **object-gate** — split to private repo MovieHolic-Plex/object-gate (vendored copy + sync) (#3117) (`88a451f`)
+- **object-gate** — rules v10 seat backrest exemption + frozen fresh5 calibration (rejected) (#3119) (`72e507e`)
+- **monster** — install user-picked crab stalk eyes A + scoped eye-stalk rule (#3118) (`0924b04`)
+
+### 수정
+
+- **flagship** — Astra temple boss and league lead 베르카부 swap the bug move for 새싹치기, like the gym leader (#3114) (`a9a8b54`)
+
+### 정리
+
+- **worldmap** — public oprn-worldmap-kit is the single master of the generator; drop the 700-file in-repo copy (#3116) (`a109107`)
+
 ## 0.290.0 — 2026-10-20
 
 ### 기능

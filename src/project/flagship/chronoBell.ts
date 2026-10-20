@@ -20,6 +20,7 @@ import { buildJrpgChapter } from "@/editor/tools/jrpgChapterTools";
 import { pickSpot, placeRoamer } from "@/editor/tools/jrpgVolumeTools";
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import { buildFallenStarOpening, FALLEN_STAR_TITLE_BACKGROUND } from "./fallenStarOpening";
+import { clearOrphanShadows, clearUpperByLabel, rimPit } from "./fallenStarMapPolish";
 import { FALLEN_STAR_ACT1, FS_NAMES, FS_PREFIX, FS_STAR_KEY_ITEM } from "./fallenStarStory";
 import type { FlagshipDemoBuildResult } from "./types";
 
@@ -68,11 +69,11 @@ function setupCast(project: Project): void {
   });
   make(IRIS_ID, "actor_gunner", {
     name: "이리스", nickname: "별에서 온 기계 소녀",
-    characterResourceId: "easyrpg-charset-actor4", characterIndex: 3,
-    battleCharacterResourceId: "charset-battler-actor4-3", initialLevel: 6,
+    // 감사 3차 감독 선택(2026-10-20): Actor4 #7 칩과 그 짝 얼굴 Actor2 #15 — 창백한 은청색 머리·붉은 눈이
+    // 「사람을 닮게 만든 기계」와 맞는다. 예전 Actor4 #3 칩의 짝 얼굴(Actor2 #11)은 굳은 남성 얼굴로 읽혔다.
+    characterResourceId: "easyrpg-charset-actor4", characterIndex: 7,
+    battleCharacterResourceId: "charset-battler-actor4-7", faceResourceId: "easyrpg-faceset-actor2-15", initialLevel: 6,
   });
-  // Actor4 칩에는 짝 얼굴 그림이 없다 — 남의 얼굴을 빌리지 않는다.
-  delete (actors.find((a) => a.id === IRIS_ID) as { faceResourceId?: string }).faceResourceId;
   project.system.startActorIds = [hero.id, ELENA_ID];
   // 런타임은 새 게임 파티를 session.partyActorIds 에서 읽는다 — 둘 다 맞춘다(감사 2차: 엘레나가 대사에만 있고 파티에 없었다).
   project.session.partyActorIds = [hero.id, ELENA_ID];
@@ -110,6 +111,9 @@ function setupFoes(project: Project): { field: string[]; boss: string } {
   makeEnemy(project, "enemy_fs_wisp", "길 잃은 도깨비불", "wisp-blue", { maxHp: 110, maxMp: 20, attack: 60, defense: 12, mind: 60, agility: 46 }, 38, 14);
   makeEnemy(project, "enemy_fs_valen", "심문관 발렌", "mage-rogue", { maxHp: 1100, maxMp: 120, attack: 84, defense: 30, mind: 90, agility: 44 }, 400, 300);
   makeEnemy(project, "enemy_fs_guardian", "별지기의 수호상", "golem-crystal", { maxHp: 900, maxMp: 0, attack: 92, defense: 40, mind: 40, agility: 22 }, 300, 0);
+  // 발렌은 필드와 같은 걷기 칩의 전투 시트로 싸운다(감사 3차: 필드는 망토 마법사, 전투는 보라 후드 — 다른 사람처럼 보였다).
+  const valen = project.database.enemies.find((e) => e.id === "enemy_fs_valen");
+  if (valen) valen.monsterResourceId = "charset-battler-actor1-4";
   makeTroop(project, "troop_fs_wolves", "숲늑대 무리", ["enemy_fs_wolf", "enemy_fs_wolf"]);
   makeTroop(project, "troop_fs_spiders", "덤불거미", ["enemy_fs_spider", "enemy_fs_spider"]);
   makeTroop(project, "troop_fs_wisps", "도깨비불", ["enemy_fs_wisp", "enemy_fs_wisp", "enemy_fs_wisp"]);
@@ -238,18 +242,18 @@ function polishLines(observatory: GameMap, forest: GameMap, vault: GameMap): voi
   if (summaryAt < 0 || !choices || choices.options.length < 2) throw new Error("[fallen-star] 하넬 의뢰 대사 구조가 바뀌었다");
   const accept = choices.options[0]!.branch;
   const askLines = accept.filter((c) => c.kind === "text");
-  choices.options[0]!.branch = [...accept.filter((c) => c.kind !== "text"), say(H, "조심하거라. 동문으로 나가면 바로 숲이다.")];
+  choices.options[0]!.branch = [...accept.filter((c) => c.kind !== "text"), say(H, "동문을 나서면 바로 숲이다. 조심하거라."), say("엘레나", "동문 밖이 숲이야. 숲지기 브람 아저씨부터 찾자.")];
   ask.splice(summaryAt, 1, ...askLines);
-  choices.prompt = "숲으로 가 볼까?";
-  choices.options[0]!.text = "가 보겠습니다";
-  choices.options[1]!.text = "조금 있다가";
-  replaceLine(observatory, hanel!.id, "마음이 바뀌면 다시 오게.", [say(H, "너무 늦지는 말거라. 심문관들이 먼저 닿을지도 모른다.")]);
+  choices.prompt = "지금 숲으로 갈까?";
+  choices.options[0]!.text = "지금 가겠습니다";
+  choices.options[1]!.text = "준비하고 오겠습니다";
+  replaceLine(observatory, hanel!.id, "마음이 바뀌면 다시 오게.", [say(H, "너무 늦지 말거라. 심문관이 먼저 닿을지도 모른다.")]);
 
   // 진행 중: 어디까지 왔는지에 따라 다음 갈 곳을 알려 준다(브람 → 공터 → 지하 철문).
   const hints = [
-    "동문으로 나가면 숲이다. 숲길은 숲지기 브람에게 물어보거라.",
+    "동문 밖이 숲이다. 숲에 들면 숲지기 브람부터 찾거라.",
     "브람이 말한 북쪽 끝 공터로 가 보거라.",
-    "바닥 철문 말이냐? 별 모양 홈이 있지. 그 열쇠가 맞을지도 모른다. 조심해서 내려가거라.",
+    "그 별 무늬 열쇠, 바닥 뚜껑문 홈에 맞을 게다. 조심해 내려가거라.",
   ];
   let fork = progressPage.commands.find((c) => c.kind === "fork") as ForkCommand | undefined;
   for (const hint of hints) {
@@ -260,7 +264,7 @@ function polishLines(observatory: GameMap, forest: GameMap, vault: GameMap): voi
   replaceLine(observatory, hanel!.id, "자네 덕분에 살았어. 정말 고맙네.", [say(H, "북쪽 하늘탑으로 가거라. 이리스를 부탁한다.")]);
 
   replaceLine(forest, `ev_${FS_PREFIX}_bram`, "고맙네.", [say("숲지기 브람", "북쪽 끝 공터다. 길만 따라가라. 풀숲에선 늑대를 조심하고.")]);
-  replaceLine(forest, `ev_${FS_PREFIX}_main_inspect1`, "확인을 마쳤다.", [narrate("금속 알은 텅 비었다. 안쪽에 아직 온기가 남아 있다.")]);
+  replaceLine(forest, `ev_${FS_PREFIX}_main_inspect1`, "확인을 마쳤다.", [narrate("은빛 관은 텅 비었다. 안쪽에 아직 온기가 남아 있다.")]);
 
   // 지하 상자 — 기본 표의 「기본 새우」 대신 상급 회복약.
   const chest = vault.events.find((e) => e.id === `ev_${FS_PREFIX}_vault_chest1`);
@@ -270,16 +274,7 @@ function polishLines(observatory: GameMap, forest: GameMap, vault: GameMap): voi
   }
   replaceLine(vault, `ev_${FS_PREFIX}_vault_chest1`, "보물상자를 열었다! 기본 새우를 손에 넣었다.", [narrate("보물상자를 열었다! 상급 회복약을 손에 넣었다.")]);
 
-  // 보기가 셋인 선택지는 질문 줄을 앞 대사로 뺀다 — 480×270 에서 질문+보기 셋이 아래 창 높이를 넘어 셋째 보기가 잘렸다(감사 2차).
-  for (const map of [observatory, forest, vault]) for (const event of map.events) for (const list of eventCommandLists(event)) {
-    for (let i = 0; i < list.length; i += 1) {
-      const c = list[i] as ChoicesCommand;
-      if (c.kind !== "choices" || !c.prompt || c.options.length < 3) continue;
-      list.splice(i, 0, narrate(c.prompt));
-      delete c.prompt;
-      i += 1;
-    }
-  }
+  // 보기 셋 선택지는 질문과 함께 띄운다 — 480×270 에서 셋째 보기가 잘리던 것은 엔진이 고쳤다(#3128, 선택 창이 보기 수만큼 자란다).
 
   // 남은 기본 화자 「의뢰인」은 하넬이다(이 장의 의뢰인은 하넬 하나).
   for (const map of [observatory, forest, vault]) for (const event of map.events) for (const list of eventCommandLists(event)) for (const c of list) {
@@ -430,6 +425,12 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   setEventFace(M(ids.hub), `ev_${FS_PREFIX}_gate`, undefined);
   setEventFace(M(ids.forest), `ev_${FS_PREFIX}_bram`, undefined);
   polishLines(M(ids.observatory), M(ids.forest), M(ids.vault));
+  // 장 구성기의 「기억의 세이브 결정」은 시스템 말투다 — 세계 안의 이름과 문장으로(감사 3차).
+  for (const event of M(ids.vault).events) if (event.name === "기억의 세이브 결정") {
+    event.name = "푸른 별빛 결정";
+    for (const page of event.pages ?? []) page.name = "푸른 별빛 결정";
+  }
+  replaceLineAnywhere(M(ids.vault), "푸른 기억의 결정이 은은하게 공명하며 파티 전원의 체력과 마력을 완전히 회복시켰다!", [narrate("푸른 결정에 손을 대자, 지친 몸에 힘이 차올랐다.")]);
   const bossEvent = M(ids.vault).events.find((e) => (e.pages ?? []).some((p) => JSON.stringify(p.commands).includes("battleProcessing")) && e.id.includes("kill"));
   if (bossEvent) {
     setEventChip(M(ids.vault), bossEvent.id, "tex_easyrpg_charset_actor1", 4);
@@ -450,18 +451,20 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   for (let i = podList.length - 1; i >= 0; i -= 1) if (podList[i]!.kind === "changeTile") podList.splice(i, 1);
   const opened = podList.findIndex((c) => c.kind === "text" && String((c as { body?: string }).body).includes("치익— 뚜껑이 열리고"));
   podList.splice(opened + 1, 0,
-    say("이리스", "…여기는 어디죠? 제 배는… 부서졌군요."),
-    say("카엘", "괜찮아? 너… 별에서 떨어진 거야?"),
-    say("이리스", "별이 아니에요. 하늘을 건너는 배예요. 저는 이리스, 사람을 닮게 만든 기계고요."),
-    say("엘레나", "기계라고? 말도 하고, 숨도 쉬는데…"),
+    say("이리스", "…여기는, 어디죠? 몸이… 아직 무거워요."),
+    say("카엘", "괜찮아? 너… 저 별 안에 있었던 거야?"),
+    say("이리스", "별이 아니에요. 하늘을 건너는 배예요. 저는 이리스, 기계예요."),
+    say("엘레나", "기계? 말도 하고, 숨도 쉬는데…"),
     say("이리스", "숨은 흉내예요. 사람들이 덜 무서워하라고요."),
-    say("이리스", "집에 돌아가려면 신호를 보내야 해요. 높은 곳에, 커다란 렌즈가 있는 곳이 필요해요."),
+    say("이리스", "…혹시, 제가 무서우세요?"),
+    say("카엘", "아니. 조금 놀랐을 뿐이야."),
+    say("이리스", "집에 신호를 보내야 해요. 높은 곳, 큰 렌즈가 있는 곳에서요."),
     say("엘레나", "렌즈라면… 천문대에 있어."),
-    say("이리스", "그리고 이거요. 배 안쪽에 박혀 있던 거예요."),
+    say("이리스", "이것도 드릴게요. 배 안에 박혀 있던 거예요."),
     keyGain,
     narrate("「별빛 열쇠」를 얻었다."),
-    say("엘레나", "이 별 무늬… 천문대 바닥 철문에 파인 홈이랑 똑같아."),
-    say("카엘", "돌아가자. 심문관들이 여길 찾기 전에."),
+    say("엘레나", "이 별 무늬… 천문대 바닥 뚜껑문의 홈이랑 똑같아!"),
+    say("카엘", "천문대로 돌아가자. 심문관이 여길 찾기 전에."),
     { kind: "changeParty", actorId: IRIS_ID, action: "add" } as Command,
     { kind: "setSwitch", switchId: SW_IRIS_JOINED, value: true } as Command,
     narrate("이리스가 동료가 되었다."),
@@ -479,7 +482,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
         if (rec.kind === "fork" && (rec.condition as { kind?: string } | undefined)?.kind === "battleResult") {
           rec.else = [
             { kind: "recoverAll" },
-            say("엘레나", "물러서자! 숨을 고르고 다시 하자."),
+            say("엘레나", "일단 물러서! 숨 고르고 다시 붙자."),
           ];
         }
       }
@@ -544,6 +547,9 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   };
   const hatch = retarget(M(ids.observatory), M(ids.vault).id, { mapId: PUZZLE_ROOM, x: 10, y: 13, facing: "up" });
   if (!hatch) throw new Error("[fallen-star] 천문대 뚜껑문을 찾지 못했다");
+  // 장 구성기는 뚜껑문을 벽 밑 찬장 사이에 두어 찬장 문처럼 보였다(감사 3차) — 방 가운데 빈 바닥으로 옮긴다.
+  const hatchOpen = nearFree(project, M(ids.observatory), { x: hatch.x, y: hatch.y + 3 }, 2, hatch.id);
+  if (hatchOpen) { hatch.x = hatchOpen.x; hatch.y = hatchOpen.y; }
   // 뚜껑문이 보이게 — 투명 출입구 칸에 바닥 뚜껑문 그림을 찍는다.
   execTool(project, "stamp_object", { objectId: "kit:atlas_biome_interior/hand-interior:trapdoor", mapId: M(ids.observatory).id, x: hatch.x, y: hatch.y });
   const hatchFront = pickSpot(project, M(ids.observatory), { x: hatch.x, y: hatch.y }, new Set([`${hatch.x},${hatch.y}`]), 0.01, 1) ?? { x: hatch.x, y: hatch.y + 1 };
@@ -565,28 +571,50 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   const pod = M(ids.forest).events.find((e) => e.id === `ev_${FS_PREFIX}_main_inspect1`);
   if (pod) {
     const fm = M(ids.forest);
-    const cx = pod.x, cy = pod.y - 1, rx = 5.2, ry = 3.4;
+    const cx = pod.x, cy = pod.y - 1, rx = 3.9, ry = 2.7;
+    const pit = new Set<number>();
     for (let y = Math.max(1, Math.floor(cy - ry)); y <= Math.min(fm.height - 2, Math.ceil(cy + ry)); y += 1) {
-      let runStart = -1;
-      for (let x = Math.max(1, Math.floor(cx - rx)); x <= Math.min(fm.width - 1, Math.ceil(cx + rx) + 1); x += 1) {
-        const wob = ((x * 7 + y * 13) % 5) * 0.06;
-        const inside = x <= fm.width - 2 && ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1 - wob
-          && fm.lowerTiles[y * fm.width + x] === 737 && (fm.upperTiles[y * fm.width + x] ?? -1) < 0;
-        if (inside && runStart < 0) runStart = x;
-        if (!inside && runStart >= 0) {
-          execTool(project, "fill_region", { mapId: fm.id, x: runStart, y, w: x - runStart, h: 1, layer: "lower", material: "버들항 농장 흙길" });
-          runStart = -1;
-        }
+      for (let x = Math.max(1, Math.floor(cx - rx)); x <= Math.min(fm.width - 2, Math.ceil(cx + rx)); x += 1) {
+        // 칸마다 흔든다 — 고른 타원은 공터 네모 판으로 보였다(감사 3차 「흙 마당」).
+        const wob = (((x * 73856093) ^ (y * 19349663)) >>> 0) % 7 * 0.1 - 0.25;
+        const inside = ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1 - wob
+          && fm.lowerTiles[y * fm.width + x] === 737
+          // 관 그림 밑 칸도 칠한다 — 남겨 두면 관 둘레에 풀 테두리가 섰다.
+          && ((fm.upperTiles[y * fm.width + x] ?? -1) < 0 || (x === pod.x && y >= pod.y - 2 && y <= pod.y - 1));
+        if (inside) pit.add(y * fm.width + x);
       }
     }
+    // 가로·세로 이웃이 둘 미만인 삐죽 칸은 뺀다 — 둑 덧그림에 그런 모양이 없어 네모 흙 한 칸이 튀어나왔다.
+    for (let changed = true; changed;) {
+      changed = false;
+      for (const c of [...pit]) {
+        const n = [c - fm.width, c + fm.width, c - 1, c + 1].filter((k) => pit.has(k)).length;
+        if (n < 2) { pit.delete(c); changed = true; }
+      }
+    }
+    for (const c of [...pit].sort((p, q) => p - q)) {
+      if (pit.has(c - 1)) continue;
+      let end = c; while (pit.has(end + 1) && Math.floor((end + 1) / fm.width) === Math.floor(c / fm.width)) end += 1;
+      execTool(project, "fill_region", { mapId: fm.id, x: c % fm.width, y: Math.floor(c / fm.width), w: end - c + 1, h: 1, layer: "lower", material: "버들항 농장 흙길" });
+    }
     const debris: Array<[string, number, number]> = [
-      ["bd-pick-volcano-cave-ember-a", -2, -2], ["bd-pick-volcano-cave-ember-a", 2, 0], ["bd-pick-volcano-cave-ember-a", -3, 0],
+      ["bd-pick-volcano-cave-ember-a", -2, -2], ["bd-pick-volcano-cave-ember-a", 2, 1], ["bd-pick-volcano-cave-ember-a", -3, 0],
       ["bd-pick-deep-forest-path-log-fallen", -7, 1], ["bd-pick-deep-forest-path-log-fallen", 5, 2],
       ["bd-pick-deep-forest-path-stump", -6, -3], ["bd-pick-deep-forest-path-stump", 6, -2], ["bd-pick-deep-forest-path-stump", -7, -1],
-      ["bd-pick-mining-valley-slagrock", 3, -3], ["bd-pick-sea-cave-rubble-cave", -4, 2],
+      ["bd-pick-volcano-cave-ember-a", 1, -2], ["bd-pick-deep-forest-path-log-fallen", 4, -4],
+      // 그을린 자리 바깥 풀밭 — 꺾인 덤불이 흩어져 공터 경계를 흐린다.
+      ["bd-pick-deep-forest-path-heath-a", -5, 2], ["bd-pick-deep-forest-path-heath-b", 5, -1], ["bd-pick-deep-forest-path-fern-b", -5, -2],
+      ["bd-pick-deep-forest-path-heath-c", 4, 3], ["bd-pick-deep-forest-path-fern-a", -4, 3], ["bd-pick-deep-forest-path-heath-b", 6, 1],
     ];
+    // 흙길 오토타일이 오목한 모서리 칸을 스스로 채운다 — 실제로 바뀐 칸을 다시 모아 둑을 얹는다.
+    const live = M(ids.forest);
+    for (let c = 0; c < live.lowerTiles.length; c += 1) if (live.lowerTiles[c] !== fm.lowerTiles[c] && fm.lowerTiles[c] === 737) pit.add(c);
+    rimPit(project, live, pit); // fill_region 이 맵 객체를 바꿔 끼우므로 fm 이 아니라 지금 맵에 얹는다.
     for (const [kit, dx, dy] of debris) tryStamp(project, M(ids.forest), `kit:beodeul_city/${kit}`, pod.x + dx, pod.y + dy);
   }
+  // 맵 마감(감사 3차) — 주인 없는 그림자, 화로의 방 긴 화덕 띠.
+  for (const map of [M(ids.hub), M(ids.forest), M(ids.vault)]) clearOrphanShadows(project, map);
+  clearUpperByLabel(project, M(PUZZLE_ROOM), /^긴 화덕/);
   // 숲지기 곁 모닥불.
   const bram = M(ids.forest).events.find((e) => e.id === `ev_${FS_PREFIX}_bram`);
   if (bram) for (const [dx, dy] of [[1, 1], [-1, 1], [1, -1], [-1, -1]] as const) if (tryStamp(project, M(ids.forest), "kit:beodeul_city/bd-pick-deep-forest-path-campfire", bram.x + dx, bram.y + dy)) break;
@@ -613,14 +641,28 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   };
 
   // 타이틀·오프닝 — 게임 안 맵을 1:1 로 구운 그림 위에 같은 배우 칩을 1배로 세운다(fallenStarOpening.ts).
+  // 키아트는 생성 그림(타이틀 후보 3, by: supervisor)을 화면 1배 64색 도트로 누른 것. 효과 좌표는 그 그림의 비율 좌표다 —
+  // 별똥별 꼬리를 따라 흐르는 반사광, 별 머리·탑 등불·다리 등불의 빛, 운하 물결, 하늘의 빛 알갱이.
   execTool(project, "set_title_screen", {
     title: "폴른 스타",
     backgroundResourceId: FALLEN_STAR_TITLE_BACKGROUND,
     logoStyle: "gold",
+    openingPreset: "moonlitCastle",
+    effects: [
+      { kind: "camera", intensity: 0.5 },
+      { kind: "glint", line: [[0.2, 0.03], [0.596, 0.263]], color: "#e8f4ff" },
+      { kind: "glow", source: [0.596, 0.263], spread: 0.06, color: "#d8f4ff" },
+      { kind: "glow", source: [0.883, 0.546], spread: 0.03, speed: 1.3 },
+      { kind: "glow", source: [0.352, 0.726], spread: 0.025, speed: 0.9 },
+      { kind: "glow", source: [0.538, 0.726], spread: 0.025, speed: 1.1 },
+      { kind: "water", region: [[0.29, 0.62], [0.58, 0.62], [0.62, 1], [0.27, 1]], color: "#cfe0ff" },
+      { kind: "motes", region: [[0, 0], [1, 0], [1, 0.36], [0, 0.36]], count: 24, color: "#e6eeff", intensity: 0.4, speed: 0.3 },
+    ],
   });
   if (project.system.titleScreen) {
     project.system.titleScreen.logoSubtitle = "제1막 · 떨어진 별";
-    // 배경은 게임 맵을 1배로 구운 밤 왕도 — 늘리지 않고 도트 그대로 보인다.
+    project.system.titleScreen.logoStyle = "gold";
+    // 키아트는 화면 1배(480×270) 도트 — 늘리지 않고 도트 그대로 보인다.
     project.system.titleScreen.backgroundFit = "cover";
     project.system.titleScreen.backgroundRendering = "pixelated";
   }

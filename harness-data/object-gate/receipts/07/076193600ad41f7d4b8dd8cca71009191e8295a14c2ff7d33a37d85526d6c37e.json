@@ -1,0 +1,427 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "076193600ad41f7d4b8dd8cca71009191e8295a14c2ff7d33a37d85526d6c37e",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "mart veg wall",
+ "label": "modern_city_interior/mart-veg-wall",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 21,
+  "tileColorsP90": 22,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice band",
+      "rows": "1-4",
+      "evidence": "none",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green valance strip",
+      "rows": "5-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf dividers (front strips)",
+      "rows": "15-16, 21-22, 27-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vegetables on shelves",
+      "rows": "9-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a flat, face-on vegetable shelf. The top rows 1-4 are a light cornice strip, and row 5 is a darker line, but there is no eave shadow below it. Rows 6-8 are a light green valance drawn as a vertical strip, which reads as a face, not a sloped awning plane. Below that, the shelf interior (rows 9-26) is a vertical face with horizontal divider strips at rows 15-16, 21-22 and 27-29. The dividers show no top surface, so no horizontal plane is visible from above. The vegetables are decor. Overall this is a front elevation with at most a 1-2 row rim at the top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 19 visible tones per 16x16 tile, level with the stall-cheese (17) and well-roofed (20) references and well above the hedge (9). Near-flat coverage is 0% and none of the dark edge pixels are neutral, so the outline is tinted and not a black sticker line. By eye, the pale frame and shelf edges are separated by value and a dark tinted edge. Each produce row (greens, reds, yellows) is drawn as small clumps with highlight and shadow dots, and the backing panel is varied rather than flat. Shading is about 5 steps on the frame and produce against about 6 on the references. It is slightly simpler than the stall and well, but not thinner or flatter than the same-kind references. A careful artist would accept it beside them."
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17782
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top cornice band",
+      "rows": "1-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green header strip",
+      "rows": "5-8",
+      "evidence": "none",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf lip upper",
+      "rows": "15-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf lip lower",
+      "rows": "21-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base shelf strip",
+      "rows": "27-29",
+      "evidence": "none",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vegetables on shelves",
+      "rows": "9-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a wall-mounted vegetable display seen straight on, like the bookshelf and locker references. The top is a flat cornice of light rows 1-4 with a green header strip at rows 5-8. Both are front-facing strips with no eave shadow and no ellipse, so there is no real horizontal top surface. The shelf shelves at rows 15-16 and 21-22 are 2-row lips, and the base strip at rows 27-29 is a flat front band. The vegetables are decor, and the rest is a vertical front face with no receding side face. Only a rim of about 2 rows could count as a top, so it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a veg-display wall with a white/grey frame and shelves holding green, red and yellow produce. The measured facts are close to the references: 19 visible tones per tile against 17 for the cheese stall and 20 for the well, with 0% near-flat coverage and 0% neutral dark edge pixels, so the outline is tinted rather than black. By eye the produce is tiny, and the dots are only about 2-3 tones each with little highlight and shadow. The frame and back panel are largely flat light grey and white, with a thin outline and few grain dots. This is thinner in material shading than the stall and well, which show 5-6 steps on roofs, wood and stone. The piece is clean and consistent but reads somewhat like a flat panel or sticker next to the richly shaded references, so I fail it when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16008
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header band (white strip over green strip)",
+      "rows": "1-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf strips (thin light-grey front edges)",
+      "rows": "15-16, 21-22, 27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vegetables and price tags on shelves",
+      "rows": "9-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a wall shelf with produce, drawn face-on. The header (rows 1-8) is a front-facing sign or cornice strip. The only front-edge line is the dark-green row 5 inside it, and no eave shadow follows. Below it, the dark back panel (rows 9-14, 17-20, 23-26) shows vegetables seen straight on. The shelves are 1-2 row light strips (rows 15-16, 21-22, 27). They have no ellipse and no visible horizontal surface or contents seen from above. Only a rim-sized top shows, so this is a front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 19 visible tones per 16x16 tile, against 17 for the cheese stall, 20 for the roofed well and 9 for the hedge. Near-flat coverage is 0%, so the frame and shelf panels carry variation and no 5x5 area is a single flat colour. 0% of its dark edge pixels are near-neutral, so the outline is tinted. By eye it is a dark green-grey frame beside the green and white panels, not a uniform black sticker line. The produce rows (reds, greens, yellows) are small clustered dots with a few shades each, which reads like the stall's goods. The shading ramp on the frame and case is a little shallower than the best references, perhaps 5 steps against 6, but the piece sits at or above the same-kind references on the primary facts and a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17768
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top frame / header band with green stripe",
+      "rows": "1-8",
+      "evidence": "none",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf ledge 1",
+      "rows": "15-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf ledge 2",
+      "rows": "21-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vegetables and produce on shelves",
+      "rows": "9-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a flat, face-on display unit. A light frame runs around the edge: rows 1-4 at the top, thin rim strips down both sides, and rows 28-29 at the bottom. The top band (rows 1-4) is the same frame rim as the other sides, just thicker, and it merges straight into a green header stripe (rows 5-8) that reads as a front-facing sign. The only dark line, at row 5, divides two vertical strips. No eave shadow or foreshortened horizontal plane follows it. Below, the shelf ledges at rows 15-16 and 21-22 are 1-2 row light strips with yellow tags, and they read as front faces. The shelves are a back wall of produce seen straight on (dark backing at rows 9-14, 17-20 and 23-26). No ellipse, no roof plane and no contents seen from above appear anywhere. So there is no real top surface, only a rim of about 2 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a grey-white shelf of vegetables with a pale frame and rows of red, green and yellow produce. Measured facts are close to the references: 19 visible tones per tile against 17 for the cheese stall and 20 for the well, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is tinted and not a black sticker line. By eye, the frame and glass panel use only about 3-4 steps (white, light grey, mid grey, dark grey-green), which is thinner than the 5-6 steps on Beodeul wood and roof materials. The produce is made of small clusters, but each has little individual shading, so the piece reads somewhat flatter and more graphic than the stall or well. Density is close to the references on the numbers but slightly lower in craft. It is acceptable in kind, yet a careful artist would likely see it as a little thin next to the stall, so the call is a fail given the instruction to fail when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19470
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.106Z",
+ "cells": {
+  "16": [
+   "07a5e9e078121e59",
+   "346859a0129a2f1f",
+   "3e071e162fe7d45d",
+   "a389259bd4888ab9"
+  ],
+  "24": [
+   "181d428418f94d16",
+   "1932ad242efb12e2",
+   "2203d9681ffd3190",
+   "33cfece9eb28d761",
+   "359e3b5ce3d2b141",
+   "4aed2564f2582391",
+   "540dfe21244aa3d6",
+   "68355612ab6a456c",
+   "73478b4c1f756049",
+   "8b46832baf852c5a",
+   "9b24ca99971589f6",
+   "9f88e0cd8f920f59",
+   "b0d5af4d36c60085",
+   "bc939bdd006587b6",
+   "bf95c73064a8d370",
+   "c1c5ae1364bb1d08",
+   "c3aee2b2abe990fe",
+   "c5e54705cdc62e88",
+   "cea6903e29dc8cca",
+   "d1a34c792f6c67e6",
+   "d1bb3ef3bb84ad75",
+   "e9e77407d74747f5",
+   "ef0572b957aeceb2",
+   "f0a519f10c26bfae"
+  ],
+  "32": [
+   "b5a33a6f9d187654"
+  ],
+  "48": [
+   "16afff931041cb37",
+   "55552715040f7376",
+   "5758827a56b8ce1c",
+   "63f2c82f5ac954ce",
+   "7be8349fbddd8ee7",
+   "9134c87312caf0a4"
+  ]
+ }
+}

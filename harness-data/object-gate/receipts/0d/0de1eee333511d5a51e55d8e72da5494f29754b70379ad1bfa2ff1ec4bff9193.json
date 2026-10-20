@@ -1,0 +1,342 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0de1eee333511d5a51e55d8e72da5494f29754b70379ad1bfa2ff1ec4bff9193",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "kinder cubby",
+ "label": "modern_city_interior/kinder-cubby",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 15,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top board of cubby unit",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "backpacks in cubbies",
+      "rows": "9-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "27-29",
+      "evidence": "none",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a tan top band (L about 151 to 217). Row 4 is a lighter front-edge line at L=217, and rows 5-6 are darker eave shadow (L=128, then 84). That is a top band of about 4 rows above a front face. The front face is the cubby grid with backpacks, rows 7-29, with a base band at rows 27-29. The silhouette is a constant 32 wide with no side face. The top band is thin, but it has an edge line and shadow, so it counts as a top surface under (a)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 13 visible tones per tile, between the hedge (9) and the stall (17) and well (20). Near-flat coverage is 0%, so there are no 5x5 flat fills. Dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood and not a black sticker line. The frame has a light face, a mid tone, and a dark inner shadow in each cubby. The coloured bins carry their own highlight and shadow steps. The wood ramp has about 4 steps against 5-6 on the references, and the grain is lighter than on the stall or well. It is still comfortably above the shallow, flat look and would sit acceptably beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18839
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top board of cubby unit",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "bins/backpacks inside the six cubbies",
+      "rows": "9-27",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a constant 32px wide. Rows 1-4 form a tan top band: row 1 is a darker edge, rows 2-3 are mid-tan, and row 4 (#f7d5a2) is a lighter front-edge line. Rows 5-6 (L=128 then 84) are darker eave shadow beneath it, so the band reads as a foreshortened top surface and not a flat cornice strip. Below it is a front face of about 25 rows (5-29) with a 2x3 grid of cubbies, a mid shelf at rows 16-17, and a base at rows 27-29. The colored items inside the cubbies are contents and are treated as decor. The top band is 4 rows, close to the 'cabinet: top 5 + edge + eave' reference, so it reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The cubby is a wooden shelf frame with a cream back panel and coloured bins. Its dark edge pixels are 0% neutral, so the outline leans brown beside the wood, as in the hedge and stall references. It reads as a dark material tone, not a black sticker line. It has 13 visible tones per 16x16 tile, above the hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no large flat fills. The frame shows highlight, mid and shadow wood steps, and each bin has 2-3 tones with a rim. This gives roughly 4 steps against the references' 5-6. Texture is modest: there is little wood grain or speckle on the back panel, which keeps it a bit simpler than the stall and well. It is still acceptable next to the references without looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19778
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top board of cubby unit",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "cubby openings with backpacks/contents",
+      "rows": "7-27",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "28-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a light tan top band: rows 2-3 are mid-light and row 4 is a lighter front-edge line. Rows 5-6 are darker eave shadow, and the front face with the 2x3 cubby grid runs from row 5 to about row 29. The width is a constant 32, so there is no side face. The top band is 4 rows with an edge line and shadow, which is more than a 1-2 row rim. The cubby openings show contents (colored bags), and the base band at rows 28-29 is a plain plinth."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a wooden cubby shelf with a tan frame, pale interiors and small coloured bins. Its measured visible tones per tile are 13, between the hedge (9) and the stall (17) and well (20). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline leans brown beside the wood and is a dark material tone, not a black sticker line. The wood frame and each bin carry about 3-4 steps with a highlight edge and some grain, a little shallower than the 5-6 steps on the stall and well. The cubby interiors are fairly plain, but they are broken up by the bins and shadow lines. It would sit acceptably next to the references on structure and shading craft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18433
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top board of cubby unit",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "backpacks in cubbies (top row)",
+      "rows": "8-16",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backpacks in cubbies (bottom row)",
+      "rows": "19-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a tan top band whose last row (4, L=217) is a lighter front-edge line. Rows 5-6 (L=128, 84) are darker eave shadow, and the front face with the 2x3 cubby openings and base runs from rows 5-29. This matches the green cabinet reference ('top 5 + edge + eave'). The backpacks are goods inside the cubbies and counted as decor. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The cubby is a wooden shelf with six coloured bins. On the measured facts it sits between prop-hedge and the stall and well references: 13 visible tones per tile against 9 (hedge), 17 (stall) and 20 (well). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood rather than a black sticker line. The wood frame shows roughly 4 steps (light face, mid, shadow, dark edge), and the bins carry their own highlight and shade. Texture is moderate, with little grain on the wood and few speckle dots, so it is a little simpler than the stall or well. I judge it acceptable next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21612
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.002Z",
+ "cells": {
+  "16": [
+   "19c08302d6b420fa",
+   "41131d45533246be",
+   "4c7bbc4bc657f7f2",
+   "648963e2d69d0372"
+  ],
+  "24": [
+   "0597e4a527e6ceeb",
+   "0d5d44faeafdf87e",
+   "277c2e92d6aa8771",
+   "2edf0b3823b97c9f",
+   "38fff06bbe7da5da",
+   "47b426f1b497e664",
+   "5591ece3b7e2c0f4",
+   "5a6de16e7471bf35",
+   "63cf36c10a60c2dc",
+   "73877ac040666b1d",
+   "769783b504888a8c",
+   "7edb326a1f1591ac",
+   "81e08008891462c7",
+   "c352fdf790442f12",
+   "c6c3b5d7371feead",
+   "c7037b422c1fe644",
+   "cb892ed597e2138f",
+   "d9a0e02f9abe0d2b",
+   "da27f9ff7049afe7",
+   "e76563ac99f8a6a3",
+   "eb68862e71607f7b",
+   "f7e88863ab507ba4",
+   "f84cc4333ed435e7",
+   "fe6f174a37009d2c"
+  ],
+  "32": [
+   "c7fdb1b0445facd2"
+  ],
+  "48": [
+   "402afedec1735fce",
+   "65d4c12e2a108ec7",
+   "701ebb8a8123be60",
+   "895e9c6e610e10a4",
+   "d7fe5c7310ca4736",
+   "d800d86676b51f44"
+  ]
+ }
+}

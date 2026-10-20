@@ -49,16 +49,39 @@ const OVERRIDE_MODERN_MAPS: Readonly<Record<string, true>> = {
   "school-class-wing": true,
   "university-lecture-wing": true,
   "lecture-hall": true,
+  bank: true,
+  clinic: true,
 };
 function mergeTemplateData(base: TemplateData, ...all: TemplateData[]): TemplateData {
   const templates: Record<string, InteriorRoomTemplate[]> = {};
   const programs: Record<string, Record<string, { map: string; kinds: readonly string[] }[]>> = {};
+  // 각 칩셋별로 실제로 추가 프리셋(all)이 재정의하는 맵 key 또는 개별 template id 만 base 에서 덮어쓴다 —
+  // modern_city 용 OVERRIDE_MODERN_MAPS 가 jp_city 의 house-1f/2f · school-1f/2f/3f · office-1f/floor 까지 지워 버리던 버그 방지.
+  const overriddenMapsByTid = new Map<string, Set<string>>();
+  const overriddenIdsByTid = new Map<string, Set<string>>();
+  for (const d of all) {
+    for (const [tid, list] of Object.entries(d.templates)) {
+      let mapSet = overriddenMapsByTid.get(tid);
+      if (!mapSet) { mapSet = new Set(); overriddenMapsByTid.set(tid, mapSet); }
+      let idSet = overriddenIdsByTid.get(tid);
+      if (!idSet) { idSet = new Set(); overriddenIdsByTid.set(tid, idSet); }
+      for (const t of list) { mapSet.add(t.map); idSet.add(t.id); }
+    }
+    for (const [tid, byB] of Object.entries(d.programs)) {
+      let set = overriddenMapsByTid.get(tid);
+      if (!set) { set = new Set(); overriddenMapsByTid.set(tid, set); }
+      for (const maps of Object.values(byB)) for (const m of maps) set.add(m.map);
+    }
+  }
+  const isOverridden = (tid: string, map: string): boolean =>
+    Boolean((tid === "modern_city" || tid === "modern_campus" || tid === "jp_city") && OVERRIDE_MODERN_MAPS[map] && overriddenMapsByTid.get(tid)?.has(map));
   for (const [tid, list] of Object.entries(base.templates)) {
-    templates[tid] = list.filter((t) => !((tid === "modern_city" || tid === "modern_campus") && OVERRIDE_MODERN_MAPS[t.map]));
+    const idSet = overriddenIdsByTid.get(tid);
+    templates[tid] = list.filter((t) => !isOverridden(tid, t.map) && !idSet?.has(t.id));
   }
   for (const [tid, byB] of Object.entries(base.programs)) {
     for (const [b, maps] of Object.entries(byB)) {
-      const kept = maps.filter((m) => !((tid === "modern_city" || tid === "modern_campus") && OVERRIDE_MODERN_MAPS[m.map]));
+      const kept = maps.filter((m) => !isOverridden(tid, m.map));
       if (kept.length) ((programs[tid] ??= {})[b] ??= []).push(...kept);
     }
   }

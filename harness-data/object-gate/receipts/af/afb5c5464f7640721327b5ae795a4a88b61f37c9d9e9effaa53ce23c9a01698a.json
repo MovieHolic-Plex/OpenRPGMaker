@@ -1,0 +1,412 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "afb5c5464f7640721327b5ae795a4a88b61f37c9d9e9effaa53ce23c9a01698a",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "dept perfume wall",
+ "label": "modern_city_interior/dept-perfume-wall",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (3/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+  "3/4: 윗면 0행 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (3/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+   "윗면 0행 < 4 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 21,
+  "tileColorsP90": 21,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header/cornice band",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf compartments with perfume bottles (upper row)",
+      "rows": "6-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle shelf ledge",
+      "rows": "15-17",
+      "evidence": "none",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf compartments with perfume bottles (lower row)",
+      "rows": "18-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base counter ledge and plinth",
+      "rows": "24-29",
+      "evidence": "none",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole piece is drawn flat-on. Rows 1-4 are a uniform cream strip with a gold line at row 5. It reads as a front-facing header or cornice board with no eave shadow beneath it and no depth. Rows 6-8 below it are the compartment back wall, not a shadow band. The shelf ledges at rows 15-17 and 24-25 are thin front-facing bands. The bottles are shown face-on, and no horizontal surface or ellipse is visible anywhere. This matches the 'front elevation' reference examples (red) rather than the cabinet that shows a top plus an edge and eave."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a framed shelf wall with perfume bottles. It measures 20 visible tones per full tile, matching the roofed well (20) and above the cheese stall (17) and hedge (9). Near-flat coverage is 0%, so there are no flat fills, and the stall actually has 13%. Dark edge pixels are 0% neutral, so the outline leans warm brown and follows the frame and shelf material rather than a black sticker line. By eye, the cream frame and back panel carry several lightness steps, with a bevelled frame edge and shelf shadows. The bottles show a few tones each, with highlights and different colours per row. Texture is more modest than the stall's wood grain and awning detail, but nothing reads as thinner or flatter than the references, so a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22746
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice band (cream)",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "shelf compartments with perfume bottles",
+      "rows": "6-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "perfume bottles on shelves",
+      "rows": "10-23",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a pale cream band across the full width. It ends in a darker gold front-edge line at row 5, followed by darker beige shadow rows 6-8, which fits evidence (a). Below it is a front face of about 24 rows (6-29), drawn as shelf bays with shelf boards at rows 15-17 and 24-25 and a plinth at rows 26-29. No side face is drawn. The top band is thin and flat, so this is a borderline read, but it has the edge line and shadow that a plain cornice strip lacks."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a framed shelf wall with perfume bottles. It measures 20 visible tones per 16x16 tile, the same as prop-well-roofed (20) and above prop-stall-cheese (17) and prop-hedge (9). Near-flat coverage is 0%, so no 5x5 area is a flat fill. The dark edge pixels are 0% neutral, so the outline is a tinted brown that follows the frame rather than a black sticker line. The cream frame and shelf backing show about 5 lightness steps, close to the references' 5-6. The bottles are small clusters in several tones and the shelf dividers are separated by value. Texture is a little less grainy than the stall and well, which keeps it at 'some' rather than 'rich', but an artist would accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21232
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header/cornice band",
+      "rows": "1-4",
+      "evidence": "none",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper shelf row with bottles in cubbies",
+      "rows": "9-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower shelf row with bottles in cubbies",
+      "rows": "18-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth/kick",
+      "rows": "26-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole piece is a flat frontal elevation of a shelving wall unit. Rows 1-4 are a cream header band with a gold line at row 5 and tan rows 6-8 below it. This reads as a front-facing cornice or sign board, not a foreshortened top plane. The shelf ledges at rows 15-17 and 24-29 are also front-facing strips with no depth. The cubbies with bottles are drawn face-on, and no horizontal surface recedes anywhere. No side face is visible. The top is a rim-like band of about 2 rows, so the piece reads as front_elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a cream-framed wall display shelf with perfume bottles. It has 20 visible tones per 16x16 tile, level with prop-well-roofed (20) and above prop-stall-cheese (17) and prop-hedge (9). Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% neutral, which means the outline is a tinted dark brown from the frame rather than a black sticker line. The frame shows about 4-5 value steps (highlight, cream, beige panel, shadow, dark edge). The bottles and shelf dividers add varied small shapes. Bottle shading is a bit simpler than the best references, but the piece would sit acceptably next to the stall and well.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22369
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cream cornice/header band",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper shelf alcoves with bottles",
+      "rows": "6-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle shelf board (front strip)",
+      "rows": "15-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower shelf alcoves with bottles",
+      "rows": "18-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom shelf board and base plinth",
+      "rows": "24-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole 32x32 sprite is a flat frontal elevation of a wall display. Rows 1-4 are a cream cornice strip, a front-facing band that sits directly on a gold line at row 5. Below it, two tiers of bottle alcoves (rows 6-14 and 18-23) are separated by gold shelf boards at rows 15-17 and 24-25, each drawn as a vertical strip. None of these boards has a lighter top plane, an ellipse, contents seen from above, or a roof plane. The width is a constant 32, so no side face is shown. There is a large front face but no top surface, so it reads as front elevation, like the 'front elevation' and 'rim only' cabinet examples."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a shelf unit with a cream frame and small bottles on its shelves. It shows 20 visible tones per 16x16 tile, level with prop-well-roofed (20) and above prop-stall-cheese (17) and prop-hedge (9). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline is tinted and reads as a dark brown frame tone, not a sticker-style black line. The frame has a highlight, mid and shadow step with inner shelf shadows, and the bottles carry individual shading, giving about 5 steps against the references' 5-6. Texture is moderate: the bottles and shelf backs have variation, but the cream frame is somewhat smooth. At this scale a careful artist would accept it next to the stall and well.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17999
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.831Z",
+ "cells": {
+  "16": [
+   "0fe7c679b417bd1b",
+   "8090cd50d025a91c",
+   "82ed3154a81c42aa",
+   "e3a384e71bb0aff8"
+  ],
+  "24": [
+   "0bf55d0d3e7cb7d2",
+   "102ff9728fc8518c",
+   "1089d36322c5c9e2",
+   "1c23cd125aa44531",
+   "1d77362c92f96043",
+   "29841aee7241c06c",
+   "2dde41e054b94785",
+   "4abc14e2f7a31686",
+   "562f411a68788e48",
+   "6358cdff673c525d",
+   "6a8103884b92952a",
+   "75c89ae5184fefc6",
+   "88ad765fe97f51cf",
+   "8c7235a95ade5d2a",
+   "8db8bb6f3c170718",
+   "92dea03a2d1aec6f",
+   "94ea8de39ce5b124",
+   "a6edf8ee0970ed42",
+   "a9eacbef31e693ac",
+   "b0f9081715fd43cb",
+   "bf3310bd25577ad4",
+   "cdc4ca338dd49964",
+   "e0fde2eead4ae0df",
+   "f09c13c91a5c7127"
+  ],
+  "32": [
+   "14442bec57b04a1a"
+  ],
+  "48": [
+   "17122d3a43403964",
+   "7e1662e78fc09d83",
+   "b99268570e7a1af8",
+   "d3788c48e67259a5",
+   "efae00225d9cf7c9",
+   "f09c17746c4f1f1a"
+  ]
+ }
+}

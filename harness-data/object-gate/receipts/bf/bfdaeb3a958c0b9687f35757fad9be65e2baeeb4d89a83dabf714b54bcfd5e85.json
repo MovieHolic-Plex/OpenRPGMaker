@@ -1,0 +1,393 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bfdaeb3a958c0b9687f35757fad9be65e2baeeb4d89a83dabf714b54bcfd5e85",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "subway ticket machine",
+ "label": "modern_city_interior/subway-ticket-machine",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (3/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+  "3/4: 윗면 0행 < 4 (2/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (3/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+   "윗면 0행 < 4 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 28,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "right",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header/roof panel",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "screen and button panel on front face",
+      "rows": "10-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 are a light band across the full 28px width. Row 5 is a gray line darker than its neighbours and works as a front-edge line. Rows 6-7 are a short white lip with blue notches. Row 8 is a lighter blue line and row 9 is a dark shadow line, so the white band reads as a top surface over the front face. Below it the blue front face (screen, slot, buttons, base) runs from about row 8 to row 29, well over 3 rows. No receding side face is drawn. The call is borderline: the white band could instead be a face-on header sign, which would make this front_elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is two small ticket machines with a blue-grey body, a white panel and a screen. Its dark edge pixels are 100% near-neutral, which matches the sticker look of a uniform near-black outline. The references that have tinted outlines (hedge 0%, cheese stall 1%, well 33%) are the Beodeul standard, and the lamp's 100% is a thin pole. Body ramps show about 3 distinct steps (dark outline, mid blue, light panel) against 5-6 in the references. Visible tones per tile are 11, which is comparable to the hedge (9) but well below the stall (17) and well (20). There is no flat fill (0%), and small details such as the screen and buttons give some texture, but the large body surfaces are mostly smooth. Overall it is cleanly drawn but shallower than the references because of the neutral outline and the thin shading ramps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15800
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "white header panel",
+      "rows": "1-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "screen",
+      "rows": "9-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "coin slot and ticket slot panel",
+      "rows": "16-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a 28px-wide rectangle spanning rows 0-29, with no widening or narrowing that would indicate an ellipse. The white band at rows 1-7 has a gray stripe at row 5. It is the same white above and below that stripe, and it ends in blue notches at rows 7-8. I read it as a front-facing sign header, not a horizontal top, because the white below the stripe does not look like a shaded face and no eave shadow follows an edge line. Everything below it is vertical: the screen at rows 9-15, the coin and ticket panel at rows 16-21, and the slot at rows 22-27. There is no side face. The machine reads as a flat front elevation with no readable top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is two small blue ticket machines with a dark grey outline all the way round. The measured facts back this up: 100% of dark edge pixels are near-neutral, so the outline has no tint and reads as the uniform 'sticker' line. Only the lamp reference, a thin iron object, shares that neutral edge value; the hedge (0%), stall (1%) and well (33%) use tinted, material-toned darks. The body has about 4 lightness steps (shell, panel, screen, dark base), and the screen and keypad details are simple blocks. It has 11 visible tones per tile, which is close to the hedge (9) but below the stall (17) and well (20), the closest comparisons for a structured prop. There is no flat fill (0% near-flat), so the surface is not blank, but there is little grain, no per-material ramp and no material-coloured edge shading. Next to the references it looks thinner and flatter, and the neutral outline is the main flaw.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 18152
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "white sign header panel",
+      "rows": "1-7",
+      "evidence": "none",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue machine body with screen, buttons, card slot and ticket tray",
+      "rows": "8-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a plain 28px-wide rectangle across rows 0-29. The white band at rows 1-7 looks like a lit header sign facing the viewer. Its one grey line at row 5 reads as a divider. Rows 6-7 go back to white, with blue notches at row 7, so there is no darker eave shadow under an edge line. The head and the blue body below (screen at rows 9-14, slot and buttons at rows 17-21, tray at rows 22-27) are all flat vertical faces with no ellipse, roof or visible contents. At most a rim of about 1-2 rows could be a top, so this reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is two small ticket machines with a blue-grey body, a lighter screen panel and a few buttons. The body has about 4 lightness steps against roughly 5-6 on the stall and well references. The measured density is fine (11 visible tones per tile, above the hedge's 9, below the stall's 17 and the well's 20), and there are no flat fills (0% near-flat). The outline is the problem. 100% of dark edge pixels are near-neutral, and in the image a uniform dark line wraps each machine, which is the sticker look. The stall, hedge and well references have tinted outlines (1%, 0% and 33% neutral). The lamp reference is also neutral, but it is a thin metal pole, where that reads differently. The machines also show little grain or per-material texture, so the shading stays shallow, with panels read mostly by block value. On balance it falls short of the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 17659
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "white header sign panel",
+      "rows": "1-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "screen window with cyan display",
+      "rows": "9-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue front body with card slot, coin slot and ticket tray",
+      "rows": "17-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole object is a flat front view. The white band at rows 2-7 is a sign header, split by a grey stripe at row 5 that looks like a panel line. It has no front-edge line followed by eave shadow, and its lower edge (row 8) is a row of blue dots. Below it the screen (rows 9-16), slots (rows 17-21) and tray (rows 23-26) are all vertical face details. The silhouette is a constant 28 px wide from row 0 to row 29, with no ellipse, no roof plane and no visible contents. No horizontal top surface is shown, so this reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate's dark edge pixels are 100% near-neutral, and in the picture the machine has a uniform black outline all the way round, which is the 'sticker' look. The Beodeul props that carry material detail (hedge 0%, cheese stall 1%, well 33%) use tinted dark edges instead. The lamp is also 100% neutral, but it is a thin dark-metal pole, so that fact says little for a body-heavy prop like this. The body shows only about 3 lightness steps: a pale grey-white face, one mid-grey shade, and a dark side, plus a blue screen and a few button dots. Its 11 visible tones per tile are on par with the hedge (9) but well below the cheese stall (17) and the well (20). There is no real grain or per-element texture on the casing, although it has no flat 5x5 fills either. Overall it is cleanly drawn but flatter and more outlined than the references, so it is not at the Beodeul quality bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18427
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.194Z",
+ "cells": {
+  "16": [
+   "01d208bcc71def21",
+   "57600a6ad45b8bfe"
+  ],
+  "24": [
+   "1f649e5c12518183",
+   "323da365aeb140bf",
+   "40f9e6221f6b9cee",
+   "416f1d58282cc454",
+   "42b4bca62b10f4cf",
+   "46398497b62a7026",
+   "54cc1dde548eaad1",
+   "61db7634a835da48",
+   "70987437568d4ee3",
+   "711d12a0289e0d9f",
+   "77cbea0f2718e15e",
+   "914b38142c852e2e",
+   "ab50e48d9a64cdcb",
+   "ad6c463817f66e49",
+   "b8d4ccc5faf65f6a",
+   "ba3b828127d6fccd",
+   "cf6aa3118c9a36f8",
+   "d1d4eedc33f2d941",
+   "dad95b2c0db86591",
+   "df90d361750587e7",
+   "e719174e494d53d7",
+   "f5122b7996dbfef7",
+   "f74ae53798880a8c",
+   "fd3551d122caf321"
+  ],
+  "32": [
+   "984e57c5c210ece4"
+  ],
+  "48": [
+   "4e3079d98064e804",
+   "64dc9748592a4728",
+   "8cfbe85d57274a93",
+   "b69a5ed1f6226aa4",
+   "bfaaea6fa410d16b",
+   "c7fd143a6ca4c77f"
+  ]
+ }
+}

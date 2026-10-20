@@ -1,0 +1,423 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "68032a6842a537adeb8f0598094ae89f11e045ce6394d69430e68ded38b33fb9",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "subway vending machine",
+ "label": "modern_city_interior/subway-vending-machine",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 1/4, 분명한 위반 2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+  "3/4: 윗면 0행 < 4 (1/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 1/4, 분명한 위반 2/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+   "윗면 0행 < 4 (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 17,
+  "darkV5": 31,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header band",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "product window with shelves",
+      "rows": "7-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark control panel with display lights",
+      "rows": "7-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dispenser slot and lower front panel",
+      "rows": "21-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band at rows 1-3 is blue. Row 4 is a light 1-row front-edge line (L=238), and rows 5-6 are darker blue, which acts as eave shadow. That fits evidence (a), though the band could also be read as a header sign strip. Below it, the front face runs rows 5-29: a product window, a dark control panel and a dispenser slot. The silhouette is a constant 28 px wide from rows 0-30 and no side face is drawn. The top band is shallow (about 3-4 rows), but it has both an edge line and a shadow row beneath it."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate's density facts are fine: 17 visible tones per tile matches the cheese stall and well, and near-flat coverage is 11%, close to the stall's 13%. The problem is structure. 100% of its dark edge pixels are near-neutral, so it has a uniform black sticker outline around the whole body. The references use tinted, material-toned edges (hedge 0%, stall 1%, well 33%). Only the lamp is also 100% neutral, and it is a thin object. The blue body has only about 3-4 lightness steps (a light edge, mid blue, dark blue). The window, panel and button areas are mostly flat blocks with little grain or per-element shading. Next to the stall and well, it reads as a clean but flatter, outlined icon, not Beodeul-style selective outlining with ramped shading.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 17345
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "blue header band with light stripe",
+      "rows": "1-4",
+      "evidence": "none",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "glass product window with drinks",
+      "rows": "7-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark button/coin panel on right",
+      "rows": "7-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dispenser tray slot",
+      "rows": "22-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole machine is a flat face-on elevation. Rows 1-4 are a front-facing blue header or sign strip with a light stripe at row 4 and a dark row below. It has no receding horizontal plane, and the width stays at 28 px from rows 0-30. The product window (rows 7-20), button panel and tray slot (rows 22-28) are all vertical faces. No top surface, ellipse, roof or visible contents from above appears. This matches the red 'front elevation' cabinet references, not the green ones, which show a top of about 5 rows with an edge line and eave shadow."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The vending machine is a blue body with a near-black outline, and the measured near-neutral share of dark edge pixels is 100%. Tinted references such as the hedge (0%) and the cheese stall (1%) are very different. That matches the sticker look: a uniform dark line around every shape instead of the dark tone of the adjacent material. The blue body is shaded in about 3 steps (light blue, mid blue, dark blue), while Beodeul materials use about 5-6. The glass panel and the buttons add some detail, but the large blue casing is mostly smooth with little grain or texture dots. Density is 17 visible tones per tile, which equals the cheese stall and is close to the well. Near-flat coverage is 11%, similar to the stall's 13%. So density is acceptable on the numbers, but the shallow ramps and neutral outline read flatter and more sticker-like than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14428
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top header band",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "front face with product window, dark dispenser panel and slot",
+      "rows": "5-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-30 are a flat 28px-wide silhouette. At the top, rows 1-3 are a blue band (L 66 then 122). Row 4 is a very light 1-row line (#e0f2fe), and rows 5-6 are darker blue (L 66), which is consistent with an eave shadow. That fits evidence (a) as a shallow top band of about 3 rows. It could also be a front-facing header sign, so this reading is borderline. Below it, rows 5-30 are a vertical front face with a lit product window (rows 7-19), a dark panel and a lower slot. There is no side face and no ellipse. The kind is a poor match: a vending machine is closer to a machine or appliance than to a bookshelf or cabinet, though it is tall and stands against a wall."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate's visible tones per tile (17) match the cheese stall (17) and sit just under the well (20), and its near-flat coverage (11%) is close to the stall's 13%, so density alone would not fail it. The problem is the outline: 100% of its dark edge pixels are near-neutral, the same as the crook lamp, while the material-toned references such as the hedge (0%) and the stall (1%) are tinted. The machine reads as a dark navy-black line around every shape, which is the 'sticker' look. The body, glass panel and product rows are mostly 2-3 flat steps each, with little grain, highlight clustering or per-item shading. Beodeul props carry 5-6 steps per material and tinted dark-tone edges, so a careful artist would not accept it beside them without reworking the outline and ramps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20461
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header band (blue sign panel)",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "glass display window with goods",
+      "rows": "7-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark side panel with indicator lights",
+      "rows": "7-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dispenser tray slot",
+      "rows": "22-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The machine is drawn as a flat front elevation. The top has only a 1-row dark outline at row 0 and a blue header at rows 1-3 with a light stripe at row 4. These are a front-facing sign strip and a thin rim, not a receding top surface. There is no ellipse, roof or visible contents from above. The remaining rows 6-29 are vertical faces: the glass window, the side panel, the tray slot and the base. So the top is 0-2 rows at most, and the front face is large."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The vending machine is a blue box with a dark, almost colourless outline all round. The measured near-neutral share of dark edge pixels is 100%, against 0-44% on the wood, hedge, cheese-stall and well references, so this is the sticker look rather than dark material tone. The blue body shows only about 3 lightness steps (light blue, mid blue, dark blue) against the 5-6 steps of the references. The lit panel and the product window add some detail, but the body, sides and top are mostly flat panels. Visible tones per tile (17) match the cheese stall (17) and are close to the well (20), and near-flat coverage (11%) is similar to the cheese stall's 13%, so density is not far off. The weak points are the neutral outline and the shallow ramps, with little grain, speckle or per-surface texture such as the references have on wood, tile or stone. A careful artist would see it as flatter and more sticker-like next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 12628
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.200Z",
+ "cells": {
+  "16": [
+   "02ee387533f2608e",
+   "23227e9e66627758",
+   "51af0827d5bda0e1",
+   "5471a2b7610793df"
+  ],
+  "24": [
+   "20239574343271d2",
+   "267bd689ef187606",
+   "30b203799d49d818",
+   "3a7892f79590a987",
+   "494679829411c775",
+   "517cb41ad4f43545",
+   "5a2c8ae891bff6e9",
+   "5f88d823447f94a2",
+   "612561e7a846cb11",
+   "76b5fc0b24b6a0bc",
+   "779f0c8dcb3b82c7",
+   "7affeda808dc51d1",
+   "7c801c76cd6e8c91",
+   "7e2b0befcf55211d",
+   "80222236bc65b9cd",
+   "8b843d1033f56ae8",
+   "ab08d9a60f422b9f",
+   "be3d095c2fe7232c",
+   "c3cd1b7e29570473",
+   "cd0d1ac7cef8e396",
+   "d5b7f994e6f18c00",
+   "da37330270268258",
+   "fb5adf1ab7959cfc",
+   "fdf6ab0568ad610a"
+  ],
+  "32": [
+   "a66063f2968da52f"
+  ],
+  "48": [
+   "209e6549ef6a48e1",
+   "361283e615d6d682",
+   "473b50e8824587a9",
+   "76102642ccc3716b",
+   "a3f5b0e125ad7a5d",
+   "e5e8eca477a69bf3"
+  ]
+ }
+}

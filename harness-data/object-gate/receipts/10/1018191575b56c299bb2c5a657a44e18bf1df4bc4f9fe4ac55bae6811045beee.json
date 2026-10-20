@@ -1,0 +1,345 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1018191575b56c299bb2c5a657a44e18bf1df4bc4f9fe4ac55bae6811045beee",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "mci magazine",
+ "label": "modern_city_interior/mci-magazine",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 24,
+  "tileColorsP90": 24,
+  "darkV5": 36,
+  "nearBlackEdge": 0.41,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "borderline",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "magazines standing on top of the rack",
+      "rows": "3-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "main body top shelf surface (grey band)",
+      "rows": "11-17",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "lower shelf lip between magazine rows",
+      "rows": "23-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Magazines stand on top (rows 3-10) and count as decor. The main body begins at row 11 with a grey horizontal band (rows 11-16) ending in a bright front-edge line at row 16 (L=231), followed by dark shadow at rows 17-18. Below it is the front face (rows 18-29) with two rows of magazines face-on, a thin shelf lip at rows 23-24, and a dark base at row 29. The top band is about 6 rows deep, so the body shows a top surface and a front face of 3 or more rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small magazine rack with coloured magazine spines on top and shelves below holding varied items. It measures 23 visible tones per 16x16 tile, above the stall (17) and well (20) references and well above the hedge (9). Near-flat coverage is 0%, so there are no large flat fills. None of its dark edge pixels are neutral, so the outline is tinted and follows the adjacent material rather than being a black sticker line. Shelf bodies and magazine blocks show about 5 lightness steps, slightly fewer than Beodeul's 5-6, and texture is moderate rather than rich. Scale and detail are in line with the references, and it would sit next to the stall without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22649
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "magazines standing on top of the rack",
+      "rows": "3-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gray top shelf surface of the rack body",
+      "rows": "11-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "front face with two shelves of magazines",
+      "rows": "17-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is 32px wide from row 11 to row 29. Its top is a gray band over rows 11-16 with a light front-edge line at row 16, followed by a darker row 17 and dark shadow at row 18. Below that is a front face of about 13 rows showing two shelves of magazines. The magazines in rows 3-10 sit on top of the body, so they count as decor goods. There is no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 23 visible tones per 16x16 tile, above the stall (17) and well (20) references and well above the hedge (9). Near-flat coverage is 0%, so there are no flat fills. 0% of its dark edge pixels are neutral, so the outline is tinted. It reads as a dark, material-toned edge, not a uniform black sticker line, and this matches the hedge and stall references. The cabinet body shows about 5 steps across the shelf bands and the magazine spines, which are separated by value and have varied colours. Texture is moderate: magazine spines and shelf edges carry variation, but there is little grain on the body. It sits at the lower end of the references' craft but would not look thinner or flatter next to the stall or well, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18697
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "magazines standing on top",
+      "rows": "3-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rack top shelf surface (gray band)",
+      "rows": "11-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "rack front with two rows of magazines on shelves",
+      "rows": "19-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The five magazines in rows 3-10 are narrower (25 vs 32) and stand on the rack, so they count as decor. The main body spans rows 11-29 at width 32. Its top is a gray gradient band in rows 11-16 that ends in a bright front-edge line at row 16. Rows 17-18 are darker shadow below it. Under that is a front face of about 11 rows (19-29) with magazine covers on two shelves separated by a shelf edge at rows 23-24. The top band is a 6-row horizontal surface, but it is ambiguous because it could also be read as a flat gray cornice; I read the bright edge line and the shadow rows as a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small magazine rack with a row of coloured magazines on top and grey-white shelves below holding more items. It has 23 visible tones per 16x16 tile, above prop-stall-cheese (17), prop-well-roofed (20) and prop-hedge (9). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% near-neutral, so the outline is tinted and follows the material rather than being a uniform black sticker line. The shelves and magazines show several lightness steps and per-item variation, though the rack is simpler than the stall or well. By eye it would sit acceptably next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19929
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "magazines standing on top of the unit",
+      "rows": "3-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top shelf board / top surface of the rack",
+      "rows": "11-17",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "lower shelf board",
+      "rows": "23-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 3-10 are upright magazines placed on the unit, so they are decor. Below them, rows 11-17 form a gray band 32 px wide. Its brightest line is at row 16, which acts as the front-edge line, and rows 17-18 are darker shadow. That band reads as a roughly 7-row top surface seen from above. The front face is rows 18-29: a dark interior with magazine covers facing the viewer, a second shelf board at rows 23-24, and a dark base at row 29. This gives a top surface plus a front face of 3+ rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a magazine rack with a pale frame, two or three shelf tiers and rows of small coloured magazine spines on top. It has 23 visible tones per 16x16 tile, above prop-stall-cheese (17) and prop-well-roofed (20). Near-flat coverage is 0%, so the large areas are broken up by shelf edges, spine variation and highlights. Dark edge pixels are 0% neutral, so the outline carries a tint and reads as a dark version of the neighbouring material rather than a sticker-style black line. The frame ramp (highlight, light, mid, shadow, dark edge) gives about 5 steps against roughly 6 on the references. It is slightly simpler than the stall and well, but it is not thinner or flatter than the references, and a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17598
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.114Z",
+ "cells": {
+  "16": [
+   "49507cef912517eb",
+   "634941e57e13b455",
+   "c5b7df5cd5f11b6d",
+   "c60a1899d7c7266e"
+  ],
+  "24": [
+   "000c9079f74f219b",
+   "08dc728acd509412",
+   "121a11935031b9c3",
+   "2e364d915428598f",
+   "45550e4efc2e17bb",
+   "4648ae9783dcba46",
+   "4c0a798fe57edd2b",
+   "4e92a7e73cfedd96",
+   "5690ccee0b4c90ce",
+   "6c763c29fbf83bcb",
+   "7271ca784a9da7a9",
+   "73291f66aee3288e",
+   "7c3b8460323f1e59",
+   "8484ce7cb0ce76d8",
+   "87a10ff2da7fec48",
+   "9266069c3fab3d56",
+   "9c6348da32e1a549",
+   "b9ab056c444c68f1",
+   "bccbaa5fa6adcfb1",
+   "e0c82c1f9fa31947",
+   "e6838e6e391dd178",
+   "ef9a8a24fb8a6f61",
+   "f0505c15b76e4f66",
+   "f515d74b8c99ad02"
+  ],
+  "32": [
+   "80d89d535d2dab41"
+  ],
+  "48": [
+   "177f6d8d11bdafbb",
+   "293ef6d4f71b8dc7",
+   "3aef2a4080344b04",
+   "42cce87b61b642bc",
+   "82cc2fbeebcd1780",
+   "a447525f8103116d"
+  ]
+ }
+}

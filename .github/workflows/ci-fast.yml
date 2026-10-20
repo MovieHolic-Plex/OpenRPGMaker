@@ -35,6 +35,8 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 2   # jp_city 핀 검사가 바로 앞 커밋(HEAD~1)의 pins.json 과 비교한다
 
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
@@ -42,6 +44,11 @@ jobs:
           cache: npm
 
       - run: npm ci
+
+      # jp_city 칸 번호 핀은 덧붙이기 전용. 2026-10-14~18 에 낡은 pins.json 으로 구운 PR 이 머지되며 번호가 밀려
+      # 게시한 장소 32곳·사용자 맵이 엉뚱한 칸을 그렸다(#2899 에서 11,329칸). node 만 쓰고 1초 안에 끝난다.
+      - name: jp_city 핀 불변
+        run: node scripts/content/jp-city/check-pins.mjs --base HEAD~1
 
       - name: 캐릭터 하네스 계약
         run: |

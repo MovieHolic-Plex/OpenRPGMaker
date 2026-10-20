@@ -165,3 +165,24 @@ export const gatePromptHash = (half: 'view34' | 'style' | 'eye' = 'view34') => {
     ? { half, judges: p.judges, factsVersion: p.factsVersion, rubric: p.rubric, outputFormat: p.outputFormat, view34Guide: p.view34Guide, view34Pairs: p.view34Pairs, magnify: p.magnify, kinds: Object.fromEntries(Object.entries(p.kinds as Record<string, { meaning: string }>).filter(([k]) => k !== 'front_prop').map(([k, v]) => [k, v.meaning])) }
     : { half, judges: p.judges, factsVersion: p.factsVersion, styleFactsVersion: p.styleFactsVersion, styleRubric: p.styleRubric, styleOutputFormat: p.styleOutputFormat, styleKinds: p.styleKinds, styleRefs: p.styleRefs });
 };
+
+/**
+ * 사람 검토 대기열의 묶음(queue/<id>.json). `enqueue` 가 쓴다 — 묶음에 든 그림의 해시·종류·표식만 적고, 판정은 영수증, 결정은 서명 기록이 따로 갖는다.
+ * 묶음은 검토 화면에서 거르고 「이 묶음 전부 허용」을 누르는 단위일 뿐 효력은 없다(허용은 그림마다 서명 기록이 따로 생긴다).
+ */
+export type ObjectGateQueueBatch = {
+  schema: 'oprn-object-gate-queue/1'; id: string; title: string; note?: string; createdAt: string;
+  items: Array<{ sha: string; kind: string; label: string; source?: string }>;
+};
+const queueDir = () => resolve(GATE_DATA, 'queue');
+export function listQueueBatches(): ObjectGateQueueBatch[] {
+  if (!existsSync(queueDir())) return [];
+  return readdirSync(queueDir()).filter(f => f.endsWith('.json')).sort().map(f => JSON.parse(readFileSync(resolve(queueDir(), f), 'utf8')) as ObjectGateQueueBatch);
+}
+export function writeQueueBatch(batch: ObjectGateQueueBatch): string {
+  if (!/^[a-z0-9][-a-z0-9_.]{0,80}$/.test(batch.id)) throw Error(`묶음 id 는 영문 소문자·숫자·-_. 만: ${batch.id}`);
+  const path = resolve(queueDir(), `${batch.id}.json`);
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, `${JSON.stringify(batch, null, 1)}\n`);
+  return path;
+}

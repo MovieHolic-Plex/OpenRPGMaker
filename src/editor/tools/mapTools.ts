@@ -2497,12 +2497,32 @@ const removeMapTool: ToolDefinition = {
   },
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
-    // 에이전트 경로는 시작 맵 삭제를 차단(암묵 재배선 금지) — 먼저 시작 위치를 옮기게 한다.
-    if (draft.startMapId === map.id) throw new ToolError("시작 맵은 삭제할 수 없습니다 — 먼저 set_start_position으로 시작 맵을 옮기세요.", { code: "start-map" });
+    // 에이전트 경로는 작업된 시작 맵 삭제를 차단(암묵 재배선 금지) — 먼저 시작 위치를 옮기게 한다.
+    // 단, 손대지 않은 빈 시작 맵(isUntouchedMap)이고 다른 맵이 있으면 삭제와 함께 시작 맵을 자동 재배선한다.
+    if (draft.startMapId === map.id && (!isUntouchedMap(map) || Object.keys(draft.maps).length <= 1)) {
+      throw new ToolError("시작 맵은 삭제할 수 없습니다 — 먼저 set_start_position으로 시작 맵을 옮기세요.", { code: "start-map" });
+    }
+    const wasStartMap = draft.startMapId === map.id;
     const plan = planMapDeletion(draft, map.id);
     if (!plan.ok) throw new ToolError(plan.block.message, { code: plan.block.code });
     const name = map.name;
     applyMapDeletion(draft, map.id);
+    if (wasStartMap) {
+      const nextStart = draft.maps[draft.startMapId];
+      if (nextStart && (!inMapBounds(nextStart, draft.startPos.x, draft.startPos.y) || !isPassable(draft, nextStart, draft.startPos.x, draft.startPos.y))) {
+        const cx = Math.floor(nextStart.width / 2);
+        const cy = Math.floor(nextStart.height / 2);
+        let best: { x: number; y: number; d: number } | null = null;
+        for (let y = 1; y < nextStart.height - 1; y++) {
+          for (let x = 1; x < nextStart.width - 1; x++) {
+            if (!isPassable(draft, nextStart, x, y)) continue;
+            const d = Math.abs(x - cx) + Math.abs(y - cy);
+            if (!best || d < best.d) best = { x, y, d };
+          }
+        }
+        if (best) draft.startPos = { x: best.x, y: best.y };
+      }
+    }
     const impact = plan.impact;
     const cleaned = [
       impact.incomingCommandCount > 0 ? `이동 명령 ${impact.incomingCommandCount}개` : null,

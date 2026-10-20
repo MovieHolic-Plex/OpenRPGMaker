@@ -1751,8 +1751,9 @@ export function createDialogueUI(
         });
         const selected = buttons[selectedIndex];
         if (selected?.isConnected && document.activeElement !== selected) selected.focus({ preventScroll: true });
-        if (selected?.isConnected && overlay.dataset.dialogueStyle === 'pixel-cinematic') {
-          // Scroll only the compact choice list, never the page/game stage.
+        if (selected?.isConnected && choicesEl.scrollHeight > choicesEl.clientHeight + 1) {
+          // 창이 보이는 화면 상한까지 자라고도 넘칠 때만 목록이 스크롤된다(모든 스타일 공통).
+          // Scroll only the choice list, never the page/game stage.
           const item = selected.getBoundingClientRect(), list = choicesEl.getBoundingClientRect();
           const scale = choicesEl.clientHeight > 0 ? list.height / choicesEl.clientHeight : 1;
           if (scale > 0 && item.bottom > list.bottom) choicesEl.scrollTop += (item.bottom - list.bottom) / scale;

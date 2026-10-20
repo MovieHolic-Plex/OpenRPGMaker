@@ -1,0 +1,474 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0648654ff88928b9ee41dbfaae3faf47b7b7942cf6612b2357deb1c41ffc1180",
+ "width": 64,
+ "height": 64,
+ "kind": "tall_furniture",
+ "name": "jumbo arcade racing twin",
+ "label": "modern_city_interior/jumbo-arcade-racing-twin",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 평면 채움 (3/4)",
+  "화풍: 명암 3단 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "평면 채움 (3/4)",
+   "명암 3단 < 4 (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 17,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 16
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cabinet header/marquee band",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "twin screen units top band",
+      "rows": "14-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17"
+     },
+     {
+      "part": "control panel ledges",
+      "rows": "34-35",
+      "evidence": "a",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": "36"
+     },
+     {
+      "part": "center pedestal cap",
+      "rows": "43-45",
+      "evidence": "a",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": "46"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 56,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The overall cabinet is 58-60 px wide. At the top, rows 1-3 form a band that ends in a lighter edge line at row 4 (#767c88). Row 5 below it is dark eave shadow, and the front face continues down to row 60. The two screen units repeat this pattern at rows 14-15 with a line at row 16 and shadow at row 17, so the top surface is thin (about 3-4 rows). The control ledges at rows 34-35 and the center pedestal cap at rows 43-45 follow the same pattern. Everything else is flat front panels: screens, buttons, marquee. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has 12 visible tones per tile against 17 for the cheese stall and 20 for the roofed well, so it sits below the richer references and only above the hedge (9). Its total palette is 24 colours against 38-40 for the stall and well. The outline is tinted (0% near-neutral dark edge pixels), so it reads as a dark navy material tone rather than a black sticker line. Shading is shallow. The cabinet body is a mostly flat dark navy panel with about 3 steps, and the red buttons and blue screens are small blocks of 2-3 tones each. They lack the 5-6 step ramps, per-surface grain and speckle that the stall and well show. Near-flat coverage is 10%, comparable to the stall (13%), but the large dark cabinet side panels and button housings are visibly flat fills. The piece is clean and readable but looks thinner and flatter than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 29959
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top marquee cap band",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "left and right cabinet top bands",
+      "rows": "14-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17"
+     },
+     {
+      "part": "lower pedestal and central column cap",
+      "rows": "42-45",
+      "evidence": "a",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": "46-47"
+     },
+     {
+      "part": "marquee display, screens, joystick and buttons",
+      "rows": "6-39",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 56,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top marquee has a grey band at rows 1-3 that ends in a lighter front-edge line at row 4, followed by dark shadow at row 5. This meets evidence (a) and is more than a 1-2 row rim. The two cabinet halves repeat this with bands at rows 14-15, an edge line at row 16 and shadow at row 17. The lower pedestal and central column do the same at rows 42-45. The front face is about 56 rows tall (rows 5-60). The drawing is mostly a flat front elevation and the top band is shallow, so this call is borderline, but each major part has a band with an edge line and shadow."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a twin arcade cabinet drawn mostly in flat panels. It has about 3 lightness steps per material (dark navy body, mid blue screen, red buttons with one highlight), against 5-6 steps in the stall and well references. Measured facts: 12 visible tones per tile is below the stall (17) and well (20) and close to the hedge (9). Near-flat coverage is 10%, close to the stall's 13%, but the picture shows large uniform areas: the dark cabinet body, the red buttons and the screen surrounds. The dark edge pixels have 0% neutral share, so the outline is tinted dark navy rather than black. That is acceptable, but it reads as a uniform dark line around each shape and the cabinet lacks the per-material shading, grain and speckle of the references. Texture is limited to a few screen and marquee detail pixels. Compared with the stall and well, it looks flatter and more sticker-like.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20661
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header/marquee cap band",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "left and right screen hood bands",
+      "rows": "14-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17"
+     },
+     {
+      "part": "control deck ledges",
+      "rows": "32-35",
+      "evidence": "a",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": "36"
+     },
+     {
+      "part": "centre coin panel cap",
+      "rows": "43-45",
+      "evidence": "a",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 55,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The cabinet is drawn mainly as a front face spanning rows 5-60. At the top, rows 1-3 form a band (L≈72) that ends in a lighter front-edge line at row 4 (#767c88), followed by dark rows from row 5. That meets evidence (a), but it is a thin 4-row top. The screen hoods (rows 14-15 plus an edge line at row 16) and the control ledges (rows 34-35) repeat the same band, edge-line and shadow pattern. There is no receding side face. The marginal 4-row top is why this reads as three_quarter rather than a pure front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate shows 12 visible tones per tile. That sits between the hedge (9) and the stall (17) and well (20), and well above the thin props. Near-flat coverage is 10%, below the stall's 13%, so the large dark cabinet body is broken up by the marquee strip, screens, buttons and coin slot rather than left as a flat fill. The dark edge pixels are 0% neutral, so the outline leans navy or blue-black toward the body and is not a pure black sticker line. The material ramps are modest: the body has about 3-4 steps, and the red buttons and blue screens have about 3 each, against 5-6 on the references. The total of 24 distinct colours is also below the stall (40) and well (38). That makes it a little thinner than the best references, but it is not shallow, and a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23336
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top marquee header band",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "twin screen cabinet tops",
+      "rows": "14-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17"
+     },
+     {
+      "part": "control panel ledges",
+      "rows": "33-35",
+      "evidence": "a",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": "36"
+     },
+     {
+      "part": "lower base with buttons and center pillar",
+      "rows": "42-60",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 55,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The cabinet is drawn almost entirely as a flat front view. The top marquee has a 3-row band (rows 1-3, L=72) that ends in a lighter edge line at row 4 (L=124), followed by a dark shadow at row 5, then the front face. That gives a thin top surface of about 4 rows. The two screen cabinets repeat the pattern at rows 14-16 with the line at row 16 and shadow at row 17. The lower base (rows 42-60) is a pure front face with no top band. The front face runs from about row 5 to row 60, so it is well over 3 rows. No side face is drawn. The top is thin, so this is borderline against the 'rim only' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is an arcade cabinet twin. Measured facts: 12 visible tones per tile, against 17-20 for the stall and well and 9 for the hedge. Near-flat coverage is 10%, close to the stall's 13%. Dark edge pixels are 0% neutral, so the outline is tinted. By eye the cabinet is built from large flat panels: the dark navy body, the red buttons, the screens and the marquee each use only 2-3 steps. The buttons are flat red blobs with a single highlight. There is little grain, scallop or per-element shading, unlike the stall's striped awning, goods and wood grain or the well's stones and roof tiles. It is clean, but it looks flatter and more sticker-like than the references. Only 24 distinct colours overall, against 38-40 for the richer references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 26166
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.973Z",
+ "cells": {
+  "16": [
+   "0017f355448b674f",
+   "0123f011b178f9c7",
+   "0444774545726ed9",
+   "20f3a5ba911669ed",
+   "40361755b5f754f9",
+   "a7ca48e15c9b5afe",
+   "b5586eaa6ce205a2",
+   "b8598148cc4a4ca8",
+   "bb5c6c2f468d1aa3",
+   "cf4bc400547cfb74",
+   "e04a76fa185c45f7",
+   "e553205ae3e3e8af",
+   "ed790ca08305c644",
+   "f170da8997f19d5e",
+   "fac40dd1dd521df2",
+   "fb4bd0ac228f9bf1"
+  ],
+  "24": [
+   "02dcd76128a4abce",
+   "03c71baa0bac8fee",
+   "05d1d2adb39a20b5",
+   "0a8434a1a03eb3dc",
+   "0bd5d4947db2f1d6",
+   "0bd8ac3bcc421a82",
+   "0d6efbde6f1ac954",
+   "0fb1aab4dc9567cd",
+   "13b3189c951bbe12",
+   "17378e2cd664f55a",
+   "2587342a3ecc60ed",
+   "25eaa205e2640e1c",
+   "27d74992789a1196",
+   "28a0a390aec96d8e",
+   "28bd9ad564c8146f",
+   "36e2969c99487890",
+   "379938af41e8e814",
+   "4235f20bc36d39e3",
+   "4765f342ecf01880",
+   "4921db3c6f5c0f40",
+   "553096c691afe3b0",
+   "5732f9a0cce468d1",
+   "5b09a71920345a74",
+   "5b9ca87a448a24e1",
+   "692d50f2422a9a86",
+   "6e1028ca9ea2d889",
+   "71e713776ca3f5ec",
+   "7377d293a5f5aa7b",
+   "849bab5610eaa6c8",
+   "889d9fd15fb4d788",
+   "954783c7646fd445",
+   "a5d3cbb32a526072",
+   "a7973cc2da800ca1",
+   "aed09e1a9182a0f7",
+   "afaac6f829dd7cac",
+   "b11bec1c46ff8c33",
+   "bc802491415ed45a",
+   "c53665aee5750136",
+   "c842ccb017fb4f48",
+   "c95fc56be8169b36",
+   "ca195cf5a1c65fd4",
+   "cebf07f31e7193b4",
+   "ceffd2d6e7e115bf",
+   "d069e6ffb7a51507",
+   "d3b34a6fc1983b1c",
+   "d3ee6d98f28ae167",
+   "d42ff343004779e9",
+   "d518e4e14251061e",
+   "d78d35b32bdaa051",
+   "dc62e3c6b6b831be",
+   "e1f0a21244e81d90",
+   "e890491ac9d37c46",
+   "ee25326299aacafd",
+   "ee8977ae1c3715de"
+  ],
+  "32": [
+   "106efa3cc87616ab",
+   "3bb8e8b44f6b79ab",
+   "40715125bd4b9f91",
+   "55e64940784216c7"
+  ],
+  "48": [
+   "08fd2d0a9556ad5d",
+   "0e7c64b4134f3b9c",
+   "1cf8917a43b24317",
+   "2834ec7ad3afb3ed",
+   "2de705f5deac5b87",
+   "3f3aedf3be563a40",
+   "63a78488e0412440",
+   "727c0d446731a326",
+   "91cdbee9f42193d8",
+   "921d0532e985814a",
+   "93b4ee9dfedc0c28",
+   "976231e8999508bb",
+   "a0c51acf1db92e6f",
+   "aa7fb69a9924f00c",
+   "b0158852a5ce51a0",
+   "b8e5b6dc1eb31cc9",
+   "c3ba4fa9a5cc3f6a",
+   "c75d5d8bf68ca710",
+   "ced9f296c92e8cb1",
+   "da2a479971944b22",
+   "dc187e69d3f6fead",
+   "f286d9a9f5512d1f",
+   "f6db783801b08889",
+   "fd0ad1ab05d4f9df"
+  ]
+ }
+}

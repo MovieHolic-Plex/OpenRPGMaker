@@ -1,0 +1,391 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "44e67b0aa4b459d8ce850bc47cf7a58e5d6b2097be623186e66d86b07e3e93dc",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "konbini atm",
+ "label": "modern_city_interior/konbini-atm",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 28,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "ATM header panel (white/grey face with blue stripe)",
+      "rows": "1-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "screen housing with blue screen",
+      "rows": "10-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "keypad panel",
+      "rows": "20-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a constant 14 px wide for rows 0-29, with no ellipse and no widening or narrowing. Rows 1-4 are a light header band, but it runs straight into the dark row 5 and a blue stripe at row 6. That makes it a vertical face with no front-edge line or eave shadow. The rest is stacked vertical faces: the screen and housing at rows 10-19 and the keypad panel at rows 20-28. Nothing shows a horizontal surface seen from above, and no opening or contents are visible. This is a flat front elevation of a vending-style machine, not an open container."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small ATM with only 13 distinct colours in total. Its body ramp has about 4 lightness steps (white-grey top, light, mid, dark), against 5-6 on the stall, well and hedge. The measured facts show 100% of its dark edge pixels are near-neutral, and the picture shows a uniform dark outline around the whole silhouette and the screen, the 'sticker' look. The references with material-toned outlines (hedge 0%, stall 1%) have no such line. Only the crook lamp, a thin pole, is as neutral. The 12 visible tones per tile and 0% flat coverage keep it from being flat, and the keypad dots and screen add some detail. It is still thinner and more outlined than the stall and well, which have 17-20 tones per tile with tinted edges. Without the density numbers against it, the neutral outline and shallow ramp still make it read flatter than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 28092
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "ATM header panel (white upper face with blue stripe)",
+      "rows": "1-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "screen bezel and blue screen",
+      "rows": "11-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "keypad panel, front face",
+      "rows": "20-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a constant 14 px wide from row 0 to row 29, with no widening or narrowing, so there is no ellipse. The light rows 1-4 lead straight into a blue stripe at rows 5-7 and read as a front-facing header panel. There is no front-edge line followed by eave shadow, so no horizontal surface is drawn. Below that are a screen with a bezel (rows 11-17) and a keypad panel (rows 20-28), all seen face-on. There is no opening and no visible contents, so it is not an open container. It is a flat front elevation of an ATM."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The ATM is a small grey-blue kiosk with a screen, a keypad and a card slot. Its body is built from only about 3 lightness steps (light panel, mid body, dark edge), where Beodeul props such as the well and cheese stall use 5-6. The outline is a neutral, nearly colourless dark line: the measured near-neutral share of dark edge pixels is 100%, against 0-1% on the tinted hedge and cheese-stall references (the lamp-crook also reads 100%, but it is a thin metal pole). It looks like the sticker-style edge rather than a dark tone of the neighbouring material. Visible tones per tile are 12, which is above the hedge (9) but below the well (20) and stall (17), so density is a little lower. Near-flat coverage is 0%, so there are no large flat fills, but the keypad and screen detail is sparse, and the body panels are smooth with little grain or speckle. Overall it is clean but shallower than the references, with a neutral outline and few shading steps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 24354
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper header panel with blue stripe",
+      "rows": "1-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "screen bezel and blue screen (vertical face)",
+      "rows": "10-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "keypad / lower panel",
+      "rows": "18-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The ATM is drawn as a flat face-on elevation, 14 px wide for all 30 rows. The light panel at rows 1-4 is a front-facing strip with no front-edge line and no eave shadow. The row 5 dark line and row 6 blue stripe sit directly under it. The blue screen (rows 12-16) is a vertical display, not an opening seen from above. The keypad panel (rows 21-28) is also a vertical face. No ellipse, roof, or visible contents show a horizontal top surface. It is not a container with an opening, so the kind does not match."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small ATM kiosk with a pale grey-blue body, a dark screen and a keypad. It reads as a clean icon. Measured facts show 12 visible tones per tile, which is near the hedge (9) but below the stall (17) and well (20). Flat coverage is 0%, so the flat-fill measure is not a problem. However, 100% of its dark edge pixels are near-neutral, so the outline is a neutral near-black line around the shape, the sticker look. The Beodeul references use tinted dark-material outlines: hedge 0%, stall 1%, well 33%. The lamp reference is 100% neutral, but it is a thin metal pole, so that case is weaker evidence. The body shows only about 3 lightness steps (light panel, mid, dark edge and screen) against the 5-6 steps on the references' main materials. There is little per-surface grain and no material-toned shading. The ATM is clean but flatter and more sticker-like than the reference props, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 22071
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top header panel (light grey, face-on)",
+      "rows": "1-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue stripe / card slot band",
+      "rows": "5-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "screen bezel with blue display",
+      "rows": "8-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "keypad panel",
+      "rows": "18-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a constant 14 px wide from row 0 to row 29, with no widening or narrowing, so there is no ellipse and no sloped plane. Rows 1-4 are a light, face-on header strip with no front-edge line or eave shadow, so it is a vertical face. The blue screen at rows 12-15 is a vertical display, not contents seen inside an open container. Everything below is stacked vertical panels: screen, keypad and slot. No horizontal top surface is visible, and no side face is drawn. The kind 'container with an opening' does not fit an ATM."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The ATM is a clean, readable 1x2-tile prop with a screen, keypad and slot. It has only 13 distinct colours in total, against 38-40 for the stall and well. Its body ramp is about 4 steps (white-grey face, mid grey-blue, dark side, deep outline), where the references use 5-6 per material. The measured dark edge pixels are 100% near-neutral, and by eye the outline is a uniform dark line around the whole silhouette rather than a darker tint of each neighbouring material. That is the sticker look, unlike the hedge (0% neutral) and the stall (1% neutral). The one neutral reference, the lamp, is a thin metal pole, so it does not justify a neutral outline on a large body. The 12 visible tones per tile and 0% flat coverage are fine and above the hedge's 9. But those tones come from the screen and keypad detail, while the large body panels are smooth with little grain, speckle or per-surface highlighting. Overall it reads as slightly shallower and more sticker-like than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 26918
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.007Z",
+ "cells": {
+  "16": [
+   "2c271d2bab53424c",
+   "800d5f70bee9ff0c"
+  ],
+  "24": [
+   "0484001a6007fd49",
+   "0b9a8f4eb6c9608b",
+   "30ea88b5f88d4613",
+   "3693c93b3936b596",
+   "4269cc738ac373f5",
+   "47f86378fd6df858",
+   "60213fbdae8f4089",
+   "99452906bc88442f",
+   "c6753f9ba09a09a9",
+   "d484db8a7fb03a19",
+   "db81f59b6cc519dd",
+   "e4db7a52d6367ec7"
+  ],
+  "32": [
+   "09c10949e838c78a",
+   "6abd8f99ecaee673",
+   "c1e9b1baf060cb29"
+  ],
+  "48": [
+   "0cb04872dba9bbd1",
+   "0e1fd8e631f91206",
+   "a91baf4621a130a0",
+   "ce27a8271a943d04",
+   "ecfd19c0bdf4635d",
+   "f501961ecd8c7f8c"
+  ]
+ }
+}

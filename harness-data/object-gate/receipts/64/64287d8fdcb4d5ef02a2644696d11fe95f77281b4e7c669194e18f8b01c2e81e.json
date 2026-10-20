@@ -1,0 +1,387 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "64287d8fdcb4d5ef02a2644696d11fe95f77281b4e7c669194e18f8b01c2e81e",
+ "width": 48,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "hotel capsule pods",
+ "label": "modern_city_interior/hotel-capsule-pods",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (3/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+  "3/4: 윗면 2행 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (3/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+   "윗면 2행 < 4 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 18,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 9
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band of the pod stack",
+      "rows": "4-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-10"
+     },
+     {
+      "part": "pod windows and bodies (front face)",
+      "rows": "10-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mid divider band",
+      "rows": "25-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 36,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 4-9 form a full-width band at the top that grades from grey to white (row 8 is white). A darker front-edge line sits at row 9, and a dark eave-shadow row follows at row 10 (#4d5363 in the x=12 and x=35 column scans). That makes a 6-row top surface with an edge line and shadow, not a plain front-facing cornice. Below it, rows 10-45 are the front face: a 2x3 grid of dark pod openings with bedding, separated by vertical and horizontal dividers. There is no receding side face. The call is borderline, because the top band is flat and uniform across the whole width."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 15 visible tones per 16x16 tile, against 9 for the hedge, 17 for the cheese stall and 20 for the well. Near-flat coverage is 0%, so there are no 5x5 flat fills. The dark edge pixels are 0% neutral, so the frame and pod outlines lean blue/navy and follow the neighbouring material. That is the Beodeul approach, not a uniform black sticker line. By eye, each pod has a rim highlight, a lit face, a shaded lower edge and a small orange indicator light, and the frame has a lighter bevel. That gives about 5 lightness steps on the pale pod material. Texture is modest, with panel lines and a few dots but no real grain. Total colours are only 22, below the 38-40 of the richest references, but the hedge reference also has just 11 total. On the primary facts and by eye, it would sit acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22133
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header band of the pod rack",
+      "rows": "4-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "six pod fronts (3x2 grid) with windows and bedding",
+      "rows": "10-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle divider band between the pod rows",
+      "rows": "24-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 38,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a flat, face-on grid of six pod openings in a frame. The top band (rows 4-9) is a vertical gradient from grey to white, with a slightly darker row 9 and a dark row 10 under it. It has no foreshortened top plane and no front-edge line with an eave shadow below. The middle divider (rows 24-28) repeats the same gradient pattern. That shows the top band is a front-facing cornice or frame strip like the divider, not a horizontal surface. The pods are drawn only as vertical faces, with no visible ceiling, floor or side faces. This matches the 'front elevation: top 1' and 'rim only' wrong examples."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The candidate has 15 visible tones per 16x16 tile, against 9 for the hedge, 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, so there are no 5x5 flat fills. Dark edge pixels are 0% neutral, so the outline leans blue-grey with the frame and pod material and is not a black sticker line. By eye, the pale pod panels show about 4 steps (white, light blue-grey, mid, dark) plus small orange light accents and panel seams. That is slightly shallower than the 5-6 steps on the references and has less grain, but it is not flat or sticker-like. On the primary measured facts it matches the references of its kind, so it passes, though not at the top of the range.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21862
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header band",
+      "rows": "4-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pod grid (6 pod fronts with windows and mattresses)",
+      "rows": "10-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle divider band",
+      "rows": "25-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 40,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a flat 48-wide rectangle (rows 3-46). The 2x3 grid of pods is drawn face-on as vertical faces. The light band at rows 4-9 is a frame header: a smooth gradient that peaks at a white highlight on row 8, with no ellipse and no receding plane. The only shading below it is a dark row 10 with orange indicator lights, which reads as a frame edge rather than eave shadow under a sloped top. The mid divider at rows 25-28 uses the same frame styling, so the header looks like a structural frame member and not a horizontal top surface. The pods' tops are not shown, so this is a front elevation with at most a rim of 1-2 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a dark navy-tinted frame holding a 2x3 grid of pale pods, each with a bevel, panel lines and a small orange light. Measured facts support it: 15 visible tones per tile against 9 (hedge), 17 (stall) and 20 (well); 0% near-flat coverage; and 0% near-neutral dark edge pixels, so the outline leans toward the material colour rather than being a black sticker line. The frame has about 4 lightness steps (dark, mid, light bevel, white) against about 5-6 for the references. The pod faces are simple and repeated, and the total palette is only 22 colours against 38-40 for the stall and well, so it is a little less textured than the best references. It is still not flat or sticker-like, and it sits acceptably next to the hedge and bench references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 26463
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header band across the top",
+      "rows": "4-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper row of 3 pod fronts (dark windows, bedding)",
+      "rows": "10-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle divider band with orange lamps",
+      "rows": "25-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower row of 3 pod fronts",
+      "rows": "29-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 43,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole piece is a flat front elevation: a 2x3 grid of pod openings in a frame. The header at rows 4-9 is a front-facing cornice strip, a smooth light gradient with no front-edge line and no eave shadow. Row 9 is only a slight tone change before the pod interiors start. The dark window, bedding and divider bands are all vertical faces. No ellipse, roof plane or visible contents give a horizontal surface, so there is no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 15 visible tones per 16x16 tile, which sits between prop-hedge (9) and prop-stall-cheese (17) and prop-well-roofed (20). Near-flat coverage is 0%, so no 5x5 block is a flat fill. The dark edge pixels are 0% neutral, so the outline is a tinted dark navy/blue-grey frame rather than a black sticker line. By eye, the pods have a dark frame, a mid blue-grey, light panels, a white highlight and small orange indicator lights, which makes about 5 steps. The repeated pod panels carry inner lines and small highlights, so texture is present but modest. Total distinct colours (22) is lower than the larger references (38-40), but that is expected for repeated modules, and per-tile density is on par. It is a little cleaner and simpler than the stall or well, but a careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17606
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.950Z",
+ "cells": {
+  "16": [
+   "30d95d9791174bab",
+   "3618c4c1770cbd3b",
+   "40989f652e261974",
+   "574e7bfa44021560",
+   "79b71b7547617b99",
+   "88f2fe2527a7d958",
+   "979ec8540363ec2e",
+   "9a45f66eebdec9bb",
+   "c2ac29ab3775c1ee"
+  ],
+  "24": [
+   "55ab87ca9dede749",
+   "61ece90716318bc8",
+   "b733cbeb8437b140",
+   "b8583ba2469a1769"
+  ],
+  "32": [
+   "0e329e57069d4eea",
+   "1712cce0897f513a",
+   "1942f7ec6b5d36e2",
+   "1b4d3c5499240a82",
+   "311d31d45dfe859d",
+   "41102c591efafb70",
+   "433c74767af405a7",
+   "65e200d9db3d7c08",
+   "6688c2c23ee54fef",
+   "677beb7bb7d13a51",
+   "6ea56469c05513ca",
+   "74f954bd6098979b",
+   "87c752a881786607",
+   "913a311ab354c88b",
+   "950509429e744a06",
+   "9f2e20af98677846",
+   "a71c5b6e8505b6b9",
+   "b218884ac97e7528",
+   "c3e99f66b327d029",
+   "ca03922853104b83",
+   "d03724a48a046664",
+   "d08641abaf493b63",
+   "da9892ddcfab30d5",
+   "dac4e42e7ef04df0"
+  ],
+  "48": [
+   "927981861e6850e5"
+  ]
+ }
+}

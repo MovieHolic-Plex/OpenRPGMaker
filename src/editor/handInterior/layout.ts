@@ -44,11 +44,11 @@ const DEFAULT_SIZE: Record<string, [number, number]> = {
   living: [8, 6], ldk: [8, 7], dining: [7, 6], great_hall: [12, 8], tavern: [10, 7], shop: [9, 6],
 };
 /** 지나다니는 방 — 문 나무의 가지가 여기서 뻗는다. 나머지(화장실·욕실·침실…)는 끝방이 되도록 점수를 준다. */
-const HUB = /^(genkan|entrance|hall|corridor|ldk|living|great_hall|tavern|dining|waiting_room|.*_shop|shop|konbini|supermarket|chapel|throne_room|engine_hall|casino|theater|common|museum_lobby|museum_gallery|ship_crew|ship_gundeck|arena_floor|arena_stands|shoegenkan|lobby|elevatorhall|open-?office|concourse|postlobby|hosp-lobby|hosp-corridor|annexcorridor|towerlobby|freeoffice|dept-atrium|dept-vip-hall|mart-sales-hall|subway-platform|subway-concourse|cinema-lobby|rest-dining-hall|gallery-lobby|gallery-paintings|karaoke-hall|sento-changing|hotel-lobby)$/u;
+const HUB = /^(genkan|entrance|hall|corridor|ldk|living|great_hall|tavern|dining|waiting_room|.*_shop|shop|konbini|supermarket|chapel|throne_room|engine_hall|casino|theater|common|museum_lobby|museum_gallery|ship_crew|ship_gundeck|arena_floor|arena_stands|shoegenkan|lobby|elevatorhall|open-?office|concourse|postlobby|hosp-lobby|hosp-corridor|annexcorridor|towerlobby|freeoffice|dept-atrium|dept-vip-hall|mart-sales-hall|subway-platform|subway-concourse|cinema-lobby|rest-dining-hall|gallery-lobby|gallery-paintings|karaoke-hall|sento-changing|hotel-lobby|bank-hall|bank-teller|clinic-waiting|civic-hall|civic-counter|lib-lobby|lib-stacks|elem-corridor|elem-genkan)$/u;
 // 손님이 드는 방(가게·주점·대청)이 복도보다 먼저 — 여관이 복도로 들어가 주점을 거치게 짜였다(2026-10-09).
 // jp_city 시설(2026-10-14): 학교 昇降口·사무 빌딩 로비·병원 외래 대기실이 거리 문 쪽 방.
 // 박물관은 매표 홀, 배는 선원 칸(위 갑판)·화물칸(아래 갑판), 투기장은 무기고(선수 입구)로 든다.
-const ENTRANCE_ORDER = [/^genkan$/u, /^entrance$/u, /^(shoegenkan|lobby|hosp-lobby|postlobby|concourse|towerlobby|annexcorridor|dept-atrium|mart-sales-hall|subway-platform|waiting_room|cinema-lobby|rest-dining-hall|gallery-lobby)$/u, /_shop$|^shop$|^tavern$|^great_hall$|^konbini$|^supermarket$|^common$/u,
+const ENTRANCE_ORDER = [/^genkan$/u, /^entrance$/u, /^(shoegenkan|lobby|hosp-lobby|postlobby|concourse|towerlobby|annexcorridor|dept-atrium|mart-sales-hall|subway-platform|waiting_room|cinema-lobby|rest-dining-hall|gallery-lobby|bank-hall|clinic-waiting|civic-hall|lib-lobby|elem-genkan)$/u, /_shop$|^shop$|^tavern$|^great_hall$|^konbini$|^supermarket$|^common$/u,
   /^museum_lobby$|^ship_crew$|^ship_cargo$|^arena_armory$/u, /^hall$/u, /^corridor$/u, HUB];
 /** 기본으로 트는 쌍(종류). */
 const OPEN_DEFAULT: [string, string][] = [
@@ -68,6 +68,11 @@ const OPEN_DEFAULT: [string, string][] = [
   ["band-room", "council-room"], ["roof-garden", "rooftop-deck"], ["otel-room", "otel-kitchen"],
   ["aud-hall", "aud-foyer"], ["koban-rest", "koban-office"], ["court-room", "court-lobby"],
   ["parking-lobby", "parking-deck"], ["elev-stair-core", "elev-hall"],
+  ["bank-teller", "bank-hall"], ["bank-hall", "bank-atm"],
+  ["clinic-waiting", "clinic-pharmacy"],
+  ["civic-counter", "civic-hall"], ["civic-hall", "civic-welfare"],
+  ["lib-stacks", "lib-lobby"],
+  ["elem-corridor", "elem-genkan"], ["shoegenkan", "corridor"],
 ];
 /** 위·아래가 정해진 쌍(종류) — 앞 방이 뒷 방 바로 위(북쪽)에 붙어야 한다. 관중석은 모래 마당을 내려다본다(2026-10-14 조수 시험: 관중석이 마당 아래 딴 방으로 떨어졌다). */
 const ABOVE_DEFAULT: [string, string][] = [
@@ -97,6 +102,18 @@ const ABOVE_DEFAULT: [string, string][] = [
   ["gallery-paintings", "gallery-lobby"],
   ["gallery-sculpture", "gallery-lobby"],
   ["gallery-sculpture", "gallery-shop"],
+  ["bank-teller", "bank-hall"],
+  ["bank-vault", "bank-atm"],
+  ["clinic-exam", "clinic-waiting"],
+  ["clinic-treatment", "clinic-pharmacy"],
+  ["civic-counter", "civic-hall"],
+  ["civic-records", "civic-welfare"],
+  ["lib-stacks", "lib-lobby"],
+  ["lib-study", "lib-media"],
+  ["elem-class-1", "elem-corridor"],
+  ["elem-class-2", "elem-corridor"],
+  ["elem-music", "elem-corridor"],
+  ["elem-nurse", "elem-genkan"],
 ];
 /** 왼·오른이 정해진 쌍(종류) — 앞 방이 뒷 방 바로 왼쪽(서쪽)에 붙어야 한다. */
 const LEFT_DEFAULT: [string, string][] = [
@@ -114,6 +131,17 @@ const LEFT_DEFAULT: [string, string][] = [
   ["gallery-paintings", "gallery-sculpture"],
   ["gallery-lobby", "gallery-shop"],
   ["lecture", "seminar"],
+  ["bank-teller", "bank-vault"],
+  ["bank-hall", "bank-atm"],
+  ["clinic-exam", "clinic-treatment"],
+  ["clinic-waiting", "clinic-pharmacy"],
+  ["civic-counter", "civic-records"],
+  ["civic-hall", "civic-welfare"],
+  ["lib-stacks", "lib-study"],
+  ["lib-lobby", "lib-media"],
+  ["elem-class-1", "elem-class-2"],
+  ["elem-class-2", "elem-music"],
+  ["elem-corridor", "elem-genkan"],
 ];
 /** 이웃이면 문으로 함께 잇는 쌍(순환 동선). */
 const PREFER_DEFAULT: [string, string][] = [
@@ -142,10 +170,82 @@ const DOOR_OF: Record<string, { h?: string; v?: string }> = {
   "cinema-theater": { h: "mci-door-glass" }, "gallery-sculpture": { h: "mci-door-glass" },
   // modern_campus(현대 학교·캠퍼스) 실내 — 강의실·세미나실·교실·학생회실은 교실 미닫이문.
   lecture: { h: "sc-classroom-door" }, seminar: { h: "sc-classroom-door" }, classroom: { h: "sc-classroom-door" }, council: { h: "sc-classroom-door" },
+  staffroom: { h: "sc-classroom-door", v: "door-side-sliding" }, infirmary: { h: "sc-classroom-door", v: "door-side-sliding" }, schooltoilet: { h: "door-open-toilet", v: "door-side-western" },
+  musicroom: { h: "sc-classroom-door", v: "door-side-sliding" }, library: { h: "sc-classroom-door", v: "door-side-sliding" }, sciencelab: { h: "sc-classroom-door", v: "door-side-sliding" },
+  "bank-vault": { h: "of-fire-door", v: "door-side-western" },
+  "clinic-exam": { h: "door-open-western", v: "door-side-sliding" }, "clinic-treatment": { h: "door-open-western", v: "door-side-sliding" },
+  "civic-records": { h: "of-glass-door", v: "door-side-western" },
+  "lib-study": { h: "sc-classroom-door", v: "door-side-sliding" }, "lib-media": { h: "of-glass-door", v: "door-side-sliding" },
+  "elem-class-1": { h: "mci-door-wood" }, "elem-class-2": { h: "mci-door-wood" }, "elem-music": { h: "mci-door-wood" }, "elem-nurse": { h: "mci-door-hospital" },
 };
 
 
 const STYLE_PALETTES: Readonly<Record<string, Readonly<Record<Exclude<InteriorStyleVariant, "A">, { readonly floors: Readonly<Record<string, string>>; readonly walls: Readonly<Record<string, string>> }>>>> = {
+  jp_city: {
+    B: {
+      floors: {
+        flooring: "flooring-dark",
+        "flooring-dark": "flooring",
+        "of-lobby-stone": "po-floor",
+        "of-carpet-tile": "flooring-dark",
+        "po-floor": "of-lobby-stone",
+        "hs-floor-sheet": "pb-linoleum",
+        "sc-classroom-wood": "flooring-dark",
+        "sc-corridor": "sc-classroom-wood",
+      },
+      walls: {
+        cloth: "cloth-beige",
+        "cloth-beige": "cloth",
+        "of-lobby-wall": "po-wall",
+        "of-wall": "cloth-beige",
+        "po-wall": "of-lobby-wall",
+        "hs-wall": "hs-wall-room",
+        "sc-wall": "sc-wall-tile",
+      },
+    },
+    C: {
+      floors: {
+        flooring: "carpet",
+        "flooring-dark": "carpet",
+        "of-lobby-stone": "st-concourse",
+        "of-carpet-tile": "of-lobby-stone",
+        "po-floor": "of-carpet-tile",
+        "hs-floor-sheet": "hs-floor-ward",
+        "sc-classroom-wood": "sc-corridor",
+        "sc-corridor": "of-lobby-stone",
+      },
+      walls: {
+        cloth: "juraku",
+        "cloth-beige": "juraku",
+        "of-lobby-wall": "of-glass-wall",
+        "of-wall": "of-lobby-wall",
+        "po-wall": "of-wall",
+        "hs-wall": "sc-wall-tile",
+        "sc-wall": "cloth-beige",
+      },
+    },
+    D: {
+      floors: {
+        flooring: "flooring-dark",
+        "flooring-dark": "tatami",
+        "of-lobby-stone": "ht-lobby-floor",
+        "of-carpet-tile": "ht-corridor-carpet",
+        "po-floor": "flooring-dark",
+        "hs-floor-sheet": "of-pantry-tile",
+        "sc-classroom-wood": "flooring",
+        "sc-corridor": "flooring-dark",
+      },
+      walls: {
+        cloth: "fd-wood-wall",
+        "cloth-beige": "fd-wood-wall",
+        "of-lobby-wall": "ht-hotel-wall",
+        "of-wall": "fd-wood-wall",
+        "po-wall": "cloth-beige",
+        "hs-wall": "cloth-beige",
+        "sc-wall": "fd-wood-wall",
+      },
+    },
+  },
   modern_city: {
     B: {
       floors: {
@@ -283,7 +383,8 @@ function programBuilding(tilesetId: string, program: string | undefined): string
 /** program 변주(modernPresets.ts MODERN_PROGRAM_VARIATION) — seed 1 은 견본 그대로, 그 뒤로 동↔서 뒤집기·바닥 벽면 묶음·큰 방 넓히기. */
 function programVariation(tilesetId: string, req: LayoutRequest): { v: ModernProgramVariation; k: number; flip: boolean; palette?: Readonly<Record<string, readonly [string, string]>> } | undefined {
   const building = programBuilding(tilesetId, req.program);
-  const v = building ? MODERN_PROGRAM_VARIATION[tilesetId]?.[building] : undefined;
+  const v = (req.program ? MODERN_PROGRAM_VARIATION[tilesetId]?.[req.program] : undefined)
+    ?? (building ? MODERN_PROGRAM_VARIATION[tilesetId]?.[building] : undefined);
   if (!v) return undefined;
   const k = Math.max(0, Math.floor(req.seed ?? 1) - 1);
   const p = k % (v.palettes.length + 1);
@@ -337,7 +438,9 @@ export function layoutWants(tilesetId: string, req: LayoutRequest): Want[] {
     const tw = tw0 + (grow && tw0 >= 10 ? Math.floor(jr() * 4) : 0), th = th0 + (grow && th0 >= 8 ? Math.floor(jr() * 2) : 0);
     const pal = vary?.palette?.[q.kind];
     // 세로는 벽면 두 줄 + 걸을 바닥 — 작은 방(복도·현관·화장실·욕실)은 바닥 2줄, 나머지는 3줄 이상(2026-10-08: 바닥 2줄짜리 여관 방이 납작했다).
-    const small = /^(hall|corridor|genkan|toilet|bath|unitbath|dressing|cell)$/u.test(q.kind);
+    // 단, 2×2 내려가는 계단통(stairwell)이 든 복도·홀은 남쪽에 착지 통로 1줄이 더 필요하므로 최소 높이 5칸(바닥 3줄)을 확보한다.
+    const hasStairwell = Boolean(template?.items.some((it) => it.t === "o" && /stairwell/u.test(it.id)));
+    const small = !hasStairwell && /^(hall|corridor|genkan|toilet|bath|unitbath|dressing|cell)$/u.test(q.kind);
     const minH = Math.max(small ? 4 : 5, Math.min(th, small ? 4 : 5));
     return { id, kind: q.kind, tw, th: Math.max(th, minH), bw: tw0, bh: Math.max(th0, minH), minW: Math.max(2, Math.min(tw, 3) - (tw <= 2 ? 1 : 0)), minH,
       floor: q.floor ?? pal?.[0] ?? template?.floor, wall: q.wall ?? pal?.[1] ?? template?.wall, template };
@@ -652,12 +755,12 @@ function buildCandidatesForVariant(
       if (!edges.some((e) => e.kind === "v" && ((e.a === p && e.b === q) || (e.a === q && e.b === p))) || lft.x > rgt.x) { score += weight; notes.push(`${p} 가 ${q} 바로 왼쪽이 아니다`); }
     }
     for (const w of wants) if (!isHub(w.kind) && w.id !== entrance && (deg[w.id] ?? 0) > 1) { score += 2.5; notes.push(`${w.id} 를 지나가야 다른 방에 간다`); }
-    const openSpan = styleVariant === "C" || styleVariant === "D" ? 6 : 5;
+    const openSpan = 5;
     const connect: HandInteriorConnect[] = tree.map((e) => {
       const A = byId.get(e.a)!, B = byId.get(e.b)!;
       if (isOpen(e.a, e.b)) {
         const lower = rects.get(e.a)!.y > rects.get(e.b)!.y ? A : B;
-        const span = programOpen.some(([p, q]) => (p === e.a && q === e.b) || (p === e.b && q === e.a)) ? 6 : openSpan;
+        const span = openSpan;
         return e.kind === "h" && !/^(genkan|entrance)$/u.test(lower.kind) ? { a: e.a, b: e.b, open: true, span } : { a: e.a, b: e.b, open: true };
       }
       const door = DOOR_OF[A.kind]?.[e.kind] ?? DOOR_OF[B.kind]?.[e.kind];
@@ -670,7 +773,7 @@ function buildCandidatesForVariant(
       return { id: w.id, kind: w.kind, x0, y0: rc.y, x1: x0 + rc.w - 1, y1: rc.y + rc.h - 1, ...(w.floor ? { floor: w.floor } : {}), ...(w.wall ? { wall: w.wall } : {}), ...(w.template ? { template: w.template.id } : {}), ...(w.dress ? { dress: w.dress } : {}) };
     });
     // ㄱ·ㄴ자 방 - 바닥 줄 방(남쪽이 건물 밖 벽, 아래 이웃 없음) 중 큰 방의 한 귀퉁이를 구조 코어(설비 샤프트·벽장)로 도려 낸다. 이웃 방 쪽 귀퉁이와 출구 방은 피한다.
-    if (tilesetId === "modern_city" && req.program && rooms.length >= 3) {
+    if ((tilesetId === "modern_city" || tilesetId === "jp_city") && req.program && rooms.length >= 3) {
       rooms.forEach((rm, i) => {
         const rw = rm.x1 - rm.x0 + 1, rh = rm.y1 - rm.y0 + 1;
         if (rm.kind === HALL_KIND) return;
@@ -709,7 +812,7 @@ function buildCandidatesForVariant(
         score: Math.round(score * 100) / 100,
         rooms,
         connect,
-        exit: { room: entrance, ...(exitX !== undefined ? { x: exitX } : {}) },
+        exit: { room: entrance, ...(vary?.v.noExteriorExit ? { width: 0 } : exitX !== undefined ? { x: exitX } : {}) },
         notes,
         styleVariant,
       });

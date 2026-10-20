@@ -1,0 +1,387 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ae0eca4ef85834e61a4ca3ce7c8a465aef6d153868cf8ba0e79f96c0c3cfddca",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "hosp anesthesia",
+ "label": "modern_city_interior/hosp-anesthesia",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 2행 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 2행 < 4 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 15,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top bezel/cornice strip above the screen",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "monitor screen panel (vertical face)",
+      "rows": "4-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "light control-panel band with highlight stripe",
+      "rows": "10-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face with dials, drawer panels, gas cylinders",
+      "rows": "13-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a constant 14 px wide from row 0 to row 29. The top rows 1-3 form a front-facing gradient bezel (L 149, 187, 225) directly above the dark screen at rows 4-7. It has no front-edge line followed by eave shadow, and it is not an ellipse. The row 9 dark line and the light band at rows 10-12 read as a panel highlight or stripe on a vertical face, not a horizontal surface. Everything from row 13 down is a flat face (dials, drawers, gas cylinders) with no receding top plane and no side face. The whole object is a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, roughly 12x24 px anesthesia machine in cool greys with a screen, a button panel and drawers. It has 14 visible tones per tile, which falls between the hedge (9) and the cheese stall (17) and well (20). Near-flat coverage is 0%, so there are no flat fills. The panel, screen, drawer seams and button dots add texture. Dark edge pixels are 0% near-neutral, so the outline leans toward the body's blue-grey and is not a black sticker line. The body ramp has about 4-5 steps, slightly fewer than the references' 5-6, but this is a small, simple prop and the information density matches the references. A careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18260
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top frame bevel above the screen",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "monitor screen band",
+      "rows": "4-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "machine front panel with knobs, dial and vials",
+      "rows": "10-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole 14px-wide silhouette is a flat face-on machine front: a screen, a light band, a knob and dial panel, and vials at the bottom. Rows 1-3 form only a thin bevel strip that goes from grey to light. It ends directly in the dark screen at row 4, with no front-edge line and no eave shadow below it. The width is constant at 14 from row 0 to row 29, so there is no ellipse and no receding top plane. The rim is 1-3 rows against a front face of about 28 rows, which matches the 'front elevation' and 'rim only' reference examples rather than the right cabinet with a 5-row top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small upright machine with a screen, a panel with buttons, and a drawer or base section. It reads as a hand-shaded piece, not a flat sticker. Measured facts: 14 visible tones per 16x16 tile, which sits between the hedge (9) and the cheese stall (17) and the well (20), and well above the bench and lamp, which are thin props with 0. Near-flat coverage is 0%, so there are no 5x5 flat fills. Dark edge pixels are 0% near-neutral, so the outline leans towards a tinted dark blue-grey of the body, not neutral black. It matches the hedge and cheese-stall references on this point. The body shows about 5 lightness steps (highlight, light, mid, dark, deep) plus small screen and button accents. Texture is a little more modest than the stall or well, because the surfaces are smooth metal and plastic. That suits the subject and does not make it look thinner than the references. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22518
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top bezel band above the monitor screen",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face: monitor screen, panels, dials and two vials, all drawn face-on",
+      "rows": "4-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole drawing is a flat face-on elevation of a machine cabinet. Rows 1-3 form a 3-row gradient bezel (L 149, 187, 225) that runs straight into the dark monitor screen at rows 4-7. There is no front-edge line followed by eave shadow, and no ellipse, roof, or visible contents. The width is a constant 14 from rows 0-29, so no top plane recedes. Rows 4-28 are vertical elements only: screen, panel bands, dials, vial windows and a base. This matches the red 'front elevation' and 'rim only' examples, not the green cabinet that has a 5-row top and an edge line."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a narrow, tall machine about one tile wide. It shows 14 visible tones per 16x16 tile, above the hedge reference (9) and close to the cheese stall (17) and well (20). Near-flat coverage is 0%, so the body has no large flat fills. It carries a screen, a gauge and buttons, and the casing has panel shading from light to dark. The dark edge pixels are 0% neutral, so the outline leans toward a dark tint of the neighbouring material rather than a black sticker line. The main weakness is that the casing ramp has about 4 steps against the 5-6 of the references. Detail is concentrated in the screen and control area, and the casing has only light grain. Overall it would sit acceptably beside the references without looking thinner or flatter than them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16476
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap band above monitor",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "monitor screen with green trace",
+      "rows": "4-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "light ledge band between monitor and control panel",
+      "rows": "10-12",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "control panel with dials",
+      "rows": "13-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower cabinet with two gas cylinders",
+      "rows": "22-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The machine is drawn almost entirely face-on. Rows 1-3 form a thin gradient band, 149 to 225, that reads as a bezel or rim and has no clear front-edge line or eave shadow. The monitor (rows 4-8), the pale band (rows 10-12), the panel with dials (rows 13-21) and the cylinder bay (rows 22-28) are all vertical faces. The pale band has a dark line above it at row 9, but it reads as a front-facing strip rather than a foreshortened horizontal surface. No ellipse, roof or visible contents show a horizontal top. The width is constant at 14 across rows 0-29, so no side face is drawn. This is a front elevation with at most a 2-row rim on top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a single-tile-wide anesthesia machine with a monitor on top, a panel with dials and a lower body. It measures 14 visible tones per 16x16 tile, above prop-hedge (9) and between the references' mid and high range (stall 17, well 20). Near-flat coverage is 0%, so there are no flat fills. Its dark edge pixels are 0% neutral, so the outline carries a tint, as in the hedge and stall, and is not a uniform black sticker line. The monitor, dials and panel are shaded in separate steps, giving about 4 steps per material against the references' 5-6. This is slightly shallower on the body, but the prop is small and the tile information is on par with the references. A careful artist would accept it next to them without it looking flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17624
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.911Z",
+ "cells": {
+  "16": [
+   "b595f820f5f825c8",
+   "cd5918b777e3b815"
+  ],
+  "24": [
+   "04cbbcba5fd4d8aa",
+   "1a7662892a13be4f",
+   "1c29d90e22a6c13f",
+   "1e980797d6d74529",
+   "2413f12bea36ea20",
+   "8958ebd0db18a5e7",
+   "952843375d8f82e7",
+   "a01301d95e969770",
+   "a8a3c39674504c92",
+   "c045c3c5bd9ddb2b",
+   "cb13c3eff66a6dcf",
+   "e0f268b4be9e7769"
+  ],
+  "32": [
+   "56eb15629c1a2579",
+   "f89828c7c40a652f",
+   "ff85497ce4c0fe97"
+  ],
+  "48": [
+   "0baaffe795809c84",
+   "19276ab47e5c10dc",
+   "363e1c84f5e7164a",
+   "bc40a6883e4cc11b",
+   "e5ff91c24063fe01",
+   "ece99e15cb287930"
+  ]
+ }
+}

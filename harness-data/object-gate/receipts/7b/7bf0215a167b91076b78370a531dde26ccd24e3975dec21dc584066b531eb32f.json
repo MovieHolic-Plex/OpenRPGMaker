@@ -1,0 +1,432 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7bf0215a167b91076b78370a531dde26ccd24e3975dec21dc584066b531eb32f",
+ "width": 32,
+ "height": 48,
+ "kind": "container",
+ "name": "arcade cabinet pair",
+ "label": "modern_city_interior/arcade-cabinet-pair",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 16,
+  "darkV5": 34,
+  "nearBlackEdge": 0.98,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "marquee header (cyan and pink gradient strip)",
+      "rows": "0-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "control panel strip with buttons",
+      "rows": "20-22",
+      "evidence": "none",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stool cushions (small ellipse tops under the cabinets)",
+      "rows": "36-41",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is the pair of upright arcade cabinets in rows 0-34, a 30px wide block drawn face-on. Rows 0-4 are a marquee strip with a gradient and no front-edge line or eave shadow, so it is a vertical face. Row 5 is dark. Rows 6-19 are the screen bezel and screen. Rows 20-22 are a thin gray control strip with buttons, and rows 26-34 are the coin-door panel. No band, ellipse, roof or visible contents reads as a horizontal top surface on the cabinets, and no side face is drawn. The object is not a container with an opening. Only the small stools at rows 36-46 have ellipse cushion tops, and they are separate minor parts, not the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate's tile density is decent: 16 visible tones per tile against 17-20 for the stall and well, and 0% near-flat coverage. The structure is shallower than the references. Each cabinet reads as a flat body with a screen, a marquee and a button panel, and each material has only about 3 lightness steps (light, mid, dark) against 5-6 on the stall and well. The dark edge pixels are 100% near-neutral, so the outline is a uniform black/grey line around each cabinet and stool. That is the 'sticker' look. The stall, hedge and well use tinted dark-material edges (0-33% neutral). The surfaces have little grain, speckle or per-element highlighting beyond the screen glow, so the texture is limited. The piece is clean and readable, but a careful artist would not put it next to the stall and well without it looking flatter and more outlined.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18909
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "marquee strip (both cabinets)",
+      "rows": "1-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "screen bezel and screen (vertical face)",
+      "rows": "6-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "control panel strip with buttons",
+      "rows": "20-23",
+      "evidence": "none",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower coin-door panel (vertical face)",
+      "rows": "25-34",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "two small stools (separate from cabinets)",
+      "rows": "36-41",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is two arcade cabinets, a 30-wide block over rows 0-34. It is drawn entirely face-on: marquee at rows 1-4, screen at rows 6-19, control panel at rows 20-23, coin door below. The roof of each cabinet has no band ending in a front-edge line, no eave shadow and no ellipse. The silhouette is a flat rectangle starting at row 0 with no foreshortened top surface. The only ellipse-like shapes are the two small stool seats at rows 36-42, which are separate from the cabinets. The object is not an open container, and no contents or opening are visible from above. It reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are not the problem: 16 visible tones per tile is in the range of the stall (17) and well (20), and near-flat coverage is 0%. The weakness is structural. 100% of the candidate's dark edge pixels are neutral, so the cabinets and stools carry a uniform near-black outline around every shape. This is the sticker look. The tinted references (hedge 0%, stall 1%, well 33%) use dark material tones instead. By eye, each cabinet body reads as only about 3 lightness steps: a coloured side panel, a darker panel, and a screen/marquee accent. The references have 5-6 per material. Grain, speckle and per-part value separation are thin on the cabinet bodies and stools, mostly small screen and button detail. At the same scale the pair looks flatter and more outlined than the stall and well, so I fail it under the 'when in doubt' rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17380
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "marquee header (both cabinets)",
+      "rows": "1-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "screen bezel and screen",
+      "rows": "6-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "control deck with buttons",
+      "rows": "20-23",
+      "evidence": "none",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower cabinet front with coin panel",
+      "rows": "25-33",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "two stools with cushion tops",
+      "rows": "36-46",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is two upright arcade cabinets drawn face-on. Rows 1-4 are a marquee strip, a vertical face with no edge line or shadow. Rows 6-19 are the bezel and screen, rows 20-23 a thin control deck, and rows 25-33 the lower front panel. The control deck is only about 3 rows and is a small detail. The cabinet top is a flat 30-wide silhouette whose first row is an outline, with no top plane and no opening seen from above. Nothing is an ellipse or a container with visible contents. The object is not a container. It is a front elevation, not a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate's tile density is respectable: 16 visible tones per tile, against 17 for the cheese stall and 20 for the well, with 0% near-flat coverage. The structure is shallower than the references, though. Each cabinet has a blue or pink body with perhaps 3 lightness steps, plus a screen, a coin panel and a base. The Beodeul props use about 5-6 steps per material. The dark edge pixels are 100% near-neutral, and the cabinets read as wrapped in a uniform near-black outline. The tinted references (hedge 0%, stall 1%) use dark green or dark brown beside the material instead, so this is the 'sticker' look. Only the thin lamp, which is dark throughout, matches the candidate's 100% figure. Total palette is 26 colours for two multi-material cabinets, against 38-40 for the stall and well. There are no flat blocks, but material texture (grain, speckle, per-part highlight clusters) is limited. Next to the stall and well it looks flatter and more outlined.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 22869
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "marquee band (both cabinets)",
+      "rows": "0-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "screen bezel and screen (vertical face)",
+      "rows": "6-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "control panel strip with buttons",
+      "rows": "20-22",
+      "evidence": "none",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower cabinet front with coin door",
+      "rows": "23-34",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stool seat cushions",
+      "rows": "36-42",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a pair of arcade cabinets, 30 px wide, rows 0-34. It is drawn entirely face-on: a marquee strip (rows 0-4), a screen (rows 6-19), a control strip (rows 20-22) and a coin door (rows 26-33). None of these has a top band with a front-edge line and eave shadow, and no ellipse or contents are visible. The width stays at 30 for rows 0-34, so nothing widens and narrows. Only the small stools below (rows 36-42, widths 14-18-14) show an ellipse-like seat, and they are not the main body. The object is not an open container, so the container kind does not fit. It reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are healthy on density. The candidate has 16 visible tones per tile against 17 for the cheese stall and 20 for the roofed well, and 0% near-flat coverage, so there are no large flat fills. The weakness is structural. 100% of its dark edge pixels are near-neutral, the same as the lamp-crook reference, while the hedge, stall and well references sit at 0-33% with tinted outlines. By eye, both cabinets carry a uniform near-black outline around the whole silhouette, the sticker look the standard warns against, not a dark tone of the adjacent material. Each cabinet body has only about 3 lightness steps (base, one highlight and one shadow band). The marquee, screen and buttons are small blocks with little per-material ramping or grain, while the Beodeul stall and well show 5-6 steps with per-element texture. The cabinets read as clean but flatter and more sticker-like than the references. The near-black outline and shallow ramps are enough to fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19756
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.736Z",
+ "cells": {
+  "16": [
+   "586bc7c0c096054d",
+   "6115230b2b37c02e",
+   "7181945c2c282b75",
+   "767a8af26c2cef53",
+   "8eafe59a2538cf27",
+   "cc5d05b7088ebab2"
+  ],
+  "24": [
+   "10c04033bec4e0de",
+   "3baa12e4b2738911",
+   "3e948b12c921a66b",
+   "5403ba8eb546c207",
+   "733246a7f77c3955",
+   "7937a400dbe5421e",
+   "8ba40048244c1148",
+   "9bfc25f8e2a1cbc2",
+   "c7bc156ef9772811",
+   "d358d2984be7adff",
+   "e77015efc3ab6329",
+   "e987ee0c3e3d87a4"
+  ],
+  "32": [
+   "a07249ab0e742fff",
+   "bf109e83f81d8181",
+   "d6e06e4017fe520d",
+   "e29190b5f3d22c62"
+  ],
+  "48": [
+   "6556fef19a565b69",
+   "741423dcbbc40673",
+   "ca758d0a097a1ce2"
+  ]
+ }
+}

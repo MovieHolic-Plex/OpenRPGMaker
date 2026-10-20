@@ -1,0 +1,334 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7b2f5b20f900ce0daa9b02a6b23e0d88ee461e72d63e46fc585f27efc1ebc4b3",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "am-arcade-stool",
+ "label": "seats34/jp_city_interior/am-arcade-stool",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 26,
+  "nearBlackEdge": 0.94,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "red cushion seat",
+      "rows": "6-11",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette width runs 6,8,10,10,8,6 over rows 6-11, which is an ellipse from the back rim (row 6) to the front rim (row 11). The seat is lit from above: light rows 7-8, mid row 9, darker row 10. Below it a narrow stem (rows 12-14, width 4) and a wider base (rows 14-15, width 8) form a front face of about 4 rows. The seat is seen from above, as the seat rule requires."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny red/pink stool, smaller than one 16x16 tile, with only 7 distinct colours in total. It shows about 3 tones: a lighter top, a mid body, and a darker base or outline. The references (bench, hedge, stall, well) carry 5-6 steps per material, with grain, per-element highlights and texture dots. The stool has no visible grain, speckle or per-part highlight, so its small surfaces read as flat fills even though no 5x5 block is measured flat. Only 4% of its dark edge pixels are neutral, so the outline is tinted (dark red-brown) and not a black sticker line. That is a point in its favour, but the shading is shallow and the form is simple. Next to the bench, which has wood grain and slat shading, it looks thinner and flatter. The density facts cannot be used because the piece is under one tile, but by eye it is clearly less rich than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12432
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "red round cushion seat",
+      "rows": "6-11",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "central post and base",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile for rows 6-11 is 6,8,10,10,8,6, so the seat widens and then narrows again. That makes an ellipse about 6 rows tall including the outline. The column scan shows light salmon at rows 7-8 shading to darker red at rows 9-10, which reads as a cushion lid seen from above. Below it, rows 12-15 hold a narrower post (width 4) on a wider base (width 8), a front support of about 4 rows. The seat surface is a real ellipse, not a 1-2 row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny pink/red stool, about 10x10 source pixels, with only 7 distinct colours. It reads as a round cushion top, a short stem and a base, with roughly 3 lightness steps. The Beodeul references (stall, well, hedge) carry 5-6 steps per material, per-tile highlights, grain and clumps. The edge tint measurement (4% near-neutral) suggests the outline is a tinted dark red rather than black, which is fine. But the cushion top and base show no grain, speckle or per-part variation, so the surfaces read as simple smooth fills. The stool is small, but even next to the small bench and lamp references it looks thinner and flatter and more sticker-like. The tile-level measurements are 0 because the piece is smaller than one tile, so I judged by eye. By eye, shading depth and texture are clearly below the references, so I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 13363
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "red cushion seat (ellipse)",
+      "rows": "6-11",
+      "evidence": "b",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal shaft and base",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is an ellipse. The width profile runs 6, 8, 10, 10, 8, 6 over rows 6-11, so it widens and then narrows again. It is bounded by dark outline rows at 6 and 11. The fill goes from light salmon (rows 7-8) to darker red (rows 9-10), which reads as a cushion top seen from above. Below it, a narrow 4-px gray pedestal (rows 12-13) flares to an 8-px foot (rows 14-15), giving a front/support face of 4 rows. The foot is a small base, not a major part that needs its own top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny pink/red stool, smaller than one tile, with only 7 distinct colours in total. The reference bench has 14, the lamp 14, the hedge 11, and the stall and well 38-40. The seat is a rounded cushion with perhaps a highlight, a mid tone and a dark base, so about 3 steps against 5-6 for the references. Its dark edge pixels are only 4% neutral, so the outline is tinted, dark red-brown beside the cushion, and not a black sticker line. At 2x it reads as a small blob with a short stem and base, with no visible grain, no per-part shading on the stem and no texture dots. The bench and lamp are also thin props, so the missing per-tile measure does not count against the stool. By eye, though, it is still thinner and flatter than the bench, which has plank highlights, grain and shaded ends, and than the lamp, which has a shaded pole, a bracket and a lantern. A careful artist would not accept it next to these references without it looking simpler.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15517
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cushion seat (ellipse)",
+      "rows": "6-11",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal post and base",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is a rounded cushion. Its width profile runs 6,8,10,10,8,6 over rows 6-11, so it widens and then narrows again, which makes an ellipse of about 6 rows from back rim to front rim. The light rows 7-8 are the seat top, and the darker rows 9-10 are the cushion's front roll. Below it is a narrow grey pedestal (rows 12-13 at width 4) on a wider base (rows 14-15 at width 8), giving about 4 rows of support. The seat surface is seen from above and the support is a front face, so this is a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny red/pink round stool of about 7 distinct colours in total. The seat top is a flat pink ellipse with a single highlight, and the stem and base are only 2-3 tones with no grain or per-part shading. The references (bench, hedge, stall, well) carry 5-6 shading steps, material textures and tinted outlines. The candidate's dark edge pixels are only 4% neutral, so the outline is tinted rather than a black sticker line, which is in its favour. Even so, it is far shallower than the references: 7 colours against 14-40, and no texture dots, cushion stitching or metal highlight on the stem. It is also much smaller and simpler than the same-kind references. Compared with the bench, the nearest simple piece, it is flatter and thinner, so a careful artist would not accept it next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15647
+  }
+ ],
+ "decidedAt": "2026-10-20T14:09:20.462Z",
+ "cells": {
+  "16": [
+   "9f038409043d11ee"
+  ],
+  "24": [
+   "11358a46c1c5d184",
+   "315907ab9cded69e",
+   "5ab1b71a346d4b50",
+   "90e9ddf564e9ab91",
+   "9e3f5bf4ea7b910e",
+   "f2b41ecba072a702"
+  ],
+  "32": [
+   "0e094a0ba4c2715e",
+   "22e457937bf3aa94",
+   "7f80fdf2ea2e76e4",
+   "82c22507fd5068cc",
+   "a24c60d6dae11879",
+   "aa964b5648f8ae5a"
+  ],
+  "48": [
+   "1d4c9fe7269a03c8",
+   "3ff01f1f985ba293",
+   "4765eaad29167d89",
+   "52eb2028d21ceb11",
+   "ace55cb97d92faa5",
+   "d2419965dc04c2f4"
+  ]
+ }
+}

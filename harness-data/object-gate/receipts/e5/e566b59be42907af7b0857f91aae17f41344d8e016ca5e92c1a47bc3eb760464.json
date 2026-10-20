@@ -1,0 +1,407 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e566b59be42907af7b0857f91aae17f41344d8e016ca5e92c1a47bc3eb760464",
+ "width": 64,
+ "height": 48,
+ "kind": "box",
+ "name": "jp-car-kei-mint",
+ "label": "jp_city/vehicle/jp-car-kei-mint",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "평면 채움 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 12,
+  "darkV5": 28,
+  "nearBlackEdge": 0.13,
+  "opaqueTiles": 10
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "van roof",
+      "rows": "6-15",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "windows/body side",
+      "rows": "18-37",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "windshield slope",
+      "rows": "7-23",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels",
+      "rows": "33-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a kei van seen from the side, not a box. Rows 6-15 form a large light-green roof band with a highlight streak. The band is bounded by a darker transition at rows 16-17 (L 153 to 125) and then the darker window band at rows 18-23. That works as a front-edge line with eave shadow, so the roof is a top surface about 10 rows tall. The south face is the body side with windows, door seams, and wheels, and it runs from about row 16 to row 41, well over 3 rows. The slanted windshield at the right adds a sloped plane."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The van body is a mostly flat grey-green with a highlight band and one or two shade steps, so the main ramp has about 4 steps against 5-6 for the references. The outline is a uniform dark line around the whole silhouette and the wheels, and 88% of the dark edge pixels are near-neutral. That is the sticker look, unlike the tinted dark-material outlines on the stall (1% neutral), the hedge (0%) and the well (33%). Near-flat coverage is 15%, slightly above the stall's 13% and well above the 0% of the well and hedge, and the body panels and door areas are broad flat fills with little grain or per-panel variation. At 9 visible tones per tile it only matches the hedge and is well under the stall (17) and the well (20), the closest comparisons for a large, detailed prop. The window glass has some gradient and the van is cleanly drawn, but the outline and flat panels would look shallower than the references next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 25320
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof panel",
+      "rows": "6-15",
+      "evidence": "c",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "windows and body side",
+      "rows": "18-41",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels",
+      "rows": "33-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a kei van facing east, drawn in side profile. Rows 6-15 are a large light roof plane with a diagonal gloss highlight, and the silhouette widens from 40 to 59 px over rows 5-14, so it reads as a roof seen from above. Rows 16-17 form a darker edge band before the window strip in rows 18-23. Below that, the south body side runs from about row 18 to row 41 with door seams, lights and wheels, giving roughly 24 rows of front face. The roof is not a thin rim, so the van reads as three-quarter, though the roof's front edge line is weak."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The van body is a grey-green ramp of about 4 steps: a top highlight, a mid side panel, a darker lower band and shadow. The windows and wheels add only 2-3 tones each. Beodeul props use 5-6 steps per material. The dark edge pixels are 88% near-neutral, and the picture shows an even black/dark-grey line around the whole silhouette and the wheels. That is the sticker look, not a dark tone of the adjacent material. The hedge (0% neutral) and the cheese stall (1%) use tinted edges. The side panel and roof have broad smooth areas with little grain or panel texture, and 15% of the piece is near-flat, which is above the hedge and well (0%) and similar to the stall (13%). At 9 visible tones per tile it matches the hedge but sits well below the stall (17) and well (20). Overall it is a clean but flatter, outlined piece, so it fails mainly on the outline and the shallow shading and texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 19044
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "van roof",
+      "rows": "6-15",
+      "evidence": "c",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "side body with windows and wheels",
+      "rows": "16-41",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "slanted windshield and short hood at right",
+      "rows": "7-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The van faces east, so its south face is the side profile. Rows 6-15 are a tall, light roof plane with a diagonal highlight and widening silhouette (40 to 58 px). It ends in a darker edge and eave band at rows 16-17, which is evidence (c) and (a). Below that, the window band (rows 18-23), body panels and wheels form a front face of about 26 rows. The roof is clearly a horizontal surface seen from above, not just a rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The van body is a grey-green panel with only about 3-4 lightness steps (highlight on the roof, mid body, darker lower sill, dark wheels and glass). Its outline is a uniform dark line around the whole silhouette, and 88% of its dark edge pixels are near-neutral. That is the 'sticker' look, unlike the tinted dark-material edges of the stall (1% neutral), hedge (0%) and well (33%). It has 9 visible tones per tile, matching the hedge but well below the stall (17) and the well (20), which are the closest structured props. Near-flat coverage is 15%, slightly above the stall's 13% and well above the 0% of the hedge and well. The flat door and side panels show little grain, panel-edge shading or per-part texture, so the large body areas read flat. The silhouette and window shapes are clean and the piece is a reasonable prop, but it is shallower than the Beodeul standard in shading, outline and texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 17114
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "east",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "roof panel",
+      "rows": "6-15",
+      "evidence": "c",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "windshield/hood block at right",
+      "rows": "7-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels",
+      "rows": "33-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a small van or car whose side profile is the south face, and the kind 'box' fits only loosely. The roof is a large light plane (rows 6-15) with a diagonal highlight. The silhouette widens from 40 to 59 px over rows 5-14. A darker band at rows 16-17 acts as the edge line and eave shadow above the window strip (rows 18-23). Below that is a body side with door lines, wheels and lights, running to about row 41. The roof is a real top surface of about 10 rows over a front face of 20+ rows, so it reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a kei van with a grey-green body. It shows about 4 lightness steps on the body (highlight, light, mid, dark), against 5-6 on the references. Its dark edge pixels are 88% near-neutral, so the outline reads as a dark neutral line around the whole van. That is the sticker look, unlike the tinted dark-material outlines of the hedge (0%) and cheese stall (1%). It does have 9 visible tones per tile, which matches the hedge but is well below the stall (17) and the well (20). Near-flat coverage is 15%, slightly above the stall's 13% and well above the 0% of the others. The side panels and roof are broad, smooth fills with little grain, speckle or per-panel variation. The windows, wheels and bumpers give some structure, but the surface texture is thin next to the references' tile scallops, plank grain and leaf clumps. Overall it is cleanly drawn but flatter and more outlined than the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 17086
+  }
+ ],
+ "decidedAt": "2026-10-20T14:27:53.377Z",
+ "cells": {
+  "16": [
+   "10079916ef82e09a",
+   "1d021a28a18a1a15",
+   "3e384746082dbf15",
+   "573af8f6f41bf91b",
+   "58efc87daf8f89d5",
+   "5b5a6bafac3ec94b",
+   "9ac0db8f2937b242",
+   "a28f741c6bfb472f",
+   "b4b213e307636422",
+   "bb50df672f497316",
+   "d9841c31837c72b1",
+   "e7c86885ed077921"
+  ],
+  "24": [
+   "033a8018b008a1e3",
+   "109b1d3f63d30149",
+   "1d665ad251d273f4",
+   "43447bc581ffca00",
+   "4d83e30d4c283180",
+   "4e229df4ea64f2bf",
+   "58b3897cbb4e761b",
+   "5b089b2f9d967c83",
+   "70c0f973dc13895e",
+   "81729d301612c352",
+   "87cb0a13f96e23ab",
+   "8d93b190ebb9cc6d",
+   "96e8c02263d27248",
+   "99e018f4fc5e3cee",
+   "a102a9c7ae36f0b5",
+   "ca566c51a5297704",
+   "fdaa560aed72b76d",
+   "ffbf3d725bf707e2"
+  ],
+  "32": [
+   "0d896bc5e4023a64",
+   "2d9d816ec3223448",
+   "2f389f292e485e41",
+   "6f3f5084d75fe90b",
+   "97c8821cedd65b47",
+   "a8e0fd2b11b17e82",
+   "b81d089cdf686d31",
+   "f75c43af2e35977d"
+  ],
+  "48": [
+   "0d6505d464f2133d",
+   "12397d8054ed95cb",
+   "145ec100c7e7601a",
+   "59e0f0454a525c65",
+   "8dde16b356bbce09",
+   "e73da93050f21be0"
+  ]
+ }
+}

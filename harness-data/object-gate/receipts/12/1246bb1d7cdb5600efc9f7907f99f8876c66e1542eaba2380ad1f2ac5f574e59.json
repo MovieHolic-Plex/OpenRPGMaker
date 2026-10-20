@@ -1,0 +1,416 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1246bb1d7cdb5600efc9f7907f99f8876c66e1542eaba2380ad1f2ac5f574e59",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "mart dairy open",
+ "label": "modern_city_interior/mart-dairy-open",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 2행 < 3 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 2행 < 3 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 21,
+  "tileColorsP90": 21,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header band (grey strip with white line)",
+      "rows": "1-4",
+      "evidence": "none",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue sign band under header",
+      "rows": "5-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "open shelves with bottles (face-on)",
+      "rows": "7-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower shelf with butter/cheese goods",
+      "rows": "23-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "29-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a face-on open dairy cooler. Rows 1-4 are a thin grey header strip with a white line at row 4. It has no eave shadow and no widening or narrowing. It reads as a flat cornice or rim, not a receding horizontal top. Rows 5-6 are a blue sign band, and rows 7-28 show bottles, shelf lines and goods all seen straight on. The silhouette is a constant 32 px wide, so there is no ellipse, no roof plane and no visible contents seen from above. The front face is large, but there is no real top surface, so it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a dairy display case with a pale frame, a blue-grey interior and shelves of small coloured items. It is the same kind as prop-stall-cheese and prop-well-roofed. On the primary facts it matches them: 20 visible tones per tile against 17 and 20, 0% near-flat coverage against 13% and 0%, and 0% neutral dark edge pixels. That last figure means the outline is tinted, a dark blue-grey that follows the neighbouring material, and not a black sticker line. By eye, the frame and interior show about 4-5 lightness steps, and the shelf rows add small item clusters and highlights that break up the surface. It is slightly more regular and cleaner than the hand-textured stall reference, but not flat or thin. A careful artist would accept it beside the references without it looking flatter or poorer.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17768
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header band / cornice",
+      "rows": "1-4",
+      "evidence": "none",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue sign stripe",
+      "rows": "5-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper shelf with bottles (face-on)",
+      "rows": "8-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower shelf with bottles (face-on)",
+      "rows": "16-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom tray with goods and base ledge",
+      "rows": "23-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole piece is a face-on elevation of an open dairy cooler. Rows 1-3 are a thin light-grey header strip with a bright line at row 4, followed directly by a blue sign stripe (rows 5-7). This strip reads as a front-facing cornice, not a foreshortened top plane. Below it, two shelves of bottles (rows 8-22) and a goods tray (rows 23-28) are all drawn flat on the front. No ellipse, no roof plane, and no visible contents from above. The only horizontal hint is the ledge at row 29. There is no real top surface, so this is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a dairy display case with a striped top, a pale frame and rows of small products on shelves. It measures 20 visible tones per 16x16 tile, which matches prop-well-roofed (20) and is above prop-stall-cheese (17) and prop-hedge (9). Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% neutral, so the outline is tinted (dark blue-grey and dark material tones) and not a sticker-style black line. The frame and glass show about 5 lightness steps, with highlights and shadow bands. The product rows add varied small dots, though the repeated grid is somewhat regular and less organic than the stall's grain. Overall it would sit acceptably next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20615
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header band (grey strip, white line, blue stripe, light-blue drip strip)",
+      "rows": "1-8",
+      "evidence": "none",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper shelf with bottles (vertical face)",
+      "rows": "9-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower tray with cheese and pink goods (vertical face)",
+      "rows": "23-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey base strip",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is an open dairy fridge drawn flat, face-on. Rows 1-3 are a grey band, row 4 is a white line, and rows 5-8 are blue and light-blue stripes with drips. Together these read as a front-facing header or cornice, not a receding horizontal surface. There is no eave shadow and no widening or narrowing that would suggest an ellipse or a roof plane. The silhouette is a uniform 32 px wide from row 0 to row 30. Below the header, the shelves of bottles (rows 9-22) and the cheese and pink goods tray (rows 23-28) are all vertical faces. No shelf shows its top surface, and the goods are seen face-on. The result is a front elevation with at most a 1-2 row rim at the top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a dairy display case with a striped top and shelves of small items. It measures 20 visible tones per 16x16 tile, level with prop-well-roofed (20) and above prop-stall-cheese (17) and prop-hedge (9). Near-flat coverage is 0%, so there are no 5x5 flat fills; the shelves, items and frame all carry variation. 0% of its dark edge pixels are neutral, so the outline leans toward a dark blue-grey of the neighbouring material rather than a black sticker line. The frame and cabinet show about 5 lightness steps, only slightly less than Beodeul's 5-6. Texture is moderate rather than rich, since the shelf rows are fairly regular. Overall it sits next to the stall reference without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17081
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top cornice strip (grey/white)",
+      "rows": "1-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue header band with light-blue lower strip",
+      "rows": "5-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front shelves with bottles, face-on",
+      "rows": "9-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The drawing is a face-on dairy display case. Rows 1-4 are a flat grey/white strip and rows 5-8 are a blue header band with a light-blue strip. Neither has a front-edge line, an eave shadow, or an ellipse. The bottle rows (9-13, 16-20) and the shelf ledges (14-15, 21-22, 28-30) are all vertical faces with no horizontal surface visible, and the open interior shows no contents from above. The column scan shows only stacked front-facing bands from row 0 to row 31. No top surface is visible, so the object is a front elevation. It is also a tall display case rather than low furniture."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a front-on dairy fridge case with a striped top, glass shelves and rows of small coloured goods. The measured facts support it: 20 visible tones per tile against 17 for the stall and 20 for the well, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is tinted rather than a black sticker line. By eye, the frame and glass show about 4-5 value steps, and the shelf items add small clusters of variation. It is flatter and less deep than the stall-cheese reference, with less grain and fewer total colours (25 against 40), but it has no large flat fills and a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18134
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.064Z",
+ "cells": {
+  "16": [
+   "1285fa26444f52a2",
+   "52d156ce6416e009",
+   "7f931a45ac1c5c44",
+   "a9aef920b35d63f0"
+  ],
+  "24": [
+   "035031812afe3876",
+   "0dc216e1fa15ca54",
+   "13c913a49211d398",
+   "20ad948f06bf6940",
+   "24dbf9c215c11dbf",
+   "28701761df32b842",
+   "33af05894966cb1a",
+   "37a14f9967bd1e97",
+   "4a012e7fbb12993d",
+   "4f13ee505435151e",
+   "608464c9bf97fdd8",
+   "795d9607c95b7a17",
+   "908dc2374aacb9cb",
+   "97981234b8b4609a",
+   "ab1f529c718f2902",
+   "ab5ae6f6c4f0d1d8",
+   "af698ff77a494e33",
+   "b52dc3f77b8921d7",
+   "b88168d975c34a3f",
+   "bb75428052b95bd7",
+   "bdbec1359ecd8bc2",
+   "c3d6fed3e0798eae",
+   "e02a994f78f210aa",
+   "e6a09a744691a32f"
+  ],
+  "32": [
+   "ea89a8c9a9984963"
+  ],
+  "48": [
+   "07c0e876999c3cab",
+   "2e91591c2707e217",
+   "3d1a7f976d82aef6",
+   "4828f2fb393b0c7a",
+   "724cd10d2359f1a4",
+   "a69928d4caea3268"
+  ]
+ }
+}

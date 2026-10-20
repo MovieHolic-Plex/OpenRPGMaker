@@ -121,7 +121,7 @@ def _finalize():
                 key = (t.tobytes(), pc)
                 if key in seen:
                     row.append(seen[key]); continue
-                local = '%s/%d.%d' % (id_, cx, cy)
+                local = '%s/%d.%d' % (_key_id(id_, C, R), cx, cy)
                 seen[key] = local
                 cells[local] = dict(img=Image.fromarray(t, 'RGBA'), pc=pc, label='%s 칸 (%d,%d)' % (name, cx, cy),
                                     desc='[건물 키트] %s 의 일부. 키트 jp-bldg-%s 로 통째로 놓는다.' % (name, id_.replace('_', '-')),
@@ -145,6 +145,15 @@ def _finalize():
 
 
 _CACHE = {}
+# 굽기 때 모양(폭×높이)을 얼린 표. 모양이 바뀐 키트(2026-10-20 3/4 깊은 지붕으로 46채가 1~2칸 높아짐)의 칸은 자리 키에 @폭x높이 를 붙인다 —
+# 칸 번호는 자리 키를 따르므로, 옛 키를 그대로 쓰면 이미 깔린 맵(사용자 맵·게시 장소)의 옛 격자 자리에 새 그림 조각이 어긋나게 들어간다.
+# 새 키는 끝 번호를 새로 받고, 옛 번호는 bake_jp 의 legacy 단계가 옛 그림 그대로 남긴다.
+_SHAPES = json.load(open(os.path.join(ROOT, 'tiledata', 'jp-city', 'buildings-shapes-v1.json'), encoding='utf-8'))['shapes']
+
+
+def _key_id(id_, C, R):
+    frozen = _SHAPES.get('jp-bldg-' + id_.replace('_', '-'))
+    return id_ if frozen is None or frozen == [C, R] else '%s@%dx%d' % (id_, C, R)
 NOTES = ('일본 동네 건물 %d종 블록. 그림은 houses/ 의 조립 키트(기준 집 ref_house 를 사용자가 승인한 화풍)로 그린 통 건물을 16px 로 자른 것이다. '
          '같은 화소·같은 통행의 칸은 합쳤다. 통행: 맨 아래 D줄(2, 큰 건물 3)의 벽 칸만 solid, 처마 옆·윗층·지붕은 star(뒤로 지나감). '
          '한계: (1) 건물은 정면 하나(뒷면·옆면 없음). (2) 간판 글자는 일본어 고정(JIS 16px 글리프). (3) 마당·담·주차장은 키트에 없다 — 기존 오토타일·소품으로 깐다.')

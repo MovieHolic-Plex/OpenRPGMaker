@@ -1,0 +1,337 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "073d407493c9392dddab8407e0b0743de3e8e2e1024f3537c8e1106ff032fcfa",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "pub ticket dispenser",
+ "label": "modern_city_interior/pub-ticket-dispenser",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 11/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 11/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 17,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "front face with red slot, green button and dark output strip",
+      "rows": "7-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a light top band (L 167, 208, then 247 for rows 3-5). Row 6 is a darker 1-row front-edge line (L about 145). Rows 7-8 are a dark shadow band (L 66) directly below it. The front face then runs from row 7 to row 28 with a red slot, a green button and a dark tray strip, so it is 22 rows tall. Rows 29-30 are the dark base outline. No side face is drawn. The top band is fairly thin and could be read as a front-facing header strip, but it has both an edge line and a shadow below it, which meets evidence (a)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a narrow standing machine with a pale panel, a red band and a green emblem. The measured facts are in line with the references. It has 15 visible tones per full tile, against 9 for the hedge, 17 for the cheese stall and 20 for the well. Near-flat coverage is 0%, and 0% of its dark edge pixels are neutral, so the outline carries a tint rather than being a black sticker line. By eye, the pale body is shaded with a few steps (light, mid and dark) and has a darker tinted edge, and the emblem and band add detail. It has fewer raw colours than the stall and well (22 in total), but it is a small single-tile-wide piece, so that is expected. It is a little simpler than the roofed well or cheese stall. It does not look thinner or flatter than the references, so I judge it acceptable next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20764
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red ticket display",
+      "rows": "7-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green button",
+      "rows": "15-20",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ticket slot",
+      "rows": "23-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The column scan shows a pale band at rows 1-5 (L 167, 208, then 247 for three rows), brightening toward the front. A 1-row darker line at row 6 (L about 145, below the neighbouring band and face) follows it, then the face. I read that as a top surface ending in a front-edge line. The face below, rows 6-28, holds the red display, green button and ticket slot. These are panel details on a vertical face, so they are not additional tops. This is ambiguous: the band could instead be a face-on header panel, since no eave shadow row is clear (rows 7-8 are dark only around the display frame)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, narrow standing kiosk with a pale body, a red/white display strip, a green icon panel and a dark base. The measured facts support it: 15 visible tones per 16x16 tile, against 9 for the hedge, 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, so there are no 5x5 flat fills. The dark edge pixels are 0% near-neutral, so the outline carries a tint (dark blue-grey beside the body) and is not a uniform black sticker line. The body ramp has about 4 steps (highlight, light, mid, shadow), a little shallower than Beodeul's 5-6. It is a thin prop, so I judged density by eye. It reads as slightly simpler than the stall and well but is comparable to the hedge and lamp in craft, with panel detail and edge shading, and would sit acceptably next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 26976
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band / header of the dispenser",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "red display window",
+      "rows": "9-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front panel with green button",
+      "rows": "11-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ticket slot and white tray",
+      "rows": "23-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a light band at the top (L 167, 208, then 247). Row 6 is a transitional edge line (L about 147), and rows 7-8 are dark (L 66), which fits an eave shadow. Below that the blue-grey front face runs from row 6 to row 28 and holds the red display (rows 9-10), the green button (rows 15-19), the dark slot (rows 23-24) and the white tray (rows 25-27). Rows 29-30 are a dark base. The silhouette is 12 px wide throughout, so no side face is drawn. This is a borderline case: the top band could instead be read as a flat header panel, since the edge line at row 6 is only intermediate in lightness and the dark rows 7-8 may be the display frame. I counted the band as a top surface because it has an edge line followed by a dark band."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate carries 15 visible tones per 16x16 tile. That is above the hedge (9) and close to the cheese stall (17) and the roofed well (20). Near-flat coverage is 0%, so there are no 5x5 flat fills. The dark edge pixels are 0% neutral, so the outline leans toward the material colour (a dark blue-grey beside the casing) instead of a black sticker line. The body has a light face, a mid tone, a shadowed side and a dark base, plus a panel with a window and a green icon, which gives roughly 5 steps. That is a little under the references' 5-6, but it is a small, thin object, and I see no flat or sticker look beside the references. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 30220
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top white band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "red display, green button and ticket slot",
+      "rows": "7-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The body is a full-width 12 px column. Rows 1-5 form a light band that brightens from L=167 to L=247 and ends in a darker edge line at row 6. Dark rows 7-8 below it act as eave shadow, though they may only be the display frame rather than a full-width shadow. Rows 6-29 are a vertical front face carrying the red display, green button, dark slot and a base. The top band is ambiguous: it could be a face-on header panel, since row 6 matches the body colour and the shadow is partial. I read it as a top surface because it has the same structure as the cabinet reference (light top, edge line, shadow, front). No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a thin, tall single-tile-width prop, so I judged it against the stall and well as well as by the numbers. It has 15 visible tones per 16x16 tile, close to the stall (17) and well (20) and above the hedge (9). Near-flat coverage is 0% and there are no flat 5x5 fills. 0% of its dark edge pixels are neutral, so the outline carries a tint, as in the hedge and stall, rather than a uniform black sticker line. The body has about 5 lightness steps across the white or grey face, the shaded side and the dark base, plus red and green accents on the slot and icon. It is a little less textured than the roofed well and the cheese stall, with no grain or speckle on the body, but a careful artist would accept it next to the references without it looking noticeably flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 31999
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.156Z",
+ "cells": {
+  "16": [
+   "67ffa858f4574605",
+   "a8b30c93905a8025"
+  ],
+  "24": [
+   "0324f3d426e2a246",
+   "046a715a3df24ff5",
+   "113acf7331ce0a28",
+   "2501fbf3cf448ff0",
+   "3efc4f6e806ae284",
+   "3f0691b06fcb4740",
+   "42f59248940b2099",
+   "6f2fd23cd1218f54",
+   "74707d351218b025",
+   "7b2b89df85d70971",
+   "8c99aa71eaa5fe32",
+   "d8e606761febfc9f"
+  ],
+  "32": [
+   "246d4108d49d73e0",
+   "8d03bd032fa7c441",
+   "f9763ebee8cedd6f"
+  ],
+  "48": [
+   "013b35cbf15be997",
+   "0c745fbda75d0eeb",
+   "25e242f8dfaa6c1e",
+   "98c4db8ac9691a6b",
+   "d9b0ccec9664a3f6",
+   "ee5d79a93c1a55e6"
+  ]
+ }
+}

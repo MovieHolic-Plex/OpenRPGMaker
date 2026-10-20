@@ -1,0 +1,395 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0ad311aeeca850b54958c80f17b80d2015f44d57bd648e03ce41332a2ab9f2a0",
+ "width": 96,
+ "height": 48,
+ "kind": "other",
+ "name": "hosp ambulance e",
+ "label": "modern_city_interior/hosp-ambulance-e",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 13,
+  "darkV5": 36,
+  "nearBlackEdge": 0.98,
+  "opaqueTiles": 11
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "box body roof",
+      "rows": "12-16",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cab roof",
+      "rows": "13-16",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "siren lights",
+      "rows": "10-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The ambulance is drawn in side view facing east. The box body has a bright roof band at rows 12-16 (L about 234) above the grey side face at rows 17-41 (L about 180). That is a 5-row top surface on top of a 25-row south face. The cab roof has a similar band at rows 13-16. The band has no distinct edge line or eave shadow, only a tone step at row 17, so the top surface is weaker than in the green references. Row 24 is a horizontal trim line on the side face and is not a top surface. The red stripe, wheels, cross and windshield are details on the front face. The siren lights at rows 10-12 are decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The ambulance is a white/grey body with a red cross, a few windows and dark wheels. The body reads as roughly 3 lightness steps (white, light grey, grey-blue shade) and the large side panel is a flat white fill with no grain, panel seams, dirt or speckle. The measured 24% near-flat coverage is above every reference (hedge 0%, well 0%, stall 13%). Its 9 visible tones per tile only match the hedge, and are well below the stall (17) and well (20). The outline is tinted (0% neutral dark edges) and sits near the dark material tone, so it is not a sticker line, but the surfaces are shallow. The references show per-material ramps of 5-6 steps with texture dots (hedge leaf clumps, stall wood grain and goods, well stones shaded one by one). Next to them the candidate looks flatter and thinner in shading, with a big plain body, little material texture and few highlights.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15948
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "box body roof",
+      "rows": "12-16",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cab roof",
+      "rows": "11-16",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "roof beacon lights",
+      "rows": "10-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The ambulance faces east, so its south face is the normal side view. The box body has a bright roof band at rows 12-16 (L about 234), with the corner rounded at the left. At row 17 the colour drops to the grey side face (L about 186), which acts as the front edge. There is no dark eave-shadow row, so the top reading is mild but present. The side wall below runs rows 17-41 (about 25 rows) and carries a trim line at row 24, the red cross, the red stripe at rows 35-37 and the wheels. The cab has the same light roof band at rows 13-16 above its slanted windshield. The beacons on the cab roof are decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The ambulance is a white/grey body with a red cross, a darker lower strip and a blue-grey window. It uses about 3 lightness steps on the white body (white, light grey, mid grey) and shows no panel grain, speckle or per-part highlights. The large body areas are near-flat (24% coverage in 5x5 flat blocks, against 0-13% for the richer references such as the stall at 13% and the well and hedge at 0%). At 9 visible tones per 16x16 tile it matches the hedge, but it falls well below the stall (17) and the well (20), which are the closer references for a structured prop. The hedge is a uniform texture with many tonal clusters, while the ambulance is smooth flat panels. Dark edge pixels are 0% neutral, so the outline is tinted (blue-grey) and not a black sticker line, which is a plus. Even so, the shading is shallow and the large flat white and grey panels read thinner and more sticker-like than the Beodeul props, which carry 5-6 steps with texture dots.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 19008
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "box body roof band",
+      "rows": "12-16",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cab roof band",
+      "rows": "12-16",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "beacon lights",
+      "rows": "10-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The ambulance is drawn in side profile, facing east. Its south face is the grey body, with a red stripe and cross, in rows 17-41 (25 rows). The top of the box body and the cab each carry a bright white roof band at rows 12-16 (L=234 against L=186 for the face below). The band ends at a tonal step at row 17, but there is no 1-row edge line and no eave shadow, so this is a weak top surface. The horizontal crease at row 24 sits inside the side face and is not a roof edge. The silhouette widens gradually from 59 to 90 px over rows 11-30, and this rounded roofline supports a roof plane seen from above. The wheels, stripe and windshield are all front-face detail."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The ambulance is a large vehicle prop with a mostly flat white/light-grey body. It has about 3 lightness steps on the body (white, light grey, mid grey-blue) and a small shading ramp on the dark wheels and windows. Measured: 9 visible tones per tile matches the hedge (9) but is well below the stall (17) and well (20). Near-flat coverage is 24%, the highest of all pieces (references 0-13%), which fits the large flat white panels of the body and the red cross area. Dark edge pixels are 0% neutral, so the outline is tinted (bluish/dark grey-brown), but it reads as a fairly continuous dark contour around the whole vehicle, which gives a mild sticker look. Texture is limited to a few window reflections, door seams and lights. Beodeul props carry 5-6 steps with grain, speckle and per-element shading, whereas the body here is shallow with large flat panels. Overall it is clean and readable but flatter and shallower than the stall and well references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19882
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cargo box roof",
+      "rows": "12-16",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cab roof",
+      "rows": "12-16",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "windshield",
+      "rows": "19-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels",
+      "rows": "36-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The ambulance is drawn in east-facing side profile. Rows 12-16 form a bright band across the box and cab roof (L about 234), and it narrows from 74 to 59 px toward the top, which suggests a rounded roof seen from above. Rows 17-41 are the grey side face with a belt line at row 24, a red cross and a red stripe at rows 35-38. The band changes tone at row 17 but has no distinct 1-row edge line and no eave shadow, so the evidence for a top surface is weak. I read it as a roof band of about 5 rows above a front face of about 25 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The ambulance is a vehicle and larger than the references. Its body is a mostly flat white/light-grey with only about 3 steps (white, light grey, mid grey) plus a cool grey-blue window. The red cross and stripe are flat fills. Measured: 9 visible tones per tile is below the richer references (stall 17, well 20) and about equal to the hedge (9), but 24% near-flat coverage is well above every reference (0-13%). The dark edge pixels are tinted (0% neutral), so the outline reads as dark, slightly cool, tinted tones rather than pure black. However, it is applied uniformly around the whole body and wheels, which gives a mild sticker look compared with Beodeul's selective outlines. Texture is limited to a few panel lines, window highlights and wheel details. The body panels are large, flat and lightly shaded, and there is no grain or speckle, unlike the per-stone and per-tile detail on the well and stall. A careful artist would find it flatter than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18612
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.901Z",
+ "cells": {
+  "16": [
+   "00f925bf546ca8cd",
+   "1358914979bb870e",
+   "24e1b2505f62339e",
+   "2aedb29ca270939b",
+   "31aa88192439ddea",
+   "3694e078345bc27e",
+   "4b1cd852fb887666",
+   "4c644220021cdbdb",
+   "70afd0c21566cd19",
+   "7220b8ba9212f229",
+   "80074543c4c18b34",
+   "88a34b1fd2d2817d",
+   "899149dca4982aca",
+   "8fb2c4ab6edf75a7",
+   "b4142d5c5ba0e7bc",
+   "c553b568a36d8e39"
+  ],
+  "24": [
+   "0fd1c2deebe40dbc",
+   "519a88c1f58d6182",
+   "77439115c2514d0f",
+   "78fb68ea142e5b2d",
+   "821e56e114fd2e67",
+   "d5d5153171bb4202",
+   "e60b8043d32d06e1",
+   "ed5e84961dda54d6"
+  ],
+  "32": [
+   "153fbefd86da6221",
+   "401924e01e1678c8",
+   "52b163192b296ffa",
+   "54624da02c654b44",
+   "7c61471e0ac82b9a",
+   "871ebb63d2e37675",
+   "8d04558ffdf3deda",
+   "98e642b071a8692a",
+   "a038084cf7ddc8e1",
+   "ab3698ddca9e5ff4",
+   "e798da52f61006cf",
+   "f4f8c314fab2d887"
+  ],
+  "48": [
+   "513701061d6a4bde",
+   "f1e185f4dfe1abdf"
+  ]
+ }
+}

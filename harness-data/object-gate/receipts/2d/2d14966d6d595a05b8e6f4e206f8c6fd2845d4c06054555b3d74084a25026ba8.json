@@ -1,0 +1,360 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2d14966d6d595a05b8e6f4e206f8c6fd2845d4c06054555b3d74084a25026ba8",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "mart meat showcase",
+ "label": "modern_city_interior/mart-meat-showcase",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 20,
+  "darkV5": 36,
+  "nearBlackEdge": 0.95,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "glass top lid",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "meat display interior with glass reflection",
+      "rows": "7-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red front panel",
+      "rows": "22-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-5 form a light glass top band that brightens toward the front (L 166 to 246). It ends in a dark front-edge line at row 6, which counts as the top surface under evidence (a). Below it the front face runs from about row 7 to row 29. It shows the meat shelf interior behind glass (rows 7-19), a shelf edge at row 20, and a red front panel (rows 22-28). The top band is only 4 rows and the interior is drawn face-on, so the read is borderline. The edge line and the band's gradient still favor a top surface over a plain cornice."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are fine: 15 visible tones per tile against 17 for the cheese stall and 20 for the well, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is tinted rather than a pure black line. By eye the piece is weaker than that suggests. It is a wide, low rectangle built from flat horizontal bands (a pale top, a dark navy stripe, a red stripe and a pale bottom), each with only about 2-3 lightness steps. The references use 5-6 steps per material. There is no tile-by-tile highlighting, no grain, and no visible meat or goods inside, unlike the cheese stall with its awning, shelves and wares. The detail that exists is mostly stripe edges and a few dots, and it reads as a flat sticker-like panel rather than a shaded prop. Shading depth and object richness are below the Beodeul bar, so I fail it on doubt despite the decent tone count.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20572
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "showcase top / glass lid",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-6"
+     },
+     {
+      "part": "glass window with meat trays (front view)",
+      "rows": "7-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front base panel (white and red bands)",
+      "rows": "22-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-5 form a light gradient band (L 166 to 246) across the full 48px width. Row 5 is the lightest row and works as the front-edge line, and row 6 is a dark shadow line directly under it. That is a top surface 4 rows tall, per evidence (a). Below it the front face runs from about row 7 to row 29. It holds the glass window with meat trays seen face-on (rows 7-19), a ledge line at row 20, and a white and red base panel (rows 22-29). No side face is drawn. The top is thin but it has a clear edge line and shadow, so it is more than a 1-2 row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are acceptable: 15 visible tones per tile against 17-20 for the stall and well, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is tinted rather than near-black. By eye, though, the piece reads as a flat horizontal striped panel. It has a pale top band, red and white stripes, and a dark navy base. Each material carries only about 3 lightness steps, where the cheese stall and well carry 5-6. It shows no meat, no wood frame or grain, no awning scallops and no per-item shading. The red and white bands look like banded fills with little grain, and the whole piece is thinner and more sticker-like than the cheese stall next to it. A careful artist would not accept it beside the reference without more form and texture, and when in doubt the rule is to fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20164
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "glass lid / top band",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "glass front with meat trays",
+      "rows": "7-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red counter front panel with white top strip",
+      "rows": "22-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-5 form a light gradient band (gray at row 2, then lighter, brightest at row 5) at the top of the body. It ends in a bright front-edge line at row 5, and row 6 is a dark line below it that works as eave shadow. That is a 4-row top surface, which is more than a 1-2 row rim. Below it is a tall front face of about 24 rows (rows 6-29): a glass front showing meat trays face-on, a gray divider at rows 19-20, and a red counter panel at rows 22-28. The meat trays are drawn in elevation, so they are not contents seen from above. The top reading is modest and leans on the band and edge line alone. There is no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are acceptable. The candidate has 15 visible tones per tile against 9-20 for the references, 0% near-flat coverage, and 0% neutral dark edges, so its outline is tinted rather than near-black. By eye it is weaker. It reads as a flat horizontal strip of banded white, navy and red stripes, with no visible meat, no shaded individual items and no material grain. Each band holds only about 3-4 lightness steps, where the cheese stall and the well show 5-6 steps per material, with per-item shading, wood grain and an awning with folds. The silhouette is a plain rectangle with little depth, so it looks thinner and more sticker-like than the stall-cheese reference. The tinted outline and lack of flat fills keep it from failing outright, but a careful artist would not accept it next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20134
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "glass/case top",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "display window with meat on ice (front face)",
+      "rows": "7-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red base panel (front face)",
+      "rows": "21-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-5 form a light gradient band at the top. It ends in a bright front-edge line at row 5 (L=246), and row 6 is a dark eave-shadow line. That makes a 4-row top surface. Below it is a tall south front face of about 24 rows: the display window with meat on ice (rows 7-19), a lip at rows 19-20, and the red base panel (rows 21-29). No side face is drawn. The top is thin but is more than a 1-2 row rim and has an edge line plus shadow, so it meets evidence (a)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are acceptable. The candidate has 15 visible tones per tile against 17-20 for the stall and well, 0% near-flat coverage, and 0% neutral dark edges, so its outline is tinted rather than a black sticker line. By eye it is weaker than the stall-cheese and well references. It reads as a flat horizontal strip of stacked bands (white, dark navy, red, white) with a thin outline. Each material has only about 3 lightness steps, with no per-item highlights, no grain, and no visible meat or cut shading. Beodeul's stall has a striped awning with scalloped shading, wood grain, and individually shaded goods. The candidate's bands are clean but graphic, with little internal form, so it looks thinner and flatter than the references and would not sit comfortably beside them. Because of the shallow shading and the stripe-only construction, it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20788
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.097Z",
+ "cells": {
+  "16": [
+   "34e33b5dda4f0095",
+   "53a8c0150c47acd1",
+   "952b82544c98c040",
+   "9540b9674dd9d9dd",
+   "a9a2a8b294aaa27b",
+   "ae49599fbc42690a"
+  ],
+  "24": [
+   "0aabda150b4b99c3",
+   "466107e7f8a7eb6b",
+   "5c70fa633f80adbc",
+   "7a0485c40134ecda",
+   "7bd7f524f11b8e48",
+   "9279958d6da602b0",
+   "9d18d456c1f72d4b",
+   "cae626ff6996e9f6"
+  ],
+  "32": [
+   "45cd85559c353912",
+   "57a9b9590120d42a",
+   "699dedb5d724e12d",
+   "9b008ef9764b5aee",
+   "a6b9e9b3d3dc5b22",
+   "b711da0dba45ab33"
+  ],
+  "48": [
+   "33fbe776c51c1fd0",
+   "e8743689ca0db1c3"
+  ]
+ }
+}

@@ -42,6 +42,73 @@ def text_w(s, step=17):
     return step * len(s) - (step - 16)
 
 
+SIGN_SHORT = {'酒のヤマ': '酒', 'ブックス': '本', '喫茶ルナ': '喫茶', 'フラワー': '花', 'サイクル': '自転車', 'ランドリー': '洗たく',
+              'ラーメン': '中華', 'いざかや': '酒場', 'テナント': '貸店舗'}
+PREFER_FULL = {'ラーメン'}                                                    # 짧은 이름보다 원래 이름을 좁힌 간격으로 먼저(VQA 4차)
+SIGN_PAD = 6                                                                 # 판 가장자리 ~ 잉크(굵은 획+그림자) 최소 여백
+
+
+def _ink(s, step):
+    """굵은 획 + 오른쪽 아래 그림자까지 포함한 잉크 가로 범위 (왼, 오른) — 글리프 안쪽 빈칸을 빼고 잰다."""
+    xs = [i * step + k + d for i, ch in enumerate(s) if ch != ' ' for j in range(16) for k in range(16) if jfont.glyph(ch)[j, k] for d in (0, 1, 2)]
+    return min(xs), max(xs)
+
+
+def _has(t):
+    try: return all(jfont.glyph(ch) is not None for ch in t if ch != ' ')
+    except KeyError: return False
+
+
+def sign_fit(s, w):
+    """간판 이름과 글자 간격을 고른다. 글자를 자르지 않는다(2026-10-20 VQA 3차).
+    순서: 원래 이름 18px 간격 → 등록된 짧은 이름 18 → 원래 이름 17·16(좁힘) → 짧은 이름 17·16. 다 안 맞으면 오류(판을 넓혀야 한다)."""
+    t = SIGN_SHORT.get(s)
+    cands = [(s, 18)] + ([(t, 18)] if t and _has(t) else []) + [(s, 17), (s, 16)] + ([(t, 17), (t, 16)] if t and _has(t) else [])
+    if t and t != s and _has(t) and len(t) < len(s) and s not in PREFER_FULL: cands.insert(0, (t, 18))
+    if s in PREFER_FULL: cands = [(s, 18), (s, 17), (s, 16)] + ([(t, 18), (t, 17)] if t and _has(t) else [])    # 긴 이름은 짧은 이름을 먼저(판을 꽉 채우지 않게)
+    for name, step in cands:
+        l, r = _ink(name, step)
+        if r - l + 1 <= w - 2 * SIGN_PAD: return name, step
+    raise ValueError(f'간판 {s!r} 이 판 {w}px 에 안 들어간다 — 판을 넓히거나 짧은 이름을 SIGN_SHORT 에 등록')
+
+
+def _holes(on):
+    """16×16 글자 칸에서 바깥과 이어지지 않은 빈 영역(닫힌 속 칸) 개수."""
+    seen = set(); n = 0
+    for j0 in range(-1, 18):
+        for k0 in range(-1, 18):
+            if (j0, k0) in on or (j0, k0) in seen: continue
+            st = [(j0, k0)]; seen.add((j0, k0)); outside = False
+            while st:
+                j, k = st.pop()
+                if j in (-1, 17) or k in (-1, 17): outside = True
+                for dj, dk in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                    q = (j + dj, k + dk)
+                    if -1 <= q[0] <= 17 and -1 <= q[1] <= 17 and q not in on and q not in seen:
+                        seen.add(q); st.append(q)
+            n += not outside
+    return n
+
+
+def bold_glyph(ch):
+    """굵게(오른쪽 1px)는 속 칸이 하나도 닫히지 않을 때만 — 麺·駅처럼 빽빽한 글자는 굵히면 속이 메워진다(VQA 4차)."""
+    g = jfont.glyph(ch)
+    on = set((j, k) for j in range(16) for k in range(16) if g[j, k])
+    bold = on | set((j, k + 1) for j, k in on)
+    gaps = sum(1 for j in range(16) for k in range(15) if (j, k) not in on and (j, k - 1) in on and (j, k + 1) in on)
+    return bold if _holes(bold) >= _holes(on) and gaps <= 10 else on              # 1px 틈이 10개 넘는 빽빽한 글자(麺 23 · 駅 18 · 喫 12)도 그대로
+
+
+def sign_text(c, x, y, s, col, shadow, step=18):
+    """간판 레터링: 16px 글리프 획을 오른쪽으로 1px 두껍게(속 칸이 닫히는 글자는 그대로) + 오른쪽 아래 1px 그림자."""
+    for i, ch in enumerate(s):
+        if ch == ' ': continue
+        bold = bold_glyph(ch)
+        for j, k in bold:
+            if (j + 1, k + 1) not in bold: c.P(x + i * step + k + 1, y + j + 1, shadow)
+        for j, k in bold: c.P(x + i * step + k, y + j, col)
+
+
 # ─────────────────────────── 간판·차양·노렌 ───────────────────────────
 def sign(c, x, y, w, s, bg='sora', fg=('shiro', 2), h=20, frame=True):
     """간판판: 윗면 2(+2/+1) · 앞면 h(bg 0, 테 -2) · 아래 그림자 3 (벽 위)."""
@@ -52,8 +119,9 @@ def sign(c, x, y, w, s, bg='sora', fg=('shiro', 2), h=20, frame=True):
     c.HL(x, y + h + 2, w, K(bg, -2))
     c.HL(x - 1, y - 1, w + 2, OL); c.VL(x - 1, y, h + 3, OL); c.VL(x + w, y, h + 3, OL); c.HL(x - 1, y + h + 3, w + 2, OL)
     if s:
-        tw = text_w(s)
-        text(c, x + (w - tw) // 2, y + 2 + (h - 16) // 2 + 1, s, K(*fg))
+        s, step = sign_fit(s, w)
+        l, r = _ink(s, step)
+        sign_text(c, x + (w - (r - l + 1)) // 2 - l, y + 2 + (h - 16) // 2 + 1, s, K(*fg), K(bg, -2), step)
     return y + h + 4
 
 

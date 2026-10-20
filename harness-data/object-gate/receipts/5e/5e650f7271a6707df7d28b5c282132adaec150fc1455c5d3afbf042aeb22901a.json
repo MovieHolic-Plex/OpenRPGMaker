@@ -1,0 +1,481 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5e650f7271a6707df7d28b5c282132adaec150fc1455c5d3afbf042aeb22901a",
+ "width": 144,
+ "height": 64,
+ "kind": "box",
+ "name": "bus-right",
+ "label": "jp_city/vehicle/bus-right",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "평면 채움 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 12,
+  "darkV5": 41,
+  "nearBlackEdge": 0.11,
+  "opaqueTiles": 30
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "white upper body / roof panel with windows",
+      "rows": "1-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "window band with green stripe",
+      "rows": "24-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower skirt and wheels",
+      "rows": "47-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 61,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The bus is a flat side elevation. Row 0 is the outline and row 1 is a 1-row highlight. Rows 2-23 are a uniform white panel with window insets, and the column scan shows the same flat L=239 at x=106 all the way down. The panel is a vertical face with no front-edge line, no eave shadow and no ellipse. Below it are a dark trim line at rows 24-27, a window band at rows 29-38, a green stripe at rows 42-43, and wheels. The silhouette is 141 px wide for rows 2-53 with no narrowing at the top, so no horizontal roof surface is visible. It is also not a box-like object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The bus body is a large white/pale-grey slab with only 2-3 lightness steps and almost no speckle, grain or panel variation. The window band is a flat dark blue row, and the green stripe is a single flat band. The dark edge pixels are 88% near-neutral, so the outline is a uniform near-black line. That is the sticker look, unlike the Beodeul references, which use tinted dark material tones (hedge 0%, stall 1% neutral). The candidate has 10 visible tones per tile, which is close to the hedge (9) but well below the stall (17) and well (20). 23% near-flat coverage is the highest of all the references (stall 13%, the others 0%). The wheels and window frames have some shading, but the large body areas are flat fills. A careful artist would not accept this next to the references, because it reads flatter and more sticker-like.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 22290
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof with hatches",
+      "rows": "2-23",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": "25-26"
+     },
+     {
+      "part": "side body with windows and green stripe",
+      "rows": "27-53",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels",
+      "rows": "47-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 22,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The white band at rows 2-23 is a large roof plane carrying vent hatches. It ends in a lighter-to-darker edge at row 24, followed by a darker eave shadow at rows 25-26. Below it is the front face at rows 27-53, with the window strip, the green stripe and the bumper line. The wheels reach down to row 62. The roof depth is plausible for 45° foreshortening. A weaker reading is that the white band is a vertical upper side panel with windows, which would make this a side profile with no top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The bus has a large white body that is mostly one or two flat tones, with only light speckle and a few gradient pixels at the edges. The roof, side panel and windows are flat fills. Shading has about 3 steps (white, light grey, grey-blue) against the 5-6 steps on the references. The dark edge pixels are 88% near-neutral, so the outline reads as a near-black sticker line. Beodeul references use tinted outlines (hedge 0%, stall 1%). The candidate shows 10 visible tones per tile, close to the hedge (9) but well below the stall (17) and the well (20). Its 23% near-flat coverage is higher than every reference (0-13%). The wheels and window frames have some detail, but the body is shallower than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 25700
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "east",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper white body panel with windows",
+      "rows": "1-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "window band with green stripe",
+      "rows": "24-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower skirt",
+      "rows": "47-54",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels",
+      "rows": "46-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 53,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a side profile of a bus facing east. Rows 0-1 are only the outline and a 1-row highlight at the top edge, so there is no top surface. The white band in rows 2-23 is a vertical side panel with face-on windows in rows 8-14. It has no front-edge line or eave shadow, and no ellipse. The dark line at rows 24-27 divides the white panel from the window strip below it. It does not mark a roof edge. Below it are the window strip, green stripe, skirt and wheels, all drawn as one flat vertical elevation. The object is a vehicle, not a box with a lid seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The bus body is a large white/pale-grey slab with only 2-3 lightness steps (white, light grey, a grey lower edge) and a few speckle dots. It has big flat areas: 23% near-flat coverage against 0-13% in the references. The dark edge pixels are 88% near-neutral, so the outline reads as a uniform near-black line, close to the sticker look. The references (hedge, stall, well) use tinted dark-material outlines at 0-33% neutral. At 10 visible tones per tile it matches the hedge (9) but is well below the stall (17) and the well (20). The windows, wheels and green stripe are cleanly drawn, but each is shaded with only 2-3 steps, and the roof panels and window frames are flat. A careful artist would find it flatter and more outlined than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 18676
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "east",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper white body panel with vent windows (vertical side face)",
+      "rows": "1-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "window band with green stripe and lower skirt (vertical side face)",
+      "rows": "24-53",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels",
+      "rows": "54-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 53,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "This is a bus drawn as a flat side elevation. The white upper area (rows 2-23) holds framed vent windows, so it is a vertical panel, not a roof. Its colour is almost uniform (L about 239) with no front-edge line or ellipse. Rows 24-27 are a dark green stripe that continues the vertical side. Below it come the window band, the green stripe, the skirt and the wheels. The top is only a 1-2 row outline (rows 0-1). There is no top surface and no lid, so a box reading fails."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The bus body is a large white/pale-grey slab with only 2-3 lightness steps and almost no speckle, grain or per-panel variation. The wide roof and side areas are flat fills. Windows are uniform dark blue rectangles, and the three roof vents are simple rectangles with a light border. The outline is a dark neutral line around the whole shape (88% of dark edge pixels near-neutral), which gives the sticker look. The references use tinted dark-material outlines (hedge 0%, stall 1% neutral). The candidate does reach 10 visible tones per tile, similar to the hedge's 9, but they come from window and stripe contrast, not from shaded material ramps. Against the stall (17) and well (20), it is thinner and flatter. The wheels are the best-shaded part, with a few grey steps, but they do not make up for the flat body. A careful artist would not accept this beside the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 14762
+  }
+ ],
+ "decidedAt": "2026-10-20T14:27:53.362Z",
+ "cells": {
+  "16": [
+   "084c32c449df9636",
+   "090568d414468e5e",
+   "1381da88fb7fae8f",
+   "20e1793d188813ed",
+   "2177baaf67a7ade3",
+   "253c9a36f4ca6a3a",
+   "308692e080ce48b4",
+   "351669b3ee892ab4",
+   "354f44e47bf2c413",
+   "3f8a34132fb7c9f6",
+   "4241b8e1fffd5b58",
+   "42dbf333e05e5b2e",
+   "42e06b74db614029",
+   "46e0cc97e73de295",
+   "4c61446d0d58e2ea",
+   "50ef30b532d5b95e",
+   "58e7f7aea1576917",
+   "5b39dacf590a3cc2",
+   "66ba2f23c7b5c3c4",
+   "6b567068e442a5e0",
+   "712dfdf7a8adc404",
+   "7a989573a4fa2041",
+   "7b971b679a47f3b6",
+   "7bc7b1901d7caa74",
+   "8d2626c1ffb67213",
+   "a2499256b20c8a57",
+   "a4b3ac8e4d3ceb2d",
+   "a8d228e5fa894c35",
+   "b74901e8ecfcefbb",
+   "cc8b18f0b93fed48",
+   "da0af5f89958ea7b",
+   "df4481c0db07e34a",
+   "ef878bf9266bc6e2",
+   "f13b29b8a457e8d3"
+  ],
+  "24": [
+   "0f48385a20617c98",
+   "2046c2448118545d",
+   "2d95a0caf116ec50",
+   "2e46233b9a5ad962",
+   "3074cb5bf2af670e",
+   "49775a763a1c3828",
+   "5805ac3314bfbe49",
+   "590d4cee2cd65e66",
+   "5cf8c176b29ad3e2",
+   "5db4f701b24da8d9",
+   "5f40a7a8973042a6",
+   "67ae23579ed99ae5",
+   "6e1b0927d8fbe997",
+   "6fe56c4ecbc699c5",
+   "7cdeb1a2b67ea328",
+   "7e2538865b850142",
+   "8495e4ee208e170a",
+   "8733bda818ff8f33",
+   "910c65fb97adfa2e",
+   "92e3379b64030b98",
+   "950bb7dafe79bb87",
+   "960f25ba589dbe5b",
+   "9d9caad3c03c49ca",
+   "a14972e8761cdb52",
+   "bda1475ed3182c0f",
+   "bf175fd46457f768",
+   "c1baa925f8bb443d",
+   "d0a2936ae05ff709",
+   "d5cdbcba89ead3bd",
+   "dd8b683871a3a168",
+   "df24886df7a16200",
+   "e9aff864e4816d4d",
+   "e9e19387c408f6f7",
+   "ecd573bd706728a6",
+   "f84d31f426901493",
+   "f84dda5807a9f00f"
+  ],
+  "32": [
+   "0191628f236dd436",
+   "06b6515947d28afd",
+   "10562ac4dd1d8168",
+   "1de99b463e075a6d",
+   "29b04efaa91886e7",
+   "34007ffedc3ae3ee",
+   "3c832592784d572b",
+   "6400be42def4fa0b",
+   "6ad26d291192faa3",
+   "747f1cbf86ac0cd0",
+   "7bcaab8e5d252663",
+   "7d23a86e156b3b6e",
+   "90a58fca7e7714ad",
+   "9a2ae3fd1d4421a9",
+   "a12df29b51971a4a",
+   "b793c70e73f3394b",
+   "bc232e48dbb0437d",
+   "c580b03ffdd864c1",
+   "c872cec14e05a895",
+   "c8a07af988ad2b9d",
+   "c8bea3f7ae28268a",
+   "cfbadf3e9b256777",
+   "d04dd18b5a32b530",
+   "d452a5d41875d1f3",
+   "e9a2d1f8c3803ab9",
+   "ee6f21d56f6f8365",
+   "efc3065961391cba",
+   "f3cf343b2130c233",
+   "f507d18ee9c13fa6",
+   "fdc70a2f3fc08c5c"
+  ],
+  "48": [
+   "041292d519588ed5",
+   "1d2ab041392ac2dd",
+   "1d96d5f761cbe208",
+   "2dfac6692210a4ee",
+   "44b86685e05c3e8d",
+   "5f931392bb7462e2",
+   "8e232e280b0e40f4",
+   "b18632f41d4aeac4",
+   "bbf271fdb3735ecb",
+   "c2b537ac4f71dd9c",
+   "c52abe50a6aec5b4",
+   "c72599aab0822a92"
+  ]
+ }
+}

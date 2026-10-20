@@ -1,0 +1,394 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4fb6cf7b0d98eaed58b8e2b5ca4ab7396f9400bf2135c912ab67d5f8f1a3cec0",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "kr-sofa-e",
+ "label": "seats34/jp_city_interior/kr-sofa-e",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 4/4, 분명한 위반 0/4)",
+  "3/4: 옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 4/4, 분명한 위반 0/4)",
+   "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 6,
+  "darkV5": 26,
+  "nearBlackEdge": 0.79,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest and armrest strip on left (x=1-4), drawn as a vertical dark-red face",
+      "rows": "0-15",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion top",
+      "rows": "0-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Columns x=7 and x=11 show a light seat band at rows 0-5 (L=163), which changes at row 6 to a darker front face at rows 6-10 (L=119). That is a 6-row seat top above a 5-row cushion front. Rows 11-15 are dark base, shadow and feet, so the front is about 10 rows in total. The left strip (x=1-4, dark red, rows 1-10) is a vertical backrest/armrest and is exempt for a seat. The seat surface itself is more than a 1-3 row strip, so it counts as a top surface and the object reads as three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small red sofa with about 6 colours in total. It shows roughly 3 lightness steps on the red ramp: a mid red body, a lighter top edge, and a dark red-brown edge. The outline leans red-brown, so it is tinted (0% neutral dark edge pixels) rather than near-black. The cushion and back are large areas of one flat red with no grain, stitching, fabric speckle or per-cushion highlights, and 37% of the piece sits in 5x5 flat blocks, against 0% for the hedge, well and bench and 13% for the cheese stall. At 6 visible tones per tile it is well below the richer references (stall 17, well 20, hedge 9). It reads as a flat, simple icon next to the references' 5-6 step ramps and textured surfaces. Even allowing for the piece being small and simple, it is flatter than a careful artist would accept beside these references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 18777
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest/left side panel",
+      "rows": "0-15",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion top",
+      "rows": "0-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat front face",
+      "rows": "6-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base/legs",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "In the seat region (x≈5-14), rows 0-5 form a light band (L=163) that reads as the seat surface seen from above. It changes to a darker front face at row 6 (L=119, rows 6-10). Row 11 is a dark shadow line, followed by a base or legs at rows 12-15. The left strip (x≈1-4) is a vertical backrest or armrest panel, exempt as seat_back. The seat top is 6 rows against a front face of 10 rows, so the seat shows a top and a front face. The edge line between them is only a tonal step, with no separate 1-row line."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small red sofa with only 6 distinct colours, about 3 visible shading steps on the red ramp (light top edge, mid body, dark base). It has 37% near-flat coverage, against 0-13% for the references that have measurable tiles. Its visible tones per tile (6) are well below the hedge (9), stall (17) and well (20). The outline is a dark red tone, not neutral (0% near-neutral edge pixels), which is good. But the cushion and arm faces are large flat fills with no grain, speckle, stitching or per-cushion highlights, so it reads as a flat sticker next to the references' multi-step shading and texture. Shallow on shading steps, texture and density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 20400
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion top",
+      "rows": "0-5",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left armrest / side panel (dark red vertical strip)",
+      "rows": "0-15",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "In the columns x=7 and x=11 the seat is a light band at rows 0-5 (L=163). It steps to a darker front face at rows 6-10 (L=119), then to a dark base and legs at rows 11-15. That makes a seat top of about 6 rows over a front face of 10 rows, which is a top surface plus a front. There is no distinct 1-row front-edge line or eave shadow; the band change at row 6 is the edge. The dark strip at x=1-4 (rows 1-10, continuing to the base) is the armrest or backrest side, which is exempt for a seat."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small red sofa with only 6 distinct colours in total. It shows about 3 lightness steps on the red material: a light top edge, a mid body and a dark outline or shadow. Its measured 6 visible tones per tile are well below the richer references (hedge 9, stall 17, well 20). Near-flat coverage is 37%, against 0-13% for the references, so the cushions and arms are large flat fills with no grain, speckle or per-part highlights. The dark edge pixels are 0% neutral, so the outline leans dark red and is not a black sticker line. That is a point in its favour, but the shallow ramp, flat fills and low density make it look flatter and thinner than the Beodeul pieces next to it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 21898
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left armrest/backrest strip (dark red vertical band)",
+      "rows": "0-15",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion top (light salmon)",
+      "rows": "0-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion front face (mid red)",
+      "rows": "6-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark base/skirt and legs",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "11"
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Columns x=7 and x=11 show a light seat band at rows 0-5 (L=163). It changes to a darker mid-red front face at rows 6-10 (L=119), then a dark shadow row at 11 and a dark base at rows 12-15. The seat has a 6-row top and a front face of 5 rows, or about 10 with the base. The left dark strip at x=1-4 is the backrest/armrest, exempt as seat_back. The front edge line between top and face is only a tone step at row 6, not a distinct line, so the top-surface evidence is moderate."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small red sofa with about 6 visible tones in total, and the measured facts show 37% near-flat coverage against 0-13% for the references. Its large red areas (seat cushion and back) look like flat fills with almost no grain, speckle or per-part highlights. It reads as 2-3 lightness steps plus a darker edge, where the references use 5-6 steps. The dark edge pixels are 0% neutral, so the outline is tinted dark red-brown and is not a black sticker line; that part is acceptable. Against the hedge (9 tones, 0% flat), the cheese stall (17 tones) and the roofed well (20 tones), it is clearly shallower and simpler, with no texture detail such as fabric weave, stitching or cushion creases.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 22729
+  }
+ ],
+ "decidedAt": "2026-10-20T14:09:20.402Z",
+ "cells": {
+  "16": [
+   "6f4f1fb807c812f7"
+  ],
+  "24": [
+   "14410b1a29ba4ee4",
+   "341ad87a369a1ad2",
+   "61a5569211bbeda5",
+   "a1e8f181fe3424f6",
+   "a8e15b16d6af9d1b",
+   "aa3478c94133cb11"
+  ],
+  "32": [
+   "076ed38bc218c931",
+   "215ce7658d1e4275",
+   "2c1ec074c5147721",
+   "3285f91e934a030d",
+   "8e6464bcfb8a8f1c",
+   "e07e73698ed9ff62"
+  ],
+  "48": [
+   "225445327a709076",
+   "968674fa90ee1643",
+   "977b4bd0d391c1fa",
+   "b22c83959e136112",
+   "f22613024be8e4f4",
+   "f5c063e2dbda21bb"
+  ]
+ }
+}
