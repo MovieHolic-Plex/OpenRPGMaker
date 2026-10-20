@@ -1,0 +1,369 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ff3ea120ae54a1a4890e96fc07410406e81a0f374d1833f489c8f0f05742e650",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "mci-chair-office-n",
+ "label": "seats34/modern_city_interior/mci-chair-office-n",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 0행 < 4 (3/4)",
+  "3/4: 윗면 1행 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 0행 < 4 (3/4)",
+   "윗면 1행 < 4 (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 11,
+  "darkV5": 36,
+  "nearBlackEdge": 0.91,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest (seen from behind)",
+      "rows": "15-26",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests",
+      "rows": "23-26",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base, star legs and casters",
+      "rows": "27-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The chair is seen from behind. Rows 15-26 are a rounded blue backrest panel with a 1-row highlight at row 16 and a lighter line at row 24. The widening to 16 px at rows 23-25 is the armrests at the sides. Rows 27-31 are the dark base, legs and casters. No seat surface is visible: no band ends in a front-edge line with eave shadow, there is no ellipse, and no contents are visible. The backrest hides where the seat would be. Only the exempt backrest and armrests are drawn, so the seat has no top and reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small blue office chair. Measured facts: 11 visible tones per 16x16 tile, which is above prop-hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, and 0% of dark edge pixels are neutral, so the outline is tinted. By eye the outline is a dark navy that follows the blue material rather than a black sticker line. The backrest and seat show about 4-5 blue steps, with a highlight rim and a darker underside, and the dark base and casters add more value separation. Texture is moderate (cushion shading, highlight dots), with no large flat fills. It is simpler than the stall and well, but that is expected for a small single-material chair. Density and craft match the hedge and bench references at this scale, so a careful artist would accept it next to them without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23691
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest panel (seen from behind)",
+      "rows": "15-26",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests",
+      "rows": "23-26",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat (hidden behind backrest, only a thin strip below it)",
+      "rows": "24-26",
+      "evidence": "none",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "swivel base and wheels",
+      "rows": "27-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The chair is drawn from behind. The large blue backrest (rows 15-26) is a face-on vertical panel and is exempt. The sitting surface is not visible from above. Only a 1-row lighter line at row 24 and a 2-3 row darker strip (rows 25-26) show below the backrest, which reads as a front band or edge, not a seat top. Below that are the dark base and wheel legs (rows 27-31). The width profile shows no ellipse or widening-then-narrowing seat shape. There is no seat top of 3 or more rows, so it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small blue office chair with a backrest, seat, armrests, a pole and a wheeled base. It has about 11 visible tones per tile, above prop-hedge at 9 and below the large stall and well at 17-20. Near-flat coverage is 0%, so there are no flat fills. The blue body shows roughly 4-5 lightness steps, with a highlight on the backrest and seat edge and darker shading under the seat. The outline is a dark navy tinted to the blue material, and the measured near-neutral edge share is 0%, so it is not a black sticker line. The texture is moderate: cushion highlights and shadow dots, but less grain than the stall or well. For its size and simplicity it sits at or near the reference level and would be accepted next to prop-hedge.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16156
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest (blue cushion seen from behind)",
+      "rows": "15-26",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests (small side stubs)",
+      "rows": "22-26",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base, stem and caster legs",
+      "rows": "27-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The chair is seen from behind. The blue backrest (rows 15-26) is a vertical face with only a 1-row highlight at row 16 and a 1-row lighter line at row 24, and neither marks a horizontal surface. The seat is hidden behind the backrest, so no seat surface is visible. Rows 27-31 show only the base with its stem and casters. No ellipse, edge line with eave shadow, or visible contents exists, so the sitting surface shows no top and the chair reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small blue office chair, about one tile in size. It shows 11 visible tones per tile, above prop-hedge (9) and below the larger stall (17) and well (20). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline leans dark blue rather than black, which matches the Beodeul habit of using the adjacent material's dark tone. The seat, backrest and base are separated by value, with highlight, mid and dark blue steps plus a grey caster base. It is simple, but it is not thinner or more sticker-like than the hedge or bench references. I could only judge the fine detail at the board's small size, so the shading count of about 5 steps is an estimate.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15576
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest (seen from behind)",
+      "rows": "15-26",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests",
+      "rows": "22-26",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base and caster legs",
+      "rows": "27-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The chair faces north, so we see the blue backrest from behind as a vertical face in rows 15-26. The rows 16-17 highlight and the row 24 line are part of that face, not a seat top. The armrests at rows 22-26 are exempt as seat_back. Below, rows 27-31 show a dark base with caster legs. No sitting surface appears: no ellipse, no edge line with eave shadow, and no contents. The seat is hidden behind the backrest, so main_top_rows is 0 and the drawing reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small navy-blue office chair, about one tile in size. It has 11 visible tones per tile, against 9 for the hedge and 0 for the bench and lamp, which are too thin to fill a tile. Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, so the outline is a dark navy tint of the seat material rather than black. The seat and back show about 4-5 blue steps, with a highlight on the back and cushion edges and a darker underside. The caster base is shaded in grey. It is a little simpler than the stall or well, but it is not thinner or more sticker-like than the bench, lamp or hedge references of the same scale.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15810
+  }
+ ],
+ "decidedAt": "2026-10-20T14:09:20.670Z",
+ "cells": {
+  "16": [
+   "aa4fa151e1d0bbf7",
+   "b3f30db639a26be3"
+  ],
+  "24": [
+   "1e51a2829de09d26",
+   "3f81c3d7a3ab7f46",
+   "45ec926b08d1f417",
+   "54944a104f5893ff",
+   "5d37b913ac80f9df",
+   "898f35c5e54ca851",
+   "8c0623ac1444c5fa",
+   "b3f14716b4e20af7",
+   "c863465fd285efed"
+  ],
+  "32": [
+   "ce2cf0c99215ecf6",
+   "cfb83ec1d82f50e2",
+   "d26593dbbbfd3b33"
+  ],
+  "48": [
+   "324b49c8bad2c908",
+   "4b9704b20e872dea",
+   "6a635f27231bf83a",
+   "711751a0dd58e8ad",
+   "c03293a42dc1b30c",
+   "eae4a29da02c691b"
+  ]
+ }
+}

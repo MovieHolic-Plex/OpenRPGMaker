@@ -1,0 +1,427 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "41efd0fbebe15b3098e0abeacb78c6cb676cb6817e10bc890f2ac3526032ba38",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "mart bread rack",
+ "label": "modern_city_interior/mart-bread-rack",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+  "3/4: 윗면 2행 < 3 (1/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+   "윗면 2행 < 3 (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 19,
+  "tileColorsP90": 21,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header panel",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "upper shelf beam",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "middle shelf beam",
+      "rows": "19-20",
+      "evidence": "none",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "base/lower shelf beam",
+      "rows": "26-29",
+      "evidence": "none",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bread loaves and crates",
+      "rows": "7-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The rack is drawn as a flat front view. The top header (rows 1-5) is a uniform pale panel with no distinct front-edge line, so it reads as a vertical sign or cornice rather than a horizontal surface. Each shelf beam (rows 12-13, 19-20, 27-28) is only a 1-2 row checkered strip with a lighter line at 13, 20 and 27, followed by dark shadow. No shelf shows a foreshortened top band, and the bread sits face-on in bins. The base is also a thin strip. No part shows a real top surface, so the rack has a front face but no 3/4 top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a glass-fronted bread display rack. It has a light frame, several shelves, and many small bread items in varied tones. The measured facts match the references. It has 18 visible tones per tile against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline carries a tint, like the hedge and cheese stall. The frame and glass ramps are a little shallower, at about 4 steps against the references' 5-6. The bread items add enough grain and clustering that it would sit acceptably next to the stall and well without looking like a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24716
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header/sign band",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf strip 1",
+      "rows": "13-13",
+      "evidence": "none",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf strip 2",
+      "rows": "20-20",
+      "evidence": "none",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom shelf/base strip",
+      "rows": "27-29",
+      "evidence": "none",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bread loaves and crates on shelves",
+      "rows": "7-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The rack is drawn face-on. The top band (rows 1-5) is a uniform pale header panel with no front-edge line and no eave shadow, so it reads as a vertical sign. The shelf beams at rows 13, 20 and 27-29 are 1-row light strips (rim-like) with no receding top plane. The bread bins are seen from the front. The frame has no horizontal surface seen from above, only a tall front face of about 24 rows (6-29)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a glass-front bread display rack with a pale frame, shelves and rows of orange and tan loaves. It shows 18 visible tones per 16x16 tile against 17 for the cheese stall and 20 for the roofed well, so density matches the same-kind references. Near-flat coverage is 0%, below the stall's 13%, and the frame, glass and loaves all carry dot-level variation, so there are no flat fills. The 0% near-neutral dark edge share means the outline is tinted, a dark bluish-grey frame tone rather than a black sticker line, like the hedge and stall references. The frame and glass ramps have roughly 4-5 steps, slightly fewer than the references' 5-6. The loaves are small and a little uniform, and the grid is somewhat regular, but a careful artist would accept it beside the stall and well.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21812
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top board / canopy band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "upper shelf with bread",
+      "rows": "9-13",
+      "evidence": "d",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "middle shelf with bread",
+      "rows": "16-20",
+      "evidence": "d",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "lower shelf with bread",
+      "rows": "23-27",
+      "evidence": "d",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "28-29",
+      "evidence": "none",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "A pale top band at rows 1-5 is followed by 3 rows of dark eave shadow (rows 6-8), which reads as a top surface over the front face. Three shelf tiers each end in a light front-edge line (rows 13, 20, 27, L=208) with dark shadow below, and the bread and trays are visible on the shelf surfaces (rows 9-12, 16-19, 23-26). The front face and supports run from row 6 to row 29, about 24 rows. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 18 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well, which are the closest references. Near-flat coverage is 0%, so there are no 5x5 flat fills; the stall reference has 13%. Dark edge pixels are 0% neutral, so the outline leans toward a dark slate or brown version of the adjacent material rather than a black sticker line. The picture agrees: the frame and shelf edges look tinted. Each shelf row is separated by value and holds small bread items with their own highlights and shadows, which gives per-object texture comparable to the stall's goods. The frame and glass panel look slightly less ramped than the references (about 4 steps on the frame against 5-6 on the roof and wood), but this is a small prop and it would sit acceptably next to the stall without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25398
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header/top plane",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "upper shelf (tray with bread)",
+      "rows": "9-13",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "middle shelf",
+      "rows": "16-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "lower shelf and base",
+      "rows": "23-29",
+      "evidence": "a",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bread loaves on shelves",
+      "rows": "8-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The column scan shows a pale band at rows 1-5 above a dark face from row 6, which reads as a top plane with its front edge and eave shadow. Each shelf ends in a light 1-row front-edge line (rows 13, 20, 27) followed by 1-2 dark shadow rows (14-15, 21-22), so the horizontal shelves and base show top faces. The bread sits on the shelves as decor. The front face runs from about row 6 to row 29, which is more than 3 rows. The top band is a little ambiguous, since it could be read as a front-facing sign strip. The shelf edge lines still give clear top-surface evidence."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts favour the candidate. It has 18 visible tones per 16x16 tile, level with prop-stall-cheese (17) and prop-well-roofed (20) and well above prop-hedge (9). Near-flat coverage is 0%, against 13% for the cheese stall. Dark edge pixels are 0% neutral, so the outline leans toward the adjacent material's tone rather than a black sticker line. By eye, the frame has several light-to-dark steps. Each shelf holds small bread items in a few orange and brown tones, and the top band is varied. It is a clean, compact piece. It reads somewhat like a display case and is a little less textured than the cheese stall's grain and cloth folds. It still holds up next to the references on density and shading, with no large flat fills.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24706
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.054Z",
+ "cells": {
+  "16": [
+   "81e93290d79a3e86",
+   "aae48f1a934d2a92",
+   "d6097137d131b89a",
+   "d6a0f9413c0ebc9d"
+  ],
+  "24": [
+   "09cc0ca0d8cececf",
+   "0cdddd0a341ff73d",
+   "1c07cf8f5c4968c9",
+   "1e56b611277317a0",
+   "2442eab059d6ed10",
+   "2c88f881f72c3475",
+   "3561ab0d7e111139",
+   "4b173d47f8dd152e",
+   "51f80ceefcaaa720",
+   "5c6776c9468d7b12",
+   "5dae22287c75ffe3",
+   "7702bbae86a7c13e",
+   "85349d5531afbc76",
+   "9a250ca9e098d296",
+   "a8b1b1cf7e8a9ba3",
+   "b0494675b2e9feb2",
+   "b64b38049941a730",
+   "b948daa2ab079859",
+   "c03176a936d4ab58",
+   "c89b363a61641d25",
+   "d32710c7859e6319",
+   "d47a0a81b6349b0b",
+   "e67bffac82ea184c",
+   "fb8055bdce32d9ec"
+  ],
+  "32": [
+   "7c94ff220890ddaa"
+  ],
+  "48": [
+   "0ced984474bbd04a",
+   "2a1d5e5190c583b7",
+   "86b51e92a1086514",
+   "889396437e026a19",
+   "a1e39a32f1cd7612",
+   "d29e1cec9b1263e3"
+  ]
+ }
+}

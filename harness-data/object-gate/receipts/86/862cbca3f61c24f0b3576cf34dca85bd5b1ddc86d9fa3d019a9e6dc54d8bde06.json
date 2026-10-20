@@ -1,0 +1,428 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "862cbca3f61c24f0b3576cf34dca85bd5b1ddc86d9fa3d019a9e6dc54d8bde06",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "park pillar",
+ "label": "modern_city_interior/park-pillar",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 0 튀어나옴 < 6) (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 0 튀어나옴 < 6) (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "평면 채움 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 6,
+  "darkV5": 28,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap band",
+      "rows": "2-4",
+      "evidence": "none",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shaft with blue sign panel",
+      "rows": "5-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 3,
+     "cap_width": 12,
+     "shaft_width": 12,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a constant 12 px wide for rows 1-30, so there is no ellipse and no overhang. Rows 2-4 are a light band at the top, with a slightly darker line at row 5. It is a flat front-facing strip, the same width as the shaft, like the 'column: flat band cap' reference. The rest is a vertical face (grey, a blue sign panel, yellow and black stripes). No receding top plane or side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small pillar or sign: a pale body with a blue panel and a yellow base, with a dark outline. Its dark edge pixels are 100% near-neutral, so the outline is a neutral black/grey line, not a tint of the adjacent material. The tinted references (hedge 0%, stall 1%) lean toward material tones. The lamp reference also reads 100% neutral, but it is a thin pole and the sparse-object rule applies to it. The candidate has about 3 lightness steps per material, against 5-6 in the references. Near-flat coverage is 19%, with large areas of one flat colour in the body and base, while the hedge and well references are 0%. It shows 6 visible tones per tile against 9 for the hedge, 17 for the stall and 20 for the well. It has no grain, speckle or per-element shading, so it looks like a flat sticker next to the references and is shallower than the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 3행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 3행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 17535
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap band",
+      "rows": "2-5",
+      "evidence": "none",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shaft with blue A sign, grey panel and yellow/black stripes",
+      "rows": "6-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 3,
+     "cap_width": 12,
+     "shaft_width": 12,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a constant 12 px wide from row 1 to row 30, so there is no ellipse and no overhang. The top is a flat light strip (rows 2-4, L about 239) with a one-row darker line at row 5 and no eave shadow. It reads as a front-facing cap band, like the red 'column: flat band cap' reference, not the green ellipse cap. Rows 6-30 are all vertical face: a blue sign, a grey panel, and yellow and black stripes. No horizontal surface is visible, so this is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small pillar with a white/cream body, a blue sign panel and a yellow band. It has only 8 distinct colours in total and about 3 lightness steps per material, against roughly 5-6 in the references (hedge, stall, well). Its dark edge pixels are 100% near-neutral, so the outline is a uniform near-black line, the sticker look. The references with tinted outlines (hedge 0%, stall 1%, well 33%) use dark material tones. The pillar's body and band are large flat fills (19% near-flat coverage vs 0% for the hedge and well), with no grain, speckle or per-surface shading. At 6 visible tones per tile it falls well below the hedge (9), stall (17) and well (20). Only the lamp reference has a similar neutral outline, and the lamp is thin, so it does not excuse this piece. Overall it looks thinner, flatter and more sticker-like than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 18898
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band (white/light strip)",
+      "rows": "2-5",
+      "evidence": "none",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue panel with letter A",
+      "rows": "6-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gray shaft",
+      "rows": "15-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "yellow and black stripes",
+      "rows": "22-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 4,
+     "cap_width": 12,
+     "shaft_width": 12,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a constant 12 px wide from row 1 to row 30, a plain rectangle. There is no ellipse cap, since the width never widens and then narrows. The top rows 2-5 are a flat light strip, a front-facing band with no distinct front-edge line and no eave shadow. The rest is vertical faces: a blue panel with an A, a gray shaft, and yellow/black stripes. No top surface is visible, so this is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small pillar with a white/cream body, a blue sign panel and a yellow base band. It uses only about 3 lightness steps on the body and 8 colours in total. The measured 100% near-neutral dark edge share confirms a neutral black outline, the sticker look, whereas the hedge, stall and well references have tinted outlines (0-33%). The body and the yellow and blue bands are flat fills with no grain, speckle or per-surface texture (19% near-flat coverage versus 0% for most references). It has 6 visible tones per tile against 9 for the hedge, 17 for the stall and 20 for the well. The lamp reference also has a neutral outline, but it is a thin object that carries more shape and shading detail. This pillar is flatter and shallower than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 15141
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band (white/light strip) above shaft",
+      "rows": "2-5",
+      "evidence": "none",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue sign plate with letter A on shaft",
+      "rows": "6-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey shaft",
+      "rows": "15-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "yellow/black hazard stripes",
+      "rows": "22-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 4,
+     "cap_width": 12,
+     "shaft_width": 12,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a constant 12 px wide for rows 1-30, so there is no ellipse and no overhang. The light strip at rows 2-5 is a flat front-facing band with a thin shade line at row 5, the same width as the shaft, like the 'column: flat band cap' reference (red). Below it are a blue sign, a grey shaft and yellow/black stripes, all drawn as vertical front faces. No row shows a widening and narrowing cap or a horizontal surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small pillar with a white/cream body, a blue sign panel and a yellow band at the base. It uses about 8 colours in total and 6 visible tones per tile, against 9 to 20 for the hedge, stall and well references. The body is shaded in only about 3 steps, with large smooth areas of one flat colour (19% near-flat coverage, where the hedge, bench and well sit at 0%). The dark edge pixels are 100% near-neutral, so the outline is a uniform near-black line. It has the sticker look, not the dark material-tone edges of the hedge, stall and well. There is no grain, speckle or per-surface texture. The prop reads cleanly but is flatter and thinner than the Beodeul references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 17865
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.140Z",
+ "cells": {
+  "16": [
+   "58090665ed20cb78",
+   "87b7064c962eb48f"
+  ],
+  "24": [
+   "03b4f9fa17154439",
+   "2f4aa01fa5d3d7b4",
+   "348649427f257774",
+   "49355b777434af0b",
+   "793ca169fc2ce188",
+   "8c0a30bb1fc43896",
+   "98481be781542e6c",
+   "9fde4cb41e7f0e10",
+   "caa5f8a6cf07d336",
+   "d8c8b1b344d9e40a",
+   "d99f0ea2515672b0",
+   "edfca6277c456f55"
+  ],
+  "32": [
+   "0c803077d3dc309e",
+   "1b76adbe19eb8e09",
+   "3944ccbf79f056bd"
+  ],
+  "48": [
+   "224c1039b4eba564",
+   "23ebc27510caaf60",
+   "5d6f4e10e1b73101",
+   "6e4e3b1932183a58",
+   "76610230f67b642f",
+   "799a547a98d5b462"
+  ]
+ }
+}

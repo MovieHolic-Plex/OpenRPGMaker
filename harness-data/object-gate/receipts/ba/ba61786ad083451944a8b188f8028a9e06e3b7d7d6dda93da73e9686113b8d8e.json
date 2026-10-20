@@ -1,0 +1,401 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ba61786ad083451944a8b188f8028a9e06e3b7d7d6dda93da73e9686113b8d8e",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp torii",
+ "label": "modern_city_interior/jp-torii",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (3/4)",
+  "화풍: 질감 없음 (1/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (3/4)",
+   "질감 없음 (1/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 10,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 3
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "kasagi roof slab (top slope)",
+      "rows": "1-5",
+      "evidence": "c",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "kasagi front face / eave shadow",
+      "rows": "6-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "nuki tie beam",
+      "rows": "11-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right pillars",
+      "rows": "17-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The kasagi roof is a 5-row gradient plane (rows 1-5, lightest at row 5) that ends at an eave edge. Dark eave shadow follows in rows 6-8, so the roof counts as a sloped top surface (c). Below it the front face is the red nuki beam (rows 11-16, a vertical strip with highlight shading only) and two pillars (rows 17-30, with stone bases in rows 23-29). The beam and pillars are drawn as vertical faces with no top surface, so not every major part shows a top. The roof still gives the main body a top surface and a front face of well over 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The references are whole houses, while the candidate is a thin torii prop. I judged it by eye as a sparse object and did not use the per-tile density fact against it. The measured facts are fine: 10 visible tones per tile against 10-12 in the references, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is tinted rather than a black sticker line. By eye, though, the red pillars and the lower crossbeam read as only about 3 steps (base red, a light edge stripe, a dark side). The dark top beam is likewise a base, a highlight and a dark underside. There are no per-tile highlights, no grain or speckle dots, and no wood-grain variation. The references have 5-6 steps with scalloped tiles, plaster speckle and stone shading. Placed next to them, the torii looks flatter and more graphic than the Beodeul standard. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 27447
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "kasagi (top lintel roof plane)",
+      "rows": "2-5",
+      "evidence": "c",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "kasagi front face (dark underside/eave)",
+      "rows": "6-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "nuki tie beam",
+      "rows": "12-13",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "pillars",
+      "rows": "17-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The kasagi has a 4-row grey-blue sloped band (rows 2-5) that brightens to its lightest row at row 5, which acts as the front-edge line. It is followed by 3 dark rows (6-8) of eave shadow and face. The silhouette is 44-48 wide, much wider than the pillars. The nuki beam (rows 11-16) has a light 2-row upper band (12-13) over darker front rows (14-15). The pillars (rows 17-30) form a 14-row front face. This is a weak but present top surface plus a front face, so it reads as three-quarter rather than flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The references are full houses with scalloped tile roofs, plaster speckle and stone shaded one by one. The candidate is a small torii prop, so the kind only loosely matches, and I judged it by eye as a thin object. It has only 14 distinct colours in total, against 66 and 185 in the references. The red pillars and crossbeams show about 3 steps (highlight, mid, dark), and the dark kasagi cap shows 2-3, well below the 5-6 per material of Beodeul. The measured facts are fine: 10 visible tones per tile (references 12 and 10), 0% near-flat coverage, and 0% neutral dark edge pixels, so the outlines are tinted and not a black sticker line. Despite that, the red surfaces have no wood grain, no per-part texture dots and no weathering. The gate reads as a clean, simple graphic, thinner and flatter than the references, so a careful artist would likely not accept it beside them without more ramp steps and grain.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 23086
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "kasagi roof (top slope)",
+      "rows": "2-5",
+      "evidence": "c",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "roof front face / eave",
+      "rows": "6-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "nuki lower beam (lintel)",
+      "rows": "11-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pillars",
+      "rows": "9-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The wide roof (rows 1-8) has a gray-blue slope plane in rows 2-5 that gets lighter toward the front. Row 5 is the lightest and acts as the front-edge line. Rows 6-8 are dark eave shadow over the front face. This is a roof plane (evidence c) of about 4 rows with a front face below it. The red lower beam (rows 11-16) is mostly a front strip: rows 12-13 are a light bevel and rows 14-15 are darker, with no clear top surface. The two pillars (rows 9-30) are plain vertical faces. The roof gives a valid top, but the beam shows only a thin bevel, so not every major part has a top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The torii is a small, sparse prop set against two full houses, so I judged mostly by eye. The measured facts are close to the references: 10 visible tones per tile against 12 and 10, 0% near-flat coverage, and 0% neutral dark edge pixels. The outline is therefore tinted, a dark red-brown beside the red and a dark grey-brown beside the kasagi, not a black sticker line. The picture is weaker than the facts suggest. The red pillars and lower beam are nearly uniform, with only a thin highlight edge, about 3-4 steps against the 5-6 on the reference tile roofs. The dark cap has one highlight line and no per-element grain. Nothing matches the reference's scalloped tiles with per-tile highlights, plaster speckle or stone-by-stone shading. The object reads as flatter and more graphic than the references, so I fail it on that margin.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 22927
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "kasagi (top roof beam) sloped top",
+      "rows": "1-5",
+      "evidence": "c",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "kasagi front face (dark band)",
+      "rows": "6-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "nuki crossbeam (red) front face",
+      "rows": "11-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "two pillars",
+      "rows": "17-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The kasagi has a sloped grey top plane in rows 2-5 that brightens downward (L 71, 94, 113, 132). Its lightest row, 5, is the front-edge line. Rows 6-8 are a dark eave shadow and front band, so the roof reads as a top surface above a front face. The red nuki beam (rows 11-16) and the pillars (rows 17-30, width 14) are drawn only as vertical front faces with no top surface. The main body still has a roof top of about 5 rows and a front face well over 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small, thin torii, so the per-tile and flat-fill numbers are only weak evidence. It has 10 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage. Its dark edge pixels are 0% neutral, so the outline is tinted (dark red or dark grey-brown), not a black sticker line. But the whole piece uses only 14 distinct colours, against 66 and 185 for the references. By eye, each material ramp is shallow, about 3 steps: the red pillars and beams are roughly base, a darker side and a thin highlight, and the grey kasagi cap is a similar 2-3 tones. The references carry about 5-6 steps per material, with per-tile tile-scallop highlights, plaster speckle and individually shaded stones. The red pillars read as nearly flat bands with no grain or wood texture. Set beside the references it looks thinner, flatter and more graphic. It is cleanly drawn with tinted outlines, but the shallow shading and missing grain would not pass a careful artist's check against the reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 22464
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.967Z",
+ "cells": {
+  "16": [
+   "390def80204045f5",
+   "88c0ba2d59679863",
+   "97fa9cb5c3c6a2b4",
+   "ac99b5e5c2041b29",
+   "c4d0654d0a0fdb9e",
+   "f4d5c62c59408f77"
+  ],
+  "24": [
+   "1ae48b5c9083f98e",
+   "219a79ee2042b363",
+   "3e1fe146bec9ab17",
+   "5bc57733916dc441",
+   "8e5165d747276917",
+   "95160e9b6b096ece",
+   "b5faefcdc86efee3",
+   "c09abe6aecc0ab98"
+  ],
+  "32": [
+   "afe4ec988195227f",
+   "b1d8cd3f91dbb335",
+   "c17dd51c10d9afe6",
+   "db1cdb2b296c40a5",
+   "e5959d3c61c5099e",
+   "e9fad606bdba6496"
+  ],
+  "48": [
+   "38dfbfb4fd8b6fdc",
+   "4ccc62f6742e1e21"
+  ]
+ }
+}

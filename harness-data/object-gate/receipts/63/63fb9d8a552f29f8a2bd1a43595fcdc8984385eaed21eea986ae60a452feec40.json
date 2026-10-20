@@ -1,0 +1,397 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "63fb9d8a552f29f8a2bd1a43595fcdc8984385eaed21eea986ae60a452feec40",
+ "width": 48,
+ "height": 32,
+ "kind": "seat",
+ "name": "mci-sofa-n",
+ "label": "seats34/modern_city_interior/mci-sofa-n",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 0행 < 4 (3/4)",
+  "3/4: 윗면 3행 < 4 (1/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 0행 < 4 (3/4)",
+   "윗면 3행 < 4 (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 9,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 3
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest top edge",
+      "rows": "12-14",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest face",
+      "rows": "15-27",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left armrest",
+      "rows": "17-28",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right armrest",
+      "rows": "17-28",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The sofa is drawn as one flat vertical slab (rows 15-27, uniform L=60) under a 3-row highlight gradient (rows 12-14) that is the backrest's top edge. Both armrests show only a 2-row light cap (rows 17-18). No seat surface is visible. There is no ellipse, no front-edge line with eave shadow, and no cushion top or seat plane. Only a faint darker strip near rows 26-27 hints at the seat base. Backrest and armrests are exempt, but the seat surface shows no top, so the drawing is front_elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a blue sofa with about 3 visible blue ramp steps: a mid blue body, a lighter top edge or cushion highlight, and a dark blue base and outline. Its dark edge pixels are 0% neutral, so the outline is tinted dark blue, not black. That is a point in its favour, but the structure is thin. The cushions and back are large flat fills with only faint seam lines, and there is no fabric grain, no per-cushion shading and no stitching or fold detail. Near-flat coverage is 47%, against 0-13% for the references that have measurable tiles (hedge 0%, stall 13%, well 0%). It shows 8 visible tones per tile, against 9 for the hedge, 17 for the cheese stall and 20 for the well. The count is close to the hedge, but by eye the sofa reads as a smooth, plain, sticker-like block next to the grain-rich bench, hedge and stall. The references use 5-6 steps with texture dots, and the sofa falls short of that on shading depth and texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 16187
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest top band",
+      "rows": "12-14",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests (left and right)",
+      "rows": "17-28",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The column scan is the same at x=12, 24 and 35. Rows 12-14 are a light top strip that runs from light to mid-blue, which is the backrest top edge and is exempt. Rows 15-27 are one flat dark-blue face with only faint vertical seams. No seat surface is drawn: no band ending in a front-edge line, no ellipse and no visible cushion top. The only lighter patches are 2-row caps on the armrests at rows 17-18, and those are exempt too. The seat has no top surface, so the drawing is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a blue sofa with a dark blue outline, a lighter top edge and a flat mid-blue body. Its outline is tinted (0% neutral dark edge pixels), so it is not the near-black sticker look. The body is mostly large flat mid-blue areas with three cushion dividers and no grain, fabric dots or per-cushion highlights. That matches the measured 47% near-flat coverage, against 0-13% for the references. At 8 visible tones per tile it is well below the stall (17) and well (20), and level only with the hedge (9). That hedge is a texture-heavy prop. The sofa has only about 3 shading steps (highlight, mid, dark) against about 5-6 for the references. It would look flatter and thinner next to the bench, stall and well, which carry plank grain, tile scallops and stone shading.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 17185
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest (top edge band plus back panel)",
+      "rows": "12-28",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left armrest",
+      "rows": "17-28",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right armrest",
+      "rows": "17-28",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The sofa is drawn from behind as a flat blue panel. Rows 12-14 are a light-to-mid gradient strip along the top edge, about 3 rows, with no eave shadow. Rows 15-27 are one uniform dark face with two faint vertical seams. Rows 17-18 are short light caps on the armrests at the left and right edges. Rows 29-30 are the feet. No seat surface is visible from above: there is no ellipse, no band ending in a front-edge line, and no cushion top. The seat is therefore a front elevation, like the 'seat: band 2' reference. The backrest and armrests are exempt, but the seat itself shows no top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate sofa is a blue block with a darker blue outline (tinted, 0% neutral dark edges) and a lighter top edge. Its body has about 3 lightness steps: highlight rim, mid blue, dark blue for cushion seams and base. There is no fabric grain, stitching, speckle or per-cushion shading. 47% of it is near-flat, against 0% for the hedge, bench and well and 13% for the stall. The stall and well carry 17-20 visible tones per tile, and the hedge carries 9 with leaf-clump variation. At 8 tones per tile the candidate is not far below the hedge on count alone, but those tones sit in large uniform cushion and back panels. The references are shaded in several steps per material, with grain and per-element highlights. Next to them the sofa reads as a flat, simplified sticker-like block. The tinted outline is good, but the shallow shading, flat fills and low texture make it fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15936
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest top edge",
+      "rows": "12-14",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left armrest",
+      "rows": "17-28",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right armrest",
+      "rows": "17-28",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The sofa is a single flat blue slab from rows 15-27, with two faint vertical seams at about x=21 and x=33. A light 3-row band at rows 12-14 is the top edge of the backrest. It fades from light to mid-tone and has no front-edge line or eave shadow, so it is exempt as a seat back. The armrests have small light caps at rows 17-18, also exempt. No seat surface is seen from above: there is no ellipse, band or contents between the arms. Only a faint darker strip at rows 26-27 sits below the large uniform face. With no sitting surface visible, this is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a blue sofa drawn as a mostly flat body with a lighter top edge, a darker base and a few seam lines. That gives about 3 lightness steps on the blue ramp, against about 5-6 on the references (the hedge's layered greens, the stall's cloth and wood). Its outline is a dark navy that leans blue, so the tint is material-based and not near-black (0% near-neutral dark edge pixels). The cushions and arms are large areas of one colour with no grain, speckle, fabric texture or per-cushion highlights, so it reads as flat fills. This matches the measured near-flat coverage of 47%, against 0-13% for the references that have tiles. At 8 visible tones per tile it is below the stall (17) and well (20) and roughly level with the hedge (9). But the hedge's tones are spread as leaf-clump texture across the whole tile, while the sofa's are mostly the same few tones repeated over big flat patches. Next to the references it looks like a cleaner, flatter sticker, and the stall and well carry much more detail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15690
+  }
+ ],
+ "decidedAt": "2026-10-20T14:09:20.615Z",
+ "cells": {
+  "16": [
+   "588ec2d4ba3c45df",
+   "700d36cc3796206f",
+   "7ca1536f722c541e",
+   "8cb3745d6a2587cd",
+   "c6cd0e41dea2a557",
+   "ff344ef4ef894fb1"
+  ],
+  "24": [
+   "197aa3cd8f77c859",
+   "4731055a26592124",
+   "4a95828f767c7466",
+   "55cf03c6b4e1e903",
+   "a754b927b40d7210",
+   "bcab3d4b35df5d1e"
+  ],
+  "32": [
+   "2179da235b9466cc",
+   "299a6fb61bbde7cb",
+   "2a9186e1ffeacee6",
+   "86b9b8a1d1682feb",
+   "93b022a73a710889",
+   "970d5b9250cbb17b"
+  ],
+  "48": [
+   "f32ff85bafe1fefb",
+   "fb360d37a3efb05c"
+  ]
+ }
+}

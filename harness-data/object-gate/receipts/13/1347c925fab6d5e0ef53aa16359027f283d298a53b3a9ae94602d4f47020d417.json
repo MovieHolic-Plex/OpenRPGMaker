@@ -1,0 +1,387 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1347c925fab6d5e0ef53aa16359027f283d298a53b3a9ae94602d4f47020d417",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "park pay machine",
+ "label": "modern_city_interior/park-pay-machine",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 0행 < 4 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 0행 < 4 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 28,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top sign/header panel (white and gold stripes)",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green screen on the front face",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ticket slot / keypad panel and coin button",
+      "rows": "16-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole machine is drawn as a flat front elevation: a 14px-wide silhouette running rows 0-29 with a constant width. Rows 1-6 hold a white/grey band with a gold stripe, which is a front-facing header strip with no front-edge line and no eave shadow. Below it are the blue face, the green screen (rows 10-13), the grey ticket panel (rows 16-18), the gold coin button (rows 20-23) and a dark slot (rows 25-27), all vertical details. No ellipse, roof or visible contents show a horizontal top surface, and no side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small blue pay machine with a screen panel and a few buttons. Its dark edge pixels are 100% near-neutral, so the outline is a uniform near-black line around the whole shape. That is the sticker look. The references with comparable props (stall, well, hedge) use tinted dark-material outlines at 0-33% neutral. The body ramp is shallow, about 3 steps (light blue, mid blue, dark) plus the screen and button accents. It has 9 visible tones per tile, equal to the hedge but well below the stall (17) and well (20). It has no flat fills (0% near-flat coverage), but the surfaces carry little grain or texture beyond the panel details. A careful artist would not accept it next to the stall and well, because the outline and shading are flatter and more sticker-like.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13981
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header sign band (white/grey) with gold stripe",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue front body with screen, ticket slot, coin pad and keypad",
+      "rows": "7-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole 14px-wide silhouette (rows 0-29) is a flat, face-on panel. Rows 1-4 are a light grey/white strip and rows 5-6 a gold stripe. They read as a front-facing header or cornice strip: there is no distinct front-edge line, no darker eave shadow beneath it, and the width does not change. The rest of the body is blue (rows 7-28) with a green screen (rows 10-13), a grey slot (rows 16-18), a gold coin pad (rows 20-23) and a dark slot (rows 25-27). All of these are vertical faces. No ellipse, roof plane or visible contents show a horizontal top surface, and no side face is drawn. It matches the 'front elevation: no top' reference pairs."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate's dark edge pixels are 100% near-neutral, so the outline is a uniform near-black line around the whole machine. That is the 'sticker' look. The references use tinted outlines: the hedge is 0% neutral, the cheese stall 1%, the well 33%. The body is a flat blue, with a white cap band and a small screen panel. Each material has only about 3 lightness steps, against 5-6 on the stall and well. The 9 visible tones per tile match the simple hedge but are well below the stall (17) and well (20), which are the closer references for a built prop. There is no grain or per-surface highlight work. The 0% near-flat coverage comes from small panels and buttons, not from real shading depth. It is clean and readable, but it is shallower and more sticker-like than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18126
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header sign band (light gray with gold stripe)",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue machine body with screen, ticket panel, coin plus and slot",
+      "rows": "7-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a constant 14px wide for rows 0-29, a plain rectangle with no ellipse or widening. Rows 1-4 (gray, lightest at row 4) and rows 5-6 (gold stripe) look like a face-on header sign, not a horizontal surface. There is no eave shadow beneath them, and the blue face continues straight down from row 7. Everything below is vertical face detail: the green screen at rows 10-13, the gray ticket panel at rows 16-18, the yellow coin plus at rows 20-23 and the dark slot at rows 25-27. No top surface or side face is drawn, so it reads as a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The pay machine is a small blue and white kiosk with a screen and a few coloured buttons. The body ramp has only about 3 steps (light, mid, dark), against 5-6 on the stall and well. Its dark edge pixels are 100% near-neutral, so the outline is a uniform near-black line like the lamp's, not the tinted dark-material tone of the hedge, stall and well. It has 9 visible tones per tile, level with the hedge but well under the stall (17) and well (20), and only 11 colours in total. Near-flat coverage is 0%, but the body panels read as simple fills with no grain, speckle or per-surface highlights. The result looks like a sticker: a clean icon with a black outline and shallow shading, not up to the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 24826
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header sign band (silver and gold stripes)",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue machine body with screen, ticket slot, keypad and coin slot",
+      "rows": "7-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a constant 14 px wide from row 0 to row 29, so there is no ellipse or widening. The top rows 1-6 are a face-on header panel of silver and gold stripes. It has no front-edge line, no eave shadow and no foreshortened horizontal band. Everything below is a vertical face: the green screen at rows 10-13, the silver slot at rows 16-18, the keypad at rows 19-24 and the dark slot at rows 25-27. No top surface is visible, so this is a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small blue pay kiosk with a white header, a screen and a few buttons. It has 9 visible tones per tile, the same as the hedge but well below the cheese stall (17) and the roofed well (20). Its whole palette is only 11 colours. The body is a flat blue with roughly one highlight and one shade, so the main ramp has about 3 steps against 5-6 for the references. All of its dark edge pixels are neutral (100%), so the outline is a uniform near-black line. The stall, well and hedge use tinted dark tones instead (1%, 33% and 0% neutral). That gives the 'sticker' look. Texture is limited to the screen and button details, with no grain or per-surface dotting. Near-flat coverage is 0% only because the piece is tiny and its details are dense. A careful artist would find it flatter and more sticker-like next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20355
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.136Z",
+ "cells": {
+  "16": [
+   "acda54494960a7e3",
+   "b2aed8d2a1791563"
+  ],
+  "24": [
+   "0b62349c31c85673",
+   "7ac76c30217b7ab2",
+   "93ebbbfb9ae82429",
+   "94d46a68f041e72b",
+   "a5b4e84620fad911",
+   "af89480a611c544c",
+   "c72a1728b73a50bc",
+   "d0dffa9d1a222e75",
+   "e139afab82a0439f",
+   "e1412b4d6c580596",
+   "f5d5e478b85cf1b6",
+   "fdda7044769d1142"
+  ],
+  "32": [
+   "9c9b43acfa6dc8d2",
+   "fca8804a80bd7d62",
+   "fe02c7b4b787e949"
+  ],
+  "48": [
+   "139979339d5fa77a",
+   "4013425c20b7609d",
+   "5f89e5af2da4ea77",
+   "7bc3723d8d0becf6",
+   "d1cf2391c1573d2c",
+   "e70bc717b9de651a"
+  ]
+ }
+}

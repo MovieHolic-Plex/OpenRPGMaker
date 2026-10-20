@@ -1,0 +1,420 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "39e6a1e39df6c08b36f53383b273b62c77efc729154f41041954ebfa65b5d34c",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "lab reagent shelf",
+ "label": "modern_city_interior/lab-reagent-shelf",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 4 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 4 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 19,
+  "tileColorsP90": 20,
+  "darkV5": 28,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top frame/cornice",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf boards (3 thin strips)",
+      "rows": "6-7, 13-14, 21-22, 29-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottles and jars on shelves",
+      "rows": "7-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a constant 30 px wide from row 0 to row 31, a plain rectangle. Rows 1-2 at the top (L=155, then 204) are a 1-2 row frame lip. Rows 3-5 are the same light tone as the back panel, so they are a vertical face and not a top surface. Each shelf is a 2-row strip (L=155 then 204) with no eave shadow and no foreshortened top band. The bottles are drawn face-on, and no shelf plane is visible from above. The whole piece is a flat front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate's tile density is on par with the references: 18 visible tones per tile against 17 for the cheese stall and 20 for the roofed well, with 0% near-flat coverage. That density comes mostly from the small bottles and jars on the shelves. The cabinet frame is a pale body with only about 3 lightness steps (white, light grey, grey), where Beodeul materials use 5-6. All of its dark edge pixels (100%) are neutral, so the outline is a uniform grey-black line around the frame instead of the dark tone of the adjacent material. The tinted references (hedge 0%, cheese stall 1%) show the Beodeul alternative. The result reads as a sticker-like cabinet with a neutral outline and shallow body shading. The lamp-crook reference is also 100% neutral, but it is a thin metal prop, so it does not justify a neutral outline on a large furniture body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18905
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top frame / cornice",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper back panel (empty compartment, face-on)",
+      "rows": "3-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf boards (thin 1-2 row strips)",
+      "rows": "6, 13-14, 21-22, 29-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "reagent bottles on shelves",
+      "rows": "7-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole object is a flat face-on elevation of a shelf unit. The width is a constant 30 px for rows 0-31. Row 0 is the outline, and rows 1-2 (L=155, then 204) form a thin frame strip at the top. Rows 3-5 are a flat light back panel with no front-edge line and no eave shadow below it. Each shelf board is only a 1-2 row strip (rows 6, 13-14, 21-22, 29-30), so it reads as a rim and not as a horizontal surface seen from above. The bottles are drawn face-on and sit on those strips as decor. No ellipse, roof or visible contents form a top surface, and there is no side face. The top is at most a 2-row rim above a tall front face, which matches the red 'front elevation: top 1' and 'rim only: top 2' references."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a white/grey cabinet with shelves of small bottles. It reads cleanly and the bottles add some variety, but the cabinet body has only about 3 steps (white, light grey, grey frame) against the 5-6 steps of the references. The measured 100% near-neutral share of dark edge pixels, against 0-44% for the material-toned references (the lamp is the exception), together with the visible dark grey frame, points to a neutral outline that looks like a sticker rather than a dark tone of the adjacent material. Visible tones per tile (18) are on par with the stall (17) and well (20), and near-flat coverage is 0%, so the candidate is not flat. Even so, the large frame and panel areas lack grain, speckle or per-piece shading, so the cabinet structure is shallower than the references. A careful artist would not accept it next to the stall or well without calling it flatter and more outlined.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17854
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top frame rim",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf ledges",
+      "rows": "13-14, 21-22, 29-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottles on shelves",
+      "rows": "7-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a constant 30 px wide from row 0 to row 31, so there is no receding side face and no widening or narrowing. The column scan shows row 1 (L=155), row 2 (L=204), then a flat light interior of rows 3-5 (L=235) closed by a grey line at row 6. This reads as an empty top compartment, not a horizontal top surface. Each shelf is only a 1-row grey line plus a 1-row lighter strip (rows 13-14, 21-22, 29-30). These are 2-row ledges that only mark the shelf edges. The bottles are decor and are all seen face-on. The whole piece is a flat front elevation of a shelving unit, with no top plane."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are mixed. The candidate has 18 visible tones per tile, in line with stall-cheese (17) and well-roofed (20), and 0% near-flat coverage, so the bottle rows give it real detail. Its dark edge pixels are 100% near-neutral, against 0-1% for the hedge and cheese stall and 33-44% for the well and bench, which fits the grey/black outline I see around the cabinet. That is the uniform sticker-style line, not a darker tone of the adjacent material. The cabinet body is shallow: a near-white fill, one grey shade and the outline, about 3 steps against the 5-6 that Beodeul uses for wood, roof and stone. The tones come almost entirely from the small bottles, while the frame and shelf boards are plain with little grain or per-part highlighting. A careful artist would find it flatter and more sticker-like than the references next to it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 21389
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top frame rim",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf compartments with bottles (face-on)",
+      "rows": "3-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The shelf is drawn face-on. Row 0 is the outline. Rows 1-2 are a 2-row light rim (L=155 then 204) at the top. Rows 3-5 continue as a flat vertical back panel (L=235) with no front-edge line and no eave shadow. Horizontal shelf boards at rows 6, 13-14, 21-22 and 29-30 are thin 1-2 row lines (L=155 over 204). They read as shelf fronts, not as top surfaces seen from above. The bottles are drawn straight-on. Nothing shows a receding top plane, an ellipse or a side face. The silhouette is a constant 30 px wide across rows 0-31. That gives about 29 rows of front face and only a rim at the top, so it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a pale cabinet with rows of small bottles. Measured density holds up: 18 visible tones per tile against 17 for the cheese stall and 20 for the roofed well, with 0% near-flat coverage. The structure is shallower than the references, though. The cabinet frame and body read as only about 3 lightness steps (white, light grey, dark grey), where Beodeul uses 5-6 per material. 100% of the dark edge pixels are neutral, so the outline is a uniform grey-black line around the whole shape. That is the sticker look, unlike the tinted dark-wood, dark-red and dark-green edges on the stall, hedge and well (0-33% neutral). Only the lamp-crook is also fully neutral, and it is a thin metal object. Most of the tone count comes from the tiny bottle details. The large cabinet surfaces have little grain, tile-by-tile highlighting or material texture. A careful artist would find it flatter and more sticker-like than the stall and well references, so it fails on shading depth and outline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18717
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.023Z",
+ "cells": {
+  "16": [
+   "13f353092a6cbcb5",
+   "48a09c84d69379da",
+   "8637953d86bcf2f9",
+   "e344272d27fba600"
+  ],
+  "24": [
+   "0a4349bba3ae08d3",
+   "0f6f8466b56ea9d7",
+   "2884a8387d3c5136",
+   "2b553bc34c09e054",
+   "4163e6a94deea75d",
+   "48c18addb0f9b2b9",
+   "5763649c9a3af9e1",
+   "57a866ca6349bc54",
+   "5a486879724554fd",
+   "64d160937a6a4177",
+   "6b0f9ac18f1aa09e",
+   "6ef22055eb7c489e",
+   "70c97f2f93d6d5e4",
+   "7178c300cf298ab0",
+   "78ad9710c22af654",
+   "8976c8b4903b5d92",
+   "8d295d21c3881e86",
+   "8fd6b2cab6923888",
+   "b0bdd90ca4681eed",
+   "b8268e8d0545b6b4",
+   "c3b38f4e934bcb92",
+   "eaddd3ac23c7bd74",
+   "eb4f7013df732184",
+   "fa64f152358e2f83"
+  ],
+  "32": [
+   "7141ee5d1c82ae83"
+  ],
+  "48": [
+   "13b575355d1b9a1e",
+   "2999100553976ba6",
+   "42057fc6375c7342",
+   "5ff8e5e1261c90b3",
+   "7ad1d0aae9591e31",
+   "a4025c1ee45be9e3"
+  ]
+ }
+}

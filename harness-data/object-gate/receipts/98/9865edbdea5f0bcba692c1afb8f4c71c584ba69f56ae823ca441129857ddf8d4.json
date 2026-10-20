@@ -1,0 +1,347 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9865edbdea5f0bcba692c1afb8f4c71c584ba69f56ae823ca441129857ddf8d4",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "ind lathe",
+ "label": "modern_city_interior/ind-lathe",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 19,
+  "darkV5": 42,
+  "nearBlackEdge": 0.25,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band of the housing",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "front face with window, lathe interior and control panel",
+      "rows": "7-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a top band that gets lighter toward the front. Row 5 is the brightest line (#fdffff) and works as the front-edge line. Row 6 is a dark line (L=91) that acts as eave shadow. Below that, the vertical south face runs from about row 7 to row 29. It holds a dark blue window with the lathe inside (rows 9-18), a control panel on the right with a green screen, and a lower panel with a seam. The silhouette is a constant 30 px wide with no side face. The top band is 5 rows, like the 'cabinet: top 5 + edge + eave' reference, so it is more than a 1-2 row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a grey machine (lathe) with a light panel, a dark window and small knobs. It carries 11 visible tones per tile, which is in the range of the hedge (9) but below the stall (17) and well (20). Near-flat coverage is 0%, so there are no large flat fills. The main failure is the outline: 98% of its dark edge pixels are near-neutral, which matches the neutral black sticker line. The references that use tinted outlines (hedge 0%, stall 1%) read as dark material tone. The grey metal body has about 4 lightness steps, fewer than the 5-6 on the Beodeul materials. The surface texture is limited to a few knob dots and panel lines, with no grain or per-part variation. Next to the references it looks cleanly drawn but flatter and more sticker-like.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 23282
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top housing band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "8-8"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a light gradient band (L 144 to 254) across the full 30px width. It ends in a darker front-edge line at row 6 (L=91), followed by a light strip at row 7 and a dark shadow line at row 8. That makes about 5 rows of top surface. Below it, rows 7-29 (about 22 rows) are the vertical front face: a window, a control panel, a bed rail and a base. The silhouette is a plain 30px-wide rectangle with no receding side face. The drawing is a straight south view with a top band, similar to the green cabinet reference (top 5 + edge + eave)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a grey machine (lathe) in a boxy frame. It has a distinct dark outline, a light panel, a small control panel, and a window or vise area. The dark edge pixels are 98% near-neutral, so the outline is a neutral black/grey line, unlike the references (hedge 0%, cheese stall 1%, well 33%). That is the uniform sticker-style outline. The material ramps are shallow: the body is about 3 grey steps (light, mid, dark) plus the outline, against 5-6 in the well, stall and hedge. Measured density is 11 visible tones per tile, which is above the hedge (9) but below the stall (17) and well (20). Near-flat coverage is 0%, so there are no large flat fills, but the surfaces are mostly clean, smooth blocks without grain, speckle or per-element highlights. Overall it looks flatter and more sticker-like than the references, mainly because of the near-black outline and the few shading steps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19337
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band of lathe housing",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "front face with window, control panel and base",
+      "rows": "7-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a band that brightens from grey to white toward the front. Row 6 is a dark front-edge line (L=91), followed by a light row 7 and a shadow row 8. Below that is a front face of about 22 rows (rows 7-28) holding the dark-blue window, the control panel on the right and the base panels. There is no isometric side face. The top band is fairly thin and could be read as a bevelled cornice, but the edge line and shadow below it support a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has 11 visible tones per tile, within the reference range (hedge 9, stall 17, well 20), and 0% near-flat coverage, so there are no flat fills. The weaknesses are structural. 98% of its dark edge pixels are neutral, and in the image it has a uniform near-black outline around the whole body and panel. That is the 'sticker' look, unlike the tinted material-tone edges of the hedge (0%), stall (1%) and well (33%). The metal body has only about 4 lightness steps, a pale grey face with a dark frame, and little per-part grain or highlight work. The machine reads as a boxy panel that looks more like an appliance than a lathe, with a flat front and few shaded sub-parts. Next to the stall and well it looks thinner and flatter. The neutral outline is also plausible for grey metal, as on the lamp reference, but the shallow stepping and uniform edge still keep it below the standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 17390
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel / upper housing",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "front face with window and control panel",
+      "rows": "7-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a top band that shades from mid-grey to near-white. A dark front-edge line at row 6 closes it, and a light strip at row 7 with a darker row 8 follows. The front face runs from row 7 to row 28. It holds a dark-blue window with a lathe bed, a right-hand control panel with a green screen and buttons, and a lower grey base. The bottom outline is at row 29. The silhouette is a constant 30 px wide, so no side face is drawn. The top band is a thin, flat-shaded surface, but it meets the edge-line criterion."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a grey machine (lathe) boxed in a dark outline. The measured near-neutral share of dark edge pixels is 98%, so the outline is a neutral near-black line all the way round, like the sticker look. The references (hedge 0%, cheese stall 1%, well 33%) use tinted outlines, and only the lamp, which is thin, is at 100%. Visible tones per tile are 11, against 9 for the hedge, 17 for the cheese stall and 20 for the well. That is mid-range, and flat coverage is 0%, so the density is acceptable. By eye, the body has only about 3-4 grey steps (light panel, mid, dark, a few control dots), shallower than the 5-6 steps of the roofed well and the cheese stall. The details are small (a screen, dials, a chuck) and tidy, but the large front panel is smooth, with little grain or per-material variation. The tinted dark-material outlines and richer ramps of the references are missing, so next to them the piece looks like a flatter, outlined sticker.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 25255
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.953Z",
+ "cells": {
+  "16": [
+   "0f9ffd4121124e6b",
+   "2db73e23b110b851",
+   "d2d767fbc20ba4cc",
+   "fb06b923c11e7f66"
+  ],
+  "24": [
+   "10af22737066e96d",
+   "1a4adc07ca4842bf",
+   "1bbab19885bf4de6",
+   "2294b76ad56668e0",
+   "26c8c42b437da1c9",
+   "373c2874200c8c38",
+   "50e6e59a7243b055",
+   "64909f9c8a6d86fc",
+   "795e8fe4e514bddf",
+   "85d2d4a4adb11594",
+   "8d661ed2c3eb8f49",
+   "8ff4fb62626424da",
+   "9f4aa55ac054749a",
+   "ab66e96a0d0dd66f",
+   "b3b0c99bb15d119f",
+   "b604eb3b8ce1dfa9",
+   "c3393e10c5bb8b95",
+   "c6d4926575864349",
+   "cbb02cee4a251718",
+   "d0f7013abc61bf2d",
+   "d4cbd4e9466bcfba",
+   "d77f9c43d145be68",
+   "f75a886b809db9bd",
+   "fc0b8f3daad34d5b"
+  ],
+  "32": [
+   "62014936037f521e"
+  ],
+  "48": [
+   "81178ab267631b66",
+   "a06e6f048afacc1f",
+   "a29fc54734c6df90",
+   "bcc7263d667c392f",
+   "cf79dbbb4fc2388d",
+   "f882060179ede0cb"
+  ]
+ }
+}

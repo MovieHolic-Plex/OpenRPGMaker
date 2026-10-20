@@ -1,0 +1,423 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "42f34b77eb0611799bf416c6dd8452972fc9a694ec01cef67a3739f24e977982",
+ "width": 32,
+ "height": 48,
+ "kind": "container",
+ "name": "arcade racing cabinet",
+ "label": "modern_city_interior/arcade-racing-cabinet",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 18,
+  "darkV5": 28,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top marquee band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "screen with bezel",
+      "rows": "8-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "control panel with joystick",
+      "rows": "20-28",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": "28-29"
+     },
+     {
+      "part": "lower cabinet with red seat cushion",
+      "rows": "29-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 39,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is an arcade cabinet, not a container with an opening. The only opening is a dark recess in the lower body, and it is seen face-on. The top marquee band (rows 1-5) shades from dark red to a light front-edge line at row 5, with dark eave shadow in rows 6-7. That meets evidence (a), but it is a thin band, and it could instead be a face-on marquee. The wider control panel (rows 20-28) has a lighter line at row 24 and a joystick ellipse. The screen (rows 8-18) is a vertical face. The lower body (rows 29-46) is a vertical face of about 18 rows with a red cushion. The overall front face is roughly 39 rows. There is no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The cabinet reads clearly as a red arcade machine with a screen, but its shading is shallow. The red body has about 3 steps (a light red, a mid red and a dark red) and the panel and base are mostly one tone each. The outline is a uniform dark line around the whole silhouette. The measured 100% near-neutral share of dark edge pixels confirms it is neutral black or grey rather than a tinted dark material tone. That is the sticker look, while the Beodeul stall and well references have tinted outlines at 1% and 33% neutral. Texture is minimal: the body is smooth with no grain, speckle or per-surface highlights, though the 6% near-flat coverage shows few large flat blocks. The candidate has 16 visible tones per tile against 17 for the stall and 20 for the well, so density is only slightly lower. The tone count is partly inflated by the screen and the control details, not by material texture. Next to the references, the near-black outline and the few shading steps make it look flatter and more sticker-like.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 23118
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top marquee band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "screen",
+      "rows": "8-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "control panel with wheel",
+      "rows": "20-24",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower base with seat",
+      "rows": "29-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The cabinet is drawn mostly as a front view. The top marquee has a red band at rows 1-5 that ends in a light edge line at row 5, with dark shadow at rows 6-7. The control panel at rows 20-24 has a similar light edge line at row 24 and a gray wheel ellipse on top. The screen at rows 8-18 and the lower base with seat at rows 29-46 are vertical faces with no top surface of their own. The base's front face is about 18 rows tall. This is not a container with an opening, so the kind does not match."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate's density is close to the references: 16 visible tones per tile against 17 for the cheese stall and 20 for the well, with only 6% near-flat coverage. The weakness is the outline. 100% of its dark edge pixels are neutral, and the cabinet is wrapped in a uniform near-black line that reads as the sticker look. The Beodeul stall, hedge and well use tinted dark-material edges (1%, 0% and 33% neutral). The red body ramp has about 3-4 steps (highlight, mid, dark, deep) against 5-6 on the references. The side panels and base are fairly smooth, with little grain or per-surface texture beyond the screen and buttons. The structure is clean and readable, but it is flatter and more sticker-like than the references next to it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 19630
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "marquee/header top band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "screen with bezel",
+      "rows": "8-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "control panel with steering wheel",
+      "rows": "20-24",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": "28-29"
+     },
+     {
+      "part": "seat/pedal area in lower body",
+      "rows": "30-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 39,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is an arcade cabinet, not a container with an opening, so the kind does not match. The top band (rows 1-5) grades from dark to light, ends in a light front-edge line at row 5, and is followed by dark eave-shadow rows 6-7, which matches evidence (a). The screen and bezel (rows 8-18) and the lower body with seat and pedal (rows 29-46) are vertical front faces, giving a front face of about 39 rows. The wider control panel (28 vs 26 px, rows 20-24) has its own lighter band ending in an edge line at row 24, then red front rows 25-28, so it also reads as a protruding horizontal surface. The drawing is ambiguous, because the marquee could also be read as a face-on sign strip. By structure alone it matches the 'top band + edge + eave' pattern."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a red cabinet with a uniform dark outline around the whole silhouette and around the screen, marquee and seat. The measured 100% near-neutral share of dark edge pixels confirms the outline is neutral black, not a darker tint of the red or grey beside it. That is the sticker look. The references for the same kind (hedge 0%, cheese stall 1%) have tinted, material-toned outlines. Visible tones per tile are 16, close to the cheese stall (17) and the well (20), and near-flat coverage is only 6%, so there is no large flat fill. By eye, though, the red body ramp has about 3 steps (base red, a lighter edge, a dark shade) against the references' 5-6. The surfaces are mostly clean panels, with little grain, speckle or per-element shading. The extra tones come from small screen and control details, not from material shading. Next to the stall and well it looks flatter and more outlined, so it does not reach the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 21194
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "marquee header band",
+      "rows": "1-7",
+      "evidence": "none",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "screen bezel and screen",
+      "rows": "8-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "control deck with rounded bar profile",
+      "rows": "20-28",
+      "evidence": "none",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "joystick base",
+      "rows": "21-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "racing seat seen face-on in the lower cabin",
+      "rows": "32-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 38,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cabinet is drawn as a flat front view. The marquee (rows 1-7) is a front-facing sign strip with a highlight row at 5 and a dark row at 6-7, so it reads as a shaded face rather than a roof. The screen (rows 8-18) is a vertical face. The control deck (rows 20-28) is a rounded horizontal bar that looks like a cylinder, with no clear receding top plane. Rows 29-43 show a front view of a dark lower cabin with a red seat and a gray base strip at rows 44-45. No ellipse, open mouth or visible contents of a container appear anywhere, and the object is not a container. The silhouette widens from 26 to 28 at rows 20-29 and returns to 24, which is only the deck sticking out sideways."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "Tile density holds up: 16 visible tones per tile against 17-20 for the stall and well, and only 6% near-flat coverage, so there are no large flat fills. The structure is the weak point. The red cabinet body and the dark side panels read as about 3 lightness steps each, where Beodeul materials use 5-6. All of the candidate's dark edge pixels are near-neutral (100%), so the outline is a uniform black/grey line around the whole cabinet. That is the sticker look. The stall, hedge and well references use tinted outlines (0-33% neutral), which is what the candidate lacks. The screen and buttons add small tonal variety but not the per-material ramps or grain the references show. A careful artist would see the black outline and shallow ramps as below the Beodeul bar next to the stall and well.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 23301
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.766Z",
+ "cells": {
+  "16": [
+   "36923dbc38b8e67c",
+   "3d2221b4a8d5e34b",
+   "59d7855ad1151ca4",
+   "85afe0abce382c4e",
+   "c674a0f6b22da081",
+   "f0c98ef4d2e491ba"
+  ],
+  "24": [
+   "022c02687b213538",
+   "125614854b382b99",
+   "3e79410f5810e09c",
+   "403706b622cff0c4",
+   "5038685a981b00e0",
+   "562367df0ef90971",
+   "699ddc9db5265f9c",
+   "90208fb598a622cb",
+   "b1ee71300b05d9da",
+   "bcedd94de47ed92e",
+   "e65931975d98e71a",
+   "fe4059503b748f99"
+  ],
+  "32": [
+   "5a689d4d79c0b39e",
+   "83da0365761cba70",
+   "b33462f82f9ed76d",
+   "bcbe1132102178e5"
+  ],
+  "48": [
+   "51d5df1f93a9f6af",
+   "ae2e9c3b1dd81287",
+   "b094afe858a52ef5"
+  ]
+ }
+}

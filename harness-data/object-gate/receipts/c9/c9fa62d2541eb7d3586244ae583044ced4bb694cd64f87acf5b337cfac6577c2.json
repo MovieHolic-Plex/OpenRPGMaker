@@ -1,0 +1,346 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c9fa62d2541eb7d3586244ae583044ced4bb694cd64f87acf5b337cfac6577c2",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "dept shoe wall",
+ "label": "modern_city_interior/dept-shoe-wall",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 11/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 11/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 22,
+  "tileColorsP90": 24,
+  "darkV5": 33,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice board",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "shoes on shelves",
+      "rows": "7-27",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a tan top band that shades from darker at row 1 to lighter at rows 3-4. It ends in a bright white front-edge line at row 5, followed by a slightly darker gray row 6 as eave shadow. This matches the cabinet 'top 5 + edge + eave' reference. Below it is a front face of about 24 rows (6-29) with shelf boards at rows 13, 20 and 27, and shoes drawn on the shelves. The body is 32 wide with no side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a cream wall unit with shoe rows on shelves. Measured facts: 19 visible tones per 16x16 tile, against 17 for the stall and 20 for the well, so it matches the richer references. Near-flat coverage is 0% and none of its dark edge pixels are neutral (0%), so the outline is tinted brown and not a sticker line. By eye, the cream frame and shelf boards show only about 3-4 steps, and the wall face is smooth with little grain or plaster speckle. The shoes supply the variation, with small coloured shapes and some highlights, but each is a few pixels of near-identical tone. Next to the stall and well, which carry tile scallops, wood grain and per-stone shading, the candidate reads cleaner and a little thinner. It is acceptable on the numbers but shallower in material ramps. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16225
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "shoes on shelves",
+      "rows": "7-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf ledges",
+      "rows": "13-14, 20-21, 27-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band at rows 1-4 shades from a darker gold on row 1 to light tan on rows 3-4. Row 5 is a white front-edge line, and row 6 is a gray eave shadow. Below that the front face runs from row 7 to row 30, with shelves at rows 13-14, 20-21 and 27-28 and shoes displayed on them. The shoes count as decor. The top band resembles the reference cabinet's 'top 5 + edge + eave', though it is borderline because it could also be read as a cornice."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate shows 19 visible tones per 16x16 tile, level with the two richest same-kind references (stall-cheese 17, well-roofed 20) and well above the hedge (9). Near-flat coverage is 0%, so the cream backing and the shelves carry grain and variation rather than flat fills. The dark edge pixels are 0% near-neutral, so the frame and shoe outlines lean brown or red-brown, like the material-tone outlines on the references, and are not a uniform black sticker line. The shoes are shaded individually with sole, upper and highlight tones, and the wood frame has a few steps. It is slightly simpler than the stall or well in overall ramp depth, with about 5 steps against their 6, but a careful artist would accept it beside them without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19753
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice / top plank",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "shoes on shelves",
+      "rows": "7-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top has a tan gradient band at rows 1-4 (columns x=8, 16 and 23 are identical there). It ends in a bright white front-edge line at row 5, followed by a grey shadow row at row 6. That matches the cabinet 'top 5 + edge + eave' reference. Below it is a front face of about 25 rows (rows 6-30), divided by 1-row brown shelf edges at rows 13, 20 and 27, each with a shade row beneath. The shelf edges are front-facing strips with no top surface, which is acceptable for a wall shelf. The shoes are contents or decor. There is no side face. The silhouette is a constant 32 wide, with a dark base at rows 30-31."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 19 visible tones per 16x16 tile, level with prop-stall-cheese (17) and prop-well-roofed (20) and well above prop-hedge (9). Near-flat coverage is 0%, so no 5x5 block is a flat fill, and 0% of its dark edge pixels are neutral, so the outlines lean toward the material tone rather than a black sticker line. The shelves and the shoes on them (red, brown, white, blue) are varied and shaded separately, with shelf dividers and a cream frame. The shading is a little shallower than the references' 5-6 steps per material, and the cream frame and shelf backing look smoother than the references' grain and speckle. At the same scale a careful artist would still accept it next to the references without it looking like a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17414
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top board of the shoe wall",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-6"
+     },
+     {
+      "part": "front face with shoe shelves",
+      "rows": "6-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf boards (1-row gold lip plus 1 shadow row)",
+      "rows": "13-14, 20-21, 27-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shoes on shelves",
+      "rows": "7-12, 15-19, 22-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 are a tan band that goes from darker gold to light tan. Row 5 is a white front-edge line and row 6 is a gray shadow row, with the front face below. This matches the 'cabinet: top 5 + edge + eave' reference, so I read it as a top surface rather than a plain cornice. The front face runs from row 6 to row 30 (about 25 rows) and is divided by thin shelf boards, each a 1-row gold lip with a 1-row shadow (rows 13-14, 20-21, 27-28). Those boards are rims and show no top surface. The shoes sit on the shelves and count as decor. No side face is drawn. The top reading is the least certain call, because the band could also be read as a front-facing cornice."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 19 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well, which are the two comparable references. Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outlines lean toward the neighbouring material, like the hedge and stall, and are not a near-black sticker line. By eye, the cream shelf frame and the rows of shoes in several colours show shelf shading, shoe soles and varied shoe shapes. The ramps are slightly shallower than the references, about 4 steps on the frame against 5-6, but the tile information is on par with the stall and well. A careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23664
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.851Z",
+ "cells": {
+  "16": [
+   "85a1c37d10119057",
+   "f2e4d4758154959d",
+   "f642f1748260dde4",
+   "fb95141ce8883164"
+  ],
+  "24": [
+   "058657b5d07b5dbc",
+   "19320b2da98696b8",
+   "34a0b9aaba963752",
+   "429e0db2fb54ae62",
+   "431c95e9daac3c52",
+   "46385d2feb3640c0",
+   "5b0e226be67f9f57",
+   "5e626e5b6a1ef65d",
+   "6a9570600b1aa4b4",
+   "83bf36033a168664",
+   "8b7e433ce3da4085",
+   "8fb86f845ce83486",
+   "90a349437546b238",
+   "a6864b76d35610f5",
+   "a8b0626305b1539a",
+   "b00ebd1d1665ef94",
+   "bc417c3e519a95dd",
+   "c52551d48739e209",
+   "cd1655a873e0ff3b",
+   "e693f90895b7da20",
+   "f02edfcdce8bdc15",
+   "f1e75b009daa322d",
+   "f6518a367125c69a",
+   "fb76dac8e9e08be8"
+  ],
+  "32": [
+   "a2d7870719d76eb3"
+  ],
+  "48": [
+   "00d8f5b09ecca26c",
+   "0fbe8c166be325cc",
+   "582eb780015e29a1",
+   "631afe3d0b77c5d0",
+   "b00cafe2e6203921",
+   "f2a5a1ec75a4d142"
+  ]
+ }
+}

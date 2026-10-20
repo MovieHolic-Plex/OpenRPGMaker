@@ -1,0 +1,441 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a9854651aa2711791806a1796f0240913a01e3a51b3f49247b1c39b3a7352cf2",
+ "width": 80,
+ "height": 48,
+ "kind": "seat",
+ "name": "court-judge-bench",
+ "label": "seats34/modern_city_interior/court-judge-bench",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 8,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 13
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "three red high-back chair backs behind the bench",
+      "rows": "2-14",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bench top (judge's desk surface)",
+      "rows": "15-18",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20"
+     },
+     {
+      "part": "front panelled face with gold scale emblem",
+      "rows": "19-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold scale emblem",
+      "rows": "25-39",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a wide bench or desk. Rows 15-18 form a lighter top band (#b88454), 4 rows tall. It ends in a darker front-edge line at row 19 (#825432), followed by a darker eave shadow at row 20 (#644028). Below it the front face runs from row 19 to about 45, about 27 rows, with recessed panels and a gold emblem (decor). The three red chair backs in rows 2-14 are vertical faces and are exempt as seat_back. The object reads more as a judge's desk than a seat, so the seat kind only loosely matches. The top band is thin but has an edge line and eave shadow, so it counts as a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a wooden judge's bench with three red chair backs and a gold scale emblem. It is built from about 3 brown steps (light top rail, mid panel, dark outline and dividers) and shows only 5 visible tones per 16x16 tile, against 17-20 for the stall and well. 44% of it is near-flat, while the stall is at 13% and the well and hedge at 0%. The large brown panels and the red backs are flat fills with no wood grain, plank highlights, knots or speckle. The outline is a tinted dark brown (0% neutral edge pixels), which is good and matches the dark-material-tone approach. However, the references carry per-plank grain, clustered texture and multi-step shading, and the candidate looks flatter and more sticker-like beside them. The structure and read are clear, but the shading is shallow and the surfaces are too plain for the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 19810
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "three red high backrests (judge chairs behind the bench)",
+      "rows": "2-14",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bench/counter top band",
+      "rows": "15-18",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20"
+     },
+     {
+      "part": "front face with panels and gold scales emblem",
+      "rows": "19-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the long wooden bench. Rows 15-18 are a lighter top band (#b88454, 4 rows) that ends in a darker front-edge line at row 19 (#825432), followed by a darker shadow row at 20 (#644028). Below it the panelled front face runs from about row 21 to row 46 (about 26 rows including the edge and shadow rows), with the gold emblem on it. The three red backrests in rows 2-14 are vertical faces, which the seat-back exemption allows. The top band is 4 rows with an edge line and shadow, so it is more than a 1-2 row rim and similar to the 'cabinet top + edge + eave' reference. There is no visible side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a wide brown wooden bench with three red chair backs and a gold scales emblem. Its main wood body has about 3 steps: a mid brown, a darker panel inset and a dark edge. The panels are large and mostly flat, with no grain, nail dots or plank texture. The 5x5 flat coverage is 44%, against 0-13% for the references that can be measured. It has 5 visible tones per tile, against 9 for the hedge, 17 for the cheese stall and 20 for the well. The outline is tinted dark brown, with 0% neutral dark edge pixels, so it is not a sticker-style black line. The red backs are flat blocks with little shading. Compared with the stall and well, which carry per-plank grain, tile scallops and stone-by-stone shading, it looks thinner and flatter.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 20064
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "three red high-back panels (backrests)",
+      "rows": "2-14",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "long judge bench seat/top slab",
+      "rows": "15-18",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-20"
+     },
+     {
+      "part": "bench front face with panels and gold scales emblem",
+      "rows": "20-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The three red backrests (rows 2-14) are exempt as seat_back. The main body is the long bench. Rows 15-18 are a lighter brown top band (L~133) that ends in a darker front-edge line at row 19 (#825432), followed by a darker eave-shadow row at row 20 (L=72). Below that is a vertical front face of about 26 rows (rows 20-45) with recessed panels and a gold emblem. The top is 4 rows plus an edge line and shadow, so it reads as a top surface above a front face, not just a 1-2 row rim. The bottom outline is rows 46-47."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a wide brown bench with three red chair backs and a gold emblem. Its wood body is built from about 3 brown steps: a lighter top rim, a mid-brown panel field, and a dark outline. The panels have only faint vertical dividers and no grain, knots, plank highlights or speckle. Near-flat coverage is 44%, against 0-13% for the references. Only 5 visible tones per tile, against 9 for the hedge, 17 for the cheese stall and 20 for the well. The red chair backs are flat blocks with one highlight edge each. The outline is tinted dark brown and red (0% neutral), so it does not read as a black sticker line. The structure is clean, but the shading is shallow and the large panels are flat fills, well below the stall and well references in richness. Even allowing for a simple furniture piece, a careful artist would find it flatter than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 16230
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "three red high backrests",
+      "rows": "1-14",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bench seat/top slab",
+      "rows": "15-18",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20"
+     },
+     {
+      "part": "gold scale emblem on front panel",
+      "rows": "25-39",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The wide bench body has a lighter top band in rows 15-18 (4 rows) that ends in a lighter front-edge line at row 19, with a darker shadow row at 20. Below it is a paneled front face in rows 20-45 (26 rows) with a dark base at rows 46-47. The three red backrests in rows 1-14 are vertical faces and are exempt as seat_back. The gold emblem is decor on the front panel. The top band is thicker than the 2-row band in the wrong reference and close to the 5-row correct seat reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a wooden judge's bench with three red chair backs and a gold scale emblem. The measured facts put it at 5 visible tones per tile against 9-20 for the larger references (hedge 9, stall 17, well 20), with 44% near-flat coverage against 0-13%. By eye, the brown front panel is one flat mid-brown with a few darker plank dividers and a lighter top rim. There is no wood grain, no per-plank highlight and no speckle. The red backs are flat red blocks with a single darker inset. That gives about 3 shading steps on the wood, where Beodeul uses 5-6. The outline is a dark brown tint (0% neutral edge pixels), which is correct, so it is not a sticker outline. The large flat panels and the shallow shading are still well below the references' texture and density, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 17025
+  }
+ ],
+ "decidedAt": "2026-10-20T14:09:20.601Z",
+ "cells": {
+  "16": [
+   "0373cd89470e43c8",
+   "0d2ff249a26a59c5",
+   "121045449f18eb0d",
+   "15347bed7a543bd4",
+   "17a2b2267a277f97",
+   "52fb9c0440ae682a",
+   "5d23342e8bf86eb0",
+   "5efc821e5a8c185d",
+   "778c38260d5a0538",
+   "8727476775602cf0",
+   "8b7d55ef3af7ce1e",
+   "ab7600df4340982e",
+   "c8f5067eabc85172",
+   "d904e1a4203eafb3",
+   "e0112cb0db27ce9e"
+  ],
+  "24": [
+   "07f175e466f1af30",
+   "0b15fc05d758bed3",
+   "0c2673e67704056b",
+   "13164a643b1345de",
+   "1efc2e0669f3e2fd",
+   "213b90bfe7da9ce4",
+   "3afa866d177bc96c",
+   "51847d7434d088b7",
+   "5d46d75507282b72",
+   "5f4e9b9e69d02c70",
+   "6360db357877868c",
+   "66f9833a398bc4f9",
+   "6ae7c45fc72856b6",
+   "78386e44f921e85f",
+   "7cb7693779dd2d02",
+   "92ad0bfd6b3e5abe",
+   "985ba4b825773201",
+   "afb2205f52d7d9f9",
+   "b06192ce1397bbd6",
+   "b28facf7c40d010d",
+   "c843cb2215ca0e0d",
+   "d6b02cfaa087d14e",
+   "e5fc1337570d7333",
+   "eff0890af958b67e"
+  ],
+  "32": [
+   "1549e080c7917f25",
+   "183a673b90790a13",
+   "1e53be2b894039aa",
+   "1e5e93b2f38fa109",
+   "1e9f24480f9a36c5",
+   "1f3e1fc697727e4d",
+   "2e9c90fea49480df",
+   "3003e196c300533d",
+   "301504acfa6d6b9b",
+   "3338252867ec24fa",
+   "34f0b2bd33ca1c1c",
+   "3f79e72fa36a8db9",
+   "42fad8619608b281",
+   "4987a36bcfdb4078",
+   "4b6923fa310a5ea7",
+   "4dd8980498434fd8",
+   "5c330eda965d9074",
+   "5ce441b3ef0d6441",
+   "6736c8b30105e208",
+   "67ae0c4b33ef4ad6",
+   "715875f83b0f11f8",
+   "770e401b1d26395e",
+   "7b4d3d4b1a49309f",
+   "7c71123e32e3fea2",
+   "8b0ea6f9e4adb37e",
+   "8c717f7ef94606e3",
+   "97d6ed8042056daf",
+   "a0281632a5d91b83",
+   "a54a4d12a4e9b44c",
+   "a8d05435def74608",
+   "b3cdf4844cd9c86e",
+   "b64768c71a8129df",
+   "b88d98150643e09c",
+   "de3813ad8fec6154",
+   "e3741d8b6d0c75c6",
+   "e6ab6e4b9838c6fc"
+  ],
+  "48": [
+   "03d065f1159fee0a",
+   "1baec22bf9b1102f",
+   "8642b29488d95eb8",
+   "8668d9375555adda",
+   "8f5f7a4b6c31026c",
+   "bd70cb6392c44230"
+  ]
+ }
+}

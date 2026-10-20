@@ -1,0 +1,345 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f04d73c7d390f648eb4f23e2f2bef952641d0ce3fac93ba846bf0caa111d9bb7",
+ "width": 48,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "clinic pharmacy shelf",
+ "label": "modern_city_interior/clinic-pharmacy-shelf",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 26,
+  "darkV5": 36,
+  "nearBlackEdge": 0.85,
+  "opaqueTiles": 9
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "green cross sign on top",
+      "rows": "0-7",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top band of cabinet",
+      "rows": "9-13",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15-16"
+     },
+     {
+      "part": "shelf boards inside",
+      "rows": "23-25",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The sign on top (rows 0-7, width 14) is decor. The main body spans rows 8-46 at width 48. At the top, a light band over rows 9-13 ends in a darker front-edge line at row 14, followed by shadow at rows 15-16. That reads as a top surface about 5 rows deep, with the front face below it. The front face is the shelved interior with bottles and boxes, and the shelf boards at rows 23-25 and 32-34 have light ledges with dark edge lines. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 17 visible tones per 16x16 tile, the same as prop-stall-cheese (17) and close to prop-well-roofed (20). It has 0% near-flat coverage, so the cabinet body and shelf backs are not flat fills. The shelves are broken up by many small product shapes in different tones. The dark edge pixels are 0% neutral, so the outline leans bluish-purple and follows the cabinet material rather than being a black sticker line. The cabinet frame and body show about 4 lightness steps (white, light grey, mid, dark base) against 5-6 in the references. This is a little shallower than the references, but the density and outline match them, and a careful artist would accept it beside the stall and well.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23708
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "green cross sign on top",
+      "rows": "0-7",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top of shelf cabinet (white top band)",
+      "rows": "9-13",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15-16"
+     },
+     {
+      "part": "front face with shelves and bottles",
+      "rows": "15-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The body is 48px wide over rows 8-46. Rows 9-13 form a light top band, with row 9 a highlight and rows 11-13 near-white. Row 14 is a darker front-edge line (L=124), followed by eave shadow in rows 15-16 (L=169 and L=144). Below that is the front face with three shelf compartments, rows 15-46. Each shelf ledge has its own light band and edge line, for example rows 23-25. The cross sign on top (rows 0-7) is decor placed on the body. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate measures 17 visible tones per full tile, the same as prop-stall-cheese (17) and close to prop-well-roofed (20). It is well above prop-hedge (9). Near-flat coverage is 0%, so the shelf interior and frame carry no 5x5 flat fills. The dark edge pixels are 0% neutral, so the outline is a tinted dark blue-grey/purple frame tone rather than a black sticker line. That fits the cool, locked-palette material. The shelves are broken up by many small product items in varied tones, which gives stall-like clutter and detail. The weakest point is the pale cabinet body, which shows about 4 lightness steps against the references' 5-6. I judge that acceptable next to the reference. It is not a thin or sticker-like piece.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25735
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "green cross sign on top",
+      "rows": "0-7",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top band of shelf unit",
+      "rows": "9-13",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15-16"
+     },
+     {
+      "part": "front face with shelves and bottles",
+      "rows": "17-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The body spans rows 8-46 at 48px wide. Rows 9-13 form a light-to-white top band (L=201, 169, then 246 for rows 11-13). A darker front-edge line at row 14 (L=124) follows it, then shadow rows 15-16 (L=169, 144), then the front face. The band is clearly lighter than the shelf interior and ends in an edge line plus shadow, so it counts as a top surface, matching the 'cabinet: top 5 + edge + eave' reference. The 5-row band is borderline, since it could also be read as a front-facing cornice. The shelf interior (rows 17-46) is a flat front view with face-on bottles and boxes and white shelf boards, giving about 30 front-face rows. The green cross sign on top (rows 0-7, 14px wide) is decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate measures 17 visible tones per 16x16 tile, the same as prop-stall-cheese (17) and just under prop-well-roofed (20). Near-flat coverage is 0%, so there are no 5x5 flat fills, and the rows of small coloured items, shelf edges and cabinet frame add variation. Dark edge pixels are 0% neutral, so the outline leans a dark cool grey-violet tone rather than black, and it reads as a tinted material outline like the references. The cabinet body is a pale grey-white ramp of roughly 4-5 steps (highlight, light, mid, shadow, dark base), a little shallower than the 5-6 on the stall and well. The green sign and the stocked shelves give it a clear silhouette and detail comparable to the stall. A careful artist would accept it next to the references without it looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23229
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top of shelf unit (light band)",
+      "rows": "9-13",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15-16"
+     },
+     {
+      "part": "green cross sign on top",
+      "rows": "0-7",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body spans rows 8-46 at a constant width of 48. Its top is a light band at rows 9-13: rows 9-10 are mid-light and rows 11-13 are near-white. Row 14 is a darker front-edge line (L=124), followed by shadow in rows 15-16. This matches the green 'cabinet: top 5 + edge + eave' reference. Below that is a front face of about 31 rows (15-46) showing shelves with bottles and boxes. The sign on top (rows 0-7, width 14) is a decor part on the body top and is not counted as the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 17 visible tones per 16x16 tile, equal to prop-stall-cheese (17) and close to prop-well-roofed (20), and well above prop-hedge (9). Near-flat coverage is 0%, so the large shelf body has no big flat fills. 0% of its dark edge pixels are neutral, so the outline leans toward the material (a tinted dark blue-grey and purple beside the pale cabinet) rather than a black sticker line. The cabinet body shows about 5 value steps across frame, glass panel and shadowed base. The shelves carry many small coloured product pixels, which gives per-item clusters like the reference stall goods. It is a little cleaner and more regular than the hand-textured wood and tile references, so texture is 'some' rather than 'rich'. Overall it would sit acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18822
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.800Z",
+ "cells": {
+  "16": [
+   "1c7f2f95bc9621ec",
+   "5bcc39132d015993",
+   "6d38aa658c8a0981",
+   "81ccd83a5106db87",
+   "9968b48f065e2826",
+   "a9a74c09f3bc32fa",
+   "ae2a3097de74b792",
+   "b0f3ee0059e04673",
+   "b3bc27d612b9903e"
+  ],
+  "24": [
+   "74f45d1fd00f1845",
+   "7e84628ce853d870",
+   "959852c978424005",
+   "a48b82aa30ffd4cb"
+  ],
+  "32": [
+   "0a85adae1c36abd3",
+   "0b9540ac4c75f6a8",
+   "15aabf4a8135f702",
+   "1715c9dd88e527a2",
+   "1c855cf76fedb335",
+   "230ce65c52948978",
+   "23e5c9ad9a474529",
+   "2b0ed48285cf91da",
+   "36f4d7f331d1f9a4",
+   "3e95899d98a3b042",
+   "457518af15369de8",
+   "5f7efdfa023fcd4f",
+   "75ac421557c02bfe",
+   "76e1ea44a373b87a",
+   "90316749231beca8",
+   "a3c9d5dc173f9a1e",
+   "b2f520423f5d59e7",
+   "b318a7232fe22c93",
+   "bb22051998ca7e5e",
+   "c3bb7c5af584c776",
+   "c9c277c65f23e9c1",
+   "ce3692b634ac2ce0",
+   "ee19c80f18dbfcd7",
+   "fcf96007cd12fd14"
+  ],
+  "48": [
+   "9188670b6537a7da"
+  ]
+ }
+}

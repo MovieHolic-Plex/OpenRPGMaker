@@ -1,0 +1,350 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a300d5dde378eac4556fdc94d8b71f3bb6d71e44276f1f67a10574b17ab138a3",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "mci mailboxes",
+ "label": "modern_city_interior/mci-mailboxes",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 7,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "mailbox cluster top band",
+      "rows": "3-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 3-6 form a top band that brightens from L=169 to 224 toward the front. Row 7 is a darker front-edge line (L=144), and the front face with 4x4 mailbox slots runs from row 8 to row 29 (22 rows). The band is a plausible top surface because it ends in an edge line, although there is no separate eave shadow row. The silhouette is a constant 32 px wide with no side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a pale grey panel with a regular grid of slightly darker blue-grey slots. It has only about 3 lightness steps: frame, slot face and slot shadow. It has 6 visible tones per tile, against 17 for the cheese stall and 20 for the roofed well, and it is below even the hedge at 9. Its dark edge pixels are 0% neutral, so the outline is tinted and reads as dark material tone, which is acceptable. The surfaces carry no grain, speckle, wear marks or per-slot highlights. The frame and slot faces are plain single-colour fills, and the measured 0% near-flat coverage is only because the slot grid breaks up the blocks. Compared with the shaded, textured references, it looks like a flat, sticker-like icon with no bevel on the frame, no metal sheen on the doors and no depth in the slots. This is a thin, simple prop, but it still reads clearly flatter than the references of the same kind.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 19911
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band of mailbox bank",
+      "rows": "3-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mailbox slots and mail openings",
+      "rows": "8-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2 and 30 are the dark outline. Rows 3-6 form a lighter band that brightens from L=169 to 202 to 224. Row 7 is a darker line (L=144) that acts as a front-edge line, with no separate eave shadow. Below it, rows 8-29 are a 22-row vertical front face with a grid of mail slots, and all four columns of slots are drawn face-on. The top band is thin and could also be read as a cornice strip, but the edge line at row 7 makes it a weak top surface. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a grey rectangular mailbox grid. It shows about 3 lightness steps on the body (light grey face, mid grey, darker slot outline). The references use 5-6 steps per material. It has 6 visible tones per tile against 17-20 for the stall and well and 9 for the hedge. The measured near-flat figure is 0%, but by eye the panel face and the frame are large, evenly filled areas with no grain, speckle, wear or per-slot highlights. The 7 distinct colours in total are far fewer than the references' 38-40 for comparable structures. The outline is a tinted grey-blue dark with 0% neutral edge pixels, so it avoids the pure black sticker line. Even so, the piece looks like a flat, repeated grid with little material craft and would look thinner and flatter than the stall or well beside them. The numbers are not a conclusive failure, but the visual shading is shallow.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 21905
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top of mailbox block",
+      "rows": "3-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "front face with mailbox slots",
+      "rows": "8-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 3-6 form a lighter top band (L 169 to 202 to 224). Row 6 is a lightest 1-row front-edge line, and row 7 is a darker eave-shadow row (L=144). Below it the front face runs rows 8-29 (22 rows) and holds a grid of mailbox slots. The width is a constant 32 from row 2 to row 30, so there is no receding side face. The top band is 4 rows with an edge line and shadow, so it is more than a 1-2 row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a grey panel with a regular grid of light slot cells. It has only 7 colours in total and 6 visible tones per tile, against 9 for the hedge, 17 for the cheese stall and 20 for the well. The frame and each slot are flat, with no grain, speckle, wear or per-element highlights. Material shading is about 3 steps, a frame tone, a face tone and a slot tone, where Beodeul uses 5-6. The outline is a tinted dark blue-grey (0% near-neutral edge pixels), so it is not a black sticker line, which counts in its favour. However, the object reads as a flat, uniform wall plate with no depth, no posts or legs, no door lips and no rust or scuffs. Next to the stall and well it looks thinner and flatter. The near-flat coverage figure of 0% comes from the slot grid alternating tones, not from real texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 19547
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel of mailbox block",
+      "rows": "3-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face with mailbox slots",
+      "rows": "8-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 3-6 form a lighter band, brightening from L=169 to 224. Row 7 is a darker 1-row line (L=144) that reads as a front-edge line. The front face below, rows 8-29 (22 rows), holds a 4x4 grid of mailbox slots and dividers. The top band is about 5 rows including the edge line, which is more than a rim. There is no separate eave shadow row. The top is fairly weak, but evidence (a) is met. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a grey rectangular box with a grid of identical pigeonhole slots. It reads as a flat panel with a light-grey face, a slightly darker frame and a bluish-grey slot interior. That is about 3 visible shading steps on the main material, against 5-6 on the references (well roof, cheese stall, hedge). The measured 6 tones per tile is well below the hedge (9), stall (17) and well (20). The outline is tinted and not neutral (0% near-neutral dark edge), so it is not a black sticker line, but it is thin and uniform. The slots repeat identically with no per-slot grain, no wear, no highlights on the metal and no speckle. The large light-grey face is nearly one flat tone, with only a small bevel. Next to the richly textured references it looks thinner, flatter and more sticker-like. It is also a floating box with no post, legs or ground contact, so it has less form detail than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 16499
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.116Z",
+ "cells": {
+  "16": [
+   "5c50a23fefffc860",
+   "d6799746aa08612f",
+   "ec1b56f3691799f7",
+   "fe5dd884b47bcae9"
+  ],
+  "24": [
+   "00771cda34d47409",
+   "0446de712c938e26",
+   "12c6ce8cb7a312eb",
+   "22b54969080eae27",
+   "3913648c0ac7ff6c",
+   "4af9cd5c8c0d3b1e",
+   "57117f516ac3f1e8",
+   "58571d49a6957bbc",
+   "5d1afd6b76a48f3b",
+   "62d93bf68269b54f",
+   "64cdededd3cf2f36",
+   "73023aa298078281",
+   "75df6de476286580",
+   "999da5cc4be38af9",
+   "99ce9b45778276cd",
+   "b20f3b5a11a2f01b",
+   "b29d4576094df624",
+   "b98103e815122ef1",
+   "d6f7b7f7bfff71d8",
+   "e31e3c28747bc1e4",
+   "e7ba12a67a2549a9",
+   "e9ef74328c825229",
+   "ece40a367263aa9c",
+   "fdd5bb892baee7f3"
+  ],
+  "32": [
+   "698f1bde598c1f95"
+  ],
+  "48": [
+   "08fadd7b6493423c",
+   "370429657784c541",
+   "b001fe0fa7083959",
+   "c4cbd3af25797f33",
+   "c746d75935287c7e",
+   "dfe17f18b15e0b56"
+  ]
+ }
+}

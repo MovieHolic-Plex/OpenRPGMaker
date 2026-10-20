@@ -1,0 +1,377 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a4c099625c46682226f721b7acf59d3b619055983eda017a1eded6d7f6635e96",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "mci pallet",
+ "label": "modern_city_interior/mci-pallet",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 11,
+  "darkV5": 39,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top crate lid",
+      "rows": "5-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top crate front face",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle crate pair, front faces",
+      "rows": "14-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pallet base",
+      "rows": "23-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a stack of crates on a pallet, not a wall-standing tall furniture piece. The top crate shows a light band at rows 5-8 (4 rows) that ends in a bright front-edge line at row 8 (L=225), with its front face below at rows 9-12. This is a real top surface, though a small one. The two middle crates at rows 14-21 (14 wide) are plain front faces, with dark outline rows at 13 and 22 and a dark divider at x=8. They show no top band, edge line or eave shadow of their own. The pallet base at rows 23-28 has a light lip at row 23 and dark fork openings at rows 25-27. The stack has a top surface and a front face of more than 3 rows, but the middle part is drawn only as a vertical face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small stack of crates and sacks on a pallet, about one tile wide. It measures 11 visible tones per 16x16 tile, above the hedge reference (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no flat fills, and the 14 total colours are close to the hedge's 11. The dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the tan and wood surfaces rather than a black sticker line. By eye the crates show about 4 lightness steps with plank and sack grain and per-box highlights. That is slightly shallower than the 5-6 steps on the larger references, but it holds up against the hedge at the same scale and the tone count backs that up. The piece is small and simple, which is not grounds for failing it.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20389
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top crate upper band",
+      "rows": "5-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-12"
+     },
+     {
+      "part": "middle crates front",
+      "rows": "14-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom crate/pallet front with dark slots",
+      "rows": "23-29",
+      "evidence": "none",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "24"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The object is a stepped stack of crates on a pallet (widths 10, 14, 16), not a tall wall furniture piece. The topmost crate has a light band at rows 5-8 ending in the lightest line at row 8, followed by darker rows 9-12. That reads as a top surface of about 4 rows with a front face below. The middle crates (rows 14-21 at x=4 and x=11, a uniform flat tone with a dark divider at x=8) and the bottom pallet (a 1-row light line at row 23, then dark slots) are drawn only as vertical faces. The top is therefore marginal, and not every major part shows one."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small stack of crates on a pallet, roughly one tile in size. Measured facts: 11 visible tones per tile, 0% near-flat coverage, and 0% near-neutral dark edge pixels. That puts it at or above the hedge (9 tones) and well below the stall (17) and well (20). The outline is tinted dark brown, not neutral black, so it reads as dark_material_tone. Shading is about 4 steps (light, mid, dark, deep on the wood), with some plank grain and a few highlights, but it is simpler than the stall and well. I cannot confirm from the 2x image that the box faces carry enough per-plank detail. They look fairly uniform, with limited per-plank texture and shading variation. It is not a flat sticker, but it is slightly thinner than the richer references. The measured facts are close to the hedge and the outline is correct, but the visible shading depth is below Beodeul's 5-6 steps. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21850
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top stacked crate top",
+      "rows": "5-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-12"
+     },
+     {
+      "part": "top crate front face",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle crate pair front face",
+      "rows": "13-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base pallet with slots",
+      "rows": "23-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top crate (width 10) has a light band at rows 5-8 ending in a bright front-edge line at row 8 (L=225), with a darker face at rows 9-12. This gives a 4-row top surface, which makes it a top plane rather than a rim. Below it the stack is front-facing: the middle crates at rows 13-22 (width 14) and the pallet base at rows 23-29 (width 16) with two dark slots at rows 25-27. The middle tier and base show no horizontal top of their own; row 23 is only a 1-row lip. The front face is well over 3 rows, so the object is not a flat slab. It reads as three_quarter, though weakly, because only the top crate shows a top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small stack of crates or boxes about one tile in size. It measures 11 visible tones per 16x16 tile, which is above prop-hedge (9) and below the stall (17) and well (20), so it sits in the reference range for a small prop. Near-flat coverage is 0%, so there are no large flat fills. Its dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the cardboard or wood rather than a black sticker line. By eye, the box faces show about 5 lightness steps with light tops, darker sides, and strap and edge detail. That is a little less grain than the richest references, but it is not thinner or flatter than the hedge. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22203
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top crate lid",
+      "rows": "5-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top crate front face",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle crates front face",
+      "rows": "14-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom crate lip and front",
+      "rows": "23-28",
+      "evidence": "none",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The object is a stack of three crates on a pallet. It is not really tall wall furniture. The top crate has a lighter band at rows 5-8 ending in a brighter edge line at row 8, then a darker front face at rows 9-12, so it shows a top of about 4 rows. The middle crates (width 14, rows 14-21) are plain front faces with a dark center divider and no visible top, because the upper crate covers it. The bottom crate (rows 22-29) has only a 1-row light lip at row 23 above its front, which has dark slots at rows 25-27. The main top surface is therefore short, and the middle and bottom parts have no real top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small stack of crates or sacks on a pallet. It has 11 visible tones per 16x16 tile, above the hedge (9) and close to the stall (17) and well (20). The bench and lamp read 0 because they are thin pieces. Near-flat coverage is 0%, so there are no flat fills; the planks and crate faces show grain and per-face value changes. The dark edge pixels are 0% neutral, so the outline leans brown rather than black and follows the adjacent material, as the references do. Total distinct colours (14) match the thin references, which is expected for a small piece. The main ramps look slightly shallower (about 4 steps) than the 5-6 on the bigger references, but nothing reads as a sticker outline or a flat body. A careful artist would accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23982
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.121Z",
+ "cells": {
+  "16": [
+   "5dff45a3f157d7f8",
+   "b91f9edc2876c171"
+  ],
+  "24": [
+   "0d1c64e8fde16c61",
+   "24969c684155c46c",
+   "28a8a72c8bfe3160",
+   "360fb9e5317c34f4",
+   "4a54bcb93edda227",
+   "6295ae728c27701c",
+   "6ca6a1ac426bdf13",
+   "89d29ea0d8d79801",
+   "8d9222135c9e9122",
+   "b86f1e12ea0b1dbe",
+   "cdc952a33b56c58e",
+   "d4ba22e6ea8a0727"
+  ],
+  "32": [
+   "02b28c787dfa6ca8",
+   "1a5caabd2462d0e8",
+   "e2901c4904693ef2"
+  ],
+  "48": [
+   "3fede041cb29ffca",
+   "7988806aef2b7cdb",
+   "81e556f1188cb7b9",
+   "b1fcc49e333da1a6",
+   "caae9a17af3434f5",
+   "d3e7575cc77c6020"
+  ]
+ }
+}

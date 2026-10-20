@@ -1,0 +1,459 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9b4a85b915b8230d04d2499f982ff6b1d9282075250e39201d1b84f5ff327e52",
+ "width": 96,
+ "height": 56,
+ "kind": "box",
+ "name": "jp-truck-box",
+ "label": "jp_city/vehicle/jp-truck-box",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "평면 채움 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 12,
+  "darkV5": 30,
+  "nearBlackEdge": 0.13,
+  "opaqueTiles": 16
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cargo box roof",
+      "rows": "2-12",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "cab roof",
+      "rows": "13-24",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": "25"
+     },
+     {
+      "part": "wheels",
+      "rows": "40-53",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The truck faces east and its south side is the normal face. The cargo box has a light roof band in rows 2-12 that ends in a front-edge line at row 13 (L=202). Eave shadow follows in rows 14-15 (L=162 and 119). Below that the side face runs from row 16 to about row 39, with vertical panel ribs. The cab has its own roof band in rows 13-24, with an edge line at row 24 and shadow at row 25 above the window. Both major volumes therefore show a top surface and a front face of 3+ rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The truck box body is a large expanse of near-white/light grey with only faint vertical panel lines, so 45% of the piece sits in 5x5 flat blocks, against 0-13% for the references. It shows 7 visible tones per tile against 17-20 for the stall and well, and the box body has only about 2-3 lightness steps. 88% of the dark edge pixels are neutral, so the outline is a near-black line around the shapes, which gives the sticker look. The references use tinted dark material tones (hedge 0%, stall 1% neutral). The wheels and cab have a bit of shading, but the large cargo box has no grain, speckle or per-panel highlight variation. Next to the stall and well it looks flatter and thinner.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 12816
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cargo box roof",
+      "rows": "2-12",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "cab roof",
+      "rows": "13-23",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": "25"
+     },
+     {
+      "part": "cargo box side/front face",
+      "rows": "16-39",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The cargo box (the largest volume) has a light roof band at rows 2-12 (about 10 rows, L~230-244). It ends in a front-edge line at row 13 (L=202), followed by darker eave shadow at rows 14-15 (L=162, then 119). Below it is a 24-row vertical south face (rows 16-39) with stripe panels. The cab also has a lighter roof band at rows 13-23 with an edge line at row 24 and a shadow row at 25, then its front face with the window. The roof is clearly more than a 1-2 row rim, so the truck reads as a top plus a front face. The slanted windshield at the right is part of the cab and not a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The truck box body is a large near-white slab with only faint vertical panel lines and one light shade. It has about 3 lightness steps, with no grain, speckle, or per-panel highlights. Near-flat coverage is 45%, against 0-13% for the references that have it measured. Visible tones per tile are 7, against 9-20 for the hedge, stall and well. 88% of the dark edge pixels are neutral, so the outline is a uniform dark grey/black line around the shapes. That is the sticker look, unlike Beodeul's material-toned outlines (hedge 0%, stall 1%). The wheels and cab are somewhat detailed, but the cargo box dominates the piece and is flat, so it falls short of the reference quality.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 14725
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cargo box roof/top",
+      "rows": "2-13",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "cargo box side (south) face with vertical ribs",
+      "rows": "16-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cab roof",
+      "rows": "14-24",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": "25"
+     },
+     {
+      "part": "cab side face with window",
+      "rows": "25-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels",
+      "rows": "40-53",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The cargo box has a light top band at rows 2-12 (64 px wide). It ends in a front-edge line at row 13, where the silhouette also widens to 82-85 px. Rows 14-15 are a darker eave shadow, and the ribbed side face runs from row 16 to about row 45, so the front face is well over 3 rows. The cab shows the same structure: a roof at rows 14-23, an edge line at row 24 and a shadow at row 25, with the window and door below. The truck faces east and its south face is the normal side profile. The cargo box is a plausible reading of the 'box' kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The truck's white cargo box is a large flat fill with only faint vertical panel lines and a slight shade at the top and bottom. It has about 3 lightness steps against 5-6 on the references (hedge, well, stall). Dark edge pixels are 88% near-neutral, so the outline is a uniform near-black line, the sticker look. The references use tinted dark material tones (hedge 0%, stall 1%). Near-flat coverage is 45% against 0-13% on the richer references. The cab and wheels carry some detail, but the large box and cab panels have no grain, speckle or per-surface texture. At 7 visible tones per tile it is well below the stall (17) and well (20). The piece reads as a clean, flat vehicle sprite and not as a Beodeul-grade prop.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 15206
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cargo box roof/top",
+      "rows": "2-12",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "cab roof",
+      "rows": "13-24",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": "25"
+     },
+     {
+      "part": "cargo box south face (side panel with ribs)",
+      "rows": "16-41",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels and undercarriage",
+      "rows": "40-53",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The truck faces east, with the cab on the right. The cargo box is the main body. Rows 2-12 are a light roof band about 11 rows tall, wider than a rim. At row 13 the width steps from 64 to 82 and a 1-row edge line (L=202) follows. Rows 14-15 are a darker eave shadow (L=162, then 119). Below that the vertical side panel with white rib stripes runs from rows 16 to about 41, then the dark undercarriage and wheels. The cab roof has the same structure: a light band in rows 15-23, an edge line at row 24 and a shadow at row 25, then the windows and door below. The box therefore shows a real top surface and a front face of well over 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The truck box body is a large cargo panel in one white/grey tone with only faint vertical panel lines, and the cab is also flat. Visible tones per tile are 7, against 9-20 for the hedge, stall and well. Near-flat coverage is 45%, against 0-13% for the references. 88% of the dark edge pixels are neutral, so the outline is a near-black sticker line around the shapes, not a dark tone of the adjacent material. The wheels and window have a little shading, but the large white surfaces have no grain, speckle or per-panel highlights. Shading is shallow, about 3 steps on the body, against 5-6 on Beodeul materials. It is clean but flatter and more sticker-like than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 16686
+  }
+ ],
+ "decidedAt": "2026-10-20T14:27:53.399Z",
+ "cells": {
+  "16": [
+   "0145d2a1f7f6fc90",
+   "037bcda13b14a733",
+   "03801c5a049bcbbd",
+   "039f38be998dcaa2",
+   "0c369a94ac5620e6",
+   "0d98c62d79d7e96f",
+   "1040fde87373fa15",
+   "145476c8bffa4848",
+   "17b93d1c58709df2",
+   "1ad1d9dba1e8ed64",
+   "1bfeb5a23ae66ace",
+   "1ddb75fe018ac188",
+   "2635dfe23ccacd51",
+   "29cf8100f605141b",
+   "344dd1cf8f705c1e",
+   "35a9fec33942618a",
+   "360af18249081c62",
+   "380e35340f318da7",
+   "3cd9af102eaec4c7",
+   "4164d66b164543b8",
+   "4503a355af34079f",
+   "49650160ae00d5b4",
+   "4e6545d66efe714d",
+   "57523fcc52ec8523",
+   "583d7f113d3750a4",
+   "5a3039b0e6ec7e60",
+   "5bd74ba2fd2c567e",
+   "60307fef33cc6e89",
+   "62c1bb23224b1e2b",
+   "782b0bff21563fb4",
+   "7abab40888e6649e",
+   "82d9d0b7c6cae6bc",
+   "867ad33c221ebeeb",
+   "8bb996f49d7df43f",
+   "9b8730a3765e9030",
+   "9e635156477ad4f6",
+   "ad60160987486ab0",
+   "b48281226d5659b9",
+   "c260d775466e0e6b",
+   "c714669f144c9142",
+   "c833542bff41d7d5",
+   "d402af2ffa79f9c1",
+   "e8dba69cb866ff9b",
+   "fc5100682796898a",
+   "feb76b9d1eb368dd"
+  ],
+  "24": [
+   "011596f7b1c86890",
+   "03d683f7bbed9667",
+   "124ed38ecfd9afc0",
+   "19937b7be7c503e8",
+   "1fa56261a704ec09",
+   "288dee6f7b0b627a",
+   "375848107e030790",
+   "3a89b2b807babe77",
+   "5eaa412da52c1904",
+   "70980e53d50d1556",
+   "7de6325ca64ae1d3",
+   "83875e1a198bf7d2",
+   "92b5a367c91457f3",
+   "96b0e97f636d238e",
+   "a590b3a02e236ec8",
+   "bf7c0f1023b36a1d",
+   "c23bb8b49a5a1fae",
+   "c447749a0b2def83",
+   "d202ff6c7af32ac6",
+   "e3451cb8893f3575",
+   "eeb48cf6a1151228",
+   "f0560cb6799fda7f",
+   "f2ba44e40f255c67"
+  ],
+  "32": [
+   "0927d8c6a7192357",
+   "1a8c4719cc0222e8",
+   "47703232110d60e3",
+   "7a5e0d32d57d91ff",
+   "9901c6e086710d6c",
+   "bab9762b6ab654ba",
+   "bb82a907d42454c0",
+   "bb969c0c81a5924e",
+   "c477180673234f73",
+   "ce5b669fcf9d3b35",
+   "e1e8fa34355a6868",
+   "f97b36c454f6953e"
+  ],
+  "48": [
+   "076d611933182ec1",
+   "0f7d5cc63d657fd0",
+   "728caf40d8794b9e",
+   "7a6707edb931f199",
+   "9ca10cc5efb64db9",
+   "a12c2b8c5b17ecee",
+   "b3cf800a38f26d15",
+   "e717b31bc32aec5b"
+  ]
+ }
+}

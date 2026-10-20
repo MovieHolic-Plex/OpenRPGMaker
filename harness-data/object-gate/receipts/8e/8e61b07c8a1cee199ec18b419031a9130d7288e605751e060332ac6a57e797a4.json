@@ -1,0 +1,356 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8e61b07c8a1cee199ec18b419031a9130d7288e605751e060332ac6a57e797a4",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "mart liquor fridge",
+ "label": "modern_city_interior/mart-liquor-fridge",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (3/4)",
+  "3/4: 윗면 2행 < 4 (3/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (3/4)",
+   "윗면 2행 < 4 (3/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 8
+ },
+ "metrics": {
+  "tileColorsMedian": 19,
+  "tileColorsP90": 21,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band (white/grey, above green stripe)",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "light green strip under the stripe (header or label)",
+      "rows": "6-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass-door front with bottles on shelves",
+      "rows": "7-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a constant 32 px wide from row 0 to row 30. Rows 1-4 form a light band that brightens from L=156 to 246. Row 5 is a darker green line (L=90), and row 6 is a light green strip. Together these read as a top band ending in a front-edge line. There is no dark eave shadow after the line, so the top surface is borderline. It could also be a front-facing header strip, but 4 rows is more than a 1-2 row rim. Below it, rows 7-30 (24 rows) are a grey frame with a dark glass door, shelves and bottles, which is a clear vertical front face. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The fridge has a dark top header, a light metal frame, glass doors with shelves, and rows of bottles in green, blue and white. The frame and glass show about 5 lightness steps, close to the stall and well references. Measured facts support this: 18 visible tones per tile against 17 for the cheese stall and 20 for the well, 0% near-flat coverage, and 0% neutral dark edges. The edges are therefore tinted and not a black sticker line. Texture comes from the bottle clusters, shelf lines and glass highlights, with no large flat fills. It is a little smaller and more schematic than the stall, but it is not thinner or flatter than the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22114
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header strip (white band with green stripe)",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass door front with shelves and bottles",
+      "rows": "7-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Rows 1-6 are a header strip drawn face-on: a white gradient (rows 1-4), a dark green stripe (row 5) and a light green strip (row 6). There is no clear front-edge line followed by eave shadow, and no ellipse or roof plane. Row 7 is the frame, and rows 7-29 are the vertical door with shelves, bottles and a central divider, all seen straight on. The silhouette is a constant 32px wide, with no receding side face. The top is at most a 1-2 row rim and the rest is a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate has 18 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, with no 5x5 flat fills. The 0% near-neutral share of dark edge pixels means the outline is tinted, not black. By eye the fridge has a bluish-grey frame with a dark teal tone beside the glass, so the outline reads as dark material tone, not a sticker line. The glass doors show light/mid/dark steps, a highlight edge and reflection, and the shelves are filled with bottle clusters in several colours that give grain. The top sign band and base add more distinct tones. Shading is about 5 steps on the frame and glass, comparable to the references. It is a little small and simple compared with the stall, but it is not thinner or flatter than the reference props.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15843
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header band (grey/white gradient with green stripe and light-green strip)",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass door/shelf front with bottles",
+      "rows": "7-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The fridge is drawn as a flat front elevation. Rows 1-6 are a header strip: a grey-white gradient (rows 1-4), a dark green stripe (row 5) and a light-green strip (row 6). It reads as a front-facing cornice or sign band. There is no ellipse, no receding top plane and no eave shadow under a distinct edge line. Rows 7-29 are the grey frame and the shelves with bottles seen face-on. The silhouette is a constant 32 px wide with no side face. The top is at most a 1-2 row rim-like band, so the body has no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a glass-door fridge with bottles inside. It measures 18 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, which means the outline is tinted and not a black sticker line. The frame carries a light-to-dark ramp of about 5 steps, with a highlight on the top edge. The glass has reflection streaks. The bottles are drawn in several tones, which gives clustered detail. Density and structure match the stall and well references. The candidate does not look thinner or flatter than they do.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16895
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header band (white/grey gradient, green stripe)",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "fridge body with glass doors, shelves and bottles",
+      "rows": "7-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole 32px width is a flat face-on drawing. Rows 1-6 are a header strip that shades from grey to near-white, then a green stripe at row 5 and a light-green line at row 6. It reads as a front-facing cornice or sign band rather than a receding horizontal surface: there is no darker eave shadow below it and the width stays at 32 throughout. Rows 7-30 are the front face, with a grey frame, a centre divider, shelves and bottles all drawn vertically. No ellipse, roof plane or visible contents give a top. At most 1-2 rows could be read as a rim, so there is no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a glass-door fridge about the size of the stall and well references. It carries 18 visible tones per tile, against 17 for the cheese stall, 20 for the well and 9 for the hedge. Near-flat coverage is 0%, so there are no flat fills. The frame has a light-to-dark ramp and the glass shows reflections. The shelves hold many small bottles in varied tones, which gives grain-like texture comparable to the stall goods. The dark edge pixels are 0% neutral, so the outline leans toward the colour of the neighbouring material rather than a black sticker line, like the hedge and the cheese stall. The one reservation is that the shading ramp (about 5 steps) is slightly shallower than the 5-6 on the best references. Because the facts match the references and the structure looks accepted at this scale, it passes.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16730
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.093Z",
+ "cells": {
+  "16": [
+   "4d742bf00db38da9",
+   "59b35dcaa0aeff34",
+   "b547d8ff5aece97f",
+   "f06c0c159ca875a8"
+  ],
+  "24": [
+   "03ea1fbab8c17ef2",
+   "0b0247c7972741e7",
+   "0b2732a8e5672a0b",
+   "2302210daf2b63c1",
+   "2857818b5dafe608",
+   "3023c6680078a852",
+   "34c739fed7ab0657",
+   "34da730c2fada5e8",
+   "3f6ab1f922e01878",
+   "41ef9fc0249e0160",
+   "51996584cc326e87",
+   "60f6a28479950c5b",
+   "720e2074985cb223",
+   "7299e42dd3f8c3c3",
+   "7b3b78429025e3c0",
+   "7f711ee73b8d6a48",
+   "ac82653e4a25c42a",
+   "b7bdbf236e1863cd",
+   "b891bc7c45f3a528",
+   "d6ab1e5ef6013fef",
+   "e08e0b097238bba6",
+   "ee4f254e6dd6b370",
+   "f50c1feb3010f9b1",
+   "f6699f0510ee9fdd"
+  ],
+  "32": [
+   "80ac54c9d4330baf"
+  ],
+  "48": [
+   "12d8cdb310bd90c4",
+   "546f316cb5d49764",
+   "8da60864477ed1ff",
+   "9048ba6cac99dc5d",
+   "b14a98764360e152",
+   "f619efd6d1d8e9e5"
+  ]
+ }
+}

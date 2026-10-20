@@ -1,0 +1,327 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bb7c6dcaf5fb3af7918e3af29fcb2044ea32d9bda2ec255a811e106b480aacd0",
+ "width": 48,
+ "height": 16,
+ "kind": "seat",
+ "name": "st-priority-seat-s",
+ "label": "seats34/jp_city_interior/st-priority-seat-s",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 11,
+  "darkV5": 26,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 3
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest (vertical padded panels with seams)",
+      "rows": "1-6",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion top",
+      "rows": "7-10",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-12"
+     },
+     {
+      "part": "armrests / end panels (grey columns at left and right edges)",
+      "rows": "0-15",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a wide bench. Rows 1-6 are the backrest: a light top highlight (rows 1-2) over dark panels with vertical seams (rows 3-6), read as a vertical face and exempt. Rows 7-10 are a light cushion band with seams, which I read as the seat surface seen from above. Row 11 is a mid-tone front-edge line, and rows 12-14 are a darker front face with a grey base at the centre (rows 13-14). That gives a 4-row seat top and a 4-row front face. The grey end columns are armrests. The seat top is thin, but it has an edge line and shadow, so it passes as a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small bench-like seat built from horizontal slat bands. It has about 5 lightness steps: a highlight top edge, light and mid orange bands, dark separator lines and a deep base. Its outline is a dark red-brown that leans toward the material. This matches the measured 0% near-neutral dark edge pixels, so it is not a black sticker line. Measured visible tones per 16x16 tile are 11 against 9 for the hedge reference, and near-flat coverage is 0%. It has no large flat fills. The band separators and small tonal variations give some texture, though it is simpler than the stall or well. It holds up beside the simple bench-wood and hedge references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25423
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest panel",
+      "rows": "1-6",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion front band",
+      "rows": "7-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The drawing is a flat, face-on bench made of two stacked horizontal bands. Rows 1-6 are the backrest, a light highlight on rows 1-2 over a dark panel on rows 3-6, and it is exempt as seat_back. The seat region starts at row 7 with a light 2-row band (rows 7-8), followed by a mid-tone face on rows 9-10, a darker face on rows 11-12, and a gray base shadow on rows 13-14. No ellipse, no front-edge line followed by eave shadow, and no visible contents appear on the seat. The 2-row light strip reads as a lip, like the 'seat: band 2' reference marked WRONG. The seat has no real top surface, so it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a salmon/orange slab seat with banded plank rows. It has a light top edge, several mid tones, and a dark red-brown base, which gives about 5 lightness steps. That matches the hedge and bench references. The outline leans visibly red-brown, which fits the dark-material-tone rule. The measured 0% near-neutral dark edge pixels supports this, and it is the same as the hedge reference. Visible tones per tile are 11 against 9 for the hedge, and near-flat coverage is 0%, so there are no flat fills. The bench and lamp references have 0 visible tones per tile because they are thin, so they are no use for density. The cheese stall (17) and well (20) are more complex pieces. The candidate is simpler than those, with little per-plank grain and no legs or backrest. It is still a clean, tinted, multi-step piece that a careful artist would accept next to the hedge and bench, so it passes, though not with much margin.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 27889
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest",
+      "rows": "1-6",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion top",
+      "rows": "7-10",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-13"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a wide bench, 48 columns across, seen from the south. The upper block (rows 1-6, a light 1-2 row highlight over a dark face with vertical dividers) reads as the backrest, which is exempt. The seat is the lower block. Rows 7-10 are a lighter, shaded band (L 194 then 163) that reads as the sitting surface. Row 11 (L 119) acts as the front-edge line, and rows 12-14 are a dark front face and base, ending in a gray strip at rows 13-14. That gives a 4-row seat top over a front face of about 4 rows, similar to the 'seat: top 5 + legs' reference. The seat top is thin and the read is ambiguous, because the seat block repeats the same light-over-dark pattern as the backrest. There is no ellipse and no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a slatted seat in one orange-salmon ramp. It runs from a pale top highlight through light and mid bands to a dark base, about 5 steps against roughly 6 in the references. The outline is a dark red-brown that leans toward the material, not neutral black, and the measured near-neutral share of dark edge pixels is 0%. Measured density is 11 visible tones per tile, close to prop-hedge at 9 and below the stall at 17 and the well at 20. Near-flat coverage is 0%, so there are no flat fills. The bands carry per-slat highlights and a little grain. The silhouette is a plain rectangle with no legs or backrest, so it reads a bit simpler than prop-bench-wood, but this is a form choice and not shallow shading. A careful artist would accept it next to the references on shading steps, outline, texture and density.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 29405
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest (upper light cap and dark panelled face)",
+      "rows": "1-6",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat surface (lighter cushion band)",
+      "rows": "7-10",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "seat front face / apron",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a wide bench seen from the south. Rows 1-6 are the backrest: a light cap on rows 1-2 and a dark panelled face on rows 3-6. That part is exempt. The seat surface is the lighter band on rows 7-10 (L 194 then 163 in the side columns), which is 4 rows tall. It ends in a darker front-edge line on row 11 (L=119), followed by the dark front face on rows 12-14 (3 rows). Row 15 is the outline. The seat top is only 4 rows, but it has an edge line and a front face of 3 rows below it. That makes it a seat top with a front face, not a bare front band. No receding side face is drawn; the grey columns at the left and right ends are just the end posts."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a banded orange-salmon slab with a dark red-brown outline. The outline is tinted, not neutral, which matches the 0% near-neutral edge fact. Each band has a highlight line, giving about 4 lightness steps against the references' 5-6. The measured facts are fine: 11 visible tones per tile (the hedge has 9) and 0% near-flat coverage. By eye, though, it reads as a flat, evenly striped rectangle. It has no legs, no seat/backrest separation, no cast shadow and no grain or per-plank variation, so it looks thinner and more sticker-like than the wood bench, stall and well. The repeating stripes are mostly uniform rather than hand-shaded plank by plank. A careful artist would not accept it next to the references as equally crafted, and since doubt resolves to fail, it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 30527
+  }
+ ],
+ "decidedAt": "2026-10-20T14:09:20.454Z",
+ "cells": {
+  "16": [
+   "423df81877b7c16d",
+   "8480ee8ccf3a455e",
+   "c39b3064505c2a0b"
+  ],
+  "24": [
+   "0ca9a5b8afade34f",
+   "18ce3ae0c8195c2c",
+   "a0360c0ca2c5889c",
+   "b20e5d16a62d101c"
+  ],
+  "32": [
+   "0ba750cc5cbbb3ea",
+   "29a665cf5a27d6cd",
+   "320183a1247d4be8",
+   "58733df23462dd04",
+   "5b78ee994cfd4325",
+   "8686f374666454c1",
+   "9142f55f79368033",
+   "932fca45f5cb5c56",
+   "cd00de978dcb1093",
+   "d35feb0c44f09fb8",
+   "f67629a1b605cd46",
+   "f84d16d6bcd056a3"
+  ],
+  "48": [
+   "33fdb4ba06c12b8e",
+   "9a68e9a57698dc14"
+  ]
+ }
+}

@@ -1,0 +1,328 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b21dc52c2ff43769216dd64d7d6b709c3afcb4d43b99ecacf66ea70d38a83308",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "mart gondola snack",
+ "label": "modern_city_interior/mart-gondola-snack",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 8/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 8/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 24,
+  "tileColorsP90": 27,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gondola top cap (light band)",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "snack goods on shelves",
+      "rows": "9-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band spans rows 1-6, with lightness rising from 166 to 218 to 246. It ends in a yellow edge-line row at row 6, followed by dark shadow at rows 7-8 (L=51), so it reads as a horizontal surface and not a front-facing cornice. The south face runs from about row 7 to row 31 (about 24 rows) and holds three shelf bays with goods. Shelf-edge lines sit at rows 13, 19 and 25-26, and the base is at rows 27-31. The snack goods are placed contents, so I listed them as decor. No receding side face is drawn, only flat gray side posts."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The gondola is a standing shelf prop, so it matches the prop references. The measured facts back it up: 23 visible tones per tile against 17 for the cheese stall and 20 for the roofed well, with 0% near-flat coverage and 0% near-neutral dark edge pixels. The outline is therefore tinted rather than neutral black, and by eye it reads as a dark blue-grey frame that follows the shelf material. The shelf frame has about 5 steps (highlight, light, mid, dark, deep). The rows of snack boxes in yellow, orange and blue carry their own highlight and shadow pixels, so no large area is a single flat colour. It is a little cleaner and more regular than the hand-textured stall, but it is not thinner or more sticker-like than the references, so a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16876
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header/cap band",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "snack shelves with goods (front face)",
+      "rows": "9-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "snack goods on shelves",
+      "rows": "9-25",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top is a light band at rows 1-6. It has a lighter 1-row line at row 5 (L=246 against 218 above) and a yellow strip at row 6, followed by dark shadow at rows 7-8, so it reads as a top surface with a front-edge line and eave shadow. This is borderline, because the band could also be a front-facing header board. Below it the front face runs from rows 7 to 29 (about 23 rows). It holds three shelves with light ledge lines at rows 13, 19 and 25, and the goods sit on those ledges. The side posts are flat frame strips, so no receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 23 visible tones per 16x16 tile, above the stall-cheese reference (17) and the well (20). Near-flat coverage is 0%, so the big shelf and frame areas are not flat fills. None of the dark edge pixels are neutral (0%), so the outline leans toward the frame's dark blue-grey rather than a black sticker line. The shelves are separated by value, and the snack packs are small clusters of yellow, orange and white with highlights. The piece is smaller and a bit more uniform than the stall, but a careful artist would accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21008
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel of gondola",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "snack goods on shelves",
+      "rows": "9-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a light gray band. Rows 5-6 are a brighter front-edge line (L=246, with a yellow tag strip at row 6). Rows 7-8 are a dark eave shadow (L=51). Below that is a front face of about rows 7-29, with three shelf compartments holding goods and light shelf-ledge lines at rows 13-14, 19 and 25-26. The top band reads as a top surface with an edge line and shadow, like the green cabinet reference, though it is only moderately deep at about 6 rows. The goods are decor, and the dark side columns are frame, not a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 23 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well, so it is at or above the references. Near-flat coverage is 0% and the dark edge pixels are 0% neutral. That fits the picture, where the outline is a dark blue-grey tinted to the frame and not a black sticker line. The shelf rows are broken up by many small product packages in several tones, with no large flat areas. The white and blue frame and the shelf boards carry fewer shading steps (about 4) than the references' 5-6, and the frame has little grain. That is a minor shortfall, and the piece would sit acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23370
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel of gondola",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "snack goods on shelves",
+      "rows": "9-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a light band at the top (row 1 is a darker edge, rows 2-4 are flat light, row 5 is the lightest line and acts as the front-edge line). Row 6 is a yellow price strip, and rows 7-8 are dark shadow under the edge. Below that is a front face of about 23 rows (7-29) with three shelves of goods and a base plinth. The top band is ambiguous because it could be read as a face-on header panel, but the edge line plus the shadow below it supports a top surface of 5 rows. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a front-view snack shelf: a pale blue-grey frame and a top sign band, with rows of yellow, orange and red product packs on the shelves. Measured facts put it at or above the references. It has 23 visible tones per tile against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, and none of its dark edge pixels are neutral, so the edges lean toward the material tone rather than a black sticker line. The shelves are separated by value, and the packs are small clustered dots, which gives grain similar to the stall's goods. The frame is a little less graded than the stall's wood and awning, with roughly 5 steps against 6 for the references. That is a minor gap, not a flat or sticker-like look. A careful artist would accept it beside the stall and well.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24230
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.086Z",
+ "cells": {
+  "16": [
+   "0fc6e01ed56ce93f",
+   "29136c7e9941a11e",
+   "449a6fc977093f5c",
+   "66583592ad75c3cd"
+  ],
+  "24": [
+   "105a219996119e15",
+   "1a6b1f9952b88c18",
+   "2308ce5a25b345d1",
+   "2b3b70099cdbe72a",
+   "2de1ba62ba5a652f",
+   "321ea0ac6b6d9837",
+   "36fa77259797b04e",
+   "3a22ca3cff1fb75f",
+   "3d5c350b02fee6d8",
+   "5425531f30d7de3c",
+   "573b5e56df433ce1",
+   "69f329041212f9b6",
+   "6f2e107a9feabfc6",
+   "71082f5d35a75b87",
+   "7c5df6ae18b9fdaf",
+   "7e65259379bb346c",
+   "80281aa965b11154",
+   "940970a1ba4c0013",
+   "96aa570d674063a6",
+   "aeb73faba8660fa6",
+   "ce76ef553c2950d8",
+   "db04a6e3f0cc615f",
+   "dd2fab46f6ea07e1",
+   "e4d3173a48518cf7"
+  ],
+  "32": [
+   "8618351e10d50412"
+  ],
+  "48": [
+   "116dcd60410eb306",
+   "4e1f95152c5aedfb",
+   "a2b9902de291d008",
+   "ab0a230460edc15b",
+   "ae379e83eedd3cda",
+   "f14efd8caa322e32"
+  ]
+ }
+}

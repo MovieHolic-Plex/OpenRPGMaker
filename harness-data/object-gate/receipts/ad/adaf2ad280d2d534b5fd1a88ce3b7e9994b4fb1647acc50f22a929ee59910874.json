@@ -1,0 +1,389 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "adaf2ad280d2d534b5fd1a88ce3b7e9994b4fb1647acc50f22a929ee59910874",
+ "width": 48,
+ "height": 32,
+ "kind": "seat",
+ "name": "aud-seat-row",
+ "label": "seats34/modern_city_interior/aud-seat-row",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 2/4)",
+  "3/4: 윗면 3행 < 4 (4/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 평면 채움 (3/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 2/4)",
+   "윗면 3행 < 4 (4/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "평면 채움 (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 3
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest (3 seats)",
+      "rows": "11-19",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests/dividers (tan caps with dark posts)",
+      "rows": "19-25",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion top",
+      "rows": "20-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23-24"
+     },
+     {
+      "part": "base/legs with floor bar",
+      "rows": "26-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Backrests (rows 11-19, dark red L=74) are vertical faces and are exempt. The seat cushion starts at row 20 with a light band (L=125, rows 20-21), then a mid-tone edge line at row 22 (L=98), then dark shadow at rows 23-24 (L=53). That gives a 3-row seat surface with a front edge and shadow. Below it, rows 25-30 show the open base with a dark frame, a transparent gap at rows 26-27, and a bar at rows 28-30. The front face including the base is about 8 rows. The top is short, but it has an edge line and shadow rather than being only a rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a row of three red seats with tinted dark red-brown outlines and grey legs. It has about 4 red steps (top highlight, light, mid, dark), plus separate armrest and cushion forms split by value. The measured facts put it inside the reference range. It shows 12 visible tones per tile, against 9 for the hedge, 17 for the cheese stall and 20 for the well, and well above the sparse bench. Dark edge pixels are 0% neutral, so the outline is tinted material tone rather than a black sticker line. Near-flat coverage is 23%, a little above the stall's 13% and the highest of the set. The seat backs and cushions have some flat red areas with little grain, which keeps texture at 'some' and density slightly below the richest references. It is at least as rich as the bench of the same kind and would sit acceptably beside the references, so it passes, narrowly.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21934
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrests (3 red seat backs)",
+      "rows": "10-19",
+      "evidence": "seat_back",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushions (sitting surface)",
+      "rows": "20-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23-24"
+     },
+     {
+      "part": "armrest caps / dividers",
+      "rows": "19-30",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Three theatre seats are drawn face-on. Rows 10-18 are the backrest, which is exempt. The sitting surface is only the light band at rows 20-22 (L=125 on rows 20-21, a slightly darker line at row 22), so it is a 3-row strip. Below it, dark rows 23-24 and a base and leg structure at rows 26-30 form the front face, about 8 rows. The seat reads as a front-facing cushion rather than a foreshortened top, and a 1-3 row seat strip counts as front_elevation. The width profile has no widening and narrowing ellipse, and no side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a row of three red seats. Its dark edge pixels are 0% neutral, so the outline is a dark red-brown that leans toward the material, not a black sticker line. The structure is clean and the seats read well. The red ramp has only about 4 steps (highlight, mid, dark, deep), and the grey legs are close to flat. Near-flat coverage is 23%, the highest of the set; the stall reference has 13% and the others 0%. The seat backs and cushions have large smooth areas with no grain, stitching or speckle. The whole piece uses only 12 distinct colours, against 38-40 for the richer references (stall, well). At 12 visible tones per tile it matches the hedge (9) but sits below the stall (17) and well (20). Overall it is shallower and flatter than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 20180
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest panels (3 seats)",
+      "rows": "10-18",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests / dividers with tan caps",
+      "rows": "19-30",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion (light top band)",
+      "rows": "20-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23-24"
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Three red auditorium seats seen from the front. The backrests (rows 10-18, with a light top row at 11 and a dark line at 19) are vertical faces and are exempt. The seat surface is a light band at rows 20-21, with a slightly darker edge line at row 22 and a dark front/eave at rows 23-24. That is only about 3 rows, so it is a thin strip rather than a clear foreshortened top. Below it are a dark frame and legs at rows 25-30 with a gap at rows 26-27. A seat whose sitting surface is only a 1-3 row strip counts as front_elevation under the seat rule."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is three red cinema-style seats in a row. The outlines are a dark red-brown that follows the material, and the measured 0% near-neutral dark edge share confirms they are tinted rather than black. That part matches Beodeul. Visible tones per tile are 12, which is above the hedge (9) and below the stall (17) and well (20), so density is acceptable on the numbers. The weaknesses are structural. Each seat has only about 4 red steps (rim highlight, mid, shade, deep base), against the 5-6 steps Beodeul uses. The seat backs and cushions are broad, smooth panels with no grain, stitching, wear dots or per-seat variation, and the three seats are near copies of each other. Near-flat coverage is 23%, higher than every reference (0-13%), which confirms the large flat fills. A careful artist would find it cleaner but flatter and more sticker-like than the stall or well beside it, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 21591
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest (3 seats)",
+      "rows": "11-18",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion top",
+      "rows": "20-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23-24"
+     },
+     {
+      "part": "armrests/dividers",
+      "rows": "19-25",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Three red auditorium seats face south. The backrests (rows 11-18, L=74 with a light top bevel) are vertical faces and are exempt. Row 19 is a dark separator line under the backrest. The seat surface is rows 20-22: a light band (L=125 on rows 20-21) ending in a slightly darker front-edge line on row 22 (L=98). Rows 23-24 (L=53) are dark eave shadow and front face, with an outline on row 25. The base below has an opening between the legs on rows 26-27 and a base bar on rows 28-30, so the front face is about 8 rows. The seat top is thin at 3 rows, but it has an edge line and a shadow, so it counts as a top surface. This is borderline, because the seat band repeats the same highlight gradient as the backrest top and could be read as a face-on cushion."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is three red cushioned seats with a dark red-brown outline. Its dark edge pixels are 0% neutral, so the outline is tinted to the material and is not a sticker line. That part matches Beodeul. The shading is shallower: each red surface has about 4 steps (highlight rim, mid red, dark red, outline) against 5-6 in the references. The seat backs and cushions are large smooth red panels with no grain, stitching dots or per-surface variation. Near-flat coverage is 23%, higher than every reference (0% for bench, hedge and well; 13% for the cheese stall). Visible tones per tile are 12, which is above the hedge (9) but below the stall (17) and well (20). The gray legs are minimal. Beside the references the piece reads cleaner and flatter, and a careful artist would likely ask for more texture and tone variation on the big red areas.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 22086
+  }
+ ],
+ "decidedAt": "2026-10-20T14:09:20.594Z",
+ "cells": {
+  "16": [
+   "0a843e0ec4ab39b7",
+   "11d3fffc67665fdf",
+   "16a23378abdaedae",
+   "1b923c60bac53b39",
+   "7ada3ae656d54de6",
+   "e6bc4898439e043c"
+  ],
+  "24": [
+   "1f43a698f87c57fa",
+   "32947563eb5ab1d2",
+   "37bb60778950880c",
+   "705279dc3de971a7",
+   "b9b0018662c588fd",
+   "bc4676f3976dadc2"
+  ],
+  "32": [
+   "3e9a3cd62ab21909",
+   "477d20a19de06c09",
+   "63382941c4da0b84",
+   "b11fd4db24d9ee16",
+   "e8cd6086ca7145b7",
+   "f5e2d4b34dd42f2a"
+  ],
+  "48": [
+   "52dfeb57104ae98e",
+   "66d11a20434fe61a"
+  ]
+ }
+}

@@ -1,0 +1,340 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "60cbf2c404cac82eed350e725e506a5ad39dcc5dcb3906becc4013fc779cf9ca",
+ "width": 32,
+ "height": 48,
+ "kind": "low_furniture",
+ "name": "shop flower cooler",
+ "label": "modern_city_interior/shop-flower-cooler",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 윗면 2행 < 3 (2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "윗면 2행 < 3 (2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 18,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cooler top lid",
+      "rows": "4-8",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "11-11"
+     },
+     {
+      "part": "flowers in pots on shelves",
+      "rows": "13-34",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 4-8 form a band across the top that fades from dark to light. Rows 9-10 are a bright white front-edge line (L=250), and row 11 is a darker eave row. Below this, rows 12-44 are the glass front face with four shelf compartments, a center mullion and a base. The flowers and pots are decor. The top band is about 5 rows, similar to the 'cabinet: top 5 + edge + eave' reference. It is a borderline case, because the band could also be read as a front-facing header strip."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a glass-front cabinet with a 2x2 grid of potted flowers. It carries 12 visible tones per 16x16 tile, which sits between the hedge (9) and the cheese stall (17) and below the roofed well (20). Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% neutral, so the outline leans blue-grey rather than black, as the measured facts say. It is not a uniform sticker line. The cabinet frame and glass panes show about 4 lightness steps, a little under the 5-6 on Beodeul materials. The flowers, leaves and pots add small clusters of detail in several tones. Overall it is only slightly shallower than the references and would sit acceptably beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18931
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header band / cornice of cooler",
+      "rows": "4-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flowers in pots on the shelves (seen through the glass)",
+      "rows": "13-37",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cooler is drawn face-on as a glass-fronted cabinet. Rows 3-11 form a header strip: a dark outline, grey-green rows 4-8, then a white highlight at rows 9-10. It has no eave shadow below it and no foreshortened depth, so it reads as a front-facing cornice and not a top plane. Rows 12-44 are the vertical glass front, split into four compartments by thin mullions and shelf lines at rows 22-25 and 38-43. The flowers and pots inside are decor, and the shelf lines are 1-row details. The width stays at 32 for every row from 3 to 46, with no widening or narrowing that would suggest a lid, and no side face is shown. The object has a front face and no real top surface, so it is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The cooler is a glass-fronted cabinet with four potted flowers (red, pink, yellow, white) on shelves. It measures 12 visible tones per 16x16 tile, which sits between the hedge (9) and the stall/well (17-20). Near-flat coverage is 0%, so the panels and frame are broken up by shelf lines, pot rims, flower clusters and glass highlights rather than left as flat fills. The dark edge pixels are 0% neutral, so the frame outline is a tinted dark version of the cabinet material, not a black sticker line, and it is used selectively. Weaknesses: the cabinet body has about 4 lightness steps against the references' 5-6, and the glass and body surfaces carry less grain than the stall or well. That is slightly lower richness, but it is not shallow, and the piece would sit acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17317
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cooler top / lid band",
+      "rows": "4-8",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "11-11"
+     },
+     {
+      "part": "glass front with shelves and potted flowers",
+      "rows": "12-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 4-8 form a top band that grades from dark grey at row 4 to light teal at rows 6-8. A 2-row white front-edge line follows at rows 9-10, then a slightly darker row 11 that works as eave shadow. Below it is a tall glass front (rows 12-43) with a dark base at rows 44-46. The band is a thin top surface, but it meets the edge-line plus eave pattern of the green cabinet reference, so it is more than a 1-2 row rim. The front face is well over 3 rows. This is a borderline reading, because the top band could also be taken as a front-facing cornice."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 12 visible tones per 16x16 tile, which is above the hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so the pale cabinet body has some variation rather than flat 5x5 fills. The dark edge pixels are 0% neutral, so the outline leans blue-grey. That fits a dark tone of the neighbouring material rather than a black sticker line. Shading is somewhat shallow: the frame and glass panes use about 4 steps, against 5-6 on the stall and well. The four flower pots add small clusters of pink, red and yellow with leaf greens, which gives some texture. Overall it is a bit lighter on detail than the richest references but would sit acceptably beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22409
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header band / cornice",
+      "rows": "4-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flowers and pots on shelves",
+      "rows": "13-37",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass front with shelf ledges and mullions",
+      "rows": "12-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole object is a flat, face-on glass-fronted cabinet, 32 px wide and rows 3-46. Rows 4-8 form a bevelled header strip and rows 9-10 are a white highlight line. This is a front-facing cornice with no darker eave shadow beneath it, so I count it as a 1-2 row rim and not a top plane. Below it (rows 12-43) the interior is seen straight on, with pots and flowers face-on and thin shelf ledges at rows 24-25 and 38-43. The shelf ledges are lines, not receding horizontal surfaces. The bottom plinth (rows 44-46) is also flat. No ellipse is drawn, no roof or canopy plane, and no contents are seen from above. The result is a front elevation with no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 12 visible tones per 16x16 tile, which sits between the hedge (9) and the stall (17) and well (20). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline leans toward the material colours rather than being a black sticker line. The pale frame and glass door use about 4 lightness steps, a little fewer than Beodeul's 5-6. The four flower pots add varied clusters of red, pink, yellow and green with highlights and shadow, which gives enough grain and variation. It is a bit simpler than the stall and well, but a careful artist would accept it next to the hedge and stall without it looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23615
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.177Z",
+ "cells": {
+  "16": [
+   "1efeedfe29c939e5",
+   "6c35bd2185d7ef85",
+   "85ecae7f8da9d178",
+   "9f04f9a6f149a036",
+   "b2656a9ae3dda39f",
+   "b88028110770523d"
+  ],
+  "24": [
+   "00caff33eedaf344",
+   "018a5c73910de622",
+   "349fba7cc66d58ee",
+   "44a3d85c7bfc29d4",
+   "4d20570fcc6e32f1",
+   "54c7e1f4d77724f7",
+   "78e265aa1e794767",
+   "853f0914dc092724",
+   "af66b5baf41a48f8",
+   "c779152f7a5a5e6e",
+   "e8862243934122fb",
+   "f965ff82a17a01bd"
+  ],
+  "32": [
+   "43cb238edc3eeef9",
+   "6bf86e8f2a255747",
+   "a612143abf713f41",
+   "b2e3e7007017d5f8"
+  ],
+  "48": [
+   "947af520dcfed7c7",
+   "9c0c2ba84ad4d8ac",
+   "a55d170fd353199a"
+  ]
+ }
+}

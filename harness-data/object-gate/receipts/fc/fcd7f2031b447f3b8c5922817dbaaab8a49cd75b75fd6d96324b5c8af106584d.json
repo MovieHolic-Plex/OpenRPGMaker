@@ -1,0 +1,333 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fcd7f2031b447f3b8c5922817dbaaab8a49cd75b75fd6d96324b5c8af106584d",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "mart baguette basket",
+ "label": "modern_city_interior/mart-baguette-basket",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 14,
+  "darkV5": 37,
+  "nearBlackEdge": 0.14,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "baguettes sticking out of the basket",
+      "rows": "1-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "basket mouth with dark interior, back rim and front rim line",
+      "rows": "13-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-19"
+     },
+     {
+      "part": "basket front face with label window",
+      "rows": "17-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The baguettes rise from the basket and count as contents or decor. Rows 13-15 are a dark band for the mouth interior at the basket's full width. Row 16 is a bright front-edge line (L=222), and rows 17-19 darken beneath it like a shadow. Below that, rows 17-28 are a woven front face with a label window. The mouth is only about 4 rows deep and is mostly hidden by the baguettes, so this is a borderline reading. Even so, the mouth is more than a 1-2 row rim: it is a dark opening ending in an edge line, so it reads as a top surface above a 12-row front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small basket of baguettes, about one tile wide and a bit taller, set next to the stall and well references. It shows 14 visible tones per 16x16 tile, above prop-hedge (9) and just under prop-stall-cheese (17) and prop-well-roofed (20). Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood and bread rather than black. The baguettes show a few warm steps with highlight streaks, and the basket has a dark, mid and light brown weave plus a small label. That gives about 4 steps per material against the references' 5-6, and the texture is modest because of the small size. The piece does not read as a sticker next to the references, so a careful artist would accept it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21069
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "baguette bundle (contents rising from the basket mouth)",
+      "rows": "1-12",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "basket mouth / opening with dark interior",
+      "rows": "13-16",
+      "evidence": "d",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "13-15"
+     },
+     {
+      "part": "basket front face with label window",
+      "rows": "17-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The basket body spans rows 12-28 at 14 px wide. Rows 13-15 are a dark band (L=80) at the mouth, where the opening's interior shows behind and between the baguettes. Row 16 is a light 1-row front rim line (#fadca0), and the woven front face runs below it, rows 17-28, with a label window at rows 20-24. The baguettes (rows 1-12) are visible contents of the open container (evidence d). The mouth is shallow and mostly covered by the bread, so the top surface is small, about 4 rows (13-16). It still shows an opening with contents, a front-edge line and a front face of 12 rows, so it reads as three-quarter, though borderline."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small single-tile prop. It has 14 visible tones per 16x16 tile, above prop-hedge (9) and below the stall (17) and well (20), so it sits in the reference range. Near-flat coverage is 0% and none of its dark edge pixels are neutral, so the outline is tinted. By eye the outline is a dark brown that follows the basket and the baguettes, not a black sticker line. The baguettes show about 4 steps (highlight, golden, mid, dark crust) with scoring marks, and the basket has a woven dark-brown ramp with a lighter label. It is slightly simpler than the stall or well, with about 4 steps against their 5-6. It still carries enough grain and variation, with no large flat fills, that it would not look thinner or flatter than the hedge next to it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19247
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "baguettes standing in the basket (contents)",
+      "rows": "1-12",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "basket mouth with dark interior behind the front rim",
+      "rows": "13-16",
+      "evidence": "d",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "13-15"
+     },
+     {
+      "part": "basket front face with label plate",
+      "rows": "17-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The baguette heap in rows 1-12 sits inside the open basket, which counts as contents seen in an open container. Rows 13-15 are a dark interior band, then row 16 is a light front-rim line (#fadca0) across all three scanned columns. Below it the woven front face runs rows 17-28 (12 rows), with a label plate at rows 20-24 and a dark base shadow at rows 29-30. The mouth is not drawn as an ellipse, since the width stays at 14 from row 12 to row 28. The opening reads only through the contents and the dark band behind the rim, so the top is thin (4 rows) but present."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small basket of baguettes with a dark label. It has 14 visible tones per 16x16 tile, which is above the hedge (9) and close to the cheese stall (17) and the roofed well (20). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% near-neutral, so the outlines lean toward the neighbouring material (dark brown beside wood and bread) rather than being a black sticker line. The baguettes and basket show several crust and weave tones, which gives some texture and grain, though not as many shading steps as the best references (roughly 4 per material against 5-6). It is a plausible match for the references at the same scale and does not look thinner or flatter than them. The total of 16 distinct colours is modest, and it is a small object, so this was judged mainly by eye and by the primary facts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18076
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "baguettes standing in the basket (contents seen above the rim)",
+      "rows": "1-12",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "basket opening: dark interior band behind the front rim",
+      "rows": "13-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "13-15"
+     },
+     {
+      "part": "basket front face (woven body with label window)",
+      "rows": "17-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-12 show baguette contents rising out of the open basket. Rows 13-15 are a dark interior or shadow band, and row 16 is a light front-rim line (#fadca0) across all three scanned columns. Below it, rows 17-28 are a 12-row vertical front face at full width 14, with a label window and a dark base shadow at rows 29-30. The opening itself is only about 4 rows tall, but it is bounded by a front-edge line and the contents are visible, so the container reads as seen from above and in front."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small prop, about one tile wide and a little over one tile tall. It reaches 14 visible tones on its full tile, which is above prop-hedge (9) and within range of prop-stall-cheese (17) and prop-well-roofed (20). Near-flat coverage is 0%, so there are no flat fills, and the 0% near-neutral dark edge share means the outline carries a tint. By eye, the outline is dark brown beside the crust and the wooden basket, not a black sticker line. The baguettes show highlight, mid and dark crust tones with scoring marks, and the basket has a few wood tones plus a label. That gives roughly 4 steps per material against about 5 in the references, which is slightly shallow but acceptable for a small single-tile prop. Nothing looks thinner or flatter than the references of the same kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18454
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.051Z",
+ "cells": {
+  "16": [
+   "1c012e9ba381ff20",
+   "43e18627389dfa08"
+  ],
+  "24": [
+   "016b8c7dd582aa70",
+   "03e60e54ce845961",
+   "2870583e96332a53",
+   "3bf742b8ec82799b",
+   "4399580956fc24f4",
+   "6fe5d791a9303e0c",
+   "9b30b403bbc1fb0a",
+   "ac759f0c8b951c6e",
+   "b222f1b22cff8688",
+   "d7fec0eeea3252b3",
+   "d8505ad45b8286f3",
+   "ee6d92cdcb9125fb"
+  ],
+  "32": [
+   "0622adc7aaa75223",
+   "4408d878e4971546",
+   "b83c2435cf8e0038"
+  ],
+  "48": [
+   "38fbc3edaafde993",
+   "5ff5f44490ee66a8",
+   "95f50aeef94dfa2c",
+   "a6bf721d0932b0c6",
+   "d5636daaf3eaa866",
+   "e01d005a47d3112c"
+  ]
+ }
+}

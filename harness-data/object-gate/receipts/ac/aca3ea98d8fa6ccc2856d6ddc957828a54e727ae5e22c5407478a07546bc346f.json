@@ -1,0 +1,395 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "aca3ea98d8fa6ccc2856d6ddc957828a54e727ae5e22c5407478a07546bc346f",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "school cleaning locker",
+ "label": "modern_city_interior/school-cleaning-locker",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 6/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 명암 3단 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 6/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "명암 3단 < 4 (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 8,
+  "darkV5": 36,
+  "nearBlackEdge": 0.87,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "locker top",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "upper vent slats",
+      "rows": "7-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "door face with handle",
+      "rows": "13-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower vent slats",
+      "rows": "23-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a light band at the top. Row 4 (L=232) is a lighter front-edge line, and row 5 (L=124) is a darker eave shadow, which is evidence (a). Below it the front face runs from about row 6 to row 29 (about 24 rows) with vent slats, a door and a handle. The darker strip at the right edge is shading on the front, not a receding side face. The top band is about 4 rows, close to the 'cabinet: top 5 + edge + eave' reference, so I read it as a top surface and not as a front-facing header strip."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a grey locker with a lighter rim, a flat body, a couple of vent slits and a handle. It reads as 3 lightness steps on the main metal ramp, while Beodeul references use about 5-6 steps per material. The body has large flat areas with no grain, speckle, scratches or per-panel highlights. Measured near-flat coverage is 16%, above the hedge (0%) and well-roofed (0%) references and similar to the cheese stall (13%). Visible tones per tile are 8, below the stall (17) and well (20) and close to the hedge (9). By eye it is a flat, simple, sticker-like silhouette beside the richly textured stall and well. The outline is tinted (0% neutral edge pixels), so it is a dark cool-grey tone rather than black, which is acceptable. Overall it is shallower and flatter than the references, with big uniform door panels.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 16401
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "locker top band",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "vent slats on door",
+      "rows": "6-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "door handle",
+      "rows": "15-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Row 0 is the dark outline. Rows 1-4 form a light top band (L=134, then 208, then 232). Row 4 is the brightest row and works as the front-edge line. Row 5 (L=124) is a darker eave shadow under it. Below that is the vertical door face, rows 5-29 (about 25 rows), with vent slats at rows 6-12, a plain panel at rows 13-22, a handle at rows 15-17 and a second slat group at rows 23-26. Row 30 is the bottom outline and row 31 is a ground shadow. The silhouette is a constant 14 px wide, so there is no receding side face. The top band is about 4 rows deep, similar to the 'cabinet: top 5 + edge + eave' reference, so it is more than a 1-2 row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The locker is a clean, readable grey-blue prop with a tinted dark outline (0% neutral edge pixels, so not a sticker line). Its construction is shallow next to the richer references. It uses only 10 colours in total, against 38-40 for the stall and well. The two door panels are large areas of one flat grey, with only a few vent slits and a handle for detail, and 16% of the piece is flat 5x5 blocks (the hedge, well and bench references have 0%). There is no per-panel grain, scuffs, rust, dents or edge highlights. Shading is about 3-4 steps (light frame edge, body, shadow side, outline) where the references use 5-6. At 8 visible tones per tile it roughly matches the simple hedge (9), but it is well below the stall (17) and well (20), which are the closest in structure. A careful artist would find it flatter than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 20414
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band of locker",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "upper door with vent slats",
+      "rows": "6-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "door body with handle",
+      "rows": "13-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower vent slats and base",
+      "rows": "23-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a light band at the top. Row 4 (L=232) is a lighter front-edge line, and row 5 (L=124) is a darker shadow row beneath it. This reads as a thin top surface of about 4 rows. Below it is a tall front face over rows 6-29 (about 25 rows), with vent slats at rows 7-12 and 23-26, a handle at rows 15-17 and a base at rows 27-29. The width is a constant 14 with no visible side face. The top is shallow but meets evidence (a)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small grey locker with a light grey body, a slightly darker door panel, a few vent slits and a dark outline. It has about 3 visible shading steps on the body against 5-6 for the references. The measured 8 visible tones per tile and 16% near-flat coverage sit well below the richer references (stall 17, well 20 tones, with 13% and 0% flat) and only match the hedge on tone count. The picture shows large flat grey door areas with no grain, scuffs, edge highlights or panel shading, so it reads as a sticker-like icon beside the textured references. The outline looks like a dark neutral grey-blue line, though the measured near-neutral edge share is 0%. Overall it is shallower than the references in shading, texture and density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15859
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band of locker",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-5"
+     },
+     {
+      "part": "upper louvre slats",
+      "rows": "6-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "door face with handle",
+      "rows": "13-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower louvre slats",
+      "rows": "23-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a band at the top, 3 rows light (L=134 to 232) that ends in a lighter front-edge line at row 4. Row 5 (L=124) is a darker eave-shadow row below it, so the band reads as a top surface. Below it the front face runs from rows 6 to 29, 24 rows. It contains louvre slats at rows 6-12 and 23-26, a plain door panel with a handle at rows 13-22, and a base at rows 27-29. The silhouette is a constant 14 wide, and no side face is drawn. The top band is only about 4 rows deep, so the call is borderline, but it matches the cabinet 'top + edge + eave' reference more than the rim-only one."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a grey locker drawn as a narrow, mostly flat body with a lighter bevelled border and a few vent slots and a handle. It shows about 3 lightness steps on the metal (light edge, mid body, dark slots or edge), against about 5-6 on the references such as the well, stall and hedge. Its 8 visible tones per tile are below the stall (17) and well (20) and roughly level with the hedge (9). Its 16% near-flat coverage is above the hedge (0%) and the well (0%) and close to the stall (13%), because the door panel is a large single-tone fill with no speckle, scratches or grain. The dark edge pixels carry a tint (0% neutral), so the outline reads as a dark material tone rather than a black sticker line, which is acceptable. The structure is clean but shallower than the references: the door is flat, with no per-panel highlight, rust, wear or surface texture. A careful artist would find it thinner and flatter than the stall or well next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17581
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.169Z",
+ "cells": {
+  "16": [
+   "1977b7bb590cfb6a",
+   "31e5374711c14ee6"
+  ],
+  "24": [
+   "0066446d0b28928e",
+   "0739cc15dae5e0fb",
+   "0c4c9a05eed80bc4",
+   "246c79be2142be2f",
+   "476f8fa72cec8469",
+   "7efcbfb5b6adae2b",
+   "a57241f87c2b2c58",
+   "ad5aa22fbc6d7d0a",
+   "c20f2e68ab06114d",
+   "c9883c7791b72794",
+   "d275e5b45140f319",
+   "e60d3d6acedd56a6"
+  ],
+  "32": [
+   "728e4dbefaa3c5b9",
+   "b8921d56da7646ba",
+   "ccb75de869e38030"
+  ],
+  "48": [
+   "01561203de5c9e41",
+   "0da140e2b12506da",
+   "0e7bc5e0797f9b82",
+   "43b56600bc7e3c0f",
+   "63f9e6a8890537aa",
+   "68ca111cddfa81aa"
+  ]
+ }
+}

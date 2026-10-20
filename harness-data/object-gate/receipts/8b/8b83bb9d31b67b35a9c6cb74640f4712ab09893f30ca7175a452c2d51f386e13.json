@@ -1,0 +1,413 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8b83bb9d31b67b35a9c6cb74640f4712ab09893f30ca7175a452c2d51f386e13",
+ "width": 64,
+ "height": 48,
+ "kind": "box",
+ "name": "jp-truck-kei",
+ "label": "jp_city/vehicle/jp-truck-kei",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "평면 채움 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 13,
+  "darkV5": 27,
+  "nearBlackEdge": 0.13,
+  "opaqueTiles": 10
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "cab roof and upper side panel",
+      "rows": "5-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cargo bed interior (floor and inner far wall, grey ribbed band)",
+      "rows": "14-22",
+      "evidence": "d",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "22"
+     },
+     {
+      "part": "bed side panel and body (south face)",
+      "rows": "23-35",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels and wheel arches",
+      "rows": "33-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The object is a small truck seen in side profile, facing east. It is not a box, so the kind match is doubtful. The bed shows a rim line at row 14 and a dark inner band at rows 16-22, which is the open bed seen from above. That band ends in a light front-edge line at row 23, with dark shadow at row 22. Below it the side panel runs from row 23 to about row 35, and wheels continue to row 45. That gives a top of about 9 rows and a front face of 13 rows or more. The cab (rows 5-17) is drawn only as a vertical side panel. Its white upper area has no edge line or shadow, so it has no real top. That makes the top surface partial and the cab a major part without one."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The kei truck is a white body with grey shading and a dark outline. The body shows about 3 lightness steps (white, light grey, mid grey), while Beodeul materials carry 5-6. The outline reads as a neutral dark grey/black line around the whole silhouette, and 88% of dark edge pixels are near-neutral, versus 0-1% on the hedge and cheese stall, so it has the sticker look rather than a dark tone of the adjacent material. The cab door, the cargo bed side and the panel areas are large smooth fills with no grain, speckle or per-surface texture. The 10 visible tones per tile roughly match the hedge (9) but sit well below the stall (17) and well (20). The 10% near-flat coverage is comparable to the stall's 13%. The references use tinted outlines and per-material texture, and the truck does not. A careful artist would find it flatter and more sticker-like next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 24339
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "east",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "cab roof",
+      "rows": "6-16",
+      "evidence": "c",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "cargo bed interior (floor seen through open top)",
+      "rows": "14-22",
+      "evidence": "d",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "22"
+     },
+     {
+      "part": "side panel and tailgate (front face)",
+      "rows": "23-35",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The truck faces east and its south side profile is the front face. The cab roof is a bright 10-11 row plane (rows 6-16, L=232) that ends in a lighter edge line at row 16, followed by a darker row 17 and the cab window. The cargo bed shows a rim (rows 14-16) and a visible interior floor of gray stripes (rows 17-22), closed by a light edge line at row 23, so the bed is an open container with its contents seen from above. Below that the side panel (rows 24-35) and wheels (to row 44) form a front face of roughly 20 rows. A truck is a vehicle rather than a crate or chest, so kind_matches is false, but the structure still shows a top surface above a tall front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a white kei truck with a mostly flat white cargo bed and cab. It has about 3 visible white/grey steps and no tile or grain texture. The outline is dark, nearly neutral grey-black around the whole silhouette (88% near-neutral dark edge pixels), which gives the sticker look. The references use tinted dark material tones: the hedge has 0% neutral, the cheese stall 1% and the well 33%. The candidate has 10 visible tones per tile against 17-20 for the stall and well, and only the hedge is close at 9. Its 10% near-flat coverage is comparable to the stall's 13%, but by eye the large flat white body panels and the plain dark wheels read as shallow next to the richly textured stall and well. The truck lacks the per-material ramps, grain and speckle seen in the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 24468
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "east",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "cab roof",
+      "rows": "6-16",
+      "evidence": "c",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "cargo bed interior (floor seen from above, ribbed)",
+      "rows": "14-22",
+      "evidence": "d",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bed side wall / body",
+      "rows": "23-35",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a kei truck in side view, facing east. The open cargo bed shows its ribbed floor in rows 14-22 (L about 102-127), framed by a rim at rows 13-16. A bright front-edge line at row 23 (L=202, then 229 at row 25) closes it, with the side wall below as the south face in rows 23-41. The cab has a large light roof plane in rows 6-16, ending at an edge line at row 16 (L=202) with a darker row 17 before the window. The wheels and lower body fill rows 33-45. The kind 'box' is a loose fit because this is a vehicle, but the open bed does behave like an open box with a visible floor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The truck body is mostly white with one or two grey shades, so the main ramp has about 4 steps against 5-6 on Beodeul's stall and well. The cab and cargo panels are broad, near-flat areas with almost no grain, speckle or per-panel highlight. The dark outline is a uniform near-neutral line around the whole silhouette, which is the sticker look; 88% of the dark edge pixels are neutral, while the hedge, cheese stall and roofed well have 0-33% and use tinted dark material tones. The measured 10 visible tones per tile and 10% near-flat coverage are in range of the hedge (9 tones, 0% flat) but clearly below the stall (17) and well (20). The wheels, windows and bumper add some variety, but the body lacks the texture and material-toned edges of the references. Outline and shading craft fall short of the standard, so this fails despite the acceptable density numbers.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 19086
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cargo bed interior (open bed seen from above, gray slat floor)",
+      "rows": "14-22",
+      "evidence": "d",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "22"
+     },
+     {
+      "part": "cab roof (light plane above the window)",
+      "rows": "6-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "body side panel and wheels (south face)",
+      "rows": "23-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a kei truck in side view, facing east. The open cargo bed shows its interior floor as gray slat rows 17-21 inside a rim (rows 14-16). A bright edge line at row 23 closes it, with a shadow at row 22. The cab has a light roof plane at rows 6-16, closed by an edge line at row 16-17 above the window. Below the bed edge, the south side panel runs from rows 23-35 with the wheels down to row 44, so there are more than 3 front-face rows. The top surfaces are foreshortened but clearly visible, so the drawing reads as three-quarter rather than a pure elevation. The cab roof is a judgment call because it has no strong shadow row."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are mixed. The candidate has 10 visible tones per tile, near the hedge (9) but well below the stall (17) and the well (20). Its near-flat coverage is 10%, close to the stall's 13%. Its dark edge pixels are 88% near-neutral, against 0-1% for the hedge and the stall, so the outline is a neutral dark line. By eye, the white body is a few flat panels with only about 3-4 lightness steps. It has no grain, panel speckle or per-part highlights. The cab, the cargo bed and the dark-outlined wheels read as separate flat shapes with a uniform dark line, which gives the 'sticker' look. The references (stall, well) carry 5-6 steps per material plus texture dots. A grey or white vehicle can legitimately have a dark neutral line, but the shading is still shallower and flatter than the references, so it does not match their craft.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 20542
+  }
+ ],
+ "decidedAt": "2026-10-20T14:27:53.402Z",
+ "cells": {
+  "16": [
+   "3adb2d361e80ed52",
+   "5afafc20e3576707",
+   "624d3fa0f1626a4b",
+   "7c43185dc7196321",
+   "a22e82d25bcb01a9",
+   "aba02a659abd04a8",
+   "d872d6af06520551",
+   "e73a517ef209d537",
+   "eb867e1201cc0237",
+   "f7d22fa46d8833fa",
+   "fa992becdd90985e",
+   "fcd79c8824f3bad5"
+  ],
+  "24": [
+   "0cfc65e9a0f42b39",
+   "281e4aff0a24bfd9",
+   "2c7f171d57ef9f5a",
+   "3306cad9591a3107",
+   "471101c7c60e7b66",
+   "65f814ae6f81b572",
+   "6b8c90594f62f419",
+   "7c7d9f9809cc7579",
+   "8c49507b71305c51",
+   "94e62b664459cf67",
+   "9d70e4f201a5bbd3",
+   "a53e922f06cde3de",
+   "ad30eea61db91255",
+   "c4997cf1d0485b83",
+   "ecb74f4def2bd920",
+   "f41b0f4dd3f1f51e",
+   "f8be64ae794a23ff",
+   "fe3386eb592be905"
+  ],
+  "32": [
+   "186303eeb88005c1",
+   "1cfe227d019f34a9",
+   "1fc3c6b0d174f8b7",
+   "32c0d20ebf6a7477",
+   "88d8837ca2767da6",
+   "92e885040f755087",
+   "d4850d47f935bc66",
+   "d7ea56561bf1b826"
+  ],
+  "48": [
+   "00d16e68089cc665",
+   "151772b361152b44",
+   "6faf12d6d2c1998c",
+   "9fb582fa7bab6793",
+   "b0e8032c84f95203",
+   "d5ba6f46d0006a67"
+  ]
+ }
+}

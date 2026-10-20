@@ -1,0 +1,317 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a9754203ff393c91ac9036458c8a593d38972f231f3537d0fc9e60341fd959b0",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "zabuton",
+ "label": "seats34/jp_city_interior/zabuton",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(top_down_slab) (3/4)",
+  "3/4: 앞면 2행 < 3 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(top_down_slab) (3/4)",
+   "앞면 2행 < 3 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 8,
+  "darkV5": 26,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cushion top",
+      "rows": "4-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-11"
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 3,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The column scan shows a 1-row outline at row 3. Rows 4-5 are a light highlight band and rows 6-9 are mid purple, so rows 4-9 form the seat top (6 rows). Row 10 (L=67, #304080) is a darker front-edge line and row 11 (L=44) is darker shadow. Row 12 is the outline. The front face is thin: rows 10-11 plus the outline row make 3. A darker strip along the right edge reads as a receding side face. The silhouette is 14 wide for rows 4-11 with 12-wide rounded corners at rows 3 and 12. This is a flat cushion whose top surface is clearly larger than its thin front thickness."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small cushion of about 13x9 source pixels. Its 8 visible tones per tile are close to the hedge reference (9). Near-flat coverage is 0%, so there are no big flat fills. It shows a lighter top edge, a mid body, a darker underside and a centre tuft or button, which gives about 5 lightness steps. A pass is not clear-cut here. The cushion is tiny, so the by-eye reading of its steps and texture is uncertain, and it is a simple object next to the larger references. All of its dark edge pixels are tinted (0% neutral), so the outline reads as a dark purple version of the body rather than a black sticker line. That matches the hedge reference. It reads as a crafted piece that a careful artist would accept beside the references, without looking noticeably flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆면(아이소)이 보인다는 판정이 과반"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆면(아이소)이 보인다는 판정이 과반"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20192
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cushion top (seat surface with center tuft)",
+      "rows": "4-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 2,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "Row 3 and row 12 are the outline. Rows 4-5 are a light highlight band and rows 6-9 are the mid-purple cushion top with a red tuft at about row 7, so the top surface is about 6 rows. Rows 10-11 are a dark blue band (L=67, then 44), which is the only front face and is just 2 rows. The right-hand columns are darker, which suggests a narrow side shading. With a front face under 3 rows, the cushion reads as a flat top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small cushion, smaller than one full tile. It has a darker purple rim, a lighter top edge and a mid body, with a few highlight and trim pixels. That gives roughly 5 lightness steps, close to the references' 5-6. The outline is a tinted dark purple, matching the material, not a neutral black line. The facts agree: 0% neutral dark edge pixels, 0% near-flat coverage and no 5x5 flat fills. It has 8 visible tones per tile, close to prop-hedge (9). The stall (17) and well (20) are much richer, but they are larger, more complex objects. The cushion is a simple small object and is not a flat sticker, so a careful artist would accept it next to the references, though it is slightly lower in density and texture detail.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(top_down_slab) (1/1)",
+    "앞면 2행 < 3 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(top_down_slab) (1/1)",
+     "앞면 2행 < 3 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18402
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cushion top (seat surface with center button)",
+      "rows": "4-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cushion front edge",
+      "rows": "10-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a 14px-wide rounded rectangle on rows 3-12. Rows 4-5 are a light bevel highlight, and rows 6-9 are the mid-purple cushion top with a red button in the middle. Rows 10-11 are a dark blue-to-navy strip that acts as the cushion's thickness, and row 12 is the outline. The seat surface is seen from above and takes up about 6 rows. The front face is only about 2 rows (10-11), under the 3-row minimum, so the cushion reads as a flat top-down slab. The darker right-hand strip looks like bevel shading rather than a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small purple cushion, under one tile in size. It shows about 5 lightness steps: a light top highlight, mid face, darker side and base, and a centre tuft or button detail. The outline is a dark purple version of the cushion, not neutral black, and the measured 0% near-neutral dark edge pixels supports that. There are no flat fills (0% near-flat coverage). It carries 8 visible tones, close to the hedge reference (9) and well above the thin bench and lamp references. It is simpler than the stall and well, but a zabuton is a small, simple object. It does not look like a flat sticker beside the bench or hedge, so I would accept it. The tiny size limits how much texture it can show, which keeps texture at 'some' and density slightly below the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(top_down_slab) (1/1)",
+    "앞면 2행 < 3 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(top_down_slab) (1/1)",
+     "앞면 2행 < 3 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17995
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cushion top (seat surface)",
+      "rows": "4-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-11"
+     },
+     {
+      "part": "red center tuft",
+      "rows": "7-7",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 2,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is 14 px wide from rows 4-11, with a 1-row dark outline at row 3 and row 12. The columns scan the same at x=4, 8 and 11. Rows 4-5 are a light purple highlight and rows 6-9 are mid purple, so together they form the cushion's top, rows 4-9. Row 10 (#304080) is a transition line, and row 11 (#1f295c) is the darkest tone. Those two rows are the only front face, which is 2 rows (under the 3-row minimum). The darker strip on the right edge looks like a receding side face. The top surface is clearly seen from above, but the front face is only a thin edge, so by the definition it falls just short of three_quarter and reads as a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small purple cushion, about 13x9 source pixels. It has a darker purple outline, a lighter top edge, a mid body and a small tuft or highlight, which reads as about 4 visible steps against the references' 5-6. The measured facts support it: 8 visible tones per tile is close to the hedge's 9, near-flat coverage is 0%, and 0% of dark edge pixels are neutral, so the outline is tinted to the material rather than a black sticker line. It has no large flat fills. Its texture is modest, with no grain or stitching dots, but the piece is tiny and simple, and a careful artist would accept it beside the bench and hedge without it looking noticeably flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(top_down_slab) (1/1)",
+    "앞면 2행 < 3 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(top_down_slab) (1/1)",
+     "앞면 2행 < 3 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20349
+  }
+ ],
+ "decidedAt": "2026-10-20T14:09:20.562Z",
+ "cells": {
+  "16": [
+   "34c6f6d988be8447"
+  ],
+  "24": [
+   "1cacec22acf789f9",
+   "4db61d2e3bb59c0b",
+   "9ef68b6ad458ecac",
+   "acdf5349266ae1b0",
+   "b16265a1b7da71bf",
+   "c73a4b044ebce34b"
+  ],
+  "32": [
+   "26943509a68fa992",
+   "33693f179f22356a",
+   "ae3a7b650d6e4b4f",
+   "b4886d65571969ba",
+   "dc6aa7a47a9cce07",
+   "e194b54a6e80c292"
+  ],
+  "48": [
+   "08ba25efea4bfa0a",
+   "10b8c01fa6f9f0d5",
+   "2ed089108f48a9e3",
+   "49b4b505c07201dc",
+   "58781276736a7c6a",
+   "9df55cc0473b1c48"
+  ]
+ }
+}

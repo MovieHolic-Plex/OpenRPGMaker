@@ -1,0 +1,464 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c84c70e7d163d4a2ef08f796a1126d76a3f60bd0f6c171d1dcbe7e64d0b726be",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "train luggage rack",
+ "label": "modern_city_interior/train-luggage-rack",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 윗면 2행 < 3 (2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "윗면 2행 < 3 (2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 11,
+  "darkV5": 52,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "blue bag on rack",
+      "rows": "4-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tan bag on rack",
+      "rows": "6-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rack shelf top with slat rails",
+      "rows": "9-15",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16"
+     },
+     {
+      "part": "rack front face (silver panel)",
+      "rows": "17-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "four small ticket/label cards below the rack",
+      "rows": "23-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main rack body (rows 8-20, 30 px wide) has a shelf band in rows 9-15. It is striped with rails (x=16 alternates L 111/91/169/91/169/91) and ends in a light front-edge line at row 15 (L 202-224). Row 16 is a dark line that acts as eave shadow, and the front face is the silver panel in rows 17-19 with the dark outline at row 20. The two bags sit on the shelf and count as decor. The four small cards in rows 23-29 are separate flat items hanging below, joined only by a 2 px connector in rows 21-22. I treated them as decor, which is a judgment call because they could also be read as a separate object. The top is a 7-row shelf, not just a rim, so the rack reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a shelf with a few bags and suitcases and small tags underneath. Its dark edge pixels are 100% near-neutral, so the outline is a neutral near-black line like the lamp-crook's. The richer references (stall, well, hedge) have tinted outlines at 0-33% neutral. Each material on the candidate (grey shelf, bag bodies, suitcase) has about 2-3 steps, a body tone plus a highlight and an outline, against about 5 steps on the stall and well. The measured facts do not count against it: 11 visible tones per tile is above the hedge's 9 but below the stall's 17 and the well's 20, and near-flat coverage is 0%. The objects still read as flat-shaded shapes with little grain or per-item shading, which gives a sticker look beside the stall and well. Because of the neutral outline and shallow ramps, it would look thinner than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18996
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rack shelf: mesh or rail floor seen from above, with the bags sitting on it",
+      "rows": "9-15",
+      "evidence": "d",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue suitcase and tan bag on the shelf",
+      "rows": "2-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front rail face of the rack",
+      "rows": "17-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "four small tag or ticket panels below the rack",
+      "rows": "23-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The rack body spans rows 8-20. Inside the frame, rows 9-15 alternate light and dark in a striped pattern (column x=16: L 111, 91, 169, 91, 169, 91, 202). This reads as a rail or mesh shelf floor seen from above, with light side rails at rows 11-13. A dark front-edge line at row 16 closes that surface. Below it, a lighter rail face fills rows 17-19, with the outline at row 20. The bags are decor standing on the shelf. The four small panels at rows 23-29 are minor details. The top surface is a judgment call: if only the light band at rows 14-15 counts, it is a 2-row rim, but the striped floor above it supports the 7-row reading."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small luggage rack: a pale shelf with a bag, a case and a few small tags. It measures 11 visible tones per tile, above the hedge (9) but below the stall (17) and well (20). Near-flat coverage is 0%. However, 100% of its dark edge pixels are neutral, so the outline is a near-black line with no brown or material tint. The references mostly use tinted outlines (hedge 0%, stall 1%). The rack's shelf and the luggage each read as 2-3 flat steps with an outline, which is shallower than the 5-6 steps Beodeul uses per material. There is little grain or per-material texture. It reads as a sticker-like icon beside the richer stall and well, so it fails on the outline and shading depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20679
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "blue bag on the rack",
+      "rows": "4-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tan duffel bag on the rack",
+      "rows": "6-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rack back panel and side posts",
+      "rows": "8-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper rail or shelf strip",
+      "rows": "14-15",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face of lower shelf slab",
+      "rows": "17-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "four small ticket or label cards below",
+      "rows": "23-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The rack frame spans rows 8-20 at a constant width of 30. Its outline is dark at row 8, and rows 9-13 form a vertical back panel with light side strips and no horizontal surface. The only candidate top is a light band at rows 14-15, which is just 2 rows, with a dark edge line at row 16. Below it, rows 17-20 are the front face of the shelf slab. The bags are decor. The four small cards at rows 23-29 are detached from the rack by a gap at rows 21-22 and show no top surfaces. The rack has no real top surface of 3+ rows and no ellipse, so it reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small grey shelf holding a navy bag and a beige bag, with small white tags underneath. The measured facts are mixed. It has 11 visible tones per tile, which is above prop-hedge (9) and below the stall (17) and well (20). It has 0% near-flat coverage. However, 100% of its dark edge pixels are neutral, so the outline is a near-black line with no tint. The references that carry real material structure (hedge 0%, stall 1%, well 33%) use tinted or mixed outlines. Only the lamp-crook is fully neutral, and that is a thin iron post. By eye, each material has only about 3 steps: the shelf has a light face and a dark underside, and each bag has a base tone, one highlight and a dark edge. The beige and navy bags read as flat blocks with little grain or per-object shading, unlike the stall and well, which have 5-6 steps and texture on every material. The dark-outlined, sticker-like shapes and shallow ramps put it below the Beodeul bar even though it has no large flat fills.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20003
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "blue suitcase on rack",
+      "rows": "3-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tan bag on rack",
+      "rows": "6-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rack shelf top band",
+      "rows": "14-15",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rack shelf front face",
+      "rows": "17-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "four small panels below the rack",
+      "rows": "23-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The rack is drawn almost flat-on. The outer frame (rows 8-20) is a front-facing rectangle with a 30px silhouette. The shelf has only a 2-row light band (rows 14-15) ending in a dark line at row 16, then a front face at rows 17-19. That is a rim-sized top of 2 rows, not a real horizontal surface. The back rail area at rows 9-13 is vertical, with no ellipse or contents showing as a top. The suitcase and bag are decor sitting on the shelf. The four small panels at rows 23-29 are separate flat front-view items that add no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small rack with a dark-blue bag, a beige bag and white tags. Its dark edge pixels are 100% near-neutral, so the outline is a neutral near-black line rather than a dark tint of the neighbouring material. The Beodeul stall, well and hedge references are 0-33% neutral. The lamp-crook reference is also 100% neutral, but it is a thin metal pole, which is not a fair comparison for a multi-material prop. Each material (grey frame, bags, tags) has only about 2-3 tones, and the bags read as near-flat blocks with one highlight each. By the numbers, the candidate has 11 visible tones per tile and 0% near-flat coverage. That is above the hedge (9) but well below the well (20) and stall (17), which carry grain, per-part shading and material-tone outlines. There are no large flat fills, but the shading is shallow and the neutral outline gives it a sticker look next to the references. It is not up to the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18471
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.221Z",
+ "cells": {
+  "16": [
+   "6c8f72b8fb16f439",
+   "aec8affaf601a57c",
+   "c8debc4922f0d33e",
+   "ceeb631e06b175a6"
+  ],
+  "24": [
+   "16cdd74bfd865a82",
+   "3a3229470d199fc7",
+   "6bda4215f99f1218",
+   "6c557079fbb881cd",
+   "717b9dfe1c17859f",
+   "7773259e860ecdfb",
+   "801194730311f3fd",
+   "8310e6fccd5e4c35",
+   "8684431c63d8fbc8",
+   "8772a9e55d9e66c0",
+   "885f2e4467134a1c",
+   "8f055e8dcc585bf7",
+   "94c473d2458d868e",
+   "99e141d9a976a00e",
+   "9ab9f54faa5102c1",
+   "9bf1bf06eac3c590",
+   "a9069708f95668d2",
+   "aa7faa6855743396",
+   "c533c41a0887cea3",
+   "cdcbff6e122f1dbf",
+   "d24fd2189c30b824",
+   "d71fb101246d4dd1",
+   "e6f1bb1fa2131280",
+   "e74968a7577bda80"
+  ],
+  "32": [
+   "66a48922c01b3068"
+  ],
+  "48": [
+   "082d1fad102a21c7",
+   "54adac6a36385501",
+   "7c7052575a598b3f",
+   "7c9c9f085cba8b88",
+   "c6570f1641154629",
+   "e4404cabf425ab13"
+  ]
+ }
+}
