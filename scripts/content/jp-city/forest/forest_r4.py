@@ -21,7 +21,36 @@ sys.path.insert(0, HERE)
 import forest_r3 as F  # noqa: E402  팔레트·해시를 같이 쓴다
 
 T = 16
-PAL = F.PAL
+PAL_R4 = F.PAL
+
+# r5 잔디 맞춤: 버들항 나무와 버들항 잔디의 관계(색상 +4°, 채도 ×0.9, 명도 중앙값 −0.14·폭 0.23~0.80)를
+# jp_city 잔디(3281: 색상 122°, 채도 0.41, 명도 0.52)에 그대로 옮긴다. 나무 색상은 124° 쪽으로 당기고(노란 연두를 뺀다),
+# 채도는 ×0.74, 명도는 ×0.93. 그늘은 잔디 짙은 단(130°)보다 푸른 쪽(≤150°)에 머문다.
+HARMONY = dict(hue=124.0, pull=0.5, sat=0.74, val=0.93, bark_sat=0.85)
+
+
+def _harm(c, leaf=True, H=HARMONY):
+    import colorsys
+    h, sat, v = colorsys.rgb_to_hsv(*[x / 255.0 for x in c])
+    if leaf:
+        hd = h * 360.0
+        hd = hd + (H['hue'] - hd) * H['pull']
+        h = min(150.0, hd) / 360.0; sat *= H['sat']; v *= H['val']
+    else:
+        sat *= H['bark_sat']
+    return tuple(int(round(x * 255)) for x in colorsys.hsv_to_rgb(h, sat, v))
+
+
+def harmonized_pal():
+    P = dict(F.PAL)
+    for k in ('keyaki_a', 'keyaki_b', 'hi'):
+        P[k] = [_harm(c) for c in F.PAL[k]]
+    P['bark'] = [_harm(c, leaf=False) for c in F.PAL['bark']]
+    return P
+
+
+PAL_R5 = harmonized_pal()
+PAL = dict(PAL_R5) if os.environ.get('JPF_PAL', 'r5') == 'r5' else dict(PAL_R4)
 hf = F.hf
 
 

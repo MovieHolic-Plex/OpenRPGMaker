@@ -19,6 +19,8 @@ def main():
     ap.add_argument('--scenes', required=True)
     ap.add_argument('--table', default='')
     ap.add_argument('--note', default='')
+    ap.add_argument('--r5', default='')
+    ap.add_argument('--r5-note', default='')
     a = ap.parse_args()
     out = os.path.join(VIZ, NAME)
     shutil.rmtree(out, ignore_errors=True); os.makedirs(out)
@@ -31,7 +33,18 @@ def main():
     def fig(src, cap):
         return f'<figure><img src="{src}"><figcaption>{html.escape(cap)}</figcaption></figure>' if src else ''
 
-    P = ['<h1>jp 숲 r4 — 나무 composer (활엽만, 1×)</h1>']
+    P = []
+    if a.r5:
+        def cp5(n):
+            p = os.path.join(a.r5, n)
+            if not os.path.exists(p): return None
+            shutil.copy(p, os.path.join(out, n)); return f'{NAME}/{n}'
+        P.append('<h1>r5 — 잔디에 맞춘 색 (jp_city 실제 땅 위, 1×)</h1>')
+        if a.r5_note: P.append(f'<p class="note">{html.escape(a.r5_note)}</p>')
+        for sh, ko in (('touching', '연못·길·집 (jp_city 잔디 3281·길·연못 오토타일·집 키트)'), ('blob', '덩이')):
+            P.append(f'<h2>{ko}</h2><div class="row">' + fig(cp5(f'r5-{sh}-before.png'), '전: r4 색') + fig(cp5(f'r5-{sh}-after.png'), '후: r5 잔디 맞춤')
+                     + fig(cp5(f'r5-{sh}-beodeul.png'), '버들항 잔디 위 버들항 나무(같은 composer)') + '</div>')
+    P.append('<h1>jp 숲 r4 — 나무 composer (활엽만, 1×)</h1>')
     if a.note: P.append(f'<p class="note">{html.escape(a.note)}</p>')
     P.append('<h2>붓 시험 (2×, 붓질마다 둘레만 다시 짠다) — 아래 모양 비교는 1×</h2><div class="row">'
              + fig(cp('bl-paint.gif'), 'jp 활엽 그림') + fig(cp('bd-paint.gif'), '버들항 bd-tree 그림(진단)') + '</div>')
