@@ -78,12 +78,12 @@
     },
     "generated-enemy-ontology-8da61312": {
       "url": "/assets/generated/pixel-enemy-portraits/ontology-8da61312.png",
-      "sha256": "e708e85d132fe9420b20ab01f012e9cba7c4c1ec6aa9d2554b70614cb971e40f",
-      "observation": "보라 룬 핵 한가운데에 앞이 낮게 찢어진 청록 눈이 세로로 빛나는 동공으로 오른쪽을 노려보고, 이마에는 짙은 홈이 파였으며 왼쪽 위에 마름모 룬이 새겨져 있다. 핵 뒤 위로 어두운 결정 조각 둘이 비스듬히 솟았고, 핵을 3/4 로 감싼 궤도를 따라 여섯 모 석판 조각들이 청록 기운 줄기에 매여 곧추선 채 돌며, 앞 조각은 밝고 크게 핵 아래쪽을 덮고 뒤 조각은 어둡게 물러나 있다.",
+      "sha256": "68bcdcdf4e18a3d721ae7c43ee6f4be1af3cd48455972fd38ccfbd9f27b39c30",
+      "observation": "네 면으로 깎인 길쭉한 보라 결정 핵이 떠 있고, 핵 앞면의 마름모 홈 안에 청록 룬 금이 세로로 빛나며 오른쪽을 겨눈다. 핵 바깥에는 성긴 청록 기운이 한 겹 감돈다. 룬이 새겨진 깨진 석판 조각 다섯이 줄기 없이 3/4 로 기운 궤도를 돌며, 앞 조각은 밝고 크게 핵 아래를 덮고 뒤 조각은 어둡게 물러나 있다.",
       "index": 7,
       "inspectionMethod": "Direct pixel redraw (scripts/content/monsters/redraw_ontology_8da61312.py): fresh anatomy, nine distinct poses with a skill-cast cell (0,2). Locally reviewed artwork; user acceptance is not implied.",
       "nativeSheet": "assets/generated/pixel-enemies/ontology-8da61312.png",
-      "nativeSheetSha256": "5694b8d750a3a356d627ddd462a30548fc51cef45f113de8c581a1f183955a7f",
+      "nativeSheetSha256": "28a1b9e02805a5435929277a54c7097c89b43b6b591bde32cf4561e67f3278b6",
       "cell": 64,
       "reviewEvidence": "verify-shots/monster-redraw-all/SUMMARY.md",
       "sourceWorkingTree": true
