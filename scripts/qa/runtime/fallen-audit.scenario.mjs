@@ -39,7 +39,7 @@ const dumpState = (name) => ({
 
 export default {
   id: "fallen-audit",
-  projectFixture: process.env.RES_FIXTURE ?? ".omo/fs/v16.json",
+  projectFixture: process.env.RES_FIXTURE ?? ".omo/fs/v17.json",
   viewport: { width: vw, height: vh },
   beats: [
     { id: "title", note: "타이틀", ops: [

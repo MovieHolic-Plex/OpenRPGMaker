@@ -556,6 +556,11 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   execTool(project, "author_map_puzzle", { mapId: PUZZLE_ROOM, presetId: "brazier_ignition_order", puzzleId: "fs_braziers", title: "네 화로의 방" });
   M(PUZZLE_ROOM).atmosphereEffects = M(ids.vault).atmosphereEffects;
   replaceLineAnywhere(M(PUZZLE_ROOM), "퍼즐 해독 보상! 「태양의 불씨 보관함」과(와) 250G를 획득했다!", [narrate("화로 사이 바닥이 열리고, 「태양의 불씨 보관함」과 250G가 나왔다.")]);
+  // 석판의 「동쪽 화로」는 동쪽에 화로가 둘(북동·남동)이라 어느 쪽인지 헷갈렸다 — 둘 중 하나임을 밝혀 추론 문제로 남긴다.
+  for (const event of M(PUZZLE_ROOM).events) for (const list of eventCommandLists(event)) for (const cmd of list) {
+    const rec = cmd as { kind: string; body?: string };
+    if (rec.kind === "text" && rec.body?.includes("첫 불은 동쪽 화로다.")) rec.body = rec.body.replace("첫 불은 동쪽 화로다.", "첫 불은 동쪽의 두 화로 가운데 하나에 붙인다.");
+  }
   const retarget = (map: GameMap, fromMapId: string, to: { mapId: string; x: number; y: number; facing?: string }): GameEvent | undefined => {
     const event = map.events.find((e) => eventCommandLists(e).some((l) => l.some((c) => c.kind === "transfer" && (c as { mapId?: string }).mapId === fromMapId)));
     if (!event) return undefined;
