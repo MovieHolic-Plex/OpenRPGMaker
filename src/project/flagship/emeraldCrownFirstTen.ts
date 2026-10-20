@@ -101,6 +101,9 @@ function polishLab(project: Project): void {
     text("다음 목표는 언제든 메뉴의 「배지」에서 볼 수 있단다.", "천문박사"),
   ]);
 
+  // 스타터 미리보기 그림(가운데)이 「자동」 위 대화창에 위쪽이 가렸다(2026-10-20 녹화 78초) — 박사 대사는 모두 아래 창.
+  for (const page of professor?.pages ?? []) walkLists(page.commands, (list) => { for (const c of list) if (c.kind === "text") c.position = "bottom"; });
+
   const rival = eventOf(project, "mx_map_lab", "mx_map_lab_rival");
   const page = rival?.pages?.[0];
   if (!rival || !page) return;

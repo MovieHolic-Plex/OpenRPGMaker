@@ -536,6 +536,16 @@ function tunePacing(project: Project): void {
   }
   // 신전 보스는 배지 하나 직후라 Lv8 셋(Lv9 셋에는 관장을 막 이긴 Lv9+Lv5 파티가 두 번 졌다, 2026-10-20), 챔피언 나루는 Lv10 넷(마지막 승부라 높게).
   for (const enemy of enemies) if (/^mx_enemy_mx_map_observatory_boss_\d+$/.test(enemy.id)) rescaleEnemy(enemy, 8);
+  // 무영의 몬스터가 챔피언 나루와 같은 종(베르카부·피오르·볼트온)이었고, 2단 진화 베르카부를 앞세워 Lv10 풀 스타터가 두 번 졌다(2026-10-21 정직 여정).
+  // 「밤막회사」답게 그림자·독·꿈 계열 기본 종 셋으로 바꾼다 — 불은 셋 모두 보통, 풀은 꿈방울로 독을, 물은 물 기술로 셋 모두를 보통 이상으로 친다.
+  const templeTeam: readonly [string, number][] = [["mx_enemy_threadimp", 7], ["mx_enemy_miretail", 7], ["mx_enemy_dozemite", 8]];
+  templeTeam.forEach(([templateId, level], i) => {
+    const enemy = byId(`mx_enemy_mx_map_observatory_boss_${i}`), template = byId(templateId);
+    if (!enemy || !template) return;
+    const rewards = enemy.rewards;
+    Object.assign(enemy, structuredClone({ ...template, id: enemy.id, rewards }));
+    rescaleEnemy(enemy, level);
+  });
   const trim: Record<string, number> = { mx_troop_mx_map_observatory_boss: 3, mx_troop_mx_map_league_0_league_challenge: 4 };
   for (const troop of project.database.troops) {
     const keep = trim[troop.id];
