@@ -95,6 +95,7 @@ export const COMPOSE_MODERN_CITY_STREET_TOOL: ToolDefinition = {
     target.lowerTiles = [...r.lower];
     target.upperTiles = [...r.upper];
     for (let i = 0; i < r.upper2.length; i++) if (r.upper2[i]! >= 0) setLayerTileAt(target, 4, i, r.upper2[i]!);
+    for (let i = 0; i < r.lower2.length; i++) if (r.lower2[i]! >= 0) setLayerTileAt(target, 2, i, r.lower2[i]!);
     const W = target.width, errs: string[] = [];
     if (!walkable(next, target, r.start.x, r.start.y)) errs.push(`시작 칸 (${r.start.x},${r.start.y}) 이 막혔다`);
     const seen = walkable(next, target, r.start.x, r.start.y) ? reachable(next, target, r.start) : new Set<number>();

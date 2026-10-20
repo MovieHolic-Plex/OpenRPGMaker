@@ -806,6 +806,10 @@ def main():
         # 움직이는 거리 소품(신호등·보행자 신호·건널목·화살표판·택시 승강장) — 이름 핀(anim:*)으로 번호를 고정한 칸·스트립·키트를 다시 붙인다.
         import bake_anim
         bake_anim.apply()
+        # 마지막 다시 칠하기(2026-10-20 modern-tiles: 바닥·연석·측구·잔디·가로수·평지붕·건물 그림자/기초) — 번호 고정 제자리 칠 + 끝 덧붙임.
+        sys.path.insert(0, os.path.join(ROOT, 'scripts', 'content', 'modern-tiles'))
+        import mc_repaint
+        mc_repaint.apply()
     rep = out['report']
     if a.selftest:
         rep['selftest'] = selftest(a.out_root)

@@ -20,6 +20,8 @@ export interface MCKit {
   readonly rows: readonly { readonly tiles: readonly number[]; readonly upperTiles?: readonly number[] }[];
   /** 건물 문 앞 접근칸(키트 기준, dy = height). */
   readonly access?: readonly { readonly dx: number; readonly dy: number }[];
+  /** 건물 그림자·기초 오버레이(2층) — [dx, dy, 칸 번호], 키트 원점 기준(키트 밖 아래 줄·오른쪽 열 포함). 2026-10-20 modern-tiles 굽기. */
+  readonly dress?: readonly (readonly [number, number, number])[];
 }
 export interface MCPalette {
   /** 바닥 묶음(mc:sidewalk·mc:green·mc:plaza …)의 칸 번호들. 없으면 빈 배열. */
@@ -45,6 +47,8 @@ export interface MCBuilding {
 export interface MCStreetSpec { readonly width: number; readonly height: number; readonly seed?: number; readonly shops?: readonly string[] }
 export interface MCStreetResult {
   readonly lower: number[];
+  /** 2층(lowerOverlay) — 건물 그림자·기초. 없으면 -1. */
+  readonly lower2: number[];
   readonly upper: number[];
   readonly upper2: number[];
   readonly buildings: MCBuilding[];
@@ -92,6 +96,9 @@ type Use = "ground" | "road" | "walk" | "front" | "bld" | "prop" | "park" | "veh
 function cellHash(x: number, y: number, k = 0): number { let h = Math.imul(x * 374761393 + y * 668265263 + k * 2147483647, 1274126177); h ^= h >>> 13; h = Math.imul(h, 1103515245); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; }
 /** 잔디 칸: mc:lawn(2026-10-14, 바탕 4 · 풀 덩이 2 · 꽃 2)이 있으면 섞어 칠하고, 옛 정의면 mc:green 두 칸. */
 function lawnTile(pal: MCPalette, x: number, y: number): number {
+  // 청록 잔디 변형(2026-10-20 modern-tiles): 바탕 넷(17·18·볕 든 자리 둘)을 섞고 큰 그늘·맨땅·토끼풀은 드물게.
+  const grass = pal.group("mc:grass");
+  if (grass.length >= 7) return variantTile(grass, 4, x, y, 0.08, 11);
   const lawn = pal.group("mc:lawn");
   if (lawn.length >= 8) {
     const j = cellHash(x, y);
@@ -99,6 +106,47 @@ function lawnTile(pal: MCPalette, x: number, y: number): number {
   }
   const green = pal.group("mc:green");
   return green[(x * 7 + y * 3) % Math.min(2, green.length)]!;
+}
+/** 묶음의 앞 common 개를 칸 해시로 섞고, rare 확률로 나머지(드문 변형) 중 하나. */
+function variantTile(ids: readonly number[], common: number, x: number, y: number, rare: number, salt: number): number {
+  const j = cellHash(x, y, salt);
+  if (j < rare && ids.length > common) return ids[common + Math.floor(cellHash(x, y, salt + 1) * (ids.length - common))]!;
+  return ids[Math.floor(cellHash(x, y, salt + 2) * Math.min(common, ids.length))]!;
+}
+/** 보도에 세우는 가로수는 나무 구덩이 판(…-pit-…)이 있으면 그것으로. */
+function pitTree(pal: MCPalette, id: string): string {
+  const pit = id.replace("mc-prop-keyaki-", "mc-prop-keyaki-pit-").replace("mc-prop-street-tree-", "mc-prop-street-tree-pit-");
+  return pit !== id && pal.kit(pit) ? pit : id;
+}
+/**
+ * 바닥 마무리(2026-10-20 modern-tiles): 아스팔트·보도 변형을 칸 해시로 섞고, 잔디와 보도가 맞닿는 곳에 경계석 칸,
+ * 건물 키트의 dress(그림자·기초) 를 2층에 깐다. 묶음이 없는 옛 정의면 아무것도 바꾸지 않는다.
+ */
+function finishGround(b: Board): number[] {
+  const lower2 = new Array<number>(b.W * b.H).fill(-1);
+  const asph = b.pal.group("mc:asphalt"), pav = b.pal.group("mc:paving");
+  const grassSet = new Set([...b.pal.group("mc:grass"), ...b.pal.group("mc:lawn"), ...b.pal.group("mc:green")]);
+  const paveSet = new Set(pav);
+  const edgeS = b.pal.group("mc:grass-edge-s"), underG = b.pal.group("mc:paving-under-grass"), edgeN = b.pal.group("mc:grass-edge-n");
+  const before = [...b.lower];
+  for (let y = 0; y < b.H; y++) for (let x = 0; x < b.W; x++) {
+    const i = b.k(x, y), t = before[i]!;
+    if (asph.length >= 8 && t === asph[0]) b.lower[i] = variantTile(asph, 5, x, y, 0.05, 21);
+    else if (pav.length >= 7 && t === pav[0]) b.lower[i] = variantTile(pav, 4, x, y, 0.04, 31);
+    if (!edgeS.length || !underG.length || !edgeN.length) continue;
+    const n = y > 0 ? before[i - b.W]! : -1, s = y + 1 < b.H ? before[i + b.W]! : -1;
+    if (grassSet.has(t) && paveSet.has(s)) b.lower[i] = edgeS[Math.floor(cellHash(x, y, 41) * edgeS.length)]!;
+    else if (grassSet.has(t) && paveSet.has(n)) b.lower[i] = edgeN[Math.floor(cellHash(x, y, 42) * edgeN.length)]!;
+    else if (paveSet.has(t) && grassSet.has(n)) b.lower[i] = underG[Math.floor(cellHash(x, y, 43) * underG.length)]!;
+  }
+  for (const d of b.buildings) {
+    for (const [dx, dy, t] of b.pal.kit(d.kit)?.dress ?? []) {
+      const X = d.rect.x + dx, Y = d.rect.y + dy;
+      if (!b.in(X, Y) || b.use[b.k(X, Y)] === "bld") continue;
+      lower2[b.k(X, Y)] = t;
+    }
+  }
+  return lower2;
 }
 /** 큰 가로수(잎 덩이 수관 3×4) — 없으면 옛 2×3 가로수. */
 const BIG_STREET_TREES = ["mc-prop-keyaki-a", "mc-prop-keyaki-b", "mc-prop-ginkgo-big-a"] as const;
@@ -388,7 +436,7 @@ export function composeModernCityStreet(spec: MCStreetSpec, pal: MCPalette): MCS
     for (let x = 1 + Math.floor(r() * 3); x < W - 2; x += 5 + Math.floor(r() * 3)) {
       if (nearCross(x, 1) || nearCross(x + 1, 1)) continue;
       // 큰 가로수(3×4): 줄기는 맨 아래 보도 줄(yy+11) 가운데 칸, 수관은 연석·차도 위로 걸친다. 없거나 안 맞으면 옛 2×3.
-      if (alt) { const big = BIG_STREET_TREES.filter((id) => b.pal.kit(id)); if (!(big.length && !nearCross(x + 2, 1) && b.prop(pick(r, big), x, yy + 8, ["walk", "road"]))) b.prop(pick(r, trees), x, yy + 9, ["walk", "road"]); }
+      if (alt) { const big = BIG_STREET_TREES.filter((id) => b.pal.kit(id)); if (!(big.length && !nearCross(x + 2, 1) && b.prop(pitTree(b.pal, pick(r, big)), x, yy + 8, ["walk", "road"]))) b.prop(pitTree(b.pal, pick(r, trees)), x, yy + 9, ["walk", "road"]); }
       else b.prop("mc-prop-lamp-a", x, yy + 9, ["walk", "road"]);
       alt = !alt;
     }
@@ -413,7 +461,7 @@ export function composeModernCityStreet(spec: MCStreetSpec, pal: MCPalette): MCS
     if (hz.some((h) => yy >= h - 1 && yy < h + 13)) continue;
     b.prop("mc-prop-lamp-a", xx + 1, yy - 2, ["walk"]);
     const big = BIG_STREET_TREES.filter((id) => b.pal.kit(id));
-    if (!(big.length && b.prop(pick(r, big), xx + 9, yy - 3, ["walk", "road"]))) b.prop(pick(r, trees), xx + 10, yy - 2, ["walk"]);
+    if (!(big.length && b.prop(pitTree(b.pal, pick(r, big)), xx + 9, yy - 3, ["walk", "road"]))) b.prop(pitTree(b.pal, pick(r, trees)), xx + 10, yy - 2, ["walk"]);
   }
   // 교차로 모서리 신호등(남쪽 두 모서리 발밑 = 교차로 맨 아래 보도 줄). 움직이는 키트라 시뮬레이션 신호 주기(TRANSIT_SIGNAL)와 같이 바뀐다:
   // 차량 신호는 남쪽을 보고 서서 북쪽행(남북) 차로용, 보행자 신호는 남쪽 횡단보도(남북 길을 가로지른다 = 동서 차량과 함께 건넌다)용.
@@ -450,7 +498,8 @@ export function composeModernCityStreet(spec: MCStreetSpec, pal: MCPalette): MCS
       busStops,
     }).routes,
   };
-  return { lower: b.lower, upper: b.upper, upper2: b.upper2, buildings, start, props: b.props, roads: { horizontal: hz, vertical: vt }, park: parkBlock ? { x: parkBlock.x0, y: parkBlock.y0, w: parkBlock.x1 - parkBlock.x0 + 1, h: parkBlock.y1 - parkBlock.y0 + 1 } : null, notes: b.notes, transit };
+  const lower2 = finishGround(b);
+  return { lower: b.lower, lower2, upper: b.upper, upper2: b.upper2, buildings, start, props: b.props, roads: { horizontal: hz, vertical: vt }, park: parkBlock ? { x: parkBlock.x0, y: parkBlock.y0, w: parkBlock.x1 - parkBlock.x0 + 1, h: parkBlock.y1 - parkBlock.y0 + 1 } : null, notes: b.notes, transit };
 }
 
 /** 번들 정의(또는 그 사본)에서 사전을 만든다. */
@@ -461,9 +510,9 @@ export function modernCityPaletteFromTileset(def: {
   const groups = new Map((def.tileGroups ?? []).map((g) => [g.id, g.tileIds] as const));
   const kits = new Map<string, MCKit>();
   for (const raw of def.structureKits ?? []) {
-    const k = raw as { id: string; width: number; height: number; rows: MCKit["rows"]; ai?: { access?: { dx: number; dy: number }[] } };
+    const k = raw as { id: string; width: number; height: number; rows: MCKit["rows"]; ai?: { access?: { dx: number; dy: number }[]; dress?: [number, number, number][] } };
     if (!k?.id || !Array.isArray(k.rows)) continue;
-    kits.set(k.id, { id: k.id, width: k.width, height: k.height, rows: k.rows, ...(k.ai?.access ? { access: k.ai.access } : {}) });
+    kits.set(k.id, { id: k.id, width: k.width, height: k.height, rows: k.rows, ...(k.ai?.access ? { access: k.ai.access } : {}), ...(Array.isArray(k.ai?.dress) ? { dress: k.ai.dress } : {}) });
   }
   const bld = [...kits.keys()].filter((id) => id.startsWith("mc-bld-"));
   return { group: (id) => groups.get(id) ?? [], kit: (id) => kits.get(id), buildingKits: () => bld };
