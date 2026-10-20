@@ -269,3 +269,6 @@ v5 시트 **끝에 덧붙인** 손 도트 조각(같은 팔레트 v6·같은 램
 - interior-plus 조각(유물 진열장 둘·선원 침상)은 원본 `scripts/content/interior-plus/pieces/*.py` 를 고치고 같은 렌더를 덮는다 — `interior-plus/bake.py` 는
   판정 프로필이 바뀌어 나머지 70조각의 옛 영수증이 무효라 지금 통째로 막힌다(고친 세 조각은 현재 프로필 영수증 PASS).
 - 런타임 확인: `bun tiledata/hand-interior/pick/work/props34/fixture.mts` → `npm run qa:runtime -- --scenario props34-v5-rooms`(이 머신은 `unshare -rn` netns 안에서).
+- **관문:** `rebake_inplace.py` 는 그림(프레임 0, 팔레트 v6)에 object-gate 영수증이 PASS 일 때만 덮는다(보정 프로필 PASS, 또는 현재 미보정 프로필의 PASS = interior-plus `gate_rooms.state` 와 같은 임시 통과). 우회 인자 없음.
+  2026-10-20 결과: 17종 덮음(진열장 13·슬롯머신·유물 진열장 둘·선원 침상), 4종 보류(투구 선반·천체 모형·제어반 = 3/4 판정 갈림 REFER, 고해실 = 화풍 FAIL) —
+  옛 그림 그대로이고 후보 그림은 `tiledata/hand-interior/props34/` 에 있다. 영수증이 PASS 로 바뀌면 `rebake_inplace.py` 를 다시 돌리면 들어간다.
