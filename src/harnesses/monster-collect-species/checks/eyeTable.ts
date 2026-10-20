@@ -35,6 +35,8 @@ export type EyeEntry = {
   frozen?: { front: string; back: string };
   /** 사람이 고르기를 기다리는 종(그림을 바꾸지 않는다) */
   pending?: string;
+  /** 손 도트 2차(2026-10-20, `redraw_failed_eyes_r2.py` + `eye-patches-r2.json`): authored 앞모습 해시 from → to. 옛 `repair` 를 대신한다 */
+  patch?: { from: string; to: string; source: string };
   /** 지금 그림이 실패하는 검사와 이유. 시험은 실제 실패 목록이 이 키들과 정확히 같아야 통과한다 — 고치면 지워야 한다 */
   accept?: Partial<Record<EyeCheckId, string>>;
 };
