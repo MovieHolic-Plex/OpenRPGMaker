@@ -154,3 +154,20 @@ export function dressVaultVoid(map: GameMap, voidTiles: ReadonlySet<number>, roc
   }
   return changed;
 }
+
+/**
+ * 금고 바닥의 규칙적인 체커 판을 깬다(가혹 VQA r3 「바닥 반복 체커」). 평평한 바닥 칸(floorTiles) 가운데 일부를
+ * 같은 줄 중앙 길에 이미 쓰인 금 간 포석(crackedTiles)으로 칸 좌표 해시에 따라 흩어 바꾼다. 새 그림은 쓰지 않는다.
+ */
+export function varyVaultFloor(map: GameMap, floorTiles: ReadonlySet<number>, crackedTiles: readonly number[], flatTiles: readonly number[], crackedPerMille: number): number {
+  let changed = 0;
+  for (let c = 0; c < map.width * map.height; c += 1) {
+    const t = map.lowerTiles[c] ?? -1;
+    if (!floorTiles.has(t)) continue;
+    const x = c % map.width, y = Math.floor(c / map.width);
+    const hsh = (((x * 73856093) ^ (y * 19349663)) >>> 0) % 1000;
+    const next = hsh < crackedPerMille ? crackedTiles[hsh % crackedTiles.length]! : flatTiles[(hsh >> 1) % flatTiles.length]!;
+    if (next !== t) { map.lowerTiles[c] = next; changed += 1; }
+  }
+  return changed;
+}

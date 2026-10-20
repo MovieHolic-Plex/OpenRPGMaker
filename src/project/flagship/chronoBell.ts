@@ -20,7 +20,7 @@ import { buildJrpgChapter } from "@/editor/tools/jrpgChapterTools";
 import { pickSpot, placeRoamer } from "@/editor/tools/jrpgVolumeTools";
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import { buildFallenStarOpening, FALLEN_STAR_TITLE_BACKGROUND } from "./fallenStarOpening";
-import { clearOrphanShadows, clearUpperByLabel, dressVaultVoid, rimPit } from "./fallenStarMapPolish";
+import { clearOrphanShadows, clearUpperByLabel, dressVaultVoid, varyVaultFloor, rimPit } from "./fallenStarMapPolish";
 import { FALLEN_STAR_ACT1, FS_NAMES, FS_PREFIX, FS_STAR_KEY_ITEM } from "./fallenStarStory";
 import type { FlagshipDemoBuildResult } from "./types";
 
@@ -759,7 +759,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // 맵 마감(감사 3차) — 주인 없는 그림자, 화로의 방 긴 화덕 띠.
   for (const map of [M(ids.hub), M(ids.forest), M(ids.vault)]) clearOrphanShadows(project, map);
   // 지하 묘소 — 방 사이 균일한 남색 허공을 방 가까이에서 바위 덩어리로 바꿔 화면이 비어 보이지 않게 한다(VQA).
-  dressVaultVoid(M(ids.vault), new Set([28462, 28509]), [25276, 25277, 25279, 25280, 25282, 25283], 1, 3);
+  dressVaultVoid(M(ids.vault), new Set([28462, 28509]), [25276, 25277, 25279, 25280, 25282, 25283], 1, 99);
+  varyVaultFloor(M(ids.vault), new Set([26817, 26818, 26819]), [26815, 26816], [26819, 26819, 26818, 26817], 90);
   clearUpperByLabel(project, M(PUZZLE_ROOM), /^긴 화덕/);
   // 천문대 윗 홀의 나선 계단은 어디로도 이어지지 않는 장식이었다(감사 라운드 2) — 걷어 낸다. 내려가는 길은 바닥 뚜껑문 하나다.
   {
