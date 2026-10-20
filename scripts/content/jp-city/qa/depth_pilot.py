@@ -12,6 +12,7 @@ for p in (os.path.join(JP, 'houses'), os.path.join(JP, 'vehicles'), os.path.join
     sys.path.insert(0, p)
 import catalog as CA, house_kit as hk  # noqa: E402
 import depth34  # noqa: E402,F401
+ROOF_NOTES = []
 import heavy, cars  # noqa: E402
 import parts_vehicles as PV  # noqa: E402
 
@@ -23,10 +24,14 @@ def pieces():
     """(그룹, 키, 이름, 새 그림 Image, 옛 그림 파일명)."""
     out = []
     for id_ in BUILDINGS:
+        depth34.ROOF_LOG.clear()
         cv, _ = hk.build(CA.CATALOG[id_][2])
+        for a, b, w in depth34.ROOF_LOG: ROOF_NOTES.append((id_, a, b)); print('roof-item', id_, a, '->', b)
         out.append(('건물', id_, CA.CATALOG[id_][0], cv.img(), id_ + '.png'))
     for id_ in CA.TOWN_IDS:                                                    # 상점가 화풍(妻入り · 난간 옥상)
+        depth34.ROOF_LOG.clear()
         cv, _ = hk.build(CA.CATALOG[id_][2])
+        for a, b, w in depth34.ROOF_LOG: ROOF_NOTES.append((id_, a, b)); print('roof-item', id_, a, '->', b)
         out.append(('상점', id_, CA.CATALOG[id_][0], cv.img(), id_ + '.png'))
     for k, fr, opn in (('bus-right', True, False), ('bus-left_open', False, True)):
         out.append(('움직이는 탈것', k, '노선버스 ' + k[4:], Image.fromarray(heavy.bus_side(fr, opn)), k + '.png'))
@@ -75,6 +80,7 @@ def main(old_dir, out):
         r.resize((r.width * 4, r.height * 4), Image.NEAREST).save(os.path.join(out, f'{k}-4x.png'))
         idx.append(dict(group=grp, key=k, name=name))
     json.dump(idx, open(os.path.join(out, 'index.json'), 'w'), ensure_ascii=False, indent=1)
+    json.dump(ROOF_NOTES, open(os.path.join(out, 'roof_items.json'), 'w'), ensure_ascii=False)
     print(len(idx), out)
 
 

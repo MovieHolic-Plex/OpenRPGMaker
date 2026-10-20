@@ -42,6 +42,31 @@ def text_w(s, step=17):
     return step * len(s) - (step - 16)
 
 
+SIGN_SHORT = {'酒のヤマ': '酒', 'ブックス': '本', '喫茶ルナ': '喫茶', 'フラワー': '花', 'サイクル': '自転車', 'ランドリー': '洗たく', 'さくら駅': 'さくら駅'}
+
+
+def sign_fit(s, w):
+    """간판 글자가 판 안쪽(테 2px)에서 좌우 여백 4px 이상 남게 — 넘치면 짧은 이름으로(2026-10-20 VQA)."""
+    t = SIGN_SHORT.get(s)                                                    # 긴 이름은 짧은 이름을 먼저(VQA: 글자가 판을 꽉 채운다)
+    if t and t != s and all(jfont.glyph(ch) is not None for ch in t) and text_w(t, 18) <= w - 12: return t
+    if text_w(s, 18) <= w - 12: return s
+    if t and all(jfont.glyph(ch) is not None for ch in t) and text_w(t, 18) <= w - 12: return t
+    while len(s) > 1 and text_w(s, 18) > w - 12: s = s[:-1]
+    return s
+
+
+def sign_text(c, x, y, s, col, shadow, step=18):
+    """간판 레터링: 16px 글리프 획을 오른쪽으로 1px 두껍게(세로획 2px, 손 도트 간판처럼 고른 굵기) + 오른쪽 아래 1px 그림자."""
+    for i, ch in enumerate(s):
+        if ch == ' ': continue
+        g = jfont.glyph(ch)
+        on = set((j, k) for j in range(16) for k in range(16) if g[j, k])
+        bold = on | set((j, k + 1) for j, k in on)
+        for j, k in bold:
+            if (j + 1, k + 1) not in bold: c.P(x + i * step + k + 1, y + j + 1, shadow)
+        for j, k in bold: c.P(x + i * step + k, y + j, col)
+
+
 # ─────────────────────────── 간판·차양·노렌 ───────────────────────────
 def sign(c, x, y, w, s, bg='sora', fg=('shiro', 2), h=20, frame=True):
     """간판판: 윗면 2(+2/+1) · 앞면 h(bg 0, 테 -2) · 아래 그림자 3 (벽 위)."""
@@ -52,8 +77,9 @@ def sign(c, x, y, w, s, bg='sora', fg=('shiro', 2), h=20, frame=True):
     c.HL(x, y + h + 2, w, K(bg, -2))
     c.HL(x - 1, y - 1, w + 2, OL); c.VL(x - 1, y, h + 3, OL); c.VL(x + w, y, h + 3, OL); c.HL(x - 1, y + h + 3, w + 2, OL)
     if s:
-        tw = text_w(s)
-        text(c, x + (w - tw) // 2, y + 2 + (h - 16) // 2 + 1, s, K(*fg))
+        s = sign_fit(s, w)
+        tw = text_w(s, 18)
+        sign_text(c, x + (w - tw) // 2, y + 2 + (h - 16) // 2 + 1, s, K(*fg), K(bg, -2))
     return y + h + 4
 
 

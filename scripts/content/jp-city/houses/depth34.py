@@ -72,7 +72,7 @@ def hip_top(c, x0, x1, ytop, yeave, mat, base, ridge_frac=0.24, run=None):
                 if (y + (2 if (x - x0) // 4 % 2 else 0)) % 4 == 0: t -= 1
                 c.P(x, y, K(mat, t))
             elif x > br:                                     # 오른쪽 옆면(동향 · 그늘)
-                t = base - 1 - (2 if (x1 - x) % 4 == 0 else 0) + (1 if (x1 - x) % 4 == 3 else 0)
+                t = max(base - 1, -1) - (2 if (x1 - x) % 4 == 0 else 0) + (1 if (x1 - x) % 4 == 3 else 0)
                 if (y + (2 if (x1 - x) // 4 % 2 else 0)) % 4 == 0: t -= 1
                 c.P(x, y, K(mat, t))
             elif y < yr and not flat_back:                   # 뒤 경사면(북향 · 빛을 받아 밝다)
@@ -109,7 +109,7 @@ def gable_top(c, x0, x1, ytop, yeave, mat, base, ridge_frac=0.22):
     """平入り 切妻를 위에서: 직사각 바깥선, 가로 용마루, 뒤 경사면 띠, 양 끝 破風板은 세로 흰 띠."""
     D = yeave - ytop
     flat_back = ridge_frac <= 0.08                            # 버들항식: 용마루 = 윗선(뒤 경사면 안 보임)
-    yr = ytop + (2 if flat_back else max(5, round(D * ridge_frac)))
+    yr = ytop + (7 if flat_back else max(5, round(D * ridge_frac)))       # 버들항식: 용마루(棟瓦) 7줄 띠가 윗선(1배에서 읽히게)
     fd = yeave - yr
     ya = _anchor(yr, yeave)
     for y in range(ytop, yeave):
@@ -117,11 +117,24 @@ def gable_top(c, x0, x1, ytop, yeave, mat, base, ridge_frac=0.22):
         for x in range(x0, x1 + 1):
             if y < yr and not flat_back: _course(c, x, y, ytop, mat, base + 1)
             else: _course(c, x, y, ya, mat, base + up)
-        c.P(x0, y, K(mat, base + 4)); c.P(x0 + 1, y, K(mat, base + 3))       # 케라바(けらば, 빛 쪽) 2px
-        c.P(x1, y, K(mat, base - 4)); c.P(x1 - 1, y, K(mat, base - 3))       # 케라바(그늘 쪽) 2px
+        c.P(x0, y, K('shiro', 1)); c.P(x0 + 1, y, K(mat, base + 3)); c.P(x0 + 2, y, K(mat, base + 2))   # けらば(빛 쪽) 3px: 흰 테 + 밝은 기와 두 줄
+        c.P(x1, y, OL); c.P(x1 - 1, y, K(mat, base - 3)); c.P(x1 - 2, y, K(mat, base - 2))             # けらば(그늘 쪽) 3px
         c.P(x0 - 1, y, OL); c.P(x1 + 1, y, OL)
-    c.HL(x0 + 2, yr - 2, x1 - x0 - 3, K(mat, base + 4)); c.HL(x0 + 2, yr - 1, x1 - x0 - 3, K(mat, base + 3)); c.HL(x0 + 2, yr, x1 - x0 - 3, K(mat, base - 4))   # 棟瓦 띠
-    for x in range(x0 + 4, x1 - 2, 6): c.P(x, yr - 1, K(mat, base + 1))                                       # 棟瓦 마디
+    if flat_back:                                                            # 棟瓦 7줄: 흰 冠 + 熨斗 2단(마디) + 그늘 띠, 양 끝 鬼瓦 5×8
+        W = x1 - x0 + 1
+        c.HL(x0, yr - 7, W, K('shiro', 1)); c.HL(x0, yr - 6, W, K(mat, base + 3))          # 冠瓦 윗면
+        c.HL(x0, yr - 5, W, K('shiro', 0))                                                       # 漆喰 줄
+        c.HL(x0, yr - 4, W, K(mat, base + 2))                                                    # 熨斗 1단
+        for x in range(x0 + 2, x1 - 1, 3): c.P(x, yr - 4, K(mat, base - 1))
+        c.HL(x0, yr - 3, W, K('shiro', -1))                                                      # 漆喰 줄
+        c.HL(x0, yr - 2, W, K(mat, base + 1))                                                    # 熨斗 2단
+        for x in range(x0 + 3, x1 - 1, 3): c.P(x, yr - 2, K(mat, base - 2))
+        c.HL(x0, yr - 1, W, K(mat, base - 4)); c.HL(x0, yr, W, K(mat, base - 2))                # 棟 아래 그늘
+        for ex in (x0, x1 - 4):
+            c.R(ex, yr - 8, 5, 8, K('yoru', -1)); c.HL(ex, yr - 8, 5, K('yoru', 2)); c.R(ex, yr - 8, 1, 8, K('yoru', 1))
+            c.P(ex + 2, yr - 5, K('yoru', -3)); c.HL(ex, yr, 5, OL)
+    else:
+        c.HL(x0 + 2, yr - 2, x1 - x0 - 3, K(mat, base + 4)); c.HL(x0 + 2, yr - 1, x1 - x0 - 3, K(mat, base + 3)); c.HL(x0 + 2, yr, x1 - x0 - 3, K(mat, base - 4))
     c.HL(x0 - 1, ytop - 1, x1 - x0 + 3, OL)
     if not flat_back: c.HL(x0, ytop, x1 - x0 + 1, K(mat, base - 1))
     _eave_lip(c, x0 - 1, x1 + 1, yeave, mat, base)
@@ -139,7 +152,7 @@ def gable_front_top(c, x0, x1, ytop, yeave, ywall, mat, base, rise, wx0, wx1, wm
         yt = ytop + round(rise_b * d); yb = yeave - round(rise * (1 - d))
         lit = x <= xc
         for y in range(yt, yb - 1):
-            t = base + (2 if lit else -1)
+            t = min(base + 2, 2) if lit else max(base - 1, -1)                # 그늘 면 하한 −1: 기와 단(−2/+1)이 램프 끝에 눌려 사라지지 않게(3~5색)
             if tex_ribs:                                                     # 골판: 얕은 세로 골 + 12줄마다 판 이음
                 t += (1 if (x - x0) % 6 == 1 else -1 if (x - x0) % 6 == 4 else 0)
                 if (y - yt) % 12 == 11: t -= 1
@@ -187,8 +200,7 @@ def shed_top(c, x0, x1, ytop, yeave, mat, base):
         for x in range(x0 + 3, x1 - 2):
             # 위(뒤)에서 아래(처마)로 밝음 → 어두움 그러데이션(경계는 체커 디더, 띠·격자 없음) + 왼쪽 위 반사
             m = (x - x0) % 8
-            d = f + 0.25 * (x - m - x0) / max(1, x1 - x0)                  # 골(8px) 단위로 계단식 경계(디더 없음, 3단)
-            g = 2 if d < 0.30 else 1 if d < 0.68 else 0
+            g = 2 if f < 0.30 else 1 if f < 0.68 else 0                     # 경사 방향(위→아래)으로만 3단 가로 띠(곧은 경계, 디더·계단 없음)
             t = base + g + (1 if m == 0 else -1 if m == 1 else 0)          # 성긴 골(8px)
             c.P(x, y, K(mat, t))
         c.P(x0, y, K(mat, base + 3)); c.P(x0 + 1, y, K(mat, base + 2)); c.P(x0 + 2, y, K(mat, base + 2))   # 마구리(빛)
@@ -253,6 +265,18 @@ def _plant(c, x, y):
     c.HL(x + 1, y + 10, 7, OL); c.VL(x + 1, y + 6, 4, OL); c.VL(x + 7, y + 6, 4, OL)
 
 
+def _pot(c, x, y):
+    """작은 화분(5×7): 화분이 안 들어갈 때의 대체품."""
+    for j in range(4):
+        for i in range(5):
+            if ((i - 2) / 2.6) ** 2 + ((j - 1.5) / 2.1) ** 2 <= 1:
+                c.P(x + i, y + j, K('midori', 3 if (j < 2 and i < 3) else 1))
+    c.R(x + 1, y + 4, 3, 2, K('renga', 1)); c.HL(x + 1, y + 4, 3, K('renga', 3)); c.HL(x, y + 6, 5, OL)
+
+
+ROOF_LOG = []                                                                    # 옥상 물건 대체·제외 기록(조용히 사라지지 않게)
+
+
 def _laundry(c, x, y, w=22):
     """빨래 건조대: 양 끝 기둥 + 줄 + 걸린 천(흰·하늘·분홍)."""
     for px in (x, x + w - 1):
@@ -302,37 +326,47 @@ def flat_top(c, x0, x1, ytop, yb, mat='conc', items=(), rail=False, floor=None):
     c.HL(x0 - 1, ytop - 1, W + 2, OL); c.VL(x0 - 1, ytop, yb - ytop, OL); c.VL(x1 + 1, ytop, yb - ytop, OL)
     if rail: _railing(c, x0, x1, ytop, yb, mat)
     taken = []
-    BW = {'pent': 28, 'ac': 14, 'tank': 14, 'plant': 9, 'laundry': 22}
-    BH = {'pent': 34, 'ac': 15, 'tank': 17, 'plant': 11, 'laundry': 14}
-    PRI = {'pent': 0, 'laundry': 1, 'tank': 2, 'ac': 3, 'plant': 4}
-    for kind, ix, iy in sorted(items, key=lambda t: PRI.get(t[0], 5)):           # 큰 것부터 자리를 잡는다(塔屋→빨래→물탱크→실외기→화분)
-        ix += x0; iy += ytop
+    BW = {'pent': 28, 'ac': 14, 'tank': 14, 'plant': 9, 'laundry': 22, 'pot': 5}
+    BH = {'pent': 34, 'ac': 15, 'tank': 17, 'plant': 11, 'laundry': 14, 'pot': 7}
+    PRI = {'pent': 0, 'laundry': 1, 'tank': 2, 'ac': 3, 'plant': 4, 'pot': 5}
+    SMALLER = {'laundry': 'plant', 'tank': 'ac', 'plant': 'pot'}                  # 자리가 없으면 한 단계 작은 물건으로
+    lo, hi = ytop + 7, yb - 7                                                    # 뒤 난간 안쪽 면(+그늘) 아래 ~ 앞 난간 앞 바닥
+
+    def free(ax, ay, bw, bh):
+        return all(not (ax < a1 + 3 and ax + bw > a0 - 3 and ay < b1 + 2 and ay + bh > b0 - 2) for a0, a1, b0, b1 in taken)
+
+    def place(kind, ix, iy):
         if kind == 'tank': ix = x1 - 4 - 14                                    # 물탱크는 오른쪽 구석
         bw, bh = BW.get(kind, 14), BH.get(kind, 15)
-        pt = 16
-        lo, hi = ytop + 7, yb - 7                                            # 뒤 난간 안쪽 면(+그늘) 아래 ~ 앞 난간 앞 바닥
-        pf = 18
-        if kind == 'pent':                                                   # 塔屋은 문 앞에 바닥이 3줄 이상 남게: 윗면 16→5, 남쪽 면 18→12 순으로 줄이고 그래도 안 되면 뺀다
+        pt, pf = 16, 18
+        if kind == 'pent':                                                   # 塔屋은 문 앞에 바닥이 3줄 이상 남게: 윗면 16→5, 남쪽 면 18→12 순으로 줄인다
             room = hi - 3 - lo
             pt = max(5, min(16, room - 18)); pf = max(12, min(18, room - pt))
-            if pt + pf > room: continue
+            if pt + pf > room: return None
             bh = pt + pf; iy = lo
         iy = max(lo, iy)
         if iy + bh > hi: iy = max(lo, hi - bh)                               # 앞 난간을 덮지 않게 위로 올린다
-        if iy + bh > hi: continue                                            # 그래도 안 들어가면 뺀다
-        def free(ax, ay):
-            return all(not (ax < a1 + 3 and ax + bw > a0 - 3 and ay < b1 + 2 and ay + bh > b0 - 2) for a0, a1, b0, b1 in taken)
+        if iy + bh > hi: return None
         ix = max(x0 + 4, min(ix, x1 - 4 - bw))
-        if not free(ix, iy):                                                 # 막히면 데크 안에서 빈자리를 찾는다(위→아래, 왼→오른)
-            spot = next(((ax, ay) for ay in range(lo, hi - bh + 1, 2) for ax in range(x0 + 4, x1 - 3 - bw, 2) if free(ax, ay)), None)
-            if spot is None: continue
+        if not free(ix, iy, bw, bh):                                         # 막히면 데크 안에서 빈자리를 찾는다(위→아래, 왼→오른)
+            spot = next(((ax, ay) for ay in range(lo, hi - bh + 1, 2) for ax in range(x0 + 4, x1 - 3 - bw, 2) if free(ax, ay, bw, bh)), None)
+            if spot is None: return None
             ix, iy = spot
         taken.append((ix, ix + bw, iy, iy + bh))
         if kind == 'ac': _ac(c, ix, iy)
         elif kind == 'tank': _tank(c, ix, iy)
         elif kind == 'pent': _penthouse(c, ix, iy, top=pt, face=pf)
         elif kind == 'plant': _plant(c, ix, iy)
+        elif kind == 'pot': _pot(c, ix, iy)
         elif kind == 'laundry': _laundry(c, ix, iy)
+        return kind
+
+    for kind, ix, iy in sorted(items, key=lambda t: PRI.get(t[0], 5)):           # 큰 것부터 자리를 잡는다(塔屋→빨래→물탱크→실외기→화분)
+        k = kind
+        while k and place(k, ix + x0, iy + ytop) is None:
+            k = SMALLER.get(k)
+        if k != kind:
+            ROOF_LOG.append((kind, k or 'dropped', W))
 
 
 # ─────────────────────────── house_kit 등록 ───────────────────────────
@@ -411,8 +445,9 @@ ROOF_DEPTH = 36                                         # 지붕 면(妻入り�
 def cap_roof(r):
     import copy
     r = copy.deepcopy(r)
-    if r.get('rmat') in ('renga', 'aka'): r['rmat'], r['rbase'] = 'kawara', -3   # 한 거리 한 기와 계열(흑갈) — 역·平屋 포함
-    if r.get('rmat') == 'kawara': r['rbase'] = -3                              # 흑갈(밝은 경사면도 −1 까지)
+    # 주택·역은 따뜻한 기와(kawara −1, 2026-10-20 VQA 2판: −3 은 검붉게 뭉개진다). 상점가는 townify 가 흑갈(ita)로 먼저 바꾼다.
+    if r.get('rmat') in ('renga', 'aka'): r['rmat'], r['rbase'] = 'kawara', -1
+    if r.get('rmat') == 'kawara': r['rbase'] = -1
     rk, ro = r['roof']
     if 'h' not in ro: return r
     hgt = {'lean': 16, 'lean_bal': 16, 'belt': 4, 'none': 0, 'corridor': 4, **hk.JOIN_H}
@@ -447,9 +482,8 @@ def townify(r, id_, narrow_w=6, force=None):
     r = copy.deepcopy(r)
     seed = zlib.crc32(id_.encode())
     rk = r['roof'][0]
-    if r.get('rmat') == 'aka': r['rmat'], r['rbase'] = 'kawara', -1
-    if r.get('rmat') == 'renga': r['rmat'], r['rbase'] = 'kawara', -2                # 연분홍 기와 금지
-    if r.get('rmat') == 'kawara': r['rbase'] = min(r.get('rbase', 0), -2)        # 흑갈 기와(밝은 주황 기와 금지)
+    # 상점가 지붕 한 계열: 슬레이트(yoru·tairu) · 흑갈 기와(ita −1) · 골판(tekko). 빨강·주황·분홍 기와(kawara·renga·aka)는 흑갈로.
+    if r.get('rmat') in ('kawara', 'renga', 'aka'): r['rmat'], r['rbase'] = 'ita', -1
     if force == 'gable_front' or (force is None and rk in PITCHED_OLD and r['w'] <= narrow_w):
         r['roof'] = ('gable_front', {})
     elif force == 'flat':
