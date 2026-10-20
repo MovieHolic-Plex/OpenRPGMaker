@@ -199,9 +199,10 @@ export function isTreeComposerGroup(group: AutotileGroup): boolean {
 /**
  * 숲 바닥 오토타일 없이 숲 칸 판정으로 맵 전체를 짠다(버들항 woodland, 2026-10-20).
  * forest(x,y) = 나무가 설 수 있는 숲 칸, hold(x,y) = 수관이 덮어도 되는 칸(숲 칸 포함). 규칙은 composeTreesAll 과 같다.
+ * hold 밖 칸은 쓰지 않는다 — 같은 나무 그림을 따로 찍어 둔 낱 나무·덤불(composer 그림과 칸 번호가 같다)을 지우지 않게.
  */
 export function composeTreesInMask(map: GameMap, cp: TreeComposerDef, forest: (x: number, y: number) => boolean,
   hold: (x: number, y: number) => boolean, seed = 0): number {
   const c = contextFor(map, cp, [], seed, forest, hold);
-  return c ? rewrite(c, 0, 0, c.W, c.H) : 0;
+  return c ? rewrite(c, 0, 0, c.W, c.H, hold) : 0;
 }
