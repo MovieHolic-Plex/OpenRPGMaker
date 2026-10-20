@@ -45,7 +45,9 @@ function polishBedroom(project: Project): void {
   const intro = eventOf(project, "mx_map_home_house_2f", "mx_map_home_house_2f_opening");
   for (const page of intro?.pages ?? []) {
     page.commands = [
-      text("드디어 오늘이다. 천문박사님께 첫 동료를 받는 날! 창밖에서는 여명의 날개 새들이 길을 잃은 듯 맴돌고 있다."),
+      // 한 쪽에 한 생각(적대 검수 m1: 문장 가운데서 쪽이 넘어갔다).
+      text("드디어 오늘이다. 천문박사님께 첫 동료를 받는 날!"),
+      text("창밖에서는 여명의 날개 새들이 길을 잃은 듯 맴돌고 있다."),
       text("〔방향키〕 걷기 · 〔Z〕 말 걸기 · 〔X〕 메뉴"),
       { kind: "setSwitch", switchId: "mx_intro", value: true },
     ];

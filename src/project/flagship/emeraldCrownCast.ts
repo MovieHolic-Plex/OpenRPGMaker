@@ -1,7 +1,7 @@
 // 아스트라 호라이즌 등장인물 배선(2026-10-21 사용자 「chargen 으로 흉상·전신을 찍어라, 지금은 너무 허접하다」).
 // - 이름 있는 인물의 대사마다 그 인물의 흉상(표정은 대사 내용으로 고른다)을 띄우고, 다른 화자로 넘어가거나 이벤트가 끝나면 지운다.
-// - 처음 만나는 나루·관장 유림·챔피언 나루는 첫 대사 묶음 동안 전신을 화면 가운데 세운다(그동안은 흉상 없음).
-// - 나루·유림·무영 트레이너 소개 그림은 같은 전신에서 구운 번들 그림(battle-trainers/astra_<id>)을 쓴다.
+// - 전신은 트레이너 소개에서만 보인다(나루·유림·무영 앞모습 battle-trainers/astra_<id>, 주인공 뒷모습 astra_hero). 맵 장면에는 세우지 않는다.
+// - 그림(스타터 카드 등)이 떠 있는 동안은 흉상을 내린다.
 // 그림: src/assets/astraCast.ts(char-gen 산출물, 감독 선택, 원래 도트 크기).
 import { ASTRA_CAST_EXPRESSIONS, astraCastBustId, astraCastCardId, type AstraCastExpression, type AstraCastId } from "@/assets/astraCast";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
@@ -68,6 +68,8 @@ function castList(list: Command[], spotlight?: Spotlight): void {
     if (command.kind === "showPicture" && (command as { pictureId?: string }).pictureId !== SPOTLIGHT) { pictures++; continue; }
     if (command.kind === "erasePicture" && (command as { pictureId?: string }).pictureId !== SPOTLIGHT) { pictures = Math.max(0, pictures - 1); continue; }
     if (command.kind !== "text") continue;
+    // 그림이 떠 있으면 인물 대사라도 흉상을 내린다. 바깥 목록에서 이어진 흉상일 수 있으니(current 모름) 꼭 지운다.
+    const hidden = pictures > 0 && castOf(command.speaker) !== undefined;
     const cid = pictures > 0 ? undefined : castOf(command.speaker);
     if (lit && cid === lit) {
       if (i === list.findIndex((c) => c.kind === "text")) {
@@ -83,7 +85,7 @@ function castList(list: Command[], spotlight?: Spotlight): void {
     lit = undefined;
     const want = cid ? astraCastBustId(cid, astraCastExpression(cid, command.body)) : null;
     if (want === current) continue;
-    if (want === null && current === undefined) { current = null; continue; } // 이 목록에서 띄운 적 없는 일반 대사는 그대로
+    if (want === null && current === undefined && !hidden) { current = null; continue; } // 이 목록에서 띄운 적 없는 일반 대사는 그대로
     list.splice(i, 0, want ? face(want) : CLEAR()); i++; current = want;
   }
   if (lit && shown) list.push({ kind: "erasePicture", pictureId: SPOTLIGHT });
@@ -107,11 +109,9 @@ function firstMeeting(list: Command[], cid: AstraCastId): Command[] | undefined 
 }
 
 /** 처음 만나는 장면: (맵, 이벤트, 인물) — 그 이벤트 첫 페이지의 첫 대사 묶음에 전신을 세운다. */
-const SPOTLIGHTS: readonly [string, string, AstraCastId][] = [
-  ["mx_map_lab", "mx_map_lab_rival", "naru"],
-  ["mx_map_grove_gym", "mx_map_grove_gym_leader", "yurim"],
-  ["mx_map_league_0", "mx_map_league_0_league_challenge", "naru"],
-];
+// 전신은 트레이너 소개(전투 시작)에서만 보인다 — 맵에 걷기 칩이 서 있는데 전신 카드까지 세우면 한 사람이 두 번 보였다(2026-10-21 적대 검수 r1).
+// 장치는 남겨 두지만 지금은 아무 장면도 세우지 않는다.
+const SPOTLIGHTS: readonly [string, string, AstraCastId][] = [];
 
 const TRAINER_FRONTS: Readonly<Record<string, string>> = {
   naru: "astra_naru",
