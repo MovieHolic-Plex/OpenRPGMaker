@@ -5,6 +5,18 @@
 
 <!-- releases -->
 
+## 0.284.0 — 2026-10-20
+
+### 기능
+
+- **defaults** — new projects default to 640x360 internal resolution at zoom 1; Fallen Star 640x360 at zoom 2 (#3057) (`f896d72`)
+
+### 수정
+
+- **monster** — 우파루파 물 정령·뼈 무더기·카벙클·나뭇잎 정령·푸른 해룡·번개 정령·가면 정령·부유 검·잎날개 요정·적갈색 말벌·나무 토템 전투 도트 다시 그리기 + (0,2) 스킬 칸 (17차, 마지막) (#3055) (`10d65f8`)
+- **modern-city-int** — wood floor A — stripe-free oak and brown walnut herringbone, in-place rebake of tiles 10240-10271 (#3032) (`97f1f91`)
+- **jp-inaka** — R4 2nd-pass layout - meandering stream below stepping stones, bicycle off the pole column (#3052) (`f4d1973`)
+
 ## 0.283.2 — 2026-10-20
 
 ### 수정
