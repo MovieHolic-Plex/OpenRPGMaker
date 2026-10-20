@@ -1,0 +1,30 @@
+import { chromium } from "playwright";
+const PORT = process.env.DEV_SERVER_PORT ?? "9823";
+const browser = await chromium.launch({ args: ["--disable-background-networking", "--disable-features=NetworkChangeNotifier"] });
+const page = await (await browser.newContext({ viewport: { width: 1280, height: 800 } })).newPage();
+page.on("pageerror", (e) => console.log("PAGEERROR", e.message));
+await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
+await page.goto(`http://127.0.0.1:${PORT}/?freshProject=1`, { timeout: 180000, waitUntil: "commit" });
+await page.waitForFunction(() => !!window.__oprnEditorStore, null, { timeout: 180000 });
+await page.waitForTimeout(6000);
+for (const preset of ["640x480", "480x270", "320x240"]) {
+  await page.evaluate(async () => { (await import("/src/editor/panels/databaseModal.ts")).openDatabaseModal("system"); });
+  await page.getByTestId("database-modal").waitFor();
+  await page.getByTestId("db-system-nav-display").click();
+  await page.getByTestId("db-field-system-resolution-preset").selectOption(preset);
+  await page.waitForTimeout(300);
+  const sys = await page.evaluate(() => JSON.stringify(window.__oprnEditorStore.getCurrent().system.playResolution ?? null));
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(500);
+  const stillOpen = await page.getByTestId("database-modal").isVisible().catch(() => false);
+  if (stillOpen) await page.evaluate(async () => { const m = await import("/src/editor/panels/databaseModal.ts"); m.closeDatabaseModal?.(); });
+  await page.evaluate(async () => { (await import("/src/editor/panels/testPlayModal.ts")).openTestPlayModal(); });
+  await page.waitForFunction(() => document.querySelectorAll("canvas").length > 0 && [...document.querySelectorAll("canvas")].some((c) => c.width > 0), null, { timeout: 60000 }).catch(() => {});
+  await page.waitForTimeout(6000);
+  const canv = await page.evaluate(() => [...document.querySelectorAll("canvas")].map((c) => { const r = c.getBoundingClientRect(); return `${c.width}x${c.height} css ${Math.round(r.width)}x${Math.round(r.height)}`; }).join(" | "));
+  console.log(preset, "store", sys, "canvas", canv);
+  await page.screenshot({ path: `/tmp/dbsys-play-${preset}.png` });
+  await page.evaluate(async () => { (await import("/src/editor/panels/testPlayModal.ts")).closeTestPlayModal(); });
+  await page.waitForTimeout(1000);
+}
+await browser.close();

@@ -104,6 +104,7 @@ import { difficultyFieldset, monsterFusionFieldset } from "@/editor/panels/datab
 import { TITLE_VARIANT_LIMIT } from "@/project/titleVariants";
 import {
   analyzePlayResolution,
+  keepsExplicitDefaultResolution,
   normalizePlayResolution,
   PLAY_RESOLUTION_LIMITS,
   resolvePlayResolution,
@@ -843,6 +844,7 @@ function playResolutionFieldset(project: Project, rerender: SystemRefresh): HTML
       text: "플레이 화면이 보여 주는 논리 영역입니다. 값이 커질수록 한 화면에 더 넓은 맵이 보이며, 다음 테스트 플레이부터 적용됩니다.",
       dataset: { testid: "db-system-resolution-help" },
     }),
+    veilResolutionNote(project),
     viewPresetField(rerender),
     field("빠른 선택", presetSelect),
     numberField("가로 (px)", "db-field-system-resolution-width", () => resolvePlayResolution(store.getCurrent().system).width, (value) => {
@@ -885,14 +887,18 @@ const VIEW_PRESETS = [
   { id: "close", label: "가깝게 · 640 × 360 · 배율 2 (16px 칸 20 × 11)", width: 640, height: 360, zoom: 2 },
 ] as const;
 
+/** 지금 해상도·배율이 맞는 「보기 범위」 id. 없으면 custom. 빠른 선택·가로·세로·배율을 바꾼 뒤에도 같은 함수로 다시 맞춘다. */
+function viewPresetIdFor(system: SystemRecords): string {
+  const resolution = resolvePlayResolution(system);
+  const zoom = resolveCameraZoom(system);
+  return VIEW_PRESETS.find((preset) => preset.width === resolution.width && preset.height === resolution.height && preset.zoom === zoom)?.id ?? "custom";
+}
+
 function viewPresetField(rerender: SystemRefresh): HTMLElement {
   const select = el("select", { dataset: { testid: "db-field-system-view-preset" } }) as HTMLSelectElement;
   for (const preset of VIEW_PRESETS) select.append(el("option", { text: preset.label, attrs: { value: preset.id } }));
   select.append(el("option", { text: "직접 정함", attrs: { value: "custom", disabled: "" } }));
-  const system = store.getCurrent().system;
-  const resolution = resolvePlayResolution(system);
-  const zoom = resolveCameraZoom(system);
-  select.value = VIEW_PRESETS.find((preset) => preset.width === resolution.width && preset.height === resolution.height && preset.zoom === zoom)?.id ?? "custom";
+  select.value = viewPresetIdFor(store.getCurrent().system);
   select.addEventListener("change", () => {
     const preset = VIEW_PRESETS.find((candidate) => candidate.id === select.value);
     if (!preset) return;
@@ -903,6 +909,20 @@ function viewPresetField(rerender: SystemRefresh): HTMLElement {
     rerender("values");
   });
   return field("보기 범위", select);
+}
+
+/**
+ * 양쪽 전신 대화창 안내. 그 대화창을 고르면 1024×768·3.2배로 올라가지만, 여기서 작가가 고른 해상도가 이긴다
+ * (2026-10-21 전에는 480×320 이하를 고르면 말없이 1024×768 로 되돌아가 「해상도가 안 바뀐다」였다).
+ */
+function veilResolutionNote(project: Project): HTMLElement {
+  const note = el("p", {
+    class: "db-system-resolution-help",
+    text: "대화창이 「양쪽 전신 · 반투명 베일」이라 기본은 1024 × 768 · 배율 3.2 입니다. 여기서 고른 크기가 그대로 쓰이며, 작게 고르면 전신 그림이 화면에 비해 커 보일 수 있습니다.",
+    dataset: { testid: "db-system-resolution-veil-note" },
+  });
+  note.hidden = project.system.dialogueStyle !== "dual-fullbody-veil";
+  return note;
 }
 
 /** 화면 맞춤 — 정수 배율(도트 굵기 고름, 남는 창은 여백) 또는 창에 꽉 맞춤. 생략 = 프로젝트 규칙(resolvePlaySurfaceScaleMode). */
@@ -1063,7 +1083,7 @@ function presetResolution(preset: PlayResolutionPreset): PlayResolution | undefi
 }
 
 function storePlayResolution(system: SystemRecords, value: PlayResolution): void {
-  const normalized = normalizePlayResolution(value);
+  const normalized = normalizePlayResolution(value, { keepDefault: keepsExplicitDefaultResolution(system) });
   if (normalized) system.playResolution = normalized;
   else delete system.playResolution;
 }
@@ -3667,6 +3687,13 @@ function refreshSystemDerived(form: HTMLElement, kind: "values" | "effects"): vo
   diagnostics?.replaceWith(playResolutionDiagnostics(project, resolvePlayResolution(project.system)));
   const preset = form.querySelector<HTMLSelectElement>('[data-testid="db-field-system-resolution-preset"]');
   if (preset) preset.value = playResolutionPreset(resolvePlayResolution(project.system));
+  // 「보기 범위」와 「화면 맞춤」도 해상도·배율에서 나온 값이다 — 빠른 선택이나 숫자를 바꾼 뒤 옛 값이 남지 않게 맞춘다.
+  const view = form.querySelector<HTMLSelectElement>('[data-testid="db-field-system-view-preset"]');
+  if (view) view.value = viewPresetIdFor(project.system);
+  const scale = form.querySelector<HTMLSelectElement>('[data-testid="db-field-system-surface-scale"]');
+  if (scale) scale.value = resolvePlaySurfaceScaleMode(project);
+  const veil = form.querySelector<HTMLElement>('[data-testid="db-system-resolution-veil-note"]');
+  if (veil) veil.hidden = project.system.dialogueStyle !== "dual-fullbody-veil";
   refreshTimeSummary(form);
 }
 
