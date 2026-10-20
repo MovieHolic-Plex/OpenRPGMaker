@@ -5,7 +5,7 @@
 import type { JpRegion, JpRegionCategory, JpRegionOp, JpZoneHint } from "./japaneseRegionsCatalog";
 
 export interface JpRegionStep {
-  /** paint_forest: args.kinds(칸마다 0 숲 아님·1 활엽·2 대숲·3 벚나무·4 삼나무·5 단풍, 길이 W*H)·args.seed — forestPainter.paintJpForest 가 칠한다. */
+  /** paint_forest: args.kinds(칸마다 0 숲 아님·1 활엽·2 대숲·3 벚나무·4 삼나무·5 단풍·6 소나무·7 신사 섞인 숲(소나무+단풍)·8 산비탈 섞인 숲(삼나무+활엽), 길이 W*H; 6~8 은 r3 오토타일이 있을 때만)·args.seed — forestPainter.paintJpForest 가 칠한다. */
   readonly tool: "fill_region" | "stamp_object" | "paint_forest";
   readonly args: Record<string, unknown>;
   readonly note: string;

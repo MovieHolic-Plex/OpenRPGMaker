@@ -72,7 +72,7 @@ BLOCK_ORDER = ['autotiles_ground', 'autotiles_lines', 'roads', 'buildings', 'str
                'interior_school', 'interior_gym', 'interior_station', 'interior_office', 'interior_post',
                'dungeon_underground', 'dungeon_hospital', 'dungeon_school', 'dungeon_construction', 'dungeon_warehouse',
                'interior_amuse', 'interior_karaoke', 'interior_famires', 'interior_hotel', 'interior_mall',
-               'interior_hospital', 'interior_school2', 'interior_office2', 'shitamachi_pack', 'jp_regions_pack', 'jp_inaka_pack', 'jp_forest_pack']
+               'interior_hospital', 'interior_school2', 'interior_office2', 'shitamachi_pack', 'jp_regions_pack', 'jp_inaka_pack', 'jp_forest_pack', 'jp_forest_r3']
 PEOPLE = (851, 1005)            # 행인(Actor1) 자리 — 번들에서 제외, 투명 빈 칸으로 번호만 지킨다
 N_ORIG = 2880
 SIGN_DECOS = ('sign_h', 'vstack', 'wallad', 'vsign', 'plate', 'board', 'rtext', 'facade_ad', 'vision', 'mural')
@@ -549,6 +549,9 @@ def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=Fal
         assert len(a['variantMap']) == len(vm), ('variantMap 키 수', a['id'])
         at = dict(id=a['id'], name=a['name'], neighborhood=a['neighborhood'], memberTileIds=sorted(set(mem)), connectTileIds=conn, variantMap=vm, layer=a['layer'], edgeConnects=bool(a.get('edgeConnects')))
         if a.get('interior'): at['interiorVariants'] = [[L(b, x) for x in lst] for lst in a['interior']]
+        if a.get('phase'):       # 위치 위상 변형(엔진 phaseVariants): 칸 그림이 마스크와 (x mod w, y mod h) 로 정해진다
+            ph = a['phase']
+            at['phaseVariants'] = dict(w=ph['w'], h=ph['h'], maps=[{k: L(b, v) for k, v in m.items()} for m in ph['maps']])
         autotiles.append(at)
     block_groups = []
     for b, g in pending_groups:

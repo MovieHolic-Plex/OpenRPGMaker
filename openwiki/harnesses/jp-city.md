@@ -109,6 +109,16 @@ flags: `overlay`(투명 덧칠: 윤곽·접지·귀퉁이 검사 제외) · `thi
 - 숲은 발 행 순서로 찍고, 위아래 이웃 나무는 종류를 바꾸며 1~2칸 비킨다(세로 기둥 줄 금지). 전봇대는 石垣 축대 앞면을 가리지 않는다.
 남은 그림 결함(돌담 이음매·논 가장자리·죽담 사다리꼴)은 그림 화소를 바꾸므로 object-gate 영수증 상태를 PR 본문에 적고 사용자 결정까지 머지하지 않는다.
 
+## 붓으로 칠하는 숲 오토타일 `jp_forest_r3` (2026-10-20, PR #3058 — 그림 머지 보류)
+
+- r1/r2 숲 팩(키트를 흩뿌리고 머리·하늘선·줄기 띠를 손으로 찍는 방식)을 대신하는 r3. 종마다 오토타일 하나 `jp-forest3-<bl|bb|sk|sg|mp|pn>`(활엽·대숲·벚·삼나무·단풍·소나무).
+- 칸 그림 = 8방 마스크(정규화 47) × 칸 위치 위상. 엔진 `AutotileGroup.phaseVariants {w,h,maps}`(`src/project/defaults/autotileEngine.ts` `autotileVariantForMask(group, mask, x, y)`)를 더했다.
+  편집기 붓(`shapeAutotileGroupAround`)·조수 지형 도구·`forestPainter.paintJpForestR3` 가 같은 표를 쓴다. 위상을 모르는 호출자는 `variantMap`(위상 0,0)으로 떨어진다.
+- 위상 주기: 활엽 6×4, 나머지 4×4. jp 시트 4096px 한도 때문이다(임시 굽기 실측: 19004번부터 4,777칸, 합계 23781 / 24576).
+- 섞인 숲(코드 7 신사 = 소나무+단풍, 8 산비탈 = 삼나무+활엽)은 새 칸 없이 `resolveJpForestMix` 가 3×3 덩이마다 종을 고른다. 다른 종 칸은 서로 숲 밖으로 본다.
+- 그림 `scripts/content/jp-city/forest/forest_r3.py`(버들항 역설계 `tiledata/jp-city/forest-r3/SPEC.md`), 장면·붓 시험 GIF `forest_r3_scenes.py`, 적대 검수 `argon_r3_judge.py`, 상태 쪽 `forest_r3_viz.py` → `~/claude-viz/jp-forest-kit-1.html`.
+- 상태: Argon 적대 검수 6판 모두 NO-SHIP(막는 결함 7~10 → 7~9), object-gate 프로필 미보정. **저장소 굽기 금지** — `BLOCK_ORDER` 에는 올렸지만 관문 보정 뒤에 굽는다.
+
 ## 이어지는 숲 팩 `jp_forest_pack` (2026-10-20, PR #3058 — 그림 머지 보류)
 
 - 진단(r1): 옛 숲은 한 그루짜리 키트(rg-sugi·rg-pine·대숲)를 `regionComposer` 가 흩뿌렸다. 시트에 수관끼리 이어지는 칸이 없어 스티커 무리가 됐고, 키트 5~6칸이 전부 숲 구획 안이어야 해서 폭 3~4칸 숲 띠는 비었다.
