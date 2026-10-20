@@ -20,7 +20,7 @@ import { buildJrpgChapter } from "@/editor/tools/jrpgChapterTools";
 import { pickSpot, placeRoamer } from "@/editor/tools/jrpgVolumeTools";
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import { buildFallenStarOpening, FALLEN_STAR_TITLE_BACKGROUND } from "./fallenStarOpening";
-import { clearOrphanShadows, clearUpperByLabel, dressVaultVoid, varyVaultFloor, rimPit } from "./fallenStarMapPolish";
+import { clearOrphanShadows, clearUpperByLabel, dressVaultVoid, padMapCentered, varyVaultFloor, rimPit } from "./fallenStarMapPolish";
 import { FALLEN_STAR_ACT1, FS_NAMES, FS_PREFIX, FS_STAR_KEY_ITEM } from "./fallenStarStory";
 import type { FlagshipDemoBuildResult } from "./types";
 
@@ -762,6 +762,19 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   dressVaultVoid(M(ids.vault), new Set([28462, 28509]), [25276, 25277, 25279, 25280, 25282, 25283], 1, 99);
   varyVaultFloor(M(ids.vault), new Set([26817, 26818, 26819]), [26815, 26816], [26819, 26819, 26818, 26817], 90);
   clearUpperByLabel(project, M(PUZZLE_ROOM), /^긴 화덕/);
+  // 화로의 방(20×15)은 화면보다 작아 바깥이 검은 허공 + 먼지 입자(별밭)로 보였다 — 사방에 바위 둘레를 덧붙이고 들어오는 이동 좌표를 같은 만큼 민다(VQA r4).
+  {
+    const padX = 6, padY = 3;
+    // 이 방은 atlas_biome_interior 라 지하실 바위 id(beodeul_city)가 없다 — 방 위쪽 벽면(3166~3176 두 줄)을 사방으로 이어 암반 덩이로 읽히게 한다.
+        const wallUpper = [3170, 3172, 3166, 3168], wallLower = [3134, 3176, 3174, 3132];
+        padMapCentered(M(PUZZLE_ROOM), padX, padY, (x, y) => ((y % 2 === 0 ? wallUpper : wallLower)[x % 4]!));
+    for (const from of [M(ids.observatory), M(ids.vault)]) {
+      for (const event of from.events) for (const list of eventCommandLists(event)) for (const cmd of list) {
+        const rec = cmd as unknown as Record<string, unknown>;
+        if (rec.kind === "transfer" && rec.mapId === PUZZLE_ROOM && typeof rec.x === "number" && typeof rec.y === "number") { rec.x += padX; rec.y += padY; }
+      }
+    }
+  }
   // 천문대 윗 홀의 나선 계단은 어디로도 이어지지 않는 장식이었다(감사 라운드 2) — 걷어 낸다. 내려가는 길은 바닥 뚜껑문 하나다.
   {
     const obs = M(ids.observatory);
