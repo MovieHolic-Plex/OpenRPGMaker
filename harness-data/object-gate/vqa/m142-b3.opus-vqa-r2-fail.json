@@ -1,0 +1,150 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b3",
+ "round": 2,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png",
+  "board-3.png",
+  "board-4.png"
+ ],
+ "items": [
+  {
+   "id": "hospital-med-cabinet",
+   "pixelSha256": "4c8cdfb49f51dc4d6d757677fb2b45340ff9cc209f2dee931e725fd42b904e10",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2
+   ],
+   "reasons": "Drawn as a flat front elevation: the top is only a single pale row with no lit top plane. The outline is a soft grey-teal, not the dark navy outline the originals use."
+  },
+  {
+   "id": "hospital-nurse-station",
+   "pixelSha256": "74072b713ff8a82b4772b49685993fb79d91a5b1737d3ab7fd4995a8b5e9b80d",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    4
+   ],
+   "reasons": "The neon green and cyan ECG screens read as bright sticker highlights. Books, clipboard and bits crowd the top as noisy clutter, and the light grey outline is much weaker than the originals' dark outline."
+  },
+  {
+   "id": "hotel-capsule-pods",
+   "pixelSha256": "0d304b719a9b1babd4ec73a23b69782c001ee821b881fabf8d48fb0bb4e1d72b",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    3
+   ],
+   "reasons": "Six pods fit in about 3x2 tiles, so each 'capsule' is a 16px cubby far too small to hold a person. At 1x it reads as an oven or locker grid, and the top is only a thin strip."
+  },
+  {
+   "id": "ind-lathe",
+   "pixelSha256": "8560f38646bb9b22811e099118e59e548eb2ffa7021fe0b4a72bda14405b13df",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3,
+    4
+   ],
+   "reasons": "It reads as a microwave or kiosk with a screen; there is no lathe bed, chuck or tailstock. It is a front elevation with no top plane, and a detached blue cylinder blob sits beside it outside the body."
+  },
+  {
+   "id": "infirmary-eye-chart",
+   "pixelSha256": "46584f5be27460c2536f858930360f6107e7fa643be6796eba6ff74c97b3c292",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The wooden easel board with a white chart and a stepped base stands on the floor line. The brown outline and wood shading match the wardrobe original, and it reads as an eye chart."
+  },
+  {
+   "id": "izakaya-beer-server",
+   "pixelSha256": "857b73f1fd4337be68e64b82a0ba19f7872dbeacc6f79b61dce8b2aee30b7289",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "At 1x it is a tiny grey jumble that does not read as a beer server. The beer mug sticks out at the right edge as a detached bit, and the grey tap tower blends into its grey outline."
+  },
+  {
+   "id": "jp-tokonoma",
+   "pixelSha256": "a7fb8acc0af6ee9d1fa0df6339558ef75f1005c90db11fa54612cc7febb178c5",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "A dark red-brown wooden frame holds the hanging scroll, ikebana vase and incense burner on a visible lit plank floor. The outline weight and wood shading are consistent with the originals, and it sits on the ground line."
+  },
+  {
+   "id": "jp-torii",
+   "pixelSha256": "48bba2a44695e1273375448c3d958fed82c312fec6b173dd570739f5d9aea03d",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    3
+   ],
+   "reasons": "The pillars are only about 4px tall under a huge black kasagi, so the gate is squashed into a bench- or table-like shape. At 1x it does not read as a torii, and its proportions do not fit the room scale."
+  },
+  {
+   "id": "jumbo-arcade-racing-twin",
+   "pixelSha256": "845f235ae7d038b448ae5cc53e3164e2f2661f898251ee7146840d19e41e5a3f",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The twin red seats seen from behind, the screens above and the checkered RACE marquee read clearly. It has a dark outline, a base plinth sits on the floor, and the palette fits the chipset."
+  },
+  {
+   "id": "jumbo-hosp-mri",
+   "pixelSha256": "b51a1eff4944ac2865ca70983782098246dfcde63f2c5a98ab44dc9a824ae7fa",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    4
+   ],
+   "reasons": "The beige body has no dark outline, so its edges dissolve, unlike the crisp outlines of the originals. The bed's small pedestal stub hangs below the gantry like a floating bit, and the bore glow is a soft gradient blob."
+  },
+  {
+   "id": "kinder-cubby",
+   "pixelSha256": "22d44acd0522d6fa51dae768db0d59ee51890e97739917e36fcce2c0cff89447",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The wooden top is visible as a lit plane above a 3x2 cubby grid with small bags and toys, and it reads at 1x. The wood palette and outline match the wardrobe, and it stands on the floor."
+  },
+  {
+   "id": "konbini-bento",
+   "pixelSha256": "006f1283fb5a4f106339ad7e28e074f561d846340d98c8d8dfd313e34e9d85e8",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "An open refrigerated case with a top strip, onigiri and bento rows shows clearly. The dark navy outline matches the cooler original, and it sits on the floor at a believable scale."
+  },
+  {
+   "id": "konbini-copier",
+   "pixelSha256": "4472652ce39efd374e5a3f802e4b62bf7fe8608a92503db4b797b5802c312a5b",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    3
+   ],
+   "reasons": "A tall, narrow, beige-and-brown box with a brown wood-coloured outline reads as a filing cabinet or kiosk at 1x, not a copier. There is no distinct lid or glass platen, and the proportions are too slim for a copier."
+  },
+  {
+   "id": "konbini-hot-snack",
+   "pixelSha256": "021e6e1c7647808e50273ce77d6c718cd93b408a1b993865cd0c61d2fa5ede36",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "A glass warmer with a red header, rows of buns and fried items, and a grey base reads at 1x. The dark outline and steel greys fit the chipset, and it stands on the floor."
+  }
+ ]
+}

@@ -1,0 +1,21 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "bd41a6a81fbdbb5f7a9883fad05c8d71c830b4efbb3b55e767fc40c5a1fa15bb",
+ "profileHash": "4d8774b517f41638",
+ "kind": "tall_furniture",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-20T23:53:15.617Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+  "3/4: 윗면/앞면 30/8 — 앞면이 거의 없는 평면도 (1/4)",
+  "3/4: 윗면/앞면 25/7 — 앞면이 거의 없는 평면도 (1/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "note": "묶음 허용: modern_city 실내 기물 m142-b3 (13) — object-gen 다시 그림, 사용자 위임·Opus 적대 VQA 통과 2026-10-21 — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/m142-b3.opus-vqa-r*.json",
+ "sig": "05d40c01200f38a210bc36f0ac600c5ec501c18bba243987f50e4d5fabcc1a89"
+}
