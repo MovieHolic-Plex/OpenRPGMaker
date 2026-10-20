@@ -688,6 +688,9 @@ try {
       if ((await readThrough()) === "battle" || await present("battle-scene")) { await mark(`gym-grunt-${k}`); await shot(`15-grunt-${k}`); step(`grunt-${k}`, true, await battleAsNewPlayer(`15-grunt-${k}-b`)); await readThrough(); }
     }
     const leader = gym.events.find((e) => /_leader$/.test(e.id));
+    // 플레이어처럼 관장 앞에서 쉬어 간다 — 입구 안내원이 회복해 준다(「부탁해요」가 첫 선택).
+    const guide = gym.events.find((e) => /_gym_guide$/.test(e.id));
+    if (guide && leader && elapsed() < LIMIT_MS) { await approachAndTalk(gym.id, guide); await readThrough(30, { choose: async () => { await page.keyboard.press("Enter"); } }); await mark("gym-guide-rest"); }
     if (leader && elapsed() < LIMIT_MS) {
       await approachAndTalk(gym.id, leader);
       if ((await readThrough()) === "battle" || await present("battle-scene")) { await mark("leader"); await shot("16-leader"); step("leader", true, await battleAsNewPlayer("16-leader-b")); await readThrough(); }

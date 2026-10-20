@@ -530,7 +530,6 @@ function tunePacing(project: Project): void {
     if (routeBug) routeBug.actions = routeBug.actions.filter((a) => !a.skillId || !bug.has(a.skillId));
     // 관장의 베르카부가 원래 기술 그대로 더듬이쏘기(벌레)를 써서 풀 스타터를 매번 2~3방에 눕혔다(2026-10-20 실입력 여정, Lv7 로 세 번 패배).
     // 풀 체육관이니 그 자리를 새싹치기(풀)로 바꾼다 — 스타터와 서로 반감이라 어깨툭 싸움이 되고, 잡은 동료가 힘을 쓸 자리가 생긴다.
-    const sprout = project.database.skills.find((s) => s.name === "새싹치기")?.id;
     // 다시(2026-10-21 적대 검수 r3·스타터 3종 봇): 풀 기술만 쓰는 풀 체육관은 물 스타터만 두 배로 맞아 수련생·관장에게 졌고 불은 무패였다.
     // 풀이 처음부터 깃바람(비행)을 갖게 된 뒤로는, 체육관 몬스터가 제 첫째 타입 기술을 쓰게 한다 — 벌레(베르카부·과수뿔)는 더듬이쏘기, 땅(브램보어)은 흙먼지.
     // 그러면 두 배로 맞는 스타터가 갈린다(풀 ← 벌레, 불 ← 땅). 물은 보통으로 맞고 서리발로 두 배를 친다.
@@ -548,10 +547,8 @@ function tunePacing(project: Project): void {
     }
     // 신전 보스 선봉도 같은 베르카부라 Lv8 로 내려도 Lv10 풀 스타터가 두 번 졌다(2026-10-20 실입력 여정).
     // 리그 선봉 베르카부도 같다 — 디버그로 Lv20 까지 올린 파티도 한 번 졌다(journey12). 둘 다 같은 자리 바꿈.
-    for (const id of ["mx_enemy_mx_map_observatory_boss_0", "mx_enemy_mx_map_league_0_league_challenge_0"]) {
-      const lead = byId(id);
-      if (lead && sprout) lead.actions = lead.actions.map((a) => (a.skillId && bug.has(a.skillId) ? { ...a, skillId: sprout } : a));
-    }
+    // (신전 선봉은 아래 templeTeam 이 통째로 바꾼다.) 리그 베르카부(에이스)는 새싹치기(풀)로 물 스타터만 두 배로 쳐서 물이 두 번 졌다(2026-10-21 r23) —
+    // 체육관처럼 제 타입 기술(더듬이쏘기, 풀에 두 배)로 둔다. 리그의 두 배 위협이 물 ← 볼트온, 불 ← 로키온, 풀 ← 베르카부로 하나씩 갈린다.
   }
   // 배지 하나짜리 데모라 초반 경험치를 두 배로 — 라이벌·도로 트레이너·수련생을 다 이기면 관장 앞에서 Lv8 안팎이 되게 한다.
   // (rescaleEnemy 가 레벨을 바꾸기 전 보상이 그대로라 레벨을 내린 수련생도 보상은 원래 레벨 몫이다.)
@@ -565,7 +562,7 @@ function tunePacing(project: Project): void {
   // 무영의 몬스터가 챔피언 나루와 같은 종(베르카부·피오르·볼트온)이었고, 2단 진화 베르카부를 앞세워 Lv10 풀 스타터가 두 번 졌다(2026-10-21 정직 여정).
   // 「밤막회사」답게 그림자·독·꿈 계열 기본 종 셋(Lv7, 셋째를 Lv8 로 두니 Lv10 풀 스타터 + Lv5 동료가 둘까지 잡고 졌다)으로 바꾼다 — 불은 셋 모두 보통, 풀은 꿈방울로 독을, 물은 물 기술로 셋 모두를 보통 이상으로 친다.
   // 경험치 나누기 뒤에도 잡은 동료가 약하면(Lv10 풀 + Lv8 벌레) 두 번 졌다(2026-10-21 r13) → 앞의 둘 Lv6, 마지막 Lv7.
-  const templeTeam: readonly [string, number][] = [["mx_enemy_threadimp", 6], ["mx_enemy_miretail", 7], ["mx_enemy_dozemite", 7]];
+  const templeTeam: readonly [string, number][] = [["mx_enemy_threadimp", 6], ["mx_enemy_miretail", 6], ["mx_enemy_dozemite", 7]];
   templeTeam.forEach(([templateId, level], i) => {
     const enemy = byId(`mx_enemy_mx_map_observatory_boss_${i}`), template = byId(templateId);
     if (!enemy || !template) return;
