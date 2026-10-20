@@ -469,10 +469,10 @@
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="party"] [data-testid="status-menu-monster-toggle"] { position: absolute; left: 0; bottom: 0; width: 160px; height: 32px; background: #f8f8e8; font-size: 18px; display: flex; align-items: center; justify-content: space-between; gap: 2px; padding: 0 4px 0 14px; box-sizing: border-box; white-space: nowrap; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="party"] [data-testid="status-menu-monster-toggle"] > * { position: static; width: auto; margin: 0; flex: none; }
 /* 작은 칸 다섯은 그림이 칸 높이(36px)보다 커서 아래가 잘렸다 — 32px 아이콘으로 맞춘다(첫 칸의 큰 그림은 그대로). */
-.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]) { grid-template-columns: 36px 1fr; grid-template-rows: 20px 20px; align-content: center; row-gap: 0; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]) { grid-template-columns: 36px 1fr; grid-template-rows: 15px 15px; align-content: center; row-gap: 1px; padding-block: 0; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]) .status-menu-detail-face { width: 32px; height: 32px; background-size: contain; background-position: center; align-self: center; }
-.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]) .status-menu-target-name { line-height: 20px; }
-.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]) .status-menu-target-vital { line-height: 20px; align-self: center; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]) .status-menu-target-name { font-size: 16px; line-height: 15px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]) .status-menu-target-vital { font-size: 16px; line-height: 15px; align-self: center; grid-template-columns: 78px minmax(24px, 1fr); }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]) .status-menu-target-track { margin-top: 0; }
 /* 지닌 도구가 있는 칸은 아이콘 오른쪽 아래에 작은 알 표시. */
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-held="true"] .status-menu-detail-face { position: relative; }
