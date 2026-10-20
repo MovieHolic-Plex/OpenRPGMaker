@@ -551,7 +551,7 @@ def _mat_box(row, col):
     """칸 안 매트 영역 (x0, y0, x1, y1) — 끝 포함 아님. 테두리는 이 상자의 가장자리 1px."""
     x0 = 9 if col == 'L' else 0
     x1 = 10 if col == 'R' else 16
-    y0 = 6 if row == 'b' else 0       # r3: 화단을 뒤 파라펫에 붙인다(잎이 파라펫 안쪽 면 위로 2–3px 넘어온다)
+    y0 = 8 if row == 'b' else 0       # r4: 뒤 파라펫 안쪽 면(y3..7, 5px)을 온전히 보이고 화단은 그 아래부터(잎은 면 아래 1–2px 만 덮는다)
     y1 = 3 if row == 'f' else 16      # f 줄: 매트 y0..1 · 화분 테 윗면 y2 · 앞면 y3..5
     return x0, y0, x1, y1
 
@@ -626,7 +626,7 @@ def flat_green(c, row, col, wall='kr', var=0):
     _sedum_cell(c, var, row, col, x0, y0, x1, y1)
     if col == 'W':                                     # 점검 보도판: 6px 판 두 줄, 8px 마다 가로 이음
         ys0 = y0
-        ys1 = y1 - 1 if row == 'f' else y1
+        ys1 = y1 + 3 if row == 'f' else y1          # r4: 보도판은 앞 파라펫 접힘까지 평평하게(화분 테 없음)
         for y in range(ys0, ys1):
             for x in range(2, 14):
                 lx, ly = (x - 2) % 6, y % 8
@@ -643,28 +643,30 @@ def flat_green(c, row, col, wall='kr', var=0):
         for y in range(y0, y1 - 1 if row == 'f' else y1): c.P(x0, y, 'shiro', 3)
     if col == 'R':
         for y in range(y0, y1 - 1 if row == 'f' else y1): c.P(x1 - 1, y, 'conc', 2)
-    if row == 'b':                                     # 잎이 뒤 파라펫 안쪽 면(y4·5) 위로 넘어온다: 열마다 2–3px, 군데군데 빈다
-        for x in range(x0 + 1 if col == 'L' else x0, x1 - 1 if col == 'R' else x1):
-            if col == 'W' and 2 <= x <= 13: continue
+    if row == 'b':                                     # r4: 뒤 파라펫 안쪽 면을 아래로 두 줄 늘려(y6·7) 5px 로 — 종이처럼 얇아 보이지 않게
+        for x in range(16):
+            if (col == 'L' and x <= 3) or (col == 'R' and x >= 13): continue
+            c.P(x, 6, 'conc', 3); c.P(x, 7, 'conc', 2)
+        for x in range(x0 + 1 if col == 'L' else x0, x1 - 1 if col == 'R' else x1):   # 잎은 면 맨 아래 1–2px 만
+            if col == 'W' and 1 <= x <= 14: continue
             k = rnd(x, 0, 91 + var)
-            if k < 0.12: continue
-            hgt = 3 if k > 0.62 else 2
-            mat = 'ki'
+            if k < 0.3: continue
+            hgt = 2 if k > 0.75 else 1
             for j in range(hgt):
-                y = y0 - 1 - j
-                c.P(x, y, mat, (4 if mat == 'ki' else 5) if j == hgt - 1 else 3)
-            if rnd(x, 2, 93 + var) < 0.35: c.P(x, y0 - hgt, mat, 5 if mat == 'ki' else 6)
-    if row == 'f':                                     # 화분 테 앞면(3px, 남향): 윗면 밝은 선 + 앞면 + 아래 접촉 그늘
+                c.P(x, y0 - 1 - j, 'ki', 4 if j == hgt - 1 else 3)
+    if row == 'f':                                     # 화분 테 앞면(3px, 남향): 윗면 밝은 선 + 앞면 + 아래 접촉 그늘 — 화단만(가운데 보도판은 평평)
         for x in range(x0, x1):
+            if col == 'W' and 1 <= x <= 14: continue
             c.P(x, y1 - 1, 'conc', 6)
             c.P(x, y1, 'conc', 4); c.P(x, y1 + 1, 'conc', 3); c.P(x, y1 + 2, 'conc', 2)
             if (x, y1 + 3) not in keep: c.P(x, y1 + 3, 'hodo', 1)
             if (x + 1) % 8 == 0 and x0 < x < x1 - 1: c.P(x, y1, 'conc', 3); c.P(x, y1 + 1, 'conc', 2)   # 테 이음
+        if col == 'W':                                 # 보도판 칸: 화단 테 끝면(보도 쪽 마구리)
+            for y in range(y1 - 1, y1 + 3): c.P(0, y, 'conc', 2 if y >= y1 else 4); c.P(15, y, 'conc', 5 if y >= y1 else 6)
         if col == 'L':
             for y in range(y1 - 1, y1 + 3): c.P(x0, y, 'conc', 5 if y >= y1 else 6)
         if col == 'R':
             for y in range(y1 - 1, y1 + 3): c.P(x1 - 1, y, 'conc', 1 if y >= y1 else 4)
-
 
 for w in ('kr', 'gl', 'br', 'cr'):
     for r in 'bmf':
