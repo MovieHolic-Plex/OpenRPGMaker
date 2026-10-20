@@ -46,6 +46,7 @@ function castList(list: Command[], spotlight?: Spotlight): void {
   // 전신: 이 목록이 그 인물과 처음 승부하는 장면(첫 대사가 그 인물 + 같은 목록에 승부)일 때 한 번만 세운다. 첫 대사 묶음이 끝나면(다른 화자·승부) 내린다.
   let lit = spotlight?.list === list ? spotlight.cid : undefined;
   let shown = false;
+  let pictures = 0;
   for (let i = 0; i < list.length; i++) {
     const command = list[i]! as Command & Record<string, unknown>;
     const nested: Command[][] = [];
@@ -63,8 +64,11 @@ function castList(list: Command[], spotlight?: Spotlight): void {
       if (current) { list.splice(i, 0, CLEAR()); i++; current = null; }
       continue;
     }
+    // 스타터 카드·배지 같은 그림이 떠 있는 동안은 흉상을 내린다(그림과 겹쳤다, 2026-10-21 적대 검수 m3).
+    if (command.kind === "showPicture" && (command as { pictureId?: string }).pictureId !== SPOTLIGHT) { pictures++; continue; }
+    if (command.kind === "erasePicture" && (command as { pictureId?: string }).pictureId !== SPOTLIGHT) { pictures = Math.max(0, pictures - 1); continue; }
     if (command.kind !== "text") continue;
-    const cid = castOf(command.speaker);
+    const cid = pictures > 0 ? undefined : castOf(command.speaker);
     if (lit && cid === lit) {
       if (i === list.findIndex((c) => c.kind === "text")) {
         // 전신 카드(테두리 창)를 화면 오른쪽, 아래 상자 바로 위에 세운다 — 가운데 맵 인물을 가리지 않게. 카드 크기 = 전신 + 24×20.

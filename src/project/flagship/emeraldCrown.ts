@@ -201,10 +201,11 @@ const MAP_TITLES: Readonly<Record<string, string>> = {
   mx_map_league_0: PLACE.league,
 };
 
+// 첫 인사는 박사가 선 연구소 컷으로, 꺼져 가는 등대 이야기는 바닷가 컷으로(2026-10-21 적대 검수: 인사하는 박사가 화면에 없었다).
 const OPENING_PAGES: EmeraldOpeningPage[] = [
-  { id: "emerald_intro_welcome", shot: "dawn", text: "안녕! 만나서 반갑구나.\n나는 오르비스 천문 연구소의 천문박사란다." },
+  { id: "emerald_intro_welcome", shot: "lab", text: "안녕! 만나서 반갑구나.\n나는 오르비스 천문 연구소의 천문박사란다." },
   { id: "emerald_intro_world", shot: "route", text: "아스트라 군도의 새벽 하늘에는 「여명의 날개」 새떼가\n등대 불빛을 따라 섬과 섬을 건넌단다." },
-  { id: "emerald_intro_lab", shot: "lab", text: "그런데 요즘 등대가 자꾸 꺼져 가는구나.\n밤막회사가 별모래 신전의 별빛을 모으고 있다더군." },
+  { id: "emerald_intro_lab", shot: "dawn", text: "그런데 요즘 등대가 자꾸 꺼져 가는구나.\n밤막회사가 별모래 신전의 별빛을 모으고 있다더군." },
   { id: "emerald_intro_companions", shot: "stage", text: "풀의 토리프, 불의 파이린, 물의 아쿠링.\n첫 동료는 네가 직접 고르렴." },
   { id: "emerald_intro_rival", shot: "gym", text: "실바나 체육관의 관장 유림, 그리고 네 소꿉친구 나루도\n너를 기다리고 있단다." },
   { id: "emerald_intro_departure", shot: "town", text: "다우닝 시티의 네 방에서 모험이 시작된다.\n준비가 되면 연구소로 오렴!" },
@@ -386,7 +387,7 @@ function retellMom(project: Project): void {
 function retellGymTrainers(project: Project): void {
   const lines: Record<string, [string, string]> = {
     mx_map_grove_gym_grunt_0: ["덩굴지기 하람", "덩굴 문을 연 건 너구나? 그럼 이번엔 내 동료를 넘어 봐!"],
-    mx_map_grove_gym_grunt_1: ["정원사 소이", "가시 덤불을 정리한 솜씨는 봤어. 승부 솜씨도 보여 줄래?"],
+    mx_map_grove_gym_grunt_1: ["정원사 소이", "관장님 정원을 지나가려면 내 승부부터 받아 줘야지!"], // 덤불을 자르기 전에 눈이 마주쳐도 맞는 말(2026-10-21 적대 검수)
     mx_map_grove_gym_grunt_2: ["수련생 도윤", "관장님 앞까지 그냥 보낼 순 없지. 풀 타입의 끈기를 맛봐!"],
   };
   for (const [eventId, [speaker, line]] of Object.entries(lines)) {

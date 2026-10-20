@@ -125,6 +125,11 @@ function polishLab(project: Project): void {
     // 첫 길 선물 — 1번 도로는 연달아 싸우므로 새 플레이어가 전투 중 「가방」을 한 번은 쓸 수 있게(2026-10-20 녹화: 체력 4로 다음 야생에 졌다).
     { kind: "changeItem", itemId: "item_potion", op: "+=", amount: 2 },
     text("이 회복약 두 개도 챙겨 가렴. 싸우다 위험하면 「가방」에서 쓰는 거란다.", "천문박사"),
+    // 도감과 첫 포획 — 1번 도로 첫 야생에서 구슬 넷이 모두 「아깝다」로 끝나고 블랙아웃했다(2026-10-21 적대 검수 B3). 3세대 첫 포획처럼 반드시 잡히는 구슬 하나.
+    { kind: "setSwitch", switchId: TRIAL.dexSwitch, value: true },
+    text("그리고 이건 별빛 도감이란다. 만난 몬스터가 저절로 기록되지.", "천문박사"),
+    { kind: "changeItem", itemId: TRIAL.orbId, op: "+=", amount: 1 },
+    text("이 시험용 구슬도 받으렴. 처음 한 번은 꼭 잡히게 만든 구슬이란다. 1번 도로에서 써 보렴!", "천문박사"),
     { kind: "changeItem", itemId: "item_capture_orb", op: "+=", amount: 3 },
     text("이거, 내 몫 포획 구슬 세 개 나눠 줄게. 대신 도감은 내가 먼저 채운다!", "나루"),
     text("난 1번 도로로 먼저 간다! 실바나 마을 체육관에서 보자!", "나루"),
@@ -246,11 +251,14 @@ function quickerHealing(project: Project): void {
 function nameGymTrainers(project: Project): void {
   const names: Record<string, string> = { mx_troop_mx_map_grove_gym_grunt_0: "덩굴지기 하람", mx_troop_mx_map_grove_gym_grunt_1: "정원사 소이", mx_troop_mx_map_grove_gym_grunt_2: "수련생 도윤" };
   for (const troop of project.database.troops) if (names[troop.id]) troop.name = names[troop.id]!;
+  // 정원사 소이의 전투 그림이 분홍 원피스 어린 소녀였다(2026-10-21 적대 검수) — 초록 작업복 그림(bug_catcher)으로.
+  const soi = project.database.troops.find((t) => t.id === "mx_troop_mx_map_grove_gym_grunt_1");
+  if (soi?.trainerSprite) soi.trainerSprite = { ...soi.trainerSprite, front: "bug_catcher" };
   // 이긴 체육관 수련생에게 다시 말을 걸면 「견습 조련사」 이름으로 「다시 만나 반가워」 + 재대결 선택지가 나왔고, Enter 한 번에 같은 승부를 또 했다
   // (2026-10-21 적대 검수 — 정원사 소이와 두 번 싸우고 다음 수련생에게 쓰러짐). 3세대처럼 진 수련생은 자기 이름으로 한마디만 한다.
   const after: Record<string, [string, string]> = {
     mx_map_grove_gym_grunt_0: ["덩굴지기 하람", "덩굴 문은 네가 열었으니 이 길도 네 거야. 관장님께 힘내!"],
-    mx_map_grove_gym_grunt_1: ["정원사 소이", "가위 솜씨도 승부 솜씨도 좋더라. 관장님은 쉽게 물러서지 않으셔."],
+    mx_map_grove_gym_grunt_1: ["정원사 소이", "승부 솜씨 좋더라. 관장님은 쉽게 물러서지 않으셔."],
     mx_map_grove_gym_grunt_2: ["수련생 도윤", "풀의 끈기를 넘었구나. 관장님 앞에서도 그렇게만 해!"],
   };
   for (const event of project.maps.mx_map_grove_gym?.events ?? []) {
@@ -273,7 +281,7 @@ function firstWildOnRouteOne(project: Project): void {
   const commands: Command[] = [
     { kind: "setSwitch", switchId: "mx_first_wild", value: true },
     text("풀숲이 바스락거리더니 무언가 튀어나왔다!"),
-    text("〔힌트〕 체력을 깎은 뒤 「가방」 → 포획 구슬을 던지면 동료로 삼을 수 있다."),
+    text("〔힌트〕 「가방」에서 박사님이 준 「시험용 구슬」을 던져 보자. 처음 한 번은 꼭 잡힌다!"),
     {
       kind: "battleProcessing", troopId, canEscape: true, canLose: true, branchOnResult: true,
       victoryBranch: [],
@@ -437,6 +445,53 @@ function fairChampion(project: Project): void {
   );
 }
 
+/** 도감 받음 스위치(메뉴의 도감은 이것이 켜진 뒤에만 보인다)와 반드시 잡히는 시험용 구슬. */
+export const TRIAL = { dexSwitch: "mx_pokedex_received", orbId: "mx_item_trial_orb" } as const;
+
+/**
+ * 3세대(GBA) 손맛 — 2026-10-21 적대 검수(4.0/10) 몫:
+ * - 시험용 구슬(마스터 등급, 1개)을 가방 맨 앞에. 도감 받음 스위치 등록.
+ * - 급소: gen1 속도 기반(빠른 몬스터 약 18%) → 기술마다 고정 6.25%(급소 잘 나는 기술 12.5%) — 엔진은 그대로, 기술 값으로.
+ * - 1번 도로: 풀 스타터가 처음 상대 넷에게 모두 반감이었다 → 연구원 몬스터를 바위(로키온)로. 승리 뒤 회복약을 누가 줬는지 밝힌다.
+ * - 모든 필드 대사는 아래 상자 하나(위·아래로 오가던 상자, 흉상 잔상의 원인).
+ */
+function gbaFeel(project: Project): void {
+  const db = project.database;
+  if (!project.switches.some((sw) => sw.id === TRIAL.dexSwitch)) project.switches.push({ id: TRIAL.dexSwitch, name: "도감 받음" });
+  const master = db.items.find((i) => i.id === "item_gen_master_orb");
+  if (master && !db.items.some((i) => i.id === TRIAL.orbId)) {
+    db.items.unshift({ ...structuredClone(master), id: TRIAL.orbId, name: "시험용 구슬", price: 0, description: "천문박사가 만든 시험용 구슬. 처음 한 번은 꼭 잡힌다." });
+  }
+  for (const skill of db.skills) {
+    if (!skill.id.startsWith("mx_skill_") || skill.criticalRate !== undefined) continue;
+    skill.criticalRate = skill.gen1CriticalRate === "high" ? 12.5 : 6.25;
+  }
+  const researcher = db.enemies.find((e) => e.id === "mx_enemy_mx_map_meadow_trainer_1_0");
+  const rock = db.enemies.find((e) => e.id === "mx_enemy_pebblekid");
+  if (researcher && rock) {
+    researcher.name = rock.name;
+    researcher.speciesId = rock.speciesId;
+    researcher.monsterResourceId = rock.monsterResourceId;
+    researcher.graphicHue = rock.graphicHue;
+    researcher.elementRates = structuredClone(rock.elementRates);
+    researcher.stateRates = structuredClone(rock.stateRates);
+  }
+  const meadow = project.maps.mx_map_meadow;
+  const giver: Record<string, string> = { mx_map_meadow_trainer_0: "산책하는 소년", mx_map_meadow_trainer_1: "연구원", mx_map_meadow_trainer_2: "길을 걷는 조련사" };
+  for (const event of meadow?.events ?? []) {
+    for (const page of event.pages ?? []) walkLists(page.commands, (list) => {
+      for (const c of list) {
+        if (c.kind !== "text") continue;
+        if (c.body === "타입 상성만큼 기술 횟수도 중요하지.") c.body = "바위 타입은 풀과 물에 약해. 상성만 알아도 승부가 쉬워지지!";
+        if (c.body === "여행에 쓰라고 회복약 하나를 건네받았다." && giver[event.id]) c.body = `${giver[event.id]}에게서 회복약 하나를 받았다.`;
+      }
+    });
+  }
+  const bottom = (commands: Command[]) => walkLists(commands, (list) => { for (const c of list) if (c.kind === "text" && !c.position) c.position = "bottom"; });
+  for (const map of Object.values(project.maps)) for (const event of map.events) for (const page of event.pages ?? []) bottom(page.commands);
+  for (const common of project.commonEvents ?? []) bottom(common.commands);
+}
+
 export function polishFirstTenMinutes(project: Project): void {
   polishBedroom(project);
   polishMom(project);
@@ -450,6 +505,7 @@ export function polishFirstTenMinutes(project: Project): void {
   starterCoverage(project);
   gymBloomPuzzle(project);
   fairChampion(project);
+  gbaFeel(project);
   castTheAstraHorizon(project);
 }
 

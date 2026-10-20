@@ -25,6 +25,24 @@ const page = await context.newPage();
 const pageCreated = Date.now();
 page.on("pageerror", (error) => report.errors.push(String(error?.message ?? error)));
 page.on("console", (message) => { if (message.type() === "error") report.errors.push(`console: ${message.text()}`); });
+// 트레이너 소개(상대 인물 그림이 들어오는 순간)를 그때 바로 찍는다 — 5초 간격 프레임과 전투 뒤 연속 촬영으로는 이미 지나가 있었다.
+report.trainerIntros = [];
+await mkdir(join(out, "intro"), { recursive: true });
+await page.exposeFunction("__qaIntroShot", async (phase, srcs) => {
+  const name = `intro-${String(report.trainerIntros.length).padStart(2, "0")}-${phase}.png`;
+  report.trainerIntros.push({ phase, srcs, shot: name });
+  await page.screenshot({ path: join(out, "intro", name) }).catch(() => {});
+});
+await page.addInitScript(() => {
+  new MutationObserver(() => {
+    const layer = document.querySelector('[data-testid="emerald-trainer-intro"]');
+    const phase = layer && !layer.hidden ? layer.dataset.phase : undefined;
+    if (!layer || !phase || layer.dataset.qaShot?.includes(phase)) return;
+    layer.dataset.qaShot = `${layer.dataset.qaShot ?? ""} ${phase}`;
+    const srcs = [...layer.querySelectorAll("img")].map((img) => img.getAttribute("src"));
+    setTimeout(() => window.__qaIntroShot?.(phase, srcs), 200);
+  }).observe(document, { subtree: true, childList: true, attributes: true, attributeFilter: ["hidden", "data-phase"] });
+});
 await page.addInitScript(() => {
   try { localStorage.clear(); } catch { /* ignore */ }
   window.__OPENRPG_BOOT__ = { projectUrl: "/__runtime-qa/project.json", saveNamespace: "runtime-qa:astra-journey", qaInstrumentation: true };
@@ -260,11 +278,6 @@ async function walkThroughDoor(fromMapId, toMapId) {
 async function fight(label, { capture = false, run = false } = {}) {
   const log = [];
   const switchedFor = new Set();
-  // 트레이너 승부는 시작 소개(상대 인물 그림이 들어오고 몬스터를 내보냄)를 연속으로 찍는다 — 5초 간격 프레임으로는 안 잡힌다.
-  if (/rival|leader|trainer/.test(label)) {
-    await mkdir(join(out, "intro"), { recursive: true });
-    for (let k = 0; k < 6; k++) { await page.screenshot({ path: join(out, "intro", `${label}-${k}.png`) }).catch(() => {}); await page.waitForTimeout(350); }
-  }
   for (let turn = 0; turn < 40; turn++) {
     if (!(await present("battle-scene"))) break;
     if (await present("battle-result-panel")) {
@@ -396,7 +409,8 @@ async function playerTactic(switchedFor, { potionOnly = false } = {}) {
   const active = party.find((m) => (m.currentHp ?? 1) > 0 && (m.nickname ?? nameOf(m)) === info.name) ?? party.find((m) => (m.currentHp ?? 1) > 0 && nameOf(m) === info.name) ?? party.find((m) => (m.currentHp ?? 1) > 0);
   const back = async () => { await page.keyboard.press("Escape"); await page.waitForTimeout(250); if (!(await page.locator('[data-testid="actor-command-fight"]').count())) { const b = page.locator('[data-testid="actor-command-back"]'); if (await b.count()) { await b.first().focus(); await page.keyboard.press("Enter"); await page.waitForTimeout(250); } } };
   // 1) 회복약 — 내 체력 35% 아래이고 상대가 아직 버티면.
-  if (info.hp !== null && info.max && info.hp / info.max < 0.35 && (info.enemyHp === null || info.enemyHp > 0.25)) {
+  // 잡으려는 싸움은 몇 턴 버텨야 하니 반 아래면 미리 마신다.
+  if (info.hp !== null && info.max && info.hp / info.max < (potionOnly ? 0.5 : 0.35) && (info.enemyHp === null || info.enemyHp > 0.25)) {
     const item = page.locator('[data-testid="actor-command-item"]');
     if (await item.count() && await item.isEnabled()) {
       await item.focus(); await page.keyboard.press("Enter"); await page.waitForTimeout(300);
@@ -622,9 +636,15 @@ try {
   // 1번 도로: 북쪽 출구(실바나 마을)로 걸어간다. 야생은 첫 번째만 잡아 보고 나머지는 싸운다. 트레이너는 눈이 마주치면 싸운다.
   const meadow = project.maps.mx_map_meadow;
   const exit = meadow.events.find((e) => /"mapId":"mx_map_grove"/.test(JSON.stringify(e.pages ?? [])));
-  let wild = 0, trainers = 0, pendingTrainer = false;
+  let wild = 0, trainers = 0, pendingTrainer = false, whiteouts = 0;
   while (elapsed() < LIMIT_MS) {
     const l = await here();
+    // 쓰러져 회복 센터로 돌아왔으면 플레이어처럼 다시 1번 도로로 나간다(2026-10-21 run17 은 여기서 끝나 버렸다).
+    if (l.currentMapId !== "mx_map_meadow" && l.currentMapId !== "mx_map_grove" && whiteouts < 2) {
+      whiteouts++; step("whiteout", false, `회복 센터(${l.currentMapId})에서 다시 출발`);
+      await readThrough(); await go(l.currentMapId, homeId).catch(() => {}); await go(homeId, "mx_map_meadow").catch(() => {});
+      continue;
+    }
     if (l.currentMapId !== "mx_map_meadow") break;
     if (await present("battle-scene")) {
       const trainer = pendingTrainer; pendingTrainer = false;

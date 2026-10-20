@@ -302,8 +302,12 @@ export function resetFollowerTrailNearPlayer(
   const gap = Math.max(effectiveGap(session, config), typeof config?.gap === "number" ? 1 : MAX_FOLLOWER_BODY_SPAN);
   const slots = Math.min(trailIndexFor(session.followers.length - 1, gap) + 1, MAX_TRAIL_POINTS);
   const facing = options?.facing ?? session.playerFacing ?? "down";
+  // 출입구(장소 이동 이벤트) 칸은 비워 둔다 — 전멸 뒤 회복 센터에 위를 보고 서면 「뒤」가 아래 벽의 출구 매트라
+  // 동료가 방 밖 검은 곳에 서 있었다(2026-10-21 적대 검수 M11).
+  const exits = new Set((map?.events ?? []).filter((event) => JSON.stringify(event.pages ?? []).includes('"kind":"transfer"')).map((event) => `${event.x},${event.y}`));
   const open = (x: number, y: number): boolean => {
     if (options?.blocked?.(x, y)) return false;
+    if (exits.has(`${x},${y}`)) return false;
     if (!map) return true;
     if (!inBounds(map, x, y)) return false;
     return options?.project ? isPassable(options.project, map, x, y) : true;
