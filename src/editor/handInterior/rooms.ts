@@ -144,10 +144,10 @@ export function composeHandInteriorRooms(
   }
 
   const exitRoom = exit ? (byId.get(exit.room) ?? fail(`exit: 방 "${exit.room}" 이 없다`)) : [...rooms].sort((a, b) => b.y1 - a.y1)[0]!;
-  if (exitRoom.y1 !== H - 2) fail(`출구 방 ${exitRoom.id} 가 맨 아래(y1=${H - 2})에 닿지 않는다 — 출구는 남쪽 바깥벽에 낸다. 출구 방을 바닥 줄까지 내리거나 다른 방을 exit 로`);
-  const width = Math.max(1, exit?.width ?? 1);
-  const ex = exit?.x ?? Math.floor((exitRoom.x0 + exitRoom.x1 + 1 - width) / 2);
-  if (ex < exitRoom.x0 || ex + width - 1 > exitRoom.x1) fail(`exit.x=${ex} — 출구는 방 ${exitRoom.id} 의 열 ${exitRoom.x0}~${exitRoom.x1} 안`);
+  const width = exit?.width === 0 ? 0 : Math.max(1, exit?.width ?? 1);
+  if (width > 0 && exitRoom.y1 !== H - 2) fail(`출구 방 ${exitRoom.id} 가 맨 아래(y1=${H - 2})에 닿지 않는다 — 출구는 남쪽 바깥벽에 낸다. 출구 방을 바닥 줄까지 내리거나 다른 방을 exit 로`);
+  const ex = exit?.x ?? Math.floor((exitRoom.x0 + exitRoom.x1 + 1 - Math.max(1, width)) / 2);
+  if (width > 0 && (ex < exitRoom.x0 || ex + width - 1 > exitRoom.x1)) fail(`exit.x=${ex} — 출구는 방 ${exitRoom.id} 의 열 ${exitRoom.x0}~${exitRoom.x1} 안`);
   for (let x = ex; x < ex + width; x++) g[H - 1]![x] = ".";
 
   const zones: HandInteriorZone[] = [
@@ -155,7 +155,7 @@ export function composeHandInteriorRooms(
       .map((r) => ({ x0: r.x0, y0: r.y0 - 1, x1: r.x1, y1: r.y1, ...(r.floor ? { floor: r.floor } : {}), ...(r.wall ? { wall: r.wall } : {}) })),
     ...seamZones,
   ];
-  return { plan: g.map((row) => row.join("")), zones, doors, exit: { x: ex, y: H - 1, width }, openings };
+  return { plan: g.map((row) => row.join("")), zones, doors, exit: { x: ex, y: width === 0 ? exitRoom.y1 + 1 : H - 1, width }, openings };
 }
 
 /** 도구 인자에 rooms 가 있으면 평면·zones·문을 채운 입력으로 바꾼다. plan 과 같이 주면 거부한다. */

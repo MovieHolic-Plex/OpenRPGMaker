@@ -64,18 +64,37 @@ export function furnishRooms(base: HandInteriorInput, rooms: readonly LayoutRoom
   const byId = new Map(roomTemplates(tilesetId).map((t) => [t.id, t]));
   const keep = doorwayCells(composed);
   let input = base;
-  const first = buildHandInteriorLayers(input, tileset, S);
+  const firstInput = composed.exit.width === 0 && !input.start?.length
+    ? { ...input, start: [{ x: composed.exit.x, y: Math.max(2, composed.exit.y - 1) }] }
+    : input;
+  const first = buildHandInteriorLayers(firstInput, tileset, S);
   let errors = first.issues.filter((i) => i.severity === "error").length, unreached = first.unreachedFloor.length;
   const perRoom: FurnishResult["perRoom"] = {};
+  const isTravelItem = (it: InteriorTemplateItem | undefined): boolean => {
+    const o = it?.t === "o" ? S.objects[it.id] : undefined;
+    return Boolean(o && (o.use?.includes("travel") || o.stairs));
+  };
+  const roomHasTravel = (rm: LayoutRoom): number => {
+    const t0 = rm.template ? byId.get(rm.template) : undefined;
+    return t0?.items.some(isTravelItem) ? 1 : 0;
+  };
+  const orderedRooms = composed.exit.width === 0 ? [...rooms].sort((a, b) => roomHasTravel(b) - roomHasTravel(a)) : rooms;
   const cellsOf = (it: InteriorTemplateItem): string[] => {
     const isFlat = it.t === "l" || (it.t === "o" && S.objects[it.id]?.kind === "flat");
     if (isFlat) return flatCells(it, S).map((c) => `f:${c}`);
     const o = it.t === "o" ? S.objects[it.id] : undefined;
     if (o?.kind === "hang") {
       const w = Math.max(1, o.w);
-      return Array.from({ length: w * 2 }, (_, i) => `h:${it.x + (i % w)},${it.y + Math.floor(i / w)}`);
+      const out = Array.from({ length: w * 2 }, (_, i) => `h:${it.x + (i % w)},${it.y + Math.floor(i / w)}`);
+      for (let dx = 0; dx < w; dx++) out.push(`wcol:${it.x + dx},${it.y}`);
+      return out;
     }
-    return footprint(it, S).map((c) => `s:${c}`);
+    const out = footprint(it, S).map((c) => `s:${c}`);
+    if (o && (o.kind === "wall" || (o.kind === "floor" && o.up >= 8))) {
+      const w = Math.max(1, o.w);
+      for (let dx = 0; dx < w; dx++) out.push(`wcol:${it.x + dx},${it.y - 2}`);
+    }
+    return out;
   };
   /** 한 점을 넣어 본다 — 싼 검사(방 안·문 앞·겹침) 뒤 조립기 검사. 되면 반영하고 true. */
   const tryPutIn = (it: InteriorTemplateItem, taken: Set<string>, inside: (it: InteriorTemplateItem) => boolean): boolean => {
@@ -89,7 +108,7 @@ export function furnishRooms(base: HandInteriorInput, rooms: readonly LayoutRoom
     for (const c of cells) taken.add(c);
     return true;
   };
-  for (const room of rooms) {
+  for (const room of orderedRooms) {
     if (room.kind === HALL_KIND && room.dress) {
       // 복도는 견본이 없다 - 벽 가구·걸이·벤치를 archHall.ts 후보대로 놓고, 문 앞·겹침에 걸리면 옆으로 비킨다.
       const hallTaken = new Set<string>();
@@ -118,8 +137,11 @@ export function furnishRooms(base: HandInteriorInput, rooms: readonly LayoutRoom
     let taken = new Set<string>();
     /** 한 점을 넣어 본다 — 싼 검사(방 안·문 앞·겹침) 뒤 조립기 검사. 되면 반영하고 true. */
     const tryPut = (it: InteriorTemplateItem): boolean => tryPutIn(it, taken, inside);
+    const clusterHasTravel = (c: { readonly members: readonly number[] }): number =>
+      c.members.some((k) => isTravelItem(t.items[k])) ? 1 : 0;
     const clusters = templateClusters(t, S).sort((a, b) =>
-      Number(b.pinTop) - Number(a.pinTop)
+      clusterHasTravel(b) - clusterHasTravel(a)
+      || Number(b.pinTop) - Number(a.pinTop)
       || (styleVariant === "D" ? a.area - b.area : b.area - a.area)
       || (styleVariant === "B" || styleVariant === "D" ? b.box[0] - a.box[0] : a.box[0] - b.box[0]),
     );
