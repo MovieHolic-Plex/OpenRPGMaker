@@ -37,3 +37,123 @@
 .battle-gimmick-marks{position:absolute;bottom:100%;left:50%;translate:-50% 0;display:flex;gap:3px;white-space:nowrap;font-size:11px;color:#fff;pointer-events:none}.battle-gimmick-marks>span:not(.battle-gimmick-summon){background:#172333d9;border:1px solid #769cb8;border-radius:3px;padding:1px 4px}.battle-gimmick-summon{position:absolute;right:100%;bottom:-35px;width:48px;height:48px;image-rendering:pixelated}
 
 .battle-actor[data-retro-class-skill] .battle-gimmick-summon{visibility:hidden}
+
+/* ---- battle-feel 2026-10-20 (프로토타입) -------------------------------------------------
+   녹화 판정: 맞은 적이 정지 내내(110~209ms) 통째로 흰 덩어리가 되고, 이어지는 점멸이 반투명(0.38)이라
+   용이 유령처럼 비쳤다. 번쩍임은 밝기로만 주고 몸은 끝까지 불투명하게 둔다. */
+.battle-scene[data-battle-motion="retro"].battle-hit-stop .battle-motion-knockback :is(.battle-enemy-image, .battle-actor-image, .battle-actor-sprite, .battle-skin-actor-image),
+.battle-scene[data-battle-motion="retro"] .battle-enemy.retro-skill-struck .battle-enemy-image,
+.battle-scene[data-battle-motion="retro"] .battle-actor.retro-skill-struck .battle-actor-sprite {
+  filter: brightness(2.1) saturate(0.55) !important;
+}
+.battle-scene[data-battle-motion="retro"].battle-hit-stop-critical .battle-motion-knockback :is(.battle-enemy-image, .battle-actor-image, .battle-actor-sprite, .battle-skin-actor-image) {
+  filter: brightness(2.4) saturate(0.4) drop-shadow(0 0 6px rgba(255, 214, 120, 0.9)) !important;
+}
+.battle-scene[data-battle-motion="retro"] .battle-hit-blink-off :is(.battle-enemy-image, .battle-actor-image, .battle-actor-sprite, .battle-skin-actor-image) {
+  opacity: 1 !important;
+  filter: brightness(1.7) !important;
+}
+/* 아군 피격 붉은 테두리: 0.72 는 무대 절반을 붉게 칠했다. 가장자리만 짧게. */
+.battle-scene[data-battle-motion="retro"].battle-flash-hurt .battle-field::after {
+  animation-duration: 170ms;
+  background: radial-gradient(ellipse at 50% 50%, rgba(160, 10, 20, 0) 55%, rgba(200, 16, 28, 0.42) 100%);
+}
+
+/* 피해 숫자: 24px 가는 숫자 → 굵은 테두리 32px(빼기표는 battleFieldDom 이 뺀다). */
+.battle-scene[data-battle-motion="retro"][data-battle-motion="retro"][data-battle-ui-style] .battle-damage-popup.battle-damage-popup:not(.battle-damage-popup-status) {
+  font-size: 32px;
+  letter-spacing: 1px;
+  text-shadow:
+    2px 0 #08080f, -2px 0 #08080f, 0 2px #08080f, 0 -2px #08080f,
+    2px 2px #08080f, -2px 2px #08080f, 2px -2px #08080f, -2px -2px #08080f,
+    0 4px #08080f;
+}
+
+/* 단축키 안내는 바뀐 순간에만(battleDom.syncPlaybackStatus data-recent), 자동 전투 중엔 작은 표지로. */
+.battle-scene[data-battle-motion="retro"] .battle-playback-status.battle-playback-status {
+  transition: opacity 240ms ease-out;
+}
+.battle-scene[data-battle-motion="retro"] .battle-playback-status.battle-playback-status:not([data-recent]):not([data-auto="true"]) {
+  opacity: 0;
+}
+
+/* 할 말이 없을 때(게이지 대기) 윗창을 비워 두지 않고 걷는다. */
+.battle-scene[data-battle-motion="retro"] .battle-message-window:has(.battle-message-lines:empty) {
+  visibility: hidden;
+}
+
+/* 시전 모으기: 확인 뒤 착탄까지 ~0.9초 동안 시전자가 반 걸음 나설 뿐 아무 빛도 없어 「멈춘 것」처럼 보였다.
+   발밑 마법진 고리(4단 계단 맥동)와 솟는 빛기둥을 시전 종류 색으로 그린다. 그림·소리 계약은 건드리지 않는다. */
+.battle-scene[data-battle-motion="retro"] .battle-actor[data-retro-action="cast"][data-retro-beat="approach"] {
+  --bf-cast: #a9c4ff;
+}
+.battle-scene[data-battle-motion="retro"] .battle-actor[data-retro-cast="fire"] { --bf-cast: #ffa040; }
+.battle-scene[data-battle-motion="retro"] .battle-actor[data-retro-cast="ice"] { --bf-cast: #9ff0ff; }
+.battle-scene[data-battle-motion="retro"] .battle-actor[data-retro-cast="thunder"] { --bf-cast: #fff27a; }
+.battle-scene[data-battle-motion="retro"] .battle-actor[data-retro-cast="heal"] { --bf-cast: #a6ffb6; }
+.battle-scene[data-battle-motion="retro"] .battle-actor[data-retro-cast="dark"] { --bf-cast: #d29bff; }
+.battle-scene[data-battle-motion="retro"] .battle-actor[data-retro-action="cast"][data-retro-beat="approach"]::after,
+.battle-scene[data-battle-motion="retro"] .battle-actor[data-retro-cast][data-retro-beat="approach"]::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 2px;
+  width: 104px;
+  height: 30px;
+  translate: -50% 0;
+  border-radius: 50%;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 50%, transparent 56%, var(--bf-cast, #a9c4ff) 58% 64%, transparent 66%),
+    radial-gradient(ellipse at 50% 50%, transparent 30%, color-mix(in srgb, var(--bf-cast, #a9c4ff) 55%, transparent) 32% 36%, transparent 38%);
+  animation: bf-cast-ring 480ms steps(4, end) infinite;
+  z-index: 0;
+}
+.battle-scene[data-battle-motion="retro"] .battle-actor[data-retro-action="cast"][data-retro-beat="approach"]::before,
+.battle-scene[data-battle-motion="retro"] .battle-actor[data-retro-cast][data-retro-beat="approach"]::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  width: 44px;
+  height: 92px;
+  translate: -50% 0;
+  pointer-events: none;
+  background: linear-gradient(to top, color-mix(in srgb, var(--bf-cast, #a9c4ff) 70%, transparent), transparent 90%);
+  mask-image: repeating-linear-gradient(to right, #000 0 4px, transparent 4px 8px);
+  animation: bf-cast-column 360ms steps(3, end) infinite;
+  mix-blend-mode: screen;
+  z-index: 3;
+}
+@keyframes bf-cast-ring {
+  0% { scale: 1.25; opacity: 0.35; }
+  50% { scale: 1; opacity: 1; }
+  100% { scale: 0.85; opacity: 0.6; }
+}
+@keyframes bf-cast-column {
+  0% { opacity: 0.25; translate: -50% 6px; }
+  100% { opacity: 0.9; translate: -50% -6px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .battle-scene[data-battle-motion="retro"] .battle-actor[data-retro-beat="approach"]::before,
+  .battle-scene[data-battle-motion="retro"] .battle-actor[data-retro-beat="approach"]::after { animation: none; }
+}
+
+/* 효과 시트의 화면 번쩍임(battleAnimationDom → battle-screen-flash)은 ease-out 두 번(≈0.4초)이라 무대가 회색 안개로 덮였다.
+   도트 측면 전투에서는 한 번, 두 프레임 머물렀다 끊는다. */
+.battle-scene[data-battle-motion="retro"].battle-screen-flash::before {
+  animation: bf-screen-snap 120ms steps(1, end) 1 forwards;
+}
+@keyframes bf-screen-snap {
+  0% { opacity: 0.5; }
+  50%, 100% { opacity: 0; }
+}
+/* 스펠 레시피의 화면 막(retro-skill-screen-flash)은 0.24 → 0 을 연출 길이(~0.7초) 내내 빠졌다 — 동굴이 회색으로 떴다(프로브 실측).
+   두 프레임만. 통상 명중의 무대 흰 막(0.16)도 도트 측면에서는 끈다 — 번쩍임은 맞은 몸(밝기)과 급소만 맡는다. */
+.battle-scene[data-battle-motion="retro"] .retro-skill-screen.retro-skill-screen-flash {
+  animation: bf-screen-snap 120ms steps(1, end) 1 forwards;
+}
+.battle-scene[data-battle-motion="retro"].battle-flash-hit:not(.battle-flash-critical):not(.battle-flash-hurt) .battle-field::after {
+  animation: none;
+  opacity: 0;
+}

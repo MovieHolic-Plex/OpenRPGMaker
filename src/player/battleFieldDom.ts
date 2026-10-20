@@ -922,7 +922,9 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
       : feedback.healing
         // MP 회복은 HP 팝업과 같은 초록 +N 으로 두면 어느 눈금이 움직였는지 알 수 없다.
         ? (feedback.resource === "mp" ? `MP +${feedback.amount}` : `+${feedback.amount}`)
-        : (feedback.resource === "mp" ? `MP -${feedback.amount}` : `-${feedback.amount}`);
+        : (feedback.resource === "mp" ? `MP -${feedback.amount}`
+          // battle-feel 2026-10-20: 도트 측면 전투는 FF·DQ 처럼 피해를 부호 없이 센다(「-37」의 빼기표가 숫자를 가늘게 만들었다).
+          : field.closest<HTMLElement>(".battle-scene")?.dataset.battleMotion === "retro" ? String(feedback.amount) : `-${feedback.amount}`);
   const anchor = findBattlerNode(field, feedback.targetId);
   if (anchor) {
     popup.style.setProperty("--battle-node-x", anchor.style.getPropertyValue("--battle-node-x"));
