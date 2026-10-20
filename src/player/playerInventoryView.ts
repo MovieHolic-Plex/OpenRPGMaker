@@ -46,7 +46,7 @@ export function inventoryViewEntries(
   // Append controls so the historical first-item shortcut/preview remains intact.
   const sortControl: StatusMenuDetailEntry = {
     label: '정렬', value: { default: '기본 순서', name: '이름순', quantity: '수량순' }[view.sort],
-    description: 'Enter로 기본 순서 / 이름순 / 수량순 전환', testId: 'inventory-sort',
+    description: 'Enter로 정렬 바꾸기', testId: 'inventory-sort',
     onActivate: onChange ? () => onChange({ ...view, sort: sorts[(sorts.indexOf(view.sort) + 1) % sorts.length]! }) : undefined,
   };
   if (pocket) {
