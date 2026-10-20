@@ -104,8 +104,8 @@ def gable_top(c, x0, x1, ytop, yeave, mat, base, ridge_frac=0.22):
         for x in range(x0, x1 + 1):
             if y < yr and not flat_back: _course(c, x, y, ytop, mat, base + 1)
             else: _course(c, x, y, yr, mat, base + up)
-        c.P(x0, y, K('shiro', 1)); c.P(x0 + 1, y, K('shiro', 2 if y >= yr else 0)); c.P(x0 + 2, y, K(mat, base - 2))   # 破風(빛 쪽)
-        c.P(x1, y, K('shiro', -1)); c.P(x1 - 1, y, K('shiro', 0 if y >= yr else -1))                                     # 破風(그늘 쪽)
+        c.P(x0, y, K(mat, base + 3)); c.P(x0 + 1, y, K(mat, base + 1))       # 케라바(빛 쪽): 기와 톤 밝게 1px
+        c.P(x1, y, K(mat, base - 3)); c.P(x1 - 1, y, K(mat, base - 2))       # 케라바(그늘 쪽)
         c.P(x0 - 1, y, OL); c.P(x1 + 1, y, OL)
     c.HL(x0 + 2, yr - 2, x1 - x0 - 3, K(mat, base + 3)); c.HL(x0 + 2, yr - 1, x1 - x0 - 3, K(mat, base + 2)); c.HL(x0 + 2, yr, x1 - x0 - 3, K(mat, base - 3))
     c.HL(x0 - 1, ytop - 1, x1 - x0 + 3, OL)
@@ -119,20 +119,21 @@ def gable_front_top(c, x0, x1, ytop, yeave, ywall, mat, base, rise, wx0, wx1, wm
     뒤 끝·앞 끝 바깥선은 납작한 Λ(가운데가 rise 만큼 높다). 앞 끝 아래로 박공 삼각벽이 벽 위(ywall)까지 보인다."""
     xc = (x0 + x1) // 2; half = max(1, (x1 - x0) / 2)
     tex_ribs = mat == 'tekko'
-    rise_b = max(4, rise // 2)                                               # 뒤 끝은 더 납작하게(멀다)
+    rise_b = rise                                                            # 뒤 끝 = 앞 처마와 나란한 Λ
     for x in range(x0, x1 + 1):
         d = abs(x - xc) / half
         yt = ytop + round(rise_b * d); yb = yeave - round(rise * (1 - d))
         lit = x <= xc
         for y in range(yt, yb - 1):
-            if tex_ribs:                                                     # 골판 골 = 물매 방향(동서) = 가로 줄
-                t = base + (2 if lit else -1) + (1 if y % 4 == 1 else -1 if y % 4 == 3 else 0)
-            else:
-                k = (x - x0) % 4 if lit else (x1 - x) % 4                   # 기와 줄 = 처마와 나란(세로)
-                t = base + (2 if lit else -1)
+            t = base + (2 if lit else -1)
+            if tex_ribs:                                                     # 골판: 얕은 세로 골 + 12줄마다 판 이음
+                t += (1 if (x - x0) % 6 == 1 else -1 if (x - x0) % 6 == 4 else 0)
+                if (y - yt) % 12 == 11: t -= 1
+            else:                                                            # 기와: 가로 단(4줄) + 엇갈린 골
+                k = (y - yt) % 4
                 if k == 3: t -= 2
                 elif k == 0: t += 1
-                elif (y + (2 if (x - x0) // 4 % 2 else 0)) % 4 == 0: t -= 1
+                elif (x + (2 if (y - yt) // 4 % 2 else 0)) % 4 == 0: t -= 1
             if lit and x < x0 + 2: t += 1
             if not lit and x > x1 - 2: t -= 1
             c.P(x, y, K(mat, t))
@@ -164,14 +165,14 @@ def shed_top(c, x0, x1, ytop, yeave, mat, base):
     D = yeave - ytop
     for y in range(ytop, yeave):
         f = (y - ytop) / max(1, D)
-        g = 2 if f < 0.2 else 1 if f < 0.55 else 0 if f < 0.85 else -1
+        g = 2 if f < 0.15 else 1 if f < 0.6 else 0
         for x in range(x0 + 3, x1 - 2):
             t = base + g + (1 if (x % 4 == 1 and (y // 2) % 2) else -1 if x % 8 == 3 else 0)
-            if (y - ytop) % 16 == 15: t -= 2
+            if (y - ytop) % 16 == 15: t -= 1
             elif (y - ytop) % 16 == 0 and y > ytop: t += 1
             c.P(x, y, K(mat, t))
-        c.P(x0, y, K('shiro', 1)); c.P(x0 + 1, y, K('shiro', 0)); c.P(x0 + 2, y, K(mat, base - 2))   # 마구리(빛)
-        c.P(x1, y, K(mat, base - 3)); c.P(x1 - 1, y, K('shiro', -2)); c.P(x1 - 2, y, K('shiro', -1))  # 마구리(그늘)
+        c.P(x0, y, K(mat, base + 3)); c.P(x0 + 1, y, K(mat, base + 2)); c.P(x0 + 2, y, K(mat, base + 2))   # 마구리(빛)
+        c.P(x1, y, K(mat, base - 3)); c.P(x1 - 1, y, K(mat, base - 2)); c.P(x1 - 2, y, K(mat, base))      # 마구리(그늘)
         c.P(x0 - 1, y, OL); c.P(x1 + 1, y, OL)
     c.HL(x0 - 1, ytop - 1, x1 - x0 + 3, OL); c.HL(x0, ytop, x1 - x0 + 1, K('tekko', 3)); c.HL(x0, ytop + 1, x1 - x0 + 1, K('tekko', 1))
     c.HL(x0 - 1, yeave, x1 - x0 + 3, K('tekko', 3)); c.HL(x0 - 1, yeave + 1, x1 - x0 + 3, K('tekko', 0))
@@ -280,7 +281,7 @@ def deepen(r, kind_map=None):
     elif rk in ('gable_front', 'gable_front_big'):
         r['roof'] = ('gable_front_top', {'h': hp + 6, 'rise': max(12, min(20, r['w'] * 3))})
     elif rk == 'shed':
-        r['roof'] = ('shed_top', {'h': hp - 6})
+        r['roof'] = ('shed_top', {'h': hp})
     elif rk == 'flat':
         hf = max(52, min(72, round(walls * 0.75)))
         items = []
