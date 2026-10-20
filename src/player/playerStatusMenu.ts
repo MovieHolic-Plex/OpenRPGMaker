@@ -227,7 +227,8 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
         ...(snapshot.chapterLabel
           ? [el("span", { class: "status-menu-chapter", text: snapshot.chapterLabel, dataset: { testid: "status-menu-chapter" } })]
           : []),
-        el("span", { class: "status-menu-gold", text: snapshot.goldLabel, dataset: { testid: "status-menu-gold" } }),
+        // 관계 중심(연애) 게임은 돈을 쓰지 않는다 — 머리줄에 「0G」 를 두지 않는다(첫사랑 VQA 1차).
+        ...(snapshot.relationship ? [] : [el("span", { class: "status-menu-gold", text: snapshot.goldLabel, dataset: { testid: "status-menu-gold" } })]),
         el("span", { class: "status-menu-time", text: snapshot.timeLabel, dataset: { testid: "status-menu-time" } }),
       ],
     }),
