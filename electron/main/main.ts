@@ -2,13 +2,14 @@ import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { startLocalProjectServer, type LocalProjectServer } from "../serve/runtime";
 import { normalizeTeamUrl } from "../serve/localNetwork";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { BrowserWindow, Menu, app, clipboard, dialog, ipcMain, protocol, shell, type IpcMainInvokeEvent } from "electron";
 import { OPRN_APP_SCHEME, OPRN_ASSET_SCHEME, OPRN_CHANNELS } from "../shared/channels";
 import { isWindowControlAction, windowChromeFor, type WindowState } from "../shared/windowControl";
 import { registerIpcHandlers } from "./ipc";
 import { registerAssetBrowser } from "./assetBrowser";
-import { registerAssetStore } from "./assetStore";
+import { acceptStoreDeepLink, registerAssetStore } from "./assetStore";
+import { findStoreDeepLinkArg } from "../../src/assetStore/deepLink";
 import { registerAppProtocol, registerAssetProtocol } from "./protocols";
 import { createProjectSessionRegistry } from "./sessions";
 import { startCompanionServer, type CompanionServer } from "./companion";
@@ -20,6 +21,49 @@ protocol.registerSchemesAsPrivileged([
   { scheme: OPRN_APP_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, corsEnabled: true } },
   { scheme: OPRN_ASSET_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, corsEnabled: true } },
 ]);
+
+// ── 「에디터에서 열기」 링크(oprn://store/install?…) ─────────────────────────────
+// 판정은 src/assetStore/deepLink.ts(순수), 받은 뒤 처리는 assetStore.ts 의 acceptStoreDeepLink. openwiki/asset-store.md.
+const DEEP_LINK_SCHEME = "oprn";
+/**
+ * 한 번만 실행(single instance). 배포 앱에서만 건다 — QA 하니스는 개발 빌드 Electron 을 여러 개 동시에 띄우고
+ * (OPRN_SMOKE_PAGE·OPRN_OPEN_PROJECT_DIR), 잠금을 걸면 두 번째부터 바로 꺼진다.
+ */
+const singleInstance = app.isPackaged && process.env.OPRN_SMOKE_PAGE === undefined && process.env.OPRN_OPEN_PROJECT_DIR === undefined
+  && process.env.OPRN_MULTI_INSTANCE !== "1";
+if (singleInstance && !app.requestSingleInstanceLock()) {
+  // 이미 떠 있는 앱이 second-instance 로 이 실행의 인자(링크)를 받는다.
+  app.exit(0);
+}
+/** 앱이 준비되고 첫 창을 만들기 전에 들어온 링크(macOS 는 open-url 이 ready 전에 올 수 있다). */
+let earlyLinks: string[] | null = [];
+function receiveDeepLink(url: string): void {
+  if (earlyLinks) { earlyLinks.push(url); return; }
+  acceptStoreDeepLink(url);
+}
+// macOS: 링크·「다음으로 열기」는 open-url 로 온다. ready 전에 붙여야 첫 실행 링크를 놓치지 않는다.
+app.on("open-url", (event, url) => {
+  event.preventDefault();
+  receiveDeepLink(url);
+});
+// Windows·Linux: 이미 떠 있는 앱에 두 번째 실행의 인자로 링크가 온다. 링크가 아니면 예전처럼 새 창(시작 화면)을 연다.
+app.on("second-instance", (_event, argv) => {
+  const link = findStoreDeepLinkArg(argv);
+  if (link) receiveDeepLink(link);
+  else if (app.isReady()) createWindow();
+});
+
+/** OS 에 oprn: 처리기로 등록한다. 개발 실행은 OPRN_REGISTER_PROTOCOL=1 일 때만(개발 빌드가 사용자 등록을 빼앗지 않게). */
+function registerDeepLinkProtocol(): void {
+  try {
+    if (!process.defaultApp) app.setAsDefaultProtocolClient(DEEP_LINK_SCHEME);
+    else if (process.env.OPRN_REGISTER_PROTOCOL === "1" && process.argv[1]) {
+      app.setAsDefaultProtocolClient(DEEP_LINK_SCHEME, process.execPath, [resolve(process.argv[1])]);
+    }
+  } catch (error) {
+    console.warn("[store-link] oprn: 링크 처리기를 등록하지 못했습니다:", error);
+  }
+}
 
 const sessions = createProjectSessionRegistry();
 const hosting = new Set<string>();
@@ -455,8 +499,15 @@ app.whenReady().then(async () => {
   ipcMain.handle(OPRN_CHANNELS.startRecentTeams, () => listRecentTeams());
   registerIpcHandlers(sessions);
   registerAssetBrowser();
-  registerAssetStore();
+  registerAssetStore({ hasProject: (webContentsId) => sessions.get(webContentsId) !== null });
+  registerDeepLinkProtocol();
   createWindow();
+  // 첫 실행 인자(Windows·Linux)와 ready 전에 온 링크를 이제 처리한다.
+  const pendingLinks = [...(earlyLinks ?? [])];
+  earlyLinks = null;
+  const initialLink = findStoreDeepLinkArg(process.argv);
+  if (initialLink) pendingLinks.unshift(initialLink);
+  for (const link of pendingLinks) acceptStoreDeepLink(link);
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });

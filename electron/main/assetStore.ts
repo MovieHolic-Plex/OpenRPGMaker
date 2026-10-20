@@ -3,7 +3,8 @@
  */
 import { existsSync, readFileSync, rmSync, writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
-import { app, ipcMain, safeStorage, shell, webContents } from "electron";
+import { app, BrowserWindow, dialog, ipcMain, safeStorage, shell, webContents } from "electron";
+import { parseStoreDeepLink } from "../../src/assetStore/deepLink";
 import { OPRN_CHANNELS } from "../shared/channels";
 import {
   storeCatalogSchema, storeConceptMadeSchema, storeConceptSlugSchema, storeConceptsSchema, storeLoginSchema, storeSlugSchema, storeUploadSchema, storeUrlSchema,
@@ -13,6 +14,62 @@ import { AssetStoreClient, sameOriginUrl, StoreError } from "./assetStoreClient"
 
 let client: AssetStoreClient | null = null;
 let loginSeq = 0;
+/** 받아 둔 초안 상태 다시 보기는 1분에 한 번만(받은 목록을 새로 그릴 때마다 서버에 묻지 않게). */
+let draftsCheckedAt = 0;
+
+/** 「에디터에서 열기」 링크로 들어와 아직 편집기가 꺼내 가지 않은 요청. 10분 지나면 버린다. */
+let pendingLink: { slug: string; version?: number; at: number } | null = null;
+const PENDING_LINK_MS = 10 * 60_000;
+
+/** 메인이 링크를 넘길 창을 고를 때 쓰는 것. main.ts 가 세션 표를 들고 있다. */
+export interface StoreLinkHost {
+  /** 이 창(webContents id)에 프로젝트가 열려 편집기가 떠 있는가. */
+  hasProject(webContentsId: number): boolean;
+}
+let linkHost: StoreLinkHost = { hasProject: () => false };
+
+function editorWindows(): BrowserWindow[] {
+  return BrowserWindow.getAllWindows().filter((window) => !window.isDestroyed()
+    && linkHost.hasProject(window.webContents.id) && !window.webContents.getURL().includes("start-screen.html"));
+}
+
+function focus(window: BrowserWindow): void {
+  if (window.isMinimized()) window.restore();
+  window.show();
+  window.focus();
+}
+
+/**
+ * OS 가 넘긴 `oprn://store/install?…` 링크를 받는다(첫 실행 인자·두 번째 실행·macOS open-url).
+ * 출처·slug·판본을 검사하고, 맞으면 요청을 맡겨 둔 뒤 편집기 창에 「꺼내 가라」고 알린다.
+ * 실제 받기·넣기는 편집기가 확인 카드를 보여 주고 사용자가 누른 뒤에만 한다 — 여기서는 아무것도 받지 않는다.
+ */
+export function acceptStoreDeepLink(url: string): void {
+  const link = parseStoreDeepLink(url, storeClient().url);
+  const editors = editorWindows();
+  const target = editors[0] ?? BrowserWindow.getAllWindows().find((window) => !window.isDestroyed()) ?? null;
+  if (target) focus(target);
+  if (!link.ok) {
+    console.warn(`[store-link] 링크를 열지 않았습니다: ${link.reason}`);
+    if (editors[0]) editors[0].webContents.send(OPRN_CHANNELS.storeOpenLink, { kind: "error", reason: link.reason });
+    else void dialog.showMessageBox({ type: "warning", message: "스토어 링크를 열지 않았습니다.", detail: link.reason });
+    return;
+  }
+  pendingLink = { slug: link.slug, ...(link.version !== undefined ? { version: link.version } : {}), at: Date.now() };
+  if (editors[0]) { editors[0].webContents.send(OPRN_CHANNELS.storeOpenLink, { kind: "request" }); return; }
+  void dialog.showMessageBox({
+    type: "info", message: "스토어 링크를 받았습니다.",
+    detail: `프로젝트를 열면 「${link.slug}」 넣기를 이어서 할게요. 시작 화면에서 프로젝트를 열거나 새로 만들어 주세요.`,
+  });
+}
+
+function takePendingLink(webContentsId: number): { slug: string; version?: number } | null {
+  if (!pendingLink || !linkHost.hasProject(webContentsId)) return null;
+  const link = pendingLink;
+  pendingLink = null;
+  if (Date.now() - link.at > PENDING_LINK_MS) return null;
+  return { slug: link.slug, ...(link.version !== undefined ? { version: link.version } : {}) };
+}
 
 /** safeStorage 가 되면 암호화해 디스크에, 안 되면(키링 없는 리눅스 등) 이번 실행 동안만 메모리에 둔다. */
 function tokenVault(root: string) {
@@ -67,7 +124,8 @@ async function status() {
   return { url: store.url, user, loggedIn: store.loggedIn, tokenPersistent: store.tokenPersistent };
 }
 
-export function registerAssetStore(): void {
+export function registerAssetStore(host?: StoreLinkHost): void {
+  if (host) linkHost = host;
   const progress = (event: unknown) => broadcast(OPRN_CHANNELS.storeProgress, event);
   ipcMain.handle(OPRN_CHANNELS.storeStatus, () => wrap(status));
   ipcMain.handle(OPRN_CHANNELS.storeSetUrl, (_event, payload: unknown) => wrap(() => { storeClient().setUrl(storeUrlSchema.parse(payload).url); return status(); }));
@@ -77,7 +135,16 @@ export function registerAssetStore(): void {
   ipcMain.handle(OPRN_CHANNELS.storeConcept, (_event, payload: unknown) => wrap(() => storeClient().concept(storeConceptSlugSchema.parse(payload))));
   ipcMain.handle(OPRN_CHANNELS.storeConceptMade, (_event, payload: unknown) => wrap(() => storeClient().conceptMade(storeConceptMadeSchema.parse(payload))));
   ipcMain.handle(OPRN_CHANNELS.storeBlob,(_event, payload: unknown) => wrap(() => storeClient().blob(storeBlobSchema.parse(payload).sha256)));
-  ipcMain.handle(OPRN_CHANNELS.storeInstalled, () => wrap(() => storeClient().installed()));
+  ipcMain.handle(OPRN_CHANNELS.storeInstalled, () => wrap(() => {
+    const store = storeClient();
+    // 받아 둔 초안이 그사이 공개됐으면 초안 표시를 뗀다(D2). 목록은 기다리지 않고 바로 돌려준다.
+    if (Date.now() - draftsCheckedAt > 60_000) {
+      draftsCheckedAt = Date.now();
+      void store.refreshDrafts().then((changed) => { if (changed) broadcast(OPRN_CHANNELS.storeChanged, { kind: "installed" }); }, () => undefined);
+    }
+    return store.installed();
+  }));
+  ipcMain.handle(OPRN_CHANNELS.storeTakeOpenLink, (event) => takePendingLink(event.sender.id));
   ipcMain.handle(OPRN_CHANNELS.storeInstall, (_event, payload: unknown) => wrap(async () => {
     const input = storeSlugSchema.parse(payload);
     const record = await storeClient().install(input.slug, progress, input.version);
@@ -117,6 +184,7 @@ export function registerAssetStore(): void {
         if (seq !== loginSeq) return;
         const result = await store.pollLogin(started.device_code).catch(() => "pending" as const);
         if (result === "pending") continue;
+        if (result === "approved") draftsCheckedAt = 0;
         broadcast(OPRN_CHANNELS.storeChanged, { kind: "auth", result });
         return;
       }
