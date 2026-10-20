@@ -661,8 +661,11 @@ try {
     if (town2 && (await live()).switches?.[`${grunt.id}_won`] !== true && lead0?.currentHp !== undefined && lead0.currentHp < 12) {
       await go(gym.id, town2.id); await healAt(town2.id); await go(town2.id, gym.id);
     }
-    const approach = await approachAndTalk(gym.id, grunt);
-    const probe = { approach, spot: besideOf(gym.id, grunt), live: liveSpots[grunt.id] ?? null, hero: await here().then((h) => `${h.x},${h.y}`), dialogue: await present("dialogue-box") };
+    // 퍼즐을 푼 뒤 연출(이벤트 실행)이 도는 동안 말을 걸면 무시된다 — 체육관 수련생 0 이 「0턴」으로 남던 원인 후보(r29 probe: 옆 칸에서 대사 없음). 끝날 때까지 기다리고, 안 열리면 한 번 더.
+    await waitIdle();
+    let approach = await approachAndTalk(gym.id, grunt);
+    if (!approach && (await live()).switches?.[`${grunt.id}_won`] !== true) { await page.waitForTimeout(1500); await waitIdle(); approach = await approachAndTalk(gym.id, grunt); }
+    const probe = { running: await eventRunning(), approach, spot: besideOf(gym.id, grunt), live: liveSpots[grunt.id] ?? null, hero: await here().then((h) => `${h.x},${h.y}`), dialogue: await present("dialogue-box") };
     const started = await pressEnterUntil(() => present("battle-scene"), 30);
     if (started) { await page.waitForTimeout(2000); if (k === 0) await shot("20b-gym-trainer"); }
     const log = started ? await fight(`gym-grunt-${k}`) : [];
