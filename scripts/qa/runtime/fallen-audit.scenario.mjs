@@ -1,5 +1,5 @@
 // 『폴른 스타』 제1막 통짜 플레이: 타이틀 → 오프닝 건너뛰기 → 포고 → 하넬 의뢰 → 숲(풀숲 조우·브람) →
-// 금속 알 세 단계(한 번 틀리고 다시) → 이리스 합류 → 천문대 철문 → 화로 순서(한 번 틀리고 다시) → 지하 → 발렌 결전 → 보고 → 엔딩.
+// 은빛 관 세 단계(한 번 틀리고 다시) → 이리스 합류 → 천문대 뚜껑문 → 화로 순서(한 번 틀리고 다시) → 지하 → 발렌 결전 → 보고 → 엔딩.
 // 맵 사이는 실제 출입구를 밟아 넘어간다. 같은 맵 안의 긴 이동만 순간이동으로 줄인다(걸어서 닿는지는 .omo/fs/reach.mts 가 따로 본다).
 // 픽스처: RES_WHICH=fallen res480-fixture.mts. 창 크기 RES_VP(기본 480x270).
 const [vw, vh] = (process.env.RES_VP ?? "480x270").split("x").map(Number);
@@ -39,7 +39,7 @@ const dumpState = (name) => ({
 
 export default {
   id: "fallen-audit",
-  projectFixture: process.env.RES_FIXTURE ?? ".omo/fs/v9.json",
+  projectFixture: process.env.RES_FIXTURE ?? ".omo/fs/v11.json",
   viewport: { width: vw, height: vh },
   beats: [
     { id: "title", note: "타이틀", ops: [{ kind: "waitFor", testid: "title-screen", state: "present", timeoutMs: 60000 }], shot: true },
@@ -72,9 +72,9 @@ export default {
       ...walkFighting("up", 2200), ...walkFighting("up", 2200), ...walkFighting("up", 2200),
       dumpState("forest-walk"),
     ], shot: true },
-    { id: "bram", note: "숲지기 브람", ops: [{ kind: "teleport", mapId: "fs_forest", x: 9, y: 16 }, { kind: "hold", dir: null, ms: 400 }, ...talk("left")], shot: true },
+    { id: "bram", note: "숲지기 브람", ops: [{ kind: "teleport", mapId: "fs_forest", x: 14, y: 19 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
     { id: "bram-close", note: "", ops: [...closeDialogue()], shot: false },
-    { id: "pod-intro", note: "금속 알 — 첫 선택지", ops: [
+    { id: "pod-intro", note: "은빛 관 — 첫 선택지", ops: [
       { kind: "teleport", mapId: "fs_forest", x: 14, y: 6 }, { kind: "hold", dir: null, ms: 400 },
       ...talk("up"),
       { kind: "pressUntil", key: "Enter", testid: "runtime-choices", state: "present", maxPresses: 20, timeoutMs: 900 },
@@ -92,7 +92,7 @@ export default {
     { id: "back-to-obs", note: "천문대", ops: [...stepInto("fs_hub", 26, 21, "up")], shot: false },
     { id: "hanel-hint", note: "하넬 — 다음 갈 곳", ops: [{ kind: "teleport", mapId: "fs_observatory", x: 11, y: 14 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
     { id: "hanel-hint-close", note: "", ops: [...closeDialogue()], shot: false },
-    { id: "hatch", note: "바닥 철문 → 화로의 방", ops: [...stepInto("fs_observatory", 13, 14, "up"), ...closeDialogue(10), { kind: "hold", dir: null, ms: 1200 }], shot: true },
+    { id: "hatch", note: "바닥 뚜껑문 → 화로의 방", ops: [...stepInto("fs_observatory", 13, 17, "up"), ...closeDialogue(10), { kind: "hold", dir: null, ms: 1200 }], shot: true },
     { id: "tablet", note: "단서 석판", ops: [{ kind: "teleport", mapId: "fs_vault_gate", x: 10, y: 10 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
     { id: "tablet-close", note: "", ops: [...closeDialogue()], shot: false },
     { id: "brazier-wrong", note: "북동부터 — 틀린다", ops: [{ kind: "teleport", mapId: "fs_vault_gate", x: 13, y: 8 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },

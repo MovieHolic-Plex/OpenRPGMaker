@@ -7,6 +7,9 @@
  * - 화로의 방: 좌우 「긴 화덕」 띠가 네온 간판처럼 번쩍여 방의 시선을 빼앗았다 — 걷어 내고 그을린 바닥만 남긴다.
  */
 import catalog from "@/assets/beodeulNatureCatalog.json";
+import { BEODEUL_NATURE, BEODEUL_NATURE_ID, createBeodeulNatureTileset } from "@/project/defaults/beodeulNature";
+import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
+import { translateTiles } from "@/project/objectStamp";
 import type { GameMap, Project } from "@/project/types";
 
 const NATURE_TEXTURE = "tex_beodeul_nature";
@@ -80,4 +83,39 @@ export function clearUpperByLabel(project: Project, map: GameMap, pattern: RegEx
     if (tile >= 0 && pattern.test(meta[tile]?.label ?? "")) { map.upperTiles[index] = -1; cleared++; }
   });
   return cleared;
+}
+
+/**
+ * 구덩이 가장자리: 칠한 흙 칸 묶음(cells)의 바깥 둘레 칸에 물가 둑 덧그림(bankGrass, 「earth」)을 2층에 얹는다.
+ * 둑 그림은 바깥 풀이 둥글게 들어오고 흙 띠·어두운 테가 서서, 네모난 흙 마당이 움푹 팬 자리로 읽힌다(새 화소 없음 — 버들항 자연 팩 칸).
+ * 이미 2층에 무언가 있는 칸은 건드리지 않는다. 얹은 칸 수를 돌려준다.
+ */
+export function rimPit(project: Project, map: GameMap, cells: ReadonlySet<number>): number {
+  const tileset = project.tilesets[map.tilesetId];
+  if (!tileset) return 0;
+  const nature = project.tilesets[BEODEUL_NATURE_ID] && project.tilesets[BEODEUL_NATURE_ID]!.count >= BEODEUL_NATURE.count
+    ? project.tilesets[BEODEUL_NATURE_ID]! : (project.tilesets[BEODEUL_NATURE_ID] = createBeodeulNatureTileset());
+  const { width: w, height: h } = map;
+  const want = new Map<number, number>();
+  for (const c of cells) {
+    const x = c % w, y = Math.floor(c / w);
+    let mask = 0;
+    [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]].forEach(([dx, dy], bit) => {
+      const nx = x + dx!, ny = y + dy!;
+      if (nx < 0 || ny < 0 || nx >= w || ny >= h || cells.has(ny * w + nx)) mask |= 1 << bit;
+    });
+    if (mask === 255 || layerTileAt(map, 2, c) >= 0) continue;
+    const tile = BEODEUL_NATURE.bankGrass[mask] ?? -1;
+    if (tile >= 0) want.set(c, tile);
+  }
+  if (want.size === 0) return 0;
+  const translated = translateTiles(nature, tileset, new Set(want.values()));
+  for (const to of translated.map.values()) {
+    if (to < 0) continue;
+    tileset.priority[to] = "upper";
+    tileset.passability[to] = { up: true, down: true, left: true, right: true };
+  }
+  let placed = 0;
+  for (const [c, t] of want) { const to = translated.map.get(t) ?? -1; if (to >= 0) { setLayerTileAt(map, 2, c, to); placed++; } }
+  return placed;
 }

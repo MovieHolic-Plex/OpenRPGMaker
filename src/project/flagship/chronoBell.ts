@@ -20,7 +20,7 @@ import { buildJrpgChapter } from "@/editor/tools/jrpgChapterTools";
 import { pickSpot, placeRoamer } from "@/editor/tools/jrpgVolumeTools";
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import { buildFallenStarOpening, FALLEN_STAR_TITLE_BACKGROUND } from "./fallenStarOpening";
-import { clearOrphanShadows, clearUpperByLabel } from "./fallenStarMapPolish";
+import { clearOrphanShadows, clearUpperByLabel, rimPit } from "./fallenStarMapPolish";
 import { FALLEN_STAR_ACT1, FS_NAMES, FS_PREFIX, FS_STAR_KEY_ITEM } from "./fallenStarStory";
 import type { FlagshipDemoBuildResult } from "./types";
 
@@ -580,26 +580,45 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   const pod = M(ids.forest).events.find((e) => e.id === `ev_${FS_PREFIX}_main_inspect1`);
   if (pod) {
     const fm = M(ids.forest);
-    const cx = pod.x, cy = pod.y - 1, rx = 5.6, ry = 3.6;
+    const cx = pod.x, cy = pod.y - 1, rx = 3.9, ry = 2.7;
+    const pit = new Set<number>();
     for (let y = Math.max(1, Math.floor(cy - ry)); y <= Math.min(fm.height - 2, Math.ceil(cy + ry)); y += 1) {
-      let runStart = -1;
-      for (let x = Math.max(1, Math.floor(cx - rx)); x <= Math.min(fm.width - 1, Math.ceil(cx + rx) + 1); x += 1) {
-        const wob = ((x * 7 + y * 13) % 5) * 0.025;
-        const inside = x <= fm.width - 2 && ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1 - wob
-          && fm.lowerTiles[y * fm.width + x] === 737 && (fm.upperTiles[y * fm.width + x] ?? -1) < 0;
-        if (inside && runStart < 0) runStart = x;
-        if (!inside && runStart >= 0) {
-          execTool(project, "fill_region", { mapId: fm.id, x: runStart, y, w: x - runStart, h: 1, layer: "lower", material: "버들항 농장 흙길" });
-          runStart = -1;
-        }
+      for (let x = Math.max(1, Math.floor(cx - rx)); x <= Math.min(fm.width - 2, Math.ceil(cx + rx)); x += 1) {
+        // 칸마다 흔든다 — 고른 타원은 공터 네모 판으로 보였다(감사 3차 「흙 마당」).
+        const wob = (((x * 73856093) ^ (y * 19349663)) >>> 0) % 7 * 0.1 - 0.25;
+        const inside = ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1 - wob
+          && fm.lowerTiles[y * fm.width + x] === 737
+          // 관 그림 밑 칸도 칠한다 — 남겨 두면 관 둘레에 풀 테두리가 섰다.
+          && ((fm.upperTiles[y * fm.width + x] ?? -1) < 0 || (x === pod.x && y >= pod.y - 2 && y <= pod.y - 1));
+        if (inside) pit.add(y * fm.width + x);
       }
     }
+    // 가로·세로 이웃이 둘 미만인 삐죽 칸은 뺀다 — 둑 덧그림에 그런 모양이 없어 네모 흙 한 칸이 튀어나왔다.
+    for (let changed = true; changed;) {
+      changed = false;
+      for (const c of [...pit]) {
+        const n = [c - fm.width, c + fm.width, c - 1, c + 1].filter((k) => pit.has(k)).length;
+        if (n < 2) { pit.delete(c); changed = true; }
+      }
+    }
+    for (const c of [...pit].sort((p, q) => p - q)) {
+      if (pit.has(c - 1)) continue;
+      let end = c; while (pit.has(end + 1) && Math.floor((end + 1) / fm.width) === Math.floor(c / fm.width)) end += 1;
+      execTool(project, "fill_region", { mapId: fm.id, x: c % fm.width, y: Math.floor(c / fm.width), w: end - c + 1, h: 1, layer: "lower", material: "버들항 농장 흙길" });
+    }
     const debris: Array<[string, number, number]> = [
-      ["bd-pick-volcano-cave-ember-a", -2, -2], ["bd-pick-volcano-cave-ember-a", 2, 0], ["bd-pick-volcano-cave-ember-a", -3, 0],
+      ["bd-pick-volcano-cave-ember-a", -2, -2], ["bd-pick-volcano-cave-ember-a", 2, 1], ["bd-pick-volcano-cave-ember-a", -3, 0],
       ["bd-pick-deep-forest-path-log-fallen", -7, 1], ["bd-pick-deep-forest-path-log-fallen", 5, 2],
       ["bd-pick-deep-forest-path-stump", -6, -3], ["bd-pick-deep-forest-path-stump", 6, -2], ["bd-pick-deep-forest-path-stump", -7, -1],
-      ["bd-pick-volcano-cave-ember-a", 3, -2], ["bd-pick-deep-forest-path-log-fallen", 4, -4],
+      ["bd-pick-volcano-cave-ember-a", 1, -2], ["bd-pick-deep-forest-path-log-fallen", 4, -4],
+      // 그을린 자리 바깥 풀밭 — 꺾인 덤불이 흩어져 공터 경계를 흐린다.
+      ["bd-pick-deep-forest-path-heath-a", -5, 2], ["bd-pick-deep-forest-path-heath-b", 5, -1], ["bd-pick-deep-forest-path-fern-b", -5, -2],
+      ["bd-pick-deep-forest-path-heath-c", 4, 3], ["bd-pick-deep-forest-path-fern-a", -4, 3], ["bd-pick-deep-forest-path-heath-b", 6, 1],
     ];
+    // 흙길 오토타일이 오목한 모서리 칸을 스스로 채운다 — 실제로 바뀐 칸을 다시 모아 둑을 얹는다.
+    const live = M(ids.forest);
+    for (let c = 0; c < live.lowerTiles.length; c += 1) if (live.lowerTiles[c] !== fm.lowerTiles[c] && fm.lowerTiles[c] === 737) pit.add(c);
+    rimPit(project, live, pit); // fill_region 이 맵 객체를 바꿔 끼우므로 fm 이 아니라 지금 맵에 얹는다.
     for (const [kit, dx, dy] of debris) tryStamp(project, M(ids.forest), `kit:beodeul_city/${kit}`, pod.x + dx, pod.y + dy);
   }
   // 맵 마감(감사 3차) — 주인 없는 그림자, 화로의 방 긴 화덕 띠.

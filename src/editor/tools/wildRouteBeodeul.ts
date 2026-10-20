@@ -222,17 +222,17 @@ function dressBeodeulVerge(project: Project, map: GameMap, tileset: TilesetDef, 
  */
 function fringeBeodeulThicket(project: Project, map: GameMap, tileset: TilesetDef, thicket: ReadonlySet<number>,
   rng: Rng, stampObject: ToolDefinition): number {
+  // 2026-10-20(폴른 스타 감사 3차 「각진 풀숲」): 짙은 잎 풀 칸만 깔면 납작한 짙은 깔개로 보였다(시트에 키큰 풀이 없다).
+  // 풀숲 칸마다 고사리·헤더 덤불을 거의 다 채우고(포켓몬 풀숲처럼 칸마다 풀포기), 바깥 한 칸 둘레에도 드문드문 흘려
+  // 네모 가장자리를 흐린다. 조우는 칸 무늬가 아니라 로케이션(「풀숲 N」)이 정하므로 그림만 바뀐다.
   const w = map.width;
   const tufts = (tileset.structureKits ?? []).filter(kit => kit.width === 1 && kit.height === 1
     && /^bd-pick-deep-forest-path-(fern|heath)-/.test(kit.id));
   if (tufts.length === 0) return 0;
   let placed = 0;
-  for (const index of thicket) {
+  const stamp = (index: number) => {
     const x = index % w, y = Math.floor(index / w);
-    const edge = [index - w, index + w, x > 0 ? index - 1 : -1, x < w - 1 ? index + 1 : -1]
-      .some(next => next < 0 || next >= map.lowerTiles.length || !thicket.has(next));
-    if (!edge || map.upperTiles[index]! >= 0 || rng() > 0.45) continue;
-    if (map.events.some(event => event.x === x && event.y === y)) continue;
+    if (map.upperTiles[index]! >= 0 || map.events.some(event => event.x === x && event.y === y)) return;
     const kit = tufts[Math.floor(rng() * tufts.length)]!;
     try {
       stampObject.run(project, { objectId: `kit:${BEODEUL_ID}/${kit.id}`, mapId: map.id, x, y });
@@ -240,6 +240,17 @@ function fringeBeodeulThicket(project: Project, map: GameMap, tileset: TilesetDe
     } catch {
       // 찍을 수 없는 자리는 건너뛴다.
     }
+  };
+  const ring = new Set<number>();
+  for (const index of thicket) {
+    const x = index % w;
+    if (rng() < 0.9) stamp(index);
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      const next = index + dy * w + dx;
+      if ((dx || dy) && x + dx >= 0 && x + dx < w && next >= 0 && next < map.lowerTiles.length && !thicket.has(next)
+        && map.lowerTiles[next] === BEODEUL_PLAIN_GRASS) ring.add(next);
+    }
   }
+  for (const index of ring) if (rng() < 0.3) stamp(index);
   return placed;
 }
