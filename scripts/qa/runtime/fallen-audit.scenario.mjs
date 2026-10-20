@@ -171,6 +171,7 @@ export default {
       { kind: "repeatUntil", testid: "ending-screen", state: "present", maxRounds: 40, ops: [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 400 }] },
       { kind: "hold", dir: null, ms: 2500 },
     ], shot: true },
-    { id: "ending-2", note: "엔딩 진행", ops: [{ kind: "key", key: "Enter", times: 2, holdMs: 80 }, { kind: "hold", dir: null, ms: 2500 }], shot: true },
+    { id: "ending-2", note: "크레딧", ops: [{ kind: "key", key: "Enter", times: 2, holdMs: 80 }, { kind: "hold", dir: null, ms: 4000 }], shot: true },
+    { id: "ending-3", note: "마지막 카드", ops: [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 2500 }], shot: true },
   ],
 };
