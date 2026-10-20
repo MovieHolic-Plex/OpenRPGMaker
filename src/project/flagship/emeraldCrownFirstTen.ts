@@ -246,6 +246,18 @@ function quickerHealing(project: Project): void {
 function nameGymTrainers(project: Project): void {
   const names: Record<string, string> = { mx_troop_mx_map_grove_gym_grunt_0: "덩굴지기 하람", mx_troop_mx_map_grove_gym_grunt_1: "정원사 소이", mx_troop_mx_map_grove_gym_grunt_2: "수련생 도윤" };
   for (const troop of project.database.troops) if (names[troop.id]) troop.name = names[troop.id]!;
+  // 이긴 체육관 수련생에게 다시 말을 걸면 「견습 조련사」 이름으로 「다시 만나 반가워」 + 재대결 선택지가 나왔고, Enter 한 번에 같은 승부를 또 했다
+  // (2026-10-21 적대 검수 — 정원사 소이와 두 번 싸우고 다음 수련생에게 쓰러짐). 3세대처럼 진 수련생은 자기 이름으로 한마디만 한다.
+  const after: Record<string, [string, string]> = {
+    mx_map_grove_gym_grunt_0: ["덩굴지기 하람", "덩굴 문은 네가 열었으니 이 길도 네 거야. 관장님께 힘내!"],
+    mx_map_grove_gym_grunt_1: ["정원사 소이", "가위 솜씨도 승부 솜씨도 좋더라. 관장님은 쉽게 물러서지 않으셔."],
+    mx_map_grove_gym_grunt_2: ["수련생 도윤", "풀의 끈기를 넘었구나. 관장님 앞에서도 그렇게만 해!"],
+  };
+  for (const event of project.maps.mx_map_grove_gym?.events ?? []) {
+    const line = after[event.id];
+    const rematch = event.pages?.find((page) => page.id.endsWith("_rematch"));
+    if (line && rematch) { rematch.name = "이긴 뒤"; rematch.commands = [text(line[1], line[0])]; }
+  }
 }
 
 /**

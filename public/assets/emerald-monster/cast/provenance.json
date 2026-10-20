@@ -1,4 +1,5 @@
 {
+ "judge": "char-gen 눈가림 표정 판정(Codex CLI) 통과분만 — KEEP 참고",
  "source": "char-gen (OPRN 자체 생성기, 우리 산출물) · 후보는 감독이 골랐다(by: supervisor) · 유료 대체 경로·스토어 크레딧 사용 없음",
  "cast": {
   "hero": {
@@ -63,6 +64,13 @@
      "uniform": 1.0,
      "sourceSha256": "16a3a3d9b993ca68192e9e6b7fbb07d4c0a59c7609a75ad3e244be06c0aa9696",
      "pixelSha256": "dd0e513ddc5a523de152b2b13bf39bd54769cd8450e9394a6676fdebf5a535e7"
+    },
+    "card-base.png": {
+     "size": [
+      83,
+      188
+     ],
+     "pixelSha256": "63573e5b5a29caeaec0929a5b1c701c55c87b4c8fc20134a56c33314fa3bc0f1"
     }
    }
   },
@@ -148,6 +156,13 @@
      "uniform": 1.0,
      "sourceSha256": "c4441e0283e4bd8232b19c28ac6e8fe5a8ef679cb7533663883c66d06fbd7d9d",
      "pixelSha256": "08e020fda58bae74aaa8a48d8bc7565f544ed6de89f86ef21b06e7495b2aab02"
+    },
+    "card-base.png": {
+     "size": [
+      82,
+      187
+     ],
+     "pixelSha256": "9e7228d8c32d0eaebcc4402a0c4b13438ed22cbba927b28672e56d8b2e02d5ef"
     }
    }
   },
@@ -233,6 +248,13 @@
      "uniform": 1.0,
      "sourceSha256": "bd14291a3d249b8cb61cf87a80457505855e9f296c2ed723c403d5571f2629ad",
      "pixelSha256": "2f4eed3d9c20b2a31fdea1a0b59a176221282dfcbbbe8f27d5512dbdf23b1d04"
+    },
+    "card-base.png": {
+     "size": [
+      85,
+      186
+     ],
+     "pixelSha256": "2204dd8e8a10cd016279806cfdb58997d218b024531aaaec19dcf02532dd0d5a"
     }
    }
   },
@@ -338,6 +360,13 @@
      "uniform": 1.0,
      "sourceSha256": "487cff347d077feb9117503c15e46eea7e214fe0dd5afb1beb44fda03cbff33d",
      "pixelSha256": "15fd4961ec2e0e143cf8ba18ce74769a0fb1fcf4190fa5481fdd4bd3c7d9234f"
+    },
+    "card-base.png": {
+     "size": [
+      86,
+      186
+     ],
+     "pixelSha256": "56807c7194382c3dc76967ee8893885d3b35118323ae99c64398f9fce2c8eabb"
     }
    },
    "trainerFront": "battle-trainers/astra_naru/front.png"
@@ -424,6 +453,13 @@
      "uniform": 1.0,
      "sourceSha256": "f03cf710ee69001de270d1f924ee40f8e28c0844a50fb527f002b30117e63fae",
      "pixelSha256": "782553d58d48bf474e0e340b7224647b7044bc3f3459045eb0ee9fcaccad8252"
+    },
+    "card-base.png": {
+     "size": [
+      70,
+      184
+     ],
+     "pixelSha256": "3ea74319116b87b27a307d62044f5e85f03d2a854cef9197e270bc48e7f41585"
     }
    }
   },
@@ -529,6 +565,13 @@
      "uniform": 1.0,
      "sourceSha256": "16d1ccac50faf2aff6098ac19765ad7c00a641b1af7c66d03809705409d154c0",
      "pixelSha256": "9905995f528efeba948be845474e3eae20980c909ceeaa149125ae0a99365793"
+    },
+    "card-base.png": {
+     "size": [
+      78,
+      186
+     ],
+     "pixelSha256": "09993d957832c535a03bf63fc5610743656f35607db52e19fd7dcd62f2a71353"
     }
    },
    "trainerFront": "battle-trainers/astra_yurim/front.png"
@@ -655,10 +698,16 @@
      "uniform": 1.0,
      "sourceSha256": "cc9ea1d089e9b4dfa1b23ed761d0de79b646c98d37a56dfa730c9675b696c0ea",
      "pixelSha256": "3ad97a3d83b662cdb17e4f4049f31d2d596c111f7ade5a5dfe5b21a1ef9df723"
+    },
+    "card-base.png": {
+     "size": [
+      86,
+      186
+     ],
+     "pixelSha256": "bed65b216e7f8b4a0c1b5a13d8dd98dd1d559eacbe5d4895f3904d1b770cea3c"
     }
    },
    "trainerFront": "battle-trainers/astra_muyeong/front.png"
   }
- },
- "judge": "char-gen 판정(Codex CLI, 눈가림 표정 판정): 통과한 표정만 남겼다. base 는 감독이 고른 그림 그대로(옅은 미소라 smile/content 로 읽힘 — 친근한 기본 얼굴로 받아들임). 판정 원본: /home/main/astra-qa/cast/final.json"
+ }
 }

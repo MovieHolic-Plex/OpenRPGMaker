@@ -2324,9 +2324,9 @@
    "index": 0,
    "source": {
     "harnessKey": "astra-cast-1",
-    "model": "char-gen (OPRN 자체 생성기, codex 엔진) 칩 편집 + 감독 선택(by: supervisor); 옛 바탕 머리색 잔재(보라)는 같은 칩의 머리색으로 화소 치환",
+    "model": "char-gen (OPRN 자체 생성기, codex 엔진) 칩 편집 + 감독 선택(by: supervisor); 옛 바탕 머리색 잔재(보라)는 같은 칩의 머리색으로 화소 치환; 눈(초록 → 흉상과 같은 파랑)·신발 잔재 색 치환",
     "baseChip": "scarloxy-charset-people1:3 (char-gen edit)",
-    "slotRgbaSha256": "521ab1b8ba1bb3251454540a7a9813f68397be831bf77ee9739443be3232218b"
+    "slotRgbaSha256": "26d1f6cfcac3fe1838d1ba185c54a7105cc526124e030e22020316b7f73b499e"
    }
   },
   {
@@ -2348,9 +2348,9 @@
    "index": 1,
    "source": {
     "harnessKey": "astra-cast-1",
-    "model": "char-gen (OPRN 자체 생성기, codex 엔진) 칩 편집 + 감독 선택(by: supervisor); 옛 바탕 머리색 잔재(보라)는 같은 칩의 머리색으로 화소 치환",
+    "model": "char-gen (OPRN 자체 생성기, codex 엔진) 칩 편집 + 감독 선택(by: supervisor); 옛 바탕 머리색 잔재(보라)는 같은 칩의 머리색으로 화소 치환; 눈(초록 → 흉상과 같은 파랑)·신발 잔재 색 치환",
     "baseChip": "scarloxy-charset-people1:3 (char-gen edit)",
-    "slotRgbaSha256": "0f995a54b5cc4ff353a86d1e4b79a1ec05559ec4f468f4cb0bcb4078d8a85f8d"
+    "slotRgbaSha256": "943c21ff3b847d7d8018922be41f02ac8a10e0e74a8f50215029a2b41f837325"
    }
   },
   {

@@ -3,7 +3,7 @@
 // - 처음 만나는 나루·관장 유림·챔피언 나루는 첫 대사 묶음 동안 전신을 화면 가운데 세운다(그동안은 흉상 없음).
 // - 나루·유림·무영 트레이너 소개 그림은 같은 전신에서 구운 번들 그림(battle-trainers/astra_<id>)을 쓴다.
 // 그림: src/assets/astraCast.ts(char-gen 산출물, 감독 선택, 원래 도트 크기).
-import { ASTRA_CAST_EXPRESSIONS, astraCastBustId, astraCastFullId, type AstraCastExpression, type AstraCastId } from "@/assets/astraCast";
+import { ASTRA_CAST_EXPRESSIONS, astraCastBustId, astraCastCardId, type AstraCastExpression, type AstraCastId } from "@/assets/astraCast";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import type { Command, Project } from "@/project/types";
 
@@ -22,9 +22,10 @@ export function astraCastExpression(cid: AstraCastId, body: string): AstraCastEx
   const pick = (e: AstraCastExpression): AstraCastExpression => ASTRA_CAST_EXPRESSIONS[cid].includes(e) ? e : "base";
   if (/용서 못|가만두지|방해하지|감히|비켜|화가 나/u.test(body)) return pick("angry");
   if (/뭐\?|뭐라고|어머|설마|헉|깜짝|!\?/u.test(body)) return pick("surprised");
-  if (/졌어|졌다|아쉽|미안|슬프|흑/u.test(body)) return pick("sad");
+  // 「건강해졌어요」의 「졌」은 슬픔이 아니다 — 낱말 처음의 「졌」만(「으으, 졌다!」).
+  if (/(?<![가-힣])졌|아쉽|미안|슬프|흑/u.test(body)) return pick("sad");
   if (/이번엔|이길 거|지지 않|각오|승부|덤벼|보여 줘|보여 줄래|시작하자/u.test(body)) return pick("determined");
-  if (/하하|헤헤|좋아|반가|축하|고마|잘했|대단|최고|어서 오세요|기뻐|환영/u.test(body)) return pick("happy");
+  if (/하하|헤헤|좋아|반가|축하|고마|잘했|대단|최고|어서 오세요|기뻐|환영|건강해|기운을 되찾|이겼다|챔피언은 너|멋진/u.test(body)) return pick("happy");
   if (/…|\.\.\./u.test(body)) return pick("serious");
   return "base";
 }
@@ -32,6 +33,10 @@ export function astraCastExpression(cid: AstraCastId, body: string): AstraCastEx
 const face = (resourceId: string): Command => ({ kind: "changeFace", resourceId, presentation: "bust", position: "left", flipHorizontally: false });
 const CLEAR = (): Command => ({ kind: "changeFace", resourceId: "", position: "left", flipHorizontally: false });
 const SPOTLIGHT = "astra_cast_spotlight";
+/** card-base.png 크기(scripts/content/monsters/bake_astra_cast.py 가 굽는다). */
+const CARD_SIZE: Readonly<Record<AstraCastId, readonly [number, number]>> = {
+  hero: [83, 188], mom: [82, 187], professor: [85, 186], naru: [86, 186], nurse: [70, 184], yurim: [78, 186], muyeong: [86, 186],
+};
 
 /** 명령 목록 하나에 흉상을 끼운다. 안쪽 목록(분기·선택지)도 같은 규칙으로 따로 처리한다. 얼굴을 띄운 채 끝나면 끝에서 지운다. */
 type Spotlight = { readonly cid: AstraCastId; readonly list: Command[] };
@@ -62,8 +67,9 @@ function castList(list: Command[], spotlight?: Spotlight): void {
     const cid = castOf(command.speaker);
     if (lit && cid === lit) {
       if (i === list.findIndex((c) => c.kind === "text")) {
-        const full = astraCastFullId(lit);
-        list.splice(i, 0, CLEAR(), { kind: "showPicture", pictureId: SPOTLIGHT, resourceId: full, x: 209, y: 74, scale: 100, opacity: 255, durationMs: 300, waitForPicture: false } as Command);
+        // 전신 카드(테두리 창)를 화면 오른쪽, 아래 상자 바로 위에 세운다 — 가운데 맵 인물을 가리지 않게. 카드 크기 = 전신 + 24×20.
+        const [w, h] = CARD_SIZE[lit];
+        list.splice(i, 0, CLEAR(), { kind: "showPicture", pictureId: SPOTLIGHT, resourceId: astraCastCardId(lit), x: 480 - w - 12, y: 240 - h, scale: 100, opacity: 255, durationMs: 300, waitForPicture: false } as Command);
         current = null; i += 2; shown = true;
       }
       // 전신은 아래 상자 바로 위에 선다(상자 위쪽 끝 ≈ 240px) — 상자가 위로 가면 머리를 덮는다.
@@ -155,5 +161,7 @@ export function castTheAstraHorizon(project: Project): void {
   for (const troop of project.database.troops) {
     const cid = troopFor[troop.id];
     if (cid && troop.trainerBattle) troop.trainerSprite = { ...(troop.trainerSprite ?? {}), front: TRAINER_FRONTS[cid]! };
+    // 주인공 전투 뒷모습: 옛 그림(머리띠·조끼)은 우리 주인공이 아니었다 — char-gen 으로 그린 별 모자·남색 재킷 뒷모습과 던지기 4칸(public/assets/battle-trainers/astra_hero).
+    if (troop.trainerBattle && troop.trainerSprite) troop.trainerSprite = { ...troop.trainerSprite, back: "astra_hero", backThrow: "astra_hero" };
   }
 }
