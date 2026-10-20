@@ -18,6 +18,7 @@
 import http from 'node:http';
 import { existsSync, readFileSync } from 'node:fs';
 import { randomBytes, timingSafeEqual } from 'node:crypto';
+import { homedir } from 'node:os';
 import { resolve } from 'node:path';
 import { OBJECT_GATE_KINDS, finalApplies, humanDecision, type ObjectGateFinal, type ObjectGateHoldDecision, type ObjectGateReceipt } from '../../_core/objectGate';
 import { GATE_DATA, calibratedFinalProfiles, readFinal, calibratedProfiles, gateProfileHash, heldImage, holdKey, listQueueBatches, listReceipts, queueExplainImagePath, readHoldDecision, readProfiles, readReceipt, styleRefs, writeHoldDecision } from './store';
@@ -102,6 +103,15 @@ export async function serveHolds({ host, port }: { host: string; port: number })
       return JSON.parse(body) as Record<string, unknown>;
     };
     const who = (q: Record<string, unknown>) => { const s = String(q.decidedBy ?? '').trim().slice(0, 60); if (!s) throw Error('결정한 사람 이름을 적어라'); return s; };
+    // 위임 허용(2026-10-21): 사용자가 감독자에게 위임해 독립 검수 뒤 기록하는 경우. delegatedBy 와 evidence 가 둘 다 있어야 하고, 없으면 사람 클릭으로 기록한다.
+    const delegation = (q: Record<string, unknown>): { by: 'human' } | { by: 'delegated'; delegatedBy: string; evidence: string } => {
+      const delegatedBy = String(q.delegatedBy ?? '').trim().slice(0, 60), evidence = String(q.evidence ?? '').trim().slice(0, 300);
+      if (!delegatedBy && !evidence) return { by: 'human' };
+      if (!delegatedBy || !evidence) throw Error('위임 허용은 delegatedBy(위임한 사람)와 evidence(근거 경로)를 둘 다 적어야 한다');
+      if (q.decision !== undefined && q.decision !== 'allow') throw Error('위임 결정은 허용만 기록한다 — 거절은 사람이 누른다');
+      if (!existsSync(resolve(evidence.replace(/^~(?=\/)/, homedir())))) throw Error(`evidence 경로에 파일이 없다: ${evidence}`);
+      return { by: 'delegated', delegatedBy, evidence };
+    };
     try {
       const url = new URL(req.url ?? '/', 'http://localhost');
       if (req.method === 'GET' && url.pathname === '/') {
@@ -188,7 +198,7 @@ export async function serveHolds({ host, port }: { host: string; port: number })
         // 해시 확인: 서버에 저장된 그림을 다시 재서 영수증·요청의 해시와 같아야 한다(화면에 보인 그림 = 결정이 묶이는 그림).
         if (!(await heldImage(sha))) throw Error('저장된 그림이 없거나 해시가 맞지 않는다 — object-gate review 로 다시 받아라');
         const note = String(q.note ?? '').trim().slice(0, 200);
-        writeHoldDecision({ schema: 'oprn-object-gate-hold-decision/1', pixelSha256: sha, profileHash: receipt.profileHash, kind: receipt.kind, decision: q.decision, decidedBy, decidedAt: new Date().toISOString(), by: 'human', via: 'review-page', reasons: receipt.reasons, ...(note ? { note } : {}) });
+        writeHoldDecision({ schema: 'oprn-object-gate-hold-decision/1', pixelSha256: sha, profileHash: receipt.profileHash, kind: receipt.kind, decision: q.decision, decidedBy, decidedAt: new Date().toISOString(), ...delegation(q), via: 'review-page', reasons: receipt.reasons, ...(note ? { note } : {}) });
         const saved = readHoldDecision(sha);
         if (!saved || saved.decision !== q.decision) throw Error('저장 확인 실패');
         json(200, { saved: true, decision: saved.decision, decidedAt: saved.decidedAt }); return;
@@ -215,9 +225,10 @@ export async function serveHolds({ host, port }: { host: string; port: number })
         if (sent.length !== want.length || sent.some((s, i) => s !== want[i])) throw Error('화면의 목록과 서버의 대기 목록이 다르다(그 사이에 바뀌었을 수 있다). 새로고침하세요');
         if (q.confirm !== `${want.length}장 전부 허용`) throw Error(`확인 문구가 맞지 않는다 — 「${want.length}장 전부 허용」을 직접 입력해야 한다`);
         const at = new Date().toISOString(), note = `묶음 허용: ${batch.title}${q.note ? ` — ${String(q.note).trim().slice(0, 150)}` : ''}`;
+        const deleg = delegation({ ...q, decision: 'allow' });
         let saved = 0;
         for (const { sha, receipt } of eligible) {
-          writeHoldDecision({ schema: 'oprn-object-gate-hold-decision/1', pixelSha256: sha, profileHash: receipt.profileHash, kind: receipt.kind, decision: 'allow', decidedBy, decidedAt: at, by: 'human', via: 'review-page', reasons: receipt.reasons, note });
+          writeHoldDecision({ schema: 'oprn-object-gate-hold-decision/1', pixelSha256: sha, profileHash: receipt.profileHash, kind: receipt.kind, decision: 'allow', decidedBy, decidedAt: at, ...deleg, via: 'review-page', reasons: receipt.reasons, note });
           if (readHoldDecision(sha)?.decision === 'allow') saved++;
         }
         if (saved !== eligible.length) throw Error(`저장 확인 실패(${saved}/${eligible.length})`);

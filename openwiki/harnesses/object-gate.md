@@ -485,6 +485,10 @@ jp_city 823 · sf-station 623 · steampunk-city 472 · pirate-isles 402 · sky-i
 `{schema: "oprn-object-gate-hold-decision/1", pixelSha256, profileHash, kind, decision: allow|reject, decidedBy, decidedAt, by: "human", via: "review-page", reasons, note?, sig}`
 - `sig` 는 저장소 밖 키(`~/.config/oprn/object-gate-hold.key`, 0600, 서버가 처음 뜰 때 만든다. `OBJECT_GATE_HOLD_KEY` 로 바꿀 수 있다)로 만든 HMAC-SHA256 이다.
 - 서명 대상은 sig 를 뺀 필드의 고정 순서 배열(TS `objectGateHoldPayload` = Python `hold_payload`)이다.
+- **위임 허용(`by: "delegated"`, 2026-10-21):** 사용자가 허용 결정을 감독자에게 위임하고 감독자가 독립 Opus 5.5 medium 적대적 VQA 뒤 같은 검토 API(`/api/decide`·`/api/decide-batch`)로 기록한 허용이다. 요청에 `delegatedBy`(위임한 사람)와 `evidence`(근거 영수증·검수 결과 경로, 실제 파일이어야 한다)를 둘 다 적으면 기록이 `by: "delegated"` + `delegatedBy` + `evidence` 로 남고, 둘 다 없으면 지금처럼 `by: "human"`(사람이 화면에서 누른 클릭)이다. 하나만 있거나 거절이면 서버가 거절한다(위임은 허용만).
+  - 서명 대상에 `delegatedBy`·`evidence` 는 위임 기록에서만 들어간다 — 사람 기록의 서명 문자열은 그대로라 기존 기록이 유효하다. `schema` 이름도 그대로다.
+  - 출구 효력은 사람 허용과 같다: TS `humanDecision`·Python `human_decision` 이 서명 확인, 그림 해시·종류 일치, 비어 있지 않은 `delegatedBy`·`evidence` 를 요구한다. 거절 위에 올라서지 못하고, Opus 최종 판정이 있는 그림에는 사람 허용과 똑같이 효력이 없다. 검토 화면은 「허용됨(위임)」과 위임자를 보여 준다.
+  - **소급 기록은 고치지 않는다.** 2026-10-21 이전에 감독자가 위임받아 검토 API 로 넣은 허용(beodeul-dark-grass-r9 묶음, inaka-handpixel-r14 묶음, astra-centre-mart-kits 묶음 등)은 `by: "human"` 으로 남아 있다. **`note` 에 「delegated by user to supervisor 2026-10-21」 가 들어 있는 기록은 사람 클릭이 아니라 위임이다.** 감사할 때는 이 문구로 가려라(서명이 걸려 있어 `by` 를 사후에 고칠 수 없다).
 - 손으로 쓴 기록이나 고친 기록은 서명이 맞지 않아 없는 것과 같다. 키가 없는 다른 기계에서는 모든 승인이 무효다. 굽기는 이 박스에서 한다.
 
 **서버 확인 사항:**

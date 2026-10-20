@@ -78,20 +78,27 @@ export function validFrontPropApproval(approval: ObjectGateFrontPropApproval | n
  * 허용 = 모든 출구 통과, 거절 = 최종(모든 출구에서 막고 공방 「그래도 넣기」도 무효).
  * 출구는 서명을 확인한 기록만 받는다(노드 store.readHoldDecision · Python read_hold_decision). 감독·에이전트·MCP 도구는 쓰지 않는다.
  * 스키마 이름(hold-decision)은 서명 대상이라 바꾸지 않는다(2026-10-20 이전 기록 4건이 그대로 유효하다).
+ *
+ * by: 'human' = 사람이 검토 화면에서 직접 누른 결정. by: 'delegated' = 사용자가 감독자에게 위임해 감독자가 독립 검수 뒤 같은 검토 API 로 기록한 허용.
+ * 위임 기록은 delegatedBy(위임한 사람)·evidence(근거 영수증·검수 결과 경로)가 둘 다 있어야 하고, 두 필드는 위임 기록의 서명 대상에만 들어간다
+ * (사람 기록의 서명 문자열은 그대로라 기존 기록이 그대로 유효하다). 출구 효력은 사람 허용과 같다 — 그림 해시·종류·서명 확인은 똑같이 요구한다.
  */
 export type ObjectGateHoldDecision = {
   schema: 'oprn-object-gate-hold-decision/1'; pixelSha256: string; profileHash: string; kind: ObjectGateKind;
-  decision: 'allow' | 'reject'; decidedBy: string; decidedAt: string; by: 'human'; via: 'review-page'; reasons: string[]; note?: string; sig: string;
+  decision: 'allow' | 'reject'; decidedBy: string; decidedAt: string; by: 'human' | 'delegated'; via: 'review-page'; reasons: string[]; note?: string;
+  /** by === 'delegated' 일 때만. 위임한 사람(예: 사용자 이름). */ delegatedBy?: string; /** by === 'delegated' 일 때만. 독립 검수 근거(영수증·결과 파일 경로). */ evidence?: string; sig: string;
 };
 /** 서명 대상 문자열(sig 제외, 키 이름순). Python hold_payload 와 같다. */
 export function objectGateHoldPayload(d: ObjectGateHoldDecision): string {
   const keys = ['schema', 'pixelSha256', 'profileHash', 'kind', 'decision', 'decidedBy', 'decidedAt', 'by', 'via', 'reasons', 'note'] as const;
-  return JSON.stringify(keys.map(k => [k, (d as Record<string, unknown>)[k] ?? null]));
+  const extra = d.by === 'delegated' ? (['delegatedBy', 'evidence'] as const) : ([] as const);
+  return JSON.stringify([...keys, ...extra].map(k => [k, (d as Record<string, unknown>)[k] ?? null]));
 }
+const nonEmpty = (v: unknown) => typeof v === 'string' && v.trim().length > 0;
 /** 서명 확인을 마친 기록이 이 영수증(그림 해시·종류)에 묶인 사람 결정이면 'allow'|'reject', 아니면 null. 프로필은 보지 않는다. */
 export function humanDecision(d: ObjectGateHoldDecision | null | undefined, receipt: ObjectGateReceipt | null | undefined): 'allow' | 'reject' | null {
   if (!d || !receipt) return null;
-  const ok = d.schema === 'oprn-object-gate-hold-decision/1' && d.by === 'human' && d.via === 'review-page' && (d.decision === 'allow' || d.decision === 'reject')
+  const ok = d.schema === 'oprn-object-gate-hold-decision/1' && (d.by === 'human' || (d.by === 'delegated' && d.decision === 'allow' && nonEmpty(d.delegatedBy) && nonEmpty(d.evidence))) && d.via === 'review-page' && (d.decision === 'allow' || d.decision === 'reject')
     && d.pixelSha256 === receipt.pixelSha256 && d.kind === receipt.kind && typeof d.decidedBy === 'string' && d.decidedBy.trim().length > 0 && !!d.decidedAt
     && typeof d.profileHash === 'string' && d.profileHash.length > 0;
   return ok ? d.decision : null;
