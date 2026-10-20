@@ -16,7 +16,6 @@ import { createProjectSessionRegistry } from "./sessions";
 import { startCompanionServer, type CompanionServer } from "./companion";
 import { describeRecentProjects, listRecentTeams, prepareNewProjectDir, recentProjectCoverSource, rememberRecentProject, rememberRecentTeam, suggestProjectDir, writeRecentProjectCover } from "./recent";
 import { openTeamWindow } from "./teamWindow";
-import { preloadProjectCore } from "./projectCorePreload";
 import type { JoinTeamResult } from "../shared/start";
 
 protocol.registerSchemesAsPrivileged([
@@ -196,7 +195,6 @@ function createWindow(): BrowserWindow {
   else if (devServerUrl) void window.loadURL(devServerUrl);
   else void window.loadURL(`${OPRN_APP_SCHEME}://oprn/index.html`);
   if (bootProjectDir !== undefined) {
-    preloadProjectCore();
     void sessions.open(window.webContents.id, bootProjectDir).then(() => {
       if (window.isDestroyed()) return;
       if (devServerUrl) void window.loadURL(devServerUrl);
@@ -441,11 +439,7 @@ app.whenReady().then(async () => {
     if (!window || !event.senderFrame?.url.startsWith(`${OPRN_APP_SCHEME}://`)) return false;
     return window.isFullScreen();
   });
-  ipcMain.handle(OPRN_CHANNELS.startRecentProjects, () => {
-    // 시작 화면이 그려진 뒤 한가할 때 프로젝트 코어(80MB)를 미리 읽는다 — 편집기로 들어가는 첫 load 가 그걸 기다리지 않게.
-    setTimeout(preloadProjectCore, 1_500);
-    return describeRecentProjects();
-  });
+  ipcMain.handle(OPRN_CHANNELS.startRecentProjects, () => describeRecentProjects());
   ipcMain.handle(OPRN_CHANNELS.startCoverSource, (_event: IpcMainInvokeEvent, payload: unknown) =>
     recentProjectCoverSource((payload as { readonly projectDir?: unknown } | null)?.projectDir));
   ipcMain.handle(OPRN_CHANNELS.startSaveCover, (_event: IpcMainInvokeEvent, payload: unknown) => {

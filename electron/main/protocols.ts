@@ -11,6 +11,7 @@ import { OPRN_APP_SCHEME, OPRN_ASSET_SCHEME } from "../shared/channels";
 import { handleActivityMirror, isActivityMirrorPath } from "../../scripts/lib/activityMirror.mjs";
 import { isCompanionPath } from "../../scripts/lib/ohMyPiHttp.mjs";
 import type { SessionRegistry } from "./sessions";
+import { noteMainActivity } from "./projectCorePreload";
 import { sharedCharacterGraphicsResponse } from "../../scripts/lib/sharedCharacterGraphics";
 import { SHARED_CHARACTER_GRAPHICS_ENDPOINT } from "../../src/project/sharedCharacterGraphicsSchema";
 
@@ -82,6 +83,7 @@ export function registerAppProtocol(rendererDir: string, activityLogBaseDir: () 
     }
   });
   async function handleAppRequest(request: Request): Promise<Response> {
+    noteMainActivity();
     const url = new URL(request.url);
     const origin = companionOrigin();
     if (origin && isCompanionPath(url.pathname)) {
