@@ -379,10 +379,11 @@ async function bestSkill(skills) {
 }
 
 /** 종·레벨로 지금 쓸 수 있는 기술(배운 것 중 마지막 넷)과 그 적에 대한 최고 점수. */
-function moveScore(speciesId, level, enemyTypes) {
+// 실제로 아는 기술(개체 skillIds)이 있으면 그것으로(journey.mjs 와 같다).
+function moveScore(speciesId, level, enemyTypes, skillIds) {
   const sp = (project.database.monsterSpecies ?? []).find((s) => s.id === speciesId);
   if (!sp) return 0;
-  const known = (sp.skillsByLevel ?? []).filter((e) => e.level <= level).slice(-4);
+  const known = Array.isArray(skillIds) && skillIds.length ? skillIds.map((skillId) => ({ skillId })) : (sp.skillsByLevel ?? []).filter((e) => e.level <= level).slice(-4);
   let best = 0;
   for (const { skillId } of known) {
     const sk = skillById.get(skillId); if (!sk) continue;
@@ -431,8 +432,8 @@ async function playerTactic(switchedFor, { potionOnly = false } = {}) {
   if (potionOnly) return null;
   // 2) 교체 — 다른 동료의 상성 점수가 1.6배 이상이고 체력이 반 이상이면(적 한 마리에 한 번).
   if (active && enemyTypes.length && !switchedFor.has(enemyName)) {
-    const mine = moveScore(active.speciesId, active.level, enemyTypes);
-    const better = party.filter((m) => m !== active && (m.currentHp ?? 1) > 0).map((m) => ({ m, score: moveScore(m.speciesId, m.level, enemyTypes) })).sort((a, b) => b.score - a.score)[0];
+    const mine = moveScore(active.speciesId, active.level, enemyTypes, active.skillIds);
+    const better = party.filter((m) => m !== active && (m.currentHp ?? 1) > 0).map((m) => ({ m, score: moveScore(m.speciesId, m.level, enemyTypes, m.skillIds) })).sort((a, b) => b.score - a.score)[0];
     if (better && better.score >= mine * 1.6) {
       const pk = page.locator('[data-testid="actor-command-pkmn"]');
       if (await pk.count() && await pk.isEnabled()) {
