@@ -175,9 +175,14 @@ export function renderCampaignRegionMap(map: CampaignRegionMap): HTMLElement {
     x: Math.round(left + rankX.get(location.x)! * (right - left)),
     y: Math.round(top + (1 - rankY.get(location.y)!) * (bottom - top)),
   }]));
+  // 길 선분도 이름이 피해야 하는 상자다 — 글자가 선에 가로로 긁히면 취소선처럼 읽힌다.
+  const roadBoxes: LabelBox[] = [];
   for (const link of map.links) {
     const from = positions.get(link.from), to = positions.get(link.to);
-    if (from && to) shape('path', { d: `M${from.x} ${from.y} H${to.x} V${to.y}`, class: 'campaign-region-road' });
+    if (!from || !to) continue;
+    shape('path', { d: `M${from.x} ${from.y} H${to.x} V${to.y}`, class: 'campaign-region-road' });
+    roadBoxes.push({ x0: Math.min(from.x, to.x) - 2, y0: from.y - 2, x1: Math.max(from.x, to.x) + 2, y1: from.y + 2 });
+    roadBoxes.push({ x0: to.x - 2, y0: Math.min(from.y, to.y) - 2, x1: to.x + 2, y1: Math.max(from.y, to.y) + 2 });
   }
   const nodeBoxes: LabelBox[] = [...positions.values()].map((p) => ({ x0: p.x - 7, y0: p.y - 7, x1: p.x + 7, y1: p.y + 7 }));
   const placed: LabelBox[] = [];
@@ -199,9 +204,21 @@ export function renderCampaignRegionMap(map: CampaignRegionMap): HTMLElement {
     add('end', point.x + 4, point.y + 9);
     add('start', point.x - 4, point.y - 9 - LABEL_PX);
     add('end', point.x + 4, point.y - 9 - LABEL_PX);
-    const fits = (c: (typeof candidates)[number]): boolean => c.box.x0 >= 2 && c.box.x1 <= MAP_W - 2 && c.box.y0 >= 1 && c.box.y1 <= MAP_H - 1
-      && !placed.some((other) => overlaps(c.box, other)) && !nodeBoxes.some((other) => overlaps(c.box, other));
-    const choice = candidates.find(fits) ?? candidates[0]!;
+    // 길이 빽빽해 위 여덟 자리가 모두 선에 걸리면, 노드에서 가까운 순으로 선 사이 빈 줄을 찾는다.
+    const extras: typeof candidates = [];
+    const mark = candidates.length;
+    for (let dy = -40; dy <= 24; dy += 2) {
+      for (const [anchor, dx] of [['start', 10], ['end', -10], ['middle', 0]] as const) add(anchor, point.x + dx, point.y + dy);
+    }
+    extras.push(...candidates.splice(mark));
+    extras.sort((a, b) => (Math.abs(a.x - point.x) + Math.abs(a.y - point.y)) - (Math.abs(b.x - point.x) + Math.abs(b.y - point.y)));
+    candidates.push(...extras);
+    const inside = (c: (typeof candidates)[number]): boolean => c.box.x0 >= 2 && c.box.x1 <= MAP_W - 2 && c.box.y0 >= 1 && c.box.y1 <= MAP_H - 1;
+    const clearOf = (c: (typeof candidates)[number]): boolean => !placed.some((other) => overlaps(c.box, other)) && !nodeBoxes.some((other) => overlaps(c.box, other));
+    const roadHits = (c: (typeof candidates)[number]): number => roadBoxes.filter((other) => overlaps(c.box, other)).length;
+    const choice = candidates.find((c) => inside(c) && clearOf(c) && roadHits(c) === 0)
+      ?? candidates.filter((c) => inside(c) && clearOf(c)).sort((a, b) => roadHits(a) - roadHits(b))[0]
+      ?? candidates[0]!;
     placed.push(choice.box);
     shape('text', { x: String(choice.x), y: String(choice.y), 'text-anchor': choice.anchor, class: `campaign-region-label${location.mapId === map.currentMapId ? ' is-current' : ''}` }, location.name);
   }
