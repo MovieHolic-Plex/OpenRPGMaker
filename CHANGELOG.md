@@ -5,6 +5,17 @@
 
 <!-- releases -->
 
+## 0.295.0 — 2026-10-21
+
+### 기능
+
+- **object-gate** — final-queue fails list carries tileset, sheet and sheet cells; written atomically per batch (#3136) (`4d5939f`)
+- **object-gate** — Opus 5.5 medium adversarial VQA is the final verdict (replaces option A) (#3135) (`f5aa0c2`)
+
+### 수정
+
+- **object-gate** — final-queue summary counts fails; beodeul_ground maps to beodeul_city (#3137) (`a7c3d1a`)
+
 ## 0.294.0 — 2026-10-21
 
 ### 기능
