@@ -627,7 +627,8 @@ try {
     }
     step(`boss-${key}`, true, ev.id, await shot(`25-after-${key}`));
   }
-  for (let i = 0; i < 30 && !(await present("ending-screen")); i++) { await page.keyboard.press("Enter"); await page.waitForTimeout(400); }
+  // 전당 등록 연출(보석·빛)은 대사 없이 길게 돈다 — 90초까지 기다린다.
+  for (let i = 0; i < 220 && !(await present("ending-screen")); i++) { await page.keyboard.press("Enter"); await page.waitForTimeout(400); }
   const ending = await present("ending-screen");
   if (ending) { await page.waitForTimeout(3000); await shot("26-ending"); for (let i = 0; i < 4; i++) { await page.keyboard.press("Enter"); await page.waitForTimeout(2500); await shot(`27-ending-${i}`); } }
   step("ending", ending, ending ? "ending-screen" : "엔딩 못 봄");

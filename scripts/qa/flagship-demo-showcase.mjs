@@ -502,10 +502,13 @@ await withTsModule("src/project/flagship/index.ts", "flagship-showcase.mjs", asy
       rec.gifs.push(battleGif);
 
       // Step 3: champion hall (debug: beacon switch) → ending
-      for (let i = 0; i < 60 && (await page.locator('[data-testid="battle-scene"],[data-testid="dialogue-box"]').count()); i++) {
+      // 관장전(두 마리)이 Enter 만으로 끝나려면 18초보다 오래 걸린다 — 끝날 때까지 기다린 뒤 전당으로 간다.
+      // 전투가 끝난 뒤 페이드 동안에는 상자가 없지만 이벤트(배지 지급)는 아직 돈다 — 실행 중 표시까지 본다.
+      for (let i = 0; i < 300 && ((await page.locator('[data-testid="battle-scene"],[data-testid="dialogue-box"]').count()) || (await page.evaluate(() => Boolean(window.__oprnHooksScene?.running)))); i++) {
         await page.keyboard.press("Enter");
         await page.waitForTimeout(300);
       }
+      assert.equal(await page.evaluate(() => window.__oprnDebug.readState().switches.mx_badge_1), true, "emerald: gym leader must award the badge before the champion step");
       const hall = emerald.project.maps.mx_map_league_0;
       const champ = hall.events.find((e) => e.id === "mx_map_league_0_league_challenge");
       await page.evaluate(() => window.__oprnDebug.setSwitch("mx_story_beacon", true));
@@ -515,11 +518,14 @@ await withTsModule("src/project/flagship/index.ts", "flagship-showcase.mjs", asy
       await page.evaluate(() => {
         void window.__oprnInput.action();
       });
-      for (let i = 0; i < 400 && !(await page.locator('[data-testid="ending-screen"]').count()); i++) {
+      for (let i = 0; i < 900 && !(await page.locator('[data-testid="ending-screen"]').count()); i++) {
         await page.keyboard.press("Enter");
         await page.waitForTimeout(200);
       }
-      await waitForEndingReady(page, 55_000);
+      await waitForEndingReady(page, 55_000).catch(async (error) => {
+        await page.screenshot({ path: path.join(OUT_DIR, "emerald-12-ending-timeout.png") });
+        throw error;
+      });
       await page.screenshot({ path: path.join(OUT_DIR, "emerald-12-ending.png") });
       rec.screenshots.push("emerald-12-ending.png");
       rec.consoleErrors = consoleErrors;
