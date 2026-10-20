@@ -41,8 +41,7 @@ def draw(side: str):
         paint(arr, sd_chain(pts, [R(1.1)] * 4) < 0, BAND[1], ["body"])
     eyes = None
     if not v.back:
-        near = eye(arr, 21, 43, NEAR_EYE_6x8, "#2a0804", "#7a3a10", "#c07a2c", rim=OL)
-        far = eye(arr, 13, 44, FAR_EYE_3x7, "#2a0804", "#7a3a10", "#c07a2c", rim=OL)
-        stamp(arr, 13, 53, ["D...D", ".DTD."], {"D": OL, "T": "#f0606a"})
-        eyes = {"anatomy": "threequarter", "style": "round", "near": near, "far": far}
+        near = eye(arr, 15, 42, NEAR_EYE_6x8, "#2a0804", "#7a3a10", "#c07a2c", rim=OL)
+        stamp(arr, 10, 52, ["D...", ".DTD"], {"D": OL, "T": "#f0606a"})
+        eyes = {"anatomy": "profile", "style": "round", "near": near, "far": None}
     return arr, eyes

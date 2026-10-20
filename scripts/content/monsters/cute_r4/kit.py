@@ -596,3 +596,12 @@ FAR_EYE_DROWSY_3x7 = [
     "DID",
     ".D.",
 ]
+
+
+def stamp_at(arr: np.ndarray, mask: np.ndarray, dx: int, dy: int, rows, cmap) -> None:
+    """Stamp `rows` relative to a mask's lower-left corner (min x, max y) — keeps small face marks (mouths) on the
+    painted feature after the view's scale/offset, instead of guessing canvas coordinates."""
+    ys, xs = np.nonzero(mask)
+    if len(xs) == 0:
+        return
+    stamp(arr, int(xs.min()) + dx, int(ys.max()) + dy, rows, cmap)

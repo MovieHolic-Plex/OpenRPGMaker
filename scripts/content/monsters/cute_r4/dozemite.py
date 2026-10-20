@@ -3,7 +3,7 @@
 Signature: two very long curly antennae, each ending in a round mint-green dream bubble. Sleepy half-lidded big eyes.
 """
 from .kit import *  # noqa: F401,F403
-from .kit import sickle
+from .kit import sickle, stamp_at
 import math
 from .kit import FAR_EYE_DROWSY_3x7, NEAR_EYE_DROWSY_7x8, blob, eye_lid, inner, paint, sd_chain, sd_ellipse, shifted
 
@@ -16,8 +16,8 @@ def draw(side: str):
     MINT = ("#e2ffe6", "#a8f3ac", "#6cd08a")
     CREAM = ("#ffffee", "#fdfddc", "#e8dcb0")
     E, R = v.p, v.r
-    head = blob(sd_ellipse(*E(25, 35), R(12.2), R(11)), sd_ellipse(*E(19, 39.5), R(6), R(5.5)), k=2.5)
-    cheek = (sd_ellipse(*E(21, 41.5), R(8.5), R(3.8)) < 0) & head
+    head = blob(sd_ellipse(*E(26, 35), R(11.6), R(10.6)), sd_ellipse(*E(17.5, 40), R(4.8), R(4.2)), k=5)
+    cheek = (sd_ellipse(*E(16, 42.5), R(4.6), R(2.8)) < 0) & head
     body = blob(sd_ellipse(*E(30, 53), R(8.6), R(6.8)), sd_ellipse(*E(26, 49.5), R(4.5), R(4)), k=2.5)
     belly = (sd_ellipse(*E(25.5, 53), R(4.2), R(5.5)) < 0) & body
     neck = sd_ellipse(*E(26.5, 45), R(3.5), R(3)) < 0
@@ -61,7 +61,7 @@ def draw(side: str):
         order = ["leg_ff", "leg_fb", "leg_nf", "leg_nb", "body", "head", "ant_far", "ant_near", "bub_far", "bub_near"]
         parts["head"].sep = False
     else:
-        order = ["leg_fb", "leg_ff", "ant_far", "bub_far", "body", "belly", "leg_nb", "leg_nf", "head", "cheek", "ant_near", "bub_near"]
+        order = ["leg_fb", "leg_ff", "ant_far", "bub_far", "body", "belly", "leg_nb", "leg_nf", "arm", "head", "ant_near", "bub_near"]
     arr = render([parts[n] for n in order], OL)
     # bubble shine + belly segment lines
     for (c, r), name in ((bub_far, "bub_far"), (bub_near, "bub_near")):
@@ -74,8 +74,7 @@ def draw(side: str):
         paint(arr, sd_chain([E(23, y), E(27.5, y + 0.8)], [R(0.5), R(0.5)]) < 0, LILAC[2], ["belly"])
     eyes = None
     if not v.back:
-        near = eye_lid(arr, v.ix(24.5), v.iy(33.5), NEAR_EYE_DROWSY_7x8, "#2a0848", "#6a3aa8", "#a07ad8", LILAC[1], rim=OL)
-        far = eye_lid(arr, v.ix(18), v.iy(34.5), FAR_EYE_DROWSY_3x7, "#2a0848", "#6a3aa8", "#a07ad8", LILAC[1], rim=OL)
-        stamp(arr, v.ix(19.5), v.iy(44), ["D.D", ".D."], {"D": OL})
-        eyes = {"anatomy": "threequarter", "style": "round", "near": near, "far": far}
+        near = eye_lid(arr, v.ix(18), v.iy(32.5), NEAR_EYE_DROWSY_7x8, "#2a0848", "#6a3aa8", "#a07ad8", LILAC[1], rim=OL)
+        stamp_at(arr, cheek, 2, -3, ["D..", ".DD"], {"D": OL})
+        eyes = {"anatomy": "profile", "style": "round", "near": near, "far": None}
     return arr, eyes

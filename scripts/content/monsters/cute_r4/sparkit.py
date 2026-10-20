@@ -69,8 +69,7 @@ def draw(side: str):
     arr[cr, :3] = hexc(FIRE[1])
     eyes = None
     if not v.back:
-        near = eye(arr, 18, 35, NEAR_EYE_6x8, "#240802", "#7a2a10", "#c0562a", rim=OL)
-        far = eye(arr, 12, 36, FAR_EYE_3x7, "#240802", "#7a2a10", "#c0562a", rim=OL)
-        stamp(arr, 12, 45, ["D..D", ".DD."], {"D": OL})
-        eyes = {"anatomy": "threequarter", "style": "hand", "near": near, "far": far}
+        near = eye(arr, 12, 35, NEAR_EYE_6x8, "#240802", "#7a2a10", "#c0562a", rim=OL)
+        stamp(arr, 9, 45, ["D..", ".DD"], {"D": OL})
+        eyes = {"anatomy": "profile", "style": "hand", "near": near, "far": None}
     return arr, eyes
