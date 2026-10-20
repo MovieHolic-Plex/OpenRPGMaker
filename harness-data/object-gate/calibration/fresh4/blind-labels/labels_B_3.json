@@ -1,0 +1,258 @@
+[
+ {
+  "id": "q065",
+  "kind": "low_furniture",
+  "top_rows": 6,
+  "front_rows": 3,
+  "label": "unsure",
+  "why": "desk top rows 1-6 then dark edge row 7, but lower rows 8-15 are a chair seen from behind; front unclear"
+ },
+ {
+  "id": "q066",
+  "kind": "structure",
+  "top_rows": 22,
+  "front_rows": 36,
+  "label": "good",
+  "why": "sloped roof plane rows ~0-21 above facade rows ~23-59 with door and windows"
+ },
+ {
+  "id": "q067",
+  "kind": "flat",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "arrow floor decal"
+ },
+ {
+  "id": "q068",
+  "kind": "structure",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "bad",
+  "why": "front elevation of oven arch and chimney, no top surface"
+ },
+ {
+  "id": "q069",
+  "kind": "seat",
+  "top_rows": 3,
+  "front_rows": 5,
+  "label": "bad",
+  "why": "front-facing chair: backrest rows 0-6, seat band only ~3 rows (8-10) below the 4 minimum"
+ },
+ {
+  "id": "q070",
+  "kind": "wall_mounted",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "window panel"
+ },
+ {
+  "id": "q071",
+  "kind": "front_prop",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "cloth drying rack, exempt front prop"
+ },
+ {
+  "id": "q072",
+  "kind": "tall_furniture",
+  "top_rows": 4,
+  "front_rows": 23,
+  "label": "unsure",
+  "why": "white band rows 1-4 with edge line row 5 could be top but reads as cornice on a front elevation"
+ },
+ {
+  "id": "q073",
+  "kind": "low_furniture",
+  "top_rows": 9,
+  "front_rows": 5,
+  "label": "good",
+  "why": "table top rows 1-9 ending in edge row 10, apron+legs rows 10-14"
+ },
+ {
+  "id": "q074",
+  "kind": "terrain",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "wheat field tile"
+ },
+ {
+  "id": "q075",
+  "kind": "frame",
+  "top_rows": 3,
+  "front_rows": 22,
+  "label": "bad",
+  "why": "front-elevation rack: beam rows 1-4 is its front face, posts and back panel flat"
+ },
+ {
+  "id": "q076",
+  "kind": "wall_mounted",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "wall-hung antlers"
+ },
+ {
+  "id": "q077",
+  "kind": "low_furniture",
+  "top_rows": 9,
+  "front_rows": 10,
+  "label": "good",
+  "why": "bench top with items rows 6-14, front drawers rows 15-24"
+ },
+ {
+  "id": "q078",
+  "kind": "low_furniture",
+  "top_rows": 9,
+  "front_rows": 5,
+  "label": "good",
+  "why": "desk top rows 1-9 with edge row 9/10, apron and legs rows 10-14"
+ },
+ {
+  "id": "q079",
+  "kind": "flat",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "face-on gear decoration, not a standing 3/4 object"
+ },
+ {
+  "id": "q080",
+  "kind": "low_furniture",
+  "top_rows": 3,
+  "front_rows": 3,
+  "label": "unsure",
+  "why": "backrest slats rows 1-5 vertical, seat only rows 8-10 (3) and front ~3 rows"
+ },
+ {
+  "id": "q081",
+  "kind": "container",
+  "top_rows": 0,
+  "front_rows": 7,
+  "label": "bad",
+  "why": "front elevation planter, flowers rows 1-4 but no soil opening seen, wooden front rows 5-11"
+ },
+ {
+  "id": "q082",
+  "kind": "round_body",
+  "top_rows": 9,
+  "front_rows": 5,
+  "label": "good",
+  "why": "hay bale top rows 0-8 with strap row 9, front rows 10-14"
+ },
+ {
+  "id": "q083",
+  "kind": "terrain",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "wall buttress fragment"
+ },
+ {
+  "id": "q084",
+  "kind": "figure",
+  "top_rows": 5,
+  "front_rows": 5,
+  "label": "unsure",
+  "why": "base disc ellipse rows 22-27 shows a top but straw body is front elevation"
+ },
+ {
+  "id": "q085",
+  "kind": "wall_mounted",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "banner flag"
+ },
+ {
+  "id": "q086",
+  "kind": "column",
+  "top_rows": 4,
+  "front_rows": 45,
+  "label": "unsure",
+  "why": "cap slab rows 7-11 reads like a front-face capital, no clear ellipse; base plinth rows 49-58"
+ },
+ {
+  "id": "q087",
+  "kind": "terrain",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "wall/door fragment of clock tower"
+ },
+ {
+  "id": "q088",
+  "kind": "structure",
+  "top_rows": 19,
+  "front_rows": 14,
+  "label": "good",
+  "why": "sloped roof rows 0-19 above log wall rows ~20-33 and stilts"
+ },
+ {
+  "id": "q089",
+  "kind": "container",
+  "top_rows": 12,
+  "front_rows": 13,
+  "label": "good",
+  "why": "cauldron elliptical opening rows 1-13 with liquid, box front rows 14-30"
+ },
+ {
+  "id": "q090",
+  "kind": "wall_mounted",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "wall pipe"
+ },
+ {
+  "id": "q091",
+  "kind": "terrain",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "rampart top tile"
+ },
+ {
+  "id": "q092",
+  "kind": "seat",
+  "top_rows": 5,
+  "front_rows": 13,
+  "label": "good",
+  "why": "round seat ellipse rows 0-4 (widths 6,8,10,10,8) plus rim, pole and base rows 8-20"
+ },
+ {
+  "id": "q093",
+  "kind": "container",
+  "top_rows": 3,
+  "front_rows": 23,
+  "label": "bad",
+  "why": "brazier bowl opening only ~3 rows (3-5) on a front-elevation stand"
+ },
+ {
+  "id": "q094",
+  "kind": "terrain",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "stage backdrop panel"
+ },
+ {
+  "id": "q095",
+  "kind": "other",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "bad",
+  "why": "car in side view, no top surface"
+ },
+ {
+  "id": "q096",
+  "kind": "flat",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "platform braille strip decal"
+ }
+]

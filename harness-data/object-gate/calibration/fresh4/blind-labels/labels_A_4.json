@@ -1,0 +1,242 @@
+[
+ {
+  "id": "q097",
+  "kind": "front_prop",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Fishing-net drying frame, flat front panel; exempt."
+ },
+ {
+  "id": "q098",
+  "kind": "seat",
+  "top_rows": 1,
+  "front_rows": 10,
+  "label": "bad",
+  "why": "Two flat cushions plus tray read as plan/front view, no 4-row seat top with edge line."
+ },
+ {
+  "id": "q099",
+  "kind": "tall_furniture",
+  "top_rows": 1,
+  "front_rows": 28,
+  "label": "bad",
+  "why": "Fermentation shelf is a front elevation; only a 1-2 row rim on top."
+ },
+ {
+  "id": "q100",
+  "kind": "structure",
+  "top_rows": 46,
+  "front_rows": 48,
+  "label": "good",
+  "why": "Roof plane rows 0-45 with chimney, then front facade rows 46-95."
+ },
+ {
+  "id": "q101",
+  "kind": "organic",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Rocky hill with grass top, organic terrain."
+ },
+ {
+  "id": "q102",
+  "kind": "structure",
+  "top_rows": 10,
+  "front_rows": 11,
+  "label": "good",
+  "why": "Beam deck rows 5-14 with box, steel girder front rows 15-25, legs with plinth tops below."
+ },
+ {
+  "id": "q103",
+  "kind": "wall_mounted",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Scroll shelf mounted on wall."
+ },
+ {
+  "id": "q104",
+  "kind": "column",
+  "top_rows": 5,
+  "front_rows": 20,
+  "label": "good",
+  "why": "Elliptical cap rows 0-4 overhanging thin shaft, base ellipse; reads as pole."
+ },
+ {
+  "id": "q105",
+  "kind": "organic",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Twisted tree."
+ },
+ {
+  "id": "q106",
+  "kind": "low_furniture",
+  "top_rows": 20,
+  "front_rows": 5,
+  "label": "good",
+  "why": "Bed: headboard rows 0-6, mattress/blanket top rows 7-26, footboard front rows 27-31."
+ },
+ {
+  "id": "q107",
+  "kind": "container",
+  "top_rows": 5,
+  "front_rows": 8,
+  "label": "good",
+  "why": "Ice/fish contents visible rows 0-4 above wicker front rows 5-12."
+ },
+ {
+  "id": "q108",
+  "kind": "container",
+  "top_rows": 8,
+  "front_rows": 5,
+  "label": "good",
+  "why": "Pies visible rows 0-8 inside open crate, wood front rows 10-13."
+ },
+ {
+  "id": "q109",
+  "kind": "container",
+  "top_rows": 3,
+  "front_rows": 5,
+  "label": "bad",
+  "why": "Basin opening only about 3 rows (6-8), mostly front elevation with wall faucet."
+ },
+ {
+  "id": "q110",
+  "kind": "other",
+  "top_rows": 6,
+  "front_rows": 13,
+  "label": "good",
+  "why": "Vegetable heap rows 0-6 above cart body front rows 7-19."
+ },
+ {
+  "id": "q111",
+  "kind": "other",
+  "top_rows": 12,
+  "front_rows": 10,
+  "label": "good",
+  "why": "Striped sloped canopy rows 0-12 plus table top ellipse and tub front below."
+ },
+ {
+  "id": "q112",
+  "kind": "box",
+  "top_rows": 5,
+  "front_rows": 7,
+  "label": "unsure",
+  "why": "Lid band rows 1-5, body rows 6-12 gives front 7, one below box minFront 8."
+ },
+ {
+  "id": "q113",
+  "kind": "other",
+  "top_rows": 3,
+  "front_rows": 7,
+  "label": "unsure",
+  "why": "Pots hide cart top; only about 3-4 row band at rows 10-13 then front 14-20."
+ },
+ {
+  "id": "q114",
+  "kind": "low_furniture",
+  "top_rows": 9,
+  "front_rows": 4,
+  "label": "good",
+  "why": "Tabletop rows 1-9 with front edge line, apron rows 10-12 and legs."
+ },
+ {
+  "id": "q115",
+  "kind": "other",
+  "top_rows": 1,
+  "front_rows": 40,
+  "label": "bad",
+  "why": "Thin crane arm and tripod in side/front elevation, no top surfaces."
+ },
+ {
+  "id": "q116",
+  "kind": "container",
+  "top_rows": 1,
+  "front_rows": 4,
+  "label": "bad",
+  "why": "Bush dome rows 0-5 with 1-row soil rim, stone front only 4 rows."
+ },
+ {
+  "id": "q117",
+  "kind": "other",
+  "top_rows": 1,
+  "front_rows": 16,
+  "label": "bad",
+  "why": "Display case interior shown face-on rows 1-10, pink front rows 11-26, no top."
+ },
+ {
+  "id": "q118",
+  "kind": "low_furniture",
+  "top_rows": 30,
+  "front_rows": 7,
+  "label": "good",
+  "why": "Large tabletop rows 0-30 with screen, front apron rows 31-37."
+ },
+ {
+  "id": "q119",
+  "kind": "organic",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Straw heap."
+ },
+ {
+  "id": "q120",
+  "kind": "wall_mounted",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Wall weapon display with shield and axes."
+ },
+ {
+  "id": "q121",
+  "kind": "frame",
+  "top_rows": 1,
+  "front_rows": 18,
+  "label": "bad",
+  "why": "Sword stand in front elevation, horizontal bars face-on, no readable top."
+ },
+ {
+  "id": "q122",
+  "kind": "structure",
+  "top_rows": 30,
+  "front_rows": 30,
+  "label": "good",
+  "why": "Thatched roof plane rows 0-30, wall and porch front rows 31-63."
+ },
+ {
+  "id": "q123",
+  "kind": "debris",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Scorched floor patches."
+ },
+ {
+  "id": "q124",
+  "kind": "tall_furniture",
+  "top_rows": 2,
+  "front_rows": 26,
+  "label": "bad",
+  "why": "Double-sided shelf in front elevation, only rim on top."
+ },
+ {
+  "id": "q125",
+  "kind": "other",
+  "top_rows": 2,
+  "front_rows": 12,
+  "label": "bad",
+  "why": "Spinning wheel face-on front elevation, no top surface."
+ },
+ {
+  "id": "q126",
+  "kind": "wall_mounted",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Wall candle sconce on wallpaper panel."
+ }
+]

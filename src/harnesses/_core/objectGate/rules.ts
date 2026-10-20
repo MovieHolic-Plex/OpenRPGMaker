@@ -17,7 +17,7 @@
  * ④ 보정은 확실 라벨(A)만 통과·차단 기준으로 세고, 다툼(C)·사용자 수락(U)은 따로 보고한다. 라벨은 숫자에 맞춰 바꾸지 않는다. 숨김 표본(hidden)은 규칙을 조정한 뒤 처음 재는 표본이다.
  */
 
-export const OBJECT_GATE_RULES_VERSION = 8;
+export const OBJECT_GATE_RULES_VERSION = 9;
 
 export type ObjectGateKind =
   | "tall_furniture" | "low_furniture" | "seat" | "frame" | "container" | "round_body" | "column" | "box"
@@ -57,6 +57,7 @@ EVIDENCE OF A TOP SURFACE (any one is enough, and you must point at rows):
  (c) a sloped ROOF, AWNING or CANOPY plane above an eave or edge line on a building or stall (its tile or stripe rows ARE the top surface).
  (d) contents, water or a heap visible inside an open container.
 NOT A TOP SURFACE: the 1-row outline at the silhouette; a 1-2 row rim or lip; a vertical face (door, drawer front, panel, window, a backrest or cushion seen face-on); a cornice or beam drawn as a front-facing strip with no edge line and no shadow; a dome-shaped top end that is rounded only at its upper edge and has a flat bottom edge directly on a narrower shaft (a "hat" or rounded end is not an ellipse cap).
+DECOR PARTS (rules v9): things that stand on, grow out of or rise above the main body but are not part of its built structure — a tree canopy or plant in a planter, pot or flowerbox; the figure of a statue standing on its plinth; a water jet or spout over a basin; goods, screens, monitors, ornaments or a sign placed on a counter, table or shelf top; a flag on a pole. List them in "surfaces" with evidence "decor": they are not expected to show a top surface, and they are NOT the main body. Measure the main body that carries them (the planter mouth, the plinth top, the counter top) as usual. NEVER call a part of the object's own structure decor: a backrest, headboard, cabinet or shelf body, hood, canopy frame, awning, roof, chimney, engine or machine housing, a stacked second crate, a door or panel are structure.
 FRONT FACE: the vertical south face (or the legs, apron or supports of an open piece). A drawing with no front face (fewer than 3 rows) is a flat top-down slab.
 Measure the MAIN BODY (the largest volume), not small details. Use the EXACT COLUMN SCAN and the SILHOUETTE WIDTH profile given with the question for every row number; row numbers equal the source-pixel rows on the left ruler of image 1.
 Image 1 is the candidate magnified 10x with the source row numbers on the left. Image 2 shows REAL reference pairs of the same objects (red frame = WRONG drawing, green frame = RIGHT drawing). Image 3 is a fixed GUIDE of synthetic shapes (green = right, red = wrong). Compare the structure of the candidate with them; do not judge by subject or detail.`;
@@ -84,8 +85,8 @@ Each theme keeps its own locked palette. NEVER judge hue, never ask for Beodeul'
 1. Shading steps: count the distinct lightness steps on the candidate's main material ramps (e.g. a tile roof: highlight, light, mid, dark, deep; a leaf canopy: 4-5 greens). Beodeul uses about 5-6 steps per material. 2-3 steps (a flat body, one shade and an outline) is shallow.
 2. Outline: Beodeul outlines are the DARK TONE OF THE ADJACENT MATERIAL (dark brown next to wood, dark green next to leaves, dark red-brown next to roof tiles), used selectively; forms are often separated by value alone. A uniform near-black / pure black line around every shape is the shallow "sticker" look. Decide by TINT: if the outline pixels are almost colourless (neutral black or very dark grey, no visible brown/green/red/blue lean) it is "near_black"; if they are a dark but visibly tinted version of the neighbouring material (dark brown beside wood, dark green beside leaves, dark red-brown beside roof tiles) it is "dark_material_tone", however dark. Report "dark_material_tone", "near_black", "mixed" or "none".
 3. Texture: Beodeul surfaces carry texture dots and grain — roof tile scallops with per-tile highlights, plaster speckle, leaf clumps in several greens, stones shaded one by one, grass tufts and soil grain. Large areas (about 5x5 source pixels or more) of ONE flat colour with no dot, grain or variation are flat fills.
-4. Tile information density: compare how much each 16x16 tile of the candidate carries against a reference tile of the same kind. Beodeul tiles are information-rich (median about 10 distinct colours per tile, the richest tiles 40+). Tiles that are mostly 2-4 colours are much lower.
-5. MEASURED STYLE FACTS are given with the question for the candidate and for each reference, computed exactly from the pixels: median distinct colours per full 16x16 tile (0 = the piece is smaller than one tile, then judge by eye), 5x5 flat-fill coverage (share of pixels inside some 5x5 block of one identical colour), the near-neutral share of dark edge pixels (bottom edge row excluded; colour spread 12 or less: 100% means a neutral black/grey outline line, 0% means the outline carries a colour tint), and the number of distinct colours. Use them as evidence next to the picture: a candidate that is far below every reference in colours per tile and distinct colours, or far above them in flat-fill coverage, or whose dark edge pixels are mostly neutral, is shallow; a candidate at or above the references on these facts, with tinted outlines, is not. The facts never replace your eye on structure, but you must not call something "rich" or "dark_material_tone" against the numbers without saying why.
+4. Tile information density: compare how much VISIBLE information each 16x16 tile of the candidate carries against a reference tile of the same kind — distinct tones the eye can tell apart, shapes, clusters, grain. Count tones, not raw colours: Beodeul references often contain dozens of near-identical shades (a grass tile with 26 raw greens shows about 3 visible tones; a tree tile with 100+ raw colours shows about 20-30), and a candidate drawn with a locked palette uses fewer raw colours for the same visible texture. Tiles that show only 2-4 visible tones are much lower.
+5. MEASURED STYLE FACTS are given with the question for the candidate and for each reference, computed exactly from the pixels. Primary: VISIBLE tones per full 16x16 tile (colours merged to 16 levels per channel; 0 = the piece is smaller than one tile, then judge by eye), near-flat coverage (share of pixels inside some 5x5 block with no visible change), and the near-neutral share of dark edge pixels (bottom edge row excluded; colour spread 12 or less: 100% means a neutral black/grey outline line, 0% means the outline carries a colour tint). Raw counts (exact distinct colours per tile, exact 5x5 flat fill, total distinct colours) are listed too but are inflated by invisible near-identical shades — never call a candidate "much_lower" from raw colour counts alone. Use the primary facts as evidence next to the picture: a candidate far below every reference in visible tones per tile, or far above them in near-flat coverage, or whose dark edge pixels are mostly neutral, is shallow; a candidate at or above the references on the primary facts, with tinted outlines, is not. The facts never replace your eye on structure, but you must not call something "rich" or "dark_material_tone" against the numbers without saying why.
 Compare against the reference of the same kind at the same scale. Do not fail a piece only because it is small or simple. For THIN or SPARSE objects (poles, lamps, fences, rails, single-tile props) the per-tile colour median may be 0 or tiny because few pixels fill a whole tile: then do not use the density fact against the piece; judge density by eye against the reference of the same kind, and never fail a piece for sparseness alone, and do not pass it only because it is cleanly drawn: pass only if a careful artist would accept it next to the reference without it looking thinner, flatter or more "sticker-like". A piece that is plainly the reference itself or equally rich passes. When in doubt, fail.
 "score" is an auxiliary 1-10 rating (reference = 8-9); it never decides anything.`;
 
@@ -93,7 +94,7 @@ Compare against the reference of the same kind at the same scale. Do not fail a 
 export const OBJECT_GATE_OUTPUT_FORMAT = `Reply ONLY JSON:
 {"facing": "south"|"east"|"west"|"north"|"round"|"unclear",
  "kind_matches": bool,
- "surfaces": [{"part": string, "rows": "a-b", "evidence": "a"|"b"|"c"|"d"|"none", "front_edge_line_row": int|null, "eave_shadow_rows": string|null}],
+ "surfaces": [{"part": string, "rows": "a-b", "evidence": "a"|"b"|"c"|"d"|"none"|"decor", "front_edge_line_row": int|null, "eave_shadow_rows": string|null}],
  "main_top_rows": int,
  "front_face_rows": int,
  "side_face_visible": bool,
@@ -101,7 +102,7 @@ export const OBJECT_GATE_OUTPUT_FORMAT = `Reply ONLY JSON:
  "round_cap": null | {"cap_rows": int, "cap_width": int, "shaft_width": int, "rounded_at_both_edges": bool},
  "reads_as": "three_quarter"|"front_elevation"|"side_profile_no_top"|"top_down_slab"|"other",
  "evidence": string}
-"kind_matches": the caller-supplied kind plausibly describes this object. "main_top_rows" = height in rows of the main top surface (0 when none; 1-2 for a rim). "side_face_visible": an isometric receding side face is drawn (not the normal south face). "all_major_parts_have_top" is false if one big part (a backrest panel, a staircase, a beam, a chimney) is drawn only as a vertical face where a horizontal surface should be visible. "round_cap" is filled ONLY for column-like objects (pillar, stele, rune stone, lantern post): cap_width and shaft_width come from the width profile; rounded_at_both_edges is true only when the cap's widest rows are bounded by narrower rows both above AND below (an ellipse plate), false for a dome or hat that ends flat.
+"kind_matches": the caller-supplied kind plausibly describes this object. "main_top_rows" = height in rows of the main top surface (0 when none; 1-2 for a rim). "side_face_visible": an isometric receding side face is drawn (not the normal south face). "all_major_parts_have_top" is false if one big part (a backrest panel, a staircase, a beam, a chimney) is drawn only as a vertical face where a horizontal surface should be visible Decor parts do not count here. "round_cap" is filled ONLY for column-like objects (pillar, stele, rune stone, lantern post): cap_width and shaft_width come from the width profile; rounded_at_both_edges is true only when the cap's widest rows are bounded by narrower rows both above AND below (an ellipse plate), false for a dome or hat that ends flat.
 "reads_as": three_quarter = the main body has a top surface and a front face of 3+ rows; front_elevation = no top surface (or only a rim); side_profile_no_top = a profile silhouette without a horizontal surface; top_down_slab = no front face.`;
 
 export const OBJECT_GATE_STYLE_OUTPUT_FORMAT = `Reply ONLY JSON:
@@ -295,6 +296,7 @@ export function decideObjectGateBoth(kind: ObjectGateKind, view34Answers: Array<
 /** 판정 프로필 — 이 값이 바뀌면 프로필 해시가 바뀌고, 새 프로필은 보정을 다시 통과해야 쓸 수 있다. */
 export const OBJECT_GATE_PROFILE = {
   rulesVersion: OBJECT_GATE_RULES_VERSION,
+  styleFactsVersion: 3, // node/facts.ts styleFacts — 보이는 색조·근사 평면 채움(규칙 v9). 화풍 프롬프트 해시에만 들어간다(3/4 답 캐시는 그대로).
   factsVersion: 2, // node/facts.ts — 판정자에게 주는 정확한 열 훑기·실루엣 폭·화풍 측정(알고리즘을 바꾸면 올린다)
   rubric: OBJECT_GATE_RUBRIC,
   outputFormat: OBJECT_GATE_OUTPUT_FORMAT,
@@ -318,5 +320,5 @@ export const OBJECT_GATE_PROFILE = {
   ],
   runsPerJudge: 4,
   magnify: 10,
-  combine: "facts-then-rules-3state-v8-front-prop" as const,
+  combine: "facts-then-rules-3state-v9-decor-visibletones" as const,
 };
