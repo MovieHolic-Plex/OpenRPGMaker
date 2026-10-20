@@ -75,8 +75,8 @@ function schoolShot(): OpeningAnimatic {
 /** 2. 어둠 속 편지 한 장의 빛 — 마지막 금요일, 처음으로 진짜 이름을 쓴 사연. */
 function letterShot(): OpeningAnimatic {
   return shot([
-    glow("letter", "#f4e6b0", 240, 135, 70, { opacity: 0.75 }),
-    glow("letter-halo", "#ffcf9a", 240, 135, 180, { opacity: 0.25 }),
+    glow("letter", "#fff0c4", 240, 135, 84, { opacity: 1 }),
+    glow("letter-halo", "#ffcf9a", 240, 135, 230, { opacity: 0.45 }),
     centerText("name", "‘바나나우유가 아니라, 윤서하가요.’", 600, 5600, 13),
     caption([
       { atMs: 300, text: "마지막 금요일. 처음으로, 진짜 이름을 썼다." },
@@ -88,8 +88,8 @@ function letterShot(): OpeningAnimatic {
 function silenceShot(): OpeningAnimatic {
   return shot([
     {
-      ...glow("letter", "#f4e6b0", 240, 135, 70, { opacity: 0.75 }),
-      keys: { opacity: [{ atMs: 0, value: 0.75 }, { atMs: 2600, value: 0, ease: "ease-in" }] },
+      ...glow("letter", "#fff0c4", 240, 135, 84, { opacity: 1 }),
+      keys: { opacity: [{ atMs: 0, value: 1 }, { atMs: 3200, value: 0, ease: "ease-in" }] },
     } as AnimaticLayer,
     { id: "rain", kind: "particles", role: "effect", space: "screen", color: "#8fa3c8", opacity: 0.35, x: 0, y: 38, width: STAGE.width, height: 194,
       particles: { preset: "rain", count: 40, seed: 7, speed: 30, size: 1 } } as AnimaticLayer,
@@ -115,7 +115,7 @@ function officeShot(): OpeningAnimatic {
 /** 5. 월요일 아침 — 첫 출근. 게임 첫 장면(아침 승강장)으로 이어진다. */
 function mondayShot(): OpeningAnimatic {
   return shot([
-    glow("dawn", "#ffd9a8", 240, 300, 520, { opacity: 0.35 }),
+    glow("dawn", "#ffd9a8", 240, 300, 560, { opacity: 0.6 }),
     centerText("title", "첫 출근, 월요일 아침.", 300, 5800, 15),
     caption([
       { atMs: 2400, text: "새 회사. 새 자리. 그리고 사수로 배정된, 한 사람." },
