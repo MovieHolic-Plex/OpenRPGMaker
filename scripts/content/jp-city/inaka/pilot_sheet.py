@@ -13,6 +13,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..', '..'))
 sys.path.insert(0, os.path.join(ROOT, 'scripts', 'content', 'jp-inaka'))
 KITS7 = os.path.join(ROOT, 'tiledata', 'beodeul-city', 'kits7')
+ROW_OF = {'inaka-vinyl-greenhouse'}
 REF = {'inaka-vinyl-greenhouse': 'bd-out-longhouse', 'inaka-kominka-thatched': 'bd-out-longhouse', 'inaka-red-tractor': 'bd-out-cabin-small'}
 
 
@@ -26,10 +27,10 @@ def beo(name):
     return c
 
 
-def grass_bg(w, h):
+def grass_bg(w, h, key='grass'):
     from inaka_art_ground import autotile_cells
     cells = autotile_cells()[0]
-    tiles = [cells[k][0] for k in cells if k.startswith('at/grass.') and (k.endswith('m255') or '.b' in k)]
+    tiles = [cells[k][0] for k in cells if k.startswith('at/%s.' % key) and (k.endswith('m255') or '.b' in k)]
     a = np.zeros((h, w, 4), np.uint8)
     for ty in range(0, h, 16):
         for tx in range(0, w, 16):
@@ -60,10 +61,18 @@ def main():
         pad = 8
         pair = Image.new('RGBA', (ref.width + im.width + pad * 3, max(ref.height, im.height) + pad * 2), (40, 44, 52, 255))
         pair.alpha_composite(ref, (pad, pair.height - pad - ref.height)); pair.alpha_composite(im, (ref.width + pad * 2, pair.height - pad - im.height))
-        snip_w, snip_h = im.width + 64, im.height + 48
+        n = 3 if kid in ROW_OF else 1                      # 하우스류는 흙 고랑 사이로 나란히 놓아 「농장」으로 읽히는지 본다
+        gap = 16
+        snip_w, snip_h = n * im.width + (n - 1) * gap + 64, im.height + 48
         snip = grass_bg(snip_w, snip_h)
-        snip.alpha_composite(im, (16, 16))
-        snip.alpha_composite(actor(), (16 + im.width + 12, 16 + im.height - 32))
+        if n > 1:
+            dirt = grass_bg(snip_w, snip_h, 'dirt')
+            for i in range(1, n):
+                x0 = 16 + i * im.width + (i - 1) * gap
+                snip.paste(dirt.crop((x0, 8, x0 + gap, 16 + im.height + 8)), (x0, 8))
+        for i in range(n):
+            snip.alpha_composite(im, (16 + i * (im.width + gap), 16))
+        snip.alpha_composite(actor(), (16 + n * im.width + (n - 1) * gap + 12, 16 + im.height - 32))
         parts = [pair, pair.resize((pair.width * 4, pair.height * 4), Image.NEAREST), snip.resize((snip.width * 2, snip.height * 2), Image.NEAREST)]
         rows.append((kid, parts))
     W = max(sum(p.width for p in ps) + 16 * (len(ps) + 1) for _, ps in rows)

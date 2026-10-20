@@ -317,22 +317,32 @@ def tractor(c, base):
         return round(63 - 0.4 * z - 1.3 * n)
 
     def tread(x0, x1, n0, n1, R, dim=0.0):
-        """위에서 본 바퀴: 트레드 윗면 띠(가로 러그 줄, 가운데가 가장 높고 밝다) + 아래 납작한 옆 반달."""
+        """위에서 본 두꺼운 바퀴: 트레드 윗면(가운데 마루에 밝은 띠 + 엇갈린 V 러그) → 아래 옆벽 3줄(얇은 반달)."""
         cx = (x0 + x1) / 2
+        rows = [k / 2 for k in range(n1 * 2, n0 * 2 - 1, -1)]
+        mid = (n0 + n1) / 2
         for x in range(x0, x1 + 1):
             u = (x - cx) / ((x1 - x0) / 2 + 0.5)
             zt = R + R * math.sqrt(max(0.0, 1 - u * u))
-            for n10 in range(n1 * 10, n0 * 10 - 1, -5):
-                n = n10 / 10
+            for n in rows:
                 y = Y(zt, n)
-                lug = (x - x0) % 3 == 0
-                lv = (0.0 if abs(u) < 0.5 else 1.0) + (2.0 if lug else 0) + dim + (1.0 if n == n1 else 0)
-                c.P(x, y, RUBBER[max(0, min(3, round(lv)))])
-            yb = Y(zt, n0)                                             # 옆 반달: 납작하게 2~3줄
-            for k in range(1, 3 if abs(u) < 0.7 else 2):
-                c.P(x, yb + k, pick(RUBBER, 2.0 + k * 0.6 + abs(u) * 0.5 + dim, x, yb + k))
-            if abs(u) < 0.18:
-                c.P(x, yb + 1, K('kii', -1) if dim == 0 else RUBBER[2])   # 작은 허브 점
+                lug = (x - x0 + round(abs(n - mid) * 1.2)) % 4 in (0, 1)
+                if lug:
+                    col = RUBBER[2] if abs(u) < 0.5 else RUBBER[3]
+                elif abs(u) < 0.3:
+                    col = STEEL[2] if dim == 0 else RUBBER[0]          # 마루의 밝은 띠
+                elif abs(u) < 0.65:
+                    col = RUBBER[0] if dim == 0 else RUBBER[1]
+                else:
+                    col = RUBBER[1] if dim == 0 else RUBBER[2]
+                if n == n1:
+                    col = RUBBER[3]                                    # 먼 쪽 모서리
+                c.P(x, y, col)
+            yb = Y(zt, n0)                                             # 옆벽: 3줄(위 1줄은 둥근 어깨 빛)
+            for k in range(1, 4 if abs(u) < 0.75 else 3):
+                c.P(x, yb + k, RUBBER[1] if k == 1 and u < 0.2 else RUBBER[2] if k == 1 else RUBBER[3])
+            if abs(u) < 0.12 and dim == 0:
+                c.P(x, yb + 2, K('kii', -1))                           # 작은 허브 점
     yellow = [K('kii', 2), K('kii', 1), K('kii', 0), K('kii', -1), K('kii', -2)]
     # 1) 먼 쪽 바퀴(n24~30): 캐노피 뒤 가장자리로 조금만
     tread(11, 33, 24, 29, 10, dim=0.8)
@@ -371,16 +381,17 @@ def tractor(c, base):
         y = Y(12, n)
         for x in range(12, 32):
             c.P(x, y, pick(STEEL, 1.4 + (0.9 if int(n) % 3 == 0 else 0) + (H(x, int(n * 2), 7) - 0.5) * 0.5 + (x - 12) / 20 * 0.5, x, y))
-    for y in range(Y(12, 8) + 1, Y(12, 8) + 3):
-        c.HL(12, y, 20, STEEL[3 + (y - Y(12, 8)) // 2])
+    c.HL(12, Y(12, 8) + 1, 20, STEEL[1])                              # 바닥 앞 모서리: 얇은 빛 턱만
     for n in [k / 2 for k in range(18, 29)]:                           # 좌석 윗면(검은 비닐 쿠션, 왼쪽 위 빛)
         y = Y(20, n)
         for x in range(15, 23):
             lv = 0.6 + (x - 15) / 8 * 1.6 + (n - 9) * 0.08 + (1.0 if x == 15 else 0)
-            c.P(x, y, RUBBER[max(0, min(3, round(lv)))])
-    c.HL(15, Y(20, 9) + 1, 8, RUBBER[3]); c.HL(16, Y(20, 13.5), 5, STEEL[3])   # 앞 모서리 그늘 · 쿠션 접힘
+            c.P(x, y, pick([STEEL[2], STEEL[3], RUBBER[0], RUBBER[1]], lv + (0.5 if int(n * 2) % 3 == 0 else 0) + (H(x, int(n * 2), 5) - 0.5) * 0.9, x, y))
+    for n in [k / 2 for k in range(19, 28)]:                           # 쿠션 가운데 박음질
+        c.P(19, Y(20, n), RUBBER[1])
+    c.HL(15, Y(20, 9) + 1, 8, RUBBER[1]); c.HL(16, Y(20, 13.5), 5, STEEL[3])   # 앞 모서리 그늘 · 쿠션 접힘
     for n in [k / 2 for k in range(18, 30)]:                           # 등받이 윗면(좌석 뒤 x13~14)
-        c.P(13, Y(26, n), STEEL[3]); c.P(14, Y(26, n), RUBBER[2])
+        c.P(13, Y(26, n), STEEL[1]); c.P(14, Y(26, n), STEEL[3])
     for k in range(24):                                                # 핸들(위에서 본 납작한 고리)
         th = k / 24 * 2 * math.pi
         x, y = round(28 + 2.6 * math.cos(th)), round(Y(24, 13) + 1.3 * math.sin(th))
@@ -398,8 +409,8 @@ def tractor(c, base):
                 continue
             y = Y(hood_z(n), n)
             v = (n - 15) / 6.6
-            lv = 0.6 + (x - 31) / 29 * 1.0 + max(0.0, v) * 1.2 + max(0.0, -v - 0.6) * 1.5 + (1.6 if x >= 58 else 0)
-            c.P(x, y, pick(RED, lv, x, y))
+            lv = 0.4 + (x - 31) / 29 * 0.8 + max(0.0, v) * 0.6 + max(0.0, -v - 0.6) * 0.8 + (0.8 if x >= 58 else 0)
+            c.P(x, y, pick(RED, min(2.0, lv), x, y))
     for x in range(33, 56):                                            # 마루 빛 줄
         c.P(x, Y(hood_z(16), 16), RED[0]); c.P(x, Y(hood_z(17), 17), K('daidai', 1) if x < 42 else RED[0])
     for x in range(39, 55, 2):                                         # 환기구: 마루 양쪽 남북 슬릿(그늘 + 빛 턱)
@@ -409,7 +420,7 @@ def tractor(c, base):
         c.P(34, Y(hood_z(n), n), W_PAINT[1])
     for y in range(Y(15.5, 9) + 1, Y(15.5, 9) + 4):                    # 남쪽 옆 띠 3줄(앞 끝은 둥글게 줄인다)
         for x in range(31, 59 - (y - Y(15.5, 9))):
-            c.P(x, y, pick(RED, 2.5 + (y - Y(15.5, 9)) * 0.5 + (x - 31) / 29 * 0.4, x, y))
+            c.P(x, y, RED[3] if y - Y(15.5, 9) < 3 else RED[4])
     ball(c, 57, Y(17, 11), 1.2, [K('shiro', 2)] + yellow[:3])
     ball(c, 57, Y(17, 19), 1.2, [K('shiro', 2)] + yellow[:3])
     # 5) 배기 연통(보닛 n19 에서, 위에서 보면 짧은 원통 + 입구 타원)
