@@ -77,9 +77,9 @@ def bus_side(front_right=True, open_=False, band=None):
         c.R(X, y + top, w, face, K('conc', 1)); c.HL(X, y + top, w, K('conc', 0)); c.VL(X + w - 1, y, top + face, K('conc', -1))
         c.HL(X + 1, y + top + face, w, K('shiro', 0)); c.VL(X + w, y + 2, top + face - 1, K('shiro', 0))   # 지붕 위 그늘
         c.HL(X - 1, y - 1, w + 2, K('conc', -1)); c.VL(X - 1, y, top + face, K('conc', -1))
-    roofbox(14, 6, 30, 9, 3)
-    roofbox(54, 6, 22, 9, 3)
-    roofbox(88, 9, 14, 6, 2)
+    roofbox(14, 5, 30, 9, 5)
+    roofbox(54, 5, 22, 9, 5)
+    roofbox(88, 8, 14, 6, 4)
     # 앞 끝 위 행선 LED(지붕 앞 가장자리 아래로 내려온 판)
     # ── 어깨: 지붕 → 옆면 둥근 모서리 2줄 ──
     c.HL(2, RB, 139, K('conc', 1)); c.HL(2, RB + 1, 139, K('conc', -1))                                # 어두운 둥근 어깨 띠 2px
@@ -121,8 +121,16 @@ def bus_side(front_right=True, open_=False, band=None):
     c.R(2, 51, 139, 3, K('tekko', 1)); c.HL(2, 51, 139, K('tekko', 2))
     for dx in doors:
         if not open_: s.R(dx - 1, 51, 16, 3, K('conc', 0))
+    for x in (28, 102):                                                                                 # 휠 아치: 차체 아래쪽을 반원으로 파낸 어두운 홈
+        X = s.fx(x)
+        for j in range(-9, 0):
+            for i in range(-10, 11):
+                if i * i + j * j <= 90: c.P(X + i, 55 + j, K('tekko', -2) if i * i + j * j > 64 else K('sumi', 1))
+        for i in range(-9, 10):
+            jj = -int((90 - i * i) ** 0.5) if i * i < 90 else 0
+            c.P(X + i, 55 + jj, K('shiro', 1))                                                         # 아치 가장자리 밝은 테
     body = c.a.copy()
-    for x in (28, 102):                                                                                 # 바퀴: 치마(51..53) 밑으로 아래 60% 만 보인다
+    for x in (28, 102):                                                                                 # 바퀴: 윗부분은 아치 홈 안, 치마 밑으로 아래 60%
         X = s.fx(x)
         for j in range(-7, 8):
             for i in range(-7, 8):
@@ -131,7 +139,9 @@ def bus_side(front_right=True, open_=False, band=None):
                     col = K('sumi', 1) if d2 > 30 else K('tekko', -1) if d2 > 12 else K('conc', 1) if d2 > 2 else K('conc', -1)
                     if 12 < d2 <= 30 and i < 0 and j > 0: col = K('tekko', 0)                                # 타이어 옆 빛
                     c.P(X + i, 55 + j, col)
-    c.a[:54] = body[:54]
+    keep = body[:54].copy(); arch = (body[:54, :, :3] == np.array([int(K('sumi', 1)) >> 16 & 255, int(K('sumi', 1)) >> 8 & 255, int(K('sumi', 1)) & 255])).all(-1)
+    arch[:51] = False                                                                                   # 바퀴 윗부분(51줄 위)은 아치 홈 그늘에 숨는다
+    c.a[:54][~arch] = keep[~arch]
     sh = (c.a[54:56, :, 3] > 0) & (body[54:56, :, 3] == 0)                                                  # 치마 밑 그늘: 보이는 바퀴 윗 2줄을 어둡게
     for j in range(2):
         for x in np.where(sh[j])[0]: c.P(int(x), 54 + j, K('sumi', 0 if j == 0 else 1))

@@ -81,6 +81,15 @@ def hip_top(c, x0, x1, ytop, yeave, mat, base, ridge_frac=0.24, run=None):
     c.HL(x0 - 1, ytop - 1, x1 - x0 + 3, OL)
     if not flat_back: c.HL(x0, ytop, x1 - x0 + 1, K(mat, base + 2))
     _eave_lip(c, x0 - 1, x1 + 1, yeave, mat, base)
+    if flat_back:                                                            # 위 바깥 귀퉁이를 사선으로 깎아 寄棟 실루엣(옆면 쐐기가 윤곽이 된다)
+        ch = max(3, run // 2)
+        for j in range(ch):
+            n = ch - j
+            for x in list(range(x0 - 1, x0 - 1 + n)) + list(range(x1 + 2 - n, x1 + 2)):
+                if 0 <= ytop + j < c.h: c.a[ytop + j, x] = 0
+            c.P(x0 - 1 + n, ytop + j, OL); c.P(x1 + 1 - n, ytop + j, OL)
+        for x in range(x0 - 1, x0 - 1 + ch): c.a[ytop - 1, x] = 0
+        for x in range(x1 + 2 - ch, x1 + 2): c.a[ytop - 1, x] = 0
     return yr
 
 
@@ -143,22 +152,28 @@ def gable_front_top(c, x0, x1, ytop, yeave, ywall, mat, base, rise, wx0, wx1, wm
     for y in range(ytop - 1, yeave - rise + 2):                              # 용마루(세로): 밝은 1 + 그늘 1
         c.P(xc, y, K(mat, base + 3)); c.P(xc + 1, y, K(mat, base - 2))
     c.VL(x0 - 1, ytop + rise_b - 1, yeave - ytop - rise_b + 3, OL); c.VL(x1 + 1, ytop + rise_b - 1, yeave - ytop - rise_b + 3, OL)
-    gy = yeave - rise + 6                                                    # 박공 환기창
-    if gy + 5 < ywall:
+    gy = yeave - rise // 2 - 1                                               # 박공 환기창(박공벽 가운데, 처마선 아래)
+    if rise >= 16 and gy > yeave - rise + 3 and gy + 5 < ywall:
         c.R(xc - 3, gy, 7, 5, K('tekko', -1)); c.HL(xc - 3, gy, 7, K('tekko', 2))
         for i in range(xc - 2, xc + 4, 2): c.VL(i, gy + 1, 4, K('tekko', 1))
 
 
 def shed_top(c, x0, x1, ytop, yeave, mat, base):
-    """片流れ를 위에서: 한 장 직사각 면(뒤가 높다). 금속 골판 = 세로 줄, 뒤 끝 밝은 판금, 앞 처마 물받이."""
+    """片流れ를 위에서: 한 장 직사각 경사면(뒤가 높다). 뒤→앞으로 어두워지는 명암 + 16줄마다 가로 판 이음,
+    골은 얕게(세로 줄은 약하게), 양옆 마구리 판(왼쪽 밝음 · 오른쪽 그늘) 3px, 뒤 끝 밝은 판금 캡, 앞 처마 물받이."""
+    D = yeave - ytop
     for y in range(ytop, yeave):
-        g = 1 if y - ytop < (yeave - ytop) * 0.3 else 0
-        for x in range(x0, x1 + 1):
-            t = base + g + (1 if x % 4 == 1 else -1 if x % 4 == 3 else 0)
+        f = (y - ytop) / max(1, D)
+        g = 2 if f < 0.2 else 1 if f < 0.55 else 0 if f < 0.85 else -1
+        for x in range(x0 + 3, x1 - 2):
+            t = base + g + (1 if (x % 4 == 1 and (y // 2) % 2) else -1 if x % 8 == 3 else 0)
+            if (y - ytop) % 16 == 15: t -= 2
+            elif (y - ytop) % 16 == 0 and y > ytop: t += 1
             c.P(x, y, K(mat, t))
-        c.P(x0, y, K(mat, base + 2)); c.P(x1, y, K(mat, base - 2))
+        c.P(x0, y, K('shiro', 1)); c.P(x0 + 1, y, K('shiro', 0)); c.P(x0 + 2, y, K(mat, base - 2))   # 마구리(빛)
+        c.P(x1, y, K(mat, base - 3)); c.P(x1 - 1, y, K('shiro', -2)); c.P(x1 - 2, y, K('shiro', -1))  # 마구리(그늘)
         c.P(x0 - 1, y, OL); c.P(x1 + 1, y, OL)
-    c.HL(x0 - 1, ytop - 1, x1 - x0 + 3, OL); c.HL(x0, ytop, x1 - x0 + 1, K(mat, base + 3)); c.HL(x0, ytop + 1, x1 - x0 + 1, K(mat, base + 2))
+    c.HL(x0 - 1, ytop - 1, x1 - x0 + 3, OL); c.HL(x0, ytop, x1 - x0 + 1, K('tekko', 3)); c.HL(x0, ytop + 1, x1 - x0 + 1, K('tekko', 1))
     c.HL(x0 - 1, yeave, x1 - x0 + 3, K('tekko', 3)); c.HL(x0 - 1, yeave + 1, x1 - x0 + 3, K('tekko', 0))
     c.HL(x0 - 1, yeave + 2, x1 - x0 + 3, K('tekko', -2)); c.HL(x0 - 2, yeave + 3, x1 - x0 + 5, OL)
     c.VL(x0 - 2, yeave, 3, OL); c.VL(x1 + 2, yeave, 3, OL)
@@ -174,27 +189,29 @@ def _box(c, x, y, w, top, face, mat='conc', tb=2, fb=0):
 
 
 def _ac(c, x, y):
-    """실외기: 윗면 4 + 남쪽 면 8(둥근 팬 + 격자)."""
-    _box(c, x, y, 14, 4, 8, 'shiro', 1, 0)
-    for j in range(y + 6, y + 11):
+    """실외기: 윗면 7(환기 살) + 남쪽 면 7(둥근 팬)."""
+    _box(c, x, y, 14, 7, 7, 'shiro', 1, -1)
+    for i in range(x + 2, x + 12, 2): c.VL(i, y + 2, 4, K('shiro', 0))
+    for j in range(y + 8, y + 13):
         for i in range(x + 2, x + 9):
-            if (i - x - 5.5) ** 2 + (j - y - 8.5) ** 2 <= 9: c.P(i, j, K('tekko', -1 if (i + j) % 2 else 0))
-    c.VL(x + 11, y + 6, 5, K('tekko', 0))
+            if (i - x - 5.5) ** 2 + (j - y - 10.5) ** 2 <= 7: c.P(i, j, K('tekko', -1 if (i + j) % 2 else 0))
+    c.VL(x + 11, y + 8, 5, K('tekko', 0))
 
 
 def _tank(c, x, y, w=14):
     """물탱크: 다리 받침 + 원통(윗면 타원 + 몸)."""
-    for j in range(4):
+    c.R(x, y + 4, w, 8, K('shiro', 0)); c.VL(x, y + 4, 8, K('shiro', 1)); c.VL(x + w - 1, y + 4, 8, K('shiro', -2)); c.VL(x + w - 2, y + 4, 8, K('shiro', -1))
+    c.HL(x, y + 8, w, K('conc', 1))
+    for j in range(-1, 8):                                                   # 윗면 타원(위에서 본 뚜껑) — 몸보다 밝다
         for i in range(w):
-            if ((i - (w - 1) / 2) / (w / 2)) ** 2 + ((j - 1.5) / 2.2) ** 2 <= 1: c.P(x + i, y + j, K('shiro', 2 if i < w // 2 else 1))
-    c.R(x, y + 3, w, 9, K('shiro', 1)); c.VL(x, y + 3, 9, K('shiro', 2)); c.VL(x + w - 1, y + 3, 9, K('shiro', -1)); c.VL(x + w - 2, y + 3, 9, K('shiro', 0))
-    c.HL(x, y + 7, w, K('conc', 1))
+            if ((i - (w - 1) / 2) / (w / 2)) ** 2 + ((j - 3) / 3.6) ** 2 <= 1: c.P(x + i, y + j, K('shiro', 2 if (i < w // 2 or j < 2) else 1))
+    c.P(x + w // 2, y + 2, K('conc', 0)); c.P(x + w // 2 - 1, y + 2, K('conc', 0))
     for px in (x + 2, x + w - 4): c.R(px, y + 12, 2, 4, K('tekko', 0))
     c.HL(x + 1, y + 16, w, K('conc', -2))
     c.VL(x - 1, y + 1, 11, OL); c.VL(x + w, y + 1, 11, OL); c.HL(x + 2, y - 1, w - 4, OL); c.HL(x, y + 12, w, OL)
 
 
-def _penthouse(c, x, y, w=28, top=12, face=20):
+def _penthouse(c, x, y, w=28, top=16, face=18):
     """塔屋(계단실): 윗면(난간 캡) + 남쪽 면에 철문."""
     _box(c, x, y, w, top, face, 'conc', 1, 1)
     c.R(x, y, w, 2, K('conc', 3)); c.R(x, y, 2, top, K('conc', 2)); c.R(x + w - 2, y, 2, top, K('conc', 0))
@@ -226,8 +243,14 @@ def flat_top(c, x0, x1, ytop, yb, mat='conc', items=()):
     c.HL(x0, yb - 1, W, K(mat, -2)); c.HL(x0 - 1, yb, W + 2, OL)                 # 앞 난간 립 그늘 + 윤곽: 옥상/벽 경계를 또렷이
     c.R(x0 + 6, yb - 9, 4, 3, K('tekko', -2)); c.HL(x0 + 6, yb - 9, 4, K('tekko', -3))   # 배수구
     c.HL(x0 - 1, ytop - 1, W + 2, OL); c.VL(x0 - 1, ytop, yb - ytop, OL); c.VL(x1 + 1, ytop, yb - ytop, OL)
+    taken = []
     for kind, ix, iy in items:
         ix += x0; iy += ytop
+        bw = {'pent': 28, 'ac': 14, 'tank': 14}.get(kind, 14)
+        for a, b in taken:                                                   # 겹치면 오른쪽으로 민다
+            if ix < b + 4 and ix + bw > a - 4: ix = b + 5
+        if ix + bw > x1 - 4: continue                                        # 옥상 밖으로 나가면 뺀다
+        taken.append((ix, ix + bw))
         if kind == 'ac': _ac(c, ix, iy)
         elif kind == 'tank': _tank(c, ix, iy)
         elif kind == 'pent': _penthouse(c, ix, iy)
