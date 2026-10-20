@@ -30,19 +30,27 @@
 }
 .oprn-status-menu .campaign-region-map figcaption {
   color: #f8edc5;
-  font: 400 18px/20px var(--runtime-pixel-font);
-  padding: 2px 4px;
+  display: flex;
+  font: 400 16px/18px var(--runtime-pixel-font);
+  gap: 12px;
+  padding: 1px 6px 3px;
 }
-.oprn-status-menu .campaign-region-island {
-  fill: var(--campaign-land);
-  stroke: #73a487;
-  stroke-width: 2;
-  shape-rendering: crispEdges;
+.oprn-status-menu .campaign-region-map figcaption .is-current { color: var(--campaign-mark); }
+.oprn-status-menu .campaign-region-map figcaption .is-town { color: #faefce; }
+.oprn-status-menu .campaign-region-map figcaption .is-route { color: #96d8a4; }
+.oprn-status-menu .campaign-region-map figcaption .is-dungeon { color: #c4b4ee; }
+.oprn-status-menu .campaign-region-label {
+  fill: #f8edc5;
+  font: 400 16px var(--runtime-pixel-font);
+  paint-order: stroke;
+  stroke: #0b2340;
+  stroke-width: 3px;
 }
+.oprn-status-menu .campaign-region-label.is-current { fill: var(--campaign-mark); }
 .oprn-status-menu .campaign-region-road {
   fill: none;
   stroke: var(--campaign-road);
-  stroke-width: 2;
+  stroke-width: 3;
   shape-rendering: crispEdges;
 }
 .oprn-status-menu .campaign-region-node {
