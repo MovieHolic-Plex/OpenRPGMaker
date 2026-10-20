@@ -620,8 +620,15 @@ try {
     const r = await approachAndTalk(gym.id, dev);
     await pressEnterUntil(async () => !(await present("dialogue-box")) && !(await present("runtime-choices")), 30);
     await shot(`19-gym-device-${k}`);
-    if (await present("battle-scene")) await fight(`gym-dev-battle-${k}`);
-    step(`gym-device-${k}`, r === true, dev.id);
+    // 받침으로 가다 수련생 눈에 띄어 싸웠으면, 싸운 뒤 그 받침에 다시 말을 건다(플레이어처럼) — 안 그러면 꽃 받침 순서가 틀어진다.
+    let talked = r;
+    if (await present("battle-scene")) {
+      await fight(`gym-dev-battle-${k}`);
+      await pressEnterUntil(async () => !(await present("dialogue-box")) && !(await present("battle-scene")), 30);
+      talked = await approachAndTalk(gym.id, dev);
+      await pressEnterUntil(async () => !(await present("dialogue-box")) && !(await present("runtime-choices")), 30);
+    }
+    step(`gym-device-${k}`, talked === true, dev.id);
   }
   const puzzleSwitches = [...new Set((JSON.stringify(gym.events) .match(/mx_gym_\d+_puzzle\b/g) ?? []))];
   const st0 = await state();
@@ -705,8 +712,13 @@ try {
     if (res2 !== "victory") {
       // 또 진 경우: 기록만 남기고, 엔딩 화면까지 보려고 레벨을 올려 다시 도전한다(디버그 쓰기로 적는다).
       await waitIdle();
-      await page.evaluate(() => { const s = window.__oprnHooksScene.session; for (const id of s.monsterParty) { const m = s.monsterInstances[id]; m.level = Math.max(m.level, 20); m.currentHp = undefined; } });
-      report.debugWrites.push(`${key}: 패배 뒤 파티 Lv20 으로 재도전`);
+      // 디버그 올림은 그 보스를 겨우 넘을 만큼만(보스 최고 레벨 + 3) — 예전엔 Lv20 으로 올려 다음 리그 전투가 정직 측정이 아니었다.
+      const troopId = JSON.stringify(ev.pages).match(/"troopId":"([^"]+)"/)?.[1];
+      const troop = project.database.troops.find((t) => t.id === troopId);
+      const bossLevel = Math.max(0, ...(troop?.members ?? []).map((m) => project.database.enemies.find((e) => e.id === m.enemyId)?.level ?? 0));
+      const lift = bossLevel ? bossLevel + 3 : 20;
+      await page.evaluate((lv) => { const s = window.__oprnHooksScene.session; for (const id of s.monsterParty) { const m = s.monsterInstances[id]; m.level = Math.max(m.level, lv); m.currentHp = undefined; } }, lift);
+      report.debugWrites.push(`${key}: 패배 뒤 파티 Lv${lift} 로 재도전`);
       if (town2) await go((await here()).currentMapId, map.id).catch(() => {});
       await approachAndTalk(map.id, ev);
       if (await pressEnterUntil(() => present("battle-scene"), 40)) await fight(`24c-${key}-retry`);
