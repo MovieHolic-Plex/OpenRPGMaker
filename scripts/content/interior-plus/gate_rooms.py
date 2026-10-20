@@ -127,9 +127,9 @@ def state(img, kind):
     return ('pass' if rc.get('profileHash') in cal else 'provisional'), None
 
 
-def _baked_unchanged(reg):
-    """이미 시트에 구운 칸과 화소가 같은 것(덧붙이기 전에 굽힌 기물·바닥·벽면) → {'piece': set(id), 'floor': set, 'wall': set}.
-    object-gate 결정(2026-10-08): 기존 번들 시트는 소급 면제, 새 그림만 막는다. 굽힌 뒤 한 화소라도 바뀐 것·새 것은 여기 들지 않는다."""
+def _shipped_unchanged(reg):
+    """이미 main 시트에 실린 칸과 화소가 같은 것 → {'piece': set(id), 'floor': set, 'wall': set}.
+    통과가 아니다 — 옛 프로필 영수증은 무효이고 이 묶음은 「재보정 후 영수증 필요」로 따로 센다. 새 것·바뀐 것은 여기 들지 않는다."""
     import bake, json
     from palette_snap import snap
     pins_p = os.path.join(iplib.TD, 'pins.json')
@@ -150,23 +150,29 @@ def _baked_unchanged(reg):
     return out
 
 
+def _current_fail(img):
+    import object_gate as OG
+    rc = OG.read_receipt(OG.pixel_sha256(img))
+    return bool(rc) and rc.get('profileHash') == current_profile() and rc.get('verdict') != 'pass'
+
+
 def check(reg):
-    """기물 + 조립 방 전부. {'pass':[], 'provisional':[], 'grandfathered':[], 'bad':[(label, why)]}
-    grandfathered = 영수증이 옛 프로필이거나 없지만 이미 시트에 구운 그림과 화소가 같다(소급 면제) — 새 조각은 해당 없음."""
-    res = {'pass': [], 'provisional': [], 'grandfathered': [], 'bad': []}
-    old = _baked_unchanged(reg)
+    """기물 + 조립 그림 전부 → {'pass','provisional','needs_receipt','superseded','bad'}.
+    needs_receipt = 현재 프로필 영수증이 없지만 이미 main 시트에 실린 그대로인 것(옛 프로필 영수증은 무효). 통과로 세지 않는다 —
+    이미 실려 있어 굽기는 그 칸을 다시 쓰기만 하고(화소 그대로), 「재보정 후 영수증 필요」로 크게 출력한다. 새 것·바뀐 것은 여기 들 수 없다."""
+    res = {'pass': [], 'provisional': [], 'needs_receipt': [], 'bad': []}
+    old = _shipped_unchanged(reg)
     items = [(f'atlas_biome_interior/plus/{pid}', iplib.render(reg.pieces[pid]), reg.pieces[pid]['gate'], pid in old['piece']) for pid in reg.order]
     rs = rooms(reg)
-    items += [(r['label'], r['img'], r['kind'], all(k in ('floor', 'wall') and v in old[k] for k, v in r['covers'])) for r in rs]
-    for label, img, kind, grand in items:
+    items += [(r['label'], r['img'], r['kind'], bool(r['covers']) and all(k in ('floor', 'wall') and v in old[k] for k, v in r['covers'])) for r in rs]
+    for label, img, kind, shipped in items:
         st, why = state(img, kind)
         if st: res[st].append(label)
-        elif grand: res['grandfathered'].append(label)
+        elif shipped and not _current_fail(img): res['needs_receipt'].append((label, why))   # 현재 프로필로 떨어진 것은 이 묶음이 아니다
         else: res['bad'].append((label, why))
     ok = set(res['pass']) | set(res['provisional'])
-    # 조립 그림은 증거다: 떨어진 그림이 덮는 바닥·벽면이 모두 다른 통과 그림(또는 소급 면제)으로 덮이면 막지 않는다(보고에는 남긴다)
+    # 조립 그림은 증거다: 떨어진 그림이 덮는 바닥·벽면이 모두 다른 「통과」 그림으로 덮이면 막지 않는다(보고에는 남긴다). 실린 그대로인 것은 덮음으로 세지 않는다.
     covered = {cv for r in rs if r['label'] in ok for cv in r['covers'] if cv[0] != 'pit'}
-    covered |= {(k, v) for k in ('floor', 'wall') for v in old[k]}
     res['superseded'] = []
     keep = []
     for label, why in res['bad']:
@@ -175,28 +181,31 @@ def check(reg):
             res['superseded'].append((label, why))
         else: keep.append((label, why))
     res['bad'] = keep
-    # 구멍 그림은 마스크 덮임으로 센다 — 떨어진 그림이 있어도 통과 그림들이 47 마스크를 다 품으면 막지 않는다
-    pit_ok = {pid for pid in reg.pits if not (set(iplib.PIT_MASKS) - set().union(*[r['masks'] for r in rs if ('pit', pid) in r.get('covers', []) and r['label'] in ok] or [set()]))}
+    got = {pid: set().union(*[r['masks'] for r in rs if ('pit', pid) in r.get('covers', []) and r['label'] in ok] or [set()]) for pid in reg.pits}
+    pit_ok = {pid for pid in reg.pits if not (set(iplib.PIT_MASKS) - got[pid])}
     keep = []
-    for label, why in res['bad']:
+    for label, why in res['bad']:   # 떨어진 구멍 그림은 통과 그림들이 칸 열쇠를 다 품으면 막지 않는다
         r = next((r for r in rs if r['label'] == label), None)
         if r and any(cv[0] == 'pit' and cv[1] in pit_ok for cv in r['covers']): res['superseded'].append((label, why))
         else: keep.append((label, why))
     res['bad'] = keep
     for pid in reg.pits:   # 구멍 칸은 통과한 조립 그림이 47 마스크를 모두 품을 때만 덮인다
-        got = set()
-        for r in rs:
-            if ('pit', pid) in r.get('covers', []) and r['label'] in ok: got |= r['masks']
-        miss = sorted(set(iplib.PIT_MASKS) - got)
+        miss = sorted(set(iplib.PIT_MASKS) - got[pid])
         if miss: res['bad'].append((f'pit:{pid}', f'통과한 조립 그림이 품지 못한 마스크 {len(miss)}개 {miss[:8]}'))
     return res
 
 
 def require_structure(reg):
-    """굽기 관문: 기물과 조립 방이 모두 pass/provisional 이어야 한다. 아니면 SystemExit(이유 전부)."""
+    """굽기 관문: 새 것·바뀐 것은 모두 pass/provisional 이어야 한다. 아니면 SystemExit(이유 전부).
+    이미 main 에 실린 그대로인 것은 막지 않지만 통과도 아니다 — 「재보정 후 영수증 필요」 목록을 크게 찍는다."""
     res = check(reg)
     print(f"[3/4 관문] 기물 {len(reg.order)} + 조립 그림 {len(rooms(reg))}: 통과 {len(res['pass'])} · 미보정 프로필 임시통과 {len(res['provisional'])} · "
-          f"이미 구운 그대로(소급 면제) {len(res['grandfathered'])} · 다른 통과 그림이 대신 덮음 {len(res.get('superseded', []))} · 막힘 {len(res['bad'])}")
+          f"재보정 후 영수증 필요(이미 실린 그대로, 통과 아님) {len(res['needs_receipt'])} · 다른 통과 그림이 대신 덮음 {len(res.get('superseded', []))} · 막힘 {len(res['bad'])}")
+    if res['needs_receipt']:
+        print('!' * 72)
+        print(f"!! 재보정 후 영수증 필요 {len(res['needs_receipt'])}건 — 통과가 아니다. 이미 main 시트에 실린 화소를 그대로 둘 뿐이다:")
+        for l, w in res['needs_receipt']: print(f'!!   {l}: {w}')
+        print('!' * 72)
     for l, w in res.get('superseded', []): print(f'  (대신 덮임) {l}: {w}')
     if res['bad']:
         raise SystemExit('3/4 관문 막힘:\n' + '\n'.join(f'  {l}: {w}' for l, w in res['bad']))
