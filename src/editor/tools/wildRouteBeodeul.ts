@@ -145,7 +145,7 @@ export function plantBeodeulForestWall(project: Project, map: GameMap, tileset: 
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (plantable(x, y)) forest.add(y * w + x);
   const inForest = (x: number, y: number) => x >= 0 && y >= 0 && x < w && y < h && forest.has(y * w + x);
   const composer = BEODEUL_FOREST_COMPOSER as unknown as TreeComposerDef;
-  composeTreesInMask(map, composer, inForest, inForest, Math.floor(rng() * 997));
+  composeTreesInMask(map, composer, inForest, inForest, Math.floor(rng() * 997));   // 숲 칸 밖은 쓰지 않는다
   let cells = 0;
   for (const index of forest) if (!empty(index)) cells++;
   // 틈 메우기 — 덤불(2×2)만. 숲 칸 안의 빈 풀밭 2×2 에만.
