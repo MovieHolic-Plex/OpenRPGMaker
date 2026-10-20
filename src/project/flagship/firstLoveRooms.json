@@ -1079,11 +1079,11 @@
    },
    {
     "id": "wall-clock",
-    "x": 6,
+    "x": 5,
     "y": 1
    },
    {
-    "id": "sc-notice-board",
+    "id": "wh-emergency-lamp",
     "x": 8,
     "y": 1
    },
@@ -1093,18 +1093,63 @@
     "y": 1
    },
    {
-    "id": "of-cabinet",
+    "id": "kr-speaker-hang",
+    "x": 1,
+    "y": 1
+   },
+   {
+    "id": "of-server-rack",
     "x": 1,
     "y": 3
    },
    {
-    "id": "sc-staff-desk",
+    "id": "sc-instrument-shelf",
+    "x": 9,
+    "y": 3
+   },
+   {
+    "id": "kr-pc-desk",
+    "x": 4,
+    "y": 4
+   },
+   {
+    "id": "of-desk",
     "x": 5,
     "y": 4
    },
    {
-    "id": "sc-instrument-shelf",
-    "x": 11,
+    "id": "of-desk",
+    "x": 6,
+    "y": 4
+   },
+   {
+    "id": "kr-pc-desk",
+    "x": 7,
+    "y": 4
+   },
+   {
+    "id": "kr-mic-stand",
+    "x": 5,
+    "y": 3
+   },
+   {
+    "id": "kr-mic-stand",
+    "x": 6,
+    "y": 3
+   },
+   {
+    "id": "of-desk-chair-n",
+    "x": 5,
+    "y": 5
+   },
+   {
+    "id": "of-desk-chair-n",
+    "x": 6,
+    "y": 5
+   },
+   {
+    "id": "houseplant",
+    "x": 12,
     "y": 3
    },
    {
@@ -1131,6 +1176,21 @@
     "id": "houseplant",
     "x": 12,
     "y": 10
+   },
+   {
+    "id": "rug",
+    "x": 9,
+    "y": 5
+   },
+   {
+    "id": "kr-poster",
+    "x": 7,
+    "y": 1
+   },
+   {
+    "id": "sh-plant-pot",
+    "x": 12,
+    "y": 6
    }
   ],
   "tables": [],
