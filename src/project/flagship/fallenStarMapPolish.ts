@@ -156,6 +156,55 @@ export function dressVaultVoid(map: GameMap, voidTiles: ReadonlySet<number>, roc
 }
 
 /**
+ * 방 밖 허공을 암반 덩어리로 채우되 한 종류의 잡음 무늬를 반복하지 않는다(VQA r5 — 「오른쪽 45% 가 소음 덩어리」).
+ * 방에서 가까운 한두 칸은 윤곽이 보이는 회색 가장자리, 그다음은 명암이 낮은 보랏빛 암반이 큰 덩이로, 깊은 곳은 어두운 심층암.
+ * 덩이 경계는 칸 좌표 값 잡음으로 번지게 해 격자 반복이 보이지 않게 하고, 회색 광맥 덩이를 드물게 섞는다. 새 그림은 쓰지 않는다.
+ */
+export function dressVaultRock(
+  map: GameMap,
+  voidTiles: ReadonlySet<number>,
+  tiles: { edge: readonly number[]; vein: readonly number[]; mid: readonly number[]; deep: readonly number[] },
+): number {
+  const { width: w, height: h } = map;
+  const dist = new Int16Array(w * h).fill(-1);
+  const queue: number[] = [];
+  for (let c = 0; c < w * h; c += 1) if (!voidTiles.has(map.lowerTiles[c] ?? -1)) { dist[c] = 0; queue.push(c); }
+  for (let head = 0; head < queue.length; head += 1) {
+    const c = queue[head]!, x = c % w, y = Math.floor(c / w);
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1], [1, -1], [-1, 1]] as const) {
+      const nx = x + dx, ny = y + dy;
+      if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+      const n = ny * w + nx;
+      if (dist[n]! >= 0) continue;
+      dist[n] = dist[c]! + 1; queue.push(n);
+    }
+  }
+  const hash = (x: number, y: number, salt: number): number => ((((x * 73856093) ^ (y * 19349663) ^ (salt * 83492791)) >>> 0) % 1000) / 1000;
+  const smooth = (x: number, y: number, cell: number, salt: number): number => {
+    const gx = Math.floor(x / cell), gy = Math.floor(y / cell), fx = (x / cell) - gx, fy = (y / cell) - gy;
+    const sx = fx * fx * (3 - 2 * fx), sy = fy * fy * (3 - 2 * fy);
+    const a = hash(gx, gy, salt), b = hash(gx + 1, gy, salt), c = hash(gx, gy + 1, salt), d = hash(gx + 1, gy + 1, salt);
+    return (a + (b - a) * sx) + ((c + (d - c) * sx) - (a + (b - a) * sx)) * sy;
+  };
+  const pick = (list: readonly number[], x: number, y: number, salt: number): number => list[Math.floor(hash(x, y, salt) * list.length) % list.length]!;
+  let changed = 0;
+  for (let c = 0; c < w * h; c += 1) {
+    if (!voidTiles.has(map.lowerTiles[c] ?? -1)) continue;
+    const d = dist[c]!;
+    if (d < 1) continue;
+    const x = c % w, y = Math.floor(c / w);
+    const n = smooth(x, y, 5, 7) * 0.7 + smooth(x, y, 2, 8) * 0.3;
+    let next: number;
+    if (d <= 1) next = pick(tiles.edge, x, y, 1);
+    else if (d <= 3) next = n > 0.72 ? pick(tiles.vein, x, y, 2) : n > 0.1 ? pick(tiles.mid, x, y, 3) : pick(tiles.deep, x, y, 4);
+    else if (d <= 6) next = n > 0.84 ? pick(tiles.vein, x, y, 5) : n > 0.3 ? pick(tiles.mid, x, y, 6) : pick(tiles.deep, x, y, 7);
+    else next = n > 0.45 ? pick(tiles.mid, x, y, 9) : pick(tiles.deep, x, y, 10);
+    map.lowerTiles[c] = next; changed += 1;
+  }
+  return changed;
+}
+
+/**
  * 금고 바닥의 규칙적인 체커 판을 깬다(가혹 VQA r3 「바닥 반복 체커」). 평평한 바닥 칸(floorTiles) 가운데 일부를
  * 같은 줄 중앙 길에 이미 쓰인 금 간 포석(crackedTiles)으로 칸 좌표 해시에 따라 흩어 바꾼다. 새 그림은 쓰지 않는다.
  */
