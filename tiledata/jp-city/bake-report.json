@@ -1,6 +1,6 @@
 {
  "tiles": {
-  "count": 17038,
+  "count": 17064,
   "tilesPerRow": 96,
   "rows": 178,
   "sheetPx": [
@@ -11,7 +11,7 @@
   "original": 2880,
   "pc_variant_copies": 4,
   "composite_cells": 253,
-  "block_cells": 13847,
+  "block_cells": 13873,
   "legacy": 54,
   "legacy_ids": [
    16642,
@@ -45,31 +45,31 @@
    "prop": 1692,
    "people-reserve": 155,
    "composite": 253,
-   "block": 13847
+   "block": 13873
   }
  },
  "pc_counts": {
-  "star": 6895,
-  "solid": 4294,
+  "star": 6918,
+  "solid": 4297,
   "floor": 3933,
   "solidfloor": 1034,
   "flat": 673,
   "blank": 155
  },
  "kits": {
-  "total": 1558,
+  "total": 1560,
   "by_kind": {
    "recipe": 22,
    "recipe-L": 3,
    "door": 9,
    "prop": 142,
-   "block-kit": 1382
+   "block-kit": 1384
   },
   "prop": 142,
   "recipe": 22,
   "recipe_L": 3,
   "door": 9,
-  "block_kit": 1382
+  "block_kit": 1384
  },
  "groups": {
   "total": 370,
@@ -511,11 +511,11 @@
    },
    {
     "name": "jp_regions_pack",
-    "cells": 528,
+    "cells": 554,
     "autotiles": 0,
     "groups": 9,
-    "kits": 26,
-    "notes": "일본 30 지역 팩: 모래사장·바다·논·산길·숲 바닥·데크·온천 돌길·습원·폐선 바닥 + 대숲·삼나무·곰솔·단풍·石垣·天守·露天風呂·湯けむり·폭포·출렁다리·유적·석불·종루·등대·어선·해바라기·로프웨이·산장·폐선 터널·허수아비·はざ掛け·屋台·이정표·약수터·무인역·테트라포드. 키트 26종."
+    "kits": 28,
+    "notes": "일본 30 지역 팩: 모래사장·바다·논·산길·숲 바닥·데크·온천 돌길·습원·폐선 바닥 + 대숲·삼나무·곰솔·단풍·石垣·天守·露天風呂·湯けむり·폭포·출렁다리·유적·석불·종루·등대·어선·해바라기·로프웨이·산장·폐선 터널·허수아비·はざ掛け·屋台·이정표·약수터·무인역·테트라포드. 키트 28종."
    },
    {
     "name": "jp_inaka_pack",
@@ -528,7 +528,7 @@
   ]
  },
  "reassembly": {
-  "kits_checked": 1558,
+  "kits_checked": 1560,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -615,7 +615,7 @@
    "mansion": 1,
    "monthly": 1,
    "hokora": 1,
-   "rg": 26,
+   "rg": 28,
    "inaka": 31
   },
   "mismatched_kits": 0,
@@ -626,8 +626,8 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 17038,
-  "kits_checked": 1558,
+  "tiles_checked": 17064,
+  "kits_checked": 1560,
   "groups_checked": 370,
   "autotiles_checked": 17
  },
@@ -690,10 +690,10 @@
    }
   }
  },
- "sheet_hash": "4b1d13d75ab98409a8c827593023fbcbb0d49831",
+ "sheet_hash": "3c881aaa1c04ea474a23dad900ce381c88f0cca0",
  "pc_rule": "tiledata/jp-city/bake/PC-RULES.md",
  "reassembly_from_files": {
-  "kits_checked": 1558,
+  "kits_checked": 1560,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -780,7 +780,7 @@
    "mansion": 1,
    "monthly": 1,
    "hokora": 1,
-   "rg": 26,
+   "rg": 28,
    "inaka": 31
   },
   "mismatched_kits": 0,
@@ -791,8 +791,8 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 17038,
-  "kits_checked": 1558,
+  "tiles_checked": 17064,
+  "kits_checked": 1560,
   "groups_checked": 370,
   "autotiles_checked": 17
  },
