@@ -656,13 +656,14 @@ try {
   step("gym-puzzle", puzzleSwitches.every((s) => st0.switches[s] === true), puzzleSwitches.map((s) => `${s}=${st0.switches[s]}`).join(","), await shot("20-gym-solved"));
   // 수련생 셋 — 플레이어처럼 다 싸운다
   for (const [k, grunt] of gym.events.filter((e) => /_grunt_\d+$/.test(e.id)).entries()) {
-    await approachAndTalk(gym.id, grunt);
+    const approach = await approachAndTalk(gym.id, grunt);
+    const probe = { approach, spot: besideOf(gym.id, grunt), live: liveSpots[grunt.id] ?? null, hero: await here().then((h) => `${h.x},${h.y}`), dialogue: await present("dialogue-box") };
     const started = await pressEnterUntil(() => present("battle-scene"), 30);
     if (started) { await page.waitForTimeout(2000); if (k === 0) await shot("20b-gym-trainer"); }
     const log = started ? await fight(`gym-grunt-${k}`) : [];
     const st = await state();
     const already = !started && (await live()).switches?.[`${grunt.id}_won`] === true;
-    step(`gym-trainer-${k}`, already || (started && st.battleResult === "victory"), already ? `${grunt.id}: 장치로 가는 길에 시야 전투로 이김(다시 말 걸면 한 줄) · ${await partyLine()}` : `${grunt.id}: ${log.length}턴 → ${st.battleResult} · ${await partyLine()}`);
+    step(`gym-trainer-${k}`, already || (started && st.battleResult === "victory"), already ? `${grunt.id}: 장치로 가는 길에 시야 전투로 이김(다시 말 걸면 한 줄) · ${await partyLine()}` : `${grunt.id}: ${log.length}턴 → ${st.battleResult} · ${await partyLine()}${started ? "" : ` · ${JSON.stringify(probe)}`}`);
   }
   // 관장 — 회복은 플레이어가 하듯 마을 센터에서
   if (town2) { await go(gym.id, town2.id); await healAt(town2.id); await go(town2.id, gym.id); }
