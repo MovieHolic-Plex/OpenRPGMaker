@@ -58,6 +58,7 @@
 일괄 변환하면 대화 상자 제목까지 끌려온다. 새 대상은 롤아웃 표에 줄을 더해 넣는다.
 
 데스크톱 창 단추(`src/start/windowControls.ts`)는 라벨이 상태에 따라 바뀌어(최대화↔이전 크기로) 롤아웃 표 대신 `attachDelayedTooltip` 을 직접 붙인다 — `openwiki/desktop-window-controls.md`.
+툴팁 시트(`src/styles/map/delayed-tooltip.css`)는 편집기 번들에만 들어 있었다 — 시작 화면(`start-screen.html`)은 `startScreen.ts` 가 직접 싣는다(2026-10-20; 없으면 툴팁이 스타일 없는 맨 글자 「닫기」로 레일 위에 남았다). 창 단추는 누를 때·창이 흐려질 때·숨겨질 때 `hideDelayedTooltip()` 으로 툴팁을 거둔다.
 
 ## 설치 지점
 

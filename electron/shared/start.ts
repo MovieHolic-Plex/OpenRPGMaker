@@ -2,6 +2,8 @@
 export type RecentProjectHiddenReason = "temporary" | "missing";
 
 /** 시작 화면 카드 그림 크기(cover.jpg). 편집기와 시작 화면이 같은 크기로 굽는다. */
+/** 카드 그림 모양이 바뀌면 올린다 — 시작 화면 캐시(userData/start-covers)의 열쇠에 들어가 옛 그림을 다시 굽게 한다. 2 = 시작 칸 중심 2배(2026-10-20). */
+export const PROJECT_COVER_VERSION = 2;
 export const PROJECT_COVER_WIDTH = 480;
 export const PROJECT_COVER_HEIGHT = 300;
 
@@ -17,8 +19,10 @@ export type RecentProjectEntry = {
   readonly mapCount?: number | null;
   /** data:image/jpeg;base64 — 편집기가 남긴 cover.jpg. 없으면 null. */
   readonly cover?: string | null;
-  /** cover.jpg 가 마지막 저장보다 오래됐다(다른 빌드·팀 호스트에서 고친 뒤). 시작 화면이 다시 굽는다. */
+  /** 그림이 낡았다 — 시작 화면이 다시 굽는다. (2026-10-20 부터 캐시가 프로젝트 해시로 열쇠를 잡아 데스크톱은 쓰지 않는다.) */
   readonly coverStale?: boolean;
+  /** 지금 판의 시작 맵이 빈 맵(풀밭 한 장)이라 그림을 내지 않기로 했다 — 자리표를 보이고 다시 굽지 않는다. */
+  readonly coverEmpty?: boolean;
   readonly hiddenReason?: RecentProjectHiddenReason | null;
 };
 
