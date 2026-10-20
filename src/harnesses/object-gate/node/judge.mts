@@ -195,7 +195,8 @@ async function pool<T, R>(items: T[], limit: number, fn: (item: T) => Promise<R>
 
 const STYLE_FLAG_DEFAULT = defaultObjectGateStyleKind;
 
-type JudgeOpts = { force: boolean; write: boolean; concurrency: number; runs?: number; cacheAnswers?: boolean; quiet?: boolean; offline?: boolean };
+/** anyProfile: 같은 그림·같은 종류의 영수증이 어느 프로필로든 이미 있으면 다시 판정하지 않는다(사람 검토 대기열에 올릴 AI 조언이 이미 있다 — 2026-10-20 결정). */
+type JudgeOpts = { force: boolean; write: boolean; concurrency: number; runs?: number; cacheAnswers?: boolean; quiet?: boolean; offline?: boolean; anyProfile?: boolean };
 
 // front_prop(규칙 v8)는 종류 뜻이 사용자 문구에 들어가므로 같은 그림이라도 옛 종류의 답을 쓰면 안 된다 — 이름에 -fp 를 붙인다. 다른 종류의 프롬프트는 v7 과 같아 캐시를 그대로 쓴다.
 const answerCachePath = (half: Half, promptHash: string, sha: string, run: number, kind?: string) => resolve(GATE_DATA, 'calibration', 'answers', `${half}-${promptHash}`, `${sha.slice(0, 20)}${kind === 'front_prop' ? '-fp' : half === 'eye' && kind === 'seat' ? '-seat' : ''}-${run}.json`);
@@ -218,15 +219,16 @@ async function judgeItems(items: Item[], opts: JudgeOpts): Promise<ObjectGateRec
     const refNames = refs.map(r => r.name);
     const metrics = auxMetrics(width, height, data);
     const cached = readReceipt(sha);
-    if (!opts.force && cached && cached.profileHash === profileHash && cached.kind === item.kind) {
+    if (!opts.force && cached && (cached.profileHash === profileHash || opts.anyProfile) && cached.kind === item.kind) {
       // 같은 그림을 다른 여백으로 다시 받았으면 칸 해시만 보탠다(판정은 그대로).
       const more = receiptCells(width, height, data), cells = { ...(cached.cells ?? {}) };
       let grew = false;
       for (const [ts, list] of Object.entries(more)) { const merged = [...new Set([...(cells[ts] ?? []), ...list])].sort(); if (merged.length !== (cells[ts] ?? []).length) grew = true; cells[ts] = merged; }
       const receipt = grew ? { ...cached, cells } : cached;
       if (grew && opts.write) writeReceipt(receipt);
-      // 보류 영수증의 그림은 검토 화면(serve-holds)이 보여 줄 수 있게 따로 둔다(영수증에는 그림이 없다).
-      if (opts.write && receipt.verdict === 'refer') writeHeldImage(sha, width, height, data);
+      // 판정받은 그림은 검토 화면(serve-holds)이 보여 주고 사람 결정 때 해시를 다시 잴 수 있게 따로 둔다(영수증에는 그림이 없다).
+      // 2026-10-20 부터 사람 허용이 최종이므로 보류뿐 아니라 모든 판정의 그림을 둔다.
+      if (opts.write) writeHeldImage(sha, width, height, data);
       prepared.push({ item, styleKind, sha, width, height, metrics, refNames, scale: BOARD_SCALE, cached: receipt }); continue;
     }
     const image = magnify(width, height, data).png;
@@ -289,7 +291,7 @@ async function judgeItems(items: Item[], opts: JudgeOpts): Promise<ObjectGateRec
       metrics: p.metrics, ...(ey.length ? { eye: { verdicts: ey.map(r => String((r.answer as { verdict?: string } | null)?.verdict ?? 'unread')) } } : {}), runs, decidedAt: new Date().toISOString(), cells: p.cells,
     };
     if (opts.write) writeReceipt(receipt);
-    if (opts.write && receipt.verdict === 'refer') { const im = readPng(p.item.png); writeHeldImage(p.sha, im.width, im.height, im.data); }
+    if (opts.write) { const im = readPng(p.item.png); writeHeldImage(p.sha, im.width, im.height, im.data); }
     receipts.push(receipt);
   }
   return receipts;
@@ -312,9 +314,13 @@ if (stage === 'review' || stage === 'audit') {
   const batch = option('batch');
   const items: Item[] = batch ? readBatch(batch) : [{ png: resolve(option('png') ?? ''), kind: option('kind') as ObjectGateKind, name: option('name') ?? basename(option('png') ?? ''), label: option('label'), styleKind: option('style-kind') as ObjectGateStyleKind | undefined }];
   if (!batch && (!option('png') || !option('kind'))) throw Error('review --png <그림> --kind <3/4 종류> [--style-kind building|roof|wall|tree|ground|water|prop] [--name 이름] [--label 표식] | --batch items.jsonl({png,kind,styleKind?,name,label})');
-  const receipts = await judgeItems(items, { force: flag('force'), write: true, concurrency });
+  // --advisory: 사람 검토 대기열을 채우는 용도. 이미 어느 프로필로든 판정받은 그림은 다시 부르지 않고(그림만 검토 화면용으로 둔다),
+  // 눈 호출은 보정과 같은 답 캐시를 쓴다. 판정 규칙·프로필은 그대로다 — 영수증의 효력은 출구 규칙(사람 허용 또는 보정 프로필 pass)이 정한다.
+  const advisory = flag('advisory');
+  const receipts = await judgeItems(items, { force: flag('force'), write: true, concurrency, ...(advisory ? { anyProfile: true, cacheAnswers: true } : {}) });
   for (const r of receipts) console.log(line(r));
   const passed = receipts.filter(r => r.verdict === 'pass').length;
+  if (!calibratedProfiles().has(await gateProfileHash())) console.log(`\n현재 프로필은 보정되지 않았다 — 아래 숫자는 AI 조언이다. 최종 통과는 검토 화면(serve-holds, 18323)의 사람 허용이다.`);
   console.log(`\n${passed}/${receipts.length} 통과(보류 ${receipts.filter(r => r.verdict === 'refer').length} — 사람 확인 전에는 굽기·게시 불가; 3/4 통과 ${receipts.filter(r => r.view34?.verdict === 'pass').length}, 화풍 통과 ${receipts.filter(r => r.style?.verdict === 'pass').length}) · 영수증 ${resolve(GATE_DATA, 'receipts')}`);
   if (stage === 'audit') {
     const out = resolve(option('out') ?? resolve(GATE_DATA, 'audit', `${new Date().toISOString().slice(0, 10)}.json`));

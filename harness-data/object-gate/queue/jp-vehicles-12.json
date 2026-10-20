@@ -1,0 +1,81 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "jp-vehicles-12",
+ "title": "jp 탈것 12 — 사용자 OK 2026-10-20",
+ "note": "#3098 버스·승용차·경차·택시·트럭 12. 사용자: 건물·탈것 OK. 종류 box(지붕 윗면).",
+ "createdAt": "2026-10-20T14:21:46.058Z",
+ "items": [
+  {
+   "sha": "3c1dc0541690562817db83b7b39820b654d335207ba636234eac738e561fa500",
+   "kind": "box",
+   "label": "jp_city/vehicle/bus-left_open",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/bus-left_open-new.png"
+  },
+  {
+   "sha": "5e650f7271a6707df7d28b5c282132adaec150fc1455c5d3afbf042aeb22901a",
+   "kind": "box",
+   "label": "jp_city/vehicle/bus-right",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/bus-right-new.png"
+  },
+  {
+   "sha": "b95207e5034207f93584c48dd9445d2f2bbc936c8668289bde8142ad9c424c53",
+   "kind": "box",
+   "label": "jp_city/vehicle/jp-car-black",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/jp-car-black-new.png"
+  },
+  {
+   "sha": "af81887d43ab5d38e9137e3f0eaa2ea7bb571683f165fae44a3376274588322d",
+   "kind": "box",
+   "label": "jp_city/vehicle/jp-car-blue",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/jp-car-blue-new.png"
+  },
+  {
+   "sha": "e566b59be42907af7b0857f91aae17f41344d8e016ca5e92c1a47bc3eb760464",
+   "kind": "box",
+   "label": "jp_city/vehicle/jp-car-kei-mint",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/jp-car-kei-mint-new.png"
+  },
+  {
+   "sha": "47ea5bed8721cea0fa91dc031b191007f42c70de38fc8467cdc790e2567e6dcc",
+   "kind": "box",
+   "label": "jp_city/vehicle/jp-car-kei-yellow",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/jp-car-kei-yellow-new.png"
+  },
+  {
+   "sha": "4d0783169e9ebfb1511ba3c68271daeb2dc57cbf4ed3999939eb388f88262362",
+   "kind": "box",
+   "label": "jp_city/vehicle/jp-car-red",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/jp-car-red-new.png"
+  },
+  {
+   "sha": "aa90dbaaef87b8f6d19dbd8dc026956ac6c1427e926a8633d1a2e900708528b7",
+   "kind": "box",
+   "label": "jp_city/vehicle/jp-car-silver",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/jp-car-silver-new.png"
+  },
+  {
+   "sha": "12719d9f717a48b3126088f7229addaee26cb7516883df12c02378824f8ca854",
+   "kind": "box",
+   "label": "jp_city/vehicle/jp-car-taxi",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/jp-car-taxi-new.png"
+  },
+  {
+   "sha": "0d18f36d65458bb7207e04c563844538c230c227f087fd00bbbda3668fae7886",
+   "kind": "box",
+   "label": "jp_city/vehicle/jp-car-white",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/jp-car-white-new.png"
+  },
+  {
+   "sha": "9b4a85b915b8230d04d2499f982ff6b1d9282075250e39201d1b84f5ff327e52",
+   "kind": "box",
+   "label": "jp_city/vehicle/jp-truck-box",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/jp-truck-box-new.png"
+  },
+  {
+   "sha": "8b83bb9d31b67b35a9c6cb74640f4712ab09893f30ca7175a452c2d51f386e13",
+   "kind": "box",
+   "label": "jp_city/vehicle/jp-truck-kei",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/jp-truck-kei-new.png"
+  }
+ ]
+}

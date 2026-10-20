@@ -1,0 +1,370 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9e63b78365f3481de267fbb8260352a63b7a4aadbc61864ad29dd234b8ac6462",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "curule seat",
+ "label": "seats34/atlas_biome_interior/curule seat",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 3/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 3/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 56,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "purple cushion seat",
+      "rows": "8-12",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "15-15"
+     },
+     {
+      "part": "gold frame rail under the cushion",
+      "rows": "13-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "X-shaped crossed legs",
+      "rows": "16-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The cushion occupies rows 8-12 and is 12-14 px wide. It shades from light (row 9, L=213) to dark (row 12, L=63), which reads as a seat surface seen from above. Row 13 is a light gold front-edge line (L=208), followed by a darker gold row 14 and a dark shadow row 15. Below that the X-crossed legs (rows 16-23, width 4-8) form the open front. There is no backrest or armrest, and no side face is drawn. The 5-row top plus an edge line and front support matches the 'seat: top 5 + legs' reference rather than the band-only wrong one."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny folding stool with a purple cushion and gold X-frame legs, much smaller than one 16x16 tile. Its measured tones per tile are 0, and it has only 13 distinct colours in total, so the numbers say little. By eye the cushion is a near-flat purple block with a single highlight band and a simple dark base. The gold legs have about 2-3 steps and no grain, wear marks or per-part shading. The references (well, stall, hedge) show 5-6 steps per material, plus tile scallops, clustered foliage and stone-by-stone shading. The candidate's dark edge pixels are 0% neutral, so the outline is tinted (dark purple and dark brown-gold) and not black. The shading is still shallow, and the cushion and legs read as flat fills. Even next to the simple bench, it looks thinner and more sticker-like. The bench also has more wood grain and more separation between slats.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15871
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "purple cushion seat top",
+      "rows": "8-12",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "gold seat frame rail (front face)",
+      "rows": "13-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crossed X legs",
+      "rows": "16-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The purple cushion spans rows 8-12 (5 rows including the dark back outline). It has a lighter back edge fading to darker rows toward the front. Row 13 is a light gold front-edge line (#ead285). Rows 14-15 step down in darkness (#c09020, then #3a2400) as eave shadow. Below that, rows 13-23 are the front face: the gold frame rail and the crossed X legs, about 11 rows. The top is a rectangle widening from 12 to 16 px, not an ellipse, but the edge line, shadow and front face are enough for a seat surface seen from above. There is no backrest or armrest."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small folding stool with a purple cushion and gold X-legs, under one tile in size. It uses only 13 distinct colours. The measured per-tile facts are 0 because the piece is smaller than a tile, so I judged by eye. The cushion shows about 2-3 purple steps (a light top, a mid tone and a dark base), and the gold legs show about 2-3 steps with little variation. There is no visible grain, tile-by-tile highlights or speckle, so the surfaces read as smooth fills. The outline is dark but looks close to neutral/dark brown in places, and I cannot clearly tell its tint at this size, so I call it mixed. Next to the references it looks thinner and flatter. The bench has slat highlights and shadow, the hedge has leaf clumps in several greens, and the well and stall have many tones and textures. The candidate has far less texture and fewer shading steps than those, so it comes across as a clean but sticker-like icon. A careful artist would not accept it beside the references without more shading and texture, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 16576
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "purple seat cushion",
+      "rows": "8-12",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "15-15"
+     },
+     {
+      "part": "gold seat frame rail",
+      "rows": "13-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crossed X legs",
+      "rows": "16-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat surface is the purple cushion in rows 8-12, 5 rows tall, with widths 12-14 and a light-to-dark gradient. It ends in a light gold front-edge line at row 13. The gold rail follows in rows 13-14, with a dark shadow in row 15. Below that, crossed X legs fill rows 16-23. The front face is about 11 rows, rows 13-23. This matches the reference 'seat: top 5 + legs', which is right, and not the 'band 2' case, which is wrong. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small curule seat (purple cushion, pale frame, X-shaped legs) of under one tile. Its 13 distinct colours are close to the bench and lamp references, which are also thin props. It reads as flat and sticker-like next to the richer references. The cushion looks like a flat purple block with a single highlight band and little grain or per-pixel texture. The X legs are thin with two or three tones and no wood grain or shading steps. Dark edge pixels are 0% neutral, so the outline is tinted, but it is a uniform dark line around every shape rather than a selective material-tone edge. The candidate reaches about 3 shading steps per material against 5-6 for the well, stall and hedge. The measured per-tile facts are 0 because the piece is smaller than a tile, so I judged density by eye. Beside the bench, the closest reference, it looks thinner and flatter, and a careful artist would not accept it as equal to the reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 17085
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "purple cushion seat",
+      "rows": "8-12",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "15"
+     },
+     {
+      "part": "gold seat rail / frame",
+      "rows": "13-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crossed X legs",
+      "rows": "16-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The cushion fills rows 8-12 (5 rows) with a dark outline at row 8 and a light-to-dark purple gradient over rows 9-12 that reads as a foreshortened seat top. Row 13 is a light gold front-edge line (L=208) over the gold rail at row 14, and row 15 is a dark eave shadow. Below that, the crossed legs on rows 16-23 give a front face of about 11 rows including the rail. This matches the reference 'seat: top 5 + legs' pattern, not the 'band 2' pattern."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny folding stool of about 13 colours with a purple cushion, gold X-legs and a dark outline. The cushion and legs show only about 2-3 lightness steps each, against 5-6 in the references such as the well roof, stall awning and hedge. The outline looks tinted rather than neutral black (0% near-neutral dark edge), so it is not a sticker line. There is little grain, speckle or per-part highlighting, and the cushion and legs read as nearly flat blocks. The piece is smaller than one 16x16 tile, so the per-tile facts are 0 and I judged by eye. By eye it looks thinner and flatter than the references, which carry visible texture such as plank grain, leaf clumps and tile scallops. It is also noticeably simpler than even the bench, which has several wood steps and visible grain. A careful artist would not accept it beside the references without more shading and texture, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 16782
+  }
+ ],
+ "decidedAt": "2026-10-20T14:09:20.781Z",
+ "cells": {
+  "16": [
+   "72076e468624cd80",
+   "80690fdfea83a481"
+  ],
+  "24": [
+   "46c1f4c544617f6c",
+   "4f884b538aeedacd",
+   "5a8e44e84bbd79e5",
+   "6cb1af2af6f5210b",
+   "6e45ee851da6933c",
+   "9d68b6d8c62799f9"
+  ],
+  "32": [
+   "4473741d2c825e10",
+   "9ea1d5604ec01a4d",
+   "b4a18a430b7cc935"
+  ],
+  "48": [
+   "0e3eea93accc4077",
+   "6696f91f637f378f",
+   "8fc3cecb344c62b4",
+   "bbad1d379b92be5b",
+   "d10ee5d2dd9ec202",
+   "e1291d39eb53f63a"
+  ]
+ }
+}

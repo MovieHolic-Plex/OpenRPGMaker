@@ -1,0 +1,387 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c20b38908918118020065f2e3825a5371940b5c0efd587eeb0a9a026da2673d0",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "chair-dining-s",
+ "label": "seats34/jp_city_interior/chair-dining-s",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 4 (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 4 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 26,
+  "nearBlackEdge": 0.67,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest with two slats",
+      "rows": "17-24",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat",
+      "rows": "25-28",
+      "evidence": "none",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "25"
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The backrest (rows 17-24, width 10 with slat gaps) is a vertical face and is exempt. The seat is the light band at rows 26-27 (L=170), with a dark row 25 above it and a mid-tone row 28 below. That is only a 1-2 row strip, with no widening-and-narrowing ellipse and no deeper top plane. Below it are the dark outline at row 29 and the narrow legs at rows 30-31 (width 6). The seat therefore reads as a front band, not a seen-from-above sitting surface, so the chair is front_elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small green dining chair with only 7 distinct colours in total. It reads as a flat body with a darker outline and little internal shading, roughly 2-3 steps, where the references use about 5-6 steps per material. The measured facts are 0 visible tones per tile and 0% near-flat coverage, but the piece is smaller than one tile, so they say little and I judged by eye. By eye the seat and backrest are mostly single flat tones with no grain, wood texture, highlight clusters or per-element shading. The bench, the nearest thin reference, shows more plank highlights and shadow steps, and the stall and well are far richer. The candidate looks thinner and more sticker-like than every reference. Its outline is dark and green-tinted, but it is applied uniformly around the shape rather than selectively.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 14928
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ladder backrest with slats",
+      "rows": "17-24",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat surface (light band)",
+      "rows": "26-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "25"
+     },
+     {
+      "part": "seat front apron",
+      "rows": "28-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs",
+      "rows": "30-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The seat is a 2-row light band (rows 26-27) under a dark line at row 25. The width profile is constant at 10 across rows 25-29, so there is no ellipse and no widening or narrowing that would show a seat plane. The rows below are a 1-row mid-tone front (28), a dark outline (29) and two 6-wide legs (30-31). The ladder-back rows 17-24 are exempt as seat_back. A 2-row seat strip matches the 'seat: band 2' BAD reference, not the 'seat: top 5 + legs' OK reference, so this reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small green dining chair with only 7 distinct colours in total. It reads as roughly 2-3 tones: a mid green body, a darker green outline and a few light accents. It has no visible wood grain, highlight ramp or per-part shading on the seat, back slats or legs. The references (bench, stall, well) show 5-6 step ramps, grain dots and individually shaded parts, with 17-20 visible tones per tile on the larger props. The candidate measures 0 visible tones per tile because it is smaller than one tile, so I judged density by eye. It looks thinner and flatter than the bench, its closest reference. The outline is dark and green-leaning, not neutral black, but it is a uniform line around the whole shape, which gives a sticker look. Overall it is much shallower than the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 16260
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest with slats and posts",
+      "rows": "17-24",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat strip (light band)",
+      "rows": "26-27",
+      "evidence": "none",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front apron and legs",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The backrest (rows 17-24) is exempt as seat_back. The seat is a light band at rows 26-27 (L=170) under a dark line at row 25 (L=42), and it is only 2 rows tall. That is a front band or rim, not a foreshortened seat top, and there is no widening and narrowing ellipse. Below it, row 28 is a front apron line and rows 29-31 are the legs (width 6). The seat surface has no real top, so the chair reads as a front elevation, like the 'seat: band 2' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small green dining chair with only 7 distinct colours in total, against 14 for the bench and 38-40 for the stall and well. It reads as about 2-3 lightness steps: a mid green body, a darker green outline and perhaps one highlight. There is no visible grain, no per-plank highlight and no wood-texture dots, whereas the bench and stall references show planks shaded individually. The outline leans dark green rather than neutral black, which is acceptable, but it is uniform around the whole shape, so the chair has a sticker look. The measured facts cannot separate it from the thin references, since the tile median is 0 for the candidate and for the bench. By eye, though, it is flatter and thinner than the bench, the closest reference of the same kind. A careful artist would not accept it next to the reference without adding more shading steps and texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 17051
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest with slats and posts",
+      "rows": "17-24",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat",
+      "rows": "25-28",
+      "evidence": "none",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "25-25"
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The backrest (rows 17-24) is a face-on ladder back and is exempt. The seat has a dark row 25 (L=42), then a light band at rows 26-27 (L=170), then a mid-tone row 28 (L=106) that acts as the front edge or apron. The light band is only 2 rows and the silhouette stays at width 10 from row 25 to 29, so there is no ellipse, no widening or narrowing, and no contents. That is a 1-3 row strip, like the 'seat band 2' reference marked wrong. Below the seat, rows 29-31 are narrow legs of width 6. The front face is the apron plus legs, about 4 rows. The sitting surface is not seen from above, so the drawing reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny green chair with only 7 distinct colours in total, against 14 for the bench and 38-40 for the stall and well. It reads as a flat body in one or two greens with a darker outline, plus a lighter highlight on the back slats. That is about 2-3 shading steps against the references' 5-6. The outline is a dark green that looks only mildly tinted, so it sits between a material tone and a uniform sticker line. There is no visible grain, wood texture or per-part shading on the seat, legs or backrest. The measured facts give 0 visible tones per tile because the piece is smaller than a tile, so the density fact is not used against it. By eye, it looks thinner and flatter than the bench, which is the closest reference and has plank highlights, shadowed undersides and wood grain. A careful artist would not accept it next to the reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14464
+  }
+ ],
+ "decidedAt": "2026-10-20T14:09:20.507Z",
+ "cells": {
+  "16": [
+   "2accaa86425bf482"
+  ],
+  "24": [
+   "1075688d7b9eb2bf",
+   "5c962267e2976f37",
+   "6b15d0c383eafca6",
+   "c2dc41b5f49fefd9",
+   "c9cd9ac063662101",
+   "cc16dcba5b8fa317",
+   "e059a858ed221561",
+   "ed47eea778212f2b",
+   "fe00f2c604ab2a85"
+  ],
+  "32": [
+   "43fc2ad18b5d3a75",
+   "86e36c89ed974dba",
+   "aed829b57b4811f4"
+  ],
+  "48": [
+   "338f5ac40df11743",
+   "461d9894a387d565",
+   "94d8748e2158c759",
+   "c22e03627dc7d9c5",
+   "ea456d5863099a14",
+   "fe716c42c69a84f0"
+  ]
+ }
+}

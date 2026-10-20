@@ -1,0 +1,349 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f657fdb84776f2c02f28132a664610e081e197b81890ce1b402b4d26e5b7d37b",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "dept sneaker wall",
+ "label": "modern_city_interior/dept-sneaker-wall",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 20,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-9"
+     },
+     {
+      "part": "shelf ledges (3 shelves)",
+      "rows": "13-14, 20-21, 27-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sneakers on shelves",
+      "rows": "7-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The column scan shows a graded band at rows 1-5 (dark, mid, then a light 1-row front-edge line at row 5). Dark eave shadow follows at rows 6-9, and the open shelf front with shelves and sneakers runs below to row 31. That gives a top band of about 5 rows over a front face of about 26 rows. This matches the 'cabinet: top 5 + edge + eave' reference. The shelf ledges are only 2 rows each, so they are thin lips. The sneakers are goods on the shelves and count as decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate shows 17 visible tones per 16x16 tile, level with prop-stall-cheese (17) and just under prop-well-roofed (20), and well above the hedge (9). Near-flat coverage is 0%, so there are no 5x5 flat fills; the stall reference has 13%. Dark edge pixels are 0% neutral, so the outline leans toward the frame and shoe tones rather than being a black sticker line. By eye, the case frame and shelves carry a light-to-dark ramp, and each sneaker has a sole, upper and highlight in different tones. The ramps are shorter than Beodeul's 5-6 steps, with about 4 per material, and the frame is a little plain. Total distinct colours (29) are fewer than the stall (40) or well (38), but the visible tone count matches them. A careful artist would accept it next to the references without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23459
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice band of the shelf unit",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-9"
+     },
+     {
+      "part": "shelf boards (3 of them, 2 rows each)",
+      "rows": "13-14, 20-21, 27-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sneakers on shelves",
+      "rows": "6-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band at rows 1-5 steps from dark to light (L 70, 124, 166) and ends in a light front-edge line at row 5. Rows 6-9 below it are dark eave shadow (L about 42), and the shelf front face continues to row 31, giving about 26 front rows. This counts as a top surface of about 5 rows rather than a bare rim. The shelf boards are 2-row light/mid strips with shadow beneath, which read as rims. The sneakers are goods on the shelves, so they count as decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The measured facts put the candidate level with the richer references. It has 17 visible tones per tile, matching prop-stall-cheese (17) and just under prop-well-roofed (20). Near-flat coverage is 0%, so no large flat areas. Dark edge pixels are 0% neutral, so the outline is tinted, a dark blue-grey frame tone, and not a sticker-style black line. By eye, the cabinet frame, glass highlights and shelf edges carry about 4 lightness steps, a little under Beodeul's 5-6. The sneakers are small multi-tone shapes (sole, upper, highlight) in repeated rows. Texture is moderate: there is no grain or speckle on the frame, but the shoes and shelf lighting vary tile to tile. Overall it would sit acceptably next to the stall and well references without looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20192
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice/header band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-9"
+     },
+     {
+      "part": "shelf boards",
+      "rows": "13-14, 20-21, 27-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sneakers on shelves",
+      "rows": "8-27",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band at rows 1-5 steps from dark gray (L=70) to mid gray (L=124) to a light front-edge line at row 5 (L=166). Dark shadow follows at rows 6-9, then the open shelf front below. That fits evidence (a), a top band ending in an edge line with shadow beneath. The front face is the shelf interior with three shelf boards and sneakers, about 26 rows. The three-step gradient is the same pattern as the shelf boards, so this call is borderline. The top could instead be a front-facing header strip, which would read as front_elevation. No side face is drawn. Silhouette width is a constant 32."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 17 visible tones per 16x16 tile, matching prop-stall-cheese (17) and close to prop-well-roofed (20). It is above prop-hedge (9). Near-flat coverage is 0%, so the shelf panels and frame are not flat fills. Dark edge pixels are 0% neutral, so the outline carries a tint, as in the references, and is not a sticker-style black line. The sneaker rows show per-shoe colour clusters and white soles, and the frame and shelves have a light/mid/dark ramp, but the ramps are somewhat shallower than the roof and canopy ramps on the references. Overall it would sit acceptably next to the references on structure and information density.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 31706
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap band of the shelf unit",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-9"
+     },
+     {
+      "part": "shelf boards (3 thin ledges)",
+      "rows": "13-14, 20-21, 27-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sneakers on shelves",
+      "rows": "7-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band at rows 1-5 is a graded strip that ends in a light front-edge line at row 5 (L=166). Dark interior rows 6-9 follow it and act as eave shadow, which matches evidence (a). Below it is a front face of about 26 rows (rows 6-31) with three open shelf bays. The shelf boards at rows 13-14, 20-21 and 27-28 are 2-row ledges, so they count as rims rather than top surfaces. The sneakers are goods placed on the shelves, so they count as decor. The silhouette is a uniform 32 px wide with no receding side face. The top band is thin and could also be read as a front-facing cornice, so this call is moderately confident."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a shelf unit with rows of small coloured sneakers, and it matches the prop kind. It measures 17 visible tones per 16x16 tile, equal to prop-stall-cheese (17) and a little below prop-well-roofed (20). It is well above prop-hedge (9). Near-flat coverage is 0%, so there are no large flat fills. The shelf back and the frame show variation, and the shoes are separated by hue and value. Only 0% of its dark edge pixels are neutral, so the outline is tinted, a dark bluish-grey frame tone, rather than a black sticker line. The weaker points are the frame and shelves, which look like about 4 value steps against the references' 5-6. The shoes are tiny and carry only 2-3 tones each, with little grain. On the primary facts it is at reference level, and a careful artist would accept it beside the references, though it is slightly lower in richness.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24966
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.856Z",
+ "cells": {
+  "16": [
+   "5fbaf084f70b6bc6",
+   "6ab16c0e3c50e8ad",
+   "c16557d628f5d49f",
+   "d2ab2c63c1b7b03f"
+  ],
+  "24": [
+   "0dfc822e317dc5a3",
+   "1d8bb16763823667",
+   "2f7259ffa262b3df",
+   "40c76b98658feacd",
+   "43efac0fac401da1",
+   "589c1cb9452625f5",
+   "5e319c5b03178796",
+   "6777a7448d658f23",
+   "6c87db0890b10fa0",
+   "6def3a096f1c6727",
+   "7a8ef273d721a491",
+   "7e92ab564343cc61",
+   "85803a5f1f3a34b4",
+   "87e56378f3436b07",
+   "8921c7ce2eefdd3a",
+   "9ff584140edb33df",
+   "b05516c0c0267555",
+   "bd9088b6c4800583",
+   "ca1f1bde2e39f153",
+   "d24779a1f9f86e46",
+   "dc0a95402859f71a",
+   "dff130f6c8a34b14",
+   "e110dc901446f78f",
+   "e4e38193b5e53d38"
+  ],
+  "32": [
+   "4236d677e84a8fa8"
+  ],
+  "48": [
+   "19fd5baebfb8969d",
+   "2161e8dbf6475065",
+   "785c07d93d949899",
+   "96c710fc061bb919",
+   "bce7ec5ecaa84e97",
+   "e40dbbd165b3ab06"
+  ]
+ }
+}

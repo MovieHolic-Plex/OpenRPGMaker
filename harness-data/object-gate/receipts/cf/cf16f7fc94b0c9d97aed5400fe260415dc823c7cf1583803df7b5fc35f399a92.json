@@ -1,0 +1,423 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cf16f7fc94b0c9d97aed5400fe260415dc823c7cf1583803df7b5fc35f399a92",
+ "width": 64,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "pub service window",
+ "label": "modern_city_interior/pub-service-window",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 16,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 12
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper cornice strip above glass panes",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "4"
+     },
+     {
+      "part": "glass pane section (vertical face)",
+      "rows": "4-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "projecting service counter top (wider, 64 vs 62 px)",
+      "rows": "16-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23"
+     },
+     {
+      "part": "lower cabinet doors (front face)",
+      "rows": "24-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The counter ledge at rows 16-22 is a light band 7 rows tall. It is 2 px wider than the glass section above it. It ends in a bright front-edge line at row 22 (L=239), followed by a darker shadow line at row 23 (L=135). Below it, the cabinet front face runs rows 24-42 (19 rows) with doors and panels. The glass pane section at rows 4-15 is a vertical face. The strip at rows 1-3 reads as a cornice with a highlight line. The counter ledge is therefore the main top surface, so the piece reads as three-quarter rather than front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has 9 visible tones per tile, the same as the hedge but about half of the stall (17) and the well (20), which are the closest references in size and complexity. Near-flat coverage is 18%, above every reference (0-13%). In the picture, the grey lower panels and the pale window glass are broad smooth fills with little grain. The material ramps are shallow, about 3-4 steps each, against 5-6 for the references. The dark edge pixels are 0% neutral, so the outline is tinted (a dark blue-grey) rather than black, which is a point in its favour. Even so, the piece reads as a clean, flat, modern-looking cabinet. It lacks the per-element shading, texture dots and grain of the stall and well, so it would look flatter than them side by side.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 24371
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice strip above the windows",
+      "rows": "0-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass window panes",
+      "rows": "4-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "service counter top (wider than the upper part)",
+      "rows": "17-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23"
+     },
+     {
+      "part": "lower cabinet front with doors and small screens",
+      "rows": "24-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The counter band at rows 17-22 is 6 rows tall and widens from 62 to 64 px. It ends in a bright front-edge line at row 22 (L=239), followed by a darker shadow row 23 (L=135). That is a projecting counter top with a front edge. Below it, rows 24-42 are a 19-row front face of cabinet doors. The rows above (cornice and glass windows) are vertical faces. The top is fairly shallow, but it meets evidence (a) with a front-edge line and shadow. The structure matches the 'cabinet: top 5 + edge + eave' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate's dark edge pixels are 0% neutral, so the outline carries a slate/blue tint rather than a black sticker line. That part is acceptable. The shading and texture are shallow, though. The grey cabinet doors and the pale glass panes are broad, nearly uniform panels with only 3-4 lightness steps, where the stall and well references use about 6 per material. There is no grain, speckle or per-element shading. The only detail is the small blue buttons and thin highlight lines. Near-flat coverage is 18%, above the stall (13%) and well (0%) references and the hedge (0%). Visible tones per tile are 9, about the same as the hedge but well below the stall (17) and well (20), which are the closest references for a structured prop. By eye it reads as a flat, modern, clean-vector counter, not hand-textured Beodeul craft, so it looks flatter than the same-kind references. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 22658
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper window frame with glass panes and cornice strip",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter-top band with small notches, projecting wider than the frame above",
+      "rows": "17-23",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23"
+     },
+     {
+      "part": "lower cabinet front with panels and small windows",
+      "rows": "24-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The lower body (width 64 from row 16) has a light band at rows 17-21, a lighter front-edge line at row 22 and a darker shadow row at 23. Below that is a 19-row front face (rows 24-42) with panels. This band counts as a counter top of about 5 rows, but it is thin and carries small notch details. The window section above (rows 0-15) is a vertical face: the cornice at rows 1-3 has no edge line or shadow, and the glass panes have no top, so not every major part shows a top. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The window is a clean, geometric slab: a pale frame, light-blue panes with a single highlight streak, and a grey lower cabinet with four near-identical doors. Each door has a small blue plate. The outline is a dark blue-grey, with 0% neutral edge pixels, so it reads as tinted rather than a black sticker line, though it is fairly uniform around the whole piece. Each material has only about 3-4 lightness steps, against 5-6 on the references. The cabinet doors and frame are broad, smooth fills with no grain, dents, rivets, wear or per-panel variation. The references (stall, well) have stone-by-stone shading, wood grain and clustered detail. Measured data: 9 visible tones per tile is about the same as the hedge but well below the stall (17) and the well (20). Near-flat coverage is 18%, higher than the stall (13%) and the well (0%). Overall it is a competent but flatter, shallower, more graphic piece than the Beodeul props of the same kind, so I fail it under 'when in doubt, fail'.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "맨 위의 큰 부분(16행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+     "맨 위의 큰 부분(16행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 23694
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice strip",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass window panes",
+      "rows": "4-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "service counter top",
+      "rows": "16-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23-24"
+     },
+     {
+      "part": "cups or tickets on counter",
+      "rows": "17-21",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower cabinet doors",
+      "rows": "24-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 17-21 form a light counter-top band (L=214) that ends in a bright front-edge line at row 22 (L=239). Row 23 is a darker shadow line (L=135) and the darker cabinet front sits below it (rows 24-42, about 19 rows). The glass window section above (rows 4-15) and the cornice at rows 1-3 are vertical faces. The counter band is a top surface of about 5 rows with an edge line and shadow, so it is more than a 1-2 row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a grey and blue service window with a light frame, pale glass panes and four lower panels with small blue buttons. Its outline is a dark bluish-grey, visibly tinted rather than neutral black, which matches the 0% near-neutral edge measurement. The shading is shallow: each material has about 3 steps (frame light/mid/dark, glass pale/mid, panel grey/darker grey). The panels and glass are large near-uniform fills with no grain, speckle or per-element highlights, and 18% near-flat coverage is above the 0% of most references. At 9 visible tones per tile it matches the hedge but is well below the comparable structured props, the cheese stall (17) and the roofed well (20), which have shaded individual elements, textured wood and a tiled roof. The overall look is a clean, flat, near-vector panel, not Beodeul's hand-dotted texture, so a careful artist would not accept it next to the stall and well.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 21760
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.153Z",
+ "cells": {
+  "16": [
+   "1005063889017fec",
+   "274a4a7868759a85",
+   "64459f06eb093db4",
+   "8e3626136242b823",
+   "94d367887b4fdeb1",
+   "aad7db31b888faef",
+   "bfcf4b4efe9a164d",
+   "db15cf833fb0e3bf",
+   "f45686731126cfab",
+   "fe3380945362b725"
+  ],
+  "24": [
+   "0dee66ff3fa82329",
+   "0e52d7c39a3dcfb9",
+   "1a41518c32e584ca",
+   "31f9809bdf07de17",
+   "44ec31e6eb76cb24",
+   "6362796dcf906886",
+   "6d2896f29b660981",
+   "6d6f4054881788c2",
+   "714366d77e7d600c",
+   "91806b24847410b3",
+   "95c7fc0dd463802d",
+   "97d6328da3a75a41",
+   "b615dd8b35d12181",
+   "cc29d8b94f38f5f9",
+   "cdde56113edbf1e7",
+   "f0478bb92beae471",
+   "f0bb3ad1a7795ba7",
+   "f5c38676108a83ec"
+  ],
+  "32": [
+   "1dfa339ce402b7e0",
+   "2877f5832c51e518",
+   "483104efb4df04a7",
+   "55ce428e2d2524c1",
+   "5dff865b63ad6a9d",
+   "5f070f89d7b8c791",
+   "8139f1465a6d6cfa",
+   "dbf8f2d6e050de99"
+  ],
+  "48": [
+   "22725f1aa311c678",
+   "56739ffa24de13e2",
+   "b3bf970dd662c309",
+   "c3129a491656e3f2",
+   "eab805fb8115d128",
+   "f2badb12b9c6ad0a"
+  ]
+ }
+}

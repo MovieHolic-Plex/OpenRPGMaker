@@ -1,0 +1,340 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4d85c4cc2d5f4dd75e5f98694ebf9d4b1f39712f84b8e00265041c6c7fcf21cc",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "mci-armchair-e",
+ "label": "seats34/modern_city_interior/mci-armchair-e",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 3행 < 4 (2/4)",
+  "3/4: 윗면 2행 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 3행 < 4 (2/4)",
+   "윗면 2행 < 4 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest and armrest column on left",
+      "rows": "18-29",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion top",
+      "rows": "23-25",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The armchair is drawn in side profile facing east, with the backrest on the left (rows 18-29). The seat surface is a light band at rows 23-24, with a slightly darker front-edge line at row 25. That makes a strip of only about 3 rows, with no eave shadow. Below it the front face is reddish at rows 26-28 with a dark base at row 29, and small feet at row 30. The seat strip is only 1-3 rows deep, like the 'seat band 2' reference, so the seat reads as front_elevation. The backrest and armrest are exempt under the seat rule."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The armchair is a small, roughly one-tile prop, so I judged it against the bench and hedge. It has 9 visible tones per tile, equal to the hedge (9) and well above the bench and lamp, which are too thin to measure. Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline leans toward the material colour (dark reddish-brown beside the upholstery) rather than a black sticker line. I count about 4 lightness steps on the upholstery (highlight, mid, shade, dark edge) against 5-6 on the richer references. The back, arm and seat are separated by value rather than by outline. Texture is modest, with little grain or dotting, but the piece is small and simple. It would not look thinner or flatter than the bench or hedge beside them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 3행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 27809
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest/armrest column on left",
+      "rows": "18-29",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat surface",
+      "rows": "23-25",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is an east-facing armchair in side profile. The tall backrest/arm on the left (rows 18-29) is exempt as seat_back. The seat surface is a light band at rows 23-24 with a slightly darker edge line at row 25, so it is only 3 rows tall. There is no ellipse and no eave shadow, and a 1-3 row sitting strip does not count as a top. Rows 26-28 are the darker front face, row 29 is shadow, and row 30 holds the feet, so the front face is about 4 rows. That makes a front elevation with only a thin seat strip."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The armchair is a small single-tile prop, so judging by eye is limited. It reads as a mauve fabric body with a lighter seat cushion and highlight, plus a dark tinted outline. The measured facts support this: 9 visible tones per tile matches prop-hedge (9) and is above the bench and lamp (0, which are thin objects). It has 0% near-flat coverage, so there are no 5x5 flat fills. 0% of its dark edge pixels are neutral, so the outline leans toward the material colour rather than being a near-black sticker line. It has about 4 lightness steps on the fabric, a little under Beodeul's 5-6. Its 9 total colours are fewer than any reference (11 to 40), so density is slightly lower than the references. The piece is cleanly shaded and would sit acceptably beside the references without looking sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 3행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24358
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest and left arm column",
+      "rows": "17-29",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion top strip",
+      "rows": "23-24",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The chair is drawn in side profile facing east. The backrest on the left (rows 17-29) is a vertical face, which is exempt for a seat. The seat surface is only a 2-row light strip at rows 23-24 (L=176), with a slightly darker edge line at row 25 (L=154). Below it the front face is the pink-brown block at rows 26-29, plus the edge row, about 5 rows. The 2-row strip is a thin band, not a visible seat from above, so it matches the 'seat: band 2' reference rather than the 'top 5 + legs' one. The seat reads as front_elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The armchair is a small single-tile prop with 9 colours in total. It shows about 4 steps on the upholstery ramp (highlight, light, mid, dark) plus a darker base and feet. The facts put it level with prop-hedge: 9 visible tones per tile, 0% near-flat coverage, and a tinted outline (0% near-neutral dark edge pixels). The outline reads as a dark, warm version of the upholstery and wood rather than a uniform black sticker line. Forms are separated by value, with a lit cushion and arm highlights. It has less texture than the stall and well, and its total colour count (9) is below the bench (14), which is why density is only slightly lower. Taken together, a careful artist would accept it next to the references as a simple, sparse piece. It is not flat or sticker-like, and it has no large flat fills.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 29492
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest (tall left side, drawn as a vertical face)",
+      "rows": "17-29",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion top strip",
+      "rows": "23-24",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat front face / base",
+      "rows": "26-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The seat is the light band at rows 23-24 (L=176), followed by a slightly darker line at row 25 (L=154). Below that is a reddish front face at rows 26-29 with small feet at row 30. The seat surface is only a 2-row strip, with no eave shadow and no real depth, so it reads as a rim rather than a seat seen from above. The backrest at rows 17-29 is a vertical face and is exempt. The object is a side-profile armchair with a thin seat strip, matching the 'seat band 2' wrong reference, so it is front_elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small armchair, so it is judged mostly on the measured facts and a rough look at the board. It has 9 visible tones per 16x16 tile, level with prop-hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no flat fills. 0% of its dark edge pixels are neutral, so the outline is tinted, a dark version of the upholstery or wood beside it, not a sticker-like black line. Only 9 distinct colours in total means roughly 4 steps per material, a little shallower than the 5-6 on the larger Beodeul props, and texture is modest. It is still comparable to the hedge and bench in craft. A careful artist would probably accept it next to them, so this is a marginal pass.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 29357
+  }
+ ],
+ "decidedAt": "2026-10-20T14:09:20.628Z",
+ "cells": {
+  "16": [
+   "86ddcaf654ed9d23"
+  ],
+  "24": [
+   "004a600765e06cc9",
+   "0af3494af7c4aba3",
+   "1020bd317f30ed79",
+   "2f746b443ade29c1",
+   "505c73ccd86da3da",
+   "907791868c9301f2",
+   "c885a0f8bb466839",
+   "d77ec1a31aced430",
+   "fc71efbf5493fb28"
+  ],
+  "32": [
+   "248214f61ad42964",
+   "82feaa69b89109f1",
+   "c8fb080902a9554e"
+  ],
+  "48": [
+   "15a336c82252d0cd",
+   "793e1cd21fee6960",
+   "9cdd28a3fd58861f",
+   "d01185cf7755c035",
+   "daa26c0b34ed12a5",
+   "e4b24133225eaa39"
+  ]
+ }
+}

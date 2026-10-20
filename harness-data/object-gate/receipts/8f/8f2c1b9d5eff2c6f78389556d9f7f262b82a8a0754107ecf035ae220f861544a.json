@@ -1,0 +1,454 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8f2c1b9d5eff2c6f78389556d9f7f262b82a8a0754107ecf035ae220f861544a",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "subway pillar sign",
+ "label": "modern_city_interior/subway-pillar-sign",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 0 튀어나옴 < 6) (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 0 튀어나옴 < 6) (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 14,
+  "darkV5": 28,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top end of white cylinder",
+      "rows": "0-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green sign panel",
+      "rows": "6-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "yellow band",
+      "rows": "18-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower white cylinder shaft",
+      "rows": "22-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 5,
+     "cap_width": 12,
+     "shaft_width": 12,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The width profile runs 10, 12 (rows 1-5), 14 (rows 6-15), then 12 and 14 again, and 12 for rows 22-30. The top end is only 10 wide on row 0 and 12 on rows 1-5, the same as the shaft below the sign. It is a rounded tip with no widening and no narrowing again, so it is not an overhanging ellipse cap. Rows 1-5 are a vertical face with shading (highlight on row 4, darker row 5, outline on row 6), not a horizontal top surface. The green sign (rows 6-15) and the yellow band (rows 18-21) are flat front panels with no top surface or eave line. The whole object reads as a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small white and green sign pillar with a near-neutral dark outline (100% of dark edge pixels are neutral), the uniform black sticker look rather than a dark tone of the adjacent material. The Beodeul references with tinted outlines (hedge 0%, stall 1%) are the ones that lean toward the material. The pillar body is mostly a flat pale fill with a green band, and I see no grain, speckle or per-surface variation. It shows only about 3 steps per material, against 5-6 on the references. The measured 14 tones per tile is mostly the sign face and the outline, and it is below the stall (17) and well (20). The 0% near-flat coverage comes from the sign details, not from textured surfaces. The lamp reference also has a neutral outline, but it is a thin pole and is not a fair standard for this piece. Against the richer references, the pillar looks flatter and more sticker-like.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 16761
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "silver top segment of pillar",
+      "rows": "0-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green sign panel with key icon",
+      "rows": "6-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "orange band",
+      "rows": "18-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "silver lower shaft",
+      "rows": "22-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 5,
+     "cap_width": 12,
+     "shaft_width": 12,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The width profile runs 10 (row 0), 12 (rows 1-5), then 14 (rows 6-15, the green sign). It only widens going down from the top and never narrows again beneath the cap, so there is no ellipse plate. The top is a flat, vertically shaded silver cylinder end with a dark outline at row 0. Rows 1-4 are a light gradient, and row 5 is slightly darker, which reads as a rim of 1-2 rows and not as a top surface. The cap is no wider than the lower shaft (12 vs 12), so it does not overhang. Below it, the green sign and orange band are face-on vertical panels with no edge line or eave shadow. The whole object is a front elevation with no readable top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a narrow pillar with a pale body and a small sign panel. The measured facts are decent: 14 visible tones per tile (references 9-20), 0% near-flat coverage, and 20 total colours. The weak point is the outline: 100% of its dark edge pixels are near-neutral, so it reads as a uniform black/grey line around every shape. That is the 'sticker' look, unlike the tinted dark-material edges on the hedge, stall and well (0-33% neutral). The main body shows only about 4 lightness steps, against 5-6 on the references' material ramps. The sign panel and its green and yellow details are small and clean, but the body is mostly smooth with little grain or per-material shading. A careful artist would find it flatter and more sticker-like than the stall or well next to it, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 27705
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top end of the white cylinder",
+      "rows": "0-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green sign band with key icon",
+      "rows": "6-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "orange band",
+      "rows": "18-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower white shaft",
+      "rows": "22-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 6,
+     "cap_width": 12,
+     "shaft_width": 12,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The width profile is 10 at row 0, then 12 for rows 1-5, then 14 for the green sign at rows 6-15. The top is rounded only at its upper edge, with the row 0 outline narrower, and it has the same width as the shaft below. It never widens and then narrows again, so there is no elliptical cap plate overhanging the shaft. The shading in rows 1-5 is the cylinder's front face, and the dark line at row 6 is the outline above the sign. The green sign and orange band are vertical front faces with no top surface or eave line. The object is a flat front elevation, like the 'column: flat band cap' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small white pillar with a green sign panel and a yellow stripe. Its tone count is respectable (14 visible tones per tile, 0% near-flat), so the density fact does not count against it. The craft is still shallow. Its dark edge pixels are 100% near-neutral, so the outline reads as a uniform black/grey line around the whole shape. That is the 'sticker' look, unlike the tinted outlines of the hedge (0% neutral) and the cheese stall (1%). The white body has only about 3 lightness steps, with little per-material ramp or grain compared with the 5-6 steps on the stall and well. The sign panel is built from a few discrete blocks rather than a shaded material. It would look flatter and more sticker-like beside the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 23224
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper white shaft segment with a rounded-corner top edge",
+      "rows": "0-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green sign panel wrapped around the pillar",
+      "rows": "6-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "orange band",
+      "rows": "18-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower white shaft",
+      "rows": "22-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 0,
+     "cap_width": 12,
+     "shaft_width": 12,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The width profile runs 10, 12, 12... from row 0, so only the top corner is trimmed by 1 px per side. Nothing widens and then narrows, so there is no ellipse. Rows 1-5 are a vertically shaded white shaft face, and row 6 is a dark outline that meets the wider sign (14 px), not a top surface. The pillar has no overhanging cap plate and no top surface, only the 1-row top outline. The green sign, orange band and lower shaft are all vertical faces. The whole object is a front elevation, with flat-topped 12 px shaft sections at the top and bottom."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a slim white and green pillar with a small sign panel. Its tile carries 14 visible tones, close to the hedge (9) and the stall and well (17 and 20), and it has 0% near-flat coverage. On the picture, though, each material (white body, green band, sign face) has only about 2-3 lightness steps, against about 5-6 on the well roof, stall awning and hedge. The outline is a uniform neutral dark line around the whole shape, and 100% of its dark edge pixels are near-neutral. The lamp-crook reference also has a neutral outline, but that is a thin iron pole, and the richer references (hedge 0%, stall 1%) use tinted outlines. Here the neutral outline wraps a painted panel, so it reads as a sticker. There is little grain or per-surface variation, and the tone count comes mostly from the sign graphics rather than from shaded material ramps. Next to the references it looks flatter and more sticker-like.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20128
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.192Z",
+ "cells": {
+  "16": [
+   "636123d6604043f6",
+   "f158a0f7e0c43d8a"
+  ],
+  "24": [
+   "18c24aa4e3132535",
+   "2a36e9a9aa5f64c5",
+   "54323775025a3004",
+   "7a1690c253eb0752",
+   "8950250ae3c92deb",
+   "8b4033b8f3b15525",
+   "9b4bb68b413b40fb",
+   "c4ba4a5bcbbdfb35",
+   "c4da0a812c936c2a",
+   "e1e56439a8b395e9",
+   "e8d77494b08512f4",
+   "ec6ccba667b1e7e1"
+  ],
+  "32": [
+   "3945ef107bfc00fd",
+   "5fed2b90ce7368b3",
+   "fbd56faae138c0aa"
+  ],
+  "48": [
+   "162f3cd0e6bf1840",
+   "af8cd503ebb837c0",
+   "b93cfac50ff4fcf1",
+   "ba3721d1dac44dfd",
+   "bce3c1291684b6c8",
+   "d6d3217c79410688"
+  ]
+ }
+}

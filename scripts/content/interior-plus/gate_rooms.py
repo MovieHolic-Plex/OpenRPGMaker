@@ -117,8 +117,13 @@ def current_profile():
 def state(img, kind):
     """('pass'|'provisional', None) 또는 (None, 이유)."""
     import object_gate as OG
-    rc = OG.read_receipt(OG.pixel_sha256(img))
+    sha = OG.pixel_sha256(img)
+    rc = OG.read_receipt(sha)
     if not rc: return None, '영수증 없음 — object-gate review 를 먼저 받아라'
+    # 서명된 사람 결정이 최종이다(2026-10-20): 허용이면 통과, 거절이면 막는다.
+    human = OG.human_decision(OG.read_hold_decision(sha), rc)
+    if human == 'reject': return None, '사람이 검토 화면에서 거절했다 — 최종'
+    if human == 'allow' and rc.get('kind') == kind: return 'pass', None
     if rc.get('kind') != kind: return None, f"영수증 종류({rc.get('kind')})가 요청 종류({kind})와 다르다"
     cal = OG.calibrated_profiles()
     if rc.get('profileHash') != current_profile() and rc.get('profileHash') not in cal:

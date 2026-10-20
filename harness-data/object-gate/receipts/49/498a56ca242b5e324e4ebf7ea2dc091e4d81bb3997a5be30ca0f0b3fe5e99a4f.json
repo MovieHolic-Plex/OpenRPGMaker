@@ -1,0 +1,321 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "498a56ca242b5e324e4ebf7ea2dc091e4d81bb3997a5be30ca0f0b3fe5e99a4f",
+ "width": 32,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "clinic pet kennels",
+ "label": "modern_city_interior/clinic-pet-kennels",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 16,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top slab of kennel unit",
+      "rows": "7-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face with four barred kennel cages",
+      "rows": "13-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "animals inside cages",
+      "rows": "16-42",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Row 6 is the dark outline. Rows 7-11 form a light band (L 166 to 237) at the top, ending in a darker 1-row edge line at row 12 (L=100). This reads as a horizontal top surface about 5 rows deep, though it has no separate eave shadow. Below it, rows 13-44 are a 32-row front face with a 2x2 grid of barred cage windows. Rows 45-46 are the dark base outline. No side face is drawn. The top band is weaker than the cabinet reference, but the edge line at row 12 and its depth make it count as a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a two-by-two block of barred kennels with small animals inside, in a pale frame. It reads as a standing prop at the same scale as the references. Measured facts support it: 14 visible tones per 16x16 tile is above prop-hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, so the outline is tinted and follows the adjacent material rather than being a black sticker line. Shading is a little shallow: the frame and body show about 4 lightness steps against about 5-6 in the references. The bars, animals and panel edges still add grain and variation. The candidate has 21 total distinct colours against 11-14 for the simple references (hedge, bench, lamp), so it is not thin or sticker-like next to them. A careful artist would accept it beside the hedge and bench, though it is a bit less rich than the stall and well.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19606
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel of kennel cabinet",
+      "rows": "7-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face with four barred kennel doors",
+      "rows": "13-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "animals inside kennels",
+      "rows": "16-43",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 7-11 form a light top band that gets lighter toward the front (L 166, 208, 237 x3). A darker front-edge line at row 12 (L=100) closes it, and a front face of about 33 rows (13-45) lies below, drawn as a 2x2 grid of barred kennel doors. The silhouette is 32 px wide on every row from 6 to 46 and has no receding side face. The top band is about 5 rows with an edge line, like the 'cabinet: top 5 + edge' reference. Row 6 is only the dark outline and rows 45-46 are the base outline. I counted the row 12 line but found no separate dark eave shadow row."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a roughly 2x2-tile kennel cabinet with four barred cages and animals inside. It measures 14 visible tones per 16x16 tile. That sits between prop-hedge (9) and prop-stall-cheese (17) and prop-well-roofed (20), so it is in the same range as the references. Near-flat coverage is 0%, so there are no 5x5 flat fills. The cage bars, animal shapes and frame edges give it varied detail. 0% of its dark edge pixels are neutral, so the outline is a tinted dark tone of the neighbouring material rather than a black sticker line, as on the hedge and stall. Weaknesses: the pale frame has only about 4 lightness steps against the references' 5-6, and the texture is mostly structural (bars and animals) rather than grain or speckle. That is a modest shortfall, not shallow, and the piece would sit acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23941
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band of kennel cabinet",
+      "rows": "7-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "12-12"
+     },
+     {
+      "part": "front face with four barred kennel windows",
+      "rows": "13-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 7-11 form a light band across the full width (L 166, 208, then 237 for three rows). Row 12 is a darker line (L=100) that works as the front-edge line with a thin shadow. Below it, rows 13-44 are the front face: four barred kennel windows with grey frames, a center divider and small white ledges. Rows 45-46 are a dark base outline. The structure matches the green cabinet reference (top about 5 rows, edge line, then face). It is a cabinet-like body with a top surface and a front face of 3+ rows, and no side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The kennel is a 2x2 cage grid with animals inside. Its frame has a light-to-mid-to-dark grey ramp (about 4 steps) with a tinted dark blue-grey outline. The measured near-neutral share of dark edge pixels is 0%, so the outline is not a black sticker line. The measured 14 visible tones per tile sit between the hedge (9) and the stall (17) and the well (20), and near-flat coverage is 0%. Cage bars, animal fur and shadow add grain, so there are no large flat fills. It is a little simpler than the richest references (stall, well), but a careful artist would accept it next to them without it looking sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18532
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel of kennel cabinet",
+      "rows": "7-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face with four barred kennel doors",
+      "rows": "13-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The column scan shows a light band at rows 7-11 (L 166-237) under the row-6 outline. Row 12 is a darker line (L=100) that works as the front-edge line, with no separate eave shadow. Below it is a vertical front face from row 13 to 44 that holds the four barred kennel compartments with animals. The 5-row top plus edge line matches the green 'cabinet: top 5 + edge' reference. There is no receding side face, and the body is 32 px wide throughout rows 6-46."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 14 visible tones per 16x16 tile. That sits between the hedge (9) and the stall (17) and the roofed well (20). Near-flat coverage is 0%, so there are no 5x5 flat fills. The dark edge pixels are 0% neutral, so the outline is tinted, not a near-black sticker line. The 2x2 cage grid has bars, inner pet shapes, and a light frame with several lightness steps. The frame is a bit smoother and has less grain than the stall or well, so shading is about 5 steps against the references' 5-6. A careful artist would accept it beside the references as a small, clean, reasonably shaded prop, though not quite as textured as the best ones.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16995
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.796Z",
+ "cells": {
+  "16": [
+   "5b38e2c4785be17b",
+   "9235bbd64c1287eb",
+   "975d9421be7f20d1",
+   "b26eca25b55599d5",
+   "b45431c8a40099d6",
+   "fee6bb973fd39896"
+  ],
+  "24": [
+   "156277fbfc5e4456",
+   "23fbc729c950624d",
+   "54a5e6dd7ba2f80a",
+   "57103084118a96ab",
+   "5bed1c8104558904",
+   "5d0b40948e546758",
+   "92c83e1ac1f4867e",
+   "c2d6350b931cd7f3",
+   "cfd8ce329ccdccc8",
+   "d516b6c699e8694c",
+   "f226428b76f2eeb5",
+   "fe9485239b535a30"
+  ],
+  "32": [
+   "139c2600a69e89ef",
+   "9652980d081e4f60",
+   "b4171b649be5aa91",
+   "e5fb1f817447af02"
+  ],
+  "48": [
+   "200cac87a8cbbc25",
+   "23f6eda49bb83aa2",
+   "93aac9d644198eb9"
+  ]
+ }
+}

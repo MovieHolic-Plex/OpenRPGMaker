@@ -1,0 +1,327 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a055233d8a6d29c476cc8fabfbd4fbfc0ea6e1179ba59602b51c12b592a8f8d9",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "hosp vitals bank",
+ "label": "modern_city_interior/hosp-vitals-bank",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 13,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "two vitals monitors on stalks",
+      "rows": "1-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "console counter top",
+      "rows": "16-19",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-21"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the wide console at rows 15-29 (width 32). Its top surface is the band at rows 16-19, which brightens from L=166 to 208 to 232 and ends in a bright front-edge line at row 19. Darker eave shadow follows at rows 20-21 (L=133). Below that, the front face runs rows 20-28 with indicator-light panels and a darker base strip, plus a dark outline at rows 29-30. The two monitors on stalks at rows 1-14 (width 28 and 12) stand on the counter, so they count as decor and are excluded from the main-body measurement."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small console with two teal monitors above a grey-white base with knobs and a readout strip. Measured facts: 11 visible tones per 16x16 tile, which is above the hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% neutral, so the outline is a tinted dark blue-grey rather than near-black, which matches the Beodeul habit of using the neighbouring material's dark tone. The casing has about 5 lightness steps (highlight, light, mid, dark, deep), and the monitors and dials add small detail dots and variation. It is a little simpler and less grainy than the stall and well, but it would sit next to the references without looking like a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17798
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "two vitals monitors on stems",
+      "rows": "1-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "console/counter body top",
+      "rows": "16-19",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-21"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the wide console at rows 15-30, 32px wide. Rows 16-19 form a light top band that gets brighter toward row 19 (L=232), which is the front-edge line. Rows 20-21 are darker (L=133), reading as eave shadow. Below them is a front face of about 10 rows (20-29) with indicator-light panels and a dark base line. The two monitors on stems above (rows 1-14) sit on the counter, so they count as decor. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small console with two monitors and a base panel of gauges and buttons. It is about the size of the hedge reference. On the measured facts it matches or beats the hedge: 11 visible tones per tile against 9, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is a tinted dark version of the neighbouring material and not a black sticker line. By eye, the casing has about 4 lightness steps (highlight, light, mid, dark). The screens carry a lit teal face with a darker rim, and the button row and panel seams break up the surface. It is a little thinner than the large stall and well references, but it is not flat and has no large single-colour areas. A careful artist would accept it next to the hedge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16424
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "console top band",
+      "rows": "16-19",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-21"
+     },
+     {
+      "part": "monitors on stems",
+      "rows": "1-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "console front face with indicator panels",
+      "rows": "20-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the wide console in rows 15-30. At x=16 its top band runs rows 16-19, going from L166 to L208 to a lightest edge line at row 19 (L232). Rows 20-21 are darker eave shadow (L133), and the front face with indicator lights and panels runs rows 20-28 above the dark base outline in rows 29-30. The two monitors in rows 1-12 and their stems in rows 13-14 sit on the console and count as decor. The top band is only 4 rows but has an edge line and shadow, so it counts as a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small console with two teal monitors and a light grey body with a button row. The measured facts are acceptable. Near-flat coverage is 0%, and 0% of dark edge pixels are neutral, so the outline is tinted (dark blue-grey) rather than a black sticker line. Visible tones per tile are 11, which is close to the hedge (9) but well under the stall (17) and the well (20), the closest comparable multi-material props. By eye, the grey casing has only about 4 lightness steps (light panel, mid, dark, outline). The monitors and the base are mostly clean blocks with little grain, speckle or per-part highlight, so the piece reads simpler and flatter than the stall and well references, which have 5-6 steps and per-material texture. It is not a flat fill and not a sticker, but it is a notch below the Beodeul bar. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16464
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "vitals monitors with stands (screens on counter)",
+      "rows": "1-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "console counter top",
+      "rows": "16-19",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-21"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the wide console in rows 15-30, 32 px wide. At x=16 it has a lighter top band in rows 16-18, with a bright front-edge line at row 19. Rows 20-21 are a darker eave shadow, and below them the front face with the indicator panels runs through rows 22-28, with the base and outline in rows 29-30. That gives a top of about 4 rows and a front face of about 10 rows. The two monitors on stands in rows 1-14 sit on the counter, so I listed them as decor. The kind is a loose fit, since this is a console with monitors rather than a classic tall cabinet, but it is still cabinet-like."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small grey counter with two teal monitors and a row of buttons. On the primary facts it holds its own: 11 visible tones per tile against 9 for the hedge, 17 for the cheese stall and 20 for the well. Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% neutral, so the outline is a tinted dark version of the neighbouring material, not a sticker-style black line. By eye, the counter body ramps through about 4 steps (highlight, light, mid, dark base), a little shallower than the 5-6 on the stall and well. The screens and buttons add small detail and variation. The total palette is only 14 colours, close to the hedge's 11, and the hedge is itself a simple reference prop. It is slightly less rich than the stall and well but not thinner or flatter than the simple references, so a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20288
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.924Z",
+ "cells": {
+  "16": [
+   "072c4ca08f8bb4e2",
+   "c7fbfa142213fd64",
+   "cc56200790a32a9b"
+  ],
+  "24": [
+   "281517679d8aee84",
+   "3474a4b60f2e87e9",
+   "49b0f14236196acf",
+   "58a2e4158c0d73de",
+   "6507e2c897864a67",
+   "6b8dd957db1cf1a9",
+   "6be4c9097297a993",
+   "722d2debd816210d",
+   "9574e8cb6750d437",
+   "96ea546ef8a4b3c7",
+   "9e9f049990d823e8",
+   "a3770a6217420fcc",
+   "a430a3fa231f7f80",
+   "b45fd56e6596c00b",
+   "b57d6b2d751e128f",
+   "b6d5140ee74945f8",
+   "b99dd3d31a25bf43",
+   "bddedd5b03d15ad0",
+   "c65e68c2e473ca64",
+   "e643529d4b821379",
+   "e79cc418b9c0ad7b",
+   "ec40e64b53b6ec85",
+   "f2cac4e48a229b09",
+   "fa9b987836c2cee9"
+  ],
+  "32": [
+   "82962799a0821b3a"
+  ],
+  "48": [
+   "2ce1e255d5f5c7fe",
+   "40d35e9d3abefe99",
+   "c14dbdf43a8de33e",
+   "c55866499bc76a4c",
+   "cf9c47dcaf87cc94",
+   "da7853356171e71c"
+  ]
+ }
+}

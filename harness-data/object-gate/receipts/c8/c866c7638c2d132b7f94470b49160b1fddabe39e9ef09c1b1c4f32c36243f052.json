@@ -1,0 +1,564 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c866c7638c2d132b7f94470b49160b1fddabe39e9ef09c1b1c4f32c36243f052",
+ "width": 80,
+ "height": 80,
+ "kind": "structure",
+ "name": "jumbo station ticket office",
+ "label": "modern_city_interior/jumbo-station-ticket-office",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+  "3/4: 윗면 2행 < 3 (1/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+   "윗면 2행 < 3 (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 21,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 25
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "green roof/awning band at top of kiosk",
+      "rows": "1-5",
+      "evidence": "c",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "counter top ledge",
+      "rows": "49-52",
+      "evidence": "a",
+      "front_edge_line_row": 53,
+      "eave_shadow_rows": "53-54"
+     },
+     {
+      "part": "sign panel with ticket windows on fascia",
+      "rows": "7-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "books, monitors and goods on shelves",
+      "rows": "26-47",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 69,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The kiosk is drawn mostly face-on. Rows 1-5 form a lighter green band at the top that ends in a bright front-edge line at row 5, and row 6 is a dark eave shadow. That reads as a thin sloped roof or awning plane above the sign fascia (rows 7-19) and the front face, which runs from row 6 to row 74 (about 69 rows). The counter has a light top band at rows 49-52 with a darker edge at rows 53-54. The top surface is thin (5 rows) but meets the edge-line-plus-shadow criterion. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a modern convenience-store-style kiosk with a flat green roof band, a white wall and a glass front. Its materials have about 2-3 lightness steps each, against about 5-6 in the references (tile roofs with per-tile highlights, speckled plaster, individually shaded stones). The roof is a flat green band with almost no tile or grain texture, and the white and light-grey wall areas are large flat fills. Measured facts: 8 visible tones per tile against 10-12 for the references, and 19% near-flat coverage against 0% for both. The 0% near-neutral share means the dark edges are tinted, so the outline reads as dark material tone, but there is little modelling inside the shapes. The shelves and the sign add some small detail, yet overall the piece looks flatter and more sticker-like than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 17645
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "green fascia/sign band at top",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "counter ledge",
+      "rows": "49-52",
+      "evidence": "none",
+      "front_edge_line_row": 53,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side kiosks / machines",
+      "rows": "27-70",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 70,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole building is drawn as a flat face-on elevation. The green fascia (rows 1-19) is a front-facing strip. It has a light stripe at rows 2-4, a bright line at row 5 and a dark row 6, but it is not a sloped roof or awning plane, and the sign board below it (rows 7-19) is vertical. Below the fascia are the shelves, windows, side kiosks and counter front, all vertical faces. The counter ledge at rows 49-52 is at most a thin strip. No roof slope, no ellipse and no visible contents show a horizontal top surface of the main body, and no side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a modern convenience-store-style kiosk: a green flat roof band, a white sign, and a glass front with shelves. The references are rustic tiled-roof houses with plaster and stone. The kind matches (whole building), but the craft is shallower. The candidate has about 3 steps per material on the green roof, the white wall and the grey base, against 5-6 in the references. It has 8 visible tones per tile against 10-12 for the references. Its near-flat coverage is 19% against 0% for both references, so large areas of the white wall, the green roof and the blue side panels are flat fills with no grain or speckle. The outline is dark but tinted (dark green beside the roof, dark grey-blue elsewhere), and 0% neutral dark edge pixels supports dark_material_tone rather than a sticker outline. The shelf items add some small-scale texture. Overall it is cleaner and flatter than the references, with no per-tile highlights or grain, so I would fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 21760
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "green canopy top band",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "canopy front fascia with sign panel",
+      "rows": "7-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ticket counter and shelves front face",
+      "rows": "21-74",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 54,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The green canopy has a band at rows 1-5 (lighter green at rows 2-4) that ends in a bright front-edge line at row 5. A darker shadow row at row 6 follows, and the sign fascia sits below it at rows 7-19. That gives a short top plane of about 5 rows. Below the canopy, a 54-row front face (rows 21-74) shows the shelves, counter and side pillars. It is drawn flat and face-on with no receding side face. The top slope is thin and close to a fascia strip, so the reading is borderline, but it meets evidence (a)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a modern convenience-store kiosk with a green awning, a sign, shelves and a white wall. It is cleanly drawn but flatter than the Beodeul references. The green roof band and the white and grey wall panels use only about 2-3 lightness steps each, against 5-6 on the reference roof tiles and walls. The references show per-tile scallops, plaster speckle and stone shading. The candidate has large smooth panels (19% near-flat coverage against 0% for both references), and the window and door areas are flat fills. It has 8 visible tones per tile against 12 and 10 for the references, so it is lower but not drastically. Its dark edge pixels are 0% neutral, so the outline leans toward a tinted dark green or blue material tone and is not a pure black sticker line. The shelves with their tiny coloured items add some detail, but the wall, awning and base are shallow. A careful artist would see it as flatter and more sticker-like beside the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19383
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "green sign fascia top band (awning-like strip)",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-6"
+     },
+     {
+      "part": "sign board with ticket windows",
+      "rows": "7-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter / shelves / booth front with side kiosks",
+      "rows": "21-74",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 68,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole drawing is a flat face-on storefront. Rows 0-19 are a green fascia with a sign. Only a thin strip at its top, rows 2-5, has a lighter green band, a bright line at row 5 and a dark row at row 6. That strip is about 4 rows and reads more like trim on the sign than a roof or awning slope. Below it, rows 21-74 hold the shelves, monitors, counter and side kiosks, all drawn as vertical faces. The counter has no visible top surface, and the building has no roof slope, ellipse or visible contents seen from above. The silhouette stays 76-80 px wide with no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a modern convenience-store style kiosk with a flat green roof band, a white wall and a glass window front. It is a whole building, so it matches the reference kind. Its roof and walls have about 3 lightness steps each, against 5-6 on the references' tile roofs, plaster and stone. Visible tones per 16x16 tile are 8 against 12 and 10 for the references. Near-flat coverage is 19% against 0% for both references, and the large white wall panels and the green roof band are flat fills. The dark edge pixels are 0% neutral, so the outline carries a tint, though the dark green and blue-grey lines look fairly uniform around every shape. The shelves, sign and bottom stripe add some detail, but there is no per-tile highlight, no grain and no speckle like the references' roof scallops, stone-by-stone shading and plaster dots. A careful artist would find it flatter and more sticker-like than the references next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 21095
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.995Z",
+ "cells": {
+  "16": [
+   "026350e22bf93db6",
+   "0c38132d8f3547c2",
+   "18b7e247fc484872",
+   "1caa39bf2e29cf8e",
+   "201fa65f575fdd52",
+   "233755c60f460d82",
+   "4142348c45e00e53",
+   "476d1dfee93ce52a",
+   "4e95fa6fa81a2726",
+   "4efd2edd748e1116",
+   "6915b4354cfd2957",
+   "751c6a16e11c35b8",
+   "95652c5c501bca27",
+   "96e05589140d7655",
+   "99c9a2089d20cced",
+   "9bf5e2c6c8683040",
+   "b2fccef19e118b5e",
+   "b9a7db996def94da",
+   "e0fc61972d3d330d",
+   "e13895869de71694",
+   "e8a18487b24653f4",
+   "f49ea86bea698355",
+   "fbafe22aedc13e78"
+  ],
+  "24": [
+   "01cb1b1975b1745d",
+   "03966c4672fb1208",
+   "10190a7ec58b3763",
+   "12ea2427b3811a60",
+   "1d18f2cf3f081155",
+   "1dfdbecb41272cfe",
+   "214aa18c956a000c",
+   "214b1f8c9745abf4",
+   "222eaac58b6fce91",
+   "235265eba714aa57",
+   "28081f6746914d7e",
+   "2997a5dfd81e6f23",
+   "2edfdbe0c1a813a3",
+   "340fe964110832f8",
+   "348e33f635444677",
+   "352f983fba75d623",
+   "386cb3f647821e3d",
+   "3b717739615358dc",
+   "3c3b95cb77cd70b1",
+   "442ec80ad03ff0f0",
+   "45a4657524bc5b33",
+   "45a8bfda9b8c2cc9",
+   "468ec28c2eef9a81",
+   "46f1cf51f656fca0",
+   "4b4d6e76ee082bab",
+   "4fb5b5ce9b1ffe3c",
+   "52cac0dbb4e1a8e7",
+   "56505ff0448eb76b",
+   "5841ac1120fa18b3",
+   "5b186ce4a819a033",
+   "5ed4bc5882a935a3",
+   "61d53ee6396aa23f",
+   "62025c1e9e8b8814",
+   "6be4ce2a2c0744df",
+   "6e3cbbf2ce857d50",
+   "715883cc7f545a3e",
+   "724368777b11beef",
+   "72ed5e69f1a61024",
+   "7423e8f451eddef2",
+   "80161da0481e1595",
+   "87476f7d99787a90",
+   "8995ab6596461e4b",
+   "8ad0d971e59db3e1",
+   "8b31909603a17657",
+   "8ccc3655d3f03992",
+   "8d5dd53df1ef9331",
+   "8e39d50a9b6fb9e3",
+   "99526029f441eaab",
+   "9da37f9c82387915",
+   "9f924082e28ec0b6",
+   "9ff6e378639ce39b",
+   "a0892f879a8e7b8a",
+   "ae85c24b09333a5d",
+   "b00c14510d74b263",
+   "b344ef1b873b3f18",
+   "b41e5f1b81e9e88f",
+   "b4eefaf54ad77032",
+   "b5d24fcd758780ca",
+   "b74244be0bd93893",
+   "b7b3f51df9010e1e",
+   "b8900989dc3928f0",
+   "b9a7633a6b0365ad",
+   "bab63f99f936d338",
+   "bc6f7f2255a0f533",
+   "bd36b6dd4a0d5462",
+   "c7c0a5cd017cee6c",
+   "c88aa7ea37a057c1",
+   "c946bfa7135a893f",
+   "cc25341d5101c978",
+   "cc84bf75e19de2cc",
+   "d1ab67833870e23d",
+   "d66d7fcd8b1270d5",
+   "da223bd3548b3a9b",
+   "dc25c35622318c5a",
+   "de930dba19cadb5b",
+   "e580668433411dca",
+   "e62da8ec52d292b9",
+   "e66a30e479b6fcde",
+   "e8898c14e202881f",
+   "ef16abf1dd90dddd",
+   "f1c26e025f1f2716",
+   "f21872bbaee329e4",
+   "f242546bbc4579e8",
+   "f2960fa64cf97cd8",
+   "f400da40027d54b4",
+   "f42facd1657a2508",
+   "fac84991e99cedbb",
+   "fb6da383cb6b666e",
+   "fd5a4da0e6ba4ae2",
+   "fe9109eef94c0850"
+  ],
+  "32": [
+   "0091b47176c8e81c",
+   "00d8046b23403f09",
+   "01847d8c07708caa",
+   "054fa01744506469",
+   "11e892fdf25acd9d",
+   "1ddff8025639a434",
+   "2fd0cdcc2d4a0b3d",
+   "3256e5adaa4ca44a",
+   "3be5497efb558391",
+   "3e63bb8f8cd5d626",
+   "48d6a800655cbfd4",
+   "4e4476a56216d85d",
+   "52c6bdd67c74b1b0",
+   "5313575acdd540c9",
+   "559765564b2dca1d",
+   "6ba11c01373ef60e",
+   "7348744e256d18a4",
+   "739ab5286bdc155a",
+   "77015cf6881163a7",
+   "803eb86ea55515a6",
+   "816abcef79c4cc5b",
+   "867a4f6c9c540493",
+   "8a0c75d2a3c5af6b",
+   "8a944daaf99bfb16",
+   "8ad79e66bb6fa0d0",
+   "8ff94d814804e59c",
+   "9276425c64000232",
+   "98bae21be544dfa3",
+   "9f42a03d01b3a786",
+   "a40ac9615b13a619",
+   "aa077bccee9f2da1",
+   "b1d0335147772ce6",
+   "b5403f0a9f42f8c1",
+   "bd94afb400cfa5a4",
+   "be9240c7fd40f3c5",
+   "c2d724ca168da200",
+   "c2fc1a9d7b8a017e",
+   "c751c78aef75a85c",
+   "d378b3e13763f213",
+   "d9ac91525f04f749",
+   "d9de4306b2ceadb0",
+   "dede6643017e72ee",
+   "e5c88e090fd236de",
+   "e6825fd96e5cf996",
+   "e6f5568f20b0735b",
+   "e7604bb8bf449e78",
+   "e829392484e20ebd",
+   "ed9c9ea6118cbec5",
+   "eda866fc87ec0441",
+   "edf1bf13d32f1c7b",
+   "f6d2e92b8567db8a",
+   "ffb9f6a348f680d7"
+  ],
+  "48": [
+   "02d36b9c87793b19",
+   "08e560b2d1f85203",
+   "2bfea3c37621d0d9",
+   "399aa2ed73725970",
+   "3b6adfd478272d47",
+   "40a2a765e7255773",
+   "60be270d80bb50b3",
+   "65ebd7e5fe9402b4",
+   "68666d375415508c",
+   "8e914335bfe5b599",
+   "921a521a9adc8279",
+   "a47959687c1a2790",
+   "a8e20d4527c4ed7d",
+   "b288059cf9bc43b5",
+   "bf433c3499c981b5",
+   "c05f5619ec8a9d47",
+   "c72de8296ff2a31a",
+   "d42d6e21eedd1358",
+   "d59b477ecfac6d73",
+   "edc7ea34164993ec",
+   "f44996e783d7e179",
+   "f4a855af47d7f8c4",
+   "faab23d26760688d",
+   "ffcd5810feae0460"
+  ]
+ }
+}

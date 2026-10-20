@@ -1,0 +1,448 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "47d4168d073c4084b1eeba37e2b0007b3784d0f7d098c4eaf2d4b9392d8ba11d",
+ "width": 32,
+ "height": 32,
+ "kind": "other",
+ "name": "library carrel",
+ "label": "modern_city_interior/library-carrel",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 28,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice strip",
+      "rows": "2-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "back partition panel with two bays",
+      "rows": "5-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green desk lamps",
+      "rows": "6-15",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "open books on the desk",
+      "rows": "16-20",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "desk work surface",
+      "rows": "14-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-23"
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the desk. Its work surface runs from about row 14 to row 21. In column x=16 it is tan wood (rows 14-20) and ends in a lighter front-edge line at row 21. Below it, dark apron rows 22-25 (#643008) act as eave shadow, and the legs continue to row 29 as the front face, about 8 rows in total. The top cornice (rows 2-4) is a front-facing strip with no shadow, so it is not counted as a top surface. The back partition (rows 5-13) is a vertical face. The lamps and books are decor. The desk surface is about 8 rows deep, which matches the green 'cabinet: top 5 + edge + eave' and 'seat: top 5 + legs' references rather than a rim-only top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The carrel is a wooden desk with two green panels and cream shelf cubbies. Its edge pixels are 100% near-neutral, so the outline is a uniform near-black line around the whole piece. That is the sticker look. The Beodeul stall and well, which are the closest references, have 1% and 33% neutral edge pixels and use dark brown or red-brown beside the material. Only the lamp-crook reference shares the neutral outline, and it is a thin object. At 12 visible tones per tile the candidate is in range of the hedge (9) but below the well (20) and stall (17). It has 19 distinct colours against 38-40 for those two. The wood, green panel and cream ramps each show only about 3 steps, against about 5-6 in the references. The panels and cubbies are cleanly drawn with no large flat blocks (0% near-flat), but there is little grain, per-plank highlighting or speckle. A careful artist would find it flatter and more outlined than the stall or well beside it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20357
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice strip of the back partition",
+      "rows": "2-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "desk work surface with open books",
+      "rows": "14-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-22"
+     },
+     {
+      "part": "desk lamps",
+      "rows": "6-15",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "open books on desk",
+      "rows": "16-20",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The desk surface is a band of tan rows 14-21 seen from above, with books lying on it. It ends in a lighter front-edge line at row 21, followed by dark shadow and apron at rows 22-25. Below that, two leg groups run to row 30 (the apron and legs together make a front face of about 9 rows). The back partition at rows 5-13 is a vertical face with lamps as decor, and rows 2-4 are a cornice strip. The desk top is therefore the main top surface and is more than a rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small desk with green panels and cream shelves. Its dark edge pixels are 100% near-neutral, and the picture shows a uniform dark line around the whole silhouette. That is the 'sticker' look. The references use tinted outlines: the hedge is at 0% neutral, the cheese stall at 1%, and the well at 33%. Only the thin lamp is at 100%, and a thin pole is a poor comparison. Its 12 visible tones per tile are in the range of the hedge (9) and below the stall (17) and well (20). It has no flat 5x5 areas, so the density is adequate. Each material has only about 3 shading steps, against 5-6 on the stall and well. The wood frame, green panels and shelves are blocked in with little per-material ramp or grain. An artist would not accept it next to the cheese stall or the roofed well, because the outline is neutral black and the shading is shallow.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18839
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "carrel top frame/cornice band",
+      "rows": "2-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "desk work surface with open books",
+      "rows": "14-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-25"
+     },
+     {
+      "part": "back panel (vertical interior wall)",
+      "rows": "5-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green desk lamps",
+      "rows": "6-15",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "open books",
+      "rows": "16-20",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "desk apron and legs",
+      "rows": "22-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the desk. Its work surface runs from rows 14 to 21, which is 8 rows of tan top seen from above. It ends in a light front-edge line at row 21 (L=198) and is followed by dark apron shadow at rows 22-25 (L=51). The apron and legs at rows 22-30 form the front face, 9 rows. The top frame at rows 2-4 also has a light edge line at row 4. The back panel at rows 5-13 is a vertical interior wall, and the lamps and books are decor on the desk. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The carrel is a standing furniture prop, so it matches the reference kind. It uses only 19 distinct colours in total, against 38-40 for the stall and well. Each material (wood frame, green panels, cream shelves) gets only about 3 lightness steps, where the stall and well show 5-6. Measured facts: 100% of its dark edge pixels are near-neutral, against 0-1% for the hedge and stall and 33% for the well. That points to a uniform near-black outline around the whole piece, the 'sticker' look, rather than dark tones of the adjacent material. Visible tones per tile (12) and near-flat coverage (0%) are acceptable and sit within the reference range (9-20), so there are no big flat fills. Even so, the shallow ramps and the neutral outline put it below the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18084
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top frame / cornice strip",
+      "rows": "2-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "back panel with side and center dividers",
+      "rows": "5-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green desk lamps",
+      "rows": "6-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "desk top (work surface)",
+      "rows": "14-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "open books on desk",
+      "rows": "15-20",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front apron and legs",
+      "rows": "22-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the desk. Rows 14-20 are a tan work surface (books and lamps stand on it as decor). Row 21 is a light front-edge line (#e2c292), and row 22 is dark eave shadow (#643008). Below that, an apron and three legs form a front face running to row 29. The back panel (rows 5-13) is a vertical face, which is acceptable because it is a partition and not a horizontal part. The rows 2-4 strip is a front-facing cornice, not a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate's dark edge pixels are 100% near-neutral, so the outline is a uniform near-black line around the frame, as in the 'sticker' look. The bigger Beodeul props (stall, well) have tinted, material-toned edges at 1% and 33% neutral. The candidate has 19 distinct colours in total against about 40 for the stall and well. Its wood frame, green panels and cream shelves each show only about 2-3 lightness steps, against 5-6 on the references. The 12 visible tones per tile are comparable to the hedge (9) but below the stall (17) and well (20). There are no flat fills, since near-flat coverage is 0%. The small panel and shelf details give some texture, but there are no per-plank grain dots or clustered highlights like those on the stall's awning and wood. Overall it reads as a clean but shallower boxy prop with a black outline, and it would look flatter next to the stall and well.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18246
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.030Z",
+ "cells": {
+  "16": [
+   "21426d29df1e79f7",
+   "7230ceac92f41527",
+   "bf906fc4406672cc",
+   "e8dc16ca1160697c"
+  ],
+  "24": [
+   "01b1a08675f0a24b",
+   "03c5dc6d149066d9",
+   "175c3fdf427b8583",
+   "175caf46068530b7",
+   "1c2d784a619b5cb4",
+   "27a4e07e47a3cf72",
+   "3a533a634a255cf4",
+   "4e67430cc112b57b",
+   "5815d93f4279119f",
+   "590a62d025a80e2d",
+   "5bb9f36bab044581",
+   "5ef76ec249f0daa0",
+   "6b575cdbd09f2dfd",
+   "7964211f4abc24c5",
+   "80727cef6091c7a5",
+   "91f069ae554726f6",
+   "c4f5f7707344a222",
+   "ce626cb67437f3d2",
+   "d5653a2dc46d910f",
+   "debbfadc6363c243",
+   "e47c7262636994ba",
+   "f1ad8474fafd54a2",
+   "f5672a8b582e62d0",
+   "f5dcdd773693ea12"
+  ],
+  "32": [
+   "2179962bfbf79df4"
+  ],
+  "48": [
+   "10698eaf9f915cc6",
+   "60f23b7ecdbaae61",
+   "8878b450f7d66579",
+   "b03e3eb7cd781b2b",
+   "cf7f430a53df2fa6",
+   "f39b941c05b2e2e1"
+  ]
+ }
+}

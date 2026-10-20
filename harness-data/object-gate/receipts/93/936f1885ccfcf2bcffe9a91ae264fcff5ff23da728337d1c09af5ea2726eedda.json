@@ -1,0 +1,404 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "936f1885ccfcf2bcffe9a91ae264fcff5ff23da728337d1c09af5ea2726eedda",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "as-chair-toppled",
+ "label": "seats34/jp_city_interior/as-chair-toppled",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(top_down_slab) (3/4)",
+  "3/4: 앞면 2행 < 3 (3/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(top_down_slab) (3/4)",
+   "앞면 2행 < 3 (3/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 26,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat/back plank lying on its side (light vertical stem)",
+      "rows": "3-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper leg/back bar",
+      "rows": "2-5",
+      "evidence": "none",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower bar (leg/back) top with 2-row dark front",
+      "rows": "10-13",
+      "evidence": "seat_back",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-12"
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a sideways H/I shape. The light stem (rows 3-10 at x=8, L 166-200) and the upper bar (rows 3-4) are flat lit surfaces seen from above. Only 1-2 dark rows (row 5 at x=11, rows 11-12 at x=8 and x=4) are drawn as a front face under them. That is fewer than 3 rows of vertical south face and no solid front under the seat surface, so the object reads as a flat top-down slab, not a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny toppled chair of about 14x12 px with only 10 distinct colours in total. Its chair parts read as roughly 2 tones, a light tan and a dark brown, with very little highlight or mid-tone ramp. The wood strokes are flat, with no grain dots or per-plank highlights, unlike the bench reference, which shows several wood steps and plank grain. The outline is dark and mostly tinted brown, but it is thin and used uniformly, so it reads as a sticker-like silhouette. The measured facts of 0 visible tones per tile and 0% near-flat coverage only mean the piece is smaller than a tile, so they do not count for or against it. Judged by eye, it is clearly thinner and flatter than the bench, which is the closest reference. A careful artist would not accept it next to the references without it looking shallower.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(top_down_slab) (1/1)",
+    "앞면 2행 < 3 (1/1)",
+    "윗면/앞면 8/2 — 앞면이 거의 없는 평면도 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(top_down_slab) (1/1)",
+     "앞면 2행 < 3 (1/1)",
+     "윗면/앞면 8/2 — 앞면이 거의 없는 평면도 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 17880
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper bar (backrest or leg of the toppled chair)",
+      "rows": "2-5",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "narrow vertical connector, 5px wide (likely the seat seen edge-on)",
+      "rows": "6-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower bar (seat or legs)",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The silhouette is a Z or S shape: a wide bar at rows 2-5, a 5px-wide stem at rows 6-9, and a bar at rows 10-13. No part has an ellipse, roof or contents. In the lower bar, row 10 is a light 1-row strip, rows 11-12 are darker brown, and row 13 is outline. That is a rim over a vertical face, not a top surface. The upper bar has 2 light rows (3-4) over a dark row 5, which is also only a thin band. The stem at rows 6-9 is a uniformly light vertical strip with no edge line or shadow. Nowhere is there a seat surface 3 or more rows deep seen from above. This reads as a flat profile of a toppled chair, not a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny toppled chair, about 14x12 px, with only 10 distinct colours in total. By eye it shows roughly 2-3 tones: a light tan face, a mid brown, and a dark outline. The reference bench has about 5 wood steps with plank grain and highlights, and the well and stall carry 17-20 visible tones per tile. The candidate's wood parts are flat strips with little highlight or grain, and the dark outline wraps the whole silhouette in a sticker-like way, with no per-part shading. The measured facts (0 tones per tile, 0% flat) only say the piece is smaller than a tile, so they do not count against it, but by eye it is thinner and flatter than the bench reference. A careful artist would not accept it next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 16181
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat/frame lying on its side, light wood plane (stem and right bar)",
+      "rows": "3-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower-left bar (chair leg/back edge) with darker front edge",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12"
+     },
+     {
+      "part": "upper-left bar (leg/rail), brown shaded",
+      "rows": "2-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The toppled chair is a Z/T-shaped silhouette. Its main light-wood plane (L~166-200 at x=8, rows 3-10) is drawn flat, as if seen from straight above. The only darker front face is rows 11-12 on the lower bar (L 95 then 60), followed by the outline at row 13. That is under 3 rows of vertical face. The upper bar's right part ends with a 1-row shade at row 5, which is an edge, not a front face. There is no ellipse and no sloped plane. The drawing reads as a flat, top-down shape with almost no front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny toppled chair of about 10 distinct colours. It shows roughly 3 lightness steps on the wood: a light top edge, a mid tone and a dark brown. The outline leans brown, so it reads as a dark material tone, not a black sticker line (0% near-neutral dark edge pixels). The measured facts are 0 per tile and 0% flat, because the piece is smaller than one tile, so they say nothing here and I judged by eye. By eye, the chair is thin and flat next to the bench, the hedge and especially the stall and well. It has little grain, no per-plank highlights and no texture dots. The bench reference is also simple, but it shows more steps and grain on its slats. A careful artist would see this chair as shallower than the references. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(top_down_slab) (1/1)",
+    "앞면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(top_down_slab) (1/1)",
+     "앞면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 18623
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper bar (backrest or leg, lying horizontal)",
+      "rows": "3-5",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vertical strip (seat surface, seen flat)",
+      "rows": "5-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower bar (leg or rail)",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The toppled chair is drawn as a flat, almost top-down silhouette: a wide upper bar (rows 2-5), a narrow light strip (rows 5-9, width 5), and a lower bar (rows 10-13). The light seat/strip colour (L=200, rows 5-8 at x=8) is a flat plane with no front-edge line and no eave shadow. The only face below it is the darker rows 11-12 (2 rows) before the outline at row 13. No ellipse or roof plane is present, and the front face is under 3 rows, so it reads as a flat slab and not a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny toppled chair, smaller than one tile, and it has only 10 distinct colours. By eye the wood is built from about 3 steps: a light top edge, a mid tone and a dark outline/underside. It has no visible grain, no per-plank highlights and no texture dots. The bench reference is also small and sparse, but it shows clearer plank highlights, a darker underside and leg shading, about 5 steps. The outline pixels lean brown and are not neutral (0% near-neutral), so this is not a sticker outline. The facts show no flat-fill coverage, but the piece is thin and reads flatter than the bench next to it. A careful artist would find it simpler and less shaded than the bench, and richer references such as the well and the stall are far ahead. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(top_down_slab) (1/1)",
+    "앞면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(top_down_slab) (1/1)",
+     "앞면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 19518
+  }
+ ],
+ "decidedAt": "2026-10-20T14:09:20.553Z",
+ "cells": {
+  "16": [
+   "07980622a4702941"
+  ],
+  "24": [
+   "768c54efab97a780",
+   "87820dd8ff074691",
+   "8ab2c5f40cbbac90",
+   "c1ecfc583f13b581",
+   "d98224cd07ff6a14",
+   "f35ea9d99dcd437e"
+  ],
+  "32": [
+   "3b7ea1e6cdca45c3",
+   "4b682e8c53c65154",
+   "537299f19dd67946",
+   "a2136ea17fd90ec2",
+   "c46b1e39f93c5828",
+   "fc939f44a4294ebb"
+  ],
+  "48": [
+   "59707daf76e4413c",
+   "651f150a0e5f7a3e",
+   "859df541f0c7246e",
+   "a2128bb938fc9ef7",
+   "cfc53069a85f4f69",
+   "e537bb93c7131dcc"
+  ]
+ }
+}

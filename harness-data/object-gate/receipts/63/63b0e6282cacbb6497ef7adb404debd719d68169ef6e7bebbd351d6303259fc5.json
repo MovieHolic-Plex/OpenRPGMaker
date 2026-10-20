@@ -1,0 +1,454 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "63b0e6282cacbb6497ef7adb404debd719d68169ef6e7bebbd351d6303259fc5",
+ "width": 32,
+ "height": 32,
+ "kind": "seat",
+ "name": "clinic-dental-chair",
+ "label": "seats34/modern_city_interior/clinic-dental-chair",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(side_profile_no_top) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 2행 < 4 (2/4)",
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 명암 3단 < 4 (2/4)",
+  "화풍: 질감 없음 (1/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(side_profile_no_top) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 2행 < 4 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "명암 3단 < 4 (2/4)",
+   "질감 없음 (1/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 11,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "headrest",
+      "rows": "10-15",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest/seat cushion run (stepped teal band, lit top row then darkening gradient)",
+      "rows": "11-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "leg rest segment",
+      "rows": "15-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "central pole",
+      "rows": "18-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plate",
+      "rows": "24-28",
+      "evidence": "none",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lamp arm and lamp head",
+      "rows": "3-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The chair is drawn as a side profile. The teal body steps diagonally down from the headrest on the left to the leg rest on the right. Each segment has a 1-row light top highlight (rows 11, 13, 15) that grades into darker teal below. That reads as cylindrical shading, not a horizontal seat plane. The silhouette widths (rows 10-19 vary 12-27) follow the diagonal, with no widen-then-narrow ellipse and no front-edge line plus eave shadow. The pole (rows 18-25, width 6) and base (rows 24-28) show only a 1-row top highlight at row 25. No sitting surface is seen from above, so the seat has at most a 1-2 row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small teal chair with a grey lamp arm. It uses only 12 distinct colours across all materials, against 38-40 for the well and the stall, so each material (teal body, grey metal) gets about 3 lightness steps, where Beodeul uses 5-6. The outline is tinted dark blue-grey rather than neutral (0% near-neutral dark edges), so it reads as a dark material tone and not a black sticker line. The measured facts are acceptable: 11 visible tones per tile (hedge 9, stall 17, well 20) and 0% near-flat coverage. By eye, though, the large teal surfaces are smooth with few texture dots, grain or per-part highlights, and the form is simple and a little thin next to the stall and well. The shading is shallow and the piece would look flatter than the references if placed beside them, so it fails."
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 22767
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "headrest and arm with lamp head",
+      "rows": "3-9",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cyan seat and leg cushion, drawn as a stepped diagonal in side profile",
+      "rows": "10-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "central pillar",
+      "rows": "18-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "foot base",
+      "rows": "24-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The chair is drawn as a side profile. The cyan cushion body (x=15, rows 13-17) has a 1-row highlight (#90fcf7) at row 13, then mid-tone rows 14-15, then darker rows 16-17. This is vertical shading of a side face. It has no front-edge line and no eave shadow, and the width profile does not widen and narrow like an ellipse. The pillar (rows 18-25) and the foot base (rows 24-28) are also vertical faces; the base has only a 1-row light top edge. No part shows a horizontal sitting surface seen from above. The backrest and arm are exempt, but the seat itself has no top, so this is not three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small, simple prop with a teal body and a grey arm and lamp head. It has about 11 visible tones per tile, above prop-hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no 5x5 flat fills. The dark edge pixels are 0% neutral, so the outline is a tinted dark version of the neighbouring material and not a black sticker line. It has only about 4 lightness steps on each material, against 5-6 on the larger references, and only 12 distinct colours overall. That makes it a little thinner than the richer references. It is still comparable to the hedge, which has a similar colour count and is accepted at the same scale. The small size and simple subject should not fail it, and the primary measured facts do not mark it as shallow.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 1행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 1행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22721
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "teal seat/body cushion (stepped diagonal profile)",
+      "rows": "10-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "central support pole",
+      "rows": "18-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plate",
+      "rows": "24-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "overhead lamp arm",
+      "rows": "3-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The chair is a side-profile silhouette. The teal body is a set of stepped segments, each shaded from a light top row (rows 11-15) down through mid and dark teal bands with no front-edge line or eave shadow, so the gradient looks like a rounded side, not a horizontal seat surface. The widths widen and narrow only along the diagonal, with no ellipse. The base plate has a 1-row light top (row 25) over 2 darker rows, which is only a rim. The pole and lamp arm are vertical strips. No sitting surface is visible from above, so it reads as a side profile with no top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 11 visible tones per tile and 0% near-flat coverage, which is on par with prop-hedge (9 tones) but below prop-well-roofed (20) and prop-stall-cheese (17). Its dark edge pixels are 0% neutral, so the outlines are tinted dark blue-teal or grey rather than black. That is acceptable. However, the whole piece uses only 12 distinct colours across several materials (teal upholstery, grey metal arm, base). That leaves each material with about 3-4 steps, against the references' 5-6. The upholstery shows only a highlight, a mid tone and a shadow, and the metal arm and lamp look like smooth tubes with no grain, stitching or speckle. Next to the well and stall, the candidate looks thinner and more simplified, closer to a clean icon than a fully modelled Beodeul prop. The outline and flat-fill criteria are fine, but the shading depth and surface texture fall short of the bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 1행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 1행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21195
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "overhead lamp arm and lamp head",
+      "rows": "3-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "headrest/backrest at left end (white pad)",
+      "rows": "11-15",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "main seat/body cushion (diagonal teal band, side view)",
+      "rows": "10-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "central pedestal pole",
+      "rows": "18-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plate",
+      "rows": "24-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The chair is drawn as a side profile. The seat is a diagonal teal band: in column x=15, rows 12 (outline), 13 (light cyan highlight), 14-15 (mid cyan), then 16-17 darker, which is a vertical shading gradient. There is no ellipse, no front-edge line followed by eave shadow, and the width profile only steps along the diagonal (17, 24, 25, 26, 27, 24, 17). The 1-2 light rows (rows 11-13) are a highlight or rim, not a horizontal surface seen from above. The base plate (rows 25-27) has a 1-row light top line (row 25, #a0a6b2) over mid and dark rows, which is a rim on a front-facing bar. This matches the 'side elevation chair' red reference, not a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has only 12 distinct colours across the whole piece. Its teal and grey-blue ramps are therefore shallow, about 3 steps each (highlight, mid, dark), against the 5-6 steps of the Beodeul references. The outline is a tinted dark blue-grey (0% near-neutral edge pixels), not a black sticker line, which is a point in its favour. The tile facts look acceptable: 11 visible tones per tile against 9 for the hedge, and 0% near-flat coverage. But the piece is mostly smooth gradient-free panels with almost no texture dots, grain, speckle or per-part shading. It reads as thinner and flatter next to the well, stall and hedge references, which have shaded clusters and varied grain. The chair and arm shapes are simple and clean but lack the material detail of the references. Since the call is close, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 34807
+  }
+ ],
+ "decidedAt": "2026-10-20T14:09:20.701Z",
+ "cells": {
+  "16": [
+   "1bfa8f047c973f92",
+   "3045af7fb622bed9",
+   "592f7686418a87e5",
+   "5a344401b12a6180"
+  ],
+  "24": [
+   "2a02e832a93e21fd",
+   "437b7a68b1416822",
+   "52a911453360f0ed",
+   "56ec49cd06648a5a",
+   "5e15299cfb1b661f",
+   "6f6d054347399928",
+   "71abf83f14a0a0bf",
+   "7f41e2d5957a14e5",
+   "87b22e6395166e00",
+   "8b7642a14f0bceab",
+   "90100fc524911582",
+   "9cbc057847639eca",
+   "9d11850914e8da9e",
+   "a5bd90b61c8f74c0",
+   "b246fa793cc10dec",
+   "bbbed6dd24d0a369",
+   "bebcab5d07412f5a",
+   "c289f4da2bbfc1d9",
+   "d6eeca8178f93b13",
+   "e19cba8a7f939d4e",
+   "f0d3d70fa8df8d4e",
+   "fa493b18438c84b5",
+   "feeeae559e65edd3"
+  ],
+  "32": [
+   "f55167c9e84ec4e0"
+  ],
+  "48": [
+   "14315d8a8810efb4",
+   "194f2f2f1cb6e3d2",
+   "97af49f35ab0d6f0",
+   "a9b2133fda12a8a6",
+   "cf3ba2dcb1c2ac25",
+   "d34736d6ef5dc7bf"
+  ]
+ }
+}

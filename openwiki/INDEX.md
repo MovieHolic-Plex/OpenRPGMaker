@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **180쪽 / 6467KB / 약 1,891,383 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **180쪽 / 6480KB / 약 1,895,115 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -30,11 +30,11 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-workflows-misc.md` | 90KB | 33KB | 631 | ~25,154 |
 | `openwiki/harnesses/interview-scene-bank.md` | 56KB | 38KB | 197 | ~17,387 |
 | `openwiki/harnesses/monster-collect-species.md` | 58KB | 18KB | 332 | ~17,539 |
-| `openwiki/harnesses/object-gate.md` | 54KB | 5KB | 454 | ~16,369 |
+| `openwiki/harnesses/object-gate.md` | 61KB | 7KB | 498 | ~18,564 |
 | `openwiki/harnesses/super-harness.md` | 102KB | 4KB | 1063 | ~32,225 |
-| `openwiki/jp-city.md` | 84KB | 9KB | 429 | ~24,865 |
+| `openwiki/jp-city.md` | 86KB | 9KB | 432 | ~25,459 |
 | `openwiki/runtime-battle.md` | 398KB | 32KB | 2211 | ~116,882 |
-| `openwiki/runtime-pre-edit-routing.md` | 132KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 908 | ~39,624 |
+| `openwiki/runtime-pre-edit-routing.md` | 132KB | 79KB ⚠상한 초과 — 절을 더 쪼개라 | 908 | ~39,738 |
 | `openwiki/runtime-project-schema.md` | 243KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1743 | ~68,488 |
 | `openwiki/runtime-sessions.md` | 143KB | 53KB ⚠상한 초과 — 절을 더 쪼개라 | 850 | ~38,573 |
 | `openwiki/testing.md` | 236KB | 47KB | 2202 | ~66,062 |
@@ -121,7 +121,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/harnesses/modern-chipset.md` | 3 | `.input.json`, `previous-tileset.json`, `public/assets/modern-exteriors/modern-city-atlas.png` |
 | `openwiki/harnesses/monster-collect-species.md` | 3 | `-lineup-before/after.png`, `qa-runs/battle-anim3/anim.js`, `run.json` |
 | `openwiki/harnesses/native-space-installation.md` | 9 | `art-supplementary-evidence.json`, `authoring-input.json`, `canonical-proof.json`, `draft-project-proof.json`, `input-manifest.json`, `library.json`, `preparation-proof.json`, `project.oprn.json`, `stair-binding.json` |
-| `openwiki/harnesses/object-gate.md` | 1 | `.board.png` |
+| `openwiki/harnesses/object-gate.md` | 2 | `.board.png`, `claude-viz/gate-blocked-1.html` |
 | `openwiki/harnesses/pokemon-character-casting.md` | 15 | `changes.png`, `context.png`, `data/waves/full-cast-v1.json`, `harness-data/pokemon-character-casting/seed.json`, `harness-data/pokemon-character-casting/templates/full-cast-v1/README.md`, `harness-data/pokemon-character-casting/templates/theme-cast-v1/cast.json`, `naru.px.json`, `references/sources.json`, `register-pokemon-character-motion.mjs`, `template.png`, `verify-shots/pokemon-character-casting-full-cast/SUMMARY.md`, `verify-shots/pokemon-character-casting-naru/SUMMARY.md`, `verify-shots/pokemon-character-casting-template/SUMMARY.md`, `waves/theme-cast-v1.json`, `world-manifest.json` |
 | `openwiki/harnesses/pokemon-character-motion.md` | 15 | `apply-emerald-native-motion.mjs`, `apply-pokemon-reviewed-hero.mjs`, `authoring.json`, `gate.json`, `hero/quality-gate.json`, `motion.json`, `portrait.png`, `register-pokemon-character-motion.mjs`, `scripts/asset-gen/pokemon-characters/references/ATTRIBUTION.md`, `verify-shots/emerald-native-motion-20261004/SUMMARY.md`, `verify-shots/pokemon-hand-pixels-20261004/SUMMARY.md`, `verify-shots/pokemon-hero-reference-revision/SUMMARY.md`, `verify-shots/pokemon-hero-refinement-2/SUMMARY.md`, `verify-shots/pokemon-hero-refinement/SUMMARY.md`, `verify-shots/pokemon-hero-shape-revision/SUMMARY.md` |
 | `openwiki/harnesses/romance-scene.md` | 2 | `verify-shots/romance-art/SUMMARY.md`, `verify-shots/romance-scene/SUMMARY.md` |
@@ -289,7 +289,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L253` Live editor AI assistant MCP (same UI session)
 - `L272` Refreshing the wiki
 
-### `openwiki/architecture.md` — 20KB · 120줄 · ~5,553 토큰
+### `openwiki/architecture.md` — 20KB · 120줄 · ~5,635 토큰
 
 절 제목 없음 (평면 목록 페이지).
 
@@ -1625,7 +1625,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L83` 함정
 - `L96` 파일
 
-### `openwiki/harnesses/jp-city.md` — 13KB · 111줄 · ~3,968 토큰
+### `openwiki/harnesses/jp-city.md` — 16KB · 123줄 · ~4,715 토큰
 
 - `L8` 흐름
 - `L19` 명령 (`python3 src/harnesses/jp-city/harness.py …` 또는 `npm run harness -- jp-city …`)
@@ -1637,6 +1637,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L76` 복제에서 바꾼 점 (modern-chipset 대비)
 - `L79` 거리 구성기 조화 검수 — 적대 시각 QA 한 판 (2026-10-13)
 - `L99` 일본 시골(jp-inaka) 쇼케이스 적대 VQA R4 (2026-10-20)
+- `L112` 3/4 깊이 지붕·탈것 윗면 (2026-10-20, 사용자 「가로 공간감만 있다」)
 
 ### `openwiki/harnesses/map-objects.md` — 4KB · 28줄 · ~1,115 토큰
 
@@ -1712,34 +1713,35 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L199` Public draft deployment
   - `L215` Wand scene panels and trial timing
 
-### `openwiki/harnesses/object-gate.md` — 54KB · 454줄 · ~16,369 토큰 · 통째읽기 잘림
+### `openwiki/harnesses/object-gate.md` — 61KB · 498줄 · ~18,564 토큰 · 통째읽기 잘림
 
-- `L4` 왜
-- `L16` 구성
-  - `L28` 저장소 위치 — 개별 저장소 `MovieHolic-Plex/object-gate` (2026-10-20 분리)
-- `L50` 판정
-- `L62` 보정
-- `L75` 시트 칸 관문
-- `L82` 쓰는 법
-- `L99` 부품은 조립 건물로 (2026-10-13)
-- `L106` 2026-10-14 개편 — 한 번에 3/4 + 버들항 화풍
-  - `L119` 보정 결과(프로필 `473db36f963972c9`, rejected, 기록 `calibration/run-473db36f963972c9.json`)
-- `L132` Sonnet 5.5 high 로 판정자 교체 (2026-10-14~15) — 보정 결과 rejected
-- `L153` 우회 길 제거 (2026-10-15)
-- `L167` 2026-10-15 규칙 v6·v7 (작업자 G, 전권 위임) — 3/4 반쪽 통과, 프로필은 아직 rejected
-  - `L169` 판정 구조 (실험으로 정함)
-  - `L184` 보정 표본 등급 (`calibration/tiers.json`)
-  - `L187` 보정 결과 (프로필 `03c2e291e607b97c`)
-  - `L199` 현재 배선 (2026-10-15 실측, `grep refusal|require_pass|require_all`)
-  - `L209` 비-기물(이펙트·초상·캐릭터 칩·트레이너·월드맵 아이콘)이 지나는 길 — 현재 해석
-- `L215` 후속 2·1 — 얇은 소품 기준 그림 보강 + 새 정상 35장 (2026-10-16, 프로필 `e48906a2b68b219a`, 여전히 rejected)
-- `L229` 정면형 소품 종류 `front_prop` (규칙 v8, 2026-10-16) — 보류로만 간다, 프로필은 여전히 rejected
-- `L244` front_prop 사람 승인 기록 (2026-10-16, 사용자 결정 옵션 2) — 승인 입구만 열었고 프로필은 여전히 rejected
-- `L255` 2026-10-20 1차(철회됨) — 프로필 `ee216f0de5822996` calibrated 로 머지했다가 정정 (규칙·지시문 변경 없음)
-- `L292` 2026-10-20 정정 — 선택 편향 철회, 블라인드 화소 규칙으로 다시 재니 rejected
-- `L322` 2026-10-20 규칙 v9 — 판정자 답 근거로 고침 + 얼린 새 숨김 fresh4 로 최종 측정 (프로필 `1db03a95223e5b0b`, rejected)
-- `L367` 보류(사람 확인) 승인 길 — 검토 화면 `serve-holds` (2026-10-20)
-- `L410` 규칙 v10 — 좌석 등받이·팔걸이 면제 (사용자 결정 2026-10-20, 프로필 `4d8774b517f41638`, rejected)
+- `L5` 사람 허용이 최종 (사용자 결정 2026-10-20, 옵션 A)
+- `L48` 왜
+- `L60` 구성
+  - `L72` 저장소 위치 — 개별 저장소 `MovieHolic-Plex/object-gate` (2026-10-20 분리)
+- `L94` 판정
+- `L106` 보정
+- `L119` 시트 칸 관문
+- `L126` 쓰는 법
+- `L143` 부품은 조립 건물로 (2026-10-13)
+- `L150` 2026-10-14 개편 — 한 번에 3/4 + 버들항 화풍
+  - `L163` 보정 결과(프로필 `473db36f963972c9`, rejected, 기록 `calibration/run-473db36f963972c9.json`)
+- `L176` Sonnet 5.5 high 로 판정자 교체 (2026-10-14~15) — 보정 결과 rejected
+- `L197` 우회 길 제거 (2026-10-15)
+- `L211` 2026-10-15 규칙 v6·v7 (작업자 G, 전권 위임) — 3/4 반쪽 통과, 프로필은 아직 rejected
+  - `L213` 판정 구조 (실험으로 정함)
+  - `L228` 보정 표본 등급 (`calibration/tiers.json`)
+  - `L231` 보정 결과 (프로필 `03c2e291e607b97c`)
+  - `L243` 현재 배선 (2026-10-15 실측, `grep refusal|require_pass|require_all`)
+  - `L253` 비-기물(이펙트·초상·캐릭터 칩·트레이너·월드맵 아이콘)이 지나는 길 — 현재 해석
+- `L259` 후속 2·1 — 얇은 소품 기준 그림 보강 + 새 정상 35장 (2026-10-16, 프로필 `e48906a2b68b219a`, 여전히 rejected)
+- `L273` 정면형 소품 종류 `front_prop` (규칙 v8, 2026-10-16) — 보류로만 간다, 프로필은 여전히 rejected
+- `L288` front_prop 사람 승인 기록 (2026-10-16, 사용자 결정 옵션 2) — 승인 입구만 열었고 프로필은 여전히 rejected
+- `L299` 2026-10-20 1차(철회됨) — 프로필 `ee216f0de5822996` calibrated 로 머지했다가 정정 (규칙·지시문 변경 없음)
+- `L336` 2026-10-20 정정 — 선택 편향 철회, 블라인드 화소 규칙으로 다시 재니 rejected
+- `L366` 2026-10-20 규칙 v9 — 판정자 답 근거로 고침 + 얼린 새 숨김 fresh4 로 최종 측정 (프로필 `1db03a95223e5b0b`, rejected)
+- `L411` 보류(사람 확인) 승인 길 — 검토 화면 `serve-holds` (2026-10-20 낮, 같은 날 저녁 「사람 허용이 최종」 으로 넓어짐 — 위 절이 현행)
+- `L454` 규칙 v10 — 좌석 등받이·팔걸이 면제 (사용자 결정 2026-10-20, 프로필 `4d8774b517f41638`, rejected)
 
 ### `openwiki/harnesses/pokemon-character-casting.md` — 25KB · 205줄 · ~6,489 토큰
 
@@ -1964,50 +1966,50 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L149` 새 장소 12장 (2026-10-04, 사냥터·동굴·실내 방 6·궁 내부 4)
 - `L176` 한계
 
-### `openwiki/jp-city.md` — 84KB · 429줄 · ~24,865 토큰 · 통째읽기 잘림
+### `openwiki/jp-city.md` — 86KB · 432줄 · ~25,459 토큰 · 통째읽기 잘림
 
 - `L6` 식별자
 - `L17` 파일
 - `L24` 굽기 규약 (TS 가 기대하는 것)
-- `L30` 기존 프로젝트 갱신 규칙
-- `L40` 행인·팔레트
-- `L45` 조수 정책
-- `L49` M3 건물 조립 도구 (`build_jp_city_building`)
-  - `L54` 파일
-  - `L65` 부품 사전 생성법
-  - `L77` 조립 규칙 (`Kit` 의 TS 이식)
-  - `L86` 입력 스키마 (`build_jp_city_building`)
-  - `L104` 오류 코드
-  - `L119` 차이 증명·변조 시험 실행
-  - `L129` 알려진 한계
-  - `L137` 조수 정책 (M3 변경)
-  - `L142` 조수 연결 (2026-10-04 조사·수정) — 조수가 이 칩셋과 건물 도구를 «고르는» 길
-- `L179` 손 도트 건물 69종 + 상점가 줄 8종 (`jp-bldg-*`, 블록 `buildings`) — 2026-10-06
-  - `L184` 그림 원본 (`scripts/content/jp-city/houses/`)
-  - `L191` 굽기 (`blocks/buildings.py`, `BLOCK_ORDER` 넷째)
-  - `L201` 조사 반영 (2026-10-06 둘째 판)
-  - `L206` 한계
-- `L209` 손 도트 거리 시설 60종 (블록 `street_hand`, `BLOCK_ORDER` 다섯째) — 2026-10-06
-- `L220` 동네 한 장 예제 (`scripts/content/jp-city/maps/town.mjs`) — 2026-10-06
-- `L229` 小学校 블록·예제 맵 (블록 `school`, `BLOCK_ORDER` 여섯째) — 2026-10-07
-- `L236` 적대적 검증 관문 (`scripts/content/jp-city/gate/adversarial_gate.py`) — 2026-10-07
-- `L242` kitmap 공용 검사기 (`scripts/content/jp-city/maps/kitmap.mjs`)
-- `L249` 탈것 — 차·버스·노면전차·전철·지하철 (2026-10-07)
-- `L265` 노면전차 거리·지하철역 블록 + さくら町駅 예제 (2026-10-07)
-- `L276` 일본 집 실내 (블록 `interior_*` 7개, `BLOCK_ORDER` 끝) — 2026-10-07
-- `L305` 일본 실내 2묶음 — 가게·공공·집 보강 + 거리 문 잇기 (2026-10-07)
-- `L317` 지면 오토타일은 맵 밖을 같은 재료로 센다 (2026-10-20)
-- `L326` 실제 거리 조사 (2026-10-06)
-- `L330` AI 참고문서 (10용도 · 61쪽 · 그림 167장)
-  - `L347` 굽는 법 (한 줄)
-- `L362` 거리 구성기 `compose_jp_city_street` (2026-10-12)
-- `L372` 하천 거리 (2026-10-12)
-- `L378` 일체형 1층 정면 (2026-10-12)
-- `L385` 고층·거리 소품 (2026-10-13)
-- `L390` 조수 지침: compose 우선 (2026-10-13)
-- `L394` 상가 띠 3/4 관문 = 조립 건물 영수증 (2026-10-13)
-- `L401` 빈터 쓰임 단계 `fillLotUses` (2026-10-14)
-- `L412` 시설 실내 6묶음 — 병원·학교 별관·IT 사옥 + 방 구성(program)·길 고르기 (2026-10-14)
+- `L33` 기존 프로젝트 갱신 규칙
+- `L43` 행인·팔레트
+- `L48` 조수 정책
+- `L52` M3 건물 조립 도구 (`build_jp_city_building`)
+  - `L57` 파일
+  - `L68` 부품 사전 생성법
+  - `L80` 조립 규칙 (`Kit` 의 TS 이식)
+  - `L89` 입력 스키마 (`build_jp_city_building`)
+  - `L107` 오류 코드
+  - `L122` 차이 증명·변조 시험 실행
+  - `L132` 알려진 한계
+  - `L140` 조수 정책 (M3 변경)
+  - `L145` 조수 연결 (2026-10-04 조사·수정) — 조수가 이 칩셋과 건물 도구를 «고르는» 길
+- `L182` 손 도트 건물 69종 + 상점가 줄 8종 (`jp-bldg-*`, 블록 `buildings`) — 2026-10-06
+  - `L187` 그림 원본 (`scripts/content/jp-city/houses/`)
+  - `L194` 굽기 (`blocks/buildings.py`, `BLOCK_ORDER` 넷째)
+  - `L204` 조사 반영 (2026-10-06 둘째 판)
+  - `L209` 한계
+- `L212` 손 도트 거리 시설 60종 (블록 `street_hand`, `BLOCK_ORDER` 다섯째) — 2026-10-06
+- `L223` 동네 한 장 예제 (`scripts/content/jp-city/maps/town.mjs`) — 2026-10-06
+- `L232` 小学校 블록·예제 맵 (블록 `school`, `BLOCK_ORDER` 여섯째) — 2026-10-07
+- `L239` 적대적 검증 관문 (`scripts/content/jp-city/gate/adversarial_gate.py`) — 2026-10-07
+- `L245` kitmap 공용 검사기 (`scripts/content/jp-city/maps/kitmap.mjs`)
+- `L252` 탈것 — 차·버스·노면전차·전철·지하철 (2026-10-07)
+- `L268` 노면전차 거리·지하철역 블록 + さくら町駅 예제 (2026-10-07)
+- `L279` 일본 집 실내 (블록 `interior_*` 7개, `BLOCK_ORDER` 끝) — 2026-10-07
+- `L308` 일본 실내 2묶음 — 가게·공공·집 보강 + 거리 문 잇기 (2026-10-07)
+- `L320` 지면 오토타일은 맵 밖을 같은 재료로 센다 (2026-10-20)
+- `L329` 실제 거리 조사 (2026-10-06)
+- `L333` AI 참고문서 (10용도 · 61쪽 · 그림 167장)
+  - `L350` 굽는 법 (한 줄)
+- `L365` 거리 구성기 `compose_jp_city_street` (2026-10-12)
+- `L375` 하천 거리 (2026-10-12)
+- `L381` 일체형 1층 정면 (2026-10-12)
+- `L388` 고층·거리 소품 (2026-10-13)
+- `L393` 조수 지침: compose 우선 (2026-10-13)
+- `L397` 상가 띠 3/4 관문 = 조립 건물 영수증 (2026-10-13)
+- `L404` 빈터 쓰임 단계 `fillLotUses` (2026-10-14)
+- `L415` 시설 실내 6묶음 — 병원·학교 별관·IT 사옥 + 방 구성(program)·길 고르기 (2026-10-14)
 
 ### `openwiki/licensing.md` — 5KB · 53줄 · ~1,589 토큰
 
@@ -2594,7 +2596,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L306` 그림 컷 준비와 direction (2026-10-04)
 - `L314` 글자·장면 오프닝 연출 (2026-10-04)
 
-### `openwiki/runtime-pre-edit-routing.md` — 132KB · 908줄 · ~39,624 토큰 · 통째읽기 잘림
+### `openwiki/runtime-pre-edit-routing.md` — 132KB · 908줄 · ~39,738 토큰 · 통째읽기 잘림
 
 - `L1` 지상 격자 위로 돌출한 원본 구조 (2026-10-06)
 - `L10` 태양 지형 그림자 (2026-10-04)

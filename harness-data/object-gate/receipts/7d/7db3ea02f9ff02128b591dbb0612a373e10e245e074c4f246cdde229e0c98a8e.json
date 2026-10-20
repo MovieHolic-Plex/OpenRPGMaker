@@ -1,0 +1,374 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7db3ea02f9ff02128b591dbb0612a373e10e245e074c4f246cdde229e0c98a8e",
+ "width": 16,
+ "height": 48,
+ "kind": "structure",
+ "name": "hospital curtain screen",
+ "label": "modern_city_interior/hospital-curtain-screen",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 11,
+  "darkV5": 60,
+  "nearBlackEdge": 0.02,
+  "opaqueTiles": 3
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top rail / header band",
+      "rows": "3-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "green curtain panels (front face)",
+      "rows": "9-38",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side posts and feet",
+      "rows": "9-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Columns x=4, 8 and 11 all show a top band at rows 3-5 that grades from grey to near-white (L 169, 224, 244). Row 6 is a darker line (L=111) that works as the front-edge line, and rows 7-8 are dark eave shadow (L=62). Below that the green curtain front face runs rows 9-38 (30 rows), with posts and feet to row 45. The top band is thin and could also be read as a front-facing valance, but it has an edge line and a shadow, which meets evidence (a)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny curtain screen, roughly one tile wide, set against two full buildings with roofs, walls and doors. It is not a building, so the kind does not match and the building references are a poor yardstick. Judged by eye, it shows about 3 green ramp steps on the curtain plus a pale grey frame. The outline is neutral dark grey/black: 100% of dark edge pixels are near-neutral, against 7-9% for the references, which carry brown-tinted outlines. That is the sticker look. The 9 visible tones per tile are below the references' 10-12, and the object has only 12 distinct colours against 66-185. Near-flat coverage is 0%, but that comes from the small size, not from rich grain. The curtain folds are only lightly suggested and there is no tile scallop, grain or speckle. A careful artist would find it thinner, flatter and more sticker-like next to the references. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15641
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top rail / header band",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "green curtain panels",
+      "rows": "9-39",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "feet / base legs",
+      "rows": "40-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The columns show a light band at rows 3-5 (L 169-244) under a dark outline at row 2. It ends in a darker front-edge line at row 6 (L=111), followed by dark eave shadow at rows 7-8, which fits evidence (a) for a top surface. Below it the front face runs from rows 7 to 39: green curtain panels (rows 9-39) between dark frame edges, with legs and base at rows 40-45. The silhouette is a constant 16 wide for rows 2-39 and narrows to the feet. No receding side face is drawn. The top band is thin (about 4 rows), but it has an edge line and shadow, so it is not just a flat front-facing strip."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny curtain screen of about 2x4 tiles. It is not a whole building with roof, walls and door or windows, so it does not match the reference kind. It has a grey frame with a thin dark outline and a green curtain with only 2-3 greens and simple vertical folds. The measured dark edge pixels are 100% near-neutral, against 7-9% for the references, so the outline is a neutral near-black line rather than a tinted material tone. The references carry per-tile roof scallops, plaster speckle and shaded stones. The candidate has no comparable grain or clumps; its curtain and frame are close to flat fills. Its 9 visible tones per tile come mostly from the frame and folds and are fewer than the references' 10-12, and its 12 total colours are far below 66-185. On the measured outline, the shallow shading and the lack of texture it reads as a sticker-like prop beside the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 18406
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top rail/header band",
+      "rows": "3-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "green curtain panels (front face)",
+      "rows": "9-39",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "frame posts and feet",
+      "rows": "40-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 37,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top rail has a light gradient band in rows 3-5 (L 169, 224, 244). Row 6 (L 111) is a darker front-edge line, and rows 7-8 (L 62) are dark eave shadow. This matches evidence (a), so it is not just a flat cornice strip. Below it the green curtain panels run from row 9 to row 39, with frame posts and feet in rows 40-45, giving a front face of about 37 rows. The top surface is thin at about 4 rows, but it has an edge line and shadow. No receding side face is drawn: the light stripe at the left edge is a frame post seen face-on."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny curtain screen (about 2 tiles wide at most), not a whole building with roof, walls and door, so it does not match the reference kind. It has a light grey top rail and a green curtain with only 2-3 green steps and little grain. Its dark edge pixels are 100% near-neutral, which indicates a black/grey sticker outline, whereas the references are 7-9%. It has 9 visible tones per tile against 10-12 for the references, which is only slightly lower on the numbers. But the object is small and mostly smooth, with no per-tile highlights, speckle or scallop texture. It looks flatter and thinner than either reference. The neutral outline and shallow ramps are the deciding failures.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 19105
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top rail / header band",
+      "rows": "3-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "green curtain panels",
+      "rows": "9-39",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark checkered base / feet",
+      "rows": "40-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top rail spans rows 2-8. Row 2 is the dark outline. Rows 3-5 are a light band that brightens from L=169 to 244. Row 6 (L=111) is a mid-gray front-edge line, followed by dark eave shadow on rows 7-8 (L=62). That matches evidence (a), so the rail reads as a thin top surface about 4 rows tall. Below it, the green curtain panels (rows 9-39, about 31 rows) are the front face. The panels are vertical faces, which is normal for a curtain. The base below (rows 40-45) is narrow and dark. The top is thin relative to the body, so this is a marginal three-quarter reading."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny curtain screen, about 24x40 px, with a grey frame and green curtain panels. It is not a whole building, so it does not match the reference kind (roof, walls, door). By eye it has only about 3 green steps on the curtain and a flat grey top bar and frame. The measured facts say 9 visible tones per tile against 10-12 in the references, and 0% near-flat coverage, which I discount because the piece is so small. The dark edge pixels are 100% near-neutral, against 7-9% for the references, so the outline is a neutral dark line and reads as a sticker, while the references use tinted material-tone edges. The curtain has some vertical fold lines but little grain, and the frame has no texture. It is thinner and flatter than the Beodeul buildings, which carry roof tile scallops, plaster speckle and stone shading at 5-6 steps per material. The neutral outline and shallow ramps make it fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 19331
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.930Z",
+ "cells": {
+  "16": [
+   "158a2fcea0b74e38",
+   "2af6461c952b9d6c",
+   "4636e9d4f41563a0"
+  ],
+  "24": [
+   "486509af29c5a3f2",
+   "49a2ec2adde06255",
+   "6a4159d684fed0bd",
+   "7298bd9e48a18ecc",
+   "7d45d3aada04f462",
+   "a78ba26b3d4bf165"
+  ],
+  "32": [
+   "016d92c4cfb72b17",
+   "0a3ae7d75b60b3cb",
+   "0c0c7e4ff6962823",
+   "20789398866bb106",
+   "2d312d0b6d3f8eb3",
+   "8a7262ffcc090829",
+   "8e7871ac04a15af9",
+   "9120f5a1785b723b",
+   "b66ab84d2f2dbd82",
+   "dc48b5d0aaabb7f0",
+   "e3efc75309298085",
+   "e65d06953a85d2f8"
+  ],
+  "48": [
+   "352f3bf980ac2888",
+   "b8d19e0e04d3af41",
+   "e5173933029eb3a9"
+  ]
+ }
+}

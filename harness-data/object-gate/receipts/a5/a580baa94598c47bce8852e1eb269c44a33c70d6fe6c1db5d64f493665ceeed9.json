@@ -1,0 +1,361 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a580baa94598c47bce8852e1eb269c44a33c70d6fe6c1db5d64f493665ceeed9",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "dept directory kiosk",
+ "label": "modern_city_interior/dept-directory-kiosk",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 17,
+  "darkV5": 46,
+  "nearBlackEdge": 0.13,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap of the kiosk head",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-6"
+     },
+     {
+      "part": "screen panel with the directory display",
+      "rows": "6-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth band",
+      "rows": "26-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a light band whose brightness shifts downward, and it ends in a darker front-edge line at row 5. Row 6 is a darker eave row just below it, so I read the band as a top surface about 4 rows tall. Below it the front face runs from row 6 to row 30. It holds the screen panel (rows 6-17), a narrower neck (rows 20-23, width 10), and a base band (rows 26-30). The band at rows 26-28 looks front-facing, with no separate top and edge line. The top is thin but has an edge line and shadow, so the drawing is not a pure front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small single-tile kiosk prop, not a full house, so it can't show roof-tile scallops or plaster grain. Judged by eye and against the facts, it holds up. It reads as a grey-blue cabinet with a lighter bevel, a darker side, a lit screen panel and small coloured buttons. That is about 4 visible steps on the body, fewer than the references' 5-6 per material, but it is a tiny object. The measured facts support it: 16 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is tinted rather than a black sticker line. It has no large flat fills. It is a little thinner in material ramps than the house references, but a careful artist would accept it next to them without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21541
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap of kiosk head",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "screen panel face with directory display",
+      "rows": "6-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "narrow waist/neck",
+      "rows": "19-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth bevel",
+      "rows": "26-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a light band that brightens from L144 to L244, then row 5 (L111) acts as the front-edge line, followed by the dark face and screen from row 6. That counts as a top surface of about 4 rows above a front face of about 25 rows (rows 6-30). The base at rows 26-30 mirrors the top bevel (224, 244, 169, 144, 50), so the top band could instead be read as a symmetric frame bevel. I measured it as a top surface, but a weak one. The waist at rows 20-23 narrows from width 14 to 10, which is a normal south-face detail rather than a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small single-tile-sized kiosk, so it only loosely matches the full-house references. It has no large flat areas: near-flat coverage is 0%, the same as both references. It shows 16 visible tones in its full 16x16 tile, against 12 and 10 for the references, so density is at or above them. The outline is a dark, bluish-grey tint rather than black, and 0% of its dark edge pixels are near-neutral, so it does not read as a sticker outline. The grey body has about 4 steps (highlight, light, mid, dark), and the screen and buttons add small accent clusters. That is somewhat fewer than the roughly 6 steps on the reference roofs, and the total of 18 colours is limited, but for a prop this size the shading and detail hold up beside the references, so it passes narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 29122
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap band of kiosk head",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "screen with menu list on the head",
+      "rows": "7-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "narrow neck",
+      "rows": "19-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth with light bevel band",
+      "rows": "24-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a light band that brightens from L=144 to 244 and ends in a darker front-edge line at row 5 (L=111). Rows 6-7 are darker (L=71, then 41) and work as eave shadow above the dark face carrying the screen in rows 7-17. The front face runs from row 6 to row 30, well over 3 rows. The head is 14 wide, the neck narrows to 10 at rows 20-23, and the base widens back to 14. This is a weak read. The base has a similar light bevel at rows 26-29, so the top band could be only a framing bevel. I counted it as a top surface because it has a band, an edge line and shadow below it."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny free-standing kiosk, about 11x18 source pixels. It has no roof, wall or door structure, so the building references only loosely match its kind. Measured facts are acceptable: 16 visible tones per tile (references 12 and 10), 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is tinted, not pure black. By eye, though, the body is a pale grey-white slab with only about 3-4 lightness steps, against 5-6 per material on the references. The outline looks like a fairly uniform dark line around the whole silhouette, which gives a sticker-like look. The screen and button dots add some detail but not the per-material grain, speckle or clump texture the references carry. Only 18 distinct colours in total, versus 185 and 66, confirms the shallower ramps. A careful artist would find it thinner and flatter than the references, so with the doubt about kind and shading depth it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 26211
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "kiosk cap / top slab",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "screen panel with directory display",
+      "rows": "7-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth bevel",
+      "rows": "26-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a light band at the top of the full 14px width. It brightens from L=144 to L=244 and ends in a darker front-edge line at row 5 (L=111). The darker frame rows from 6 work as eave shadow, and the front face continues below. The front face is the framed directory screen, rows 6-18, plus a narrower neck at rows 20-23 and a base. The base bevel at rows 26-29 mirrors the top band and reads as a front-facing chamfer, not a second top surface. It is a minor part. Overall the top band and the tall front face give a modest three-quarter reading. The top band is somewhat bevel-like, so the top surface is on the thin side."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a tiny, roughly one-tile kiosk next to two full houses with roofs and walls. The measured facts are fine: 16 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is tinted and not a black sticker line. By eye, though, the main material ramp is shallow. The grey/white casing reads as about 4 steps, against 5-6 on the reference roofs and walls. The casing panels are smooth, with no grain, speckle or per-element highlights like the tile scallops and stone shading on the references. Most of the tone count comes from the small screen and button details, not from shaded material. Next to the richly textured references it looks flatter and more sticker-like, so I fail it on shading depth and texture even though the numbers are acceptable.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 26647
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.815Z",
+ "cells": {
+  "16": [
+   "19f84b2e6d453096",
+   "b72922a2bf9c5d85"
+  ],
+  "24": [
+   "160ec4b28adda012",
+   "218cc4c1f45c9028",
+   "493233678e56ce23",
+   "4d8d541ab2689092",
+   "552546b9d1f3f357",
+   "87175e02460310b8",
+   "888d93aa8b119ba0",
+   "8dad40104565949d",
+   "9b2bfd7db44b6ac2",
+   "eb5e7a94e72044a5",
+   "ec806a83a94ee805",
+   "f5f0e772357c749c"
+  ],
+  "32": [
+   "23ab8de78f8aa41b",
+   "a5584d55ec60259c",
+   "cae1c3fd0cc7ba0e"
+  ],
+  "48": [
+   "05d7540888537ee0",
+   "1c493c9c9b973b95",
+   "20d927bb93d0212c",
+   "42b7693c994a4f9a",
+   "da2e67cc33e3d98f",
+   "e594aae6e3de073a"
+  ]
+ }
+}

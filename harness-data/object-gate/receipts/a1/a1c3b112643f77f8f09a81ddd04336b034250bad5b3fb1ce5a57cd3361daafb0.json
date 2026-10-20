@@ -1,0 +1,337 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a1c3b112643f77f8f09a81ddd04336b034250bad5b3fb1ce5a57cd3361daafb0",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "home washing machine",
+ "label": "modern_city_interior/home-washing-machine",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel of washer body",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "control strip with display and dial",
+      "rows": "8-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face with round drum door",
+      "rows": "10-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-6 form a light band at the top (L 166, then 205, then 243). Row 7 is a thin edge line (L=195 at x=8 and x=11). Rows 8-9 are dark at x=11 and act as eave shadow. Below that is a front face of about 23 rows (rows 8-30) holding the control strip and a large circular drum door. The top band is weakly distinct from the front face, so this reading is borderline. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small front-loader about one tile wide. It has a control panel strip, a round porthole door with a dark drum, and a light body with a few steps of grey-blue shading. It shows 11 visible tones per tile, above the hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no flat fills, and none of its dark edge pixels are neutral, so the outline is tinted rather than near-black sticker lines. Texture is modest: the door ring, knobs and panel details give some variation, but there is little grain on the body. That is acceptable for a smooth appliance surface, and it would sit next to the references without looking thinner or more sticker-like than the hedge or lamp. It is slightly less rich than the stall and well, which are bigger and more detailed objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22654
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band of the machine",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "control panel strip with display and button",
+      "rows": "8-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "round porthole door and drum",
+      "rows": "13-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "26-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-6 form a light band with a gradient (L 166, 205, 243). A 1-row edge line sits at row 7 (L about 195), and darker rows 8-9 follow it, so the band reads as a top surface above the front face. The front face below runs from about row 8 to row 29 and holds the control strip, the circular porthole door and the base. The silhouette is a flat 16 px wide with no receding side face. This is a borderline call, because the band could instead be read as a bevelled header on a pure front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a roughly one-tile-wide, two-tile-tall appliance, so it is comparable to the other props. It measures 11 visible tones per full tile, above the hedge (9) and below the well (20) and cheese stall (17). Near-flat coverage is 0%, so the casing and drum have no large flat fills. The drum shows concentric rings and a highlight, and the control panel has small dial and button detail. The casing has about 5 lightness steps from white through light grey to a darker blue-grey. Dark edge pixels are 0% neutral, so the outline leans toward a tinted, darker version of the casing, not a uniform black sticker line. It is somewhat less rich than the large stall and well, with only 17 distinct colours against 38-40 for those, but that is reasonable for a small, simple object. A careful artist would accept it next to the references without it looking noticeably flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24322
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "washer top panel (lid)",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "control strip with window and knob",
+      "rows": "8-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face with round drum door",
+      "rows": "10-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The columns at x=8 and x=11 show a light band at rows 2-6 (L 166, 205, then 243). It ends in a front-edge line at row 7 (L=195), followed by dark rows 8-9 that act as eave shadow. That gives a top surface about 5 rows deep. Below it the front face runs rows 8-30 (about 23 rows) with a control strip and a circular drum door. The body is a single box, so no part lacks a top. The top band is thin and lies close to the control strip, so the top-surface reading is somewhat borderline."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a one-tile-wide washing machine with a control panel, a round drum door with ring and glass shading, and a body panel. It has 11 visible tones per tile, above prop-hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no 5x5 flat fills. The dark edge pixels are 0% neutral, so the outline leans blue-grey and follows the adjacent material rather than a black sticker line. The body ramp is about 5 steps (highlight, light, mid, shadow, dark edge), and the drum has concentric shading. Texture is more modest than the stall or well because the white enamel panels are smooth by nature. A careful artist would still accept it next to the references without it looking thinner or flatter than the hedge or bench.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17657
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "machine top panel",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "front face with control strip and round drum door",
+      "rows": "8-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-6 form a light top band that shades from L=166 to 205 to 243. It ends in a 1-row edge line at row 7 (L=195 at x=8 and x=11). Rows 8-9 below it are darker, which reads as eave shadow, and the control strip and drum door hang from there. The front face runs from row 8 to row 30, about 23 rows, with a base band at rows 26-29. The top band is only 5 rows and is partly ambiguous because the control strip is drawn face-on, but it meets evidence (a). No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 11 visible tones per 16x16 tile, above prop-hedge (9) and below prop-stall-cheese (17) and prop-well-roofed (20). Near-flat coverage is 0%, so there are no 5x5 flat fills. The body, drum ring and door glass show a graded ramp of about 5 steps, with highlights and a dark drum interior. The measured near-neutral share of dark edge pixels is 0%, so the outline is tinted dark and not a black sticker line, though the picture is too small to confirm the tint by eye. Total colours (17) are fewer than the busier references (38-40), and the smooth appliance surfaces have less grain than the stall or well. That makes it slightly leaner than the richest references, but it is not shallow and sits comfortably beside the hedge and bench at the same scale.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18763
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.898Z",
+ "cells": {
+  "16": [
+   "1210d97cf20cc261",
+   "e7afb9deea8509b0"
+  ],
+  "24": [
+   "1634ca915ef10f63",
+   "31c89cbf2d118203",
+   "5267898238d63b5a",
+   "5339ea82191dc7fc",
+   "560ed3da81f582a8",
+   "5bbd941b0f3898d1",
+   "7fe03d43ab6db6cb",
+   "95213d88f9201619",
+   "a938ac4b7321d5b8",
+   "c5e928f0412a7bc6",
+   "c98979ee496e5f23",
+   "e039b8132f9444ff"
+  ],
+  "32": [
+   "1af5a52b3700356e",
+   "4fcf0340491bf99c",
+   "77538856e667a07c"
+  ],
+  "48": [
+   "210fa1fec13f62dd",
+   "6f5b7596f5189161",
+   "91dec90ce9f2c8fe",
+   "d7cda1e39c534acb",
+   "dfdf7fe867b10e93",
+   "f2f11d465bba48f5"
+  ]
+ }
+}

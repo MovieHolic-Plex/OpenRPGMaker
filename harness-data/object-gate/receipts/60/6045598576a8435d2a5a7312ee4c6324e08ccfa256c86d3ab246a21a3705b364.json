@@ -1,0 +1,366 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6045598576a8435d2a5a7312ee4c6324e08ccfa256c86d3ab246a21a3705b364",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "art plinth",
+ "label": "modern_city_interior/art-plinth",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 윗면 2행 < 4 (2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "윗면 2행 < 4 (2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "glass display case above the plinth, drawn as a pale vertical panel",
+      "rows": "2-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold figurine inside the case",
+      "rows": "6-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plinth top strip (light band)",
+      "rows": "13-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plinth front face",
+      "rows": "15-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a constant 12 px wide for rows 1-29, so it is a flat rectangle with no widening or narrowing. The pale case above (rows 2-12) is a vertical glass panel with a gold figurine, which counts as decor. Below it, the plinth shows only a 2-row light strip (rows 13-14, L=251) above a uniform grey front face (rows 15-25) and a base shadow (rows 26-27). There is no ellipse, no clear front-edge line and no eave shadow, so the strip is at most a rim. The object reads as a front elevation, not a box with a visible lid."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small stone plinth with a gold emblem on its face. It carries 12 visible tones per tile, which is above prop-hedge (9) and in the range of the richer references (stall 17, well 20). Near-flat coverage is 0%, so the pale stone body has no 5x5 flat fills, and the picture shows a lit face, a darker side and a base. The dark edge pixels are 0% near-neutral, so the outline leans toward the material tone rather than a black sticker line. The stone ramp has about 4 steps against roughly 5-6 in the references, which is slightly shallower, and the grain is modest. For a simple single-tile prop it holds up next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25357
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gold ornament on plinth top",
+      "rows": "6-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plinth top (pale blue-white plane)",
+      "rows": "3-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plinth front face",
+      "rows": "13-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The columns show a pale blue-white region in rows 3-11 (#eef9ff). A 1-row line at row 12 (L=190, #bbbec5) ends it, and a lighter bevel band at rows 13-14 (L=251) sits below the line. Below that is a grey-white front face in rows 13-25 (L=222), then a dark base at rows 26-29. I read rows 3-12 as the plinth's top plane seen from above, about 10 rows tall on a 12-wide body. That fits a foreshortened square top. The gold ornament in rows 6-11 has a dark brown outline and stands on that top, so it is decor. The reading is uncertain: rows 3-12 could instead be a vertical glass backdrop, which would leave only a 2-row rim at rows 13-14 and make this a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The plinth is a small, simple stone pillar with a gold medallion on top. The measured facts support it: 12 visible tones per 16x16 tile, above the hedge reference (9) and below the stall (17) and well (20). Near-flat coverage is 0%, with no 5x5 flat fills. Dark edge pixels are 0% neutral, so the outline leans toward the material's tone rather than being a sticker-style black line. By eye, the stone body has a lit face, a shaded side and a base/cap with several grey steps, and the medallion has its own highlight and shadow. That is about 5 steps against Beodeul's 5-6. Surface grain is modest but present, so texture is 'some' rather than 'rich'. It would sit acceptably beside the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 32736
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "golden statuette/figure inside case",
+      "rows": "6-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass-like upper panel (vertical, face-on)",
+      "rows": "3-12",
+      "evidence": "none",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plinth top strip",
+      "rows": "13-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plinth front face",
+      "rows": "15-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a uniform 12px-wide tall rectangle (rows 1-29). Rows 3-12 are a pale vertical panel with a small gold figure (decor) and a line at row 12. Rows 13-14 are a bright 1-2 row band that reads as a rim or strip, not a foreshortened top. Rows 15-25 are a flat front face with only slight shading. There is no ellipse, no band of 3 or more rows ending in a front-edge line with eave shadow, and no visible lid. The body is therefore a front elevation with at most a 2-row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a pale stone plinth with a gold emblem at the top. It shows 12 visible tones per 16x16 tile, which sits between the hedge (9) and the stall (17) and the well (20). Its near-flat coverage is 0%, so there is no large flat fill. Its dark edge pixels are 0% near-neutral, so the outline is tinted toward the material rather than a black sticker line. The stone body steps through roughly 5 lightness levels, with the emblem as a separate accent. It is simpler than the stall or well, but that is natural for a single-block prop, and on the measured facts it is not thinner than the hedge. The image is small, so I judged mostly from the numbers, which are consistent with the reference standard.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 34640
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "glass-topped plinth top",
+      "rows": "3-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold statuette on plinth top",
+      "rows": "6-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 3-12 form a pale blue top band, 10 rows tall, with a gold figure sitting on it (decor, rows 6-11). At x=10 a 1-row line (L=190, #bbbec5) at row 12 ends the band, and a lighter strip (rows 13-14, L=251) follows. Below it is a gray front face from row 13 to 27, about 15 rows, with a darker base line at row 26. The top is not clearly foreshortened, since the object is tall and narrow, but it has a front-edge line, a distinct front face and decor standing on it, so it reads as a top surface over a front face rather than a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small plinth: a pale stone slab with a gold emblem. It measures 12 visible tones per 16x16 tile, above the hedge reference (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so no 5x5 block is a single flat colour. The body shows lit, mid and shadow faces plus an emblem ramp, which gives about 4 steps, a little under Beodeul's 5-6 but not shallow for a simple stone object. The dark edge pixels are 0% neutral, so the outline leans toward a tint rather than being a black sticker line. Texture is modest, with no speckle or grain. The piece is simple, but I judge a careful artist would accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 26353
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.775Z",
+ "cells": {
+  "16": [
+   "2fcb27a7b1539eed",
+   "ae62aff958de1028"
+  ],
+  "24": [
+   "08a30378eb667c59",
+   "36abd6ef818ad6f0",
+   "43235bcc787cca5a",
+   "5b21843ecca39fca",
+   "60e2ae8376d80b91",
+   "969addf02a070390",
+   "a1767d4e16c62ae9",
+   "ab68e8252f8f3e09",
+   "bd5b5bbc549f55b1",
+   "bf91e5cd0f00c25b",
+   "c31c5f32601b6d91",
+   "fca5742d45365887"
+  ],
+  "32": [
+   "10870d573b14e29e",
+   "4167e1fc7b3a00d6",
+   "a7772e3bb99021d5"
+  ],
+  "48": [
+   "3b11d3def0494616",
+   "4ce05f6150fb7759",
+   "6dddf0b62012ce0e",
+   "8db42acf6619d53c",
+   "e91a3b33edc6460d",
+   "f3efb2b1e3bb3190"
+  ]
+ }
+}

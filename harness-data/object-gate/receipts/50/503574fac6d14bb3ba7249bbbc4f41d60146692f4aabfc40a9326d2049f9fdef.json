@@ -1,0 +1,408 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "503574fac6d14bb3ba7249bbbc4f41d60146692f4aabfc40a9326d2049f9fdef",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "hospital med cabinet",
+ "label": "modern_city_interior/hospital-med-cabinet",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 19,
+  "tileColorsP90": 21,
+  "darkV5": 34,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top header panel with cross emblem, flat uniform white, drawn face-on",
+      "rows": "2-8",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10"
+     },
+     {
+      "part": "green cross emblem on header",
+      "rows": "5-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass-door shelf compartments with medicine boxes, seen face-on",
+      "rows": "11-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "two drawer fronts",
+      "rows": "24-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole object is a flat front view of a wall cabinet. Rows 2-8 form a uniform white header band with a centred green cross emblem, which makes it a vertical sign or header panel rather than a horizontal surface. It has a darker line at row 9 and a shadow at row 10, but no foreshortened top plane, no ellipse and no roof plane. Rows 11-23 are glass-door compartments with boxes shown face-on, not contents seen from above. Rows 24-28 are drawer fronts. The silhouette is a constant 30 px wide from row 0 to row 31, with no receding side face. It has no opening seen from above, so it is not a container with an opening."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are fine for density: 18 visible tones per tile against 17-20 for the stall and well, and 0% near-flat coverage. The structure is where it falls short. The dark edge pixels are 100% near-neutral, so the cabinet has a uniform grey-black outline around the body and doors. That is the sticker look, not the tinted, material-toned edges of the hedge (0% neutral), the stall (1%) or the well (33%). The pale cabinet body and door frames read as roughly 3-4 lightness steps (white, light grey, mid grey, outline) against 5-6 on the reference materials. The glass doors and shelf items give some detail, but there is little grain or speckle on the large white panels. Only the shelf contents and the cross add variety, so the piece sits a little below the references in craft.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 22142
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "header panel with green cross",
+      "rows": "2-8",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green cross sign",
+      "rows": "6-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass-door shelf compartments",
+      "rows": "10-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "drawers",
+      "rows": "24-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole object is a flat front view. Rows 2-8 are a pale header panel carrying a green cross sign, so it is a vertical face. Row 9 is only a thin outline-like line, with no eave shadow or foreshortened top. Below it are glass-door shelf compartments with bottles and boxes seen face-on (rows 10-22) and two drawers with handles (rows 24-29). No ellipse, roof or visible inside of an opening appears, and the contents are seen through the doors, not from above. This is a front elevation with no top surface, and it is not an open container."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "On the measured facts the candidate holds up: 18 visible tones per tile against 17 and 20 for the stall and well, and 0% near-flat coverage. Structure is weaker than those numbers suggest. The cabinet body reads as about 4 steps (white, light grey, mid grey, dark line), where Beodeul props like the well and stall carry 5-6 per material. All of its dark edge pixels are neutral (100%), and the picture shows an even dark grey line around the whole cabinet and each door. That is the uniform 'sticker' outline, not a darker tone of the adjacent material, as the stall (1%) and hedge (0%) references show. The door frames and glass panes are mostly smooth, with few grain or speckle dots. Most of the tone count comes from the small coloured items on the shelves. Next to the references the body looks flatter and more outlined, so with the outline and shading concerns this is a fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 20537
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "header panel with green cross",
+      "rows": "2-8",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10"
+     },
+     {
+      "part": "upper glass-door shelves with bottles",
+      "rows": "11-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower drawers",
+      "rows": "24-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole object is drawn face-on. Rows 2-8 are a flat, uniform light band with a green cross emblem, which makes it a vertical header or sign panel and not a horizontal surface. Row 9 is a divider line with a darker row 10 under it, but the cross shows the band is facing the viewer. Below it are glass-door shelves holding bottles, seen straight on, and two drawers with handles (rows 24-29). The silhouette is a constant 30 px wide from row 0 to row 31, with no ellipse, no opening seen from above, and no contents visible from above. It is a cabinet, not an open container, so the container kind does not fit. It reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate's tile density is on par with the references: 18 visible tones per tile against 17 for the cheese stall and 20 for the well, and 0% near-flat coverage. But 100% of its dark edge pixels are neutral, so it has a uniform grey-black outline around the cabinet, doors and shelves. The Beodeul pieces mostly use tinted dark material tones instead (hedge 0%, stall 1%, well 33%). The lamp is also 100% neutral, but it is a thin metal pole, so it does not set the standard for a furniture body. The cabinet body reads as only about 4 steps (white, light grey, mid grey, dark line), and the doors and frame are separated by outline rather than by value. The shelf items are small coloured dots with little grain or per-item shading. Overall it looks flatter and more sticker-like than the stall or well, which have 5-6 steps and tinted outlines.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 17408
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "header panel with green cross",
+      "rows": "2-8",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass-door shelf compartments with medicine boxes",
+      "rows": "10-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "drawers",
+      "rows": "24-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole drawing is a flat face-on elevation. Rows 2-8 are a pale header panel with a green cross, a vertical sign strip. Row 9 is a divider line with no eave shadow, so it does not mark a top surface. Below it, rows 10-22 are glass-fronted shelves with boxes seen face-on, and rows 24-29 are drawer fronts with handle slots. The width is a constant 30 for rows 0-31, with no ellipse, no opening seen from above, and no contents visible from above. The object is a cabinet rather than an open container, like the red 'front elevation: top 1' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are mixed. The candidate has 18 visible tones per tile, which is on par with the stall (17) and well (20), and 0% near-flat coverage, so no big flat fills. Its dark edge pixels are 100% near-neutral, against 0-1% for the tinted hedge and stall references, and the picture agrees: a uniform grey-black line wraps the whole cabinet like a sticker. Beodeul instead uses dark tones of the adjacent material. The cabinet body and doors use only about 3 lightness steps (white, pale grey-blue, grey), compared with 5-6 on the references' main materials. The shelf items add some variety, but the body panels are smooth and have no grain or per-surface texture, so the piece reads flatter than the references. The neutral outline and shallow body ramp outweigh the adequate tone count.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17602
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.933Z",
+ "cells": {
+  "16": [
+   "1d6410f32096ea17",
+   "5ac628d027c926fd",
+   "990044af0c453368",
+   "d810bf0bf675eb92"
+  ],
+  "24": [
+   "07f980b4c4f8b2f1",
+   "0d8678b8f1f4fa6e",
+   "15eda412339b9b2e",
+   "1a4fafb45e3b92e9",
+   "1cf06974076b058b",
+   "22267ee95aa84237",
+   "3b697154dd8bc8d2",
+   "54d81929a293d30c",
+   "5994634eee7d825f",
+   "63ee3c612a92e957",
+   "70e9d51c5e57dafc",
+   "78f5b82c238da22a",
+   "9377bab3a00e78a6",
+   "9fb9b55f0f253eb6",
+   "af7c1fb9d185d6ac",
+   "c49346301d3eddf8",
+   "c74911969e89a703",
+   "c9378135da932f0b",
+   "cee8cadc52e08c8a",
+   "d3837b52346625d9",
+   "e12c45f543021db1",
+   "e5d84914b5b36779",
+   "e8f724f1b6677a44",
+   "fe452bcf18f22bf3"
+  ],
+  "32": [
+   "a9c65b370dd49623"
+  ],
+  "48": [
+   "16adfe49bc08495f",
+   "5b47af563a9c108e",
+   "6307844b61a202c7",
+   "a7c89d687b351747",
+   "c029a610d7d4e7f7",
+   "d338ca491e006618"
+  ]
+ }
+}

@@ -1,0 +1,345 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cc14e85fa6f9f5934d58ddda7e53f18cc335a859ac630de901311b8a4e4c93db",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "school piano",
+ "label": "modern_city_interior/school-piano",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 8/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 8/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 13,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "piano top lid",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band at rows 1-4 is a gray gradient that ends in a lighter front-edge line at row 4 (L=144, against L=80-111 above it). Rows 5-6 below are dark eave shadow (L=33). The front face then runs from row 5 to row 29, and shows the music rack at rows 7-11, the keyboard at rows 14-19, and the lower panel and pedals below. The silhouette is a constant 30 px wide with no side face. The top band is thin at 4 rows, but it has an edge line and a shadow, so it counts as a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are acceptable. The candidate has 11 visible tones per tile, against 9 for the hedge, 17 for the stall and 20 for the well. Near-flat coverage is 4%, and 0% of dark edge pixels are neutral, so the outline is tinted rather than a black sticker line. The structure is still shallow next to the better references. The whole piece uses only 16 distinct colours, against 38-40 for the stall and well. The main dark body reads as roughly 3 lightness steps, with little grain, no per-part highlights and no material texture on the casing. Only the keyboard strip and the small panel carry detail, while the rest is a near-uniform dark mass. The references (stall, well) show 5-6 steps per material with texture on each part. A careful artist would find the piano flatter and simpler than those pieces, so it fails when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15545
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "piano top lid",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a top band that gets lighter toward the south (L 80, 80, 111, 144). It ends in a lighter front-edge line at row 4 and is followed by dark eave shadow at rows 5-6. Below it, rows 5-29 are the vertical front face, which holds the music stand, the keyboard (rows 15-19) and the pedals (rows 25-27). The top band is only 4 rows, but it has an edge line and a shadow, so it counts as a top surface. It is not just a rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The piano is a small prop, with an upright body, a lighter music-desk panel, a keyboard of white and black keys, and a few warm accent pixels. Measured facts support a pass. It has 11 visible tones per tile, above the hedge reference (9) and below the stall (17) and well (20). Near-flat coverage is 4%, close to the stall (13%) and hedge (0%). The dark edge pixels are 0% near-neutral, so the outline is tinted, dark blue-grey beside the body, not a black sticker line. The body ramp is shallower than the references, about 4 steps against 5-6, and the dark case is somewhat plain. The keys and panel give enough dot-level variation to avoid large flat fills. It would sit acceptably next to the references, slightly below the richest ones.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17479
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "piano top lid band",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "music rack and sheet panel",
+      "rows": "7-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "keyboard",
+      "rows": "14-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower body with pedals",
+      "rows": "20-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a full-width block (30 px wide, rows 0-28). Rows 1-4 form a top band that brightens from L=80 to L=111 to L=144, so row 4 acts as a lighter front-edge line. Rows 5-6 (L=33) are a dark eave shadow below it. Below that is a tall front face of about 25 rows: music rack, keyboard, lower body and pedals. The top band is only 4 rows, but it has an edge line and shadow, so it counts as a top surface and not a plain rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The piano is a small, boxy, almost frontal object. Its dark cabinet has only about 3-4 lightness steps: a body tone, a slightly lighter top panel, a dark keyboard strip and a few white or black key pixels. There is no wood grain, no edge highlight and no side or top bevel to model the cabinet. Measured facts: 11 visible tones per tile and 4% near-flat coverage, with 0% neutral dark edges, so the outline is tinted rather than a black sticker line. That is on par with prop-hedge (9 tones) but well below prop-well-roofed (20) and prop-stall-cheese (17), the richer references, which show per-material ramps, grain and individually shaded parts. By eye, the candidate reads as a flat dark slab with a keyboard pasted on. It is thinner and flatter than the Beodeul pieces, and the cabinet lacks the texture dots and tonal variety they carry. Doubt resolves to fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 36248
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "piano top lid",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "music stand with sheet",
+      "rows": "7-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "keyboard and front panel with pedals",
+      "rows": "13-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band at rows 1-4 brightens down the column (L 80, 80, 111, 144). Its lightest row, 4, acts as the front-edge line. Rows 5-6 are dark (L=33) and read as eave shadow. Below that, the front face runs from row 5 to about row 28. It holds the music rack, the keyboard (rows 14-20) and the pedals, so the face is well over 3 rows. No receding side face is drawn. The top band is only 4 rows, but it has an edge line and shadow, so it counts as a top surface and not a rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The upright piano has a dark body with a lighter lid edge, a grey music-stand panel with a small logo, and a keyboard with white and black keys, so it reads as modelled and not as a sticker. Its dark edge pixels are 0% neutral, so the outline leans toward the body's own dark tone and is not a uniform black line. It shows 11 visible tones per 16x16 tile, above the hedge (9) and below the stall (17) and well (20). Near-flat coverage is 4%, close to the stall's 13% and far from a flat fill. The weak spot is the large dark body, which carries only about 4 lightness steps and little grain compared with the stall roof or well. Because a black instrument naturally uses a narrow value range, and the measured facts sit within the reference range, this is slightly lower than the best references but acceptable.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21221
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.171Z",
+ "cells": {
+  "16": [
+   "070e8aedb99645f8",
+   "2d7b8e85d9142e41",
+   "570f5a338fb853ad",
+   "b9dfd889a5ed295d"
+  ],
+  "24": [
+   "0189dead5f26feda",
+   "02935b71782bc666",
+   "0a694560f75ba6f6",
+   "293f001efe2404a2",
+   "30bc3f711363a2f4",
+   "4e0afab5726d5c67",
+   "5091a59f3126047e",
+   "56ad52d8ecbbc928",
+   "5fb30ba466fa1efb",
+   "65bb5d0815407e8d",
+   "836ae42e353218b6",
+   "9d5cbd43094adb70",
+   "9e6f290d8d5ed7f1",
+   "a25bbace38581f6a",
+   "a6d9638c21e5bd83",
+   "aaaf50b53449a83c",
+   "bd74018f6eac371c",
+   "d3bcd241b224e7c4",
+   "df860bdbffbf99b3",
+   "e0dc02bca09298f8",
+   "e1ef5122642d1481",
+   "e8c522221d10ceb8",
+   "ed399ee26a8c35c9",
+   "f9c3d43259398c02"
+  ],
+  "32": [
+   "4e42a00c0322aeb4"
+  ],
+  "48": [
+   "1c179b9992f6bf79",
+   "2454bb6f9cc53990",
+   "616c49ca63645075",
+   "9da90b940c00455a",
+   "eafd4da9326fe21c",
+   "f5db1b025c6d9a39"
+  ]
+ }
+}

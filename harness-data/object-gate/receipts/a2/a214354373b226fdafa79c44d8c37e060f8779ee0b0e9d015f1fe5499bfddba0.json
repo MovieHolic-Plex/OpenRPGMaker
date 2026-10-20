@@ -1,0 +1,392 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a214354373b226fdafa79c44d8c37e060f8779ee0b0e9d015f1fe5499bfddba0",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "hospital water dispenser",
+ "label": "modern_city_interior/hospital-water-dispenser",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 28,
+  "nearBlackEdge": 0.97,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "water jug (bottle)",
+      "rows": "0-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dispenser body top band",
+      "rows": "13-14",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dispenser body front face with taps and cup recess",
+      "rows": "16-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The body (rows 12-30, width 10) has only a 2-row white band at rows 13-14, with a slightly darker line at row 15. That is a rim-level strip, not a real top surface. Below it the face is flat and vertical: red and blue taps at rows 17-18, a dark cup recess at rows 19-22, and a lower panel at rows 23-29. The jug on top (rows 0-11) is decor. The body is drawn as a flat front elevation. It is a small appliance, not really tall wall furniture, though it is the closest listed kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The dark edge pixels are 100% near-neutral. The references that carry material-toned outlines (hedge 0%, stall 1%, well 33%) are far from that. The candidate's outline reads as a uniform black/grey line around the whole dispenser, which is the 'sticker' look. Only about 3 lightness steps are visible on the white/grey body and about 3 on the blue bottle, against 5-6 per material on the references. It has 16 distinct colours in total, versus 38-40 on the stall and well. It does have 12 visible tones per tile and 0% flat coverage, so it is not flat-filled and it beats the hedge on tile density. That is not enough to offset the near-black outline and the shallow ramps, which would look thinner and more sticker-like next to the well and stall.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15121
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "water bottle on top",
+      "rows": "0-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dispenser body top strip",
+      "rows": "13-14",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face with taps, drip alcove and base panel",
+      "rows": "16-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The body is a 10px-wide cabinet running from row 12 (outline) to row 30 (outline). Its top is only a 2-row white strip at rows 13-14 with a slightly darker line at row 15. There is no eave shadow, and row 16 is lighter than row 15, so the strip reads as a rim, not a receding top plane. Below it the face is vertical: red and blue taps at rows 17-18, a dark drip alcove at rows 19-22, and a base panel at rows 23-29. The bottle (rows 0-11) is decor sitting on the body. The body shows no top surface beyond a 2-row rim, so it is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The dispenser is a small prop with 16 colours in total. Each material ramp is shallow, at about 3 steps: a white/grey body, a blue jug with one highlight, and a dark base. The references use about 5-6 steps per material. The measured density is acceptable, with 12 visible tones per tile against 9 for the hedge and 17-20 for the stall and well, and near-flat coverage is 0%. But 100% of the dark edge pixels are near-neutral. The outline reads as a uniform dark grey/black line around the shapes, which is the 'sticker' look. The references with tinted edges (hedge 0%, stall 1%, well 33%) use dark tones of the adjacent material. There is little grain or per-surface texture beyond a few highlight pixels. Overall the piece is cleanly drawn but shallower in ramps and outline craft than the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16907
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "water bottle on top",
+      "rows": "0-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top band of dispenser body",
+      "rows": "13-14",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face with taps, drip tray recess and base",
+      "rows": "15-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The blue bottle on rows 0-11 is decor. The body runs from row 12 (outline) to row 30. Its top is only a 2-row white band (rows 13-14) with a slightly darker line at row 15, and no eave shadow follows. That is a rim-like strip rather than a foreshortened top surface. Below it is a flat front face with red and blue taps (rows 17-18), a dark tray recess (rows 19-22) and a light base (rows 23-29), and no side face is drawn. The object is a small appliance, not tall wall furniture, so the kind only loosely fits. The body reads as a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has 12 visible tones per tile, which is within the range of the hedge (9), cheese stall (17) and well (20). It has no flat 5x5 areas. However, 100% of its dark edge pixels are neutral, so it uses a uniform near-black sticker outline. The references that carry real material structure use tinted edges (hedge 0%, stall 1%, well 33%, bench 44%). Only the thin lamp pole is fully neutral. The white body and blue jug show only about 3 steps each (white, light grey, grey, plus a blue highlight and mid). That is shallower than the 5-6 steps Beodeul uses per material. There is little grain, speckle or per-part shading, so the piece reads as a clean icon rather than a shaded prop. A careful artist would not accept it next to the references because of the neutral outline and the shallow ramps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18931
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "water jug (bottle) on top of the dispenser",
+      "rows": "0-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top band of dispenser body",
+      "rows": "13-14",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face with taps, drip tray and lower panel",
+      "rows": "16-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body (rows 12-30, 10px wide) has a dark outline at row 12. Below it are only 2 white rows (13-14) and a slightly darker line at row 15, which reads as a rim. After that comes a vertical front face with taps (rows 17-18), a drip tray (rows 20-22) and a lower panel (rows 23-29). No ellipse, no deep top plane and no eave shadow are visible. The jug (rows 0-11) is decor. The object is a freestanding appliance, not tall wall furniture, so the kind only loosely matches. It matches the 'rim only: top 2' wrong example."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small, clean dispenser: a blue jug, a white-grey body and a dark outline. Its 16 colours in total are split across jug, body, taps and base, so each material gets only about 3 lightness steps (for example white, light grey, mid grey). The Beodeul props use 5-6 steps per material. The measured facts back up the outline reading: 100% of the dark edge pixels are neutral, which means a colourless black/grey line, not a tint of the neighbouring material. The hedge, cheese stall and well references sit at 0-33% neutral. The lamp reference is also 100% neutral, but its dark iron is naturally neutral, so that is not a fair comparison for a multi-material body. Visible tones per tile (12) fall inside the reference range of 9-20 and near-flat coverage is 0%, so the piece is not a flat fill. Even so, the surfaces have little grain or speckle, and the uniform dark outline around the jug and body gives it the 'sticker' look. Next to the references it looks thinner and flatter.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20145
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.945Z",
+ "cells": {
+  "16": [
+   "706b2ae8d92b5497",
+   "f8681fb186f4dcfa"
+  ],
+  "24": [
+   "014618611ea21f51",
+   "027aa3eeeb54f8c7",
+   "08445832fd597852",
+   "2cc75e81fd3f835c",
+   "4d795f4e16f18dcc",
+   "5014e0a6fa43e2d7",
+   "648a41d1d16084b3",
+   "9002317df81487bd",
+   "dc7e1691a42ec5c3",
+   "e4641e5fc2302695",
+   "fa93f6cce83a350c",
+   "fad2f652925d74e4"
+  ],
+  "32": [
+   "9c02a090b87cc8b7",
+   "a430ab50e7ad99fd",
+   "bd51498bcd04425d"
+  ],
+  "48": [
+   "00ff31598cd22513",
+   "14f75d62115f42f0",
+   "2689799b815614d9",
+   "523263457d517da4",
+   "b97082708a5937d2",
+   "ec6a79131fc22836"
+  ]
+ }
+}

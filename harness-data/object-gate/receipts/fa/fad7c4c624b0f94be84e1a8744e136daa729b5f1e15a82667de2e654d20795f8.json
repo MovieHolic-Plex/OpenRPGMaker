@@ -1,0 +1,470 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fad7c4c624b0f94be84e1a8744e136daa729b5f1e15a82667de2e654d20795f8",
+ "width": 64,
+ "height": 64,
+ "kind": "tall_furniture",
+ "name": "jumbo hosp mri",
+ "label": "modern_city_interior/jumbo-hosp-mri",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 14,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 13
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top trim band of main housing",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "control panel on the face",
+      "rows": "7-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "patient table or bed in front",
+      "rows": "32-38",
+      "evidence": "a",
+      "front_edge_line_row": 39,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base block under the table",
+      "rows": "45-57",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 50,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main housing is drawn face-on, like a washing machine. The round bore with its ring occupies rows 15-45, the control panel sits at rows 7-11, and the base runs through rows 47-57. The top band at rows 1-6 is thin trim with a faint line at row 5. It is a cornice-like front strip, not a receding top, so it counts as a rim of about 2 rows. Only the small patient table (rows 32-38, edge line at row 39) shows a real top surface, and it is a minor part. The big housing has no horizontal surface, and the object does not look like tall wall furniture."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a large MRI/washing-machine-like prop. Measured facts: 9 visible tones per 16x16 tile, equal to the hedge (9) but below the stall (17) and well (20). Near-flat coverage is 14%, close to the stall's 13%, and 0% of dark edge pixels are neutral, so the outline is tinted (dark blue-grey beside the white/blue body) rather than sticker black. By eye, the white casing has about 3-4 steps (white, light grey-blue, mid, dark) and the blue bed has 3-4 steps. These are fewer than the 5-6 steps of the stall and well, and the large white panels are fairly smooth with little grain or speckle. The porthole has some ring and glass shading but is simple. Overall it is clean and not sticker-like, but a careful artist would see it as thinner and flatter than the richest references (stall, well), so it falls short of the standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21717
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gantry top band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-6"
+     },
+     {
+      "part": "patient table top",
+      "rows": "32-38",
+      "evidence": "a",
+      "front_edge_line_row": 39,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "control panel with screen",
+      "rows": "7-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gantry front face with round bore",
+      "rows": "6-57",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "table base",
+      "rows": "45-57",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 51,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the gantry, a front-facing block with a round bore. At x=16 its top band runs rows 1-5 (L 166, 227, 227, 255). Row 5 is a darker line (L 159), and row 6 (L 205) is a darker row before the white face (L 246) from row 7. That fits a top band with a front-edge line and a thin eave shadow, though it is a thin strip. The front face is rows 6-57. The patient table sticks out in front with a lit top (rows 32-38, light-blue stripes) and a grey front face (rows 39-43), so it also shows a top. The control panel is decor placed on the face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a large 2x2-tile prop, so the stall (17 tones) and roofed well (20 tones) are the fair comparisons. It reaches 9 visible tones per tile, about half of theirs and level only with the small hedge. Its outline is a dark blue-grey that leans toward the neighbouring material, and 0% of its dark edge pixels are neutral, so it does not have the sticker look. Near-flat coverage is 14%, close to the stall's 13%. By eye, the white casing and the light-blue bed top are smooth panels with only about 4 value steps (highlight, light, mid, shadow). They have no speckle, grain or per-part shading like the references' tiles, wood grain and stone work. The drum ring and the bed edge are cleanly drawn but simple. The result reads cleaner and flatter than the Beodeul large props, so it is a borderline fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 27551
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "gantry housing top strip",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gantry front face with control panel and bore",
+      "rows": "7-56",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "patient table top",
+      "rows": "31-38",
+      "evidence": "a",
+      "front_edge_line_row": 39,
+      "eave_shadow_rows": "40-42"
+     },
+     {
+      "part": "table base box",
+      "rows": "45-57",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 50,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is the gantry housing, a washing-machine-like block drawn face-on. Rows 1-6 are a thin strip of light bands with one darker line at row 5. That reads as a rim or cornice, not a receding top plane. Below it the control panel (rows 7-12), the round bore (rows 15-45) and the base stripes (rows 47-55) are all vertical front-face detail. Only the protruding patient table (rows 31-38) shows a top surface, with a front edge at row 39 and a front face below it. It is a small secondary part, so the main body still reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The outline is a dark blue-grey tinted to the casing, with 0% near-neutral edge pixels, so it is not a black sticker line. The bore rings and the bed show some gradient, but the large white front panel and the bed top are mostly 2-3 steps of near-flat colour with little speckle, grain or per-part highlights. It measures 9 visible tones per tile. That equals the hedge but is about half of the stall (17) and well (20), the closest multi-material props. Near-flat coverage of 14% is similar to the stall's 13%, but the stall hides it under dense detail, while here the flat areas are the main casing. Shading is about 4 steps against roughly 5-6 on the references. It is clean and coherent, but a careful artist would likely find it a bit flatter and less textured than the Beodeul props, and with that doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 20231
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "gantry housing (front panel with bore ring and control panel)",
+      "rows": "0-56",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "patient bed top (light-blue strip)",
+      "rows": "31-38",
+      "evidence": "a",
+      "front_edge_line_row": 39,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bed pedestal under the bed",
+      "rows": "45-57",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 50,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is the gantry, a large box drawn face-on like a washing machine, with a circular bore ring and a control panel. Rows 1-6 at its top are only a front-facing strip of light and dark bands with no clear front-edge line and no eave shadow, so at most a 1-2 row rim. The bore is a flat circle seen head-on, not a receding ellipse. Only the small patient bed protruding at rows 31-38 shows a top plane, ending in a lighter edge line at row 39 above a grey front face at rows 40-43. The pedestal below it (rows 45-57) is a plain vertical face. The large gantry has no horizontal top surface, so the object reads as front elevation. The tall-furniture kind is also a poor match for a medical scanner."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate's outline is a tinted dark blue-grey, not neutral black (0% near-neutral dark edge pixels), which matches the Beodeul approach. The weaknesses are in shading and texture. The white and grey housing and the bed slab are drawn with about 4 lightness steps, against 5-6 on the references. The large front panel and bed top are broad smooth areas with little grain, speckle or per-part highlights. Visible tones per tile are 9, equal to the hedge but well under the detailed props of the same kind (stall-cheese 17, well-roofed 20). Near-flat coverage is 14%, in line with the stall at 13%. The porthole gradient is a good touch, but the rest reads as clean, simplified vector-like shapes rather than hand-textured pixel art. A careful artist would find it somewhat flatter and thinner than the stall and well beside it, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 19935
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.987Z",
+ "cells": {
+  "16": [
+   "023b563f43b4802d",
+   "07c03af8a6000f27",
+   "0d8c9094442c5c09",
+   "1d6886e8a9ea81a4",
+   "3a1c2b4d84f19a3e",
+   "550007d6d70415f3",
+   "5e8d508eef10d479",
+   "62c08d7b9342c81c",
+   "79991304149674b0",
+   "8c0ea0677bf47af3",
+   "912cac49d6580606",
+   "9156681c107a255b",
+   "a5079cf12608d31e",
+   "b4b9dd9da6329ccb",
+   "ef2503f2f0a806c5"
+  ],
+  "24": [
+   "00263e7e85e5dc04",
+   "02fc9c62140025d1",
+   "049085280147db04",
+   "0b02dec58bc15b80",
+   "0ef91385203228a6",
+   "11ad227a5a2a2949",
+   "19626aa0340f0174",
+   "1ceef02b1b5d2c4e",
+   "1ed08ae617b9ab53",
+   "24ee6149400a5d69",
+   "32379bc2021b886a",
+   "410488a1cc885881",
+   "48a1fbb2d39608b8",
+   "4a2cbe3ad293952b",
+   "4a331fceb7cf8e75",
+   "57d0a0679fdfcdd5",
+   "5a38eff315527275",
+   "5b3d5499d38e6d8d",
+   "6ba05d42899dafa8",
+   "6dd9cb097dff7e37",
+   "6eecfcda5963bde3",
+   "71975041fd04b194",
+   "76e14afacc84d22e",
+   "88a759977265696f",
+   "88ea1336924ed010",
+   "9014a8d3acf3e91b",
+   "9197147065665cde",
+   "972af23da94025c4",
+   "97b4af9ebb50ddca",
+   "ae71da28ff0ec468",
+   "ae7b91538e44602a",
+   "b1005bc8bd8ce5c4",
+   "b48b9cb795f6c969",
+   "b727edcd80ac4ae9",
+   "b8eb846ad46e8c69",
+   "bbd5493fba5dae36",
+   "bf8fa50da98d7aab",
+   "c157db7b5078594c",
+   "c8abd6cdfe6938a9",
+   "c95d2d9e1c7426ea",
+   "cf77be772623ecaa",
+   "d9bc5718cca4e471",
+   "df839ef9188580d7",
+   "e6af8cbb2450a5f0",
+   "e6ddd834ce8898b2",
+   "e755da08e59ad389",
+   "edb4f87986922091",
+   "f38fdefec970320b",
+   "f783bde37b9d0f6e",
+   "f89eb0bada251d50"
+  ],
+  "32": [
+   "0801e361bdcf78b8",
+   "62d4565a4c4bfbb8",
+   "6ddf2147c820929f",
+   "f389cf6613177d23"
+  ],
+  "48": [
+   "017c082d75d9380c",
+   "04865f49a6a05838",
+   "090a15af52f8af8d",
+   "14707e643070f816",
+   "16582a3158aedba2",
+   "176f484987c22e67",
+   "240a7a988ac9f404",
+   "4852e21beaa68c12",
+   "4a47cf6ba5287ca7",
+   "5fe9d15a91221833",
+   "6b45ad74723590d3",
+   "6db6445de1a4a4f6",
+   "763cf4d92e38edf8",
+   "776d9bbf35790085",
+   "7c85c9812242c83f",
+   "822ca4e12af19424",
+   "84f06e779ee7c76a",
+   "9216db063a8f6da8",
+   "aac5ec690e169bec",
+   "b97f29663b1131e1",
+   "ba469fd696cf8b64",
+   "e828305ce6aa89fa",
+   "fe439753a87e49c6"
+  ]
+ }
+}

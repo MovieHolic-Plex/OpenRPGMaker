@@ -1,0 +1,375 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3b4d0e32d87f0054a601634242f84db5570d45250635e14019d0bb4710a1bb02",
+ "width": 32,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "shop peg wall",
+ "label": "modern_city_interior/shop-peg-wall",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 21,
+  "tileColorsP90": 22,
+  "darkV5": 52,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "right",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header band of the peg wall",
+      "rows": "9-13",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "yellow sign above the board",
+      "rows": "0-6",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pegboard front face with hung goods",
+      "rows": "15-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The board spans rows 8-46 at 32 px wide. Rows 9-13 form a cream band that brightens toward the bottom (L 169 to 249) and ends in a dark front-edge line at row 14 (L=112). That matches the 'top 5 + edge' cabinet reference. Below it the pegboard front face runs rows 15-45 (about 31 rows) with hung goods and a dark bottom outline at row 46. The yellow sign at rows 0-6 sits on top of the body, so it is decor. The top band has no distinct eave shadow, so it is a modest but valid top surface. It is borderline, since it could also be read as a front-facing header strip."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate's tile information is fine on paper: 21 visible tones per tile (references: 17 and 20 for the stall and well), and 0% near-flat coverage. The structure is shallower than the numbers suggest. All of its dark edge pixels (100%) are near-neutral, and the board frame reads as a uniform grey/black line, not a dark tone of the neighbouring material. The stall (1%) and well (33%) outlines lean brown, and the hedge (0%) leans green, so this is the sticker look. The tones come mostly from the many small coloured goods on the pegs. The board itself, a pale cream panel in a grey frame, has only about 3 lightness steps, with no grain, no plank or peg shading and no wood ramp like the stall and well. The small sign on top is also flat, with a dark outline and two or three tones. Overall it is busy but shallow in material shading, with a neutral outline. That is below the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 27752
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header band",
+      "rows": "9-13",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sign above the wall",
+      "rows": "0-6",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "goods hanging on the peg board",
+      "rows": "17-44",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a 32px wide panel on rows 8-46. Rows 9-13 form a cream band that gets lighter toward the bottom and ends in a dark front-edge line at row 14 (#7a6f5a). This is the only candidate for a top surface. It could instead be a face-on header board, because no darker eave shadow follows the line (rows 15-16 are light). Rows 15-45 are the vertical peg-board face, which carries hanging goods and small peg shadows. The sign on rows 0-6 and the hung goods are decor. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 5,
+    "evidence": "Measured density is fine: 21 visible tones per tile against 17 for the cheese stall and 20 for the well, with 0% near-flat coverage. The weakness is structural. 100% of the candidate's dark edge pixels are near-neutral, so the grey-black frame and outline read as a uniform sticker line. The references that carry tinted outlines (hedge 0%, cheese stall 1%, well 33%) use dark material tones instead. The cream backing panel and the frame have only about 3 lightness steps, with little per-material ramp or grain. Nearly all the richness comes from the small coloured item dots in a regular grid, not from shaded material. A careful artist would find it flatter and more sticker-like than the stall or the well, so it fails on outline and shading depth despite the tone count.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19300
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band of peg wall cabinet",
+      "rows": "9-13",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-14"
+     },
+     {
+      "part": "sign on top",
+      "rows": "0-6",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging goods on pegboard",
+      "rows": "16-44",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The body is 32px wide from row 8 to row 46. Rows 9-13 form a top band that brightens from #b5aa88 to #fffdd4. Row 13 is the lightest line and acts as the front-edge line, and row 14 (#7a6f5a) is a dark eave shadow. Below it the pegboard front face runs rows 15-45 with goods hung on it, which count as decor. The sign above the body (rows 0-6) is also decor. The top band is about 5 rows, which matches the green 'cabinet: top 5 + edge + eave' reference, so I read it as a top surface rather than a 1-2 row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "Density holds up: 21 visible tones per tile is on par with the stall (17) and well (20), and near-flat coverage is 0%. The weakness is structural. The dark edge pixels are 100% near-neutral, so the frame and sign are outlined in a colourless dark grey/black line, which gives the sticker look. The Beodeul stall and well sit at 1% and 33% neutral, and the hedge at 0%, because their outlines lean toward the material. The panel's main materials (the cream backing, the grey frame and the sign) show only about 3 lightness steps each, against about 5-6 on the references. Most of the 21 tones come from the small coloured goods dotted over the pegboard, not from shaded ramps on the wall itself. The panel is a uniform grid of small items with little grain, and the wood frame has no shading. A careful artist would not accept it next to the stall and well references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 24732
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hanging sign above the wall",
+      "rows": "0-6",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top band of the peg wall",
+      "rows": "9-13",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pegboard front face with hung goods",
+      "rows": "15-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a 32px-wide panel on rows 8-46. Rows 9-13 form a cream band that lightens downward (L 169 to 249) and ends in a darker front-edge line at row 14 (#7a6f5a). This meets rule (a), but it is a weak case: there are no eave shadow rows, and the band is the same cream colour as the face below. Below the line is a pegboard face of about 31 rows (15-45) with gray pegs and hung goods, each drawn with its own small top and front. The sign on rows 0-6 is decor sitting above the body. The band could also be read as a front-facing header strip, which would make this a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 5,
+    "evidence": "Density is not the problem. The candidate has 21 visible tones per tile, against 17-20 for the stall and well, and 0% near-flat coverage, so its items and pegs give it real variety. The problem is the outline. 100% of its dark edge pixels are near-neutral, the same as the lamp-crook reference, while the stall, hedge and well references are tinted at 1%, 0% and 33%. The board in the image also reads as a cream panel in a dark neutral frame, which is the sticker look. The panel and frame show only about 3 lightness steps, with no per-plank grain or tinted dark-wood shading, against 5-6 steps on the stall and well wood and roof. The colourful goods supply the variety, not the material shading. Because of the near-black outline and shallow material ramps, it falls short of the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19871
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.179Z",
+ "cells": {
+  "16": [
+   "2507cc3e2f8287e7",
+   "424ef142868af89b",
+   "70144fef8efca5a2",
+   "78c16b31319d6dee",
+   "f0482d77c1a11998",
+   "fda1588886c8a543"
+  ],
+  "24": [
+   "033b28e89726c961",
+   "096e5382051f6acf",
+   "14607e4c2a63f918",
+   "24e3dd431f3b1825",
+   "3340ac6169a7f8ba",
+   "4fe2d6cb262c6094",
+   "7425ac4f14020028",
+   "840c4a68633e0a43",
+   "961682e6ee8be288",
+   "a83898d42fa2c32c",
+   "b765223ec6cd9bbd",
+   "cc23efc9b18f91bf"
+  ],
+  "32": [
+   "41c765c17a935002",
+   "8d3321237d3e1a86",
+   "94451c806ae7c80f",
+   "9ecbd86c80e6d0a4"
+  ],
+  "48": [
+   "1472180d6d620513",
+   "15ca9cb7f7b7876a",
+   "d364d03199240dfc"
+  ]
+ }
+}

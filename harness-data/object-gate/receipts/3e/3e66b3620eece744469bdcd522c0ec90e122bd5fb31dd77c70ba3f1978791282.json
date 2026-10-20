@@ -1,0 +1,517 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3e66b3620eece744469bdcd522c0ec90e122bd5fb31dd77c70ba3f1978791282",
+ "width": 64,
+ "height": 80,
+ "kind": "tall_furniture",
+ "name": "jumbo arcade dance stage",
+ "label": "modern_city_interior/jumbo-arcade-dance-stage",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+  "3/4: 윗면/앞면 20/6 — 앞면이 거의 없는 평면도 (1/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (1/4)",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+   "윗면/앞면 20/6 — 앞면이 거의 없는 평면도 (1/4)",
+   "투영이 3/4 아님(front_elevation) (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 18,
+  "darkV5": 35,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 20
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "marquee header strip",
+      "rows": "1-4",
+      "evidence": "none",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "upper cabinet with screens and speakers (vertical face)",
+      "rows": "16-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dance stage platform with pad grid seen from above",
+      "rows": "53-72",
+      "evidence": "a",
+      "front_edge_line_row": 73,
+      "eave_shadow_rows": "74"
+     }
+    ],
+    "main_top_rows": 20,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The upper cabinet (rows 0-45) is a flat front elevation. It has a marquee, two screens and speakers, and its top is only a 4-row bevelled header strip. That strip is more likely a front-facing cornice than a top surface. The lower stage (rows 46-78) is wider (64 px) and has a light edge band at rows 47-52. Its pad grid with arrow tiles (rows 53-72) is drawn as a horizontal surface seen from above, ending in a light front-edge line at row 73 and an LED strip front face at rows 74-78. I took the stage as the main top surface because it is the only part that clearly shows one. The tall upper cabinet has no top surface, so not all major parts have a top. The object is a stage with a cabinet, not a wall-standing tall furniture piece, so the kind matches poorly."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured: candidate has 13 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well. Its near-flat coverage is 11%, close to the stall's 13%, and 0% of its dark edge pixels are neutral, so the outline is tinted. By eye the outline is a dark bluish-purple tone of the cabinet body, not a uniform black sticker line, and forms are also separated by value. The cabinet carries a marquee, screens with pixel dots, light strips, speaker panels and arrow pads in cyan and magenta, which gives real detail. Each material has only about 3-4 steps, such as the dark body panels and the pad bevels, where the references use 5-6 on their roofs, wood and stone. The large body areas beside the screens and under the pads are fairly smooth with little grain, so texture is some, not rich. Overall it is a competent and detailed piece, but a little thinner in per-material shading and surface grain than the best references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20728
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "marquee cap of cabinet",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "screen-section ledge",
+      "rows": "16-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-20"
+     },
+     {
+      "part": "dance stage platform top with pads",
+      "rows": "47-72",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "52-53"
+     },
+     {
+      "part": "marquee lights, screens and speakers",
+      "rows": "5-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 41,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main cabinet (rows 0-45) has a gray top band at rows 1-4. Row 4 is a lighter front-edge line (L124 against L92 above), and rows 5-6 are dark eave shadow, so it counts as a top surface. The face below (marquee, two screens, speakers, rows 5-45) is a front face of about 41 rows. A second ledge at rows 16-18 ends in an edge line at row 18 with shadow below. The dance stage at rows 47-78 has a light top band with a dark shadow line at row 52, and its pads are drawn as a flat face-on grid. The object is more an arcade cabinet on a platform than tall furniture, but its structure still reads as a top plus a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 13 visible tones per 16x16 tile. That is above the hedge (9) and a little below the cheese stall (17) and the roofed well (20). Near-flat coverage is 11%, close to the cheese stall's 13%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outlines lean navy/blue and follow the cabinet material instead of forming a black sticker line. The cabinet shows about 5 steps: bezel highlight, mid, dark, deep, plus lit screens. The screens, speaker grilles, button rows and arrow pads add small varied clusters, comparable to the stall's goods and awning. Its shading is somewhat less graded than the references' wood and tile ramps, so density is slightly lower. It would still sit acceptably beside the stall and well.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22817
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice / marquee header band",
+      "rows": "1-4",
+      "evidence": "none",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "marquee display with lit buttons",
+      "rows": "5-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mid beam under marquee",
+      "rows": "16-18",
+      "evidence": "none",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "twin screens and speaker cabinet front",
+      "rows": "19-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dance platform back rail",
+      "rows": "46-53",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "51-53"
+     },
+     {
+      "part": "dance pad floor with face-on arrow pads",
+      "rows": "54-72",
+      "evidence": "none",
+      "front_edge_line_row": 73,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "platform front lip with light strip",
+      "rows": "73-78",
+      "evidence": "none",
+      "front_edge_line_row": 73,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 74,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tall cabinet (marquee, two screens, speakers) is drawn entirely as a vertical face seen straight on. The top of the object is a 4-row gradient cornice band (rows 1-4) with a lighter line at row 4 and dark rows 5-6 behind it. That reads as a front-facing strip, not a horizontal top. The pad area at the bottom (rows 54-72) has flat face-on arrow glyphs and no receding top plane, so it is more a front panel than a foreshortened floor. The silhouette is nearly constant at 56-64 px wide with no side face. The large cabinet therefore has no real top surface, only a rim of about 2 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate carries 13 visible tones per 16x16 tile. That sits inside the reference range (hedge 9, stall 17, well 20) and is a little below the richest references. Near-flat coverage is 11%, close to the cheese stall's 13% and nowhere near a flat-fill problem. Dark edge pixels are 0% neutral, so the outline leans dark navy/blue against the cabinet body rather than being a black sticker line. It reads as dark_material_tone, and forms are often separated by value alone. The cabinet has a bezel highlight, mid and dark panel tones, and a deep outline, which makes about 4 steps against about 5 on the references. The detail is dense: speakers, two screens with pixel-block readouts, a marquee row of coloured lights, and a dance pad with arrow buttons that have their own highlights. Texture is 'some' rather than rich, because the dark body panels are fairly smooth and lack grain. It is slightly less rich than the best references but would sit acceptably beside them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 30489
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "marquee header top cornice",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "screen section top band",
+      "rows": "16-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-20"
+     },
+     {
+      "part": "dance platform with arrow pads (seen from above)",
+      "rows": "47-72",
+      "evidence": "a",
+      "front_edge_line_row": 50,
+      "eave_shadow_rows": "51-52"
+     },
+     {
+      "part": "marquee lights and screen contents",
+      "rows": "7-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 42,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tall cabinet has a top band at rows 1-4. It ends in a lighter edge line at row 4 (L=124) and is followed by dark eave-shadow rows 5-6. The marquee face sits below it. The screen section repeats this at rows 16-18, with an edge line at row 18 and a dark face from row 19. The wide dance platform at rows 47-73 shows a lit top band and a pad surface seen from above, and a front lip with lights at rows 73-78. The front face is large (marquee, screens, speakers, platform front), so the object reads as three-quarter view, not flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured: candidate has 13 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well, so it sits in the same range as the references and above the hedge at 9. Near-flat coverage is 11%, close to the cheese stall's 13%. Dark edge pixels are 0% neutral, so the outline is tinted. By eye, the outline is a dark blue-purple tone of the cabinet body, with forms separated by value, not a uniform black sticker line. The cabinet has a marquee with coloured lights, two screens with pixel dots, speaker stacks, and a dance pad with arrow panels. Each material shows about 3-4 lightness steps, fewer than the 5-6 on the wood and roof of the references. The large cabinet body and the pad's panel faces are fairly uniform, and there is little grain or wear texture. It is clean and readable, but a bit thinner and flatter on material ramps than the best references (stall, well).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 22455
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.970Z",
+ "cells": {
+  "16": [
+   "00de6cc26a0e85ed",
+   "1ba94279548f6dac",
+   "37aa80b1d845bd01",
+   "413c7bca1773f06a",
+   "5eb4708e3dbb0497",
+   "5f5a2f92bf95d5d0",
+   "7d5aec8438da2fed",
+   "8a8f0864034c40bc",
+   "94c82f9560d3e7e6",
+   "9664bdbab84700df",
+   "a1b35d01cacc3871",
+   "aace56a993a2ed15",
+   "b972dd3f16c27fd2",
+   "bd252f5de9d042d4",
+   "be29e7f371cfa496",
+   "cba0402447d95ed5",
+   "edf242956715f92e",
+   "f4c0e1886806bf0d",
+   "f80b7fe6b857fc41",
+   "fa6bebbfcbec4156"
+  ],
+  "24": [
+   "113f9e14cd2e2bdb",
+   "1c5d554a63e51cdd",
+   "24fd4c58ea918d95",
+   "2d04285319f007f3",
+   "3550d26a3724f0c4",
+   "3d726d0d760537f3",
+   "43e0cba7ebd3ce19",
+   "4815272251d8a570",
+   "4cbea4eee69a367f",
+   "5166137170119737",
+   "5354acee3dd4a707",
+   "54e667e46c9cdeb3",
+   "57e6e2c7858880d3",
+   "58915cf2c2799129",
+   "5989a255d5bd0fad",
+   "5a2e52908e094e07",
+   "5a9ffba607869a13",
+   "5af68a7e20c9a654",
+   "60287fdb27c5f48c",
+   "612aa3a2126309c1",
+   "61536e98895efd94",
+   "620ba98ab2803a42",
+   "63220aa3302c1e5b",
+   "695c4bb4226d8b4b",
+   "6b046444538c2c07",
+   "75d3ab5cb4cdc32d",
+   "777721f91ecbc2b9",
+   "778c683a400788d9",
+   "7b53a1b5a7a278a6",
+   "7e1cee48968c0507",
+   "84c290204d664360",
+   "88d9e4339609c742",
+   "89ace89f502fbc50",
+   "8aab97481134fcba",
+   "8ca3f79e8b481f42",
+   "96bd349a6c5f3651",
+   "9fe5c65f8aa01ab2",
+   "a01cc1bdbbbc2c98",
+   "a2337bc1ce6524f0",
+   "a67e769583fad050",
+   "aaf207224d9c528b",
+   "b70f531fe6ae220d",
+   "bf3eba2500121bab",
+   "bf6be2b561d98faa",
+   "bfcbfaf47edc3d74",
+   "c1beb0b7d42d6b74",
+   "c3b91f5086ba2f8c",
+   "c5e2124476f28ec4",
+   "c65f9cb3da2cce08",
+   "c794cc1ebdc40552",
+   "ca62b13eaaca0829",
+   "ccddc7a2b929d383",
+   "cf106a0102333f40",
+   "d05b80df83bf6405",
+   "d2abc4c955200f1f",
+   "d9f9bc4433025ce2",
+   "dccb029d10cebc63",
+   "dcd0870689483ca9",
+   "de13cc03febd8149",
+   "e2fc68cd47138b35",
+   "e604f8214a3b3f9e",
+   "e6374cae5e496725",
+   "e64e9dd94de91958",
+   "ec53d4c704e4dbba",
+   "ee64195659d6850b",
+   "eefe821a1074584b",
+   "f1877cd8bb42d4d8",
+   "f1d010c6b0a67810",
+   "f4cf157a38b806bd",
+   "f97f996152f9ec84",
+   "fc5519e66d8fff28"
+  ],
+  "32": [
+   "1205466d4878bf0a",
+   "33c8f89f23d0252b",
+   "3962d4f1b1d25ac7",
+   "4821b0ca3f75ed11",
+   "504607f330c57541",
+   "75644de8a2928b46",
+   "98153ec53baf7d63",
+   "a4acdd7d3917b96a",
+   "d6f9ce31d3474a2a",
+   "da4652b8254a3a14",
+   "e7ab46407f76a1e2",
+   "fcf3da87958ce060"
+  ],
+  "48": [
+   "0070bca0ee5c2d68",
+   "0e70cab5e308bdfd",
+   "0f2b2f0bc42f9438",
+   "1597436a4acef881",
+   "42ff755e282579c0",
+   "4b8297b8800de2c5",
+   "59e48a2aec18eff7",
+   "5af019e55a751972",
+   "5d7d543019106117",
+   "63428e1e1eb624a4",
+   "7eb90b5c8a0f3107",
+   "7fc75f08c37f9606",
+   "856ca5575eb6e644",
+   "992291207b8102fd",
+   "a271367f33f7a987",
+   "a4e090e34dcd64bd",
+   "aaa67eba37e1f579",
+   "b415a590d16cf19a",
+   "ba75239d0bdd570c",
+   "c1b2722f30c2088d",
+   "c3315d84250a3c89",
+   "d5ac88d5dc1a4f7d",
+   "dc8ea162dd2a5736",
+   "e0ec4568b402d7fe"
+  ]
+ }
+}

@@ -1,0 +1,408 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "410bb22ed97e28e3ae5496e70f7d84e61511d5c42694adf9259717aabc77172c",
+ "width": 32,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "svc salon mirror",
+ "label": "modern_city_interior/svc-salon-mirror",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 맨 위의 큰 부분(22행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (3/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "맨 위의 큰 부분(22행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (3/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 19,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "mirror panel with frame (vertical face above the counter)",
+      "rows": "1-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter top (wood, seen from above)",
+      "rows": "24-28",
+      "evidence": "a",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": "30"
+     },
+     {
+      "part": "bottles, tray and jars on the counter",
+      "rows": "22-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face with drawers and cabinet doors",
+      "rows": "30-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the vanity cabinet. Its tan wood counter top fills rows 24-28, bounded by a dark back line at row 24 and a dark brown front-edge line at row 29 (#786048). Gray shadow starts at row 30. Below that, the front face runs rows 30-44 (15 rows) and shows two drawers and two doors with handles. The bottles and jars standing on the counter are decor. The mirror above (rows 1-22) is a tall vertical panel with a frame and no horizontal top surface, so I mark all_major_parts_have_top false, but the main cabinet body clearly shows a top and a front."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a white-framed mirror over a drawer counter with small bottles. Its dark edge pixels are 0% neutral, so the outlines lean toward the material tone, similar to the hedge and cheese-stall references, and it does not have the black-sticker look. Shading is shallower than the references. The white frame, the cabinet and the mirror glass each show only about 3-4 lightness steps, where Beodeul materials carry 5-6. The mirror pane and the cabinet fronts are broad, nearly uniform areas with a few glint or drawer-line accents and no grain or per-surface dotting. Measured density is 8 visible tones per tile, against 9 for the hedge, 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 16%, slightly above the cheese stall's 13% and well above the 0% of the hedge and well. Placed next to the stall and well it would read as flatter and thinner, so it falls just short of the bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "맨 위의 큰 부분(22행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+     "맨 위의 큰 부분(22행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 21566
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "mirror panel with frame (vertical glass face)",
+      "rows": "1-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vanity counter top (wood)",
+      "rows": "24-28",
+      "evidence": "a",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "29"
+     },
+     {
+      "part": "bottles, jars and soap on the counter",
+      "rows": "15-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "drawer and door front below the counter",
+      "rows": "30-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the vanity cabinet. Its counter top is a tan band at rows 24-28, with a dark brown back edge at row 24. A lighter front-edge line sits at row 28 and a dark brown eave-shadow row at row 29. Below it is a front face of 15 rows (30-44) with drawers and doors. This matches the green cabinet reference of top 5 plus edge plus eave. The mirror (rows 1-22) is a thin vertical panel and the goods on the counter are decor. The mirror is judged as a thin frame and not as a major part that needs its own top surface. The silhouette is 32 px wide from row 8, with a narrower 26 px mirror section above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a white-framed mirror over a counter with a few bottles. Visible tones per tile are 8, close to the hedge (9) but well below the stall (17) and well (20). Near-flat coverage is 16%, a little above the stall (13%) and well above the hedge and well (0%). The dark edge pixels are 0% neutral, so the outline is tinted rather than near-black. By eye, the frame, mirror glass and cabinet are large areas with only 2-3 steps: white/grey frame, pale blue glass, and a flat cabinet front with a simple drawer outline. The mirror glass and cabinet panels read as flat fills with little grain, and the white frame has no per-material ramp. The bottles on the counter are small details, but they do not give the piece the 5-6 step ramps, texture dots or per-part shading that the stall and well show. It would look flatter and thinner next to those references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "맨 위의 큰 부분(22행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "맨 위의 큰 부분(22행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17122
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "mirror panel with frame above counter",
+      "rows": "1-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottles and soap on counter",
+      "rows": "22-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vanity counter top",
+      "rows": "24-28",
+      "evidence": "a",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": "29"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the vanity cabinet. Its tan counter top covers rows 24-28 (5 rows) and ends in a dark brown front-edge line at row 29, which also acts as the eave shadow. Below it the front face runs rows 30-44 (15 rows) and shows drawer fronts and door panels. The mirror above (rows 1-22) is a screen-like panel standing on the counter, so I counted it as decor. The bottles and soap on the counter are also decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate has 8 visible tones per tile. That is about the same as the simple hedge (9), but under half of the similarly sized stall (17) and well (20). Its near-flat coverage is 16%, higher than the stall (13%) and the well and hedge (0%). By eye, the frame, mirror glass and cabinet fronts are mostly large, flat pale panels with only 2-3 lightness steps each. There are no grain dots, per-part highlights or speckle, and the bottles on the counter are tiny. The outline is a tinted dark tone (0% neutral edge pixels), so it is not a black sticker line, and that counts in its favour. Even so, it reads thinner and flatter than the stall and well, which are the closest references in size.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 18377
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "mirror panel with frame",
+      "rows": "1-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter top (vanity surface)",
+      "rows": "24-29",
+      "evidence": "a",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": "29"
+     },
+     {
+      "part": "bottles, jars and small items on counter",
+      "rows": "20-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cabinet front with drawers and doors",
+      "rows": "30-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the vanity cabinet. Its counter top is a tan band of about 5 rows (25-28), with a dark back line at row 24 and a dark front-edge line at row 29 that acts as eave shadow. Below it the drawers and doors form a front face of about 15 rows (30-44). The mirror above is a thin vertical wall panel. The bottles and jars on the counter are decor. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a white-framed mirror over a drawer counter with small bottles. It reads cleanly, and its outline is a tinted blue-grey (0% neutral dark edge pixels), so it is not a sticker-black line. The shading is shallow, though: the frame and counter are about 3-4 near-white and grey steps, while the stall and well references carry 5-6 steps per material. It has 8 visible tones per tile, which is level with the hedge (9) but well under the stall (17) and the well (20), the two references closest to it in structure. Near-flat coverage is 16%, above the hedge and well (0%) and a little above the stall (13%). The mirror glass and the broad frame and drawer faces are large smooth areas with only a diagonal glint or a single highlight. Nothing like the per-tile grain, wood texture or per-element shading of the stall and well appears. Next to those references it looks thinner and flatter, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "맨 위의 큰 부분(22행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "맨 위의 큰 부분(22행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 18506
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.212Z",
+ "cells": {
+  "16": [
+   "366938a858c3c14b",
+   "3f159a14c9ff3f2b",
+   "508112fca6c470b9",
+   "7fdfd937aaea3396",
+   "a16697eb8f5be5f8",
+   "d87e19de3a59d970"
+  ],
+  "24": [
+   "02cd5648f18d893f",
+   "1e1c8f3b6dc42ced",
+   "2dd7907b804e51fc",
+   "397395f1e62474bf",
+   "3ebf9ae60d06caa4",
+   "5e5bdd102674063f",
+   "5f395283bff05c20",
+   "7f00cb1512f36efc",
+   "9f085b1c5e520914",
+   "a072e202a60a4e13",
+   "aadc750c5cfd8d61",
+   "e4b3943e8d87ddb0"
+  ],
+  "32": [
+   "08cb1db9a760c2f9",
+   "4278c253a7c8bcb5",
+   "a623e74ed2b32b5f",
+   "c88ac4d4cd60e029"
+  ],
+  "48": [
+   "1f532890d0bee52d",
+   "4d0e1e29e71ed8c6",
+   "72a0c9fc9c61d593"
+  ]
+ }
+}

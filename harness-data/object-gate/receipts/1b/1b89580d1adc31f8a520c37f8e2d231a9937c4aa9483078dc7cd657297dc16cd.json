@@ -1,0 +1,352 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1b89580d1adc31f8a520c37f8e2d231a9937c4aa9483078dc7cd657297dc16cd",
+ "width": 48,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "cafe maid stage",
+ "label": "modern_city_interior/cafe-maid-stage",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 15,
+  "darkV5": 97,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "backdrop panel with heart and valance",
+      "rows": "0-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden stage floor",
+      "rows": "17-25",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": "26-27"
+     },
+     {
+      "part": "stage front base with footlights",
+      "rows": "26-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The object is a stage, not tall furniture. The tall pink backdrop (rows 0-16) is a vertical face only. Below it, the wood plank floor (rows 17-25) has a dark back edge at row 17, plank grain, and a light front-edge line at row 25. Rows 26-28 darken into a shadow, and the front base with gold footlights runs to row 30. That gives a top of about 9 rows over a 5-row front face. The backdrop reads as a wall screen with no top of its own."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a pink counter with a scalloped awning, a heart sign and a row of light dots. It has about 4 lightness steps per material (pink and cream/peach), against about 5 on the references. Its outlines lean pink or brown and are not neutral, which matches the measured 0% near-neutral dark edge pixels, so this is not the black sticker look. The measured 15 visible tones per tile is close to the stall (17) and well (20) and above the hedge (9). Near-flat coverage is only 2%, far below the stall's 13%, so no large flat fills are measured. The scallops, heart, trim and light dots add texture, but the counter front and the sign band are somewhat smoother than the references' per-tile grain. That puts density slightly below the references but still acceptable next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 27539
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "pink striped backdrop wall with heart",
+      "rows": "0-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden stage floor (top of platform)",
+      "rows": "17-25",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": "26-27"
+     },
+     {
+      "part": "stage front face with gold lights",
+      "rows": "26-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stage platform is a wood-plank band at rows 17-25 under a dark back-edge line at row 17. It ends in a lighter front-edge line at row 25, followed by darker shadow rows 26-27, and then a 5-row front face (rows 26-30) with gold lights. That gives a top surface of about 9 rows with a front face below. The pink backdrop (rows 0-16) is a flat vertical panel with no top surface of its own. It reads as a wall rather than tall furniture, so the tall_furniture kind fits poorly."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate carries 15 visible tones per tile, close to the cheese stall (17) and the roofed well (20) and well above the bench and lamp. Its near-flat coverage is 2%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline is a dark, pink-tinted version of the adjacent material rather than a black sticker line. By eye, the sign panel has a heart with highlight and shadow, the scalloped valance has a light and dark band, and the counter front has a row of lamp dots and a lighter trim. That gives about 5 lightness steps on the pink ramp, against roughly 6 on the references. The pink surfaces are a little smoother and less grainy than the stall's wood and awning, so density is slightly lower, but a careful artist would still accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 26956
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "pink valance/cornice strip",
+      "rows": "1-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "striped backdrop with heart",
+      "rows": "5-16",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden stage floor",
+      "rows": "17-25",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": "26-27"
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a stage platform. Rows 17-25 show a plank-grained wood floor that starts at a dark back line at row 17 and ends in a light front-edge line at row 25. Below it, rows 26-28 darken to a plum front face with gold studs, and rows 29-30 are the outline, so the front face is about 5 rows. The pink striped backdrop with the heart (rows 1-16) is a vertical screen standing at the back of the stage, so it is treated as decor. The object is a wide platform rather than tall furniture, so the kind fits only loosely."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 15 visible tones per tile, close to the stall (17) and well (20) and above the hedge (9). Near-flat coverage is 2%, so there are no large flat fills; the pink sign, scalloped trim, heart highlight and dotted wood-and-light front all carry variation. Dark edge pixels are 0% neutral, so the outline leans pink/brown and follows the adjacent material rather than being a black sticker line. The weak points are that the whole piece uses only 19 distinct colours, and each material ramp (pink, wood, white trim) has about 3-4 steps against Beodeul's 5-6. That puts density slightly below the best references. It would still sit acceptably next to the stall and well at the same scale.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 26072
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "pink striped backdrop panel with heart",
+      "rows": "5-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backdrop top valance band",
+      "rows": "1-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden stage floor (plank top)",
+      "rows": "17-25",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": "26-27"
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a low stage platform. Rows 17-25 are a wood plank surface: a dark back edge at row 17, horizontal plank grain and seams, and a lighter front-edge line at row 25. Below it, rows 26-30 are a darker mauve front face with gold footlights, and rows 26-27 act as the shadow under the edge. Rows 1-16 are a vertical pink striped backdrop with a heart, standing behind the stage floor. The object is a stage, not tall wall furniture, so the kind match is doubtful. It does show a top surface of about 8 rows and a front face of 5 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 15 visible tones per 16x16 tile, against 17 for the cheese stall, 20 for the well and 9 for the hedge, so it sits inside the reference range. Near-flat coverage is 2% (the stall has 13%), so there are no large flat fills. The dark edge pixels are 0% near-neutral, which means the outlines carry a tint, here a dark rose-brown beside the pink and wood. By eye, the pink valance has stripe and scallop variation, the heart has an inner highlight, and the wood front has a row of light dots. I count about 4 steps on the pink and wood ramps, a little below Beodeul's 5-6, and total colours (19) are well under the stall (40) and well (38). That makes it a touch simpler than the best references, but a careful artist would still accept it next to the cheese stall and hedge.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 31337
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.787Z",
+ "cells": {
+  "16": [
+   "0ac8dbfbfc7a088f",
+   "0adaeacfe818e373",
+   "3d749a5abfaea9bf",
+   "4ecf4b5935156135",
+   "99d9783cd7570031",
+   "a74d952c095d0b7f"
+  ],
+  "24": [
+   "31124fe517bff642",
+   "78a9cdeaf1115c65",
+   "af3c5eee80f7973e",
+   "d1ff4b8085b8f740",
+   "ebce2e8d02d8e126",
+   "f38d8f1e49fc55a4",
+   "f544ee7bd5945545",
+   "feacbb425de870d9"
+  ],
+  "32": [
+   "04ee379e6bcc4475",
+   "42ff5f5cc53f2c04",
+   "545badd67dd5d541",
+   "57c9c01002e01d8b",
+   "df7d12c1511c0307",
+   "e9a279550360eeb2"
+  ],
+  "48": [
+   "601aa14fb9932c2d",
+   "a1e0ff0d2942e646"
+  ]
+ }
+}
