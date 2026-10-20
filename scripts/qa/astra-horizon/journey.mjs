@@ -610,7 +610,9 @@ try {
     if (started) { await page.waitForTimeout(2500); if (k === 0) await shot("15-trainer-battle"); }
     const log = started ? await fight(`15b-trainer-${k}`) : [];
     const st = await state();
-    step(`trainer-${k}`, started && st.battleResult === "victory", `${trainer.id}: ${log.length}턴 → ${st.battleResult} (${r}) · ${await partyLine()}`, k === 0 ? await shot("16-after-trainer") : undefined);
+    // 다가가는 길에 시야 전투로 이미 이긴 트레이너는 말을 걸어도 승부가 다시 열리지 않는다(다시 말 걸기 쪽) — 0턴 ✗ 로 적던 것(r4 R4-7)을 사실대로.
+    const already = !started && (await live()).switches?.[`${trainer.id}_won`] === true;
+    step(`trainer-${k}`, already || (started && st.battleResult === "victory"), already ? `${trainer.id}: 앞서 시야 전투로 이김(다시 말 걸면 한 줄) · ${await partyLine()}` : `${trainer.id}: ${log.length}턴 → ${st.battleResult} (${r}) · ${await partyLine()}`, k === 0 ? await shot("16-after-trainer") : undefined);
     if (st.battleResult !== "victory") { await pressEnterUntil(async () => !(await present("dialogue-box")), 30); }
   }
   report.wildFights = wildFights;
@@ -652,7 +654,8 @@ try {
     if (started) { await page.waitForTimeout(2000); if (k === 0) await shot("20b-gym-trainer"); }
     const log = started ? await fight(`gym-grunt-${k}`) : [];
     const st = await state();
-    step(`gym-trainer-${k}`, started && st.battleResult === "victory", `${grunt.id}: ${log.length}턴 → ${st.battleResult} · ${await partyLine()}`);
+    const already = !started && (await live()).switches?.[`${grunt.id}_won`] === true;
+    step(`gym-trainer-${k}`, already || (started && st.battleResult === "victory"), already ? `${grunt.id}: 장치로 가는 길에 시야 전투로 이김(다시 말 걸면 한 줄) · ${await partyLine()}` : `${grunt.id}: ${log.length}턴 → ${st.battleResult} · ${await partyLine()}`);
   }
   // 관장 — 회복은 플레이어가 하듯 마을 센터에서
   if (town2) { await go(gym.id, town2.id); await healAt(town2.id); await go(town2.id, gym.id); }
