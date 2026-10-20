@@ -183,7 +183,8 @@ const passable = (mapId, x, y, target) => {
   const ts = project.tilesets[map.tilesetId], i = y * map.width + x;
   if (tileBlocks(ts, map.lowerTiles[i]) || tileBlocks(ts, map.upperTiles[i])) return false;
   // 다른 문(맵을 옮기는 이벤트)은 밟지 않는다 — 북쪽 출구 둘(도로·학교)이 붙어 있어 도로로 가다 학교 문을 밟았다.
-  return !map.events.some((e) => e.x === x && e.y === y && (!(e.pages?.[0]?.priority === "below") || /"kind":"transfer"/.test(JSON.stringify(e.pages ?? e.commands))));
+  // 문은 첫 줄 명령이 바로 이동인 이벤트만 — 전투에 진 뒤 센터로 옮기는 깊은 분기(1번 도로 첫 야생)까지 문으로 보면 길이 막혔다.
+  return !map.events.some((e) => e.x === x && e.y === y && (!(e.pages?.[0]?.priority === "below") || (e.pages?.[0]?.commands ?? e.commands ?? []).some((c) => c.kind === "transfer" || (c.kind === "fork" && (c.then ?? []).some((t) => t.kind === "transfer")))));
 };
 const DIRS = [["up", 0, -1], ["down", 0, 1], ["left", -1, 0], ["right", 1, 0]];
 async function walkTo(mapId, target, maxSteps = 160) {
