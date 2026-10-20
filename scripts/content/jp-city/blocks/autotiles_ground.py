@@ -521,7 +521,7 @@ def sets():
              rank=_s_rank, notch=_raised_notch(style_sidewalk), pc="floor", outside=lambda: rc, interior_n=2, tactile_b2=True, body_weights=(2, 1, 0),
              desc="보도(점자블록 줄 변형 포함) ↔ 아스팔트 도로. 바깥은 아스팔트 한 가지. 남쪽 변은 연석 앞면이 보이는 3/4."),
         dict(key="lane", id="jp-lane-road", name="생활도로", role="road", tex=lt, style=style_lane, var=lane_variants(lt),
-             rank=None, notch=_lane_notch, pc="floor", outside=lambda: chip("sw"), interior_n=2,
+             rank=None, notch=_lane_notch, pc="floor", outside=lambda: chip("sw"), interior_n=2, body_weights=(6, 1, 2),
              desc="보도 없는 생활도로 아스팔트. 집 앞 콘크리트와 맞닿는 가장자리에 1px 간격의 흰 외측선."),
         dict(key="lawn", id="jp-lawn-dirt", name="잔디", role="green", tex=lawn, style=style_lawn, var=lawn_variants(lawn),
              rank=None, pc="floor", outside=lambda: chip("gravel"), interior_n=2,

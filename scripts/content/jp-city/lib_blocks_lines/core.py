@@ -141,6 +141,13 @@ def _owner():
     if not _OWN:
         for n, r in RAMPS.items():
             for i, c in enumerate(r): _OWN.setdefault(c, (n, i))
+        # 계약 재료 색(tiledata/jp-city/palette-contract.json)도 허용 — 굽기(bake_jp)가 modern3 ∪ 계약으로 검사하는 것과 맞춘다.
+        import json, os
+        cp = os.path.join(ROOT, 'tiledata', 'jp-city', 'palette-contract.json')
+        if os.path.exists(cp):
+            for f in json.load(open(cp, encoding='utf-8'))['families']:
+                for m in f['materials']:
+                    for i, h in enumerate(m['steps']): _OWN.setdefault(int(h[1:], 16), ('contract:' + m['id'], i))
     return _OWN
 
 def check_cell(img):
