@@ -171,3 +171,42 @@ export function varyVaultFloor(map: GameMap, floorTiles: ReadonlySet<number>, cr
   }
   return changed;
 }
+
+/**
+ * 화면(480×270)보다 작은 방은 바깥이 검은 허공이 되고 흙먼지 입자가 별밭처럼 얹힌다(VQA r4 — 화로의 방).
+ * 방을 가운데 두고 사방에 `padX`×`padY` 칸 바위 둘레를 덧붙인다. 타일 층·덧그림·이벤트 좌표·방 안 칸 바꾸기/입자 좌표를 함께 민다.
+ * 다른 맵에서 이 방으로 들어오는 이동 좌표는 호출자가 같은 만큼 옮긴다.
+ */
+export function padMapCentered(map: GameMap, padX: number, padY: number, rockTiles: readonly number[] | ((x: number, y: number) => number)): void {
+  const ow = map.width, oh = map.height, nw = ow + padX * 2, nh = oh + padY * 2;
+  const shiftLayer = (src: readonly number[] | undefined, fill: (x: number, y: number) => number): number[] => {
+    const out = new Array<number>(nw * nh);
+    for (let y = 0; y < nh; y += 1) for (let x = 0; x < nw; x += 1) {
+      const ox = x - padX, oy = y - padY;
+      const inside = ox >= 0 && oy >= 0 && ox < ow && oy < oh;
+      out[y * nw + x] = inside ? (src?.[oy * ow + ox] ?? -1) : fill(x, y);
+    }
+    return out;
+  };
+  const rock = typeof rockTiles === "function" ? rockTiles : (x: number, y: number): number => rockTiles[(((x * 73856093) ^ (y * 19349663)) >>> 0) % rockTiles.length]!;
+  map.lowerTiles = shiftLayer(map.lowerTiles, rock);
+  map.upperTiles = shiftLayer(map.upperTiles, () => -1);
+  map.lowerOverlayTiles = shiftLayer(map.lowerOverlayTiles, () => -1);
+  map.upperOverlayTiles = shiftLayer(map.upperOverlayTiles, () => -1);
+  map.width = nw; map.height = nh;
+  const walk = (node: unknown): void => {
+    if (Array.isArray(node)) { node.forEach(walk); return; }
+    if (!node || typeof node !== "object") return;
+    const rec = node as Record<string, unknown>;
+    if (rec.kind === "changeTile" && rec.mapId === map.id && typeof rec.x === "number" && typeof rec.y === "number") { rec.x += padX; rec.y += padY; }
+    if (rec.kind === "m2Command") {
+      const f = rec.fields as Record<string, unknown> | undefined;
+      if (f && typeof f.x === "number" && typeof f.y === "number") { f.x += padX; f.y += padY; }
+    }
+    for (const value of Object.values(rec)) if (value && typeof value === "object") walk(value);
+  };
+  for (const event of map.events) {
+    event.x += padX; event.y += padY;
+    walk(event.pages); walk(event.commands);
+  }
+}
