@@ -682,15 +682,17 @@ try {
       if (elapsed() > LIMIT_MS) break;
       await approachAndTalk(gym.id, dev); await readThrough(30, { choose: async () => { await page.keyboard.press("Enter"); } }); await mark(`device ${dev.id}`);
     }
+    // 플레이어처럼 쉬어 간다 — 입구 안내원이 회복해 준다(「부탁해요」가 첫 선택). 장치 길의 시야 전투 뒤·관장 앞.
+    const guide = gym.events.find((e) => /_gym_guide$/.test(e.id));
+    const rest = async (why) => { if (!guide || elapsed() > LIMIT_MS) return; await approachAndTalk(gym.id, guide); await readThrough(30, { choose: async () => { await page.keyboard.press("Enter"); } }); await mark(`gym-guide-rest ${why}`); };
+    await rest("after-devices");
     for (const [k, grunt] of gym.events.filter((e) => /_grunt_\d+$/.test(e.id)).entries()) {
       if (elapsed() > LIMIT_MS) break;
       await approachAndTalk(gym.id, grunt);
       if ((await readThrough()) === "battle" || await present("battle-scene")) { await mark(`gym-grunt-${k}`); await shot(`15-grunt-${k}`); step(`grunt-${k}`, true, await battleAsNewPlayer(`15-grunt-${k}-b`)); await readThrough(); }
     }
     const leader = gym.events.find((e) => /_leader$/.test(e.id));
-    // 플레이어처럼 관장 앞에서 쉬어 간다 — 입구 안내원이 회복해 준다(「부탁해요」가 첫 선택).
-    const guide = gym.events.find((e) => /_gym_guide$/.test(e.id));
-    if (guide && leader && elapsed() < LIMIT_MS) { await approachAndTalk(gym.id, guide); await readThrough(30, { choose: async () => { await page.keyboard.press("Enter"); } }); await mark("gym-guide-rest"); }
+    if (leader) await rest("before-leader");
     if (leader && elapsed() < LIMIT_MS) {
       await approachAndTalk(gym.id, leader);
       if ((await readThrough()) === "battle" || await present("battle-scene")) { await mark("leader"); await shot("16-leader"); step("leader", true, await battleAsNewPlayer("16-leader-b")); await readThrough(); }
