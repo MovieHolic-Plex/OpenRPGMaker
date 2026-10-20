@@ -72,7 +72,8 @@ BLOCK_ORDER = ['autotiles_ground', 'autotiles_lines', 'roads', 'buildings', 'str
                'interior_school', 'interior_gym', 'interior_station', 'interior_office', 'interior_post',
                'dungeon_underground', 'dungeon_hospital', 'dungeon_school', 'dungeon_construction', 'dungeon_warehouse',
                'interior_amuse', 'interior_karaoke', 'interior_famires', 'interior_hotel', 'interior_mall',
-               'interior_hospital', 'interior_school2', 'interior_office2', 'shitamachi_pack', 'jp_regions_pack', 'jp_inaka_pack']
+               'interior_hospital', 'interior_school2', 'interior_office2', 'shitamachi_pack', 'jp_regions_pack', 'jp_inaka_pack',
+               'jp_shore', 'jp_street_trees']
 PEOPLE = (851, 1005)            # 행인(Actor1) 자리 — 번들에서 제외, 투명 빈 칸으로 번호만 지킨다
 N_ORIG = 2880
 SIGN_DECOS = ('sign_h', 'vstack', 'wallad', 'vsign', 'plate', 'board', 'rtext', 'facade_ad', 'vision', 'mural')
@@ -572,6 +573,12 @@ def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=Fal
         if a.get('snap'): ai['snap'] = SNAP[a['snap']]
         if a.get('anchor'): ai['anchor'] = a['anchor']
         if a.get('access'): ai['access'] = [dict(dx=q['x'], dy=q['y']) for q in a['access']]
+        if k.get('replaces') and k['id'] in kit_index:
+            # 블록이 같은 id 의 카탈로그 소품 키트를 다시 그려 갈아 끼운다(예: jp_street_trees 가로수 4×6 → 3×4).
+            # 옛 키트의 칸 번호·그림은 그대로 남는다(이미 깐 지도 보존). 새 칸은 소품 분류 그룹에도 넣는다.
+            old_k = kit_index.pop(k['id']); expected.pop(k['id'], None)
+            kits[:] = [x for x in kits if x['id'] != k['id']]
+            if old_k.get('category'): prop_group_ids[old_k['category']] |= {t for lo, up in rows for t in lo + up if t >= 0}
         realize(k['id'], k['name'], rows, w, h, ai, parts)
         # 기대 그림: 블록 칸 그림 그대로 아래층 → 위층 겹침
         exp = Image.new('RGBA', (w * 16, h * 16), (0, 0, 0, 0))

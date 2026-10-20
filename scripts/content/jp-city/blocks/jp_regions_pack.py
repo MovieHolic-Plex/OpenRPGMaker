@@ -22,6 +22,7 @@ import numpy as np  # noqa: E402
 from PIL import Image  # noqa: E402
 from house_kit import K, Cv, OL  # noqa: E402
 from shitamachi_pack import H, disc, line  # noqa: E402
+from lib_blocks import water_art as WA  # noqa: E402  (2026-10-20 바다·등대·폭포 다시 그리기 — 시안 ~/claude-viz/modern-tiles-proto/water)
 
 BLOCK = 'jp_regions_pack'
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..', '..'))
@@ -285,9 +286,10 @@ def steam_puff(c, x, y, h, seed=0, width=5):
 KITS = []
 
 
-def kit(id_, name, w, h, kind, solid=(), other='star', tags=(), rules='', role='prop'):
+def kit(id_, name, w, h, kind, solid=(), other='star', tags=(), rules='', role='prop', key=None):
+    """key: 칸 자리 키 접두어(기본 id). 판 크기를 바꿔 다시 그린 키트는 새 접두어로 칸을 덧붙인다 — 옛 칸 번호의 그림은 그대로 남는다(이미 깐 지도 보존)."""
     def deco(fn):
-        KITS.append(dict(id=id_, name=name, w=w, h=h, kind=kind, draw=fn, solid=set(solid), other=other, tags=list(tags), rules=rules, role=role))
+        KITS.append(dict(id=id_, name=name, w=w, h=h, kind=kind, draw=fn, solid=set(solid), other=other, tags=list(tags), rules=rules, role=role, key=key or id_))
         return fn
     return deco
 
@@ -763,61 +765,15 @@ def yukemuri(c, base):
     steam_puff(c, 20, 8, 25, seed=8, width=5)
 
 
-@kit('rg-waterfall', '폭포 - 이끼 바위 절벽·떨어지는 물줄기·물보라 소(4×6)', 4, 6, 'water', solid=rows(4, range(6)),
-     tags=['폭포', '계곡', '절벽', '등산로'], rules='계곡 맵 북쪽 끝 절벽. 아래로 수로(fill_region 「수로」)를 이어 강을 만든다.', role='structure')
+@kit('rg-waterfall', '폭포 - 이끼 바위 절벽·떨어지는 물줄기·물보라 소(10×6, 강 4칸 + 양옆 절벽 3칸)', 10, 6, 'water', solid=rows(10, range(1, 5)),
+     tags=['폭포', '계곡', '절벽', '등산로', '강'], key='rg-waterfall10',
+     rules='계곡 강(fill_region 「계곡 강」 4칸 폭) 위에 놓는다 — 키트 3..6열이 강 4칸과 겹치게. 강 열은 투명이라 바닥의 강이 비친다. 양옆 3칸은 절벽이 풀밭으로 줄어든다.',
+     role='structure')
 def waterfall(c, base):
-    # 1. 3/4 절벽 상단(y=0..16): 이끼 바위 윗면 테라스 + 상류 물길
-    c.R(0, 0, 64, 96, OL)
-    c.R(1, 1, 62, 14, J('shrine_flagstone', 3))
-    for x in (1, 52):
-        c.R(x, 1, 11, 12, J('moss', 2)); c.R(x + 1, 2, 8, 6, J('moss', 3))
-    # 상류 수면 (y=1..15, x=18..46)
-    c.R(18, 1, 28, 14, J('canal_indigo', 2))
-    c.R(20, 1, 24, 14, J('onsen_mineral_teal', 3))
-    for wy in (3, 7, 11):
-        c.HL(22, wy, 20, J('vending_cool_white', 4))
-    # 절벽 상단 턱 (y=14..16)
-    c.HL(1, 14, 17, J('shrine_flagstone', 4)); c.HL(46, 14, 17, J('shrine_flagstone', 4))
-    c.HL(1, 15, 17, OL); c.HL(46, 15, 17, OL)
-
-    # 2. 계단식 바위 절벽 정면 (y=16..76) + 중간 바위 턱(y=44..48)
-    stones(c, 1, 16, 62, 60, seed=51, course=(7, 10), width=(9, 15), moss=0.32)
-    # 중간 계단식 바위 선반 윗면 (3/4 깊이감)
-    c.R(1, 43, 18, 4, J('shrine_flagstone', 4)); c.HL(1, 47, 18, OL)
-    c.R(45, 45, 18, 4, J('shrine_flagstone', 4)); c.HL(45, 49, 18, OL)
-
-    # 3. 2단 폭포 물줄기 (x=18..46, y=14..78)
-    c.VL(17, 14, 64, OL); c.VL(46, 14, 64, OL)
-    streams = ((19, 3, 2), (22, 4, 5), (26, 2, 1), (28, 5, 0), (33, 3, 4), (36, 4, 2), (40, 3, 6), (43, 2, 3))
-    for y in range(14, 78):
-        step_ledge = 43 <= y <= 46
-        for x in range(18, 46):
-            if x in (18, 45):
-                c.P(x, y, J('canal_indigo', 1)); continue
-            if step_ledge:
-                c.P(x, y, J('vending_cool_white', 4 if y <= 44 else 3)); continue
-            col = J('onsen_mineral_teal', 2)
-            for sx, sw, ph in streams:
-                if sx <= x < sx + sw:
-                    cyc = (y + ph * 3) % (11 + (sw * 2))
-                    if cyc < 5:
-                        col = J('vending_cool_white', 4 if (x == sx or cyc < 2) else 3)
-                    elif cyc < 9:
-                        col = J('onsen_mineral_teal', 3)
-                    else:
-                        col = J('canal_indigo', 2)
-                    break
-            c.P(x, y, col)
-
-    # 4. 3/4 폭포수 소(滝壺, y=72..95) + 거품 물보라 클러스터 + 바위 테두리
-    disc(c, 32, 84, 30, OL, ry=11)
-    disc(c, 32, 84, 28, J('canal_indigo', 2), ry=10)
-    disc(c, 32, 83, 24, J('onsen_mineral_teal', 3), ry=8)
-    disc(c, 32, 78, 16, J('vending_cool_white', 3), ry=5)
-    disc(c, 32, 77, 11, J('vending_cool_white', 4), ry=3.5)
-    for bx, by in ((8, 78), (55, 79), (14, 88), (50, 88)):
-        disc(c, bx, by, 5, OL, ry=3.5)
-        disc(c, bx, by - 0.5, 4, J('wet_cobble', 3), ry=2.5)
+    """2026-10-20 다시 그림(4×6 → 10×6, 검은 바탕 없음). 그림은 lib_blocks/water_art.waterfall()."""
+    w = WA.waterfall()
+    m = w.a[:, :, 3] > 0
+    c.a[m] = w.a[m]
 
 
 @kit('rg-tsuribashi', '출렁다리(吊り橋) - 나무 발판·밧줄 난간·양끝 기둥(8×2)', 8, 2, 'bridge', solid=[],
@@ -868,60 +824,13 @@ def tsuribashi(c, base):
 
 
 # ----------------------------- 바다·항구 -----------------------------
-@kit('rg-lighthouse', '등대(灯台) - 흰 탑·전망 난간·불 켜진 등실·붉은 지붕(3×8)', 3, 8, 'landmark', solid=[(0, 7), (1, 7), (2, 7), (1, 6)],
-     tags=['등대', '灯台', '항구', '방파제', '해안'], rules='방파제 끝이나 곶 끝. 한 맵에 하나.', role='structure')
+@kit('rg-lighthouse', '등대(灯台) - 흰 원통 탑·전망 데크 난간·불 켜진 등실·붉은 돔·돌 기단 계단(3×8)', 3, 8, 'landmark', solid=[(0, 7), (1, 7), (2, 7), (1, 6)],
+     tags=['등대', '灯台', '항구', '방파제', '해안'], rules='방파제 끝이나 곶 끝(부두 콘크리트 위). 한 맵에 하나.', role='structure')
 def lighthouse(c, base):
-    # 1. 3/4 팔각 콘크리트 기단(윗면 테라스 y=104..111 + 정면 벽 y=112..126 + 출입문)
-    plinth_34(c, 4, 104, 40, 23, top_h=7, mat='concrete_grey')
-    c.R(19, 113, 10, 13, OL)
-    c.R(20, 114, 8, 12, J('noren_indigo', 1))
-    c.HL(20, 114, 8, J('vending_cool_white', 4))
-    c.P(26, 120, J('lantern_amber', 4))
-
-    # 2. 3/4 원통형 흰 탑신 (위로 갈수록 좁아지며 타원형 이음 띠가 3/4 곡률을 보여준다)
-    for y in range(30, 106):
-        f = (y - 30) / 75.0
-        hw = round(10.5 + 5.5 * f)
-        a, b = 24 - hw, 24 + hw
-        c.P(a - 1, y, OL); c.P(b, y, OL)
-        ring = y in (48, 68, 88)
-        for x in range(a, b):
-            u = (x - a) / max(1, b - a - 1)
-            lv = 4 if u < 0.35 else 3 if u < 0.72 else 2 if u < 0.9 else 1
-            if ring: lv = max(0, lv - 1)
-            c.P(x, y, J('vending_cool_white', lv))
-    # 탑신 밑동 3/4 타원 몰딩
-    c.HL(8, 105, 32, J('vending_cool_white', 2))
-    c.HL(8, 106, 32, OL)
-    # 채광창 3개 (테두리 OL + 유리 하이라이트)
-    for wy in (40, 60, 80):
-        c.R(21, wy, 6, 7, OL)
-        c.R(22, wy + 1, 4, 5, J('arcade_skylight_slate', 2))
-        c.P(22, wy + 1, J('arcade_skylight_slate', 4))
-        c.HL(21, wy + 7, 6, J('vending_cool_white', 4))
-
-    # 3. 3/4 전망대 갤러리 데크 (타원 윗면 바닥 + 쇠 난간)
-    disc(c, 24, 28, 16, OL, ry=4.5)
-    disc(c, 24, 28, 15, J('kawara_dark_tile', 2), ry=3.5)
-    disc(c, 24, 27, 13, J('concrete_grey', 3), ry=2.5)
-    # 난간 기둥과 상부 링
-    c.HL(10, 22, 28, OL); c.HL(10, 23, 28, J('kawara_dark_tile', 4))
-    for rx in range(10, 39, 4):
-        c.VL(rx, 23, 5, OL)
-
-    # 4. 등실(유리 격자 + 밝은 호박색 등불) + 3/4 붉은 돔 지붕 + 피뢰침
-    c.R(15, 12, 18, 12, OL)
-    c.R(16, 13, 16, 10, J('lantern_amber', 3))
-    c.R(18, 14, 8, 8, J('lantern_amber', 4))
-    for gx in (19, 24, 29): c.VL(gx, 13, 10, OL)
-    c.HL(16, 17, 16, OL)
-    # 붉은 돔 지붕 (3/4 구형 명암 + 처마 테 + OL)
-    disc(c, 24, 11, 11, OL, ry=6.5)
-    disc(c, 24, 11, 10, J('torii_vermilion', 2), ry=5.5)
-    disc(c, 22, 9.5, 6.5, J('torii_vermilion', 3), ry=3.5)
-    disc(c, 21, 8.5, 3.2, J('torii_vermilion', 4), ry=2.0)
-    c.HL(13, 12, 22, OL)
-    c.VL(24, 1, 5, OL); c.P(24, 3, J('lantern_amber', 4))
+    """2026-10-20 다시 그림(같은 3×8 발자국·같은 칸 자리 키). 그림은 lib_blocks/water_art.lighthouse()."""
+    w = WA.lighthouse()
+    m = w.a[:, :, 3] > 0
+    c.a[m] = w.a[m]
 
 
 @kit('rg-fishing-boat', '어선(漁船) - 흰 선체·쪽빛 띠·조타실·大漁旗(6×3)', 6, 3, 'boat', solid=rows(6, (0, 1, 2)),
@@ -1404,13 +1313,9 @@ def _sand(c):
 
 
 def _sea(c):
-    for y in range(16):
-        for x in range(16):
-            t = 2
-            if (y % 8 == 3 and (x + (y // 8) * 7) % 16 < 5): t = 3
-            if (y % 8 == 4 and (x + (y // 8) * 7) % 16 < 4): t = 1
-            if (x, y) in ((11, 11), (3, 2)): t = 4
-            c.P(x, y, J('canal_indigo', t))
+    """바다 몸통 v0(2026-10-20 시안 바탕 — 16px 주기 단색 바탕 + 칸 안 얼룩·물결, 몸통 변형 jp_shore sea.v1..v5 와 테두리가 같다)."""
+    w = WA.water_body('sea', 0)
+    c.a[:, :] = w.a
 
 
 def _paddy(c):
@@ -1491,7 +1396,7 @@ GROUND = collections.OrderedDict((
 ))
 GROUND_GROUPS = (
     ('jp:region-sand', '해변 모래사장', ['gnd/sand'], '해변·해안도로 모래(크림 회벽 밝은 단 + 짚빛 알갱이, 물결 자국). fill_region 몸통. 바다(「바다」)와 맞붙인다.'),
-    ('jp:region-sea', '바다', ['gnd/sea'], '항구·해변의 바다(운하 쪽빛 램프, 물결 줄). 걸을 수 없다. 어선·테트라포드 키트를 위에 둔다.'),
+    ('jp:region-sea', '바다', ['gnd/sea'], '항구·해변의 바다(운하 쪽빛 램프, 얕은 물 덩이·물결 줄·반짝임). 걸을 수 없다. 어선·테트라포드 키트를 위에 둔다. 지역 구성기가 모래사장·부두와 맞닿는 칸에 물가(jp-shore-sea-sand·jp-shore-sea-quay)를, 넓은 바다에 몸통 변형(jp:sea-body)을 자동으로 깐다.'),
     ('jp:region-paddy', '논(물 댄 모)', ['gnd/paddy'], '다랑논·시골 논(온천 청록 물 + 이끼색 모 줄). 걸을 수 없다 - 논두렁은 「산길 흙」으로 1칸 띠를 남긴다.'),
     ('jp:region-trail', '산길 흙', ['gnd/trail'], '등산로·논두렁·고개 흙길(삭은 삼나무 밝은 단 + 돌 알갱이). fill_region path 로 굽은 길.'),
     ('jp:region-forest', '숲 바닥(이끼·낙엽)', ['gnd/forest'], '삼나무·대숲·유적 숲의 바닥(이끼 그늘 단 + 낙엽 점).'),
@@ -1537,7 +1442,7 @@ def _finalize():
                 pc = 'floor' if layer == 'base' else ('solid' if (cx, cy) in k['solid'] else k['other'])
                 key = (t.tobytes(), pc)
                 if key not in seen:
-                    loc = '%s/%s%d.%d' % (k['id'], 'b' if layer == 'base' else '', cx, cy)
+                    loc = '%s/%s%d.%d' % (k['key'], 'b' if layer == 'base' else '', cx, cy)
                     seen[key] = loc
                     cells[loc] = dict(img=Image.fromarray(t, 'RGBA'), pc=pc, label='%s 칸 (%d,%d)%s' % (k['name'], cx, cy, ' 바닥' if layer == 'base' else ''),
                                       desc='[지역 팩] %s 의 일부. 키트 jp-%s 로 통째로 놓는다.' % (k['name'], k['id']), tags=list(k['tags']))
@@ -1568,6 +1473,8 @@ NOTES = '일본 30 지역 팩: 모래사장·바다·논·산길·숲 바닥·�
 def build():
     cells, kits, renders, groups = _finalize()
     return {'cells': collections.OrderedDict((k, dict(v, img=v['img'].copy(), tags=list(v['tags']))) for k, v in cells.items()),
+            # 바다 단칸(gnd/sea)을 jp_shore 바다 물가 오토타일이 물 이웃으로 센다(굽기 connect_extra)
+            'connect_extra': {'jp-shore-sea-sand': ['gnd/sea'], 'jp-shore-sea-quay': ['gnd/sea']},
             'autotiles': [], 'groups': [dict(g, cells=list(g['cells'])) for g in groups], 'kits': [dict(k) for k in kits], 'notes': NOTES % len(kits)}
 
 
