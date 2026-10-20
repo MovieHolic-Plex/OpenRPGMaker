@@ -7,12 +7,15 @@
     from object_gate import require_pass, ObjectGateRefused
     require_pass(img, kind="tall_furniture", context="bundle", label="murim/prop_scroll_shelf")
 
+보류(refer) 판정은 사람이 검토 화면(`object-gate serve-holds`)에서 허용한 기록(approvals/hold/<해시>.json, 저장소 밖 키로 HMAC 서명)이
+그림 해시·프로필·종류와 맞을 때만 통과로 받는다. 서명이 안 맞는 기록(손으로 쓴 것)은 없는 것과 같다.
 front_prop 은 사람 승인 기록(approvals/front_prop/<해시>.json)이 있어야만 3/4 반쪽을 면제한다(승인은 CLI approve-front-prop, 터미널에서 사람이 직접).
 출구(context): bundle·shared·store 는 pass 만(사람 덮어쓰기도 무효), workshop-local 은 pass 또는 사람의 「그래도 넣기」.
 """
 from __future__ import annotations
 
 import hashlib
+import hmac
 import json
 import os
 from pathlib import Path
@@ -70,6 +73,34 @@ def read_front_prop_approval(sha: str) -> dict | None:
     return a if ok else None
 
 
+HOLD_KEY_PATH = Path(os.environ.get("OBJECT_GATE_HOLD_KEY") or Path.home() / ".config" / "oprn" / "object-gate-hold.key")
+_HOLD_KEYS = ("schema", "pixelSha256", "profileHash", "kind", "decision", "decidedBy", "decidedAt", "by", "via", "reasons", "note")
+
+
+def hold_payload(d: dict) -> str:
+    """서명 대상 문자열. TS objectGateHoldPayload 와 같다."""
+    return json.dumps([[k, d.get(k)] for k in _HOLD_KEYS], ensure_ascii=False, separators=(",", ":"))
+
+
+def read_hold_decision(sha: str) -> dict | None:
+    """보류 판정의 사람 결정 기록. 검토 화면 서버의 서명이 맞을 때만 돌려준다."""
+    path = GATE_DATA / "approvals" / "hold" / sha[:2] / f"{sha}.json"
+    if not path.exists() or not HOLD_KEY_PATH.exists():
+        return None
+    key_hex = HOLD_KEY_PATH.read_text().strip()
+    if len(key_hex) != 64:
+        return None
+    d = json.loads(path.read_text())
+    want = hmac.new(bytes.fromhex(key_hex), hold_payload(d).encode(), hashlib.sha256).hexdigest()
+    return d if hmac.compare_digest(str(d.get("sig") or ""), want) else None
+
+
+def hold_allows(d: dict | None, receipt: dict) -> bool:
+    return bool(d) and d.get("schema") == "oprn-object-gate-hold-decision/1" and d.get("by") == "human" and d.get("via") == "review-page" \
+        and d.get("decision") == "allow" and d.get("pixelSha256") == receipt.get("pixelSha256") and d.get("profileHash") == receipt.get("profileHash") \
+        and d.get("kind") == receipt.get("kind") and str(d.get("decidedBy") or "").strip() != "" and bool(d.get("decidedAt"))
+
+
 def calibrated_profiles() -> set[str]:
     root = GATE_DATA / "profiles"
     if not root.exists():
@@ -107,6 +138,9 @@ def refusal(img, *, kind: str | None, context: str) -> str | None:
     if receipt.get("verdict") == "pass":
         return None
     if receipt.get("verdict") == "refer":
+        # 사람이 검토 화면에서 이 그림·프로필·종류의 보류를 허용했으면 통과(TS objectGateRefusal 과 같다).
+        if hold_allows(read_hold_decision(sha), receipt):
+            return None
         # 보류(판정자 의견이 갈림·사용자 정의 영역)는 pass 가 아니다 — 모든 출구에서 막는다(workshop-local 의 사람 덮어쓰기만 예외).
         if not (context == "workshop-local" and (receipt.get("override") or {}).get("by") == "human"):
             why = " · ".join(receipt.get("reasons") or []) or "판정자 의견이 갈림"

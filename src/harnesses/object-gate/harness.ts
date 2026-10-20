@@ -16,6 +16,7 @@ export const OBJECT_GATE_HARNESS = defineHarness({
     { id: 'calibrate', title: '보정', summary: '3/4 위반·정상 표본과 화풍 얕음·버들 수준 표본으로 현재 프로필을 잰다. 위반을 하나라도 통과시키거나 정상 표본 통과율이 하한 아래면 rejected. 답은 프롬프트 해시별로 캐시해 이어 돌릴 수 있다(--offline 은 캐시만).' },
     { id: 'rereview', title: '재검수', summary: '현재 번들 테마 칩셋의 키트·바닥 그룹을 시트에서 합성해 새 프로필로 다시 판정한다(중단 후 이어 돌리기). 보정 통과 프로필만 영수증을 쓰고, --audit 은 보고서만.' },
     { id: 'check', title: '출구 확인', summary: '그림 하나가 출구(bundle·shared·store·workshop-local)를 지나갈 수 있는지 영수증만 보고 답한다(모델 호출 없음).' },
+    { id: 'serve-holds', title: '보류 사람 확인', summary: '현재 프로필의 보류(refer) 영수증을 1배·4배로 버들항 기준 그림 옆에 놓고 사람이 허용/거절을 누르는 로컬 화면(기본 포트 18323). 결정은 화소 해시·프로필·종류에 묶이고 서버가 저장소 밖 키로 서명한다 — 허용된 보류만 출구를 지난다. holds 는 현황.' },
     { id: 'status', title: '현황', summary: '프로필·영수증 수와 통과율을 보여 준다.' },
     { id: 'audit', title: '기존 그림 감사', summary: '이미 번들에 든 기물을 판정만 하고 보고서를 쓴다. 막지 않는다.' },
   ],
