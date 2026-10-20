@@ -38,6 +38,18 @@
   색 키 반복문 손질은 67→40ms 라 되돌렸다 · Phaser 텍스처 만들기(약 1s, 첫 화면 뒤)·업로드 캐릭터 시트 변환은 동작이 바뀌어 건드리지 않았다.
   남은 가장 큰 비용: 빌드마다 첫 부팅(표식이 안 맞음)은 전 문서 요약 두 번 + 정규화기로 +10~15s(`src/project`·`src/assets` 가 바뀌는 배포마다 한 번).
 
+- **데스크톱 시작 속도 (2026-10-20, 측정기 `scripts/perf/startup-bench.mjs`):** 앱을 켜서 시작 화면 카드가 눌리기까지 4.9~6.4s → 약 1.1~1.6s(박스 부하 40, 같은 부하의 빈 Electron 이 data: 한 장 띄우는 데 0.9~1.1s).
+  ① 메인 번들(main.cjs)이 83MB 였다 — `loadRepair`·`io/serialize` 가 소유 참고문서 복원 때문에 번들 타일셋 전부를 끌고 왔다. `scripts/build-electron.mjs` 가 두 모듈을
+  `dist-electron/project-core.cjs`(`electron/main/projectCore.ts`)로 떼고, 메인 번들 안에서는 «처음 읽힐 때 require 하는» getter 대역으로 바꾼다(소스·테스트·oprn-serve 는 그대로 원래 모듈).
+  편집기가 프로젝트를 읽은 뒤 메인이 2.5s 쉬면(`app://`·IPC 요청 없음, 늦어도 60s) `preloadProjectCoreWhenIdle()` 가 미리 읽는다 — 편집기 부팅은 이 모듈을 안 쓰고 첫 저장이 쓴다. 시작 화면에서 미리 읽으면 1.7s 동기 require 가 카드 클릭→편집기 문서 요청과 겹쳐 편집기가 약 1s 늦어졌다(실측). Node 번들의 큰 JSON 은 `JSON.parse("…")` 문자열이다. 메인 단계 시각은 `globalThis.__oprnMainTiming`(`electron/main/startupTiming.ts`).
+  ② 시작 화면 번들이 `@/project/io`·`@/player/oprnGameFile` 를 정적으로 가져와 묶음 청크 65MB 를 실었다 — 둘은 «게임 파일 열기» 안에서 동적으로 받고, accept 값은 `src/project/packageFormat.ts`.
+  `vite.config.ts` 의 `HOME_SCREEN_JSON`(bundledConcepts.json)은 `bundled-data` 묶음에서 뺀다 — 시작 화면이 작은 JSON 하나 때문에 44MB 묶음을 싣지 않게. **시작 화면에 정적 import 를 더할 때는 묶음 청크가 끌려오지 않는지 `dist/start-screen.html` 의 modulepreload 를 확인한다.**
+  ③ 편집기 진입 번들이 대표 데모 빌더(`@/project/flagship`, 예제 그림 약 18MB)와 이벤트 편집 모달→조수 도구 목록을 정적으로 품었다 — 데모는 `?demo=`·메뉴·환영 카드에서만 동적으로 받는다(`prepareDevShowcaseProjectFactory`). 정적 JS 93MB → 67MB.
+  ④ `app://` 은 `codeCache` 권한(V8 컴파일 결과 재사용)을 갖고, HTML 이 아닌 정적 파일은 `net.fetch(file:)` 로 흘린다(메인의 readFileSync 복사 대비 2배, asar 안에서도 동작 확인, 실패하면 예전 길).
+  ⑤ 공용 자료 304 는 본문을 만들기 전에 판본(SELECT)만으로 판정한다 — 새 호스트 프로세스(데스크톱은 매 실행)의 첫 요청이 304 로 끝날 일에 읽기·gzip 1s 를 쓰던 것.
+  ⑥ 창 닫기는 창을 바로 숨기고 저장을 60s 까지 기다린다 — 예전 10s 상한이 새 빌드 첫 실행 뒤의 큰 자동 저장(71MB 프로젝트 13~16s)을 끊어, 다음 실행이 또 «첫 부팅»(+10~15s)이 됐다.
+  남은 것: 편집기 진입은 여전히 번들 타일셋 JSON 67MB 를 동기로 싣는다(정규화·소유 참고문서 복원이 동기로 쓴다) — 지연 로드는 부팅 경로 비동기화가 필요하다. 웜 부팅 편집기 입력 가능까지 클릭 뒤 약 5~7s(부하 40).
+
 - Phaser app split:
   - `src/app/mode.ts` owns the single active mode (`edit` or `play`), the shared Phaser game handle, and the DOM shell for topbar/main.
   - `bootApp()` loads the project store, seeds editor state from `startMapId`, renders the topbar, and enters edit mode.

@@ -22,9 +22,6 @@ import { bootApp, isModeShellMounted as modeShellMountedForBootFailure } from "@
 import { dismissBootLoader, failBootLoader, reportBootStage } from "@/app/bootLoader";
 import { expectBootSettle } from "@/util/bootSettled";
 import { editorState } from "@/editor/editorState";
-import { addEvent } from "@/editor/eventActions";
-import { addEventPage, ensureEventPages } from "@/editor/eventPages";
-import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { store } from "@/project/store";
 import { hasElectronBridge } from "@/project/persistence/electronRepository";
 import { adoptElectronOpenProject } from "@/project/persistence/repository";
@@ -167,6 +164,12 @@ async function openClassicEventEditorCaptureIfRequested(): Promise<void> {
   if (typeof window === "undefined" || typeof document === "undefined") return;
   const params = new URLSearchParams(window.location.search);
   if (params.get("classicCapture") !== "2") return;
+  // 캡처 전용 경로 — 이벤트 편집기 모달은 조수 도구 목록까지 끌고 와서 진입 번들에 정적으로 두지 않는다(2026-10-20).
+  const [{ addEvent }, { addEventPage, ensureEventPages }, { openEventEditorModal }] = await Promise.all([
+    import("@/editor/eventActions"),
+    import("@/editor/eventPages"),
+    import("@/editor/panels/eventEditor/modal"),
+  ]);
 
   const mapId = editorState.get().currentMapId ?? store.getCurrent().startMapId;
   const map = store.getCurrent().maps[mapId];

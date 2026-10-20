@@ -27,6 +27,9 @@ applyLegacyEnvAliases();
 
 const DEFAULT_DEV_SERVER_PORT = 9999;
 
+/** 시작 화면(start-screen.html)이 첫 그리기에 쓰는 정적 JSON. manualChunks 의 «bundled-data» 묶음에서 뺀다. */
+const HOME_SCREEN_JSON = ["/src/assets/bundledConcepts.json"];
+
 /**
  * dev 서버 TLS. `https://localhost:9999` 로 접속하려면 반드시 있어야 한다.
  *
@@ -333,6 +336,9 @@ export default defineConfig(({ mode }) => {
         // 읽는 시점을 늦추는 지연 로드는 동기 소비자가 많고 JSON 해석이 합쳐 약 0.4초라 넣지 않았다(openwiki/runtime-project-schema.md 편집기 렉 F).
         manualChunks(id) {
           const file = id.split("?")[0]!.replace(/\\/g, "/");
+          // 데스크톱 시작 화면이 쓰는 작은 JSON 은 묶음에 넣지 않는다 — 묶음 청크(44MB)가 통째로 시작 화면에 실려
+          // 첫 화면이 2초 넘게 늦었다(2026-10-20 실측). 이 파일은 자기를 import 하는 청크로 간다.
+          if (HOME_SCREEN_JSON.some((suffix) => file.endsWith(suffix))) return undefined;
           if (file.endsWith(".json") && (file.includes("/src/assets/") || file.includes("/src/project/defaults/"))) {
             // 8MB 가 넘는 JSON(버들항·일본 도시 타일셋)만 자기 청크로 나눈다 — 한 스크립트는 한 스레드가 읽고 컴파일하므로 큰 덩이가 여럿이면
             // 병렬로 풀린다. 웜 부팅 실측(2026-10-15, 9회 중앙값): 한 덩이 → 셋으로 모듈 평가 시작 1.6s → 1.1s, 편집 화면 5.5s → 4.6s.

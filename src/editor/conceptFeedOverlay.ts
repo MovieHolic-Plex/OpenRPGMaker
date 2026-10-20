@@ -5,7 +5,6 @@ import { createConceptSource } from "@/concepts/source";
 import { menuBriefHandler, menuMakeHandler, welcomeBriefHandler, welcomeMakeHandler } from "./conceptMake";
 import { registerModal, unregisterModal } from "./ui/modalStack";
 import { focusProjectStartMap } from "@/editor/mapSelection";
-import { createFlagshipDemoProject } from "@/project/flagship";
 import { store } from "@/project/store";
 import { toast } from "@/util/toast";
 
@@ -77,7 +76,9 @@ function mountOverlay(mode: "menu" | "welcome", resolve: (result: ConceptFeedOve
     beforeDraft: () => ensureAiConnected("내가 쓴 컨셉"),
     onBuiltinDemo: (demoId, action) => {
       if (blankBusy || feed.busy()) return;
-      openBuiltinDemoFromOverlay(demoId, action, () => finish("closed"));
+      void openBuiltinDemoFromOverlay(demoId, action, () => finish("closed")).catch((error: unknown) => {
+        console.error("[welcome] 기본 데모를 열지 못했습니다:", error);
+      });
     },
     onBlank: mode === "menu"
       ? () => {
@@ -103,11 +104,12 @@ function mountOverlay(mode: "menu" | "welcome", resolve: (result: ConceptFeedOve
 }
 
 
-function openBuiltinDemoFromOverlay(
+async function openBuiltinDemoFromOverlay(
   demoId: "chrono-bell" | "emerald-crown",
   action: "play" | "open",
   closeOverlay: () => void,
-): void {
+): Promise<void> {
+  const { createFlagshipDemoProject } = await import("@/project/flagship");
   const demo = createFlagshipDemoProject(demoId);
   store.replaceProject(demo.project, { label: `${demo.manifest.title} 기본 데모 열기`, origin: "human" });
   focusProjectStartMap();

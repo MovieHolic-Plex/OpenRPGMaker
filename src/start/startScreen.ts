@@ -19,8 +19,8 @@ import { START_PLAY_URL, writeStartScreenIntent } from "./startIntent";
 import { createConceptFeed, type ConceptFeed } from "./conceptFeed/conceptFeed";
 import { launcherBriefHandler, launcherMakeHandler } from "./conceptFeed/launcherMake";
 import { createConceptSource } from "@/concepts/source";
-import { OPRN_GAME_FILE_ACCEPT, readOprnGameFile } from "@/player/oprnGameFile";
-import { serialize } from "@/project/io";
+// 게임 파일 읽기·직렬화는 번들 타일셋(80MB)을 끌고 오므로 «게임 파일 열기» 를 누를 때만 받는다 — 첫 화면 번들에 넣지 않는다.
+import { OPRN_GAME_FILE_ACCEPT } from "@/project/packageFormat";
 import { createLauncherShell, readLauncherMode, topButton, writeLauncherMode, type LauncherMode } from "./launcherShell";
 import { readPlayedLog, recordPlayed, worldGrid, worldLead, worldsByLastPlayed, type PlayedLog, type WorldAction, type WorldListOptions } from "./playFeed/playFeed";
 import { startIcon } from "./icons";
@@ -272,6 +272,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       if (!file) return;
       void run(async () => {
         if (!bridge) throw new Error("데스크톱 앱에서만 게임 파일을 열 수 있습니다.");
+        const [{ readOprnGameFile }, { serialize }] = await Promise.all([import("@/player/oprnGameFile"), import("@/project/io")]);
         const read = await readOprnGameFile(file);
         if (!read.ok) throw new Error(read.message);
         // 받은 게임을 그대로 새 폴더의 시드로 심는다 — 직렬화 형식은 편집기 저장과 같다.

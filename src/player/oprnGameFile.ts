@@ -9,12 +9,7 @@ import {
 } from "@/project/package";
 import type { Project } from "@/project/types";
 
-export const OPRN_GAME_FILE_ACCEPT = [
-  OPRN_MIME,
-  LEGACY_RPGZZU_MIME,
-  OPRN_EXTENSION,
-  LEGACY_RPGZZU_EXTENSION,
-].join(",");
+export { OPRN_GAME_FILE_ACCEPT } from "@/project/packageFormat";
 
 export type OprnGameFileRead =
   | { readonly ok: true; readonly project: Project }
