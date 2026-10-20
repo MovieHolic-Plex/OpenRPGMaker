@@ -41,7 +41,7 @@
 - **데스크톱 시작 속도 (2026-10-20, 측정기 `scripts/perf/startup-bench.mjs`):** 앱을 켜서 시작 화면 카드가 눌리기까지 4.9~6.4s → 약 1.1~1.6s(박스 부하 40, 같은 부하의 빈 Electron 이 data: 한 장 띄우는 데 0.9~1.1s).
   ① 메인 번들(main.cjs)이 83MB 였다 — `loadRepair`·`io/serialize` 가 소유 참고문서 복원 때문에 번들 타일셋 전부를 끌고 왔다. `scripts/build-electron.mjs` 가 두 모듈을
   `dist-electron/project-core.cjs`(`electron/main/projectCore.ts`)로 떼고, 메인 번들 안에서는 «처음 읽힐 때 require 하는» getter 대역으로 바꾼다(소스·테스트·oprn-serve 는 그대로 원래 모듈).
-  시작 화면이 최근 목록을 물은 1.5s 뒤 `preloadProjectCore()` 가 미리 읽는다. Node 번들의 큰 JSON 은 `JSON.parse("…")` 문자열이다. 메인 단계 시각은 `globalThis.__oprnMainTiming`(`electron/main/startupTiming.ts`).
+  편집기가 프로젝트를 읽은 뒤 메인이 2.5s 쉬면(`app://`·IPC 요청 없음, 늦어도 60s) `preloadProjectCoreWhenIdle()` 가 미리 읽는다 — 편집기 부팅은 이 모듈을 안 쓰고 첫 저장이 쓴다. 시작 화면에서 미리 읽으면 1.7s 동기 require 가 카드 클릭→편집기 문서 요청과 겹쳐 편집기가 약 1s 늦어졌다(실측). Node 번들의 큰 JSON 은 `JSON.parse("…")` 문자열이다. 메인 단계 시각은 `globalThis.__oprnMainTiming`(`electron/main/startupTiming.ts`).
   ② 시작 화면 번들이 `@/project/io`·`@/player/oprnGameFile` 를 정적으로 가져와 묶음 청크 65MB 를 실었다 — 둘은 «게임 파일 열기» 안에서 동적으로 받고, accept 값은 `src/project/packageFormat.ts`.
   `vite.config.ts` 의 `HOME_SCREEN_JSON`(bundledConcepts.json)은 `bundled-data` 묶음에서 뺀다 — 시작 화면이 작은 JSON 하나 때문에 44MB 묶음을 싣지 않게. **시작 화면에 정적 import 를 더할 때는 묶음 청크가 끌려오지 않는지 `dist/start-screen.html` 의 modulepreload 를 확인한다.**
   ③ 편집기 진입 번들이 대표 데모 빌더(`@/project/flagship`, 예제 그림 약 18MB)와 이벤트 편집 모달→조수 도구 목록을 정적으로 품었다 — 데모는 `?demo=`·메뉴·환영 카드에서만 동적으로 받는다(`prepareDevShowcaseProjectFactory`). 정적 JS 93MB → 67MB.
