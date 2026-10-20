@@ -116,7 +116,7 @@ def J(mat, s):
     return r[max(0, min(4, s))]
 
 
-W_HV, W_LV = J('kawara_dark_tile', 2), J('kawara_dark_tile', 1)          # 고압(피복 회색, 조금 밝다) · 저압
+W_HV, W_LV = J('kawara_dark_tile', 1), J('kawara_dark_tile', 1)          # 고압(피복 회색, 조금 밝다) · 저압
 W_CB, W_CB_S = J('kawara_dark_tile', 1), J('kawara_dark_tile', 0)        # 통신선(1px + 밑 그늘 1px — 굵어 보이되 순흑 줄 하나로 뭉개지지 않게)
 STEEL_OL = J('kawara_dark_tile', 1)                                        # 철·콘크리트 윤곽(재질 톤, 순흑 아님)
 
@@ -161,7 +161,7 @@ def pole_body(c, x, top, bot, mat='conc'):
             c.P(xx, y, K('tekko', 1)); c.P(xx, y + 1, STEEL_OL)
         for y in range(bot - 15, bot - 6):                                                                 # 노랑 검정 표지
             for i in range(-2, 2):
-                c.P(x + i, y, J('lantern_amber', 3) if ((y + i) // 2) % 2 else J('kawara_dark_tile', 0))
+                c.P(x + i, y, (J('lantern_amber', 4) if i < 0 else J('lantern_amber', 3)) if ((y + i) // 2) % 2 else K('ita', -3))
         c.HL(x - 3, bot - 4, 7, ol)                                                                         # 밑동 깃(한 줄 윗면 + 앞면)
         c.P(x - 3, bot - 3, ol); c.HL(x - 2, bot - 3, 5, K('conc', 0)); c.P(x - 2, bot - 3, K('conc', 1)); c.P(x + 3, bot - 3, ol)
         c.P(x - 3, bot - 2, ol); c.HL(x - 2, bot - 2, 5, K('conc', -2)); c.P(x + 3, bot - 2, ol)
@@ -170,7 +170,7 @@ def pole_body(c, x, top, bot, mat='conc'):
         c.HL(x - 1, top - 3, 3, ol)                                                                         # 머리 윗면(3×2 타원)
         c.P(x - 2, top - 2, ol); c.P(x - 1, top - 2, K('conc', 3)); c.P(x, top - 2, K('conc', 3)); c.P(x + 1, top - 2, K('conc', 2)); c.P(x + 2, top - 2, ol)
         c.P(x - 2, top - 1, ol); c.P(x - 1, top - 1, K('conc', 2)); c.P(x, top - 1, K('conc', 1)); c.P(x + 1, top - 1, K('conc', 0)); c.P(x + 2, top - 1, ol)
-    c.HL(x - 2, bot, 10, K('yoru', -1)); c.HL(x, bot + 1, 7, K('yoru', -1)); c.HL(x + 3, bot + 2, 3, K('yoru', -1))   # 바닥 그림자(오른쪽 아래로 눕는 타원)
+    c.HL(x - 2, bot, 11, K('yoru', -1)); c.HL(x, bot + 1, 12, K('yoru', -1)); c.HL(x + 5, bot + 2, 8, K('yoru', -1))   # 바닥 그림자(오른쪽 아래로 눕는 타원)
     c.HL(x - 1, bot, 3 if not wood else 2, K('conc', -3) if not wood else K('ita', -3))                    # 둥근 밑(가운데가 1px 내려온 원기둥 발)
 
 
@@ -183,6 +183,7 @@ def crossarm(c, x0, x1, y, ins, cx=24, braces=True):
     c.HL(x0, y + 1, x1 - x0, K('tekko', -1))
     for i in range(x0 + 5, x1 - 1, 9): c.P(i, y + 1, K('tekko', -2))
     c.HL(x0, y + 2, x1 - x0, STEEL_OL)
+    c.P(x0, y, K('tekko', 2)); c.P(x0, y + 1, K('tekko', 0)); c.P(x1 - 1, y + 1, K('tekko', -2))        # 끝 마구리(왼쪽 빛·오른쪽 그늘)
     c.VL(x0 - 1, y - 1, 4, STEEL_OL) if x0 > 0 else None
     c.VL(x1, y - 1, 4, STEEL_OL) if x1 < 48 else None
     c.HL(cx - 2, y + 3, 5, K('tekko', -2))                                                 # 띠쇠
@@ -206,19 +207,19 @@ def _wires_through(c, W=48):
 
 
 def transformer(c, x, y):
-    """주상 변압기 원통(폭 7, 기둥의 두 배): 뚜껑 타원 윗면 2줄 + 테 + 몸통 8줄(왼쪽 빛·띠) + 둥근 밑. 기둥 쪽 걸쇠 2줄, 뚜껑 위 사기 부싱 둘."""
+    """주상 변압기 원통(폭 7, 기둥의 두 배): 뚜껑 타원 윗면 2줄 + 테 + 몸통 6줄(왼쪽 빛·띠) + 둥근 밑. 통신선 클램프보다 위에서 끝난다. 기둥 쪽 걸쇠 2줄, 뚜껑 위 사기 부싱 둘."""
     ol = STEEL_OL
     c.HL(x + 1, y, 5, ol)
     c.P(x, y + 1, ol); c.HL(x + 1, y + 1, 5, K('conc', 3)); c.P(x + 5, y + 1, K('conc', 2)); c.P(x + 6, y + 1, ol)
     c.P(x - 1, y + 2, ol); c.HL(x, y + 2, 7, K('conc', 2)); c.P(x, y + 2, K('conc', 3)); c.P(x + 6, y + 2, K('conc', 1)); c.P(x + 7, y + 2, ol)
     c.P(x - 1, y + 3, ol); c.HL(x, y + 3, 7, K('conc', -2)); c.P(x + 7, y + 3, ol)                       # 뚜껑 테(앞)
-    for j in range(y + 4, y + 12):
+    for j in range(y + 4, y + 10):
         c.P(x - 1, j, ol); c.P(x + 7, j, ol)
         for i, t in enumerate((1, 1, 0, 0, 0, -1, -2)): c.P(x + i, j, K('conc', t))
-    for j in (y + 6, y + 9): c.HL(x, j, 7, K('conc', -1)); c.P(x, j, K('conc', 0))                       # 몸통 띠
-    c.P(x - 1, y + 12, ol); c.HL(x, y + 12, 7, K('conc', -2)); c.P(x + 7, y + 12, ol)
-    c.HL(x, y + 13, 7, ol)
-    c.HL(x - 3, y + 5, 2, K('tekko', -2)); c.HL(x - 3, y + 10, 2, K('tekko', -2))                         # 걸쇠
+    c.HL(x, y + 7, 7, K('conc', -1)); c.P(x, y + 7, K('conc', 0))                                         # 몸통 띠
+    c.P(x - 1, y + 10, ol); c.HL(x, y + 10, 7, K('conc', -2)); c.P(x + 7, y + 10, ol)
+    c.HL(x, y + 11, 7, ol)
+    c.HL(x - 3, y + 5, 2, K('tekko', -2)); c.HL(x - 3, y + 8, 2, K('tekko', -2))                          # 걸쇠
     for bx in (x + 1, x + 5): c.P(bx, y - 1, K('shiro', 2)); c.P(bx, y, K('shiro', 0))                   # 부싱(사기)
 
 
@@ -236,11 +237,10 @@ def closure(c, x, y, w=6):
 def _pole(c):
     _wires_through(c)
     pole_body(c, 24, 6, 157)
-    for lx in (31, 35): c.VL(lx, ARM1 + 3, ARM2 - ARM1 + 2, W_HV)                      # 변압기 1차 인하선(고압 완목 → 부싱, 저압 완목 뒤로)
+    for lx in (31, 35): c.VL(lx, ARM1 + 3, ARM2 - ARM1 - 1, W_HV)                      # 변압기 1차 인하선(고압 완목 → 부싱, 저압 완목 뒤로)
     crossarm(c, 1, 47, ARM1, HV_INS); crossarm(c, 3, 45, ARM2, LV_INS)
     c.R(27, CABLE - 3, 2, 4, K('tekko', -1)); c.P(27, CABLE - 3, K('tekko', 1)); c.HL(27, CABLE + 1, 2, STEEL_OL)   # 통신선 클램프
-    transformer(c, 30, ARM2 + 4)
-    closure(c, 40, CABLE - 1, 5)
+    transformer(c, 30, ARM2 + 3)
     c.HL(22, 50, 5, K('tekko', -2)); c.VL(22, 51, 6, K('tekko', -2)); c.VL(26, 51, 6, K('tekko', -2)); c.HL(22, 57, 5, K('tekko', -3))   # 번호판
     c.R(23, 51, 3, 6, K('shiro', 1)); c.VL(25, 51, 6, K('shiro', 0)); c.HL(23, 52, 3, K('kon', 0)); c.HL(23, 54, 3, J('kawara_dark_tile', 2)); c.HL(23, 55, 2, J('kawara_dark_tile', 2))
 
@@ -265,12 +265,12 @@ def _pole_wood(c):
     pole_body(c, 24, 6, 141, 'ita')
     crossarm(c, 1, 47, ARM1, HV_INS); crossarm(c, 3, 45, ARM2, LV_INS)               # 고압 완목도 ARM1 — 전선 키트 고압 가닥이 애자 위에 닿는다
     c.R(27, CABLE - 3, 2, 4, K('tekko', -1)); c.P(27, CABLE - 3, K('tekko', 1)); c.HL(27, CABLE + 1, 2, STEEL_OL)   # 통신선 클램프
-    ol = J('kawara_dark_tile', 0)                                                   # 옛 법랑 간판(작게)
-    c.HL(21, 60, 7, ol); c.HL(21, 71, 7, ol); c.VL(20, 61, 10, ol); c.VL(28, 61, 10, ol)
-    c.R(21, 61, 7, 10, K('kinari', 1)); c.VL(21, 61, 10, K('kinari', 2)); c.VL(27, 61, 10, K('kinari', 0))
-    c.R(21, 61, 7, 3, K('kawara', 0)); c.HL(21, 61, 7, K('kawara', 1))
-    c.HL(22, 65, 5, J('kawara_dark_tile', 1)); c.HL(22, 67, 4, J('kawara_dark_tile', 1)); c.HL(22, 69, 3, J('kawara_dark_tile', 2))
-    c.P(27, 70, K('soil', 0)); c.P(26, 70, K('soil', 1))                 # 녹
+    ol = J('kawara_dark_tile', 1)                                                   # 옛 법랑 간판(기둥 폭에 맞춘 좁은 판)
+    c.HL(22, 60, 4, ol); c.HL(22, 71, 4, ol); c.VL(21, 61, 10, ol); c.VL(26, 61, 10, ol)
+    c.R(22, 61, 4, 10, K('kinari', 1)); c.VL(22, 61, 10, K('kinari', 2)); c.VL(25, 61, 10, K('kinari', 0))
+    c.R(22, 61, 4, 3, K('kawara', 0)); c.HL(22, 61, 4, K('kawara', 1))
+    c.HL(23, 65, 2, J('kawara_dark_tile', 1)); c.HL(22, 67, 3, J('kawara_dark_tile', 1)); c.HL(23, 69, 2, J('kawara_dark_tile', 2))
+    c.P(25, 70, K('soil', 0)); c.P(24, 70, K('soil', 1))                             # 녹
 
 
 WIRE_BOTTOM = 46        # 키트 높이 3칸(48px) 안 — 처짐이 이보다 내려가면 잘려 끊긴 조각이 된다(2026-10-07 학교 관문 지적)
