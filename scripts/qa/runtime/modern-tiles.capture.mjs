@@ -15,14 +15,19 @@ const REPO_ROOT = fileURLToPath(new URL("../../../", import.meta.url));
 const PROJECT_URL = "/__qa/modern-tiles-project.json";
 let outDir = join(REPO_ROOT, "verify-shots/runtime-qa/modern-tiles");
 const maps = [];
+const extra = [];
+const heroAt = {}; // --hero <맵 id>:<x>:<y> — 기본 화면(480×270 줌 1)에서 주인공을 그 칸에 세우고 카메라는 엔진 기본(따라가기) 그대로
 for (let i = 2; i < process.argv.length; i += 1) {
   if (process.argv[i] === "--out-dir") outDir = resolve(process.argv[++i]);
+  else if (process.argv[i] === "--npcs") extra.push("--npcs", resolve(process.argv[++i]));
+  else if (process.argv[i] === "--default-res") extra.push("--default-res");
+  else if (process.argv[i] === "--hero") { const [m, x, y] = process.argv[++i].split(":"); heroAt[m] = [Number(x), Number(y)]; }
   else maps.push(resolve(process.argv[i]));
 }
 if (!maps.length) { console.error("맵 JSON 경로가 필요하다"); process.exit(2); }
 await mkdir(outDir, { recursive: true });
 const FIXTURE = join(outDir, "_fixture.json");
-const built = spawnSync("npx", ["--no-install", "tsx", "--import", "./tiledata/jp-city/refs/css-stub.mjs", "scripts/qa/runtime/modern-tiles-fixture.mts", "--out", FIXTURE, ...maps],
+const built = spawnSync("npx", ["--no-install", "tsx", "--import", "./tiledata/jp-city/refs/css-stub.mjs", "scripts/qa/runtime/modern-tiles-fixture.mts", "--out", FIXTURE, ...extra, ...maps],
   { cwd: REPO_ROOT, encoding: "utf8", env: { ...process.env, NODE_OPTIONS: "--max-old-space-size=6000" } });
 if (built.status !== 0) { console.error(built.stdout, built.stderr); process.exit(2); }
 const info = JSON.parse(built.stdout.trim().split("\n").pop());
@@ -44,14 +49,23 @@ try {
   }, PROJECT_URL);
   await page.route(`**${PROJECT_URL}`, (route) => route.fulfill({ status: 200, contentType: "application/json", body: projectJson }));
   await page.goto(`${server.url}/player.html`, { waitUntil: "domcontentloaded" });
-  await page.waitForSelector("[data-testid='title-screen']", { timeout: 120_000 });
+  await page.waitForSelector("[data-testid='title-screen']", { timeout: 120_000 }).catch((e) => { console.error(log.join("\n")); throw e; });
   await page.keyboard.press("Enter");
   await page.waitForSelector("[data-testid='title-screen']", { state: "detached", timeout: 90_000 });
   await page.waitForFunction(() => !!window.__oprnHooksScene && !!window.__oprnDebug, undefined, { timeout: 90_000 });
   for (const id of info.maps) {
-    await page.evaluate((m) => window.__oprnDebug.teleport(m, 0, 0), id);
+    const hero = heroAt[id];
+    await page.evaluate(([m, x, y]) => window.__oprnDebug.teleport(m, x, y), [id, hero?.[0] ?? 0, hero?.[1] ?? 0]);
     await page.waitForFunction((m) => window.__oprnDebug.readState().currentMapId === m, id, { timeout: 60_000 });
     await page.waitForTimeout(1500);
+    if (hero) {
+      const canvas = await page.$("canvas");
+      const box = await canvas.boundingBox();
+      const file = join(outDir, `${id}.png`);
+      await page.screenshot({ path: file, clip: { x: box.x, y: box.y, width: box.width, height: box.height } });
+      lines.push(`- ${id}: 주인공 (${hero.join(",")}) 따라가기, 캔버스 ${box.width}×${box.height} → ${file}`);
+      continue;
+    }
     const dims = await page.evaluate(() => {
       const s = window.__oprnHooksScene, c = s.cameras.main;
       s.player?.setVisible?.(false);
