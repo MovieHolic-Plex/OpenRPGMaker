@@ -1,0 +1,31 @@
+{
+ "id": "home-school-bag",
+ "w": 16,
+ "h": 16,
+ "legend": {
+  "a": "#0b1224ff",
+  "b": "#96222cff",
+  "c": "#cc343cff",
+  "d": "#ccd0d8ff",
+  "e": "#ee6c6cff"
+ },
+ "rows": [
+  "................",
+  "................",
+  "..aaaaaaaaaaaa..",
+  "..aceeeeeeeeca..",
+  "..acccccccccca..",
+  "..acccccccccca..",
+  ".aaccccccccccaa.",
+  ".aaccccccccccaa.",
+  ".aacccaaaacccaa.",
+  ".aabbbaddabbbaa.",
+  ".aabbbaddabbbaa.",
+  ".aabbbaaaabbbaa.",
+  ".aabbbbbbbbbbaa.",
+  "..abbbbbbbbbba..",
+  "..aaaaaaaaaaaa..",
+  "................"
+ ],
+ "note": ""
+}
