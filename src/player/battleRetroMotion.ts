@@ -179,6 +179,20 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
       user.style.setProperty("--retro-enemy-dx", `${reach?.dx ?? 18}px`);
       user.style.setProperty("--retro-enemy-dy", `${reach?.dy ?? 0}px`);
     }
+    if (user.dataset.charsetEnemy && entry) {
+      // 사람 적(걷기 칩 전투 시트): 아군 배우와 같은 칸 순서(걷기·젖힘·휘두름·시전)와 같은 걸음 키프레임을 쓴다.
+      // 다른 점은 방향뿐이다 — 이동량이 양수(오른쪽, 아군 쪽)다. 근접이면 대상 아군 앞까지 걷고, 기술은 반 걸음 나와 시전한다.
+      const reach = retroEnemyReach(field, entry);
+      const enemySkill = entry.commandKind === "enemySkill" ? battleEntrySkillRecord(entry) : undefined;
+      user.dataset.retroAction = !reach && enemySkill ? "cast" : "attack";
+      user.dataset.retroReach = reach ? "melee" : "ranged";
+      const enemyCast = user.dataset.retroAction === "cast" && enemySkill ? castTypeForSkill(enemySkill) : undefined;
+      if (enemyCast) user.dataset.retroCast = enemyCast;
+      else delete user.dataset.retroCast;
+      user.dataset.retroFinisher = String((enemySkill?.power ?? 0) >= 100);
+      user.style.setProperty("--retro-travel", `${reach ? reach.dx : 16}px`);
+      user.style.setProperty("--retro-travel-y", `${reach?.dy ?? 0}px`);
+    }
   }
   animateRetroSkillFx(field, user, beat);
   user.dataset.retroBeat = beat.kind;
@@ -217,16 +231,21 @@ export function retroDamage(node: HTMLElement | null, feedback: DamageFeedback, 
     beginEnemyCollapse(node);
     return;
   }
-  if (!node.classList.contains("battle-actor")) return;
+  if (!ownsRetroHurtFrame(node)) return;
   hitGenerations.set(node, (hitGenerations.get(node) ?? 0) + 1);
   node.dataset.retroHurt = "true";
   if (node.dataset.battlerExtended === "true") node.dataset.retroHurtFrame = node.dataset.battlerDefending === "true" ? "guard_hit" : "hit";
   paint(node, lethal ? "dead" : "hit");
 }
 
+/** 맞은 칸(hit·guard_hit)을 히트스톱 동안 붙들었다가 retroHitRelease 로 푸는 배틀러 — 아군, 그리고 걷기 칩 시트를 쓰는 사람 적. */
+export function ownsRetroHurtFrame(node: HTMLElement): boolean {
+  return node.classList.contains("battle-actor") || (node.classList.contains("battle-enemy") && node.dataset.charsetEnemy === "true");
+}
+
 /** 흰 히트스톱이 끝난 뒤 붉은 두 번 점멸. rAF를 기다리지 않는다. */
 export function retroHitRelease(node: HTMLElement): void {
-  if (!node.classList.contains("battle-actor")) return;
+  if (!ownsRetroHurtFrame(node)) return;
   node.classList.remove("retro-hit-release");
   void node.offsetWidth;
   node.classList.add("retro-hit-release");
@@ -824,7 +843,7 @@ export function retroEnemyReach(field: HTMLElement, entry: BattleTimelineEntrySn
 
 function measureEnemyReach(field: HTMLElement, entry: BattleTimelineEntrySnapshot): RetroEnemyReach | undefined {
   if (!isEnemyMeleeEntry(entry) || reduced()) return undefined;
-  const enemies = [...field.querySelectorAll<HTMLElement>(".battle-enemy[data-pixel-enemy]:not(.defeated)")];
+  const enemies = [...field.querySelectorAll<HTMLElement>(".battle-enemy:is([data-pixel-enemy], [data-charset-enemy]):not(.defeated)")];
   const user = enemies.find((node) => node.dataset.testid === entry.userId)
     ?? enemies.find((node) => node.dataset.recordId === entry.userRecordId);
   // 궁수·브레스는 통상 공격이어도 ranged. 대상까지 걸어가지 않는다. 뿌리 박힌 적(식충 식물: stomp 칸이지만 제자리 덩굴 채찍)도 제자리.
@@ -846,7 +865,9 @@ function measureEnemyReach(field: HTMLElement, entry: BattleTimelineEntrySnapsho
   const cell = Math.max(1, Number(user.dataset.pixelEnemyCell) || 48);
   // 적 셀은 가변 크기: 앞 가장자리 cell−6, 지면 cell−4, 부유 중심 cell/2−4.
   // 아군 확장 시트는 여전히 48px 셀이다. 적의 비율을 아군에도 적용하면 큰 적이 높이를 잘못 맞춘다.
-  const front = imageRect.left + imageRect.width * ((cell - 6) / cell);
+  // 사람 적(걷기 칩 시트, 좌우 반전)은 아군 몸 비율을 거울로 쓴다 — 몸 앞(오른쪽)이 48−14=34/48, 발이 44/48.
+  const charset = user.dataset.charsetEnemy === "true";
+  const front = imageRect.left + imageRect.width * (charset ? 34 / 48 : (cell - 6) / cell);
   // 파티원 몬스터 시트(셀 48·64)는 몸 앞 12/cell, 발 (cell−4)/cell — 사람 전투 시트(14/48 · 44/48)와 다르다.
   const targetCell = target?.dataset.pixelParty ? Number(target.dataset.pixelEnemyCell) || 48 : 0;
   const actorFront = actorRect.left + actorRect.width * (targetCell ? 12 / targetCell : (48 / 2 - 10) / 48);
