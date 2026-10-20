@@ -126,6 +126,53 @@ def finish(c, shadow=None):
         ground_shadow(c, *s)
 
 
+def _ramps():
+    """색 → (램프 목록(어둠 → 밝음), 그 안 위치). 윤곽을 「이웃 재질의 몇 단 어두운 색」으로 고를 때 쓴다."""
+    import json as _json
+    import os as _os
+    from modern3_check import load_pal
+    rs = {k: list(v) for k, v in load_pal().items() if k not in ('shiba', 'neonP', 'neonC')}
+    root = _os.path.abspath(_os.path.join(_os.path.dirname(_os.path.abspath(__file__)), '..', '..', '..'))
+    with open(_os.path.join(root, 'tiledata', 'jp-city', 'palette-contract.json'), encoding='utf-8') as f:
+        for fam in _json.load(f)['families']:
+            for m in fam['materials']:
+                rs[m['id']] = [int(h[1:], 16) for h in m['steps']]
+    own = {}
+    for r in rs.values():
+        for i, col in enumerate(r):
+            own.setdefault(col, (r, i))
+    return own
+
+
+_RAMP_OF: Final = _ramps()
+
+
+def soft_outline(c, steps=2):
+    """add_outline 대신: 투명 칸 둘레를 이웃 재질 램프의 steps 단 어두운 색으로 두른다(근흑 대신 재질 어두운 톤).
+    이웃이 여럿이면 가장 많이 닿은 색, 같으면 더 어두운 색."""
+    a = c.a
+    h, w = a.shape[:2]
+    op = a[..., 3] > 0
+    out = []
+    for y in range(h):
+        for x in range(w):
+            if op[y, x]:
+                continue
+            votes = {}
+            for dy, dx in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+                yy, xx = y + dy, x + dx
+                if 0 <= yy < h and 0 <= xx < w and op[yy, xx]:
+                    k = (int(a[yy, xx, 0]) << 16) | (int(a[yy, xx, 1]) << 8) | int(a[yy, xx, 2])
+                    votes[k] = votes.get(k, 0) + 1
+            if not votes:
+                continue
+            nb = max(votes, key=lambda k: (votes[k], -k))
+            r, i = _RAMP_OF.get(nb, ([nb], 0))
+            out.append((x, y, r[max(1 if len(r) > 4 else 0, i - steps)] if i - steps >= 0 else r[0]))
+    for x, y, col in out:
+        c.P(x, y, col)
+
+
 def wheel(c, cx, cy, r=4.5, hub='conc'):
     """바퀴: 바퀴집 그늘 → 고무 4단(왼쪽 위 밝은 트레드, 바깥 둘레 깊게) → 휠 5단 + 너트."""
     disc(c, cx + 0.3, cy - 0.6, r + 1.5, K('tekko', -2))
@@ -751,30 +798,33 @@ def watchtower(c, base):
 # ═══════════════════════════ 논·밭 소품 ═══════════════════════════
 STALK = [J('lantern_amber', 4), J('lantern_amber', 3), J('lantern_amber', 2), J('lantern_amber', 1), J('lantern_amber', 0)]
 EAR = [K('kii', 2), K('kii', 1), K('kii', 0), K('kii', -1), K('kii', -2)]
+GAP = J('machiya_timber', 2)                                      # 다발 사이 틈: 검정이 아니라 짙은 갈색
 
 
-def straw_bundle(c, x, y, h=9, seed=0, back=0):
-    """매달린 볏단(はさ掛け): 가로대 위 짚 끝(자른 줄기) → 묶은 목 → 아래로 퍼지는 짚 다발(세로 짚 결, 왼쪽 빛·오른쪽 그늘)
-    → 끝에 늘어진 이삭(진한 금빛, 길이 들쭉날쭉, 낟알 점). back: 뒷줄 다발은 그만큼 어둡게(정수 단)."""
-    def put(px, py, cols, lv):
-        c.P(px, py, cols[max(0, min(len(cols) - 1, int(round(lv))))])
-    for dx in (-1, 0, 1):                                        # 가로대 위로 나온 줄기 끝
-        put(x + dx, y - 3, STALK, 2 + (dx > 0) + back); put(x + dx, y - 2, STALK, 1 + (dx > 0) + back)
-    for dx in range(-2, 3):
-        L = h + int(H(x + dx, 1, seed) * 3) - (1 if abs(dx) == 2 else 0)
-        for k in range(L):
-            hw = 1 + k * 2 // h
-            if abs(dx) > hw:
+def straw_bundle(c, x, y, L, seed=0):
+    """매달린 볏단(はさ掛け) 하나: 가로대 위로 나온 줄기 끝 → 목(3px) → 몸(5px, 세로 짚 결: 빛 가닥·그늘 가닥, 왼쪽 빛·오른쪽 그늘)
+    → 열마다 길이가 다르고 바깥으로 벌어지는 이삭 끝(진한 금빛 + 낟알 점, 들쭉날쭉한 실루엣)."""
+    for dx in (-1, 0, 1):                                         # 가로대 위 줄기 끝(자른 단면)
+        if H(x + dx, 2, seed) < 0.8:
+            c.P(x + dx, y - 3, STALK[1 + (dx > 0)])
+    for dx in range(-3, 4):
+        Lc = L + int(H(x + dx, 1, seed) * 3) - (1 if abs(dx) >= 2 else 0)
+        for k in range(Lc):
+            if abs(dx) == 3 and k < Lc - 2:                       # 바깥 열은 맨 끝 이삭만 벌어진다
+                continue
+            if abs(dx) == 2 and k < 2:
                 continue
             px, py = x + dx, y + k
-            edge = (dx + hw) * 2 // (2 * hw)
-            strand = 1 if H(px, 0, seed) < 0.25 else 0               # 세로 짚 결(열마다 고정)
-            lv = edge + strand + back + (1 if k < 2 else 0)
-            if k >= L - 3:                                        # 이삭: 진한 금빛 + 밝은 낟알 점
-                lv = 1 + edge + back - (1 if H(px, py, seed + 1) < 0.35 else 0)
-                put(px, py, EAR, lv)
+            edge = (0, 0, 0, 1, 2, 3, 3)[dx + 3]
+            if k >= Lc - 3:                                       # 이삭
+                lv = edge * 0.8 + (0 if H(px, py, seed + 1) < 0.4 else 1) + (1 if k == Lc - 1 else 0)
+                c.P(px, py, EAR[min(4, round(lv))])
             else:
-                put(px, py, STALK, lv)
+                hs = H(px, 0, seed)
+                strand = -1 if hs < 0.3 else 1 if hs > 0.62 else 0   # 빛 가닥 / 그늘 가닥
+                strand += 1 if H(px, py, seed + 3) < 0.12 else 0
+                lv = edge + strand + (1 if k < 2 else 0)
+                c.P(px, py, STALK[max(0, min(4, lv))])
     c.HL(x - 1, y + 1, 3, J('aged_cedar', 1)); c.P(x - 1, y + 1, J('aged_cedar', 3))   # 묶은 새끼줄
 
 
@@ -782,30 +832,44 @@ def straw_bundle(c, x, y, h=9, seed=0, back=0):
      solid=[(0, 1), (1, 1), (2, 1)], tags=['inaka', '하사기', 'はさ掛け', '볏단'],
      rules='가을 황금 논(inaka-paddy-golden) 논두렁 위.', role='prop')
 def hasagi(c, base):
-    def stakes(ymin, ymax):                                       # X 장대(나무: 빛 줄 + 그늘 줄)
-        for x in (3, 23, 43):
-            for (x0, x1, col) in ((x - 2, x + 1, CEDAR[1]), (x - 1, x + 2, CEDAR[3]), (x + 2, x - 1, CEDAR[2]), (x + 3, x, CEDAR[4])):
-                for i in range(26):
-                    yy = 30 - i
-                    xx = round(x0 + (x1 - x0) * i / 25)
+    def stakes(ymin, ymax):                                       # X 장대: 꼭대기에서 엇갈려 위로 튀어나온다(빛 줄 + 그늘 줄)
+        for x in (4, 24, 44):
+            for (x0, x1, col) in ((x - 5, x + 2, CEDAR[1]), (x - 4, x + 3, CEDAR[3]), (x + 5, x - 2, CEDAR[2]), (x + 6, x - 1, CEDAR[4])):
+                for i in range(32):
+                    yy = 31 - i
+                    xx = round(x0 + (x1 - x0) * i / 31)
                     if ymin <= yy < ymax:
                         c.P(xx, yy, col)
 
     def bar(y):                                                   # 가로대(대나무: 윗면 빛 → 아래 그늘, 마디)
-        for x in range(1, 47):
-            c.P(x, y, pick(CEDAR, 0.2 + (H(x // 4, y, 2) - 0.5) * 0.8, x, y))
-            c.P(x, y + 1, pick(CEDAR, 2.6, x, y + 1))
-        for x in range(6, 47, 9):
+        for x in range(0, 48):
+            c.P(x, y, pick(CEDAR, 0.3 + (H(x // 4, y, 2) - 0.5) * 0.8, x, y))
+            c.P(x, y + 1, CEDAR[3])
+        for x in range(5, 48, 9):
             c.P(x, y, CEDAR[3]); c.P(x, y + 1, CEDAR[4])
+
     stakes(0, 32)
-    for t, (yb, y0) in enumerate(((7, 8), (16, 17))):
-        for k, x in enumerate(range(6, 45, 8)):                   # 뒷줄(어둡게) → 가로대 → 앞줄(밝게): 다발 하나하나가 갈린다
-            straw_bundle(c, x, y0, 8, seed=t * 40 + k, back=1)
+    xs = list(range(3, 46, 6))
+    for t, (yb, y0) in enumerate(((16, 18), (5, 7))):             # 아랫단 먼저 → 윗단 이삭이 아랫단 위로 늘어진다
         bar(yb)
-        for k, x in enumerate(range(2, 47, 8)):
-            straw_bundle(c, x, y0, 8, seed=t * 40 + k + 20)
-    stakes(0, 7); stakes(27, 32)
-    finish(c, [(3, 47, 29, 3, SHADOW, 1)])
+        for x in xs[:-1]:                                         # 목·몸통 사이 틈은 짙은 갈색으로 메운다
+            for k in range(0, 7):
+                for gx in ((x + 2, x + 3, x + 4) if k < 2 else (x + 3,)):
+                    c.P(gx, y0 + k, GAP)
+        for k, x in enumerate(xs):
+            straw_bundle(c, x, y0, 8, seed=t * 40 + k)
+        if t == 0:
+            for x in range(1, 47):                                # 윗단 이삭 밑에 진 그늘(아랫단 목·가로대)
+                for yy in (yb - 1, yb):
+                    if c.a[yy, x, 3]:
+                        c.P(x, yy, CEDAR[4] if yy == yb else c.a[yy, x, 3] and STALK[3])
+    stakes(27, 32)
+    for x in (4, 24, 44):                                         # 장대 끝: 가로대 위에서 X 로 엇갈려 V 로 벌어진다
+        for i in range(6):
+            yy = 5 - i
+            c.P(x - round(i * 1.0), yy, CEDAR[1]); c.P(x + 1 - round(i * 1.0), yy, CEDAR[3])
+            c.P(x + 1 + round(i * 1.0), yy, CEDAR[2]); c.P(x + 2 + round(i * 1.0), yy, CEDAR[4])
+    finish(c, [(1, 48, 29, 3, SHADOW, 0)])
 
 
 def _blit(c, t):
@@ -816,18 +880,21 @@ def _blit(c, t):
                 c.P(x, y, (int(t.a[y, x, 0]) << 16) | (int(t.a[y, x, 1]) << 8) | int(t.a[y, x, 2]))
 
 
-def scarecrow(c, t, x, y, robe='noren_indigo', obi='torii_vermilion'):
-    """3/4 허수아비: 흙 둔덕 → 대나무 기둥·팔 막대 → 소매 늘어진 기모노(주름 명암) → 자루 얼굴 → 菅笠(짚 결 원뿔 윗면 + 챙 그늘)(t)."""
+def scarecrow(c, t, x, y, robe='noren_indigo', obi='torii_vermilion', tilt=1):
+    """3/4 허수아비: 흙 둔덕 → 대나무 기둥·기운 팔 막대(tilt: 오른팔이 올라가면 1, 내려가면 -1) → 소매 늘어진 기모노(주름 명암)
+    → 자루 얼굴 → 菅笠(짚 결 원뿔 윗면 + 챙) → 삿갓이 얼굴·어깨 위로 드리운 그늘(t)."""
     RB = [J(robe, 4), J(robe, 3), J(robe, 2), J(robe, 1), J(robe, 0)]
-    # 흙 둔덕(윗면 빛 → 앞 그늘) + 풀
     ball(t, x - 0.3, y + 27.4, 5.4, SOIL, ry=2.2)
     for gx in (x - 4, x + 3):
         t.P(gx, y + 26, J('moss', 3)); t.P(gx + 1, y + 25, J('moss', 4)); t.P(gx + 1, y + 26, J('moss', 2))
-    # 대나무 기둥·팔 막대(마디)
     cyl(t, x - 1, y + 8, 2, 20, [J('pine_bamboo', 4), J('pine_bamboo', 3), J('pine_bamboo', 2), J('pine_bamboo', 1)])
     for my in (y + 20, y + 24): t.HL(x - 1, my, 2, J('pine_bamboo', 1))
-    t.HL(x - 7, y + 12, 15, J('pine_bamboo', 4)); t.HL(x - 7, y + 13, 15, J('pine_bamboo', 2))
-    # 기모노 몸통: 왼 빛 → 오른 그늘, 세로 주름(빛 접힘 + 골 그늘), 밑단 그늘
+
+    def arm_y(xx):                                                # 기운 팔 막대 높이
+        return y + 12 - round((xx - x) * tilt * 0.22)
+    for xx in (x - 8, x + 8):                                     # 팔 막대는 소매 밖 끝만 보인다
+        t.P(xx, arm_y(xx), J('pine_bamboo', 4)); t.P(xx, arm_y(xx) + 1, J('pine_bamboo', 2))
+    # 기모노 몸통: 왼 빛 → 오른 그늘, 세로 주름, 밑단 그늘
     for k in range(11):
         hw = 4 if k < 6 else 3
         for dx in range(-hw, hw + 1):
@@ -838,21 +905,28 @@ def scarecrow(c, t, x, y, robe='noren_indigo', obi='torii_vermilion'):
             if dx in (-3, 1) and k > 4:
                 lv -= 0.7
             t.P(px, py, pick(RB, lv, px, py))
-    t.P(x - 1, y + 12, K('shiro', 2)); t.P(x + 1, y + 12, K('shiro', 1)); t.P(x, y + 13, K('shiro', 1))
-    # 늘어진 소매
-    for (sx, add) in ((x - 7, 0.0), (x + 5, 1.2)):
-        for j in range(5):
-            for i in range(3):
-                t.P(sx + i, y + 13 + j, pick(RB, 0.6 + add + i * 0.5 + j * 0.3 + (1.2 if j == 4 else 0), sx + i, y + 13 + j))
-    # 오비 + 매듭
+    t.P(x - 1, y + 12, K('shiro', 1)); t.P(x + 1, y + 12, K('shiro', 0)); t.P(x, y + 13, K('shiro', 1))
+    # 늘어진 소매: 팔 막대를 따라 기울고, 내려간 쪽 소매가 더 길게 처진다
+    for (sx, add, side) in ((x - 7, 0.0, -1), (x + 5, 1.2, 1)):
+        drop = 5 + (1 if side * tilt < 0 else 0)
+        for i in range(3):
+            top = arm_y(sx + i)
+            for j in range(drop + 1):
+                t.P(sx + i, top + j, pick(RB, (0.0 if j == 0 else 0.6) + add + i * 0.5 + j * 0.3 + (1.2 if j == drop else 0), sx + i, top + j))
     OB = [J(obi, 4), J(obi, 3), J(obi, 2), J(obi, 1), J(obi, 0)]
     hgrad(t, x - 4, y + 16, 9, 1, OB, 0.2, 2.0); hgrad(t, x - 4, y + 17, 9, 1, OB, 1.4, 3.2)
     t.P(x + 2, y + 18, OB[2]); t.P(x + 3, y + 18, OB[3])
-    # 자루 얼굴(꿰맨 점) + 챙 그늘
+    # 자루 얼굴(꿰맨 점)
     ball(t, x, y + 9, 2.9, [J('cream_stucco', 4), J('cream_stucco', 3), J('cream_stucco', 2), J('cream_stucco', 1)], ry=2.6)
-    t.HL(x - 2, y + 8, 5, J('cream_stucco', 1))
-    t.P(x - 1, y + 9, J('aged_cedar', 0)); t.P(x + 1, y + 9, J('aged_cedar', 0)); t.P(x, y + 10, J('aged_cedar', 1))
-    # 菅笠: 챙 아래 그늘 테 → 원뿔 윗면(왼쪽 빛, 방사 짚 결)
+    t.P(x - 1, y + 10, J('aged_cedar', 1)); t.P(x + 1, y + 10, J('aged_cedar', 1)); t.P(x, y + 11, J('aged_cedar', 2))
+    # 삿갓 그늘: 챙 바로 밑 얼굴 윗줄과 어깨가 한 단 어둡다(빛 왼쪽 위 → 그늘은 오른쪽으로 더 길게)
+    for xx in range(x - 3, x + 4):
+        if t.a[y + 9, xx, 3]:
+            t.P(xx, y + 9, J('cream_stucco', 1 if xx < x + 1 else 0))
+    for xx in range(x - 1, x + 6):
+        yy = y + 12
+        t.P(xx, yy, pick(RB, 3.2 + (xx - x) * 0.15, xx, yy))
+    # 菅笠: 챙 아래 테 → 원뿔 윗면(왼쪽 빛, 방사 짚 결)
     ball(t, x, y + 6.5, 7.2, STRAW[2:], ry=2.4, bias=0.5)
     for k in range(7):
         hw = 1 + k
@@ -869,29 +943,36 @@ def scarecrow(c, t, x, y, robe='noren_indigo', obi='torii_vermilion'):
      solid=[(0, 1), (1, 1)], tags=['inaka', '허수아비', 'かかし'],
      rules='논 한가운데·논두렁.', role='prop')
 def scarecrows(c, base):
-    scarecrow(c, c, 8, 1, 'noren_indigo', 'torii_vermilion')
-    scarecrow(c, c, 24, 2, 'torii_vermilion', 'tatami_straw')
-    finish(c, [(4, 15, 30, 2, SHADOW, 0), (20, 31, 31, 1, SHADOW, 0)])
+    scarecrow(c, c, 8, 1, 'noren_indigo', 'torii_vermilion', tilt=1)
+    scarecrow(c, c, 24, 2, 'torii_vermilion', 'tatami_straw', tilt=-1)
+    soft_outline(c)
+    for s in ((4, 15, 30, 2, SHADOW, 0), (20, 31, 31, 1, SHADOW, 0)):
+        ground_shadow(c, *s)
 
 
 def _sunflower_head(t, x, y, rx, ry, face=1):
-    """3/4 해바라기 머리: 꽃잎 하나씩(뒤 그늘 → 앞 빛, 끝 주황) → 기울어진 씨앗판(씨 결 + 빛 테)."""
-    for k in range(12):
-        a = k * math.pi / 6 + 0.25
-        px, py = x + math.cos(a) * rx, y + math.sin(a) * ry
-        lit = -(math.cos(a) + math.sin(a)) * 0.7                 # 왼쪽 위 꽃잎이 밝다
-        ball(t, px, py, 1.7, SUN, ry=1.5, bias=-lit * 0.6)
-    ball(t, x, y, rx * 0.95, SUN, ry=ry * 0.95, bias=-0.2)
-    cx, cy = x + face * rx * 0.18, y + ry * 0.15
-    sr, sry = rx * 0.55, ry * 0.55
+    """3/4 해바라기 머리(위로 살짝 젖힌 납작 타원): 아래 초록 꽃받침 테 → 꽃잎 한 장씩(뒤쪽 짧고 어둡게, 앞쪽 길고 밝게)
+    → 타원 씨앗판(씨 결 + 위쪽 빛 테)."""
+    ball(t, x + 0.3, y + ry * 0.55, rx * 0.8, LEAF[1:], ry=ry * 0.75, bias=0.3)   # 꽃받침(밑면이 살짝 보인다)
+    for k in range(14):
+        a = k * math.pi / 7 + 0.2
+        front = math.sin(a)                                       # +1 앞(아래), -1 뒤(위)
+        pl = 1.0 + 0.45 * max(0.0, front)
+        px, py = x + math.cos(a) * rx * pl, y + math.sin(a) * ry * pl
+        lit = -(math.cos(a) * 0.6 + front * 0.2)
+        ball(t, px, py, 1.5, SUN, ry=1.1 + 0.4 * max(0.0, front), bias=-lit * 0.5 + (0.5 if front < -0.3 else 0))
+    ball(t, x, y, rx * 0.92, SUN, ry=ry * 0.92, bias=0.1)
+    cx, cy = x + face * rx * 0.1, y + ry * 0.1
+    sr, sry = rx * 0.6, ry * 0.6
     for yy in range(int(cy - sry - 1), int(cy + sry + 2)):
         for xx in range(int(cx - sr - 1), int(cx + sr + 2)):
             u, v = (xx - cx) / sr, (yy - cy) / sry
             if u * u + v * v > 1:
                 continue
-            lv = 1.4 + (u + v) * 0.9 + ((xx + 2 * yy) % 3 == 0) * 1.0 - (u * u + v * v < 0.2) * 0.6
+            lv = 1.6 + u * 0.8 + v * 0.5 + ((xx + 2 * yy) % 3 == 0) * 1.0
+            if v < -0.55:
+                lv -= 1.0                                         # 위쪽 테에 빛
             t.P(xx, yy, pick(SEED, lv, xx, yy))
-    t.P(int(cx - sr * 0.5), int(cy - sry * 0.6), SEED[0])
 
 
 def _leaf(t, x, y, side):
@@ -905,7 +986,6 @@ def _leaf(t, x, y, side):
      solid=[(0, 1), (1, 1), (2, 1)], tags=['inaka', '해바라기', 'ひまわり', '여름'],
      rules='밭·마당 가장자리에 2~6개 이어 붙인다.', role='prop')
 def sunflowers(c, base):
-    # 북돋운 흙 두둑: 앞면(짙은 흙) → 윗면(빛, 이랑 결·흙덩이)
     for y in range(21, 31):
         for x in range(1, 48):
             u, v = (x - 24) / 22.5, (y - 26.5) / 4.2
@@ -917,16 +997,20 @@ def sunflowers(c, base):
             c.P(x, y, pick(SOIL, lv, x, y))
     for x in range(6, 43, 5):
         c.HL(x, 24, 3, SOIL[3]); c.HL(x, 25, 3, SOIL[0])
-    back = ((8, 5, 4.2, 3.4, 1), (20, 3, 4.6, 3.6, -1), (32, 5, 4.2, 3.4, 1), (42, 4, 3.8, 3.2, -1))
-    front = ((13, 13, 5.4, 4.4, -1), (26, 12, 5.8, 4.6, 1), (38, 14, 5.2, 4.2, -1))
+    # 머리끼리 떨어지게: 뒷줄 4송이(높고 작게) · 앞줄 3송이(낮고 크게), 앞줄은 뒷줄 사이에 둔다
+    back = ((7, 5, 3.2, 2.0, 1), (19, 3, 3.4, 2.1, -1), (31, 4, 3.2, 2.0, 1), (42, 5, 3.0, 1.9, -1))
+    front = ((13, 13, 4.0, 2.5, -1), (25, 12, 4.2, 2.6, 1), (37, 14, 3.9, 2.4, -1))
     for row, top_ in ((back, 22), (front, 25)):
         for (x, y, rx, ry, face) in row:
-            cyl(c, x, y + 3, 2, top_ - y - 3, LEAF[1:])
-            for k, ly in enumerate(range(y + 7, top_ - 2, 5)):
+            cyl(c, x, y + 2, 2, top_ - y - 2, LEAF[1:])
+            for k, ly in enumerate(range(y + 6, top_ - 2, 5)):
                 _leaf(c, x + (0 if k % 2 else 1), ly, -1 if k % 2 else 1)
         for (x, y, rx, ry, face) in row:
+            # 뒤에 있는 머리·잎 위로 이 머리의 그늘 테(이미 칠한 곳에만)를 먼저 깔아 머리끼리 갈라 보이게 한다
+            ball(c, x + 0.6, y + 0.8, rx * 1.4 + 1.6, [LEAF[4]], ry=ry * 1.45 + 1.6, mask=lambda xx, yy: 0 <= xx < c.w and 0 <= yy < c.h and c.a[yy, xx, 3] > 0)
             _sunflower_head(c, x, y, rx, ry, face)
-    finish(c, [(6, 47, 30, 2, SHADOW, 1)])
+    soft_outline(c)
+    ground_shadow(c, 6, 47, 30, 2, SHADOW, 1)
 
 
 @kit('inaka-hydrangea-hedge', '수국 꽃덤불(紫陽花) - 잎 덩이 위 파랑·보라 꽃송이·낮은 돌 테(3×2)', 3, 2, 'tree',
