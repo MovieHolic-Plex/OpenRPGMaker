@@ -391,6 +391,9 @@ for _id in DEEP_IDS:
                        else (it[:4] + ('',) + it[5:]) if it[0] == 'lantern' and len(it) > 4 else it for it in _f['items']]
     CATALOG[_id] = (_n, _cat, _r)
 # 깊은 지붕에서 자리를 옮긴 부품: 파출소 빨간 등은 박공벽 안(처마선 아래), 역 시계는 지붕이 아니라 글자 없는 간판 판 가운데
+for _id in DEEP_IDS + ['post_office', 'house_hip2']:            # 지붕 높이 상한(경사 40% · 평지붕 35%)
+    _n, _cat, _r = CATALOG[_id]
+    CATALOG[_id] = (_n, _cat, depth34.cap_roof(_r))
 CATALOG['koban'][2]['after'] = [lambda cv, g: red_lamp(cv, (g['X0'] + g['X1']) // 2 - 3, g['ys'][0] - 8)]
 CATALOG['station_small'][2]['after'] = [lambda cv, g: LP.clock(cv, g['X0'] + 96, g['ys'][0] + 11, 6)]   # 간판 판 가운데
 

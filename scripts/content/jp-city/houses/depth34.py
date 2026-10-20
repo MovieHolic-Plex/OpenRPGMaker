@@ -310,3 +310,30 @@ ROOFS['shed_top'] = _shed_top
 ROOFS['hip_top'] = _hip_top
 ROOFS['gable_top'] = _gable_top
 ROOFS['flat_top'] = _flat_top
+
+
+# ── 지붕 높이 상한(2026-10-20 사용자: 「지붕이 너무 세로로 길어지는 경우」) ─────────────────────
+# 지붕 줄 R = 그림 맨 위 → 처마선, 그림 높이 H = R + 벽(층+이음) + 기초 4. 경사 지붕 ≤ 40%, 평지붕 데크 ≤ 35%.
+# 줄 수만 줄이고(무늬는 같은 간격으로 그려진다) 벽·문은 그대로 둔다. 기준: 버들항 단층 60%·2층 43%(cream/ochre/brick-native).
+ROOF_CAP = {'flat_top': 0.35}
+ROOF_CAP_PITCHED = 0.40
+ROOF_MIN_H = 24
+
+
+def cap_roof(r):
+    import copy
+    r = copy.deepcopy(r)
+    rk, ro = r['roof']
+    if 'h' not in ro: return r
+    hgt = {'lean': 16, 'lean_bal': 16, 'belt': 4, 'none': 0, 'corridor': 4, **hk.JOIN_H}
+    walls = sum(f['h'] for f in r['floors']) + sum(hgt[j[0]] for j in r.get('joins', []))
+    c = ROOF_CAP.get(rk, ROOF_CAP_PITCHED)
+    r_max = int(c / (1 - c) * (walls + 4))              # 지붕 줄 상한(R = h + 1)
+    h_new = max(ROOF_MIN_H, min(ro['h'], r_max - 1))
+    if h_new == ro['h']: return r
+    ro = dict(ro, h=h_new)
+    if rk == 'flat_top' and ro.get('items'):
+        k = h_new / r['roof'][1]['h']
+        ro['items'] = tuple((kind, ix, max(4, round(iy * k))) for kind, ix, iy in ro['items'])
+    r['roof'] = (rk, ro)
+    return r
