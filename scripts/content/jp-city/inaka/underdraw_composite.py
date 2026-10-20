@@ -14,6 +14,7 @@ import box_underdraw as B  # noqa: E402
 
 KIND = {'inaka-keitora-white': 'keitora', 'inaka-red-tractor': 'tractor', 'inaka-fire-watchtower': 'watchtower',
         'inaka-bicycle-parked': 'bicycle'}
+KIND.update({'inaka-' + k + ('-thatched' if k == 'kominka' else '-storehouse' if k == 'kura' else ''): 'house-' + k for k in B.HOUSES})
 
 
 def main():

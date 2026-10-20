@@ -296,8 +296,38 @@ def bicycle(S):
     S.rod('stand', P(6, 0, 4), P(7.5, -2.5, 0), 0.45)
 
 
+def low_roof_house(kw, kh, roof_share=0.25, hip=True, over=3.0):
+    """낮은 지붕 집(R8, 사용자 결정 지붕 ≈ 건물 높이의 25%): 벽 상자 + 낮은 우진각(hip) 또는 박공 지붕.
+    지붕 화면 높이 = 0.65·깊이 + 오름. 오름이 0.65·깊이/2 보다 작으면 위에서 앞·뒤 두 비탈이 다 보인다(낮은 지붕을 위에서 본 모습)."""
+    def fn(S):
+        H = kh - 4                                   # 건물 화면 높이(그림자 여백 제외)
+        roof = roof_share * H
+        rise = roof * 0.25                           # 지붕 오름(낮은 물매)
+        D = (roof - rise) / C                        # 깊이: 0.65·D + rise = roof
+        Hw = H - roof                                # 앞벽 높이(화면 = 실제)
+        x0, x1 = 2.0 + over, kw - 2.0 - over
+        S.box('wall', v3(x0, 0, 0), v3(x1 - x0, 0, 0), v3(0, D, 0), v3(0, 0, Hw))
+        e0, e1, y0, y1 = x0 - over, x1 + over, -over * 0.6, D + over * 0.6
+        ym, zr = (y0 + y1) / 2, Hw + rise
+        r0, r1 = (e0 + (ym - y0), e1 - (ym - y0)) if hip else (e0, e1)
+        A, B, Cc, Dd = v3(e0, y0, Hw), v3(e1, y0, Hw), v3(e1, y1, Hw), v3(e0, y1, Hw)
+        R0, R1 = v3(r0, ym, zr), v3(r1, ym, zr)
+        S.tri('roof.s', A, B, R1); S.tri('roof.s', A, R1, R0)      # 앞 비탈
+        S.tri('roof.n', Dd, Cc, R1); S.tri('roof.n', Dd, R1, R0)   # 뒤 비탈(낮은 지붕이라 보인다)
+        if hip:
+            S.tri('roof.w', A, Dd, R0); S.tri('roof.e', B, Cc, R1)
+        S.box('eave', v3(e0, y0 - 0.6, Hw - 1.2), v3(e1 - e0, 0, 0), v3(0, 0.6, 0), v3(0, 0, 1.2))
+    return fn
+
+
+HOUSES = {'kominka': (96, 96, True), 'kawara-farmhouse': (96, 80, True), 'kura': (64, 80, False), 'dagashiya': (80, 96, False),
+          'wooden-station': (112, 96, True), 'bus-stop-shelter': (48, 64, False), 'waterwheel-mill': (64, 64, True), 'agri-tin-shed': (64, 80, False)}
+
+
 MODELS = {'keitora': (keitora, 64, 48, 45), 'tractor': (tractor, 64, 64, 61), 'watchtower': (watchtower, 32, 64, 62),
           'bicycle': (bicycle, 32, 32, 30)}
+for _k, (_w, _h, _hip) in HOUSES.items():
+    MODELS['house-' + _k] = (low_roof_house(_w, _h, hip=_hip), _w, _h, _h - 3)
 
 
 def render(kind):
