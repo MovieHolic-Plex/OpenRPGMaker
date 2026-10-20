@@ -17,7 +17,8 @@ const choose = (index) => [
   { kind: "key", key: "Enter" },
   { kind: "hold", dir: null, ms: 400 },
 ];
-const talk = (dir) => [{ kind: "face", dir }, { kind: "action" }, { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 8000 }];
+// 대사 타자 효과가 다 찍힌 뒤에 찍는다 — 바로 찍으면 「석판: 「」「불길이」처럼 한두 글자만 보였다(가혹 검수 r3).
+const talk = (dir) => [{ kind: "face", dir }, { kind: "action" }, { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 8000 }, { kind: "hold", dir: null, ms: 1800 }];
 /** 출입구 칸 바로 앞에 서서 그쪽으로 걸어 밟는다. */
 const stepInto = (mapId, x, y, dir) => [
   { kind: "teleport", mapId, x, y },

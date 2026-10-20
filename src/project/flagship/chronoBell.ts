@@ -77,7 +77,14 @@ function setupCast(project: Project): void {
   });
   // 경험치 곡선 — 견본 곡선(extra 677)은 Lv6 에서 다음 레벨까지 1만이 넘어 한 막 내내 레벨이 오르지 않았다(가혹 검수 r1).
   // 숲 전투 몇 판이면 한 번, 결전 보상으로 한 번 더 오르게 줄인다.
-  for (const actor of actors) if (actor.id === hero.id || actor.id === ELENA_ID || actor.id === IRIS_ID) actor.expCurve = { base: 30, extra: 60, acceleration: 20 };
+  const partyCurve = { base: 30, extra: 60, acceleration: 20 };
+  for (const actor of actors) if (actor.id === hero.id || actor.id === ELENA_ID || actor.id === IRIS_ID) actor.expCurve = { ...partyCurve };
+  // 레벨 업 계산이 직업 곡선을 읽는 경로도 있어 세 직업도 같이 맞춘다(가혹 검수 r3: 결과 창 「다음 Lv까지 12,298」).
+  for (const actor of actors) {
+    if (actor.id !== hero.id && actor.id !== ELENA_ID && actor.id !== IRIS_ID) continue;
+    const cls = project.database.classes.find((c) => c.id === actor.classId);
+    if (cls && "expCurve" in cls) (cls as { expCurve: typeof partyCurve }).expCurve = { ...partyCurve };
+  }
   project.system.startActorIds = [hero.id, ELENA_ID];
   // 런타임은 새 게임 파티를 session.partyActorIds 에서 읽는다 — 둘 다 맞춘다(감사 2차: 엘레나가 대사에만 있고 파티에 없었다).
   project.session.partyActorIds = [hero.id, ELENA_ID];
@@ -122,7 +129,8 @@ function setupFoes(project: Project): { field: string[]; boss: string } {
   if (valen) valen.monsterResourceId = "charset-battler-actor1-4";
   // 보스 압박(가혹 검수 r1: 「공격 연타만으로 이긴다」) — 발렌은 둘째 차례부터 세 차례마다 「심판의 기도」로 예고하고 다음 차례에
   // 파티 전체에 「심판의 빛」을 쏟는다. 수호상은 둘째 차례부터 격 차례로 「수호의 철퇴」. 자기 치유는 체력 30% 아래에서만.
-  // 헤드리스 시뮬레이터(battle/simulate, 60판) 기준: 공격만 10% 승, 기술·회복을 쓰면 100% 승(평균 19~24 결정).
+  // 헤드리스 시뮬레이터(battle/simulate, 60판) 기준: Lv6 공격만 15% 승, 기술을 쓰면 100% 승(평균 13 결정).
+  // 가혹 검수 r3: 결정 20여 개는 실제 화면에서 5분이 넘었다 — 체력을 줄이고 심판의 빛을 세게 해 짧고 아프게.
   const skills = project.database.skills;
   const cloneSkill = (fromId: string, id: string, patch: Record<string, unknown>): void => {
     const base = skills.find((s) => s.id === fromId);
@@ -133,8 +141,8 @@ function setupFoes(project: Project): { field: string[]; boss: string } {
   };
   const noMp = { flat: 0, percentMax: 0 };
   cloneSkill("skill_focus", "skill_fs_prayer", { name: "심판의 기도", mpCost: noMp, description: "빛을 모은다. 다음 차례에 큰 빛이 쏟아진다." });
-  cloneSkill("skill_mage_blizzard", "skill_fs_judgment", { name: "심판의 빛", power: 130, mpCost: noMp, description: "모은 빛을 파티 전체에 쏟아붓는다." });
-  cloneSkill("skill_sword_slash", "skill_fs_maul", { name: "수호의 철퇴", power: 120, description: "돌 팔을 크게 내리친다." });
+  cloneSkill("skill_mage_blizzard", "skill_fs_judgment", { name: "심판의 빛", power: 240, mpCost: noMp, description: "모은 빛을 파티 전체에 쏟아붓는다." });
+  cloneSkill("skill_sword_slash", "skill_fs_maul", { name: "수호의 철퇴", power: 160, description: "돌 팔을 크게 내리친다." });
   const act = (skillId: string, priority: number, condition: Enemy["actions"][number]["condition"] = { kind: "always" }) =>
     ({ skillId, priority, condition, switchOnAfterAction: { enabled: false }, switchOffAfterAction: { enabled: false } });
   const guardian = project.database.enemies.find((e) => e.id === "enemy_fs_guardian");
@@ -145,11 +153,11 @@ function setupFoes(project: Project): { field: string[]; boss: string } {
       act("skill_sword_slash", 6), act("skill_weaken", 4),
       act("skill_heal", 9, { kind: "hp", minPercent: 0, maxPercent: 30 }),
     ];
-    valen.stats = { ...valen.stats, maxHp: 1300 };
+    valen.stats = { ...valen.stats, maxHp: 1000 };
   }
   if (guardian) {
     guardian.actions = [act("skill_fs_maul", 9, { kind: "turn", start: 2, interval: 2 }), act("skill_earth", 7), act("skill_attack", 6)];
-    guardian.stats = { ...guardian.stats, maxHp: 1000 };
+    guardian.stats = { ...guardian.stats, maxHp: 700 };
   }
   // 표시 레벨 — 견본 몬스터에서 복제한 레벨(발렌 33·수호상 27)이 Lv6 파티 앞에 그대로 떠 이야기와 어긋났다(감사 VQA).
   // 보상은 위에서 직접 정했으므로 레벨은 표시와 레벨 차 경험치 보정에만 쓰인다.
@@ -640,9 +648,22 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   M(PUZZLE_ROOM).atmosphereEffects = M(ids.vault).atmosphereEffects;
   replaceLineAnywhere(M(PUZZLE_ROOM), "퍼즐 해독 보상! 「태양의 불씨 보관함」과(와) 250G를 획득했다!", [narrate("화로 사이 바닥이 열리고, 「태양의 불씨 보관함」과 250G가 나왔다.")]);
   // 석판의 「동쪽 화로」는 동쪽에 화로가 둘(북동·남동)이라 어느 쪽인지 헷갈렸다 — 둘 중 하나임을 밝혀 추론 문제로 남긴다.
-  for (const event of M(PUZZLE_ROOM).events) for (const list of eventCommandLists(event)) for (const cmd of list) {
-    const rec = cmd as { kind: string; body?: string };
-    if (rec.kind === "text" && rec.body?.includes("첫 불은 동쪽 화로다.")) rec.body = rec.body.replace("첫 불은 동쪽 화로다.", "첫 불은 동쪽의 두 화로 가운데 하나에 붙인다.");
+  // 가혹 검수 r3: 석판 글이 「석판: 「…」」 한 상자에 몰려 이름표가 없고 길었다 — 이름표 「석판」으로 세 줄에 나눈다.
+  // 틀렸을 때도 한 줄로 끝나 무엇을 다시 볼지 몰랐다 — 석판을 떠올리게 하는 둘째 줄을 붙인다.
+  for (const event of M(PUZZLE_ROOM).events) for (const list of eventCommandLists(event)) {
+    for (let i = list.length - 1; i >= 0; i -= 1) {
+      const rec = list[i] as { kind: string; body?: string };
+      if (rec.kind !== "text" || !rec.body) continue;
+      if (rec.body.startsWith("석판: 「")) {
+        list.splice(i, 1,
+          say("석판", "네 화로에 차례로 불을 옮겨라. 틀리면 불은 모두 꺼진다."),
+          say("석판", "첫 불은 동쪽의 두 화로 가운데 하나에 붙인다."),
+          say("석판", "북서는 남서보다, 그리고 북동보다 먼저 탄다. 남서는 셋째가 아니다."),
+        );
+      } else if (rec.body.startsWith("불길이 역류해 모든 화로가 꺼졌다")) {
+        list.splice(i + 1, 0, say("엘레나", "석판을 다시 떠올려 봐. 첫 불은 동쪽이었고, 북서는 남서와 북동보다 먼저야."));
+      }
+    }
   }
   const retarget = (map: GameMap, fromMapId: string, to: { mapId: string; x: number; y: number; facing?: string }): GameEvent | undefined => {
     const event = map.events.find((e) => eventCommandLists(e).some((l) => l.some((c) => c.kind === "transfer" && (c as { mapId?: string }).mapId === fromMapId)));

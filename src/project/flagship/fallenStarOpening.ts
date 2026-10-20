@@ -35,7 +35,7 @@ function particles(id: string, preset: "stars" | "sparks" | "dust", color: strin
 }
 
 function caption(cues: readonly { atMs: number; text: string }[]): AnimaticLayer {
-  return { id: "caption", kind: "caption", x: 0, y: 0, width: STAGE.width, height: 38, color: CAPTION_COLOR, typography: { fontSize: 14, align: "center", weight: 700 },
+  return { id: "caption", kind: "caption", x: 0, y: 0, width: STAGE.width, height: 38, color: CAPTION_COLOR, typography: { fontSize: 16, align: "center", weight: 700 },
     caption: { cues: cues.map(cue => ({ ...cue, typewriterMs: 600 })), fadeOutMs: 400 } };
 }
 
@@ -87,7 +87,9 @@ function observatoryShot(): OpeningAnimatic {
     flicker("candle-d", { x: 60, y: 216 }, 26), flicker("candle-e", { x: 410, y: 214 }), flicker("candle-f", { x: 106, y: 176 }),
     caption([
       { atMs: 300, text: "천문대장 하넬은 그 빛을 끝까지 지켜보았다." },
-      { atMs: 3200, text: "떨어지기 직전, 별은 방향을 틀었다. 별똥별은 그러지 않는다." },
+      // 이 컷은 아래 띠가 얇다 — 두 줄로 접히면 화면 밖으로 밀리므로 한 줄씩 나눈다.
+      { atMs: 3000, text: "떨어지기 직전, 별은 방향을 틀었다." },
+      { atMs: 5000, text: "별똥별은 그러지 않는다." },
     ]),
   // 돔 틈의 별똥별 꼬리가 화면 위쪽에 있다 — 레터박스를 얇게, 카메라를 위로 둔다(감사 VQA: 위 띠가 꼬리를 가렸다).
   // 바둑판 디더 전환은 원화를 망친 것처럼 보였다 — 다른 컷처럼 페이드.
