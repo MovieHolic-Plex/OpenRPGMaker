@@ -190,9 +190,9 @@
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-stat-bar-hp::before { background: #48b888; border-radius: 0; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-stat-bar-hp[data-hp-state="mid"]::before { background: #e8c040; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-stat-bar-hp[data-hp-state="low"]::before { background: #e85848; }
-/* 상태 배지: HP 상자 안 둘째 줄 왼쪽(3세대 자리). 스프라이트에 붙은 배지는 숨긴다. */
+/* 상태 배지: HP 상자 안 셋째 줄 왼쪽(HP 막대·「HP」 글자 줄 밑 — 둘째 줄에 두면 「HP」 라벨을 가린다, R5-3). 내 몬스터 상자는 셋째 줄 오른쪽이 HP 숫자라 서로 비켜 선다. 스프라이트에 붙은 배지는 숨긴다. */
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-actor-group .battle-actor, .battle-enemy) > .battle-status-icons { display: none; }
-.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-row, .battle-party .battle-actor-status) > .battle-status-icons { grid-area: 2 / 1; justify-self: start; align-self: center; display: flex; gap: 2px; position: static; margin: 0; z-index: 1; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-row, .battle-party .battle-actor-status) > .battle-status-icons { grid-area: 3 / 1; justify-self: start; align-self: center; display: flex; gap: 2px; position: static; margin: 0; z-index: 1; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-row, .battle-party .battle-actor-status) > .battle-status-icons :is(.battle-status-icon, .battle-stage-pill, .battle-held-pill) { font: 18px/20px var(--runtime-pixel-font); min-width: 30px; height: 20px; padding: 0 3px; border: 0; border-radius: 2px; box-shadow: none; box-sizing: border-box; letter-spacing: 0; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-row, .battle-party .battle-actor-status) > .battle-status-icons .battle-status-icon-death { display: none; }
 /* 능력치 단계 알약(ATK↑2)이 있으면 알약 묶음이 HP 막대 줄(2행)에서 내려온다 — 막대 앞 「HP」 글자와 겹치지 않는다.
@@ -466,7 +466,7 @@
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot] :is(.status-menu-target-state, .status-menu-target-vital.mp) { display: none; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot] .status-menu-target-track { height: 6px; background: #586858; margin-top: 4px; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot] .status-menu-target-fill { background: #68c084; }
-.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="party"] [data-testid="status-menu-monster-toggle"] { position: absolute; left: 0; bottom: 0; width: 168px; height: 32px; background: #f8f8e8; font-size: 18px; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 4px 0 18px; box-sizing: border-box; white-space: nowrap; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="party"] [data-testid="status-menu-monster-toggle"] { position: absolute; left: 0; bottom: 0; width: 160px; height: 32px; background: #f8f8e8; font-size: 18px; display: flex; align-items: center; justify-content: space-between; gap: 2px; padding: 0 4px 0 14px; box-sizing: border-box; white-space: nowrap; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="party"] [data-testid="status-menu-monster-toggle"] > * { position: static; width: auto; margin: 0; flex: none; }
 /* 작은 칸 다섯은 그림이 칸 높이(36px)보다 커서 아래가 잘렸다 — 32px 아이콘으로 맞춘다(첫 칸의 큰 그림은 그대로). */
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]) { grid-template-columns: 36px 1fr; grid-template-rows: 20px 20px; align-content: center; row-gap: 0; }
@@ -638,19 +638,33 @@
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-box .body { font: 18px/24px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; color: #384840; text-align: left; text-shadow: none; height: 48px; min-height: 0; max-height: 48px; overflow: hidden; margin: 0; word-break: keep-all; overflow-wrap: anywhere; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-box.has-speaker { padding-top: 12px; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] :is(.speaker-nameplate, .dialogue-face:not(.dialogue-face-bust), .dialogue-log-button) { display: none; }
-/* 흉상(changeFace presentation bust)은 보인다 — 상자 위(위쪽 상자면 아래)에 1배 도트로 서고, 글은 상자 전체 폭을 그대로 쓴다.
-   작은 얼굴·이름표는 3세대 상자처럼 계속 숨긴다(2026-10-21 아스트라 인물 흉상). */
+/* 흉상(changeFace presentation bust)은 보인다 — 상자 위(위쪽 상자면 아래)에 서고, 글은 상자 전체 폭을 그대로 쓴다.
+   작은 얼굴·이름표는 3세대 상자처럼 계속 숨긴다(2026-10-21 아스트라 인물 흉상).
+   일러스트는 표시 시점에 44x46 도트 격자로 줄여(색 16개·윤곽 1화소, src/player/bustPixelate.ts) 정수 2배로 키운다 —
+   맵·상자와 화소 크기가 같다. 원본 그림은 그대로 두고, 변환이 실패하면 원본이 부드럽게 보이는 대신 그대로 나온다. */
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] {
-  --runtime-dialogue-bust-height: 128px;
-  --runtime-dialogue-bust-width: 120px;
+  --runtime-dialogue-bust-height: 108px;
+  --runtime-dialogue-bust-width: 104px;
 }
-.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-face.dialogue-face-bust { box-sizing: border-box; width: 120px; height: 128px; bottom: calc(100% - 4px); left: 8px; background-color: #e8f0d8; background-size: auto; background-position: bottom center; border: 4px solid #487068; box-shadow: inset 0 0 0 4px #a8c0a0; }
-/* 아스트라 흉상은 원래 도트 크기(약 100×110)로 구웠다 — 늘이지 않고 1배로, 대사 상자와 같은 테두리 창 안에 그린다.
-   맵(2배 화소) 위에 그냥 띄우면 화소 크기가 섞여 보인다(2026-10-21 적대 검수) → 상자처럼 읽히는 초상 창. */
+/* 대사 상자와 같은 두 겹 테두리: 안쪽 #a8c0a0 4px(border), 바깥 #487068 4px(box-shadow), 그림 칸 88x92 는 연한 #e8f0d8 바탕. */
+.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-face.dialogue-face-bust {
+  box-sizing: border-box;
+  width: 96px;
+  height: 100px;
+  bottom: 100%;
+  left: 12px;
+  border: 4px solid #a8c0a0;
+  box-shadow: 0 0 0 4px #487068;
+  background-color: #e8f0d8;
+  background-repeat: no-repeat;
+  background-size: 88px 92px;
+  background-position: center;
+  image-rendering: pixelated;
+}
 /* 3세대 상자는 초상이 하나다 — 앞 화자(듣는 쪽)를 같은 자리에 겹쳐 그리지 않는다. */
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-portrait-listener { display: none; }
-.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-box.bust-right .dialogue-face.dialogue-face-bust { left: auto; right: 8px; }
-.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].position-top .dialogue-face.dialogue-face-bust { bottom: auto; top: calc(100% - 4px); }
+.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-box.bust-right .dialogue-face.dialogue-face-bust { left: auto; right: 12px; }
+.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].position-top .dialogue-face.dialogue-face-bust { bottom: auto; top: 100%; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-content.has-bust { padding-inline: 0; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-page-cursor { right: 12px; bottom: 12px; color: #c85048; font: 18px/20px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; text-shadow: none; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].choices-active { box-sizing: border-box; height: auto; min-height: 0; padding: 0 8px 8px; max-height: 240px; }
@@ -674,10 +688,10 @@
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .status-menu-detail.has-item-facts .status-menu-showcase-description,
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .status-menu-detail-showcase.has-item-facts .status-menu-showcase-description { display: block; -webkit-line-clamp: unset; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="bag"] .status-menu-showcase-description { display: block; }
-.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-testid="status-menu-monster-toggle"] :is(.status-menu-detail-label, .status-menu-detail-value) { font: 18px/20px var(--runtime-pixel-font); white-space: nowrap; }
-.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]) .status-menu-target-states { display: none; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-testid="status-menu-monster-toggle"] :is(.status-menu-detail-label, .status-menu-detail-value) { font: 16px/20px var(--runtime-pixel-font); white-space: nowrap; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot] .status-menu-target-states:not(.has-state) { display: none; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot] .status-menu-target-states { font: 18px/20px var(--runtime-pixel-font); color: #586858; }
-.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]) .status-menu-target-states.has-state { display: block; position: absolute; top: -12px; right: 4px; background: #c85048; color: #fff; padding: 0 4px; z-index: 1; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot] .status-menu-target-states.has-state { display: block; position: absolute; top: -12px; right: 4px; background: #c85048; color: #fff; padding: 0 4px; z-index: 1; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-party { border-radius: 0; overflow: visible; box-shadow: none; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-party .battle-actor-hp > .battle-vital-label { display: none; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-party .battle-actor-status { border-radius: 0; }
@@ -737,7 +751,7 @@
 
 /* 수리 2판(D20·D24): 칸에 안 맞는 긴 글자는 겹치지 않고 「…」로 줄인다. */
 /* D20: 전투불능 알약이 칸 위 경계(top:-12px)에 걸려 윗부분이 잘렸다 — 칸 안 오른쪽 위에 앉히고, 이름은 알약 앞에서 줄인다. */
-.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]) .status-menu-target-states.has-state { top: 2px; line-height: 16px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot] .status-menu-target-states.has-state { top: 2px; line-height: 16px; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]) .status-menu-target-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]):has(.status-menu-target-states.has-state) .status-menu-target-name { padding-right: 80px; }
 /* D24: 라벨·값 두 칸 행(가방 이름+수량, 동료 상세 라벨+값)에서 긴 라벨이 옆 칸 글자와 겹치지 않는다. */

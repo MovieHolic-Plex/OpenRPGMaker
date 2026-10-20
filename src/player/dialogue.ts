@@ -17,6 +17,7 @@ import { resolveAuthoredVnLook, resolveVnLook, vnLookAttributes, vnLookShowsPort
 import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
+import { applyPixelBust } from "@/player/bustPixelate";
 import { dialogueFaceForEmotion, findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitId, sharedPortraitRendering } from "@/assets/sharedPortraitAssets";
 import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
 import { appearancePortraitForEmotion, faceForDialogueEmotion, resolveActorAppearance, resolveAppearancePortrait } from "@/project/characterAppearances";
@@ -1976,7 +1977,13 @@ function setFaceImage(node: HTMLElement, resourceId: string): void {
   const url = safeResourceImageUrl(resolveAssetResourceUrl(resourceId, { project: store.getCurrent() }));
   if (!url) return;
   if (node.classList.contains("dialogue-face-image")) node.style.setProperty("--face-url", `url("${url}")`);
-  else node.style.backgroundImage = `url("${url}")`;
+  else {
+    node.style.backgroundImage = `url("${url}")`;
+    if (node.classList.contains("dialogue-face-bust")) {
+      delete node.dataset.bustPixel;
+      applyPixelBust(node, url);
+    }
+  }
   node.dataset.resourceId = resourceId;
   if (node.dataset.portraitRender) node.dataset.portraitRender = sharedPortraitRendering(resourceId);
 }
@@ -2611,8 +2618,6 @@ function dialoguePortraitMode(face: FaceGraphic | undefined): "face" | "bust" | 
   return face.presentation ?? facePresentationForResource(face.resourceId);
 }
 
-const loadedPortraitUrls = new Set<string>();
-
 function renderFace(face: FaceGraphic): HTMLElement {
   const url = safeResourceImageUrl(resolveAssetResourceUrl(face.resourceId, { project: store.getCurrent() }));
   if (!url) {
@@ -2625,9 +2630,7 @@ function renderFace(face: FaceGraphic): HTMLElement {
   const mode = dialoguePortraitMode(face);
   if (mode !== "face") {
     const side = face.position === "right" ? "right" : "left";
-    // 그림이 아직 안 왔으면 틀(테두리·배경색)만 빈 채로 먼저 보였다(2026-10-21 아스트라 첫 10분 녹화) — 받을 때까지 숨긴다.
-    const pending = !loadedPortraitUrls.has(url);
-    const node = el("div", {
+    const bust = el("div", {
       class: [
         "dialogue-face",
         "dialogue-face-bust",
@@ -2650,16 +2653,10 @@ function renderFace(face: FaceGraphic): HTMLElement {
         portraitRender: sharedPortraitRendering(face.resourceId),
       },
     });
-    if (pending) {
-      node.style.visibility = "hidden";
-      const probe = new Image();
-      const reveal = () => { loadedPortraitUrls.add(url); node.style.visibility = ""; };
-      probe.onload = reveal;
-      probe.onerror = () => { node.style.visibility = ""; };
-      probe.src = url;
-      if (probe.complete && probe.naturalWidth > 0) reveal();
-    }
-    return node;
+    // 그림(또는 에메랄드 화면의 도트 변환본)이 준비될 때까지 숨긴다 — 빈 틀이 먼저 보였다(2026-10-21 아스트라 첫 10분 녹화).
+    bust.style.visibility = "hidden";
+    applyPixelBust(bust, url, () => { bust.style.visibility = ""; });
+    return bust;
   }
   // 얼굴은 낱장 파일(48×48) 한 장이다 — 상자 크기만 정하고 이미지를 통째로 그린다.
   const style = [
