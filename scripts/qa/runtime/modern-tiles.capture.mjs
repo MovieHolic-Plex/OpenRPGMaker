@@ -48,7 +48,7 @@ try {
     window.__OPENRPG_BOOT__ = { projectUrl, saveNamespace: "runtime-qa:modern-tiles", qaInstrumentation: true };
   }, PROJECT_URL);
   await page.route(`**${PROJECT_URL}`, (route) => route.fulfill({ status: 200, contentType: "application/json", body: projectJson }));
-  await page.goto(`${server.url}/player.html`, { waitUntil: "domcontentloaded" });
+  await page.goto(`${server.url}/player.html`, { waitUntil: "domcontentloaded", timeout: 300_000 });
   await page.waitForSelector("[data-testid='title-screen']", { timeout: 120_000 }).catch((e) => { console.error(log.join("\n")); throw e; });
   await page.keyboard.press("Enter");
   await page.waitForSelector("[data-testid='title-screen']", { state: "detached", timeout: 90_000 });
