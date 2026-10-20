@@ -14,6 +14,7 @@ import { createBlankProject } from "./defaults";
 // 에디터 인테리어 파이프라인을 끌고, store 를 import 하는 테스트 669개가 그 비용을 물게 된다.
 import { ensureSwitchVariableSlots } from "./defaults/blankProject";
 import { ensureBundledResourceProfiles, ensureBundledTilesets, removeLegacyRmTileset, removeLegacySpriteReferences } from "./defaults/defaultAssets";
+import { reshapeJpCityMapBorders } from "./defaults/jpCityEdgeMigration";
 import { hasPendingFacesetSheetRepair, repairUploadedFacesetSheets } from "@/assets/facesetSheetRepair";
 import { separateInlineUploadedMedia } from "./persistence/inlineMediaRefs";
 import { repairInteriorTransparentPropLayers } from "./defaults/interiorTransparentPropLayerRepair";
@@ -1756,6 +1757,8 @@ class ProjectStore {
       ["mapTreeCoverage", ensureMapTreeCoversAllMaps(this.current)],
       ["switchVariableSlots", ensureSwitchVariableSlots(this.current)],
       ["bundledTilesets", ensureBundledTilesets(this.current)],
+      // jp_city 지면 오토타일이 맵 밖과 이어지게 바뀐 뒤(2026-10-20), 구워 저장된 맵의 둘레 한 겹을 다시 맞춘다(jpCityEdgeMigration.ts).
+      ["jpCityEdgeConnect", reshapeJpCityMapBorders(this.current)],
       ["sharedTileReferences", ensureSharedTileReferences(this.current)],
       ["bundledReferenceImages", externalizeBundledReferenceImages(this.current)],
       ["interiorPropLayers", repairInteriorTransparentPropLayers(this.current)],
