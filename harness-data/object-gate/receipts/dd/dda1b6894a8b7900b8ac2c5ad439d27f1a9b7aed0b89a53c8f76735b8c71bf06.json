@@ -1,0 +1,324 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dda1b6894a8b7900b8ac2c5ad439d27f1a9b7aed0b89a53c8f76735b8c71bf06",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "dept sneaker wall",
+ "label": "modern_city_interior/dept-sneaker-wall",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 19,
+  "tileColorsP90": 20,
+  "darkV5": 61,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice slab",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-5"
+     },
+     {
+      "part": "shelf unit front with six sneaker cubbies",
+      "rows": "6-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a light grey top band 32 px wide, wider than the 30 px body. It brightens from #c6cad4 to #dde0e7 and ends in a lightest front-edge line at row 4 (#f3f4f7). Row 5 (#8d9095) is a darker shadow row before the front face. The band overhangs the body, which supports a top surface, though it could also be read as a flat cornice. Rows 6-30 are the front face: a wooden frame with a 2x3 grid of cubbies holding sneakers and horizontal shelf boards. Row 31 is a 6 px base detail. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate shows 18 visible tones per 16x16 tile. That is level with prop-stall-cheese (17) and close to prop-well-roofed (20), and well above prop-hedge (9). Near-flat coverage is 0%, so there are no large flat fills. The shelf interior and the sneakers each vary in tone, with highlights, soles and laces. The near-neutral share of dark edge pixels is 0%, so the outlines carry a brown tint of the wooden frame rather than a black sticker line. Shading on the frame and shelf is a little shallower than the best references, at about 4 steps against 5-6. Overall, a careful artist would accept it beside the stall and well without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21601
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap of the cabinet",
+      "rows": "0-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-5"
+     },
+     {
+      "part": "front face with shelf cubbies and sneakers",
+      "rows": "5-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-4 form a light gray band that overhangs the body (width 30 on row 0, 32 on rows 1-5). It brightens from L=111 to L=244 and ends in a bright front-edge line on row 4. Row 5 is darker (L=144) and works as the eave shadow. Below it, rows 6-30 are a vertical front face of wooden frame, shelf dividers and sneaker cubbies. Because the band has an edge line, a shadow and an overhang, it reads as a top surface rather than a plain front strip. This is a borderline reading: the band is light and could be taken as a front-facing cornice. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a shoe shelf with six cubbies holding sneakers in different colours. On the primary facts it matches the richer references: 18 visible tones per 16x16 tile against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, so there are no flat fills. None of its dark edge pixels are near-neutral (0%), so the outline is tinted and reads as a darker tone of the neighbouring material, not a black sticker line. By eye, the shelf frame has a light-to-mid-to-dark wood ramp of about 4 steps. Each shoe carries its own sole, upper and detail pixels, so the cubbies are not empty boxes. It is slightly less layered than the stall or well, which have 5-6 steps with scalloped roof highlights and per-stone shading. At the same scale it would not look thinner or flatter than the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20638
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top slab of the shelf unit",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-5"
+     },
+     {
+      "part": "cubby front with sneakers, dividers and wooden frame",
+      "rows": "6-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band spans rows 1-4. It is 32px wide against a 30px body, so it overhangs. Its lightest row is row 4 (#f3f4f7), which acts as the front-edge line. Row 5 is darker (#8d9095 at x=8 and x=23) and acts as eave shadow. Below it a front face of about 25 rows (rows 6-30) holds three rows of sneaker cubbies. This band is read as a thin top slab, with the cabinet reference as the comparison, rather than a flat cornice strip. The call is borderline because the band is only about 4 rows tall and could be a front-facing cornice. The cubbies, dividers and frame are vertical faces, as expected for a wall-standing cabinet."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 18 visible tones per tile, against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, and 0% of its dark edge pixels are neutral, so the outline is tinted. It reads as a dark brown frame and shelf edges, not a black sticker line. The sneakers are small multi-tone shapes (white, red, blue, yellow with soles and laces) sitting on shelves, so there is no large flat area. The frame and back panel ramp has about 4 steps, a little shallower than the 5-6 on the stall and well. Overall it sits close to the references in density and craft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17546
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap / cornice slab",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "wooden frame with six sneaker alcoves (front face)",
+      "rows": "6-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sneakers inside alcoves",
+      "rows": "7-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is 30 wide at row 0, then 32 wide on rows 1-5, so the top overhangs the body. Rows 1-4 are a light gradient band (L about 202-244) that ends in a darker full-width line at row 5 (#8d9095), which is a front-edge line and acts as the eave shadow. Below it, rows 6-30 are a front face of about 25 rows: a wooden frame with a central divider and horizontal shelf bars, holding six sneaker alcoves. The top is thin (4 rows) but has an edge line and overhang, so I read it as a cap with a top surface. A reading of this band as a flat front-facing header strip is possible, which makes this borderline."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate carries 18 visible tones per 16x16 tile, against 17 for prop-stall-cheese, 20 for prop-well-roofed and 9 for prop-hedge. Near-flat coverage is 0%, so no large single-colour areas. None of its dark edge pixels are neutral (0%), so the outline leans toward a tint rather than a black line, like the hedge and the cheese stall. The frame and shelf dividers show a light-to-dark ramp, and each sneaker has its own small light, mid and dark shading, laces and soles. The ramps are somewhat shorter than the 5-6 steps on the references, and the frame surface is cleaner and smoother than the wood grain on the stall. It is still at reference level for a small shelf prop and does not look like a sticker next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20327
+  }
+ ],
+ "decidedAt": "2026-10-20T23:28:13.336Z",
+ "cells": {
+  "16": [
+   "2f7b44a512723f44",
+   "9c21b3e6f059c78c",
+   "bc08e42aa4c6477b",
+   "df832c945481f329"
+  ],
+  "24": [
+   "0d29f24cf85a3e0d",
+   "223ed926cbc4cbed",
+   "34c127d0ae8e67fe",
+   "3e2a52d65986a390",
+   "52c01a021408da9b",
+   "56ad658473ccca00",
+   "632b46c203040c96",
+   "65e77f5523b1baaf",
+   "67e69b88a901154a",
+   "72cc4e7ed12a0a39",
+   "7ca4705d2da70263",
+   "7fecd614b1b06312",
+   "9aa45b54fbacb79d",
+   "a53f2b32479b4e19",
+   "ac43f6846546a247",
+   "bb7b07ebe853a02f",
+   "c56f2297fcae2ecc",
+   "d5c91e09c13616c3",
+   "da2a9a2dfed8a539",
+   "db12db3034c6a8f0",
+   "df0bf7ddc7f06eee",
+   "e52a917014293fc6",
+   "fb91b07fa1b9d7c7",
+   "ffe5f73dbfb23da4"
+  ],
+  "32": [
+   "f9bb69fd6f4da30b"
+  ],
+  "48": [
+   "468628d6e38a3e6f",
+   "4b9ebf2c3a3cd14b",
+   "8c70f6b29491dc64",
+   "8ef05e8b3f47907d",
+   "d0bae2777379f55a",
+   "d7d884382e5c9fdf"
+  ]
+ }
+}

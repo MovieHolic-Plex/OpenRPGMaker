@@ -1,0 +1,344 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "482afb63f693fc91cc03e6d7d6f756cbf5652fd38fd8db7cdaf163f2c65073c5",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "hosp crash cart",
+ "label": "modern_city_interior/hosp-crash-cart",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 19,
+  "tileColorsP90": 19,
+  "darkV5": 44,
+  "nearBlackEdge": 0.05,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cart top deck",
+      "rows": "2-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17"
+     },
+     {
+      "part": "defibrillator or monitor unit on the deck",
+      "rows": "3-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "drawer stack front",
+      "rows": "18-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top deck is a large red band over rows 2-16 and is 14 px wide, wider than the 12 px body below it. It ends in a light front-edge line at row 16 (#ee6c6c), and row 17 is a dark eave shadow. Below that, the front face runs rows 18-29 as three drawers with grey handles at rows 20, 24 and 28, and the wheels at rows 30-31 add 2 more rows. The cream and teal unit at rows 3-9 sits on the deck and is decor. The cart has a clear top surface and a clear front face, so it reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small red cart with a monitor on top. It carries 19 visible tones per 16x16 tile, which matches the well (20) and the cheese stall (17) and is well above the hedge (9). Near-flat coverage is 0%, so there are no flat fills. Only 11% of its dark edge pixels are neutral, so the outline leans dark red-brown beside the red body and is not a uniform black sticker line. The body shows several red steps with highlight and shadow sides, plus drawer and panel detail, though the board is too small to count steps exactly. It is a little narrower and simpler than the roofed well and the stall, but I see no flat or sticker-like areas, and a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17144
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cart top deck (red)",
+      "rows": "2-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17"
+     },
+     {
+      "part": "items on the deck (cream tray/bag, teal parts, dark equipment)",
+      "rows": "3-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "drawer front with silver handles",
+      "rows": "18-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels",
+      "rows": "30-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The red top deck spans rows 2-16 and ends in a light front-edge line at row 16 (#ee6c6c). Row 17 is a darker eave-shadow row. Below it the front face (rows 18-29) shows drawers with silver handles at rows 20, 24 and 28, and small wheels sit at rows 30-31. The cream and teal items on the deck are goods placed on top, so they count as decor. The top is tall relative to the front, but it clearly has an edge line and a front face of more than 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a narrow red cart with a monitor on top and drawers below. It reads as a compact prop with a dark red-brown edge that follows the body colour rather than a black sticker line. The measured facts back this: only 11% of dark edge pixels are near-neutral, so the outline is tinted. It has 19 visible tones per full tile, level with prop-stall-cheese (17) and prop-well-roofed (20) and above prop-hedge (9). Near-flat coverage is 0%, with no large single-colour areas. The red body steps from highlight through mid to dark, and the screen and drawer details add variation. The ramps are somewhat shallower than the 5-6 steps of the best references, but density and edge treatment hold up next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18000
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cart top slab (red work surface)",
+      "rows": "2-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17"
+     },
+     {
+      "part": "equipment and pad placed on top (beige pad, teal monitor, grey items)",
+      "rows": "3-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "drawer front body with grey handles",
+      "rows": "18-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top slab is rows 2-16 and is 14 px wide, wider than the 12 px body below it. It ends in a light front-edge line at row 16 (#ee6c6c, L=147) followed by a dark eave-shadow row at 17. Below it are the drawer front, rows 18-29, with three grey handles at rows 20, 24 and 28, then small wheels or feet at rows 30-31. The beige, teal and grey items on the top are decor placed on the counter surface. The top is a deep horizontal plane and the front face is 12 rows, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 19 visible tones per 16x16 tile, close to the stall (17) and well (20) references and well above the bench and lamp (0, sparse objects). Near-flat coverage is 0%, so there are no flat fills. Only 11% of its dark edge pixels are near-neutral, so the outline is a tinted dark red-brown beside the red body, not a black sticker line. By eye, the red body has highlight, mid and dark steps with separate drawer, screen and handle details. That is about 4 steps against 5-6 for the references. It is slightly simpler than the stall or well, but it is not thinner, flatter or more sticker-like than the references, so a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16637
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cart top slab",
+      "rows": "2-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17"
+     },
+     {
+      "part": "defibrillator/monitor on top",
+      "rows": "3-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "drawer front",
+      "rows": "18-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The wide red top block (rows 2-16, 14 px wide) carries a beige and teal device (decor) and ends in a light front-edge line at row 16 (#ee6c6c). Row 17 is dark eave shadow, and the body narrows to 12 px below it. The front face is rows 18-29: three drawers with grey handles at rows 20, 24 and 28, and dark feet at rows 30-31. The top is a tall, foreshortened surface with a clear edge line, so it is not a rim and not a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a narrow red cart with a screen or defibrillator on top. It is small, so my reading of fine detail is limited. It shows about 19 visible tones per full 16x16 tile, level with prop-stall-cheese (17) and prop-well-roofed (20) and well above prop-hedge (9). Near-flat coverage is 0%, so there are no large flat fills; the red body breaks into highlight, mid, dark and deep steps with drawer or panel detail. Only 11% of dark edge pixels are neutral, so the outline is a dark red-brown tint of the neighbouring material, like the Beodeul references, and not a black sticker line. Shading is slightly less deep than the 5-6 step references but acceptable, and the piece is as dense as the references of the same kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16480
+  }
+ ],
+ "decidedAt": "2026-10-20T23:28:13.359Z",
+ "cells": {
+  "16": [
+   "4c240693a831fe45",
+   "a7dd6b7580e80c81"
+  ],
+  "24": [
+   "0166a3f8da2640ca",
+   "0563780398958fd6",
+   "0c12052a7a7eec20",
+   "103f4891b3290b78",
+   "1d002bf3b81f2172",
+   "1fa92c7dd532db75",
+   "21fee74709d22fe0",
+   "22fcd1bb2fec5763",
+   "36ceca895ddf36c1",
+   "37ae460937dd598a",
+   "8effc736ec6341d8",
+   "e1cab16ce63b2afd"
+  ],
+  "32": [
+   "07a2d0a7bab1ebbc",
+   "660713f5111ec9c6",
+   "eb700b7bf34f98b1"
+  ],
+  "48": [
+   "2331b86d0f548298",
+   "3ead3fd72a0f935d",
+   "8166f2d974dfec2f",
+   "8781fc2a20d0aedd",
+   "eeba0548733cd888",
+   "fca17ecd8f55cb5d"
+  ]
+ }
+}
