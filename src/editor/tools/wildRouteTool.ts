@@ -13,6 +13,7 @@ import type { EncounterTableEntry, GameEvent, GameMap, MapNamedLocation, Project
 import { mulberry32, type Rng } from "@/util/rng";
 import { requireMap } from "./mapHelpers";
 import { BEODEUL_PLAIN_GRASS, canPaintBeodeulWildRoute, paintBeodeulWildRoute } from "./wildRouteBeodeul";
+import { BEODEUL_FOREST_TYPES, parseBeodeulForestType, type BeodeulForestType } from "./beodeulForest";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 type Point = { x: number; y: number };
@@ -284,6 +285,8 @@ const authorWildRoute: ToolDefinition = {
         items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"] },
       },
       grassPatches: { type: "integer", description: "길을 가로지르는 키큰 풀숲 개수(1~6, 기본 3)" },
+      forestType: { type: "string", enum: [...BEODEUL_FOREST_TYPES], description: "길 양옆 숲 종류: broadleaf 활엽수림(기본) · conifer 침엽수림(전나무·측백) · mixed 혼효림(큰 활엽수 사이 측백·전나무)" },
+      edgeDecor: { type: "string", enum: ["default", "soft"], description: "버들항 길섶·풀숲 둘레 소품: default(기본, 고사리 큐브 포함) · soft(네모 울타리처럼 읽히는 fern-a/b 를 빼고 풀 무늬·열매 덤불만)" },
       encounters: {
         type: "array",
         description: "풀숲에서 나올 야생 무리 [{troopId, weight}] — 조회한 troop id. 풀숲 밖(흙길·숲)에서는 조우가 없다.",
@@ -358,6 +361,9 @@ const authorWildRoute: ToolDefinition = {
     map.upperTiles = Array.from({ length: size }, () => TILE.EMPTY);
     delete map.lowerTileStacks;
     delete map.upperTileStacks;
+    // 숲 composer 가 2·4층에도 쓰므로 다시 깔 때 덧층도 비운다(남은 나무 칸이 새 숲을 막지 않게).
+    if (map.lowerOverlayTiles) map.lowerOverlayTiles = Array.from({ length: size }, () => TILE.EMPTY);
+    if (map.upperOverlayTiles) map.upperOverlayTiles = Array.from({ length: size }, () => TILE.EMPTY);
 
     const rng = mulberry32(seed ^ 0x5eed17);
     const noise = noiseField(map, rng);
@@ -366,7 +372,9 @@ const authorWildRoute: ToolDefinition = {
     // 숲마을·combined_town 분기(흙길·키큰 풀 오토타일·굽이숲)는 2026-10-07 저작권 정리로 지웠다.
     const { path, road, patches, grass } = planRouteCorridor(map, exits, patchCount, rng, noise, relayDoors, warnings,
       (from, to) => routePathStraight(map, from, to, noise), true);
-    const laid = paintBeodeulWildRoute({ project: draft, map, tileset, road, grass, patches, exits, clearings, rng });
+    let forestType: BeodeulForestType;
+    try { forestType = parseBeodeulForestType(args.forestType); } catch (e) { throw new ToolError((e as Error).message, { code: "invalid-args", mapId: map.id }); }
+    const laid = paintBeodeulWildRoute({ project: draft, map, tileset, road, grass, patches, exits, clearings, rng, forestType, edgeDecor: args.edgeDecor === "soft" ? "soft" : "default" });
     const roadCellCount = laid.roadCells;
     const treeCells = laid.treeCells;
     const fillNote = `, 길섶 소품 ${laid.decor}개, 풀숲은 짙은 잎 풀(버들항엔 키큰 풀이 없다)`;

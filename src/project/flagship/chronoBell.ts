@@ -18,7 +18,6 @@ import { runTool } from "@/editor/tools/toolRunner";
 import "@/editor/tools/toolRegistry";
 import { buildJrpgChapter } from "@/editor/tools/jrpgChapterTools";
 import { pickSpot, placeRoamer } from "@/editor/tools/jrpgVolumeTools";
-import { BEODEUL_THICKET_TILE } from "@/editor/tools/wildRouteBeodeul";
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import { buildFallenStarOpening, FALLEN_STAR_TITLE_BACKGROUND } from "./fallenStarOpening";
 import { clearOrphanShadows, clearUpperByLabel, rimPit } from "./fallenStarMapPolish";
@@ -721,14 +720,16 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       ["bd-pick-deep-forest-path-log-fallen", -7, 1], ["bd-pick-deep-forest-path-log-fallen", 5, 2],
       ["bd-pick-deep-forest-path-stump", -6, -3], ["bd-pick-deep-forest-path-stump", 6, -2], ["bd-pick-deep-forest-path-stump", -7, -1],
       ["bd-pick-volcano-cave-ember-a", 1, -2], ["bd-pick-deep-forest-path-log-fallen", 4, -4],
+      // 그을린 구덩이 — 숯 더미를 구덩이 안쪽에 흩어 맨 흙 타원으로 읽히지 않게 한다(감사 2차).
+      ["bd-pick-volcano-cave-coal-pile", -2, 0], ["bd-pick-volcano-cave-coal-pile", 2, -1],
       // 그을린 자리 바깥 풀밭 — 꺾인 덤불이 흩어져 공터 경계를 흐린다.
-      ["bd-pick-deep-forest-path-heath-a", -5, 2], ["bd-pick-deep-forest-path-heath-b", 5, -1], ["bd-pick-deep-forest-path-fern-b", -5, -2],
-      ["bd-pick-deep-forest-path-heath-c", 4, 3], ["bd-pick-deep-forest-path-fern-a", -4, 3], ["bd-pick-deep-forest-path-heath-b", 6, 1],
+      ["bd-pick-deep-forest-path-heath-a", -5, 2], ["bd-pick-deep-forest-path-heath-b", 5, -1], ["bd-pick-deep-forest-path-fern-c", -5, -2],
+      ["bd-pick-deep-forest-path-heath-c", 4, 3], ["bd-pick-deep-forest-path-fern-c", -4, 3], ["bd-pick-deep-forest-path-heath-b", 6, 1],
     ];
     // 흙길 오토타일이 오목한 모서리 칸을 스스로 채운다 — 실제로 바뀐 칸을 다시 모아 둑을 얹는다.
     const live = M(ids.forest);
     for (let c = 0; c < live.lowerTiles.length; c += 1) if (live.lowerTiles[c] !== fm.lowerTiles[c] && fm.lowerTiles[c] === 737) pit.add(c);
-    rimPit(project, live, pit); // fill_region 이 맵 객체를 바꿔 끼우므로 fm 이 아니라 지금 맵에 얹는다.
+    rimPit(project, live, pit, "bankLava"); // fill_region 이 맵 객체를 바꿔 끼우므로 fm 이 아니라 지금 맵에 얹는다.
     for (const [kit, dx, dy] of debris) tryStamp(project, M(ids.forest), `kit:beodeul_city/${kit}`, pod.x + dx, pod.y + dy);
   }
   // 선포하는 발렌이 광장 가장자리 수정 기둥에 겹쳐 서 몸이 가렸다(감사 VQA) — 광장 포석 쪽 빈 칸으로 옮긴다.
@@ -754,18 +755,27 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       if (tryStamp(project, hub, "kit:beodeul_city/bd-pick-wizard-tower-armillary", obsDoor.x + dx, obsDoor.y + dy)) break;
     }
   }
-  // 풀숲(짙은 풀 한 칸 그림)의 가장자리가 직각 네모로 끊겼다(감사 VQA 「각진 풀숲」) — 바깥 테두리 칸에 풀 둑 덧그림을 얹어 흐린다.
-  {
-    const fm = M(ids.forest);
-    const thicket = new Set<number>();
-    for (let c = 0; c < fm.lowerTiles.length; c += 1) if (fm.lowerTiles[c] === BEODEUL_THICKET_TILE) thicket.add(c);
-    rimPit(project, fm, thicket);
-  }
+  // 풀숲 가장자리에 풀 둑 덧그림을 얹던 마감은 걷어 냈다 — 흙 입술(진흙 못 가장자리)로 읽혔다(감사 라운드 2).
   // 맵 마감(감사 3차) — 주인 없는 그림자, 화로의 방 긴 화덕 띠.
   for (const map of [M(ids.hub), M(ids.forest), M(ids.vault)]) clearOrphanShadows(project, map);
   clearUpperByLabel(project, M(PUZZLE_ROOM), /^긴 화덕/);
+  // 천문대 윗 홀의 나선 계단은 어디로도 이어지지 않는 장식이었다(감사 라운드 2) — 걷어 낸다. 내려가는 길은 바닥 뚜껑문 하나다.
+  {
+    const obs = M(ids.observatory);
+    for (let y = 4; y <= 7; y += 1) for (let x = 8; x <= 9; x += 1) {
+      const i = y * obs.width + x, t = obs.upperTiles[i] ?? -1;
+      if (t >= 4516 && t <= 4523) obs.upperTiles[i] = -1;
+    }
+    // 아래 왼쪽 돌 홀과 오른쪽 방 사이 벽 틈(9,15)은 문틀 없이 뚫려 있었다 — 열린 철문 틀을 세운다(바닥 칸은 그대로 통행).
+    // 쇠창살 문틀: 앵커가 발밑 칸(dy1)이라 (9,14)에 찍으면 아래 줄이 문 칸(9,15) 위에 선다(tryStamp 는 위 칸이 벽이라 거절해 직접 호출).
+        try { execTool(project, "stamp_object", { objectId: "kit:atlas_biome_interior/hand-interior:iron gate open", mapId: obs.id, x: 9, y: 14 }); } catch { /* 문틀은 장식이라 실패해도 통행은 그대로 */ }
+        // 아래 줄(문틀 옆기둥 6424)은 통행을 막으므로 걷어 낸다 — 위 줄(상인방 6423)만 벽 칸에 남아 문 위를 두른다.
+        { const om = M(ids.observatory); const door = om.upperTiles; const di = 15 * om.width + 9; if (door[di] === 6424) door[di] = -1; }
+  }
   // 숲지기 곁 모닥불.
   const bram = M(ids.forest).events.find((e) => e.id === `ev_${FS_PREFIX}_bram`);
+  // 숲지기는 길 한가운데(14,18) 곁에 선다 — 길 계획(rng)이 바뀌어도 QA 대본·대화 접근 칸(14,19)이 같다.
+  if (bram && !M(ids.forest).events.some((e) => e !== bram && e.x === 14 && e.y === 18) && isPassable(project, M(ids.forest), 14, 18) && isPassable(project, M(ids.forest), 14, 19)) { bram.x = 14; bram.y = 18; }
   if (bram) for (const [dx, dy] of [[1, 1], [-1, 1], [1, -1], [-1, -1]] as const) if (tryStamp(project, M(ids.forest), "kit:beodeul_city/bd-pick-deep-forest-path-campfire", bram.x + dx, bram.y + dy)) break;
 
   // 시작 — 광장, 천문대 문이 보이는 곳.

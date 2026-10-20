@@ -100,7 +100,7 @@ export interface ChapterSpec {
   readonly title: string;
   readonly era: string;
   /** form = 버들항 마을 형태(plaza 광장 = 장터 축제 마을). scene 이 beodeul_town:<theme> 일 때만. */
-  readonly hub: { readonly name: string; readonly scene: string; readonly form?: string };
+  readonly hub: { readonly name: string; readonly scene: string; readonly form?: string; /** 강·해안 마을 숲 덩이 종류(author_beodeul_town forestType). */ readonly forestType?: string };
   readonly sites: readonly SiteSpec[];
   readonly moods?: Readonly<Record<string, MoodSpec>>;
   /** 맵 대기 입자(꽃잎·불씨·마력·먼지) — 날씨·조명과 겹쳐 깔린다. */
@@ -1257,7 +1257,7 @@ export function buildJrpgChapter(
     const townTheme = /^beodeul_town:(.+)$/u.exec(spec.hub.scene)?.[1];
     if (spec.hub.form && townTheme) {
       // create_map themeScene 은 마을 형태를 넘기지 않는다 — 장터 광장 마을은 구성기를 직접 부른다.
-      const built = nested(draft, "author_beodeul_town", { id: hubId, name: spec.hub.name, theme: townTheme, form: spec.hub.form, seed });
+      const built = nested(draft, "author_beodeul_town", { id: hubId, name: spec.hub.name, theme: townTheme, form: spec.hub.form, seed, ...(spec.hub.forestType ? { forestType: spec.hub.forestType } : {}) });
       const plaza = (built.data as { plaza?: Cell } | undefined)?.plaza;
       if (plaza) plazas.set("hub", { x: plaza.x, y: plaza.y });
     } else nested(draft, "create_map", { id: hubId, name: spec.hub.name, themeScene: spec.hub.scene, seed });

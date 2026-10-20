@@ -27,7 +27,7 @@ export const FS_NAMES = {
 export const FALLEN_STAR_ACT1: ChapterSpec = {
   title: "떨어진 별",
   era: "제1막",
-  hub: { name: "왕도 아스텔", scene: "beodeul_town:river", form: "plaza" },
+  hub: { name: "왕도 아스텔", scene: "beodeul_town:river", form: "plaza", forestType: "broadleaf" },
   sites: [
     { key: "observatory", name: "별빛 천문대", interior: "tower" },
     {
@@ -35,7 +35,7 @@ export const FALLEN_STAR_ACT1: ChapterSpec = {
       // 남쪽 입구에서 북쪽 끝 공터(추락지)까지 이어지는 막다른 숲길. 풀숲에서는 숲짐승이 나온다.
       route: {
         exits: [{ x: 15, y: 39 }], end: { x: 15, y: 8 }, clearings: [{ x: 9, y: 2, w: 13, h: 8 }],
-        grassPatches: 3, encounterRate: 12,
+        grassPatches: 3, encounterRate: 12, forestType: "broadleaf", edgeDecor: "soft",
         encounters: [{ troopId: "troop_fs_wolves", weight: 3 }, { troopId: "troop_fs_spiders", weight: 3 }, { troopId: "troop_fs_wisps", weight: 2 }],
       },
     },
