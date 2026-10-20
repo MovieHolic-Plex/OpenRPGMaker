@@ -43,7 +43,7 @@
   ".aaaaaaaaaaaaaaaaaqqqqqqqqqqqqqaaqqqaqqqqqqqqqa.",
   ".alllllllllllllllllllllllllllllllllllllllllllla.",
   ".alllllllllllllllllllllllllllllllllllllllllllla.",
-  ".alllllllllllllllllllllllllllllllllllllllllllla.",
+  ".ammmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmma.",
   ".ahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhha.",
   ".ajgjjjgjjjgjjjgjjjgjjjgjjjgjjjgjjjgjjjgjjjgjja.",
   ".ajgjjjgjjjgjjjgjjjgjjjgjjjgjjjgjjjgjjjgjjjgjja.",
@@ -56,5 +56,5 @@
   ".aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.",
   "................................................"
  ],
- "note": ""
+ "note": "r16: counter top 3 cream rows now end in a white lit front edge (machines unchanged)"
 }

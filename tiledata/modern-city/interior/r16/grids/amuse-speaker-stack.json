@@ -12,17 +12,19 @@
   "g": "#464852ff",
   "h": "#4e505bff",
   "i": "#525662ff",
-  "j": "#ccd0d8ff"
+  "j": "#ccd0d8ff",
+  "k": "#767c88ff"
  },
  "rows": [
-  "................",
   ".bbbbbbbbbbbbbb.",
+  ".biiiiiiiiiiiib.",
   ".bhhhhhhhhhhhhb.",
+  ".bhhhhhhhhhhhhb.",
+  ".bkkkkkkkkkkkkb.",
   ".bggggggggggggb.",
   ".bggeeeeeeeeggb.",
   ".bddeeeeeeeeddb.",
   ".bffeeeeeeeeffb.",
-  ".bffffffffffffb.",
   ".bffffffffffffb.",
   ".bffffbbbbffffb.",
   ".bfffbeeeebfffb.",
@@ -34,7 +36,6 @@
   ".bffbeebbeebffb.",
   ".bfffbeeeebfffb.",
   ".bffffbbbbffffb.",
-  ".bffffffffffffb.",
   ".bffffffffffffb.",
   ".bffffbbbbffffb.",
   ".bfffbeeeebfffb.",
@@ -48,5 +49,5 @@
   "..aaaaaaaaaaaaa.",
   "................"
  ],
- "note": ""
+ "note": "r16: speaker top 3 rows (dark far edge) + grey lit edge; two plain grille rows removed"
 }

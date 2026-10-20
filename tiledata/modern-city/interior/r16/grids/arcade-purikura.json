@@ -13,8 +13,11 @@
   "h": "#faecf6ff"
  },
  "rows": [
-  "................................",
   ".aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.",
+  ".adddddddddddddddddddddddddddda.",
+  ".aeeeeeeeeeeeeeeeeeeeeeeeeeeeea.",
+  ".affffffffffffffffffffffffffffa.",
+  ".ahhhhhhhhhhhhhhhhhhhhhhhhhhhha.",
   ".afffgggfffffgggfffffgggffffffa.",
   ".affgggggfffgggggfffgggggfffffa.",
   ".affgggggfffgggggfffgggggfffffa.",
@@ -39,12 +42,9 @@
   ".aheedeedeedeedeedeeehhhhhhhhha.",
   ".aheedeedeedeedeedeeehhhhhhhhha.",
   ".aheedeedeedeedeedeeehhhhhhhhha.",
-  ".aheedeedeedeedeedeeehhhhhhhhha.",
-  ".aheedeedeedeedeedeeehhhhhhhhha.",
-  ".aheedeedeedeedeedeeehhhhhhhhha.",
   ".aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.",
   "................................",
   "................................"
  ],
- "note": ""
+ "note": "r16: booth roof 3 rows (deep pink far edge) + pale lit edge above the sign (uses the empty row); three plain curtain rows removed, footing unchanged"
 }

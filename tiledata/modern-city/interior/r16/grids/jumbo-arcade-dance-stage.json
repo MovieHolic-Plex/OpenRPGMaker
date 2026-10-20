@@ -30,10 +30,15 @@
   "y": "#f4f6f8ff",
   "z": "#ff5078ff",
   "A": "#ff5ac8ff",
-  "B": "#ff689cff"
+  "B": "#ff689cff",
+  "C": "#5a5a6eff"
  },
  "rows": [
   "...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb...",
+  "..bllllllllllllllllllllllllllllllllllllllllllllllllllllllllllb..",
+  "..bCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCb..",
+  "..bCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCb..",
+  "..bssssssssssssssssssssssssssssssssssssssssssssssssssssssssssb..",
   "..bggggggggggggggggggggggggggggggggggggggggggggggggggggggggggb..",
   "..bgddddddddddddddddddddddddddddddddddddddddddddddddddddddddgb..",
   "..bgddAdAdAdAdAdAdAdAdAdAdAdAdAdpdpdpdpdpdpdpdpdpdpdpdpdpdddgb..",
@@ -46,7 +51,6 @@
   "..bgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgb..",
   "..bggggggggggggggggggggggggggggggggggggggggggggggggggggggggggb..",
   "...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb...",
-  "....bkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkb....",
   "....bkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkb....",
   "....bffffffffffffffffffffffffffffffffffffffffffffffffffffffb....",
   "....bffbbbbbbbbbbbbbbbbbbbbbbbffffbbbbbbbbbbbbbbbbbbbbbbbffb....",
@@ -70,7 +74,6 @@
   "....bbblbbbfffffffbbbbbbbbbbbbbbbbbbbbbbbbbbbbfffffffbbblbbb....",
   "....bblllbbfffffffbhhhhhhhhhhhhhhhhhhhhhhhhhhbfffffffbblllbb....",
   "....bbblbbbfffffffbhpppppppppppppppppppppppphbfffffffbbblbbb....",
-  "....bcbbbcbfffffffbhhhhhhhhhhhhhhhhhhhhhhhhhhbfffffffbcbbbcb....",
   "....bcbbbcbfffffffbhhhhhhhhhhhhhhhhhhhhhhhhhhbfffffffbcbbbcb....",
   "....bbblbbbfffffffbhAAAAAAAAAAAAAAAAAAAAAAAAhbfffffffbbblbbb....",
   "....bblllbbfffffffbhhhhhhhhhhhhhhhhhhhhhhhhhhbfffffffbblllbb....",
@@ -110,9 +113,7 @@
   ".biiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiib.",
   ".bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.",
   "..aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.",
-  "..aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.",
-  "..aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.",
   "................................................................"
  ],
- "note": ""
+ "note": "r16: cabinet roof 3 rows (charcoal far edge) + grey lit edge above the marquee; dance pad already top-down; duplicate rows and 2 shadow rows removed"
 }

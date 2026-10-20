@@ -8,12 +8,15 @@
   "c": "#2c2c34ff",
   "d": "#383842ff",
   "e": "#e2b448ff",
-  "f": "#f4f6f8ff"
+  "f": "#f4f6f8ff",
+  "g": "#464852ff",
+  "h": "#5a5a6eff"
  },
  "rows": [
-  "................",
-  "................",
   ".aaaaaaaaaaaaaa.",
+  ".adddddddddddda.",
+  ".agggggggggggga.",
+  ".ahhhhhhhhhhhha.",
   ".adeeeeeeeeeeda.",
   ".adefeeefeeeeda.",
   ".adcdcdcdcdcdda.",
@@ -22,7 +25,6 @@
   ".adcdcdcdcdcdda.",
   ".adcdcdcdcdcdda.",
   ".adddddddddddda.",
-  ".abbbbbbbbbbbba.",
   ".abbbbbbbbbbbba.",
   ".adddddddddddda.",
   ".adcdcdcdcdcdda.",
@@ -44,5 +46,5 @@
   "................",
   "................"
  ],
- "note": ""
+ "note": "r16: amp top 3 rows (dark far edge to grey) above the gold control strip (now the front edge); one grille gap row removed"
 }

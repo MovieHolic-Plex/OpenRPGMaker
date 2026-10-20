@@ -18,6 +18,9 @@
  },
  "rows": [
   ".bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.",
+  ".beeeeeeeeeeeeeeeeeeeeeeeeeeeeb.",
+  ".bggggggggggggggggggggggggggggb.",
+  ".bhhhhhhhhhhhhhhhhhhhhhhhhhhhhb.",
   ".bddddddddddddddddddddddddddddb.",
   ".bdeeeebbbbbbbbbbbbbbbbbbeeeedb.",
   ".bdegggbkkkkkkkkkkkkkkkkbgggedb.",
@@ -26,9 +29,6 @@
   ".bdeeeebkkkkkkkkkkkkkkkkbeeeedb.",
   ".bdeeeebbbbbbbbbbbbbbbbbbeeeedb.",
   ".bdeeeeeeeeeeeeeeeeeeeeeeeeeedb.",
-  ".bddddddddddddddddddddddddddddb.",
-  ".bddddddddddddddddddddddddddddb.",
-  ".bddddddddddddddddddddddddddddb.",
   ".bddddddddddddddddddddddddddddb.",
   ".bddddddddddddddddddddddddddddb.",
   ".bddddddddddddddddddddddddddddb.",
@@ -50,5 +50,5 @@
   "................................",
   "................................"
  ],
- "note": ""
+ "note": "r16: upright piano lid top 3 rows (dark far edge to slate lit edge); key bed already reads from above; body 3 rows shorter"
 }

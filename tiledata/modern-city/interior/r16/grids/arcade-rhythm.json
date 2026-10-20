@@ -22,8 +22,10 @@
   "q": "#fad23cff"
  },
  "rows": [
-  "................................",
   "..cccccccccccccccccccccccccccc..",
+  "..ceeeeeeeeeeeeeeeeeeeeeeeeeec..",
+  "..ckkkkkkkkkkkkkkkkkkkkkkkkkkc..",
+  "..ckkkkkkkkkkkkkkkkkkkkkkkkkkc..",
   "..ceeeeeeeeeeeeeeeeeeeeeeeeeec..",
   "..ceebbbbbbbbbbbbbbbbbbbbbbeec..",
   "..ceebkkkkkkkkkkkkkkkkkkkkbeec..",
@@ -50,10 +52,8 @@
   ".caaaaaaaaaaaaaaaaaaaaaaaaaaaac.",
   ".cffffffffffffffffffffffffffffc.",
   ".cffffffffffffffffffffffffffffc.",
-  ".cffffffffffffffffffffffffffffc.",
-  ".cffffffffffffffffffffffffffffc.",
   ".cccccccccccccccccccccccccccccc.",
   "................................"
  ],
- "note": ""
+ "note": "r16: cabinet roof 3 rows (dark far edge to purple) above the frame row that now reads as the lit edge; base thinned 2 rows"
 }

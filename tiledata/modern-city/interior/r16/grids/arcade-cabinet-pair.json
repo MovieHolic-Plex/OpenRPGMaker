@@ -19,10 +19,10 @@
   "n": "#fef08aff"
  },
  "rows": [
-  "................................",
-  "................................",
   ".cccccccccccccccccccccccccccccc.",
-  ".cccccccccccccccccccccccccccccc.",
+  ".cggggggggggggggggggggggggggggc.",
+  ".cggggggggggggggggggggggggggggc.",
+  ".cjjjjjjjjjjjjjjjjjjjjjjjjjjjjc.",
   ".ccaaaaaaaaaaacccckkkkkkkkkkkcc.",
   ".ccannnnnnnnnaccccknnnnnnnnnkcc.",
   ".ccannnnnnnnnaccccknnnnnnnnnkcc.",
@@ -68,5 +68,5 @@
   ".......ccc............ccc.......",
   "................................"
  ],
- "note": ""
+ "note": "r16: cabinet roofs 2 rows slate + light lit edge above the marquees (uses the empty rows); control deck already shows its top"
 }

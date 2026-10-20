@@ -23,6 +23,9 @@
  },
  "rows": [
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "bkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkb",
+  "bmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmb",
+  "boooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooob",
   "bhbbbbbbbbbbbbhhhhbbbbbbbbbbbbhhhhbbbbbbbbbbbbhhhhbbbbbbbbbbbbhb",
   "bgbppppppppppbggggbiiiiiiiiiibggggbqqqqqqqqqqbggggbjjjjjjjjjjbgb",
   "bgbpccccccccpbggggbiccccccccibggggbqccccccccqbggggbjccccccccjbgb",
@@ -40,9 +43,6 @@
   "bfbmmmmmmmmmmbffffbmmmmmmmmmmbffffbmmmmmmmmmmbffffbmmmmmmmmmmbfb",
   "bffmkkkkkkkkmffffffmkkkkkkkkmffffffmkkkkkkkkmffffffmkkkkkkkkmffb",
   "bffmmmmmmmmmmffffffmmmmmmmmmmffffffmmmmmmmmmmffffffmmmmmmmmmmffb",
-  "bffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb",
-  "bffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb",
-  "bffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb",
   "bddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddb",
   "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
   ".aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -55,5 +55,5 @@
   "................................................................",
   "................................................................"
  ],
- "note": ""
+ "note": "r16: island cabinets get a shared top 2 rows (grey far edge) + white lit edge; three plain lower-panel rows removed; stools unchanged"
 }

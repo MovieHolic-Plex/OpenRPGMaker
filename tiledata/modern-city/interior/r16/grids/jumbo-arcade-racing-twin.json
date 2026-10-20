@@ -23,10 +23,15 @@
   "r": "#ee6c6cff",
   "s": "#f0c838ff",
   "t": "#f4f6f8ff",
-  "u": "#ff7676ff"
+  "u": "#ff7676ff",
+  "v": "#767c88ff"
  },
  "rows": [
   "...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb...",
+  "..bhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhb..",
+  "..bjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjb..",
+  "..bkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkb..",
+  "..bvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvb..",
   "..bdddddddddddddddddddbbbbbbbbbbbbbbbbbbbbdddddddddddddddddddb..",
   "..bdhhddttddhhddttddhhbppppppppppppppppppbddhhddttddhhddttdddb..",
   "..bdhhddttddhhddttddhhbppssssssssssssssppbddhhddttddhhddttdddb..",
@@ -70,7 +75,6 @@
   ".....bfffbqpppppppppppnbfffb.bjjjjb.bfffbqpppppppppppnbfffb.....",
   ".....bfffbqnnnnnnnnnnnnbfffb.bssssb.bfffbqnnnnnnnnnnnnbfffb.....",
   ".....bfffbqpppppppppppnbfffb.bssssb.bfffbqpppppppppppnbfffb.....",
-  ".....bfffbqpppppppppppnbfffb.bssssb.bfffbqpppppppppppnbfffb.....",
   ".....bfffbqpppppppppppnbfffb.bjjjjb.bfffbqpppppppppppnbfffb.....",
   ".....bfffbqpppppppppppnbfffb.bjjjjb.bfffbqpppppppppppnbfffb.....",
   ".....bfffbqpppppppppppnbfffb.bjbbjb.bfffbqpppppppppppnbfffb.....",
@@ -82,14 +86,11 @@
   ".....bfffffffffffffffffffffb.bjjjjb.bfffffffffffffffffffffb.....",
   ".....biiiiiiiiiiiiiiiiiiiiib.bjjjjb.biiiiiiiiiiiiiiiiiiiiib.....",
   ".....biiiiiiiiiiiiiiiiiiiiib.bjjjjb.biiiiiiiiiiiiiiiiiiiiib.....",
-  ".....biiiiiiiiiiiiiiiiiiiiib.bjjjjb.biiiiiiiiiiiiiiiiiiiiib.....",
-  ".....biiiiiiiiiiiiiiiiiiiiib.bjjjjb.biiiiiiiiiiiiiiiiiiiiib.....",
   ".....bfffffffffffffffffffffb.bbbbbb.bfffffffffffffffffffffb.....",
   "......bbbbbbbbbbbbbbbbbbbbb..........bbbbbbbbbbbbbbbbbbbbb......",
   "................................................................",
   "..aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.",
-  "..aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.",
   "................................................................"
  ],
- "note": ""
+ "note": "r16: twin cabinet roof 3 rows (charcoal far edge) + grey lit edge above the shared marquee; seat rows and one shadow row trimmed"
 }
