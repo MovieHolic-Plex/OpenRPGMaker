@@ -485,12 +485,12 @@ function tunePacing(project: Project): void {
   const enemies = project.database.enemies;
   const byId = (id: string) => enemies.find((e) => e.id === id);
   const reskin: Record<string, { species: string; level?: number }> = {
-    // 다 싸운 플레이어가 Lv6 일 때 수련생 Lv6~7 에게 6턴 만에, 관장 Lv8·10 에게 2턴 만에 졌다(2026-10-20 실플레이) → 수련생 5·5·6, 관장 7·8. 다시 재니 Lv8+Lv4 로 관장에게 9턴 접전 끝에 졌다 — 회복약을 쓰면 이기는 선.
+    // 다 싸운 플레이어가 Lv6 일 때 수련생 Lv6~7 에게 6턴 만에, 관장 Lv8·10 에게 2턴 만에 졌다(2026-10-20 실플레이) → 수련생 5·5·6, 관장 7·8. 다시 재니 Lv7 스타터가 수련생 Lv6 개미(벌레)·관장 7·8 에게 6턴 만에 두 번 졌다 → 수련생 5·5·5, 관장 6·7.
     mx_enemy_mx_map_grove_gym_grunt_0_0: { species: "mx_enemy_podback", level: 5 },
     mx_enemy_mx_map_grove_gym_grunt_1_0: { species: "mx_enemy_brambleboar", level: 5 },
-    mx_enemy_mx_map_grove_gym_grunt_2_0: { species: "mx_enemy_orchardant", level: 6 },
-    mx_enemy_mx_map_grove_gym_leader_0: { species: "mx_enemy_podback", level: 7 },
-    mx_enemy_mx_map_grove_gym_leader_1: { species: "mx_enemy_brambleboar", level: 8 },
+    mx_enemy_mx_map_grove_gym_grunt_2_0: { species: "mx_enemy_orchardant", level: 5 },
+    mx_enemy_mx_map_grove_gym_leader_0: { species: "mx_enemy_podback", level: 6 },
+    mx_enemy_mx_map_grove_gym_leader_1: { species: "mx_enemy_brambleboar", level: 7 },
   };
   for (const [enemyId, { species, level }] of Object.entries(reskin)) {
     const enemy = byId(enemyId), template = byId(species);
