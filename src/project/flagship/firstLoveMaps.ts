@@ -258,8 +258,12 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   lamps.push(light("fl_subway", anchors.street.subway, 3, "#cfe4ff", 0.8));
   streetPm.defaultLighting = { ambient: 0.62, color: "#0e1630", sources: lamps };
   officePm.defaultLighting = {
-    ambient: 0.5, color: "#1a1830",
-    sources: [light("fl_desk_hero", anchors.office.heroDesk, 3, "#ffe6b8"), light("fl_desk_jihu", anchors.office.jihuDesk, 3, "#ffe6b8"), light("fl_pantry", anchors.office.pantry, 3, "#fff2d0")],
+    // 야근 밤: 너무 어두우면 인물이 안 읽힌다(VQA r3) — 어둠은 한 단계 줄이고 책상·탕비실·회의 자리 불을 넓힌다.
+    ambient: 0.3, color: "#1c1a34",
+    sources: [
+      light("fl_desk_hero", anchors.office.heroDesk, 5, "#ffe6b8"), light("fl_desk_jihu", anchors.office.jihuDesk, 5, "#ffe6b8"),
+      light("fl_pantry", anchors.office.pantry, 5, "#fff2d0"), light("fl_meeting", anchors.office.meetingSeat, 5, "#ffeecc", 0.8),
+    ],
   };
   platformPm.defaultLighting = {
     ambient: 0.48, color: "#121a36",
