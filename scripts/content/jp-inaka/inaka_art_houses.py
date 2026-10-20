@@ -187,6 +187,14 @@ def _below(c, d):
     return v
 
 
+def _crop_draw(c, extra, fn):
+    """키 낮추기: 옛 좌표 그대로 extra 줄 더 높은 캔버스에 그린 뒤 아래쪽만 c 에 옮긴다(바닥 고정, 위 빈 줄 버림)."""
+    t = Cv(c.w, c.h + extra)
+    fn(t)
+    assert not t.a[:extra, :, 3].any(), 'crop 영역에 그림이 남았다'
+    c.a[:] = t.a[extra:]
+
+
 def _finish(c, shadow=None, keep_bottom=0):
     """마지막 손질: 근흑 윤곽을 재질 색 어두운 톤으로 바꾸고 발치 체커 그늘을 깐다. shadow=(x0, x1, y0, rows)."""
     tint_outlines(c, keep_bottom)
@@ -467,7 +475,7 @@ def _thatch_px(x, y, ytop, n, face, moss_bias=0.0, seed=0):
 _THATCH_WEDGE: dict = {}   # 키트별 隅面 덮어쓰기(고민가 전용): {'w': 쐐기 px, 'face': 쐐기 면 단}. 비면 옛 동작(run//2, 왼쪽 빛).
 
 
-def thatch_roof(c, x0, x1, ytop, yeave, run, ridge=True):
+def thatch_roof(c, x0, x1, ytop, yeave, run, ridge=True, small=None):
     """茅葺き 寄棟: 사다리꼴 경사 윗면에 짚 다발 결(다발 끝 빛·밑 그늘·세로 획), 묵은 짚 얼룩, 북·오른쪽 그늘 이끼.
     처마는 6px 두께 단면(짚 끝 층), 위에 箱棟(대나무 누름대·烏おどり)."""
     rl, rr = x0 + run, x1 - run
@@ -506,7 +514,7 @@ def thatch_roof(c, x0, x1, ytop, yeave, run, ridge=True):
         c.P(x, yeave + 5, J('machiya_timber', 2 if x % 5 == 0 else 1))
     c.VL(ex0 - 1, yeave, 6, OL); c.VL(ex1 + 1, yeave, 6, OL)
     if ridge:
-        _thatch_ridge(c, rl - 4, rr + 4, ytop, small=n < 20)
+        _thatch_ridge(c, rl - 4, rr + 4, ytop, small=(n < 20) if small is None else small)
 
 
 def _thatch_ridge(c, bx0, bx1, ytop, small=False):
@@ -603,22 +611,35 @@ def _tile_ridge(c, x0, x1, y, mat, base, oni=True, glint=None):
             c.P(ox, y - 6, _kt(mat, base + 3, glint)); c.P(ox + 2, y - 4, _kt(mat, base - 3))
 
 
+_KAWARA_WEDGE: dict = {}   # 寄棟 기와 隅面 덮어쓰기(기와 농가 전용): {'w','lface','rface','rh','courses'}. 비면 옛 동작.
+
+
 def _kawara_hip(c, x0, x1, ytop, yeave, run, mat='tairu', base=0, glint=None, seed=0):
     """寄棟 기와 지붕(ref_house.hip_roof 의 깊은 사본): 장마다 하이라이트·골 그늘, 왼쪽 隅 삼각면 빛, 오른쪽 그늘,
     위 1/3 은 하늘빛 한 단 밝게, 隅棟 마루, 大棟 + 鬼瓦, 막새 처마."""
     rl, rr = x0 + run, x1 - run
+    wg = _KAWARA_WEDGE.get('w', run // 2)                                 # 隅面 쐐기 폭(농가만 덮어씀)
+    lf, rf = _KAWARA_WEDGE.get('lface', 2), _KAWARA_WEDGE.get('rface', -1)
+    rh = _KAWARA_WEDGE.get('rh', 4)
+    crs_k = _KAWARA_WEDGE.get('courses', False)
     for y in range(ytop, yeave):
         f = (y - ytop) / (yeave - ytop)
         xl = round(lerp(rl, x0, f)); xr = round(lerp(rr, x1, f))
-        bl = round(lerp(rl, x0 + run // 2, f)); br = round(lerp(rr, x1 - run // 2, f))
+        bl = round(lerp(rl, x0 + wg, f)); br = round(lerp(rr, x1 - wg, f))
         for x in range(xl, xr + 1):
             if x < bl:
-                face = 2
+                face = lf
             elif x > br:
-                face = -1
+                face = rf
             else:
                 face = 1 if f < 0.34 else 0
-            c.P(x, y, _kt(mat, base + face + _tile_t(x, y, ytop, seed), glint))
+            tt = _tile_t(x, y, ytop, seed, rh=rh)
+            if crs_k:                                                     # 가로 기와 줄 강조: 줄눈 한 단 더, 세로 골 한 단 덜
+                if (y - ytop) % rh == rh - 1:
+                    tt -= 1
+                elif x % 4 == 3:
+                    tt += 1
+            c.P(x, y, _kt(mat, base + face + tt, glint))
         c.P(bl, y, _kt(mat, base + 3, glint)); c.P(bl + 1, y, _kt(mat, base - 1))
         c.P(br, y, _kt(mat, base + 2)); c.P(br + 1, y, _kt(mat, base - 2))
         c.P(xl, y, _kt(mat, base)); c.P(xr, y, _kt(mat, base - 3))
@@ -778,16 +799,20 @@ def _kominka_ridge(c, bx0, bx1, ytop):
         c.P(sx - 3, top - 6, OL); c.P(sx + 3, top - 6, OL); c.P(sx - 2, top - 6, OL); c.P(sx + 2, top - 6, OL)
 
 
-@kit('inaka-kominka-thatched', '초가 고민가(茅葺き古民家) - 이엉 寄棟 지붕·箱棟·흙벽·장지문·툇마루(6×7)', 6, 7, 'building',
-     solid=rows(6, [4, 5, 6]), tags=['inaka', '고민가', '초가집', '茅葺き', '古民家'],
+@kit('inaka-kominka-thatched', '초가 고민가(茅葺き古民家) - 이엉 寄棟 지붕·箱棟·흙벽·장지문·툇마루(6×6)', 6, 6, 'building',
+     solid=rows(6, [3, 4, 5]), tags=['inaka', '고민가', '초가집', '茅葺き', '古民家'],
      rules='시골 마을 중심 집. 앞(남)에 흙마당 2칸 이상, 뒤에 대숲·삼나무. 현관은 왼쪽 두 번째 칸.', role='building',
-     doors=[(1, 6, 1)])
+     doors=[(1, 5, 1)])
 def kominka(c, base):
+    _crop_draw(c, 16, _kominka_draw)                                     # 지붕 낮춤 뒤 비는 위 16px 를 버린다(바닥 고정)
+
+
+def _kominka_draw(c):
     # 6×7(96×112). 지붕 윗면이 화면 대부분, 아래 짧은 벽 띠(현관 18×28). 처마는 벽보다 양쪽 3px 넓다.
     X0, X1 = 8, 87                                                         # 벽
     EX0, EX1 = 4, 91                                                       # 처마(벽보다 바깥)
-    RL, RR = 26, 69                                                        # 용마루(처마 폭의 ≈ 50%)
-    YT, YE = 18, 61                                                        # 지붕 면 위·처마 선
+    RL, RR = 15, 80                                                        # 용마루: 승인 지붕(26..69 @y18)을 y40 에서 자른 폭 — 隅面 기울기 그대로
+    YT, YE = 40, 61                                                        # 지붕 면 위·처마 선(지붕 몫 ≤55%: 위 이엉 22줄을 덜어냄)
     WT, WB = 66, 96                                                        # 벽 띠
     W = X1 - X0 + 1
     plaster(c, X0, WT, W, 6, 'kinari', 1)
@@ -831,35 +856,37 @@ def kominka(c, base):
 
 
 # ═══════════════════════════ 2. 기와 농가 ═══════════════════════════
-@kit('inaka-kawara-farmhouse', '기와 농가 - 寄棟 기와 지붕·下屋·회벽·격자문·툇마루(6×7)', 6, 7, 'building',
-     solid=rows(6, [4, 5, 6]), tags=['inaka', '기와집', '농가', '瓦', '母屋'],
-     rules='마을 큰 농가 본채. 앞에 마당·경트럭, 옆에 토장 창고와 헛간.', role='building', doors=[(1, 6, 1)])
+@kit('inaka-kawara-farmhouse', '기와 농가 - 넓은 寄棟 기와 지붕·회벽·격자문·툇마루(6×5)', 6, 5, 'building',
+     solid=rows(6, [2, 3, 4]), tags=['inaka', '기와집', '농가', '瓦', '母屋'],
+     rules='마을 큰 농가 본채. 앞에 마당·경트럭, 옆에 토장 창고와 헛간.', role='building', doors=[(1, 4, 1)])
 def farmhouse(c, base):
+    _crop_draw(c, 32, _farmhouse_draw)                                   # 지붕 낮춤 뒤 비는 위 32px 를 버린다(바닥 고정)
+
+
+def _farmhouse_draw(c):
     D = 32
     c0, c = c, _below(c, D)
-    X0, X1 = 8, 87
+    X0, X1 = 7, 88
     W = X1 - X0 + 1
     glint = K('conc', 2)
-    # 2층 회벽 띠 + 기둥 + 고창
-    plaster(c, X0, 38, W, 10, 'shiro', 1)
-    for px in (X0, 28, 48, 68, X1 - 1):
-        post(c, px, 38, 10, 'machiya_timber', 2)
-    for wx in (32, 52):
-        _lattice_win(c, wx, 41, 10, 4)
-    _eave_shade(c, X0, 38, W, 4)
-    c.VL(X0 - 1, 38, 10, OL); c.VL(X1 + 1, 38, 10, OL)
-    # 1층 벽: 焼杉 下見板
-    Y1, YF = 57, 73
-    _boards_h(c, X0, Y1, W, YF - Y1, 'ita', -1, 4, 12, seed=7)
+    # 1층 벽(짧은 띠): 焼杉 下見板 + 회벽 소벽
+    Y1, YF = 45, 71
+    plaster(c, X0, Y1, W, 4, 'shiro', 1)
+    _boards_h(c, X0, Y1 + 4, W, YF - Y1 - 4, 'ita', -1, 4, 12, seed=7)
+    _hbeam(c, X0, Y1 + 4, W, 'machiya_timber', 2)
     for px in (X0, 36, 72, X1 - 1):
         post(c, px, Y1, YF - Y1, 'machiya_timber', 2)
-    _koshido(c, 12, Y1 + 1, 20, YF - Y1 - 1)                              # 현관 격자 미닫이
-    shoji(c, 40, Y1 + 1, 30, YF - Y1 - 1, panes=3)
-    _lattice_win(c, 75, Y1 + 4, 10, 7)
+    _koshido(c, 12, Y1 + 6, 20, YF - Y1 - 6)                              # 현관 격자 미닫이
+    shoji(c, 40, Y1 + 6, 30, YF - Y1 - 6, panes=3)
+    _lattice_win(c, 75, Y1 + 8, 10, 6)
     _eave_shade(c, X0, Y1, W, 4)
-    # 지붕: 寄棟 본채 + 앞 下屋
-    _kawara_hip(c0, 4, 91, 10, 34 + D, 26, 'tairu', 0, glint, seed=1)
-    _kawara_lean(c, 4, 91, 48, 53, 'tairu', 0, glint)
+    c.VL(X0 - 1, Y1, YF - Y1, OL); c.VL(X1 + 1, Y1, YF - Y1, OL)
+    # 지붕: 넓은 寄棟 본채(大棟 ≈ 폭 85%, 隅面 쐐기 13px 짙게, 촘촘한 가로 기와 줄) + 앞 낮은 下屋
+    _KAWARA_WEDGE.update(w=13, lface=-2, rface=-3, rh=3, courses=True)
+    try:
+        _kawara_hip(c0, 3, 92, 47, 41 + D, 7, 'tairu', 0, glint, seed=1)     # 지붕 몫 ≤55%: 下屋 없이 처마까지 한 경사면(26줄)
+    finally:
+        _KAWARA_WEDGE.clear()
     # 기초: 돌 기단
     stone_base(c, X0, YF, W, 4)
     engawa(c, 38, YF - 3, 34, depth=4, front=3)
@@ -1072,7 +1099,7 @@ def dagashiya(c, base):
     _shade(c, X0, 39, W, 2, 0.7, dither=True)
     # 둥근 법랑 간판(기둥에)
     disc(c, 4, 46, 3.6, OL); disc(c, 4, 46, 2.6, K('sora', 1)); c.P(3, 45, K('shiro', 2)); c.P(4, 46, K('shiro', 1)); c.P(5, 47, K('sora', -1))
-    kawara_gable(c0, 2, 77, 6, 18 + D, 'tairu', 0)
+    kawara_gable(c0, 2, 77, 14, 18 + D, 'tairu', 0)                      # 지붕 몫 ≤55%: 위 기와 8줄을 덜어냄
     stone_base(c, X0, YF, W, 4)
     _finish(c0, (X0 + 2, X1 + 4, YF + 4 + D, 3))
 
@@ -1113,7 +1140,7 @@ def station(c, base):
     for yy, col in ((35, K('shiro', 1)), (36, K('aka', 1)), (39, K('shiro', 0)), (42, K('sora', 1))):
         c.P(101, yy, col); c.P(102, yy, _dim(col, 0.8))
     # 지붕(테라코타 기와 寄棟) + 가운데 시계 박공
-    _kawara_hip(c0, 3, 108, 10, 24 + D, 24, 'kawara', 0, K('daidai', 2), seed=2)
+    _kawara_hip(c0, 3, 108, 24, 24 + D, 24, 'kawara', 0, K('daidai', 2), seed=2)   # 지붕 몫 ≤55%: 위 기와 14줄을 덜어냄
     gx0, gx1, gy = 44, 68, 24
     for y in range(12, gy):
         half = (y - 12)
@@ -1195,13 +1222,18 @@ def bus_shelter(c, base):
                 if H(xx, yy, 39) < 0.12:
                     c.P(xx, yy, _dim(_key(c, xx, yy), 0.86))
         _shade(c, 4, 34, 30, 1, 0.75)
-        rect_3d(c, 7, 27, 22, 6, 3, 'aged_cedar', top_t=4, front_t=2)
-        for xx in range(8, 28):
-            if (xx - 8) % 7 == 0:
-                c.P(xx, 28, J('aged_cedar', 2)); c.P(xx, 29, J('aged_cedar', 2))
-        for lx in (9, 25):
-            c.R(lx, 33, 2, 3, J('machiya_timber', 1)); c.P(lx, 33, J('machiya_timber', 3))
-        _shade(c, 8, 33, 21, 2, 0.75, dither=True)
+        # 벤치: 넓은 앉는 판 윗면(6px, 길이 방향 판 세 장) + 얇은 앞 띠 + 다리
+        rect_3d(c, 5, 24, 28, 10, 6, 'aged_cedar', top_t=4, front_t=2)
+        for xx in range(6, 32):
+            c.P(xx, 27, J('aged_cedar', 2))                               # 판 이음(가로)
+            if H(xx, 3, 61) < 0.12:
+                c.P(xx, 26, J('aged_cedar', 3))
+            if H(xx, 4, 61) < 0.12:
+                c.P(xx, 29, J('aged_cedar', 3))
+        c.VL(6, 25, 6, J('aged_cedar', 4))
+        for lx in (8, 28):
+            c.R(lx, 34, 2, 3, J('machiya_timber', 1)); c.P(lx, 34, J('machiya_timber', 3))
+        _shade(c, 7, 34, 25, 2, 0.75, dither=True)
         # 기둥
         post(c, 3, 13, 21, 'machiya_timber', 3, 3); post(c, 32, 13, 21, 'machiya_timber', 3, 3)
         # 片流れ 지붕(녹슨 골함석)
@@ -1218,9 +1250,14 @@ def bus_shelter(c, base):
         c.R(42, 12, 2, 30, K('tekko', 2)); c.VL(42, 12, 30, K('tekko', 3)); c.VL(41, 12, 30, OL); c.VL(44, 12, 30, OL)
         for yy in range(14, 42, 5):
             c.P(43, yy, K('tekko', 0))
-        disc(c, 42.5, 8, 5.6, OL); disc(c, 42.5, 8, 4.6, K('sora', 0)); disc(c, 42, 7.5, 3.6, K('sora', 1))
-        disc(c, 42.5, 8, 3.2, K('shiro', 2)); disc(c, 43.2, 8.7, 2.0, K('shiro', 1))
-        c.HL(40, 8, 6, K('sora', 0)); c.P(41, 6, K('aka', 1)); c.P(42, 6, K('aka', 1)); c.P(40, 5, K('sora', 2))
+        # 둥근 표지판: 살짝 눌린 타원 + 위 가장자리 두께(밝은 테 초승달, 아래로 판 옆면 한 줄)
+        disc(c, 42.5, 8, 5.8, OL, ry=5.2)
+        disc(c, 42.5, 7.6, 4.8, K('tekko', 3), ry=4.0)                     # 판 윗 가장자리(빛 받는 두께)
+        disc(c, 42.5, 8.8, 4.8, K('tekko', 1), ry=4.0)                     # 판 아래 옆면
+        disc(c, 42.5, 8.4, 4.6, K('sora', 0), ry=3.7); disc(c, 42, 8.0, 3.6, K('sora', 1), ry=2.9)
+        disc(c, 42.5, 8.4, 3.0, K('shiro', 2), ry=2.4); disc(c, 43.2, 9.0, 1.8, K('shiro', 1), ry=1.4)
+        c.HL(40, 8, 6, K('sora', 0)); c.P(41, 6, K('aka', 1)); c.P(42, 6, K('aka', 1))
+        c.HL(39, 4, 7, K('tekko', 3)); c.P(42, 4, K('conc', 3))           # 윗 테 하이라이트
         c.R(40, 18, 6, 7, K('shiro', 2)); c.VL(45, 18, 7, K('shiro', 0)); c.HL(40, 18, 6, K('sora', 1))
         c.R(41, 20, 2, 2, K('kii', 1)); c.R(41, 22, 4, 1, K('sora', 0))
         c.R(39, 17, 8, 1, OL); c.VL(39, 18, 7, OL); c.VL(46, 18, 7, OL); c.HL(39, 25, 8, OL)
@@ -1228,29 +1265,34 @@ def bus_shelter(c, base):
     front(_shift(c, D))
     # 片流れ 지붕 윗면(녹슨 골함석, y2~25 ≈ 1.5칸): 뒤(위)가 높고 앞(아래)으로 흘러내린다 — 골은 경사 따라 세로,
     # 판 이음은 가로, 위쪽은 빛, 처마 가까이 녹이 짙다
-    for y in range(2, D + 11):
-        f = (y - 2) / (D + 8)
+    Y0 = 2
+    for y in range(Y0, D + 11):
+        f = (y - Y0) / (D + 10 - Y0)
         for x in range(1, 37):
             t = (1 if f < 0.25 else 0) - (1 if x > 31 else 0) - (1 if f > 0.85 else 0)
-            col = _tin_px(x, y, 2, t, seed=40)
-            if (y - 2) % 9 == 8:
+            col = _tin_px(x, y, Y0, t, seed=40)
+            if (y - Y0) % 9 == 8:
                 col = K('tekko', t - 1)                                      # 판 겹침 그늘
-            elif (y - 2) % 9 == 0 and y > 2:
+            elif (y - Y0) % 9 == 0 and y > Y0:
                 col = K('tekko', t + 2) if x % 4 < 2 else col                # 겹친 판 끝 빛
             c.P(x, y, col)
         for xo in (0, 37):
             if c.a[y, xo, 3] == 0:
                 c.P(xo, y, OL)
-    c.HL(0, 1, 38, OL); c.HL(1, 2, 36, K('tekko', 3))
+    c.HL(0, Y0 - 1, 38, OL); c.HL(1, Y0, 36, K('tekko', 3))
     _finish(c)
     ground_shadow(c, 3, 47, 42 + D, 4, K('tairu', -2))             # 차가운 남색 그늘(무채색 근흑 대신)
 
 
 # ═══════════════════════════ 7. 물레방아간 ═══════════════════════════
-@kit('inaka-waterwheel-mill', '물레방아간(水車小屋) - 초가 오두막·筧 물길·나무 물레·돌 물받이(4×5)', 4, 5, 'building',
-     solid=rows(4, [3, 4]), tags=['inaka', '물레방아', '水車', '물레방아간'],
-     rules='개울·수로 가장자리에 둔다(오른쪽 아래 물받이가 물에 닿는다).', role='building', doors=[(1, 4, 1)])
+@kit('inaka-waterwheel-mill', '물레방아간(水車小屋) - 초가 오두막·筧 물길·나무 물레·돌 물받이(4×4)', 4, 4, 'building',
+     solid=rows(4, [2, 3]), tags=['inaka', '물레방아', '水車', '물레방아간'],
+     rules='개울·수로 가장자리에 둔다(오른쪽 아래 물받이가 물에 닿는다).', role='building', doors=[(1, 3, 1)])
 def waterwheel_mill(c, base):
+    _crop_draw(c, 16, _waterwheel_mill_draw)                             # 지붕 낮춤 뒤 비는 위 16px 를 버린다(바닥 고정)
+
+
+def _waterwheel_mill_draw(c):
     D = 16
     c0, c = c, _below(c, D)
     # 오두막 벽(세로 판) + 문
@@ -1265,7 +1307,7 @@ def waterwheel_mill(c, base):
         c.P(sx, sy, J('cream_stucco', 2)); c.P(sx + 1, sy, J('cream_stucco', 1))
     _eave_shade(c, 6, 33, 28, 4)
     c.VL(5, 31, 20, OL); c.VL(34, 31, 20, OL)
-    thatch_roof(c0, 3, 37, 13, 27 + D, 11)
+    thatch_roof(c0, 3, 37, 33, 27 + D, 11, small=False)                   # 지붕 몫 ≤55%: 위 이엉 20줄을 덜어냄(箱棟은 그대로)
     stone_base(c, 4, 51, 32, 4)
     # 돌 물받이(윗면에 물 + 앞면 돌, 젖은 아래쪽)
     c.R(36, 49, 27, 14, OL)
@@ -1279,49 +1321,63 @@ def waterwheel_mill(c, base):
             c.P(xx, yy, K('sora', t) if yy > 50 else J('shrine_flagstone', 4))
     for (wx, wy, ww) in ((38, 52, 5), (48, 51, 4), (55, 52, 4)):
         c.HL(wx, wy, ww, K('sora', 2)); c.P(wx + ww, wy, K('shiro', 2))
-    # 물레: 뒤 테(두께, 오른쪽 아래) → 앞 테(판마다 톤) → 살 → 바깥 물받이 날개 → 축
-    cx, cy, r = 47, 34, 13.5
-    disc(c, cx + 2, cy + 1, r + 1, OL)
-    disc(c, cx + 2, cy + 1, r, J('machiya_timber', 2))
-    disc(c, cx, cy, r + 1, OL)
-    for yy in range(int(cy - r - 1), int(cy + r + 2)):
-        for xx in range(int(cx - r - 1), int(cx + r + 2)):
-            d = math.hypot(xx - cx, yy - cy)
-            if d > r:
-                continue
-            ang = math.atan2(yy - cy, xx - cx)
-            seg = int((ang + math.pi) / (math.pi / 8))
-            if d > r - 3:                                                  # 테: 판(16장)마다 톤, 위 왼쪽 빛
-                lt = -math.cos(ang + math.pi / 4)
-                t = 3 + (1 if lt > 0.5 else -1 if lt < -0.4 else 0) - (1 if H(seg, 0, 43) < 0.3 else 0)
-                if d > r - 0.8:
-                    t -= 1
-                c.P(xx, yy, J('aged_cedar', t))
+    # 물레(축 동서): tunnel_underdraw 와 같은 투영 sx = x, sy = 바닥 − c·y − z 로 찍은 원통 — 위에서 본 바퀴는
+    # 날개 판이 가로 살로 감긴 세로 드럼 띠다(옆에서 본 원판이 아니다). 아래쪽은 물받이 물속에 잠긴다.
+    DX0, DX1, WR = 41, 54, 12.0
+    wyc, wzc, wbase = WR, WR - 3, 60                                       # 바퀴 중심(땅 y·높이), 물받이 앞 땅 화면 y
+    NP = 18                                                                # 날개 수
+    for sy in range(11, 50):
+        best = None
+        for k in range(0, 1440):
+            ph = 2 * math.pi * k / 1440
+            rr = WR + (1.6 if (ph * NP / (2 * math.pi)) % 1.0 < 0.24 else 0.0)   # 날개 판 끝은 테보다 바깥(톱니 윤곽)
+            yy, zz = wyc + rr * math.cos(ph), wzc + rr * math.sin(ph)
+            if abs(wbase - _TUN_C * yy - zz - (sy + 0.5)) < 0.5 and (best is None or yy < best[0]):
+                best = (yy, zz, ph)
+        if not best or best[1] < 0:
+            continue
+        yy, zz, ph = best
+        lam = _tun_lam(0, math.cos(ph), math.sin(ph))
+        fr = (ph * NP / (2 * math.pi)) % 1.0
+        for sx in range(DX0, DX1 + 1):
+            if fr < 0.24:
+                t = 4 if lam > 0.35 else 3                                 # 날개 판(가로 살) 앞 끝 빛
+            elif fr < 0.5:
+                t = 0                                                      # 날개 사이 깊은 틈(그늘)
             else:
-                g = (xx - cx) + (yy - cy)
-                c.P(xx, yy, J('machiya_timber', 2 if g < -9 else 1 if g < 4 else 0))   # 안쪽 그늘(왼쪽 위 옅게)
-    for k in range(8):
-        a = k * math.pi / 4 + 0.15
-        x2, y2 = cx + math.cos(a) * (r - 2), cy + math.sin(a) * (r - 2)
-        line(c, round(cx), round(cy), round(x2), round(y2), J('aged_cedar', 3 if math.sin(a) < 0 else 2))
-        line(c, round(cx + 1), round(cy), round(x2 + 1), round(y2), J('aged_cedar', 1))
-    for k in range(16):                                                    # 날개(바깥 판 끝)
-        a = k * math.pi / 8 + 0.2
-        px, py = round(cx + math.cos(a) * (r + 0.4)), round(cy + math.sin(a) * (r + 0.4))
-        lit = -math.cos(a + math.pi / 4) > 0
-        c.P(px, py, J('aged_cedar', 4 if lit else 1))
-        c.P(round(cx + math.cos(a) * (r - 1.5)), round(cy + math.sin(a) * (r - 1.5)), J('machiya_timber', 2))
-    disc(c, cx, cy, 2.4, OL); disc(c, cx, cy, 1.5, K('tekko', 2)); c.P(cx - 1, cy - 1, K('tekko', 3))
-    # 筧(나무 물길): 윗면에 물이 보이는 홈통
-    for k in range(18):
-        x = 62 - k; y = 4 + k // 2
-        c.P(x, y - 1, OL); c.P(x, y, J('aged_cedar', 4)); c.P(x, y + 1, K('sora', 1 if k % 4 else 2))
-        c.P(x, y + 2, K('sora', 2) if k % 3 else K('shiro', 1))
-        c.P(x, y + 3, J('aged_cedar', 3 if k % 5 else 2)); c.P(x, y + 4, J('aged_cedar', 1)); c.P(x, y + 5, OL)
-    post(c, 58, 8, 12, 'machiya_timber', 3); c.VL(57, 8, 12, OL); c.VL(60, 8, 12, OL)
+                t = 1 + round(lam * 2.4)                                   # 드럼 몸: 위(하늘 쪽) 밝고 앞 아래로 어둡다(원통 곡면)
+            if sx in (DX0, DX1) and fr >= 0.24:
+                col = J('machiya_timber', 2 if sx == DX0 else 0)           # 양 테(옆판 끝선)
+            else:
+                col = J('aged_cedar', max(0, t - (1 if sx > DX1 - 3 else 0)))
+            c.P(sx, sy, col)
+        if fr < 0.24:                                                      # 날개 끝이 테 밖으로 1px 나온다
+            c.P(DX0 - 1, sy, J('aged_cedar', 3)); c.P(DX1 + 1, sy, J('aged_cedar', 1))
+            c.P(DX0 - 2, sy, OL); c.P(DX1 + 2, sy, OL)
+        else:
+            c.P(DX0 - 1, sy, OL); c.P(DX1 + 1, sy, OL)
+    ay = round(wbase - _TUN_C * wyc - wzc)                                 # 축: 오두막 벽에서 바퀴로
+    c.R(34, ay - 1, DX0 - 34, 3, OL); c.HL(35, ay, DX0 - 35, K('tekko', 3)); c.HL(35, ay + 1, DX0 - 35, K('tekko', 1))
+    c.R(33, ay - 3, 3, 7, J('machiya_timber', 1)); c.VL(33, ay - 3, 7, J('machiya_timber', 3))
+    for (wx, wy) in ((44, 24), (47, 30), (43, 36), (50, 27)):             # 날개에 튄 물
+        c.P(wx, wy, K('sora', 2)); c.P(wx + 1, wy, K('shiro', 2))
+    # 筧(나무 물길, 남북): 북쪽에서 바퀴 꼭대기로 곧게 오는 열린 홈통 — 위에서 보면 양 벽 윗모서리(빛·그늘) 사이 물 띠,
+    # 남쪽 끝은 홈통 앞 끝면(2px)으로 끊긴다.
+    FX0, FX1 = 44, 51
+    for y in range(3, 26):
+        c.P(FX0 - 1, y, OL); c.P(FX1 + 1, y, OL)
+        c.P(FX0, y, J('aged_cedar', 4)); c.P(FX0 + 1, y, J('aged_cedar', 2))
+        for x in range(FX0 + 2, FX1 - 1):
+            c.P(x, y, K('shiro', 2) if (x + y // 3) % 4 == 0 else K('sora', 2 if x < FX1 - 3 else 1))
+        c.P(FX1 - 1, y, J('aged_cedar', 1)); c.P(FX1, y, J('aged_cedar', 3))
+    for x in range(FX0, FX1 + 1):                                          # 남쪽 끝면(앞면 2px)
+        c.P(x, 26, J('aged_cedar', 2)); c.P(x, 27, J('aged_cedar', 1))
+    c.HL(FX0 - 1, 28, FX1 - FX0 + 3, OL); c.VL(FX0 - 1, 26, 2, OL); c.VL(FX1 + 1, 26, 2, OL)
+    c.HL(FX0 - 1, 2, FX1 - FX0 + 3, OL)
     # 떨어지는 물 + 물보라
-    for y in range(13, 22):
-        c.P(44, y, K('sora', 2)); c.P(45, y, K('shiro', 2) if y % 3 else K('sora', 2)); c.P(43, y, K('sora', 1) if y % 2 else K('sora', 0))
+    for y in range(28, 32):                                                # 홈통 끝에서 바퀴 꼭대기 날개로 떨어지는 물
+        for x in range(FX0 + 2, FX1 - 1):
+            c.P(x, y, K('shiro', 2) if (x + y) % 3 == 0 else K('sora', 2 if x < FX1 - 3 else 1))
     for (sx, sy) in ((40, 48), (42, 47), (52, 48), (55, 49), (47, 48), (36, 46), (58, 47)):
         c.P(sx, sy, K('shiro', 2)); c.P(sx + 1, sy, K('shiro', 1))
     _finish(c0, (6, 63, 55 + D, 4))
@@ -1576,26 +1632,27 @@ def tin_shed(c, base):
     front(_shift(c, D))
     X0, X1 = 5, 58
     # 切妻 앞 경사면(y2~42 ≈ 2.5칸): 용마루에서 처마로 흘러내리는 골(세로) · 판 겹침(가로, 13줄마다) · 처마로 갈수록 녹
-    for y in range(2, 15 + D):
-        f = (y - 2) / (12 + D)
+    Y0 = 14                                                                # 지붕 몫 ≤55%: 용마루를 y14 로(위 판 12줄을 덜어냄)
+    for y in range(Y0, 15 + D):
+        f = (y - Y0) / (14 + D - Y0)
         for x in range(2, 62):
             up = 1 if f < 0.2 else (-1 if f > 0.85 else 0)
             sh = -1 if x > 53 else (1 if x < 6 else 0)
-            col = _tin_px(x, y, 2, up + sh, seed=54 + (1 if f > 0.6 else 0))
-            if 36 <= x < 48 and 5 <= y < 30:
+            col = _tin_px(x, y, Y0, up + sh, seed=54 + (1 if f > 0.6 else 0))
+            if 36 <= x < 48 and Y0 + 3 <= y < Y0 + 19:
                 col = K('tekko', up + sh + (2 if x % 4 == 0 else 1 if x % 4 == 1 else 0 if x % 4 == 2 else -1))   # 덧댄 새 판
-            lap = (y - 2) % 13
+            lap = (y - Y0) % 13
             if lap == 12:
                 col = K('tekko', up + sh - 2)                                # 판 겹침 그늘
-            elif lap == 0 and y > 2 and x % 4 < 2:
+            elif lap == 0 and y > Y0 and x % 4 < 2:
                 col = K('tekko', up + sh + 2)                                # 겹친 판 끝 빛
             elif f > 0.7 and x % 4 in (2, 3) and H(x, y // 3, 56) < (f - 0.7) * 1.6:
                 col = J('noren_rust', 1 if H(x, y, 57) > 0.4 else 2)         # 처마 쪽 녹물
             c.P(x, y, col)
         c.P(1, y, OL); c.P(62, y, OL)
-    c.HL(1, 0, 62, OL); c.HL(2, 1, 60, K('tekko', 3)); c.HL(2, 2, 60, K('tekko', 1))
+    c.HL(1, Y0 - 2, 62, OL); c.HL(2, Y0 - 1, 60, K('tekko', 3)); c.HL(2, Y0, 60, K('tekko', 1))
     for x in range(4, 60, 6):
-        c.P(x, 1, K('tekko', 2)); c.P(x, 2, K('tekko', -1))
+        c.P(x, Y0 - 1, K('tekko', 2)); c.P(x, Y0, K('tekko', -1))
     _finish(c)
     ground_shadow(c, X0 + 2, X1 + 4, 47 + D, 1, K('tairu', -2))
 
@@ -1639,10 +1696,31 @@ def stone_lantern(c, x, y):
     rect_3d(c, x + 1, y + 6, 9, 7, 1, 'shrine_flagstone', top_t=3, front_t=2)
     c.R(x + 3, y + 8, 5, 3, J('lantern_amber', 3)); c.HL(x + 3, y + 8, 5, J('lantern_amber', 4)); c.P(x + 7, y + 10, J('lantern_amber', 2))
     c.VL(x + 5, y + 8, 3, J('shrine_flagstone', 1))
-    rect_3d(c, x - 1, y + 2, 13, 5, 3, 'shrine_flagstone', top_t=4, front_t=1)
-    c.P(x + 1, y + 3, J('moss', 3)); c.P(x + 2, y + 3, J('moss', 2)); c.P(x + 9, y + 4, J('moss', 1))
-    c.R(x + 4, y, 3, 2, J('shrine_flagstone', 3)); c.P(x + 4, y, J('shrine_flagstone', 4)); c.P(x + 6, y + 1, J('shrine_flagstone', 2))
-    c.HL(x + 4, y - 1, 3, OL); c.P(x + 3, y, OL); c.P(x + 7, y, OL)
+    # 笠(갓): 위에서 보이는 네모뿔 지붕 윗면 — 꼭대기에서 처마로 넓어지는 사다리꼴, 왼쪽 면 빛 · 오른쪽 면 그늘,
+    # 처마 끝 두께 2px(앞면 짙게) + 보주
+    cxl = x + 5
+    for j in range(5):                                                     # 윗면 y+1..y+5
+        hw = 2 + j * 1.5
+        yy = y + 1 + j
+        xl, xr = round(cxl - hw), round(cxl + hw)
+        c.P(xl - 1, yy, OL); c.P(xr + 1, yy, OL)
+        for i in range(xl, xr + 1):
+            t = 4 if i < cxl - 0.5 else 3 if i <= cxl + 0.5 else 2
+            if i == xl:
+                t = 3
+            if H(i, yy, 70) < 0.12:
+                t -= 1
+            col = K('conc', t - 2) if t >= 3 else J('shrine_flagstone', t)  # 갓 윗면: 하늘빛 받는 밝은 돌
+            if j == 4 and i < cxl + 3 and i % 2 == 0:
+                col = K('conc', 2)                                         # 갓 앞 모서리 빛(윗면 끝)
+            c.P(i, yy, col)
+    c.HL(cxl - 2, y, 5, OL)
+    for i in range(x - 2, x + 13):                                         # 처마 두께(앞면)
+        c.P(i, y + 6, J('shrine_flagstone', 1 if i < x + 9 else 0)); c.P(i, y + 7, J('shrine_flagstone', 0))
+    c.HL(x - 2, y + 8, 15, OL); c.P(x - 3, y + 6, OL); c.P(x - 3, y + 7, OL); c.P(x + 13, y + 6, OL); c.P(x + 13, y + 7, OL)
+    c.P(x + 1, y + 5, J('moss', 3)); c.P(x + 2, y + 5, J('moss', 2)); c.P(x + 9, y + 5, J('moss', 1))
+    c.R(cxl - 1, y - 2, 3, 2, J('shrine_flagstone', 3)); c.P(cxl - 1, y - 2, J('shrine_flagstone', 4)); c.P(cxl + 1, y - 1, J('shrine_flagstone', 2))
+    c.HL(cxl - 1, y - 3, 3, OL); c.P(cxl - 2, y - 2, OL); c.P(cxl + 2, y - 2, OL); c.P(cxl - 2, y - 1, OL); c.P(cxl + 2, y - 1, OL)
     c.P(x + 1, y + 23, J('moss', 3)); c.P(x + 9, y + 24, J('moss', 1))
 
 
@@ -1671,24 +1749,24 @@ def torii_stairs(c, base):
             joint = x in cuts
             for j in range(6):
                 yy = y + j
-                if j < 3:
-                    t = (3 if j < 2 else 4) + tv                           # 디딤판(앞 끝 코가 가장 밝다)
-                    if j == 1 and 22 < x < 42 and H(x, yy, 61) < 0.3:
-                        t += 1                                             # 닳아 반들한 가운데
+                if j < 4:
+                    t = 3 if j == 0 else 4                                 # 디딤판 윗면 4px: 뒤 한 줄 · 밝은 넓은 면
+                    if j == 3 and x % 3:
+                        t = 5                                              # 앞 끝 코(모서리 빛)
+                    if 0 < j < 3 and H(x, yy, 61) < 0.18:
+                        t -= 1
+                elif j == 4:
+                    t = 1                                                  # 챌면(앞면) 2px: 짙은 그늘
                 else:
-                    t = (1 if j < 5 else 0) + (tv if j == 3 else 0)        # 챌면(그늘)
+                    t = 0
                 if joint:
-                    t = 1 if j < 3 else 0
-                if H(x, yy, 62) < 0.07:
-                    t -= 1
-                col = J('shrine_flagstone', t)
+                    t = 2 if j < 4 else 0
+                col = K('conc', 2) if t >= 5 else J('shrine_flagstone', min(4, t))
                 edge = min(x - SX0, SX1 - 1 - x)
-                if edge < 3 and H(x // 2, yy // 2, 63) < 0.55 - edge * 0.15 and j != 0:
-                    col = J('moss', 3 if j < 3 else 1)
-                elif H(x, yy, 68) < 0.035:
-                    col = K('kinari', 0) if j < 3 else J('wet_cobble', 1)    # 지의류 반점 · 젖은 금
-                elif j == 5 and H(x // 2, k, 69) < 0.3:
-                    col = J('wet_cobble', 2)
+                if edge < 2 and H(x // 2, yy // 2, 63) < 0.5 - edge * 0.2 and j < 3:
+                    col = J('moss', 3)
+                elif j == 5:
+                    col = K('yoru', 0) if H(x, k, 69) > 0.25 else J('wet_cobble', 1)   # 챌면 밑 짙은 그늘 줄
                 c.P(x, yy, col)
     for yy in range(24, 30):                                               # 맨 위 참배길(판석)
         for x in range(SX0, SX1):
@@ -1720,7 +1798,7 @@ def torii_stairs(c, base):
     c.R(8, 14, 48, 4, OL)
     for xx in range(9, 55):
         sh = -1 if xx > 50 else 0
-        c.P(xx, 15, J(VR, 4 + sh if xx % 9 else 3 + sh)); c.P(xx, 16, J(VR, 2 + sh))
+        c.P(xx, 15, J(VR, 4 + sh)); c.P(xx, 16, J(VR, 1 + sh))               # 貫: 윗면 빛 1px + 앞면 그늘
     # 額束(판, 금 테, 글자 없음)
     c.R(29, 9, 6, 6, OL); c.R(30, 10, 4, 4, J('kawara_dark_tile', 1)); c.HL(30, 10, 4, J('lantern_amber', 3))
     c.VL(30, 10, 4, J('lantern_amber', 3)); c.P(31, 11, J('lantern_amber', 2)); c.P(32, 12, J('kawara_dark_tile', 2))
@@ -1730,12 +1808,21 @@ def torii_stairs(c, base):
         sh = -1 if xx > 52 else 0
         c.P(xx, 7, J(VR, 4 + sh)); c.P(xx, 8, J(VR, 2 + sh if xx % 7 else 1 + sh))
     c.HL(6, 9, 52, J('autumn_maple', 0))
-    # 笠木(검은 윗면 + 앞면) + 반전 끝
-    c.R(2, 1, 60, 6, OL)
+    # 笠木: 위에서 보이는 윗면 4px(뒤 가장자리가 양쪽 2px 안으로 들어간 사다리꼴 — 뒤로 눕는 면, 하늘빛 받아 밝다)
+    #       + 앞 모서리 빛 + 앞면 2px(짙은 그늘) + 반전 끝
+    c.R(2, 1, 60, 7, OL); c.HL(4, 0, 56, OL)
     for xx in range(3, 61):
         sh = -1 if xx > 54 else 0
-        c.P(xx, 2, J('kawara_dark_tile', 4 + sh if xx % 5 else 3 + sh)); c.P(xx, 3, J('kawara_dark_tile', 3 + sh))
-        c.P(xx, 4, J('kawara_dark_tile', 1 + sh)); c.P(xx, 5, J('kawara_dark_tile', 0))
-    c.R(0, 0, 4, 3, OL); c.R(60, 0, 4, 3, OL)
-    c.P(1, 1, J('kawara_dark_tile', 4)); c.P(2, 1, J('kawara_dark_tile', 3)); c.P(62, 1, J('kawara_dark_tile', 2)); c.P(61, 1, J('kawara_dark_tile', 2))
+        if 4 < xx < 59:
+            c.P(xx, 1, K('conc', 0 + sh))                                  # 윗면 뒤 가장자리(사다리꼴 윗변)
+        else:
+            c.P(xx, 1, OL)
+        c.P(xx, 2, K('conc', 1 + sh)); c.P(xx, 3, K('conc', 1 + sh) if xx % 7 else K('conc', 0 + sh))
+        c.P(xx, 4, K('conc', 2 + sh))                                      # 앞 모서리 빛(윗면 끝)
+        c.P(xx, 5, J('kawara_dark_tile', 1 + sh)); c.P(xx, 6, J('kawara_dark_tile', 0))
+    c.R(0, 1, 4, 3, OL); c.R(60, 1, 4, 3, OL)
+    c.P(1, 2, K('conc', 1)); c.P(2, 2, K('conc', 0)); c.P(62, 2, K('conc', -1)); c.P(61, 2, K('conc', -1))
+    for xx in range(6, 58):                                                # 島木: 笠木 밑 한 줄 + 그늘
+        sh = -1 if xx > 52 else 0
+        c.P(xx, 8, J(VR, 3 + sh))
     _finish(c)

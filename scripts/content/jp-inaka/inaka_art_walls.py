@@ -270,33 +270,47 @@ def bamboo_culm(c, x, top, bot, w=3, depth=2, seed=0, lean=0):
             c.P(ox + 1, y, lt)                                     # 반짝임
 
 
-def _takegaki_panel(c, x0, x1, top, bot, seed):
-    """建仁寺垣 판: 3px 쪼갠 대를 빈틈없이 세운 판(줄기 사이 윤곽 없음, 앞뒤 단을 섞어 결을 낸다) +
-    위 갓대(玉縁) + 가로 누름대(押縁) 2줄 + 검은 종려 끈 매듭. 줄기마다 마디 높이가 어긋나 사다리 가로대로 읽히지 않는다."""
+def _takegaki_panel(c, x0, x1, top, bot, seed, cap=7):
+    """建仁寺垣 판(3/4 탑뷰): 위에서 내려다본 넓은 갓(玉縁·押縁 묶음) 윗면 띠 cap 줄 + 그 아래 짧은 쪼갠 대 정면 +
+    가운데 누름대(押縁) 1줄과 검은 종려 끈 매듭. 줄기마다 마디 높이가 어긋나 사다리 가로대로 읽히지 않는다."""
+    ft = top + cap                                                 # 정면(대 판) 시작
     k = 0
-    c.R(x0, top, x1 - x0, bot - top + 1, BAMB[1])                 # 판 뒤 그늘
+    c.R(x0, ft, x1 - x0, bot - ft + 1, BAMB[1])                    # 판 뒤 그늘
     for x in range(x0, x1, 3):
-        tp = top + (1 if H(x, 1, seed) > 0.55 else 0)
         h = H(x, 2, seed)
-        depth = 3 if H(x, 4, seed) < 0.14 else ((2, 1, 2, 1, 0)[k % 5] if h > 0.25 else 1)
-        bamboo_culm(c, x, tp, bot, w=min(3, x1 - x), depth=depth, seed=seed + k)
+        depth = 3 if H(x, 4, seed) < 0.10 else ((1, 0, 1, 2, 0)[k % 5] if h > 0.25 else 0)
+        bamboo_culm(c, x, ft, bot, w=min(3, x1 - x), depth=depth, seed=seed + k)
         k += 1
-    # 갓대(玉縁) 윗면: 위에서 내려다본 반쪽 대 3줄(밝은 등·몸·그늘) + 앞 처마 그늘 1줄.
+    # 갓(玉縁) = 위에서 내려다본 상자: 먼 끝선 · 밝은 윗면 4줄(길이 방향 결·마디) · 앞 모서리 빛 · 갓 앞면 · 판에 진 그늘.
     for x in range(x0, x1):
         h = H(x, top, seed + 11)
-        c.P(x, top - 2, MOSS[4] if h < 0.35 else BAMB[4])
-        c.P(x, top - 1, BAMB[3] if h > 0.15 else BAMB[4])
-        c.P(x, top, BAMB[2] if (x // 5 + top) % 3 else STRAW[2])   # 반쪽 대 이음 마디
-        c.P(x, top + 1, BAMB[0] if h > 0.3 else BAMB[1])
-    for y in (top + 6, bot - 5):                                   # 누름대(쪼갠 대): 밝은 등 + 몸 + 판에 진 그늘
-        for x in range(x0, x1):
-            h = H(x, y, seed + 12)
-            c.P(x, y, MOSS[4] if h < 0.3 else BAMB[4])
-            c.P(x, y + 1, BAMB[2] if h > 0.2 else MOSS[2])
-            if H(x, y + 2, seed + 13) < 0.7:
-                c.P(x, y + 2, BAMB[0])
-        for x in range(x0 + 2 + (y % 3), x1 - 1, 6):
-            c.P(x, y, K('sumi', 1)); c.P(x, y + 1, K('sumi', 0)); c.P(x + 1, y + 1, MOSS[0])   # 종려 끈 매듭
+        node = (x + int(H(x // 9, 1, seed) * 5)) % 9 == 0          # 대 마디(가닥마다 어긋남)
+        for j in range(cap):
+            y = top + j
+            g = H(x, y, seed + 14)
+            if j == 0:
+                col = BAMB[2] if h > 0.3 else MOSS[2]                # 먼 끝선
+            elif j <= cap - 4:                                     # 윗면(밝음)
+                col = MOSS[4] if g < 0.62 else BAMB[4]
+                if j == 2 and g > 0.8:
+                    col = STRAW[3]                                 # 길이 방향 결
+                if node:
+                    col = STRAW[2]
+            elif j == cap - 3:
+                col = STRAW[3] if g < 0.5 else MOSS[4]              # 앞 모서리 빛
+            elif j == cap - 2:
+                col = BAMB[2] if not node else BAMB[1]             # 갓 앞면
+            else:
+                col = BAMB[0]                                      # 판에 진 그늘
+            c.P(x, y, col)
+    y = ft + (bot - ft) // 2 - 1                                   # 누름대(쪼갠 대) 한 줄: 밝은 등 + 판에 진 그늘
+    for x in range(x0, x1):
+        h = H(x, y, seed + 12)
+        c.P(x, y, MOSS[4] if h < 0.3 else BAMB[4])
+        if H(x, y + 1, seed + 13) < 0.7:
+            c.P(x, y + 1, BAMB[0])
+    for x in range(x0 + 2 + (y % 3), x1 - 1, 6):
+        c.P(x, y, K('sumi', 1)); c.P(x, y + 1, K('sumi', 0)); c.P(x + 1, y + 1, MOSS[0])   # 종려 끈 매듭
 
 
 def _cedar_post(c, x, y, h, w=3):
@@ -316,43 +330,55 @@ def _cedar_post(c, x, y, h, w=3):
             c.P(x + i, y + j, col)
 
 
-def _mini_kawara_roof(c, x0, x1, y0):
-    """문 위 작은 기와 지붕(3/4): 용마루(빛·몸) + 경사 윗면 기와 4줄(장마다 빛 비늘) + 막새 줄 + 처마 그늘."""
-    w = x1 - x0
-    c.HL(x0 + 2, y0, w - 4, TILE[4]); c.HL(x0 + 2, y0 + 1, w - 4, TILE[2])
-    c.P(x0 + 1, y0, TILE[2]); c.P(x1 - 2, y0, TILE[1])
-    for j in range(4):
+def _mini_kawara_roof(c, x0, x1, y0, rows_n=8):
+    """문 위 작은 기와 지붕(3/4 탑뷰, 우진각): 짧은 용마루 + 위에서 내려다본 경사 윗면 rows_n 줄(아래로 갈수록 넓어짐) —
+    둥근 기와 골이 세로로 흐르고(등 빛·몸·골 그늘) 2줄마다 장 겹침 비늘, 아래로 갈수록 한 단 어두움 + 막새 끝 + 처마 그늘.
+    처마 끝 다음 줄(그늘) y 를 돌려준다."""
+    ins = [max(0, 4 - j // 2) for j in range(rows_n)]
+    rx0, rx1 = x0 + 5, x1 - 5                                   # 용마루(위에서 본 윗면 2줄 + 앞면 + 그늘)
+    c.HL(rx0, y0, rx1 - rx0, TILE[3]); c.HL(rx0, y0 + 1, rx1 - rx0, TILE[4])
+    c.HL(rx0, y0 + 2, rx1 - rx0, TILE[2]); c.HL(rx0, y0 + 3, rx1 - rx0, TILE[0])
+    for yy in range(y0, y0 + 4):
+        c.P(rx0 - 1, yy, TILE[2] if yy < y0 + 3 else TILE[0]); c.P(rx1, yy, TILE[1] if yy < y0 + 3 else TILE[0])
+    c.P(rx0, y0 + 2, TILE[4]); c.P(rx1 - 1, y0 + 1, TILE[3])   # 귀면 기와 끝 빛
+    y0 += 2
+    for j in range(rows_n):
         y = y0 + 2 + j
-        for x in range(x0, x1):
-            ph = (x - x0 + (j % 2) * 2) % 4
-            col = (TILE[4] if j == 0 else TILE[3]) if ph == 0 else TILE[2] if ph in (1, 2) else TILE[1]
-            if j == 3 and ph != 0:
-                col = TILE[1] if ph != 3 else TILE[0]
-            if x == x0:
-                col = TILE[3]
-            if x == x1 - 1:
-                col = TILE[1]
+        a, b = x0 + ins[j], x1 - ins[j]
+        for x in range(a, b):
+            ph = (x - x0) % 4
+            far = j < rows_n // 2
+            col = (TILE[4] if far else TILE[3]) if ph == 0 else TILE[3] if ph == 1 and far else TILE[2] if ph in (1, 2) else TILE[1]
+            if j % 2 == 1 and ph in (2, 3):
+                col = TILE[1] if ph == 2 else TILE[0]               # 장 겹침 비늘 그늘
+            if x == a:
+                col = TILE[4] if j < rows_n - 1 else TILE[3]         # 왼 내림마루(빛)
+            elif x == b - 1:
+                col = TILE[1]                                      # 오른 내림마루(그늘)
             c.P(x, y, col)
+    ye = y0 + 2 + rows_n
     for x in range(x0 - 1, x1 + 1):                               # 막새 끝(장마다 밝은 동그라미)
-        c.P(x, y0 + 6, TILE[4] if (x - x0) % 4 == 0 else TILE[2])
-    c.HL(x0 - 1, y0 + 7, w + 2, TILE[0])
+        ph = (x - x0) % 4
+        c.P(x, ye, TILE[4] if ph == 0 else TILE[2] if ph == 1 else TILE[1])
+    c.HL(x0 - 1, ye + 1, x1 - x0 + 2, TILE[0])
+    return ye + 1
 
 
-@kit('inaka-bamboo-fence-gate', '대나무 울타리와 문(建仁寺垣) - 쪼갠 대 판·갓대·누름대·종려 끈·작은 기와 문(4×2)', 4, 2, 'structure',
+@kit('inaka-bamboo-fence-gate', '대나무 울타리와 문(建仁寺垣) - 위에서 본 넓은 갓 윗면·짧은 쪼갠 대 판·누름대·종려 끈·작은 기와 문(4×2)', 4, 2, 'structure',
      solid=[(0, 1), (1, 1), (3, 1)], tags=['inaka', '대나무울타리', '竹垣', '문'],
      rules='농가 마당 경계. 세 번째 칸이 드나드는 문.', role='fence')
 def bamboo_fence(c, base):
     t = Cv(c.w, c.h)
-    _takegaki_panel(t, 0, 33, 12, 28, 3)
-    _takegaki_panel(t, 57, 64, 12, 28, 8)
+    _takegaki_panel(t, 0, 33, 13, 28, 3, cap=7)
+    _takegaki_panel(t, 57, 64, 13, 28, 8, cap=7)
     for x in (33, 54):                                           # 문 기둥(삼나무 결)
-        _cedar_post(t, x, 7, 23)
-    _mini_kawara_roof(t, 31, 59, 0)
-    for x in range(36, 54):                                      # 꿰뚫은 가로대(貫)
+        _cedar_post(t, x, 12, 18)
+    for x in range(36, 54):                                      # 꿰뚫은 가로대(貫): 윗면 2줄 + 앞면 + 그늘
         h = H(x, 10, 62)
-        t.P(x, 9, CEDAR[4] if h < 0.4 else CEDAR[3]); t.P(x, 10, CEDAR[2]); t.P(x, 11, CEDAR[0])
+        t.P(x, 15, CEDAR[4] if h < 0.4 else CEDAR[3]); t.P(x, 16, CEDAR[3]); t.P(x, 17, CEDAR[1]); t.P(x, 18, CEDAR[0])
+    ye = _mini_kawara_roof(t, 30, 60, 0, rows_n=7)
     for x in (33, 54):
-        t.P(x + 1, 8, CEDAR[0]); t.P(x + 1, 12, CEDAR[0])       # 처마·가로대 밑 그늘
+        t.P(x + 1, ye + 1, CEDAR[0]); t.P(x + 1, 19, CEDAR[0])  # 처마·가로대 밑 그늘
     add_outline(t)                                               # 실루엣만 윤곽(대 판 안쪽은 윤곽 없음)
     tint_outlines(t)
     _blit(c, t)
@@ -362,72 +388,85 @@ def bamboo_fence(c, base):
 
 
 # ═══════════════════════════ 이끼 돌담 ═══════════════════════════
-def _moss_blanket(c, seed):
-    """윗면을 덮은 이끼 이불: 4px 값 잡음 높이장의 왼쪽 위 빛으로 덩이를 깎는다(빛 4 → 몸 3·2 → 그늘 1 → 끝 0).
-    아랫단은 굽이치며 돌 정면으로 흘러내린다. x=0·64 칸 값은 seed 무관 → 어느 토막과 이어도 끊기지 않는다."""
-    def cell(i, j, s):
+# R6 시점(3/4 탑뷰): 위에서 내려다본 이끼 덮인 담 윗면이 8줄 띠(먼 쪽 밝음 → 앞 끝 짙은 턱)로 깊이를 갖고,
+# 그 아래 정면은 돌 2줄(7·8px)로 짧다. 윗면 띠 > 정면 높이의 절반이라 「앞에서 본 입면」으로 읽히지 않는다.
+_TOP0, _LIP = 3, 11            # 윗면 띠: 3..10(8줄), 앞 턱 11
+_FACE = 13                     # 정면 돌 줄 시작(12 = 턱 밑 그늘)
+
+
+def _field(seed):
+    """4px 값 잡음 높이장. x=0·64 칸 값은 seed 무관 → 어느 토막과 이어도 끊기지 않는다."""
+    def cell(i, j):
         fixed = i <= 0 or i >= 16
-        return H(0 if fixed else i, j, (1234 if fixed else seed) + s)
+        return H(0 if fixed else i, j, 1234 + seed if fixed else seed)
 
     def hgt(x, y):
         x = max(0, min(64, x))
         i, fx = divmod(x, 4)
         j, fy = divmod(y, 4)
-        a0 = cell(i, j, 0) + (cell(i + 1, j, 0) - cell(i, j, 0)) * fx / 4
-        a1 = cell(i, j + 1, 0) + (cell(i + 1, j + 1, 0) - cell(i, j + 1, 0)) * fx / 4
+        a0 = cell(i, j) + (cell(i + 1, j) - cell(i, j)) * fx / 4
+        a1 = cell(i, j + 1) + (cell(i + 1, j + 1) - cell(i, j + 1)) * fx / 4
         return a0 + (a1 - a0) * fy / 4
+    return hgt
 
-    def v(k):
-        return cell(k * 2, 9, 5)
+
+def _moss_top(c, seed):
+    """담 윗면(위에서 본 면): 이끼 덩이(왼쪽 위 빛으로 깎음) 사이로 갓돌 윗면이 드문드문 비친다.
+    먼 쪽(위)이 밝고 앞으로 올수록 한 단 어두워지며, 앞 끝은 짙은 이끼 턱 + 정면에 진 그늘 줄."""
+    moss = _field(seed)
+    rock = _field(seed + 400)
     for x in range(64):
-        k, f = divmod(x, 8)
-        vv = v(k) + (v(k + 1) - v(k)) * (f / 8)
-        yb = 7 + round(vv * 6)                                     # 이끼 아랫단 7..13
-        top = 5
-        for y in range(top, yb + 1):
-            ny = (y - top) / max(1, yb - top)
-            lit = (hgt(x - 1, y - 1) - hgt(x + 1, y + 1)) * 4.5
-            lv = 2.6 + lit - ny * 1.4 + (H(x, y, seed + 21) - 0.5) * 0.5
+        for y in range(_TOP0, _LIP):
+            ny = (y - _TOP0) / (_LIP - 1 - _TOP0)
+            r = rock(x, y)
+            if r < 0.30 and 0 < y - _TOP0 < 7:                      # 갓돌 윗면(이끼 사이로 비침)
+                if rock(x - 1, y - 1) >= 0.30:
+                    col = FLAG[4]
+                elif rock(x + 1, y + 1) >= 0.30:
+                    col = FLAG[1]
+                else:
+                    col = FLAG[3] if H(x, y, seed + 31) > 0.2 else GRAV[3]
+                c.P(x, y, col)
+                continue
+            lit = (moss(x - 1, y - 1) - moss(x + 1, y + 1)) * 4.0
+            lv = 3.5 + lit - ny * 1.5 + (H(x, y, seed + 21) - 0.5) * 0.6
             col = MOSS[max(1, min(4, round(lv)))]
-            if y == yb:
-                col = MOSS[1] if H(x, y, seed + 22) < 0.6 else MOSS[0]
-            if y == top and H(x, 3, seed + 23) < 0.22:
-                col = BAMB[4]                                      # 새 잎 끝
-            elif lv > 4.2 and H(x, y, seed + 24) < 0.3:
-                col = STRAW[4]                                     # 볕 받은 마른 이끼 끝
+            if y == _TOP0:
+                col = MOSS[2] if H(x, y, seed + 23) < 0.5 else MOSS[1]   # 먼 끝 선
+            elif lv > 4.3 and H(x, y, seed + 24) < 0.35:
+                col = STRAW[4]                                          # 볕 받은 마른 이끼 끝
+            elif y == _TOP0 + 1 and H(x, 3, seed + 23) < 0.25:
+                col = BAMB[4]                                           # 새 잎 끝
             c.P(x, y, col)
-        if 2 < x < 61 and H(x, 8, seed) < 0.3:                     # 흘러내림(가장자리 밖)
-            n = 1 + int(H(x, 9, seed) * 4)
+        h = H(x, _LIP, seed + 22)
+        c.P(x, _LIP, MOSS[1] if h < 0.7 else MOSS[0])                  # 앞 턱(짙은 이끼 가장자리)
+        c.P(x, _LIP + 1, MOSS[0] if h < 0.45 else WETC[1])            # 턱 밑 정면 그늘
+        if 2 < x < 61 and H(x, 8, seed) < 0.22:                        # 정면으로 흘러내린 이끼(짧게)
+            n = 1 + int(H(x, 9, seed) * 3)
             for k2 in range(n):
-                c.P(x, yb + 1 + k2, MOSS[2] if k2 < n - 1 else MOSS[1])
+                c.P(x, _FACE + k2, MOSS[2] if k2 < n - 1 else MOSS[1])
 
 
 def _mossy_wall(c, seed):
     """이끼 돌담 4×2 한 토막. 양옆 끝에 윤곽이 없고, 가장자리에 걸친 돌·이끼 덩이는 seed 와 무관해서
-    이 토막과 -mid 를 어떤 순서로 이어도 이음매가 생기지 않는다. 돌 줄 높이 6·7·6px 고정."""
-    _course(c, 5, 6, 10, seed + 50, tone=1)                     # 윗면 덮개돌(위에서 본 밝은 면)
-    y = 11
-    for k, ch in enumerate((6, 7, 6)):
+    이 토막과 -mid 를 어떤 순서로 이어도 이음매가 생기지 않는다. 윗면 띠 8줄 + 정면 돌 줄 7·8px."""
+    y = _FACE
+    for k, ch in enumerate((7, 8)):
         _course(c, y, ch, k, seed + 31 * k)
         y += ch
-    for x in range(64):                                          # 돌 턱 이끼 점·줄눈 이끼
-        for yy in range(11, 30):
-            col = c_get(c, x, yy)
-            if col == MORTAR and H(x, yy, seed + 3) < 0.12:
+    for x in range(64):                                          # 줄눈 이끼
+        for yy in range(_FACE, y):
+            if c_get(c, x, yy) == MORTAR and H(x, yy, seed + 3) < 0.14:
                 c.P(x, yy, MOSS[1])
-    _moss_blanket(c, seed)
-    for x in range(64):                                          # 먼 윗선(어두운 이끼 / 돌)
-        below = c_get(c, x, 5)
-        c.P(x, 4, MOSS[0] if below in MOSS or below in BAMB else FLAG[0])
-    for k in range(3):                                           # 윗길 풀포기(토막 안쪽에만)
+    _moss_top(c, seed)
+    for k in range(3):                                           # 윗면 먼 끝 풀포기(토막 안쪽에만)
         x = 8 + k * 17 + int(H(k, 2, seed) * 8)
-        c.P(x, 4, BAMB[2]); c.P(x + 1, 4, BAMB[3]); c.P(x + 2, 4, BAMB[2]); c.P(x + 3, 4, MOSS[2])
-        c.P(x, 3, BAMB[3]); c.P(x + 1, 2, BAMB[4]); c.P(x + 1, 3, BAMB[3]); c.P(x + 2, 3, MOSS[4]); c.P(x + 3, 2, MOSS[4])
-        c.P(x - 1, 2, BAMB[3]); c.P(x + 1, 1, MOSS[4])
+        c.P(x, 2, BAMB[2]); c.P(x + 1, 2, BAMB[3]); c.P(x + 2, 2, BAMB[2]); c.P(x + 3, 2, MOSS[2])
+        c.P(x + 1, 1, BAMB[4]); c.P(x + 2, 1, MOSS[4]); c.P(x + 3, 0, MOSS[4]); c.P(x - 1, 1, BAMB[3]); c.P(x + 1, 0, MOSS[4])
     for x in range(64):                                          # 담 발치: 젖은 돌·이끼 접지선 + 디더 그늘
-        c.P(x, 30, MOSS[0] if H(x, 30, 7) < 0.3 else FLAG[0])
-        if (x + 31) % 2 == 0:
-            c.P(x, 31, K('yoru', -2))
+        c.P(x, y, MOSS[0] if H(x, 30, 7) < 0.3 else FLAG[0])
+        if (x + y + 1) % 2 == 0:
+            c.P(x, y + 1, K('yoru', -2))
 
 
 @kit('inaka-mossy-stone-wall', '이끼 낀 돌담 - 이끼 덮인 윗길·돌 쌓기 정면(4×2)', 4, 2, 'wall',
