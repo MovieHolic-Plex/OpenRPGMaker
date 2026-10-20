@@ -1,130 +1,255 @@
 {
- "about": "2026-10-20 보정 정상 거짓 차단 검토(프로필 ee216f0de5822996, 답 캐시로 재계산). 결과를 본 뒤의 분류다 — fresh 는 이 검토 뒤 더 이상 숨김 표본이 아니다. 라벨을 정상↔위반으로 뒤집은 것은 없다. U=사용자 수락(엄격 계약과 어긋나는 버들항 원본), C=다툼(판정자 사실·독립 눈·감독 육안 셋이 모두 라벨과 어긋날 때만). 육안은 4~6배 확대로 감독(Opus 5.5)이 봤다.",
+ "about": "2026-10-20 2차: fresh3 버들항 원본(3/4 라벨 있는 것 중 front_prop 제외 25장)을 판정 결과와 무관하게 하나의 화소 규칙으로 분류. 그림을 무작위 id(p01~p25)로 바꿔 판정 결과·이름 없이 별도 측정자(Sonnet 5.5 high 서브에이전트, /tmp 사본만 열람)가 종류별 엄격 계약 수치(manifest 의 contract)로 윗면·앞면 행을 세게 했다. NO_TOP → U(사용자 수락·엄격 계약 미달), SHOWS_TOP → A. 판정 통과 여부로 고르지 않았다(통과한 원본 2장도 규칙대로 U). 1차(결과를 보고 고른 U 13·C 2)는 선택 편향이라 폐기했다.",
  "items": [
   {
-   "label": "fresh3/b3_prop-crate_apple",
-   "decision": "U (감독 결정)",
-   "why": "버들항 원본 1칸 상자, 앞면 7행 < 상자 계약 8행. 독립 눈 right 3/3 — 그림은 3/4 로 읽히나 숫자 계약과 어긋남."
+   "label": "fresh3/b3_house-h101_1",
+   "blindId": "p18",
+   "kind": "structure",
+   "top_rows": 44,
+   "front_rows": null,
+   "pixelRule": "SHOWS_TOP",
+   "tier": "A",
+   "why": "Hipped roof planes cover rows 0-43 plus porch roof, far above 3."
   },
   {
-   "label": "fresh3/b3_prop-crate_cabbage",
-   "decision": "U (감독 결정)",
-   "why": "버들항 원본 1칸 상자, 앞면 7행 < 8."
+   "label": "fresh3/b3_house-h103_1",
+   "blindId": "p23",
+   "kind": "structure",
+   "top_rows": 62,
+   "front_rows": null,
+   "pixelRule": "SHOWS_TOP",
+   "tier": "A",
+   "why": "Gabled roof slopes span rows 0-61, well over 3 rows."
   },
   {
-   "label": "fresh3/b3_prop-fish_crates",
-   "decision": "U (감독 결정)",
-   "why": "버들항 원본 1칸 상자 둘, 앞면 7행 < 8. 눈 right 3/3."
+   "label": "fresh3/b3_house-h109_0",
+   "blindId": "p08",
+   "kind": "structure",
+   "top_rows": 62,
+   "front_rows": null,
+   "pixelRule": "SHOWS_TOP",
+   "tier": "A",
+   "why": "Gabled roof slopes span rows 0-61, well over 3 rows."
   },
   {
-   "label": "fresh3/b3_prop-crate_fish",
-   "decision": "U (감독 결정)",
-   "why": "버들항 원본 1칸 상자, 앞면 7행 < 8. 눈 right 3/3."
+   "label": "fresh3/b3_house-h113_1",
+   "blindId": "p09",
+   "kind": "structure",
+   "top_rows": 62,
+   "front_rows": null,
+   "pixelRule": "SHOWS_TOP",
+   "tier": "A",
+   "why": "Gabled roof slopes span rows 0-61, well over 3 rows."
+  },
+  {
+   "label": "fresh3/b3_house-h120_0",
+   "blindId": "p03",
+   "kind": "structure",
+   "top_rows": 44,
+   "front_rows": null,
+   "pixelRule": "SHOWS_TOP",
+   "tier": "A",
+   "why": "Tiled roof plane covers rows 0-43, far above 3 rows."
+  },
+  {
+   "label": "fresh3/b3_house-h132_0",
+   "blindId": "p25",
+   "kind": "structure",
+   "top_rows": 44,
+   "front_rows": null,
+   "pixelRule": "SHOWS_TOP",
+   "tier": "A",
+   "why": "Hipped roof planes cover rows 0-43 plus porch roof, far above 3."
   },
   {
    "label": "fresh3/b3_prop-anchor_display",
-   "decision": "U (감독 결정)",
-   "why": "버들항 원본 정면형 진열대 — 닻은 정면 입면, 받침 윗면 2~3행."
+   "blindId": "p16",
+   "kind": "frame",
+   "top_rows": 3,
+   "front_rows": null,
+   "pixelRule": "SHOWS_TOP",
+   "tier": "A",
+   "why": "Log base top rows 22-24 (3 rows) before darker front rows 25-27, meets frame>=3."
   },
   {
    "label": "fresh3/b3_prop-bread_rack",
-   "decision": "U (감독 결정)",
-   "why": "버들항 원본 빵 선반 — 선반 판 1~2행, 정면 입면. 눈 wrong 3/3."
-  },
-  {
-   "label": "fresh3/b3_prop-sword_barrel",
-   "decision": "U (감독 결정)",
-   "why": "버들항 원본 칼 꽂이 통 — 아가리 1~2행."
-  },
-  {
-   "label": "fresh3/b3_prop-tree_planter",
-   "decision": "U (감독 결정)",
-   "why": "버들항 원본 나무 화분 — 화분 흙 띠 2~3행, 위 26행은 나무."
+   "blindId": "p01",
+   "kind": "tall_furniture",
+   "top_rows": 2,
+   "front_rows": null,
+   "pixelRule": "NO_TOP",
+   "tier": "U",
+   "why": "Shelf planks are 2 rows each and face-on, below the 4-row threshold."
   },
   {
    "label": "fresh3/b3_prop-column_monument",
-   "decision": "U (감독 결정)",
-   "why": "버들항 원본 기념 기둥 — 머리 판 2~3행."
+   "blindId": "p07",
+   "kind": "column",
+   "top_rows": 2,
+   "front_rows": null,
+   "pixelRule": "NO_TOP",
+   "tier": "U",
+   "why": "Capital plate is a rectangular front elevation with about 2 rows of top, below 4."
   },
   {
-   "label": "fresh3/b3_prop-statue_sage",
-   "decision": "U (감독 결정)",
-   "why": "버들항 원본 현자 석상 — 받침 윗면 1~2행, 인물은 정면."
+   "label": "fresh3/b3_prop-crate_apple",
+   "blindId": "p17",
+   "kind": "box",
+   "top_rows": 4,
+   "front_rows": 7,
+   "pixelRule": "NO_TOP",
+   "tier": "U",
+   "why": "Top rows about 1-4 but front rows 6-12 are only 7, below 8."
+  },
+  {
+   "label": "fresh3/b3_prop-crate_cabbage",
+   "blindId": "p12",
+   "kind": "box",
+   "top_rows": 3,
+   "front_rows": 7,
+   "pixelRule": "NO_TOP",
+   "tier": "U",
+   "why": "Top rows 5-7 (3) and front rows 8-14 (7), both under box thresholds 4 and 8."
+  },
+  {
+   "label": "fresh3/b3_prop-crate_fish",
+   "blindId": "p22",
+   "kind": "box",
+   "top_rows": 4,
+   "front_rows": 7,
+   "pixelRule": "NO_TOP",
+   "tier": "U",
+   "why": "Top rows 1-4 (4) but front rows 6-12 are 7, below 8."
+  },
+  {
+   "label": "fresh3/b3_prop-door_pots",
+   "blindId": "p10",
+   "kind": "container",
+   "top_rows": 3,
+   "front_rows": null,
+   "pixelRule": "NO_TOP",
+   "tier": "U",
+   "why": "Pot openings are about 2-3 rows, below 4."
   },
   {
    "label": "fresh3/b3_prop-fish_barrel",
-   "decision": "U (확장)",
-   "why": "버들항 원본, 아가리 2~3행 < round_body 4행. 사실·눈·육안 모두 3행 이하."
+   "blindId": "p06",
+   "kind": "round_body",
+   "top_rows": 3,
+   "front_rows": null,
+   "pixelRule": "NO_TOP",
+   "tier": "U",
+   "why": "Barrel cap rows 4-6 only 3 rows and silhouette does not narrow into an ellipse."
   },
   {
-   "label": "fresh3/b3_prop-mooring_bollard",
-   "decision": "U (확장)",
-   "why": "버들항 원본, 머리 판 3행·튀어나옴 4 < 6. 눈 right 0/3."
+   "label": "fresh3/b3_prop-fish_crates",
+   "blindId": "p14",
+   "kind": "box",
+   "top_rows": 3,
+   "front_rows": 7,
+   "pixelRule": "NO_TOP",
+   "tier": "U",
+   "why": "Light top band rows 2-4 (3) and front rows 5-11 (7), below 4 and 8."
   },
   {
    "label": "fresh3/b3_prop-flowerbox_long",
-   "decision": "U (확장)",
-   "why": "버들항 원본, 꽃에 가린 흙 띠 1~2행 < 4. 눈 right 0/3."
+   "blindId": "p20",
+   "kind": "container",
+   "top_rows": 2,
+   "front_rows": null,
+   "pixelRule": "NO_TOP",
+   "tier": "U",
+   "why": "Only rim and soil rows 5-6 (2 rows) before the front face, below 4."
+  },
+  {
+   "label": "fresh3/b3_prop-mooring_bollard",
+   "blindId": "p13",
+   "kind": "column",
+   "top_rows": 4,
+   "front_rows": null,
+   "pixelRule": "SHOWS_TOP",
+   "tier": "A",
+   "why": "Cap widths 6,10,10,6 over rows 0-3 form a 4-row ellipse overhanging the shaft."
+  },
+  {
+   "label": "fresh3/b3_prop-parasol_table",
+   "blindId": "p05",
+   "kind": "low_furniture",
+   "top_rows": 3,
+   "front_rows": null,
+   "pixelRule": "SHOWS_TOP",
+   "tier": "A",
+   "why": "Lighter table-top band rows 18-20 (3 rows) above darker front rows 21-24."
+  },
+  {
+   "label": "fresh3/b3_prop-planter_round",
+   "blindId": "p04",
+   "kind": "container",
+   "top_rows": 3,
+   "front_rows": null,
+   "pixelRule": "NO_TOP",
+   "tier": "U",
+   "why": "Opening is only about 3 rows, below 4."
   },
   {
    "label": "fresh3/b3_prop-stall_jug_bottle",
-   "decision": "A 유지 — 판정자 약점",
-   "why": "차양(c) 윗면 9행을 사실 판정 4/4 가 인정했는데 눈(wrong 2/3)이 계산대 윗면만 보고 거부권. 버들항 기준 노점과 같은 구조 — 눈 거부권의 약점."
+   "blindId": "p15",
+   "kind": "low_furniture",
+   "top_rows": 9,
+   "front_rows": null,
+   "pixelRule": "SHOWS_TOP",
+   "tier": "A",
+   "why": "Striped awning plane spans rows 1-10 (about 9 rows), above 3."
   },
   {
-   "label": "fresh/g53_modern_city",
-   "decision": "C (라벨 오류)",
-   "why": "벤치 좌판 윗면 1~2행 정면 입면. 사실 4/4·눈 right 0/3·6배 육안 일치."
+   "label": "fresh3/b3_prop-stall_veg",
+   "blindId": "p21",
+   "kind": "low_furniture",
+   "top_rows": 13,
+   "front_rows": null,
+   "pixelRule": "SHOWS_TOP",
+   "tier": "A",
+   "why": "Striped awning plane spans rows 0-12 (about 13 rows), above 3."
   },
   {
-   "label": "fresh2/g12_modern_city",
-   "decision": "C (라벨 오류)",
-   "why": "평지붕 가판대 정면 띠. 사실 4/4·눈 wrong 3/3·5배 육안 일치."
+   "label": "fresh3/b3_prop-statue_sage",
+   "blindId": "p11",
+   "kind": "figure",
+   "top_rows": 4,
+   "front_rows": null,
+   "pixelRule": "SHOWS_TOP",
+   "tier": "A",
+   "why": "Plinth top rows 42-45 (4 rows) above front panel rows 46-55, meets base>=3."
   },
   {
-   "label": "fresh/g6_snow",
-   "decision": "A 유지 — 규칙 약점",
-   "why": "눈 쌓인 상자 윗면 4~5행(눈 borderline 3/3, 육안 3/4). 판정자가 몸통 부분을 0행부터 12행으로 적어 「맨 위 큰 부분 윗면 없음」(v7 crown) 규칙이 오발."
+   "label": "fresh3/b3_prop-sword_barrel",
+   "blindId": "p24",
+   "kind": "round_body",
+   "top_rows": 3,
+   "front_rows": null,
+   "pixelRule": "NO_TOP",
+   "tier": "U",
+   "why": "Rim row 7 and rows 8-9 form about 3 rows with no elliptical narrowing, below 4."
   },
   {
-   "label": "fresh/g20_campus",
-   "decision": "A 유지 — 규칙 약점",
-   "why": "분수대 타원 수반(눈 right 3/3). 낮고 넓은 수반은 윗면/앞면 22/5 라 평면도 규칙(maxTopToFront 3)이 오발."
+   "label": "fresh3/b3_prop-tree_planter",
+   "blindId": "p02",
+   "kind": "container",
+   "top_rows": 4,
+   "front_rows": null,
+   "pixelRule": "SHOWS_TOP",
+   "tier": "A",
+   "why": "Planter opening spans rows 31-34 (back rim, soil, front lip), 4 rows."
   },
   {
-   "label": "fresh/g44_desert",
-   "decision": "A 유지 — 규칙 약점",
-   "why": "1칸 상자 셋, 윗면 3~4행·앞면 7행(눈 right 3/3). 상자 앞면 8행 계약이 1칸 상자에 너무 높다 — 버들항 원본 상자 4장과 같은 원인."
-  },
-  {
-   "label": "fresh/g62_modern_city",
-   "decision": "A 유지 — 판정자 분산",
-   "why": "계산대 윗면 6행(눈 right 3/3). 사실 판정 2:2 로 갈림(crown 오발 1)."
-  },
-  {
-   "label": "fresh/g18_modern_city",
-   "decision": "A 유지 — 계약 경계",
-   "why": "작은 상자 더미 윗면 3행 < 4(사실 4/4), 눈 right 3/3(4~5행으로 읽음). 3행/4행 경계."
-  },
-  {
-   "label": "fresh2/g7_steampunk",
-   "decision": "A 유지 — 판정자 약점",
-   "why": "석탄 쟁반 윗면 12~14행(눈 right 3/3, 육안 동의)을 사실 판정자가 4/4 「창문」으로 읽음."
-  },
-  {
-   "label": "holdout/mir_bookshelf_1w__w41-A",
-   "decision": "A 유지",
-   "why": "윗판 3~4행(6배 육안 3/4). 눈 right 0/3 이지만 육안이 라벨과 같아 C 로 빼지 않음."
-  },
-  {
-   "label": "interior/bookshelf_1w__w41-A",
-   "decision": "A 유지",
-   "why": "같은 책장(위와 같음)."
-  },
-  {
-   "label": "interior/roundtable__v5",
-   "decision": "A 유지",
-   "why": "원탁 상판 원반 큼(6배 육안 3/4). 눈 right 0/3 이지만 육안이 라벨과 같아 유지."
+   "label": "fresh3/b3_prop-veg_cart",
+   "blindId": "p19",
+   "kind": "low_furniture",
+   "top_rows": 3,
+   "front_rows": null,
+   "pixelRule": "SHOWS_TOP",
+   "tier": "A",
+   "why": "Lighter wood/contents band rows 8-10 (3 rows) above front rows 11-19."
   }
  ]
 }
