@@ -741,7 +741,8 @@ function resultPartyCard(project: Project, context: BattleResultContext | undefi
   const levelUp = snapshot.rewards.levelUps?.find((entry) => entry.actorId === actor.recordId);
   const fromLevel = snapshot.eventState.actorLevels?.[actor.recordId] ?? actor.level ?? 1;
   const toLevel = levelUp?.toLevel ?? fromLevel;
-  const before = snapshot.eventState.actorExperience?.[actor.recordId] ?? totalExpForLevel(normalized.expCurve, fromLevel);
+  // 세션 경험치가 현재 레벨 바닥보다 낮으면(시작 레벨 > 1·중간 합류) 보상 적립과 같은 바닥에서 센다.
+  const before = Math.max(snapshot.eventState.actorExperience?.[actor.recordId] ?? 0, totalExpForLevel(normalized.expCurve, fromLevel));
   const gained = rewarded ? expForRewardActor(snapshot.rewards.exp, fromLevel, snapshot.rewards.enemyLevel, project.system.rewardPolicy) : 0;
   const after = before + gained;
   const base = totalExpForLevel(normalized.expCurve, toLevel);

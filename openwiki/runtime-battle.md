@@ -2137,6 +2137,14 @@ Owned64×64 trainer fronts and waist-up player back are rendered at exact2× (12
 
 Native trainer assets must also survive `webExportAssets.collectProjectStrings`: implicit owned trainer pictures accept64×64 and explicitly authored legacy64×96, matching the renderer. The former96-only collector silently pruned all17native pictures while leaving a functioning monster-battle fallback. `emerald-native-dependencies.mjs` guards the actual collector against this regression, and `emerald-native-battle.mjs` verifies the actual compiled export with a genuine previous Continue slot, native trainer handoff, victory reward and level-up. Private party/teleport preparation is recorded; it does not claim a natural whole-campaign playthrough.
 
+### 경험치 바닥 — 시작 레벨 > 1·중간 합류 (2026-10-21)
+
+- 새 게임의 `session.actorExperience` 는 시작 파티를 0 으로 채우고, 중간에 합류한 동료는 값이 없다. 그런데 레벨 업은
+  배우 곡선의 누적 문턱(`totalExpForLevel(actor.expCurve, level+1)`)과 비교하므로, `initialLevel` 이 6 인 파티는 보스를 잡아도
+  0+보상이 Lv7 문턱에 못 미쳐 레벨이 오르지 않았고 결과 창은 「다음 Lv까지」를 엉뚱하게 셌다(폴른 스타 가혹 검수).
+- 이제 `battleRewardsToSession` 은 적립 전에 현재 레벨의 바닥(`totalExpForLevel(normalizeActorRecord(record).expCurve, level)`)까지 올린 뒤
+  보상을 더하고, 결과 파티 카드(`battleDirectorDom.resultPartyCard`)도 같은 바닥에서 센다. 레벨 1 로 시작하는 게임은 바닥이 0 이라 그대로다.
+
 ### 도망 불가 안내와 경험치 분배 expSplitAlive (2026-10-16)
 
 - `canEscape:false`(트레이너 전 `place_trainer` 기본·이벤트가 막은 전투)에서 「도망간다」 줄은 회색(`aria-disabled`)이지만 이유를 말하지 않았다.
