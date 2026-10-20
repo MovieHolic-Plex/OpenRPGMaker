@@ -16843,4 +16843,17 @@
 "이 단계의 작업 화면을 엽니다":"Opens the work screen for this step",
 "이 서버에서는 AI 가 꺼져 있어요. 서버 관리자에게 AI 를 켜 달라고 요청하세요.":"AI is turned off on this server. Ask the server administrator to turn it on.",
 "AI 에게 묻고 지시하는 대화창":"A chat where you ask the AI and give instructions",
-"AI 팀원에게 일을 맡기고 진행을 보는 곳":"Hand work to AI teammates and follow their progress"}
+"AI 팀원에게 일을 맡기고 진행을 보는 곳":"Hand work to AI teammates and follow their progress",
+"공방은 AI가 새 그림 후보를 여러 장 그려 주면, 마음에 드는 한 장을 직접 골라 게임에 넣는 곳이에요.":"The workshop is where the AI draws several new picture candidates, and you pick the one you like to put into your game.",
+"가구·소품 그림 후보를 AI가 여러 장 그려요.":"The AI draws several furniture and prop candidates.",
+"후보를 비교해서 쓸 한 장을 골라요.":"Compare the candidates and pick the one to use.",
+"고른 그림이 이 게임에서 바로 쓸 수 있게 들어가요.":"The chosen picture is added so you can use it in this game right away.",
+"성능이 높은 AI 모델일수록 결과가 좋아요. 낮은 모델은 그림의 각도와 크기를 자주 틀려요.":"Higher-performance AI models give better results. Weaker models often get the picture's angle and size wrong.",
+"실내 가구·소품 그리기":"Draw indoor furniture and props",
+"맵 소품 그리기":"Draw map props",
+"방 안 가구와 소품을 새로 그리거나 다시 그려요. AI가 후보 5장을 그리고, 모양을 스스로 점검한 뒤 다른 AI가 한 번 더 검사해요. 그 가운데서 마음에 드는 한 장을 고르세요.":"Draw or redraw furniture and props for a room. The AI draws 5 candidates, checks the shapes itself, and another AI checks them once more. Pick the one you like.",
+"지금 맵에 없는 물건을 지금 맵의 그림 느낌에 맞춰 그려요. AI가 후보 3장을 그리고 다른 AI가 검사해요. 마음에 드는 한 장을 고르세요.":"Draw things missing from the current map, matching the current map's art style. The AI draws 3 candidates and another AI checks them. Pick the one you like.",
+"이 서버에서는 AI가 꺼져 있어요. 서버 관리자에게 AI를 켜 달라고 요청하세요.":"AI is turned off on this server. Ask the server administrator to turn it on.",
+"AI를 연결하면 후보를 만들 수 있어요. 연결 전에도 어떤 공방이 있는지 둘러볼 수 있어요.":"Connect AI to make candidates. You can look around the available workshops before connecting.",
+"후보 만들기 시작":"Start making candidates",
+"그리는 중 {0} · 고를 차례 {1}":"Drawing {0} · Ready to pick {1}"}
