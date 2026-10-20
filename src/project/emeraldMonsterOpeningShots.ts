@@ -83,10 +83,10 @@ function dawnShot(cast: EmeraldOpeningCast): OpeningAnimatic {
     walking('swimmer', cast.starters[2]?.chip ?? cast.wild, 'left', [{ atMs: 0, x: 600, y: 800 }, { atMs: 4500, x: 440, y: 800 }]),
     { id: 'dawn-tint', kind: 'shape', shape: 'rect', role: 'effect', space: 'screen', color: '#ff9a5c', blend: 'multiply', x: 0, y: 0, width: STAGE.width, height: STAGE.height,
       keys: { opacity: [{ atMs: 0, value: 0.52 }, { atMs: 3600, value: 0, ease: 'ease-in-out' }] } },
-    walking('flyer-a', cast.flyer, 'right', [{ atMs: 0, x: 36, y: 34 }, { atMs: 4500, x: 520, y: 18 }], { space: 'screen' }),
-    walking('flyer-b', swallow, 'right', [{ atMs: 0, x: 112, y: 82 }, { atMs: 4500, x: 480, y: 58 }], { space: 'screen' }),
-    // 새떼는 같은 쪽으로 뒤따라 난다 — 마주 날면 한가운데서 세 마리가 한 덩이로 겹쳐 보였다(2026-10-20 아스트라 검수).
-    walking('flyer-c', flock, 'right', [{ atMs: 0, x: -60, y: 60 }, { atMs: 4500, x: 380, y: 44 }], { space: 'screen' }),
+    // 세 마리는 같은 빠르기(4.5초에 484px)로 비스듬히 줄지어 난다 — 빠르기가 다르면 뒤의 새가 앞의 새를 따라잡아 겹쳤다(2026-10-20 겹침 검사: 2.95초에 551px²).
+    walking('flyer-a', cast.flyer, 'right', [{ atMs: 0, x: 40, y: 20 }, { atMs: 4500, x: 524, y: 4 }], { space: 'screen' }),
+    walking('flyer-b', swallow, 'right', [{ atMs: 0, x: -36, y: 74 }, { atMs: 4500, x: 448, y: 58 }], { space: 'screen' }),
+    walking('flyer-c', flock, 'right', [{ atMs: 0, x: -112, y: 128 }, { atMs: 4500, x: 372, y: 112 }], { space: 'screen' }),
   ], { x: 416, keys: { y: [{ atMs: 0, value: 860 }, { atMs: 4300, value: 250, ease: 'ease-in-out' }] } });
 }
 
@@ -164,9 +164,9 @@ function townShot(cast: EmeraldOpeningCast): OpeningAnimatic {
     backdrop('town'),
     ...(partner ? [walking('partner', partner, 'down', [{ atMs: 0, x: from.x, y: from.y - TILE * 2 }, { atMs: 4300, x: to.x, y: to.y - TILE }])] : []),
     walking('hero', cast.hero, 'down', [{ atMs: 0, x: from.x, y: from.y }, { atMs: 4300, x: to.x, y: to.y }]),
-    walking('flyer', cast.flyer, 'left', [{ atMs: 0, x: 440, y: 28 }, { atMs: 4500, x: 40, y: 52 }], { space: 'screen' }),
-    // 새떼는 큰 새를 뒤따라 하늘 높이 — 마주 날면 화면 가운데(주인공·동료 머리 위)에서 겹쳤다(2026-10-20 아스트라 검수).
-    walking('flyer-flock', flock, 'left', [{ atMs: 200, x: 540, y: 16 }, { atMs: 4500, x: 150, y: 10 }], { space: 'screen', startMs: 200 }),
+    // 새 두 마리는 화면 맨 위 줄로 같은 빠르기로 줄지어 난다 — 내려오며 날면 2.7초쯤 동료·주인공 머리와 겹쳤다(2026-10-20 겹침 검사).
+    walking('flyer', cast.flyer, 'left', [{ atMs: 0, x: 440, y: -18 }, { atMs: 4500, x: 40, y: -14 }], { space: 'screen' }),
+    walking('flyer-flock', flock, 'left', [{ atMs: 0, x: 560, y: -18 }, { atMs: 4500, x: 160, y: -14 }], { space: 'screen' }),
   ], { x: 352, keys: { y: [{ atMs: 0, value: 200 }, { atMs: 4300, value: 400, ease: 'ease-in-out' }] } });
 }
 
