@@ -15,12 +15,16 @@ def lerp(a, b, t):
 # 하늘: 위 남색 → 아래 보랏빛 도시 불빛. 8단 계단식 그라디언트(도트 느낌).
 TOP, MID, BOT = (10, 14, 38), (28, 28, 66), (74, 52, 98)
 BANDS = 14
+def sky_at(b):
+    b = max(0, min(BANDS - 1, b)) / (BANDS - 1)
+    return lerp(TOP, MID, b * 2) if b < 0.5 else lerp(MID, BOT, (b - 0.5) * 2)
 for y in range(H):
-    t = y / (H - 1)
-    band = min(BANDS - 1, int(t * BANDS)) / (BANDS - 1)
-    c = lerp(TOP, MID, band * 2) if band < 0.5 else lerp(MID, BOT, (band - 0.5) * 2)
+    t = y / (H - 1) * BANDS
+    b0 = int(t); frac = t - b0
     for x in range(W):
-        px[y][x] = c
+        # 밴드 경계 근처 체커 디더(도트 그라디언트)
+        dith = ((x + y) % 2 == 0 and frac > 0.62) or ((x % 2 == 0 and y % 2 == 0) and frac > 0.82)
+        px[y][x] = sky_at(b0 + 1) if dith else sky_at(b0)
 
 # 별
 for _ in range(95):
@@ -50,9 +54,20 @@ def layer(base_col, win_col, win_density, hmin, hmax, wmin, wmax, ground, edge_b
         mid = abs((x + bw / 2) - W / 2) / (W / 2)
         bh = rnd.randrange(hmin, hmax) + int(mid * edge_boost)
         top = ground - bh
+        dark = tuple(max(0, c - 7) for c in base_col)
+        lite = tuple(min(255, c + 16) for c in base_col)
         for yy in range(max(top, 0), H):
             for xx in range(max(x, 0), min(x + bw, W)):
-                px[yy][xx] = base_col
+                c = base_col
+                if (yy - top) % 12 == 11 and (xx + yy) % 2 == 0:
+                    c = dark                      # 층 줄눈(점선)
+                elif (xx - x) % 7 == 6 and (yy + xx) % 3 == 0:
+                    c = dark                      # 세로 패널 이음
+                if xx == x or xx == x + 1:
+                    c = lite                      # 달빛 받는 왼쪽 모서리
+                if yy == top or (yy == top + 1 and (xx + x) % 2 == 0):
+                    c = lite                      # 옥상 윤곽선
+                px[yy][xx] = c
         # 옥상 설비: 안테나·물탱크 실루엣
         r = rnd.random()
         if r < 0.35 and 0 <= x + bw // 2 < W:
