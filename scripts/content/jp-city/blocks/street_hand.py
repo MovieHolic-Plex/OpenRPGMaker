@@ -95,51 +95,145 @@ def box_top(c, x, y, w, rows, ramp, t=3, ends=(False, False)):
 
 
 # ─────────────────────────── 전봇대·전선 (조사 02: 지상 약 10m, 위→아래 고압·저압·변압기·통신선, 노랑 검정 표지판) ───────────────────────────
+# 2026-10-20 다시 그림(시골 R5·버들항 기준): 기둥 머리 크림 「갓」·밑동 크림 덩이·순흑 굵은 전선을 걷어냈다.
+#   기둥 = 가는 원기둥(콘크리트 회색 / 나무 짙은 삼나무 결) — 윗면은 원래 거의 안 보이므로 머리 윗면은 2px 타원뿐.
+#   3/4 는 완목(철 각재: 밝은 윗면 1px + 앞면 1px)·애자(사기 윗면)·변압기 뚜껑 타원·클로저 윗면으로 읽힌다.
+#   전선 = 1px 짙은 회색(계약 kawara_dark_tile 0~2단, 순흑 아님) — 고압 2가닥·저압 2가닥·통신선(1px+그늘 1px), 가닥 사이 1px 이상 띄움.
 ARM1, ARM2, CABLE = 9, 21, 37          # 전봇대 키트 맨 위에서 고압 완목·저압 완목·통신선 높이(px). 전선 키트가 이 높이에 맞춘다.
+HV_Y = (ARM1 - 4, ARM1 - 2)            # 고압 두 가닥: 애자 윗머리 위 · 애자 목(옆으로 묶임)
+LV_Y = (ARM2 - 4, ARM2 - 2)            # 저압 두 가닥
+HV_INS = (1, 8, 38, 45)                # 고압 완목 위 애자 x(2px 폭) — 양 끝 애자는 키트 경계에 닿아 전선 키트 끝과 만난다
+LV_INS = (3, 10, 36, 43)
+CABLE_X = 27                           # 세로 통신선(남북 전선 키트)이 내려가는 x — 기둥 오른쪽 클램프
+
+_CONTRACT = json.load(open(os.path.join(ROOT, 'tiledata', 'jp-city', 'palette-contract.json'), encoding='utf-8'))
+_RAMP = {m['id']: [int(h[1:], 16) for h in m['steps']] for f in _CONTRACT['families'] for m in f['materials']}
+
+
+def J(mat, s):
+    """계약 재료 mat 의 단 s(0 깊은 그늘 … 4 하이라이트)."""
+    r = _RAMP[mat]
+    return r[max(0, min(4, s))]
+
+
+W_HV, W_LV = J('kawara_dark_tile', 2), J('kawara_dark_tile', 1)          # 고압(피복 회색, 조금 밝다) · 저압
+W_CB, W_CB_S = J('kawara_dark_tile', 0), J('kawara_dark_tile', 1)        # 통신선(짙다) + 그늘 1px
+STEEL_OL = J('kawara_dark_tile', 0)
+
+
+def _seg(c, x0, y0, x1, y1, col):
+    n = max(abs(x1 - x0), abs(y1 - y0), 1)
+    for i in range(n + 1):
+        c.P(int(round(x0 + (x1 - x0) * i / n)), int(round(y0 + (y1 - y0) * i / n)), col)
 
 
 def pole_body(c, x, top, bot, mat='conc'):
-    """콘크리트 기둥: 위 4px → 아래 6px(굵어진다), 왼쪽 빛, 발판 볼트, 밑동 노랑·검정 표지 12px."""
+    """가는 원기둥: 위 3px → 아래 4px, 왼쪽 빛·오른쪽 그늘, 재질 톤 윤곽. 머리 윗면은 2px 낮은 타원(콘크리트) 또는 작은 함석 모자(나무).
+    콘크리트는 발판 볼트·노랑 검정 표지·밑동 깃, 나무는 세로 결·옹이·흙 얼룩. 바닥 그림자는 오른쪽 아래로 짧게."""
+    wood = mat != 'conc'
+    ol = K('ita', -3) if wood else STEEL_OL
+    lit, mid, dk = (K('ita', 0), K('ita', -1), K('ita', -2)) if wood else (K('conc', 1), K('conc', 0), K('conc', -2))
+    split = top + (bot - top) * 2 // 3 if wood else top + (bot - top) // 2
     for y in range(top, bot):
-        t = (y - top) / max(1, bot - top)
-        w = 4 + (2 if t > 0.55 else 1 if t > 0.25 else 0)
-        x0 = x - w // 2
-        c.HL(x0, y, w, K(mat, 0)); c.P(x0, y, K(mat, 2)); c.P(x0 + 1, y, K(mat, 1)); c.P(x0 + w - 1, y, K(mat, -2))
-        c.P(x0 - 1, y, OL); c.P(x0 + w, y, OL)
-    for y in range(top + 30, bot - 26, 9): c.HL(x + 3, y, 2, K('tekko', -1)); c.HL(x - 5, y + 4, 2, K('tekko', -1))   # 발판 볼트
-    for y in range(bot - 14, bot - 2):                                                                             # 호랑이 무늬 표지
-        for i in range(-3, 3):
-            c.P(x + i, y, K('kii', 1) if ((y + i) // 2) % 2 else K('sumi', 1))
-    c.R(x - 6, bot - 4, 12, 4, K('conc', -2)); c.HL(x - 6, bot - 1, 12, K('conc', -3)); c.VL(x - 7, bot - 6, 6, OL); c.VL(x + 6, bot - 6, 6, OL)   # 밑동 콘크리트 기초
-    disc_top(c, x, bot - 6, 6, 3, 'conc', 3); c.HL(x - 6, bot, 12, OL)
-    disc_top(c, x, top - 2, 7, 4, 'kinari', 3)                                                                              # 기둥 머리 윗면(낮고 넓은 타원 — 위에서 내려다본 원)
+        w = 4 if y >= split else 3
+        x0 = x - 1 - (w - 3)
+        cols = [lit, mid, dk] if w == 3 else [lit, mid, mid, dk]
+        for i, col in enumerate(cols): c.P(x0 + i, y, col)
+        c.P(x0 - 1, y, ol); c.P(x0 + w, y, ol)
+    if wood:
+        for k, y in enumerate(range(top + 4, bot - 4, 11)):                          # 세로 결(짙은 줄 · 빛 쪽 밝은 결)
+            xx = x - (1 if y >= split else 0) + (k % 2)
+            c.VL(xx, y, 4 + k % 3, K('ita', -2))
+        for y in range(top + 9, bot - 6, 17): c.VL(x - 1 - (1 if y >= split else 0), y, 3, K('ita', 1))
+        for y in (top + 47, top + 101): c.P(x, y, K('ita', -3)); c.P(x + 1, y, K('ita', -2))   # 옹이
+        c.HL(x - 2, bot - 3, 4, K('ita', -3)); c.HL(x - 2, bot - 2, 4, K('ita', -2)); c.HL(x - 2, bot - 1, 4, K('ita', -3))   # 밑동 흙 얼룩
+        c.HL(x - 3, top - 4, 7, ol)                                                   # 함석 모자(5px, 윗면 1 + 테 1)
+        c.P(x - 3, top - 3, ol); c.HL(x - 2, top - 3, 5, K('tekko', 1)); c.P(x - 2, top - 3, K('tekko', 2)); c.P(x + 3, top - 3, ol)
+        c.P(x - 3, top - 2, ol); c.HL(x - 2, top - 2, 5, K('tekko', -1)); c.P(x + 3, top - 2, ol)
+        c.HL(x - 2, top - 1, 5, ol)
+    else:
+        for y in range(top + 24, bot - 20, 32): c.P(x, y, K('conc', -1)); c.P(x + 1, y, K('conc', -1))   # 거푸집 이음
+        for y in range(top + 13, bot - 30, 19): c.P(x, y, K('conc', -1))                                  # 잔 얼룩
+        for k, y in enumerate(range(top + 34, bot - 22, 10)):                                             # 발판 볼트(좌우 번갈아)
+            xx = (x - 3 - (y >= split)) if k % 2 == 0 else x + 3
+            c.P(xx, y, K('tekko', 1)); c.P(xx, y + 1, STEEL_OL)
+        for y in range(bot - 15, bot - 6):                                                                 # 노랑 검정 표지
+            for i in range(-2, 2):
+                c.P(x + i, y, J('lantern_amber', 3) if ((y + i) // 2) % 2 else J('kawara_dark_tile', 0))
+        c.HL(x - 3, bot - 4, 7, ol)                                                                         # 밑동 깃(한 줄 윗면 + 앞면)
+        c.P(x - 3, bot - 3, ol); c.HL(x - 2, bot - 3, 5, K('conc', 0)); c.P(x - 2, bot - 3, K('conc', 1)); c.P(x + 3, bot - 3, ol)
+        c.P(x - 3, bot - 2, ol); c.HL(x - 2, bot - 2, 5, K('conc', -2)); c.P(x + 3, bot - 2, ol)
+        c.P(x - 3, bot - 1, ol); c.HL(x - 2, bot - 1, 5, K('conc', -3)); c.P(x + 3, bot - 1, ol)
+        c.HL(x - 1, top - 3, 3, ol)                                                                         # 머리 윗면(3×2 타원)
+        c.P(x - 2, top - 2, ol); c.P(x - 1, top - 2, K('conc', 3)); c.P(x, top - 2, K('conc', 3)); c.P(x + 1, top - 2, K('conc', 2)); c.P(x + 2, top - 2, ol)
+        c.P(x - 2, top - 1, ol); c.P(x - 1, top - 1, K('conc', 2)); c.P(x, top - 1, K('conc', 1)); c.P(x + 1, top - 1, K('conc', 0)); c.P(x + 2, top - 1, ol)
+    c.HL(x + 2, bot, 5, K('yoru', -1)); c.HL(x + 3, bot + 1, 3, K('yoru', -1))                             # 바닥 그림자(오른쪽 아래)
 
 
-def crossarm(c, x0, x1, y, mat='tekko'):
-    """완목: 윗면 3줄(밝은 결) + 앞면 2줄 + 애자(흰 2×3) 4개. 애자는 윗면 뒤쪽에 선다(전선 높이는 y-4~y-2 그대로)."""
-    slab(c, x0, y, x1 - x0, 5, 'kinari', 2, taper=0.5, ribs=(x1 - x0) // 5, lip=False, rc=5)
-    c.R(x0, y + 4, x1 - x0, 3, K(mat, -3)); c.HL(x0, y + 4, x1 - x0, K(mat, -1)); c.HL(x0, y + 7, x1 - x0, OL)
-    c.VL(x0 - 1, y + 4, 3, OL); c.VL(x1, y + 4, 3, OL)
-    for ix in (x0 + 2, x0 + (x1 - x0) // 3, x0 + 2 * (x1 - x0) // 3, x1 - 4):
-        c.R(ix, y - 4, 2, 3, K('shiro', 2)); c.P(ix + 1, y - 3, K('shiro', 0))
+def crossarm(c, x0, x1, y, ins, cx=24, braces=True):
+    """완목(철 각재): 밝은 윗면 1px(결 반짝) + 앞면 1px, 재질 윤곽. ins 의 x 마다 사기 애자(2px, 윗면 밝게 + 목 + 핀).
+    애자 윗머리 바로 위(y-4)에 첫 가닥이 얹히고, 둘째 가닥(y-2)은 애자 목에 옆으로 묶인다. 기둥과 만나는 곳에 띠쇠, 아래로 가는 버팀쇠."""
+    c.HL(x0, y - 1, x1 - x0, STEEL_OL)
+    c.HL(x0, y, x1 - x0, K('tekko', 1))
+    for i in range(x0 + 2, x1 - 1, 9): c.P(i, y, K('tekko', 2))
+    c.HL(x0, y + 1, x1 - x0, K('tekko', -1))
+    for i in range(x0 + 5, x1 - 1, 9): c.P(i, y + 1, K('tekko', -2))
+    c.HL(x0, y + 2, x1 - x0, STEEL_OL)
+    c.VL(x0 - 1, y - 1, 4, STEEL_OL) if x0 > 0 else None
+    c.VL(x1, y - 1, 4, STEEL_OL) if x1 < 48 else None
+    c.HL(cx - 2, y + 3, 5, K('tekko', -2))                                                 # 띠쇠
+    if braces:
+        _seg(c, cx - 11, y + 3, cx - 3, y + 8, K("tekko", -2)); _seg(c, cx + 11, y + 3, cx + 3, y + 8, K('tekko', -2))
+    for ix in ins:
+        c.P(ix, y - 3, K('shiro', 2)); c.P(ix + 1, y - 3, K('shiro', 1))                  # 애자 윗면
+        c.P(ix, y - 2, K('shiro', 0)); c.P(ix + 1, y - 2, K('shiro', -1))                 # 몸(오른쪽 그늘)
+        c.P(ix, y - 1, K('tekko', 0)); c.P(ix + 1, y - 1, STEEL_OL)                       # 핀
+
+
+def _wires_through(c, W=48):
+    """전봇대 키트 안을 지나는 전선(완목 위·기둥 뒤). 전선 키트 끝과 같은 높이로 키트 경계에서 이어진다."""
+    for yo in HV_Y: c.HL(0, yo, W, W_HV)
+    for yo in LV_Y: c.HL(0, yo, W, W_LV)
+    c.HL(0, CABLE, W, W_CB); c.HL(0, CABLE + 1, W, W_CB_S)
 
 
 def transformer(c, x, y):
-    """변압기 원통 9×15(회색, 위 뚜껑, 왼쪽 빛) + 걸쇠."""
-    c.R(x, y, 9, 15, K('tekko', 1)); c.VL(x, y, 15, K('tekko', 3)); c.VL(x + 1, y, 15, K('tekko', 2)); c.VL(x + 8, y, 15, K('tekko', -1))
-    c.HL(x, y, 9, K('tekko', 3)); c.HL(x - 1, y - 1, 11, K('tekko', 0)); c.HL(x, y + 15, 9, K('tekko', -2))
-    for j in (y + 4, y + 10): c.HL(x, j, 9, K('tekko', 0))
-    c.VL(x - 1, y, 16, OL); c.VL(x + 9, y, 16, OL); c.HL(x - 1, y + 16, 11, OL)
+    """주상 변압기 원통(폭 6): 뚜껑 타원 윗면 2줄 + 테 + 몸통(왼쪽 빛) + 둥근 밑. 기둥 쪽 걸쇠 2줄."""
+    ol = STEEL_OL
+    c.HL(x + 1, y, 4, ol)
+    c.P(x, y + 1, ol); c.HL(x + 1, y + 1, 4, K('conc', 3)); c.P(x + 4, y + 1, K('conc', 2)); c.P(x + 5, y + 1, ol)
+    c.P(x - 1, y + 2, ol); c.HL(x, y + 2, 6, K('conc', 2)); c.P(x, y + 2, K('conc', 3)); c.P(x + 5, y + 2, K('conc', 1)); c.P(x + 6, y + 2, ol)
+    c.P(x - 1, y + 3, ol); c.HL(x, y + 3, 6, K('conc', -2)); c.P(x + 6, y + 3, ol)                       # 뚜껑 테(앞)
+    for j in range(y + 4, y + 11):
+        c.P(x - 1, j, ol); c.P(x + 6, j, ol)
+        for i, t in enumerate((1, 1, 0, 0, -1, -2)): c.P(x + i, j, K('conc', t))
+    c.HL(x, y + 7, 6, K('conc', -1)); c.P(x, y + 7, K('conc', 0))                                         # 몸통 띠
+    c.P(x - 1, y + 11, ol); c.HL(x, y + 11, 6, K('conc', -2)); c.P(x + 6, y + 11, ol)
+    c.HL(x, y + 12, 6, ol)
+    c.HL(x - 3, y + 5, 2, K('tekko', -2)); c.HL(x - 3, y + 9, 2, K('tekko', -2))                          # 걸쇠
+    c.P(x + 1, y - 1, K('shiro', 2)); c.P(x + 1, y, K('shiro', 0)); c.P(x + 4, y - 1, K('shiro', 2)); c.P(x + 4, y, K('shiro', 0))   # 부싱(사기)
+
+
+def closure(c, x, y, w=6):
+    """통신선 접속함(クロージャ): 통신선에 매달린 작은 원통 — 윗면 1줄 밝게."""
+    c.HL(x, y - 1, w, STEEL_OL)
+    c.P(x - 1, y, STEEL_OL); c.HL(x, y, w, K('tekko', 1)); c.P(x, y, K('tekko', 2)); c.P(x + w, y, STEEL_OL)
+    c.P(x - 1, y + 1, STEEL_OL); c.HL(x, y + 1, w, K('tekko', -1)); c.P(x + w, y + 1, STEEL_OL)
+    c.P(x - 1, y + 2, STEEL_OL); c.HL(x, y + 2, w, K('tekko', -2)); c.P(x + w, y + 2, STEEL_OL)
+    c.HL(x, y + 3, w, STEEL_OL)
 
 
 @prop('pole', '전봇대(콘크리트·변압기)', 3, 10, solid=[(1, 9)], tags=['전봇대', '전선', '가로 시설'],
       rules='생활도로 길가(보도 없는 길은 길 칸 안쪽 가장자리)에 25~35칸마다 하나. 완목이 키트 폭 전체(3칸)라 전선 키트가 양옆 칸 경계에서 이어진다.')
 def _pole(c):
-    pole_body(c, 24, 8, 160)
-    crossarm(c, 0, 48, ARM1); crossarm(c, 4, 44, ARM2)
-    transformer(c, 30, ARM2 + 5); c.HL(27, ARM2 + 8, 3, K('tekko', -1))
-    c.R(18, CABLE - 2, 5, 6, K('tekko', -1)); c.HL(18, CABLE - 2, 5, K('tekko', 1))                                # 통신선 단자함
-    c.R(25, 50, 6, 10, K('shiro', 1)); c.HL(25, 50, 6, K('shiro', 2)); c.HL(26, 53, 4, K('sora', 0)); c.HL(26, 56, 3, K('sumi', 2))  # 번호판
+    _wires_through(c)
+    pole_body(c, 24, 6, 157)
+    crossarm(c, 1, 47, ARM1, HV_INS); crossarm(c, 3, 45, ARM2, LV_INS)
+    c.R(27, CABLE - 1, 2, 4, K('tekko', -1)); c.P(27, CABLE - 1, K('tekko', 1)); c.HL(27, CABLE + 3, 2, STEEL_OL)   # 통신선 클램프
+    transformer(c, 31, ARM2 + 4)
+    closure(c, 36, CABLE - 1)
+    c.HL(22, 50, 5, K('tekko', -2)); c.VL(22, 51, 6, K('tekko', -2)); c.VL(26, 51, 6, K('tekko', -2)); c.HL(22, 57, 5, K('tekko', -3))   # 번호판
+    c.R(23, 51, 3, 6, K('shiro', 1)); c.VL(25, 51, 6, K('shiro', 0)); c.HL(23, 52, 3, K('kon', 0)); c.HL(23, 54, 3, J('kawara_dark_tile', 2)); c.HL(23, 55, 2, J('kawara_dark_tile', 2))
 
 
 @prop('pole-guy', '전봇대(지선·노랑 지선 커버)', 4, 10, solid=[(1, 9), (3, 9)], tags=['전봇대', '지선', '가로 시설'],
@@ -158,17 +252,23 @@ def _pole_guy(c):
 @prop('pole-wood', '나무 전봇대(옛 동네)', 3, 9, solid=[(1, 8)], tags=['전봇대', '옛 동네', '가로 시설'],
       rules='골목·下町 쪽. 콘크리트 전봇대와 섞어 둬도 된다.')
 def _pole_wood(c):
-    pole_body(c, 24, 8, 144, 'ita')
-    crossarm(c, 2, 46, ARM1 + 2, 'ita')
-    c.R(28, 30, 7, 9, K('tekko', 0)); c.HL(28, 30, 7, K('tekko', 2)); c.VL(35, 30, 9, OL)                          # 통신 단자
-    c.R(19, 60, 10, 14, K('shiro', 1)); c.R(20, 62, 8, 4, K('aka', 0)); c.HL(20, 68, 8, K('sumi', 2)); c.HL(20, 70, 6, K('sumi', 2))   # 옛 광고판
+    _wires_through(c)
+    pole_body(c, 24, 6, 141, 'ita')
+    crossarm(c, 1, 47, ARM1, HV_INS); crossarm(c, 3, 45, ARM2, LV_INS)               # 고압 완목도 ARM1 — 전선 키트 고압 가닥이 애자 위에 닿는다
+    c.R(27, CABLE - 1, 2, 4, K('tekko', -1)); c.P(27, CABLE - 1, K('tekko', 1)); c.HL(27, CABLE + 3, 2, STEEL_OL)   # 통신선 클램프
+    ol = J('kawara_dark_tile', 0)                                                   # 옛 법랑 간판(작게)
+    c.HL(21, 60, 7, ol); c.HL(21, 71, 7, ol); c.VL(20, 61, 10, ol); c.VL(28, 61, 10, ol)
+    c.R(21, 61, 7, 10, K('kinari', 1)); c.VL(21, 61, 10, K('kinari', 2)); c.VL(27, 61, 10, K('kinari', 0))
+    c.R(21, 61, 7, 3, K('kawara', 0)); c.HL(21, 61, 7, K('kawara', 1))
+    c.HL(22, 65, 5, J('kawara_dark_tile', 1)); c.HL(22, 67, 4, J('kawara_dark_tile', 1)); c.HL(22, 69, 3, J('kawara_dark_tile', 2))
+    c.P(27, 70, K('soil', 0)); c.P(26, 70, K('soil', 1))                 # 녹
 
 
 WIRE_BOTTOM = 46        # 키트 높이 3칸(48px) 안 — 처짐이 이보다 내려가면 잘려 끊긴 조각이 된다(2026-10-07 학교 관문 지적)
 
 
 def wire(c, x0, x1, y0, y1, sag, col):
-    """두 점 사이 처진 전선. 처짐은 키트 바닥(WIRE_BOTTOM)을 넘지 않게 줄이고, 이웃 화소 사이 세로 틈은 메워 끊기지 않게 한다."""
+    """두 점 사이 처진 1px 전선. 처짐은 키트 바닥(WIRE_BOTTOM)을 넘지 않게 줄이고, 이웃 화소 사이 세로 틈은 메워 끊기지 않게 한다."""
     n = max(1, x1 - x0)
     sag = max(0.0, min(sag, WIRE_BOTTOM - max(y0, y1)))
     prev = None
@@ -190,10 +290,10 @@ for _L in WIRE_SPANS:
         def _w(c):
             W = (L - 3) * 16
             s = L * 0.7
-            for yo in (ARM1 - 4, ARM1 - 3):                                                         # 고압 2가닥(애자 높이)
-                wire(c, 0, W - 1, yo, yo, s * 0.6, K('sumi', 1))
-            wire(c, 0, W - 1, ARM2 - 4, ARM2 - 4, s * 0.8, K('sumi', 1))                             # 저압
-            wire(c, 0, W - 1, CABLE, CABLE, s * 1.2, K('sumi', 0)); wire(c, 0, W - 1, CABLE + 1, CABLE + 1, s * 1.2, K('sumi', 1))   # 통신선(굵음)
+            for yo in HV_Y: wire(c, 0, W - 1, yo, yo, s * 0.6, W_HV)                 # 고압 2가닥(같은 처짐 — 나란히, 1px 띄움)
+            for yo in LV_Y: wire(c, 0, W - 1, yo, yo, s * 0.8, W_LV)                 # 저압 2가닥
+            cs = min(s * 1.2, WIRE_BOTTOM - (CABLE + 1))                              # 통신선(1px + 그늘 1px, 같은 처짐)
+            wire(c, 0, W - 1, CABLE + 1, CABLE + 1, cs, W_CB_S); wire(c, 0, W - 1, CABLE, CABLE, cs, W_CB)
         return _w
     _mk(_L)
 
@@ -204,9 +304,9 @@ for _L in (6, 8, 10):
               rules=f'같은 x 에 {L}칸 떨어진 두 전봇대(위쪽 전봇대 y = Y) 사이: 위쪽 전봇대와 같은 x, y = Y 에 **4층**으로 찍는다. 아래쪽 전봇대 팔에서 끝난다.')
         def _w(c):
             H = L * 16
-            for xo, col in ((2, K('sumi', 1)), (45, K('sumi', 1)), (8, K('sumi', 1)), (40, K('sumi', 1))):
-                c.VL(xo, ARM1 - 3 if xo in (2, 45) else ARM2 - 3, H, col)
-            c.VL(28, CABLE + 2, H - 2, K('sumi', 0)); c.VL(29, CABLE + 2, H - 2, K('sumi', 1))
+            for xo in (HV_INS[0], HV_INS[-1] + 1): c.VL(xo, ARM1 - 3, H, W_HV)        # 고압: 양 끝 애자에서 내려간다
+            for xo in (LV_INS[0], LV_INS[-1] + 1): c.VL(xo, ARM2 - 3, H, W_LV)        # 저압
+            c.VL(CABLE_X, CABLE + 3, H - 3, W_CB); c.VL(CABLE_X + 1, CABLE + 3, H - 3, W_CB_S)   # 통신선(클램프 밑에서)
         return _w
     _mkv(_L)
 
