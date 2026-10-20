@@ -27,7 +27,8 @@
   `find_tools` 수확 → `tools/list_changed`. 참고 그림은 한 실행에 한 번만(이미 인정된 그림은 다시 안 싣는다), 1568px 초과는 «손실 없을 때만» 정수
   배율로 줄인다(번들 953장 중 3장). 비용의 대부분은 관문이 요구하는 참고문서 글(버들항 한 용도 약 15만 자)이고 캐시 읽기다 — 관문은 줄이지 않는다.
 - 설정 API(첫 화면 설정 화면이 그린다): 동반 `GET /v1/local-agents[?fresh=1]` → `{clis, recommended}`(상태 «연결됨/로그인 필요/설치 필요/확인 실패»,
-  설치·로그인 안내 문구, 모델 목록, 역할별 기본 모델), `POST /v1/local-agents/health {cli}`. 선택 저장은 localStorage `oprn:assistant-engine`
+  설치·로그인 안내 문구, 모델 목록, 역할별 기본 모델), `POST /v1/local-agents/health {cli}`(워커는 `{cli}`·옛 `{id}` 둘 다 읽는다 —
+  2026-10-21 까지 `{id}` 만 읽어 「연결 시험」이 Codex(ChatGPT) 포함 모든 CLI 에서 매번 400 이었다. 재현 `node scripts/qa/chatgpt-connection-repro.mjs`). 선택 저장은 localStorage `oprn:assistant-engine`
   (`src/ai/localCliEngine.ts`), `loadAiConfig` 가 `applyAssistantEngine` 으로 덮는다. 개발 중 강제 선택: 그 키에 `{"kind":"local-cli","cli":"claude"}`.
 - 검증: 헤드리스 `bun scripts/spike/claude-cli-turn.mts --cli claude|codex`(SQLite 저장·재로드, `verify-shots/assistant-claude-p/<cli>/`),
   gemini 는 미로그인이라 녹화 스트림 재생 `scripts/spike/gemini-replay.mts`. 실제 입력창 경로는 하네스에 엔진 설정 파일을 준다:
