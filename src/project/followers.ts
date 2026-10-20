@@ -77,6 +77,12 @@ function trailIndexFor(index: number, gap: number): number {
   return (index + 1) * gap - 1;
 }
 
+/** 동료 `count` 명이 각자 읽을 칸을 가지려면 궤적이 얼마나 길어야 하는가(resetFollowerTrailNearPlayer 가 깔아 두는 길이와 같다). */
+function requiredTrailLength(session: object, config: CompanionConfig | undefined, count: number): number {
+  const lay = Math.max(effectiveGap(session, config), typeof config?.gap === "number" ? 1 : MAX_FOLLOWER_BODY_SPAN);
+  return Math.min(trailIndexFor(count - 1, lay) + 1, MAX_TRAIL_POINTS);
+}
+
 function uniqueFollowerName(session: PlaySession, desired: string): string {
   const taken = new Set(session.followers.map((f) => f.name));
   if (!taken.has(desired)) return desired;
@@ -135,8 +141,12 @@ export function addFollowerToSession(
     keptActors = actorFollowers.slice(actorFollowers.length + 1 - rules.maxCompanions);
   }
   session.followers = [...keptActors, follower, ...monsterFollowers];
-  if (!session.followerTrail || session.followerTrail.length === 0) {
-    resetFollowerTrailNearPlayer(session, project.maps[session.currentMapId], project.system.companions, { project });
+  // 궤적이 비었거나, 새 동료가 읽을 칸까지 모자라면 다시 깐다 — 이미 동료가 있는 채로 한 명이 더 합류하면
+  // 궤적이 비어 있지 않아 예전엔 그대로 두었고, 새 동료는 읽을 칸이 없어 숨거나 플레이어 칸에 겹쳤다(3인 파티가 2명으로 보임).
+  const companions = project.system.companions;
+  const needed = requiredTrailLength(session, companions, session.followers.length);
+  if (!session.followerTrail || session.followerTrail.length < needed) {
+    resetFollowerTrailNearPlayer(session, project.maps[session.currentMapId], companions, { project });
   }
   return follower;
 }
@@ -238,7 +248,7 @@ export function syncPartyFollowers(project: Project, session: PlaySession): void
   const actorOthers = others.filter((entry) => entry.kind !== "monster" && !entry.monsterInstanceId);
   const monsterOthers = others.filter((entry) => entry.kind === "monster" || Boolean(entry.monsterInstanceId));
   session.followers = [...partyFollowers, ...actorOthers, ...monsterOthers];
-  const needed = session.followers.length * resolveCompanionRules(project.system.companions).gap;
+  const needed = requiredTrailLength(session, project.system.companions, session.followers.length);
   if (session.followers.length === 0) session.followerTrail = [];
   else if ((session.followerTrail?.length ?? 0) < needed) {
     resetFollowerTrailNearPlayer(session, project.maps[session.currentMapId], project.system.companions, { project });
