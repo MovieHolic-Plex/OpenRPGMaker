@@ -5,6 +5,22 @@
 
 <!-- releases -->
 
+## 0.299.0 — 2026-10-21
+
+### 기능
+
+- **object-gate** — Opus final judge v9-v11 — no exempt kind correction, wall_structure, contrast pairs, side-seat charge, 3 per call (all rejected) (#3158) (`97fa517`)
+
+### 수정
+
+- **beodeul** — woodland — tree composer forests + original-pixel fence corners (#3122) (`6159010`)
+- **db-system** — 해상도 변경이 안 되던 버그(양쪽 전신 대화창) + 게임 설정 탭 전수 점검 (#3155) (`5eca89b`)
+- **editor** — UI/UX VQA 1 — topbar overlap, canvas seams, i18n, CSP, AI-off login (#3154) (`d893ccd`)
+
+### 잡무
+
+- **object-gate** — beodeul dark-grass r9 — allow records (user-delegated to supervisor 2026-10-21), receipts, held images, Opus VQA receipts r1-r4 (#3157) (`498d040`)
+
 ## 0.298.0 — 2026-10-21
 
 ### 기능
