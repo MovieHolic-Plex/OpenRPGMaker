@@ -177,8 +177,8 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
       whiteboard: nearestFree(project, officeRoom, { x: 21, y: 9 }),
     },
     rooftop: {
-      door: { x: 6, y: 4 }, doorOut: nearestFree(project, roofRoom, { x: 6, y: 5 }),
-      rail: nearestFree(project, roofRoom, { x: 9, y: 7 }), bench: nearestFree(project, roofRoom, { x: 3, y: 6 }),
+      door: nearestFree(project, roofRoom, { x: 3, y: 6 }), doorOut: nearestFree(project, roofRoom, { x: 3, y: 7 }),
+      rail: nearestFree(project, roofRoom, { x: 10, y: 4 }), bench: nearestFree(project, roofRoom, { x: 6, y: 10 }),
     },
     konbini: {
       door: bottomGap(konbiniRoom, project), doorOut: nearestFree(project, konbiniRoom, { x: 6, y: 9 }),
@@ -224,6 +224,19 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
       light("fl_plat_a", { x: 4, y: 12 }, 4, "#e8f0ff", 0.6), light("fl_plat_b", { x: 13, y: 12 }, 4, "#e8f0ff", 0.6), light("fl_plat_c", { x: 29, y: 12 }, 4, "#e8f0ff", 0.6),
     ],
   };
+  // 편의점은 밤에도 형광등이 켜진 밝은 가게 — 거리의 어두운 조명을 물려받지 않게 따로 건다.
+  {
+    const w = konbiniRoom.width, h = konbiniRoom.height;
+    konbiniRoom.defaultLighting = {
+      ambient: 0.04, color: "#f0f6ff",
+      sources: [
+        light("fl_kb_a", { x: Math.round(w * 0.25), y: Math.round(h * 0.3) }, 6, "#f4fbff", 0.7),
+        light("fl_kb_b", { x: Math.round(w * 0.7), y: Math.round(h * 0.3) }, 6, "#f4fbff", 0.7),
+        light("fl_kb_c", { x: Math.round(w * 0.3), y: Math.round(h * 0.75) }, 6, "#f4fbff", 0.7),
+        light("fl_kb_d", { x: Math.round(w * 0.7), y: Math.round(h * 0.75) }, 6, "#f4fbff", 0.7),
+      ],
+    };
+  }
   roofRoom.defaultLighting = { ambient: 0.06, color: "#ffd9a8", sources: [] };
   roofRoom.atmosphereEffects = normalizeAtmosphereEffects([{ kind: "sunrays", amount: 0.5, speed: 0.4, size: 1, opacity: 0.5 }]);
 

@@ -16,19 +16,26 @@ function spot(mapId) {
 
 export default {
   id: "first-love-maps",
-  projectFixture: FIXTURE,
+  // 출하 경로 그대로 player.html?demo=first-love 가 데모를 짓는다. FIXTURE 는 이벤트 좌표 읽기용.
+  projectFixture: "scripts/qa/runtime/first-love-empty.json",
+  query: { demo: "first-love" },
   viewport: { width: vw, height: vh },
   beats: [
-    { id: "title", note: "타이틀", ops: [{ kind: "waitFor", testid: "title-screen", state: "present", timeoutMs: 120000 }, { kind: "hold", dir: null, ms: 1500 }], shot: true },
+    { id: "title", note: "타이틀", ops: [{ kind: "waitFor", testid: "title-screen", state: "present", timeoutMs: 240000 }, { kind: "hold", dir: null, ms: 1500 }], shot: true },
     { id: "start", note: "시작", ops: [
       { kind: "key", key: "Enter" },
-      { kind: "pressUntilJs", key: "Escape", fn: "() => !document.querySelector(\"[data-testid='cinematic-sequence']\") && !document.querySelector(\"[data-testid='title-screen']\") && !!window.__oprnDebug?.readState?.().currentMapId", maxPresses: 20, settleMs: 1500 },
+      { kind: "waitFor", testid: "cinematic-sequence", state: "present", timeoutMs: 60000 },
+      { kind: "pressUntilJs", key: "Escape", fn: "() => !document.querySelector(\"[data-testid='cinematic-sequence']\")", maxPresses: 8, settleMs: 800 },
       { kind: "waitForRuntime", timeoutMs: 120000 },
       { kind: "hold", dir: null, ms: 800 },
     ], shot: false },
     ...MAPS.map((mapId) => {
       const s = spot(mapId);
-      return { id: `map-${mapId.replace(/_/g, "-")}`, note: mapId, ops: [{ kind: "teleport", mapId, x: s.x, y: s.y }, { kind: "hold", dir: null, ms: 1400 }], shot: true };
+      return { id: `map-${mapId.replace(/_/g, "-")}`, note: mapId, ops: [
+        { kind: "pressUntilJs", key: "Enter", fn: "() => !document.querySelector(\"[data-testid='dialogue-box']\")", maxPresses: 60, settleMs: 350 },
+        { kind: "teleport", mapId, x: s.x, y: s.y }, { kind: "hold", dir: null, ms: 600 },
+        { kind: "pressUntilJs", key: "Enter", fn: "() => !document.querySelector(\"[data-testid='dialogue-box']\")", maxPresses: 40, settleMs: 350 },
+        { kind: "hold", dir: null, ms: 1400 }], shot: true };
     }),
   ],
 };
