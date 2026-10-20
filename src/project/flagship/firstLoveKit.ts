@@ -7,7 +7,7 @@ import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import type { EmoteKind } from "@/project/emotes";
 import type { Command, Dir, EventPage, EventPageCondition, GameEvent } from "@/project/types";
 
-export type Who = "seoha" | "jihu" | "minho" | "lead" | "client" | "clerk" | "seohaYoung" | "jihuYoung";
+export type Who = "seoha" | "jihu" | "minho" | "lead" | "client" | "clerk" | "seohaYoung" | "jihuYoung" | "commuterA" | "commuterB";
 export type Expr = "base" | "happy" | "surprised" | "sad" | "embarrassed";
 
 interface CastMember {
@@ -31,6 +31,9 @@ export const CAST: Readonly<Record<Who, CastMember>> = {
   clerk: { name: "점원", stem: "apron-brown", tex: "tex_oprn_charset_modern3", resource: "oprn-charset-modern3", index: 3, side: "right" },
   seohaYoung: { name: "열일곱의 서하", stem: "uni-girl-long", tex: "tex_oprn_charset_modern2", resource: "oprn-charset-modern2", index: 0, side: "left" },
   jihuYoung: { name: "열아홉의 지후", stem: "uni-boy-navy", tex: "tex_oprn_charset_modern1", resource: "oprn-charset-modern1", index: 0, side: "right" },
+  // 엑스트라 — 주요 인물과 겹치지 않는 칩(승강장에서 팀장·본부장 칩을 미리 보이면 같은 사람으로 읽힌다).
+  commuterA: { name: "회사원", stem: "suit-boy-navy", tex: "tex_oprn_charset_modern3", resource: "oprn-charset-modern3", index: 0, side: "right" },
+  commuterB: { name: "회사원", stem: "casual-girl-stripe", tex: "tex_oprn_charset_modern2", resource: "oprn-charset-modern2", index: 7, side: "right" },
 };
 
 export function bustId(who: Who, expr: Expr): string {

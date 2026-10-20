@@ -158,8 +158,8 @@ function buildMondayMorning(project: Project, a: FirstLoveAnchors): void {
   const commuterA = spot(project, FL_MAP.platformAm, { x: a.platform.arrive.x + 4, y: a.platform.arrive.y - 1 }, taken);
   const commuterB = spot(project, FL_MAP.platformAm, { x: a.platform.arrive.x - 3, y: a.platform.arrive.y }, taken);
   add(plat,
-    event("ev_fl_commuter_a", "출근하는 회사원", commuterA, [page("p", [], voice("회사원", "…아, 오늘 월요일이지. 월요일이네. 월요일이야."), { who: "client", dir: "up" })]),
-    event("ev_fl_commuter_b", "통화하는 회사원", commuterB, [page("p", [], voice("회사원", "네, 부장님. 지금 역이에요. 5분이면… 네, 3분이요."), { who: "lead", dir: "right" })]),
+    event("ev_fl_commuter_a", "출근하는 회사원", commuterA, [page("p", [], voice("회사원", "…아, 오늘 월요일이지. 월요일이네. 월요일이야."), { who: "commuterA", dir: "up" })]),
+    event("ev_fl_commuter_b", "통화하는 회사원", commuterB, [page("p", [], voice("회사원", "네, 부장님. 지금 역이에요. 5분이면… 네, 3분이요."), { who: "commuterB", dir: "right" })]),
   );
 
   add(plat, scene("ev_fl_intro", { x: 1, y: 1 }, S.START, [
@@ -241,10 +241,12 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
       ...say("minho", "happy", "왔어요? 이 커피 머신, 버튼 두 개를 같이 누르면 라떼가 돼요. 우리 회사 최대 기밀."),
       ...say("seoha", "happy", "그런 걸 첫날에 알려 줘도 돼요?"),
       ...say("minho", "happy", "동기잖아요. 기밀은 동기끼리 나누는 거죠."),
+      { kind: "changeFriendship", npcKey: "minho", delta: 150 } as Command,
       ...say("minho", "base", "…근데요. 아까 강 선임님 볼 때 표정이 좀. 혹시 아는 사이예요?"),
       choices([
         { text: "고등학교 선배야. …였던 것 같아.", then: [
           setSw(SW_TOLD_MINHO, true),
+          { kind: "changeFriendship", npcKey: "minho", delta: 150 } as Command,
           ...say("minho", "surprised", "에? 근데 선임님은 처음 뵙겠다고…"),
           ...say("seoha", "sad", "그러게. 나도 그게 궁금해."),
           ...say("minho", "base", "음. 사람마다 사정이 있겠죠. 걱정 마요, 입은 무거운 편이에요. 진짜로."),
@@ -633,6 +635,7 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
     choices([
       { text: "팀장님께 바로 말씀드린다", then: [
         setSw(SW_HONEST, true),
+        { kind: "changeFriendship", npcKey: "lead", delta: 220 } as Command,
         ...say("seoha", "sad", "팀장님. 제가 소리결에 시안을 잘못 보냈습니다. 지난주 버전으로요."),
         ...say("lead", "base", "…몇 시에 보냈어요?"),
         ...say("seoha", "sad", "여섯 시 반쯤이요. 죄송합니다."),
@@ -989,7 +992,7 @@ export function createFirstLoveFlagshipDemo(): FlagshipDemoBuildResult {
   buildTitleAndOpening(project, theme.resourceId);
 
   // 연애 게임의 ESC 메뉴 — 전투 능력치(상태·스킬·장비·돈) 없이 호감도·대화 기록·엔딩·저장(VQA 1차 MAJOR).
-  project.characters = { ...(project.characters ?? {}), [JIHU_KEY]: { displayName: "강지후" } };
+  project.characters = { ...(project.characters ?? {}), [JIHU_KEY]: { displayName: "강지후" }, minho: { displayName: "차민호" }, lead: { displayName: "오정민 팀장" } };
   project.meta.oprnFieldMenu = { version: 1, entries: [
     { command: "relationships", label: "호감도" }, { command: "backlog", label: "대화 기록" }, { command: "endings", label: "엔딩" },
     { command: "save", label: "저장" }, { command: "load", label: "불러오기" }, { command: "options", label: "설정" }, { command: "to-title", label: "타이틀로" },
