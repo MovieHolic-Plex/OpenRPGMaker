@@ -5,6 +5,22 @@
 
 <!-- releases -->
 
+## 0.291.0 — 2026-10-20
+
+### 기능
+
+- **object-gate** — split to private repo MovieHolic-Plex/object-gate (vendored copy + sync) (#3117) (`88a451f`)
+- **object-gate** — rules v10 seat backrest exemption + frozen fresh5 calibration (rejected) (#3119) (`72e507e`)
+- **monster** — install user-picked crab stalk eyes A + scoped eye-stalk rule (#3118) (`0924b04`)
+
+### 수정
+
+- **flagship** — Astra temple boss and league lead 베르카부 swap the bug move for 새싹치기, like the gym leader (#3114) (`a9a8b54`)
+
+### 정리
+
+- **worldmap** — public oprn-worldmap-kit is the single master of the generator; drop the 700-file in-repo copy (#3116) (`a109107`)
+
 ## 0.290.0 — 2026-10-20
 
 ### 기능
