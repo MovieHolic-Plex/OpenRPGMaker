@@ -2,25 +2,25 @@
  "version": 1,
  "picks": {
   "gustchick": {
-   "run": "derive-20261020-144651",
+   "run": "derive-20261020-163307",
    "candidate": 1,
-   "sha": "958f6f3bc7426e27",
-   "at": "2026-10-20T14:46:51",
-   "note": "눈 3차(eye-patches-r3) derive"
+   "sha": "4a3e4d2129f7e39b",
+   "at": "2026-10-20T16:33:31",
+   "note": "4차 몸 전체 재그림(cute_redraw_r4) 앞·뒤에서 derive"
   },
   "zaptoe": {
-   "run": "derive-20261020-144652",
+   "run": "derive-20261020-163307",
    "candidate": 1,
-   "sha": "57e5148ab0297594",
-   "at": "2026-10-20T14:46:52",
-   "note": "눈 3차(eye-patches-r3) derive"
+   "sha": "105ffc9fc318ed56",
+   "at": "2026-10-20T16:33:31",
+   "note": "4차 몸 전체 재그림(cute_redraw_r4) 앞·뒤에서 derive"
   },
   "sparkit": {
-   "run": "derive-20261020-144650",
+   "run": "derive-20261020-163306",
    "candidate": 1,
-   "sha": "68bd2ef81d2ac559",
-   "at": "2026-10-20T14:46:51",
-   "note": "눈 3차(eye-patches-r3) derive"
+   "sha": "5b077f3acb6ec07d",
+   "at": "2026-10-20T16:33:30",
+   "note": "4차 몸 전체 재그림(cute_redraw_r4) 앞·뒤에서 derive"
   },
   "aqualing": {
    "run": "derive-20261019-r13",
@@ -30,11 +30,11 @@
    "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "leafling": {
-   "run": "derive-20261020-144651",
+   "run": "derive-20261020-163306",
    "candidate": 1,
-   "sha": "00cf67cf17e39e96",
-   "at": "2026-10-20T14:46:51",
-   "note": "눈 3차(eye-patches-r3) derive"
+   "sha": "f04025407274809f",
+   "at": "2026-10-20T16:33:30",
+   "note": "4차 몸 전체 재그림(cute_redraw_r4) 앞·뒤에서 derive"
   },
   "pipbug": {
    "run": "derive-20261020-140214",
@@ -44,11 +44,11 @@
    "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
   },
   "wickworm": {
-   "run": "derive-20261020-144651",
+   "run": "derive-20261020-163307",
    "candidate": 1,
-   "sha": "469e927375079492",
-   "at": "2026-10-20T14:46:51",
-   "note": "눈 3차(eye-patches-r3) derive"
+   "sha": "16be3a883857c373",
+   "at": "2026-10-20T16:33:31",
+   "note": "4차 몸 전체 재그림(cute_redraw_r4) 앞·뒤에서 derive"
   },
   "rootpig": {
    "run": "derive-20261019-r13",
@@ -135,11 +135,11 @@
    "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
   },
   "lanternwing": {
-   "run": "derive-20261020-144652",
+   "run": "derive-20261020-163307",
    "candidate": 1,
-   "sha": "24df22b798b7a24f",
-   "at": "2026-10-20T14:46:52",
-   "note": "눈 3차(eye-patches-r3) derive"
+   "sha": "12cd3fce699fda54",
+   "at": "2026-10-20T16:33:31",
+   "note": "4차 몸 전체 재그림(cute_redraw_r4) 앞·뒤에서 derive"
   },
   "brambleboar": {
    "run": "derive-20261020-014116",
@@ -254,11 +254,11 @@
    "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
   },
   "sandnip": {
-   "run": "derive-20261020-144652",
+   "run": "derive-20261020-163307",
    "candidate": 1,
-   "sha": "6499bf21284d7b8f",
-   "at": "2026-10-20T14:46:53",
-   "note": "눈 3차(eye-patches-r3) derive"
+   "sha": "d0ed2ff3fc87511a",
+   "at": "2026-10-20T16:33:31",
+   "note": "4차 몸 전체 재그림(cute_redraw_r4) 앞·뒤에서 derive"
   },
   "dunestalk": {
    "run": "derive-20261020-014118",
@@ -289,11 +289,11 @@
    "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
   },
   "glaciermane": {
-   "run": "derive-20261020-144653",
+   "run": "derive-20261020-163308",
    "candidate": 1,
-   "sha": "a630310d67c1a29a",
-   "at": "2026-10-20T14:46:53",
-   "note": "눈 3차(eye-patches-r3) derive"
+   "sha": "dbcfa985cd7449c9",
+   "at": "2026-10-20T16:33:32",
+   "note": "4차 몸 전체 재그림(cute_redraw_r4) 앞·뒤에서 derive"
   },
   "miretail": {
    "run": "derive-20261020-140214",
@@ -317,25 +317,25 @@
    "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
   },
   "dozemite": {
-   "run": "derive-20261020-144653",
+   "run": "derive-20261020-163308",
    "candidate": 1,
-   "sha": "a88ae03aced0dc1d",
-   "at": "2026-10-20T14:46:53",
-   "note": "눈 3차(eye-patches-r3) derive"
+   "sha": "f92137a54b483423",
+   "at": "2026-10-20T16:33:32",
+   "note": "4차 몸 전체 재그림(cute_redraw_r4) 앞·뒤에서 derive"
   },
   "trancescythe": {
-   "run": "derive-20261020-144653",
+   "run": "derive-20261020-163308",
    "candidate": 1,
-   "sha": "a0a762eab344b0b1",
-   "at": "2026-10-20T14:46:54",
-   "note": "눈 3차(eye-patches-r3) derive"
+   "sha": "946a7451425e818c",
+   "at": "2026-10-20T16:33:32",
+   "note": "4차 몸 전체 재그림(cute_redraw_r4) 앞·뒤에서 derive"
   },
   "oraclemantis": {
-   "run": "derive-20261020-144654",
+   "run": "derive-20261020-163308",
    "candidate": 1,
-   "sha": "0c95a9862426755d",
-   "at": "2026-10-20T14:46:54",
-   "note": "눈 3차(eye-patches-r3) derive"
+   "sha": "0152082a5a82a978",
+   "at": "2026-10-20T16:33:32",
+   "note": "4차 몸 전체 재그림(cute_redraw_r4) 앞·뒤에서 derive"
   },
   "threadimp": {
    "run": "derive-20261020-140216",
@@ -387,18 +387,18 @@
    "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
   },
   "solmane": {
-   "run": "derive-20261020-144654",
+   "run": "derive-20261020-163309",
    "candidate": 1,
-   "sha": "968f0f52ebdf0e8b",
-   "at": "2026-10-20T14:46:54",
-   "note": "눈 3차(eye-patches-r3) derive"
+   "sha": "8f96edef846b1eb8",
+   "at": "2026-10-20T16:33:32",
+   "note": "4차 몸 전체 재그림(cute_redraw_r4) 앞·뒤에서 derive"
   },
   "lunavane": {
-   "run": "derive-20261020-144654",
+   "run": "derive-20261020-163309",
    "candidate": 1,
-   "sha": "dab5f5b13f2e6b67",
-   "at": "2026-10-20T14:46:54",
-   "note": "눈 3차(eye-patches-r3) derive"
+   "sha": "9f00a5b788366554",
+   "at": "2026-10-20T16:33:33",
+   "note": "4차 몸 전체 재그림(cute_redraw_r4) 앞·뒤에서 derive"
   },
   "relicarab": {
    "run": "derive-20261020-140215",
@@ -408,11 +408,11 @@
    "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
   },
   "astralhart": {
-   "run": "derive-20261020-144655",
+   "run": "derive-20261020-163309",
    "candidate": 1,
-   "sha": "7eeface9c5580b68",
-   "at": "2026-10-20T14:46:55",
-   "note": "눈 3차(eye-patches-r3) derive"
+   "sha": "61b9c96cd7fb5c11",
+   "at": "2026-10-20T16:33:33",
+   "note": "4차 몸 전체 재그림(cute_redraw_r4) 앞·뒤에서 derive"
   },
   "mistralheron": {
    "run": "derive-20261020-014121",

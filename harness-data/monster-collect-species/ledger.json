@@ -11,8 +11,8 @@
         "block": 11,
         "pickedAt": "2026-10-16T10:40:08.570Z",
         "note": "v4 cute-first, Opus 5.5 judge: 가장 큰 동그란 눈에 흰 하이라이트가 선명하고 둥근 큰 머리라 친근하다. 꼬리 숯덩이 공도 크고 금이 또렷하다",
-        "previousAuthoredSha256": "bf1980ad4fb96700488f0e43829738aadc8f8ae71eb13fa10d82c9ba781002d0",
-        "authoredSha256": "65563ef4a73eba3cf8030c07ce5e254a97f672b9817d65aa9e47c59348b9de58"
+        "previousAuthoredSha256": "65563ef4a73eba3cf8030c07ce5e254a97f672b9817d65aa9e47c59348b9de58",
+        "authoredSha256": "402baf07a2a409f26ec88ecb3d68503e24fca67c45eb1b850a981a4fcb13f933"
       },
       "back": {
         "authored": "authored/sparkit-back.png",
@@ -22,7 +22,9 @@
         "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style, proportions and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile are visible; NO eyes are visible from behind - draw no eyes, no pupils, no face features at all on the back view (keep the dark outline, no dark dots on the head); the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Keep the exaggerated signature feature (a huge round tail club - the short thick tail ends in a giant cracked-charcoal ball almost as big as its own head, with glowing orange cracks and one crisp pixel flame tuft on top (flat colors, dark outline, not glowing), so the tail looks like a smoldering mace it drags behind it) just as big and just as prominent as in the reference - it must still dominate the silhouette from behind. Keep the chibi proportions: the head stays big and round, the body short and plump. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
         "block": 14,
         "pickedAt": "2026-10-16T11:15:53.512Z",
-        "note": "v4 cute-first, Opus 5.5 judge: Same orange kit with striped back and a big cracked-charcoal tail ball nearly head-sized. Round head, plump body, no eyes, clean pixels."
+        "note": "v4 cute-first, Opus 5.5 judge: Same orange kit with striped back and a big cracked-charcoal tail ball nearly head-sized. Round head, plump body, no eyes, clean pixels.",
+        "previousAuthoredSha256": "ed94138a6eed5136f70e97f2b1130c241fb0612b006622c948bce5106ff781b8",
+        "authoredSha256": "ab57e19db56bf2ac6482ff9d16bc70e7e4f0d94f7258d0f2a73ad0b39dd2c976"
       }
     },
     "aqualing": {
@@ -57,8 +59,8 @@
         "block": 12,
         "pickedAt": "2026-10-16T10:40:57.349Z",
         "note": "v4 cute-first, Opus 5.5 judge: 큰 동그란 갈색 눈에 흰 하이라이트가 또렷하고 머리가 크다. 잎사귀 귀 두 장이 크고 위로 높이 솟아 있다",
-        "previousAuthoredSha256": "56872ec997688983994a6d4a87c3a084eaaa1021c89b496716193ba885e192a8",
-        "authoredSha256": "993d1249b19a0262de64efd5998711ad09791c49205c75aaca76e44ab7a06911"
+        "previousAuthoredSha256": "993d1249b19a0262de64efd5998711ad09791c49205c75aaca76e44ab7a06911",
+        "authoredSha256": "4786407a2e0736fc715677d4122aba1f974483d6f0d21a877b8cad077aece8d4"
       },
       "back": {
         "authored": "authored/leafling-back.png",
@@ -68,7 +70,9 @@
         "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style, proportions and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile are visible; NO eyes are visible from behind - draw no eyes, no pupils, no face features at all on the back view (keep the dark outline, no dark dots on the head); the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Keep the exaggerated signature feature (two gigantic leaf ears - broad pointed leaves growing from the head, each as tall as its entire body, tilted outward like wide antennas with a visible vein line) just as big and just as prominent as in the reference - it must still dominate the silhouette from behind. Keep the chibi proportions: the head stays big and round, the body short and plump. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
         "block": 12,
         "pickedAt": "2026-10-16T11:16:29.159Z",
-        "note": "v4 cute-first, Opus 5.5 judge: Same green leaf-eared creature with a brown tuft and two huge veined leaf ears. Compact, plump body, clean silhouette, no eyes."
+        "note": "v4 cute-first, Opus 5.5 judge: Same green leaf-eared creature with a brown tuft and two huge veined leaf ears. Compact, plump body, clean silhouette, no eyes.",
+        "previousAuthoredSha256": "cd5905e0b3e27da01dd60bc9e488b6b1a2602caa3d3f42d8784d5b960a4b0fd5",
+        "authoredSha256": "840ab37d5eaa199d04c7e67ab71207cd133f0e462d499123744aa91f8f80c269"
       }
     },
     "gustchick": {
@@ -81,8 +85,8 @@
         "pickedAt": "2026-10-16T10:41:20.318Z",
         "note": "v4 cute-first, Opus 5.5 judge: 크고 둥근 눈에 흰 하이라이트가 선명해 반짝이고, 통통한 몸에 하늘색 볏이 크게 솟았다",
         "authored": "authored/gustchick-front.png",
-        "previousAuthoredSha256": "77635aa59f4a52b6f50b80c1b6df3c6472a27857a3bd1c82a210f569b96fd55a",
-        "authoredSha256": "4033694c374bb855a1f30db129ad42d1ea3ec8b3cee2519c34417cfc2a7cfa30"
+        "previousAuthoredSha256": "4033694c374bb855a1f30db129ad42d1ea3ec8b3cee2519c34417cfc2a7cfa30",
+        "authoredSha256": "4c6287f67ba076797dd18a18f432afa04861a35a7b3c16edd699badebab65480"
       },
       "back": {
         "grid": "grids/gustchick-back.png",
@@ -91,7 +95,9 @@
         "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style, proportions and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile are visible; NO eyes are visible from behind - draw no eyes, no pupils, no face features at all on the back view (keep the dark outline, no dark dots on the head); the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Keep the exaggerated signature feature (a gigantic stiff sky-blue three-feather crest swept back like a wind vane, as tall as its whole body) just as big and just as prominent as in the reference - it must still dominate the silhouette from behind. Keep the chibi proportions: the head stays big and round, the body short and plump. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
         "block": 14,
         "pickedAt": "2026-10-16T11:16:46.022Z",
-        "note": "v4 cute-first, Opus 5.5 judge: Same grey chick with a sky-blue three-feather crest swept back. Round, plump body, no eyes, clean feet and tail."
+        "note": "v4 cute-first, Opus 5.5 judge: Same grey chick with a sky-blue three-feather crest swept back. Round, plump body, no eyes, clean feet and tail.",
+        "authored": "authored/gustchick-back.png",
+        "authoredSha256": "0a78d97b7c0fcaa9a1c7423a8b3209b548667ddae84832c655ba3391474661ec"
       }
     },
     "pipbug": {
@@ -127,8 +133,8 @@
         "pickedAt": "2026-10-16T10:42:05.961Z",
         "note": "v4 cute-first, Opus 5.5 judge: 둥근 큰 머리에 흰 하이라이트가 반짝이는 큰 눈 두 개, 표정이 순하고 불꽃이 머리만큼 크다",
         "authored": "authored/wickworm-front.png",
-        "previousAuthoredSha256": "83abc7cf08ebc91b3d264fb5f18e3a69f6c249068257fcb8e3761a27a7d430c6",
-        "authoredSha256": "b3b4332fc22c4fda54062b115da1193f27f081fa2b2c476f313bb3ddb816076a"
+        "previousAuthoredSha256": "b3b4332fc22c4fda54062b115da1193f27f081fa2b2c476f313bb3ddb816076a",
+        "authoredSha256": "d1c94a11e1d75710a9528b8ad14fb8a090965dce4930630da7043b8351afb2b2"
       },
       "back": {
         "grid": "grids/wickworm-back.png",
@@ -137,7 +143,9 @@
         "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style, proportions and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile are visible; NO eyes are visible from behind - draw no eyes, no pupils, no face features at all on the back view (keep the dark outline, no dark dots on the head); the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Keep the exaggerated signature feature (an oversized candle flame - a short curly wick on its head carries a big bright pixel flame as big as its own head (flat colors, dark outline, not glowing)) just as big and just as prominent as in the reference - it must still dominate the silhouette from behind. Keep the chibi proportions: the head stays big and round, the body short and plump. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
         "block": 14,
         "pickedAt": "2026-10-16T11:17:15.807Z",
-        "note": "v4 cute-first, Opus 5.5 judge: Same yellow banded grub with a big flat candle flame. Round plump back with no eyes, tail at lower left and head facing away."
+        "note": "v4 cute-first, Opus 5.5 judge: Same yellow banded grub with a big flat candle flame. Round plump back with no eyes, tail at lower left and head facing away.",
+        "authored": "authored/wickworm-back.png",
+        "authoredSha256": "62ab1b1dbf516dcf29b01640cf13a9caf12b536adf98dbdc4be587ff9a087c54"
       }
     },
     "rootpig": {
@@ -283,8 +291,8 @@
         "pickedAt": "2026-10-16T10:43:01.808Z",
         "note": "v4 cute-first, Opus 5.5 judge: Biggest, roundest eye with clear white highlight squares; friendly smile; tall ridged coil with bright orb reads first",
         "authored": "authored/zaptoe-front.png",
-        "previousAuthoredSha256": "71c33c08e39093f302edae6962413ffb3380635f727a82fd8f6fdb9896d8fa94",
-        "authoredSha256": "22d5d28e017ca8b172f9ea460f5fc104885738edf80cbaa5689443f177377aed"
+        "previousAuthoredSha256": "22d5d28e017ca8b172f9ea460f5fc104885738edf80cbaa5689443f177377aed",
+        "authoredSha256": "8062dbdcd636ebdbaf6387a975a3f595087f30af9ea7a60616b9ca21f23baff3"
       },
       "back": {
         "grid": "grids/zaptoe-back.png",
@@ -293,7 +301,9 @@
         "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style, proportions and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile are visible; NO eyes are visible from behind - draw no eyes, no pupils, no face features at all on the back view (keep the dark outline, no dark dots on the head); the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Keep the exaggerated signature feature (a huge coiled-spring tail - the tail is a giant ridged coil like a stack of copper rings standing up behind it, taller than its whole body, ending in a bright glowing spark orb) just as big and just as prominent as in the reference - it must still dominate the silhouette from behind. Keep the chibi proportions: the head stays big and round, the body short and plump. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
         "block": 9,
         "pickedAt": "2026-10-16T11:18:15.217Z",
-        "note": "v4 cute-first, Opus 5.5 judge: Same yellow lizard with a tall copper coil tail and a spark orb. Round faceless head facing away, clean pixels."
+        "note": "v4 cute-first, Opus 5.5 judge: Same yellow lizard with a tall copper coil tail and a spark orb. Round faceless head facing away, clean pixels.",
+        "authored": "authored/zaptoe-back.png",
+        "authoredSha256": "67b3df1353534dcecd62362c72993a9b15fa9e6faae4d8307ab7900e24619755"
       }
     },
     "pebblekid": {
@@ -399,8 +409,8 @@
         "pickedAt": "2026-10-18T08:10:30.115Z",
         "note": "2026-10-18-진화계통-하네스-통일",
         "authored": "authored/lanternwing-front.png",
-        "previousAuthoredSha256": "64c8801ecb0ab8250ff6f70ade300c0c68552423c9baa94773b16b2942c8edf1",
-        "authoredSha256": "4316b63942f54d257e4a6a98499a8d6075c840c1464f9711471d482e8d78dbb3"
+        "previousAuthoredSha256": "4316b63942f54d257e4a6a98499a8d6075c840c1464f9711471d482e8d78dbb3",
+        "authoredSha256": "c2080b4a963d047acd7df56e08232dd651aad4e25b3ff37ff8965457672fb1e4"
       },
       "back": {
         "grid": "grids/lanternwing-back.png",
@@ -409,7 +419,9 @@
         "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style, proportions and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile are visible; NO eyes are visible from behind - draw no eyes, no pupils, no face features at all on the back view (keep the dark outline, no dark dots on the head); the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Keep the exaggerated signature feature (two huge round paper-lantern wings - each wing is a big round warm-cream lantern panel with a bright orange flame-shaped window pattern in the middle, together much wider than its body (flat colors, dark outline, not glowing)) just as big and just as prominent as in the reference - it must still dominate the silhouette from behind. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
         "block": 11,
         "pickedAt": "2026-10-18T08:38:27.834Z",
-        "note": "2026-10-18-진화계통-하네스-통일"
+        "note": "2026-10-18-진화계통-하네스-통일",
+        "authored": "authored/lanternwing-back.png",
+        "authoredSha256": "57954cd59daedf0ec2e5009d6d719dcb23c8cd8c97ad9776fa5bf101ab4b841b"
       }
     },
     "brambleboar": {
@@ -836,8 +848,8 @@
         "pickedAt": "2026-10-18T09:35:23.650Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/sandnip-front.png",
-        "previousAuthoredSha256": "e96958901be71619b089a2acde951c43f40d488f60e97c06d8e38425405a456b",
-        "authoredSha256": "00dc17c75f7101fbd8410b2442230b504b788ca3bba29dd5696238f9f7ff1ddd"
+        "previousAuthoredSha256": "00dc17c75f7101fbd8410b2442230b504b788ca3bba29dd5696238f9f7ff1ddd",
+        "authoredSha256": "2e17f41528ab704a9cb3ddd3aefbbf07d4973f2fe40e50d4a5fd6090b3a56fbf"
       },
       "back": {
         "grid": "grids/sandnip-back.png",
@@ -846,7 +858,9 @@
         "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style, proportions and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile are visible; NO eyes are visible from behind - draw no eyes, no pupils, no face features at all on the back view (keep the dark outline, no dark dots on the head); the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Keep the exaggerated signature feature (a short thick curled tail ending in a round pink crystal bulb almost as big as its head, held up over its back) just as big and just as prominent as in the reference - it must still dominate the silhouette from behind. Keep the chibi proportions: the head stays big and round, the body short and plump. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
         "block": 12,
         "pickedAt": "2026-10-18T10:03:35.012Z",
-        "note": "2026-10-18-캠페인-전종-하네스"
+        "note": "2026-10-18-캠페인-전종-하네스",
+        "authored": "authored/sandnip-back.png",
+        "authoredSha256": "166d89da0e8b27426b4a20eb070dbb57b8d8f021626791dc49b21d4d845f76e9"
       }
     },
     "flurrykit": {
@@ -905,8 +919,8 @@
         "pickedAt": "2026-10-18T09:36:23.535Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/dozemite-front.png",
-        "previousAuthoredSha256": "473dbfbdb5d4fe5e4819cc939c223d6cf2387c69843875e098c2289a5ae36bb4",
-        "authoredSha256": "f37da038e4bbfdf049ed89ae1ba706f6c334729a8b2b5b213b1878197754b585"
+        "previousAuthoredSha256": "f37da038e4bbfdf049ed89ae1ba706f6c334729a8b2b5b213b1878197754b585",
+        "authoredSha256": "d7e5a91a093fadc1b8d4c579352f1aeb9c08d3e58737dafcfa2f91a6e03e29dd"
       },
       "back": {
         "grid": "grids/dozemite-back.png",
@@ -915,7 +929,9 @@
         "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style, proportions and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile are visible; NO eyes are visible from behind - draw no eyes, no pupils, no face features at all on the back view (keep the dark outline, no dark dots on the head); the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Keep the exaggerated signature feature (two very long curly antennae rising from its head, each ending in a round mint-green dream bubble almost as big as its eye) just as big and just as prominent as in the reference - it must still dominate the silhouette from behind. Keep the chibi proportions: the head stays big and round, the body short and plump. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
         "block": 10,
         "pickedAt": "2026-10-18T10:04:16.785Z",
-        "note": "2026-10-18-캠페인-전종-하네스"
+        "note": "2026-10-18-캠페인-전종-하네스",
+        "authored": "authored/dozemite-back.png",
+        "authoredSha256": "aba868fe4f8d23a7c22227925b3451f6a9709893bad283bb4c075c774119697a"
       }
     },
     "threadimp": {
@@ -1018,8 +1034,8 @@
         "pickedAt": "2026-10-18T09:46:48.772Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/solmane-front.png",
-        "previousAuthoredSha256": "38d6753d42bfb2d8021ffbbae7d7272e1519639929a142659827056cc4e11f32",
-        "authoredSha256": "fba27cef2f2f37060dba54ee6b120fc720f48c598a9b91e52256cf44b6a2a769"
+        "previousAuthoredSha256": "fba27cef2f2f37060dba54ee6b120fc720f48c598a9b91e52256cf44b6a2a769",
+        "authoredSha256": "19e9e7abd9b9ea2cef4d8c3f69aba3ac2134e07bbc9173d0142ff9344a00fba8"
       },
       "back": {
         "grid": "grids/solmane-back.png",
@@ -1028,7 +1044,9 @@
         "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style, proportions and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile are visible; NO eyes are visible from behind - draw no eyes, no pupils, no face features at all on the back view (keep the dark outline, no dark dots on the head); the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Keep the exaggerated signature feature (a gigantic blazing sun mane around its whole head, shaped like a big round sunburst of pointed orange and gold flame spikes, wider than its body) just as big and just as prominent as in the reference - it must still dominate the silhouette from behind. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
         "block": 9,
         "pickedAt": "2026-10-18T10:06:13.451Z",
-        "note": "2026-10-18-캠페인-전종-하네스"
+        "note": "2026-10-18-캠페인-전종-하네스",
+        "authored": "authored/solmane-back.png",
+        "authoredSha256": "a39e431d45c3f7d5ec0dbc72c30f637112255f95955986d1798411d95f2b92fd"
       }
     },
     "lunavane": {
@@ -1041,8 +1059,8 @@
         "pickedAt": "2026-10-18T09:47:04.025Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/lunavane-front.png",
-        "previousAuthoredSha256": "b666b9ab6a7aa6c749fd5c0c156fa900c4476412b682e9d4421b04211bde26fa",
-        "authoredSha256": "f5a604b11ce9543b967d952f26a4918e30709d91c040000575e5b171dc2dd9dd"
+        "previousAuthoredSha256": "f5a604b11ce9543b967d952f26a4918e30709d91c040000575e5b171dc2dd9dd",
+        "authoredSha256": "acd36e95cbd08632337a023f905af9b6655442a8f9a0b659ce568cfbb21cc2f8"
       },
       "back": {
         "grid": "grids/lunavane-back.png",
@@ -1051,7 +1069,9 @@
         "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style, proportions and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile are visible; NO eyes are visible from behind - draw no eyes, no pupils, no face features at all on the back view (keep the dark outline, no dark dots on the head); the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Keep the exaggerated signature feature (two gigantic wide wing fins spread out to both sides like a moonlit kite, much wider than its body, with four bright mint-green star spots on them) just as big and just as prominent as in the reference - it must still dominate the silhouette from behind. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
         "block": 10,
         "pickedAt": "2026-10-18T10:06:34.706Z",
-        "note": "2026-10-18-캠페인-전종-하네스"
+        "note": "2026-10-18-캠페인-전종-하네스",
+        "authored": "authored/lunavane-back.png",
+        "authoredSha256": "0c04d5abdc5831ee1b98c43d69692b295fb23278176a5ba8a8165aa43ad0dc50"
       }
     },
     "relicarab": {
@@ -1087,8 +1107,8 @@
         "pickedAt": "2026-10-18T09:38:37.978Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/astralhart-front.png",
-        "previousAuthoredSha256": "a8493a6796638939b5385aa38894ba362ccc2b33e5f45fa8dd93c6be028be0a7",
-        "authoredSha256": "7e43cbcb6f91e87debe4b1255f6f1ce0bfc9f3013d77d4173e7137feedc52a5e"
+        "previousAuthoredSha256": "7e43cbcb6f91e87debe4b1255f6f1ce0bfc9f3013d77d4173e7137feedc52a5e",
+        "authoredSha256": "73eac64709d9a817be8fef68a1c02dee4debeac5bda3509ebc3cc1fb980c19aa"
       },
       "back": {
         "grid": "grids/astralhart-back.png",
@@ -1097,7 +1117,9 @@
         "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style, proportions and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile are visible; NO eyes are visible from behind - draw no eyes, no pupils, no face features at all on the back view (keep the dark outline, no dark dots on the head); the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Keep the exaggerated signature feature (a gigantic pair of glowing antlers branching like a starry tree, wider and taller than its body, with small pale-yellow star lights on every tip) just as big and just as prominent as in the reference - it must still dominate the silhouette from behind. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
         "block": 12,
         "pickedAt": "2026-10-18T10:05:35.800Z",
-        "note": "2026-10-18-캠페인-전종-하네스"
+        "note": "2026-10-18-캠페인-전종-하네스",
+        "authored": "authored/astralhart-back.png",
+        "authoredSha256": "394b2f67e33349ee406d39e8cac7b9ece238d60c83fee6af128733b32fc62e7f"
       }
     },
     "dunestalk": {
@@ -1225,8 +1247,8 @@
         "pickedAt": "2026-10-18T10:08:15.378Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/trancescythe-front.png",
-        "previousAuthoredSha256": "62d01d78ef52d0e9edfc8ef062b3fc73b7d38803caeefe9317f6d546dc940c1d",
-        "authoredSha256": "960212ac3074a1477864aa5e0cfd3a164464484f3a613abf7684725d991464b2"
+        "previousAuthoredSha256": "960212ac3074a1477864aa5e0cfd3a164464484f3a613abf7684725d991464b2",
+        "authoredSha256": "2f1469a73c4121e00d14398c3700d324cd7eaed8b376009735e9bbd2d8c762ec"
       },
       "back": {
         "grid": "grids/trancescythe-back.png",
@@ -1235,7 +1257,9 @@
         "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style, proportions and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile are visible; NO eyes are visible from behind - draw no eyes, no pupils, no face features at all on the back view (keep the dark outline, no dark dots on the head); the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Keep the exaggerated signature feature (two huge curved scythe arms, each as long as its body, with thin glowing mint-green membranes along the blades) just as big and just as prominent as in the reference - it must still dominate the silhouette from behind. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
         "block": 11,
         "pickedAt": "2026-10-18T10:19:09.229Z",
-        "note": "2026-10-18-캠페인-전종-하네스"
+        "note": "2026-10-18-캠페인-전종-하네스",
+        "authored": "authored/trancescythe-back.png",
+        "authoredSha256": "c5c682b9432d7bcf368b9ce3a7a130fe669e7bfd3d6ba70a7be0d12a3992a310"
       }
     },
     "miragespike": {
@@ -1271,8 +1295,8 @@
         "pickedAt": "2026-10-18T10:17:57.676Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/glaciermane-front.png",
-        "previousAuthoredSha256": "a29763f52320c0e8c9667814c1293979750f6cc1acb714d2fec395ca6e1b6d66",
-        "authoredSha256": "c3f45b9527fbc82229a610606ae41a859a5cf431172a887a775beed83e8091c9"
+        "previousAuthoredSha256": "c3f45b9527fbc82229a610606ae41a859a5cf431172a887a775beed83e8091c9",
+        "authoredSha256": "3c8f003d36ba6d5ce46ecbe6209de76e7a2eb4f572a80d8abb22fc030665197c"
       },
       "back": {
         "grid": "grids/glaciermane-back.png",
@@ -1281,7 +1305,9 @@
         "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style, proportions and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile are visible; NO eyes are visible from behind - draw no eyes, no pupils, no face features at all on the back view (keep the dark outline, no dark dots on the head); the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Keep the exaggerated signature feature (a gigantic mane of sharp lavender-blue ice crystals rising from its head and shoulders like a crown of glacier shards, taller than its head) just as big and just as prominent as in the reference - it must still dominate the silhouette from behind. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
         "block": 8,
         "pickedAt": "2026-10-18T10:33:33.013Z",
-        "note": "2026-10-18-캠페인-전종-하네스"
+        "note": "2026-10-18-캠페인-전종-하네스",
+        "authored": "authored/glaciermane-back.png",
+        "authoredSha256": "1728a4a9abbb32c36e73e0b0e88360a6e3ecce8ce1917720ce2f43304cba973e"
       }
     },
     "marshcrown": {
@@ -1317,8 +1343,8 @@
         "pickedAt": "2026-10-18T10:32:42.925Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/oraclemantis-front.png",
-        "previousAuthoredSha256": "7f4d3e75322ea61bed394e173fde553730b3861ae3c6c9e9ca647b406d9c4ee5",
-        "authoredSha256": "03ed21519868a8cbf06b80127f79b144017afbd9f532e7d48bff2d9ea0de12ec"
+        "previousAuthoredSha256": "03ed21519868a8cbf06b80127f79b144017afbd9f532e7d48bff2d9ea0de12ec",
+        "authoredSha256": "30c1ad8e83fb0fdfd989a506d12965cff689e9c0a1eb974741c130f513ac02ab"
       },
       "back": {
         "grid": "grids/oraclemantis-back.png",
@@ -1327,7 +1353,9 @@
         "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style, proportions and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile are visible; NO eyes are visible from behind - draw no eyes, no pupils, no face features at all on the back view (keep the dark outline, no dark dots on the head); the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Keep the exaggerated signature feature (a gigantic diamond-shaped mint-green crystal on its forehead with two wide glowing wing-like sheets of light spreading behind its shoulders, wider than its body) just as big and just as prominent as in the reference - it must still dominate the silhouette from behind. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
         "block": 9,
         "pickedAt": "2026-10-18T10:39:12.904Z",
-        "note": "2026-10-18-캠페인-전종-하네스"
+        "note": "2026-10-18-캠페인-전종-하네스",
+        "authored": "authored/oraclemantis-back.png",
+        "authoredSha256": "86224e83e004929f8e49532e4335c85a17e699f1e4a7343d916e2b7e66d5ae27"
       }
     },
     "veilmaster": {
