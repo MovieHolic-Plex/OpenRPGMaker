@@ -100,6 +100,14 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → `interview-scene-bank` · 시드 `harness-data/interview-scene-bank/seed.json` · 문서 `openwiki/harnesses/interview-scene-bank.md`
   → 1,457개 선택 조합을 계획하고, 원본 도트 규격과 해시에 묶인 실제 그림 검수를 모두 통과한 배경만 배포한다.
 
+## 코딩 에이전트의 에셋 스토어 제출 (hard rule, 2026-10-20)
+
+**코딩 에이전트(Claude Code·omp·Codex 등)가 만든 그림·소리를 store.openrpgmaker.com 에 올릴 때는 `npm run -s store -- publish <팩 폴더> --agent "<도구·모델>"` 하나만 쓴다.**
+팩 폴더는 `npm run -s store -- init <폴더> --kind … --title … --license … --file …` 로 만든다. 토큰은 주인이 발급한 에이전트 토큰 파일
+`~/.config/oprn-store/agent-token`(권한 600)에서 읽는다 — 값을 출력·커밋·채팅에 넣지 않는다. 제출은 **항상 확인 대기**이고 주인이 `/admin` 에서 공개한다.
+「공개됐다」가 아니라 「확인 대기로 제출(url)」로 보고한다. 타사 소재(Rasak·REFMAP·PAW·MV/MZ·RTP) 금지, 타일·기물 시트는 3/4 관문 영수증 필수(지금은 보정 전이라 막힌다 — 우회 금지).
+운영자 세션·`STORE_LINK_TOKEN`·서버 셸로 대신 올리지 않는다. 문서 `openwiki/store-agent-contribution.md`, 스킬 `assistant-skills/store-contribution/SKILL.md`.
+
 새 하네스를 만들면 `src/harnesses/<id>/` 폴더 하나에 두고, `src/harnesses/_core/registry.ts` 에 등록하고,
 `npm run harness -- list` 로 INDEX 를 다시 쓰고, 이 목록에 한 줄을 더한다.
 
@@ -126,6 +134,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - Editor AI panel & tools: `openwiki/editor-ai-panel.md` + `openwiki/editor-ai-tools.md`
    - Editor misc workflows: `openwiki/editor-workflows-misc.md`
    - 에디터 「공방」 (하네스를 에디터 안에서 사용자 계정 모델로 돌리기 — 왼쪽 막대, 실행기·저장·표면): `openwiki/editor-workshop.md`
+   - 코딩 에이전트의 스토어 제출 (`npm run -s store`, 에이전트 토큰·확인 대기·검사 목록): `openwiki/store-agent-contribution.md`
    - 에셋 스토어 (편집기 안 공용 장터 — 팩 형식 `oprn-store-pack/1`, 프로젝트에 넣기·출처·크레딧, Electron 중계, 서버는 비공개 `OpenRPGMaker-store` 저장소, 게시기 `scripts/store/`(주소는 환경 변수만), Rasak·REFMAP·MV·PAW 제외 집행 지점): `openwiki/asset-store.md`
    - Editor validation: `openwiki/editor-validation.md`
    - **타일을 저작하는 모든 에이전트:** 먼저 현재 프로젝트의 `타일 → 참고문서 → 해당 용도`를 읽어라. `list_tileset_references`로 용도/자료 목록을 조회하고 `read_tileset_reference`로 MD 전 페이지와 실제 이미지를 확인한 뒤 배치한다. 코딩 에이전트는 정본(SQLite 호스트) 프로젝트를 읽어 `scripts/content/export-tileset-references.mjs`로 추출하고 이미지를 직접 연다. 이전 대화나 저장소의 옛 학습 문서만으로 대체하지 않는다. 구현·도구 계약은 `openwiki/tileset-reference-documents.md`.
