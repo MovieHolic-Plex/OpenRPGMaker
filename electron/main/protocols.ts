@@ -71,7 +71,17 @@ async function staticFileResponse(target: string): Promise<Response> {
 
 export function registerAppProtocol(rendererDir: string, activityLogBaseDir: () => string, companionOrigin: () => string | null = () => null): void {
   const root = resolve(rendererDir);
-  protocol.handle(OPRN_APP_SCHEME, async (request) => {
+  // OPRN_IPC_TIMING=1 이면 느린(30ms+) 요청을 stderr 에 남긴다 — 시작 속도 측정기용.
+  const timing = process.env.OPRN_IPC_TIMING === "1";
+  protocol.handle(OPRN_APP_SCHEME, !timing ? (request) => handleAppRequest(request) : async (request) => {
+    const started = performance.now();
+    try { return await handleAppRequest(request); }
+    finally {
+      const elapsed = performance.now() - started;
+      if (elapsed >= 30) process.stderr.write(`[ipc-timing] app:${new URL(request.url).pathname} ${Math.round(elapsed)}ms at ${Math.round(started)}\n`);
+    }
+  });
+  async function handleAppRequest(request: Request): Promise<Response> {
     const url = new URL(request.url);
     const origin = companionOrigin();
     if (origin && isCompanionPath(url.pathname)) {
@@ -132,7 +142,7 @@ export function registerAppProtocol(rendererDir: string, activityLogBaseDir: () 
     }
     if (!existsSync(target)) return new Response("not found", { status: 404 });
     return staticFileResponse(target);
-  });
+  }
 }
 
 export function registerAssetProtocol(sessions: SessionRegistry): void {
