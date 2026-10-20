@@ -209,7 +209,7 @@ def export_gate(out=None):
         p = os.path.join(out, kt['id'] + '.png')
         Image.fromarray(renders[kid]).save(p)
         part = kid.split('-')[2]
-        lines.append(json.dumps(dict(png=p, kind='organic', name=names.get(part, 'forest piece') + (' (bamboo)' if '-bb-' in kid else ''), label='jp_city/' + kt['id'])))
+        lines.append(json.dumps(dict(png=os.path.relpath(p, ROOT), kind='organic', name=names.get(part, 'forest piece') + (' (bamboo)' if '-bb-' in kid else ''), label='jp_city/' + kt['id'])))
     # 수관 오토타일 표본: 6×4 마스크 지도
     for k, kind, _ in KINDS:
         kit = F.Kit(kind)
@@ -222,7 +222,7 @@ def export_gate(out=None):
                 F.over(img, kit.tiles[m] if m != 255 else kit.interior[0][F.cell_hash(xx, yy) % len(kit.interior[0])], xx * 16, yy * 16)
         p = os.path.join(out, f'jp-forest-{k}-canopy-sample.png')
         Image.fromarray(img).save(p)
-        lines.append(json.dumps(dict(png=p, kind='organic', name='forest canopy autotile sample' + (' (bamboo)' if k == 'bb' else ''), label=f'jp_city/jp-forest-{k}-canopy')))
+        lines.append(json.dumps(dict(png=os.path.relpath(p, ROOT), kind='organic', name='forest canopy autotile sample' + (' (bamboo)' if k == 'bb' else ''), label=f'jp_city/jp-forest-{k}-canopy')))
     jl = os.path.join(out, 'items.jsonl')
     open(jl, 'w', encoding='utf-8').write('\n'.join(lines) + '\n')
     return jl
