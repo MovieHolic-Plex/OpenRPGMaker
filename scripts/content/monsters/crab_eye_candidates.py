@@ -174,6 +174,7 @@ def apply_pick(out: Path, pick: str) -> None:
     entry = table["species"][sid]
     entry.update({"style": "hand", "near": cand["near"], "second": cand["second"], "picked": f"user-pick {key} ({cand['sha256'][:12]})"})
     entry.pop("pending", None)
+    entry["patch"] = {"from": current, "to": cand["sha256"], "source": f"crab_eye_candidates.py user-pick {key}"}
     entry.pop("accept", None)
     rows = ",\n".join(f"    {json.dumps(k)}: {json.dumps(v, ensure_ascii=False)}" for k, v in table["species"].items())
     table_path.write_text('{\n  "version": 1,\n  "species": {\n' + rows + "\n  }\n}\n", encoding="utf-8")
