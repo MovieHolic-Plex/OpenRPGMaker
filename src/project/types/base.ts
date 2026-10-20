@@ -606,6 +606,10 @@ export interface AutotileGroup {
   // [0] 2칸 안에 이어지지 않은 칸이 있는 속, [1] 그보다 깊은 속. 칠하는 도구가 칸 위치 해시로 고른다
   // (autotileEngine.shadeAutotileInterior). 굽이숲 수관의 잎 채움(forestGrove.ts)이 쓴다.
   interiorVariants?: number[][];
+  // 위치 위상 변형(2026-10-20 jp 숲 r3): 칸 그림이 이웃 마스크뿐 아니라 (x mod w, y mod h) 에도 달린다.
+  // 여러 칸에 걸친 수관처럼 세계 좌표로 이어지는 그림을 오토타일로 칠하기 위한 것이다. maps[(y%h)*w + x%w] 는 8방 마스크(정규화된 47 키 또는 256 키) → 칸.
+  // 키가 없으면 variantMap 으로 내려간다. 좌표를 모르는 호출(autotileVariantForMask 의 x,y 생략)도 variantMap 을 쓴다.
+  phaseVariants?: { w: number; h: number; maps: Record<string, number>[] };
   // 이웃을 세고 모양을 바꾸는 레이어. 생략 = lower. "upper" 는 바닥 위에 겹치는 투명 오토타일
   // (RPG Maker MV A2 오른쪽 절반의 울타리·주차선·균열처럼)이다 — 아래층 지면을 지우지 않는다.
   layer?: "lower" | "upper";

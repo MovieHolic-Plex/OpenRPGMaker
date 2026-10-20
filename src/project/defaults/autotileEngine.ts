@@ -196,7 +196,26 @@ export function autotileGroupLayerView(
 }
 
 // 비트마스크에 매핑된 변형 타일. 없으면 undefined.
-export function autotileVariantForMask(group: AutotileGroup, mask: number): number | undefined {
+/** 8방 마스크 정규화 — 대각 비트는 맞닿은 두 변이 다 이어졌을 때만 남긴다(47 키). */
+export function canonicalAutotileMask8(mask: number): number {
+  const { N, E, S, W, NE, SE, SW, NW } = AUTOTILE_DIR;
+  let c = mask & (N | E | S | W);
+  if ((mask & NE) && (mask & N) && (mask & E)) c |= NE;
+  if ((mask & SE) && (mask & S) && (mask & E)) c |= SE;
+  if ((mask & SW) && (mask & S) && (mask & W)) c |= SW;
+  if ((mask & NW) && (mask & N) && (mask & W)) c |= NW;
+  return c;
+}
+
+/** 마스크 → 변형 칸. 칸 좌표(x,y)를 주면 위치 위상 변형(phaseVariants)을 먼저 본다. */
+export function autotileVariantForMask(group: AutotileGroup, mask: number, x?: number, y?: number): number | undefined {
+  const phase = group.phaseVariants;
+  if (phase && x !== undefined && y !== undefined && phase.w > 0 && phase.h > 0) {
+    const px = ((x % phase.w) + phase.w) % phase.w, py = ((y % phase.h) + phase.h) % phase.h;
+    const table = phase.maps[py * phase.w + px];
+    const hit = table?.[String(mask)] ?? table?.[String(canonicalAutotileMask8(mask))];
+    if (typeof hit === "number") return hit;
+  }
   const value = group.variantMap[String(mask)];
   return typeof value === "number" ? value : undefined;
 }
@@ -217,7 +236,7 @@ export function autotileVariantForCell(map: AutotileMapView, group: AutotileGrou
   if (!members.has(current)) return undefined;
   const connect = connectSet(group);
   const mask = autotileNeighborMask(map, x, y, (tile) => connect.has(tile), group.neighborhood ?? 4, group.edgeConnects === true || group.outsideConnects === true);
-  return autotileVariantForMask(group, mask);
+  return autotileVariantForMask(group, mask, x, y);
 }
 
 // 편집된 이전/다음 타일이 이 그룹의 재계산을 유발하는지 판정한다.
@@ -256,7 +275,7 @@ export function shapeAutotileGroupAround(
       const current = tileAt(map, cx, cy);
       if (typeof current !== "number" || !members.has(current)) continue;
       const mask = autotileNeighborMask(map, cx, cy, isConnected, neighborhood, edgeConnects);
-      const variant = autotileVariantForMask(group, mask);
+      const variant = autotileVariantForMask(group, mask, cx, cy);
       if (variant === full && interior.has(current)) continue;
       if (typeof variant === "number") map.lowerTiles[cy * map.width + cx] = variant;
     }

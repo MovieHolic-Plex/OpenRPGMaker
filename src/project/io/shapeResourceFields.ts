@@ -383,6 +383,16 @@ export function validateTileset(id: string, value: unknown): void {
         requireNumber(`tileset ${id}.autotileGroups[${index}].variantMap[${mask}]`, variant);
       }
       if (record.edgeConnects !== undefined) requireBoolean(`tileset ${id}.autotileGroups[${index}].edgeConnects`, record.edgeConnects);
+      if (record.phaseVariants !== undefined) {
+        const phase = requireRecord(`tileset ${id}.autotileGroups[${index}].phaseVariants`, record.phaseVariants);
+        requireNumber(`tileset ${id}.autotileGroups[${index}].phaseVariants.w`, phase.w);
+        requireNumber(`tileset ${id}.autotileGroups[${index}].phaseVariants.h`, phase.h);
+        for (const [p, table] of requireArray(`tileset ${id}.autotileGroups[${index}].phaseVariants.maps`, phase.maps).entries()) {
+          for (const [mask, tileId] of Object.entries(requireRecord(`tileset ${id}.autotileGroups[${index}].phaseVariants.maps[${p}]`, table))) {
+            requireNumber(`tileset ${id}.autotileGroups[${index}].phaseVariants.maps[${p}][${mask}]`, tileId);
+          }
+        }
+      }
       if (record.interiorVariants !== undefined) {
         for (const [depth, tier] of requireArray(`tileset ${id}.autotileGroups[${index}].interiorVariants`, record.interiorVariants).entries()) {
           for (const tileId of requireArray(`tileset ${id}.autotileGroups[${index}].interiorVariants[${depth}]`, tier)) {
