@@ -1,0 +1,385 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "97bef01f877de94360fda1a1898fc61f89f0beaae5f5bf5bd107febd10b33ff3",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "mart donut case",
+ "label": "modern_city_interior/mart-donut-case",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 2행 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 2행 < 4 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 21,
+  "tileColorsP90": 22,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header band (cream and pink stripe)",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass display with donuts on shelves",
+      "rows": "7-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base panel (cream and pink)",
+      "rows": "24-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole case is a flat front view. Rows 1-6 are a cream band over a pink stripe, drawn like a front-facing cornice or valance. There is no distinct front-edge line, no eave shadow and no widening or narrowing ellipse. Rows 7-23 show the donut shelves and a gray vertical divider face-on, and rows 24-29 are a front-facing base panel. No horizontal top surface is visible, and the width stays at 32 on every row from 0 to 30. The case therefore reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a display case with a pale body, pink stripes and rows of donuts. It carries 19 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well, so it matches the richer references. Near-flat coverage is 0%, so there are no flat fills, and the white panels still show variation. Dark edge pixels are 0% neutral, which means the outline leans toward the material colour (brownish or pinkish) and does not read as a black sticker line. I count about 5 shading steps on the body and trim, slightly below the 5-6 on the references. The small donut clusters add texture, though the pale panels are somewhat simpler than the stall's wood grain and awning detail. Overall it holds up beside the references at the same scale.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19381
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice / striped valance",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass display with donuts and shelves",
+      "rows": "7-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base panel with pink band",
+      "rows": "24-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole silhouette is a flat 32-wide rectangle (rows 0-30, width 32). Rows 1-6 are a cream and pink striped strip. It has no front-edge line and no eave shadow, and it does not widen or narrow like an ellipse, so it reads as a front-facing cornice or valance rather than a top surface. Rows 7-23 are the vertical glass front with donuts, shelf bands and a grey centre divider. Rows 24-29 are the base panel. Nothing shows a horizontal top and no side face is drawn, so the case is a pure front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The case is a front-on display with pink and white striped shelves and rows of donuts. Measured facts support it: 19 visible tones per tile, against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, and the dark edge pixels are 0% neutral, so the outlines are tinted (dark brown/rose) rather than a black sticker line. The white and pink bands carry several lightness steps with dither-like speckle, and each donut is shaded separately with icing and hole detail. The shading ramp is somewhat shallower than the reference stall's, at about 4 steps against 5-6, and the form is flatter and more frontal. Even so, it would sit next to the references without looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23568
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header cornice strip (cream with pink stripe)",
+      "rows": "1-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "display compartments with donuts and glass shelf dividers",
+      "rows": "9-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base cabinet with pink panel",
+      "rows": "23-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a 32-wide rectangle for rows 0-30. Rows 1-4 are a cream band and rows 5-6 are a pink stripe, followed by cream rows 7-8. This reads as a front-facing header or cornice strip. There is no distinct lighter or darker front-edge line and no eave shadow rows beneath it. Below it, rows 9-22 are the front faces of the donut shelves, with a gray vertical divider at x=16 over rows 7-23. Rows 23-29 are a base panel, also seen face-on. No ellipse, no visible contents from above and no receding side face appear, so only a 1-2 row rim-like top reads. The piece is a flat front elevation, like the red 'front elevation' and 'rim only' cabinet references."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a front-on display case with striped pink and white panels and rows of donuts on shelves. It reads as a standing prop of the same kind as the stall and well references. The measured facts are at reference level: 19 visible tones per 16x16 tile against 17 for the cheese stall and 20 for the roofed well, and 0% near-flat coverage, so there are no flat fills. Dark edge pixels are 0% neutral, so the outlines lean toward the neighbouring material's colour rather than black, which counts as dark_material_tone. The small image makes the shading hard to read. The pale panels look about 4 steps deep against roughly 6 for Beodeul, and the donut rows add texture dots, so texture is 'some' rather than 'rich'. The case is slightly simpler than the stall and well, but it would sit acceptably next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21522
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header/cornice band (cream with pink stripe)",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass display section with donuts and center divider",
+      "rows": "7-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base cabinet with pink panel",
+      "rows": "24-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Every part is a flat, face-on vertical strip. The cream and pink band at rows 1-6 is a front-facing header with no distinct front-edge line and no dark eave shadow beneath it. Row 7 below it is light cream, not shadow. The glass section (rows 7-23) and the base (rows 24-29) are also face-on. No ellipse, roof plane or visible contents seen from above appear anywhere, so no top surface is drawn. The case reads as a front elevation, like the 'front elevation' and 'rim only' cabinet references."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 19 visible tones per 16x16 tile, against 17 for prop-stall-cheese and 20 for prop-well-roofed, so it matches the same-kind references. Near-flat coverage is 0%, so there are no large flat fills. The pale case body, pink stripes and rows of donuts each carry some variation. None of the dark edge pixels are neutral (0%), so the outline leans toward a tint rather than the black sticker look. By eye the case body has about 4 shading steps, a bit fewer than the roughly 5-6 on the stall and well, but the density and texture are comparable. A careful artist would accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19367
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.066Z",
+ "cells": {
+  "16": [
+   "27dfbee99fb0f7a0",
+   "58917f1189c41a5c",
+   "df02b490ca75f1e2",
+   "e93359135649b3f9"
+  ],
+  "24": [
+   "047c94b8595d9072",
+   "069e0570d58f585b",
+   "06e79da0530c5286",
+   "102e5d348fc24820",
+   "28b0c64328ada11a",
+   "3037aed605993167",
+   "407c11c30f7575c7",
+   "6974040427cb1054",
+   "6f989f6909dbb7f1",
+   "793253be1417f025",
+   "82ca3499823ae8c1",
+   "9218537e92cdb2e7",
+   "9ab0457190ab82c0",
+   "9e8d4b4d7f765ff7",
+   "b115f4d570a24e90",
+   "b68950f26f2bcad0",
+   "c60ed7e65580b9c4",
+   "d3e8ac9ead1dd14a",
+   "d6f375d392ec5f65",
+   "d971063f5bd803d0",
+   "e2ec57994c99f5cc",
+   "f1bc0973f7dc87f9",
+   "f98d7164d893543b",
+   "f9959cad3b56adf2"
+  ],
+  "32": [
+   "1c1274e32d6e67ff"
+  ],
+  "48": [
+   "2e7670a56f996617",
+   "4504f80448b1243d",
+   "6c71a467e58ef485",
+   "92b636365ae1ec40",
+   "c2b74fce5af7a4c9",
+   "ee440bfceb0a4c6f"
+  ]
+ }
+}

@@ -1,0 +1,6 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"P1","view34":"PASS","quality":"PASS","reason":"Clear 6px lit wooden top plane and well-shaded glass vials and conical flasks with readable necks, stoppers, and upper-left speculars."}
+{"id":"P2","view34":"PASS","quality":"PASS","reason":"Solid 3/4 cabinet top plane and varied large/small apothecary jars with distinct lids, stepped shoulders, and clean 3-tone shading."}
+{"id":"P3","view34":"PASS","quality":"PASS","reason":"Readable 6px cabinet top surface and varied book spines with spine bands, height variation, and clean 1x legibility."}
+{"id":"P4","view34":"PASS","quality":"FAIL","reason":"Cabinet has a valid 3/4 top plane, but the gems read as blobby stoppered pots or mushrooms with side handles and muddy brown corner pixels rather than faceted crystals."}

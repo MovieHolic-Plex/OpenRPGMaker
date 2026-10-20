@@ -1,0 +1,305 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "976af342b65f550ce63c43953e6e1456c8bc008be1285d6a481dd6f266dd71e3",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "저울 추 받침(추 2 — 놋쇠) (weight stand 2)",
+ "label": "atlas_biome_interior/plus/weight stand 2",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 15,
+  "darkV5": 58,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "brass weight block",
+      "rows": "0-2",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "4-5"
+     },
+     {
+      "part": "gray base tray",
+      "rows": "8-8",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The brass block is 8 px wide at rows 0-2 and widens to 14 px at rows 3-7. A light highlight line at row 3 (#fff0a0) ends the top band, and darker rows 4-5 follow as eave shadow. The front face runs from rows 4 to 7 with carved marks. Under it, a gray base sits at rows 8-13, with a light rim at row 8 and a front face of about 4 rows (9-12). The base's top is only a 1-row rim, but the brass block is the main body and has a top band with an edge line and shadow, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small single-tile prop, a brass weight stand with a block on top. The measured facts support it. It has 15 distinct colours and a median of 15 per tile, which is above the bench (14 colours) and lamp (14 colours) references and close to the hedge (10 per tile) and stall (17 per tile). Flat-fill coverage is 0%. Dark edge pixels are 0% neutral, so the outline leans brown or brass rather than black, which fits dark_material_tone. By eye, the brass has a highlight, mid and dark ramp with some speckle, about 4 steps against the references' 5. It is not a sticker-like flat shape and does not look thinner or flatter next to the references, so it passes, though it is not the richest piece.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21630
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "brass weight (top block)",
+      "rows": "0-3",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "4-5"
+     },
+     {
+      "part": "stone tray (open top with weight inside)",
+      "rows": "4-8",
+      "evidence": "d",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The grey stone tray has a light front rim line at row 8 and a front face over rows 9-13 (5 rows, graded L 170-196-170-138-56). Above that rim, the tray interior is open and the brass weight sits inside it (contents, evidence d). The brass weight has a lighter top block at rows 0-2, a bright edge line at row 3 (#fff0a0), and a darker face with a pattern below it at rows 4-7. Both parts show a top surface and a front face, so the object reads as three-quarter view, not a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small brass weight stand with a visible highlight-to-shadow ramp, which I read as about 4-5 steps. This is a rough read, because the piece is tiny at board scale. The measured facts back it up. It has 15 colours per tile, above prop-hedge (10) and in line with prop-stall-cheese (17) and prop-well-roofed (20). It has 15 distinct colours in total, comparable to the bench (14) and lamp (14), which are thin props. 5x5 flat-fill coverage is 0%. Neutral dark edge pixels are 0%, so the outline carries a brown/brass tint rather than a black sticker line. It is simple but not flatter or thinner than the references, and a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 28082
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "brass weight (upper block)",
+      "rows": "0-3",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "4-5"
+     },
+     {
+      "part": "gray stone base/tray",
+      "rows": "8-13",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "In column x=8, rows 0-2 are a uniform #bfa045 band that ends in a bright #fff0a0 line at row 3. Darker rows 4-5 follow (#a07818, #5c4108), then the checkered brass front face down to row 7. That is evidence (a) for a roughly 3-row top with a 4-row front face. The band is only 8 wide against the 14-wide body below, so the read is soft. The gray base (rows 8-13) has a 1-row light rim at row 8 and a front face of rows 9-13 (5 rows). It shows no real top surface beyond that rim, so not every major part has a top. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small single-tile prop, about 16x16 px, so I judged it mainly on the measured facts and by eye at this size. It has 15 distinct colours and a median of 15 per tile, which is above the bench and lamp (14 each) and in line with the hedge (10) and stall (17). Flat-fill coverage is 0%. The dark edge pixels are 0% neutral, so the outline is tinted: a dark brown/olive lean next to the brass and wood, not a black sticker line. The brass shows highlight, mid and dark steps with a few grain dots, roughly 4-5 steps against about 5 on the references. It is a little simpler than the larger stall and well, but a careful artist would accept it beside the bench and lamp without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 32017
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "brass weight block on top",
+      "rows": "0-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "grey stone/metal stand base (rim and tray opening)",
+      "rows": "7-8",
+      "evidence": "d",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The brass weight (rows 0-5) is a lit top band with highlight rows, ending in a lighter edge line at row 6 and followed by dark shadow at rows 7-8 (column x=8: L=197 at row 6, then #7e5c10 and #3a2600). It sits in a grey base whose white front rim is at row 8 and whose front face is rows 9-13 (5 rows, shaded light to dark with a dark outline at row 13). The silhouette is a 14px-wide body with a narrower 8px weight on top. A top surface plus a front face of at least 3 rows reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small single-tile brass weight stand. It has 15 distinct colours and a median of 15 per full tile, which is above the hedge (10) and close to the stall (17) and well (20) tiles. Flat-fill coverage is 0%, so there are no 5x5 blocks of one colour. None of its dark edge pixels are neutral (0%), so the outline leans warm brown, a darker tone of the brass and wood next to it, not a black sticker line. It shows roughly 5 lightness steps on the brass, with a bright highlight, mid and dark tones and a deep shadow, plus some speckle variation. It is small and simple, but it does not look thinner or flatter than the references of the same kind. The bench (14 colours) and lamp (14 colours) are just as compact, and the lamp's outline is fully neutral, so the candidate is not weaker than those.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 27315
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:38.687Z",
+ "cells": {
+  "16": [
+   "0fa0977bc1c9f108"
+  ],
+  "24": [
+   "0304c4f4211bed09",
+   "07ca3bb1ce86e2b1",
+   "25b03395625137ed",
+   "27535a323f7a0a69",
+   "7464695d9f88bb21",
+   "a71fecec06341a18"
+  ],
+  "32": [
+   "0632710e1c141272",
+   "2dc7fe0294fd71cd",
+   "3f91d895e410ca96",
+   "656b1012547a6cc7",
+   "940fff85f9300a81",
+   "d21c4efa8a1800ef"
+  ],
+  "48": [
+   "35345e68cccad0ed",
+   "5cc2062a08b684e8",
+   "60d60a6840d2bbc5",
+   "686e4e9f633a8eb2",
+   "bced1b8b16132dd0",
+   "cf4139a13398f4ec"
+  ]
+ }
+}

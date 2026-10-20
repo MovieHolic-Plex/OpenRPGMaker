@@ -1,0 +1,416 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "560dd9cefaa56a90b66d477b5017b7bd0365d076f3c828a77a274b60457577ff",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "svc-barber-chair",
+ "label": "seats34/modern_city_interior/svc-barber-chair",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (3/4)",
+  "3/4: 윗면 2행 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (3/4)",
+   "윗면 2행 < 4 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "headrest",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest",
+      "rows": "14-19",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests",
+      "rows": "18-24",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion",
+      "rows": "20-21",
+      "evidence": "none",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23-24"
+     },
+     {
+      "part": "pole and footrest base",
+      "rows": "25-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The seat cushion is the lighter red band at rows 20-21 (#ee6c6c). Row 22 (#e05060) is slightly darker and acts as the front edge. Rows 23-24 darken (#a82030, #7a1824) as the front face, and the silhouette narrows from 16 to 14 to 12 px. The sitting surface is therefore only a 2-row strip, with no ellipse or foreshortened plane. The seat is only a strip, like the 'seat: band 2' reference. The rows above (headrest 10-13, backrest 14-19) read as vertical faces and are exempt as seat_back. The base (rows 25-31) is a narrow pole with thin footrest bars, so it adds no top surface. The drawing reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small red barber chair on a grey base, about one tile in size. It has 13 visible tones per tile, which is above prop-hedge (9) and below prop-well-roofed (20) and prop-stall-cheese (17). Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, which means the outline is tinted, a dark red-brown beside the red upholstery, rather than a black sticker line. The red cushion shows highlight, mid, dark and deep steps, and the grey chrome base shows about 3 steps. That gives roughly 4 steps for the main material against about 5 in the references. The shading and grain are a bit more compact than the larger references, but a careful artist would accept it next to them. It does not look thinner, flatter or more sticker-like than the hedge or the bench.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20424
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "headrest",
+      "rows": "10-13",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest cushion",
+      "rows": "13-19",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests",
+      "rows": "18-24",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion",
+      "rows": "20-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal and footrest base",
+      "rows": "25-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The seat cushion (rows 20-24) repeats the backrest's face-on shading: a light highlight at rows 20-21, a mid tone at row 22, then darker rows 23-24. The width profile (16 at rows 18-22, 14 at row 23, 12 at row 24) only rounds off the bottom and never widens then narrows into an ellipse. There is no front-edge line and no eave shadow, so at most a 2-row highlight reads as a top. The backrest, headrest and armrests are exempt as seat_back. The pedestal and footrest below (rows 25-31) are vertical faces, so the whole chair is drawn as a front elevation with no real seat top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small red barber chair, about one tile in size. It measures 13 visible tones per tile, which sits between prop-hedge (9) and prop-stall-cheese (17) and below prop-well-roofed (20). Its near-flat coverage is 0%, so there are no flat fills. Its dark edge pixels are 0% near-neutral, so the outline carries a tint. By eye it reads as a dark red-brown beside the red upholstery, not a black sticker line. The cushion and back show roughly 4-5 lightness steps (highlight, light, mid, dark, deep), and the grey chrome base and footrest add a separate small ramp. Texture is moderate, mostly highlights and form shading rather than grain. That is slightly simpler than the stall or well, but it is acceptable for a single small furniture piece, and it does not look thinner or flatter than the hedge or bench references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19089
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "headrest",
+      "rows": "10-12",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest cushion",
+      "rows": "14-19",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests",
+      "rows": "18-24",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion top",
+      "rows": "20-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23-24"
+     },
+     {
+      "part": "footrest plate",
+      "rows": "26-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat cushion at rows 20-24 has a light top band at rows 20-21 (L=147). Row 22 (#e05060) is a slightly darker transition line, and rows 23-24 are dark shading, with the silhouette narrowing from 16 to 14 to 12 wide. That gives about 3 rows of seat top, with a 2-row front lip below. Below the seat, the pedestal and footrest at rows 25-31 add more front face. The backrest, headrest and armrests are vertical faces and are exempt as seat_back. The top reading is marginal because the seat repeats the backrest's highlight-to-shadow gradient, so it could also be read as a face-on cushion."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small red barber chair with a grey chrome base, about one tile in size. It shows 13 visible tones per tile, above prop-hedge (9) and close to the stall (17) and well (20). Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, so the outline leans toward dark red-brown beside the cushion and darker grey-blue beside the metal, not a black sticker line. The red upholstery has highlight, mid, shadow and deep steps, and the metal base has a few more. That gives about 5 steps against Beodeul's 5-6. Texture is modest, mostly shaded form with little speckle or grain. For a small, simple single-tile prop this is acceptable next to the references and does not look thinner or flatter than the hedge.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22257
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "headrest",
+      "rows": "10-13",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest cushion",
+      "rows": "14-19",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests (grey)",
+      "rows": "18-24",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion",
+      "rows": "20-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "footrest and base",
+      "rows": "25-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The seat cushion (rows 20-24) repeats the shading of the backrest above it (rows 14-19): light rows 20-21, a mid row 22, then darker rows 23-24. This reads as one face-on cushion, not a horizontal surface. There is no edge line, no eave shadow and no widening-then-narrowing ellipse. Width only grows to 16 and then shrinks to 14 and 12 at the bottom, which is a rounded cushion outline. At most the top 2 rows (20-21) could be a seat top, which is a band or strip. The grey pole and footrest (rows 25-31) are thin vertical elements. The backrest, headrest and armrests are exempt, but the seat itself shows no real top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small red barber chair with a chrome base. It shows about 13 visible tones in a single tile, which is above prop-hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so no large flat fills. Its dark edge pixels are 0% neutral, so the outlines lean dark red or dark material tone rather than the black sticker look. The red cushion and back carry about 4-5 steps with highlights, and the grey metal base has several steps too. Texture is moderate: the small size limits grain, but the shaded forms read clearly. Next to the references it looks no thinner or flatter than the hedge or bench, so a careful artist would accept it.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19738
+  }
+ ],
+ "decidedAt": "2026-10-20T14:09:20.709Z",
+ "cells": {
+  "16": [
+   "b1ff42a17b3ef1b1",
+   "e7e5ea9d09986946"
+  ],
+  "24": [
+   "2e8499366a4fff09",
+   "38ef27a0c112775b",
+   "4889660353b8a85e",
+   "72734a06398a0274",
+   "89a5363f279806b9",
+   "9c63f6e97b4b9de0",
+   "a0fa3e84ba8e8f93",
+   "d760d529df29f182",
+   "e0df0f81b7ab5218"
+  ],
+  "32": [
+   "5a55499397b40938",
+   "92d8db669d975dca",
+   "c685fe8aa770b6cc"
+  ],
+  "48": [
+   "0144a419121b2f19",
+   "18a921c73299aaf9",
+   "2867423bc9c157da",
+   "7ec676433db2723f",
+   "c00977b4a81959b5",
+   "eda37135f0ad032f"
+  ]
+ }
+}

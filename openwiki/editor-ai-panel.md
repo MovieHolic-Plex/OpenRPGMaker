@@ -1,5 +1,43 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 로컬 에이전트 CLI 엔진 — `local-cli:claude|codex|gemini` (2026-10-20, opt-in)
+
+방향: 조수 LLM 루프를 우리가 구독 OAuth 로 중계하지 않는다. 사용자가 직접 로그인한 순정 `claude -p` · `codex exec` · `gemini` 가 돈다.
+키·토큰은 읽지도 옮기지도 않는다(로그인 여부만 각 CLI 의 상태 명령으로). 설계 그림: `http://mdc-server:18301/assistant-local-agent-1.html`.
+기본 엔진은 아직 기존 Pi 엔진이다(D1: 동등성 입증 뒤 기본 전환, D2: 그때 Google 로그인 Argon 경로 제거).
+
+- **한 런타임, 두 운전기.** `runPiAgent`(scripts/lib/piAgentRuntime.ts)가 `PiLoopDriver{subscribe,prompt,steer,abort}` 하나로 Pi `Agent` 또는
+  `createLocalCliLoop`(scripts/lib/localCliAgent/localCliLoop.ts)를 끼운다. 그래서 도구 표면·실시간 체크포인트·참고문서/칩셋 관문·spatialProof·
+  map_delta·반복 차단·완료 검사·팀 모드(runPiTeam→runPiAgent)·맵 소유권 잠금·병합이 **같은 코드**다. 따로 옮긴 사본이 없다.
+- CLI 루프는 코어 사건 모양을 흉내 낸다(turn_start · tool_execution_start/end · message_end · thinking_delta). 도구는 실행마다 뜨는
+  루프백 MCP 서버(mcpHttpServer.ts: 127.0.0.1, 실행별 Bearer, Origin 거절, `tools/list_changed` 를 GET SSE 로 알림)로만 노출한다.
+- 잠금(D3): claude `--tools "" --strict-mcp-config --allowedTools mcp__oprn --permission-mode dontAsk --no-session-persistence
+  --disable-slash-commands --settings {"disableAllHooks":true} --system-prompt-file`; codex `exec --json --ignore-user-config --ignore-rules
+  -s read-only approval never` + 셸·웹·플러그인·하위 에이전트 등 `--disable`(`code_mode_host` 는 끄면 MCP 가 죽는다); gemini 는 시스템 설정
+  덮기(`GEMINI_CLI_SYSTEM_SETTINGS_PATH`)로 내장 도구·훅을 빼고 `GEMINI_SYSTEM_MD` 로 지시문을 바꾼다. 셋 다 빈 임시 cwd.
+- **관문은 «CLI 가 모델에 넘겼다고 말한 것»만 인정한다.** claude·codex 는 stream 의 도구 결과 원문(delivered)을, gemini 는 원문을 안 주므로
+  `acknowledged` 를 우리가 돌려준 결과와 짝짓는다. 함정(실측): Claude Code 는 긴 변 2000px 초과 그림을 스스로 줄여 다시 인코딩한다 —
+  2304×288 농장 아틀라스가 바이트 불일치로 영영 「이미지 전달 필요」였다. 글이 같고 그림 수가 같은 결과면 우리 원본으로 되돌려 인정한다.
+- 보조 호출(의도 선언·이벤트 도우미·시각 검토)도 CLI 로 간다(`completeProvider` local-cli 분기). 그림은 실제 그림으로 싣는다(claude stream-json
+  image 블록, codex `-i`). gemini 비대화 모드는 그림을 못 실어 그림 검토를 거절한다(그림 없이 「봤다」 금지). 고치기 전엔 검토자가 「이미지 생략」을 받았다.
+- codex 함정: `Reconnecting... n/5 (high demand)` error 줄은 알림이지 실패가 아니다. 「model is at capacity」는 같은 대화를 이어 다시 보낸다(도구를
+  이미 불렀으면 처음부터 다시 시키지 않는다).
+- 비용(D8): 차례마다 「이번 차례 · …」, 대화창 하단에 「N턴 · M토큰 · 구독 한도 사용(청구 아님) · 환산 $x」. claude 만 환산 $ 를 준다.
+- 토큰: 도구는 전체 목록(404개·스키마 약 79만 자)을 싣지 않는다 — 기존 의도 라우팅이 고른 첫 묶음(실측 11~38개·1.3만~5.7만 자)에
+  `find_tools` 수확 → `tools/list_changed`. 참고 그림은 한 실행에 한 번만(이미 인정된 그림은 다시 안 싣는다), 1568px 초과는 «손실 없을 때만» 정수
+  배율로 줄인다(번들 953장 중 3장). 비용의 대부분은 관문이 요구하는 참고문서 글(버들항 한 용도 약 15만 자)이고 캐시 읽기다 — 관문은 줄이지 않는다.
+- 설정 API(첫 화면 설정 화면이 그린다): 동반 `GET /v1/local-agents[?fresh=1]` → `{clis, recommended}`(상태 «연결됨/로그인 필요/설치 필요/확인 실패»,
+  설치·로그인 안내 문구, 모델 목록, 역할별 기본 모델), `POST /v1/local-agents/health {cli}`. 선택 저장은 localStorage `oprn:assistant-engine`
+  (`src/ai/localCliEngine.ts`), `loadAiConfig` 가 `applyAssistantEngine` 으로 덮는다. 개발 중 강제 선택: 그 키에 `{"kind":"local-cli","cli":"claude"}`.
+- 검증: 헤드리스 `bun scripts/spike/claude-cli-turn.mts --cli claude|codex`(SQLite 저장·재로드, `verify-shots/assistant-claude-p/<cli>/`),
+  gemini 는 미로그인이라 녹화 스트림 재생 `scripts/spike/gemini-replay.mts`. 실제 입력창 경로는 하네스에 엔진 설정 파일을 준다:
+  `--ai-config harness-data/assistant-capability/ai-configs/local-claude.json`(space-craft·assistant-capability 공용, editorDriver 가 엔진 칸을 심는다).
+- 실제 입력창 결과(2026-10-20, `verify-shots/assistant-claude-p/editor-e2e/summary.json`): claude CLI(sonnet) 농장 마을 2회·서재 2회 모두 저장·재로드 일치,
+  45~122초·$0.22~0.53(구독 환산), 첫 도구 목록 38~50개·4.9만~5.7만 자(전체 목록 79만 자의 6~7%). 이벤트(reward-once) 실행·요구·보존·저장 통과,
+  플레이에서 보상 1회·재대화·재입장 무보상 통과(맵 나가기 두 항목 실패는 기존 하네스 경합이다: `dir:null` 뒤에도 한 걸음 더 가 x=1 에서 조사한다. 조수가 아무것도 안 바꾼 Pi 실행 저장본도 같은 x=1 로 실패, 같은 사건 정답본은 통과 — 엔진·이번 변경 무관).
+  같은 날 Pi 기준선은 Argon 이 응답하지 않아 막혔고(의도 선언 실패), gpt-6.1-sol Pi 는 서재 212초·98만 토큰, 농장은 서버 과부하로 끝, 이벤트는 240초 초과.
+  codex CLI 는 차례 자체는 끝냈으나(서재 완성·배치 품질 통과) 뒤이은 시각 검토가 느려 하네스 900초 안에 한가해지지 않았다 — codex 는 오늘 용량 거절이 잦았다.
+
 ## 조수 「턴 사이 기록」 (2026-10-05)
 
 사용자 요청: 「각 턴 사이의 로그만 읽고 싶다」. 조수 툴바인 「표시·실행 기록」 안에 접이식 「턴 사이 기록」을

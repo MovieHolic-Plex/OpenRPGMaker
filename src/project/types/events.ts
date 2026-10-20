@@ -738,6 +738,8 @@ export interface EventObjectInteraction {
   kind: "pushable" | "hiding";
   /** A push always moves one tile. Omitted directions allow all four directions. */
   directions?: Dir[];
+  /** pushable 전용: 밀기가 시작될 때 한 번 울리는 효과음 리소스 id(예: 바위 긁는 소리). 생략하면 무음. */
+  sound?: string;
 }
 
 /** 시야에 처음 들어온 순간의 놀람 — 머리 위 말풍선을 띄우고 holdMs 동안 멈췄다가 쫓는다(chase 전용). */

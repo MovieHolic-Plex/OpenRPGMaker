@@ -1,7 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {buildWorldmap} from '../lib/worldmapBuild.mjs';
-const root = path.resolve('tiledata/worldmap-kit');
+import {requireWorldmapKitDir} from '../lib/worldmapKitDir.mjs';
+const root = requireWorldmapKitDir();
 const out = path.resolve('verify-shots/worldmap-theme-readiness');
 fs.mkdirSync(out,{recursive:true});
 const selected = JSON.parse(fs.readFileSync(path.join(root,'selected/selected.json'),'utf8')).icons;

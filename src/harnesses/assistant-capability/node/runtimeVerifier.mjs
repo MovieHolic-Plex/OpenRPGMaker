@@ -1,6 +1,6 @@
 import { firefox } from 'playwright';
 import { resolve } from 'node:path';
-import { writeFileSync, readFileSync, appendFileSync } from 'node:fs';
+import { writeFileSync, readFileSync, appendFileSync, existsSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { startPlayerQaServer, runRuntimeQa } from '../../../../scripts/lib/runtimeQaRun.mjs';
 import { MAP } from './checks.mjs';
@@ -76,7 +76,9 @@ export async function verifyRuntime(entry, dir, initial) {
   const out=resolve(dir,'runtime'), projectFile=resolve(dir,'player.json');
   // Use the production export projection, including its committed-event rule.
   // Reference libraries belong to the editor and can exhaust a player renderer.
-  execFileSync(process.execPath,[resolve('node_modules/vite-node/vite-node.mjs'),
+  // vite-node 3 은 실행 파일이 dist/cli.mjs 다(옛 vite-node.mjs 경로는 없다).
+  const viteNode=['node_modules/vite-node/vite-node.mjs','node_modules/vite-node/dist/cli.mjs'].map(file=>resolve(file)).find(file=>existsSync(file));
+  execFileSync(process.execPath,[viteNode,
     '--config','vite.config.ts','src/harnesses/assistant-capability/node/runtimeProjection.ts',
     '--',resolve(dir,'live.json'),projectFile],{stdio:'pipe',maxBuffer:1024*1024});
   const scenario=scenarioFor(entry,projectFile,initial);

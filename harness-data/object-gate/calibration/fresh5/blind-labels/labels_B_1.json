@@ -1,0 +1,186 @@
+[
+ {
+  "id": "s001",
+  "kind": "figure",
+  "top_rows": 7,
+  "front_rows": 12,
+  "label": "unsure",
+  "why": "Pedestal top band rows 12-18 ending in edge line, but jar mouth shows no opening and kind is ambiguous."
+ },
+ {
+  "id": "s005",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Wall-hung framed painting."
+ },
+ {
+  "id": "s009",
+  "kind": "other",
+  "top_rows": 13,
+  "front_rows": 19,
+  "label": "good",
+  "why": "Roof/hood/trunk planes rows 1-14 over side body rows 15-33 read as 3/4 car."
+ },
+ {
+  "id": "s013",
+  "kind": "structure",
+  "top_rows": 11,
+  "front_rows": 23,
+  "label": "good",
+  "why": "Snow roof plane rows 1-11 with edge line, wall rows 16-38."
+ },
+ {
+  "id": "s017",
+  "kind": "low_furniture",
+  "top_rows": 6,
+  "front_rows": 4,
+  "label": "good",
+  "why": "Platform top rows 33-38 ending in edge line, front rows 39-42; sloped parasol roof rows 1-12."
+ },
+ {
+  "id": "s021",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Wall plaque with crossed swords."
+ },
+ {
+  "id": "s025",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Wall-mounted pull-down screen, flat front panel."
+ },
+ {
+  "id": "s029",
+  "kind": "seat",
+  "top_rows": 5,
+  "front_rows": 7,
+  "label": "good",
+  "why": "Seat top rows 1-5 with edge line, apron rows 6-7 plus legs rows 8-12."
+ },
+ {
+  "id": "s033",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Wall segment tile."
+ },
+ {
+  "id": "s037",
+  "kind": "seat",
+  "top_rows": 7,
+  "front_rows": 6,
+  "label": "good",
+  "why": "Seat top rows 1-7 with edge line, front rows 8-13."
+ },
+ {
+  "id": "s041",
+  "kind": "low_furniture",
+  "top_rows": 10,
+  "front_rows": 5,
+  "label": "good",
+  "why": "Mattress/pillow top rows 1-10, front panel rows 11-15."
+ },
+ {
+  "id": "s045",
+  "kind": "tall_furniture",
+  "top_rows": 10,
+  "front_rows": 20,
+  "label": "good",
+  "why": "Mantel top rows 1-11 with edge line, fireplace front rows 12-31."
+ },
+ {
+  "id": "s049",
+  "kind": "seat",
+  "top_rows": 6,
+  "front_rows": 6,
+  "label": "good",
+  "why": "Seat top rows 2-7 with edge line, front rows 8-13."
+ },
+ {
+  "id": "s053",
+  "kind": "box",
+  "top_rows": 6,
+  "front_rows": 8,
+  "label": "good",
+  "why": "Domed lid rows 2-7 ending in gold edge row 7, body rows 8-15 (exactly 8)."
+ },
+ {
+  "id": "s057",
+  "kind": "seat",
+  "top_rows": 0,
+  "front_rows": 13,
+  "label": "bad",
+  "why": "Rows 12-25 are a flat front/back face with no seat top visible."
+ },
+ {
+  "id": "s061",
+  "kind": "seat",
+  "top_rows": 3,
+  "front_rows": 5,
+  "label": "bad",
+  "why": "Seat rows 6-8 not distinct from front rows 9-13; reads as front elevation, top under 4."
+ },
+ {
+  "id": "s065",
+  "kind": "structure",
+  "top_rows": 39,
+  "front_rows": 38,
+  "label": "good",
+  "why": "Shingle roof plane rows 0-38 over plank wall rows ~40-79."
+ },
+ {
+  "id": "s069",
+  "kind": "container",
+  "top_rows": 17,
+  "front_rows": 5,
+  "label": "unsure",
+  "why": "Ring with water ellipse rows 5-21 but near-symmetric plan view; front rim only rows 25-29."
+ },
+ {
+  "id": "s073",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Wall-mounted candle sconce."
+ },
+ {
+  "id": "s077",
+  "kind": "seat",
+  "top_rows": 8,
+  "front_rows": 2,
+  "label": "bad",
+  "why": "Cushions are flat panels (8 rows) with only 2-row dark bottom; no 3-row front face."
+ },
+ {
+  "id": "s081",
+  "kind": "low_furniture",
+  "top_rows": 11,
+  "front_rows": 10,
+  "label": "good",
+  "why": "Bench top rows 1-11 with edge line, drawers rows 12-21 plus legs."
+ },
+ {
+  "id": "s085",
+  "kind": "seat",
+  "top_rows": 4,
+  "front_rows": 8,
+  "label": "unsure",
+  "why": "Cushion light top rows 19-22 then 8-row dark panel; orientation of west-facing view unclear."
+ },
+ {
+  "id": "s089",
+  "kind": "low_furniture",
+  "top_rows": 9,
+  "front_rows": 6,
+  "label": "good",
+  "why": "Counter top rows 1-9 with edge line, door front rows 10-15."
+ }
+]

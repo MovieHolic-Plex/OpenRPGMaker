@@ -1,0 +1,295 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "024516d85ad145f25634e11865102bdcf065ffdbedfb28d149434dddd4d6d5e6",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "썩은 판자 다리(떨어짐 2) (plank bridge falling 2)",
+ "label": "atlas_biome_interior/plus/plank bridge falling 2",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (3/4)",
+  "화풍: 명암 3단 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (3/4)",
+   "명암 3단 < 4 (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 42,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scattered broken plank debris",
+      "rows": "4-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a sparse scatter of a few brown pixels (rows 4-13, max width 5) with no solid body. Several rows are gaps, and there is no top band, no front-edge line, no eave shadow, no ellipse, and no front face of 3 or more rows. It reads as flat debris on the ground seen from above, which fits a flat decal-style kind. It has no standing volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny cluster of broken planks, roughly 8x8 source pixels, with only 6 distinct colours. The bench reference has 14 colours and the lamp has 14, and the bench has about 5 wood steps (highlight, light, mid, dark, deep). The candidate's wood ramp shows only about 3 steps: a light plank, a mid-brown, and a dark brown. Its dark edge pixels are 0% neutral, so the outline leans brown and counts as dark_material_tone, which is good. Flat-fill coverage is 0%, but only because the piece is so small. At this size there is no visible per-plank highlight, grain or splinter detail. Next to the references it reads thinner and simpler than the bench, even allowing for a sparse prop. The tinted outline is not enough to offset the shallow shading and low colour count, so it does not meet the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18442
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scattered plank debris",
+      "rows": "4-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a sparse cluster of a few brown pixels (max width 5, rows 4-13) scattered like fallen plank fragments. It has no front-edge line, no eave shadow, no ellipse and no vertical front face of 3+ rows. It reads as a flat debris decal seen from above, which matches the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny brown fragment, about 10x10 px at 2x, and sits far below the references in size and craft. It has only 6 distinct colours against 11-40 for the references, which are far richer. It shows about 2-3 brown steps, with no visible grain, per-plank highlights or detail beyond a few dark and light dots. The dark edge pixels are 0% neutral, so the outline leans brown and reads as dark_material_tone, which is acceptable. The per-tile median of 0 means the piece is under one tile, so I judged density by eye. Even so, it looks thinner and flatter than the bench or lamp references, which carry 14 colours with several shading steps. A careful artist would not accept it next to them. It reads as a small debris sprite rather than a rich prop, so it fails on shading depth and texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 30618
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scattered broken plank fragments",
+      "rows": "4-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a sparse scatter of a few brown pixels (max width 5, rows 4-13) representing falling plank debris. There is no standing body, no front-edge line, no eave shadow, and no front face of 3+ rows. It lies flat as a decal-like fragment cluster, consistent with the flat kind. The column scan shows only isolated 1-3 row runs with gaps, not a volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny scattered plank fragment, smaller than one tile, so the per-tile median of 0 says nothing and I judged by eye. It has only 6 distinct colours against 14 for the bench and lamp references and 38-40 for the well and stall. That is about 3 wood steps (dark, mid, light) against the 5-6 steps Beodeul uses on wood. The dark edge pixels are 0% neutral, so the outline leans brown and counts as dark_material_tone, which is good. There are no flat 5x5 fills because the piece is too small to have any. Even so, the candidate has no per-plank grain, no highlight and no extra ramp steps, so it looks thinner and flatter than the bench-wood reference. I would not accept it next to the references, and when in doubt the rule is to fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15287
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scattered plank fragments",
+      "rows": "6-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a small, sparse cluster of brown pixels (about 5 px wide, rows 4-13) that looks like broken plank debris lying flat on the ground. The silhouette is irregular, with no front-edge line, eave shadow, ellipse or standing front face of 3+ rows. It is a flat decal-like scatter seen from above, which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny brown debris scrap, only about 10x10 px at 2x, with 6 distinct colours. That is far below every reference: bench 14, lamp 14, hedge 11, stall 40, well 38. It reads as a few brown pixels in 2-3 value steps, so there is no real per-plank shading or grain. The grain and nail detail that the bench and well show is missing. Its dark edge pixels are 0% neutral, so the outline is tinted dark brown and is not a sticker line. That is the one point in its favour. The per-tile median of 0 is not held against it, since the piece is small and sparse, but by eye it is still clearly thinner and flatter than the bench, which is the closest reference. A careful artist would not accept it next to the references. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14233
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:38.684Z",
+ "cells": {
+  "16": [
+   "2c87ef98a34c5e8d"
+  ],
+  "24": [
+   "2687250eb84b22f8",
+   "96865f34c26a7bca",
+   "b3184c826a14f1e2",
+   "de02e37af926d488",
+   "e16e41ddaec61b1f",
+   "e224f0665c0258e6"
+  ],
+  "32": [
+   "177411a02f6d4027",
+   "59fe534a02ede1cc",
+   "acfa8bde24df0636",
+   "d289076cde375cfe",
+   "dc62ee3cccc618cc",
+   "e4b4bad44ad77f99"
+  ],
+  "48": [
+   "075f987f374f5f99",
+   "14839106871ebbcf",
+   "5c6b4b8f0c3f609f",
+   "5f98348157727229",
+   "cb6351bf45a088f0",
+   "df04f7538ca62a80"
+  ]
+ }
+}

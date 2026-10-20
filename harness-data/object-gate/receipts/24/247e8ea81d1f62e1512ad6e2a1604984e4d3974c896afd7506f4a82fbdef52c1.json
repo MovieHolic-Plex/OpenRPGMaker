@@ -1,0 +1,338 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "247e8ea81d1f62e1512ad6e2a1604984e4d3974c896afd7506f4a82fbdef52c1",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "wooden dining chair (faces south)",
+ "label": "seats34/modern_city_interior/mci-chair-wood-s",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 7,
+  "darkV5": 70,
+  "nearBlackEdge": 0.04,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat",
+      "rows": "16-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "backrest",
+      "rows": "3-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is the main body. It is 14px wide from row 16 to row 25. A darker edge row at 16 is followed by lighter rows 17-18 and 20, and the lightest row at 21 acts as the front-edge line. Rows 22-24 step darker (L 151, 128, 103), which reads as the apron and eave shadow. Below that, legs run from rows 25 to 29 with a gap between them. That gives a seat top of about 6 rows and a front face of about 8 rows (apron plus legs). The backrest (rows 3-9, with slats at rows 12-13) is drawn face-on as a vertical panel, which is acceptable for a backrest. The silhouette is symmetric, with no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate chair is a small single-tile-scale prop with only 7 distinct colours, against 14 for the bench and lamp and 38-40 for the stall and well. Its dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood, as in Beodeul, and it is not a sticker line. The wood ramp has about 3 steps (light slat, mid, dark), and the references use 5-6. The back slats and seat show little grain or per-plank highlight, so texture is only some. There are no flat fills of 5x5 or more. Because the piece is thin, I do not use the per-tile median against it. By eye it still looks a little thinner and flatter than the bench, which is the closest reference. It has fewer shading steps and fewer colours than a careful artist would accept next to the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20081
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat",
+      "rows": "16-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-24"
+     },
+     {
+      "part": "backrest top rail",
+      "rows": "4-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat (rows 16-21, width 14) is a lighter band that brightens toward a light front-edge line at row 21. Rows 22-24 below it are darker eave shadow or apron. Rows 25-29 hold the front face and legs, which taper in width from 14 to 8 to 4. The seat top is about 6 rows, well beyond a rim. The backrest above (rows 3-9) has a similar gradient with a light line at row 7 and shadow at rows 8-9, and the slats at rows 10-15 sit between the backrest and the seat. The result is a seat seen from above with a front face and legs, with no isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate's outline is a tinted dark brown, with 0% neutral dark edge pixels, so it avoids the sticker look. There are no 5x5 flat fills. However, the whole chair uses only 7 colours, against 14 for the bench and the lamp and 38-40 for the stall and well. The wood ramp is roughly 3 steps (light slat, mid, dark), where Beodeul wood has about 5-6 with grain and per-plank highlights. The seat and back slats read as mostly flat bands with little grain or speckle. The chair is a small prop, so I did not penalise its size. Even so, it is plainly shallower in shading and texture than the bench reference of the same material, and it would look thinner next to it. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 23404
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest panel",
+      "rows": "4-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat",
+      "rows": "16-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-24"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is the widest part (width 14, rows 16-25). Rows 17-20 are a light top band (L~171) that ends in a bright front-edge line at row 21 (L=195, #ddbf91). Rows 22-24 are darker, graded apron/eave shadow (L 151, 128, 103). Below that, the legs run to rows 26-29, so the front face is about 8 rows. This matches the green 'seat: top 5 + legs' reference. The backrest (rows 3-9) and its slats (rows 10-15) are vertical face-on parts, which is normal for a chair back, and the seat is the main body. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 7 distinct colours in total, against 11-14 for the small references (bench, hedge, lamp) and 38-40 for the stall and well. Its median of 7 colours per tile is below the hedge (10), stall (17) and well (20). The bench and lamp read 0 only because they are thin. Dark edge pixels are 0% neutral, so the outline is tinted brown and follows the wood; it is not a sticker line. Flat-fill coverage is 0%, so no large flat areas. The wood has about 3 lightness steps (light, mid, dark brown) with a little grain on the backrest slats and seat. That is shallower than the 5-6 steps in Beodeul wood and roof materials, and the bench reference has more tone variation. A careful artist would likely call it thinner and flatter than the references. The chair is a small single-tile prop, so I judge it by eye, and it looks simplified next to the rest of the set.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18329
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat",
+      "rows": "16-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "backrest top rail and slats",
+      "rows": "3-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is 14px wide in rows 16-25. Row 16 is a darker back edge. Rows 17-21 form a light seat plane that brightens to the lightest row at 21 (L=195), which acts as the front-edge line. Rows 22-24 darken (151, 128, 103) as the apron and shadow. Rows 25-29 are the legs, with a transparent gap between them (x=8 ends at row 25), so the front face is about 8 rows. The backrest in rows 3-15 is a face-on rail (rows 3-9) with two posts and a slat (rows 10-15). It is a vertical panel with no clear top surface, so I mark it as lacking a top. The seat is the main body and reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The chair has a tinted dark-brown outline (0% neutral dark edge pixels), which fits the Beodeul approach, and no 5x5 flat fills. It has only 7 distinct colours in total, against 14 for the bench and lamp, 11 for the hedge and 38-40 for the stall and well. The wood ramp reads as about 3 steps (light slats, mid, dark outline), where the bench and other references have 5-6. The backrest slats and seat show little grain or per-plank highlight. The 7-colour median per tile is not far below the hedge, but across the whole piece the chair looks thinner and flatter than the same-kind references such as the bench, so it falls short of the standard. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 25969
+  }
+ ],
+ "decidedAt": "2026-10-20T07:20:07.108Z",
+ "cells": {
+  "16": [
+   "3339de23a9771a8e",
+   "a22d2e8b21980b19"
+  ],
+  "24": [
+   "21733e78aa78ae92",
+   "4875f7c6ff56db51",
+   "499c26d488759f85",
+   "504f525077b1c796",
+   "9b996e76658f73d7",
+   "9d20a8f0b0aaa7a4",
+   "aa01439eb8090b39",
+   "bdf3738f0c552df5",
+   "be3b919b6ffc3b8e",
+   "bf81d902b4ad8460",
+   "c63dff5874cbbe4a",
+   "c7796b27d4549b76"
+  ],
+  "32": [
+   "0d626b256707e8ab",
+   "c15e813ac39d47c1",
+   "ce131d6185395f0a"
+  ],
+  "48": [
+   "12f96e28ae78789b",
+   "423d88ac7fa80895",
+   "50f2b9e5c0cfdfc7",
+   "7d644c40a756fcda",
+   "adc475ec01fbc3b9",
+   "fae3e0c08afefc4c"
+  ]
+ }
+}

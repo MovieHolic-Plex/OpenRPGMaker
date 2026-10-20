@@ -321,12 +321,34 @@ def compose_chains(src, asm):
     return out
 
 
+def hardcoded_kit_sizes(kit_index):
+    """src/ 의 TS 에 `{ id: "jp-bldg-…", w: N, h: M }` 로 박힌 키트 크기(jpCityStreetComposer LANDMARKS 등)가 이번 굽기 키트와 맞는가.
+    2026-10-20: 3/4 깊은 지붕으로 건물 46채가 1~2칸 높아진다 — 표가 옛 높이면 띠 높이 계산이 틀려 건물이 띠 위로 튀어나온다."""
+    pat = re.compile(r'id: *"(jp-(?:bldg|recipe)-[a-z0-9-]+)", *w: *(\d+), *h: *(\d+)')
+    bad = []
+    for d, _, fs in os.walk(os.path.join(ROOT, 'src')):
+        for f in fs:
+            if not f.endswith('.ts'): continue
+            p = os.path.join(d, f)
+            for m in pat.finditer(open(p, encoding='utf-8').read()):
+                k = kit_index.get(m.group(1))
+                if k is None: bad.append(f'{os.path.relpath(p, ROOT)}: {m.group(1)} 키트가 없다')
+                elif (k['w'], k['h']) != (int(m.group(2)), int(m.group(3))):
+                    bad.append(f'{os.path.relpath(p, ROOT)}: {m.group(1)} 표 {m.group(2)}×{m.group(3)} · 키트 {k["w"]}×{k["h"]}')
+    return bad
+
+
 def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=False):
     block_order = list(BLOCK_ORDER if block_order is None else block_order)
     P = paths(out_root)
     src = Src(); K = src.K; cat = src.cat
     pal = BL.load_palette(PALETTE) - {BL.MARKER}
     prev_pins = BL.load_pins(P['pins'])
+    if os.path.abspath(out_root) == ROOT:                                    # 진짜 저장소 굽기: pins.json 이 origin/main 것을 그대로 품어야 한다(앞 번호 불변)
+        chk = BL.base_pin_problems(prev_pins.get('cells', {}), ROOT)
+        if chk and chk[0]:
+            raise SystemExit('pins.json 이 origin/main 보다 낡았거나 번호가 다르다 — git fetch 후 origin/main 에 rebase 하고 '
+                             'tiledata/jp-city/pins.json 을 origin/main 것으로 둔 뒤 다시 구워라(번호가 밀리면 게시한 장소·사용자 맵이 깨진다).\n  ' + '\n  '.join(chk[0]))
     pins = BL.Pins(prev_pins)
     cells = Cells(pins)
     old_png = Image.open(P['png']).convert('RGBA') if os.path.exists(P['png']) else None
@@ -729,6 +751,11 @@ def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=Fal
     res['sheet_hash'] = hashlib.sha1(sheet_img.tobytes()).hexdigest()
     res['pc_rule'] = 'tiledata/jp-city/bake/PC-RULES.md'
     pins_out = dict(version=1, tilesPerRow=TPR, count=count, cells={k: v for k, v in sorted(pins.map.items(), key=lambda kv: kv[1])})
+    if os.path.abspath(out_root) == ROOT:
+        chk = BL.base_pin_problems(pins_out['cells'], ROOT)                  # 굽기가 번호를 옮기지 않았는가(Pins 는 옮기지 않지만 한 번 더)
+        if chk and chk[0]: raise SystemExit('이번 굽기가 origin/main 칸 번호를 옮겼다:\n  ' + '\n  '.join(chk[0]))
+        bad = hardcoded_kit_sizes(kit_index)
+        if bad: raise SystemExit('코드에 박힌 키트 크기가 새 키트와 다르다 — 같이 고쳐라(건물이 띠 밖으로 튀어나오거나 겹친다):\n  ' + '\n  '.join(bad))
     out = dict(data=data, sheet_img=sheet_img, count=count, pins=pins_out, kit_index=kit_index, report=res, expected=expected)
     if dry: return out
     for p in P.values(): os.makedirs(os.path.dirname(p), exist_ok=True)

@@ -12,7 +12,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { objectGateRefusal, type ObjectGateContext, type ObjectGateReceipt } from '../../_core/objectGate';
-import { GATE_DATA, calibratedProfiles, listReceipts, readApproval } from './store';
+import { GATE_DATA, calibratedProfiles, listReceipts, readApproval, readHoldDecision } from './store';
 
 export const CELL_SIZES = [16, 24, 32, 48] as const;
 export const BASELINE_FILE = resolve(GATE_DATA, 'baseline-cells.txt');
@@ -69,7 +69,7 @@ export function passingCellIndex(context: ObjectGateContext, receipts: ObjectGat
   const calibrated = calibratedProfiles();
   const index = new Map<string, ObjectGateReceipt>();
   for (const receipt of receipts) {
-    if (objectGateRefusal({ receipt, pixelSha256: receipt.pixelSha256, context, calibratedProfiles: calibrated, approval: receipt.kind === 'front_prop' ? readApproval(receipt.pixelSha256) : null })) continue;
+    if (objectGateRefusal({ receipt, pixelSha256: receipt.pixelSha256, context, calibratedProfiles: calibrated, approval: receipt.kind === 'front_prop' ? readApproval(receipt.pixelSha256) : null, hold: readHoldDecision(receipt.pixelSha256) })) continue;
     for (const hashes of Object.values(receipt.cells ?? {})) for (const h of hashes) index.set(h, receipt);
   }
   return index;

@@ -1,0 +1,349 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2f079551ea7c5c5b1e20aa65952f4fde754effbb10985b39544a39b466dbf75f",
+ "width": 32,
+ "height": 16,
+ "kind": "flat",
+ "name": "two square floor cushions (zabuton) and a small tea tray on the floor",
+ "label": "seats34/modern_city_interior/home-zabuton",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)",
+  "화풍: 질감 없음 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)",
+   "질감 없음 (2/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 16,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left purple cushion",
+      "rows": "3-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right teal cushion",
+      "rows": "3-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tea tray",
+      "rows": "5-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The two cushions are almost fully flat top plates (rows 3-10, with a lighter highlight at the top and a uniform fill below). Only rows 11-12 are a darker shaded bottom edge, which is about 2 rows and is more a thickness lip than a front face. Row 13 is the outline. The silhouette narrows at rows 11-13 as rounded corners, with no separate front face. The tray is a small tan plate with a dark base line at rows 9-10. The whole piece reads as a flat mat seen from above, which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small cluster of two cushions and a tray, roughly 38x12 source pixels, on an empty backdrop. It is far smaller than the 4x3-tile (64x48) ground patch the references show, and it has no ground surface of its own. Each cushion is a flat purple or teal body with a pale rim and a darker tinted edge, which gives about 3 lightness steps. I see no stitching, fabric grain, tuft or button detail, and the tray is a few brown pixels. The tinted outlines match the measured 0% neutral edge pixels, so the outline is not near-black. The measured 16 colours per tile and 22 distinct colours are below the grass reference (26 and 80), and it is not in the same class as the grass for shading depth or texture variety. The paving reference is lower on colours (7 per tile) but is a full tiled surface with per-stone shading. The 0% flat-fill figure only reflects the small object size. By eye, the cushions are simpler and flatter than the reference materials.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 24675
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left purple zabuton",
+      "rows": "3-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "right teal zabuton",
+      "rows": "3-10",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "small tea tray (center)",
+      "rows": "5-8",
+      "evidence": "d",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Both cushions are large, lighter, flat-shaded squares (purple rows 3-9, teal rows 3-10) with a slightly rounded silhouette that widens from 22 to 32 px (rows 2-4). Below this, rows 10-12 step darker (L 107, 77, 54 in the purple column) and the width narrows to 26 and then 22, forming a short front thickness of about 3 rows above the dark outline at row 13. The tray between them has a light top (rows 5-8), a darker front row 9 and an outline at row 10. The whole object is only 12 rows tall. The front face is thin, and the cushion tops dominate."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny strip of two cushions and a tray, about 25x8 source pixels on a flat backdrop. It is not a 4x3-tile ground patch like the grass and paving references. Each cushion has a body tone, a light edge, a dark edge and a button, which is about 3 steps against roughly 5-6 on the references. The dark edge pixels are 0% neutral, so the outlines lean towards the material colour. There are no 5x5 flat fills. Colours per tile (16) are above the paving reference (7) but below the grass reference (26), and the 22 distinct colours are far below the grass reference's 80. Texture is limited to a few edge highlights and a button dot, with no fabric weave or grain. A careful artist would find it thinner and more sticker-like than the references. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 27650
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left purple zabuton",
+      "rows": "3-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "right teal zabuton",
+      "rows": "3-10",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "tea tray",
+      "rows": "5-8",
+      "evidence": "d",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Each cushion is a bevelled square. At x=8, rows 3-9 are a light top surface (L=126). Rows 10-12 step down through 107, 77 and 54 to the row-13 outline, which reads as a 3-row darker front face with shading. At x=23 the teal cushion matches: rows 3-10 are the top, rows 11-12 are the darker front, and row 13 is the outline. The silhouette narrows from 32 to 26 to 22 at rows 11-13, so the cushions have thickness. The tray at x=16 has a tan top at rows 5-8 and a dark front edge at row 9. Both cushions show a top plus a short front face, so this is a low three-quarter object, not a pure flat top-down decal."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is only a small cluster (two cushions and a tray, roughly 35x12 source pixels) on a plain dark backdrop. It is not a 4x3-tile ground patch like the grass and paving references, which fill whole tiles with surface. Each cushion reads as a flat purple or teal body with a lighter top edge, a darker rim and a tiny tray between them. That is about 3 lightness steps per material, against 5-6 in the references. The outlines look like darker tints of each cushion colour, not neutral black, and the 0% near-neutral edge figure agrees. The 5x5 flat-fill measure is 0%, but only because the objects are so small. By eye there is almost no weave, stitching, tuft or grain texture. The measured 22 distinct colours is far below grass (80), and 16 per tile sits under grass (26) though above paving (7). The floor surface that should carry the tile density is missing, so the piece looks thinner and flatter than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 23052
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "purple cushion",
+      "rows": "3-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "teal cushion",
+      "rows": "3-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "tea tray",
+      "rows": "4-9",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "Both cushions are seen almost entirely from above. Rows 3-10 are the flat top, with a lighter top band at rows 3-4 and uniform fill at rows 5-10. Only rows 11-12 are darker, giving a 2-row front thickness, and row 13 is the outline. The silhouette is 32 px wide for rows 5-10 and narrows to 26 px at rows 11-12, so it reads as a thin plate lying on the floor. The tray shows a lit top with contents (rows 5-9) and a dark front strip at rows 9-10. With only about 2 front rows, the drawing is a flat slab and not a raised 3/4-view volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is two small cushions and a tray, so it is tiny and sparse next to the full grass and paving patches. Measured facts: 16 colours per tile is below the grass reference (26) but above the paving reference (7), and the 22 distinct colours are far below the grass reference's 80. Flat-fill coverage is 0% and the 0% neutral dark edge share means the outlines are tinted, in dark purple and teal beside the cushion fabric. By eye, each cushion has only about 3 lightness steps: a body, a lighter top edge and a dark edge. There are only a few dots and no real fabric grain, no stitching texture, and no tuft or button shading. The tray is a few pixels. The rest of the patch is a flat slate background with no ground surface texture such as floor grain or tatami weave. A careful artist would find it flatter and more sticker-like than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 26011
+  }
+ ],
+ "decidedAt": "2026-10-20T08:30:15.554Z",
+ "cells": {
+  "16": [
+   "18ce2602c827eca2",
+   "32c12825cb280609"
+  ],
+  "24": [
+   "12b969ddba787a59",
+   "1899bccf5b4c1e34",
+   "37550713aabc8648",
+   "392bfae62215a68f",
+   "63bca29c0b5f96f4",
+   "6491f8698c999e2a",
+   "73546f65486f96a4",
+   "85f03fec359f2d65",
+   "b99fa0c8f23c8bea",
+   "d0b40b9e0c71bd01",
+   "d5441492fe358951",
+   "df6d5acaff08a520"
+  ],
+  "32": [
+   "3754bf26e0da242d",
+   "49ed8760ffce2870"
+  ],
+  "48": [
+   "0bd84970a3554ac1",
+   "43c0f6e9002aac08",
+   "4d4cc436c6fa890d",
+   "5378844082de5bac",
+   "ccf52262333f4b07",
+   "f5b8010aced1d7a4"
+  ]
+ }
+}

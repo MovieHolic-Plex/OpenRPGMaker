@@ -1,0 +1,347 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9351f35adc47154eaf62e20ab4210856a9a8ce125fa01849ed7f70c9526ccd33",
+ "width": 48,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "library shelf",
+ "label": "modern_city_interior/library-shelf",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 10/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 10/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 22,
+  "tileColorsP90": 22,
+  "darkV5": 28,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top board of shelf",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "book rows and shelves (front face)",
+      "rows": "8-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "28-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a wood top band that brightens downward and ends in a light front-edge line at row 5 (L=180). Rows 6-7 are darker eave shadow (L=86, then L=45). This matches the green cabinet reference (top 5 + edge + eave). Below it is a front face of about 24 rows (rows 6-29) with three shelves of books and a plinth at rows 28-29. No side face is drawn. The shelf is a single body, so every major part has a top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "Tile density is fine: 22 visible tones per tile against 17-20 for the stall and well, with 0% near-flat coverage. The weakness is structural. 100% of the dark edge pixels are neutral, so the outline is a near-black line around the frame and shelf, where the stall, hedge and well use tinted dark-material tones (0-33% neutral). The wood frame and shelf boards read as about 3 steps (a light top edge, a mid tone and a dark line) with no grain or per-plank shading, and the book spines are mostly flat two-tone vertical bars. The colour variety is real, but it comes from the many different book colours rather than from shading depth within each material. Next to the stall and well references this looks cleaner and flatter, more like a sticker, and it is not at Beodeul's 5-6 steps per material.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16854
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top board of shelf",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "bookshelf front with three shelves of books",
+      "rows": "6-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a wooden top band that goes from dark (row 1) to mid tan (rows 2-4) and ends in a lighter front-edge line at row 5. Rows 6-7 are darker eave shadow (L=86 and L=45), and the books and shelves of the front face sit below them in rows 8-29. The front face runs from about row 6 to the base at row 30, so it has well over 3 rows. This matches the green cabinet and bookshelf references (top 5 + edge + eave), not the 1-2 row rim cases. No side face is drawn. The silhouette is a constant 46 px wide."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "On tone count the candidate matches the references: 22 visible tones per tile against 17 for the cheese stall and 20 for the roofed well, with 0% near-flat coverage. The weakness is structure. 100% of its dark edge pixels are near-neutral, so the outline is a uniform near-black line around the frame and shelves. The references with tinted outlines are the hedge at 0%, the cheese stall at 1% and the well at 33%. The wooden frame has only about 3 steps (a light top edge, a mid brown and a dark line), well short of Beodeul's 5-6 per material. The books are mostly flat colour blocks with little per-book highlight or grain, and the shelf boards and sides lack wood grain. The overall read is a clean but sticker-like piece that looks flatter than the stall and well references. The tone count comes from the many book hues, not from shading depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17651
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a top band that gets lighter toward the front. It ends in a light front-edge line at row 5 (#d6b073), followed by darker shadow rows 6-7 (#6e5032, #3c281e). Below it is the front face, rows 6-30, with three shelves of books separated by shelf boards at rows 13 and 20 and a base at rows 28-29. The silhouette is a flat 46px wide with no side face. The top is 5 rows deep, like the green cabinet reference (top 5 + edge + eave), not the 1-2 row rim of the red references."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The shelf reads clearly as a bookcase and has about 22 visible tones per tile with 0% near-flat coverage, so it matches the references on density. Its structure is shallower than the references. The wooden frame has only about 3 lightness steps (a light top edge, a mid tone and a dark edge), against roughly 5-6 on the well roof and stall. The dark edge pixels are 100% near-neutral, so the outline is a uniform neutral dark line around the frame and shelves. That is the 'sticker' look, unlike the tinted dark-brown, dark-green or dark-red outlines on the hedge (0% neutral), stall (1%) and well (33%). The books are mostly flat two-tone rectangles with little grain, and the wood has no visible grain or texture dots. The tone count is good, but the neutral outline and shallow ramps would look flatter than the references side by side.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16254
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top plank of bookshelf",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "shelf face with book rows and shelf boards",
+      "rows": "8-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a wood top band, lighter at rows 3-5, that ends in a light front-edge line at row 5. Rows 6-7 are dark eave shadow (#6e5032, then #3c281e). Below that is a front face about 22 rows tall (rows 8-29) with three shelf rows of books separated by shelf boards at rows 13-14 and 20-21, and a base at rows 28-29. This matches the green cabinet reference (top 5 + edge + eave). The top surface is 5 rows, not a 1-2 row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has only 22 distinct colours in total, and the per-tile figure is also 22, so the whole piece is built from that one small set. Its density per tile (22 visible tones) is at or above the stall (17) and well (20), and it has 0% near-flat coverage. That richness comes mostly from the many book colours, which are narrow 2px vertical strips with little internal shading. The wood frame and shelf boards carry only about 3 lightness steps (a light top rail, a mid body and a dark edge), against roughly 5-6 steps on Beodeul's wood and roof ramps. The dark edge pixels are 100% near-neutral, unlike the stall (1%), the hedge (0%) and the well (33%), which have tinted outlines. So the frame reads as a uniform dark outline around the whole shape rather than a dark brown tone of the wood, which is the sticker look. The shelf interior is a regular grid of identical rows with no per-book highlights, grain or wear. The piece is clean and readable, but its shading and outline are shallower than the same-kind references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19390
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.037Z",
+ "cells": {
+  "16": [
+   "3d927906fcc72583",
+   "76078b8620819804",
+   "a828f51f3f2169c6",
+   "d1efe1d6a917b79f",
+   "e64cd63a9b757b84",
+   "ec761e41b5a17e85"
+  ],
+  "24": [
+   "0f3f016c3f1f2018",
+   "689003f20dbd5355",
+   "8f6a1469f33a4cae",
+   "b81feb1dc96599a0",
+   "bac7241d90104ed5",
+   "d743601d01a77198",
+   "d9b9a65a93199550",
+   "eb5c85c2443ba91e"
+  ],
+  "32": [
+   "2b717f25ae74a38a",
+   "a8aa265623af2fc7",
+   "b64ea48ef50efa5c",
+   "c0e5d00a1f63e075",
+   "c141d12dcb6fbe45",
+   "fd754b6c5d9a8ae4"
+  ],
+  "48": [
+   "5e6ba4110f424928",
+   "96abbd1532dd0ede"
+  ]
+ }
+}

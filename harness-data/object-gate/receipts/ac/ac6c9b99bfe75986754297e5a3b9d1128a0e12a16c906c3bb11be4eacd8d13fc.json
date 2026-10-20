@@ -1,0 +1,376 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ac6c9b99bfe75986754297e5a3b9d1128a0e12a16c906c3bb11be4eacd8d13fc",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "wooden chair facing east",
+ "label": "seats34/atlas_biome_interior/chair E",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(side_profile_no_top) (4/4)",
+  "3/4: 윗면 2행 < 4 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(side_profile_no_top) (4/4)",
+   "윗면 2행 < 4 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 65,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat",
+      "rows": "7-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "backrest",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The silhouette is a classic side-elevation chair. Rows 1-5 are a 4px-wide backrest, drawn as a vertical strip with no top surface. Rows 6-12 are a 10px-wide seat. Its light band in rows 7-8 is only 2 rows, with no distinct front-edge line, so it reads as a rim or lip and not a seat surface seen from above. Below it, rows 9-10 are a darker front face, row 11 is shadow and row 12 is the outline. Rows 13-15 are 4px-wide legs. This matches the 'seat: band 2' and 'side elevation chair' bad references and not the 'seat: top 5 + legs' good one."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate chair is tiny and has only 6 distinct colours, against 14 for the bench and 11-40 for the other references. Its dark edge pixels are 0% neutral, so the outline leans brown and counts as dark_material_tone, which is fine. The shading is shallow: about 3 wood steps (a dark outline, a mid tone and a light tone), where the bench shows a highlight, light, mid and dark ramp plus grain. I see no wood grain, no per-plank highlight and no texture dots. The 5x5 flat-fill measure is 0%, but only because the piece is small. The colour median of 0 means the density fact does not count against it, so I judged by eye. Beside the bench, the chair looks thinner, flatter and more sticker-like. A careful artist would not accept it next to the bench without adding more shading steps and some grain.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 23136
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat",
+      "rows": "7-8",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "backrest",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "This is a side-on chair with the backrest on the left (rows 1-6, width 2-4) and a seat block 10 px wide (rows 6-12). The seat has a light band at rows 7-8 (L=157), then a darker face at rows 9-10 (L=124), a shadow at row 11 and an outline at row 12. The light band is only 2 rows and has no distinct edge line, so it reads as a rim or lip, like the 'seat band 2' and 'side elevation chair' red references rather than a 5-row seat top. The backrest is a plain vertical strip with no top surface. Legs are at rows 13-15."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate chair is tiny and has only 6 distinct colours, against 14 for the simplest references (bench, lamp) and 38-40 for the stall and well. By eye the wood has about 2-3 steps (a mid brown, a lighter brown and a dark outline), with no visible grain, plank highlights or texture dots. The bench reference has a clear highlight, mid and shadow ramp on its slats, which the chair does not. The outline is tinted dark brown (0% neutral dark edge pixels), so it is not a sticker-style near-black line. The 5x5 flat-fill coverage is 0%, but only because the piece is so small. Even allowing for the small size and for the per-tile median being 0, the chair is thinner and flatter than the bench it should match, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 18822
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat",
+      "rows": "7-8",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "backrest",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The chair is a side profile. The backrest (rows 1-5, width 4) is a vertical strip with no top surface. The seat block (rows 6-12, width 10) has a light band only at rows 7-8 (L=157 at x=8 and x=10). Below it, rows 9-10 are the darker front face (L=124), row 11 is a shadow or apron (L=70), and row 12 is the outline. Legs run at rows 13-15 (width 4). The seat top is only about 2 rows, which is a rim rather than a seat seen from above. It matches the 'seat band 2' and 'side elevation chair' wrong references and falls well short of the 5-row seat top in the right reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate chair is tiny and has only 6 distinct colours, against 14 for the bench and lamp and 38-40 for the stall and well. The dark edge pixels are 0% neutral, so the outline is tinted brown and reads as dark_material_tone. That is good, but the shading is shallow: about 3 wood steps (light, mid, dark) against 5-6 on the references. The wood has no visible grain, no per-plank highlights and no texture dots. The chair is small and thin, so the per-tile fact is not used against it, but by eye it still looks flatter and simpler than the bench, which is the closest reference of the same kind and carries visible plank shading and grain. A careful artist would not accept it next to the references without it looking flatter, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 20238
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat",
+      "rows": "7-8",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "backrest",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The seat is the main body (rows 6-12, width 10). Its lighter band is only rows 7-8 (L=157), and rows 9-10 below it are a darker face (L=124) with a shadow on row 11, so the top is 2 rows, about a rim. The backrest (rows 1-5, width 4) is a vertical panel seen from the side with no horizontal surface. The legs run through rows 13-15 at width 4. The overall shape is a side-elevation chair with a thin seat band, close to the red 'seat: band 2' and 'side elevation chair' references and far from the green 'seat: top 5 + legs' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate chair is tiny (about 18x28 px at 2x) and uses only 6 distinct colours, against 14 for the bench and 38-40 for the stall and well. It has roughly 3 wood steps (light, mid, dark) where the bench reads about 5 (highlight, light, mid, dark, deep). The outline is a tinted dark brown with 0% neutral edge pixels, which is correct and not a sticker line. Flat-fill coverage is 0% only because the piece is so small. The seat, backrest and legs are plain single-tone planes with no grain, plank separation or highlight dots, so the texture is flat. The per-tile median is 0, so I judged density by eye. Next to the bench, which has plank highlights and shaded slats, the chair looks thinner, flatter and simpler. Its colour count is less than half the bench's, so it falls short of the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 18030
+  }
+ ],
+ "decidedAt": "2026-10-20T06:56:03.647Z",
+ "cells": {
+  "16": [
+   "86d32b3bb56f5c4f"
+  ],
+  "24": [
+   "56b4a2b9799af028",
+   "62e60d706e22490e",
+   "7712e13fb3a11008",
+   "9be5a11d494882ea",
+   "e508eb9cd2edb24a",
+   "f97ec68323753b54"
+  ],
+  "32": [
+   "18db46730c6b9f6e",
+   "7cf50c8e421bcf75",
+   "b2598e954099f46d",
+   "d234210da1f95d06",
+   "d3543f2d9457683a",
+   "ed79bd6f1fcc7622"
+  ],
+  "48": [
+   "5cd2299733e65560",
+   "819dfd8d64eb7bda",
+   "c63b1cdf7b55de8c",
+   "d1c0a9efa1c56bb3",
+   "d400fa3ed4eca09e",
+   "f5529d772804ffcb"
+  ]
+ }
+}

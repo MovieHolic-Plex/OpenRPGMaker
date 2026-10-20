@@ -1,0 +1,6 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"P1","view34":"PASS","quality":"FAIL","reason":"Top plane reads in 3/4 view, but all six toys are identical copy-pasted 6x6 checkered blobs on paper-thin 1px shelves that do not read as toys."}
+{"id":"P2","view34":"PASS","quality":"FAIL","reason":"Wood top and shelves show 3/4 planes, but the helmets are un-outlined flat front-facing icons with vertical stripe banding and a blurry red blob crest."}
+{"id":"P3","view34":"PASS","quality":"FAIL","reason":"Elliptical wooden base reads in 3/4 view, but the brass post, 1px arms, and 3x3 planet spheres lack dark outlines and wash into the background compared to the globe anchor."}
+{"id":"P4","view34":"PASS","quality":"FAIL","reason":"Console has a visible top deck plane, but consists of flat un-outlined grey bands, four identical stick levers with pink tips, and mechanically repeated 2px indicator pairs."}

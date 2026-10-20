@@ -85,7 +85,8 @@ function dawnShot(cast: EmeraldOpeningCast): OpeningAnimatic {
       keys: { opacity: [{ atMs: 0, value: 0.52 }, { atMs: 3600, value: 0, ease: 'ease-in-out' }] } },
     walking('flyer-a', cast.flyer, 'right', [{ atMs: 0, x: 36, y: 34 }, { atMs: 4500, x: 520, y: 18 }], { space: 'screen' }),
     walking('flyer-b', swallow, 'right', [{ atMs: 0, x: 112, y: 82 }, { atMs: 4500, x: 480, y: 58 }], { space: 'screen' }),
-    walking('flyer-c', flock, 'left', [{ atMs: 0, x: 410, y: 48 }, { atMs: 4500, x: -40, y: 72 }], { space: 'screen' }),
+    // 새떼는 같은 쪽으로 뒤따라 난다 — 마주 날면 한가운데서 세 마리가 한 덩이로 겹쳐 보였다(2026-10-20 아스트라 검수).
+    walking('flyer-c', flock, 'right', [{ atMs: 0, x: -60, y: 60 }, { atMs: 4500, x: 380, y: 44 }], { space: 'screen' }),
   ], { x: 416, keys: { y: [{ atMs: 0, value: 860 }, { atMs: 4300, value: 250, ease: 'ease-in-out' }] } });
 }
 
@@ -164,7 +165,8 @@ function townShot(cast: EmeraldOpeningCast): OpeningAnimatic {
     ...(partner ? [walking('partner', partner, 'down', [{ atMs: 0, x: from.x, y: from.y - TILE * 2 }, { atMs: 4300, x: to.x, y: to.y - TILE }])] : []),
     walking('hero', cast.hero, 'down', [{ atMs: 0, x: from.x, y: from.y }, { atMs: 4300, x: to.x, y: to.y }]),
     walking('flyer', cast.flyer, 'left', [{ atMs: 0, x: 440, y: 28 }, { atMs: 4500, x: 40, y: 52 }], { space: 'screen' }),
-    walking('flyer-flock', flock, 'right', [{ atMs: 200, x: 30, y: 64 }, { atMs: 4500, x: 450, y: 40 }], { space: 'screen', startMs: 200 }),
+    // 새떼는 큰 새를 뒤따라 하늘 높이 — 마주 날면 화면 가운데(주인공·동료 머리 위)에서 겹쳤다(2026-10-20 아스트라 검수).
+    walking('flyer-flock', flock, 'left', [{ atMs: 200, x: 540, y: 16 }, { atMs: 4500, x: 150, y: 10 }], { space: 'screen', startMs: 200 }),
   ], { x: 352, keys: { y: [{ atMs: 0, value: 200 }, { atMs: 4300, value: 400, ease: 'ease-in-out' }] } });
 }
 

@@ -1,0 +1,409 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7ff6a620e3e90360d4b4d1190b8cc2c2e486a3a4cb93fb8c8f072cef924e1bcb",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "svc salon basin",
+ "label": "modern_city_interior/svc-salon-basin",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (3/4)",
+  "3/4: 윗면 2행 < 4 (3/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (3/4)",
+   "윗면 2행 < 4 (3/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 72,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "mirror/faucet fixture above the basin",
+      "rows": "0-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper basin body, light band at its top",
+      "rows": "11-13",
+      "evidence": "none",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side handles and middle band",
+      "rows": "17-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower base strip",
+      "rows": "26-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body (rows 11-28) is a set of horizontal color bands seen face-on. Rows 12-13 are a light 2-row strip, which is a rim and not a top surface. Rows 14-18 are a flat dark face. The width profile jumps from 12 to 20 at row 17 and back to 12 at row 25, so it never widens and then narrows like an ellipse. No opening, water or contents are seen from above, and the opening a container needs is not visible. The round white object at rows 2-8 sits above the body as a mirror or fixture and counts as decor. Overall this is a front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The basin is a small prop, under one tile wide, so the per-tile tone counts are 0 and I judged by eye. It reads as a pale grey-blue bowl on a blue pedestal with only about 4 lightness steps per material. The references, such as the well and the cheese stall, carry 5-6 steps plus per-stone and per-plank texture. The measured facts do not flag it as shallow: 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is tinted rather than black. Its 18 distinct colours are comparable to the bench and lamp. Even so, it looks smoother and more sticker-like than the references. It has little grain or speckle on the bowl and base, and the shading is simple. Next to the well and stall it looks thinner and flatter, and when in doubt I fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18592
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "faucet and round white oval above the basin (spout or mirror)",
+      "rows": "0-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "basin top band (rim)",
+      "rows": "11-13",
+      "evidence": "none",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "main blue body front face with side handles",
+      "rows": "14-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The body below the faucet (rows 11-28) is a stack of horizontal bands seen face-on. Row 11 is the dark outline, rows 12-13 are a light 2-row rim, rows 14-18 are a dark face, rows 19-21 are a light stripe with the side handles (width 20), and rows 22-28 are dark with another light line at row 26. No ellipse widens and narrows at the body top, since rows 11-16 are a constant width of 12. No contents, water or inside of the opening can be seen from above, so there is no top surface of 3 or more rows. The white oval at rows 2-8 widens and narrows (10, 12, 10, 8, 6), but it sits above the body like a faucet or mirror, so it is decor and not the basin mouth. The result is a front elevation with only a rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small basin on a pedestal, under one tile in size, so the per-tile tone facts are 0 and I judged by eye. The facts do not count against it: it has 18 distinct colours against 14 for the bench and lamp, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is tinted and reads as a dark blue-grey material tone rather than a black sticker line. By eye, though, the bowl and pedestal each show only about 3-4 lightness steps, with a few highlight pixels and little grain, speckle or per-stone shading. The well and cheese stall carry clearly more ramp steps and texture, and even the thin bench and lamp are more finely modelled. Next to the references the basin looks smoother, simpler and slightly thinner, closer to a clean icon than a Beodeul-grade prop. Since the brief says to fail when in doubt, it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19561
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "faucet/mirror head (round white disc with spout)",
+      "rows": "0-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "basin opening: back rim and dark interior",
+      "rows": "11-18",
+      "evidence": "d",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "18"
+     },
+     {
+      "part": "front face of basin with side wings",
+      "rows": "19-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal foot",
+      "rows": "29-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The basin body starts at row 11 with a dark outline and a light back rim at rows 12-13. Below it, rows 14-18 are a darker blue interior with shading (L about 61-94), which reads as the opening seen from above. A lighter band at rows 19-21 with a highlight at row 20 acts as the front rim edge line, and rows 22-28 form the vertical front face. The silhouette widens to 20 at rows 17-24 for the side wings. The round white head at rows 2-10 is decor. The reading is ambiguous because the repeating light bands at rows 12, 20 and 26 could also be stacked front-facing stripes."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. Its 18 distinct colours are comparable to the bench and lamp (14 each) and far below the well (38) and stall (40). The outline looks like a dark bluish tint, and the 0% neutral edge share supports that, so it does not read as a black sticker line. The rounded basin and the stand each seem to carry only about 3-4 tones, with little grain or per-part clustering. The references show 5-6 steps, with stones shaded one by one on the well and clustered texture on the hedge. There is no large flat fill, but the piece looks smoother and thinner than the references. A careful artist would likely ask for more shading steps and texture, and since I am unsure, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 25753
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "white bowl with drain and tap above the body",
+      "rows": "2-8",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue basin body, upper block",
+      "rows": "11-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue basin body, wide striped middle with side lugs",
+      "rows": "17-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue base band",
+      "rows": "25-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The largest volume is the blue body, rows 11-28. It has a dark outline at row 11 and a 2-row lighter band at rows 12-13, which is only a rim. Rows 14-18 below it are a flat face, and rows 19-21 and 26-27 are light stripe bands on that same face. No front-edge line with eave shadow and no opening or contents can be seen on this body. The white ellipse at rows 2-8 (width 4, 8, 10, 12, then 10, 8, 6) has a drain mark. It sits above the body on a narrow neck at rows 9-10 (width 8, then 6) and is separate from the blue block, so it does not give the body a top surface. The body reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small single-tile-scale prop, so the per-tile facts read 0 and I judged by eye. Compared with the similarly sized bench and lamp references, it has more distinct colours (18, against 14 each). It shows about 4 lightness steps on the pale basin bowl and the blue-grey pedestal, with highlight bands and a darker underside. The dark edge pixels are 0% neutral, so the outline leans blue-grey and follows the material instead of being a black sticker line. Near-flat coverage is 0%. It is a little simpler than the larger well and stall references, with less grain and few per-surface texture dots. That puts it at the level of the small bench and lamp, which is acceptable for a thin prop of this size.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 29130
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.209Z",
+ "cells": {
+  "16": [
+   "97ad5e7597b9fddc",
+   "beda61e77df75d84",
+   "bf7867b0f05169af",
+   "dccd7c928be5eb30"
+  ],
+  "24": [
+   "0a2abffd2694149b",
+   "0d2a79ce7e1569dc",
+   "0e6c4f76a397ed7a",
+   "147c08b3060699bb",
+   "16a44b8059e53a7c",
+   "2e2895774810ab3d",
+   "4738b2563e4d4947",
+   "633b9b9651ca856f",
+   "64cc45f7de921d57",
+   "66e06cc4127e079c",
+   "6750f3d3d0c1b991",
+   "693798a1d2331810",
+   "85b1543af8ef3fe0",
+   "86b7d89de254603f",
+   "872ecfa14109d61a",
+   "8abc3d16195d2878",
+   "a2bb231ff181f7df",
+   "a3a05cf0bd4f0343",
+   "aee97260fdf09124",
+   "d63c76a543f9aef5",
+   "dceed19c2b21bd43",
+   "f5e73c2c87a474f8"
+  ],
+  "32": [
+   "50d26d15978423ad"
+  ],
+  "48": [
+   "06814f2725edf8b1",
+   "20e1cb44fcf839b8",
+   "246a2bdb232ab090",
+   "4f08bb128f07848e",
+   "6cf222b372b17daa",
+   "fea3327f4388928b"
+  ]
+ }
+}

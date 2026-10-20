@@ -527,13 +527,24 @@ function stageGrid(): void {
   }
 }
 
+/** eyes.json 의 눈자루(stalk) 종 눈알 상자 — checkSprite 가 그 종만 눈자루 규칙으로 보게 넘긴다 */
+function stalkEyeBoxes(): Map<string, [number, number, number, number][]> {
+  const out = new Map<string, [number, number, number, number][]>();
+  const file = join(PATHS.data, "eyes.json");
+  if (!existsSync(file)) return out;
+  const table = JSON.parse(readFileSync(file, "utf8")) as { species: Record<string, { anatomy: string; near: [number, number, number, number]; second?: [number, number, number, number] }> };
+  for (const [id, e] of Object.entries(table.species)) if (e.anatomy === "stalk") out.set(id, [e.near, ...(e.second ? [e.second] : [])]);
+  return out;
+}
+
 function stageCheck(): number {
   const seed = loadSeed();
+  const stalks = stalkEyeBoxes();
   let errors = 0;
   for (const species of seed.species) {
     const front = existsSync(bundlePath(species.id, "front")) ? readPng(bundlePath(species.id, "front")) : null;
     const back = existsSync(bundlePath(species.id, "back")) ? readPng(bundlePath(species.id, "back")) : null;
-    if (front) errors += printIssues(`${species.id} front`, checkSprite(front, seed.style.maxColors, "front", species.stage as 1 | 2 | 3).issues);
+    if (front) errors += printIssues(`${species.id} front`, checkSprite(front, seed.style.maxColors, "front", species.stage as 1 | 2 | 3, stalks.get(species.id)).issues);
     if (back) errors += printIssues(`${species.id} back`, checkSprite(back, seed.style.maxColors, "back", species.stage as 1 | 2 | 3).issues);
     if (front && back) errors += printIssues(`${species.id} 앞·뒤`, checkPair(front, back));
     const manifestPath = join(PATHS.bundle, species.id, "anim.json");

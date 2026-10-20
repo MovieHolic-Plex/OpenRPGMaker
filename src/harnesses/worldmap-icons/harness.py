@@ -28,7 +28,8 @@ from urllib.parse import unquote
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent.parent.parent
 sys.path.insert(0, str(HERE))
-KIT_DIR = ROOT / 'tiledata' / 'worldmap-kit'
+from kitdir import kit_dir
+KIT_DIR = kit_dir(ROOT)
 DATA = Path(os.environ.get('WMI_HARNESS_DATA', os.path.expanduser('~/.local/share/oprn/worldmap-icon-harness')))
 ITEMS = DATA / 'items'
 LOGS = DATA / 'logs'
@@ -41,7 +42,7 @@ PAR = int(os.environ.get('WMI_HARNESS_PAR', '12'))
 TIMEOUT_S = int(os.environ.get('WMI_HARNESS_TIMEOUT', str(20 * 60)))
 # 세트 = iconsets/<id>/manifest.json 이 있는 폴더(_ 로 시작하는 공용 폴더 제외). 앞 셋은 처음부터 있던 세트라 순서를 고정한다.
 _FIRST = ('fantasy', 'desert-east', 'modern-sf')
-_ALL = sorted(p.parent.name for p in (ROOT / 'tiledata' / 'worldmap-kit' / 'iconsets').glob('*/manifest.json') if not p.parent.name.startswith('_'))
+_ALL = sorted(p.parent.name for p in (KIT_DIR / 'iconsets').glob('*/manifest.json') if not p.parent.name.startswith('_'))
 SETS = tuple(s for s in _FIRST if s in _ALL) + tuple(s for s in _ALL if s not in _FIRST)
 REASONS = ['옆면 보임(아이소)', '시점 이상', '안 읽힘', '화풍 다름', '크기·비례', '지저분함', '원래(v9)가 나음']
 
@@ -126,7 +127,7 @@ FRONT3D_RULE = ('- **정면 카메라 3D 장면 세트:** 이 그림은 3D 장�
                 '`DIAG`·`FRONT`·`READ`·`STYLE` 은 엄격하게 본다 — 1배 지도에서 무엇인지 안 읽히거나, 정면 벽이 없어 순수 평면도로 보이거나, 칩셋 결과 다르면 떨어뜨린다.')
 for _s in SETS:
     try:
-        _cam = json.loads((ROOT / 'tiledata' / 'worldmap-kit' / 'iconsets' / _s / 'manifest.json').read_text()).get('camera') or {}
+        _cam = json.loads((KIT_DIR / 'iconsets' / _s / 'manifest.json').read_text()).get('camera') or {}
     except (OSError, ValueError):
         continue
     if _cam.get('kx', None) == 0:
@@ -138,7 +139,7 @@ def set_names():
     out = {}
     for s in SETS:
         try:
-            out[s] = json.loads((ROOT / 'tiledata' / 'worldmap-kit' / 'iconsets' / s / 'manifest.json').read_text())['name']
+            out[s] = json.loads((KIT_DIR / 'iconsets' / s / 'manifest.json').read_text())['name']
         except (OSError, ValueError, KeyError):
             pass
     return out

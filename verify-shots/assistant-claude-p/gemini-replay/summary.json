@@ -1,0 +1,29 @@
+{
+  "tools": [
+    "paint_road:fail",
+    "get_project_summary:ok",
+    "read_tileset_reference:ok",
+    "paint_road:ok",
+    "show_map_region:ok"
+  ],
+  "checkpoints": 1,
+  "stats": {
+    "ms": 5903,
+    "turns": 6,
+    "toolCalls": 5,
+    "toolErrors": 1,
+    "usage": {
+      "input": 400,
+      "output": 234,
+      "cacheRead": 600,
+      "cacheWrite": 0,
+      "totalTokens": 1234,
+      "calls": 6
+    },
+    "engine": "local-cli:gemini",
+    "billing": "api"
+  },
+  "changedKeys": [
+    "maps.map_blank_start"
+  ]
+}

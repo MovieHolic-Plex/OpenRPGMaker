@@ -1,0 +1,942 @@
+[
+ {
+  "name": "q001_gothic",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 gothic/gm-wardrobe. A: bad/tall_furniture — Closed-door wardrobe in front elevation; top is only a cornice strip, no edge line. | B: bad/tall_furniture — Rows 1-10 are a flat cornice band with no front-edge line; doors face-on, front elevation."
+ },
+ {
+  "name": "q002_modern_city",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 modern_city/mc-veh-scooter-b-l. A: bad/other — Scooter drawn in side view; seat is a 2-row slab, no readable top. | B: bad/other — Left-facing side view of a scooter; no readable top surface."
+ },
+ {
+  "name": "q003_sengoku",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 sengoku/se-bucket-stack. A: good/container — Bucket openings with water span rows 1-4 and 7-10; bucket bodies rows 11-15. | B: good/container — Water-filled bucket ellipses span 5 rows each (rows 0-4, 6-10), front body rows 11-15."
+ },
+ {
+  "name": "q004_interior",
+  "kind": "figure",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 interior/hand-interior:orb pedestal. A: unsure/figure — Pedestal topped by a red/white ball; no plinth top surface readable, just a dome. | B: bad/figure — Red dome and white bulb pedestal are rounded front elevation; no top surface. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "q005_wizarding",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 wizarding/wz-dorm-mirror. A: bad/other — Oval mirror in front elevation, rounded frame top only. | B: bad/other — Oval mirror face-on, only rounded upper frame; rows 27-31 base, no top."
+ },
+ {
+  "name": "q008_interior",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 interior/hand-interior:dining 4x1. A: good/low_furniture — Table top rows 1-9 with grain, edge/apron rows 10-13 with legs. | B: good/low_furniture — Wood top rows 1-9, edge row 10, apron+legs rows 10-14."
+ },
+ {
+  "name": "q011_wizarding",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 wizarding/wz-nv-pot-teaching-kit-table. A: good/low_furniture — Desk top rows 1-7, edge rows 8-9, drawer front rows 10-22. | B: good/low_furniture — Top surface rows 1-7 with edge line, drawer front rows 8-22."
+ },
+ {
+  "name": "q013_beodeul",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": "good",
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 beodeul/bd-prop-goods_pile. A: unsure/box — Mixed pile of barrels, crate and sack; crate top is cropped and the lids are hard to read. | B: bad/box — Barrel, crate and sack pile drawn mostly front elevation; lids only 1-2 rows. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌) | 화풍: 버들항 원본 = 버들항 수준(출처 라벨)."
+ },
+ {
+  "name": "q014_interior",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 interior/hand-interior:vanity mirror. A: good/tall_furniture — Vanity top rows 9-13 with a front-edge line at row 14, drawer front rows 15-31 (mirror above). | B: good/low_furniture — Pink top rows 9-14 under mirror, drawer front rows 15-31. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "q015_modern_city",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 modern_city/mc-in-r13-jumbo-gym-apparatus. A: unsure/other — Composite gym zone of mats, beam and steps; no single main body. | B: bad/other — Beam, steps and mats drawn face-on in front elevation. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "q016_interior",
+  "kind": "figure",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 interior/hand-interior:gym statue. A: bad/figure — Statue on a plinth in front elevation; plinth cap is only about 2 rows (28-30), no top surface. | B: bad/figure — Plinth top is only ~2 rows (rows 10-11) then front face; statue front elevation."
+ },
+ {
+  "name": "q017_interior",
+  "kind": "column",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 interior/hand-interior:bone pillar. A: bad/column — Front-facing stack of skulls and bands; no cap plate. | B: bad/column — Stacked skulls front elevation; no elliptical cap."
+ },
+ {
+  "name": "q018_sky",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 sky/si-hammock. A: unsure/low_furniture — Hammock bed seen mostly from above (rows 3-12), front sag only rows 13-14. | B: unsure/low_furniture — Cloth surface rows 3-12 reads as seen from above but front edge only ~3 rows. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "q019_prehistoric",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 prehistoric/ph-hut-thatch-s. A: good/structure — Thatched cone roof plane fills the top ~40 rows; wall with door rows ~45-62. | B: good/structure — Conical thatch roof slope rows ~0-43, front wall with doorway rows ~44-62."
+ },
+ {
+  "name": "q021_interior",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 interior/hand-interior:alembic. A: bad/container — Distiller flask and burner in front elevation; no opening seen from above. | B: bad/other — Flask and tube drawn front elevation, no top surface. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "q024_wizarding",
+  "kind": "frame",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 wizarding/wz-qd-fence-corner-ne. A: bad/frame — Fence corner post in front elevation; only a 2-row cap. | B: bad/frame — Cropped fence post/frame fragment face-on, cap only ~2 rows."
+ },
+ {
+  "name": "q025_sky",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 sky/si-dockhouse. A: good/structure — Sloped tiled roof rows ~4-41, plank wall front rows 42-79. | B: good/structure — Large sloped tile roof rows ~3-41, plank wall front rows 42-79."
+ },
+ {
+  "name": "q028_desert",
+  "kind": "column",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 desert/de-column-palace. A: good/column — Capital widens 8-16 then narrows over rows 0-6 as an elliptical cap; shaft rows 11-30. | B: good/column — Capital ellipse rows 1-5 with white top, shaft rows 7-29."
+ },
+ {
+  "name": "q029_pirate",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 pirate/pi-fish-rack. A: good/low_furniture — Table top rows 1-9 with fish, edge rows 10-13, legs below. | B: good/low_furniture — Fish-laden top rows 2-10, edge/apron rows 11-14, legs to row 21."
+ },
+ {
+  "name": "q030_farm",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 farm/bd-farm-barn. A: good/structure — Large tiled roof plane rows 0-52 with dormer; timber-frame wall front rows 54-91. | B: good/structure — Big tiled roof with dormer rows 0-54, timber wall with doors rows 55-91."
+ },
+ {
+  "name": "q031_sf",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 sf/sf-sink-unit. A: good/low_furniture — White top with basin rows 1-9, door front rows 10-15. | B: good/low_furniture — White top with basin rows 2-8, door front rows 9-14."
+ },
+ {
+  "name": "q032_steampunk",
+  "kind": "column",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 steampunk/sp-clock-post. A: good/column — Green cap rows 0-6 widens 10-16 with front-edge band and shadow; clock drum below. | B: bad/column — Green cap is a dome rounded on upper edge only; clock drum face-on. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "q039_interior",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 interior/hand-interior:weapon barrel. A: bad/container — weapons stick up rows 0-7; barrel rim only rows 8-9 dark, no opening seen, body rows 10-15. | B: bad/container — Barrel opening is only the 2-row rim at rows 8-9 with weapons poking up; front elevation, below 4."
+ },
+ {
+  "name": "q040_modern_city",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 modern_city/mc-in-r13-jumbo-arcade-racing-twin. A: bad/other — front-facing arcade elevation (screens, pedals, seats) with no readable top surface. | B: bad/other — Two arcade cabinets drawn face-on (screens, seats, pedals); no readable top surface."
+ },
+ {
+  "name": "q041_snow",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 snow/sn-trough. A: good/container — back rim rows 0-2, ice water rows 3-6 (4 rows), wood front rows 7-11. | B: good/container — Ice water interior rows 2-6 inside the rim, wooden front face rows 8-12."
+ },
+ {
+  "name": "q042_modern_city",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 modern_city/mc-in-r10-train-seat7-green-s. A: good/seat — lighter seat cushions rows 14-21 end in dark edge row 21, base front rows 22-29; backrest rows 6-12 face-on. | B: bad/seat — Backrest cushions rows 6-12 and seat cushions rows 14-21 are face-on; no seat top surface. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "q043_wizarding",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 wizarding/wz-hd-box-beans. A: bad/box — top contents rows 1-5, front striped rows 6-11 only 6 rows, below box front minimum 8. | B: bad/box — Open crate contents rows 1-5, front rows 6-12 = 7, below box front minimum of 8."
+ },
+ {
+  "name": "q045_farm",
+  "kind": "frame",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 farm/bd-farm-fence-v-3. A: skip/skip — fence section | B: bad/frame — Vertical post/rail strips repeat face-on with no top surface rows. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "q047_sf",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 sf/sf-med-scanner. A: good/other — wide top plate rows 1-9 ending in dark edge row 10, ring body front rows 11-25, bed below. | B: unsure/other — Plate rows 10-17 and ring opening rows 12-24 with bed, but back panel rows 2-9 reads face-on; ambiguous. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "q048_modern_city",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 modern_city/mc-in-r10b-mci-hosp-bed-e. A: good/low_furniture — mattress/pillow/blanket top rows 12-19, frame front rows 20-26 with posts. | B: good/low_furniture — Mattress and pillow top rows 12-20, frame front rows 21-26 with wheels."
+ },
+ {
+  "name": "q050_sf",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 sf/sf-bunk. A: unsure/low_furniture — upper bunk light surface rows 2-12 but pillow and lower bunk read like front elevation; cannot decide. | B: unsure/low_furniture — Upper mattress rows 3-10, frame front rows 11-14, but the stacked lower bunk rows 15-24 reads as front elevation. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "q051_interior",
+  "kind": "round_body",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 interior/hand-interior:war drum. A: good/round_body — white tilted elliptical head rows 1-8, red striped shell rows 9-16, legs below. | B: good/round_body — Drum head ellipse rows 1-8 then red/white body rows 9-16."
+ },
+ {
+  "name": "q052_sengoku",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 sengoku/se-shop-cloth. A: good/structure — tile roof slope plane rows ~2-31 plus lower roof, shopfront rows ~48-79. | B: good/structure — Large sloped tile roof plane rows ~5-28 over shopfront rows ~48-76."
+ },
+ {
+  "name": "q054_desert",
+  "kind": "column",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 desert/de-column-broken. A: good/column — capital cap rows 0-6 wider than shaft with shadow row 7, shaft rows 7-20, base 21-26. | B: good/column — Capital cap ellipse rows 1-5 with front edge row 6, shaft rows 7-22."
+ },
+ {
+  "name": "q055_wizarding",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 wizarding/wz-furn-bench-seat. A: good/low_furniture — seat top rows 0-4 ending in highlight edge, front apron rows 5-7, legs rows 8-10. | B: good/low_furniture — Seat top rows 0-4, front apron rows 5-7 plus legs rows 8-10."
+ },
+ {
+  "name": "q057_interior",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 interior/hand-interior:desk 2x1. A: good/low_furniture — plank top rows 1-9 with edge row 9, front/drawer rows 10-14. | B: good/low_furniture — Desktop rows 1-9 with edge line, drawer front rows 10-14."
+ },
+ {
+  "name": "q060_interior",
+  "kind": "figure",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 interior/hand-interior:marble bust. A: bad/figure — bust on pedestal drawn as front elevation; no plinth top surface, shaft rows 20-27 flares at 28-31. | B: bad/figure — Bust and plinth drawn face-on; plinth rows 28-31 has no top surface."
+ },
+ {
+  "name": "q061_beodeul",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": "good",
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 beodeul/bd-prop-table_mugs. A: bad/low_furniture — table top rows 7-16 with plan-like benches rows 0-4 and 19-23; front face only rows 17-18. | B: unsure/low_furniture — Horizontal bands (rows 1-4, 7-12, 13-16, 19-23) read as a face-on arrangement; no clear tabletop plane. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌) | 화풍: 버들항 원본 = 버들항 수준(출처 라벨)."
+ },
+ {
+  "name": "q062_modern_city",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 modern_city/mc-in-r11-jp-tea-hearth. A: bad/container — full-tile plan view of sunken hearth on floor, no front face. | B: bad/container — Plan view from above on a floor mat; no front face."
+ },
+ {
+  "name": "q063_pirate",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 pirate/pi-net-rack. A: good/low_furniture — cloth-covered top rows 2-13, draping cloth rows 14-17, legs rows 18-22. | B: good/low_furniture — Cloth-covered top rows 1-12, legs and drape rows 14-21."
+ },
+ {
+  "name": "q065_campus",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 campus/mc-in-sc-desk-n. A: unsure/low_furniture — desk top rows 1-6, front only rows 7-10 with chair tucked under; hard to read | B: unsure/low_furniture — desk top rows 1-6 then dark edge row 7, but lower rows 8-15 are a chair seen from behind; front unclear → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "q066_sf",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 sf/sf-hab-module-3. A: good/structure — sloped roof plane rows 0-20, facade rows 22-59 | B: good/structure — sloped roof plane rows ~0-21 above facade rows ~23-59 with door and windows"
+ },
+ {
+  "name": "q068_interior",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 interior/hand-interior:bread oven. A: bad/structure — front elevation of oven with chimney; no top surface | B: bad/structure — front elevation of oven arch and chimney, no top surface"
+ },
+ {
+  "name": "q069_sky",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 sky/si-chair. A: bad/seat — chair backrest face-on, seat only ~3 rows (7-9) | B: bad/seat — front-facing chair: backrest rows 0-6, seat band only ~3 rows (8-10) below the 4 minimum"
+ },
+ {
+  "name": "q072_modern_city",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 modern_city/mc-in-opus-hospital-med-cabinet. A: bad/tall_furniture — front elevation of glass cabinet; no readable top | B: unsure/tall_furniture — white band rows 1-4 with edge line row 5 could be top but reads as cornice on a front elevation → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "q073_interior",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 interior/hand-interior:dining 1x1. A: good/low_furniture — table top rows 1-9, apron/legs rows 10-14 | B: good/low_furniture — table top rows 1-9 ending in edge row 10, apron+legs rows 10-14"
+ },
+ {
+  "name": "q075_interior",
+  "kind": "frame",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 interior/hand-interior:meat hooks. A: bad/frame — front elevation meat rack, top beam only 1-2 rows | B: bad/frame — front-elevation rack: beam rows 1-4 is its front face, posts and back panel flat"
+ },
+ {
+  "name": "q077_steampunk",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 steampunk/sp-lab-bench. A: good/low_furniture — bench top rows 5-14 with items, front drawers rows 15-24 | B: good/low_furniture — bench top with items rows 6-14, front drawers rows 15-24"
+ },
+ {
+  "name": "q078_interior",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 interior/hand-interior:desk 3x1. A: good/low_furniture — desk top rows 1-9 with edge line, front/legs rows 10-14 | B: good/low_furniture — desk top rows 1-9 with edge row 9/10, apron and legs rows 10-14"
+ },
+ {
+  "name": "q080_modern_city",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 modern_city/mc-prop-bench2-b. A: bad/seat — bench seat only rows 8-10 (3), backrest face-on | B: unsure/low_furniture — backrest slats rows 1-5 vertical, seat only rows 8-10 (3) and front ~3 rows → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "q081_beodeul",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": "good",
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 beodeul/bd-prop-flowerbox_long. A: unsure/container — flowers rows 0-5 over soil, front rows 6-11; opening hidden by plants | B: bad/container — front elevation planter, flowers rows 1-4 but no soil opening seen, wooden front rows 5-11 → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌) | 화풍: 버들항 원본 = 버들항 수준(출처 라벨)."
+ },
+ {
+  "name": "q082_sky",
+  "kind": "round_body",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 sky/si-haybale. A: bad/round_body — bale shows round face front-on; top only dome rows 0-4 rounded on upper edge | B: good/round_body — hay bale top rows 0-8 with strap row 9, front rows 10-14 → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "q084_interior",
+  "kind": "figure",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 interior/hand-interior:training dummy. A: good/figure — scarecrow on round base ellipse rows 23-27 top, 28-31 front | B: unsure/figure — base disc ellipse rows 22-27 shows a top but straw body is front elevation → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "q086_beodeul",
+  "kind": "column",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": "good",
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 beodeul/bd-prop-column_monument. A: unsure/column — capital slab rows 7-10 flat rectangular, no elliptical cap | B: unsure/column — cap slab rows 7-11 reads like a front-face capital, no clear ellipse; base plinth rows 49-58 → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌) | 화풍: 버들항 원본 = 버들항 수준(출처 라벨)."
+ },
+ {
+  "name": "q088_farm",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 farm/bd-farm-coop. A: good/structure — sloped roof plane rows 5-21, wall on stilts rows 22-37 | B: good/structure — sloped roof rows 0-19 above log wall rows ~20-33 and stilts"
+ },
+ {
+  "name": "q089_wizarding",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 wizarding/wz-pot-cauldron-bench-green. A: good/container — cauldron opening ellipse rows 1-11 with liquid, front rows 14-30 | B: good/container — cauldron elliptical opening rows 1-13 with liquid, box front rows 14-30"
+ },
+ {
+  "name": "q092_modern_city",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 modern_city/mc-in-mci-bar-stool. A: good/seat — round cushion top ellipse rows 0-4 on thin pole | B: good/seat — round seat ellipse rows 0-4 (widths 6,8,10,10,8) plus rim, pole and base rows 8-20"
+ },
+ {
+  "name": "q093_desert",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 desert/de-brazier-stand. A: unsure/container — bowl rim ~rows 3-5 with flame rising, opening shallow | B: bad/container — brazier bowl opening only ~3 rows (3-5) on a front-elevation stand → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "q095_modern_city",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 modern_city/mc-veh-sedan-d-navy. A: bad/other — car side elevation; no top surface | B: bad/other — car in side view, no top surface"
+ },
+ {
+  "name": "q098_modern_city",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 modern_city/mc-in-r10-home-zabuton. A: bad/seat — Two flat cushions plus tray read as plan/front view, no 4-row seat top with edge line. | B: bad/seat — Two cushions and tray drawn flat from above (rows 1-11), no front face."
+ },
+ {
+  "name": "q099_interior",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 interior/hand-interior:proofing rack. A: bad/tall_furniture — Fermentation shelf is a front elevation; only a 1-2 row rim on top. | B: unsure/tall_furniture — Shelf is mostly front elevation; top plank only rows 1-4 with front edge at row 4-5. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "q100_modern_city",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 modern_city/mc-bld-house-B. A: good/structure — Roof plane rows 0-45 with chimney, then front facade rows 46-95. | B: good/structure — Roof plane rows 0-45 with chimney, then front wall rows 47-95."
+ },
+ {
+  "name": "q102_steampunk",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 steampunk/sp-gantry-crane. A: good/structure — Beam deck rows 5-14 with box, steel girder front rows 15-25, legs with plinth tops below. | B: good/structure — Wood deck beam rows 5-15 with steel front edge rows 15-25, legs and floor below."
+ },
+ {
+  "name": "q104_modern_city",
+  "kind": "column",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 modern_city/mc-in-mci-iv-stand. A: good/column — Elliptical cap rows 0-4 overhanging thin shaft, base ellipse; reads as pole. | B: unsure/column — Disc cap rows 0-4 and base ellipse rows 20-27 on a thin pole, mostly elevation. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "q106_pirate",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 pirate/pi-bunk-ship. A: good/low_furniture — Bed: headboard rows 0-6, mattress/blanket top rows 7-26, footboard front rows 27-31. | B: bad/low_furniture — Bed drawn plan view: headboard rows 0-6 mirrored by footboard rows 27-31, no front face. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "q107_interior",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 interior/hand-interior:basket:fish+ice. A: good/container — Ice/fish contents visible rows 0-4 above wicker front rows 5-12. | B: unsure/container — Ice/fish contents rows 0-5 over wicker front rows 6-11, tiny but plausible. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "q108_interior",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 interior/hand-interior:crate:pie. A: good/container — Pies visible rows 0-8 inside open crate, wood front rows 10-13. | B: good/container — Pies visible rows 0-8 over crate front rows 9-14."
+ },
+ {
+  "name": "q109_campus",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 campus/mc-in-toilet-handwash. A: bad/container — Basin opening only about 3 rows (6-8), mostly front elevation with wall faucet. | B: unsure/container — Basin interior rows 6-8 and front rows 9-11, only ~3-4 opening rows. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "q110_beodeul",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 beodeul/bd-prop-veg_cart. A: good/other — Vegetable heap rows 0-6 above cart body front rows 7-19. | B: good/other — Produce top rows 0-6, cart body front rows 7-19. | 화풍: 버들항 원본 = 버들항 수준(출처 라벨)."
+ },
+ {
+  "name": "q111_beodeul",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 beodeul/bd-prop-parasol_table. A: good/other — Striped sloped canopy rows 0-12 plus table top ellipse and tub front below. | B: good/other — Striped canopy slope rows 0-9 with scalloped edge, table body beneath. | 화풍: 버들항 원본 = 버들항 수준(출처 라벨)."
+ },
+ {
+  "name": "q112_campus",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 campus/mc-recycle-bins. A: unsure/box — Lid band rows 1-5, body rows 6-12 gives front 7, one below box minFront 8. | B: bad/box — Lid rows 1-5 and body front ~7 rows, under box minimum front 8. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "q113_beodeul",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": "good",
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 beodeul/bd-prop-flower_cart. A: unsure/other — Pots hide cart top; only about 3-4 row band at rows 10-13 then front 14-20. | B: unsure/other — Pots are front elevation; cart deck only ~3 rows, front rows 13-20. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌) | 화풍: 버들항 원본 = 버들항 수준(출처 라벨)."
+ },
+ {
+  "name": "q114_interior",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 interior/hand-interior:work 3x1. A: good/low_furniture — Tabletop rows 1-9 with front edge line, apron rows 10-12 and legs. | B: unsure/low_furniture — Plank top rows 1-9 but front face only rows 10-12. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "q115_modern_city",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 modern_city/mc-in-opus-studio-camera-crane. A: bad/other — Thin crane arm and tripod in side/front elevation, no top surfaces. | B: bad/other — Thin-line camera crane in elevation, no top surfaces."
+ },
+ {
+  "name": "q116_beodeul",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": "good",
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 beodeul/bd-prop-planter_round. A: bad/container — Bush dome rows 0-5 with 1-row soil rim, stone front only 4 rows. | B: unsure/container — Planter with plant rows 0-4 over stone front rows 5-10, tiny. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌) | 화풍: 버들항 원본 = 버들항 수준(출처 라벨)."
+ },
+ {
+  "name": "q117_modern_city",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 modern_city/mc-in-opus-cafe-parfait-case. A: bad/other — Display case interior shown face-on rows 1-10, pink front rows 11-26, no top. | B: bad/low_furniture — Glass case contents in front elevation rows 1-11, no top surface. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "q118_modern_city",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 modern_city/mc-in-r13-jumbo-office-boardroom. A: good/low_furniture — Large tabletop rows 0-30 with screen, front apron rows 31-37. | B: good/low_furniture — Table top rows 0-31 with front edge rows 32-37."
+ },
+ {
+  "name": "q121_sengoku",
+  "kind": "frame",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 sengoku/se-in-sword-rack. A: bad/frame — Sword stand in front elevation, horizontal bars face-on, no readable top. | B: bad/frame — Sword rack in front elevation, bars show only a thin top."
+ },
+ {
+  "name": "q122_pirate",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 pirate/pi-longhouse. A: good/structure — Thatched roof plane rows 0-30, wall and porch front rows 31-63. | B: good/structure — Thatched roof slope rows 0-~26 then wall and porch front."
+ },
+ {
+  "name": "q124_modern_city",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 modern_city/mc-in-mci-gondola. A: bad/tall_furniture — Double-sided shelf in front elevation, only rim on top. | B: good/tall_furniture — Top surface with items rows 0-10, shelf front below. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "q125_interior",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh4-blind",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20). 원본 interior/hand-interior:spinning wheel. A: bad/other — Spinning wheel face-on front elevation, no top surface. | B: bad/other — Spinning wheel front elevation, table rim only 2 rows."
+ },
+ {
+  "name": "g4_beodeul-road",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "good",
+  "group": "fresh4-style-beodeul",
+  "tier": "A",
+  "note": "버들항 번들 원본 바닥(오토타일 가운데 칸 4×3) — 기준 그림에 안 쓴 것, 출처 라벨(버들항 원본 = 버들항 수준). 판정 전 고정."
+ },
+ {
+  "name": "g4_beodeul-canal",
+  "kind": "terrain",
+  "styleKind": "water",
+  "view34": null,
+  "style": "good",
+  "group": "fresh4-style-beodeul",
+  "tier": "A",
+  "note": "버들항 번들 원본 바닥(오토타일 가운데 칸 4×3) — 기준 그림에 안 쓴 것, 출처 라벨(버들항 원본 = 버들항 수준). 판정 전 고정."
+ },
+ {
+  "name": "g4_beodeul-sand",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "good",
+  "group": "fresh4-style-beodeul",
+  "tier": "A",
+  "note": "버들항 번들 원본 바닥(오토타일 가운데 칸 4×3) — 기준 그림에 안 쓴 것, 출처 라벨(버들항 원본 = 버들항 수준). 판정 전 고정."
+ },
+ {
+  "name": "g4_beodeul-farmland",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "good",
+  "group": "fresh4-style-beodeul",
+  "tier": "A",
+  "note": "버들항 번들 원본 바닥(오토타일 가운데 칸 4×3) — 기준 그림에 안 쓴 것, 출처 라벨(버들항 원본 = 버들항 수준). 판정 전 고정."
+ },
+ {
+  "name": "g4_beodeul-farmland-wet",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "good",
+  "group": "fresh4-style-beodeul",
+  "tier": "A",
+  "note": "버들항 번들 원본 바닥(오토타일 가운데 칸 4×3) — 기준 그림에 안 쓴 것, 출처 라벨(버들항 원본 = 버들항 수준). 판정 전 고정."
+ },
+ {
+  "name": "g4_beodeul-farm-lane",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "good",
+  "group": "fresh4-style-beodeul",
+  "tier": "A",
+  "note": "버들항 번들 원본 바닥(오토타일 가운데 칸 4×3) — 기준 그림에 안 쓴 것, 출처 라벨(버들항 원본 = 버들항 수준). 판정 전 고정."
+ },
+ {
+  "name": "g4_beodeul-farm-grass",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "good",
+  "group": "fresh4-style-beodeul",
+  "tier": "A",
+  "note": "버들항 번들 원본 바닥(오토타일 가운데 칸 4×3) — 기준 그림에 안 쓴 것, 출처 라벨(버들항 원본 = 버들항 수준). 판정 전 고정."
+ },
+ {
+  "name": "syn4_g4_beodeul-road",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "bad",
+  "group": "fresh4-style-synthetic",
+  "tier": "A",
+  "note": "g4_beodeul-road 를 3×3 최빈 필터 + 채널당 4단 포스터화로 일부러 평평·얕게 만든 통제 표본(새 방식, 개발 표본의 4색+근흑 윤곽과 다름). 판정 전 고정."
+ },
+ {
+  "name": "syn4_g4_beodeul-canal",
+  "kind": "terrain",
+  "styleKind": "water",
+  "view34": null,
+  "style": "bad",
+  "group": "fresh4-style-synthetic",
+  "tier": "A",
+  "note": "g4_beodeul-canal 를 3×3 최빈 필터 + 채널당 4단 포스터화로 일부러 평평·얕게 만든 통제 표본(새 방식, 개발 표본의 4색+근흑 윤곽과 다름). 판정 전 고정."
+ },
+ {
+  "name": "syn4_g4_beodeul-sand",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "bad",
+  "group": "fresh4-style-synthetic",
+  "tier": "A",
+  "note": "g4_beodeul-sand 를 3×3 최빈 필터 + 채널당 4단 포스터화로 일부러 평평·얕게 만든 통제 표본(새 방식, 개발 표본의 4색+근흑 윤곽과 다름). 판정 전 고정."
+ },
+ {
+  "name": "syn4_q013_beodeul",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "bad",
+  "group": "fresh4-style-synthetic",
+  "tier": "A",
+  "note": "q013_beodeul 를 3×3 최빈 필터 + 채널당 4단 포스터화로 일부러 평평·얕게 만든 통제 표본(새 방식, 개발 표본의 4색+근흑 윤곽과 다름). 판정 전 고정."
+ },
+ {
+  "name": "syn4_q061_beodeul",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "bad",
+  "group": "fresh4-style-synthetic",
+  "tier": "A",
+  "note": "q061_beodeul 를 3×3 최빈 필터 + 채널당 4단 포스터화로 일부러 평평·얕게 만든 통제 표본(새 방식, 개발 표본의 4색+근흑 윤곽과 다름). 판정 전 고정."
+ },
+ {
+  "name": "syn4_q081_beodeul",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "bad",
+  "group": "fresh4-style-synthetic",
+  "tier": "A",
+  "note": "q081_beodeul 를 3×3 최빈 필터 + 채널당 4단 포스터화로 일부러 평평·얕게 만든 통제 표본(새 방식, 개발 표본의 4색+근흑 윤곽과 다름). 판정 전 고정."
+ }
+]

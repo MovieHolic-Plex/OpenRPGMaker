@@ -1,0 +1,361 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6fffb90560f1feada00c689e4e8521c8c0fccf96cfbc0588b5519a058efe11f4",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "천체 모형(움직임) (orrery)",
+ "label": "atlas_biome_interior/props34/orrery",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 65,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "base",
+      "rows": "26-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armillary rings and central sphere",
+      "rows": "11-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pole",
+      "rows": "18-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a thin 2px pole (rows 18-25) on a small base. Above the pole sit a sphere and rings (rows 11-17) with small planet dots at the sides. The base (rows 26-31, width 8-10) has a dark outline at row 26, then a slightly lighter band at rows 27-28 (L=157 against L=130 below). That band reads as a 1-2 row rim or lip, not a real top surface: there is no front-edge line, no eave shadow and no ellipse width profile (widths 8,10,10,10,10,8). Front rows 29-30 plus the outline give about 3-4 rows. The pole and rings are drawn face-on with no horizontal surface. So the drawing is a front elevation with only a rim-like top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The orrery is a thin, sparse prop, so the per-tile median of 0 says nothing against it. It uses 12 distinct colours, close to the bench (14) and lamp (14), the closest sparse references. Flat-fill coverage is 0%. Its dark edge pixels are 0% neutral, so the outline carries a brown or warm tint rather than a black sticker line, as in the hedge and stall. By eye, the gold arms and spheres and the brown base show about 4 lightness steps with small highlights, so it is not a flat body with one shade. It is a little simpler than the roofed well and the stall, but no thinner or flatter than the bench or lamp. A careful artist would accept it next to those two, so it passes narrowly.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22439
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "base pedestal",
+      "rows": "26-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ring and orbs at top",
+      "rows": "11-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "central pole",
+      "rows": "18-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The orrery is a 2px-wide pole (rows 18-25, width 2) on a small pedestal (rows 26-31, width 8-10). The pedestal has only a 2-row lighter band (rows 27-28) under a dark outline row 26. That band reads as a rim or lip, with no distinct front-edge line or eave shadow, so the pedestal has no real top surface. The upper ring (rows 13-17) is a thin line-drawn ring with orbs. Its width runs 11, 7, 4, 8, which is not a clean ellipse plate, and it has no filled horizontal surface. The whole drawing reads as a front elevation with no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The orrery is a small, thin prop (a stand, arms and a few orbs), so the per-tile median of 0 says nothing against it. It uses 12 distinct colours, close to the bench (14), lamp (14) and hedge (11), which are the sparse references. There are no flat fills (0% 5x5 coverage), and 0% of its dark edge pixels are neutral, so the outline leans brown or tinted. That matches the Beodeul material-tone outline, unlike the lamp's 100% neutral line. By eye, the gold stand and arms show about 4 tones (highlight, mid, dark, deep) and the orbs have small highlights. That is slightly fewer steps than the 5-6 on the richer references (stall, well), but comparable to the bench and lamp. It does not look like a flat sticker beside them, so I accept it, though it is a little lower in density than the best pieces.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23705
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "base pedestal",
+      "rows": "26-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "central pole with orbit arms and planets",
+      "rows": "11-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a thin 2px pole (rows 18-25) with flat, face-on orbit arms and planet dots (rows 11-17), standing on a small bowl-like base (rows 26-31, width 8-10-8). The arms and sphere read as a front-facing silhouette with no horizontal plane. The base has a dark outline at row 26 and lighter rows 27-28, which is only a 1-2 row rim or lip with no ellipse widening and narrowing and no clear front-edge line or eave shadow. The base's front face is rows 29-30 above the outline at row 31. Overall this matches the front-elevation and rim-only wrong examples, not a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The orrery is a thin, sparse prop of roughly 15x24 source pixels, so the per-tile median of 0 says nothing against it. Judged by eye it uses 12 distinct colours in that small area, close to the bench (14) and lamp (14) references. Flat-fill coverage is 0%, and 0% of its dark edge pixels are neutral, so the outline is a tinted brown, as on the hedge and cheese stall, and not a near-black sticker line. The stand and the spheres show about 4 lightness steps, with highlights on the orbs and arms, which is a little below the 5-6 steps of the references. Next to the lamp and bench it looks equally crafted and not flatter or thinner, so it is acceptable for a small single-tile-scale prop. It is lighter than the large stall and well, but those are much bigger objects.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21107
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "base pedestal",
+      "rows": "26-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "central orb and rings",
+      "rows": "11-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The orrery is a thin 2px-wide shaft (rows 18-25) with a ring and arm assembly on top (rows 11-17). The rings and planets are drawn face-on as flat arms, not as ellipses seen from above. The base (rows 26-31, widths 8-10) has a dark outline at row 26 and a 2-row lighter band at rows 27-28. That band is only a rim-like strip with no clear front-edge line and no eave shadow. Below it the front face runs through rows 29-31. This matches the 'rim only: top 2' wrong reference. No part has a real top surface, so the object reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny, thin prop, about 15x19 source pixels, so the per-tile median of 0 is not held against it. Its outline is tinted, with 0% neutral dark edge pixels, which matches prop-hedge and is not the black sticker look. Flat-fill coverage is 0%. However, it has only 12 distinct colours spread over several materials (brass stand, rings, orbs). By eye each material gets only about 2-3 lightness steps, where the lamp-crook and bench references carry about 5 with clear highlight-to-deep ramps. The rings and spheres read as single-tone shapes with an edge, and there is little grain or per-part highlighting. Next to the references it looks thinner and flatter, so with the doubt I fail it as shallow shading and slightly lower density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 24552
+  }
+ ],
+ "decidedAt": "2026-10-20T07:04:17.699Z",
+ "cells": {
+  "16": [
+   "aa3e3a242cec6654",
+   "d49875cc476699c6"
+  ],
+  "24": [
+   "1e425e46eccac4f8",
+   "2706c44a57cc5694",
+   "31d1a855dca87de3",
+   "3379aa289b80f245",
+   "3875209cf1c14977",
+   "388973dbf33ad720",
+   "45efb8dbb68a6fe8",
+   "55162939fbe60a75",
+   "ac508de0d69e47d0"
+  ],
+  "32": [
+   "0733d42a4a74077a",
+   "23a35ea334890398",
+   "44baac819d429ef6"
+  ],
+  "48": [
+   "257820d5ab41c611",
+   "2effa7f499fccab7",
+   "45a16f972d15056a",
+   "752e3f12cf1ba0c1",
+   "8940a93f628b4a5b",
+   "ff5e99259d6a1e8e"
+  ]
+ }
+}

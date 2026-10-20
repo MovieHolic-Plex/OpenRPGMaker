@@ -13,7 +13,8 @@ import { createBlankProject } from "./defaults";
 // defaultProject 가 아니라 blankProject 에서 가져온다 — defaultProject 는 데모·쇼케이스 빌더 때문에
 // 에디터 인테리어 파이프라인을 끌고, store 를 import 하는 테스트 669개가 그 비용을 물게 된다.
 import { ensureSwitchVariableSlots } from "./defaults/blankProject";
-import { ensureBundledResourceProfiles, ensureBundledTilesets, removeLegacyRmTileset, removeLegacySpriteReferences } from "./defaults/defaultAssets";
+import { ensureBundledResourceProfiles, ensureBundledTilesets, preloadAllBundledTilesetDefinitions, removeLegacyRmTileset, removeLegacySpriteReferences } from "./defaults/defaultAssets";
+import { reshapeJpCityMapBorders } from "./defaults/jpCityEdgeMigration";
 import { hasPendingFacesetSheetRepair, repairUploadedFacesetSheets } from "@/assets/facesetSheetRepair";
 import { separateInlineUploadedMedia } from "./persistence/inlineMediaRefs";
 import { repairInteriorTransparentPropLayers } from "./defaults/interiorTransparentPropLayerRepair";
@@ -343,6 +344,8 @@ class ProjectStore {
             // 열어줬는데 "작업을 찾지 못함" 오류로 떨어지면 온라인 선택지가 없는 패키징
             // 앱이 DB 연결 화면에 갇힌다(2026-09-17 패키징 실측: db-required-panel).
             // 빈 문서를 채택하고 dirty 로 둬 첫 flush 가 폴더에 심는다.
+            const definitions = preloadAllBundledTilesetDefinitions();
+            if (definitions) await definitions;
             this.adoptProject(createBlankProject(), { restoreVault: false });
             this.loadedRemoteProjectId = target.projectId;
             this.writeAuthority = { mode: "legacy", target };
@@ -1216,6 +1219,8 @@ class ProjectStore {
 
   async clearAll(): Promise<void> {
     if (!canWriteTeamProject()) return;
+    const definitions = preloadAllBundledTilesetDefinitions();
+    if (definitions) await definitions;
     assertCanonicalReplacement(createBlankProject(), this.writeAuthority);
     clearEventDraftVault();
     clearCopiedEventPage();
@@ -1744,6 +1749,10 @@ class ProjectStore {
     // 표식이 없거나 짝이 다르면(옛 파일·미마이그 사본·새 빌드) 예전처럼 전부 돌리고, 끝난 뒤 표식을 새긴다.
     const bootMarker = currentBootNormalizationMarker();
     const skipNormalizers = bootNormalizationMatches(this.current, bootMarker);
+    // 정규화기(ensureBundledTilesets)는 번들 타일셋 정의를 동기로 읽는다. 편집기는 정의를 지연으로 싣으므로(bundledJson.ts)
+    // 돌리기 전에 한꺼번에 읽어 둔다 — 건너뛰는 웜 부팅은 읽지 않는다. 기다리는 동안 문서가 바뀌면 아래는 새 문서를 정규화한다.
+    const definitions = skipNormalizers ? null : preloadAllBundledTilesetDefinitions();
+    if (definitions) await definitions;
     if (!skipNormalizers) forgetTrustedSharedEntries();
     const before = skipNormalizers ? null : jsonContentDigest(this.current);
     // 어느 정규화기가 실제로 손을 댔는지 이름으로 남긴다.
@@ -1756,6 +1765,8 @@ class ProjectStore {
       ["mapTreeCoverage", ensureMapTreeCoversAllMaps(this.current)],
       ["switchVariableSlots", ensureSwitchVariableSlots(this.current)],
       ["bundledTilesets", ensureBundledTilesets(this.current)],
+      // jp_city 지면 오토타일이 맵 밖과 이어지게 바뀐 뒤(2026-10-20), 구워 저장된 맵의 둘레 한 겹을 다시 맞춘다(jpCityEdgeMigration.ts).
+      ["jpCityEdgeConnect", reshapeJpCityMapBorders(this.current)],
       ["sharedTileReferences", ensureSharedTileReferences(this.current)],
       ["bundledReferenceImages", externalizeBundledReferenceImages(this.current)],
       ["interiorPropLayers", repairInteriorTransparentPropLayers(this.current)],

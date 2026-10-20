@@ -129,7 +129,10 @@
   filter: none;
   gap: 8px;
 }
-.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-row, .battle-party .battle-actor-status, .battle-party:has(> .battle-actor-status:only-child) .battle-actor-status) {
+/* 쓰러진 상대 행(.defeated)은 뺀다 — 이 파일은 층 밖이고 :is 특이도가 (0,7,0)이라, 여기서 display: grid 를 주면 runtime 층의
+   「쓰러진 행 숨김」(19-adversarial-review-3.css)을 이겼다. 트레이너가 다음 몬스터를 낼 때 쓰러진 행이 06 의 opacity .42 로
+   새 상자 옆에 반투명하게 되살아났다(2026-10-20 실측). */
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-row:not(.defeated), .battle-party .battle-actor-status, .battle-party:has(> .battle-actor-status:only-child) .battle-actor-status) {
   display: grid;
   position: relative;
   grid-template-columns: minmax(0, 1fr);
@@ -145,6 +148,19 @@
   filter: none;
 }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-row, .battle-party .battle-actor-status)::before { content: none; display: none; }
+/* 상대 HP 상자 보임 계약: 상대 몬스터가 서 있는 동안(쓰러지지 않음) 그 상자는 늘 불투명하게 제자리에 있다. scripts/qa/astra-horizon/hud-probe.mjs 가 잰다. */
+/* 야생 등장: 02-intro-reveal 의 패널 페이드는 적 그림보다 360ms 늦게 시작해 상대가 다 보인 뒤 0.6초 넘게 상자가 비었다.
+   에메랄드는 상자가 몬스터와 같이 들어온다 — 같은 때 시작하고 짧게. 트레이너 소개(data-emerald-trainer-intro)는 자기 박자를 쓴다. */
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"][data-battle-director-step="intro"]:not([data-emerald-trainer-intro]) .battle-enemy-list-panel {
+  animation-duration: 240ms;
+  animation-delay: calc(var(--battle-reveal-ms, 300ms) + 120ms);
+}
+/* 내 몬스터가 다 쓰러져 진 결과(「싸울 수 있는 몬스터가 없다!」·「눈앞이 캄캄해졌다…」)·도망에도 상대는 서 있다 — 상자를 남긴다.
+   09-keyboard-result-panel.css 의 결과 단계 숨김은 이긴 경우(쓰러뜨림·포획 — 포획한 상대 행은 defeated 가 아니다)에만 남는다. */
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"][data-battle-director-step="result"]:has(.battle-result-panel:is([data-battle-result="defeat"], [data-battle-result="escape"])) .battle-enemy-list-panel:has(.battle-enemy-list-row:not(.defeated)) {
+  opacity: 1;
+  visibility: visible;
+}
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-name, .battle-party .battle-actor-name, .battle-party:has(> .battle-actor-status:only-child) .battle-actor-name) {
   font: 18px/24px var(--runtime-pixel-font);
   color: #384840;
@@ -612,10 +628,10 @@
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-box.has-speaker { padding-top: 12px; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] :is(.speaker-nameplate, .dialogue-face, .dialogue-log-button) { display: none; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-page-cursor { right: 12px; bottom: 12px; color: #c85048; font: 18px/20px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; text-shadow: none; }
-.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].choices-active { height: auto; min-height: 0; padding: 0 8px 8px; max-height: 240px; }
+.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].choices-active { box-sizing: border-box; height: auto; min-height: 0; padding: 0 8px 8px; max-height: 240px; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].choices-active .dialogue-box.choices { width: 224px; height: auto; min-height: 0; max-height: 232px; padding: 8px 12px; margin-left: auto; overflow-y: auto; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].choices-active .choice-list { gap: 0; }
-.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].choices-active .choice-btn { font: 18px/28px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; color: #384840; border: 0; border-radius: 0; background: transparent; padding: 0 8px 0 16px; text-shadow: none; min-height: 28px; }
+.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].choices-active .choice-btn { font: 18px/28px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; color: #384840; border: 0; border-radius: 0; background: transparent; padding: 0 8px 0 16px; text-shadow: none; min-height: 28px; height: auto; flex: 0 0 auto; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].choices-active .choice-btn.selected { background: #e0e8d0; box-shadow: none; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].choices-active .choice-btn.selected::before { content: ""; width: 0; height: 0; border: 6px solid transparent; border-left: 8px solid #384840; left: 2px; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].choices-active .choice-prompt-row { font: 18px/22px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; color: #384840; border: 0; padding: 4px 0; text-shadow: none; }

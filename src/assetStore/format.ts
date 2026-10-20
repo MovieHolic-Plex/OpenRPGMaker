@@ -4,6 +4,7 @@
  * 설계: docs/superpowers/specs/2026-10-06-asset-store-design.md, 위키 openwiki/asset-store.md.
  */
 import type { TilesetDef, UploadedAsset } from "../project/types";
+import { validateObjectSpec, type ObjectSpecV1 } from "../project/objectSpec";
 
 export const STORE_PACK_SCHEMA = "oprn-store-pack/1" as const;
 /** 매니페스트 안의 data URL 을 대신하는 blob 자리표시. 받을 때 data URL 로 되돌린다. */
@@ -11,6 +12,14 @@ export const STORE_BLOB_PREFIX = "oprn-blob:" as const;
 export const STORE_SLUG_SEPARATOR = "__" as const;
 
 export const STORE_LICENSES = ["CC0", "CC-BY-4.0", "CC-BY-SA-4.0", "OPRN-GAME"] as const;
+/**
+ * 그림·소리 하나를 어떻게 만들었나(2026-10-20 감독 결정 — AI 표시는 정확해야 한다. 「에이전트가 냈다」와 「AI 가 그렸다」는 다르다).
+ * - generative-model: 생성 모델이 만들었다(이미지·소리 생성, LLM 이 픽셀을 직접 찍기 포함). model 필수.
+ * - procedural: 스크립트만(색 바꾸기·조각 합성·규칙 생성), 생성 모델 없음. model 을 적지 않는다.
+ * - mixed: 둘 다(예: 스크립트로 합성한 칩 + 생성 모델 초상). model 필수.
+ * engine = 실제로 돌린 도구(예 "tile-gen 0.2.0", "char-gen compose"). tile-gen·char-gen·에디터가 같은 꼴을 쓴다.
+ */
+export const STORE_GENERATION_METHODS = ["generative-model", "procedural", "mixed"] as const;
 export type StoreLicense = (typeof STORE_LICENSES)[number];
 export const STORE_LICENSE_LABELS: Readonly<Record<StoreLicense, string>> = {
   "CC0": "CC0 — 조건 없이 자유 사용",
@@ -80,6 +89,8 @@ export const STORE_LIMITS = {
   characters: 2048,
   characterLabel: 40,
   characterAppearance: 240,
+  /** 기물 설명서(content.objects): 타일셋 하나에 기물 수백 개가 들어간다(버들항 키트 120). */
+  objects: 4096,
 } as const;
 
 /** 에디터 UploadedAsset.kind 중 스토어로 오갈 수 있는 것. */
@@ -116,6 +127,14 @@ export function storeImageSizeProblem(kind: StoreAssetKind, width: number, heigh
 
 export interface StoreBlobRef { readonly sha256: string; readonly mime: StoreBlobMime; readonly bytes: number }
 
+export type StoreGenerationMethod = (typeof STORE_GENERATION_METHODS)[number];
+export interface StoreGeneration {
+  method: StoreGenerationMethod;
+  engine: string;
+  /** 생성 모델 이름(예 "claude-opus-5.5"). generative-model·mixed 면 필수, procedural 이면 없음. */
+  model?: string;
+}
+
 export interface StorePackAsset {
   id: string;
   name: string;
@@ -123,6 +142,26 @@ export interface StorePackAsset {
   blob: string;
   mime: StoreBlobMime;
   meta: UploadedAsset["meta"];
+  /** 만든 방법(선택). 없으면 「AI 생성」으로 친다(팩의 다른 에셋이 방법을 밝힌 경우). */
+  generation?: StoreGeneration;
+}
+
+/**
+ * 캐릭터 칸의 짝 초상(char-gen 캐릭터 세트, 2026-10-20). 같은 팩의 에셋 id 를 가리킨다.
+ * face = faceset(48×48 낱장), bust·full = 표정 → picture. 표정 이름은 공용 초상 16표정과 같고 base 가 있어야 한다.
+ * extra 는 그 밖의 표정(thinking, hurt …) — 그림으로만 들어오고 대사 표정이 저절로 바꾸지는 않는다.
+ * 넣으면 그 칸의 캐릭터 외형(database.characterAppearances)이 생기고 표정 짝이 portraitExpressions 로 들어간다.
+ */
+export const STORE_PORTRAIT_EXPRESSIONS = [
+  "base", "smile", "happy", "content", "surprised", "embarrassed", "doubtful", "serious",
+  "annoyed", "angry", "sad", "crying", "worried", "determined", "shy", "wink",
+] as const;
+export type StorePortraitExpression = (typeof STORE_PORTRAIT_EXPRESSIONS)[number];
+export interface StorePackCharacterPortraits {
+  face?: string;
+  bust?: Partial<Record<StorePortraitExpression, string>>;
+  full?: Partial<Record<StorePortraitExpression, string>>;
+  extra?: Record<string, { bust?: string; full?: string }>;
 }
 
 /**
@@ -139,12 +178,30 @@ export interface StorePackCharacter {
   gender?: "male" | "female" | "none";
   age?: "child" | "youth" | "middle" | "elder";
   appearance?: string;
+  /** 이 캐릭터(칩·초상 묶음)를 만든 방법. 칩은 스크립트 + 초상은 생성 모델이면 mixed. */
+  generation?: StoreGeneration;
+  /** 짝 초상(선택). */
+  portraits?: StorePackCharacterPortraits;
+}
+
+/**
+ * 팩에 든 기물 하나(2026-10-20). 정본은 그 타일셋 구조 킷의 `spec`(ObjectSpec v1)이고, 이 목록은 거기서 만든 사본이다 —
+ * 스토어 상품 화면이 타일셋 정의를 다 풀지 않고 「들어 있는 기물」을 보여 주고, tile-gen 이 만든 팩을 같은 꼴로 읽는다.
+ */
+export interface StorePackObject {
+  /** content.tilesets 의 키. */
+  tileset: string;
+  /** 그 타일셋 structureKits 의 id. */
+  kit: string;
+  spec: ObjectSpecV1;
 }
 
 export interface StorePackContent {
   assets: Record<string, StorePackAsset>;
   tilesets: Record<string, TilesetDef>;
   characters?: StorePackCharacter[];
+  /** 기물 설명서 목록(없어도 된다 — 옛 팩·캐릭터·소리 팩). */
+  objects?: StorePackObject[];
 }
 
 export interface StorePackManifest {
@@ -186,6 +243,8 @@ export interface StoreItemSummary {
   grade: StoreGrade;
   license: StoreLicense;
   aiGenerated: boolean;
+  /** 「AI 생성」 표시의 근거(storePackGeneration). 옛 상품·방법을 밝히지 않은 상품은 없다. */
+  generation?: StorePackGenerationSummary | null;
   author: string;
   tags: string[];
   latestVersion: number;
@@ -266,6 +325,37 @@ export function slugify(title: string, suffix: string): string {
   return base.length >= 3 ? `${base}-${tail}` : `item-${tail}`;
 }
 
+/** content.characters[i].portraits 검사 — 가리키는 에셋의 종류·표정 이름·base. */
+function portraitProblems(raw: unknown, assets: Record<string, unknown>, where: string): string[] {
+  const out: string[] = [];
+  if (!isRecord(raw)) return [`캐릭터 초상 설명이 올바르지 않습니다: ${where}`];
+  const kindOf = (id: unknown): unknown => (typeof id === "string" && Object.hasOwn(assets, id) && isRecord(assets[id]) ? (assets[id] as Record<string, unknown>).kind : undefined);
+  if (raw.face !== undefined && kindOf(raw.face) !== "faceset") out.push(`캐릭터 얼굴은 팩의 얼굴(faceset) 에셋이어야 합니다: ${where}`);
+  for (const mode of ["bust", "full"] as const) {
+    const map = raw[mode];
+    if (map === undefined) continue;
+    if (!isRecord(map)) { out.push(`캐릭터 ${mode} 초상 목록이 올바르지 않습니다: ${where}`); continue; }
+    const names = Object.keys(map);
+    if (names.length > 0 && !Object.hasOwn(map, "base")) out.push(`캐릭터 ${mode} 초상에 기본(base) 표정이 없습니다: ${where}`);
+    for (const name of names) {
+      if (!(STORE_PORTRAIT_EXPRESSIONS as readonly string[]).includes(name)) out.push(`캐릭터 ${mode} 초상 표정 이름이 올바르지 않습니다(${name.slice(0, 24)}): ${where}`);
+      else if (kindOf(map[name]) !== "picture") out.push(`캐릭터 ${mode} ${name} 초상은 팩의 그림(picture) 에셋이어야 합니다: ${where}`);
+    }
+  }
+  if (raw.extra !== undefined) {
+    if (!isRecord(raw.extra) || Object.keys(raw.extra).length > 16) out.push(`캐릭터 추가 표정은 16개 이하의 목록이어야 합니다: ${where}`);
+    else {
+      for (const [name, pair] of Object.entries(raw.extra)) {
+        if (!/^[a-z][a-z0-9-]{0,23}$/u.test(name) || !isRecord(pair)) { out.push(`캐릭터 추가 표정이 올바르지 않습니다(${name.slice(0, 24)}): ${where}`); continue; }
+        for (const mode of ["bust", "full"] as const) {
+          if (pair[mode] !== undefined && kindOf(pair[mode]) !== "picture") out.push(`캐릭터 추가 표정 ${name} ${mode} 는 그림(picture) 에셋이어야 합니다: ${where}`);
+        }
+      }
+    }
+  }
+  return out;
+}
+
 /** 프로젝트에 넣을 때의 id. 같은 상품의 다음 판본이 같은 id 를 덮어써 맵 참조가 유지된다. */
 export const storeProjectId = (slug: string, originalId: string): string => `store_${slug.replace(/-/g, "_")}${STORE_SLUG_SEPARATOR}${originalId}`;
 
@@ -310,6 +400,53 @@ export function storeThirdPartyName(text: string): string | null {
   const compact = spaced.replace(/[^\p{L}\p{N}]+/gu, "");
   const tokens = new Set(spaced.split(/[^\p{L}\p{N}]+/u));
   return THIRD_PARTY_SUBSTRINGS.find((word) => compact.includes(word)) ?? THIRD_PARTY_TOKENS.find((word) => tokens.has(word)) ?? null;
+}
+
+const GENERATION_NAME = 80;
+
+/** generation 객체 하나의 문제(없으면 빈 배열). where = 「에셋 a_x」 같은 사람이 읽는 위치. */
+export function storeGenerationProblems(raw: unknown, where: string): string[] {
+  if (!isRecord(raw) || !includes(STORE_GENERATION_METHODS, raw.method)) return [`${where}: generation.method 는 ${STORE_GENERATION_METHODS.join("|")} 중 하나여야 합니다.`];
+  const out: string[] = [];
+  if (!isString(raw.engine, GENERATION_NAME, 1)) out.push(`${where}: generation.engine(실제로 돌린 도구 이름, 1~${GENERATION_NAME}자)이 있어야 합니다.`);
+  if (raw.model !== undefined && !isString(raw.model, GENERATION_NAME, 1)) out.push(`${where}: generation.model 은 1~${GENERATION_NAME}자 글이어야 합니다.`);
+  if (raw.method === "procedural" && raw.model !== undefined) out.push(`${where}: procedural(생성 모델 없음)인데 generation.model 이 있습니다 — 모델을 썼으면 mixed 입니다.`);
+  if (raw.method !== "procedural" && raw.model === undefined) out.push(`${where}: ${raw.method} 이면 쓴 생성 모델 이름(generation.model)을 적어야 합니다.`);
+  return out;
+}
+
+/** 상품 단위 「만든 방법」 요약. 상품 화면·목록의 표시가 이것으로 정해진다. */
+export interface StorePackGenerationSummary {
+  /** ai-generated: 생성 모델·섞음이 하나라도 있거나 방법을 안 밝힌 것이 있다. procedural: 전부 스크립트. */
+  label: "ai-generated" | "procedural";
+  counts: Record<StoreGenerationMethod | "unstated", number>;
+  engines: string[];
+  models: string[];
+}
+
+/**
+ * 팩의 만든 방법 요약. 에셋·캐릭터 어디에도 generation 이 없으면 null — 그때는 매니페스트 aiGenerated 가 정한다(사람이 손으로 만든 팩은 false).
+ * 하나라도 밝혔으면: 생성 모델·섞음이 있거나 안 밝힌 에셋이 있으면 ai-generated, 전부 procedural 이면 procedural.
+ */
+export function storePackGeneration(manifest: Pick<StorePackManifest, "content">): StorePackGenerationSummary | null {
+  const assets = Object.values(manifest.content?.assets ?? {});
+  const characters = manifest.content?.characters ?? [];
+  const stated = [...assets, ...characters].map((entry) => entry.generation).filter((g): g is StoreGeneration => Boolean(g));
+  if (stated.length === 0) return null;
+  const counts: StorePackGenerationSummary["counts"] = { "generative-model": 0, procedural: 0, mixed: 0, unstated: 0 };
+  for (const asset of assets) counts[asset.generation?.method ?? "unstated"] += 1;
+  for (const character of characters) if (character.generation) counts[character.generation.method] += 1;
+  const uniq = (values: (string | undefined)[]): string[] => [...new Set(values.filter((v): v is string => Boolean(v)))].slice(0, 8);
+  return {
+    label: counts["generative-model"] + counts.mixed + counts.unstated > 0 ? "ai-generated" : "procedural",
+    counts, engines: uniq(stated.map((g) => g.engine)), models: uniq(stated.map((g) => g.model)),
+  };
+}
+
+/** 이 팩을 「AI 생성」으로 표시하는가. 방법을 밝혔으면 요약이, 아니면 aiGenerated 가 정한다. */
+export function storeIsAiGenerated(manifest: Pick<StorePackManifest, "aiGenerated" | "content">): boolean {
+  const summary = storePackGeneration(manifest);
+  return summary ? summary.label === "ai-generated" : manifest.aiGenerated;
 }
 
 /**
@@ -375,6 +512,7 @@ export function validateManifest(input: unknown): Validation<StorePackManifest> 
       if (!isSha256(raw.blob) || !blobs.has(raw.blob)) errors.push(`에셋 ${id} 의 blob 이 목록에 없습니다.`);
       else if (blobs.get(raw.blob)!.mime !== raw.mime) errors.push(`에셋 ${id} 의 형식이 blob 과 다릅니다.`);
       if (!isRecord(raw.meta)) errors.push(`에셋 ${id} 의 meta 가 없습니다.`);
+      if (raw.generation !== undefined) errors.push(...storeGenerationProblems(raw.generation, `에셋 ${id}`));
     }
     for (const [id, raw] of Object.entries(tilesets)) {
       if (!ASSET_ID.test(id) || !isRecord(raw) || raw.id !== id) { errors.push(`타일셋 id 가 올바르지 않습니다: ${id.slice(0, 40)}`); continue; }
@@ -418,8 +556,31 @@ export function validateManifest(input: unknown): Validation<StorePackManifest> 
           if (c.gender !== undefined && !["male", "female", "none"].includes(c.gender as string)) errors.push(`캐릭터 성별 값이 올바르지 않습니다: ${where}`);
           if (c.age !== undefined && !["child", "youth", "middle", "elder"].includes(c.age as string)) errors.push(`캐릭터 나이 값이 올바르지 않습니다: ${where}`);
           if (c.appearance !== undefined && !isString(c.appearance, STORE_LIMITS.characterAppearance)) errors.push(`캐릭터 외형 설명은 ${STORE_LIMITS.characterAppearance}자 이하여야 합니다: ${where}`);
+          if (c.generation !== undefined) errors.push(...storeGenerationProblems(c.generation, `캐릭터 ${where}`));
+          if (c.portraits !== undefined) errors.push(...portraitProblems(c.portraits, assets, where));
           const key = `${c.asset as string}#${String(c.characterIndex)}`;
           if (seen.has(key)) errors.push(`같은 캐릭터 칸이 두 번 적혔습니다: ${where}`);
+          seen.add(key);
+        }
+      }
+    }
+    if (content.objects !== undefined) {
+      if (!Array.isArray(content.objects) || content.objects.length > STORE_LIMITS.objects) {
+        errors.push(`기물 설명서는 ${STORE_LIMITS.objects}개 이하의 목록이어야 합니다.`);
+      } else {
+        const seen = new Set<string>();
+        for (const raw of content.objects as unknown[]) {
+          const o = isRecord(raw) ? raw : null;
+          const tileset = o && typeof o.tileset === "string" && Object.hasOwn(tilesets, o.tileset) ? tilesets[o.tileset] : undefined;
+          const where = o && typeof o.tileset === "string" && typeof o.kit === "string" ? `${o.tileset.slice(0, 40)}/${o.kit.slice(0, 40)}` : "?";
+          if (!o || !isRecord(tileset)) { errors.push(`기물 설명서가 팩의 타일셋을 가리키지 않습니다: ${where}`); continue; }
+          const kits = Array.isArray(tileset.structureKits) ? tileset.structureKits as unknown[] : [];
+          if (typeof o.kit !== "string" || !kits.some((kit) => isRecord(kit) && kit.id === o.kit)) errors.push(`기물 설명서의 킷이 그 타일셋에 없습니다: ${where}`);
+          const spec = validateObjectSpec(o.spec);
+          if (!spec.ok) errors.push(...spec.errors.slice(0, 4).map((e) => `${where}: ${e}`));
+          else if (spec.value.id !== o.kit) errors.push(`기물 설명서 id(${spec.value.id.slice(0, 40)})가 킷 id 와 다릅니다: ${where}`);
+          const key = `${o.tileset as string}\u0000${String(o.kit)}`;
+          if (seen.has(key)) errors.push(`같은 기물이 두 번 적혔습니다: ${where}`);
           seen.add(key);
         }
       }
@@ -443,6 +604,14 @@ export function validateManifest(input: unknown): Validation<StorePackManifest> 
   }
   // 문자열 안에 data URL 이 남아 있으면 안 된다(전부 blob 으로 빼야 한다). 크기 제한을 우회하는 길이다.
   if (content && JSON.stringify(content).includes('"data:')) errors.push("매니페스트에 data: URL 이 남아 있습니다. blob 으로 빼야 합니다.");
+  if (errors.length === 0 && typeof m.aiGenerated === "boolean") {
+    const summary = storePackGeneration(m as unknown as StorePackManifest);
+    if (summary && m.aiGenerated !== (summary.label === "ai-generated")) {
+      errors.push(summary.label === "procedural"
+        ? "모든 에셋이 procedural(생성 모델 없음)인데 aiGenerated 가 true 입니다 — false 로 적으세요."
+        : "생성 모델·섞음이거나 만든 방법을 밝히지 않은 에셋이 있는데 aiGenerated 가 false 입니다.");
+    }
+  }
   return errors.length > 0 ? { ok: false, errors } : { ok: true, value: m as unknown as StorePackManifest };
 }
 

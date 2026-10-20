@@ -1,0 +1,344 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "63a8c400020c23b07fcb2d1befbc5a5100a355eadf93a58a6bd68af8098aaa70",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "저울 추 받침(추 1 — 가장 가벼운 놋쇠) (weight stand 1)",
+ "label": "atlas_biome_interior/plus/weight stand 1",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 15,
+  "darkV5": 30,
+  "nearBlackEdge": 0.5,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden stand box top",
+      "rows": "4-7",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "brass weight on top",
+      "rows": "2-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a 14px-wide box. Rows 4-7 form a top band, seen at x=4 and x=11, that ends in a light front-edge line at row 8 (#ac9067). Below it, rows 9-12 are a darker front face of 4 rows, with an outline at row 13. The small brass weight sits on the top band as a detail (rows 2-7) and is not the main body. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a very small prop: a dark box or stand with a brass weight on top. The measured facts are mixed. It has 15 colours per tile, in line with the hedge (10), cheese stall (17) and well (20), and 0% flat-fill coverage, so it is not a flat fill. However, 82% of its dark edge pixels are near-neutral. The tinted references (hedge 0%, cheese stall 1%, well 33%) are far lower, which points to a uniform near-black outline around the stand and the weight, the 'sticker' look. By eye, the brass weight has only about 3 lightness steps (a highlight, a mid tone and a dark) against the 5-6 steps on the reference wood, roof and stone. The stand body is dark and shows little grain or per-material shading. Its total of 15 distinct colours is also well below the cheese stall (40) and well (38). The tint test on the outline and the shallow ramps outweigh the adequate per-tile count, so it falls short of the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16341
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stand body (box/chest)",
+      "rows": "4-7",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brass weight on top (small detail)",
+      "rows": "2-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "In columns x=4 and x=11 the box has a top band at rows 4-7, which is lighter than the outline at row 3. Row 8 is a 1-row light line (#ac9067) that acts as the front-edge line. Below it, rows 9-12 are a darker front face of 4 rows, closed by a dark outline at row 13. The silhouette is 14 px wide from rows 3-12. The brass weight at rows 2-7 is a small detail on top of the box. The body therefore has a top band, an edge line and a front face of at least 3 rows, which reads as three-quarter, though the top is shallow."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 5,
+    "evidence": "The candidate is a tiny single-tile prop: a dark box base with a brass weight on top. It has 15 distinct colours in about one tile, which is above the bench and lamp (14 each) and the hedge (11), and it has 0% flat-fill coverage, so density is not the problem. The outline is the problem. 82% of its dark edge pixels are neutral, and by eye the dark rim around the base and the weight reads as a grey-black line rather than a dark brown or brass tone. The references tied to material (hedge 0%, stall 1%) have tinted outlines. The base looks fairly flat, with about 2-3 steps of dark grey. The brass weight has about 4 steps, which is fewer than the roughly 5-6 on the reference materials. The near-black sticker-style outline with a shallow base ramp does not match the Beodeul standard, so it fails. The lamp reference also has a neutral outline, but that does not offset the base's flatness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 17961
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stand box top (lid/platform)",
+      "rows": "4-7",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brass weight sitting on top",
+      "rows": "2-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The box body is 14 px wide over rows 3-12. Rows 4-7 form a brown top band (x=11 L=92, x=4 L=67). Row 8 is a lighter front-edge line (#ac9067 at x=4 and x=11), so evidence (a) applies. Below it, rows 9-12 are a darker front face (L about 64-71), and row 13 is the bottom outline. A small brass weight (rows 2-8, width 4 at row 2) sits on the top surface and is a detail, not the main body. No isometric side face is drawn. There is no distinct eave shadow row apart from the dark front face directly under the edge line, but the top band and front face are both clear."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small dark box with a brass weight on top, and it is less than one tile across. Its 15 distinct colours are about the same as the simple references (hedge 11, bench 14, lamp 14) but far below the stall (40) and well (38). Flat-fill coverage is 0%, so there are no large flat areas. The dark edge pixels are 82% near-neutral, which points to a neutral black/grey sticker outline rather than a tinted dark brown or brass tone. The references of the same kind (hedge 0%, stall 1%, well 33%) mostly carry tinted outlines. The brass weight has only about 3 lightness steps (highlight, mid, dark), against 5-6 on a Beodeul material. The dark base looks like one dark tone with little grain. Because the outline is neutral and the shading is shallow, it would look flatter and more sticker-like next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14644
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stand box top (with brass weight resting on it)",
+      "rows": "4-7",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "front face of box",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brass weight on top",
+      "rows": "2-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Columns x=4 and x=11 both show a top band at rows 4-7 (L 67-92) ending in a lighter 1-row front-edge line at row 8 (#ac9067). Below it, rows 9-12 form a darker front face of 4 rows, and row 13 is the outline. The top band therefore reads as a horizontal surface with a front face beneath it. The brass weight in the centre (rows 2-8, bright highlight at row 5) sits on the top surface and is a small detail. The box is 14 px wide with a 12 px base row. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small dark box with a brass weight on top, about one tile in size. The measured facts are healthy: 15 colours per tile (references run 10-20), 0% flat-fill coverage and 15 distinct colours. The brass shows only about 3-4 lightness steps (highlight, mid, dark) and the dark box body about 2-3, against roughly 5-6 per material in the references. 82% of its dark edge pixels are near-neutral, so the outline reads as a uniform black/grey line rather than a dark tone of the adjacent material. Beodeul pieces such as the hedge (0%), the cheese stall (1%) and the roofed well (33%) use tinted outlines. That gives the 'sticker' look, and I cannot see any dark brown or dark brass lean in the outline. Texture is limited to a few grain dots on the weight. Because of the near-black outline and the shallower ramps, I do not think it would sit comfortably beside the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 17517
+  }
+ ],
+ "decidedAt": "2026-10-20T05:59:10.983Z",
+ "cells": {
+  "16": [
+   "90c38099a85339a0"
+  ],
+  "24": [
+   "2bc0c9d96e0af7e2",
+   "31ddfc8bb056713f",
+   "53958a18829fda8a",
+   "697b07a64845cc82",
+   "b4f6d6da44a32dfa",
+   "f19c925e0890956e"
+  ],
+  "32": [
+   "2b30e2a6a4d051e2",
+   "3c8703ec224d3dcd",
+   "63893c61f6e70252",
+   "c33db5a1414b51a2",
+   "f5bbd0b8c958d5a1",
+   "f881471dea18401a"
+  ],
+  "48": [
+   "025b44533ca2d218",
+   "030b91f0cdb1b3fb",
+   "172902c5316bc2d0",
+   "7b8e07eb8ef9711e",
+   "bfefc2b6cc15a7a2",
+   "c50b7aa2dce0a109"
+  ]
+ }
+}

@@ -1,0 +1,7 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"cabinet:gem+gemr","view34":"PASS","quality":"FAIL","reason":"The right-hand gemb sprites taper to a 1px bottom stem like mushrooms instead of cut gems, and the left clus prongs have a disconnected-looking pixel on the right tip while repeating the same two shapes on all three shelves."}
+{"id":"cabinet:bolt+boltg+boltr","view34":"PASS","quality":"FAIL","reason":"The bolts are flat front-facing rectangles with 1px alternating dots (making the yellow piece look like swiss cheese or a sponge) rather than rolled or folded cloth bolts."}
+{"id":"cabinet:bottle+bottler+bottley","view34":"PASS","quality":"FAIL","reason":"All three shelves place the exact same 3px-wide peg-like bottles at identical x=2, 6, 10 columns with only color swaps and no glass specular highlight or shoulder taper."}
+{"id":"cabinet:candle","view34":"PASS","quality":"FAIL","reason":"All nine candles have lit orange-yellow flames burning directly under the wooden shelf planks, and the center tapers are bare 1px white vertical lines with no readable candle form."}
+{"id":"cabinet:cheese","view34":"PASS","quality":"FAIL","reason":"Only two monochrome yellow sprites (wheel2 and staircase wedge2) are repeated across the shelves, with no rind-versus-paste contrast and wedge2 reading as a jagged diagonal stair blob."}

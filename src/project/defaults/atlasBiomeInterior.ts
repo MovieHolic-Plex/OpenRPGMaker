@@ -7,40 +7,55 @@
 //   · 예제 26맵(tiledata/hand-interior/v5-maps)의 합성 칸(탁상 물건을 얹은 가구·창 빛)
 // 옛 정의(2026-09-29 오전, Tibo 실내 번호 0~2159 + 배·던전 블록)는 폐기했다. 배·던전은 atlasBiomeDungeon.ts 로 떼었다.
 // 조립은 src/editor/handInterior/builder.ts(평면 문자열 → 구조 자동, 가구는 v5 물건 id), 도구 build_hand_interior_room.
-import data from "@/assets/atlasBiomeInteriorTileset.json";
+import sheet from "@/assets/atlasBiomeInteriorSheet.json";
+import { bundledJson } from "./bundledJson";
+/** 번들 정의 JSON — 처음 쓸 때 읽는다(bundledJson.ts). 칸 수·한 줄 폭은 같은 굽기가 쓰는 작은 시트 메타(`atlasBiomeInteriorSheet.json`)에서 읽는다. */
+const data = () => bundledJson("atlasBiomeInteriorTileset");
 import references from "@/assets/sharedHandInteriorReferences.json";
-import type { AutotileGroup, PassFlag, Project, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
+import type { AutotileGroup, PassFlag, Project, SlideRule, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
 import { attachWorkshopTiles, detachWorkshopTiles } from "../workshopTiles";
 
 export const ATLAS_BIOME_INTERIOR_ID = "atlas_biome_interior";
 export const ATLAS_BIOME_INTERIOR_TEXTURE = "tex_atlas_biome_interior";
 export const ATLAS_BIOME_INTERIOR_FAMILY = "oprn-atlas";
-export const ATLAS_BIOME_INTERIOR_COUNT: number = data.count;
-export const ATLAS_BIOME_INTERIOR_TILES_PER_ROW: number = data.tilesPerRow;
+export const ATLAS_BIOME_INTERIOR_COUNT: number = sheet.count;
+export const ATLAS_BIOME_INTERIOR_TILES_PER_ROW: number = sheet.tilesPerRow;
 /** 옛(Tibo 번호 기반) 정의가 번들로 심은 참고문서 분류 — 새 정의로 바꿀 때 함께 뺀다. */
 const RETIRED_REFERENCE_PREFIX = "atlas-interior-";
 const REFERENCES = references as unknown as readonly { tilesetId: string; category: TilesetReferenceCategory }[];
 
+/** 굽기 JSON 의 빙판 규칙(없을 수 있다 — 얼음 바닥을 굽기 전 판본). */
+function slideTilesOf(json: unknown): Record<string, SlideRule> | undefined {
+  return (json as { slideTiles?: Record<string, SlideRule> }).slideTiles;
+}
+
+/** 새 사본이 들고 태어나는 참고문서 — 정의 JSON 없이 만든다(로드가 저장본에서 뺀 번들 참고문서를 되돌릴 때 쓴다, installReferenceOwners.ts). */
+export function atlasBiomeInteriorBundledReferenceDocuments(): TilesetReferenceCategory[] {
+  return REFERENCES.filter((r) => r.tilesetId === ATLAS_BIOME_INTERIOR_ID).map((r) => structuredClone(r.category));
+}
+
 export function createAtlasBiomeInteriorTileset(): TilesetDef {
   return {
     id: ATLAS_BIOME_INTERIOR_ID,
-    name: data.name,
+    name: data().name,
     image: { type: "bundled", id: ATLAS_BIOME_INTERIOR_TEXTURE },
     kind: "custom",
     family: ATLAS_BIOME_INTERIOR_FAMILY,
-    tileSize: data.tileSize,
-    tilesPerRow: data.tilesPerRow,
-    count: data.count,
-    passability: structuredClone(data.passability) as PassFlag[],
-    priority: [...data.priority] as ("lower" | "upper")[],
-    terrain: [...data.terrain],
-    tileMeta: structuredClone(data.tileMeta) as TileAiMetadata[],
-    tileGroups: structuredClone(data.tileGroups) as unknown as TileGroupMetadata[],
-    autotileGroups: structuredClone(data.autotileGroups) as unknown as AutotileGroup[],
-    animationStrips: structuredClone(data.animationStrips),
-    structureKits: structuredClone(data.structureKits) as unknown as StructureKitDef[],
-    referenceDocuments: REFERENCES.filter((r) => r.tilesetId === ATLAS_BIOME_INTERIOR_ID).map((r) => structuredClone(r.category)),
+    tileSize: data().tileSize,
+    tilesPerRow: sheet.tilesPerRow,
+    count: sheet.count,
+    passability: structuredClone(data().passability) as PassFlag[],
+    priority: [...data().priority] as ("lower" | "upper")[],
+    terrain: [...data().terrain],
+    tileMeta: structuredClone(data().tileMeta) as TileAiMetadata[],
+    tileGroups: structuredClone(data().tileGroups) as unknown as TileGroupMetadata[],
+    autotileGroups: structuredClone(data().autotileGroups) as unknown as AutotileGroup[],
+    animationStrips: structuredClone(data().animationStrips),
+    structureKits: structuredClone(data().structureKits) as unknown as StructureKitDef[],
+    // 빙판(퍼즐 얼음 미끄럼 방) — interior-plus 굽기가 얼음 바닥 칸을 "ice" 규칙으로 적는다.
+    ...(slideTilesOf(data()) ? { slideTiles: structuredClone(slideTilesOf(data())!) } : {}),
+    referenceDocuments: atlasBiomeInteriorBundledReferenceDocuments(),
     roomKit: { builtin: ATLAS_BIOME_INTERIOR_ID },
   };
 }
@@ -54,7 +69,7 @@ export function isAtlasBiomeInteriorTileset(tileset: Pick<TilesetDef, "image"> |
  * 이미 있는 번호는 그대로다(scripts/content/hand-interior/pin_ids.py) — 그래서 칸 수가 번들 이하이면 같은 시트의 옛 빌드다.
  */
 export function isHandInteriorV5Definition(tileset: TilesetDef): boolean {
-  return tileset.count <= data.count && tileset.tilesPerRow === data.tilesPerRow
+  return tileset.count <= sheet.count && tileset.tilesPerRow === sheet.tilesPerRow
     && (tileset.structureKits ?? []).some((k) => k.id.startsWith("hand-interior:"));
 }
 
@@ -69,7 +84,7 @@ function layerSignature(t: Pick<TilesetDef, "priority" | "passability" | "tileMe
 }
 let bundled: string | undefined;
 function bundleSignature(): string {
-  return bundled ??= layerSignature({ priority: data.priority as ("lower" | "upper")[], passability: data.passability as PassFlag[], tileMeta: data.tileMeta as TileAiMetadata[] });
+  return bundled ??= layerSignature({ priority: data().priority as ("lower" | "upper")[], passability: data().passability as PassFlag[], tileMeta: data().tileMeta as TileAiMetadata[] });
 }
 
 /** 옛 정의를 새 정의로 바꿀 때 남기는 경고(맵은 건드리지 않는다). 편집기 콘솔과 테스트가 읽는다. */
@@ -128,11 +143,12 @@ function refreshAtlasBiomeInterior(project: InteriorProject, id: string): boolea
   if (isHandInteriorV5Definition(tileset)) {
     // same sheet, older build (new tiles appended, passage/layer/labels refreshed): refresh the bundle-owned fields.
     // Tile ids already placed on maps keep their meaning (append-only build), so maps are not touched.
-    if (tileset.count === data.count && layerSignature(tileset) === bundleSignature()) return ensureAtlasBiomeInteriorReferences(tileset);
+    if (tileset.count === sheet.count && layerSignature(tileset) === bundleSignature()) return ensureAtlasBiomeInteriorReferences(tileset);
     const fresh = createAtlasBiomeInteriorTileset();
     for (const key of ["count", "passability", "priority", "terrain", "tileMeta", "tileGroups", "autotileGroups", "animationStrips", "structureKits"] as const) {
       (tileset as unknown as Record<string, unknown>)[key] = fresh[key];
     }
+    if (fresh.slideTiles) tileset.slideTiles = fresh.slideTiles;
     // the bundle-owned reference category (furniture dictionary, examples) follows the new build; authored categories stay
     tileset.referenceDocuments = (tileset.referenceDocuments ?? []).map((c) => fresh.referenceDocuments!.find((f) => f.id === c.id) ?? c);
     ensureAtlasBiomeInteriorReferences(tileset);

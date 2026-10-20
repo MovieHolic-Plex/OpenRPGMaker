@@ -1,0 +1,376 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5b5c9cd21bf68b2e6ebe7a7caf8583cd5632270a00a75bc2194dec3820246a75",
+ "width": 32,
+ "height": 32,
+ "kind": "seat",
+ "name": "office lobby 2-seat leather sofa (faces north, seen from behind)",
+ "label": "seats34/jp_city_interior/of-lobby-sofa-n",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 3/4, 분명한 위반 1/4)",
+  "3/4: 옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/4)",
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 질감 없음 (3/4)",
+  "화풍: 명암 3단 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 3/4, 분명한 위반 1/4)",
+   "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "질감 없음 (3/4)",
+   "명암 3단 < 4 (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 8,
+  "darkV5": 26,
+  "nearBlackEdge": 0.86,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest top (sofa back seen from behind)",
+      "rows": "13-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "left and right armrest ends",
+      "rows": "11-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body spans rows 12-25 and is 32 px wide. At x=8, 16 and 23, rows 13-16 are a lighter band (L=88-115) and rows 17-24 are a darker vertical face (L=57-65), so the band reads as the top of the backrest above the back face. Rows 20-21 add some darker horizontal shading. The arms are 2-px-wide columns with a 2-row lighter cap and are not separate top surfaces. The legs are thin posts at rows 26-30. No seat cushion surface is visible, because the backrest hides it from behind. The top band is 4 rows and ends at a tone change, not a crisp edge line, so the evidence for a top surface is weak."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a grey-blue leather sofa seen from behind, with a lighter rounded top rim, a mid back panel, darker seams and a dark base with legs. It has 9 distinct colours and a median of 8 per tile, close to prop-hedge (11 colours, 10 per tile) and below the stall and well (38-40 colours). The measured 5x5 flat-fill coverage is 0%, so the back panel carries variation rather than a single flat fill. The dark edge pixels are 0% neutral, so the outline leans toward the material's own tone and is not a black sticker line. It is somewhat plainer than the richest references, with fewer shading steps and little grain. That puts it slightly below the references on density but acceptable next to the hedge and bench.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25189
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest top (seen from behind)",
+      "rows": "13-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "armrest tops",
+      "rows": "11-13",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "back face of sofa body",
+      "rows": "17-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The body spans rows 12-25 with a 1-row outline at each end. Rows 13-16 form a lighter band (L=115 at the edges, 88 in the middle) across the whole backrest. Rows 17-24 are a darker vertical face (L about 57-65). That gives a 4-row top band over an 8-row face, which reads as the top of the backrest seen from above. The armrests are narrow columns with a small light cap at rows 11-13. Thin legs run down rows 26-29. The seat cushion itself is hidden behind the backrest, so only the backrest top is visible as a horizontal surface, and the 'band' is not strongly separated by a distinct edge line."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a grey-blue sofa seen from behind. It has a back cushion, two armrests and a dark base, with only about 3 lightness steps on the leather: a highlight edge, a mid tone and a dark shade. It has 9 distinct colours in total, against 11-40 for the references. The hedge reference is the closest in kind and has 11 colours with 10 per tile, so the candidate's 8 per tile is not far below it. The 0% flat-fill figure is from the measurement, but by eye the back panel reads as large smooth fields with almost no leather grain, seam stitching, per-cushion highlights or speckle. The bench, hedge, stall and well all show per-element shading and grain. The outline is tinted (0% neutral dark edge pixels), a dark blue-grey that follows the material rather than a black sticker line, so it is dark_material_tone. Overall the sofa is clean and readable, but its shading is shallow at 3 steps against 5-6 in the references, and it has little texture. It would look flatter and thinner than the hedge or well next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 21624
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest (seen from behind)",
+      "rows": "13-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "armrests",
+      "rows": "10-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is rows 12-25 at width 32. Rows 13-16 form a lighter band (L about 115 at x=8 and x=23) that steps down to a darker face at rows 17-24 (L about 65), so it reads as the top of the backrest. The band is 4 rows, with a faint edge at row 16/17 and slightly darker rows beneath it. Below it is a vertical back face of 8 rows. The armrests at the sides (rows 10-25) have a lighter cap at the top. Thin legs run through rows 26-30. This is a weak, borderline top surface. Because the sofa is seen from behind, the seat cushion itself is not visible, only the top of the backrest."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a grey-blue sofa seen from behind. It reads as a simple back panel with two cushion bulges, armrests and a base, shaded in about 3 lightness steps (highlight, mid, dark). It has 9 distinct colours in total, against 11-40 for the references, and 8 per tile, which is close to the hedge (10) but well below the stall (17) and well (20). The measured 0% flat-fill coverage comes from small pixel variations, but by eye the large back and armrest surfaces are smooth gradients with no leather grain, stitching, tufting or specular dots. The hedge and the bench carry clear texture and per-element shading, so the sofa looks flatter and more sticker-like beside them. The dark edge pixels are 0% neutral, so the outline is tinted, a dark blue-grey that follows the material, which is correct. Shading depth and texture are still too shallow for the Beodeul bar, which uses 5-6 steps per material.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 26115
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest/body top band",
+      "rows": "13-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "left and right armrests (small lighter caps)",
+      "rows": "10-13",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body spans rows 12-25 at width 32. Rows 13-16 are a lighter band (L about 115) that reads as the top of the backrest. Rows 17-24 form a darker vertical back face (L about 65) of 8 rows. The armrests at the sides (rows 10-25) have lighter tops. Thin legs run down rows 26-30. The top band is only moderately distinct from the face, with no clearly separate edge line. Because it is seen from behind, the seat surface itself is hidden, but the drawing still has a top band and a front face of 3+ rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a grey-blue sofa seen from behind. It shows only about 3 lightness steps on the leather: a light top-edge highlight, a mid body, and a dark base/outline. It has 9 distinct colours in total against 11-40 for the references. The hedge, the nearest comparable piece, has a similar tile median (10) but carries leaf clumps and several greens. The sofa's back cushion and arms are smooth gradients with no grain, stitching, creases or leather speckle, so it reads as simple and slightly sticker-like. The 0% near-neutral share of dark edges means the outline is tinted, not black, which is correct. The 5x5 flat-fill coverage is 0%, so there are no large single-colour blocks, but the surfaces still have almost no texture dots. Compared with the stall and well (38-40 colours, per-element shading), it is much shallower in shading steps and detail. A careful artist would not place it beside the references without it looking flatter.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 26282
+  }
+ ],
+ "decidedAt": "2026-10-20T08:33:20.461Z",
+ "cells": {
+  "16": [
+   "6265639635a10075",
+   "8dee3a992a98be18",
+   "965c3b3ebed5df8d",
+   "cc16007d65cdd791"
+  ],
+  "24": [
+   "180df63c0e2385d6",
+   "281eec4fa13b0c18",
+   "3660b45b81ccd3b6",
+   "435fe8c06e4df06b",
+   "5ea4770cf526b901",
+   "6aff9c04b4570e7b",
+   "6deac5fbf3801d34",
+   "7477118497342cb8",
+   "7ffb18c584036711",
+   "887a1fe43b5cdeaf",
+   "95fee336c799b3d2",
+   "a0c942727306c6aa",
+   "a848d53d789e6022",
+   "a8b7a1f29159a534",
+   "ace7fa8f623c5dec",
+   "b3a8d2854dbd692e",
+   "bc1b55695a4a1d8d",
+   "cea47248a8247036"
+  ],
+  "32": [
+   "f6809930c53b1196"
+  ],
+  "48": [
+   "656587ac29a58e1d",
+   "6629cab4afaf8d58",
+   "b7bb49b5a8ccedb9",
+   "dd825f62090f333a",
+   "e822e64050bcee45",
+   "f573effaac730343"
+  ]
+ }
+}

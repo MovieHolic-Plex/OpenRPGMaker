@@ -1,0 +1,305 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ee69ab3b1537984c59981fede2d262cf8b61f2be249f1c85a08f7a9ea891e0a8",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "amuse speaker stack",
+ "label": "modern_city_interior/amuse-speaker-stack",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 33,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel of speaker cabinet",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "front face with two speaker cones",
+      "rows": "6-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a light gray band that brightens from L=77 to L=169. Row 5 is the lightest, so it works as a front-edge line, and dark rows (L~35) follow directly below it as eave shadow. This matches the green cabinet reference (top 5 + edge + eave). The front face is a dark panel at rows 6-28 (23 rows). The two speaker cones sit on it as vertical-face detail. Rows 0 and 29-30 are outline and base. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small dark cabinet with a top panel and two round speaker cones, about one tile in size. It measures 11 visible tones per tile, against 9 for the hedge, 17 for the cheese stall and 20 for the well. Near-flat coverage is 0%, so no 5x5 area is a flat fill. Its dark edge pixels are 0% neutral, so the outline is tinted rather than a near-black sticker line, and the cabinet is separated mostly by value. The cabinet has roughly 4 lightness steps (body, bevel highlight, panel, deep shadow), and the cones add concentric rings with a centre dot. That is slightly fewer than the 5-6 steps in the references and the texture is modest, but the piece is small and the measured facts match the hedge reference. A careful artist would likely accept it beside the references, so I am passing it with some reservation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21746
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel of speaker stack",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "front face with two speaker cones",
+      "rows": "6-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a top band that brightens from L=77 to L=169. Row 5 is the lightest row and acts as the front-edge line. Dark rows from 6 down, with the face starting at about row 8, work as eave shadow and the front face. The front face (rows 6-28, 23 rows) holds two round speaker cones and no side face is drawn. The top band matches the cabinet 'top 5 + edge + eave' reference, not the 'rim only' or 'top 1' wrong cases."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a roughly one-tile speaker cabinet with two round cones. The measured facts match the hedge reference, which is also a small, simple prop. It has 11 visible tones per tile against the hedge's 9. Near-flat coverage is 0%, so no 5x5 area is a single flat colour. Dark edge pixels are 0% near-neutral, so the outline is a tinted dark version of the body and rim rather than a black sticker line. It has about 4 lightness steps (case, rim highlight, cone rings, dark outline), a little below Beodeul's 5-6. It has only 12 colours in total, against 38-40 on the richer stall and well, but that is similar to the hedge's 11. Its density is slightly lower than the richest references, though not shallow. A speaker cabinet is a simple, mostly dark object, so it would sit acceptably beside the hedge, though it is not as rich as the stall or well.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22511
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel of speaker cabinet",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "front face with two speaker cones",
+      "rows": "6-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a lighter band that brightens from L=77 to L=169 and ends in the lightest front-edge line at row 5. Dark rows (L~35) follow immediately and act as eave shadow. Below that is a 23-row dark front face (rows 6-28) carrying two speaker cones, with the outline at rows 29-30. The structure matches the reference 'cabinet: top 5 + edge + eave' (right) rather than the 1-2 row rim (wrong). The silhouette is a uniform 14 px wide with no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The measured facts support the candidate. It has 11 visible tones per full tile, above prop-hedge at 9 and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no 5x5 flat fills. The dark edge pixels are 0% neutral, so the outline leans toward a tint rather than being a neutral black sticker line. By eye, the cabinet has a bevelled highlight edge, a darker body, a top grille panel and two speaker cones with ringed shading. That is about 5 steps on the main ramp against roughly 6 on the references. Total colours (12) are low and the stack is narrow and simple, so it is a little less rich than the stall and well. It still sits at hedge level and would not look thinner or flatter beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21081
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "front face with two speaker cones",
+      "rows": "6-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a top band that brightens from L=77 to L=169, with its lightest row (5) acting as the front-edge line. Dark rows (6+, L about 35) follow it as eave shadow, and the speaker front face below runs rows 6-28 (23 rows) with two cone circles. The base outline is rows 29-30. The top band could be a glossy front panel, but the lighter edge line followed by shadow fits a top surface. It is about 5 rows, which is more than a 1-2 row rim. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a dark cabinet with two speaker cones. It has about 11 visible tones per 16x16 tile, which is above prop-hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no 5x5 flat fills. The dark edge pixels are 0% neutral, so the outline leans toward the material tone rather than being a black sticker line. The cabinet and cones show roughly 3-4 lightness steps each, a little shallower than Beodeul's 5-6, and the piece is simple. Judged by eye it is a plausible companion to the hedge and bench, not noticeably thinner or flatter, so it passes narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22550
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.728Z",
+ "cells": {
+  "16": [
+   "069766dd93e9c670",
+   "9fc9ce88e841f5ca"
+  ],
+  "24": [
+   "0cff8589c2e601de",
+   "245dc085fd6b5024",
+   "51fe53a72d15086f",
+   "5d02908a04e59b97",
+   "8389e0cf825169b7",
+   "92a6a41ab716f37d",
+   "aaf5c81635029a03",
+   "b1e63c50c27edca9",
+   "b41fa9e3abd5f961",
+   "b754f306f78bde4f",
+   "ccc0b43ce6c3fc3e",
+   "d455be399e8efcc4"
+  ],
+  "32": [
+   "6692284e31e20be6",
+   "8600e3039ab2ccda",
+   "ebb968fb006e0b7b"
+  ],
+  "48": [
+   "006c08b5633c0f48",
+   "0b6f22e1bd8aa29d",
+   "1a28f84a45742d73",
+   "2a1b9bc3a02edadf",
+   "3531c1e69301b2ea",
+   "f80c8b3f2f795dff"
+  ]
+ }
+}

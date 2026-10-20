@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "v5-props34",
+ "title": "손 도트 v5 실내 기물 22 (props34·plus)",
+ "note": "#3087·#3104 에서 구운 v5 기물. 보류 4장은 #3107 에서 사용자가 v9 프로필 1db03a95 로 허용(서명 기록 그대로).",
+ "createdAt": "2026-10-20T13:29:57.419Z",
+ "items": [
+  {
+   "sha": "f3525c3a3400e629eac372e8f177067e6fbd63e236b37624b6d21a134097ebe0",
+   "kind": "tall_furniture",
+   "label": "atlas_biome_interior/props34/cabinet:bolt+boltg+boltr",
+   "source": "tiledata/hand-interior/props34/cabinet_bolt_boltg_boltr.png"
+  },
+  {
+   "sha": "2fc56e24ab29710da2ae83e122fd7be84ccd52a20ba3134fab425653d7f9793d",
+   "kind": "tall_furniture",
+   "label": "atlas_biome_interior/props34/cabinet:book+bookb+bookg",
+   "source": "tiledata/hand-interior/props34/cabinet_book_bookb_bookg.png"
+  },
+  {
+   "sha": "ad0728a822469fbb2da94d526a9e640afabfcfb621835b250c37965936653b07",
+   "kind": "tall_furniture",
+   "label": "atlas_biome_interior/props34/cabinet:bottle+bottler+bottley",
+   "source": "tiledata/hand-interior/props34/cabinet_bottle_bottler_bottley.png"
+  },
+  {
+   "sha": "bb2e6254af29e1861928934b8feebfd0dcb917c978aa913f80883573663c176b",
+   "kind": "tall_furniture",
+   "label": "atlas_biome_interior/props34/cabinet:bun",
+   "source": "tiledata/hand-interior/props34/cabinet_bun.png"
+  },
+  {
+   "sha": "e6ea08cd671814144c034c981378935b1e0512669019ddad10889334c71b81d5",
+   "kind": "tall_furniture",
+   "label": "atlas_biome_interior/props34/cabinet:candle",
+   "source": "tiledata/hand-interior/props34/cabinet_candle.png"
+  },
+  {
+   "sha": "90ac954379059eeb994324de4c04fc390d9f829b68f4dc8f79310fd8689baf0d",
+   "kind": "tall_furniture",
+   "label": "atlas_biome_interior/props34/cabinet:cheese",
+   "source": "tiledata/hand-interior/props34/cabinet_cheese.png"
+  },
+  {
+   "sha": "4fe507e944468ffabc00afd867a26b30ad4c5b4f18b4876aa2876af86363eac0",
+   "kind": "tall_furniture",
+   "label": "atlas_biome_interior/props34/cabinet:gem+gemr",
+   "source": "tiledata/hand-interior/props34/cabinet_gem_gemr.png"
+  },
+  {
+   "sha": "e4f72e2a3369c72fa29bb2ac3112461fa8842123f2b70f2fe9e7ecb03caa338f",
+   "kind": "tall_furniture",
+   "label": "atlas_biome_interior/props34/cabinet:jar+jarb+jarg",
+   "source": "tiledata/hand-interior/props34/cabinet_jar_jarb_jarg.png"
+  },
+  {
+   "sha": "1aa9cbfe0f3582bd34574e12ae29004069bce6dcdee87b477cdbf0a372a8850c",
+   "kind": "tall_furniture",
+   "label": "atlas_biome_interior/props34/cabinet:loaf",
+   "source": "tiledata/hand-interior/props34/cabinet_loaf.png"
+  },
+  {
+   "sha": "f5d3ec2972a2788f599c8494d81eef042f8edf67a212fba6c17e202bcc07f382",
+   "kind": "tall_furniture",
+   "label": "atlas_biome_interior/props34/cabinet:pie",
+   "source": "tiledata/hand-interior/props34/cabinet_pie.png"
+  },
+  {
+   "sha": "f3e8dcc02ae9b14c43b8d384eb723fc98417bb5b92526b0a5088079cd06e16dd",
+   "kind": "tall_furniture",
+   "label": "atlas_biome_interior/props34/cabinet:potion+potionb+potiong",
+   "source": "tiledata/hand-interior/props34/cabinet_potion_potionb_potiong.png"
+  },
+  {
+   "sha": "7ad2fe7ceb6888ae2b83e96206ae937e82fdcdedca9f7fdf693c672c8b4c5073",
+   "kind": "tall_furniture",
+   "label": "atlas_biome_interior/props34/cabinet:toy",
+   "source": "tiledata/hand-interior/props34/cabinet_toy.png"
+  },
+  {
+   "sha": "05fdfbe997f8beffae5d1ea6e292f2719289b9efda374f9e0dd9c82cd2dd4657",
+   "kind": "tall_furniture",
+   "label": "atlas_biome_interior/props34/cabinet:vial+flask",
+   "source": "tiledata/hand-interior/props34/cabinet_vial_flask.png"
+  },
+  {
+   "sha": "c3b9faee1601a78beeb7617bd91edd6b8b5048f6fcdb70ae32979e34338c15dc",
+   "kind": "tall_furniture",
+   "label": "atlas_biome_interior/props34/confessional",
+   "source": "tiledata/hand-interior/props34/confessional.png"
+  },
+  {
+   "sha": "3d81aa46966e38bd247b5dde0d9bebd64f1ac78189edd22463e009c91dc780f8",
+   "kind": "low_furniture",
+   "label": "atlas_biome_interior/props34/control console",
+   "source": "tiledata/hand-interior/props34/control_console.png"
+  },
+  {
+   "sha": "ea6726ec68db1f3c3315f943a74f190f04b04ba9e650508a4ca2c72f124cd43e",
+   "kind": "tall_furniture",
+   "label": "atlas_biome_interior/props34/helmet shelf",
+   "source": "tiledata/hand-interior/props34/helmet_shelf.png"
+  },
+  {
+   "sha": "dcea3605a56bcf44bcc91f711c4cc4ced0274757300f587e2dec1d99cb8c05ca",
+   "kind": "other",
+   "label": "atlas_biome_interior/props34/orrery",
+   "source": "tiledata/hand-interior/props34/orrery.png"
+  },
+  {
+   "sha": "27d7aab526c9bf8a00cbc932b688a0467eceede750894bf9bf23e6ddcd45252c",
+   "kind": "tall_furniture",
+   "label": "atlas_biome_interior/props34/slot machine",
+   "source": "tiledata/hand-interior/props34/slot_machine.png"
+  },
+  {
+   "sha": "654de23316f0fe973623a2258e624b0d96706d8c72c0a6bc31ce02881e5e3fda",
+   "kind": "tall_furniture",
+   "label": "atlas_biome_interior/plus/ship bunk",
+   "source": "tiledata/hand-interior/props34/ship_bunk.png"
+  },
+  {
+   "sha": "776e61b8b82eab7c5ceec606709df08e8cca12157326bf8d575b4ee76e87faf9",
+   "kind": "tall_furniture",
+   "label": "atlas_biome_interior/plus/relic cabinet",
+   "source": "tiledata/hand-interior/props34/relic_cabinet.png"
+  },
+  {
+   "sha": "506755925c9ea93841c2c51cff5bf01c1824f59ae4a8fa24c2d9db3f1782be57",
+   "kind": "tall_furniture",
+   "label": "atlas_biome_interior/plus/ship bunk 2w",
+   "source": "harness-data/object-gate/held-images/50/506755925c9ea93841c2c51cff5bf01c1824f59ae4a8fa24c2d9db3f1782be57.png"
+  },
+  {
+   "sha": "1553df9bb3c66fd82d00898249e61c302925b2ef125d35a72a51ba698723a71a",
+   "kind": "tall_furniture",
+   "label": "atlas_biome_interior/plus/wide cabinet",
+   "source": "tiledata/hand-interior/props34/wide_cabinet.png"
+  }
+ ]
+}

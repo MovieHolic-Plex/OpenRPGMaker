@@ -1,0 +1,331 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "506755925c9ea93841c2c51cff5bf01c1824f59ae4a8fa24c2d9db3f1782be57",
+ "width": 32,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "선원 2단 침상(넓은) (ship bunk 2w)",
+ "label": "atlas_biome_interior/plus/ship bunk 2w",
+ "profileHash": "1db03a95223e5b0b",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 3/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 3/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 8
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 20,
+  "darkV5": 26,
+  "nearBlackEdge": 0.5,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top beam / canopy of bunk frame",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 38,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-4 are a mid-brown band. Row 5 is a lighter orange front-edge line, and rows 6-7 are dark eave shadow. This gives a top band of about 4 rows, with the front face below from rows 6-43 (the two bunk bays, mattresses and rails). No receding side face is drawn. The interior bunks are shown face-on. The top band is thin and could also be read as a cornice, but it has an edge line and a shadow, so it counts as a top surface under evidence (a)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a wooden two-tier bunk with pillows and blue blankets. It reads at 17 visible tones per 16x16 tile, level with the cheese stall (17) and close to the roofed well (20), and above the hedge (9). Near-flat coverage is 0%, so no large flat fills. The wood frame has several steps: highlight, light, mid, dark brown. The bedding has its own light and shadow steps, and the blue ladder adds contrast. Dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood and not a black sticker line. Texture is moderate: the wood grain and bedding folds are modest next to the stall's tiles, but nothing is a flat fill. It would sit acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13328
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top board of upper bunk frame",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 38,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-4 form a brown top band that ends in a lighter orange front-edge line at row 5 (L=157). Rows 6-8 are dark eave shadow beneath it, and the front face runs from row 6 to row 43. The front face holds two bunk bays with mattresses and rails in front view, and a ladder on the right. No receding side face is drawn. The top band is 4 rows, close to the cabinet 'top + edge + eave' reference, so it is more than a 1-2 row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate's measured facts match the richer references: 17 visible tones per tile (stall-cheese 17, well-roofed 20, hedge 9), 0% near-flat coverage and 0% neutral dark edge pixels. That means the outline is tinted, and by eye it reads as dark brown beside the wood frame rather than black. The wood frame carries about 5 steps (highlight, light, mid, dark, deep) with plank grain. Mattresses and pillows are shaded in light/mid/shadow steps, and the blue ladder/rail accents are shaded too. No large flat fills. Structure and shading craft sit comfortably next to the stall and well references, so a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12501
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top frame / upper bunk canopy board",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "upper mattress with pillow and blanket",
+      "rows": "13-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle bunk floor board",
+      "rows": "21-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower mattress with pillow and blanket",
+      "rows": "31-38",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 37,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top plank at rows 2-5 is a 4-row band that ends in a lighter orange front-edge line at row 5. Dark eave shadow follows at rows 6-8, and the front face runs below it to row 43. The 32px-wide bunk frame is seen from the south, with two open bays showing the back wall, mattresses and a ladder on the right. The middle board at rows 21-23 reads as a front-facing strip. The top band is thin but passes as a top surface. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a wooden two-tier bunk with white pillows and blue blanket accents. Measured facts: 17 visible tones per tile, matching the cheese stall (17) and close to the well (20), above the hedge (9). Near-flat coverage is 0% and 0% of dark edge pixels are neutral, so the outline is tinted dark brown, not black. By eye, the wood frame has about 3-4 steps (a light edge highlight, mid brown, dark brown, deep shadow). The frame posts and the inner panel are fairly smooth, with little plank grain or per-board highlights, whereas the stall and well show per-plank and per-tile detail and 5-6 steps. The mattresses and blankets show some folds and stripes but are simple. Overall it is clean and not sticker-like, but the wood reads somewhat smoother and shallower than the references, so a careful artist would likely see it as a little flatter. Given the 'when in doubt, fail' rule, it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 13884
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top frame plank of bunk",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 38,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band at rows 2-5 is a lighter orange-brown plank ending in a lighter front-edge line at row 5 (#d59147). Dark eave shadow follows in rows 6-8, and the front face runs from row 6 to about row 43, with the two bunks, pillows, blankets and the ladder on the right. The top is thin, only 4 rows, but it has an edge line and shadow, so it counts as a top surface under (a). The mattresses and bunk planks are seen face-on, but the object reads as a shelf-like frame with a small top, and its overall width stays constant (32). There is no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a two-tier wooden bunk with light bedding, a pillow and blue ladder or accent details. It shows about 5 lightness steps on the wood (highlight, light, mid, dark, deep brown) and separate ramps on the bedding. The dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood, not a black sticker line. Measured density is 17 visible tones per tile, equal to prop-stall-cheese (17) and close to prop-well-roofed (20), above prop-hedge (9). Near-flat coverage is 0%, so there are no large flat fills. The wood grain, the plank edges and the bedding folds give enough texture, though it is somewhat cleaner than the busiest references. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12281
+  }
+ ],
+ "decidedAt": "2026-10-20T10:37:21.369Z",
+ "cells": {
+  "16": [
+   "22a5c160b69c7950",
+   "2f267ba6c413c514",
+   "3d8e13f775160fd0",
+   "548522681282f1f6",
+   "5e757dddf97684c5",
+   "728c7ed4fd9a062f",
+   "734307a0f194eea6",
+   "8112e5f7e7bdc1be",
+   "8cde9aa4952b601e",
+   "a198bc65c4000a38",
+   "aa49fec5326e1afd",
+   "dd89f8017284b680"
+  ],
+  "24": [
+   "06fbc2212b5858fe",
+   "1a5fe1f29432ba11",
+   "23082959aac82c2c",
+   "3d4867dfe5c93109",
+   "4648ff4474130496",
+   "5cda45fe8c6c044c",
+   "642d23b53fa175c4",
+   "64aa035eaa8b47ac",
+   "65b05471f4750a83",
+   "669219f2ac0f0937",
+   "6b09ec56a1993b39",
+   "6c05d295ac172f9a",
+   "78877e336622023d",
+   "814e1232670e960b",
+   "8db0dd85509d17d8",
+   "93702976833c99f9",
+   "a892af1e9663a33a",
+   "adba93665a8c9f82",
+   "bc91dc7abc9a6dce",
+   "d54a74fd9ed2a146",
+   "e6ed31e0b4a5a409",
+   "e706d8dc7800cf52",
+   "f18e4020ef8550e1",
+   "fd317b5e8199cf8f"
+  ],
+  "32": [
+   "06ffa369f2dd7fd3",
+   "1f01d7643579d476",
+   "4688aa8ebf8103b0",
+   "70a7142741395fc6",
+   "d8bd84b940b403ff",
+   "dab6e585a35e3917"
+  ],
+  "48": [
+   "1c0308212c7b7e96",
+   "23143ad36165c555",
+   "256fa961bdbcada4",
+   "47281ddfefa35f34",
+   "a496046b0caab19a",
+   "b88336969f175eed"
+  ]
+ }
+}

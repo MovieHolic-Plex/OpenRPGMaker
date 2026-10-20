@@ -7,7 +7,10 @@
 // 칸 번호는 덧붙이기 전용이다(자리 키 핀 tiledata/modern-campus/bake-pins.json) — 다시 구워도 앞 번호는 그대로이고 새 칸은 끝에 붙는다. 그래서 칸 수가 번들 이하이고 한 줄 폭이 같은
 // 사본은 같은 시트의 옛 굽기로 보고, 번들 소유 칸 표(통행·층·그룹·애니메이션·조립 부품)만 새 굽기로 바꾼다. 맵은 건드리지 않는다.
 // 번들 소유 = id 가 `mc-`·`mci-` 로 시작하는 조립 부품·참고문서. 저자가 더한 것(다른 id)은 갱신 때 보존한다. 구조는 wizardingWorld.ts·jpCity.ts 와 같다.
-import data from "@/assets/modernCampusTileset.json";
+import sheet from "@/assets/modernCampusSheet.json";
+import { bundledJson } from "./bundledJson";
+/** 번들 정의 JSON — 처음 쓸 때 읽는다(bundledJson.ts). 칸 수·한 줄 폭은 같은 굽기가 쓰는 작은 시트 메타(`modernCampusSheet.json`)에서 읽는다. */
+const data = () => bundledJson("modernCampusTileset");
 import outdoorReferences from "@/assets/modernCampusReferences.json";
 import interiorReferences from "@/assets/modernCampusInteriorReferences.json";
 import type { AutotileGroup, PassFlag, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
@@ -17,34 +20,39 @@ export const MODERN_CAMPUS_ID = "modern_campus";
 export const MODERN_CAMPUS_TEXTURE = "tex_modern_campus";
 /** 학교·캠퍼스 칩셋 계열. 다른 번들과 칸 번호 체계가 달라, 맵이 있는 채로 말없이 바꾸면 깨진다. */
 export const MODERN_CAMPUS_FAMILY = "oprn-campus";
-export const MODERN_CAMPUS_COUNT: number = data.count;
-export const MODERN_CAMPUS_TILES_PER_ROW: number = data.tilesPerRow;
+export const MODERN_CAMPUS_COUNT: number = sheet.count;
+export const MODERN_CAMPUS_TILES_PER_ROW: number = sheet.tilesPerRow;
 /** 조립 부품·참고문서 id 머리(`mc-` 야외·실내 키트, `mci-` 실내 참고문서). 번들이 소유한다(기존 사본에서 같은 id 는 번들 것으로 바꾼다). */
 export const MODERN_CAMPUS_PREFIX = "mc-";
 const REFERENCES = [...outdoorReferences, ...interiorReferences] as unknown as TilesetReferenceCategory[];
 
 const isOwned = (id: string): boolean => id.startsWith(MODERN_CAMPUS_PREFIX) || id.startsWith("mci-");
 
+/** 새 사본이 들고 태어나는 참고문서 — 정의 JSON 없이 만든다(로드가 저장본에서 뺀 번들 참고문서를 되돌릴 때 쓴다, installReferenceOwners.ts). */
+export function modernCampusBundledReferenceDocuments(): TilesetReferenceCategory[] {
+  return structuredClone(REFERENCES);
+}
+
 /** 번들 정의의 독립 사본 — 참고문서를 들고 태어난다. */
 export function createModernCampusTileset(): TilesetDef {
   return {
     id: MODERN_CAMPUS_ID,
-    name: data.name,
+    name: data().name,
     image: { type: "bundled", id: MODERN_CAMPUS_TEXTURE },
     kind: "custom",
     family: MODERN_CAMPUS_FAMILY,
-    tileSize: data.tileSize,
-    tilesPerRow: data.tilesPerRow,
-    count: data.count,
-    passability: structuredClone(data.passability) as PassFlag[],
-    priority: [...data.priority] as ("lower" | "upper")[],
-    terrain: [...data.terrain],
-    tileMeta: structuredClone(data.tileMeta) as TileAiMetadata[],
-    tileGroups: structuredClone(data.tileGroups) as unknown as TileGroupMetadata[],
-    autotileGroups: structuredClone(data.autotileGroups) as unknown as AutotileGroup[],
-    animationStrips: structuredClone(data.animationStrips),
-    structureKits: structuredClone(data.structureKits) as unknown as StructureKitDef[],
-    referenceDocuments: structuredClone(REFERENCES),
+    tileSize: data().tileSize,
+    tilesPerRow: sheet.tilesPerRow,
+    count: sheet.count,
+    passability: structuredClone(data().passability) as PassFlag[],
+    priority: [...data().priority] as ("lower" | "upper")[],
+    terrain: [...data().terrain],
+    tileMeta: structuredClone(data().tileMeta) as TileAiMetadata[],
+    tileGroups: structuredClone(data().tileGroups) as unknown as TileGroupMetadata[],
+    autotileGroups: structuredClone(data().autotileGroups) as unknown as AutotileGroup[],
+    animationStrips: structuredClone(data().animationStrips),
+    structureKits: structuredClone(data().structureKits) as unknown as StructureKitDef[],
+    referenceDocuments: modernCampusBundledReferenceDocuments(),
     // 방 짓기 역할표 — 사양은 편집기(src/assets/modernCampusRoomSpec.json, HAND_INTERIOR_SPECS)가 들고 있다.
     roomKit: { builtin: MODERN_CAMPUS_ID },
   };
@@ -103,13 +111,13 @@ function shapeSignature(t: Pick<TilesetDef, "priority" | "passability" | "tileMe
 let bundledShape: string | undefined;
 function bundleShape(): string {
   return bundledShape ??= shapeSignature({
-    priority: data.priority as ("lower" | "upper")[],
-    passability: data.passability as PassFlag[],
-    tileMeta: data.tileMeta as TileAiMetadata[],
-    tileGroups: data.tileGroups as unknown as TileGroupMetadata[],
-    autotileGroups: data.autotileGroups as unknown as AutotileGroup[],
-    animationStrips: data.animationStrips,
-    structureKits: data.structureKits as unknown as StructureKitDef[],
+    priority: data().priority as ("lower" | "upper")[],
+    passability: data().passability as PassFlag[],
+    tileMeta: data().tileMeta as TileAiMetadata[],
+    tileGroups: data().tileGroups as unknown as TileGroupMetadata[],
+    autotileGroups: data().autotileGroups as unknown as AutotileGroup[],
+    animationStrips: data().animationStrips,
+    structureKits: data().structureKits as unknown as StructureKitDef[],
   });
 }
 
@@ -125,9 +133,9 @@ export function ensureModernCampusTileset(tileset: TilesetDef): boolean {
   let changed = false;
   if (tileset.family !== MODERN_CAMPUS_FAMILY) { tileset.family = MODERN_CAMPUS_FAMILY; changed = true; }
   if (!tileset.roomKit) { tileset.roomKit = { builtin: MODERN_CAMPUS_ID }; changed = true; }
-  if (tileset.tilesPerRow === data.tilesPerRow) {
-    if (tileset.count > data.count) return changed;
-    if (tileset.count === data.count && shapeSignature(tileset) === bundleShape()) return changed;
+  if (tileset.tilesPerRow === sheet.tilesPerRow) {
+    if (tileset.count > sheet.count) return changed;
+    if (tileset.count === sheet.count && shapeSignature(tileset) === bundleShape()) return changed;
     const fresh = createModernCampusTileset();
     const authoredKits = (tileset.structureKits ?? []).filter((kit) => !isOwned(kit.id));
     const authoredAutotiles = (tileset.autotileGroups ?? []).filter((group) => !isOwned(group.id));

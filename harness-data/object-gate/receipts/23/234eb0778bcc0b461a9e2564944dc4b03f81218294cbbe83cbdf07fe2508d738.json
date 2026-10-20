@@ -1,0 +1,408 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "234eb0778bcc0b461a9e2564944dc4b03f81218294cbbe83cbdf07fe2508d738",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "reclining seat (faces north)",
+ "label": "seats34/jp_city_interior/kr-reclining-seat",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 4 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 4 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 26,
+  "nearBlackEdge": 0.75,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "headrest",
+      "rows": "0-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest/main body top band",
+      "rows": "7-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests",
+      "rows": "10-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base",
+      "rows": "27-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body (rows 7-22, 16px wide with armrests) is a flat backrest seen face-on, because the seat faces north. Rows 7-8 form a 2-row lighter band (L=115) directly above the dark face (rows 9-22). It is a lip, with no front-edge line and no eave shadow. The headrest (rows 1-2) has the same 2-row light strip. The armrests and the base (rows 27-30) are plain vertical strips. No seat surface is visible from above, there is no ellipse, and there is no contents or sloped plane. The result is a front elevation with a 2-row rim only."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a one-tile-wide grey reclining chair. Only 8% of its dark edge pixels are neutral, so the outline leans visibly toward the material (dark blue-grey), not a uniform black sticker line. Flat-fill coverage is 0%, and the cushion, headrest and arms show highlight, mid and shadow variation with some dot texture. It has 9 colours per tile against 10 for the hedge, and 12 colours in total against 14 for the bench and 11 for the hedge. That puts it level with the simpler Beodeul references, though below the stall and well (17-20 per tile, 38-40 colours). It has about 4 lightness steps per material against 5-6 in the references, which is slightly lower but not shallow. A careful artist would accept it next to the bench and hedge.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21157
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "headrest",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest/main body",
+      "rows": "7-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests",
+      "rows": "10-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base/pedestal",
+      "rows": "27-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Seen from the back (faces north), the main body is a tall dark vertical panel (rows 9-22, width 16 with armrest strips). Its only light band is rows 7-8, a 2-row rim or cap at the top. There is no front-edge line followed by eave shadow, no ellipse, and no visible seat surface. The headrest (rows 0-5) has the same flat face-on structure. The arms are vertical strips, and the narrow stem and base (rows 24-30) are also vertical. This matches the 'rim only: top 2' wrong reference, not a seat top seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small grey reclining seat seen from behind, with a headrest, back cushion, armrests and a base. It reads as a proper object and not a sticker. Measured facts: 9 colours per 16x16 tile against the hedge's 10, 12 distinct colours against the hedge's 11 and the bench's 14, and 0% flat-fill coverage like most references. Only 8% of its dark edge pixels are near-neutral, so the outline leans visibly cool and tinted rather than black, which matches the dark-material-tone approach. The grey ramp has about 4 steps (highlight, light, mid, dark, deep outline), slightly fewer than the 5-6 in the richer references, and the cushion panels carry a little dithering and edge highlighting. It is clearly simpler than the stall and the well, but it matches the hedge and bench, which are equally simple props, on colour count, tinted edges and absence of flat fills, so a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16538
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "headrest",
+      "rows": "0-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "main backrest/body",
+      "rows": "7-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side armrests",
+      "rows": "10-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base/pedestal",
+      "rows": "27-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body (width 16, rows 10-22) starts with a 2-row lighter band at rows 7-8, directly followed by a flat dark face at rows 9-22. This band is only a rim. It has no distinct front-edge line and no eave shadow, so it is not a top surface. The headrest (rows 1-2) has the same 2-row light cap over a flat face. The armrests at the sides are flat vertical strips. The seat cushion is not visible from above, because the chair faces north and we see its back panel. The narrow base (rows 24-30) is also a front-facing strip. Overall this is a flat front elevation with no readable horizontal seat surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small chair-like prop with a dark outline that leans blue-grey, matching the material. Only 8% of its dark edge pixels are neutral, which is far from the sticker look; the bench and lamp references sit at 44% and 100%. It has 12 distinct colours and a median of 9 per 16x16 tile, close to prop-hedge (11 colours, 10 per tile) and prop-bench-wood (14 colours). It is below the much busier stall and well (about 38-40 colours), but those are larger multi-material pieces. Flat-fill coverage is 0%, so there are no large single-colour areas. By eye, the headrest, backrest, seat and armrests are separated by value steps, with highlights and shadow bands giving roughly 4-5 lightness steps on the main grey ramp. Surface grain is modest but present. It would sit acceptably beside the bench and hedge without looking thinner or flatter, though it is a little plainer than the stall and well.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17941
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "headrest",
+      "rows": "0-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest top band",
+      "rows": "7-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest/body face",
+      "rows": "9-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests",
+      "rows": "10-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal and foot plate",
+      "rows": "23-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The seat is seen from behind. The main body (rows 9-22, width 16) is a flat dark vertical panel with a 2-row lighter band at rows 7-8, which is only a rim or top edge of the backrest. There is no front-edge line followed by eave shadow, no ellipse, and no visible seat surface. The headrest (rows 0-8) and the side armrests are also drawn face-on. The pedestal below (rows 23-30) is a thin stem and a foot plate. Nothing horizontal is seen from above, so it reads as an elevation with only a rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a compact grey-blue chair with a headrest, backrest, armrests and base. At this size I can make out about 5 lightness steps across the cushion and frame. It has 12 distinct colours, close to the hedge (11) and bench (14) and the lamp (14). Its median is 9 colours per tile against 10 for the hedge. Flat-fill coverage is 0%. Only 8% of its dark edge pixels are neutral, so the outline carries a tint and is not a uniform black sticker line. The stall and well are larger and richer (38-40 colours), but they are bigger props and the fair comparison is the bench, hedge and lamp. Highlights and shadows on the cushion and arms break up the surfaces. The piece would sit next to the bench and hedge without looking flatter or thinner. The picture is small, so I judge shading and texture partly from the measured facts.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16800
+  }
+ ],
+ "decidedAt": "2026-10-20T06:47:26.144Z",
+ "cells": {
+  "16": [
+   "493a9213eb855d3f",
+   "5d1a9f24e57784d6"
+  ],
+  "24": [
+   "1d82311d68968645",
+   "247930a848493d41",
+   "42ea8a67b3a8aa05",
+   "4335909729c1422a",
+   "47621a2bf8870ed6",
+   "47b9ab7ff17fe963",
+   "915d4fd4ac17aa26",
+   "9da67f4a8b1ea12d",
+   "a7352b885b0c64f6",
+   "c32576c5d7646da9",
+   "cd8421b9284857a5",
+   "ec82714c38b53554"
+  ],
+  "32": [
+   "61a98367cc673dff",
+   "681d6a9c9db3a4df",
+   "dcfcb8a71a84b15c"
+  ],
+  "48": [
+   "1f180d9a97236646",
+   "626c4f4841a1e09e",
+   "740849ca47926461",
+   "93046e66bc748aee",
+   "aead85899afad716",
+   "fd7f00a66f5ae402"
+  ]
+ }
+}

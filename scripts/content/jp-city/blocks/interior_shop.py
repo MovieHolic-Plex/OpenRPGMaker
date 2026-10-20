@@ -835,6 +835,67 @@ def f_baskets(c, x0, y0, w, h, lvl, seed):
 def sh_basket_shelf(c): shelf(c, 0, 3, 16, 29, 'ki', 3, f_baskets, seed=5)
 
 
+# ══ seats34 (3/4 다시 그리기) ══
+def _barber34(c, d):
+    """이발 의자 3/4(다시 그리기). 머리받침·등받이는 윗날 2행만 밝고 나머지는 매끈한 쿠션 면(왼 테 밝게, 오른 테 어둡게),
+    좌판 윗면 4행이 가장 밝다. 크롬 팔걸이·발받침·받침은 윤곽을 두른다. 동·서 모두 빛은 왼위(서향도 왼쪽 테가 밝다)."""
+    red = lambda s: K('aka', s - 1)
+    ch = lambda s: K('conc', s)
+    YO = K('yoru', -1)
+
+    def cushion(x, y, w, h, rim=2):
+        c.R(x, y, w, h, red(0)); box(c, x, y, w, h, red(-3))
+        c.R(x + 1, y + 1, w - 2, rim, red(2)); c.HL(x + 1, y + 1, w - 2, red(3))                     # 윗날 판
+        c.VL(x + 1, y + 1 + rim, h - 2 - rim, red(1)); c.VL(x + w - 2, y + 1 + rim, h - 2 - rim, red(-1))
+
+    def chrome(x, y, w, h, t=0, top=2):
+        box(c, x, y, w, h, YO); c.R(x + 1, y + 1, w - 2, h - 2, ch(t - 1))
+        c.R(x + 1, y + 1, w - 2, top, ch(t + 2)); c.HL(x + 1, y + 1, w - 2, ch(t + 3))
+
+    def base(x0, w):
+        c.R(7, 25, 2, 4, ch(0)); c.VL(7, 25, 4, ch(2)); c.VL(8, 25, 4, ch(-1))                      # 기둥
+        box(c, x0, 28, w, 4, YO); c.R(x0 + 1, 29, w - 2, 2, ch(1)); c.HL(x0 + 1, 29, w - 2, ch(3))   # 받침(윗면 밝게)
+
+    if d == 's':
+        cushion(4, 2, 8, 6)                                                                            # 머리받침
+        cushion(3, 7, 10, 10)                                                                          # 등받이
+        box(c, 3, 16, 10, 9, red(-3))                                                                  # 좌판
+        c.R(4, 17, 8, 4, red(2)); c.HL(4, 17, 8, red(3)); c.VL(4, 17, 4, red(3))                        # 좌판 윗면 4행
+        c.R(4, 21, 8, 3, red(-1)); c.HL(4, 21, 8, red(0)); c.VL(4, 22, 2, red(0))                       # 앞날
+        chrome(1, 13, 3, 10, 1); chrome(12, 13, 3, 10, 0)                                              # 팔걸이
+        base(3, 10)
+    elif d == 'n':
+        chrome(1, 14, 3, 8, 1); chrome(12, 14, 3, 8, 0)                                                # 팔걸이(뒤끝)
+        cushion(4, 2, 8, 6)                                                                            # 머리받침 뒷면
+        cushion(3, 7, 10, 17)                                                                          # 등받이 뒷면
+        c.HL(5, 16, 6, red(-1))                                                                        # 뒷면 이음 하나
+        base(3, 10)
+    else:
+        e = d == 'e'
+        bx = 2 if e else 10
+        cushion(bx, 6, 4, 18)                                                                          # 등받이(옆에서, 두께 2)
+        sx = 5 if e else 4
+        box(c, sx, 18, 7, 6, red(-3))                                                                  # 좌판
+        c.R(sx + 1, 19, 5, 3, red(2)); c.HL(sx + 1, 19, 5, red(3)); c.VL(sx + 1, 19, 3, red(3))         # 좌판 윗면 3행
+        c.HL(sx + 1, 22, 5, red(-1))                                                                   # 옆날
+        ax = 6 if e else 5
+        box(c, ax, 13, 5, 4, YO); c.HL(ax + 1, 14, 3, ch(3)); c.HL(ax + 1, 15, 3, ch(0))               # 크롬 팔걸이(윗면·옆)
+        c.P(ax + 3 if e else ax + 1, 17, ch(-1))                                                       # 팔걸이 기둥
+        fx = 11 if e else 1
+        box(c, fx, 23, 4, 3, YO); c.HL(fx + 1, 24, 2, ch(3))                                           # 발받침
+        c.HL(9 if e else 5, 25, 2, ch(-1))                                                             # 발받침 대
+        base(4, 8)
+
+
+PENDING_SEATS34 = {'sh-barber-chair-' + _d: (lambda d: (lambda c: _barber34(c, d)))(_d) for _d in 'snew'}
+SEATS34_PASS = set()          # object-gate PASS 영수증을 받은 id 만 — 이 id 들만 굽는 그림을 바꾼다
+for _k in SEATS34_PASS: R.objs[_k]['draw'] = PENDING_SEATS34[_k]
+# ══ /seats34 ══
+
+
+
+S34_STUDY2 = __import__('seat34').apply_study2(R)   # 사람 합격(2026-10-20) 앉는 기물 — 관문 pass 영수증 있는 것만 바꾼다
+
 def build(): return R.build()
 def selftest(): return R.selftest()
 

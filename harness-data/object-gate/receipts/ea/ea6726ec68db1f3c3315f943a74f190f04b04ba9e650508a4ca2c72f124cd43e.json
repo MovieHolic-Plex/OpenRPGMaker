@@ -1,0 +1,363 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ea6726ec68db1f3c3315f943a74f190f04b04ba9e650508a4ca2c72f124cd43e",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "투구 진열 선반 (helmet shelf)",
+ "label": "atlas_biome_interior/props34/helmet shelf",
+ "profileHash": "1db03a95223e5b0b",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 2/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 2/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 21,
+  "tileColorsP90": 22,
+  "darkV5": 32,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "right",
+   "right",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "shelf top board",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "shelf body with two open compartments",
+      "rows": "7-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle shelf board",
+      "rows": "16-19",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "helmets displayed on the shelves",
+      "rows": "7-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band at rows 1-5 has a textured wood surface. Row 5 is a light front-edge line (#f4b370) and row 6 is a darker shadow (#b77246), which reads as a top surface with an eave shadow. The front face runs from row 7 to row 31 and shows two open compartments with helmets (decor) inside. The middle shelf board at rows 16-19 has its own light edge line at row 18. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 20 visible tones per 16x16 tile, matching the well (20) and above the cheese stall (17) and hedge (9). Its near-flat coverage is 6%, below the stall's 13%, so there are no large flat fills. The 0% near-neutral share of dark edge pixels means the outline is tinted. By eye it is a dark brown beside the wood, not a black sticker line. The frame has a lit top edge, mid wood and dark shelf undersides, about 4 steps. The helmets show several metal tones with highlights and small red details, so the shelf is not a flat body. It is a little less ramped than the references' 5-6 steps, and the wood grain is modest. Overall it is comparable to the stall and well and would sit next to them without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14774
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "shelf top plank",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "helmets on upper and lower shelves",
+      "rows": "8-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle shelf board",
+      "rows": "16-19",
+      "evidence": "none",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 are a wood-plank band across the full width. Row 5 (#f4b370) is a lighter front-edge line, and row 6 is a darker eave-shadow row beneath it. Below that, rows 7-31 are the south-facing front: two open compartments with side posts, a middle shelf board at rows 16-19, and a base at rows 28-31. The helmets inside are goods, so I counted them as decor. The silhouette is a constant 32 px wide with no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a wooden shelf holding helmets, and it sits at the same scale as the stall and well references. It carries 20 visible tones per tile, against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is only 6%, below the stall's 13%. Dark edge pixels are 0% neutral, so the outline leans brown, the dark tone of the adjacent wood, rather than being a black sticker line. The wood frame shows about 5 lightness steps, with highlight edges and darker shelf undersides. The helmets add small clusters of metal highlights and shadows, so the interior is not a flat fill. Overall density and shading match the references, and a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12698
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top plank of shelf",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-6"
+     },
+     {
+      "part": "middle shelf plank",
+      "rows": "16-19",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-19"
+     },
+     {
+      "part": "helmets on shelves",
+      "rows": "7-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Column x=16 shows the top plank in rows 1-5, with brown tones and a horizontal wood grain, ending in a light front-edge line at row 5 (#f4b370). Row 6 is a darker shadow row (#b77246), and the dark interior of the shelf opening starts at row 7. That gives a top band of about 5 rows plus a shadow row, which is more than a rim. The front face runs from row 7 to row 31, about 25 rows. It holds two compartments split by a middle plank with its own light edge line at row 18. The helmets in the compartments are goods on the shelves, so they count as decor. The silhouette is a constant 32 wide, with no isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a wooden shelf frame holding helmets, which is the same kind as the stall and well references. Measured facts support this: 20 visible tones per tile matches the well (20) and beats the cheese stall (17). Near-flat coverage is 6%, below the stall's 13%. Dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood rather than a black sticker line. The wood has about 4 steps (highlight, mid, shadow, dark edge) with some grain, and the helmets carry several grey-blue tones with highlights. That is slightly fewer steps than the references' 5-6. The total of 28 distinct colours is lower than the stall (40) and well (38), but the visible-tone count shows this is not shallow. The back panel and shelf boards are fairly smooth, with no large single-colour areas. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18210
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top board of shelf",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "shelf body with two compartments (front face)",
+      "rows": "7-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle shelf board",
+      "rows": "16-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "helmets displayed in compartments",
+      "rows": "7-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Column x=16 shows a top band at rows 1-5 with a light front-edge line at row 5 (#f4b370) and a darker eave-shadow row at row 6 (#b77246). Below it the front face runs rows 7-31 with two open compartments and a middle shelf board at rows 16-19. This matches the green 'cabinet: top 5 + edge + eave' reference. The helmets sit inside the compartments and are decor. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a wooden shelf with helmets, small and compact. Measured facts are 20 visible tones per tile, against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 6%, below the stall's 13%. Dark edge pixels are 0% neutral, so the outline is tinted dark brown, not a black sticker line. By eye, the wood frame has a highlight, mid and dark ramp with a visible grain, and the helmets show a few metal tones with small highlights. The shelf backs are slightly flatter than the references' richest areas, and the wood ramp is roughly 4 steps against 5-6 in the references, but the piece holds up next to the stall and well without looking thinner or more sticker-like. Density and outline match the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12402
+  }
+ ],
+ "decidedAt": "2026-10-20T10:14:44.669Z",
+ "cells": {
+  "16": [
+   "0dc180d97c528c8c",
+   "73352947ba4590b2",
+   "b462eb02a08e7331",
+   "e7dab8c944118148"
+  ],
+  "24": [
+   "0a3c019c178f28dd",
+   "0fd4703e39f9d1ba",
+   "1903adc4dc644261",
+   "1cc3f867dbc735a3",
+   "2d0f93221b2304b6",
+   "467ef90de6dbd4ed",
+   "4fafcb054a8341d8",
+   "5a92f939bb210d77",
+   "5b045ae73cf3d17a",
+   "632fbde204885801",
+   "64b7f9d82a010629",
+   "6804fd521906dfa7",
+   "680b8c43d11fe3ff",
+   "8f619d9848927c06",
+   "90f335a61189137d",
+   "939c9ac26ad7d80a",
+   "9604c985dac7b804",
+   "a3fa6047c3021e4d",
+   "a617f2e54a04aa01",
+   "a6623b295c6d0af1",
+   "d7aafe41f3734e5e",
+   "f07bbac4e5dc2bba",
+   "f92c6360d857ea8d",
+   "fb38bcf325796dfe"
+  ],
+  "32": [
+   "7f4012723098543a"
+  ],
+  "48": [
+   "13bed9cd814de614",
+   "28f1a6772c8b63c6",
+   "52628eb6713040a5",
+   "667b942a9d57e904",
+   "d7633df388496178",
+   "edc69811d06e9331"
+  ]
+ }
+}

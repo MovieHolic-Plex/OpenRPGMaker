@@ -7,6 +7,8 @@
  * 픽셀 처리는 순수 함수다(RGBA 배열 in/out). PNG 인코딩·이미지 읽기는 호출하는 쪽(편집기 캔버스)이 한다.
  */
 import type { PassFlag, TileAiMetadata, TilesetDef } from "./types";
+import { validateObjectSpec } from "./objectSpec";
+import { objectSpecHandKind } from "./objectSpecKits";
 
 export const ROOM_KIT_ASSET_PREFIX = "roomkit_";
 /** 변형 칸 시트 에셋 id. 칸 크기를 id 에 넣어 이식 칸을 읽는 쪽(bundledChipsetGeometry)이 칸 크기·줄 칸 수를 안다. */
@@ -249,10 +251,13 @@ export function kitHandObjects(tileset: TilesetDef | undefined): Record<string, 
     const firstBlocked = kit.rows.findIndex((row) => [...(row.tiles ?? []), ...(row.upperTiles ?? [])].some((t) => t >= 0 && blocked(t)));
     const hasUpper = kit.rows.some((row) => (row.upperTiles ?? []).some((t) => t >= 0));
     const place = `${kit.ai?.placementRules ?? ""} ${kit.ai?.description ?? ""}`;
-    const kind: KitHandObject["kind"] = firstBlocked < 0
+    // 설명서(ObjectSpec)가 있으면 놓는 곳·발밑을 거기서 읽는다(2026-10-20). 없으면 예전처럼 통행·문장에서 짐작한다.
+    const spec = kit.spec && validateObjectSpec(kit.spec).ok ? kit.spec : null;
+    const specKind = objectSpecHandKind(spec);
+    const kind: KitHandObject["kind"] = specKind ?? (firstBlocked < 0
       ? (hasUpper ? (HANG_PLACE.test(place) ? "hang" : "floor") : "flat")
-      : WALL_PLACE.test(kit.ai?.placementRules ?? "") ? "wall" : "floor";
-    const foot = firstBlocked < 0 ? 0 : H - firstBlocked;
+      : WALL_PLACE.test(kit.ai?.placementRules ?? "") ? "wall" : "floor");
+    const foot = specKind ? (specKind === "floor" || specKind === "wall" ? Math.min(H, spec!.view.footRows) : 0) : firstBlocked < 0 ? 0 : H - firstBlocked;
     // 칸 좌표: floor·wall 은 발밑 첫 줄이 dy 0(솟은 칸은 음수), hang·flat 은 맨 윗줄이 dy 0 — 발밑 없는 floor 는 맨 아랫줄이 dy 0.
     const top = kind === "hang" || kind === "flat" ? 0 : foot ? H - foot : H - 1;
     const cells: [number, number, number, number][] = [];
@@ -264,9 +269,9 @@ export function kitHandObjects(tileset: TilesetDef | undefined): Record<string, 
     const tags = (kit.ai?.tags ?? []).filter((t) => !t.startsWith("use:"));
     out[kit.id] = {
       ko: kit.name ?? kit.id, category: role || "prop", category_ko: tags[2] ?? tags[1] ?? "가구", kind,
-      w: W, h: kind === "hang" ? 0 : kind === "flat" ? H : foot, up: 0, cells,
-      desc: (kit.ai?.description ?? "").slice(0, 60), tags, place: kit.ai?.placementRules ?? "", pair: [],
-      use: (kit.ai?.tags ?? []).filter((t) => t.startsWith("use:")).map((t) => t.slice(4)),
+      w: W, h: kind === "hang" ? 0 : kind === "flat" ? H : foot, up: spec?.view.risePx ?? 0, cells,
+      desc: (kit.ai?.description ?? spec?.summary ?? "").slice(0, 60), tags, place: kit.ai?.placementRules ?? spec?.placement.rule ?? "", pair: [],
+      use: spec?.placement.use ?? (kit.ai?.tags ?? []).filter((t) => t.startsWith("use:")).map((t) => t.slice(4)),
     };
   }
   return out;

@@ -136,6 +136,12 @@ const bridge = {
       ipcRenderer.on(OPRN_CHANNELS.storeChanged, listener);
       return () => ipcRenderer.removeListener(OPRN_CHANNELS.storeChanged, listener);
     },
+    takeOpenLink: invoke(OPRN_CHANNELS.storeTakeOpenLink),
+    onOpenLink: (callback: (payload: unknown) => void): (() => void) => {
+      const listener = (_event: unknown, payload: unknown): void => callback(payload);
+      ipcRenderer.on(OPRN_CHANNELS.storeOpenLink, listener);
+      return () => ipcRenderer.removeListener(OPRN_CHANNELS.storeOpenLink, listener);
+    },
   },
 } as const;
 

@@ -5,7 +5,10 @@
 //
 // 칸마다 통행·레이어가 구워져 있다(조각별 X 막힘 / C 걸음★ / F 걸음 격자 = tiledata/joseon-village/piece-walk.json).
 // 시트 칸 수·열 수는 하드코딩하지 않고 정의 JSON 에서 읽는다 — 국내성 조각이 합쳐지면 칸이 늘어난다.
-import data from "@/assets/joseonBaramTileset.json";
+import sheet from "@/assets/joseonBaramSheet.json";
+import { bundledJson } from "./bundledJson";
+/** 번들 정의 JSON — 처음 쓸 때 읽는다(bundledJson.ts). 칸 수·한 줄 폭은 같은 굽기가 쓰는 작은 시트 메타(`joseonBaramSheet.json`)에서 읽는다. */
+const data = () => bundledJson("joseonBaramTileset");
 import references from "@/assets/joseonBaramReferences.json";
 import type { AutotileGroup, PassFlag, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
@@ -14,32 +17,37 @@ export const JOSEON_BARAM_TEXTURE = "tex_joseon_baram";
 export const JOSEON_BARAM_ID = "joseon_baram";
 /** 조선 칩셋 계열. 버들항(oprn-atlas)과 칸 번호 체계가 전혀 달라, 맵이 있는 채로 말없이 바꾸면 깨진다. */
 export const JOSEON_BARAM_FAMILY = "oprn-joseon";
-export const JOSEON_BARAM_TILE_COUNT: number = data.count;
-export const JOSEON_BARAM_TILES_PER_ROW: number = data.tilesPerRow;
+export const JOSEON_BARAM_TILE_COUNT: number = sheet.count;
+export const JOSEON_BARAM_TILES_PER_ROW: number = sheet.tilesPerRow;
 /** 조립 부품(structureKits)·참고문서 id 머리. 번들이 소유한다(기존 사본에서 같은 id 는 번들 것으로 바꾼다). */
 export const JOSEON_BARAM_PREFIX = "jb-";
 const REFERENCES = references as unknown as TilesetReferenceCategory[];
+
+/** 새 사본이 들고 태어나는 참고문서 — 정의 JSON 없이 만든다(로드가 저장본에서 뺀 번들 참고문서를 되돌릴 때 쓴다, installReferenceOwners.ts). */
+export function joseonBaramBundledReferenceDocuments(): TilesetReferenceCategory[] {
+  return structuredClone(REFERENCES);
+}
 
 /** 번들 정의의 독립 사본 — 참고문서를 들고 태어난다. */
 export function createJoseonBaramTileset(): TilesetDef {
   return {
     id: JOSEON_BARAM_ID,
-    name: data.name,
+    name: data().name,
     image: { type: "bundled", id: JOSEON_BARAM_TEXTURE },
     kind: "custom",
     family: JOSEON_BARAM_FAMILY,
-    tileSize: data.tileSize,
-    tilesPerRow: data.tilesPerRow,
-    count: data.count,
-    passability: structuredClone(data.passability) as PassFlag[],
-    priority: [...data.priority] as ("lower" | "upper")[],
-    terrain: [...data.terrain],
-    tileMeta: structuredClone(data.tileMeta) as TileAiMetadata[],
-    tileGroups: structuredClone(data.tileGroups) as TileGroupMetadata[],
-    animationStrips: structuredClone(data.animationStrips),
-    structureKits: structuredClone(data.structureKits) as unknown as StructureKitDef[],
-    autotileGroups: structuredClone(data.autotileGroups) as unknown as AutotileGroup[],
-    referenceDocuments: structuredClone(REFERENCES),
+    tileSize: data().tileSize,
+    tilesPerRow: sheet.tilesPerRow,
+    count: sheet.count,
+    passability: structuredClone(data().passability) as PassFlag[],
+    priority: [...data().priority] as ("lower" | "upper")[],
+    terrain: [...data().terrain],
+    tileMeta: structuredClone(data().tileMeta) as TileAiMetadata[],
+    tileGroups: structuredClone(data().tileGroups) as TileGroupMetadata[],
+    animationStrips: structuredClone(data().animationStrips),
+    structureKits: structuredClone(data().structureKits) as unknown as StructureKitDef[],
+    autotileGroups: structuredClone(data().autotileGroups) as unknown as AutotileGroup[],
+    referenceDocuments: joseonBaramBundledReferenceDocuments(),
   };
 }
 
@@ -77,10 +85,10 @@ export function ensureJoseonBaramTileset(tileset: TilesetDef): boolean {
   if (tileset.id !== JOSEON_BARAM_ID || tileset.image.type !== "bundled" || tileset.image.id !== JOSEON_BARAM_TEXTURE) return false;
   let changed = false;
   if (tileset.family !== JOSEON_BARAM_FAMILY) { tileset.family = JOSEON_BARAM_FAMILY; changed = true; }
-  const shippedAutotiles = (data.autotileGroups as unknown as AutotileGroup[]);
+  const shippedAutotiles = (data().autotileGroups as unknown as AutotileGroup[]);
   const sheetCopy = tileset.autotileGroups?.some(group => shippedAutotiles.some(ship => ship.id === group.id)) ?? false;
-  if (sheetCopy && tileset.count > data.count) return changed;
-  if (sheetCopy && tileset.count === data.count) return mergeShippedKits(tileset) || changed;
+  if (sheetCopy && tileset.count > sheet.count) return changed;
+  if (sheetCopy && tileset.count === sheet.count) return mergeShippedKits(tileset) || changed;
   const fresh = createJoseonBaramTileset();
   // 저자가 더한 부품·묶음·오토타일(번들 id 가 아닌 것)은 지킨다 — 칸 번호는 판이 늘어도 바뀌지 않으므로(앞 칸 불변) 그대로 유효하다.
   const shippedGroupIds = new Set((fresh.tileGroups ?? []).map(group => group.id));
@@ -107,7 +115,7 @@ export function ensureJoseonBaramTileset(tileset: TilesetDef): boolean {
 
 /** 번들 부품 중 사본에 없는 것은 덧붙이고, 번들 소유 `jb-` 부품은 최신으로 바꾼다. 나머지(저자 부품)는 그대로. */
 function mergeShippedKits(tileset: TilesetDef): boolean {
-  const shipped = data.structureKits as unknown as StructureKitDef[];
+  const shipped = data().structureKits as unknown as StructureKitDef[];
   const shippedById = new Map(shipped.map(kit => [kit.id, kit]));
   const current = tileset.structureKits ?? [];
   let changed = false;

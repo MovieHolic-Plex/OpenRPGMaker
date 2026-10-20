@@ -21,7 +21,9 @@ OUT = os.path.join(iplib.TD, '_gate', '_rooms')
 ROOMS = [('hull', ('deck', 'hold'), 'wood', '범선 선체 판자 벽 방(갑판 판자·짐칸 판자 바닥)'),
          ('cabin', ('deck',), 'wood', '선장실 판벽 방(갑판 판자 바닥)'),
          ('gallery', ('parquet',), 'default', '미술관 벽지 전시실(쪽모이 마루)'),
-         ('arenawall', ('sand', 'sandstone'), 'rock', '투기장 사암 벽 마당(모래·사암 포석 바닥)')]
+         ('arenawall', ('sand', 'sandstone'), 'rock', '투기장 사암 벽 마당(모래·사암 포석 바닥)'),
+         # 벽면이 v5 시트에 있는 것(reg 에 없는 벽) — 시트 칸을 그대로 쓴다. 바닥만 새 그림.
+         ('rock', ('ice',), 'rock', '얼음 동굴 바위벽 방(빙판 바닥)', 7, True)]
 W, FLOOR_ROWS = 10, 4
 
 
@@ -33,22 +35,26 @@ def _sheet_tile(n):
     return _SHEET.crop(((n % 48) * 16, (n // 48) * 16, (n % 48) * 16 + 16, (n // 48) * 16 + 16))
 
 
-def room_image(reg, wid, floors, ceiling):
+def room_image(reg, wid, floors, ceiling, floor_rows=None, inner=False):
     """조립기(builder.ts handInteriorStructure)와 같은 규칙으로 방 한 칸을 짓는다: 평면 맨 윗줄 공허 → 천장 띠(벽 윗면) → 벽면 두 줄 → 바닥.
     좌우·아래 막힌 칸도 실내에 닿으면 천장 띠다(비트 = 아래1·위2·왼4·오른8·위가 공허16)."""
     import bake, json
     from palette_snap import snap
     spec = json.load(open(os.path.join(iplib.ROOT, 'src/assets/handInteriorSpec.json')))
     ceil = spec['ceilings'][ceiling]; void = spec['void']
-    wd = reg.walls[wid]
-    GW, GH = W + 2, 2 + 2 + FLOOR_ROWS + 2          # 공허 1 + 천장 띠 1 + 벽면 2 + 바닥 + 아래 천장 띠 1 + 공허 1
-    inn = lambda x, y: 1 <= x <= W and 2 <= y <= 3 + FLOOR_ROWS
+    wd = reg.walls.get(wid)
+    sheet_wall = None if wd else spec['walls'][wid]                 # v5 시트 벽면: tiles[(줄*cols + x%cols)*2 + 서쪽]
+    FR = floor_rows or FLOOR_ROWS
+    GW, GH = W + 2, 2 + 2 + FR + 2          # 공허 1 + 천장 띠 1 + 벽면 2 + 바닥 + 아래 천장 띠 1 + 공허 1
+    inn = lambda x, y: 1 <= x <= W and 2 <= y <= 3 + FR
     top = lambda x, y: 0 <= x < GW and 0 <= y < GH and not inn(x, y) and any(inn(x + dx, y + dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1))
     im = Image.new('RGBA', (GW * 16, GH * 16), (0, 0, 0, 0))
     for y in range(GH):
         for x in range(GW):
             if inn(x, y):
-                if y in (2, 3):
+                if y in (2, 3) and sheet_wall:
+                    t = _sheet_tile(sheet_wall['tiles'][((y - 2) * sheet_wall['cols'] + (x - 1) % sheet_wall['cols']) * 2 + (0 if inn(x - 1, y) else 1)])
+                elif y in (2, 3):
                     t = bake.wall_tile(wd, (x - 1) % wd['cols'], y - 1, not inn(x - 1, y))
                 else:
                     fy = y - 4; fx = x - 1
@@ -63,13 +69,39 @@ def room_image(reg, wid, floors, ceiling):
             else:
                 t = _sheet_tile(void)
             im.paste(t, (x * 16, y * 16))
+    if inner:   # 바깥 공허 줄(평면 한 색)만 뺀다 — 천장 띠(벽 윗면)·벽면·바닥은 조립기 그대로. 칸 화소는 그대로다.
+        im = im.crop((0, 16, GW * 16, (GH - 1) * 16))
     return snap(im)[0]
 
 
+GROUND = ['ice']
+
+
+def ground_patch(reg, fid):
+    """바닥 한 벌(주기 cols×rows 칸, 그림자 없음 + 북·서 벽 접촉 그림자 줄)을 깐 땅 조각. 칸 화소는 굽는 것과 같다."""
+    import bake
+    from palette_snap import snap
+    fd = reg.floors[fid]; W_, H_ = fd['cols'] + 2, fd['rows'] + 1
+    im = Image.new('RGBA', (W_ * 16, H_ * 16))
+    for y in range(H_):
+        for x in range(W_):
+            sh = (1 if y == 0 else 0) | (2 if x == 0 else 0)
+            im.paste(bake.floor_tile(fd, x % fd['cols'], y % fd['rows'], sh), (x * 16, y * 16))
+    return dict(label=f'atlas_biome_interior/plus/ground-{fid}', kind='terrain', img=snap(im)[0],
+                name=f'{fd["ko"]} 바닥 조각(위에서 본 3/4 실내 바닥 {W_}×{H_}칸 — 위·왼쪽 줄은 벽 밑 접촉 그림자)', covers=[('floor', fid)])
+
+
 def rooms(reg):
-    return [dict(label=f'atlas_biome_interior/plus/room-{wid}', kind='structure', img=room_image(reg, wid, floors, ceil),
-                 name=f'{ko} — 바닥·벽면을 조립기와 같은 천장 띠(벽 윗면) 사이에 조립(위에서 본 3/4 방 한 칸)', covers=[('wall', wid)] + [('floor', f) for f in floors])
-            for wid, floors, ceil, ko in ROOMS]
+    out = [dict(label=f'atlas_biome_interior/plus/room-{wid}' + ('' if wid in reg.walls else '-' + '-'.join(floors)), kind='structure', img=room_image(reg, wid, floors, ceil, *rest),
+                name=f'{ko} — 바닥·벽면을 조립기와 같은 천장 띠(벽 윗면) 사이에 조립(위에서 본 3/4 방 한 칸)',
+                covers=([('wall', wid)] if wid in reg.walls else []) + [('floor', f) for f in floors])
+           for wid, floors, ceil, ko, *rest in ROOMS]
+    for fid in GROUND:   # 바닥 칸만 깐 땅 조각(kind terrain · 화풍 ground) — 버들항 땅 기준과 같은 종류로 비교한다
+        if fid in reg.floors: out.append(ground_patch(reg, fid))
+    if reg.pits:   # 구멍(심연) 오토타일 — 47 칸을 화소 그대로 품은 동굴 바닥 조립 그림(kind terrain)
+        import puzzle_scene
+        out += puzzle_scene.pit_pictures(reg)
+    return out
 
 
 _CUR = None
@@ -85,8 +117,13 @@ def current_profile():
 def state(img, kind):
     """('pass'|'provisional', None) 또는 (None, 이유)."""
     import object_gate as OG
-    rc = OG.read_receipt(OG.pixel_sha256(img))
+    sha = OG.pixel_sha256(img)
+    rc = OG.read_receipt(sha)
     if not rc: return None, '영수증 없음 — object-gate review 를 먼저 받아라'
+    # 서명된 사람 결정이 최종이다(2026-10-20): 허용이면 통과, 거절이면 막는다.
+    human = OG.human_decision(OG.read_hold_decision(sha), rc)
+    if human == 'reject': return None, '사람이 검토 화면에서 거절했다 — 최종'
+    if human == 'allow' and rc.get('kind') == kind: return 'pass', None
     if rc.get('kind') != kind: return None, f"영수증 종류({rc.get('kind')})가 요청 종류({kind})와 다르다"
     cal = OG.calibrated_profiles()
     if rc.get('profileHash') != current_profile() and rc.get('profileHash') not in cal:
@@ -95,21 +132,86 @@ def state(img, kind):
     return ('pass' if rc.get('profileHash') in cal else 'provisional'), None
 
 
+def _shipped_unchanged(reg):
+    """이미 main 시트에 실린 칸과 화소가 같은 것 → {'piece': set(id), 'floor': set, 'wall': set}.
+    통과가 아니다 — 옛 프로필 영수증은 무효이고 이 묶음은 「재보정 후 영수증 필요」로 따로 센다. 새 것·바뀐 것은 여기 들지 않는다."""
+    import bake, json
+    from palette_snap import snap
+    pins_p = os.path.join(iplib.TD, 'pins.json')
+    if not os.path.exists(pins_p): return {'piece': set(), 'floor': set(), 'wall': set()}
+    pins = json.load(open(pins_p)); slots = pins.get('slots', {}); done = set(pins.get('ids', []))
+    eq = lambda im, n: n is not None and snap(im)[0].tobytes() == _sheet_tile(n).tobytes()
+    out = {'piece': set(), 'floor': set(), 'wall': set()}
+    for pid in reg.order:
+        if pid not in done: continue
+        p = reg.pieces[pid]
+        if all(eq(t, slots.get(f'obj:{pid}:{dx},{dy}')) for dx, dy, t, _ in bake.cells_of(p, iplib.render(p))): out['piece'].add(pid)
+    for fid, fd in reg.floors.items():
+        n = fd['cols'] * fd['rows'] * 4
+        if all(eq(bake.floor_tile(fd, (i // 4) % fd['cols'], i // (4 * fd['cols']), i % 4), slots.get(f'floor:{fid}:{i}')) for i in range(n)): out['floor'].add(fid)
+    for wid, wd in reg.walls.items():
+        n = wd['cols'] * 4
+        if all(eq(bake.wall_tile(wd, (i // 2) % wd['cols'], 1 + i // (2 * wd['cols']), i % 2), slots.get(f'wall:{wid}:{i}')) for i in range(n)): out['wall'].add(wid)
+    return out
+
+
+def _current_fail(img):
+    import object_gate as OG
+    rc = OG.read_receipt(OG.pixel_sha256(img))
+    return bool(rc) and rc.get('profileHash') == current_profile() and rc.get('verdict') != 'pass'
+
+
 def check(reg):
-    """기물 + 조립 방 전부. {'pass':[], 'provisional':[], 'bad':[(label, why)]}"""
-    res = {'pass': [], 'provisional': [], 'bad': []}
-    items = [(f'atlas_biome_interior/plus/{pid}', iplib.render(reg.pieces[pid]), reg.pieces[pid]['gate']) for pid in reg.order]
-    items += [(r['label'], r['img'], r['kind']) for r in rooms(reg)]
-    for label, img, kind in items:
+    """기물 + 조립 그림 전부 → {'pass','provisional','needs_receipt','superseded','bad'}.
+    needs_receipt = 현재 프로필 영수증이 없지만 이미 main 시트에 실린 그대로인 것(옛 프로필 영수증은 무효). 통과로 세지 않는다 —
+    이미 실려 있어 굽기는 그 칸을 다시 쓰기만 하고(화소 그대로), 「재보정 후 영수증 필요」로 크게 출력한다. 새 것·바뀐 것은 여기 들 수 없다."""
+    res = {'pass': [], 'provisional': [], 'needs_receipt': [], 'bad': []}
+    old = _shipped_unchanged(reg)
+    items = [(f'atlas_biome_interior/plus/{pid}', iplib.render(reg.pieces[pid]), reg.pieces[pid]['gate'], pid in old['piece']) for pid in reg.order]
+    rs = rooms(reg)
+    items += [(r['label'], r['img'], r['kind'], bool(r['covers']) and all(k in ('floor', 'wall') and v in old[k] for k, v in r['covers'])) for r in rs]
+    for label, img, kind, shipped in items:
         st, why = state(img, kind)
-        (res[st].append(label) if st else res['bad'].append((label, why)))
+        if st: res[st].append(label)
+        elif shipped and not _current_fail(img): res['needs_receipt'].append((label, why))   # 현재 프로필로 떨어진 것은 이 묶음이 아니다
+        else: res['bad'].append((label, why))
+    ok = set(res['pass']) | set(res['provisional'])
+    # 조립 그림은 증거다: 떨어진 그림이 덮는 바닥·벽면이 모두 다른 「통과」 그림으로 덮이면 막지 않는다(보고에는 남긴다). 실린 그대로인 것은 덮음으로 세지 않는다.
+    covered = {cv for r in rs if r['label'] in ok for cv in r['covers'] if cv[0] != 'pit'}
+    res['superseded'] = []
+    keep = []
+    for label, why in res['bad']:
+        r = next((r for r in rs if r['label'] == label), None)
+        if r and r['covers'] and all(cv in covered for cv in r['covers'] if cv[0] != 'pit') and not any(cv[0] == 'pit' for cv in r['covers']):
+            res['superseded'].append((label, why))
+        else: keep.append((label, why))
+    res['bad'] = keep
+    got = {pid: set().union(*[r['masks'] for r in rs if ('pit', pid) in r.get('covers', []) and r['label'] in ok] or [set()]) for pid in reg.pits}
+    pit_ok = {pid for pid in reg.pits if not (set(iplib.PIT_MASKS) - got[pid])}
+    keep = []
+    for label, why in res['bad']:   # 떨어진 구멍 그림은 통과 그림들이 칸 열쇠를 다 품으면 막지 않는다
+        r = next((r for r in rs if r['label'] == label), None)
+        if r and any(cv[0] == 'pit' and cv[1] in pit_ok for cv in r['covers']): res['superseded'].append((label, why))
+        else: keep.append((label, why))
+    res['bad'] = keep
+    for pid in reg.pits:   # 구멍 칸은 통과한 조립 그림이 47 마스크를 모두 품을 때만 덮인다
+        miss = sorted(set(iplib.PIT_MASKS) - got[pid])
+        if miss: res['bad'].append((f'pit:{pid}', f'통과한 조립 그림이 품지 못한 마스크 {len(miss)}개 {miss[:8]}'))
     return res
 
 
 def require_structure(reg):
-    """굽기 관문: 기물과 조립 방이 모두 pass/provisional 이어야 한다. 아니면 SystemExit(이유 전부)."""
+    """굽기 관문: 새 것·바뀐 것은 모두 pass/provisional 이어야 한다. 아니면 SystemExit(이유 전부).
+    이미 main 에 실린 그대로인 것은 막지 않지만 통과도 아니다 — 「재보정 후 영수증 필요」 목록을 크게 찍는다."""
     res = check(reg)
-    print(f"[3/4 관문] 기물 {len(reg.order)} + 조립 방 {len(ROOMS)}: 통과 {len(res['pass'])} · 미보정 프로필 임시통과 {len(res['provisional'])} · 막힘 {len(res['bad'])}")
+    print(f"[3/4 관문] 기물 {len(reg.order)} + 조립 그림 {len(rooms(reg))}: 통과 {len(res['pass'])} · 미보정 프로필 임시통과 {len(res['provisional'])} · "
+          f"재보정 후 영수증 필요(이미 실린 그대로, 통과 아님) {len(res['needs_receipt'])} · 다른 통과 그림이 대신 덮음 {len(res.get('superseded', []))} · 막힘 {len(res['bad'])}")
+    if res['needs_receipt']:
+        print('!' * 72)
+        print(f"!! 재보정 후 영수증 필요 {len(res['needs_receipt'])}건 — 통과가 아니다. 이미 main 시트에 실린 화소를 그대로 둘 뿐이다:")
+        for l, w in res['needs_receipt']: print(f'!!   {l}: {w}')
+        print('!' * 72)
+    for l, w in res.get('superseded', []): print(f'  (대신 덮임) {l}: {w}')
     if res['bad']:
         raise SystemExit('3/4 관문 막힘:\n' + '\n'.join(f'  {l}: {w}' for l, w in res['bad']))
     return res

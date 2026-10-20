@@ -1,0 +1,5 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"slot_machine","view34":"PASS","quality":"FAIL","reason":"Uses the same flat crimson-and-pink sticker palette as the BAD armchair anchor, with a blocky pink slab on the top plane, crude squished 77 reels, and a floating yellow coin-slot blob."}
+{"id":"wide_cabinet","view34":"PASS","quality":"PASS","reason":"Clear 5px lit wooden top plane and warm multi-tone cabinet frame with six readable relic cubbies that match the GOOD wardrobe and bread shelf anchors."}
+{"id":"ship_bunk","view34":"PASS","quality":"FAIL","reason":"At only 1 tile (16px) wide with a 10px interior opening, the three stacked bunks have the proportions of a narrow towel or bread shelf rather than beds a character could lie in."}

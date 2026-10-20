@@ -1,0 +1,408 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9972df5fa369e7a2a41059dcf8230b7605c52085b8f7e3f8275d2869c49e6b69",
+ "width": 48,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "hospital nurse station",
+ "label": "modern_city_interior/hospital-nurse-station",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 16,
+  "darkV5": 28,
+  "nearBlackEdge": 0.61,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "counter top",
+      "rows": "13-19",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "monitors and small items on the counter",
+      "rows": "1-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a wide counter, rows 12-30. Rows 13-19 are a light tiled counter top 7 rows tall (L=235). It ends in a gray front-edge band at rows 20-22, which is darker than the top, with shading below it. Below that is the front face: a teal stripe at rows 23-24 and a panel with a red cross at rows 25-29, about 10 rows in all. The monitors and the small item on the counter at rows 1-11 are decor. The object is a low counter rather than tall wall furniture, so the kind only loosely matches."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a white and light-blue counter with a red cross and two monitors. Measured density is acceptable: 11 visible tones per tile against 9 for the hedge and 17-20 for the stall and well, with 0% near-flat coverage. The structure is shallower than the references, though. The counter body reads as about 4 lightness steps (white top, pale blue front, a mid blue band, a dark base), where the stall, well and hedge carry 5-6 steps with per-element highlights. The dark edge pixels are 100% near-neutral, so the outline is a uniform black/grey line. The tinted references (hedge 0%, stall 1%) use dark material tones instead, and the neutral line gives the candidate the 'sticker' look. The counter front is also fairly smooth, with little grain, speckle or per-element shading compared with the stall's and well's textured surfaces. The piece is clean and readable, but the neutral outline and limited ramps keep it below the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 18261
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left monitor",
+      "rows": "1-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "center monitor",
+      "rows": "1-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right monitor and small items",
+      "rows": "1-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter top",
+      "rows": "13-19",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "20-22"
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the long counter. Rows 13-19 form a broad, light worktop band, 7 rows deep. It ends in a gray front-edge band at rows 20-22, which works as the edge line plus eave shadow. Below it the front face runs rows 23-29: a teal stripe at 23-24, then a panel with a red cross at 25-29, all inside a dark outline at row 30. The monitors and small items at rows 1-11 sit on the counter and count as decor. The top surface is deeper than a 1-2 row rim and the front face is over 3 rows, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The counter is a pale front panel with a blue stripe, a small red cross and two dark monitors. Each material has only about 3 lightness steps, against 5-6 on the stall, well and hedge references. All of the candidate's dark edge pixels are neutral (100%), which gives the uniform near-black sticker outline. The references use tinted dark-material outlines: the hedge is 0% neutral, the stall 1% and the well 33%. The measured facts do not show large flat blocks (0% near-flat) and the tile has 11 visible tones, which is within the reference range of 9 to 20. By eye, though, the counter front reads as flat panels with no grain, speckle or per-element highlights, so it looks flatter than the stall and well. The neutral outline and shallow ramps make it look more sticker-like than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 18497
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "left monitor and screen",
+      "rows": "1-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "center blue screen",
+      "rows": "3-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right monitor",
+      "rows": "1-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small cup/lamp item and right brown-based item on counter",
+      "rows": "4-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter top (white worktop)",
+      "rows": "13-19",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "20-22"
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a long counter spanning rows 12-30 at a constant width of 46. Rows 13-19 form a 7-row pale worktop (L=235). It ends in a darker grey band at rows 20-22 (L=174), which works as the front-edge line and shadow. Below it the front face runs from the teal stripe at rows 23-24 to the red-cross panel and light grey face at rows 25-29, about 10 rows including the grey band, with a dark outline at row 30. The monitors, screens and small items on top (rows 1-11) are decor on the counter. The object is a low counter rather than tall wall furniture, so the kind only loosely fits."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has about 4 lightness steps on the counter (white top, pale face, blue band, shadow) and 2-3 on the monitors. The Beodeul well, stall and hedge show 5-6 steps per material. 100% of its dark edge pixels are near-neutral, so the outline is a uniform black/grey line around the whole piece. That is the 'sticker' look. The tinted, material-toned outlines on the hedge (0% neutral), stall (1%) and well (33%) are the contrast. The measured density is fine: 11 visible tones per tile against 9 for the hedge, and 0% near-flat coverage. But the counter face reads as smooth panels with little grain, tile-by-tile shading or material texture, unlike the wood grain and stone shading in the references. The shading is shallower and the outline is the wrong type, so it falls short of the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 20682
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "left monitor",
+      "rows": "1-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "center blue screen",
+      "rows": "1-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right monitor",
+      "rows": "1-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small item/figure on counter",
+      "rows": "7-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter top",
+      "rows": "13-19",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-22"
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a long counter. Rows 13-19 form a light, flat counter top 7 rows tall. It ends in a gray front-edge band at rows 20-22, which is darker than the top and acts as the edge line and eave shadow. Below it is a front face of about 10 rows (rows 20-29): a teal stripe at rows 23-24, then a panel with a red cross at rows 25-29. The monitors and the small items above row 12 stand on the counter, so they are decor. The counter is low and wide rather than tall furniture, so the kind only loosely matches."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a white counter with a pale blue top, a red cross and two small monitors. The counter front and side are mostly one or two light tones, so each material has only about 3 shading steps, against 5-6 on the stall, well and hedge. 100% of its dark edge pixels are near-neutral, which matches the neutral black outline I see around the counter and monitors, so it has the sticker look. The references have tinted outlines: the hedge is 0%, the stall 1% and the well 33%. The measured 11 visible tones per tile is in the range of the hedge (9) but below the stall (17) and well (20). Near-flat coverage is 0%, so the measurements don't flag flat fills. By eye the counter body still looks smooth, with little grain, speckle or per-part highlighting. A careful artist would find it flatter and more outlined than the references, so I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17328
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.939Z",
+ "cells": {
+  "16": [
+   "397400844331d93c",
+   "6a30ccd214e45131",
+   "797e4359b5137226",
+   "b4ab75e1011e9a83",
+   "d0e6cb1dafcb2174",
+   "e61275f2de16dc4a"
+  ],
+  "24": [
+   "0230c23006af9c42",
+   "0771e47c2db65207",
+   "232202226d12c489",
+   "a69c729df6cb9bb7",
+   "ce088f2a0477d427",
+   "dadd09e764567a54",
+   "db38c53ba80f1cfa",
+   "dd5059e749de9a37"
+  ],
+  "32": [
+   "0974422e485217f0",
+   "1c2c6856a4e22b1a",
+   "260d8638289ce589",
+   "6daf587e1b143221",
+   "d9d3efa532db785b",
+   "f760d67f8cb9011c"
+  ],
+  "48": [
+   "81718cb6e0672b43",
+   "8853a62142440915"
+  ]
+ }
+}

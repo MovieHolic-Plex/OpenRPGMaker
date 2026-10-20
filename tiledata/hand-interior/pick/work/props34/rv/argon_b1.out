@@ -1,0 +1,6 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"P1","view34":"PASS","quality":"FAIL","reason":"The cyan flasks have a 1px white stopper floating diagonally off-center from the 1px neck, the yellow vials are flat 2x5 two-tone bars, and the cabinet top cap is copy-pasted from the wardrobe anchor."}
+{"id":"P2","view34":"PASS","quality":"FAIL","reason":"The jars on the shelves are pillow-shaded 4x5 rectangles with no lid, neck, or rim, reading as flat colored blocks rather than jars."}
+{"id":"P3","view34":"PASS","quality":"FAIL","reason":"Instead of a row of book spines or 3/4 stacks, each shelf holds 2-3 spaced front-facing 4x5 rectangles with a single yellow center dot that look like flat plaques."}
+{"id":"P4","view34":"PASS","quality":"FAIL","reason":"The gems are ten identical 3x4 T-shaped pink and cyan stamps with 1px stems below a 3px cap, reading as rows of mushrooms or goblets rather than gemstones."}

@@ -7,12 +7,17 @@
     from object_gate import require_pass, ObjectGateRefused
     require_pass(img, kind="tall_furniture", context="bundle", label="murim/prop_scroll_shelf")
 
+최종 통과는 서명된 사람 허용이다(2026-10-20 사용자 결정 — AI 판정 보정 2회 실패, 사용자가 매번 눈으로 판정 → AI 는 1차 거름·조언).
+사람이 검토 화면(`object-gate serve-holds`, 18323)에서 허용한 기록(approvals/hold/<해시>.json, 저장소 밖 키로 HMAC 서명)이
+그림 해시·종류와 맞고 그 그림의 영수증(어느 프로필이든 — AI 조언)이 있으면 모든 출구를 지난다. 사람 거절은 최종이다.
+서명이 안 맞는 기록(손으로 쓴 것)은 없는 것과 같다. 사람 결정이 없으면 보정된 프로필의 pass 만 지난다.
 front_prop 은 사람 승인 기록(approvals/front_prop/<해시>.json)이 있어야만 3/4 반쪽을 면제한다(승인은 CLI approve-front-prop, 터미널에서 사람이 직접).
 출구(context): bundle·shared·store 는 pass 만(사람 덮어쓰기도 무효), workshop-local 은 pass 또는 사람의 「그래도 넣기」.
 """
 from __future__ import annotations
 
 import hashlib
+import hmac
 import json
 import os
 from pathlib import Path
@@ -70,6 +75,43 @@ def read_front_prop_approval(sha: str) -> dict | None:
     return a if ok else None
 
 
+HOLD_KEY_PATH = Path(os.environ.get("OBJECT_GATE_HOLD_KEY") or Path.home() / ".config" / "oprn" / "object-gate-hold.key")
+_HOLD_KEYS = ("schema", "pixelSha256", "profileHash", "kind", "decision", "decidedBy", "decidedAt", "by", "via", "reasons", "note")
+
+
+def hold_payload(d: dict) -> str:
+    """서명 대상 문자열. TS objectGateHoldPayload 와 같다."""
+    return json.dumps([[k, d.get(k)] for k in _HOLD_KEYS], ensure_ascii=False, separators=(",", ":"))
+
+
+def read_hold_decision(sha: str) -> dict | None:
+    """보류 판정의 사람 결정 기록. 검토 화면 서버의 서명이 맞을 때만 돌려준다."""
+    path = GATE_DATA / "approvals" / "hold" / sha[:2] / f"{sha}.json"
+    if not path.exists() or not HOLD_KEY_PATH.exists():
+        return None
+    key_hex = HOLD_KEY_PATH.read_text().strip()
+    if len(key_hex) != 64:
+        return None
+    d = json.loads(path.read_text())
+    want = hmac.new(bytes.fromhex(key_hex), hold_payload(d).encode(), hashlib.sha256).hexdigest()
+    return d if hmac.compare_digest(str(d.get("sig") or ""), want) else None
+
+
+def human_decision(d: dict | None, receipt: dict | None) -> str | None:
+    """서명 확인을 마친 사람 결정이 이 영수증(그림 해시·종류)에 묶였으면 'allow'|'reject', 아니면 None. 프로필 보정 여부는 보지 않는다(TS humanDecision 과 같다)."""
+    if not d or not receipt:
+        return None
+    ok = d.get("schema") == "oprn-object-gate-hold-decision/1" and d.get("by") == "human" and d.get("via") == "review-page" \
+        and d.get("decision") in ("allow", "reject") and d.get("pixelSha256") == receipt.get("pixelSha256") \
+        and d.get("kind") == receipt.get("kind") and str(d.get("decidedBy") or "").strip() != "" and bool(d.get("decidedAt")) \
+        and bool(d.get("profileHash"))
+    return d.get("decision") if ok else None
+
+
+def hold_allows(d: dict | None, receipt: dict) -> bool:
+    return human_decision(d, receipt) == "allow"
+
+
 def calibrated_profiles() -> set[str]:
     root = GATE_DATA / "profiles"
     if not root.exists():
@@ -94,8 +136,15 @@ def refusal(img, *, kind: str | None, context: str) -> str | None:
         return "3/4·화풍 판정 영수증이 없다 — object-gate review 를 먼저 받아라"
     if kind and receipt.get("kind") != kind:
         return f"영수증 종류({receipt.get('kind')})가 요청 종류({kind})와 다르다"
+    # 사람 결정이 최종이다(2026-10-20): 허용 = 통과(프로필 보정 여부·AI 판정과 무관), 거절 = 모든 출구에서 막는다(TS objectGateRefusal 과 같다).
+    held = read_hold_decision(sha)
+    human = human_decision(held, receipt)
+    if human == "reject":
+        return f"사람이 검토 화면에서 거절했다({held.get('decidedBy')}, {str(held.get('decidedAt'))[:10]}) — 최종이다. 다시 그려 새 해시로 다시 받아라"
+    if human == "allow":
+        return None
     if receipt.get("profileHash") not in calibrated_profiles():
-        return f"판정 프로필 {receipt.get('profileHash')} 가 보정되지 않았다"
+        return f"판정 프로필 {receipt.get('profileHash')} 가 보정되지 않았다 — AI 판정({receipt.get('verdict')})은 조언일 뿐이다. 검토 화면(serve-holds, 18323)에서 사람이 허용해야 지나간다"
     # front_prop: 이 그림 해시에 사람이 종류를 승인했다면 3/4 반쪽은 면제 — 화풍 반쪽만 본다(TS objectGateRefusal 과 같다).
     if receipt.get("kind") == "front_prop" and read_front_prop_approval(sha):
         sv = (receipt.get("style") or {}).get("verdict")

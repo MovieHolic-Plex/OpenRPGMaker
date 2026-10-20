@@ -252,3 +252,60 @@ v5 시트 **끝에 덧붙인** 손 도트 조각(같은 팔레트 v6·같은 램
 - **적대 검수(2026-10-14)**: 9방(전시실·유물실·선장실·배 주방·화물칸·포 갑판·관중석·모래 마당·검투사 방)을 원본 해상도로 새 검수자가 보고 결함 47건(높음 8). 한 번 고친 것:
   그림 액자 한 중심선·관람 줄이 그림을 가리던 것·진열장 윗면 판·쇠창살 문을 벽면 걸이로(모래 위에 서 있던 문)·물통 거치대와 자루가 발밑 칸보다 7px 떠 있던 것·삼베 자루 색·닻 사슬 고리·고패 지렛대·핀 막대·북채(뿔처럼 보임)·허수아비 얼굴 제거·선체 벽 걸레받이·투기장 모래 반복·관중석 좌석 정렬·사다리와 돛대가 한 기둥으로 보이던 것·주방 탁상 물건이 탁자 앞턱에 그려지던 것(2줄 탁자로).
   남은 것: v5 조각(족쇄·짚 더미·화로)이 사암·돌무더기 벽 위에서 잘 안 보인다, 대리석 바닥 광택 줄 반복(v5 바닥), 관중석 계단 단차(층 높이는 이 칩셋 구조 밖).
+
+## 3/4·품질 재검 — 의자 밖 기물 (2026-10-20, props34)
+
+감사 `~/claude-viz/interior-props-34-audit-1.*` 가 이 칩셋 기물 100종을 FAIL 로 냈지만 사유가 분류 틀 문장이라, 의자 4종을 뺀 96종을 4배·8배로
+알려진 합격 그림(`tiledata/atlas-pick/style-demo-view34/interior-new-*`, 빵 진열대·옷장)과 나란히 다시 판정했다. 독립 검수(Argon)와 맞춰 본 결과
+**실제 위반은 21종**(진열장 재고 변형 13 = 몸통 하나, 투구 선반, 천체 모형, 제어반·슬롯머신(앞면 평칠), 고해실 지붕, 유물 진열장 둘, 선원 침상),
+나머지 75종은 오판(벽걸이·거울·인물·기둥·문·무대 배경처럼 윗면 규칙 면제이거나 윗면이 이미 4행 이상). 판정 원본 `tiledata/hand-interior/pick/work/props34/`
+(`my_verdicts.json`, `argon_verdicts.jsonl`, `argon_after.jsonl`).
+
+- **전체 재굽기(`build_tileset.py`)는 지금 못 돈다** — 공개 기준 정리(2026-10-09)로 `room2.py` 가 여는 `public/assets/atlas-biomes/jungle-chipset.png` 가 저장소에 없다.
+  그래서 고친 그림을 **이미 가진 칸 위에 그대로 덮는다**: `scripts/content/hand-interior/props34/redraw.py`(기준 = `PROPS34_BASE` 커밋의 시트, 다시 돌려도 같다)
+  → `rebake_inplace.py`(사양 cells 의 칸, 움직이는 칸은 띠의 k 번째 프레임, 등록 안 된 칸에 그리면 멈춤). 칸 번호·발밑·통행·정의 JSON 은 그대로라
+  `ensureAtlasBiomeInteriorCurrent` 를 올릴 일이 없다(기존 프로젝트도 같은 시트 그림을 읽는다).
+- 움직이는 기물(제어반·슬롯머신)은 **프레임마다 달라지는 화소는 건드리지 않고** 정지 화소만 고친다(`static_edit`). 천체 모형은 12프레임을 새로 그렸다.
+- interior-plus 조각(유물 진열장 둘·선원 침상)은 원본 `scripts/content/interior-plus/pieces/*.py` 를 고치고 같은 렌더를 덮는다 — `interior-plus/bake.py` 는
+  판정 프로필이 바뀌어 나머지 70조각의 옛 영수증이 무효라 지금 통째로 막힌다(고친 세 조각은 현재 프로필 영수증 PASS).
+- 런타임 확인: `bun tiledata/hand-interior/pick/work/props34/fixture.mts` → `npm run qa:runtime -- --scenario props34-v5-rooms`(이 머신은 `unshare -rn` netns 안에서).
+- **관문:** `rebake_inplace.py` 는 그림(프레임 0, 팔레트 v6)에 object-gate 영수증이 PASS 일 때만 덮는다(보정 프로필 PASS, 또는 현재 미보정 프로필의 PASS = interior-plus `gate_rooms.state` 와 같은 임시 통과). 우회 인자 없음.
+  2026-10-20 결과: 17종 덮음(진열장 13·슬롯머신·유물 진열장 둘·선원 침상), 4종 보류(투구 선반·천체 모형·제어반 = 3/4 판정 갈림 REFER, 고해실 = 화풍 FAIL) —
+  옛 그림 그대로이고 후보 그림은 `tiledata/hand-interior/props34/` 에 있다. 영수증이 PASS 로 바뀌면 `rebake_inplace.py` 를 다시 돌리면 들어간다.
+
+### 2판 — 독립 적대 판정으로 다시 (2026-10-20)
+
+1판 17종은 object-gate 미보정 프로필의 잠정 PASS 만으로 들어갔다(정식 관문 아님). 2판은 21종 전부를 독립 적대 판정자
+Gemini 4 Argon(`claude -p --model gemini-4-argon-high`, 8319/cc)으로 3번씩 보고(과반, 3/4 + 품질 기준표, 좋은 기준 빵 선반·옷장·지구본 /
+나쁜 기준 안락의자, 프롬프트 `tiledata/hand-interior/pick/work/props34/rv/prompt.txt`) 떨어진 것을 다시 그렸다. 1판 진열장 13종은
+윗면만 고쳐 진열품이 「복사한 납작 블록」으로 전부 품질 FAIL 이었다.
+- 그림: 진열장 진열품 `props34/r2_cabinet.py`, 투구 선반·천체 모형·제어반·슬롯머신 `props34/r2_misc.py`(redraw.build 가 덮어쓴다),
+  유물·넓은 진열장 `interior-plus/pieces/museum.py`. 투표 원본 `props34/argon_r2.json` + `rv/argon_*.out`.
+- **굽기 조건은 둘 다**: `rebake_inplace.py` 가 object-gate 현재 프로필 PASS **그리고** `argon_r2.json` 과반 PASS 인 것만 붙인다.
+  작업 중 main 의 판정 프로필이 ee216f→1db03a95(규칙 v9, 여전히 rejected)로 바뀌어 21종을 다시 받았다(`gate-review-r3.log`). 같은 그림의 판정이 프로필마다 뒤집힌다(슬롯머신 PASS→화풍 FAIL, 천체 모형 FAIL→PASS).
+- 반영 13종: 진열장 11(식빵·둥근빵·파이·물약·시험관·단지·책·보석·병·치즈·장난감), 천체 모형, 넓은 진열장.
+- 보류 8종(시트는 #3087 그림 그대로, 후보는 `tiledata/hand-interior/props34/`·`rv/`): Argon 탈락 — 옷감 진열장(천이 16px 에서 천으로 안 읽힘, 0/3)·초 진열장(1/3)·선원 침상(3/4 는 통과,
+  1칸 폭이라 침대로 안 읽힘 — 발자국을 2칸으로 바꿀지는 사람 결정, 후보 그림만 `rv/ship_bunk_r5_candidate.png`). object-gate 탈락(Argon 은 통과) — 슬롯머신·고해실(화풍 FAIL),
+  투구 선반·제어반·유물 진열장(REFER, 사람 확인 대기 — #3101 의 보류 판정 사람 검토 화면 대상). 유물 진열장 원본 함수는 main 그림으로 되돌렸다(후보 `rv/relic_cabinet_r2_candidate.png`).
+- 3판(감독 결정, 2026-10-20): 기존 16×48 선원 침상은 그대로 두고 2칸 폭 새 기물 `ship bunk 2w`(32×48)를 그렸다 — Argon 3/3 통과, object-gate 1db03a95 는 REFER(독립 눈 3/12 「정면 입면」).
+  REFER 는 사람 검토(`npm run harness -- object-gate serve-holds` → :18323)에서 허용되기 전에는 굽지 않으므로 조각 등록·배 선실(crew) 예제 교체는 넣지 않았다.
+  후보는 `tiledata/hand-interior/pick/work/props34/rv/ship_bunk_2w_candidate.{png,diff}` — 허용되면 diff 를 ship.py 에 붙이고 plans/ship.json 의 (21,12)·(22,12) `ship bunk` 둘을 (21,12) `ship bunk 2w` 하나로 바꾼 뒤
+  `rooms_json.py` → `bake.py` → `templates.mts`. 옷감(나선 두루마리 끝)·초(상자 속 심지 점) 마지막 시도는 둘 다 Argon 0/3 이라 중단(`rv/r2_cabinet_r4_attempt.py.txt`, `rv/c10.png`).
+- object-gate 는 보정 프로필이 없어(미보정) 정식 영수증이 불가능하다. 보정되면 이 21종을 다시 받아야 한다.
+
+## 퍼즐 방 조각 — interior-plus `puzzle` (2026-10-20)
+
+`scripts/content/interior-plus/pieces/puzzle.py` (카테고리 `puzzle` = 「퍼즐 방」). 칸은 7157부터 덧붙였다(핀 덧붙이기 전용, 옛 칸 0개 변경 — 굽기 대조).
+
+- **무너지는 판자**: `plank bridge` · `plank bridge cracked` · `plank bridge falling 1` · `plank bridge falling 2`(flat, 1칸). 구멍 칸 위에 얹어 쓴다.
+- **심연 오토타일** `abyss`(47 마스크, 비트 N=1 NE=2 E=4 SE=8 S=16 SW=32 W=64 NW=128 = 그 이웃도 구멍, `iplib.pit_reduce` 로 47개로 줄임):
+  사양 `pits.abyss = {ko, masks, tiles}`(masks[i] ↔ tiles[i]), 정의 tileGroup `hand-interior:pit:abyss`, 칸은 통행 불가·층 lower·역할 terrain.
+  그림: 먼 벽(북이 바닥) 바위 낯 15줄 — 남도 바닥인 한 칸 높이 구멍은 9줄로 눌러 그린다, 옆벽 4px 띠, 가까운 입술(남이 바닥), 안모서리 홈. 바위 램프 `rk` 는 v6 팔레트의 기존 색만 쓴다.
+- **저울 추**: `weight stand`(빈 받침, 놋 홈) → `weight stand 1`…`5` 가벼운 순(놋 2 · 쇠 2 · 납 원통 1). 3~5 는 2칸 높이.
+- **빙판** `REG.floor('ice')` 8×6 주기(빈틈 없이 이어짐, 눈 매트·대리석과 다른 푸른 유리 결) + 정의 `slideTiles = {칸: 'ice'}`(굽기가 base 아래 키만 남기고 다시 쓴다).
+- **경비 등불 빛** `guard lantern light`(flat, 반투명 따뜻한 빛, 줄로 놓으면 이어진다). 끝 조각은 화풍 4회 불합격이라 뺐다.
+- **관문 그림**: 기물은 `gate_export.py pending`. 바닥 `ice` 는 지형 조각 그림 `ground-{fid}`(gate_rooms.GROUND, kind terrain)로 덮는다 — 얼음 동굴 방 `room-rock-ice` 는 3/4 불합격이지만
+  「다른 통과 그림이 대신 덮음」으로 막지 않는다(그 그림이 덮는 바닥·벽면이 전부 통과 그림에 덮일 때만). 구멍 칸은 `puzzle_scene.PIT_GRIDS` 의 지형 그림(abyss-b 18 + abyss-c 29 마스크)이
+  **통과한 그림의 마스크 합집합**으로만 덮인다. 칸을 한 화소라도 다시 그리면 그림 해시가 바뀌어 다시 받아야 한다.
+- **재보정 후 영수증 필요(통과 아님)**: 옛 판정 프로필 영수증은 무효다. 현재 프로필 영수증이 없지만 핀 칸의 main 시트 화소와 지금 그림이 같은 조각은 「재보정 후 영수증 필요」 묶음으로 따로 센다(`gate_rooms._shipped_unchanged`). 이미 main 에 실려 있어 굽기는 그 칸을 화소 그대로 다시 쓰고 목록을 `!!` 줄로 크게 찍는다 — 통과·면제로 세지 않고, 다른 그림을 「덮는」 근거로도 쓰지 않는다. 새 것·바뀐 것은 이 묶음에 들 수 없다(현재 프로필 PASS 필요). 2026-10-20 폐지 전에는 「소급 면제」로 셌다.
+- 모의 장면·GIF: `python3 scripts/content/interior-plus/puzzle_scene.py <out>` → scene.png · plank.gif · pit47.png · abyss-*.png.

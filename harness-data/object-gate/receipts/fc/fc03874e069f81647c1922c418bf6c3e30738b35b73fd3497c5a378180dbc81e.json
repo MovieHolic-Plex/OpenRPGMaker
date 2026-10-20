@@ -1,0 +1,381 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fc03874e069f81647c1922c418bf6c3e30738b35b73fd3497c5a378180dbc81e",
+ "width": 32,
+ "height": 48,
+ "kind": "frame",
+ "name": "shop stationery rack",
+ "label": "modern_city_interior/shop-stationery-rack",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 19,
+  "tileColorsP90": 26,
+  "darkV5": 57,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rack top panel",
+      "rows": "9-13",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "sign on top (blue panel with white label)",
+      "rows": "0-7",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stationery goods on shelves (books, pens, items)",
+      "rows": "16-40",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The rack body (rows 8-46, 32 px wide) opens with a top band at rows 9-13. It shades from b0b4b9 to dce2e8 and ends in a white front-edge line at row 13. Rows 14-15 follow as lighter and then darker eave shadow, and the open shelf front face runs below that for about 31 rows. The inner shelf boards show the same pattern at rows 23-25 and 33-35: a white edge line, then shadow. The blue sign at rows 0-7 and the goods on the shelves are decor. The top band is 5 rows deep and is separated from the front face by an edge line and shadow, so I read it as a top surface rather than a rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 18 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well, both of the same kind. Near-flat coverage is 0%, so there are no large single-colour fills. The cabinet frame and shelves show several light-to-dark grey steps, and the shelf contents (books, jars, boxes) are small clusters in varied tones. The sign on top has an inner highlight and a darker edge. None of the dark edge pixels are neutral (0%), so the outline is a dark blue-grey tint of the neighbouring material, not a black sticker line. It is a bit cleaner and less grainy than the stall or well, with little speckle on the frame, so texture is 'some' rather than 'rich'. Overall it holds up beside the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21312
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top sign/header board with blue panel",
+      "rows": "0-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rack top panel",
+      "rows": "9-13",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "upper shelf board",
+      "rows": "23-25",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "24-25"
+     },
+     {
+      "part": "middle shelf board",
+      "rows": "33-35",
+      "evidence": "a",
+      "front_edge_line_row": 33,
+      "eave_shadow_rows": "34-35"
+     },
+     {
+      "part": "bottom shelf board",
+      "rows": "41-42",
+      "evidence": "a",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": "42-44"
+     },
+     {
+      "part": "books, boxes and stationery on shelves",
+      "rows": "16-40",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main rack top is a graded band at rows 9-13 (gray, light, then a white front-edge line at row 13) followed by darker shadow rows 14-15. That is a 5-row top surface with the open shelved front face below it, about rows 14-46. Each shelf board repeats the pattern of a white edge line plus 2 shadow rows (rows 23-25 and 33-35). The sign on top and the items on the shelves are decor. The silhouette is 32 px wide from row 8 down, with no isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 18 visible tones per 16x16 tile, level with prop-stall-cheese (17) and prop-well-roofed (20) and well above prop-hedge (9). Near-flat coverage is 0%, so there are no 5x5 flat fills. Dark edge pixels are 0% neutral, so the outline is a tinted dark version of the neighbouring material (blue-grey on the white shelf frame) rather than a black sticker line. The white and grey shelf frame shows about 5 lightness steps, and the shelves are filled with small multicoloured items (books, boxes, bottles) that give clustered detail like the cheese stall's goods. The blue sign on top is a fairly simple block, but it is small and has a highlight and shadow edge. It is slightly cleaner and less grainy than the best references but sits within their range on the primary facts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19220
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "blue sign on top of the rack",
+      "rows": "0-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rack top board",
+      "rows": "9-13",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "shelf boards (upper and middle)",
+      "rows": "23-25, 33-35",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom shelf and base",
+      "rows": "41-46",
+      "evidence": "none",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The rack body is 32px wide and runs from row 8 to row 46. At the top, rows 9-13 form a 5-row board that gets lighter toward the front. It ends in a white front-edge line at row 13, followed by darker shadow at rows 14-15 (L=191, then 124). That matches the cabinet-top reference, so I read it as a top surface rather than a flat cornice strip. Below it the front face runs from row 16 to row 46, about 31 rows, and holds three shelf tiers with books and goods. Each inner shelf is a 1-row white lip with 1-2 rows of shadow, so the shelves are thin lips rather than visible top faces. The 16px blue sign on top (rows 0-8) is decor placed on the rack. There is no side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 18 visible tones per 16x16 tile, level with prop-stall-cheese (17) and prop-well-roofed (20) and well above prop-hedge (9). Near-flat coverage is 0%, so the shelf body has no 5x5 flat fills. The rack has several rows of small multi-coloured items such as jars, books and boxes, and these supply the grain and clusters. Dark edge pixels are 0% neutral, so the outline leans toward a tinted dark blue-grey that follows the adjacent material and is not a black sticker line. The body ramp (white, light grey, mid, dark) is slightly shallower than the references' 5-6 steps, but an artist would accept the piece next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19767
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "blue sign on top of rack",
+      "rows": "0-7",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rack top board",
+      "rows": "9-13",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "shelf board 1",
+      "rows": "23-25",
+      "evidence": "none",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "24-25"
+     },
+     {
+      "part": "shelf board 2",
+      "rows": "33-35",
+      "evidence": "none",
+      "front_edge_line_row": 33,
+      "eave_shadow_rows": "34-35"
+     },
+     {
+      "part": "bottom shelf and base",
+      "rows": "41-46",
+      "evidence": "none",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main rack body spans rows 8-46 at width 32. Its top band, rows 9-13, grades from mid-gray to near-white and ends in a bright white front-edge line at row 13. Rows 14-15 below it are a darker eave shadow (L=124 at row 15). That gives a 5-row top surface, with the shelved front face of about 33 rows beneath it. The inner shelf boards use the same white edge line plus shadow but are only thin 1-3 row strips. The blue sign at rows 0-7 is narrower (width 16), sits above the rack, and is treated as decor. The goods inside are drawn face-on. Overall this reads as three_quarter, though the top band is fairly thin."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a standing shelf prop, the same kind as the stall and well references. Measured visible tones per tile are 18, against 17 for the cheese stall and 20 for the roofed well, so it is level with the richest references. Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, so the outline carries a tint (a dark blue-grey beside the pale frame) rather than a sticker-style black line. By eye the frame has about 4 lightness steps (white, light grey, mid grey, dark). The shelves are broken up by many small multicolour items (books, boxes, tubes) with highlights, and the sign on top has a lighter inner bar. This is slightly fewer steps than Beodeul's 5-6 per material, and the frame is a little plain. The overall density and shading craft would still sit acceptably beside the cheese stall and the well.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23316
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.182Z",
+ "cells": {
+  "16": [
+   "06740900cb3b6d86",
+   "3c58a75b8e829d81",
+   "73d3ee252d3fc11b",
+   "971531debc63ed2d",
+   "b236318dd92e694c",
+   "d257a4768b0c5f0c"
+  ],
+  "24": [
+   "127ec52d42162e14",
+   "17816033ef389b8d",
+   "4b770fa8e558a87b",
+   "5ba073da790c2ee0",
+   "6698b0b6df73d067",
+   "80d9a7ac2be57213",
+   "8e9ae80af600989a",
+   "9785cf9c4b86e25a",
+   "9a52cacf6e0580f8",
+   "9f140d10993966f9",
+   "e891adf6c677cfd1",
+   "ec0e8a28a7f467dc"
+  ],
+  "32": [
+   "0667a94cf6133440",
+   "29a5804e121190cb",
+   "70f1a929cfd1d488",
+   "b1a8c3cc787fac1d"
+  ],
+  "48": [
+   "1cfa7763094e9628",
+   "820da4ebe13669c7",
+   "dc2a9598eaf0cb31"
+  ]
+ }
+}

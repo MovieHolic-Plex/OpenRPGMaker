@@ -339,6 +339,52 @@ def g_ashtray(c):
     px(c, 4, 7, K('shiro', 4)); px(c, 5, 6, K('shiro', 3))
 
 
+# ══ seats34 (3/4 다시 그리기) ══
+# seats34 group A — 코드 손 도트(행 문자열 격자). 글자 → (램프, 단: 0 = 가장 어두운 단). 빛은 왼위(윗면 밝게·앞면 중간·그늘 쪽 어둡게),
+# 거의 검은 윤곽은 바깥 실루엣에만. '.' = 투명. 격자는 srcA/designs.py 에서 만든다.
+from ikit import RAMPS as _RAMPS34
+
+
+def _g34(c, layers):
+    for rows, leg, ox, oy in layers:
+        for j, r in enumerate(rows):
+            for i, ch in enumerate(r):
+                if ch not in '. ':
+                    m, t = leg[ch]; c.P(ox + i, oy + j, K(m, t - len(_RAMPS34[m]) // 2))
+
+_S34_0_0 = [
+    '................',
+    '...OOOOOOOOOO...',
+    '..OCBBBCCCCCCO..',
+    '.OCBBBCCCCCCDDO.',
+    '.OCBBCCCCCCCDDO.',
+    '.OCCCCCCCCCCDDO.',
+    '.OCCCCCZYCCCDDO.',
+    '.OCCCCCCCCCCDDO.',
+    '.OCCCCCCCCCDDDO.',
+    '.ODCCCCCCCDDDDO.',
+    '.ODDDDDDDDDDDDO.',
+    '.ODDDDDDDDDDDEO.',
+    '..ODDDDDDDDDEO..',
+    '...OOOOOOOOOO...',
+    '................',
+    '................',
+]
+_S34_0_0L = {'B': ('kon', 3), 'C': ('kon', 2), 'D': ('kon', 1), 'E': ('kon', 0), 'O': ('sumi', 0), 'Y': ('aka', 1), 'Z': ('aka', 3)}
+_S34_0 = [(_S34_0_0, _S34_0_0L, 0, 0)]   # zabuton (16x16)
+
+
+PENDING_SEATS34 = {
+    'zabuton': (lambda c, _l=_S34_0: _g34(c, _l)),
+}
+SEATS34_PASS = set()          # object-gate PASS 영수증을 받은 id 만 — 이 id 들만 굽는 그림을 바꾼다
+for _k in SEATS34_PASS: R.objs[_k]['draw'] = PENDING_SEATS34[_k]
+# ══ /seats34 ══
+
+
+
+S34_STUDY2 = __import__('seat34').apply_study2(R)   # 사람 합격(2026-10-20) 앉는 기물 — 관문 pass 영수증 있는 것만 바꾼다
+
 def build(): return R.build()
 def selftest(): return R.selftest()
 

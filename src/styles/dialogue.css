@@ -130,15 +130,20 @@
   padding: 0;
 }
 
+/* 선택지 창은 내용에 맞춰 자란다. --runtime-choice-panel-height 는 「최소」 높이이고,
+   선택지가 그보다 길면(480×270 의 25% = 67px 에 질문 + 3지선다는 안 들어간다) 창이 위로 늘어난다.
+   상한은 보이는 화면에서 8px 여백을 뺀 높이 — 그것마저 넘을 때만 목록이 스크롤된다(최후 수단). */
 .dialogue-overlay.choices-active.position-bottom {
-  height: var(--runtime-choice-panel-height);
+  height: auto;
   min-height: var(--runtime-choice-panel-height);
+  max-height: calc(100% - 8px);
   padding: 0 10px 8px;
 }
 
 .dialogue-overlay.choices-active.position-top {
-  height: var(--runtime-choice-panel-height);
+  height: auto;
   min-height: var(--runtime-choice-panel-height);
+  max-height: calc(100% - 8px);
   padding: 8px 10px 0;
 }
 
@@ -202,7 +207,11 @@
 
 .dialogue-overlay.choices-active .dialogue-box.choices {
   cursor: default;
-  min-height: 100%;
+  /* 최소 높이까지는 채우고(grow), 상한에 걸리면 줄어든다(shrink → 목록 스크롤). */
+  flex: 1 1 auto;
+  height: auto;
+  max-height: 100%;
+  min-height: 0;
   overflow: hidden;
   padding: 5px;
 }
@@ -217,6 +226,8 @@
   flex-direction: column;
   gap: 1px;
   min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
   pointer-events: auto;
   width: 100%;
 }

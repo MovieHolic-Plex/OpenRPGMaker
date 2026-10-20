@@ -1,0 +1,258 @@
+[
+ {
+  "id": "q001",
+  "kind": "tall_furniture",
+  "top_rows": 0,
+  "front_rows": 34,
+  "label": "bad",
+  "why": "Rows 1-10 are a flat cornice band with no front-edge line; doors face-on, front elevation."
+ },
+ {
+  "id": "q002",
+  "kind": "other",
+  "top_rows": 0,
+  "front_rows": 12,
+  "label": "bad",
+  "why": "Left-facing side view of a scooter; no readable top surface."
+ },
+ {
+  "id": "q003",
+  "kind": "container",
+  "top_rows": 5,
+  "front_rows": 5,
+  "label": "good",
+  "why": "Water-filled bucket ellipses span 5 rows each (rows 0-4, 6-10), front body rows 11-15."
+ },
+ {
+  "id": "q004",
+  "kind": "figure",
+  "top_rows": 0,
+  "front_rows": 22,
+  "label": "bad",
+  "why": "Red dome and white bulb pedestal are rounded front elevation; no top surface."
+ },
+ {
+  "id": "q005",
+  "kind": "other",
+  "top_rows": 0,
+  "front_rows": 18,
+  "label": "bad",
+  "why": "Oval mirror face-on, only rounded upper frame; rows 27-31 base, no top."
+ },
+ {
+  "id": "q006",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Wall-mounted shield rack panel."
+ },
+ {
+  "id": "q007",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Wall lever."
+ },
+ {
+  "id": "q008",
+  "kind": "low_furniture",
+  "top_rows": 9,
+  "front_rows": 5,
+  "label": "good",
+  "why": "Wood top rows 1-9, edge row 10, apron+legs rows 10-14."
+ },
+ {
+  "id": "q009",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Rug."
+ },
+ {
+  "id": "q010",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Framed portrait, wall-mounted."
+ },
+ {
+  "id": "q011",
+  "kind": "low_furniture",
+  "top_rows": 7,
+  "front_rows": 15,
+  "label": "good",
+  "why": "Top surface rows 1-7 with edge line, drawer front rows 8-22."
+ },
+ {
+  "id": "q012",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Floor tile."
+ },
+ {
+  "id": "q013",
+  "kind": "box",
+  "top_rows": 2,
+  "front_rows": 10,
+  "label": "bad",
+  "why": "Barrel, crate and sack pile drawn mostly front elevation; lids only 1-2 rows."
+ },
+ {
+  "id": "q014",
+  "kind": "low_furniture",
+  "top_rows": 6,
+  "front_rows": 17,
+  "label": "good",
+  "why": "Pink top rows 9-14 under mirror, drawer front rows 15-31."
+ },
+ {
+  "id": "q015",
+  "kind": "other",
+  "top_rows": 0,
+  "front_rows": 40,
+  "label": "bad",
+  "why": "Beam, steps and mats drawn face-on in front elevation."
+ },
+ {
+  "id": "q016",
+  "kind": "figure",
+  "top_rows": 2,
+  "front_rows": 36,
+  "label": "bad",
+  "why": "Plinth top is only ~2 rows (rows 10-11) then front face; statue front elevation."
+ },
+ {
+  "id": "q017",
+  "kind": "column",
+  "top_rows": 1,
+  "front_rows": 28,
+  "label": "bad",
+  "why": "Stacked skulls front elevation; no elliptical cap."
+ },
+ {
+  "id": "q018",
+  "kind": "low_furniture",
+  "top_rows": 9,
+  "front_rows": 3,
+  "label": "unsure",
+  "why": "Cloth surface rows 3-12 reads as seen from above but front edge only ~3 rows."
+ },
+ {
+  "id": "q019",
+  "kind": "structure",
+  "top_rows": 40,
+  "front_rows": 18,
+  "label": "good",
+  "why": "Conical thatch roof slope rows ~0-43, front wall with doorway rows ~44-62."
+ },
+ {
+  "id": "q020",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Small scroll/book prop lying flat."
+ },
+ {
+  "id": "q021",
+  "kind": "other",
+  "top_rows": 1,
+  "front_rows": 12,
+  "label": "bad",
+  "why": "Flask and tube drawn front elevation, no top surface."
+ },
+ {
+  "id": "q022",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Wall shelf with bottles."
+ },
+ {
+  "id": "q023",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Descending stairs, terrain feature."
+ },
+ {
+  "id": "q024",
+  "kind": "frame",
+  "top_rows": 2,
+  "front_rows": 24,
+  "label": "bad",
+  "why": "Cropped fence post/frame fragment face-on, cap only ~2 rows."
+ },
+ {
+  "id": "q025",
+  "kind": "structure",
+  "top_rows": 38,
+  "front_rows": 36,
+  "label": "good",
+  "why": "Large sloped tile roof rows ~3-41, plank wall front rows 42-79."
+ },
+ {
+  "id": "q026",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Concrete stairs, terrain."
+ },
+ {
+  "id": "q027",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Wall fragment with door opening."
+ },
+ {
+  "id": "q028",
+  "kind": "column",
+  "top_rows": 5,
+  "front_rows": 23,
+  "label": "good",
+  "why": "Capital ellipse rows 1-5 with white top, shaft rows 7-29."
+ },
+ {
+  "id": "q029",
+  "kind": "low_furniture",
+  "top_rows": 9,
+  "front_rows": 11,
+  "label": "good",
+  "why": "Fish-laden top rows 2-10, edge/apron rows 11-14, legs to row 21."
+ },
+ {
+  "id": "q030",
+  "kind": "structure",
+  "top_rows": 54,
+  "front_rows": 36,
+  "label": "good",
+  "why": "Big tiled roof with dormer rows 0-54, timber wall with doors rows 55-91."
+ },
+ {
+  "id": "q031",
+  "kind": "low_furniture",
+  "top_rows": 7,
+  "front_rows": 6,
+  "label": "good",
+  "why": "White top with basin rows 2-8, door front rows 9-14."
+ },
+ {
+  "id": "q032",
+  "kind": "column",
+  "top_rows": 0,
+  "front_rows": 36,
+  "label": "bad",
+  "why": "Green cap is a dome rounded on upper edge only; clock drum face-on."
+ }
+]

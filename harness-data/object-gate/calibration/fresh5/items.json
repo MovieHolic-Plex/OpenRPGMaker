@@ -1,0 +1,782 @@
+[
+ {
+  "name": "s001_interior",
+  "kind": "figure",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-other",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 interior/hand-interior:plinth amphora. A: good/figure — Pedestal top slab rows 12-18 light top, front rows 19-29; vase on it. | B: unsure/figure — Pedestal top band rows 12-18 ending in edge line, but jar mouth shows no opening and kind is ambiguous. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "s002_modern_city_interior",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 modern_city_interior/jumbo-lobby-tree-bench. A: good/other — Round planter-bench ring: top ellipse ~rows 44-61, front wall ~rows 62-76. | B: good/seat — Round bench ring around tree: elliptical wood top ~13 rows (back rim to front), plank front ~9 rows. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "s003_steampunk",
+  "kind": "column",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh5-blind-other",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 steampunk/sp-hydrant. A: bad/column — Hydrant head is a dome rounded only on its upper edge (rows 1-5); no elliptical cap, under 4 top rows. | B: bad/column — Dome head rounded on upper edge only, rows 1-4 head then body: front elevation, no cap ellipse."
+ },
+ {
+  "name": "s004_steampunk",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-other",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 steampunk/sp-drafting-table. A: good/low_furniture — Tilted drafting top rows 1-13 ending in front edge, drawer+apron rows 14-19 and legs below. | B: good/low_furniture — Sloped drafting board rows 2-14 with items, drawer apron rows 15-19 and legs below."
+ },
+ {
+  "name": "s006_modern_city",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 modern_city/mc-in-mci-chair-office-s. A: good/seat — Seat top rows 12-19 ending in edge, front rows 20-22; backrest exempt. | B: good/seat — Seat cushion rows 12-18 top, light edge row 19 and dark front rows 19-22; backrest exempt."
+ },
+ {
+  "name": "s007_wizarding",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh5-blind-other",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 wizarding/wz-nv-wand-deep-display-window-recess. A: bad/tall_furniture — Front-elevation display window: 1-row highlight at row 1, then straight frame and panes, no top surface. | B: bad/tall_furniture — Face-on display window: wooden header rows 1-10 and glass rows 11-24 are vertical faces, no top edge line."
+ },
+ {
+  "name": "s008_prehistoric",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-other",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 prehistoric/ph-shaman-altar. A: good/low_furniture — Light slab top rows 4-8 with items, dark front face rows 9-13. | B: good/low_furniture — Altar slab top rows 3-8 with skull/bowl, front face rows 9-12."
+ },
+ {
+  "name": "s009_modern_city",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-other",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 modern_city/mc-veh-sedan-e-beige-l. A: unsure/other — Car mostly side view; tapered roof rows 1-7 above windows, body side rows 13-33; unclear 3/4. | B: good/other — Roof/hood/trunk planes rows 1-14 over side body rows 15-33 read as 3/4 car. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "s011_modern_city",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh5-blind-other",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 modern_city/mc-in-r13-jumbo-hosp-surgical-rig. A: bad/low_furniture — Operating table is a front elevation: only rows 29-30 light edge, front rows 31-46 plus pedestal. | B: bad/low_furniture — Operating table is face-on capsule: only rows 29-31 light strip then front panel to row 42, reads front elevation."
+ },
+ {
+  "name": "s013_snow",
+  "kind": "structure",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-other",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 snow/sn-smokehouse. A: good/structure — Snow roof slope rows 1-14, wall/doors rows 15-39. | B: good/structure — Snow roof plane rows 1-11 with edge line, wall rows 16-38."
+ },
+ {
+  "name": "s014_modern_city_interior",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 modern_city_interior/mci-chair-wood-s. A: good/seat — Seat top rows 16-23 with edge line, front rows 24-26; backrest exempt. | B: good/seat — Seat top rows 16-22, light edge 23 and front rows 23-26; back exempt."
+ },
+ {
+  "name": "s015_gothic",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 gothic/gm-pew. A: bad/seat — Pew seat band rows 9-13 then only 2 dark front rows 14-15; reads as front elevation. | B: bad/seat — Face-on pew: backrest rows 0-8, seat band rows 9-13 with only 2 dark front rows, no readable seat top."
+ },
+ {
+  "name": "s017_sengoku",
+  "kind": "structure",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 sengoku/se-bench-parasol. A: good/structure — Parasol roof plane rows 1-12; platform top rows 33-38, front rows 39-41. | B: good/low_furniture — Platform top rows 33-38 ending in edge line, front rows 39-42; sloped parasol roof rows 1-12. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "s018_prehistoric",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 prehistoric/ph-stone-seat. A: bad/seat — Reads as a rounded boulder; no readable seat surface or front face. | B: unsure/seat — Rounded rock-like stone seat: lighter top rows 1-5, darker front rows 6-10 but no clear edge line. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "s019_campus",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 campus/mc-in-mc-cafe-stool. A: good/seat — Round cushion ellipse rows 1-4 lit top, cushion side rows 5-7, then pole and base. | B: good/seat — Round cushion ellipse rows 1-6, cushion edge rows 5-7 plus pole and base rows 8-12."
+ },
+ {
+  "name": "s020_sengoku",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-other",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 sengoku/se-in-shop-counter. A: good/low_furniture — Counter top rows 1-6 with ledger, slatted front rows 7-16. | B: good/low_furniture — Counter top rows 1-5 with ledger, front lattice panel rows 7-16."
+ },
+ {
+  "name": "s022_interior",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 interior/hand-interior:curule seat. A: bad/seat — Folding chair in front elevation: purple back rows 0-8, no seat top, X legs. | B: bad/seat — Director chair: seat is a 2-row gold strip (rows 9-10) under a face-on purple back, X legs; no seat top."
+ },
+ {
+  "name": "s023_jp_city_interior",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 jp_city_interior/sh-dough-bench. A: good/low_furniture — Dough bench top rows 2-9 with dough lumps, edge line row 10, drawer front rows 11-15. | B: good/low_furniture — Top with dough lumps rows 2-9, edge line row 10, drawer front rows 11-15."
+ },
+ {
+  "name": "s024_sf",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-other",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 sf/sf-vending-int. A: good/tall_furniture — Vending machine top gradient rows 1-5 ending in edge line row 6, front rows 7-31. | B: good/tall_furniture — Top band rows 1-5 ending in edge line row 6, front face rows 7-30."
+ },
+ {
+  "name": "s026_desert",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-other",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 desert/de-sacks-spice. A: good/container — Right sack opening with contents rows 4-8, front rows 9-12; left sack opening rows 0-3. | B: good/container — Two open sacks with visible contents ellipses ~4-5 rows (left rows 1-4, right rows 4-8) above sack bodies."
+ },
+ {
+  "name": "s027_jp_city_interior",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 jp_city_interior/sc-lab-bench. A: good/low_furniture — Lab bench top rows 2-8 with edge line row 9, front rows 10-14. | B: good/low_furniture — Top with sink rows 2-8, edge row 9, wood front rows 10-14."
+ },
+ {
+  "name": "s028_jp_city_interior",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 jp_city_interior/bath-stool. A: good/seat — Seat cap rows 4-7, front/legs rows 8-13; exactly at minimum. | B: good/seat — Round seat ellipse rows 4-7, front rim row 8 and legs rows 9-13; top exactly at minimum."
+ },
+ {
+  "name": "s029_interior",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 interior/hand-interior:bench 3. A: bad/seat — Plank top rows 1-5 but front edge only rows 6-7 plus thin legs; front under 3 rows. | B: good/seat — Seat top rows 1-5 with edge line, apron rows 6-7 plus legs rows 8-12. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "s030_interior",
+  "kind": "frame",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh5-blind-other",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 interior/hand-interior:herb drying rack. A: bad/frame — Drying rack drawn in flat front elevation, no top beams. | B: skip/front_prop — Herb drying rack, flat front frame with shelves; front_prop exempt. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "s031_modern_city",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 modern_city/mc-in-r11-clinic-dental-chair. A: good/seat — Dental chair light top rows 11-19, edge at row 20, front rows 20-24. | B: good/seat — Teal body top rows 11-19 and front band rows 20-24; reads as 3/4 despite odd shape."
+ },
+ {
+  "name": "s032_pirate",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 pirate/pi-table-stools. A: good/low_furniture — Round table top ellipse rows 1-8, apron rows 9-11 plus legs/stools. | B: good/low_furniture — Round table top ellipse rows 1-8, rim rows 9-11, legs below; stools with tops."
+ },
+ {
+  "name": "s034_sky",
+  "kind": "structure",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-other",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 sky/si-observatory. A: unsure/structure — Green dome is a large sloped roof but terrace floor shows only ~3 rows; tower front rows ~50-95. | B: good/structure — Observatory: flat roof deck with dome rows ~25-46 and parapet, brick facade with door rows ~54-92. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "s035_pirate",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh5-blind-other",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 pirate/pi-lobster-traps. A: unsure/box — Stacked slatted traps: lid rows 0-4 and 9-11, fronts rows 5-8 and 12-15; each front only 4 rows, hard to read. | B: unsure/box — Upper trap lid rows 0-4, front rows 5-8; lower trap lid 9-11, front 12-15; each front under 8 and view partly frontal. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "s036_interior",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 interior/hand-interior:pew. A: good/seat — Cushion top gradient rows 2-5 ending in edge row 6, front panel rows 7-20. | B: unsure/seat — Red cushion band rows 1-5 then tan band 7-9 and panel 10-18; reads partly as front elevation, seat top unclear. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "s037_campus",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 campus/mc-bench-stone. A: good/seat — Stone bench top rows 1-7, front rows 8-10 plus leg rows 11-12. | B: good/seat — Seat top rows 1-7 with edge line, front rows 8-13."
+ },
+ {
+  "name": "s038_sky",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-other",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 sky/si-basin. A: good/low_furniture — Basin+table top rows 3-8 ending in edge line, apron and legs rows 9-14. | B: unsure/low_furniture — Washstand: table top with basin rows 3-8, edge+front only rows 8-10 plus legs. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "s039_sky",
+  "kind": "structure",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-other",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 sky/si-shrine. A: good/structure — Large sloped teal roof about 40 rows over a wall front of about 25 rows with door. | B: good/structure — Sloped tile roof plane about rows 4-45 over front facade and steps below."
+ },
+ {
+  "name": "s040_jp_city_interior",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 jp_city_interior/ox-bar-stool. A: good/seat — Stool cap ellipse rows 0-6 (widens then narrows), side rows 7-9, pedestal below. | B: good/round_body — Disc seat ellipse rows 1-5 with side rows 6-8, pole and base rows 9-15. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "s041_sf",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-other",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 sf/sf-bed-single. A: good/low_furniture — Pillow/mattress/blanket top rows 2-10, front board rows 11-14. | B: good/low_furniture — Mattress/pillow top rows 1-10, front panel rows 11-15."
+ },
+ {
+  "name": "s042_sengoku",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-other",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 sengoku/se-in-writing-desk. A: good/low_furniture — Desk top rows 1-6 ending in light edge, front rows 7-10. | B: good/low_furniture — Low desk: top rows 1-6 with paper/ink, front rows 7-10."
+ },
+ {
+  "name": "s043_modern_city",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 modern_city/mc-prop-bench-b. A: bad/seat — Bench seat only rows 6-7 top and 1-row front row 8, backrest face-on; front elevation. | B: bad/seat — Side-elevation bench: backrest rows 1-4, seat slat rows 6-8 only 3 rows, no seat top."
+ },
+ {
+  "name": "s044_interior",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 interior/hand-interior:pew E2. A: unsure/seat — East pew: red cushion panels rows 12-18/21-27 may be seat tops or face-on panels; front box rows 28-38. | B: bad/seat — East-facing pew drawn as vertical backrest and face-on cushion panels rows 5-27, no seat top, only 2-row strip rows 29-30. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "s045_snow",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-other",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 snow/sn-hearth. A: good/tall_furniture — Shelf top with items rows 1-11, stone front with firebox rows 12-31. | B: good/tall_furniture — Mantel top rows 1-11 with edge line, fireplace front rows 12-31."
+ },
+ {
+  "name": "s047_modern_city",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 modern_city/mc-in-r11-svc-barber-chair. A: bad/seat — Barber chair seat top only rows 11-13 (3 rows) with front rows 14-19; backrest block mirrors it, front elevation. | B: bad/seat — Seat top only about rows 11-13 (3 rows) before front rows 14-19; below minimum of 4."
+ },
+ {
+  "name": "s048_desert",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 desert/de-bench-stone. A: good/seat — Bench top rows 1-6 with front edge, front rows 7-9 and legs 10-13. | B: good/seat — Bench top rows 1-5 with edge line row 6, apron rows 7-9, legs rows 10-13."
+ },
+ {
+  "name": "s049_interior",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 interior/hand-interior:stone bench. A: good/seat — Stool top rows 2-7, front rows 8-11. | B: good/seat — Seat top rows 2-7 with edge line, front rows 8-13."
+ },
+ {
+  "name": "s050_sf",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 sf/sf-lab-bench. A: good/low_furniture — White top rows 2-9 with edge line, drawer front rows 10-14. | B: good/low_furniture — Lab bench: white top with items rows 1-9, drawer front rows 10-14."
+ },
+ {
+  "name": "s051_wizarding",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 wizarding/wz-furn-chair-back-up. A: bad/seat — Chair seat is rows 9-11 (about 2 top rows), legs below; backrest face-on. | B: bad/seat — Front-elevation chair: backrest rows 0-8, seat highlight about 1-2 rows, no seat top."
+ },
+ {
+  "name": "s052_snow",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 snow/sn-fishing-spot. A: skip/skip — Ice hole scene with rod, mostly flat decal. | B: unsure/seat — Ice hole plus rod plus barrel seat (top ~rows 4-7), composite scene, hard to judge. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "s053_pirate",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-other",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 pirate/pi-chest-big. A: good/box — Domed lid rows 1-7 above gold rim, body rows 8-15; meets 4/8 literally. | B: good/box — Domed lid rows 2-7 ending in gold edge row 7, body rows 8-15 (exactly 8)."
+ },
+ {
+  "name": "s054_sf",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 sf/sf-captain-chair. A: good/seat — Seat cushion rows 8-11, front rows 12-14; backrest and arms exempt. | B: good/seat — Cushion top rows 8-11, front rows 12-14; tall back and armrests exempt, but front is only 3 rows."
+ },
+ {
+  "name": "s055_gothic",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 gothic/gm-museum-bench. A: good/seat — Tufted bench top rows 2-7, front rows 8-10 plus 2 leg rows. | B: good/seat — Teal tufted cushion top rows 2-7, front rows 8-10 plus legs rows 11-13."
+ },
+ {
+  "name": "s057_jp_city_interior",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 jp_city_interior/pb-waiting-sofa-n. A: bad/seat — Face-on sofa, flat blue rows 12-25, no seat top visible. | B: bad/seat — Rows 12-25 are a flat front/back face with no seat top visible."
+ },
+ {
+  "name": "s058_interior",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 interior/hand-interior:bench 2. A: bad/seat — Plank top rows 1-5 but front only rows 6-7 (2), then thin legs. | B: unsure/seat — Bench top rows 1-4, light edge row 5, front rows 6-7 then legs; front barely 3. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "s059_prehistoric",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 prehistoric/ph-chief-seat. A: good/seat — Dais top with fur oval rows 9-20, stone front rows 21-25. | B: good/seat — Fur-topped stone dais top rows 9-20 and front rows 21-25."
+ },
+ {
+  "name": "s060_interior",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh5-blind-other",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 interior/hand-interior:cursed mirror. A: bad/other — Standing mirror drawn as front elevation, only rounded dome top, no top surface. | B: bad/other — Standing mirror drawn face-on, frame top only rows 1-4, no readable top."
+ },
+ {
+  "name": "s061_interior",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 interior/hand-interior:theater seat. A: bad/seat — Front elevation chair; seat top only rows 7-8/9, below 4. | B: bad/seat — Seat rows 6-8 not distinct from front rows 9-13; reads as front elevation, top under 4."
+ },
+ {
+  "name": "s062_modern_city",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 modern_city/mc-in-opus-mci-chair-office-e. A: good/seat — Seat top rows 11-14, front rows 15-17; side-facing, backrest exempt. | B: bad/seat — Side-view office chair: seat top rows 11-14 but front only rows 15-16. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "s063_pirate",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 pirate/pi-bench. A: good/seat — Wooden bench plank top rows 2-6 with edge highlight row 6, front rows 7-10, legs. | B: good/seat — Plank top rows 1-6 with light edge line row 6, front rows 7-9, legs 10-12; borderline front."
+ },
+ {
+  "name": "s064_pirate",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 pirate/pi-log-bench. A: good/seat — Log seat top rows 1-5, front rows 6-9 plus legs 10-12. | B: good/seat — Log seat top rows 1-5, front rows 6-8, legs rows 9-12."
+ },
+ {
+  "name": "s065_sky",
+  "kind": "structure",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-other",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 sky/si-cottage-blue. A: good/structure — Slate roof slope rows 0-41, plank facade rows 42-78. | B: good/structure — Shingle roof plane rows 0-38 over plank wall rows ~40-79."
+ },
+ {
+  "name": "s066_jp_city_interior",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 jp_city_interior/sh-barber-chair-s. A: bad/seat — Barber chair in front elevation; no distinct seat top (edge at row 20), pedestal below. | B: bad/seat — Barber chair drawn front-on: face-on back/cushion and armrests, no seat top visible."
+ },
+ {
+  "name": "s068_gothic",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 gothic/gm-bench. A: good/seat — Stone top rows 1-5 with front edge, front rows 6-9 plus legs 10-12. | B: good/seat — Stone seat top rows 1-5 with edge highlight, front rows 6-8, legs rows 9-12."
+ },
+ {
+  "name": "s069_interior",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh5-blind-other",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 interior/hand-interior:healing spring. A: unsure/container — Near-circular ring with water rows 5-21, front rim rows 22-29; plan-like. | B: unsure/container — Ring with water ellipse rows 5-21 but near-symmetric plan view; front rim only rows 25-29. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "s070_wizarding",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 wizarding/wz-pot-cauldron-bench-violet. A: good/container — Cauldron opening ellipse rows ~2-11 with purple contents, stove front rows 14-30. | B: good/container — Cauldron on table: purple opening ellipse with rims rows 1-11, table front rows 14-29."
+ },
+ {
+  "name": "s071_campus",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 campus/mc-in-mc-desk-pair. A: good/low_furniture — Desk top rows 3-7 with items, front rows 8-11, chair back above. | B: good/low_furniture — Desk top rows 3-7 with items, front rows 8-11, chair tops above."
+ },
+ {
+  "name": "s072_gothic",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-other",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 gothic/gm-bld-fountain. A: good/container — Basin opening ellipse with water rows ~29-46, front rim rows 47-57. | B: good/container — Basin shows dark water ellipse with back to front rim (~14 rows), rim/body front below."
+ },
+ {
+  "name": "s074_desert",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh5-blind-other",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 desert/de-hookah. A: unsure/other — Hookah on gold plate: plate top ~rows 8-12, front ~13-15, small flask above. | B: unsure/other — Shisha: brass base top rows ~7-9 with vase, front rows 10-14; small and ambiguous. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "s076_atlas_biome_interior",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 atlas_biome_interior/armor bench. A: good/low_furniture — Bench top rows 11-16, front rows 17-20 plus legs. | B: good/low_furniture — Bench top rows ~11-15 under helmets, front face rows 16-19, legs 21-23."
+ },
+ {
+  "name": "s077_modern_city",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 modern_city/mc-in-opus-mci-sofa-e. A: bad/seat — East-facing sofa drawn as plan/side view: cushion squares, no front face. | B: bad/seat — Cushions are flat panels (8 rows) with only 2-row dark bottom; no 3-row front face."
+ },
+ {
+  "name": "s078_modern_city",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 modern_city/mc-in-opus-mci-armchair-n. A: bad/seat — North-facing armchair seen from behind; no seat top visible, only back panel rows 0-22. | B: bad/seat — Armchair seen from the back (north): tall face-on panel, no seat top."
+ },
+ {
+  "name": "s079_pirate",
+  "kind": "structure",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-other",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 pirate/pi-captain-house. A: good/structure — Big tiled roof slope about 40 rows above two-storey front wall. | B: good/structure — Tile roof slope rows 0-40 over two-storey facade."
+ },
+ {
+  "name": "s080_wizarding",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 wizarding/wz-furn-bench-long. A: good/low_furniture — Plank top rows 0-9 ending in highlight edge, apron rows 10-16 and legs. | B: good/low_furniture — Plank top rows 0-8 with seams, front apron rows 10-16, lower shelf/legs 17-25."
+ },
+ {
+  "name": "s081_steampunk",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 steampunk/sp-workbench. A: good/low_furniture — Bench top with tools rows 1-11, drawer front rows 12-21, legs below. | B: good/low_furniture — Bench top rows 1-11 with edge line, drawers rows 12-21 plus legs."
+ },
+ {
+  "name": "s082_sengoku",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-other",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 sengoku/se-in-kamado. A: good/container — Two pot tops rows 1-6, light edge row 7, stove front rows 8-20. | B: good/container — Stove with two pots: openings/top rows 1-7, front rows 8-20."
+ },
+ {
+  "name": "s083_prehistoric",
+  "kind": "column",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh5-blind-other",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 prehistoric/ph-menhir. A: bad/column — Standing stone with rounded top only, no elliptical cap plate. | B: bad/column — Stele with dome top rows 0-5 rounded only, no cap plate; front elevation."
+ },
+ {
+  "name": "s084_prehistoric",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-other",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 prehistoric/ph-bonfire. A: good/container — Stone ring opening ellipse rows ~14-27 with fire inside, front ring rows 25-29. | B: good/container — Stone ring ellipse with fire visible inside, front rim below."
+ },
+ {
+  "name": "s085_jp_city_interior",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 jp_city_interior/ht-lobby-sofa-w. A: bad/seat — West-facing sofa drawn as side elevation, no readable seat top. | B: unsure/seat — Cushion light top rows 19-22 then 8-row dark panel; orientation of west-facing view unclear. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "s086_interior",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 interior/hand-interior:tier seat 3. A: good/seat — Seat top with cushions rows 2-9, front rows 10-14. | B: good/seat — Stone stepped seat: top rows 1-9 with cushions, front rows 10-14."
+ },
+ {
+  "name": "s087_jp_city_interior",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 jp_city_interior/kr-reclining-seat. A: bad/seat — Reclining seat body rows 12-22 is uniform dark front elevation; only row 7 highlight on top. | B: bad/seat — Face-on reclining seat: back rows 1-10 and seat rows 11-22 are vertical panels, no seat top."
+ },
+ {
+  "name": "s088_desert",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 desert/de-divan. A: bad/seat — Divan seat cushion rows 6-8 only 3 rows (<4), front/base rows 9-13. | B: unsure/seat — Backrest rows 1-5 exempt; seat surface rows 6-8 (maybe 5-8), front rows 9-13; borderline at minTop 4. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ },
+ {
+  "name": "s089_sf",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "A",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 sf/sf-lab-sink-bench. A: good/low_furniture — Counter top with sink rows 1-9, door front rows 10-14. | B: good/low_furniture — Counter top rows 1-9 with edge line, door front rows 10-15."
+ },
+ {
+  "name": "s090_campus",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh5-blind-seat",
+  "tier": "C",
+  "note": "블라인드 화소 라벨(판정 전 고정, 2026-10-20, 규칙 v10 계약: seat 등받이·팔걸이 면제). 원본 campus/mc-in-mc-lecture-stool. A: unsure/seat — Round stool cap ellipse rows 1-7 but cushion side only 1 row; pole rows 8-11 and base 12-13. | B: bad/seat — Stool seat is a dome cap: top rows 1-6 but front only rows 7 (1-2 rows) on a pole. → 두 측정자 불일치(라벨·종류) → C(기준에서 뺌)"
+ }
+]

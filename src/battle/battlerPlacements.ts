@@ -213,3 +213,56 @@ export function resolveSkinEnemyPositions(
     return next;
   });
 }
+
+/** 적 그림의 불투명 상자 — 발 위치(x, y) 기준 저작 단위 오프셋. left/right 는 x 에서, top/bottom 은 y 에서 잰다(위는 음수). */
+export interface FormationBox {
+  readonly left: number;
+  readonly right: number;
+  readonly top: number;
+  readonly bottom: number;
+}
+
+/**
+ * 도트 측면 진형을 그림 상자로 벌린다(battle-feel r3). 진형 자리는 고정 오프셋이라 정수 배율로 그림이 커지면
+ * (640×360 = 1.33배) 같은 열의 앞뒤 적이 겹쳤다(녹화 실측: 늑대 다리를 도깨비불이 덮었다).
+ * 세로로 겹치는 두 상자의 가로 겹침이 좁은 쪽 폭의 `allowed` 를 넘으면 두 자리를 좌우로 반씩 민다.
+ * 다 벌린 뒤 무리 전체를 원래 무게중심으로 되돌리고, 상자가 [minX, maxX] 를 넘지 않게 민다.
+ */
+export function spreadEnemyFormation(
+  seats: readonly { readonly x: number; readonly y: number }[],
+  boxes: readonly (FormationBox | undefined)[],
+  options: { readonly minX?: number; readonly maxX?: number; readonly allowed?: number } = {},
+): { x: number; y: number }[] {
+  const minX = options.minX ?? 8;
+  const maxX = options.maxX ?? 206;
+  const allowed = options.allowed ?? 0.12;
+  const xs = seats.map((seat) => seat.x);
+  const ys = seats.map((seat) => seat.y);
+  const live = boxes.map((box, i) => (box && Number.isFinite(xs[i]!) ? i : -1)).filter((i) => i >= 0);
+  if (live.length < 2) return seats.map((seat) => ({ x: seat.x, y: seat.y }));
+  const centre = live.reduce((sum, i) => sum + xs[i]!, 0) / live.length;
+  for (let pass = 0; pass < 24; pass += 1) {
+    let moved = false;
+    for (const a of live) for (const b of live) {
+      if (b <= a) continue;
+      const A = boxes[a]!, B = boxes[b]!;
+      const vertical = Math.min(ys[a]! + A.bottom, ys[b]! + B.bottom) - Math.max(ys[a]! + A.top, ys[b]! + B.top);
+      if (vertical <= 0.08 * Math.min(A.bottom - A.top, B.bottom - B.top)) continue;
+      const overlap = Math.min(xs[a]! + A.right, xs[b]! + B.right) - Math.max(xs[a]! + A.left, xs[b]! + B.left);
+      const limit = allowed * Math.min(A.right - A.left, B.right - B.left);
+      if (overlap <= limit + 0.5) continue;
+      const push = (overlap - limit) / 2;
+      // 왼쪽(같으면 뒷줄)이 왼쪽으로, 다른 쪽이 오른쪽으로.
+      const aLeft = xs[a]! < xs[b]! || (xs[a] === xs[b] && ys[a]! < ys[b]!);
+      xs[a] = xs[a]! + (aLeft ? -push : push);
+      xs[b] = xs[b]! + (aLeft ? push : -push);
+      moved = true;
+    }
+    if (!moved) break;
+  }
+  const shift = centre - live.reduce((sum, i) => sum + xs[i]!, 0) / live.length;
+  let lo = Infinity, hi = -Infinity;
+  for (const i of live) { xs[i] = xs[i]! + shift; lo = Math.min(lo, xs[i]! + boxes[i]!.left); hi = Math.max(hi, xs[i]! + boxes[i]!.right); }
+  const nudge = lo < minX ? Math.min(minX - lo, Math.max(0, maxX - hi)) : hi > maxX ? -Math.min(hi - maxX, Math.max(0, lo - minX)) : 0;
+  return seats.map((seat, i) => ({ x: Math.round((xs[i]! + (live.includes(i) ? nudge : 0)) * 10) / 10, y: seat.y }));
+}

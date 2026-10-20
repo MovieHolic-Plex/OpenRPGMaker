@@ -5,6 +5,7 @@
 // 모두 「플레이어가 어디에 서고 무엇을 미느냐」가 풀이다. 모형은 플레이어 칸 단위 BFS 이고, 최단 해가 그대로 걸음 절차가 된다.
 
 import type { Command, GameEvent } from "@/project/types";
+import { HAND_INTERIOR_SPEC } from "@/editor/handInterior/builder";
 import type { Cell } from "./jrpgVolumeTools";
 import {
   analysePuzzleModel,
@@ -30,6 +31,7 @@ import {
   rect,
   revealInWaves,
   se,
+  sfx,
   setSw,
   setVar,
   shake,
@@ -38,6 +40,7 @@ import {
   wait,
   type PuzzleRoomSpec,
 } from "./puzzleKit";
+import { puzzleSfxResourceId } from "@/assets/puzzleSfxAssets";
 
 const getEventId = (variableId: string, at: Cell): Command => m2("Get Event ID", { variableId, x: at.x, y: at.y });
 const setEventLocation = (target: string, mapId: string, at: Cell): Command => m2("Set Event Location", { target, mapId, x: at.x, y: at.y });
@@ -137,7 +140,7 @@ export const sokobanPlates: MechanicDef = {
           vOcc[i]!,
           "!=",
           0,
-          [ifSw(swPlate[i]!, false, [setSw(swPlate[i]!, true), ...room.set(key, 1), se("key"), particles("dust", 600, p), shake(1, 120)])],
+          [ifSw(swPlate[i]!, false, [setSw(swPlate[i]!, true), ...room.set(key, 1), sfx("plate-press"), particles("dust", 600, p), shake(1, 120)])],
           [ifSw(swPlate[i]!, true, [setSw(swPlate[i]!, false), ...room.set(key, 0), se("cursor2")])],
         ),
       ];
@@ -164,7 +167,7 @@ export const sokobanPlates: MechanicDef = {
         priority: "below",
         graphic: TRANSPARENT,
         commands: [
-          se("earth6"),
+          // 낮은 굉음은 revealInWaves 첫 물결(earth2)이 낸다 — 여기서 또 울리면 두 번 겹친다.
           shake(3, 400),
           textCmd("쿠웅…! 두 바위가 발판을 동시에 짓누르자 울타리 철창이 사슬 소리를 내며 올라간다."),
           ...revealInWaves(gateCmds, { flash: "white", pulse: "255,236,180", waves: ["dust", "dust", "sparkle"] }),
@@ -181,7 +184,7 @@ export const sokobanPlates: MechanicDef = {
           name: "바위",
           graphic: objGraphic("object2", 5),
           priority: "same",
-          interaction: { kind: "pushable" },
+          interaction: { kind: "pushable", sound: puzzleSfxResourceId("stone-push") },
           animationType: "normal",
           commands: [],
         }),
@@ -281,6 +284,9 @@ export const sokobanPlates: MechanicDef = {
  * 판자를 전부 무너뜨려야(= 모두 한 번씩 밟아야) 북쪽 둑의 봉인 철창이 열린다. 갇히면 떨어져 처음으로 돌아간다.
  */
 // 해밀턴 경로 전수 탐색으로 고른 판(해 1~3가지, 판자 14~16장). 판자를 대충 밟으면 거의 반드시 고립된다.
+/** 심연 위 판자 프레임(멀쩡 → 금 감 → 꺾임 → 떨어짐) — interior-plus 손 도트 조각. */
+const PLANK_FRAMES = ["plank bridge", "plank bridge cracked", "plank bridge falling 1", "plank bridge falling 2"] as const;
+
 const PLANK_VARIANTS: readonly (readonly string[])[] = [
   [" E   ", "oooo ", "oooo ", "oo o ", "oo o ", "   S "],
   ["  E  ", "  oo ", "oooo ", "ooooo", " oooo", "   S "],
@@ -308,7 +314,8 @@ export const crackedPlankBridge: MechanicDef = {
     // 판자 띠 전체(진입 칸·출구 칸이 있는 둑 가장자리 줄까지)를 심연으로 두고 판자·진입·출구 칸만 남긴다 —
     // 그래야 판자에서 둑 아무 데로나 내려서는 지름길이 없다.
     const chasm = rect(2, OY, 17, OY + grid.length - 1);
-    const keep = new Set([...idx.keys(), `${entry.x},${entry.y}`, `${exit.x},${exit.y}`]);
+    const plankArtPresent = PLANK_FRAMES.every((id) => Boolean(HAND_INTERIOR_SPEC.objects[id]));
+    const keep = new Set([...(plankArtPresent ? [] : idx.keys()), `${entry.x},${entry.y}`, `${exit.x},${exit.y}`]);
     const spec: PuzzleRoomSpec = {
       top: 1,
       left: 2,
@@ -343,8 +350,22 @@ export const crackedPlankBridge: MechanicDef = {
         return out;
       })(),
     };
+    // 판자 그림(2026-10-20 r4): 심연 위에 얹는 판자 프레임 넷(멀쩡 → 금 감 → 꺾임 → 떨어짐)이 칩셋에 있으면 판자 칸도 심연으로 파고
+    // 2층에 판자를 얹는다(상태 0 멀쩡 · 1 사라짐 · 2 금 감(올라섬) · 3·4 무너지는 중). 없으면 옛 마루 바닥 판자.
+    const plankArt = plankArtPresent;
     const plankProps = Object.fromEntries(
-      planks.map((c, i) => [`plank_${i}`, [{ zones: [{ x0: c.x, y0: c.y, x1: c.x, y1: c.y, floor: "dplank" }] }, { voids: [rect(c.x, c.y, c.x, c.y)] }]]),
+      planks.map((c, i) => [
+        `plank_${i}`,
+        plankArt
+          ? [
+              { overlays: [obj(PLANK_FRAMES[0], c.x, c.y)] },
+              { voids: [rect(c.x, c.y, c.x, c.y)] },
+              { overlays: [obj(PLANK_FRAMES[1], c.x, c.y)] },
+              { overlays: [obj(PLANK_FRAMES[2], c.x, c.y)] },
+              { overlays: [obj(PLANK_FRAMES[3], c.x, c.y)] },
+            ]
+          : [{ zones: [{ x0: c.x, y0: c.y, x1: c.x, y1: c.y, floor: "dplank" }] }, { voids: [rect(c.x, c.y, c.x, c.y)] }],
+      ]),
     );
     const room = new PuzzleRoom(
       ctx.draft,
@@ -377,6 +398,7 @@ export const crackedPlankBridge: MechanicDef = {
     ];
     const breakPlank = (i: number): Command[] => [
       setSw(swBroken[i]!, true),
+      ...(plankArt ? [...room.set(`plank_${i}`, 3), se("knock"), wait(90), ...room.set(`plank_${i}`, 4), wait(90)] : []),
       ...room.set(`plank_${i}`, 1),
       se("collapse1"),
       particles("dust", 700, at(planks[i]!)),
@@ -402,15 +424,21 @@ export const crackedPlankBridge: MechanicDef = {
           commands: [
             ...leave,
             setVar(vCur, i + 1),
+            ...(plankArt ? room.set(`plank_${i}`, 2) : []),
             se("knock"),
             particles("dust", 400, at(c)),
             ...trapped,
           ],
         }),
         makePage({ id: `${id}_gone`, name: "판자(무너짐)", conditions: [{ kind: "switch", switchId: swBroken[i]!, value: true }], priority: "below", graphic: TRANSPARENT, commands: [] }),
+        // 풀린 뒤에는 다리가 튼튼한 새 판자로 다시 놓인다(아래 해제 연출) — 밟아도 무너지지 않는다.
+        makePage({ id: `${id}_solved`, name: "판자(해결 뒤 튼튼함)", conditions: [{ kind: "switch", switchId: ctx.solveSwitchId, value: true }], priority: "below", graphic: TRANSPARENT, commands: [] }),
       ]);
     });
     const gateCmds = room.set("gate", 1);
+    // 해제 연출은 철창만 여는 게 아니라 무너진 다리를 남쪽부터 다시 놓는다. 방의 유일한 출입문은 남쪽이라
+    // 다리를 그대로 두면 북쪽 둑에 갇힌다(2026-10-20 적대 검수에서 발견한 진행 불능).
+    const rebuildCmds = planks.flatMap((_, i) => room.set(`plank_${i}`, 0));
     // 출구 앞 둑: 판자를 모두 밟았으면 마지막 판자도 무너지며 철창이 열린다.
     const exitId = ctx.evId("exit_gate");
     const exitEvent = puzzleEvent(exitId, "북쪽 둑 봉인 철창", at(exit), [
@@ -426,8 +454,8 @@ export const crackedPlankBridge: MechanicDef = {
             planks.length - 1,
             [
               ...planks.map((_, k) => ifVar(vCur, "==", k + 1, [ifSw(swBroken[k]!, false, breakPlank(k))])),
-              textCmd("마지막 판자가 무너져 내리자 철창의 사슬이 풀렸다!"),
-              ...revealInWaves(gateCmds, { flash: "white", pulse: "255,230,170", waves: ["dust", "smoke", "sparkle"] }),
+              textCmd("마지막 판자가 무너져 내리자 철창의 사슬이 풀리고, 심연 위로 새 판자가 차례로 놓인다!"),
+              ...revealInWaves([...gateCmds, ...rebuildCmds], { flash: "white", pulse: "255,230,170", waves: ["dust", "smoke", "sparkle"] }),
               ...ctx.rewardCommands,
               setSw(ctx.solveSwitchId, true),
             ],

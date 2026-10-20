@@ -1,0 +1,332 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "83af7bdf600c9e66787f5540f96eaccb1896a20ed14177ee6f68f1636648291b",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "hosp crash cart",
+ "label": "modern_city_interior/hosp-crash-cart",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 36,
+  "nearBlackEdge": 0.95,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "defibrillator monitor on cart top",
+      "rows": "1-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red cart top",
+      "rows": "10-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13"
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The red cart body starts with a gray rim at row 9. Rows 10-12 form a short top band: row 10 is dark, row 11 is light (#ee6c6c), and row 12 is the lightest (#fa9689) and acts as the front-edge line. Row 13 is a dark shadow line (#96222c). Below it, rows 13-29 are the vertical drawer front, with drawer seams at rows 17, 21 and 25 and handles at rows 15, 19 and 23. That gives a front face of about 17 rows. The monitor on top (rows 1-8, 10 px wide) is a device placed on the cart, so it is decor. The top band is only 3 rows, which is thin but has an edge line and shadow. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small red drawer cabinet with a monitor on top. It has about 4 visible steps on the red body (highlight, mid, dark, deep red-brown), plus a separate green-screen and grey monitor group. Drawer fronts, handles and the top edge are separated by value, with little hard black outlining. The measured facts back this up: 0% of its dark edge pixels are neutral, so the outline leans red-brown and is not a sticker line. Near-flat coverage is 0%, so there are no large flat fills. Visible tones per tile are 12, which is above prop-hedge (9) and below the stall (17) and well (20). That is acceptable for a compact single-tile-scale prop, though the body has fewer ramp steps and less grain than the stall or well. A careful artist would accept it next to the references without it looking like a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17496
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "monitor/defibrillator unit on top of cart",
+      "rows": "1-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cart top band (red, light bevel)",
+      "rows": "10-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13"
+     },
+     {
+      "part": "drawer stack front face",
+      "rows": "13-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a red drawer cart. Rows 10-12 form a top band: row 10 is dark, row 11 is light (#ee6c6c) and row 12 is the lightest (#fa9689), which acts as the front-edge line. Row 13 is a dark line (#96222c) that works as eave shadow. Below it, rows 13-29 are the vertical drawer front, with three drawers, grey handles and dividers at rows 17, 21 and 25. The monitor on rows 1-8 sits on the cart and is decor. The top band is shallow at 3 rows, but it has an edge line and a shadow line, and the front face is well over 3 rows. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small red drawer cart with a green monitor on top. Its dark edge pixels are 0% neutral, so the outline leans dark red-brown beside the red body rather than being a black sticker line. Measured facts: 12 visible tones per 16x16 tile, above prop-hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no large flat fills. The red body shows about 4 lightness steps, with highlight edges, drawer-front shading and handle dots. The monitor has its own light, dark and screen tones. It is a little less textured than the stall and well, but it is comparable to the hedge and clearly richer than the thin bench and lamp, so it would sit acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24133
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "monitor/screen unit on top of cart",
+      "rows": "1-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cart top shelf (red top band)",
+      "rows": "10-12",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "13"
+     },
+     {
+      "part": "red drawer body front face",
+      "rows": "14-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The monitor on rows 1-8 is a gray unit with a green screen, treated as decor. Below it the red cart body starts at row 9 (a gray band). Rows 10-12 are a dark-to-light red band (L=70, 147, 178), ending in a dark front-edge line at row 13 (L=70). The body widens from 14 to 15 px at row 12, which supports a shelf top seen from above. Under that line is a drawer front from rows 14-29, with dark divider lines at rows 17, 21 and 25, light handles, and a dark base. The top band is thin (about 3 rows) but has an edge line and shadow, and the front face is 16 rows, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small red cart with a monitor on top and stacked drawers. It measures 12 visible tones per full tile, above prop-hedge (9) and below the larger stall (17) and well (20). Near-flat coverage is 0%, so there are no 5x5 flat fills. The drawer fronts carry highlight and shadow lines, handles and a lit screen, so the red ramp has about 4 steps against 5-6 in the references. The dark edge pixels are 0% neutral, so the outlines lean dark red or brown rather than black. That matches the tinted, selective outlines of the references and avoids the sticker look. It is simpler than the stall and well, but it is a small prop and its tile density is on par with the hedge reference, so a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21191
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "defibrillator monitor on cart top",
+      "rows": "1-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red cart body top strip",
+      "rows": "10-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13"
+     },
+     {
+      "part": "drawer front face",
+      "rows": "13-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The red cart body has only a thin highlight strip at its top: row 10 is a dark line, rows 11-12 are light (#ee6c6c, #fa9689), and row 13 is a dark line. That is about 2 lit rows, which reads as a rim or lip, not a real horizontal surface. The monitor and defibrillator on top (rows 1-9) is decor sitting on the counter. Below the strip, rows 13-28 are flat drawer fronts with handles and no receding side face, so the body is a front elevation with only a rim-like top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small red crash cart with a monitor on top and drawers below. It has 12 visible tones per 16x16 tile, above prop-hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no 5x5 flat fills. The dark edge pixels are 0% neutral, so the outline carries a tint. By eye it reads as a dark red-brown beside the red body, not a black sticker line. The red body has about 4 steps (highlight, light, mid, dark) with per-drawer edges and handles, plus a grey monitor with a lit screen. That is a little shallower than Beodeul's 5-6 steps, and the drawer faces are fairly uniform. For a small single-tile prop this is acceptable next to the references, and it does not look flatter than the hedge or the bench.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24247
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.915Z",
+ "cells": {
+  "16": [
+   "1a7e47d325c67f09",
+   "ba193e9b513495c9"
+  ],
+  "24": [
+   "05733a71062b2f18",
+   "14b32e604ab083ea",
+   "360976f8b36d0a7a",
+   "441f9081d7a6827a",
+   "586765016febd370",
+   "63ed1f437ad8bcaa",
+   "71ff86ab11b4b907",
+   "9c4209a7c5cd7667",
+   "a9c904090b99bda6",
+   "c9a8fb1a184ed58c",
+   "d7a31d09091e9a61",
+   "e8dd27c778860145"
+  ],
+  "32": [
+   "29096c6d2063077c",
+   "75739fef241142b5",
+   "cb0990401b0b45ab"
+  ],
+  "48": [
+   "5fe84b214931e071",
+   "7af1ac44b2815a65",
+   "91cc197486229dd3",
+   "dbd980544ffb1723",
+   "e368b20a21fae6a5",
+   "f10dde18c4b76824"
+  ]
+ }
+}

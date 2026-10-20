@@ -5,6 +5,161 @@
 
 <!-- releases -->
 
+## 0.293.0 — 2026-10-21
+
+### 기능
+
+- **jp-city** — 「jp_city 칸 번호 복구」 — 밀린 판에서 그린 사용자 맵을 판 미리보기로 골라 지금 번호로 (#3132) (`036b48b`)
+- **object-gate** — signed human allow is the final pass; 18323 review queue with batches (#3130) (`0832641`)
+
+### 수정
+
+- **object-gate** — review queue counts an image once — duplicate hashes in a batch broke 'allow this whole batch' (#3131) (`2d9c450`)
+- **runtime** — choice window grows to fit 3-5 options at 480x270 (#3128) (`2b0af42`)
+- **jp-city** — remap 32 published places to the current tile pins; block stale-pin bakes (#3127) (`38bcd79`)
+- **build** — scope bundled-JSON lazy loader to browser transforms so vite-node runs work again (#3126) (`8f9da4d`)
+
+## 0.292.0 — 2026-10-20
+
+### 기능
+
+- **jp-city** — 3/4 top-view depth for city buildings and vehicles (draft) (#3098) (`563991c`)
+
+### 수정
+
+- **runtime** — field followers no longer flank or overlap the hero (#3124) (`4e30d70`)
+- **interior** — 실내 조수 RCA r2 — remove_map 행·상층 출구·school 견본·벽면 걸이 겹침·공공시설 program (#3123) (`d98b243`)
+- **battle** — keep the emerald enemy HP box solid while the enemy stands (#3121) (`bc6d02c`)
+
+## 0.291.0 — 2026-10-20
+
+### 기능
+
+- **object-gate** — split to private repo MovieHolic-Plex/object-gate (vendored copy + sync) (#3117) (`88a451f`)
+- **object-gate** — rules v10 seat backrest exemption + frozen fresh5 calibration (rejected) (#3119) (`72e507e`)
+- **monster** — install user-picked crab stalk eyes A + scoped eye-stalk rule (#3118) (`0924b04`)
+
+### 수정
+
+- **flagship** — Astra temple boss and league lead 베르카부 swap the bug move for 새싹치기, like the gym leader (#3114) (`a9a8b54`)
+
+### 정리
+
+- **worldmap** — public oprn-worldmap-kit is the single master of the generator; drop the 700-file in-repo copy (#3116) (`a109107`)
+
+## 0.290.0 — 2026-10-20
+
+### 기능
+
+- **interior-seats** — seat study 2 — 89 seats passed by the user (2026-10-20), waiting on 3/4 gate receipts (#3115) (`635077c`)
+- **fallen-star** — rebuild act 1 — real journey, puzzles, boss, 1x opening, natural dialogue (#3111) (`6df4e06`)
+
+### 수정
+
+- **flagship** — Astra Horizon plays its real campaign — audit fixes (shortcut, fairness, story, people, UI) (#3110) (`a7b1476`)
+
+### 잡무
+
+- **monster** — record user pass verdict for all 60 species (round 6, hash-bound) (#3113) (`ce67df4`)
+
+## 0.289.0 — 2026-10-20
+
+### 기능
+
+- **monster** — round 6 eye catalog — distinct eyes for all 60 species, redraw 4 failed species (#3108) (`a1ee935`)
+- **object-gate** — human review page for held (refer) verdicts — signed allow/reject bound to pixel hash, profile and kind (#3101) (`014e07f`)
+- **object-gate** — rules v9 + frozen fresh4 final calibration (still rejected) (#3100) (`6a1a55c`)
+- **interior-seats** — 3/4·quality redraws of 89 seats as pending candidates (#3097) (`6e0ce53`)
+- **puzzle** — 옛 퍼즐 넷(레버·얼음·시간·경비)을 방째로 다시 짓기 + 판자·심연·추·빙판 손 도트 (#3081) (`662de61`)
+- **start** — library home — one hero, my-games/built-in/concept shelves, settings with AI engine (#3094) (`6dec642`)
+- **monster** — 불합격 14종 5차 — 한쪽 눈 옆얼굴(먼 눈 숨김) (#3093) (`eac5c64`)
+- **store** — character packs pair chips with portraits from char-gen (#3091) (`6570b87`)
+
+### 수정
+
+- **modern-city-int** — 관문 없이 머지된 실내 기물 142종 적대 재검수 — FAIL 92종 다시 그림 (#3109) (`3851ca9`)
+- **build** — player artifacts back under the 64MiB secret-scan limit (#3106) (`90253ee`)
+- **interior** — v5 props round 2 — independent adversarial Argon re-judge, 13 redraws baked, 8 held (#3104) (`cf7cf9a`)
+- **start** — AI connect from the desktop home actually shows, and home reflects an existing Google login (#3102) (`441cc63`)
+
+### 성능
+
+- **startup** — lazy-load bundled tileset definitions — editor opens ~1s faster (#3103) (`dd46149`)
+- **startup** — desktop home in ~1.4s — lazy project core, slim start-screen bundle, codeCache, close-save fix (#3095) (`39d189a`)
+
+### 문서
+
+- **interior** — props34 round 3 — 2-wide ship bunk candidate held at object-gate REFER, last cloth/candle attempts fail Argon 0/3 (#3105) (`de3b110`)
+
+### 잡무
+
+- **object-gate** — record the user's 4 hold allows (profile 1db03a95) — relic cabinet, ship bunk 2w, control console, helmet shelf (#3107) (`5fcb430`)
+
+### 기타
+
+- **ai** — 조수를 사용자의 로컬 claude -p 로 돌리기 (MCP 서버) — 병합 금지 (#3072) (`f7baaeb`)
+
+## 0.288.0 — 2026-10-20
+
+### 기능
+
+- **store** — per-asset generation method so the AI label is accurate (#3090) (`8288a32`)
+- **battle** — battle-feel r3 — enemy formation spaced by sprite bounding boxes, victory windows leave the party visible (#3088) (`25917dc`)
+- **modern-city-int** — r16 quality redraw of 21 modern interior props that did not read (racks, tokonoma, witness stand, booths...), baked in place (#3086) (`9ba0a4e`)
+- **monster** — 눈 판정 1차 불합격 14종 몸 전체 4차 손 도트 재그림 (#3085) (`5b7db9a`)
+
+### 수정
+
+- **interior** — v5 non-seat props 3/4 + quality re-judge — 17 redraws baked in place behind object-gate (#3087) (`eedc48f`)
+
+### 잡무
+
+- **modern-city-int** — list 142 redrawn props that still need a 3/4 gate receipt (#3089) (`9f8389d`)
+
+## 0.287.0 — 2026-10-20
+
+### 기능
+
+- **modern-city-int** — r16 3/4 redraw of the remaining 60 interior props + review fixes, baked in place (#3083) (`e109f31`)
+- **store-cli** — preview / submit / discard for private store scratch previews (#3082) (`47b9e5c`)
+- **modern-city-int** — r16 3/4 redraw of 61 interior props (tops 4-6 rows, lit edge, cornice shadow), baked in place (#3080) (`e4bd293`)
+- **battle** — battle-feel r2 — integer battler pixel scale, boss entrance, result over the stage, shorter interludes (#3079) (`9f8e6f6`)
+- **store** — open-in-editor deep link (oprn://store/install) and owner drafts (D2) (#3078) (`3df019c`)
+
+## 0.286.0 — 2026-10-20
+
+### 기능
+
+- **objectspec** — ObjectSpec v1 — one object manifest for tile-gen, store packs and editor kits (#3076) (`a7807ed`)
+- **defaults** — recommended play screen 480x270 at zoom 1 with integer scaling + letterbox; Fallen Star 480x270 z1 (#3077) (`81ab73d`)
+
+### 수정
+
+- **monster** — 룬 둘러싼 부유 조각돌 2차 — 줄기 없이 도는 석판 조각·결정 핵·큰 대기 움직임·번쩍 금 가는 피격 (19차) (#3073) (`417f1bb`)
+- **object-gate** — revert profile ee216f0de5822996 to rejected — blind pixel rule for beodeul U (fresh 29/42 = 69%) (#3069) (`f508f17`)
+
+## 0.285.0 — 2026-10-20
+
+### 기능
+
+- **object-gate** — calibrate profile ee216f0de5822996 — front_prop out of the clean-pass denominator, label fixes (fresh 31/38, violations 0/84, adversarial 0/144) (#3068) (`6e29818`)
+- **puzzle-sfx** — SNES sample-instrument puzzle SFX (ALttP-like), same ids (#3067) (`f86b8dd`)
+- **battle** — battle-feel prototype — widescreen side-view stage, crisp hit flashes, bold damage numbers, less chatter, cast charge ring (#3063) (`c60f014`)
+- **store** — one-command asset contribution path for coding agents (#3064) (`222dcbb`)
+
+### 수정
+
+- **monster** — 눈 판정 2차 불합격 15종 눈 3차 손 도트 + 걷기 칩 눈 잔상 정리 (#3066) (`980b473`)
+- **monster** — 룬 둘러싼 부유 조각돌 전투 도트 다시 그리기 + (0,2) 스킬 칸 (18차, 140/140) (#3065) (`71d2593`)
+
+## 0.284.1 — 2026-10-20
+
+### 수정
+
+- **jp-city** — ground autotiles treat out-of-map as same material; border-only migration for saved maps (#3061) (`3e17750`)
+- **puzzle** — adversarial VQA r3 — Zelda-style puzzle SFX, push sound, readable states, no soft-lock (#3060) (`1d12069`)
+- **monster** — 눈 판정 불합격 32종 눈을 손 도트로 다시 그리기 + 걷기 칩 눈 다시 찍기 (#3059) (`96e7bde`)
+
 ## 0.284.0 — 2026-10-20
 
 ### 기능

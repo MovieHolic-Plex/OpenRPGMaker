@@ -1,0 +1,3 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"ship bunk","view34":"FAIL","quality":"FAIL","reason":"Three identical copy-pasted 10x5px flat white-and-blue bars inside a 16px-wide black-outlined frame read as battery icons on a narrow shelf rather than a 3/4 bunk bed, with only 1px top lines on the mattresses and 2px flat shelf dividers."}

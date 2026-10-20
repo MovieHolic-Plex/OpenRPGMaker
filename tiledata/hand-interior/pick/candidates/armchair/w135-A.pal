@@ -1,0 +1,13 @@
+// armchair w135-A palette (ramp colours only)
+~ #1c1418 110
+- #1c1418 58
+# #e040c0
+
+A #3a0508   // = red:0
+B #67030c   // = red:1
+C #950110   // = red:2
+D #c30014   // = red:3
+E #d73a42   // = red:4
+F #eb7571   // = red:5
+G #411e05   // = wood:1
+H #6d3b15   // = wood:3

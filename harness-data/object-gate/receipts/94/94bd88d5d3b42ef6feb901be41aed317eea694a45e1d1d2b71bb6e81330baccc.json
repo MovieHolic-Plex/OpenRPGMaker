@@ -1,0 +1,397 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "94bd88d5d3b42ef6feb901be41aed317eea694a45e1d1d2b71bb6e81330baccc",
+ "width": 48,
+ "height": 16,
+ "kind": "seat",
+ "name": "cinema seat row of 3 red seats seen from behind (faces north toward the screen)",
+ "label": "seats34/modern_city_interior/cinema-seat-row",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 4 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 4 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 28,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 3
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest top highlight (all three seats)",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest/seat back face with gold plate",
+      "rows": "3-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs and base",
+      "rows": "11-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Each seat is seen from behind, so only the backrest is shown. Rows 1-2 are a light red 1-2 row highlight along the top of the backrest, with no front-edge line or eave shadow beneath it. Rows 3-10 are a vertical red back face with a gold plate at rows 5-6 and a darker lower band at rows 9-10. The width profile (36 at rows 1-3, then 44-46 from row 4) comes from the armrests and the backrest body, with no widen-then-narrow ellipse. The seat cushion is hidden behind the backrest, so no horizontal seat surface is visible from above. This matches the 'seat: band 2' and 'front elevation' wrong examples rather than the right seat example, which has a top of about 5 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small row of three red seats seen from behind. It has about 3 red lightness steps (a highlight on the top edge, a mid red, a dark red) plus a dark base, against roughly 5-6 steps on the references (hedge, well, stall). The measured facts back this up: 100% of its dark edge pixels are neutral, so the outline is a uniform near-black line around every seat. That is the sticker look, and it is unlike the tinted dark-material outlines of the hedge (0%), the stall (1%) and the well (33%). The only reference at 100% is the thin lamp, which is a sparse object. Colour count is low at 12 distinct colours, compared with 38-40 on the large references and 11-14 on the small ones. The 12-colour median per tile is comparable to the hedge's 10, and there are no 5x5 flat fills, so density is only slightly lower. The backs have little grain or texture beyond a highlight line and a few shading dots. Shading is shallow and the outline is black rather than a dark red-brown, so a careful artist would not accept it next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 22576
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat backrests (3), seen from behind",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest and seat back face with gold plate",
+      "rows": "3-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs and grey armrests",
+      "rows": "11-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Each seat is seen from behind as a tall red backrest. Rows 1-2 (L=125, #e05060) are a 1-2 row highlight on the upper edge, which reads as a rim and not a top surface. There is no front-edge line and no eave shadow below it. Rows 3-8 are a flat vertical face with a gold plate at rows 5-6. Rows 9-10 are a darker lower band, and rows 11-13 are thin legs. The width profile steps from 36 to 44 to 46 with no ellipse. The seat cushion is never seen from above, because the backrest hides it, so the seat surface that the kind requires is not visible. The drawing matches the 'seat: band 2' and front-elevation wrong examples."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is small, three red seats with dark backs. Its measured facts are mixed. Median colours per tile is 12, in line with the hedge (10). Flat-fill coverage is 0%, so there are no large flat areas. But 100% of its dark edge pixels are neutral, so the outline is a uniform near-black line around every seat, which is the 'sticker' look. The tinted references (hedge 0%, cheese stall 1%, bench 44%, well 33%) separate forms with dark tones of the neighbouring material instead. The red ramp reads as about 3-4 steps (highlight, mid, dark, plus outline), against about 5-6 on the Beodeul pieces. There is little grain or texture on the seat backs and cushions. The distinct-colour count of 12 is well below the stall (40) and well (38). The piece is clean and readable, but a careful artist would see it as flatter and more sticker-like than the references, and the neutral outline is the deciding weakness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 14282
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat backrests (3 red seats seen from behind)",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest/seat back face",
+      "rows": "3-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs and armrests",
+      "rows": "11-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The seats are seen from behind, so the backrest is a vertical face-on panel. Rows 1-2 (L=125, lighter red) are a 2-row highlight rim along the top of the backrest. They have no front-edge line or eave shadow, and the width stays constant at 36, so they are not an ellipse or a top plane. Rows 3-10 are the flat back face with a gold plate at rows 5-6 and a darker lower band at rows 9-10. The seat cushion, the horizontal surface a seat needs, is never visible from above. The gray armrests are drawn in profile and are not a receding side face. This matches the 'seat: band 2' and 'front elevation' wrong examples."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small row of three red seats seen from behind. The red ramp looks like about 3 steps: a highlight on the top edge, a mid red, and a dark red in the shading. References such as the hedge, stall and well carry 5-6 steps per material. The dark edge pixels are 100% near-neutral, so the outline is a neutral near-black line around each seat. The references that carry tinted outlines (hedge 0%, stall 1%, well 33%, bench 44%) use dark material tones instead. The lamp-crook reference is also 100% neutral, but it is a thin metal object. The candidate has 12 distinct colours and a median of 12 per tile, which is comparable to the hedge (11 colours, median 10), so measured density is not the problem. There are no large flat fills (0% coverage). The seats do show some shading and a few highlight dots, but the sticker-like black outline and the shallow red ramp sit below the Beodeul standard of tinted dark-material outlines and 5-6 steps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17142
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest (3 seats, seen from behind)",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest face with gold plaque",
+      "rows": "3-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The seats are seen from behind, so the backrest hides the seat surface. Rows 1-2 are a light red highlight band (#e05060) at the top of each backrest. It is a 1-2 row rim, with no front-edge line and no eave shadow beneath it. Rows 3-10 are a vertical red backrest face, with a gold plaque at rows 5-6 and a darker base at rows 9-10. Rows 11-12 are legs and outline. No horizontal seat surface is visible anywhere and no ellipse is present. Width profile 36 to 46 px is a plain rectangle with small bevels. The nearest reference is the 'seat: band 2' WRONG example, which has only a thin top band over the front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is three small red seats seen from behind, with a dark outline around each seat. The measured facts say 100% of its dark edge pixels are near-neutral, and the picture agrees: the outline is a uniform near-black line with no tint toward the red. That is the sticker look, unlike the tinted outlines on the hedge (0%) and the cheese stall (1%). Each seat has only about 3 red steps (a light top edge, a mid body and a dark base), where the references use 5-6 per material. The seat backs show no grain, cushion stitching or per-seat highlight variation, so texture is flat even though the 5x5 flat-fill coverage is 0%. It has 12 distinct colours in total, close to the hedge (11) and the bench (14) but far below the stall (40) and the well (38). The per-tile median of 12 is comparable to the hedge (10), so density is only slightly lower. Shallow shading and the neutral outline still put it below the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 20727
+  }
+ ],
+ "decidedAt": "2026-10-20T06:55:38.656Z",
+ "cells": {
+  "16": [
+   "72484b8888630740",
+   "f7c2d6ece25957f1",
+   "fe4b459262bc95e3"
+  ],
+  "24": [
+   "2f5853fa44f120b4",
+   "a961ba3442983a3b",
+   "c0945c7f93cf3036",
+   "f7d431cdead2d33b"
+  ],
+  "32": [
+   "200546211eabc027",
+   "2164b5ff3260a8aa",
+   "26926b6b621feee5",
+   "5a15dd505fc3c2a9",
+   "79c6ddce5d9d38f2",
+   "7e7b2b997405bf76",
+   "87cbf589a6350f66",
+   "c896c2fd90f94ac4",
+   "d7fa7e50e1421290",
+   "ea031dee7e6fc8ac",
+   "ecdb4d8d593f0790",
+   "fbfa2a38d36495df"
+  ],
+  "48": [
+   "0a3d9b91c88fee9d",
+   "0c5892da8114276f"
+  ]
+ }
+}

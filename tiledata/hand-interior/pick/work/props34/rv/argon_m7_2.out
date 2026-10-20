@@ -1,0 +1,3 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"control console","view34":"PASS","quality":"PASS","reason":"Clear 4px lit steel top plane and bright sloped control deck above the darker front cabinet doors, with crisp CRT waveform, gauge, colored buttons, and throttle levers."}

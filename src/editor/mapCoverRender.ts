@@ -5,8 +5,26 @@
 import { drawMapTileLayers, type TilesetCanvasImage } from "@/editor/mapTileDrawCore";
 import type { GameMap, TilesetDef } from "@/project/types";
 
-/** 카드 한 장에 타일이 너무 잘게 보이지 않게, 보이는 창을 가로 최대 이만큼 칸으로 둔다(큰 마을은 일부만 보인다). */
-const MAX_VIEW_TILES_X = 30;
+/**
+ * 보이는 창 가로 칸 수. 2026-10-20 「라이브러리 홈」: 주인공 시작 칸을 가운데에 둔 플레이 화면 크기(16칸 × 9칸 남짓 = 2배 확대)로 —
+ * 예전 30칸(1배)은 큰 마을에서 지붕만 보였다. 시작 칸(focus)이 없으면 맵 가운데.
+ */
+const MAX_VIEW_TILES_X = 15;
+
+/** 그림을 낼 가치가 없는 빈 맵 — 한 타일이 바닥 칸의 90% 를 넘고 위층이 거의 비었다(새 프로젝트의 풀밭 한 장). */
+export function isMostlyEmptyMap(map: Pick<GameMap, "lowerTiles" | "upperTiles" | "width" | "height">): boolean {
+  const cells = map.width * map.height;
+  if (!(cells > 0)) return true;
+  const counts = new Map<number, number>();
+  let top = 0;
+  for (const tile of map.lowerTiles) {
+    const next = (counts.get(tile) ?? 0) + 1;
+    counts.set(tile, next);
+    if (next > top) top = next;
+  }
+  const upper = map.upperTiles.filter((tile) => tile >= 0).length;
+  return top / cells > 0.9 && upper / cells < 0.03;
+}
 
 /**
  * 카드 비율을 **채우도록** 자른다 — 여백을 두면 16:10 카드 안에서 정사각 맵 양옆에 검은 띠가 남는다.

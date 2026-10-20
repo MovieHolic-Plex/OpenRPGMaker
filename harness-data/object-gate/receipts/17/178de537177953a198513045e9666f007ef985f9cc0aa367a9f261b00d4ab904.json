@@ -1,0 +1,402 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "178de537177953a198513045e9666f007ef985f9cc0aa367a9f261b00d4ab904",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "hp-chair-fallen",
+ "label": "seats34/jp_city_interior/hp-chair-fallen",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(side_profile_no_top) (4/4)",
+  "3/4: 윗면 0행 < 4 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(side_profile_no_top) (4/4)",
+   "윗면 0행 < 4 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 26,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat panel (horizontal blue bar, top)",
+      "rows": "2-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest (vertical blue bar lying down the middle)",
+      "rows": "5-12",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey legs (two horizontal strips to the right)",
+      "rows": "3-4 and 11-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The chair is drawn lying on its side as a flat profile shaped like a T or C. The silhouette widths are 16 (rows 3-4), 5 (rows 7-9) and 11 (rows 11-12). The seat at rows 2-6 is a uniform blue band with no front-edge line, no eave shadow and no ellipse, so it shows no horizontal surface seen from above. The vertical blue bar at rows 5-12 is the backrest and is exempt. The grey strips at rows 3-4 and 11-12 are legs seen in side profile. There is no top surface and no receding side face, so it reads as a profile silhouette without a top, like the 'side elevation chair' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny blue glyph-like shape, about 14x12 px, with only 10 distinct colours. It reads as a fallen chair only vaguely, if at all. It has about 2-3 flat tones with a light outline and no visible grain, highlights or per-part shading. Beodeul props such as the bench, well and stall show 5-6 steps per material, tinted dark outlines, and wood grain or tile and stone texture. The tile-based measures (0 tones per tile) don't apply because the piece is smaller than a tile, so I judged by eye. By eye it is much thinner and flatter than the bench, the nearest reference in kind, which has slat highlights, shadow and leg detail. Its edge pixels are 0% neutral, but the outline is not a clear dark material tone; it is a flat blue-ish contour, and the whole piece looks like a sticker. It is much less rich than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 0행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 27551
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "horizontal bar at top (backrest or leg of the tipped chair)",
+      "rows": "3-5",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vertical blue slab (the seat, tipped on its side)",
+      "rows": "5-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower horizontal grey bar (leg or rail)",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The silhouette is a T or C shape of thin bars, like the 'side elevation chair' reference. The width profile runs 16, 16, 15, 9, then 5 for rows 7-9, then 11, 11, 9. The 5-wide column at rows 5-10 is the seat, seen edge-on as a vertical slab. No row band ends in a front-edge line with eave shadow, no ellipse is present, and no contents are visible. The seat shows no horizontal surface seen from above, so this is a profile silhouette with no top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny blue glyph-like shape, about 10 distinct colours in total, and it does not read as a fallen chair. It has roughly 2 tone steps (a mid blue and a lighter highlight) with a dark outline, so it looks like a sticker or icon. It has no wood grain, no seat or leg detail, and no per-part shading. The bench reference has a plank structure with highlights and a shaded base, and the well and stall have 17-20 visible tones per tile. The candidate is far smaller and simpler than any reference of this kind. The measured facts are 0 per-tile tones because the piece is under one tile, so I judged by eye. By eye it is much flatter and thinner than the bench, the closest reference. The outline reads as a uniform dark line around the shape rather than a material-toned edge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 17473
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest / upper blue bar",
+      "rows": "3-5",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upright blue seat strip",
+      "rows": "5-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey leg bars",
+      "rows": "3-4, 11-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The silhouette is a T or C shape lying on its side. Rows 2-5 are a wide bar (width 14-16), rows 6-9 are a narrow vertical strip (width 5), and rows 10-13 are a wide bar (width 9-11). The seat is a narrow vertical blue strip (column x=8, rows 5-10, one flat colour). It has no back rim, no front-edge line and no eave shadow, and its width never widens and narrows as an ellipse would. The grey bars at rows 3-4 and 11-12 are drawn as flat side-profile strips (outline row, light row, mid row, outline row) with no top plane. Nothing shows the seat from above, so this reads as a flat side elevation, like the red 'side elevation chair' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny blue glyph, smaller than one 16x16 tile, with only 10 distinct colours in total. By eye it is a flat light-blue shape with a dark outline and no visible grain, wood texture or per-part shading. It reads as a sticker or icon, not a fallen wooden chair. The wooden bench reference has about 5 wood steps, grain and a tinted dark-brown edge. The well, stall and hedge references carry 9-20 visible tones per tile with clustered texture. The 0 visible tones per tile is only because the piece is small, so I did not use that fact against it. The shallow structure is judged by eye: roughly 3 steps, a uniform dark outline and flat fills. It sits well below the references in richness and would look thinner and flatter next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 20006
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest lying as horizontal bar at top",
+      "rows": "2-5",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat panel drawn as a narrow vertical blue strip (side profile)",
+      "rows": "5-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey legs/arm bars pointing right (upper and lower)",
+      "rows": "3-4, 11-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The chair is drawn as a flat side silhouette in a T/C shape. A 16px-wide bar at rows 2-5 is the backrest. A 5px-wide vertical blue strip at rows 6-10 is the seat panel, with a narrower bar at rows 10-13. Two grey bars at rows 3-4 and 11-12 are legs. The column scans at x=8 and x=11 show no front-edge line, no eave shadow and no ellipse. The seat is a narrow vertical strip, so no horizontal sitting surface is visible from above. This matches the 'side elevation chair' reference, which is wrong, so it is not three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny blue glyph of about 10 distinct colours, roughly 14x12 px. It reads as an abstract shape rather than a fallen chair: no legs, seat or backrest can be made out. It has about 2-3 lightness steps, a light blue top face and a darker blue underside. Its outline is a dark blue tint, not neutral, which agrees with the 0% neutral edge share. The measured facts show 0 visible tones per tile because the piece is smaller than a tile, so I judged density by eye. Beside the references it looks much thinner and flatter. The bench has a clear plank structure with highlights and grain. The well and stall carry many tones, stone-by-stone shading and per-element highlights. The candidate has no grain, no texture dots and no material detail, so it looks like a sticker or icon next to them. A careful artist would not accept it beside the Beodeul props.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 19574
+  }
+ ],
+ "decidedAt": "2026-10-20T14:09:20.458Z",
+ "cells": {
+  "16": [
+   "3e1b56f7fa653a53"
+  ],
+  "24": [
+   "0be91ef7cc4dab54",
+   "1516870f4d9a5935",
+   "46476553c2fa05b6",
+   "879999e3a026c88d",
+   "995994c1ed821f7f",
+   "9f83c2306fc9451a"
+  ],
+  "32": [
+   "220c44678505dd3d",
+   "50dcdc3119a1dadb",
+   "7ba47b7b6a58a320",
+   "a4ce08556d4c92a1",
+   "ba2faddd54a08d04",
+   "e60c6f627570182b"
+  ],
+  "48": [
+   "04e89b532dfdead7",
+   "107d166b69f75356",
+   "524bf7e81dc26756",
+   "a2b7838ee22b3d27",
+   "cdcde8337a7d52cd",
+   "d3bfdfd8e0fa2fdb"
+  ]
+ }
+}

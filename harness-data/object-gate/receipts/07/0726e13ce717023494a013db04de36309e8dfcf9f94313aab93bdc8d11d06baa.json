@@ -1,0 +1,335 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0726e13ce717023494a013db04de36309e8dfcf9f94313aab93bdc8d11d06baa",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "cafe chair metal back wooden seat (faces east, side view)",
+ "label": "seats34/modern_city_interior/mci-cafe-chair-e",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 4/4, 분명한 위반 0/4)",
+  "3/4: 옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 4/4, 분명한 위반 0/4)",
+   "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden seat",
+      "rows": "15-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-20"
+     },
+     {
+      "part": "backrest post",
+      "rows": "4-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat block at rows 14-21 is 12 px wide. Rows 15-17 are a mid-tone tan band that reads as the seat top seen from above. Row 18 is a lighter 1-row front-edge line (#ddbf91), followed by darker rows 19-20 (#a67a37, #8a6128) as eave shadow and apron. The legs below, rows 22-28, are 4 px wide on the front side and carry the front face, giving about 10 rows with the apron. The metal backrest is a thin vertical post (width 4, rows 5-28) in side profile. It is a slim post rather than a large panel, so the missing top on it is acceptable. The seat top is about 4 rows, similar to the green 'seat: top 5 + legs' reference, not the 2-row band in the red reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, thin side-view chair: a dark metal back with a wooden seat. It has 10 distinct colours and a median of 9 per full tile, which matches prop-hedge (11 and 10) and is close to the bench (14) and lamp (14). Flat-fill coverage is 0%, so there are no large single-colour areas. Dark edge pixels are 0% neutral, so the outline is tinted by the neighbouring material rather than a near-black sticker line, unlike the lamp at 100% neutral. The seat shows a lighter top plane and grain over a darker underside, and the metal back has a highlight and shadow edge, giving about 4 steps per material against about 5 for the references. It is a sparse object, so it is lower than the stall and well on colour count, but a careful artist would accept it next to the bench and lamp without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17284
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden seat",
+      "rows": "15-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-20"
+     },
+     {
+      "part": "metal backrest post",
+      "rows": "4-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is 12 px wide. Rows 15-18 form a tan top band that ends in a light front-edge line at row 18. Rows 19-20 below it are darker brown shadow and apron. The legs run below it through about row 28, so the front face and legs total about 9 rows. The backrest is a thin vertical metal post, so it needs no top surface. This matches the green 'seat: top 5 + legs' reference, not the 2-row band or the side-elevation chair."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a thin, sparse prop, so I judged it mostly by eye against the bench and lamp. The measured facts also hold up: 9 distinct colours per tile (hedge 10), 10 colours overall (hedge 11, bench and lamp 14), and 0% flat-fill coverage. Its dark edge pixels are 0% neutral, so the outline is tinted (dark brown beside the wooden seat, dark tone beside the metal back) rather than a black sticker line. The wooden seat and metal back each show about 4 lightness steps with some grain or highlight dots, a little shallower than the bench's 5-6 but not flat. Nothing in it looks thinner or more sticker-like than the lamp or bench, and it would sit acceptably beside them. It is slightly leaner than the references but acceptable.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19906
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden seat",
+      "rows": "15-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-20"
+     },
+     {
+      "part": "metal backrest and legs (thin posts)",
+      "rows": "5-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is a 12px wide block. Rows 15-18 form a tan top band that gets lighter toward the front and ends in a lightest front-edge line at row 18 (L=195). Rows 19-20 are darker (L=128, then 103) and act as the eave shadow and apron. Below that the legs run down to row 29 (rows 22-28 at width 8), so the front face and supports are about 11 rows. The backrest and legs are thin posts, so they need no separate top surface. The seat reads like the 'seat: top 5 + legs' reference rather than the 'band 2' one."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, thin prop (metal back, wooden seat, legs). Its measured facts sit close to the references: median 9 colours per full tile against 10 for the hedge, 0% flat-fill coverage, and 10 distinct colours against 11-14 for the thin references (bench, hedge, lamp). The dark edge pixels are 0% neutral, so the outline carries a tint, as in the hedge, and is not the uniform near-black sticker line. By eye, the seat shows a few wood steps and the metal back has a highlight and a dark tone, with no large flat areas. It has about 4 steps per material against about 5 on the bench, and the small size limits grain, so it is slightly lower than the references. It would still sit acceptably next to them without looking sticker-like or flat.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20619
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden seat",
+      "rows": "15-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-20"
+     },
+     {
+      "part": "backrest post (thin metal bar)",
+      "rows": "5-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat spans rows 14-21 and is 12 px wide. Rows 15-17 are mid tan and row 18 is the lightest, which reads as the front-edge line. Rows 19-20 step darker (#a67a37, #8a6128) as eave shadow and apron, so about 4 rows of top surface sit above the front. Below the seat, legs run to rows 28-29, giving roughly 10 rows of front face counting the apron and legs. The backrest is a 4 px wide vertical bar at rows 5-14, a thin post that does not need its own top. The structure matches the green 'seat: top 5 + legs' reference rather than the 'band 2' or 'side elevation chair' reds."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, thin chair at about one tile in size. Its measured facts sit at the level of the references: 9 colours per tile against 10 for the hedge, 10 distinct colours against 11 for the hedge and 14 for the bench and lamp, and 0% flat-fill coverage. The dark edge pixels are 0% neutral, so the outline is tinted. By eye, the dark metal back and the brown wooden seat each show about 4 value steps, with highlight edges on the seat and back. The shading is a little shallower than the bench's wood ramp, and the piece is sparse, but it is not a flat sticker with a uniform black outline. A careful artist could accept it next to the bench and lamp references. The small size and thin form explain the slightly lower density.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19147
+  }
+ ],
+ "decidedAt": "2026-10-20T08:09:08.175Z",
+ "cells": {
+  "16": [
+   "12772d736d785c2d",
+   "243a5f76404d3397"
+  ],
+  "24": [
+   "0469c1cd023a0b6c",
+   "087f64cce7fbb412",
+   "279389392a8ad1a5",
+   "35a54a024fcd221f",
+   "57ef20df2c2171e3",
+   "5fb3f954a9586c7b",
+   "68f3f77fc19a008a",
+   "836ee901612d7507",
+   "8b869d76a6a50b35",
+   "ea2f9a3bdb9a13ee",
+   "f0e8000d95ac4003",
+   "f63d6ad5025de852"
+  ],
+  "32": [
+   "7ffdd93b09e2ad71",
+   "87f330d35adf89cf",
+   "c09933bebef2d7a3"
+  ],
+  "48": [
+   "36de9c42bb0674b6",
+   "423088b7ded5c620",
+   "68eae921e705d1f7",
+   "86edbe062a4c4710",
+   "db8c5cfeabd9d0d7",
+   "f767f3a025ea1839"
+  ]
+ }
+}

@@ -1,0 +1,861 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "modern-city-interior-r16-142",
+ "title": "modern_city 실내 기물 142 (r16)",
+ "note": "#3080·#3083·#3086·#3109 에서 관문 없이 머지된 실내 기물. 그림은 tiledata/modern-city/interior/r16/grids 원본 격자를 그대로 화소로 옮긴 것.",
+ "createdAt": "2026-10-20T13:30:27.267Z",
+ "items": [
+  {
+   "sha": "1cf305361109af9205564076f823a156d5f85e07e10cc5d0b74148524f639ef9",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/amuse-bowling-pins",
+   "source": ".tmp/og-seed/mc/amuse-bowling-pins.png"
+  },
+  {
+   "sha": "9bd762ff57d56ad2daffa76712f1a46f724ba86a371b21a7f617725a2b8abf7c",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/amuse-pachinko-island",
+   "source": ".tmp/og-seed/mc/amuse-pachinko-island.png"
+  },
+  {
+   "sha": "ee69ab3b1537984c59981fede2d262cf8b61f2be249f1c85a08f7a9ea891e0a8",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/amuse-speaker-stack",
+   "source": ".tmp/og-seed/mc/amuse-speaker-stack.png"
+  },
+  {
+   "sha": "7bf0215a167b91076b78370a531dde26ccd24e3975dec21dc584066b531eb32f",
+   "kind": "container",
+   "label": "modern_city_interior/arcade-cabinet-pair",
+   "source": ".tmp/og-seed/mc/arcade-cabinet-pair.png"
+  },
+  {
+   "sha": "ed734eb829fc2e6a252ee4573793a7d006e67ac75a30cc2acbd12f69e19f7a5f",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/arcade-claw-machine",
+   "source": ".tmp/og-seed/mc/arcade-claw-machine.png"
+  },
+  {
+   "sha": "662a7c7481296a0831f9552ade862f6677127f801ec3b3430a5c9db0f40ff837",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/arcade-medal-changer",
+   "source": ".tmp/og-seed/mc/arcade-medal-changer.png"
+  },
+  {
+   "sha": "9cbed16337225fee31ba891877afa2174eb228d0a0b0ef41bbed099e7613b918",
+   "kind": "low_furniture",
+   "label": "modern_city_interior/arcade-prize-counter",
+   "source": ".tmp/og-seed/mc/arcade-prize-counter.png"
+  },
+  {
+   "sha": "f1953bcfe503e4912e1a598ced58f7823315a929374ea4b20bbe4cfce4c36689",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/arcade-purikura",
+   "source": ".tmp/og-seed/mc/arcade-purikura.png"
+  },
+  {
+   "sha": "42f34b77eb0611799bf416c6dd8452972fc9a694ec01cef67a3739f24e977982",
+   "kind": "container",
+   "label": "modern_city_interior/arcade-racing-cabinet",
+   "source": ".tmp/og-seed/mc/arcade-racing-cabinet.png"
+  },
+  {
+   "sha": "267d1028fba1bf49b5471d1c6b79ffcfc4efd8f0714ff1f4d843cd7388df258e",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/arcade-rhythm",
+   "source": ".tmp/og-seed/mc/arcade-rhythm.png"
+  },
+  {
+   "sha": "6045598576a8435d2a5a7312ee4c6324e08ccfa256c86d3ab246a21a3705b364",
+   "kind": "box",
+   "label": "modern_city_interior/art-plinth",
+   "source": ".tmp/og-seed/mc/art-plinth.png"
+  },
+  {
+   "sha": "81f62f25cd642a1b7a7f6313b71d3530ebc1a0722b400c6aed546170ca80793d",
+   "kind": "low_furniture",
+   "label": "modern_city_interior/aud-lectern",
+   "source": ".tmp/og-seed/mc/aud-lectern.png"
+  },
+  {
+   "sha": "089e17c5efc96dbfe77e759e798e7f7096441726252c8533b80b08444e218e32",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/book-shelf",
+   "source": ".tmp/og-seed/mc/book-shelf.png"
+  },
+  {
+   "sha": "1b89580d1adc31f8a520c37f8e2d231a9937c4aa9483078dc7cd657297dc16cd",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/cafe-maid-stage",
+   "source": ".tmp/og-seed/mc/cafe-maid-stage.png"
+  },
+  {
+   "sha": "b1cdfa6478911de11094c9c8e063b9b1b5a02a7ee3c101134028d73b8859f04a",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/cinema-concession",
+   "source": ".tmp/og-seed/mc/cinema-concession.png"
+  },
+  {
+   "sha": "498a56ca242b5e324e4ebf7ea2dc091e4d81bb3997a5be30ca0f0b3fe5e99a4f",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/clinic-pet-kennels",
+   "source": ".tmp/og-seed/mc/clinic-pet-kennels.png"
+  },
+  {
+   "sha": "f04d73c7d390f648eb4f23e2f2bef952641d0ce3fac93ba846bf0caa111d9bb7",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/clinic-pharmacy-shelf",
+   "source": ".tmp/og-seed/mc/clinic-pharmacy-shelf.png"
+  },
+  {
+   "sha": "f95f8c87f5708a8b96d318a61e3f056024628b54446a49a8215b2a9fda2f9cd9",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/council-trophy-case",
+   "source": ".tmp/og-seed/mc/council-trophy-case.png"
+  },
+  {
+   "sha": "f7c0b2c1b2e4ea29b7c3c04efdb681700fee240ba0856d0ce4f47dfe23e3fdc9",
+   "kind": "frame",
+   "label": "modern_city_interior/court-witness-stand",
+   "source": ".tmp/og-seed/mc/court-witness-stand.png"
+  },
+  {
+   "sha": "d3744cd998806f868423db25e82ae449b217b702bef947c90b324096e8d44fc1",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/dept-accessory-wall",
+   "source": ".tmp/og-seed/mc/dept-accessory-wall.png"
+  },
+  {
+   "sha": "a580baa94598c47bce8852e1eb269c44a33c70d6fe6c1db5d64f493665ceeed9",
+   "kind": "structure",
+   "label": "modern_city_interior/dept-directory-kiosk",
+   "source": ".tmp/og-seed/mc/dept-directory-kiosk.png"
+  },
+  {
+   "sha": "6222616a52a9a72bd970c10b549aa2fefb5175e2a3b32116f8f9d3ee76967346",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/dept-eyewear-tower",
+   "source": ".tmp/og-seed/mc/dept-eyewear-tower.png"
+  },
+  {
+   "sha": "720114d95dc1ee10d72acc8475e07abdeaef976a05b0ef8a44e05cedba7b0dd3",
+   "kind": "container",
+   "label": "modern_city_interior/dept-handbag-vitrine",
+   "source": ".tmp/og-seed/mc/dept-handbag-vitrine.png"
+  },
+  {
+   "sha": "3232ead27f7e32779f269e99a1cb626b53945138e1398d810c721cbfc813da23",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/dept-nail-bar",
+   "source": ".tmp/og-seed/mc/dept-nail-bar.png"
+  },
+  {
+   "sha": "afb5c5464f7640721327b5ae795a4a88b61f37c9d9e9effaa53ce23c9a01698a",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/dept-perfume-wall",
+   "source": ".tmp/og-seed/mc/dept-perfume-wall.png"
+  },
+  {
+   "sha": "b0d7fa588494e5301a2e173b869c5c22658bcc1b2fc4d8cdf8b5824c03303035",
+   "kind": "frame",
+   "label": "modern_city_interior/dept-rack-cool",
+   "source": ".tmp/og-seed/mc/dept-rack-cool.png"
+  },
+  {
+   "sha": "080de13166b0c3523b42ffcf43e06bbe4199607bfc0641d5e91e10551b82da2b",
+   "kind": "frame",
+   "label": "modern_city_interior/dept-rack-mono",
+   "source": ".tmp/og-seed/mc/dept-rack-mono.png"
+  },
+  {
+   "sha": "a0cfe752593f250ad38fd8a35055e3b11d72fb8372db922110d2ce29c3ef7eac",
+   "kind": "frame",
+   "label": "modern_city_interior/dept-rack-pastel",
+   "source": ".tmp/og-seed/mc/dept-rack-pastel.png"
+  },
+  {
+   "sha": "f4baca39aa41475addc8680b875319f331f13a19e3ba81837dadbc8cdd2180d2",
+   "kind": "frame",
+   "label": "modern_city_interior/dept-rack-warm",
+   "source": ".tmp/og-seed/mc/dept-rack-warm.png"
+  },
+  {
+   "sha": "c9fa62d2541eb7d3586244ae583044ced4bb694cd64f87acf5b337cfac6577c2",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/dept-shoe-wall",
+   "source": ".tmp/og-seed/mc/dept-shoe-wall.png"
+  },
+  {
+   "sha": "f657fdb84776f2c02f28132a664610e081e197b81890ce1b402b4d26e5b7d37b",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/dept-sneaker-wall",
+   "source": ".tmp/og-seed/mc/dept-sneaker-wall.png"
+  },
+  {
+   "sha": "105dde5a7b95ba05c87457f784c282c52d016f50f2590d64697deb40a40784b4",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/food-drink-bar",
+   "source": ".tmp/og-seed/mc/food-drink-bar.png"
+  },
+  {
+   "sha": "8c8406a6596f677c35f5d1b5722061d4050f45c64e19198fe3ddf81ccbfa8f04",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/food-ticket-machine",
+   "source": ".tmp/og-seed/mc/food-ticket-machine.png"
+  },
+  {
+   "sha": "50646d7c93aad034802ea07019d2058e5179596f0e9913709da334bcea081815",
+   "kind": "frame",
+   "label": "modern_city_interior/home-appliance-rack",
+   "source": ".tmp/og-seed/mc/home-appliance-rack.png"
+  },
+  {
+   "sha": "6f8462e3e463eba876ca876150424b77c69c66ac8d7529403336fc19dba96b5a",
+   "kind": "frame",
+   "label": "modern_city_interior/home-drying-rack",
+   "source": ".tmp/og-seed/mc/home-drying-rack.png"
+  },
+  {
+   "sha": "eaa5d6e58c5dc2f88af2b405f4824e1707621bef15b6e81f722f750e628878bf",
+   "kind": "container",
+   "label": "modern_city_interior/home-ofuro",
+   "source": ".tmp/og-seed/mc/home-ofuro.png"
+  },
+  {
+   "sha": "261e13003d1cee8db7e2fd70eec890d19e1a9364ddf3bbe2e562b2620a3d7f0e",
+   "kind": "container",
+   "label": "modern_city_interior/home-school-bag",
+   "source": ".tmp/og-seed/mc/home-school-bag.png"
+  },
+  {
+   "sha": "a046b2a7401d034256db33636731542ca8a3c733f79cff9156af70b19e9a60e4",
+   "kind": "container",
+   "label": "modern_city_interior/home-umbrella-stand",
+   "source": ".tmp/og-seed/mc/home-umbrella-stand.png"
+  },
+  {
+   "sha": "a1c3b112643f77f8f09a81ddd04336b034250bad5b3fb1ce5a57cd3361daafb0",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/home-washing-machine",
+   "source": ".tmp/og-seed/mc/home-washing-machine.png"
+  },
+  {
+   "sha": "0ad311aeeca850b54958c80f17b80d2015f44d57bd648e03ce41332a2ab9f2a0",
+   "kind": "other",
+   "label": "modern_city_interior/hosp-ambulance-e",
+   "source": ".tmp/og-seed/mc/hosp-ambulance-e.png"
+  },
+  {
+   "sha": "5f03e2e31d90d778e40951c38db31fa210f061f68fb8b19d3138fcaf41867587",
+   "kind": "other",
+   "label": "modern_city_interior/hosp-ambulance-w",
+   "source": ".tmp/og-seed/mc/hosp-ambulance-w.png"
+  },
+  {
+   "sha": "ae0eca4ef85834e61a4ca3ce7c8a465aef6d153868cf8ba0e79f96c0c3cfddca",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/hosp-anesthesia",
+   "source": ".tmp/og-seed/mc/hosp-anesthesia.png"
+  },
+  {
+   "sha": "83af7bdf600c9e66787f5540f96eaccb1896a20ed14177ee6f68f1636648291b",
+   "kind": "other",
+   "label": "modern_city_interior/hosp-crash-cart",
+   "source": ".tmp/og-seed/mc/hosp-crash-cart.png"
+  },
+  {
+   "sha": "e7e6da43d9236b3a163adac168f82e86b12102fe996f5896bae34a976a6ff107",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/hosp-ct-scanner",
+   "source": ".tmp/og-seed/mc/hosp-ct-scanner.png"
+  },
+  {
+   "sha": "5f008cb349ab6517c829584e33b4463a8c692d22112a836ca3d6460be739dcf0",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/hosp-ticket-dispenser",
+   "source": ".tmp/og-seed/mc/hosp-ticket-dispenser.png"
+  },
+  {
+   "sha": "a055233d8a6d29c476cc8fabfbd4fbfc0ea6e1179ba59602b51c12b592a8f8d9",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/hosp-vitals-bank",
+   "source": ".tmp/og-seed/mc/hosp-vitals-bank.png"
+  },
+  {
+   "sha": "7db3ea02f9ff02128b591dbb0612a373e10e245e074c4f246cdde229e0c98a8e",
+   "kind": "structure",
+   "label": "modern_city_interior/hospital-curtain-screen",
+   "source": ".tmp/og-seed/mc/hospital-curtain-screen.png"
+  },
+  {
+   "sha": "503574fac6d14bb3ba7249bbbc4f41d60146692f4aabfc40a9326d2049f9fdef",
+   "kind": "container",
+   "label": "modern_city_interior/hospital-med-cabinet",
+   "source": ".tmp/og-seed/mc/hospital-med-cabinet.png"
+  },
+  {
+   "sha": "9972df5fa369e7a2a41059dcf8230b7605c52085b8f7e3f8275d2869c49e6b69",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/hospital-nurse-station",
+   "source": ".tmp/og-seed/mc/hospital-nurse-station.png"
+  },
+  {
+   "sha": "a214354373b226fdafa79c44d8c37e060f8779ee0b0e9d015f1fe5499bfddba0",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/hospital-water-dispenser",
+   "source": ".tmp/og-seed/mc/hospital-water-dispenser.png"
+  },
+  {
+   "sha": "64287d8fdcb4d5ef02a2644696d11fe95f77281b4e7c669194e18f8b01c2e81e",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/hotel-capsule-pods",
+   "source": ".tmp/og-seed/mc/hotel-capsule-pods.png"
+  },
+  {
+   "sha": "9865edbdea5f0bcba692c1afb8f4c71c584ba69f56ae823ca441129857ddf8d4",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/ind-lathe",
+   "source": ".tmp/og-seed/mc/ind-lathe.png"
+  },
+  {
+   "sha": "03f20dbbbfafcbb3d2a4d708e8df6cbe3ac9f69043e0a86702d0fcf2255ace1f",
+   "kind": "wall_mounted",
+   "label": "modern_city_interior/infirmary-eye-chart",
+   "source": ".tmp/og-seed/mc/infirmary-eye-chart.png"
+  },
+  {
+   "sha": "5ef72f9832bc00be4e5b090aa34b3577b5b65f6493329520744b298f5d4e442a",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/izakaya-beer-server",
+   "source": ".tmp/og-seed/mc/izakaya-beer-server.png"
+  },
+  {
+   "sha": "7098a6f7fe77a556b25ed5d11c840330264ac945f9c4587a480746e349983e4c",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/jp-tokonoma",
+   "source": ".tmp/og-seed/mc/jp-tokonoma.png"
+  },
+  {
+   "sha": "ba61786ad083451944a8b188f8028a9e06e3b7d7d6dda93da73e9686113b8d8e",
+   "kind": "structure",
+   "label": "modern_city_interior/jp-torii",
+   "source": ".tmp/og-seed/mc/jp-torii.png"
+  },
+  {
+   "sha": "3e66b3620eece744469bdcd522c0ec90e122bd5fb31dd77c70ba3f1978791282",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/jumbo-arcade-dance-stage",
+   "source": ".tmp/og-seed/mc/jumbo-arcade-dance-stage.png"
+  },
+  {
+   "sha": "0648654ff88928b9ee41dbfaae3faf47b7b7942cf6612b2357deb1c41ffc1180",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/jumbo-arcade-racing-twin",
+   "source": ".tmp/og-seed/mc/jumbo-arcade-racing-twin.png"
+  },
+  {
+   "sha": "fad7c4c624b0f94be84e1a8744e136daa729b5f1e15a82667de2e654d20795f8",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/jumbo-hosp-mri",
+   "source": ".tmp/og-seed/mc/jumbo-hosp-mri.png"
+  },
+  {
+   "sha": "c866c7638c2d132b7f94470b49160b1fddabe39e9ef09c1b1c4f32c36243f052",
+   "kind": "structure",
+   "label": "modern_city_interior/jumbo-station-ticket-office",
+   "source": ".tmp/og-seed/mc/jumbo-station-ticket-office.png"
+  },
+  {
+   "sha": "0de1eee333511d5a51e55d8e72da5494f29754b70379ad1bfa2ff1ec4bff9193",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/kinder-cubby",
+   "source": ".tmp/og-seed/mc/kinder-cubby.png"
+  },
+  {
+   "sha": "939113435fbcf497b0142e14f8fd3158561a700f8afb8a49d638a7064d123992",
+   "kind": "flat",
+   "label": "modern_city_interior/kinder-play-mat",
+   "source": ".tmp/og-seed/mc/kinder-play-mat.png"
+  },
+  {
+   "sha": "44e67b0aa4b459d8ce850bc47cf7a58e5d6b2097be623186e66d86b07e3e93dc",
+   "kind": "container",
+   "label": "modern_city_interior/konbini-atm",
+   "source": ".tmp/og-seed/mc/konbini-atm.png"
+  },
+  {
+   "sha": "2ef31785b4e8df81c608ab09169d7a88b17a2348352ab57861d33347270ae183",
+   "kind": "container",
+   "label": "modern_city_interior/konbini-bento",
+   "source": ".tmp/og-seed/mc/konbini-bento.png"
+  },
+  {
+   "sha": "b240a4916dc3b00e431db6a65079519daee87511e3d5a4600782bafd1f4c1990",
+   "kind": "container",
+   "label": "modern_city_interior/konbini-copier",
+   "source": ".tmp/og-seed/mc/konbini-copier.png"
+  },
+  {
+   "sha": "51c3225ba64e6c2c2e1f784d3fbff6513ac0afaa62206758cc66a594bd1bb06a",
+   "kind": "container",
+   "label": "modern_city_interior/konbini-hot-snack",
+   "source": ".tmp/og-seed/mc/konbini-hot-snack.png"
+  },
+  {
+   "sha": "04846f7222305e44bd712061534aa231f3096a9259ff882ae78d3042b0f558ec",
+   "kind": "container",
+   "label": "modern_city_interior/konbini-magazine-rack",
+   "source": ".tmp/og-seed/mc/konbini-magazine-rack.png"
+  },
+  {
+   "sha": "e3510edbf2ec0ed12f7afdb89b53894d0abe1eb2bb1c781e11d14c93e139c40b",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/lab-fume-hood",
+   "source": ".tmp/og-seed/mc/lab-fume-hood.png"
+  },
+  {
+   "sha": "39e6a1e39df6c08b36f53383b273b62c77efc729154f41041954ebfa65b5d34c",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/lab-reagent-shelf",
+   "source": ".tmp/og-seed/mc/lab-reagent-shelf.png"
+  },
+  {
+   "sha": "3b0e76ef2981a46a77c78ef5c0f8ef49f95c18b2f33d93dec942399087f905f9",
+   "kind": "low_furniture",
+   "label": "modern_city_interior/lecture-podium",
+   "source": ".tmp/og-seed/mc/lecture-podium.png"
+  },
+  {
+   "sha": "47d4168d073c4084b1eeba37e2b0007b3784d0f7d098c4eaf2d4b9392d8ba11d",
+   "kind": "other",
+   "label": "modern_city_interior/library-carrel",
+   "source": ".tmp/og-seed/mc/library-carrel.png"
+  },
+  {
+   "sha": "9351f35adc47154eaf62e20ab4210856a9a8ce125fa01849ed7f70c9526ccd33",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/library-shelf",
+   "source": ".tmp/og-seed/mc/library-shelf.png"
+  },
+  {
+   "sha": "36b42df13922a65f1696ef702631496ef55fec13c485eabaccf680ee71ffc6e6",
+   "kind": "structure",
+   "label": "modern_city_interior/manga-booth",
+   "source": ".tmp/og-seed/mc/manga-booth.png"
+  },
+  {
+   "sha": "6da5bbabe5679d5ab96b29c83ce5fc115c9d757fee82e8611aca7beedd621740",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/manga-shelf",
+   "source": ".tmp/og-seed/mc/manga-shelf.png"
+  },
+  {
+   "sha": "fcd7f2031b447f3b8c5922817dbaaab8a49cd75b75fd6d96324b5c8af106584d",
+   "kind": "container",
+   "label": "modern_city_interior/mart-baguette-basket",
+   "source": ".tmp/og-seed/mc/mart-baguette-basket.png"
+  },
+  {
+   "sha": "42758aa23da04be7733a971555ade8f05a763be88392b3785dc84c963a2d9c99",
+   "kind": "container",
+   "label": "modern_city_interior/mart-basket-stacker",
+   "source": ".tmp/og-seed/mc/mart-basket-stacker.png"
+  },
+  {
+   "sha": "41efd0fbebe15b3098e0abeacb78c6cb676cb6817e10bc890f2ac3526032ba38",
+   "kind": "frame",
+   "label": "modern_city_interior/mart-bread-rack",
+   "source": ".tmp/og-seed/mc/mart-bread-rack.png"
+  },
+  {
+   "sha": "185ca19d0f0c90cb08ba887ac9684145c7fb2d42f68e7b05c2611c9d6fe066ec",
+   "kind": "low_furniture",
+   "label": "modern_city_interior/mart-cake-showcase",
+   "source": ".tmp/og-seed/mc/mart-cake-showcase.png"
+  },
+  {
+   "sha": "e6cd39947ced063a599a5497d187e84e4ca2ce66771196da8a5c713d6f749f4d",
+   "kind": "container",
+   "label": "modern_city_interior/mart-candy-bins",
+   "source": ".tmp/og-seed/mc/mart-candy-bins.png"
+  },
+  {
+   "sha": "b1284dc2e1141684703bb6468aebc980725c00e1af263867b73def85d58f35ed",
+   "kind": "other",
+   "label": "modern_city_interior/mart-cart-bay",
+   "source": ".tmp/og-seed/mc/mart-cart-bay.png"
+  },
+  {
+   "sha": "6c5c2ed00f9f3e43821fca964502ad813ea5a05ff8c3cfebeef1aef2d0b2fc79",
+   "kind": "low_furniture",
+   "label": "modern_city_interior/mart-cold-case",
+   "source": ".tmp/og-seed/mc/mart-cold-case.png"
+  },
+  {
+   "sha": "1246bb1d7cdb5600efc9f7907f99f8876c66e1542eaba2380ad1f2ac5f574e59",
+   "kind": "low_furniture",
+   "label": "modern_city_interior/mart-dairy-open",
+   "source": ".tmp/og-seed/mc/mart-dairy-open.png"
+  },
+  {
+   "sha": "97bef01f877de94360fda1a1898fc61f89f0beaae5f5bf5bd107febd10b33ff3",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/mart-donut-case",
+   "source": ".tmp/og-seed/mc/mart-donut-case.png"
+  },
+  {
+   "sha": "2fda653b322f70373246323f3b4727f962fb3c4c192f753d3aebd3d2bac3e730",
+   "kind": "low_furniture",
+   "label": "modern_city_interior/mart-drink-open",
+   "source": ".tmp/og-seed/mc/mart-drink-open.png"
+  },
+  {
+   "sha": "b187c41b7bb98f958af2d90553c0a13256fb5acfae680bdbfbd9887dafd4a83d",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/mart-gondola-cans",
+   "source": ".tmp/og-seed/mc/mart-gondola-cans.png"
+  },
+  {
+   "sha": "b5895ddc10978b2217bdfd530ce66c02e591ac10c9db8b55e8741e67575d6da1",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/mart-gondola-cereal",
+   "source": ".tmp/og-seed/mc/mart-gondola-cereal.png"
+  },
+  {
+   "sha": "5e10749c8c17779eb44ff28866b81d1a9a517ee189dd960848b215e28d149610",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/mart-gondola-detergent",
+   "source": ".tmp/og-seed/mc/mart-gondola-detergent.png"
+  },
+  {
+   "sha": "7c2c2e42a6e1eae097d1ecf43f812ff4eabd98fa2234d5f6b12177c6468bbc81",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/mart-gondola-household",
+   "source": ".tmp/og-seed/mc/mart-gondola-household.png"
+  },
+  {
+   "sha": "b44987bd830fe7b0788f14867152bfcd8e6b3fa49fbff6c208193917eb04f9df",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/mart-gondola-ramen",
+   "source": ".tmp/og-seed/mc/mart-gondola-ramen.png"
+  },
+  {
+   "sha": "b21dc52c2ff43769216dd64d7d6b709c3afcb4d43b99ecacf66ea70d38a83308",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/mart-gondola-snack",
+   "source": ".tmp/og-seed/mc/mart-gondola-snack.png"
+  },
+  {
+   "sha": "75b5aa096bd38b111fdd23da273c50f7b0f1b9607d1e15ba714fa198660e7b43",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/mart-gondola-tea",
+   "source": ".tmp/og-seed/mc/mart-gondola-tea.png"
+  },
+  {
+   "sha": "a85db6417f714c180a6a3e7f2a89bd330aff65740e0a3baedbf481887ba6e9ce",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/mart-gondola-water",
+   "source": ".tmp/og-seed/mc/mart-gondola-water.png"
+  },
+  {
+   "sha": "8e61b07c8a1cee199ec18b419031a9130d7288e605751e060332ac6a57e797a4",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/mart-liquor-fridge",
+   "source": ".tmp/og-seed/mc/mart-liquor-fridge.png"
+  },
+  {
+   "sha": "4f44c7af4ac86f141c16840b7cf516a51cec4f53090315a885ce607efa265eb2",
+   "kind": "low_furniture",
+   "label": "modern_city_interior/mart-meat-case",
+   "source": ".tmp/og-seed/mc/mart-meat-case.png"
+  },
+  {
+   "sha": "2d14966d6d595a05b8e6f4e206f8c6fd2845d4c06054555b3d74084a25026ba8",
+   "kind": "low_furniture",
+   "label": "modern_city_interior/mart-meat-showcase",
+   "source": ".tmp/og-seed/mc/mart-meat-showcase.png"
+  },
+  {
+   "sha": "a134c0f2a6364adea2a89e6cfcecb015956c2096144aff14def53a1a9e269cde",
+   "kind": "low_furniture",
+   "label": "modern_city_interior/mart-sale-endcap",
+   "source": ".tmp/og-seed/mc/mart-sale-endcap.png"
+  },
+  {
+   "sha": "ed88af1404b62d64218b4bfaf614bd7e4c8ee5bef37f7ee619b7f88cfd84335e",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/mart-scale-station",
+   "source": ".tmp/og-seed/mc/mart-scale-station.png"
+  },
+  {
+   "sha": "076193600ad41f7d4b8dd8cca71009191e8295a14c2ff7d33a37d85526d6c37e",
+   "kind": "low_furniture",
+   "label": "modern_city_interior/mart-veg-wall",
+   "source": ".tmp/og-seed/mc/mart-veg-wall.png"
+  },
+  {
+   "sha": "75503713a8f00f8651231159ea5a3712c1d8f4ba19c5d09bb6a72949123c7a1a",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/mci-fridge",
+   "source": ".tmp/og-seed/mc/mci-fridge.png"
+  },
+  {
+   "sha": "80b86f2280990d5dccb21b32e17a606a88de5f8382dd6f511580735ff27c7295",
+   "kind": "low_furniture",
+   "label": "modern_city_interior/mci-hosp-bed",
+   "source": ".tmp/og-seed/mc/mci-hosp-bed.png"
+  },
+  {
+   "sha": "1018191575b56c299bb2c5a657a44e18bf1df4bc4f9fe4ac55bae6811045beee",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/mci-magazine",
+   "source": ".tmp/og-seed/mc/mci-magazine.png"
+  },
+  {
+   "sha": "a300d5dde378eac4556fdc94d8b71f3bb6d71e44276f1f67a10574b17ab138a3",
+   "kind": "box",
+   "label": "modern_city_interior/mci-mailboxes",
+   "source": ".tmp/og-seed/mc/mci-mailboxes.png"
+  },
+  {
+   "sha": "26aefc1d341f2c72ba2b8868eb2c6714c43b33b43ab3515a8fd6a8005e49deca",
+   "kind": "other",
+   "label": "modern_city_interior/mci-med-cart",
+   "source": ".tmp/og-seed/mc/mci-med-cart.png"
+  },
+  {
+   "sha": "a4c099625c46682226f721b7acf59d3b619055983eda017a1eded6d7f6635e96",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/mci-pallet",
+   "source": ".tmp/og-seed/mc/mci-pallet.png"
+  },
+  {
+   "sha": "bfca4c5b6a63ae77caa1ba5b20a47c7c16c33210cd76ac22123c49aa1aac6aaa",
+   "kind": "structure",
+   "label": "modern_city_interior/mci-shelf-office",
+   "source": ".tmp/og-seed/mc/mci-shelf-office.png"
+  },
+  {
+   "sha": "89eb532642d5cd7390f8912d03ed56e6cfac2149bdc0e372c70f6228588be38c",
+   "kind": "container",
+   "label": "modern_city_interior/mci-toilet",
+   "source": ".tmp/og-seed/mc/mci-toilet.png"
+  },
+  {
+   "sha": "9d063ee2adca8153bffa28554e0fd09f1e857c0850da207c217eb8c275362894",
+   "kind": "frame",
+   "label": "modern_city_interior/mci-tv-stand",
+   "source": ".tmp/og-seed/mc/mci-tv-stand.png"
+  },
+  {
+   "sha": "fb2fda158788050b395cde19842f8f53debf17acf5d3459652086b3789bcd53e",
+   "kind": "structure",
+   "label": "modern_city_interior/museum-partition-wall",
+   "source": ".tmp/og-seed/mc/museum-partition-wall.png"
+  },
+  {
+   "sha": "72d41a4d6fb6c4db277fcb3c643b817011ef164e1597043ee9dc26c9cd84e703",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/music-amp",
+   "source": ".tmp/og-seed/mc/music-amp.png"
+  },
+  {
+   "sha": "8a45315ffdfb88bfcad8df9115ce68b49b7c89b4a4632a879f8681ea2532f22e",
+   "kind": "structure",
+   "label": "modern_city_interior/office-water-cooler",
+   "source": ".tmp/og-seed/mc/office-water-cooler.png"
+  },
+  {
+   "sha": "1347c925fab6d5e0ef53aa16359027f283d298a53b3a9ae94602d4f47020d417",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/park-pay-machine",
+   "source": ".tmp/og-seed/mc/park-pay-machine.png"
+  },
+  {
+   "sha": "862cbca3f61c24f0b3576cf34dca85bd5b1ddc86d9fa3d019a9e6dc54d8bde06",
+   "kind": "column",
+   "label": "modern_city_interior/park-pillar",
+   "source": ".tmp/og-seed/mc/park-pillar.png"
+  },
+  {
+   "sha": "1d726fa634e7e4440823ead74b19d991c16627c87582e2aa56fdea368b6eb6ea",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/pub-atm",
+   "source": ".tmp/og-seed/mc/pub-atm.png"
+  },
+  {
+   "sha": "aed5d42bbb2bbf4eaf0a663ac27fcf4ddb88f3283cd95f24a29ad46f0ba180fa",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/pub-fire-locker",
+   "source": ".tmp/og-seed/mc/pub-fire-locker.png"
+  },
+  {
+   "sha": "cf16f7fc94b0c9d97aed5400fe260415dc823c7cf1583803df7b5fc35f399a92",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/pub-service-window",
+   "source": ".tmp/og-seed/mc/pub-service-window.png"
+  },
+  {
+   "sha": "073d407493c9392dddab8407e0b0743de3e8e2e1024f3537c8e1106ff032fcfa",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/pub-ticket-dispenser",
+   "source": ".tmp/og-seed/mc/pub-ticket-dispenser.png"
+  },
+  {
+   "sha": "3f8940b4b5192617888196c4b3f01999bdf7cae41edb96d2649bda3cde839405",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/rest-bottle-shelf",
+   "source": ".tmp/og-seed/mc/rest-bottle-shelf.png"
+  },
+  {
+   "sha": "ab3238d212a447cca302473fb2f82a665c23e15cf428cd47f32dd4a01f019101",
+   "kind": "frame",
+   "label": "modern_city_interior/rest-wine-rack",
+   "source": ".tmp/og-seed/mc/rest-wine-rack.png"
+  },
+  {
+   "sha": "544d2ab9818e8966f988b225fc0c326aabf3d782dd38309bc5ca3b3890353724",
+   "kind": "frame",
+   "label": "modern_city_interior/roof-fence",
+   "source": ".tmp/og-seed/mc/roof-fence.png"
+  },
+  {
+   "sha": "1ed611cbfea838dbade52d7c7adb6c2b591c5aab338ad7db38b0235226cc92f0",
+   "kind": "structure",
+   "label": "modern_city_interior/roof-stair-hut",
+   "source": ".tmp/og-seed/mc/roof-stair-hut.png"
+  },
+  {
+   "sha": "926287e1bd784b9572df3c37131650ef8132dc22aac5d6e3a01f140d360ccfbc",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/roof-water-tank",
+   "source": ".tmp/og-seed/mc/roof-water-tank.png"
+  },
+  {
+   "sha": "aca3ea98d8fa6ccc2856d6ddc957828a54e727ae5e22c5407478a07546bc346f",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/school-cleaning-locker",
+   "source": ".tmp/og-seed/mc/school-cleaning-locker.png"
+  },
+  {
+   "sha": "cc14e85fa6f9f5934d58ddda7e53f18cc335a859ac630de901311b8a4e4c93db",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/school-piano",
+   "source": ".tmp/og-seed/mc/school-piano.png"
+  },
+  {
+   "sha": "99c16d5d7655f9d363584ffced8f53f4101473dd70968ae569a285376e5ed33b",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/sento-shoe-locker",
+   "source": ".tmp/og-seed/mc/sento-shoe-locker.png"
+  },
+  {
+   "sha": "87c1c790c55c3f75bfffbf54c5156e403626fce8e6847b59c6798f2e35c30e57",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/shop-drug-gondola",
+   "source": ".tmp/og-seed/mc/shop-drug-gondola.png"
+  },
+  {
+   "sha": "60cbf2c404cac82eed350e725e506a5ad39dcc5dcb3906becc4013fc779cf9ca",
+   "kind": "low_furniture",
+   "label": "modern_city_interior/shop-flower-cooler",
+   "source": ".tmp/og-seed/mc/shop-flower-cooler.png"
+  },
+  {
+   "sha": "3b4d0e32d87f0054a601634242f84db5570d45250635e14019d0bb4710a1bb02",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/shop-peg-wall",
+   "source": ".tmp/og-seed/mc/shop-peg-wall.png"
+  },
+  {
+   "sha": "fc03874e069f81647c1922c418bf6c3e30738b35b73fd3497c5a378180dbc81e",
+   "kind": "frame",
+   "label": "modern_city_interior/shop-stationery-rack",
+   "source": ".tmp/og-seed/mc/shop-stationery-rack.png"
+  },
+  {
+   "sha": "3edc9138a4ddabb58bd022b81b893ea95d06bfb8a7de44dd4c83feec053f2204",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/shop-used-shelf",
+   "source": ".tmp/og-seed/mc/shop-used-shelf.png"
+  },
+  {
+   "sha": "2a3a33c4faecf6039110ac72d90997ae9bf4e73871c9d2632435690ac41dd19f",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/station-coin-lockers",
+   "source": ".tmp/og-seed/mc/station-coin-lockers.png"
+  },
+  {
+   "sha": "cee4f57dc096c065856b3dc0f9238442af92716025cc9f370a355510315af01f",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/station-ic-charger",
+   "source": ".tmp/og-seed/mc/station-ic-charger.png"
+  },
+  {
+   "sha": "8f2c1b9d5eff2c6f78389556d9f7f262b82a8a0754107ecf035ae220f861544a",
+   "kind": "column",
+   "label": "modern_city_interior/subway-pillar-sign",
+   "source": ".tmp/og-seed/mc/subway-pillar-sign.png"
+  },
+  {
+   "sha": "bfdaeb3a958c0b9687f35757fad9be65e2baeeb4d89a83dabf714b54bcfd5e85",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/subway-ticket-machine",
+   "source": ".tmp/og-seed/mc/subway-ticket-machine.png"
+  },
+  {
+   "sha": "2dfa0c7e4d60fdafa1a5991df98afeebcc8df63296d7c1b6b66243140c086116",
+   "kind": "container",
+   "label": "modern_city_interior/subway-trash-bins",
+   "source": ".tmp/og-seed/mc/subway-trash-bins.png"
+  },
+  {
+   "sha": "68032a6842a537adeb8f0598094ae89f11e045ce6394d69430e68ded38b33fb9",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/subway-vending-machine",
+   "source": ".tmp/og-seed/mc/subway-vending-machine.png"
+  },
+  {
+   "sha": "91dea3aa2d876f9f0df87e2cd1342783b0e3810800244620578b63a2bd69389a",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/svc-arcade-shopfront",
+   "source": ".tmp/og-seed/mc/svc-arcade-shopfront.png"
+  },
+  {
+   "sha": "41feb82bdd3ab2039fccf6c25c190d2d2ad0b89ea8fa6c25eac52339f8fb1de2",
+   "kind": "container",
+   "label": "modern_city_interior/svc-dryer-stack",
+   "source": ".tmp/og-seed/mc/svc-dryer-stack.png"
+  },
+  {
+   "sha": "7ff6a620e3e90360d4b4d1190b8cc2c2e486a3a4cb93fb8c8f072cef924e1bcb",
+   "kind": "container",
+   "label": "modern_city_interior/svc-salon-basin",
+   "source": ".tmp/og-seed/mc/svc-salon-basin.png"
+  },
+  {
+   "sha": "410bb22ed97e28e3ae5496e70f7d84e61511d5c42694adf9259717aabc77172c",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/svc-salon-mirror",
+   "source": ".tmp/og-seed/mc/svc-salon-mirror.png"
+  },
+  {
+   "sha": "4ac5322046f4cdd70883c38e076eeb565e4171513949ad6b2fd99ec7d40fd946",
+   "kind": "container",
+   "label": "modern_city_interior/svc-washer-row",
+   "source": ".tmp/og-seed/mc/svc-washer-row.png"
+  },
+  {
+   "sha": "cc43d60adc09e7fbf9fac7e5937f17897c419cd30f00ed70d183548635f15dec",
+   "kind": "other",
+   "label": "modern_city_interior/tr-bus-bay",
+   "source": ".tmp/og-seed/mc/tr-bus-bay.png"
+  },
+  {
+   "sha": "c84c70e7d163d4a2ef08f796a1126d76a3f60bd0f6c171d1dcbe7e64d0b726be",
+   "kind": "frame",
+   "label": "modern_city_interior/train-luggage-rack",
+   "source": ".tmp/og-seed/mc/train-luggage-rack.png"
+  }
+ ]
+}

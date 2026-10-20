@@ -21,7 +21,7 @@ import { openResourceModal } from "@/editor/panels/resourceModal";
 import { openWorldPanel } from "@/editor/panels/worldEntries";
 import { deserialize, ProjectFormatError } from "@/project/io";
 import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
-import { createFlagshipDemoProject, type FlagshipDemoId } from "@/project/flagship";
+import type { FlagshipDemoId } from "@/project/flagship/types";
 import {
   createProjectPackage,
   ProjectPackageError,
@@ -773,11 +773,11 @@ function menuCommands(id: MenuId, topbar: HTMLElement): readonly MenuCommand[] {
  * 지운 칩셋 위의 데모(이슬 마을·천공의 계단·학습 예시·설산·얼음 평원·포켓몬풍·농장)는 2026-10-07 저작권 정리로 뺐다. */
 function sampleProjectCommands(): readonly MenuCommand[] {
   return [
-    item("폴른 스타: 추락한 별과 태엽의 성녀 (기본 JRPG 데모)", "menu-project-demo-chrono-bell", () => loadFlagshipDemoInEditor("chrono-bell")),
-    item("폴른 스타: 추락한 별과 태엽의 성녀 — 바로 플레이 ▶", "menu-project-play-chrono-bell", () => loadFlagshipDemoInEditor("chrono-bell", true)),
-    item("아스트라 호라이즌: 다우닝 시티와 여명의 날개 (기본 몬스터 수집 데모)", "menu-project-demo-emerald-crown", () => loadFlagshipDemoInEditor("emerald-crown")),
-    item("아스트라 호라이즌: 다우닝 시티와 여명의 날개 — 바로 플레이 ▶", "menu-project-play-emerald-crown", () => loadFlagshipDemoInEditor("emerald-crown", true)),
-    item("시타마치 사계절 (기본 현대 연애 데모)", "menu-project-demo-shitamachi", () => loadFlagshipDemoInEditor("shitamachi-fourth-season")),
+    item("폴른 스타: 추락한 별과 태엽의 성녀 (기본 JRPG 데모)", "menu-project-demo-chrono-bell", () => void loadFlagshipDemoInEditor("chrono-bell")),
+    item("폴른 스타: 추락한 별과 태엽의 성녀 — 바로 플레이 ▶", "menu-project-play-chrono-bell", () => void loadFlagshipDemoInEditor("chrono-bell", true)),
+    item("아스트라 호라이즌: 다우닝 시티와 여명의 날개 (기본 몬스터 수집 데모)", "menu-project-demo-emerald-crown", () => void loadFlagshipDemoInEditor("emerald-crown")),
+    item("아스트라 호라이즌: 다우닝 시티와 여명의 날개 — 바로 플레이 ▶", "menu-project-play-emerald-crown", () => void loadFlagshipDemoInEditor("emerald-crown", true)),
+    item("시타마치 사계절 (기본 현대 연애 데모)", "menu-project-demo-shitamachi", () => void loadFlagshipDemoInEditor("shitamachi-fourth-season")),
     { kind: "separator" },
     item("Scarloxy 몬스터 초원 데모", "menu-project-scarloxy-demo", () => void newScarloxyDemoProject()),
   ];
@@ -924,7 +924,9 @@ async function newScarloxyDemoProject(): Promise<void> {
   toast("Scarloxy 몬스터 초원 데모를 불러왔습니다", "ok");
 }
 
-function loadFlagshipDemoInEditor(id: FlagshipDemoId, playNow = false): void {
+async function loadFlagshipDemoInEditor(id: FlagshipDemoId, playNow = false): Promise<void> {
+  // 데모 빌더는 예제 그림 수십 MB 를 끌고 온다 — 편집기 첫 화면 번들에 넣지 않고 누를 때 받는다.
+  const { createFlagshipDemoProject } = await import("@/project/flagship");
   const demo = createFlagshipDemoProject(id);
   store.replaceProject(demo.project, { label: `${demo.manifest.title} 데모 열기`, origin: "human" });
   focusLoadedProjectStartMap();

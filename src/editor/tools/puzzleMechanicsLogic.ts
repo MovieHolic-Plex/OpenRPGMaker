@@ -29,6 +29,7 @@ import {
   rect,
   revealInWaves,
   se,
+  sfx,
   setSw,
   setVar,
   shake,
@@ -85,7 +86,7 @@ function tabletEvent(ctx: MechanicContext, b: Built, cell: Cell, text: string): 
   return actEvent(ctx, b, "hint_tablet", "단서 석판", cell, [se("decision1"), textCmd(ctx.hint ?? text)]);
 }
 
-const wrongBuzz = (line: string): Command[] => [se("buzzer1"), ...tintPulse("200,40,40", 0.3, 100, 400), shake(3, 300), textCmd(line)];
+const wrongBuzz = (line: string): Command[] => [sfx("wrong"), ...tintPulse("200,40,40", 0.3, 100, 400), shake(3, 300), textCmd(line)];
 
 const blueTheme: RevealTheme = { flash: "white", pulse: "170,210,255", waves: ["magic", "dust", "sparkle"] };
 const fireTheme: RevealTheme = { flash: "white", pulse: "255,170,90", waves: ["fire", "smoke", "sparkle"] };
@@ -147,7 +148,7 @@ export const sealCrystalsLightsOut: MechanicDef = {
         `봉인 수정 ${i + 1}`,
         c,
         [
-          se("ice1"),
+          sfx("crystal-ping"),
           ...links[i]!.map((j) => particles("magic", 500, b.at(cells[j]!))),
           ...links[i]!.map(toggle),
           shake(1, 150),
@@ -343,8 +344,9 @@ export const brazierRelationalOrder: MechanicDef = {
 // 3. 오르간 메아리 (cathedral_organ_tuning) — 다섯 음 기억해 발판으로 따라 치기
 // ---------------------------------------------------------------------------
 
-const NOTE_SE = ["bell", "chime1", "chime2", "holy3"] as const;
-const NOTE_NAMES = ["종", "맑은 방울", "낮은 방울", "성가"] as const;
+/** 네 발판은 같은 오르간 음색에 음높이만 다르다 — 따라 치기 기억은 귀로도 구별돼야 한다(옛 판은 종·방울·성가 샘플이 길이·음량이 제각각이라 겹쳐 뭉개졌다). */
+const NOTE_SE = ["organ-c", "organ-e", "organ-g", "organ-c2"] as const;
+const NOTE_NAMES = ["낮은 도", "미", "솔", "높은 도"] as const;
 const NOTE_CELLS: readonly Cell[] = [
   { x: 5, y: 7 },
   { x: 14, y: 7 },
@@ -374,9 +376,12 @@ export const organEchoMemory: MechanicDef = {
         obj("candelabra", 12, 3),
         obj("tall stained window", 3, 1),
         obj("tall stained window", 6, 1),
-        obj("stained glass", 12, 1),
+        obj("tall stained window", 12, 1),
         obj("tall stained window", 16, 1),
-        ...[9, 13].flatMap((y) => [obj("pew", 2, y), obj("pew", 16, y)]),
+        // 양옆 회중석 줄 + 봉헌 초 — 옛 판은 바닥 절반이 빈 회색이었다. 발판(5·14열)과 붉은 길(9~10열)은 비워 둔다.
+        ...[7, 9, 11, 13].flatMap((y) => [obj("pew", 2, y), obj("pew", 16, y)]),
+        obj("votive stand", 7, 6),
+        obj("votive stand", 12, 6),
         obj("holy water font", 2, 5),
         obj("holy water font", 17, 5),
       ],
@@ -388,7 +393,7 @@ export const organEchoMemory: MechanicDef = {
     };
     const b = buildRoom(ctx, spec, "cathedral_organ_tuning", [{ x: 9, y: 3 }]);
     const vProg = ctx.v("echo_progress", "메아리 따라 친 음 수");
-    const blink = (i: number, ms: number): Command[] => [...b.room.set(`note_${i}`, 1), se(NOTE_SE[i]!), particles("sparkle", 600, b.at(NOTE_CELLS[i]!)), wait(ms), ...b.room.set(`note_${i}`, 0)];
+    const blink = (i: number, ms: number): Command[] => [...b.room.set(`note_${i}`, 1), sfx(NOTE_SE[i]!), particles("sparkle", 600, b.at(NOTE_CELLS[i]!)), wait(ms), ...b.room.set(`note_${i}`, 0)];
     const organ = actEvent(
       ctx,
       b,
@@ -486,7 +491,7 @@ export const leverMastermind: MechanicDef = {
     const vHits = ctx.v("judge_hits", "판정 석상이 센 맞은 레버 수");
     const levers = LEVER_X.map((x, i) =>
       actEvent(ctx, b, `lever_${i}`, `레버 ${i + 1}`, { x, y: 4 }, [
-        se("key"),
+        sfx("switch-clack"),
         ifSw(swLever[i]!, true, [setSw(swLever[i]!, false), ...b.room.set(`lever_${i}`, 0)], [setSw(swLever[i]!, true), ...b.room.set(`lever_${i}`, 1)]),
         shake(1, 100),
       ]),

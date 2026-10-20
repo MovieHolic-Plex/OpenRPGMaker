@@ -6,7 +6,7 @@
  * 변형은 기준 지도와 같은 지형(작업·바탕·배치 번호)을 그대로 짓고, 만들어진 칸 배열 위에 침수·균열·바닥 갈아엎기·고사목을 얹는다.
  * 여정 검사는 「설계 막 순서」 대신 「모든 장소가 어떤 수단으로든 닿는다」(free)로 바꾸고, 막이 바뀐 장소는 notes 로 알린다.
  *
- * 작업 문법·검사의 정본: tiledata/worldmap-kit/kit/lib/kit_variant.py (이 파일의 스키마는 그 거울).
+ * 작업 문법·검사의 정본: oprn-worldmap-kit 저장소 tiledata/worldmap-kit/kit/lib/kit_variant.py (이 파일의 스키마는 그 거울).
  */
 import type { GameEvent, GameMap, MapId, Project, WorldmapVariantSpec } from "@/project/types";
 import type { WorldmapBuildRequest, WorldmapBuildResult } from "@/editor/worldmap/worldmapBuild";

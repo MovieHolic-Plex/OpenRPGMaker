@@ -1,7 +1,7 @@
 import { BATTLER_HIRES_SHEETS } from "@/assets/battlerHiresSheets";
 import { BATTLER_IDLE_ANIMATIONS } from "@/assets/battlerIdleAnimations";
 import { FARMING_LIFE_UI_ASSETS } from "@/assets/farmingLifeUi";
-import { hasLifeLedgerData } from "@/player/lifeLedger";
+import { hasLifeLedgerData } from "@/player/lifeLedgerData";
 import { PLAYER_RUNTIME_ASSET_PATHS } from "@/project/playerDeploymentManifest";
 import type { Project } from "@/project/types";
 

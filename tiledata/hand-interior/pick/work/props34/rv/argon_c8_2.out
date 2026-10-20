@@ -1,0 +1,7 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"cabinet:gem+gemr","view34":"PASS","quality":"FAIL","reason":"The top plane is well-lit, but the gem sprites lack specular highlights and the gemb pieces taper to a 1px bottom stem that reads like a mushroom or goblet rather than a cut gemstone."}
+{"id":"cabinet:bolt+boltg+boltr","view34":"PASS","quality":"FAIL","reason":"The cabinet top plane reads in 3/4 view, but the plaid fabric bolts have a 1px checkerboard dot pattern that looks like perforated Lego bricks or Swiss cheese instead of rolled cloth."}
+{"id":"cabinet:bottle+bottler+bottley","view34":"PASS","quality":"FAIL","reason":"The 3/4 cabinet top is clear, but all three shelves repeat the exact same x=2,6,10 grid of tiny 3px-wide bottles with no specular glass highlight."}
+{"id":"cabinet:candle","view34":"PASS","quality":"FAIL","reason":"The 3/4 cabinet frame passes, but all nine stocked candles have lit flames burning directly against the underside of the wooden shelves above flat white wax blocks."}
+{"id":"cabinet:cheese","view34":"PASS","quality":"FAIL","reason":"The cabinet top plane is readable, but the cheese wedges are unoutlined diagonal pixel staircases with no rind-to-paste contrast and the wheels read as flat yellow blobs with twin dots."}

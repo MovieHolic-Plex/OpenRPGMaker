@@ -1,0 +1,354 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "83db0b1d8c2262383196f096d83485f552137bfa11cc198ffa6974097e517964",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "bath stool and wash basin",
+ "label": "seats34/jp_city_interior/pb-wash-stool",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 0/4)",
+  "3/4: 윗면 3행 < 4 (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 0/4)",
+   "윗면 3행 < 4 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 71,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stool seat (yellow wooden block)",
+      "rows": "6-8",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wash basin (blue bowl with water)",
+      "rows": "7-11",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Column x=5 shows the stool's outline at row 5, a highlight at row 6 and yellow at rows 7-8. That is a 3-row seat top, ending in a dark front-edge line at row 9. Below it the front face runs rows 10-13 with a dark slot line at row 11 and brown rows 12-13, about 5 rows including the edge line. The basin is a round bowl whose width profile widens from 8 to 15 px and narrows again. At x=12 the rim is light (row 8) and dark water shows inside (rows 9-10), with a light highlight at row 11. That reads as an opening seen from above. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a single-tile prop of about 16x14 px with 12 colours. That matches the hedge (10 per tile) and is close to the bench and lamp (14 colours each across the whole piece). It has no 5x5 flat fills, and its dark edge pixels are 0% neutral, so the outline is tinted dark brown/blue-leaning rather than a black sticker line. Even so, it reads as a small icon. The yellow stool and the blue basin are each only about 3 lightness steps (highlight, mid, dark), against 5-6 on the references' wood, tile and stone ramps. The basin is a flat-looking blue disc with little water or rim detail. The stool has almost no plank grain or per-part shading, so the two objects are hard to tell apart. Placed next to the bench, well or stall, it looks thinner and more sticker-like. I'm failing it on that shallow shading, since the case is borderline and the rule is to fail when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 22944
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stool seat (yellow block)",
+      "rows": "6-8",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "wash basin (blue bowl)",
+      "rows": "7-11",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "In column x=5 the stool has a light yellow top at rows 6-8 (highlight at row 6, yellow at rows 7-8). A dark line at row 9 acts as the front-edge line and eave shadow. Below it, a yellow front face runs through rows 10-13, with a dark opening at the bottom. The basin at right is a round blue bowl with a lighter rim at rows 8 and 11 (x=12) and darker water between them. Its width profile widens from 13 to 15 and narrows again, so it reads as an ellipse mouth. The stool is a small chest-like block, but its seat surface is seen from above and its front face is 4 rows, so the drawing reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny prop, roughly 12x12 source pixels, a yellow-orange stool with a blue basin, and it is much smaller than the references. The measured facts are acceptable: 0% flat-fill coverage, 0% neutral dark edge pixels (so the outline is tinted, not near-black), and 12 colours per tile, which is within the reference range of 10-20. However, only 12 colours in total are shared between two materials (wood stool and blue basin) plus the outline. That leaves about 3 lightness steps per material, against the 5-6 steps in the hedge, well and stall. Texture is limited to a few highlight dots and shows no per-plank grain or per-stone shading. It reads as a small, clean icon rather than a Beodeul-grade prop, and the material ramps are shallower than the same-kind references. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 21559
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden stool body (yellow box)",
+      "rows": "6-8",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "wash basin (blue round bowl with water)",
+      "rows": "7-13",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stool is the largest body. At x=5 and x=8, rows 6-8 are a light yellow top band (L about 200-221). A dark line at row 9 (L=52) acts as the front-edge line and eave shadow. Below it, rows 10-13 form the front face, with a dark opening at x=8 and a grey ground shadow at row 14. The top band is 3 rows, which is thin but has a clear edge line, so it is more than a 1-2 row rim. The basin at x=12 shows an outline at row 7, a light rim at row 8, dark water at rows 9-10, a light highlight at row 11 and a lower bowl at rows 12-13. Its silhouette widens from 8 to 15 and narrows again at 13-14, so it reads as a round bowl seen from above with water inside."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a very small sprite, about one tile, and it reads like an icon beside the larger references. The numbers are acceptable. It has 12 colours per tile, which is near the hedge (10) and above the bench and lamp. Flat-fill coverage is 0%. Dark edge pixels are 0% neutral, so the outline is tinted: dark brown beside the wood and dark blue beside the basin. The weakness is the shading ramps. The 12 colours are split across at least two materials (wood stool, blue basin) plus outline and highlight, which leaves only about 3-4 steps per material against the 5-6 in the stall and well. The wood and basin show little grain, scallop or per-element texture, and the basin's rim and water are only lightly modelled. The shapes are also hard to read as a stool plus a basin. It is clean and not a black-outlined sticker, but it is thinner and flatter than the same-kind references, so I fail it on shading depth when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 23325
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden bath stool",
+      "rows": "5-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wash basin (blue bowl with water)",
+      "rows": "7-14",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "In column x=5 the stool has a light yellow top band at rows 6-8 (highlight row 6, yellow rows 7-8). A dark front-edge line at row 9 closes it. Below that is a front face with a drawn opening at rows 10-13, and a gray shadow at row 14. The basin to the right is round, with a lighter water highlight at rows 8 and 11 inside a darker rim, so its contents are visible from above. Its width grows from 8 to 15 and then narrows again. The stool top is only about 3 rows, but it is a clear surface bounded by an edge line, and the front face is 4 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a very small sprite, about one 16x16 tile, and it reads as an icon. Its measured facts are acceptable: 12 colours per tile, 0% flat-fill coverage, and 0% neutral dark edge pixels, so the outline is tinted and not a black sticker line. But the 12 colours are split across two materials, a yellow wood stool and a blue basin, which leaves roughly 3-4 lightness steps each. The reference bench puts about 14 colours into one wood material, and the hedge puts 11 into one foliage material, so the candidate is shallower per material. By eye the basin and stool are small chunky shapes with little grain, per-plank texture or highlight clusters. They look flatter and more sticker-like than the bench, hedge and well. It is not clearly equal to the references, so it fails under the when-in-doubt rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20032
+  }
+ ],
+ "decidedAt": "2026-10-20T06:47:26.156Z",
+ "cells": {
+  "16": [
+   "686830dda3281f54"
+  ],
+  "24": [
+   "24b73baad0e1bd8b",
+   "4e70d7e240f09016",
+   "75c6d176111d6b4e",
+   "da7e3a0c869d07bc",
+   "e3e2c2e3d635e8fe",
+   "e6c4152e455be9b3"
+  ],
+  "32": [
+   "3c1f5a749a56363d",
+   "4392519aaed7dcde",
+   "5043eb0b954faf14",
+   "5d7d8e8b2eb48fac",
+   "7d841186cea62462",
+   "f999c01f6350cf6f"
+  ],
+  "48": [
+   "48de36c0954937c6",
+   "64ff29264d9796a2",
+   "8c2f21e446ff3167",
+   "9cb58422cb805b4d",
+   "a5c2920baa413c6e",
+   "d14723bdaa702f90"
+  ]
+ }
+}

@@ -1,0 +1,330 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bb4abe7d16e4f3122cc18ee846cab01c3d9a4792bfb26c5f9c8edcc977ace1b6",
+ "width": 48,
+ "height": 32,
+ "kind": "seat",
+ "name": "auditorium folding seats row of 3 (faces south toward the viewer)",
+ "label": "seats34/modern_city_interior/aud-seat-row",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 8/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 8/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 16,
+  "darkV5": 41,
+  "nearBlackEdge": 0.14,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "18-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "backrest top band",
+      "rows": "4-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Each seat has a seat-cushion band at rows 18-20 that ends in a bright front-edge line at row 21. Rows 22-23 are darker shadow and front face, and the grey legs run down through rows 24-29, so the front face is about 7 rows. The backrest has a top band at rows 4-7 ending in a light line at row 7, with shadow at row 8, above a face-on panel at rows 9-17. The gold armrests at the sides are plain vertical strips with no receding side face. The seat top is only about 4 rows, like the 'seat: top 5 + legs' reference rather than the 'band 2' one."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 19 distinct colours and a median of 15 per 16x16 tile, close to the stall (17) and well (20) and above the hedge (10). 5x5 flat-fill coverage is 0%. Only 21% of dark edge pixels are neutral, so the outline leans toward a dark red-brown tint of the seat material rather than a black sticker line. Each red seat shows about 4 lightness steps (highlight on the top edge, light, mid, dark and a deep shadow), with gold armrests and legs, and the three seats are separated by value. The texture is modest: the cushions have some highlight and shade variation but little grain or speckle, which makes it slightly simpler than the stall and well. Overall it would sit acceptably next to the references without looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17026
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest top",
+      "rows": "4-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "seat cushion top",
+      "rows": "18-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-23"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Three red folding seats are drawn from the front. In every seat column the seat cushion has a lighter band at rows 18-20, then a bright 1-row front-edge line at row 21 (L=151), then darker shadow at rows 22-23. That gives a seat top of about 4 rows. Below it are the seat front and the grey legs, rows 22-28, about 7 rows of front face. The backrest has the same pattern: a lighter band at rows 4-6, an edge line at row 7 and a shadow at row 8, so it also has a top surface. The gold armrests at the sides are narrow vertical strips, not a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is three red folding seats with gold legs. The red ramp shows about 4 steps: a highlight on the seat tops and backs, a mid red, a darker red on the cushions and sides, and a deep red-brown in the gaps. Outlines are a dark red-brown that leans red, not neutral, which matches the 21% near-neutral share, so they read as dark material tone. Measured facts are 15 colours per tile, 0% flat fill and 19 distinct colours. Colours per tile sit in the range of the stall (17), well (20) and hedge (10). The 19 distinct colours are well below the stall (40) and well (38), though the candidate is a smaller, simpler object. Texture is limited: the red surfaces are smooth, with only stitch-like highlights and subtle gradients, and there is no grain or speckle like the hedge leaf clumps or the stall's goods. The gold legs are small and carry about 2 steps. The piece is clean and coherent, but it is shallower than the best references, with fewer steps and less surface texture. It is close enough to the bench and hedge in craft to be borderline. The 5x5 flat-fill figure is 0%, so there are no large flat areas. Verdict: it sits slightly below the reference bar on texture and step count, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18371
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushions (three)",
+      "rows": "18-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "backrest top band",
+      "rows": "4-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "armrests",
+      "rows": "11-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "In column x=24 the seat cushion has a lighter band at rows 18-20, a bright front-edge line at row 21 and darker front and eave rows at 22-23. Metal legs continue to row 29, so the front face totals about 7 rows. A darker band at rows 15-17 separates the seat from the backrest. The backrest also has a lighter top band at rows 5-6, an edge highlight at row 7 and a dark shadow row at 8. The inset panel at rows 9-14 is a vertical face. The seat top is seen from above, so it reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is three red folding seats with gold legs. Its measured facts are 15 colours per tile median, 0% flat-fill coverage, 21% near-neutral dark edge pixels and 19 distinct colours. That is comparable to the references on per-tile density (hedge 10, stall 17, well 20) and has no flat fills. The outline leans dark red-brown, with only 21% neutral pixels, so it is a tinted material tone rather than a black sticker line. The weak points are the 19 total colours, well below the stall (40) and well (38), and the shading on the red seat ramp, which has about 4 steps (highlight, light, mid, dark) against the 5-6 steps on Beodeul materials. The seat backs are smooth with little grain or speckle, and the three seats are near-identical repeats. The gold legs and armrests carry only 2-3 tones. It is clean and readable, and close to the hedge on richness, but slightly shallower than the stall and well on shading depth and texture. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17433
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest top (cushion crown)",
+      "rows": "4-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "seat cushion",
+      "rows": "18-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-23"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "In column x=24 the seat cushion has a light band at rows 18-21. Row 21 is a bright front-edge line (#e8737e), followed by darker eave shadow at rows 22-23. Below that is the front face and legs at rows 24-29. The backrest top has the same pattern: light rows 4-7, edge line at row 7, shadow at row 8. The backrest panel (rows 9-17) and the gold armrests are seen face-on. The armrests are not a receding side face. The seat top is a short band, but it reads as a seat surface with an edge line and shadow, not just a 1-2 row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is three red theatre seats with gold legs and trim. Measured: 15 colours per full tile, which is above the bench, hedge and cheese stall and close to the well. Flat-fill coverage is 0% and only 21% of dark edge pixels are neutral, so the outlines lean dark red-brown beside the red upholstery, not black. Against that, the whole piece has only 19 distinct colours versus 38-40 for the stall and well. The red ramp shows about 4 steps (highlight, light, mid, dark/deep) with soft cushion folds and small gold studs, but little grain or speckle. The three seats are near-identical repeats with fairly smooth surfaces and a simple silhouette, so it reads somewhat cleaner and flatter than the richest Beodeul props. It is acceptable next to the hedge and bench, but it falls short of the stall and well in shading depth and texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17805
+  }
+ ],
+ "decidedAt": "2026-10-20T07:20:07.079Z",
+ "cells": {
+  "16": [
+   "2db7ac0eefe41b8c",
+   "4fee51ce1bf7011f",
+   "7d8a87ee1f5b68f5",
+   "8da28c039bf3f10d",
+   "906b99da519e84cf",
+   "f7c847bd20a66c27"
+  ],
+  "24": [
+   "818e889c28a8eb18",
+   "8924814a8f7f00af",
+   "9b2d8b9ae9bd433d",
+   "a9f0c87e4c93b6ed",
+   "cacfe3ea04d49b9b",
+   "dbba220ffc5397a9",
+   "f7e464a24491d6c1",
+   "f93af5d5df75aa51"
+  ],
+  "32": [
+   "0e0e745f35113911",
+   "22d4d36524caef77",
+   "585a2b567063eb37",
+   "8f4c4787aef2cf84",
+   "9adab1c012e8c9d5",
+   "ef24f9a8b464772e"
+  ],
+  "48": [
+   "42fbe85a2d08a342",
+   "fe562db90e329f40"
+  ]
+ }
+}

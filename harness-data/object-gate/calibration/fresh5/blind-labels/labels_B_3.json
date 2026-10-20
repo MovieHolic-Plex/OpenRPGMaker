@@ -1,0 +1,178 @@
+[
+ {
+  "id": "s003",
+  "kind": "column",
+  "top_rows": 0,
+  "front_rows": 5,
+  "label": "bad",
+  "why": "Dome head rounded on upper edge only, rows 1-4 head then body: front elevation, no cap ellipse."
+ },
+ {
+  "id": "s007",
+  "kind": "tall_furniture",
+  "top_rows": 0,
+  "front_rows": 20,
+  "label": "bad",
+  "why": "Face-on display window: wooden header rows 1-10 and glass rows 11-24 are vertical faces, no top edge line."
+ },
+ {
+  "id": "s011",
+  "kind": "low_furniture",
+  "top_rows": 3,
+  "front_rows": 14,
+  "label": "bad",
+  "why": "Operating table is face-on capsule: only rows 29-31 light strip then front panel to row 42, reads front elevation."
+ },
+ {
+  "id": "s015",
+  "kind": "seat",
+  "top_rows": 0,
+  "front_rows": 6,
+  "label": "bad",
+  "why": "Face-on pew: backrest rows 0-8, seat band rows 9-13 with only 2 dark front rows, no readable seat top."
+ },
+ {
+  "id": "s019",
+  "kind": "seat",
+  "top_rows": 6,
+  "front_rows": 5,
+  "label": "good",
+  "why": "Round cushion ellipse rows 1-6, cushion edge rows 5-7 plus pole and base rows 8-12."
+ },
+ {
+  "id": "s023",
+  "kind": "low_furniture",
+  "top_rows": 8,
+  "front_rows": 5,
+  "label": "good",
+  "why": "Top with dough lumps rows 2-9, edge line row 10, drawer front rows 11-15."
+ },
+ {
+  "id": "s027",
+  "kind": "low_furniture",
+  "top_rows": 7,
+  "front_rows": 5,
+  "label": "good",
+  "why": "Top with sink rows 2-8, edge row 9, wood front rows 10-14."
+ },
+ {
+  "id": "s031",
+  "kind": "seat",
+  "top_rows": 9,
+  "front_rows": 5,
+  "label": "good",
+  "why": "Teal body top rows 11-19 and front band rows 20-24; reads as 3/4 despite odd shape."
+ },
+ {
+  "id": "s035",
+  "kind": "box",
+  "top_rows": 5,
+  "front_rows": 4,
+  "label": "unsure",
+  "why": "Upper trap lid rows 0-4, front rows 5-8; lower trap lid 9-11, front 12-15; each front under 8 and view partly frontal."
+ },
+ {
+  "id": "s039",
+  "kind": "structure",
+  "top_rows": 40,
+  "front_rows": 30,
+  "label": "good",
+  "why": "Sloped tile roof plane about rows 4-45 over front facade and steps below."
+ },
+ {
+  "id": "s043",
+  "kind": "seat",
+  "top_rows": 0,
+  "front_rows": 3,
+  "label": "bad",
+  "why": "Side-elevation bench: backrest rows 1-4, seat slat rows 6-8 only 3 rows, no seat top."
+ },
+ {
+  "id": "s047",
+  "kind": "seat",
+  "top_rows": 3,
+  "front_rows": 6,
+  "label": "bad",
+  "why": "Seat top only about rows 11-13 (3 rows) before front rows 14-19; below minimum of 4."
+ },
+ {
+  "id": "s051",
+  "kind": "seat",
+  "top_rows": 1,
+  "front_rows": 5,
+  "label": "bad",
+  "why": "Front-elevation chair: backrest rows 0-8, seat highlight about 1-2 rows, no seat top."
+ },
+ {
+  "id": "s055",
+  "kind": "seat",
+  "top_rows": 6,
+  "front_rows": 3,
+  "label": "good",
+  "why": "Teal tufted cushion top rows 2-7, front rows 8-10 plus legs rows 11-13."
+ },
+ {
+  "id": "s059",
+  "kind": "seat",
+  "top_rows": 12,
+  "front_rows": 5,
+  "label": "good",
+  "why": "Fur-topped stone dais top rows 9-20 and front rows 21-25."
+ },
+ {
+  "id": "s063",
+  "kind": "seat",
+  "top_rows": 6,
+  "front_rows": 3,
+  "label": "good",
+  "why": "Plank top rows 1-6 with light edge line row 6, front rows 7-9, legs 10-12; borderline front."
+ },
+ {
+  "id": "s067",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Gray rock, organic."
+ },
+ {
+  "id": "s071",
+  "kind": "low_furniture",
+  "top_rows": 5,
+  "front_rows": 4,
+  "label": "good",
+  "why": "Desk top rows 3-7 with items, front rows 8-11, chair tops above."
+ },
+ {
+  "id": "s075",
+  "kind": "front_prop",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Cloth drying rack, front-prop exempt."
+ },
+ {
+  "id": "s079",
+  "kind": "structure",
+  "top_rows": 38,
+  "front_rows": 52,
+  "label": "good",
+  "why": "Tile roof slope rows 0-40 over two-storey facade."
+ },
+ {
+  "id": "s083",
+  "kind": "column",
+  "top_rows": 0,
+  "front_rows": 22,
+  "label": "bad",
+  "why": "Stele with dome top rows 0-5 rounded only, no cap plate; front elevation."
+ },
+ {
+  "id": "s087",
+  "kind": "seat",
+  "top_rows": 0,
+  "front_rows": 12,
+  "label": "bad",
+  "why": "Face-on reclining seat: back rows 1-10 and seat rows 11-22 are vertical panels, no seat top."
+ }
+]

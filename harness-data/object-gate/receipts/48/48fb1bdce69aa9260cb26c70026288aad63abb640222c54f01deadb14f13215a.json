@@ -1,0 +1,322 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "48fb1bdce69aa9260cb26c70026288aad63abb640222c54f01deadb14f13215a",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "제어반(움직임, 2칸) (control console)",
+ "label": "atlas_biome_interior/props34/control console",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 7/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 7/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 44,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "right",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "right",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "console top deck with indicator lights",
+      "rows": "15-19",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21"
+     },
+     {
+      "part": "front cabinet with three drawer panels",
+      "rows": "22-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Row 14 is a light 1-row back edge. Rows 15-19 form a band about 5 rows tall (dark row 15, mid-gray rows 16-18 with the LED row, lighter row 19). The band ends in a 1-row lighter front-edge line at row 20, which is also wider, like an overhanging lip. Row 21 is a dark eave shadow. Below that, rows 22-31 are a dark front face with drawer panels and a base, about 10 rows. This matches the reference 'cabinet: top 5 + edge + eave'. The four antenna stalks at rows 9-13 are small details and were not counted as the main body. The top band could be read as a face-on panel because of its LEDs, but the edge line and shadow below it are enough to count it as a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small 2-tile console: a grey-blue body with a lighter top edge, a row of knobs and lights, a panel grid, and a darker base. The measured facts support passing. It carries 12 distinct colours per full tile, against 10 for the hedge, 17 for the stall and 20 for the well. It has 0% flat-fill coverage, so no 5x5 block is a single flat colour. None of its dark edge pixels are neutral, so the outline carries a tint, as Beodeul's does, rather than a black sticker line. Its 14 distinct colours match the bench and lamp, which are thinner props. The hedge has 11, and the stall and well reach about 40 only because they are much larger and more complex. By eye the body has about 4 lightness steps, a little under the references' 5-6, but the knob and button detail and the panel variation keep it from looking flat. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21915
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "console top panel with indicator lights",
+      "rows": "14-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21"
+     },
+     {
+      "part": "antenna posts with red tips",
+      "rows": "9-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 14-20 form a band across the full width. It starts with a light outline at row 14 and has a grey panel with indicator lights in rows 15-19. It ends in a light front-edge line at row 20 (L=172), followed by a dark shadow at row 21 (L=38). Below that, rows 21-31 are the front face: three dark drawer or panel bays with slots, and a dark base at rows 29-31. The antenna posts at rows 9-13 are small details and are not part of the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small 2-tile console. It has 14 distinct colours and a median of 12 colours per full tile, which is above the hedge (10) and level with the simple bench and lamp props (14 colours each). Flat-fill coverage is 0%, so there are no big flat areas. The dark edge pixels are 0% neutral, so the outline leans blue-grey and reads as a dark tone of the metal body, not a black sticker line. By eye, the body has about 4 lightness steps (highlight top edge, light panel, mid, dark base). Rows of knobs, buttons and red indicator lights break up the panel, which gives dot-level texture. It is not as rich as the stall or well (38-40 colours), but those are much larger, more complex pieces. Next to the simpler references it does not look thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23779
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "console top panel (control deck with indicator lights)",
+      "rows": "14-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-21"
+     },
+     {
+      "part": "antenna posts with red tips",
+      "rows": "9-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front cabinet face with dark panels",
+      "rows": "21-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is 32px wide. Rows 14-20 form a deck band with a light highlight on row 14, a panel with indicator lights on rows 16-18, and a lighter front-edge line on row 20 that is wider than the body. Row 21 is a dark eave shadow below it. Rows 21-31 are the vertical south face, with recessed dark panels and a dark base, so there are 11 front rows. The antennas on rows 9-13 are small details. The top band could be read as a tilted control panel, but the edge line plus the shadow row meets evidence (a)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small 2-tile console: a grey-blue metal body with a row of knobs or buttons, small red indicator lights on top, and a dark base. Measured facts: 12 colours per tile (above the hedge at 10, below the well at 20 and stall at 17), 0% flat-fill coverage, 0% neutral dark edge pixels (outline is tinted), and 14 distinct colours (equal to the bench and lamp, far below the stall at 40 and well at 38). The tinted outline is a dark blue-grey, matching the material rather than a black sticker line. The panel carries button and dial detail with some highlights, but it is a small piece with about 4 lightness steps against 5-6 on the richer references, so its shading is shallower. Density is slightly lower than the rich references but comparable to the hedge and bench. Overall it is acceptable next to the references, with no sticker look and no flat fills, though a careful artist might want more ramp steps and surface grain on the body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19814
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "console top / control panel slab with indicator lights",
+      "rows": "14-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21"
+     },
+     {
+      "part": "antenna stubs with red tips",
+      "rows": "9-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body spans rows 14-31 at full width 32. Rows 14-20 form a top band: a light back rim at row 14, a panel with indicator lights in rows 16-19, and a bright front-edge line at row 20 (L=172). Row 21 is a dark eave shadow (L=38). Below it, rows 22-28 are a front face with drawer or panel recesses, and rows 29-31 are a dark base. That gives about 11 rows of front face. The thin antenna stubs at rows 9-13 are small details and are not part of the main body. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The console is a small, simple 2-tile prop. The measured facts put it at the level of the simpler references. It has 12 colours per 16x16 tile, against 10 for the hedge and 17-20 for the stall and well. It has 0% flat-fill coverage, so there are no 5x5 flat areas. All of its dark edge pixels are tinted (0% neutral), so the outline reads as a dark blue-grey of the body material rather than a black sticker line. It has 14 distinct colours, equal to the bench and lamp and above the hedge (11), which is reasonable for a small object. By eye, the body has about 4 lightness steps, with a lit top edge, a mid panel face and a dark base. Rows of knobs, buttons and indicator lights on the panel and top add texture dots, though it is a little less rich than the stall or well. A careful artist would accept it next to the references without it looking thinner or flatter than the bench, hedge or lamp.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 27500
+  }
+ ],
+ "decidedAt": "2026-10-20T07:22:59.449Z",
+ "cells": {
+  "16": [
+   "395b50fac79b9fb5",
+   "abc6d074062cc915",
+   "b05a344247559860",
+   "e08af37d30d93c43"
+  ],
+  "24": [
+   "0bb547eba5b68faf",
+   "0c857aa66efb041c",
+   "161572d24ae2b853",
+   "181ae8fb85662e9a",
+   "2388cdffff0a6a78",
+   "23ab174b21b559e7",
+   "244d7d79b0850078",
+   "37c8ac929fa9c6b5",
+   "3ffd4c598dc346bb",
+   "579a13c161ee0d13",
+   "5ea7cdf2847f81b9",
+   "67d9cba20675b2de",
+   "7541669301bc653a",
+   "8229fb980195e7c7",
+   "965fa522649b0775",
+   "cec6c4790859efb4",
+   "cee98ed13da9a5e9",
+   "fac6454b94018850"
+  ],
+  "32": [
+   "0ed2e07795052660"
+  ],
+  "48": [
+   "041305dff904622d",
+   "64e1244c2199dda7",
+   "a865feaa2f7792ca",
+   "bcfe8b5af3e5c253",
+   "d26bbe17e268274a",
+   "e8ec67830b555d83"
+  ]
+ }
+}

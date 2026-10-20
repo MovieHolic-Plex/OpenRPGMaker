@@ -26,6 +26,7 @@ import { ensureGrassTerrainRecord, GRASS_TERRAIN_ID } from "@/project/defaults/d
 import { terrainRecordAt } from "@/project/terrainAt";
 import { fillAreaByUse } from "@/project/kitAreaFurnish";
 import { badgeAwardCommands, badgeIconResourceId } from "@/project/monsterBadgeCeremony";
+import { withJosa } from "@/util/josa";
 
 type Point = { x: number; y: number };
 type Template = { width: number; height: number; lower: number[]; upper: number[]; tilesetId: string; run: string;
@@ -869,7 +870,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     const at = nearest(map, { x: map.width - 4, y: 4 + i }, connected(map), true);
     const tid = troop(`희귀 몬스터 · ${record.name}`, `legendary_${i}`, [sid], levels.endgame(55), false);
     const caught = `mx_legendary_${i}_encountered`;
-    event(map, `legendary_${i}`, at, [{ kind: "fork", condition: condition("mx_ending"), then: [{ kind: "fork", condition: condition(caught), then: [text("별빛의 흔적이 남아 있다. 이 몬스터는 주변 서식지에서도 아주 드물게 나타난다.")], else: [text(`${record.name}이 별빛을 따라 모습을 드러냈다!`),
+    event(map, `legendary_${i}`, at, [{ kind: "fork", condition: condition("mx_ending"), then: [{ kind: "fork", condition: condition(caught), then: [text("별빛의 흔적이 남아 있다. 이 몬스터는 주변 서식지에서도 아주 드물게 나타난다.")], else: [text(`${withJosa(record.name, "이/가")} 별빛을 따라 모습을 드러냈다!`),
       { kind: "battleProcessing", troopId: tid, canEscape: true, canLose: true, branchOnResult: true,
         victoryBranch: [sw(caught), text("별빛의 만남을 도감에 기록했다.")], defeatBranch: [{ kind: "recoverAll" }, transfer(townMaps.get("home")!, entries.get(id("home"))!)], escapeBranch: [text("희귀 몬스터가 당신을 기다리고 있다.")] } ] }], else: [text("빛을 잃은 별무늬가 새겨져 있다. 섬의 등불이 모두 돌아온 뒤 다시 와 보자.")] }], { below: true, graphic: marker("star") });
     map.encounterTable ??= [];

@@ -1,0 +1,72 @@
+{
+ "date": "2026-10-20",
+ "before": "ee216f0de5822996 (rules v8)",
+ "after": "1db03a95223e5b0b (rules v9: decor evidence + visible tones)",
+ "judge": "claude-sonnet-5-5 high, 4 runs, 3 eye runs",
+ "frozen_fresh4": {
+  "note": "blind pixel labels frozen in 72e474ed7c before tuning; judge outputs on it first read after the final run. 'before' = old profile run on the same set afterwards in a scratch copy (/tmp), only for comparison.",
+  "view34_A": {
+   "bad_autopassed": {
+    "before": "1/19",
+    "after": "1/19",
+    "item": "q001_gothic wardrobe (9-row cornice read as top)"
+   },
+   "good_passed": {
+    "before": "21/31",
+    "after": "22/31"
+   }
+  },
+  "view34_C": {
+   "bad_autopassed": {
+    "before": "6/22",
+    "after": "5/22"
+   },
+   "good_passed": {
+    "before": "4/9",
+    "after": "5/9"
+   }
+  },
+  "view34_A_good_by_kind_after": {
+   "structure": "8/9",
+   "low_furniture": "7/12",
+   "container": "4/4",
+   "column": "1/2",
+   "other": "1/2",
+   "round_body": "1/1",
+   "seat": "0/1"
+  },
+  "style": {
+   "shallow_caught": {
+    "before": "6/6",
+    "after": "6/6"
+   },
+   "beodeul_passed": {
+    "before": "8/15",
+    "after": "11/15"
+   },
+   "beodeul_ground_passed": {
+    "before": "1/7",
+    "after": "4/7"
+   },
+   "beodeul_props_passed": {
+    "before": "7/8",
+    "after": "7/8"
+   }
+  }
+ },
+ "tuning_sets_after": {
+  "dev_A": "bad 30/30 caught, good 25/29 (was 26/29)",
+  "hidden1_A": "bad 47/47, good 43/47 (was 42/47)",
+  "old_fresh_A": "bad 7/7, good 31/42 (was 29/42)",
+  "adversarial": "0/144 passed",
+  "style_strong": "8/8 · 14/14",
+  "style_weak_before": "13/60 (was 4/60)",
+  "style_weak_after": "17/60 (was 10/60)",
+  "farm_user": "5/10 (was 4/10)"
+ },
+ "status": "rejected (frozen good 22/31 = 71% < 80%, 1 A violation auto-passed)",
+ "probes_not_calibration": {
+  "jp_forest_r2_13": "3/4 13/13 ok, style 0/13 — visible tones per tile 9-12 vs 26-29 in beodeul tree refs: a measured gap, not a raw-colour artefact",
+  "interior_seat_anchors": "10 positive anchors: 1 pass, 1 refer, 8 fail (7 on 3/4: sofa/bench backrest read as a big part with no top); 2 negative anchors fail (style) / refer (E-facing chair routed to human)"
+ }
+}

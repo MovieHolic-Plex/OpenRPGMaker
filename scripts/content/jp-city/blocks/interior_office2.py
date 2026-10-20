@@ -509,6 +509,51 @@ def _(c):
 I.hold()
 
 
+# ══ seats34 (3/4 다시 그리기) ══
+# seats34 group A — 코드 손 도트(행 문자열 격자). 글자 → (램프, 단: 0 = 가장 어두운 단). 빛은 왼위(윗면 밝게·앞면 중간·그늘 쪽 어둡게),
+# 거의 검은 윤곽은 바깥 실루엣에만. '.' = 투명. 격자는 srcA/designs.py 에서 만든다.
+from inst import _paint as _paint34
+
+
+def _g34(c, layers):
+    for rows, leg, ox, oy in layers:
+        for j, r in enumerate(rows):
+            for i, ch in enumerate(r):
+                if ch not in '. ': c.P(ox + i, oy + j, *leg[ch])
+
+_S34_0_0 = [
+    '....OOOOOOOO....',
+    '..OOBAABBBBCOO..',
+    '.OBAAABBBBBBCCO.',
+    '.OBBBBBBBBBBCCO.',
+    '.OCCCCCCCCCCCCO.',
+    '.ODDDDDDDDDDEEO.',
+    '..OOEEEEEEEEOO..',
+    '....OOOOOOOO....',
+    '......OpqO......',
+    '......OpqO......',
+    '....OOOpqOOO....',
+    '...O665pq332O...',
+    '...O33333221O...',
+    '....OOOpqOOO....',
+    '...OrrppqqqsO...',
+    '....OOOOOOOO....',
+]
+_S34_0_0L = {'1': ('tekko', 1), '2': ('tekko', 2), '3': ('tekko', 3), '5': ('tekko', 5), '6': ('tekko', 6), 'A': ('kon', 4), 'B': ('kon', 3), 'C': ('kon', 2), 'D': ('kon', 1), 'E': ('kon', 0), 'O': ('sumi', 0), 'p': ('yoru', 4), 'q': ('yoru', 2), 'r': ('yoru', 5), 's': ('yoru', 1)}
+_S34_0 = [(_S34_0_0, _S34_0_0L, 0, 0)]   # ox-bar-stool (16x16)
+
+
+PENDING_SEATS34 = {
+    'ox-bar-stool': _paint34(lambda c, _l=_S34_0: _g34(c, _l)),
+}
+SEATS34_PASS = set()          # object-gate PASS 영수증을 받은 id 만 — 이 id 들만 굽는 그림을 바꾼다
+for _k in SEATS34_PASS: R.objs[_k]['draw'] = PENDING_SEATS34[_k]
+# ══ /seats34 ══
+
+
+
+S34_STUDY2 = __import__('seat34').apply_study2(R)   # 사람 합격(2026-10-20) 앉는 기물 — 관문 pass 영수증 있는 것만 바꾼다
+
 def build(): return R.build()
 
 

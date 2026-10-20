@@ -1,0 +1,186 @@
+[
+ {
+  "id": "s002",
+  "kind": "seat",
+  "top_rows": 13,
+  "front_rows": 9,
+  "label": "good",
+  "why": "Round bench ring around tree: elliptical wood top ~13 rows (back rim to front), plank front ~9 rows."
+ },
+ {
+  "id": "s006",
+  "kind": "seat",
+  "top_rows": 7,
+  "front_rows": 4,
+  "label": "good",
+  "why": "Seat cushion rows 12-18 top, light edge row 19 and dark front rows 19-22; backrest exempt."
+ },
+ {
+  "id": "s010",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Wall segment with arched doorway, part of a wall."
+ },
+ {
+  "id": "s014",
+  "kind": "seat",
+  "top_rows": 7,
+  "front_rows": 4,
+  "label": "good",
+  "why": "Seat top rows 16-22, light edge 23 and front rows 23-26; back exempt."
+ },
+ {
+  "id": "s018",
+  "kind": "seat",
+  "top_rows": 5,
+  "front_rows": 5,
+  "label": "unsure",
+  "why": "Rounded rock-like stone seat: lighter top rows 1-5, darker front rows 6-10 but no clear edge line."
+ },
+ {
+  "id": "s022",
+  "kind": "seat",
+  "top_rows": 2,
+  "front_rows": 2,
+  "label": "bad",
+  "why": "Director chair: seat is a 2-row gold strip (rows 9-10) under a face-on purple back, X legs; no seat top."
+ },
+ {
+  "id": "s026",
+  "kind": "container",
+  "top_rows": 5,
+  "front_rows": 5,
+  "label": "good",
+  "why": "Two open sacks with visible contents ellipses ~4-5 rows (left rows 1-4, right rows 4-8) above sack bodies."
+ },
+ {
+  "id": "s030",
+  "kind": "front_prop",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Herb drying rack, flat front frame with shelves; front_prop exempt."
+ },
+ {
+  "id": "s034",
+  "kind": "structure",
+  "top_rows": 20,
+  "front_rows": 38,
+  "label": "good",
+  "why": "Observatory: flat roof deck with dome rows ~25-46 and parapet, brick facade with door rows ~54-92."
+ },
+ {
+  "id": "s038",
+  "kind": "low_furniture",
+  "top_rows": 6,
+  "front_rows": 3,
+  "label": "unsure",
+  "why": "Washstand: table top with basin rows 3-8, edge+front only rows 8-10 plus legs."
+ },
+ {
+  "id": "s042",
+  "kind": "low_furniture",
+  "top_rows": 6,
+  "front_rows": 4,
+  "label": "good",
+  "why": "Low desk: top rows 1-6 with paper/ink, front rows 7-10."
+ },
+ {
+  "id": "s046",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Wall-mounted screen."
+ },
+ {
+  "id": "s050",
+  "kind": "low_furniture",
+  "top_rows": 9,
+  "front_rows": 5,
+  "label": "good",
+  "why": "Lab bench: white top with items rows 1-9, drawer front rows 10-14."
+ },
+ {
+  "id": "s054",
+  "kind": "seat",
+  "top_rows": 4,
+  "front_rows": 3,
+  "label": "good",
+  "why": "Cushion top rows 8-11, front rows 12-14; tall back and armrests exempt, but front is only 3 rows."
+ },
+ {
+  "id": "s058",
+  "kind": "seat",
+  "top_rows": 4,
+  "front_rows": 3,
+  "label": "unsure",
+  "why": "Bench top rows 1-4, light edge row 5, front rows 6-7 then legs; front barely 3."
+ },
+ {
+  "id": "s062",
+  "kind": "seat",
+  "top_rows": 4,
+  "front_rows": 2,
+  "label": "bad",
+  "why": "Side-view office chair: seat top rows 11-14 but front only rows 15-16."
+ },
+ {
+  "id": "s066",
+  "kind": "seat",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "bad",
+  "why": "Barber chair drawn front-on: face-on back/cushion and armrests, no seat top visible."
+ },
+ {
+  "id": "s070",
+  "kind": "container",
+  "top_rows": 10,
+  "front_rows": 16,
+  "label": "good",
+  "why": "Cauldron on table: purple opening ellipse with rims rows 1-11, table front rows 14-29."
+ },
+ {
+  "id": "s074",
+  "kind": "other",
+  "top_rows": 3,
+  "front_rows": 5,
+  "label": "unsure",
+  "why": "Shisha: brass base top rows ~7-9 with vase, front rows 10-14; small and ambiguous."
+ },
+ {
+  "id": "s078",
+  "kind": "seat",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "bad",
+  "why": "Armchair seen from the back (north): tall face-on panel, no seat top."
+ },
+ {
+  "id": "s082",
+  "kind": "container",
+  "top_rows": 7,
+  "front_rows": 12,
+  "label": "good",
+  "why": "Stove with two pots: openings/top rows 1-7, front rows 8-20."
+ },
+ {
+  "id": "s086",
+  "kind": "seat",
+  "top_rows": 9,
+  "front_rows": 5,
+  "label": "good",
+  "why": "Stone stepped seat: top rows 1-9 with cushions, front rows 10-14."
+ },
+ {
+  "id": "s090",
+  "kind": "seat",
+  "top_rows": 6,
+  "front_rows": 2,
+  "label": "bad",
+  "why": "Stool seat is a dome cap: top rows 1-6 but front only rows 7 (1-2 rows) on a pole."
+ }
+]

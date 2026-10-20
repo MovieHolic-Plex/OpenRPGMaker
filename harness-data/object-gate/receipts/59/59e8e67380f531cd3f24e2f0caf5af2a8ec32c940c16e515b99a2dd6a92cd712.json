@@ -1,0 +1,380 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "59e8e67380f531cd3f24e2f0caf5af2a8ec32c940c16e515b99a2dd6a92cd712",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "theater seat",
+ "label": "seats34/atlas_biome_interior/theater seat",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 0행 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 0행 < 4 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 16,
+  "darkV5": 22,
+  "nearBlackEdge": 0.23,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest",
+      "rows": "1-9",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests",
+      "rows": "6-11",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat front / lower cushion",
+      "rows": "9-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The chair is seen face-on. The backrest is a light-red block (rows 1-9) with a 2-row highlight at its top (x=8, rows 2-3), which reads as a rounded top edge, not a seat surface. The armrests (rows 6-11, width 16) are vertical orange side blocks. Below the backrest only a 2-row dark-red band (rows 9-10) appears, which is the front of the seat. There is no band ending in a front-edge line with eave shadow, no ellipse, and no visible seat top. Legs are in rows 12-14. The sitting surface shows no top, so this is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a one-tile red theater seat, so the per-tile facts apply. It carries 16 visible tones per tile, close to the stall (17) and well (20) and well above the hedge (9). Near-flat coverage is 0%, so there are no large flat fills. By eye, the backrest and seat cushion show about 5 red steps: highlight, light, mid, dark and deep. The armrests are separated by value, with a darker rim. Only 30% of the dark edge pixels are near-neutral, which fits the outline leaning dark red rather than a uniform black sticker line. The piece is small and simple, but it sits next to the references without looking thinner or flatter. It has less grain than the stall and well, which keeps the texture at 'some' rather than 'rich'.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17875
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest",
+      "rows": "1-6",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests",
+      "rows": "7-11",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion",
+      "rows": "7-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The theater seat is drawn face-on. The red backrest (rows 1-6, width 10) sits on a wider seat block (rows 7-11, width 16) with brown armrests at the sides. The only highlight is rows 2-3 at the top of the backrest, which is exempt. The seat cushion is a plain red front face: the x=4 column shows a lighter red at rows 3-8 and a darker red at rows 9-10. There is no front-edge line, no eave shadow, no ellipse and no visible seat surface. Dark legs below (rows 12-14) belong to the front face. So the sitting surface shows no top and the drawing is front_elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The seat is a single-tile red prop. It shows about 5 lightness steps on the red upholstery: a highlight on the backrest top and armrests, a mid red, a darker shaded seat front and sides, and a deep red base. The outline leans dark red-brown rather than neutral. The measured facts agree: 70% of dark edge pixels carry a colour tint (30% near-neutral), and the references run 0-44% on this fact apart from the lamp pole at 100%. Visible tones per tile are 16, close to the stall (17) and well (20) and well above the hedge (9). Near-flat coverage is 0%, so there are no large flat fills. The seat is small and simple, with less grain than the stall or well, but a careful artist would accept it beside the bench and hedge without it looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17468
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest (rounded red cushion block, top highlight)",
+      "rows": "1-5",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests (brown side blocks)",
+      "rows": "6-11",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion front (red, no visible sitting surface)",
+      "rows": "6-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs/base (dark)",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The red body is one continuous block, rows 1-11. Its light highlight at rows 2-3 (x=8) is the rounded top of the backrest, not a seat surface. Below it the red is a uniform dark face (rows 4-10 at x=8, rows 9-10 at x=4) ending in the outline at row 11. No seat band ends in a front-edge line with eave shadow, and no ellipse is visible. The brown armrests at rows 6-11 and the base/legs at rows 12-14 are vertical faces. The sitting surface shows no top, so this is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small red theater seat about one tile in size. It carries 16 visible tones in its tile, level with the stall (17) and close to the well (20), and well above the hedge (9). Near-flat coverage is 0%, so there are no 5x5 flat fills. Only 30% of its dark edge pixels are neutral, so the outline mostly leans dark red-brown, matching the red material beside it rather than a black sticker line. The seat shows a highlight on the backrest and cushion, mid reds, shadowed reds and a dark base, which gives about 5 steps against the references' 5-6. Texture is modest because the piece is small, but the shading is not a flat body with an outline. A careful artist would accept it next to the bench and the stall without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17204
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest (rounded red back panel)",
+      "rows": "1-8",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests (orange side blocks)",
+      "rows": "6-11",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion (dark red front band)",
+      "rows": "9-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tall red backrest (rows 1-8, light highlight on rows 2-3 at the top) and the orange armrests are vertical faces, which is exempt for a seat. The seat itself shows only a dark red front band (rows 9-11, columns x=4, 8 and 11 all dark c30014) with no lighter horizontal band, front-edge line, ellipse or visible cushion top. Legs sit below at rows 12-14. The sitting surface has no top, so this is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small red theater seat of about one tile. It shows 16 visible tones per tile, in line with the hedge (9), cheese stall (17) and roofed well (20). Near-flat coverage is 0%, so no 5x5 areas are left as one flat colour. Only 30% of its dark edge pixels are near-neutral, below the bench (44%) and well (33%) and far below the lamp (100%). The outline therefore leans towards a dark red-brown tone, not a uniform black sticker line. The seat back, cushion and armrests are separated by value, with a highlight, light, mid, dark and deep red ramp of about 5 steps. That is slightly below Beodeul's 5-6 steps, but it is not shallow. Texture is modest, since the small piece has little room for grain. A careful artist would accept it next to the references without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16249
+  }
+ ],
+ "decidedAt": "2026-10-20T14:09:20.777Z",
+ "cells": {
+  "16": [
+   "bc6857e7b7550d1b"
+  ],
+  "24": [
+   "169f952bf9557cd2",
+   "30356bc2ab3e742c",
+   "87f9318af39bd06c",
+   "9bb4d9d368d22119",
+   "b9f07d68c3852356",
+   "bfc26a9c393a6ea6"
+  ],
+  "32": [
+   "5122032f43b374e2",
+   "6ca0113ea01e5745",
+   "86fc20b8c3ab3ae4",
+   "9cceb4e6bf75d1cd",
+   "e98333acfa60453e",
+   "f2cceae861ebcc1b"
+  ],
+  "48": [
+   "0a626f17e1461562",
+   "16e8a5ec4dcaf0a9",
+   "17b0f78d70973505",
+   "24655364659a7d06",
+   "2879f67f6296bfd4",
+   "3c02075eb0fd122a"
+  ]
+ }
+}

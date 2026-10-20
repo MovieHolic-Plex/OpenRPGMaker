@@ -62,6 +62,8 @@ export interface Rect {
 export interface RoomState {
   readonly input: HandInteriorInput;
   readonly chasm?: readonly Rect[];
+  /** 심연 위에 얹는 밟는 기물(무너지는 판자 등, 사양 kind flat) — 심연을 판 뒤 2층에 쓴다. */
+  readonly overlays?: readonly HandInteriorObject[];
 }
 
 interface RoomDesign {
@@ -727,7 +729,7 @@ function elementalDesign(): RoomDesign {
     { x: 5, y: 11 },
     { x: 15, y: 11 },
   ];
-  const activeObjIds = ["lava brazier", "mana crystal", "orb pedestal", "rune stone"] as const;
+  const activeObjIds = ["lava brazier", "mana crystal", "rune stone", "stone sphere"] as const;
   const state = (awake: readonly boolean[], solved: boolean): RoomState => ({
     input: {
       plan: roomPlan({ top: 3, left: 2, door, ...(solved ? { open: [{ x0: 9, y0: 1, x1: 11, y1: 2 }] } : {}) }),
@@ -812,18 +814,63 @@ export function buildLayers(project: Project, state: RoomState, label: string): 
     upper: [...built.upperTiles],
     upper2: [...built.upperOverlayTiles],
   };
+  const pit = new Set<number>();
   for (const r of state.chasm ?? []) {
     for (let y = r.y0; y <= r.y1; y += 1) {
-      for (let x = r.x0; x <= r.x1; x += 1) {
-        const i = y * PUZZLE_ROOM_W + x;
-        layers.lower[i] = HAND_INTERIOR_SPEC.void;
-        layers.lower2[i] = -1;
-        layers.upper[i] = -1;
-        layers.upper2[i] = -1;
-      }
+      for (let x = r.x0; x <= r.x1; x += 1) pit.add(y * PUZZLE_ROOM_W + x);
+    }
+  }
+  const floorTiles = floorTileSet();
+  for (const i of pit) {
+    layers.lower[i] = abyssTile(pit, layers.lower, floorTiles, i % PUZZLE_ROOM_W, Math.floor(i / PUZZLE_ROOM_W));
+    layers.lower2[i] = -1;
+    layers.upper[i] = -1;
+    layers.upper2[i] = -1;
+  }
+  // 심연 위 판자처럼 밟는 기물은 구덩이를 판 뒤에 2층(밟는 무늬)에 얹는다 — 조립기는 바닥 밖 기물을 오류로 막는다.
+  for (const o of state.overlays ?? []) {
+    const def = HAND_INTERIOR_SPEC.objects[o.id];
+    if (!def) throw new Error(`퍼즐 무대 ${label}: 심연 위 기물 '${o.id}' 가 실내 칩셋 사양에 없습니다.`);
+    for (const [dx, dy, tile, layer] of def.cells) {
+      const x = o.x + dx;
+      const y = o.y + dy;
+      if (x < 0 || y < 0 || x >= PUZZLE_ROOM_W || y >= PUZZLE_ROOM_H) continue;
+      const key = layer === 2 ? "lower2" : layer === 4 ? "upper2" : "upper";
+      layers[key][y * PUZZLE_ROOM_W + x] = tile;
     }
   }
   return layers;
+}
+
+let floorTilesCache: Set<number> | undefined;
+function floorTileSet(): Set<number> {
+  if (!floorTilesCache) {
+    floorTilesCache = new Set<number>();
+    for (const f of Object.values(HAND_INTERIOR_SPEC.floors)) for (const t of f.tiles) floorTilesCache.add(t);
+  }
+  return floorTilesCache;
+}
+
+/**
+ * 심연 칸 그림: 사양에 심연 자동 타일(pits.abyss)이 있으면 8이웃 마스크로 고른다 — 북쪽이 바닥이면 깊은 벼랑 벽, 남쪽이
+ * 바닥이면 바닥 끝 입술이 보인다. 바닥이 아닌 이웃(벽·천장·방 밖)은 구덩이가 벽 밑으로 이어지는 것으로 본다. 없으면 옛 공허 칸.
+ */
+function abyssTile(pit: ReadonlySet<number>, lower: readonly number[], floors: ReadonlySet<number>, x: number, y: number): number {
+  const set = HAND_INTERIOR_SPEC.pits?.abyss;
+  if (!set) return HAND_INTERIOR_SPEC.void;
+  const deep = (nx: number, ny: number): boolean => {
+    if (nx < 0 || ny < 0 || nx >= PUZZLE_ROOM_W || ny >= PUZZLE_ROOM_H) return true;
+    const i = ny * PUZZLE_ROOM_W + nx;
+    return pit.has(i) || !floors.has(lower[i] ?? -1);
+  };
+  const n = deep(x, y - 1), e = deep(x + 1, y), so = deep(x, y + 1), w = deep(x - 1, y);
+  let m = (n ? 1 : 0) | (e ? 4 : 0) | (so ? 16 : 0) | (w ? 64 : 0);
+  if (n && e && deep(x + 1, y - 1)) m |= 2;
+  if (so && e && deep(x + 1, y + 1)) m |= 8;
+  if (so && w && deep(x - 1, y + 1)) m |= 32;
+  if (n && w && deep(x - 1, y - 1)) m |= 128;
+  const k = set.masks.indexOf(m);
+  return k >= 0 ? set.tiles[k]! : HAND_INTERIOR_SPEC.void;
 }
 
 export function diffCommands(project: Project, map: GameMap, ox: number, oy: number, from: Layers, to: Layers): Command[] {

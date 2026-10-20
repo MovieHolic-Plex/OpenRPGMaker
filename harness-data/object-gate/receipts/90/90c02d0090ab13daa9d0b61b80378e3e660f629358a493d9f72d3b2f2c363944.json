@@ -1,0 +1,399 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "90c02d0090ab13daa9d0b61b80378e3e660f629358a493d9f72d3b2f2c363944",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "wheelchair (faces south)",
+ "label": "seats34/modern_city_interior/hospital-wheelchair",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 투영이 3/4 아님(other) (1/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/4)",
+  "3/4: 투영이 3/4 아님(top_down_slab) (1/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "투영이 3/4 아님(other) (1/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/4)",
+   "투영이 3/4 아님(top_down_slab) (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 14,
+  "darkV5": 28,
+  "nearBlackEdge": 0.56,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion (blue)",
+      "rows": "14-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-21"
+     },
+     {
+      "part": "backrest (blue, face-on or plan view)",
+      "rows": "4-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side wheels (gray bars)",
+      "rows": "4-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "footrests/casters",
+      "rows": "24-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The drawing is mostly a plan (overhead) view. The blue seat and back run as one long vertical strip (rows 4-21) with gray wheels as flat bars on both sides. The seat has a lighter highlight at row 18, then dark rows 19-21 that could be a thin front edge and shadow, which gives about 3 front-face rows. The backrest (rows 4-13) is a flat face-on panel with no top surface. The wheels and footrests are drawn as side or top silhouettes. The seat surface is only weakly shown as 4 rows, so this is not a clear 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small blue wheelchair with a dark outline around the whole silhouette. 92% of its dark edge pixels are neutral, so the outline is a near-black line rather than a dark tone of the adjacent material. Beodeul references such as the hedge (0% neutral), the stall (1%) and the well (33%) tint their edges. The candidate has only 16 distinct colours in total, against 38-40 for the richer references. It shows about 3 visible lightness steps on the blue fabric and little grain or per-part shading on the frame and wheels. Colours per tile (14) and flat-fill coverage (0%) are acceptable, so it is not a flat fill, but the sticker-like outline and shallow ramps put it below the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(other) (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(other) (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20388
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat and backrest cushion (blue)",
+      "rows": "4-21",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side wheels and armrests (gray)",
+      "rows": "4-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "footrests and front casters",
+      "rows": "24-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 18,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a symmetric plan view. The blue seat and back run as one long cushion from rows 4 to 21, with gray wheels and armrests as vertical strips on either side. The blue shading is lighter at rows 6-8 and 15-18 and darker below each, which reads as cushion bulges seen from above, not as a vertical front face. There is no front-edge line followed by eave shadow, and no seat front face below the cushion. The only lower structure is the small footrest and caster group at rows 24-29, which is a detail and not a 3+ row front face of the main body. The reference pairs show the same failure as 'top-down slab (no front)': the main body is all top surface with no south face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small blue chair-like shape with a dark outline. 92% of its dark edge pixels are near-neutral, so the outline is a neutral black/grey line rather than a dark tone of the neighbouring blue or metal. That is the 'sticker' look. Beodeul tinted outlines such as the hedge (0% neutral), the stall (1%) and the well (33%) read very differently. The blue fabric seems to have only about 3 lightness steps, against 5-6 on the reference materials. It has 16 distinct colours against 38-40 on the stall and well, and 14 colours per tile is comparable to the hedge (10) and the well (20). There are no flat 5x5 fills (0%), and a few highlight and stripe pixels give some texture. But the forms are separated by a uniform dark line rather than by value, and the material ramps are shallow. The wheels and frame do not read as separately shaded materials. A careful artist would not accept it next to the well or stall.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(top_down_slab) (1/1)",
+    "앞면 0행 < 3 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(top_down_slab) (1/1)",
+     "앞면 0행 < 3 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 22026
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "14-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-21"
+     },
+     {
+      "part": "backrest cushion",
+      "rows": "4-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-9"
+     },
+     {
+      "part": "footrests and wheel bases",
+      "rows": "24-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The blue seat cushion has a lighter band in rows 15-18 that ends in a bright front-edge line at row 18 (L=157). Dark shadow rows 19-21 (L=49) follow, and these act as the short front face. The backrest has the same pattern, with a highlight at row 8 and a shadow at row 9. The wheels and footrests (rows 22-28) are small details below. The view is steep and close to top-down, but the seat still shows a top surface above a front face of 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small blue wheelchair with about 3 visible blue lightness steps on the seat and back. The references use roughly 5-6 steps per material. 92% of its dark edge pixels are neutral, so the outline is a uniform near-black line, which gives the sticker look. The references mostly use outlines tinted to the adjacent material: the hedge is 0% neutral, the stall 1%, the well 33% and the bench 44%. Only the metal lamp is fully neutral. Its measured density is acceptable, with 14 colours per tile, 0% flat-fill coverage and 16 distinct colours. That is comparable to the hedge, but well below the stall and well, which have 38-40 colours. Wheel and frame detail is thin and reads as flat, with little per-part shading or material texture. The neutral outline and shallow ramps are not up to the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 22837
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "14-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-21"
+     },
+     {
+      "part": "backrest panel",
+      "rows": "4-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-9"
+     },
+     {
+      "part": "footrests and lower frame",
+      "rows": "24-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "In column x=8 the seat has a lighter band at rows 15-17 with a 1-row lighter front-edge line at row 18 (#7aa2dc). Rows 19-22 below it are much darker (L=76 then 49), which reads as the front face and shadow, about 4 rows. The backrest above has the same pattern: light rows 6-8, an edge line at row 8, then a dark row 9. Gray wheels run down both sides (rows 4-21) and footrests sit at rows 24-28. The view is steep and close to top-down, but the seat still shows a 4-row top plane above a front face of 3+ rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small blue wheelchair with a dark outline all round it. 92% of its dark edge pixels are near-neutral, so the outline is a neutral black/grey line with little tint. It is the 'sticker' look, unlike the tinted material-tone edges of the hedge (0% neutral), the cheese stall (1%) and the roofed well (33%). The blue ramp reads as about 3 steps (dark, mid, light) against 5-6 on the reference materials. The wheels and frame are thin and mostly dark with little per-part shading. The measured facts do not show flat fills (0% coverage). Its 14 colours per tile is comparable to the hedge (10) and stall (17), but only 16 distinct colours overall versus 38-40 for the stall and well. Because of the neutral outline and shallow ramps, it would look flatter than the references beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17631
+  }
+ ],
+ "decidedAt": "2026-10-20T07:20:07.080Z",
+ "cells": {
+  "16": [
+   "09d6b057a9533bf3",
+   "a74b3599f5af91fe"
+  ],
+  "24": [
+   "2327f7102f9307ca",
+   "3d061b9cffa06ba2",
+   "4b9050c5a76d51b0",
+   "610e91d88a928991",
+   "6b5b5b282c947f98",
+   "96be18619de37c4f",
+   "9efeaa3010743bfb",
+   "a626f1e753601035",
+   "c17f3bdafe8a929e",
+   "dfb588d1eeafd100",
+   "f0c592b973438aa0",
+   "ff273875ab50aee9"
+  ],
+  "32": [
+   "5e8c96849d63d007",
+   "6b36ff34fcb6019c",
+   "b97138b4f8f8b9a0"
+  ],
+  "48": [
+   "0b175ce40d73c875",
+   "3c92c3527d17d6bb",
+   "7706a5d495620f28",
+   "900bb81fe21baab3",
+   "974a0c2de1b02531",
+   "9f73d42e32e9d827"
+  ]
+ }
+}

@@ -1,0 +1,339 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7928112abd36ccc9c6a02209862241a0ccd07b08136f1f2aa8acd686314432f3",
+ "width": 48,
+ "height": 16,
+ "kind": "seat",
+ "name": "train long seat, south row (faces north)",
+ "label": "seats34/jp_city_interior/st-long-seat-s",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 4/4, 분명한 위반 0/4)",
+  "3/4: 옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 4/4, 분명한 위반 0/4)",
+   "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+  ]
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 10,
+  "darkV5": 26,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 3
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion band (main body)",
+      "rows": "4-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-12"
+     },
+     {
+      "part": "backrest strip behind seat",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 4-9 form a seat band 6 rows tall, divided into cushions by vertical seams. It opens with a light line at row 4 and ends in a light front-edge line at row 9. Rows 10-12 are dark navy shadow under the seat edge, and rows 13-14 are a gray base, so the front face is about 5 rows. Rows 1-3 are a backrest strip that reads as a vertical band. The seat surface is seen from above with a front face below it. The width is a constant 48 across all rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a purple slab with a light top edge, three or four tonal bands, vertical panel dividers and a dark base. Its outline is a tinted dark purple, not neutral (0% near-neutral edge pixels), so the outline is fine. There are no 5x5 flat blocks (0%), and the 10 colours per tile match the hedge reference. However, the whole piece has only 10 distinct colours against 14 for the wooden bench and 38-40 for the stall and well. At 2x the panels read as smooth gradient bands with almost no grain, seat-cushion stitching or per-panel highlights. It has about 4 shading steps against the references' 5-6. Beside the slatted wooden bench and the richer props it looks like a flat, clean 'sticker' slab. It is not shallow by the numbers, but it is a step below the standard, so it fails on doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 26329
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest top rail",
+      "rows": "1-3",
+      "evidence": "a",
+      "front_edge_line_row": 2,
+      "eave_shadow_rows": "3"
+     },
+     {
+      "part": "seat cushion (segmented bench seat)",
+      "rows": "4-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-12"
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The long bench is 48px wide. The seat band at rows 4-9 starts with a light line at row 4 and has divider stripes between cushion segments. It ends in a light front-edge line at row 9, followed by 3 rows of dark shadow (rows 10-12) under the seat. Below that is a front face of about 5 rows (10-14): the dark underside, then a light grey rail at row 13 and a grey base at row 14. The upper band at rows 1-3 reads as the backrest top with a darker shadow row beneath. A reader could take the cushion as a face-on panel, but the edge line plus shadow gives a top surface of about 6 rows, so the seat surface is seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a long purple seat with segmented cushion panels, a light top rim and a darker lower band. I count about 5 lightness steps on the purple ramp: dark outline, deep, mid, light and a rim highlight. The measured facts support this. 0% of its dark edge pixels are neutral, so the outline leans dark violet, the dark tone of the adjacent material, and is not a black sticker line. Flat-fill coverage is 0%, and the median of 10 colours per tile matches the hedge reference (10). With 10 distinct colours it is slightly below the bench (14) and hedge (11) but in the same range, and well below the richer stall and well references (38-40). Texture comes from the panel seams and per-segment shading, which is modest but not flat. Next to the bench and hedge references it would not look thinner or more sticker-like, so it is acceptable, though not as rich as the best references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 26572
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion band",
+      "rows": "4-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-12"
+     },
+     {
+      "part": "backrest top strip",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 4-9 form a seat band. Row 4 is a light back edge, rows 5-8 are a mid-tone cushion field with darker dividers, and row 9 is a light front-edge line (#8d7cd1). Rows 10-12 are dark navy shadow and apron, which fits eave shadow under a seat edge. Rows 13-14 are a light and mid grey base rail, so the front face is about 5 rows. Rows 1-3 are a thin backrest strip behind the seat. The silhouette is a constant 48 px wide with no side face, and this is a long bench with a visible seat top over a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a long purple slab built from repeated cushion panels. It has a light top edge, a mid purple body and dark purple dividers, which gives about 4 lightness steps against roughly 5-6 on the references. The outline is a tinted dark purple (0% neutral dark edge pixels), so it does not have the near-black sticker look. The measured facts are acceptable: 10 colours per tile matches the hedge, and flat-fill coverage is 0%. Even so, there are only 10 distinct colours in total, against 11-40 for the references, and the whole piece repeats one identical panel module. There is no grain, wear or per-panel variation, and no structural detail such as legs, a back or a frame. Next to the wood bench and the hedge it reads as a flat, schematic bar rather than a hand-shaded prop. The result is thinner and more uniform than the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 23745
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion band (long bench top)",
+      "rows": "4-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-12"
+     },
+     {
+      "part": "backrest strip behind seat",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The scan is the same at x=12, 24 and 35. Row 4 is a light highlight and rows 5-8 are the cushion body with vertical seams. Row 9 is a light front-edge line (#8d7cd1), followed by dark navy shadow in rows 10-12. Below that, a grey base or foot rail sits in rows 13-14 (front face about rows 10-14). The cushion band is 6 rows deep and ends in a clear edge line plus shadow, so it reads as a seat surface seen from above, like the green 'seat: top 5 + legs' reference. The strip in rows 1-3 is a backrest behind the seat, drawn as a vertical strip with no ellipse or edge line. The silhouette is 48 px wide on every row."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a long purple seat about three tiles wide. It has a light top rim, a mid body with a lighter band, darker segment dividers and a deep base, which gives roughly 5 lightness steps. That is comparable to the bench-wood and hedge references. The outline is a dark purple-blue and visibly tinted: 0% of its dark edge pixels are neutral, so it is not a black sticker line. The measured facts support this. Median colours per tile is 10, equal to the hedge reference. Flat-fill coverage is 0%, so no 5x5 block is a single colour. The total of 10 distinct colours is slightly below bench-wood (14) and similar to hedge (11), and well below the stall and well references (38-40). Texture comes from the segment dividers and highlight strips rather than grain, so I rate it 'some'. For a thin, low prop this is within the range of the simpler references and not noticeably flatter than them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19678
+  }
+ ],
+ "decidedAt": "2026-10-20T08:33:20.420Z",
+ "cells": {
+  "16": [
+   "77392e5d546f7e4f",
+   "b65383e32b3863b7",
+   "f6a494d4a4c67415"
+  ],
+  "24": [
+   "21989aac111c8508",
+   "7e2fb65f54c4a0b0",
+   "a650a7d25c517c7f",
+   "cfcfab8fa03a221c"
+  ],
+  "32": [
+   "0aa26220c54b0a43",
+   "149589b524272634",
+   "1a799b773f14da03",
+   "1d3f166d1c269a38",
+   "4c3b75c8475870d2",
+   "66b8bd61526e7c85",
+   "6c5cf53b7ace006a",
+   "71691658936874b0",
+   "9feb46e3995bb5a4",
+   "afe6104e16278d10",
+   "ca5fb9740d50313e",
+   "e7cbaa5a5a9b6902"
+  ],
+  "48": [
+   "cea09e29163075d4",
+   "f49846f34e62dd62"
+  ]
+ }
+}

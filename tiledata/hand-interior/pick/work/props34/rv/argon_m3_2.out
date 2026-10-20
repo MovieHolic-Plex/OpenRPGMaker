@@ -1,0 +1,6 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"control console","view34":"PASS","quality":"PASS","reason":"Clear 5px lit steel top plane and angled control deck with crisp oscilloscope, gauge, buttons, levers, and dark-slate outlines."}
+{"id":"slot machine","view34":"PASS","quality":"FAIL","reason":"Top plane is a flat pink slab with a muddled gold blob, and the front is an over-tall stack of noisy yellow/red stripes and black-boxed windows."}
+{"id":"wide cabinet","view34":"PASS","quality":"PASS","reason":"Readable 5px warm-wood top plane and cornice above six well-shaded display cubbies with glass highlights and dark-brown outlines matching the wardrobe anchor."}
+{"id":"ship bunk","view34":"PASS","quality":"FAIL","reason":"Three copy-pasted bunk tiers lack vertical bedposts or a ladder, and the white pillows have a boxy cross-grid that reads like stacked crates on shelves."}

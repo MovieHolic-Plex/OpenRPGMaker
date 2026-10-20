@@ -267,6 +267,118 @@ def _rando(c):
     c.R(1, 5, 2, 7, K('ita', -1)); c.R(13, 5, 2, 7, K('ita', -2)); outline(c, 2, 2, 12, 13)
 
 
+# ══ seats34 (3/4 다시 그리기) ══
+# seats34 group A — 코드 손 도트(행 문자열 격자). 글자 → (램프, 단: 0 = 가장 어두운 단). 빛은 왼위(윗면 밝게·앞면 중간·그늘 쪽 어둡게),
+# 거의 검은 윤곽은 바깥 실루엣에만. '.' = 투명. 격자는 srcA/designs.py 에서 만든다.
+from ikit import RAMPS as _RAMPS34
+
+
+def _g34(c, layers):
+    for rows, leg, ox, oy in layers:
+        for j, r in enumerate(rows):
+            for i, ch in enumerate(r):
+                if ch not in '. ':
+                    m, t = leg[ch]; c.P(ox + i, oy + j, K(m, t - len(_RAMPS34[m]) // 2))
+
+_S34_0_0 = [
+    '..OOOOOOOOOOOO..',
+    '..O6666666665O..',
+    '..O5555555554O..',
+    '..O4332332332O..',
+    '..O4332332332O..',
+    '..O4332332332O..',
+    '.OccccccccccccO.',
+    '.OeddddcccdddcO.',
+    '.OeeeeeeeeeeedO.',
+    '.O544444444443O.',
+    '.O322222222221O.',
+    '.OOOOOOOOOOOOOO.',
+    '...42......42...',
+    '...42......42...',
+    '...42......42...',
+    '...21......21...',
+]
+_S34_0_0L = {'1': ('ita', 1), '2': ('ita', 2), '3': ('ita', 3), '4': ('ita', 4), '5': ('ita', 5), '6': ('ita', 6), 'O': ('sumi', 0), 'c': ('yuka', 2), 'd': ('yuka', 3), 'e': ('yuka', 4)}
+_S34_0 = [(_S34_0_0, _S34_0_0L, 0, 0)]   # desk-chair-s (16x16)
+
+_S34_1_0 = [
+    '...OOOOOOOOOO...',
+    '...O66666665O...',
+    '...O55555554O...',
+    '...O43233232O...',
+    '...O43233232O...',
+    '...O43233232O...',
+    '.OOO43233232OOO.',
+    '.OeO43233232OcO.',
+    '.OdO43233232OcO.',
+    '.O544444444443O.',
+    '.O322222222221O.',
+    '.OOOOOOOOOOOOOO.',
+    '...42......42...',
+    '...42......42...',
+    '...42......42...',
+    '...21......21...',
+]
+_S34_1_0L = {'1': ('ita', 1), '2': ('ita', 2), '3': ('ita', 3), '4': ('ita', 4), '5': ('ita', 5), '6': ('ita', 6), 'O': ('sumi', 0), 'c': ('yuka', 2), 'd': ('yuka', 3), 'e': ('yuka', 4)}
+_S34_1 = [(_S34_1_0, _S34_1_0L, 0, 0)]   # desk-chair-n (16x16)
+
+_S34_2_0 = [
+    '..OOOOO.........',
+    '..O665O.........',
+    '..O554O.........',
+    '..O543O.........',
+    '..O543O.........',
+    '..O543OOOOOOOOO.',
+    '..O543eeeeeeedO.',
+    '..O543ddddcccdO.',
+    '..O543ddddddddO.',
+    '..O543eeeeeeedO.',
+    '..O54354444443O.',
+    '..O43232222221O.',
+    '..OOOOOOOOOOOOO.',
+    '...42......42...',
+    '...42......42...',
+    '...21......21...',
+]
+_S34_2_0L = {'1': ('ita', 1), '2': ('ita', 2), '3': ('ita', 3), '4': ('ita', 4), '5': ('ita', 5), '6': ('ita', 6), 'O': ('sumi', 0), 'c': ('yuka', 2), 'd': ('yuka', 3), 'e': ('yuka', 4)}
+_S34_2 = [(_S34_2_0, _S34_2_0L, 0, 0)]   # desk-chair-e (16x16)
+
+_S34_3_0 = [
+    '.........OOOOO..',
+    '.........O665O..',
+    '.........O554O..',
+    '.........O543O..',
+    '.........O543O..',
+    '.OOOOOOOOO543O..',
+    '.Oeeeeeeed543O..',
+    '.Odcccdddd543O..',
+    '.Odddddddd543O..',
+    '.Oeeeeeeed543O..',
+    '.O54444443543O..',
+    '.O32222221432O..',
+    '.OOOOOOOOOOOOO..',
+    '...42......42...',
+    '...42......42...',
+    '...21......21...',
+]
+_S34_3_0L = {'1': ('ita', 1), '2': ('ita', 2), '3': ('ita', 3), '4': ('ita', 4), '5': ('ita', 5), '6': ('ita', 6), 'O': ('sumi', 0), 'c': ('yuka', 2), 'd': ('yuka', 3), 'e': ('yuka', 4)}
+_S34_3 = [(_S34_3_0, _S34_3_0L, 0, 0)]   # desk-chair-w (16x16)
+
+
+PENDING_SEATS34 = {
+    'desk-chair-s': (lambda c, _l=_S34_0: _g34(c, _l)),
+    'desk-chair-n': (lambda c, _l=_S34_1: _g34(c, _l)),
+    'desk-chair-e': (lambda c, _l=_S34_2: _g34(c, _l)),
+    'desk-chair-w': (lambda c, _l=_S34_3: _g34(c, _l)),
+}
+SEATS34_PASS = set()          # object-gate PASS 영수증을 받은 id 만 — 이 id 들만 굽는 그림을 바꾼다
+for _k in SEATS34_PASS: R.objs[_k]['draw'] = PENDING_SEATS34[_k]
+# ══ /seats34 ══
+
+
+
+S34_STUDY2 = __import__('seat34').apply_study2(R)   # 사람 합격(2026-10-20) 앉는 기물 — 관문 pass 영수증 있는 것만 바꾼다
+
 def build(): return R.build()
 def selftest(): return R.selftest()
 

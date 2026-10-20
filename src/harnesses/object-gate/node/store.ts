@@ -1,9 +1,10 @@
 /** 영수증·프로필 파일 저장소(노드). 경로 규칙은 seed.json 과 Python object_gate 가 같이 쓴다. */
-import { createHash } from 'node:crypto';
+import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
+import { homedir } from 'node:os';
 import { existsSync, mkdirSync, readFileSync, readdirSync, unlinkSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { PNG } from 'pngjs';
-import { OBJECT_GATE_PROFILE, objectGatePixelSha256, objectGateProfileHash, type ObjectGateFrontPropApproval, type ObjectGateProfileRecord, type ObjectGateReceipt, type ObjectGateStyleKind } from '../../_core/objectGate';
+import { OBJECT_GATE_PROFILE, objectGatePixelSha256, objectGateProfileHash, type ObjectGateFrontPropApproval, type ObjectGateHoldDecision, type ObjectGateProfileRecord, normalizeObjectGateImage, objectGateHoldPayload, type ObjectGateReceipt, type ObjectGateStyleKind } from '../../_core/objectGate';
 
 export const GATE_DATA = resolve(process.env.OBJECT_GATE_DATA ?? 'harness-data/object-gate');
 const receiptPath = (sha: string) => resolve(GATE_DATA, 'receipts', sha.slice(0, 2), `${sha}.json`);
@@ -28,6 +29,62 @@ export function listApprovals(): ObjectGateFrontPropApproval[] {
   const root = resolve(GATE_DATA, 'approvals', 'front_prop');
   if (!existsSync(root)) return [];
   return readdirSync(root).flatMap(dir => readdirSync(resolve(root, dir)).filter(f => f.endsWith('.json')).map(f => JSON.parse(readFileSync(resolve(root, dir, f), 'utf8')) as ObjectGateFrontPropApproval));
+}
+
+/**
+ * 보류(refer) 판정의 사람 결정 기록 — 검토 화면(`serve-holds`)의 서버만 쓴다.
+ * 서명 키는 저장소 밖(~/.config/oprn/object-gate-hold.key, 0600)에 있고, 기록에는 HMAC 서명이 붙는다.
+ * 손으로 쓴 파일·다른 경로로 만든 파일은 서명이 맞지 않아 없는 것과 같다(TS·Python 출구가 둘 다 서명을 확인한다).
+ */
+export const HOLD_KEY_PATH = resolve(process.env.OBJECT_GATE_HOLD_KEY ?? resolve(homedir(), '.config', 'oprn', 'object-gate-hold.key'));
+export function holdKey(create = false): Buffer | null {
+  if (!existsSync(HOLD_KEY_PATH)) {
+    if (!create) return null;
+    mkdirSync(dirname(HOLD_KEY_PATH), { recursive: true, mode: 0o700 });
+    writeFileSync(HOLD_KEY_PATH, randomBytes(32).toString('hex'), { mode: 0o600 });
+  }
+  const hexKey = readFileSync(HOLD_KEY_PATH, 'utf8').trim();
+  return /^[0-9a-f]{64}$/.test(hexKey) ? Buffer.from(hexKey, 'hex') : null;
+}
+const holdPath = (sha: string) => resolve(GATE_DATA, 'approvals', 'hold', sha.slice(0, 2), `${sha}.json`);
+export const holdSignature = (key: Buffer, d: ObjectGateHoldDecision) => createHmac('sha256', key).update(objectGateHoldPayload(d)).digest('hex');
+/** 서명이 맞는 기록만 돌려준다(키가 없거나 서명이 틀리면 null). */
+export function readHoldDecision(sha: string): ObjectGateHoldDecision | null {
+  const path = holdPath(sha);
+  if (!existsSync(path)) return null;
+  const d = JSON.parse(readFileSync(path, 'utf8')) as ObjectGateHoldDecision;
+  const key = holdKey();
+  if (!key || typeof d.sig !== 'string' || d.sig.length !== 64) return null;
+  const want = Buffer.from(holdSignature(key, d), 'hex'), got = Buffer.from(d.sig, 'hex');
+  return got.length === want.length && timingSafeEqual(got, want) ? d : null;
+}
+/** 검토 화면 서버 전용. 다른 곳에서 부르지 않는다. */
+export function writeHoldDecision(d: Omit<ObjectGateHoldDecision, 'sig'>): string {
+  const key = holdKey(true)!;
+  const signed = { ...d, sig: '' } as ObjectGateHoldDecision;
+  signed.sig = holdSignature(key, signed);
+  const path = holdPath(d.pixelSha256);
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, `${JSON.stringify(signed, null, 1)}\n`);
+  return path;
+}
+
+/** 보류 영수증의 그림(정규화한 PNG). 검토 화면이 보여 주고, 서버가 결정을 받을 때 해시를 다시 잰다. */
+const heldImagePath = (sha: string) => resolve(GATE_DATA, 'held-images', sha.slice(0, 2), `${sha}.png`);
+export function writeHeldImage(sha: string, width: number, height: number, data: Uint8Array): void {
+  const path = heldImagePath(sha);
+  if (existsSync(path)) return;
+  const n = normalizeObjectGateImage(width, height, data);
+  const png = new PNG({ width: n.width, height: n.height });
+  png.data = Buffer.from(n.rgba);
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, PNG.sync.write(png));
+}
+/** 저장된 그림이 있고 화소 해시가 맞을 때만 경로를 돌려준다. */
+export async function heldImage(sha: string): Promise<string | null> {
+  const path = heldImagePath(sha);
+  if (!existsSync(path)) return null;
+  return (await pngPixelSha256(path)) === sha ? path : null;
 }
 
 export function readPng(path: string): { width: number; height: number; data: Uint8Array; png: Buffer } {
@@ -106,5 +163,26 @@ export const gatePromptHash = (half: 'view34' | 'style' | 'eye' = 'view34') => {
   if (half === 'eye') return objectGateProfileHash({ half, judges: p.judges, eyeRubric: p.eyeRubric, eyeOutputFormat: p.eyeOutputFormat, view34Pairs: p.view34Pairs, magnify: p.magnify });
   return objectGateProfileHash(half === 'view34'
     ? { half, judges: p.judges, factsVersion: p.factsVersion, rubric: p.rubric, outputFormat: p.outputFormat, view34Guide: p.view34Guide, view34Pairs: p.view34Pairs, magnify: p.magnify, kinds: Object.fromEntries(Object.entries(p.kinds as Record<string, { meaning: string }>).filter(([k]) => k !== 'front_prop').map(([k, v]) => [k, v.meaning])) }
-    : { half, judges: p.judges, factsVersion: p.factsVersion, styleRubric: p.styleRubric, styleOutputFormat: p.styleOutputFormat, styleKinds: p.styleKinds, styleRefs: p.styleRefs });
+    : { half, judges: p.judges, factsVersion: p.factsVersion, styleFactsVersion: p.styleFactsVersion, styleRubric: p.styleRubric, styleOutputFormat: p.styleOutputFormat, styleKinds: p.styleKinds, styleRefs: p.styleRefs });
 };
+
+/**
+ * 사람 검토 대기열의 묶음(queue/<id>.json). `enqueue` 가 쓴다 — 묶음에 든 그림의 해시·종류·표식만 적고, 판정은 영수증, 결정은 서명 기록이 따로 갖는다.
+ * 묶음은 검토 화면에서 거르고 「이 묶음 전부 허용」을 누르는 단위일 뿐 효력은 없다(허용은 그림마다 서명 기록이 따로 생긴다).
+ */
+export type ObjectGateQueueBatch = {
+  schema: 'oprn-object-gate-queue/1'; id: string; title: string; note?: string; createdAt: string;
+  items: Array<{ sha: string; kind: string; label: string; source?: string }>;
+};
+const queueDir = () => resolve(GATE_DATA, 'queue');
+export function listQueueBatches(): ObjectGateQueueBatch[] {
+  if (!existsSync(queueDir())) return [];
+  return readdirSync(queueDir()).filter(f => f.endsWith('.json')).sort().map(f => JSON.parse(readFileSync(resolve(queueDir(), f), 'utf8')) as ObjectGateQueueBatch);
+}
+export function writeQueueBatch(batch: ObjectGateQueueBatch): string {
+  if (!/^[a-z0-9][-a-z0-9_.]{0,80}$/.test(batch.id)) throw Error(`묶음 id 는 영문 소문자·숫자·-_. 만: ${batch.id}`);
+  const path = resolve(queueDir(), `${batch.id}.json`);
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, `${JSON.stringify(batch, null, 1)}\n`);
+  return path;
+}

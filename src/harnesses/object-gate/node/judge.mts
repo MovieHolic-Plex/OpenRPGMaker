@@ -12,7 +12,7 @@ import {
   decideObjectGate, decideObjectGateBoth, decideObjectGateStyle, defaultObjectGateStyleKind, objectGatePixelSha256,
   type ObjectGateKind, type ObjectGateReceipt, type ObjectGateRun, type ObjectGateStyleKind,
 } from '../../_core/objectGate';
-import { GATE_DATA, gatePromptHash, gateProfileHash, readPng, readReceipt, styleRefs, writeProfile, writeReceipt } from './store';
+import { GATE_DATA, gatePromptHash, gateProfileHash, readPng, readReceipt, styleRefs, writeHeldImage, writeProfile, writeReceipt } from './store';
 import { receiptCells } from './cells';
 import { auxMetrics } from './metrics';
 import { columnScan, factsLine, styleFacts, widthProfile } from './facts';
@@ -195,10 +195,11 @@ async function pool<T, R>(items: T[], limit: number, fn: (item: T) => Promise<R>
 
 const STYLE_FLAG_DEFAULT = defaultObjectGateStyleKind;
 
-type JudgeOpts = { force: boolean; write: boolean; concurrency: number; runs?: number; cacheAnswers?: boolean; quiet?: boolean; offline?: boolean };
+/** anyProfile: 같은 그림·같은 종류의 영수증이 어느 프로필로든 이미 있으면 다시 판정하지 않는다(사람 검토 대기열에 올릴 AI 조언이 이미 있다 — 2026-10-20 결정). */
+type JudgeOpts = { force: boolean; write: boolean; concurrency: number; runs?: number; cacheAnswers?: boolean; quiet?: boolean; offline?: boolean; anyProfile?: boolean };
 
 // front_prop(규칙 v8)는 종류 뜻이 사용자 문구에 들어가므로 같은 그림이라도 옛 종류의 답을 쓰면 안 된다 — 이름에 -fp 를 붙인다. 다른 종류의 프롬프트는 v7 과 같아 캐시를 그대로 쓴다.
-const answerCachePath = (half: Half, promptHash: string, sha: string, run: number, kind?: string) => resolve(GATE_DATA, 'calibration', 'answers', `${half}-${promptHash}`, `${sha.slice(0, 20)}${kind === 'front_prop' ? '-fp' : ''}-${run}.json`);
+const answerCachePath = (half: Half, promptHash: string, sha: string, run: number, kind?: string) => resolve(GATE_DATA, 'calibration', 'answers', `${half}-${promptHash}`, `${sha.slice(0, 20)}${kind === 'front_prop' ? '-fp' : half === 'eye' && kind === 'seat' ? '-seat' : ''}-${run}.json`);
 
 async function judgeItems(items: Item[], opts: JudgeOpts): Promise<ObjectGateReceipt[]> {
   const profileHash = await gateProfileHash();
@@ -218,13 +219,16 @@ async function judgeItems(items: Item[], opts: JudgeOpts): Promise<ObjectGateRec
     const refNames = refs.map(r => r.name);
     const metrics = auxMetrics(width, height, data);
     const cached = readReceipt(sha);
-    if (!opts.force && cached && cached.profileHash === profileHash && cached.kind === item.kind) {
+    if (!opts.force && cached && (cached.profileHash === profileHash || opts.anyProfile) && cached.kind === item.kind) {
       // 같은 그림을 다른 여백으로 다시 받았으면 칸 해시만 보탠다(판정은 그대로).
       const more = receiptCells(width, height, data), cells = { ...(cached.cells ?? {}) };
       let grew = false;
       for (const [ts, list] of Object.entries(more)) { const merged = [...new Set([...(cells[ts] ?? []), ...list])].sort(); if (merged.length !== (cells[ts] ?? []).length) grew = true; cells[ts] = merged; }
       const receipt = grew ? { ...cached, cells } : cached;
       if (grew && opts.write) writeReceipt(receipt);
+      // 판정받은 그림은 검토 화면(serve-holds)이 보여 주고 사람 결정 때 해시를 다시 잴 수 있게 따로 둔다(영수증에는 그림이 없다).
+      // 2026-10-20 부터 사람 허용이 최종이므로 보류뿐 아니라 모든 판정의 그림을 둔다.
+      if (opts.write) writeHeldImage(sha, width, height, data);
       prepared.push({ item, styleKind, sha, width, height, metrics, refNames, scale: BOARD_SCALE, cached: receipt }); continue;
     }
     const image = magnify(width, height, data).png;
@@ -234,7 +238,9 @@ async function judgeItems(items: Item[], opts: JudgeOpts): Promise<ObjectGateRec
     const refFacts = refs.map(r => factsLine(`reference ${r.name}`, styleFacts(readPng(r.path))));
     for (const judge of OBJECT_GATE_PROFILE.judges) for (let run = 1; run <= runsPerJudge; run++) {
       if (!item.skipHalves?.includes('view34')) jobs.push({ half: 'view34', kind: item.kind, sha, images: [image, pairsPng(), guidePng()], text: userText('view34', item, styleKind, refNames, cand, refFacts), judge, run });
-      if (!item.skipHalves?.includes('view34') && !OBJECT_GATE_KINDS[item.kind]?.exempt) for (let e = 1; e <= OBJECT_GATE_PROFILE.eyeRuns; e++) jobs.push({ half: 'eye', sha, images: [plainMagnify(width, height, data), pairsPng()], text: 'Candidate (image 1) and references (image 2). Verdict?', judge, run: e });
+      // 주의(2026-10-20 실측): 눈 호출은 판정 회차 루프 안에 있어 같은 답 3개(캐시 run 1~3)가 회차마다 다시 들어가 12표로 센다 — 거부권 문턱 2 는 실제로 「고유 답 3개 중 wrong 1개」다.
+      // 이것을 문서대로(3개 중 2개)로 고치면 개발 확실 위반 slot_machine__w46-A 가 통과해 버린다(규칙 v9 조정 실측). 그래서 지금 동작을 유지한다 — 바꾸려면 문턱·보정을 함께 다시.
+      if (!item.skipHalves?.includes('view34') && !OBJECT_GATE_KINDS[item.kind]?.exempt) for (let e = 1; e <= OBJECT_GATE_PROFILE.eyeRuns; e++) jobs.push({ half: 'eye', sha, images: [plainMagnify(width, height, data), pairsPng()], text: item.kind === 'seat' ? 'The object is a seat (chair, sofa, bench, pew or stool). Candidate (image 1) and references (image 2). Verdict?' : 'Candidate (image 1) and references (image 2). Verdict?', judge, run: e, ...(item.kind === 'seat' ? { kind: 'seat' } : {}) });
       if (!item.skipHalves?.includes('style')) jobs.push({ half: 'style', sha, images: [board.png], text: userText('style', item, styleKind, refNames, cand, refFacts), judge, run });
     }
   }
@@ -285,6 +291,7 @@ async function judgeItems(items: Item[], opts: JudgeOpts): Promise<ObjectGateRec
       metrics: p.metrics, ...(ey.length ? { eye: { verdicts: ey.map(r => String((r.answer as { verdict?: string } | null)?.verdict ?? 'unread')) } } : {}), runs, decidedAt: new Date().toISOString(), cells: p.cells,
     };
     if (opts.write) writeReceipt(receipt);
+    if (opts.write) { const im = readPng(p.item.png); writeHeldImage(p.sha, im.width, im.height, im.data); }
     receipts.push(receipt);
   }
   return receipts;
@@ -307,9 +314,13 @@ if (stage === 'review' || stage === 'audit') {
   const batch = option('batch');
   const items: Item[] = batch ? readBatch(batch) : [{ png: resolve(option('png') ?? ''), kind: option('kind') as ObjectGateKind, name: option('name') ?? basename(option('png') ?? ''), label: option('label'), styleKind: option('style-kind') as ObjectGateStyleKind | undefined }];
   if (!batch && (!option('png') || !option('kind'))) throw Error('review --png <그림> --kind <3/4 종류> [--style-kind building|roof|wall|tree|ground|water|prop] [--name 이름] [--label 표식] | --batch items.jsonl({png,kind,styleKind?,name,label})');
-  const receipts = await judgeItems(items, { force: flag('force'), write: true, concurrency });
+  // --advisory: 사람 검토 대기열을 채우는 용도. 이미 어느 프로필로든 판정받은 그림은 다시 부르지 않고(그림만 검토 화면용으로 둔다),
+  // 눈 호출은 보정과 같은 답 캐시를 쓴다. 판정 규칙·프로필은 그대로다 — 영수증의 효력은 출구 규칙(사람 허용 또는 보정 프로필 pass)이 정한다.
+  const advisory = flag('advisory');
+  const receipts = await judgeItems(items, { force: flag('force'), write: true, concurrency, ...(advisory ? { anyProfile: true, cacheAnswers: true } : {}) });
   for (const r of receipts) console.log(line(r));
   const passed = receipts.filter(r => r.verdict === 'pass').length;
+  if (!calibratedProfiles().has(await gateProfileHash())) console.log(`\n현재 프로필은 보정되지 않았다 — 아래 숫자는 AI 조언이다. 최종 통과는 검토 화면(serve-holds, 18323)의 사람 허용이다.`);
   console.log(`\n${passed}/${receipts.length} 통과(보류 ${receipts.filter(r => r.verdict === 'refer').length} — 사람 확인 전에는 굽기·게시 불가; 3/4 통과 ${receipts.filter(r => r.view34?.verdict === 'pass').length}, 화풍 통과 ${receipts.filter(r => r.style?.verdict === 'pass').length}) · 영수증 ${resolve(GATE_DATA, 'receipts')}`);
   if (stage === 'audit') {
     const out = resolve(option('out') ?? resolve(GATE_DATA, 'audit', `${new Date().toISOString().slice(0, 10)}.json`));
@@ -385,10 +396,20 @@ if (stage === 'calibrate') {
   // adv-* = 적대 시험(위반 표본을 면제 종류로 거짓 선언): 개발·숨김 집계에 섞지 않고 따로 센다. 한 장이라도 통과하면 효력 없음.
   const probe = picked.filter(c => c.set.startsWith('adv-'));
   const dev = picked.filter(c => !c.holdout && !c.set.startsWith('adv-')), hold = picked.filter(c => c.holdout);
-  const v34 = (list: Cal[], tier: Tier) => tally(list.filter(c => c.tier === tier), (c, r) => ({ truth: c.view34, verdict: r.view34?.verdict ?? 'fail' }));
+  // 사람 승인 전용 종류(humanOnly: front_prop)는 3/4 반쪽이 구조상 자동 pass 를 낼 수 없다(항상 refer). 자동 통과율 분모에 넣으면 정상 통과율을 근거 없이 깎으므로
+  // 따로 센다 — 자동 통과가 한 장이라도 나오면 효력 없음(사람 승인 없이 출구를 넘을 길이 생긴 것이다).
+  const humanOnly = (c: Cal) => !!OBJECT_GATE_KINDS[c.kind]?.humanOnly;
+  const v34 = (list: Cal[], tier: Tier) => tally(list.filter(c => c.tier === tier && !humanOnly(c)), (c, r) => ({ truth: c.view34, verdict: r.view34?.verdict ?? 'fail' }));
+  const humanItems = picked.filter(c => !c.set.startsWith('adv-') && c.view34 && humanOnly(c));
+  const humanAutoPass = humanItems.filter(c => byLabel.get(c.label!)!.view34?.verdict === 'pass').map(c => c.label!);
   // 숨김 표본은 둘이다: holdout(1차 숨김 — 규칙 v6 결과를 본 뒤 규칙 v7 을 조정하는 데 쓰였으므로 더 이상 숨김이 아님) · fresh(v7 규칙을 정한 뒤 처음 재는 표본).
-  const holdOld = hold.filter(c => c.set === 'holdout'), holdFresh = hold.filter(c => c.set.startsWith('fresh'));
-  const devA = v34(dev, 'A'), holdA = v34(holdOld, 'A'), freshA = v34(holdFresh, 'A');
+  // 2026-10-20: fresh4 = 판정을 고치기 전에 블라인드 화소 라벨로 얼려 둔 새 숨김 표본(최종 측정 전용). fresh·fresh2·fresh3 은 그 전 결과를 본 표본이라 이제 조정용(보고만, 위반 통과 0 은 그대로 요구).
+  const FROZEN = 'fresh4';
+  // 규칙 v10 앞에 얼린 두 번째 숨김(좌석 위주, 3/4 만). fresh4 와 따로 세고 둘 다 기준을 넘어야 한다.
+  const FROZEN2 = 'fresh5';
+  const holdOld = hold.filter(c => c.set === 'holdout'), holdFresh = hold.filter(c => c.set.startsWith('fresh') && c.set !== FROZEN && c.set !== FROZEN2), frozen = hold.filter(c => c.set === FROZEN), frozen2 = hold.filter(c => c.set === FROZEN2);
+  const devA = v34(dev, 'A'), holdA = v34(holdOld, 'A'), freshA = v34(holdFresh, 'A'), frozenA = v34(frozen, 'A'), frozen2A = v34(frozen2, 'A');
+  const frozenStyle = tally(frozen, (c, r) => ({ truth: c.weak ? null : c.style, verdict: r.style?.verdict ?? 'fail' }));
   const sty = tally(dev, (c, r) => ({ truth: c.style, verdict: r.style?.verdict ?? 'fail' }));
   const strong = tally(dev, (c, r) => ({ truth: c.weak ? null : c.style, verdict: r.style?.verdict ?? 'fail' }));
   const tiers: Record<string, { bad: { total: number; passed: number }; good: { total: number; passed: number } }> = {};
@@ -400,15 +421,20 @@ if (stage === 'calibrate') {
   const GOOD_MIN = 0.8; // 정상 표본 통과율 하한(위반을 하나도 못 놓치는 것에 더해, 정상 표본을 대부분 통과시켜야 효력이 있다)
   // 효력 조건: 개발 표본(확실 라벨)과 숨김 표본 양쪽에서 위반 자동 통과 0 · 정상 통과 ≥ 80%, 화풍은 강한 라벨만.
   const probeMissed = probe.filter(c => byLabel.get(c.label!)!.view34?.verdict === 'pass').map(c => c.label!);
-  const ok = probeMissed.length === 0 && devA.missed.length === 0 && goodRate(devA) >= GOOD_MIN && holdA.missed.length === 0 && goodRate(holdA) >= GOOD_MIN
-    && (freshA.badTotal + freshA.goodTotal > 0 ? freshA.missed.length === 0 && goodRate(freshA) >= GOOD_MIN : true)
+  const ok = probeMissed.length === 0 && humanAutoPass.length === 0 && devA.missed.length === 0 && goodRate(devA) >= GOOD_MIN && holdA.missed.length === 0 && goodRate(holdA) >= GOOD_MIN
+    && freshA.missed.length === 0
+    && (frozen2.length ? frozen2A.missed.length === 0 && goodRate(frozen2A) >= GOOD_MIN : true)
+    && (frozen.length ? frozenA.missed.length === 0 && goodRate(frozenA) >= GOOD_MIN && frozenStyle.missed.length === 0 && goodRate(frozenStyle) >= GOOD_MIN : false)
     && strong.missed.length === 0 && goodRate(strong) >= GOOD_MIN;
   const record = {
     schema: 'oprn-object-gate-profile/1' as const, profileHash, status: ok && full ? 'calibrated' as const : 'rejected' as const, calibratedAt: new Date().toISOString(),
     bad: { total: devA.badTotal, caught: devA.caught, missed: devA.missed, refer: devA.badRefer }, good: { total: devA.goodTotal, passed: devA.passed, falseFail: devA.falseFail, refer: devA.goodRefer },
     tiers, holdout: { bad: { total: holdA.badTotal, caught: holdA.caught, missed: holdA.missed }, good: { total: holdA.goodTotal, passed: holdA.passed, falseFail: holdA.falseFail } },
     fresh: { bad: { total: freshA.badTotal, caught: freshA.caught, missed: freshA.missed }, good: { total: freshA.goodTotal, passed: freshA.passed, falseFail: freshA.falseFail } },
+    frozen2: { set: FROZEN2, bad: { total: frozen2A.badTotal, caught: frozen2A.caught, missed: frozen2A.missed }, good: { total: frozen2A.goodTotal, passed: frozen2A.passed, falseFail: frozen2A.falseFail } },
+    frozen: { set: FROZEN, bad: { total: frozenA.badTotal, caught: frozenA.caught, missed: frozenA.missed }, good: { total: frozenA.goodTotal, passed: frozenA.passed, falseFail: frozenA.falseFail }, style: { shallow: { total: frozenStyle.badTotal, caught: frozenStyle.caught, missed: frozenStyle.missed }, beodeul: { total: frozenStyle.goodTotal, passed: frozenStyle.passed, falseFail: frozenStyle.falseFail } } },
     probe: { total: probe.length, passed: probeMissed.length, missed: probeMissed },
+    humanOnly: { total: humanItems.length, refer: humanItems.filter(c => byLabel.get(c.label!)!.view34?.verdict === 'refer').length, autoPassed: humanAutoPass },
     style: { ...strong, groups }, judge: OBJECT_GATE_PROFILE.judges.map(j => `${j.model}(${j.effort})`).join('+'),
     note: full ? undefined : '부분 실행(--set/--limit/--runs) — 효력 없음',
   };
@@ -418,8 +444,12 @@ if (stage === 'calibrate') {
   console.log(`\n프로필 ${profileHash} (${record.judge})`);
   console.log(`3/4 개발·확실(A)  ${t(devA)}`);
   console.log(`3/4 숨김(1차, 조정에 쓰임)·확실(A)  ${t(holdA)}`);
-  console.log(`3/4 새 숨김(fresh, v7 확정 뒤 처음)·확실(A)  ${t(freshA)}`);
+  console.log(`3/4 조정용 옛 숨김(fresh·fresh2·fresh3, 결과를 본 표본)·확실(A)  ${t(freshA)}`);
+  console.log(`3/4 얼린 새 숨김(${FROZEN}, 블라인드 화소 라벨)·확실(A)  ${t(frozenA)}`);
+  if (frozen2.length) console.log(`3/4 얼린 새 숨김 2(${FROZEN2}, 좌석 위주, v10 계약 블라인드 라벨)·확실(A)  ${t(frozen2A)}`);
+  console.log(`화풍 얼린 새 숨김(${FROZEN})  얕음 ${frozenStyle.caught}/${frozenStyle.badTotal} 막음 · 버들 ${frozenStyle.passed}/${frozenStyle.goodTotal} 통과`);
   if (probe.length) { console.log(`적대 시험(위반 ${probe.length}장을 면제 종류로 거짓 선언)  통과 ${probeMissed.length}/${probe.length}${probeMissed.length ? ' — ' + probeMissed.join(', ') : ''}`); }
+  if (humanItems.length) console.log(`사람 승인 전용 종류(front_prop, 자동 통과율 분모에서 뺌)  ${humanItems.length}장: 보류 ${humanItems.filter(c => byLabel.get(c.label!)!.view34?.verdict === 'refer').length} · 자동 통과 ${humanAutoPass.length}${humanAutoPass.length ? ' — ' + humanAutoPass.join(', ') : ''}`);
   for (const [k, v] of Object.entries(tiers)) console.log(`   등급 ${k}: 위반 자동통과 ${v.bad.passed}/${v.bad.total} · 정상 통과 ${v.good.passed}/${v.good.total}`);
   console.log(`화풍 강한 라벨만  얕음 ${strong.caught}/${strong.badTotal} 막음 · 버들 ${strong.passed}/${strong.goodTotal} 통과 (약한 라벨 포함: 얕음 ${sty.caught}/${sty.badTotal} · 버들 ${sty.passed}/${sty.goodTotal})`);
   for (const [g, v] of Object.entries(groups)) console.log(`  화풍 그룹 ${g.padEnd(18)} 통과 ${v.passed}/${v.total}`);
@@ -427,6 +457,9 @@ if (stage === 'calibrate') {
   if (devA.missed.length) console.log(`놓친 3/4 위반(개발): ${devA.missed.join(', ')}`);
   if (holdA.missed.length) console.log(`놓친 3/4 위반(숨김): ${holdA.missed.join(', ')}`);
   if (freshA.missed.length) console.log(`놓친 3/4 위반(fresh): ${freshA.missed.join(', ')}`);
+  if (frozenA.missed.length) console.log(`놓친 3/4 위반(얼린 새 숨김): ${frozenA.missed.join(", ")}`);
+  if (frozen2A.missed.length) console.log(`놓친 3/4 위반(얼린 새 숨김 2): ${frozen2A.missed.join(", ")}`);
+  if (frozenStyle.missed.length) console.log(`놓친 화풍(얼린 새 숨김, 얕음인데 통과): ${frozenStyle.missed.join(", ")}`);
   if (strong.missed.length) console.log(`놓친 화풍(강한 라벨, 얕음인데 통과): ${strong.missed.join(', ')}`);
   console.log(`상세 ${out}`);
   if (full || flag('record')) console.log(`프로필 ${writeProfile(record)}`);

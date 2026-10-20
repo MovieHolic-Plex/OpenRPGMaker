@@ -31,10 +31,39 @@ export const BATTLE_LOGICAL_HEIGHT = 480;
 /** 자산 px(320×240 시대 기준) → 논리 px 환산 계수. 640×480 논리 해상도에서 1 자산 px = 2 논리 px. */
 export const BATTLE_ASSET_PIXEL_SCALE = 2;
 
+/**
+ * 배틀러 도트 정수 배율. 자산 1px 이 host 레이아웃 px(= 게임 px) 몇 개로 그려지는지를 정수로 맞추는
+ * 필드 zoom 을 돌려준다. 무대 배율 s 에서 자산 1px = 2·s 게임 px 인데, 640×360 은 1.5, 480×270 은 1.125
+ * 라 선이 번졌다(2026-10-20 battle-feel 녹화 실측). 가장 가까운 정수 n(최소 1)으로 맞춘다: zoom = n / (2·s).
+ *   640×360 → s 0.75, n 2, zoom 1.333 · 480×270 → s 0.5625, n 1, zoom 0.889 · 320×240 → s 0.5, n 1, zoom 1
+ * 전투 테스트 모달(host 640×480, 조상 배율 없음)은 s 1 → n 2 → zoom 1 로 그대로다.
+ */
+export function calculateBattleAssetZoom(stageScale: number): { readonly zoom: number; readonly pixels: number } {
+  const exact = BATTLE_ASSET_PIXEL_SCALE * stageScale;
+  if (!Number.isFinite(exact) || exact <= 0) return { zoom: 1, pixels: BATTLE_ASSET_PIXEL_SCALE };
+  const pixels = Math.max(1, Math.round(exact));
+  return { zoom: pixels / exact, pixels };
+}
+
+/** 넓은 화면(16:9) 게임에서 도트 측면 전투가 쓰는 최대 논리 폭. 480 × 16/9 ≈ 853.3. */
+export const BATTLE_WIDE_LOGICAL_WIDTH_MAX = 854;
+
+/**
+ * 전투 무대의 논리 폭. 높이는 480 으로 두고 폭만 host 비율을 따른다(640~854).
+ * 2026-10-20 battle-feel: 새 프로젝트 기본이 640×360(16:9)이 된 뒤 4:3 무대가 가운데에 떠
+ * 좌우 25% 가 남색 띠였다(출하 player 녹화 실측). 도트 측면 전투만 넓힌다 — 배틀러 좌표는
+ * 무대 폭의 백분율이라 그대로 넓게 퍼지고, 그림 칸은 px 라 늘어나지 않는다.
+ */
+export function calculateBattleStageWidth(width: number, height: number, wide: boolean): number {
+  if (!wide || !Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) return BATTLE_LOGICAL_WIDTH;
+  const fit = Math.round(BATTLE_LOGICAL_HEIGHT * (width / height));
+  return Math.max(BATTLE_LOGICAL_WIDTH, Math.min(BATTLE_WIDE_LOGICAL_WIDTH_MAX, fit));
+}
+
 /** Largest uniform fit without cropping; the host's own transform is applied once by its parent. */
-export function calculateBattleStageScale(width: number, height: number): number {
+export function calculateBattleStageScale(width: number, height: number, logicalWidth = BATTLE_LOGICAL_WIDTH): number {
   if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) return 1;
-  return Math.min(width / BATTLE_LOGICAL_WIDTH, height / BATTLE_LOGICAL_HEIGHT);
+  return Math.min(width / logicalWidth, height / BATTLE_LOGICAL_HEIGHT);
 }
 
 type ScaleBinding = { readonly sync: () => void; readonly cleanup: () => void };
@@ -58,14 +87,27 @@ export function bindBattleStageScale(host: HTMLElement, scene: HTMLElement): Sca
     // 전투 테스트 모달(레이아웃 640×480)은 배율 1.0 으로 각각 맞는다.
     const width = host.clientWidth || host.offsetWidth;
     const height = host.clientHeight || host.offsetHeight;
-    const scale = calculateBattleStageScale(width, height);
+    const logicalWidth = calculateBattleStageWidth(width, height, scene.dataset.battleMotion === "retro");
+    const scale = calculateBattleStageScale(width, height, logicalWidth);
     // transform-origin 이 top left 라 스케일 후 남는 여백을 직접 반으로 나눠 중앙에 놓는다.
-    const offsetX = Math.max(0, (width - BATTLE_LOGICAL_WIDTH * scale) / 2);
+    const offsetX = Math.max(0, (width - logicalWidth * scale) / 2);
     const offsetY = Math.max(0, (height - BATTLE_LOGICAL_HEIGHT * scale) / 2);
+    scene.style.setProperty("--battle-stage-width", `${logicalWidth}px`);
+    if (logicalWidth !== BATTLE_LOGICAL_WIDTH) scene.dataset.battleStageWide = "true";
+    else delete scene.dataset.battleStageWide;
     scene.style.setProperty("--battle-stage-scale", String(scale));
     scene.style.setProperty("--battle-stage-offset-x", `${offsetX}px`);
     scene.style.setProperty("--battle-stage-offset-y", `${offsetY}px`);
     scene.dataset.battleStageScale = scale.toFixed(3);
+    // 도트 측면 전투만: 배틀러 필드를 정수 배율로 맞춘다(calculateBattleAssetZoom).
+    if (scene.dataset.battleMotion === "retro") {
+      const asset = calculateBattleAssetZoom(scale);
+      scene.style.setProperty("--battle-asset-zoom", String(asset.zoom));
+      scene.dataset.battleAssetScale = String(asset.pixels);
+    } else {
+      scene.style.removeProperty("--battle-asset-zoom");
+      delete scene.dataset.battleAssetScale;
+    }
   };
 
   sync();

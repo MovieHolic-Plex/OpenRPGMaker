@@ -1,0 +1,388 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e6cd39947ced063a599a5497d187e84e4ca2ce66771196da8a5c713d6f749f4d",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "mart candy bins",
+ "label": "modern_city_interior/mart-candy-bins",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "pink header band with light lower edge",
+      "rows": "5-9",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-9"
+     },
+     {
+      "part": "upper pair of candy bin windows (face-on)",
+      "rows": "10-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white divider strip",
+      "rows": "17-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower pair of candy bin windows (face-on)",
+      "rows": "18-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front base panel",
+      "rows": "25-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole object is a flat face-on display. A pink header band (rows 5-7) with a light row 8 and a grey row 9 reads as a sign or cornice strip, not a horizontal surface. Below it are four glass-fronted bins with candy dots drawn face-on (rows 10-16 and 18-24), and a front base panel (rows 25-28). The bin interiors are seen from the front, not from above, so no opening, ellipse, contents heap or roof plane is visible. The width profile is a constant 16 from rows 4 to 29, with no widening or narrowing that would suggest a top surface. As a container, nothing shows the inside of an opening from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small pink-and-white bin cabinet, about one tile wide and just over one tile tall. It has 12 visible tones in a full tile, which is above the hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline is tinted dark maroon rather than black; this matches the hedge and stall references and does not look like a sticker outline. The pink frame and the bin compartments carry about 4 lightness steps, fewer than the 5-6 on the stall roof or well. Surface grain is modest, but the compartments and frame are varied enough that it sits close to the same-kind references. It is slightly lower in richness but acceptable beside them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20489
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top pink and white cornice strip",
+      "rows": "5-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper candy bin windows (face-on)",
+      "rows": "10-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower candy bin windows (face-on)",
+      "rows": "18-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom front panel",
+      "rows": "25-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The width is a constant 16 px for rows 4-29, so it is a flat rectangular cabinet front with no ellipse. Rows 5-7 are a pink strip and rows 8-9 a white strip. This reads as a face-on cornice or sign band with no clear front-edge line or eave shadow. Rows 10-24 are dark panels holding two face-on windows of candy dots, drawn as vertical faces. A thin white divider sits at row 17. Rows 25-28 are a vertical white front panel. No opening, contents, water or heap is seen from above, so there is no container mouth and no top surface beyond at most a 2-row strip. The drawing is an elevation of a display shelf, not a container with an opening."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small candy-bin cabinet, about one tile wide. It has 12 visible tones per 16x16 tile, above the hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, and the main pink and white bodies show about 4 lightness steps with no large flat fills. The dark edge pixels are 0% near-neutral, so the outline is a tinted dark version of the neighbouring material, like the hedge and stall. It also has a structured bin grid with items inside, not a sticker silhouette. The ramps are a little shallower and the surface grain a little sparser than the richest references, but the piece matches the hedge and the simpler references on the primary facts. A careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21337
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "pink header band (cornice/awning-like strip, flat colour, drawn face-on)",
+      "rows": "5-9",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "candy bin windows with candy dots, seen face-on",
+      "rows": "10-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom white front panel",
+      "rows": "25-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole object is a flat front view. Rows 5-7 are a uniform pink strip with a light line at row 8 and a faint grey line at row 9, then dark navy from row 10. It has no ellipse and no sloped plane, so it reads as a front-facing cornice or header rather than a top surface. Rows 10-24 are dark panels with small windows holding coloured candy dots. These are drawn face-on, so no contents are seen from above and no bin opening shows. A white divider sits at row 17 and a white front panel at rows 25-28. Widths are a constant 16 from rows 4-29 with no receding side face. It is a front-elevation shelf or display, not a container with a visible opening."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small, single-tile-width prop (a pink cabinet with white frame and four bins). The measured facts are at or above the closest same-kind reference. It has 12 visible tones per tile against 9 for prop-hedge, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is a tinted dark tone rather than a black sticker line. By eye it has about 4 lightness steps on the body and frame, with varied bin contents and no large flat fills. That is a little shallower than the 5-6 steps on the well and cheese stall. It is also simpler than those larger pieces, but not flatter or thinner than the hedge for its size, so a careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25542
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "pink header band with light edge line",
+      "rows": "5-9",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "upper candy bin window (face-on)",
+      "rows": "10-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "light divider strip",
+      "rows": "17-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower candy bin window (face-on)",
+      "rows": "18-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pink-white front panel base",
+      "rows": "25-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a flat, face-on shelf unit. The pink band at rows 5-7 has a light line at row 8 and a gray row at row 9, but it reads as a front-facing header strip rather than a receding top plane. The candy bins at rows 10-16 and 18-24 are small windows with candy dots drawn face-on in a grid, not contents seen from above, and no bin opening shows an ellipse or rim. The width is a constant 16 from rows 4-29. No top surface, side face or opening is seen from above, so it is a front elevation and not a container with a visible opening."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small pink and white bin cabinet, about one tile wide. It has 12 visible tones per tile, which is above the hedge reference (9) and below the stall (17) and well (20). Near-flat coverage is 0%, and no 5x5 area is a single flat colour. The dark edge pixels are 0% neutral, so the outline leans maroon/pink-brown, a dark tone of the neighbouring material and not a black sticker line. The pink and white ramps have about 4 steps, a little under the references' 5-6. The bins carry small dot and window details but little grain. It has fewer total colours (15) than the stall (40) and well (38) but is comparable to the hedge (11), a simple reference. On the primary facts it matches the simpler Beodeul props, and a careful artist would accept it next to them, though it is a little thinner than the richest ones.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22114
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.057Z",
+ "cells": {
+  "16": [
+   "79e3f72a56dbbaf0",
+   "d58c3a42b039b9c1"
+  ],
+  "24": [
+   "01b3c050e63602c2",
+   "22d8caf4b8a8389c",
+   "286b163a064fb4d5",
+   "3b5624965e23f7bd",
+   "41ca51e00fd3c98f",
+   "5f820b58ae2c20cf",
+   "61f82aec2455c54c",
+   "7383649a9d2e4a53",
+   "cbb33609ff4dcb88",
+   "db272974672285d4",
+   "dc03365f71a90e4a",
+   "e65f81348c22e205"
+  ],
+  "32": [
+   "5b60300cf8bd8b4b",
+   "d892bda8b6355065",
+   "e395f8546424da1a"
+  ],
+  "48": [
+   "0ea2b211debc8f5b",
+   "1e2dc1d7d952df42",
+   "4b603cf023f2fbd8",
+   "9d4b4a2559b90fca",
+   "a8a14dc79839f4d6",
+   "abd47964624aebb4"
+  ]
+ }
+}

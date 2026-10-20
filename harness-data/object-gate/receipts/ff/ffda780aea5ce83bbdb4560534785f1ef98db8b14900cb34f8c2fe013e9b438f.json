@@ -1,0 +1,370 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ffda780aea5ce83bbdb4560534785f1ef98db8b14900cb34f8c2fe013e9b438f",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "fr-counter-stool",
+ "label": "seats34/jp_city_interior/fr-counter-stool",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 2/4)",
+  "3/4: 윗면 3행 < 4 (2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 윗면 2행 < 4 (2/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 2/4)",
+   "윗면 3행 < 4 (2/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "윗면 2행 < 4 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 26,
+  "nearBlackEdge": 0.94,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat top",
+      "rows": "7-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-10"
+     },
+     {
+      "part": "legs and rung",
+      "rows": "11-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat has a light top band in rows 7-8 (L=146). Row 9 is a mid-tone front-edge line (L=114), and row 10 is a darker eave shadow (L=83). The width profile 6,8,10,10,8 widens then narrows, so the seat is slightly rounded. Below the seat, legs and a crossbar run through rows 11-14, so the front face is about 5 rows including the apron. The top surface is only 3 rows, which is thin but more than a 1-2 row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny stool with only 5 distinct colours in total, against 11-40 for the references. It is smaller than one tile, so the per-tile tone counts are 0 and I judged by eye. The seat has a light top and a mid side, and the legs are one brown with a dark edge, so about 3 steps against the bench's 5-6 (highlight, light, mid, dark, deep on the slats and legs). The edge pixels are 0% neutral, so the outline is a tinted dark brown rather than black. Nothing suggests wood grain, plank separation, per-surface highlights or texture dots, so the surface is plain next to the bench reference, which shows plank seams and grain. The exact flat-fill figure is 0% only because the piece is tiny. The stool looks thinner and flatter than the bench, the closest reference of the same kind, and a careful artist would not accept it beside the Beodeul props. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15270
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat top",
+      "rows": "7-9",
+      "evidence": "b",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10"
+     },
+     {
+      "part": "legs and crossbar",
+      "rows": "11-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is a rounded disc. Its width profile runs 6, 8, 10, 10, 8 over rows 6-10, so it widens and then narrows. Rows 7-8 are light (L=146) and read as the seat surface, and row 9 is a mid-tone front edge. Row 10 is darker (L=83) and acts as eave shadow or the seat's underside. Below that, rows 11-14 show two legs with a crossbar at row 13 (width 8), which gives a front face of about 5 rows including the dark apron row. The top is short at about 3 rows, but it shows a lit surface, an edge line and a shadow, which is more than a 1-2 row rim. There is no backrest."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny stool with only 5 distinct colours in total, against 11-40 for the references. It reads as a flat brown seat and legs with a dark outline, which gives about 2-3 lightness steps where the Beodeul pieces use around 5. The seat top shows no grain, plank edges or highlight dots. The measured facts are 0 per tile because the piece is smaller than a tile, so I judged by eye. Next to the bench, which also has wood grain and highlights, the stool looks thinner, flatter and more sticker-like. The outline looks dark and close to neutral rather than a clearly tinted dark wood tone. The 0% near-neutral measure may reflect a dark brown, but nothing in the picture shows a material-tinted edge. The piece is clean but too shallow for the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 21336
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat top",
+      "rows": "7-8",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-10"
+     },
+     {
+      "part": "legs and stretcher",
+      "rows": "11-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The seat has a light top band on rows 7-8 (L=146). Row 9 (L=114) is a darker edge line and row 10 (L=83) is shadow. Below that are legs on rows 11-14, with a crossbar on row 13 at x=8. The seat widens from 6 to 10 pixels over rows 6-9 and narrows to 8 on rows 10-11, but the outline accounts for most of that, so it is not a real ellipse. The sitting surface is only 2 rows of light colour, which matches the 'seat: band 2' WRONG reference rather than the 'seat: top 5 + legs' RIGHT reference. The seat therefore shows no real top and reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny stool (about 16x16 or smaller) with only 5 distinct colours in total. It reads as a seat, a dark outline and a couple of leg tones, so shading is shallow at about 3 steps against the 5-6 steps on the references. The facts show 0 visible tones per tile, but that is only because the piece is smaller than a tile, so I judged by eye. By eye the seat top and legs are nearly flat blocks with no grain, plank lines or highlight dots. The comparable wood bench has 14 colours and visible wood grain and highlights, so the stool looks thinner and more sticker-like. The outline is a dark line around the whole shape with little tint variation, so it is not clearly the dark tone of the adjacent material. A careful artist would not accept it next to the bench without asking for more shading and texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 21819
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat",
+      "rows": "7-8",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10"
+     },
+     {
+      "part": "legs and crossbar",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The seat has only a 2-row light top band (rows 7-8, L=146). Below it are a mid-tone front row 9 and a dark shadow row 10, then the legs (rows 11-15). The width profile 6,8,10,10,8 suggests slightly rounded corners, but it does not form a real ellipse. Only 2 light rows read as a top, which matches the 'seat band 2' wrong reference rather than the 'top 5 + legs' right one. The seat top is therefore a rim-like strip over a front face, so the drawing reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny stool, about 14x16 source pixels, with only 5 distinct colours in total. The measured per-tile facts are 0 because it is smaller than one tile, so I judged by eye. It shows roughly 3 brown steps: a light seat top, a mid body and a dark outline/legs. The outline is a dark brown, so it is tinted and not neutral black. There is no grain, no plank texture and no per-surface highlight on the seat or legs. Next to the bench (14 colours), which carries wood grain and several tones, the stool looks thinner, flatter and more sticker-like. The references hold 11-40 distinct colours, and the candidate holds 5. Too shallow for the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 17400
+  }
+ ],
+ "decidedAt": "2026-10-20T14:09:20.478Z",
+ "cells": {
+  "16": [
+   "50c23f862123aa6f"
+  ],
+  "24": [
+   "30763a3bc6c90f84",
+   "310ef05093e6dae4",
+   "4e47a9ee3494881d",
+   "770b5faafcbdf4b4",
+   "8c35fe6da79136d0",
+   "fc33515b8de44063"
+  ],
+  "32": [
+   "15aea3847293964b",
+   "537ea5a360b9186a",
+   "86903db380f9a7f5",
+   "a204cbb594f063f9",
+   "daf744dd9be00a21",
+   "e2fa81ddcc225afd"
+  ],
+  "48": [
+   "19f74d562aec61d0",
+   "57874c931d632bce",
+   "5fa46dcfffbe32b0",
+   "6c3d80d626ca91cf",
+   "aa779ee1d2b95733",
+   "ae09cd03250d29d5"
+  ]
+ }
+}

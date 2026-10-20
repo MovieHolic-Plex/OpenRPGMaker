@@ -27,15 +27,15 @@
   {
    "row": 58,
    "xs": [
-    0,
-    17,
+    5,
+    23,
     29,
     44,
     52,
     68,
     87
    ],
-   "cover": 25.9
+   "cover": 23.2
   },
   {
    "row": 78,
@@ -76,7 +76,7 @@
   "failing": []
  },
  "solid": {
-  "cells": 845,
+  "cells": 811,
   "openByEngine": 0,
   "open": []
  },
@@ -101,8 +101,8 @@
   "overlaps": 0,
   "issues": [],
   "l2": 726,
-  "l3": 3330,
-  "l4": 958
+  "l3": 3291,
+  "l4": 943
  },
  "emptiness": {
   "worst17x13": 0.566,
@@ -112,10 +112,10 @@
   ]
  },
  "reach": {
-  "reachable": 6483,
-  "walkable": 6675
+  "reachable": 6517,
+  "walkable": 6709
  },
- "placed": 237,
+ "placed": 203,
  "deco": {
   "placed": 88,
   "skipped": 28
@@ -347,123 +347,11 @@
    "layer": 3
   },
   {
-   "id": "jp-bwall-end-l",
-   "x": 2,
-   "y": 54,
-   "w": 1,
-   "h": 1,
-   "layer": 3
-  },
-  {
-   "id": "jp-bwall-plain",
-   "x": 3,
-   "y": 54,
-   "w": 1,
-   "h": 1,
-   "layer": 3
-  },
-  {
-   "id": "jp-bwall-plain",
-   "x": 4,
-   "y": 54,
-   "w": 1,
-   "h": 1,
-   "layer": 3
-  },
-  {
-   "id": "jp-bwall-plain",
-   "x": 5,
-   "y": 54,
-   "w": 1,
-   "h": 1,
-   "layer": 3
-  },
-  {
-   "id": "jp-bwall-sukashi",
-   "x": 6,
-   "y": 54,
-   "w": 1,
-   "h": 1,
-   "layer": 3
-  },
-  {
-   "id": "jp-bwall-plain",
-   "x": 7,
-   "y": 54,
-   "w": 1,
-   "h": 1,
-   "layer": 3
-  },
-  {
-   "id": "jp-bwall-end-r",
-   "x": 8,
-   "y": 54,
-   "w": 1,
-   "h": 1,
-   "layer": 3
-  },
-  {
    "id": "jp-bldg-house-shed-modern",
    "x": 10,
    "y": 47,
    "w": 8,
    "h": 6,
-   "layer": 3
-  },
-  {
-   "id": "jp-bwallf-end-l",
-   "x": 10,
-   "y": 53,
-   "w": 1,
-   "h": 2,
-   "layer": 3
-  },
-  {
-   "id": "jp-bwallf-end-r",
-   "x": 11,
-   "y": 53,
-   "w": 1,
-   "h": 2,
-   "layer": 3
-  },
-  {
-   "id": "jp-bwallf-end-l",
-   "x": 13,
-   "y": 53,
-   "w": 1,
-   "h": 2,
-   "layer": 3
-  },
-  {
-   "id": "jp-bwallf-plain",
-   "x": 14,
-   "y": 53,
-   "w": 1,
-   "h": 2,
-   "layer": 3
-  },
-  {
-   "id": "jp-bwallf-plain",
-   "x": 15,
-   "y": 53,
-   "w": 1,
-   "h": 2,
-   "layer": 3
-  },
-  {
-   "id": "jp-bwallf-plain",
-   "x": 16,
-   "y": 53,
-   "w": 1,
-   "h": 2,
-   "layer": 3
-  },
-  {
-   "id": "jp-bwallf-end-r",
-   "x": 17,
-   "y": 53,
-   "w": 1,
-   "h": 2,
    "layer": 3
   },
   {
@@ -483,48 +371,8 @@
    "layer": 3
   },
   {
-   "id": "jp-bwall-end-l",
-   "x": 46,
-   "y": 54,
-   "w": 1,
-   "h": 1,
-   "layer": 3
-  },
-  {
-   "id": "jp-bwall-plain",
-   "x": 47,
-   "y": 54,
-   "w": 1,
-   "h": 1,
-   "layer": 3
-  },
-  {
-   "id": "jp-bwall-sukashi",
-   "x": 48,
-   "y": 54,
-   "w": 1,
-   "h": 1,
-   "layer": 3
-  },
-  {
    "id": "jp-gatepost",
    "x": 49,
-   "y": 54,
-   "w": 1,
-   "h": 1,
-   "layer": 3
-  },
-  {
-   "id": "jp-bwall-end-l",
-   "x": 51,
-   "y": 54,
-   "w": 1,
-   "h": 1,
-   "layer": 3
-  },
-  {
-   "id": "jp-bwall-end-r",
-   "x": 52,
    "y": 54,
    "w": 1,
    "h": 1,
@@ -555,64 +403,8 @@
    "layer": 3
   },
   {
-   "id": "jp-bwall-end-l",
-   "x": 74,
-   "y": 54,
-   "w": 1,
-   "h": 1,
-   "layer": 3
-  },
-  {
-   "id": "jp-bwall-plain",
-   "x": 75,
-   "y": 54,
-   "w": 1,
-   "h": 1,
-   "layer": 3
-  },
-  {
-   "id": "jp-bwall-sukashi",
-   "x": 76,
-   "y": 54,
-   "w": 1,
-   "h": 1,
-   "layer": 3
-  },
-  {
    "id": "jp-gatepost",
    "x": 77,
-   "y": 54,
-   "w": 1,
-   "h": 1,
-   "layer": 3
-  },
-  {
-   "id": "jp-bwall-end-l",
-   "x": 79,
-   "y": 54,
-   "w": 1,
-   "h": 1,
-   "layer": 3
-  },
-  {
-   "id": "jp-bwall-sukashi",
-   "x": 80,
-   "y": 54,
-   "w": 1,
-   "h": 1,
-   "layer": 3
-  },
-  {
-   "id": "jp-bwall-plain",
-   "x": 81,
-   "y": 54,
-   "w": 1,
-   "h": 1,
-   "layer": 3
-  },
-  {
-   "id": "jp-bwall-end-r",
-   "x": 82,
    "y": 54,
    "w": 1,
    "h": 1,
@@ -635,72 +427,8 @@
    "layer": 3
   },
   {
-   "id": "jp-bwall-end-l",
-   "x": 86,
-   "y": 54,
-   "w": 1,
-   "h": 1,
-   "layer": 3
-  },
-  {
-   "id": "jp-bwall-plain",
-   "x": 87,
-   "y": 54,
-   "w": 1,
-   "h": 1,
-   "layer": 3
-  },
-  {
-   "id": "jp-bwall-plain",
-   "x": 88,
-   "y": 54,
-   "w": 1,
-   "h": 1,
-   "layer": 3
-  },
-  {
-   "id": "jp-bwall-plain",
-   "x": 89,
-   "y": 54,
-   "w": 1,
-   "h": 1,
-   "layer": 3
-  },
-  {
    "id": "jp-gatepost",
    "x": 90,
-   "y": 54,
-   "w": 1,
-   "h": 1,
-   "layer": 3
-  },
-  {
-   "id": "jp-bwall-end-l",
-   "x": 92,
-   "y": 54,
-   "w": 1,
-   "h": 1,
-   "layer": 3
-  },
-  {
-   "id": "jp-bwall-plain",
-   "x": 93,
-   "y": 54,
-   "w": 1,
-   "h": 1,
-   "layer": 3
-  },
-  {
-   "id": "jp-bwall-sukashi",
-   "x": 94,
-   "y": 54,
-   "w": 1,
-   "h": 1,
-   "layer": 3
-  },
-  {
-   "id": "jp-bwall-end-r",
-   "x": 95,
    "y": 54,
    "w": 1,
    "h": 1,
@@ -1796,7 +1524,7 @@
   },
   {
    "id": "jp-pole",
-   "x": 0,
+   "x": 5,
    "y": 49,
    "w": 3,
    "h": 10,
@@ -1804,7 +1532,7 @@
   },
   {
    "id": "jp-pole",
-   "x": 17,
+   "x": 23,
    "y": 49,
    "w": 3,
    "h": 10,
@@ -1851,18 +1579,18 @@
    "layer": 4
   },
   {
-   "id": "jp-wire-17",
-   "x": 3,
+   "id": "jp-wire-18",
+   "x": 8,
    "y": 49,
-   "w": 14,
+   "w": 15,
    "h": 3,
    "layer": 4
   },
   {
-   "id": "jp-wire-12",
-   "x": 20,
+   "id": "jp-wire-6",
+   "x": 26,
    "y": 49,
-   "w": 9,
+   "w": 3,
    "h": 3,
    "layer": 4
   },

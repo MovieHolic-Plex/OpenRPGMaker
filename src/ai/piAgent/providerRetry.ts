@@ -20,6 +20,8 @@ const TRANSIENT_PATTERNS: readonly RegExp[] = [
   /\bfetch failed\b|network error|terminated/i,
   /\b(?:502|503|504)\b|bad gateway|service unavailable|gateway timeout/i,
   /\boverloaded\b|\bUNAVAILABLE\b/i,
+  // 2026-10-20 로컬 Codex CLI(gpt-6.1-sol): 「Selected model is at capacity. Please try a different model.」 — 같은 명령이 번갈아 성공/실패했다.
+  /model is at capacity/i,
   /returned an empty response/i,
   // 2026-10-14 gpt-6-astra 오프닝 시험: OpenAI 쪽 「An error occurred while processing your request … (upstream_server_error)」 로 6·17턴째에 끝났다 — 재요청하면 풀리는 서버 오류.
   // 2026-10-15 Argon 8318 프록시 경로: 계정 승격 순간 「unknown provider for model」, 소켓 끊김, 일회성 400 — 같은 요청을 다시 보내면 풀린다.

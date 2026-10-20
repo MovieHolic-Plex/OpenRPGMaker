@@ -1,0 +1,425 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a10b57654adf94b9558f79e62ce216e0c9fa66b1d0727fb8cf0c9b4138d01dd9",
+ "width": 80,
+ "height": 48,
+ "kind": "seat",
+ "name": "judge bench with three high-backed judge chairs behind it (faces south)",
+ "label": "seats34/modern_city_interior/court-judge-bench",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 11,
+  "darkV5": 27,
+  "nearBlackEdge": 0.57,
+  "opaqueTiles": 13
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "judge bench top (wood plank surface)",
+      "rows": "12-20",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "21-21"
+     },
+     {
+      "part": "bench front face with gold emblem",
+      "rows": "22-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "three high-backed chair backs",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The bench is the main body. Rows 12-20 form a plank-grained top surface that ends in a lighter front-edge line at row 19 (L=130), then row 20 and a dark shadow line at row 21 (L=42). Below it is a 24-row vertical front panel (rows 22-45) with a gold emblem, so the bench has a top and a front face. The three chair backs (rows 0-10, 30 px wide in total) are drawn only as vertical faces with a small lighter cap at rows 2-4. No chair seat is visible, because the bench hides it, so the chairs show no horizontal seat surface. This matters for a 'seat' kind. The bench itself reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a large wood bench front with a gold coin emblem and three dark chairs behind it. It has only 18 distinct colours against 38-40 for the large references (stall, well), and a median of 7 colours per tile against 17-20 for those two. Its 15% flat-fill coverage is above the 0% of the well and hedge and just above the stall's 13%. The big front panel reads as broad mid-brown areas with sparse vertical plank lines and little per-plank grain or highlight. The wood ramp looks like about 4 steps against 5-6 in the stall and well. The chair backs are near-uniform dark blocks with minimal shading. The outline is mixed: 40% of dark edge pixels are neutral, so some edges are dark brown and others are close to black, where the stall and hedge are tinted at 0-1% neutral. The piece is clean and readable, but it is flatter and thinner than the large references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 18964
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "judge bench top (wood plank)",
+      "rows": "12-21",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-21"
+     },
+     {
+      "part": "three high chair backs",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The bench is the main body. Rows 12-19 are a wood-grain top plank that ends in a lighter front-edge line at row 19 (L=130). Rows 20-21 are darker eave shadow. Below that, rows 22-45 are a 24-row front face with a gold emblem. The three chairs behind the bench (rows 0-10) are face-on backrests with no seat visible, because the bench hides it. Only a small cap band at rows 1-4 gives them any top, so I mark the chairs as lacking a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a large multi-tile prop, so it should be compared with the stall and well, which are similar in size and richness. It has only 18 distinct colours against 38-40 for the stall and well. It has 7 colours per tile against 17-20 for those two. Its flat-fill coverage is 15%, against 0% for the well and 13% for the stall. By eye, the wide front panel of the bench is mostly one brown with faint vertical plank lines and little grain, knots or per-plank highlights. The wood ramp has about 4 steps, where Beodeul uses 5-6. The three chairs are small, dark and simple, with little shading on the high backs. The gold coin emblem is neat but built from only a few tones. The outline is partly tinted dark brown and partly neutral (40% near-neutral), so it is mixed rather than clearly the dark tone of the adjacent material. Overall it reads flatter and more sticker-like than the stall and well, and is not at their level of craft.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 26255
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "judge bench top (wood-grain plank surface)",
+      "rows": "12-21",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "21"
+     },
+     {
+      "part": "three high-backed chairs (backrests only, seat hidden behind the bench)",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The bench is the main body. Rows 12-18 are a wood-grain top plane, row 19 is a lighter front-edge line (L=130), row 20 is a lip, and row 21 is dark eave shadow. Below that is a front face on rows 22-45 (24 rows) with a gold medallion and vertical panels. The three chair backs on rows 0-10 are drawn face-on as vertical panels with a rounded headrest. No seat surface is visible because the bench hides it, so the chairs show no horizontal surface where a seat should be seen from above. The bench itself reads as a three-quarter object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a large prop, comparable in footprint to the stall and well, but it has only 18 distinct colours against 38-40 for those two. Its median of 7 colours per tile is far below the stall (17) and well (20). Its 15% flat-fill coverage is at or above the stall's 13% and well above the 0% of the well, hedge and bench. The front panel is broad vertical planks with a thin top slab and a gold coin emblem. The wood has about 3-4 lightness steps and little per-plank grain, knots or highlight dots. The coin is a simple flat disc. The three chairs are small, dark and almost silhouettes, with little ramp inside them and a near-black look. The dark edge pixels are 40% neutral, so the outline is mixed: partly brown-tinted on the wood, partly near-black on the chairs. The reference well and stall have richly textured, tinted ramps, so this piece reads flatter and more sticker-like beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 19500
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "judge bench top",
+      "rows": "12-20",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "21"
+     },
+     {
+      "part": "three high-backed chairs (backrests only)",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the bench. Rows 12-20 are a wood-grain top plane ending in a lighter front-edge line at row 19 and a dark eave shadow at row 21. Below it, rows 22-45 are the front face (24 rows) with a gold emblem. The three chairs above (rows 0-10) show only vertical backrest faces with small rounded caps. Their seats are hidden behind the bench, so no seat surface is visible from above. The bench itself reads as three-quarter, but the chairs are vertical faces only."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate has 18 distinct colours against 38-40 for the rich references (stall, well). Its median of 7 colours per tile is below the stall (17) and well (20). Its flat-fill coverage of 15% is above the well and hedge (0%) and the bench (0%), and slightly above the stall (13%). The bench front is a large panel of near-flat brown with only a few grain lines, and the coin emblem is a flat gold disc with little shading. The chairs are dark silhouettes with about 2-3 steps and little highlight or texture. The top ledge and front panel show roughly 3 brown steps, where the references use 5-6 per material. Dark edges are 40% neutral, so the outline is mixed and leans toward a uniform dark line with a sticker feel, unlike the tinted material-tone outlines of the hedge and stall (0-1% neutral). Overall it is clean and readable but shallower and flatter than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14732
+  }
+ ],
+ "decidedAt": "2026-10-20T07:20:07.097Z",
+ "cells": {
+  "16": [
+   "22ee1e681cc8606c",
+   "3dcaa75c4849cef1",
+   "4ef16aca104ba657",
+   "51a508029b93dfed",
+   "5fe95761bc33a94b",
+   "658e14fd3b8abd09",
+   "69b6ce4bb996754a",
+   "7b8c950d1b3d92b2",
+   "7feb21e2c9554083",
+   "815086232662f280",
+   "8d44df7a16052d49",
+   "9ddadd349813ce16",
+   "a6d34cbb5e648d64",
+   "ad39092c434f14b3",
+   "fba18f1ad7f1015b"
+  ],
+  "24": [
+   "028155dffedf92e6",
+   "084856f983af97db",
+   "0e08401db7ebed80",
+   "166443a6157ca337",
+   "295ebd3a9e3fdf40",
+   "2b610a0fb713e2b7",
+   "2d598c98aee95fec",
+   "31c6ab374ff47b24",
+   "35ee3dbac4a91b1b",
+   "4184a0c9ebf21add",
+   "480cbfae2cc8ff0b",
+   "5cbf98c85b720d34",
+   "5e8cdefdee108f0b",
+   "66f22effce733c00",
+   "68686157dd1884df",
+   "8309ad63c55f501f",
+   "87e82c8b31166c54",
+   "a33e6e7ce5733f25",
+   "cc1cbe1772a7b4f1",
+   "d2e20e2c13fcd0b3",
+   "d4a7a561aab9990c",
+   "d8a659cf17b4df20",
+   "e1e210b2f20f42c1",
+   "e9d19e96dd45205c"
+  ],
+  "32": [
+   "0bba2f79e03f2aa2",
+   "0da42431246cddc1",
+   "10ee28af0428a94a",
+   "11bdb41abd220a1d",
+   "14b9db14f530fe7d",
+   "16aaaa7dd3d785f6",
+   "18ed07c8ad88a070",
+   "18efdd38cc2a3226",
+   "1f4ff94648b2bafe",
+   "30cd62180897b946",
+   "3141f1b77d9bf8c0",
+   "334aa534117bc460",
+   "3435494e77fb4a52",
+   "39c8deecc10a38e8",
+   "3e1481f35f5bf3a1",
+   "46d44df6c5b584cc",
+   "4b776bbbcf4b1844",
+   "592c66d33fb78c06",
+   "5a02bb9f70bbef53",
+   "680ba3668ac513a1",
+   "753bc511a978efee",
+   "822341ccbf8f4397",
+   "83c8f584c74bcb29",
+   "85e369ebbfecb084",
+   "88105cee59dff3bd",
+   "8e6c94a6a5aef285",
+   "928be56ca25015cc",
+   "965388813fa4fd0b",
+   "a4b00a954aa76ae1",
+   "a4e3b06691ce6a79",
+   "a99cc62518658296",
+   "b58313751e3c2d60",
+   "bf76599ad7261bc3",
+   "cf028f5802c63775",
+   "d6985ca61850e447",
+   "e2e9cb56806d6fea"
+  ],
+  "48": [
+   "09cb6a5a9ba83201",
+   "1aee3621c03e9c4f",
+   "800f950366864c37",
+   "8512106bb653be2a",
+   "9d5401d424a784e9",
+   "fbbde256e26d7988"
+  ]
+ }
+}

@@ -4,7 +4,7 @@
 // 설계·플랫폼 결정: openwiki/desktop-window-controls.md
 import { el } from "@/util/dom";
 import { desktopWindowChrome } from "@/app/windowChrome";
-import { attachDelayedTooltip } from "@/editor/delayedTooltip";
+import { attachDelayedTooltip, hideDelayedTooltip } from "@/editor/delayedTooltip";
 import type { WindowControlAction, WindowState } from "../../electron/shared/windowControl";
 import "@/styles/shell/window-controls.css";
 
@@ -69,7 +69,8 @@ export function mountWindowControls(): void {
       class: `swc-button ${spec.cls}`,
       attrs: { type: "button", "aria-label": label() },
       dataset: { testid: spec.testid },
-      on: { click: () => { void chrome.control(spec.action).catch(() => false); } },
+      // 누르면 툴팁부터 거둔다 — 창이 숨겨졌다(닫기·최소화) 돌아오면 대상 위치가 0 으로 읽혀 툴팁이 왼쪽 위에 남았다(2026-10-20).
+      on: { click: () => { hideDelayedTooltip(); void chrome.control(spec.action).catch(() => false); } },
     });
     button.append(glyph(icon()));
     buttons.set(spec.action, button);
@@ -112,6 +113,8 @@ export function mountWindowControls(): void {
     children: [fullscreen, el("span", { class: "swc-separator", attrs: { role: "presentation" } }), minimize, maximize, closeButton],
   }));
   paint();
+  window.addEventListener("blur", () => hideDelayedTooltip());
+  document.addEventListener("visibilitychange", () => { if (document.hidden) hideDelayedTooltip(); });
   bridge?.onWindowState?.(apply);
   void bridge?.windowState?.().then(apply).catch(() => {});
 }

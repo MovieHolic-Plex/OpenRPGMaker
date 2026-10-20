@@ -1,9 +1,10 @@
 import { spawn } from 'node:child_process';
-import { resolve } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import { OBJECT_GATE_PROFILE, objectGateRefusal, type ObjectGateContext, type ObjectGateKind } from '../../_core/objectGate';
 import { createInterface } from 'node:readline/promises';
-import { validFrontPropApproval } from '../../_core/objectGate';
-import { calibratedProfiles, gateProfileHash, listApprovals, listReceipts, pngPixelSha256, readApproval, readProfiles, readReceipt, removeApproval, writeApproval } from './store';
+import { humanDecision, validFrontPropApproval } from '../../_core/objectGate';
+import { readFileSync } from 'node:fs';
+import { calibratedProfiles, gateProfileHash, listApprovals, listQueueBatches, listReceipts, pngPixelSha256, readApproval, readHoldDecision, readProfiles, readReceipt, removeApproval, writeApproval, writeQueueBatch } from './store';
 
 const spawnBun = (argv: string[]): Promise<number> => new Promise((done, reject) => {
   const child = spawn('bun', [resolve('src/harnesses/object-gate/node/judge.mts'), ...argv], { stdio: 'inherit', cwd: process.cwd() });
@@ -14,11 +15,16 @@ export async function run(argv: string[]): Promise<number> {
   const stage = argv[0];
   const option = (name: string) => { const i = argv.indexOf(`--${name}`); return i >= 0 ? argv[i + 1] : undefined; };
   if (stage === 'review' || stage === 'calibrate' || stage === 'audit' || stage === 'preview' || stage === 'rereview') return spawnBun(argv);
+  // 사람 허용 규칙 위변조 시험(임시 데이터·임시 키). 모델 호출 없음.
+  if (stage === 'selftest-holds') return new Promise((done, reject) => {
+    const child = spawn('bun', [resolve('src/harnesses/object-gate/node/selftest-holds.mts')], { stdio: 'inherit', cwd: process.cwd() });
+    child.once('error', reject); child.once('exit', code => done(code ?? 1));
+  });
   if (stage === 'check') {
     const png = option('png'), context = option('context') as ObjectGateContext | undefined;
     if (!png || !context) throw Error('check --png <그림> --context bundle|shared|store|workshop-local [--kind 종류]');
     const sha = await pngPixelSha256(resolve(png));
-    const refusal = objectGateRefusal({ receipt: readReceipt(sha), pixelSha256: sha, kind: option('kind') as ObjectGateKind | undefined, context, calibratedProfiles: calibratedProfiles(), approval: readApproval(sha) });
+    const refusal = objectGateRefusal({ receipt: readReceipt(sha), pixelSha256: sha, kind: option('kind') as ObjectGateKind | undefined, context, calibratedProfiles: calibratedProfiles(), approval: readApproval(sha), hold: readHoldDecision(sha) });
     console.log(refusal ? `거절: ${refusal}` : `통과 (${sha.slice(0, 12)})`);
     return refusal ? 3 : 0;
   }
@@ -52,6 +58,48 @@ export async function run(argv: string[]): Promise<number> {
     for (const a of approvals) console.log(`  ${a.pixelSha256.slice(0, 12)} ${a.approvedBy} ${a.approvedAt}${a.note ? ` — ${a.note}` : ''}`);
     return 0;
   }
+  // 보류 판정 사람 검토 화면. 결정 기록은 이 서버만 쓴다(서명). 감독·에이전트는 띄울 수는 있어도 대신 누르지 않는다.
+  if (stage === 'serve-holds') {
+    const { serveHolds } = await import('./holds');
+    await serveHolds({ host: option('host') ?? '0.0.0.0', port: Number(option('port') ?? 18323) });
+    await new Promise(() => {});
+  }
+  // 사람 검토 대기열에 묶음을 올린다: 묶음 목록(queue/<id>.json)을 쓰고, 영수증이 없는 그림만 AI 판정(review --advisory)을 받는다.
+  // 판정은 조언이고 최종 통과는 검토 화면(serve-holds)의 사람 허용이다. 이 단계는 아무것도 허용하지 않는다.
+  if (stage === 'enqueue') {
+    const batch = option('batch'), id = option('id'), title = option('title');
+    if (!batch || !id || !title) throw Error('enqueue --batch items.jsonl({png,kind,styleKind?,name,label}) --id <묶음 id> --title <묶음 이름> [--note 메모] [--no-review]');
+    const lines = readFileSync(resolve(batch), 'utf8').split('\n').filter(l => l.trim()).map(l => JSON.parse(l) as { png: string; kind: string; label?: string; name?: string });
+    const items = [];
+    for (const l of lines) {
+      const png = resolve(dirname(resolve(batch)), l.png);
+      items.push({ sha: await pngPixelSha256(png), kind: l.kind, label: l.label ?? l.name ?? png, source: png.startsWith(process.cwd()) ? png.slice(process.cwd().length + 1) : png });
+    }
+    const prev = listQueueBatches().find(b => b.id === id);
+    const file = writeQueueBatch({ schema: 'oprn-object-gate-queue/1', id, title, ...(option('note') ? { note: option('note') } : {}), createdAt: prev?.createdAt ?? new Date().toISOString(), items });
+    console.log(`대기열 묶음 ${file} — ${items.length}장`);
+    if (argv.includes('--no-review')) return 0;
+    const code = await spawnBun(['review', '--advisory', '--batch', resolve(batch)]);
+    return code === 3 ? 0 : code; // 3 = 전부 통과는 아님(조언) — 대기열에 올리는 데는 정상
+  }
+  if (stage === 'holds') {
+    // 사람 검토 대기열 현황(모델 호출 없음). 대기 = 영수증은 있고(AI 조언) 사람 결정이 없으며 보정 프로필의 통과도 아닌 것.
+    const calibrated = calibratedProfiles(), byBatch = new Map<string, string[]>();
+    for (const b of listQueueBatches()) byBatch.set(`${b.id} — ${b.title}`, b.items.map(i => i.sha));
+    const count = (shas: string[]) => {
+      const c = { total: shas.length, waiting: 0, allowed: 0, rejected: 0, autoPass: 0, noReceipt: 0 };
+      for (const sha of shas) {
+        const r = readReceipt(sha); if (!r) { c.noReceipt++; continue; }
+        const h = humanDecision(readHoldDecision(sha), r);
+        if (h === 'allow') c.allowed++; else if (h === 'reject') c.rejected++; else if (r.verdict === 'pass' && calibrated.has(r.profileHash)) c.autoPass++; else c.waiting++;
+      }
+      return c;
+    };
+    for (const [name, shas] of byBatch) { const c = count(shas); console.log(`${name}: ${c.total}장 — 대기 ${c.waiting} · 허용 ${c.allowed} · 거절 ${c.rejected}${c.autoPass ? ` · 자동 통과 ${c.autoPass}` : ''}${c.noReceipt ? ` · AI 판정 없음 ${c.noReceipt}` : ''}`); }
+    const all = count(listReceipts().map(r => r.pixelSha256));
+    console.log(`영수증 전체 ${all.total}장 — 사람 대기 ${all.waiting} · 허용 ${all.allowed} · 거절 ${all.rejected} · 보정 프로필 자동 통과 ${all.autoPass} · 검토 화면 serve-holds (18323)`);
+    return 0;
+  }
   if (stage === 'status') {
     const current = await gateProfileHash();
     const profiles = readProfiles();
@@ -69,5 +117,5 @@ export async function run(argv: string[]): Promise<number> {
     console.log(`  현재 프로필 영수증 ${now.length}장 — 통과 ${now.filter(r => r.verdict === 'pass').length}, 보류 ${now.filter(r => r.verdict === 'refer').length} (3/4 통과 ${now.filter(r => r.view34?.verdict === 'pass').length}, 화풍 통과 ${now.filter(r => r.style?.verdict === 'pass').length}) · 옛 프로필 ${receipts.length - now.length}장은 무효(재검수 필요: rereview)`);
     return 0;
   }
-  throw Error('단계: review | calibrate | rereview | check | status | audit | preview | approve-front-prop | revoke-front-prop | approvals');
+  throw Error('단계: review | calibrate | rereview | check | status | audit | preview | approve-front-prop | revoke-front-prop | approvals | enqueue | serve-holds | holds | selftest-holds');
 }

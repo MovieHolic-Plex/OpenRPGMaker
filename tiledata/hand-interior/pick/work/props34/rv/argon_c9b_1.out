@@ -1,0 +1,7 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"cabinet:gem+gemr","view34":"PASS","quality":"PASS","reason":"5px lit wooden top plane over shaded shelf bays with distinct purple, cyan, and green crystal clusters and cut gems lit from upper-left."}
+{"id":"cabinet:bolt+boltg+boltr","view34":"PASS","quality":"FAIL","reason":"The middle-left yellow-over-blue block reads as a flat two-tone sponge and the small right-side items have a 1px right nub that makes them look like tiny handled mugs rather than cloth bolts."}
+{"id":"cabinet:bottle+bottler+bottley","view34":"PASS","quality":"PASS","reason":"Clear 5px 3/4 cabinet top plane and varied green, red, and yellow corked bottles with crisp upper-left glass speculars and dark material outlines."}
+{"id":"cabinet:candle","view34":"PASS","quality":"PASS","reason":"Readable 3/4 cabinet frame holding varied cream, red, and blue pillar candles with wicks, brass saucer holders, and a warm flame on the middle-left candle."}
+{"id":"cabinet:cheese","view34":"PASS","quality":"PASS","reason":"Solid 3/4 wooden shelf with recognizable yellow cheese wedges and red-waxed wheels showing distinct top and cut faces."}

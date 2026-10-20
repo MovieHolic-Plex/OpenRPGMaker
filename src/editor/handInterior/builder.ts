@@ -63,6 +63,11 @@ export interface HandInteriorSpec {
   readonly daises: Readonly<Record<string, { readonly ko: string; readonly pieces: Readonly<Record<string, number>> }>>;
   readonly goods: Readonly<Record<string, number>>;
   readonly rooms?: HandInteriorRoomTable;
+  /**
+   * 심연(구덩이) 자동 타일(선택, interior-plus 굽기): masks[i] 이웃 8비트(N1 NE2 E4 SE8 S16 SW32 W64 NW128, 같은 구덩이면 1,
+   * 대각선은 낀 두 직교 이웃이 모두 1일 때만) → tiles[i]. 47가지 정규 마스크.
+   */
+  readonly pits?: Readonly<Record<string, { readonly ko: string; readonly masks: readonly number[]; readonly tiles: readonly number[] }>>;
 }
 export const HAND_INTERIOR_SPEC = spec as unknown as HandInteriorSpec;
 /** 일본 실내(jp_city 번들 안) — 같은 모양의 사양을 scripts/content/jp-city/bake_interior_spec.py 가 굽는다. 조립 규칙은 같다. */
@@ -342,7 +347,9 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
         if (!A.isFloor(x, y) && (flush || d.stairs !== "up")) issues.push({ severity: "error", code: "not-on-floor", message: flush ? `${label} 앞 탈 자리 (${x},${y}) 가 바닥이 아니다 — 벽면 바로 아래 첫 바닥 줄 칸을 준다(그림은 그 위 벽면 두 줄에 박힌다)` : `${label} 발밑 (${x},${y}) 이 바닥이 아니다`, x, y });
         claim(x, y, label);
         if (flush && inBounds(x, y)) landings.push({ i: y * W + x, label });
-        else if (d.use?.includes("travel") && dy === d.h - 1 && A.isFloor(x, y + 1)) landings.push({ i: (y + 1) * W + x, label });
+        else if ((d.use?.includes("travel") || Boolean(d.stairs)) && dy === d.h - 1 && A.isFloor(x, y + 1)) landings.push({ i: (y + 1) * W + x, label });
+        else if ((d.use?.includes("travel") || Boolean(d.stairs)) && dy === d.h - 1 && dx === 0 && A.isFloor(x - 1, y)) landings.push({ i: y * W + (x - 1), label });
+        else if ((d.use?.includes("travel") || Boolean(d.stairs)) && dy === d.h - 1 && dx === d.w - 1 && A.isFloor(x + 1, y)) landings.push({ i: y * W + (x + 1), label });
         if (isSeatId(o.id, d) && inBounds(x, y)) seats.add(y * W + x);
       }
       if (d.kind === "wall") for (let dx = 0; dx < d.w; dx++) {
@@ -375,7 +382,11 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
         && A.face[o.y - 1]?.[o.x] === 2 && A.face[o.y - 2]?.[o.x] === 1 && !A.inn(o.x, o.y - 3);
       if (!ok) issues.push({ severity: "error", code: "sidedoor-not-in-gap", message: `${label} 옆문은 세로 칸막이('#' 열)의 3줄 틈 중 통로 칸(셋째 줄)에 단다 — 좌우가 실내, 바로 위 두 칸이 칸막이 끝 벽면이어야 한다`, x: o.x, y: o.y });
     } else if (d.stairs === "down") {
-      for (let dy = 0; dy < Math.max(1, d.h); dy++) for (let dx = 0; dx < d.w; dx++) claim(o.x + dx, o.y + dy, label);
+      for (let dy = 0; dy < Math.max(1, d.h); dy++) for (let dx = 0; dx < d.w; dx++) {
+        const x = o.x + dx, y = o.y + dy;
+        claim(x, y, label);
+        if (dy === Math.max(1, d.h) - 1 && A.isFloor(x, y + 1)) landings.push({ i: (y + 1) * W + x, label });
+      }
     }
     // 벽면 높이 탈것은 한 줄 올려 벽면 두 줄에 그린다 — 준 칸(첫 바닥 줄)은 그림 없이 비어 탈 자리가 된다.
     const lift = flush ? 1 : 0;
@@ -468,7 +479,9 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
   }
 
   // start cells + BFS on the resulting passage
-  const start = (input.start?.length ? input.start.map((s) => ({ x: s.x, y: s.y })) : Array.from({ length: W }, (_, x) => ({ x, y: H - 1 })).filter((c) => A.isFloor(c.x, c.y)));
+  const southStart = Array.from({ length: W }, (_, x) => ({ x, y: H - 1 })).filter((c) => A.isFloor(c.x, c.y));
+  const travelStart = landings.map((l) => ({ x: l.i % W, y: Math.floor(l.i / W) }));
+  const start = input.start?.length ? input.start.map((s) => ({ x: s.x, y: s.y })) : (southStart.length ? southStart : travelStart);
   let reachable = 0;
   const unreachedFloor: { x: number; y: number }[] = [];
   let floorCells = 0;

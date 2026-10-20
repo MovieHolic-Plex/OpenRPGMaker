@@ -1,0 +1,401 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "75503713a8f00f8651231159ea5a3712c1d8f4ba19c5d09bb6a72949123c7a1a",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "mci fridge",
+ "label": "modern_city_interior/mci-fridge",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 1/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (1/4)",
+  "3/4: 윗면 2행 < 4 (1/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 1/4)",
+   "투영이 3/4 아님(front_elevation) (1/4)",
+   "윗면 2행 < 4 (1/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 36,
+  "nearBlackEdge": 0.92,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "item on top of fridge (tan box or basket)",
+      "rows": "0-3",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "fridge body top strip (light highlight above the freezer door seam)",
+      "rows": "4-5",
+      "evidence": "none",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "freezer door and fridge door (vertical faces)",
+      "rows": "6-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The body is a 16px-wide outlined slab from row 1 to row 30. Below the small tan decor item on top (rows 0-3, width 7), rows 4-5 are only a light highlight. Row 6 is a gray seam line, and it matches the door seam at rows 13-14, so it reads as a door division rather than a front-edge line with eave shadow. The rows below are flat door faces with handles (the light strip at x=11, rows 16-24), a red label and a seam. There is no ellipse, no sloped plane and no visible contents. At most a 1-2 row highlight acts as a rim, so this is a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The fridge is a small white/grey box with a thin outline, a freezer-door split, a small red label and two handles. The body is mostly flat near-white, with only about 3 lightness steps (light, mid grey, dark edge). 32% near-flat coverage is far above the references, which are 0-13% for the detailed ones (hedge 0%, cheese stall 13%, well 0%). There are 9 visible tones per tile, similar to the hedge. But those tones are spread across the outline, handles and label rather than carried as texture on the body, so the surface reads as a flat sticker-like fill. The outline is tinted (0% neutral dark edge), so it is not near-black. The well and cheese stall carry 17-20 visible tones with per-material grain, shaded stones and wood detail, and the fridge has no grain, speckle or panel shading to match them. It looks thinner and flatter than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 22319
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "item on top of fridge (tan box)",
+      "rows": "0-3",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "fridge top band",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "fridge front face (freezer and fridge doors)",
+      "rows": "7-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-30 form a 16px-wide body with a dark outline. Rows 2-5 are a light band (L 224-244, brightest at row 5) that ends in a darker gray front-edge line at row 6 (L=169). This reads as a 4-row top surface, though a lighter-faced door top is a possible alternative reading. Below it the front face runs rows 7-29 (23 rows) and is split by a door seam at rows 13-14, with handles and a red magnet on the doors. The narrow tan item at rows 0-3 sits on top of the fridge and is decor. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The fridge is a small white/grey box with a few light-grey steps, a freezer-door seam and a small red label. Its body is mostly large flat light areas. The measured near-flat coverage is 32%, while the references with tile-sized content are 0-13%. It has 9 visible tones per tile, matching the hedge but well below the cheese stall (17) and the well (20). The outline is tinted (0% neutral dark edge pixels), so it is not a sticker-style black line. Shading is shallow, with about 3 steps on the body and no grain, speckle or per-surface texture, where the references show 5 or more steps and varied texture. A careful artist would find it flatter and thinner than the stall and well next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 23194
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "item on top of fridge (cream/orange block)",
+      "rows": "0-3",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "fridge top band",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-6"
+     },
+     {
+      "part": "freezer door (front face)",
+      "rows": "7-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "fridge door (front face)",
+      "rows": "15-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The body is 16px wide from row 1 to row 30, with a dark outline. At the top there is a light band on rows 2-5. Row 5 is the brightest row (#f3f4f7) and works as the front-edge line. Row 6 is a darker gray line (L=169) that works as the eave shadow. Below that is a vertical front face with a freezer door (rows 7-12), a dark seam at row 13 with a highlight at row 14, and a fridge door (rows 15-29). The top band is thin, only 4 rows, and looks a lot like a front-facing strip, so this reading is borderline. It does have the band, edge line and shadow sequence, so I count it as a top surface. The small cream item on rows 0-3 is decor. The red panel and the handles are details on the front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The fridge is a clean, readable prop with a tinted dark outline (0% neutral dark edge pixels, so not a sticker-style black line). The body is a pale slab with only about 3-4 lightness steps: a light face, a shadowed side edge, and a split line between freezer and fridge doors. Large areas of the door faces are one flat colour, giving 32% near-flat coverage against 0% for the hedge and well and 13% for the cheese stall. It has 9 visible tones per tile, equal to the hedge but well under the well (20) and the stall (17). There is no grain, speckle, scuffing or per-surface highlight variation like the references show on their materials. A careful artist would find it thinner and flatter than the well or stall next to it, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 32191
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "fridge top band",
+      "rows": "3-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "6-6"
+     },
+     {
+      "part": "fridge door/front face",
+      "rows": "7-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "item on top of fridge (tan box)",
+      "rows": "0-3",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The body is 16 px wide and spans rows 1-30, with a dark outline. Rows 3-5 form a lighter band (L=224-244) across the top. Row 6 is a darker line (L=169), which acts as a front-edge line with about 1 row of shadow. Below it the grey front face runs rows 7-29, split by a door seam at rows 13-14 and carrying handles at x=11. The top band is thin and ambiguous, since row 2 matches the face colour, so it may be only a highlight on a front elevation. The tan item at rows 0-3 is decor on top. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The fridge is a small, simple sprite: a pale body with a grey outline, a darker freezer-door split, and a couple of red handle/label dots. The body has only about 2-3 lightness steps (a flat light face plus one side shade). It has no grain, speckle or per-surface highlights, so the large door areas are flat fills; 32% near-flat coverage against 0-13% for the references backs this up. Its 9 visible tones per tile match the hedge but sit well below the stall (17) and well (20), and those pieces carry far more shapes and texture. The dark edges are tinted (0% neutral), so the outline is not pure black, but it reads as a uniform grey-blue line around the whole shape, close to the sticker look, not a material-tone outline used selectively. Beodeul props such as the stall and well show 5-6 steps per material with texture on every surface, and the fridge looks thinner and flatter next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 27168
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.109Z",
+ "cells": {
+  "16": [
+   "2c442a6244c1f5f5",
+   "a2f1241821a6809a"
+  ],
+  "24": [
+   "0e725bb76312c7cb",
+   "126d87f91d7a62b3",
+   "18b5545bd281b112",
+   "1b0483e3082466d6",
+   "43fbf756059e5e8c",
+   "4c16a711bb29c961",
+   "6fb6a935de789040",
+   "7e705bad938d4cd3",
+   "9a2cb92a0281ca04",
+   "a6f9b3fb9556cea7",
+   "ce12b50614860b5e",
+   "dfea274573eb406d"
+  ],
+  "32": [
+   "0d300341928c8eff",
+   "87197f1a6472bdc1",
+   "d2c89a7184ef1d2b"
+  ],
+  "48": [
+   "488762ee21025913",
+   "5dcbe44d5ea07317",
+   "8ca1acfbe4a2d224",
+   "9edbb831a913c332",
+   "b3eab3fe0e7781fe",
+   "e3ce4d39113690d2"
+  ]
+ }
+}

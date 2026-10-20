@@ -1,0 +1,284 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d42988eaf800ce8c5ed7741e0923d16b9038fe8d7b0832683b69051e921d3046",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "단지 진열장 (cabinet:jar+jarb+jarg)",
+ "label": "atlas_biome_interior/props34/cabinet:jar+jarb+jarg",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 23,
+  "tileColorsP90": 23,
+  "darkV5": 26,
+  "nearBlackEdge": 0.71,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The columns show a lighter wood band at rows 2-4 (L≈125-135) ending in a lighter front-edge line at row 5 (#d59147). Rows 6-7 are a dark eave shadow (L=28) below it. Row 1 is a darker outline and row 0 is the 14px-wide outline. Below the top, the front face runs from row 6 to row 31 (about 26 rows). It shows three shelf bays with jars, divided by 1-row shelf planks at rows 12, 21 and 29. The shelf planks are only lips, not top surfaces. The silhouette stays 16px wide, so no side face is drawn. The structure matches the green 'cabinet: top 5 + edge + eave' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a wooden shelf cabinet holding jars. It is small, about one tile wide and 1.5 tiles tall, and the image is tiny, so I judged it partly by eye. The measured facts are healthy. It has 23 colours per tile against about 17-20 for the richer references (stall, well). Flat-fill coverage is 0%. Dark edge pixels are 0% near-neutral, so the outline carries a brown tint and reads as the dark tone of the adjacent wood, not a black sticker line. The frame shows several wood tones, and the jars on each shelf add colour variation, so nothing is a flat fill. The wood has probably 4 steps (highlight, mid, dark, deep outline), slightly under the 5-6 of the references, but the jars add shaded detail. It would sit acceptably next to the stall and well without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20639
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "front face with three jar shelves",
+      "rows": "6-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-4 form a lighter-brown top band, and row 5 is a lighter front-edge line (#d59147). Rows 6-7 are dark eave shadow beneath it. Below that the front face runs from about row 8 to row 31, with three shelf compartments holding jars separated by shelf boards at rows 12-13, 21-22 and 29-30. The top band is about 4 rows, similar to the green cabinet reference (top, edge line, eave). No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wooden cabinet with three shelves of jars in blue, orange and green. It is roughly 15x30 source pixels. The measured facts are at or above the references. It has 23 colours per full tile, against 17-20 for the stall and well and 10 for the hedge. Flat-fill coverage is 0%. None of its dark edge pixels are neutral, so the outline is a tinted dark brown, not a black sticker line. The frame has about 4 wood steps, a little fewer than the 5-6 on the stall and well. The jars carry their own highlight and shadow pixels, and the shelves have grain and shadow lines. It is smaller and simpler than the stall and well, but it is not thinner, flatter or more sticker-like than the references, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19193
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-4 form a top band (L~130) that ends in a lighter front-edge line at row 5 (L=157). Rows 6-7 are dark eave shadow (L=28). Below it the open front face runs from row 6 to row 31 and holds three shelf bays with jars. Shelf planks sit at rows 12-13, 21-22 and 29-30. The silhouette is 16 wide with no receding side face. The structure matches the green bookshelf and cabinet references (top band, edge line, eave, front face)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small three-shelf wooden cabinet holding jars in blue, orange and green. It is a compact single-tile-wide prop, so its 23 total colours are fewer than the stall (40) and well (38), but that is expected at this size. The measured facts support it: median 23 colours per full tile is above the hedge (10), stall (17) and well (20). Flat-fill coverage is 0%, and 0% of dark edge pixels are neutral, so the outline is a tinted dark brown, not a sticker-style black line. The wood frame shows about 4 lightness steps (highlight, mid, dark, deep outline) against about 5 on the references. Each jar has its own highlight and shade, and the shelf backs have some variation instead of one flat fill. It is slightly simpler than the stall and well but sits comfortably next to them in craft, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20687
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-4 form a lighter orange top band (#bd764d). Row 5 is a lighter front-edge line (#d59147), and rows 6-7 are dark eave shadow (#2a180b). Below that is a front face from row 6 to row 31 with open shelves holding jars (green, orange, blue). Shelf planks sit at rows 12-13, 21-22 and 29-30. The top band reads as a horizontal surface with an edge line and shadow, not just a rim, so it matches the green cabinet reference (top ~4-5 rows with edge and eave) rather than the 1-2 row rim-only red examples."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a wooden shelf cabinet with three shelves of jars. It measures 23 distinct colours per full tile, against 17-20 for the richest references (stall-cheese and well-roofed) and 10 for the hedge. Flat-fill coverage is 0%. 0% of its dark edge pixels are neutral, so the outline is a dark brown tint beside the wood, not a black sticker line. By eye the frame has about 4 wood steps (light edge, mid, dark, deep shelf shadow). The jars add small highlight and shade variation in blue, orange and green. That is slightly fewer steps than the 5-6 on the stall and well, but the density and outline match the references. Texture is some: the jars and shelf shadows carry detail, while the wood grain is modest. A careful artist would accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21941
+  }
+ ],
+ "decidedAt": "2026-10-20T07:22:59.446Z",
+ "cells": {
+  "16": [
+   "ab4cc915a8274208",
+   "eeafb763493e9477"
+  ],
+  "24": [
+   "37a0d792d9069f0d",
+   "4ce556587659f678",
+   "6e39b4a41b12dd8d",
+   "752486437c25705f",
+   "7b59cfba62ada78e",
+   "87326da8ddf85844",
+   "b781877c0f74d0a8",
+   "c1fe26897836b5a3",
+   "da8a8c0f9ed1974f",
+   "e181f5c8a6f8307a",
+   "e80318b5a93c7abb",
+   "f836d5106ac7b006"
+  ],
+  "32": [
+   "5f074b1d1a4cd050",
+   "8280abd86d23a9b3",
+   "dd130a7bd5e0b356"
+  ],
+  "48": [
+   "094037dd4e3baff5",
+   "105691f1311f7f1f",
+   "18caeb1f2806b5a7",
+   "3d9bb521a2cb5d4a",
+   "7c0a2a33b04c0c91",
+   "86641b09219b2cc7"
+  ]
+ }
+}

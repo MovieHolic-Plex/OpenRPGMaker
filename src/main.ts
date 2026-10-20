@@ -20,11 +20,9 @@ import { loadSharedContent } from "@/project/sharedContent";
 import { installReferenceDocumentOwners } from "@/project/installReferenceOwners";
 import { bootApp, isModeShellMounted as modeShellMountedForBootFailure } from "@/app/mode";
 import { dismissBootLoader, failBootLoader, reportBootStage } from "@/app/bootLoader";
-import { expectBootSettle } from "@/util/bootSettled";
+import { afterBootSettled, expectBootSettle } from "@/util/bootSettled";
+import { preloadBundledJsonForProject } from "@/project/defaults/bundledJson";
 import { editorState } from "@/editor/editorState";
-import { addEvent } from "@/editor/eventActions";
-import { addEventPage, ensureEventPages } from "@/editor/eventPages";
-import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { store } from "@/project/store";
 import { hasElectronBridge } from "@/project/persistence/electronRepository";
 import { adoptElectronOpenProject } from "@/project/persistence/repository";
@@ -38,6 +36,13 @@ installBootSummaryFallback();
 installVitePreloadRecovery();
 // 로드 직후 걸리는 «한가할 때» 일(요약 데우기)은 첫 화면 뒤로 미룬다(src/util/bootSettled.ts).
 expectBootSettle();
+// 번들 타일셋 정의 JSON 은 부팅에 싣지 않는다(bundledJson.ts). 첫 화면 뒤 한가할 때 열린 프로젝트의 맵이 쓰는 칩셋 것만 읽어 둔다 —
+// 조립 도구·팔레트가 번들 판본을 물을 때 동기 읽기로 떨어지지 않게. 나머지는 쓰일 때 읽는다.
+afterBootSettled(() => {
+  const run = () => { void preloadBundledJsonForProject(store.getCurrent()).catch((error: unknown) => console.warn("[bundled-json] 미리 읽기 실패", error)); };
+  if (typeof requestIdleCallback === "function") requestIdleCallback(run, { timeout: 5_000 });
+  else setTimeout(run, 1_000);
+});
 // 번들의 모든 import 평가가 끝났다(여기까지가 «JS 내려받기 + 파싱 + 평가»).
 bootMark("js-ready");
 
@@ -113,7 +118,10 @@ void bootEditorWithOpenedProject(app)
     dismissBootLoader();
     throw error;
   })
-  .then(openClassicEventEditorCaptureIfRequested);
+  .then(openClassicEventEditorCaptureIfRequested)
+  // 스토어 「에디터에서 열기」 링크: 편집기가 뜬 뒤에 받는다(부팅 전에 온 요청은 메인이 맡겨 두었다).
+  .then(() => import("@/editor/assetStore/storeOpenLink"))
+  .then(({ installStoreOpenLinks }) => installStoreOpenLinks());
 
 /**
  * 시작 화면이 폴더를 열어둔 채 편집기 창으로 넘어오면, 렌더러의 저장소는 그 사실을 모른다 —
@@ -164,6 +172,12 @@ async function openClassicEventEditorCaptureIfRequested(): Promise<void> {
   if (typeof window === "undefined" || typeof document === "undefined") return;
   const params = new URLSearchParams(window.location.search);
   if (params.get("classicCapture") !== "2") return;
+  // 캡처 전용 경로 — 이벤트 편집기 모달은 조수 도구 목록까지 끌고 와서 진입 번들에 정적으로 두지 않는다(2026-10-20).
+  const [{ addEvent }, { addEventPage, ensureEventPages }, { openEventEditorModal }] = await Promise.all([
+    import("@/editor/eventActions"),
+    import("@/editor/eventPages"),
+    import("@/editor/panels/eventEditor/modal"),
+  ]);
 
   const mapId = editorState.get().currentMapId ?? store.getCurrent().startMapId;
   const map = store.getCurrent().maps[mapId];

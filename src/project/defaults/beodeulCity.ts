@@ -4,19 +4,22 @@
 //
 // Every cell of the city is a tile (lower = ground, upper = what the objects put over it); animated cells are
 // consecutive frames with animationStrips. The structure kits are the districts and houses of the city, cut from it.
-import data from "@/assets/beodeulCityTileset.json";
+import sheet from "@/assets/beodeulCitySheet.json";
+import { bundledJson } from "./bundledJson";
+/** 번들 정의 JSON — 처음 쓸 때 읽는다(bundledJson.ts). 칸 수·한 줄 폭은 같은 굽기가 쓰는 작은 시트 메타(`beodeulCitySheet.json`)에서 읽는다. */
+const data = () => bundledJson("beodeulCityTileset");
 import references from "@/assets/beodeulCityReferences.json";
 import { beodeulGroundReferences } from './beodeulGround';
-import {ensureBeodeulFacilityKits} from './beodeulFacilities';
-import {ensureBeodeulForms} from './beodeulForms';
-import {ensureBeodeulReviewed} from './beodeulReviewed';
+import {beodeulFacilityReferences,ensureBeodeulFacilityKits} from './beodeulFacilities';
+import {beodeulFormsHostReferences,ensureBeodeulForms} from './beodeulForms';
+import {beodeulReviewedHostReferences,ensureBeodeulReviewed} from './beodeulReviewed';
 import type { AutotileGroup, PassFlag, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
 
 export const BEODEUL_CITY_TEXTURE = "tex_beodeul_city";
 export const BEODEUL_CITY_ID = "beodeul_city";
-export const BEODEUL_CITY_TILE_COUNT: number = data.count;
-export const BEODEUL_CITY_TILES_PER_ROW: number = data.tilesPerRow;
+export const BEODEUL_CITY_TILE_COUNT: number = sheet.count;
+export const BEODEUL_CITY_TILES_PER_ROW: number = sheet.tilesPerRow;
 /**
  * 도시 시트(build-beodeul-city.py) 의 칸 수. 그 뒤(23,936~)는 버들항 변형 20곳에서 사용자가 고른 조각 칸이다
  * (scripts/content/beodeul-picks/bake_picks.py, 키트 `bd-pick-*`). 덧붙이기 전용 — 앞 칸 번호는 바뀌지 않는다.
@@ -46,26 +49,47 @@ export const BEODEUL_PICK_KIT_PREFIX = "bd-pick-";
 export const BEODEUL_CITY_FAMILY = "oprn-atlas";
 const REFERENCES = references as unknown as TilesetReferenceCategory[];
 
+/** 새 사본의 기본 참고문서(시설·형태·허용 건물 문서는 아래 create 의 ensure 들이 덧붙인다). */
+function baseReferenceDocuments(): TilesetReferenceCategory[] {
+  return [...structuredClone(REFERENCES),...beodeulGroundReferences()];
+}
+
+/**
+ * 새 사본이 들고 태어나는 참고문서 전부 — `createBeodeulCityTileset().referenceDocuments` 와 같은 값을 정의 JSON 없이 만든다
+ * (로드가 저장본에서 뺀 번들 참고문서를 되돌릴 때 쓴다, installReferenceOwners.ts). create 의 ensure 셋은 새 용도를 끝에 덧붙인다.
+ * 용도 id 가 겹치면(합치기 규칙이 끼면) 통째로 만든 값을 쓴다.
+ */
+export function beodeulCityBundledReferenceDocuments(): TilesetReferenceCategory[] {
+  const docs = baseReferenceDocuments();
+  const ids = new Set(docs.map((category) => category.id));
+  for (const category of [...beodeulFacilityReferences(), ...beodeulFormsHostReferences(), ...beodeulReviewedHostReferences()]) {
+    if (ids.has(category.id)) return createBeodeulCityTileset().referenceDocuments ?? [];
+    ids.add(category.id);
+    docs.push(structuredClone(category));
+  }
+  return docs;
+}
+
 /** Independent copy of the shipped tileset, born with its reference documents. */
 export function createBeodeulCityTileset(): TilesetDef {
   const tileset:TilesetDef = {
     id: BEODEUL_CITY_ID,
-    name: data.name,
+    name: data().name,
     image: { type: "bundled", id: BEODEUL_CITY_TEXTURE },
     kind: "custom",
     family: BEODEUL_CITY_FAMILY,
-    tileSize: data.tileSize,
-    tilesPerRow: data.tilesPerRow,
-    count: data.count,
-    passability: structuredClone(data.passability) as PassFlag[],
-    priority: [...data.priority] as ("lower" | "upper")[],
-    terrain: [...data.terrain],
-    tileMeta: structuredClone(data.tileMeta) as TileAiMetadata[],
-    tileGroups: structuredClone(data.tileGroups) as TileGroupMetadata[],
-    animationStrips: structuredClone(data.animationStrips),
-    structureKits: structuredClone(data.structureKits) as unknown as StructureKitDef[],
-    autotileGroups: structuredClone(data.autotileGroups) as unknown as AutotileGroup[],
-    referenceDocuments: [...structuredClone(REFERENCES),...beodeulGroundReferences()],
+    tileSize: data().tileSize,
+    tilesPerRow: sheet.tilesPerRow,
+    count: sheet.count,
+    passability: structuredClone(data().passability) as PassFlag[],
+    priority: [...data().priority] as ("lower" | "upper")[],
+    terrain: [...data().terrain],
+    tileMeta: structuredClone(data().tileMeta) as TileAiMetadata[],
+    tileGroups: structuredClone(data().tileGroups) as TileGroupMetadata[],
+    animationStrips: structuredClone(data().animationStrips),
+    structureKits: structuredClone(data().structureKits) as unknown as StructureKitDef[],
+    autotileGroups: structuredClone(data().autotileGroups) as unknown as AutotileGroup[],
+    referenceDocuments: baseReferenceDocuments(),
   };
   ensureBeodeulFacilityKits(tileset);
   ensureBeodeulForms(tileset);
@@ -119,14 +143,14 @@ export function ensureBeodeulCityTileset(tileset: TilesetDef): boolean {
   const citySheet = tileset.autotileGroups?.some(group => group.id === "beodeul_road_autotile") ?? false;
   if (citySheet && tileset.count >= BEODEUL_CITY_BASE_COUNT) {
     // 더 새 번들에서 저장된 사본(꼬리가 더 긴 것)은 칸 표를 줄이지 않는다.
-    if (tileset.count > data.count) return familyFixed;
+    if (tileset.count > sheet.count) return familyFixed;
     // 농장 꼬리(27,648~28,415)가 생기기 전에 저장된 사본은 그 자리에 공방·기물 이식 칸(tileGrafts)을 이미 쓰고 있을 수 있다.
     // 번들 꼬리를 덮으면 그 칸의 통행·그림이 바뀌므로 그 사본은 농장 칸을 받지 않는다(밭은 단색 흙 폴백).
     const grafts = tileset.tileGrafts ?? [];
     if (grafts.some(graft => graft.targetTile >= BEODEUL_FARM_BASE && graft.targetTile < BEODEUL_DUNGEON_CEILING_BASE)) return familyFixed;
     // 던전 천장 꼬리(28,416~)도 같은 이유: 그 자리에 이식 칸을 쓴 사본은 꼬리를 농장 끝까지만 받는다(던전은 테두리 없는 허공으로 물러선다).
-    const dungeonBlocked = grafts.some(graft => graft.targetTile >= BEODEUL_DUNGEON_CEILING_BASE && graft.targetTile < data.count);
-    const extended = extendPickedParts(tileset, dungeonBlocked ? Math.max(tileset.count, BEODEUL_DUNGEON_CEILING_BASE) : data.count);
+    const dungeonBlocked = grafts.some(graft => graft.targetTile >= BEODEUL_DUNGEON_CEILING_BASE && graft.targetTile < sheet.count);
+    const extended = extendPickedParts(tileset, dungeonBlocked ? Math.max(tileset.count, BEODEUL_DUNGEON_CEILING_BASE) : sheet.count);
     const farm = mergeShippedFarm(tileset, !dungeonBlocked);
     return mergeShippedKits(tileset) || extended || farm || familyFixed;
   }
@@ -149,22 +173,22 @@ export function ensureBeodeulCityTileset(tileset: TilesetDef): boolean {
 }
 
 /** Cell tables from BEODEUL_CITY_BASE_COUNT on are the bundle's: copy them in (and grow the copy to the shipped count). */
-function extendPickedParts(tileset: TilesetDef, limit: number = data.count): boolean {
+function extendPickedParts(tileset: TilesetDef, limit: number = sheet.count): boolean {
   const base = BEODEUL_CITY_BASE_COUNT;
-  const shippedPass = data.passability as PassFlag[];
-  const shippedMeta = data.tileMeta as TileAiMetadata[];
-  const end = Math.min(limit, data.count);
+  const shippedPass = data().passability as PassFlag[];
+  const shippedMeta = data().tileMeta as TileAiMetadata[];
+  const end = Math.min(limit, sheet.count);
   const same = tileset.count === end
     && JSON.stringify(tileset.passability.slice(base, end)) === JSON.stringify(shippedPass.slice(base, end))
-    && JSON.stringify(tileset.priority.slice(base, end)) === JSON.stringify(data.priority.slice(base, end))
+    && JSON.stringify(tileset.priority.slice(base, end)) === JSON.stringify(data().priority.slice(base, end))
     && JSON.stringify((tileset.tileMeta ?? []).slice(base, end)) === JSON.stringify(shippedMeta.slice(base, end));
-  const shippedStrips = data.animationStrips.filter(strip => strip.baseTile >= base && strip.baseTile < end);
+  const shippedStrips = data().animationStrips.filter(strip => strip.baseTile >= base && strip.baseTile < end);
   const ownStrips = (tileset.animationStrips ?? []).filter(strip => strip.baseTile >= base);
   if (same && JSON.stringify(ownStrips) === JSON.stringify(shippedStrips)) return false;
   tileset.count = end;
   tileset.passability = [...tileset.passability.slice(0, base), ...structuredClone(shippedPass.slice(base, end))];
-  tileset.priority = [...tileset.priority.slice(0, base), ...(data.priority.slice(base, end) as ("lower" | "upper")[])];
-  tileset.terrain = [...tileset.terrain.slice(0, base), ...data.terrain.slice(base, end)];
+  tileset.priority = [...tileset.priority.slice(0, base), ...(data().priority.slice(base, end) as ("lower" | "upper")[])];
+  tileset.terrain = [...tileset.terrain.slice(0, base), ...data().terrain.slice(base, end)];
   tileset.tileMeta = [...(tileset.tileMeta ?? []).slice(0, base), ...structuredClone(shippedMeta.slice(base, end))];
   tileset.animationStrips = [...(tileset.animationStrips ?? []).filter(strip => strip.baseTile < base), ...structuredClone(shippedStrips)];
   return true;
@@ -172,7 +196,7 @@ function extendPickedParts(tileset: TilesetDef, limit: number = data.count): boo
 
 /** Shipped kits the copy lacks are added (by id); bundle-owned `bd-pick-*` kits are replaced by the shipped ones. Others stay. */
 function mergeShippedKits(tileset: TilesetDef): boolean {
-  const shipped = data.structureKits as unknown as StructureKitDef[];
+  const shipped = data().structureKits as unknown as StructureKitDef[];
   const shippedById = new Map(shipped.map(kit => [kit.id, kit]));
   const current = tileset.structureKits ?? [];
   let changed = false;
@@ -197,7 +221,7 @@ function mergeShippedKits(tileset: TilesetDef): boolean {
 function mergeShippedFarm(tileset: TilesetDef, withDungeon = true): boolean {
   let changed = false;
   const groups = [...(tileset.autotileGroups ?? [])];
-  for (const shipped of data.autotileGroups as unknown as AutotileGroup[]) {
+  for (const shipped of data().autotileGroups as unknown as AutotileGroup[]) {
     if (!BEODEUL_FARM_AUTOTILE_IDS.includes(shipped.id) && !(withDungeon && BEODEUL_DUNGEON_AUTOTILE_IDS.includes(shipped.id))) continue;
     const i = groups.findIndex(group => group.id === shipped.id);
     if (i < 0) { groups.push(structuredClone(shipped)); changed = true; }
@@ -206,7 +230,7 @@ function mergeShippedFarm(tileset: TilesetDef, withDungeon = true): boolean {
   if (changed) tileset.autotileGroups = groups;
   const tileGroups = [...(tileset.tileGroups ?? [])];
   let groupsChanged = false;
-  for (const shipped of data.tileGroups as unknown as TileGroupMetadata[]) {
+  for (const shipped of data().tileGroups as unknown as TileGroupMetadata[]) {
     if (!shipped.id.startsWith("beodeul:farm") && !(withDungeon && shipped.id === "beodeul:dungeon_ceiling")) continue;
     const i = tileGroups.findIndex(group => group.id === shipped.id);
     if (i < 0) { tileGroups.push(structuredClone(shipped)); groupsChanged = true; }

@@ -1,0 +1,328 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d6ea83bab5e7349c1bf74983e61a39dec26ff00930165317fd33a1026c0798d9",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "bar stool",
+ "label": "seats34/atlas_biome_interior/bar stool",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)",
+  "화풍: 질감 없음 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)",
+   "질감 없음 (1/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 46,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "borderline",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "red cushion seat",
+      "rows": "2-7",
+      "evidence": "b",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "6"
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is an ellipse from rows 2 to 7. The width profile goes 6, 8, 10, 10, 10, 8, so it widens and then narrows. Dark outline rows 2 and 7 bound it as back and front rims, with a highlight in rows 3-5 and a darker band in row 6. Two grey legs with a crossbar run from rows 8 to 15 (8 rows) beneath the seat. This matches the 'seat: top 5 + legs' reference rather than a thin band."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The stool is a small red cushion on a grey pedestal and legs, with only 8 distinct colours against 14 for the bench and lamp and 38-40 for the well and stall. The cushion has a highlight, a mid tone and a dark red edge, which is about 3 steps. The legs are only about 2 tones (grey and dark grey), so the ramps are shallower than the references' 5-6 steps. The outline is mostly tinted (only 24% of dark edge pixels are neutral), so it is dark material tone rather than a sticker line. The measured flat-fill coverage is 0%, but there is little grain or texture on the cushion or the metal. This is a thin prop, so the per-tile median of 0 is not held against it. Even so, next to the bench and lamp it looks thinner and flatter, with no per-part shading or detail on the base or footrest. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16703
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "2-7",
+      "evidence": "b",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-7"
+     },
+     {
+      "part": "legs with footrest",
+      "rows": "8-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is an oval cushion in rows 2-7. The width profile runs 6, 8, 10, 10, 10, 8, so it widens and then narrows again, which is an ellipse. The lighter pink highlight in rows 3-5 forms the top surface. The darker red at rows 5-6 is the front edge, and row 7 is a dark outline. Below it, two thin grey legs run through rows 8-15 with a crossbar or footrest at row 11. That gives 8 rows of open front structure under a seat seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The stool is a thin, small prop, so the per-tile fact of 0 is not held against it. It has 8 distinct colours against 14 for the bench and lamp, the closest references. The red seat shows only about 3 steps (highlight, mid, dark) and the grey post and legs about 2-3. The bench wood and lamp carry about 5 steps with grain and per-part highlights. Only 24% of the dark edge pixels are neutral, so the outline leans dark red or grey-brown and is not a black sticker line. There are no 5x5 flat fills (0%). The seat and legs are still smooth and plain, with no cushion texture, no stitching or dot detail, and little metal highlighting on the frame. Next to the bench it would look thinner and flatter, so it fails on shallow shading.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16610
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "red cushion seat",
+      "rows": "2-7",
+      "evidence": "b",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs and footrest",
+      "rows": "8-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is an ellipse, rows 2-7. The width profile goes 6, 8, 10, 10, 10, 8: it widens from the back rim at row 2, then narrows toward the dark front rim at row 7. A lighter highlight on rows 3-4 and darker red on rows 5-6 show a rounded cushion surface seen from above. Below it, rows 8-15 show two grey legs (x=5 and x=10) with a crossbar or footrest at row 11. That gives about 8 rows of open front support, so the stool has a visible seat top over legs, like the green 'seat: top 5 + legs' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The stool is a small, thin prop, so the per-tile median of 0 is not held against it. I judged it by eye against the bench and the lamp, which are similar in size and each have 14 colours. The stool has only 8 colours. Its red cushion shows about 3 steps (a highlight, a mid red and a dark red edge) and the grey legs show about 2, whereas the bench and lamp carry roughly 5 steps per material. The outline is partly tinted (24% neutral dark edge pixels, against 44% for the bench), so it is mixed rather than clearly material-toned, and the dark rim around the seat and legs reads as a uniform sticker-like line. There is no visible grain, per-part shading or texture dots on the seat or legs, and the metal legs look like flat strokes. Flat-fill coverage is 0% only because the piece is tiny. A careful artist would find it thinner and flatter than the bench and lamp beside it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16339
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "red cushion seat",
+      "rows": "2-7",
+      "evidence": "b",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs",
+      "rows": "8-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is an ellipse from back rim row 2 to front rim row 7. Its width profile is 6, 8, 10, 10, 10, 8, so it widens and then narrows again. Rows 3-5 carry a lighter highlight, and the dark outline at row 7 is the front rim. Below it, rows 8-15 show two grey legs with a crossbar and a gap between them, which gives a front face of 8 rows. This matches the 'seat: top 5 + legs' reference rather than a band or rim only."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The stool is a small thin prop, so the per-tile median of 0 is not held against it. It has only 8 distinct colours, against 14 for the bench and lamp and 38-40 for the well and stall. The red seat has a highlight, a mid tone and a dark underside, and the grey legs carry about 2 tones, so each material gets roughly 3 steps against the references' 5-6. Only 24% of the dark edge pixels are neutral, so most of the outline leans toward the material colour, but the neutral rest makes it 'mixed' rather than clearly dark_material_tone. There are no 5x5 flat fills (0%). Texture is minimal: a small seat highlight and no grain or per-part variation. Next to the bench and well it reads thinner and more icon-like, so with doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16424
+  }
+ ],
+ "decidedAt": "2026-10-20T08:43:41.765Z",
+ "cells": {
+  "16": [
+   "48c34d9c413dcc05"
+  ],
+  "24": [
+   "0b48339757dd4a8f",
+   "0ea0ea90be90264a",
+   "3ca87fd7a5148c14",
+   "3cc0330ab7e00c42",
+   "5a058cd6719eb934",
+   "d9cecbc29a741779"
+  ],
+  "32": [
+   "0108caab24e488e8",
+   "382c11e747a178f9",
+   "4a41c87ce11776d6",
+   "a6d6fb24e9bf4cbb",
+   "a9eb24f55f9490fd",
+   "c876e10387a2e229"
+  ],
+  "48": [
+   "31e61fc01d193bbd",
+   "55e20b9420d3e437",
+   "7a45acf50d1fbb4c",
+   "bcc6ce0dccc10425",
+   "bde8e5b81e59bd2e",
+   "e6be48e48cbf12ca"
+  ]
+ }
+}

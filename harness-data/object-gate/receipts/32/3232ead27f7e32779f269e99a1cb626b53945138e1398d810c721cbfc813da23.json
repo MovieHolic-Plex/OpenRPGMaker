@@ -1,0 +1,398 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3232ead27f7e32779f269e99a1cb626b53945138e1398d810c721cbfc813da23",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "dept nail bar",
+ "label": "modern_city_interior/dept-nail-bar",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 1/4, 분명한 위반 2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+  "3/4: 윗면 3행 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 1/4, 분명한 위반 2/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+   "윗면 3행 < 4 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 24,
+  "tileColorsP90": 24,
+  "darkV5": 49,
+  "nearBlackEdge": 0.26,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header band / cornice",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "bottles on shelves",
+      "rows": "7-18",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf boards",
+      "rows": "11-13",
+      "evidence": "none",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "lower pink counter/cabinet front",
+      "rows": "24-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole object is a flat face-on elevation. The pink band at rows 1-3 has the same colour and width as a sign panel. The white line at row 4 and the dark line at row 5 read as the lower trim of a front-facing header, not as the front edge of a horizontal surface. Nothing widens and narrows into an ellipse, and no contents are visible from above. The shelves (rows 6-23) are drawn as vertical strips with bottles in front view, and the lower counter (rows 24-29) is also a vertical pink face with panel dividers. At most 2 to 3 rows could be a rim-like top, with no real top plane visible."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a standing display-cabinet prop, so it matches the stall, well and bench references. It has 23 visible tones per 16x16 tile, level with the stall (17) and well (20) and well above the hedge (9). Near-flat coverage is 0% and there are no 5x5 flat fills. Dark edge pixels are 0% neutral, so the outline leans dark pink or magenta, a tinted tone of the neighbouring material rather than a black sticker line. The shelf rows carry many small product dots and a striped top band, and the body shows pink, white and grey steps. The shading ramp is slightly shallower than Beodeul's 5-6 steps per material, and the large body panels are a little smooth. Overall, a careful artist would accept it next to the stall reference.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20802
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header band",
+      "rows": "0-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-5"
+     },
+     {
+      "part": "shelf 1 plank",
+      "rows": "11-13",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "shelf 2 plank",
+      "rows": "18-19",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-19"
+     },
+     {
+      "part": "goods on shelves (bottles)",
+      "rows": "7-10, 14-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a full-width display unit, 32 px wide on every row. Rows 1-3 form a pink top band. Row 4 is a white front-edge line and row 5 is a darker shadow line (#be6e8c), which is evidence (a) for a top surface. The band could also be read as a front-facing header sign, so this reading is only moderate. Below it is a tall front face (rows 6-30): open shelves with goods, a counter with a white and grey strip, and a pink base cabinet at rows 24-30. The shelf planks at rows 11-13 and 18-19 each have a white edge line with shading below. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a standing display-shelf prop, the same kind as the stall and well references. It measures 23 visible tones per 16x16 tile, above the stall (17) and the roofed well (20). Near-flat coverage is 0%, so there are no 5x5 flat fills. The dark edge pixels are 0% neutral, so the outline leans toward a dark pink or rose tone instead of a black sticker line. By eye, the pink canopy has highlight, mid and dark bands. The white body is shaded with pale pink-grey steps. The shelf rows carry small product dots and clusters that break up the surface. Shading is slightly shallower than the best references, at about 5 steps against 6, and the texture is more product dots than grain. Overall it would sit acceptably next to the stall and the well without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21170
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top pink cornice band",
+      "rows": "1-3",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "nail polish bottles on upper shelf",
+      "rows": "7-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "nail polish bottles on lower shelf",
+      "rows": "14-18",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Full width is 32 px on every row. Rows 1-3 form a pink band at the top. Row 4 is a light edge line (L=246) and row 5 is a darker shadow row (L=137), so the band has a front-edge line and eave shadow. Below it is a front face of about 26 rows (rows 5-30): two shelves of bottles, a counter strip and a pink base cabinet in rows 24-29. The bottles are goods on shelves and count as decor. The top band is thin, only 3 rows, so this reading is borderline against a flat front-facing cornice."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a pink and white display cabinet with shelves of small items, and it fits the prop kind. It shows 23 visible tones per 16x16 tile, above prop-stall-cheese (17) and prop-well-roofed (20). Near-flat coverage is 0%, so there are no large flat fills; the shelf rows of small goods and the lower white counter add dot-level variation. Dark edge pixels are 0% neutral, so the outlines lean pink or mauve, a darker tone of the adjacent material rather than a black sticker line. The main weakness is that the pink and white ramps look a little shallower (about 4 steps) than Beodeul's 5-6, and the surfaces are cleaner and less grainy than the stall or well. The measured density and tinted outlines are enough to carry it, and a careful artist would accept it beside the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18626
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header band",
+      "rows": "1-3",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "open display shelves with products",
+      "rows": "6-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "products on shelves",
+      "rows": "7-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pink lower cabinet",
+      "rows": "24-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole object is a flat front view. Rows 1-3 form a uniform pink header strip, with a white line at row 4 and a darker row at row 5. It has the same pink as the bottom cabinet, so it reads as a front-facing sign or cornice and not as a foreshortened top. Shelf ledges are only 1-row white lines (rows 11 and 18) with a 1-2 row shadow beneath. The lower cabinet (rows 24-29) is a plain front panel with a dark line at row 24 and no visible top. There is no ellipse and no receding side face. The front face is tall, about 26 rows, but the top is at most 3 rows, so it is marginal and closer to a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a pink and white display cabinet, the same kind as the stall and well references. It measures 23 visible tones per 16x16 tile, above prop-stall-cheese (17) and prop-well-roofed (20). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, which means the outline leans dark mauve or pink rather than black. That matches the dark-material-tone outline used in the references. The body steps through pink, light pink, white and darker rose, which I count as about 5 steps. The shelves carry small product dots and a striped header band that give grain and variation. It is slightly less textured than the stall and well, but not enough to look thinner or sticker-like beside them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 3행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 3행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25263
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.825Z",
+ "cells": {
+  "16": [
+   "83ba3bedd61b26cf",
+   "91a17d293f6c8aae",
+   "a801019c0f455035",
+   "f600bac39085506d"
+  ],
+  "24": [
+   "0e120d0b82a6e13e",
+   "292c1df96dfa36ae",
+   "3a33f29388a2e64d",
+   "3a790ec3e96dce31",
+   "3e26a131e5a93e25",
+   "4d4e3ae8111e9e25",
+   "55788f8127c11c60",
+   "57648fb0fc67b52e",
+   "6159adda35119e43",
+   "760df2ffb4e5ea6c",
+   "7b19509aaf2ec0a1",
+   "8ea6a8eeea69c8c6",
+   "a232bda83d2ffaa0",
+   "a54287340c48dca3",
+   "a961c1b867fe8ee9",
+   "aa30acdfd1c814e6",
+   "ad2bf341f9462892",
+   "aef6336bb016cf28",
+   "ba1f7ed84e8366ac",
+   "c080f4655058ead7",
+   "d041718c323d9bf5",
+   "db4ae60658853ee9",
+   "f536c1cf8853d47b",
+   "fd392d06d5a6baa1"
+  ],
+  "32": [
+   "f7ce8a6c7abca69d"
+  ],
+  "48": [
+   "283820a3c3a1b0da",
+   "789a8cda768285d9",
+   "98c1da346fe7e40a",
+   "db746997e01394de",
+   "dd7fbfaff94c0e8b",
+   "ea58650c09b7ec28"
+  ]
+ }
+}

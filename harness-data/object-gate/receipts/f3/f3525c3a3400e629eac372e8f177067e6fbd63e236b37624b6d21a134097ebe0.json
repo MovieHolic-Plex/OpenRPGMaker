@@ -1,0 +1,305 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f3525c3a3400e629eac372e8f177067e6fbd63e236b37624b6d21a134097ebe0",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "옷감 진열장 (cabinet:bolt+boltg+boltr)",
+ "label": "atlas_biome_interior/props34/cabinet:bolt+boltg+boltr",
+ "profileHash": "1db03a95223e5b0b",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 33,
+  "tileColorsP90": 33,
+  "darkV5": 26,
+  "nearBlackEdge": 0.71,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "cloth bolts on shelves",
+      "rows": "8-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-4 form a wood-coloured band under a darker back rim (row 1) and a row 0 outline. Row 5 is a lighter front-edge line (#d59147), followed by dark eave shadow in rows 6-7. The front face runs from row 6 to row 31 and holds three open shelf bays of cloth bolts, divided by shelf boards at rows 13-14 and 22-23. The width is a constant 16 px, so no side face is drawn. The top band is about 4 rows, similar to the green 'cabinet: top 5 + edge + eave' reference, so this is a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wooden cabinet with shelves of coloured cloth bolts. The measured facts are at or above the references: 33 visible tones per tile against 17-20 for the stall and well, 0% near-flat coverage, and 0% neutral dark edge pixels. That last figure means the outline is a tinted dark brown beside the wood, not a black sticker line, as in the hedge and stall references. By eye, the wood frame has about 4 lightness steps (highlight, mid, dark, deep), a little short of the references' 5-6. The shelves are broken up by the individual bolts in several tones rather than left as flat fills. A careful artist would accept it next to the stall and well props without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15626
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top plate",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "cloth bolts on shelves (red, blue, green, yellow)",
+      "rows": "8-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Column scans at x=4, 8 and 11 all show the same top structure. Row 0 is outline and row 1 is dark. Rows 2-4 are a lighter wood band (#bd764d) that ends in a lighter front-edge line at row 5 (#d59147). Rows 6-7 are dark eave shadow (#2a180b), and the front face starts below them. The front face runs rows 6-31 and is divided into three shelf compartments by horizontal shelf boards at rows 13-14, 22-23 and 30. The shelves hold the cloth bolts, which are decor. The silhouette is a constant 16 px wide with no receding side face. This matches the green cabinet reference: top band, edge line, eave shadow, then a tall front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wooden display cabinet with shelves of coloured cloth bolts, so it is the same kind as the references (stall, well, bench). It carries 33 visible tones per 16x16 tile, above the cheese stall (17) and the roofed well (20). Near-flat coverage is 0%, so there are no large flat fills, and the shelves and bolts are broken up with several tones and small highlights. The dark edge pixels are 0% neutral, so the outline leans brown rather than black, matching the Beodeul habit of using the dark tone of the adjacent material. The wood frame has about 4 visible steps, slightly fewer than the references' 5-6, and the bolts have fewer steps each. This is a minor shortfall and the piece would sit acceptably beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18602
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "cloth bolts on shelves",
+      "rows": "8-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a lighter wood top band (rows 2-4 are L~130) that ends in a lighter front-edge line at row 5 (#d59147). Dark eave shadow follows in rows 6-7. Below that is a front face of about 26 rows (rows 6-31) with open shelves, shelf-plank edges at rows 13-14, 22-23 and 30, and cloth bolts as contents. The silhouette is a constant 16 wide, so no side face is drawn. The structure matches the green 'bookshelf' reference with top, edge line, shadow and front."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small standing cabinet with a wood frame and shelves of cloth bolts in several colours, the same kind as the stall and well references. The measured facts support it: 33 visible tones per 16x16 tile against 17-20 for the richer references (stall, well), 0% near-flat coverage, and 0% neutral dark edge pixels. The outline is therefore tinted, a dark brown that follows the wood frame rather than a uniform black sticker line. Shelf dividers and bolt stacks break up every area, so there are no large flat fills. The wood frame shows about 4 lightness steps against roughly 5 on the references, which is a little shallower but acceptable at this small size. Texture is moderate: the bolts carry highlight and shadow bands, but there is less grain than on the well or stall. Overall it would sit next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18765
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "cloth bolts on shelves",
+      "rows": "8-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a lighter wood band, with a darker row 1 at the back. Row 5 is a lighter front-edge line (#d59147), and rows 6-7 are dark eave shadow beneath it. This matches the green bookshelf and cabinet references. Below that, rows 6-31 are the front face: shelf boards at rows 13-14 and 22-23, with cloth bolts on the shelves. The silhouette is a constant 16 px wide, and no side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wooden cabinet with shelves of cloth bolts in several colours. It measures 33 visible tones per 16x16 tile, above the stall (17) and well (20) references and the hedge (9). Near-flat coverage is 0%, so there are no flat fills, and the bolts and wood frame show varied tones. The dark edge pixels are 0% neutral, which means the outline leans brown or tinted by the adjacent material, not a uniform black sticker line. The wood frame shows about 5 lightness steps and the cloth bolts have highlight and shadow pairs. Structurally it sits comfortably next to the Beodeul props. Texture is a little less grainy than the roofed well's tile and stone work, so I rate it 'some', but density is at least equal to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13599
+  }
+ ],
+ "decidedAt": "2026-10-20T10:14:44.640Z",
+ "cells": {
+  "16": [
+   "3051361047b58baf",
+   "aff85e01d1a1e476"
+  ],
+  "24": [
+   "1a6d69ae3d002553",
+   "1beb262d96363716",
+   "205cd7b267b6b8c1",
+   "25b77ae47873b006",
+   "34e50d7919199ada",
+   "3bbe9cd1edcccff7",
+   "6b04149c73d372c9",
+   "959505b0c9bab7a1",
+   "9ff2fcf1372f52df",
+   "a7510fc57650a950",
+   "bee189c39b4c819a",
+   "d8a9ec321f779080"
+  ],
+  "32": [
+   "08fcd18454b1681b",
+   "6d0f858218838366",
+   "ab56ae0cf69b60b8"
+  ],
+  "48": [
+   "22567c9428c8a101",
+   "677567096df05383",
+   "784b1f6a5c5bdf4d",
+   "a77fdd87ca2a96c7",
+   "ad6ff75639b7dd29",
+   "b36e9b9e6dfe3cc6"
+  ]
+ }
+}

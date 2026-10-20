@@ -1,0 +1,359 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1d726fa634e7e4440823ead74b19d991c16627c87582e2aa56fdea368b6eb6ea",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "pub atm",
+ "label": "modern_city_interior/pub-atm",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 윗면 0행 < 4 (2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "윗면 0행 < 4 (2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 11,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header band above screen",
+      "rows": "2-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "screen with bezel",
+      "rows": "6-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "keypad and card slot panel",
+      "rows": "16-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a constant 14 px wide from row 0 to row 29. Rows 2-5 are a light-blue header strip. The dark row 6 is the top of the screen bezel (the dark frame around the screen), not an eave shadow under a top surface. Everything below is vertical front detail: screen rows 7-14, slots at rows 17-21, a dark slot at rows 22-23 and a gold tray at rows 26-27. There is no ellipse and no roof or contents. A header strip plus a flat front face with no depth cue gives no top surface, so this is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small blue kiosk with a lighter screen, a panel and a dark navy edge. The edge is a tinted dark blue of the body, not neutral black: 0% of its dark edge pixels are near-neutral. Its blue body ramp has about 5 steps (highlight, light, mid, dark, deep), plus a screen and slot detail. The measured facts back this up. It has 11 visible tones per full tile, above prop-hedge (9) and below prop-stall-cheese (17) and prop-well-roofed (20). Its near-flat coverage is 0%, so it has no large flat fills. It has fewer total colours (17 vs 38-40 for the richest references), which is expected for a locked palette on a small, simple object. It is a little less textured than the stall and well, but it does not look like a sticker. A careful artist would likely accept it next to the hedge and the lamp.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 28773
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band of the ATM cabinet",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "screen, keypad slots and cash tray on the front face",
+      "rows": "7-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-5 form a lighter blue band at the top, closed by a dark 1-row line at row 6 (L=47, across all scanned columns). That line works as the front-edge line with eave shadow, and the front face continues below it. The front face (screen, slots, cash tray) runs rows 7-28, with the dark base at rows 29-30. The silhouette is a constant 14 px wide with no receding side face. The top band is thin and the dark row could also be read as the screen bezel, so this is a borderline reading, but it is more than a 1-2 row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The ATM is a small blue kiosk with a lighter screen, a keypad/slot panel and a darker body edge. The outline is a dark navy tinted toward the body blue, not neutral black (0% near-neutral dark edge pixels), so it reads as a material-tone outline, as Beodeul does. It carries 11 visible tones per 16x16 tile against 9 for the hedge, 17 for the cheese stall and 20 for the roofed well. It has 0% near-flat coverage, so there are no large flat fills; the body and screen are broken up by panel detail and highlights. By eye it is simpler than the stall and well, with about 4 body ramp steps against 5-6, but it is at or above the bench, lamp and hedge in richness. A careful artist would accept it next to those references, though it is slightly less textured than the best ones.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22332
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header band above screen",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "screen with bezel (face-on panel)",
+      "rows": "6-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "keypad/slot panels and cash tray on front face",
+      "rows": "17-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole ATM is a flat face-on panel with constant width (14 px) from row 0 to row 29. Rows 1-5 are a lighter blue header band, but it is a front-facing strip. Row 6 is the dark top edge of the screen bezel, not a front-edge line of a horizontal surface, and no eave shadow follows it. The screen, slots and tray are all vertical face details. No ellipse, roof, or visible contents show a top surface, and there is no receding side face. This matches the 'front elevation' wrong examples for cabinets."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The ATM is a narrow, roughly 1x2-tile blue cabinet with a lighter screen panel, a keypad/slot area and a highlight edge. Its blue body has about 4 lightness steps, a bit fewer than the 5-6 on the stall and well. The outline is a dark blue tint, not neutral black, and the measured 0% near-neutral dark edge pixels confirms the tint. It has 11 visible tones per full tile, which is above the hedge (9) and below the stall (17) and well (20), and near-flat coverage is 0%. There are no large flat fills, since the body is broken up by the screen, buttons and edge highlights. It is somewhat simpler than the stall and well, but it is a small modern prop and holds up beside the references without looking like a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20349
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "screen with frame",
+      "rows": "6-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "keypad and card slot panel",
+      "rows": "17-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cash tray",
+      "rows": "25-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-5 form a lighter band across the full width (L=144 against 154 below). Row 6 is a 1-row dark line (L=47) under it, which reads as a front-edge line with eave shadow. The front face runs from row 6 to row 28 and holds the screen, slots and tray, then the dark base at rows 29-30. The top band is only 4 rows and is ambiguous: it could be a face-on header panel, since row 6 also doubles as the screen frame's top border. Taken as a top surface it is marginal. There is no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The ATM is a small, narrow prop, about 12x22 source pixels. The measured facts support it: 11 visible tones per full tile, above the hedge at 9 and below the stall at 17 and the well at 20. Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% neutral, so the outline is a dark navy-blue version of the body rather than a black sticker line. By eye, the body has about 4 blue steps (highlight, light, mid, dark), plus a lit screen, a keypad and a card slot, which break up the surface. It has less grain and fewer ramp steps than the stall and well, but it is a hard-surface machine and sits comfortably next to the hedge and bench. A careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20211
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.143Z",
+ "cells": {
+  "16": [
+   "77e1873d636979fd",
+   "f086eea0ab6246c3"
+  ],
+  "24": [
+   "0918a5d3fba3ead5",
+   "126a6d3b7c89bee4",
+   "361ad50b89216e85",
+   "7610b409cc9dab76",
+   "7fd5e55fa92d635e",
+   "92d7294fc4d0ffc2",
+   "9df42bef9843a1fc",
+   "a2b0244a27fa11d6",
+   "bfa4074e46c88e51",
+   "ecfca257e75c650f",
+   "f2a2729b6b3b83b9",
+   "f44ed421c97d4fca"
+  ],
+  "32": [
+   "59b27d5c31a6a5f8",
+   "77639c18fe8a8390",
+   "e5078fe29a1e55d9"
+  ],
+  "48": [
+   "3ec9cca4ebee8683",
+   "6cfa9cff8431e292",
+   "881dfc96e26f4e7a",
+   "c90e830b4d331587",
+   "f41d3261a7e8cdd1",
+   "f7c90a39866c731d"
+  ]
+ }
+}

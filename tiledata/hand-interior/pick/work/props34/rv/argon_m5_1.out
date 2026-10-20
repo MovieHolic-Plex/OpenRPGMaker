@@ -1,0 +1,3 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"slot machine","view34":"PASS","quality":"PASS","reason":"Clear 5px lit wooden top plane above the front face, with well-shaded brass reel bezel, two readable symbol reels, coin payout tray, and side pull lever matching the anchor palette."}

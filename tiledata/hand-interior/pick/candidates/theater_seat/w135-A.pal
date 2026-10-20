@@ -1,0 +1,21 @@
+// theater_seat w135-A palette (ramp colours only)
+~ #1c1418 110
+- #1c1418 58
+# #e040c0
+
+A #950110   // = red:2
+B #c30014   // = red:3
+C #d73a42   // = red:4
+D #eb7571   // = red:5
+E #0e1216   // = iron:0
+F #22282e   // = iron:1
+G #363e47   // = iron:2
+H #4a5460   // = iron:3
+I #3a0508   // = red:0
+J #d59147   // = wood:7
+K #b77246   // = wood:6
+L #9e684b   // = wood:5
+M #9a5435   // = wood:4
+N #6d3b15   // = wood:3
+O #63310b   // = wood:2
+P #411e05   // = wood:1

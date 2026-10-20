@@ -1,0 +1,335 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4725ad4bcf08858e72cd2c0114796f40e5cef6966e77881ca91885708f2dba9c",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "천체 모형(움직임) (orrery)",
+ "label": "atlas_biome_interior/props34/orrery",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 윗면 2행 < 3 (2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "윗면 2행 < 3 (2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 65,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "base bowl/pedestal",
+      "rows": "24-28",
+      "evidence": "b",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "29"
+     },
+     {
+      "part": "armillary rings with planets and sun",
+      "rows": "11-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The base (rows 24-31) is the main volume. Its width profile goes 8, 10, 12 and back to 10, 8, so it reads as a rounded ellipse. Rows 25-27 are the visible top with the shaft entering it. Row 28 (#f4b370) is a lighter front-edge line, and a darker row 29 follows. Rows 29-31 are the darker front face. The thin shaft (rows 18-23, width 2), the crossbar and ring arms (rows 13-17) and the sun and planets are slender details on top of this base."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The orrery is a small, thin prop: a gold stand with a few small spheres and rings. The per-tile median of 0 only reflects its size, so I judged density by eye. On the measured facts it matches the thin references: 16 distinct colours against 14 for the bench and the lamp. Flat-fill coverage is 0%, and 0% of its dark edge pixels are neutral, so the outlines carry a tint (dark brown/gold) rather than a black sticker line. The gold stand and the spheres show about 4 lightness steps with highlight dots, close to the bench and lamp, though a little less than the richer stall and well. It does not look flatter or more sticker-like than the bench or the lamp, so I accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18157
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "base bowl/pedestal",
+      "rows": "24-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper arms and spheres",
+      "rows": "11-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a round base at rows 24-31 with a 2-row outline and rim at the top (dark outline at row 24, lighter rim at row 25). Below it is a front face of about 6 rows shaded for a rounded bottom (widths 12, then 10, then 8). The base has no ellipse opening, no contents, and no front-edge line followed by eave shadow. Above it is a 2px-wide shaft (rows 18-23) with a crossbar and small spheres at rows 11-17. These are drawn face-on with no horizontal surfaces. The object reads as a front elevation with only a rim on top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The orrery is a small, thin prop: a tripod base, a central stem and arms ending in small spheres. The per-tile median of 0 means the piece is smaller than one tile, so the density fact does not count against it. It has 16 distinct colours, slightly above the thin references (bench 14, lamp 14), and flat-fill coverage is 0%. Its dark edge pixels are 0% neutral, so the outline carries a tint and reads as a dark version of the adjacent material. This avoids the near-black sticker look of the lamp, which is 100% neutral. The spheres and arms show highlight, mid and dark steps, about 4 in total against 5 on the references. It is a little simpler than the bench and lamp but would sit next to them without looking flatter or more sticker-like. It is not as rich as the stall or well, which are much larger objects.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17130
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "base bowl",
+      "rows": "24-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "central shaft with arms and planet spheres",
+      "rows": "11-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The base is a pot-shaped bowl in rows 24-31, with widths 8, 10, 12 (rows 26-29), 10, 8. Its top is only a 1-2 row rim (row 24 dark outline, row 25 lighter band) with no clear ellipse mouth or contents. Rows 26-31 are the front face, shaded from a highlight at row 28 down to dark at row 31. The shaft (width 2, rows 18-23), the arms and the spheres (rows 11-17) are drawn face-on, with no horizontal top surface and no front-edge line plus eave shadow. The whole object reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The orrery is a thin, sparse prop of roughly 12x20 source pixels, so the per-tile median of 0 says nothing against it and I judged density by eye. Its 16 distinct colours are above the bench (14) and the crook lamp (14), the two references of similar thinness. Flat-fill coverage is 0%, and 0% of its dark edge pixels are neutral, so the outline is tinted. It reads as a dark brown-bronze tone beside the brass rather than a black sticker line. The brass stand, arms and spheres show about 4 lightness steps, with highlight dots on the spheres and a stepped tripod base. That is a little shallower than the 5-6 steps on the well and stall, but comparable to the bench and lamp. A careful artist would accept it next to the bench and lamp without it looking flatter or more sticker-like. It is not as rich as the large stall and well, but its size does not call for that.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20659
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "base bowl (opening/ellipse top)",
+      "rows": "24-27",
+      "evidence": "b",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base bowl front face",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "central shaft and ring arms with planets",
+      "rows": "11-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the round base. Its width runs 8, 10, 12 over rows 24-26, then stays at 12, so the top reads as an ellipse. The shaft continues down to row 27 inside the opening (x=8 stays dark through rows 18-27). A lighter line at row 28 (#f4b370) is the front rim edge, with 4 rows of front face below (28-31), narrowing to 10 and 8 at the bottom. The thin shaft (width 2, rows 18-23) and the arms and planets (rows 11-17) are small details and need no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a thin, sparse prop (a small stand with orbs and rings), so the per-tile median of 0 says nothing against it. It is judged by eye against the thin references, the crook lamp and the bench. It has 16 distinct colours, against 14 for both the lamp and the bench. Flat-fill coverage is 0%. Dark edge pixels are 0% neutral, so the outline leans brown or dark brass beside the material rather than sitting as a black sticker line, unlike the lamp at 100% neutral. The brass orbs and the wooden stand show about 4 lightness steps with highlight and shadow dots. That is slightly under the 5-6 of the richer references, but the same as the thin references. Nothing reads as thinner, flatter or more sticker-like than the lamp or bench next to them, so I pass it, though not by a wide margin.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20968
+  }
+ ],
+ "decidedAt": "2026-10-20T07:29:22.699Z",
+ "cells": {
+  "16": [
+   "836e7b126179d563",
+   "b52ac092730f2ced"
+  ],
+  "24": [
+   "4edf340bfd7fe909",
+   "691c3a6fd2990627",
+   "789ef954dc5c4c4c",
+   "9abaf55f0888f64a",
+   "9dd883762a86090d",
+   "b2ddd71da269688c",
+   "c7a72418b56407d6",
+   "eb2bc5096e13ad2a",
+   "ef260ef331e92d94"
+  ],
+  "32": [
+   "4d8bf048ab277678",
+   "95e55cab059b156a",
+   "cecda464cb1481cc"
+  ],
+  "48": [
+   "199f512b6dacb013",
+   "5057f99609b0c633",
+   "6300a11102bc1b00",
+   "816760d9865a19b8",
+   "b40ff6fc5033a90c",
+   "c74b937ac66334f5"
+  ]
+ }
+}

@@ -12,12 +12,13 @@
 
 import {
   allSwitchesFork,
-  flash,
   makePage,
   objGraphic,
   particles,
   revealInWaves,
   se,
+  sfx,
+  tintPulse,
   shake,
   textCmd,
 } from "./puzzleKit";
@@ -1018,6 +1019,7 @@ function runMechanicPreset(
     const page = event.pages?.[0];
     const kind = page?.trigger.kind;
     if (kind === "auto" || kind === "parallel" || page?.priority !== "same") continue;
+    if (built.stagedReach?.includes(event.id)) continue;
     if (!analysisPlacement.hasInteractionPosition(event, origin)) {
       throw new ToolError(`퍼즐 이벤트 '${event.id}'(${event.x},${event.y}) 에 시작점 (${origin.x},${origin.y}) 에서 닿을 수 없습니다 — 롤백합니다.`, {
         code: "puzzle-softlock-prevented",
@@ -1065,13 +1067,13 @@ function runMechanicPreset(
 const listPuzzlePresetsTool: ToolDefinition = {
   name: "list_puzzle_presets",
   description:
-    "AI 조수가 맵·던전·실내에 바로 설치할 수 있는 20종 JRPG·어드벤처 퍼즐 프리셋 카탈로그(상태 공간 BFS 검증 품질 프리셋 12종 + 호환 프리셋 8종)를 조회한다. " +
-    "① 레버-비밀통로(lever_secret_passage) ② 4레버 마스터마인드 판정(two_step_sequence) " +
+    "AI 조수가 맵·던전·실내에 바로 설치할 수 있는 20종 JRPG·어드벤처 퍼즐 프리셋 카탈로그(상태 공간 BFS 검증 품질 프리셋 16종 + 호환 프리셋 4종)를 조회한다. " +
+    "① 떨어지는 쇠창살 감옥 회랑 레버(lever_secret_passage) ② 4레버 마스터마인드 판정(two_step_sequence) " +
     "③ 성당 오르간 5음 메아리 기억(cathedral_organ_tuning) ④ 사방 화로 관계 단서 점화(brazier_ignition_order) " +
-    "⑤ 석상 밀기 발판 소코반(statue_pressure_plates) ⑥ 얼음/컨베이어 미끄럼(ice_conveyor_slide) " +
-    "⑦ 시간의 문 시대 연동(time_gate_causality) ⑧ 다이너마이트 장애물 폭파(dynamite_rock_blast) " +
+    "⑤ 석상 밀기 발판 소코반(statue_pressure_plates) ⑥ 빙판 동굴 미끄럼(ice_conveyor_slide) " +
+    "⑦ 모래시계 신전 과거↔현재(time_gate_causality) ⑧ 다이너마이트 장애물 폭파(dynamite_rock_blast) " +
     "⑨ 거짓말쟁이 상자 추론(riddle_mimic_chests) ⑩ 두 저수조 3·5칸 수위 맞추기(sluice_lava_bridge) " +
-    "⑪ 경비병 시야/순찰 잠입(stealth_guard_patrol) ⑫ 보스 결계 3×3 수정 뒤집기 라이츠아웃(boss_seal_monoliths) " +
+    "⑪ 초소 경비 등불 시야 잠입(stealth_guard_patrol) ⑫ 보스 결계 3×3 수정 뒤집기 라이츠아웃(boss_seal_monoliths) " +
     "⑬ 거대 바위 굴리기·구렁 메우기(rolling_boulder_chasm) ⑭ 고대 거울 빛줄기 굴절(mirror_beam_refraction) " +
     "⑮ 광산 선로 전환기 & 광차 충돌(minecart_track_switch) ⑯ 사원소 구슬 제단 배치 추론(elemental_pedestal_swap) " +
     "⑰ 무너지는 판자 다리 한붓 건너기(cracked_plank_bridge) ⑱ 서재 유물 세기 세 자리 자물쇠(number_code_lock) " +
@@ -1297,12 +1299,13 @@ const authorMapPuzzleTool: ToolDefinition = {
                     {
                       text: "레버를 힘껏 당긴다",
                       branch: [
-                        se("key"),
+                        sfx("switch-clack"),
                         { kind: "setEventGraphicPattern", eventId: leverId, pattern: leverUp.pattern ?? 0 },
                         shake(3, 500),
-                        flash("white", 300),
+                        ...tintPulse("255,255,255", 0.4),
                         se("collapse1"),
                         particles("dust", 700),
+                        sfx("secret-solved"),
                         ...changeTileCmds,
                         textCmd("철컥— 덜커덩! 바닥 타일이 움직이며 옆의 비밀 통로 철문이 열렸다!"),
                         ...reward.grantCommands,
@@ -1417,7 +1420,7 @@ const authorMapPuzzleTool: ToolDefinition = {
                     {
                       text: "왼쪽으로 당긴다",
                       branch: [
-                        se("key"),
+                        sfx("switch-clack"),
                         textCmd("철컥! 1단계 주 레버가 맞물렸다."),
                         {
                           kind: "choices",
@@ -1426,8 +1429,8 @@ const authorMapPuzzleTool: ToolDefinition = {
                             {
                               text: "위쪽 눈금",
                               branch: [
-                                se("buzzer1"),
-                                flash("red", 250),
+                                sfx("wrong"),
+                                ...tintPulse("200,40,40", 0.3, 100, 400),
                                 shake(3, 400),
                                 textCmd("경보음이 울리며 레버가 초기 위치로 튕겨 돌아갔다!"),
                               ],
@@ -1437,9 +1440,10 @@ const authorMapPuzzleTool: ToolDefinition = {
                               branch: [
                                 se("chime2"),
                                 { kind: "setEventGraphicPattern", eventId: consoleId, pattern: consoleUp.pattern ?? 0 },
-                                flash("white", 300),
+                                ...tintPulse("255,255,255", 0.4),
                                 shake(3, 450),
                                 particles("sparkle", 800),
+                                sfx("secret-solved"),
                                 ...changeTileCmds,
                                 textCmd("삐비빅— 「2단계 보안 인증 완료!」 철문이 열리며 바닥 잠금이 해제되었다!"),
                                 ...reward.grantCommands,
@@ -1449,8 +1453,8 @@ const authorMapPuzzleTool: ToolDefinition = {
                             {
                               text: "아래쪽 눈금",
                               branch: [
-                                se("buzzer1"),
-                                flash("red", 250),
+                                sfx("wrong"),
+                                ...tintPulse("200,40,40", 0.3, 100, 400),
                                 textCmd("다이얼이 맞지 않는다. 처음부터 다시 조작해야 한다."),
                               ],
                             },
@@ -1461,8 +1465,8 @@ const authorMapPuzzleTool: ToolDefinition = {
                     {
                       text: "오른쪽으로 당긴다",
                       branch: [
-                        se("buzzer1"),
-                        flash("red", 250),
+                        sfx("wrong"),
+                        ...tintPulse("200,40,40", 0.3, 100, 400),
                         textCmd("1단계 레버 방향이 틀렸다! 단서 비석을 다시 확인하자."),
                       ],
                     },
@@ -1602,7 +1606,7 @@ const authorMapPuzzleTool: ToolDefinition = {
                     {
                       text: "불협화음을 내리친다",
                       branch: [
-                        se("buzzer1"),
+                        sfx("wrong"),
                         shake(1, 300),
                         textCmd("귀를 찌르는 소리가 울렸지만 아무 장치도 움직이지 않았다."),
                       ],
@@ -1681,8 +1685,8 @@ const authorMapPuzzleTool: ToolDefinition = {
         const litGraphic = objGraphic("object2", 6, "down");
 
         const resetBraziers: Command[] = [
-          se("buzzer1"),
-          flash("red", 250),
+          sfx("wrong"),
+          ...tintPulse("200,40,40", 0.3, 100, 400),
           shake(3, 400),
           { kind: "setVariable", variableId: progressVar, op: "=", value: 0 },
           { kind: "setSwitch", switchId: swB1, value: false },
@@ -1697,7 +1701,7 @@ const authorMapPuzzleTool: ToolDefinition = {
           const isFinal = idx === 3;
           const onCorrect: Command[] = [
             se("fire7"),
-            flash("red", 250),
+            ...tintPulse("200,40,40", 0.3, 100, 400),
             particles("fire", 1200, at),
             particles("smoke", 1200, { x: at.x, y: at.y - 1 }),
             { kind: "setVariable", variableId: progressVar, op: "=", value: idx },
@@ -1833,7 +1837,7 @@ const authorMapPuzzleTool: ToolDefinition = {
                 priority: "below",
                 overlapForbidden: false,
                 commands: [
-                  se("key"),
+                  sfx("switch-clack"),
                   { kind: "setSwitch", switchId: swId, value: true },
                   ...(idx === 1 ? (stagePlan?.stepChangeTileCommands.plate_1 ?? []) : []),
                   particles("dust", 1000, at),
@@ -1937,12 +1941,13 @@ const authorMapPuzzleTool: ToolDefinition = {
                     {
                       text: "레버를 당겨 궤도를 정렬한다",
                       branch: [
-                        se("key"),
+                        sfx("switch-clack"),
                         se("earth2"),
                         { kind: "setEventGraphicPattern", eventId: leverId, pattern: leverUp.pattern ?? 0 },
                         shake(3, 450),
-                        flash("white", 250),
+                        ...tintPulse("255,255,255", 0.4),
                         particles("sparkle", 700),
+                        sfx("secret-solved"),
                         ...changeTileCmds,
                         textCmd("철컥— 덜커덩! 미끄럼 궤도가 정렬되며 정지 바위가 치워지고 보물 통로가 열렸다!"),
                         ...reward.grantCommands,
@@ -2097,7 +2102,7 @@ const authorMapPuzzleTool: ToolDefinition = {
                       text: "시간의 씨앗과 마력을 공명시킨다",
                       branch: [
                         se("bell"),
-                        flash("white", 350),
+                        ...tintPulse("255,255,255", 0.4),
                         particles("magic", 900),
                         ...changeTileCmds,
                         { kind: "setSwitch", switchId: seededSwitchId, value: true },
@@ -2153,6 +2158,7 @@ const authorMapPuzzleTool: ToolDefinition = {
               graphic: closedGoldChest,
               commands: [
                 ...chestOpenCommands(futureId, closedGoldChest),
+                sfx("secret-solved"),
                 particles("sparkle", 800),
                 textCmd("과거에서 전해진 시공의 힘으로 유산 상자의 봉인이 풀렸다!"),
                 ...reward.grantCommands,
@@ -2346,7 +2352,7 @@ const authorMapPuzzleTool: ToolDefinition = {
               graphic: decoyGraphic,
               commands: [
                 se("damage2"),
-                flash("red", 300),
+                ...tintPulse("200,40,40", 0.3, 100, 400),
                 shake(3, 450),
                 particles("smoke", 700),
                 textCmd("크아악! 상자 뚜껑에서 미믹의 날카로운 이빨이 튀어나왔다! 이 상자는 함정이다!"),
@@ -2368,8 +2374,8 @@ const authorMapPuzzleTool: ToolDefinition = {
               name: "나무 상자 B (함정)",
               graphic: decoy2Graphic,
               commands: [
-                se("buzzer1"),
-                flash("red", 250),
+                sfx("wrong"),
+                ...tintPulse("200,40,40", 0.3, 100, 400),
                 shake(3, 400),
                 textCmd("푸슉—! 상자 틈에서 마비 연기가 뿜어져 나왔다! 이 상자도 가짜다!"),
               ],
@@ -2450,12 +2456,13 @@ const authorMapPuzzleTool: ToolDefinition = {
                     {
                       text: "배수 밸브를 끝까지 돌려 다리를 개방한다",
                       branch: [
-                        se("key"),
+                        sfx("switch-clack"),
                         se("earth6"),
                         { kind: "setEventGraphicPattern", eventId: valveId, pattern: valveUp.pattern ?? 0 },
                         shake(6, 650),
-                        flash("white", 350),
+                        ...tintPulse("255,255,255", 0.4),
                         particles("dust", 800),
+                        sfx("secret-solved"),
                         ...changeTileCmds,
                         textCmd("쏴아아아— 쿠구구궁! 수위가 내려가며 잠겨 있던 돌다리와 수문이 완전히 개방되었다!"),
                         ...reward.grantCommands,
@@ -2650,6 +2657,7 @@ const authorMapPuzzleTool: ToolDefinition = {
               graphic: cacheClosed,
               commands: [
                 ...chestOpenCommands(cacheId, cacheClosed),
+                sfx("secret-solved"),
                 particles("sparkle", 750),
                 textCmd("경비병이 한눈을 판 사이에 기밀 보급 상자를 열었다!"),
                 ...reward.grantCommands,
@@ -2727,7 +2735,7 @@ const authorMapPuzzleTool: ToolDefinition = {
                 graphic: dormantMono,
                 commands: [
                   se("chime2"),
-                  flash("white", 250),
+                  ...tintPulse("255,255,255", 0.4),
                   particles("magic", 1200, spec.at),
                   shake(3, 300),
                   { kind: "setSwitch", switchId: spec.swId, value: true },
@@ -2832,7 +2840,7 @@ const authorMapPuzzleTool: ToolDefinition = {
               graphic: objGraphic("object2", 0, "down"),
               commands: [
                 { kind: "wait", ms: 200 },
-                se("key"),
+                sfx("switch-clack"),
                 se("earth2"),
                 { kind: "setSwitch", switchId: swWinch, value: true },
                 ...(stagePlan?.stepChangeTileCommands.boulder_winch ?? []),
@@ -2970,7 +2978,7 @@ const authorMapPuzzleTool: ToolDefinition = {
               commands: [
                 { kind: "wait", ms: 200 },
                 se("chime2"),
-                flash("yellow", 250),
+                ...tintPulse("255,230,120", 0.4),
                 { kind: "setSwitch", switchId: swM1, value: true },
                 ...(stagePlan?.stepChangeTileCommands.mirror_1 ?? []),
                 particles("sparkle", 1100, cMirror1),
@@ -3106,7 +3114,7 @@ const authorMapPuzzleTool: ToolDefinition = {
               graphic: objGraphic("object2", 0, "down"),
               commands: [
                 { kind: "wait", ms: 200 },
-                se("key"),
+                sfx("switch-clack"),
                 se("earth2"),
                 { kind: "setSwitch", switchId: swTrack, value: true },
                 ...(stagePlan?.stepChangeTileCommands.minecart_switch ?? []),
@@ -3149,7 +3157,7 @@ const authorMapPuzzleTool: ToolDefinition = {
                     particles("sparkle", 1000, { x: cCart.x, y: cCart.y - 2 }),
                     particles("dust", 900, cCart),
                     shake(3, 200),
-                    se("key"),
+                    sfx("switch-clack"),
                     ...(stagePlan?.stepChangeTileCommands.minecart_step_2 ?? []),
                     particles("sparkle", 1000, { x: cCart.x, y: cCart.y - 4 }),
                     particles("smoke", 900, { x: cCart.x, y: cCart.y - 2 }),
@@ -3286,7 +3294,7 @@ const authorMapPuzzleTool: ToolDefinition = {
                 commands: [
                   { kind: "wait", ms: 200 },
                   se("chime2"),
-                  flash("white", 250),
+                  ...tintPulse("255,255,255", 0.4),
                   particles(spec.vfx, 1100, spec.at),
                   shake(3, 280),
                   { kind: "setSwitch", switchId: spec.swId, value: true },

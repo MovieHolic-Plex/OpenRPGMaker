@@ -1,0 +1,370 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3d81aa46966e38bd247b5dde0d9bebd64f1ac78189edd22463e009c91dc780f8",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "제어반(움직임, 2칸) (control console)",
+ "label": "atlas_biome_interior/props34/control console",
+ "profileHash": "1db03a95223e5b0b",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 15,
+  "darkV5": 56,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper hood / monitor housing top band",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "main console desk top with buttons (control surface)",
+      "rows": "13-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-20"
+     },
+     {
+      "part": "screens and indicator lights",
+      "rows": "7-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower cabinet base",
+      "rows": "24-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main console body has a lit band at rows 14-17 (bright edge line at row 14, controls on it) that ends at a darker edge at row 18, followed by shadow at rows 19-20. Below it the front panel runs rows 19-23, and a dark base runs rows 24-31, so the front face is about 13 rows. The upper hood shows a similar band at rows 2-6, with a highlight at row 3 and a slightly darker edge at row 6 above the dark screen face. The top band is only moderately strong, and it is partly drawn face-on, so the evidence is not very clear-cut. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate carries 14 visible tones per 16x16 tile. That is above the hedge reference (9) and a little below the stall (17) and well (20). Near-flat coverage is 0%, so there are no large flat fills, and the front panel is broken up by a screen with a waveform, knobs, coloured buttons and a vent strip. The dark edge pixels are 0% neutral, so the outline leans blue-grey and follows the metal rather than being a black sticker line. The weak points are that the casing ramp is only about 4 steps, against 5-6 on Beodeul materials, and that the total palette is small (23 colours against 38-40 on the richer references). Since the piece is a compact device and its tile density is within the reference range, a careful artist would accept it beside the references, though it is slightly less rich than the stall and well.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19423
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper monitor housing top band",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "main console control deck (top band with buttons)",
+      "rows": "14-17",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "screens and indicator lights",
+      "rows": "7-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower base with vents",
+      "rows": "24-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main console body has a lighter band at rows 14-17. It starts with a dark back line at row 13 and a bright highlight at row 14, and it carries buttons. It steps down to a darker, mid-gray front face at rows 18-23, with a dark vented base at rows 24-31. This gives a front face of about 14 rows below the top band. The upper housing has a similar light band at rows 2-6 that ends in a slightly darker edge at row 6, followed by dark screen rows. The silhouette is flat-fronted with no receding side face. The top band is only about 4 rows deep and the edge line is subtle, so it could also be read as a front-facing control panel, which makes this a borderline call."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate carries 14 visible tones per 16x16 tile. That sits between the hedge (9) and the stall (17) and just under the well (20), and it is well above the near-empty tiles of the bench and lamp. Near-flat coverage is 0%, so the grey casing is broken up by panel seams, a screen with a waveform, knobs, and red, blue and green buttons. None of the large areas is a flat fill. Dark edge pixels are 0% neutral, so the outline leans a tinted dark blue-grey against the casing, like the hedge's dark-green edge, and is not a uniform black sticker line. Its body ramp shows roughly 4 distinct steps (highlight, light, mid, dark) with a darker rim, one fewer than Beodeul's 5-6, and the texture is mostly structural detail instead of grain. That is slightly shallower than the best references but acceptable next to them at the same scale, and it is not thinner or flatter than the hedge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21656
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper monitor hood strip",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "main console deck with buttons",
+      "rows": "14-17",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower front panel and base",
+      "rows": "18-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main console has a lighter deck band at rows 14-17. Row 13 is a dark line above it and row 14 is a bright line, with buttons and indicators on the band. Below it, a darker face runs over rows 18-23 and a dark base over rows 24-31, giving a front face of about 14 rows. The upper monitor housing at rows 2-6 has a bright highlight at row 3 and a darker line at row 6, then a dark screen strip at rows 7-12. There is no isometric side face. The deck band is only 4 rows and has no clear front-edge line or eave shadow, so the top surface is weakly evidenced and the call is borderline."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a grey-blue control console with a screen, knobs and small coloured lights, and it reads as a standing prop. Measured facts support it: 14 visible tones per tile against 9 for the hedge, 17 for the cheese stall and 20 for the well. Near-flat coverage is 0% and the dark edge pixels are 0% neutral, so the outline is tinted (a dark blue-grey tone of the casing) rather than a black sticker line. Weaknesses: the casing body is only about 3-4 steps (panel, mid, dark, rim), against 5-6 on the references' materials. The panel faces are smooth, with little grain or speckle beyond the knobs and lights. It is somewhat less layered than the well or stall, but it is not shallow or sticker-like, and a careful artist would likely accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 30566
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper monitor housing top band",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "main console control-panel top (sloped ledge with buttons)",
+      "rows": "14-17",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower front face with button panels",
+      "rows": "18-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark base with vent slots",
+      "rows": "24-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main console has a light band at rows 14-17 that starts under the row-13 line and carries buttons and lights. It ends in a bright edge at row 17 and sits above a front face (rows 18-23, panels) and a dark base (rows 24-31), about 14 front-face rows in total. The upper housing has its own light top band at rows 2-6, with a slightly darker edge at row 6 and the dark screen recess below it. The weakest point is the main top surface, which is only about 4 rows deep and reads partly as a sloped control surface. Even so, it is distinct from a 1-2 row rim. There is no isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate shows 14 visible tones per 16x16 tile. That sits between the hedge (9) and the stall (17) and well (20) references, and above the hedge. Near-flat coverage is 0%, so the metal panel is not a flat fill: it has a lighter top bevel, a mid face, darker side and base planes, and separate panel segments. The dark edge pixels are 0% neutral, so the outline leans visibly bluish-grey, the dark tone of the adjacent metal, not a black sticker line. The small details (green waveform screen, rows of knobs, red and orange buttons, slider strips) are drawn one by one and give a clustered, varied surface. It has fewer total colours (23) than the stall and well (38-40), and the body ramp has about 5 steps against Beodeul's 5-6. Even so, a careful artist would accept it beside the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23312
+  }
+ ],
+ "decidedAt": "2026-10-20T10:14:44.659Z",
+ "cells": {
+  "16": [
+   "5a3a5f96569ee283",
+   "615f57e1b6a74265",
+   "9c2bce47f6d8eb31",
+   "9c452f6b97422e65"
+  ],
+  "24": [
+   "085ba1f013439a93",
+   "0c22bea6bff4667c",
+   "1dc86d82c3d0920e",
+   "23af97092eb5473c",
+   "2be62a5f2005be38",
+   "370cbccab364fba8",
+   "4385fb4f2913b1c2",
+   "45dd9d55e457e36c",
+   "4a7484ca67174b1a",
+   "688dc208ba098d67",
+   "802b8df0f3bb00b2",
+   "810adb6629bc1b67",
+   "8985f3b0e20b6294",
+   "91a8d02a87ee51ca",
+   "92eca1d61ba14dc4",
+   "98b0ea1566cb44b5",
+   "9d22fcd428e630e6",
+   "9dcc1909541c1c5b",
+   "c02d0f5c07764bf5",
+   "f528c09e1b49d7d2",
+   "f7598e8d99a975fa",
+   "f93aa1ed832203aa",
+   "fa42b5d65341f279",
+   "fb715f9011a4051c"
+  ],
+  "32": [
+   "72d58c3fb7a02684"
+  ],
+  "48": [
+   "620b17fc218b3db5",
+   "6e51fd7615ca936a",
+   "77df141404784e48",
+   "9afac334ce6eb090",
+   "c5f4f67d66cbbff4",
+   "ec894b69641ed982"
+  ]
+ }
+}

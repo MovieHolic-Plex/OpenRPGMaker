@@ -1,0 +1,331 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9465263049721dc1852df846368375a140089e85a1b3b30778faf78641c53616",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "저울 추 받침(추 3 — 무쇠) (weight stand 3)",
+ "label": "atlas_biome_interior/plus/weight stand 3",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 5/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 5/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 15,
+  "darkV5": 22,
+  "nearBlackEdge": 0.52,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "iron weight top",
+      "rows": "14-17",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18-20"
+     },
+     {
+      "part": "wooden stand/tray with weight inside",
+      "rows": "19-29",
+      "evidence": "d",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The iron weight has a light top band at rows 14-17 (L=215/170) that ends in a bright front-edge line at row 17. Darker shaded rows 18-23 follow, with a checker detail, so this reads as a front face under the top. The wooden stand below has a dark rim at row 24 and a brown front face at rows 25-28. The weight sits inside it, which shows contents. The silhouette widens from 9 to 14 px, as a base would. The top band is 4 rows and the front faces total more than 3 rows, so it reads as three-quarter view rather than a flat slab or a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small cast-iron prop with 15 distinct colours, all inside about one tile. That matches or beats the references on colour count (hedge 11, bench 14, lamp 14) and per-tile density (hedge 10, cheese stall 17, well 20). Flat-fill coverage is 0%, so there are no dead 5x5 blocks. By eye it shows roughly 5 grey steps, with a lighter top and edge highlights against darker body and base. The outline is 100% near-neutral, which strictly reads as near_black. But the material is grey iron, and the iron lamp-crook reference measures the same 100% neutral. Its dark edge is therefore the dark end of the iron ramp, not a uniform black sticker line. Outlines are not applied to every shape; value steps separate the forms. Texture is modest because the piece is tiny, but the shading and density hold up next to the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 23532
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "iron weight top plate",
+      "rows": "14-17",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18-20"
+     },
+     {
+      "part": "wooden stand/tray holding the weight",
+      "rows": "19-29",
+      "evidence": "d",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The iron weight has a light band at rows 14-17 that is lighter than the face below and ends in a bright front-edge line at row 17. Darker rows follow (18-20 at x=8, 14-19 at x=11), then the front face with a checker pattern at rows 21-23. The weight sits in an open wooden tray (rows 19-29, width 14), whose front face is rows 25-28, below a dark line at row 24. The top band is only 4 rows, but it has an edge line and shadow below it, so it counts as a top surface. The object faces south and shows no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 5,
+    "evidence": "The candidate is a small grey cast-iron stand. Its 15 colours per tile are at or above the lamp-crook and bench references (14 distinct colours each), and its 5x5 flat-fill coverage is 0%, so it is not flat-filled. The weak points are the outline and the shading. 100% of its dark edge pixels are neutral, so it has a uniform black/grey outline with no tint toward the adjacent material. Beodeul's richer props (cheese stall 1%, hedge 0%, well 33%) use tinted dark edges. Only the iron lamp-crook is also fully neutral, and the iron material gives that one some excuse. The candidate reads as a dark-outlined sticker around a grey body with a pale top. It has about 4 lightness steps against roughly 5-6 on the references, and little per-part grain or highlight work beyond a few speckles. Because the outline reads as near-black, and when in doubt the rule is to fail, it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 22492
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "iron weight (on the stand)",
+      "rows": "14-17",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18-20"
+     },
+     {
+      "part": "wooden crate/stand holding the weight",
+      "rows": "19-24",
+      "evidence": "d",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The iron weight has a light top band at rows 14-17 (L about 170-215). Row 17 is a lighter front-edge line, followed by darker rows 18-20 (L=82 at x=8, L=17 at x=11) that act as eave shadow, and a gray-blue front face to row 23. The wooden crate below is an open container: its mouth at rows 19-24 shows the weight and a checker pattern inside, and its brown front face runs rows 25-28 under a dark rim at row 24. The top surface and front face are both visible, so it reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The candidate is a small iron stand of about one tile. It has 15 distinct colours, and its median of 15 colours per tile sits between the hedge (10) and the stall (17). Flat-fill coverage is 0%, so there are no big flat areas. By eye it shows roughly 5 grey steps, with a light top plate, mid body, dark underside and small highlight dots on the metal, which is comparable to the iron lamp-crook reference. The dark edge pixels are 100% neutral, which by the tint rule is near_black. That is the same value the Beodeul iron lamp-crook reference shows, and neutral dark grey is the natural shadow tone of cast iron, so it is not a sticker outline imposed on a coloured material. The piece is not thinner or flatter than the iron reference. It is borderline on outline, but it passes on shading steps, texture and density.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 21367
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "iron weight top (light slab)",
+      "rows": "14-17",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18-20"
+     },
+     {
+      "part": "wooden tray/crate holding the weight (open container with contents visible)",
+      "rows": "19-24",
+      "evidence": "d",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Column x=4 and x=8 show a light top band at rows 14-17: row 14 is light, rows 15-16 mid, and row 17 is a light front-edge line. Below it, rows 18-23 are a darker front face with a checker pattern. The weight sits in a wooden tray 14 px wide. Row 24 is a dark rim, rows 25-28 are the brown front face, and row 29 is the outline. The weight is visible inside the open tray, which also counts as a top surface. Top surface of about 4 rows plus a front face of more than 3 rows reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny grey iron prop. By the numbers it holds up: 15 colours per tile against a reference median of 10-20, 0% flat-fill coverage, and 15 distinct colours against 11-40 for the references. The problem is the outline and shading. 100% of its dark edge pixels are neutral, so it reads as a colourless dark line around the whole silhouette. That is the sticker look, set against references whose outlines mostly lean toward the material tone (hedge 0%, stall 1%, well 33%, bench 44% neutral). Only the iron lamp-crook is equally neutral. Because the iron body is also grey, the object has only about 4 grey steps and little interior grain, and it is much less rich than the roofed well or the cheese stall. The distinct-colour count is only comparable to the thin lamp and bench, so it looks thinner and flatter than the richer references. I could not clearly justify a pass on a piece with a uniform neutral outline and a shallow ramp, so the verdict is fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 19646
+  }
+ ],
+ "decidedAt": "2026-10-20T05:59:10.984Z",
+ "cells": {
+  "16": [
+   "3bceb16c2d5cc79e",
+   "6f56f25935fb8963"
+  ],
+  "24": [
+   "104c6013a55d834c",
+   "3e24d77bcbdae8c4",
+   "449cae3f419a5768",
+   "8a9f6c2fc9059674",
+   "9f6af419da82f076",
+   "a78d375802189672",
+   "b1f17dcd4cdb06cd",
+   "daca6a1688bbc0e7",
+   "ec3f82b39da7fb65"
+  ],
+  "32": [
+   "3c1e20be4a8224a1",
+   "6649bc46b77ae7e0",
+   "af5d60ff93078d2e"
+  ],
+  "48": [
+   "4794236ab1baf60f",
+   "5cf88344b51a982a",
+   "6874d132bac1216b",
+   "789491e56f9f5a99",
+   "7c46aabb127e3c55",
+   "c66afe051bd38e03"
+  ]
+ }
+}

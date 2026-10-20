@@ -1,0 +1,395 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "926287e1bd784b9572df3c37131650ef8132dc22aac5d6e3a01f140d360ccfbc",
+ "width": 32,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "roof water tank",
+ "label": "modern_city_interior/roof-water-tank",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 명암 3단 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "명암 3단 < 4 (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 8,
+  "darkV5": 57,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "tank lid (top ellipse)",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "cylindrical tank body front",
+      "rows": "8-32",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs and cross brace",
+      "rows": "33-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tank has a lid that starts narrow at row 1 (width 12) and widens to 28 by row 5. Its bright front-edge line is at row 7 (L=246), followed by a darker shadow row at row 8 (L=124). That is a top surface of about 7 rows. Below it is a tall front face of rows 8-32, which is 25 rows, with horizontal band lines at rows 15-16, 24-25 and 32. The darker strips at the left and right are cylinder shading, not a receding side face. Thin legs and a cross brace run from row 33 to 46. The object is a roof water tank on legs, not wall-standing tall furniture, so the kind does not match well."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a grey steel tank with only about 4 lightness steps on the body (highlight, light, mid, dark). It has vertical banding and hoop lines, but the cylinder is mostly smooth with little grain, rivets or per-plate variation. Its measured 7 visible tones per tile is below the hedge (9), well (20) and stall (17) references. Near-flat coverage is 21%, higher than every reference (0-13%), which confirms flat panels on the body and lid. The outline is not near-black: 0% neutral dark edge pixels, so it carries a visible tint, a dark bluish-grey on steel. That matches the dark-material-tone approach. The legs and lid are simple with few steps. A careful artist would find it somewhat flatter and thinner than the stall and well references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 19113
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "tank lid (top of cylinder)",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "tank body (cylindrical front face)",
+      "rows": "8-33",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs",
+      "rows": "34-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "leg crossbar",
+      "rows": "39-41",
+      "evidence": "none",
+      "front_edge_line_row": 39,
+      "eave_shadow_rows": "40"
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tank lid at rows 1-7 widens from 12 to 28 px, so it reads as a foreshortened top. It ends in a bright front-edge line at row 7 (L=246 at x=9 and x=16), followed by a darker shadow row at row 8 (L=124). Below that the cylindrical front face runs rows 8-33, about 26 rows, with hoop bands at rows 15-16, 24-25 and 32. The left side is lit and the right side is darker, which is shading on the curved body, not a receding side face. Two legs and a crossbar sit below. The object is a tank on legs, not tall furniture against a wall, so the kind only loosely fits."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a grey-silver cylindrical tank on stilts. It has 7 visible tones per tile against 17-20 for the stall and well, and 9 for the hedge. Near-flat coverage is 21%, higher than any reference (0-13%). The body shows only a few lightness steps: a light left highlight, a mid-grey body and a darker right side, plus a couple of band lines. There are no per-plate dots, rivets or grain, and the lid is a smooth ellipse. The outline looks dark and slightly tinted rather than pure black (0% neutral edge pixels), but it runs as a fairly uniform line around the whole silhouette, which is the sticker look. The legs and cross-bracing are thin and flat. Beodeul props like the well and stall are shaded stone by stone or plank by plank, and this tank is visibly flatter and simpler than them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18066
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "tank lid (top ellipse)",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "cylindrical tank body (front face)",
+      "rows": "8-33",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs and cross brace",
+      "rows": "34-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The lid occupies rows 1-7. Its silhouette widens from 12 to 28 px over rows 1-5 and it has a lighter highlight band. A bright front-edge line sits at row 7 (L=246 at x=9 and x=16), followed by a darker eave shadow at row 8 (L=124). Below that is a 26-row vertical front face (rows 8-33) with banding and a rounded bottom, standing on two legs with a cross brace at rows 39-41. This is a 3/4 view of a round water tank, not a wall-standing piece of tall furniture, so the kind does not match well."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a grey cylindrical tank on legs. It shows about 3-4 lightness steps on the body: a light highlight band on the left, a mid grey, and a darker right side, with horizontal band lines. Beodeul references such as the well, the stall and the hedge carry 5-6 steps with per-element grain and clumps. Measured: 7 visible tones per tile against 17-20 for the stall and well and 9 for the hedge. Near-flat coverage is 21%, higher than the stall at 13% and the well and hedge at 0%, which matches the large smooth areas on the tank body and lid. The outline pixels are tinted (0% neutral), but the outline reads as a fairly uniform dark line around the whole shape, with little selective value separation, so it is mixed and leans toward sticker. Texture is limited to band lines and a few rivet dots, and the metal has no grain, speckle or per-plate shading. Overall it is cleaner and flatter than the references and looks thinner next to the stall and well.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15845
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "tank lid (elliptical top)",
+      "rows": "1-7",
+      "evidence": "b",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "tank cylindrical body (front face)",
+      "rows": "8-33",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs and crossbar",
+      "rows": "34-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile for rows 0-5 goes 0, 12, 20, 24, 26, 28, so the lid is an ellipse that widens from its back rim at row 1. Row 7 is a bright 1-row front-edge line (L=246) and row 8 is a darker eave-shadow line (L=124). Below that the front face runs rows 8-33 with horizontal band lines at rows 15-16, 24-25 and 32. It narrows slightly to rows 30-33 as the base curves. Two thin legs and a crossbar (rows 34-46) hold it up. The side shading is cylinder shading on the south face, not a receding side face. The object is a tank on legs, not a wall-standing cabinet or bookshelf, so the kind fits poorly."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a grey metal tank on legs. It has 7 visible tones per tile against 17-20 for the stall and well references and 9 for the hedge. Its near-flat coverage is 21%, higher than every reference (0-13%). The cylinder body reads as 3 grey steps (light left, mid, dark right) with a few band lines. There is no per-plank grain, rivet dotting, rust, or speckle. The wide lid and body areas are smooth, flat fills. The outline is a tinted dark grey-blue rather than neutral black, with 0% near-neutral dark edge pixels, so it avoids the sticker look. Even so, the shading is shallow, with 3 steps against the 5-6 of the Beodeul references. It looks flatter and simpler than the stall and well, so it does not match the quality bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 14096
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.167Z",
+ "cells": {
+  "16": [
+   "0ecc712e11fe97ed",
+   "47f5459ba159742a",
+   "8db0bfcd9069bb97",
+   "bb78323cd2931fdd",
+   "e3220b7bf028e148",
+   "ffa53025299f0bef"
+  ],
+  "24": [
+   "20a7a07b029e1cad",
+   "2bc5a0640f19ec2a",
+   "30f7565dd33d32c4",
+   "4c5d64bdaff5ebce",
+   "5d914c3ca1ad93b5",
+   "6761bd4a9255c204",
+   "6c5e16e761d424fd",
+   "a78fa0ec8a98ea38",
+   "aa4208f20343a8af",
+   "c226d511d823436e",
+   "cc5b7f4a32aec9d4",
+   "f99cbb29265b2d82"
+  ],
+  "32": [
+   "1a0bd1ecead4409b",
+   "9c6373f6eba4dcbe",
+   "bc8c802ff34d721a",
+   "e9663de02d62082d"
+  ],
+  "48": [
+   "2d62243603846e0e",
+   "45f8386ee7765fe4",
+   "c3eb1203b50ed91a"
+  ]
+ }
+}

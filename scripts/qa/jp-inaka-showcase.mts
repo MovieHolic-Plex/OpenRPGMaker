@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { renderMapPng } from "../qa-game/render.mts";
 import { createNewProjectSeed } from "../../src/editor/genrePacks.ts";
+import { reshapeJpCityMapBorders } from "../../src/project/defaults/jpCityEdgeMigration.ts";
 import { ensureBundledTilesets } from "../../src/project/defaults/defaultAssets.ts";
 import { runTool } from "../../src/editor/tools/index.ts";
 import { blankFillTileFor } from "../../src/project/defaults/defaultMaps.ts";
@@ -36,6 +37,8 @@ interface SceneSummaryRow {
 
 const rows: SceneSummaryRow[] = [];
 
+// --old-edge: 옛 타일셋(맵 밖 = 다른 재질)으로 맵을 짓고 → 둘레 마이그레이션을 돌려 전/후 PNG(.old/.migrated)를 함께 쓴다.
+const OLD_EDGE = process.argv.includes("--old-edge");
 const onlyIndex = process.argv.indexOf("--only");
 const ONLY = onlyIndex >= 0 ? process.argv[onlyIndex + 1] : undefined;
 
@@ -44,6 +47,11 @@ for (const scene of INAKA_SHOWCASE_SCENES) {
   const project = createNewProjectSeed("adventure-jrpg", scene.id);
   ensureBundledTilesets(project);
   const ctx = { project };
+  if (OLD_EDGE) {
+    for (const g of project.tilesets.jp_city?.autotileGroups ?? []) {
+      if (g.layer === "lower" && g.id.startsWith("jp-")) { g.edgeConnects = false; g.outsideConnects = false; }
+    }
+  }
   const mapId = project.startMapId;
   const map = project.maps[mapId];
   const kit = project.tilesets.jp_city;
@@ -144,6 +152,15 @@ for (const scene of INAKA_SHOWCASE_SCENES) {
   const rendered = renderMapPng({ ...ctx.project, startMapId: "__none__" }, finalMap);
   const pngPath = path.join(OUT, scene.fileName);
   fs.writeFileSync(pngPath, rendered.png);
+  if (OLD_EDGE) {
+    for (const g of ctx.project.tilesets.jp_city?.autotileGroups ?? []) {
+      if (g.layer === "lower" && g.id.startsWith("jp-")) { g.edgeConnects = true; g.outsideConnects = true; }
+    }
+    const changed = reshapeJpCityMapBorders(ctx.project);
+    const again = reshapeJpCityMapBorders(ctx.project);
+    fs.writeFileSync(pngPath.replace(/\.png$/, ".migrated.png"), renderMapPng({ ...ctx.project, startMapId: "__none__" }, ctx.project.maps[mapId]!).png);
+    console.log(`  migration: changed=${changed} second-pass-changed=${again}`);
+  }
   if (scene.no === 1) {
     const thumbsDir = "/home/main/claude-viz/_thumbs";
     if (fs.existsSync(thumbsDir)) {

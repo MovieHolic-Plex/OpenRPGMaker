@@ -1,0 +1,535 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8dc52d343f2654ce63c169049a29c912d49106a6c99490a7d39bf3105d594ba0",
+ "width": 192,
+ "height": 160,
+ "kind": "structure",
+ "name": "얼음 동굴 바위벽 방(빙판 바닥) — 바닥·벽면을 조립기와 같은 천장 띠(벽 윗면) 사이에 조립(위에서 본 3/4 방 한 칸)",
+ "label": "atlas_biome_interior/plus/room-rock-ice",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "평면 채움 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 9,
+  "darkV5": 18,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 120
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "back wall top cap (ceiling strip)",
+      "rows": "28-30",
+      "evidence": "a",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": "31-31"
+     },
+     {
+      "part": "back rock wall face",
+      "rows": "31-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ice floor (horizontal surface seen from above)",
+      "rows": "64-127",
+      "evidence": "d",
+      "front_edge_line_row": 128,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 64,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The room is a cutaway box. A 3-row wall-top strip (rows 28-30) ends in a darker edge line at row 30. Below it is a rock back-wall face of about 33 rows (31-63), then a large ice floor of 64 rows (64-127) seen from above. A dark border line sits at rows 128-129, and the side walls are only 1-2 px strips. Rows 0-27 and 130-159 are dark filler. The main volume has both a visible horizontal surface (the floor) and a vertical front/back face of 3+ rows, so it reads as three-quarter. The wall-top cap is thin, though."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The measured facts put the candidate well below both references on colours per tile (5 against 18 and 11) and far above them on flat-fill coverage (42% against 0%). Its dark edge pixels are 100% neutral, where the references sit at 7-9%. Visually, the ice floor is a pale blue field with only about 3 lightness steps, a few crack lines and sparse speckle. The rock wall band has some texture, but the room is framed by a neutral near-black border and a grey rim, which gives the sticker-like look rather than dark material-tone outlines. The Beodeul references have 5-6 steps per material, with scalloped per-tile roof highlights and stone shaded one by one. The candidate falls short of that on shading depth, outline tint and density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 17508
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "back wall top cap (thin gray band along the top of the rock wall)",
+      "rows": "28-30",
+      "evidence": "a",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": "31-35"
+     },
+     {
+      "part": "rock wall front face (brown stone)",
+      "rows": "31-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ice floor (horizontal surface seen from above, with a light edge line at its top)",
+      "rows": "64-127",
+      "evidence": "d",
+      "front_edge_line_row": 66,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 61,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The room is drawn in 3/4 view. Rows 28-30 are a gray wall-top band, 3 rows with its front-edge line at row 30, followed by dark shadow rows 31-35 (L about 41-46). Below it the rock wall's south face runs rows 31-63 (33 rows). Rows 64-66 form a light edge line, then a large ice floor fills rows 67-127 (61 rows). The floor reads as a horizontal surface seen from above. The left and right borders are thin 1-2 px outlines, not receding side faces. Rows 128-129 are the bottom border. The wall cap itself is only 3 rows, but the room as a whole has both a visible horizontal floor and a front wall face of 3+ rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate's measured facts are far below both references. It has 5 colours per tile against 18 and 11, and 51 distinct colours against 185 and 66. Its 5x5 flat-fill coverage is 42%, while the references are at 0%. All of its dark edge pixels (100%) are neutral, so the frame and border read as a neutral black/grey line, whereas the references' outlines are tinted (7% and 9% neutral). By eye, the ice floor is a pale blue wash with only about 3 lightness steps, a few crack strokes and speckles, and large smooth areas. The rock wall band has some brown clump texture, but it is dark and low in contrast. The wide dark frame is a flat fill. Beodeul pieces carry per-tile shading and grain throughout, so the candidate looks flatter and more sticker-like next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 20078
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "back wall top band (ceiling strip)",
+      "rows": "28-30",
+      "evidence": "a",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "29-30"
+     },
+     {
+      "part": "ice floor (horizontal plane seen from above)",
+      "rows": "64-127",
+      "evidence": "d",
+      "front_edge_line_row": 128,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rock back wall (vertical face)",
+      "rows": "31-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 64,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a room cell. Rows 28-30 are a thin light-to-dark band that caps the back wall. Rows 31-63 are the rock back wall, a vertical face 33 rows tall. Rows 64-127 are a large ice floor seen from above, with a bright edge line at row 64 and a dark border at rows 128-129. The side walls are 1-2 px lines. The wall cap alone is only a 3-row rim, so the top surface here is the floor, which makes this a room interior with a back wall rather than a flat slab or a pure front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The measured facts point to a shallow piece. The candidate has 5 distinct colours per 16x16 tile against 18 and 11 for the references, and 51 distinct colours in total against 185 and 66. Its 5x5 flat-fill coverage is 42% while both references are at 0%. All of its dark edge pixels (100%) are neutral, against 7% and 9% for the references, so it has the uniform black frame and sticker look instead of the dark material-tone outline Beodeul uses. By eye, the ice floor is a pale blue wash with only 3 or so lightness steps, with sparse crack lines and snow dots. These give some texture, but the large soft patches are flat. The rock wall band has some mottled brown dither, but it is dark and low in contrast. It is a room interior, not a building with roof, walls and door, so it also differs structurally from the references. Next to the references it looks thinner, flatter and more sticker-like.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 18543
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "back wall top band (ceiling strip)",
+      "rows": "28-30",
+      "evidence": "none",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": "31-35"
+     },
+     {
+      "part": "back rock wall face",
+      "rows": "31-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ice floor (open room interior seen from above)",
+      "rows": "64-127",
+      "evidence": "d",
+      "front_edge_line_row": 128,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 61,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a room cutaway, not a gate, pavilion or building, so the kind only loosely fits. Rows 28-30 are a thin 3-row gray band that fades from light to dark, then rows 31-63 are a brown rock wall face. That makes the wall's own top surface only a rim. Below it, rows 64-127 are a large ice floor seen from above, with a light edge at rows 64-66, and rows 128-129 form the bottom border. The floor reads as a horizontal surface (evidence d) and the back wall as a 33-row vertical face, so I read it as a top-down room with a 3/4 back wall. The side walls are only 2-px outlines and there is no sloped roof, so the wall caps are minimal."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The measured facts put the candidate well below both references. It has 5 colours per 16x16 tile against 18 and 11, and 51 distinct colours against 185 and 66. Its 5x5 flat-fill coverage is 42%, while both references are at 0%. 100% of its dark edge pixels are neutral, against 7% and 9% for the references, which matches the picture: the dark frame and bands around the room are near-black, not a tinted material tone. The rock band has some dot texture, and the ice floor has a few crack and speckle marks. But the ice is mostly broad pale patches with only about 3 lightness steps, and the dark border bands are flat fills. Beodeul materials carry 5-6 steps with per-element texture. The candidate reads as shallower and flatter, closer to a sticker than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 22622
+  }
+ ],
+ "decidedAt": "2026-10-20T05:59:10.986Z",
+ "cells": {
+  "16": [
+   "037429b4a6515e0c",
+   "042fbdc06c6a4050",
+   "050eb2413c7f7104",
+   "12632f1443fbe3c7",
+   "1ae11a30bdc9aa53",
+   "21786e2ae1ddf331",
+   "2453c364d88d0f0c",
+   "283ff96ab1b30cc0",
+   "31db82a7f9062326",
+   "3a4d08f0286e4269",
+   "3d7db052fed081a9",
+   "3ee5741988aec291",
+   "417e131cab7c0fea",
+   "433b65a569ea9cfc",
+   "4471eac0436d1d34",
+   "45d8de638fb98c4b",
+   "48438f01c78348fe",
+   "492f79d5311c2a6c",
+   "4a94393ae35a3b5d",
+   "5012a68a10d59544",
+   "5597b260005adbc9",
+   "55a4d3df5d9b0f95",
+   "60ef6eff1d6d583e",
+   "61780f94ed382602",
+   "630c15b3a4c6be60",
+   "6438191d764a9b6c",
+   "649537549b44ad70",
+   "6df446d94b61dd1a",
+   "748608d7d7a40f98",
+   "7bb879ff8be87140",
+   "86fff9c746fc101d",
+   "8e1738b9392234a0",
+   "8e3862549d13fb60",
+   "8ef85b1c520ddb9d",
+   "8fecf43aa454eb16",
+   "9069e657fbf8e8ba",
+   "994ade4e1ea9f4c0",
+   "99cf83811c4faf69",
+   "a848b801657e039a",
+   "aa11b58886936fa7",
+   "b2b92cb483ff022b",
+   "bac712bfeb0227b6",
+   "bae7dcd9ed981b81",
+   "c0fd16b112cafa65",
+   "c4d551a05d88a77e",
+   "c7b31b996cd1cdd2",
+   "cffe853ca796e730",
+   "ed28baee9f4708e9",
+   "ef982bed2f538174",
+   "f55eb2b2e29a8b25",
+   "f5c50f594440f52e",
+   "f9c41b4038944e69",
+   "fdaa16bce60593f1"
+  ],
+  "24": [
+   "020f776e634720f6",
+   "0611d37f742f3ef6",
+   "0c60ad4be0831183",
+   "0ccaa21b763e1ccf",
+   "0df8a90c6a0e24a1",
+   "1325963c573ed90a",
+   "1669bc3dde1a56ff",
+   "17174a3ed8856fcd",
+   "229b189f7c8a679d",
+   "23ca946e5d73ab09",
+   "25d9be06c41c8225",
+   "2761750f83be0caf",
+   "2766c9b1fae3e768",
+   "292db989cf4e1aa0",
+   "2a12f74818193d8e",
+   "2f04dd2ee71a3265",
+   "31c0e362d2e3144c",
+   "334e853d3b95f68d",
+   "34852a29a2ccfd94",
+   "36b6bce9807ed154",
+   "3e5ffc4ea7531cae",
+   "420efdc8729282cb",
+   "446b9f87f84fda0f",
+   "49d3495c637f3449",
+   "4ec3c828cc22424c",
+   "534dbe2252283fe1",
+   "56b98580fc3dd035",
+   "57478d266540f678",
+   "5af8214036eecb30",
+   "6381c60b2c9ddcd5",
+   "66569688be50b54b",
+   "6b9b2cea60fc7e3a",
+   "6d5f9be87ad95ef8",
+   "6d69bfc2de6d9be1",
+   "7e02067b90bfe4c9",
+   "80133438a294c4ae",
+   "829ccae12226f80c",
+   "84cf605f836791bd",
+   "8d8c2c319787530f",
+   "933b566945d0af73",
+   "959d8c25060af990",
+   "9684473e85af1587",
+   "99794b6fe56f2ea2",
+   "9a384bf55c98b3d4",
+   "9b78109405b68347",
+   "9c774c6147942abb",
+   "9d48a9c715e449c2",
+   "a6af556cbba9059f",
+   "a974234c6bd041eb",
+   "ac9cedcbdabaa063",
+   "b2e2fa4ef2f41769",
+   "b9f8930203bebdc9",
+   "bad3857f97e0bbb8",
+   "c051b641146e9ad4",
+   "c13ceef85ffd75f8",
+   "c377c4ab2b4d3545",
+   "c403afd177598b1a",
+   "c46f4ad93a38353c",
+   "c4bb8b711de1d393",
+   "c6fd8da5bb26d151",
+   "c8b65c478f66d12a",
+   "cafae9109668f8b3",
+   "cc105d83220d0555",
+   "cee494fbb899d926",
+   "cf7902867a8603ce",
+   "d0bdc9621a297da3",
+   "d0c9dd59a6ebc03f",
+   "d1194255246eb5c0",
+   "d1d57d0473bd968e",
+   "d614156ec5264f1d",
+   "df749976db34f430",
+   "e212f20c504e03cf",
+   "e3140c42d10e7a45",
+   "e3ad9fb897a34121",
+   "e4fe8383ce3b00ab",
+   "ea229c521b7394b9",
+   "ed2610d7cc635b98",
+   "f30c825062efe688",
+   "f343c74941373638",
+   "f46c30eb98159409",
+   "f4ec60e334033092",
+   "f720b82f20baa201",
+   "f7a750c6fab62448",
+   "fd1d99258b8ffa93"
+  ],
+  "32": [
+   "008311cfc49baca8",
+   "22ed7f3e66b0ec73",
+   "3903817230ba9226",
+   "3e256b09600a0709",
+   "68297de8e8678d25",
+   "68dbc7b7b1845357",
+   "7497a35d56945a1a",
+   "7a2619739d2b4660",
+   "8c83122c4108d80a",
+   "8ecc81300a0f5f24",
+   "966241b4ad6d2baf",
+   "9aae638f3092eb08",
+   "a6dc1ba21ab5257d",
+   "accfaca1b81066c2",
+   "b3503af147eb78b0",
+   "b36ac131f3865b34",
+   "c05afff43d0c7ec7",
+   "d1823111dc20db7a",
+   "d5a42bd15680fabf",
+   "d61f187c5599dafd",
+   "e46de43e9bad3602",
+   "fec4a71d57f81595"
+  ],
+  "48": [
+   "0009f6725386a0a3",
+   "013d63a9928d1bb7",
+   "133d20b43153e317",
+   "2c2abf46a4b2e6fb",
+   "2d6f848787825dc6",
+   "2f5a0ae94035a353",
+   "3a161f9de2338b6a",
+   "41f3f3a4bdab82f0",
+   "4242e5faaac40f97",
+   "48c550055b34b3ae",
+   "5484205cd630fcab",
+   "55a34d6f511d6205",
+   "5ce4a309f2c53ad1",
+   "66d851980e4a6658",
+   "6a5568c31482a120",
+   "7086f24dceca2dde",
+   "8c14439d5ac3746e",
+   "8e206055ddd9004b",
+   "ba336857fc831e80",
+   "d2e2d9656629a4a2",
+   "de168d6782eaa9ef",
+   "e10dd257640d4349",
+   "e356775feada3423",
+   "ee0341f389f4a829",
+   "f4422e1e4484595b",
+   "fbd6865342a63b7b"
+  ]
+ }
+}

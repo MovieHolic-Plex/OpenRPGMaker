@@ -82,10 +82,12 @@
      스킨 노브 `--battle-stage-skin-inset-top` 만 재정의한다(rm2000 = 8px,
      나머지 11종 = 미지정 → 48px). 그래서 배틀러 그룹·애니메이션 레이어·이펙트
      레이어가 어느 스킨에서든 하나의 값으로 같은 박스로 풀린다. */
-  --battle-stage-inset-top: var(--battle-stage-skin-inset-top, 48px);
+  /* 도트 측면 전투는 필드에 정수 배율 zoom(--battle-asset-zoom)이 걸린다 — 필드 안에서 px 가 zoom 배로
+     커지므로 여기서 되나눠 화면 위치를 그대로 둔다. 변수가 없으면 1. */
+  --battle-stage-inset-top: calc(var(--battle-stage-skin-inset-top, 48px) / var(--battle-asset-zoom, 1));
   left: var(--battle-stage-offset-x);
   top: var(--battle-stage-offset-y);
-  width: 640px;
+  width: var(--battle-stage-width, 640px);
   height: 480px;
   transform: scale(var(--battle-stage-scale));
   transform-origin: top left;

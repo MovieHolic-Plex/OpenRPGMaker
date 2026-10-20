@@ -1,0 +1,349 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f1953bcfe503e4912e1a598ced58f7823315a929374ea4b20bbe4cfce4c36689",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "arcade purikura",
+ "label": "modern_city_interior/arcade-purikura",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 17,
+  "darkV5": 58,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band of the booth header",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "header face with window highlights",
+      "rows": "7-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "curtain and screen panel (front face)",
+      "rows": "13-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a 30-wide rectangle on rows 0-29. Rows 1-3 form a light pink band at the top, and row 4 is a white line that works as a front-edge line. Rows 5-6 are darker pink and work as eave shadow. Below that is a vertical front face: the header with window highlights on rows 7-12, a grey ledge line on row 13, then the striped curtain and the screen panel down to row 28. The top band is thin and the whole drawing is mostly a flat front view, so this is a borderline case, but a banded top with an edge line and shadow is present, followed by a front face of more than 15 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a pink booth with a lighter sign band, a striped or ribbed body and a side panel with a small screen. It has about 4 pink steps, from a light highlight through mid pinks to a dark rose edge. Its outlines are a tinted dark rose, not neutral black, and the measured near-neutral share of dark edge pixels is 0%. Vertical ribbing and the panel details break up the surfaces, so there are no flat fills (near-flat coverage 0%). It shows 15 visible tones per tile, close to the cheese stall (17) and the well (20) and above the hedge (9). Its 20 total colours are fewer than the 38-40 of the richest references, and its texture is less grainy than their tile scallops and stone shading. That makes it slightly lower by eye, but a careful artist would still accept it next to the references and it does not look like a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21651
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band of the booth",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "front face with sign lights, curtain and monitor panel",
+      "rows": "5-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The column scan shows a lightening pink band at rows 1-3 that ends in a white front-edge line at row 4. Rows 5-6 below it are darker pink, which reads as eave shadow. That gives a top surface about 4 rows tall. Below it the front face runs from row 5 to row 28 (about 24 rows): sign lights at rows 7-12, a grey ledge line at row 13, a striped curtain, and a white monitor panel on the right. No receding side face is drawn. The top band is thin and could also be read as a cornice strip, so this is a borderline call, but it has both an edge line and shadow."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a pink booth with a striped upper sign band, a white or pale control panel and vertical ribbing on the body. The pink ramp reads as about 5 steps, from a pale highlight through mid pinks to a dark rose shadow. That is slightly under the 5-6 steps of the roof and stall references. The outline is a dark rose tone, visibly tinted against the pink, and the measured 0% near-neutral dark edge share confirms this, so it is not a black sticker line. The measured visible tones per tile are 15, close to prop-stall-cheese (17) and prop-well-roofed (20) and well above prop-hedge (9). Near-flat coverage is 0%, so there are no large flat fills. The panel stripes and ribs break up the surface, but the grain is lighter than the tile scallops and stone-by-stone shading on the richer references. Total distinct colours (20) are lower than the richest references (about 40), which is expected for a locked palette. A careful artist would accept it next to the references. It is a simple, clean machine, slightly less textured than the best references but not shallow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24064
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band of booth",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "sign panel with window highlights",
+      "rows": "7-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "curtain and side machine with screen",
+      "rows": "13-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-3 form a lighter pink band that ends in a white front-edge line at row 4. Rows 5-6 are a darker pink shadow band below it, which fits a top surface with an eave. Below that is a front face of about 24 rows: a sign panel (rows 7-12), a grey line at row 13, a curtain, and a white machine with a screen. The top band is only 4 rows and could be read as a front-facing cornice, but the edge line plus the shadow fits evidence (a). No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a compact pink booth, about one tile in size. Its pink ramp has roughly 4-5 steps: a light sign band, mid pink, vertical-stripe panels, and a darker pink base. A white and blue-grey control panel adds contrast. Measured facts back this up: 15 visible tones per tile, between the hedge (9) and the stall and well (17-20). Near-flat coverage is 0%, so there are no 5x5 dead fills. Dark edge pixels are 0% neutral, so the outline is a tinted dark pink rather than a black sticker line, which fits the Beodeul habit of using the adjacent material's dark tone. It is a bit simpler than the stall and well, with less per-surface grain and fewer ramp steps, but it is at or above the hedge and would sit acceptably beside the references without looking like a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23555
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap band of booth",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "sign panel with light windows",
+      "rows": "7-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "curtain front",
+      "rows": "13-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "screen/control panel on right",
+      "rows": "13-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-3 form a band that gets lighter toward the front, ending in a bright white front-edge line at row 4. Rows 5-6 are a darker pink eave shadow below it, so this reads as a short top surface. Below it the front face runs rows 5-28 (the sign with windows, then the curtain and the screen panel). That is a tall front face, but the top band is only about 4 rows deep, so the top is shallow. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a pink booth with a white sign band, vertical panel stripes, and a screen panel on the right. The outline is a dark rose/magenta tone and not neutral black, which matches the 0% near-neutral edge share. The measured facts agree with this. It shows 15 visible tones per tile, against 9 for the hedge, 17 for the cheese stall and 20 for the well. Near-flat coverage is 0%, below the stall's 13%. Shading uses about 5 steps (white, light pink, mid pink, dark pink, deep rose), and the stripe pattern and screen detail add grain, so there are no big flat fills. The piece is small and cleanly drawn, but its density sits within the reference range for the kind. It is a bit simpler than the stall and well, but not thinner or more sticker-like than the hedge or bench.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21855
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.762Z",
+ "cells": {
+  "16": [
+   "4f387c5fe835fc8d",
+   "89cbafbe25ede797",
+   "ccf2c29fefde5d34",
+   "f38736e7f748404b"
+  ],
+  "24": [
+   "03a88f80ea8cbc30",
+   "0b41af93082b0a64",
+   "10ccab2813df07ad",
+   "1b547028eac4c2a1",
+   "1ffec6d62ecfb34f",
+   "262e157bcb19610b",
+   "2b1e0d50d3234bdd",
+   "2fd862352dd6fad7",
+   "409d2999dd209715",
+   "50440446958c3f9a",
+   "5d4206cf3cc39c4a",
+   "6905f7db332845b1",
+   "88bfd3504afac7c1",
+   "8ef1c37bd06bf852",
+   "9108a57f5eaff811",
+   "9143cdcab5fc3be5",
+   "a44f78ac6172535d",
+   "b774c2bc9b99c0d6",
+   "bc045657d13e3319",
+   "c20860b31726aa05",
+   "c960feb7c7a93129",
+   "dc82ed821a204524",
+   "e0d50fb05895fcc5",
+   "f0d5274111e50209"
+  ],
+  "32": [
+   "2af8d5f8316ee97d"
+  ],
+  "48": [
+   "2c6044579cfcb7ae",
+   "4baf7507308fa465",
+   "4c49425f8df4b71d",
+   "68f5c1993872b0d3",
+   "adcd8f0a4add57ad",
+   "d2aab966af7807c2"
+  ]
+ }
+}

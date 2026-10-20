@@ -1,0 +1,277 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a90b9e2b0366732a1822d60b9e58df38a3b901d240e4ef17198073f03b533025",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "책 진열장 (cabinet:book+bookb+bookg)",
+ "label": "atlas_biome_interior/props34/cabinet:book+bookb+bookg",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 23,
+  "tileColorsP90": 23,
+  "darkV5": 26,
+  "nearBlackEdge": 0.71,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top of bookshelf (main body)",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a lighter wood band (L≈125-135) that ends in a lighter 1-row front-edge line at row 5 (#d59147, L=157). Rows 6-7 are very dark (L=28), which reads as eave shadow. Below that is the front face, rows 6-31, with three shelf compartments holding books. The shelf boards at rows 12-13, 21-22 and 29-30 are thin front-facing strips. The structure matches the green 'cabinet: top 5 + edge + eave' reference. The silhouette is 16 wide from row 1 down, with no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small bookshelf with a wooden frame and shelves of red, blue, green and cream books. The measured facts support it: 23 distinct colours per full tile is at or above the stall (17) and well (20), 5x5 flat-fill coverage is 0%, and 0% of its dark edge pixels are neutral, so the outline leans brown rather than black. The frame has about 4 wood steps (highlight, mid, dark, deep outline) against roughly 5 in the references, which is a little shallow, but the book spines add varied colour, with spine highlights and gaps between books. At 26 total colours it is small next to the stall and well (38-40), but that fits a narrow prop, and per-tile richness matches them. A careful artist would accept it beside the references without it looking like a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18171
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top board of bookshelf",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a wooden top band: row 1 is a darker back edge, rows 2-4 are the lighter plane, and row 5 (#d59147) is a lighter front-edge line. Rows 6-7 are dark eave shadow (L=28) directly below it. Below that the front face runs rows 6-31 (26 rows) and holds three shelf compartments with books, separated by plank strips at rows 12-13, 21-22 and 29-30. The silhouette is 16 wide from row 1 down with no side face. The structure matches the green RIGHT bookshelf reference, which has a top band plus a front face, and not the red front-elevation examples."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a narrow bookcase, so it is small beside the stall and well. Its measured facts are at or above the references: 23 colours per full tile (the well has 20, the stall 17, the hedge 10), 26 distinct colours (the bench and lamp have 14), and 0% flat-fill coverage. The 0% neutral share of dark edge pixels means the outline is tinted. By eye it reads as a dark brown frame beside the wood, not a black sticker line. The wood frame shows about 4 lightness steps (highlight, mid, dark, deep). Books in several hues break up the shelves, with spine highlights and shadow lines. It is slightly less deeply ramped than the roofed well or stall, but the density and outline match the Beodeul bar and it looks like part of the same set.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19240
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 (brown, #bd764d) form a top band, with row 0 as the outline. Row 5 (#d59147) is a lighter front-edge line, and rows 6-7 (#2a180b) are dark eave shadow. Below is a front face of about 26 rows (rows 6-31) with three book compartments. Shelf boards at rows 12-13, 21-22 and 29-30 are thin front-facing strips, each with a light edge row above a darker row. The body is a uniform 16 wide and no side face is drawn. This matches the green 'cabinet: top 5 + edge + eave' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small bookcase with a dark brown wood frame, shelves and red, blue and green books. The measured facts support it. It has 23 colours per full tile, against 10-20 for the references that fill a tile (hedge 10, cheese stall 17, well 20). It has 26 distinct colours and 0% flat-fill coverage. None of its dark edge pixels are neutral (0%), so the outline leans brown rather than black. The frame is a dark brown tone of the wood, and the books are separated by value and hue rather than a uniform black line. The wood has about 4 lightness steps (highlight, mid, shadow, dark edge) and the book spines carry 2-3 tones each. That is slightly less than the 5-6 steps in the well and stall. It still has per-book highlights, shelf shadow and grain, so it is not a sticker-style flat fill. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18693
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel of bookshelf",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a wood band at the top, about 4-5 rows deep. Row 5 is a lighter front-edge line (#d59147), and rows 6-7 are dark eave shadow. This matches the green 'cabinet: top 5 + edge + eave' reference. Below, rows 6-31 are the front face, with three shelf compartments holding books. Each shelf plank has a lighter edge line (rows 12, 21, 29) with a dark row under it (rows 13, 22, 30). No isometric side face is drawn, and the silhouette is a constant 16 px wide from row 1 down."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts favour the candidate: 23 distinct colours per 16x16 tile against 17-20 for the richer references, 0% flat-fill coverage, and 0% neutral dark edge pixels, so the outline carries a tint. The picture agrees. The dark brown frame sits next to wood and the shelves are separated by value. The books show several colours in red, blue and green, with small highlights on the spines. Distinct colours (26) are lower than the stall (40) and the well (38), but the candidate is a small single-tile-width piece, so that is expected. Wood shading is a little shallow at about 4 steps against the reference's 5, but the overall density and craft would sit acceptably next to the Beodeul references without looking like a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15280
+  }
+ ],
+ "decidedAt": "2026-10-20T07:22:59.442Z",
+ "cells": {
+  "16": [
+   "08cee08106fc6a48",
+   "82e6b5409686ac82"
+  ],
+  "24": [
+   "0902f0f8aa46ac7c",
+   "0c007bd7a7c3d05c",
+   "0e5a2fcd1a80df39",
+   "1e90152f7feee278",
+   "3507e574ed99fdf3",
+   "360bbee3645c1b9c",
+   "37a0d792d9069f0d",
+   "730896c8edf1eb4c",
+   "ad13186b2c962699",
+   "c1fe26897836b5a3",
+   "e80318b5a93c7abb",
+   "f1fc0b1fdfb9b0f9"
+  ],
+  "32": [
+   "239040149f6d3ae9",
+   "48395dda6adb46c6",
+   "5c683fd698c4032a"
+  ],
+  "48": [
+   "39397eb9b7725cc8",
+   "45f9a937e99b8565",
+   "8a1d8a6a117a25ec",
+   "976d2b82d1219758",
+   "de2ad5781a6fc5c9",
+   "e367bb4f42f406d7"
+  ]
+ }
+}

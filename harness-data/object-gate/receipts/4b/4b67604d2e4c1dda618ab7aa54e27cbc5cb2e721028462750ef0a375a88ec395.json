@@ -1,0 +1,368 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4b67604d2e4c1dda618ab7aa54e27cbc5cb2e721028462750ef0a375a88ec395",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "folding wheelchair facing south (front view, seat, backrest, side wheels, footrests)",
+ "label": "seats34/jp_city_interior/hs-wheelchair",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (1/4)",
+  "3/4: 윗면 0행 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+   "투영이 3/4 아님(front_elevation) (1/4)",
+   "윗면 0행 < 4 (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 26,
+  "nearBlackEdge": 0.81,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "15-18",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20"
+     },
+     {
+      "part": "backrest panel",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "footrests and wheel bases",
+      "rows": "21-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The backrest (rows 8-14, dark blue, L about 44-67) is a face-on vertical panel with only a 1-row light rim at row 9. Below it, rows 15-18 are lighter purple (L about 97, with a highlight on row 16 at x=4) and read as a seat top seen from above. Row 19 is a darker edge line and row 20 is the dark outline or eave shadow. Under that, rows 21-28 show the footrests and wheel bases as the front support, about 8 rows. The seat top is short at 4 rows, and the backrest has no visible top surface of its own."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, sparse prop of about one tile. Its 12 distinct colours and 12 colours per tile match the simple Beodeul props (hedge 11 colours and 10 per tile, bench 14, lamp 14). The larger stall and well reach 38-40 colours, but they are much bigger pieces. Flat-fill coverage is 0%, so there are no dead fills. Only 6% of dark edge pixels are neutral, so the outline leans navy or purple and follows the frame, fabric and wheel materials instead of being a uniform black sticker line. The seat and backrest, wheel rims and hubs, and the frame each carry about 3-4 value steps with some highlight dots. That is a bit less than Beodeul's 5-6 on large materials, but it is in line with the small props at this scale. It would sit next to the hedge and bench without looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22092
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest panel (blue, seen face-on)",
+      "rows": "8-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion (lighter purple band)",
+      "rows": "15-19",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "footrests/legs and wheel bases",
+      "rows": "21-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The backrest (rows 9-14) is a vertical panel, which is normal for a chair. Below it, rows 15-18 form a lighter purple band that is separated from the backrest by a dark line at row 14. A dark front-edge line closes the band at row 19, so it reads as a seat surface about 4 rows tall. The front face is the footrest and wheel-base area at rows 21-29, about 9 rows, with a gap at row 20. The seat evidence is modest: there is no clear eave shadow, and the backrest and seat could also read as two stacked front-facing panels."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, sparse prop, so I judged it mostly by eye. Its 12 colours per tile is above the hedge (10) and near the bench and lamp totals (14), though below the stall and well (17-20 per tile, 38-40 colours in total). Flat-fill coverage is 0%, so there are no large flat areas. Only 6% of its dark edge pixels are neutral, so the outlines lean toward the colour of the neighbouring material (blue-purple fabric, grey frame) rather than a black sticker line. Its colours are spread across fabric, frame and wheels, which gives about 3-4 steps per material against about 5 in the references, so it is a little lower in density. A careful artist would still accept it beside the bench and hedge without it looking noticeably flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22344
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest panel (blue/purple)",
+      "rows": "8-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "possible seat cushion band (lighter purple, lower panel)",
+      "rows": "15-18",
+      "evidence": "none",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side wheels",
+      "rows": "14-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "footrests",
+      "rows": "21-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a rectangular panel on rows 8-20 with a 1-row light highlight at row 9 and a dark line at row 14. This reads as a face-on backrest with a bevel. The lower lighter band on rows 15-18 ends in a dark line at row 19-20. It has no eave shadow and no widening or narrowing, and the column scan shows no seat plane receding from the backrest, so I do not count it as a top surface. The wheels (rows 14-20) and the footrests (rows 21-28) are drawn only as vertical faces. The silhouette widths are 12, then 16, then 10-14, with no ellipse. The seat surface is not seen from above, so this is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, thin prop, so I judged it against the small references (bench, hedge, lamp), not the large stall and well. The measured facts support it. It has 12 colours per full tile, against 10 for the hedge. Flat-fill coverage is 0%. Only 6% of its dark edge pixels are neutral, so the outline leans visibly blue/purple, a dark tone of the neighbouring material rather than a black sticker line. Its 12 distinct colours are in line with the hedge (11), bench (14) and lamp (14). By eye, the seat and backrest show about 4 blue steps, with a lighter seat panel against a darker frame. The wheels have spoke or rim variation, and the footrests are separated by value. That is slightly shallower than the 5-6 steps of the bigger references, but it is not flat or sticker-like, and a careful artist would accept it next to the bench and hedge.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20308
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest panel (blue, face-on)",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion (purple, lighter band with highlight)",
+      "rows": "15-18",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20"
+     },
+     {
+      "part": "footrests, wheel bases and legs",
+      "rows": "21-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Column x=8 shows a dark blue backrest in rows 10-13 and a divider line at row 14. Below it is a lighter purple band in rows 15-18 with a highlight at row 16. A darker line at row 19 and the black outline at row 20 follow it, which reads as a front-edge line plus shadow under a seat surface. The footrests and wheel bases (rows 21-29) form the front support area below. The seat band is short (4 rows) and could also be read as a second face-on panel, so this is a weak three-quarter read. There is no isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small piece, about 14x20 source pixels. The measured facts are not the problem. It has 12 colours per tile against 10 for the hedge and 0 to 20 for the other references. Flat-fill coverage is 0%, and only 6% of its dark edge pixels are neutral, so the outline leans blue or purple and is not a black sticker line. The weakness is in the shading. The 12 colours are spread across several materials: fabric seat and back, metal frame, wheels and footrests. That leaves roughly 3-4 steps per material, where Beodeul uses 5-6 (the bench wood, the hedge greens and the well stone all have deeper ramps). By eye the seat and backrest read as mostly one dark mass with little grain or per-part highlighting, and the wheels are simple rings. It is clean and tinted, but thinner and flatter than the references, so it fails the bar, though not by much.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 22601
+  }
+ ],
+ "decidedAt": "2026-10-20T08:55:46.235Z",
+ "cells": {
+  "16": [
+   "8e678defadcda550",
+   "c9d1848dc99f1a57"
+  ],
+  "24": [
+   "0b9e07d5dd7ef6c9",
+   "0be6ed14bddff411",
+   "1bad01e3c8388d2e",
+   "3390612f229f0cf3",
+   "585d6c40f0d8e283",
+   "5efbf17bbc8c00ce",
+   "7b0efb2ed8714108",
+   "92167b51af1d2216",
+   "a3f221eb9d00e0dc",
+   "b900bdc6cce285e5",
+   "e17b3d28cb489f41",
+   "e2b9dc8bfe76a03c"
+  ],
+  "32": [
+   "c036d5e952c1e6f4",
+   "d19612945b3a38af",
+   "e75f3302d9348b36"
+  ],
+  "48": [
+   "7dd9e6ee5b8addef",
+   "873117a3739b16d5",
+   "9eb64950bdb87aa5",
+   "ac3f8a0e16334a60",
+   "b314c93962156c7f",
+   "ee4b5e2460ef7e79"
+  ]
+ }
+}

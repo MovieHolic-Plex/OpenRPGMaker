@@ -19,7 +19,7 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
 import { dialogueFaceForEmotion, findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitId, sharedPortraitRendering } from "@/assets/sharedPortraitAssets";
 import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
-import { resolveActorAppearance, resolveAppearancePortrait } from "@/project/characterAppearances";
+import { appearancePortraitForEmotion, faceForDialogueEmotion, resolveActorAppearance, resolveAppearancePortrait } from "@/project/characterAppearances";
 import { facePresentationForResource } from "@/project/facePresentation";
 import { DEFAULT_MESSAGE_WINDOW_SETTINGS } from "@/project/session";
 import { store } from "@/project/store";
@@ -922,7 +922,7 @@ export function createDialogueUI(
         if (baseFace && isDualFullbodyVeil) {
           faceForLine = promoteFaceToFullPortrait(baseFace, look.emotion, look.expressionFace);
         } else {
-          const lineFaceId = baseFace ? dialogueFaceForEmotion(baseFace.resourceId, look.emotion, look.expressionFace) : undefined;
+          const lineFaceId = baseFace ? faceForDialogueEmotion(activeProject, baseFace.resourceId, look.emotion, look.expressionFace) : undefined;
           faceForLine = baseFace && lineFaceId && lineFaceId !== baseFace.resourceId ? { ...baseFace, resourceId: lineFaceId } : baseFace;
         }
         let face = faceForLine;
@@ -1203,7 +1203,7 @@ export function createDialogueUI(
         const baseResourceForExpr = faceForLine?.resourceId ?? request.face?.resourceId;
         const nextFace = findSharedPortrait(baseResourceForExpr)
           ? dialogueFaceForEmotion(baseResourceForExpr, emotion, expression?.face)
-          : expression?.face;
+          : expression?.face ?? appearancePortraitForEmotion(store.getCurrent(), baseResourceForExpr, emotion);
         if (nextFace && faceEl) {
           currentFaceId = nextFace;
           setFaceImage(faceEl, nextFace);
@@ -1751,8 +1751,9 @@ export function createDialogueUI(
         });
         const selected = buttons[selectedIndex];
         if (selected?.isConnected && document.activeElement !== selected) selected.focus({ preventScroll: true });
-        if (selected?.isConnected && overlay.dataset.dialogueStyle === 'pixel-cinematic') {
-          // Scroll only the compact choice list, never the page/game stage.
+        if (selected?.isConnected && choicesEl.scrollHeight > choicesEl.clientHeight + 1) {
+          // 창이 보이는 화면 상한까지 자라고도 넘칠 때만 목록이 스크롤된다(모든 스타일 공통).
+          // Scroll only the choice list, never the page/game stage.
           const item = selected.getBoundingClientRect(), list = choicesEl.getBoundingClientRect();
           const scale = choicesEl.clientHeight > 0 ? list.height / choicesEl.clientHeight : 1;
           if (scale > 0 && item.bottom > list.bottom) choicesEl.scrollTop += (item.bottom - list.bottom) / scale;

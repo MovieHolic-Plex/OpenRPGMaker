@@ -1,0 +1,420 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4f44c7af4ac86f141c16840b7cf516a51cec4f53090315a885ce607efa265eb2",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "mart meat case",
+ "label": "modern_city_interior/mart-meat-case",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (3/4)",
+  "3/4: 윗면 2행 < 3 (3/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (3/4)",
+   "윗면 2행 < 3 (3/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 28,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top rim / frame",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "header band with white panel and red stripe (front-facing sign strip)",
+      "rows": "3-6",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass front with three shelves of meat trays, seen face-on",
+      "rows": "8-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "29-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole drawing is a flat front view of a display case. Rows 1-2 are a grey rim. Rows 3-6 are a white band with a red stripe, which reads as a vertical header or label strip. It has no eave shadow and no receding top plane. Row 7 is a thin divider line. Rows 8-28 are glass shelves with meat trays drawn face-on, separated by grey shelf lines at rows 14, 21 and 28. The trays are vertical views and show no contents from above. Width stays at 30 for every row, so nothing widens or narrows into an ellipse and no roof or lid plane is visible. At most a 2-row rim could count as a top, so the case reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The case is a clean white/grey cabinet with a glass front and rows of red meat packs. It reads as a neat sticker. The measured dark edge pixels are 100% near-neutral, so the outline is a grey/black line with no tint from the neighbouring material. The references use tinted dark brown or red-brown edges (stall-cheese 1% neutral, hedge 0%). The cabinet body has only about 3 steps (white, light grey, dark grey), against about 5-6 on the stall and well. At 9 visible tones per tile the candidate matches the simple hedge but is well under the stall (17) and the well (20). It has no flat 5x5 areas, but the texture is limited to the repeated meat-pack dots, with no grain or speckle on the frame or glass. Neutral outline plus shallow ramps means a careful artist would not accept it next to the stall and well references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19701
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header/sign band with red stripe",
+      "rows": "1-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass front with three shelves of meat",
+      "rows": "8-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole case is a flat front view. Rows 1-7 are a header strip: a gray rim at rows 1-2, a white band at rows 3-5 and a red stripe at rows 5-6. It is a front-facing strip with no clear front-edge line and no eave shadow, so it is not a top surface. Below it, rows 8-30 are a glass front with three shelves (divider lines at rows 14, 21 and 28) holding meat packs, all seen face-on. The silhouette is a constant 30 px wide with no narrowing or widening that would suggest an ellipse. No horizontal surface is visible, and no contents are seen from above. At most a 1-2 row rim at the top, so this is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a white and grey fridge case with rows of red meat packs. The measured facts back up what the picture shows. Its dark edge pixels are 100% near-neutral, so the outline is a neutral dark grey line with no material tint. The Beodeul stall and well references use tinted dark-brown outlines, at 1% and 33% neutral. Shading is shallow: the white or pale-grey body has about 3 steps (white, light grey, dark grey), and the glass and frame are almost flat. The red meat packs are tiny repeated blocks with little per-item shading. It has 9 visible tones per tile, against 17 for the cheese stall and 20 for the roofed well. That is about the level of the hedge, but well below the closest comparable furniture props. Flat coverage is 0%, so there are no big flat fills, but the body panels are clean, sticker-like surfaces with no grain, speckle or wear. The neutral outline and shallow ramps make it look thinner than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17555
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top rim / header cap",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white and red header band (sign strip)",
+      "rows": "3-6",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass front with shelves and meat",
+      "rows": "8-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "29-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Rows 0-31 are a face-on view of the case. Rows 1-2 are a thin gray rim. Rows 3-6 are a front-facing white and red header strip with no front-edge line and no eave shadow. Row 7 is a thin gray line. Rows 8-28 show a glass front with three shelf compartments and meat, all seen head-on. Row 29 is a darker base strip. The shelf contents are drawn as vertical faces, with no top plane, no ellipse and no sloped roof, and no top of the case is visible. The case is a front elevation with at most a 2-row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The case is a pale grey-white frame with rows of small red meat pieces, and it is cleanly drawn. Its frame and glass carry only about 3 lightness steps, against about 5-6 per material on the stall and well references. All of its dark edge pixels (100%) are neutral grey or black, with no tint from the adjacent material. The references that use tinted outlines (hedge 0%, stall 1%) show the Beodeul approach, so this is the 'sticker' look. At 9 visible tones per tile it matches the hedge but is well below the stall (17) and well (20), the closest references in structure. Near-flat coverage is 0%, so there are no big flat fills, and the meat dots give some texture. But the glass and the frame are smooth, with no grain, speckle or per-item highlights, so it reads thinner and flatter than the stall reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16158
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top lid band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-7"
+     },
+     {
+      "part": "glass front with shelves of meat",
+      "rows": "8-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "29-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a light band across the full width, and a red stripe on row 6 acts as its front-edge line. Row 7 is a grey line that works as a shadow. Below it, rows 8-28 are the vertical glass front with three shelves of meat, and rows 29-30 are the base. The top band could instead be read as a front-facing header or sign strip, since the red stripe steps up on the right and the band is the same colour family as the glass. I read it as a 5-row top because the edge line, shadow and front face come in the expected order, and the front face is well over 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a white/grey fridge case with rows of small red meat packs. It carries 9 visible tones per tile, which matches the hedge but is well below the stall (17) and the well (20), the two references closest in complexity. Its dark edge pixels are 100% near-neutral, so the outline is a grey-black line with no tint. The tinted-outline references (stall 1%, hedge 0%) contrast sharply with that, and the case reads as a 'sticker'. The white and grey body has only about 3 lightness steps (white, light grey, dark grey frame). The red packs repeat as identical blocks with little per-item shading. There are no flat 5x5 fills, but the shading is shallow and the neutral outline is the Beodeul 'sticker' failure, so it falls short of the reference quality.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19140
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.095Z",
+ "cells": {
+  "16": [
+   "1093b372d59d8f87",
+   "28a622d6cf8cd89d",
+   "34f9b3e751796723",
+   "ca61bfbae9d63c1b"
+  ],
+  "24": [
+   "017057618d52f05e",
+   "01aa1dfb1e295eea",
+   "0328e077d704b3ae",
+   "070377377167e228",
+   "260a83564096933f",
+   "3211fab2f8f72072",
+   "365ddf9c8d2e676b",
+   "3814d077691ddeef",
+   "45b9e102a0c5fbda",
+   "4942e5aee4e61e5b",
+   "515bd0cdaf8ae39f",
+   "56af306af1870a50",
+   "7eb999d5748e444f",
+   "8adbbb2b682289af",
+   "93d838c4f750719e",
+   "9431868a186aece0",
+   "bda8ecbbfb45bdb9",
+   "beaa716c1da1f70f",
+   "c9718cd6f2b599c1",
+   "ccc2f3158ee654a7",
+   "d9d18167c923be13",
+   "e9216d6690ca5ccc",
+   "f11738b7870ca642",
+   "fba24863ead70f4e"
+  ],
+  "32": [
+   "5a4cadda6406dc7f"
+  ],
+  "48": [
+   "1cda759f1f790230",
+   "1f84a768b81ea800",
+   "437e8cf5e6e95174",
+   "4603b9874254c65b",
+   "98b994d310580e94",
+   "a522ff05acb43e29"
+  ]
+ }
+}

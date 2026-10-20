@@ -1,0 +1,367 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bd74a3d0e212268c3331976e3496178e95996105b1a0f66c6a7471a7e23ef713",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "stack of folded pipe chairs on a cart",
+ "label": "seats34/jp_city_interior/gy-pipe-chair",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 2/4)",
+  "3/4: 윗면 3행 < 4 (3/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (1/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 2/4)",
+   "윗면 3행 < 4 (3/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+   "투영이 3/4 아님(front_elevation) (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 10,
+  "darkV5": 26,
+  "nearBlackEdge": 0.93,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top crossbar of the chair stack frame",
+      "rows": "5-8",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "folded chair stack (face-on bars and seat slats)",
+      "rows": "9-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cart platform",
+      "rows": "27-29",
+      "evidence": "none",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole object is drawn face-on. Rows 5-7 are a brown crossbar at the top of a light grey frame, with a light line at row 8. It reads as a front-facing beam, not a horizontal surface. Rows 9-26 show the stacked chairs only as vertical bands of dark and mid brown, so no chair seat is seen from above. The cart base at rows 27-29 has a 1-row light top edge and no real top plane. No ellipse, roof or visible container contents appear, so the stack looks like a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small, narrow sprite, about one tile wide. It has 11 distinct colours, the same as prop-hedge (11) and not far below prop-bench-wood and prop-lamp-crook (14 each). Its median of 10 colours per 16x16 tile equals the hedge's, and its 0% 5x5 flat-fill coverage matches the references. The dark edge pixels are 0% neutral, so the outline leans toward the material tone rather than the neutral black or grey line of the 'sticker' look (the lamp is 100% neutral). The repeated chair-leg and seat stripes and the cart body show about 4 lightness steps, a little fewer than Beodeul's 5-6. It is simpler than the stall and well, but it is on par with the small thin props, so the verdict is a modest pass.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20652
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band of the stack frame",
+      "rows": "5-7",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stacked chair backs and seats (front view inside frame)",
+      "rows": "9-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cart base",
+      "rows": "27-29",
+      "evidence": "none",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 5-7 are a thin tan band across the top that ends in a light front-edge line at row 8, with no eave shadow. That is weak evidence of a top surface. Below it, rows 9-26 are a front-on stack of chair bands in alternating dark brown and tan, inside light vertical posts at x=4 and x=11. These are all vertical faces, and no individual chair seat is visible from above. The cart base at rows 27-29 is a 16-wide front-facing strip. The top band is only 3 rows, so this is borderline and close to a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, narrow prop, about one tile wide and one and a half tall. It has 11 distinct colours and a median of 10 colours per full tile, matching prop-hedge (11 colours, 10 per tile) and well above the sparse bench and lamp, which read 0 per tile. Flat-fill coverage is 0%, so there are no large single-colour areas. 0% of its dark edge pixels are neutral, so the outline leans toward a tint of the neighbouring material rather than a black sticker line, as in the hedge. The chair bars and cart read as roughly 4 stepped tones with banding and highlight dots. That is a little shallower than the 5-6 steps on the big stall and well references, and its total colour count is far below their 38-40. For a thin, sparse stack of folded chairs this is acceptable next to the hedge and bench, and a careful artist would not see it as noticeably flatter or more sticker-like. I judged this by eye because the piece is small and low-contrast.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 3행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "윗면 3행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20582
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top of chair stack",
+      "rows": "5-7",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cart platform",
+      "rows": "27-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Column x=8 shows a brown band at rows 5-7 (L 144 then 119). A light 1-row edge line at row 8 (#bbb4c4) runs across the full width and ends the band. Below it the dark front face of the stacked chair frames runs rows 9-26 (18 rows), with light frame uprights at x=4 and x=11. The brown band is a thin top, 3 rows, with no eave shadow under the edge line. The cart platform (rows 27-29, 16 wide) is only a light edge row plus a darker row and the outline, so it reads as a rim, not a top surface. The wheels are rows 30-31. No receding side face is drawn. The top is marginal but present."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small, thin grey and brown cart with stacked chairs. The measured facts are mixed. It has 0% flat-fill coverage and 0% neutral dark edge pixels, so its outline is tinted, not a black sticker line. Its median of 10 colours per tile matches the hedge reference. However, it has only 11 distinct colours across several materials (metal pipes, a wooden or metal cart bed, wheels). That leaves about 3 lightness steps per material, against about 5-6 in the richer references (stall-cheese has 40 colours, well-roofed 38). The pipes and cart read as flat-shaded with little per-part highlighting, grain or texture dots. A multi-part object like this should carry more variation than the plain hedge, which has the same 11 colours. Next to the stall and well it looks thinner and flatter, so I fail it under the 'when in doubt, fail' rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 24404
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band of the chair stack / cart frame",
+      "rows": "5-7",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face of stacked chairs inside the frame",
+      "rows": "9-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cart base platform",
+      "rows": "27-28",
+      "evidence": "none",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 5-7 form a brown band (row 5 lighter, rows 6-7 darker) that ends in a light front-edge line at row 8 (#bbb4c4). Below it is an 18-row front face (rows 9-26) showing dark chair stripes inside a light frame. The cart base at rows 27-29 is wider (16 vs 12). The top band is thin and no seat surface is clearly seen from above, so this is a weak three-quarter read: top 3 rows plus a tall front face. There is no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small, narrow prop, about 12x22 source pixels. It has a median of 10 colours per full tile, matching the hedge (10) and the typical Beodeul median. It has 11 distinct colours, equal to the hedge and the lamp and bench, though well below the large stall and well props at about 40. Flat-fill coverage is 0%. Dark edge pixels are 0% neutral, so the outline is tinted rather than a near-black sticker line. By eye, the chair slats and cart frame are separated by value steps, with some grain and highlight dots. It reads as about 4 lightness steps against roughly 5 on the references, so it is slightly lower in richness. It is not flat or sticker-like, and a careful artist could accept it next to the hedge and bench at this scale and size.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19213
+  }
+ ],
+ "decidedAt": "2026-10-20T08:33:20.430Z",
+ "cells": {
+  "16": [
+   "1352738c2c4422bf",
+   "c8897171097b1d13"
+  ],
+  "24": [
+   "0fb0d6221123865f",
+   "45fbed0663f71bf7",
+   "4ac148ef4871c86a",
+   "4d1b5d7edcf1542d",
+   "519cf6e9659d1f98",
+   "7bf59d88b6336df4",
+   "8a98d033286ed711",
+   "97f1682de07eb23e",
+   "9eaf2b1a9ba4c7b8",
+   "ce3a6b60025e7b63",
+   "ef874581611391f1",
+   "f481defa473b269f"
+  ],
+  "32": [
+   "1fe341f6a5d5a75a",
+   "416bff97245675f5",
+   "a8d57deb19653c98"
+  ],
+  "48": [
+   "074dae130e49fda4",
+   "2776d61211b1fc7b",
+   "65dd2177ea12714f",
+   "8e162a4f11664269",
+   "d9920c6ebb795623",
+   "e5d52cf119d63ad1"
+  ]
+ }
+}

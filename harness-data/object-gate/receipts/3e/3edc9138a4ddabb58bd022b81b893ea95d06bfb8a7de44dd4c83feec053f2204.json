@@ -1,0 +1,324 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3edc9138a4ddabb58bd022b81b893ea95d06bfb8a7de44dd4c83feec053f2204",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "shop used shelf",
+ "label": "modern_city_interior/shop-used-shelf",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 8
+ },
+ "metrics": {
+  "tileColorsMedian": 23,
+  "tileColorsP90": 25,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "shelf unit top board",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "goods on shelves (monitor, lamp, red box, books, cushion, tray)",
+      "rows": "7-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a wood top band that brightens from #906b3b to #f0dc8c at row 4. That row is a light front-edge line, and rows 5-6 (#704e26, #533020) are darker eave shadow. This matches the 'cabinet: top 5 + edge + eave' reference. The front face then runs from row 5 to row 31, and its open compartments are divided by shelf boards at rows 13-15, 21-23 and 28-30. The items sitting on the shelves are decor and are not the main body. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a wooden shelf with items on its shelves. It shows about 22 visible tones per tile, against 17-20 for the stall and well references. Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% neutral, so the outline is tinted dark brown and follows the wood instead of being a black sticker line. The wood frame has several steps (highlight, light, mid, dark), and the shelved goods (books, jars, boxes) add varied small clusters. It matches the stall and well in density and structure. The texture is only 'some' because the wood grain is modest, but nothing reads as flat or shallow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18907
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top of shelf unit (top board)",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "shelf boards (middle and bottom), each with a light edge line then dark underside",
+      "rows": "13-15, 21-23, 28-30",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "goods on shelves (monitor, lamp, red box, books, cloth, blue item)",
+      "rows": "6-12, 16-20, 24-27",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a full 32-wide rectangle. Rows 1-4 form a top board whose lightness rises from L=113 to 133, 169 and 217, ending in a light front-edge line at row 4. Rows 5-6 are dark eave shadow (L=84, then 57), and the front face with open shelves runs below to about row 31. The top band is 4 rows, close to the green cabinet reference of a top band, edge line and eave. The shelf boards repeat the pattern of a light edge row followed by dark shadow rows. The shelf contents are decor on the shelves, so they do not count as the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate shelf has 22 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, below the stall's 13%, so there are no large flat fills. Dark edge pixels are 0% near-neutral, which means the outline is tinted. By eye it reads as a dark brown wood frame, not a black sticker line. The wood has several steps (frame highlight, mid, dark, deep). The shelves are filled with varied items in different tones (books, jars, boxes), so the interior is busy with small shaded objects. It sits at or above the stall and well on every primary fact and would not look thinner or flatter beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18948
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "shelf unit top plank",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "items on shelves (monitor, lamp, books, boxes, cloth)",
+      "rows": "7-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a top plank that brightens from L=113 to L=217 (#f0dc8c) at row 4, a light front-edge line. Rows 5-6 (#704e26, #533020) are dark eave shadow. Below them is a front face about 25 rows tall (rows 6-30) with three shelf compartments separated by plank fronts at rows 13-15, 21-23 and 28-30, each with a light edge line over a dark shadow. The silhouette is a constant 32 wide with no receding side face. Objects inside the shelf compartments are decor. The top band is about 4 rows, similar to the green 'cabinet: top 5 + edge + eave' reference, so it reads as three-quarter rather than a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a wooden shelf with several rows of small goods: books, jars and boxes. It has 22 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% neutral, so the outline is tinted dark brown wood tone rather than near-black. The wood frame shows highlight, mid and dark steps, and the goods add varied small colour clusters. Compared with the stall and well it looks equally dense and is not a sticker-style piece. It reads slightly small and simple, but that is not a reason to fail.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12279
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice/top plane of shelf unit",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "goods on shelves (monitor, lamp, books, box, cloth)",
+      "rows": "7-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a constant 32 px wide. Rows 1-4 form a top band that brightens from L=113 to L=217 at row 4, which acts as the front-edge line. Rows 5-6 (L=84, then 57) are darker eave shadow, and below them the front face with three shelf compartments runs from about row 7 to row 31. Shelf boards at rows 13-15 and 21-23 repeat the light-line-then-shadow pattern. The goods on the shelves are decor. The top band is only 4 rows and its gradient looks somewhat like a front-facing bevel, so the top surface is borderline, but it does have an edge line plus shadow."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a wooden shelf with items on it. Measured facts: 22 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well, so it is at or above the references. Near-flat coverage is 0%, below the stall's 13%. Dark edge pixels are 0% neutral, so the outline is tinted dark brown, not near-black, and matches the Beodeul approach. The wood frame shows several tones (highlight, mid, dark, deep), and the shelves hold varied items (books, jars, boxes) in different colours, which gives clustered detail instead of flat panels. No large single-colour areas are visible. At 2x scale it reads as hand-shaded, in the same craft as the stall and well, not a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14467
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.186Z",
+ "cells": {
+  "16": [
+   "4e7b88199c7dd85a",
+   "65f40c51733cf076",
+   "90ac9b63e8ce9fcb",
+   "c4029e8f5b5f2e3d"
+  ],
+  "24": [
+   "07b46023da641cb8",
+   "220e4580fb66433d",
+   "2a7de4f13e2a6040",
+   "3549b976d4604493",
+   "3e9607d64dbd07a9",
+   "4b82f47e089b0785",
+   "568ad293f63f1b5b",
+   "5dc38544ec5e1731",
+   "67db2641c0d93b12",
+   "69bb97262759af73",
+   "72f666ab26d62953",
+   "7ac8c0d763247b48",
+   "827583ad99686911",
+   "9480403ec54be540",
+   "956a73a54b70767d",
+   "aefcb5a7366e4ce6",
+   "c0b5b14f2d0262c0",
+   "c12ce9e8a53e46f0",
+   "e38a1cdf01c4e746",
+   "e8c85be394b7a483",
+   "ecea3a4288b0909c",
+   "f0167263aeffa072",
+   "f54a6617970ce3c6",
+   "ffe38c75c14dc5e6"
+  ],
+  "32": [
+   "6c85eab3319212ec"
+  ],
+  "48": [
+   "5b9a59507bf7a382",
+   "85bd465df7a354b8",
+   "ad995df7c53d77ba",
+   "c6e69e329129cd33",
+   "cd61b61cc72bb990",
+   "f8272418be570825"
+  ]
+ }
+}

@@ -151,6 +151,9 @@ function withEffectiveness(damageLine: string, critical: boolean | undefined, ef
 }
 
 export function chargingDirectorState(snapshot: BattleSnapshot): BattleDirectorState {
+  // battle-feel 2026-10-20: 도트 측면 전투는 게이지가 차는 동안 말을 하지 않는다(FF6·CT 처럼 무대만 숨 쉰다).
+  // 「행동 게이지가 차는 중입니다.」가 개시 직후 1초 넘게 윗창을 차지해 시스템 안내문처럼 읽혔다.
+  if (store.getCurrent().system.battleUiStyle !== "pokemon") return { step: "acting", lines: [], activeActorRecordId: undefined };
   const peers = snapshot.actors.some((actor) => actor.id === snapshot.nextReadyBattlerId)
     ? snapshot.actors : snapshot.enemies;
   const ready = peers.find((battler) => battler.id === snapshot.nextReadyBattlerId);
@@ -912,6 +915,8 @@ function commandLine(command: ActorCommand, actor: BattleBattlerSnapshot | undef
           .map((id) => before?.actors.find((entry) => entry.recordId === id)?.name ?? id)];
         return `${names.join("·")}의 연계기 — ${skillName(command.skillId)}!`;
       }
+      // 자동 전투의 통상 공격은 skill_attack 스킬로 들어온다 — 「정찰병이 공격을 사용했다!」 대신 손 입력과 같은 문형.
+      if (command.skillId === "skill_attack" || skillName(command.skillId) === "공격") return `${actorName}의 공격!`;
       return `${subject} ${withJosa(skillName(command.skillId), "을/를")} 사용했다!`;
     }
     case "item":

@@ -27,6 +27,9 @@ applyLegacyEnvAliases();
 
 const DEFAULT_DEV_SERVER_PORT = 9999;
 
+/** 시작 화면(start-screen.html)이 첫 그리기에 쓰는 정적 JSON. manualChunks 의 «bundled-data» 묶음에서 뺀다. */
+const HOME_SCREEN_JSON = ["/src/assets/bundledConcepts.json"];
+
 /**
  * dev 서버 TLS. `https://localhost:9999` 로 접속하려면 반드시 있어야 한다.
  *
@@ -208,6 +211,23 @@ function codexOAuthPlugin(): Plugin {
  */
 const freezeDevServer = () => process.env.E2E_FREEZE_DEV_SERVER === "1";
 
+// 번들 타일셋 정의 JSON(약 43MB)을 편집기 진입 청크에서 빼고 처음 쓸 때 fetch 한다(src/project/defaults/bundledJson.ts).
+// 브라우저 쪽 변환(편집기·시작 화면 빌드, dev 서버)에서만 `./bundledJsonSources` 를 지연 출처로 바꿔 끼운다.
+// resolve.alias 로 걸면 vite-node(`npm run harness`·`store`·`qa:export` 등)와 ssrLoadModule 까지 같은 설정을 읽어
+// node 에서 동기 XHR 길을 타고 `XMLHttpRequest is not defined` 로 죽는다(#3103 회귀, 2026-10-20).
+// SSR 변환(= node 실행)은 정적 출처 그대로 둔다 — 테스트·tsx·Electron 메인·플레이어도 정적 출처다.
+function bundledJsonLazyPlugin(): Plugin {
+  const lazy = fileURLToPath(new URL("./src/project/defaults/bundledJsonSources.lazy.ts", import.meta.url));
+  return {
+    name: "oprn-bundled-json-lazy",
+    enforce: "pre",
+    resolveId(source, _importer, options) {
+      if (source !== "./bundledJsonSources" || options?.ssr) return null;
+      return lazy;
+    },
+  };
+}
+
 export default defineConfig(({ mode }) => {
   const apitopiaKey = gatewayApiKey(mode);
   if (!apitopiaKey) {
@@ -237,16 +257,16 @@ export default defineConfig(({ mode }) => {
   // (npm run dev · dev:worktree · playwright webServer)는 공유 node_modules 를 보면 스스로
   // `<체크아웃>/.vite-cache/dev` 를 넣는다(scripts/lib/viteCacheDir.mjs). vite 를 직접 부르면 안 걸린다.
   cacheDir: process.env.VITE_CACHE_DIR,
-  plugins: [{ name: "oprn-shared-content-sqlite", configureServer(server) { server.middlewares.use(sharedContentMiddleware); }, configurePreviewServer(server) { server.middlewares.use(sharedContentMiddleware); } }, { name: "oprn-shared-character-graphics", configureServer(server) { server.middlewares.use(sharedCharacterGraphicsMiddleware); }, configurePreviewServer(server) { server.middlewares.use(sharedCharacterGraphicsMiddleware); } }, bgmInstallPlugin(), audioDeliveryPlugin(), devPlayerBundlesPlugin(), activityMirrorPlugin(), codexOAuthPlugin(), localOnlyAiProxyPlugin(), appVersionPlugin(), normalizerFingerprintPlugin(), deferStylesheetsPlugin(), jsonParseModulesPlugin()],
+  plugins: [{ name: "oprn-shared-content-sqlite", configureServer(server) { server.middlewares.use(sharedContentMiddleware); }, configurePreviewServer(server) { server.middlewares.use(sharedContentMiddleware); } }, { name: "oprn-shared-character-graphics", configureServer(server) { server.middlewares.use(sharedCharacterGraphicsMiddleware); }, configurePreviewServer(server) { server.middlewares.use(sharedCharacterGraphicsMiddleware); } }, bgmInstallPlugin(), audioDeliveryPlugin(), devPlayerBundlesPlugin(), activityMirrorPlugin(), codexOAuthPlugin(), localOnlyAiProxyPlugin(), appVersionPlugin(), normalizerFingerprintPlugin(), deferStylesheetsPlugin(), jsonParseModulesPlugin(), bundledJsonLazyPlugin()],
   // src/styles/index.css 는 @import 로 243개 파일을 한 모듈로 인라인한다. 소스맵이 없으면
   // DevTools 가 그 모든 규칙을 `index.css` 한 파일로 귀속시켜, 계산된 스타일에서 소유 파일을
   // 역추적할 수 없다. !important 1,051개와 "재배열 금지" 순서 계약 40여 개가 걸린 시트에서
   // 이건 디버깅 불가를 뜻한다. dev 전용이라 프로덕션 번들에는 영향이 없다.
   css: { devSourcemap: true },
   resolve: {
-    alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
-    },
+    alias: [
+      { find: "@", replacement: fileURLToPath(new URL("./src", import.meta.url)) },
+    ],
     extensions: [".ts", ".js"],
   },
   server: {
@@ -333,6 +353,11 @@ export default defineConfig(({ mode }) => {
         // 읽는 시점을 늦추는 지연 로드는 동기 소비자가 많고 JSON 해석이 합쳐 약 0.4초라 넣지 않았다(openwiki/runtime-project-schema.md 편집기 렉 F).
         manualChunks(id) {
           const file = id.split("?")[0]!.replace(/\\/g, "/");
+          // `?url` 자산 참조(번들 타일셋 정의 JSON 의 주소 한 줄)는 묶음에 넣지 않는다 — 묶음 청크를 끌고 오면 안 된다.
+          if (id.includes("?url")) return undefined;
+          // 데스크톱 시작 화면이 쓰는 작은 JSON 은 묶음에 넣지 않는다 — 묶음 청크(44MB)가 통째로 시작 화면에 실려
+          // 첫 화면이 2초 넘게 늦었다(2026-10-20 실측). 이 파일은 자기를 import 하는 청크로 간다.
+          if (HOME_SCREEN_JSON.some((suffix) => file.endsWith(suffix))) return undefined;
           if (file.endsWith(".json") && (file.includes("/src/assets/") || file.includes("/src/project/defaults/"))) {
             // 8MB 가 넘는 JSON(버들항·일본 도시 타일셋)만 자기 청크로 나눈다 — 한 스크립트는 한 스레드가 읽고 컴파일하므로 큰 덩이가 여럿이면
             // 병렬로 풀린다. 웜 부팅 실측(2026-10-15, 9회 중앙값): 한 덩이 → 셋으로 모듈 평가 시작 1.6s → 1.1s, 편집 화면 5.5s → 4.6s.

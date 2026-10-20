@@ -26,6 +26,16 @@ export function validateCharacterAppearances(value: unknown): void {
         assert(Number.isInteger(cell) && cell >= 0 && cell <= 7, `${label}.charset.characterIndex must be an integer from 0 to 7`);
       }
     }
+    if (record.portraitExpressions !== undefined) {
+      const sets = requireRecord(`${label}.portraitExpressions`, record.portraitExpressions);
+      for (const [mode, rawMap] of Object.entries(sets)) {
+        assert(mode === "bust" || mode === "full", `${label}.portraitExpressions.${mode} must be bust or full`);
+        for (const [expression, resourceId] of Object.entries(requireRecord(`${label}.portraitExpressions.${mode}`, rawMap))) {
+          assert(requireString(`${label}.portraitExpressions.${mode}.${expression}`, resourceId).trim().length > 0,
+            `${label}.portraitExpressions.${mode}.${expression} is blank`);
+        }
+      }
+    }
   }
 }
 
@@ -50,6 +60,13 @@ export function characterAppearanceReferenceIssues(project: Project): string[] {
         ?? GENERATED_ASSET_PLAN.assets.find((asset) => asset.resourceId === id && asset.status === "promoted" && (asset.resourceKind === "faceset" || asset.resourceKind === "picture"))?.resourceKind
         ?? project.resourceProfiles.find((profile) => profile.assetId === id)?.kind;
       if (kind !== expectedKind) issues.push(`characterAppearance ${appearance.id}: ${slot} requires an existing ${expectedKind} resource: ${id}`);
+    }
+    for (const [mode, map] of Object.entries(appearance.portraitExpressions ?? {})) {
+      for (const [expression, id] of Object.entries(map ?? {})) {
+        if (!id) continue;
+        const kind = project.assets.uploaded[id]?.kind ?? (findSharedPortrait(id) ? "picture" : undefined);
+        if (kind !== "picture") issues.push(`characterAppearance ${appearance.id}: portraitExpressions.${mode}.${expression} requires an existing picture resource: ${id}`);
+      }
     }
   }
   return issues;

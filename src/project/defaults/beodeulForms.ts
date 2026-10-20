@@ -5,6 +5,8 @@ import type {TilesetReferenceCategory} from '../tilesetReferences';
 import {translateTiles} from '../objectStamp';
 
 export const BEODEUL_FORMS_TEXTURE='tex_beodeul_forms';
+/** 호스트(beodeul_city)에 심는 참고문서 원본 — 읽기 전용(beodeulCity 의 참고문서 전용 경로가 쓴다). */
+export const beodeulFormsHostReferences=():readonly TilesetReferenceCategory[]=>references as unknown as TilesetReferenceCategory[];
 // 2026-10-05: user rejected these four silhouettes. Keep their pixels for saved
 // maps, but stop offering their stamps as examples or newly placeable kits.
 const rejectedConcepts=new Set(['wing','inn','smithy','warehouse']);

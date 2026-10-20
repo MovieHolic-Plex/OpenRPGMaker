@@ -23,11 +23,19 @@ import {
 import { requireMap } from "./mapHelpers";
 import { buildVerifiedChangeTileCommands, type PuzzlePresetId } from "./puzzleAuthoringTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
-type MapKind = { readonly scene: string } | { readonly interior: string } | { readonly dungeon: string };
-type SiteSpec = MapKind & { readonly key: string; readonly name: string; readonly from?: string };
+export type MapKind = { readonly scene: string } | { readonly interior: string } | { readonly dungeon: string };
+export type SiteSpec = MapKind & {
+  readonly key: string; readonly name: string; readonly from?: string;
+  /** 앞 맵에서 이 갈래로 나가는 출입구를 둘 변(장면 갈래만). 없으면 앞 맵이 고른다. */
+  readonly gateSide?: "north" | "south" | "east" | "west";
+  /** 장면 갈래 맵에 들어오는 칸(가장자리). 없으면 맵이 고른다. */
+  readonly entry?: { readonly x: number; readonly y: number };
+  /** 장면 갈래가 버들항 필드일 때 author_wild_route 를 이 인자로 다시 깐다(end·clearings 로 막다른 숲속 공터). */
+  readonly route?: Readonly<Record<string, unknown>>;
+};
 /** roam = 마을을 돌아다니는 주민(random 이동). 의뢰인·조력자·동료는 제자리에 둔다. */
-interface NpcSpec { readonly key: string; readonly name: string; readonly query: string; readonly lines: readonly string[]; readonly map?: string; readonly roam?: true }
-interface MoodSpec { readonly weather?: "rain" | "snow" | "fog" | "storm"; readonly ambient?: number; readonly color?: string }
+export interface NpcSpec { readonly key: string; readonly name: string; readonly query: string; readonly lines: readonly string[]; readonly map?: string; readonly roam?: true }
+export interface MoodSpec { readonly weather?: "rain" | "snow" | "fog" | "storm"; readonly ambient?: number; readonly color?: string }
 /**
  * 맵에 세우는 장면 소품 — 공용 킷(kit:<칩셋>/<id>, 다른 칩셋 그림은 stamp_object 가 이식한다).
  * where: north·center·south = 걸음 덩이의 북쪽·가운데·남쪽, boss = 던전 보스방, rooms = 던전 방들을 돌아가며(장면 맵은 가운데),
@@ -36,21 +44,21 @@ interface MoodSpec { readonly weather?: "rain" | "snow" | "fog" | "storm"; reado
  * (clue 퀘스트 조사·퍼즐 자리, 그 밖은 장치 이름 — devices[].mark).
  */
 /** where: fair = 바깥 맵 풀밭에 걷어 낸 장터 마당 둘레, fair-north = 그 마당 북쪽 무대, fair-center = 마당 한가운데. */
-interface DressSpec {
+export interface DressSpec {
   readonly object: string;
   readonly where: "north" | "center" | "south" | "boss" | "rooms" | "gate" | "fair" | "fair-north" | "fair-center";
   readonly count?: number; readonly light?: string; readonly mark?: string;
 }
-type Beat = Record<string, unknown>;
+export type Beat = Record<string, unknown>;
 /**
  * 연출 낱말 — 퍼즐·장치 명령에 끼우는 짧은 화면·소리 효과. 컷신 컴파일러는 라벨을 한 범위에 하나만 허용해
  * 선택지 갈래마다 다시 쓸 수 없으므로(label.duplicate) 같은 M2 명령을 직접 만든다.
  * flash:<색> · shake:<1|3|6|10> · particles:<preset> · tint:<#hex|clear> · se:<easyrpg 효과음> · emote:<감정> · wait:<ms>
  */
-type Fx = `${"flash" | "shake" | "particles" | "tint" | "se" | "emote" | "wait"}:${string}`;
-interface ItemSpec { readonly id: string; readonly name: string; readonly description: string }
+export type Fx = `${"flash" | "shake" | "particles" | "tint" | "se" | "emote" | "wait"}:${string}`;
+export interface ItemSpec { readonly id: string; readonly name: string; readonly description: string }
 /** 퍼즐 한 단계 — answer 번째 보기만 다음 단계로 간다. hit = 맞힌 뒤 연출·대사, miss = 이 단계만의 틀린 답 반응. */
-interface PuzzleStage {
+export interface PuzzleStage {
   readonly prompt: string; readonly options: readonly string[]; readonly answer: number;
   readonly hit?: { readonly lines?: readonly string[]; readonly fx?: readonly Fx[] };
   readonly miss?: { readonly lines: readonly string[]; readonly fx?: readonly Fx[] };
@@ -59,7 +67,7 @@ interface PuzzleStage {
  * 단서 조사 자리의 진짜 기믹 — 퀘스트 조사 단계(create_quest inspect)의 진행 페이지를 이 퍼즐로 감싼다.
  * 모든 단계를 맞혀야 연출·보상 뒤에 원래 단서 대사와 단계 완료가 따른다. 단계가 없으면 조사만으로 보상을 준다.
  */
-interface PuzzleSpec {
+export interface PuzzleSpec {
   readonly intro: readonly string[];
   readonly stages: readonly PuzzleStage[];
   readonly wrong: readonly string[];
@@ -71,24 +79,24 @@ interface PuzzleSpec {
  * 퀘스트와 따로 쓰는 장치 — 소품 앞(mark) 칸에서 조사하면 연출 + 대사 + (heal) 회복.
  * puzzle 이 있으면 그 선택지 퍼즐을 풀어야 연출·대사·보상이 따르고, 한 번 풀면 뒤로는 done 대사만 한다(보상 되풀이 없음).
  */
-interface StatefulGraphicSpec { readonly sheet: "object1" | "object2"; readonly index: number; readonly beforeDir?: Dir; readonly afterDir?: Dir }
-interface DeviceSpec {
+export interface StatefulGraphicSpec { readonly sheet: "object1" | "object2"; readonly index: number; readonly beforeDir?: Dir; readonly afterDir?: Dir }
+export interface DeviceSpec {
   readonly map: string; readonly mark: string; readonly name: string; readonly fx: readonly Fx[]; readonly heal?: true; readonly lines: readonly string[];
   readonly puzzle?: PuzzleSpec; readonly done?: readonly string[];
   readonly graphic?: StatefulGraphicSpec; readonly changeTile?: true;
 }
-interface ChapterPresetSpec {
+export interface ChapterPresetSpec {
   readonly map: string; readonly presetId: PuzzlePresetId; readonly title: string; readonly hintText?: string;
 }
 /** 갈래 맵으로 가는 출입구를 아이템으로 잠근다 — 아이템을 지니고 닿으면 연출과 함께 열리고, 그 뒤로는 보통 출입구다. */
-interface LockSpec { readonly site: string; readonly item: string; readonly locked: readonly string[]; readonly opened: readonly string[]; readonly fx: readonly Fx[] }
+export interface LockSpec { readonly site: string; readonly item: string; readonly locked: readonly string[]; readonly opened: readonly string[]; readonly fx: readonly Fx[] }
 /** 수호자 전투 — 기존 보스 트룹 이름이 장과 안 맞아(「성 경비대장」이 붉은 드래곤 트룹과 싸웠다) 장마다 제 이름·외형의 적·트룹을 만든다. */
-interface FoeSpec {
+export interface FoeSpec {
   readonly map: string; readonly name: string; readonly query: string; readonly intro: readonly string[]; readonly victory: readonly string[];
   /** 몬스터 리소스 id(generated-enemy-*). */ readonly graphic: string;
   /** 트룹에 서는 마리 수(쌍둥이 골렘 = 2)와 한 마리 이름(없으면 name). */ readonly count?: number; readonly enemyName?: string;
 }
-interface ChapterSpec {
+export interface ChapterSpec {
   readonly title: string;
   readonly era: string;
   /** form = 버들항 마을 형태(plaza 광장 = 장터 축제 마을). scene 이 beodeul_town:<theme> 일 때만. */
@@ -726,6 +734,19 @@ function hubGate(project: Project, hub: GameMap, taken: Set<string>, preferDoor:
   return far ? { cell: far } : undefined;
 }
 
+/** 앞 맵의 한 변에서 걸음 덩이에 붙은 가장자리 칸 — 변 가운데에 가까운 칸. */
+function sideGate(project: Project, map: GameMap, taken: Set<string>, side: "north" | "south" | "east" | "west"): { cell: Cell; doorAt?: Cell } | undefined {
+  const main = mainComponent(project, map);
+  const on = (x: number, y: number): boolean =>
+    side === "north" ? y === 0 : side === "south" ? y === map.height - 1 : side === "west" ? x === 0 : x === map.width - 1;
+  const cells = [...main]
+    .map((k) => { const [x, y] = k.split(",").map(Number) as [number, number]; return { x, y }; })
+    .filter((c) => on(c.x, c.y) && !taken.has(key(c)) && !(map.events ?? []).some((e) => e.x === c.x && e.y === c.y));
+  const off = (c: Cell): number => (side === "north" || side === "south" ? Math.abs(c.x - map.width / 2) : Math.abs(c.y - map.height / 2));
+  const best = cells.sort((a, b) => off(a) - off(b))[0];
+  return best ? { cell: best } : undefined;
+}
+
 interface RoomRect { readonly id: string; readonly x: number; readonly y: number; readonly w: number; readonly h: number }
 interface DressResult { readonly lights: Array<Record<string, unknown>>; readonly placed: string[]; readonly marks: Map<string, Cell> }
 
@@ -1199,8 +1220,26 @@ const authorJrpgChapter: ToolDefinition = {
     const prefix = sanitizeId(text(args, "prefix")?.trim() || chapterId);
     const seed = Number.isInteger(args.seed) ? Number(args.seed) : 7;
     const timeGateFrom = text(args, "timeGateFrom")?.trim();
+    return buildJrpgChapter(draft, spec, { chapterId, prefix, seed, ...(timeGateFrom ? { timeGateFrom } : {}) });
+  },
+};
+
+/**
+ * 장 사양 하나를 짓는다 — author_jrpg_chapter 도구와 대표 데모(폴른 스타)가 같이 쓴다.
+ * 대표 데모는 자기 이야기의 사양을 직접 넘긴다(장 사전의 크로노·FF6풍 장을 지어 글자만 바꾸지 않는다).
+ */
+export function buildJrpgChapter(
+  draft: Project,
+  spec: ChapterSpec,
+  opts: {
+    readonly chapterId: string; readonly prefix: string; readonly seed: number; readonly timeGateFrom?: string;
+    /** 잡몹·보스 트룹 지정(없으면 데이터베이스에서 고른다) — pickTroops 의 given 과 같은 모양. */
+    readonly troops?: { readonly field?: readonly string[]; readonly boss?: string };
+  },
+): ToolExecResult {
+    const { chapterId, prefix, seed, timeGateFrom } = opts;
     if (timeGateFrom) requireMap(draft, timeGateFrom);
-    const troops = pickTroops(draft, undefined);
+    const troops = pickTroops(draft, opts.troops);
     const warnings: string[] = [];
     const ids = new Map<string, string>();
     const taken = new Map<string, Set<string>>();
@@ -1236,7 +1275,7 @@ const authorJrpgChapter: ToolDefinition = {
       if (!fromId) throw new ToolError(`${site.key}: 앞 맵 ${fromKey} 이 먼저 지어지지 않았다`, { code: "chapter-order" });
       const from = requireMap(draft, fromId);
       const mapId = freshId(`${prefix}_${site.key}`);
-      const gate = hubGate(draft, from, takenOf(fromId), "interior" in site);
+      const gate = (site.gateSide ? sideGate(draft, from, takenOf(fromId), site.gateSide) : undefined) ?? hubGate(draft, from, takenOf(fromId), "interior" in site);
       if (!gate) { warnings.push(`${site.name}: ${from.name} 에 출입구 자리가 없다`); continue; }
       takenOf(fromId).add(key(gate.cell));
       gateCells.set(site.key, { from: fromKey, cell: gate.cell });
@@ -1265,7 +1304,8 @@ const authorJrpgChapter: ToolDefinition = {
       } else {
         nested(draft, "create_map", { id: mapId, name: site.name, themeScene: site.scene, seed: seed + 1 });
         const map = requireMap(draft, mapId);
-        const there = hubGate(draft, map, takenOf(mapId), false);
+        if (site.route) nested(draft, "author_wild_route", { mapId, replace: true, seed: seed + 1, ...site.route });
+        const there = site.entry ? { cell: { x: site.entry.x, y: site.entry.y } } : hubGate(draft, map, takenOf(mapId), false);
         if (!there) { warnings.push(`${site.name}: 출입구 자리가 없다`); continue; }
         takenOf(mapId).add(key(there.cell));
         nested(draft, "create_transfer_pair", { a: { mapId: fromId, x: gate.cell.x, y: gate.cell.y }, b: { mapId, x: there.cell.x, y: there.cell.y } });
@@ -1537,7 +1577,6 @@ const authorJrpgChapter: ToolDefinition = {
       data: { chapter: chapterId, title: spec.title, era: spec.era, hubMapId: hubId, maps: mapsOut, npcs: npcsOut, quest: { key: questKey, title: q.title, summary: q.summary, steps: stepsOut, bossTroopId: bossTroop }, event: eventOut, timeGate: gateOut, moods, dressed, gimmicks },
       ...(warnings.length ? { warnings } : {}),
     };
-  },
-};
+}
 
 export const JRPG_CHAPTER_TOOLS: readonly ToolDefinition[] = [authorJrpgChapter];

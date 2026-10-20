@@ -1,0 +1,335 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "64d3c176696440160f0feb9d66c5e714558cb954b63615fccd16d10e00bdba80",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "curule folding seat",
+ "label": "seats34/atlas_biome_interior/curule seat",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 윗면 0행 < 4 (2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "윗면 0행 < 4 (2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 56,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "wrong",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "purple cushion seat",
+      "rows": "3-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The purple seat band (rows 3-11, 16 px wide) is a wide, shallow plane. Its shading runs from light at rows 5-6 to dark at row 11, and it ends in a light gold front-edge line at row 12 (#ead285). Dark shadow follows at rows 13-14 (#936c15, #3a2400). Crossed X legs run below it at rows 14-23, and these form the front face. The cushion could be read as a face-on panel, but it has no vertical-face detail and its depth fits a seat seen from above, so I count it as a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small folding seat: a purple cushion with a light top edge and a darker underside, on a thin wooden X-frame. Measured facts put it level with the simpler references. It has 12 distinct colours and a median of 12 per tile, against the hedge (11 and 10) and the bench (14). Flat-fill coverage is 0%, so there are no large flat areas. None of its dark edge pixels are neutral (0%), so the outline is tinted: dark purple beside the cushion and dark brown beside the frame, not a black sticker line. The cushion has about 4 lightness steps (highlight, light, mid, dark), fewer than the 5-6 on the richer references, and the thin frame is only lightly shaded. It is less rich than the stall or the well, but it is a sparse single-tile prop. A careful artist would accept it next to the bench and hedge without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22769
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "purple cushion seat",
+      "rows": "3-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "gold seat frame rail",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 3-11 form a 16px-wide purple cushion with a light-to-dark gradient, which reads as a seat surface seen from above. Row 12 is a light gold front-edge line, with darker gold on rows 13-14 acting as shadow. Below that, the crossed X-legs on rows 15-23 narrow to a point at row 18 and splay back out, forming the open front/support structure. That gives a top of about 9 rows and a front of 3+ rows, so it reads as a three-quarter seat."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small folding seat with a purple cushion and a pale wood X-frame. The measured facts put it at or above the comparable small references. It has 12 colours and a median of 12 per tile, against 11 and 10 for the hedge and 14 colours for the bench and lamp. Flat-fill coverage is 0%. Its dark edge pixels are 0% neutral, so the outline is tinted (dark purple beside the cushion, dark brown beside the wood) rather than a black sticker line. The cushion shows a highlight, mid and dark band, and the frame has light and dark wood tones, about 4 steps per material against roughly 5 for the references. That is slightly shallower but acceptable for a prop this small. A careful artist would accept it next to the bench and hedge without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20935
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "purple cushion",
+      "rows": "3-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold seat rail",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "X-shaped folding legs",
+      "rows": "14-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cushion (rows 3-11) is a rounded rectangle with a smooth light-to-dark vertical gradient (L 213 at rows 5-6 down to 63 at row 11). It has no front-edge line, no eave shadow and no ellipse. The width stays at 16 for rows 4-13, so the silhouette never widens and narrows again. The gradient reads as a face-on bolster, not a seat surface seen from above. The gold rail (rows 12-13) is a front-facing strip, and the X legs (rows 14-23) are also seen straight on. No horizontal surface is visible."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small prop of about 14x22 source pixels, so I compared it with the similarly small references, the bench and the lamp. It has 12 distinct colours against 14 for the bench and 14 for the lamp. Its median of 12 colours per 16x16 tile is above the hedge (10) and within reach of the stall and well (17 and 20). Flat-fill coverage is 0%, and none of the dark edge pixels are neutral, so the outline carries a tint. By eye, the purple cushion has a highlight, a mid tone and a dark tone, with a lighter top edge and a darker underside. The wooden X frame has a similar three-to-four-step ramp. This is a bit shallower than the 5-6 steps in the larger references, but it is not a flat sticker with one shade and a black outline. The slight shortfall comes from the object's size and simplicity, so I do not fail it for that. A careful artist would accept it next to the bench and lamp.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 26084
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "purple cushion",
+      "rows": "3-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold seat rail",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "X-shaped folding legs",
+      "rows": "14-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cushion (rows 3-11) is a 16-wide rectangle with only the corners trimmed. Its colour fades smoothly from light lavender (rows 5-6) to dark purple (rows 10-11). There is no 1-row front-edge line and no eave shadow between a top band and a front face, so the light rows read as shading on a face seen head-on. The width profile (14, 16, 16...) never widens and narrows again, so there is no ellipse. The gold bar at rows 12-13 is a front-facing strip. The X legs (rows 14-23) are drawn in pure front elevation. No horizontal seat surface is visible from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small single-tile prop. It has 12 distinct colours and a median of 12 per tile, which is at or above the hedge (10 per tile, 11 colours) and close to the bench and lamp (14 colours each). Flat-fill coverage is 0%. None of its dark edge pixels are neutral, so the outline is tinted: dark purple beside the cushion and dark brown beside the wooden frame, not a uniform black sticker line. The cushion shows about 4 steps (highlight band, light, mid, dark), and the frame has a light/mid/dark wood ramp with a separate leg highlight. It is a little simpler than the stall and well, but those are much larger pieces. Next to the bench and hedge it does not look thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20954
+  }
+ ],
+ "decidedAt": "2026-10-20T08:30:09.742Z",
+ "cells": {
+  "16": [
+   "00f09e43d2b8c58c",
+   "4d63446c6a091b19"
+  ],
+  "24": [
+   "1052690b8dd461a2",
+   "23fa67a73f5f17cf",
+   "6712ff127b0453b6",
+   "81c6c64fcf119b70",
+   "ad76ea5023831ff8",
+   "af4253477d215c08",
+   "c6ad7fb11407f328",
+   "d836033432e78e86",
+   "db7fe54c89c2305d"
+  ],
+  "32": [
+   "42184452057ed534",
+   "93755dbe056efd87",
+   "e9d5b19e2c3a33a7"
+  ],
+  "48": [
+   "32db79dac8929963",
+   "462a597681ff36a0",
+   "b869dfbf28164774",
+   "cf71fc503a8d182b",
+   "d6573ddf02a37f5b",
+   "f6fb5ff570bfc893"
+  ]
+ }
+}

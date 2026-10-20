@@ -1,0 +1,333 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2626b39b18bb1d8c565d12128c132f8d33124bffab9a7ace5912bffecaba070d",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "plastic bath stool with wash bucket",
+ "label": "seats34/modern_city_interior/home-bath-stool",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 윗면 2행 < 4 (2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "윗면 2행 < 4 (2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stool seat/body (right object)",
+      "rows": "4-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "wash bucket (left object)",
+      "rows": "6-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The stool (right object, rows 3-13) has a rounded top that narrows to widths 4 and 6 on rows 3-4. Its light rows 4-5 are only a 2-row cap with no ellipse (no widen-then-narrow profile). Darker rows 6-7 and a light row 8 follow, then the body and legs on rows 9-12. This is a front-facing seat with just a rim-like top, and no clear seat surface seen from above. The bucket (left object, rows 5-12) shows a rim on rows 6-7, then a vertical face with a dark opening and legs, and no visible interior or contents. Both parts read as front elevations, so the stool seat is not seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a very small prop, about 16x9 source pixels: a yellow stool and a bucket with pale highlights. Its 9 colours sit in one tile, close to the hedge reference (10 per tile) and above the bench and lamp, which are thin and measure 0 per tile. Flat-fill coverage is 0%. The dark edge pixels are 0% neutral, so the outline leans brown/yellow-tinted rather than a black sticker line. The yellow ramp has about 4 steps (outline-dark, mid, light, highlight) against roughly 5-6 on the larger references, so it is slightly shallower. Texture is minimal, which is acceptable for smooth plastic. A careful artist would likely accept it beside the references, though it is a little thinner than the richest ones.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 31741
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stool seat (left object)",
+      "rows": "6-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wash bucket opening (right object)",
+      "rows": "4-5",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "6-7"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The left object is the stool. At x=4 rows 6-9 are a light seat band, with a handle slot darkening row 7. Row 9 is the lightest row and the front edge, and rows 10-11 are a darker front face. The width profile (rows 9-12 at 15, then 13 at 8) and the notch at the bottom show legs or apron, so the front face is about 3 rows (10-12). The right object is the bucket. At x=11 rows 4-5 are a light elliptical mouth, widening from 6 to 15 across rows 4-5. Rows 6-7 are a dark rim shadow, and rows 9-12 are the body. Both parts show a top surface and a front face. The stool top is only about 4 rows, so this is a borderline reading."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small stool and bucket in yellow plastic. It has 9 distinct colours and a median of 9 per tile, which is close to the hedge reference (11 colours, median 10) and a little below the stall and well (17-20 per tile). Flat-fill coverage is 0%. None of the dark edge pixels are neutral, so the outline is a dark tinted tone of the plastic rather than a black sticker line. The yellow ramp shows about 4 steps (highlight, light, mid, dark), against roughly 5-6 on the larger references, so it is slightly shallower. The two forms are separated by value, and there are small highlight and shadow dots rather than flat fills. For a tiny single-material prop this is comparable to the hedge and would sit acceptably beside it, though it is less rich than the stall and well.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 26231
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stool seat (right object, round seat on a stem)",
+      "rows": "4-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "wash bucket (left object, rim and body)",
+      "rows": "6-9",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "7"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Right object (the stool): at x=11, rows 4-5 are a light seat top (L=226), rows 6-7 are a darker band (L=140) that reads as the seat's front curve and shadow, and row 8 is a light front-edge line (L=209). Rows 9-13 are the mid-tone face and stem, about 5 rows, so a top surface sits above a front face of 3+ rows. The top widens from width 4 to 15 over rows 3-5 but does not narrow again, so it is a dome-like top and not a clean ellipse. The rows 4-8 banding still marks a top plane above an edge line. Left object (the bucket): at x=4, row 6 is light, row 7 is darker, rows 8-9 are light, and rows 10-11 are mid-tone, with an arch-shaped cutout at the bottom (the gap at x=8 in rows 11-12). It also shows a top band over a front face. Neither object is drawn as a flat slab or a pure front elevation. The scan mixes two objects in one silhouette, so these row calls are less certain than usual."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny two-object prop, a yellow stool and a bucket, with 9 distinct colours in total. That is below the thin references (bench 14, lamp 14, hedge 11) and far below the stall (40) and well (38). Its 9 colours per tile match the hedge's 10, but the hedge is a full-tile object with several greens, and the candidate carries fewer. The dark edge pixels are 0% neutral, so the outline is a tinted dark brown or olive and not a black sticker line. There are no 5x5 flat fills. Each plastic form still reads as only about 3 steps (a light yellow, a mid yellow and a dark shade, plus the outline). It has no per-object grain, speckle or secondary highlights, and the bucket and stool are near-identical rounded blobs. The references use about 5-6 steps per material, with per-element texture such as wood slats, leaf clumps and stones shaded one by one. A careful artist would likely find it flatter and simpler than the references beside it, so it fails on shallow shading depth despite the clean, tinted outline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 32570
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stool seat (right object)",
+      "rows": "4-5",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "bucket/stool body (left object)",
+      "rows": "6-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "7"
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Two objects sit side by side. The right one is the stool: its seat is a rounded hat shape with its widest rows at 5-8 (widths 4, 6, then 15-16). Rows 4-5 are light, rows 6-7 are darker, row 8 is a light line, and rows 9-12 are a narrower shaft. Only rows 4-5 could be a top surface, which is about a 2-row rim. Rows 6-8 look like the seat's vertical edge, not a foreshortened ellipse. The left object, the bucket, has a light row 6, a darker row 7, and a light face on rows 8-9 with an arch cutout below. It has no clear top plane or edge line and reads as a flat front face. Neither object shows a seat surface seen from above with 3 or more rows, so the whole drawing reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a very small two-object prop (stool plus bucket), about 1 tile in size. It has 9 distinct colours and a median of 9 per tile, which is close to the hedge reference (10 per tile, 11 colours) and above the sparse bench and lamp per-tile numbers. Flat-fill coverage is 0%. Its dark edge pixels are 0% neutral, so the outline carries a brown tint and reads as a dark version of the yellow material rather than a black sticker line. By eye, the yellow plastic shows about 4 steps (highlight, light, mid, shade) plus the dark outline, with small highlights on the rims. That is slightly fewer steps than the bigger references, but it is proportionate to the piece's size. It would not look thinner or flatter next to the hedge or bench, so I accept it.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 27445
+  }
+ ],
+ "decidedAt": "2026-10-20T06:55:38.660Z",
+ "cells": {
+  "16": [
+   "be4d9203d32ca326"
+  ],
+  "24": [
+   "428da5f39b53c52b",
+   "8c865e561957c6ae",
+   "cd5770d5e4128fd6",
+   "dc4e8c5b00eceb67",
+   "f451ff9bf3399bd5",
+   "fe926851fd453bd7"
+  ],
+  "32": [
+   "7246b98cb20b8599",
+   "752fddd1ce6d7133",
+   "867959fd9d1f20c9",
+   "986cc693e477d430",
+   "cc3f0e955c598fdb",
+   "ed5d9864a588eea8"
+  ],
+  "48": [
+   "3ee13f21a72dcf32",
+   "424936134e8f7930",
+   "4462080f6a6e28e5",
+   "7283e11f861065c4",
+   "a6725cec988d254b",
+   "ab09eb5b10eb19d2"
+  ]
+ }
+}

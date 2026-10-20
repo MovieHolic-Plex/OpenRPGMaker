@@ -1,0 +1,7 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"cabinet:gem+gemr","view34":"PASS","quality":"FAIL","reason":"The cut gems (gemb) still read as crude T-shaped mushroom blocks balanced on a 1px bottom stem and lack specular highlights or dark outlines."}
+{"id":"cabinet:bolt+boltg+boltr","view34":"PASS","quality":"FAIL","reason":"The fabric bolts read as flat perforated bricks and checkerboard blocks with isolated white sticker dots on the blue and red pieces rather than rolled cloth."}
+{"id":"cabinet:bottle+bottler+bottley","view34":"PASS","quality":"FAIL","reason":"All three shelves repeat the exact same x=2,6,10 grid of uniform 3px-wide three-stripe cylinders with no glass specular highlights."}
+{"id":"cabinet:candle","view34":"PASS","quality":"FAIL","reason":"All nine candles are lit inside the wooden cabinet with flames touching the shelves above, the tapers have 2px bodies as short as their flames, and the pillar tops are flat unshaded cream blocks."}
+{"id":"cabinet:cheese","view34":"PASS","quality":"PASS","reason":"Clean 5-row lit wooden top plane over a shaded back wall with readable multi-tone cheese wheels and wedges lit from the upper-left."}

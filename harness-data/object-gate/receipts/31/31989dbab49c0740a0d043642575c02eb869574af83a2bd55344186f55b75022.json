@@ -1,0 +1,346 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "31989dbab49c0740a0d043642575c02eb869574af83a2bd55344186f55b75022",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "armchair (faces west, side view)",
+ "label": "seats34/modern_city_interior/mci-armchair-w",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 3/4, 분명한 위반 0/4)",
+  "3/4: 옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+  "3/4: 윗면 3행 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 3/4, 분명한 위반 0/4)",
+   "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+   "윗면 3행 < 4 (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 10,
+  "darkV5": 64,
+  "nearBlackEdge": 0.06,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "9-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-13"
+     },
+     {
+      "part": "backrest/arm top",
+      "rows": "5-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "In the x=4 and x=8 columns the seat shows a light band at rows 10-12, with the lightest row 12 (L=199) acting as the front-edge line. Row 13 is a dark shadow (L=105). Below it, rows 14-24 form the front face, with a lighter cushion front at 14-17 and a darker base at 18-24, which is about 11-12 rows. The backrest at x=11 has a lighter top band at rows 5-8 ending in a bright edge line at row 8, then a vertical face at rows 9-24. The seat surface is seen from above, so it reads as a 3/4 view. The top band is only about 4 rows, but it has an edge line and a shadow."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The armchair is a single-tile prop and matches the hedge reference on the measured facts. Both have 11 distinct colours, a median of 10 colours per tile and 0% 5x5 flat-fill coverage, and the candidate sits close to the bench's 14 colours. 0% of its dark edge pixels are neutral, so the outline is tinted. By eye it is a dark brown-mauve line that follows the material rather than a black sticker line. The seat, back and arm are separated by value steps, giving about 4 visible tones on the upholstery plus a darker wood or leg tone. That is slightly under the 5-6 steps of the larger references. There are no large flat areas, and the cushion shows some shading variation. It would sit acceptably next to the hedge and bench without looking thinner or flatter, though it is not as rich as the stall or well.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21900
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat/armrest cushion top",
+      "rows": "9-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13"
+     },
+     {
+      "part": "backrest top",
+      "rows": "5-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "At x=4 and x=8 a light band at rows 9-12 ends in a lighter edge line at row 12, followed by a darker shadow row 13, so a seat/arm top is seen from above. Below it the cushion front (rows 14-17) and the body (rows 18-23) form a front face of about 12 rows, with dark legs at rows 24-27. The backrest column at x=11 has its own light top band at rows 5-8 with an edge line at row 8, then a vertical face down to row 24. The silhouette is a west-facing armchair in 3/4 view, not a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The armchair is a mauve fabric body with a lighter top and back edge, a mid seat and a darker side. Its outline leans dark red-brown, matching the fabric. The measured near-neutral share of dark edge pixels is 0%, so it does not have the black sticker outline. It has 0% flat-fill coverage and a median of 10 colours per tile, equal to prop-hedge (10) and below the stall and well (17 and 20). Its 11 distinct colours are slightly below the bench and lamp (14 each). That suggests about 4 ramp steps against 5-6 for the references, and somewhat less grain than the richest references. The piece is small and simple, but it is not flat or sticker-like and would sit acceptably beside the hedge and bench.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21377
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion / arm (main body)",
+      "rows": "10-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13"
+     },
+     {
+      "part": "backrest top (right column)",
+      "rows": "5-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "In the seat columns (x=4 and x=8), rows 10-12 form a light top band that ends in the lightest edge line at row 12. Row 13 is a dark eave shadow. Below it, rows 14-23 are the cushion front face, and rows 24-26 are the dark base and feet. The backrest on the right (x=11) has a lighter cap in rows 5-8 with its edge line at row 8. Below that, rows 9-24 are a vertical face. No receding isometric side face is drawn. The seat surface is seen from above, so it is a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts put the candidate level with prop-hedge: 10 colours per tile against 10, and 11 distinct colours against 11. Flat-fill coverage is 0%, so no 5x5 area is one flat colour. None of the dark edge pixels are neutral (0%), so the outline is a tinted dark rose-brown beside the upholstery, not a black sticker line. By eye, the back, seat cushion and arm are separated by value steps (highlight, light, mid, dark, deep), with a lit top edge and a shaded underside. It is small and simple, with less grain than the stall or well, but it is no thinner or flatter than the hedge or bench references. It would sit acceptably beside them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+    "윗면 3행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 27194
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "armrest top",
+      "rows": "10-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13"
+     },
+     {
+      "part": "seat cushion",
+      "rows": "14-17",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17"
+     },
+     {
+      "part": "backrest top",
+      "rows": "5-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "In the left column (x=4 and x=8), rows 10-12 are a light band on the armrest. Row 12 is the lightest and acts as the front-edge line, and row 13 is a darker shadow row. Rows 14-17 form a light seat cushion band, with row 16 lighter as its front edge. Rows 18-23 are a darker front face of 6 rows, with feet at rows 24-27. At x=11 the backrest has a light top at rows 5-8, with the lightest row 8 as its edge line, and a vertical face below at rows 9-24. The seat is seen from above with a clear front face, so this reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The armchair is a small single-material prop. It has a tinted dark-mauve and brown outline, with 0% neutral dark edge pixels, so it avoids the black sticker look. It has no 5x5 flat fills (0%), and the back, arm and seat cushion are separated by value, with highlights on the top rail and arm. Its 10 colours per tile and 11 distinct colours match the hedge reference (10 and 11) and are at or above the lamp and bench on colours per tile, though well below the stall and well (38-40 colours). Those two are multi-material pieces, so the gap is expected. The ramp is a little shallower than Beodeul's 5-6 steps, but it is not flat or sticker-like and would sit acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24144
+  }
+ ],
+ "decidedAt": "2026-10-20T07:20:07.130Z",
+ "cells": {
+  "16": [
+   "28ef8ad9f34b6d9b",
+   "578f37ff95a9add1"
+  ],
+  "24": [
+   "117bb6de7d7c39dd",
+   "37c3907ac251c408",
+   "38e4590c52e64048",
+   "42f14ae2fd032477",
+   "67a2a9f00d51d2fc",
+   "7d8dee9897dbb3b9",
+   "9a3cfc51fcb30bfc",
+   "a919b8ef859d3c98",
+   "bb7f40cfc8768ee5",
+   "d970ac4c2c3638f3",
+   "e385216c83852a09",
+   "e5676a8a400b79bc"
+  ],
+  "32": [
+   "057826eeb9a1f8ed",
+   "ddd7ccf4dbf3d067",
+   "f9a172124758ceea"
+  ],
+  "48": [
+   "421fc16e04712919",
+   "5784c95c26d651af",
+   "76af53b472d76763",
+   "8e1cfd5c3ca209bb",
+   "b51d99834e571713",
+   "cf98d42c4b57cdd2"
+  ]
+ }
+}

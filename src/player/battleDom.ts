@@ -102,6 +102,12 @@ export interface BattleDomController {
 }
 
 const BATTLE_TICK_MS = 200;
+/** 도트 측면 전투 보스 등장 인트로 길이(battle-feel r2, 29-impact-contact.css bf-boss-entry 와 짝). */
+const BATTLE_BOSS_INTRO_MS = 2_000;
+/** 도트 측면 전투의 행동 사이 쉼 배율(battle-feel r2, battleSequencer interludeScale). 격파 대사 660 → 400ms. */
+const BATTLE_RETRO_INTERLUDE_SCALE = 0.6;
+/** 도트 측면 전투에서 메뉴가 닫힌 게이지 충전 구간을 감는 배수(battle-feel r2). */
+const BATTLE_IDLE_CHARGE_BOOST = 3;
 /** 연출 중 확인/취소를 누를 때 걸리는 1회성 빨리감기 배속. */
 const SKIP_SPEED = 5.0;
 
@@ -296,6 +302,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
 
   // Keyboard controls stay keyboard-only. This is a status line, not a button bar.
   const playbackStatus = document.createElement("div");
+  let playbackStatusTimer = 0;
   playbackStatus.className = "battle-playback-status";
   playbackStatus.dataset.testid = "battle-playback-status";
   playbackStatus.setAttribute("role", "status");
@@ -363,7 +370,18 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
 
   function syncPlaybackStatus(): void {
     const text = `${AUTO_BATTLE_KEY_LABEL} 자동 ${autoBattle ? "켜짐" : "꺼짐"} · ${SPEED_KEY_LABEL} ${speedMultiplier}×${skipping ? " · 넘기는 중" : ""}`;
-    if (playbackStatus.textContent !== text) playbackStatus.textContent = text;
+    if (playbackStatus.textContent !== text) {
+      const first = playbackStatus.textContent === "";
+      playbackStatus.textContent = text;
+      // battle-feel 2026-10-20: 단축키 안내가 전투 내내 무대 오른쪽 위에 떠 디버그 표시처럼 읽혔다.
+      // 바뀐 순간에만 1.6초 보이고, 자동 전투가 켜져 있으면 작은 표지로 남는다(CSS 가 data-recent/data-auto 를 읽는다).
+      playbackStatus.dataset.auto = autoBattle ? "true" : "false";
+      if (!first) {
+        playbackStatus.dataset.recent = "true";
+        window.clearTimeout(playbackStatusTimer);
+        playbackStatusTimer = window.setTimeout(() => { delete playbackStatus.dataset.recent; }, 1600);
+      }
+    }
   }
 
   /** 이 시퀀스 한 번만 빨리감기. onSequenceBusy(false) 에서 원래 배속으로 되돌린다. */
@@ -703,6 +721,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       showFinaleStamp(result);
     },
     collapseHoldMs: () => remainingEnemyCollapseMs(field),
+    // battle-feel r2: 보스(쓰러짐 연출 bossSink) 등장은 실루엣 → 땅울림 → 색 입기로 1.4초를 쓴다 — 커버가 걷힌 뒤 다 보이게 인트로를 늘린다.
+    interludeScale: () => (root.dataset.battleMotion === "retro" ? BATTLE_RETRO_INTERLUDE_SCALE : undefined),
+    introHoldMs: () => (root.dataset.battleMotion === "retro" && field.querySelector(".battle-enemy[data-collapse='bossSink']") ? BATTLE_BOSS_INTRO_MS : undefined),
     motionTempo: () => motionTempo,
     describeEffectiveness: pokemonMotion,
     // 도트 측면 전투: 근접 공격은 대상 적 앞까지 실제로 걸어간다. 비트 길이를 걸음 거리에 맞춘다.
@@ -735,6 +756,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       root.dataset.battleSequenceBusy = busy ? "true" : "false";
       // 시퀀스가 끝나면 원장을 버리고 실제 스냅샷으로 복귀한다.
       if (!busy) presentation = undefined;
+      // battle-feel r2: 도트 측면 전투는 연출이 끝나면 다음 게이지 틱(최대 200ms 뒤)을 기다리지 않고 바로 한 틱 돈다.
+      if (!busy && root.dataset.battleMotion === "retro") window.setTimeout(() => { if (root.isConnected) battleTick(); }, 0);
       if (!busy && autoBattle) queueMicrotask(() => {
         if (root.isConnected) syncView();
       });
@@ -1960,7 +1983,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   if (options.introHold !== false) sequencer.startIntro(initialSnapshot);
   else syncView();
 
-  const tickInterval = window.setInterval(() => {
+  function battleTick(): void {
     if (sequenceBusy || inputPrompt) return;
     const before = options.runtime.snapshot();
     if (before.result) return;
@@ -1971,6 +1994,16 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       return;
     }
     options.runtime.tick(BATTLE_TICK_MS);
+    // battle-feel r2: 도트 측면 전투에서 아무도 명령을 기다리지 않는 게이지 충전 시간은 죽은 시간이었다
+    // (녹화 실측: 행동 사이 0.6~0.8초 동안 아무것도 움직이지 않았다). 메뉴가 닫힌 충전 구간만 틱을 두 번 더
+    // 돌려 3배로 감는다 — 같은 틱을 더 도는 것이라 행동 순서는 그대로고, 누가 준비되거나 행동하면 바로 멈춘다.
+    if (!menuTime && root.dataset.battleMotion === "retro") {
+      for (let extra = 0; extra < BATTLE_IDLE_CHARGE_BOOST - 1; extra += 1) {
+        const mid = options.runtime.snapshot();
+        if (mid.phase !== "charging" || mid.result || mid.eventChoice || mid.eventPause || mid.timeline.length > before.timeline.length) break;
+        options.runtime.tick(BATTLE_TICK_MS);
+      }
+    }
     const after = options.runtime.snapshot();
     const timelineKey = `${before.timeline.length}:${after.timeline.length}`;
     if ((after.timeline.length > before.timeline.length && timelineKey !== lastEnemyActionKey) || after.eventChoice || after.eventPause || after.result) {
@@ -1982,7 +2015,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       return;
     }
     syncView();
-  }, BATTLE_TICK_MS);
+  }
+  const tickInterval = window.setInterval(battleTick, BATTLE_TICK_MS);
 
   const controller: BattleDomController = {
     root,

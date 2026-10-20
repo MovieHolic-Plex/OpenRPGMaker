@@ -1,0 +1,297 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "aed5d42bbb2bbf4eaf0a663ac27fcf4ddb88f3283cd95f24a29ad46f0ba180fa",
+ "width": 32,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "pub fire locker",
+ "label": "modern_city_interior/pub-fire-locker",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 6/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 6/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 15,
+  "darkV5": 35,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top of locker (light grey band)",
+      "rows": "4-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-10"
+     },
+     {
+      "part": "front face with two door bays, fire gear and boots",
+      "rows": "9-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 38,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 4-8 form a 5-row grey band that brightens toward the front. Row 8 (L=224) is a light front-edge line, and rows 9-10 are dark shadow under it, so the band reads as a top surface rather than a front-facing cornice. Rows 9-46 are the vertical front face, with two bays holding turnout gear and boots, a central divider and a dark base. No receding side face is drawn, so the view is a normal south-facing three-quarter view. Top 5 rows plus a 38-row front matches the green cabinet reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a standing cabinet prop with two glowing arched glass doors, so it matches the prop references. Its 13 visible tones per tile sit between the hedge (9) and the stall (17) and well (20). Near-flat coverage is 0%, and 0% of its dark edge pixels are neutral, so the outline is tinted: a dark blue-grey frame edge and brown-dark lines around the yellow panels, not a sticker-style black line. The yellow panels show a ramp from light yellow through yellow and orange to a brown shadow, with mullions and a lower detail row. The frame has about 3-4 value steps, a thin lighter rim and a darker inner edge. It reads a little smoother and less grainy than the stall and well, which have per-tile highlights and speckle, so density is slightly lower. Still, there are no flat fills and the shading is clearly more than a flat body with an outline, so a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18066
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band of locker",
+      "rows": "4-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-10"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 37,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 4-8 form a light gray band that gets lighter toward the bottom and ends in the lightest row, row 8, which acts as the front-edge line. Rows 9-10 are darker eave shadow, and the front face runs from row 9 to row 46. The front face shows two compartments with coats and boots, a divider, and a dark base. The band is about 5 rows high, similar to the 'cabinet: top 5 + edge + eave' reference. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate shows 13 visible tones per tile, between the hedge (9) and the cheese stall (17) and below the well (20). Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, so the outline is tinted and reads as a dark blue-grey frame tone, not a black sticker line. Each glass pane steps through about 4-5 lightness values from pale yellow to deep orange, with mullions and a highlight edge, and the cabinet frame has 3-4 steps with small handle and latch details. Texture is moderate: there is no grain or speckle on the frame, but the gradient panes carry enough variation. It is a little simpler than the stall and well, but a careful artist would accept it next to the references without it looking sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18402
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top of locker (light grey top band)",
+      "rows": "4-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-10"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 38,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 4-8 form a band that brightens from L=124 at row 4 to L=224 at row 8. Row 8 is the lightest row, so it acts as the front-edge line. Rows 9-10 are darker, forming eave shadow. Below that the front face runs rows 9-46 (about 38 rows) and holds two door/compartment panels with turnout gear and boots inside. This matches the green cabinet reference (top 5 rows plus edge line plus eave), not the top-1 or rim-only red ones. The top band is a little thin and gradient-shaded, but it still reads as a horizontal top surface with a clear edge line."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a cabinet with a dark blue-grey frame and two glowing arched panes. It shows 13 visible tones per tile, which is above prop-hedge (9) and a little below the stall (17) and well (20). Near-flat coverage is 0%. Dark edge pixels are 0% neutral, so the outline leans toward the frame and pane material rather than being a black sticker line. The glowing panes have a visible 4-step ramp with mullions and highlights, and the frame has some value separation. The ramps are a bit shallower than Beodeul's 5-6 steps, and the frame is on the plain side, but with tinted edges, no flat fills and tone counts above the hedge, it sits acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21680
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "locker top",
+      "rows": "4-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-10"
+     },
+     {
+      "part": "front face with two doors and coats",
+      "rows": "9-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 38,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 4-8 form a light gray band that brightens toward the bottom. Row 8 (L=224) is a lighter front-edge line, and row 9 is a darker shadow row. Together these read as a top surface about 5 rows deep. Below it, rows 9-46 are the vertical front face: two door bays with coats, a shelf line at about row 35, and boots underneath. The top band is a little ambiguous because it could also be a front-facing cornice, but the edge line plus the shadow row point to a top surface, similar to the green cabinet reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a tall cabinet with a dark frame and two glowing amber glass doors. It measures 13 visible tones per tile, which is above the hedge (9) and below the stall (17) and well (20), so it sits in the reference range. Near-flat coverage is 0%, so there are no large flat fills. The glass panes show a gradient of amber steps from highlight to deep, with small mullion and handle details. Dark edge pixels are 0% near-neutral, so the outline is tinted, a dark blue-grey/brown frame tone, not a black sticker line. The cabinet body has fewer material steps than the stall's roof and wood, and the frame is fairly uniform, but overall it is accepted next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14414
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.147Z",
+ "cells": {
+  "16": [
+   "1db913e8d54f9ff0",
+   "8a8e0a5326c38de0",
+   "93670b66e44a780d",
+   "9abc2c896bd9d5d4",
+   "c80372878657064b",
+   "e2d55b6eb7229fd5"
+  ],
+  "24": [
+   "08a2c5373b002f80",
+   "0fbaf5270911666b",
+   "141f58418c022f0f",
+   "5dfa9ea618ea5532",
+   "631cef2215083e44",
+   "8a5de5c26092b2de",
+   "9a5539685269fa85",
+   "9d3283fe042e9453",
+   "a68026c191741368",
+   "a8c7070b60171462",
+   "ea0d7efe9c657a78",
+   "f18f58ea25ea5c8b"
+  ],
+  "32": [
+   "89b6c2098e0b699d",
+   "9696754a13b8c587",
+   "d68c5dc3424f4601",
+   "f3d9226d81e5eb21"
+  ],
+  "48": [
+   "012d15112886c85e",
+   "077bb0b0b4a1c3ad",
+   "1037f17ae10da333"
+  ]
+ }
+}

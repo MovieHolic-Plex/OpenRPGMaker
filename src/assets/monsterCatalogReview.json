@@ -78,12 +78,12 @@
     },
     "generated-enemy-ontology-8da61312": {
       "url": "/assets/generated/pixel-enemy-portraits/ontology-8da61312.png",
-      "sha256": "11b4a977d723cb0d829c38748ed304a0f5bf445a298fe0b3f0149f3af6abd958",
-      "observation": "청록·보라 룬 소용돌이 주위의 다섯 두꺼운 조각돌에 깊은 면과 밝은 문양이 새겨져 있다.",
+      "sha256": "68bcdcdf4e18a3d721ae7c43ee6f4be1af3cd48455972fd38ccfbd9f27b39c30",
+      "observation": "네 면으로 깎인 길쭉한 보라 결정 핵이 떠 있고, 핵 앞면의 마름모 홈 안에 청록 룬 금이 세로로 빛나며 오른쪽을 겨눈다. 핵 바깥에는 성긴 청록 기운이 한 겹 감돈다. 룬이 새겨진 깨진 석판 조각 다섯이 줄기 없이 3/4 로 기운 궤도를 돌며, 앞 조각은 밝고 크게 핵 아래를 덮고 뒤 조각은 어둡게 물러나 있다.",
       "index": 7,
-      "inspectionMethod": "Fresh native pixel anatomy and all nine poses. Locally reviewed artwork; user acceptance is not implied.",
+      "inspectionMethod": "Direct pixel redraw (scripts/content/monsters/redraw_ontology_8da61312.py): fresh anatomy, nine distinct poses with a skill-cast cell (0,2). Locally reviewed artwork; user acceptance is not implied.",
       "nativeSheet": "assets/generated/pixel-enemies/ontology-8da61312.png",
-      "nativeSheetSha256": "e7cb1880c07c589c8b4a3d1ad1e09afc0bb91406a62b2cd31de108821bdbcaa4",
+      "nativeSheetSha256": "28a1b9e02805a5435929277a54c7097c89b43b6b591bde32cf4561e67f3278b6",
       "cell": 64,
       "reviewEvidence": "verify-shots/monster-redraw-all/SUMMARY.md",
       "sourceWorkingTree": true

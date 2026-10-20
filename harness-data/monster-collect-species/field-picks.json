@@ -2,424 +2,424 @@
  "version": 1,
  "picks": {
   "gustchick": {
-   "run": "derive-20261020-140212",
+   "run": "derive-20261020-183122",
    "candidate": 1,
-   "sha": "d10957bafffd898d",
-   "at": "2026-10-20T14:03:44",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "3ec5e698b7264720",
+   "at": "2026-10-20T18:31:22",
+   "note": ""
   },
   "zaptoe": {
-   "run": "derive-20261020-140217",
+   "run": "derive-20261020-183125",
    "candidate": 1,
-   "sha": "e2e568852f53d68f",
-   "at": "2026-10-20T14:03:47",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "ba3d89a742a51fa3",
+   "at": "2026-10-20T18:31:25",
+   "note": ""
   },
   "sparkit": {
-   "run": "derive-20261020-140215",
+   "run": "derive-20261020-183121",
    "candidate": 1,
-   "sha": "861dacb7982f0ef7",
-   "at": "2026-10-20T14:03:46",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "3c333b669b9081db",
+   "at": "2026-10-20T18:31:21",
+   "note": ""
   },
   "aqualing": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-183121",
    "candidate": 1,
-   "sha": "b7d6f1bf4132b102",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "914cb65d604541c5",
+   "at": "2026-10-20T18:31:21",
+   "note": ""
   },
   "leafling": {
-   "run": "derive-20261020-140213",
+   "run": "derive-20261020-183122",
    "candidate": 1,
-   "sha": "c07292473ae1ba3a",
-   "at": "2026-10-20T14:03:44",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "63f9e668d5007dec",
+   "at": "2026-10-20T18:31:22",
+   "note": ""
   },
   "pipbug": {
-   "run": "derive-20261020-140214",
+   "run": "derive-20261020-190438",
    "candidate": 1,
-   "sha": "85889035461aba44",
-   "at": "2026-10-20T14:03:45",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "c98639d638c188ea",
+   "at": "2026-10-20T19:04:38",
+   "note": ""
   },
   "wickworm": {
-   "run": "derive-20261020-140217",
+   "run": "derive-20261020-191557",
    "candidate": 1,
-   "sha": "e5bc8071eb168c30",
-   "at": "2026-10-20T14:03:47",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "c9ee83c062f045da",
+   "at": "2026-10-20T19:15:58",
+   "note": ""
   },
   "rootpig": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-183123",
    "candidate": 1,
-   "sha": "22a8c5ec639b6dd0",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "e5fb8e06440d1d4c",
+   "at": "2026-10-20T18:31:23",
+   "note": ""
   },
   "frondhare": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-183123",
    "candidate": 1,
-   "sha": "8e98ae1a441f39a5",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "f13189c6f1fcb0e6",
+   "at": "2026-10-20T18:31:24",
+   "note": ""
   },
   "kilnclaw": {
-   "run": "derive-20261020-140213",
+   "run": "derive-20261020-183124",
    "candidate": 1,
-   "sha": "8804621f155cb2b9",
-   "at": "2026-10-20T14:03:44",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "579d5afd74354231",
+   "at": "2026-10-20T18:31:24",
+   "note": ""
   },
   "brookraft": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-183124",
    "candidate": 1,
-   "sha": "af225fcc4dfee4f2",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "7be3e21aa117623a",
+   "at": "2026-10-20T18:31:24",
+   "note": ""
   },
   "coralpin": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-215928",
    "candidate": 1,
-   "sha": "0d152a84147534f7",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "e38c170f0f47218b",
+   "at": "2026-10-20T21:59:28",
+   "note": ""
   },
   "curlfin": {
-   "run": "derive-20261020-140212",
+   "run": "derive-20261020-183125",
    "candidate": 1,
-   "sha": "da13a7b22fe4f140",
-   "at": "2026-10-20T14:03:43",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "119f57276f1f0ea1",
+   "at": "2026-10-20T18:31:25",
+   "note": ""
   },
   "pebblekid": {
-   "run": "derive-20261020-140214",
+   "run": "derive-20261020-183126",
    "candidate": 1,
-   "sha": "da09791616182b17",
-   "at": "2026-10-20T14:03:45",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "5d7c1fed252c19cc",
+   "at": "2026-10-20T18:31:26",
+   "note": ""
   },
   "gritnose": {
-   "run": "derive-20261020-014115",
+   "run": "derive-20261020-191559",
    "candidate": 1,
-   "sha": "bb34b35f93c33a42",
-   "at": "2026-10-20T01:41:28",
-   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
+   "sha": "9f29f198e60e42ef",
+   "at": "2026-10-20T19:16:00",
+   "note": ""
   },
   "podback": {
-   "run": "derive-20261020-140214",
+   "run": "derive-20261020-190439",
    "candidate": 1,
-   "sha": "2f801caed3edcdd2",
-   "at": "2026-10-20T14:03:45",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "7494b1a5a463cc6d",
+   "at": "2026-10-20T19:04:39",
+   "note": ""
   },
   "ribbonwing": {
-   "run": "derive-20261020-140215",
+   "run": "derive-20261020-183127",
    "candidate": 1,
-   "sha": "7f4566392c777cf2",
-   "at": "2026-10-20T14:03:46",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "2ab356f8611310a9",
+   "at": "2026-10-20T18:31:27",
+   "note": ""
   },
   "coilcrest": {
-   "run": "derive-20261020-140211",
+   "run": "derive-20261020-190441",
    "candidate": 1,
-   "sha": "3d23953c62d442fc",
-   "at": "2026-10-20T14:03:43",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "32b0c1d8f60514c2",
+   "at": "2026-10-20T19:04:41",
+   "note": ""
   },
   "craghoof": {
-   "run": "derive-20261020-140212",
+   "run": "derive-20261020-183127",
    "candidate": 1,
-   "sha": "978047c20d14e218",
-   "at": "2026-10-20T14:03:43",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "9b7cdae533ba3fe5",
+   "at": "2026-10-20T18:31:28",
+   "note": ""
   },
   "lanternwing": {
-   "run": "derive-20261020-140213",
+   "run": "derive-20261020-190440",
    "candidate": 1,
-   "sha": "6343d700eafd3ce9",
-   "at": "2026-10-20T14:03:44",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "7f58ebe8c676b174",
+   "at": "2026-10-20T19:04:40",
+   "note": ""
   },
   "brambleboar": {
-   "run": "derive-20261020-014116",
+   "run": "derive-20261020-183128",
    "candidate": 1,
-   "sha": "c293e9bbb32f4a8b",
-   "at": "2026-10-20T01:41:28",
-   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
+   "sha": "67b8883f518fcf85",
+   "at": "2026-10-20T18:31:28",
+   "note": ""
   },
   "tunnelpaw": {
-   "run": "derive-20261020-014116",
+   "run": "derive-20261020-191600",
    "candidate": 1,
-   "sha": "50a6456306d05055",
-   "at": "2026-10-20T01:41:29",
-   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
+   "sha": "3e6d61f50a3135c7",
+   "at": "2026-10-20T19:16:00",
+   "note": ""
   },
   "reefguard": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-215928",
    "candidate": 1,
-   "sha": "7313f88c51b63bad",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "d56f3a46a1c75c9b",
+   "at": "2026-10-20T21:59:28",
+   "note": ""
   },
   "grovewarden": {
-   "run": "derive-20261020-014116",
+   "run": "derive-20261020-190440",
    "candidate": 1,
-   "sha": "6a6f98f712e76621",
-   "at": "2026-10-20T01:41:29",
-   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
+   "sha": "0e1c6f4fa5d30566",
+   "at": "2026-10-20T19:04:40",
+   "note": ""
   },
   "furnscale": {
-   "run": "derive-20261020-014116",
+   "run": "derive-20261020-183130",
    "candidate": 1,
-   "sha": "0d9f71018c47e5b4",
-   "at": "2026-10-20T01:41:29",
-   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
+   "sha": "0f591162a6a0b3f1",
+   "at": "2026-10-20T18:31:30",
+   "note": ""
   },
   "tidekeeper": {
-   "run": "derive-20261020-014116",
+   "run": "derive-20261020-190439",
    "candidate": 1,
-   "sha": "4a2feb130a068d44",
-   "at": "2026-10-20T01:41:29",
-   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
+   "sha": "1d52c9a4158954c0",
+   "at": "2026-10-20T19:04:39",
+   "note": ""
   },
   "orchardant": {
-   "run": "derive-20261020-014117",
+   "run": "derive-20261020-183130",
    "candidate": 1,
-   "sha": "1f65af99ef72ee2b",
-   "at": "2026-10-20T01:41:29",
-   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
+   "sha": "00ce87eda0885171",
+   "at": "2026-10-20T18:31:31",
+   "note": ""
   },
   "galecrest": {
-   "run": "derive-20261020-014117",
+   "run": "derive-20261020-183131",
    "candidate": 1,
-   "sha": "f979ddcab098ed15",
-   "at": "2026-10-20T01:41:29",
-   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
+   "sha": "d6f0f21ef8cb3d2e",
+   "at": "2026-10-20T18:31:31",
+   "note": ""
   },
   "stormskink": {
-   "run": "derive-20261020-014117",
+   "run": "derive-20261020-191601",
    "candidate": 1,
-   "sha": "e720d1f5193848c9",
-   "at": "2026-10-20T01:41:30",
-   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
+   "sha": "87934a52cd71e6ae",
+   "at": "2026-10-20T19:16:01",
+   "note": ""
   },
   "ridgehorn": {
-   "run": "derive-20261020-014117",
+   "run": "derive-20261020-191600",
    "candidate": 1,
-   "sha": "9467f84927457d33",
-   "at": "2026-10-20T01:41:30",
-   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
+   "sha": "80026a55e52841c9",
+   "at": "2026-10-20T19:16:00",
+   "note": ""
   },
   "beaconmoth": {
-   "run": "derive-20261020-014117",
+   "run": "derive-20261020-190441",
    "candidate": 1,
-   "sha": "9125a66916e20f1a",
-   "at": "2026-10-20T01:41:30",
-   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
+   "sha": "08997aedb61c7de7",
+   "at": "2026-10-20T19:04:41",
+   "note": ""
   },
   "briartusk": {
-   "run": "derive-20261020-140211",
+   "run": "derive-20261020-183132",
    "candidate": 1,
-   "sha": "88738c89bbce2c70",
-   "at": "2026-10-20T14:03:43",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "c56f74fa014d78b2",
+   "at": "2026-10-20T18:31:33",
+   "note": ""
   },
   "faultdigger": {
-   "run": "derive-20261020-014118",
+   "run": "derive-20261020-190442",
    "candidate": 1,
-   "sha": "7bf49fcf2c3fd089",
-   "at": "2026-10-20T01:41:30",
-   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
+   "sha": "f90dcdf30529a38d",
+   "at": "2026-10-20T19:04:42",
+   "note": ""
   },
   "atollclamp": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-215929",
    "candidate": 1,
-   "sha": "70d63625821e9229",
-   "at": "2026-10-19T21:30:49",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "354b3155009c6adf",
+   "at": "2026-10-20T21:59:29",
+   "note": ""
   },
   "abyssail": {
-   "run": "derive-20261020-014118",
+   "run": "derive-20261020-191601",
    "candidate": 1,
-   "sha": "872115eeb38d84b6",
-   "at": "2026-10-20T01:41:30",
-   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
+   "sha": "02244f983f1de36f",
+   "at": "2026-10-20T19:16:02",
+   "note": ""
   },
   "brinewyrm": {
-   "run": "derive-20261020-014116",
+   "run": "derive-20261020-191601",
    "candidate": 1,
-   "sha": "eefc5ab2ec6f3916",
-   "at": "2026-10-20T01:41:29",
-   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
+   "sha": "257356403e649194",
+   "at": "2026-10-20T19:16:01",
+   "note": ""
   },
   "sandnip": {
-   "run": "derive-20261020-140215",
+   "run": "derive-20261020-195214",
    "candidate": 1,
-   "sha": "45474e3446a82f18",
-   "at": "2026-10-20T14:03:46",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "3735b78bee9b55d4",
+   "at": "2026-10-20T19:52:14",
+   "note": ""
   },
   "dunestalk": {
-   "run": "derive-20261020-014118",
+   "run": "derive-20261020-183134",
    "candidate": 1,
-   "sha": "0bb6ff168a08c886",
-   "at": "2026-10-20T01:41:31",
-   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
+   "sha": "a6bcf88718a92c27",
+   "at": "2026-10-20T18:31:34",
+   "note": ""
   },
   "miragespike": {
-   "run": "derive-20261020-014118",
+   "run": "derive-20261020-191602",
    "candidate": 1,
-   "sha": "0e21ebdcb0eacbe8",
-   "at": "2026-10-20T01:41:31",
-   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
+   "sha": "946b08cfe0284044",
+   "at": "2026-10-20T19:16:02",
+   "note": ""
   },
   "flurrykit": {
-   "run": "derive-20261020-014118",
+   "run": "derive-20261020-195215",
    "candidate": 1,
-   "sha": "bb278a4eace5cb8f",
-   "at": "2026-10-20T01:41:31",
-   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
+   "sha": "62eb1d30eb60b54a",
+   "at": "2026-10-20T19:52:16",
+   "note": ""
   },
   "rimepelt": {
-   "run": "derive-20261020-140215",
+   "run": "derive-20261020-190443",
    "candidate": 1,
-   "sha": "03418224c07bcec8",
-   "at": "2026-10-20T14:03:46",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "ffa5538366a82099",
+   "at": "2026-10-20T19:04:43",
+   "note": ""
   },
   "glaciermane": {
-   "run": "derive-20261020-140212",
+   "run": "derive-20261020-195214",
    "candidate": 1,
-   "sha": "11b7fbcfadd077ec",
-   "at": "2026-10-20T14:03:44",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "df5399ad51a939b1",
+   "at": "2026-10-20T19:52:14",
+   "note": ""
   },
   "miretail": {
-   "run": "derive-20261020-140214",
+   "run": "derive-20261020-183136",
    "candidate": 1,
-   "sha": "200ed9309850d268",
-   "at": "2026-10-20T14:03:45",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "e51981320ffb6a24",
+   "at": "2026-10-20T18:31:36",
+   "note": ""
   },
   "venomfrill": {
-   "run": "derive-20261020-140217",
+   "run": "derive-20261020-183136",
    "candidate": 1,
-   "sha": "baf36a47ffb99a49",
-   "at": "2026-10-20T14:03:47",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "4c5409c14c779c7f",
+   "at": "2026-10-20T18:31:37",
+   "note": ""
   },
   "marshcrown": {
-   "run": "derive-20261020-140213",
+   "run": "derive-20261020-183137",
    "candidate": 1,
-   "sha": "4f93222a5f39aa2d",
-   "at": "2026-10-20T14:03:45",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "06c9f56335bec3e8",
+   "at": "2026-10-20T18:31:37",
+   "note": ""
   },
   "dozemite": {
-   "run": "derive-20261020-140212",
+   "run": "derive-20261020-183137",
    "candidate": 1,
-   "sha": "d756522f87b06fb1",
-   "at": "2026-10-20T14:03:44",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "979832b2071104c2",
+   "at": "2026-10-20T18:31:37",
+   "note": ""
   },
   "trancescythe": {
-   "run": "derive-20261020-140216",
+   "run": "derive-20261020-195215",
    "candidate": 1,
-   "sha": "a07a3e1f0700cdbb",
-   "at": "2026-10-20T14:03:47",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "7caa26f1efb7821c",
+   "at": "2026-10-20T19:52:15",
+   "note": ""
   },
   "oraclemantis": {
-   "run": "derive-20261020-140214",
+   "run": "derive-20261020-183138",
    "candidate": 1,
-   "sha": "caeabdb434d1f09e",
-   "at": "2026-10-20T14:03:45",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "83dca5223dc93df0",
+   "at": "2026-10-20T18:31:38",
+   "note": ""
   },
   "threadimp": {
-   "run": "derive-20261020-140216",
+   "run": "derive-20261020-183138",
    "candidate": 1,
-   "sha": "fe5127540a3cd3d9",
-   "at": "2026-10-20T14:03:46",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "86d56bae252feb4e",
+   "at": "2026-10-20T18:31:38",
+   "note": ""
   },
   "hushdoll": {
-   "run": "derive-20261020-140212",
+   "run": "derive-20261020-195216",
    "candidate": 1,
-   "sha": "fc3113b55b64a60f",
-   "at": "2026-10-20T14:03:44",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "3455494ec1ef2808",
+   "at": "2026-10-20T19:52:17",
+   "note": ""
   },
   "veilmaster": {
-   "run": "derive-20261020-140216",
+   "run": "derive-20261020-183139",
    "candidate": 1,
-   "sha": "5917fb3a36a3a4d1",
-   "at": "2026-10-20T14:03:47",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "95bcc4d2c7b6896b",
+   "at": "2026-10-20T18:31:39",
+   "note": ""
   },
   "reedpeep": {
-   "run": "derive-20261020-014120",
+   "run": "derive-20261020-195216",
    "candidate": 1,
-   "sha": "27ac4eb27217c564",
-   "at": "2026-10-20T01:41:32",
-   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
+   "sha": "2dbc0842b892b31e",
+   "at": "2026-10-20T19:52:16",
+   "note": ""
   },
   "fenstrider": {
-   "run": "derive-20261020-014120",
+   "run": "derive-20261020-195216",
    "candidate": 1,
-   "sha": "561fa3582614467f",
-   "at": "2026-10-20T01:41:33",
-   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
+   "sha": "bc2d290669746c6f",
+   "at": "2026-10-20T19:52:16",
+   "note": ""
   },
   "thundercairn": {
-   "run": "derive-20261020-140216",
+   "run": "derive-20261020-195217",
    "candidate": 1,
-   "sha": "924ef0b155406a5e",
-   "at": "2026-10-20T14:03:46",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "370be5faaff4f7d2",
+   "at": "2026-10-20T19:52:17",
+   "note": ""
   },
   "winterquill": {
-   "run": "derive-20261019-r13",
+   "run": "derive-20261020-191559",
    "candidate": 1,
-   "sha": "0c27a61a03008baa",
-   "at": "2026-10-19T21:30:50",
-   "note": "R13 #6/#7/#8/#10 BW pixel-art upgrade"
+   "sha": "6ac3ddd63cc67cbe",
+   "at": "2026-10-20T19:15:59",
+   "note": ""
   },
   "solmane": {
-   "run": "derive-20261020-140215",
+   "run": "derive-20261020-191602",
    "candidate": 1,
-   "sha": "78e194be289637ae",
-   "at": "2026-10-20T14:03:46",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "851415eba3c75e29",
+   "at": "2026-10-20T19:16:02",
+   "note": ""
   },
   "lunavane": {
-   "run": "derive-20261020-140213",
+   "run": "derive-20261020-183141",
    "candidate": 1,
-   "sha": "48ffb1cc3fd23368",
-   "at": "2026-10-20T14:03:45",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "26d837dac159cfc2",
+   "at": "2026-10-20T18:31:41",
+   "note": ""
   },
   "relicarab": {
-   "run": "derive-20261020-140215",
+   "run": "derive-20261020-190438",
    "candidate": 1,
-   "sha": "3fa5386865e80abe",
-   "at": "2026-10-20T14:03:45",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "b347a02d08f85def",
+   "at": "2026-10-20T19:04:39",
+   "note": ""
   },
   "astralhart": {
-   "run": "derive-20261020-140211",
+   "run": "derive-20261020-195215",
    "candidate": 1,
-   "sha": "13afbd66096d6e80",
-   "at": "2026-10-20T14:03:43",
-   "note": "R14 눈 손 도트 2차 + 칩 눈 다시 찍기"
+   "sha": "a41eb23bb7f18187",
+   "at": "2026-10-20T19:52:15",
+   "note": ""
   },
   "mistralheron": {
-   "run": "derive-20261020-014121",
+   "run": "derive-20261020-191559",
    "candidate": 1,
-   "sha": "aacc37f9bf1f3004",
-   "at": "2026-10-20T01:41:33",
-   "note": "눈 규칙 판본 5: 눈 재배치 후 다시 derive"
+   "sha": "bf794bb2320eed73",
+   "at": "2026-10-20T19:15:59",
+   "note": ""
   }
  }
 }

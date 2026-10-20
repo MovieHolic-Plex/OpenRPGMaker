@@ -1,0 +1,47 @@
+{
+ "date": "2026-10-20",
+ "before": "1db03a95223e5b0b (rules v9)",
+ "after": "4d8774b517f41638 (rules v10: seat backrest/armrest exemption, user decision 2026-10-20)",
+ "status": "rejected",
+ "fresh5_frozen": {
+  "note": "frozen in 402e51a0b0 before any v10 run; blind pixel labels under the v10 contract; v9 numbers from a scratch run of the v9 profile on the same files",
+  "A_bad_autopassed": {
+   "v9": "4/16",
+   "v10": "3/16",
+   "v10_items": [
+    "s007 display window",
+    "s011 surgical rig",
+    "s022 curule seat"
+   ]
+  },
+  "A_good_passed": {
+   "v9": "30/41",
+   "v10": "31/41"
+  },
+  "A_seat": {
+   "good_passed": "7/15 -> 9/15",
+   "bad_autopassed": "2/11 -> 1/11"
+  },
+  "A_other": {
+   "good_passed": "23/26 -> 22/26",
+   "bad_autopassed": "2/5 -> 2/5"
+  },
+  "C": {
+   "bad_passed": "4/12 -> 7/12",
+   "good_passed": "5/9 -> 3/9"
+  }
+ },
+ "fresh4_frozen": {
+  "A_bad_autopassed": "1/19 -> 1/19",
+  "A_good_passed": "22/31 -> 18/31 (holds 6 -> 10)"
+ },
+ "tuning_sets": {
+  "dev_A": "bad 30/30 -> 28/30 caught (pew__v5, stone_throne now pass), good 25/29 -> 25/29",
+  "hidden1_A": "bad 47/47 -> 45/47 (same two images), good 43/47 -> 42/47",
+  "old_fresh_A": "good 31/42 -> 28/42",
+  "adversarial": "0/144",
+  "style_strong": "8/8 · 14/14"
+ },
+ "seat_anchors_v10": "good 10: 1 pass, 1 refer, 8 fail (sofas/benches: judge counts the seat surface as 0-2 rows, i.e. cushions drawn face-on); bad 2: fail (style) and fail (E-facing chair refer on 3/4 + style fail)",
+ "why_worse": "with the backrest exempted the judge reads thin seat bands more generously (pew rows 7-10 as a 4-row top, throne cushion rows 18-21) -> 2 sure violations pass; the face-on cushion sofas the user likes still show no seat top by the unchanged minTopRows 4"
+}

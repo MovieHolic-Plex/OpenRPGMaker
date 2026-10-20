@@ -1,0 +1,6 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"P1 slot machine","view34":"FAIL","quality":"FAIL","reason":"Arched red top with finial perched on the back outline reads as a front marquee rather than a receding top plane, a stray white pixel pokes out the left reel frame, and the reels/lower box are noisy and flat."}
+{"id":"P2 confessional","view34":"PASS","quality":"PASS","reason":"Clear 5px lit wooden cornice top plane and stepped plinth with clean 3-4 tone wood framing, purple curtain folds, and center lattice grille."}
+{"id":"P3 relic cabinet","view34":"PASS","quality":"FAIL","reason":"Top wooden plane is clear, but the middle shelf holds an unreadable grey-white lump, bottom-right has noisy 1px color stripes, and isolated 2px white-cyan corner ticks look like stray pixels."}
+{"id":"P4 wide cabinet","view34":"PASS","quality":"FAIL","reason":"Clear 5px wooden top plane, but the six compartments are crammed with noisy unreadable pixel blobs including a yellow comb-bar, floating red T-pixels, and a blade clipping into the center wood divider."}

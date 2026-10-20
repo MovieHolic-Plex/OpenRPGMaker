@@ -1,0 +1,314 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c4ced9e946b2fc74b7b42181190f4a0d4900aef5321a959c42485b7c7f47a07b",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "round red vinyl arcade stool, backless, chrome post and round base (no facing)",
+ "label": "seats34/jp_city_interior/am-arcade-stool",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 26,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "red vinyl seat",
+      "rows": "2-4",
+      "evidence": "b",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "round chrome base",
+      "rows": "12-14",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is a puck in rows 1-9. Its silhouette widens from 8 to 14 and narrows again to 8, so it has an elliptical outline. Rows 2-4 are the light red top surface, seen in columns x=4, 8 and 11. Row 5 is a darker red edge line (L=80), and rows 6-9 step down to darker red as the front face, about 5 rows. A narrow 4px chrome post sits in rows 10-11. The base in rows 12-15 is a 10-12px ellipse with a light top highlight at row 13. The seat top surface is clearly visible from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The stool is a small single-tile-scale prop. It has 12 colours and a median of 12 per tile. That is at or above the hedge (11 colours, 10 per tile) and close to the bench and lamp (14 colours each). Flat-fill coverage is 0% and none of the dark edge pixels are neutral, so the outline is tinted. By eye, the red vinyl seat has a highlight, light, mid and dark-red underside, which gives about 4 steps. The chrome post and base are cool grey with a lit side and a shaded side. The outline reads as dark red beside the seat and dark grey-blue beside the chrome, not a uniform black sticker line. It is not as rich as the stall or well, but it is as rich as the similar-sized bench, lamp and hedge references. A careful artist would accept it next to them without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17698
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "red vinyl seat cushion",
+      "rows": "1-5",
+      "evidence": "b",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "round chrome base",
+      "rows": "12-15",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat silhouette widens from 8 to 14 px over rows 1-3 and narrows again to 8 px by row 9, so it is a rounded puck. Rows 2-4 are a light red top with a highlight at x=4. Row 5 is a darker red front-edge line (L=80). Rows 6-7 are darker shadow and rows 8-9 are the darkest, forming the cushion's front face. Below it the chrome post (rows 10-12, 4 px wide) and the round base (rows 12-15, widths 10-12) support the seat. The seat surface is seen from above, with a top of about 5 rows and a front face and post of 8 or more rows, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small stool of about 1 tile. It has 12 distinct colours and a median of 12 per tile, which is at the level of the hedge (10) and the bench (14 total colours). It is below the stall (40) and the well (38). Flat-fill coverage is 0%, and the dark edge pixels are 0% neutral, so the outline is tinted: dark red-brown beside the vinyl and a dark blue-grey beside the chrome. This is not a sticker-style black line. The red seat has about 4 steps (highlight, light, mid, dark) with a specular dot, and the chrome post and base have about 3-4 steps. This is a bit shallower than the 5-6 steps on the richer references, and there is little grain or texture beyond the highlights. It is a small, simple object. Next to the bench and hedge it would not look flatter or more sticker-like, so it is acceptable.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16210
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "red seat cushion top",
+      "rows": "2-5",
+      "evidence": "b",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "red seat cushion side/front face",
+      "rows": "6-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "round chrome base",
+      "rows": "12-15",
+      "evidence": "b",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is a puck whose width profile widens from 8 to 14 (rows 1-3) and narrows again to 8 (rows 8-9). Rows 2-4 are a light red highlighted top (L 119-163), and row 5 is a darker edge line (L=80). Rows 6-9 are a darker red front wall (L 53 to 22), so the top is seen from above with a 4-5 row front face. Below it, a chrome post runs rows 10-12 (width 4) onto a base ellipse at rows 12-15 (width 10-12-12-10). The seat top is a visible elliptical surface, not a thin rim, so it reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The stool is a small single-tile-scale prop, so I compared it mainly with the bench and lamp-crook, which are similarly thin or small. It has 12 distinct colours, close to the bench (14) and lamp (14) and above the hedge (11). Its median per-tile count is 12, near the hedge's 10 and the richer stall and well tiles. It has 0% flat-fill coverage, so there are no large single-colour areas. The red cushion shows a highlight, a mid tone, a dark side and a deep shadow, about 4 steps. The chrome post and base carry roughly 3-4 grey steps with a highlight. The dark edge pixels are 0% neutral, so the outline leans dark red or brown against the vinyl and is not a black sticker line, unlike the lamp, which is 100% neutral. It is slightly simpler than the stall and well, but a careful artist would accept it next to the bench and lamp without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20702
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "red seat cushion top",
+      "rows": "1-5",
+      "evidence": "b",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "round chrome base disc",
+      "rows": "12-14",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat's width profile runs 8,12,14,14,14,14,14,12,8 over rows 1-9. Rows 2-4 are a light red top highlight, row 5 is a darker transition line, and rows 6-9 step down to dark red. That reads as an elliptical seat top of about 5 rows with a cylindrical front face below it. The chrome post (rows 10-11, width 4) and the round base disc (rows 12-15, width 10-12, lighter top row 13) form the support, so the front reads as 10 rows from row 6 down. The seat surface is clearly seen from above, so this is a three-quarter view rather than a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The stool is a small, simple prop, and its numbers sit at the hedge reference. It has 12 colours per tile against the hedge's 10, 12 distinct colours against the hedge's 11, and 0% flat-fill coverage. Its dark edge pixels are 0% neutral, so the outline carries a tint (dark red-brown beside the seat, dark blue-grey beside the chrome) rather than a uniform black line. The red vinyl seat shows a highlight, light, mid and dark band plus a darker underside, about 4 steps. The chrome post and base use a few lightness steps with a specular highlight. It has fewer colours overall than the big props (stall 40, well 38), but those are much larger pieces. It looks slightly simpler than the best references but not flat or sticker-like, so a careful artist would accept it beside the hedge and bench.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17230
+  }
+ ],
+ "decidedAt": "2026-10-20T08:55:46.229Z",
+ "cells": {
+  "16": [
+   "e1435e8a3f1cfe7e"
+  ],
+  "24": [
+   "06b63940e92bddbd",
+   "3d83163439765ffd",
+   "82ee9d0599f9e0a7",
+   "d3f66b97d42f561f",
+   "dbc014850b367327",
+   "faf38f6b5bd0be78"
+  ],
+  "32": [
+   "0bbcf15000c53fa8",
+   "4d8a7b6646a3f267",
+   "72c2898fccb8647b",
+   "8470474036dc8fa0",
+   "ba8e3a5acce5a2ba",
+   "fe27462d6888f4f2"
+  ],
+  "48": [
+   "6024c0f1c18212ff",
+   "a1859ab70085f447",
+   "ccebd0c306d61fd8",
+   "d2a6ded018ac08c2",
+   "d9b4f7e73a83cce7",
+   "dccaf76abd851a0d"
+  ]
+ }
+}

@@ -44,11 +44,13 @@ export interface BeodeulWildRouteInput {
   readonly grass: ReadonlySet<number>;
   readonly patches: readonly Rect[];
   readonly exits: readonly { x: number; y: number }[];
+  /** 나무를 심지 않을 공터(풀밭으로 둔다). */
+  readonly clearings?: readonly Rect[];
   readonly rng: Rng;
 }
 
 export function paintBeodeulWildRoute(input: BeodeulWildRouteInput): { roadCells: number; treeCells: number; decor: number } {
-  const { project, map, tileset, road, grass, patches, exits, rng } = input;
+  const { project, map, tileset, road, grass, patches, exits, clearings = [], rng } = input;
   const fillRegion = requireTool(CONSTRUCTION_TOOLS_V3, "fill_region");
   const stampObject = requireTool(SHARED_OBJECT_TOOLS, "stamp_object");
   const w = map.width;
@@ -105,6 +107,9 @@ export function paintBeodeulWildRoute(input: BeodeulWildRouteInput): { roadCells
   for (const index of road) reserve(index % w, Math.floor(index / w), 1);
   for (const exit of exits) reserve(exit.x, exit.y, 2);
   for (const event of map.events) reserve(event.x, event.y, 1);
+  for (const rect of clearings) for (let y = rect.y; y < rect.y + rect.h; y++) for (let x = rect.x; x < rect.x + rect.w; x++) {
+    if (x >= 0 && y >= 0 && x < w && y < map.height) reserved.add(y * w + x);
+  }
 
   const treeCells = plantBeodeulForestWall(project, map, tileset, reserved, rng, stampObject);
   const decor = dressBeodeulVerge(project, map, tileset, road, reserved, rng, stampObject);

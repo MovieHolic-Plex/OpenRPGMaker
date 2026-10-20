@@ -1,0 +1,368 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "91dea3aa2d876f9f0df87e2cd1342783b0e3810800244620578b63a2bd69389a",
+ "width": 48,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "svc arcade shopfront",
+ "label": "modern_city_interior/svc-arcade-shopfront",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 19,
+  "darkV5": 36,
+  "nearBlackEdge": 0.65,
+  "opaqueTiles": 9
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "striped awning",
+      "rows": "0-8",
+      "evidence": "c",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-9"
+     },
+     {
+      "part": "sign band with invaders",
+      "rows": "9-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shop window and stone piers",
+      "rows": "18-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 39,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-8 are a red and white striped awning plane. It ends in a dark scalloped front-edge line at row 8, followed by dark shadow at row 9, so it reads as a sloped canopy top (evidence c). Below it the vertical front face runs from row 9 to row 47: the sign band (rows 9-17), then the windows and stone piers (rows 18-47). That is far more than 3 rows. The silhouette is a constant 46-48 px wide, so it is a flat shopfront rather than a piece of tall furniture, and kind_matches is false. The structure is still an awning over a front face, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a striped-awning shopfront with a pixel-invader sign, arcade cabinets in the windows and a stone or brick base. It is about the size and complexity of the cheese stall and well references. On the primary facts it matches them: 16 visible tones per tile against 17 for the stall and 20 for the well, and 6% near-flat coverage against 13% for the stall. Its dark edge pixels are 0% neutral, so the outlines lean toward the dark tone of the neighbouring material (dark blue beside the facade, dark red beside the awning) rather than a uniform black sticker line. The awning stripes, window panes, cabinet screens and base texture each carry several lightness steps, around 4 per material against about 5 on the references. That is slightly fewer, but no large area is a flat fill. Judged by eye at this small scale, a careful artist could place it beside the stall reference without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22710
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "striped awning",
+      "rows": "0-8",
+      "evidence": "c",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "sign band with pixel-invader icons",
+      "rows": "9-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shop window and door frame with display cabinets",
+      "rows": "18-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 39,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-8 are a red and white striped awning, which counts as a sloped canopy plane under rule (c). Row 0 is a dark top outline, rows 1-7 are the stripes, and row 8 is a darker scalloped edge line. Row 9 is a dark shadow line under the eave. The vertical front face runs from row 9 to row 47: a dark sign band (rows 9-17), then a window with a grey frame and stone-tile side piers (rows 18-47). No side face is drawn. The object is a shopfront rather than tall furniture, so the kind only loosely fits. It is still a standing object against a wall with a roof/awning plane above a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate matches the stall-cheese and well-roofed references on the primary facts. It has 16 visible tones per tile against 17 and 20 for those two, and 6% near-flat coverage against 13% for the stall. Its dark edge pixels are 0% neutral, so the outlines lean toward the material tone (dark blue-grey beside the facade, dark red beside the awning) rather than being a black sticker line. By eye, the striped awning has a highlight and shadow on its scallops, the facade has panel and frame separation, and the window holds arcade cabinets, a pixel-invader sign and screen glints. This gives it varied tones inside the window and awning, not just flat fills. The facade shading is somewhat shallower, at about 4 steps against the references' 5-6, but nothing in it reads as a large flat block or a sticker. A careful artist would accept it next to the stall and well.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20054
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "striped awning",
+      "rows": "0-8",
+      "evidence": "c",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "sign band with invader sprites",
+      "rows": "9-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shop window and stone piers",
+      "rows": "18-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 38,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The red and white striped awning at rows 0-8 is a sloped canopy plane (evidence c). Its dark front-edge line is at row 8, followed by a dark shadow row at 9, and the front face lies below. The face is the sign band (rows 9-17) and the window and stone piers (rows 18-47), about 38 rows tall. The silhouette is a flat 46-48 px wide with no side face. The subject is a shop facade rather than tall furniture, so the kind only loosely fits."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts put the candidate level with the richest references. It has 16 visible tones per tile against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 6%, lower than the stall's 13%, and 0% of its dark edge pixels are neutral, so the outlines carry a tint. By eye, the striped awning has alternating tones, the sign band has a few distinct tones, the grey-blue wall and window frames have several value steps, and the arcade cabinets and invader sprite add small detail clusters. Material ramps look like 4 steps against the references' 5-6, a little shallower, and texture is only 'some' rather than the rich per-tile grain of the references. It does not read as a flat sticker, and a careful artist would accept it next to the cheese stall and well, so I pass it, though not with great margin.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17278
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "striped awning",
+      "rows": "0-8",
+      "evidence": "c",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "sign band with invader sprites",
+      "rows": "9-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "window and door storefront with stone piers",
+      "rows": "18-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 39,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-8 hold a red and white striped awning plane. Its scalloped dark edge line is at row 8, and row 9 is dark eave shadow above the sign. This counts as a top surface under (c). Below it is a vertical front face from rows 9-47: the sign band, the display window with two arcade cabinets, and the stone piers. The silhouette is a constant 46-48 px wide, so no side face is drawn. The object is a building shopfront, not tall furniture, so the kind only loosely matches."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate's 16 visible tones per tile sit between prop-stall-cheese (17) and prop-hedge (9). Its 6% near-flat coverage is below the stall's 13%, and 0% of its dark edge pixels are neutral, so the outlines carry a tint. By eye, the dark edges look blue-grey beside the stone frame and dark red beside the awning, not uniform black. The red and white awning stripes, the sign with pixel-invader motifs, the brick-like frame, and the glowing arcade cabinets in the dark window all give varied detail. Material ramps run about 4 steps (the awning and frame slightly fewer than the stall's 5-6), which is a little shallower than the reference but not flat or sticker-like. A careful artist would accept it next to the stall and well.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16147
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.203Z",
+ "cells": {
+  "16": [
+   "194fc237d906a9c6",
+   "1cb614ccbf0b62dd",
+   "2ed965e2a9e61821",
+   "3b254b62a7b4d23d",
+   "46bd949b0fd8049f",
+   "6d50be032a34d5c0",
+   "8071608cea110059",
+   "b6173ede33e8903d",
+   "e1340fbea1bd78cb"
+  ],
+  "24": [
+   "3f7fb575c98652bf",
+   "466d55a38d0fcc1a",
+   "6890e6a8b592f461",
+   "b1a549d52f44deea"
+  ],
+  "32": [
+   "063afb354baafced",
+   "12898b5caf6460ca",
+   "1d25e57c246431b6",
+   "1ea1e35bee5be17d",
+   "2e696c6c53d04782",
+   "302b20dc683163dc",
+   "38ac65112f4f263b",
+   "4085effca1fa4550",
+   "4455712eafa76c61",
+   "451cfd8a9980c607",
+   "4f2bbe2f4b03696c",
+   "5189b3a19a259770",
+   "59f1be950916be6f",
+   "6fe1257b9e75eeda",
+   "71e975ae3c26ede0",
+   "7462392edd74b28d",
+   "7f478f09b1e7de28",
+   "9dc311ec86335450",
+   "a769c3c11e23a4df",
+   "b14abfaf910abcf2",
+   "b26bcc943ed5bf6f",
+   "b4056b6655a059f5",
+   "cbf94e4c47af15e5",
+   "e2d3b38338f1ceb0"
+  ],
+  "48": [
+   "fbcbcce69d196c68"
+  ]
+ }
+}

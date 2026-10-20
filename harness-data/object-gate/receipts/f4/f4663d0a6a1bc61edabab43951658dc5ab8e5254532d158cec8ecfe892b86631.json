@@ -1,0 +1,408 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f4663d0a6a1bc61edabab43951658dc5ab8e5254532d158cec8ecfe892b86631",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "armchair (faces north, back view)",
+ "label": "seats34/modern_city_interior/mci-armchair-n",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 4 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 4 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 6,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest top edge",
+      "rows": "6-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrest tops (left and right)",
+      "rows": "11-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "back panel and body",
+      "rows": "8-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Seen from behind, the main body (rows 8-24) is a single flat-colored back panel, L=101 in every scanned column. Rows 6-7 at the top are a light 2-row rim (L 199 then 176) with no eave shadow below. This is the top edge of the backrest, not a top surface. The armrests have small light caps at rows 11-13, but they are only 2-3 rows tall and have no front-edge line. The seat cannot be seen at all, because the backrest hides it. The two brown legs at rows 25-26 confirm a back view. The width profile (10, 12, 14, 16) just follows the chair outline and shows no ellipse. The chair has no visible seat surface, so it matches the 'seat: band 2' and 'front elevation' wrong references."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate armchair has only 8 distinct colours against 11-40 for the references. Its 5x5 flat-fill coverage is 33%, while the references with similar structure (bench, hedge, lamp) are at 0% and the richest stall is at 13%. The back panel and body read as large flat areas of one muted tone, with a single highlight band and a dark edge. The outline does lean brown/maroon (0% neutral dark edge pixels), so it is a tinted material tone and not a sticker black. But the shading is shallow at about 3 steps against 5-6 on the references, and there is no grain, stitching, wood-leg detail or fabric texture. The median of 6 colours per tile is below the hedge (10), stall (17) and well (20). Next to the references it looks thinner and flatter.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15622
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest top edge",
+      "rows": "6-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrest tops",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat",
+      "rows": "none",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a back view. The backrest is a face-on vertical panel, rows 8-24, with a uniform fill of L=101 in the column scan. The only light rows at the top are 6-7, a 1-2 row rim with no eave shadow below. The arms have a similar 2-row light cap at about rows 12-13. The seat surface is hidden behind the backrest and cannot be seen from above. There is no ellipse or top plane, and the short legs at rows 25-26 do not add one. It matches the reference 'rim only' and 'band 2' wrong examples, not the 'top 5 + legs' right example."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate has only 8 distinct colours, against 11-40 for the references (the hedge has 11 and the stall and well have 38-40). Its flat-fill coverage is 33%, while every reference is at 13% or below, and the hedge, bench and lamp are at 0%. The back panel and seat are broad areas of one colour with only a light top edge and a dark side band. That gives about 3 lightness steps on the upholstery, against the 5-6 steps on Beodeul materials such as roof tiles and leaf clumps. The outline is a tinted dark brown-red (0% neutral edge pixels), which is a good match for the adjacent material and the right approach. But there is almost no grain, stitching, seam or speckle texture to match the references' per-tile variation. Its median of 6 colours per tile is below the hedge's 10 and far below the stall's 17 and the well's 20. Overall it reads as a flat, simple sticker-like silhouette next to the richer references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 16460
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest top edge",
+      "rows": "6-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrest tops",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest back panel (vertical face)",
+      "rows": "8-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a back view. The column scan shows a light 2-row band at rows 6-7 (L=199, 176), then a uniform face from rows 8-24 (L=101). The band is only a rim on the backrest, with no front-edge line or eave shadow below it. The arms have a similar 2-row light cap at rows 12-13. The backrest panel hides the seat, so no seat surface is visible from above. No ellipse, roof or contents are present. The body is a tall vertical panel with two small legs at rows 25-26, so it reads as a front elevation with only a rim and no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate has only 8 distinct colours against 11-40 for the references. Its 5x5 flat-fill coverage is 33%, while the hedge and bench are at 0%. The back panel and seat body read as large, mostly flat pinkish-brown areas with a lighter top edge and darker sides, about 3 lightness steps. Beodeul pieces use 5-6 steps with per-element texture. The dark edge pixels are 0% neutral, so the outline is a tinted dark material tone and not a sticker line. That is its one strength. It has no visible grain, stitching, cushion seams or fabric speckle, so it looks thinner and flatter than the hedge, which has similar tile density but real clumped texture. A careful artist would not accept it next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15356
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest top edge",
+      "rows": "6-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrest tops",
+      "rows": "11-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest/body face (back view)",
+      "rows": "8-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The columns at x=4, 8 and 11 all show the same pattern: a 1-row outline at row 5, a light 2-row band at rows 6-7, then a uniform mid-tone face from row 8 to row 24, with no edge line or eave shadow. The light band is only a 1-2 row rim on top of the backrest. The arms have similar 2-row light caps at rows 11-12, which are also just rims. The back view hides the seat, so no seat surface is visible from above. The width profile never widens and narrows again, so there is no ellipse. The big backrest panel is drawn as a vertical face only, and the legs at rows 25-27 are tiny. It reads as a front elevation with no seat top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small armchair back view with only 8 distinct colours, against 11-40 for the references. Its 5x5 flat-fill coverage is 33%, while the references run from 0% to 13%, so it has large flat areas. The back panel and seat read as roughly 2-3 tones (a mid dusty-pink body, a lighter edge, a darker side) with no grain, stitching, fabric speckle or highlight clusters. The outline is a tinted dark red-brown rather than neutral black (0% neutral edge pixels), which is good. Even so, the shading is shallow next to the 5-6 steps of the Beodeul references (the hedge has many greens, the stall and well are heavily textured). The 6 colours per tile is below the hedge at 10, the stall at 17 and the well at 20. The piece is clean but flatter and thinner than the reference quality bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 14437
+  }
+ ],
+ "decidedAt": "2026-10-20T08:09:08.178Z",
+ "cells": {
+  "16": [
+   "c2b14270b953661e",
+   "eaeed4ad85afb3bc"
+  ],
+  "24": [
+   "01dd7b14a2e7c077",
+   "073402fc1ae36dee",
+   "0db58eb177163855",
+   "1eda55628520cb4e",
+   "43cd6b7b08a0e203",
+   "45080c722fda46f9",
+   "5bb3facfb197f11c",
+   "5f4acd3808e5a502",
+   "6e345c45dd048e2a",
+   "7a1143c2615caf04",
+   "d2a37ceb13a392d6",
+   "dcfb159637a973bc"
+  ],
+  "32": [
+   "53541f0e34149493",
+   "57eb24cbf3f94dca",
+   "aec3e120c7d72fef"
+  ],
+  "48": [
+   "0442bc95749520e6",
+   "2072a636650f16b0",
+   "93dfbef96e6e8473",
+   "a229dc231460815f",
+   "c503143bb125d3c8",
+   "ea06a3e8d09f8acb"
+  ]
+ }
+}

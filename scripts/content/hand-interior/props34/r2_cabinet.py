@@ -1,0 +1,516 @@
+"""Round 2 (2026-10-20): the 13 stock cabinets. An adversarial Argon check passed the 3/4 top but failed the goods:
+copy-pasted flat blocks on a flat black back. Redraw the inside: shaded back wall, 1+1 shelf planks, and per-stock
+goods sprites (outline = the material's darkest tone, lit upper-left, varied shapes/arrangement per shelf).
+The top (rows 0-5) and the side posts come from redraw.cabinet(); everything between the posts below row 5 is new."""
+import os, sys
+sys.path.insert(0, os.path.dirname(__file__))
+import redraw as R
+from redraw import hx
+
+# rows: eave 6 | bay1 7-12 | plank 13/14 | bay2 15-21 | plank 22/23 | bay3 24-29 | plank 30 | base 31
+BAYS = [(7, 12), (15, 21), (24, 29)]
+PLANKS = [(13, 14), (22, 23), (30, None)]
+X0, X1 = 2, 13
+BACK = ['2a180b', '3a2210', '411e05', '4a2c16']    # dark under the plank above -> lighter low on the back
+
+BREAD = dict(o='643810', d='8e561d', m='b8742a', l='cf9851', L='e7bd78', h='ffe2a0')
+GLASS = {'r': dict(o='5a1020', d='8e2232', m='c23a48', l='e0606a', h='ffd8d8'),
+         'b': dict(o='1a2a5a', d='2a4a8e', m='3c6ec8', l='6aa0e8', h='e0f0ff'),
+         'g': dict(o='1a4a22', d='2a7034', m='3ca04a', l='6ccc6a', h='e0ffe0'),
+         'c': dict(o='164a54', d='2a7a86', m='48b0bc', l='86dce0', h='f0ffff'),
+         'y': dict(o='6a4a10', d='a07418', m='d0a830', l='f0d060', h='fff4c0'),
+         'p': dict(o='3a1a50', d='5a2c7a', m='8a48b0', l='b878d8', h='f4e0ff')}
+CORK = dict(c='b8742a', C='8e561d')
+METAL = dict(g='5c6470', G='a4aebb', w='e7ded0')
+WAX = dict(o='6a5a40', d='c8b890', m='e7ded0', l='fff4e0', h='fff4e0', k='3a2210', Y='ffd040', y='c08a20', f='ff8a20', r='c23a48', L='fff4e0')
+CHEESE = dict(o='8a5a10', d='c08a20', m='e8b830', l='f8d860', L='fff0a0', h='fff0a0')
+
+
+def put(px, x0, ybot, rows, pal):
+    """rows: strings top->bottom; '.' = keep. Bottom row lands on ybot."""
+    h = len(rows)
+    for j, r in enumerate(rows):
+        for i, ch in enumerate(r):
+            if ch == '.': continue
+            c = pal.get(ch) or pal.get(ch.lower()) or pal.get({'L': 'h', 'h': 'l', 'R': 'm', 'e': 'h', 'w': 'h', 'G': 'l', 'g': 'd', 's': 'l', 'f': 'm', 'y': 'l'}.get(ch, 'm')) or pal['m']
+            px[x0 + i, ybot - h + 1 + j] = hx(c)
+    return max(len(r) for r in rows)
+
+
+S = {   # sprite shapes (lit from upper-left, outline 'o' only on the shadow sides and bottom)
+ 'loaf':  ['.LhhL.', 'LhLLld', 'mlmmmd', 'oddddo'],
+ 'loafs': ['.Lhl.', 'LLlmd', 'mlmdd', 'odddo'],
+ 'baget': ['..LhL', '.Llmd', 'Llmdo', 'mdoo.'],
+ 'bun':   ['.hL.', 'hLlm', 'mlmd', 'oddo'],
+ 'buns':  ['.L.', 'Llm', 'odo'],
+ 'pie':   ['.LhhL.', 'LfLfLm', 'lLfLfd', 'mmmmmd', 'oddddo'],
+ 'tart':  ['.hL.', 'LffL', 'mmmd', 'oddo'],
+ 'potion': ['..c..', '..m..', '.hlm.', 'hlmmd', 'mmmdd', '.ooo.'],
+ 'potions': ['.c.', '.m.', 'hld', 'mmd', 'ooo'],
+ 'vial':  ['c.', 'hm', 'lm', 'ld', 'md', 'oo'],
+ 'flask': ['..c..', '..h..', '.hld.', 'hlmmd', 'ooooo'],
+ 'jar':   ['.GGg.', 'gwwGg', 'hlmmd', 'lmmmd', 'mmmdd', 'odddo'],
+ 'jars':  ['GGg', 'hld', 'lmd', 'odo'],
+ 'gem':   ['.h.', 'hld', 'lmd', 'odo'],
+ 'gemr':  ['.hl.', 'hlmd', '.dd.'],
+ 'gemt':  ['..h..', '.hlm.', 'hlmmd', '.ddd.'],
+ 'gemc':  ['.lhl.', 'lmlmd', '.mdd.', '..o..'],
+ 'gemk':  ['.h.', 'hlm', 'lmd', 'mdd', 'odo'],
+ 'gemo':  ['.hl.', 'lmmd', '.od.'],
+ 'cloth': ['llllll', 'mmmmmd', 'ffffff', 'mmmmmd', 'oddddo'],
+ 'cloths': ['llll', 'mmmd', 'ffff', 'oddo'],
+ 'wine':  ['.c.', '.d.', '.m.', 'lmd', 'lmd', 'odo'],
+ 'squat': ['.c..', '.m..', 'lmmd', 'lmmd', 'oddo'],
+ 'pillar': ['.k..', 'hllm', 'lmmd', 'lmmd', 'oddo'],
+ 'taper': ['k', 'l', 'l', 'm', 'o'],
+ 'taper2': ['.k', 'hm', 'lm', 'ld', 'md', 'oo'],
+ 'wine2': ['.cc.', '.lm.', 'hlmd', 'lmmd', 'lmmd', 'oddo'],
+ 'jug':   ['.cc.', 'hlmd', 'lmmd', 'oddo'],
+ 'pil':   ['hhhl', 'hlkm', 'lmmd', 'lmmd', 'oddo'],
+ 'pils':  ['hhl', 'hkm', 'lmd', 'odo'],
+ 'stick': ['.k.', '.l.', '.m.', 'YyY', '.y.', 'oyo'],
+ 'roll':  ['.hl.', 'hllm', 'lmmd', 'lmfd', 'lmmd', 'oddo'],
+ 'rolls': ['.hl.', 'hllm', 'lmfd', 'lmmd', 'oddo'],
+ 'crys':  ['.h...', '.lm.h', 'hlmlm', 'lmdmd', 'oddoo'],
+ 'dish':  ['.RRRR.', 'oQQQQo'],
+ 'pil2':  ['.k..', 'hhhl', 'hlmd', 'lmmd', 'lmmd', 'oddo'],
+ 'pil3':  ['.k.', 'hhl', 'lmd', 'odo'],
+ 'stk':   ['k.', 'hm', 'lm', 'ld', 'YY', 'yo'],
+ 'fold':  ['hllllm', 'llllmd', 'mmmddd', 'lllmmd', 'mmmddd', 'oddddo'],
+ 'folds': ['hlllm', 'mmmdd', 'llmmd', 'mmddd', 'odddo'],
+ 'rollh': ['.llll.', 'ldllmd', 'dkmmdd', '.oooo.'],
+ 'endc':  ['.hl.', 'lcmd', 'oddo'],
+ 'b3':    ['.c.', '.m.', 'hld', 'lmd', 'lmd', 'odo'],
+ 'lit':   ['.f..', '.y..', '.k..', 'hhhl', 'hlmd', 'lmmd', 'oddo'],
+ 'bund':  ['kkk', 'hlm', 'lmd', 'rrr', 'lmd', 'odo'],
+ 'crys2': ['.h..', '.lm.', 'hlmd', 'lmdd', 'oddo'],
+ 'wineo': ['..c..', '.oco.', '.olo.', 'ohlmo', 'olmdo', 'oommo'],
+ 'jugo':  ['.occo.', 'ohlmmo', 'olmmdo', '.oooo.'],
+ 'pilk':  ['ohkho', 'ohlmo', 'olmdo', 'olmdo', 'ooooo'],
+ 'pilk3': ['okho', 'olmo', 'oooo'],
+ 'stand': ['.okh.', '.olm.', '.olm.', '.olm.', 'oYYYo', '.oyo.', 'oyyyo'],
+ 'crys3': ['..o..', '.olo.', 'ohlmo', 'olmdo', 'oommo'],
+ 'gemo2': ['.ooo.', 'ohllo', 'olmdo', '.odo.'],
+ 'stack': ['ohllmo', 'ommmdo', 'odddko', 'olllmo', 'ommddo', 'oooooo'],
+ 'stack3': ['ohlmo', 'ommdo', 'olmmo', 'ooooo'],
+ 'wheel2': ['.lLLl.', 'lLLLLl', 'mmdmmd', 'mmmmdd', 'oddddo'],
+ 'wedge2': ['Ll...', 'LLll.', 'LLLll', 'mdmmd', 'odddo'],
+ 'btl':   ['.c.', '.l.', 'lmd', 'lmd', 'odo'],
+ 'btls':  ['.c.', 'lmd', 'lmd', 'odo'],
+ 'cpil':  ['.f..', '.Y..', 'LLLl', 'lmmd', 'oddo'],
+ 'cpilt': ['.f..', '.Y..', 'LLLl', 'lmmd', 'lmmd', 'oddo'],
+ 'ctap':  ['.f.', '.Y.', '.l.', '.m.', 'oyo'],
+ 'gemb':  ['.llm.', 'lmlmd', '.mdd.', '..d..'],
+ 'clus':  ['.l...', '.lm.l', 'llmlm', 'lmdmd', 'oddoo'],
+ 'plaid': ['lklklm', 'mmmmmd', 'lklklm', 'mmmmmd', 'oddddo'],
+ 'plaid4': ['lklm', 'mmmd', 'lklm', 'oddo'],
+ 'cush':  ['RRRRR', 'ooooo'],
+ 'bolt':  ['.hlll.', 'ellmmd', 'eemmdd', '.oooo.'],
+ 'bolts': ['.hll.', 'elmmd', 'eemdd', '.ooo.'],
+ 'bottle': ['.c.', '.m.', 'hlm', 'lmd', 'lmd', 'odo'],
+ 'bottlel': ['.....c', 'hllmmd', 'mmmddo', '.oooo.'],
+ 'candle': ['.f.', '.y.', 'hlm', 'lmd', 'lmd', 'odo'],
+ 'candles': ['f.', 'y.', 'hm', 'ld', 'oo'],
+ 'candlew': ['.f..', '.y..', 'hllm', 'lmmd', 'oddo'],
+ 'wheel': ['.hLLl.', 'hLlllm', 'mmmmmd', 'rrrrrd', 'oddddo'],
+ 'wedge': ['h...', 'hL..', 'hllm', 'mmmd', 'oddd'],
+ 'block': ['hll', 'lml', 'mdd'],
+ 'ball':  ['.hl.', 'hwlm', 'lmmd', '.oo.'],
+ 'horse': ['..hl.', '.hlmo', 'hlmm.', 'm.d.d', 'o.o.o'],
+ 'drum':  ['.WW.', 'WwwG', 'myym', 'mdyd', 'oddo'],
+}
+
+
+def shelf_back(px, y0, y1, xs=(X0, X1)):
+    for y in range(y0, y1 + 1):
+        t = y - y0
+        c = BACK[0] if t == 0 else BACK[1] if t == 1 else BACK[2] if y < y1 else BACK[3]
+        for x in range(xs[0], xs[1] + 1):
+            px[x, y] = hx(c)
+        # faint vertical board seams on the back
+        for x in (5, 10):
+            if t >= 2 and y < y1: px[x, y] = hx('2a180b' if t == 2 else '3a2210')
+
+
+def planks(px):
+    for top, front in PLANKS:
+        for x in range(X0 - 1, X1 + 2):
+            px[x, top] = hx('b77246')
+        px[X0 - 1, top] = hx('9a5435'); px[X1 + 1, top] = hx('9a5435')
+        for x in range(X0, X1 + 1, 4):
+            px[x, top] = hx('d59147')      # lit front edge glints
+        if front is not None:
+            for x in range(X0 - 1, X1 + 2):
+                px[x, front] = hx('63310b')
+
+
+def lay(px, ybot, items):
+    """items: list of (sprite, palette, x)."""
+    for name, pal, x in items:
+        put(px, x, ybot, S[name], pal)
+
+
+def GN(k):
+    return dict(GLASS[k], h=GLASS[k]['l'], o=GLASS[k]['o'])
+
+
+def GB(k):
+    p = dict(GLASS[k], h=GLASS[k]['l']); p.update(c='cf9851'); return p
+
+
+def G(k, extra=None):
+    p = dict(GLASS[k]); p.update(CORK); p.update(extra or {}); return p
+
+
+def stock(kind):
+    b1, b2, b3 = 12, 21, 29
+    B = BREAD
+    P = dict(BREAD, f='8e2232')
+    Pb = dict(BREAD, f='5a2c7a')
+    bk = lambda k: dict(GLASS[k])
+    T = {
+     'loaf': [(b1, [('loaf', B, 2), ('loafs', B, 9)]), (b2, [('loafs', B, 2), ('baget', B, 7), ('buns', B, 11)]),
+              (b3, [('loaf', B, 3), ('loaf', B, 8)])],
+     'bun': [(b1, [('bun', B, 2), ('buns', B, 7), ('bun', B, 10)]), (b2, [('buns', B, 2), ('bun', B, 5), ('buns', B, 10)]),
+             (b3, [('bun', B, 3), ('bun', B, 8), ('buns', B, 12 - 1)])],
+     'pie': [(b1, [('pie', P, 2), ('tart', Pb, 9)]), (b2, [('tart', P, 2), ('pie', Pb, 7)]), (b3, [('pie', P, 3), ('tart', P, 10)])],
+     'potion': [(b1, [('potions', G('r'), 2), ('potion', G('b'), 5), ('potions', G('g'), 11)]),
+                (b2, [('potion', G('g'), 2), ('potions', G('r'), 8), ('potions', G('b'), 11)]),
+                (b3, [('potions', G('b'), 2), ('potion', G('r'), 6), ('potions', G('g'), 11)])],
+     'vial': [(b1, [('vial', G('y'), 2), ('vial', G('c'), 5), ('flask', G('c'), 8)]),
+              (b2, [('flask', G('g'), 2), ('vial', G('y'), 8), ('vial', G('p'), 11)]),
+              (b3, [('vial', G('c'), 3), ('flask', G('y'), 6), ('vial', G('g'), 12)])],
+     'jar': [(b1, [('jars', G('y', METAL), 2), ('jars', G('r', METAL), 6), ('jars', G('g', METAL), 10)]),
+             (b2, [('jar', G('b', METAL), 2), ('jars', G('y', METAL), 8)]),
+             (b3, [('jars', G('g', METAL), 2), ('jar', G('r', METAL), 7)])],
+     'gem': [(b1, [('clus', GN('p'), 2), ('gemb', GN('c'), 8)]),
+             (b2, [('gemb', GN('r'), 2), ('clus', GN('c'), 8)]),
+             (b3, [('clus', GN('r'), 3), ('gemb', GN('p'), 8)])],
+     'bolt': [(b1, [('plaid', dict(GLASS['r'], k=GLASS['r']['d']), 2), ('plaid4', dict(GLASS['b'], k='e7ded0'), 9)]),
+              (b2, [('plaid4', dict(GLASS['g'], k=GLASS['g']['d']), 2), ('plaid', dict(GLASS['y'], k=GLASS['y']['o']), 7)]),
+              (b3, [('plaid', dict(GLASS['p'], k=GLASS['p']['l']), 2), ('plaid4', dict(GLASS['r'], k='e7ded0'), 9)])],
+     'bottle': [(b1, [('btl', GB('g'), 2), ('btls', GB('r'), 6), ('btl', GB('y'), 10)]),
+                (b2, [('btls', GB('y'), 2), ('btl', GB('r'), 6), ('btl', GB('g'), 10)]),
+                (b3, [('btl', GB('r'), 2), ('btl', GB('g'), 6), ('btls', GB('y'), 10)])],
+     'candle': [(b1, [('cpil', WAX, 2), ('ctap', WAX, 7), ('cpil', WAX, 10)]),
+                (b2, [('ctap', WAX, 2), ('cpilt', WAX, 5), ('ctap', WAX, 10)]),
+                (b3, [('cpilt', WAX, 2), ('ctap', WAX, 7), ('cpil', WAX, 10)])],
+     'cheese': [(b1, [('wheel2', CHEESE, 2), ('wedge2', CHEESE, 9)]),
+                (b2, [('wedge2', CHEESE, 2), ('wheel2', CHEESE, 8)]),
+                (b3, [('wheel2', CHEESE, 4)])],
+    }
+    TOYR = dict(o='5a1020', d='8e2232', m='c23a48', l='e0606a', h='ffd8d8', w='ffffff')
+    TOYB = dict(o='1a2a5a', d='2a4a8e', m='3c6ec8', l='6aa0e8', h='e0f0ff', w='ffffff')
+    HORSE = dict(o='63310b', d='9a5435', m='b77246', l='d59147', h='f4b370')
+    DRUM = dict(o='5a1020', d='8e2232', m='c23a48', W='fff4e0', w='e7ded0', G='a4aebb', y='ffd040')
+    DOLL = dict(o='5a2c7a', d='5a2c7a', m='8a48b0', l='b878d8', s='f0c8a0', w='3a2210')
+    BLK = lambda k: dict(h=GLASS[k]['h'], l=GLASS[k]['l'], m=GLASS[k]['m'], d=GLASS[k]['d'])
+    T['toy'] = [(b1, [('horse', HORSE, 2), ('ball', TOYR, 9)]),
+                (b2, [('block', BLK('y'), 2), ('block', BLK('b'), 5), ('drum', DRUM, 9)]),
+                (b3, [('ball', TOYB, 2), ('block', BLK('r'), 7), ('block', BLK('g'), 10)])]
+    for ybot, items in T[kind]:
+        yield ybot, items
+
+
+def book_shelf(px, ybot, top, seq):
+    """Upright book spines: seq of (colour, height, width)."""
+    x = X0
+    for k, hgt, w in seq:
+        if k == 'gap': x += hgt; continue
+        if k == 'lean':   # a leaning book
+            g = GLASS['p']
+            for j in range(4):
+                px[x + j, ybot - j] = hx(g['m']); px[x + j + 1, ybot - j] = hx(g['d'])
+            px[x + 3, ybot - 4] = hx(g['l'])
+            x += 6; continue
+        g = GLASS[k]
+        for y in range(ybot - hgt + 1, ybot + 1):
+            px[x, y] = hx(g['l'])
+            for i in range(1, w - 1): px[x + i, y] = hx(g['m'])
+            px[x + w - 1, y] = hx(g['o'])
+        px[x, ybot - hgt + 1] = hx(g['h'])                       # lit top corner
+        for i in range(w - 1): px[x + i, ybot - hgt + 2] = hx('ffd040')   # gilt band
+        if w > 2: px[x + 1, ybot - 1] = hx('ffd040')
+        x += w
+        if x > X1: break
+
+
+# ---------------------------------------------------------------- round 3 goods (gem, bolt, bottle, candle, cheese)
+# Explicit palettes: every char must be in the palette ('.' = keep the back wall). Outline = the material's own
+# darkest tone, 3-4 tones lit from upper-left, at most one 1px highlight per object, sizes/positions vary per shelf.
+
+def put2(px, x0, ybot, rows, pal):
+    h = len(rows)
+    for j, r in enumerate(rows):
+        for i, ch in enumerate(r):
+            if ch == '.': continue
+            px[x0 + i, ybot - h + 1 + j] = hx(pal[ch])
+    return max(len(r) for r in rows)
+
+
+def gp(k, **kw):
+    g = GLASS[k]; p = dict(o=g['o'], d=g['d'], m=g['m'], l=g['l'], h=g['h']); p.update(kw); return p
+
+
+STONE = dict(t='3a3530', s='5a5a66', S='7e7e8a')
+BRASS = dict(Y='ffd040', y='c09020', z='7c5a10')
+CORK3 = dict(c='cf9851', C='8e561d')
+WAX3 = dict(o='8a6038', d='d5b17d', m='e0c89c', l='f4d8a0', L='fff0b0', k='4a4a58')
+WAXR = dict(o='510e15', d='972129', m='c23a48', l='e0606a', L='f06a64', k='4a4a58')
+WAXB = dict(o='1a2a5a', d='2a4a8e', m='3c6ec8', l='6aa0e8', L='88c0e7', k='4a4a58')
+FLAME = dict(f='e06a10', F='ffd040', W='fff4b0')
+RIND = dict(o='5c4108', s='b8742a', q='8e561d', r='d0a818', R='eac65a', h='fff0a0', P='fff0b0', p='efdd7d', x='bfa045', a='d5b152')
+REDWAX = dict(o='510e15', s='972129', q='67030c', r='c30014', R='d73a42', h='f06a64', P='fff0b0', p='efdd7d', x='bfa045', a='d5b152')
+
+R3 = {
+ # gems: octagonal cuts (lit table + one highlight, crown facets, darker pavilion); clusters = prisms on grey rock
+ 'oct5':  ['..ooo..',
+           '.ohlmo.',
+           'olllmdo',
+           '.odmdo.',
+           '..ooo..'],
+ 'sm5':   ['.ooo.',
+           'ohlmo',
+           'odmdo',
+           '.ooo.'],
+ 'sm4':   ['.oo.',
+           'ohlo',
+           'odmo',
+           '.oo.'],
+ 'clu6':  ['...oho....',
+           '.o.olmo...',
+           'olooolmo.o',
+           'olmolmooho',
+           'olmolmdold',
+           'tsSSSSSSst'],
+ 'clu5':  ['..o....',
+           '.olo.o.',
+           '.olmoho',
+           'oolmold',
+           'olmmold',
+           'tsSSSst'],
+ # bottles 5px: corked 1px neck, shoulder with one glass highlight, paper label, dark base
+ 'wine6': ['.oco.',
+           '.olo.',
+           'ohlmo',
+           'olmdo',
+           'oeeEo',
+           'odddo'],
+ 'wine5': ['.oco.',
+           '.olo.',
+           'ohlmo',
+           'oeeEo',
+           'odddo'],
+ 'flask5': ['.oco.',
+            'ohlmo',
+            'olmdo',
+            'ommdo',
+            '.ooo.'],
+ 'jug5':  ['.oco.',
+           'oolmo',
+           'ohlmo',
+           'olmdo',
+           'odddo'],
+ # candles: grey charred wick standing on the lit 2-row top plane; tapers in small brass saucers
+ 'pil5':  ['..k..',
+           'oLLLo',
+           'oLLlo',
+           'olmdo',
+           'odddo'],
+ 'pil5d': ['..k..',
+           'oLLLo',
+           'oLLlo',
+           'oLmdo',
+           'oLmdo',
+           'odddo'],
+ 'taper5': ['.k..',
+            'oLlo',
+            'olmo',
+            'zYyz',
+            '.zz.'],
+ 'taper6': ['.k..',
+            'oLlo',
+            'olmo',
+            'olmo',
+            'zYyz',
+            '.zz.'],
+ 'litp':  ['..f..',
+           '..W..',
+           'oLkLo',
+           'oLLlo',
+           'olmdo',
+           'odddo'],
+ # cheese: wedges = pale paste top + rind back, soft (paste-tone) diagonal edge; waxed wheel with a wedge cut out
+ 'wedge5': ['.....oo',
+            '...aoRo',
+            '.aPPPso',
+            'oxpPxso',
+            'ooooooo'],
+ 'wedge5s': ['....oo',
+             '..aPso',
+             'aPPPso',
+             'oxpPso',
+             'oooooo'],
+ 'wedge4': ['...oo',
+            '.aPso',
+            'oxpso',
+            'ooooo'],
+ 'notch': ['..ooooo.',
+           '.oRhRRRo',
+           'oRRRRaPo',
+           'osRRaPpo',
+           'osssPxpo',
+           '.ooooooo'],
+}
+
+LABEL = dict(e='e0c89c', E='c49e6d')
+
+
+def towel(px, x, ybot, w, tubes, k, rim=True):
+    """A stack of folded cloth of one fabric: every fold is a soft 2-row tube (lit upper, shaded lower) whose
+    folded edge opens on the left (the open corner pixel), closed rounded edge on the right; lit top plane."""
+    g = GLASS[k]
+    rows = []
+    if rim: rows.append([None] + [g['o']] * (w - 2) + [None])
+    rows.append([g['o'], g['h']] + [g['l']] * (w - 4) + [g['m'], g['o']])
+    for t in range(tubes):
+        rows.append([None] + [g['l'] if i < w - 3 else g['m'] for i in range(w - 2)] + [g['o']])
+        rows.append([g['o']] + [g['m'] if i < w - 3 else g['d'] for i in range(w - 2)] + [g['o']])
+    for j, r in enumerate(rows):
+        for i, c in enumerate(r):
+            if c: px[x + i, ybot - len(rows) + 1 + j] = hx(c)
+
+
+HANG = {   # cloths folded over a brass rod: hump over the rod, woven band (W/V), back half peeking under the hem (q/Q)
+ 'T5':  ['.ooo.',
+         'ohllo',
+         'oWWVo',
+         'olmdQ',
+         '.oooq'],
+ 'T5b': ['.ooo.',
+         'ohllo',
+         'olmdo',
+         'oWWVo',
+         'ooooQ'],
+ 'T4':  ['.oo.',
+         'ohlo',
+         'oWVo',
+         'olmo',
+         'oooQ'],
+ 'T4l': ['.oo.',
+         'ohlo',
+         'olmo',
+         'oWVo',
+         'Qooo'],
+}
+
+
+def rail(px, rod_y, panels):
+    """brass rod across the bay (dark ends in the posts) with cloths hanging over it."""
+    for x in range(X0, X1 + 1):
+        px[x, rod_y] = hx(BRASS['y'])
+    px[X0, rod_y] = hx(BRASS['z']); px[X1, rod_y] = hx(BRASS['z'])
+    for x0, shape, k, st in panels:
+        g = GLASS[k]
+        W = ('e7ded0', 'c4bcac') if st == 'w' else (GLASS[st]['l'], GLASS[st]['m'])
+        mp = dict(o=g['o'], d=g['d'], m=g['m'], l=g['l'], h=g['h'], q=g['o'], Q=g['d'], W=W[0], V=W[1])
+        put2(px, x0, rod_y + len(HANG[shape]) - 2, HANG[shape], mp)
+
+
+def glow(px, cx, cy, r=2):
+    """warm light on the back wall around a flame."""
+    for dy in range(-r, r + 1):
+        for dx in range(-r, r + 1):
+            if abs(dx) + abs(dy) <= r and px[cx + dx, cy + dy][:3] in [hx(c)[:3] for c in BACK]:
+                px[cx + dx, cy + dy] = hx('6c4c2a' if abs(dx) + abs(dy) <= 1 else '58301e')
+
+
+def goods_r3(px, kind):
+    b1, b2, b3 = 12, 21, 29
+    P = lambda name, pal, x, yb: put2(px, x, yb, R3[name], pal)
+    if kind == 'gem':
+        P('clu5', dict(gp('p'), **STONE), 2, b1); P('sm4', gp('r'), 10, b1)
+        P('clu6', dict(gp('c'), **STONE), 2, b2)
+        P('oct5', gp('g'), 2, b3); P('sm5', gp('p'), 10, b3)
+    elif kind == 'bolt':
+        rail(px, 8, [(3, 'T5', 'r', 'w'), (9, 'T4', 'b', 'y')])
+        rail(px, 17, [(2, 'T4l', 'g', 'w'), (7, 'T5b', 'y', 'r')])
+        towel(px, 2, b3, 6, 2, 'r', rim=False)
+        towel(px, 9, b3, 5, 2, 'b', rim=False)
+    elif kind == 'bottle':
+        P('wine5', dict(gp('g'), **CORK3, **LABEL), 2, b1); P('flask5', dict(gp('r'), **CORK3), 8, b1)
+        P('wine6', dict(gp('y'), **CORK3, **LABEL), 2, b2); P('jug5', dict(gp('r'), **CORK3), 8, b2)
+        P('flask5', dict(gp('g'), **CORK3), 3, b3); P('wine5', dict(gp('r'), **CORK3, **LABEL), 9, b3)
+    elif kind == 'candle':
+        P('pil5', WAX3, 2, b1); P('taper5', dict(WAXR, **BRASS), 9, b1)
+        glow(px, 5, 17); P('litp', dict(WAX3, **FLAME), 3, b2)
+        P('taper6', dict(WAXB, **BRASS), 9, b2)
+        P('pil5', WAXR, 2, b3); P('pil5d', WAX3, 8, b3)
+    elif kind == 'cheese':
+        P('wedge5s', RIND, 2, b1); P('wedge5s', REDWAX, 9, b1)
+        P('notch', REDWAX, 3, b2)
+        P('wedge5', RIND, 2, b3); P('wedge4', REDWAX, 9, b3)
+    else:
+        return False
+    return True
+
+
+def cabinet2(oid):
+    base = R.cabinet(R.frames(oid)[0])
+    im = base.copy(); px = im.load()
+    kind = oid.split(':')[1].split('+')[0]
+    for i, (y0, y1) in enumerate(BAYS):
+        shelf_back(px, y0, y1)
+    for x in range(X0, X1 + 1):
+        px[x, 6] = hx('2a180b')
+    planks(px)
+    if kind == 'book':
+        book_shelf(px, 12, 7, [('r', 5, 2), ('b', 4, 2), ('g', 5, 3), ('y', 4, 2), ('gap', 1, 0), ('r', 3, 2)])
+        book_shelf(px, 21, 15, [('b', 5, 3), ('lean', 0, 0), ('g', 6, 2), ('r', 5, 2)])
+        book_shelf(px, 29, 24, [('g', 4, 2), ('y', 5, 2), ('p', 5, 3), ('b', 4, 2), ('r', 5, 2), ('g', 3, 1)])
+    elif kind in ('gem', 'bolt', 'bottle', 'candle', 'cheese') and not os.environ.get('R2_OLD'):
+        goods_r3(px, kind)
+    elif kind == 'bolt' and os.environ.get('BOLT_ROLLS'):
+        cols = [['r', 'b', 'y'], ['g', 'p', 'r'], ['b', 'y', 'g']]
+        for i, ybot in enumerate((12, 21, 29)):
+            c = cols[i]
+            pal = lambda k: dict(GLASS[k], c='cf9851')
+            off = (0, 1, 0)[i]
+            for j, x in enumerate((2 + off, 6 + off, 10 - off)):
+                put(px, x, ybot, S['endc'], pal(c[j]))
+            for j, x in enumerate((4 + off, 8 - off)):
+                put(px, x, ybot - 3, S['endc'], pal(c[(j + 1) % 3]))
+    elif kind == 'gem' and os.environ.get('GEM_DISH'):
+        DISHES = {'r': dict(R='2a4a8e', Q='1a2a5a', o='3a2210'), 'c': dict(R='8e2232', Q='5a1020', o='3a2210'), 'p': dict(R='a07418', Q='6a4a10', o='3a2210')}
+        for ybot, items in stock('gem'):
+            for name, pal, x in items:
+                put(px, x - 1, ybot, S['dish'], DISHES[[k for k, v in GLASS.items() if v['m'] == pal['m']][0]])
+                put(px, x, ybot - 1, S[name], pal)
+    else:
+        for ybot, items in stock(kind):
+            lay(px, ybot, items)
+        if kind == 'bolt' and os.environ.get('BOLT_DRAPE'):
+            for (ybot, items), tail in zip(stock('bolt'), (3, 4, 3)):
+                name, pal, x = items[0]
+                if ybot + 2 >= 31: continue
+                for j in range(3):
+                    for i in range(tail):
+                        px[x + 1 + i, ybot + 1 + j] = hx(pal['l'] if i == 0 else pal['m'] if j < 2 else pal['d'])
+    return im
+
+
+def build_cabinets():
+    return {oid: [cabinet2(oid)] for oid in R.CAB_IDS}
+
+
+if __name__ == '__main__':
+    import compare as C
+    res = build_cabinets()
+    sys.path.insert(0, os.path.join(R.ROOT, 'scripts/content/hand-interior-pick'))
+    import palette_snap
+    ids = list(res)
+    refs = [C.card('GOOD ' + r, R.frames(r)[0], 6) for r in ['bread shelf', 'wardrobe']]
+    rows = [C.row(refs)]
+    for b in range(0, len(ids), 5):
+        rows.append(C.row([C.card(k[8:], palette_snap.snap(res[k][0])[0], 6) for k in ids[b:b + 5]]))
+    print(C.stack(rows, os.path.join(R.ROOT, 'tiledata/hand-interior/pick/work/props34/rv/cab_r2.png')))

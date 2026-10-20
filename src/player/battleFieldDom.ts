@@ -29,7 +29,10 @@ import {
   BATTLER_PLACEMENTS,
   resolveSkinEnemyPosition,
   resolveSkinEnemyPositions,
+  spreadEnemyFormation,
+  type FormationBox,
 } from "@/battle/battlerPlacements";
+import { battleContactBounds } from "@/battle/battleContactGeometry";
 export {
   BATTLER_PLACEMENTS,
   CANONICAL_SIDEVIEW_ANCHOR_X,
@@ -605,7 +608,8 @@ function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
       if (!currentIds.has(node.dataset.testid ?? "")) node.remove();
     }
   }
-  const positions = onFieldEnemyPositions(group as HTMLElement, snapshot, presentation?.onField) ?? resolveEnemyRowPositions(snapshot, snapshot.enemies);
+  const onFieldPositions = onFieldEnemyPositions(group as HTMLElement, snapshot, presentation?.onField);
+  const positions = onFieldPositions ?? spreadRetroEnemyRow(group as HTMLElement, snapshot, resolveEnemyRowPositions(snapshot, snapshot.enemies));
   for (const [index, enemy] of snapshot.enemies.entries()) {
     let node = group.querySelector<HTMLElement>(`[data-testid="${enemy.id}"]`);
     const form = presentedForm(enemy, presentation);
@@ -633,6 +637,43 @@ function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
     positionBattleNode(node, position.x, position.y);
     node.style.setProperty("--battle-depth", String(1 + Math.round(position.y / 16)));
   }
+}
+
+/**
+ * 도트 측면: 진형 자리를 실제 그림 상자로 벌린다(battle-feel r3, battlerPlacements.spreadEnemyFormation).
+ * 상자 = 시트 칸의 대기 포즈 불투명 범위(battleContactBounds) × 그림의 레이아웃 크기. 화면 px 를 저작 단위(320×160)로
+ * 옮기는 비율은 그룹 상자에서 잰다 — 무대 폭·정수 zoom 이 무엇이든 같은 식이다. 레이아웃 크기(offsetWidth)만 읽어
+ * 피격·숨쉬기 애니메이션에 흔들리지 않고, 같은 적·같은 그룹 크기면 그룹에 적어 둔 값을 다시 쓴다.
+ * 그림이 아직 없는 적(새로 생긴 노드)은 다음 동기화에서 잰다. 옮겨진 적(moved)은 손대지 않는다.
+ */
+function spreadRetroEnemyRow(group: HTMLElement, snapshot: BattleSnapshot, positions: readonly { x: number; y: number }[]): readonly { x: number; y: number }[] {
+  if (activeSkin().motionStyle !== "retro" || positions.length < 2 || snapshot.enemies.some((enemy) => enemy.moved)) return positions;
+  const width = group.offsetWidth;
+  const height = group.offsetHeight;
+  if (!(width > 0 && height > 0)) return positions;
+  const key = `${width}x${height}|${snapshot.enemies.map((enemy, i) => `${enemy.id}@${positions[i]?.x},${positions[i]?.y}`).join(";")}`;
+  if (group.dataset.formationKey === key && group.dataset.formation) {
+    try { return JSON.parse(group.dataset.formation) as { x: number; y: number }[]; } catch { /* 다시 잰다 */ }
+  }
+  const unitX = width / 320;
+  const unitY = height / 160;
+  let complete = true;
+  const boxes = snapshot.enemies.map((enemy): FormationBox | undefined => {
+    const image = group.querySelector<HTMLElement>(`[data-testid="${enemy.id}"] .battle-enemy-image`);
+    const w = image?.offsetWidth ?? 0;
+    const h = image?.offsetHeight ?? 0;
+    if (!image || !(w > 0 && h > 0)) { complete = false; return undefined; }
+    const url = image.style.getPropertyValue("--pixel-enemy-url") || image.getAttribute("src") || undefined;
+    // 등록되지 않은 그림(업로드)은 칸 전체를 상자로 본다.
+    const [l, t, r, b] = battleContactBounds(url, "idle") ?? [0, 0, 1, 1];
+    return { left: (l - 0.5) * w / unitX, right: (r - 0.5) * w / unitX, top: -(1 - t) * h / unitY, bottom: -(1 - b) * h / unitY };
+  });
+  const spread = spreadEnemyFormation(positions, boxes);
+  if (complete) {
+    group.dataset.formationKey = key;
+    group.dataset.formation = JSON.stringify(spread);
+  }
+  return spread;
 }
 
 /* 옛 `alignEnemyFeetToAuthoredY` 가 여기 있었다.
@@ -922,7 +963,9 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
       : feedback.healing
         // MP 회복은 HP 팝업과 같은 초록 +N 으로 두면 어느 눈금이 움직였는지 알 수 없다.
         ? (feedback.resource === "mp" ? `MP +${feedback.amount}` : `+${feedback.amount}`)
-        : (feedback.resource === "mp" ? `MP -${feedback.amount}` : `-${feedback.amount}`);
+        : (feedback.resource === "mp" ? `MP -${feedback.amount}`
+          // battle-feel 2026-10-20: 도트 측면 전투는 FF·DQ 처럼 피해를 부호 없이 센다(「-37」의 빼기표가 숫자를 가늘게 만들었다).
+          : field.closest<HTMLElement>(".battle-scene")?.dataset.battleMotion === "retro" ? String(feedback.amount) : `-${feedback.amount}`);
   const anchor = findBattlerNode(field, feedback.targetId);
   if (anchor) {
     popup.style.setProperty("--battle-node-x", anchor.style.getPropertyValue("--battle-node-x"));
@@ -945,7 +988,10 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
       const banner = field.closest(".battle-scene")?.querySelector<HTMLElement>(".battle-message-window");
       const bannerRect = banner?.getBoundingClientRect();
       if (bannerRect && bannerRect.height > 0 && bannerRect.bottom > layerRect.top) {
-        const clearance = 64 * (POP_SCALE[anchor.dataset.hitIntensity ?? ""] ?? 1);
+        // 64 는 레이어 안 px 다 — 화면 px(rect)로 옮긴다. 무대 배율·필드 정수 zoom 이 곱해져 있다(battle-feel r2:
+        // zoom 1.33 에서 큰 적 머리 위 숫자가 배너 뒤로 잘렸다).
+        const layerScale = layer.offsetHeight > 0 ? layerRect.height / layer.offsetHeight : 1;
+        const clearance = 64 * layerScale * (POP_SCALE[anchor.dataset.hitIntensity ?? ""] ?? 1);
         topPx = Math.max(topPx, bannerRect.bottom - layerRect.top + clearance);
       }
       popup.style.top = `${(topPx / layerRect.height) * 100}%`;

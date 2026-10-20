@@ -1,4 +1,5 @@
 import { observeActivitySave } from "./aiActivitySave";
+import { formatLocalCliCost } from "@/ai/localCliEngine";
 import { activityNote, activityPhase, recordActivityEvent } from "@/ai/activityTrace";
 import { createPiPublication } from "./aiPiPublication";
 import { createAssistantViewNavigation } from "@/editor/assistantViewNavigation";
@@ -276,7 +277,7 @@ export interface PiCommandSurface {
    */
   readonly onRunAudit?: (rows: readonly AuditEntry[]) => void;
   /** 이번 실행이 쓴 턴·토큰. 패널이 대화 합계로 쌓아 입력줄에 짧게 보여 준다. */
-  readonly onSpend?: (spend: { readonly turns: number; readonly tokens: number }) => void;
+  readonly onSpend?: (spend: { readonly turns: number; readonly tokens: number; readonly costUsd?: number; readonly billing?: "subscription" | "api" | "unknown" }) => void;
   /** 직접 누른 화면 이동만 follow를 쓴다. 자동 적용의 기본은 visible-only. */
   readonly focus?: "follow" | "visible-only";
   /**
@@ -640,11 +641,18 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
   const reportSpend = (): void => {
     let turns = 0;
     let tokens = 0;
+    let costUsd: number | undefined;
+    let billing: PiAgentStats["billing"];
     for (const stats of spendStats) {
       turns += stats.turns;
       tokens += stats.usage?.totalTokens ?? 0;
+      if (stats.costUsd !== undefined) costUsd = (costUsd ?? 0) + stats.costUsd;
+      billing ??= stats.billing;
     }
-    if (turns > 0 || tokens > 0) surface.onSpend?.({ turns, tokens });
+    if (turns > 0 || tokens > 0) surface.onSpend?.({ turns, tokens, ...(costUsd !== undefined ? { costUsd } : {}), ...(billing ? { billing } : {}) });
+    // 로컬 CLI 엔진은 차례마다 쓴 양을 한 줄로 남긴다(D8) — 구독이면 청구가 아니라 한도 사용이다.
+    const line = formatLocalCliCost({ ...(billing ? { billing } : {}), ...(costUsd !== undefined ? { costUsd } : {}), usage: { input: tokens, output: 0, cacheRead: 0, cacheWrite: 0 } });
+    if (line) surface.appendProcess?.(`이번 차례 · ${line}`);
   };
   const modelTask = composePiTask(command.goalMode && !isGoalCampaignTask(command.task) ? goalCampaignTask(command.task) : command.task, options.intentNote);
   let executionTask = modelTask;

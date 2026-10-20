@@ -15,7 +15,9 @@ from PIL import Image
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent.parent.parent
-KIT = ROOT / 'tiledata' / 'worldmap-kit' / 'kit'
+sys.path.insert(0, str(HERE))
+from kitdir import kit_asset, kit_dir  # noqa: E402
+KIT = kit_dir(ROOT) / 'kit'
 JOURNEY = 'fantasy-5act'
 PALETTE = 'original'
 MARGIN = 5   # 둘레 칸 수
@@ -70,7 +72,7 @@ def on_bg(im, s, bg=BG):
 
 def reference(out):
     """EasyRPG 월드 시트의 마을·성·탑 칸(정면 3/4 의 기준) 4배."""
-    sheet = Image.open(ROOT / 'public' / 'assets' / 'easyrpg-chipset-world.png').convert('RGB')
+    sheet = Image.open(kit_asset(ROOT, 'public/assets/easyrpg-chipset-world.png')).convert('RGB')
     arr = np.array(sheet.crop((288, 128, 384, 256)))
     im = icon_rgba(arr, (255, 103, 139), (254, 103, 139))
     on_bg(im, 4, (120, 150, 90, 255)).save(out)
@@ -181,7 +183,7 @@ def palette_of(set_id):
     _B, K, _KP, _W = _kit()
     iconset = K.IconSet(set_id)
     cols = {tuple(c) for c in iconset.sheet.reshape(-1, 3).tolist()}
-    world = np.array(Image.open(ROOT / 'public' / 'assets' / 'easyrpg-chipset-world.png').convert('RGB'))
+    world = np.array(Image.open(kit_asset(ROOT, 'public/assets/easyrpg-chipset-world.png')).convert('RGB'))
     cols |= {tuple(c) for c in world.reshape(-1, 3).tolist()}
     cols.discard(tuple(iconset.key))
     cols.discard(tuple(iconset.shadow_key))

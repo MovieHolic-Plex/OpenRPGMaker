@@ -1,0 +1,342 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c3b9faee1601a78beeb7617bd91edd6b8b5048f6fcdb70ae32979e34338c15dc",
+ "width": 48,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "고해소(3칸) (confessional)",
+ "label": "atlas_biome_interior/props34/confessional",
+ "profileHash": "1db03a95223e5b0b",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 12,
+  "darkV5": 32,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 7
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice slab",
+      "rows": "9-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "front face with curtains, door and lattice window",
+      "rows": "15-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "44-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 9-11 form a lighter orange band across the full 46px width. Row 12 is a lighter front-edge line (#d59147), and rows 13-14 are dark eave shadow. This matches the 'top + edge + eave' cabinet reference, so I count it as a top surface about 4 rows tall (rows 9-12). Below it, rows 15-47 are a vertical front face with curtains, a lattice window and a door. No receding side face is drawn, since the left post is front-facing."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The confessional has a dark-brown wood frame with a lighter top beam and trim, a lattice or panel door, and two purple curtains with a few tonal steps. The outlines and edge pixels lean brown or purple, not neutral black, and the measured near-neutral edge share is 0%. It has 10 visible tones per 16x16 tile and 0% near-flat coverage. That matches the hedge (9) and sits below the well (20) and stall (17), but it is clearly not a flat fill. Wood grain and the curtain folds give some texture, though less dense than the roofed well or the cheese stall. At 18 total colours it is lean but not shallow, and it would sit acceptably beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15610
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band / cornice slab",
+      "rows": "9-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "front face with curtained booths, lattice window and door",
+      "rows": "15-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band spans rows 9-11 in a mid-light orange (L~126). Row 12 is a lighter front-edge line (#d59147, L~157), and rows 13-14 are dark eave shadow (#744e2c, then #2a180b). Together these give a top surface about 4 rows deep over a front face of about 33 rows (rows 15-47). The front face holds purple curtains, a lattice window and a door. The silhouette is a plain rectangle 44-46 px wide. No receding side face is drawn. The top is thin, but the edge line plus shadow separates it from a flat front-facing cornice strip."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The confessional is a clean 3-tile wooden facade with a cornice, a lattice door and purple curtains. The dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood, which matches Beodeul. Near-flat coverage is 0%, so there are no large flat fills. Its 10 visible tones per tile are roughly level with the hedge (9) but about half of the comparable stall (17) and roofed well (20). With only 18 distinct colours in total (stall 40, well 38), each material (wood, curtain, trim) gets about 3-4 lightness steps against the 5-6 Beodeul uses. The wood reads mostly as banded planks with little per-plank grain, highlight or speckle, and the curtains are shaded shallowly. It is neat and consistent but a step flatter and thinner than the stall and well references, so it does not clearly reach the bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15545
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice slab",
+      "rows": "9-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 8-14 form a wide top band. Row 8 is the outline, rows 9-11 are a lit wood plane, and row 12 is a lighter front-edge line (#d59147). Rows 13-14 are darker eave shadow, with a small gold ornament at rows 12-14. Below it the front face runs from row 15 to row 47, about 33 rows. It holds two purple curtained bays, a central lattice window and a door, plus a base plinth at rows 42-47. The left strip at x≈5-9 is a frame post on the south face, not a receding side face. The top band is similar to the green cabinet reference (top plus edge line plus eave), so it counts as a top surface and not a rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The confessional is a wooden booth with a dark top cornice, purple curtains and a lattice door. Its outline is a dark brown that leans toward the wood, and 0% of its dark edge pixels are neutral, so it does not have the black sticker look. It has no flat fills (0% near-flat coverage). Wood panels show some banding and grain, and the curtains have a few fold stripes. However, it has only 10 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well, which are the closest references in size and complexity. It only matches the simple hedge at 9. Its total of 18 distinct colours is also well below the 38-40 of the stall and well. The wood and curtain ramps look like about 4 steps, not the 5-6 Beodeul uses, and the grain and per-plank detail are sparser than the references. A careful artist would likely see it as slightly flatter and thinner than the stall and well beside it, so with the doubt it fails."
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15927
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice slab",
+      "rows": "9-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "front face with curtained booths and center door",
+      "rows": "15-41",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "42-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 9-12 form a lighter orange band across the full width (columns x=11, 23 and 34 all read about L=121-127). It ends in a lighter front-edge line at row 12 (#d59147), followed by darker eave shadow in rows 13-14, which is the top surface of the cabinet. Below it the front face runs from row 15 to row 47 (about 33 rows), with two purple curtained booths, a center door with a grille window, and a base plinth. No receding side face is drawn. The row 8 outline is not counted as top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The outline is a tinted dark brown beside the wood, with 0% neutral dark edge pixels, so it avoids the sticker look. The measured flat coverage is 0%, and the cornice, lattice door and curtain folds give some structure. The candidate is thinner than the comparable large props on the board. It has 10 visible tones per tile against 17 for the cheese stall and 20 for the roofed well, and only 18 distinct colours in total against 38-40 for those two. It only matches the simple hedge (9 tones). By eye, the wood ramps are about 4 steps against the references' 5-6, and the big wall and panel areas are mostly clean planes with little per-plank grain or speckle. A careful artist would likely see it as flatter than the stall and well, so it fails when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17089
+  }
+ ],
+ "decidedAt": "2026-10-20T10:14:44.656Z",
+ "cells": {
+  "16": [
+   "12c53afd323197fc",
+   "3e54df3785d1fc38",
+   "4c165ed52914c1fd",
+   "579c4a3a92ffd80f",
+   "77a62f6ec46835a9",
+   "92aee1138fbf6c9d",
+   "a4631c461ab3dcd8",
+   "d901817a7fa5b322",
+   "e2e4102c7cc76be7"
+  ],
+  "24": [
+   "08e0a18255f1a041",
+   "1c03525680ae2e81",
+   "40125eb5c386dbe2",
+   "fe4eb70783fd73d5"
+  ],
+  "32": [
+   "15f5eafb82b6b55f",
+   "1fedf0c3ba0ecb4d",
+   "2b6f49e3020ddb1c",
+   "2f480003c4223475",
+   "3f3c5d0d4088122e",
+   "4c116807c96be9f3",
+   "54be2978e0e79ffe",
+   "703ec8bb2f0c9581",
+   "718a8a3b9b9cdd6e",
+   "7a39e0aa4fb60be8",
+   "862e5f8ab5cc357c",
+   "8aec7f4f9da5e0be",
+   "8d6da044bef59a1c",
+   "901e844d49f1c570",
+   "91fc5e55273f777f",
+   "9cd97fff5a9ffaa3",
+   "a5fe0ea58b7d9857",
+   "b3dfbd317ab2c4a1",
+   "b3fed95adf0b81f4",
+   "b87fe6aff83120c5",
+   "b8a00f18960dbcf0",
+   "bb77d42455f6b8ab",
+   "c59f420fcdf1d861",
+   "f9997189ae27eeff"
+  ],
+  "48": [
+   "374c7cd8669da33b"
+  ]
+ }
+}

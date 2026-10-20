@@ -905,6 +905,61 @@ for _d, _ko, _face in (('s', '남향', '남쪽(앞)'), ('n', '북향', '북쪽(�
     _reg()
 
 
+# ══ seats34 (3/4 다시 그리기) ══
+def _chair_fallen34(c):
+    """옆으로 쓰러진 대기 의자 3/4: 옆구리를 바닥에 대고 누워, 옆모습이 90° 돌아간 채 위를 본다 —
+    등받이는 바닥을 따라 왼쪽으로 눕고, 좌판은 세로로 서고, 쇠 다리 둘은 오른쪽(동)으로 뻗었다. 부재마다 윗면(밝음) + 남쪽 두께 면 1~2행."""
+    hl(c, 1, 15, 9, K('sumi', 0))                                                                     # 바닥 그늘
+    for y in (3, 9):                                                                                 # 쇠 다리(오른쪽으로 뻗어 누움)
+        hl(c, 9, y, 6, ST(3)); hl(c, 9, y + 1, 6, ST(0)); px(c, 15, y, ST(1)); px(c, 15, y + 1, K('sumi', 0))
+        hl(c, 9, y - 1, 6, K('sumi', 0)); hl(c, 9, y + 2, 6, K('sumi', 0))
+    vl(c, 13, 5, 4, ST(0))                                                                           # 다리 가로대
+    outline(c, 5, 1, 5, 13, K('sumi', 0))                                                             # 좌판(세로로 섬)
+    rc(c, 6, 2, 3, 9, K('sora', 1)); hl(c, 6, 2, 3, K('sora', 2)); vl(c, 6, 2, 9, K('sora', 2))
+    rc(c, 6, 11, 3, 2, K('sora', -1))                                                                # 좌판 남쪽 두께
+    line(c, 7, 4, 7, 6, K('kinari', -1))                                                             # 찢김
+    outline(c, 0, 9, 6, 6, K('sumi', 0))                                                              # 등받이(바닥을 따라 왼쪽으로 누움)
+    rc(c, 1, 10, 5, 2, K('sora', 1)); hl(c, 1, 10, 5, K('sora', 2))
+    rc(c, 1, 12, 5, 2, K('sora', -1))                                                                # 등받이 남쪽 두께
+    rc(c, 5, 10, 1, 2, K('sora', 1)); px(c, 5, 12, K('sora', -1)); px(c, 5, 13, K('sora', -1))       # 등받이·좌판 이음
+
+
+def _wheelchair34(c):
+    """버려진 휠체어 3/4(남쪽): 감색 비닐 등받이(위 테 2행 밝게) + 좌판 윗면 4행(가장 밝음)과 앞치마 2행,
+    양옆 큰 바퀴는 좌우 같은 2px 테(왼 바퀴 바깥이 밝고 오른 바퀴 바깥이 어둡다), 쇠 틀·앞 발판·작은 앞바퀴."""
+    import seat34 as S34
+    ST_ = lambda t: K('tekko', t)
+    for x in (3, 12): vl(c, x, 5, 11, ST_(1 if x == 3 else -1)); px(c, x, 5, K('sumi', 0)); px(c, x, 6, K('sumi', 0))   # 손잡이 기둥·고무 손잡이
+    rc(c, 4, 7, 8, 9, K('kon', -1)); hl(c, 4, 7, 8, K('kon', 1)); hl(c, 4, 8, 8, K('kon', 0))          # 등받이: 위 테 2행
+    vl(c, 4, 9, 7, K('kon', 0)); vl(c, 11, 8, 8, K('kon', -2)); hl(c, 5, 13, 6, K('kon', -2))           # 왼 테 밝게·오른 테 어둡게·처진 주름
+    line(c, 6, 10, 8, 12, K('kinari', -1))                                                             # 비닐 찢김(한 줄)
+    rc(c, 3, 16, 10, 4, K('kon', 1)); hl(c, 3, 16, 10, K('kon', 2)); vl(c, 3, 16, 4, K('kon', 2))      # 좌판 윗면 4행
+    vl(c, 12, 17, 3, K('kon', 0)); 
+    rc(c, 3, 20, 10, 2, K('kon', -1)); hl(c, 3, 21, 10, K('kon', -2))                                  # 앞치마(두께)
+    for x in (2, 13): rc(c, x, 14, 1, 2, ST_(2 if x == 2 else 0))                                      # 팔걸이 쇠
+    S34.silhouette(c, K('kon', -3), 2, 4, 14, 22)
+    for x in (2, 13): px(c, x, 5, K('sumi', 0))
+    hl(c, 2, 22, 12, ST_(-1)); hl(c, 3, 22, 10, ST_(0))                                                # 바퀴 축·틀
+    for x0, lit in ((0, True), (14, False)):                                                           # 큰 바퀴(세로 테, 같은 모양)
+        vl(c, x0, 14, 14, ST_(1) if lit else ST_(-1)); vl(c, x0 + 1, 14, 14, ST_(-1) if lit else ST_(-2))
+        px(c, x0, 14, ST_(-3)); px(c, x0 + 1, 14, ST_(-3)); px(c, x0, 27, ST_(-3)); px(c, x0 + 1, 27, ST_(-3))
+        px(c, x0, 15, ST_(2) if lit else ST_(0)); px(c, x0 + 1, 15, ST_(0) if lit else ST_(-1))
+    px(c, 14, 23, RU(-1))                                                        # 녹(한쪽씩, 엇갈림)
+    S34.leg(c, 4, 23, 3, 'tekko', 1); S34.leg(c, 10, 23, 3, 'tekko', 1)                              # 앞 다리
+    for x in (3, 9):                                                                                   # 발판(윗면 밝음 + 앞 두께)
+        hl(c, x, 26, 4, ST_(3)); hl(c, x, 27, 4, ST_(0)); px(c, x + 3, 27, ST_(-2))
+    for x in (4, 10): px(c, x, 28, ST_(-1)); px(c, x + 1, 28, ST_(-3)); hl(c, x, 29, 2, K('sumi', 0))  # 작은 앞바퀴
+
+
+PENDING_SEATS34 = {'hp-chair-fallen': _chair_fallen34, 'hp-wheelchair': _wheelchair34}
+SEATS34_PASS = set()          # object-gate PASS 영수증을 받은 id 만 — 이 id 들만 굽는 그림을 바꾼다
+for _k in SEATS34_PASS: R.objs[_k]['draw'] = PENDING_SEATS34[_k]
+# ══ /seats34 ══
+
+
+
+S34_STUDY2 = __import__('seat34').apply_study2(R)   # 사람 합격(2026-10-20) 앉는 기물 — 관문 pass 영수증 있는 것만 바꾼다
+
 def build(): return R.build()
 def selftest(): return R.selftest()
 

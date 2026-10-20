@@ -1,0 +1,307 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "131cf570383e81519bd126e0044bd571668dd573ffee2430f3ec4b7cfb18544b",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "tall round bar stool, navy seat, black post, chrome foot ring (no facing)",
+ "label": "seats34/jp_city_interior/ox-bar-stool",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 15,
+  "darkV5": 26,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "round navy seat",
+      "rows": "0-4",
+      "evidence": "b",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "chrome foot ring",
+      "rows": "10-12",
+      "evidence": "b",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat width profile runs 8,12,14,14,14,14,12,8 over rows 0-7. That is an ellipse: it widens and then narrows again, with an outline on rows 0 and 7. Rows 0-3 are light purple top surface. Row 4 is a mid-navy front-edge line, and rows 5-6 are dark navy shading that reads as the seat's thickness. Below the seat, the black post (rows 8-9, width 4) and the chrome foot ring (rows 10-14, with a highlight on row 11 and an ellipse-like width of 8-10) form the front face and supports. The seat surface is clearly seen from above, so this matches the green 'seat: top 5 + legs' and ellipse-cap references, not the band-2 or slab references."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The stool is small, about one to two tiles, yet it carries 15 distinct colours and a median of 15 per full tile. That is above prop-hedge (10) and close to stall-cheese (17) and well-roofed (20). Flat-fill coverage is 0%, so there are no large single-colour blocks. The dark edge pixels are 0% neutral, so the outlines lean toward the navy seat and dark post rather than being a uniform black sticker line. By eye, the seat has a highlight, mid and dark band, and the chrome ring and post add separate value steps, giving roughly 4 steps per material against about 5 in the references. The piece is a simple prop but is not thinner or flatter than the references, so a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17852
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "navy round seat",
+      "rows": "0-4",
+      "evidence": "b",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "chrome foot ring",
+      "rows": "10-14",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat width profile goes 8,12,14,14,14,14,12,8 over rows 0-7, so it widens and narrows again, which is an ellipse. Rows 1-3 are the lighter purple top with a highlight at row 2. Row 4 is a slightly darker edge line (#304080), and rows 5-6 are darker navy (#1f295c) for the seat's front thickness. A narrow black post (4px wide, rows 8-9) and a chrome foot ring (rows 10-14, widths 8-10-8-10-8) support it. The ring has a highlight at row 11 and a dark rim at row 13, so it reads as an elliptical ring. The seat is seen from above with a visible front face and support, as in the green barrel and column ellipse references."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The stool is a small thin prop, comparable in size to the bench and lamp references. Its 15 distinct colours match or exceed the bench (14), lamp (14) and hedge (11). Median colours per tile is 15, above the hedge's 10, so density holds up. Flat-fill coverage is 0% and 0% of dark edge pixels are neutral, so the outline is tinted (dark navy beside the seat) rather than a uniform black sticker line. The seat shows a highlight, mid, dark and deep navy ramp of about 4 steps, with a separate chrome ring. That is slightly short of the references' 5-6 steps but acceptable for such a small object. A careful artist would accept it next to the bench and lamp without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15705
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "navy round seat",
+      "rows": "0-4",
+      "evidence": "b",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "chrome foot ring",
+      "rows": "10-14",
+      "evidence": "b",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat silhouette widths run 8,12,14,14,14,14,12,8, so it widens and narrows again as an ellipse. Rows 1-3 are a light lavender top surface with a darker blue edge line at row 4. Rows 5-6 are a navy front band (the seat thickness), and row 7 is the outline. Below that, a narrow black post (rows 8-9, width 4) leads to a chrome foot ring (rows 10-14). The ring has a bright top row at 11 and dark shading beneath, so it reads as a ring seen from above. The seat is clearly seen from above with a front face of more than 3 rows, which matches the green 'barrel: ellipse top' and 'seat: top 5 + legs' references."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The stool is a small, thin prop, so I judged it against the thin references (bench, lamp) as well as the larger ones. The measured facts back it up: 15 distinct colours is at or above the bench (14) and lamp (14) and close to the hedge (11). Its median of 15 colours per tile is within the range of the hedge (10), stall (17) and well (20). Flat-fill coverage is 0%, so there are no large single-colour areas. The dark edge pixels are 0% neutral, so the outline carries a tint (dark navy on the seat) rather than a sticker-like black line, unlike the lamp at 100% neutral. By eye, the navy seat has a highlight, mid and shadow band with a rim. The post and the chrome ring are separated by value, with a bright ring highlight. The ramps (about 4 steps) are slightly shallower than Beodeul's 5-6, but this is a small, simple object. A careful artist would accept it next to the bench and lamp without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17691
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "navy round seat (ellipse lid)",
+      "rows": "0-4",
+      "evidence": "b",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "black post and chrome foot ring",
+      "rows": "8-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat silhouette widens from 8 at row 0 to 12 at row 1 and 14 at rows 2-5, then narrows to 12 at row 6 and 8 at row 7. This is an ellipse. Rows 1-3 are the lighter purple top with a highlight, and row 4 is a darker blue edge line. Rows 5-6 are the dark navy front/skirt of the seat. The post (rows 8-9, width 4) and the foot ring (rows 10-15) are thin supports. The foot ring is an open-support detail with its own flat rim, so the seat reads as seen from above on a stool."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The stool is a small single-tile prop, comparable in size to the bench and lamp references. It uses 15 distinct colours, against 14 for the bench and lamp and 11 for the hedge, so it is not thinner than the simple references. Its median of 15 colours per tile is above the hedge (10) and near the stall (17). Flat-fill coverage is 0%. None of its dark edge pixels are neutral (0%), so the outline leans to the material tone, a dark navy seat edge and a tinted post, not a uniform black sticker line. The seat shows a highlight, mid and dark cushion ramp with a rim, and the chrome ring and post carry a few value steps. That is about 4 steps, slightly below the references' 5-6 but acceptable for such a small, thin object. It would sit next to the bench and lamp without looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "앞면 2행 < 3 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "앞면 2행 < 3 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15197
+  }
+ ],
+ "decidedAt": "2026-10-20T08:55:46.236Z",
+ "cells": {
+  "16": [
+   "2b18184a747c30ba"
+  ],
+  "24": [
+   "4d2518d807d6f65a",
+   "6431458130ac668c",
+   "7649447101e412c7",
+   "78a2bab031ae5253",
+   "d74894e77028d0ea",
+   "f1ab18867aeb14c4"
+  ],
+  "32": [
+   "1ead06e332844be2",
+   "5a4a53d19a14d3f0",
+   "d37162b4033392c9",
+   "d966ff61fed21835",
+   "dbc38931fe1f1ff8",
+   "e0f922f39d6a1b72"
+  ],
+  "48": [
+   "78a1dfd2869e9adb",
+   "78c8505df7df1f18",
+   "8847acaaa31de31a",
+   "9c9d37ceb16c7b51",
+   "e540767b130b943e",
+   "fbfbb20989bb762d"
+  ]
+ }
+}

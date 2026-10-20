@@ -1,0 +1,374 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6e2d14a08223c911c06faa899b3f613900d38203f7c4202650ca850a90abbaca",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "fd-chair-s",
+ "label": "seats34/jp_city_interior/fd-chair-s",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 4 (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)",
+  "화풍: 질감 없음 (1/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 4 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)",
+   "질감 없음 (1/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 26,
+  "nearBlackEdge": 0.67,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ladder backrest with posts",
+      "rows": "17-24",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red cushion seat",
+      "rows": "25-28",
+      "evidence": "none",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The ladder backrest (rows 17-24) is exempt as seat_back. The seat is a red cushion at rows 25-28: row 25 is a dark back edge, rows 26-27 are a light pink strip (L=163), and row 28 is a dark red front band (L=80). Only the 2 light rows could be a top surface. That is a thin strip like the 'seat: band 2' wrong reference, and there is no widening and narrowing ellipse. Below the seat, rows 29-31 are only dark legs, 6 px wide against the 10 px seat. The front face is the dark red band plus the legs, about 4 rows. The sitting surface shows no real top, so the chair reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The chair is a small, sparse piece of about 10x12 source pixels, so the per-tile facts read 0 and I judged it by eye against the bench. It uses only 9 distinct colours in total, against 14 for the bench and 38-40 for the stall and well. That splits into roughly 3 tones for the frame and 2-3 for the red seat, which is shallower than the 5-6 steps on the bench's wood. The outline is tinted rather than neutral (0% near-neutral dark edge pixels), so it reads as a dark material tone and not a black sticker line. There are no large flat fills, but the frame and seat are mostly a single tone each, with little grain or per-part highlighting. Next to the bench it looks thinner and flatter, with fewer shading steps, so I fail it on shallow shading and density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18024
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ladder backrest",
+      "rows": "17-24",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red cushion seat",
+      "rows": "25-28",
+      "evidence": "none",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The ladder backrest (rows 17-24) is exempt as seat_back. The seat is the red cushion in rows 25-28. Row 25 is a dark outline, rows 26-27 are a light pink band (2 rows, the only possible top), and row 28 is a darker red front band. The widths stay a constant 10 in rows 25-29, so there is no widening and narrowing ellipse. Below the cushion are only short legs in rows 29-31, narrowing to 6 wide. The seat shows a 2-row strip plus a front band with no deeper top, which matches the 'seat band 2' wrong reference, so it is front_elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small ladder-back chair, less than one tile, so the per-tile facts read 0 and cannot be used for or against it. Its dark edge pixels are 0% near-neutral, so the outline is tinted and not a black sticker line. It has only 9 distinct colours in total, against 14 for prop-bench-wood, the closest reference of the same kind. By eye, the wood back and legs show about 3 steps, plus a red seat with little grain or per-slat highlight. The bench has a clearer light, mid and dark ramp with grain on the slats. Beside it the chair looks thinner and flatter. Because it is a sparse piece and the call is close, I fail it: a careful artist would see it as lower in shading depth and detail than the reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18073
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ladder backrest",
+      "rows": "17-24",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red cushion seat",
+      "rows": "26-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs",
+      "rows": "29-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The ladder backrest (rows 17-24) is exempt as seat_back. The seat is a red cushion at rows 26-28 under a dark shadow line at row 25. Its light rows 26-27 (#f78175) form a strip of at most 2 rows, with no ellipse and no distinct front-edge line, then a darker front row 28. That is a rim-sized strip rather than a seat surface seen from above. Below it are the front face and legs at rows 28-31. The seat shows no real top surface, so it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The chair is tiny, about 9x12 source pixels, and uses only 9 distinct colours in total. That has to cover the wood frame, the red seat and the outline. The measured facts show no flat fills (0% near-flat) and a tinted outline (0% near-neutral dark edges), so it does not look like a black-sticker piece. Per-tile facts are 0 because the piece is smaller than one tile, so I judged by eye. Against prop-bench-wood (14 colours, about 5 wood steps with grain and highlights), each material on the chair gets only about 2-3 steps. The back and legs read as a flat tone with an outline and almost no grain or per-part highlights. It looks thinner and flatter than the bench, the nearest reference of the same kind and scale. Since it is borderline, it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20572
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ladder backrest with two rungs",
+      "rows": "17-24",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red cushion seat",
+      "rows": "25-28",
+      "evidence": "none",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs",
+      "rows": "29-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The ladder backrest (rows 17-24) is exempt as seat_back. The seat is a red cushion in rows 25-28: row 25 is a dark back edge, rows 26-27 are a light pink band (about 2 rows), and row 28 is a darker red front edge. That is a 2-row strip, with no ellipse and no widening and narrowing of the width profile (width 10 throughout rows 25-29). The light band reads as the cushion's front face catching light, not a foreshortened top. Below it are only the legs (rows 29-31, width 6) and the 1-row darker front edge. This matches the 'seat: band 2' wrong reference, so the seat shows no real top surface and the chair is front_elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The chair is a small, simple prop with only 9 distinct colours in total, against 14 for the bench and lamp and 38-40 for the stall and well. The tile-level facts are 0 for the candidate and for the bench and lamp, because the pieces are smaller than a tile, so I judged density by eye. The outline pixels carry a tint (0% near-neutral), so they read as dark brown beside wood and dark red beside the cushion, which is correct. The wood back and legs show about 3 steps (dark, mid, light) and the red seat about 2, with no grain, per-plank highlights or texture dots. The bench shows a clear highlight edge, plank shading and a dark underside, so the chair looks thinner and flatter next to it. The measured facts show no flat 5x5 blocks, but that is only because the piece is tiny. It is cleanly drawn but shallow, and a careful artist would not accept it beside the reference without more shading steps and texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19799
+  }
+ ],
+ "decidedAt": "2026-10-20T14:09:20.485Z",
+ "cells": {
+  "16": [
+   "0ea8f5f74579de7a"
+  ],
+  "24": [
+   "09ae1ccf53c57298",
+   "0c6d9f67d10b4adb",
+   "33d93c410bf0fbfb",
+   "3ba315a69c201bde",
+   "56489f8001792b4d",
+   "80cdfd0d307e206f",
+   "8d36d6b8737471ff",
+   "dacffe2883ebe33a",
+   "dbbdb59f0c1fa7bd"
+  ],
+  "32": [
+   "862a68472136cb73",
+   "9e8b90b5d7efd59d",
+   "cbb5f4a899086293"
+  ],
+  "48": [
+   "07cf0a0eb23ca7a6",
+   "2f2d4e16b388c535",
+   "a2b9fd4597b9086d",
+   "abe8627d27d32286",
+   "f732e389fa252b34",
+   "f9aa542e4b8cfd74"
+  ]
+ }
+}

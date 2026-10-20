@@ -1,0 +1,358 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8a45315ffdfb88bfcad8df9115ce68b49b7c89b4a4632a879f8681ea2532f22e",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "office water cooler",
+ "label": "modern_city_interior/office-water-cooler",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "water bottle on top",
+      "rows": "0-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cooler body top band",
+      "rows": "12-16",
+      "evidence": "none",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cooler body front with taps and drip tray",
+      "rows": "17-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The body spans rows 11-30 at a constant width of 14. It is drawn face-on. Row 12 is a 1-row light rim and rows 13-15 are a near-white flat panel. Row 16 is a thin darker line, but no eave shadow follows it. The red and blue taps, the grey drip-tray bars (rows 22-25) and the base are all vertical front details. There is no ellipse and no receding top plane. The width stays constant down the body, so no top surface is visible. The blue bottle on top is a placed object (decor). Its neck only overlaps rows 11-13 and does not reveal a top surface on the body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The references are whole buildings and the candidate is a small single-tile prop, so the kinds do not match and the comparison is only approximate. On the measured facts it holds up: 10 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is tinted rather than black. By eye the bottle has light, mid and dark blue steps with a highlight, and the body has white, grey and blue-grey steps, giving about 4 steps against the references' 5-6. There are no large flat fills. It is slightly simpler than the building materials but not a flat sticker, and a careful artist would accept it next to the references for a small prop.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 27408
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "water bottle on top",
+      "rows": "0-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cooler body top band",
+      "rows": "12-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cooler front face with taps and drip tray",
+      "rows": "17-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The cooler body (rows 11-30, width 14) starts with a 1-row light rim at row 12. Rows 13-15 are a bright white band, lighter than the face below, and row 16 is a darker front-edge line (#a6abb1). Below it the front face runs rows 17-29, with the red and blue taps and a drip-tray stripe at rows 22-24. The top band is only about 4 rows and has no eave shadow, so it is a modest top surface, but the edge line supports reading it as one. The bottle on top (rows 0-11) is decor placed on the body. A water cooler is an appliance, not a large structure like a gate or building, so the supplied kind fits poorly."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The references are whole buildings (roof, walls, door), but the candidate is a small single-tile prop, so the kind does not match and I judged it as a thin or sparse object. It reads as about 4 lightness steps per material: the blue bottle has a highlight, light and mid tone, and the white and grey body has a light, mid and dark base. That is fewer than the 5-6 steps on the reference roofs and walls. The dark edge pixels are 0% neutral, so the outline is tinted: dark blue-grey beside the bottle and body, not a black sticker line. Near-flat coverage is 0%, the same as both references, so there are no 5x5 flat fills. It has 10 visible tones per tile against 12 and 10 for the references, which matches the stone house. Density by eye is only slightly lower because the object is small and simple. A careful artist would accept it beside the references without it looking clearly flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 28570
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "water jug (bottle and neck) on top of the cooler",
+      "rows": "0-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cooler top (light band where the jug sits)",
+      "rows": "12-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cooler front face with taps and drip tray slots",
+      "rows": "17-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The jug in rows 0-11 is a goods item on top of the body, so it counts as decor. The main body is 14 px wide from row 11 to row 30. At rows 12-16 there is a light band: row 12 is a lighter line, rows 13-15 are near-white (L~249), and row 16 is a darker 1-row front-edge line (L~170). Below it the front face runs from row 17 to row 30 and has the red and blue taps and the slot bands, with a shading line at row 25 and an edge at row 29. The top band is short, about 4 rows, and has no distinct eave shadow, so it is a weak top surface. It still ends in an edge line, so I read it as a top. The kind label (a large structure such as a gate or building) does not fit a small appliance."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The references are whole buildings with tiled roofs, plaster and stone, but the candidate is a single small prop about one tile wide. The comparison is therefore only partly like-for-like. The measured facts are fine: 10 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and 0% neutral dark edges, so the outline is tinted rather than near-black. By eye, though, the jug, white body and base each show only about 3-4 lightness steps against the references' 5-6 per material. The large white and grey body panel has little grain or speckle, unlike the per-tile roof highlights and stone-by-stone shading in the references. It reads cleanly but somewhat thin and sticker-like beside them. With the kind mismatch and the shallower ramps, I would not accept it as equal to the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 28946
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "water bottle (jug) on top",
+      "rows": "0-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cooler body top surface",
+      "rows": "12-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cooler body front face (drip tray band, taps)",
+      "rows": "17-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The blue bottle in rows 0-11 is a goods item standing on the body, so it counts as decor. The main body spans rows 11-30 at a constant 14 px wide. Its top is a band at rows 12-16: row 12 is a light edge, rows 13-15 are bright white (L about 249), and row 16 is a darker front-edge line (L=170). The bottle neck sits in this band, and a shadow pixel at row 13 under the neck suggests the band is a horizontal surface. Below the line is a vertical front face at rows 17-29 (L about 213) with the red and blue taps and the drip-tray band at rows 22-25. There is no receding side face. The structure is a top band of 5 rows over a front face of 13 rows, similar to the green cabinet reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The references are whole houses, but the candidate is a tiny single-tile-wide prop (a blue jug on a white and grey cooler body), so the kind match is weak. The measured facts are acceptable: 10 visible tones per tile against 10-12 for the references, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is tinted (dark blue-grey beside the material) and not a black sticker line. By eye it is still thin. The whole piece has only 17 distinct colours against 66-185 for the references. Each material (jug, body, base) has about 3-4 lightness steps, short of the 5-6 per material on the houses. There is some highlight and shadow on the jug and body but little grain or speckle, so it reads cleaner and flatter than the references' tile scallops, plaster speckle and stone shading. It is a close call, but a careful artist would likely see it as slightly simpler and more icon-like than the Beodeul standard. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21827
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.133Z",
+ "cells": {
+  "16": [
+   "0dcc22243be66420",
+   "5ac5704cf35ae133"
+  ],
+  "24": [
+   "0ef29d836baeaf32",
+   "157c9740ce2724e7",
+   "48fb4cb9ce8ec65c",
+   "4a95e3bf40df73bc",
+   "560b868b12e2ad71",
+   "66067939d5aeb675",
+   "796fd10cba85c320",
+   "87f97125bf184115",
+   "8bae9dbbdb4b423c",
+   "9ce80d01587d1e7c",
+   "ca33175c2ad46041",
+   "f43be6ca2b864d2b"
+  ],
+  "32": [
+   "03879b6dc816da0f",
+   "2a9614812d394c84",
+   "5d1f43231d45e02d"
+  ],
+  "48": [
+   "5506fae83815daf3",
+   "8849e709cb022d39",
+   "a0514f060df52dee",
+   "b78b56ff1337aebd",
+   "e3872d54a02f86d2",
+   "eb37264b3129b5b5"
+  ]
+ }
+}

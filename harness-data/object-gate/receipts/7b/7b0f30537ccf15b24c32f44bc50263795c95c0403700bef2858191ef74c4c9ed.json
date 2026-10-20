@@ -1,0 +1,355 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7b0f30537ccf15b24c32f44bc50263795c95c0403700bef2858191ef74c4c9ed",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "school pipe chair (faces north)",
+ "label": "seats34/jp_city_interior/sc-music-chair-n",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 4 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 4 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 51,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest/seat block",
+      "rows": "2-4",
+      "evidence": "none",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat/front panel",
+      "rows": "5-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The body is a 10px-wide box on rows 1-10. Rows 2-3 are a 2-row cream band, row 4 is a dark line, and rows 5-9 are tan to brown. The band is only 2 rows, so it reads as a panel face or rim, not a seat seen from above. No ellipse and no contents are visible. Legs on rows 11-15 (4px wide, with a crossbar on row 13) support a mostly vertical, face-on block. Because the chair faces north, the backrest back hides any seat surface, so no real horizontal seat surface is shown."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, sparse prop of about 10x14 source pixels, so the per-tile median of 0 says nothing against it. Its 12 distinct colours are close to the bench (14), hedge (11) and lamp (14). Flat-fill coverage is 0%, the same as the bench. The dark edge pixels are 47% near-neutral, almost identical to the bench at 44%, so the outline is a mix of neutral and brown-tinted pixels rather than a uniform black sticker line. By eye, the chair back has a light panel with a darker frame, and the seat and legs use separate brown steps. That gives about 4 steps on the main materials against the bench's 5. It reads slightly simpler than the bench but is not flatter or more sticker-like, so a careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21927
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat/backrest block",
+      "rows": "2-3",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face of block",
+      "rows": "5-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The body is a 10px-wide block over rows 1-10 with a dark outline on rows 1 and 10. A cream band on rows 2-3 is followed by a dark line on row 4, then a tan row 5 and brown rows 6-9. The cream band is only 2 rows tall, so it reads as a rim or a back-panel top rather than a seat seen from above. There is no ellipse and no visible contents. Rows 11-15 are two thin 4px legs. This matches the 'seat: band 2' wrong reference, so the seat surface is not seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate chair is a very small sprite (about 10x16 px) with 12 distinct colours, close to the bench's 14 and the hedge's 11, so the numbers alone don't mark it as shallow. By eye, though, it is thin: the backrest and seat show only about 3 lightness steps (a light seat, a mid wood back, a dark leg/frame) and little grain or texture dotting. The 47% near-neutral dark edge share is similar to the bench's 44%, so the outline is mixed, partly grey-black and partly tinted. The bench reference carries more steps and visible wood grain with a lighter top highlight. Next to the references the chair looks flatter and more sticker-like. With no clear per-material ramp and no texture, I fail it when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18747
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat/back block (cream band)",
+      "rows": "2-3",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brown panel (backrest seen from behind)",
+      "rows": "5-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs and crossbar",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Rows 1-10 are one 10px-wide block: a dark outline at row 1, a light cream band at rows 2-3, a dark line at row 4, brown face at rows 5-9, and an outline at row 10. The cream band is only 2 rows tall, which is a rim-level top like the 'seat band 2' wrong reference, not a 5-row seat plane. The brown block is a flat vertical panel, and the thin legs (width 4, rows 11-15) with a crossbar at row 13 hang below it. No seat surface, ellipse, or contents are visible from above, so the chair reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The chair is a small, thin prop, so the per-tile median of 0 says nothing against it. The closest reference is prop-bench-wood, which is also small with a median of 0. The chair has 12 distinct colours against the bench's 14, and 0% 5x5 flat-fill coverage, the same as the bench. Its dark edge pixels are 47% near-neutral against the bench's 44%, so the outline is a mix of tinted and neutral pixels, not a uniform black sticker line. The back panel, seat and legs show separate value steps, and the back carries some speckle. It has a little fewer steps than the bench, but a careful artist would accept it next to the bench without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18853
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest/top panel (cream band)",
+      "rows": "2-3",
+      "evidence": "none",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat/lower body block",
+      "rows": "5-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The body is a 10px-wide box in rows 1-10 with a dark outline at row 1 and row 10. Rows 2-3 are a cream band (L=216) that ends in a dark line at row 4. That band is only 2 rows, so it reads as a rim or a panel top, not a seat surface. Rows 5-9 are tan to brown (L 166, 131, then 95) with no edge line or ellipse. They look like a vertical face seen from behind. The width profile is constant at 10 for rows 1-10, with no widening and narrowing for a seat ellipse. Below the body, narrow 4px pipe legs run through rows 11-15 with a thin crossbar at row 13. No seat surface is visible from above, so the drawing reads as a front elevation, like the 'seat band 2' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The chair is a small single-object prop, close in scale to the bench reference, so per-tile density (0 for both) is not usable and I judged by eye. Its 12 distinct colours are near the bench's 14, and flat-fill coverage is 0%, the same as every reference. 47% of its dark edge pixels are neutral, against 44% for the bench, so its outline sits at the same mixed level: part neutral, part tinted. The seat, back panel and legs show about 4 value steps with some pixel variation, a little shallower than the bench's wood ramp but not a flat sticker. A careful artist would accept it next to the bench without it looking clearly thinner or flatter. At this tiny size the image is hard to read, which is the main uncertainty.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24769
+  }
+ ],
+ "decidedAt": "2026-10-20T09:02:37.244Z",
+ "cells": {
+  "16": [
+   "fc69ee68978ff7ed"
+  ],
+  "24": [
+   "02a5e839963bb204",
+   "1caf3773dffc7791",
+   "385a18c4dd085bcd",
+   "3b05184288802a3d",
+   "ac8fe61421243e40",
+   "c8c3325c0df51ea9"
+  ],
+  "32": [
+   "1070f1fb3974ee32",
+   "22eae82e86316048",
+   "93fd81361bb68b9b",
+   "a5727ca542e0d155",
+   "c3bb4700e313e224",
+   "d73fc2dfdba6fdf1"
+  ],
+  "48": [
+   "03411fc611317a1b",
+   "5215f2d5351d4971",
+   "761a5bdf58aa8c18",
+   "85ab4e12aef14bc4",
+   "a579d6162fee574d",
+   "b7127ee852748ece"
+  ]
+ }
+}

@@ -1,0 +1,107 @@
+[
+ {
+  "id": "dept-rack-cool",
+  "why": "quality FAIL (rubric Q1-Q3): barcode grid in a black box on a stick",
+  "source": "Argon rubric scan of 319 PASS/false-FAIL props, confirmed by eye at 3x"
+ },
+ {
+  "id": "dept-rack-mono",
+  "why": "quality FAIL (rubric Q1-Q3): barcode grid in a black box on a stick",
+  "source": "Argon rubric scan of 319 PASS/false-FAIL props, confirmed by eye at 3x"
+ },
+ {
+  "id": "dept-rack-pastel",
+  "why": "quality FAIL (rubric Q1-Q3): barcode grid in a black box on a stick",
+  "source": "Argon rubric scan of 319 PASS/false-FAIL props, confirmed by eye at 3x"
+ },
+ {
+  "id": "dept-rack-warm",
+  "why": "quality FAIL (rubric Q1-Q3): barcode grid in a black box on a stick",
+  "source": "Argon rubric scan of 319 PASS/false-FAIL props, confirmed by eye at 3x"
+ },
+ {
+  "id": "hospital-curtain-screen",
+  "why": "quality FAIL (rubric Q1-Q3): reads as a green test tube",
+  "source": "Argon rubric scan of 319 PASS/false-FAIL props, confirmed by eye at 3x"
+ },
+ {
+  "id": "home-drying-rack",
+  "why": "quality FAIL (rubric Q1-Q3): reads as a window frame",
+  "source": "Argon rubric scan of 319 PASS/false-FAIL props, confirmed by eye at 3x"
+ },
+ {
+  "id": "mart-cart-bay",
+  "why": "quality FAIL (rubric Q1-Q3): reads as a grey radiator",
+  "source": "Argon rubric scan of 319 PASS/false-FAIL props, confirmed by eye at 3x"
+ },
+ {
+  "id": "kinder-play-mat",
+  "why": "quality FAIL (rubric Q1-Q3): white crosses read as gifts/graves",
+  "source": "Argon rubric scan of 319 PASS/false-FAIL props, confirmed by eye at 3x"
+ },
+ {
+  "id": "jp-tokonoma",
+  "why": "quality FAIL (rubric Q1-Q3): scroll reads as a Christian cross",
+  "source": "Argon rubric scan of 319 PASS/false-FAIL props, confirmed by eye at 3x"
+ },
+ {
+  "id": "court-witness-stand",
+  "why": "quality FAIL (rubric Q1-Q3): black block + white cross reads as a grave",
+  "source": "Argon rubric scan of 319 PASS/false-FAIL props, confirmed by eye at 3x"
+ },
+ {
+  "id": "infirmary-eye-chart",
+  "why": "quality FAIL (rubric Q1-Q3): blank domino",
+  "source": "Argon rubric scan of 319 PASS/false-FAIL props, confirmed by eye at 3x"
+ },
+ {
+  "id": "mci-hosp-bed",
+  "why": "quality FAIL (rubric Q1-Q3): flat strip, no headboard/footboard",
+  "source": "Argon rubric scan of 319 PASS/false-FAIL props, confirmed by eye at 3x"
+ },
+ {
+  "id": "mci-pallet",
+  "why": "quality FAIL (rubric Q1-Q3): flat boxes, no tops",
+  "source": "Argon rubric scan of 319 PASS/false-FAIL props, confirmed by eye at 3x"
+ },
+ {
+  "id": "mci-toilet",
+  "why": "quality FAIL (rubric Q1-Q3): flat cistern box",
+  "source": "Argon rubric scan of 319 PASS/false-FAIL props, confirmed by eye at 3x"
+ },
+ {
+  "id": "manga-booth",
+  "why": "quality FAIL (rubric Q1-Q3): flat slab with stickers",
+  "source": "Argon rubric scan of 319 PASS/false-FAIL props, confirmed by eye at 3x"
+ },
+ {
+  "id": "cafe-maid-stage",
+  "why": "quality FAIL (rubric Q1-Q3): flat pink card, no stage floor",
+  "source": "Argon rubric scan of 319 PASS/false-FAIL props, confirmed by eye at 3x"
+ },
+ {
+  "id": "tr-bus-bay",
+  "why": "quality FAIL (rubric Q1-Q3): two unrelated blocks",
+  "source": "Argon rubric scan of 319 PASS/false-FAIL props, confirmed by eye at 3x"
+ },
+ {
+  "id": "svc-arcade-shopfront",
+  "why": "quality FAIL (rubric Q1-Q3): flat poster with stick figure",
+  "source": "Argon rubric scan of 319 PASS/false-FAIL props, confirmed by eye at 3x"
+ },
+ {
+  "id": "train-luggage-rack",
+  "why": "quality FAIL (rubric Q1-Q3): posters overpower the rack",
+  "source": "Argon rubric scan of 319 PASS/false-FAIL props, confirmed by eye at 3x"
+ },
+ {
+  "id": "home-ofuro",
+  "why": "quality FAIL (rubric Q1-Q3): reads as a microwave",
+  "source": "Argon rubric scan of 319 PASS/false-FAIL props, confirmed by eye at 3x"
+ },
+ {
+  "id": "svc-salon-basin",
+  "why": "quality FAIL (rubric Q1-Q3): reads as a washing machine",
+  "source": "Argon rubric scan of 319 PASS/false-FAIL props, confirmed by eye at 3x"
+ }
+]

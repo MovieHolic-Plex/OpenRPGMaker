@@ -1,0 +1,354 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "261e13003d1cee8db7e2fd70eec890d19e1a9364ddf3bbe2e562b2620a3d7f0e",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "home school bag",
+ "label": "modern_city_interior/home-school-bag",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 0/4)",
+  "3/4: 윗면 3행 < 4 (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)",
+  "화풍: 질감 없음 (1/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 0/4)",
+   "윗면 3행 < 4 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (2/4)",
+   "질감 없음 (1/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 7,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top flap / lid",
+      "rows": "2-4",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "front pocket body with buckle",
+      "rows": "6-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The bag is a closed red satchel with no visible opening, so the container kind fits only loosely. Rows 2-4 form a lighter flap band, with a highlight on rows 3-4, ending in a dark front-edge line at row 5. That is evidence (a), but the band is only 3 rows, and it could equally be read as a face-on flap. Below it, rows 6-13 are the front face, with a grey buckle on rows 9-10 and a darker bottom shadow on rows 11-13. No side face is drawn, and the silhouette is 12-14 px wide, outlined in dark navy."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small red satchel with a dark red-brown outline, a lighter red body, a flap and a small clasp. The outline is tinted by the neighbouring material (0% near-neutral edge pixels), so it is not a sticker-style black line. It is drawn with only 7 colours in total, against 11 to 40 for the references (hedge 11, bench 14, lamp 14, well 38, stall 40). The main red ramp has only about 3 steps (outline, mid, highlight), where the references use 5 or 6 per material. There is no grain or per-surface texture on the body, only a flap seam and a clasp. The 7 visible tones on its single tile are below the hedge at 9, the well at 20 and the stall at 17. It has no flat 5x5 fills, but at this size it looks thinner and flatter than the references, so a careful artist would not accept it beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17894
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bag flap / top band",
+      "rows": "2-4",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "clasp on front",
+      "rows": "9-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is 12 px wide at rows 1-4 and 14 px wide at rows 5-12. Rows 2-4 form a lighter pink band (L=147) that ends in a dark edge line at row 5 (L=51, #601e28), which matches evidence (a). Below it, rows 6-10 are the red front face (L=98), and rows 11-13 are darker lower rows. The grey clasp at rows 9-10 is a small detail on the front. The top band is only 3 rows and could be read as a flap seen face-on. The edge line and the narrower back silhouette above the wider body are enough to count it as a top surface. The bag is closed, so no opening or contents are visible, and the 'container with an opening' kind fits only loosely."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny red bag of about 7 colours in total. It reads as a flat body with a lighter flap, a clasp and a dark red outline, so about 3 steps on the main material. The outline is a tinted dark red, with 0% near-neutral edge pixels, so it is not a black sticker line. The measured facts do not flag flat fills (0% near-flat). That is only because the piece is so small that no 5x5 block fits. By eye the bag has no leather grain, stitching dots or per-surface highlights. The references (hedge, well, stall) carry 9-20 visible tones per tile with clustered texture and 5-6 shading steps. The bag is clearly thinner and flatter than those, and it looks like a simple icon rather than a shaded Beodeul prop. It is small and simple, but a careful artist would not accept it next to the references without it looking flatter.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 19929
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top flap / lid",
+      "rows": "2-4",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front body with buckle",
+      "rows": "6-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The bag is a red body with a flap on top. Rows 2-4 form a 3-row band that is lighter at rows 3-4. It ends in a dark front-edge line at row 5, and the band is narrower (12 px) than the body below (14 px). That is weak evidence (a) for a top surface. Below it, rows 6-13 are a front face of about 8 rows, with a silver buckle at rows 9-10 and a dark base at rows 11-13. No opening or contents are visible, so this is a closed bag, not an open container. The top band is thin, and it could also be read as a front-facing flap."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The bag is a small, sparse prop of about 14x12 px with only 7 distinct colours in total, against 14 for the bench and lamp, 11 for the hedge and 38-40 for the stall and well. Its red ramp has about 4 steps (highlight, light, mid, dark/outline), plus a small clasp tone. That is fewer than Beodeul's 5-6 steps per material, and the bag reads as a clean icon with little grain or per-surface dotting. The outline is a dark red-brown tinted to the body, and the measured 0% near-neutral edge share confirms it is not near-black. Near-flat coverage is 0% and there are no large flat fills. The 7 visible tones per tile are close to the hedge's 9, but the piece is still thinner and more sticker-like than the references. A careful artist would likely ask for more shading steps and some texture on the flap and body, and with doubt the call is fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21604
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bag flap / top band",
+      "rows": "2-4",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bag front body with buckle",
+      "rows": "6-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band at rows 2-4 is a lighter pink plane (the lightest at rows 3-4, L=147). It ends in a dark front-edge line at row 5 (#601e28), which is the top surface evidence (a). Below it the front face runs rows 6-13 (8 rows) in uniform red, with a grey buckle at rows 9-10 and a dark hem at rows 11-13. The silhouette widens from 12 to 14 px at row 5, which suggests a flap over a fuller body. The top is only 3 rows, so it is shallow, and no opening or contents are visible, so the bag is closed. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The bag is a small red satchel with a lighter flap, a clasp and a dark red-brown outline. The outline is tinted, not neutral black, and the measured 0% near-neutral dark edge pixels agrees. It has no flat 5x5 areas (0% near-flat coverage), and 7 visible tones per tile is below the hedge (9), stall (17) and well (20), though the thin references read 0 on that fact. The whole piece uses only 7 colours, against 14 for the bench and 11 for the hedge. That gives about 3-4 lightness steps on the red body, compared with the 5-6 per material the references use. It has no grain, stitching or per-pixel texture, so the surface looks like a clean flat sticker-like icon next to the references. It is clean and correctly outlined but thinner and flatter than a careful artist would accept beside the references, so it fails on the doubt rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19730
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.890Z",
+ "cells": {
+  "16": [
+   "536bfdb73e1fdf86"
+  ],
+  "24": [
+   "1f8207d2e1a02de9",
+   "39fa2a8ff8385237",
+   "7726b8cef6c8dce2",
+   "82f94472026d5dc5",
+   "b5bde21b914449bd",
+   "e4dbd9cdb76d0bbf"
+  ],
+  "32": [
+   "28f5ec2948969769",
+   "2e52c4cf7bc23702",
+   "917b00412d7c229b",
+   "9bab02394082c265",
+   "c4d6be8ba09319f9",
+   "f4d37f14526dd7e7"
+  ],
+  "48": [
+   "35b816f43febb11e",
+   "3a67e681bf42a654",
+   "4e6cab5f366c00eb",
+   "bebdb934c5ad556c",
+   "c3df9c01b899daf8",
+   "e2cc61d328a9aca8"
+  ]
+ }
+}
