@@ -24,7 +24,7 @@ import { OBJECT_GATE_KINDS, OBJECT_GATE_STYLE_KINDS, defaultObjectGateStyleKind,
 import { GATE_DATA, calibratedFinalProfiles, listFinals, listQueueBatches, readFinal, readFinalProfiles, readPng, readReceipt, styleRefs, writeFinal, writeFinalProfile, writeHeldImage } from './store';
 import { receiptCells } from './cells';
 
-export const FINAL_RULES_VERSION = 1;
+export const FINAL_RULES_VERSION = 2;
 export const FINAL_JUDGE = { provider: 'claude-cli' as const, model: 'claude-opus-5-5', effort: 'medium' };
 export const FINAL_BATCH = 6;
 const MAX_SIDE = 640; // 확대 그림의 긴 변 상한(8배가 넘치면 정수 배율을 낮춘다)
@@ -40,6 +40,7 @@ THE VIEW CONTRACT ("3/4 top view"): the camera is south of the object looking do
 CHARGES — fail the candidate if ANY one holds (cite it in "reasons"):
 1. FRONT ELEVATION: the main body is drawn as a flat orthographic front view; its "top" is only the 1-row outline, a 1-2 row rim/lip, or a front-facing strip (cornice, beam, panel) with no foreshortened plane behind it. Count rows on the 8x view.
 2. TOP TOO THIN: the top plane exists but is shallower than the minimum rows for the declared kind (listed below), or the opening of a container does not show its inside from above.
+2b. SEAT vs BACKREST (kind seat): the sitting surface is the plane at sitting height that the legs or frame attach directly under. A large panel at the top of a chair drawn like a framed picture — outlined on all sides, a bevel highlight inside, flat face shading — is the BACKREST seen face-on, not the seat. If the only possibly-horizontal part between that panel and the legs is a 1-3 row strip, charge 1. If you cannot tell whether a panel is a seat top seen from above or a backrest seen face-on, charge 1 and set sure=false.
 3. A MAJOR PART HAS NO TOP: some big structural part (a cabinet hood, a second crate, a staircase, a chimney, a canopy frame, a machine housing) is drawn only as a vertical face where a horizontal surface should be visible. Decor riding on the object (a plant in a pot, a statue figure on its plinth, goods on a counter, a water jet) is not charged; the body carrying it is. For kind seat ONLY, the backrest and armrests may be vertical faces, but the SITTING SURFACE must show its top.
 4. SIDE FACE / ISOMETRIC: a receding diagonal side face, a two-point or isometric projection, a visible east or west side plane next to the south face of a box-like body, or a rhombus-shaped top. 3/4 view has no receding side faces.
 5. TOP-DOWN SLAB: no front face (fewer than 3 rows) — a pure plan view of a standing object.
@@ -336,14 +337,19 @@ if (stage === 'final-calibrate') {
   // 위반 = 확실(A) 3/4 위반 + 적대 시험(adv-*) + 강한 라벨 화풍 얕음. 하나라도 pass 면 효력 없음.
   const strict = (c: Cal) => c.truth === 'bad' ? (c.tier === 'A' && !(c.half === 'style' && c.weak)) : (c.tier === 'A' && !(c.half === 'style' && c.weak));
   const missed: string[] = [], falseFail: string[] = [], errors: string[] = [];
-  let bad = 0, good = 0;
+  let bad = 0, good = 0, overallGood = 0, overallPass = 0;
   const sets: Record<string, { bad: { total: number; caught: number }; good: { total: number; passed: number } }> = {};
   const tiers: Record<string, { bad: { total: number; passed: number }; good: { total: number; passed: number } }> = {};
   const lines: string[] = [];
   for (const c of shuffled) {
     const a = bySrc.get(`${c.label}|${c.kind}`);
     if (isErr(a)) { errors.push(c.label!); continue; }
-    const d = decideFinal(a), pass = d.verdict === 'pass';
+    const d = decideFinal(a);
+    // 정상: 라벨이 보증하는 반쪽으로 센다(3/4 라벨은 화풍을, 화풍 라벨은 3/4 를 보증하지 않는다 — 옛 보정과 같다). 전체 통과는 따로 센다.
+    // 위반: 출구는 전체 판정을 쓰므로 전체가 fail 이면 막은 것이다.
+    const halfPass = c.half === 'view34' ? d.view34 === 'pass' && d.kindOk : d.style === 'pass';
+    const pass = c.truth === 'bad' ? d.verdict === 'pass' : halfPass;
+    if (strict(c) && c.truth === 'good') { overallGood++; if (d.verdict === 'pass') overallPass++; }
     const t = (tiers[`${c.tier}${c.half === 'style' ? '-style' : ''}`] ??= { bad: { total: 0, passed: 0 }, good: { total: 0, passed: 0 } });
     t[c.truth].total++; if (pass) t[c.truth].passed++;
     lines.push(`${c.truth === 'bad' ? '위반' : '정상'}${c.tier}${c.half === 'style' ? '화풍' : '3/4 '} ${pass ? 'PASS' : 'FAIL'} ${c.kind.padEnd(14)} ${c.label!.padEnd(46)} ${d.reasons.join(' · ').slice(0, 160)}`);
@@ -358,12 +364,12 @@ if (stage === 'final-calibrate') {
   const ok = missed.length === 0 && errors.length === 0 && goodRate >= MIN_GOOD_RATE;
   const record: ObjectGateFinalProfileRecord = { schema: 'oprn-object-gate-final-profile/1', profileHash: hash, status: ok && full ? 'calibrated' : 'rejected', calibratedAt: new Date().toISOString(), judge: FINAL_JUDGE,
     bad: { total: bad, caught: bad - missed.length, missed }, good: { total: good, passed: good - falseFail.length, falseFail }, sets, tiers, errors,
-    note: `위반 = 등급 A 3/4 위반(적대 시험 adv-* 포함) + 강한 라벨 화풍 얕음. 정상 통과율 하한 ${MIN_GOOD_RATE}. ${full ? '전체 표본' : '부분 표본 — 효력 없음'}` };
+    note: `위반 = 등급 A 3/4 위반(적대 시험 adv-* 포함) + 강한 라벨 화풍 얕음, 전체 판정으로 센다. 정상 = 라벨 반쪽(3/4 라벨은 3/4·종류, 화풍 라벨은 화풍)으로 센다, 하한 ${MIN_GOOD_RATE}. 전체 판정 정상 통과 ${overallPass}/${overallGood}. ${full ? '전체 표본' : '부분 표본 — 효력 없음'}` };
   if (full) writeFinalProfile(record);
   writeFileSync(resolve(root, `final-run-${hash}.json`), `${JSON.stringify({ ...record, lines: lines.sort() }, null, 1)}\n`);
   console.log(`\n== 최종 보정 ${hash}: ${record.status}`);
   console.log(`   위반 잡음 ${bad - missed.length}/${bad}${missed.length ? ` — 놓침: ${missed.join(', ')}` : ''}`);
-  console.log(`   정상 통과 ${good - falseFail.length}/${good} (${(goodRate * 100).toFixed(1)}%)`);
+  console.log(`   정상 통과(라벨 반쪽) ${good - falseFail.length}/${good} (${(goodRate * 100).toFixed(1)}%) · 전체 판정 통과 ${overallPass}/${overallGood} (${overallGood ? (overallPass / overallGood * 100).toFixed(1) : 0}%)`);
   for (const [k, v] of Object.entries(sets).sort()) console.log(`   ${k.padEnd(16)} 위반 ${v.bad.caught}/${v.bad.total} · 정상 ${v.good.passed}/${v.good.total}`);
   for (const [k, v] of Object.entries(tiers).sort()) console.log(`   등급 ${k.padEnd(8)} 위반 통과 ${v.bad.passed}/${v.bad.total} · 정상 통과 ${v.good.passed}/${v.good.total}`);
   if (errors.length) console.log(`   답 못 받음 ${errors.length}: ${errors.slice(0, 10).join(', ')}`);
