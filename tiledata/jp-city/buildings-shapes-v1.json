@@ -1,0 +1,313 @@
+{
+"note": "buildings 블록 키트의 2026-10-20 굽기 모양(폭×높이). 모양이 이 표와 다른 키트의 칸은 자리 키에 @폭x높이 를 붙여 새 번호를 받는다 — 옛 번호는 옛 그림(legacy)으로 남아 이미 깔린 맵이 깨지지 않는다. 표는 고치지 않는다(덧붙이기만).",
+"shapes": {
+"jp-bldg-apart-steel2": [
+12,
+6
+],
+"jp-bldg-apart-wood2": [
+14,
+7
+],
+"jp-bldg-clinic": [
+9,
+8
+],
+"jp-bldg-coin-laundry": [
+8,
+6
+],
+"jp-bldg-conbini": [
+10,
+6
+],
+"jp-bldg-danchi5": [
+16,
+13
+],
+"jp-bldg-factory": [
+11,
+5
+],
+"jp-bldg-garage-carport-house": [
+10,
+4
+],
+"jp-bldg-gas-office": [
+7,
+6
+],
+"jp-bldg-house-flat3": [
+7,
+9
+],
+"jp-bldg-house-gable-garage": [
+7,
+7
+],
+"jp-bldg-house-hip2": [
+9,
+8
+],
+"jp-bldg-house-hip2-wide": [
+11,
+8
+],
+"jp-bldg-house-hiraya": [
+10,
+5
+],
+"jp-bldg-house-hiraya-gable": [
+9,
+5
+],
+"jp-bldg-house-machiya": [
+7,
+8
+],
+"jp-bldg-house-nagaya": [
+14,
+5
+],
+"jp-bldg-house-nisetai": [
+12,
+8
+],
+"jp-bldg-house-shed-modern": [
+8,
+6
+],
+"jp-bldg-house-terrace": [
+14,
+7
+],
+"jp-bldg-house-tile3": [
+7,
+8
+],
+"jp-bldg-house-western": [
+9,
+8
+],
+"jp-bldg-kindergarten": [
+11,
+7
+],
+"jp-bldg-koban": [
+6,
+6
+],
+"jp-bldg-machikoba-home": [
+8,
+7
+],
+"jp-bldg-mansion4": [
+11,
+11
+],
+"jp-bldg-mansion6-slim": [
+7,
+15
+],
+"jp-bldg-market-hall": [
+14,
+7
+],
+"jp-bldg-office6": [
+9,
+15
+],
+"jp-bldg-post-office": [
+9,
+8
+],
+"jp-bldg-row-ekimae": [
+25,
+8
+],
+"jp-bldg-row-inshokugai": [
+27,
+9
+],
+"jp-bldg-row-shotengai-a": [
+24,
+9
+],
+"jp-bldg-row-shotengai-b": [
+23,
+8
+],
+"jp-bldg-row-shotengai-c": [
+24,
+8
+],
+"jp-bldg-row-shotengai-d": [
+20,
+10
+],
+"jp-bldg-row-shutter-a": [
+29,
+8
+],
+"jp-bldg-row-shutter-b": [
+24,
+9
+],
+"jp-bldg-school": [
+20,
+10
+],
+"jp-bldg-school-gym": [
+14,
+6
+],
+"jp-bldg-sento": [
+11,
+8
+],
+"jp-bldg-shop-bakery": [
+8,
+9
+],
+"jp-bldg-shop-barber": [
+6,
+8
+],
+"jp-bldg-shop-bicycle": [
+8,
+8
+],
+"jp-bldg-shop-bicycle-shut": [
+8,
+8
+],
+"jp-bldg-shop-books": [
+8,
+8
+],
+"jp-bldg-shop-books-shut": [
+8,
+8
+],
+"jp-bldg-shop-butcher": [
+7,
+8
+],
+"jp-bldg-shop-butcher-shut": [
+7,
+8
+],
+"jp-bldg-shop-cafe": [
+7,
+8
+],
+"jp-bldg-shop-cleaning": [
+7,
+8
+],
+"jp-bldg-shop-cleaning-shut": [
+7,
+8
+],
+"jp-bldg-shop-dagashi": [
+7,
+9
+],
+"jp-bldg-shop-fish": [
+7,
+8
+],
+"jp-bldg-shop-fish-shut": [
+7,
+8
+],
+"jp-bldg-shop-flower": [
+7,
+8
+],
+"jp-bldg-shop-flower-shut": [
+7,
+8
+],
+"jp-bldg-shop-greengrocer": [
+8,
+8
+],
+"jp-bldg-shop-izakaya": [
+7,
+9
+],
+"jp-bldg-shop-pharmacy": [
+7,
+8
+],
+"jp-bldg-shop-ramen": [
+7,
+9
+],
+"jp-bldg-shop-realestate": [
+7,
+8
+],
+"jp-bldg-shop-realestate-shut": [
+7,
+8
+],
+"jp-bldg-shop-sake": [
+8,
+8
+],
+"jp-bldg-shop-sake-shut": [
+8,
+8
+],
+"jp-bldg-shop-salon": [
+7,
+8
+],
+"jp-bldg-shop-soba": [
+8,
+6
+],
+"jp-bldg-shop-sushi": [
+7,
+9
+],
+"jp-bldg-shop-tabako": [
+6,
+8
+],
+"jp-bldg-shop-teishoku": [
+7,
+8
+],
+"jp-bldg-shop-vacant": [
+7,
+8
+],
+"jp-bldg-shop-wagashi": [
+7,
+7
+],
+"jp-bldg-shrine-haiden": [
+8,
+7
+],
+"jp-bldg-station-small": [
+14,
+6
+],
+"jp-bldg-supermarket": [
+14,
+6
+],
+"jp-bldg-warehouse": [
+10,
+6
+],
+"jp-bldg-zakkyo5": [
+7,
+14
+]
+}
+}
