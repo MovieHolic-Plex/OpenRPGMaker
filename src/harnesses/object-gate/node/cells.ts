@@ -69,7 +69,7 @@ export function passingCellIndex(context: ObjectGateContext, receipts: ObjectGat
   const calibrated = calibratedProfiles();
   const index = new Map<string, ObjectGateReceipt>();
   for (const receipt of receipts) {
-    if (objectGateRefusal({ receipt, pixelSha256: receipt.pixelSha256, context, calibratedProfiles: calibrated, approval: receipt.kind === 'front_prop' ? readApproval(receipt.pixelSha256) : null, hold: receipt.verdict === 'refer' ? readHoldDecision(receipt.pixelSha256) : null })) continue;
+    if (objectGateRefusal({ receipt, pixelSha256: receipt.pixelSha256, context, calibratedProfiles: calibrated, approval: receipt.kind === 'front_prop' ? readApproval(receipt.pixelSha256) : null, hold: readHoldDecision(receipt.pixelSha256) })) continue;
     for (const hashes of Object.values(receipt.cells ?? {})) for (const h of hashes) index.set(h, receipt);
   }
   return index;

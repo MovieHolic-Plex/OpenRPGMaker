@@ -2,8 +2,9 @@
  * 공용 오브젝트 게이트 — 영수증·해시·출구 판정(브라우저·노드 공용, Web Crypto 만 쓴다).
  *
  * 영수증은 그림 화소 해시(pixelSha256)에 묶인다. 한 화소라도 바뀌면 영수증이 없어져 다시 판정받아야 한다.
- * 출구(context)마다 받는 조건이 다르다:
- *   bundle·shared·store → 보정된 프로필의 「pass」 영수증만. 사람 덮어쓰기도 받지 않는다(예외 없음).
+ * 최종 통과는 서명된 사람 허용이다(2026-10-20 사용자 결정): 그 그림 해시·종류의 영수증(어느 프로필이든 — AI 조언)이 있고
+ * 검토 화면 서버가 서명한 「허용」이 있으면 모든 출구를 지난다. 사람 「거절」은 최종이다. 사람 결정이 없을 때만 아래 옛 규칙:
+ *   bundle·shared·store → 보정된 프로필의 「pass」 영수증만. 공방 「그래도 넣기」도 받지 않는다.
  *   workshop-local      → pass, 또는 사람이 직접 누른 「그래도 넣기」 덮어쓰기. 조수·에이전트는 덮어쓸 수 없다.
  * Python 쪽 같은 규칙: src/harnesses/_core/object_gate/__init__.py. 둘을 같이 고친다.
  */
@@ -66,8 +67,14 @@ export function validFrontPropApproval(approval: ObjectGateFrontPropApproval | n
 }
 
 /**
- * 보류(refer) 판정에 대한 사람의 허용/거절 기록. 그림 화소 해시·프로필·종류에 묶이고, 검토 화면 서버가 저장소 밖 키로 HMAC 서명한다.
+ * 사람의 허용/거절 기록(검토 화면 `serve-holds` 가 쓴다). 2026-10-20 사용자 결정(옵션 A): **AI 판정은 1차 거름·조언이고, 최종 통과는 서명된 사람 허용이다.**
+ * 이유: AI 판정 보정이 두 번(규칙 v9·v10) 실패했고, 사용자가 매번 눈으로 판정하고 있었다.
+ *
+ * 기록은 그림 화소 해시·종류에 묶이고 검토 화면 서버가 저장소 밖 키로 HMAC 서명한다. profileHash 는 사람이 본 AI 조언(영수증)의 프로필을 적어 둔 것이다 —
+ * 효력 조건은 「그 그림·그 종류의 영수증이 어느 프로필로든 있다」(AI 가 한 번은 판정해 조언이 남았다)이고, 프로필의 보정 여부는 보지 않는다.
+ * 허용 = 모든 출구 통과, 거절 = 최종(모든 출구에서 막고 공방 「그래도 넣기」도 무효).
  * 출구는 서명을 확인한 기록만 받는다(노드 store.readHoldDecision · Python read_hold_decision). 감독·에이전트·MCP 도구는 쓰지 않는다.
+ * 스키마 이름(hold-decision)은 서명 대상이라 바꾸지 않는다(2026-10-20 이전 기록 4건이 그대로 유효하다).
  */
 export type ObjectGateHoldDecision = {
   schema: 'oprn-object-gate-hold-decision/1'; pixelSha256: string; profileHash: string; kind: ObjectGateKind;
@@ -78,9 +85,16 @@ export function objectGateHoldPayload(d: ObjectGateHoldDecision): string {
   const keys = ['schema', 'pixelSha256', 'profileHash', 'kind', 'decision', 'decidedBy', 'decidedAt', 'by', 'via', 'reasons', 'note'] as const;
   return JSON.stringify(keys.map(k => [k, (d as Record<string, unknown>)[k] ?? null]));
 }
+/** 서명 확인을 마친 기록이 이 영수증(그림 해시·종류)에 묶인 사람 결정이면 'allow'|'reject', 아니면 null. 프로필은 보지 않는다. */
+export function humanDecision(d: ObjectGateHoldDecision | null | undefined, receipt: ObjectGateReceipt | null | undefined): 'allow' | 'reject' | null {
+  if (!d || !receipt) return null;
+  const ok = d.schema === 'oprn-object-gate-hold-decision/1' && d.by === 'human' && d.via === 'review-page' && (d.decision === 'allow' || d.decision === 'reject')
+    && d.pixelSha256 === receipt.pixelSha256 && d.kind === receipt.kind && typeof d.decidedBy === 'string' && d.decidedBy.trim().length > 0 && !!d.decidedAt
+    && typeof d.profileHash === 'string' && d.profileHash.length > 0;
+  return ok ? d.decision : null;
+}
 export function holdAllows(d: ObjectGateHoldDecision | null | undefined, receipt: ObjectGateReceipt): boolean {
-  return !!d && d.schema === 'oprn-object-gate-hold-decision/1' && d.by === 'human' && d.via === 'review-page' && d.decision === 'allow'
-    && d.pixelSha256 === receipt.pixelSha256 && d.profileHash === receipt.profileHash && d.kind === receipt.kind && d.decidedBy.trim().length > 0 && !!d.decidedAt;
+  return humanDecision(d, receipt) === 'allow';
 }
 
 export type ObjectGateConfusion = { badTotal: number; caught: number; missed: string[]; goodTotal: number; passed: number; falseFail: string[] };
@@ -154,14 +168,18 @@ export function objectGateRefusal(input: {
   calibratedProfiles: ReadonlySet<string>;
   /** front_prop 종류의 사람 승인 기록(없으면 null). 이 그림 해시에 묶인 유효한 승인이 있을 때만 3/4 반쪽을 면제한다. */
   approval?: ObjectGateFrontPropApproval | null;
-  /** 보류 판정의 사람 결정(서명 확인을 마친 것만 넘긴다). 허용이면 보류를 통과로 받는다. */
+  /** 사람 결정(서명 확인을 마친 것만 넘긴다). 허용이면 통과, 거절이면 최종 차단 — 프로필 보정 여부와 무관하다. */
   hold?: ObjectGateHoldDecision | null;
 }): string | null {
   const { receipt, pixelSha256, kind, context } = input;
   if (!receipt) return '3/4·화풍 판정 영수증이 없다 — object-gate review 를 먼저 받아라';
   if (receipt.pixelSha256 !== pixelSha256) return '영수증의 그림 해시가 지금 그림과 다르다 — 고친 뒤 다시 판정받아라';
   if (kind && receipt.kind !== kind) return `영수증 종류(${receipt.kind})가 요청 종류(${kind})와 다르다`;
-  if (!input.calibratedProfiles.has(receipt.profileHash)) return `판정 프로필 ${receipt.profileHash} 가 보정되지 않았다(위반 표본을 다 잡지 못했거나 보정 전)`;
+  // 사람 결정이 최종이다(2026-10-20). 허용 = 통과(프로필 보정 여부·AI 판정과 무관), 거절 = 모든 출구에서 막는다.
+  const human = humanDecision(input.hold, receipt);
+  if (human === 'reject') return `사람이 검토 화면에서 거절했다(${input.hold!.decidedBy}, ${input.hold!.decidedAt.slice(0, 10)}) — 최종이다. 다시 그려 새 해시로 다시 받아라`;
+  if (human === 'allow') return null;
+  if (!input.calibratedProfiles.has(receipt.profileHash)) return `판정 프로필 ${receipt.profileHash} 가 보정되지 않았다 — AI 판정(${receipt.verdict})은 조언일 뿐이다. 검토 화면(serve-holds, 18323)에서 사람이 허용해야 지나간다`;
   // front_prop: 사람이 이 그림 해시에 대해 종류를 승인했다면 3/4 반쪽은 면제 — 남은 것은 화풍 반쪽의 판정뿐이다. 승인이 없으면 아래 보류 경로(번들·공용·스토어 출구 차단).
   if (receipt.kind === 'front_prop' && validFrontPropApproval(input.approval, pixelSha256)) {
     const styleVerdict = receipt.style?.verdict;
@@ -171,8 +189,6 @@ export function objectGateRefusal(input: {
   }
   if (receipt.verdict === 'pass') return null;
   if (receipt.verdict === 'refer') {
-    // 사람이 검토 화면에서 이 그림·이 프로필·이 종류의 보류를 허용했으면 통과(서명은 호출자가 확인했다). 거절 기록은 아래로 내려가 막힌다.
-    if (holdAllows(input.hold, receipt)) return null;
     // 보류는 통과로 세지 않는다(번들·공용·스토어 출구는 예외 없이 막는다). 공방 로컬만 사람이 직접 누른 「그래도 넣기」로 확인할 수 있다(Python refusal 과 같다).
     if (context === 'workshop-local' && receipt.override?.by === 'human') return null;
     return `판정 보류(사람 확인 필요: ${receipt.reasons.join(' · ') || '판정자 의견이 갈림'}) — 보류는 통과로 세지 않는다. 그림을 더 분명하게 고치거나 사람이 고르는 하네스 경로를 거쳐라`;
