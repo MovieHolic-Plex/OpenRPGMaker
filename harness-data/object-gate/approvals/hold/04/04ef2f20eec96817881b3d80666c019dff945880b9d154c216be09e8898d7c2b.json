@@ -1,0 +1,19 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "04ef2f20eec96817881b3d80666c019dff945880b9d154c216be09e8898d7c2b",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-20T22:09:47.221Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)",
+  "화풍: 질감 없음 (2/4)"
+ ],
+ "note": "묶음 허용: Astra 센터·마트 키트 32칸 (4d293f96db) — 사용자 위임·Opus 적대 VQA 통과 2026-10-21 — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/astra-centre-mart-kits.opus-vqa-r2.json",
+ "sig": "b7a6bac5190144bda246f9e2cd532e34a50d1b55c796279515e9f24f3ca1775f"
+}

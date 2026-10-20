@@ -1,0 +1,389 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "207c3199ff49e169d85f9e5800640dcf06a8406b1117313f6ea4d629f88ee0a8",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "Astra mart kit cell 12 (r3 c0)",
+ "label": "monster_overworld/astra-mart-kit-12 (칸 2252)",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (3/4)",
+  "3/4: 윗면 2행 < 3 (3/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (3/4)",
+  "화풍: 명암 3단 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (3/4)",
+   "윗면 2행 < 3 (3/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (3/4)",
+   "명암 3단 < 4 (3/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 16,
+  "darkV5": 88,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "right",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden post on left",
+      "rows": "0-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "window with blue glass in dark frame",
+      "rows": "0-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cream sill or counter ledge",
+      "rows": "8-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cream and grey front base strip",
+      "rows": "11-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a 13x15 wall-segment fragment: a wooden post (x=6, rows 0-10) beside a window (blue glass at rows 0-5, dark frame rows 6-7). Below the window is a cream ledge. Row 8 is cream, row 9 is a near-white highlight and row 10 is a darker tan line, so at most 2-3 rows could be read as a ledge top. There is no eave shadow, no roof or lintel slope, and no ellipse. The rest is a vertical front: cream face rows 11-12 and a grey base row 13, with a dark outline at row 14. The post and window are drawn only as vertical faces, with no horizontal top surface for a large structure. The silhouette is a constant 13 px wide with no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny icon of about 13x14 source pixels, roughly a shelf or sign with a blue panel. It has no roof, walls, door or windows, so it is not a whole building like the two references. It uses only 16 colours in total, against 66 and 185 for the references. Each reference carries many roof tile scallops, timber framing, plaster speckle and individually shaded stones. The candidate shows only a few blocky tones per material (about 3 steps), with no tile or plaster texture. The measured facts (16 tones per tile, 0% flat, 0% neutral edges) come from a single sub-tile cluster, so they say little about density. By eye the candidate is far thinner and more sticker-like than a Beodeul building. Its outline is a dark brown-ish edge on the wood parts and a lighter, bluish edge on the panel, so I read it as mixed. Wrong kind and too shallow to compare, so fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17994
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "window sill / counter ledge",
+      "rows": "8-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden post (left edge)",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "window glass and dark frame",
+      "rows": "0-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The cell is a 13x15 storefront fragment with a wood post on the left, a blue window above, and a sill at the bottom. The sill has a cream top band at rows 8-9 (row 9 is a near-white highlight) that ends in a darker tan front-edge line at row 10. Below it is a cream front face at rows 11-12, a grey base at row 13, and a dark outline at row 14. The sill gives a thin top surface of about 3 rows over a front face of about 4 rows. The post and window are vertical faces cut off by the cell edge, so no roof or lintel top is visible here. This is a weak three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a single tile-sized object of about 16x16 source pixels, with a brown base and a small blue/white panel. It is not a whole building: it has no roof, walls, door or windows, so it cannot be compared with the two house references. The measured facts do not count against it. It has 16 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and 0% neutral dark edge pixels, which means the outline is tinted. But it has only 16 distinct colours in total against 185 and 66, so it has far less material variety than a full building. By eye it shows about 3-4 shading steps and no roof-tile scallops or plaster speckle, while the references show about 6 steps of tile highlights, plaster grain and stone-by-stone shading. The piece does not deliver the building the cell calls for, so it fails on kind mismatch and on lower overall richness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 22170
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "wooden post/pillar at left",
+      "rows": "0-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "window with sky-blue glass",
+      "rows": "0-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cream sill/counter ledge",
+      "rows": "8-10",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-10"
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The image is a 13x15 corner fragment of a wall, not a complete structure. It shows a wooden post (x=6, rows 0-10), a window with a blue pane (x=12, rows 0-5) and a cream ledge at the bottom. The ledge has a light band at rows 8-9, with the brightest line at row 9 and a tan shadow at row 10. Below it a cream face covers rows 11-12 and a gray base line sits at row 13, with dark outline at row 14. That is only a 2-row top strip over a roughly 3-row front, so it reads as a rim. The post and window are plain vertical faces with no roof, lintel or top slope, so it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate beside the magenta bar is a tiny icon-like sprite, roughly one tile in size. It looks like a small brown and blue object (a shelf, kiosk or sign), not a whole building. It has no roof, walls or door/window structure, so it cannot be compared with the two references, which are full tiled-roof houses with timber-frame or stone walls. The facts say 16 visible tones per tile, 0% near-flat coverage and 0% neutral edges. They come from only 16 distinct colours in the whole piece, so they do not show the richness of a building. The references have 185 and 66 distinct colours, with per-tile roof scallops, plaster speckle and shaded stones. The candidate has far fewer shading steps on any one material and no roof tile scallops or wall texture. Its dark edges lean brown, but that does not make up for the wrong kind and missing structure. Fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18353
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "brown wooden post at left",
+      "rows": "0-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "window glass with dark frame",
+      "rows": "0-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cream sill or ledge strip",
+      "rows": "8-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The image is a 13x15 fragment of a storefront wall: a vertical brown post (x~5-8, rows 0-11) beside a window (light-blue glass rows 0-5, dark frame rows 6-7). A cream sill band sits below the window. Row 8 is cream, row 9 is a bright highlight and row 10 is a darker line (#b8a684), which is the only front-edge line. This gives about 2-3 rows of sill top and no eave shadow. Below it are cream face rows 11-12 and a lavender base on row 13, with a dark outline on row 14. The post and window are drawn only as vertical faces. There is no roof, lintel or slope surface, so the cell reads as a front elevation with at most a rim-like sill. It is a partial tile, not a whole gate, pavilion or building, so the structure kind fits poorly."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate on the right of the magenta bar is a tiny sprite of about 16x16 source pixels, roughly one tile. It looks like a small brown and blue-white icon or prop, not a whole building with roof, walls and door. The references are full houses with scalloped tile roofs, timber framing, plaster speckle and shaded stones, so the kind does not match. The 16 visible tones per tile come from one tile packing a few colours, and there is no roof, wall or door structure to compare against the references' 10-12 tones. Shading looks shallow at about 3 steps per material, with no per-tile highlights or grain like the reference roofs and stonework. Even allowing for a small piece, it reads thinner and flatter than the references. I cannot confirm that its outline follows the dark tone of the adjacent material, so I rate it mixed. A kit cell this small does not meet the building standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 26147
+  }
+ ],
+ "decidedAt": "2026-10-20T22:08:46.698Z",
+ "cells": {
+  "16": [
+   "768187df0d7ef22a"
+  ],
+  "24": [
+   "1e0f6616c46eaeed",
+   "2a9c9d9b4ebd90c2",
+   "76d40ff340dcef89",
+   "85b178ffab444451",
+   "b747a3204ef1978c",
+   "f979f4fbadc6cba4"
+  ],
+  "32": [
+   "047f486c65e72b87",
+   "8a400bd242f686c9",
+   "a09dd6b6711dd7ea",
+   "ac97b78dce62119b",
+   "b31030ed6a6a85b2",
+   "b8a122eaa1109846"
+  ],
+  "48": [
+   "1d21431a87920ea4",
+   "3c4402d773bf8484",
+   "5177d894f64d0a1d",
+   "73632e91e845d57a",
+   "cf2ba5b8e4929933",
+   "feb62223a054e475"
+  ]
+ }
+}

@@ -1,0 +1,352 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1fc858db78f123b289a23153c3eb92c4096aac4bc7338456b5362fdea02ad145",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "Astra mart kit cell 5 (r1 c1)",
+ "label": "monster_overworld/astra-mart-kit-5 (칸 2245)",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 11,
+  "darkV5": 88,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof/awning band (cream)",
+      "rows": "0-2",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "brown fascia/edge under the roof band",
+      "rows": "3-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The cream band at rows 0-2 is a roof/awning top surface. It ends in a brown front-edge line at row 3, with a second brown row at row 4. Rows 5-6 are dark eave shadow (#383c58), and the front wall below runs rows 5-15 (about 11 rows) in purple/blue with a small brown post at x≈11, rows 7-12. The silhouette is a full 16 px wide on every row, so it is a cropped kit cell. The top band is only 3 rows deep and may be cut off by the cell edge, but it still has a front-edge line and shadow, so it is more than a 1-2 row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny sign-like prop, roughly 16x12 source pixels: a cream plank on a purple block with a small brown accent. It is not a whole building with roof, walls and door/windows, so it does not match the reference kind. Its per-tile numbers (11 visible tones, 0% near-flat, 0% neutral dark edge pixels) are on par with the references, but they come from one tiny object. There is no roof-tile scallop, no wall material such as plaster, timber or stone, and no door or window. Each material shows only about 3 shading steps, against 5-6 on the references. Outline pixels are tinted (dark purple/brown), not near-black, which is fine. The piece is far less rich than a full Beodeul building, and as a building it would be much lower in density and structure.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19386
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cream roof/awning band at top of tile",
+      "rows": "0-2",
+      "evidence": "c",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "brown eave edge line",
+      "rows": "3-4",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "blue-purple front wall with brown post/door frame",
+      "rows": "7-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tile is 16 px wide on every row. Rows 0-2 are a light cream band, read as a roof or awning plane. Row 3 is a lighter brown edge line, row 4 is a darker brown line, and rows 5-6 are dark eave shadow. Rows 7-15 are a vertical blue-purple front wall with a brown post, about 9 rows tall. The top band is cropped by the cell edge and only 3 rows are visible. It still ends in a front-edge line followed by eave shadow, so it counts as a top surface (a) above a front face of more than 3 rows. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny sign or counter-like prop, roughly 16x12 source pixels, with a white top slab, a purple base and a small brown element. It has no roof, walls, door or windows, so it is not a whole building and does not fit the building references (timber-frame house with tile roof, stone house with plaster gable). The measured facts are decent: 11 visible tones, 0% near-flat coverage and 0% neutral dark edges, so the outline is tinted rather than near-black. But the shading is shallow by eye, about 3 steps per material (purple base, white top, brown) against 5-6 in the references. There are no scalloped tiles, plaster speckle or stone-by-stone shading. Next to the references it reads as far thinner and simpler, and it lacks the structure the building kind requires.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17504
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof/awning top plane (cream band)",
+      "rows": "0-2",
+      "evidence": "c",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "front wall with central post (purple/blue)",
+      "rows": "7-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "In the column scans (x=4, 8, 11), rows 0-2 are a light cream band (L=245) that reads as a roof or awning plane. Row 3 is a lighter brown front-edge line (#a06234) and row 4 is a darker brown line (#7e4824). Rows 5-6 are dark (L~56-60) and work as eave shadow. Below that, the front wall runs from rows 7 to 15, drawn in purple/blue with a brown post at rows 8-12 near the middle. The silhouette is 16 wide on every row, so this is a cropped kit cell. The top band is only 3 rows, but it has an edge line and eave shadow above a front face of 9 or more rows. It therefore counts as a top surface with a front face, not a bare rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is not a whole building. It is a tiny sign-like prop, about one tile wide, with a pale top slab on a purple base. It has no roof, walls, door or windows, so it does not match the building references. Measured facts are favourable: 11 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and 0% neutral dark edge pixels, which means tinted outlines. But the piece has only 11 colours in total, against 185 and 66 for the references. Those per-tile numbers come from a very small area and do not show building-level richness. By eye it has about 3 shading steps per material, with no tile scallops, plaster speckle or stone-by-stone shading. Next to the half-timbered house and the stone house it looks much thinner and flatter. This cell is the wrong kind of object for the building category and would not be accepted next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 16519
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cream top band / roof or sign strip",
+      "rows": "0-2",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "brown edge trim under the band",
+      "rows": "3-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "purple-blue front wall with a brown post",
+      "rows": "5-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a 16-wide tile fragment. Rows 0-2 are a flat cream band across the full width. Row 3 (#a06234) is a lighter brown edge line, and row 4 is a darker brown line. Rows 5-6 are dark eave shadow (L~56), and rows 5-15 are the front wall in purple-blue with a brown post around x=11. The cream band with an edge line and shadow fits evidence (a), but it is only 3 rows. It could also be read as a face-on framed panel, because a brown frame runs down the left side. The front face is 11 rows. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny sign or counter prop, roughly 15x12 source pixels, with a white top slab on a purple-blue base. It is not a whole building: it has no roof, no walls, no door and no windows. The references are full buildings with 5-6 step tile roofs, timber framing and shaded stonework. The measured facts (11 visible tones, 0% near-flat, 0% neutral dark edges) are on par with the references and the outline is tinted, so there is no flat fill and no sticker outline. But a piece that small cannot carry the references' roof-tile scallops, per-stone shading or plaster grain, and it shows only about 3 shading steps per material. By eye it is far thinner than a building. It fails because it is the wrong kind of object, and shading depth and structural richness are far below the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20693
+  }
+ ],
+ "decidedAt": "2026-10-20T22:08:46.680Z",
+ "cells": {
+  "16": [
+   "0997ab48546bc6c9"
+  ],
+  "24": [
+   "753e5b71b9c767fa",
+   "a7a148d8f5c47879",
+   "b99f7a47aead716b",
+   "dc87010a34fdb2f9",
+   "dcecbbe3a8c832ce",
+   "f18bce1e498fac35"
+  ],
+  "32": [
+   "08f75558184c8dde",
+   "0fd37b689b25553a",
+   "6b945fa9dd23eb2b",
+   "702e45e678727247",
+   "7412ef3304f25d21",
+   "db0c4b0639392268"
+  ],
+  "48": [
+   "461f2e11fc5f913c",
+   "72f7f73f677e5cb8",
+   "89bbbe5771efb407",
+   "b08488d28aa8ac8e",
+   "c064d1688c0d1892",
+   "e30072043b9822d0"
+  ]
+ }
+}

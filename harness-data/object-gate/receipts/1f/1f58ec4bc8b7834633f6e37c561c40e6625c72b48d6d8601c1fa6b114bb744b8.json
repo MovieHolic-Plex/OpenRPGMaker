@@ -1,0 +1,429 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1f58ec4bc8b7834633f6e37c561c40e6625c72b48d6d8601c1fa6b114bb744b8",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "Astra centre kit cell 15 (r3 c3)",
+ "label": "monster_overworld/astra-centre-kit-15 (칸 2239)",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 2행 < 3 (3/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 2행 < 3 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 72,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cream lintel strip at top-left",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "teal recessed panel / door face",
+      "rows": "4-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lavender stone pillar/wall face on right",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey threshold/base ledge",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Every part is a vertical face seen head-on. The width is a constant 13 for rows 0-14, so there is no widening or narrowing ellipse. The x=3 and x=6 scans show a 2-row cream strip (rows 1-2) bounded by dark outline rows 0 and 3. It has no lighter or darker front-edge line and no eave shadow, so it reads as a front-facing lintel strip. Below it the teal panel runs through rows 4-11 as a gradient from light to dark, i.e. a door or recess face. The x=9 column is one uniform lavender run (rows 0-10), a flat pillar or wall face with no cap or top band. Rows 12-13 are a 2-row light-grey threshold, which counts as a rim and not a top surface. No roof, awning, ellipse or visible contents appear anywhere, so the cell has no top surface and is front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny teal and white box or monitor-like icon, about 12x14 source pixels. It has no roof, walls, door or windows, so it is not a whole building like the two references. The references have scalloped tile roofs with per-tile highlights, timber framing, plaster speckle and shaded stonework, with 5-6 steps per material. The candidate shows only about 3 lightness steps on its teal body, with a light rim and a dark edge. The measured 13 tones per tile and 0% near-flat coverage look comparable to the references, but they come from a very small object and tell us little about building craft. The dark edge pixels are tinted, not neutral (0% near-neutral), so the outline reads as a dark material tone. There is no building structure, roof ramp or wall texture to compare, so it fails as a building piece.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17404
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cream cornice/lintel strip at top-left",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "teal recessed panel / door face",
+      "rows": "4-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "light grey right pillar/wall strip",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pale floor/step strip at base",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a constant 13 px wide for rows 0-14, with no widening or narrowing, so there is no ellipse. The only upper band is the cream strip at rows 1-2, which is a 2-row lip closed by a dark line at row 3. It has no eave shadow and no slope, so it reads as a cornice or lintel face, not a roof or top plane. Below it, the teal panel (rows 4-10), the dark band at row 11 and the pale base strip (rows 12-13) are all vertical faces. The light grey strip at x=9 (rows 0-10) is a flat vertical pillar or wall with no visible top. Overall it is a flat front elevation tile with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny teal/grey box-like icon, about 12x14 source pixels. It has no roof, walls, door or windows, so it is not a whole building and does not match the reference kind. The references are full houses with scalloped tile roofs, timber framing, plaster speckle and stone shaded one by one, at about 6 steps per material. The candidate shows only about 3 lightness steps and no roof tiles, plaster grain or stonework. Its outline looks dark and tinted, and the measured 0% neutral edge share supports that. The 13 tones per tile and 0% near-flat coverage come from a very small object and do not make up for the missing structure. Its visible detail is far thinner than the references' roof, wall and door detail. Fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15127
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cream cornice strip at top left",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "teal inset door/panel (vertical face)",
+      "rows": "4-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pale pillar/wall strip at right",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base/threshold strip",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cell is a 13x15 flat-fronted fragment with a constant width of 13 across rows 0-14. At x=3 and x=6 the scan shows a 2-row cream strip (rows 1-2) over a dark line (row 3). Below that is a teal panel with a light top row and darkening bands (rows 4-11). At x=9 the pale pillar is one uniform run of L=217 over rows 0-10. A 2-row light base strip (rows 12-13) sits above the dark outline at row 14. The cream strip is a 1-2 row cornice or lip with no eave shadow and no widening, so it is not a top surface. The pillar, panel and base are all vertical faces. No roof slope, ellipse, or visible contents appear, so the cell reads as a front elevation with at most a rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny teal and grey box-like prop, roughly one tile in size. It has no roof, walls, door or windows, so it is not a whole building and does not match the reference kind. The numbers look fine: 13 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and 0% neutral dark edges, which points to tinted outlines. But they come from one small tile and do not show building-level craft. By eye it has only about 3 lightness steps on its main materials, with no tile scallops, plaster speckle or stone shading. Next to the richly shaded roofs and walls of the references it looks thin and sticker-like, and as a building it does not meet the bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15373
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cream lintel strip at top-left",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "teal door/panel face",
+      "rows": "4-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right pale lavender pillar/wall face",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey stone base/threshold",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cell is a 13-px-wide fragment of a larger structure. It is made of flat vertical faces: a 2-row cream strip (rows 1-2) with a dark line at row 3, a teal panel (rows 4-11) with a graded shading, a pale lavender vertical column (rows 0-10), and a grey base (rows 12-13). The cream strip is only 1-2 rows, like a front-facing cornice or lip, with no sloped roof plane, no ellipse and no visible contents. The right column is a flat face from row 0 and has no cap or top plane. The wall faces stay at constant width for rows 0-14 and show no receding top. This matches the red 'front elevation / rim only' references and not the green three-quarter ones."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny teal and grey box, about 12x12 source pixels and smaller than one tile. It has no roof, walls or door, so it is a small prop rather than a whole building and does not match the reference kind. The measured facts give 13 tones per tile and 0% near-flat coverage, but with so few pixels they cannot be compared fairly against full house façades. By eye it shows about 3 shading steps on its main material, with no tile scallops, plaster speckle or stone shading. The references carry roof tile highlights, timber framing, plaster grain and individually shaded stones, and the candidate is far thinner than both. The outline looks tinted rather than neutral black, which is fine, but the missing building structure and shallow ramps mean it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16903
+  }
+ ],
+ "decidedAt": "2026-10-20T22:08:46.651Z",
+ "cells": {
+  "16": [
+   "bc5ac46315d2c7f2"
+  ],
+  "24": [
+   "19e1a10bab0a3fe4",
+   "2ccb0f67a9ed350b",
+   "2d555cecb3738cbd",
+   "77d6f2790dd33e35",
+   "d3f48978605bd8e2",
+   "d795eff584c5a519"
+  ],
+  "32": [
+   "01683f4e355fb6b5",
+   "1aa4e43ddde955c8",
+   "1d649c0ace37ccd2",
+   "34a4d037a67c7e62",
+   "63fbcd0702db42f0",
+   "c76d60e3182e8e61"
+  ],
+  "48": [
+   "5a3ecd2d88e56111",
+   "5f1aac673ad0be18",
+   "749abda914534a45",
+   "a774c533684df9f9",
+   "b84a7a940607272d",
+   "dfe8ed580832b14a"
+  ]
+ }
+}

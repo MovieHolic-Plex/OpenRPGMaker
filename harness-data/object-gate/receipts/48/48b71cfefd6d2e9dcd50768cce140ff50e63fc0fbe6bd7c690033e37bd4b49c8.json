@@ -1,0 +1,339 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "48b71cfefd6d2e9dcd50768cce140ff50e63fc0fbe6bd7c690033e37bd4b49c8",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "Astra mart kit cell 4 (r1 c0)",
+ "label": "monster_overworld/astra-mart-kit-4 (칸 2244)",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(top_down_slab) (3/4)",
+  "3/4: 앞면 0행 < 3 (3/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (1/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(top_down_slab) (3/4)",
+   "앞면 0행 < 3 (3/4)",
+   "투영이 3/4 아님(front_elevation) (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 2
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 5,
+  "darkV5": 88,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled or striped panel filling the whole cell",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a constant 15 px wide for rows 0-15, so there is no widening or narrowing and no ellipse. The column scans repeat a 4-row pattern: a dark or mid line, then 2-3 light rows. Row 15 is a dark outline. The dark seams are staggered between columns x=5 and x=8/12, like shingle or brick courses. There is no single front-edge line followed by eave shadow, and no separate top band above a distinct front face. The cell reads as a flat tiled wall or roof filler panel, a vertical face with no top surface. This is a modular kit cell, so it may be a fragment of a larger roof or wall. As drawn, it shows no top surface evidence."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny blue-purple icon, well under one 16x16 tile, with horizontal stripe lines. It is not a whole building: there is no roof, walls, door or windows. The references are full buildings with scalloped tile roofs, plaster speckle, timber framing and stone shaded one by one, at 10-12 visible tones per tile. The candidate has only 5 raw colours and about 2-3 visible tones, and its measured tones are low for its size. The outline is tinted, not neutral (0% near-neutral), but there is no real material-toned outline structure to judge. It shows no per-tile highlights and no grain, so its shading is much shallower than the references. It does not match the building kind and is far below the references in craft.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 16820
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "striped tile or roof fill covering the whole cell",
+      "rows": "0-15",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a constant 15 px wide for rows 0-15. The column scans at x=5, 8 and 12 show the same repeating pattern all the way down: dark lines at rows 0, 4, 8, 12 and 15, each followed by 3 light blue rows. This reads as roof-tile or awning courses, a modular roof fill piece, and the lighter strip on the left edge looks like a side trim. There is no wall, door, lintel or any vertical south face below the pattern, so there are 0 front-face rows and no eave shadow. The whole cell is a flat tiled plane, like the top-down slab in the guide, and not a roof over a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny icon of roughly 14x20 px, not a whole building with roof, walls and door/windows, so it does not match the reference kind. It uses only 5 colours in total. Its visible tones per tile are 5, against 10-12 in the references. It shows a blue block with a few lighter horizontal stripes and a simple border, with no roof tile scallops, no plaster or stone grain and no per-element shading. Shading is about 2-3 steps against 5-6 in the references. There is no real material-tone outline, and the dark edge pixels are tinted (0% neutral), so the outline is not near-black but also not meaningfully developed. The 0% near-flat coverage comes from the stripes, not from rich texture. Compared with the references, it is far thinner, flatter and more sticker-like.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(top_down_slab) (1/1)",
+    "앞면 0행 < 3 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(top_down_slab) (1/1)",
+     "앞면 0행 < 3 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 12793
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof/awning plane (shingle courses)",
+      "rows": "0-15",
+      "evidence": "c",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The whole 15x16 cell is one repeating pattern of tile courses. Dark lines fall at rows 0, 4, 8, 12 and 15, each with 1-2 mid-tone rows and 2-3 light rows between them. This is a roof or awning plane (evidence c). The only edge is a 1-row dark line at row 15, with no eave shadow below it. Below that line there is no wall, lintel, post or other vertical south face of 3 or more rows. A light vertical strip runs along the left edge. The cell is therefore a roof-fill kit piece with no front face, so it reads as a flat slab and not a 3/4 volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny icon of about one tile, a blue-purple striped rectangle. It is not a building: there is no roof, walls, door or windows, and it is far smaller than the references. It has 5 visible tones per tile against 12 and 10 for the references. The 0% near-flat coverage and 0% neutral edge share come from a tiny striped pattern, not from tile-level craft. The outline is a plain darker line with no material-tone outlining, there are only 2-3 lightness steps, and there are no tile scallops, plaster speckle or grain like the references show. Compared with the references' roof tiles, timber framing and stone shading, it reads as a flat sticker-like glyph, far thinner and shallower than the reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(top_down_slab) (1/1)",
+    "앞면 0행 < 3 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(top_down_slab) (1/1)",
+     "앞면 0행 < 3 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 13868
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof/awning plane (repeating scalloped stripe rows across the whole cell)",
+      "rows": "0-15",
+      "evidence": "c",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "4,8,12,15"
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The whole 16x16 cell is one roof-tile or awning pattern. Rows repeat every 4 rows: a dark line at rows 4, 8 and 12 (#433779, L=66), mid-tone rows 5-7 and 9-11, and a light blue band of 1-2 rows. The last row, 15, is a dark line. There is no wall, door or fascia below the roof, so no vertical south face of 3 or more rows is drawn. A light vertical strip at the left edge (about x=1-2) is a thin edge trim, not a receding side face. The cell is a roof section only, with a top surface and no front face. The rows are measured as roof (evidence c), but the missing front face makes the cell read as a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny blue-purple icon about 15x20 px with horizontal line stripes. It is not a whole building with roof, walls and door/windows, so it does not match the reference kind. It has only 5 raw and visible tones against 10-12 for the references. No shaded ramps, no tile scallops, no plaster speckle and no stone shading. Its outline is not a material-tone outline. The 0% near-flat coverage figure comes from the stripe pattern, not from real texture. It is far thinner and flatter than either reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(top_down_slab) (1/1)",
+    "앞면 0행 < 3 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(top_down_slab) (1/1)",
+     "앞면 0행 < 3 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 16751
+  }
+ ],
+ "decidedAt": "2026-10-20T22:08:46.677Z",
+ "cells": {
+  "16": [
+   "58af264efca6e692"
+  ],
+  "24": [
+   "21cb7fd37aa091af",
+   "365800127bf9a3f9",
+   "6ae7f73e665d40e4",
+   "7c5bb00cea7d7d44",
+   "b3314fd78c6d4d4f",
+   "e09a8318cf2cdbd4"
+  ],
+  "32": [
+   "1bec0ffcd8f3412f",
+   "9f89f74ef7581364",
+   "b07cbaeb7208c8fb",
+   "c6a9b1c4df2fcdb4",
+   "d2199ac53c73beb9",
+   "d66c3cedc158e9be"
+  ],
+  "48": [
+   "1045545a1ceb2837",
+   "134b0b649a519242",
+   "1a6e562771af62b9",
+   "4d19d6c883d93c18",
+   "7c11b123e62988a9",
+   "98ed92db35a2c826"
+  ]
+ }
+}

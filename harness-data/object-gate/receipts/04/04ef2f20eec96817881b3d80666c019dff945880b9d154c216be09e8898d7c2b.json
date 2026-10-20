@@ -1,0 +1,365 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "04ef2f20eec96817881b3d80666c019dff945880b9d154c216be09e8898d7c2b",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "Astra mart kit cell 10 (r2 c2)",
+ "label": "monster_overworld/astra-mart-kit-10 (칸 2250)",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)",
+  "화풍: 질감 없음 (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)",
+   "질감 없음 (2/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 88,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice or beam strip",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "striped orange and white awning plane",
+      "rows": "3-7",
+      "evidence": "c",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "7-7"
+     },
+     {
+      "part": "cream front wall or counter face with valance",
+      "rows": "9-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 3-7 are an orange and white striped awning, a sloped canopy plane. Its lowest row 7 is darker orange and acts as eave shadow. Row 8 is a dark 1-row edge line below it. Below that, rows 9-13 are a cream and tan front face, and rows 14-15 are a dark and white base, giving about 7 front rows. Rows 0-2 are a front-facing dark and tan cornice strip with no top surface, which is not counted. The awning gives a top of 5 rows above a front face of 3+ rows, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny fragment, roughly one or two tiles, that reads as a striped orange-and-white awning over a small sign or counter. It is not a whole building with roof, walls, door and windows like the references, so the kind does not match. Measured facts: 9 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and 0% neutral dark edge pixels. That suggests tinted outlines rather than a black sticker line, but the whole piece uses only 9 colours in total, against 185 and 66 for the references. By eye, the awning stripes are simple bands of about 3 lightness steps (light, mid, dark) with no per-tile scallops, plaster speckle or grain like the references' roof tiles and stone. The piece has fewer steps and less texture than the references, so it would look flatter and thinner beside them. Because it is not the same kind and is shallower, I fail it, as the instructions say to when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18741
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice/beam strip",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "striped awning with scalloped valance",
+      "rows": "3-7",
+      "evidence": "c",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front wall/counter band",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 3-7 hold alternating orange and white awning stripes (x=8 and x=11 run L=173 to 109 over rows 3-7, with a shaded scallop at row 7). Row 8 is a dark line that works as the awning's front-edge line, and the stripe rows count as the top plane under rule (c). Rows 0-2 are only an outlined beam strip with no top surface. Rows 9-14 are the cream front face with a dark base line at row 14, about 6 rows. There is no eave shadow, because row 9 below the edge line is light. The awning is drawn almost face-on, so the call is borderline, but the stripe band with a scalloped edge line fits (c)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny striped awning and sign fragment, under one tile tall. It is not a whole building with roof, walls and door/windows like the references, so the kind match is weak. It has only 9 distinct colours in total, against 66 and 185 for the references. Its shading is shallow, with roughly 3 steps on the orange/cream stripes where the references use 5-6 per material. There are no per-tile roof scallops, plaster speckle or stone shading, and the stripes read as flat bands. The edge pixels are tinted (0% neutral), so the outline is not a sticker-style black line. The measured 9 visible tones per tile is close to the references' 10-12, but the small, thin piece has far less structure and texture than a reference next to it. It would look thinner and flatter beside the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19585
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice or beam strip",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "striped awning (white and orange stripes with scalloped valance)",
+      "rows": "3-8",
+      "evidence": "c",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "cream front wall or counter face with tan band",
+      "rows": "9-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 3-7 are the awning plane, with alternating white and orange stripes. The orange columns darken at row 7 (#b4552c), and row 8 is a dark scalloped edge line (#383c58) that serves as the front-edge line, so the awning counts as a canopy top surface (evidence c). Below it, rows 9-13 show a cream front face with a tan band at row 10, and rows 14-15 are a dark line and a white base. Rows 0-2 are a front-facing dark/tan/dark cornice strip with no edge line or shadow, so I did not count it as a top. The awning stripes run vertically, which makes the top reading somewhat weak, but the edge line and shading are enough to call it three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny awning or sign fragment, about 16x12 source pixels, with an orange and white striped top and a pale grey base bar. It is not a whole building with roof, walls and door or windows, so it does not match the reference kind. The facts put it near the references (9 visible tones against 10 and 12, 0% near-flat, 0% neutral dark edges), but the piece is smaller than one tile, so those numbers are weak evidence. By eye, each material has only about 3 steps (orange, light orange, white or cream, with a dark brown-red edge), against the roughly 5-6 steps in the reference roofs. The reference roofs also have per-tile scallops and highlights, and the references' walls have plaster speckle, timber and stone detail. The candidate's stripes are clean but plain, and its base bar is nearly a flat fill. The outline is tinted, not black, which is a point in its favour. Overall it looks thinner and more sticker-like than the references, and it does not show the structural depth of a Beodeul building.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18049
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top beam/cornice strip",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "striped awning (orange/white stripes with scalloped lower edge)",
+      "rows": "3-7",
+      "evidence": "c",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "7-7"
+     },
+     {
+      "part": "front wall/counter face",
+      "rows": "9-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 3-7 are a striped awning plane (white and orange stripes). Row 7 is a darker orange eave shadow, and row 8 is a dark line (#383c58) at the awning's front edge, with a scalloped edge visible in the image. Below it, rows 9-13 are a cream/tan front wall, with a dark line at row 14 and a white base at row 15. Rows 0-2 are a flat beam strip with no top surface of their own, but the awning above the front edge counts as the top surface (evidence c). The awning is 5 rows and the front face is 5-6 rows, so the object reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny fragment, roughly one striped awning over a white wall band, not a whole building with roof, walls and door/windows, so it does not match the reference kind. The whole piece uses only 9 distinct colours, against 185 and 66 for the references, and each material has about 2-3 lightness steps, where the references have 5-6. The tile-level facts are close: 9 visible tones per tile against 12 and 10, with 0% near-flat coverage and 0% neutral dark edge pixels. That means the outline is tinted rather than black, and there are no large flat fills. The awning stripes are simple bands with no per-tile scallops, highlights or plaster speckle like the reference roofs and stone walls. It is cleanly drawn but visibly flatter and shallower than the references. With the kind mismatch and the shallow shading, it fails when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17111
+  }
+ ],
+ "decidedAt": "2026-10-20T22:08:46.694Z",
+ "cells": {
+  "16": [
+   "a0ef13700f8007ef"
+  ],
+  "24": [
+   "138d807f48a8571d",
+   "2ad48c43bc325629",
+   "3817988bc77af0e4",
+   "5089a18dcf78f00e",
+   "514e50f843cb592a",
+   "fda4c8e46e3a1a41"
+  ],
+  "32": [
+   "2026d75b4361a02b",
+   "30ca0f6cbad592c7",
+   "70d38c43b63a94ae",
+   "b121bc99263cec56",
+   "e967e77f091460f3",
+   "ee2ab3d5edbd2bdf"
+  ],
+  "48": [
+   "3177fd9a13d32c44",
+   "36c3730a3b378bf1",
+   "59ab4e7b730f2327",
+   "ad9464deadd24b15",
+   "e5fb815466dd188c",
+   "fc3f7775a9ac27f8"
+  ]
+ }
+}

@@ -1,0 +1,410 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "17cbb06191e55002c44c9d3823c9c3c82ae1eda472df8a3a491e3da3df6bdc98",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "Astra mart kit cell 11 (r2 c3)",
+ "label": "monster_overworld/astra-mart-kit-11 (칸 2251)",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (3/4)",
+  "3/4: 윗면 0행 < 3 (3/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (3/4)",
+   "윗면 0행 < 3 (3/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 88,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "right",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "striped awning (orange and white stripes with a scalloped lower edge)",
+      "rows": "3-7",
+      "evidence": "c",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "top cornice strip",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cream lower wall or counter face with horizontal bands",
+      "rows": "9-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brown side post with grey checker panel",
+      "rows": "1-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a cropped storefront tile. Rows 3-7 are an awning plane of orange and white stripes. It ends in a scalloped edge at row 7 (light blue-grey tip), followed by a dark eave-shadow row at row 8. Below it, rows 9-15 are a cream front face with tan banding, about 7 rows. The tan strip at rows 1-2 under the dark top outline is a cornice and is not counted as a top surface. The brown post and grey checker panel on the right are vertical faces. The width profile is constant at 13 from row 1 down, so there is no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a single 16x16 kit cell, so it is much smaller than the two whole-house references. It reads as a roof or awning edge in orange tiles, a cream wall band and a brown base. On the primary facts it matches the references: 12 visible tones per tile against 12 and 10, 0% near-flat coverage against 0%, and 0% neutral dark edge pixels against 7% and 9%. Its edge pixels are therefore tinted, not neutral black, which fits dark_material_tone. There are no flat 5x5 fills, and the dots and grain read as tile and plaster texture. It has only 12 distinct colours in total against 66 and 185 for the references, so by eye it is slightly thinner than them, with about 4 steps per material against their 5-6. A cell this size cannot carry more, and its per-tile richness matches the references, so I pass it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20931
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top dark outline and tan trim strip",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "orange and white panels (sign or window blocks)",
+      "rows": "3-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cream and tan horizontal banded front (counter or wall face)",
+      "rows": "9-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brown vertical post or pillar",
+      "rows": "1-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey checkered wall strip",
+      "rows": "1-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cell is a flat front-facing storefront fragment. Rows 0-2 are a dark outline and a thin tan trim line. Rows 3-8 are vertical orange and white panels. Rows 9-15 are horizontal cream and tan bands. Row 10 (#b8a684) is a darker line and row 11 is slightly lighter, but they read as stripes on a vertical face, with no eave shadow and no widening or narrowing of the width profile. The silhouette is a constant 13 wide from row 1 to row 15, with a brown post at x=11 and a checkered strip to the right. No roof, awning plane, ellipse or visible contents show a horizontal top surface, so it reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a single small kit cell, about one tile, not a whole building, so it only partly matches the reference kind. On the measured facts it matches the references: 12 visible tones per tile against 12 and 10, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is tinted rather than near-black. The whole piece uses only 12 distinct colours in total, against 66 and 185 for the references. That leaves roughly 3 steps per material (roof, plaster, wood), where the references carry 5-6 with per-tile roof highlights, plaster speckle and stone shading. At this size I cannot see the roof scallops, plaster grain or the shaded wood detail that the references show. It reads as thinner than the references, and with the shading shallow and the kind mismatched I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 21354
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top outline and trim strip",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "orange and white wall panels (vertical faces)",
+      "rows": "3-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cream striped lower wall or shelf face",
+      "rows": "9-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brown post on the right",
+      "rows": "1-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a flat front-facing wall fragment. Rows 0-2 are an outline and trim strip. Rows 3-7 are orange and white panels, and row 8 is a dark line. Rows 9-15 are cream stripes that read as a vertical face. The brown post at x=11 and the grey checker area run the full height. The width stays at 13 from rows 1-15, so there is no widening and narrowing that would make an ellipse. No roof slope, awning plane or edge line with eave shadow is visible, and no horizontal top surface is drawn. Rows 9-11 have a slight tan stripe gradation, but it reads as banding on the face and not as a foreshortened top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny fragment, about 11x22 source pixels, with orange, white and brown blocks. It is not a whole building with roof, walls and door, so it does not match the reference kind. The measured facts are not bad: 12 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is tinted rather than near-black. By eye, though, I can only see about 3 distinct lightness steps on any one material, against roughly 5-6 on the references' tile roofs, plaster and stone. I can't see the per-tile roof scallops, speckled plaster or individually shaded stones that the references show. At this size I can't confirm it is as rich as the references, and when in doubt the verdict is fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17461
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "window or display panel (white and orange blocks)",
+      "rows": "3-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "beige striped band, shelf or counter front",
+      "rows": "9-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brown vertical post or door-frame strip",
+      "rows": "1-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey checkered wall",
+      "rows": "1-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cell is a fragment of a shop kit. The silhouette is 13 px wide on every row from 1 to 15, with no widening or narrowing that would indicate an ellipse. The column scan at x=7 shows a flat white block (rows 3-6), a dark line at row 8, and beige bands (rows 9-15) with no lighter or darker front-edge line followed by eave shadow. The x=11 column is a uniform brown strip (rows 1-15), so the post is a vertical face. The grey checker wall is also a vertical face. No roof, awning plane or horizontal surface is visible, so the whole cell reads as a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a single 16x16 kit cell showing a fragment of a shopfront with an awning-like band, so it is much smaller than the two whole-house references. The measured facts support it: 12 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outlines carry a tint. By eye, the small piece shows warm orange, cream and brown steps with no uniform black outline and no large flat fills. It has about 4 ramp steps, fewer than the references' 5-6, and less fine grain than their per-tile scallops and speckle, which is why density is rated slightly lower. At this size, a careful artist would accept it next to the references without it looking like a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18638
+  }
+ ],
+ "decidedAt": "2026-10-20T22:08:46.696Z",
+ "cells": {
+  "16": [
+   "3b0725ea59ab096d"
+  ],
+  "24": [
+   "04c1ec500621103f",
+   "2606f402aab4b561",
+   "491451d27a177f36",
+   "5974e0a4d772ac2b",
+   "8da9fe74702393c2",
+   "f280c1df844c916f"
+  ],
+  "32": [
+   "013fd288613f8799",
+   "2482e2b4b6bbae3a",
+   "2a800a487514e637",
+   "b2d99a225e766739",
+   "d3e33e7c7e29d36c",
+   "e82dc2890afab404"
+  ],
+  "48": [
+   "0272ac708169d436",
+   "0da8f118d3a8cb37",
+   "5d30eb148c4f67c5",
+   "61268fde272d86f5",
+   "912f7f9a6fb20d37",
+   "d9bb33e942a9682a"
+  ]
+ }
+}

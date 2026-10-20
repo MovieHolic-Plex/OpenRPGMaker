@@ -1,0 +1,371 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "20aecace893b8a75602ddbb79eb0d3cb6a82451ee4e2cdb41350a6d1d48bf5bd",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "Astra centre kit cell 6 (r1 c2)",
+ "label": "monster_overworld/astra-centre-kit-6 (칸 2230)",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 2
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 16,
+  "darkV5": 88,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "teal border strip along the top row and right side",
+      "rows": "0-0",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brown frame (rows 1-3) around a cream/white panel holding pink and green shapes",
+      "rows": "1-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The 16x16 cell is a flat, face-on panel. A teal row at the top (row 0) and a teal strip on the right edge border a brown frame (rows 1-3), a dark navy inner edge, and a cream/white field with pink and green motifs. The column scan at x=8 shows the brown frame at rows 2-3, then uniform cream (#f4ead0) from rows 4-14 with a single green pixel at row 11, and a brown bottom edge at row 15. There is no band ending in a front-edge line, no eave shadow, no ellipse, no sloped roof or awning plane, and no visible contents inside an open container. Everything is drawn as a vertical face, so the cell reads as a front elevation with no top surface. It looks like a wall or window-panel tile rather than a gate, pavilion or building, so the structure kind fits poorly."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate on the right of the magenta bar is a tiny icon-like sprite, about one tile or less, with a white/teal panel and a small mark. It has no roof, walls or door, so it is not a whole building and does not match the building references. The facts show 16 distinct colours in total, against 185 and 66 for the references. The 16 visible tones per tile come from this one small icon, so they say little about building-level shading. The references have scalloped tile roofs with per-tile highlights, plaster speckle and shaded stonework, each at about 5-6 steps. The candidate has only about 3 readable shading steps and no material ramps or texture at building scale. Without a roof, wall and door it cannot be compared fairly, and it would look far thinner and more sticker-like beside the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 13079
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "framed panel with cream interior and pink/green motifs",
+      "rows": "1-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "teal strip at top (row 0) and teal band at right (x 12-15)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cell is a 16x16 tile section: a brown frame (rows 2-3 at the top, row 15 at the bottom) around a flat cream/white interior (rows 4-14) with pink and green motifs, and a dark vertical band at x=11 over teal tiles on the right. Every row is a vertical face, and none shows a front-edge line with eave shadow, an ellipse, a sloped roof plane or visible contents. The brown rows 2-3 and the teal row 0 are 1-2 row outlines or trim, not a top surface. There is no roof, lintel slope or horizontal surface, so it reads as a flat front-elevation panel, not a 3/4-view gate or building. It looks like a fragment of a larger kit rather than a whole structure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny icon-like fragment, about one tile, with a white square, a small green mark and a teal strip. It has no roof, walls, door or windows, so it is not a whole building like the two references. The references have a scalloped tile roof with per-tile highlights, plaster or stone texture and a timber frame, each with about 5-6 steps per material. The candidate shows only 2-3 steps per area and large plain white and teal regions. Its measured 16 visible tones in one tile and 0% near-flat coverage come from a tiny, busy sliver, and they do not show building-level shading, texture or structure. Its dark edge pixels are tinted (0% neutral), but there is too little outline to judge. Compared with the references, it is far thinner and flatter and is not the same kind of object.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 13047
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "teal strip along the top edge and right side (tile or roof fragment)",
+      "rows": "0-0",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brown frame with cream panel containing pink and green shapes, a vertical face",
+      "rows": "1-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tile is a 16x16 cell cut from a larger kit, with a uniform width of 16 on every row. Column x=8 shows a dark outline at row 1, brown frame at rows 2-3, then a flat cream panel at rows 4-14 with a pink blob and a green leaf, and a brown bottom edge at row 15. Column x=11 is a dark vertical strip from row 1 to 15, and the right-hand columns are teal. There is no front-edge line, no eave shadow, no ellipse and no sloped roof plane. The only possible top evidence is a 1-row teal strip at row 0, which is an outline-scale detail. The whole cell reads as a flat vertical panel, so it is a front elevation and does not show the roof or lintel top slope the structure kind requires."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny icon-like sprite, about one tile in size, with a white square, a small green mark and a teal striped edge. It has no roof, walls, door or windows, so it is not a whole building like the references. Its 16 colours in total are far below the references' 66 and 185. The measured 16 tones per tile come from a few contrasting pixels in a small area, not from material shading. By eye it shows 2-3 steps per material, with no tile scallops, plaster speckle or stone shading. The outline is a thin dark edge with no clear material tinting. The 0% flat coverage reflects the piece's small size, not real texture. A careful artist would not accept it next to the references, because it reads as a placeholder or sticker.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 14202
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "teal top strip (row 0), possibly a roof or wall edge fragment",
+      "rows": "0-0",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "frame trim: dark row 1, tan row 2, brown row 3, drawn as a front-facing strip",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "inset panel or window with cream background and pink and green motifs",
+      "rows": "4-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right-hand teal tiled strip with dark vertical frame at x=11",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a flat tile cell, a framed panel or window with a teal wall or roof tile strip on the right. Row 0 is a 1-row teal outline. Rows 1-3 are trim bands (dark, tan, brown) with no front-edge line followed by eave shadow, so they read as a vertical frame. The inner cream area in rows 4-14 is a vertical face with motifs, not a horizontal surface or contents. No ellipse, sloped roof plane or awning plane is visible. The right teal columns run uniformly from row 0 to row 15, so they are not a roof slope. The whole cell is drawn face-on with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate does not read as a building. It is a tiny icon-like fragment, about one tile wide, with a pale square panel, a small green mark and a teal striped bar. It has no roof, walls, door or windows, so it cannot be compared with the two references, which are full houses with tiled roofs, timber framing, plaster speckle and stone masonry shaded stone by stone. The measured facts (16 visible tones, 0% flat, 0% neutral edges) come from a few high-contrast pixels in a very small area, not from layered material shading. I judged by eye, since the piece is smaller than a tile. By eye there are only about 2 tones per material, no roof scallops, no grain, and large plain panels. The shading and texture are far shallower than the references, and the kind does not match.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15103
+  }
+ ],
+ "decidedAt": "2026-10-20T22:08:46.612Z",
+ "cells": {
+  "16": [
+   "2ba2755e52b7689e"
+  ],
+  "24": [
+   "21404d12369087a4",
+   "4602c4a63945db4b",
+   "940b25994d9af447",
+   "cd5fc010e49cd955",
+   "d9929de9c3e2f221",
+   "e42128598c0aa786"
+  ],
+  "32": [
+   "2f630d2fec3f61ac",
+   "469164d5f72c01dc",
+   "869c77b7029640f1",
+   "c5376c2974d39ddf",
+   "c77c3e09ac117193",
+   "daf97a406febb91c"
+  ],
+  "48": [
+   "2cc03a9259ceb8d4",
+   "2d3e7635c732d151",
+   "32b57e3248c15c65",
+   "58dee33f5765476d",
+   "c8285c606dee74be",
+   "ce3adb853d291c76"
+  ]
+ }
+}
