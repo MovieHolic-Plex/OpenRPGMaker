@@ -824,7 +824,7 @@ function monsterDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   if (isEmeraldMonsterStyle(options.project) && view === "party") {
     const slots: StatusMenuDetailEntry[] = Array.from({ length: MONSTER_PARTY_MAX }, (_, index): StatusMenuDetailEntry => {
       const raw = options.session.monsterInstances[ids[index] ?? ""];
-      if (!raw) return { label: index === 0 && ids.length === 0 ? "동료 없음" : "—", value: "", attributes: { partySlot: String(index), partyEmpty: "true", partyFainted: "false" }, disabled: true };
+      if (!raw) return { label: index === 0 && ids.length === 0 ? "동료 없음" : "비어 있음", value: "", attributes: { partySlot: String(index), partyEmpty: "true", partyFainted: "false" }, disabled: true };
       const member = monsterUiEntry(options.project, raw);
       const heldName = raw.heldItemId ? options.project.database.items.find((item) => item.id === raw.heldItemId)?.name : undefined;
       const slotNote = swapSourceId
