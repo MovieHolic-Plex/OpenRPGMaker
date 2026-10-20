@@ -32,6 +32,15 @@ export interface CharacterAppearanceRecord {
   bust?: { resourceId: string };
   /** 대사 창 뒤에 크게 서는 전신(선택). 없으면 흉상, 그것도 없으면 얼굴. */
   full?: { resourceId: string };
+  /**
+   * 표정별 흉상·전신(선택, 업로드·스토어 그림). 키는 공용 초상 표정 이름(base, happy, sad …).
+   * 대사 표정이 바뀌면 지금 서 있는 그림(bust/full 의 base 또는 다른 표정)이 같은 모양의 그 표정으로 바뀐다.
+   * 스토어 캐릭터 팩(char-gen)의 칩↔초상 짝이 이리로 들어온다(2026-10-20).
+   */
+  portraitExpressions?: {
+    bust?: Partial<Record<string, string>>;
+    full?: Partial<Record<string, string>>;
+  };
 }
 
 export interface ActorRecord {

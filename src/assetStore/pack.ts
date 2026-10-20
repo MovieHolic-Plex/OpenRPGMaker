@@ -2,7 +2,7 @@
  * 팩 만들기(프로젝트 → 매니페스트 + blob)와 넣기(매니페스트 + blob → 프로젝트), 크레딧.
  * 순수 함수다. 바이트 읽기·해시는 호출하는 쪽이 넘긴다(렌더러는 crypto.subtle, 서버는 node:crypto).
  */
-import type { CharsetLabelOverride, PassFlag, Project, TilesetDef, UploadedAsset } from "../project/types";
+import type { CharacterAppearanceRecord, CharsetLabelOverride, PassFlag, Project, TilesetDef, UploadedAsset } from "../project/types";
 import {
   STORE_ASSET_KINDS,
   STORE_BLOB_MIMES,
@@ -369,6 +369,14 @@ export function applyPackToProject(project: Project, manifest: StorePackManifest
     };
     project.charsetLabels = at >= 0 ? labels.map((old, i) => (i === at ? entry : old)) : [...labels, entry];
   }
+  // 캐릭터 칸의 짝 초상 → 캐릭터 외형(칩·얼굴·흉상·전신 + 표정 짝). 같은 상품을 다시 넣으면 그 외형을 새 그림으로 바꾼다.
+  for (const c of manifest.content.characters ?? []) {
+    const record = storeAppearanceRecord(slug, c, assetIdMap);
+    if (!record) continue;
+    const list = project.database.characterAppearances ?? [];
+    const at = list.findIndex((entry) => entry.id === record.id);
+    project.database.characterAppearances = at >= 0 ? list.map((old, i) => (i === at ? { ...record, name: old.name, description: old.description } : old)) : [...list, record];
+  }
   for (const [id, source] of Object.entries(manifest.content.tilesets)) {
     const existingBundled = Object.hasOwn(project.tilesets, id) ? project.tilesets[id] : undefined;
     const bundledRefUrls = new Map<string, string>();
@@ -411,6 +419,34 @@ export function applyPackToProject(project: Project, manifest: StorePackManifest
     project.tilesets[tileset.id] = tileset;
   }
   return { assetIds: [...assetIdMap.values()], tilesetIds: [...tilesetIdMap.values()], replaced };
+}
+
+/** 스토어 캐릭터 칸이 만드는 외형 id. */
+export const storeAppearanceId = (slug: string, asset: string, characterIndex: number): string => storeProjectId(slug, `appearance-${asset}-${characterIndex}`);
+
+/** 짝 초상이 있는 캐릭터 칸 → 외형 레코드(없으면 null). 프로젝트 id 로 바꾼 에셋만 가리킨다. */
+export function storeAppearanceRecord(slug: string, c: StorePackCharacter, assetIdMap: ReadonlyMap<string, string>): CharacterAppearanceRecord | null {
+  const por = c.portraits;
+  const charset = assetIdMap.get(c.asset);
+  if (!por || !charset) return null;
+  const mapOf = (raw: Partial<Record<string, string>> | undefined): Partial<Record<string, string>> | undefined => {
+    const entries = Object.entries(raw ?? {}).flatMap(([name, id]) => (id && assetIdMap.has(id) ? [[name, assetIdMap.get(id)!] as const] : []));
+    return entries.length > 0 ? Object.fromEntries(entries) : undefined;
+  };
+  const bust = mapOf(por.bust);
+  const full = mapOf(por.full);
+  const face = por.face ? assetIdMap.get(por.face) : undefined;
+  if (!bust && !full && !face) return null;
+  return {
+    id: storeAppearanceId(slug, c.asset, c.characterIndex),
+    name: c.label,
+    description: c.appearance ?? "",
+    charset: { resourceId: charset, characterIndex: c.characterIndex },
+    ...(face ? { face: { resourceId: face } } : {}),
+    ...(bust?.base ? { bust: { resourceId: bust.base } } : {}),
+    ...(full?.base ? { full: { resourceId: full.base } } : {}),
+    ...(bust || full ? { portraitExpressions: { ...(bust ? { bust } : {}), ...(full ? { full } : {}) } } : {}),
+  };
 }
 
 /** 팩 에셋이 프로젝트에서 받을 id(넣기 전에 저장소에 미리 넣을 때 쓴다). */

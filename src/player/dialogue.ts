@@ -19,7 +19,7 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
 import { dialogueFaceForEmotion, findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitId, sharedPortraitRendering } from "@/assets/sharedPortraitAssets";
 import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
-import { resolveActorAppearance, resolveAppearancePortrait } from "@/project/characterAppearances";
+import { appearancePortraitForEmotion, faceForDialogueEmotion, resolveActorAppearance, resolveAppearancePortrait } from "@/project/characterAppearances";
 import { facePresentationForResource } from "@/project/facePresentation";
 import { DEFAULT_MESSAGE_WINDOW_SETTINGS } from "@/project/session";
 import { store } from "@/project/store";
@@ -922,7 +922,7 @@ export function createDialogueUI(
         if (baseFace && isDualFullbodyVeil) {
           faceForLine = promoteFaceToFullPortrait(baseFace, look.emotion, look.expressionFace);
         } else {
-          const lineFaceId = baseFace ? dialogueFaceForEmotion(baseFace.resourceId, look.emotion, look.expressionFace) : undefined;
+          const lineFaceId = baseFace ? faceForDialogueEmotion(activeProject, baseFace.resourceId, look.emotion, look.expressionFace) : undefined;
           faceForLine = baseFace && lineFaceId && lineFaceId !== baseFace.resourceId ? { ...baseFace, resourceId: lineFaceId } : baseFace;
         }
         let face = faceForLine;
@@ -1203,7 +1203,7 @@ export function createDialogueUI(
         const baseResourceForExpr = faceForLine?.resourceId ?? request.face?.resourceId;
         const nextFace = findSharedPortrait(baseResourceForExpr)
           ? dialogueFaceForEmotion(baseResourceForExpr, emotion, expression?.face)
-          : expression?.face;
+          : expression?.face ?? appearancePortraitForEmotion(store.getCurrent(), baseResourceForExpr, emotion);
         if (nextFace && faceEl) {
           currentFaceId = nextFace;
           setFaceImage(faceEl, nextFace);
