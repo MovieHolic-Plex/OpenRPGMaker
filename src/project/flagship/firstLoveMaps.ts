@@ -167,6 +167,12 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
     buildings: { kind: string; doors: Cell[]; access: Cell[] }[];
   };
   const street = project.maps[FL_MAP.street]!;
+  // 퇴근길 사무가 거리에 소방차·구급차·경찰차가 도는 것은 이야기와 맞지 않는다 — 민간 차량만 남긴다(데모 전용 후처리).
+  const EMERGENCY_VEHICLES = new Set(["mc-veh-ambulance-a", "mc-veh-firetruck-b", "mc-veh-police-a"]);
+  for (const route of street.transit?.routes ?? []) {
+    const civil = route.vehicles.filter((v) => !EMERGENCY_VEHICLES.has(v));
+    if (civil.length > 0) route.vehicles = civil;
+  }
   const office = streetData.buildings.find((b) => b.kind === "office");
   const conv = streetData.buildings.find((b) => b.kind === "conv");
   if (!office || !conv) throw new Error("[first-love] 거리에 사무소·편의점 건물이 없다");
