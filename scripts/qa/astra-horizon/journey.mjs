@@ -310,7 +310,7 @@ async function fight(label, { capture = false, run = false } = {}) {
   await page.waitForFunction(() => !document.querySelector('[data-testid="battle-scene"]'), undefined, { timeout: 30000 }).catch(() => {});
   await page.waitForTimeout(600);
   // 승리 뒤 이어지는 대사(보상 안내)를 닫는다 — 열린 채 두면 이벤트가 끝나지 않아 다음 조사가 먹지 않는다.
-  await pressEnterUntil(async () => !(await present("dialogue-box")), 40);
+  await waitIdle();
   return log;
 }
 
@@ -345,6 +345,8 @@ async function bestSkill(skills) {
 
 const here = () => page.evaluate(() => window.__oprnDebug.readLive());
 const eventRunning = () => page.evaluate(() => Boolean(window.__oprnHooksScene?.running));
+/** 대사·선택지가 없고 이벤트 실행도 끝날 때까지 — 배지 연출처럼 상자 없이 도는 구간에 순간이동하면 연출이 끊기고 그림이 남았다. */
+const waitIdle = () => pressEnterUntil(async () => !(await eventRunning()) && !(await present("dialogue-box")) && !(await present("runtime-choices")), 80);
 const findEvent = (mapId, re) => project.maps[mapId]?.events.find((e) => re.test(e.id));
 /** from → to 로 걸어서 들어간다. 못 가면 to 맵 입구로 순간이동하고 기록한다. */
 async function go(fromMapId, toMapId) {
@@ -564,7 +566,7 @@ try {
   const started = talked && await pressEnterUntil(() => present("battle-scene"), 40);
   if (started) { await page.waitForTimeout(2500); await shot("21-leader-battle"); }
   const log = started ? await fight("21b-leader") : [];
-  await pressEnterUntil(async () => !(await present("dialogue-box")), 40);
+  await waitIdle();
   const afterLeader = await state();
   step("gym-leader", started && afterLeader.battleResult === "victory", `${log.length}턴 → ${afterLeader.battleResult} · badge=${afterLeader.switches.mx_badge_1} · ${report.levelBeforeLeader.join(", ")}`, await shot("22-after-leader"));
   // 지면 회복 센터에서 깨어난다(눈앞이 캄캄 → 센터). 플레이어처럼 그대로 한 번 더 도전해 본다 — 디버그 없이.
@@ -574,7 +576,7 @@ try {
     await approachAndTalk(gym.id, leader);
     const again = await pressEnterUntil(() => present("battle-scene"), 40);
     const log2 = again ? await fight("21d-leader-rematch") : [];
-    await pressEnterUntil(async () => !(await present("dialogue-box")), 40);
+    await waitIdle();
     const st2 = await state();
     step("gym-leader-rematch", again && st2.switches.mx_badge_1 === true, `${log2.length}턴 → ${st2.battleResult} · badge=${st2.switches.mx_badge_1} · ${await partyLine()}`);
   }
@@ -583,7 +585,7 @@ try {
     report.debugWrites.push("관장 패배 뒤 파티 Lv16 으로 재도전");
     await approachAndTalk(gym.id, leader);
     if (await pressEnterUntil(() => present("battle-scene"), 40)) await fight("21c-leader-retry");
-    await pressEnterUntil(async () => !(await present("dialogue-box")), 40);
+    await waitIdle();
   }
 
   // 엔딩까지 — 관측탑 보스 → 리그
@@ -600,8 +602,11 @@ try {
     await shot(`23-${key}`);
     await approachAndTalk(map.id, ev);
     const st = await pressEnterUntil(() => present("battle-scene") || present("ending-screen"), 40);
-    if (st && await present("battle-scene")) { await page.waitForTimeout(2000); await shot(`24-${key}-battle`); await fight(`24b-${key}`); }
-    const res = (await state()).battleResult;
+    const fought = Boolean(st && await present("battle-scene"));
+    if (fought) { await page.waitForTimeout(2000); await shot(`24-${key}-battle`); await fight(`24b-${key}`); }
+    await waitIdle();
+    // 싸우지 않았으면 battleResult 는 앞 전투 값이 남아 있다 — 전투가 실제로 열렸을 때만 결과로 친다.
+    const res = fought ? (await state()).battleResult : "no-battle";
     step(`boss-${key}-result`, res === "victory", `${res} · ${await partyLine()}`);
     let res2 = res;
     if (res !== "victory") {
@@ -614,7 +619,7 @@ try {
     }
     if (res2 !== "victory") {
       // 또 진 경우: 기록만 남기고, 엔딩 화면까지 보려고 레벨을 올려 다시 도전한다(디버그 쓰기로 적는다).
-      await pressEnterUntil(async () => !(await present("dialogue-box")), 40);
+      await waitIdle();
       await page.evaluate(() => { const s = window.__oprnHooksScene.session; for (const id of s.monsterParty) { const m = s.monsterInstances[id]; m.level = Math.max(m.level, 20); m.currentHp = undefined; } });
       report.debugWrites.push(`${key}: 패배 뒤 파티 Lv20 으로 재도전`);
       if (town2) await go((await here()).currentMapId, map.id).catch(() => {});
