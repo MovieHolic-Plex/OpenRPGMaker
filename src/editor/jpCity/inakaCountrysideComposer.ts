@@ -243,7 +243,7 @@ export const INAKA_SHOWCASE_SCENES: readonly InakaShowcaseScene[] = [
       // 동쪽 집터: 기와 농가 + 단층 박공집, 이끼 돌담
       { kit: "inaka-kawara-farmhouse", x: 22, y: 4, allowOverlap: true },
       { kit: "jp-bldg-house-hiraya-gable", x: 29, y: 4, allowOverlap: true },
-      { kit: "inaka-bicycle-parked", x: 28, y: 9 },
+      { kit: "inaka-bicycle-parked", x: 31, y: 9 }, // 전봇대(28..30열) 기둥 뒤에 숨지 않게
       { kit: "inaka-hydrangea-hedge", x: 34, y: 9 },
       { kit: "inaka-mossy-stone-wall", x: 21, y: 12 },
       { kit: "inaka-mossy-stone-wall", x: 25, y: 12 },
@@ -437,9 +437,10 @@ export const INAKA_SHOWCASE_SCENES: readonly InakaShowcaseScene[] = [
       { x: 13, y: 13, w: 6, h: 2, material: "연못" },
       { x: 14, y: 15, w: 5, h: 2, material: "연못" },
       { x: 14, y: 17, w: 4, h: 3, material: "연못" },
-      { x: 15, y: 20, w: 5, h: 2, material: "연못" },
-      { x: 16, y: 22, w: 5, h: 2, material: "연못" },
-      { x: 17, y: 24, w: 5, h: 2, material: "연못" },
+      // 징검다리 아래: 한 방향으로만 1칸씩 비키면 계단 운하가 되므로 좌우로 굽이친다. 띠는 2줄 이상(1줄 띠는 연못 테가 삼킨다).
+      { x: 14, y: 20, w: 6, h: 2, material: "연못" },
+      { x: 15, y: 22, w: 6, h: 2, material: "연못" },
+      { x: 14, y: 24, w: 6, h: 2, material: "연못" },
       { x: 0, y: 6, w: 14, h: 3, material: "생활도로" },
       { x: 20, y: 6, w: 20, h: 3, material: "생활도로" },
       { x: 3, y: 18, w: 11, h: 2, material: "산길 흙" },
