@@ -136,6 +136,7 @@ def empty(c):
 # ====================================================================== 바닥 직접 지정
 CURB_KIND = {9: 'S', 10: 'N', 11: 'E', 12: 'W', 13: 'SE', 14: 'SW', 15: 'NE', 16: 'NW'}
 MARKED = [3, 4, 5, 6] + list(range(77, 93))
+OVERLAY_MARKED = list(range(25, 49))     # 겹층 표시 칸(투명 바탕): 중앙선 25–36 · 정지선/띠 37–48 — r2 에서 같은 굵기로
 
 
 def ground_direct(orig):
@@ -145,7 +146,9 @@ def ground_direct(orig):
     for t, k in CURB_KIND.items():
         d[t] = (G.curb(k, 0), f'연석 {k}')
     for i, t in enumerate(MARKED):
-        d[t] = (G.restyle_markings(orig.cell(t), var=(0, 5, 6, 7)[i % 4], seed=t), '도로 표시')
+        d[t] = (G.paint_marks(orig.cell(t), var=(0, 5, 6, 7)[i % 4], seed=t), '도로 표시')
+    for t in OVERLAY_MARKED:
+        d[t] = (G.paint_marks(orig.cell(t), seed=t, overlay=True), '도로 표시(겹층)')
     return d
 
 
@@ -188,10 +191,21 @@ def main(dry=False, gate_only=False):
     next_id = [max([base_count] + [v + 1 for v in prev_app.values()])]
     app_ids = {}
 
-    def append(img, src, label, group, key_extra=''):
-        k = key_of(img, str(src) + key_extra)
+    legacy_groups = {g['id']: g['tileIds'] for g in data['tileGroups']}
+
+    def append(img, src, label, group, key_extra='', slot=None, legacy=None):
+        """slot 이 있으면 그림 내용이 아니라 자리 이름(묶음#순번)으로 번호를 잇는다 — 그림을 다시 그려도 번호가 그대로다.
+        처음 slot 을 쓰는 판에서는 지금 정의의 같은 묶음·순번 번호를 물려받는다(옛 내용 열쇠에서 옮김)."""
+        k = ('slot:' + slot) if slot else key_of(img, str(src) + key_extra)
         if k not in app_ids:
             tid = prev_app.get(k)
+            if tid is None and slot and legacy is not None and legacy >= base_count:
+                tid = legacy
+            if tid is None and slot and '#' in slot:
+                gid, i = slot.rsplit('#', 1)
+                lg = legacy_groups.get(gid) or []
+                if int(i) < len(lg) and lg[int(i)] >= base_count:
+                    tid = lg[int(i)]
             if tid is None:
                 tid = next_id[0]; next_id[0] += 1
             app_ids[k] = tid
@@ -263,23 +277,24 @@ def main(dry=False, gate_only=False):
         for i in ids:
             if i not in groups_new[gid]:
                 groups_new[gid].append(i)
-    asph = [1, 2] + [append(G.to_img(G.asphalt(v)), 1, '아스팔트(' + G.ASPHALT_VARIANTS[v] + ')', 'mc:asphalt') for v in (1, 6, 7, 2, 3, 4)]
+    asph = [1, 2] + [append(G.to_img(G.asphalt(v)), 1, '아스팔트(' + G.ASPHALT_VARIANTS[v] + ')', 'mc:asphalt', slot=f'mc:asphalt#{i + 2}') for i, v in enumerate((1, 6, 7, 2, 3, 4))]
     add_group('mc:asphalt', asph)
-    pav = [7, 8] + [append(G.to_img(G.sidewalk(v)), 7, '보도(' + G.SIDEWALK_VARIANTS[v] + ')', 'mc:paving') for v in (5, 6, 2, 3, 4)]
+    pav = [7, 8] + [append(G.to_img(G.sidewalk(v)), 7, '보도(' + G.SIDEWALK_VARIANTS[v] + ')', 'mc:paving', slot=f'mc:paving#{i + 2}') for i, v in enumerate((5, 6, 2, 3, 4))]
     add_group('mc:paving', pav)
-    grs = [17, 18] + [append(G.to_img(G.grass(v)), 17, '잔디(' + G.GRASS_VARIANTS[v] + ')', 'mc:grass') for v in (5, 6, 2, 3, 4)]
+    grs = [17, 18] + [append(G.to_img(G.grass(v)), 17, '잔디(' + G.GRASS_VARIANTS[v] + ')', 'mc:grass', slot=f'mc:grass#{i + 2}') for i, v in enumerate((5, 6, 2, 3, 4))]
     add_group('mc:grass', grs)
-    add_group('mc:grass-edge-s', [append(G.to_img(G.grass_edge_south(v)), 17, '잔디 끝 경계석(남쪽이 보도)', 'mc:grass-edge') for v in (0, 1, 5)])
-    add_group('mc:paving-under-grass', [append(G.to_img(G.sidewalk_under_grass(v)), 7, '보도(북쪽 잔디 경계석 그늘)', 'mc:grass-edge') for v in (0, 1, 5)])
-    add_group('mc:grass-edge-n', [append(G.to_img(G.grass_edge_north(v)), 17, '잔디 끝 경계석(북쪽이 보도)', 'mc:grass-edge') for v in (0, 1)])
-    tac = append(G.to_img(G.tactile()), 7, '점자 블록(횡단보도 앞)', 'mc:tactile')
+    add_group('mc:grass-edge-s', [append(G.to_img(G.grass_edge_south(v)), 17, '잔디 끝 경계석(남쪽이 보도)', 'mc:grass-edge', slot=f'mc:grass-edge-s#{i}') for i, v in enumerate((0, 1, 5))])
+    add_group('mc:paving-under-grass', [append(G.to_img(G.sidewalk_under_grass(v)), 7, '보도(북쪽 잔디 경계석 그늘)', 'mc:grass-edge', slot=f'mc:paving-under-grass#{i}') for i, v in enumerate((0, 1, 5))])
+    add_group('mc:grass-edge-n', [append(G.to_img(G.grass_edge_north(v)), 17, '잔디 끝 경계석(북쪽이 보도)', 'mc:grass-edge', slot=f'mc:grass-edge-n#{i}') for i, v in enumerate((0, 1))])
+    tac = append(G.to_img(G.tactile()), 7, '점자 블록(횡단보도 앞)', 'mc:tactile', slot='mc:tactile#0')
     add_group('mc:tactile', [tac])
 
     # 측구 — 도로 키트 자리마다(바탕 칸의 새 그림 위에 측구)
-    def gut(base, side, ext=None):
+    def gut(base, side, ext=None, legacy=None):
         t = G.from_img(gimg[base] if base in gimg else orig.cell(base))
         G.gutter_overlay(t, side, ext)
-        return append(G.to_img(t), base, f'측구({side}) — 연석 곁 차도', 'mc:gutter', key_extra=side + repr(ext))
+        return append(G.to_img(t), base, f'측구({side}) — 연석 곁 차도', 'mc:gutter', key_extra=side + repr(ext),
+                      slot=f'gut:{base}:{side}:{ext}', legacy=legacy)
     GUT = {
         'mc-street-ew-section': [(3, 0, 'N', None), (8, 0, 'S', None)],
         'mc-street-ns-section': [(0, 3, 'W', None), (0, 8, 'E', None)],
@@ -289,11 +304,12 @@ def main(dry=False, gate_only=False):
                                   (0, 8, 'E', None), (1, 8, 'E', None), (2, 8, 'E', (0, 6)), (9, 8, 'E', (10, 16)), (10, 8, 'E', None), (11, 8, 'E', None)],
     }
     gut_ids = []
+    cur_rows = {k['id']: k['rows'] for k in data['structureKits']}   # 지금 정의(지난 판 측구 번호) — slot 첫 판 물려받기용
     for kid, spots in GUT.items():
         rows = orig.rows(kid)
         for r, c, side, ext in spots:
             base = rows[r]['tiles'][c]
-            nid = gut(base, side, ext); gut_ids.append(nid)
+            nid = gut(base, side, ext, legacy=cur_rows[kid][r]['tiles'][c]); gut_ids.append(nid)
             repoint[kid].append((r, 'tiles', c, nid))
     for (r, c) in ((1, 1), (1, 10), (10, 1), (10, 10)):
         repoint['mc-intersection-12x12'].append((r, 'tiles', c, tac))

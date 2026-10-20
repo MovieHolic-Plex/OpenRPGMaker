@@ -2,8 +2,8 @@
 (~/claude-viz/modern-tiles-proto/ground/src/draw.py)을 굽기용으로 옮겼다. 생성 이미지 없음.
 
 아스팔트·노면 표시·횡단보도·측구·연석(8방향, SDF)·점자 블록·잔디·잔디 경계석.
-보도는 시안이 바둑판(블록마다 톤이 크게 달라 체크무늬)으로 읽혀 다시 그렸다: 8×4 러닝 본드 · 톤 폭을 좁게(반 단계) ·
-드물게 닳은 블록 하나. 칸 경계에 걸친 블록은 바탕 톤만 써서 칸 사이에서 블록이 끊기지 않는다.
+보도는 시안이 바둑판(블록마다 톤이 크게 달라 체크무늬)으로 읽혀 다시 그렸다(r2): 16×8 판석 러닝 본드 · 이음 한 단계 · 톤 폭을 좁게 ·
+드물게 닳은 판 하나. 칸 경계에 걸친 블록은 바탕 톤만 써서 칸 사이에서 블록이 끊기지 않는다.
 
 모든 함수는 결정적이다(같은 인자 → 같은 화소). 반환은 16×16 RGBA PIL 그림.
 """
@@ -26,13 +26,13 @@ W = [(236, 240, 236), (205, 213, 211), (158, 168, 170)]
 Y = [(236, 194, 102), (210, 165, 76), (160, 120, 54)]
 TY = [(120, 92, 30), (178, 140, 48), (214, 176, 70), (240, 210, 112)]
 DIRT = [(70, 58, 44), (96, 80, 60), (122, 104, 78)]
-CLOVER = (214, 222, 204)
+CLOVER = (150, 176, 140)   # r2: 밝은 흰 점 → 잔디보다 조금 밝은 연녹백(대비 낮춤)
 
 # 보도(다시 그림) — 바탕 S3 둘레 반 단계 톤만. 이음은 S1 과 S2 사이.
 SW_BASE = S[3]
-SW_TONES = {0: S[3], 1: (85, 103, 109), -1: (77, 93, 99), -2: (71, 86, 92)}   # 바탕 · 반 단계 밝음 · 반 단계 어둠 · 닳은 블록(드묾)
-SW_JOINT = (64, 78, 84)
-SW_HJOINT = (72, 87, 93)
+SW_TONES = {0: S[3], 1: (87, 105, 111), -1: (75, 91, 97), -2: (71, 86, 92)}   # 바탕 · 반 단계 밝음 · 반 단계 어둠 · 닳은 판(드묾)
+SW_JOINT = S[2]          # 이음 = 몸보다 한 단계만 어둡게
+SW_LIT = S[4]            # 위·왼쪽 모서리 = 한 단계 밝게
 
 
 def lit(c, k):
@@ -178,6 +178,77 @@ def restyle_markings(old, var=0, seed=0):
     return t
 
 
+# ---------------------------------------------------------------- 노면 표시 r2 — 시안 굵기(감독 검수 2026-10-20)
+# 중앙선: 노란 2px 한 줄 + 아래(세로선은 오른쪽) 그늘 1px + 닳은 점. 옛 칸은 칸 경계 양쪽 1px 겹선(77 y14 · 78 y1)이라,
+#   경계 쪽 화소(77 y15 · 78 y0)로 옮겨 붙여 두 칸이 한 줄 2px 를 이룬다. 칸 가운데 짧은 선(3·4)은 제자리 2px.
+# 흰 띠(횡단보도·정지선): 옛 2px 띠를 길이 방향은 그대로, 굵기만 양쪽 1px 씩 넓혀 4px + 그늘 1px + 조금 닳음.
+def _comps(m, k):
+    seen, out = set(), []
+    for y in range(T):
+        for x in range(T):
+            if m[y][x] == k and (x, y) not in seen:
+                st, comp = [(x, y)], []
+                seen.add((x, y))
+                while st:
+                    cx, cy = st.pop(); comp.append((cx, cy))
+                    for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                        nx, ny = cx + dx, cy + dy
+                        if 0 <= nx < T and 0 <= ny < T and (nx, ny) not in seen and m[ny][nx] == k:
+                            seen.add((nx, ny)); st.append((nx, ny))
+                out.append(comp)
+    return out
+
+
+_CENTRE_MAP = {14: ([15], None), 1: ([0], 1), 7: ([7, 8], 9), 8: ([7, 8], 9)}
+
+
+def paint_marks(old, var=0, seed=0, overlay=False):
+    """옛 표시 칸 → 새 표시. overlay=True 면 바탕은 투명(겹층 표시 칸), 아니면 새 아스팔트 위."""
+    px = old.convert('RGBA').load()
+    m = [[(classify_marking(px[x, y]) if px[x, y][3] else None) for x in range(T)] for y in range(T)]
+    t = new(None) if overlay else asphalt(var)
+    paint, shade = {}, set()
+    for comp in _comps(m, 'Y'):
+        xs = sorted({p[0] for p in comp}); ys = sorted({p[1] for p in comp})
+        horiz = len(ys) <= 2 and len(xs) > len(ys)
+        across = ys if horiz else xs
+        lines, sh = _CENTRE_MAP.get(across[0], (across, across[-1] + 1))
+        along = range(xs[0], xs[-1] + 1) if horiz else range(ys[0], ys[-1] + 1)
+        for i, a in enumerate(lines):
+            for b in along:
+                x, y = (b, a) if horiz else (a, b)
+                w = h01('cl', seed, x, y)
+                paint[(x, y)] = Y[1] if w < 0.05 else (Y[2] if w < 0.065 else Y[0])   # 두 줄 모두 밝은 노랑 · 닳은 점은 드물게
+            if sh is not None and sh < T:
+                for b in along:
+                    shade.add((b, sh) if horiz else (sh, b))
+    for comp in _comps(m, 'W'):
+        xs = sorted({p[0] for p in comp}); ys = sorted({p[1] for p in comp})
+        horiz = (xs[-1] - xs[0]) >= (ys[-1] - ys[0])
+        lo, hi = (ys[0], ys[-1]) if horiz else (xs[0], xs[-1])
+        lo, hi = max(0, lo - 1), min(T - 1, hi + 1)
+        along = range(xs[0], xs[-1] + 1) if horiz else range(ys[0], ys[-1] + 1)
+        for a in range(lo, hi + 1):
+            for b in along:
+                x, y = (b, a) if horiz else (a, b)
+                w = h01('cw', seed, x, y)
+                c = W[1] if a == hi else W[0]
+                if w < 0.05:
+                    c = W[1] if c == W[0] else W[2]
+                elif w < 0.065:
+                    c = W[2]
+                paint[(x, y)] = c
+        if hi + 1 < T:
+            for b in along:
+                shade.add((b, hi + 1) if horiz else (hi + 1, b))
+    for (x, y) in shade:
+        if (x, y) not in paint:
+            t[y][x] = A[2]
+    for (x, y), c in paint.items():
+        t[y][x] = c
+    return t
+
+
 # ---------------------------------------------------------------- 측구(연석 앞 차도 칸)
 def gutter_overlay(t, side, extent=None):
     """t(차도 칸)에 측구를 칠한다. side: 'N'(위가 남향 연석 앞면) · 'S'(아래가 북향 연석) · 'W'(왼쪽이 동향 연석) · 'E'(오른쪽).
@@ -222,66 +293,51 @@ def gutter_overlay(t, side, extent=None):
     return t
 
 
-# ---------------------------------------------------------------- 보도(다시 그림 — 8×4 러닝 본드, 좁은 톤 폭)
-def _block_tone(var, row, bx):
-    """칸 안 블록(행 row 0..3, 블록 시작 x) 톤. 칸 경계를 넘는 블록(시작 x=12)은 늘 바탕."""
-    if bx >= 12 or bx < 0:
-        return 0
-    h = h01('sw', var, row, bx)
-    if var == 0:
-        return 0 if h < 0.82 else (1 if h < 0.92 else -1)
-    if var in (5, 6):
-        return 0 if h < 0.7 else (1 if h < 0.85 else -1)
-    if var == 2:   # 닳은 블록 하나(드문 변형)
-        return -2 if (row, bx) == (1, 4) else (0 if h < 0.8 else -1)
-    return 0 if h < 0.75 else (1 if h < 0.88 else -1)
+# ---------------------------------------------------------------- 보도(다시 그림 r2 — 16×8 판석 러닝 본드)
+# 감독 검수(2026-10-20): 8×4 판은 양방향 이음이 진해 벽돌 벽처럼 읽혔다. 큰 판(16×8), 줄마다 8px 엇갈림,
+# 이음은 몸보다 한 단계만 어둡게(S2), 위·왼쪽 1px 모서리 한 단계 밝게(S4), 몸은 시안 보도 중간값(S3).
+# 칸 경계에 걸치는 둘째 줄 판(x 8..23)은 늘 바탕 톤 → 칸 사이에서 판이 끊기지 않는다.
+def _sw_body(var):
+    """첫째 줄 판(칸 안 판 하나) 몸 톤. 대부분 바탕, var5 만 반 단계 밝음(섞으면 판의 ~12%), var2 는 닳은 판(어둠)."""
+    return {5: SW_TONES[1], 2: SW_TONES[-2]}.get(var, SW_BASE)
 
 
 def sidewalk(var=0):
-    """보도 판석 8×4 러닝 본드. 줄(4px)마다 이음이 4px 엇갈린다(짝수 줄 x=0·8, 홀수 줄 x=4·12).
-    블록: 위 줄·왼쪽 열 반 단계 밝게, 아래 줄 오른쪽 끝·오른쪽 열 반 단계 어둡게, 이음 1px.
-    var 0 바탕 · 1 바탕(톤 배치 2) · 2 닳은 블록 하나 · 3 금 간 블록 · 4 껌 자국 · 5,6 톤 배치만 다름."""
+    """보도 판석 16×8 러닝 본드. 첫째 줄(y0..7) 판은 칸 너비 그대로(이음 x15), 둘째 줄(y8..15)은 8px 엇갈려 이음 x7.
+    판: 위 줄·왼쪽 열 1px 한 단계 밝게, 이음 1px 한 단계 어둡게. 면에 아주 옅은 알갱이 몇 개.
+    var 0 바탕 · 1 바탕(알갱이 배치 2) · 2 닳은 판 하나 · 3 금 간 판 · 4 껌 자국 · 5 밝은 판 하나 · 6 바탕(알갱이 배치 3)."""
     t = new(SW_BASE)
-    for row in range(4):
-        y0 = row * 4
-        off = 0 if row % 2 == 0 else 4
-        for bx in (off - 8, off, off + 8):
-            tone = SW_TONES[_block_tone(var, row, bx)]
-            for yy in range(4):
-                for xx in range(8):
-                    x = bx + xx
-                    if not 0 <= x < T:
-                        continue
-                    y = y0 + yy
-                    if xx == 7:
-                        c = SW_JOINT
-                    elif yy == 3:
-                        c = SW_HJOINT if xx < 6 else SW_JOINT
-                    elif yy == 0 and 1 <= xx < 5:
-                        c = lit(tone, 1)
-                    elif xx == 0 and yy < 3:
-                        c = lit(tone, 1.5)
-                    elif xx == 6 and yy > 0:
-                        c = lit(tone, -1)
-                    else:
-                        c = tone
-                    t[y][x] = c
-    # 면 결: 블록 몇에 밝은 점 + 아래 그늘 한 쌍(작게)
+    for course in (0, 1):
+        y0 = course * 8
+        body = _sw_body(var) if course == 0 else SW_BASE
+        jx = 15 if course == 0 else 7
+        lx = 0 if course == 0 else 8
+        for yy in range(8):
+            y = y0 + yy
+            for x in range(T):
+                if yy == 7 or x == jx:
+                    c = SW_JOINT
+                elif yy == 0 or x == lx:
+                    c = SW_LIT if body == SW_BASE else lit(body, 2)
+                else:
+                    c = body
+                t[y][x] = c
     r = random.Random(300 + var)
-    for _ in range(7):
-        x, y = 1 + r.randrange(14), 1 + 4 * r.randrange(4)
-        if t[y][x] not in (SW_JOINT,) and y + 1 < T and t[y + 1][x] not in (SW_JOINT,):
-            t[y][x] = lit(t[y][x], 1); t[y + 1][x] = lit(t[y + 1][x], -1)
-    if var == 3:   # 금 간 블록
-        for x, y in [(9, 4), (10, 5), (11, 6)]:
+    for _ in range(4):            # 알갱이: 반 단계만(아주 옅게)
+        x, y = 1 + r.randrange(13), 1 + r.randrange(14)
+        if y % 8 in (0, 7) or x in (7, 8, 15, 0):
+            continue
+        t[y][x] = lit(t[y][x], 1 if r.random() < 0.5 else -1)
+    if var == 3:   # 금 간 판
+        for x, y in [(3, 3), (4, 4), (5, 4), (6, 5)]:
             t[y][x] = SW_JOINT
     if var == 4:   # 껌 자국
-        for x, y in [(3, 9), (12, 2), (10, 13)]:
+        for x, y in [(4, 10), (11, 3)]:
             t[y][x] = S[2]
     return t
 
 
-SIDEWALK_VARIANTS = {0: '바탕', 1: '바탕(톤 배치 2)', 2: '닳은 블록 하나', 3: '금 간 블록', 4: '껌 자국', 5: '바탕(톤 배치 3)', 6: '바탕(톤 배치 4)'}
+SIDEWALK_VARIANTS = {0: '바탕', 1: '바탕(알갱이 배치 2)', 2: '닳은 판 하나', 3: '금 간 판', 4: '껌 자국', 5: '밝은 판 하나', 6: '바탕(알갱이 배치 3)'}
 
 
 def tactile():
@@ -388,35 +444,34 @@ GRASS_VARIANTS = {0: '바탕', 1: '바탕(덩이 배치 2)', 2: '큰 그늘 덩�
 
 def grass(var=0):
     t = new(G[3])
-    blobs = {0: [(4, 11, 2.6)], 1: [(10, 10, 2.4)], 2: [(8, 8, 5.0), (2, 2, 2.0)], 3: [(13, 13, 2.4)], 5: [(2, 6, 2.8)], 6: []}.get(var, [])
-    lights = {0: [(10, 12, 3.0)], 1: [(4, 4, 3.4)], 5: [(9, 3, 2.8)], 6: [(6, 10, 3.6), (14, 2, 2.4)], 3: [(3, 3, 2.6)]}.get(var, [])
+    # r2: 칸마다 같은 자리에 덩이가 있으면 격자(마름모)로 반복돼 보인다 → 바탕 칸(0)은 덩이 없음, 나머지도 크기·자리를 흩는다.
+    blobs = {0: [], 1: [(11, 9, 2.2)], 2: [(8, 8, 5.0), (2, 2, 2.0)], 3: [(13, 13, 2.4)], 5: [], 6: [(3, 13, 1.8)]}.get(var, [])
+    lights = {0: [], 1: [], 5: [(9, 4, 2.6)], 6: [(5, 7, 3.0)], 3: [(3, 3, 2.6)]}.get(var, [])
     for bx, by, rad in lights:
         for y in range(T):
             for x in range(T):
                 dx = min(abs(x - bx), T - abs(x - bx)); dy = min(abs(y - by), T - abs(y - by))
                 d = (dx * dx + dy * dy) ** 0.5
-                if d < rad - 1 or (d < rad + 0.5 and (x + y) % 2 == 0):
+                if d < rad - 1 or (d < rad + 0.5 and h01('gl', var, x, y) < 0.45):   # 가장자리 흩뿌림(체크 디더 대신 → 마름모 반복이 덜 보인다)
                     t[y][x] = G[4]
     for bx, by, rad in blobs:
         for y in range(T):
             for x in range(T):
                 dx = min(abs(x - bx), T - abs(x - bx)); dy = min(abs(y - by), T - abs(y - by))
                 d = (dx * dx + dy * dy) ** 0.5
-                if d < rad * 0.7 or (d < rad and (x + y) % 2 == 1):
+                if d < rad * 0.7 or (d < rad and h01('gb', var, x, y) < 0.5):
                     t[y][x] = G[2]
-    for x, y, k in jitter_points(600 + var, cell=4, prob=0.4):
+    for x, y, k in jitter_points(600 + var, cell=4, prob=0.28):   # r2: 잎끝 밀도를 낮춰 차분하게
         base = t[y % T][x % T]
         dark = base == G[2]
         lit_ = base == G[4]
-        tip = G[3] if dark else (G[5] if lit_ else G[4])
-        if k > 0.92:
-            tip = G[4] if dark else G[5]
+        tip = G[3] if dark else (G[5] if lit_ and k > 0.6 else G[4])   # 밝은 잎끝(G5)은 볕 든 자리에서만, 드물게
         if k < 0.5:
             put(t, x, y, tip); put(t, x - 1, y + 1, tip); put(t, x + 1, y + 1, tip); put(t, x, y + 1, G[1] if dark else (G[3] if lit_ else G[2]))
         else:
             put(t, x, y, tip); put(t, x, y + 1, G[1] if dark else (G[3] if lit_ else G[2]))
-    if var == 4:
-        for x, y in [(3, 4), (11, 12), (13, 7)]:
+    if var == 4:   # 토끼풀 꽃 — 두 송이, 대비를 낮춘 연녹백
+        for x, y in [(3, 4), (12, 11)]:
             put(t, x, y, CLOVER); put(t, x, y + 1, G[2])
     if var == 3:
         for x, y in [(6, 9), (7, 9), (8, 9), (5, 10), (6, 10), (7, 10), (8, 10), (9, 10), (6, 11), (7, 11), (8, 11)]:

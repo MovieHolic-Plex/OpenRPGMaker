@@ -7,12 +7,12 @@
 {"png": "/home/main/z-project/rpg-zzu-modern-tiles-r1/tiledata/modern-city/modern-tiles/_gate/asphalt-6.png", "kind": "terrain", "name": "아스팔트 바탕(결 배치 3) (3×3 반복)", "label": "modern_city/modern-tiles/asphalt-6"}
 {"png": "/home/main/z-project/rpg-zzu-modern-tiles-r1/tiledata/modern-city/modern-tiles/_gate/asphalt-7.png", "kind": "terrain", "name": "아스팔트 바탕(결 배치 4) (3×3 반복)", "label": "modern_city/modern-tiles/asphalt-7"}
 {"png": "/home/main/z-project/rpg-zzu-modern-tiles-r1/tiledata/modern-city/modern-tiles/_gate/paving-0.png", "kind": "terrain", "name": "보도 바탕 (3×3 반복)", "label": "modern_city/modern-tiles/paving-0"}
-{"png": "/home/main/z-project/rpg-zzu-modern-tiles-r1/tiledata/modern-city/modern-tiles/_gate/paving-1.png", "kind": "terrain", "name": "보도 바탕(톤 배치 2) (3×3 반복)", "label": "modern_city/modern-tiles/paving-1"}
-{"png": "/home/main/z-project/rpg-zzu-modern-tiles-r1/tiledata/modern-city/modern-tiles/_gate/paving-2.png", "kind": "terrain", "name": "보도 닳은 블록 하나 (3×3 반복)", "label": "modern_city/modern-tiles/paving-2"}
-{"png": "/home/main/z-project/rpg-zzu-modern-tiles-r1/tiledata/modern-city/modern-tiles/_gate/paving-3.png", "kind": "terrain", "name": "보도 금 간 블록 (3×3 반복)", "label": "modern_city/modern-tiles/paving-3"}
+{"png": "/home/main/z-project/rpg-zzu-modern-tiles-r1/tiledata/modern-city/modern-tiles/_gate/paving-1.png", "kind": "terrain", "name": "보도 바탕(알갱이 배치 2) (3×3 반복)", "label": "modern_city/modern-tiles/paving-1"}
+{"png": "/home/main/z-project/rpg-zzu-modern-tiles-r1/tiledata/modern-city/modern-tiles/_gate/paving-2.png", "kind": "terrain", "name": "보도 닳은 판 하나 (3×3 반복)", "label": "modern_city/modern-tiles/paving-2"}
+{"png": "/home/main/z-project/rpg-zzu-modern-tiles-r1/tiledata/modern-city/modern-tiles/_gate/paving-3.png", "kind": "terrain", "name": "보도 금 간 판 (3×3 반복)", "label": "modern_city/modern-tiles/paving-3"}
 {"png": "/home/main/z-project/rpg-zzu-modern-tiles-r1/tiledata/modern-city/modern-tiles/_gate/paving-4.png", "kind": "terrain", "name": "보도 껌 자국 (3×3 반복)", "label": "modern_city/modern-tiles/paving-4"}
-{"png": "/home/main/z-project/rpg-zzu-modern-tiles-r1/tiledata/modern-city/modern-tiles/_gate/paving-5.png", "kind": "terrain", "name": "보도 바탕(톤 배치 3) (3×3 반복)", "label": "modern_city/modern-tiles/paving-5"}
-{"png": "/home/main/z-project/rpg-zzu-modern-tiles-r1/tiledata/modern-city/modern-tiles/_gate/paving-6.png", "kind": "terrain", "name": "보도 바탕(톤 배치 4) (3×3 반복)", "label": "modern_city/modern-tiles/paving-6"}
+{"png": "/home/main/z-project/rpg-zzu-modern-tiles-r1/tiledata/modern-city/modern-tiles/_gate/paving-5.png", "kind": "terrain", "name": "보도 밝은 판 하나 (3×3 반복)", "label": "modern_city/modern-tiles/paving-5"}
+{"png": "/home/main/z-project/rpg-zzu-modern-tiles-r1/tiledata/modern-city/modern-tiles/_gate/paving-6.png", "kind": "terrain", "name": "보도 바탕(알갱이 배치 3) (3×3 반복)", "label": "modern_city/modern-tiles/paving-6"}
 {"png": "/home/main/z-project/rpg-zzu-modern-tiles-r1/tiledata/modern-city/modern-tiles/_gate/grass-0.png", "kind": "terrain", "name": "잔디 바탕 (3×3 반복)", "label": "modern_city/modern-tiles/grass-0"}
 {"png": "/home/main/z-project/rpg-zzu-modern-tiles-r1/tiledata/modern-city/modern-tiles/_gate/grass-1.png", "kind": "terrain", "name": "잔디 바탕(덩이 배치 2) (3×3 반복)", "label": "modern_city/modern-tiles/grass-1"}
 {"png": "/home/main/z-project/rpg-zzu-modern-tiles-r1/tiledata/modern-city/modern-tiles/_gate/grass-2.png", "kind": "terrain", "name": "잔디 큰 그늘 덩이 (3×3 반복)", "label": "modern_city/modern-tiles/grass-2"}
