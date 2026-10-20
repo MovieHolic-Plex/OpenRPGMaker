@@ -24,7 +24,7 @@ import { OBJECT_GATE_KINDS, OBJECT_GATE_STYLE_KINDS, defaultObjectGateStyleKind,
 import { GATE_DATA, calibratedFinalProfiles, listFinals, listQueueBatches, readFinal, readFinalProfiles, readPng, readReceipt, styleRefs, writeFinal, writeFinalProfile, writeHeldImage } from './store';
 import { receiptCells, sheetCells } from './cells';
 
-export const FINAL_RULES_VERSION = 5;
+export const FINAL_RULES_VERSION = 6;
 export const FINAL_JUDGE = { provider: 'claude-cli' as const, model: 'claude-opus-5-5', effort: 'medium' };
 export const FINAL_BATCH = 6;
 /** 표 수. 각 표는 다른 묶음 섞기로 따로 부른다. 모든 표가 pass 일 때만 pass — 앞 표가 fail 이면 뒤 표는 부르지 않는다(규칙 v3: 한 번만 보면 같은 그림이 판마다 뒤집혔다). */
@@ -44,13 +44,13 @@ ANCHORS: image 3 shows ACCEPTED ORIGINAL pieces of the same declared kind, taken
 
 VIEW CHARGES — fail the 3/4 half if ANY one holds (cite it in "reasons"):
 1. FRONT ELEVATION: the main body is drawn as a flat orthographic front view; its "top" is only the 1-row outline, a 1-2 row rim/lip, or a front-facing strip (cornice, beam, panel) with no foreshortened plane behind it. Count rows on the magnified view.
-2. TOP TOO THIN: the top plane exists but is shallower than the minimum rows for the declared kind (listed below) — for a piece one tile (16 px) tall or less, one row less is enough when the anchors of that kind are drawn the same way — or the opening of a container does not show its inside from above.
+2. TOP TOO THIN: the top plane exists but is clearly shallower than the anchors of the same kind draw it at the same size. The minimum rows listed below are the default yardstick; when an anchor of the same kind and similar height draws its top or opening with fewer rows, the anchor wins (one row less than that anchor still fails). FILLED TOPS: when a container, barrel, crate, basket, pot or shelf is filled with goods, soil, a plant or liquid that is drawn heaped or spread as seen from above (you see the tops of the fruit/loaves/bottles/leaves and the far rim or back edge behind them), that fill IS the top seen from above — count it as the top and do not charge 2 for a hidden opening. Charge only when the fill and the rim are both a flat front-facing band.
 2b. SEAT vs BACKREST (kind seat): the sitting surface is the plane at sitting height that the legs or frame attach directly under. A large panel at the top of a chair drawn like a framed picture — outlined on all sides, a bevel highlight inside, flat face shading — is the BACKREST seen face-on, not the seat. If the only possibly-horizontal part between that panel and the legs is a 1-3 row strip, charge 1. If you cannot tell whether a panel is a seat top seen from above or a backrest seen face-on, charge 1 and set sure=false.
-3. A MAJOR PART HAS NO TOP: some big structural part (a cabinet hood, a second crate, a staircase, a chimney, a canopy frame, a machine housing) is drawn only as a vertical face where a horizontal surface should be visible. Decor riding on the object (a plant in a pot, a statue figure on its plinth, goods on a counter or shelf, a water jet) is not charged; the body carrying it is. For kind seat ONLY, the backrest and armrests may be vertical faces, but the SITTING SURFACE must show its top.
+3. A MAJOR PART HAS NO TOP: some big structural part (a cabinet hood, a second crate, a staircase, a chimney, a canopy frame, a machine housing) is drawn only as a vertical face where a horizontal surface should be visible. Decor riding on the object (a plant in a pot, a statue figure on its plinth, goods on a counter or shelf, a water jet) is not charged; the body carrying it is. FABRIC COVERS (an awning, a parasol, a market-stall canopy, a bed canopy curtain) slope toward the viewer; their visible striped face IS their top seen at an angle and is not charged under 3, as long as the counter, table or bed under them shows its top. For kind seat ONLY, the backrest and armrests may be vertical faces, but the SITTING SURFACE must show its top.
 4. SIDE FACE / ISOMETRIC: a receding diagonal side face, a two-point or isometric projection, a visible east or west side plane next to the south face of a box-like body, or a rhombus-shaped top. 3/4 view has no receding side faces.
 5. TOP-DOWN SLAB: no front face (fewer than 3 rows) — a pure plan view of a standing object.
 6. COLUMN CAP: a pillar, stele or column whose top end is a dome, hat or flat band instead of an elliptical cap plate that is narrower again above and below its widest rows.
-7. WRONG KIND: the declared kind does not describe the object. Exempt kinds skip charges 1-6 ONLY when the object truly is that kind (a cabinet, rack, crate, display case or sign stand called organic, debris, flat, wall_mounted, terrain or front_prop is a WRONG KIND and fails). front_prop is only a single flat front panel (A-frame sign, post sign, laundry/net drying frame, banner stand) with no volume and holding no goods.
+7. WRONG KIND: the declared kind does not describe the object — it is plainly a different category (a seat declared as a box, a building declared as a prop). A standing object declared as the nearest-fitting standing kind (a cart or stall called low_furniture, a display stand called frame) is NOT a wrong kind. Exempt kinds skip charges 1-6 ONLY when the object truly is that kind (a cabinet, rack, crate, display case or sign stand called organic, debris, flat, wall_mounted, terrain or front_prop is a WRONG KIND and fails). front_prop is only a single flat front panel (A-frame sign, post sign, laundry/net drying frame, banner stand) with no volume and holding no goods.
 
 STYLE CHARGE — fail the style half only when you can name one of these with the rows/parts where it occurs:
 8a. STICKER OUTLINE: a uniform pure-black or near-neutral black line around every shape and part, where the anchors outline with darker tinted tones of the adjacent material.
@@ -389,7 +389,7 @@ if (stage === 'final-review') {
 if (stage === 'final-calibrate') {
   const root = resolve(GATE_DATA, 'calibration');
   type Tier = 'A' | 'B' | 'C' | 'U' | 'D' | 'K';
-  type Cal = FinalItem & { truth: 'bad' | 'good'; half: 'view34' | 'style'; set: string; tier: Tier; weak?: boolean };
+  type Cal = FinalItem & { truth: 'bad' | 'good'; half: 'view34' | 'style'; set: string; tier: Tier; weak?: boolean; uncertain?: boolean };
   const tierMap = existsSync(resolve(root, 'tiers.json')) ? (JSON.parse(readFileSync(resolve(root, 'tiers.json'), 'utf8')) as { tiers: Record<string, { tier: Tier }> }).tiers : {};
   const onlySets = option('set')?.split(',');
   const cal: Cal[] = [];
@@ -403,9 +403,11 @@ if (stage === 'final-calibrate') {
         cal.push({ png: resolve(root, set, `${name}.png`), kind: labels.kinds[name]!, name: name.replace(/^props?[._]/, '').replace(/__.*$/, '').replace(/_/g, ' '), label, truth, half: 'view34', set, tier: tierMap[label]?.tier ?? 'A' });
       }
     } else {
-      for (const it of JSON.parse(readFileSync(itemsPath, 'utf8')) as Array<{ name: string; kind: ObjectGateKind; styleKind: ObjectGateStyleKind; view34: 'good' | 'bad' | null; style: 'good' | 'bad' | null; weak?: boolean; tier?: Tier }>) {
+      for (const it of JSON.parse(readFileSync(itemsPath, 'utf8')) as Array<{ name: string; kind: ObjectGateKind; styleKind: ObjectGateStyleKind; view34: 'good' | 'bad' | null; style: 'good' | 'bad' | null; weak?: boolean; tier?: Tier; group?: string }>) {
         const label = `${set}/${it.name}`, base = { png: resolve(root, set, `${it.name}.png`), kind: it.kind, styleKind: it.styleKind, name: it.name.replace(/__.*$/, '').replace(/[_-]/g, ' '), label, set, tier: tierMap[label]?.tier ?? it.tier ?? 'A' as Tier, weak: it.weak };
-        if (it.view34) cal.push({ ...base, truth: it.view34, half: 'view34' });
+        // 불확실(10-01 전수조사가 표시했거나 조사에 없던 실내 원본): 판정만 받고 (a)·(b) 어디에도 세지 않는다(보고만).
+        if (it.group?.startsWith('uncertain')) cal.push({ ...base, truth: 'good', half: 'view34', uncertain: true });
+        else if (it.view34) cal.push({ ...base, truth: it.view34, half: 'view34' });
         else if (it.style) cal.push({ ...base, truth: it.style, half: 'style' });
       }
     }
@@ -427,8 +429,22 @@ if (stage === 'final-calibrate') {
   const sets: Record<string, { bad: { total: number; caught: number }; good: { total: number; passed: number } }> = {};
   const tiers: Record<string, { bad: { total: number; passed: number }; good: { total: number; passed: number } }> = {};
   const lines: string[] = [];
+  const uncertain: Array<{ label: string; verdict: string; reasons: string[] }> = [];
+  // 칩셋 계열(보고용): 위반·원본을 계열별로 따로 센다 — 섞은 숫자는 판정자가 어디서 약한지 숨긴다(감독 지시 2026-10-21).
+  const familyOf = (label: string) => {
+    const [set, name = ''] = label.split('/');
+    if (set === 'originals-jp') return 'jp_city';
+    if (set === 'originals-interior' || set === 'uncertain-interior' || set === 'interior' || set === 'holdout' || set === 'pairs') return 'interior(hand)';
+    if (set === 'originals-v5large') return 'oprn-interior-v5-large';
+    if (set === 'fresh3') return 'beodeul_city';
+    if (set === 'murim' || set === 'adv-front-prop') return set;
+    if (set === 'style') return name.split('__')[0] === 'beodeul' ? 'beodeul_city' : name.split('__')[0]!;
+    const m = name.match(/^[a-z]+\d+_(.+)$/); return m ? m[1]! : set!;
+  };
+  const fam: Record<string, { bad: number; caught: number; good: number; passed: number }> = {};
   for (const c of shuffled) {
     const a = bySrc.get(`${c.label}|${c.kind}`);
+    if (c.uncertain) { uncertain.push({ label: c.label!, verdict: isErr(a) ? 'error' : decideFinal(a).verdict, reasons: isErr(a) ? [] : decideFinal(a).reasons }); continue; }
     if (isErr(a)) { errors.push(c.label!); continue; }
     const d = decideFinal(a);
     // 정상: 라벨이 보증하는 반쪽으로 센다(3/4 라벨은 화풍을, 화풍 라벨은 3/4 를 보증하지 않는다 — 옛 보정과 같다). 전체 통과는 따로 센다.
@@ -440,6 +456,8 @@ if (stage === 'final-calibrate') {
     t[c.truth].total++; if (pass) t[c.truth].passed++;
     lines.push(`${c.truth === 'bad' ? '위반' : '정상'}${c.tier}${c.half === 'style' ? '화풍' : '3/4 '} ${pass ? 'PASS' : 'FAIL'} ${c.kind.padEnd(14)} ${c.label!.padEnd(46)} ${d.reasons.join(' · ').slice(0, 160)}`);
     if (!strict(c)) continue;
+    const fm = (fam[familyOf(c.label!)] ??= { bad: 0, caught: 0, good: 0, passed: 0 });
+    if (c.truth === 'bad') { fm.bad++; if (d.verdict !== 'pass') fm.caught++; } else { fm.good++; if (d.verdict === 'pass') fm.passed++; }
     const s = (sets[c.set] ??= { bad: { total: 0, caught: 0 }, good: { total: 0, passed: 0 } });
     if (c.truth === 'bad') { bad++; s.bad.total++; if (pass) missed.push(c.label!); else s.bad.caught++; }
     else { good++; s.good.total++; if (pass) s.good.passed++; else falseFail.push(c.label!); }
@@ -464,7 +482,7 @@ if (stage === 'final-calibrate') {
   const ORIGINALS_MIN = 0.9;
   const ok = missed.length === 0 && errors.length === 0 && oT > 0 && oP / oT >= ORIGINALS_MIN;
   const record: ObjectGateFinalProfileRecord = { schema: 'oprn-object-gate-final-profile/1', profileHash: hash, status: ok && full ? 'calibrated' : 'rejected', calibratedAt: new Date().toISOString(), judge: FINAL_JUDGE,
-    bad: { total: bad, caught: bad - missed.length, missed }, good: { total: good, passed: good - falseFail.length, falseFail }, sets, tiers, errors, originals,
+    bad: { total: bad, caught: bad - missed.length, missed }, good: { total: good, passed: good - falseFail.length, falseFail }, sets, tiers, errors, originals, families: fam, uncertain,
     note: `조건 (a) 위반 = 등급 A 3/4 위반(적대 시험 adv-*·object-gen 반려 포함) + 강한 라벨 화풍 얕음, 전체 판정으로 하나도 놓치면 안 된다. 조건 (b) 칩셋 원본 전체 판정 통과 ${oP}/${oT} ≥ ${ORIGINALS_MIN * 100}%. 정상 = 라벨 반쪽으로 센다(보고만). 전체 판정 정상 통과 ${overallPass}/${overallGood}. ${full ? '전체 표본' : '부분 표본 — 효력 없음'}` };
   if (full) writeFinalProfile(record);
   writeFileSync(resolve(root, `final-run-${hash}.json`), `${JSON.stringify({ ...record, lines: lines.sort() }, null, 1)}\n`);
@@ -473,6 +491,9 @@ if (stage === 'final-calibrate') {
   console.log(`   정상 통과(라벨 반쪽) ${good - falseFail.length}/${good} (${(goodRate * 100).toFixed(1)}%) · 전체 판정 통과 ${overallPass}/${overallGood} (${overallGood ? (overallPass / overallGood * 100).toFixed(1) : 0}%)`);
   console.log(`   (b) 칩셋 원본 전체 판정 통과 ${oP}/${oT} (${oT ? (oP / oT * 100).toFixed(1) : 0}%) — 기준 90%`);
   for (const [g, o] of Object.entries(originals)) console.log(`       ${g.padEnd(24)} ${o.passed}/${o.total}${o.failed.length ? ` — 떨어짐: ${o.failed.slice(0, 12).join(', ')}${o.failed.length > 12 ? ' …' : ''}` : ''}`);
+  console.log('   계열별 — (a) 위반 잡음 · 정상 전체 판정 통과');
+  for (const [k, v] of Object.entries(fam).sort()) console.log(`       ${k.padEnd(24)} (a) ${v.caught}/${v.bad} · 정상 ${v.passed}/${v.good}`);
+  if (uncertain.length) console.log(`   불확실(보고만) ${uncertain.length}장: 통과 ${uncertain.filter(u => u.verdict === 'pass').length} · ${uncertain.map(u => `${u.label.split('/')[1]}=${u.verdict}`).join(', ')}`);
   for (const [k, v] of Object.entries(sets).sort()) console.log(`   ${k.padEnd(16)} 위반 ${v.bad.caught}/${v.bad.total} · 정상 ${v.good.passed}/${v.good.total}`);
   for (const [k, v] of Object.entries(tiers).sort()) console.log(`   등급 ${k.padEnd(8)} 위반 통과 ${v.bad.passed}/${v.bad.total} · 정상 통과 ${v.good.passed}/${v.good.total}`);
   if (errors.length) console.log(`   답 못 받음 ${errors.length}: ${errors.slice(0, 10).join(', ')}`);

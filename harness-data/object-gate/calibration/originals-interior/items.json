@@ -1,572 +1,362 @@
 [
  {
-  "name": "int__crate__cabbage",
-  "kind": "box",
-  "styleKind": "prop",
-  "view34": "good",
-  "style": "good",
-  "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:crate:cabbage (양배추 궤짝)"
- },
- {
-  "name": "int__basket__cabbage",
-  "kind": "container",
-  "styleKind": "prop",
-  "view34": "good",
-  "style": "good",
-  "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:basket:cabbage (양배추 바구니)"
- },
- {
-  "name": "int__crate__carrot",
-  "kind": "box",
-  "styleKind": "prop",
-  "view34": "good",
-  "style": "good",
-  "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:crate:carrot (당근 궤짝)"
- },
- {
-  "name": "int__basket__carrot",
-  "kind": "container",
-  "styleKind": "prop",
-  "view34": "good",
-  "style": "good",
-  "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:basket:carrot (당근 바구니)"
- },
- {
   "name": "int__barrel__potato",
   "kind": "round_body",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:barrel:potato (감자 통) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:barrel:potato (감자 통)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__barrel__apple",
   "kind": "round_body",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:barrel:apple (사과 통) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:barrel:apple (사과 통)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__cabinet__loaf",
   "kind": "tall_furniture",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:cabinet:loaf (식빵 진열장) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:cabinet:loaf (식빵 진열장)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__cabinet__bun",
   "kind": "tall_furniture",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:cabinet:bun (둥근빵 진열장) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:cabinet:bun (둥근빵 진열장)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__shelf__potion_potionb_potiong",
   "kind": "tall_furniture",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:shelf:potion+potionb+potiong (물약 벽 선반) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:shelf:potion+potionb+potiong (물약 벽 선반)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__shelf__herb",
   "kind": "tall_furniture",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:shelf:herb (약초 벽 선반) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:shelf:herb (약초 벽 선반)"
- },
- {
-  "name": "int__table__loaf_bun",
-  "kind": "low_furniture",
-  "styleKind": "prop",
-  "view34": "good",
-  "style": "good",
-  "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:table:loaf+bun (식빵·둥근빵 탁자)"
- },
- {
-  "name": "int__table__cake_pie",
-  "kind": "low_furniture",
-  "styleKind": "prop",
-  "view34": "good",
-  "style": "good",
-  "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:table:cake+pie (케이크·파이 탁자)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__apothecary_drawers",
   "kind": "tall_furniture",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:apothecary drawers (약재 서랍장) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:apothecary drawers (약재 서랍장)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__cauldron",
   "kind": "container",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:cauldron (가마솥) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:cauldron (가마솥)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__quench_barrel",
   "kind": "round_body",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:quench barrel (담금질 통) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:quench barrel (담금질 통)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__bar_stool",
   "kind": "seat",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:bar stool (바 의자) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:bar stool (바 의자)"
- },
- {
-  "name": "int__pew",
-  "kind": "seat",
-  "styleKind": "prop",
-  "view34": "good",
-  "style": "good",
-  "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:pew (교회 긴의자)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__holy_water_font",
   "kind": "container",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:holy water font (성수반) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:holy water font (성수반)"
- },
- {
-  "name": "int__armchair",
-  "kind": "seat",
-  "styleKind": "prop",
-  "view34": "good",
-  "style": "good",
-  "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:armchair (안락의자)"
- },
- {
-  "name": "int__sofa",
-  "kind": "seat",
-  "styleKind": "prop",
-  "view34": "good",
-  "style": "good",
-  "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:sofa (소파)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__washbasin",
   "kind": "container",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:washbasin (세면대) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:washbasin (세면대)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__bathtub",
   "kind": "container",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:bathtub (욕조) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:bathtub (욕조)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__canopy_bed",
   "kind": "low_furniture",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:canopy bed (닫집 침대) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:canopy bed (닫집 침대)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__straw_bed",
   "kind": "low_furniture",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:straw bed (짚 침대) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:straw bed (짚 침대)"
- },
- {
-  "name": "int__water_jar",
-  "kind": "container",
-  "styleKind": "prop",
-  "view34": "good",
-  "style": "good",
-  "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:water jar (물독)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__potted_fern",
   "kind": "container",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:potted fern (화분 고사리) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:potted fern (화분 고사리)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__potted_flowering",
   "kind": "container",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:potted flowering (화분 꽃) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:potted flowering (화분 꽃)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__potted_cactus",
   "kind": "container",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:potted cactus (화분 선인장) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:potted cactus (화분 선인장)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__round_rug",
   "kind": "flat",
   "styleKind": "ground",
+  "note": "atlas_biome_interior 키트 hand-interior:round rug (둥근 양탄자) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:round rug (둥근 양탄자)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__runner",
   "kind": "flat",
   "styleKind": "ground",
+  "note": "atlas_biome_interior 키트 hand-interior:runner (긴 양탄자) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:runner (긴 양탄자)"
- },
- {
-  "name": "int__throne",
-  "kind": "seat",
-  "styleKind": "prop",
-  "view34": "good",
-  "style": "good",
-  "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:throne (왕좌)"
- },
- {
-  "name": "int__royal_chest",
-  "kind": "box",
-  "styleKind": "prop",
-  "view34": "good",
-  "style": "good",
-  "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:royal chest (왕실 상자)"
- },
- {
-  "name": "int__chair_S",
-  "kind": "seat",
-  "styleKind": "prop",
-  "view34": "good",
-  "style": "good",
-  "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:chair S (의자 S)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__stool",
   "kind": "seat",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:stool (스툴) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:stool (스툴)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__bed_green",
   "kind": "low_furniture",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:bed green (침대 초록) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:bed green (침대 초록)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__double_bed_red",
   "kind": "low_furniture",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:double bed red (2인 침대 빨강) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:double bed red (2인 침대 빨강)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__bookshelf_1w",
   "kind": "tall_furniture",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:bookshelf 1w (책장 1w) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:bookshelf 1w (책장 1w)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__bookshelf_2w",
   "kind": "tall_furniture",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:bookshelf 2w (책장 2w) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:bookshelf 2w (책장 2w)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__bookshelf_3w",
   "kind": "tall_furniture",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:bookshelf 3w (책장 3w) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:bookshelf 3w (책장 3w)"
- },
- {
-  "name": "int__cupboard",
-  "kind": "tall_furniture",
-  "styleKind": "prop",
-  "view34": "good",
-  "style": "good",
-  "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:cupboard (서랍장)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__wardrobe",
   "kind": "tall_furniture",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:wardrobe (옷장) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:wardrobe (옷장)"
- },
- {
-  "name": "int__chest",
-  "kind": "box",
-  "styleKind": "prop",
-  "view34": "good",
-  "style": "good",
-  "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:chest (상자)"
- },
- {
-  "name": "int__pot",
-  "kind": "container",
-  "styleKind": "prop",
-  "view34": "good",
-  "style": "good",
-  "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:pot (항아리)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__fireplace",
   "kind": "tall_furniture",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:fireplace (벽난로) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:fireplace (벽난로)"
- },
- {
-  "name": "int__stove",
-  "kind": "tall_furniture",
-  "styleKind": "prop",
-  "view34": "good",
-  "style": "good",
-  "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:stove (화덕)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__doormat",
   "kind": "flat",
   "styleKind": "ground",
+  "note": "atlas_biome_interior 키트 hand-interior:doormat (발깔개) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:doormat (발깔개)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__roundtable",
   "kind": "low_furniture",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:roundtable (원탁) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:roundtable (원탁)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__rug_red",
   "kind": "flat",
   "styleKind": "ground",
+  "note": "atlas_biome_interior 키트 hand-interior:rug red (붉은 양탄자) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:rug red (붉은 양탄자)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__bench_2",
   "kind": "seat",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:bench 2 (벤치 2칸) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:bench 2 (벤치 2칸)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__nightstand",
   "kind": "low_furniture",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:nightstand (협탁) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:nightstand (협탁)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__ice_chest__fish_fishr_fish",
   "kind": "box",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:ice chest:fish+fishr+fish (생선·붉은 생선 얼음 진열함) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:ice chest:fish+fishr+fish (생선·붉은 생선 얼음 진열함)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__ice_chest__fish_fishg_fishr",
   "kind": "box",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:ice chest:fish+fishg+fishr (생선·푸른 생선·붉은 생선 얼음 진열함) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:ice chest:fish+fishg+fishr (생선·푸른 생선·붉은 생선 얼음 진열함)"
- },
- {
-  "name": "int__dining_2x1",
-  "kind": "low_furniture",
-  "styleKind": "prop",
-  "view34": "good",
-  "style": "good",
-  "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:dining 2x1 (식탁 2×1)"
- },
- {
-  "name": "int__work_2x1",
-  "kind": "low_furniture",
-  "styleKind": "prop",
-  "view34": "good",
-  "style": "good",
-  "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:work 2x1 (작업대 2×1)"
- },
- {
-  "name": "int__desk_2x1",
-  "kind": "low_furniture",
-  "styleKind": "prop",
-  "view34": "good",
-  "style": "good",
-  "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:desk 2x1 (책상 2×1)"
+  "original": "atlas_biome_interior"
  },
  {
   "name": "int__counter_2x1",
   "kind": "low_furniture",
   "styleKind": "prop",
+  "note": "atlas_biome_interior 키트 hand-interior:counter 2x1 (카운터 2×1) · 10-01 전수조사 ok",
   "view34": "good",
   "style": "good",
   "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:counter 2x1 (카운터 2×1)"
- },
- {
-  "name": "int__tea_2x1",
-  "kind": "low_furniture",
-  "styleKind": "prop",
-  "view34": "good",
-  "style": "good",
-  "group": "originals-interior-v5",
-  "original": "atlas_biome_interior",
-  "note": "atlas_biome_interior 키트 hand-interior:tea 2x1 (찻상(붉은 천) 2×1)"
+  "original": "atlas_biome_interior"
  }
 ]

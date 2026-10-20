@@ -4,7 +4,10 @@
 묶음:
   originals-beodeul   버들항 원본(기존 표본 fresh3·style beodeul-heldout·fresh4 style-beodeul 을 다시 쓰지 않고 이름만 묶는다 → originals.json)
   originals-jp        jp_city 사용자 OK(2026-10-20) 묶음 jp-roof-47·jp-vehicles-12 (18323 held-images 의 그림, 종류는 묶음 그대로)
-  originals-interior  손 도트 v5 실내(atlas_biome_interior) 키트 중 종류가 분명한 것 — 시트에서 키트를 그대로 합성
+  originals-interior  손 도트 v5 실내(atlas_biome_interior) 키트 중 종류가 분명하고 2026-10-01 전수조사(tiledata/hand-interior/pick/audit/v34-audit-verdicts.json)가
+                      「ok」 로 둔 것만 — 시트에서 키트를 그대로 합성. 전수조사가 A(위반)·B(수치 미달)로 표시했거나 조사에 없던 키트는
+  uncertain-interior  로 따로 둔다(보정 (a)·(b) 어디에도 세지 않고 보고만). 감독 지시(2026-10-21)로 사용자 3/4 규칙상 결함인 3장
+                      (궤짝 cabbage 윗면 1~2행, 식탁보 cake+pie 정면, 화덕 stove 윗면 3행)은 정상 묶음에서 뺀다 — 다시 그리기 대상.
   originals-v5large   object-gen oprn-interior-v5-large 견본: good 8 = 정상, bad·rejects 6 = 위반(종류는 이름으로)
 라벨은 판정 전에 고정한다. 판정 결과를 보고 바꾸지 않는다.
 
@@ -40,6 +43,7 @@ INTERIOR_KIND = {
     "round rug": "flat", "runner": "flat", "doormat": "flat", "rug red": "flat",
 }
 MAX_PER_TYPE = 2
+DEFECT_KITS = {"hand-interior:crate:cabbage", "hand-interior:table:cake+pie", "hand-interior:stove"}  # 감독 지시 2026-10-21: 사용자 3/4 규칙상 결함
 
 
 def compose_kit(tileset: dict, sheet: Image.Image, kit: dict) -> Image.Image:
@@ -96,8 +100,9 @@ def main() -> None:
     # 손 도트 v5 실내 키트
     ts = json.loads((ROOT / "src" / "assets" / "atlasBiomeInteriorTileset.json").read_text())
     sheet = Image.open(ROOT / "public" / "assets" / "atlas-interior" / "interior-chipset.png").convert("RGBA")
+    audit = {v["key"]: v["tier"] for v in json.loads((ROOT / "tiledata" / "hand-interior" / "pick" / "audit" / "v34-audit-verdicts.json").read_text())}
     taken: dict[str, int] = {}
-    inter = []
+    inter, unsure = [], []
     for kit in ts["structureKits"]:
         parts = kit["id"].split(":")
         if len(parts) < 2 or parts[0] != "hand-interior":
@@ -109,11 +114,17 @@ def main() -> None:
         img = compose_kit(ts, sheet, kit)
         if img.width == 0:
             continue
-        taken[typ] = taken.get(typ, 0) + 1
-        nm = "int__" + kit["id"].split(":", 1)[1].replace(":", "__").replace(" ", "_").replace("+", "_")
-        inter.append({"name": nm, "kind": kind, "styleKind": "ground" if kind == "flat" else "prop", "view34": "good", "style": "good",
-                      "group": "originals-interior-v5", "original": "atlas_biome_interior", "note": f"atlas_biome_interior 키트 {kit['id']} ({kit['name']})", "img": img})
+        key = kit["id"].split(":", 1)[1]
+        tier = audit.get(key)
+        nm = "int__" + key.replace(":", "__").replace(" ", "_").replace("+", "_")
+        entry = {"name": nm, "kind": kind, "styleKind": "ground" if kind == "flat" else "prop", "note": f"atlas_biome_interior 키트 {kit['id']} ({kit['name']}) · 10-01 전수조사 {tier or '없음'}", "img": img}
+        if tier == "ok" and kit["id"] not in DEFECT_KITS:
+            taken[typ] = taken.get(typ, 0) + 1
+            inter.append({**entry, "view34": "good", "style": "good", "group": "originals-interior-v5", "original": "atlas_biome_interior"})
+        elif sum(1 for u in unsure if u["name"].split("__")[1] == nm.split("__")[1]) < MAX_PER_TYPE:
+            unsure.append({**entry, "view34": None, "style": None, "group": "uncertain-interior-v5", "audit": tier or "unaudited", "defect": kit["id"] in DEFECT_KITS})
     write_set("originals-interior", inter)
+    write_set("uncertain-interior", unsure)
 
     # object-gen oprn-interior-v5-large
     base = Path(a.objgen) / "objectgen" / "anchors" / "oprn-interior-v5-large"
@@ -139,6 +150,7 @@ def main() -> None:
         "about": "Opus 최종 판정 보정 조건 (b) — 알려진 정상 원본. 전체 판정(3/4·화풍 둘 다)으로 90% 이상 통과해야 한다. 판정 전에 고정(2026-10-21).",
         "groups": {"beodeul_city": beodeul, "jp_city": [f"originals-jp/{e['name']}" for e in jp], "atlas_biome_interior": [f"originals-interior/{e['name']}" for e in inter],
                    "oprn-interior-v5-large": [f"originals-v5large/{e['name']}" for e in v5l if e["view34"] == "good"]},
+        "uncertain": [f"uncertain-interior/{e['name']}" for e in unsure],
     }, ensure_ascii=False, indent=1) + "\n")
     print("beodeul", len(beodeul))
 
