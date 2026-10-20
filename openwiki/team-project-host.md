@@ -428,6 +428,17 @@ node scripts/install-project-host-service.mjs --project-dir /home/main/.local/sh
 로그아웃은 해당 세션을 삭제하며 매 요청에서 회원 취소 여부를 확인한다. 기존 메모리 세션은
 이번 전환 때 한 번 재로그인이 필요하다. 접속 코드·쿠키 원문은 로그/증거/커밋에 남기지 않는다.
 
+### 서버 재시작 뒤 열린 페이지의 옛 토큰 (2026-10-21)
+
+로컬 서버는 실행마다 브리지 토큰(`x-oprn-bridge-token`)과 동반 서비스 토큰(`x-oprn-companion-token`)을 새로 만든다.
+예전에는 서버가 다시 시작되면 이미 열린 페이지가 HTML 에 박힌 옛 토큰을 계속 실어 저장(`/__oprn/bridge`)과
+AI(`/auth/*`·`/v1/*`)가 새로고침 전까지 전부 403 이었다(사용자 신고 「한 번 오류 뒤 ChatGPT 연결이 계속 실패」).
+
+- 서버: `GET /__oprn/handshake` → `{ token, companionToken }`(호스트·출처 검사·팀 로그인 뒤, `no-store`). 노출 범위는 같은 값을 싣는 페이지 HTML 과 같다. 공유 호스트는 `companionToken: null`(서버가 붙인다).
+- 브리지(`electron/browser/bridge.ts`): 403 이면 `refreshConnection()` 으로 한 번 다시 받아 같은 요청을 한 번 다시 보낸다(`keepalive` 제외). `window.oprn.refreshConnection` 으로도 내보낸다.
+- 조수 쪽 한 입구: `src/ai/companionConnection.ts` 의 `fetchCompanion`. 동반 서비스 호출(조수·Pi 실행·체크포인트·그림·월드맵·연결 시험·로그인 상태)은 모두 여기를 지난다 — 요청마다 지금 토큰을 싣고, 401/403 이면 한 번 다시 맺어 토큰이 바뀌었을 때만 다시 보낸다. 그래도 실패하거나 경로가 404 면 한국어 알림(토스트 키 하나)에 「다시 연결」(`companion-reconnect`) 단추를 띄우고, 다음 성공 응답에서 걷는다. 남는 상태는 진행 중인 다시 맺기 약속 하나뿐이다.
+- 재현·확인: `node scripts/qa/chatgpt-connection-repro.mjs --restart-serve`(서버를 직접 두 번 띄워 옛 토큰 403 → handshake → 200, 모델 호출 없음).
+
 ## 내부 웹 기본 접속 (2026-09-18)
 
 `workspace_settings.access_code_required`는 누락 시 false다. 기존 코드 파일이 있어도
