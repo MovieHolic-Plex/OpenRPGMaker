@@ -6,9 +6,11 @@
 // (performance.timeOrigin)이다 — 사용자가 아이콘을 누른 순간에 가장 가깝다.
 type MainTiming = Record<string, number>;
 const target = globalThis as typeof globalThis & { __oprnMainTiming?: MainTiming };
-target.__oprnMainTiming = { firstModule: performance.now() };
+// 입구(main.cjs)와 본체(app.cjs)가 이 모듈을 하나씩 품는다 — 먼저 평가된 쪽이 만든 기록을 그대로 쓴다.
+const firstHere = target.__oprnMainTiming === undefined;
+target.__oprnMainTiming ??= { firstModule: performance.now() };
 const trace = process.env.OPRN_STARTUP_TRACE === "1";
-if (trace) process.stderr.write(`[startup] +${Math.round(performance.now())}ms firstModule\n`);
+if (trace && firstHere) process.stderr.write(`[startup] +${Math.round(performance.now())}ms firstModule\n`);
 
 export function mainMark(name: string): void {
   if (target.__oprnMainTiming && target.__oprnMainTiming[name] === undefined) {

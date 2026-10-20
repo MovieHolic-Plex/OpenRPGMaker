@@ -73,7 +73,8 @@ async function electronRun(projectDir, configHome) {
   const app = await electron.launch({
     args: [resolve(opt("main", join(REPO, "dist-electron/main.cjs"))), "--disable-dev-shm-usage"],
     cwd: REPO,
-    env: { ...process.env, ...(opt("ipc-timing", null) ? { OPRN_IPC_TIMING: "1" } : {}), XDG_CONFIG_HOME: configHome, OPRN_RENDERER_DIR: resolve(REPO, opt("dist", "dist")) },
+    // 스플래시(electron/main/splash.ts)는 Playwright 아래에서 기본으로 꺼진다 — 사용자가 겪는 길을 재도록 켠다.
+    env: { ...process.env, OPRN_SPLASH: "1", ...(opt("ipc-timing", null) ? { OPRN_IPC_TIMING: "1" } : {}), XDG_CONFIG_HOME: configHome, OPRN_RENDERER_DIR: resolve(REPO, opt("dist", "dist")) },
   });
   const t = {};
   const ipcLog = opt("ipc-timing", null);
