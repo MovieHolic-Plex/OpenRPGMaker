@@ -198,7 +198,7 @@ const STYLE_FLAG_DEFAULT = defaultObjectGateStyleKind;
 type JudgeOpts = { force: boolean; write: boolean; concurrency: number; runs?: number; cacheAnswers?: boolean; quiet?: boolean; offline?: boolean };
 
 // front_prop(규칙 v8)는 종류 뜻이 사용자 문구에 들어가므로 같은 그림이라도 옛 종류의 답을 쓰면 안 된다 — 이름에 -fp 를 붙인다. 다른 종류의 프롬프트는 v7 과 같아 캐시를 그대로 쓴다.
-const answerCachePath = (half: Half, promptHash: string, sha: string, run: number, kind?: string) => resolve(GATE_DATA, 'calibration', 'answers', `${half}-${promptHash}`, `${sha.slice(0, 20)}${kind === 'front_prop' ? '-fp' : ''}-${run}.json`);
+const answerCachePath = (half: Half, promptHash: string, sha: string, run: number, kind?: string) => resolve(GATE_DATA, 'calibration', 'answers', `${half}-${promptHash}`, `${sha.slice(0, 20)}${kind === 'front_prop' ? '-fp' : half === 'eye' && kind === 'seat' ? '-seat' : ''}-${run}.json`);
 
 async function judgeItems(items: Item[], opts: JudgeOpts): Promise<ObjectGateReceipt[]> {
   const profileHash = await gateProfileHash();
@@ -238,7 +238,7 @@ async function judgeItems(items: Item[], opts: JudgeOpts): Promise<ObjectGateRec
       if (!item.skipHalves?.includes('view34')) jobs.push({ half: 'view34', kind: item.kind, sha, images: [image, pairsPng(), guidePng()], text: userText('view34', item, styleKind, refNames, cand, refFacts), judge, run });
       // 주의(2026-10-20 실측): 눈 호출은 판정 회차 루프 안에 있어 같은 답 3개(캐시 run 1~3)가 회차마다 다시 들어가 12표로 센다 — 거부권 문턱 2 는 실제로 「고유 답 3개 중 wrong 1개」다.
       // 이것을 문서대로(3개 중 2개)로 고치면 개발 확실 위반 slot_machine__w46-A 가 통과해 버린다(규칙 v9 조정 실측). 그래서 지금 동작을 유지한다 — 바꾸려면 문턱·보정을 함께 다시.
-      if (!item.skipHalves?.includes('view34') && !OBJECT_GATE_KINDS[item.kind]?.exempt) for (let e = 1; e <= OBJECT_GATE_PROFILE.eyeRuns; e++) jobs.push({ half: 'eye', sha, images: [plainMagnify(width, height, data), pairsPng()], text: 'Candidate (image 1) and references (image 2). Verdict?', judge, run: e });
+      if (!item.skipHalves?.includes('view34') && !OBJECT_GATE_KINDS[item.kind]?.exempt) for (let e = 1; e <= OBJECT_GATE_PROFILE.eyeRuns; e++) jobs.push({ half: 'eye', sha, images: [plainMagnify(width, height, data), pairsPng()], text: item.kind === 'seat' ? 'The object is a seat (chair, sofa, bench, pew or stool). Candidate (image 1) and references (image 2). Verdict?' : 'Candidate (image 1) and references (image 2). Verdict?', judge, run: e, ...(item.kind === 'seat' ? { kind: 'seat' } : {}) });
       if (!item.skipHalves?.includes('style')) jobs.push({ half: 'style', sha, images: [board.png], text: userText('style', item, styleKind, refNames, cand, refFacts), judge, run });
     }
   }
@@ -399,8 +399,10 @@ if (stage === 'calibrate') {
   // 숨김 표본은 둘이다: holdout(1차 숨김 — 규칙 v6 결과를 본 뒤 규칙 v7 을 조정하는 데 쓰였으므로 더 이상 숨김이 아님) · fresh(v7 규칙을 정한 뒤 처음 재는 표본).
   // 2026-10-20: fresh4 = 판정을 고치기 전에 블라인드 화소 라벨로 얼려 둔 새 숨김 표본(최종 측정 전용). fresh·fresh2·fresh3 은 그 전 결과를 본 표본이라 이제 조정용(보고만, 위반 통과 0 은 그대로 요구).
   const FROZEN = 'fresh4';
-  const holdOld = hold.filter(c => c.set === 'holdout'), holdFresh = hold.filter(c => c.set.startsWith('fresh') && c.set !== FROZEN), frozen = hold.filter(c => c.set === FROZEN);
-  const devA = v34(dev, 'A'), holdA = v34(holdOld, 'A'), freshA = v34(holdFresh, 'A'), frozenA = v34(frozen, 'A');
+  // 규칙 v10 앞에 얼린 두 번째 숨김(좌석 위주, 3/4 만). fresh4 와 따로 세고 둘 다 기준을 넘어야 한다.
+  const FROZEN2 = 'fresh5';
+  const holdOld = hold.filter(c => c.set === 'holdout'), holdFresh = hold.filter(c => c.set.startsWith('fresh') && c.set !== FROZEN && c.set !== FROZEN2), frozen = hold.filter(c => c.set === FROZEN), frozen2 = hold.filter(c => c.set === FROZEN2);
+  const devA = v34(dev, 'A'), holdA = v34(holdOld, 'A'), freshA = v34(holdFresh, 'A'), frozenA = v34(frozen, 'A'), frozen2A = v34(frozen2, 'A');
   const frozenStyle = tally(frozen, (c, r) => ({ truth: c.weak ? null : c.style, verdict: r.style?.verdict ?? 'fail' }));
   const sty = tally(dev, (c, r) => ({ truth: c.style, verdict: r.style?.verdict ?? 'fail' }));
   const strong = tally(dev, (c, r) => ({ truth: c.weak ? null : c.style, verdict: r.style?.verdict ?? 'fail' }));
@@ -415,6 +417,7 @@ if (stage === 'calibrate') {
   const probeMissed = probe.filter(c => byLabel.get(c.label!)!.view34?.verdict === 'pass').map(c => c.label!);
   const ok = probeMissed.length === 0 && humanAutoPass.length === 0 && devA.missed.length === 0 && goodRate(devA) >= GOOD_MIN && holdA.missed.length === 0 && goodRate(holdA) >= GOOD_MIN
     && freshA.missed.length === 0
+    && (frozen2.length ? frozen2A.missed.length === 0 && goodRate(frozen2A) >= GOOD_MIN : true)
     && (frozen.length ? frozenA.missed.length === 0 && goodRate(frozenA) >= GOOD_MIN && frozenStyle.missed.length === 0 && goodRate(frozenStyle) >= GOOD_MIN : false)
     && strong.missed.length === 0 && goodRate(strong) >= GOOD_MIN;
   const record = {
@@ -422,6 +425,7 @@ if (stage === 'calibrate') {
     bad: { total: devA.badTotal, caught: devA.caught, missed: devA.missed, refer: devA.badRefer }, good: { total: devA.goodTotal, passed: devA.passed, falseFail: devA.falseFail, refer: devA.goodRefer },
     tiers, holdout: { bad: { total: holdA.badTotal, caught: holdA.caught, missed: holdA.missed }, good: { total: holdA.goodTotal, passed: holdA.passed, falseFail: holdA.falseFail } },
     fresh: { bad: { total: freshA.badTotal, caught: freshA.caught, missed: freshA.missed }, good: { total: freshA.goodTotal, passed: freshA.passed, falseFail: freshA.falseFail } },
+    frozen2: { set: FROZEN2, bad: { total: frozen2A.badTotal, caught: frozen2A.caught, missed: frozen2A.missed }, good: { total: frozen2A.goodTotal, passed: frozen2A.passed, falseFail: frozen2A.falseFail } },
     frozen: { set: FROZEN, bad: { total: frozenA.badTotal, caught: frozenA.caught, missed: frozenA.missed }, good: { total: frozenA.goodTotal, passed: frozenA.passed, falseFail: frozenA.falseFail }, style: { shallow: { total: frozenStyle.badTotal, caught: frozenStyle.caught, missed: frozenStyle.missed }, beodeul: { total: frozenStyle.goodTotal, passed: frozenStyle.passed, falseFail: frozenStyle.falseFail } } },
     probe: { total: probe.length, passed: probeMissed.length, missed: probeMissed },
     humanOnly: { total: humanItems.length, refer: humanItems.filter(c => byLabel.get(c.label!)!.view34?.verdict === 'refer').length, autoPassed: humanAutoPass },
@@ -436,6 +440,7 @@ if (stage === 'calibrate') {
   console.log(`3/4 숨김(1차, 조정에 쓰임)·확실(A)  ${t(holdA)}`);
   console.log(`3/4 조정용 옛 숨김(fresh·fresh2·fresh3, 결과를 본 표본)·확실(A)  ${t(freshA)}`);
   console.log(`3/4 얼린 새 숨김(${FROZEN}, 블라인드 화소 라벨)·확실(A)  ${t(frozenA)}`);
+  if (frozen2.length) console.log(`3/4 얼린 새 숨김 2(${FROZEN2}, 좌석 위주, v10 계약 블라인드 라벨)·확실(A)  ${t(frozen2A)}`);
   console.log(`화풍 얼린 새 숨김(${FROZEN})  얕음 ${frozenStyle.caught}/${frozenStyle.badTotal} 막음 · 버들 ${frozenStyle.passed}/${frozenStyle.goodTotal} 통과`);
   if (probe.length) { console.log(`적대 시험(위반 ${probe.length}장을 면제 종류로 거짓 선언)  통과 ${probeMissed.length}/${probe.length}${probeMissed.length ? ' — ' + probeMissed.join(', ') : ''}`); }
   if (humanItems.length) console.log(`사람 승인 전용 종류(front_prop, 자동 통과율 분모에서 뺌)  ${humanItems.length}장: 보류 ${humanItems.filter(c => byLabel.get(c.label!)!.view34?.verdict === 'refer').length} · 자동 통과 ${humanAutoPass.length}${humanAutoPass.length ? ' — ' + humanAutoPass.join(', ') : ''}`);
@@ -447,6 +452,7 @@ if (stage === 'calibrate') {
   if (holdA.missed.length) console.log(`놓친 3/4 위반(숨김): ${holdA.missed.join(', ')}`);
   if (freshA.missed.length) console.log(`놓친 3/4 위반(fresh): ${freshA.missed.join(', ')}`);
   if (frozenA.missed.length) console.log(`놓친 3/4 위반(얼린 새 숨김): ${frozenA.missed.join(", ")}`);
+  if (frozen2A.missed.length) console.log(`놓친 3/4 위반(얼린 새 숨김 2): ${frozen2A.missed.join(", ")}`);
   if (frozenStyle.missed.length) console.log(`놓친 화풍(얼린 새 숨김, 얕음인데 통과): ${frozenStyle.missed.join(", ")}`);
   if (strong.missed.length) console.log(`놓친 화풍(강한 라벨, 얕음인데 통과): ${strong.missed.join(', ')}`);
   console.log(`상세 ${out}`);

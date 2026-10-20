@@ -1,0 +1,186 @@
+[
+ {
+  "id": "s001",
+  "kind": "figure",
+  "top_rows": 7,
+  "front_rows": 13,
+  "label": "good",
+  "why": "Pedestal top slab rows 12-18 light top, front rows 19-29; vase on it."
+ },
+ {
+  "id": "s005",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Framed painting, wall-mounted."
+ },
+ {
+  "id": "s009",
+  "kind": "other",
+  "top_rows": 7,
+  "front_rows": 20,
+  "label": "unsure",
+  "why": "Car mostly side view; tapered roof rows 1-7 above windows, body side rows 13-33; unclear 3/4."
+ },
+ {
+  "id": "s013",
+  "kind": "structure",
+  "top_rows": 13,
+  "front_rows": 25,
+  "label": "good",
+  "why": "Snow roof slope rows 1-14, wall/doors rows 15-39."
+ },
+ {
+  "id": "s017",
+  "kind": "structure",
+  "top_rows": 12,
+  "front_rows": 3,
+  "label": "good",
+  "why": "Parasol roof plane rows 1-12; platform top rows 33-38, front rows 39-41."
+ },
+ {
+  "id": "s021",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Wall plaque with crossed swords."
+ },
+ {
+  "id": "s025",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Hanging projector screen, wall-mounted flat panel."
+ },
+ {
+  "id": "s029",
+  "kind": "seat",
+  "top_rows": 5,
+  "front_rows": 2,
+  "label": "bad",
+  "why": "Plank top rows 1-5 but front edge only rows 6-7 plus thin legs; front under 3 rows."
+ },
+ {
+  "id": "s033",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Wall fragment."
+ },
+ {
+  "id": "s037",
+  "kind": "seat",
+  "top_rows": 7,
+  "front_rows": 3,
+  "label": "good",
+  "why": "Stone bench top rows 1-7, front rows 8-10 plus leg rows 11-12."
+ },
+ {
+  "id": "s041",
+  "kind": "low_furniture",
+  "top_rows": 9,
+  "front_rows": 4,
+  "label": "good",
+  "why": "Pillow/mattress/blanket top rows 2-10, front board rows 11-14."
+ },
+ {
+  "id": "s045",
+  "kind": "tall_furniture",
+  "top_rows": 11,
+  "front_rows": 19,
+  "label": "good",
+  "why": "Shelf top with items rows 1-11, stone front with firebox rows 12-31."
+ },
+ {
+  "id": "s049",
+  "kind": "seat",
+  "top_rows": 6,
+  "front_rows": 4,
+  "label": "good",
+  "why": "Stool top rows 2-7, front rows 8-11."
+ },
+ {
+  "id": "s053",
+  "kind": "box",
+  "top_rows": 6,
+  "front_rows": 8,
+  "label": "good",
+  "why": "Domed lid rows 1-7 above gold rim, body rows 8-15; meets 4/8 literally."
+ },
+ {
+  "id": "s057",
+  "kind": "seat",
+  "top_rows": 0,
+  "front_rows": 14,
+  "label": "bad",
+  "why": "Face-on sofa, flat blue rows 12-25, no seat top visible."
+ },
+ {
+  "id": "s061",
+  "kind": "seat",
+  "top_rows": 3,
+  "front_rows": 4,
+  "label": "bad",
+  "why": "Front elevation chair; seat top only rows 7-8/9, below 4."
+ },
+ {
+  "id": "s065",
+  "kind": "structure",
+  "top_rows": 41,
+  "front_rows": 36,
+  "label": "good",
+  "why": "Slate roof slope rows 0-41, plank facade rows 42-78."
+ },
+ {
+  "id": "s069",
+  "kind": "container",
+  "top_rows": 16,
+  "front_rows": 8,
+  "label": "unsure",
+  "why": "Near-circular ring with water rows 5-21, front rim rows 22-29; plan-like."
+ },
+ {
+  "id": "s073",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Wall-mounted candlestick."
+ },
+ {
+  "id": "s077",
+  "kind": "seat",
+  "top_rows": 0,
+  "front_rows": 2,
+  "label": "bad",
+  "why": "East-facing sofa drawn as plan/side view: cushion squares, no front face."
+ },
+ {
+  "id": "s081",
+  "kind": "low_furniture",
+  "top_rows": 11,
+  "front_rows": 10,
+  "label": "good",
+  "why": "Bench top with tools rows 1-11, drawer front rows 12-21, legs below."
+ },
+ {
+  "id": "s085",
+  "kind": "seat",
+  "top_rows": 0,
+  "front_rows": 26,
+  "label": "bad",
+  "why": "West-facing sofa drawn as side elevation, no readable seat top."
+ },
+ {
+  "id": "s089",
+  "kind": "low_furniture",
+  "top_rows": 9,
+  "front_rows": 5,
+  "label": "good",
+  "why": "Counter top with sink rows 1-9, door front rows 10-14."
+ }
+]

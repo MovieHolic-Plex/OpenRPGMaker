@@ -1,0 +1,178 @@
+[
+ {
+  "id": "s004",
+  "kind": "low_furniture",
+  "top_rows": 12,
+  "front_rows": 5,
+  "label": "good",
+  "why": "Sloped drafting board rows 2-14 with items, drawer apron rows 15-19 and legs below."
+ },
+ {
+  "id": "s008",
+  "kind": "low_furniture",
+  "top_rows": 6,
+  "front_rows": 4,
+  "label": "good",
+  "why": "Altar slab top rows 3-8 with skull/bowl, front face rows 9-12."
+ },
+ {
+  "id": "s012",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Stone floor threshold tile."
+ },
+ {
+  "id": "s016",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Elevator mirror wall panel, wall fragment."
+ },
+ {
+  "id": "s020",
+  "kind": "low_furniture",
+  "top_rows": 5,
+  "front_rows": 10,
+  "label": "good",
+  "why": "Counter top rows 1-5 with ledger, front lattice panel rows 7-16."
+ },
+ {
+  "id": "s024",
+  "kind": "tall_furniture",
+  "top_rows": 5,
+  "front_rows": 25,
+  "label": "good",
+  "why": "Top band rows 1-5 ending in edge line row 6, front face rows 7-30."
+ },
+ {
+  "id": "s028",
+  "kind": "seat",
+  "top_rows": 4,
+  "front_rows": 6,
+  "label": "good",
+  "why": "Round seat ellipse rows 4-7, front rim row 8 and legs rows 9-13; top exactly at minimum."
+ },
+ {
+  "id": "s032",
+  "kind": "low_furniture",
+  "top_rows": 8,
+  "front_rows": 8,
+  "label": "good",
+  "why": "Round table top ellipse rows 1-8, rim rows 9-11, legs below; stools with tops."
+ },
+ {
+  "id": "s036",
+  "kind": "seat",
+  "top_rows": 5,
+  "front_rows": 12,
+  "label": "unsure",
+  "why": "Red cushion band rows 1-5 then tan band 7-9 and panel 10-18; reads partly as front elevation, seat top unclear."
+ },
+ {
+  "id": "s040",
+  "kind": "round_body",
+  "top_rows": 5,
+  "front_rows": 7,
+  "label": "good",
+  "why": "Disc seat ellipse rows 1-5 with side rows 6-8, pole and base rows 9-15."
+ },
+ {
+  "id": "s044",
+  "kind": "seat",
+  "top_rows": 2,
+  "front_rows": 9,
+  "label": "bad",
+  "why": "East-facing pew drawn as vertical backrest and face-on cushion panels rows 5-27, no seat top, only 2-row strip rows 29-30."
+ },
+ {
+  "id": "s048",
+  "kind": "seat",
+  "top_rows": 5,
+  "front_rows": 7,
+  "label": "good",
+  "why": "Bench top rows 1-5 with edge line row 6, apron rows 7-9, legs rows 10-13."
+ },
+ {
+  "id": "s052",
+  "kind": "seat",
+  "top_rows": 4,
+  "front_rows": 6,
+  "label": "unsure",
+  "why": "Ice hole plus rod plus barrel seat (top ~rows 4-7), composite scene, hard to judge."
+ },
+ {
+  "id": "s056",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Wheelchair space: wall signs and floor strip, wall/floor fragment."
+ },
+ {
+  "id": "s060",
+  "kind": "other",
+  "top_rows": 2,
+  "front_rows": 17,
+  "label": "bad",
+  "why": "Standing mirror drawn face-on, frame top only rows 1-4, no readable top."
+ },
+ {
+  "id": "s064",
+  "kind": "seat",
+  "top_rows": 5,
+  "front_rows": 7,
+  "label": "good",
+  "why": "Log seat top rows 1-5, front rows 6-8, legs rows 9-12."
+ },
+ {
+  "id": "s068",
+  "kind": "seat",
+  "top_rows": 5,
+  "front_rows": 7,
+  "label": "good",
+  "why": "Stone seat top rows 1-5 with edge highlight, front rows 6-8, legs rows 9-12."
+ },
+ {
+  "id": "s072",
+  "kind": "container",
+  "top_rows": 14,
+  "front_rows": 10,
+  "label": "good",
+  "why": "Basin shows dark water ellipse with back to front rim (~14 rows), rim/body front below."
+ },
+ {
+  "id": "s076",
+  "kind": "low_furniture",
+  "top_rows": 5,
+  "front_rows": 4,
+  "label": "good",
+  "why": "Bench top rows ~11-15 under helmets, front face rows 16-19, legs 21-23."
+ },
+ {
+  "id": "s080",
+  "kind": "low_furniture",
+  "top_rows": 9,
+  "front_rows": 8,
+  "label": "good",
+  "why": "Plank top rows 0-8 with seams, front apron rows 10-16, lower shelf/legs 17-25."
+ },
+ {
+  "id": "s084",
+  "kind": "container",
+  "top_rows": 10,
+  "front_rows": 4,
+  "label": "good",
+  "why": "Stone ring ellipse with fire visible inside, front rim below."
+ },
+ {
+  "id": "s088",
+  "kind": "seat",
+  "top_rows": 3,
+  "front_rows": 5,
+  "label": "unsure",
+  "why": "Backrest rows 1-5 exempt; seat surface rows 6-8 (maybe 5-8), front rows 9-13; borderline at minTop 4."
+ }
+]

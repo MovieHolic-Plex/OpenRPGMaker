@@ -1,0 +1,178 @@
+[
+ {
+  "id": "s004",
+  "kind": "low_furniture",
+  "top_rows": 13,
+  "front_rows": 12,
+  "label": "good",
+  "why": "Tilted drafting top rows 1-13 ending in front edge, drawer+apron rows 14-19 and legs below."
+ },
+ {
+  "id": "s008",
+  "kind": "low_furniture",
+  "top_rows": 5,
+  "front_rows": 5,
+  "label": "good",
+  "why": "Light slab top rows 4-8 with items, dark front face rows 9-13."
+ },
+ {
+  "id": "s012",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Stone floor tile."
+ },
+ {
+  "id": "s016",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Elevator mirror wall panel, wall-mounted elevation."
+ },
+ {
+  "id": "s020",
+  "kind": "low_furniture",
+  "top_rows": 6,
+  "front_rows": 10,
+  "label": "good",
+  "why": "Counter top rows 1-6 with ledger, slatted front rows 7-16."
+ },
+ {
+  "id": "s024",
+  "kind": "tall_furniture",
+  "top_rows": 5,
+  "front_rows": 25,
+  "label": "good",
+  "why": "Vending machine top gradient rows 1-5 ending in edge line row 6, front rows 7-31."
+ },
+ {
+  "id": "s028",
+  "kind": "seat",
+  "top_rows": 4,
+  "front_rows": 6,
+  "label": "good",
+  "why": "Seat cap rows 4-7, front/legs rows 8-13; exactly at minimum."
+ },
+ {
+  "id": "s032",
+  "kind": "low_furniture",
+  "top_rows": 8,
+  "front_rows": 3,
+  "label": "good",
+  "why": "Round table top ellipse rows 1-8, apron rows 9-11 plus legs/stools."
+ },
+ {
+  "id": "s036",
+  "kind": "seat",
+  "top_rows": 4,
+  "front_rows": 14,
+  "label": "good",
+  "why": "Cushion top gradient rows 2-5 ending in edge row 6, front panel rows 7-20."
+ },
+ {
+  "id": "s040",
+  "kind": "seat",
+  "top_rows": 7,
+  "front_rows": 8,
+  "label": "good",
+  "why": "Stool cap ellipse rows 0-6 (widens then narrows), side rows 7-9, pedestal below."
+ },
+ {
+  "id": "s044",
+  "kind": "seat",
+  "top_rows": 7,
+  "front_rows": 11,
+  "label": "unsure",
+  "why": "East pew: red cushion panels rows 12-18/21-27 may be seat tops or face-on panels; front box rows 28-38."
+ },
+ {
+  "id": "s048",
+  "kind": "seat",
+  "top_rows": 6,
+  "front_rows": 7,
+  "label": "good",
+  "why": "Bench top rows 1-6 with front edge, front rows 7-9 and legs 10-13."
+ },
+ {
+  "id": "s052",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Ice hole scene with rod, mostly flat decal."
+ },
+ {
+  "id": "s056",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Wheelchair space floor/wall signage decal."
+ },
+ {
+  "id": "s060",
+  "kind": "other",
+  "top_rows": 0,
+  "front_rows": 32,
+  "label": "bad",
+  "why": "Standing mirror drawn as front elevation, only rounded dome top, no top surface."
+ },
+ {
+  "id": "s064",
+  "kind": "seat",
+  "top_rows": 5,
+  "front_rows": 4,
+  "label": "good",
+  "why": "Log seat top rows 1-5, front rows 6-9 plus legs 10-12."
+ },
+ {
+  "id": "s068",
+  "kind": "seat",
+  "top_rows": 5,
+  "front_rows": 4,
+  "label": "good",
+  "why": "Stone top rows 1-5 with front edge, front rows 6-9 plus legs 10-12."
+ },
+ {
+  "id": "s072",
+  "kind": "container",
+  "top_rows": 12,
+  "front_rows": 11,
+  "label": "good",
+  "why": "Basin opening ellipse with water rows ~29-46, front rim rows 47-57."
+ },
+ {
+  "id": "s076",
+  "kind": "low_furniture",
+  "top_rows": 6,
+  "front_rows": 5,
+  "label": "good",
+  "why": "Bench top rows 11-16, front rows 17-20 plus legs."
+ },
+ {
+  "id": "s080",
+  "kind": "low_furniture",
+  "top_rows": 10,
+  "front_rows": 7,
+  "label": "good",
+  "why": "Plank top rows 0-9 ending in highlight edge, apron rows 10-16 and legs."
+ },
+ {
+  "id": "s084",
+  "kind": "container",
+  "top_rows": 12,
+  "front_rows": 5,
+  "label": "good",
+  "why": "Stone ring opening ellipse rows ~14-27 with fire inside, front ring rows 25-29."
+ },
+ {
+  "id": "s088",
+  "kind": "seat",
+  "top_rows": 3,
+  "front_rows": 5,
+  "label": "bad",
+  "why": "Divan seat cushion rows 6-8 only 3 rows (<4), front/base rows 9-13."
+ }
+]
