@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.298.0 — 2026-10-21
+
+### 기능
+
+- **object-gate** — Opus final judge v8 — same-chipset style anchors, kind correction (rejected) (#3151) (`6293e4e`)
+
+### 수정
+
+- **ai** — recover the ChatGPT/assistant connection after a local serve restart (stale token 403) without reload (#3152) (`0a1a93b`)
+
 ## 0.297.0 — 2026-10-21
 
 ### 기능
