@@ -11,7 +11,6 @@
   "d": "#d24682ff",
   "D": "#aa466eff",
   "e": "#ec64a0ff",
-  "g": "#f4f6f8ff",
   "s": "#c6cad4ff",
   "t": "#8d9095ff",
   "h": "#faecf6ff",
@@ -33,10 +32,10 @@
   ".awwwwwwwwwwwwwwwwwwwwwwwwwwwwa.",
   ".adddddddddddddddddddddddddddda.",
   ".aDDDDDDDDDDDDDDDDDDDDDDDDDDDDa.",
-  ".aeeewwggeeeeewwggeeeeewwggeeea.",
-  ".aeewwgggfeeewwgggfeeewwgggfeea.",
-  ".aeewggggfeeewggggfeeewggggfeea.",
-  ".aeeegffdeeeeegffdeeeeegffdeeea.",
+  ".aeeeppppeeeeeppppeeeeeppppeeea.",
+  ".aeepWWWWpeeepWWWWpeeepWWWWpeea.",
+  ".aeeeppppeeeeeppppeeeeeppppeeea.",
+  ".aeeeeeeeeeeeeeeeeeeeeeeeeeeeea.",
   ".affffffffffffffffffffffffffffa.",
   ".adddddddddddddddddddddddddddda.",
   ".assssssssssssssssstwwhhhhhhHra.",
@@ -59,5 +58,5 @@
   "................................",
   "................................"
  ],
- "note": "r16-2: 윤곽을 자주 근흑→짙은 자두색, 지붕 4행(m>f>p>w)+1px 짙은 분홍 처마+그늘, 머리판 전구 3개 대칭(하이라이트·음영), 커튼 주름 4톤+막대+밑단, 부스판 3톤(밝은 왼·그늘 오른/아래), 화면 베젤 안쪽 그늘+유리 대각 하이라이트, 아래 표지·투입구"
+ "note": "r16-2: 윤곽을 자주 근흑→짙은 자두색, 지붕 4행(m>f>p>w)+1px 짙은 분홍 처마+그늘, 머리판 전구 3개를 상하좌우 대칭 6x3 마키 전구(분홍 테·흰 심)로, 커튼 주름 4톤+막대+밑단, 부스판 3톤(밝은 왼·그늘 오른/아래), 화면 베젤 안쪽 그늘+유리 대각 하이라이트, 아래 표지·투입구"
 }

@@ -44,24 +44,26 @@
   "X": "#5ae678ff",
   "R": "#fa5050ff",
   "s": "#cc343cff",
-  "z": "#091125ff"
+  "z": "#091125ff",
+  "E": "#24222cff",
+  "Z": "#862e38ff"
  },
  "rows": [
   "................................................",
-  "......oo....oo.......rr.rr......................",
-  ".....olBo..oBDo.....rwWrwWr.....................",
-  ".....oBBooooBDo.....rwWrwWr.....................",
-  "......olllBBBo......rwpr.pr.....................",
-  "......oleBBeDo......rwWrwWr.....................",
-  "......oBmmmBDo.....rwwwwwWWr....................",
-  "......oBmnmBDo.....rwewwweWr......kkkk..........",
-  ".......oBBBDo......rwwwpwWWr.....kwRx8W.........",
-  "......olBBBBDo......rwwwWWr......k4X1Rv..12.....",
-  ".....olBBmmBBDo.....rwwwwWr......W8x4XW.1e2O....",
-  ".aaaaoBBBmmBDDoaaaarwwwwWWWraaaaaassssaa12223aa.",
-  ".aHHHHoBBooBDoHHHHHrwwwWWWvrHHHHHssssssHH333HHa.",
-  ".ahhhhHHHHHHHHhhhhhhrWWvvvrhkkhhhHHHHHHHHHHHHha.",
-  ".ahhhhkkhhhhhhhhhhHhhhhhhhhkHhhhhhhhhhhhhhhhhha.",
+  "................................................",
+  "................................................",
+  ".....................r...r......................",
+  "....................rpr.rpr.....................",
+  "....................rpr.rpr.....................",
+  "........oo..oo......rpr.rpr.....................",
+  ".......olBooBDo.....rwrrrWr......EEEE...........",
+  ".......oBeBBeDo.....rweweWr.....EkwRxE...EE.....",
+  ".......oBBmmBDo.....rwwpwWr.....E4X18E..E12E....",
+  "........oBBnDo.......rwwWr......EW8x4E..E1e2OE..",
+  ".aaaaaaolBmmBDoaaaaarwwwwWraaaaaEssssEaaE1222Ea.",
+  ".aHHHHHoBBmmBDoHHHHHrwwwWvrHHHHHEZZZZEHHE2333Ea.",
+  ".ahhhhhkoDooDohhhhhhhrrrrrhhkkhhhEEEEhhhhEEEEha.",
+  ".ahhhhkkHHHHHHhhhhhhhHHHHHhkkhhhhHHHHhhhhHHHHha.",
   ".ahhhkkhhhhhhhhhhhhhhhhhhhkkhhhhhhhhhhhhhhhhhha.",
   ".akkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkka.",
   ".adddddddddddddddddddddddddddddddddddddddddddda.",
@@ -80,5 +82,5 @@
   ".aPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPa.",
   "..zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz.."
  ],
- "note": "r16-2: smaller shaded plush bear/rabbit/gumball+duck sit on a 5-row glass top (far edge, streaked glass, white lit edge, purple cornice); front = 3 glass panes with lit frame, inner top shade, shaded small prizes on a shelf; yellow trim 2-tone; purple cabinet doors with bevels"
+ "note": "r16-2: compact full-body sitting bear/rabbit and gumball/duck, each with a 1px dark outline, sit on a 5-row glass top (far edge, streaked glass, white lit edge, purple cornice); front = 3 glass panes with lit frame, inner top shade, shaded small prizes on a shelf; yellow trim 2-tone; purple cabinet doors with bevels"
 }
