@@ -255,8 +255,8 @@
         "pickedAt": "2026-10-16T10:47:22.589Z",
         "note": "v4 cute-first, Opus 5.5 judge: 눈자루 위 두 눈이 크고 둥글며 흰 하이라이트가 또렷해 반짝이고, 웃는 입이 순하다. 집게도 큰 조개 모양 권투 장갑처럼 잘 읽힌다",
         "authored": "authored/coralpin-front.png",
-        "previousAuthoredSha256": "e58ae273e2077c1e57147adfa96442ff3f055468bbd1238486d02b6339e60c16",
-        "authoredSha256": "4f9f67815d84190929fa2a10d55ae32106d25db6478d483005645765990abaff"
+        "previousAuthoredSha256": "4f9f67815d84190929fa2a10d55ae32106d25db6478d483005645765990abaff",
+        "authoredSha256": "09686e9aa6e50928cb6057aa16619d7e867e697d17c19fe11b72aa2856c4e482"
       },
       "back": {
         "grid": "grids/coralpin-back.png",
@@ -494,8 +494,8 @@
         "pickedAt": "2026-10-18T09:17:48.313Z",
         "note": "2026-10-18-진화-몸집-단조-증가",
         "authored": "authored/reefguard-front.png",
-        "previousAuthoredSha256": "590731ba9013be55f19690eb055c3d98782e340fd546f32660e62370d4b4df2e",
-        "authoredSha256": "7f2306c3de20daa91f006079578b99b137e2ec1dfe5454a1d5ad8b968e27b90c"
+        "previousAuthoredSha256": "7f2306c3de20daa91f006079578b99b137e2ec1dfe5454a1d5ad8b968e27b90c",
+        "authoredSha256": "0587171286a550f500d13f24515a5161d532cf9cba5f0c4c999c50231ce6e0b9"
       },
       "back": {
         "grid": "grids/reefguard-back.png",
@@ -819,8 +819,8 @@
         "pickedAt": "2026-10-18T09:21:16.072Z",
         "note": "2026-10-18-진화-몸집-단조-증가",
         "authored": "authored/atollclamp-front.png",
-        "previousAuthoredSha256": "bfffbdb5a8646e49f4bd7af4c15477f3a805c22b72a94b431574efa5f71cf7dd",
-        "authoredSha256": "2b3b8bde35654aab5d05dc8aa1d29a57ea9f28b97f32f4a0c2cffa91efd46768"
+        "previousAuthoredSha256": "2b3b8bde35654aab5d05dc8aa1d29a57ea9f28b97f32f4a0c2cffa91efd46768",
+        "authoredSha256": "04a4c0fab9331acf96db17ffe9ef3d4f39bd5efb107731620255816316a67a5b"
       },
       "back": {
         "grid": "grids/atollclamp-back.png",

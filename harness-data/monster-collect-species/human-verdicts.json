@@ -73,7 +73,8 @@
      "front": "63f6d40959d479872186b0f34c40f16a9c92dc92e0834da459fc26f7f2d799e7",
      "back": "2f53cb7c4af1cbfbaadffe564242fc7ac7cda7cc571d24e497c0d95fdcbbbfed",
      "chip": "3c5e2dc6729aea92c739a4065768e91e3490edd008ba448a6767f05a9db70886",
-     "authoredFront": "4f9f67815d84190929fa2a10d55ae32106d25db6478d483005645765990abaff"
+     "authoredFront": "4f9f67815d84190929fa2a10d55ae32106d25db6478d483005645765990abaff",
+     "supersededBy": "monster-crab-eyes-pick-2"
     },
     "curlfin": {
      "front": "0c75e13ff6a986388ffef261bf01d8a258ed683c00e4c37a56d3d5557d72a9eb",
@@ -145,7 +146,8 @@
      "front": "206abb275abe1b83d1b016162e3ccf40ace99128635a5e07d4d480274ca0a6e1",
      "back": "b055860caac3c5d90d58c0650be5ce0292580ccfc440b7818aa192bf03c43a30",
      "chip": "277271d0f2bc7a5af34695ea01846669d804570c49f5cc1865dff782d3e9ecf9",
-     "authoredFront": "7f2306c3de20daa91f006079578b99b137e2ec1dfe5454a1d5ad8b968e27b90c"
+     "authoredFront": "7f2306c3de20daa91f006079578b99b137e2ec1dfe5454a1d5ad8b968e27b90c",
+     "supersededBy": "monster-crab-eyes-pick-2"
     },
     "brinewyrm": {
      "front": "db0c96765bb9f53143a7d2b7014936f6893682dbf3013e8802b97c654d0afa30",
@@ -217,7 +219,8 @@
      "front": "6c10b721ef9074940ddce4773a787dd2d05776440602d6f8c847c357f3d92d3f",
      "back": "54ccf832446d013864ed943a58729cc9d702112af73f9791875a27054c17b18f",
      "chip": "b1e0df8339f826044637de821a7d89923162c74bfaf93172d0b0d9f77a6cb5c7",
-     "authoredFront": "2b3b8bde35654aab5d05dc8aa1d29a57ea9f28b97f32f4a0c2cffa91efd46768"
+     "authoredFront": "2b3b8bde35654aab5d05dc8aa1d29a57ea9f28b97f32f4a0c2cffa91efd46768",
+     "supersededBy": "monster-crab-eyes-pick-2"
     },
     "abyssail": {
      "front": "76540bf6d16f2ff7c31482ff8d9ed84003fbec18319e664948fee6051cb5e9dc",
@@ -368,6 +371,39 @@
      "back": "d11f1eeeb82dfe17da9739a339e9ed8610e077eb4d183255297c1ee6e5793fea",
      "chip": "db15b5f57a2f79729342b55c070ec352b64ea569e1c141a4576b6898233e379b",
      "authoredFront": "f5d813fa287c3d43e1b7a33ca2f787a2ff23aff86f0fd28f44baa08530c77a56"
+    }
+   }
+  },
+  {
+   "sheet": "monster-crab-eyes-pick-2",
+   "verdict": "pick A",
+   "by": "user",
+   "at": "2026-10-20",
+   "quote": "셋 다 새 A (crab-eyes-2)",
+   "species": {
+    "coralpin": {
+     "pick": "A",
+     "drawnOn": "4f9f67815d84190929fa2a10d55ae32106d25db6478d483005645765990abaff",
+     "authoredFront": "09686e9aa6e50928cb6057aa16619d7e867e697d17c19fe11b72aa2856c4e482",
+     "front": "c54020fab799efea9dac24e2fd6df652a932a837e56e356739f519e6343ba544",
+     "back": "2f53cb7c4af1cbfbaadffe564242fc7ac7cda7cc571d24e497c0d95fdcbbbfed",
+     "chip": "c1a7d19d5c7899173f6278b39a5c43e54a3e83577fd0dc526bc66c41ef071b9a"
+    },
+    "reefguard": {
+     "pick": "A",
+     "drawnOn": "7f2306c3de20daa91f006079578b99b137e2ec1dfe5454a1d5ad8b968e27b90c",
+     "authoredFront": "0587171286a550f500d13f24515a5161d532cf9cba5f0c4c999c50231ce6e0b9",
+     "front": "a8619a64baeb640a47a4a16ed3cc0eeae0456ddcf37da56bf1af91f675c0c50b",
+     "back": "b055860caac3c5d90d58c0650be5ce0292580ccfc440b7818aa192bf03c43a30",
+     "chip": "8641f5c0ce19a55bf46acb00d2d50095d3f419078c3603e172f1d7a09a139283"
+    },
+    "atollclamp": {
+     "pick": "A",
+     "drawnOn": "2b3b8bde35654aab5d05dc8aa1d29a57ea9f28b97f32f4a0c2cffa91efd46768",
+     "authoredFront": "04a4c0fab9331acf96db17ffe9ef3d4f39bd5efb107731620255816316a67a5b",
+     "front": "fff690139ca3b0aca4943b74b4b6c783d460f495913c7f85bc82c67588582a0a",
+     "back": "54ccf832446d013864ed943a58729cc9d702112af73f9791875a27054c17b18f",
+     "chip": "00b59cad5fa010e06521376b14c4f91fd26e8ee5b6b51a127af960fb1c85f0df"
     }
    }
   }

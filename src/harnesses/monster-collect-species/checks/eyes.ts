@@ -9,6 +9,10 @@
  *  - 두 눈이 보이면 크기가 크게 어긋나지 않는다(좌우 대칭 허용 오차)
  *  - 뒷모습에는 눈이 보이지 않는다 (눈 모양 + 하이라이트가 잡히면 경고)
  *
+ * 눈자루 예외(2026-10-20, 게 계통 coralpin·reefguard·atollclamp 사용자 선택 A): 눈알이 몸 밖 자루 위에 있어
+ * 「밝은 살갗에 둘러싸인 눈동자」 전제가 맞지 않는다. eyes.json anatomy "stalk" 종만, 호출자가 표의 상자를 넘길 때만
+ * `checkStalkBall` 로 본다 — 닫힌 어두운 테 안에 크림 눈알 + 눈동자 + 눈동자에 붙은 흰 반짝임. 다른 종의 규칙은 그대로다.
+ *
  * 이 검사는 「눈 후보 탐지」다. 눈이 자연스럽고 생기 있는지는 판정 모델이 그림을 보고 정한다 — 통과가 합격이 아니다.
  * 실패한 앞모습 후보는 시트에 「눈 규칙 탈락」으로 표시하고 판정 대상에서 뺀다(후보가 모자라면 더 뽑는다).
  */
@@ -173,6 +177,47 @@ export function detectEyes(image: RgbaImage): EyeReport {
   return report;
 }
 
+/** 눈자루 눈알 상자 [x, y, w, h] (eyes.json near/second — 테 안쪽) */
+export type StalkBox = readonly [number, number, number, number];
+
+/**
+ * 눈자루 눈알 하나: 상자 안에 눈동자(어두운 칸 ≥2) · 눈동자에 4방향으로 붙은 흰 반짝임 ≥1 · 크림 흰자(눈동자보다 0.3 이상 밝은 칸) ≥2,
+ * 상자 둘레 한 칸 테의 75% 이상이 어둡다(닫힌 테 — 몸 밖 공에 그린 눈알). 면적(상자) ≥ minArea.
+ */
+export function checkStalkBall(image: RgbaImage, box: StalkBox, minArea: number): string | null {
+  const [bx, by, bw, bh] = box;
+  const inside = (x: number, y: number) => x >= 0 && y >= 0 && x < image.width && y < image.height;
+  if (bw * bh < minArea) return `눈자루 눈알 ${bw}×${bh} 가 작다 (면적 ${minArea} 이상)`;
+  const isDark = (x: number, y: number) => inside(x, y) && isOpaque(image, x, y) && lightness(image, x, y) < EYE_RULES.darkL;
+  let pupil = 0, sumL = 0;
+  for (let y = by; y < by + bh; y += 1) for (let x = bx; x < bx + bw; x += 1) if (isDark(x, y)) { pupil += 1; sumL += lightness(image, x, y); }
+  if (pupil < 2) return "눈자루 눈알에 눈동자가 없다";
+  const pupilL = sumL / pupil;
+  let shine = 0, sclera = 0;
+  for (let y = by; y < by + bh; y += 1) {
+    for (let x = bx; x < bx + bw; x += 1) {
+      if (!inside(x, y) || !isOpaque(image, x, y) || isDark(x, y)) continue;
+      const p = pixelAt(image, x, y);
+      const lab = oklabCached(p[0], p[1], p[2]);
+      if (lab[0] >= pupilL + 0.3) sclera += 1;
+      if (lab[0] >= EYE_RULES.highlightMinL && Math.hypot(lab[1], lab[2]) <= EYE_RULES.highlightMaxChroma && N4.some(([ox, oy]) => isDark(x + ox, y + oy) && x + ox >= bx && x + ox < bx + bw && y + oy >= by && y + oy < by + bh)) shine += 1;
+    }
+  }
+  if (shine < 1) return "눈자루 눈알에 눈동자에 붙은 흰 반짝임이 없다";
+  if (sclera < 2) return "눈자루 눈알에 밝은 흰자가 없다";
+  let rim = 0, rimTotal = 0;
+  for (let y = by - 1; y <= by + bh; y += 1) {
+    for (let x = bx - 1; x <= bx + bw; x += 1) {
+      if (x >= bx && x < bx + bw && y >= by && y < by + bh) continue;
+      if ((x === bx - 1 || x === bx + bw) && (y === by - 1 || y === by + bh)) continue; // 둥근 공: 네 모서리는 비어도 된다
+      rimTotal += 1;
+      if (isDark(x, y)) rim += 1;
+    }
+  }
+  if (rim / rimTotal < 0.75) return `눈자루 눈알 테가 열렸다 (${rim}/${rimTotal})`;
+  return null;
+}
+
 export type EyeVerdict = {
   /** 앞모습: 주 눈(면적 ≥ 12(1~2단계)/9, 흰 하이라이트, 살갗에 둘러싸임)이 있다. 뒷모습: 눈 모양이 없다. */
   pass: boolean;
@@ -187,9 +232,18 @@ export type EyeVerdict = {
  * 규칙 판정. 앞모습은 주 눈이 있어야 통과(탈락 = 판정 대상에서 뺀다), 두 눈은 「확인」으로만 기록(3/4 시점에서 먼 눈이 정당하게 가려질 수 있다).
  * 뒷모습은 큰 눈 모양(면적 12 이상)이 잡히면 경고. 화소 규칙은 필요조건일 뿐이다 — 눈의 자연스러움은 판정 모델이 본다.
  */
-export function checkEyes(image: RgbaImage, side: "front" | "back", stage: 1 | 2 | 3 = 1): EyeVerdict {
+export function checkEyes(image: RgbaImage, side: "front" | "back", stage: 1 | 2 | 3 = 1, stalkBoxes?: readonly StalkBox[]): EyeVerdict {
   const report = detectEyes(image);
   const issues: CheckIssue[] = [];
+  if (side === "front" && stalkBoxes && stalkBoxes.length > 0) {
+    // 눈자루 종(eyes.json anatomy "stalk") 전용: 표의 눈알 상자를 직접 본다. 첫 상자(near)는 주 눈 면적 하한을 따른다.
+    const minArea = stage <= 2 ? EYE_RULES.minPrimaryAreaCute : EYE_RULES.minPrimaryArea;
+    stalkBoxes.forEach((box, i) => {
+      const why = checkStalkBall(image, box, i === 0 ? minArea : EYE_RULES.minSecondArea);
+      if (why) issues.push({ level: "error", message: `눈 규칙 탈락(눈자루): ${why}` });
+    });
+    return { pass: issues.length === 0, pair: stalkBoxes.length > 1, report, issues };
+  }
   if (side === "back") {
     const big = report.eyes.filter((e) => e.area >= EYE_RULES.backEyeArea);
     if (big.length > 0) issues.push({ level: "warn", message: `뒷모습에 눈처럼 보이는 점 ${big.length}개 — 뒷모습에는 눈이 보이면 안 된다` });

@@ -79,10 +79,10 @@
    "note": ""
   },
   "coralpin": {
-   "run": "derive-20261020-183125",
+   "run": "derive-20261020-215928",
    "candidate": 1,
-   "sha": "ff801480c1d154d6",
-   "at": "2026-10-20T18:31:25",
+   "sha": "e38c170f0f47218b",
+   "at": "2026-10-20T21:59:28",
    "note": ""
   },
   "curlfin": {
@@ -156,10 +156,10 @@
    "note": ""
   },
   "reefguard": {
-   "run": "derive-20261020-191558",
+   "run": "derive-20261020-215928",
    "candidate": 1,
-   "sha": "58bf511fb16a5ff6",
-   "at": "2026-10-20T19:15:58",
+   "sha": "d56f3a46a1c75c9b",
+   "at": "2026-10-20T21:59:28",
    "note": ""
   },
   "grovewarden": {
@@ -233,10 +233,10 @@
    "note": ""
   },
   "atollclamp": {
-   "run": "derive-20261020-183133",
+   "run": "derive-20261020-215929",
    "candidate": 1,
-   "sha": "d07d464a49f158d1",
-   "at": "2026-10-20T18:31:33",
+   "sha": "354b3155009c6adf",
+   "at": "2026-10-20T21:59:29",
    "note": ""
   },
   "abyssail": {

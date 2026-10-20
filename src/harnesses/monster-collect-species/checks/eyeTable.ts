@@ -11,10 +11,12 @@
  *  - V5 옛 눈 잔상: 상자 밖 두 칸 안의 (윤곽 아닌) 어두운 칸 ≤ 한도 — 덮어 그린 옛 눈이 비어져 나온 것을 잡는다
  *  - V7 양식: 사각 5×5 눈 금지(둥근 틀: 높이 ≥6·왼쪽 위 모서리 살갗), 한 진화 계통 안에서 양식이 같다
  * V6(뒷모습에 눈 없음)은 `checks/eyes.ts` checkEyes(back), V8(동결 종 해시)은 시험이 본다.
- * 눈자루(stalk) 눈은 몸 밖으로 나가는 것이 정상이라 V1·V2·V4 를 보지 않는다.
+ * 눈자루(stalk) 눈은 몸 밖으로 나가는 것이 정상이라 V1·V2·V4 를 보지 않는다. 2026-10-20 사용자 선택 A(크림 눈알 + 짧은 자루)부터
+ * V0·V3 은 `checkStalkBall`(닫힌 테 안 크림 눈알·눈동자·반짝임)로 바꾸고, V5 는 눈알 테 한 칸과 눈알 바로 밑 자루 칸을 세지 않는다.
  */
 import { isOpaque, pixelAt, type RgbaImage } from "../pixel/image";
 import { oklabCached } from "../pixel/oklab";
+import { checkStalkBall } from "./eyes";
 
 export type EyeBox = readonly [number, number, number, number];
 export type EyeAnatomy = "threequarter" | "profile" | "frontal" | "stalk";
@@ -130,6 +132,11 @@ export function checkEyePlacement(image: RgbaImage, entry: EyeEntry): EyeFinding
   const all = placed(entry);
   const stalk = entry.anatomy === "stalk";
   for (const { role, box } of all) {
+    if (stalk) {
+      const why = checkStalkBall(image, box, role === "near" ? 9 : 5);
+      if (why) findings.push({ check: "V0", message: `${role} ${why}` });
+      continue;
+    }
     const st = boxStats(image, box);
     const minDark = role === "far" ? 2 : Math.ceil(box[2] * box[3] * EYE_TABLE_RULES.minNearDarkRatio);
     if (st.highlights < 1 || st.dark < minDark) findings.push({ check: "V0", message: `${role} 상자 [${box.join(",")}] 에 눈이 없다 (어두운 칸 ${st.dark}, 하이라이트 ${st.highlights})` });
@@ -161,6 +168,8 @@ export function checkEyePlacement(image: RgbaImage, entry: EyeEntry): EyeFinding
       const nx = x + ox, ny = y + oy;
       if (reached.has(ny * image.width + nx) || all.some((p) => inBox(p.box, nx, ny)) || !all.some((p) => inBox(p.box, nx, ny, 2))) continue;
       if (!isDark(nx, ny) || isEdge(image, nx, ny)) continue;
+      // 눈자루: 눈알 테 한 칸과 눈알 바로 밑 자루는 그림의 일부다
+      if (stalk && all.some((p) => inBox(p.box, nx, ny, 1) || (nx >= p.box[0] - 1 && nx <= p.box[0] + p.box[2] && ny >= p.box[1] + p.box[3]))) continue;
       reached.add(ny * image.width + nx);
       leftover += 1;
       stack.push([nx, ny]);

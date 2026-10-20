@@ -523,6 +523,9 @@ def main(argv=None) -> int:
         path = AUTHORED / f"{sid}-front.png"
         arr = np.array(Image.open(path).convert("RGBA"))
         entry = table["species"][sid]
+        if entry.get("picked"):  # a human-picked eye (crab stalk eyes, crab_eye_candidates.py) — never overwrite it
+            print(f"{sid}: skipped — human pick {entry['picked']}")
+            continue
         out, new = redraw(sid, arr, entry, spec)
         n_col = len(palette(out))
         print(f"{sid}: {spec.get('tpl', 'recolor')} near {new.get('near')} far {new.get('far')} second {new.get('second')} colours {n_col}{'  !! >20' if n_col > 20 else ''}")

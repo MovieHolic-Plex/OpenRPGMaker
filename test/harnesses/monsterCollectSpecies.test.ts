@@ -468,11 +468,15 @@ describe("monster-collect-species 시드·레지스트리", () => {
 
   it("커밋된 번들 스프라이트가 검사를 통과한다 (눈 규칙 포함 — 면·단계를 넘겨야 checkSprite 가 눈을 본다)", () => {
     const seed = validateSeed(JSON.parse(readFileSync(join(ROOT, "harness-data/monster-collect-species/seed.json"), "utf8")));
+    const eyeTable = JSON.parse(readFileSync(join(ROOT, "harness-data/monster-collect-species/eyes.json"), "utf8")) as EyeTable;
     for (const species of seed.species) {
       const stage = species.stage as 1 | 2 | 3;
+      const eyeEntry = eyeTable.species[species.id]!;
+      // 눈자루 종(게 계통)은 표의 눈알 상자를 넘겨 눈자루 규칙으로 본다 — 다른 종은 v4 규칙 그대로
+      const stalkBoxes = eyeEntry.anatomy === "stalk" ? [eyeEntry.near, ...(eyeEntry.second ? [eyeEntry.second] : [])] : undefined;
       const front = readPng(join(ROOT, "public/assets/harnesses/monster-collect-species", species.id, "front.png"));
       const back = readPng(join(ROOT, "public/assets/harnesses/monster-collect-species", species.id, "back.png"));
-      expect(checkSprite(front, seed.style.maxColors, "front", stage).issues.filter((i) => i.level === "error"), `${species.id} front`).toEqual([]);
+      expect(checkSprite(front, seed.style.maxColors, "front", stage, stalkBoxes).issues.filter((i) => i.level === "error"), `${species.id} front`).toEqual([]);
       expect(checkSprite(back, seed.style.maxColors, "back", stage).issues.filter((i) => i.level === "error"), `${species.id} back`).toEqual([]);
       expect(checkEyes(back, "back", stage).pass, `${species.id} 뒷모습에 눈 (V6)`).toBe(true);
       expect(checkPair(front, back), `${species.id} 앞·뒤`).toEqual([]);
