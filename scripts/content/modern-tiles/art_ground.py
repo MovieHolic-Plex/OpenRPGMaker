@@ -28,11 +28,14 @@ TY = [(120, 92, 30), (178, 140, 48), (214, 176, 70), (240, 210, 112)]
 DIRT = [(70, 58, 44), (96, 80, 60), (122, 104, 78)]
 CLOVER = (150, 176, 140)   # r2: 밝은 흰 점 → 잔디보다 조금 밝은 연녹백(대비 낮춤)
 
-# 보도(다시 그림) — 바탕 S3 둘레 반 단계 톤만. 이음은 S1 과 S2 사이.
-SW_BASE = S[3]
-SW_TONES = {0: S[3], 1: (87, 105, 111), -1: (75, 91, 97), -2: (71, 86, 92)}   # 바탕 · 반 단계 밝음 · 반 단계 어둠 · 닳은 판(드묾)
-SW_JOINT = S[2]          # 이음 = 몸보다 한 단계만 어둡게
-SW_LIT = S[4]            # 위·왼쪽 모서리 = 한 단계 밝게
+# 보도 r3(감독 VQA 2026-10-20: 대비가 낮아 평평한 회색으로 읽힘) — 몸을 한 단 올리고(S4) 이음은 한 단 내리고(S1),
+# 판마다 위 1px 밝은 테(S5 쪽), 가까운 두 톤(바탕·한 끗 어둠)을 칸 해시로 드물게. 바둑판 없음, 러닝 본드 그대로.
+SW_BASE = S[4]
+SW_ALT = (87, 105, 111)                                   # 가까운 둘째 톤(S3 와 S4 사이)
+SW_TONES = {0: S[4], 1: SW_ALT, -1: SW_ALT, -2: (78, 95, 101)}   # 바탕 · 둘째 톤 · (호환) · 닳은 판(드묾)
+SW_JOINT = S[1]          # 이음 = 옛(S2)보다 한 단계 더 어둡게
+SW_LIT = (106, 125, 130)  # 판 위 1px 밝은 테(S4 와 S5 사이)
+SW_LIT_W = (99, 118, 124)  # 판 왼쪽 1px(위 테보다 약하게)
 
 
 def lit(c, k):
@@ -79,6 +82,13 @@ def jitter_points(seed, cell=4, prob=0.7):
 
 def h01(*a):
     return (zlib.crc32(repr(a).encode()) & 0xffffff) / 0xffffff
+
+
+def hmix(*a):
+    """화소 잔점용 해시(crc32 는 이웃 좌표끼리 상관이 남아 세로 쌍·사선이 생긴다 → fmix32 로 섞는다)."""
+    h = zlib.crc32(repr(a).encode())
+    h ^= h >> 16; h = (h * 0x85ebca6b) & 0xffffffff; h ^= h >> 13; h = (h * 0xc2b2ae35) & 0xffffffff; h ^= h >> 16
+    return (h & 0xffffff) / 0xffffff
 
 
 # ---------------------------------------------------------------- 아스팔트
@@ -298,14 +308,14 @@ def gutter_overlay(t, side, extent=None):
 # 이음은 몸보다 한 단계만 어둡게(S2), 위·왼쪽 1px 모서리 한 단계 밝게(S4), 몸은 시안 보도 중간값(S3).
 # 칸 경계에 걸치는 둘째 줄 판(x 8..23)은 늘 바탕 톤 → 칸 사이에서 판이 끊기지 않는다.
 def _sw_body(var):
-    """첫째 줄 판(칸 안 판 하나) 몸 톤. 대부분 바탕, var5 만 반 단계 밝음(섞으면 판의 ~12%), var2 는 닳은 판(어둠)."""
-    return {5: SW_TONES[1], 2: SW_TONES[-2]}.get(var, SW_BASE)
+    """첫째 줄 판(칸 안 판 하나) 몸 톤. 대부분 바탕, var1 은 둘째 톤(한 끗 어둠), var2 는 닳은 판(드묾)."""
+    return {1: SW_ALT, 2: SW_TONES[-2]}.get(var, SW_BASE)
 
 
 def sidewalk(var=0):
     """보도 판석 16×8 러닝 본드. 첫째 줄(y0..7) 판은 칸 너비 그대로(이음 x15), 둘째 줄(y8..15)은 8px 엇갈려 이음 x7.
-    판: 위 줄·왼쪽 열 1px 한 단계 밝게, 이음 1px 한 단계 어둡게. 면에 아주 옅은 알갱이 몇 개.
-    var 0 바탕 · 1 바탕(알갱이 배치 2) · 2 닳은 판 하나 · 3 금 간 판 · 4 껌 자국 · 5 밝은 판 하나 · 6 바탕(알갱이 배치 3)."""
+    판: 위 줄 1px 밝은 테, 왼쪽 1px 조금 밝게, 이음(아래·오른쪽) 1px S1. 칸 경계에 걸친 둘째 줄 판은 늘 바탕 톤.
+    var 0 바탕 · 1 둘째 톤 판 하나 · 2 닳은 판 하나 · 3 금 간 판 · 4 껌 자국 · 5 바탕(알갱이 배치 2) · 6 바탕(알갱이 배치 3)."""
     t = new(SW_BASE)
     for course in (0, 1):
         y0 = course * 8
@@ -317,27 +327,31 @@ def sidewalk(var=0):
             for x in range(T):
                 if yy == 7 or x == jx:
                     c = SW_JOINT
-                elif yy == 0 or x == lx:
+                elif yy == 0:
                     c = SW_LIT if body == SW_BASE else lit(body, 2)
+                elif x == lx:
+                    c = SW_LIT_W if body == SW_BASE else lit(body, 1)
                 else:
                     c = body
                 t[y][x] = c
+        if body != SW_BASE or course == 1:
+            pass
     r = random.Random(300 + var)
-    for _ in range(4):            # 알갱이: 반 단계만(아주 옅게)
+    for _ in range(5):            # 알갱이: 반 단계만(아주 옅게)
         x, y = 1 + r.randrange(13), 1 + r.randrange(14)
         if y % 8 in (0, 7) or x in (7, 8, 15, 0):
             continue
-        t[y][x] = lit(t[y][x], 1 if r.random() < 0.5 else -1)
+        t[y][x] = lit(t[y][x], 1 if r.random() < 0.4 else -1)
     if var == 3:   # 금 간 판
         for x, y in [(3, 3), (4, 4), (5, 4), (6, 5)]:
-            t[y][x] = SW_JOINT
+            t[y][x] = S[2]
     if var == 4:   # 껌 자국
         for x, y in [(4, 10), (11, 3)]:
             t[y][x] = S[2]
     return t
 
 
-SIDEWALK_VARIANTS = {0: '바탕', 1: '바탕(알갱이 배치 2)', 2: '닳은 판 하나', 3: '금 간 판', 4: '껌 자국', 5: '밝은 판 하나', 6: '바탕(알갱이 배치 3)'}
+SIDEWALK_VARIANTS = {0: '바탕', 1: '둘째 톤 판 하나', 2: '닳은 판 하나', 3: '금 간 판', 4: '껌 자국', 5: '바탕(알갱이 배치 2)', 6: '바탕(알갱이 배치 3)'}
 
 
 def tactile():
@@ -439,37 +453,54 @@ def curb(kind, var=0):
 
 
 # ---------------------------------------------------------------- 잔디
-GRASS_VARIANTS = {0: '바탕', 1: '바탕(덩이 배치 2)', 2: '큰 그늘 덩이', 3: '맨땅 조금', 4: '토끼풀 꽃', 5: '볕 든 자리', 6: '볕 든 자리 둘'}
+GRASS_VARIANTS = {0: '바탕', 1: '바탕(잔점 배치 2)', 2: '큰 그늘 덩이', 3: '맨땅 조금', 4: '토끼풀 꽃', 5: '흐린 볕 자리', 6: '흐린 볕 자리 둘'}
 
 
 def grass(var=0):
     t = new(G[3])
     # r2: 칸마다 같은 자리에 덩이가 있으면 격자(마름모)로 반복돼 보인다 → 바탕 칸(0)은 덩이 없음, 나머지도 크기·자리를 흩는다.
-    blobs = {0: [], 1: [(11, 9, 2.2)], 2: [(8, 8, 5.0), (2, 2, 2.0)], 3: [(13, 13, 2.4)], 5: [], 6: [(3, 13, 1.8)]}.get(var, [])
-    lights = {0: [], 1: [], 5: [(9, 4, 2.6)], 6: [(5, 7, 3.0)], 3: [(3, 3, 2.6)]}.get(var, [])
+    # r3: 흔한 칸(0·1·5·6)의 작은 덩이(반지름 2–3)가 1배에서 마름모 격자로 보였다 → 흔한 칸엔 덩이 없음, 볕 든 자리는
+    #     반지름 5–6 의 «흐린 잔점 밀도»로만(가운데일수록 밝은 화소가 많을 뿐 테두리 모양이 없다).
+    blobs = {2: [(8, 8, 5.0)], 3: [(13, 13, 2.4)]}.get(var, [])
+    lights = {5: [(9, 6, 7.5)], 6: [(5, 9, 7.0)], 3: [(3, 3, 2.6)]}.get(var, [])
     for bx, by, rad in lights:
         for y in range(T):
             for x in range(T):
                 dx = min(abs(x - bx), T - abs(x - bx)); dy = min(abs(y - by), T - abs(y - by))
                 d = (dx * dx + dy * dy) ** 0.5
-                if d < rad - 1 or (d < rad + 0.5 and h01('gl', var, x, y) < 0.45):   # 가장자리 흩뿌림(체크 디더 대신 → 마름모 반복이 덜 보인다)
-                    t[y][x] = G[4]
+                if hmix('gl', var, x, y) < max(0.0, 1 - d / rad) * 0.55:   # 가운데 짙고 가장자리로 갈수록 드문 잔점 → 모양이 없다
+                    t[y][x] = tuple((u + v) // 2 for u, v in zip(G[3], G[4]))
     for bx, by, rad in blobs:
         for y in range(T):
             for x in range(T):
                 dx = min(abs(x - bx), T - abs(x - bx)); dy = min(abs(y - by), T - abs(y - by))
                 d = (dx * dx + dy * dy) ** 0.5
-                if d < rad * 0.7 or (d < rad and h01('gb', var, x, y) < 0.5):
+                if hmix('gb', var, x, y) < max(0.0, 1 - d / rad) * 0.9:
                     t[y][x] = G[2]
-    for x, y, k in jitter_points(600 + var, cell=4, prob=0.28):   # r2: 잎끝 밀도를 낮춰 차분하게
+    # r3(감독 VQA): 4px 칸 격자에 잎끝을 하나씩 두면 1배에서 사선·격자 반복이 보였다 → 버들항 잔디처럼 화소마다 해시로 고른
+    # 가까운 두 톤 잔점(격자 없음) + 칸마다 자리를 흩은 잎끝 몇 개(칸 격자 아님).
+    def mixc(p, q):
+        return tuple((u + v) // 2 for u, v in zip(p, q))
+    for y in range(T):
+        for x in range(T):
+            base = t[y][x]
+            w = hmix('gs', var, x, y)
+            if base == G[3]:
+                t[y][x] = mixc(G[2], G[3]) if w < 0.13 else mixc(G[3], G[4]) if w < 0.25 else base
+            elif base == G[2]:
+                t[y][x] = mixc(G[1], G[2]) if w < 0.12 else mixc(G[2], G[3]) if w < 0.22 else base
+            elif base == G[4]:
+                t[y][x] = mixc(G[3], G[4]) if w < 0.15 else mixc(G[4], G[5]) if w < 0.24 else base
+    r = random.Random(600 + var)
+    for _ in range(2 + var % 2):
+        x, y, k = r.randrange(T), r.randrange(T), r.random()
         base = t[y % T][x % T]
-        dark = base == G[2]
-        lit_ = base == G[4]
-        tip = G[3] if dark else (G[5] if lit_ and k > 0.6 else G[4])   # 밝은 잎끝(G5)은 볕 든 자리에서만, 드물게
-        if k < 0.5:
-            put(t, x, y, tip); put(t, x - 1, y + 1, tip); put(t, x + 1, y + 1, tip); put(t, x, y + 1, G[1] if dark else (G[3] if lit_ else G[2]))
-        else:
-            put(t, x, y, tip); put(t, x, y + 1, G[1] if dark else (G[3] if lit_ else G[2]))
+        dark = base in (G[2], mixc(G[1], G[2]))
+        lit_ = base in (G[4], mixc(G[4], G[5]))
+        tip = G[3] if dark else (G[5] if lit_ and k > 0.6 else G[4])
+        put(t, x, y, tip); put(t, x, y + 1, mixc(G[1], G[2]) if dark else (G[3] if lit_ else mixc(G[2], G[3])))
+        if k < 0.35:
+            put(t, x + 1, y + 1, tip)
     if var == 4:   # 토끼풀 꽃 — 두 송이, 대비를 낮춘 연녹백
         for x, y in [(3, 4), (12, 11)]:
             put(t, x, y, CLOVER); put(t, x, y + 1, G[2])

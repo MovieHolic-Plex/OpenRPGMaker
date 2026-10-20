@@ -65,11 +65,21 @@ class Map:
                         self.bld.add(i)
         return k
 
-    def dress(self, kid, x, y):
-        for dx, dy, t in K[kid].get('ai', {}).get('dress', []):
-            X, Y = x + dx, y + dy
-            if 0 <= X < self.W and 0 <= Y < self.H and self.i(X, Y) not in self.bld:
-                self.L2[self.i(X, Y)] = t
+    def dress(self, kid, x, y, foot=None):
+        """foot=None 이면 그림자 다음 발 순서로 둘 다. 여러 건물이면 dress_all 로(구성기 finishGround 와 같은 두 번 깔기)."""
+        k = K[kid]
+        for want in ((False, True) if foot is None else (foot,)):
+            for dx, dy, t in k.get('ai', {}).get('dress', []):
+                if (dy == k['height'] and dx < k['width']) != want:
+                    continue
+                X, Y = x + dx, y + dy
+                if 0 <= X < self.W and 0 <= Y < self.H and self.i(X, Y) not in self.bld:
+                    self.L2[self.i(X, Y)] = t
+
+    def dress_all(self, places):
+        for foot in (False, True):
+            for kid, x, y in places:
+                self.dress(kid, x, y, foot)
 
     def obj(self):
         return dict(id=self.id, name=self.name, width=self.W, height=self.H, tilesetId='modern_city', tileSize=16,
@@ -160,8 +170,7 @@ def ground_scene():
     # 시안처럼 점자 블록은 그대로
     for c in cross:
         m.L[m.i(c, 9)] = GR['mc:tactile'][0]
-    for kid, x, y in places:
-        m.dress(kid, x, y)
+    m.dress_all(places)
     return m
 
 
@@ -175,8 +184,7 @@ def outline_scene():
     blds = [('mc-bld-house-modern-C', 1, 4), ('mc-bld-low3-A', 7, 2), ('mc-bld-cafe-A', 14, 4)]
     for kid, x, y in blds:
         m.stamp(kid, x, y)
-    for kid, x, y in blds:
-        m.dress(kid, x, y)
+    m.dress_all(blds)
     trees = [('mc-prop-street-tree-pit-a', 6, 8), ('mc-prop-street-tree-pit-b', 13, 8), ('mc-prop-keyaki-pit-b', 20, 6), ('mc-prop-street-tree-pit-a', 24, 8)]
     props = [('mc-prop-bench-a', 2, 11), ('mc-prop-stall-a', 10, 10), ('mc-prop-bench-a', 17, 11), ('mc-prop-vending-a', 19, 10), ('mc-veh-sedan-a-red', 9, 12)]
     for kid, x, y in trees + props:

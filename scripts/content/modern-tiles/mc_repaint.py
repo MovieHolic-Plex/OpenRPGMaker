@@ -141,7 +141,7 @@ OVERLAY_MARKED = list(range(25, 49))     # 겹층 표시 칸(투명 바탕): 중
 
 def ground_direct(orig):
     """번호 → (16×16 목록 그림, 설명). 표시가 구워진 도로 칸은 옛 표시 모양 그대로 새 아스팔트·페인트로."""
-    d = {1: (G.asphalt(0), '아스팔트'), 2: (G.asphalt(5), '아스팔트(결 배치 2)'), 7: (G.sidewalk(0), '보도'), 8: (G.sidewalk(1), '보도(톤 배치 2)'),
+    d = {1: (G.asphalt(0), '아스팔트'), 2: (G.asphalt(5), '아스팔트(결 배치 2)'), 7: (G.sidewalk(0), '보도'), 8: (G.sidewalk(1), '보도(둘째 톤 판)'),
          17: (G.grass(0), '잔디'), 18: (G.grass(1), '잔디(덩이 배치 2)')}
     for t, k in CURB_KIND.items():
         d[t] = (G.curb(k, 0), f'연석 {k}')
@@ -198,14 +198,19 @@ def main(dry=False, gate_only=False):
         처음 slot 을 쓰는 판에서는 지금 정의의 같은 묶음·순번 번호를 물려받는다(옛 내용 열쇠에서 옮김)."""
         k = ('slot:' + slot) if slot else key_of(img, str(src) + key_extra)
         if k not in app_ids:
+            taken = set(app_ids.values())
             tid = prev_app.get(k)
-            if tid is None and slot and legacy is not None and legacy >= base_count:
+            if tid in taken:
+                tid = None
+            if tid is None and slot and legacy is not None and legacy >= base_count and legacy not in taken:
                 tid = legacy
             if tid is None and slot and '#' in slot:
                 gid, i = slot.rsplit('#', 1)
                 lg = legacy_groups.get(gid) or []
                 if int(i) < len(lg) and lg[int(i)] >= base_count:
                     tid = lg[int(i)]
+            if tid is not None and tid in taken:
+                tid = None
             if tid is None:
                 tid = next_id[0]; next_id[0] += 1
             app_ids[k] = tid
@@ -221,6 +226,7 @@ def main(dry=False, gate_only=False):
         repaint[t] = (im, why)
     DIRECT = set(repaint)
 
+    cur_rows0 = {k['id']: k['rows'] for k in data['structureKits']}   # 지금 정의(지난 판 번호) — 자리 이름 첫 판 물려받기용
     # ---- 2. 키트 새 그림(자리마다)
     want = collections.defaultdict(list)      # id -> [(kid, r, c, layer, img or None)]
     roof_info = {}
@@ -257,14 +263,23 @@ def main(dry=False, gate_only=False):
         for kid, r, c, ly, im in want[t]:
             kk = okey if im is None else key_of(im)
             groups.setdefault(kk, dict(img=im if im is not None else orig.cell(t), uses=[]))['uses'].append((kid, r, c, ly))
-        best = max(groups, key=lambda kk: (len(groups[kk]['uses']), kk != okey, kk))
+        # 동률이면 지난 판에 이 번호를 제자리로 쓰던 무리가 이긴다(r3) — 그림을 고칠 때마다 이긴 무리가 바뀌어 번호가 출렁이지 않게
+        def held(kk):
+            return any(kid in cur_rows0 and cur_rows0[kid][r][ly][c] == t for kid, r, c, ly in groups[kk]['uses'])
+        best = max(groups, key=lambda kk: (len(groups[kk]['uses']), held(kk), kk != okey, kk))
         if best != okey:
             repaint[t] = (groups[best]['img'], 'kit')
             stats['kit_inplace'] += 1
         for kk, g in groups.items():
             if kk == best:
                 continue
-            nid = append(g['img'], t, (tmeta[t] or {}).get('label', ''), 'kit-copy' if kk == okey else 'kit', key_extra='')
+            if kk == okey:
+                nid = append(g['img'], t, (tmeta[t] or {}).get('label', ''), 'kit-copy', key_extra='')
+            else:   # r3: 새 그림 무리는 «자리 이름»(그 무리의 가장 앞 자리)으로 번호를 잇는다 → 지붕을 다시 그려도 번호가 그대로
+                ukid, ur, uc, uly = min(g['uses'])
+                taken = set(app_ids.values())
+                leg = next((v for v in (cur_rows0[a][b][d][e] for a, b, e, d in sorted(g['uses'])) if v >= base_count and v not in taken), None)
+                nid = append(g['img'], t, (tmeta[t] or {}).get('label', ''), 'kit', slot=f'kit:{t}:{ukid}:{ur}:{uc}:{uly}', legacy=leg)
             stats['kit_appended_uses'] += len(g['uses'])
             for kid, r, c, ly in g['uses']:
                 repoint[kid].append((r, ly, c, nid))
@@ -321,12 +336,15 @@ def main(dry=False, gate_only=False):
     dress_ids = [57, 58, 59, e_top]
     for kid in sorted(k for k in scope if k.startswith('mc-bld-')):
         k = K[kid]; w, h = k['width'], k['height']
-        cells = AD.plinth_row(newimg[kid])
-        if cells is None:
+        res = AD.plinth_row(newimg[kid], with_sig=True)
+        if res is None:
             continue
+        cells, sigs = res
+        prev_d = {(e[0], e[1]): e[2] for e in (k.get('ai') or {}).get('dress') or []}
         lst = []
-        for c, cell in enumerate(cells):
-            nid = append(cell, 58, '건물 기초·접촉선·남쪽 그늘(2층)', 'mc:dress'); lst.append([c, h, nid]); dress_ids.append(nid)
+        for c, cell in enumerate(cells):   # r3: 입력(밑변 벽/문 열·끝 자리) 서명으로 번호를 잇는다 → 기초 그림을 고쳐도 번호가 그대로
+            nid = append(cell, 58, '건물 기초·접촉선·남쪽 그늘(2층)', 'mc:dress', slot='dress:' + sigs[c], legacy=prev_d.get((c, h)))
+            lst.append([c, h, nid]); dress_ids.append(nid)
         r0 = max(1, math.ceil(h * 0.35))
         for r in range(r0, h):
             lst.append([w, r, e_top if r == r0 else 57])
@@ -425,8 +443,8 @@ def main(dry=False, gate_only=False):
     pit_ids = {k['id'] for k in pit_kits}
     data['structureKits'] = [k for k in data['structureKits'] if k['id'] not in pit_ids] + pit_kits
     GNAME = {'mc:asphalt': ('아스팔트 변형', 'terrain', 'lower', '앞 다섯(바탕 둘·바퀴 자국 결·결 배치 둘)을 칸 해시로 섞고, 뒤 셋(덧씌운 보수 판·실링 균열·기름 얼룩)은 드물게(5%).'),
-             'mc:paving': ('보도 블록(8×4 러닝 본드) 변형', 'terrain', 'lower', '보도 바탕 2 + 톤 배치 2 + 닳은 블록·금 간 블록·껌 자국(드물게). 칸 해시로 섞는다.'),
-             'mc:grass': ('잔디(청록) 변형', 'terrain', 'lower', '잔디 바탕 2 + 볕 든 자리 2 + 큰 그늘 덩이·맨땅·토끼풀(드물게).'),
+             'mc:paving': ('보도 판석(16×8 러닝 본드) 변형', 'terrain', 'lower', '보도 바탕 + 둘째 톤 판 + 알갱이 배치 2(앞 넷 흔함) + 닳은 판·금 간 판·껌 자국(드물게). 칸 해시로 섞는다.'),
+             'mc:grass': ('잔디(청록) 변형', 'terrain', 'lower', '잔디 바탕 2 + 흐린 볕 자리 2(화소 잔점, 칸 격자 반복 없음) + 큰 그늘 덩이·맨땅·토끼풀(드물게).'),
              'mc:grass-edge-s': ('잔디 끝 경계석(남쪽이 보도)', 'terrain', 'lower', '잔디 칸, 바로 아래가 보도일 때. 경계석 윗면·앞면 + 넘어온 잎끝.'),
              'mc:paving-under-grass': ('보도(북쪽 잔디 경계석 그늘)', 'terrain', 'lower', '보도 칸, 바로 위가 잔디(경계석)일 때.'),
              'mc:grass-edge-n': ('잔디 끝 경계석(북쪽이 보도)', 'terrain', 'lower', '잔디 칸, 바로 위가 보도일 때.'),

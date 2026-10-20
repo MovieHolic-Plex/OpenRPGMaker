@@ -76,8 +76,12 @@ def wall_mask(kit_img):
     return [bool(B[h - 1, x, 3]) and (not B[r, x, 3] or tuple(B[r, x, :3]) in wallc) for x in range(w)], [bool(B[h - 1, x, 3]) for x in range(w)]
 
 
-def plinth_row(kit_img):
-    """접근칸 줄 오버레이 칸들(왼쪽 → 오른쪽, 키트 폭 칸 수). 기초 3px + 접촉선 + 남쪽 그늘(왼쪽 끝 3px 는 비움)."""
+def plinth_row(kit_img, with_sig=False):
+    """접근칸 줄 오버레이 칸들(왼쪽 → 오른쪽, 키트 폭 칸 수). 기초 3px + 접촉선 + 접촉 그늘 + 남쪽 그늘.
+    r3(감독 VQA 2026-10-20): 이웃 건물과 붙으면 동쪽 그림자가 숨어 건물 발이 떠 보였다 → 기초 바로 아래 접촉 그늘 2줄을
+    건물 폭 전체(왼쪽 끝 포함)에 진하게 깔고, 그 아래 드리운 그늘은 오른쪽으로 3px 밀린 채 둔다.
+    with_sig=True 면 (칸들, 칸마다 입력 서명) — 서명은 이 칸 그림을 정하는 입력(벽/문 열·끝 자리)의 해시라 번호 잇기에 쓴다."""
+    import hashlib
     wall, opq = wall_mask(kit_img)
     w = len(wall)
     xs = [x for x in range(w) if opq[x]]
@@ -88,9 +92,9 @@ def plinth_row(kit_img):
 
     def setc(x, y, c, al=255):
         row[y, x, :3] = c; row[y, x, 3] = al
-    for x in range(w):            # 그늘(기초 아래 3줄) — 오른쪽으로 3px 밀린 그림자
+    for x in range(w):            # 드리운 그늘(접촉 그늘 아래 2줄) — 오른쪽으로 3px 밀린 그림자
         if x >= x0 + 3:
-            for y, al in ((3, 104), (4, 74), (5, 52)):
+            for y, al in ((5, 82), (6, 54)):
                 setc(x, y, SH, al)
     for x in range(x0, x1 + 1):
         end = x in (x0, x1)
@@ -98,9 +102,18 @@ def plinth_row(kit_img):
         setc(x, 0, STONE[3] if end else (STONE[0] if iswall else THRESH))
         setc(x, 1, STONE[3] if end else (STONE[3] if (iswall and (x - x0) % 8 == 5) else STONE[1] if iswall else STONE[0]))
         setc(x, 2, STONE[3])
-        if row[3, x, 3] < 120:
-            setc(x, 3, SH, 120)
-    return [Image.fromarray(np.ascontiguousarray(row[:, c * T:(c + 1) * T]), 'RGBA') for c in range(w // T)]
+        setc(x, 3, SH, 150)       # 접촉 그늘(건물 발 바로 아래, 건물 폭 전체)
+        setc(x, 4, SH, 112)
+    if x1 + 1 < w:                # 오른쪽 끝을 1px 넘겨 그림자 꺾임
+        setc(x1 + 1, 3, SH, 112); setc(x1 + 1, 4, SH, 82)
+    cells = [Image.fromarray(np.ascontiguousarray(row[:, c * T:(c + 1) * T]), 'RGBA') for c in range(w // T)]
+    if not with_sig:
+        return cells
+    sigs = []
+    for c in range(w // T):
+        sig = [(bool(wall[x]), bool(opq[x]), x == x0, x == x1, x >= x0 + 3, (x - x0) % 8 == 5, x == x1 + 1) for x in range(c * T, (c + 1) * T)]
+        sigs.append(hashlib.sha1(repr(sig).encode()).hexdigest()[:20])
+    return cells, sigs
 
 
 def restyle_prop_shadow(cell):

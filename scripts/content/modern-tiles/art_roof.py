@@ -169,6 +169,67 @@ def detect_ramp(arr):
     return best if bn >= 300 else None
 
 
+def _mix(a, b):
+    return tuple((x + y) // 2 for x, y in zip(a, b))
+
+
+# 옥상 설비 r3 — 옛 설비는 남색 거의 검정 윤곽(9,17,37)이라 지붕 위에 떠 보였다. 윤곽을 지붕·파라펫과 같은 계열의 어두운 슬레이트로,
+# 회색 설비 덩이는 윗면 3px 를 밝게(위 테 다음 줄 가장 밝게) + 윗면/앞면 경계 한 줄, 지붕에는 오른쪽 아래로 2px 드리운 그림자.
+EQ_OUTLINE = (40, 46, 56)                                   # 어두운 슬레이트(P0 와 같은 명도, 조금 푸른 쪽)
+EQ_GREYS = {(103, 106, 119), (117, 120, 134), (132, 135, 148), (148, 150, 161), (161, 163, 172), (175, 177, 184), (188, 189, 195),
+            (193, 207, 204), (228, 233, 232), (241, 243, 243), (161, 178, 174), (115, 144, 138)}
+EQ_TOP = ((214, 216, 220), (198, 200, 206), (188, 189, 195))
+EQ_EDGE = (132, 135, 148)
+
+
+def _is_navy(c):
+    r, g, b = c
+    return max(r, g, b) < 48 and b >= r + 12
+
+
+def restyle_equipment(out, E, R, rect, top_y):
+    rx0, ry0, rx1, ry1 = rect
+    H, W = E.shape
+    navy = np.zeros_like(E)
+    for y, x in zip(*np.nonzero(E)):
+        if _is_navy(tuple(int(v) for v in out[y, x, :3])):
+            navy[y, x] = True
+    out[navy, 0], out[navy, 1], out[navy, 2] = EQ_OUTLINE
+    lab, n = ndimage.label(E)
+    roofm = np.zeros_like(E)
+    roofm[max(ry0, top_y):ry1 - 3, rx0 + 3:rx1 - 3] = True
+    for i in range(1, n + 1):
+        M = lab == i
+        ys, xs = np.nonzero(M)
+        cols = [tuple(int(v) for v in out[y, x, :3]) for y, x in zip(ys, xs)]
+        grey = sum(1 for c in cols if c in EQ_GREYS or c == EQ_OUTLINE) / max(1, len(cols))
+        if grey < 0.7 or len(ys) < 12:
+            continue
+        for x in range(xs.min(), xs.max() + 1):     # 열마다 맨 위 윤곽 다음 3px = 윗면, 그다음 1px = 윗면 모서리
+            col = np.nonzero(M[:, x])[0]
+            if not len(col):
+                continue
+            y0 = col.min()
+            if tuple(int(v) for v in out[y0, x, :3]) != EQ_OUTLINE:
+                continue
+            k = 0
+            for y in range(y0 + 1, min(H, y0 + 5)):
+                if not M[y, x]:
+                    break
+                c = tuple(int(v) for v in out[y, x, :3])
+                if c == EQ_OUTLINE:
+                    break
+                if c in EQ_GREYS:
+                    out[y, x, :3] = EQ_TOP[k] if k < 3 else EQ_EDGE
+                k += 1
+        sh = np.zeros_like(M)                        # 드리운 그림자(빛 왼쪽 위 → 오른쪽 아래 2px)
+        for dx, dy in ((1, 1), (2, 2), (1, 2), (2, 1), (0, 2)):
+            sh[dy:, dx:] |= M[:H - dy, :W - dx]
+        sh &= ~E & roofm
+        for y, x in zip(*np.nonzero(sh)):
+            out[y, x, :3] = _darken(tuple(int(v) for v in out[y, x, :3]), 2, R)
+
+
 def _mode(vals):
     vals = [tuple(v) for v in vals]
     return max(set(vals), key=vals.count) if vals else None
@@ -269,15 +330,23 @@ def reroof(img, stem, ramp_name=None):
 
     def get(x, y):
         return tuple(int(v) for v in out[y, x, :3])
-    # 파라펫 그늘(북쪽 안쪽 면 아래 2줄, 서쪽 안쪽 1줄 옆 2줄)
+    # 파라펫 r3(감독 VQA 2026-10-20: 평면도처럼 읽힘) — 북쪽 파라펫: 윤곽 1 + 밝은 두겁 2 + «그늘진 안쪽 면» 4(남향 세로 면,
+    # 지붕보다 어둡다, 16px 마다 패널 이음) + 지붕 위 그늘 2줄. 서쪽 안쪽 면 1px 그늘(P1) + 지붕 그늘 2열, 동쪽 안쪽 면 1px 밝게(P4).
+    # → 지붕이 파라펫보다 «한 단 낮게 파인 3/4 면»으로 읽힌다.
+    NF = 7   # 북쪽 파라펫 줄 수(윤곽·두겁 2·안쪽 면 4)
     for xx in range(bx0, bx1 + 1):
-        setc(xx, by0 + 6, _darken(get(xx, by0 + 6), 2, R)); setc(xx, by0 + 7, _darken(get(xx, by0 + 7), 1, R))
-    for yy in range(by0 + 6, by1 - 5):
+        setc(xx, by0 + NF, _darken(get(xx, by0 + NF), 2, R)); setc(xx, by0 + NF + 1, _darken(get(xx, by0 + NF + 1), 1, R))
+    for yy in range(by0 + NF, by1 - 5):
         setc(bx0 + 4, yy, _darken(get(bx0 + 4, yy), 2, R)); setc(bx0 + 5, yy, _darken(get(bx0 + 5, yy), 1, R))
+    FACE = (P[2], P[1], P[1], P[1])
     for xx in range(bx0, bx1 + 1):
         setc(xx, by1 - 5, R[1])
-        for k, c in enumerate((P[0], P[6], P[5], P[3], P[2], P[1])):
+        for k, c in enumerate((P[0], P[6], P[5]) + FACE):
             setc(xx, by0 + k, c)
+        if xx % T == 8 and bx0 + 4 < xx < bx1 - 4:        # 안쪽 면 패널 이음(어둡게)
+            for yy in (by0 + 4, by0 + 5):
+                setc(xx, yy, P[0])
+        setc(xx, by0 + NF - 1, _mix(P[1], P[0]))          # 안쪽 면 밑 = 지붕과 닿는 선
         for k, c in enumerate((P[6], P[5], P[3], P[2], P[0])):
             setc(xx, by1 - 4 + k, c)
     for xx in range(bx0, bx1 + 1):
@@ -288,8 +357,10 @@ def reroof(img, stem, ramp_name=None):
         setc(bx0, yy, P[0]); setc(bx1, yy, P[0])
         if by0 + 3 <= yy <= by1 - 5:
             setc(bx0 + 1, yy, P[5]); setc(bx0 + 2, yy, P[4]); setc(bx1 - 1, yy, P[4]); setc(bx1 - 2, yy, P[5])
-        if by0 + 6 <= yy <= by1 - 6:
-            setc(bx0 + 3, yy, P[2]); setc(bx1 - 3, yy, P[3])
+        if by0 + NF <= yy <= by1 - 6:
+            setc(bx0 + 3, yy, P[1]); setc(bx1 - 3, yy, P[4])
+    for yy in range(by0 + 3, by0 + NF):                   # 서·동 두겁 안쪽 모서리: 안쪽 면과 만나는 곳
+        setc(bx0 + 3, yy, P[1] if yy < by0 + NF - 1 else _mix(P[1], P[0])); setc(bx1 - 3, yy, P[2])
     setc(bx0 + 1, by0 + 1, P[6]); setc(bx0 + 1, by0 + 2, P[5])
     for yy in (by1 - 2, by1 - 1):
         setc(bx0 + 1, yy, P[4]); setc(bx1 - 1, yy, P[1])
@@ -307,6 +378,7 @@ def reroof(img, stem, ramp_name=None):
             elif i > 2 and near1[yy, xx]:
                 setc(xx, yy, R[i + 1] if i + 1 < len(R) else R[-1])
     out[E] = arr[E]
+    restyle_equipment(out, E, R, (rx0, ry0, rx1, ry1), by0 + NF + 1)
     info = dict(box=[int(bx0), int(by0), int(bx1), int(by1)], rect=[int(v) for v in rect], eave=int(by1 + 1), mat=mat, ramp=ramp_name, equipment_px=int(E.sum()))
     return Image.fromarray(out, 'RGBA'), info
 

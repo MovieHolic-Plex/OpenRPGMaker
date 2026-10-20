@@ -139,11 +139,17 @@ function finishGround(b: Board): number[] {
     else if (grassSet.has(t) && paveSet.has(n)) b.lower[i] = edgeN[Math.floor(cellHash(x, y, 42) * edgeN.length)]!;
     else if (paveSet.has(t) && grassSet.has(n)) b.lower[i] = underG[Math.floor(cellHash(x, y, 43) * underG.length)]!;
   }
-  for (const d of b.buildings) {
-    for (const [dx, dy, t] of b.pal.kit(d.kit)?.dress ?? []) {
-      const X = d.rect.x + dx, Y = d.rect.y + dy;
-      if (!b.in(X, Y) || b.use[b.k(X, Y)] === "bld") continue;
-      lower2[b.k(X, Y)] = t;
+  // 두 번 깐다: 먼저 동쪽·모서리 그림자, 다음에 건물 발(기초·접촉 그늘, dy = 키트 높이 · dx < 키트 폭).
+  // 이웃 건물이 붙어 있으면 앞 건물의 동쪽 그림자 칸이 이웃의 발 칸과 겹치는데, 발이 이겨야 건물이 떠 보이지 않는다.
+  for (const foot of [false, true]) {
+    for (const d of b.buildings) {
+      const kit = b.pal.kit(d.kit);
+      for (const [dx, dy, t] of kit?.dress ?? []) {
+        if ((dy === kit!.height && dx < kit!.width) !== foot) continue;
+        const X = d.rect.x + dx, Y = d.rect.y + dy;
+        if (!b.in(X, Y) || b.use[b.k(X, Y)] === "bld") continue;
+        lower2[b.k(X, Y)] = t;
+      }
     }
   }
   return lower2;
