@@ -137,6 +137,7 @@ export default {
         { id: "letter", note: "편지", ops: [{ kind: "pressUntilJs", key: "Enter", fn: "() => /처음으로 이름이 적힌/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 30, settleMs: 600 }, shotPause(900)], shot: true },
         { id: "c9", note: "마지막 선택", ops: [toChoice(), shotPause(500)], shot: true },
         { id: "confess", note: "고백", ops: [...pick(0), shotPause(1500)], shot: true },
+        { id: "peak", note: "고백 정점 — 10년 전 그림이 겹친다", ops: [{ kind: "pressUntilJs", key: "Enter", fn: `() => /${A ? "10년 늦은 답장이에요" : "그 금요일에도. 지금도"}/.test(document.querySelector("[data-testid='dialogue-box']")?.textContent ?? '')`, maxPresses: 20, settleMs: 700 }, shotPause(600)], shot: true },
         { id: `ending-${PATH.toLowerCase()}`, note: `엔딩 ${PATH}`, ops: [untilEnding, shotPause(2500)], shot: true },
       ]),
     { id: "ending-after", note: "엔딩 에필로그 뒤", ops: [{ kind: "key", key: "Enter" }, shotPause(2500), { kind: "key", key: "Enter" }, shotPause(2500)], shot: true },

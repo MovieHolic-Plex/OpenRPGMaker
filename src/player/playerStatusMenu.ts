@@ -602,6 +602,7 @@ function renderRelationshipOverview(project: PlayerStatusMenuOptions["project"],
       el("span", { class: "status-menu-rel-name", text: row.name }),
       el("span", { class: "status-menu-rel-hearts", text: row.hearts }),
       ...(row.tierLabel ? [el("span", { class: "status-menu-rel-tier", text: row.tierLabel })] : []),
+      ...(row.note ? [el("span", { class: "status-menu-rel-note", text: row.note })] : []),
     ],
   })));
   return overview;

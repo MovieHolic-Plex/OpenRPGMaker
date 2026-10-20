@@ -277,6 +277,8 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     ...emote("ev_fl_minho", "sweat"),
     ...say("minho", "happy", "아, 들켰다. 차민호예요! 지난주에 들어온 백엔드 신입. 동기라고 해도 되죠?"),
     ...say("seoha", "happy", "네, 그럼요. 반가워요."),
+    { kind: "changeFriendship", npcKey: "lead", delta: 60 } as Command,
+    { kind: "changeFriendship", npcKey: "minho", delta: 60 } as Command,
     ...say("lead", "base", "그리고 서하 씨 사수. 지후 씨, 잠깐 와 볼래요?"),
     walk("ev_fl_jihu_meet", path(jihuMeet, { x: o.elevatorOut.x - 1, y: o.elevatorOut.y - 1 }, true).slice(0, 3)),
     face("ev_fl_jihu_meet", "down"),
@@ -995,7 +997,9 @@ export function createFirstLoveFlagshipDemo(): FlagshipDemoBuildResult {
   buildTitleAndOpening(project, theme.resourceId);
 
   // 연애 게임의 ESC 메뉴 — 전투 능력치(상태·스킬·장비·돈) 없이 호감도·대화 기록·엔딩·저장(VQA 1차 MAJOR).
-  project.characters = { ...(project.characters ?? {}), [JIHU_KEY]: { displayName: "강지후" }, minho: { displayName: "차민호" }, lead: { displayName: "오정민 팀장" } };
+  project.characters = { ...(project.characters ?? {}), [JIHU_KEY]: { displayName: "강지후", note: "앱 개발 4년 차 선임, 그리고 내 사수. 10년 전, 금요일 점심 방송의 목소리." },
+    minho: { displayName: "차민호", note: "지난주에 들어온 백엔드 신입. 자칭 동기, 탕비실 간식 담당." },
+    lead: { displayName: "오정민 팀장", note: "프로덕트팀 팀장. 말은 부드럽지만, 보고는 정확해야 한다." } };
   project.meta.oprnFieldMenu = { version: 1, entries: [
     { command: "relationships", label: "호감도" }, { command: "backlog", label: "대화 기록" }, { command: "endings", label: "엔딩" },
     { command: "save", label: "저장" }, { command: "load", label: "불러오기" }, { command: "options", label: "설정" }, { command: "to-title", label: "타이틀로" },
