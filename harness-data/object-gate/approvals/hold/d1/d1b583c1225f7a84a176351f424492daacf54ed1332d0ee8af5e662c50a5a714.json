@@ -1,0 +1,14 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "d1b583c1225f7a84a176351f424492daacf54ed1332d0ee8af5e662c50a5a714",
+ "profileHash": "4d8774b517f41638",
+ "kind": "terrain",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-20T20:29:35.062Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [],
+ "note": "묶음 허용: 버들항 숲 짙은 풀 가장자리 93 (r9) — 사용자 위임·Opus 적대 VQA 통과 2026-10-21 — delegated by user to supervisor 2026-10-21; Opus 5.5 adversarial VQA receipt harness-data/object-gate/vqa/beodeul-dark-grass-r9.opus-vqa-r4.json",
+ "sig": "baaf3fa2e7716bfc470f63898c3a6950aa0d36e72ae101f9551e72ff945a6c32"
+}

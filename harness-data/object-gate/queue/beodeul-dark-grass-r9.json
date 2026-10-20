@@ -1,0 +1,567 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "beodeul-dark-grass-r9",
+ "title": "버들항 숲 짙은 풀 가장자리 93 (r9) — 사용자 위임·Opus 적대 VQA 통과 2026-10-21",
+ "note": "PR #3122 woodland r9. 짙은 풀은 2×2 덩이에서만 보이고 외딴 칸·한 칸 폭 띠는 바탕 잔디. 독립 Opus 적대 VQA r4 전부 통과(~/.cache/bdg-vqa/r4/receipt.json). r6 묶음은 1~3판 불합격으로 폐기.",
+ "createdAt": "2026-10-20T20:19:56.477Z",
+ "items": [
+  {
+   "sha": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-woodland-grass (칸 650)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-woodland-grass.png"
+  },
+  {
+   "sha": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-0 (칸 651)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-0.png"
+  },
+  {
+   "sha": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-1 (칸 652)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-1.png"
+  },
+  {
+   "sha": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-2 (칸 653)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-2.png"
+  },
+  {
+   "sha": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-3 (칸 654)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-3.png"
+  },
+  {
+   "sha": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-4 (칸 655)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-4.png"
+  },
+  {
+   "sha": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-5 (칸 656)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-5.png"
+  },
+  {
+   "sha": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-6 (칸 657)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-6.png"
+  },
+  {
+   "sha": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-7 (칸 658)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-7.png"
+  },
+  {
+   "sha": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-8 (칸 659)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-8.png"
+  },
+  {
+   "sha": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-9 (칸 660)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-9.png"
+  },
+  {
+   "sha": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-10 (칸 661)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-10.png"
+  },
+  {
+   "sha": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-11 (칸 662)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-11.png"
+  },
+  {
+   "sha": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-12 (칸 663)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-12.png"
+  },
+  {
+   "sha": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-13 (칸 664)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-13.png"
+  },
+  {
+   "sha": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-14 (칸 665)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-14.png"
+  },
+  {
+   "sha": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-15 (칸 666)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-15.png"
+  },
+  {
+   "sha": "7a47f1266587d1427e0db0e5af8976a8448778cd65652bcc0d0f8fee0541ef81",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-19 (칸 667)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-19.png"
+  },
+  {
+   "sha": "7a47f1266587d1427e0db0e5af8976a8448778cd65652bcc0d0f8fee0541ef81",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-23 (칸 668)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-23.png"
+  },
+  {
+   "sha": "7a47f1266587d1427e0db0e5af8976a8448778cd65652bcc0d0f8fee0541ef81",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-27 (칸 669)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-27.png"
+  },
+  {
+   "sha": "7a47f1266587d1427e0db0e5af8976a8448778cd65652bcc0d0f8fee0541ef81",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-31 (칸 670)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-31.png"
+  },
+  {
+   "sha": "3a4e261d1aee530387d5127dff9ba7631617dfc4be42ba4575bc05077e58e2f8",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-38 (칸 671)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-38.png"
+  },
+  {
+   "sha": "3a4e261d1aee530387d5127dff9ba7631617dfc4be42ba4575bc05077e58e2f8",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-39 (칸 672)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-39.png"
+  },
+  {
+   "sha": "3a4e261d1aee530387d5127dff9ba7631617dfc4be42ba4575bc05077e58e2f8",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-46 (칸 673)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-46.png"
+  },
+  {
+   "sha": "3a4e261d1aee530387d5127dff9ba7631617dfc4be42ba4575bc05077e58e2f8",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-47 (칸 674)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-47.png"
+  },
+  {
+   "sha": "20dc4b40365611c95c4dd54d069570e0225fdca82928be8e83c2d48910ad7951",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-55 (칸 675)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-55.png"
+  },
+  {
+   "sha": "20dc4b40365611c95c4dd54d069570e0225fdca82928be8e83c2d48910ad7951",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-63 (칸 676)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-63.png"
+  },
+  {
+   "sha": "b7329258af06f83143516ff34fa6116d48c6e2e17dc5c9ac61b1b4465bcccb34",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-76 (칸 677)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-76.png"
+  },
+  {
+   "sha": "b7329258af06f83143516ff34fa6116d48c6e2e17dc5c9ac61b1b4465bcccb34",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-77 (칸 678)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-77.png"
+  },
+  {
+   "sha": "b7329258af06f83143516ff34fa6116d48c6e2e17dc5c9ac61b1b4465bcccb34",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-78 (칸 679)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-78.png"
+  },
+  {
+   "sha": "b7329258af06f83143516ff34fa6116d48c6e2e17dc5c9ac61b1b4465bcccb34",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-79 (칸 680)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-79.png"
+  },
+  {
+   "sha": "26af468f0771e1a1c9d51e6961fd92fa77d3ab2694fc6393a7b98a7d7f1df157",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-95 (칸 681)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-95.png"
+  },
+  {
+   "sha": "93a9ef8e583ad4ccd650ecaf765bc69958db3230b48c2f75eadbdf7eade837d3",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-110 (칸 682)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-110.png"
+  },
+  {
+   "sha": "93a9ef8e583ad4ccd650ecaf765bc69958db3230b48c2f75eadbdf7eade837d3",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-111 (칸 683)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-111.png"
+  },
+  {
+   "sha": "23de0ea0ca88a8871354c1a99c8c0808d438b33bd0846669fc592b41d9f0969a",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-127 (칸 684)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-127.png"
+  },
+  {
+   "sha": "030b6c25b160e60b125204623aba7c4c2992bdf4c5d80074b8b7200cd001499c",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-137 (칸 685)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-137.png"
+  },
+  {
+   "sha": "030b6c25b160e60b125204623aba7c4c2992bdf4c5d80074b8b7200cd001499c",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-139 (칸 686)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-139.png"
+  },
+  {
+   "sha": "030b6c25b160e60b125204623aba7c4c2992bdf4c5d80074b8b7200cd001499c",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-141 (칸 687)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-141.png"
+  },
+  {
+   "sha": "030b6c25b160e60b125204623aba7c4c2992bdf4c5d80074b8b7200cd001499c",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-143 (칸 688)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-143.png"
+  },
+  {
+   "sha": "3c813a5ae59d342b54dbe684683e73655a018bb9dcb15f4139033b5cb321e4e5",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-155 (칸 689)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-155.png"
+  },
+  {
+   "sha": "3c813a5ae59d342b54dbe684683e73655a018bb9dcb15f4139033b5cb321e4e5",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-159 (칸 690)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-159.png"
+  },
+  {
+   "sha": "90cbb398a6bf7ea4178ef72214ce8b0a1653e3ca54c548c4e4f3827bb51bf3be",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-175 (칸 691)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-175.png"
+  },
+  {
+   "sha": "d1b583c1225f7a84a176351f424492daacf54ed1332d0ee8af5e662c50a5a714",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-191 (칸 692)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-191.png"
+  },
+  {
+   "sha": "034dcbf0a6c1edb2943e4cddc9aeb82e35ef082c481828d6d57cf03e0ee17ab6",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-205 (칸 693)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-205.png"
+  },
+  {
+   "sha": "034dcbf0a6c1edb2943e4cddc9aeb82e35ef082c481828d6d57cf03e0ee17ab6",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-207 (칸 694)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-207.png"
+  },
+  {
+   "sha": "bf7384cac4af8a29206de042776163250f21f8814cc1f14c570b0a232d0e20ba",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-223 (칸 695)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-223.png"
+  },
+  {
+   "sha": "cbfdda5dbd69889f8660d862dc4296bc90d0e809e6e92de060f174b5ed7eb50f",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-plain-239 (칸 696)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-plain-239.png"
+  },
+  {
+   "sha": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-0 (칸 697)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-0.png"
+  },
+  {
+   "sha": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-1 (칸 698)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-1.png"
+  },
+  {
+   "sha": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-2 (칸 699)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-2.png"
+  },
+  {
+   "sha": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-3 (칸 700)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-3.png"
+  },
+  {
+   "sha": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-4 (칸 701)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-4.png"
+  },
+  {
+   "sha": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-5 (칸 702)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-5.png"
+  },
+  {
+   "sha": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-6 (칸 703)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-6.png"
+  },
+  {
+   "sha": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-7 (칸 704)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-7.png"
+  },
+  {
+   "sha": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-8 (칸 705)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-8.png"
+  },
+  {
+   "sha": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-9 (칸 706)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-9.png"
+  },
+  {
+   "sha": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-10 (칸 707)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-10.png"
+  },
+  {
+   "sha": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-11 (칸 708)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-11.png"
+  },
+  {
+   "sha": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-12 (칸 709)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-12.png"
+  },
+  {
+   "sha": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-13 (칸 710)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-13.png"
+  },
+  {
+   "sha": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-14 (칸 711)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-14.png"
+  },
+  {
+   "sha": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-15 (칸 712)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-15.png"
+  },
+  {
+   "sha": "3fe14f54ef478d2be0f641b313d3d597a1326de3a6e0e4ff18d8706790e0b803",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-19 (칸 713)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-19.png"
+  },
+  {
+   "sha": "3fe14f54ef478d2be0f641b313d3d597a1326de3a6e0e4ff18d8706790e0b803",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-23 (칸 714)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-23.png"
+  },
+  {
+   "sha": "3fe14f54ef478d2be0f641b313d3d597a1326de3a6e0e4ff18d8706790e0b803",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-27 (칸 715)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-27.png"
+  },
+  {
+   "sha": "3fe14f54ef478d2be0f641b313d3d597a1326de3a6e0e4ff18d8706790e0b803",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-31 (칸 716)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-31.png"
+  },
+  {
+   "sha": "9d30a66e58651d905e3e622579ca540f6b20585f305f25dd7e1be9f9d33e09b7",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-38 (칸 717)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-38.png"
+  },
+  {
+   "sha": "9d30a66e58651d905e3e622579ca540f6b20585f305f25dd7e1be9f9d33e09b7",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-39 (칸 718)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-39.png"
+  },
+  {
+   "sha": "9d30a66e58651d905e3e622579ca540f6b20585f305f25dd7e1be9f9d33e09b7",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-46 (칸 719)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-46.png"
+  },
+  {
+   "sha": "9d30a66e58651d905e3e622579ca540f6b20585f305f25dd7e1be9f9d33e09b7",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-47 (칸 720)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-47.png"
+  },
+  {
+   "sha": "05cbc47efd383faae8a77879e0a1166e93621f9e1907f7c119f92d10e9ce1eea",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-55 (칸 721)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-55.png"
+  },
+  {
+   "sha": "05cbc47efd383faae8a77879e0a1166e93621f9e1907f7c119f92d10e9ce1eea",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-63 (칸 722)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-63.png"
+  },
+  {
+   "sha": "d18947d066c4d238a2255b01e559bc7c095da48ba441dfb96c6358f426dd5424",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-76 (칸 723)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-76.png"
+  },
+  {
+   "sha": "d18947d066c4d238a2255b01e559bc7c095da48ba441dfb96c6358f426dd5424",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-77 (칸 724)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-77.png"
+  },
+  {
+   "sha": "d18947d066c4d238a2255b01e559bc7c095da48ba441dfb96c6358f426dd5424",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-78 (칸 725)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-78.png"
+  },
+  {
+   "sha": "d18947d066c4d238a2255b01e559bc7c095da48ba441dfb96c6358f426dd5424",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-79 (칸 726)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-79.png"
+  },
+  {
+   "sha": "8c36eaebfaaee17de5fccd22b3edca127e198448266de04997cceebde600b973",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-95 (칸 727)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-95.png"
+  },
+  {
+   "sha": "93fb0c62da366080eb59a6e06e72989ae6319dc985bf27f5d6a9c9aab1d2d7f0",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-110 (칸 728)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-110.png"
+  },
+  {
+   "sha": "93fb0c62da366080eb59a6e06e72989ae6319dc985bf27f5d6a9c9aab1d2d7f0",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-111 (칸 729)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-111.png"
+  },
+  {
+   "sha": "3c9cc4525d209744614b62d1e875734a1559e0fff6d50b190b4a4ddd6791886b",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-127 (칸 730)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-127.png"
+  },
+  {
+   "sha": "d947ac07180f4ee4665053ffd7f1b198c00b2f7f3b13920592163d9864c25b9f",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-137 (칸 731)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-137.png"
+  },
+  {
+   "sha": "d947ac07180f4ee4665053ffd7f1b198c00b2f7f3b13920592163d9864c25b9f",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-139 (칸 732)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-139.png"
+  },
+  {
+   "sha": "d947ac07180f4ee4665053ffd7f1b198c00b2f7f3b13920592163d9864c25b9f",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-141 (칸 733)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-141.png"
+  },
+  {
+   "sha": "d947ac07180f4ee4665053ffd7f1b198c00b2f7f3b13920592163d9864c25b9f",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-143 (칸 734)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-143.png"
+  },
+  {
+   "sha": "7b58d50ea6af25f3791462cf198df13fbb7850205cc79e2c009bd3a98cc952e2",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-155 (칸 735)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-155.png"
+  },
+  {
+   "sha": "7b58d50ea6af25f3791462cf198df13fbb7850205cc79e2c009bd3a98cc952e2",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-159 (칸 736)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-159.png"
+  },
+  {
+   "sha": "19c0b1712e03b68ab79b958b623d4f440d8e57baba407dbf64ea41a8ee68712a",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-175 (칸 737)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-175.png"
+  },
+  {
+   "sha": "64427e4ae857709cc2fee419402943591fa88a5e40d2257322c5f6b7211095c6",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-191 (칸 738)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-191.png"
+  },
+  {
+   "sha": "37da0b99138d9b6f2440dbf49fafd1a5c8dc5697f9f41f22cb90961ff416b168",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-205 (칸 739)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-205.png"
+  },
+  {
+   "sha": "37da0b99138d9b6f2440dbf49fafd1a5c8dc5697f9f41f22cb90961ff416b168",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-207 (칸 740)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-207.png"
+  },
+  {
+   "sha": "c6d4d668833cd4545e0098249676a3046398571c9a48e8c839967c3f1facd1f6",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-223 (칸 741)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-223.png"
+  },
+  {
+   "sha": "2edeb1fefa91934c443bb33ae31a7ec7961c5b27f9e563ce646c8020b3820a42",
+   "kind": "terrain",
+   "label": "beodeul_ground/bdg-dark-grass-woodland-239 (칸 742)",
+   "source": "/home/main/.cache/beodeul-woodlands-gate/r9/bdg-dark-grass-woodland-239.png"
+  }
+ ]
+}
