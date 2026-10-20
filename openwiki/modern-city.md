@@ -79,6 +79,10 @@ modern-chipset 하네스가 합성한 도시(건물·도로·소품·차량)를 
   런타임 확인: `r16/qa_project.mts`(실조수 modern_city 저장본 + 예제 9장) → `npm run qa:runtime -- --scenario modern-interior-props --project …`(크로미움 백지면 `unshare -rn` 안에서).
   화풍 다시 그림 21종(`interior/r16/quality.json`): 3/4 합격·오판 319종을 루브릭(`~/claude-viz/interior-props-quality-rubric-1.json`)으로 훑어 「안 읽히는」 것만(바코드 옷걸이·십자 족자·무덤 같은 증인석 등) 같은 칸 안에서 새로 그렸다. 독립 Argon 재검수 30/30 통과.
   object-gate: `r16/gate_items.py` 로 내보내 `object-gate review --batch` — 프로필이 미보정(rejected)이라 영수증은 임시일 뿐 통과가 아니다.
+  **관문 없이 머지된 뒤 재검수(2026-10-20):** #3080·#3083·#3086 은 유효 영수증 없이 머지됐다(`interior/r16/needs-receipt.json`, 관문 재보정 뒤 이 목록으로 다시 받는다).
+  142종 전부를 독립 적대 판정자(Argon, 그린 이와 다름)가 3/4+루브릭 Q1~Q6 으로 다시 봤고 1차에 92종 FAIL(대부분 화풍: 큰 면 단색·부속마다 근흑 상자 윤곽·떠 있는 부품).
+  FAIL 은 고쳐 다시 판정하기를 최대 9차까지 반복해 142/142 PASS(`interior/r16/rejudge2.json`, 기물마다 차수별 판정·근거). 작업자 절차 `interior/r16/WORKER2.md`.
+  교훈: 「최소 수정(윗면만)」은 3/4 는 고쳐도 화풍 루브릭을 못 넘는다 — 처음부터 Q2/Q3/Q5(3단 명암·재료색 윤곽·재질 결)를 같이 고쳐야 한다.
 
 ## 공간 규모 규격 · 학생/직장인 하루 18곳 (2026-10-18, `src/editor/handInterior/venueScale.ts`·`dailyVenues.ts`)
 
