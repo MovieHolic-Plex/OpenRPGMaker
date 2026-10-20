@@ -178,6 +178,14 @@ function setupFoes(project: Project): { field: string[]; boss: string } {
     const enemy = project.database.enemies.find((e) => e.id === id);
     if (enemy) enemy.battleScalePercent = scale;
   }
+  // 자동 정렬은 발렌을 위쪽에 세워 2배 그림이 화면 위 여백에 걸려 도로 1배로 줄었다 — 발밑을 낮춰 직접 세운다.
+  if (finale) {
+    finale.autoAlign = false;
+    finale.members = [
+      { enemyId: "enemy_fs_valen", x: 84, y: 128, hidden: false },
+      { enemyId: "enemy_fs_guardian", x: 156, y: 124, hidden: false },
+    ] as typeof finale.members;
+  }
   return { field: ["troop_fs_wolves", "troop_fs_spiders", "troop_fs_wisps"], boss: "troop_fs_finale" };
 }
 
