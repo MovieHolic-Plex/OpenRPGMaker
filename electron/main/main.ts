@@ -1,3 +1,4 @@
+import { mainMark } from "./startupTiming";
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { startLocalProjectServer, type LocalProjectServer } from "../serve/runtime";
@@ -15,6 +16,7 @@ import { createProjectSessionRegistry } from "./sessions";
 import { startCompanionServer, type CompanionServer } from "./companion";
 import { describeRecentProjects, listRecentTeams, prepareNewProjectDir, recentProjectCoverSource, rememberRecentProject, rememberRecentTeam, suggestProjectDir, writeRecentProjectCover } from "./recent";
 import { openTeamWindow } from "./teamWindow";
+import { preloadProjectCore } from "./projectCorePreload";
 import type { JoinTeamResult } from "../shared/start";
 
 protocol.registerSchemesAsPrivileged([
@@ -65,6 +67,7 @@ function registerDeepLinkProtocol(): void {
   }
 }
 
+mainMark("modulesEvaluated");
 const sessions = createProjectSessionRegistry();
 const hosting = new Set<string>();
 const teamHosts = new Map<string, LocalProjectServer>();
@@ -183,6 +186,7 @@ function createWindow(): BrowserWindow {
   else if (devServerUrl) void window.loadURL(devServerUrl);
   else void window.loadURL(`${OPRN_APP_SCHEME}://oprn/index.html`);
   if (bootProjectDir !== undefined) {
+    preloadProjectCore();
     void sessions.open(window.webContents.id, bootProjectDir).then(() => {
       if (window.isDestroyed()) return;
       if (devServerUrl) void window.loadURL(devServerUrl);
@@ -368,6 +372,7 @@ function buildMenu(): void {
 }
 
 app.whenReady().then(async () => {
+  mainMark("appReady");
   const workerBinName = process.platform === "win32" ? "oh-my-pi-worker.exe" : "oh-my-pi-worker";
   const workerBin = [
     process.env.OPRN_OH_MY_PI_WORKER_BIN,
@@ -426,7 +431,11 @@ app.whenReady().then(async () => {
     if (!window || !event.senderFrame?.url.startsWith(`${OPRN_APP_SCHEME}://`)) return false;
     return window.isFullScreen();
   });
-  ipcMain.handle(OPRN_CHANNELS.startRecentProjects, () => describeRecentProjects());
+  ipcMain.handle(OPRN_CHANNELS.startRecentProjects, () => {
+    // 시작 화면이 그려진 뒤 한가할 때 프로젝트 코어(80MB)를 미리 읽는다 — 편집기로 들어가는 첫 load 가 그걸 기다리지 않게.
+    setTimeout(preloadProjectCore, 1_500);
+    return describeRecentProjects();
+  });
   ipcMain.handle(OPRN_CHANNELS.startCoverSource, (_event: IpcMainInvokeEvent, payload: unknown) =>
     recentProjectCoverSource((payload as { readonly projectDir?: unknown } | null)?.projectDir));
   ipcMain.handle(OPRN_CHANNELS.startSaveCover, (_event: IpcMainInvokeEvent, payload: unknown) => {
@@ -501,7 +510,9 @@ app.whenReady().then(async () => {
   registerAssetBrowser();
   registerAssetStore({ hasProject: (webContentsId) => sessions.get(webContentsId) !== null });
   registerDeepLinkProtocol();
+  mainMark("createWindow");
   createWindow();
+  mainMark("windowCreated");
   // 첫 실행 인자(Windows·Linux)와 ready 전에 온 링크를 이제 처리한다.
   const pendingLinks = [...(earlyLinks ?? [])];
   earlyLinks = null;
