@@ -33,35 +33,32 @@ def h(px, py, salt):
     v = hashlib.blake2b(f'bdg-ground|{salt}|{px}|{py}'.encode(), digest_size=4).digest()
     return int.from_bytes(v, 'little') / 4294967296.0
 
-def raw(X, Y, forest):
-    lev = 0
+# r4(2026-10-21 독립 검수 N1·N3): 그늘 덮개 칸마다 원(반지름 RADIUS, 중심은 칸 가운데에서 오른쪽 +3·아래 +5)을 그리고
+# 그 합집합을 그늘 덩이로 삼는다 — 이웃 칸 원이 겹쳐 한 덩이로 이어지고, 바깥 경계는 칸 선이 아니라 둥근 물결이 된다.
+# 덮이지 않은 칸 하나가 덩이 안에 있으면 칸 네모가 아니라 지름 8~10px 둥근 볕 구멍만 남는다.
+# 원은 반지름 12 · 중심 (+3,+5) 라 이 칸에 닿는 원은 가운데·북·서·북서·동 칸뿐이다(남·남서·남동·북동 원은 닿지 않는다) —
+# 그늘 코드 6비트로 이웃 칸과 정확히 이어진다. 색은 원본 숲 그늘의 「가」 단(×0.82) 하나 — 「속」 은 쓰지 않는다(N3 너무 어둡다).
+RADIUS = 12.0
+CENTER = (T / 2 + 3, T / 2 + 5)
+
+def edge_dist(X, Y, forest):
+    best = 99.0
     for j in (-1, 0, 1):
         for i in (-1, 0, 1):
             if not forest(i, j): continue
-            x0, y0 = i * T, j * T
-            # 그늘 덩이는 대부분 나무 밑에 숨는다 — 덮개 칸의 윗부분은 비우고(위 4~5px) 오른쪽 아래로 민다(보이는 부분 +5~9px).
-            if x0 + 3 <= X < x0 + T + 4 and y0 + 5 <= Y < y0 + T + 4: return 2
-            if x0 - 1 <= X < x0 + T + 7 and y0 + 4 <= Y < y0 + T + 7: lev = 1
-    return lev
+            cx, cy = i * T + CENTER[0], j * T + CENTER[1]
+            best = min(best, ((X + 0.5 - cx) ** 2 + (Y + 0.5 - cy) ** 2) ** 0.5 - RADIUS)
+    return best
 
 def lone(px, py):
     v = h(px, py, 'd')
     return all(v > h(px + dx, py + dy, 'd') for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))
 
 def level(px, py, forest):
-    """0 잔디 · 1 가 · 2 속. 원본 도시 숲 그늘 결(woodland r3, 2026-10-21 독립 검수 D7): 속은 단색 덩이, 가장자리 밖으로만
-    듬성한 낱점. 원판(반지름 √13) 평균 비율이 절반을 넘으면 덩이, 그보다 옅은 띠에서는 해시 확률로 낱점만 찍는다
-    (정규 바둑 무늬 없음). 낱점 자리는 4이웃 해시보다 큰 화소뿐이라 낱점끼리 붙지 않고 무늬도 없다."""
-    jx, jy = int(h(px, py, 'x') * 3) - 1, int(h(px, py, 'y') * 3) - 1
-    core = outer = 0
-    for dx, dy in DISK:
-        r = raw(px + dx + jx, py + dy + jy, forest)
-        core += r == 2; outer += r >= 1
-    n = len(DISK)
-    cf, of = core / n, outer / n
-    if cf > 0.5: return 2
-    if of > 0.5: return 1 if cf <= 0.3 or h(px, py, 'c') > (cf - 0.3) * 2.0 else 2
-    if of > 0.12 and lone(px, py) and h(px, py, 'e') < (of - 0.12) * 3.0: return 1
+    """0 잔디 · 1 그늘. 원 합집합 안은 단색, 밖 2.5px 띠에는 듬성한 낱점(원본 도시 숲 그늘 결 — 4이웃보다 해시가 큰 화소만)."""
+    d = edge_dist(px, py, forest)
+    if d <= 0: return 1
+    if d < 2.5 and lone(px, py) and h(px, py, 'e') < (1 - d / 2.5) * 0.55: return 1
     return 0
 
 def forest_of(code):
@@ -73,7 +70,7 @@ def overlay(code):
     for py in range(T):
         for px in range(T):
             L = level(px, py, f)
-            if L: im.putpixel((px, py), CORE if L == 2 else OUTER)
+            if L: im.putpixel((px, py), OUTER)
     return im
 
 city = Image.open(R / 'public/assets/beodeul-city/beodeul-city-chipset.png').convert('RGBA')

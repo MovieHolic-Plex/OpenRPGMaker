@@ -127,6 +127,16 @@ export function planBeodeulForest(map: GameMap, def: TreeComposerDef, type: Beod
     }
     return true;
   };
+  const topTouch: number[] = [], tipSet = new Set<number>(), trunkSet = new Set<number>();
+  const tipCells = (sp: TreeComposerSprite, x0: number, y0: number): number[] => {
+    if (!CONIFER_ART.test(sp.name)) return [];
+    for (let j = 0; j < sp.h; j++) {
+      const row: number[] = [];
+      for (let i = 0; i < sp.w; i++) if ((sp.cover[j * sp.w + i] ?? 0) > 2 && inMap(x0 + i, y0 + j)) row.push((y0 + j) * W + x0 + i);
+      if (row.length) return row;
+    }
+    return [];
+  };
   for (const { x, y } of cand) {
     if (placed.some((p) => Math.abs(p.ax - x) < rule.gx && Math.abs(p.ay - y) < rule.gy)) continue;
     const r = treeHash(x, y, sd + 17) / 4294967296;
@@ -148,9 +158,17 @@ export function planBeodeulForest(map: GameMap, def: TreeComposerDef, type: Beod
       const pick = fresh > 0 ? [names[rot % fresh]!, ...names] : names;
       for (const sp of pick) {
         const x0 = x, y0 = y - sp.h + 1;
-        // 꼭대기가 수관 한계(맵 위 끝·hold 밖)에 딱 닿는 나무는 반만 — 숲 윗줄 나무 밑동이 한 줄로 맞지 않게(D2·D3)
-        if (!tcols.some((i) => canHold(x + i, y0 - 1)) && treeHash(x, y, sd + 29) % 100 < 60) continue;
+        // 꼭대기가 수관 한계(맵 위 끝·hold 밖)에 딱 닿는 나무는 반만, 그리고 그런 나무끼리는 2칸 안에 하나만 —
+        // 숲 윗줄 나무(특히 1칸 폭 측백)가 같은 높이로 늘어서지 않게(D2·D3, 2차 검수 N2)
+        const touch = !tcols.some((i) => canHold(x + i, y0 - 1));
+        if (touch && (treeHash(x, y, sd + 29) % 100 < 60 || topTouch.some((tx) => Math.abs(tx - x) <= 2))) continue;
+        // 침엽 꼭대기가 다른 나무 줄기 칸에 꽂히지 않게(2차 검수 N4) — 꼭대기 칸 ↔ 줄기 칸이 겹치는 배치는 건너뛴다
+        const tips = tipCells(sp, x0, y0), trunks = (def.trunkCols[sp.shape] ?? [0]).map((i) => y * W + x + i);
+        if (tips.some((k) => trunkSet.has(k)) || trunks.some((k) => tipSet.has(k))) continue;
         if (!fits(sp, x0, y0, z)) continue;
+        if (touch) topTouch.push(x);
+        for (const k of tips) tipSet.add(k);
+        for (const k of trunks) trunkSet.add(k);
         placed.push({ sprite: sp, x0, y0, z, ax: x, ay: y });
         for (let j = 0; j < sp.h; j++) for (let i = 0; i < sp.w; i++) {
           const cv = sp.cover[j * sp.w + i] ?? 0, xx = x0 + i, yy = y0 + j;
