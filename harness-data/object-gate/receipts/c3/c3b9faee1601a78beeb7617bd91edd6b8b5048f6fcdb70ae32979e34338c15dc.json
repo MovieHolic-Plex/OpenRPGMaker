@@ -6,7 +6,7 @@
  "kind": "tall_furniture",
  "name": "고해소(3칸) (confessional)",
  "label": "atlas_biome_interior/props34/confessional",
- "profileHash": "ee216f0de5822996",
+ "profileHash": "1db03a95223e5b0b",
  "verdict": "fail",
  "reasons": [
   "화풍: 판정자 fail (3/4)"
@@ -43,13 +43,13 @@
    "right",
    "right",
    "right",
+   "borderline",
    "right",
    "borderline",
    "borderline",
    "right",
    "right",
-   "right",
-   "right",
+   "borderline",
    "right",
    "right"
   ]
@@ -63,137 +63,14 @@
     "kind_matches": true,
     "surfaces": [
      {
-      "part": "top cornice / roof slab",
-      "rows": "9-13",
-      "evidence": "a",
-      "front_edge_line_row": 12,
-      "eave_shadow_rows": "14-15"
-     },
-     {
-      "part": "front face with curtained booths and central door",
-      "rows": "15-43",
-      "evidence": "none",
-      "front_edge_line_row": null,
-      "eave_shadow_rows": null
-     },
-     {
-      "part": "base plinth",
-      "rows": "44-47",
-      "evidence": "none",
-      "front_edge_line_row": null,
-      "eave_shadow_rows": null
-     }
-    ],
-    "main_top_rows": 5,
-    "front_face_rows": 33,
-    "side_face_visible": false,
-    "all_major_parts_have_top": true,
-    "round_cap": null,
-    "reads_as": "three_quarter",
-    "evidence": "The top band spans rows 9-13 and is a mid-orange plane (rows 9-11) ending in a lighter front-edge line at rows 12-13. Dark eave shadow follows at row 14, with a dark beam at rows 15-17. Below that, the front face runs about rows 15-47, with two purple curtained bays, a central grilled window and a door. The top band is similar to the green cabinet reference (top ~5 rows, edge line, eave shadow), so it counts as a top surface and not just a rim. No receding side face is drawn."
-   },
-   "styleAnswer": {
-    "ref_kind_matches": true,
-    "shading_steps": 4,
-    "reference_steps": 5,
-    "outline": "dark_material_tone",
-    "texture": "some",
-    "flat_fills": false,
-    "density": "slightly_lower",
-    "score": 6,
-    "evidence": "The candidate is a wooden confessional with purple curtains, a lattice door and a carved cornice. Measured facts: 10 colours per tile (matches the hedge, below the stall at 17 and the well at 20), 18 distinct colours (far below the stall at 40 and the well at 38), 0% flat-fill coverage, and 0% neutral dark edge pixels, so the outline is tinted dark brown and not a black sticker line. Wood is shaded in about 4 steps (cornice highlight, mid brown, dark brown, deep), with grain on the panels. The curtains show only 2-3 purple steps and the door lattice is simple. It reads as clean and coherent, but it is thinner on colour variety and texture than the stall and well, with large smooth panel areas lacking per-plank grain or speckle. A careful artist would likely find it a little flatter than the richest references. Borderline, but with fewer ramp steps and a lower distinct-colour count than the same-kind references, I fail it.",
-    "verdict": "fail"
-   },
-   "pass": false,
-   "reasons": [
-    "판정자 fail (1/1)"
-   ],
-   "view34": {
-    "pass": true,
-    "reasons": []
-   },
-   "style": {
-    "pass": false,
-    "reasons": [
-     "판정자 fail (1/1)"
-    ]
-   },
-   "ms": 13839
-  },
-  {
-   "judge": "sonnet",
-   "run": 2,
-   "answer": {
-    "facing": "south",
-    "kind_matches": true,
-    "surfaces": [
-     {
-      "part": "top cornice/roof slab",
-      "rows": "8-14",
-      "evidence": "a",
-      "front_edge_line_row": 12,
-      "eave_shadow_rows": "13-14"
-     },
-     {
-      "part": "front face with curtained booths, center door and base",
-      "rows": "15-47",
-      "evidence": "none",
-      "front_edge_line_row": null,
-      "eave_shadow_rows": null
-     }
-    ],
-    "main_top_rows": 4,
-    "front_face_rows": 33,
-    "side_face_visible": false,
-    "all_major_parts_have_top": true,
-    "round_cap": null,
-    "reads_as": "three_quarter",
-    "evidence": "Rows 9-11 form a lighter orange band (L~126) that ends in a lighter 1-row front-edge line at row 12 (#d59147, L~157). Rows 13-14 are darker eave shadow (L~28-85), and the front face continues below. The top band is about 4 rows (9-12) plus a 1-row outline at row 8. The front face runs rows 15-47 (about 33 rows) with two purple curtained openings, a central grille and a door, and a base plinth at rows 42-47. No isometric side face is drawn. This matches the green 'cabinet: top + edge + eave' reference rather than a thin 1-2 row rim."
-   },
-   "styleAnswer": {
-    "ref_kind_matches": true,
-    "shading_steps": 4,
-    "reference_steps": 5,
-    "outline": "dark_material_tone",
-    "texture": "some",
-    "flat_fills": false,
-    "density": "slightly_lower",
-    "score": 6,
-    "evidence": "The outline is tinted: 0% of dark edge pixels are neutral, and the frame reads as dark brown beside the wood, so it is not a sticker line. There are no flat fills (0% coverage), and the wood has some grain and panel and lattice detail. The weak point is depth. The candidate has only 18 distinct colours, against 38-40 for the comparably large references (stall and well), and its median of 10 colours per tile sits below their 17 and 20. At this size it is a 3-tile piece, so the lower count shows in the ramps. The wood has about 4 steps against the references' 5-6. The purple curtains look like roughly 3 steps with little texture, and the cornice is only lightly modelled. It is clean and reads well, but it is thinner than the stall and well it would sit beside. When in doubt, fail.",
-    "verdict": "fail"
-   },
-   "pass": false,
-   "reasons": [
-    "판정자 fail (1/1)"
-   ],
-   "view34": {
-    "pass": true,
-    "reasons": []
-   },
-   "style": {
-    "pass": false,
-    "reasons": [
-     "판정자 fail (1/1)"
-    ]
-   },
-   "ms": 18226
-  },
-  {
-   "judge": "sonnet",
-   "run": 3,
-   "answer": {
-    "facing": "south",
-    "kind_matches": true,
-    "surfaces": [
-     {
-      "part": "main body top (cornice slab)",
+      "part": "top cornice slab",
       "rows": "9-12",
       "evidence": "a",
       "front_edge_line_row": 12,
       "eave_shadow_rows": "13-14"
      },
      {
-      "part": "front face (curtained booths and center door)",
+      "part": "front face with curtains, door and lattice window",
       "rows": "15-43",
       "evidence": "none",
       "front_edge_line_row": null,
@@ -213,7 +90,7 @@
     "all_major_parts_have_top": true,
     "round_cap": null,
     "reads_as": "three_quarter",
-    "evidence": "Rows 9-12 form a wide lighter orange band across the top (#9e684b, then a lighter #d59147 line at row 12). Rows 13-14 below it are dark (#2a180b, #744e2c) and read as eave shadow. This matches the green 'cabinet: top + edge + eave' reference rather than a plain front-facing strip. The front face runs from row 15 to row 47: purple curtains, a lattice window and a door, all on a plinth. No receding side face is drawn."
+    "evidence": "Rows 9-11 form a lighter orange band across the full 46px width. Row 12 is a lighter front-edge line (#d59147), and rows 13-14 are dark eave shadow. This matches the 'top + edge + eave' cabinet reference, so I count it as a top surface about 4 rows tall (rows 9-12). Below it, rows 15-47 are a vertical front face with curtains, a lattice window and a door. No receding side face is drawn, since the left post is front-facing."
    },
    "styleAnswer": {
     "ref_kind_matches": true,
@@ -224,7 +101,7 @@
     "flat_fills": false,
     "density": "slightly_lower",
     "score": 7,
-    "evidence": "The confessional is a wide wooden prop with a cornice, panelled doors and purple curtains. Its dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood and not a black sticker line. Flat-fill coverage is 0%, and the wood shows grain and panel highlights. Median colours per full tile is 10, equal to the hedge and in line with the Beodeul median, though below the stall (17) and well (20). It has 18 distinct colours in total, well under the stall (40) and well (38) and closer to the bench, lamp and hedge (11-14). I count about 4 wood steps and only 2-3 on the curtains, against about 5-6 on the richer references, so it is slightly shallower than the best references but not flat. A careful artist would accept it next to the bench, hedge and lamp, so I pass it.",
+    "evidence": "The confessional has a dark-brown wood frame with a lighter top beam and trim, a lattice or panel door, and two purple curtains with a few tonal steps. The outlines and edge pixels lean brown or purple, not neutral black, and the measured near-neutral edge share is 0%. It has 10 visible tones per 16x16 tile and 0% near-flat coverage. That matches the hedge (9) and sits below the well (20) and stall (17), but it is clearly not a flat fill. Wood grain and the curtain folds give some texture, though less dense than the roofed well or the cheese stall. At 18 total colours it is lean but not shallow, and it would sit acceptably beside the references.",
     "verdict": "pass"
    },
    "pass": true,
@@ -237,21 +114,28 @@
     "pass": true,
     "reasons": []
    },
-   "ms": 21093
+   "ms": 15610
   },
   {
    "judge": "sonnet",
-   "run": 4,
+   "run": 2,
    "answer": {
     "facing": "south",
     "kind_matches": true,
     "surfaces": [
      {
-      "part": "top slab/cornice of confessional",
+      "part": "top band / cornice slab",
       "rows": "9-12",
       "evidence": "a",
       "front_edge_line_row": 12,
       "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "front face with curtained booths, lattice window and door",
+      "rows": "15-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
      }
     ],
     "main_top_rows": 4,
@@ -260,7 +144,7 @@
     "all_major_parts_have_top": true,
     "round_cap": null,
     "reads_as": "three_quarter",
-    "evidence": "Rows 8-14 form a wide top band, 46 px wide against 44 px for the body below. Rows 9-11 are a lighter orange plank surface, and row 12 (#d59147) is a lighter front-edge line. Rows 13-14 are dark (#744e2c, then #2a180b), which reads as eave shadow. Below that, rows 15-47 are the vertical front face: purple curtained side bays, a central lattice window and a door, with a base plinth at rows 43-47. The top band is a 4-row surface with an edge line and shadow, like the cabinet 'top 5 + edge + eave' reference. No receding side face is drawn."
+    "evidence": "The top band spans rows 9-11 in a mid-light orange (L~126). Row 12 is a lighter front-edge line (#d59147, L~157), and rows 13-14 are dark eave shadow (#744e2c, then #2a180b). Together these give a top surface about 4 rows deep over a front face of about 33 rows (rows 15-47). The front face holds purple curtains, a lattice window and a door. The silhouette is a plain rectangle 44-46 px wide. No receding side face is drawn. The top is thin, but the edge line plus shadow separates it from a flat front-facing cornice strip."
    },
    "styleAnswer": {
     "ref_kind_matches": true,
@@ -271,7 +155,7 @@
     "flat_fills": false,
     "density": "slightly_lower",
     "score": 6,
-    "evidence": "The outline is right: 0% of dark edge pixels are neutral, and the edges lean dark brown beside the wood and dark purple beside the curtains. There are no 5x5 flat fills (0%), and the median of 10 colours per tile matches the hedge. The weak point is the total palette. A 3-tile-wide, tall structure uses only 18 colours, against 38-40 for the comparably sized stall and well. The wood ramps look to be about 4 steps (frame, cornice, door panel), against roughly 6 on the reference stall and well. The wall panels and the curtain folds carry little grain or per-element highlighting. It is clean and tinted rather than sticker-like, but it reads thinner and less textured than the large references, so it fails in doubt.",
+    "evidence": "The confessional is a clean 3-tile wooden facade with a cornice, a lattice door and purple curtains. The dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood, which matches Beodeul. Near-flat coverage is 0%, so there are no large flat fills. Its 10 visible tones per tile are roughly level with the hedge (9) but about half of the comparable stall (17) and roofed well (20). With only 18 distinct colours in total (stall 40, well 38), each material (wood, curtain, trim) gets about 3-4 lightness steps against the 5-6 Beodeul uses. The wood reads mostly as banded planks with little per-plank grain, highlight or speckle, and the curtains are shaded shallowly. It is neat and consistent but a step flatter and thinner than the stall and well references, so it does not clearly reach the bar.",
     "verdict": "fail"
    },
    "pass": false,
@@ -288,10 +172,125 @@
      "판정자 fail (1/1)"
     ]
    },
-   "ms": 16725
+   "ms": 15545
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice slab",
+      "rows": "9-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 8-14 form a wide top band. Row 8 is the outline, rows 9-11 are a lit wood plane, and row 12 is a lighter front-edge line (#d59147). Rows 13-14 are darker eave shadow, with a small gold ornament at rows 12-14. Below it the front face runs from row 15 to row 47, about 33 rows. It holds two purple curtained bays, a central lattice window and a door, plus a base plinth at rows 42-47. The left strip at x≈5-9 is a frame post on the south face, not a receding side face. The top band is similar to the green cabinet reference (top plus edge line plus eave), so it counts as a top surface and not a rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The confessional is a wooden booth with a dark top cornice, purple curtains and a lattice door. Its outline is a dark brown that leans toward the wood, and 0% of its dark edge pixels are neutral, so it does not have the black sticker look. It has no flat fills (0% near-flat coverage). Wood panels show some banding and grain, and the curtains have a few fold stripes. However, it has only 10 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well, which are the closest references in size and complexity. It only matches the simple hedge at 9. Its total of 18 distinct colours is also well below the 38-40 of the stall and well. The wood and curtain ramps look like about 4 steps, not the 5-6 Beodeul uses, and the grain and per-plank detail are sparser than the references. A careful artist would likely see it as slightly flatter and thinner than the stall and well beside it, so with the doubt it fails."
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15927
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice slab",
+      "rows": "9-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "front face with curtained booths and center door",
+      "rows": "15-41",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "42-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 9-12 form a lighter orange band across the full width (columns x=11, 23 and 34 all read about L=121-127). It ends in a lighter front-edge line at row 12 (#d59147), followed by darker eave shadow in rows 13-14, which is the top surface of the cabinet. Below it the front face runs from row 15 to row 47 (about 33 rows), with two purple curtained booths, a center door with a grille window, and a base plinth. No receding side face is drawn. The row 8 outline is not counted as top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The outline is a tinted dark brown beside the wood, with 0% neutral dark edge pixels, so it avoids the sticker look. The measured flat coverage is 0%, and the cornice, lattice door and curtain folds give some structure. The candidate is thinner than the comparable large props on the board. It has 10 visible tones per tile against 17 for the cheese stall and 20 for the roofed well, and only 18 distinct colours in total against 38-40 for those two. It only matches the simple hedge (9 tones). By eye, the wood ramps are about 4 steps against the references' 5-6, and the big wall and panel areas are mostly clean planes with little per-plank grain or speckle. A careful artist would likely see it as flatter than the stall and well, so it fails when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17089
   }
  ],
- "decidedAt": "2026-10-20T07:29:22.696Z",
+ "decidedAt": "2026-10-20T10:14:44.656Z",
  "cells": {
   "16": [
    "12c53afd323197fc",

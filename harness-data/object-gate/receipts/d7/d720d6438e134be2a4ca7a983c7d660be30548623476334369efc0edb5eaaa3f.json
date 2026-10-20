@@ -1,0 +1,379 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d720d6438e134be2a4ca7a983c7d660be30548623476334369efc0edb5eaaa3f",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "제어반(움직임, 2칸) (control console)",
+ "label": "atlas_biome_interior/props34/control console",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 2/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 2/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 15,
+  "darkV5": 40,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "control deck (button panel)",
+      "rows": "14-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-20"
+     },
+     {
+      "part": "upper monitor housing top band",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "lower cabinet with vent drawers",
+      "rows": "24-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The control deck has a light highlight line at row 14, lighter rows 15-17 and an edge at row 18, with a dark band at rows 19-20 below it. Buttons sit on it, so I read rows 14-18 as a horizontal, foreshortened top surface. The upper housing has a similar light band at rows 2-6 that ends in a darker edge at row 6 and shadow at rows 7-8. The south face (screens, lower cabinet with vents) runs about rows 19-30. No receding side face is drawn. This is ambiguous, because the deck could also be read as a vertical sloped panel."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a 2-tile control console with a dark grey casing, a screen, knobs and buttons. Measured facts: 14 colours per tile, which is within the reference range (10-20), 0% flat-fill coverage and 23 distinct colours. The 23 distinct colours are well below the richer references (38-40 for the well and stall). The 100% near-neutral dark edge pixels mean a neutral black/grey outline all round the casing, the 'sticker' look. The references with tinted outlines (hedge 0%, stall 1%, well 33%) use dark material tones instead. By eye, the casing body has only about 3 lightness steps (dark grey, mid grey, light bevel), against the 5-6 steps Beodeul uses per material. Small details on the panel (buttons, a screen, knobs) give it some texture and stop it reading as flat fill, but the large grey casing is shaded shallowly. The neutral black outline and the shallow casing ramp together stop it matching the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16511
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper housing top band",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "control deck with buttons",
+      "rows": "14-17",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The upper housing has a light band in rows 3-5 (L about 172-196). It ends in a darker edge line at row 6 (L=136), followed by dark shadow in rows 7-8, and the monitor face sits below. A second sloped control deck in rows 14-17 carries buttons seen from above, with an edge line at row 13. Below it, the front face (rows 18-30, about 13 rows) shows the grey panel and dark vented lower cabinet. The silhouette is a plain rectangle, so the top reads only through the shading bands. Both major parts show a horizontal surface above a vertical face, so it reads as three-quarter rather than flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a grey metal console with a screen, knobs and buttons. Its density by the numbers is acceptable: 14 colours per tile against references at 10-20, and 0% flat-fill coverage. But its distinct colour count is 23, well below the richer references (38-40), and the measured near-neutral share of dark edge pixels is 100%. That matches a uniform near-black outline around the whole shape, which is the sticker look; the Beodeul props with tinted outlines sit at 0-44%. The body shows only about 3 lightness steps, namely a dark grey frame, a mid grey panel and a light highlight, where the references use 5-6 on their main materials. The grey casing has little grain or speckle, and the detail is mostly small button dots. The piece reads as clean but flatter and more outlined than the reference. The lamp-crook reference is also 100% neutral, but it is a thin prop and not a good basis for excusing a bulky console.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15539
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper monitor housing top band",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "sloped control deck with buttons",
+      "rows": "13-23",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower cabinet front with drawer slots",
+      "rows": "24-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top of the monitor housing is a light band at rows 2-6 (L 124-196). Its edge line is row 6 (L 136), followed by dark eave-shadow rows 7-8 (L 61). Below it, the screens are a vertical face. The control deck at rows 13-23 is lit light grey (L 172-196) and carries buttons, so it reads as a horizontal surface seen from above. The lower cabinet front at rows 24-30 (7 rows, L 61-64) has drawer slots. The silhouette is a plain rectangle 30-32 px wide with no isometric side face. The deck has no distinct front-edge line, so the clearest top evidence is the band at rows 2-6."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The console is a grey metal box with a lighter top bezel, two small screens, knobs and coloured buttons. Detail is decent: 14 colours per tile, 0% flat fill and 23 distinct colours, with no large flat areas. The weak points are the outline and the ramps. The dark edge pixels are 100% neutral, so the silhouette reads as a uniform black-grey sticker outline. The references with tinted outlines (hedge 0%, stall 1%) separate forms by value or dark material tone instead. The grey casing has only about 3-4 lightness steps against about 6 on the stall and well, and there is little grain on the casing apart from the control details. Distinct colours (23) are well below the stall (40) and well (38). The lamp reference also has a neutral outline, but it is a thin object and the weaker piece in that comparison, so it does not justify this outline. Overall the piece is cleanly drawn and not flat, but it looks thinner and more sticker-like than the references, so it fails on the doubt rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 23424
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper monitor housing top band",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "control deck with buttons (main top)",
+      "rows": "14-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower cabinet front with vent slots",
+      "rows": "19-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Row 13 is a transition line. Rows 14-17 are a light band (L≈172-196) that carries the buttons and lights and reads as a horizontal control deck. It ends at row 18, a dark edge line at x=8 and a lighter line at x=23, with a different, darker face below. Rows 19-30 are the front face: a mid-tone panel (rows 19-23) above a dark lower cabinet with vent slots (rows 24-30). The upper housing has its own light top band in rows 2-6, with an edge line at row 6 and dark shadow in rows 7-8 above the screens. There is no receding side face. The drawing is somewhat elevation-like, but the deck band and the roof band both qualify as top surfaces."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a grey control console with a screen, knobs and small coloured buttons. Measured: 14 colours per tile and 0% flat-fill coverage, so it is not flat, and it is above the bench and hedge on per-tile colours. But its 23 distinct colours are well below the well (38) and stall (40). 100% of its dark edge pixels are near-neutral, so the outline is a neutral black/grey line around the whole shape, which is the 'sticker' look. The references with tinted outlines (hedge 0%, stall 1%) separate forms by value or by dark material tone. The body casing is mostly 2-3 grey steps (light top edge, mid grey, dark outline), shallower than the roof, wood and stone ramps of 5-6 steps in the references. Detail is concentrated in the small buttons and screen, with little grain or shading on the casing. A careful artist would not accept it beside the well and stall without it looking flatter and more outlined.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17056
+  }
+ ],
+ "decidedAt": "2026-10-20T09:51:22.675Z",
+ "cells": {
+  "16": [
+   "6be8f66dc6b19bb5",
+   "9e178ada913b61f0",
+   "cbb3d8c0de10a87f",
+   "d0bdd2173f8bea0b"
+  ],
+  "24": [
+   "1da5fac0b216b600",
+   "22111b593f18cdb7",
+   "249d5a4200379f71",
+   "33405fdfc2e28cd1",
+   "3558faee9ce2f433",
+   "3c463a44a981b10c",
+   "3e8270e0ba3e1ce0",
+   "44b90096a993cb43",
+   "5c030cba0a0c14e7",
+   "6f5b386b8f055387",
+   "72830041998f055b",
+   "785764bcdba74651",
+   "807e08cbd5075826",
+   "8b7dd6c7769c5fe0",
+   "980806fe9f50472a",
+   "ab2fc5716c527097",
+   "b156012cdbf1729a",
+   "c148f34404d8e146",
+   "c996a2148f6b7b7b",
+   "cd2039c2eca28fe1",
+   "ddfab12d5fdcbbde",
+   "ede7ec3789f6ecda",
+   "f27338cd03dfac04",
+   "fe250f3edb67bc03"
+  ],
+  "32": [
+   "4d75b5b69a0934a6"
+  ],
+  "48": [
+   "0c4ea9544d596844",
+   "10b3b419aa667a7c",
+   "9434c8f354ff3539",
+   "b654cd951f8f4923",
+   "d4b21b5427de181a",
+   "e291c0fc57beaadc"
+  ]
+ }
+}

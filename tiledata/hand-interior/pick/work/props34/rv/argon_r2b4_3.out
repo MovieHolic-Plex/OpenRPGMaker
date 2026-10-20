@@ -1,0 +1,6 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"P1 slot machine","view34":"PASS","quality":"FAIL","reason":"The reel window is a noisy, unreadable jumble of white/yellow/red pixels with no clear reel dividers, and a stray white pixel pokes through the left outer outline."}
+{"id":"P2 confessional","view34":"PASS","quality":"PASS","reason":"Clear 4px lit wooden roof plane above a well-shaded three-bay booth with readable purple curtain folds, gold rods, and center lattice grille."}
+{"id":"P3 relic cabinet","view34":"PASS","quality":"PASS","reason":"Readable 5px lit wooden top plane and clean three-shelf glass case with distinct, well-shaded amphora, bust, and scroll relics."}
+{"id":"P4 wide cabinet","view34":"PASS","quality":"FAIL","reason":"Interior relics are crowded and noisy at 1x, with a sword blade in the middle-left cubby clipping across the center vertical wood divider and a flat pink cushion block on the middle-right."}

@@ -1,0 +1,345 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dcea3605a56bcf44bcc91f711c4cc4ced0274757300f587e2dec1d99cb8c05ca",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "천체 모형(움직임) (orrery)",
+ "label": "atlas_biome_interior/props34/orrery",
+ "profileHash": "1db03a95223e5b0b",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 17,
+  "darkV5": 65,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "base drum/pedestal",
+      "rows": "24-27",
+      "evidence": "a",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": "25"
+     },
+     {
+      "part": "stem",
+      "rows": "18-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armillary rings and spheres (orrery arms)",
+      "rows": "9-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The base (rows 24-31) widens from 10 to 12 px. Its upper rows 24-27 form a lighter band that ends in a bright front-edge line at row 27 (L=191). Row 25 at the stem column is dark, which reads as the stem's shadow on the top surface. Rows 28-30 below it are a darker front face about 4 rows tall. The thin stem (rows 18-23, 4 px wide) rises from this top. The arms, rings and spheres (rows 9-17) are drawn face-on as a thin structure with shaded spheres, so they add no large flat vertical panel. The top surface is modest but present."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The orrery is a small prop, about 12x20 source pixels, with gold arms and rings, a red orb, a blue orb and a brown base. The measured facts match the references. It has 16 visible tones per full tile, against 17 for the cheese stall, 20 for the roofed well and 9 for the hedge. Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% neutral, so the outlines lean toward the neighbouring material (brown beside the base, darker gold and red beside the orbs) and do not read as a black sticker line. Each material shows about 4 lightness steps, with highlights on the orbs and the metal, which is a little below the 5-6 steps of the larger references. That is acceptable for a piece this small. It would sit next to the stall and well without looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21558
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "base bowl/pedestal top",
+      "rows": "24-27",
+      "evidence": "a",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": "28"
+     },
+     {
+      "part": "base front face",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "central shaft",
+      "rows": "18-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armillary arm with red and blue spheres and gold core",
+      "rows": "9-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The base (rows 24-31) is a bowl-like pedestal. Rows 24-26 form a band that is darker and then orange. Row 27 is a bright front-edge line (L=191) and row 28 is a darker shadow row. Rows 28-31 below are the front face, and the width narrows from 12 to 10 to 6 at the bottom. The shaft (rows 18-23, width 4) is a thin vertical post. The ring arm and spheres above (rows 9-17) are ornaments drawn face-on, so I counted them as decor. The top surface is modest and not a clean ellipse, but there is a lit band with an edge line, and a front face of 4 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small orrery: a gold armature with red and blue spheres on a dark stand. Measured facts support it. It has 16 visible tones per full tile, close to the stall (17) and well (20) and well above the hedge (9). Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, which means the outline is tinted (dark brown or gold-brown) rather than a black sticker line. By eye, the spheres and the metal arms carry highlight, mid and dark steps. That gives about 4 steps per material, slightly below the references' 5, but it is a small, thin object and the density matches the references. A careful artist would accept it next to the references without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16469
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "base drum (pedestal)",
+      "rows": "24-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shaft",
+      "rows": "18-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armillary ring arms with sun and planet spheres",
+      "rows": "9-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The base is the largest volume. Its width profile goes 6, 10, 12 over rows 23-25, stays at 12 through row 29, then narrows to 10 and 6 at rows 30-31. It widens and then narrows only at the bottom, like a rounded drum, so there is no top ellipse that widens and narrows again. At x=8, row 25 is a dark 1-row band under the shaft, followed by banded front-face tones in rows 26-30, which looks like a rim rather than a top surface. There is no front-edge line with eave shadow, so the top reads as about 2 rows, and the front face is about 6 rows. The shaft (width 4) and the ring arms with spheres (rows 9-17) are drawn as face-on elevation with no horizontal surfaces. The whole object reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small gold-framed orrery with a red sphere, a blue sphere and a stand, about one tile in size. Measured facts support it. It has 16 visible tones per tile, close to the stall (17) and well (20) and above the hedge (9). Near-flat coverage is 0% and none of its dark edge pixels are neutral, so the outline is tinted, a dark brown/gold tone rather than a black sticker line. By eye, the spheres have highlight and shadow steps and the brass parts have several tones, so there are no big flat areas. Shading is about 4 steps per material, slightly below the references' 5-6, but this is a small prop and the density matches the same-kind references. It would sit acceptably next to the stall and well without looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18691
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "round pedestal base (top disc with the shaft rising from it)",
+      "rows": "24-27",
+      "evidence": "a",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "29-30"
+     },
+     {
+      "part": "armillary rings and planet spheres on the central shaft",
+      "rows": "9-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "central gold shaft",
+      "rows": "18-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the base at rows 24-31. Row 24 is a dark rim, and rows 25-27 form a light orange top surface with the shaft's dark foot at row 25. Row 28 is a darker front-edge line, and rows 29-31 are the dark front face with shadow, about 4 rows. The width profile (10, 12, 12, 12, 12, 12, 10, 6) is not a clean ellipse, but the edge line and the face below it show a top plus a front. The thin shaft (width 4, rows 19-22) and the rings and spheres above (rows 9-17) are standing ornaments or thin frame, not a main volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a single-tile prop: a gold sphere, red and blue orbiting balls and a small base. It has 16 visible tones per 16x16 tile, against 9 for the hedge, 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, so there are no large flat fills. Its dark edge pixels are 0% neutral, so the outline carries a tint (dark brown or dark material tone) rather than a black sticker line. The spheres have highlight, mid and shadow steps, and the base has some grain. I count about 4 steps per material, slightly below the 5-6 of the larger references, but the density matches what a small single-tile prop of this kind would carry. A careful artist would accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19376
+  }
+ ],
+ "decidedAt": "2026-10-20T10:14:44.678Z",
+ "cells": {
+  "16": [
+   "2c44c74bc2b19f95",
+   "e1d8f214927dbc0b"
+  ],
+  "24": [
+   "008d06f32320455d",
+   "15bf13550f4336d7",
+   "249e58970c83531a",
+   "313f6ffd047f1a95",
+   "56134f773d6e6794",
+   "82793a332f7b73be",
+   "8bd3542911edfcea",
+   "c43a338c0f6a0e22",
+   "f5b190d1807e1ef6"
+  ],
+  "32": [
+   "1fca74340fa5c0d6",
+   "2c56520f0c2ae803",
+   "e86e9b93b79ef773"
+  ],
+  "48": [
+   "4e54480002959fb5",
+   "6010d7ef4f59ffec",
+   "65c8abccd3abc816",
+   "8f7c3ae85dfc344a",
+   "999a322ad3ba64d5",
+   "c095bf7b9c4f648a"
+  ]
+ }
+}

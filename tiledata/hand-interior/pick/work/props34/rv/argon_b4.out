@@ -1,0 +1,6 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"P1","view34":"FAIL","quality":"FAIL","reason":"The flat yellow top block reads as a front-facing marquee sign rather than a receding top plane of the crimson body, and the machine uses flat unshaded yellow slabs, crude 3-strip reels, and a 1px black stick lever."}
+{"id":"P2","view34":"PASS","quality":"PASS","reason":"Clear 5px lit wooden top plane with cornice detail above a well-shaded three-bay front featuring pleated purple curtains, a central lattice grille, paneled door, and stepped plinth."}
+{"id":"P3","view34":"PASS","quality":"FAIL","reason":"Top wooden plane reads in 3/4 view, but the interior shelves contain unrecognizable flat cyan, yellow, and orange pixel blobs floating over a noisy blue checkerboard grid."}
+{"id":"P4","view34":"PASS","quality":"FAIL","reason":"Has a readable wooden top plane, but the shelf contents are crude unshaded blocks—four white circles with single blue center dots like eyeballs, a flat cyan rectangle, and neon red-green-blue book bars—over a noisy blue grid."}

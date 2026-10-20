@@ -1,0 +1,6 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"P1 cabinet:vial+flask","view34":"PASS","quality":"PASS","reason":"Shows a 5-row grained tan top plane with a 1-row bright front lip above three shelves of multi-tone shaded vials and conical flasks against a planked wood back wall."}
+{"id":"P2 cabinet:jar+jarb+jarg","view34":"PASS","quality":"PASS","reason":"Displays a 5-row lit wood top surface and bright front lip above three tiers of capped small and large glass jars with upper-left specular highlights and 3-tone cylindrical shading."}
+{"id":"P3 cabinet:book+bookb+bookg","view34":"PASS","quality":"PASS","reason":"Features a 5-row grained tan top plane and bright lip over three shelves of varied upright and leaning books with top-edge highlights and spine bands."}
+{"id":"P4 cabinet:gem+gemr","view34":"PASS","quality":"PASS","reason":"Has a 5-row lit tan top surface with a bright front lip above three shelves of faceted purple, cyan, and red gems with 4-tone upper-left lighting on dark mounts."}

@@ -1,0 +1,6 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"P1","view34":"PASS","quality":"PASS","reason":"Clear 5px lit wood top plane above a 2px front header and three recessed shelves holding well-shaded 4-tone loaves lit from upper-left."}
+{"id":"P2","view34":"PASS","quality":"PASS","reason":"Readable 5px lit top surface and recessed shelves with cleanly shaded assorted round buns using a warm 4-tone crust ramp."}
+{"id":"P3","view34":"PASS","quality":"PASS","reason":"Distinct 5px lit cabinet top plane and three shelves of berry and plum lattice pies/tarts with readable crust bases and upper-left lighting."}
+{"id":"P4","view34":"PASS","quality":"PASS","reason":"Solid 3/4 cabinet frame with a 5px lit top plane and three shelves of corked red, blue, and green potion flasks with clean glass highlights."}

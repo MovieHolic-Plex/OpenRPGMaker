@@ -1,0 +1,7 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"cabinetgem+gemr","view34":"PASS","quality":"PASS","reason":"Clear 6px lit wooden top plane and 2px shelf ledges; amethyst, cyan crystal, emerald, and ruby clusters have crisp 3-4 tone facets and upper-left highlights matching the good anchors."}
+{"id":"cabinetbolt+boltg+boltr","view34":"PASS","quality":"PASS","reason":"Readable 6px top surface and recessed shelf planes; hanging and stacked red, blue, green, and gold cloth bolts have clean belly bands, layered fold ends, and cohesive wood framing."}
+{"id":"cabinetbottle+bottler+bottleg","view34":"PASS","quality":"PASS","reason":"Strong 6px 3/4 cabinet top plane and shelf depth; green, red, and amber potion bottles read clearly with cork stoppers, white labels, and upper-left glass specular glints."}
+{"id":"cabinetcandle","view34":"PASS","quality":"PASS","reason":"Distinct 6px lit top plane above the front fascia and shelves; pillar and jar candles show smooth 3-4 tone cylindrical shading, dark material outlines, and readable wicks."}
+{"id":"cabinetcheese","view34":"PASS","quality":"PASS","reason":"Clear 6px 3/4 top plane and 2px shelf ledges; cheese wedges and cut red-wax wheel have well-defined rind contrast and warm yellow cut faces comparable to the good bread shelf."}

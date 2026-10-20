@@ -304,6 +304,10 @@ def build():
     reg = loader.load()
     for pid in PLUS:
         res[pid] = [iplib.render(reg.pieces[pid])]
+    # round 2 (2026-10-20, after the adversarial Argon re-check): cabinet goods and the four misc props redrawn
+    import r2_cabinet, r2_misc
+    res.update(r2_cabinet.build_cabinets())
+    res.update(r2_misc.build_misc())
     # same final step as build_tileset.py: snap to the shared interior palette v6
     sys.path.insert(0, os.path.join(ROOT, 'scripts/content/hand-interior-pick'))
     import palette_snap

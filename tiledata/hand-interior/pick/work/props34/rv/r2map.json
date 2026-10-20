@@ -1,0 +1,35 @@
+{
+ "/home/main/z-project/rpg-zzu-v5-interior-props-34/tiledata/hand-interior/pick/work/props34/rv/r2b0.png": [
+  "cabinet:loaf",
+  "cabinet:bun",
+  "cabinet:pie",
+  "cabinet:potion+potionb+potiong"
+ ],
+ "/home/main/z-project/rpg-zzu-v5-interior-props-34/tiledata/hand-interior/pick/work/props34/rv/r2b1.png": [
+  "cabinet:vial+flask",
+  "cabinet:jar+jarb+jarg",
+  "cabinet:book+bookb+bookg",
+  "cabinet:gem+gemr"
+ ],
+ "/home/main/z-project/rpg-zzu-v5-interior-props-34/tiledata/hand-interior/pick/work/props34/rv/r2b2.png": [
+  "cabinet:bolt+boltg+boltr",
+  "cabinet:bottle+bottler+bottley",
+  "cabinet:candle",
+  "cabinet:cheese"
+ ],
+ "/home/main/z-project/rpg-zzu-v5-interior-props-34/tiledata/hand-interior/pick/work/props34/rv/r2b3.png": [
+  "cabinet:toy",
+  "helmet shelf",
+  "orrery",
+  "control console"
+ ],
+ "/home/main/z-project/rpg-zzu-v5-interior-props-34/tiledata/hand-interior/pick/work/props34/rv/r2b4.png": [
+  "slot machine",
+  "confessional",
+  "relic cabinet",
+  "wide cabinet"
+ ],
+ "/home/main/z-project/rpg-zzu-v5-interior-props-34/tiledata/hand-interior/pick/work/props34/rv/r2b5.png": [
+  "ship bunk"
+ ]
+}

@@ -317,26 +317,90 @@ def wide_cabinet(c):
     for y in (7, 8, 9, 10): c.hl(2, 29, y, K('wood', 6))
     c.hl(1, 30, 11, K('wood', 7))                           # 앞 입술(빛)
     c.hl(1, 30, 12, K(m, 2))                                # 앞면 머리 그늘
-    for y in range(13, 35):
-        for x in range(3, 29):
-            c.p(x, y, K('glass', 1) if (x + y) % 5 else K('glass', 2))
-    for sy in (19, 28):
-        c.hl(3, 28, sy - 1, K(m, 5)); c.hl(3, 28, sy, K(m, 6)); c.hl(3, 28, sy + 1, K(m, 2))   # 선반 윗면 2줄 + 앞 두께
-    c.vl(15, 13, 34, K(m, 3)); c.vl(16, 13, 34, K(m, 4))
-    # 위 칸: 세워 둔 접시
-    for cx in (6, 11, 21, 26):
-        c.ell(cx, 15.5, 2, 2.5, None, only=lambda x, y, cx=cx: K('white', 5 if x < cx else 3)); c.p(cx, 15, K('blue', 4))
-    # 가운데 칸: 투구·항아리
-    c.ell(7, 25, 2.5, 2.5, None, only=lambda x, y: K('iron', 5 if x < 7 else 3)); c.hl(5, 9, 27, K('iron', 2))
-    c.ell(12, 25, 1.5, 2.5, None, only=lambda x, y: K('clay', 5 if x < 12 else 3))
-    c.ell(20, 26, 2, 1.5, None, only=lambda x, y: K('gold', 5 if x < 20 else 3)); c.rect(24, 23, 26, 27, K('teal', 4)); c.hl(24, 26, 23, K('teal', 5))
-    # 아래 칸: 작은 상·책
-    c.rect(5, 31, 6, 34, K('marble', 5)); c.p(5, 30, K('marble', 6))
-    for i, col in enumerate(('red', 'green', 'blue')): c.rect(10 + i * 2, 31, 11 + i * 2, 34, K(col, 3)); c.p(10 + i * 2, 31, K(col, 4))
-    c.ell(23, 33, 3, 1.2, None, only=lambda x, y: K('clay', 4 if x < 23 else 2))
-    for y in range(12, 35):
-        if (y % 6) in (1, 2): c.p(3, y, K('glass', 5)); c.p(17, y, K('glass', 5))
-    c.p(14, 24, K('brass', 5)); c.p(18, 24, K('brass', 5))
+
+    def spr(x0, y0, rows, mat, **ex):
+        """행 문자열 물건: o=재질 0단 윤곽, 1~6=재질 단, 그 밖 글자=ex 색. '.' 투명(뒤 천이 보인다)."""
+        for j, row in enumerate(rows):
+            for i, ch in enumerate(row):
+                if ch == '.': continue
+                c.p(x0 + i, y0 + j, K(mat, 0) if ch == 'o' else K(mat, int(ch)) if ch.isdigit() else ex[ch])
+
+    def back(y0, y1):
+        """칸 속 뒷벽: 회청 벨벳 — 선반 바로 밑 한 줄만 그늘, 나머지는 중간 어둠(검은 빈 곳이 아니다)."""
+        for y in range(y0, y1 + 1):
+            k = 1 if y == y0 else 3 if y == y1 else 2
+            for x0, x1 in ((3, 14), (17, 28)):
+                c.hl(x0, x1, y, K('stone', k))
+        c.vl(14, y0 + 1, y1, K('stone', 1)); c.vl(28, y0 + 1, y1, K('stone', 1))
+
+    def spr2(x0, y0, rows, mat, **ex):
+        """채움만 적은 행 문자열 → 바깥 둘레에 재질 0단 윤곽을 자동으로 두른다."""
+        pts = {}
+        for j, row in enumerate(rows):
+            for i, ch in enumerate(row):
+                if ch != '.': pts[(x0 + i, y0 + j)] = K(mat, int(ch)) if ch.isdigit() else ex[ch]
+        for (x, y) in pts:
+            for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                if (x + dx, y + dy) not in pts: c.p(x + dx, y + dy, K(mat, 0))
+        for (x, y), col in pts.items(): c.p(x, y, col)
+
+    def board(y):
+        for x0, x1 in ((3, 14), (17, 28)):
+            c.hl(x0, x1, y, K('wood', 5)); c.hl(x0, x1, y + 1, K(m, 3)); c.p(x1, y, K('wood', 4))
+
+    def book(x, y, w, mat, band):
+        """누운 책 한 권(3/4): 표지 윗면 한 줄 + 등 한 줄(금 띠 하나, 오른쪽 끝은 종이 결)."""
+        c.hl(x, x + w - 1, y, K(mat, 0)); c.hl(x, x + w - 1, y + 3, K(mat, 0))
+        c.vl(x, y, y + 3, K(mat, 0)); c.vl(x + w - 1, y, y + 3, K(mat, 0))
+        c.hl(x + 1, x + w - 2, y + 1, K(mat, 5)); c.p(x + w - 2, y + 1, K(mat, 4))
+        c.hl(x + 1, x + w - 2, y + 2, K(mat, 3)); c.p(x + band, y + 2, K('gold', 5)); c.p(x + w - 2, y + 2, K('linen', 5))
+
+    back(13, 19); board(20); back(22, 28); board(29); back(31, 36)
+    c.vl(15, 13, 38, K(m, 3)); c.vl(16, 13, 38, K(m, 4))    # 두 문짝 사이 기둥
+    c.vl(2, 13, 38, K(m, 4)); c.vl(29, 13, 38, K(m, 2))
+    c.rect(2, 37, 29, 38, K(m, 3)); c.hl(3, 28, 37, K(m, 4)); c.hl(4, 27, 38, K(m, 2))
+
+    # ── 칸마다 큰 물건 하나(가운데 기둥을 넘지 않는다)
+    # 왼문 위: 청동 투구(둥근 정수리 빛 → 눈 띠·코 가리개 → 뺨 가리개)
+    spr2(5, 13, ["..6654..",
+                 ".666543.",
+                 "56655432",
+                 "5kk44kk2",
+                 "54k44k32",
+                 "43k..k21"], 'brass', k=K('brass', 1))
+    c.p(7, 13, K('brass', 6)); c.p(6, 14, K('brass', 6))
+    # 오른문 위: 놋쇠 받침에 세운 흙 접시
+    c.ell(22.5, 16, 3.2, 3.0, K('clay', 0))                                                                       # 붉은 흙 접시
+    c.ell(22.5, 16, 2.3, 2.1, None, only=lambda x, y: K('clay', 6 if x + y < 36 else 5 if x + y < 39 else 3))       # 밝은 테
+    c.ell(22.5, 16, 1.2, 1.0, None, only=lambda x, y: K('clay', 3 if x + y < 39 else 2))                           # 오목한 바닥
+    c.p(20, 19, K('brass', 1)); c.p(25, 19, K('brass', 1)); c.p(19, 19, K('brass', 3)); c.p(26, 19, K('brass', 2))
+    # 왼문 가운데: 뚜껑 있는 청록 유약 단지
+    spr(5, 22, ["...oo...",
+                "..o65o..",
+                ".o6554o.",
+                "..o54o..",
+                "o665432o",
+                "o654321o",
+                ".oooooo."], 'teal')
+    # 오른문 가운데: 작은 금관(뾰족 셋 + 보석 띠), 선반 위에 바로
+    spr2(19, 24, ["6..5..3",
+                  "6555443",
+                  "5R4B3R2",
+                  "4433221"], 'gold', R=K('red', 4), B=K('blue', 4))
+    # ── 왼문 아래 칸: 쌓은 옛 책 셋(폭·색이 다르게)
+    book(4, 33, 10, 'clay', 2)
+    book(5, 31, 8, 'dwood', 5)
+    # ── 오른문 아래 칸: 금 띠 두른 나무 보물함(3/4 뚜껑)
+    spr(19, 31, [".oooooo.",
+                 "o66g665o",
+                 "o55g554o",
+                 "oggggg2o",
+                 "o44Y443o",
+                 "o3g322go"], 'clay', g=K('gold', 4), Y=K('gold', 6))
+    # 유리 반짝임: 문마다 짧은 사선 하나
+    for x, y in ((13, 22), (27, 31)):
+        c.p(x, y, K('glass', 4))
+    c.p(15, 25, K('brass', 5)); c.p(15, 26, K('brass', 3)); c.p(16, 25, K('brass', 4)); c.p(16, 26, K('brass', 2))   # 문 손잡이(가운데 기둥 위)
     c.shadow(1, 36, 31, 39)
 
 

@@ -1,0 +1,7 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"cabinetgem+gemr","view34":"PASS","quality":"PASS","reason":"Cabinet has a 5px lit wood top plane and the purple, cyan, and green crystal clusters and gems read clearly with 4-tone shading."}
+{"id":"cabinetbolt+boltg+boltr","view34":"PASS","quality":"FAIL","reason":"Top and middle shelf items look like blocky bags or canisters hanging from a horizontal rod with flat white/yellow sticker patches rather than rolled fabric bolts."}
+{"id":"cabinetbottle+bottler+bot","view34":"PASS","quality":"PASS","reason":"Cabinet top plane is 5px deep and the green, amber, and red potion bottles have clear necks, rounded bodies, and upper-left specular highlights."}
+{"id":"cabinetcandle","view34":"PASS","quality":"FAIL","reason":"Items read as plain beige boxes, a punctured sack with a dark center dot, and a blue battery canister rather than candles or candlesticks."}
+{"id":"cabinetcheese","view34":"PASS","quality":"PASS","reason":"Cabinet has a 5px lit top surface and the triangular cheese wedges and cut red-wax wheel read clearly with warm 3-4 tone ramps."}
