@@ -5,6 +5,18 @@
 
 <!-- releases -->
 
+## 0.286.0 — 2026-10-20
+
+### 기능
+
+- **objectspec** — ObjectSpec v1 — one object manifest for tile-gen, store packs and editor kits (#3076) (`a7807ed`)
+- **defaults** — recommended play screen 480x270 at zoom 1 with integer scaling + letterbox; Fallen Star 480x270 z1 (#3077) (`81ab73d`)
+
+### 수정
+
+- **monster** — 룬 둘러싼 부유 조각돌 2차 — 줄기 없이 도는 석판 조각·결정 핵·큰 대기 움직임·번쩍 금 가는 피격 (19차) (#3073) (`417f1bb`)
+- **object-gate** — revert profile ee216f0de5822996 to rejected — blind pixel rule for beodeul U (fresh 29/42 = 69%) (#3069) (`f508f17`)
+
 ## 0.285.0 — 2026-10-20
 
 ### 기능
