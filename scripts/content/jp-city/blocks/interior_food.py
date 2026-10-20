@@ -704,6 +704,63 @@ PLACE = {
 for _id, _t in PLACE.items(): R.objs[_id]['place'] = _t
 
 
+# ══ seats34 (3/4 다시 그리기) ══
+import seat34 as S34   # noqa: E402
+
+
+def _chair34(d):
+    """식당 나무 의자 4방향(3/4 다시 그리기). 모두 같은 방석·앞 테두리·다리 높이.
+    남: 등받이 앞면 윗날 2행 + 방석 윗면 6행 + 앞 테두리.
+    북: 등받이 뒷면이 방석을 가리고 윗날 판 2행이 밝다.
+    동·서: L자 옆모습 — 등받이 판 윗면 2행이 밝고, 방석 윗면 6행이 옆판보다 밝다. 빛은 두 방향 모두 왼위."""
+    m = 'ita'; yb = 16
+    def cushion(c, x0, x1, y0=yb):
+        w = x1 - x0 + 1
+        c.R(x0, y0, w, 6, K('aka', 1)); c.HL(x0, y0, w, K('aka', 3)); c.VL(x0, y0, 5, K('aka', 2)); c.HL(x0, y0 + 5, w, K('aka', -1))   # 윗면
+        c.HL(x0 + 1, y0 + 1, w - 1, K('aka', 2))                                                                                    # 윗면 빛 둘째 단
+        c.R(x0, y0 + 6, w, 3, K(m, 0)); c.HL(x0, y0 + 6, w, K(m, 2)); c.HL(x0, y0 + 8, w, K(m, -3))      # 앞 테두리
+    def legs(c, x0, x1, y0=yb + 9):
+        for x in (x0 + 1, x1 - 2): c.VL(x, y0, 7, K(m, 0)); c.VL(x + 1, y0, 7, K(m, -2)); c.HL(x, y0 + 6, 2, K(m, -3))   # 다리 2px(왼 밝게)
+    def f(c):
+        if d == 's':
+            c.R(4, 7, 8, 10, K(m, 0)); box(c, 4, 7, 8, 10, K(m, -3))                                    # 등받이 앞면(방석 뒤에서 솟음)
+            c.R(5, 8, 6, 2, K(m, 2)); c.HL(5, 8, 6, K(m, 3))                                                # 윗날 2행
+            c.VL(5, 10, 6, K(m, 1)); c.VL(10, 10, 6, K(m, -1)); c.HL(6, 12, 4, K(m, -1))                   # 앞면(왼 테 밝게)·살 하나
+            cushion(c, 3, 12); legs(c, 3, 12)
+            c.VL(3, yb, 6, K('aka', 2)); c.VL(12, yb, 6, K('aka', -2))                                      # 방석 양끝(왼 밝게·오른 윤곽)
+        elif d == 'n':
+            cushion(c, 4, 11); legs(c, 3, 12)
+            c.R(4, 11, 8, 14, K(m, -1)); box(c, 4, 11, 8, 14, K(m, -3))                                   # 등받이(방석을 가림)
+            c.R(5, 12, 6, 2, K(m, 2)); c.HL(5, 12, 6, K(m, 3))                                              # 윗날 판 2행
+            c.VL(5, 14, 10, K(m, 0)); c.VL(10, 14, 10, K(m, -2))                                           # 뒷면(왼 테 밝게)
+            for y in (18, 21): c.HL(6, y, 4, K(m, -2))                                                    # 뒷면 살(재질 단)
+        else:
+            e = d == 'e'
+            bx = 2 if e else 10
+            c.R(bx, yb - 9, 4, 16, K(m, 0)); box(c, bx, yb - 9, 4, 16, K(m, -3))                          # 등받이 판(옆에서, 두께 2)
+            c.HL(bx + 1, yb - 8, 2, K(m, 3)); c.HL(bx + 1, yb - 7, 2, K(m, 2))                              # 윗날 윗면 2행
+            c.VL(bx + 1, yb - 6, 12, K(m, 1)); c.VL(bx + 2, yb - 6, 12, K(m, -1))                           # 옆면(왼쪽 밝게)
+            x0, x1 = (5, 13) if e else (2, 10)
+            legs(c, x0 - 1, x1 + 1); cushion(c, x0, x1)                                                   # 방석이 등받이 판 안쪽 테를 덮어 이어진다
+            ex = x1 if e else x0
+            c.VL(ex, yb, 6, K('aka', -2))                                                                  # 방석 앞 끝 윤곽
+    return f
+
+
+def _stool34(c):
+    """카운터 둥근 스툴(품질 다시 그리기): 붉은 방석 윗면 타원 + 두께 2행, 2px 크롬 기둥, 둥근 받침. 윤곽은 바깥에만."""
+    S34.round_base(c, 8, 13.5, 4.5, 1.8, 'tekko', 1, K('tekko', -3))
+    c.VL(7, 8, 5, K('tekko', 2)); c.VL(8, 8, 5, K('tekko', -1))                                          # 기둥
+    S34.round_seat(c, 8, 5.5, 5.5, 2.7, 2, 'aka', 1, K('aka', -2))
+
+
+PENDING_SEATS34 = {'fd-chair-' + _d: _chair34(_d) for _d in 'snew'}
+PENDING_SEATS34['fd-stool'] = _stool34
+SEATS34_PASS = set()          # object-gate PASS 영수증을 받은 id 만 — 이 id 들만 굽는 그림을 바꾼다
+for _k in SEATS34_PASS: R.objs[_k]['draw'] = PENDING_SEATS34[_k]
+# ══ /seats34 ══
+
+
 def build(): return R.build()
 def selftest(): return R.selftest()
 

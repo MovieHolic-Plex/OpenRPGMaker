@@ -1,0 +1,319 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e7cfe379298d606b3d091264ac0f8096416549c1457ea1d6e8e4cf28f2e88118",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "bath stool and wash basin",
+ "label": "seats34/jp_city_interior/pb-wash-stool",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 0/4)",
+  "3/4: 윗면 3행 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 0/4)",
+   "윗면 3행 < 4 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 71,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stool seat",
+      "rows": "3-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10"
+     },
+     {
+      "part": "wash basin",
+      "rows": "7-14",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The yellow stool seat covers rows 3-9 and widens from 6 to 15 px. It ends in a light front-edge row at row 9 (#ffe26e), followed by a dark shadow row at row 10. Below that, the brown apron and legs at rows 10-13 form a front face of about 4 rows. The blue basin to the right shows an open ellipse mouth with a light rim at row 8 and water at rows 9-13, so it also has a top surface. The stool seat is somewhat dome-like with some interior detail, so the top reading is moderately confident."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small single-tile prop (yellow stool plus blue basin), so I judged it by eye and by the measured facts. It has 13 colours per 16x16 tile, above the hedge reference (10) and in the range of the stall (17) and well (20) tiles. Its 0% flat-fill coverage matches the references. The dark edge pixels are 0% neutral, so the outline leans toward each material (dark amber beside the stool, dark blue beside the basin) and is not a black sticker line. Each material carries about 4 lightness steps (highlight, mid, shade, dark edge), slightly fewer than the 5-6 on the larger references, which is reasonable at this size. The highlights and shading on the basin rim and stool top give some texture, though less than the larger props. It is not thinner or flatter than the small references like the bench and hedge, so it passes narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19107
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stool seat",
+      "rows": "3-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "6-6"
+     },
+     {
+      "part": "wash basin",
+      "rows": "7-11",
+      "evidence": "d",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stool at x=5 has a light seat band at rows 4-5 (L=221) that ends in a darker front-edge line at row 6 (L=101). Below it is a front body and legs from rows 7-13, about 7 rows, so the seat is seen from above with a real front face. The blue basin on the right has a rim ellipse with its back rim at row 8 and front rim at row 11 (x=12 scan), and water is visible inside, which counts as evidence (d). The seat's top band is short, only about 3 rows, but it is a genuine top surface and not just a rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small single-tile prop, about 12x12 source pixels: a yellow stool with a blue basin. It has 13 distinct colours in its tile, level with the hedge (10) and below only the large stall and well (17-20), which are far bigger pieces. Flat-fill coverage is 0%. Dark edge pixels are 0% neutral, so the outlines lean brown or navy and follow the neighbouring material, as in Beodeul, rather than forming a black sticker line. Each material ramp (yellow wood, blue basin) shows about 4 steps with highlights and a shaded side, slightly under the references' 5-6, but this is acceptable for something this small. It would not look thinner or flatter next to the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18115
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stool seat",
+      "rows": "3-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wash basin",
+      "rows": "7-11",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "At x=5 the stool seat is a lit band at rows 3-6 (highlight at rows 4-5), ending in a darker front-edge line at row 6. The yellow front face runs rows 7-10, with brown legs at rows 11-13, so the front is about 7 rows. The width profile widens from 6 to 15 across rows 3-9, which fits a rounded seat. The blue basin at the right shows a rim at row 8 and water inside at rows 9-11, so its top is visible too (evidence d). The stool's top-surface reading is slightly ambiguous because the seat is small and rounded, but the edge line and front face support three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a tiny sprite of about one tile: a yellow stool and a blue basin. The measured facts back it up. It has 13 colours per tile, above the hedge reference at 10 and close to the stall at 17. Flat-fill coverage is 0%. None of its dark edge pixels are neutral, so the outlines carry a tint, brown-ish beside the yellow and dark blue beside the basin, rather than a black sticker line. Its 13 distinct colours are spread over two materials, so each ramp has about 4 steps. That is a little under the 5-6 steps on the references, but the highlight, mid and dark bands and the small basin rim and water dots show real shading, not a flat fill. Judged by eye it would sit acceptably next to the small bench and lamp references and does not look thinner or more sticker-like than them. It is simple, but that is in proportion to its size.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18456
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stool seat",
+      "rows": "3-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "10-11"
+     },
+     {
+      "part": "wash basin",
+      "rows": "7-10",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "At x=5 the stool seat is a light yellow band at rows 4-5 under a dark outline at row 3. Row 6 (#8f610b) is a darker front-edge line below it. Below that, rows 7-10 are a yellow front face or apron. Row 11 is dark shadow, and rows 12-13 are brown legs. The silhouette width of 6, 8, 10 at rows 3-6 only rounds the top corners, so it is not an ellipse. The blue basin in front at x=12 has a lighter rim row (row 8) and water-colored interior rows, so it shows an open top with contents. The seat top is thin (about 3 rows) but has an edge line and a 7-row front face, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a very small prop, roughly one tile, made of a yellow stool and a blue basin. It uses 13 distinct colours, and its median of 13 colours per 16x16 tile is above the hedge (10) and close to the cheese stall (17). Flat-fill coverage is 0%, so there are no large single-colour areas. Dark edge pixels are 0% neutral, so the outline is a tinted darker version of each material (brown-orange beside the stool, dark blue beside the basin) rather than a black sticker line. Each material shows about 3-4 lightness steps, with highlights on the stool top and on the basin rim and water, slightly fewer than the references' 5-6. For a piece this size that is acceptable, and it would sit next to the references without looking thinner or flatter. I could not make out fine grain at this scale, so texture is rated 'some' rather than 'rich'.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21345
+  }
+ ],
+ "decidedAt": "2026-10-20T07:00:39.781Z",
+ "cells": {
+  "16": [
+   "e7b8258337084e36"
+  ],
+  "24": [
+   "041a18ae533ea6a1",
+   "1727dc8ed555f103",
+   "3bafd834be6a48df",
+   "825bf6837f371015",
+   "b951f002010a7f79",
+   "c90c03e293189fa7"
+  ],
+  "32": [
+   "0c1de5c75c4722c5",
+   "152fbb162a882a60",
+   "31a7ce8495cb450f",
+   "4eb0541f2f931c96",
+   "e6c739fb80d67163",
+   "f5634663d4a7e91e"
+  ],
+  "48": [
+   "18b654ddab9d8f88",
+   "298bd682101ae2fb",
+   "64c427fd5987d76d",
+   "70d96948d1031f68",
+   "776bc2cbf9ba0612",
+   "a62b9c933ad1a11c"
+  ]
+ }
+}

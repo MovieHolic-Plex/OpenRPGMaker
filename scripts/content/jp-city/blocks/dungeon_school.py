@@ -705,6 +705,40 @@ def _item_photo_box(c):
     speck(c, 95, 60, (K('daidai', -2),), (2, 4, 14, 13))
 
 
+# ══ seats34 (3/4 다시 그리기) ══
+import seat34 as S34   # noqa: E402
+
+
+def _chair_toppled34(c):
+    """옆으로 쓰러진 쇠 파이프 학교 의자 3/4: 옆구리를 바닥에 대고 누웠다 — 나무 좌판은 세로로 서서 윗날(왼쪽 밝음)과 남쪽 두께를 보이고,
+    등받이 판은 바닥을 따라 왼쪽으로 눕고(윗면 밝음 + 남쪽 두께), 녹슨 2px 쇠 다리 둘이 동쪽으로 뻗는다. 바닥에 그늘."""
+    hl(c, 1, 15, 14, K('yoru', -2))                                                                  # 바닥 그늘
+    for y in (4, 10):                                                                                # 쇠 다리(동쪽으로 누움, 윗면 밝게·아랫면 어둡게)
+        hl(c, 9, y, 6, ST(2)); hl(c, 9, y + 1, 6, ST(-1)); px(c, 15, y, ST(0)); px(c, 15, y + 1, ST(-3))
+    vl(c, 13, 6, 4, ST(-1))                                                                          # 다리 가로대
+    rc(c, 5, 2, 4, 11, kc('kinari', 0)); vl(c, 5, 2, 11, kc('kinari', 2)); hl(c, 5, 2, 4, kc('kinari', 2))   # 좌판(세로로 섬, 왼쪽 윗날 밝음)
+    vl(c, 6, 3, 9, kc('kinari', 1)); vl(c, 8, 3, 9, kc('kinari', -1))
+    rc(c, 5, 13, 4, 1, kc('yuka', -2))                                                               # 좌판 남쪽 두께
+    rc(c, 0, 10, 6, 3, kc('yuka', 1)); hl(c, 0, 10, 6, kc('yuka', 2)); hl(c, 0, 12, 6, kc('yuka', 0))  # 등받이 판(바닥에 누움) 윗면
+    rc(c, 0, 13, 6, 1, kc('yuka', -2))                                                               # 등받이 남쪽 두께
+    S34.silhouette(c, kc('ita', -3), 0, 0, 9, 15)
+    hl(c, 11, 5, 2, K('soil', 0))                                                                    # 녹(다리 아랫면 한 줄기)
+
+
+def _music_chair_dusty34(c):
+    """먼지 앉은 음악실 의자(북향) — 다시 그린 학교 의자 그대로에, 좌판 윗면 한쪽에 먼지 덩이(점 흩뿌림 아님)·한쪽 다리 녹."""
+    SC._pipe_chair34(c, 's')
+    age(c, -1, (3, 5, 13, 11))                                                                       # 등받이 뒷면만 한 단 바램(윗면은 가장 밝게 남김)
+    rc(c, 8, 2, 4, 2, kc('kinari', 0)); hl(c, 9, 2, 3, kc('kinari', 1))                              # 좌판 오른쪽 먼지 덩이
+    px(c, 12, 12, K('soil', 0)); px(c, 12, 13, K('soil', -1))                                       # 녹(한쪽 다리)
+
+
+PENDING_SEATS34 = {'as-chair-toppled': _chair_toppled34, 'as-music-chair-n': _music_chair_dusty34}
+SEATS34_PASS = set()          # object-gate PASS 영수증을 받은 id 만 — 이 id 들만 굽는 그림을 바꾼다
+for _k in SEATS34_PASS: R.objs[_k]['draw'] = PENDING_SEATS34[_k]
+# ══ /seats34 ══
+
+
 def build(): return R.build()
 def selftest(): return R.selftest()
 

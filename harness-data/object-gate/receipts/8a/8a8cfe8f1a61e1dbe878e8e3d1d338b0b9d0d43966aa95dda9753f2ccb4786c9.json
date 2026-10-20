@@ -1,0 +1,358 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8a8cfe8f1a61e1dbe878e8e3d1d338b0b9d0d43966aa95dda9753f2ccb4786c9",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "sofa",
+ "label": "seats34/ref/atlas sofa (current)",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 8,
+  "darkV5": 42,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest top",
+      "rows": "1-2",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "4-5"
+     },
+     {
+      "part": "seat cushions",
+      "rows": "7-11",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12"
+     },
+     {
+      "part": "armrests",
+      "rows": "4-7",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat cushions are a light band on rows 7-10. Row 11 is the lightest row and works as the front-edge line. Rows 12-14 are a darker front base of 3 rows, with row 12 acting as shadow. The backrest has a light top band on rows 1-2, an edge on row 3 and a darker face on rows 4-5. The armrests have lighter tops with side faces below. The seat is therefore seen from above, though the front face is shallow."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The sofa uses only 8 distinct colours, against 11 for the hedge, 14 for the bench and 38-40 for the stall and well. Its median is 8 colours per tile, below the hedge at 10 and the stall at 17. The outline is a dark green with no neutral edge pixels (0% near-neutral), so it is a dark material tone and not a sticker-style black line. Flat-fill coverage is 0%, so there are no large dead areas. The shading is shallow, though: about 4 green steps (highlight, mid, dark, outline) against the 5-6 steps in the references. The cushions and arms are smooth, with little grain, no fabric speckle and no per-cushion variation, so the piece reads as clean but simplified beside the hedge's clumped foliage and the stall's detail. It is not a sticker look, but it is thinner and flatter than the references, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17455
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest",
+      "rows": "1-3",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "4-5"
+     },
+     {
+      "part": "seat cushions",
+      "rows": "7-11",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12"
+     },
+     {
+      "part": "arms",
+      "rows": "4-9",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat cushions (rows 7-11) are a light band that ends in a lighter front-edge line at row 11. Row 12 is darker shadow, and rows 12-14 form the front base, which is 3 rows. The backrest also has a light top band (rows 1-3) over a darker face (rows 4-5). The arms have light tops at the sides. The seat surface is seen from above, so the sofa reads as three-quarter. The front face is short, at the minimum of 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The green sofa is a small, clean piece with 8 distinct colours, roughly 3 green steps (highlight, mid, dark) plus a dark green outline. The outline is tinted dark green (0% neutral edge pixels), so it is not the near-black sticker look. There are no 5x5 flat fills (0%), and the cushions and armrests are separated by value. It has 8 colours per tile against a hedge reference at 10 and a stall or well at 17-20, and 8 total colours against 11-40 for the references, so it sits at the low end. Shading is shallower than Beodeul's 5-6 steps per material. Texture is limited to cushion seams and a few highlights, with no grain, stitching dots or fabric speckle. Cleanly drawn, but flatter and thinner than the references, so a careful artist would likely ask for more ramp steps and texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16946
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest",
+      "rows": "1-2",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "4-5"
+     },
+     {
+      "part": "seat cushion",
+      "rows": "7-11",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12"
+     },
+     {
+      "part": "armrests",
+      "rows": "4-8",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Column scan at x=8, 16 and 23 shows the same sequence. Rows 1-2 are a light backrest top band (L=142) over a mid row 3 and a darker backrest face on rows 4-5. Row 6 is a dark gap. Rows 7-10 are the seat top (L=104 then 142), ending in a light front-edge line at row 11 (L=180). Row 12 is darker shadow (L=79), and rows 13-14 are the dark front base (L=54). That gives a seat top of about 5 rows and a front face of about 3 rows. The armrests are drawn on both sides with their own lighter tops, so no major part is only a vertical face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The green sofa has only 8 distinct colours against 11-40 for the references, and its median is 8 per tile against 10-20 for the tiled references (hedge 10, stall 17, well 20). Its dark edge pixels are 0% neutral, so the outline is a dark green tint and not black, which fits the Beodeul approach. Flat-fill coverage is 0%, so there are no large flat areas. The cushions and backrest show about 3 green steps (light, mid, dark) with a few seam and highlight pixels, shallower than the 5-6 steps Beodeul uses per material. It is cleaner and simpler than the hedge, which carries many leaf-clump greens, and next to the references it looks thinner and less textured. It has no fabric grain, stitching or per-cushion highlights, and the legs are minimal. It is a competent but shallow piece, so it fails when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14064
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "7-11",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12"
+     },
+     {
+      "part": "backrest",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "4-5"
+     },
+     {
+      "part": "armrests",
+      "rows": "4-8",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat cushion is a light band at rows 7-11 (L=104 then 142). Row 11 (L=180) is the lightest row and acts as a front-edge line. Row 12 (L=79) is a darker eave shadow, and rows 13-14 (L=54) are the dark front base. That gives a 5-row seat top and about 3 rows of front face. The backrest sits above at rows 1-5 with a light band (rows 1-2), a mid row 3 and a darker lower part (rows 4-5). The armrests have lighter tops at the sides. The scan is identical at x=8, 16 and 23, so the structure is consistent across the body. The silhouette is a plain front-facing sofa with no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The sofa has a dark green-tinted outline (0% neutral dark edge pixels), so it is not a sticker-style black line. It has no 5x5 flat fills. The shading is shallow: only about 4 greens on the body (highlight, light, mid, dark) plus the outline, where Beodeul uses 5-6 steps per material. It has 8 distinct colours in total, fewer than every reference (hedge 11, bench 14, lamp 14, well 38, stall 40). Its median of 8 colours per tile is also below the hedge's 10 and far below the stall's 17 and the well's 20. The cushions, arms and seat read as smooth, clean shapes with little grain, stitching or speckle, so they look thinner and flatter than the hedge's leaf clumps or the stall's textured surfaces. A careful artist would find it a bit sticker-like next to the references, and with doubt the verdict is fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19834
+  }
+ ],
+ "decidedAt": "2026-10-20T06:56:03.649Z",
+ "cells": {
+  "16": [
+   "79860a8e63c96758",
+   "c5ac5caae52cd93f"
+  ],
+  "24": [
+   "0207fd7b0f62f14f",
+   "026f45ce4c88c95e",
+   "10007f3e62ee39b1",
+   "2ca193b49c7f506f",
+   "4c16915ec86bfe37",
+   "4f3988e0d0abe70c",
+   "9207c4ff7d6fd830",
+   "ae3349083e08d90f",
+   "d68880786db063af",
+   "dd93f83aa7a6ca52",
+   "e081184a6c06099d",
+   "e8e9326b6c04d6e4"
+  ],
+  "32": [
+   "9b2cf0836df43846",
+   "b1ac5c8f164988d1"
+  ],
+  "48": [
+   "09d065fd79ee0d58",
+   "167b52f5dc6c489d",
+   "2df88d668d2c200b",
+   "39574e861d8503b9",
+   "4abfe62827ecb54a",
+   "590ae4c0dd0d11f7"
+  ]
+ }
+}

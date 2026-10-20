@@ -485,6 +485,42 @@ PLACE = {
 for _id, _t in PLACE.items(): R.objs[_id]['place'] = _t
 
 
+# ══ seats34 (3/4 다시 그리기) ══
+import seat34 as S34   # noqa: E402
+
+
+def _kids_chair34(c):
+    """뒤에서 본 아이 의자 3/4: 윤곽 두른 식판 끝 → 등판(윗날 판 2행 밝음 + 결, 뒷면) → 등판 양옆으로 좌판 윗면 3행
+    → 좌판 뒷날 2행 → 벌어진 두 다리·발판. 안쪽은 재질 단으로만 나누고 검은 줄은 바깥 윤곽에만."""
+    c.HL(4, 0, 8, OL); c.VL(4, 1, 2, OL); c.VL(11, 1, 2, OL)                                              # 식판 끝(윤곽)
+    c.HL(5, 1, 6, K('shiro', 2)); c.HL(5, 2, 6, K('shiro', 0))
+    box(c, 1, 5, 14, 7, OL)                                                                              # 좌판(양옆으로 보임)
+    c.R(2, 6, 12, 3, K('yuka', 2)); c.HL(2, 6, 12, K('yuka', 3)); c.VL(2, 6, 3, K('yuka', 3))            # 좌판 윗면 3행
+    c.R(2, 9, 12, 2, K('yuka', 0)); c.HL(2, 10, 12, K('yuka', -1)); c.VL(2, 9, 2, K('yuka', 1))           # 좌판 뒷날 2행
+    box(c, 4, 3, 8, 7, OL)                                                                               # 등판
+    c.R(5, 4, 6, 2, K('yuka', 2)); c.HL(5, 4, 6, K('kinari', 3)); c.VL(5, 4, 2, K('kinari', 3))           # 윗날 판 2행
+    c.R(5, 6, 6, 3, K('yuka', 0)); c.HL(5, 6, 6, K('yuka', -1)); c.VL(5, 7, 2, K('yuka', 1)); c.HL(7, 7, 3, K('yuka', 1))   # 뒷면 + 결
+    c.HL(4, 9, 8, K('yuka', -1))                                                                          # 등판 밑(좌판 뒷날과 이음)
+    for x0, d in ((3, -1), (11, 1)):                                                                     # 벌어진 두 다리(2px)
+        for k, y in enumerate(range(12, 16)):
+            xx = x0 + d * (k // 2)
+            c.P(xx, y, K('yuka', 0)); c.P(xx + 1, y, K('ita', -1))
+    c.HL(4, 13, 8, K('yuka', -1))                                                                        # 발판
+
+
+def _counter_stool34(c):
+    """규동집 카운터 스툴(품질 다시 그리기): 갈색 비닐 방석 윗면 타원 + 두께 2행, 2px 은색 기둥, 둥근 받침. 윤곽은 바깥에만, 빛은 왼위."""
+    S34.round_base(c, 8, 13.5, 5, 1.8, 'conc', 1, K('tekko', -2))
+    c.VL(7, 8, 5, K('conc', 3)); c.VL(8, 8, 5, K('conc', 0))                                             # 기둥
+    S34.round_seat(c, 8, 5, 6, 3, 2, 'soil', 1, OL)
+
+
+PENDING_SEATS34 = {'fr-kids-chair': _kids_chair34, 'fr-counter-stool': _counter_stool34}
+SEATS34_PASS = set()          # object-gate PASS 영수증을 받은 id 만 — 이 id 들만 굽는 그림을 바꾼다
+for _k in SEATS34_PASS: R.objs[_k]['draw'] = PENDING_SEATS34[_k]
+# ══ /seats34 ══
+
+
 def build(): return R.build()
 def selftest(): return R.selftest()
 

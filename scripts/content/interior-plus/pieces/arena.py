@@ -402,3 +402,20 @@ def curule_seat(c):
     c.hl(1, 14, 12, K('gold', 5)); c.hl(1, 14, 13, K('gold', 2))   # 금 틀
     c.p(7, 7, K('purple', 4)); c.p(8, 7, K('purple', 4))      # 방석 단추
     c.outline()
+
+# ══ seats34 ══ 대기 후보(굽지 않음): 방석 윗면을 왼쪽 위에서 밝게, 단추 두 점(눈처럼 읽힘) 제거.
+def curule_seat_seats34(c):
+    c.shadow(1, 21, 15, 23)
+    line(c, 2, 22, 13, 13, K('gold', 4)); line(c, 13, 22, 2, 13, K('gold', 3))
+    line(c, 3, 22, 14, 13, K('gold', 2)); line(c, 12, 22, 1, 13, K('gold', 5))
+    c.hl(1, 3, 22, K('gold', 4)); c.hl(12, 14, 22, K('gold', 3))
+    for j in range(5):                                    # 방석 윗면 5줄: 위·왼쪽 밝게 → 아래·오른쪽 어둡게
+        for i in range(14):
+            t = 6 - (j >= 2) - (j >= 4) - (i >= 10) - (i >= 13)
+            c.p(1 + i, 5 + j, K('purple', max(3, t)))
+    c.hl(1, 14, 10, K('purple', 3)); c.hl(1, 14, 11, K('purple', 2))   # 방석 앞면 2줄
+    c.p(14, 10, K('purple', 2)); c.p(14, 11, K('purple', 1))
+    c.hl(1, 14, 4, K('purple', 1)); c.vl(0, 5, 11, K('purple', 0)); c.vl(15, 5, 11, K('purple', 0))
+    c.hl(1, 14, 12, K('gold', 5)); c.hl(1, 14, 13, K('gold', 2))   # 금 틀
+    c.outline()
+# ══ seats34 ══

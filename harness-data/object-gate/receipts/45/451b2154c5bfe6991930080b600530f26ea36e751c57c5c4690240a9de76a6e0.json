@@ -1,0 +1,357 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "451b2154c5bfe6991930080b600530f26ea36e751c57c5c4690240a9de76a6e0",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "low plastic Japanese bath stool, front view with arched leg cutout",
+ "label": "seats34/jp_city_interior/bath-stool",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+  "3/4: 윗면 0행 < 4 (1/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+   "윗면 0행 < 4 (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 6,
+  "darkV5": 26,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat body",
+      "rows": "3-7",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "front apron and legs with arched cutout",
+      "rows": "8-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 3-7 form a medium-blue band (#4f80d6) with a lighter highlight at top-left in rows 3-4. It steps to a much darker blue (#164d75) at rows 8-10, which reads as the front apron and shadow. Two legs continue down through rows 11-14 around an arched cutout, with the silhouette narrowing from 12 to 8 px wide. That layout resembles the green 'seat: top 5 + legs' reference. The weak point is that the band-to-face change is a 2-3 row tone step, with no distinct 1-row front-edge line. The top surface is therefore inferred from the lighter band over a darker face, not from a clear edge line. There is no ellipse and no side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny blue stool with only 6 distinct colours in total, against 11-40 for the references. Its main plastic body ramps through about 3 blue steps (light top edge, mid body, dark leg and outline), where Beodeul materials use 5-6. The dark edge pixels are tinted (0% neutral), so the outline is a dark blue material tone and not a black sticker line. That is a point in its favour. The body is smooth plastic with no grain, speckle or dot variation, and the arched cutout is a plain dark shape. The flat-fill coverage figure is 0% only because the piece is so small. By eye it reads as a simple flat icon beside the richly textured hedge, stall and well. The prop is small, but even the sparse references (bench, lamp) carry more per-material shading steps than this. A careful artist would find it shallower and more sticker-like next to them, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 23324
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat block / body",
+      "rows": "3-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "apron and legs with arched cutout",
+      "rows": "8-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The body is a 12-wide block (rows 3-10) with two legs and an arched cutout below (rows 11-14, width 8). Rows 3-7 are one mid-blue tone, and rows 8-10 are a darker tone. There is no band across the top that ends in a front-edge line, no eave shadow and no ellipse. The only lighter pixels are a small highlight patch at the upper left (rows 3-4), which reads as a gloss spot and not a horizontal seat surface. The whole object reads as a vertical front face, so the seat surface is not seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny blue stool with only 6 distinct colours in total, against 11-40 for the references. It has about 3 lightness steps on its blue plastic: a light top edge, a mid body and a dark outline/underside. The 0% neutral share of dark edge pixels means the outline leans blue, so it counts as a dark material tone and not a black sticker line. The 5x5 flat-fill figure is 0% only because the piece is small. By eye the surface is smooth plastic with no grain, speckle or per-part variation, so the texture is flat. The arched cutout is a clean shape, but the piece is thinner and flatter than the references, which carry 5-6 steps and texture dots (the hedge's leaf clumps, the well's stones). Plain plastic can justify some simplicity, but a careful artist would not accept this next to the references without it looking shallower and more sticker-like. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 20188
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat block",
+      "rows": "3-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs with arch cutout",
+      "rows": "8-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a flat-fronted block. Rows 3-7 are a uniform mid blue, with a light highlight on rows 3-4 only at the upper left (x=5). That highlight is not a full-width band and has no front-edge line or eave shadow. Rows 8-10 step to a darker blue for the apron and legs, and the arch cutout sits below them (row 10 at the centre column). Legs run to row 14, and the width profile has no widening or narrowing that would make an ellipse. The seat surface is not seen from above, so this is a front elevation like the 'seat: band 2' reference, not a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny blue stool with only 6 distinct colours, against 11-40 for the references (the hedge has 11 and the bench 14). Its tile median of 6 is below the hedge's 10, the stall's 17 and the well's 20. Its dark edge pixels are 0% neutral, so the outline is a tinted dark blue, which fits dark_material_tone. Shading is shallow: about 3 blue steps (a light top, a mid body and a dark base/inner cutout), where the references use 5-6. The top face and the legs are smooth fills with no grain, speckle or per-surface dots. The 0% flat-fill coverage comes only from the piece's small size, not from richness. Next to the references, especially the shaded hedge, the stall and the well, it looks like a flat, sticker-like icon with little material texture, so it falls short of the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 16514
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat top",
+      "rows": "3-7",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "8-9"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Column scans at x=5, 8 and 10 show a lighter blue band in rows 3-7 (L about 119, with a brighter highlight in rows 3-4 at x=5). It breaks sharply to a darker tone (L=65) at row 8, so rows 3-7 read as the seat top and rows 8-10 as the front apron. No separate 1-row edge line is drawn, so the row 8 tonal break stands in for it. Below that, the arched cutout (gap at x=8 from row 10) and the two legs in rows 11-14 (silhouette width 8) make a front face of about 7 rows (rows 8-14). The proportions match the green 'seat: top 5 + legs' reference rather than the 'band 2' one. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny blue stool with only 6 distinct colours in total, against 11-40 for the references. Its main plastic ramp has about 3 steps: a light top highlight, a mid blue and a dark blue edge. The outline is a dark blue tone with no neutral pixels (0% near-neutral), so it is tinted, not near-black. The measured flat-fill coverage is 0%, but only because the piece is so small. By eye the body is smooth, with no grain, speckle or per-surface variation. The reference bench and hedge have a richer ramp and visible texture such as grain and leaf clumps. At the same scale the stool looks flatter and more sticker-like than the references, and its 6 colours are well below the hedge's 11 and the bench's 14. This is a shallow piece for the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 18063
+  }
+ ],
+ "decidedAt": "2026-10-20T08:55:46.236Z",
+ "cells": {
+  "16": [
+   "794af6d4ac7e0e25"
+  ],
+  "24": [
+   "1567496810b98e89",
+   "1ce4a878dbc1ee42",
+   "21628026b4a4c1f5",
+   "725fe38bdcd4aa12",
+   "e76d6636dd9a0996",
+   "e79ecd24ec4585af"
+  ],
+  "32": [
+   "3883276d759f3065",
+   "51ae8d9db0a1e7d1",
+   "99f2c41d6736403a",
+   "a18bbb30dbbd5ecb",
+   "dcd0e04539604ee9",
+   "f2d1024301838c64"
+  ],
+  "48": [
+   "5daafd2d60d9c0c4",
+   "86e632faa9d5e2a7",
+   "c36199cd00686eee",
+   "e8b3e1d073bbea5d",
+   "ea7efcfa18528575",
+   "f06ea9dbd6b26c71"
+  ]
+ }
+}

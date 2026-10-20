@@ -1,0 +1,387 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fae77d567f8e60deb523619ebd47090e4908c8c37211232566d92588d76151b6",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "wooden dining chair (faces north, back view)",
+ "label": "seats34/modern_city_interior/mci-chair-wood-n",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (3/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+  "3/4: 윗면 2행 < 4 (2/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)",
+  "화풍: 질감 없음 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (3/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+   "윗면 2행 < 4 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)",
+   "질감 없음 (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 6,
+  "darkV5": 36,
+  "nearBlackEdge": 0.82,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest top rail",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest panel and slats (seen from behind)",
+      "rows": "15-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs",
+      "rows": "25-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a back view of a chair. The 4-row band at rows 10-13 is a smooth highlight-to-dark gradient (L 195, 171, 151, 128) with no front-edge line and no eave shadow, so it reads as a bevelled top rail seen face-on, not a horizontal surface. Row 14 is a transparent slot in the middle, with only the side posts (width 6) present. Rows 15-24 are the backrest panel, with slat bands at rows 15-16 and 17-22 and a shadow at rows 23-24. Legs run from row 25 to 29. No seat is visible from above: there is no ellipse, no contents, and no band ending in an edge line. This matches the red 'front elevation' and 'band 2' references and not the green 'seat: top 5 + legs' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The chair's outline is a tinted dark brown, with 0% neutral dark edge pixels, so it avoids the black sticker look. Shading is shallow, though. The candidate has only 7 distinct colours, against 14 for the similar wooden bench and 38-40 for the stall and well. Its wood ramp is about 3 steps (light, mid, dark) plus the outline, where Beodeul uses 5-6. The back slats and frame read as simple, evenly shaded bands with little grain, no per-plank highlights and no wear dots. The median of 6 colours per tile is below the hedge's 10. Flat-fill coverage is 0%, but only because the piece is small. Next to the bench it looks thinner and flatter, so it falls short of the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 21956
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest top rail / chair top",
+      "rows": "10-13",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "back panel with slats and posts (vertical face)",
+      "rows": "15-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 10-13 form a 4-row band across the full 12px width. It steps from light (L=195 at row 10) to darker (L=128 at row 13), which reads as the top of the backrest seen from above. Row 14 is a see-through gap (width 6, only the posts), which stands in for the eave shadow. Below it, rows 15-24 are the vertical back face with slat banding, and rows 25-29 are the legs (width 8, then 4). That gives about 15 rows of front face. No receding side face is drawn. The seat surface itself is not separately visible, because this is a back view and the backrest hides it. The only top evidence is the 4-row band, which has no distinct bright edge line, only a gradient."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate chair is small (about 20x28 px at 2x) and has only 7 distinct colours, against 14 for the bench and 38-40 for the stall and well. Its main wood ramp has about 3 steps (light, mid, dark), where Beodeul uses 5-6 steps per material. Dark edge pixels are 0% neutral, so the outline leans brown and counts as a dark material tone; this is the one point in its favour. At this scale the back slats and seat show almost no grain, no per-plank highlights and no texture dots, and the wood reads as smooth, simple fills. The bench reference is also small, but it has more tonal variation across its slats and legs. Measured flat-fill coverage is 0% only because the piece is tiny. By eye the candidate is thinner and flatter than the references, and it would look sticker-like beside them. The 6 colours per tile is below the hedge's 10, the stall's 17 and the well's 20.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 20441
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest top rail",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest slat panel and posts (back view)",
+      "rows": "15-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rear legs",
+      "rows": "26-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a back view of a chair. Rows 10-13 are a top rail whose lightness steps down smoothly (195, 171, 151, 128) with no distinct front-edge line and no eave shadow, so it is a shaded vertical face. Row 14 narrows to 6 px, a see-through gap between the rail and the slat panel. Rows 15-25 are the vertical back panel with side posts, and rows 26-29 are the legs. No seat surface is visible from above and no ellipse, roof, or contents appear. It matches the 'seat: band 2' and 'side elevation chair' red references rather than the green 'seat: top 5 + legs' example."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small chair seen from behind, with a slatted back and a darker brown outline that leans toward the wood tone (0% neutral dark edge pixels). It has only 7 distinct colours in total, against 11-40 for the references (14 for the bench, the closest kind). It shows about 3 wood steps (light, mid, dark), where the bench and stall have 5-6. Surfaces are smooth with little grain, knots or per-plank highlights. The 6-colour tile median is below the hedge (10), stall (17) and well (20), and the colour count is the weakest of any reference. The 0% flat-fill figure only reflects the piece's small size, not richness. A careful artist would find it thinner and flatter than the bench and stall next to it, so it fails on shallow shading and low texture and density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 16668
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest top rail",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat/back panel with slats",
+      "rows": "15-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a back view. Rows 10-13 are a top rail with a light-to-dark gradient (L 195 to 128), drawn like a face-on beam. It has no distinct front-edge line and no eave shadow, so it is not a top surface. Row 14 is a transparent slot between the posts. Rows 15-24 are a slatted back panel with horizontal bands, a vertical face. Two legs run through rows 25-29. No seat surface is visible from above, so the chair reads as a flat elevation. It matches the 'seat: band 2' and 'front elevation' wrong examples."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small chair seen from the back, with about 7 distinct colours in total. The references have 11-40 colours, and the nearest same-kind pieces (bench 14, hedge 11) are also well above it. Its measured 6 colours per tile is below the hedge (10), the cheese stall (17) and the roofed well (20). Flat-fill coverage is 0%, but the slats and back panel look like only 2-3 wood tones with little grain, knots or per-plank highlights, so the shading is shallow compared with the bench's roughly 5 wood steps. The dark edge pixels are 0% neutral, so the outline is tinted brown and follows the material rather than being a black sticker line, which is a point in its favour. Even so, the piece reads as flat and simple, with fewer ramp steps and less texture than any reference, so it falls short of the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 18192
+  }
+ ],
+ "decidedAt": "2026-10-20T08:09:08.173Z",
+ "cells": {
+  "16": [
+   "30ebc284b83ba8a2",
+   "9ab1ca0357f105d9"
+  ],
+  "24": [
+   "09ee32602692a39d",
+   "1379a1e7479d4dd6",
+   "25e261874f9b4365",
+   "2d59bd526764cdd5",
+   "60100fd97b24275e",
+   "6b4bfa40c9755d48",
+   "a1396085b6d6634f",
+   "b256492393f51012",
+   "e78a0de626d91ef9"
+  ],
+  "32": [
+   "677305c972482945",
+   "adc58906325c9fc9",
+   "b5d4c014280ef39e"
+  ],
+  "48": [
+   "13c5b39c0c63b8a9",
+   "18e3f344c7a2e97b",
+   "4d96a85fcfd9981d",
+   "696437d492cc74ed",
+   "be57c500c0857f86",
+   "f17891015a64bace"
+  ]
+ }
+}

@@ -1,0 +1,375 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "da6ce7e19f0b4441143367808c8d14c71bc4d36f75673492406ea235c25271ca",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "office swivel chair (faces north, back view)",
+ "label": "seats34/modern_city_interior/mci-chair-office-n",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 2/4)",
+  "3/4: 옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+  "3/4: 윗면 3행 < 4 (3/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (1/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 2/4)",
+   "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+   "윗면 3행 < 4 (3/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+   "투영이 3/4 아님(front_elevation) (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest top / chair cushion top",
+      "rows": "7-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "10"
+     },
+     {
+      "part": "backrest and seat back face (vertical)",
+      "rows": "11-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "swivel base and wheels",
+      "rows": "22-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 7-9 form a lighter band (L about 128-148) across the top of the chair body. Row 10 is a darker line (L=52) directly below it, which acts as a front-edge line with shadow. Below that, rows 10-20 show the blue back face, with lighter armrest strips at x=4 on rows 11-18. The base with its wheels is on rows 22-28. The top band is thin and could also be read as the rounded top of a backrest seen from behind. The seat surface itself is hidden because the chair faces away. I read it as a weak three-quarter view: a 3-row top, a front face of 10+ rows, and a base."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The chair is a blue-grey swivel chair seen from the back. Its backrest and seat show about 4-5 blue lightness steps: a highlight on the top edge, a mid body, and darker side and under-seat shading. The wheelbase is a separate grey ramp. The dark edge pixels are 0% neutral, so the outline is a dark navy that leans toward the material's blue, not a black sticker line. Flat-fill coverage is 0%, with no 5x5 block of one colour. It has 13 colours and a median of 13 per 16x16 tile, above the hedge (10) and in line with the stall (17) and well (20) tiles. Its total colour count matches the bench and lamp (14 each). The bench and lamp are thin props, so their tile medians are 0 and say little. By eye, the chair is as modelled and shaded as the bench and hedge, and a careful artist would accept it next to them. It is simpler than the stall and well, but those are much larger pieces, and size alone is no reason to fail it.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+    "윗면 3행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 26470
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest/seat cushion (seen from behind)",
+      "rows": "7-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests",
+      "rows": "11-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "swivel base and wheels",
+      "rows": "22-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a back view. The lighter band at rows 7-9 is the rounded top edge of the backrest, a 2-3 row rim with no ellipse and no eave shadow. Rows 10-20 are the vertical back panel, with the armrests as lighter side strips at x=4 for rows 11-18. The seat surface cannot be seen from above. Rows 22-28 are the gas lift and star base. The silhouette widens only through the armrests, not through a seat plate. So the chair shows a vertical face with only a rim at the top and no visible seat top, which matches the 'rim only' and 'band 2' wrong examples."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The chair is a small prop, about one tile wide, with 13 distinct colours. That matches the bench (14) and lamp (14) and exceeds the hedge (11). Its median of 13 colours per tile is above the hedge's 10 and close to the stall's 17. Flat-fill coverage is 0%, so there are no large single-colour areas. 0% of its dark edge pixels are neutral, so the outline is a dark navy tint of the blue material, not a black sticker line. The back cushion, headrest and seat show about 4-5 blue steps with highlights, and the grey base and wheels are separated by value. It is a little simpler than the stall and well, but it is not thinner or flatter than the bench or lamp, so a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23145
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest top edge",
+      "rows": "7-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest/seat back face with armrests",
+      "rows": "10-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "swivel base and wheels",
+      "rows": "21-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a back view. Rows 7-9 form a lighter band (#8397b3 to #6f83a0) across the top of the backrest, closed by a darker line at row 10. That band is the only top-like surface, and it belongs to the backrest rather than the seat. Rows 10-20 are the vertical back face (width 14) with lighter armrest strips at the sides (x=4, rows 11-18). Rows 21-28 show the stem, a base bar and wheels. The seat cushion is not drawn as a horizontal surface seen from above, so the seat has no top. The top-surface call is borderline because the band could be read as a rim on a vertical backrest."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small blue office chair seen from behind. It has 13 distinct colours and a median of 13 per 16x16 tile, which is above the hedge (10) and in line with the stall (17) and well (20). Flat-fill coverage is 0%, and 0% of its dark edge pixels are neutral, so the outline is tinted and dark navy-blue rather than black. By eye, the backrest has about 4 blue steps (highlight, light, mid, dark) with a lighter seam or panel and a dark base with casters. The chair is small and fairly simple, but it is not a flat sticker. Its ramps are somewhat shallower than the 5-6 steps on the well and stall, and its texture is limited to panel shading with little grain. It sits acceptably next to the references and is comparable to the bench and lamp in richness, so it passes, though marginally.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 3행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "윗면 3행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23954
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest top edge (light band)",
+      "rows": "7-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "10"
+     },
+     {
+      "part": "seat/backrest back face with side bulges",
+      "rows": "11-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base and casters",
+      "rows": "22-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The chair is seen from behind. Rows 7-9 form a lighter band (L~128-148) across the top of the backrest. A darker line at row 10 (L=52) ends it, which reads as a front-edge line with shadow beneath. Below it the back face runs rows 11-20, with lighter armrest or seat edges at the sides (x=4, rows 11-18). The base and casters fill rows 22-28. The seat surface itself is hidden behind the backrest, which is expected in a back view. The top band is thin but is more than a 1-2 row rim, and the front face is well over 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small blue-grey chair seen from the back. Measured facts: 13 distinct colours, a median of 13 per 16x16 tile (hedge 10, stall 17, well 20), 0% flat-fill coverage, and 0% neutral dark edge pixels, so the outline carries a tint. The outline is a dark navy-blue version of the chair's own material, not black, and some forms are separated by value alone. Shading: the backrest and seat show about 4 steps (highlight, light, mid, dark, deep), with a mesh-like grain on the back and a lit top edge. Texture is moderate, with small highlights on the backrest and base but no heavy grain. The base and wheels are small and read cleanly with several tones. Against the references it is on par with the hedge and lamp and a bit simpler than the stall and well, which is expected for a small single-tile-wide prop. It would sit acceptably next to the references and not look sticker-like. The chair's colour does not matter, since the palette is locked per theme.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+    "윗면 3행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21222
+  }
+ ],
+ "decidedAt": "2026-10-20T08:30:15.551Z",
+ "cells": {
+  "16": [
+   "3d1fcf6430c79cf3",
+   "a2fa4ee91e5a1166"
+  ],
+  "24": [
+   "12158b44111698e1",
+   "486d71fa56d98ecc",
+   "636c373c63e86473",
+   "74d5c1781220ba05",
+   "8eedb1e5a0499dc2",
+   "993c0167cf4b11da",
+   "a8b7890877eaa9bf",
+   "aaee4a50caa8c016",
+   "ba9780dd43f4abab",
+   "c3553ffe0fd89024",
+   "c991dd5385f54074",
+   "ef0e24e097f63729"
+  ],
+  "32": [
+   "909d3f4609193f58",
+   "e54123cd27830618",
+   "f1456c8d55c33b43"
+  ],
+  "48": [
+   "26b6ad8c694b376b",
+   "37cea9403a9c4137",
+   "70a2b887a9763579",
+   "9ff3117c4778cbdd",
+   "c96f29683407a8ca",
+   "de06fc44aa0db7a1"
+  ]
+ }
+}

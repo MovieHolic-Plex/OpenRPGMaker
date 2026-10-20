@@ -1,0 +1,302 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bc0d7c2ee44422109cad98298e9d2ac3f444d110465f5f54a1951d56c3c8b869",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "round backless swivel exam stool with gas lift and caster base (no facing)",
+ "label": "seats34/jp_city_interior/hs-exam-stool",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 26,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion top",
+      "rows": "9-14",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15-16"
+     },
+     {
+      "part": "caster base plate",
+      "rows": "24-27",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is a rounded puck. Its width profile goes 8, 12, 14 over rows 9-11, holds at 14 through row 16, then narrows to 12 and 8 at rows 17-18, so it reads as an ellipse. Rows 10-13 are a lighter purple top surface. Row 14 (#304080) is a darker front-edge line, followed by darker navy rows 15-17 as the front face with an outline at row 18. Together the top is about 5 rows and the front is about 4 rows. Below it, a gas-lift pole (rows 19-23, width 4) stands on a base. The base widens 8, 12, 14 over rows 24-26 and has a lighter top plate at rows 25-27, with a darker front at rows 28-29. The stool shows both a seat top seen from above and a front face, so it reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small single-tile-scale prop. Its facts are close to the simple references: 12 distinct colours against 11 (hedge) and 14 (bench, lamp), 9 colours per full tile against the hedge's 10, and 0% flat-fill coverage. The stool is a purple cushion with highlight, mid and shadow bands, then a darker stem and a caster base with its own light and dark values. That gives about 4 steps on the cushion ramp, slightly below the 5-6 on the bench and hedge. Dark edge pixels are 0% neutral, so the outline leans toward a dark purple/blue tint of the adjacent material rather than a black sticker line. The stool is thin and sparse, and a careful artist would accept it beside the bench, hedge and lamp without it looking flatter or more sticker-like. It is less rich than the stall and well, but those are much larger pieces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16738
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion top",
+      "rows": "10-13",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15-16"
+     },
+     {
+      "part": "caster base plate",
+      "rows": "25-27",
+      "evidence": "a",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is a round cushion whose width profile goes 8, 12, 14 and back to 12, 8 over rows 9-18, so it forms an ellipse. Rows 10-13 are a lighter purple top with a highlight, and row 14 is a darker blue edge line. Rows 15-17 are the dark front face, with the outline at row 18. A thin gas-lift column runs through rows 19-23. The caster base at rows 24-29 has a lighter top band at rows 25-27 and a darker front edge at row 28. The seat surface is seen from above and the front face is 3+ rows, so this is a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The stool is a small, thin prop, so I judged it by eye against the bench and lamp, which are similar slim props. It has 12 colours, close to the bench and lamp at 14 each, and a per-tile median of 9, close to the hedge at 10. Flat-fill coverage is 0%, so there are no dead 5x5 areas. Neutral dark edge pixels are 0%, so the outline is tinted: a dark purple-blue lean that matches the cushion and base rather than a black sticker line. The cushion shows a highlight, a mid tone, a shaded underside and a rim, about 4 steps. The stem and caster base add a few more value steps, and the form is separated by value rather than a uniform outline. It is a little simpler than the stall and well, which have 38-40 colours, but it does not look thinner or flatter than the bench or lamp. A careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16129
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion top",
+      "rows": "10-14",
+      "evidence": "b",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15-17"
+     },
+     {
+      "part": "caster base plate",
+      "rows": "24-28",
+      "evidence": "a",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is a rounded disc. Its width profile goes 8, 12, 14 (rows 11-16), 12, 8 over rows 9-18, so it widens and narrows again like an ellipse. Rows 10-13 are the light purple top surface. Row 14 is a mid-tone edge line (#304080), followed by the darker front side of the cushion in rows 15-17. Below the seat, a 4px gas-lift stem runs through rows 19-23 and the caster base fans out in rows 24-29. The base has a lighter top plate in rows 25-27 and a darker front edge in row 28. The top surface, the front face and the supports are all visible, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, thin-ish prop. It has 12 distinct colours and a median of 9 per full tile, which is in line with the hedge (11 colours, median 10), the bench (14) and the lamp (14). Its 5x5 flat-fill coverage is 0%, so there are no flat blocks. Dark edge pixels are 0% neutral, so the outline leans visibly toward the material: a dark purple around the cushion, and dark tinted tones on the stem and base. That is the opposite of the sticker look. The cushion shows a highlight, a mid and a dark step with a rim. The gas-lift stem and caster base carry about 2-3 grey steps and a few separating dark pixels. It has roughly 4 steps per material against about 5-6 on the references, and less grain than the stall or well, so density is slightly lower. For a simple single-material furniture piece, a careful artist would accept it next to the bench and lamp without it looking flatter or like a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20634
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "10-13",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "caster base",
+      "rows": "25-27",
+      "evidence": "a",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat cushion spans rows 9-18. Its silhouette widens from 8 to 14 px (rows 9-11) and narrows again to 8 px (row 18), so it reads as a rounded plate. Rows 10-13 form a lighter purple top surface with a highlight. Row 14 is a darker blue-violet line that works as the front-edge line. Rows 15-17 are a dark navy front face, and row 18 is the outline. The gas-lift shaft is rows 19-23 at 4 px wide. The base at rows 24-30 has a light grey top band at rows 25-27 and a darker front edge at row 28, so it also shows a top surface. The seat surface is seen from above, which matches the seat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The stool is a small, sparse prop, so I judge it by eye against the bench and lamp, which are similar in size. It has 12 distinct colours against 14 for the bench and lamp and 11 for the hedge, so it is on par with the small references. Its median of 9 colours per 16x16 tile is close to the hedge's 10, and 5x5 flat-fill coverage is 0%. Dark edge pixels are 0% neutral, so the outline is a tinted dark purple/blue-grey, not black. This matches Beodeul's practice of using the adjacent material's dark tone. The cushion has about 4 lightness steps, with a highlight on the rounded top and a darker underside. The gas-lift stem and caster base are shaded with separate light and dark tones, not drawn as flat shapes. It is somewhat simpler than the cheese stall and well, but those are much larger pieces. Beside the bench and lamp it would not look thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22251
+  }
+ ],
+ "decidedAt": "2026-10-20T08:55:46.235Z",
+ "cells": {
+  "16": [
+   "44d8edce5083c00c",
+   "bfba5720bf1600c4"
+  ],
+  "24": [
+   "04531eb290e3f2d5",
+   "0eb41a2128f543f3",
+   "26f81256d2c02b85",
+   "3c83787ee7f64778",
+   "60d03a088a6a9bc7",
+   "79cbe3dcfbaef0b6",
+   "837276becdeaceaa",
+   "a43bb524195e84ea",
+   "e70a27bf207fe43e"
+  ],
+  "32": [
+   "19291d32fd66a544",
+   "24e75fbd53bac7c7",
+   "dfff45424767b2ce"
+  ],
+  "48": [
+   "1198bb565528d1af",
+   "316d5a56a6802e51",
+   "7405e626e18737d6",
+   "84cc7d3678a7ec09",
+   "8bc97159d290ec7a",
+   "d9a186cd4a675b41"
+  ]
+ }
+}

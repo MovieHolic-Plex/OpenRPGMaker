@@ -1,0 +1,342 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "988b1e832e323616bb2cb337d5fcc99358b0e5d0894de609c76969f79ccc5215",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "kids chair (faces west)",
+ "label": "seats34/jp_city_interior/gy-kid-chair-w",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 1/4, 분명한 위반 2/4)",
+  "3/4: 옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+  "3/4: 윗면 3행 < 4 (2/4)",
+  "3/4: 투영이 3/4 아님(side_profile_no_top) (1/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 1/4, 분명한 위반 2/4)",
+   "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+   "윗면 3행 < 4 (2/4)",
+   "투영이 3/4 아님(side_profile_no_top) (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 82,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat",
+      "rows": "20-23",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "24"
+     },
+     {
+      "part": "backrest",
+      "rows": "10-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat spans rows 19-24 and is 11 px wide. Its column scan shows a dark outline at row 19, a bright top at row 20 (L=226), and mid-tone rows 21-22. Row 23 is a darker front-edge line (L=157), and row 24 is a dark shadow/outline. That gives about 3-4 rows of seat surface seen from above, similar to the 'seat: top 5 + legs' reference rather than the 'band 2' one. Two thin legs hang below in rows 25-28, giving a 4-row open front. The backrest is a narrow 4 px column in rows 10-23 with a highlight on its left and a light cap at row 11. It is the chair's edge-on side profile and is not treated as a missing top. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The kids chair is a small single-tile prop, so the per-tile median of 0 says nothing against it. It has 9 distinct colours against 14 for the bench and 11 for the hedge. That is lower, but proportionate for a much smaller object. Flat-fill coverage is 0%, so there are no large single-colour areas. The dark edge pixels are 0% neutral, meaning the outline leans brown beside the golden wood. This matches the Beodeul rule better than the bench, which is 44% neutral, and the lamp, which is 100% neutral. It reads as a lit wood ramp of about 4 steps, with highlight, mid and dark tones on the seat, back and legs. That is slightly shallower than the bench's roughly 5 steps, but it is not a sticker-style flat fill. A careful artist would accept it next to the bench without it looking flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18737
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat block (side profile)",
+      "rows": "19-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest post",
+      "rows": "10-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "This is a west-facing side-profile chair. The seat is an 11-wide block on rows 19-24. Row 19 is outline and row 20 is a 1-row light highlight (L=226). Rows 21-22 are a flat mid-tone and row 23 is darker, then a dark outline on row 24. No band ends in a front-edge line with eave shadow, and there is no ellipse or visible seat surface, so the highlight is only a rim. The backrest is a 4-wide vertical strip on rows 10-24 with a 1-row dark outline cap and no horizontal surface. Two thin legs on rows 25-28 are 4 px wide in total. The shape matches the red 'side elevation chair' and 'seat: band 2' references rather than the green seat with a top of 5 rows plus legs."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The kids chair is a small, thin prop, so the per-tile median of 0 is not held against it. It has 9 distinct colours, close to prop-hedge (11) and not far below prop-bench-wood and prop-lamp-crook (14 each). Flat-fill coverage is 0%, so there are no big flat areas. The dark edge pixels are 0% neutral, so the outline is a dark brown tinted to the wood, not a near-black sticker line. The chair shows about 4 wood steps: a light highlight on the back and seat, a golden mid tone, an orange-brown shadow side, and the dark outline. Back slats and legs are separated by value. It has less grain than the bench, and 4 steps is slightly under the reference's 5. A careful artist would still accept it next to the bench without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 1행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 1행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18107
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat",
+      "rows": "20-22",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "24-24"
+     },
+     {
+      "part": "backrest",
+      "rows": "10-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat spans rows 19-24 and is 11 px wide. Row 19 is the outline. Rows 20-22 are a light band, with a bright highlight at row 20 and a mid tone at rows 21-22, so the seat top is 3 rows. Row 23 is a darker front-edge line, and row 24 is a dark outline that works as eave shadow. Below that, the legs run through rows 25-28 (4 rows) and the apron adds rows 23-24, giving about 6 front-face rows. The backrest is a thin vertical post at x=8-11 from rows 10-23, with a lighter top at row 11, and it is part of the west-facing profile. The seat is closer to the 'seat: top 5 + legs' reference than to the 'band 2' or 'side elevation chair' failures, but its top is thin."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The chair is a small single-tile prop, so the per-tile median of 0 says nothing against it. It uses 9 colours, close to the hedge (11) and lamp (14) and the bench (14), which are similarly small and simple. Its dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the yellow wood, as in the Beodeul pieces, and not a black sticker line. Flat-fill coverage is 0%. The seat and backrest show roughly four steps (highlight, mid, shadow, dark brown edge), slightly fewer than the bench's five. Texture is limited to light grain and shading, which is plausible at this size. It would sit next to the bench without looking noticeably flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+    "윗면 3행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18898
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat",
+      "rows": "20-22",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "24"
+     },
+     {
+      "part": "backrest post",
+      "rows": "10-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is 11 px wide over rows 19-24. Row 19 is the outline, row 20 is a light highlight, and rows 21-22 are a mid tone, so rows 20-22 form a 3-row top band. Row 23 is a darker edge line and row 24 is the dark outline, which stands in for eave shadow. Below the seat, four legs rows 25-28 form the front face, so the seat edge plus legs give about 6 rows. This is a borderline read: the seat could also be a bevelled slab seen from the side. The backrest is a 4 px wide vertical strip (rows 10-23) with only a 1-2 row rim at its top, so it has no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The chair is a tiny single-tile prop, so the per-tile median of 0 says nothing against it. It has 9 distinct colours, close to the hedge (11) and not far below the bench and lamp (14 each). Flat-fill coverage is 0%, so there are no 5x5 blocks of one colour. Dark edge pixels are 0% neutral, so the outline leans brown, which matches the dark-material-tone style of the hedge and the stall, and it is not a black sticker line. By eye, the yellow seat and back show about 3-4 lightness steps (highlight, mid, shade) plus the brown legs and outline, a little fewer than the bench's wood ramp. The small size limits texture, but there is some grain variation. A careful artist would accept it next to the bench without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 3행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "윗면 3행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23783
+  }
+ ],
+ "decidedAt": "2026-10-20T09:02:37.233Z",
+ "cells": {
+  "16": [
+   "93265ee0cc8a9e27",
+   "f5b3c1c3303b57ed"
+  ],
+  "24": [
+   "066ebff0f5629a6c",
+   "167a44966b9d2751",
+   "4ab6fc0c9494ab42",
+   "5cb8fdae1df5a8c9",
+   "7c2d595966197104",
+   "89d0a8a3c9a90168",
+   "c10bca72106938ef",
+   "ed5cbb1bda1d2c95",
+   "f7d6e6df0d311d67"
+  ],
+  "32": [
+   "c496318faf4b51b9",
+   "ea214e3ebe2b2966",
+   "f76afa7c575858ff"
+  ],
+  "48": [
+   "760177018d9a26bd",
+   "8fd06464b6f7348b",
+   "ad4ab2ad589c5f26",
+   "adab937f576c9826",
+   "c1f485245cb351c4",
+   "f217a1bec3dc6c09"
+  ]
+ }
+}

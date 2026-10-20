@@ -984,6 +984,102 @@ def _(c):
 I.hold()
 
 
+# ══ seats34 (3/4 다시 그리기) ══
+# seats34 group A — 코드 손 도트(행 문자열 격자). 글자 → (램프, 단: 0 = 가장 어두운 단). 빛은 왼위(윗면 밝게·앞면 중간·그늘 쪽 어둡게),
+# 거의 검은 윤곽은 바깥 실루엣에만. '.' = 투명. 격자는 srcA/designs.py 에서 만든다.
+from inst import _paint as _paint34
+
+
+def _g34(c, layers):
+    for rows, leg, ox, oy in layers:
+        for j, r in enumerate(rows):
+            for i, ch in enumerate(r):
+                if ch not in '. ': c.P(ox + i, oy + j, *leg[ch])
+
+_S34_0_0 = [
+    '................',
+    '................',
+    '................',
+    '................',
+    '................',
+    '................',
+    '..OOO......OOO..',
+    '..OSO......OSO..',
+    '..OSOOOOOOOOSO..',
+    '..O5AAAAAAAB3O..',
+    '..O5BBBBBBBC3O..',
+    '..O5BCCCCCCD3O..',
+    '..O5BCCCCCCD3O..',
+    '..O5BCCCCCCD3O..',
+    'OOO5DDDDDDDD3OOO',
+    'O5S5BAAABBBB3S3O',
+    'O5S5ABBBBBBC3S3O',
+    'O5S5BBBBBBBC3S3O',
+    'O5S5BBBBBBCC3S3O',
+    'O5S5DDDDDDDD3S3O',
+    'O5SOOOOOOOOOOS3O',
+    'O5S.54....32.S3O',
+    'O5S354....322S3O',
+    'O5S.54....32.S3O',
+    'O5S.54....32.S3O',
+    'O5SOOOO..OOOOS3O',
+    'O5S6655..5543S3O',
+    'O5S3332..3221S3O',
+    'OSSOOOO..OOOOSSO',
+    '.OO.SS....SS.OO.',
+    '................',
+    '................',
+]
+_S34_0_0L = {'1': ('tekko', 1), '2': ('tekko', 2), '3': ('tekko', 3), '4': ('tekko', 4), '5': ('tekko', 5), '6': ('tekko', 6), 'A': ('kon', 4), 'B': ('kon', 3), 'C': ('kon', 2), 'D': ('kon', 1), 'O': ('sumi', 0), 'S': ('sumi', 1)}
+_S34_0 = [(_S34_0_0, _S34_0_0L, 0, 0)]   # hs-wheelchair (16x32)
+
+_S34_1_0 = [
+    '................',
+    '................',
+    '................',
+    '................',
+    '................',
+    '................',
+    '................',
+    '................',
+    '................',
+    '....OOOOOOOO....',
+    '..OOBAABBBBCOO..',
+    '.OBAAABBBBBBCCO.',
+    '.OBBBBBBBBBBCCO.',
+    '.OBBBBBBBBBBCCO.',
+    '.OCCCCCCCCCCCCO.',
+    '.ODDDDDDDDDDEEO.',
+    '.ODDDDDDDDDEEEO.',
+    '..OOEEEEEEEEOO..',
+    '....OOOOOOOO....',
+    '......O53O......',
+    '......O53O......',
+    '......O53O......',
+    '......O53O......',
+    '......O53O......',
+    '...OO.O53O.OO...',
+    '..O55OO53OO44O..',
+    '.OO5555553332OO.',
+    '.O555555543222O.',
+    '.O333333322221O.',
+    '..OOOOOOOOOOOO..',
+    '..SS...SS...SS..',
+    '................',
+]
+_S34_1_0L = {'1': ('tekko', 1), '2': ('tekko', 2), '3': ('tekko', 3), '4': ('tekko', 4), '5': ('tekko', 5), 'A': ('kon', 4), 'B': ('kon', 3), 'C': ('kon', 2), 'D': ('kon', 1), 'E': ('kon', 0), 'O': ('sumi', 0), 'S': ('sumi', 1)}
+_S34_1 = [(_S34_1_0, _S34_1_0L, 0, 0)]   # hs-exam-stool (16x32)
+
+
+PENDING_SEATS34 = {
+    'hs-wheelchair': _paint34(lambda c, _l=_S34_0: _g34(c, _l)),
+    'hs-exam-stool': _paint34(lambda c, _l=_S34_1: _g34(c, _l)),
+}
+SEATS34_PASS = set()          # object-gate PASS 영수증을 받은 id 만 — 이 id 들만 굽는 그림을 바꾼다
+for _k in SEATS34_PASS: R.objs[_k]['draw'] = PENDING_SEATS34[_k]
+# ══ /seats34 ══
+
+
 def build(): return R.build()
 
 

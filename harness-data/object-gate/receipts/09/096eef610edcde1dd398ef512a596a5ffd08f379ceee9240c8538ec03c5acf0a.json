@@ -1,0 +1,389 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "096eef610edcde1dd398ef512a596a5ffd08f379ceee9240c8538ec03c5acf0a",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "waiting-room chair toppled over onto its side",
+ "label": "seats34/jp_city_interior/hp-chair-fallen",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(side_profile_no_top) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 1행 < 4 (2/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (3/4)",
+  "화풍: 질감 없음 (1/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(side_profile_no_top) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 1행 < 4 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (3/4)",
+   "질감 없음 (1/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 8,
+  "darkV5": 38,
+  "nearBlackEdge": 0.94,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest panel (vertical blue bar)",
+      "rows": "2-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat (horizontal blue arm of the L)",
+      "rows": "9-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "chair legs (grey bars on the right)",
+      "rows": "3-4 and 9-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The chair is an L-shaped side silhouette, with the backrest as a vertical blue bar (rows 1-10) and the seat as a horizontal arm (rows 9-13). The grey legs point right as flat bars at rows 3-4 and 9-10. The seat shows only a 2-row light highlight (rows 9-10, a mid row 11), then dark blue rows 12-13. There is no widening-then-narrowing ellipse, no distinct top plane and no front-edge line separating a top from a face. Column x=8 is a single blue run with no top band. The seat surface is not seen from above, so this matches the 'side elevation chair' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The toppled chair is a small single-tile prop. Its outline is a tinted dark blue, not neutral black, which matches the 0% near-neutral edge share. It has no 5x5 flat fills. It has only 8 distinct colours, against 14 for the bench and lamp and 38-40 for the stall and well. That leaves roughly 3-4 lightness steps on the blue material, where Beodeul uses about 5. At this size I can see only a few highlight dots and no grain or per-part shading, so it reads thinner and more icon-like next to the bench and hedge. Its 8 colours per tile is near the hedge's 10, but the shallower ramp and lower colour count mean it would sit slightly below the references. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19928
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest (vertical blue strip of the toppled chair)",
+      "rows": "1-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat / lower arm of the L (blue)",
+      "rows": "9-13",
+      "evidence": "none",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "grey legs sticking out to the right",
+      "rows": "3-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The silhouette is an L: a blue backrest strip (x 7-12, rows 1-10) joined to a seat arm along the bottom (rows 9-13, widest at 16 px). In the seat arm, row 10 is a 1-row highlight (#7b9cf7), row 11 is mid blue, and rows 12-13 are dark blue. That highlight is only a lip, not a 2+ row top plane, and no ellipse, roof or visible contents show up. The backrest is a flat vertical strip with no horizontal top surface. The grey leg stubs on the right (rows 3-5 and 8-11) are drawn as side-on bars. Overall it reads as a side-profile chair silhouette with no seat surface seen from above, similar to the 'side elevation chair' and 'band 2' reference failures."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny blue and white prop with only 8 distinct colours. That is below the bench (14), hedge (11) and every other reference (38-40 for the stall and well). Its 8 colours per tile are below the hedge (10), stall (17) and well (20). Dark edge pixels are 0% neutral, so the outline is tinted (dark blue) rather than a black sticker line, which is good, and there are no 5x5 flat fills. The shading is shallow, though. The material seems to have about 3 lightness steps (dark blue, mid blue, white highlight) against 5-6 on the Beodeul pieces. There is little grain or per-part shading, and the toppled-chair form reads thinly as an L-shaped blob with a few light dashes. Next to the bench, which is also small but has distinct slats, highlights and shadow, it looks flatter and simpler. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 1행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 1행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20045
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "blue seat and backrest, drawn as an L-shaped side profile",
+      "rows": "1-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey leg bars at right",
+      "rows": "3-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The chair is an L-shaped silhouette of flat blue with a dark outline. The vertical arm covers rows 1-12 and the horizontal arm covers rows 9-13. The blue is one flat colour, with a 1-row light highlight at the top edge (row 2 at x=8, row 10 at x=4) that is only an outline highlight. The dark blue band at rows 11-13 is a shaded lower edge. There is no front-edge line and no eave shadow below any band. No ellipse is visible, and no seat surface is seen from above. The grey bars at right look like chair legs seen end-on, drawn as flat stripes with no top surface. This is a side elevation of a toppled chair, like the 'side elevation chair' reference marked BAD."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small blue L-shaped chair on its side with a few white highlight dashes. It has only 8 distinct colours against 14 for the bench and lamp and 38-40 for the well and stall. Its 8 colours per tile is close to the hedge's 10, but the hedge is a full-tile texture while this piece is thin. The outline is tinted dark blue (0% neutral edge pixels), so it is not a black sticker line, and there are no flat 5x5 fills (0%). The main material ramp is shallow, about 3 steps (dark blue, mid blue, light highlight) against 5-6 for Beodeul pieces. There is no visible grain or per-part shading, such as seat versus legs or backrest, and the toppled-chair form is hard to read. A careful artist would find it flatter and thinner than the bench reference, so it fails on shading depth and texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 21595
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest (vertical bar of the L)",
+      "rows": "1-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat (horizontal foot of the L)",
+      "rows": "9-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gray legs sticking out to the right",
+      "rows": "3-4, 9-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The chair is an L-shaped side profile. At x=4 the seat part has only a 1-row light highlight (row 10), then a mid-blue row (11) and 2 dark rows (12-13). That is a rim, not a top surface. There is no ellipse, no front-edge line with eave shadow, and no visible contents. The backrest (x=8, rows 2-12) is a flat vertical blue face with a 1-row light top line. The gray leg bars at x=11 are plain bars. The seat is never shown from above, so the drawing reads as a side elevation like the 'side elevation chair' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small blue chair on its side, about one tile in size. It has 8 distinct colours, against 14 for the bench and lamp and 38-40 for the stall and well. Its 8 colours per tile are close to the hedge's 10, but the hedge is a plain foliage block and the bench has more colours overall. The dark edge pixels are 0% neutral, so the outline is tinted (dark blue) rather than a black sticker line, which is good. The 5x5 flat-fill coverage is 0%, but only because the piece is so small. By eye, the legs, seat and back read as roughly 3 tones plus an outline, with no grain, highlight dots or per-part shading. The references carry about 5 steps and visible material texture, such as wood grain and slat highlights on the bench. The piece is cleanly drawn but thinner and flatter than the references, and it would look more sticker-like beside the bench. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 1행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 1행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20961
+  }
+ ],
+ "decidedAt": "2026-10-20T08:33:20.439Z",
+ "cells": {
+  "16": [
+   "cfefbe56363ce2c1"
+  ],
+  "24": [
+   "575f5c3c4e2e20fc",
+   "6a0e719d1a9f090b",
+   "b03c3b7fee7d4579",
+   "b2936b3d2866959e",
+   "e4a1cf99dc93f443",
+   "f98d09d7f69e1755"
+  ],
+  "32": [
+   "0c80db8ae400639f",
+   "25f4224b1b2c2165",
+   "278fb1f4cd4df42f",
+   "b015e7122833f133",
+   "b246a46e7366f184",
+   "ccb8b4114d1c1e7b"
+  ],
+  "48": [
+   "60cb47166d7630fd",
+   "632f32d358818516",
+   "6de6d05470165686",
+   "9aeb486c8aa5b6f7",
+   "d3ba6be965511be5",
+   "d75f85b19a654365"
+  ]
+ }
+}
