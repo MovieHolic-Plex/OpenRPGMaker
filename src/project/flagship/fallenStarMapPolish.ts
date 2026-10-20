@@ -120,3 +120,37 @@ export function rimPit(project: Project, map: GameMap, cells: ReadonlySet<number
   for (const [c, t] of want) { const to = translated.map.get(t) ?? -1; if (to >= 0) { setLayerTileAt(map, 2, c, to); placed++; } }
   return placed;
 }
+
+/**
+ * 지하 묘소의 허공(천장 오토타일이 남기는 균일한 남색 면)을 바위 덩어리로 읽히게 한다(VQA — 화면이 비어 보임).
+ * 방·복도에서 가까운 허공 칸(`bandMax` 칸 이내)만 이미 번들에 있는 광산 바위 결(`rockTiles`)로 바꾸고 바깥은 그대로 어둠이다.
+ * 열린 칸과 닿는 테두리 띠(오토타일)는 손대지 않는다 — 허공 값(`voidTiles`)인 칸만 바꾼다.
+ */
+export function dressVaultVoid(map: GameMap, voidTiles: ReadonlySet<number>, rockTiles: readonly number[], bandMin: number, bandMax: number): number {
+  const { width: w, height: h } = map;
+  const dist = new Int16Array(w * h).fill(-1);
+  const queue: number[] = [];
+  for (let c = 0; c < w * h; c += 1) if (!voidTiles.has(map.lowerTiles[c] ?? -1)) { dist[c] = 0; queue.push(c); }
+  for (let head = 0; head < queue.length; head += 1) {
+    const c = queue[head]!, x = c % w, y = Math.floor(c / w);
+    if (dist[c]! >= bandMax) continue;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1], [1, -1], [-1, 1]] as const) {
+      const nx = x + dx, ny = y + dy;
+      if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+      const n = ny * w + nx;
+      if (dist[n]! >= 0) continue;
+      dist[n] = dist[c]! + 1; queue.push(n);
+    }
+  }
+  let changed = 0;
+  for (let c = 0; c < w * h; c += 1) {
+    if (!voidTiles.has(map.lowerTiles[c] ?? -1)) continue;
+    const d = dist[c]!;
+    if (d < bandMin || d > bandMax) continue;
+    const x = c % w, y = Math.floor(c / w);
+    const hsh = ((x * 73856093) ^ (y * 19349663)) >>> 0;
+    map.lowerTiles[c] = rockTiles[hsh % rockTiles.length]!;
+    changed += 1;
+  }
+  return changed;
+}
