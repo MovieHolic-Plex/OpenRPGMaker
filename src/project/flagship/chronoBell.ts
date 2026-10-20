@@ -735,8 +735,9 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
 
   project.meta.title = "폴른 스타: 추락한 별과 태엽의 성녀";
   project.meta.author = "OPRN Flagship Studio";
-  project.system.playResolution = { width: 640, height: 360 };
-  project.system.cameraZoom = 2;
+  // 480×270 · 배율 1 = 30×17칸(2026-10-20 사용자 결정: 640×360·배율 2 의 20×11칸은 너무 좁았다). 배율 1 은 생략이 기본값이다.
+  project.system.playResolution = { width: 480, height: 270 };
+  delete project.system.cameraZoom;
   project.system.dialogueStyle = "pixel-cinematic";
 
   const hero = project.database.actors.find((a) => a.id === DEFAULT_ACTOR_ID) ?? project.database.actors[0];

@@ -1931,6 +1931,11 @@ export interface SystemRecords {
   battleLook?: import("@/project/battleLook").BattleLookSettings;
   /** 화면 표시 필터(project/displayFilter.ts) — 주사선·브라운관. 생략 = 없음. */
   displayFilter?: "scanlines" | "crt";
+  /**
+   * 플레이 화면을 창에 키우는 방식(project/playSurfaceScaleMode.ts). integer = 정수 배율+여백, fit = 창에 꽉.
+   * 생략하면 해상도를 저장한 프로젝트는 integer, 옛 320×240 프로젝트는 fit.
+   */
+  playSurfaceScale?: "integer" | "fit";
   /** ESC(X) 게임 메뉴 디자인. 생략 = workbench(작업대, 지금 화면). */
   menuUiStyle?: MenuUiStyle;
   /** 대화창 스타일(project/dialogueStyles.ts). 생략 = glass(지금까지의 유리 창). */
