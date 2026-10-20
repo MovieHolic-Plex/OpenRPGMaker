@@ -117,8 +117,8 @@ def J(mat, s):
 
 
 W_HV, W_LV = J('kawara_dark_tile', 2), J('kawara_dark_tile', 1)          # 고압(피복 회색, 조금 밝다) · 저압
-W_CB, W_CB_S = J('kawara_dark_tile', 0), J('kawara_dark_tile', 1)        # 통신선(짙다) + 그늘 1px
-STEEL_OL = J('kawara_dark_tile', 0)
+W_CB, W_CB_S = J('kawara_dark_tile', 1), J('kawara_dark_tile', 0)        # 통신선(1px + 밑 그늘 1px — 굵어 보이되 순흑 줄 하나로 뭉개지지 않게)
+STEEL_OL = J('kawara_dark_tile', 1)                                        # 철·콘크리트 윤곽(재질 톤, 순흑 아님)
 
 
 def _seg(c, x0, y0, x1, y1, col):
@@ -138,6 +138,8 @@ def pole_body(c, x, top, bot, mat='conc'):
         w = 4 if y >= split else 3
         x0 = x - 1 - (w - 3)
         cols = [lit, mid, dk] if w == 3 else [lit, mid, mid, dk]
+        if wood and (y - top) % 7 == 3: cols[0] = mid                                   # 빛 쪽 결 끊김(매끈한 관처럼 보이지 않게)
+        if wood and (y - top) % 13 == 8: cols[0] = K('ita', 1)
         for i, col in enumerate(cols): c.P(x0 + i, y, col)
         c.P(x0 - 1, y, ol); c.P(x0 + w, y, ol)
     if wood:
@@ -164,10 +166,12 @@ def pole_body(c, x, top, bot, mat='conc'):
         c.P(x - 3, bot - 3, ol); c.HL(x - 2, bot - 3, 5, K('conc', 0)); c.P(x - 2, bot - 3, K('conc', 1)); c.P(x + 3, bot - 3, ol)
         c.P(x - 3, bot - 2, ol); c.HL(x - 2, bot - 2, 5, K('conc', -2)); c.P(x + 3, bot - 2, ol)
         c.P(x - 3, bot - 1, ol); c.HL(x - 2, bot - 1, 5, K('conc', -3)); c.P(x + 3, bot - 1, ol)
+        for y, i in ((bot - 28, 0), (bot - 25, -1), (bot - 21, 1), (bot - 19, 0), (bot - 17, -1)): c.P(x + i, y, K('conc', -1))   # 밑동 때·풍화
         c.HL(x - 1, top - 3, 3, ol)                                                                         # 머리 윗면(3×2 타원)
         c.P(x - 2, top - 2, ol); c.P(x - 1, top - 2, K('conc', 3)); c.P(x, top - 2, K('conc', 3)); c.P(x + 1, top - 2, K('conc', 2)); c.P(x + 2, top - 2, ol)
         c.P(x - 2, top - 1, ol); c.P(x - 1, top - 1, K('conc', 2)); c.P(x, top - 1, K('conc', 1)); c.P(x + 1, top - 1, K('conc', 0)); c.P(x + 2, top - 1, ol)
     c.HL(x - 2, bot, 10, K('yoru', -1)); c.HL(x, bot + 1, 7, K('yoru', -1)); c.HL(x + 3, bot + 2, 3, K('yoru', -1))   # 바닥 그림자(오른쪽 아래로 눕는 타원)
+    c.HL(x - 1, bot, 3 if not wood else 2, K('conc', -3) if not wood else K('ita', -3))                    # 둥근 밑(가운데가 1px 내려온 원기둥 발)
 
 
 def crossarm(c, x0, x1, y, ins, cx=24, braces=True):
@@ -195,7 +199,10 @@ def _wires_through(c, W=48):
     """전봇대 키트 안을 지나는 전선(완목 위·기둥 뒤). 전선 키트 끝과 같은 높이로 키트 경계에서 이어진다."""
     for yo in HV_Y: c.HL(0, yo, W, W_HV)
     for yo in LV_Y: c.HL(0, yo, W, W_LV)
-    c.HL(0, CABLE, W, W_CB); c.HL(0, CABLE + 1, W, W_CB_S)
+    for x in range(W):                                                                     # 통신선: 클램프(기둥 곁, 2px 위)에서 키트 경계(CABLE)로 처지며 내려간다
+        d = min(1.0, abs(x - 24) / 24)
+        y = CABLE - 2 + int(round(2 * d * d))
+        c.P(x, y, W_CB); c.P(x, y + 1, W_CB_S)
 
 
 def transformer(c, x, y):
@@ -229,8 +236,9 @@ def closure(c, x, y, w=6):
 def _pole(c):
     _wires_through(c)
     pole_body(c, 24, 6, 157)
+    for lx in (31, 35): c.VL(lx, ARM1 + 3, ARM2 - ARM1 + 2, W_HV)                      # 변압기 1차 인하선(고압 완목 → 부싱, 저압 완목 뒤로)
     crossarm(c, 1, 47, ARM1, HV_INS); crossarm(c, 3, 45, ARM2, LV_INS)
-    c.R(27, CABLE - 1, 2, 4, K('tekko', -1)); c.P(27, CABLE - 1, K('tekko', 1)); c.HL(27, CABLE + 3, 2, STEEL_OL)   # 통신선 클램프
+    c.R(27, CABLE - 3, 2, 4, K('tekko', -1)); c.P(27, CABLE - 3, K('tekko', 1)); c.HL(27, CABLE + 1, 2, STEEL_OL)   # 통신선 클램프
     transformer(c, 30, ARM2 + 4)
     closure(c, 40, CABLE - 1, 5)
     c.HL(22, 50, 5, K('tekko', -2)); c.VL(22, 51, 6, K('tekko', -2)); c.VL(26, 51, 6, K('tekko', -2)); c.HL(22, 57, 5, K('tekko', -3))   # 번호판
@@ -256,7 +264,7 @@ def _pole_wood(c):
     _wires_through(c)
     pole_body(c, 24, 6, 141, 'ita')
     crossarm(c, 1, 47, ARM1, HV_INS); crossarm(c, 3, 45, ARM2, LV_INS)               # 고압 완목도 ARM1 — 전선 키트 고압 가닥이 애자 위에 닿는다
-    c.R(27, CABLE - 1, 2, 4, K('tekko', -1)); c.P(27, CABLE - 1, K('tekko', 1)); c.HL(27, CABLE + 3, 2, STEEL_OL)   # 통신선 클램프
+    c.R(27, CABLE - 3, 2, 4, K('tekko', -1)); c.P(27, CABLE - 3, K('tekko', 1)); c.HL(27, CABLE + 1, 2, STEEL_OL)   # 통신선 클램프
     ol = J('kawara_dark_tile', 0)                                                   # 옛 법랑 간판(작게)
     c.HL(21, 60, 7, ol); c.HL(21, 71, 7, ol); c.VL(20, 61, 10, ol); c.VL(28, 61, 10, ol)
     c.R(21, 61, 7, 10, K('kinari', 1)); c.VL(21, 61, 10, K('kinari', 2)); c.VL(27, 61, 10, K('kinari', 0))
@@ -307,7 +315,7 @@ for _L in (6, 8, 10):
             H = L * 16
             for xo in (HV_INS[0], HV_INS[-1] + 1): c.VL(xo, ARM1 - 4, H, W_HV)        # 고압: 양 끝 애자에서 내려간다
             for xo in (LV_INS[0], LV_INS[-1] + 1): c.VL(xo, ARM2 - 4, H, W_LV)        # 저압
-            c.VL(CABLE_X, CABLE + 3, H - 3, W_CB); c.VL(CABLE_X + 1, CABLE + 3, H - 3, W_CB_S)   # 통신선(클램프 밑에서)
+            c.VL(CABLE_X, CABLE + 1, H - 1, W_CB); c.VL(CABLE_X + 1, CABLE + 1, H - 1, W_CB_S)   # 통신선(클램프 밑에서)
         return _w
     _mkv(_L)
 
