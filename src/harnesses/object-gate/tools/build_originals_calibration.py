@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import shutil
 import sys
@@ -31,12 +32,12 @@ from object_gate import pixel_sha256  # noqa: E402
 # 손 도트 v5 실내 키트 → 종류. 키트 id 의 두 번째 마디(hand-interior:<type>:…)로 고른다. 종류가 애매한 것은 넣지 않는다.
 INTERIOR_KIND = {
     "crate": "box", "chest": "box", "royal chest": "box", "ice chest": "box",
-    "basket": "container", "pot": "container", "water jar": "container", "cauldron": "container", "washbasin": "container", "bathtub": "container",
+    "basket": "container", "pot": "container", "water jar": "container", "cauldron": "container", "bathtub": "container",
     "holy water font": "container", "potted fern": "container", "potted flowering": "container", "potted cactus": "container",
     "barrel": "round_body", "quench barrel": "round_body",
-    "shelf": "tall_furniture", "cabinet": "tall_furniture", "cupboard": "tall_furniture", "wardrobe": "tall_furniture", "bookshelf 1w": "tall_furniture",
+    "shelf": "wall_mounted", "cabinet": "tall_furniture", "cupboard": "tall_furniture", "wardrobe": "tall_furniture", "bookshelf 1w": "tall_furniture",
     "bookshelf 2w": "tall_furniture", "bookshelf 3w": "tall_furniture", "apothecary drawers": "tall_furniture", "fireplace": "tall_furniture", "stove": "tall_furniture",
-    "table": "low_furniture", "roundtable": "low_furniture", "nightstand": "low_furniture", "dining 2x1": "low_furniture", "desk 2x1": "low_furniture",
+    "washbasin": "low_furniture", "table": "low_furniture", "roundtable": "low_furniture", "nightstand": "low_furniture", "dining 2x1": "low_furniture", "desk 2x1": "low_furniture",
     "work 2x1": "low_furniture", "tea 2x1": "low_furniture", "counter 2x1": "low_furniture", "bed green": "low_furniture", "double bed red": "low_furniture",
     "straw bed": "low_furniture", "canopy bed": "low_furniture",
     "chair S": "seat", "stool": "seat", "bench 2": "seat", "pew": "seat", "armchair": "seat", "sofa": "seat", "bar stool": "seat", "throne": "seat",
@@ -74,12 +75,74 @@ def write_set(name: str, entries: list[dict]) -> None:
     print(name, len(items))
 
 
+AUDIT = CAL / "audit-2026-10-21.json"  # 감독 지시 감사(v6 에서 떨어진 원본·놓친 위반) — 종류 라벨 수정·결함·(a) 제외를 여기서 적용한다
+
+
+def apply_audit_to_sets(audit: list[dict]) -> None:
+    """fresh3·style 처럼 손으로 고정한 표본에 감사 결과를 적용한다(멱등). i=종류 수정, iii=불확실·결함, out=화풍 위반은 약한 라벨(보고만)."""
+    by_set: dict[str, dict[str, dict]] = {}
+    for a in audit:
+        st, nm = a["label"].split("/", 1)
+        by_set.setdefault(st, {})[nm] = a
+    for st, m in by_set.items():
+        path = CAL / st / "items.json"
+        if not path.exists():
+            continue  # 이 빌더가 만드는 묶음(originals-*)은 아래에서 따로 적용
+        items = json.loads(path.read_text())
+        for it in items:
+            a = m.get(it["name"])
+            if not a:
+                continue
+            if a["class"] == "i":
+                it.setdefault("kindBefore", it["kind"])
+                it["kind"] = a["newKind"]
+                it["relabel"] = f"2026-10-21 감사: {a['reason']}"
+            elif a["class"] == "iii":
+                it.setdefault("groupBefore", it.get("group"))
+                it["group"] = "uncertain-defect"
+                it["defect"] = f"2026-10-21 감사: {a['reason']}"
+            elif a["class"] == "out":
+                it["weak"] = True
+                it["auditOut"] = f"2026-10-21 감사: {a['reason']}"
+        path.write_text(json.dumps(items, ensure_ascii=False, indent=1) + "\n")
+
+
+def negatives(skip: set[str]) -> dict[str, list[str]]:
+    """종류마다 확실(A) 3/4 위반 2장 — 판정자에게 같은 종류의 「틀린 예」로 보인다. 이 그림들은 보정 (a)·(b) 에서 뺀다(누설 방지)."""
+    tiers = json.loads((CAL / "tiers.json").read_text()).get("tiers", {})
+    pool: dict[str, list[str]] = {}
+    lab = json.loads((CAL / "interior" / "labels.json").read_text())
+    for nm in lab["bad"]:
+        pool.setdefault(lab["kinds"][nm], []).append(f"interior/{nm}")
+    for st in ("fresh4", "fresh5", "holdout"):
+        f = CAL / st / "items.json"
+        lf = CAL / st / "labels.json"
+        if f.exists():
+            for it in json.loads(f.read_text()):
+                if it.get("view34") == "bad" and it.get("tier", "A") == "A":
+                    pool.setdefault(it["kind"], []).append(f"{st}/{it['name']}")
+        elif lf.exists():
+            l2 = json.loads(lf.read_text())
+            for nm in l2["bad"]:
+                pool.setdefault(l2["kinds"][nm], []).append(f"{st}/{nm}")
+    out = {}
+    for k, labels in pool.items():
+        # 감사한 표본(놓친 위반 등)은 쓰지 않는다 — 틀린 예로 쓰면 (a) 에서 빠져 숫자가 좋아진다. 고르는 순서는 이름의 해시(결정적, 판정 결과와 무관).
+        ok = sorted((x for x in labels if tiers.get(x, {}).get("tier", "A") == "A" and x not in skip), key=lambda x: hashlib.sha256(x.encode()).hexdigest())
+        if ok:
+            out[k] = ok[:2]
+    return out
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--holds", required=True, help="18323 서버의 harness-data/object-gate")
     ap.add_argument("--objgen", required=True, help="object-gen 체크아웃")
     a = ap.parse_args()
     holds = Path(a.holds)
+    audit21 = json.loads(AUDIT.read_text())["items"] if AUDIT.exists() else []
+    apply_audit_to_sets(audit21)
+    out_v5l = {x["label"].split("/", 1)[1]: x for x in audit21 if x["class"] == "out" and x["label"].startswith("originals-v5large/")}
 
     # jp_city 사용자 OK 묶음
     jp = []
@@ -135,8 +198,12 @@ def main() -> None:
         v5l.append({"name": "v5l__" + e["file"][:-4], "kind": kind_of(e["file"]), "styleKind": "prop", "view34": "good", "style": "good", "group": "originals-v5large",
                     "original": "oprn-interior-v5-large", "note": e["label"], "img": Image.open(base / e["file"]).convert("RGBA")})
     for e in meta["bad"] + meta["rejects"]:
-        v5l.append({"name": "v5l__" + e["file"][:-4], "kind": kind_of(e["file"]), "styleKind": "prop", "view34": "bad", "style": None, "group": "v5large-bad",
-                    "note": f"object-gen 견본 반려: {e['why']}", "img": Image.open(base / e["file"]).convert("RGBA")})
+        nm = "v5l__" + e["file"][:-4]
+        ent = {"name": nm, "kind": kind_of(e["file"]), "styleKind": "prop", "view34": "bad", "style": None, "group": "v5large-bad",
+               "note": f"object-gen 견본 반려: {e['why']}", "img": Image.open(base / e["file"]).convert("RGBA")}
+        if nm in out_v5l:  # 반려 이유가 시점이 아니라 화풍 → (a) 에서 빼고 약한 화풍 위반(보고만)
+            ent.update(view34=None, style="bad", weak=True, auditOut=f"2026-10-21 감사: {out_v5l[nm]['reason']}")
+        v5l.append(ent)
     write_set("originals-v5large", v5l)
 
     # 버들항 원본: 기존 표본의 이름만 묶는다(그림 복사 없음)
@@ -150,7 +217,11 @@ def main() -> None:
         "about": "Opus 최종 판정 보정 조건 (b) — 알려진 정상 원본. 전체 판정(3/4·화풍 둘 다)으로 90% 이상 통과해야 한다. 판정 전에 고정(2026-10-21).",
         "groups": {"beodeul_city": beodeul, "jp_city": [f"originals-jp/{e['name']}" for e in jp], "atlas_biome_interior": [f"originals-interior/{e['name']}" for e in inter],
                    "oprn-interior-v5-large": [f"originals-v5large/{e['name']}" for e in v5l if e["view34"] == "good"]},
-        "uncertain": [f"uncertain-interior/{e['name']}" for e in unsure],
+        "uncertain": [f"uncertain-interior/{e['name']}" for e in unsure]
+                     + [f"fresh3/{x['label'].split('/', 1)[1]}" for x in audit21 if x["class"] == "iii" and x["label"].startswith("fresh3/")],
+        "defects": sorted(["uncertain-interior/int__crate__cabbage", "uncertain-interior/int__table__cake_pie", "uncertain-interior/int__stove"]
+                          + [x["label"] for x in audit21 if x["class"] == "iii"]),
+        "negatives": negatives({x["label"] for x in audit21}),
     }, ensure_ascii=False, indent=1) + "\n")
     print("beodeul", len(beodeul))
 

@@ -1,0 +1,211 @@
+{
+ "schema": "oprn-object-gate-final-profile/1",
+ "profileHash": "0a7de657d3da80f1",
+ "status": "rejected",
+ "calibratedAt": "2026-10-20T18:06:57.844Z",
+ "judge": {
+  "provider": "claude-cli",
+  "model": "claude-opus-5-5",
+  "effort": "medium"
+ },
+ "bad": {
+  "total": 3,
+  "caught": 3,
+  "missed": []
+ },
+ "good": {
+  "total": 4,
+  "passed": 4,
+  "falseFail": []
+ },
+ "sets": {
+  "style": {
+   "bad": {
+    "total": 0,
+    "caught": 0
+   },
+   "good": {
+    "total": 1,
+    "passed": 1
+   }
+  },
+  "holdout": {
+   "bad": {
+    "total": 1,
+    "caught": 1
+   },
+   "good": {
+    "total": 1,
+    "passed": 1
+   }
+  },
+  "fresh4": {
+   "bad": {
+    "total": 0,
+    "caught": 0
+   },
+   "good": {
+    "total": 1,
+    "passed": 1
+   }
+  },
+  "adv-front-prop": {
+   "bad": {
+    "total": 2,
+    "caught": 2
+   },
+   "good": {
+    "total": 0,
+    "passed": 0
+   }
+  },
+  "fresh5": {
+   "bad": {
+    "total": 0,
+    "caught": 0
+   },
+   "good": {
+    "total": 1,
+    "passed": 1
+   }
+  }
+ },
+ "tiers": {
+  "A-style": {
+   "bad": {
+    "total": 0,
+    "passed": 0
+   },
+   "good": {
+    "total": 2,
+    "passed": 2
+   }
+  },
+  "A": {
+   "bad": {
+    "total": 3,
+    "passed": 0
+   },
+   "good": {
+    "total": 3,
+    "passed": 3
+   }
+  },
+  "U": {
+   "bad": {
+    "total": 0,
+    "passed": 0
+   },
+   "good": {
+    "total": 2,
+    "passed": 0
+   }
+  },
+  "C": {
+   "bad": {
+    "total": 1,
+    "passed": 0
+   },
+   "good": {
+    "total": 1,
+    "passed": 0
+   }
+  }
+ },
+ "errors": [],
+ "originals": {
+  "beodeul_city": {
+   "total": 1,
+   "passed": 0,
+   "failed": [
+    "fresh3/b3_prop-bread_rack"
+   ]
+  },
+  "jp_city": {
+   "total": 0,
+   "passed": 0,
+   "failed": []
+  },
+  "atlas_biome_interior": {
+   "total": 0,
+   "passed": 0,
+   "failed": []
+  },
+  "oprn-interior-v5-large": {
+   "total": 0,
+   "passed": 0,
+   "failed": []
+  }
+ },
+ "families": {
+  "farm": {
+   "bad": 0,
+   "caught": 0,
+   "good": 1,
+   "passed": 1
+  },
+  "interior(hand)": {
+   "bad": 1,
+   "caught": 1,
+   "good": 1,
+   "passed": 1
+  },
+  "modern_city": {
+   "bad": 0,
+   "caught": 0,
+   "good": 1,
+   "passed": 0
+  },
+  "adv-front-prop": {
+   "bad": 2,
+   "caught": 2,
+   "good": 0,
+   "passed": 0
+  },
+  "sf": {
+   "bad": 0,
+   "caught": 0,
+   "good": 1,
+   "passed": 1
+  }
+ },
+ "uncertain": [],
+ "excludedNegatives": [
+  "fresh5/s011_modern_city",
+  "fresh5/s087_jp_city_interior",
+  "fresh4/q016_interior",
+  "fresh4/q060_interior",
+  "fresh4/q068_interior",
+  "fresh4/q095_modern_city",
+  "fresh4/q125_interior",
+  "holdout/mir_votive_stand__v5",
+  "holdout/mir_column_marble__w51-A",
+  "holdout/mir_powder_kegs__w9-B",
+  "holdout/mir_scroll_shelf__B",
+  "holdout/flat_wardrobe__w42-A",
+  "holdout/flat_water_trough__w4-A",
+  "holdout/flat_coal_bin__w10-B",
+  "holdout/flat_timber_prop__w53-B",
+  "holdout/thin_timber_prop__w53-B",
+  "interior/coffin__w73-A",
+  "interior/column_stone__w51-A",
+  "interior/sofa__v5",
+  "interior/powder_kegs__w9-B",
+  "interior/hay_bale__w44-A"
+ ],
+ "note": "조건 (a) 위반 = 등급 A 3/4 위반(적대 시험 adv-*·object-gen 반려 포함) + 강한 라벨 화풍 얕음, 전체 판정으로 하나도 놓치면 안 된다. 조건 (b) 칩셋 원본 전체 판정 통과 0/1 ≥ 90%. 정상 = 라벨 반쪽으로 센다(보고만). 전체 판정 정상 통과 3/4. 부분 표본 — 효력 없음",
+ "lines": [
+  "위반A3/4  FAIL column         holdout/mir_column_dwarf__w51-A                6: the capital (source rows ~11-18) is a rounded, cushion- or capsule-shaped block shaded with vertical cylinder stripes. It has no elliptical cap plate seen fr",
+  "위반A3/4  FAIL front_prop     adv-front-prop/holdout__mir_rune_stone__w45-A  7: this is a free-standing slab or pod with volume, an inset bevelled panel carrying cyan glyphs and no legs or frame. It reads as a stele, locker or capsule, n",
+  "위반A3/4  FAIL front_prop     adv-front-prop/interior__cake_display_case__w8-C 7: this is a display case, a cake under a glass dome on a wooden counter base. It holds goods and has volume, so it is display furniture, not a front_prop. · 1:",
+  "위반C3/4  FAIL box            interior/altar_E__w21-G                        Charge 1: the altar block's only 'top' is the 2-row gold strip at about source rows 27-28. It reads as a front-facing trim band with no foreshortened plane behi",
+  "정상A3/4  PASS low_furniture  fresh4/q118_modern_city                        View passes: the rounded desk top is a large plane seen from above (rows ~0-31) holding the monitors and centre panel. Below it a dark brown front band (rows ~3",
+  "정상A3/4  PASS low_furniture  fresh5/s089_sf                                 ",
+  "정상A3/4  PASS tall_furniture holdout/hue_dresser__w71-A                     ",
+  "정상A화풍 PASS structure      style/farm__farm-coop__v3                      ",
+  "정상A화풍 PASS tall_furniture style/sf__vending__after                       ",
+  "정상C3/4  FAIL figure         fresh5/s001_interior                           Charge 1: the white plinth below the brown bust (about rows 13-31) is drawn as a front elevation made of stacked horizontal bands. Its 'top' is only the 1-2 lig",
+  "정상U3/4  FAIL frame          fresh3/b3_prop-bread_rack                      Charge 1: the rack's top is only the 1-row dark outline at row 0. The side posts and grey back panel start straight away, with no foreshortened top plane or eav",
+  "정상U3/4  FAIL seat           pairs/new-chair-w                              Charge 1: this is the 'side elevation chair' pattern from the guide. The backrest is a thin vertical post on the right edge, and the seat block is mostly a flat"
+ ]
+}

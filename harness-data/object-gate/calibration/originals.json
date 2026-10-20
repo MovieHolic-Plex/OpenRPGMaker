@@ -11,7 +11,6 @@
    "fresh3/b3_prop-fish_crates",
    "fresh3/b3_prop-stall_veg",
    "fresh3/b3_prop-fish_barrel",
-   "fresh3/b3_prop-mooring_bollard",
    "fresh3/b3_prop-bread_rack",
    "fresh3/b3_prop-sandwich_board",
    "fresh3/b3_prop-crate_fish",
@@ -23,8 +22,6 @@
    "fresh3/b3_prop-flowerbox_long",
    "fresh3/b3_prop-laundry_rack",
    "fresh3/b3_prop-tree_planter",
-   "fresh3/b3_prop-column_monument",
-   "fresh3/b3_prop-statue_sage",
    "fresh3/b3_prop-flowerbed",
    "fresh3/b3_house-h101_1",
    "fresh3/b3_house-h103_1",
@@ -189,6 +186,62 @@
   "uncertain-interior/int__dining_2x1",
   "uncertain-interior/int__work_2x1",
   "uncertain-interior/int__desk_2x1",
-  "uncertain-interior/int__tea_2x1"
- ]
+  "uncertain-interior/int__tea_2x1",
+  "fresh3/b3_prop-mooring_bollard",
+  "fresh3/b3_prop-column_monument",
+  "fresh3/b3_prop-statue_sage"
+ ],
+ "defects": [
+  "fresh3/b3_prop-column_monument",
+  "fresh3/b3_prop-mooring_bollard",
+  "fresh3/b3_prop-statue_sage",
+  "uncertain-interior/int__crate__cabbage",
+  "uncertain-interior/int__stove",
+  "uncertain-interior/int__table__cake_pie"
+ ],
+ "negatives": {
+  "tall_furniture": [
+   "holdout/mir_scroll_shelf__B",
+   "holdout/flat_wardrobe__w42-A"
+  ],
+  "round_body": [
+   "interior/powder_kegs__w9-B",
+   "holdout/mir_powder_kegs__w9-B"
+  ],
+  "box": [
+   "interior/coffin__w73-A",
+   "interior/hay_bale__w44-A"
+  ],
+  "seat": [
+   "interior/sofa__v5",
+   "fresh5/s087_jp_city_interior"
+  ],
+  "low_furniture": [
+   "fresh5/s011_modern_city",
+   "holdout/mir_votive_stand__v5"
+  ],
+  "column": [
+   "interior/column_stone__w51-A",
+   "holdout/mir_column_marble__w51-A"
+  ],
+  "other": [
+   "fresh4/q095_modern_city",
+   "fresh4/q125_interior"
+  ],
+  "container": [
+   "holdout/flat_water_trough__w4-A",
+   "holdout/flat_coal_bin__w10-B"
+  ],
+  "frame": [
+   "holdout/thin_timber_prop__w53-B",
+   "holdout/flat_timber_prop__w53-B"
+  ],
+  "structure": [
+   "fresh4/q068_interior"
+  ],
+  "figure": [
+   "fresh4/q060_interior",
+   "fresh4/q016_interior"
+  ]
+ }
 }

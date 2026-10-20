@@ -128,6 +128,7 @@ export type ObjectGateFinalProfileRecord = {
   originals?: Record<string, { total: number; passed: number; failed: string[] }>;
   families?: Record<string, { bad: number; caught: number; good: number; passed: number }>;
   uncertain?: Array<{ label: string; verdict: string; reasons: string[] }>;
+  excludedNegatives?: string[];
 };
 /** 이 그림·종류에 효력이 있는 Opus 최종 기록인가(보정된 프로필·해시 일치). 종류가 다르면 효력 없음이 아니라 「종류 불일치」로 막는다(refusal). */
 export function finalApplies(final: ObjectGateFinal | null | undefined, pixelSha256: string, calibratedFinalProfiles: ReadonlySet<string> | undefined): final is ObjectGateFinal {
