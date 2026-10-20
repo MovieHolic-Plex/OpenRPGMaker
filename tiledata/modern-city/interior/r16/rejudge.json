@@ -1,0 +1,1172 @@
+[
+ {
+  "id": "amuse-bowling-lane",
+  "real": false,
+  "why": "flat lane plate seen from above (flat kind)"
+ },
+ {
+  "id": "amuse-bowling-pins",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "amuse-pachinko-island",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "arcade-cabinet-pair",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "arcade-claw-machine",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "arcade-purikura",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "arcade-racing-cabinet",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "arcade-rhythm",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "art-plinth",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "aud-stage",
+  "real": false,
+  "why": "stage floor is a visible wood band between curtains and apron front"
+ },
+ {
+  "id": "cafe-maid-stage",
+  "real": false,
+  "why": "low platform drawn as top plate with front lip"
+ },
+ {
+  "id": "cinema-concession",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "clinic-pet-kennels",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "dept-accessory-wall",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "dept-bag-stand",
+  "real": false,
+  "why": "false FAIL: rack like the clothing racks (false): base plinth top 3 rows with mat, bags hang from the bar"
+ },
+ {
+  "id": "dept-eyewear-tower",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "dept-hat-stand",
+  "real": false,
+  "why": "hats show crown tops and the base is an ellipse — column/stand reads 3/4"
+ },
+ {
+  "id": "dept-nail-bar",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "dept-perfume-wall",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "dept-shoe-wall",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "dept-sneaker-wall",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "food-drink-bar",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "food-ticket-machine",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "gym-hoop",
+  "real": false,
+  "why": "backboard is a vertical panel; rim ellipse is seen from above"
+ },
+ {
+  "id": "gym-hoop-e",
+  "real": false,
+  "why": "false FAIL: side-facing hoop: L-shaped side profile is correct, base plate top visible"
+ },
+ {
+  "id": "gym-hoop-w",
+  "real": false,
+  "why": "false FAIL: side-facing hoop: L-shaped side profile is correct, base plate top visible"
+ },
+ {
+  "id": "home-electric-fan",
+  "real": false,
+  "why": "south-facing grille is the correct face; base ellipse visible"
+ },
+ {
+  "id": "home-school-bag",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "hosp-ambulance-e",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "hosp-ambulance-w",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "hosp-anesthesia",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "hosp-crash-cart",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "hosp-ct-scanner",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "hosp-icu-pod",
+  "real": false,
+  "why": "false FAIL: bed is a top-down mattress and the side cart already has a 4-row white top"
+ },
+ {
+  "id": "hosp-iv-pump",
+  "real": false,
+  "why": "thin pole (column exempt width); pump is a small box on the pole"
+ },
+ {
+  "id": "hosp-mayo-stand",
+  "real": false,
+  "why": "tray is a top surface seen from above"
+ },
+ {
+  "id": "hosp-ticket-dispenser",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "hosp-vitals-bank",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "hosp-xray-console",
+  "real": false,
+  "why": "glass console top is a visible slanted plane"
+ },
+ {
+  "id": "hospital-bedside-monitor",
+  "real": false,
+  "why": "pole-mounted screen, thin pole"
+ },
+ {
+  "id": "hospital-nurse-station",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "hospital-pharmacy-window",
+  "real": false,
+  "why": "service window set into the wall (wall_mounted)"
+ },
+ {
+  "id": "hospital-water-dispenser",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "hotel-capsule-pods",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "hotel-luggage-cart",
+  "real": false,
+  "why": "false FAIL: frame cart: deck is covered by the suitcases (like gondola goods)"
+ },
+ {
+  "id": "ind-forklift",
+  "real": false,
+  "why": "overhead guard top and body top visible"
+ },
+ {
+  "id": "infirmary-scale",
+  "real": false,
+  "why": "scale platform top visible, thin column"
+ },
+ {
+  "id": "izakaya-beer-server",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "jp-tokonoma",
+  "real": false,
+  "why": "alcove floor is the visible platform"
+ },
+ {
+  "id": "jp-torii",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "jumbo-arcade-airhockey",
+  "real": false,
+  "why": "whole table top visible"
+ },
+ {
+  "id": "jumbo-arcade-dance-stage",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "jumbo-arcade-racing-twin",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "jumbo-gym-apparatus",
+  "real": false,
+  "why": "beam board and box tiers show tops"
+ },
+ {
+  "id": "jumbo-hosp-mri",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "jumbo-hosp-nurse-command",
+  "real": false,
+  "why": "round desk ring top visible"
+ },
+ {
+  "id": "jumbo-roof-cooling-tower",
+  "real": false,
+  "why": "top with fan visible ~10px"
+ },
+ {
+  "id": "jumbo-roof-water-tower",
+  "real": false,
+  "why": "elliptic top cap visible"
+ },
+ {
+  "id": "jumbo-station-ticket-office",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "konbini-atm",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "konbini-bento",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "konbini-copier",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "konbini-hot-snack",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "konbini-oden",
+  "real": false,
+  "why": "pot compartments seen from above (container opening)"
+ },
+ {
+  "id": "lab-fume-hood",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "manga-booth",
+  "real": false,
+  "why": "cubicle drawn top-down with partitions"
+ },
+ {
+  "id": "mart-baguette-basket",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "mart-basket-stacker",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "mart-liquor-fridge",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "mart-scale-station",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "mci-basket-stack",
+  "real": false,
+  "why": "false FAIL: top basket shows its mesh opening ~8 rows from above"
+ },
+ {
+  "id": "mci-bedside",
+  "real": false,
+  "why": "light top 4px with items"
+ },
+ {
+  "id": "mci-cooler",
+  "real": false,
+  "why": "top with goods visible ~5px"
+ },
+ {
+  "id": "mci-fridge",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "mci-iv-stand",
+  "real": false,
+  "why": "thin pole"
+ },
+ {
+  "id": "mci-kitchen",
+  "real": false,
+  "why": "worktop with sink and hob visible"
+ },
+ {
+  "id": "mci-med-cart",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "mci-pastry-case",
+  "real": false,
+  "why": "glass top with pastries visible"
+ },
+ {
+  "id": "mci-tv-stand",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "office-copier",
+  "real": false,
+  "why": "lid and panel visible as top"
+ },
+ {
+  "id": "office-water-cooler",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "office-whiteboard-stand",
+  "real": false,
+  "why": "front_prop board on legs"
+ },
+ {
+  "id": "park-bus-e",
+  "real": false,
+  "why": "east-facing vehicle; roof with vents visible"
+ },
+ {
+  "id": "park-pay-machine",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "park-sedan-red-w",
+  "real": false,
+  "why": "west-facing car; roof and glass slopes visible"
+ },
+ {
+  "id": "park-sedan-white-e",
+  "real": false,
+  "why": "east-facing car; roof and glass slopes visible"
+ },
+ {
+  "id": "pub-atm",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "pub-mail-sort",
+  "real": false,
+  "why": "sorting counter top ~6px visible"
+ },
+ {
+  "id": "pub-service-window",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "roof-water-tank",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "studio-camera",
+  "real": false,
+  "why": "small camera on tripod, organic small prop"
+ },
+ {
+  "id": "studio-camera-crane",
+  "real": false,
+  "why": "open frame arm"
+ },
+ {
+  "id": "studio-chroma-wall",
+  "real": false,
+  "why": "flat backdrop on the wall"
+ },
+ {
+  "id": "subway-ticket-machine",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "subway-trash-bins",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "subway-vending-machine",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "svc-arcade-shopfront",
+  "real": false,
+  "why": "facade with awning top stripes (structure)"
+ },
+ {
+  "id": "svc-salon-mirror",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — appliances_machines"
+ },
+ {
+  "id": "tr-baggage-belt",
+  "real": false,
+  "why": "carousel seen from above"
+ },
+ {
+  "id": "tr-bus-bay",
+  "real": false,
+  "why": "bench/booth with visible top surfaces"
+ },
+ {
+  "id": "tr-fuel-pump",
+  "real": false,
+  "why": "false FAIL: island top is 6+ rows from above; pumps are slim columns with a white cap"
+ },
+ {
+  "id": "tr-xray-lane",
+  "real": false,
+  "why": "machine top with tunnel visible"
+ },
+ {
+  "id": "train-cab-console",
+  "real": false,
+  "why": "dashboard seen from above"
+ },
+ {
+  "id": "train-cab-front-w",
+  "real": false,
+  "why": "cab end wall (structure wall)"
+ },
+ {
+  "id": "train-ceiling-ac",
+  "real": false,
+  "why": "ceiling unit, seen from below/front by design"
+ },
+ {
+  "id": "train-hanging-ad",
+  "real": false,
+  "why": "hanging flat card"
+ },
+ {
+  "id": "train-pole",
+  "real": false,
+  "why": "thin pole"
+ },
+ {
+  "id": "train-straps",
+  "real": false,
+  "why": "hanging straps"
+ },
+ {
+  "id": "sento-wash-station",
+  "real": false,
+  "why": "wall mirror and tap with small floor items"
+ },
+ {
+  "id": "svc-dryer-stack",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — bath_sanitary"
+ },
+ {
+  "id": "svc-salon-basin",
+  "real": false,
+  "why": "basin top visible"
+ },
+ {
+  "id": "svc-washer-row",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — bath_sanitary"
+ },
+ {
+  "id": "hosp-stretcher",
+  "real": false,
+  "why": "mattress top visible"
+ },
+ {
+  "id": "jumbo-officetel-studio-bed-desk",
+  "real": false,
+  "why": "bed and desk tops visible"
+ },
+ {
+  "id": "cinema-wide-screen",
+  "real": false,
+  "why": "wall-mounted screen"
+ },
+ {
+  "id": "clinic-herb-cabinet",
+  "real": false,
+  "why": "top with herbs visible ~5px"
+ },
+ {
+  "id": "jumbo-park-box-truck-e",
+  "real": false,
+  "why": "false FAIL: side-facing truck: cargo-box roof is 8 light rows from above and cab roof 6 rows"
+ },
+ {
+  "id": "kinder-cubby",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — cabinets_lockers"
+ },
+ {
+  "id": "mart-candy-bins",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — cabinets_lockers"
+ },
+ {
+  "id": "mart-cart-bay",
+  "real": false,
+  "why": "carts show basket grids from above"
+ },
+ {
+  "id": "mci-mailboxes",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — cabinets_lockers"
+ },
+ {
+  "id": "mci-wardrobe",
+  "real": false,
+  "why": "light top ~5px visible"
+ },
+ {
+  "id": "pub-fire-locker",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — cabinets_lockers"
+ },
+ {
+  "id": "pub-ticket-dispenser",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — cabinets_lockers"
+ },
+ {
+  "id": "pub-vault-door",
+  "real": false,
+  "why": "door set into wall"
+ },
+ {
+  "id": "school-cleaning-locker",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — cabinets_lockers"
+ },
+ {
+  "id": "station-coin-lockers",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — cabinets_lockers"
+ },
+ {
+  "id": "station-ic-charger",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — cabinets_lockers"
+ },
+ {
+  "id": "train-gangway",
+  "real": false,
+  "why": "doorway in wall"
+ },
+ {
+  "id": "arcade-prize-counter",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — counters_stalls"
+ },
+ {
+  "id": "art-installation",
+  "real": false,
+  "why": "sculpture on elliptic base"
+ },
+ {
+  "id": "dept-directory-kiosk",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — counters_stalls"
+ },
+ {
+  "id": "dept-watch-case",
+  "real": false,
+  "why": "glass top with watches seen from above"
+ },
+ {
+  "id": "food-fastfood-counter",
+  "real": false,
+  "why": "false FAIL: counter top is the 8-row yellow surface the register and cups stand on, lit edge then red front"
+ },
+ {
+  "id": "jumbo-bakery-deck-oven",
+  "real": false,
+  "why": "grey top band with vents ~6px"
+ },
+ {
+  "id": "mart-bread-rack",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — counters_stalls"
+ },
+ {
+  "id": "mart-cake-showcase",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — counters_stalls"
+ },
+ {
+  "id": "mart-cold-case",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — counters_stalls"
+ },
+ {
+  "id": "mart-dairy-open",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — counters_stalls"
+ },
+ {
+  "id": "mart-drink-open",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — counters_stalls"
+ },
+ {
+  "id": "mart-fish-ice",
+  "real": false,
+  "why": "ice bed seen from above"
+ },
+ {
+  "id": "mart-fruit-apple",
+  "real": false,
+  "why": "fruit heap in tilted bin seen from above"
+ },
+ {
+  "id": "mart-fruit-banana",
+  "real": false,
+  "why": "fruit heap in tilted bin seen from above"
+ },
+ {
+  "id": "mart-fruit-orange",
+  "real": false,
+  "why": "fruit heap in tilted bin seen from above"
+ },
+ {
+  "id": "mart-fruit-watermelon",
+  "real": false,
+  "why": "fruit heap in tilted bin seen from above"
+ },
+ {
+  "id": "mart-meat-case",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — counters_stalls"
+ },
+ {
+  "id": "mart-meat-showcase",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — counters_stalls"
+ },
+ {
+  "id": "mart-produce-island",
+  "real": false,
+  "why": "produce bins seen from above"
+ },
+ {
+  "id": "mart-promo-endcap",
+  "real": false,
+  "why": "false FAIL: stacked goods pyramid: each tier shows its top; no flat lid"
+ },
+ {
+  "id": "mart-sale-endcap",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — counters_stalls"
+ },
+ {
+  "id": "mart-sashimi-case",
+  "real": false,
+  "why": "false FAIL: ice well and trays are already seen from above (open top ~8 rows)"
+ },
+ {
+  "id": "mart-self-checkout",
+  "real": false,
+  "why": "false FAIL: counter top with scanner is already ~6 rows"
+ },
+ {
+  "id": "mart-veg-pyramid",
+  "real": false,
+  "why": "produce tops seen from above"
+ },
+ {
+  "id": "mart-veg-wall",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — counters_stalls"
+ },
+ {
+  "id": "shop-flower-cooler",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — counters_stalls"
+ },
+ {
+  "id": "amuse-mixing-desk",
+  "real": false,
+  "why": "console top with faders visible"
+ },
+ {
+  "id": "aud-lectern",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — desks_tables"
+ },
+ {
+  "id": "court-counsel-table",
+  "real": false,
+  "why": "table top with papers visible"
+ },
+ {
+  "id": "court-witness-stand",
+  "real": false,
+  "why": "stand top visible ~5px"
+ },
+ {
+  "id": "jumbo-school-stage-board",
+  "real": false,
+  "why": "stage floor visible below board"
+ },
+ {
+  "id": "lecture-podium",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — desks_tables"
+ },
+ {
+  "id": "library-carrel",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — desks_tables"
+ },
+ {
+  "id": "restaurant-booth-set",
+  "real": false,
+  "why": "table top visible"
+ },
+ {
+  "id": "restaurant-host-podium",
+  "real": false,
+  "why": "false FAIL: sloped top with the open book is ~10 rows seen from above"
+ },
+ {
+  "id": "restaurant-table-4p",
+  "real": false,
+  "why": "table top visible"
+ },
+ {
+  "id": "school-teacher-podium",
+  "real": false,
+  "why": "podium top with book ~6px"
+ },
+ {
+  "id": "dept-fitting-booth",
+  "real": false,
+  "why": "false FAIL: kind wall: drawn flush into the back wall row, no protruding top"
+ },
+ {
+  "id": "dept-fitting-curtain",
+  "real": false,
+  "why": "false FAIL: kind wall: curtain booth flush in the back wall row"
+ },
+ {
+  "id": "dept-sign-pillar",
+  "real": false,
+  "why": "front_prop sign post"
+ },
+ {
+  "id": "elev-car-door",
+  "real": false,
+  "why": "door kind"
+ },
+ {
+  "id": "hospital-curtain-screen",
+  "real": false,
+  "why": "curtain screen on frame (front_prop-like)"
+ },
+ {
+  "id": "jp-shoji-screen",
+  "real": false,
+  "why": "sliding screen in wall"
+ },
+ {
+  "id": "koban-cell",
+  "real": false,
+  "why": "cell bars wall"
+ },
+ {
+  "id": "mci-elevator",
+  "real": false,
+  "why": "door in wall"
+ },
+ {
+  "id": "museum-partition-wall",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — doors_stairs_screens"
+ },
+ {
+  "id": "park-pillar",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — doors_stairs_screens"
+ },
+ {
+  "id": "roof-fence",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — doors_stairs_screens"
+ },
+ {
+  "id": "roof-stair-hut",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — doors_stairs_screens"
+ },
+ {
+  "id": "subway-pillar-sign",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — doors_stairs_screens"
+ },
+ {
+  "id": "subway-psd-door",
+  "real": false,
+  "why": "platform screen wall"
+ },
+ {
+  "id": "subway-psd-wall",
+  "real": false,
+  "why": "platform screen wall"
+ },
+ {
+  "id": "train-stanchion",
+  "real": false,
+  "why": "thin pole"
+ },
+ {
+  "id": "amuse-speaker-stack",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — pianos_instruments"
+ },
+ {
+  "id": "home-washing-machine",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — pianos_instruments"
+ },
+ {
+  "id": "hosp-surgical-lamp",
+  "real": false,
+  "why": "ceiling-hung lamp"
+ },
+ {
+  "id": "music-amp",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — pianos_instruments"
+ },
+ {
+  "id": "school-piano",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — pianos_instruments"
+ },
+ {
+  "id": "arcade-medal-changer",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "book-shelf",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "clinic-pharmacy-shelf",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "council-trophy-case",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "dept-clothing-rack",
+  "real": false,
+  "why": "open frame rack, hanger bar seen"
+ },
+ {
+  "id": "dept-handbag-vitrine",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "dept-rack-cool",
+  "real": false,
+  "why": "round rack: hangers and base ellipse seen from above"
+ },
+ {
+  "id": "dept-rack-mono",
+  "real": false,
+  "why": "round rack: hangers and base ellipse seen from above"
+ },
+ {
+  "id": "dept-rack-pastel",
+  "real": false,
+  "why": "round rack: hangers and base ellipse seen from above"
+ },
+ {
+  "id": "dept-rack-warm",
+  "real": false,
+  "why": "round rack: hangers and base ellipse seen from above"
+ },
+ {
+  "id": "home-appliance-rack",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "home-drying-rack",
+  "real": false,
+  "why": "front_prop drying rack"
+ },
+ {
+  "id": "home-umbrella-stand",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "hosp-curtain-track",
+  "real": false,
+  "why": "hanging curtain"
+ },
+ {
+  "id": "hospital-med-cabinet",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "ind-lathe",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "konbini-magazine-rack",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "lab-reagent-shelf",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "library-shelf",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "manga-shelf",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "mart-donut-case",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "mart-gondola-cans",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "mart-gondola-cereal",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "mart-gondola-detergent",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "mart-gondola-household",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "mart-gondola-ramen",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "mart-gondola-snack",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "mart-gondola-tea",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "mart-gondola-water",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "mci-gondola",
+  "real": false,
+  "why": "false FAIL: goods hide the top; a light shelf-top ledge is visible above them"
+ },
+ {
+  "id": "mci-magazine",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "mci-shelf-office",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "rest-bottle-shelf",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "rest-coat-stand",
+  "real": false,
+  "why": "thin coat stand"
+ },
+ {
+  "id": "rest-wine-rack",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "sento-shoe-locker",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "shop-drug-gondola",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "shop-peg-wall",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "shop-stationery-rack",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "shop-used-shelf",
+  "real": true,
+  "why": "horizontal top (lid/top cap/counter/opening) <=2px — shelves_racks"
+ },
+ {
+  "id": "court-gallery-pew",
+  "real": false,
+  "why": "false FAIL: seat (other agent scope): seat tops ~4 rows visible"
+ },
+ {
+  "id": "hosp-wait-row-n",
+  "real": false,
+  "why": "false FAIL: seat (other agent scope): north-facing row, seat band visible behind backs"
+ },
+ {
+  "id": "train-priority-orange-n",
+  "real": false,
+  "why": "false FAIL: seat (other agent scope): cushions seen from above"
+ },
+ {
+  "id": "train-priority-pink-s",
+  "real": false,
+  "why": "false FAIL: seat (other agent scope): cushions seen from above"
+ },
+ {
+  "id": "home-wall-ac",
+  "real": false,
+  "why": "wall_mounted unit"
+ },
+ {
+  "id": "mci-ac-wall",
+  "real": false,
+  "why": "wall_mounted unit"
+ },
+ {
+  "id": "train-luggage-rack",
+  "real": false,
+  "why": "overhead hanging rack"
+ }
+]
