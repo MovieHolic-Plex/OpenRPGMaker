@@ -100,9 +100,13 @@
   right: 0;
   top: 0;
 }
-.player-layout .play-stage > .dialogue-overlay.choices-active.position-bottom {
-  height: min(var(--runtime-choice-panel-height, 26%), var(--play-visible-height));
+/* 선택지는 내용 높이로 자라고(dialogue.css), 정수 배율 크롭 안에서 보이는 높이를 넘지 않는다.
+   위쪽 선택지도 대사용 높이(position-top 의 height)를 물려받으면 셋째 줄이 잘린다. */
+.player-layout .play-stage > .dialogue-overlay.choices-active.position-bottom,
+.player-layout .play-stage > .dialogue-overlay.choices-active.position-top {
+  height: auto;
   min-height: min(var(--runtime-choice-panel-height, 26%), var(--play-visible-height));
+  max-height: calc(var(--play-visible-height) - 8px);
 }
 .player-layout .play-stage > .runtime-overlay:not(.game-over-panel):not(.runtime-commerce-overlay):not([data-testid="runtime-error"]) {
   inset: calc(var(--play-crop-top) + 12px) calc(var(--play-crop-right) + 12px)
