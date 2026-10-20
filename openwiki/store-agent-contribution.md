@@ -21,7 +21,7 @@ npm run -s store -- publish /tmp/my-pack --agent "claude-code opus-5.5"   # 검�
 | 명령 | 하는 일 |
 |---|---|
 | `whoami` | 토큰 파일(권한 600 확인)·계정·토큰 라벨을 보여 준다. 토큰 값은 찍지 않는다. |
-| `init <폴더> --kind K --title T --license L --file F [--file F2…] [--summary --description --tags a,b --credits]` | 파일로 팩 폴더(`manifest.json` + `blobs/<sha256>`)를 만들고 바로 `check` 한다. K = `character`(288×256 캐릭터 시트)·`face`·`battler`(144×384)·`picture`·`tileset`(16px 배수)·`music`·`sound`. 여러 종류를 섞은 팩은 `manifest.json` 을 직접 쓴다(형식 `src/assetStore/format.ts`). |
+| `init <폴더> --kind K --title T --license L --method M --engine E [--model X] --file F [--file F2…] [--summary --description --tags a,b --credits]` | 파일로 팩 폴더(`manifest.json` + `blobs/<sha256>`)를 만들고 바로 `check` 한다. K = `character`(288×256 캐릭터 시트)·`face`·`battler`(144×384)·`picture`·`tileset`(16px 배수)·`music`·`sound`. 여러 종류를 섞은 팩은 `manifest.json` 을 직접 쓴다(형식 `src/assetStore/format.ts`). |
 | `check <폴더>` | 올리기 전 검사만. 아래 「검사」 전부. |
 | `publish <폴더> [--draft]` | 검사 → 없는 파일만 올리기 → 새 상품 제출. `--draft` 는 써도 되고 안 써도 같다(제출은 항상 확인 대기). |
 | `version <slug> <폴더>` | **에이전트가 제출한** 내 상품에 새 판본. 사람이 올린 상품에는 못 올린다(서버 403). |
@@ -36,7 +36,11 @@ npm run -s store -- publish /tmp/my-pack --agent "claude-code opus-5.5"   # 검�
 
 - 형식: `validateManifest`(서버와 같은 계약 파일), blob 해시·크기·실제 형식(시그니처)이 매니페스트와 같은가.
 - 그림 규격: `storeImageSizeProblem` — 캐릭터 288×256, 전투 144×384, 타일셋 16의 배수.
-- **AI 표시:** `aiGenerated: true` 필수(서버도 422 `agent_ai_required`), `credits` 비면 거절 — 만든 에이전트·모델과 출처를 적는다.
+- **만든 방법(2026-10-20 감독 결정, AI 표시는 정확해야 한다):** 에셋마다 `content.assets[id].generation = {method, engine, model?}`, 캐릭터마다 `content.characters[i].generation`(칩+초상이면 `mixed`) — 실제로 돌린 것 그대로.
+  `generative-model`(생성 모델이 만듦, `model` 필수) · `procedural`(스크립트 색 바꾸기·조각 합성뿐, `model` 없음) · `mixed`(둘 다, `model` 필수). `engine` = 돌린 도구.
+  상품 표시(`storePackGeneration`): 생성 모델·섞음이 하나라도 있거나 방법을 안 밝힌 에셋이 있으면 「AI 생성」, 전부 procedural 이면 「스크립트 생성」. `aiGenerated` 는 그 표시와 같아야 한다(다르면 형식 오류).
+  아무 데도 방법을 밝히지 않으면 예전처럼 에이전트 제출은 `aiGenerated: true` 여야 한다(서버 422 `agent_ai_required`). 에이전트 제출은 방법과 상관없이 「만든 에이전트」 표시와 주인 승인이 붙는다. `init` 은 `--method`·`--engine` 이 필수다.
+- **크레딧:** 비면 거절 — 만든 에이전트·모델과 출처를 적는다. 맨 낱말 「RTP」는 계속 거절한다 — EasyRPG 출처는 「EasyRPG project contributors, CC BY 4.0」 로 적는다.
 - **타사 소재:** Rasak·REFMAP·PAW·RPG Maker MV/MZ·RTP 이름이 제목·태그·크레딧·에셋/타일셋 id·이름·이식 원본에 있으면 거절(`storeThirdPartyName`, 서버도 누구에게서나 거절).
 - **3/4 관문(AGENTS.md hard rule):** `chipset`·`tileset` 그림은 시트의 비지 않은 16px 칸이 전부 `object-gate` 의 **store 출구를 통과한 영수증 칸**(또는 기준선)이어야 한다(`src/harnesses/object-gate/node/cells.ts`).
   2026-10-20 현재 판정 프로필이 보정되지 않아(`npm run harness -- object-gate status`) **새 타일·기물 시트는 모두 막힌다.** 이것은 정상이다 — 관문을 건너뛰거나 기준을 낮추지 말고, 사용자에게 알린다.

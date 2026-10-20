@@ -2,7 +2,8 @@
  * 코딩 에이전트의 스토어 제출 명령 — `npm run -s store -- <명령>`. 문서: openwiki/store-agent-contribution.md
  *
  *   npm run -s store -- whoami                                   # 토큰 파일·계정·에이전트 이름 확인(토큰은 찍지 않는다)
- *   npm run -s store -- init <폴더> --kind character --title "…" --license CC-BY-4.0 --file a.png [--file b.png]
+ *   npm run -s store -- init <폴더> --kind character --title "…" --license CC-BY-4.0 --method generative-model --engine <도구> --model <모델> --file a.png [--file b.png]
+ *                         # --method: generative-model·mixed(--model 필수)|procedural(생성 모델 없음, --model 없음). 실제로 돌린 그대로
  *                         [--summary "…"] [--description "…"] [--tags a,b] [--credits "…"]   # 그림·소리 파일로 팩 폴더 만들기
  *   npm run -s store -- check <폴더>                             # 올리기 전 검사만(형식·규격·타사 이름·AI 표시·3/4 관문)
  *   npm run -s store -- publish <폴더> [--draft]                  # 검사 → 파일 올리기 → 새 상품 제출(항상 확인 대기)
@@ -24,8 +25,8 @@ import { homedir } from "node:os";
 import { basename, join, resolve } from "node:path";
 import { PNG } from "pngjs";
 import {
-  STORE_ITEM_KINDS, STORE_LICENSES, STORE_PACK_SCHEMA, STORE_TILE_SIZE, storeImageSizeProblem, storeThirdPartyName, validateManifest,
-  type StoreAssetKind, type StoreBlobMime, type StoreItemKind, type StoreLicense, type StorePackManifest,
+  STORE_GENERATION_METHODS, STORE_ITEM_KINDS, STORE_LICENSES, STORE_PACK_SCHEMA, storePackGeneration, STORE_TILE_SIZE, storeImageSizeProblem, storeThirdPartyName, validateManifest,
+  type StoreAssetKind, type StoreBlobMime, type StoreGeneration, type StoreGenerationMethod, type StoreItemKind, type StoreLicense, type StorePackManifest,
 } from "../../src/assetStore/format";
 import { basicTilesetFor } from "../../src/assetStore/pack";
 import { pngSize, sniffMime } from "../../src/assetStore/sniff";
@@ -126,7 +127,8 @@ function checkPack(pack: Pack, { gate = true }: { gate?: boolean } = {}): { prob
   const notes: string[] = [];
   const valid = validateManifest(manifest);
   if (!valid.ok) problems.push(...valid.errors);
-  if (manifest.aiGenerated !== true) problems.push("에이전트 제출은 aiGenerated: true 여야 합니다(서버도 거절한다).");
+  // 만든 방법(generation)을 밝히면 그대로 표시한다(procedural 만 AI 생성 아님). 밝히지 않으면 에이전트 제출은 AI 생성이어야 한다(서버도 같다).
+  if (!storePackGeneration(manifest) && manifest.aiGenerated !== true) problems.push("만든 방법(에셋 generation)을 밝히지 않은 에이전트 제출은 aiGenerated: true 여야 합니다 — 생성 모델 없이 스크립트로만 만들었으면 에셋마다 generation: {method: \"procedural\", engine} 을 적으세요(서버도 거절한다).");
   if (!manifest.credits?.trim()) problems.push("credits 가 비었습니다 — 만든 에이전트·모델과 원작 출처(없으면 「직접 생성」)를 적으세요.");
   // 타사 소재(Rasak·REFMAP·PAW·RPG Maker MV/MZ·RTP) 이름은 서버가 누구에게서나 거절한다. 같은 판정을 먼저 돌린다.
   const named: [string, string][] = [["제목", manifest.title ?? ""], ["크레딧", manifest.credits ?? ""], ...(manifest.tags ?? []).map((tag): [string, string] => ["태그", tag])];
@@ -184,6 +186,14 @@ function init(dir: string): Pack {
   if (!license || !(STORE_LICENSES as readonly string[]).includes(license)) throw usage(`--license 는 ${STORE_LICENSES.join("|")} 중 하나여야 합니다.`);
   if (files.length === 0) throw usage("--file <그림·소리 파일> 이 하나 이상 필요합니다.");
   if (existsSync(join(dir, "manifest.json"))) throw usage(`이미 팩 폴더입니다: ${dir} (덮어쓰지 않는다)`);
+  const method = opt("--method") as StoreGenerationMethod | undefined;
+  if (!method || !(STORE_GENERATION_METHODS as readonly string[]).includes(method)) {
+    throw usage(`--method 는 ${STORE_GENERATION_METHODS.join("|")} 중 하나여야 합니다(실제로 돌린 것 그대로: 생성 모델이 그렸으면 generative-model + --model, 스크립트만이면 procedural).`);
+  }
+  const engine = opt("--engine");
+  const model = opt("--model");
+  if (!engine) throw usage("--engine <실제로 돌린 도구>(예 \"char-gen compose\")가 필요합니다.");
+  const generation: StoreGeneration = { method, engine, ...(model ? { model } : {}) };
   const audio = kind === "music" || kind === "sound";
   const assets: StorePackManifest["content"]["assets"] = {};
   const tilesets: StorePackManifest["content"]["tilesets"] = {};
@@ -211,7 +221,7 @@ function init(dir: string): Pack {
         tilesets[tileset.id] = tileset;
       }
     }
-    assets[id] = { id, name, kind: assetKind, blob: sha, mime, meta };
+    assets[id] = { id, name, kind: assetKind, blob: sha, mime, meta, generation };
   }
   const manifest: StorePackManifest = {
     schema: STORE_PACK_SCHEMA,
@@ -221,7 +231,7 @@ function init(dir: string): Pack {
     tags: (opt("--tags") ?? "").split(",").map((tag) => tag.trim()).filter(Boolean),
     kind: (STORE_ITEM_KINDS as readonly string[]).includes(kind) ? kind : "pack",
     license,
-    aiGenerated: true,
+    aiGenerated: generation.method !== "procedural",
     credits: opt("--credits") ?? (agentName ? `AI 생성: ${agentName}` : ""),
     content: { assets, tilesets },
     previews: audio ? [] : refs.filter((ref) => ref.mime.startsWith("image/")).slice(0, 8).map((ref) => ref.sha256),
