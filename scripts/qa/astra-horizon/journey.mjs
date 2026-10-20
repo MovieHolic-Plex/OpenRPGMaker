@@ -479,7 +479,7 @@ async function healAt(townId) {
 }
 
 try {
-  await page.goto(`${server.url}/player.html`, { waitUntil: "domcontentloaded" });
+  await page.goto(`${server.url}/player.html`, { waitUntil: "domcontentloaded", timeout: 240000 });
   await page.waitForSelector("[data-testid='title-screen']", { timeout: 120000 });
   await page.waitForTimeout(3500);
   step("title", true, project.meta?.title ?? "", await shot("01-title"));

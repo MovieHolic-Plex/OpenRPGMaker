@@ -391,6 +391,39 @@ function gymBloomPuzzle(project: Project): void {
   }
 }
 
+/**
+ * 챔피언 나루 — 마지막 승부 전에 둘 다 최고 상태로. 정직 여정(2026-10-21)에서 신전 보스를 이긴 Lv11·Lv8 파티가 나루의 셋을 쓰러뜨리고
+ * 회복약이 바닥나 에이스에게 졌다. 라이벌다운 한 장면으로 동료를 쉬게 하고 회복약 둘을 쥐여 준다(처음 한 번만).
+ */
+function fairChampion(project: Project): void {
+  const champion = eventOf(project, "mx_map_league_0", "mx_map_league_0_league_challenge");
+  const page = champion?.pages?.[0];
+  const top = page?.commands.find((c): c is Extract<Command, { kind: "fork" }> => c.kind === "fork" && c.condition.kind === "switch" && c.condition.switchId === "mx_league_1");
+  const first = top?.else;
+  if (!first) return;
+  const at = first.findIndex((c) => c.kind === "battleProcessing");
+  if (at < 0 || first.some((c) => c.kind === "setSwitch" && c.switchId === "mx_league_gift")) return;
+  if (!project.switches.some((sw) => sw.id === "mx_league_gift")) project.switches.push({ id: "mx_league_gift", name: "mx_league_gift" });
+  // 전투 음악을 바꾸는 줄(m2Command)이 전투 바로 앞에 있으면 그 앞에 넣는다 — 쉬는 장면은 아직 전당 음악으로.
+  let before = at;
+  while (before > 0 && first[before - 1]!.kind === "m2Command") before--;
+  first.splice(before, 0,
+    text("잠깐! 지친 동료로 이기면 하나도 기쁘지 않아. 우리 둘 다 최고 상태로 붙자.", "챔피언 · 나루"),
+    { kind: "recoverAll" },
+    { kind: "playAudio", resourceId: "easyrpg-sound-chime2", channel: "se", loop: false },
+    {
+      kind: "fork",
+      condition: { kind: "switch", switchId: "mx_league_gift", value: false },
+      then: [
+        { kind: "setSwitch", switchId: "mx_league_gift", value: true },
+        { kind: "changeItem", itemId: "item_potion", op: "+=", amount: 2 },
+        text("나루가 동료들을 쉬게 해 주고 회복약 두 개를 건넸다."),
+      ],
+      else: [text("나루가 동료들을 쉬게 해 주었다.")],
+    },
+  );
+}
+
 export function polishFirstTenMinutes(project: Project): void {
   polishBedroom(project);
   polishMom(project);
@@ -403,5 +436,6 @@ export function polishFirstTenMinutes(project: Project): void {
   firstWildOnRouteOne(project);
   starterCoverage(project);
   gymBloomPuzzle(project);
+  fairChampion(project);
 }
 
