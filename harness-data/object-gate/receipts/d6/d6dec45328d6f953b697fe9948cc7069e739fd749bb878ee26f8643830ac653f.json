@@ -1,0 +1,356 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d6dec45328d6f953b697fe9948cc7069e739fd749bb878ee26f8643830ac653f",
+ "width": 48,
+ "height": 96,
+ "kind": "organic",
+ "name": "narrow bamboo grove (3x6)",
+ "label": "jp_city/jp-rg-bamboo-grove-b",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 10,
+  "darkV5": 38,
+  "nearBlackEdge": 0.87,
+  "opaqueTiles": 16
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy",
+      "rows": "3-34",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "33-40"
+     },
+     {
+      "part": "bamboo stalks (front face)",
+      "rows": "41-93",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 30,
+    "front_face_rows": 45,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "A leafy canopy mass fills rows 3-34. It is lit and speckled on top, widens from 6 to 43 px, and sits over a dark underside around rows 33-48 that acts as eave shadow. Below it, vertical stalks with node segments and a dark gap between them run from about row 49 to row 93, giving a front face over 40 rows tall. There is no crisp front-edge line, so the canopy top is a leaf heap or canopy plane rather than a flat band. The base has a ground patch on rows 88-94. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate has only 12 distinct colours and a median of 8 per 16x16 tile, against about 108 per tile and 427-567 colours in the references. That is far below every reference. Its dark edge pixels are 0% neutral, so the outline is tinted dark green rather than black, which matches the Beodeul approach. The 5x5 flat-fill coverage is 0%, so there are no big flat blocks. Even so, the canopy at the top reads as a few dark green clumps with only 3 or so lightness steps, and the bamboo stalks are mostly one mid green with a lighter stripe and little per-segment highlight or grain. The references have 5-6 steps, individually shaded leaf clumps and varied trunk texture. Because the shading is shallow and the colour count is very low, the candidate looks thinner and flatter than the references and would not sit next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15849
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy mass",
+      "rows": "3-48",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bamboo stalks (vertical culms with node bands)",
+      "rows": "49-93",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ground tuft/base",
+      "rows": "88-93",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 45,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The grove is a stack of vertical stalks seen face-on (rows 49-93) under a clumpy leaf canopy (rows 3-48). The canopy is a mottled foliage silhouette. It has no front-edge line, no eave shadow and no ellipse, so it shows no horizontal top surface. The width profile grows steadily from 6 to about 42 and stays near 34-37 down the stalks, with no widen-then-narrow ellipse. The stalks end in a flat base at rows 88-93, with no visible tops or open container contents. The whole object reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate has only 12 distinct colours against 427 and 567 for the references. Its median is 8 colours per 16x16 tile against about 108 for each reference, so it is far below them on density. The canopy at the top is a dark green mass with a few lighter clumps, about 3 green steps, where the references show 5-6 steps of clustered leaves. The culms are vertical stripes of mid green with a lighter edge and little node detail or grain. The outline is a tinted dark green with no neutral edge pixels (0% near-neutral), so it is not a black sticker line, and flat-fill coverage is 0%. Even so, the shading ramp is shallow, the colour count is very low, and the piece is much thinner and flatter than the Beodeul trees, which are rich in per-leaf highlights and shaded trunk and root detail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14041
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy mass",
+      "rows": "3-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bamboo stalks (main body)",
+      "rows": "45-92",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 48,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The grove is a tall, narrow silhouette. Rows 3-44 are a speckled leaf canopy with no front-edge line, no eave shadow and no ellipse. Its width profile grows steadily (6 to 43 px) and never narrows into a flat plane. Rows 45-92 are vertical bamboo stalks with light node bands and a dark gap between them, and they show only vertical faces. The stalk tops are hidden under the foliage, so no horizontal surface is visible anywhere. The base at rows 88-93 is a small ground patch. This is a front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate has only 12 distinct colours against 427 and 567 for the references, and a median of 8 colours per tile against about 108. Each material ramp is shallow. The canopy is a dark green mass with a few lighter clumps, about 3 to 4 greens at most. The culms are mostly 2-3 greens with thin vertical highlights. Edge pixels are tinted, with 0% neutral, so the outline reads as dark green rather than black. That is good, but the dark mass blends into it and the form is not separated by value steps. There are no 5x5 flat fills, but the texture is sparse and repetitive, with little per-leaf clumping or grain compared with the references' individually shaded leaf clusters. The piece is far below both references in colour count and shading depth, so it would look flatter and thinner beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12775
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy mass",
+      "rows": "3-48",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bamboo stalk bundle",
+      "rows": "49-93",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 45,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The grove is a tall leaf mass (rows 3-48) over vertical stalks (rows 49-93). The stalks are drawn as straight vertical cylinders with node bands, and they end in the foliage with no horizontal top surface. The width profile grows smoothly from 6 to about 42 px and then stays near 34-42 px. It never forms an ellipse that widens and narrows again. The canopy is a lumpy foliage silhouette with speckled highlights. It has no front-edge line or eave-shadow band, so it reads as a front-facing blob rather than a top plane. A small base of grass and dirt (rows 88-94) sits at the bottom. Overall it is a front elevation with no distinct top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate has only 12 distinct colours and a median of 8 per tile, against 108-109 per tile and 427-567 colours in the references, so it is far below them. Its dark edge pixels are 0% neutral, so the outlines lean green and read as dark material tone, and there are no 5x5 flat fills. The bamboo culms are built from about 3 green steps (light, mid, dark) with simple segment joints. The leaf canopy at the top is dark clumps with a few lighter dots, which is much shallower than the references' 5-6 step leaf clusters with individual highlights. The base is a dark mass with little soil or grain detail. Next to the references it looks thinner and flatter, with a limited ramp and little per-element shading.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13681
+  }
+ ],
+ "decidedAt": "2026-10-19T16:22:52.897Z",
+ "cells": {
+  "16": [
+   "013aaf14b842383f",
+   "027ac6eb83c06963",
+   "19d999364f3e40f2",
+   "21650d64d52ad5d1",
+   "44a4019a795f7087",
+   "474a77898b6aec2a",
+   "54e62afcc59caf83",
+   "6af0e612fda97052",
+   "7d466982d9b84206",
+   "89e5d432d41673cc",
+   "9e2cdb340325e77a",
+   "b753d2c31e4613bd",
+   "c7fc1ea3b78e9c42",
+   "d30e4145e5c7e506",
+   "d704a46b29f27a90",
+   "e4a60a97ffba240c",
+   "e7f532aaa22a8410",
+   "ee2303f309188b26"
+  ],
+  "24": [
+   "3a783f3b03d093ac",
+   "5ca2642d2aae4658",
+   "5dce17584a3002fd",
+   "6fb10154236f5049",
+   "8418552df7c5f7bc",
+   "b60e7cbfedcbce88",
+   "c6b25a3e3c1c3f97",
+   "f80d08823ab76814"
+  ],
+  "32": [
+   "088dbee76111846e",
+   "1011dee3f6950bcd",
+   "105f0673c88099ff",
+   "18a6698b5ecf06a0",
+   "209ac8ea7a03690b",
+   "36d9ea8a61222915",
+   "4d5e07a6848c5c19",
+   "5061499f9f0ec2a6",
+   "6fe5b58ae46396ae",
+   "7a99fa205e308b95",
+   "81dd86893ee75237",
+   "99add3b9d1136320",
+   "b2e66abf36837c97",
+   "c5b357fd9494a44c",
+   "cba497a39c03bdf8",
+   "d0f536b75cda8145",
+   "d453c4d80ffc4180",
+   "fd3e877d0574fa41"
+  ],
+  "48": [
+   "1351a9fe7892698e",
+   "7a565e65e71ffb49"
+  ]
+ }
+}
