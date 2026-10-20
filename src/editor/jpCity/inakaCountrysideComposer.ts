@@ -117,7 +117,7 @@ export const INAKA_KITS: readonly InakaKitSpec[] = [
   { id: "inaka-keitora-white", jpId: "jp-inaka-keitora-white", ko: "시골 흰 경트럭(軽トラ 4×3)", w: 4, h: 3, allowWet: false },
   { id: "inaka-red-tractor", jpId: "jp-inaka-red-tractor", ko: "붉은 농기계 트랙터(4×4)", w: 4, h: 4, allowWet: false },
   { id: "inaka-agri-tin-shed", jpId: "jp-inaka-agri-tin-shed", ko: "함석 농기구 헛간", w: 4, h: 5, allowWet: false },
-  { id: "inaka-vinyl-greenhouse", jpId: "jp-inaka-vinyl-greenhouse", ko: "비닐하우스", w: 3, h: 7, allowWet: false },
+  { id: "inaka-vinyl-greenhouse", jpId: "jp-inaka-vinyl-greenhouse", ko: "비닐하우스(남북으로 긴 터널 4×7)", w: 4, h: 7, allowWet: false },
   { id: "inaka-sunflower-patch", jpId: "jp-inaka-sunflower-patch", ko: "여름 해바라기 군락", w: 3, h: 2, allowWet: false },
   { id: "inaka-hydrangea-hedge", jpId: "jp-inaka-hydrangea-hedge", ko: "수국 꽃덤불", w: 3, h: 2, allowWet: false },
   { id: "inaka-jizo-shrine-row", jpId: "jp-inaka-jizo-shrine-row", ko: "길가 지장보살 사당(3기)", w: 3, h: 3, allowWet: false },
@@ -131,7 +131,7 @@ export const INAKA_KITS: readonly InakaKitSpec[] = [
   { id: "inaka-mossy-stone-wall", jpId: "jp-inaka-mossy-stone-wall", ko: "이끼 낀 시골 돌담", w: 4, h: 2, allowWet: false },
   { id: "inaka-mossy-stone-wall-mid", jpId: "jp-inaka-mossy-stone-wall-mid", ko: "이끼 낀 시골 돌담(이음 토막)", w: 4, h: 2, allowWet: false },
   { id: "inaka-roadside-mirror", jpId: "jp-inaka-roadside-mirror", ko: "커브길 볼록거울", w: 1, h: 2, allowWet: false },
-  { id: "inaka-bicycle-parked", jpId: "jp-inaka-bicycle-parked", ko: "세워둔 시골 자전거", w: 2, h: 1, allowWet: false },
+  { id: "inaka-bicycle-parked", jpId: "jp-inaka-bicycle-parked", ko: "세워둔 시골 자전거", w: 2, h: 2, allowWet: false },
   { id: "inaka-well-handpump", jpId: "jp-inaka-well-handpump", ko: "작두 우물 펌프", w: 2, h: 2, allowWet: false },
   { id: "inaka-hillside-torii-stairs", jpId: "jp-inaka-hillside-torii-stairs", ko: "언덕 삼나무 돌계단과 도리이", w: 4, h: 5, allowWet: false },
 ] as const;
@@ -249,7 +249,7 @@ export const INAKA_SHOWCASE_SCENES: readonly InakaShowcaseScene[] = [
       // 동쪽 집터: 기와 농가 + 단층 박공집, 이끼 돌담
       { kit: "inaka-kawara-farmhouse", x: 22, y: 2, allowOverlap: true },
       { kit: "jp-bldg-house-hiraya-gable", x: 29, y: 4, allowOverlap: true },
-      { kit: "inaka-bicycle-parked", x: 31, y: 9 }, // 전봇대(28..30열) 기둥 뒤에 숨지 않게
+      { kit: "inaka-bicycle-parked", x: 31, y: 8 }, // 전봇대(28..30열) 기둥 뒤에 숨지 않게
       { kit: "inaka-hydrangea-hedge", x: 34, y: 9 },
       { kit: "inaka-mossy-stone-wall", x: 21, y: 12 },
       { kit: "inaka-mossy-stone-wall-mid", x: 25, y: 12 },
@@ -297,7 +297,7 @@ export const INAKA_SHOWCASE_SCENES: readonly InakaShowcaseScene[] = [
       { kit: "jp-bldg-shop-dagashi", x: 1, y: 2, allowOverlap: true },
       { kit: "inaka-dagashiya", x: 9, y: 5, allowOverlap: true },
       { kit: "inaka-retro-postbox-vending", x: 14, y: 9 },
-      { kit: "inaka-bicycle-parked", x: 16, y: 9 },
+      { kit: "inaka-bicycle-parked", x: 16, y: 8 },
       { kit: "jp-bldg-post-office", x: 23, y: 3, allowOverlap: true },
       { kit: "jp-bldg-koban", x: 33, y: 5, allowOverlap: true },
       { kit: "jp-prop-bus", x: 2, y: 12 },
@@ -342,7 +342,7 @@ export const INAKA_SHOWCASE_SCENES: readonly InakaShowcaseScene[] = [
       { kit: "inaka-wooden-station", x: 7, y: 1, allowOverlap: true },
       { kit: "inaka-retro-postbox-vending", x: 14, y: 5 },
       { kit: "jp-bldg-station-small", x: 18, y: 1, allowOverlap: true },
-      { kit: "inaka-bicycle-parked", x: 16, y: 5 },
+      { kit: "inaka-bicycle-parked", x: 16, y: 4 },
       { kit: "inaka-retro-postbox-vending", x: 38, y: 4 },
       ...Array.from({ length: 28 }, (_, i) => ({ kit: "jp-platform-edge", x: 6 + i, y: 7 })),
       ...Array.from({ length: 6 }, (_, i) => ({ kit: "jp-rail-verge", x: i, y: 7 })),
@@ -388,6 +388,8 @@ export const INAKA_SHOWCASE_SCENES: readonly InakaShowcaseScene[] = [
       { x: 33, y: 0, w: 2, h: 26, material: "수로" },
       { x: 0, y: 21, w: 33, h: 2, material: "시골 흙길" },
       { x: 35, y: 9, w: 5, h: 17, material: "시골 흙길" },
+      // 비닐하우스 두 동이 서는 맨흙 밭(사이 x=28 이 흙 고랑).
+      { x: 24, y: 0, w: 9, h: 7, material: "시골 흙길" },
     ],
     stamps: [
       { kit: "inaka-mossy-stone-wall", x: 0, y: 5 },
@@ -410,9 +412,9 @@ export const INAKA_SHOWCASE_SCENES: readonly InakaShowcaseScene[] = [
       { kit: "inaka-waterwheel-mill", x: 30, y: 7, allowWet: true },
       { kit: "inaka-red-tractor", x: 28, y: 12 },
       { kit: "inaka-sluice-gate", x: 33, y: 16, allowWet: true },
-      // 비닐하우스는 남북으로 긴 터널(3×7) — 두 동을 나란히 세운다.
-      { kit: "inaka-vinyl-greenhouse", x: 27, y: 0 },
-      { kit: "inaka-vinyl-greenhouse", x: 30, y: 0 },
+      // 비닐하우스는 남북으로 긴 터널(4×7) — 흙 고랑 한 칸을 사이에 두고 두 동을 나란히 세운다.
+      { kit: "inaka-vinyl-greenhouse", x: 24, y: 0 },
+      { kit: "inaka-vinyl-greenhouse", x: 29, y: 0 },
       { kit: "inaka-keitora-white", x: 36, y: 10 },
       { kit: "inaka-fire-watchtower", x: 38, y: 13 },
       { kit: "inaka-rice-rack-hasagi", x: 2, y: 23 },

@@ -1337,8 +1337,8 @@ def greenhouse(c, base):
     # 필름은 반투명: 가로 명암(가운데 빛 띠 → 동·서 치마 어둡게) 위로 남북 작물 줄이 비친다.
     VW = 'vending_cool_white'
     x0, x1 = 3, 60
-    R, RN, RS = 30, 22, 27                                                 # 화면 고리 높이: 북쪽 머리 22(멀어 조금 완만) · 늑재 22→27 · 남쪽 아치 끝면 30
-    GN, YB = 24, 107                                                        # 북쪽 끝 땅 y, 남쪽 끝 땅 y
+    R, RN, RS = 30, 6, 13                                                  # 화면 고리 높이: 북쪽 머리 6(얕은 호 — 먼 끝 아치는 눌려 보인다) · 늑재 6→13 · 남쪽 아치 끝면 30(높은 ∩)
+    GN, YB = 8, 107                                                         # 북쪽 끝 땅 y, 남쪽 끝 땅 y
     cx, half = (x0 + x1) / 2, (x1 - x0) / 2
 
     def prof(x):
@@ -1400,10 +1400,10 @@ def greenhouse(c, base):
                 lw = 2.4 + (0.9 if ph in (1, 2) else 0) - (0.7 if ph == 3 else 0)
                 dd = (xx - px) / lw
                 if abs(dd) <= 1.0:
-                    t = 1 + (1 if dd < -0.3 else -1 if dd > 0.5 else 0) + (1 if ph == 1 and dd < 0.3 else 0)
+                    t = 2 + (1 if dd < -0.3 else -1 if dd > 0.5 else 0) + (1 if ph == 1 and dd < 0.3 else 0)   # 대비 한 단 낮춤: 필름 빛에 가깝게(세로 판처럼 튀지 않게)
                     col = K('lino', t)
                 else:
-                    col = K('soil', 1 if xx < px else 0)                   # 포기 사이로 비치는 흙 고랑
+                    col = K('soil', 2 if xx < px else 1)                   # 포기 사이로 비치는 흙 고랑(필름에 비쳐 한 단 옅게)
                 c.P(xx, y, col)
                 rowmask.add((xx, y))
     # 필름 빛 얹기: 꼭대기 쪽 성긴 하이라이트 띠(줄 위로도 지나간다)
@@ -1490,9 +1490,9 @@ def greenhouse(c, base):
         c.P(xx, YB + 3, K('soil', -2))
     _shade(c, x0, YB, x1 - x0 + 1, 1, 0.7)
     _finish(c)
-    for y in range(GN, YB + 3):                                            # 동쪽 땅 부드러운 그림자(디더)
-        for k, xx in enumerate((x1 + 2, x1 + 3)):
-            if xx < c.w and y < c.h and c.a[y, xx, 3] == 0 and ((xx + y) % 2 == 0 if k < 1 else (xx + y) % 4 == 0):
+    for y in range(GN - 2, YB + 3):                                        # 동쪽 치마 밖 땅 그림자: 터널 길이 내내 3px 디더 띠
+        for k, xx in enumerate((x1 + 1, x1 + 2, x1 + 3)):
+            if xx < c.w and y < c.h and c.a[y, xx, 3] == 0 and ((True if k == 0 else (xx + y) % 2 == 0) if k < 2 else (xx + y) % 4 == 0):
                 c.P(xx, y, K('yoru', -1))
 
 
