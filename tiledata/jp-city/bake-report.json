@@ -1,6 +1,6 @@
 {
  "tiles": {
-  "count": 17656,
+  "count": 17658,
   "tilesPerRow": 96,
   "rows": 184,
   "sheetPx": [
@@ -11,7 +11,7 @@
   "original": 2880,
   "pc_variant_copies": 4,
   "composite_cells": 253,
-  "block_cells": 14441,
+  "block_cells": 14443,
   "legacy": 78,
   "legacy_ids": [
    16392,
@@ -45,13 +45,13 @@
    "prop": 1692,
    "people-reserve": 155,
    "composite": 253,
-   "block": 14441
+   "block": 14443
   }
  },
  "pc_counts": {
   "star": 6919,
   "solid": 4304,
-  "floor": 3984,
+  "floor": 3986,
   "solidfloor": 1539,
   "flat": 677,
   "blank": 155
@@ -72,7 +72,7 @@
   "block_kit": 1383
  },
  "groups": {
-  "total": 535,
+  "total": 537,
   "by_kind": {
    "street": 9,
    "band": 60,
@@ -81,6 +81,7 @@
    "block": 222,
    "shore-alt": 12,
    "shore-ring": 140,
+   "shore-bridge-deck-over": 2,
    "shore-bridge": 7
   }
  },
@@ -538,11 +539,11 @@
    },
    {
     "name": "jp_shore",
-    "cells": 559,
+    "cells": 561,
     "autotiles": 4,
-    "groups": 167,
+    "groups": 169,
     "kits": 0,
-    "notes": "물가 오토타일(바다↔모래·바다↔안벽·강↔숲 둑·부두 갓돌) + 바다·강 몸통 변형 + 부두 콘크리트. 칸 559."
+    "notes": "물가 오토타일(바다↔모래·바다↔안벽·강↔숲 둑·부두 갓돌) + 바다·강 몸통 변형 + 부두 콘크리트. 칸 561."
    },
    {
     "name": "jp_street_trees",
@@ -653,9 +654,9 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 17656,
+  "tiles_checked": 17658,
   "kits_checked": 1557,
-  "groups_checked": 535,
+  "groups_checked": 537,
   "autotiles_checked": 21
  },
  "relayout_identical": {
@@ -717,7 +718,7 @@
    }
   }
  },
- "sheet_hash": "89db22c3d3fae9ccc86d72da945f4005547fd0d1",
+ "sheet_hash": "23227d518535be06515759737abc687da809306a",
  "pc_rule": "tiledata/jp-city/bake/PC-RULES.md",
  "reassembly_from_files": {
   "kits_checked": 1557,
@@ -818,9 +819,9 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 17656,
+  "tiles_checked": 17658,
   "kits_checked": 1557,
-  "groups_checked": 535,
+  "groups_checked": 537,
   "autotiles_checked": 21
  },
  "files": {

@@ -140,6 +140,18 @@ def build():
             dk = np.array(RP._finalize()[0]['rg-tsuribashi/b0.1']['img']).copy()
             dk[15, :, :3] = WA.rgb(WA.J('soil', 1))
             cells['bridge-deck.soil'] = _cell(Image.fromarray(dk, 'RGBA'), 'floor', '출렁다리 상판 · 둑 위', '출렁다리 1층 발판 칸 중 남쪽이 흙 둑인 칸(아래 그늘이 흙 색). 물가 다듬기가 바꿔 단다.', ['다리', 'bridge'])
+            # 둑과 물이 반씩인 강 가장자리 칸(다리 그늘 m55·m205) 위 발판: 아래 1px 그늘을 그 칸 맨 윗줄이 물인 화소만 물빛, 땅이면 흙 색(r3)
+            WATERCOLS = {WA.rgb(WA.J(mm, i)) for mm in ('canal_indigo', 'garasu') for i in range(7) if mm == 'garasu' or i < 5}
+            for bm in BRIDGE_MASKS:
+                edge = np.array(WA.shore_cell(kind, land, bm, lp, v=CANON.index(bm) % 3, bridge=True).img())
+                dk2 = np.array(RP._finalize()[0]['rg-tsuribashi/b0.1']['img']).copy()
+                for xx in range(16):
+                    under = tuple(int(q) for q in edge[0, xx, :3])
+                    dk2[15, xx, :3] = WA.rgb(WA.J('canal_indigo', 0)) if under in WATERCOLS else WA.rgb(WA.J('soil', 1))
+                loc = 'bridge-deck.m%d' % bm
+                cells[loc] = _cell(Image.fromarray(dk2, 'RGBA'), 'floor', '출렁다리 상판 · 물가 칸 위(마스크 %d)' % bm, '출렁다리 발판 칸 중 남쪽이 둑·물 반씩인 강 가장자리 칸. 물가 다듬기가 바꿔 단다.', ['다리', 'bridge'])
+                groups.append(dict(id='jp:shore-bridge-deck-over:m%d' % bm, name='출렁다리 상판 · 물가 위 %d' % bm, role='terrain', defaultLayer='lower', cells=[loc],
+                                   desc='출렁다리 발판 칸의 강 가장자리(마스크 %d) 위 변형 — 아래 그늘이 물 위 화소만 물빛.' % bm, rules='물가 다듬기(shorePass)가 단다.'))
             groups.append(dict(id='jp:shore-bridge-deck-soil', name='출렁다리 상판 · 둑 위', role='terrain', defaultLayer='lower', cells=['bridge-deck.soil'],
                                desc='출렁다리 발판 칸의 둑 위 변형(아래 1px 그늘이 흙 색).', rules='물가 다듬기(shorePass)가 다리 키트 발판 중 남쪽이 땅인 칸에 단다.'))
         # 다리 그늘(셋째 판, 강만): 다리 상판 바로 남쪽 물 칸 — 다리가 물에 납작 붙어 보이지 않게
@@ -285,7 +297,9 @@ def compose_grid(grid, b=None):
             t = grid[y][x]; h = GA.cell_hash(x, y)
             if t == 'B':
                 south = at_(x, y + 1)
-                im = C['bridge-deck.soil']['img'] if (south is not None and not water(south)) else deck
+                if south is not None and not water(south): im = C['bridge-deck.soil']['img']
+                elif south == 'R' and ('bridge-deck.m%d' % mask(x, y + 1, water)) in C: im = C['bridge-deck.m%d' % mask(x, y + 1, water)]['img']
+                else: im = deck
             elif water(t):
                 m = mask(x, y, water)
                 under_bridge = at_(x, y - 1) == 'B'

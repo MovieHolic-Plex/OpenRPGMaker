@@ -189,7 +189,7 @@ def water_body(kind, v):
 # 4×4 베이어 디더(칸 안 좌표, 주기 4 → 칸끼리 이어짐)로 바탕 → garasu 1 → canal 1 세 단으로 옮긴다. 모래 해변(S)은 그늘을 두지 않는다(얕은 물).
 #   PROF[땅][방향] = (온 그늘 거리, 0 이 되는 거리)  N = 북쪽 땅(벽 높이면 밑), V = 동·서, S = 남쪽 땅.
 PROF = {'D': {'N': (6, 18), 'V': (6, 22), 'S': (2, 7)},
-        'G': {'N': (9, 22), 'V': (6, 20), 'S': (4, 9)}}
+        'G': {'N': (7, 15), 'V': (5, 14), 'S': (3, 7)}}   # r3: 강 가운데 밝은 물이 굽이 칸에서도 끊기지 않게(≥ 20px) 둑 그늘을 짧게
 FACE = {'D': 12, 'G': 0}
 BAYER = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]]
 
@@ -397,7 +397,9 @@ def quay_face_px(x, y, alt=0):
     edge = 10 + (1 if pnoise(x, 0, 16, 4, 52) > 0.55 else 0)
     if y < edge: return J('onsen_mineral_teal', 1) if H(x, y, 53) > 0.3 else J('moss', 1)
     if y < 12: return J('onsen_mineral_teal', 0) if H(x, y, 54) > 0.35 else OL2
-    if y == 12: return _foam(x, alt, 1) or J('canal_indigo', 0)
+    if y == 12:
+        f = _foam(x, alt, 1) or _foam(x - 1, alt + 7, 1)      # r3: 부두 옆면과 같은 드문 거품(가끔 2px)
+        return f or J('canal_indigo', 0)
     if y == 13: return J('canal_indigo', 0)
     return None
 
@@ -515,7 +517,8 @@ def quay_deck_cell(m=255, v=0):
     같은 줄눈이라 칸 경계에서 줄눈이 어긋나지 않는다(셋째 판 r2: 변형마다 세로 줄눈이 달라 16px 마다 T 자로 끊겼다). 변형은 판 얼룩·잔무늬만 다르다.
     m = canon 8방 마스크(켜진 비트 = 부두/땅, 꺼진 비트 = 물)."""
     tone = 4
-    def joint(x, y): return y in (7, 15) or (y < 7 and x == 15) or (7 < y < 15 and x == 7)
+    west_open = not (m & DIRS['W'])
+    def joint(x, y): return y in (7, 15) or (y < 7 and x == 15) or (7 < y < 15 and x == 7 and not west_open)   # 서쪽 갓돌 옆 3px 조각 돌을 첫 돌에 합친다(r3)
     c = Cv(16, 16)
     for y in range(16):
         for x in range(16):
