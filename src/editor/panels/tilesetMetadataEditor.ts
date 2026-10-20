@@ -309,7 +309,7 @@ function renderPassagePaintTools(rerender: () => void): HTMLElement {
     el("button", {
       class: `database-footer-button tileset-passage-choice${current === mark ? " active" : ""}`,
       text: label,
-      attrs: { type: "button", "aria-pressed": String(current === mark), title: `${label} — 시트에서 클릭·드래그로 칠합니다` },
+      attrs: { type: "button", "aria-pressed": String(current === mark), title: mark === "star" ? "지나갈 수 있지만 캐릭터보다 위에 그려져요 (나뭇잎·지붕 끝처럼 캐릭터를 가리는 칸)" : `${label} — 시트에서 클릭·드래그로 칠합니다` },
       dataset: { testid },
       on: {
         click: () => {
@@ -328,7 +328,7 @@ function renderPassagePaintTools(rerender: () => void): HTMLElement {
         children: [
           paintButton("o", "통과", "tileset-passage-open"),
           paintButton("x", "막힘", "tileset-passage-blocked"),
-          paintButton("star", "위 ★", "tileset-passage-star"),
+          paintButton("star", "캐릭터 위 ★", "tileset-passage-star"),
         ],
       }),
       el("span", { class: "tileset-passage-paint-hint", text: "시트에서 클릭·드래그로 칠합니다" }),
@@ -340,7 +340,7 @@ function renderPassageInspector(tileset: TilesetDef, rerender: () => void): HTML
   const home = tileLayerHome(tileset, selectedTile);
   const homeLabel = home === "both" ? "양쪽" : home === "upper" ? "상위" : "하위";
   const mark = passageMarkForTile(tileset, selectedTile);
-  const markLabel = mark === "x" ? "막힘" : mark === "star" ? "위 ★" : "통과";
+  const markLabel = mark === "x" ? "막힘" : mark === "star" ? "캐릭터 위 ★" : "통과";
   const rows = Math.ceil(tileset.count / tileset.tilesPerRow);
   const passage = tileset.passability[selectedTile] ?? passableFlag();
   return el("section", {

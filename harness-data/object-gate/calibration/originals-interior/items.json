@@ -41,7 +41,7 @@
  },
  {
   "name": "int__shelf__potion_potionb_potiong",
-  "kind": "wall_mounted",
+  "kind": "wall_structure",
   "styleKind": "prop",
   "note": "atlas_biome_interior 키트 hand-interior:shelf:potion+potionb+potiong (물약 벽 선반) · 10-01 전수조사 ok",
   "view34": "good",
@@ -51,7 +51,7 @@
  },
  {
   "name": "int__shelf__herb",
-  "kind": "wall_mounted",
+  "kind": "wall_structure",
   "styleKind": "prop",
   "note": "atlas_biome_interior 키트 hand-interior:shelf:herb (약초 벽 선반) · 10-01 전수조사 ok",
   "view34": "good",

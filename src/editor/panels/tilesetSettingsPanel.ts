@@ -14,7 +14,10 @@ let listQuery = "";
 // 기억해 두지 않으면 스크롤이 0으로 돌아가 방금 누른 줄이 화면 밖으로 나간다.
 let tilesetLibraryScrollTop = 0;
 let tilesetLibraryScrollEpoch = 0;
-const collapsedArtStyles = new Set<TilesetArtStyleId>(TILESET_ART_STYLES.map((style) => style.id).filter((id) => id !== "easyrpg"));
+// 폐기된 EasyRPG 계열은 목록 맨 끝으로 보내고 처음부터 접어 둔다. 처음 열 때는 지금 고른 타일셋의 묶음만 펼친다.
+const collapsedArtStyles = new Set<TilesetArtStyleId>(TILESET_ART_STYLES.map((style) => style.id));
+let artStylesSeeded = false;
+const ART_STYLES_DEPRECATED_LAST = [...TILESET_ART_STYLES.filter((style) => style.id !== "easyrpg"), ...TILESET_ART_STYLES.filter((style) => style.id === "easyrpg")];
 
 /** Dedicated tile library: spatial placement controls do not apply to tilesets. */
 export function renderTilesetsTab(host: HTMLElement, rerender: () => void): void {
@@ -22,12 +25,18 @@ export function renderTilesetsTab(host: HTMLElement, rerender: () => void): void
   const tilesets = Object.values(project.tilesets);
   const selected = selectTileset(tilesets);
   const rows = el("div", { class: "tileset-library-rows" });
+  if (!artStylesSeeded) {
+    artStylesSeeded = true;
+    const openStyle = selected ? tilesetArtStyle(selected, tilesets) : null;
+    if (openStyle) collapsedArtStyles.delete(openStyle);
+    else collapsedArtStyles.delete(ART_STYLES_DEPRECATED_LAST[0].id);
+  }
   const search = el("input", { value: listQuery, attrs: { type: "search", placeholder: "타일셋 검색", "aria-label": "타일셋 검색" }, dataset: { testid: "tileset-db-search" } });
   const renderRows = () => {
     rows.replaceChildren();
     const query = listQuery.trim().toLocaleLowerCase();
     const visible = tilesets.filter((tileset) => `${tileset.name} ${tileset.id}`.toLocaleLowerCase().includes(query));
-    for (const style of TILESET_ART_STYLES) {
+    for (const style of ART_STYLES_DEPRECATED_LAST) {
       const members = visible.filter((tileset) => tilesetArtStyle(tileset, tilesets) === style.id);
       if (members.length === 0) continue;
       const expanded = query.length > 0 || !collapsedArtStyles.has(style.id);

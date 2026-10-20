@@ -1,0 +1,818 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3fe14f54ef478d2be0f641b313d3d597a1326de3a6e0e4ff18d8706790e0b803",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "forest floor dark grass edge",
+ "label": "beodeul_ground/bdg-dark-grass-woodland-31 (칸 716)",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 8,
+  "darkV5": 90,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground tile with dark grass patch in upper right",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a flat terrain tile, 16x16 fully opaque, with light green grass and a darker green patch in the upper right (x=8-11 columns show dark rows 0-6, then light grass below). It has no front face, eave or ellipse, and no vertical faces. It is a ground texture seen from above, so as a terrain autotile it is a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 4,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a ground patch, so it matches the grass reference kind. It is drawn small on the board, so most of this judgement rests on the measured facts. It has 8 visible tones per 16x16 tile against 3 for the reference grass, which makes it richer on the primary density fact. Near-flat coverage is 0%, the same as both references, and the exact 5x5 flat fill is also 0%, so there are no flat fills. Dark edge pixels are 0% neutral, so any darker edges lean green rather than black. This is not a sticker outline, and the patch reads as a green ramp from light at top-left to dark at bottom-right with speckled grass texture. It has roughly 5 distinct green steps, close to the grass reference. The texture is somewhat less varied than the reference's grass tufts, but it is not shallow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13671
+  },
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground tile with dark grass patch in upper right",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a flat terrain tile, 16x16 fully opaque, with light green grass and a darker green patch in the upper right (x=8-11 columns show dark rows 0-6, then light grass below). It has no front face, eave or ellipse, and no vertical faces. It is a ground texture seen from above, so as a terrain autotile it is a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 4,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a ground patch, so it matches the grass reference kind. It is drawn small on the board, so most of this judgement rests on the measured facts. It has 8 visible tones per 16x16 tile against 3 for the reference grass, which makes it richer on the primary density fact. Near-flat coverage is 0%, the same as both references, and the exact 5x5 flat fill is also 0%, so there are no flat fills. Dark edge pixels are 0% neutral, so any darker edges lean green rather than black. This is not a sticker outline, and the patch reads as a green ramp from light at top-left to dark at bottom-right with speckled grass texture. It has roughly 5 distinct green steps, close to the grass reference. The texture is somewhat less varied than the reference's grass tufts, but it is not shallow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 0
+  },
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground tile with dark grass patch in upper right",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a flat terrain tile, 16x16 fully opaque, with light green grass and a darker green patch in the upper right (x=8-11 columns show dark rows 0-6, then light grass below). It has no front face, eave or ellipse, and no vertical faces. It is a ground texture seen from above, so as a terrain autotile it is a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 4,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a ground patch, so it matches the grass reference kind. It is drawn small on the board, so most of this judgement rests on the measured facts. It has 8 visible tones per 16x16 tile against 3 for the reference grass, which makes it richer on the primary density fact. Near-flat coverage is 0%, the same as both references, and the exact 5x5 flat fill is also 0%, so there are no flat fills. Dark edge pixels are 0% neutral, so any darker edges lean green rather than black. This is not a sticker outline, and the patch reads as a green ramp from light at top-left to dark at bottom-right with speckled grass texture. It has roughly 5 distinct green steps, close to the grass reference. The texture is somewhat less varied than the reference's grass tufts, but it is not shallow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 0
+  },
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground tile with dark grass patch in upper right",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a flat terrain tile, 16x16 fully opaque, with light green grass and a darker green patch in the upper right (x=8-11 columns show dark rows 0-6, then light grass below). It has no front face, eave or ellipse, and no vertical faces. It is a ground texture seen from above, so as a terrain autotile it is a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 4,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a ground patch, so it matches the grass reference kind. It is drawn small on the board, so most of this judgement rests on the measured facts. It has 8 visible tones per 16x16 tile against 3 for the reference grass, which makes it richer on the primary density fact. Near-flat coverage is 0%, the same as both references, and the exact 5x5 flat fill is also 0%, so there are no flat fills. Dark edge pixels are 0% neutral, so any darker edges lean green rather than black. This is not a sticker outline, and the patch reads as a green ramp from light at top-left to dark at bottom-right with speckled grass texture. It has roughly 5 distinct green steps, close to the grass reference. The texture is somewhat less varied than the reference's grass tufts, but it is not shallow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 0
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat grass ground tile with a dark grass patch in the upper right",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a terrain autotile: a full 16x16 opaque grass tile with a dark grass patch in the upper right (rows 0-7, columns 8-15). The column scan shows only a color change from dark (L~74-78) to light (L~134-138) grass. There is no standing volume, no front face, no front-edge line and no eave shadow. It is flat ground seen from above, so it reads as a flat top-down tile, which is normal for terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small ground patch, roughly one tile, with a light-to-dark green ramp. It has a darker green edge on one side and speckle variation across the surface, so it reads as grass rather than a sticker. Measured facts: 8 visible tones per tile against 3 for the grass reference and 7 for the paving. Near-flat coverage is 0%, the same as both references. Dark edge pixels are 0% neutral, so the darks lean green rather than black. The tile shows about 5 distinct green steps, close to the grass reference. Texture is less clumped than the reference's tufts, but nothing is a flat fill, and the density facts are at or above the grass reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12048
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat grass ground tile with a dark grass patch in the upper right",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a terrain autotile: a full 16x16 opaque grass tile with a dark grass patch in the upper right (rows 0-7, columns 8-15). The column scan shows only a color change from dark (L~74-78) to light (L~134-138) grass. There is no standing volume, no front face, no front-edge line and no eave shadow. It is flat ground seen from above, so it reads as a flat top-down tile, which is normal for terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is small on the board, so I leaned on the measured facts and what the picture shows. It has 8 visible tones per tile against 3 for the grass reference and 7 for the paving reference. Near-flat coverage is 0%, the same as both references, so there are no flat 5x5 fills. The picture shows a mottled light-to-mid green with a dark green edge area, which gives a graded ramp of roughly 5 steps and grain-like variation. This is a ground patch with no object outline. The dark edge pixels are 0% neutral, so they are tinted green rather than black. Texture is somewhat less varied than the grass reference's clumps, but tone count and layering are at or above the references, so it matches the Beodeul ground standard.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 6640
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat grass ground tile with a dark grass patch in the upper right",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a terrain autotile: a full 16x16 opaque grass tile with a dark grass patch in the upper right (rows 0-7, columns 8-15). The column scan shows only a color change from dark (L~74-78) to light (L~134-138) grass. There is no standing volume, no front face, no front-edge line and no eave shadow. It is flat ground seen from above, so it reads as a flat top-down tile, which is normal for terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is small on the board, so I leaned on the measured facts and what the picture shows. It has 8 visible tones per tile against 3 for the grass reference and 7 for the paving reference. Near-flat coverage is 0%, the same as both references, so there are no flat 5x5 fills. The picture shows a mottled light-to-mid green with a dark green edge area, which gives a graded ramp of roughly 5 steps and grain-like variation. This is a ground patch with no object outline. The dark edge pixels are 0% neutral, so they are tinted green rather than black. Texture is somewhat less varied than the grass reference's clumps, but tone count and layering are at or above the references, so it matches the Beodeul ground standard.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 0
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat grass ground tile with a dark grass patch in the upper right",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a terrain autotile: a full 16x16 opaque grass tile with a dark grass patch in the upper right (rows 0-7, columns 8-15). The column scan shows only a color change from dark (L~74-78) to light (L~134-138) grass. There is no standing volume, no front face, no front-edge line and no eave shadow. It is flat ground seen from above, so it reads as a flat top-down tile, which is normal for terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is small on the board, so I leaned on the measured facts and what the picture shows. It has 8 visible tones per tile against 3 for the grass reference and 7 for the paving reference. Near-flat coverage is 0%, the same as both references, so there are no flat 5x5 fills. The picture shows a mottled light-to-mid green with a dark green edge area, which gives a graded ramp of roughly 5 steps and grain-like variation. This is a ground patch with no object outline. The dark edge pixels are 0% neutral, so they are tinted green rather than black. Texture is somewhat less varied than the grass reference's clumps, but tone count and layering are at or above the references, so it matches the Beodeul ground standard.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 0
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground tile with dark grass patch in upper right",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The 16x16 tile is a flat ground texture of light green grass with a dark green patch in the upper right (rows 0-7). The column scan shows only a color change between dark and light grass, with no front-edge line, eave shadow, ellipse or vertical face. It is a terrain autotile with no standing volume, so it reads as a flat top-down surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a grass ground patch with a dark-grass edge, the same kind as the reference grass and its dark-grass corner. It shows about 5 green steps, from a light mottled green through mid greens to a deep green. Dark clumps and tuft dots break up the surface, so there are no flat fills (near-flat coverage 0%). The measured 8 visible tones per tile is above the grass reference (3) and about level with the paving (7). Dark edge pixels are 0% neutral, so the dark areas lean green rather than black, and there is no sticker outline. Only 8 raw colours are used, so the texture is a little more regular than the reference's 26-colour grass. The rendered candidate is also small, roughly one tile, so I judged it by eye as a tile sample. By the numbers and by eye it sits at or above the reference grass in structure and density.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13798
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground tile with dark grass patch in upper right",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The 16x16 tile is a flat ground texture of light green grass with a dark green patch in the upper right (rows 0-7). The column scan shows only a color change between dark and light grass, with no front-edge line, eave shadow, ellipse or vertical face. It is a terrain autotile with no standing volume, so it reads as a flat top-down surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 6,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a ground patch, so it matches the grass and paving references in kind. It is tiny on the board and looks like a single 16x16 tile, which is smaller than the 4x3 patch the brief calls for. This is a size observation, not a style failure. The facts favour it: 8 visible tones per tile against 3 for the grass reference and 7 for the paving, and 0% near-flat coverage, the same as both references. It has no dark edge pixels, so there is no black sticker outline. The dark-green edge is shaded in tinted greens, and the light grass area has speckle and clump variation. The shading ramp looks like about 5-6 green steps. The tile is small and its fine detail is hard to read, so it may be a little less varied than the grass reference at full size. On the primary facts it is at or above the references, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 8044
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground tile with dark grass patch in upper right",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The 16x16 tile is a flat ground texture of light green grass with a dark green patch in the upper right (rows 0-7). The column scan shows only a color change between dark and light grass, with no front-edge line, eave shadow, ellipse or vertical face. It is a terrain autotile with no standing volume, so it reads as a flat top-down surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a grass ground patch with a dark-grass edge, the same kind as the reference grass and its dark-grass corner. It shows about 5 green steps, from a light mottled green through mid greens to a deep green. Dark clumps and tuft dots break up the surface, so there are no flat fills (near-flat coverage 0%). The measured 8 visible tones per tile is above the grass reference (3) and about level with the paving (7). Dark edge pixels are 0% neutral, so the dark areas lean green rather than black, and there is no sticker outline. Only 8 raw colours are used, so the texture is a little more regular than the reference's 26-colour grass. The rendered candidate is also small, roughly one tile, so I judged it by eye as a tile sample. By the numbers and by eye it sits at or above the reference grass in structure and density.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 0
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground tile with dark grass patch in upper right",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The 16x16 tile is a flat ground texture of light green grass with a dark green patch in the upper right (rows 0-7). The column scan shows only a color change between dark and light grass, with no front-edge line, eave shadow, ellipse or vertical face. It is a terrain autotile with no standing volume, so it reads as a flat top-down surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a grass ground patch with a dark-grass edge, the same kind as the reference grass and its dark-grass corner. It shows about 5 green steps, from a light mottled green through mid greens to a deep green. Dark clumps and tuft dots break up the surface, so there are no flat fills (near-flat coverage 0%). The measured 8 visible tones per tile is above the grass reference (3) and about level with the paving (7). Dark edge pixels are 0% neutral, so the dark areas lean green rather than black, and there is no sticker outline. Only 8 raw colours are used, so the texture is a little more regular than the reference's 26-colour grass. The rendered candidate is also small, roughly one tile, so I judged it by eye as a tile sample. By the numbers and by eye it sits at or above the reference grass in structure and density.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 0
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground tile with dark grass patch in upper right",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a flat terrain tile, 16 rows by 16 columns, fully opaque. It shows light green grass with a dark green grass patch in the upper right (rows 0-7, columns 8 and up). The column scan shows only color changes between light and dark grass, with no front-edge line, no eave shadow and no vertical face. As a terrain autotile it is a ground surface with no standing volume, so it reads as a flat top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a grass patch with a dark-grass edge, the same kind as the reference grass. It shows 8 visible tones per 16x16 tile against 3 for the reference grass and 7 for the paving. Near-flat coverage is 0%, the same as both references, so there are no flat fills. The candidate has 0% neutral dark edge pixels, so the dark grass edge leans green rather than black, matching the reference grass. There is no sticker outline. It reads as a mottled light-to-mid green field with darker green tufts and a darker green edge, which gives about 5 ramp steps. The texture is a little less organic than the reference's blade clumps, and the candidate is only 8 raw colours against the reference's 26, but it is as visibly varied. On the measured facts it is at or above the grass reference, so I judge it acceptable beside it. The thumbnail is very small, so fine detail is hard to confirm by eye.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12200
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground tile with dark grass patch in upper right",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a flat terrain tile, 16 rows by 16 columns, fully opaque. It shows light green grass with a dark green grass patch in the upper right (rows 0-7, columns 8 and up). The column scan shows only color changes between light and dark grass, with no front-edge line, no eave shadow and no vertical face. As a terrain autotile it is a ground surface with no standing volume, so it reads as a flat top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small ground patch that blends light grass into a dark green edge, so it has no outline and the outline check is moot. The measured facts support it: 8 visible tones per 16x16 tile against 3 for the reference grass and 7 for the paving. Near-flat coverage is 0%, the same as both references, and 0% of its dark edge pixels are neutral, so any dark pixels carry a green tint rather than a near-black sticker line. By eye, the transition from light to dark green uses several distinct greens with speckled variation, matching the reference grass's tuft-and-dither texture. It has only 8 distinct colours against the reference grass's 80, so it is simpler, but its visible tone count is higher. The rendering is tiny, so I cannot confirm fine detail, and the numbers carry much of this judgement. Nothing indicates it would look flatter or thinner than the reference grass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 7981
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground tile with dark grass patch in upper right",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a flat terrain tile, 16 rows by 16 columns, fully opaque. It shows light green grass with a dark green grass patch in the upper right (rows 0-7, columns 8 and up). The column scan shows only color changes between light and dark grass, with no front-edge line, no eave shadow and no vertical face. As a terrain autotile it is a ground surface with no standing volume, so it reads as a flat top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small grass patch with a darker green edge, so it matches the grass and ground references in kind. The measured facts put it at or above the references. It shows 8 visible tones per tile against 3 for the reference grass and 7 for the paving. Near-flat coverage is 0%, the same as both references, so there are no flat fills. Dark edge pixels are 0% neutral, so the edge is tinted green rather than a black sticker line. By eye the patch shows a light-to-dark green ramp with speckle and tuft variation. It is less detailed than the reference grass clumps, but it is not thinner than the grass reference by the measured tone count.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 7525
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground tile with dark grass patch in upper right",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a flat terrain tile, 16 rows by 16 columns, fully opaque. It shows light green grass with a dark green grass patch in the upper right (rows 0-7, columns 8 and up). The column scan shows only color changes between light and dark grass, with no front-edge line, no eave shadow and no vertical face. As a terrain autotile it is a ground surface with no standing volume, so it reads as a flat top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a grass patch with a dark-grass edge, the same kind as the reference grass. It shows 8 visible tones per 16x16 tile against 3 for the reference grass and 7 for the paving. Near-flat coverage is 0%, the same as both references, so there are no flat fills. The candidate has 0% neutral dark edge pixels, so the dark grass edge leans green rather than black, matching the reference grass. There is no sticker outline. It reads as a mottled light-to-mid green field with darker green tufts and a darker green edge, which gives about 5 ramp steps. The texture is a little less organic than the reference's blade clumps, and the candidate is only 8 raw colours against the reference's 26, but it is as visibly varied. On the measured facts it is at or above the grass reference, so I judge it acceptable beside it. The thumbnail is very small, so fine detail is hard to confirm by eye.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 0
+  }
+ ],
+ "decidedAt": "2026-10-20T20:28:05.459Z",
+ "cells": {
+  "16": [
+   "a5295e8927f35d2b"
+  ],
+  "24": [
+   "145db8807cc68487",
+   "2c936b040630d96d",
+   "36791df404ba6ebf",
+   "e3c7d534a24425eb",
+   "ee1c73f4e0565454",
+   "f7c15d5a3d6fd9ce"
+  ],
+  "32": [
+   "49aa9e6408ddb052",
+   "50bd6c1d9fcf70aa",
+   "6b7bcd0cb27991d1",
+   "6de22fa77d5c2d26",
+   "94a51eca94aa9319",
+   "a6fba188e1881b74"
+  ],
+  "48": [
+   "07ed066fcc1a4fa4",
+   "2a0bbd18de05cdaa",
+   "48c7567dc8677ce8",
+   "7614bd184b2c0bda",
+   "ae645f9116afb1b8",
+   "f6d92aa4726d4eb4"
+  ]
+ }
+}

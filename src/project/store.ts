@@ -9,7 +9,7 @@ import { mergeTeamProject } from "./persistence/core/teamMerge";
 import { clearCopiedEventPage } from "@/editor/eventPageClipboard";
 import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
 import { rewriteLegacyAdvancedDialogueInProject } from "@/project/io/rewriteLegacyDialogue";
-import { createBlankProject } from "./defaults";
+import { createBlankProject, createStarterBlankProject } from "./defaults";
 // defaultProject 가 아니라 blankProject 에서 가져온다 — defaultProject 는 데모·쇼케이스 빌더 때문에
 // 에디터 인테리어 파이프라인을 끌고, store 를 import 하는 테스트 669개가 그 비용을 물게 된다.
 import { ensureSwitchVariableSlots } from "./defaults/blankProject";
@@ -346,7 +346,7 @@ class ProjectStore {
             // 빈 문서를 채택하고 dirty 로 둬 첫 flush 가 폴더에 심는다.
             const definitions = preloadAllBundledTilesetDefinitions();
             if (definitions) await definitions;
-            this.adoptProject(createBlankProject(), { restoreVault: false });
+            this.adoptProject(createStarterBlankProject(), { restoreVault: false });
             this.loadedRemoteProjectId = target.projectId;
             this.writeAuthority = { mode: "legacy", target };
             this.remotePersistenceEnabled = true;

@@ -589,6 +589,23 @@ r1 시험(`verify-shots/assistant-beodeul-village/r1/fresh`)은 「마을」에 
 
 refine_beodeul_courtyard_vegetation({mapId})는 인식된 54×34 예제의 건물/나무 전체 배열을 확인하고 집·길·마당·시작점을 유지하며 흩어진 나무/덤불을 수관이 앞뒤로 겹친 공용 숲 8덩어리로 교체한다. 높이 있는 풀은 숲 밑동에만 겹치고 줄기의 X를 상속하는 ★다. 짧은 문틈 울타리 두 조각을 제거하고 실제 텃밭 3변을 연속 레일/수직선/모서리로 연결한다. 북쪽은 큰길에서 들어오는 면이다. stone 박공은 정면 돌벽과 같은 원본 질감으로 통일한다. 원본 지붕/알파/창문/문 개수/집 위치를 유지한다. 이벤트/높이/다른 이벤트의 전이 도착점/수정된 나무·별도 지형/기물은 거부, 반복은 no-op. source WOODLAND.md, build 하네스가 이전368칸을 보존한다. 공용 문서/정확한 4층 예제/전체 graft 규칙은 새·기존 city/ground 모두 배포하며 각 MD 12만자 이하로 분리한다. 전용 player.html과 SQLite 재로드 근거 verify-shots/beodeul-depth-fix.
 
+
+### woodland 보정 (2026-10-20)
+
+- 붓으로 까는 버들항 숲은 나무 composer(`src/project/defaults/treeComposer.ts` `composeTreesInMask`, #3058 jp 숲 r4 와 같은 규칙)로 짠다:
+  도로 숲 벽 `plantBeodeulForestWall`(author_wild_route·이야기 산책), 강가·해안 마을 숲 덩이(`buildBeodeulVillage` leaf). 원본 줄기 나무 4종만 쓰고(`src/assets/beodeulForestComposer.json`, 빌더 `scripts/content/build-beodeul-forest-composer.py`)
+  칸마다 앞 나무부터 4·3·2층에 쌓는다. 예전 3칸 격자 3×3 수관(반복·풀밭 틈·떠 있는 수관)과 leaf 수관 오토타일(칸 경계로 곧게 잘린 숲 가장자리)을 대신한다. 설원 수관은 그대로.
+- composer 는 hold 칸 밖을 쓰지 않는다 — 같은 bd-tree 칸 번호로 따로 찍은 낱 나무·덤불을 지우던 함정(그림자만 남음)을 막는다. 마을에서는 composer 나무도 nature 밑동 그림자를 받는다.
+- `bdg-woodland-fence-*` 는 원본 밭 울타리 칸 화소 복사로 바뀌었고 남동·북서·북동 모서리와 동쪽 세로가 늘었다(643~649, `scripts/content/build-beodeul-woodland-fence.py`). 공동마당 보정은 남서/남동 모서리와 서/동변을 따로 쓴다.
+- r2(같은 날): 접지 — #3058 r6 `TreeComposerGround` 를 버들항 원본 숲 그늘 색(α65/α115 두 단)으로 채운다(`scripts/content/build-beodeul-forest-ground.py`, 공용 기초 칩셋 `bdg-forest-ground-*` 192칸 → 런타임 이식). 숲 종류 `forestType`(broadleaf·conifer·mixed)을 `author_wild_route`·`author_beodeul_town` 에 더했다. 침엽은 원본 해안 절벽길 전나무·도시 숲 측백 칸 그대로(새 그림 없음). 입구 `src/editor/tools/beodeulForest.ts` `composeBeodeulForest`. treeComposer.ts 는 #3058 2c72aeed32 와 같고 `composeTreesInMask` 의 `write` 인자만 더했다(#3058 에 넘길 것). 감사 렌더 숲 종류는 `BW_TYPES=broadleaf,conifer,mixed`.
+- r3(2026-10-21, 독립 검수 1차 FAIL 6 대응): 밑동을 composer 격자 대신 `planBeodeulForest`(`beodeulForest.ts`)가 해시 순으로 고르고 `composeTreesPlaced`(treeComposer.ts 에 덧붙인 입구 — 밑동 목록·그늘 덮개를 받는다, #3058 에 넘길 것)로 쌓는다. 맵 밖으로 보이는 칸이 나가는 나무·칸당 층 수를 넘는 겹침은 심지 않는다. 숲 속 바닥은 그늘 덩이. 그늘 칸은 단색 덩이+낱점으로 다시 그렸다. **그늘 칸 71장은 새 그림이라 18323 사람 허용 대기**(`beodeul-forest-ground-r3`), 빌더는 허용 전 `--draft` 로만 굽는다. 공동마당 숲도 composer, 침엽·혼효 마을은 낱 나무도 침엽 계열·숲 덩이 크게.
+- r4(2026-10-21, 사용자 승인 B): 숲 덩이 한 톤 — 가장자리(깊이 ≤1)만 밝은 연두 나무, 속은 원본 짙은 초록 T3·덤불, 큰 4×5 와 작은 나무 섞기. 숲 장면(도로 숲 벽) 바닥 잔디만 채도 ×0.84(`bdg-woodland-grass`). 2차 검수 N2(윗줄 측백 같은 높이)·N4(전나무 꼭대기가 줄기에 꽂힘) 수정.
+- r5(같은 날, 사용자 정정): **나무 밑 땅 = 원본 「짙은 풀」 오토타일.** 원본 도시는 나무 밑을 짙은 결(원본 칸 11628) 둥근 디더 덩이로 칠했는데 칩셋에 가장자리가 없어 도로 도구가 11628 을 네모 판으로 깔았다.
+  `ensureBeodeulDarkGrass`(`beodeulForest.ts`)가 대상 칩셋에 오토타일 그룹 `beodeul_dark_grass`(_woodland)를 단다 — 속은 원본 칸, 가장자리 46모양×바탕 2벌은 원본 화소 조합(beodeul_ground 651~742).
+  코드가 그린 숲 바닥 그늘·둘레 땅 그늘 칸(r2~r4)은 모두 지웠다. `author_wild_route` 의 조우 풀숲은 `isDeclaredMonsterGame` 일 때만 깐다(일반 RPG 는 맵 전체 조우). 자세한 규칙 `tiledata/beodeul-ground/WOODLAND.md`.
+- r9(같은 날, 사용자 위임 허용): 독립 Opus 적대 VQA 가 한 칸 폭 띠·외딴 칸을 1~3판 내리 불합격시켰다(끊긴 점 사슬·구슬·풀포기). **짙은 풀은 2×2 덩이에서만 보이고** 외딴 칸·한 칸 폭 띠는 바탕 잔디, 덩이는 한 칸 폭 이음매에서 물러난다. 4판 93/93 통과 → 18323 묶음 `beodeul-dark-grass-r9` 허용(감독, 사용자 위임) → 실제 굽기. 잔디 결의 글자 같은 반복 무늬는 원본 737 의 것이고 650 은 그 복사본이다(이번 변경이 만든 것 아님).
+- 감사 렌더: `bun scripts/qa/beodeul-woodlands-audit.mts <dir> <tag>`(도로 숲 벽·공동마당·강가 마을·닫힌 울타리를 실제 도구로 짓고 renderMapPng, 높이 맵 pad 띠는 잘라 낸다 — 게임 화면 밖이다. 끝에 잘림 검사 `clip-check`).
+- 남은 것: 공동마당 밝은 잔디 사각 패치(마당 설계), 강가 마을 예제(river-town)의 남쪽 숲 조각 반복, 도로 풀숲(조우 칸)의 네모 판 — 풀숲 가장자리를 깎으면 조우 로케이션 사각형과 보이는 풀숲이 어긋나므로 가장자리 그림(새 그림·관문)이 필요하다. 풀 군락 fringe 는 PIL 도형 그림이라 원본 결이 아니다 — 새 그림은 하네스·3/4 관문을 거쳐야 한다.
 ## 기와 복원 · stone 박공 벽/중앙 창 (2026-10-04 사용자 정정)
 
 revision 16 기와 변경은 사용자 지적을 오해한 것이며 철회했다. 민가 5종/성당의 기와를 원본 픽셀로 복원했다. stone 지붕 아래 삼각형 벽의 일부 회벽 색만 덮던 보정 때문에 기존 목재 기둥/사각창이 남아 새 창과 겹쳤다. gable.py는 전체 박공 벽과 계단형 가장자리만 같은 돌 질감으로 채우고 원형창 하나를 중앙 (31,53)에 둔다. 원래 지붕/문/하단 벽/위치/통행/맵은 유지한다. 원본 기와 픽셀 대조, revision 15 대비 stone 박공 밖 픽셀 불변, 공용 참고문서와 새/기존 프로젝트, 실제 저장·재로드/화면은 verify-shots/beodeul-gable-fix.
